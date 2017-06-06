@@ -1,6 +1,6 @@
 About Beth
 
-‘Beth’ is private project represents my personal interest in researching and developing software
+‘Beth’ is a private project representing my personal interest in researching and developing software
 particularly fining new useful architecture techniques/design patterns optimally incorporating
 reflection, polymorphism, generic programming and other areas.
 
