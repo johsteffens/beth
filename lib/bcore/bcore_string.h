@@ -1,0 +1,143 @@
+/// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
+
+/** Managed string of characters.
+ *  The character array always terminates with '0'.
+ *  'size' specifies the number of characters in the string (excluding the terminating '0')
+ *  'space' specifies the amount of memory available for the string (including terminating '0')
+ *  Except for the empty state when space = size = 0, space is >= size + 1;
+ *  sc should be used with functions expecting a 0-terminated string.
+ *  sc always represents a valid 0-terminated string. In case of the empty string, sc points to to an external constant "";
+ */
+
+#ifndef BCORE_STRING_H
+#define BCORE_STRING_H
+
+#include "stdarg.h"
+
+#include "bcore_first.h"
+#include "bcore_types.h"
+#include "bcore_control.h"
+#include "bcore_life.h"
+
+typedef struct bcore_string_s
+{
+    aware_t _;
+    union
+    {
+        sc_t sc;
+        sd_t data;
+    };
+    sz_t size, space;
+} bcore_string_s;
+
+void            bcore_string_s_init(    bcore_string_s* o );
+void            bcore_string_s_initvf(  bcore_string_s* o, sc_t format, va_list args );  // formatted initialization (like sprintf)
+void            bcore_string_s_initf(   bcore_string_s* o, sc_t format, ... );           // formatted initialization (like sprintf)
+void            bcore_string_s_down(    bcore_string_s* o );
+void            bcore_string_s_copy(    bcore_string_s* o, const bcore_string_s* src );
+void            bcore_string_s_move(    bcore_string_s* o,       bcore_string_s* src );
+void            bcore_string_s_copy_sc( bcore_string_s* o, sc_t sc );
+bcore_string_s* bcore_string_s_create();
+bcore_string_s* bcore_string_s_createf(      sc_t format, ... );
+bcore_string_s* bcore_string_s_create__sc(   sc_t sc );
+
+/// create with lifetime manager
+bcore_string_s* bcore_string_s_create_l(     bcore_life_s* life );
+bcore_string_s* bcore_string_s_createf_l(    bcore_life_s* life, sc_t format, ... );
+bcore_string_s* bcore_string_s_create_l__sc( bcore_life_s* life, sc_t sc );
+
+void            bcore_string_s_discard(       bcore_string_s* o );
+bcore_string_s* bcore_string_s_clone(   const bcore_string_s* o );
+bcore_string_s* bcore_string_s_crop(    const bcore_string_s* o, sz_t start, sz_t end ); // creates a new string subsection of o;
+bcore_string_s* bcore_string_s_crop_d(        bcore_string_s* o, sz_t start, sz_t end ); // discards o;
+
+bcore_string_s* bcore_string_s_clear( bcore_string_s* o ); // empties string
+
+bcore_string_s* bcore_string_s_push_char(     bcore_string_s* o, char c );
+bcore_string_s* bcore_string_s_push_char_n(   bcore_string_s* o, char c, sz_t n ); // pushes c n times
+char            bcore_string_s_pop_char(      bcore_string_s* o );
+bcore_string_s* bcore_string_s_push_string(   bcore_string_s* o, const bcore_string_s* src );
+bcore_string_s* bcore_string_s_push_string_d( bcore_string_s* o, bcore_string_s* src ); // discards src
+bcore_string_s* bcore_string_s_push_sc(       bcore_string_s* o, sc_t sc );
+bcore_string_s* bcore_string_s_pushf(         bcore_string_s* o, sc_t format, ... );
+
+/// comparison and equality (for return of comparison 'cmp' see bcore_strcmp)
+static inline int  bcore_string_s_cmp_sc(       const bcore_string_s* o, sc_t sc ) { return bcore_strcmp( o->sc, sc ); }
+static inline int  bcore_string_s_cmp_string(   const bcore_string_s* o, const bcore_string_s* string ) { return bcore_strcmp( o->sc, string->sc ); }
+static inline bool bcore_string_s_equal_sc(     const bcore_string_s* o, sc_t sc ) { return bcore_strcmp( o->sc, sc ) == 0; }
+static inline bool bcore_string_s_equal_string( const bcore_string_s* o, const bcore_string_s* string ) { return bcore_strcmp( o->sc, string->sc ) == 0; }
+
+/// self reflection
+struct bcore_flect_self_s;
+struct bcore_flect_self_s* bcore_string_s_create_self();
+
+/** Search:
+ *  Search involving positions between start to end in direction start --> end
+ *  Detects first position nearest to start.
+ *  'start' may be bigger then 'end' in which case the search direction is backwards.
+ *  The search range is [start, end-1] when start < end and [end, start-1] otherwise.
+ *  if not found, the function returns the bigger of (start, end) but maximally o->size.
+ */
+sz_t bcore_string_s_find_char(     const bcore_string_s* o, sz_t start, sz_t end, char c );
+sz_t bcore_string_s_find_sc(       const bcore_string_s* o, sz_t start, sz_t end, sc_t sc );
+sz_t bcore_string_s_find_string(   const bcore_string_s* o, sz_t start, sz_t end, const bcore_string_s* string );
+sz_t bcore_string_s_find_string_d( const bcore_string_s* o, sz_t start, sz_t end,       bcore_string_s* string ); // discards string
+sz_t bcore_string_s_find_any_sc(   const bcore_string_s* o, sz_t start, sz_t end, sc_t sc ); // any character in sc
+sz_t bcore_string_s_find_none_sc(  const bcore_string_s* o, sz_t start, sz_t end, sc_t sc ); // any character not in sc
+
+/// Counting (expects start >= end)
+sz_t bcore_string_s_count_char(   const bcore_string_s* o, sz_t start, sz_t end, char c );
+sz_t bcore_string_s_count_sc(     const bcore_string_s* o, sz_t start, sz_t end, sc_t sc );
+sz_t bcore_string_s_count_string( const bcore_string_s* o, sz_t start, sz_t end, const bcore_string_s* string );
+
+/// Inserts at position <start>
+bcore_string_s* bcore_string_s_insert_char(     bcore_string_s* o, sz_t start, char c );
+bcore_string_s* bcore_string_s_insert_sc(       bcore_string_s* o, sz_t start, sc_t sc );
+bcore_string_s* bcore_string_s_insert_string(   bcore_string_s* o, sz_t start, const bcore_string_s* string );
+bcore_string_s* bcore_string_s_insert_string_d( bcore_string_s* o, sz_t start, bcore_string_s* string ); // discards string
+
+/// Removes from position start: <size> characters. If not enough characters left, the entire tail is removed. Returns o.
+bcore_string_s* bcore_string_s_remove( bcore_string_s* o, sz_t start, sz_t size );
+
+/// Replaces all occurrences of <c> with <string>
+bcore_string_s* bcore_string_s_replace_char_sc(       bcore_string_s* o, char c, sc_t sc );
+bcore_string_s* bcore_string_s_replace_char_string(   bcore_string_s* o, char c, const bcore_string_s* string );
+bcore_string_s* bcore_string_s_replace_char_string_d( bcore_string_s* o, char c, bcore_string_s* string );
+
+/// Replaces all occurrences of <match> with <replace>
+bcore_string_s* bcore_string_s_replace_sc_sc(             bcore_string_s* o, sc_t match, sc_t replace );
+bcore_string_s* bcore_string_s_replace_string_string(     bcore_string_s* o, const bcore_string_s* match, const bcore_string_s* replace );
+bcore_string_s* bcore_string_s_replace_string_d_string_d( bcore_string_s* o, bcore_string_s* match, bcore_string_s* replace ); // discards input strings
+
+/// Text navigation
+sz_t bcore_string_s_lineof(    const bcore_string_s* o, sz_t pos );            // line number of character position in text (line counting starts with '1')
+sz_t bcore_string_s_colof(     const bcore_string_s* o, sz_t pos );            // column of character position in text (column counting starts with '1')
+sz_t bcore_string_s_posof(     const bcore_string_s* o, sz_t line, sz_t col ); // transforms line and column into a position
+sz_t bcore_string_s_posofline( const bcore_string_s* o, sz_t pos );            // returns the position at which the line begins containing the character indicated by pos
+
+/// string to stdout
+void bcore_string_s_print( const bcore_string_s* o );
+void bcore_string_s_print_d(     bcore_string_s* o ); // discards o
+
+/// parsing
+
+/** Functions supporting for text-parsing with specific rules.
+ *  Format rules
+ *  "#name"   - scans a name-string consisting of valid name characters; argument: bcore_string_s*
+ *  "#?'...'" - test presence and consumes the string literal between '' iff exactly matching; argument: bool*
+ *  " "       - consumes whitespaces including c-style comments
+ *  "#u3_t"   - matches content to a u3_t; argument: u3_t*
+ *  currently supported types: u3_t, s3_t
+ */
+sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t format, va_list args );
+sz_t bcore_string_s_parsef(  const bcore_string_s* o, sz_t start, sz_t end, sc_t format, ... );
+
+/// constructs a double-line with a visible position indicator (useful for context messages/warnings/errors with highlighted position)
+bcore_string_s* bcore_string_s_show_line_context( const bcore_string_s* o, sz_t pos );
+
+/**********************************************************************************************************************/
+// testing, debugging
+
+void bcore_string_s_quicktest( void );
+
+#endif //BCORE_STRING_H
