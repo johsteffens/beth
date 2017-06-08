@@ -2,6 +2,7 @@
 
 /** Name registration framework
  *  This framework links names to hash values and vice versa.
+ *  Hash value 0 is reserved. Names resulting is hash 0 are rejected.
  */
 
 #ifndef BCORE_NAME_MANAGER_H

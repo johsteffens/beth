@@ -5,15 +5,22 @@
 
 #include "bcore_types.h"
 
+/**********************************************************************************************************************/
 /// Creation, copying, relocation
-typedef void  (*bcore_fp_init   )( void* o );                  // initialization (construction)
-typedef void  (*bcore_fp_down   )( void* o );                  // destruction
-typedef void  (*bcore_fp_copy   )( void* o, const void* src ); // deep copy
-typedef void  (*bcore_fp_plant  )( void* o, const void* src ); // init(o); copy(o, src);
-typedef void  (*bcore_fp_move   )( void* o,       void* src ); // init(o); copy(o, src); down(src)
-typedef void* (*bcore_fp_create )(         );                  // allocate & init
-typedef void  (*bcore_fp_discard)( void* o );                  // down & deallocate; o may be NULL in which case function does nothing
-typedef void* (*bcore_fp_clone  )( const void* o );            // allocate & copy; o may be NULL in which case NULL is returned
+typedef void  (*bcore_fp_init   )( vd_t o );                  // initialization (construction)
+typedef void  (*bcore_fp_down   )( vd_t o );                  // destruction
+typedef void  (*bcore_fp_copy   )( vd_t o, vc_t src ); // deep copy
+typedef void  (*bcore_fp_plant  )( vd_t o, vc_t src ); // init(o); copy(o, src);
+typedef void  (*bcore_fp_move   )( vd_t o, vd_t src ); // init(o); copy(o, src); down(src)
+typedef vd_t  (*bcore_fp_create )(        );                  // allocate & init
+typedef void  (*bcore_fp_discard)( vd_t o );                  // down & deallocate; o may be NULL in which case function does nothing
+typedef vd_t  (*bcore_fp_clone  )( vc_t o );            // allocate & copy; o may be NULL in which case NULL is returned
+
+/**********************************************************************************************************************/
+
+/// bifunctions
+typedef s2_t (*bcore_fp_cmp  )( vc_t v1,  vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
+typedef vd_t (*bcore_fp_fold )( vd_t acc, vc_t arg ); // folding
 
 /**********************************************************************************************************************/
 /// Testing. A test shall either complete safely or fail with a descriptive error (via bcore_err).

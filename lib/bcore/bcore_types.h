@@ -8,10 +8,6 @@
 #include <float.h>
 #include <stdbool.h>
 
-//typedef _Bool  bool;
-//typedef _True  true;
-//typedef _False false;
-
 typedef float  flt32_t;
 typedef double flt64_t;
 
@@ -31,9 +27,8 @@ typedef const char* sc_t; // const zero terminated string
 typedef size_t      sz_t;
 typedef void*       vd_t; // dynamic void pointer
 typedef const void* vc_t; // const void pointer
-//typedef void*       so_t; // pointer to self aware object (first element of object is its type)
 
-typedef void (*fp_t)();     // general function pointer (also for functions with different signature)
+typedef void (*fp_t)();   // general function pointer (also for functions with different signature)
 
 // types for special purposes
 typedef u2_t tp_t;    // object type identifier

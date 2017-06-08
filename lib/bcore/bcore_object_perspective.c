@@ -4,43 +4,31 @@
 
 /**********************************************************************************************************************/
 
-typedef struct bcore_object_stem_s
-{
-    const bcore_flect_item_s*    flect_item;
-    const struct bcore_object_s* interface;
-} bcore_object_stem_s;
-
-DEFINE_FUNCTION_INIT_FLAT( bcore_object_stem_s )
-DEFINE_FUNCTION_DOWN_FLAT( bcore_object_stem_s )
-DEFINE_FUNCTION_COPY_FLAT( bcore_object_stem_s )
-DEFINE_FUNCTION_MOVE(      bcore_object_stem_s )
-DEFINE_FUNCTION_CREATE(    bcore_object_stem_s )
-DEFINE_FUNCTION_DISCARD(   bcore_object_stem_s )
-DEFINE_FUNCTION_CLONE(     bcore_object_stem_s )
+DEFINE_FUNCTION_INIT_FLAT( bcore_object_item_s )
+DEFINE_FUNCTION_DOWN_FLAT( bcore_object_item_s )
+DEFINE_FUNCTION_COPY_FLAT( bcore_object_item_s )
+DEFINE_FUNCTION_MOVE(      bcore_object_item_s )
+DEFINE_FUNCTION_CREATE(    bcore_object_item_s )
+DEFINE_FUNCTION_DISCARD(   bcore_object_item_s )
+DEFINE_FUNCTION_CLONE(     bcore_object_item_s )
 
 /**********************************************************************************************************************/
-
-typedef struct bcore_object_body_s
-{
-    bcore_object_stem_s* data;
-    sz_t size, space;
-} bcore_object_body_s;
 
 DEFINE_FUNCTION_INIT_FLAT( bcore_object_body_s )
 
 void bcore_object_body_s_down( bcore_object_body_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_object_stem_s_down( &o->data[ i ] );
-    o->data = bcore_un_alloc( sizeof( bcore_object_stem_s ), o->data, o->space, 0, &o->space );
+    for( sz_t i = 0; i < o->size; i++ ) bcore_object_item_s_down( &o->data[ i ] );
+    o->data = bcore_un_alloc( sizeof( bcore_object_item_s ), o->data, o->space, 0, &o->space );
     o->size = 0;
 }
 
 void bcore_object_body_s_copy( bcore_object_body_s* o, const bcore_object_body_s* src )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_object_stem_s_down( &o->data[ i ] );
-    o->data = bcore_un_alloc( sizeof( bcore_object_stem_s ), o->data, o->space, 0,         &o->space );
-    o->data = bcore_un_alloc( sizeof( bcore_object_stem_s ), o->data, o->space, src->size, &o->space );
-    for( sz_t i = 0; i < src->size; i++ ) bcore_object_stem_s_copy( &o->data[ i ], &src->data[ i ] );
+    for( sz_t i = 0; i < o->size; i++ ) bcore_object_item_s_down( &o->data[ i ] );
+    o->data = bcore_un_alloc( sizeof( bcore_object_item_s ), o->data, o->space, 0,         &o->space );
+    o->data = bcore_un_alloc( sizeof( bcore_object_item_s ), o->data, o->space, src->size, &o->space );
+    for( sz_t i = 0; i < src->size; i++ ) bcore_object_item_s_copy( &o->data[ i ], &src->data[ i ] );
     o->size = src->size;
 }
 
@@ -48,19 +36,19 @@ DEFINE_FUNCTION_CREATE(    bcore_object_body_s )
 DEFINE_FUNCTION_DISCARD(   bcore_object_body_s )
 DEFINE_FUNCTION_CLONE(     bcore_object_body_s )
 
-bcore_object_stem_s* bcore_object_body_s_push( bcore_object_body_s* o )
+bcore_object_item_s* bcore_object_body_s_push( bcore_object_body_s* o )
 {
     if( o->size == o->space )
     {
         sz_t old_space = o->space;
-        bcore_object_stem_s* old_data = o->data;
-        o->data = bcore_u_alloc( sizeof( bcore_object_stem_s ), NULL, o->space > 0 ? o->space * 2 : 1, &o->space );
-        for( sz_t i = 0; i < o->size; i++  ) bcore_object_stem_s_move( &o->data[ i ], &old_data[ i ] );
-        bcore_un_alloc( sizeof( bcore_object_stem_s ), old_data, old_space, 0, NULL );
+        bcore_object_item_s* old_data = o->data;
+        o->data = bcore_u_alloc( sizeof( bcore_object_item_s ), NULL, o->space > 0 ? o->space * 2 : 1, &o->space );
+        for( sz_t i = 0; i < o->size; i++  ) bcore_object_item_s_move( &o->data[ i ], &old_data[ i ] );
+        bcore_un_alloc( sizeof( bcore_object_item_s ), old_data, old_space, 0, NULL );
     }
-    bcore_object_stem_s* item = &o->data[ o->size ];
+    bcore_object_item_s* item = &o->data[ o->size ];
     o->size++;
-    bcore_object_stem_s_init( item );
+    bcore_object_item_s_init( item );
     return item;
 }
 
@@ -68,7 +56,7 @@ void bcore_object_body_s_pop( bcore_object_body_s* o )
 {
     if( o->size == 0 ) return;
     o->size--;
-    bcore_object_stem_s_down( &o->data[ o->size ] );
+    bcore_object_item_s_down( &o->data[ o->size ] );
 }
 
 /**********************************************************************************************************************/
@@ -101,7 +89,7 @@ void bcore_object_s_discard( bcore_object_s* o )
     bcore_free( o );
 }
 
-bcore_object_stem_s* bcore_object_s_push( bcore_object_s* o )
+bcore_object_item_s* bcore_object_s_push( bcore_object_s* o )
 {
     if( !o->body ) o->body = bcore_object_body_s_create();
     return bcore_object_body_s_push( o->body );
@@ -156,7 +144,7 @@ void bcore_object_s__init_generic( const bcore_object_s* o, void* obj )
     }
     for( sz_t i = first; i < o->body->size; i++ )
     {
-        const bcore_object_stem_s* item = &o->body->data[ i ];
+        const bcore_object_item_s* item = &o->body->data[ i ];
         const bcore_flect_item_s* flect_item = item->flect_item;
         void* item_obj = ( u0_t* )obj + item->flect_item->offset;
 
@@ -164,8 +152,8 @@ void bcore_object_s__init_generic( const bcore_object_s* o, void* obj )
         {
             case BCORE_CAPS_STATIC:
             {
-                const bcore_object_s* interface = item->interface;
-                if( !interface->init_flat ) interface->init( interface, item_obj );
+                const bcore_object_s* perspective = item->perspective;
+                if( !perspective->init_flat ) perspective->init( perspective, item_obj );
             }
             break;
 
@@ -213,7 +201,7 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
 #endif // NDEBUG
     for( sz_t i = 0; i < o->body->size; i++ )
     {
-        const bcore_object_stem_s* item = &o->body->data[ i ];
+        const bcore_object_item_s* item = &o->body->data[ i ];
         const bcore_flect_item_s* flect_item = item->flect_item;
         void* item_obj = ( u0_t* )obj + item->flect_item->offset;
 
@@ -221,8 +209,8 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
         {
             case BCORE_CAPS_STATIC:
             {
-                const bcore_object_s* interface = item->interface;
-                if( !interface->down_flat ) interface->down( interface, item_obj );
+                const bcore_object_s* perspective = item->perspective;
+                if( !perspective->down_flat ) perspective->down( perspective, item_obj );
             }
             break;
 
@@ -231,8 +219,8 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
                 bcore_flect_caps_static_link_s* s = item_obj;
                 if( s->link )
                 {
-                    const bcore_object_s* interface = item->interface;
-                    interface->discard( interface, s->link );
+                    const bcore_object_s* perspective = item->perspective;
+                    perspective->discard( perspective, s->link );
                 }
             }
             break;
@@ -242,8 +230,8 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
                 bcore_flect_caps_typed_link_s* s = item_obj;
                 if( s->link )
                 {
-                    const bcore_object_s* interface = bcore_object_s_get_typed( s->type );
-                    interface->discard( interface, s->link );
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( s->type );
+                    perspective->discard( perspective, s->link );
                 }
             }
             break;
@@ -253,8 +241,8 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
                 bcore_flect_caps_aware_link_s* s = item_obj;
                 if( s->link )
                 {
-                    const bcore_object_s* interface = bcore_object_s_get_typed( *( aware_t* )s->link );
-                    interface->discard( interface, s->link );
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( *( aware_t* )s->link );
+                    perspective->discard( perspective, s->link );
                 }
             }
             break;
@@ -264,16 +252,16 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
                 bcore_flect_caps_static_array_s* s = item_obj;
                 if( s->data )
                 {
-                    const bcore_object_s* interface = item->interface;
-                    if( !interface->down_flat )
+                    const bcore_object_s* perspective = item->perspective;
+                    if( !perspective->down_flat )
                     {
                         for( sz_t i = 0; i < s->size; i++ )
                         {
-                            vd_t obj = ( u0_t* )s->data + interface->size * i;
-                            interface->down( interface, obj );
+                            vd_t obj = ( u0_t* )s->data + perspective->size * i;
+                            perspective->down( perspective, obj );
                         }
                     }
-                    s->data = bcore_un_alloc( interface->size, s->data, s->space, 0, &s->space );
+                    s->data = bcore_un_alloc( perspective->size, s->data, s->space, 0, &s->space );
                 }
             }
             break;
@@ -283,8 +271,8 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
                 bcore_flect_caps_static_link_array_s* s = item_obj;
                 if( s->data )
                 {
-                    const bcore_object_s* interface = item->interface;
-                    for( sz_t i = 0; i < s->size; i++ ) interface->discard( interface, s->data[ i ] );
+                    const bcore_object_s* perspective = item->perspective;
+                    for( sz_t i = 0; i < s->size; i++ ) perspective->discard( perspective, s->data[ i ] );
                     s->data = bcore_un_alloc( sizeof( vd_t ), s->data, s->space, 0, &s->space );
                 }
             }
@@ -295,8 +283,8 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
                 bcore_flect_caps_typed_link_array_s* s = item_obj;
                 if( s->data )
                 {
-                    const bcore_object_s* interface = bcore_object_s_get_typed( s->type );
-                    for( sz_t i = 0; i < s->size; i++ ) interface->discard( interface, s->data[ i ] );
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( s->type );
+                    for( sz_t i = 0; i < s->size; i++ ) perspective->discard( perspective, s->data[ i ] );
                     s->data = bcore_un_alloc( sizeof( vd_t ), s->data, s->space, 0, &s->space );
                 }
             }
@@ -309,8 +297,8 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
                 {
                     for( sz_t i = 0; i < s->size; i++ )
                     {
-                        const bcore_object_s* interface = bcore_object_s_get_typed( *( aware_t* )s->data[ i ] );
-                        interface->discard( interface, s->data[ i ] );
+                        const bcore_object_s* perspective = bcore_object_s_get_typed( *( aware_t* )s->data[ i ] );
+                        perspective->discard( perspective, s->data[ i ] );
                     }
                     s->data = bcore_un_alloc( sizeof( vd_t ), s->data, s->space, 0, &s->space );
                 }
@@ -369,7 +357,7 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
 #endif // NDEBUG
     for( sz_t i = 0; i < o->body->size; i++ )
     {
-        const bcore_object_stem_s* item = &o->body->data[ i ];
+        const bcore_object_item_s* item = &o->body->data[ i ];
         const bcore_flect_item_s* flect_item = item->flect_item;
         void* dst_obj = ( u0_t* )dst + item->flect_item->offset;
         void* src_obj = ( u0_t* )src + item->flect_item->offset;
@@ -378,8 +366,8 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
         {
             case BCORE_CAPS_STATIC:
             {
-                const bcore_object_s* interface = item->interface;
-                interface->copy( interface, dst_obj, src_obj );
+                const bcore_object_s* perspective = item->perspective;
+                perspective->copy( perspective, dst_obj, src_obj );
             }
             break;
 
@@ -387,9 +375,9 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
             {
                 bcore_flect_caps_static_link_s* dst = dst_obj;
                 bcore_flect_caps_static_link_s* src = src_obj;
-                const bcore_object_s* interface = item->interface;
-                interface->discard( interface, dst->link );
-                dst->link = interface->clone( interface, src->link );
+                const bcore_object_s* perspective = item->perspective;
+                perspective->discard( perspective, dst->link );
+                dst->link = perspective->clone( perspective, src->link );
             }
             break;
 
@@ -399,13 +387,13 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
                 bcore_flect_caps_typed_link_s* src = src_obj;
                 if( dst->link )
                 {
-                    const bcore_object_s* interface = bcore_object_s_get_typed( dst->type );
-                    interface->discard( interface, dst->link );
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( dst->type );
+                    perspective->discard( perspective, dst->link );
                 }
                 if( src->link )
                 {
-                    const bcore_object_s* interface = bcore_object_s_get_typed( src->type );
-                    dst->link = interface->clone( interface, src->link );
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( src->type );
+                    dst->link = perspective->clone( perspective, src->link );
                 }
                 dst->type = src->type;
             }
@@ -417,13 +405,13 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
                 bcore_flect_caps_aware_link_s* src = src_obj;
                 if( dst->link )
                 {
-                    const bcore_object_s* interface = bcore_object_s_get_typed( *( aware_t* )dst->link );
-                    interface->discard( interface, dst->link );
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( *( aware_t* )dst->link );
+                    perspective->discard( perspective, dst->link );
                 }
                 if( src->link )
                 {
-                    const bcore_object_s* interface = bcore_object_s_get_typed( *( aware_t* )src->link );
-                    dst->link = interface->clone( interface, src->link );
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( *( aware_t* )src->link );
+                    dst->link = perspective->clone( perspective, src->link );
                 }
             }
             break;
@@ -432,34 +420,34 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
             {
                 bcore_flect_caps_static_array_s* dst = dst_obj;
                 bcore_flect_caps_static_array_s* src = src_obj;
-                const bcore_object_s* interface = item->interface;
-                if( interface->copy_flat )
+                const bcore_object_s* perspective = item->perspective;
+                if( perspective->copy_flat )
                 {
                     if( src->size > dst->space )
                     {
-                        dst->data = bcore_un_alloc( interface->size, dst->data, dst->space, 0,         &dst->space );
-                        dst->data = bcore_un_alloc( interface->size, dst->data, dst->space, src->size, &dst->space );
+                        dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, 0,         &dst->space );
+                        dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, src->size, &dst->space );
                     }
-                    bcore_memcpy( dst->data, src->data, interface->size * src->size );
+                    bcore_memcpy( dst->data, src->data, perspective->size * src->size );
                     dst->size = src->size;
                 }
                 else
                 {
                     for( sz_t i = 0; i < dst->size; i++ )
                     {
-                        interface->down( interface, ( u0_t* )dst->data + i * interface->size );
+                        perspective->down( perspective, ( u0_t* )dst->data + i * perspective->size );
                     }
                     if( src->size > dst->space )
                     {
-                        dst->data = bcore_un_alloc( interface->size, dst->data, dst->space, 0,         &dst->space );
-                        dst->data = bcore_un_alloc( interface->size, dst->data, dst->space, src->size, &dst->space );
+                        dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, 0,         &dst->space );
+                        dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, src->size, &dst->space );
                     }
                     for( sz_t i = 0; i < src->size; i++ )
                     {
-                        vd_t dst_obj = ( u0_t* )dst->data + i * interface->size;
-                        vd_t src_obj = ( u0_t* )src->data + i * interface->size;
-                        interface->init( interface, dst_obj );
-                        interface->copy( interface, dst_obj, src_obj );
+                        vd_t dst_obj = ( u0_t* )dst->data + i * perspective->size;
+                        vd_t src_obj = ( u0_t* )src->data + i * perspective->size;
+                        perspective->init( perspective, dst_obj );
+                        perspective->copy( perspective, dst_obj, src_obj );
                     }
                     dst->size = src->size;
                 }
@@ -470,14 +458,14 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
             {
                 bcore_flect_caps_static_link_array_s* dst = dst_obj;
                 bcore_flect_caps_static_link_array_s* src = src_obj;
-                const bcore_object_s* interface = item->interface;
-                for( sz_t i = 0; i < dst->size; i++ ) interface->discard( interface, dst->data[ i ] );
+                const bcore_object_s* perspective = item->perspective;
+                for( sz_t i = 0; i < dst->size; i++ ) perspective->discard( perspective, dst->data[ i ] );
                 if( src->size > dst->space )
                 {
                     dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                     dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                 }
-                for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = interface->clone( interface, src->data[ i ] );
+                for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = perspective->clone( perspective, src->data[ i ] );
                 dst->size = src->size;
             }
             break;
@@ -488,19 +476,19 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
                 bcore_flect_caps_typed_link_array_s* src = src_obj;
                 if( dst->size > 0 )
                 {
-                    const bcore_object_s* interface = bcore_object_s_get_typed( dst->type );
-                    for( sz_t i = 0; i < dst->size; i++ ) interface->discard( interface, dst->data[ i ] );
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( dst->type );
+                    for( sz_t i = 0; i < dst->size; i++ ) perspective->discard( perspective, dst->data[ i ] );
                     dst->size = 0;
                 }
                 if( src->size > 0 )
                 {
-                    const bcore_object_s* interface = bcore_object_s_get_typed( src->type );
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( src->type );
                     if( src->size > dst->space )
                     {
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                     }
-                    for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = interface->clone( interface, src->data[ i ] );
+                    for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = perspective->clone( perspective, src->data[ i ] );
                 }
                 dst->size = src->size;
                 dst->type = src->type;
@@ -515,8 +503,8 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
                 {
                     for( sz_t i = 0; i < dst->size; i++ )
                     {
-                        const bcore_object_s* interface = bcore_object_s_get_typed( *( aware_t* )dst->data[ i ] );
-                        interface->discard( interface, dst->data[ i ] );
+                        const bcore_object_s* perspective = bcore_object_s_get_typed( *( aware_t* )dst->data[ i ] );
+                        perspective->discard( perspective, dst->data[ i ] );
                     }
                     dst->size = 0;
                 }
@@ -529,8 +517,8 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
                     }
                     for( sz_t i = 0; i < src->size; i++ )
                     {
-                        const bcore_object_s* interface = bcore_object_s_get_typed( *( aware_t* )src->data[ i ] );
-                        dst->data[ i ] = interface->clone( interface, src->data[ i ] );
+                        const bcore_object_s* perspective = bcore_object_s_get_typed( *( aware_t* )src->data[ i ] );
+                        dst->data[ i ] = perspective->clone( perspective, src->data[ i ] );
                     }
                 }
                 dst->size = src->size;
@@ -606,6 +594,7 @@ bcore_object_s* bcore_object_s_create_from_self( const bcore_flect_self_s* self 
     o->init_flat = true;
     o->down_flat = true;
     o->copy_flat = true;
+    o->move_flat = true;
     o->size  = self->size;
     o->aware = self->aware;
     if( o->aware ) o->init_flat = 0;
@@ -651,12 +640,12 @@ bcore_object_s* bcore_object_s_create_from_self( const bcore_flect_self_s* self 
             }
             else
             {
-                bcore_object_stem_s* o_item = bcore_object_s_push( o );
+                bcore_object_item_s* o_item = bcore_object_s_push( o );
                 o_item->flect_item = item;
-                o_item->interface = bcore_object_s_get_typed( item->type );
-                o->init_flat = o->init_flat & o_item->interface->init_flat;
-                o->copy_flat = o->copy_flat & o_item->interface->copy_flat;
-                o->down_flat = o->down_flat & o_item->interface->down_flat;
+                o_item->perspective = bcore_object_s_get_typed( item->type );
+                o->init_flat = o->init_flat & o_item->perspective->init_flat;
+                o->copy_flat = o->copy_flat & o_item->perspective->copy_flat;
+                o->down_flat = o->down_flat & o_item->perspective->down_flat;
                 switch( item->caps )
                 {
                     case BCORE_CAPS_STATIC: break;
@@ -679,6 +668,7 @@ bcore_object_s* bcore_object_s_create_from_self( const bcore_flect_self_s* self 
     }
 
     if( o->copy_flat && !o->down_flat ) ERR( "copy_flat is not implying down_flat" );
+    o->move_flat = o->init_flat && o->copy_flat && o->down_flat;
 
     o->init    = o->init_o    ? bcore_object_s__init_o    : o->init_flat ? bcore_object_s__init_flat : bcore_object_s__init_generic;
     o->down    = o->down_o    ? bcore_object_s__down_o    : o->down_flat ? bcore_object_s__down_flat : bcore_object_s__down_generic;
@@ -696,15 +686,15 @@ bcore_object_s* bcore_object_s_create_from_self( const bcore_flect_self_s* self 
 const bcore_object_s* bcore_object_s_get_typed( u2_t o_type )
 {
     u2_t p_type = typeof( "bcore_object_s" );
-    const bcore_object_s* interface = ( const bcore_object_s* )bcore_perspective_try_perspective( p_type, o_type );
-    if( !interface )
+    const bcore_object_s* perspective = ( const bcore_object_s* )bcore_perspective_try_perspective( p_type, o_type );
+    if( !perspective )
     {
         const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
-        bcore_object_s* new_interface = bcore_object_s_create_from_self( o_self );
-        bcore_perspective_enroll( p_type, o_type, ( bcore_perspective_s* )new_interface );
-        interface = new_interface;
+        bcore_object_s* new_perspective = bcore_object_s_create_from_self( o_self );
+        bcore_perspective_enroll( p_type, o_type, ( bcore_perspective_s* )new_perspective );
+        perspective = new_perspective;
     }
-    return interface;
+    return perspective;
 }
 
 /**********************************************************************************************************************/

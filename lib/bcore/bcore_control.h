@@ -79,7 +79,7 @@ sd_t bcore_strcpy( sd_t dst, sc_t src );
  *   if str2 matches the beginning of str1 ..: if( ( -bcore_strcmp( str1, str2 ) >> 1 ) == 0 )
  *
  */
-int bcore_strcmp( sc_t str1, sc_t str2 );
+s2_t bcore_strcmp( sc_t str1, sc_t str2 );
 
 /// like strlen but also accepts NULL
 sz_t bcore_strlen( sc_t str );

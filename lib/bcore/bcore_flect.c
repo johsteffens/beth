@@ -50,6 +50,25 @@ const sz_t bcore_flect_caps_e_align_arr[] =
     0,  // EXTERNAL_FUNCTION
 };
 
+bool bcore_flect_caps_is_array( u2_t caps )
+{
+    switch( caps )
+    {
+        case BCORE_CAPS_STATIC:            return false;
+        case BCORE_CAPS_STATIC_LINK:       return false;
+        case BCORE_CAPS_TYPED_LINK:        return false;
+        case BCORE_CAPS_AWARE_LINK:        return false;
+        case BCORE_CAPS_STATIC_ARRAY:      return true;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return true;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return true;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return true;
+        case BCORE_CAPS_EXTERNAL_DATA:     return false;
+        case BCORE_CAPS_EXTERNAL_FUNC:     return false;
+        default: break;
+    }
+    return false;
+}
+
 sc_t bcore_flect_caps_e_sc( u2_t caps )
 {
     const u2_t size = sizeof( bcore_flect_caps_e_sc_arr ) / sizeof( sc_t );

@@ -186,6 +186,7 @@ u2_t bcore_name_enroll( const char* name )
 {
     if( !tree_s_g ) bcore_name_open();
     u2_t hash =  bcore_name_get_type( name );
+    if( hash == 0 ) ERR( "Hash of '%s' is zero. Zero is a reserved value.", name );
     bcore_mutex_lock( &tree_s_g->mutex );
     if( tree_s_g->root )
     {

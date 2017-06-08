@@ -62,10 +62,10 @@ bcore_string_s* bcore_string_s_push_sc(       bcore_string_s* o, sc_t sc );
 bcore_string_s* bcore_string_s_pushf(         bcore_string_s* o, sc_t format, ... );
 
 /// comparison and equality (for return of comparison 'cmp' see bcore_strcmp)
-static inline int  bcore_string_s_cmp_sc(       const bcore_string_s* o, sc_t sc ) { return bcore_strcmp( o->sc, sc ); }
-static inline int  bcore_string_s_cmp_string(   const bcore_string_s* o, const bcore_string_s* string ) { return bcore_strcmp( o->sc, string->sc ); }
-static inline bool bcore_string_s_equal_sc(     const bcore_string_s* o, sc_t sc ) { return bcore_strcmp( o->sc, sc ) == 0; }
-static inline bool bcore_string_s_equal_string( const bcore_string_s* o, const bcore_string_s* string ) { return bcore_strcmp( o->sc, string->sc ) == 0; }
+static inline s2_t bcore_string_s_cmp_sc(       const bcore_string_s* o, sc_t sc ) { return bcore_strcmp( o ? o->sc : NULL, sc ); }
+static inline s2_t bcore_string_s_cmp_string(   const bcore_string_s* o, const bcore_string_s* string ) { return bcore_strcmp( o ? o->sc : NULL, string ? string->sc : NULL ); }
+static inline bool bcore_string_s_equal_sc(     const bcore_string_s* o, sc_t sc ) { return bcore_strcmp( o ? o->sc : NULL, sc ) == 0; }
+static inline bool bcore_string_s_equal_string( const bcore_string_s* o, const bcore_string_s* string ) { return bcore_strcmp( o ? o->sc : NULL, string ? string->sc : NULL ) == 0; }
 
 /// self reflection
 struct bcore_flect_self_s;
