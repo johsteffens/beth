@@ -157,11 +157,11 @@ void bcore_object_s__init_generic( const bcore_object_s* o, void* obj )
             }
             break;
 
-            // TODO: cases below (except default) can be removed; flat init already covered above
             case BCORE_CAPS_STATIC_LINK:
             case BCORE_CAPS_TYPED_LINK:
             case BCORE_CAPS_AWARE_LINK:
             case BCORE_CAPS_STATIC_ARRAY:
+            case BCORE_CAPS_TYPED_ARRAY:
             case BCORE_CAPS_STATIC_LINK_ARRAY:
             case BCORE_CAPS_TYPED_LINK_ARRAY:
             case BCORE_CAPS_AWARE_LINK_ARRAY:
@@ -266,6 +266,25 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
             }
             break;
 
+            case BCORE_CAPS_TYPED_ARRAY:
+            {
+                bcore_flect_caps_typed_array_s* s = item_obj;
+                if( s->data )
+                {
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( s->type );
+                    if( !perspective->down_flat )
+                    {
+                        for( sz_t i = 0; i < s->size; i++ )
+                        {
+                            vd_t obj = ( u0_t* )s->data + perspective->size * i;
+                            perspective->down( perspective, obj );
+                        }
+                    }
+                    s->data = bcore_un_alloc( perspective->size, s->data, s->space, 0, &s->space );
+                }
+            }
+            break;
+
             case BCORE_CAPS_STATIC_LINK_ARRAY:
             {
                 bcore_flect_caps_static_link_array_s* s = item_obj;
@@ -295,11 +314,7 @@ void  bcore_object_s__down_generic( const bcore_object_s* o, void* obj )
                 bcore_flect_caps_aware_link_array_s* s = item_obj;
                 if( s->data )
                 {
-                    for( sz_t i = 0; i < s->size; i++ )
-                    {
-                        const bcore_object_s* perspective = bcore_object_s_get_typed( *( aware_t* )s->data[ i ] );
-                        perspective->discard( perspective, s->data[ i ] );
-                    }
+                    for( sz_t i = 0; i < s->size; i++ ) bcore_object_aware_discard( s->data[ i ] );
                     s->data = bcore_un_alloc( sizeof( vd_t ), s->data, s->space, 0, &s->space );
                 }
             }
@@ -450,6 +465,49 @@ void  bcore_object_s__copy_generic( const bcore_object_s* o, void* dst, const vo
                         perspective->copy( perspective, dst_obj, src_obj );
                     }
                     dst->size = src->size;
+                }
+            }
+            break;
+
+            case BCORE_CAPS_TYPED_ARRAY:
+            {
+                bcore_flect_caps_typed_array_s* dst = dst_obj;
+                bcore_flect_caps_typed_array_s* src = src_obj;
+
+                if( dst->space > 0 ) // deplete dst
+                {
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( dst->type );
+                    if( !perspective->down_flat )
+                    {
+                        for( sz_t i = 0; i < dst->size; i++ )
+                        {
+                            perspective->down( perspective, ( u0_t* )dst->data + i * perspective->size );
+                        }
+                    }
+                    dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, 0, &dst->space );
+                    dst->size = 0;
+                    dst->type = 0;
+                }
+                if( src->space > 0 ) // fill dst with new data
+                {
+                    const bcore_object_s* perspective = bcore_object_s_get_typed( src->type );
+                    dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, src->size, &dst->space );
+                    if( perspective->copy_flat )
+                    {
+                        bcore_memcpy( dst->data, src->data, perspective->size * src->size );
+                    }
+                    else
+                    {
+                        for( sz_t i = 0; i < src->size; i++ )
+                        {
+                            vd_t dst_obj = ( u0_t* )dst->data + i * perspective->size;
+                            vc_t src_obj = ( u0_t* )src->data + i * perspective->size;
+                            perspective->init( perspective, dst_obj );
+                            perspective->copy( perspective, dst_obj, src_obj );
+                        }
+                    }
+                    dst->size = src->size;
+                    dst->type = src->type;
                 }
             }
             break;
@@ -642,10 +700,13 @@ bcore_object_s* bcore_object_s_create_from_self( const bcore_flect_self_s* self 
             {
                 bcore_object_item_s* o_item = bcore_object_s_push( o );
                 o_item->flect_item = item;
-                o_item->perspective = bcore_object_s_get_typed( item->type );
-                o->init_flat = o->init_flat & o_item->perspective->init_flat;
-                o->copy_flat = o->copy_flat & o_item->perspective->copy_flat;
-                o->down_flat = o->down_flat & o_item->perspective->down_flat;
+                if( item->type )
+                {
+                    o_item->perspective = bcore_object_s_get_typed( item->type );
+                    o->init_flat = o->init_flat & o_item->perspective->init_flat;
+                    o->copy_flat = o->copy_flat & o_item->perspective->copy_flat;
+                    o->down_flat = o->down_flat & o_item->perspective->down_flat;
+                }
                 switch( item->caps )
                 {
                     case BCORE_CAPS_STATIC: break;
@@ -653,6 +714,7 @@ bcore_object_s* bcore_object_s_create_from_self( const bcore_flect_self_s* self 
                     case BCORE_CAPS_TYPED_LINK:
                     case BCORE_CAPS_AWARE_LINK:
                     case BCORE_CAPS_STATIC_ARRAY:
+                    case BCORE_CAPS_TYPED_ARRAY:
                     case BCORE_CAPS_STATIC_LINK_ARRAY:
                     case BCORE_CAPS_TYPED_LINK_ARRAY:
                     case BCORE_CAPS_AWARE_LINK_ARRAY:

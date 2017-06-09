@@ -24,6 +24,7 @@ enum
     BCORE_CAPS_TYPED_LINK,
     BCORE_CAPS_AWARE_LINK,
     BCORE_CAPS_STATIC_ARRAY,
+    BCORE_CAPS_TYPED_ARRAY,
     BCORE_CAPS_STATIC_LINK_ARRAY,
     BCORE_CAPS_TYPED_LINK_ARRAY,
     BCORE_CAPS_AWARE_LINK_ARRAY,
@@ -36,6 +37,7 @@ typedef struct { vd_t  link;                                   } bcore_flect_cap
 typedef struct { vd_t  link; tp_t type;                        } bcore_flect_caps_typed_link_s;
 typedef struct { vd_t  link;                                   } bcore_flect_caps_aware_link_s;
 typedef struct { vd_t  data; sz_t size; sz_t space;            } bcore_flect_caps_static_array_s;
+typedef struct { vd_t  data; sz_t size; sz_t space; tp_t type; } bcore_flect_caps_typed_array_s;
 typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_flect_caps_static_link_array_s;
 typedef struct { vd_t* data; sz_t size; sz_t space; tp_t type; } bcore_flect_caps_typed_link_array_s;
 typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_flect_caps_aware_link_array_s;
@@ -128,9 +130,11 @@ void                     bcore_flect_self_s_init( bcore_flect_self_s* o );
 void                     bcore_flect_self_s_init_head( bcore_flect_self_s* o, u2_t type, sz_t size );
 void                     bcore_flect_self_s_init_plain( bcore_flect_self_s* o, u2_t type, sz_t size );
 void                     bcore_flect_self_s_down( bcore_flect_self_s* o );
+void                     bcore_flect_self_s_copy( bcore_flect_self_s* o, const bcore_flect_self_s* src );
 bcore_flect_self_s*      bcore_flect_self_s_create();
 bcore_flect_self_s*      bcore_flect_self_s_create_head( u2_t type, sz_t size ); // body follows
 bcore_flect_self_s*      bcore_flect_self_s_create_plain( u2_t type, sz_t size ); // plain (primitive) self contained type
+bcore_flect_self_s*      bcore_flect_self_s_clone( const bcore_flect_self_s* o );
 void                     bcore_flect_self_s_discard( bcore_flect_self_s* o );
 void                     bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item );
 void                     bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item );
@@ -146,7 +150,8 @@ bcore_flect_self_s*      bcore_flect_self_s_build_parse_sc( sc_t text );
 void bcore_flect_define_basics();
 void bcore_flect_close();  // closes manager
 
-void bcore_flect_define_self_d( bcore_flect_self_s* self ); // takes over control of self
+void bcore_flect_define_self_d(       bcore_flect_self_s* self ); // takes over control of self
+void bcore_flect_define_self_c( const bcore_flect_self_s* self ); // stores a copy of self
 sz_t bcore_flect_parse(         const bcore_string_s* string, sz_t idx );
 sc_t bcore_flect_parse_sc(      sc_t sc );
 

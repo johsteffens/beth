@@ -48,7 +48,7 @@ bcore_string_s* bcore_string_s_create_l__sc( bcore_life_s* life, sc_t sc );
 
 void            bcore_string_s_discard(       bcore_string_s* o );
 bcore_string_s* bcore_string_s_clone(   const bcore_string_s* o );
-bcore_string_s* bcore_string_s_crop(    const bcore_string_s* o, sz_t start, sz_t end ); // creates a new string subsection of o;
+bcore_string_s* bcore_string_s_crop(    const bcore_string_s* o, sz_t start, sz_t end ); // creates a new string with subsection of o;
 bcore_string_s* bcore_string_s_crop_d(        bcore_string_s* o, sz_t start, sz_t end ); // discards o;
 
 bcore_string_s* bcore_string_s_clear( bcore_string_s* o ); // empties string

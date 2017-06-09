@@ -38,8 +38,11 @@ void bcore_ext_err( sc_t func, sc_t file, int line, sc_t format, ... )
 /**********************************************************************************************************************/
 
 // implemented in memory_manager
-vd_t bcore_external_b_alloc( vd_t current_ptr, const sz_t* current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
-vd_t bcore_external_u_alloc( sz_t unit_bytes, vd_t current_ptr, const sz_t* current_units, sz_t requested_units, sz_t* reserved_units );
+vd_t bcore_external_b_alloc(  vd_t current_ptr,                     sz_t requested_bytes, sz_t* granted_bytes );
+vd_t bcore_external_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
+
+vd_t bcore_external_u_alloc(  sz_t unit_bytes,  vd_t current_ptr,                       sz_t requested_units, sz_t* reserved_units );
+vd_t bcore_external_un_alloc( sz_t unit_bytes,  vd_t current_ptr,   sz_t current_units, sz_t requested_units, sz_t* reserved_units );
 
 vd_t bcore_free( vd_t buf )
 {

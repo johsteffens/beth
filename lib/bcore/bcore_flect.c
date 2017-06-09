@@ -15,6 +15,7 @@ const sc_t bcore_flect_caps_e_sc_arr[] =
     "TYPED_LINK",
     "AWARE_LINK",
     "STATIC_ARRAY",
+    "TYPED_ARRAY",
     "STATIC_LINK_ARRAY",
     "TYPED_LINK_ARRAY",
     "AWARE_LINK_ARRAY",
@@ -29,6 +30,7 @@ const sz_t bcore_flect_caps_e_size_arr[] =
     sizeof( bcore_flect_caps_typed_link_s ),
     sizeof( bcore_flect_caps_aware_link_s ),
     sizeof( bcore_flect_caps_static_array_s ),
+    sizeof( bcore_flect_caps_typed_array_s ),
     sizeof( bcore_flect_caps_static_link_array_s ),
     sizeof( bcore_flect_caps_typed_link_array_s ),
     sizeof( bcore_flect_caps_aware_link_array_s ),
@@ -43,6 +45,7 @@ const sz_t bcore_flect_caps_e_align_arr[] =
     _Alignof( bcore_flect_caps_typed_link_s ),
     _Alignof( bcore_flect_caps_aware_link_s ),
     _Alignof( bcore_flect_caps_static_array_s ),
+    _Alignof( bcore_flect_caps_typed_array_s ),
     _Alignof( bcore_flect_caps_static_link_array_s ),
     _Alignof( bcore_flect_caps_typed_link_array_s ),
     _Alignof( bcore_flect_caps_aware_link_array_s ),
@@ -59,6 +62,7 @@ bool bcore_flect_caps_is_array( u2_t caps )
         case BCORE_CAPS_TYPED_LINK:        return false;
         case BCORE_CAPS_AWARE_LINK:        return false;
         case BCORE_CAPS_STATIC_ARRAY:      return true;
+        case BCORE_CAPS_TYPED_ARRAY:       return true;
         case BCORE_CAPS_STATIC_LINK_ARRAY: return true;
         case BCORE_CAPS_TYPED_LINK_ARRAY:  return true;
         case BCORE_CAPS_AWARE_LINK_ARRAY:  return true;
@@ -181,15 +185,23 @@ DEFINE_FUNCTION_INIT_FLAT( bcore_flect_body_s )
 
 void bcore_flect_body_s_down( bcore_flect_body_s* o )
 {
-    if( o->data ) o->data = bcore_un_alloc( sizeof( bcore_flect_body_s ), o->data, o->space, 0, &o->space );
+    if( o->data )
+    {
+        for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_down( &o->data[ i ] );
+        o->data = bcore_un_alloc( sizeof( bcore_flect_item_s ), o->data, o->space, 0, &o->space );
+    }
 }
 
 void bcore_flect_body_s_copy( bcore_flect_body_s* o, const bcore_flect_body_s* src )
 {
     for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_down( &o->data[ i ] );
-    o->data = bcore_un_alloc( sizeof( bcore_flect_body_s ), o->data, o->space,         0, &o->space );
-    o->data = bcore_un_alloc( sizeof( bcore_flect_body_s ), o->data, o->space, src->size, &o->space );
-    for( sz_t i = 0; i < src->size; i++ ) bcore_flect_item_s_copy( &o->data[ i ], &src->data[ i ] );
+    o->data = bcore_un_alloc( sizeof( bcore_flect_item_s ), o->data, o->space,         0, &o->space );
+    o->data = bcore_un_alloc( sizeof( bcore_flect_item_s ), o->data, o->space, src->size, &o->space );
+    for( sz_t i = 0; i < src->size; i++ )
+    {
+        bcore_flect_item_s_init( &o->data[ i ] );
+        bcore_flect_item_s_copy( &o->data[ i ], &src->data[ i ] );
+    }
     o->size = src->size;
 }
 
@@ -207,7 +219,7 @@ void bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* i
         bcore_flect_item_s* old_data = o->data;
         o->data = bcore_u_alloc( sizeof( bcore_flect_item_s ), NULL, o->space > 0 ? o->space * 2 : 1, &o->space );
         for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_move( &o->data[ i ], &old_data[ i ] );
-        bcore_un_alloc( sizeof( bcore_flect_body_s ), old_data, old_space, 0, NULL );
+        bcore_un_alloc( sizeof( bcore_flect_item_s ), old_data, old_space, 0, NULL );
     }
     bcore_flect_item_s_init( &o->data[ o->size ] );
     bcore_flect_item_s_copy( &o->data[ o->size ], item );
@@ -283,25 +295,20 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
             if( !ptr && !arr )
             {
                 bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, "typed" ) );
-                ERR( "\n%s\nEmplacement of typed objects is only possible as array. Use 'typed *' to clarify method of referencing.", context->sc );
+                ERR( "\n%s\nTyped objects cannot be embedded. Use 'typed *' to clarify method of referencing.", context->sc );
             }
-            if( !ptr && arr )
-            {
-                bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, "typed" ) );
-                ERR( "\n%s\nArray of emplaced typed object not yet supported. Choose 'typed * []' to clarify method of referencing.", context->sc );
-            }
-            item->type = typeof( "vd_t" );
+            item->type = 0; //typeof( "vd_t" );
             item->name = bcore_name_enroll( name2->sc );
-            item->caps = arr ? BCORE_CAPS_TYPED_LINK_ARRAY : BCORE_CAPS_TYPED_LINK;
+            item->caps = arr ? ( ptr ? BCORE_CAPS_TYPED_LINK_ARRAY : BCORE_CAPS_TYPED_ARRAY ) : BCORE_CAPS_TYPED_LINK;
         }
         else if( bcore_string_s_equal_sc( name1, "aware" ) )
         {
             if( !ptr )
             {
                 bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, "aware" ) );
-                ERR( "\n%s\nEmplacement of self-aware objects is not possible. Use 'aware *' to clarify referencing.", context->sc );
+                ERR( "\n%s\nSelf-aware objects must be referenced by a link. Use 'aware *' to clarify method of referencing.", context->sc );
             }
-            item->type = typeof( "vd_t" );
+            item->type = 0; //typeof( "vd_t" );
             item->name = bcore_name_enroll( name2->sc );
             item->caps = arr ? BCORE_CAPS_AWARE_LINK_ARRAY : BCORE_CAPS_AWARE_LINK;
         }
@@ -309,7 +316,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
         {
             item->type = typeof( name1->sc );
             item->name = bcore_name_enroll( name2->sc );
-            item->caps = arr ? ptr ? BCORE_CAPS_STATIC_LINK_ARRAY : BCORE_CAPS_STATIC_ARRAY : ptr ? BCORE_CAPS_STATIC_LINK : BCORE_CAPS_STATIC;
+            item->caps = arr ? ( ptr ? BCORE_CAPS_STATIC_LINK_ARRAY : BCORE_CAPS_STATIC_ARRAY ) : ( ptr ? BCORE_CAPS_STATIC_LINK : BCORE_CAPS_STATIC );
         }
 
         bcore_flect_item_s_set_size_align( item );
@@ -344,6 +351,13 @@ void bcore_flect_self_s_down( bcore_flect_self_s* o )
     bcore_flect_body_s_discard( o->body );
 }
 
+void bcore_flect_self_s_copy( bcore_flect_self_s* o, const bcore_flect_self_s* src )
+{
+    bcore_flect_body_s_discard( o->body );
+    bcore_memcpy( o, src, sizeof( bcore_flect_self_s ) );
+    o->body = bcore_flect_body_s_clone( src->body );
+}
+
 bcore_flect_self_s* bcore_flect_self_s_create()
 {
     bcore_flect_self_s* o = bcore_alloc( NULL, sizeof( bcore_flect_self_s ) );
@@ -363,6 +377,13 @@ bcore_flect_self_s* bcore_flect_self_s_create_plain( u2_t type, sz_t size )
     bcore_flect_self_s* o = bcore_flect_self_s_create();
     bcore_flect_self_s_init_plain( o, type, size );
     return o;
+}
+
+bcore_flect_self_s* bcore_flect_self_s_clone( const bcore_flect_self_s* o )
+{
+    bcore_flect_self_s* dst = bcore_flect_self_s_create();
+    bcore_flect_self_s_copy( dst, o );
+    return dst;
 }
 
 void bcore_flect_self_s_discard( bcore_flect_self_s* o )
@@ -699,6 +720,11 @@ void bcore_flect_define_self_d( bcore_flect_self_s* self )
 {
     if( !bcore_flect_tree_s_g ) bcore_flect_open();
     bcore_flect_tree_s_insert( bcore_flect_tree_s_g, self->type, self, true );
+}
+
+void bcore_flect_define_self_c( const bcore_flect_self_s* self )
+{
+    bcore_flect_define_self_d( bcore_flect_self_s_clone( self ) );
 }
 
 sz_t bcore_flect_parse( const bcore_string_s* string, sz_t idx )

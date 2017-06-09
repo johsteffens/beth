@@ -45,17 +45,33 @@ typedef struct bcore_array_s
     void ( *pop         )( const bcore_array_s* p, vd_t o );             // removes last element from array
 
     // direct data access (data pointer dereferencing and stepping depends on array structure)
-    vc_t ( *get_c_data    )( const bcore_array_s* p, vc_t o ); // returns arr_caps->data (note that this is either vc_t or vc_t*
-    vd_t ( *get_d_data    )( const bcore_array_s* p, vd_t o );
-    bool ( *linked_data   )( const bcore_array_s* p         ); // true in case of link arrays; false otherwise
-    sz_t ( *get_unit_size )( const bcore_array_s* p         ); // spacing between data elements (item_p->size or sizeof(vd_t))
+    vc_t ( *get_c_data    )( const bcore_array_s* p, vc_t o ); // returns arr_caps->data (note that this is either vc_t or vc_t* depending on linkage-indirection
+    vd_t ( *get_d_data    )( const bcore_array_s* p, vd_t o ); // returns arr_caps->data (note that this is either vd_t or vd_t* depending on linkage-indirection
+    bool ( *is_linked     )( const bcore_array_s* p         ); // true in case of array of links; false otherwise
+    bool ( *is_typed      )( const bcore_array_s* p         ); // true in case of typed-array; false otherwise
+    sz_t ( *get_unit_size )( const bcore_array_s* p, vc_t o ); // spacing between data elements (item_p->size or sizeof(vd_t))
 
-    // maximum at given relation and order (order = -1 for minimum)
-    vc_t ( *max         )( const bcore_array_s* p, vc_t o, bcore_fp_cmp cmp, s2_t order );
-    sz_t ( *max_index   )( const bcore_array_s* p, vc_t o, bcore_fp_cmp cmp, s2_t order );
+    /** Array operations
+     *  The specified limits cover the index range [start, end-1]
+     *  When end is larger than the array size, it is truncated to the array size.
+     *  Using '-1' as argument for 'end' is allowed, which sets 'end' equal to 'size'
+     *  When using non-negative values and start >= end the effective range is zero.
+     */
 
-    // (merge-)sort of the entire array
-    void ( *sort        )( const bcore_array_s* p, vd_t o, bcore_fp_cmp cmp, s2_t order );
+    // maximum/minimum within range (order = -1: minimum)
+    vc_t ( *max         )( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_cmp cmp, s2_t order );
+    sz_t ( *max_index   )( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_cmp cmp, s2_t order );
+
+    // creates a cropped sub-array from o
+    vd_t ( *crop        )( const bcore_array_s* p, vc_t o, sz_t start, sz_t end );
+    vd_t ( *crop_d      )( const bcore_array_s* p, vd_t o, sz_t start, sz_t end ); // discards o after cropping
+
+    // (merge-)sort within index range [start, end-1]
+    void ( *sort        )( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp_cmp cmp, s2_t order );
+
+    // special functions not valid for all array types
+    tp_t ( *get_type    )( const bcore_array_s* p, vc_t o            ); // retrieves item-type; not defied for aware-arrays
+    void ( *set_type    )( const bcore_array_s* p, vd_t o, tp_t type ); // changes item-type; only for empty typed arrays
 
 } bcore_array_s;
 
