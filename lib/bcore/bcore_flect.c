@@ -297,7 +297,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
                 bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, "typed" ) );
                 ERR( "\n%s\nTyped objects cannot be embedded. Use 'typed *' to clarify method of referencing.", context->sc );
             }
-            item->type = 0; //typeof( "vd_t" );
+            item->type = 0; //or typeof( "vd_t" );
             item->name = bcore_name_enroll( name2->sc );
             item->caps = arr ? ( ptr ? BCORE_CAPS_TYPED_LINK_ARRAY : BCORE_CAPS_TYPED_ARRAY ) : BCORE_CAPS_TYPED_LINK;
         }
@@ -308,7 +308,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
                 bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, "aware" ) );
                 ERR( "\n%s\nSelf-aware objects must be referenced by a link. Use 'aware *' to clarify method of referencing.", context->sc );
             }
-            item->type = 0; //typeof( "vd_t" );
+            item->type = 0; //or typeof( "vd_t" );
             item->name = bcore_name_enroll( name2->sc );
             item->caps = arr ? BCORE_CAPS_AWARE_LINK_ARRAY : BCORE_CAPS_AWARE_LINK;
         }

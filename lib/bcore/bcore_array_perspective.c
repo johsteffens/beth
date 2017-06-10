@@ -643,6 +643,77 @@ static void pop( const bcore_array_s* p, vd_t o )
 
 /**********************************************************************************************************************/
 
+static tp_t get_type( const bcore_array_s* p, vc_t o )
+{
+    vd_t obj = ( u0_t* )o + p->caps_offset;
+    switch( p->caps_type )
+    {
+        case BCORE_CAPS_STATIC_ARRAY:      return p->item_p->_.o_type;
+        case BCORE_CAPS_TYPED_ARRAY:       return ( ( const bcore_flect_caps_typed_array_s*       )obj )->type;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return p->item_p->_.o_type;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_flect_caps_typed_link_array_s*  )obj )->type;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return 0;
+        default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+    }
+    return 0;
+}
+
+/**********************************************************************************************************************/
+
+static void set_type( const bcore_array_s* p, vd_t o, tp_t type )
+{
+    vd_t obj = ( u0_t* )o + p->caps_offset;
+    switch( p->caps_type )
+    {
+        case BCORE_CAPS_STATIC_ARRAY:
+        {
+            if( p->item_p->_.o_type == type ) break;
+            ERR( "cannot change type on static-array" );
+        }
+        break;
+
+        case BCORE_CAPS_TYPED_ARRAY:
+        {
+            bcore_flect_caps_typed_array_s* arr = obj;
+            if( arr->type == type ) break;
+            if( arr->size > 0 ) ERR( "array size (%zu) must be zero for a type change", arr->size );
+            arr->type = type;
+        }
+        break;
+
+        case BCORE_CAPS_STATIC_LINK_ARRAY:
+        {
+            if( p->item_p->_.o_type == type ) break;
+            ERR( "cannot change type on static-link-array" );
+        }
+        break;
+
+        case BCORE_CAPS_TYPED_LINK_ARRAY:
+        {
+            bcore_flect_caps_typed_link_array_s* arr = obj;
+            if( arr->type == type ) break;
+            if( arr->size > 0 ) ERR( "array size (%zu) must be zero for a type change", arr->size );
+            arr->type = type;
+        }
+        break;
+
+        case BCORE_CAPS_AWARE_LINK_ARRAY:
+        {
+            bcore_flect_caps_aware_link_array_s* arr = obj;
+            if( arr->size > 0 ) ERR( "cannot change type on aware-link-array of non-zero size" );
+        }
+        break;
+
+        default:
+        {
+            ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+        }
+        break;
+    }
+}
+
+/**********************************************************************************************************************/
+
 static vc_t get_c_data( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
@@ -894,73 +965,6 @@ static void sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp
     }
 }
 
-static tp_t get_type( const bcore_array_s* p, vc_t o )
-{
-    vd_t obj = ( u0_t* )o + p->caps_offset;
-    switch( p->caps_type )
-    {
-        case BCORE_CAPS_STATIC_ARRAY:      return p->item_p->_.o_type;
-        case BCORE_CAPS_TYPED_ARRAY:       return ( ( const bcore_flect_caps_typed_array_s*       )obj )->type;
-        case BCORE_CAPS_STATIC_LINK_ARRAY: return p->item_p->_.o_type;
-        case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_flect_caps_typed_link_array_s*  )obj )->type;
-        case BCORE_CAPS_AWARE_LINK_ARRAY:  return 0;
-        default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
-    }
-    return 0;
-}
-
-static void set_type( const bcore_array_s* p, vd_t o, tp_t type )
-{
-    vd_t obj = ( u0_t* )o + p->caps_offset;
-    switch( p->caps_type )
-    {
-        case BCORE_CAPS_STATIC_ARRAY:
-        {
-            if( p->item_p->_.o_type == type ) break;
-            ERR( "cannot change type on static-array" );
-        }
-        break;
-
-        case BCORE_CAPS_TYPED_ARRAY:
-        {
-            bcore_flect_caps_typed_array_s* arr = obj;
-            if( arr->type == type ) break;
-            if( arr->size > 0 ) ERR( "array size (%zu) must be zero for a type change", arr->size );
-            arr->type = type;
-        }
-        break;
-
-        case BCORE_CAPS_STATIC_LINK_ARRAY:
-        {
-            if( p->item_p->_.o_type == type ) break;
-            ERR( "cannot change type on static-link-array" );
-        }
-        break;
-
-        case BCORE_CAPS_TYPED_LINK_ARRAY:
-        {
-            bcore_flect_caps_typed_link_array_s* arr = obj;
-            if( arr->type == type ) break;
-            if( arr->size > 0 ) ERR( "array size (%zu) must be zero for a type change", arr->size );
-            arr->type = type;
-        }
-        break;
-
-        case BCORE_CAPS_AWARE_LINK_ARRAY:
-        {
-            bcore_flect_caps_aware_link_array_s* arr = obj;
-            if( arr->size > 0 ) ERR( "cannot change type on aware-link-array of non-zero size" );
-        }
-        break;
-
-        default:
-        {
-            ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
-        }
-        break;
-    }
-}
-
 /**********************************************************************************************************************/
 
 static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
@@ -1057,6 +1061,8 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
     o->push_c        = push_c;
     o->push_d        = push_d;
     o->pop           = pop;
+    o->get_type      = get_type;
+    o->set_type      = set_type;
     o->get_c_data    = get_c_data;
     o->get_d_data    = get_d_data;
     o->is_linked     = is_linked;
@@ -1065,8 +1071,6 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
     o->max           = max;
     o->max_index     = max_index;
     o->sort          = sort;
-    o->get_type      = get_type;
-    o->set_type      = set_type;
 
     return o;
 }
@@ -1089,30 +1093,30 @@ const bcore_array_s* bcore_array_s_get_typed( u2_t o_type )
 
 /**********************************************************************************************************************/
 
-static void test_type( sc_t type_sc )
+static void test_string_array( sc_t type_sc )
 {
     vd_t arr = bcore_object_typed_create( typeof( type_sc ) );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
 
     arr_p->set_type( arr_p, arr, typeof( "bcore_string_s" ) );
     arr_p->set_size( arr_p, arr, 5 );
-    arr_p->set_item_d( arr_p, arr, 0, bcore_string_s_createf( "test line" ) );
-    arr_p->set_item_d( arr_p, arr, 1, bcore_string_s_createf( "sakjd" ) );
-    arr_p->set_item_d( arr_p, arr, 2, bcore_string_s_createf( "dspaud" ) );
+    arr_p->set_item_d( arr_p, arr, 0, bcore_string_s_createf( "test line a" ) );
+    arr_p->set_item_d( arr_p, arr, 1, bcore_string_s_createf( "some nonsense: sakjd" ) );
+    arr_p->set_item_d( arr_p, arr, 2, bcore_string_s_createf( "some nonsense: dspaud" ) );
     arr_p->set_item_d( arr_p, arr, 7, bcore_string_s_createf( "test line x" ) );
     arr_p->push_d( arr_p, arr, bcore_string_s_createf( "test line p" ) );
     arr_p->set_space( arr_p, arr, 20 );
 
-    arr_p->sort( arr_p, arr, 0, -1, ( bcore_fp_cmp )bcore_string_s_cmp_string, 1 );
+    ASSERT( arr_p->max_index( arr_p, arr, 0, -1, ( bcore_fp_cmp )bcore_string_s_cmp_string, 1 ) == 7 );
+    arr_p->sort( arr_p, arr, 0, -1, ( bcore_fp_cmp )bcore_string_s_cmp_string, -1 );
+    ASSERT( arr_p->max_index( arr_p, arr, 0, -1, ( bcore_fp_cmp )bcore_string_s_cmp_string, 1 ) == 0 );
 
-    bcore_string_s_print_d( bcore_string_s_createf( "size = %zu\n", arr_p->get_size( arr_p, arr ) ) );
-    bcore_string_s_print_d( bcore_string_s_createf( "space = %zu\n", arr_p->get_space( arr_p, arr ) ) );
-    for( sz_t i = 0; i < arr_p->get_size( arr_p, arr ); i++ )
-    {
-        const bcore_string_s* string = arr_p->get_c_item( arr_p, arr, i );
-        if( string ) bcore_string_s_print_d( bcore_string_s_createf( "index %zu: %s\n", i, string->sc ) );
-    }
-    bcore_string_s_print_d( bcore_string_s_createf( "max index %zu\n", arr_p->max_index( arr_p, arr, 0, -1, ( bcore_fp_cmp )bcore_string_s_cmp_string, 1 ) ) );
+    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c_item( arr_p, arr, 0 ), "test line x" ) == 0 );
+    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c_item( arr_p, arr, 1 ), "test line p" ) == 0 );
+    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c_item( arr_p, arr, 2 ), "test line a" ) == 0 );
+    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c_item( arr_p, arr, 3 ), "some nonsense: sakjd" ) == 0 );
+    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c_item( arr_p, arr, 4 ), "some nonsense: dspaud" ) == 0 );
+    ASSERT( arr_p->get_size( arr_p, arr ) == 9 );
     bcore_object_aware_discard( arr );
 }
 
@@ -1133,7 +1137,7 @@ bcore_string_s* bcore_array_perspective_selftest()
         const bcore_string_s* code = arr_p->get_c_item( arr_p, arr, i );
         bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( code->sc );
         bcore_flect_define_self_c( self );
-        test_type( nameof( self->type ) );
+        test_string_array( nameof( self->type ) );
         bcore_flect_self_s_discard( self );
     }
 

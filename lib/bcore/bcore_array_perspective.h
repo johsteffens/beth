@@ -44,6 +44,9 @@ typedef struct bcore_array_s
     vd_t ( *push_d      )( const bcore_array_s* p, vd_t o, vd_t src );   // push by taking ownership of item; returns new entry. (emplaced arrays copy the item and delete it)
     void ( *pop         )( const bcore_array_s* p, vd_t o );             // removes last element from array
 
+    tp_t ( *get_type    )( const bcore_array_s* p, vc_t o            ); // retrieves item-type; returns 0 for aware-arrays
+    void ( *set_type    )( const bcore_array_s* p, vd_t o, tp_t type ); // changes item-type on empty arrays;
+
     // direct data access (data pointer dereferencing and stepping depends on array structure)
     vc_t ( *get_c_data    )( const bcore_array_s* p, vc_t o ); // returns arr_caps->data (note that this is either vc_t or vc_t* depending on linkage-indirection
     vd_t ( *get_d_data    )( const bcore_array_s* p, vd_t o ); // returns arr_caps->data (note that this is either vd_t or vd_t* depending on linkage-indirection
@@ -69,9 +72,6 @@ typedef struct bcore_array_s
     // (merge-)sort within index range [start, end-1]
     void ( *sort        )( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp_cmp cmp, s2_t order );
 
-    // special functions not valid for all array types
-    tp_t ( *get_type    )( const bcore_array_s* p, vc_t o            ); // retrieves item-type; not defied for aware-arrays
-    void ( *set_type    )( const bcore_array_s* p, vd_t o, tp_t type ); // changes item-type; only for empty typed arrays
 
 } bcore_array_s;
 

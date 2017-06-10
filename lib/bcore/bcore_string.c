@@ -597,7 +597,6 @@ bcore_string_s* bcore_string_s_show_line_context( const bcore_string_s* o, sz_t 
     bcore_string_s_push_char( s, '\n' );
     bcore_string_s_push_char_n( s, ' ', pos - start );
     bcore_string_s_push_char(   s, '^' );
-//    if( pos < end ) bcore_string_s_push_char_n( s, '_', end - pos - 1 );
     bcore_string_s_push_char( s, '\n' );
     return s;
 }
