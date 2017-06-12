@@ -63,13 +63,7 @@ bool bcore_flect_caps_is_array( u2_t caps );
 
 typedef struct bcore_flect_item_s
 {
-    u2_t caps;   // type of embedding
-
-    /// to be removed...
-    sz_t offset;
-    sz_t size;
-    sz_t align;
-
+    u2_t caps;   // data encapsulation
 
     union
     {
@@ -92,9 +86,6 @@ void                bcore_flect_item_s_discard( bcore_flect_item_s* o );
 bcore_flect_item_s* bcore_flect_item_s_clone( const bcore_flect_item_s* o );
 bcore_string_s*     bcore_flect_item_s_show( const bcore_flect_item_s* o );
 
-// calculates the offset from alignment and raw offset
-sz_t bcore_flect_aligned_offset( sz_t align, sz_t raw_offset );
-
 /**********************************************************************************************************************/
 
 typedef struct bcore_flect_body_s
@@ -111,15 +102,6 @@ void                bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_
 void                bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flect_item_s* item );
 bcore_string_s*     bcore_flect_body_s_show( const bcore_flect_body_s* o );
 
-/// computes the offset for next item at given alignment
-sz_t bcore_flect_body_s_get_next_offset( const bcore_flect_body_s* o, sz_t align );
-
-/// Returns the body alignment
-sz_t bcore_flect_body_s_get_align( const bcore_flect_body_s* o );
-
-/// Returns the body size (offsets must be correctly set)
-sz_t bcore_flect_body_s_get_size( const bcore_flect_body_s* o );
-
 /**********************************************************************************************************************/
 
 typedef struct bcore_flect_self_s
@@ -127,20 +109,14 @@ typedef struct bcore_flect_self_s
     u2_t type;   // type is needed for self aware objects constructed by the interface; (whether this might cause problems with aliases is to be determined)
     sz_t size;   // sizeof(type); Only for the predefined size of primitive types. Composite types have size calculated in the instanceperspective.
 
-    /// to be removed...
-    sz_t align;  // alignof(type)
-    bool aware;  // object is self-aware meaning it defines its type as first element
-
     bcore_flect_body_s* body;
 } bcore_flect_self_s;
 
 void                     bcore_flect_self_s_init( bcore_flect_self_s* o );
-void                     bcore_flect_self_s_init_head( bcore_flect_self_s* o, u2_t type, sz_t size );
 void                     bcore_flect_self_s_init_plain( bcore_flect_self_s* o, u2_t type, sz_t size );
 void                     bcore_flect_self_s_down( bcore_flect_self_s* o );
 void                     bcore_flect_self_s_copy( bcore_flect_self_s* o, const bcore_flect_self_s* src );
 bcore_flect_self_s*      bcore_flect_self_s_create();
-bcore_flect_self_s*      bcore_flect_self_s_create_head( u2_t type, sz_t size ); // body follows
 bcore_flect_self_s*      bcore_flect_self_s_create_plain( u2_t type, sz_t size ); // plain (primitive) self contained type
 bcore_flect_self_s*      bcore_flect_self_s_clone( const bcore_flect_self_s* o );
 void                     bcore_flect_self_s_discard( bcore_flect_self_s* o );

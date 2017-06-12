@@ -129,26 +129,8 @@ bcore_string_s* bcore_flect_item_s_show( const bcore_flect_item_s* o )
     {
         bcore_string_s_pushf( s, "\n    f_ptr : %p", o->f_ptr );
     }
-    bcore_string_s_pushf( s, "\n    offset: %zu", o->offset );
-    bcore_string_s_pushf( s, "\n    size  : %zu", o->size );
-    bcore_string_s_pushf( s, "\n    align : %zu", o->align );
     bcore_string_s_pushf( s, "\n}" );
     return s;
-}
-
-void bcore_flect_item_s_set_size_align( bcore_flect_item_s* o )
-{
-    if( o->caps == BCORE_CAPS_STATIC )
-    {
-        const bcore_flect_self_s* self = bcore_flect_get_self( o->type );
-        o->size  = self->size;
-        o->align = self->align;
-    }
-    else
-    {
-        o->size  = bcore_flect_caps_e_size( o->caps );
-        o->align = bcore_flect_caps_e_align( o->caps );
-    }
 }
 
 bcore_flect_item_s* bcore_flect_item_s_create_external_data( vc_t data, sc_t type, sc_t name )
@@ -211,8 +193,6 @@ DEFINE_FUNCTION_CLONE(   bcore_flect_body_s )
 
 void bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* item )
 {
-    sz_t next_offset = bcore_flect_body_s_get_next_offset( o, item->align );
-
     if( o->size == o->space )
     {
         sz_t old_space = o->space;
@@ -223,7 +203,6 @@ void bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* i
     }
     bcore_flect_item_s_init( &o->data[ o->size ] );
     bcore_flect_item_s_copy( &o->data[ o->size ], item );
-    o->data[ o->size ].offset = next_offset;
     o->size++;
 }
 
@@ -245,34 +224,6 @@ bcore_string_s* bcore_flect_body_s_show( const bcore_flect_body_s* o )
     }
     bcore_string_s_pushf( s, "\n}" );
     return s;
-}
-
-sz_t bcore_flect_body_s_get_align( const bcore_flect_body_s* o )
-{
-    sz_t align = 0;
-    for( sz_t i = 0; i < o->size; i++ )
-    {
-        sz_t align_l = o->data[ i ].align;
-        align = align_l > align ? align_l : align;
-    }
-    return align;
-}
-
-sz_t bcore_flect_body_s_get_size( const bcore_flect_body_s* o )
-{
-    if( o->size == 0 ) return 0;
-    if( o->size == 1 ) return o->data[ 0 ].size;
-    sz_t prev_offset = o->data[ o->size - 1 ].offset;
-    sz_t prev_size   = o->data[ o->size - 1 ].size;
-    return bcore_flect_aligned_offset( bcore_flect_body_s_get_align( o ), prev_offset + prev_size );
-}
-
-sz_t bcore_flect_body_s_get_next_offset( const bcore_flect_body_s* o, sz_t align )
-{
-    if( o->size == 0 ) return 0;
-    sz_t prev_offset = o->data[ o->size - 1 ].offset;
-    sz_t prev_size   = o->data[ o->size - 1 ].size;
-    return bcore_flect_aligned_offset( align, prev_offset + prev_size );
 }
 
 bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, sz_t* p_idx )
@@ -319,8 +270,6 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
             item->caps = arr ? ( ptr ? BCORE_CAPS_STATIC_LINK_ARRAY : BCORE_CAPS_STATIC_ARRAY ) : ( ptr ? BCORE_CAPS_STATIC_LINK : BCORE_CAPS_STATIC );
         }
 
-        bcore_flect_item_s_set_size_align( item );
-
         if( item->type == typeof( "aware_t" ) )
         {
             if( o->size > 0 )
@@ -365,13 +314,6 @@ bcore_flect_self_s* bcore_flect_self_s_create()
     return o;
 }
 
-bcore_flect_self_s* bcore_flect_self_s_create_head( u2_t type, sz_t size )
-{
-    bcore_flect_self_s* o = bcore_flect_self_s_create();
-    bcore_flect_self_s_init_head( o, type, size );
-    return o;
-}
-
 bcore_flect_self_s* bcore_flect_self_s_create_plain( u2_t type, sz_t size )
 {
     bcore_flect_self_s* o = bcore_flect_self_s_create();
@@ -395,15 +337,8 @@ void bcore_flect_self_s_discard( bcore_flect_self_s* o )
 
 void bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item )
 {
-    const bcore_flect_self_s* item_self = bcore_flect_get_self( item->type );
     if( !o->body ) o->body = bcore_flect_body_s_create();
     bcore_flect_body_s_push( o->body, item );
-    o->align = ( item_self->align > o->align ) ? item_self->align : o->align;
-    if( o->size > 0 )
-    {
-        o->size  = bcore_flect_body_s_get_size( o->body );
-    }
-    if( o->size == 1 && item->type == typeof( "aware_t" ) ) o->aware = true;
 }
 
 void bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item )
@@ -422,22 +357,11 @@ void bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc
     bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_external_func( func, type, name ) );
 }
 
-void bcore_flect_self_s_init_head( bcore_flect_self_s* o, u2_t type, sz_t size )
-{
-    bcore_flect_self_s_init( o );
-    o->type  = type;
-    o->size  = size;
-    o->align = 0;
-    if( o->body ) bcore_flect_body_s_discard( o->body );
-    o->body = NULL;
-}
-
 void bcore_flect_self_s_init_plain( bcore_flect_self_s* o, u2_t type, sz_t size )
 {
     bcore_flect_self_s_init( o );
     o->type  = type;
     o->size  = size;
-    o->align = size;
     if( o->body ) bcore_flect_body_s_discard( o->body );
     o->body = NULL;
 }
@@ -449,8 +373,6 @@ bcore_string_s* bcore_flect_self_s_show( const bcore_flect_self_s* o )
     bcore_string_s_pushf( s, "\n{" );
     bcore_string_s_pushf( s, "\n    type:  %x '%s'", o->type, ifnameof( o->type ) );
     bcore_string_s_pushf( s, "\n    size:  %zu", o->size );
-    bcore_string_s_pushf( s, "\n    align: %zu", o->align );
-    bcore_string_s_pushf( s, "\n    aware: %s" , o->aware ? "true" : "false" );
     bcore_string_s_pushf( s, "\n    body: " );
     if( o->body ) bcore_string_s_push_string_d( s, bcore_string_s_replace_char_sc( bcore_flect_body_s_show( o->body ), '\n', "\n    " ) );
     bcore_string_s_pushf( s, "\n}" );
@@ -470,9 +392,6 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, 
     if( text->sc[ idx ] == '{' )
     {
         o->body  = bcore_flect_body_s_build_parse( text, &idx );
-        o->align = bcore_flect_body_s_get_align( o->body );
-        o->size  = bcore_flect_body_s_get_size( o->body );
-        o->aware = ( o->body->size > 0 ) && ( o->body->data[ 0 ].type == typeof( "aware_t" ) );
     }
     else
     {
@@ -484,9 +403,7 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, 
             ERR( "\n%s\nType %s not defined", context->sc, name->sc );
         }
         o->body  = bcore_flect_body_s_clone( self_l->body );
-        o->align = self_l->align;
         o->size  = self_l->size;
-        o->aware = self_l->aware;
     }
 
     if( p_idx != NULL ) *p_idx = idx;
