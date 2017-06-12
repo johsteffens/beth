@@ -215,9 +215,11 @@ void bcore_name_print_predefined_list( tp_t (*hash)( sc_t name ) )
     bcore_name_print_predefined_type( hash, "s3_t" );
     bcore_name_print_predefined_type( hash, "s2_t" );
     bcore_name_print_predefined_type( hash, "s1_t" );
+    bcore_name_print_predefined_type( hash, "s0_t" );
     bcore_name_print_predefined_type( hash, "u3_t" );
     bcore_name_print_predefined_type( hash, "u2_t" );
     bcore_name_print_predefined_type( hash, "u1_t" );
+    bcore_name_print_predefined_type( hash, "u0_t" );
     bcore_name_print_predefined_type( hash, "f3_t" );
     bcore_name_print_predefined_type( hash, "f2_t" );
     bcore_name_print_predefined_type( hash, "sz_t" );

@@ -38,9 +38,11 @@ void bcore_name_print_predefined_list( tp_t (*hash)( sc_t name ) );
 #define BCORE_TYPEOF_s3_t 0x6835cf40
 #define BCORE_TYPEOF_s2_t 0x0d0e488b
 #define BCORE_TYPEOF_s1_t 0x44a88362
+#define BCORE_TYPEOF_s0_t 0xeabe312d
 #define BCORE_TYPEOF_u3_t 0x2583bb32
 #define BCORE_TYPEOF_u2_t 0xcafb983d
 #define BCORE_TYPEOF_u1_t 0x46969e10
+#define BCORE_TYPEOF_u0_t 0xec0e7b1b
 #define BCORE_TYPEOF_f3_t 0xd95df3e5
 #define BCORE_TYPEOF_f2_t 0x5485acfa
 #define BCORE_TYPEOF_sz_t 0x9cdbf133

@@ -496,7 +496,7 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, 
 
 bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text )
 {
-    bcore_string_s* string = bcore_string_s_create__sc( text );
+    bcore_string_s* string = bcore_string_s_create_sc( text );
     bcore_flect_self_s* ret = bcore_flect_self_s_build_parse( string, NULL );
     bcore_string_s_discard( string );
     return ret;
@@ -735,7 +735,7 @@ sz_t bcore_flect_parse( const bcore_string_s* string, sz_t idx )
 
 sc_t bcore_flect_parse_sc( sc_t sc )
 {
-    bcore_string_s* string = bcore_string_s_create__sc( sc );
+    bcore_string_s* string = bcore_string_s_create_sc( sc );
     sz_t idx = 0;
     idx = bcore_flect_parse( string, idx );
     bcore_string_s_discard( string );
@@ -813,6 +813,8 @@ void bcore_flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_create"  ), sizeof( bcore_fp_create ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_discard" ), sizeof( bcore_fp_discard ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_clone"   ), sizeof( bcore_fp_clone ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_copy_typed"   ), sizeof( bcore_fp_copy_typed ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_create_typed" ), sizeof( bcore_fp_create_typed ) ) );
 
     // string
     bcore_flect_define_self_d( bcore_string_s_create_self() );
@@ -844,15 +846,32 @@ bcore_string_s* bcore_flect_selftest()
         bcore_flect_parse_sc(" another = delivery" );
     }
 
+/*
+
+  parametric type
+  my_gen_type1 =
+  {
+     <type> tp1
+     <name> nm1
+
+     u3_t v1;
+     tp1 v2;
+  }
+
+  my_gen_type2 =
+  {
+     u3_t v1;
+     arg1 v2;
+     arg2 v3;
+     my_gen_type1( arg3 ) v4;
+  }
+
+*/
+
     bcore_string_s* s = bcore_string_s_create();
     bcore_string_s_push_string_d( s, bcore_flect_self_s_show( bcore_flect_get_self( typeof( "bcore_string_s" ) ) ) );
-/*
-    bcore_string_s_pushf( s, "\n\n" );
-    bcore_string_s_push_string_d( s, bcore_flect_self_s_show( bcore_flect_get_self( typeof( "container" ) ) ) );
-    bcore_string_s_pushf( s, "\n\n" );
-    bcore_string_s_push_string_d( s, bcore_flect_self_s_show( bcore_flect_get_self( typeof( "another" ) ) ) );
-    bcore_string_s_pushf( s, "\n\n" );
-*/
+
+
     return s;
 }
 

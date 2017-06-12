@@ -29,12 +29,20 @@ void init_library_bcore()
 
 void down_library_bcore()
 {
-    bcore_flect_close();
+    sz_t space = bcore_memory_manager_granted_space();
+    bcore_msg( "\n");
     bcore_perspective_close();
+    bcore_msg( "\n");
+    bcore_msg( "perspective mananger: %lu bytes\n", space - bcore_memory_manager_granted_space() );
+    space = bcore_memory_manager_granted_space();
+    bcore_flect_close();
+    bcore_msg( "reflection mananger : %lu bytes\n", space - bcore_memory_manager_granted_space() );
+    space = bcore_memory_manager_granted_space();
     bcore_name_manager_close();
+    bcore_msg( "name mananger       : %lu bytes\n", space - bcore_memory_manager_granted_space() );
+    space = bcore_memory_manager_granted_space();
 
-    sz_t granted_space = bcore_memory_manager_granted_space();
-    if( granted_space > 0 ) ERR( "Leaking memory: %lu bytes", granted_space );
+    if( space > 0 ) ERR( "Leaking memory: %lu bytes", space );
 
     bcore_memory_manager_close();
 }

@@ -14,7 +14,7 @@
 #ifndef BCORE_ARRAY_PERSPECTIVE_H
 #define BCORE_ARRAY_PERSPECTIVE_H
 
-#include "bcore_object_perspective.h"
+#include "bcore_instance_perspective.h"
 #include "bcore_flect.h"
 #include "bcore_features.h"
 
@@ -26,7 +26,7 @@ typedef struct bcore_array_s
 
     u2_t caps_type;
     sz_t caps_offset;
-    const bcore_object_s* item_p;  // item-perspective; NULL for typed or aware arrays
+    const bcore_instance_s* item_p;  // item-perspective; NULL for typed or aware arrays
 
     sz_t ( *get_size    )( const bcore_array_s* p, vc_t o );             // returns size
     sz_t ( *get_space   )( const bcore_array_s* p, vc_t o );             // returns space

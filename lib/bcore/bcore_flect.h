@@ -64,14 +64,19 @@ bool bcore_flect_caps_is_array( u2_t caps );
 typedef struct bcore_flect_item_s
 {
     u2_t caps;   // type of embedding
+
+    /// to be removed...
     sz_t offset;
     sz_t size;
     sz_t align;
+
+
     union
     {
         vc_t d_ptr;  // external data pointer
         fp_t f_ptr;  // external function pointer
     };
+
     u2_t type; // hash of type (primitive, structure, aware-mutative, typed-mutative)
     u2_t name; // hash of name
 } bcore_flect_item_s;
@@ -120,9 +125,12 @@ sz_t bcore_flect_body_s_get_size( const bcore_flect_body_s* o );
 typedef struct bcore_flect_self_s
 {
     u2_t type;   // type is needed for self aware objects constructed by the interface; (whether this might cause problems with aliases is to be determined)
-    sz_t size;   // sizeof(type); if size == 0 then type represents a constant or function
+    sz_t size;   // sizeof(type); Only for the predefined size of primitive types. Composite types have size calculated in the instanceperspective.
+
+    /// to be removed...
     sz_t align;  // alignof(type)
     bool aware;  // object is self-aware meaning it defines its type as first element
+
     bcore_flect_body_s* body;
 } bcore_flect_self_s;
 

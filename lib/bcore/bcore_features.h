@@ -6,15 +6,19 @@
 #include "bcore_types.h"
 
 /**********************************************************************************************************************/
-/// Creation, copying, relocation
-typedef void  (*bcore_fp_init   )( vd_t o );                  // initialization (construction)
-typedef void  (*bcore_fp_down   )( vd_t o );                  // destruction
-typedef void  (*bcore_fp_copy   )( vd_t o, vc_t src ); // deep copy
-typedef void  (*bcore_fp_plant  )( vd_t o, vc_t src ); // init(o); copy(o, src);
-typedef void  (*bcore_fp_move   )( vd_t o, vd_t src ); // init(o); copy(o, src); down(src)
-typedef vd_t  (*bcore_fp_create )(        );                  // allocate & init
-typedef void  (*bcore_fp_discard)( vd_t o );                  // down & deallocate; o may be NULL in which case function does nothing
-typedef vd_t  (*bcore_fp_clone  )( vc_t o );            // allocate & copy; o may be NULL in which case NULL is returned
+/// create, copy, discard
+typedef void (*bcore_fp_init   )( vd_t o );           // initialization (construction)
+typedef void (*bcore_fp_down   )( vd_t o );           // destruction
+typedef void (*bcore_fp_copy   )( vd_t o, vc_t src ); // deep copy
+typedef void (*bcore_fp_plant  )( vd_t o, vc_t src ); // init(o); copy(o, src);
+typedef void (*bcore_fp_move   )( vd_t o, vd_t src ); // init(o); copy(o, src); down(src)
+typedef vd_t (*bcore_fp_create )( void   );           // allocate & init
+typedef void (*bcore_fp_discard)( vd_t o );           // down & deallocate; o may be NULL in which case function does nothing
+typedef vd_t (*bcore_fp_clone  )( vc_t o );           // allocate & copy; o may be NULL in which case NULL is returned
+
+/// copy, create from another object with type conversion
+typedef void (*bcore_fp_copy_typed   )( vd_t o, tp_t type, vc_t src ); // deep conversion & copy
+typedef vd_t (*bcore_fp_create_typed )(         tp_t type, vc_t src ); // deep conversion & create
 
 /**********************************************************************************************************************/
 

@@ -30,21 +30,26 @@ typedef struct bcore_string_s
     sz_t size, space;
 } bcore_string_s;
 
-void            bcore_string_s_init(    bcore_string_s* o );
-void            bcore_string_s_initvf(  bcore_string_s* o, sc_t format, va_list args );  // formatted initialization (like sprintf)
-void            bcore_string_s_initf(   bcore_string_s* o, sc_t format, ... );           // formatted initialization (like sprintf)
-void            bcore_string_s_down(    bcore_string_s* o );
-void            bcore_string_s_copy(    bcore_string_s* o, const bcore_string_s* src );
-void            bcore_string_s_move(    bcore_string_s* o,       bcore_string_s* src );
-void            bcore_string_s_copy_sc( bcore_string_s* o, sc_t sc );
+void            bcore_string_s_init(       bcore_string_s* o );
+void            bcore_string_s_initvf(     bcore_string_s* o, sc_t format, va_list args );  // formatted initialization (like sprintf)
+void            bcore_string_s_initf(      bcore_string_s* o, sc_t format, ... );           // formatted initialization (like sprintf)
+void            bcore_string_s_down(       bcore_string_s* o );
+void            bcore_string_s_copy(       bcore_string_s* o, const bcore_string_s* src );
+void            bcore_string_s_copyf(      bcore_string_s* o, sc_t format, ...  );
+void            bcore_string_s_copy_sc(    bcore_string_s* o, sc_t sc );
+void            bcore_string_s_copy_typed( bcore_string_s* o, tp_t type, vc_t src ); // copy with type conversion
+void            bcore_string_s_copy_aware( bcore_string_s* o,            vc_t src ); // copy with type conversion
+void            bcore_string_s_move(       bcore_string_s* o, bcore_string_s* src );
 bcore_string_s* bcore_string_s_create();
 bcore_string_s* bcore_string_s_createf(      sc_t format, ... );
-bcore_string_s* bcore_string_s_create__sc(   sc_t sc );
+bcore_string_s* bcore_string_s_create_sc(    sc_t sc );
+bcore_string_s* bcore_string_s_create_typed( tp_t type, vc_t src );
+bcore_string_s* bcore_string_s_create_aware(            vc_t src );
 
 /// create with lifetime manager
 bcore_string_s* bcore_string_s_create_l(     bcore_life_s* life );
 bcore_string_s* bcore_string_s_createf_l(    bcore_life_s* life, sc_t format, ... );
-bcore_string_s* bcore_string_s_create_l__sc( bcore_life_s* life, sc_t sc );
+bcore_string_s* bcore_string_s_create_l_sc(  bcore_life_s* life, sc_t sc );
 
 void            bcore_string_s_discard(       bcore_string_s* o );
 bcore_string_s* bcore_string_s_clone(   const bcore_string_s* o );
@@ -59,6 +64,7 @@ char            bcore_string_s_pop_char(      bcore_string_s* o );
 bcore_string_s* bcore_string_s_push_string(   bcore_string_s* o, const bcore_string_s* src );
 bcore_string_s* bcore_string_s_push_string_d( bcore_string_s* o, bcore_string_s* src ); // discards src
 bcore_string_s* bcore_string_s_push_sc(       bcore_string_s* o, sc_t sc );
+bcore_string_s* bcore_string_s_push_typed(    bcore_string_s* o, tp_t type, vc_t src ); // push with type conversion
 bcore_string_s* bcore_string_s_pushf(         bcore_string_s* o, sc_t format, ... );
 
 /// comparison and equality (for return of comparison 'cmp' see bcore_strcmp)
