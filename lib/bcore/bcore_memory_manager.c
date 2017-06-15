@@ -677,11 +677,12 @@ static void* bcore_memory_manager_s_realloc( bcore_memory_manager_s* o, void* cu
         {
             sz_t* p_current_bytes = bcore_btree_ps_s_val( o->external_btree, current_ptr );
             if( !p_current_bytes ) ERR( "Could not retrieve current external memory" );
+            sz_t current_ext_bytes = *p_current_bytes;
 
-            // is requested bytes is not significantly lower than current bytes, keep current memory
-            if( ( *p_current_bytes >> 1 ) >= requested_bytes )
+            // is requested bytes is less but not significantly less than current bytes, keep current memory
+            if( ( requested_bytes < current_ext_bytes ) && ( requested_bytes >= ( current_ext_bytes >> 1 ) ) )
             {
-                if( granted_bytes ) *granted_bytes = *p_current_bytes;
+                if( granted_bytes ) *granted_bytes = current_ext_bytes;
                 return current_ptr;
             }
 
@@ -690,7 +691,7 @@ static void* bcore_memory_manager_s_realloc( bcore_memory_manager_s* o, void* cu
             if( granted_bytes ) *granted_bytes = requested_bytes;
             if( bcore_btree_ps_s_set( o->external_btree, reserved_ptr, requested_bytes ) != 1 ) ERR( "Registering new address failed" );
 
-            sz_t copy_bytes = ( requested_bytes < *p_current_bytes ) ? requested_bytes : *p_current_bytes;
+            sz_t copy_bytes = ( requested_bytes < current_ext_bytes ) ? requested_bytes : current_ext_bytes;
             bcore_memcpy( reserved_ptr, current_ptr, copy_bytes );
 
             if( bcore_btree_ps_s_remove( o->external_btree, current_ptr ) != 1 ) ERR( "Attempt to free invalid memory" );
@@ -973,7 +974,6 @@ static bcore_string_s* bcore_memory_alloc_challenge( void* (*alloc)( void* curre
                     rval = bcore_xsg_u2( rval );
                     sz_t size = pow( ( double )max_alloc, rval * pow( 2.0, -32 ) );
 
-//                    sz_t size = rval % max_alloc;
                     sz_t new_size = 0;
 
                     data_table[ idx ] = alloc( data_table[ idx ], size_table[ idx ], size, &new_size ); // realloc
