@@ -41,13 +41,25 @@ typedef struct { vd_t  data; sz_t size; sz_t space; tp_t type; } bcore_flect_cap
 typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_flect_caps_static_link_array_s;
 typedef struct { vd_t* data; sz_t size; sz_t space; tp_t type; } bcore_flect_caps_typed_link_array_s;
 typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_flect_caps_aware_link_array_s;
+
 /*
-  Note:
-  The reflection framework assumes above structures 'emplaced' in governing structures.
-  Except for trivial cases (such as structures with one element), parallel structures should also emplace
-  above structures rather than emplacing their respective elements (anonymous unions may be possible).
-  Not doing so can cause platform sensitive misalignments depending on the organization of the
-  enveloping structure.
+PLANNING:
+
+* Above array structures should have a self reflection supported by array and instance perspective.
+
+* Above structure names should be simplified:
+  bcore_flect_caps_static_link_s  --> bcore_static_link_s
+  bcore_flect_caps_static_array_s --> bcore_static_array_s
+  From the 'perspective' perspective, a static_array is a template to be completed in its parent
+  structure. The self reflection of such an array-object is to be created on the fly at its point
+  of definition inside the parent structure.
+
+* An element of a structure may be anonymous. An anonymous structure merges with its parent structure.
+  --> as if elements of the child structure had been defined in given order inside parent structure.
+
+* Name management: Ensure all names in a structure have unique names (already at definition level).
+
+* Use hash lookup table for (extended) name management.
 */
 
 /// conversion between enum and string
@@ -71,7 +83,7 @@ typedef struct bcore_flect_item_s
         fp_t f_ptr;  // external function pointer
     };
 
-    u2_t type; // hash of type (primitive, structure, aware-mutative, typed-mutative)
+    u2_t type; // hash of type
     u2_t name; // hash of name
 } bcore_flect_item_s;
 

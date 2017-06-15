@@ -7,8 +7,9 @@
 #include "bcore_flect.h"
 #include "bcore_features.h"
 
-/** The instance perspective provide basic functionality around the object covering
- *  construction, destruction, copying and conversion.
+/** The instance perspective is concerned with the representation of an object in memory and
+ *  provides basic object related functionality covering construction, destruction, copying
+ *  and (type-) conversion.
  */
 
 /**********************************************************************************************************************/
@@ -38,7 +39,7 @@ typedef struct bcore_instance_s
 
     sz_t size;   // sizeof(type);
     sz_t align;  // alignof(type)
-    bool aware;  // object is self-aware meaning it defines its type as first element
+    bool aware;  // object is self-aware meaning it defines its type (aware_t) as first element
 
     bool init_flat; // flat initialization possible
     bool down_flat; // flat shut down possible
@@ -57,17 +58,17 @@ typedef struct bcore_instance_s
     bcore_fp_clone        clone_o;
 
     /// these functions are always defined and represent the service this perspective offers
-    void ( *init         )( const bcore_instance_s* i, vd_t o );
-    void ( *down         )( const bcore_instance_s* i, vd_t o );
-    void ( *copy         )( const bcore_instance_s* i, vd_t o,         vc_t src );
-    void ( *copy_typed   )( const bcore_instance_s* i, vd_t o, tp_t t, vc_t src );
-    void ( *copy_aware   )( const bcore_instance_s* i, vd_t o,         vc_t src );
-    void ( *move         )( const bcore_instance_s* i, vd_t o,         vd_t src );
-    vd_t ( *create       )( const bcore_instance_s* i );
-    vd_t ( *create_typed )( const bcore_instance_s* i, tp_t t, vc_t src );
-    vd_t ( *create_aware )( const bcore_instance_s* i,         vc_t src );
-    void ( *discard      )( const bcore_instance_s* i, vd_t o );
-    vd_t ( *clone        )( const bcore_instance_s* i, vc_t o );
+    void ( *init         )( const bcore_instance_s* p, vd_t o );
+    void ( *down         )( const bcore_instance_s* p, vd_t o );
+    void ( *copy         )( const bcore_instance_s* p, vd_t o,         vc_t src );
+    void ( *copy_typed   )( const bcore_instance_s* p, vd_t o, tp_t t, vc_t src );
+    void ( *copy_aware   )( const bcore_instance_s* p, vd_t o,         vc_t src );
+    void ( *move         )( const bcore_instance_s* p, vd_t o,         vd_t src );
+    vd_t ( *create       )( const bcore_instance_s* p );
+    vd_t ( *create_typed )( const bcore_instance_s* p, tp_t t, vc_t src );
+    vd_t ( *create_aware )( const bcore_instance_s* p,         vc_t src );
+    void ( *discard      )( const bcore_instance_s* p, vd_t o );
+    vd_t ( *clone        )( const bcore_instance_s* p, vc_t o );
 } bcore_instance_s;
 
 const bcore_instance_s* bcore_instance_s_get_typed( u2_t type );

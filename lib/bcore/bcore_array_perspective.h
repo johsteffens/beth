@@ -32,10 +32,10 @@ typedef struct bcore_array_s
     sz_t ( *get_space   )( const bcore_array_s* p, vc_t o );             // returns space
     void ( *set_size    )( const bcore_array_s* p, vd_t o, sz_t size  ); // changes array size (keeping previous data); for linked arrays new items are NULL
     void ( *set_space   )( const bcore_array_s* p, vd_t o, sz_t space ); // changes space
-    vc_t ( *get_c_item  )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
-    vd_t ( *get_d_item  )( const bcore_array_s* p, vd_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
-    vd_t ( *set_item_c  )( const bcore_array_s* p, vd_t o, sz_t index, vc_t src ); // sets item at indexed position by copying src; if index is out of size, size is increased
-    vd_t ( *set_item_d  )( const bcore_array_s* p, vd_t o, sz_t index, vd_t src ); // sets item at indexed position by taking ownership of src (emplaced arrays copy and discard src)
+    vc_t ( *get_c       )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
+    vd_t ( *get_d       )( const bcore_array_s* p, vd_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
+    vd_t ( *set_c       )( const bcore_array_s* p, vd_t o, sz_t index, vc_t src ); // sets item at indexed position by copying src; if index is out of size, size is increased
+    vd_t ( *set_d       )( const bcore_array_s* p, vd_t o, sz_t index, vd_t src ); // sets item at indexed position by taking ownership of src (emplaced arrays copy and discard src)
     vc_t ( *get_c_first )( const bcore_array_s* p, vc_t o );             // returns first item; NULL if array is empty
     vd_t ( *get_d_first )( const bcore_array_s* p, vd_t o );             // returns first item; NULL if array is empty
     vc_t ( *get_c_last  )( const bcore_array_s* p, vc_t o );             // returns last item; NULL if array is empty
