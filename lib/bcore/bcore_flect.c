@@ -26,14 +26,14 @@ const sc_t bcore_flect_caps_e_sc_arr[] =
 const sz_t bcore_flect_caps_e_size_arr[] =
 {
     0, // STATIC
-    sizeof( bcore_flect_caps_static_link_s ),
-    sizeof( bcore_flect_caps_typed_link_s ),
-    sizeof( bcore_flect_caps_aware_link_s ),
-    sizeof( bcore_flect_caps_static_array_s ),
-    sizeof( bcore_flect_caps_typed_array_s ),
-    sizeof( bcore_flect_caps_static_link_array_s ),
-    sizeof( bcore_flect_caps_typed_link_array_s ),
-    sizeof( bcore_flect_caps_aware_link_array_s ),
+    sizeof( bcore_static_link_s ),
+    sizeof( bcore_typed_link_s ),
+    sizeof( bcore_aware_link_s ),
+    sizeof( bcore_static_array_s ),
+    sizeof( bcore_typed_array_s ),
+    sizeof( bcore_static_link_array_s ),
+    sizeof( bcore_typed_link_array_s ),
+    sizeof( bcore_aware_link_array_s ),
     0,  // EXTERNAL_DATA
     0,  // EXTERNAL_FUNCTION
 };
@@ -41,14 +41,14 @@ const sz_t bcore_flect_caps_e_size_arr[] =
 const sz_t bcore_flect_caps_e_align_arr[] =
 {
     0, // STATIC
-    _Alignof( bcore_flect_caps_static_link_s ),
-    _Alignof( bcore_flect_caps_typed_link_s ),
-    _Alignof( bcore_flect_caps_aware_link_s ),
-    _Alignof( bcore_flect_caps_static_array_s ),
-    _Alignof( bcore_flect_caps_typed_array_s ),
-    _Alignof( bcore_flect_caps_static_link_array_s ),
-    _Alignof( bcore_flect_caps_typed_link_array_s ),
-    _Alignof( bcore_flect_caps_aware_link_array_s ),
+    _Alignof( bcore_static_link_s ),
+    _Alignof( bcore_typed_link_s ),
+    _Alignof( bcore_aware_link_s ),
+    _Alignof( bcore_static_array_s ),
+    _Alignof( bcore_typed_array_s ),
+    _Alignof( bcore_static_link_array_s ),
+    _Alignof( bcore_typed_link_array_s ),
+    _Alignof( bcore_aware_link_array_s ),
     0,  // EXTERNAL_DATA
     0,  // EXTERNAL_FUNCTION
 };
@@ -736,54 +736,28 @@ void bcore_flect_define_basics()
     // string
     bcore_flect_define_self_d( bcore_string_s_create_self() );
 
+    // encapsulation structure
+    bcore_flect_parse_sc(" bcore_static_link_s       = { vd_t link; }" );
+    bcore_flect_parse_sc(" bcore_typed_link_s        = { vd_t link; tp_t type; }" );
+    bcore_flect_parse_sc(" bcore_aware_link_s        = { vd_t link; }" );
+    bcore_flect_parse_sc(" bcore_static_array_s      = { vd_t  data; sz_t size; sz_t space; }" );
+    bcore_flect_parse_sc(" bcore_typed_array_s       = { typed []; }" );
+    bcore_flect_parse_sc(" bcore_static_link_array_s = { vd_t* data; sz_t size; sz_t space; }" );
+    bcore_flect_parse_sc(" bcore_typed_link_array_s  = { typed* []; }" );
+    bcore_flect_parse_sc(" bcore_aware_link_array_s  = { aware* []; }" );
+
 }
 
 /**********************************************************************************************************************/
 
 bcore_string_s* bcore_flect_selftest()
 {
-    if( sizeof( vd_t ) < sizeof( tp_t ) )
-    {
-        ERR( "On this platform: ( sizeof( vd_t ) = %zu ) < ( sizeof( tp_t ) = %zu ).\n"
-             "This can cause misalignment in the reflection framework.",
-             sizeof( vd_t ), sizeof( tp_t ) );
-    }
-
-    if( sizeof( vd_t ) < sizeof( sz_t ) )
-    {
-        ERR( "On this platform: ( sizeof( vd_t ) = %zu ) < ( sizeof( sz_t ) = %zu ).\n"
-             "This can cause misalignment in the reflection framework.",
-             sizeof( vd_t ), sizeof( sz_t ) );
-    }
-
     {
         bcore_flect_parse_sc(" teabag =    { u3_t leaves; s1_t flavor; s0_t color;  }" );
         bcore_flect_parse_sc(" container = { u3_t elements; teabag*[] bags; u1_t flags; }" );
         bcore_flect_parse_sc(" delivery =  { aware_t _; u3_t tag; container* cargo; aware*[] attachments; }" );
         bcore_flect_parse_sc(" another = delivery" );
     }
-
-/*
-
-  parametric type
-  my_gen_type1 =
-  {
-     <type> tp1
-     <name> nm1
-
-     u3_t v1;
-     tp1 v2;
-  }
-
-  my_gen_type2 =
-  {
-     u3_t v1;
-     arg1 v2;
-     arg2 v3;
-     my_gen_type1( arg3 ) v4;
-  }
-
-*/
 
     bcore_string_s* s = bcore_string_s_create();
     bcore_string_s_push_string_d( s, bcore_flect_self_s_show( bcore_flect_get_self( typeof( "bcore_string_s" ) ) ) );

@@ -36,31 +36,31 @@ void bcore_array_s_discard( bcore_array_s* o )
 static sz_t get_size_static( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_flect_caps_static_array_s* )obj )->size;
+    return ( ( bcore_static_array_s* )obj )->size;
 }
 
 static sz_t get_size_typed( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_flect_caps_typed_array_s* )obj )->size;
+    return ( ( bcore_typed_array_s* )obj )->size;
 }
 
 static sz_t get_size_static_link( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_flect_caps_static_link_array_s* )obj )->size;
+    return ( ( bcore_static_link_array_s* )obj )->size;
 }
 
 static sz_t get_size_typed_link( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_flect_caps_typed_link_array_s* )obj )->size;
+    return ( ( bcore_typed_link_array_s* )obj )->size;
 }
 
 static sz_t get_size_aware_link( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_flect_caps_aware_link_array_s* )obj )->size;
+    return ( ( bcore_aware_link_array_s* )obj )->size;
 }
 
 /**********************************************************************************************************************/
@@ -68,31 +68,31 @@ static sz_t get_size_aware_link( const bcore_array_s* p, vc_t o )
 static sz_t get_space_static( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_flect_caps_static_array_s* )obj )->space;
+    return ( ( bcore_static_array_s* )obj )->space;
 }
 
 static sz_t get_space_typed( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_flect_caps_typed_array_s* )obj )->space;
+    return ( ( bcore_typed_array_s* )obj )->space;
 }
 
 static sz_t get_space_static_link( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_flect_caps_static_link_array_s* )obj )->space;
+    return ( ( bcore_static_link_array_s* )obj )->space;
 }
 
 static sz_t get_space_typed_link( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_flect_caps_typed_link_array_s* )obj )->space;
+    return ( ( bcore_typed_link_array_s* )obj )->space;
 }
 
 static sz_t get_space_aware_link( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_flect_caps_aware_link_array_s* )obj )->space;
+    return ( ( bcore_aware_link_array_s* )obj )->space;
 }
 
 /**********************************************************************************************************************/
@@ -104,7 +104,7 @@ static void set_space( const bcore_array_s* p, vd_t o, sz_t space )
     {
         case BCORE_CAPS_STATIC_ARRAY:
         {
-            bcore_flect_caps_static_array_s* arr = obj;
+            bcore_static_array_s* arr = obj;
             const bcore_instance_s* instance_p = p->item_p;
             sz_t unit_size = instance_p->size;
             if( instance_p->move_flat )
@@ -143,7 +143,7 @@ static void set_space( const bcore_array_s* p, vd_t o, sz_t space )
 
         case BCORE_CAPS_TYPED_ARRAY:
         {
-            bcore_flect_caps_typed_array_s* arr = obj;
+            bcore_typed_array_s* arr = obj;
             if( space == arr->space ) break;
             if( !arr->type ) ERR( "attempt to change space on type-zero array" );
             const bcore_instance_s* instance_p = bcore_instance_s_get_typed( arr->type );
@@ -184,7 +184,7 @@ static void set_space( const bcore_array_s* p, vd_t o, sz_t space )
 
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         {
-            bcore_flect_caps_static_link_array_s* arr = obj;
+            bcore_static_link_array_s* arr = obj;
             const bcore_instance_s* instance_p = p->item_p;
             while( arr->size > space )
             {
@@ -197,7 +197,7 @@ static void set_space( const bcore_array_s* p, vd_t o, sz_t space )
 
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         {
-            bcore_flect_caps_typed_link_array_s* arr = obj;
+            bcore_typed_link_array_s* arr = obj;
             if( space < arr->size )
             {
                 if( !arr->type ) ERR( "type-zero array with non-zero size detected" );
@@ -214,7 +214,7 @@ static void set_space( const bcore_array_s* p, vd_t o, sz_t space )
 
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
-            bcore_flect_caps_aware_link_array_s* arr = obj;
+            bcore_aware_link_array_s* arr = obj;
             while( arr->size > space )
             {
                 arr->size--;
@@ -240,7 +240,7 @@ static void set_size( const bcore_array_s* p, vd_t o, sz_t size )
     {
         case BCORE_CAPS_STATIC_ARRAY:
         {
-            bcore_flect_caps_static_array_s* arr = obj;
+            bcore_static_array_s* arr = obj;
             const bcore_instance_s* instance_p = p->item_p;
             sz_t unit_size = instance_p->size;
             if( size < arr->size )
@@ -279,7 +279,7 @@ static void set_size( const bcore_array_s* p, vd_t o, sz_t size )
 
         case BCORE_CAPS_TYPED_ARRAY:
         {
-            bcore_flect_caps_typed_array_s* arr = obj;
+            bcore_typed_array_s* arr = obj;
             if( size == arr->size ) break;
             if( !arr->type ) ERR( "attempt to change size on type-zero array" );
             const bcore_instance_s* instance_p = bcore_instance_s_get_typed( arr->type );
@@ -320,7 +320,7 @@ static void set_size( const bcore_array_s* p, vd_t o, sz_t size )
 
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         {
-            bcore_flect_caps_static_link_array_s* arr = obj;
+            bcore_static_link_array_s* arr = obj;
             const bcore_instance_s* instance_p = p->item_p;
             if( size < arr->size )
             {
@@ -340,7 +340,7 @@ static void set_size( const bcore_array_s* p, vd_t o, sz_t size )
 
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         {
-            bcore_flect_caps_typed_link_array_s* arr = obj;
+            bcore_typed_link_array_s* arr = obj;
             if( size < arr->size )
             {
                 const bcore_instance_s* instance_p = ( arr->type ) ? bcore_instance_s_get_typed( arr->type ) : NULL;
@@ -364,7 +364,7 @@ static void set_size( const bcore_array_s* p, vd_t o, sz_t size )
 
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
-            bcore_flect_caps_aware_link_array_s* arr = obj;
+            bcore_aware_link_array_s* arr = obj;
             if( size < arr->size )
             {
                 while( size < arr->size )
@@ -390,14 +390,14 @@ static void set_size( const bcore_array_s* p, vd_t o, sz_t size )
 static vc_t get_c_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    const bcore_flect_caps_static_array_s* arr = obj;
+    const bcore_static_array_s* arr = obj;
     return ( index < arr->size ) ? ( u0_t* )arr->data + p->item_p->size * index : NULL;
 }
 
 static vc_t get_c_typed( const bcore_array_s* p, vc_t o, sz_t index )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    const bcore_flect_caps_typed_array_s* arr = obj;
+    const bcore_typed_array_s* arr = obj;
     if( index < arr->size )
     {
         return ( u0_t* )arr->data + bcore_instance_s_get_typed( arr->type )->size * index;
@@ -411,21 +411,21 @@ static vc_t get_c_typed( const bcore_array_s* p, vc_t o, sz_t index )
 static vc_t get_c_static_link( const bcore_array_s* p, vc_t o, sz_t index )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    const bcore_flect_caps_static_link_array_s* arr = obj;
+    const bcore_static_link_array_s* arr = obj;
     return ( index < arr->size ) ? arr->data[ index ] : NULL;
 }
 
 static vc_t get_c_typed_link( const bcore_array_s* p, vc_t o, sz_t index )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    const bcore_flect_caps_typed_link_array_s* arr = obj;
+    const bcore_typed_link_array_s* arr = obj;
     return ( index < arr->size ) ? arr->data[ index ] : NULL;
 }
 
 static vc_t get_c_aware_link( const bcore_array_s* p, vc_t o, sz_t index )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    const bcore_flect_caps_aware_link_array_s* arr = obj;
+    const bcore_aware_link_array_s* arr = obj;
     return ( index < arr->size ) ? arr->data[ index ] : NULL;
 }
 
@@ -434,14 +434,14 @@ static vc_t get_c_aware_link( const bcore_array_s* p, vc_t o, sz_t index )
 static vd_t get_d_static( const bcore_array_s* p, vd_t o, sz_t index )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_static_array_s* arr = obj;
+    bcore_static_array_s* arr = obj;
     return ( index < arr->size ) ? ( u0_t* )arr->data + p->item_p->size * index : NULL;
 }
 
 static vd_t get_d_typed( const bcore_array_s* p, vd_t o, sz_t index )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    const bcore_flect_caps_typed_array_s* arr = obj;
+    const bcore_typed_array_s* arr = obj;
     if( index < arr->size )
     {
         return ( u0_t* )arr->data + bcore_instance_s_get_typed( arr->type )->size * index;
@@ -455,21 +455,21 @@ static vd_t get_d_typed( const bcore_array_s* p, vd_t o, sz_t index )
 static vd_t get_d_static_link( const bcore_array_s* p, vd_t o, sz_t index )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_static_link_array_s* arr = obj;
+    bcore_static_link_array_s* arr = obj;
     return ( index < arr->size ) ? arr->data[ index ] : NULL;
 }
 
 static vd_t get_d_typed_link( const bcore_array_s* p, vd_t o, sz_t index )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_typed_link_array_s* arr = obj;
+    bcore_typed_link_array_s* arr = obj;
     return ( index < arr->size ) ? arr->data[ index ] : NULL;
 }
 
 static vd_t get_d_aware_link( const bcore_array_s* p, vd_t o, sz_t index )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_aware_link_array_s* arr = obj;
+    bcore_aware_link_array_s* arr = obj;
     return ( index < arr->size ) ? arr->data[ index ] : NULL;
 }
 
@@ -478,7 +478,7 @@ static vd_t get_d_aware_link( const bcore_array_s* p, vd_t o, sz_t index )
 static vd_t set_c_static( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_static_array_s* arr = obj;
+    bcore_static_array_s* arr = obj;
     if( index >= arr->size ) set_size( p, o, index + 1 );
     const bcore_instance_s* instance_p = p->item_p;
     vd_t dst = ( u0_t* )arr->data + instance_p->size * index;
@@ -489,7 +489,7 @@ static vd_t set_c_static( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )
 static vd_t set_c_typed( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_typed_array_s* arr = obj;
+    bcore_typed_array_s* arr = obj;
     if( index >= arr->size ) set_size( p, o, index + 1 );
     const bcore_instance_s* item_p = bcore_instance_s_get_typed( arr->type );
     vd_t dst = ( u0_t* )arr->data + item_p->size * index;
@@ -500,7 +500,7 @@ static vd_t set_c_typed( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )
 static vd_t set_c_static_link( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_static_link_array_s* arr = obj;
+    bcore_static_link_array_s* arr = obj;
     if( index >= arr->size ) set_size( p, o, index + 1 );
     const bcore_instance_s* instance_p = p->item_p;
     vd_t* dst = &arr->data[ index ];
@@ -512,7 +512,7 @@ static vd_t set_c_static_link( const bcore_array_s* p, vd_t o, sz_t index, vc_t 
 static vd_t set_c_typed_link( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_typed_link_array_s* arr = obj;
+    bcore_typed_link_array_s* arr = obj;
     if( index >= arr->size ) set_size( p, o, index + 1 );
     vd_t* dst = &arr->data[ index ];
     if( *dst ) bcore_instance_typed_discard( arr->type, *dst );
@@ -523,7 +523,7 @@ static vd_t set_c_typed_link( const bcore_array_s* p, vd_t o, sz_t index, vc_t s
 static vd_t set_c_aware_link( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_aware_link_array_s* arr = obj;
+    bcore_aware_link_array_s* arr = obj;
     if( index >= arr->size ) set_size( p, o, index + 1 );
     vd_t* dst = &arr->data[ index ];
     if( *dst ) bcore_instance_aware_discard( *dst );
@@ -536,7 +536,7 @@ static vd_t set_c_aware_link( const bcore_array_s* p, vd_t o, sz_t index, vc_t s
 static vd_t set_d_static( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_static_array_s* arr = obj;
+    bcore_static_array_s* arr = obj;
     if( index >= arr->size ) set_size( p, o, index + 1 );
     const bcore_instance_s* instance_p = p->item_p;
     vd_t dst = ( u0_t* )arr->data + instance_p->size * index;
@@ -548,7 +548,7 @@ static vd_t set_d_static( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )
 static vd_t set_d_typed( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_typed_array_s* arr = obj;
+    bcore_typed_array_s* arr = obj;
     if( index >= arr->size ) set_size( p, o, index + 1 );
     const bcore_instance_s* item_p = bcore_instance_s_get_typed( arr->type );
     vd_t dst = ( u0_t* )arr->data + item_p->size * index;
@@ -560,7 +560,7 @@ static vd_t set_d_typed( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )
 static vd_t set_d_static_link( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_static_link_array_s* arr = obj;
+    bcore_static_link_array_s* arr = obj;
     if( index >= arr->size ) set_size( p, o, index + 1 );
     const bcore_instance_s* instance_p = p->item_p;
     vd_t* dst = &arr->data[ index ];
@@ -572,7 +572,7 @@ static vd_t set_d_static_link( const bcore_array_s* p, vd_t o, sz_t index, vd_t 
 static vd_t set_d_typed_link( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_typed_link_array_s* arr = obj;
+    bcore_typed_link_array_s* arr = obj;
     if( index >= arr->size ) set_size( p, o, index + 1 );
     vd_t* dst = &arr->data[ index ];
     if( *dst ) bcore_instance_typed_discard( arr->type, *dst );
@@ -583,7 +583,7 @@ static vd_t set_d_typed_link( const bcore_array_s* p, vd_t o, sz_t index, vd_t s
 static vd_t set_d_aware_link( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    bcore_flect_caps_aware_link_array_s* arr = obj;
+    bcore_aware_link_array_s* arr = obj;
     if( index >= arr->size ) set_size( p, o, index + 1 );
     vd_t* dst = &arr->data[ index ];
     if( *dst ) bcore_instance_aware_discard( *dst );
@@ -649,9 +649,9 @@ static tp_t get_type( const bcore_array_s* p, vc_t o )
     switch( p->caps_type )
     {
         case BCORE_CAPS_STATIC_ARRAY:      return p->item_p->_.o_type;
-        case BCORE_CAPS_TYPED_ARRAY:       return ( ( const bcore_flect_caps_typed_array_s*       )obj )->type;
+        case BCORE_CAPS_TYPED_ARRAY:       return ( ( const bcore_typed_array_s*       )obj )->type;
         case BCORE_CAPS_STATIC_LINK_ARRAY: return p->item_p->_.o_type;
-        case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_flect_caps_typed_link_array_s*  )obj )->type;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_typed_link_array_s*  )obj )->type;
         case BCORE_CAPS_AWARE_LINK_ARRAY:  return 0;
         default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
     }
@@ -674,7 +674,7 @@ static void set_type( const bcore_array_s* p, vd_t o, tp_t type )
 
         case BCORE_CAPS_TYPED_ARRAY:
         {
-            bcore_flect_caps_typed_array_s* arr = obj;
+            bcore_typed_array_s* arr = obj;
             if( arr->type == type ) break;
             if( arr->size > 0 ) ERR( "array size (%zu) must be zero for a type change", arr->size );
             arr->type = type;
@@ -690,7 +690,7 @@ static void set_type( const bcore_array_s* p, vd_t o, tp_t type )
 
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         {
-            bcore_flect_caps_typed_link_array_s* arr = obj;
+            bcore_typed_link_array_s* arr = obj;
             if( arr->type == type ) break;
             if( arr->size > 0 ) ERR( "array size (%zu) must be zero for a type change", arr->size );
             arr->type = type;
@@ -699,7 +699,7 @@ static void set_type( const bcore_array_s* p, vd_t o, tp_t type )
 
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
-            bcore_flect_caps_aware_link_array_s* arr = obj;
+            bcore_aware_link_array_s* arr = obj;
             if( arr->size > 0 ) ERR( "cannot change type on aware-link-array of non-zero size" );
         }
         break;
@@ -719,11 +719,11 @@ static vc_t get_c_data( const bcore_array_s* p, vc_t o )
     vc_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
     {
-        case BCORE_CAPS_STATIC_ARRAY:      return ( ( const bcore_flect_caps_static_array_s*      )obj )->data;
-        case BCORE_CAPS_TYPED_ARRAY:       return ( ( const bcore_flect_caps_typed_array_s*       )obj )->data;
-        case BCORE_CAPS_STATIC_LINK_ARRAY: return ( ( const bcore_flect_caps_static_link_array_s* )obj )->data;
-        case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_flect_caps_typed_link_array_s*  )obj )->data;
-        case BCORE_CAPS_AWARE_LINK_ARRAY:  return ( ( const bcore_flect_caps_aware_link_array_s*  )obj )->data;
+        case BCORE_CAPS_STATIC_ARRAY:      return ( ( const bcore_static_array_s*      )obj )->data;
+        case BCORE_CAPS_TYPED_ARRAY:       return ( ( const bcore_typed_array_s*       )obj )->data;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return ( ( const bcore_static_link_array_s* )obj )->data;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_typed_link_array_s*  )obj )->data;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return ( ( const bcore_aware_link_array_s*  )obj )->data;
         default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
     }
     return NULL;
@@ -734,11 +734,11 @@ static vd_t get_d_data( const bcore_array_s* p, vd_t o )
     vd_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
     {
-        case BCORE_CAPS_STATIC_ARRAY:      return ( ( bcore_flect_caps_static_array_s*      )obj )->data;
-        case BCORE_CAPS_TYPED_ARRAY:       return ( ( bcore_flect_caps_typed_array_s*       )obj )->data;
-        case BCORE_CAPS_STATIC_LINK_ARRAY: return ( ( bcore_flect_caps_static_link_array_s* )obj )->data;
-        case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( bcore_flect_caps_typed_link_array_s*  )obj )->data;
-        case BCORE_CAPS_AWARE_LINK_ARRAY:  return ( ( bcore_flect_caps_aware_link_array_s*  )obj )->data;
+        case BCORE_CAPS_STATIC_ARRAY:      return ( ( bcore_static_array_s*      )obj )->data;
+        case BCORE_CAPS_TYPED_ARRAY:       return ( ( bcore_typed_array_s*       )obj )->data;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return ( ( bcore_static_link_array_s* )obj )->data;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( bcore_typed_link_array_s*  )obj )->data;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return ( ( bcore_aware_link_array_s*  )obj )->data;
         default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
     }
     return NULL;
@@ -780,7 +780,7 @@ static sz_t get_unit_size( const bcore_array_s* p, vc_t o )
         case BCORE_CAPS_TYPED_ARRAY:
         {
             vc_t obj = ( u0_t* )o + p->caps_offset;
-            const bcore_flect_caps_typed_array_s* arr = obj;
+            const bcore_typed_array_s* arr = obj;
             if( !arr->type ) ERR( "type-zero array: cannot obtain unit size" );
             return bcore_instance_s_get_typed( arr->type )->size;
         }
@@ -1144,6 +1144,43 @@ bcore_string_s* bcore_array_perspective_selftest()
     bcore_instance_aware_discard( arr );
 
     return NULL;
+}
+
+/**********************************************************************************************************************/
+
+tp_t bcore_static_array_type_of( tp_t type )
+{
+    sc_t name = bcore_name_try_name( type );
+    if( !name ) ERR( "type %u has no name", type );
+    bcore_string_s* arr_name = bcore_string_s_createf( "%s__static_array", name );
+    tp_t arr_type = typeof( arr_name->sc );
+    if( !bcore_flect_try_self( arr_type ) )
+    {
+        bcore_string_s* code = bcore_string_s_createf( "%s = { %s []; }", arr_name->sc, name );
+        bcore_flect_parse( code, 0 );
+        bcore_string_s_discard( code );
+
+    }
+    bcore_string_s_discard( arr_name );
+    return arr_type;
+}
+
+/**********************************************************************************************************************/
+
+tp_t bcore_static_link_array_type_of( tp_t type )
+{
+    sc_t name = bcore_name_try_name( type );
+    if( !name ) ERR( "type %u has no name", type );
+    bcore_string_s* arr_name = bcore_string_s_createf( "%s__static_link_array", name );
+    tp_t arr_type = typeof( arr_name->sc );
+    if( !bcore_flect_try_self( arr_type ) )
+    {
+        bcore_string_s* code = bcore_string_s_createf( "%s = { %s * []; }", arr_name->sc, name );
+        bcore_flect_parse( code, 0 );
+        bcore_string_s_discard( code );
+    }
+    bcore_string_s_discard( arr_name );
+    return arr_type;
 }
 
 /**********************************************************************************************************************/

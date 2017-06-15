@@ -31,7 +31,7 @@ typedef struct bcore_array_s
     sz_t ( *get_size    )( const bcore_array_s* p, vc_t o );             // returns size
     sz_t ( *get_space   )( const bcore_array_s* p, vc_t o );             // returns space
     void ( *set_size    )( const bcore_array_s* p, vd_t o, sz_t size  ); // changes array size (keeping previous data); for linked arrays new items are NULL
-    void ( *set_space   )( const bcore_array_s* p, vd_t o, sz_t space ); // changes space
+    void ( *set_space   )( const bcore_array_s* p, vd_t o, sz_t space ); // changes space (can affect size; set space to zero means clearing the array)
     vc_t ( *get_c       )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
     vd_t ( *get_d       )( const bcore_array_s* p, vd_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
     vd_t ( *set_c       )( const bcore_array_s* p, vd_t o, sz_t index, vc_t src ); // sets item at indexed position by copying src; if index is out of size, size is increased
@@ -81,6 +81,21 @@ static inline const bcore_array_s* bcore_array_s_get_aware( vc_t obj )
 {
     return bcore_array_s_get_typed( *( const aware_t* )obj );
 }
+
+/**********************************************************************************************************************/
+// array construction
+
+/** Constructs and returns an array-type of type if not already existing.
+ *  The array type constructed is
+ *  <typename>__static_array = { <typename> []; }
+ */
+tp_t bcore_static_array_type_of( tp_t type );
+
+/** Constructs and returns an array-type of type if not already existing.
+ *  The array type constructed is
+ *  <typename>__static_link_array = { <typename> * []; }
+ */
+tp_t bcore_static_link_array_type_of( tp_t type );
 
 /**********************************************************************************************************************/
 // testing, debugging

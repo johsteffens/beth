@@ -234,7 +234,7 @@ static void down_generic( const bcore_instance_s* p, vd_t o )
 
             case BCORE_CAPS_STATIC_LINK:
             {
-                bcore_flect_caps_static_link_s* s = item_obj;
+                bcore_static_link_s* s = item_obj;
                 if( s->link )
                 {
                     const bcore_instance_s* perspective = inst_item->perspective;
@@ -245,7 +245,7 @@ static void down_generic( const bcore_instance_s* p, vd_t o )
 
             case BCORE_CAPS_TYPED_LINK:
             {
-                bcore_flect_caps_typed_link_s* s = item_obj;
+                bcore_typed_link_s* s = item_obj;
                 if( s->link )
                 {
                     const bcore_instance_s* perspective = bcore_instance_s_get_typed( s->type );
@@ -256,7 +256,7 @@ static void down_generic( const bcore_instance_s* p, vd_t o )
 
             case BCORE_CAPS_AWARE_LINK:
             {
-                bcore_flect_caps_aware_link_s* s = item_obj;
+                bcore_aware_link_s* s = item_obj;
                 if( s->link )
                 {
                     const bcore_instance_s* perspective = bcore_instance_s_get_typed( *( aware_t* )s->link );
@@ -267,7 +267,7 @@ static void down_generic( const bcore_instance_s* p, vd_t o )
 
             case BCORE_CAPS_STATIC_ARRAY:
             {
-                bcore_flect_caps_static_array_s* s = item_obj;
+                bcore_static_array_s* s = item_obj;
                 if( s->data )
                 {
                     const bcore_instance_s* perspective = inst_item->perspective;
@@ -286,7 +286,7 @@ static void down_generic( const bcore_instance_s* p, vd_t o )
 
             case BCORE_CAPS_TYPED_ARRAY:
             {
-                bcore_flect_caps_typed_array_s* s = item_obj;
+                bcore_typed_array_s* s = item_obj;
                 if( s->data )
                 {
                     const bcore_instance_s* perspective = bcore_instance_s_get_typed( s->type );
@@ -305,7 +305,7 @@ static void down_generic( const bcore_instance_s* p, vd_t o )
 
             case BCORE_CAPS_STATIC_LINK_ARRAY:
             {
-                bcore_flect_caps_static_link_array_s* s = item_obj;
+                bcore_static_link_array_s* s = item_obj;
                 if( s->data )
                 {
                     const bcore_instance_s* perspective = inst_item->perspective;
@@ -317,7 +317,7 @@ static void down_generic( const bcore_instance_s* p, vd_t o )
 
             case BCORE_CAPS_TYPED_LINK_ARRAY:
             {
-                bcore_flect_caps_typed_link_array_s* s = item_obj;
+                bcore_typed_link_array_s* s = item_obj;
                 if( s->data )
                 {
                     const bcore_instance_s* perspective = bcore_instance_s_get_typed( s->type );
@@ -329,7 +329,7 @@ static void down_generic( const bcore_instance_s* p, vd_t o )
 
             case BCORE_CAPS_AWARE_LINK_ARRAY:
             {
-                bcore_flect_caps_aware_link_array_s* s = item_obj;
+                bcore_aware_link_array_s* s = item_obj;
                 if( s->data )
                 {
                     for( sz_t i = 0; i < s->size; i++ ) bcore_instance_aware_discard( s->data[ i ] );
@@ -408,8 +408,8 @@ static void copy_generic( const bcore_instance_s* p, vd_t dst, vc_t src )
 
             case BCORE_CAPS_STATIC_LINK:
             {
-                bcore_flect_caps_static_link_s* dst = dst_obj;
-                bcore_flect_caps_static_link_s* src = src_obj;
+                bcore_static_link_s* dst = dst_obj;
+                bcore_static_link_s* src = src_obj;
                 const bcore_instance_s* perspective = inst_item->perspective;
                 perspective->discard( perspective, dst->link );
                 dst->link = perspective->clone( perspective, src->link );
@@ -418,8 +418,8 @@ static void copy_generic( const bcore_instance_s* p, vd_t dst, vc_t src )
 
             case BCORE_CAPS_TYPED_LINK:
             {
-                bcore_flect_caps_typed_link_s* dst = dst_obj;
-                bcore_flect_caps_typed_link_s* src = src_obj;
+                bcore_typed_link_s* dst = dst_obj;
+                bcore_typed_link_s* src = src_obj;
                 if( dst->link )
                 {
                     const bcore_instance_s* perspective = bcore_instance_s_get_typed( dst->type );
@@ -436,8 +436,8 @@ static void copy_generic( const bcore_instance_s* p, vd_t dst, vc_t src )
 
             case BCORE_CAPS_AWARE_LINK:
             {
-                bcore_flect_caps_aware_link_s* dst = dst_obj;
-                bcore_flect_caps_aware_link_s* src = src_obj;
+                bcore_aware_link_s* dst = dst_obj;
+                bcore_aware_link_s* src = src_obj;
                 if( dst->link )
                 {
                     const bcore_instance_s* perspective = bcore_instance_s_get_typed( *( aware_t* )dst->link );
@@ -453,8 +453,8 @@ static void copy_generic( const bcore_instance_s* p, vd_t dst, vc_t src )
 
             case BCORE_CAPS_STATIC_ARRAY:
             {
-                bcore_flect_caps_static_array_s* dst = dst_obj;
-                bcore_flect_caps_static_array_s* src = src_obj;
+                bcore_static_array_s* dst = dst_obj;
+                bcore_static_array_s* src = src_obj;
                 const bcore_instance_s* perspective = inst_item->perspective;
                 if( perspective->copy_flat )
                 {
@@ -491,8 +491,8 @@ static void copy_generic( const bcore_instance_s* p, vd_t dst, vc_t src )
 
             case BCORE_CAPS_TYPED_ARRAY:
             {
-                bcore_flect_caps_typed_array_s* dst = dst_obj;
-                bcore_flect_caps_typed_array_s* src = src_obj;
+                bcore_typed_array_s* dst = dst_obj;
+                bcore_typed_array_s* src = src_obj;
 
                 if( dst->space > 0 ) // deplete dst
                 {
@@ -534,8 +534,8 @@ static void copy_generic( const bcore_instance_s* p, vd_t dst, vc_t src )
 
             case BCORE_CAPS_STATIC_LINK_ARRAY:
             {
-                bcore_flect_caps_static_link_array_s* dst = dst_obj;
-                bcore_flect_caps_static_link_array_s* src = src_obj;
+                bcore_static_link_array_s* dst = dst_obj;
+                bcore_static_link_array_s* src = src_obj;
                 const bcore_instance_s* perspective = inst_item->perspective;
                 for( sz_t i = 0; i < dst->size; i++ ) perspective->discard( perspective, dst->data[ i ] );
                 if( src->size > dst->space )
@@ -550,8 +550,8 @@ static void copy_generic( const bcore_instance_s* p, vd_t dst, vc_t src )
 
             case BCORE_CAPS_TYPED_LINK_ARRAY:
             {
-                bcore_flect_caps_typed_link_array_s* dst = dst_obj;
-                bcore_flect_caps_typed_link_array_s* src = src_obj;
+                bcore_typed_link_array_s* dst = dst_obj;
+                bcore_typed_link_array_s* src = src_obj;
                 if( dst->size > 0 )
                 {
                     const bcore_instance_s* perspective = bcore_instance_s_get_typed( dst->type );
@@ -575,8 +575,8 @@ static void copy_generic( const bcore_instance_s* p, vd_t dst, vc_t src )
 
             case BCORE_CAPS_AWARE_LINK_ARRAY:
             {
-                bcore_flect_caps_aware_link_array_s* dst = dst_obj;
-                bcore_flect_caps_aware_link_array_s* src = src_obj;
+                bcore_aware_link_array_s* dst = dst_obj;
+                bcore_aware_link_array_s* src = src_obj;
                 if( dst->size > 0 )
                 {
                     for( sz_t i = 0; i < dst->size; i++ )
@@ -1111,7 +1111,7 @@ const bcore_instance_s* bcore_instance_s_get_typed( u2_t o_type )
 
 bcore_string_s* bcore_instance_perspective_selftest()
 {
-    typedef struct { aware_t _; bcore_flect_caps_typed_link_array_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
+    typedef struct { aware_t _; bcore_typed_link_array_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
 
     bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " test_object1_s = { aware_t _; typed * [] string_arr; u2_t val1; u3_t val2; s1_t val3; }" ) );
 

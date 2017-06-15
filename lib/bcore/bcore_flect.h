@@ -33,14 +33,14 @@ enum
 };
 
 /// encapsulation structures
-typedef struct { vd_t  link;                                   } bcore_flect_caps_static_link_s;
-typedef struct { vd_t  link; tp_t type;                        } bcore_flect_caps_typed_link_s;
-typedef struct { vd_t  link;                                   } bcore_flect_caps_aware_link_s;
-typedef struct { vd_t  data; sz_t size; sz_t space;            } bcore_flect_caps_static_array_s;
-typedef struct { vd_t  data; sz_t size; sz_t space; tp_t type; } bcore_flect_caps_typed_array_s;
-typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_flect_caps_static_link_array_s;
-typedef struct { vd_t* data; sz_t size; sz_t space; tp_t type; } bcore_flect_caps_typed_link_array_s;
-typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_flect_caps_aware_link_array_s;
+typedef struct { vd_t  link;                                   } bcore_static_link_s;
+typedef struct { vd_t  link; tp_t type;                        } bcore_typed_link_s;
+typedef struct { vd_t  link;                                   } bcore_aware_link_s;
+typedef struct { vd_t  data; sz_t size; sz_t space;            } bcore_static_array_s;
+typedef struct { vd_t  data; sz_t size; sz_t space; tp_t type; } bcore_typed_array_s;
+typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_static_link_array_s;
+typedef struct { vd_t* data; sz_t size; sz_t space; tp_t type; } bcore_typed_link_array_s;
+typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_aware_link_array_s;
 
 /*
 PLANNING:
@@ -48,8 +48,8 @@ PLANNING:
 * Above array structures should have a self reflection supported by array and instance perspective.
 
 * Above structure names should be simplified:
-  bcore_flect_caps_static_link_s  --> bcore_static_link_s
-  bcore_flect_caps_static_array_s --> bcore_static_array_s
+  bcore_static_link_s  --> bcore_static_link_s
+  bcore_static_array_s --> bcore_static_array_s
   From the 'perspective' perspective, a static_array is a template to be completed in its parent
   structure. The self reflection of such an array-object is to be created on the fly at its point
   of definition inside the parent structure.
