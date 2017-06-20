@@ -2219,9 +2219,11 @@ bcore_string_s* bcore_btree_vd_s_selftest()
         u3_t rval = 1;
         for( sz_t i = 0; i < cycles; i++ )
         {
-            rval = bcore_xsg_u2( rval );
             bcore_btree_vd_kv_s kv;
-            kv.key = ( bcore_btree_vd_key_t )( rval << 8 ); // use multiple of 256 to allow nearest_... tests
+
+            // use multiple of 256 to allow nearest_... tests
+            // The left-shift can produce key repetitions on 32bit systems. The loop below ensures stored keys are not repeatet.
+            while( bcore_btree_vd_s_exists( t, ( kv.key = ( bcore_btree_vd_key_t )( ( rval = bcore_xsg_u2( rval ) ) << 8 ) ) ) );
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set

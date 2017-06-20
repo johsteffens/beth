@@ -733,9 +733,6 @@ void bcore_flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_copy_typed"   ), sizeof( bcore_fp_copy_typed ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_create_typed" ), sizeof( bcore_fp_create_typed ) ) );
 
-    // string
-    bcore_flect_define_self_d( bcore_string_s_create_self() );
-
     // encapsulation structure
     bcore_flect_parse_sc(" bcore_static_link_s       = { vd_t link; }" );
     bcore_flect_parse_sc(" bcore_typed_link_s        = { vd_t link; tp_t type; }" );
@@ -746,6 +743,8 @@ void bcore_flect_define_basics()
     bcore_flect_parse_sc(" bcore_typed_link_array_s  = { typed* []; }" );
     bcore_flect_parse_sc(" bcore_aware_link_array_s  = { aware* []; }" );
 
+    // string
+    bcore_flect_define_self_d( bcore_string_s_create_self() );
 }
 
 /**********************************************************************************************************************/

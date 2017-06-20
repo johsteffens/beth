@@ -38,6 +38,12 @@ void bcore_via_s_discard( bcore_via_s* o )
 
 /**********************************************************************************************************************/
 
+static tp_t iget_name( const bcore_via_s* p, sz_t index )
+{
+    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
+    return p->vitem_arr[ index ].name;
+}
+
 static tp_t iget_type( const bcore_via_s* p, vc_t o, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
@@ -331,7 +337,7 @@ static const bcore_via_s* iget_via( const bcore_via_s* p, sz_t index )
     return p->vitem_arr[ index ].via;
 }
 
-static vd_t icreate( const bcore_via_s* p, vc_t o, sz_t index )
+static vd_t icreate( const bcore_via_s* p, vd_t o, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -395,7 +401,7 @@ static vd_t icreate( const bcore_via_s* p, vc_t o, sz_t index )
     return NULL;
 }
 
-static vd_t ityped_create( const bcore_via_s* p, vc_t o, sz_t index, tp_t type )
+static vd_t ityped_create( const bcore_via_s* p, vd_t o, sz_t index, tp_t type )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -467,7 +473,7 @@ static vd_t ityped_create( const bcore_via_s* p, vc_t o, sz_t index, tp_t type )
     return NULL;
 }
 
-static void idiscard( const bcore_via_s* p, vc_t o, sz_t index )
+static void idiscard( const bcore_via_s* p, vd_t o, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -525,7 +531,7 @@ static void idiscard( const bcore_via_s* p, vc_t o, sz_t index )
     }
 }
 
-static vd_t idetach( const bcore_via_s* p, vc_t o, sz_t index )
+static vd_t idetach( const bcore_via_s* p, vd_t o, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -626,22 +632,22 @@ static const bcore_via_s* nget_via( const bcore_via_s* p, tp_t name )
     return iget_via( p, nget_index( p, name ) );
 }
 
-static vd_t ncreate( const bcore_via_s* p, vc_t o, tp_t name )
+static vd_t ncreate( const bcore_via_s* p, vd_t o, tp_t name )
 {
     return icreate( p, o, nget_index( p, name ) );
 }
 
-static vd_t ntyped_create( const bcore_via_s* p, vc_t o, tp_t name, tp_t type )
+static vd_t ntyped_create( const bcore_via_s* p, vd_t o, tp_t name, tp_t type )
 {
     return ityped_create( p, o, nget_index( p, name ), type );
 }
 
-static void ndiscard( const bcore_via_s* p, vc_t o, tp_t name )
+static void ndiscard( const bcore_via_s* p, vd_t o, tp_t name )
 {
     idiscard( p, o, nget_index( p, name ) );
 }
 
-static vd_t ndetach( const bcore_via_s* p, vc_t o, tp_t name )
+static vd_t ndetach( const bcore_via_s* p, vd_t o, tp_t name )
 {
     return idetach( p, o, nget_index( p, name ) );
 }
@@ -694,10 +700,14 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
             {
                 case BCORE_CAPS_STATIC:
                 case BCORE_CAPS_STATIC_LINK:
-                case BCORE_CAPS_TYPED_LINK:
-                case BCORE_CAPS_AWARE_LINK:
                     vitem->type = flect_item->type;
                     vitem->via  = bcore_via_s_get_typed( vitem->type );
+                    break;
+
+                case BCORE_CAPS_TYPED_LINK:
+                case BCORE_CAPS_AWARE_LINK:
+                    vitem->type = 0;
+                    vitem->via  = NULL;
                     break;
 
                 case BCORE_CAPS_STATIC_ARRAY:
@@ -772,6 +782,7 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
         }
     }
 
+    o->iget_name     = iget_name;
     o->iget_c        = iget_c;
     o->iget_d        = iget_d;
     o->iset_c        = iset_c;

@@ -28,26 +28,25 @@ typedef struct bcore_array_s
     sz_t caps_offset;
     const bcore_instance_s* item_p;  // item-perspective; NULL for typed or aware arrays
 
-    sz_t ( *get_size    )( const bcore_array_s* p, vc_t o );             // returns size
-    sz_t ( *get_space   )( const bcore_array_s* p, vc_t o );             // returns space
-    void ( *set_size    )( const bcore_array_s* p, vd_t o, sz_t size  ); // changes array size (keeping previous data); for linked arrays new items are NULL
-    void ( *set_space   )( const bcore_array_s* p, vd_t o, sz_t space ); // changes space (can affect size; set space to zero means clearing the array)
-    vc_t ( *get_c       )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
-    vd_t ( *get_d       )( const bcore_array_s* p, vd_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
-    vd_t ( *set_c       )( const bcore_array_s* p, vd_t o, sz_t index, vc_t src ); // sets item at indexed position by copying src; if index is out of size, size is increased
-    vd_t ( *set_d       )( const bcore_array_s* p, vd_t o, sz_t index, vd_t src ); // sets item at indexed position by taking ownership of src (emplaced arrays copy and discard src)
-    vc_t ( *get_c_first )( const bcore_array_s* p, vc_t o );             // returns first item; NULL if array is empty
-    vd_t ( *get_d_first )( const bcore_array_s* p, vd_t o );             // returns first item; NULL if array is empty
-    vc_t ( *get_c_last  )( const bcore_array_s* p, vc_t o );             // returns last item; NULL if array is empty
-    vd_t ( *get_d_last  )( const bcore_array_s* p, vd_t o );             // returns last item; NULL if array is empty
-    vd_t ( *push_c      )( const bcore_array_s* p, vd_t o, vc_t src );   // push by copying item; returns new entry
-    vd_t ( *push_d      )( const bcore_array_s* p, vd_t o, vd_t src );   // push by taking ownership of item; returns new entry. (emplaced arrays copy the item and delete it)
-    void ( *pop         )( const bcore_array_s* p, vd_t o );             // removes last element from array
+    sz_t ( *get_size     )( const bcore_array_s* p, vc_t o );             // returns size
+    sz_t ( *get_space    )( const bcore_array_s* p, vc_t o );             // returns space
+    void ( *set_size     )( const bcore_array_s* p, vd_t o, sz_t size  ); // changes array size (keeping previous data); for linked arrays new items are NULL
+    void ( *set_space    )( const bcore_array_s* p, vd_t o, sz_t space ); // changes space (can affect size; set space to zero means clearing the array)
+    vc_t ( *get_c        )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
+    vd_t ( *get_d        )( const bcore_array_s* p, vd_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
+    vd_t ( *set_c        )( const bcore_array_s* p, vd_t o, sz_t index, vc_t src ); // sets item at indexed position by copying src; if index is out of size, size is increased
+    vd_t ( *set_d        )( const bcore_array_s* p, vd_t o, sz_t index, vd_t src ); // sets item at indexed position by taking ownership of src (catenated arrays copy and discard src)
+    vc_t ( *get_c_first  )( const bcore_array_s* p, vc_t o );             // returns first item; NULL if array is empty
+    vd_t ( *get_d_first  )( const bcore_array_s* p, vd_t o );             // returns first item; NULL if array is empty
+    vc_t ( *get_c_last   )( const bcore_array_s* p, vc_t o );             // returns last item; NULL if array is empty
+    vd_t ( *get_d_last   )( const bcore_array_s* p, vd_t o );             // returns last item; NULL if array is empty
+    vd_t ( *push_c       )( const bcore_array_s* p, vd_t o, vc_t src );   // push by copying item; returns new entry
+    vd_t ( *push_d       )( const bcore_array_s* p, vd_t o, vd_t src );   // push by taking ownership of item; returns new entry. (catenated arrays copy the item and delete it)
+    void ( *pop          )( const bcore_array_s* p, vd_t o );             // removes last element from array
+    tp_t ( *get_type     )( const bcore_array_s* p, vc_t o            );  // retrieves item-type; returns 0 for aware-arrays
+    void ( *set_type     )( const bcore_array_s* p, vd_t o, tp_t type );  // changes item-type on empty arrays;
 
-    tp_t ( *get_type    )( const bcore_array_s* p, vc_t o            ); // retrieves item-type; returns 0 for aware-arrays
-    void ( *set_type    )( const bcore_array_s* p, vd_t o, tp_t type ); // changes item-type on empty arrays;
-
-    // direct data access (data pointer dereferencing and stepping depends on array structure)
+    /// Direct data access (data pointer dereferencing and stepping depends on array structure)
     vc_t ( *get_c_data    )( const bcore_array_s* p, vc_t o ); // returns arr_caps->data (note that this is either vc_t or vc_t* depending on linkage-indirection
     vd_t ( *get_d_data    )( const bcore_array_s* p, vd_t o ); // returns arr_caps->data (note that this is either vd_t or vd_t* depending on linkage-indirection
     bool ( *is_linked     )( const bcore_array_s* p         ); // true in case of array of links; false otherwise
@@ -65,9 +64,9 @@ typedef struct bcore_array_s
     vc_t ( *max         )( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_cmp cmp, s2_t order );
     sz_t ( *max_index   )( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_cmp cmp, s2_t order );
 
-    // creates a cropped sub-array from o
+    // creates a cropped sub-array from o; caller assumes ownership
     vd_t ( *crop        )( const bcore_array_s* p, vc_t o, sz_t start, sz_t end );
-    vd_t ( *crop_d      )( const bcore_array_s* p, vd_t o, sz_t start, sz_t end ); // discards o after cropping
+    vd_t ( *crop_d      )( const bcore_array_s* p, vd_t o, sz_t start, sz_t end ); // takes ownership of o
 
     // (merge-)sort within index range [start, end-1]
     void ( *sort        )( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp_cmp cmp, s2_t order );

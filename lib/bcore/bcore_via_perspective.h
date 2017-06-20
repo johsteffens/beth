@@ -45,6 +45,7 @@ typedef struct bcore_via_s
     const bcore_instance_s** inst_arr;   // pointers to instance perspectives
 
     /// Access by index. Error when index is out of range.
+    tp_t                 ( *iget_name     )( const bcore_via_s* p,         sz_t index ); // Returns name for given index
     tp_t                 ( *iget_type     )( const bcore_via_s* p, vc_t o, sz_t index ); // Returns type of element
     vc_t                 ( *iget_c        )( const bcore_via_s* p, vc_t o, sz_t index ); // Returns indexed const item.
     vd_t                 ( *iget_d        )( const bcore_via_s* p, vd_t o, sz_t index ); // Returns indexed item.
@@ -52,24 +53,24 @@ typedef struct bcore_via_s
     vd_t                 ( *iset_d        )( const bcore_via_s* p, vd_t o, sz_t index, vd_t src ); // Sets item at indexed position by taking ownership of src.
     const bcore_vitem_s* ( *iget_vitem    )( const bcore_via_s* p,         sz_t index ); // Returns bcore_vitem_s structure;
     const bcore_via_s*   ( *iget_via      )( const bcore_via_s* p,         sz_t index ); // Returns bcore_vitem_s structure;
-    vd_t                 ( *icreate       )( const bcore_via_s* p, vc_t o, sz_t index ); // creates item. No effect if already created. Error if type info needed
-    vd_t                 ( *ityped_create )( const bcore_via_s* p, vc_t o, sz_t index, tp_t type ); // creates item at given type. Error if not possible
-    void                 ( *idiscard      )( const bcore_via_s* p, vc_t o, sz_t index ); // Discards discardable element (do effect otherwise)
-    vd_t                 ( *idetach       )( const bcore_via_s* p, vc_t o, sz_t index ); // moves ownership of item to caller. Error if not detachable
+    vd_t                 ( *icreate       )( const bcore_via_s* p, vd_t o, sz_t index ); // creates item. No effect if already created. Error when type info is not available.
+    vd_t                 ( *ityped_create )( const bcore_via_s* p, vd_t o, sz_t index, tp_t type ); // creates item at given type. Error for static types.
+    void                 ( *idiscard      )( const bcore_via_s* p, vd_t o, sz_t index ); // Discards discardable element (do effect otherwise)
+    vd_t                 ( *idetach       )( const bcore_via_s* p, vd_t o, sz_t index ); // moves ownership of item to caller. Error if not detachable
 
     /// Access by name. Error when object has no element of given name.
     sz_t                 ( *nget_index    )( const bcore_via_s* p,         tp_t name ); // Returns index for given name
-    tp_t                 ( *nget_type     )( const bcore_via_s* p, vc_t o, tp_t name ); // Returns type of element
-    vc_t                 ( *nget_c        )( const bcore_via_s* p, vc_t o, tp_t name ); // Returns named item. Returns NULL if the item is linked and NULL.
-    vd_t                 ( *nget_d        )( const bcore_via_s* p, vd_t o, tp_t name ); // Returns named item. Returns NULL if the item is linked and NULL.
-    vd_t                 ( *nset_c        )( const bcore_via_s* p, vd_t o, tp_t name, vc_t src ); // Sets item by copying src.
-    vd_t                 ( *nset_d        )( const bcore_via_s* p, vd_t o, tp_t name, vd_t src ); // sets item by taking ownership of src
-    const bcore_vitem_s* ( *nget_vitem    )( const bcore_via_s* p,         tp_t name ); // Returns bcore_vitem_s structure;
-    const bcore_via_s*   ( *nget_via      )( const bcore_via_s* p,         tp_t name ); // Returns bcore_vitem_s structure;
-    vd_t                 ( *ncreate       )( const bcore_via_s* p, vc_t o, tp_t name ); // creates item. No effect if already created. Error if type info needed
-    vd_t                 ( *ntyped_create )( const bcore_via_s* p, vc_t o, tp_t name, tp_t type ); // creates item at given type. Error if not possible
-    void                 ( *ndiscard      )( const bcore_via_s* p, vc_t o, tp_t name ); // Discards discardable element (do effect otherwise)
-    vd_t                 ( *ndetach       )( const bcore_via_s* p, vc_t o, tp_t name ); // moves ownership of item to caller. Error if not detachable
+    tp_t                 ( *nget_type     )( const bcore_via_s* p, vc_t o, tp_t name );
+    vc_t                 ( *nget_c        )( const bcore_via_s* p, vc_t o, tp_t name );
+    vd_t                 ( *nget_d        )( const bcore_via_s* p, vd_t o, tp_t name );
+    vd_t                 ( *nset_c        )( const bcore_via_s* p, vd_t o, tp_t name, vc_t src );
+    vd_t                 ( *nset_d        )( const bcore_via_s* p, vd_t o, tp_t name, vd_t src );
+    const bcore_vitem_s* ( *nget_vitem    )( const bcore_via_s* p,         tp_t name );
+    const bcore_via_s*   ( *nget_via      )( const bcore_via_s* p,         tp_t name );
+    vd_t                 ( *ncreate       )( const bcore_via_s* p, vd_t o, tp_t name );
+    vd_t                 ( *ntyped_create )( const bcore_via_s* p, vd_t o, tp_t name, tp_t type );
+    void                 ( *ndiscard      )( const bcore_via_s* p, vd_t o, tp_t name );
+    vd_t                 ( *ndetach       )( const bcore_via_s* p, vd_t o, tp_t name );
 
 } bcore_via_s;
 

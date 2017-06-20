@@ -73,10 +73,6 @@ static inline s2_t bcore_string_s_cmp_string(   const bcore_string_s* o, const b
 static inline bool bcore_string_s_equal_sc(     const bcore_string_s* o, sc_t sc ) { return bcore_strcmp( o ? o->sc : NULL, sc ) == 0; }
 static inline bool bcore_string_s_equal_string( const bcore_string_s* o, const bcore_string_s* string ) { return bcore_strcmp( o ? o->sc : NULL, string ? string->sc : NULL ) == 0; }
 
-/// self reflection
-struct bcore_flect_self_s;
-struct bcore_flect_self_s* bcore_string_s_create_self();
-
 /** Search:
  *  Search involving positions between start to end in direction start --> end
  *  Detects first position nearest to start.
@@ -140,6 +136,10 @@ sz_t bcore_string_s_parsef(  const bcore_string_s* o, sz_t start, sz_t end, sc_t
 
 /// constructs a double-line with a visible position indicator (useful for context messages/warnings/errors with highlighted position)
 bcore_string_s* bcore_string_s_show_line_context( const bcore_string_s* o, sz_t pos );
+
+/// self reflection
+struct bcore_flect_self_s;
+struct bcore_flect_self_s* bcore_string_s_create_self();
 
 /**********************************************************************************************************************/
 // testing, debugging

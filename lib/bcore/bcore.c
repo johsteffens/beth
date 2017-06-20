@@ -8,14 +8,19 @@
 #include "bcore_memory_manager.h"
 #include "bcore_flect.h"
 #include "bcore_string.h"
+#include "bcore_bml.h"
 #include "bcore.h"
 
 static void init_library_bcore_once()
 {
+    // services ...
     bcore_memory_manager_open();
     bcore_flect_define_basics();
 
-    // critical quick-tests
+    // reflections ...
+    bcore_flect_define_self_d( bcore_bml_translator_s_create_self() );
+
+    // critical quick-tests ...
     bcore_string_s_quicktest();
     bcore_memory_manager_s_quicktest();
 
@@ -33,16 +38,16 @@ void down_library_bcore()
     bcore_msg( "\n");
     bcore_perspective_close();
     bcore_msg( "\n");
-    bcore_msg( "perspective mananger: %lu bytes\n", space - bcore_memory_manager_granted_space() );
+    bcore_msg( "perspective mananger: %zu bytes\n", space - bcore_memory_manager_granted_space() );
     space = bcore_memory_manager_granted_space();
     bcore_flect_close();
-    bcore_msg( "reflection mananger : %lu bytes\n", space - bcore_memory_manager_granted_space() );
+    bcore_msg( "reflection mananger : %zu bytes\n", space - bcore_memory_manager_granted_space() );
     space = bcore_memory_manager_granted_space();
     bcore_name_manager_close();
-    bcore_msg( "name mananger       : %lu bytes\n", space - bcore_memory_manager_granted_space() );
+    bcore_msg( "name mananger       : %zu bytes\n", space - bcore_memory_manager_granted_space() );
     space = bcore_memory_manager_granted_space();
 
-    if( space > 0 ) ERR( "Leaking memory: %lu bytes", space );
+    if( space > 0 ) ERR( "Leaking memory: %zu bytes", space );
 
     bcore_memory_manager_close();
 }

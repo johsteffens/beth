@@ -6,6 +6,7 @@
 #include "bcore_types.h"
 
 /**********************************************************************************************************************/
+
 /// create, copy, discard
 typedef void (*bcore_fp_init   )( vd_t o );           // initialization (construction)
 typedef void (*bcore_fp_down   )( vd_t o );           // destruction
@@ -25,6 +26,18 @@ typedef vd_t (*bcore_fp_create_typed )(         tp_t type, vc_t src ); // deep c
 /// bifunctions
 typedef s2_t (*bcore_fp_cmp  )( vc_t v1,  vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
 typedef vd_t (*bcore_fp_fold )( vd_t acc, vc_t arg ); // folding
+
+/**********************************************************************************************************************/
+
+/// data flow
+typedef sz_t (*bcore_fp_flow_snk )( vd_t o, vc_t data, sz_t size ); // flow-sink;   size in bytes
+typedef sz_t (*bcore_fp_flow_src )( vd_t o, vd_t data, sz_t size ); // flow_source; size in bytes
+
+/**********************************************************************************************************************/
+
+/// marshalling, building, injection
+typedef void (*bcore_fp_translate )( vc_t o, tp_t obj_type, vc_t obj, vd_t sink   ); // serializes via translator 'o' from object to flow-sink
+typedef void (*bcore_fp_interpret )( vc_t o, tp_t obj_type, vd_t obj, vd_t source ); // builds, injects via interpreter 'o' from flow-source to object
 
 /**********************************************************************************************************************/
 /// Testing. A test shall either complete safely or fail with a descriptive error (via bcore_err).

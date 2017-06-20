@@ -4,7 +4,9 @@
 #include "bcore_string.h"
 #include "bcore_control.h"
 #include "bcore_memory_manager.h"
+#include "bcore_name_manager.h"
 #include "bcore_flect.h"
+#include "bcore_bml.h"
 
 void bcore_string_s_init( bcore_string_s* o )
 {
@@ -82,8 +84,8 @@ void bcore_string_s_copy_typed( bcore_string_s* o, tp_t type, vc_t src )
     switch( type )
     {
         case BCORE_TYPEOF_bcore_string_s: bcore_string_s_copy( o, ( const bcore_string_s* )src ); break;
-        case BCORE_TYPEOF_sc_t: bcore_string_s_copy_sc( o, ( sc_t )src ); break;
-        case BCORE_TYPEOF_sd_t: bcore_string_s_copy_sc( o, ( sc_t )src ); break;
+        case BCORE_TYPEOF_sc_t: bcore_string_s_copy_sc( o,       *(const sc_t*)src ); break;
+        case BCORE_TYPEOF_sd_t: bcore_string_s_copy_sc( o,       *(const sc_t*)src ); break;
         case BCORE_TYPEOF_s0_t: bcore_string_s_copyf( o, "%hhi", *(const s0_t*)src ); break;
         case BCORE_TYPEOF_s1_t: bcore_string_s_copyf( o, "%hi",  *(const s1_t*)src ); break;
         case BCORE_TYPEOF_s2_t: bcore_string_s_copyf( o, "%i",   *(const s2_t*)src ); break;
@@ -95,7 +97,29 @@ void bcore_string_s_copy_typed( bcore_string_s* o, tp_t type, vc_t src )
         case BCORE_TYPEOF_f2_t: bcore_string_s_copyf( o, "%g",   *(const f2_t*)src ); break;
         case BCORE_TYPEOF_f3_t: bcore_string_s_copyf( o, "%g",   *(const f3_t*)src ); break;
         case BCORE_TYPEOF_sz_t: bcore_string_s_copyf( o, "%zu",  *(const sz_t*)src ); break;
-        default: ERR( "Type conversion 'bcore_string_s' <- '%s' not supported", ifnameof( type ) );
+
+        case BCORE_TYPEOF_tp_t:
+        case BCORE_TYPEOF_aware_t:
+        {
+            sc_t name = bcore_name_try_name( *(const tp_t*)src );
+            if( name )
+            {
+                bcore_string_s_copy_sc( o, name );
+            }
+            else
+            {
+                bcore_string_s_copyf( o, "%u", *(const tp_t*)src ); break;
+            }
+        }
+        break;
+
+        default: // translate type into beth markup language
+        {
+            bcore_bml_translator_s* t = bcore_bml_translator_s_create();
+            bcore_bml_translator_s_translate( t, type, src, o );
+            bcore_bml_translator_s_discard( t );
+        }
+        break;
     }
 }
 
@@ -307,21 +331,6 @@ bcore_string_s* bcore_string_s_pushf( bcore_string_s* o, sc_t format, ... )
     bcore_string_s_push_string( o, &s );
     bcore_string_s_down( &s );
     return o;
-}
-
-struct  bcore_flect_self_s* bcore_string_s_create_self()
-{
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_string_s =  { aware_t _; sd_t data; sz_t size; sz_t space; }" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_init,    "bcore_fp_init",       "init"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_down,    "bcore_fp_down",       "down"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy,    "bcore_fp_copy",       "copy"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_move,    "bcore_fp_move",       "move"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create,  "bcore_fp_create",     "create"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_clone,   "bcore_fp_clone",      "clone"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_discard, "bcore_fp_discard",    "discard"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy_typed,   "bcore_fp_copy_typed",   "copy_typed" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create_typed, "bcore_fp_create_typed", "create_typed" );
-    return self;
 }
 
 sz_t bcore_string_s_find_char( const bcore_string_s* o, sz_t start, sz_t end, char c )
@@ -537,13 +546,13 @@ bcore_string_s* bcore_string_s_insert_sc( bcore_string_s* o, sz_t start, sc_t sc
 bcore_string_s* bcore_string_s_replace_char_sc( bcore_string_s* o, char c, sc_t sc )
 {
     sz_t start = 0;
-    sz_t sc_size = bcore_strlen( sc );
+    sz_t sz_sc = bcore_strlen( sc );
 
     while( ( start = bcore_string_s_find_char( o, start, o->size, c ) ) < o->size )
     {
-        bcore_string_s_remove(      o, start, 1 );
+        bcore_string_s_remove(    o, start, 1 );
         bcore_string_s_insert_sc( o, start, sc );
-        start += sc_size;
+        start += sz_sc;
     }
     return o;
 }
@@ -564,10 +573,12 @@ bcore_string_s* bcore_string_s_replace_sc_sc( bcore_string_s* o, sc_t match, sc_
 {
     sz_t start = 0;
     sz_t sz_match = bcore_strlen( match );
+    sz_t sz_replace = bcore_strlen( replace );
     while( ( start = bcore_string_s_find_sc( o, start, o->size, match ) ) < o->size )
     {
-        bcore_string_s_remove(      o, start, sz_match );
+        bcore_string_s_remove(    o, start, sz_match );
         bcore_string_s_insert_sc( o, start, replace );
+        start += sz_replace;
     }
     return o;
 }
@@ -704,7 +715,7 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
             {
                 fp += strlen( "#u3_t" );
                 int size = 0;
-                if( sscanf( o->sc + idx, "%lu%n", va_arg( args, u3_t* ), &size ) <= 0 )
+                if( sscanf( o->sc + idx, "%"PRIu64"%n", va_arg( args, u3_t* ), &size ) <= 0 )
                 {
                     ERR( "\n%s\nParsing #u3_t failed at (%lu:%lu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
                 }
@@ -715,7 +726,7 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
             {
                 fp += strlen( "#s3_t" );
                 int size = 0;
-                if( sscanf( o->sc + idx, "%li%n", va_arg( args, s3_t* ), &size ) <= 0 )
+                if( sscanf( o->sc + idx, "%"PRIi64"%n", va_arg( args, s3_t* ), &size ) <= 0 )
                 {
                     ERR( "\n%s\nParsing #s3_t failed at (%lu:%lu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
                 }
@@ -819,6 +830,40 @@ sz_t bcore_string_s_parsef(  const bcore_string_s* o, sz_t start, sz_t end, sc_t
     sz_t idx = bcore_string_s_parsevf( o, start, end, format, args );
     va_end( args );
     return idx;
+}
+
+static sz_t flow_snk( vd_t o, vc_t data, sz_t size )
+{
+    if( *( aware_t*)o != BCORE_TYPEOF_bcore_string_s ) ERR( "object 'o' of type %u ('%s') must be bcore_string_s", *( aware_t*)o, ifnameof( *( aware_t*)o ) );
+    bcore_string_s* s = o;
+    if( s->space == 0 )
+    {
+        s->data = bcore_bn_alloc( NULL, 0, size < 7 ? 8 : size + 1, &s->space );
+    }
+    else if( s->space < s->size + size + 1 )
+    {
+        s->data = bcore_bn_alloc( s->data, s->space, ( s->space * 2 < s->size + size + 1 ) ? s->size + size + 1 : s->space * 2, &s->space );
+    }
+    bcore_memcpy( s->data + s->size, data, size );
+    s->size += size;
+    s->data[ s->size ] = 0;
+    return size;
+}
+
+struct bcore_flect_self_s* bcore_string_s_create_self()
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_string_s =  { aware_t _; sd_t data; sz_t size; sz_t space; }" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_init,         "bcore_fp_init",         "init"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_down,         "bcore_fp_down",         "down"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy,         "bcore_fp_copy",         "copy"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_move,         "bcore_fp_move",         "move"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create,       "bcore_fp_create",       "create"     );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_clone,        "bcore_fp_clone",        "clone"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_discard,      "bcore_fp_discard",      "discard"    );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy_typed,   "bcore_fp_copy_typed",   "copy_typed" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create_typed, "bcore_fp_create_typed", "create_typed" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,                    "bcore_fp_flow_snk",     "flow_snk"   );
+    return self;
 }
 
 /**********************************************************************************************************************/
