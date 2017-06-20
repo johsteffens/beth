@@ -6,7 +6,6 @@
 #include "bcore_memory_manager.h"
 #include "bcore_name_manager.h"
 #include "bcore_flect.h"
-#include "bcore_bml.h"
 
 void bcore_string_s_init( bcore_string_s* o )
 {
@@ -84,19 +83,20 @@ void bcore_string_s_copy_typed( bcore_string_s* o, tp_t type, vc_t src )
     switch( type )
     {
         case BCORE_TYPEOF_bcore_string_s: bcore_string_s_copy( o, ( const bcore_string_s* )src ); break;
-        case BCORE_TYPEOF_sc_t: bcore_string_s_copy_sc( o,       *(const sc_t*)src ); break;
-        case BCORE_TYPEOF_sd_t: bcore_string_s_copy_sc( o,       *(const sc_t*)src ); break;
-        case BCORE_TYPEOF_s0_t: bcore_string_s_copyf( o, "%hhi", *(const s0_t*)src ); break;
-        case BCORE_TYPEOF_s1_t: bcore_string_s_copyf( o, "%hi",  *(const s1_t*)src ); break;
-        case BCORE_TYPEOF_s2_t: bcore_string_s_copyf( o, "%i",   *(const s2_t*)src ); break;
-        case BCORE_TYPEOF_s3_t: bcore_string_s_copyf( o, "%li",  *(const s3_t*)src ); break;
-        case BCORE_TYPEOF_u0_t: bcore_string_s_copyf( o, "%hhu", *(const u0_t*)src ); break;
-        case BCORE_TYPEOF_u1_t: bcore_string_s_copyf( o, "%hu",  *(const u1_t*)src ); break;
-        case BCORE_TYPEOF_u2_t: bcore_string_s_copyf( o, "%u",   *(const u2_t*)src ); break;
-        case BCORE_TYPEOF_u3_t: bcore_string_s_copyf( o, "%lu",  *(const u3_t*)src ); break;
-        case BCORE_TYPEOF_f2_t: bcore_string_s_copyf( o, "%g",   *(const f2_t*)src ); break;
-        case BCORE_TYPEOF_f3_t: bcore_string_s_copyf( o, "%g",   *(const f3_t*)src ); break;
-        case BCORE_TYPEOF_sz_t: bcore_string_s_copyf( o, "%zu",  *(const sz_t*)src ); break;
+        case BCORE_TYPEOF_sc_t: bcore_string_s_copy_sc( o,          *(const sc_t*)src ); break;
+        case BCORE_TYPEOF_sd_t: bcore_string_s_copy_sc( o,          *(const sc_t*)src ); break;
+        case BCORE_TYPEOF_s0_t: bcore_string_s_copyf( o, "%"PRIi8 , *(const s0_t*)src ); break;
+        case BCORE_TYPEOF_s1_t: bcore_string_s_copyf( o, "%"PRIi16, *(const s1_t*)src ); break;
+        case BCORE_TYPEOF_s2_t: bcore_string_s_copyf( o, "%"PRIi32, *(const s2_t*)src ); break;
+        case BCORE_TYPEOF_s3_t: bcore_string_s_copyf( o, "%"PRIi64, *(const s3_t*)src ); break;
+        case BCORE_TYPEOF_u0_t: bcore_string_s_copyf( o, "%"PRIu8 , *(const u0_t*)src ); break;
+        case BCORE_TYPEOF_u1_t: bcore_string_s_copyf( o, "%"PRIu16, *(const u1_t*)src ); break;
+        case BCORE_TYPEOF_u2_t: bcore_string_s_copyf( o, "%"PRIu32, *(const u2_t*)src ); break;
+        case BCORE_TYPEOF_u3_t: bcore_string_s_copyf( o, "%"PRIu64, *(const u3_t*)src ); break;
+        case BCORE_TYPEOF_f2_t: bcore_string_s_copyf( o, "%g",      *(const f2_t*)src ); break;
+        case BCORE_TYPEOF_f3_t: bcore_string_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
+        case BCORE_TYPEOF_sz_t: bcore_string_s_copyf( o, "%zu",     *(const sz_t*)src ); break;
+        case BCORE_TYPEOF_bool: bcore_string_s_copy_sc( o, *(const bool*)src ? "true" : "false" ); break;
 
         case BCORE_TYPEOF_tp_t:
         case BCORE_TYPEOF_aware_t:
@@ -113,11 +113,9 @@ void bcore_string_s_copy_typed( bcore_string_s* o, tp_t type, vc_t src )
         }
         break;
 
-        default: // translate type into beth markup language
+        default:
         {
-            bcore_bml_translator_s* t = bcore_bml_translator_s_create();
-            bcore_bml_translator_s_translate( t, type, src, o );
-            bcore_bml_translator_s_discard( t );
+            ERR( "Converting type '%s' into bcore_string_s is not yet implemented", ifnameof( type ) );
         }
         break;
     }
@@ -715,9 +713,42 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
             {
                 fp += strlen( "#u3_t" );
                 int size = 0;
-                if( sscanf( o->sc + idx, "%"PRIu64"%n", va_arg( args, u3_t* ), &size ) <= 0 )
+                if( sscanf( o->sc + idx, "%"SCNu64"%n", va_arg( args, u3_t* ), &size ) <= 0 )
                 {
-                    ERR( "\n%s\nParsing #u3_t failed at (%lu:%lu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                    ERR( "\n%s\nParsing #u3_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#u2_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#u2_t" );
+                int size = 0;
+                if( sscanf( o->sc + idx, "%"SCNu32"%n", va_arg( args, u2_t* ), &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #u2_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#u1_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#u1_t" );
+                int size = 0;
+                if( sscanf( o->sc + idx, "%"SCNu16"%n", va_arg( args, u1_t* ), &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #u1_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#u0_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#u0_t" );
+                int size = 0;
+                if( sscanf( o->sc + idx, "%"SCNu8"%n", va_arg( args, u0_t* ), &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #u0_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
                 }
                 idx += size;
                 if( idx > end_l ) idx = end_l;
@@ -726,11 +757,100 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
             {
                 fp += strlen( "#s3_t" );
                 int size = 0;
-                if( sscanf( o->sc + idx, "%"PRIi64"%n", va_arg( args, s3_t* ), &size ) <= 0 )
+                if( sscanf( o->sc + idx, "%"SCNi64"%n", va_arg( args, s3_t* ), &size ) <= 0 )
                 {
-                    ERR( "\n%s\nParsing #s3_t failed at (%lu:%lu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                    ERR( "\n%s\nParsing #s3_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
                 }
                 idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#s2_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#s2_t" );
+                int size = 0;
+                if( sscanf( o->sc + idx, "%"SCNi32"%n", va_arg( args, s2_t* ), &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #s2_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#s1_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#s1_t" );
+                int size = 0;
+                if( sscanf( o->sc + idx, "%"SCNi16"%n", va_arg( args, s1_t* ), &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #s1_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#s0_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#s0_t" );
+                int size = 0;
+                if( sscanf( o->sc + idx, "%"SCNi8"%n", va_arg( args, s0_t* ), &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #s0_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#f3_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#f3_t" );
+                int size = 0;
+                if( sscanf( o->sc + idx, "%lg%n", va_arg( args, f3_t* ), &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #f3_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#f2_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#f2_t" );
+                int size = 0;
+                if( sscanf( o->sc + idx, "%g%n", va_arg( args, f2_t* ), &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #f2_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#sz_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#sz_t" );
+                int size = 0;
+                uintmax_t val;
+                if( sscanf( o->sc + idx, "%"SCNuMAX"%n", &val, &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #sz_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                *va_arg( args, sz_t* ) = val;
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#bool", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#bool" );
+                bool val = false;
+                if( ( bcore_strcmp( "true", o->sc + idx ) >> 1 ) == 0 )
+                {
+                    val = true;
+                    idx += strlen( "true" );
+                }
+                else if( ( bcore_strcmp( "false", o->sc + idx ) >> 1 ) == 0 )
+                {
+                    val = false;
+                    idx += strlen( "false" );
+                }
+                else
+                {
+                    ERR( "\n%s\nParsing #bool failed at (%zu:%zu): true or false expected.", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                *va_arg( args, bool* ) = val;
                 if( idx > end_l ) idx = end_l;
             }
             else if( ( bcore_strcmp( "#name", fp ) >> 1 ) == 0 )
@@ -797,7 +917,7 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                 }
                 else
                 {
-                    ERR( "\n%s\nMatching format characters '%s' failed at (%lu:%lu).", bcore_string_s_show_line_context( o, idx )->sc, fp, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                    ERR( "\n%s\nMatching format characters '%s' failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, fp, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
                 }
                 fp += strlen( "##" );
             }
@@ -816,7 +936,7 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
             }
             else
             {
-                ERR( "\n%s\nMatching format characters '%s' failed at (%lu:%lu).", bcore_string_s_show_line_context( o, idx )->sc, fp0, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                ERR( "\n%s\nMatching format characters '%s' failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, fp0, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
             }
         }
     }

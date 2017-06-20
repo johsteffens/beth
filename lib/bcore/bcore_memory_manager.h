@@ -6,7 +6,7 @@
 #include "bcore_types.h"
 #include "bcore_string.h"
 
-/// Minimum alignment of memory manager
+/// Minimum alignment of memory blocks
 #define BCORE_MEMORY_MANAGER_ALIGN 0x100
 
 typedef struct bcore_memory_manager_s bcore_memory_manager_s;

@@ -32,7 +32,7 @@ typedef struct bcore_vitem_s
         vc_t d_ptr;  // external data pointer
         fp_t f_ptr;  // external function pointer
     };
-    const bcore_via_s* via; // via of this item; NULL for terminal types
+    const bcore_via_s* via; // via of this item; NULL for leaf types
 } bcore_vitem_s;
 
 typedef struct bcore_via_s

@@ -229,6 +229,7 @@ void bcore_name_print_predefined_list( tp_t (*hash)( sc_t name ) )
     bcore_name_print_predefined_type( hash, "vc_t" );
     bcore_name_print_predefined_type( hash, "fp_t" );
     bcore_name_print_predefined_type( hash, "tp_t" );
+    bcore_name_print_predefined_type( hash, "bool" );
     bcore_name_print_predefined_type( hash, "aware_t" );
     bcore_name_print_predefined_type( hash, "bcore_string_s" );
 }

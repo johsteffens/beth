@@ -52,6 +52,7 @@ void bcore_name_print_predefined_list( tp_t (*hash)( sc_t name ) );
 #define BCORE_TYPEOF_vc_t 0x10e046e5
 #define BCORE_TYPEOF_fp_t 0xaf449918
 #define BCORE_TYPEOF_tp_t 0x36216482
+#define BCORE_TYPEOF_bool 0xc894953d
 #define BCORE_TYPEOF_aware_t 0x59ddfae2
 #define BCORE_TYPEOF_bcore_string_s 0x9035dee8
 

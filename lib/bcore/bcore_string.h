@@ -128,8 +128,12 @@ void bcore_string_s_print_d(     bcore_string_s* o ); // discards o
  *  "#name"   - scans a name-string consisting of valid name characters; argument: bcore_string_s*
  *  "#?'...'" - test presence and consumes the string literal between '' iff exactly matching; argument: bool*
  *  " "       - consumes whitespaces including c-style comments
- *  "#u3_t"   - matches content to a u3_t; argument: u3_t*
- *  currently supported types: u3_t, s3_t
+ *  "#<type>" - matches content to <type>; argument: <type>*
+ *              Example: #u3_t matches to u3_t and requires u3_t* as argument.
+ *              supported types: u*_t, s*_t, f*_t, sz_t, bool
+ *  Return:
+ *     Index position after scan completes.
+ *     This value would be be used as 'start' for continued scanning.
  */
 sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t format, va_list args );
 sz_t bcore_string_s_parsef(  const bcore_string_s* o, sz_t start, sz_t end, sc_t format, ... );

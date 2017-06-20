@@ -36,7 +36,14 @@ typedef struct bcore_bml_interpreter_s
     aware_t _;
 } bcore_bml_interpreter_s;
 
-void bcore_bml_translator_s_interpret( vc_t o, tp_t obj_type, vd_t obj, bcore_fp_flow_src src, vd_t flow_o );
+void                     bcore_bml_interpreter_s_init(            bcore_bml_interpreter_s* o );
+void                     bcore_bml_interpreter_s_down(            bcore_bml_interpreter_s* o );
+void                     bcore_bml_interpreter_s_copy(            bcore_bml_interpreter_s* o, const bcore_bml_interpreter_s* src );
+bcore_bml_interpreter_s* bcore_bml_interpreter_s_create();
+bcore_bml_interpreter_s* bcore_bml_interpreter_s_clone(     const bcore_bml_interpreter_s* o );
+void                     bcore_bml_interpreter_s_discard(         bcore_bml_interpreter_s* o );
+void                     bcore_bml_interpreter_s_interpret( const bcore_bml_interpreter_s* o, tp_t obj_type, vd_t obj, bcore_fp_flow_src src, vd_t flow_o );
+bcore_flect_self_s*      bcore_bml_interpreter_s_create_self();
 
 /**********************************************************************************************************************/
 // testing, debugging
