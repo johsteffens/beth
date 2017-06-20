@@ -705,6 +705,7 @@ void bcore_flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "vd_t" ), sizeof( vd_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "vc_t" ), sizeof( vc_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "fp_t" ), sizeof( fp_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bool" ), sizeof( bool ) ) );
 
     bcore_flect_define_alias( bcore_name_enroll( "int64_t" ),  typeof( "s3_t" ) );
     bcore_flect_define_alias( bcore_name_enroll( "int32_t" ),  typeof( "s2_t" ) );

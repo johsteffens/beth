@@ -56,6 +56,7 @@ typedef struct bcore_instance_s
     bcore_fp_create_typed create_typed_o;
     bcore_fp_discard      discard_o;
     bcore_fp_clone        clone_o;
+    bcore_fp_check_sanity check_sanity_o;
 
     /// these functions are always defined and represent the service this perspective offers
     void ( *init         )( const bcore_instance_s* p, vd_t o );
@@ -69,133 +70,48 @@ typedef struct bcore_instance_s
     vd_t ( *create_aware )( const bcore_instance_s* p,         vc_t src );
     void ( *discard      )( const bcore_instance_s* p, vd_t o );
     vd_t ( *clone        )( const bcore_instance_s* p, vc_t o );
+    void ( *check_sanity )( const bcore_instance_s* p, vc_t o );
 } bcore_instance_s;
 
-const bcore_instance_s* bcore_instance_s_get_typed( u2_t type );
+const bcore_instance_s* bcore_instance_s_get_typed(                            u2_t type           );
+const bcore_instance_s* bcore_instance_s_get_aware(                                       vc_t obj );
 
-static inline const bcore_instance_s* bcore_instance_s_get_aware( vc_t obj )
-{
-    return bcore_instance_s_get_typed( *( const aware_t* )obj );
-}
+void bcore_instance_spect_init(  const bcore_instance_s* o, vd_t obj );
+void bcore_instance_typed_init(                  u2_t type, vd_t obj );
 
-static inline void bcore_instance_spect_init( const bcore_instance_s* o, vd_t obj )
-{
-    o->init( o, obj );
-}
+void bore_instance_spect_down(  const bcore_instance_s* o, vd_t obj );
+void bcore_instance_typed_down(                 u2_t type, vd_t obj );
+void bcore_instance_aware_down(                            vd_t obj );
 
-static inline void bcore_instance_typed_init( u2_t type, vd_t obj )
-{
-    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
-    o->init( o, obj );
-}
+void bcore_instance_spect_copy(  const bcore_instance_s* o, vd_t dst, vc_t src );
+void bcore_instance_typed_copy(                  u2_t type, vd_t dst, vc_t src );
+void bcore_instance_aware_copy(                             vd_t dst, vc_t src );
 
-static inline void bcore_instance_spect_down( const bcore_instance_s* o, vd_t obj )
-{
-    o->down( o, obj );
-}
+void bcore_instance_spect_move(  const bcore_instance_s* o, vd_t dst, vd_t src );
+void bcore_instance_typed_move(                  u2_t type, vd_t dst, vd_t src );
+void bcore_instance_aware_move(                             vd_t dst, vd_t src );
 
-static inline void bcore_instance_typed_down( u2_t type, vd_t obj )
-{
-    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
-    o->down( o, obj );
-}
+vd_t bcore_instance_spect_create(  const bcore_instance_s* o );
+vd_t bcore_instance_typed_create(                  u2_t type );
 
-static inline void bcore_instance_aware_down( vd_t obj )
-{
-    const bcore_instance_s* o = bcore_instance_s_get_aware( obj  );
-    o->down( o, obj );
-}
+void bcore_instance_spect_discard( const bcore_instance_s* o, vd_t obj );
+void bcore_instance_typed_discard(                 u2_t type, vd_t obj );
+void bcore_instance_aware_discard(                            vd_t obj );
 
-static inline void bcore_instance_spect_copy( const bcore_instance_s* o, vd_t dst, vc_t src )
-{
-    if( dst == src ) return;
-    o->copy( o, dst, src );
-}
+vd_t bcore_instance_spect_clone( const bcore_instance_s* o, vc_t obj );
+vd_t bcore_instance_typed_clone(                 u2_t type, vc_t obj );
+vd_t bcore_instance_aware_clone(                            vc_t obj );
 
-static inline void bcore_instance_typed_copy( u2_t type, vd_t dst, vc_t src )
-{
-    if( dst == src ) return;
-    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
-    o->copy( o, dst, src );
-}
+void bcore_instance_spect_check_sanity( const bcore_instance_s* o, vc_t obj );
+void bcore_instance_typed_check_sanity(                 u2_t type, vc_t obj );
+void bcore_instance_aware_check_sanity(                            vc_t obj );
 
-static inline void bcore_instance_aware_copy( vd_t dst, vc_t src )
-{
-    if( dst == src ) return;
-    const bcore_instance_s* o = bcore_instance_s_get_aware( src );
-    o->copy( o, dst, src );
-}
-
-static inline void bcore_instance_spect_move( const bcore_instance_s* o, vd_t dst, vd_t src )
-{
-    if( dst == src ) return;
-    o->move( o, dst, src );
-}
-
-static inline void bcore_instance_typed_move( u2_t type, vd_t dst, vd_t src )
-{
-    if( dst == src ) return;
-    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
-    o->move( o, dst, src );
-}
-
-static inline void bcore_instance_aware_move( vd_t dst, vd_t src )
-{
-    if( dst == src ) return;
-    const bcore_instance_s* o = bcore_instance_s_get_aware( src );
-    o->move( o, dst, src );
-}
-
-static inline vd_t bcore_instance_spect_create( const bcore_instance_s* o )
-{
-    return o->create( o );
-}
-
-static inline vd_t bcore_instance_typed_create( u2_t type )
-{
-    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
-    return o->create( o );
-}
-
-static inline void bcore_instance_spect_discard( const bcore_instance_s* o, vd_t obj )
-{
-    if( !obj ) return;
-    o->discard( o, obj );
-}
-
-static inline void bcore_instance_typed_discard( u2_t type, vd_t obj )
-{
-    if( !obj ) return;
-    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
-    o->discard( o, obj );
-}
-
-static inline void bcore_instance_aware_discard( vd_t obj )
-{
-    if( !obj ) return;
-    const bcore_instance_s* o = bcore_instance_s_get_aware( obj  );
-    o->discard( o, obj );
-}
-
-static inline vd_t bcore_instance_spect_clone( const bcore_instance_s* o, vc_t obj )
-{
-    if( !obj ) return NULL;
-    return o->clone( o, obj );
-}
-
-static inline vd_t bcore_instance_typed_clone( u2_t type, vc_t obj )
-{
-    if( !obj ) return NULL;
-    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
-    return o->clone( o, obj );
-}
-
-static inline vd_t bcore_instance_aware_clone( vc_t obj )
-{
-    if( !obj ) return NULL;
-    const bcore_instance_s* o = bcore_instance_s_get_aware( obj  );
-    return o->clone( o, obj );
-}
+/** This function checks the instance's size with c-style sizeof( object ).
+ *  It can be used as low-level safeguard against changing the c-structure
+ *  but forgetting to update the self reflection.
+ */
+void bcore_instance_spect_check_sizeof( const bcore_instance_s* o, sz_t size );
+void bcore_instance_typed_check_sizeof(                 u2_t type, sz_t size );
 
 /**********************************************************************************************************************/
 // testing, debugging

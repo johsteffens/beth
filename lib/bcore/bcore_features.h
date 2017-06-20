@@ -21,6 +21,9 @@ typedef vd_t (*bcore_fp_clone  )( vc_t o );           // allocate & copy; o may 
 typedef void (*bcore_fp_copy_typed   )( vd_t o, tp_t type, vc_t src ); // deep conversion & copy
 typedef vd_t (*bcore_fp_create_typed )(         tp_t type, vc_t src ); // deep conversion & create
 
+/// Sanity check of an object
+typedef void (*bcore_fp_check_sanity )( vc_t o );
+
 /**********************************************************************************************************************/
 
 /// bifunctions
@@ -40,7 +43,7 @@ typedef void (*bcore_fp_translate )( vc_t o, tp_t obj_type, vc_t obj, vd_t sink 
 typedef void (*bcore_fp_interpret )( vc_t o, tp_t obj_type, vd_t obj, vd_t source ); // builds, injects via interpreter 'o' from flow-source to object
 
 /**********************************************************************************************************************/
-/// Testing. A test shall either complete safely or fail with a descriptive error (via bcore_err).
+/// Testing, Debugging. A test shall either complete safely or fail with a descriptive error (via bcore_err).
 
 typedef struct bcore_string_s bcore_string_s; // forward declaration
 

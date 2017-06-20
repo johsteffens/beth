@@ -924,6 +924,25 @@ static vd_t clone( const bcore_instance_s* p, vc_t src )
     return obj;
 }
 
+/**********************************************************************************************************************/
+
+static void check_sanity( const bcore_instance_s* p, vc_t o )
+{
+    if( p->check_sanity_o )
+    {
+        p->check_sanity_o( o );
+    }
+    else
+    {
+        if( p->aware )
+        {
+            verify_aware_type( p->_.o_type, o, "check_sanity" );
+        }
+    }
+}
+
+/**********************************************************************************************************************/
+
 static sz_t aligned_offset( sz_t align, sz_t raw_offset )
 {
     if( align < 2 ) return raw_offset;
@@ -988,6 +1007,10 @@ bcore_instance_s* bcore_instance_s_create_from_self( const bcore_flect_self_s* s
                 else if( flect_item->type == typeof( "bcore_fp_clone"   ) )
                 {
                     o->clone_o = ( bcore_fp_clone )flect_item->f_ptr;
+                }
+                else if( flect_item->type == typeof( "bcore_fp_check_sanity"   ) )
+                {
+                    o->check_sanity_o = ( bcore_fp_check_sanity )flect_item->f_ptr;
                 }
             }
             else if( flect_item->caps == BCORE_CAPS_EXTERNAL_DATA )
@@ -1086,7 +1109,8 @@ bcore_instance_s* bcore_instance_s_create_from_self( const bcore_flect_self_s* s
     o->discard      = o->discard_o    ? discard_o      : discard;
     o->clone        = o->clone_o      ? clone_o        : clone;
 
-    o->copy_aware = copy_aware;
+    o->copy_aware   = copy_aware;
+    o->check_sanity = check_sanity;
 
     return o;
 }
@@ -1105,6 +1129,167 @@ const bcore_instance_s* bcore_instance_s_get_typed( u2_t o_type )
         perspective = new_perspective;
     }
     return perspective;
+}
+
+/**********************************************************************************************************************/
+
+const bcore_instance_s* bcore_instance_s_get_aware( vc_t obj )
+{
+    return bcore_instance_s_get_typed( *( const aware_t* )obj );
+}
+
+void bcore_instance_spect_init( const bcore_instance_s* o, vd_t obj )
+{
+    o->init( o, obj );
+}
+
+void bcore_instance_typed_init( u2_t type, vd_t obj )
+{
+    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
+    o->init( o, obj );
+}
+
+void bcore_instance_spect_down( const bcore_instance_s* o, vd_t obj )
+{
+    o->down( o, obj );
+}
+
+void bcore_instance_typed_down( u2_t type, vd_t obj )
+{
+    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
+    o->down( o, obj );
+}
+
+void bcore_instance_aware_down( vd_t obj )
+{
+    const bcore_instance_s* o = bcore_instance_s_get_aware( obj  );
+    o->down( o, obj );
+}
+
+void bcore_instance_spect_copy( const bcore_instance_s* o, vd_t dst, vc_t src )
+{
+    if( dst == src ) return;
+    o->copy( o, dst, src );
+}
+
+void bcore_instance_typed_copy( u2_t type, vd_t dst, vc_t src )
+{
+    if( dst == src ) return;
+    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
+    o->copy( o, dst, src );
+}
+
+void bcore_instance_aware_copy( vd_t dst, vc_t src )
+{
+    if( dst == src ) return;
+    const bcore_instance_s* o = bcore_instance_s_get_aware( src );
+    o->copy( o, dst, src );
+}
+
+void bcore_instance_spect_move( const bcore_instance_s* o, vd_t dst, vd_t src )
+{
+    if( dst == src ) return;
+    o->move( o, dst, src );
+}
+
+void bcore_instance_typed_move( u2_t type, vd_t dst, vd_t src )
+{
+    if( dst == src ) return;
+    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
+    o->move( o, dst, src );
+}
+
+void bcore_instance_aware_move( vd_t dst, vd_t src )
+{
+    if( dst == src ) return;
+    const bcore_instance_s* o = bcore_instance_s_get_aware( src );
+    o->move( o, dst, src );
+}
+
+vd_t bcore_instance_spect_create( const bcore_instance_s* o )
+{
+    return o->create( o );
+}
+
+vd_t bcore_instance_typed_create( u2_t type )
+{
+    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
+    return o->create( o );
+}
+
+void bcore_instance_spect_discard( const bcore_instance_s* o, vd_t obj )
+{
+    if( !obj ) return;
+    o->discard( o, obj );
+}
+
+void bcore_instance_typed_discard( u2_t type, vd_t obj )
+{
+    if( !obj ) return;
+    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
+    o->discard( o, obj );
+}
+
+void bcore_instance_aware_discard( vd_t obj )
+{
+    if( !obj ) return;
+    const bcore_instance_s* o = bcore_instance_s_get_aware( obj  );
+    o->discard( o, obj );
+}
+
+vd_t bcore_instance_spect_clone( const bcore_instance_s* o, vc_t obj )
+{
+    if( !obj ) return NULL;
+    return o->clone( o, obj );
+}
+
+vd_t bcore_instance_typed_clone( u2_t type, vc_t obj )
+{
+    if( !obj ) return NULL;
+    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
+    return o->clone( o, obj );
+}
+
+vd_t bcore_instance_aware_clone( vc_t obj )
+{
+    if( !obj ) return NULL;
+    const bcore_instance_s* o = bcore_instance_s_get_aware( obj  );
+    return o->clone( o, obj );
+}
+
+void bcore_instance_spect_check_sanity( const bcore_instance_s* o, vc_t obj )
+{
+    if( !obj ) return;
+    o->check_sanity( o, obj );
+}
+
+void bcore_instance_typed_check_sanity( u2_t type, vc_t obj )
+{
+    if( !obj ) return;
+    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
+    o->check_sanity( o, obj );
+}
+
+void bcore_instance_aware_check_sanity( vc_t obj )
+{
+    if( !obj ) return;
+    const bcore_instance_s* o = bcore_instance_s_get_aware( obj  );
+    o->check_sanity( o, obj );
+}
+
+void bcore_instance_spect_check_sizeof( const bcore_instance_s* o, sz_t size )
+{
+    if( o->size != size )
+    {
+        ERR( "Size mismatch for object '%s': Instance has measured %zu but sizeof( object ) is %zu bytes.\n"
+             "This error might be caused due to a difference between object's c-definitions and its self reflection.\n" , nameof( o->_.o_type ), o->size, size );
+    }
+}
+
+void bcore_instance_typed_check_sizeof( u2_t type, sz_t size )
+{
+    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
+    bcore_instance_spect_check_sizeof( o, size );
 }
 
 /**********************************************************************************************************************/

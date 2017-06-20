@@ -845,24 +845,47 @@ static sz_t flow_snk( vd_t o, vc_t data, sz_t size )
         s->data = bcore_bn_alloc( s->data, s->space, ( s->space * 2 < s->size + size + 1 ) ? s->size + size + 1 : s->space * 2, &s->space );
     }
     bcore_memcpy( s->data + s->size, data, size );
+
     s->size += size;
     s->data[ s->size ] = 0;
     return size;
 }
 
+/// sanity feature
+void bcore_instance_typed_check_sizeof( u2_t type, sz_t size );
+static void check_sanity( vc_t o )
+{
+    bcore_instance_typed_check_sizeof( BCORE_TYPEOF_bcore_string_s, sizeof( bcore_string_s ) );
+
+    if( BCORE_TYPEOF_bcore_string_s != *(aware_t *)o ) ERR( "incorrect type value (%u) (expected bcore_string_s)", *(aware_t *)o );
+    const bcore_string_s* s = o;
+
+    if( s->size  > 1000000000 )    ERR( "String of size (%zu) appears incorrect.", s->size );
+    if( s->space > 1000000000 )    ERR( "String of space (%zu) appears incorrect.", s->space );
+    if( s->space < s->size )       ERR( "space (%zu) < size (%zu)", s->space, s->size );
+    if( s->data[ s->size ] != 0 )  ERR( "data section does not terminate in zero" );
+
+    for( sz_t i = 0; i < s->size; i++ )
+    {
+        u0_t c = s->data[ i ];
+        if( c < 10 || c >= 128 ) ERR( "invalid character '%c' in string", c );
+    }
+}
+
 struct bcore_flect_self_s* bcore_string_s_create_self()
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_string_s =  { aware_t _; sd_t data; sz_t size; sz_t space; }" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_init,         "bcore_fp_init",         "init"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_down,         "bcore_fp_down",         "down"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy,         "bcore_fp_copy",         "copy"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_move,         "bcore_fp_move",         "move"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create,       "bcore_fp_create",       "create"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_clone,        "bcore_fp_clone",        "clone"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_discard,      "bcore_fp_discard",      "discard"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy_typed,   "bcore_fp_copy_typed",   "copy_typed" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_init,         "bcore_fp_init",         "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_down,         "bcore_fp_down",         "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy,         "bcore_fp_copy",         "copy"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_move,         "bcore_fp_move",         "move"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create,       "bcore_fp_create",       "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_clone,        "bcore_fp_clone",        "clone"        );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_discard,      "bcore_fp_discard",      "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy_typed,   "bcore_fp_copy_typed",   "copy_typed"   );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create_typed, "bcore_fp_create_typed", "create_typed" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,                    "bcore_fp_flow_snk",     "flow_snk"   );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,                    "bcore_fp_flow_snk",     "flow_snk"     );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )check_sanity,                "bcore_fp_check_sanity", "check_sanity" );
     return self;
 }
 
