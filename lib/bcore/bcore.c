@@ -5,9 +5,9 @@
 #include "bcore_memory_manager.h"
 #include "bcore_perspective.h"
 #include "bcore_name_manager.h"
-#include "bcore_memory_manager.h"
 #include "bcore_flect.h"
 #include "bcore_string.h"
+#include "bcore_string_source.h"
 #include "bcore_bml.h"
 #include "bcore.h"
 
@@ -19,6 +19,8 @@ static void init_library_bcore_once()
 
     // reflections ...
     bcore_flect_define_self_d( bcore_bml_translator_s_create_self() );
+    bcore_flect_define_self_d( bcore_bml_interpreter_s_create_self() );
+    bcore_flect_define_self_d( bcore_string_source_s_create_self() );
 
     // critical quick-tests ...
     bcore_string_s_quicktest();

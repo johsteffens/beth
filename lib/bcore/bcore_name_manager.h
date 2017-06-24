@@ -30,30 +30,4 @@ static inline u2_t typeof(   sc_t name ) { return bcore_name_get_type( name ); }
 static inline sc_t nameof(   u2_t type ) { return bcore_name_get_name( type ); }
 static inline sc_t ifnameof( u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
 
-void bcore_name_print_predefined_list( tp_t (*hash)( sc_t name ) );
-
-/** Predefined types of frequently used objects for given hash function.
- *  Run bcore_name_print_predefined_list( new_hash ) in case the hash function changes.
- */
-#define BCORE_TYPEOF_s3_t 0x6835cf40
-#define BCORE_TYPEOF_s2_t 0x0d0e488b
-#define BCORE_TYPEOF_s1_t 0x44a88362
-#define BCORE_TYPEOF_s0_t 0xeabe312d
-#define BCORE_TYPEOF_u3_t 0x2583bb32
-#define BCORE_TYPEOF_u2_t 0xcafb983d
-#define BCORE_TYPEOF_u1_t 0x46969e10
-#define BCORE_TYPEOF_u0_t 0xec0e7b1b
-#define BCORE_TYPEOF_f3_t 0xd95df3e5
-#define BCORE_TYPEOF_f2_t 0x5485acfa
-#define BCORE_TYPEOF_sz_t 0x9cdbf133
-#define BCORE_TYPEOF_sd_t 0xf9ae9579
-#define BCORE_TYPEOF_sc_t 0xd328b750
-#define BCORE_TYPEOF_vd_t 0x607aa784
-#define BCORE_TYPEOF_vc_t 0x10e046e5
-#define BCORE_TYPEOF_fp_t 0xaf449918
-#define BCORE_TYPEOF_tp_t 0x36216482
-#define BCORE_TYPEOF_bool 0xc894953d
-#define BCORE_TYPEOF_aware_t 0x59ddfae2
-#define BCORE_TYPEOF_bcore_string_s 0x9035dee8
-
 #endif // BCORE_NAME_MANAGER_H

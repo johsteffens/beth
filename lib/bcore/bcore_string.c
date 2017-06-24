@@ -6,10 +6,11 @@
 #include "bcore_memory_manager.h"
 #include "bcore_name_manager.h"
 #include "bcore_flect.h"
+#include "bcore_quicktypes.h"
 
 void bcore_string_s_init( bcore_string_s* o )
 {
-    o->_ = BCORE_TYPEOF_bcore_string_s;
+    o->_ = TYPEOF_bcore_string_s;
     o->sc = "";
     o->size = o->space = 0;
 }
@@ -82,24 +83,24 @@ void bcore_string_s_copy_typed( bcore_string_s* o, tp_t type, vc_t src )
 {
     switch( type )
     {
-        case BCORE_TYPEOF_bcore_string_s: bcore_string_s_copy( o, ( const bcore_string_s* )src ); break;
-        case BCORE_TYPEOF_sc_t: bcore_string_s_copy_sc( o,          *(const sc_t*)src ); break;
-        case BCORE_TYPEOF_sd_t: bcore_string_s_copy_sc( o,          *(const sc_t*)src ); break;
-        case BCORE_TYPEOF_s0_t: bcore_string_s_copyf( o, "%"PRIi8 , *(const s0_t*)src ); break;
-        case BCORE_TYPEOF_s1_t: bcore_string_s_copyf( o, "%"PRIi16, *(const s1_t*)src ); break;
-        case BCORE_TYPEOF_s2_t: bcore_string_s_copyf( o, "%"PRIi32, *(const s2_t*)src ); break;
-        case BCORE_TYPEOF_s3_t: bcore_string_s_copyf( o, "%"PRIi64, *(const s3_t*)src ); break;
-        case BCORE_TYPEOF_u0_t: bcore_string_s_copyf( o, "%"PRIu8 , *(const u0_t*)src ); break;
-        case BCORE_TYPEOF_u1_t: bcore_string_s_copyf( o, "%"PRIu16, *(const u1_t*)src ); break;
-        case BCORE_TYPEOF_u2_t: bcore_string_s_copyf( o, "%"PRIu32, *(const u2_t*)src ); break;
-        case BCORE_TYPEOF_u3_t: bcore_string_s_copyf( o, "%"PRIu64, *(const u3_t*)src ); break;
-        case BCORE_TYPEOF_f2_t: bcore_string_s_copyf( o, "%g",      *(const f2_t*)src ); break;
-        case BCORE_TYPEOF_f3_t: bcore_string_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
-        case BCORE_TYPEOF_sz_t: bcore_string_s_copyf( o, "%zu",     *(const sz_t*)src ); break;
-        case BCORE_TYPEOF_bool: bcore_string_s_copy_sc( o, *(const bool*)src ? "true" : "false" ); break;
+        case TYPEOF_bcore_string_s: bcore_string_s_copy( o, ( const bcore_string_s* )src ); break;
+        case TYPEOF_sc_t: bcore_string_s_copy_sc( o,          *(const sc_t*)src ); break;
+        case TYPEOF_sd_t: bcore_string_s_copy_sc( o,          *(const sc_t*)src ); break;
+        case TYPEOF_s0_t: bcore_string_s_copyf( o, "%"PRIi8 , *(const s0_t*)src ); break;
+        case TYPEOF_s1_t: bcore_string_s_copyf( o, "%"PRIi16, *(const s1_t*)src ); break;
+        case TYPEOF_s2_t: bcore_string_s_copyf( o, "%"PRIi32, *(const s2_t*)src ); break;
+        case TYPEOF_s3_t: bcore_string_s_copyf( o, "%"PRIi64, *(const s3_t*)src ); break;
+        case TYPEOF_u0_t: bcore_string_s_copyf( o, "%"PRIu8 , *(const u0_t*)src ); break;
+        case TYPEOF_u1_t: bcore_string_s_copyf( o, "%"PRIu16, *(const u1_t*)src ); break;
+        case TYPEOF_u2_t: bcore_string_s_copyf( o, "%"PRIu32, *(const u2_t*)src ); break;
+        case TYPEOF_u3_t: bcore_string_s_copyf( o, "%"PRIu64, *(const u3_t*)src ); break;
+        case TYPEOF_f2_t: bcore_string_s_copyf( o, "%g",      *(const f2_t*)src ); break;
+        case TYPEOF_f3_t: bcore_string_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
+        case TYPEOF_sz_t: bcore_string_s_copyf( o, "%zu",     *(const sz_t*)src ); break;
+        case TYPEOF_bool: bcore_string_s_copy_sc( o, *(const bool*)src ? "true" : "false" ); break;
 
-        case BCORE_TYPEOF_tp_t:
-        case BCORE_TYPEOF_aware_t:
+        case TYPEOF_tp_t:
+        case TYPEOF_aware_t:
         {
             sc_t name = bcore_name_try_name( *(const tp_t*)src );
             if( name )
@@ -137,6 +138,13 @@ bcore_string_s* bcore_string_s_create()
 {
     bcore_string_s* o = bcore_malloc( sizeof( bcore_string_s ) );
     bcore_string_s_init( o );
+    return o;
+}
+
+bcore_string_s* bcore_string_s_createvf( sc_t format, va_list args )
+{
+    bcore_string_s* o = bcore_malloc( sizeof( bcore_string_s ) );
+    bcore_string_s_initvf( o, format, args );
     return o;
 }
 
@@ -881,6 +889,33 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                     }
                 }
             }
+            else if( ( bcore_strcmp( "#string", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#string" );
+                bcore_string_s* string = va_arg( args, bcore_string_s* );
+                bcore_string_s_clear( string );
+                if( o->sc[ idx ] != '"' ) ERR( "\n%s\n'\"' expected at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, fp, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                idx++;
+                while ( o->sc[ idx ] != '"' )
+                {
+                    if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\"' )
+                    {
+                        bcore_string_s_push_char( string, '\"' );
+                        idx += 2;
+                    }
+                    else if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\\' )
+                    {
+                        bcore_string_s_push_char( string, '\\' );
+                        idx += 2;
+                    }
+                    else
+                    {
+                        bcore_string_s_push_char( string, o->sc[ idx ] );
+                        idx++;
+                    }
+                }
+                idx++;
+            }
             else if( ( bcore_strcmp( "#?", fp ) >> 1 ) == 0 )
             {
                 sc_t fp0 = fp;
@@ -954,7 +989,7 @@ sz_t bcore_string_s_parsef(  const bcore_string_s* o, sz_t start, sz_t end, sc_t
 
 static sz_t flow_snk( vd_t o, vc_t data, sz_t size )
 {
-    if( *( aware_t*)o != BCORE_TYPEOF_bcore_string_s ) ERR( "object 'o' of type %u ('%s') must be bcore_string_s", *( aware_t*)o, ifnameof( *( aware_t*)o ) );
+    if( *( aware_t*)o != TYPEOF_bcore_string_s ) ERR( "object 'o' of type %u ('%s') must be bcore_string_s", *( aware_t*)o, ifnameof( *( aware_t*)o ) );
     bcore_string_s* s = o;
     if( s->space == 0 )
     {
@@ -975,9 +1010,9 @@ static sz_t flow_snk( vd_t o, vc_t data, sz_t size )
 void bcore_instance_typed_check_sizeof( u2_t type, sz_t size );
 static void check_sanity( vc_t o )
 {
-    bcore_instance_typed_check_sizeof( BCORE_TYPEOF_bcore_string_s, sizeof( bcore_string_s ) );
+    bcore_instance_typed_check_sizeof( TYPEOF_bcore_string_s, sizeof( bcore_string_s ) );
 
-    if( BCORE_TYPEOF_bcore_string_s != *(aware_t *)o ) ERR( "incorrect type value (%u) (expected bcore_string_s)", *(aware_t *)o );
+    if( TYPEOF_bcore_string_s != *(aware_t *)o ) ERR( "incorrect type value (%u) (expected bcore_string_s)", *(aware_t *)o );
     const bcore_string_s* s = o;
 
     if( s->size  > 1000000000 )    ERR( "String of size (%zu) appears incorrect.", s->size );

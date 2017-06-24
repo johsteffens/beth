@@ -2,6 +2,7 @@
 
 #include "bcore_life.h"
 #include "bcore_control.h"
+#include "bcore_instance_perspective.h"
 
 /**********************************************************************************************************************/
 
@@ -9,7 +10,17 @@ DEFINE_FUNCTION_INIT_FLAT( bcore_life_item_s )
 
 void bcore_life_item_s_down( bcore_life_item_s* o )
 {
-    if( o->object && o->discard ) o->discard( o->object );
+    if( o->object )
+    {
+        if( o->discard )
+        {
+            o->discard( o->object );
+        }
+        else if( o->type )
+        {
+            bcore_instance_typed_discard( o->type, o->object );
+        }
+    }
 }
 
 DEFINE_FUNCTION_COPY_FLAT( bcore_life_item_s )
@@ -54,18 +65,34 @@ bcore_life_item_s* bcore_life_s_push_item( bcore_life_s* o )
     return r;
 }
 
-void* bcore_life_s_push( bcore_life_s* o, bcore_fp_discard discard, void* object )
+vd_t bcore_life_s_push( bcore_life_s* o, bcore_fp_discard discard, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );
-    item->discard  = discard ;
+    item->discard = discard;
+    item->object  = object;
+    return object;
+}
+
+vd_t bcore_life_s_push_typed( bcore_life_s* o, tp_t type, vd_t object )
+{
+    bcore_life_item_s* item = bcore_life_s_push_item( o );
+    item->type   = type;
     item->object = object;
     return object;
 }
 
-void* bcore_life_s_push_free( bcore_life_s* o, void* object )
+vd_t bcore_life_s_push_aware( bcore_life_s* o, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );
-    item->discard  = ( fp_t )bcore_free;
-    item->object = object;
+    item->discard = bcore_instance_aware_discard;
+    item->object  = object;
+    return object;
+}
+
+vd_t bcore_life_s_push_free( bcore_life_s* o, vd_t object )
+{
+    bcore_life_item_s* item = bcore_life_s_push_item( o );
+    item->discard = ( fp_t )bcore_free;
+    item->object  = object;
     return object;
 }

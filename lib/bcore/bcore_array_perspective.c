@@ -482,7 +482,7 @@ static vd_t set_c_static( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )
     if( index >= arr->size ) set_size( p, o, index + 1 );
     const bcore_instance_s* instance_p = p->item_p;
     vd_t dst = ( u0_t* )arr->data + instance_p->size * index;
-    instance_p->copy( instance_p, dst, src );
+    if( src ) instance_p->copy( instance_p, dst, src );
     return dst;
 }
 
@@ -540,8 +540,11 @@ static vd_t set_d_static( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )
     if( index >= arr->size ) set_size( p, o, index + 1 );
     const bcore_instance_s* instance_p = p->item_p;
     vd_t dst = ( u0_t* )arr->data + instance_p->size * index;
-    instance_p->copy( instance_p, dst, src );
-    instance_p->discard( instance_p, src );
+    if( src )
+    {
+        instance_p->copy( instance_p, dst, src );
+        instance_p->discard( instance_p, src );
+    }
     return dst;
 }
 

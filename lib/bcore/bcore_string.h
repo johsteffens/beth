@@ -12,7 +12,7 @@
 #ifndef BCORE_STRING_H
 #define BCORE_STRING_H
 
-#include "stdarg.h"
+#include <stdarg.h>
 
 #include "bcore_first.h"
 #include "bcore_types.h"
@@ -41,6 +41,7 @@ void            bcore_string_s_copy_typed( bcore_string_s* o, tp_t type, vc_t sr
 void            bcore_string_s_copy_aware( bcore_string_s* o,            vc_t src ); // copy with type conversion
 void            bcore_string_s_move(       bcore_string_s* o, bcore_string_s* src );
 bcore_string_s* bcore_string_s_create();
+bcore_string_s* bcore_string_s_createvf(     sc_t format, va_list args );
 bcore_string_s* bcore_string_s_createf(      sc_t format, ... );
 bcore_string_s* bcore_string_s_create_sc(    sc_t sc );
 bcore_string_s* bcore_string_s_create_typed( tp_t type, vc_t src );
@@ -126,7 +127,8 @@ void bcore_string_s_print_d(     bcore_string_s* o ); // discards o
 /** Functions supporting for text-parsing with specific rules.
  *  Format rules
  *  "#name"   - scans a name-string consisting of valid name characters; argument: bcore_string_s*
- *  "#?'...'" - test presence and consumes the string literal between '' iff exactly matching; argument: bool*
+ *  "#string" - scans a string enclosed in quotes '"'; Quotes inside the string are escaped '\"'; backslashes are escaped '\\'; argument: bcore_string_s*
+ *  "#?'...'" - test presence and consumes the string literal between '' if exactly matching; argument: bool*
  *  " "       - consumes whitespaces including c-style comments
  *  "#<type>" - matches content to <type>; argument: <type>*
  *              Example: #u3_t matches to u3_t and requires u3_t* as argument.

@@ -1,6 +1,7 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 #include "bcore_instance_perspective.h"
+#include "bcore_quicktypes.h"
 
 /**********************************************************************************************************************/
 
@@ -629,212 +630,212 @@ static void copy_typed( const bcore_instance_s* p, vd_t dst, tp_t type, vc_t src
     tp_t dst_type = p->_.o_type;
     switch( dst_type )
     {
-        case BCORE_TYPEOF_s3_t:
+        case TYPEOF_s3_t:
         {
             s3_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }
-        case BCORE_TYPEOF_s2_t:
+        case TYPEOF_s2_t:
         {
             s2_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }
-        case BCORE_TYPEOF_s1_t:
+        case TYPEOF_s1_t:
         {
             s1_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }
-        case BCORE_TYPEOF_s0_t:
+        case TYPEOF_s0_t:
         {
             s0_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }
-        case BCORE_TYPEOF_u3_t:
+        case TYPEOF_u3_t:
         {
             u3_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }
-        case BCORE_TYPEOF_u2_t:
+        case TYPEOF_u2_t:
         {
             u2_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }
-        case BCORE_TYPEOF_u1_t:
+        case TYPEOF_u1_t:
         {
             u1_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }
-        case BCORE_TYPEOF_u0_t:
+        case TYPEOF_u0_t:
         {
             u0_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }
-        case BCORE_TYPEOF_f3_t:
+        case TYPEOF_f3_t:
         {
             f3_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }
-        case BCORE_TYPEOF_f2_t:
+        case TYPEOF_f2_t:
         {
             f2_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }
-        case BCORE_TYPEOF_sz_t:
+        case TYPEOF_sz_t:
         {
             sz_t* dst_l = dst;
             switch( type )
             {
-                case BCORE_TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case BCORE_TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case BCORE_TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case BCORE_TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case BCORE_TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case BCORE_TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case BCORE_TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case BCORE_TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case BCORE_TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case BCORE_TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case BCORE_TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 default: break;
             }
         }

@@ -34,6 +34,11 @@ void bcore_sink_s_discard( bcore_sink_s* o )
 
 /**********************************************************************************************************************/
 
+static void push_data( const struct bcore_sink_s* p, vd_t o, vc_t data, sz_t size )
+{
+    p->flow_snk( o, data, size );
+}
+
 static void pushf( const struct bcore_sink_s* p, vd_t o, sc_t format, ... )
 {
     bcore_string_s* s = bcore_string_s_create();
@@ -92,6 +97,7 @@ static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
 
     if( !o->flow_snk ) ERR( "'%s' has no feature 'bcore_fp_flow_snk'", ifnameof( self->type ) );
 
+    o->push_data     = push_data;
     o->pushf         = pushf;
     o->push_char     = push_char;
     o->push_sc       = push_sc;

@@ -3,6 +3,8 @@
 #ifndef BCORE_FEATURES_H
 #define BCORE_FEATURES_H
 
+#include <stdarg.h>
+
 #include "bcore_types.h"
 
 /**********************************************************************************************************************/
@@ -26,6 +28,11 @@ typedef void (*bcore_fp_check_sanity )( vc_t o );
 
 /**********************************************************************************************************************/
 
+/// formated logging
+typedef void (*bcore_fp_logvf )( vd_t o, sc_t format, va_list args );
+
+/**********************************************************************************************************************/
+
 /// bifunctions
 typedef s2_t (*bcore_fp_cmp  )( vc_t v1,  vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
 typedef vd_t (*bcore_fp_fold )( vd_t acc, vc_t arg ); // folding
@@ -33,14 +40,16 @@ typedef vd_t (*bcore_fp_fold )( vd_t acc, vc_t arg ); // folding
 /**********************************************************************************************************************/
 
 /// data flow
-typedef sz_t (*bcore_fp_flow_snk )( vd_t o, vc_t data, sz_t size ); // flow-sink;   size in bytes
-typedef sz_t (*bcore_fp_flow_src )( vd_t o, vd_t data, sz_t size ); // flow_source; size in bytes
+typedef sz_t (*bcore_fp_flow_snk )( vd_t o, vc_t data, sz_t size ); // flow-sink;   size in bytes; returns number of bytes transferred
+typedef sz_t (*bcore_fp_flow_src )( vd_t o, vd_t data, sz_t size ); // flow_source; size in bytes; returns number of bytes transferred
 
 /**********************************************************************************************************************/
 
-/// marshalling, building, injection
-typedef void (*bcore_fp_translate )( vc_t o, tp_t obj_type, vc_t obj, vd_t sink   ); // serializes via translator 'o' from object to flow-sink
-typedef void (*bcore_fp_interpret )( vc_t o, tp_t obj_type, vd_t obj, vd_t source ); // builds, injects via interpreter 'o' from flow-source to object
+/// marshaling, building, injection
+typedef void ( *bcore_fp_translate_object )( vc_t o, tp_t type, vc_t obj, vd_t fsnk ); // translates object to be reconstructible via 'interpret_object'
+typedef void ( *bcore_fp_translate_body   )( vc_t o, tp_t type, vc_t obj, vd_t fsnk ); // translates object to be reconstructible via 'interpret_body'
+typedef vd_t ( *bcore_fp_interpret_object )( vc_t o, vd_t fsrc, tp_t* type );           // reconstructs entire object
+typedef void ( *bcore_fp_interpret_body   )( vc_t o, vd_t fsrc, tp_t  type, vd_t obj ); // injects into or reconstructs existing instance
 
 /**********************************************************************************************************************/
 /// Testing, Debugging. A test shall either complete safely or fail with a descriptive error (via bcore_err).

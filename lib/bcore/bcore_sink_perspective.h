@@ -14,11 +14,12 @@ typedef struct bcore_sink_s
 
     bcore_fp_flow_snk flow_snk;
 
+    void (*push_data    )( const struct bcore_sink_s* p, vd_t o, vc_t data, sz_t size ); // pushes size bytes of data
     void (*pushf        )( const struct bcore_sink_s* p, vd_t o, sc_t format, ... );
     void (*push_char    )( const struct bcore_sink_s* p, vd_t o, char c );
     void (*push_sc      )( const struct bcore_sink_s* p, vd_t o, sc_t sc );
     void (*push_string  )( const struct bcore_sink_s* p, vd_t o, const bcore_string_s* string );
-    void (*push_string_d)( const struct bcore_sink_s* p, vd_t o, bcore_string_s* string );
+    void (*push_string_d)( const struct bcore_sink_s* p, vd_t o,       bcore_string_s* string );
 
 } bcore_sink_s;
 
