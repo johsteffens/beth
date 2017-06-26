@@ -61,7 +61,7 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
     const bcore_sink_s* snk = bcore_sink_s_get_aware( dst );
     if( !obj )
     {
-       snk->pushf( snk, dst, "void" );
+       snk->pushf( snk, dst, "NULL" );
        return;
     }
 
@@ -280,86 +280,39 @@ bcore_flect_self_s* bcore_bml_interpreter_s_create_self()
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_interpreter_s = { aware_t _; }"   );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_init,             "bcore_fp_init",             "init"             );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_interpret_object, "bcore_fp_interpret_object", "interpret_object" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_interpret_typed,  "bcore_fp_interpret_typed",  "interpret_typed" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_interpret_body,   "bcore_fp_interpret_body",   "interpret_body"   );
     return self;
 }
 
 /**********************************************************************************************************************/
 
-static void interpret( const bcore_bml_interpreter_s* o, bool link, vd_t src, tp_t* p_type, vd_t* p_obj )
+static dt_p interpret_object( const bcore_bml_interpreter_s* o, vd_t src );
+static dt_p interpret_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t type );
+
+// target object is instantiated and filled with data
+static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst )
 {
     const bcore_source_s* src_p = bcore_source_s_get_aware( src );
 
-    if( link )
+    if( src_p->parse_boolf( src_p, src, " #?'<-'" ) ) // explicit type conversion requested
     {
-        if( src_p->parse_boolf( src_p, src, " #?'!'" ) )
-        {
-            tp_t type_l = 0;
-            {
-                bcore_string_s* s = bcore_string_s_create();
-                src_p->parsef( src_p, src, "#name :", s );
-                type_l = typeof( s->sc );
-                if( !bcore_flect_try_self( type_l ) ) src_p->parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
-                bcore_string_s_discard( s );
-            }
-
-            if( p_type )
-            {
-                if( *p_type == 0 )
-                {
-                    *p_type = type_l;
-                }
-                else if( *p_type != type_l )
-                {
-                    //TODO: consider automatic type conversion here
-                    src_p->parse_errf( src_p, src, "Requested type '%s' differs from specified type '%s'.", ifnameof( *p_type ), ifnameof( type_l ) );
-                }
-            }
-
-            if( *p_obj )
-            {
-                if( p_type && *p_type )
-                {
-                    bcore_instance_typed_discard( *p_type, *p_obj );
-                }
-                else
-                {
-                    bcore_instance_aware_discard( *p_obj );
-                }
-            }
-            *p_obj = bcore_instance_typed_create( type_l );
-            interpret( o, false, src, &type_l, p_obj );
-        }
-        else if( src_p->parse_boolf( src_p, src, " #?'void'" ) )
-        {
-            /* do nothing */
-        }
-        else
-        {
-            if( p_type && *p_type )
-            {
-                src_p->parse_errf( src_p, src, "'!%s' expected", ifnameof( *p_type ) );
-            }
-            else
-            {
-                src_p->parse_errf( src_p, src, "'!<type>' expected" );
-            }
-        }
+        dt_p tmp = interpret_object( o, src );
+        bcore_instance_typed_copy_typed( dst.t, dst.o, tmp.t, tmp.o );
+        bcore_instance_typed_discard( tmp.t, tmp.o );
+        return;
     }
-    else if( p_type && *p_type == TYPEOF_bcore_string_s ) // treat as leaf type
+
+    if( dst.t == TYPEOF_bcore_string_s ) // treat as leaf type
     {
-        vd_t obj = *p_obj;
-        if( !obj ) ERR( "obj is NULL" );
-        if( ( *( aware_t* )obj ) != TYPEOF_bcore_string_s )  ERR( "obj is incorrect (must be bcore_string_s)" );
-        src_p->parsef( src_p, src, " #string", obj );
+        if( ( *( aware_t* )dst.o ) != TYPEOF_bcore_string_s )  ERR( "dst.o is incorrect (must be bcore_string_s)" );
+        src_p->parsef( src_p, src, " #string", dst.o );
     }
     else
     {
-        if( !p_type || !*p_type ) ERR( "type must be specified when link == false" );
-        tp_t type = *p_type;
+        tp_t type = dst.t;
+        vd_t obj  = dst.o;
         const bcore_instance_s* inst_p = bcore_instance_s_get_typed( type );
-        vd_t obj = *p_obj;
-        if( !obj  ) ERR( "*p_obj == NULL but no link specified." );
         const bcore_via_s* via_p = bcore_via_s_get_typed( type );
         if( inst_p->body )
         {
@@ -429,13 +382,23 @@ static void interpret( const bcore_bml_interpreter_s* o, bool link, vd_t src, tp
                         if( link )
                         {
                             vd_t obj = NULL;
-                            interpret( o, true, src, &type_l, &obj );
+                            if( type_l )
+                            {
+                                obj = interpret_typed( o, src, type_l ).o;
+                            }
+                            else
+                            {
+                                obj = interpret_object( o, src ).o;
+
+                            }
                             arr_p->push_d( arr_p, element, obj );
                         }
                         else
                         {
-                            vd_t obj = arr_p->push_c( arr_p, element, NULL );
-                            interpret( o, false, src, &type_l, &obj );
+                            dt_p dst;
+                            dst.t = type_l;
+                            dst.o = arr_p->push_c( arr_p, element, NULL );
+                            interpret_body( o, src, dst );
                         }
                     }
                     if( typed && typed_type == 0 && arr_p->get_size( arr_p, element ) > 0 )
@@ -446,17 +409,32 @@ static void interpret( const bcore_bml_interpreter_s* o, bool link, vd_t src, tp
                 else
                 {
                     src_p->parsef( src_p, src, link ? " =" : " :" );
-                    tp_t type_l = vitem->type;
                     switch( vitem->caps )
                     {
-                        case BCORE_CAPS_STATIC:      interpret( o, false, src, &type_l, &element ); break;
-                        case BCORE_CAPS_STATIC_LINK: interpret( o, true,  src, &type_l, &( ( bcore_static_link_s* )element )->link ); break;
-                        case BCORE_CAPS_AWARE_LINK:  interpret( o, true,  src, &type_l, &( ( bcore_aware_link_s*  )element )->link ); break;
+                        case BCORE_CAPS_STATIC:
+                        {
+                            dt_p dst = { element, vitem->type };
+                            interpret_body( o, src, dst );
+                        }
+                        break;
+
+                        case BCORE_CAPS_STATIC_LINK:
+                        {
+                            ( ( bcore_static_link_s* )element )->link = interpret_typed(  o, src, vitem->type ).o;
+                        }
+                        break;
+
+                        case BCORE_CAPS_AWARE_LINK:
+                        {
+                            ( ( bcore_aware_link_s* )element )->link = interpret_object( o, src ).o;
+                        }
+                        break;
+
                         case BCORE_CAPS_TYPED_LINK:
                         {
                             bcore_typed_link_s* dst = element;
                             dst->type = typed_type;
-                            interpret( o, true, src, &dst->type, &dst->link );
+                            dst->link = interpret_typed( o, src, dst->type ).o;
                             if( typed_type == 0 && dst->link != NULL )
                             {
                                 src_p->parse_errf( src_p, src, "Missing type specifier for nonzero typed object '%s'", ifnameof( vitem->name ) );
@@ -478,16 +456,92 @@ static void interpret( const bcore_bml_interpreter_s* o, bool link, vd_t src, tp
     }
 }
 
-void bcore_bml_interpreter_s_interpret_body( const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type, vd_t obj )
+// requires instantiation in src or NULL
+static dt_p interpret_object( const bcore_bml_interpreter_s* o, vd_t src )
 {
-    interpret( o, false, fsrc, &type, &obj );
+    dt_p ret;
+    ret.t = 0;
+    ret.o = NULL;
+
+    const bcore_source_s* src_p = bcore_source_s_get_aware( src );
+    if( src_p->parse_boolf( src_p, src, " #?'NULL'" ) ) return ret;
+
+    if( src_p->parse_boolf( src_p, src, " #?'!'" ) )
+    {
+        bcore_string_s* s = bcore_string_s_create();
+        src_p->parsef( src_p, src, "#name :", s );
+        ret.t = typeof( s->sc );
+        if( !bcore_flect_exists( ret.t ) ) src_p->parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
+        bcore_string_s_discard( s );
+        ret.o = bcore_instance_typed_create( ret.t );
+        interpret_body( o, src, ret );
+    }
+    else
+    {
+        src_p->parse_errf( src_p, src, "Instantiation (!<type>) expected." );
+    }
+    return ret;
 }
 
-vd_t bcore_bml_interpreter_s_interpret_object( const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t* p_type )
+// target type is given and object of that type is returned
+// instantiation in src is optional, NULL allowed
+// if instatiation type different from target type, automatic conversion is initiated
+static dt_p interpret_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t type )
 {
-    vd_t obj = NULL;
-    interpret( o, true, fsrc, p_type, &obj );
-    return obj;
+    dt_p ret;
+    const bcore_source_s* src_p = bcore_source_s_get_aware( src );
+
+    ret.t = type;
+    ret.o = NULL;
+
+    if( src_p->parse_boolf( src_p, src, " #?'NULL'" ) ) return ret;
+
+    if( src_p->parse_boolf( src_p, src, " #?'!'" ) )
+    {
+        ret.o = bcore_instance_typed_create( ret.t );
+        bcore_string_s* s = bcore_string_s_create();
+        src_p->parsef( src_p, src, "#name :", s );
+        tp_t type_l = typeof( s->sc );
+        if( !bcore_flect_exists( type_l ) ) src_p->parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
+        bcore_string_s_discard( s );
+
+        if( type_l != type )
+        {
+            dt_p dt_l;
+            dt_l.t = type_l;
+            dt_l.o = bcore_instance_typed_create( dt_l.t );
+            interpret_body( o, src, dt_l );
+            bcore_instance_typed_copy_typed( ret.t, ret.o, dt_l.t, dt_l.o );
+            bcore_instance_typed_discard( dt_l.t, dt_l.o );
+        }
+        else
+        {
+            interpret_body( o, src, ret );
+        }
+    }
+    else
+    {
+        ret.o = bcore_instance_typed_create( ret.t );
+        interpret_body( o, src, ret );
+    }
+    return ret;
+}
+
+dt_p bcore_bml_interpreter_s_interpret_body( const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type, vd_t obj )
+{
+    dt_p dst = { obj, type };
+    interpret_body( o, fsrc, dst );
+    return dst;
+}
+
+dt_p bcore_bml_interpreter_s_interpret_object( const bcore_bml_interpreter_s* o, vd_t fsrc )
+{
+    return interpret_object( o, fsrc );
+}
+
+dt_p bcore_bml_interpreter_s_interpret_typed( const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type )
+{
+    return interpret_typed( o, fsrc, type );
 }
 
 /**********************************************************************************************************************/
@@ -538,6 +592,16 @@ static bcore_string_s* translate_selftest()
     bcore_bml_translator_s_translate_body( trans, typeof( "specs_arr" ), specs_arr, out );
     bcore_bml_translator_s_translate_body( trans, typeof( "bcore_bml_translator_s" ), trans, out );
 
+    {
+        bcore_string_s* buf = bcore_life_s_push_aware( l, bcore_string_s_create() );
+        bcore_bml_translator_s_translate_object( trans, typeof( "specs_arr" ), specs_arr, buf );
+        bcore_bml_interpreter_s* intrp = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() );
+        bcore_string_source_s* str_src = bcore_life_s_push_aware( l, bcore_string_source_s_create_string( buf ) );
+        vd_t specs_arr_2 = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_interpret_object( intrp, str_src ).o );
+        bcore_string_s_pushf( out, "\n =================specs_arr_2: ==================\n" );
+        bcore_bml_translator_s_translate_body( trans, typeof( "specs_arr" ), specs_arr_2, out );
+    }
+
     bcore_life_s_discard( l );
     return out;
 }
@@ -550,7 +614,7 @@ static bcore_string_s* interpret_selftest()
     sc_t src = "\
     !specs:\n\
     { \n\
-        name = !bcore_string_s:\"Alfred\" \n\
+        name = !f2_t:12345E7 \n\
         param2:1234 \n\
         param1:3456 \n\
         flag: true\n\
@@ -560,7 +624,7 @@ static bcore_string_s* interpret_selftest()
 
     bcore_bml_interpreter_s* intrp = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() );
     bcore_string_source_s* str_src = bcore_life_s_push_aware( l, bcore_string_source_s_create_sc( src ) );
-    vd_t specs                     = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_interpret_object( intrp, str_src, NULL ) );
+    vd_t specs                     = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_interpret_object( intrp, str_src ).o );
     bcore_bml_translator_s* trans  = bcore_life_s_push_aware( l, bcore_bml_translator_s_create() );
     bcore_bml_translator_s_translate_body( trans, typeof( "specs" ), specs, out );
 

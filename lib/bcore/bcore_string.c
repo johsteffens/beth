@@ -894,7 +894,7 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                 fp += strlen( "#string" );
                 bcore_string_s* string = va_arg( args, bcore_string_s* );
                 bcore_string_s_clear( string );
-                if( o->sc[ idx ] != '"' ) ERR( "\n%s\n'\"' expected at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, fp, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                if( o->sc[ idx ] != '"' ) ERR( "\n%s\n'\"' expected at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
                 idx++;
                 while ( o->sc[ idx ] != '"' )
                 {

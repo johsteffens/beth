@@ -13,11 +13,12 @@
 
 static void init_library_bcore_once()
 {
-    // services ...
+    // global services ...
     bcore_memory_manager_open();
-    bcore_flect_define_basics();
+    bcore_flect_open();
 
     // reflections ...
+    bcore_flect_define_basics();
     bcore_flect_define_self_d( bcore_bml_translator_s_create_self() );
     bcore_flect_define_self_d( bcore_bml_interpreter_s_create_self() );
     bcore_flect_define_self_d( bcore_string_source_s_create_self() );

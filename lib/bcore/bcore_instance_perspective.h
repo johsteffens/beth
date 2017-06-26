@@ -87,6 +87,11 @@ void bcore_instance_spect_copy(  const bcore_instance_s* o, vd_t dst, vc_t src )
 void bcore_instance_typed_copy(                  u2_t type, vd_t dst, vc_t src );
 void bcore_instance_aware_copy(                             vd_t dst, vc_t src );
 
+// copy with type conversion
+void bcore_instance_spect_copy_typed(  const bcore_instance_s* o, vd_t dst, tp_t src_type, vc_t src );
+void bcore_instance_typed_copy_typed(                  u2_t type, vd_t dst, tp_t src_type, vc_t src );
+void bcore_instance_aware_copy_typed(                             vd_t dst, tp_t src_type, vc_t src );
+
 void bcore_instance_spect_move(  const bcore_instance_s* o, vd_t dst, vd_t src );
 void bcore_instance_typed_move(                  u2_t type, vd_t dst, vd_t src );
 void bcore_instance_aware_move(                             vd_t dst, vd_t src );

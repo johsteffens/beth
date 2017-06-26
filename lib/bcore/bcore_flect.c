@@ -314,7 +314,7 @@ bcore_flect_self_s* bcore_flect_self_s_create()
     return o;
 }
 
-bcore_flect_self_s* bcore_flect_self_s_create_plain( u2_t type, sz_t size )
+bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, sz_t size )
 {
     bcore_flect_self_s* o = bcore_flect_self_s_create();
     bcore_flect_self_s_init_plain( o, type, size );
@@ -357,7 +357,7 @@ void bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc
     bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_external_func( func, type, name ) );
 }
 
-void bcore_flect_self_s_init_plain( bcore_flect_self_s* o, u2_t type, sz_t size )
+void bcore_flect_self_s_init_plain( bcore_flect_self_s* o, tp_t type, sz_t size )
 {
     bcore_flect_self_s_init( o );
     o->type  = type;
@@ -459,7 +459,7 @@ void bcore_flect_node_s_down( bcore_flect_node_s* o )
     o->holds_self = 0;
 }
 
-void bcore_flect_node_s_insert( bcore_flect_node_s* o, u2_t type, bcore_flect_self_s* self, bool hold_self )
+void bcore_flect_node_s_insert( bcore_flect_node_s* o, tp_t type, bcore_flect_self_s* self, bool hold_self )
 {
     if( type < o->type )
     {
@@ -498,7 +498,7 @@ void bcore_flect_node_s_insert( bcore_flect_node_s* o, u2_t type, bcore_flect_se
     }
 }
 
-bcore_flect_self_s* bcore_flect_node_s_self( const bcore_flect_node_s* o, u2_t type )
+bcore_flect_self_s* bcore_flect_node_s_self( const bcore_flect_node_s* o, tp_t type )
 {
     if( type < o->type )
     {
@@ -555,7 +555,7 @@ void bcore_flect_tree_s_down( bcore_flect_tree_s* o )
     bcore_mutex_down( &o->mutex );
 }
 
-void bcore_flect_tree_s_insert( bcore_flect_tree_s* o, u2_t type, bcore_flect_self_s* self, bool hold_self )
+void bcore_flect_tree_s_insert( bcore_flect_tree_s* o, tp_t type, bcore_flect_self_s* self, bool hold_self )
 {
     bcore_mutex_lock( &o->mutex );
     if( o->root )
@@ -606,16 +606,25 @@ void bcore_flect_close()
     bcore_discard_flect_tree();
 }
 
-const bcore_flect_self_s* bcore_flect_try_self( u2_t type )
+bool bcore_flect_exists( tp_t type )
 {
-    if( !bcore_flect_tree_s_g ) bcore_flect_open();
+    assert( bcore_flect_tree_s_g != NULL );
+    bcore_mutex_lock( &bcore_flect_tree_s_g->mutex );
+    bool exists = bcore_flect_node_s_self( bcore_flect_tree_s_g->root, type ) != NULL;
+    bcore_mutex_unlock( &bcore_flect_tree_s_g->mutex );
+    return exists;
+}
+
+const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
+{
+    assert( bcore_flect_tree_s_g != NULL );
     bcore_mutex_lock( &bcore_flect_tree_s_g->mutex );
     const bcore_flect_self_s* self = bcore_flect_node_s_self( bcore_flect_tree_s_g->root, type );
     bcore_mutex_unlock( &bcore_flect_tree_s_g->mutex );
     return self;
 }
 
-const bcore_flect_self_s* bcore_flect_get_self( u2_t type )
+const bcore_flect_self_s* bcore_flect_get_self( tp_t type )
 {
     const bcore_flect_self_s* self = bcore_flect_try_self( type );
     if( !self )
@@ -635,7 +644,7 @@ const bcore_flect_self_s* bcore_flect_get_self( u2_t type )
 
 void bcore_flect_define_self_d( bcore_flect_self_s* self )
 {
-    if( !bcore_flect_tree_s_g ) bcore_flect_open();
+    assert( bcore_flect_tree_s_g != NULL );
     bcore_flect_tree_s_insert( bcore_flect_tree_s_g, self->type, self, true );
 }
 
@@ -659,7 +668,7 @@ sc_t bcore_flect_parse_sc( sc_t sc )
     return sc + idx;
 }
 
-void bcore_flect_define_alias( u2_t alias, u2_t type )
+void bcore_flect_define_alias( u2_t alias, tp_t type )
 {
     if( !bcore_flect_tree_s_g ) bcore_flect_open();
     bcore_flect_self_s* self = ( bcore_flect_self_s* )bcore_flect_try_self( type );
@@ -681,7 +690,7 @@ void bcore_flect_define_alias( u2_t alias, u2_t type )
 void bcore_flect_define_alias_sc( sc_t alias, sc_t type )
 {
     u2_t alias_l = bcore_name_enroll( alias );
-    u2_t type_l = bcore_name_get_type( type );
+    tp_t type_l = bcore_name_get_type( type );
     bcore_flect_define_alias( alias_l, type_l );
 }
 

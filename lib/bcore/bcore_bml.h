@@ -46,8 +46,9 @@ bcore_bml_interpreter_s* bcore_bml_interpreter_s_clone(     const bcore_bml_inte
 void                     bcore_bml_interpreter_s_discard(         bcore_bml_interpreter_s* o );
 bcore_flect_self_s*      bcore_bml_interpreter_s_create_self();
 
-vd_t bcore_bml_interpreter_s_interpret_object( const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t* type );
-void bcore_bml_interpreter_s_interpret_body(   const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t  type, vd_t obj );
+dt_p bcore_bml_interpreter_s_interpret_object( const bcore_bml_interpreter_s* o, vd_t fsrc );
+dt_p bcore_bml_interpreter_s_interpret_typed(  const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type );
+dt_p bcore_bml_interpreter_s_interpret_body(   const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type, vd_t obj );
 
 /**********************************************************************************************************************/
 // testing, debugging

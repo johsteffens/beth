@@ -111,7 +111,6 @@ bcore_instance_item_s* bcore_instance_s_push( bcore_instance_s* o )
     return bcore_instance_body_s_push( o->body );
 }
 
-#ifndef NDEBUG
 static void verify_aware_type( tp_t type, vc_t obj, sc_t context )
 {
     if( type != *( aware_t* )obj )
@@ -127,7 +126,6 @@ static void verify_aware_type( tp_t type, vc_t obj, sc_t context )
         }
     }
 }
-#endif
 
 /**********************************************************************************************************************/
 
@@ -1183,8 +1181,49 @@ void bcore_instance_typed_copy( u2_t type, vd_t dst, vc_t src )
 void bcore_instance_aware_copy( vd_t dst, vc_t src )
 {
     if( dst == src ) return;
-    const bcore_instance_s* o = bcore_instance_s_get_aware( src );
+    const bcore_instance_s* o = bcore_instance_s_get_aware( dst );
     o->copy( o, dst, src );
+}
+
+void bcore_instance_spect_copy_typed( const bcore_instance_s* o, vd_t dst, tp_t src_type, vc_t src )
+{
+    if( dst == src ) return;
+    if( o->_.o_type == src_type )
+    {
+        o->copy( o, dst, src );
+    }
+    else
+    {
+        o->copy_typed( o, dst, src_type, src );
+    }
+}
+
+void bcore_instance_typed_copy_typed( u2_t type, vd_t dst, tp_t src_type, vc_t src )
+{
+    if( dst == src ) return;
+    const bcore_instance_s* o = bcore_instance_s_get_typed( type );
+    if( o->_.o_type == src_type )
+    {
+        o->copy( o, dst, src );
+    }
+    else
+    {
+        o->copy_typed( o, dst, src_type, src );
+    }
+}
+
+void bcore_instance_aware_copy_typed( vd_t dst, tp_t src_type, vc_t src )
+{
+    if( dst == src ) return;
+    const bcore_instance_s* o = bcore_instance_s_get_aware( dst );
+    if( o->_.o_type == src_type )
+    {
+        o->copy( o, dst, src );
+    }
+    else
+    {
+        o->copy_typed( o, dst, src_type, src );
+    }
 }
 
 void bcore_instance_spect_move( const bcore_instance_s* o, vd_t dst, vd_t src )

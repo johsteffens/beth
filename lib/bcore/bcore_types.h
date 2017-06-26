@@ -34,6 +34,8 @@ typedef void (*fp_t)();   // general function pointer (also for functions with d
 // types for special purposes
 typedef u2_t tp_t;    // object type identifier
 typedef tp_t aware_t; // self-awareness type (first element in self-aware object)
+typedef struct { vd_t o; tp_t t; } dt_p; // pair of object reference and type
+typedef struct { vc_t o; tp_t t; } ct_p; // pair of const object reference and type
 
 #endif // BCORE_TYPE_H
 

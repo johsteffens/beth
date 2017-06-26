@@ -83,7 +83,7 @@ typedef struct bcore_flect_item_s
         fp_t f_ptr;  // external function pointer
     };
 
-    u2_t type; // hash of type
+    tp_t type; // hash of type
     u2_t name; // hash of name
 } bcore_flect_item_s;
 
@@ -118,18 +118,18 @@ bcore_string_s*     bcore_flect_body_s_show( const bcore_flect_body_s* o );
 
 typedef struct bcore_flect_self_s
 {
-    u2_t type;   // type is needed for self aware objects constructed by the interface; (whether this might cause problems with aliases is to be determined)
+    tp_t type;   // type is needed for self aware objects constructed by the interface; (whether this might cause problems with aliases is to be determined)
     sz_t size;   // sizeof(type); Only for the predefined size of primitive types. Composite types have size calculated in the instanceperspective.
 
     bcore_flect_body_s* body;
 } bcore_flect_self_s;
 
 void                     bcore_flect_self_s_init( bcore_flect_self_s* o );
-void                     bcore_flect_self_s_init_plain( bcore_flect_self_s* o, u2_t type, sz_t size );
+void                     bcore_flect_self_s_init_plain( bcore_flect_self_s* o, tp_t type, sz_t size );
 void                     bcore_flect_self_s_down( bcore_flect_self_s* o );
 void                     bcore_flect_self_s_copy( bcore_flect_self_s* o, const bcore_flect_self_s* src );
 bcore_flect_self_s*      bcore_flect_self_s_create();
-bcore_flect_self_s*      bcore_flect_self_s_create_plain( u2_t type, sz_t size ); // plain (primitive) self contained type
+bcore_flect_self_s*      bcore_flect_self_s_create_plain( tp_t type, sz_t size ); // plain (primitive) self contained type
 bcore_flect_self_s*      bcore_flect_self_s_clone( const bcore_flect_self_s* o );
 void                     bcore_flect_self_s_discard( bcore_flect_self_s* o );
 void                     bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item );
@@ -143,19 +143,21 @@ bcore_flect_self_s*      bcore_flect_self_s_build_parse_sc( sc_t text );
 /**********************************************************************************************************************/
 
 /// Global reflection manager (thread safe)
-void bcore_flect_define_basics();
-void bcore_flect_close();  // closes manager
+void bcore_flect_open();          // opens manager
+void bcore_flect_define_basics(); // defines basic types
+void bcore_flect_close();         // closes manager
 
 void bcore_flect_define_self_d(       bcore_flect_self_s* self ); // takes over control of self
 void bcore_flect_define_self_c( const bcore_flect_self_s* self ); // stores a copy of self
 sz_t bcore_flect_parse(         const bcore_string_s* string, sz_t idx );
 sc_t bcore_flect_parse_sc(      sc_t sc );
 
-void bcore_flect_define_alias(     u2_t alias, u2_t type ); // also enrolls name in name manager
+void bcore_flect_define_alias(     u2_t alias, tp_t type ); // also enrolls name in name manager
 void bcore_flect_define_alias_sc(  sc_t alias, sc_t type ); // also enrolls name in name manager
 
-const bcore_flect_self_s* bcore_flect_try_self( u2_t type ); // returns NULL when type does not exist
-const bcore_flect_self_s* bcore_flect_get_self( u2_t type ); // error when type does not exits
+bool  bcore_flect_exists(                       tp_t type ); // checks existence of type
+const bcore_flect_self_s* bcore_flect_try_self( tp_t type ); // returns NULL when type does not exist
+const bcore_flect_self_s* bcore_flect_get_self( tp_t type ); // error when type does not exits
 
 /**********************************************************************************************************************/
 
