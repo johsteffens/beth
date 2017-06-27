@@ -24,7 +24,7 @@ typedef struct bcore_array_s
 {
     bcore_perspective_s _;
 
-    u2_t caps_type;
+    tp_t caps_type;
     sz_t caps_offset;
     const bcore_instance_s* item_p;  // item-perspective; NULL for typed or aware arrays
 
@@ -74,7 +74,7 @@ typedef struct bcore_array_s
 
 } bcore_array_s;
 
-const bcore_array_s* bcore_array_s_get_typed( u2_t type );
+const bcore_array_s* bcore_array_s_get_typed( tp_t type );
 
 static inline const bcore_array_s* bcore_array_s_get_aware( vc_t obj )
 {
@@ -84,13 +84,13 @@ static inline const bcore_array_s* bcore_array_s_get_aware( vc_t obj )
 /**********************************************************************************************************************/
 // array construction
 
-/** Constructs and returns an array-type of type if not already existing.
+/** Constructs and returns an array of type if not already existing.
  *  The array type constructed is
  *  <typename>__static_array = { <typename> []; }
  */
 tp_t bcore_static_array_type_of( tp_t type );
 
-/** Constructs and returns an array-type of type if not already existing.
+/** Constructs and returns an array of type if not already existing.
  *  The array type constructed is
  *  <typename>__static_link_array = { <typename> * []; }
  */

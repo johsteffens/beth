@@ -1027,7 +1027,29 @@ bcore_instance_s* bcore_instance_s_create_from_self( const bcore_flect_self_s* s
                 inst_item->flect_item = flect_item;
                 if( flect_item->type )
                 {
-                    inst_item->perspective = bcore_instance_s_get_typed( flect_item->type );
+                    if( !bcore_flect_exists( flect_item->type ) )
+                    {
+                        ERR( "Constructing bcore_instance_s of %s:\n"
+                             "Type '%s' (%"PRIu32") does not exist.", ifnameof( self->type ), ifnameof( flect_item->type ) );
+                    }
+                    else if( flect_item->type == self->type )
+                    {
+                        if( flect_item->caps == BCORE_CAPS_STATIC )
+                        {
+                            ERR( "Constructing bcore_instance_s of %s:\n"
+                                 "Type '%s' (%"PRIu32") is static member of itself, which is inconstructible.\n"
+                                 "A static link might be a viable alternative.\n" , ifnameof( self->type ), ifnameof( flect_item->type ) );
+                        }
+                        else
+                        {
+                            inst_item->perspective = o;
+                        }
+                    }
+                    else
+                    {
+                        inst_item->perspective = bcore_instance_s_get_typed( flect_item->type );
+                    }
+
                     if( flect_item->type == typeof( "aware_t" ) )
                     {
                         o->init_flat = false;
@@ -1155,7 +1177,7 @@ void bcore_instance_spect_init( const bcore_instance_s* o, vd_t obj )
     o->init( o, obj );
 }
 
-void bcore_instance_typed_init( u2_t type, vd_t obj )
+void bcore_instance_typed_init( tp_t type, vd_t obj )
 {
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
     o->init( o, obj );
@@ -1166,7 +1188,7 @@ void bcore_instance_spect_down( const bcore_instance_s* o, vd_t obj )
     o->down( o, obj );
 }
 
-void bcore_instance_typed_down( u2_t type, vd_t obj )
+void bcore_instance_typed_down( tp_t type, vd_t obj )
 {
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
     o->down( o, obj );
@@ -1184,7 +1206,7 @@ void bcore_instance_spect_copy( const bcore_instance_s* o, vd_t dst, vc_t src )
     o->copy( o, dst, src );
 }
 
-void bcore_instance_typed_copy( u2_t type, vd_t dst, vc_t src )
+void bcore_instance_typed_copy( tp_t type, vd_t dst, vc_t src )
 {
     if( dst == src ) return;
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
@@ -1211,7 +1233,7 @@ void bcore_instance_spect_copy_typed( const bcore_instance_s* o, vd_t dst, tp_t 
     }
 }
 
-void bcore_instance_typed_copy_typed( u2_t type, vd_t dst, tp_t src_type, vc_t src )
+void bcore_instance_typed_copy_typed( tp_t type, vd_t dst, tp_t src_type, vc_t src )
 {
     if( dst == src ) return;
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
@@ -1245,7 +1267,7 @@ void bcore_instance_spect_move( const bcore_instance_s* o, vd_t dst, vd_t src )
     o->move( o, dst, src );
 }
 
-void bcore_instance_typed_move( u2_t type, vd_t dst, vd_t src )
+void bcore_instance_typed_move( tp_t type, vd_t dst, vd_t src )
 {
     if( dst == src ) return;
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
@@ -1264,7 +1286,7 @@ vd_t bcore_instance_spect_create( const bcore_instance_s* o )
     return o->create( o );
 }
 
-vd_t bcore_instance_typed_create( u2_t type )
+vd_t bcore_instance_typed_create( tp_t type )
 {
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
     return o->create( o );
@@ -1276,7 +1298,7 @@ void bcore_instance_spect_discard( const bcore_instance_s* o, vd_t obj )
     o->discard( o, obj );
 }
 
-void bcore_instance_typed_discard( u2_t type, vd_t obj )
+void bcore_instance_typed_discard( tp_t type, vd_t obj )
 {
     if( !obj ) return;
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
@@ -1296,7 +1318,7 @@ vd_t bcore_instance_spect_clone( const bcore_instance_s* o, vc_t obj )
     return o->clone( o, obj );
 }
 
-vd_t bcore_instance_typed_clone( u2_t type, vc_t obj )
+vd_t bcore_instance_typed_clone( tp_t type, vc_t obj )
 {
     if( !obj ) return NULL;
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
@@ -1316,7 +1338,7 @@ void bcore_instance_spect_check_sanity( const bcore_instance_s* o, vc_t obj )
     o->check_sanity( o, obj );
 }
 
-void bcore_instance_typed_check_sanity( u2_t type, vc_t obj )
+void bcore_instance_typed_check_sanity( tp_t type, vc_t obj )
 {
     if( !obj ) return;
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
@@ -1339,7 +1361,7 @@ void bcore_instance_spect_check_sizeof( const bcore_instance_s* o, sz_t size )
     }
 }
 
-void bcore_instance_typed_check_sizeof( u2_t type, sz_t size )
+void bcore_instance_typed_check_sizeof( tp_t type, sz_t size )
 {
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
     bcore_instance_spect_check_sizeof( o, size );

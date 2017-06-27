@@ -3,6 +3,7 @@
 #include "bcore_life.h"
 #include "bcore_control.h"
 #include "bcore_instance_perspective.h"
+#include "bcore_flect.h"
 
 /**********************************************************************************************************************/
 
@@ -95,4 +96,19 @@ vd_t bcore_life_s_push_free( bcore_life_s* o, vd_t object )
     item->discard = ( fp_t )bcore_free;
     item->object  = object;
     return object;
+}
+
+vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type )
+{
+    return bcore_life_s_push_typed( o, type, bcore_instance_typed_create( type ) );
+}
+
+/**********************************************************************************************************************/
+
+bcore_flect_self_s* bcore_life_s_create_self()
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_life_s =  { aware_t _; private vd_t data; private sz_t size; private sz_t space; }" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_life_s_init, "bcore_fp_init",  "init" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_life_s_down, "bcore_fp_down",  "down" );
+    return self;
 }

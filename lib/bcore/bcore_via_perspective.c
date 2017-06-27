@@ -687,9 +687,18 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
             {
                 case BCORE_CAPS_STATIC:
                 case BCORE_CAPS_STATIC_LINK:
+                {
                     vitem->type = flect_item->type;
-                    vitem->via  = bcore_via_s_get_typed( vitem->type );
-                    break;
+                    if( flect_item->type == o->_.o_type )
+                    {
+                        vitem->via = o;
+                    }
+                    else
+                    {
+                        vitem->via = bcore_via_s_get_typed( vitem->type );
+                    }
+                }
+                break;
 
                 case BCORE_CAPS_TYPED_LINK:
                 case BCORE_CAPS_AWARE_LINK:

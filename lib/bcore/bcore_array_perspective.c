@@ -224,7 +224,7 @@ static void set_space( const bcore_array_s* p, vd_t o, sz_t space )
         }
         break;
 
-        default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
     }
 }
 
@@ -381,7 +381,7 @@ static void set_size( const bcore_array_s* p, vd_t o, sz_t size )
         }
         break;
 
-        default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
     }
 }
 
@@ -656,7 +656,7 @@ static tp_t get_type( const bcore_array_s* p, vc_t o )
         case BCORE_CAPS_STATIC_LINK_ARRAY: return p->item_p->_.o_type;
         case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_typed_link_array_s*  )obj )->type;
         case BCORE_CAPS_AWARE_LINK_ARRAY:  return 0;
-        default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
     }
     return 0;
 }
@@ -709,7 +709,7 @@ static void set_type( const bcore_array_s* p, vd_t o, tp_t type )
 
         default:
         {
-            ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+            ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
         }
         break;
     }
@@ -727,7 +727,7 @@ static vc_t get_c_data( const bcore_array_s* p, vc_t o )
         case BCORE_CAPS_STATIC_LINK_ARRAY: return ( ( const bcore_static_link_array_s* )obj )->data;
         case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_typed_link_array_s*  )obj )->data;
         case BCORE_CAPS_AWARE_LINK_ARRAY:  return ( ( const bcore_aware_link_array_s*  )obj )->data;
-        default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
     }
     return NULL;
 }
@@ -742,7 +742,7 @@ static vd_t get_d_data( const bcore_array_s* p, vd_t o )
         case BCORE_CAPS_STATIC_LINK_ARRAY: return ( ( bcore_static_link_array_s* )obj )->data;
         case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( bcore_typed_link_array_s*  )obj )->data;
         case BCORE_CAPS_AWARE_LINK_ARRAY:  return ( ( bcore_aware_link_array_s*  )obj )->data;
-        default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
     }
     return NULL;
 }
@@ -756,7 +756,7 @@ static bool is_linked( const bcore_array_s* p )
         case BCORE_CAPS_STATIC_LINK_ARRAY: return true;
         case BCORE_CAPS_TYPED_LINK_ARRAY:  return true;
         case BCORE_CAPS_AWARE_LINK_ARRAY:  return true;
-        default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
     }
     return false;
 }
@@ -770,7 +770,7 @@ static bool is_typed( const bcore_array_s* p )
         case BCORE_CAPS_STATIC_LINK_ARRAY: return false;
         case BCORE_CAPS_TYPED_LINK_ARRAY:  return true;
         case BCORE_CAPS_AWARE_LINK_ARRAY:  return false;
-        default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
     }
     return false;
 }
@@ -790,7 +790,7 @@ static sz_t get_unit_size( const bcore_array_s* p, vc_t o )
         case BCORE_CAPS_STATIC_LINK_ARRAY: return sizeof( vd_t );
         case BCORE_CAPS_TYPED_LINK_ARRAY:  return sizeof( vd_t );
         case BCORE_CAPS_AWARE_LINK_ARRAY:  return sizeof( vd_t );
-        default: ERR( "invalid caps_type (%u)", ( u2_t )p->caps_type );
+        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
     }
     return 0;
 }
@@ -1052,7 +1052,7 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
         }
         break;
 
-        default: ERR( "invalid caps_type %u", ( u2_t )o->caps_type );
+        default: ERR( "invalid caps_type %"PRIu32, ( u2_t )o->caps_type );
     }
 
     o->set_size      = set_size;
@@ -1080,9 +1080,9 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
 
 /**********************************************************************************************************************/
 
-const bcore_array_s* bcore_array_s_get_typed( u2_t o_type )
+const bcore_array_s* bcore_array_s_get_typed( tp_t o_type )
 {
-    u2_t p_type = typeof( "bcore_array_s" );
+    tp_t p_type = typeof( "bcore_array_s" );
     const bcore_array_s* perspective = ( const bcore_array_s* )bcore_perspective_try_perspective( p_type, o_type );
     if( !perspective )
     {

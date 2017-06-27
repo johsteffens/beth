@@ -74,42 +74,42 @@ typedef struct bcore_instance_s
     void ( *check_sanity )( const bcore_instance_s* p, vc_t o );
 } bcore_instance_s;
 
-const bcore_instance_s* bcore_instance_s_get_typed(                            u2_t type           );
-const bcore_instance_s* bcore_instance_s_get_aware(                                       vc_t obj );
+const bcore_instance_s* bcore_instance_s_get_typed( tp_t type );
+const bcore_instance_s* bcore_instance_s_get_aware( vc_t obj );
 
 void bcore_instance_spect_init(  const bcore_instance_s* o, vd_t obj );
-void bcore_instance_typed_init(                  u2_t type, vd_t obj );
+void bcore_instance_typed_init(                  tp_t type, vd_t obj );
 
 void bore_instance_spect_down(  const bcore_instance_s* o, vd_t obj );
-void bcore_instance_typed_down(                 u2_t type, vd_t obj );
+void bcore_instance_typed_down(                 tp_t type, vd_t obj );
 void bcore_instance_aware_down(                            vd_t obj );
 
 void bcore_instance_spect_copy(  const bcore_instance_s* o, vd_t dst, vc_t src );
-void bcore_instance_typed_copy(                  u2_t type, vd_t dst, vc_t src );
+void bcore_instance_typed_copy(                  tp_t type, vd_t dst, vc_t src );
 void bcore_instance_aware_copy(                             vd_t dst, vc_t src );
 
 // copy with type conversion
 void bcore_instance_spect_copy_typed(  const bcore_instance_s* o, vd_t dst, tp_t src_type, vc_t src );
-void bcore_instance_typed_copy_typed(                  u2_t type, vd_t dst, tp_t src_type, vc_t src );
+void bcore_instance_typed_copy_typed(                  tp_t type, vd_t dst, tp_t src_type, vc_t src );
 void bcore_instance_aware_copy_typed(                             vd_t dst, tp_t src_type, vc_t src );
 
 void bcore_instance_spect_move(  const bcore_instance_s* o, vd_t dst, vd_t src );
-void bcore_instance_typed_move(                  u2_t type, vd_t dst, vd_t src );
+void bcore_instance_typed_move(                  tp_t type, vd_t dst, vd_t src );
 void bcore_instance_aware_move(                             vd_t dst, vd_t src );
 
 vd_t bcore_instance_spect_create(  const bcore_instance_s* o );
-vd_t bcore_instance_typed_create(                  u2_t type );
+vd_t bcore_instance_typed_create(                  tp_t type );
 
 void bcore_instance_spect_discard( const bcore_instance_s* o, vd_t obj );
-void bcore_instance_typed_discard(                 u2_t type, vd_t obj );
+void bcore_instance_typed_discard(                 tp_t type, vd_t obj );
 void bcore_instance_aware_discard(                            vd_t obj );
 
 vd_t bcore_instance_spect_clone( const bcore_instance_s* o, vc_t obj );
-vd_t bcore_instance_typed_clone(                 u2_t type, vc_t obj );
+vd_t bcore_instance_typed_clone(                 tp_t type, vc_t obj );
 vd_t bcore_instance_aware_clone(                            vc_t obj );
 
 void bcore_instance_spect_check_sanity( const bcore_instance_s* o, vc_t obj );
-void bcore_instance_typed_check_sanity(                 u2_t type, vc_t obj );
+void bcore_instance_typed_check_sanity(                 tp_t type, vc_t obj );
 void bcore_instance_aware_check_sanity(                            vc_t obj );
 
 /** This function checks the instance's size with c-style sizeof( object ).
@@ -117,7 +117,7 @@ void bcore_instance_aware_check_sanity(                            vc_t obj );
  *  but forgetting to update the self reflection.
  */
 void bcore_instance_spect_check_sizeof( const bcore_instance_s* o, sz_t size );
-void bcore_instance_typed_check_sizeof(                 u2_t type, sz_t size );
+void bcore_instance_typed_check_sizeof(                 tp_t type, sz_t size );
 
 /**********************************************************************************************************************/
 // testing, debugging

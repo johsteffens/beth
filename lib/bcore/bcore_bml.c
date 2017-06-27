@@ -152,10 +152,11 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
                     vc_t item = src->data;
                     for( sz_t i = 0; i < src->size; i++ )
                     {
+                        if( i > 0 ) snk->push_char( snk, dst, ',' );
                         translate( o, false, src_type, item, dst, indent + 1 );
-                        snk->push_char( snk, dst, ( i + 1 == src->size ) ? ';' : ',' );
                         item = ( u0_t* )item + unit_size;
                     }
+                    snk->push_char( snk, dst, ';' );
                 }
                 break;
 
@@ -169,10 +170,11 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
                     vc_t item = src->data;
                     for( sz_t i = 0; i < src->size; i++ )
                     {
+                        if( i > 0 ) snk->push_char( snk, dst, ',' );
                         translate( o, false, src_type, item, dst, indent + 1 );
-                        snk->push_char( snk, dst, ( i + 1 == src->size ) ? ';' : ',' );
                         item = ( u0_t* )item + unit_size;
                     }
+                    snk->push_char( snk, dst, ';' );
                 }
                 break;
 
@@ -183,9 +185,10 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
                     tp_t src_type = flect_item->type;
                     for( sz_t i = 0; i < src->size; i++ )
                     {
+                        if( i > 0 ) snk->push_char( snk, dst, ',' );
                         translate( o, true, src_type, src->data[ i ], dst, indent + 1 );
-                        snk->push_char( snk, dst, ( i + 1 == src->size ) ? ';' : ',' );
                     }
+                    snk->push_char( snk, dst, ';' );
                 }
                 break;
 
@@ -197,9 +200,10 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
                     snk->pushf( snk, dst, "[%zu]:", src->size );
                     for( sz_t i = 0; i < src->size; i++ )
                     {
+                        if( i > 0 ) snk->push_char( snk, dst, ',' );
                         translate( o, true, src_type, src->data[ i ], dst, indent + 1 );
-                        snk->push_char( snk, dst, ( i + 1 == src->size ) ? ';' : ',' );
                     }
+                    snk->push_char( snk, dst, ';' );
                 }
                 break;
 
@@ -209,10 +213,11 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
                     snk->pushf( snk, dst, "[%zu]:", src->size );
                     for( sz_t i = 0; i < src->size; i++ )
                     {
+                        if( i > 0 ) snk->push_char( snk, dst, ',' );
                         tp_t src_type = *( aware_t* )src->data[ i ];
                         translate( o, true, src_type, src->data[ i ], dst, indent + 1 );
-                        snk->push_char( snk, dst, ( i + 1 == src->size ) ? ';' : ',' );
                     }
+                    snk->push_char( snk, dst, ';' );
                 }
                 break;
 
@@ -553,7 +558,20 @@ static bcore_string_s* translate_selftest()
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* out = bcore_string_s_create();
 
-    bcore_flect_parse_sc( "specs = { aware_t _; bcore_string_s* name; sz_t size; u2_t param1; s2_t param2; private s3_t param3; sz_t [] numarr;  bcore_string_s [] strarr; bool flag;}" );
+    bcore_flect_parse_sc
+    (
+        "specs = "
+        "{"
+        "   aware_t _;"
+        "   bcore_string_s* name;"
+        "   sz_t size;"
+        "   u2_t param1;"
+        "   s2_t param2;"
+        "   specs * child;"
+        "   sz_t [] numarr;"
+        "   bcore_string_s [] strarr; bool flag;"
+        "}"
+    );
     bcore_flect_parse_sc( "specs_arr = { aware_t _; aware * [] arr; }" );
 
     vd_t specs = bcore_life_s_push_aware( l, bcore_instance_typed_create( typeof( "specs" ) ) );
@@ -579,6 +597,8 @@ static bcore_string_s* translate_selftest()
             vd_t strarr = specs_v->nget_d( specs_v, specs, typeof( "strarr" ) );
             for( sz_t i = 0; i < 10; i++ ) strarr_p->push_d( strarr_p, strarr, bcore_string_s_createf( "<%zu>", i ) );
         }
+
+        specs_v->nset_d( specs_v, specs, typeof( "child"  ), bcore_instance_aware_clone( specs ) );
     }
 
     vd_t specs_arr = bcore_life_s_push_aware( l, bcore_instance_typed_create( typeof( "specs_arr" ) ) );
@@ -592,6 +612,7 @@ static bcore_string_s* translate_selftest()
 
     bcore_bml_translator_s* trans = bcore_life_s_push_aware( l, bcore_bml_translator_s_create() );
     bcore_bml_translator_s_translate_body( trans, typeof( "specs_arr" ), specs_arr, out );
+
     bcore_bml_translator_s_translate_body( trans, typeof( "bcore_bml_translator_s" ), trans, out );
 
     {

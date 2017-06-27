@@ -263,7 +263,6 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
 
         item->attr = private ? TYPEOF_private : cyclic ? TYPEOF_cyclic : 0;
 
-
         if( bcore_string_s_equal_sc( name1, "typed" ) )
         {
             if( !link && !arr )
@@ -448,7 +447,7 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text )
 // node of binary tree
 typedef struct bcore_flect_node_s
 {
-    u2_t       type;
+    tp_t       type;
     bcore_flect_self_s*  self;
     unsigned       holds_self : 1;
     struct bcore_flect_node_s* child0;
@@ -516,7 +515,7 @@ void bcore_flect_node_s_insert( bcore_flect_node_s* o, tp_t type, bcore_flect_se
     }
     else // already registered
     {
-        ERR( "'%s' (%u) is already defined", ifnameof( type ), type );
+        ERR( "'%s' (%"PRIu32") is already defined", ifnameof( type ), type );
         //if( hold_self ) bcore_flect_self_s_discard( self );
     }
 }
@@ -691,7 +690,7 @@ sc_t bcore_flect_parse_sc( sc_t sc )
     return sc + idx;
 }
 
-void bcore_flect_define_alias( u2_t alias, tp_t type )
+void bcore_flect_define_alias( tp_t alias, tp_t type )
 {
     if( !bcore_flect_tree_s_g ) bcore_flect_open();
     bcore_flect_self_s* self = ( bcore_flect_self_s* )bcore_flect_try_self( type );
@@ -712,7 +711,7 @@ void bcore_flect_define_alias( u2_t alias, tp_t type )
 
 void bcore_flect_define_alias_sc( sc_t alias, sc_t type )
 {
-    u2_t alias_l = bcore_name_enroll( alias );
+    tp_t alias_l = bcore_name_enroll( alias );
     tp_t type_l = bcore_name_get_type( type );
     bcore_flect_define_alias( alias_l, type_l );
 }

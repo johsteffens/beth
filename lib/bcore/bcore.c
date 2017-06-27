@@ -8,6 +8,7 @@
 #include "bcore_flect.h"
 #include "bcore_string.h"
 #include "bcore_string_source.h"
+#include "bcore_life.h"
 #include "bcore_bml.h"
 #include "bcore.h"
 
@@ -22,6 +23,7 @@ static void init_library_bcore_once()
     bcore_flect_define_self_d( bcore_bml_translator_s_create_self() );
     bcore_flect_define_self_d( bcore_bml_interpreter_s_create_self() );
     bcore_flect_define_self_d( bcore_string_source_s_create_self() );
+    bcore_flect_define_self_d( bcore_life_s_create_self() );
 
     // critical quick-tests ...
     bcore_string_s_quicktest();
@@ -38,7 +40,6 @@ void init_library_bcore()
 void down_library_bcore()
 {
     sz_t space = bcore_memory_manager_granted_space();
-    bcore_msg( "\n");
     bcore_perspective_close();
     bcore_msg( "\n");
     bcore_msg( "perspective mananger: %zu bytes\n", space - bcore_memory_manager_granted_space() );

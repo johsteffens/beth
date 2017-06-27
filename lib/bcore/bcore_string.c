@@ -1012,7 +1012,7 @@ static void check_sanity( vc_t o )
 {
     bcore_instance_typed_check_sizeof( TYPEOF_bcore_string_s, sizeof( bcore_string_s ) );
 
-    if( TYPEOF_bcore_string_s != *(aware_t *)o ) ERR( "incorrect type value (%u) (expected bcore_string_s)", *(aware_t *)o );
+    if( TYPEOF_bcore_string_s != *(aware_t *)o ) ERR( "incorrect type value (%"PRIu32") (expected bcore_string_s)", *(aware_t *)o );
     const bcore_string_s* s = o;
 
     if( s->size  > 1000000000 )    ERR( "String of size (%zu) appears incorrect.", s->size );
