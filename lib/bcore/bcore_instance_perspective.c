@@ -219,6 +219,8 @@ static void down_generic( const bcore_instance_s* p, vd_t o )
     for( sz_t i = 0; i < p->body->size; i++ )
     {
         const bcore_instance_item_s* inst_item = &p->body->data[ i ];
+        if( inst_item->no_trace ) continue;
+
         const bcore_flect_item_s* flect_item = inst_item->flect_item;
         void* item_obj = ( u0_t* )o + inst_item->offset;
 
@@ -392,6 +394,8 @@ static void copy_generic( const bcore_instance_s* p, vd_t dst, vc_t src )
     for( sz_t i = 0; i < p->body->size; i++ )
     {
         const bcore_instance_item_s* inst_item = &p->body->data[ i ];
+        if( inst_item->no_trace ) continue;
+
         const bcore_flect_item_s* flect_item = inst_item->flect_item;
         void* dst_obj = ( u0_t* )dst + inst_item->offset;
         void* src_obj = ( u0_t* )src + inst_item->offset;
@@ -1033,6 +1037,7 @@ bcore_instance_s* bcore_instance_s_create_from_self( const bcore_flect_self_s* s
                     o->copy_flat = o->copy_flat & inst_item->perspective->copy_flat;
                     o->down_flat = o->down_flat & inst_item->perspective->down_flat;
                 }
+
                 switch( flect_item->caps )
                 {
                     case BCORE_CAPS_STATIC: break;
@@ -1061,6 +1066,14 @@ bcore_instance_s* bcore_instance_s_create_from_self( const bcore_flect_self_s* s
                 {
                     inst_item->size  = bcore_flect_caps_e_size(  flect_item->caps );
                     inst_item->align = bcore_flect_caps_e_align( flect_item->caps );
+                }
+
+                if( flect_item->attr == TYPEOF_private ||
+                    flect_item->attr == TYPEOF_cyclic  ||
+                    flect_item->attr == TYPEOF_external )
+                {
+                    inst_item->no_trace = true;
+                    o->copy_flat        = false;
                 }
 
                 if( last_inst_item )

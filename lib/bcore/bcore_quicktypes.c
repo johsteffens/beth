@@ -21,6 +21,7 @@ static void print_type( hf hash, sc_t name )
 void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
 {
     hf hash_l = ( hash ) ? hash : typeof;
+    bcore_msg( "// leaf types\n" );
     print_type( hash_l, "s3_t" );
     print_type( hash_l, "s2_t" );
     print_type( hash_l, "s1_t" );
@@ -40,8 +41,13 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
     print_type( hash_l, "tp_t" );
     print_type( hash_l, "bool" );
     print_type( hash_l, "aware_t" );
+    bcore_msg( "\n// frequently used types\n" );
     print_type( hash_l, "bcore_string_s" );
     print_type( hash_l, "bcore_string_source_s" );
+    bcore_msg( "\n// attributes\n" );
+    print_type( hash_l, "private" );
+    print_type( hash_l, "cyclic" );
+    print_type( hash_l, "external" );
 }
 
 /**********************************************************************************************************************/

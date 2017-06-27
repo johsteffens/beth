@@ -95,6 +95,8 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
         for( sz_t i = 0; i < inst->body->size; i++ )
         {
             const bcore_instance_item_s* inst_item = &inst->body->data[ i ];
+            if( inst_item->no_trace ) continue;
+
             const bcore_flect_item_s*    flect_item = inst_item->flect_item;
 
             if( i == 0 && o->suppress_aware )
@@ -551,7 +553,7 @@ static bcore_string_s* translate_selftest()
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* out = bcore_string_s_create();
 
-    bcore_flect_parse_sc( "specs = { aware_t _; bcore_string_s* name; sz_t size; u2_t param1; s2_t param2; sz_t [] numarr;  bcore_string_s [] strarr; bool flag;}" );
+    bcore_flect_parse_sc( "specs = { aware_t _; bcore_string_s* name; sz_t size; u2_t param1; s2_t param2; private s3_t param3; sz_t [] numarr;  bcore_string_s [] strarr; bool flag;}" );
     bcore_flect_parse_sc( "specs_arr = { aware_t _; aware * [] arr; }" );
 
     vd_t specs = bcore_life_s_push_aware( l, bcore_instance_typed_create( typeof( "specs" ) ) );

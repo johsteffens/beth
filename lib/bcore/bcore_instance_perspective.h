@@ -19,6 +19,7 @@ typedef struct bcore_instance_item_s
     sz_t offset;
     sz_t size;
     sz_t align;
+    bool no_trace; // do not recursively follow this item (could be private, cyclic or external)
     const bcore_flect_item_s*      flect_item;
     const struct bcore_instance_s* perspective;
 } bcore_instance_item_s;

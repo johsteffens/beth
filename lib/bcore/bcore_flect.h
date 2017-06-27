@@ -45,21 +45,26 @@ typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_aware_lin
 /*
 PLANNING:
 
-* Above array structures should have a self reflection supported by array and instance perspective.
+* (Done) Above array structures should have a self reflection supported by array and instance perspective.
 
-* Above structure names should be simplified:
-  bcore_static_link_s  --> bcore_static_link_s
-  bcore_static_array_s --> bcore_static_array_s
+* (Done) Structure names should be simplified:
   From the 'perspective' perspective, a static_array is a template to be completed in its parent
   structure. The self reflection of such an array-object is to be created on the fly at its point
   of definition inside the parent structure.
 
-* An element of a structure may be anonymous. An anonymous structure merges with its parent structure.
+* (Might not be feasible) An element of a structure may be anonymous. An anonymous structure merges with its parent structure.
   --> as if elements of the child structure had been defined in given order inside parent structure.
 
 * Name management: Ensure all names in a structure have unique names (already at definition level).
+  --> should multiple unnamed (special purpose) members be allowed ? (aware_t, parent-pointer, ... ?)
 
 * Use hash lookup table for (extended) name management.
+
+* Use type qualifiers (possibly flags). Qualifier may be of a general nature (e.g. 'private')
+  or more specific (e.g. private for instance and interpreter perspectives), flags <-> features.
+  -> truly universal flag managements probably requires handling an arbitrary amount of
+     different flags in arbitrary combinations.
+
 */
 
 /// conversion between enum and string
@@ -75,7 +80,11 @@ bool bcore_flect_caps_is_array( u2_t caps );
 
 typedef struct bcore_flect_item_s
 {
-    u2_t caps;   // data encapsulation
+    tp_t type; // hash of type
+    tp_t name; // hash of name
+    tp_t attr; // hash of type attribute (type qualifier)
+
+    u2_t caps; // data encapsulation
 
     union
     {
@@ -83,8 +92,6 @@ typedef struct bcore_flect_item_s
         fp_t f_ptr;  // external function pointer
     };
 
-    tp_t type; // hash of type
-    u2_t name; // hash of name
 } bcore_flect_item_s;
 
 void                bcore_flect_item_s_init( bcore_flect_item_s* o );

@@ -16,6 +16,8 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 /** List of predefined types for quick access.
  *  Created via bcore_quicktypes_to_stdout( NULL );
  */
+
+// leaf types
 #define TYPEOF_s3_t                     1748356928
 #define TYPEOF_s2_t                      219039883
 #define TYPEOF_s1_t                     1151894370
@@ -35,7 +37,14 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_tp_t                      908158082
 #define TYPEOF_bool                     3365180733
 #define TYPEOF_aware_t                  1507719906
+
+// frequently used types
 #define TYPEOF_bcore_string_s           2419449576
 #define TYPEOF_bcore_string_source_s    3813423344
+
+// attributes
+#define TYPEOF_private                  1657474316
+#define TYPEOF_cyclic                   1833008818
+#define TYPEOF_external                  857568394
 
 #endif // BCORE_QUICKTYPES_H

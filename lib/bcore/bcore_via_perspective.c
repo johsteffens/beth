@@ -593,7 +593,7 @@ static vd_t idetach( const bcore_via_s* p, vd_t o, sz_t index )
 static sz_t nget_index( const bcore_via_s* p, tp_t name )
 {
     for( sz_t i = 0; i < p->size; i++ ) if( p->vitem_arr[ i ].name == name ) return i;
-    ERR( "object '%s' has no element of name '%s'", ifnameof( p->inst_p->_.o_type ), ifnameof( name ) );
+    ERR( "object '%s' has no element of name '%s'", ifnameof( p->_.o_type ), ifnameof( name ) );
     return 0;
 }
 
@@ -661,38 +661,25 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     o->_.o_type = self->type;
 
     const bcore_instance_s* inst_p = bcore_instance_s_get_typed( self->type );
-    o->inst_p = inst_p;
 
-    if( self->body )
-    {
-        for( sz_t i = 0; i < self->body->size; i++ )
-        {
-            switch( self->body->data[ i ].caps )
-            {
-                case BCORE_CAPS_EXTERNAL_DATA:
-                case BCORE_CAPS_EXTERNAL_FUNC:
-                o->size++;
-                default: break;
-            }
-        }
-    }
+    sz_t size = self->body ? self->body->size : 0;
+    sz_t index = 0;
 
-    if( inst_p->body ) o->size += inst_p->body->size;
-
-    o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s       ), NULL, o->size, NULL );
-    o->inst_arr  = bcore_u_alloc( sizeof( bcore_instance_s* ), NULL, o->size, NULL );
-    bcore_memzero( o->vitem_arr, sizeof( bcore_via_s       ) * o->size );
-    bcore_memzero( o->inst_arr,  sizeof( bcore_instance_s* ) * o->size );
-
-    sz_t idx = 0;
+    o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s       ), NULL, size, NULL );
+    o->inst_arr  = bcore_u_alloc( sizeof( bcore_instance_s* ), NULL, size, NULL );
+    bcore_memzero( o->vitem_arr, sizeof( bcore_via_s       ) * size );
+    bcore_memzero( o->inst_arr,  sizeof( bcore_instance_s* ) * size );
 
     if( inst_p->body )
     {
         for( sz_t i = 0; i < inst_p->body->size; i++ )
         {
             const bcore_instance_item_s* inst_item = &inst_p->body->data[ i ];
+            if( inst_item->no_trace ) continue;
+
             const bcore_flect_item_s*   flect_item = inst_item->flect_item;
-            bcore_vitem_s* vitem = &o->vitem_arr[ idx ];
+            ASSERT( index < size );
+            bcore_vitem_s* vitem = &o->vitem_arr[ index ];
             vitem->name = flect_item->name;
             vitem->caps = flect_item->caps;
             vitem->offs = inst_item->offset;
@@ -742,9 +729,9 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
 
             if( vitem->type )
             {
-                o->inst_arr[ idx ] = bcore_instance_s_get_typed( vitem->type );
+                o->inst_arr[ index ] = bcore_instance_s_get_typed( vitem->type );
             }
-            idx++;
+            index++;
         }
     }
 
@@ -757,29 +744,38 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
             {
                 case BCORE_CAPS_EXTERNAL_DATA:
                 {
-                    bcore_vitem_s* vitem = &o->vitem_arr[ idx ];
+                    ASSERT( index < size );
+                    bcore_vitem_s* vitem = &o->vitem_arr[ index ];
                     vitem->type  = flect_item->type;
                     vitem->name  = flect_item->name;
                     vitem->caps  = flect_item->caps;
                     vitem->d_ptr = flect_item->d_ptr;
-                    idx++;
+                    index++;
                 }
                 break;
 
                 case BCORE_CAPS_EXTERNAL_FUNC:
                 {
-                    bcore_vitem_s* vitem = &o->vitem_arr[ idx ];
+                    ASSERT( index < size );
+                    bcore_vitem_s* vitem = &o->vitem_arr[ index ];
                     vitem->type  = flect_item->type;
                     vitem->name  = flect_item->name;
                     vitem->caps  = flect_item->caps;
                     vitem->f_ptr = flect_item->f_ptr;
-                    idx++;
+                    index++;
                 }
                 break;
 
                 default: break;
             }
         }
+    }
+
+    o->size = index;
+    if( o->size < size ) // realloc to save memory;
+    {
+        o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s       ), o->vitem_arr, o->size, NULL );
+        o->inst_arr  = bcore_u_alloc( sizeof( bcore_instance_s* ), o->inst_arr,  o->size, NULL );
     }
 
     o->iget_name     = iget_name;

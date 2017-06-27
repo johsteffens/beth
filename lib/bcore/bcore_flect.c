@@ -5,6 +5,7 @@
 #include "bcore_control.h"
 #include "bcore_threads.h"
 #include "bcore_life.h"
+#include "bcore_quicktypes.h"
 
 /**********************************************************************************************************************/
 
@@ -120,6 +121,7 @@ bcore_string_s* bcore_flect_item_s_show( const bcore_flect_item_s* o )
     bcore_string_s_pushf( s, "\n{" );
     bcore_string_s_pushf( s, "\n    type  : %x '%s'", o->type, ifnameof( o->type ) );
     bcore_string_s_pushf( s, "\n    name  : %x '%s'", o->name, ifnameof( o->name ) );
+    bcore_string_s_pushf( s, "\n    attr  : %x '%s'", o->attr, ifnameof( o->attr ) );
     bcore_string_s_pushf( s, "\n    caps  : %s",  bcore_flect_caps_e_sc( o->caps ) );
     if( o->caps == BCORE_CAPS_EXTERNAL_DATA )
     {
@@ -239,22 +241,43 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
         bcore_string_s* name1 = bcore_string_s_create_l( life );
         bcore_string_s* name2 = bcore_string_s_create_l( life );
         bcore_flect_item_s* item = bcore_life_s_push( life, bcore_flect_item_s_discard, bcore_flect_item_s_create() );
-        bool ptr, arr;
-        idx = bcore_string_s_parsef( text, idx, text->size, "#name #?'*' #?'[]' #name ; ", name1, &ptr, &arr, name2 );
+        bool private, cyclic, external, link, arr;
+        idx = bcore_string_s_parsef( text, idx, text->size, "#?'private' #?'cyclic' #?'external' #name #?'*' #?'[]' #name ; ",  &private, &cyclic, &external, name1, &link, &arr, name2 );
+        if( ( int )private + cyclic + external > 1 )
+        {
+            bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, ";" ) );
+            ERR( "\n%s\nAttributes are mutually exclusive. Choose maximally one attribute.", context->sc );
+        }
+
+        if( cyclic && !link )
+        {
+            bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, "cyclic" ) );
+            ERR( "\n%s\nOnly links (*) can be cyclic.", context->sc );
+        }
+
+        if( external && !link )
+        {
+            bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, "external" ) );
+            ERR( "\n%s\nOnly links (*) can be external.", context->sc );
+        }
+
+        item->attr = private ? TYPEOF_private : cyclic ? TYPEOF_cyclic : 0;
+
+
         if( bcore_string_s_equal_sc( name1, "typed" ) )
         {
-            if( !ptr && !arr )
+            if( !link && !arr )
             {
                 bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, "typed" ) );
                 ERR( "\n%s\nTyped objects cannot be embedded. Use 'typed *' to clarify method of referencing.", context->sc );
             }
             item->type = 0; //or typeof( "vd_t" );
             item->name = bcore_name_enroll( name2->sc );
-            item->caps = arr ? ( ptr ? BCORE_CAPS_TYPED_LINK_ARRAY : BCORE_CAPS_TYPED_ARRAY ) : BCORE_CAPS_TYPED_LINK;
+            item->caps = arr ? ( link ? BCORE_CAPS_TYPED_LINK_ARRAY : BCORE_CAPS_TYPED_ARRAY ) : BCORE_CAPS_TYPED_LINK;
         }
         else if( bcore_string_s_equal_sc( name1, "aware" ) )
         {
-            if( !ptr )
+            if( !link )
             {
                 bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, "aware" ) );
                 ERR( "\n%s\nSelf-aware objects must be referenced by a link. Use 'aware *' to clarify method of referencing.", context->sc );
@@ -267,7 +290,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
         {
             item->type = typeof( name1->sc );
             item->name = bcore_name_enroll( name2->sc );
-            item->caps = arr ? ( ptr ? BCORE_CAPS_STATIC_LINK_ARRAY : BCORE_CAPS_STATIC_ARRAY ) : ( ptr ? BCORE_CAPS_STATIC_LINK : BCORE_CAPS_STATIC );
+            item->caps = arr ? ( link ? BCORE_CAPS_STATIC_LINK_ARRAY : BCORE_CAPS_STATIC_ARRAY ) : ( link ? BCORE_CAPS_STATIC_LINK : BCORE_CAPS_STATIC );
         }
 
         if( item->type == typeof( "aware_t" ) )
