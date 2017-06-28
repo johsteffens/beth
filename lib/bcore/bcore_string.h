@@ -61,7 +61,8 @@ bcore_string_s* bcore_string_s_clear( bcore_string_s* o ); // empties string
 
 bcore_string_s* bcore_string_s_push_char(     bcore_string_s* o, char c );
 bcore_string_s* bcore_string_s_push_char_n(   bcore_string_s* o, char c, sz_t n ); // pushes c n times
-char            bcore_string_s_pop_char(      bcore_string_s* o );
+char            bcore_string_s_pop_char(      bcore_string_s* o );                 // removes last character and returns it
+void            bcore_string_s_pop_n(         bcore_string_s* o,         sz_t n ); // removes n last characters
 bcore_string_s* bcore_string_s_push_string(   bcore_string_s* o, const bcore_string_s* src );
 bcore_string_s* bcore_string_s_push_string_d( bcore_string_s* o, bcore_string_s* src ); // discards src
 bcore_string_s* bcore_string_s_push_sc(       bcore_string_s* o, sc_t sc );

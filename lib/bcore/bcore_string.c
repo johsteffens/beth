@@ -275,6 +275,13 @@ char bcore_string_s_pop_char( bcore_string_s* o )
     return c;
 }
 
+void bcore_string_s_pop_n( bcore_string_s* o, sz_t n )
+{
+    if( o->size == 0 ) return;
+    o->size = ( o->size > n ) ? ( o->size - n ) : 0;
+    o->data[ o->size ] = 0;
+}
+
 bcore_string_s* bcore_string_s_push_string( bcore_string_s* o, const bcore_string_s* src )
 {
     if( o->size == 0 )

@@ -28,8 +28,8 @@ bcore_bml_translator_s* bcore_bml_translator_s_clone(     const bcore_bml_transl
 void                    bcore_bml_translator_s_discard(         bcore_bml_translator_s* o );
 bcore_flect_self_s*     bcore_bml_translator_s_create_self();
 
-void bcore_bml_translator_s_translate_object( const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t fsnk );
-void bcore_bml_translator_s_translate_body(   const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t fsnk );
+void bcore_bml_translator_s_from_object( const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t fsnk );
+void bcore_bml_translator_s_from_body(   const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t fsnk );
 
 /**********************************************************************************************************************/
 
@@ -46,9 +46,9 @@ bcore_bml_interpreter_s* bcore_bml_interpreter_s_clone(     const bcore_bml_inte
 void                     bcore_bml_interpreter_s_discard(         bcore_bml_interpreter_s* o );
 bcore_flect_self_s*      bcore_bml_interpreter_s_create_self();
 
-dt_p bcore_bml_interpreter_s_interpret_object( const bcore_bml_interpreter_s* o, vd_t fsrc );
-dt_p bcore_bml_interpreter_s_interpret_typed(  const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type );
-dt_p bcore_bml_interpreter_s_interpret_body(   const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type, vd_t obj );
+dt_p bcore_bml_interpreter_s_to_object( const bcore_bml_interpreter_s* o, vd_t fsrc );
+dt_p bcore_bml_interpreter_s_to_typed(  const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type );
+dt_p bcore_bml_interpreter_s_to_body(   const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type, vd_t obj );
 
 /**********************************************************************************************************************/
 // testing, debugging

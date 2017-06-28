@@ -47,9 +47,9 @@ void bcore_bml_translator_s_discard( bcore_bml_translator_s* o )
 bcore_flect_self_s* bcore_bml_translator_s_create_self()
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_translator_s = { aware_t _; sz_t tab_size; bool suppress_aware; }"   );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_init,             "bcore_fp_init",             "init"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_translate_object, "bcore_fp_translate_object", "translate_object" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_translate_body,   "bcore_fp_translate_body",   "translate_body"   );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_init,        "bcore_fp_init",                  "init"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_from_object, "bcore_fp_translate_from_object", "from_object" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_from_body,   "bcore_fp_translate_from_body",   "from_body"   );
     return self;
 }
 
@@ -85,19 +85,23 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
 
         if( link )
         {
-            snk->pushf( snk, dst, "%s!%s:%s{ ", prefix->sc, nameof( type ), prefix->sc );
+//            snk->pushf( snk, dst, "%s!%s:%s{ ", prefix->sc, nameof( type ), prefix->sc );
+            snk->pushf( snk, dst, "!%s:%s{ ", nameof( type ), prefix->sc );
         }
         else
         {
             snk->pushf( snk, dst, "%s{", prefix->sc );
         }
 
+        bcore_string_s_push_char_n( prefix, ' ', o->tab_size );
+
+
         for( sz_t i = 0; i < inst->body->size; i++ )
         {
             const bcore_instance_item_s* inst_item = &inst->body->data[ i ];
             if( inst_item->no_trace ) continue;
 
-            const bcore_flect_item_s*    flect_item = inst_item->flect_item;
+            const bcore_flect_item_s* flect_item = inst_item->flect_item;
 
             if( i == 0 && o->suppress_aware )
             {
@@ -105,7 +109,7 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
             }
 
             vc_t element = ( u0_t* )obj + inst_item->offset;
-            snk->pushf( snk, dst, "%s  %s", prefix->sc, nameof( flect_item->name ) );
+            snk->pushf( snk, dst, "%s%s", prefix->sc, nameof( flect_item->name ) );
 
             switch( flect_item->caps )
             {
@@ -224,6 +228,7 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
                 default: break;
             }
         }
+        bcore_string_s_pop_n( prefix, o->tab_size );
         snk->pushf( snk, dst, "%s}", prefix->sc );
         bcore_string_s_discard( prefix );
     }
@@ -234,18 +239,18 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
     }
 }
 
-void bcore_bml_translator_s_translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t fsnk )
+void bcore_bml_translator_s_from_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t fsnk )
 {
     translate( o, false, type, obj, fsnk, 0 );
     const bcore_sink_s* snk_p = bcore_sink_s_get_aware( fsnk );
     snk_p->pushf( snk_p, fsnk, "\n" );
 }
 
-void bcore_bml_translator_s_translate_object( const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t fsnk )
+void bcore_bml_translator_s_from_object( const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t fsnk )
 {
     const bcore_sink_s* snk_p = bcore_sink_s_get_aware( fsnk );
     snk_p->pushf( snk_p, fsnk, "!%s: ", nameof( type ) );
-    bcore_bml_translator_s_translate_body( o, type, obj, fsnk );
+    bcore_bml_translator_s_from_body( o, type, obj, fsnk );
 }
 
 /**********************************************************************************************************************/
@@ -285,28 +290,27 @@ void bcore_bml_interpreter_s_discard( bcore_bml_interpreter_s* o )
 bcore_flect_self_s* bcore_bml_interpreter_s_create_self()
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_interpreter_s = { aware_t _; }"   );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_init,             "bcore_fp_init",             "init"             );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_interpret_object, "bcore_fp_interpret_object", "interpret_object" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_interpret_typed,  "bcore_fp_interpret_typed",  "interpret_typed" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_interpret_body,   "bcore_fp_interpret_body",   "interpret_body"   );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_init,      "bcore_fp_init",                "init"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_to_object, "bcore_fp_interpret_to_object", "to_object" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_to_typed,  "bcore_fp_interpret_to_typed",  "to_typed"  );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_to_body,   "bcore_fp_interpret_to_body",   "to_body"   );
     return self;
 }
 
 /**********************************************************************************************************************/
 
-static dt_p interpret_object( const bcore_bml_interpreter_s* o, vd_t src );
-static dt_p interpret_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t type );
+static dt_p to_object( const bcore_bml_interpreter_s* o, vd_t src );
+static dt_p to_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t type );
+static void enter_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst );
 
 // target object is instantiated and filled with data
-static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst )
+static void to_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst )
 {
     const bcore_source_s* src_p = bcore_source_s_get_aware( src );
 
-    if( src_p->parse_boolf( src_p, src, " #?'<-'" ) ) // explicit type conversion requested
+    if( src_p->parse_boolf( src_p, src, " #?'.'" ) ) // stepping outside body
     {
-        dt_p tmp = interpret_object( o, src );
-        bcore_instance_typed_copy_typed( dst.t, dst.o, tmp.t, tmp.o );
-        bcore_instance_typed_discard( tmp.t, tmp.o );
+        enter_body( o, src, dst );
         return;
     }
 
@@ -362,7 +366,7 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                 if( src_p->parse_boolf( src_p, src, " #?'!'" ) )
                 {
                     bcore_string_s* s = bcore_string_s_create();
-                    src_p->parsef( src_p, src, " #name :", s );
+                    src_p->parsef( src_p, src, " #name", s );
                     typed_type = typeof( s->sc );
                     if( !bcore_flect_try_self( typed_type ) ) src_p->parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
                     bcore_string_s_discard( s );
@@ -391,11 +395,11 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                             vd_t obj = NULL;
                             if( type_l )
                             {
-                                obj = interpret_typed( o, src, type_l ).o;
+                                obj = to_typed( o, src, type_l ).o;
                             }
                             else
                             {
-                                obj = interpret_object( o, src ).o;
+                                obj = to_object( o, src ).o;
 
                             }
                             arr_p->push_d( arr_p, element, obj );
@@ -405,7 +409,7 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                             dt_p dst;
                             dst.t = type_l;
                             dst.o = arr_p->push_c( arr_p, element, NULL );
-                            interpret_body( o, src, dst );
+                            to_body( o, src, dst );
                         }
                     }
                     if( typed && typed_type == 0 && arr_p->get_size( arr_p, element ) > 0 )
@@ -415,33 +419,35 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                 }
                 else
                 {
-                    src_p->parsef( src_p, src, link ? " =" : " :" );
                     switch( vitem->caps )
                     {
                         case BCORE_CAPS_STATIC:
                         {
                             dt_p dst = { element, vitem->type };
-                            interpret_body( o, src, dst );
+                            enter_body( o, src, dst );
                         }
                         break;
 
                         case BCORE_CAPS_STATIC_LINK:
                         {
-                            ( ( bcore_static_link_s* )element )->link = interpret_typed(  o, src, vitem->type ).o;
+                            src_p->parsef( src_p, src, " =" );
+                            ( ( bcore_static_link_s* )element )->link = to_typed(  o, src, vitem->type ).o;
                         }
                         break;
 
                         case BCORE_CAPS_AWARE_LINK:
                         {
-                            ( ( bcore_aware_link_s* )element )->link = interpret_object( o, src ).o;
+                            src_p->parsef( src_p, src, " =" );
+                            ( ( bcore_aware_link_s* )element )->link = to_object( o, src ).o;
                         }
                         break;
 
                         case BCORE_CAPS_TYPED_LINK:
                         {
+                            src_p->parsef( src_p, src, " =" );
                             bcore_typed_link_s* dst = element;
                             dst->type = typed_type;
-                            dst->link = interpret_typed( o, src, dst->type ).o;
+                            dst->link = to_typed( o, src, dst->type ).o;
                             if( typed_type == 0 && dst->link != NULL )
                             {
                                 src_p->parse_errf( src_p, src, "Missing type specifier for nonzero typed object '%s'", ifnameof( vitem->name ) );
@@ -463,8 +469,27 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
     }
 }
 
+static void enter_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst )
+{
+    const bcore_source_s* src_p = bcore_source_s_get_aware( src );
+    if( src_p->parse_boolf( src_p, src, " #?':'" ) )
+    {
+        to_body( o, src, dst );
+    }
+    else if( src_p->parse_boolf( src_p, src, " #?'<-'" ) )
+    {
+        dt_p dt_l = to_object( o, src );
+        bcore_instance_typed_copy_typed( dst.t, dst.o, dt_l.t, dt_l.o );
+        bcore_instance_typed_discard( dt_l.t, dt_l.o );
+    }
+    else
+    {
+        /* do nothing */
+    }
+}
+
 // requires instantiation in src or NULL
-static dt_p interpret_object( const bcore_bml_interpreter_s* o, vd_t src )
+static dt_p to_object( const bcore_bml_interpreter_s* o, vd_t src )
 {
     dt_p ret;
     ret.t = 0;
@@ -476,12 +501,12 @@ static dt_p interpret_object( const bcore_bml_interpreter_s* o, vd_t src )
     if( src_p->parse_boolf( src_p, src, " #?'!'" ) )
     {
         bcore_string_s* s = bcore_string_s_create();
-        src_p->parsef( src_p, src, "#name :", s );
+        src_p->parsef( src_p, src, "#name", s );
         ret.t = typeof( s->sc );
         if( !bcore_flect_exists( ret.t ) ) src_p->parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
         bcore_string_s_discard( s );
         ret.o = bcore_instance_typed_create( ret.t );
-        interpret_body( o, src, ret );
+        enter_body( o, src, ret );
     }
     else
     {
@@ -492,8 +517,8 @@ static dt_p interpret_object( const bcore_bml_interpreter_s* o, vd_t src )
 
 // target type is given and object of that type is returned
 // instantiation in src is optional, NULL allowed
-// if instatiation type different from target type, automatic conversion is initiated
-static dt_p interpret_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t type )
+// if instantiation type different from target type, automatic conversion is initiated
+static dt_p to_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t type )
 {
     dt_p ret;
     const bcore_source_s* src_p = bcore_source_s_get_aware( src );
@@ -507,7 +532,7 @@ static dt_p interpret_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t ty
     {
         ret.o = bcore_instance_typed_create( ret.t );
         bcore_string_s* s = bcore_string_s_create();
-        src_p->parsef( src_p, src, "#name :", s );
+        src_p->parsef( src_p, src, "#name", s );
         tp_t type_l = typeof( s->sc );
         if( !bcore_flect_exists( type_l ) ) src_p->parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
         bcore_string_s_discard( s );
@@ -517,38 +542,38 @@ static dt_p interpret_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t ty
             dt_p dt_l;
             dt_l.t = type_l;
             dt_l.o = bcore_instance_typed_create( dt_l.t );
-            interpret_body( o, src, dt_l );
+            enter_body( o, src, dt_l );
             bcore_instance_typed_copy_typed( ret.t, ret.o, dt_l.t, dt_l.o );
             bcore_instance_typed_discard( dt_l.t, dt_l.o );
         }
         else
         {
-            interpret_body( o, src, ret );
+            enter_body( o, src, ret );
         }
     }
     else
     {
         ret.o = bcore_instance_typed_create( ret.t );
-        interpret_body( o, src, ret );
+        to_body( o, src, ret );
     }
     return ret;
 }
 
-dt_p bcore_bml_interpreter_s_interpret_body( const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type, vd_t obj )
+dt_p bcore_bml_interpreter_s_to_body( const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type, vd_t obj )
 {
     dt_p dst = { obj, type };
-    interpret_body( o, fsrc, dst );
+    to_body( o, fsrc, dst );
     return dst;
 }
 
-dt_p bcore_bml_interpreter_s_interpret_object( const bcore_bml_interpreter_s* o, vd_t fsrc )
+dt_p bcore_bml_interpreter_s_to_object( const bcore_bml_interpreter_s* o, vd_t fsrc )
 {
-    return interpret_object( o, fsrc );
+    return to_object( o, fsrc );
 }
 
-dt_p bcore_bml_interpreter_s_interpret_typed( const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type )
+dt_p bcore_bml_interpreter_s_to_typed( const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type )
 {
-    return interpret_typed( o, fsrc, type );
+    return to_typed( o, fsrc, type );
 }
 
 /**********************************************************************************************************************/
@@ -611,18 +636,20 @@ static bcore_string_s* translate_selftest()
     }
 
     bcore_bml_translator_s* trans = bcore_life_s_push_aware( l, bcore_bml_translator_s_create() );
-    bcore_bml_translator_s_translate_body( trans, typeof( "specs_arr" ), specs_arr, out );
+    bcore_bml_translator_s_from_object( trans, typeof( "specs_arr" ), specs_arr, out );
 
-    bcore_bml_translator_s_translate_body( trans, typeof( "bcore_bml_translator_s" ), trans, out );
+    //bcore_string_s_print( out );
+
+    bcore_bml_translator_s_from_object( trans, typeof( "bcore_bml_translator_s" ), trans, out );
 
     {
         bcore_string_s* buf = bcore_life_s_push_aware( l, bcore_string_s_create() );
-        bcore_bml_translator_s_translate_object( trans, typeof( "specs_arr" ), specs_arr, buf );
+        bcore_bml_translator_s_from_object( trans, typeof( "specs_arr" ), specs_arr, buf );
         bcore_bml_interpreter_s* intrp = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() );
         bcore_string_source_s* str_src = bcore_life_s_push_aware( l, bcore_string_source_s_create_string( buf ) );
-        vd_t specs_arr_2 = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_interpret_object( intrp, str_src ).o );
+        vd_t specs_arr_2 = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_to_object( intrp, str_src ).o );
         bcore_string_s_pushf( out, "\n =================specs_arr_2: ==================\n" );
-        bcore_bml_translator_s_translate_body( trans, typeof( "specs_arr" ), specs_arr_2, out );
+        bcore_bml_translator_s_from_object( trans, typeof( "specs_arr" ), specs_arr_2, out );
     }
 
     bcore_life_s_discard( l );
@@ -634,22 +661,25 @@ static bcore_string_s* interpret_selftest()
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* out = bcore_string_s_create();
 
-    sc_t src = "\
-    !specs:\n\
-    { \n\
-        name = !f2_t:12345E7 \n\
-        param2:1234 \n\
-        param1:3456 \n\
-        flag: true\n\
-        numarr[]: 4,4,5,6; \n\
-        strarr[]: \"fluff\", \"quirk\", \"mint\"; \n\
-    }";
+    sc_t src =
+    "!specs:                                        \n"
+    "{                                              \n"
+    "    name = !f2_t      // a comment             \n"
+    "    /* another                                 \n"
+    "       comment                                 \n"
+    "    */                                         \n"
+    "    param2 <- !f2_t: 1.9                       \n"
+    "    param1:3456                                \n"
+    "    flag: true                                 \n"
+    "    numarr[]: 4,4,5,6, . <- !f3_t: 3.7;        \n"
+    "    strarr[]: \"fluff\", \"quirk\",.<-!s2_t:-6; \n"
+    "}";
 
     bcore_bml_interpreter_s* intrp = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() );
     bcore_string_source_s* str_src = bcore_life_s_push_aware( l, bcore_string_source_s_create_sc( src ) );
-    vd_t specs                     = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_interpret_object( intrp, str_src ).o );
+    vd_t specs                     = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_to_object( intrp, str_src ).o );
     bcore_bml_translator_s* trans  = bcore_life_s_push_aware( l, bcore_bml_translator_s_create() );
-    bcore_bml_translator_s_translate_body( trans, typeof( "specs" ), specs, out );
+    bcore_bml_translator_s_from_object( trans, typeof( "specs" ), specs, out );
 
     bcore_life_s_discard( l );
 

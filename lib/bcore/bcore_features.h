@@ -46,11 +46,11 @@ typedef sz_t (*bcore_fp_flow_src )( vd_t o, vd_t data, sz_t size ); // flow_sour
 /**********************************************************************************************************************/
 
 /// marshaling, building, injection
-typedef void ( *bcore_fp_translate_object )( vc_t o, tp_t type, vc_t obj, vd_t fsnk ); // translates object to be constructible via 'interpret_object'
-typedef void ( *bcore_fp_translate_body   )( vc_t o, tp_t type, vc_t obj, vd_t fsnk ); // translates object to be constructible via 'interpret_body'
-typedef dt_p ( *bcore_fp_interpret_object )( vc_t o, vd_t fsrc );                      // constructs object (no information given)
-typedef dt_p ( *bcore_fp_interpret_typed  )( vc_t o, vd_t fsrc, tp_t type );           // constructs object of given type (possibly via type conversion)
-typedef dt_p ( *bcore_fp_interpret_body   )( vc_t o, vd_t fsrc, tp_t type, vd_t obj ); // injects into object instance of given type
+typedef void ( *bcore_fp_translate_from_object )( vc_t o, tp_t type, vc_t obj, vd_t fsnk ); // translates object to be constructible via 'interpret_object'
+typedef void ( *bcore_fp_translate_from_body   )( vc_t o, tp_t type, vc_t obj, vd_t fsnk ); // translates object to be constructible via 'interpret_body'
+typedef dt_p ( *bcore_fp_interpret_to_object   )( vc_t o, vd_t fsrc );                      // constructs object (no information given)
+typedef dt_p ( *bcore_fp_interpret_to_typed    )( vc_t o, vd_t fsrc, tp_t type );           // constructs object of given type (possibly via type conversion)
+typedef dt_p ( *bcore_fp_interpret_to_body     )( vc_t o, vd_t fsrc, tp_t type, vd_t obj ); // injects into object instance of given type
 
 /**********************************************************************************************************************/
 /// Testing, Debugging. A test shall either complete safely or fail with a descriptive error (via bcore_err).
