@@ -4,130 +4,37 @@
 #include "bcore_control.h"
 #include "bcore_string.h"
 #include "bcore_threads.h"
+#include "bcore_hmap.h"
 
 /**********************************************************************************************************************/
+// hash map
 
-// node of binary tree
-typedef struct node_s
+typedef struct hmap_s
 {
-    u2_t           hash;
-    bcore_string_s string;
-    struct node_s* child0;
-    struct node_s* child1;
-} node_s;
-
-static void node_s_init( node_s* o )
-{
-    o->hash = 0;
-    bcore_string_s_init( &o->string );
-    o->child0 = NULL;
-    o->child1 = NULL;
-}
-
-static void node_s_down( node_s* o )
-{
-    if( o->child0 )
-    {
-        node_s_down( o->child0 );
-        o->child0 = bcore_free( o->child0 );
-    }
-    if( o->child1 )
-    {
-        node_s_down( o->child1 );
-        o->child1 = bcore_free( o->child1 );
-    }
-    o->hash = 0;
-    bcore_string_s_down( &o->string );
-}
-
-static void node_s_insert( node_s* o, u2_t hash, const char* name )
-{
-    if( hash < o->hash )
-    {
-        if( o->child0 )
-        {
-            node_s_insert( o->child0, hash, name );
-        }
-        else
-        {
-            o->child0 = bcore_alloc( NULL, sizeof( node_s ) );
-            node_s_init( o->child0 );
-            bcore_string_s_copy_sc( &o->child0->string, name );
-            o->child0->hash = hash;
-        }
-    }
-    else if( hash > o->hash )
-    {
-        if( o->child1 )
-        {
-            node_s_insert( o->child1, hash, name );
-        }
-        else
-        {
-            o->child1 = bcore_alloc( NULL, sizeof( node_s ) );
-            node_s_init( o->child1 );
-            bcore_string_s_copy_sc( &o->child1->string, name );
-            o->child1->hash = hash;
-        }
-    }
-    else
-    {
-        if( !bcore_string_s_equal_sc( &o->string, name ) != 0 ) ERR( "%s collides with %s", name, o->string.sc );
-    }
-}
-
-static const char* node_s_name( const node_s* o, u2_t hash )
-{
-    if( hash < o->hash )
-    {
-        if( o->child0 )
-        {
-            return node_s_name( o->child0, hash );
-        }
-        else
-        {
-            return NULL;
-        }
-    }
-    else if( hash > o->hash )
-    {
-        if( o->child1 )
-        {
-            return node_s_name( o->child1, hash );
-        }
-        else
-        {
-            return NULL;
-        }
-    }
-    else
-    {
-        return o->string.sc;
-    }
-}
-
-/**********************************************************************************************************************/
-
-// binary tree
-typedef struct tree_s
-{
-    node_s* root;
+    bcore_hmap_u2vd_s* map;
     bcore_mutex_t mutex;
-} tree_s;
+} hmap_s;
 
-static void tree_s_init( tree_s* o )
+static void hmap_s_init( hmap_s* o )
 {
-    o->root = NULL;
+    o->map = NULL;
     bcore_mutex_init( &o->mutex );
 }
 
-void tree_s_down( tree_s* o )
+static void hmap_s_node_down( u2_t key, vd_t val )
+{
+    bcore_string_s* string = val;
+    bcore_string_s_discard( string );
+}
+
+static void hmap_s_down( hmap_s* o )
 {
     bcore_mutex_lock( &o->mutex );
-    if( o->root )
+    if( o->map )
     {
-        node_s_down( o->root );
-        o->root = bcore_free( o->root );
+        bcore_hmap_u2vd_s_run( o->map, hmap_s_node_down );
+        bcore_hmap_u2vd_s_discard( o->map );
+        o->map = NULL;
     }
     bcore_mutex_unlock( &o->mutex );
     bcore_mutex_down( &o->mutex );
@@ -135,71 +42,77 @@ void tree_s_down( tree_s* o )
 
 /**********************************************************************************************************************/
 
-tree_s* tree_s_g = NULL;
+hmap_s* bcore_name_hmap_s_g = NULL;
 
-static void create_name_tree_s()
+static void create_name_hmap_s()
 {
-    if( tree_s_g == NULL )
+    if( bcore_name_hmap_s_g == NULL )
     {
-        tree_s_g = bcore_alloc( NULL, sizeof( tree_s ) );
-        tree_s_init( tree_s_g );
+        bcore_name_hmap_s_g = bcore_alloc( NULL, sizeof( hmap_s ) );
+        hmap_s_init( bcore_name_hmap_s_g );
     }
 }
 
-static void discard_name_tree_s()
+static void discard_name_hmap_s()
 {
-    if( tree_s_g )
+    if( bcore_name_hmap_s_g )
     {
-        tree_s_down( tree_s_g );
-        tree_s_g = bcore_free( tree_s_g );
+        hmap_s_down( bcore_name_hmap_s_g );
+        bcore_name_hmap_s_g = bcore_free( bcore_name_hmap_s_g );
     }
 }
 
 void bcore_name_open()
 {
     static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, create_name_tree_s );
+    bcore_once( &flag, create_name_hmap_s );
 }
 
 void bcore_name_manager_close()
 {
-    discard_name_tree_s();
+    discard_name_hmap_s();
 }
 
 const char* bcore_name_try_name( u2_t hash )
 {
-    if( !tree_s_g ) bcore_name_open();
-    bcore_mutex_lock( &tree_s_g->mutex );
-    const char* name = node_s_name( tree_s_g->root, hash );
-    bcore_mutex_unlock( &tree_s_g->mutex );
+    if( !bcore_name_hmap_s_g ) bcore_name_open();
+    bcore_mutex_lock( &bcore_name_hmap_s_g->mutex );
+    vd_t* vdp = bcore_hmap_u2vd_s_get( bcore_name_hmap_s_g->map, hash );
+    sc_t name = NULL;
+    if( vdp )
+    {
+        bcore_string_s* s = *vdp;
+        name = s->sc;
+    }
+    bcore_mutex_unlock( &bcore_name_hmap_s_g->mutex );
     return name;
 }
 
 const char* bcore_name_get_name( u2_t hash )
 {
     const char* name = bcore_name_try_name( hash );
-    if( !name ) ERR( "hash %u has no name", hash );
+    if( !name ) ERR( "hash %"PRIu32" has no name", hash );
     return name;
 }
 
-u2_t bcore_name_enroll( const char* name )
+u2_t bcore_name_enroll( sc_t name )
 {
-    if( !tree_s_g ) bcore_name_open();
-    u2_t hash =  bcore_name_get_type( name );
+    if( !bcore_name_hmap_s_g ) bcore_name_open();
+    u2_t hash = bcore_name_get_type( name );
     if( hash == 0 ) ERR( "Hash of '%s' is zero. Zero is a reserved value.", name );
-    bcore_mutex_lock( &tree_s_g->mutex );
-    if( tree_s_g->root )
+    bcore_mutex_lock( &bcore_name_hmap_s_g->mutex );
+    if( !bcore_name_hmap_s_g->map ) bcore_name_hmap_s_g->map = bcore_hmap_u2vd_s_create();
+    vd_t* vdp = bcore_hmap_u2vd_s_get( bcore_name_hmap_s_g->map, hash );
+    if( vdp )
     {
-        node_s_insert( tree_s_g->root, hash, name );
+        const bcore_string_s* string = *vdp;
+        if( !bcore_string_s_equal_sc( string, name ) ) ERR( "%s collides with %s", name, string->sc );
     }
     else
     {
-        tree_s_g->root = bcore_alloc( NULL, sizeof( node_s ) );
-        node_s_init( tree_s_g->root );
-        tree_s_g->root->hash = hash;
-        bcore_string_s_copy_sc( &tree_s_g->root->string, name );
+        bcore_hmap_u2vd_s_set( bcore_name_hmap_s_g->map, hash, bcore_string_s_create_sc( name ) );
     }
-    bcore_mutex_unlock( &tree_s_g->mutex );
+    bcore_mutex_unlock( &bcore_name_hmap_s_g->mutex );
     return hash;
 }
 
