@@ -690,12 +690,16 @@ bcore_string_s* bcore_btree_ip_s_selftest()
 
     time = clock();
     bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
-    for( sz_t j = 0; j < 10; j++ )
+    sz_t read_cycles = 20;
+    for( sz_t j = 0; j < read_cycles; j++ )
     {
-        for( sz_t i = 0; i < kvbuf_size; i++ ) bcore_btree_ip_s_val( t, kvbuf[ i ].key );
+        for( sz_t i = 0; i < kvbuf_size; i++ )
+        {
+            if( *bcore_btree_ip_s_val( t, kvbuf[ i ].key ) != kvbuf[ i ].val ) ERR( "value mismatch (%lu vs %lu)", kvbuf[ i ].key, kvbuf[ i ].val );
+        }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fus per access)\n", 1E6 * ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * 10.0 ) );
+    bcore_string_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
 
     bcore_string_s_pushf( log, "\n" );
     bcore_string_s_pushf( log, "Removal: " );
@@ -1476,12 +1480,16 @@ bcore_string_s* bcore_btree_ps_s_selftest()
 
     time = clock();
     bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
-    for( sz_t j = 0; j < 10; j++ )
+    sz_t read_cycles = 20;
+    for( sz_t j = 0; j < read_cycles; j++ )
     {
-        for( sz_t i = 0; i < kvbuf_size; i++ ) bcore_btree_ps_s_val( t, kvbuf[ i ].key );
+        for( sz_t i = 0; i < kvbuf_size; i++ )
+        {
+            if( *bcore_btree_ps_s_val( t, kvbuf[ i ].key ) != kvbuf[ i ].val ) ERR( "value mismatch (%lu vs %lu)", kvbuf[ i ].key, kvbuf[ i ].val );
+        }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fus per access)\n", 1E6 * ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * 10.0 ) );
+    bcore_string_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
 
     bcore_string_s_pushf( log, "\n" );
     bcore_string_s_pushf( log, "Removal: " );
@@ -2258,12 +2266,16 @@ bcore_string_s* bcore_btree_vd_s_selftest()
 
     time = clock();
     bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
-    for( sz_t j = 0; j < 10; j++ )
+    sz_t read_cycles = 20;
+    for( sz_t j = 0; j < read_cycles; j++ )
     {
-        for( sz_t i = 0; i < kvbuf_size; i++ ) bcore_btree_vd_s_exists( t, kvbuf[ i ].key );
+        for( sz_t i = 0; i < kvbuf_size; i++ )
+        {
+            if( !bcore_btree_vd_s_exists( t, kvbuf[ i ].key ) ) ERR( "key %lu does not exist", kvbuf[ i ].key );
+        }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fus per access)\n", 1E6 * ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * 10.0 ) );
+    bcore_string_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
 
     time = clock();
     bcore_string_s_pushf( log, "largest_below_equal - test: ", kvbuf_size );
