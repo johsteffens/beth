@@ -662,16 +662,16 @@ static bcore_string_s* interpret_selftest()
     bcore_string_s* out = bcore_string_s_create();
 
     sc_t src =
-    "!specs:                                        \n"
-    "{                                              \n"
-    "    name = !f2_t      // a comment             \n"
-    "    /* another                                 \n"
-    "       comment                                 \n"
-    "    */                                         \n"
-    "    param2 <- !f2_t: 1.9                       \n"
-    "    param1:3456                                \n"
-    "    flag: true                                 \n"
-    "    numarr[]: 4,4,5,6, . <- !f3_t: 3.7;        \n"
+    "!specs:                                         \n"
+    "{                                               \n"
+    "    name = !f2_t      // a comment              \n"
+    "    /* another                                  \n"
+    "       comment                                  \n"
+    "    */                                          \n"
+    "    param2 <- !f2_t: 1.9                        \n"
+    "    param1:3456                                 \n"
+    "    flag: true                                  \n"
+    "    numarr[]: 4,4,5,6, . <- !f3_t: 3.7;         \n"
     "    strarr[]: \"fluff\", \"quirk\",.<-!s2_t:-6; \n"
     "}";
 
