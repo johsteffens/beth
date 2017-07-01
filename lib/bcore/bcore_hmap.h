@@ -38,7 +38,7 @@ DECLARE_FUNCTION_CREATE(  bcore_hmap_u2vd_s )
 DECLARE_FUNCTION_DISCARD( bcore_hmap_u2vd_s )
 DECLARE_FUNCTION_CLONE(   bcore_hmap_u2vd_s )
 
-void  bcore_hmap_u2vd_s_set_hash(     bcore_hmap_u2vd_s* o, sz_t index, bcore_hash_u2u2 hash ); // sets optional external hash function (up to thee functions can be specified index 0, 1, 2)
+void  bcore_hmap_u2vd_s_set_hash(     bcore_hmap_u2vd_s* o, sz_t index, bcore_hash_u2u2 hash ); // sets optional external hash function (up to three functions can be specified via index 0, 1, 2)
 vd_t* bcore_hmap_u2vd_s_get(    const bcore_hmap_u2vd_s* o, u2_t key ); // returns pinter to value or NULL when key does not exist
 void  bcore_hmap_u2vd_s_set(          bcore_hmap_u2vd_s* o, u2_t key, vd_t val );
 vd_t  bcore_hmap_u2vd_s_remove(       bcore_hmap_u2vd_s* o, u2_t key ); // removes key and returns its value. returns NULL if key did not exist
@@ -46,6 +46,8 @@ bool  bcore_hmap_u2vd_s_exists( const bcore_hmap_u2vd_s* o, u2_t key ); // check
 void  bcore_hmap_u2vd_s_clear(        bcore_hmap_u2vd_s* o           ); // removes all entries and frees memory
 sz_t  bcore_hmap_u2vd_s_keys(   const bcore_hmap_u2vd_s* o           ); // returns number of registered keys
 sz_t  bcore_hmap_u2vd_s_size(   const bcore_hmap_u2vd_s* o           ); // returns current size of the hash map
+void  bcore_hmap_u2vd_s_run_c(  const bcore_hmap_u2vd_s* o, void (*fp)( u2_t key, vd_t  val ) ); // runs a function on all registered key-value pairs
+void  bcore_hmap_u2vd_s_run_d(        bcore_hmap_u2vd_s* o, void (*fp)( u2_t key, vd_t* val ) ); // runs a function on all registered key-value pairs; value can be changed
 
 bcore_string_s* bcore_hmap_u2vd_selftest();
 
