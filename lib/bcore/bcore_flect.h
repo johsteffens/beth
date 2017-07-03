@@ -45,20 +45,13 @@ typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_aware_lin
 /*
 PLANNING:
 
-* (Done) Above array structures should have a self reflection supported by array and instance perspective.
-
-* (Done) Structure names should be simplified:
-  From the 'perspective' perspective, a static_array is a template to be completed in its parent
-  structure. The self reflection of such an array-object is to be created on the fly at its point
-  of definition inside the parent structure.
-
 * (Might not be feasible) An element of a structure may be anonymous. An anonymous structure merges with its parent structure.
   --> as if elements of the child structure had been defined in given order inside parent structure.
 
 * Name management: Ensure all names in a structure have unique names (already at definition level).
   --> should multiple unnamed (special purpose) members be allowed ? (aware_t, parent-pointer, ... ?)
 
-* Use hash lookup table for (extended) name management.
+* Use hashtable for (extended) name management.
 
 * Use type qualifiers (possibly flags). Qualifier may be of a general nature (e.g. 'private')
   or more specific (e.g. private for instance and interpreter perspectives), flags <-> features.
@@ -125,9 +118,25 @@ bcore_string_s*     bcore_flect_body_s_show( const bcore_flect_body_s* o );
 
 typedef struct bcore_flect_self_s
 {
+    aware_t _;
     tp_t type;   // type is needed for self aware objects constructed by the interface; (whether this might cause problems with aliases is to be determined)
-    sz_t size;   // sizeof(type); Only for the predefined size of primitive types. Composite types have size calculated in the instanceperspective.
 
+    /** size
+     *  Represets sizeof(object-type);
+     *  Mandatory for leaf-types (which are basically types without body)
+     *  Optional for types with body:
+     *   = 0: sizeof(type) is calculated in the instance perspective (e.g. for runtime generated types)
+     *   > 0: sizeof(type) is calculated in the instance perspective and checked against bcore_flect_self_s::size
+     *        Perspective can produce a descriptive error in case of a mismatch.
+     *        This feature is useful to detect the error that object's compile-time definition is out of
+     *        sync with its reflection.
+     */
+    sz_t size;
+
+    /** Body of type. Exposing the body is optional.
+     *  If the body is exposed, it must be complete. Otherwise, a perspective can not correctly compute the alignment of elements.
+     *  A leaf type never has a body.
+     */
     bcore_flect_body_s* body;
 } bcore_flect_self_s;
 
@@ -144,8 +153,11 @@ void                     bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore
 void                     bcore_flect_self_s_push_external_data( bcore_flect_self_s* o, vc_t data, sc_t type, sc_t name );
 void                     bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
 bcore_string_s*          bcore_flect_self_s_show( const bcore_flect_self_s* o );
-bcore_flect_self_s*      bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx );
-bcore_flect_self_s*      bcore_flect_self_s_build_parse_sc( sc_t text );
+bcore_flect_self_s*      bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx, sz_t size_of );
+bcore_flect_self_s*      bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );
+
+/// reflection on bcore_flect_self_s
+bcore_flect_self_s*      bcore_flect_self_s_create_self();
 
 /**********************************************************************************************************************/
 

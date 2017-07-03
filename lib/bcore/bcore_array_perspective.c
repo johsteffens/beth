@@ -1125,7 +1125,7 @@ static void test_string_array( sc_t type_sc )
 
 bcore_string_s* bcore_array_perspective_selftest()
 {
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "string_array = { aware_t _; bcore_string_s [] string_arr; }" ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "string_array = { aware_t _; bcore_string_s [] string_arr; }", 0 ) );
     vd_t arr = bcore_instance_typed_create( typeof( "string_array" ) );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
 
@@ -1138,7 +1138,7 @@ bcore_string_s* bcore_array_perspective_selftest()
     for( sz_t i = 0; i < arr_p->get_size( arr_p, arr ); i++ )
     {
         const bcore_string_s* code = arr_p->get_c( arr_p, arr, i );
-        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( code->sc );
+        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( code->sc, 0 );
         bcore_flect_define_self_c( self );
         test_string_array( nameof( self->type ) );
         bcore_flect_self_s_discard( self );

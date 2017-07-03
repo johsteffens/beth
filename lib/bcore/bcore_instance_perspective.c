@@ -1130,6 +1130,13 @@ bcore_instance_s* bcore_instance_s_create_from_self( const bcore_flect_self_s* s
         o->align = self->size;
     }
 
+    if( ( self->size > 0 ) && ( self->size != o->size ) )
+    {
+        ERR( "Size mismatch: sizeof(%s):%zu differs from reflective body size:%zu.\n"
+             "The object's reflection is probably out of sync with its compile-time definition.\n",
+            ifnameof( self->type ), self->size, o->size );
+    }
+
     if( o->copy_flat && !o->down_flat ) ERR( "copy_flat is not implying down_flat" );
     o->move_flat = o->init_flat && o->copy_flat && o->down_flat;
 
@@ -1373,10 +1380,10 @@ bcore_string_s* bcore_instance_perspective_selftest()
 {
     typedef struct { aware_t _; bcore_typed_link_array_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
 
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " test_object1_s = { aware_t _; typed * [] string_arr; u2_t val1; u3_t val2; s1_t val3; }" ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " test_object1_s = { aware_t _; typed * [] string_arr; u2_t val1; u3_t val2; s1_t val3; }", 0 ) );
 
     typedef struct { aware_t _; u2_t val1; test_object1_s* o1; } test_object2_s;
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " test_object2_s = { aware_t _; u2_t val1; test_object1_s* o1; }" ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " test_object2_s = { aware_t _; u2_t val1; test_object1_s* o1; }", 0 ) );
 
     test_object1_s* o1 = bcore_instance_typed_create( typeof( "test_object1_s" ) );
 

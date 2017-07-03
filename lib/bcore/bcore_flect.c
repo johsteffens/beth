@@ -6,6 +6,7 @@
 #include "bcore_threads.h"
 #include "bcore_life.h"
 #include "bcore_quicktypes.h"
+#include "bcore_hmap.h"
 
 /**********************************************************************************************************************/
 
@@ -315,6 +316,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
 void bcore_flect_self_s_init( bcore_flect_self_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
+    o->_ = TYPEOF_bcore_flect_self_s;
 }
 
 void bcore_flect_self_s_down( bcore_flect_self_s* o )
@@ -401,7 +403,7 @@ bcore_string_s* bcore_flect_self_s_show( const bcore_flect_self_s* o )
     return s;
 }
 
-bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx )
+bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx, sz_t size_of )
 {
     bcore_life_s* life = bcore_life_s_create();
     bcore_flect_self_s* o = bcore_flect_self_s_create();
@@ -429,221 +431,144 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, 
     }
 
     if( p_idx != NULL ) *p_idx = idx;
+    o->size = size_of;
     bcore_life_s_discard( life );
     return o;
 }
 
-bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text )
+bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of )
 {
     bcore_string_s* string = bcore_string_s_create_sc( text );
-    bcore_flect_self_s* ret = bcore_flect_self_s_build_parse( string, NULL );
+    bcore_flect_self_s* ret = bcore_flect_self_s_build_parse( string, NULL, size_of );
     bcore_string_s_discard( string );
     return ret;
 }
 
-/**********************************************************************************************************************/
-// reflection manager
-
-// node of binary tree
-typedef struct bcore_flect_node_s
+bcore_flect_self_s* bcore_flect_self_s_create_self()
 {
-    tp_t       type;
-    bcore_flect_self_s*  self;
-    unsigned       holds_self : 1;
-    struct bcore_flect_node_s* child0;
-    struct bcore_flect_node_s* child1;
-} bcore_flect_node_s;
-
-void bcore_flect_node_s_init( bcore_flect_node_s* o )
-{
-    o->type = 0;
-    o->self = NULL;
-    o->holds_self = 0;
-    o->child0 = NULL;
-    o->child1 = NULL;
-}
-
-void bcore_flect_node_s_down( bcore_flect_node_s* o )
-{
-    if( o->child0 )
-    {
-        bcore_flect_node_s_down( o->child0 );
-        o->child0 = bcore_free( o->child0 );
-    }
-    if( o->child1 )
-    {
-        bcore_flect_node_s_down( o->child1 );
-        o->child1 = bcore_free( o->child1 );
-    }
-    o->type = 0;
-    if( o->holds_self ) bcore_flect_self_s_discard( o->self );
-    o->self = NULL;
-    o->holds_self = 0;
-}
-
-void bcore_flect_node_s_insert( bcore_flect_node_s* o, tp_t type, bcore_flect_self_s* self, bool hold_self )
-{
-    if( type < o->type )
-    {
-        if( o->child0 )
-        {
-            bcore_flect_node_s_insert( o->child0, type, self, hold_self );
-        }
-        else
-        {
-            o->child0 = bcore_alloc( NULL, sizeof( bcore_flect_node_s ) );
-            bcore_flect_node_s_init( o->child0 );
-            o->child0->self = self;
-            o->child0->holds_self = hold_self;
-            o->child0->type = type;
-        }
-    }
-    else if( type > o->type )
-    {
-        if( o->child1 )
-        {
-            bcore_flect_node_s_insert( o->child1, type, self, hold_self );
-        }
-        else
-        {
-            o->child1 = bcore_alloc( NULL, sizeof( bcore_flect_node_s ) );
-            bcore_flect_node_s_init( o->child1 );
-            o->child1->self = self;
-            o->child1->holds_self = hold_self;
-            o->child1->type = type;
-        }
-    }
-    else // already registered
-    {
-        ERR( "'%s' (%"PRIu32") is already defined", ifnameof( type ), type );
-        //if( hold_self ) bcore_flect_self_s_discard( self );
-    }
-}
-
-bcore_flect_self_s* bcore_flect_node_s_self( const bcore_flect_node_s* o, tp_t type )
-{
-    if( type < o->type )
-    {
-        if( o->child0 )
-        {
-            return bcore_flect_node_s_self( o->child0, type );
-        }
-        else
-        {
-            return NULL;
-        }
-    }
-    else if( type > o->type )
-    {
-        if( o->child1 )
-        {
-            return bcore_flect_node_s_self( o->child1, type );
-        }
-        else
-        {
-            return NULL;
-        }
-    }
-    else
-    {
-        return o->self;
-    }
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_flect_self_s" ), sizeof( bcore_flect_self_s ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_init,         "bcore_fp_init",         "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_down,         "bcore_fp_down",         "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_copy,         "bcore_fp_copy",         "copy"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_create,       "bcore_fp_create",       "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_clone,        "bcore_fp_clone",        "clone"        );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_discard,      "bcore_fp_discard",      "discard"      );
+    return self;
 }
 
 /**********************************************************************************************************************/
-// binary tree
+// hash map
 
-typedef struct bcore_flect_tree_s
+typedef struct bcore_flect_hmap_s
 {
-    bcore_flect_node_s* root;
+    bcore_hmap_u2vd_s* hmap;
     bcore_mutex_t mutex;
-} bcore_flect_tree_s;
+} bcore_flect_hmap_s;
 
-void bcore_flect_tree_s_init( bcore_flect_tree_s* o )
+static void bcore_flect_hmap_s_init( bcore_flect_hmap_s* o )
 {
-    o->root = NULL;
+    o->hmap = bcore_hmap_u2vd_s_create();
     bcore_mutex_init( &o->mutex );
 }
 
-void bcore_flect_tree_s_down( bcore_flect_tree_s* o )
+static void bcore_flect_hmap_s_down( bcore_flect_hmap_s* o )
 {
     bcore_mutex_lock( &o->mutex );
-    if( o->root )
+    if( o->hmap )
     {
-        bcore_flect_node_s_down( o->root );
-        o->root = bcore_free( o->root );
+        // We manually detach objects here to keep hmap from invoking
+        // perspective management, which may (already) be down at this point.
+        sz_t hmap_size = bcore_hmap_u2vd_s_size( o->hmap );
+        for( sz_t i = 0; i < hmap_size; i++ )
+        {
+            if( bcore_hmap_u2vd_s_idx_holds( o->hmap, i ) )
+            {
+                tp_t key = bcore_hmap_u2vd_s_idx_key( o->hmap, i );
+                bcore_flect_self_s_discard( bcore_hmap_u2vd_s_detach_h( o->hmap, key ) );
+            }
+        }
+        bcore_hmap_u2vd_s_discard( o->hmap );
     }
     bcore_mutex_unlock( &o->mutex );
     bcore_mutex_down( &o->mutex );
 }
 
-void bcore_flect_tree_s_insert( bcore_flect_tree_s* o, tp_t type, bcore_flect_self_s* self, bool hold_self )
+static bcore_flect_hmap_s* bcore_flect_hmap_s_create()
+{
+    bcore_flect_hmap_s* o = bcore_alloc( NULL, sizeof( bcore_flect_hmap_s ) );
+    bcore_flect_hmap_s_init( o );
+    return o;
+}
+
+static void bcore_flect_hmap_s_discard( bcore_flect_hmap_s* o )
+{
+    if( !o ) return;
+    bcore_flect_hmap_s_down( o );
+    bcore_free( o );
+}
+
+static void bcore_flect_hmap_s_insert( bcore_flect_hmap_s* o, tp_t type, bcore_flect_self_s* self, bool hold_self )
 {
     bcore_mutex_lock( &o->mutex );
-    if( o->root )
-    {
-        bcore_flect_node_s_insert( o->root, type, self, hold_self );
-    }
-    else
-    {
-        o->root = bcore_alloc( NULL, sizeof( bcore_flect_node_s ) );
-        bcore_flect_node_s_init( o->root );
-        o->root->type = type;
-        o->root->self = self;
-        o->root->holds_self = hold_self;
-    }
+    if( bcore_hmap_u2vd_s_exists( o->hmap, type ) ) ERR( "'%s' (%"PRIu32") is already defined", ifnameof( type ), type );
+    bcore_hmap_u2vd_s_set( o->hmap, type, self, hold_self );
     bcore_mutex_unlock( &o->mutex );
 }
 
-/**********************************************************************************************************************/
-
-bcore_flect_tree_s* bcore_flect_tree_s_g = NULL;
-
-void bcore_create_flect_tree()
+const bcore_flect_self_s* bcore_flect_hmap_s_get_self( bcore_flect_hmap_s* o, tp_t type )
 {
-    if( bcore_flect_tree_s_g == NULL )
-    {
-        bcore_flect_tree_s_g = bcore_alloc( NULL, sizeof( bcore_flect_tree_s ) );
-        bcore_flect_tree_s_init( bcore_flect_tree_s_g );
-    }
+    bcore_mutex_lock( &o->mutex );
+    vd_t* p_val = bcore_hmap_u2vd_s_get( o->hmap, type );
+    bcore_mutex_unlock( &o->mutex );
+    return p_val ? *p_val : NULL;
 }
 
-void bcore_discard_flect_tree()
+bool bcore_flect_hmap_s_exists( bcore_flect_hmap_s* o, tp_t type )
 {
-    if( bcore_flect_tree_s_g )
+    bcore_mutex_lock( &o->mutex );
+    bool ret = bcore_hmap_u2vd_s_exists( o->hmap, type );
+    bcore_mutex_unlock( &o->mutex );
+    return ret;
+}
+
+/**********************************************************************************************************************/
+bcore_flect_hmap_s* bcore_flect_hmap_s_g = NULL;
+
+void bcore_create_flect_hmap()
+{
+    if( !bcore_flect_hmap_s_g ) bcore_flect_hmap_s_g = bcore_flect_hmap_s_create();
+}
+
+void bcore_discard_flect_hmap()
+{
+    if( bcore_flect_hmap_s_g )
     {
-        bcore_flect_tree_s_down( bcore_flect_tree_s_g );
-        bcore_flect_tree_s_g = bcore_free( bcore_flect_tree_s_g );
+        bcore_flect_hmap_s_discard( bcore_flect_hmap_s_g );
+        bcore_flect_hmap_s_g = NULL;
     }
 }
 
 void bcore_flect_open()
 {
     static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, bcore_create_flect_tree );
+    bcore_once( &flag, bcore_create_flect_hmap );
 }
 
 void bcore_flect_close()
 {
-    bcore_discard_flect_tree();
+    bcore_discard_flect_hmap();
 }
 
 bool bcore_flect_exists( tp_t type )
 {
-    assert( bcore_flect_tree_s_g != NULL );
-    bcore_mutex_lock( &bcore_flect_tree_s_g->mutex );
-    bool exists = bcore_flect_node_s_self( bcore_flect_tree_s_g->root, type ) != NULL;
-    bcore_mutex_unlock( &bcore_flect_tree_s_g->mutex );
-    return exists;
+    assert( bcore_flect_hmap_s_g != NULL );
+    return bcore_flect_hmap_s_exists( bcore_flect_hmap_s_g, type );
 }
 
 const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
 {
-    assert( bcore_flect_tree_s_g != NULL );
-    bcore_mutex_lock( &bcore_flect_tree_s_g->mutex );
-    const bcore_flect_self_s* self = bcore_flect_node_s_self( bcore_flect_tree_s_g->root, type );
-    bcore_mutex_unlock( &bcore_flect_tree_s_g->mutex );
-    return self;
+    assert( bcore_flect_hmap_s_g != NULL );
+    return bcore_flect_hmap_s_get_self( bcore_flect_hmap_s_g, type );
 }
 
 const bcore_flect_self_s* bcore_flect_get_self( tp_t type )
@@ -666,8 +591,8 @@ const bcore_flect_self_s* bcore_flect_get_self( tp_t type )
 
 void bcore_flect_define_self_d( bcore_flect_self_s* self )
 {
-    assert( bcore_flect_tree_s_g != NULL );
-    bcore_flect_tree_s_insert( bcore_flect_tree_s_g, self->type, self, true );
+    assert( bcore_flect_hmap_s_g != NULL );
+    bcore_flect_hmap_s_insert( bcore_flect_hmap_s_g, self->type, self, true );
 }
 
 void bcore_flect_define_self_c( const bcore_flect_self_s* self )
@@ -677,7 +602,7 @@ void bcore_flect_define_self_c( const bcore_flect_self_s* self )
 
 sz_t bcore_flect_parse( const bcore_string_s* string, sz_t idx )
 {
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse( string, &idx ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse( string, &idx, 0 ) );
     return idx;
 }
 
@@ -692,7 +617,7 @@ sc_t bcore_flect_parse_sc( sc_t sc )
 
 void bcore_flect_define_alias( tp_t alias, tp_t type )
 {
-    if( !bcore_flect_tree_s_g ) bcore_flect_open();
+    if( !bcore_flect_hmap_s_g ) bcore_flect_open();
     bcore_flect_self_s* self = ( bcore_flect_self_s* )bcore_flect_try_self( type );
     if( !self )
     {
@@ -706,7 +631,7 @@ void bcore_flect_define_alias( tp_t alias, tp_t type )
             ERR( "type '%s' has no self-reflection", name );
         }
     }
-    bcore_flect_tree_s_insert( bcore_flect_tree_s_g, alias, self, false );
+    bcore_flect_hmap_s_insert( bcore_flect_hmap_s_g, alias, self, false );
 }
 
 void bcore_flect_define_alias_sc( sc_t alias, sc_t type )
@@ -775,8 +700,9 @@ void bcore_flect_define_basics()
     bcore_flect_parse_sc(" bcore_typed_link_array_s  = { typed* []; }" );
     bcore_flect_parse_sc(" bcore_aware_link_array_s  = { aware* []; }" );
 
-    // string
-    bcore_flect_define_self_d( bcore_string_s_create_self() );
+    // specific objects
+    bcore_flect_define_self_d( bcore_flect_self_s_create_self() ); // self
+    bcore_flect_define_self_d( bcore_string_s_create_self() );     // string
 }
 
 /**********************************************************************************************************************/

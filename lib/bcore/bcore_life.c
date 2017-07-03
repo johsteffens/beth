@@ -107,7 +107,7 @@ vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type )
 
 bcore_flect_self_s* bcore_life_s_create_self()
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_life_s =  { aware_t _; private vd_t data; private sz_t size; private sz_t space; }" );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_life_s =  { aware_t _; private vd_t data; private sz_t size; private sz_t space; }", sizeof( bcore_life_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_life_s_init, "bcore_fp_init",  "init" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_life_s_down, "bcore_fp_down",  "down" );
     return self;

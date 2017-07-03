@@ -3,7 +3,7 @@
 /** Perspective framework
  *  This is an approach to establish abstraction on the basis of reflection.
  *  In this context the perspective is an approach to generalize functionality
- *  and can be seen as a hybrid of generic program and abstract interface.
+ *  and can be seen as a hybrid of generic programming and abstract interfacing.
  *  Were appropriate we abbreviate 'perspective' as 'spect'.
  */
 
@@ -26,6 +26,7 @@ void bcore_perspective_s_init( bcore_perspective_s* o, fp_t i_down );
 void bcore_perspective_s_down( bcore_perspective_s* o );
 void bcore_perspective_s_discard( bcore_perspective_s* o );
 
+void bcore_perspective_open();
 void bcore_perspective_enroll( u2_t i_type, u2_t o_type, bcore_perspective_s* perspective );
 const bcore_perspective_s* bcore_perspective_try_perspective( u2_t i_type, u2_t o_type );
 const bcore_perspective_s* bcore_perspective_get_perspective( u2_t i_type, u2_t o_type );

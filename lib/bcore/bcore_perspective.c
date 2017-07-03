@@ -212,7 +212,7 @@ void bcore_perspective_close()
 
 const bcore_perspective_s* bcore_perspective_try_perspective( u2_t i_type, u2_t o_type )
 {
-    if( !tree_s_g ) bcore_perspective_open();
+    assert( tree_s_g != NULL );
     const bcore_perspective_s* spect = NULL;
     bcore_mutex_lock( &tree_s_g->mutex );
     if( tree_s_g->root )
@@ -260,7 +260,7 @@ const bcore_perspective_s* bcore_perspective_get_perspective( u2_t i_type, u2_t 
 
 void bcore_perspective_enroll( u2_t i_type, u2_t o_type, bcore_perspective_s* spect )
 {
-    if( !tree_s_g ) bcore_perspective_open();
+    assert( tree_s_g != NULL );
     u3_t key = ( ( u3_t )i_type << 32 ) | o_type;
     tree_s_insert( tree_s_g, key, spect, true );
 }

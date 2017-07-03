@@ -46,7 +46,7 @@ void bcore_bml_translator_s_discard( bcore_bml_translator_s* o )
 
 bcore_flect_self_s* bcore_bml_translator_s_create_self()
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_translator_s = { aware_t _; sz_t tab_size; bool suppress_aware; }"   );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_translator_s = { aware_t _; sz_t tab_size; bool suppress_aware; }", sizeof( bcore_bml_translator_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_init,        "bcore_fp_init",                  "init"      );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_from_object, "bcore_fp_translate_from_object", "from_object" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_from_body,   "bcore_fp_translate_from_body",   "from_body"   );
@@ -289,7 +289,7 @@ void bcore_bml_interpreter_s_discard( bcore_bml_interpreter_s* o )
 
 bcore_flect_self_s* bcore_bml_interpreter_s_create_self()
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_interpreter_s = { aware_t _; }"   );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_interpreter_s = { aware_t _; }", sizeof( bcore_bml_interpreter_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_init,      "bcore_fp_init",                "init"      );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_to_object, "bcore_fp_interpret_to_object", "to_object" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_to_typed,  "bcore_fp_interpret_to_typed",  "to_typed"  );

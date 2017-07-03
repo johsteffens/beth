@@ -109,7 +109,8 @@ u2_t bcore_name_enroll( sc_t name )
     }
     else
     {
-        bcore_hmap_u2vd_s_set( bcore_name_hmap_s_g->map, hash, bcore_string_s_create_sc( name ) );
+        // name manager owns string because lifetime of name management exceeds that of perspective management
+        bcore_hmap_u2vd_s_set( bcore_name_hmap_s_g->map, hash, bcore_string_s_create_sc( name ), false );
     }
     bcore_mutex_unlock( &bcore_name_hmap_s_g->mutex );
     return hash;
@@ -119,7 +120,7 @@ void bcore_name_remove( tp_t type )
 {
     assert( bcore_name_hmap_s_g != NULL );
     bcore_mutex_lock( &bcore_name_hmap_s_g->mutex );
-    bcore_string_s* s = bcore_hmap_u2vd_s_remove( bcore_name_hmap_s_g->map, type );
+    bcore_string_s* s = bcore_hmap_u2vd_s_remove_h( bcore_name_hmap_s_g->map, type );
     bcore_string_s_discard( s );
     bcore_mutex_unlock( &bcore_name_hmap_s_g->mutex );
 }

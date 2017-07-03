@@ -37,6 +37,7 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_tp_t                      908158082
 #define TYPEOF_bool                     3365180733
 #define TYPEOF_aware_t                  1507719906
+#define TYPEOF_bcore_flect_self_s        556415048
 
 // frequently used types
 #define TYPEOF_bcore_string_s           2419449576
