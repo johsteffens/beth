@@ -1,7 +1,6 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 #include "bcore_name_manager.h"
-#include "bcore_control.h"
 #include "bcore_string.h"
 #include "bcore_threads.h"
 #include "bcore_hmap.h"
@@ -21,7 +20,7 @@ static void hmap_s_init( hmap_s* o )
     bcore_mutex_init( &o->mutex );
 }
 
-static void hmap_s_node_down( u2_t key, vd_t val )
+static void hmap_s_node_down( vd_t obj, u2_t key, vd_t val )
 {
     bcore_string_s* string = val;
     bcore_string_s_discard( string );
@@ -32,7 +31,7 @@ static void hmap_s_down( hmap_s* o )
     bcore_mutex_lock( &o->mutex );
     if( o->map )
     {
-        bcore_hmap_u2vd_s_run( o->map, hmap_s_node_down );
+        bcore_hmap_u2vd_s_run_c( o->map, NULL, hmap_s_node_down );
         bcore_hmap_u2vd_s_discard( o->map );
         o->map = NULL;
     }
@@ -62,7 +61,7 @@ static void discard_name_hmap_s()
     }
 }
 
-void bcore_name_open()
+void bcore_name_manager_open()
 {
     static bcore_once_t flag = bcore_once_init;
     bcore_once( &flag, create_name_hmap_s );
@@ -73,11 +72,11 @@ void bcore_name_manager_close()
     discard_name_hmap_s();
 }
 
-const char* bcore_name_try_name( u2_t hash )
+const char* bcore_name_try_name( tp_t type )
 {
-    if( !bcore_name_hmap_s_g ) bcore_name_open();
+    assert( bcore_name_hmap_s_g != NULL );
     bcore_mutex_lock( &bcore_name_hmap_s_g->mutex );
-    vd_t* vdp = bcore_hmap_u2vd_s_get( bcore_name_hmap_s_g->map, hash );
+    vd_t* vdp = bcore_hmap_u2vd_s_get( bcore_name_hmap_s_g->map, type );
     sc_t name = NULL;
     if( vdp )
     {
@@ -88,16 +87,16 @@ const char* bcore_name_try_name( u2_t hash )
     return name;
 }
 
-const char* bcore_name_get_name( u2_t hash )
+const char* bcore_name_get_name( tp_t type )
 {
-    const char* name = bcore_name_try_name( hash );
-    if( !name ) ERR( "hash %"PRIu32" has no name", hash );
+    const char* name = bcore_name_try_name( type );
+    if( !name ) ERR( "hash %"PRIu32" has no name", type );
     return name;
 }
 
 u2_t bcore_name_enroll( sc_t name )
 {
-    if( !bcore_name_hmap_s_g ) bcore_name_open();
+    assert( bcore_name_hmap_s_g != NULL );
     u2_t hash = bcore_name_get_type( name );
     if( hash == 0 ) ERR( "Hash of '%s' is zero. Zero is a reserved value.", name );
     bcore_mutex_lock( &bcore_name_hmap_s_g->mutex );
@@ -114,6 +113,15 @@ u2_t bcore_name_enroll( sc_t name )
     }
     bcore_mutex_unlock( &bcore_name_hmap_s_g->mutex );
     return hash;
+}
+
+void bcore_name_remove( tp_t type )
+{
+    assert( bcore_name_hmap_s_g != NULL );
+    bcore_mutex_lock( &bcore_name_hmap_s_g->mutex );
+    bcore_string_s* s = bcore_hmap_u2vd_s_remove( bcore_name_hmap_s_g->map, type );
+    bcore_string_s_discard( s );
+    bcore_mutex_unlock( &bcore_name_hmap_s_g->mutex );
 }
 
 /**********************************************************************************************************************/

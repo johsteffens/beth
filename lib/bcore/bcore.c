@@ -16,6 +16,7 @@ static void init_library_bcore_once()
 {
     // global services ...
     bcore_memory_manager_open();
+    bcore_name_manager_open();
     bcore_flect_open();
 
     // reflections ...

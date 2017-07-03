@@ -46,8 +46,8 @@ bool  bcore_hmap_u2vd_s_exists( const bcore_hmap_u2vd_s* o, u2_t key ); // check
 void  bcore_hmap_u2vd_s_clear(        bcore_hmap_u2vd_s* o           ); // removes all entries and frees memory
 sz_t  bcore_hmap_u2vd_s_keys(   const bcore_hmap_u2vd_s* o           ); // returns number of registered keys
 sz_t  bcore_hmap_u2vd_s_size(   const bcore_hmap_u2vd_s* o           ); // returns current size of the hash map
-void  bcore_hmap_u2vd_s_run_c(  const bcore_hmap_u2vd_s* o, void (*fp)( u2_t key, vd_t  val ) ); // runs a function on all registered key-value pairs
-void  bcore_hmap_u2vd_s_run_d(        bcore_hmap_u2vd_s* o, void (*fp)( u2_t key, vd_t* val ) ); // runs a function on all registered key-value pairs; value can be changed
+void  bcore_hmap_u2vd_s_run_c(  const bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t  val ) ); // runs a function on all registered key-value pairs
+void  bcore_hmap_u2vd_s_run_d(        bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t* val ) ); // runs a function on all registered key-value pairs; value can be changed
 
 bcore_string_s* bcore_hmap_u2vd_selftest();
 

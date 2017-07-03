@@ -834,11 +834,13 @@ void bcore_memory_manager_close()
 
 void* bcore_memory_manager_b_alloc( void* current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
 {
+    assert( bcore_memory_manager_s_g != NULL );
     return bcore_memory_manager_s_b_alloc( bcore_memory_manager_s_g, current_ptr, requested_bytes, granted_bytes );
 }
 
 void* bcore_memory_manager_bn_alloc( void* current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
 {
+    assert( bcore_memory_manager_s_g != NULL );
     return bcore_memory_manager_s_bn_alloc( bcore_memory_manager_s_g, current_ptr, current_bytes, requested_bytes, granted_bytes );
 }
 
@@ -866,6 +868,7 @@ sz_t bcore_memory_manager_s_granted_space( bcore_memory_manager_s* o )
 
 sz_t bcore_memory_manager_granted_space()
 {
+    assert( bcore_memory_manager_s_g != NULL );
     return bcore_memory_manager_s_granted_space( bcore_memory_manager_s_g );
 }
 

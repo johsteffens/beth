@@ -308,19 +308,19 @@ sz_t bcore_hmap_u2vd_s_space( const bcore_hmap_u2vd_s* o )
     return o->size;
 }
 
-void bcore_hmap_u2vd_s_run_c( const bcore_hmap_u2vd_s* o, void (*fp)( u2_t key, vd_t val ) )
+void bcore_hmap_u2vd_s_run_c( const bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t val ) )
 {
     for( sz_t i = 0; i < o->size; i++ )
     {
-        if( o->data[ i ].key > 0 ) fp( o->data[ i ].key, o->data[ i ].val );
+        if( o->data[ i ].key > 0 ) fp( obj, o->data[ i ].key, o->data[ i ].val );
     }
 }
 
-void bcore_hmap_u2vd_s_run_d( bcore_hmap_u2vd_s* o, void (*fp)( u2_t key, vd_t* val ) )
+void bcore_hmap_u2vd_s_run_d( bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t* val ) )
 {
     for( sz_t i = 0; i < o->size; i++ )
     {
-        if( o->data[ i ].key > 0 ) fp( o->data[ i ].key, &o->data[ i ].val );
+        if( o->data[ i ].key > 0 ) fp( obj, o->data[ i ].key, &o->data[ i ].val );
     }
 }
 
