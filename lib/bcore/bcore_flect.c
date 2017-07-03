@@ -457,21 +457,86 @@ bcore_flect_self_s* bcore_flect_self_s_create_self()
 }
 
 /**********************************************************************************************************************/
-// hash map
+// map of functions creating a self-reflection
 
-typedef struct bcore_flect_hmap_s
+typedef struct creator_map_s
 {
     bcore_hmap_u2vd_s* hmap;
     bcore_mutex_t mutex;
-} bcore_flect_hmap_s;
+} creator_map_s;
 
-static void bcore_flect_hmap_s_init( bcore_flect_hmap_s* o )
+static void creator_map_s_init( creator_map_s* o )
 {
     o->hmap = bcore_hmap_u2vd_s_create();
     bcore_mutex_init( &o->mutex );
 }
 
-static void bcore_flect_hmap_s_down( bcore_flect_hmap_s* o )
+static void creator_map_s_down( creator_map_s* o )
+{
+    bcore_mutex_lock( &o->mutex );
+    bcore_hmap_u2vd_s_discard( o->hmap );
+    bcore_mutex_unlock( &o->mutex );
+    bcore_mutex_down( &o->mutex );
+}
+
+static creator_map_s* creator_map_s_create()
+{
+    creator_map_s* o = bcore_alloc( NULL, sizeof( creator_map_s ) );
+    creator_map_s_init( o );
+    return o;
+}
+
+static void creator_map_s_discard( creator_map_s* o )
+{
+    if( !o ) return;
+    creator_map_s_down( o );
+    bcore_free( o );
+}
+
+static void creator_map_s_insert( creator_map_s* o, tp_t type, bcore_flect_create_self_fp fp )
+{
+    bcore_mutex_lock( &o->mutex );
+    if( bcore_hmap_u2vd_s_exists( o->hmap, type ) ) ERR( "'%s' (%"PRIu32") is already defined", ifnameof( type ), type );
+    if( sizeof( fp ) > sizeof( vd_t ) )
+    {
+        ERR( "Platform specific error: Cannot convert function pointer into data pointer." );
+    }
+    bcore_hmap_u2vd_s_set( o->hmap, type, ( vd_t )fp, false );
+    bcore_mutex_unlock( &o->mutex );
+}
+
+static const bcore_flect_create_self_fp creator_map_s_get_fp( creator_map_s* o, tp_t type )
+{
+    bcore_mutex_lock( &o->mutex );
+    vd_t* p_val = bcore_hmap_u2vd_s_get( o->hmap, type );
+    bcore_mutex_unlock( &o->mutex );
+    return p_val ? ( bcore_flect_create_self_fp )*p_val : NULL;
+}
+
+static bool creator_map_s_exists( creator_map_s* o, tp_t type )
+{
+    bcore_mutex_lock( &o->mutex );
+    bool ret = bcore_hmap_u2vd_s_exists( o->hmap, type );
+    bcore_mutex_unlock( &o->mutex );
+    return ret;
+}
+
+/**********************************************************************************************************************/
+// map of self reflections
+
+typedef struct self_map_s
+{
+    bcore_hmap_u2vd_s* hmap;
+    bcore_mutex_t mutex;
+} self_map_s;
+
+static void self_map_s_init( self_map_s* o )
+{
+    o->hmap = bcore_hmap_u2vd_s_create();
+    bcore_mutex_init( &o->mutex );
+}
+
+static void self_map_s_down( self_map_s* o )
 {
     bcore_mutex_lock( &o->mutex );
     if( o->hmap )
@@ -493,21 +558,21 @@ static void bcore_flect_hmap_s_down( bcore_flect_hmap_s* o )
     bcore_mutex_down( &o->mutex );
 }
 
-static bcore_flect_hmap_s* bcore_flect_hmap_s_create()
+static self_map_s* self_map_s_create()
 {
-    bcore_flect_hmap_s* o = bcore_alloc( NULL, sizeof( bcore_flect_hmap_s ) );
-    bcore_flect_hmap_s_init( o );
+    self_map_s* o = bcore_alloc( NULL, sizeof( self_map_s ) );
+    self_map_s_init( o );
     return o;
 }
 
-static void bcore_flect_hmap_s_discard( bcore_flect_hmap_s* o )
+static void self_map_s_discard( self_map_s* o )
 {
     if( !o ) return;
-    bcore_flect_hmap_s_down( o );
+    self_map_s_down( o );
     bcore_free( o );
 }
 
-static void bcore_flect_hmap_s_insert( bcore_flect_hmap_s* o, tp_t type, bcore_flect_self_s* self, bool hold_self )
+static void self_map_s_insert( self_map_s* o, tp_t type, bcore_flect_self_s* self, bool hold_self )
 {
     bcore_mutex_lock( &o->mutex );
     if( bcore_hmap_u2vd_s_exists( o->hmap, type ) ) ERR( "'%s' (%"PRIu32") is already defined", ifnameof( type ), type );
@@ -515,7 +580,7 @@ static void bcore_flect_hmap_s_insert( bcore_flect_hmap_s* o, tp_t type, bcore_f
     bcore_mutex_unlock( &o->mutex );
 }
 
-const bcore_flect_self_s* bcore_flect_hmap_s_get_self( bcore_flect_hmap_s* o, tp_t type )
+static const bcore_flect_self_s* self_map_s_get_self( self_map_s* o, tp_t type )
 {
     bcore_mutex_lock( &o->mutex );
     vd_t* p_val = bcore_hmap_u2vd_s_get( o->hmap, type );
@@ -523,7 +588,7 @@ const bcore_flect_self_s* bcore_flect_hmap_s_get_self( bcore_flect_hmap_s* o, tp
     return p_val ? *p_val : NULL;
 }
 
-bool bcore_flect_hmap_s_exists( bcore_flect_hmap_s* o, tp_t type )
+static bool self_map_s_exists( self_map_s* o, tp_t type )
 {
     bcore_mutex_lock( &o->mutex );
     bool ret = bcore_hmap_u2vd_s_exists( o->hmap, type );
@@ -532,43 +597,64 @@ bool bcore_flect_hmap_s_exists( bcore_flect_hmap_s* o, tp_t type )
 }
 
 /**********************************************************************************************************************/
-bcore_flect_hmap_s* bcore_flect_hmap_s_g = NULL;
+static self_map_s*    self_map_s_g    = NULL;
+static creator_map_s* creator_map_s_g = NULL;
 
-void bcore_create_flect_hmap()
+void bcore_create_flect_maps()
 {
-    if( !bcore_flect_hmap_s_g ) bcore_flect_hmap_s_g = bcore_flect_hmap_s_create();
+    if( !self_map_s_g    ) self_map_s_g    = self_map_s_create();
+    if( !creator_map_s_g ) creator_map_s_g = creator_map_s_create();
 }
 
-void bcore_discard_flect_hmap()
+void bcore_discard_flect_maps()
 {
-    if( bcore_flect_hmap_s_g )
+    if( self_map_s_g )
     {
-        bcore_flect_hmap_s_discard( bcore_flect_hmap_s_g );
-        bcore_flect_hmap_s_g = NULL;
+        self_map_s_discard( self_map_s_g );
+        self_map_s_g = NULL;
+    }
+    if( creator_map_s_g )
+    {
+        creator_map_s_discard( creator_map_s_g );
+        creator_map_s_g = NULL;
     }
 }
 
 void bcore_flect_open()
 {
     static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, bcore_create_flect_hmap );
+    bcore_once( &flag, bcore_create_flect_maps );
 }
 
 void bcore_flect_close()
 {
-    bcore_discard_flect_hmap();
+    bcore_discard_flect_maps();
 }
 
 bool bcore_flect_exists( tp_t type )
 {
-    assert( bcore_flect_hmap_s_g != NULL );
-    return bcore_flect_hmap_s_exists( bcore_flect_hmap_s_g, type );
+    assert( self_map_s_g != NULL );
+    if( self_map_s_exists(    self_map_s_g,    type ) ) return true;
+    assert( creator_map_s_g != NULL );
+    if( creator_map_s_exists( creator_map_s_g, type ) ) return true;
+    return false;
 }
 
 const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
 {
-    assert( bcore_flect_hmap_s_g != NULL );
-    return bcore_flect_hmap_s_get_self( bcore_flect_hmap_s_g, type );
+    assert( self_map_s_g != NULL );
+    const bcore_flect_self_s* self = self_map_s_get_self( self_map_s_g, type );
+    if( !self )
+    {
+        assert( creator_map_s_g != NULL );
+        bcore_flect_create_self_fp fp = creator_map_s_get_fp( creator_map_s_g, type );
+        if( fp )
+        {
+            self_map_s_insert( self_map_s_g, type, fp(), true );
+            self = self_map_s_get_self( self_map_s_g, type );
+        }
+    }
+    return self;
 }
 
 const bcore_flect_self_s* bcore_flect_get_self( tp_t type )
@@ -591,8 +677,8 @@ const bcore_flect_self_s* bcore_flect_get_self( tp_t type )
 
 void bcore_flect_define_self_d( bcore_flect_self_s* self )
 {
-    assert( bcore_flect_hmap_s_g != NULL );
-    bcore_flect_hmap_s_insert( bcore_flect_hmap_s_g, self->type, self, true );
+    assert( self_map_s_g != NULL );
+    self_map_s_insert( self_map_s_g, self->type, self, true );
 }
 
 void bcore_flect_define_self_c( const bcore_flect_self_s* self )
@@ -615,9 +701,15 @@ sc_t bcore_flect_parse_sc( sc_t sc )
     return sc + idx;
 }
 
+void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
+{
+    assert( creator_map_s_g != NULL );
+    creator_map_s_insert( creator_map_s_g, type, creator );
+}
+
 void bcore_flect_define_alias( tp_t alias, tp_t type )
 {
-    if( !bcore_flect_hmap_s_g ) bcore_flect_open();
+    if( !self_map_s_g ) bcore_flect_open();
     bcore_flect_self_s* self = ( bcore_flect_self_s* )bcore_flect_try_self( type );
     if( !self )
     {
@@ -631,7 +723,7 @@ void bcore_flect_define_alias( tp_t alias, tp_t type )
             ERR( "type '%s' has no self-reflection", name );
         }
     }
-    bcore_flect_hmap_s_insert( bcore_flect_hmap_s_g, alias, self, false );
+    self_map_s_insert( self_map_s_g, alias, self, false );
 }
 
 void bcore_flect_define_alias_sc( sc_t alias, sc_t type )
@@ -691,18 +783,18 @@ void bcore_flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_create_typed" ), sizeof( bcore_fp_create_typed ) ) );
 
     // encapsulation structure
-    bcore_flect_parse_sc(" bcore_static_link_s       = { vd_t link; }" );
-    bcore_flect_parse_sc(" bcore_typed_link_s        = { vd_t link; tp_t type; }" );
-    bcore_flect_parse_sc(" bcore_aware_link_s        = { vd_t link; }" );
-    bcore_flect_parse_sc(" bcore_static_array_s      = { vd_t  data; sz_t size; sz_t space; }" );
-    bcore_flect_parse_sc(" bcore_typed_array_s       = { typed []; }" );
-    bcore_flect_parse_sc(" bcore_static_link_array_s = { vd_t* data; sz_t size; sz_t space; }" );
-    bcore_flect_parse_sc(" bcore_typed_link_array_s  = { typed* []; }" );
-    bcore_flect_parse_sc(" bcore_aware_link_array_s  = { aware* []; }" );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_static_link_s       = { vd_t link; }",            sizeof( bcore_static_link_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_typed_link_s        = { vd_t link; tp_t type; }", sizeof( bcore_typed_link_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_aware_link_s        = { vd_t link; }",            sizeof( bcore_aware_link_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_static_array_s      = { vd_t  data; sz_t size; sz_t space; }", sizeof( bcore_static_array_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_typed_array_s       = { typed []; }",             sizeof( bcore_typed_array_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_static_link_array_s = { vd_t* data; sz_t size; sz_t space; }", sizeof( bcore_static_link_array_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_typed_link_array_s  = { typed* []; }",            sizeof( bcore_typed_link_array_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_aware_link_array_s  = { aware* []; }",            sizeof( bcore_aware_link_array_s ) ) );
 
     // specific objects
-    bcore_flect_define_self_d( bcore_flect_self_s_create_self() ); // self
-    bcore_flect_define_self_d( bcore_string_s_create_self() );     // string
+    bcore_flect_define_creator( typeof( "bcore_flect_self_s" ), bcore_flect_self_s_create_self ); // self
+    bcore_flect_define_creator( typeof( "bcore_string_s" ),     bcore_string_s_create_self     ); // string
 }
 
 /**********************************************************************************************************************/

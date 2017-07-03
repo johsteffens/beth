@@ -119,7 +119,9 @@ bcore_string_s*     bcore_flect_body_s_show( const bcore_flect_body_s* o );
 typedef struct bcore_flect_self_s
 {
     aware_t _;
-    tp_t type;   // type is needed for self aware objects constructed by the interface; (whether this might cause problems with aliases is to be determined)
+
+    /// type of object being reflected
+    tp_t type;
 
     /** size
      *  Represets sizeof(object-type);
@@ -160,8 +162,8 @@ bcore_flect_self_s*      bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size
 bcore_flect_self_s*      bcore_flect_self_s_create_self();
 
 /**********************************************************************************************************************/
-
 /// Global reflection manager (thread safe)
+
 void bcore_flect_open();          // opens manager
 void bcore_flect_define_basics(); // defines basic types
 void bcore_flect_close();         // closes manager
@@ -170,6 +172,13 @@ void bcore_flect_define_self_d(       bcore_flect_self_s* self ); // takes over 
 void bcore_flect_define_self_c( const bcore_flect_self_s* self ); // stores a copy of self
 sz_t bcore_flect_parse(         const bcore_string_s* string, sz_t idx );
 sc_t bcore_flect_parse_sc(      sc_t sc );
+
+/** Defining reflection via creation function
+ *  The function releases a newly created instance of self.
+ *  The creator is lazily invoked.
+ */
+typedef bcore_flect_self_s* (*bcore_flect_create_self_fp)( void ); // function pointer to reflection creating function
+void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator );
 
 void bcore_flect_define_alias(     u2_t alias, tp_t type ); // also enrolls name in name manager
 void bcore_flect_define_alias_sc(  sc_t alias, sc_t type ); // also enrolls name in name manager

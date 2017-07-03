@@ -22,15 +22,15 @@ static void init_library_bcore_once()
 
     // define reflections ...
     bcore_flect_define_basics();
-    bcore_flect_define_self_d( bcore_bml_translator_s_create_self() );
-    bcore_flect_define_self_d( bcore_bml_interpreter_s_create_self() );
-    bcore_flect_define_self_d( bcore_string_source_s_create_self() );
-    bcore_flect_define_self_d( bcore_life_s_create_self() );
+
+    bcore_flect_define_creator( typeof( "bcore_bml_translator_s"  ), bcore_bml_translator_s_create_self );
+    bcore_flect_define_creator( typeof( "bcore_bml_interpreter_s" ), bcore_bml_interpreter_s_create_self );
+    bcore_flect_define_creator( typeof( "bcore_string_source_s"   ), bcore_string_source_s_create_self );
+    bcore_flect_define_creator( typeof( "bcore_life_s"            ), bcore_life_s_create_self );
 
     // run some critical quick-tests ...
     bcore_string_s_quicktest();
     bcore_memory_manager_s_quicktest();
-
 }
 
 void init_library_bcore()
