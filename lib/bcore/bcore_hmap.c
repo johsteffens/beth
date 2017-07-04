@@ -70,6 +70,7 @@ typedef struct bcore_hmap_u2vd_s
     bcore_hash_u2u2 h1, h2, h3;
 } bcore_hmap_u2vd_s;
 
+/// hashing (non-cryptographic)
 static u2_t hash_u2u2_1( u2_t key )
 {
     u2_t h = ( 632432329 ^ ( ( key       ) & 0x0FFFFu ) ) * 88888888901;
@@ -77,6 +78,7 @@ static u2_t hash_u2u2_1( u2_t key )
     return h;
 }
 
+/// hashing (non-cryptographic)
 static u2_t hash_u2u2_2( u2_t key )
 {
     u2_t h = ( 368653234 ^ ( ( key       ) & 0x0FFFFu ) ) * 77777777827;

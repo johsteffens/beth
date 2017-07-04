@@ -145,8 +145,8 @@ sz_t bcore_string_s_parsef(  const bcore_string_s* o, sz_t start, sz_t end, sc_t
 bcore_string_s* bcore_string_s_show_line_context( const bcore_string_s* o, sz_t pos );
 
 /// self reflection
-struct bcore_flect_self_s;
-struct bcore_flect_self_s* bcore_string_s_create_self();
+typedef struct bcore_flect_self_s bcore_flect_self_s;
+bcore_flect_self_s* bcore_string_s_create_self();
 
 /**********************************************************************************************************************/
 // testing, debugging

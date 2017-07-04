@@ -17,7 +17,7 @@
  *  Disadvantage:
  *     No well defined lower bound on worst case storage efficiency.
  *     However, in practice a significant deviation from average efficiency is very unlikely.
- *     (See studies on cuckoo hashing for more details).
+ *     (See public studies on cuckoo hashing for more details).
  */
 
 /**********************************************************************************************************************/

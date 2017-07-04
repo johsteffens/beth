@@ -52,7 +52,8 @@ vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t
 vd_t bcore_memzero( vd_t dst, sz_t size );
 
 /// like stdlib memcpy but when dst == NULL function allocates destination first, copies and returns address; size == 0 allowed
-vd_t bcore_memcpy( vd_t dst, vc_t src, sz_t size );
+vd_t bcore_memcpy(                    vd_t dst, vc_t src, sz_t size );
+vd_t bcore_u_memcpy( sz_t unit_bytes, vd_t dst, vc_t src, sz_t size ); // copies multiple of a given unit size
 
 /// like stdlib memmove but when dst == NULL function allocates destination first, copies and returns address; size == 0 allowed
 vd_t bcore_memmove( vd_t dst, vc_t src, sz_t size );
@@ -125,6 +126,15 @@ static inline u2_t bcore_fnv_fold_text_u2( u2_t hash, sc_t text )
     return hash;
 }
 
+static inline u2_t bcore_fnv_fold_u2_u2( u2_t hash, u2_t val )
+{
+    hash = ( hash ^ ( ( val       ) & 0x0FF ) ) * 0x01000193u;
+    hash = ( hash ^ ( ( val >>  8 ) & 0x0FF ) ) * 0x01000193u;
+    hash = ( hash ^ ( ( val >> 16 ) & 0x0FF ) ) * 0x01000193u;
+    hash = ( hash ^ ( ( val >> 24 ) & 0x0FF ) ) * 0x01000193u;
+    return hash;
+}
+
 static inline u2_t bcore_fnv_fold_data_u2( u2_t hash, vc_t data, sz_t size )
 {
     const u0_t* src = data;
@@ -132,7 +142,8 @@ static inline u2_t bcore_fnv_fold_data_u2( u2_t hash, vc_t data, sz_t size )
     return hash;
 }
 
-static inline u2_t bcore_fnv_hash_text_u2( sc_t text )            { return bcore_fnv_fold_text_u2( 0x811c9dc5u, text );       }
+static inline u2_t bcore_fnv_hash_text_u2( sc_t text            ) { return bcore_fnv_fold_text_u2( 0x811c9dc5u, text );       }
+static inline u2_t bcore_fnv_hash_u2_u2(   u2_t val             ) { return bcore_fnv_fold_u2_u2(   0x811c9dc5u, val );        }
 static inline u2_t bcore_fnv_hash_data_u2( vc_t data, sz_t size ) { return bcore_fnv_fold_data_u2( 0x811c9dc5u, data, size ); }
 
 /**********************************************************************************************************************/

@@ -729,7 +729,7 @@ void bcore_flect_define_alias( tp_t alias, tp_t type )
 void bcore_flect_define_alias_sc( sc_t alias, sc_t type )
 {
     tp_t alias_l = bcore_name_enroll( alias );
-    tp_t type_l = bcore_name_get_type( type );
+    tp_t type_l = bcore_name_get_hash( type );
     bcore_flect_define_alias( alias_l, type_l );
 }
 

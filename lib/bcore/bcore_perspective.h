@@ -1,9 +1,9 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 /** Perspective framework
- *  This is an approach to establish abstraction on the basis of reflection.
- *  In this context the perspective is an approach to generalize functionality
- *  and can be seen as a hybrid of generic programming and abstract interfacing.
+ *  The perspective establishes abstraction on via reflection and specified features.
+ *  It is an approach to generalize functionality and can be seen as a hybrid of
+ *  generic programming and abstract interfacing.
  *  Were appropriate we abbreviate 'perspective' as 'spect'.
  */
 

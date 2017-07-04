@@ -114,6 +114,11 @@ vd_t bcore_memcpy( vd_t dst, vc_t src, sz_t size )
 	return dst;
 }
 
+vd_t bcore_u_memcpy( sz_t unit_bytes, vd_t dst, vc_t src, sz_t size )
+{
+    return bcore_memcpy( dst, src, unit_bytes * size );
+}
+
 vd_t bcore_memmove( vd_t dst, vc_t src, sz_t size )
 {
 	if( !dst )

@@ -41,67 +41,67 @@ static void hmap_s_down( hmap_s* o )
 
 /**********************************************************************************************************************/
 
-hmap_s* bcore_name_hmap_s_g = NULL;
+static hmap_s* hmap_s_g = NULL;
 
-static void create_name_hmap_s()
+static void create_hmap_s()
 {
-    if( bcore_name_hmap_s_g == NULL )
+    if( hmap_s_g == NULL )
     {
-        bcore_name_hmap_s_g = bcore_alloc( NULL, sizeof( hmap_s ) );
-        hmap_s_init( bcore_name_hmap_s_g );
+        hmap_s_g = bcore_alloc( NULL, sizeof( hmap_s ) );
+        hmap_s_init( hmap_s_g );
     }
 }
 
-static void discard_name_hmap_s()
+static void discard_hmap_s()
 {
-    if( bcore_name_hmap_s_g )
+    if( hmap_s_g )
     {
-        hmap_s_down( bcore_name_hmap_s_g );
-        bcore_name_hmap_s_g = bcore_free( bcore_name_hmap_s_g );
+        hmap_s_down( hmap_s_g );
+        hmap_s_g = bcore_free( hmap_s_g );
     }
 }
 
 void bcore_name_manager_open()
 {
     static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, create_name_hmap_s );
+    bcore_once( &flag, create_hmap_s );
 }
 
 void bcore_name_manager_close()
 {
-    discard_name_hmap_s();
+    discard_hmap_s();
 }
 
-const char* bcore_name_try_name( tp_t type )
+sc_t bcore_name_try_name( tp_t type )
 {
-    assert( bcore_name_hmap_s_g != NULL );
-    bcore_mutex_lock( &bcore_name_hmap_s_g->mutex );
-    vd_t* vdp = bcore_hmap_u2vd_s_get( bcore_name_hmap_s_g->map, type );
+    assert( hmap_s_g != NULL );
+    bcore_mutex_lock( &hmap_s_g->mutex );
+    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, type );
     sc_t name = NULL;
     if( vdp )
     {
         bcore_string_s* s = *vdp;
         name = s->sc;
     }
-    bcore_mutex_unlock( &bcore_name_hmap_s_g->mutex );
+    bcore_mutex_unlock( &hmap_s_g->mutex );
     return name;
 }
 
-const char* bcore_name_get_name( tp_t type )
+sc_t bcore_name_get_name( tp_t type )
 {
-    const char* name = bcore_name_try_name( type );
+    sc_t name = bcore_name_try_name( type );
     if( !name ) ERR( "hash %"PRIu32" has no name", type );
     return name;
 }
 
 u2_t bcore_name_enroll( sc_t name )
 {
-    assert( bcore_name_hmap_s_g != NULL );
-    u2_t hash = bcore_name_get_type( name );
+    assert( hmap_s_g != NULL );
+    u2_t hash = bcore_name_get_hash( name );
     if( hash == 0 ) ERR( "Hash of '%s' is zero. Zero is a reserved value.", name );
-    bcore_mutex_lock( &bcore_name_hmap_s_g->mutex );
-    if( !bcore_name_hmap_s_g->map ) bcore_name_hmap_s_g->map = bcore_hmap_u2vd_s_create();
-    vd_t* vdp = bcore_hmap_u2vd_s_get( bcore_name_hmap_s_g->map, hash );
+    bcore_mutex_lock( &hmap_s_g->mutex );
+    if( !hmap_s_g->map ) hmap_s_g->map = bcore_hmap_u2vd_s_create();
+    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, hash );
     if( vdp )
     {
         const bcore_string_s* string = *vdp;
@@ -110,19 +110,19 @@ u2_t bcore_name_enroll( sc_t name )
     else
     {
         // name manager owns string because lifetime of name management exceeds that of perspective management
-        bcore_hmap_u2vd_s_set( bcore_name_hmap_s_g->map, hash, bcore_string_s_create_sc( name ), false );
+        bcore_hmap_u2vd_s_set( hmap_s_g->map, hash, bcore_string_s_create_sc( name ), false );
     }
-    bcore_mutex_unlock( &bcore_name_hmap_s_g->mutex );
+    bcore_mutex_unlock( &hmap_s_g->mutex );
     return hash;
 }
 
 void bcore_name_remove( tp_t type )
 {
-    assert( bcore_name_hmap_s_g != NULL );
-    bcore_mutex_lock( &bcore_name_hmap_s_g->mutex );
-    bcore_string_s* s = bcore_hmap_u2vd_s_remove_h( bcore_name_hmap_s_g->map, type );
+    assert( hmap_s_g != NULL );
+    bcore_mutex_lock( &hmap_s_g->mutex );
+    bcore_string_s* s = bcore_hmap_u2vd_s_remove_h( hmap_s_g->map, type );
     bcore_string_s_discard( s );
-    bcore_mutex_unlock( &bcore_name_hmap_s_g->mutex );
+    bcore_mutex_unlock( &hmap_s_g->mutex );
 }
 
 /**********************************************************************************************************************/

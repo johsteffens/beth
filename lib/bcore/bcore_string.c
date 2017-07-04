@@ -1034,7 +1034,7 @@ static void check_sanity( vc_t o )
     }
 }
 
-struct bcore_flect_self_s* bcore_string_s_create_self()
+bcore_flect_self_s* bcore_string_s_create_self()
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_string_s =  { aware_t _; sd_t data; sz_t size; sz_t space; }", sizeof( bcore_string_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_init,         "bcore_fp_init",         "init"         );
