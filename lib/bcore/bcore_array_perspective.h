@@ -22,7 +22,8 @@ typedef struct bcore_array_s bcore_array_s;
 
 typedef struct bcore_array_s
 {
-    bcore_perspective_s _;
+    aware_t p_type; // type of perspective
+    tp_t    o_type; // type of object
 
     tp_t caps_type;
     sz_t caps_offset;
@@ -73,6 +74,8 @@ typedef struct bcore_array_s
 
 
 } bcore_array_s;
+
+bcore_flect_self_s* bcore_array_s_create_self();
 
 const bcore_array_s* bcore_array_s_get_typed( tp_t type );
 

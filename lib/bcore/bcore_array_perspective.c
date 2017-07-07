@@ -1,34 +1,51 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 #include "bcore_array_perspective.h"
+#include "bcore_spect.h"
 
 /**********************************************************************************************************************/
 // bcore_array_s
 
-void bcore_array_s_down( bcore_array_s* o );
+static void array_s_down( bcore_array_s* o );
 
-void bcore_array_s_init( bcore_array_s* o )
+static void array_s_init( bcore_array_s* o )
 {
     bcore_memzero( o, sizeof( bcore_array_s ) );
-    bcore_perspective_s_init( &o->_, bcore_array_s_down );
+    o->p_type = typeof( "bcore_array_s" );
 }
 
-void bcore_array_s_down( bcore_array_s* o )
+static void array_s_down( bcore_array_s* o )
 {
 }
 
-bcore_array_s* bcore_array_s_create()
+static bcore_array_s* array_s_create()
 {
     bcore_array_s* o = bcore_alloc( NULL, sizeof( bcore_array_s ) );
-    bcore_array_s_init( o );
+    array_s_init( o );
     return o;
 }
 
-void bcore_array_s_discard( bcore_array_s* o )
+static void array_s_discard( bcore_array_s* o )
 {
     if( !o ) return;
-    bcore_array_s_down( o );
+    array_s_down( o );
     bcore_free( o );
+}
+
+static bcore_signature_s* array_s_create_signature( bcore_array_s* o )
+{
+    return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
+}
+
+bcore_flect_self_s* bcore_array_s_create_self()
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_array_s" ), sizeof( bcore_array_s ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_init,             "bcore_fp_init",                    "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_down,             "bcore_fp_down",                    "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_create,           "bcore_fp_create",                  "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
+    return self;
 }
 
 /**********************************************************************************************************************/
@@ -651,9 +668,9 @@ static tp_t get_type( const bcore_array_s* p, vc_t o )
     vd_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
     {
-        case BCORE_CAPS_STATIC_ARRAY:      return p->item_p->_.o_type;
+        case BCORE_CAPS_STATIC_ARRAY:      return p->item_p->o_type;
         case BCORE_CAPS_TYPED_ARRAY:       return ( ( const bcore_typed_array_s*       )obj )->type;
-        case BCORE_CAPS_STATIC_LINK_ARRAY: return p->item_p->_.o_type;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return p->item_p->o_type;
         case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_typed_link_array_s*  )obj )->type;
         case BCORE_CAPS_AWARE_LINK_ARRAY:  return 0;
         default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
@@ -670,7 +687,7 @@ static void set_type( const bcore_array_s* p, vd_t o, tp_t type )
     {
         case BCORE_CAPS_STATIC_ARRAY:
         {
-            if( p->item_p->_.o_type == type ) break;
+            if( p->item_p->o_type == type ) break;
             ERR( "cannot change type on static-array" );
         }
         break;
@@ -686,7 +703,7 @@ static void set_type( const bcore_array_s* p, vd_t o, tp_t type )
 
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         {
-            if( p->item_p->_.o_type == type ) break;
+            if( p->item_p->o_type == type ) break;
             ERR( "cannot change type on static-link-array" );
         }
         break;
@@ -972,9 +989,9 @@ static void sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp
 
 static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
 {
-    bcore_array_s* o = bcore_array_s_create();
-    o->_.p_type = bcore_name_enroll( "bcore_array_s" );
-    o->_.o_type = self->type;
+    bcore_array_s* o = array_s_create();
+    o->p_type = bcore_name_enroll( "bcore_array_s" );
+    o->o_type = self->type;
 
     const bcore_instance_s* instance = bcore_instance_s_get_typed( self->type );
     if( !instance->body ) ERR( "'%s' has no body", ifnameof( self->type ) );
@@ -1082,16 +1099,16 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
 
 const bcore_array_s* bcore_array_s_get_typed( tp_t o_type )
 {
-    tp_t p_type = typeof( "bcore_array_s" );
-    const bcore_array_s* perspective = ( const bcore_array_s* )bcore_perspective_try_perspective( p_type, o_type );
-    if( !perspective )
+    tp_t sig = bcore_signature_get_hash_na( 2, typeof( "bcore_array_s" ), o_type );
+    const bcore_array_s* array_p = bcore_spect_try( sig );
+    if( !array_p )
     {
         const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
-        bcore_array_s* new_perspective = create_from_self( o_self );
-        bcore_perspective_enroll( p_type, o_type, ( bcore_perspective_s* )new_perspective );
-        perspective = new_perspective;
+        bcore_array_s* new_array_p = create_from_self( o_self );
+        bcore_spect_enroll_d( new_array_p );
+        array_p = new_array_p;
     }
-    return perspective;
+    return array_p;
 }
 
 /**********************************************************************************************************************/

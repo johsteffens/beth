@@ -3,37 +3,54 @@
 #include "bcore_via_perspective.h"
 #include "bcore_array_perspective.h"
 #include "bcore_flect.h"
+#include "bcore_spect.h"
 
 
 /**********************************************************************************************************************/
 // bcore_via_s
 
-void bcore_via_s_down( bcore_via_s* o );
+static void via_s_down( bcore_via_s* o );
 
-void bcore_via_s_init( bcore_via_s* o )
+static void via_s_init( bcore_via_s* o )
 {
     bcore_memzero( o, sizeof( bcore_via_s ) );
-    bcore_perspective_s_init( &o->_, bcore_via_s_down );
+    o->p_type = typeof( "bcore_via_s" );
 }
 
-void bcore_via_s_down( bcore_via_s* o )
+static void via_s_down( bcore_via_s* o )
 {
     if( o->vitem_arr ) bcore_un_alloc( sizeof( bcore_via_s       ), o->vitem_arr, o->size, 0, NULL );
     if( o->inst_arr  ) bcore_un_alloc( sizeof( bcore_instance_s* ), o->inst_arr,  o->size, 0, NULL );
 }
 
-bcore_via_s* bcore_via_s_create()
+static bcore_via_s* via_s_create()
 {
     bcore_via_s* o = bcore_alloc( NULL, sizeof( bcore_via_s ) );
-    bcore_via_s_init( o );
+    via_s_init( o );
     return o;
 }
 
-void bcore_via_s_discard( bcore_via_s* o )
+static void via_s_discard( bcore_via_s* o )
 {
     if( !o ) return;
-    bcore_via_s_down( o );
+    via_s_down( o );
     bcore_free( o );
+}
+
+static bcore_signature_s* via_s_create_signature( bcore_via_s* o )
+{
+    return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
+}
+
+bcore_flect_self_s* bcore_via_s_create_self()
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_via_s" ), sizeof( bcore_via_s ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_init,             "bcore_fp_init",                    "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_down,             "bcore_fp_down",                    "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_create,           "bcore_fp_create",                  "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
+    return self;
 }
 
 /**********************************************************************************************************************/
@@ -241,7 +258,7 @@ static vd_t iset_c( const bcore_via_s* p, vd_t o, sz_t index, vc_t src )
 
         case BCORE_CAPS_EXTERNAL_DATA:
         case BCORE_CAPS_EXTERNAL_FUNC:
-            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->_.p_type ) );
+            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
             break;
 
         default:
@@ -314,7 +331,7 @@ static vd_t iset_d( const bcore_via_s* p, vd_t o, sz_t index, vd_t src )
 
         case BCORE_CAPS_EXTERNAL_DATA:
         case BCORE_CAPS_EXTERNAL_FUNC:
-            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->_.p_type ) );
+            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
             break;
 
         default:
@@ -385,12 +402,12 @@ static vd_t icreate( const bcore_via_s* p, vd_t o, sz_t index )
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         case BCORE_CAPS_AWARE_LINK_ARRAY:
-            ERR( "Use array perspective to change '%s'", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->_.p_type ) );
+            ERR( "Use array perspective to change '%s'", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
             break;
 
         case BCORE_CAPS_EXTERNAL_DATA:
         case BCORE_CAPS_EXTERNAL_FUNC:
-            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->_.p_type ) );
+            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
             break;
 
         default:
@@ -416,9 +433,9 @@ static vd_t ityped_create( const bcore_via_s* p, vd_t o, sz_t index, tp_t type )
         case BCORE_CAPS_STATIC_LINK:
         {
             const bcore_instance_s* inst_p = p->inst_arr[ index ];
-            if( inst_p->_.o_type != type )
+            if( inst_p->o_type != type )
             {
-               ERR( "Element is static type '%s'. Requested type '%s'.", ifnameof( inst_p->_.o_type ), ifnameof( type ) );
+               ERR( "Element is static type '%s'. Requested type '%s'.", ifnameof( inst_p->o_type ), ifnameof( type ) );
             }
 
             bcore_static_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
@@ -457,12 +474,12 @@ static vd_t ityped_create( const bcore_via_s* p, vd_t o, sz_t index, tp_t type )
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         case BCORE_CAPS_AWARE_LINK_ARRAY:
-            ERR( "Use array perspective to change '%s'", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->_.p_type ) );
+            ERR( "Use array perspective to change '%s'", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
             break;
 
         case BCORE_CAPS_EXTERNAL_DATA:
         case BCORE_CAPS_EXTERNAL_FUNC:
-            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->_.p_type ) );
+            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
             break;
 
         default:
@@ -517,12 +534,12 @@ static void idiscard( const bcore_via_s* p, vd_t o, sz_t index )
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         case BCORE_CAPS_AWARE_LINK_ARRAY:
-            ERR( "Use array perspective to change '%s'", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->_.p_type ) );
+            ERR( "Use array perspective to change '%s'", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
             break;
 
         case BCORE_CAPS_EXTERNAL_DATA:
         case BCORE_CAPS_EXTERNAL_FUNC:
-            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->_.p_type ) );
+            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
             break;
 
         default:
@@ -572,12 +589,12 @@ static vd_t idetach( const bcore_via_s* p, vd_t o, sz_t index )
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         case BCORE_CAPS_AWARE_LINK_ARRAY:
-            ERR( "Cannot detach '%s'", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->_.p_type ) );
+            ERR( "Cannot detach '%s'", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
             break;
 
         case BCORE_CAPS_EXTERNAL_DATA:
         case BCORE_CAPS_EXTERNAL_FUNC:
-            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->_.p_type ) );
+            ERR( "External object '%s' cannot be changed though perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
             break;
 
         default:
@@ -593,7 +610,7 @@ static vd_t idetach( const bcore_via_s* p, vd_t o, sz_t index )
 static sz_t nget_index( const bcore_via_s* p, tp_t name )
 {
     for( sz_t i = 0; i < p->size; i++ ) if( p->vitem_arr[ i ].name == name ) return i;
-    ERR( "object '%s' has no element of name '%s'", ifnameof( p->_.o_type ), ifnameof( name ) );
+    ERR( "object '%s' has no element of name '%s'", ifnameof( p->o_type ), ifnameof( name ) );
     return 0;
 }
 
@@ -656,9 +673,9 @@ static vd_t ndetach( const bcore_via_s* p, vd_t o, tp_t name )
 
 static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
 {
-    bcore_via_s* o = bcore_via_s_create();
-    o->_.p_type = bcore_name_enroll( "bcore_via_s" );
-    o->_.o_type = self->type;
+    bcore_via_s* o = via_s_create();
+    o->p_type = bcore_name_enroll( "bcore_via_s" );
+    o->o_type = self->type;
 
     const bcore_instance_s* inst_p = bcore_instance_s_get_typed( self->type );
 
@@ -689,7 +706,7 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
                 case BCORE_CAPS_STATIC_LINK:
                 {
                     vitem->type = flect_item->type;
-                    if( flect_item->type == o->_.o_type )
+                    if( flect_item->type == o->o_type )
                     {
                         vitem->via = o;
                     }
@@ -820,79 +837,79 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
 
 const bcore_via_s* bcore_via_s_get_typed( u2_t o_type )
 {
-    u2_t p_type = typeof( "bcore_via_s" );
-    const bcore_via_s* perspective = ( const bcore_via_s* )bcore_perspective_try_perspective( p_type, o_type );
-    if( !perspective )
+    tp_t sig = bcore_signature_get_hash_na( 2, typeof( "bcore_via_s" ), o_type );
+    const bcore_via_s* via_p = bcore_spect_try( sig );
+    if( !via_p )
     {
         const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
-        bcore_via_s* new_perspective = create_from_self( o_self );
-        bcore_perspective_enroll( p_type, o_type, ( bcore_perspective_s* )new_perspective );
-        perspective = new_perspective;
+        bcore_via_s* new_via_p = create_from_self( o_self );
+        bcore_spect_enroll_d( new_via_p );
+        via_p = new_via_p;
     }
-    return perspective;
+    return via_p;
 }
 
 /**********************************************************************************************************************/
 
 bcore_string_s* bcore_via_perspective_selftest()
 {
-    bcore_flect_parse_sc( "specs = { sz_t size; u2_t param1; s2_t; }" );
-    vd_t specs = bcore_instance_typed_create( typeof( "specs" ) );
-    const bcore_via_s* specs_v = bcore_via_s_get_typed( typeof( "specs" ) );
+    bcore_flect_parse_sc( "via_specs = { sz_t size; u2_t param1; s2_t; }" );
+    vd_t via_specs = bcore_instance_typed_create( typeof( "via_specs" ) );
+    const bcore_via_s* via_specs_v = bcore_via_s_get_typed( typeof( "via_specs" ) );
 
     {
         sz_t size   =  10;
         u2_t param1 = 200;
         s2_t param2 = -50;
-        specs_v->nset_c( specs_v, specs, typeof( "size"   ), &size );
-        specs_v->nset_c( specs_v, specs, typeof( "param1" ), &param1 );
-        specs_v->nset_c( specs_v, specs, typeof( "" ), &param2 );
+        via_specs_v->nset_c( via_specs_v, via_specs, typeof( "size"   ), &size );
+        via_specs_v->nset_c( via_specs_v, via_specs, typeof( "param1" ), &param1 );
+        via_specs_v->nset_c( via_specs_v, via_specs, typeof( "" ), &param2 );
     }
 
-    ASSERT( *( sz_t* )specs_v->nget_c( specs_v, specs, typeof( "size"   ) ) ==  10 );
-    ASSERT( *( u2_t* )specs_v->nget_c( specs_v, specs, typeof( "param1" ) ) == 200 );
-    ASSERT( *( s2_t* )specs_v->nget_c( specs_v, specs, typeof( "" ) )       == -50 );
+    ASSERT( *( sz_t* )via_specs_v->nget_c( via_specs_v, via_specs, typeof( "size"   ) ) ==  10 );
+    ASSERT( *( u2_t* )via_specs_v->nget_c( via_specs_v, via_specs, typeof( "param1" ) ) == 200 );
+    ASSERT( *( s2_t* )via_specs_v->nget_c( via_specs_v, via_specs, typeof( "" ) )       == -50 );
 
-    bcore_flect_parse_sc( "specs_arr = { aware_t _; u3_t flags; specs [] arr; }" );
-    vd_t specs_arr = bcore_instance_typed_create( typeof( "specs_arr" ) );
+    bcore_flect_parse_sc( "via_specs_arr = { aware_t _; u3_t flags; via_specs [] arr; }" );
+    vd_t via_specs_arr = bcore_instance_typed_create( typeof( "via_specs_arr" ) );
 
-    const bcore_via_s* specs_arr_v = bcore_via_s_get_typed( typeof( "specs_arr" ) );
+    const bcore_via_s* via_specs_arr_v = bcore_via_s_get_typed( typeof( "via_specs_arr" ) );
 
-    vd_t arr = specs_arr_v->nget_d( specs_arr_v, specs_arr, typeof( "arr" ) );
-    tp_t arr_type = specs_arr_v->nget_type( specs_arr_v, specs_arr, typeof( "arr" ) );
+    vd_t arr = via_specs_arr_v->nget_d( via_specs_arr_v, via_specs_arr, typeof( "arr" ) );
+    tp_t arr_type = via_specs_arr_v->nget_type( via_specs_arr_v, via_specs_arr, typeof( "arr" ) );
     const bcore_array_s* arr_p = bcore_array_s_get_typed( arr_type );
 
     sz_t arr_size = 100000;
 
     for( sz_t i = 0; i < arr_size; i++ )
     {
-        arr_p->push_c( arr_p, arr, specs );
+        arr_p->push_c( arr_p, arr, via_specs );
     }
 
     for( sz_t i = 0; i < arr_size; i++ )
     {
-        vd_t specs_l = arr_p->get_d( arr_p, arr, i );
-        specs_v->nset_c( specs_v, specs_l, typeof( "size" ), &i );
+        vd_t via_specs_l = arr_p->get_d( arr_p, arr, i );
+        via_specs_v->nset_c( via_specs_v, via_specs_l, typeof( "size" ), &i );
     }
 
-    vd_t specs_arr2 = bcore_instance_typed_create( typeof( "specs_arr" ) );
+    vd_t via_specs_arr2 = bcore_instance_typed_create( typeof( "via_specs_arr" ) );
 
-    specs_arr_v->nset_c( specs_arr_v, specs_arr2, typeof( "arr" ), specs_arr_v->nget_c( specs_arr_v, specs_arr, typeof( "arr" ) ) );
+    via_specs_arr_v->nset_c( via_specs_arr_v, via_specs_arr2, typeof( "arr" ), via_specs_arr_v->nget_c( via_specs_arr_v, via_specs_arr, typeof( "arr" ) ) );
 
-    vd_t arr2 = specs_arr_v->nget_d( specs_arr_v, specs_arr2, typeof( "arr" ) );
+    vd_t arr2 = via_specs_arr_v->nget_d( via_specs_arr_v, via_specs_arr2, typeof( "arr" ) );
 
     for( sz_t i = 0; i < arr_size; i++ )
     {
-        vc_t specs_l = arr_p->get_c( arr_p, arr2, i );
-        ASSERT( i == *( sz_t* )specs_v->nget_c( specs_v, specs_l, typeof( "size" ) ) );
+        vc_t via_specs_l = arr_p->get_c( arr_p, arr2, i );
+        ASSERT( i == *( sz_t* )via_specs_v->nget_c( via_specs_v, via_specs_l, typeof( "size" ) ) );
     }
 
-    ASSERT( bcore_strcmp( nameof( arr_type ), "specs__static_array" ) == 0 );
+    ASSERT( bcore_strcmp( nameof( arr_type ), "via_specs__static_array" ) == 0 );
     ASSERT( arr_p->get_size( arr_p, arr ) == arr_size );
 
-    bcore_instance_typed_discard( typeof( "specs" ), specs );
-    bcore_instance_aware_discard( specs_arr );
-    bcore_instance_aware_discard( specs_arr2 );
+    bcore_instance_typed_discard( typeof( "via_specs" ), via_specs );
+    bcore_instance_aware_discard( via_specs_arr );
+    bcore_instance_aware_discard( via_specs_arr2 );
 
     return NULL;
 }

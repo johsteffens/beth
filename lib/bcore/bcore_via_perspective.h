@@ -37,7 +37,8 @@ typedef struct bcore_vitem_s
 
 typedef struct bcore_via_s
 {
-    bcore_perspective_s _;
+    aware_t p_type; // type of perspective
+    tp_t    o_type; // type of object
 
     sz_t                     size;       // number of elements
     bcore_vitem_s*           vitem_arr;  // array of vitem
@@ -72,6 +73,8 @@ typedef struct bcore_via_s
     vd_t                 ( *ndetach       )( const bcore_via_s* p, vd_t o, tp_t name );
 
 } bcore_via_s;
+
+bcore_flect_self_s* bcore_via_s_create_self();
 
 const bcore_via_s* bcore_via_s_get_typed( u2_t type );
 

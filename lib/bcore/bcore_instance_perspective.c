@@ -84,7 +84,7 @@ static void instance_s_down( bcore_instance_s* o );
 void instance_s_init( bcore_instance_s* o )
 {
     bcore_memzero( o, sizeof( bcore_instance_s ) );
-    bcore_perspective_s_init( &o->_, instance_s_down );
+    o->p_type = typeof( "bcore_instance_s" );
 }
 
 void instance_s_down( bcore_instance_s* o )
@@ -108,7 +108,7 @@ static void instance_s_discard( bcore_instance_s* o )
 
 static bcore_signature_s* instance_s_create_signature( bcore_instance_s* o )
 {
-    return bcore_signature_s_create_an( 2, o->_.p_type, o->_.o_type );
+    return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
 }
 
 static bcore_instance_item_s* instance_s_push( bcore_instance_s* o )
@@ -171,7 +171,7 @@ static void init_generic( const bcore_instance_s* p, vd_t o )
     sz_t first = 0;
     if( p->aware )
     {
-        *( aware_t* )o = p->_.o_type;
+        *( aware_t* )o = p->o_type;
         first = 1;
     }
     for( sz_t i = first; i < p->body->size; i++ )
@@ -213,7 +213,7 @@ static void down_o( const bcore_instance_s* p, vd_t o )
 {
 #ifndef NDEBUG
     if( !o ) ERR( "o == NULL" );
-    if( p->aware ) verify_aware_type( p->_.o_type, o, __func__ );
+    if( p->aware ) verify_aware_type( p->o_type, o, __func__ );
 #endif // NDEBUG
     p->down_o( o );
 }
@@ -222,7 +222,7 @@ static void down_flat( const bcore_instance_s* p, vd_t o )
 {
 #ifndef NDEBUG
     if( !o ) ERR( "o == NULL" );
-    if( p->aware ) verify_aware_type( p->_.o_type, o, __func__ );
+    if( p->aware ) verify_aware_type( p->o_type, o, __func__ );
 #endif // NDEBUG
     /* nothing to do */
 }
@@ -231,7 +231,7 @@ static void down_generic( const bcore_instance_s* p, vd_t o )
 {
 #ifndef NDEBUG
     if( !o ) ERR( "o == NULL" );
-    if( p->aware ) verify_aware_type( p->_.o_type, o, __func__ );
+    if( p->aware ) verify_aware_type( p->o_type, o, __func__ );
 #endif // NDEBUG
     for( sz_t i = 0; i < p->body->size; i++ )
     {
@@ -374,8 +374,8 @@ static void copy_o( const bcore_instance_s* p, vd_t dst, vc_t src )
     if( !src ) ERR( "src == NULL" );
     if( p->aware )
     {
-        verify_aware_type( p->_.o_type, dst, __func__ );
-        verify_aware_type( p->_.o_type, src, __func__ );
+        verify_aware_type( p->o_type, dst, __func__ );
+        verify_aware_type( p->o_type, src, __func__ );
     }
 #endif // NDEBUG
     p->copy_o( dst, src );
@@ -389,8 +389,8 @@ static void copy_flat( const bcore_instance_s* p, vd_t dst, vc_t src )
     if( !src ) ERR( "src == NULL" );
     if( p->aware )
     {
-        verify_aware_type( p->_.o_type, dst, __func__ );
-        verify_aware_type( p->_.o_type, src, __func__ );
+        verify_aware_type( p->o_type, dst, __func__ );
+        verify_aware_type( p->o_type, src, __func__ );
     }
 #endif // NDEBUG
     bcore_memcpy( dst, src, p->size );
@@ -404,8 +404,8 @@ static void copy_generic( const bcore_instance_s* p, vd_t dst, vc_t src )
     if( !src ) ERR( "src == NULL" );
     if( p->aware )
     {
-        verify_aware_type( p->_.o_type, dst, __func__ );
-        verify_aware_type( p->_.o_type, src, __func__ );
+        verify_aware_type( p->o_type, dst, __func__ );
+        verify_aware_type( p->o_type, src, __func__ );
     }
 #endif // NDEBUG
     for( sz_t i = 0; i < p->body->size; i++ )
@@ -639,14 +639,14 @@ static void copy_typed_o( const bcore_instance_s* p, vd_t dst, tp_t type, vc_t s
 #ifndef NDEBUG
     if( !dst ) ERR( "dst == NULL" );
     if( !src ) ERR( "src == NULL" );
-    if( p->aware ) verify_aware_type( p->_.o_type, dst, __func__ );
+    if( p->aware ) verify_aware_type( p->o_type, dst, __func__ );
 #endif // NDEBUG
     p->copy_typed_o( dst, type, src );
 }
 
 static void copy_typed( const bcore_instance_s* p, vd_t dst, tp_t type, vc_t src )
 {
-    tp_t dst_type = p->_.o_type;
+    tp_t dst_type = p->o_type;
     switch( dst_type )
     {
         case TYPEOF_s3_t:
@@ -956,7 +956,7 @@ static void check_sanity( const bcore_instance_s* p, vc_t o )
     {
         if( p->aware )
         {
-            verify_aware_type( p->_.o_type, o, "check_sanity" );
+            verify_aware_type( p->o_type, o, "check_sanity" );
         }
     }
 }
@@ -974,8 +974,7 @@ static sz_t aligned_offset( sz_t align, sz_t raw_offset )
 bcore_instance_s* bcore_instance_s_create_from_self( const bcore_flect_self_s* self )
 {
     bcore_instance_s* o = instance_s_create();
-    o->_.p_type  = bcore_name_enroll( "bcore_instance_s" );
-    o->_.o_type  = self->type;
+    o->o_type  = self->type;
     o->init_flat = true;
     o->down_flat = true;
     o->copy_flat = true;
@@ -1187,20 +1186,6 @@ const bcore_instance_s* bcore_instance_s_get_typed( tp_t o_type )
         instance_p = new_instance_p;
     }
     return instance_p;
-
-
-/*
-    u2_t p_type = typeof( "bcore_instance_s" );
-    const bcore_instance_s* perspective = ( const bcore_instance_s* )bcore_perspective_try_perspective( p_type, o_type );
-    if( !perspective )
-    {
-        const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
-        bcore_instance_s* new_perspective = bcore_instance_s_create_from_self( o_self );
-        bcore_perspective_enroll( p_type, o_type, ( bcore_perspective_s* )new_perspective );
-        perspective = new_perspective;
-    }
-    return perspective;
-*/
 }
 
 /**********************************************************************************************************************/
@@ -1261,7 +1246,7 @@ void bcore_instance_aware_copy( vd_t dst, vc_t src )
 void bcore_instance_spect_copy_typed( const bcore_instance_s* o, vd_t dst, tp_t src_type, vc_t src )
 {
     if( dst == src ) return;
-    if( o->_.o_type == src_type )
+    if( o->o_type == src_type )
     {
         o->copy( o, dst, src );
     }
@@ -1275,7 +1260,7 @@ void bcore_instance_typed_copy_typed( tp_t type, vd_t dst, tp_t src_type, vc_t s
 {
     if( dst == src ) return;
     const bcore_instance_s* o = bcore_instance_s_get_typed( type );
-    if( o->_.o_type == src_type )
+    if( o->o_type == src_type )
     {
         o->copy( o, dst, src );
     }
@@ -1289,7 +1274,7 @@ void bcore_instance_aware_copy_typed( vd_t dst, tp_t src_type, vc_t src )
 {
     if( dst == src ) return;
     const bcore_instance_s* o = bcore_instance_s_get_aware( dst );
-    if( o->_.o_type == src_type )
+    if( o->o_type == src_type )
     {
         o->copy( o, dst, src );
     }
@@ -1395,7 +1380,7 @@ void bcore_instance_spect_check_sizeof( const bcore_instance_s* o, sz_t size )
     if( o->size != size )
     {
         ERR( "Size mismatch for object '%s': Instance has measured %zu but sizeof( object ) is %zu bytes.\n"
-             "This error might be caused due to a difference between object's c-definitions and its self reflection.\n" , nameof( o->_.o_type ), o->size, size );
+             "This error might be caused due to a difference between object's c-definitions and its self reflection.\n" , nameof( o->o_type ), o->size, size );
     }
 }
 

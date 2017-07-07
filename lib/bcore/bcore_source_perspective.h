@@ -6,7 +6,7 @@
 #include "bcore_first.h"
 #include "bcore_types.h"
 #include "bcore_features.h"
-#include "bcore_perspective.h"
+#include "bcore_flect.h"
 
 /// specific features
 
@@ -15,7 +15,8 @@ typedef void (*bcore_source_fp_parsevf )( vd_t o, sc_t format, va_list args ); /
 typedef struct bcore_source_s bcore_source_s;
 typedef struct bcore_source_s
 {
-    bcore_perspective_s _;
+    aware_t p_type; // type of perspective
+    tp_t    o_type; // type of object
 
     bcore_fp_flow_src       fp_flow_src;
     bcore_fp_logvf          fp_parse_errvf;
@@ -26,6 +27,8 @@ typedef struct bcore_source_s
     bool (*parse_boolf)( const bcore_source_s* p, vd_t o, sc_t format      ); // format must yield just one bool, which is returned
 
 } bcore_source_s;
+
+bcore_flect_self_s* bcore_source_s_create_self();
 
 const bcore_source_s* bcore_source_s_get_typed( u2_t type );
 

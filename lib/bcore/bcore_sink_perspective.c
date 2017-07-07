@@ -2,34 +2,51 @@
 
 #include "bcore_sink_perspective.h"
 #include "bcore_flect.h"
+#include "bcore_spect.h"
 
 /**********************************************************************************************************************/
 // bcore_sink_s
 
-void bcore_sink_s_down( bcore_sink_s* o );
+static void sink_s_down( bcore_sink_s* o );
 
-void bcore_sink_s_init( bcore_sink_s* o )
+static void sink_s_init( bcore_sink_s* o )
 {
     bcore_memzero( o, sizeof( bcore_sink_s ) );
-    bcore_perspective_s_init( &o->_, bcore_sink_s_down );
+    o->p_type = typeof( "bcore_sink_s" );
 }
 
-void bcore_sink_s_down( bcore_sink_s* o )
+static void sink_s_down( bcore_sink_s* o )
 {
 }
 
-bcore_sink_s* bcore_sink_s_create()
+static bcore_sink_s* sink_s_create()
 {
     bcore_sink_s* o = bcore_alloc( NULL, sizeof( bcore_sink_s ) );
-    bcore_sink_s_init( o );
+    sink_s_init( o );
     return o;
 }
 
-void bcore_sink_s_discard( bcore_sink_s* o )
+static void sink_s_discard( bcore_sink_s* o )
 {
     if( !o ) return;
-    bcore_sink_s_down( o );
+    sink_s_down( o );
     bcore_free( o );
+}
+
+static bcore_signature_s* sink_s_create_signature( bcore_sink_s* o )
+{
+    return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
+}
+
+bcore_flect_self_s* bcore_sink_s_create_self()
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_sink_s" ), sizeof( bcore_sink_s ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_init,             "bcore_fp_init",                    "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_down,             "bcore_fp_down",                    "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_create,           "bcore_fp_create",                  "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
+    return self;
 }
 
 /**********************************************************************************************************************/
@@ -79,9 +96,8 @@ static void push_string_d( const struct bcore_sink_s* p, vd_t o, bcore_string_s*
 
 static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
 {
-    bcore_sink_s* o = bcore_sink_s_create();
-    o->_.p_type = bcore_name_enroll( "bcore_sink_s" );
-    o->_.o_type = self->type;
+    bcore_sink_s* o = sink_s_create();
+    o->o_type = self->type;
     if( !self->body ) ERR( "'%s' has no body", ifnameof( self->type ) );
     const bcore_flect_body_s* body = self->body;
 
@@ -111,16 +127,16 @@ static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
 
 const bcore_sink_s* bcore_sink_s_get_typed( u2_t o_type )
 {
-    u2_t p_type = typeof( "bcore_sink_s" );
-    const bcore_sink_s* perspective = ( const bcore_sink_s* )bcore_perspective_try_perspective( p_type, o_type );
-    if( !perspective )
+    tp_t sig = bcore_signature_get_hash_na( 2, typeof( "bcore_sink_s" ), o_type );
+    const bcore_sink_s* sink_p = bcore_spect_try( sig );
+    if( !sink_p )
     {
         const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
-        bcore_sink_s* new_perspective = create_from_self( o_self );
-        bcore_perspective_enroll( p_type, o_type, ( bcore_perspective_s* )new_perspective );
-        perspective = new_perspective;
+        bcore_sink_s* new_sink_p = create_from_self( o_self );
+        bcore_spect_enroll_d( new_sink_p );
+        sink_p = new_sink_p;
     }
-    return perspective;
+    return sink_p;
 }
 
 /**********************************************************************************************************************/

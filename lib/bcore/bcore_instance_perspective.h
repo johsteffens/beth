@@ -3,7 +3,6 @@
 #ifndef BCORE_INSTANCE_PERSPECTIVE_H
 #define BCORE_INSTANCE_PERSPECTIVE_H
 
-#include "bcore_perspective.h"
 #include "bcore_flect.h"
 #include "bcore_features.h"
 
@@ -34,9 +33,10 @@ typedef struct bcore_instance_s bcore_instance_s;
 
 typedef struct bcore_instance_s
 {
-    bcore_perspective_s _;
+    aware_t p_type; // type of perspective
+    tp_t    o_type; // type of object
 
-    bcore_instance_body_s* body; // primitive objects have no body
+    bcore_instance_body_s* body;
 
     sz_t size;   // sizeof(type);
     sz_t align;  // alignof(type)
