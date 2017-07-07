@@ -11,6 +11,8 @@
 #include "bcore_life.h"
 #include "bcore_bml.h"
 #include "bcore_signature.h"
+#include "bcore_spect.h"
+#include "bcore_instance_perspective.h"
 #include "bcore.h"
 
 static void init_library_bcore_once()
@@ -20,6 +22,7 @@ static void init_library_bcore_once()
     bcore_name_manager_open();
     bcore_signature_manager_open();
     bcore_flect_open();
+    bcore_spect_manager_open();
     bcore_perspective_open();
 
     // define reflections ...
@@ -29,6 +32,7 @@ static void init_library_bcore_once()
     bcore_flect_define_creator( typeof( "bcore_string_source_s"   ), bcore_string_source_s_create_self   );
     bcore_flect_define_creator( typeof( "bcore_life_s"            ), bcore_life_s_create_self            );
     bcore_flect_define_creator( typeof( "bcore_signature_s"       ), bcore_signature_s_create_self       );
+    bcore_flect_define_creator( typeof( "bcore_instance_s"        ), bcore_instance_s_create_self       );
 
     // run some critical quick-tests ...
     bcore_memory_manager_s_quicktest();
@@ -44,9 +48,12 @@ void init_library_bcore()
 void down_library_bcore()
 {
     sz_t space = bcore_memory_manager_granted_space();
-    bcore_perspective_close();
     bcore_msg( "\n");
+    bcore_perspective_close();
     bcore_msg( "perspective mananger: %zu bytes\n", space - bcore_memory_manager_granted_space() );
+    space = bcore_memory_manager_granted_space();
+    bcore_spect_manager_close();
+    bcore_msg( "spect mananger      : %zu bytes\n", space - bcore_memory_manager_granted_space() );
     space = bcore_memory_manager_granted_space();
     bcore_flect_close();
     bcore_msg( "reflection mananger : %zu bytes\n", space - bcore_memory_manager_granted_space() );

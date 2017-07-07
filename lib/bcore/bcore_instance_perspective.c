@@ -2,6 +2,7 @@
 
 #include "bcore_instance_perspective.h"
 #include "bcore_quicktypes.h"
+#include "bcore_spect.h"
 
 /**********************************************************************************************************************/
 
@@ -78,34 +79,39 @@ void bcore_instance_body_s_pop( bcore_instance_body_s* o )
 /**********************************************************************************************************************/
 // bcore_instance_s
 
-void bcore_instance_s_down( bcore_instance_s* o );
+static void instance_s_down( bcore_instance_s* o );
 
-void bcore_instance_s_init( bcore_instance_s* o )
+void instance_s_init( bcore_instance_s* o )
 {
     bcore_memzero( o, sizeof( bcore_instance_s ) );
-    bcore_perspective_s_init( &o->_, bcore_instance_s_down );
+    bcore_perspective_s_init( &o->_, instance_s_down );
 }
 
-void bcore_instance_s_down( bcore_instance_s* o )
+void instance_s_down( bcore_instance_s* o )
 {
     bcore_instance_body_s_discard( o->body );
 }
 
-bcore_instance_s* bcore_instance_s_create()
+static bcore_instance_s* instance_s_create()
 {
     bcore_instance_s* o = bcore_alloc( NULL, sizeof( bcore_instance_s ) );
-    bcore_instance_s_init( o );
+    instance_s_init( o );
     return o;
 }
 
-void bcore_instance_s_discard( bcore_instance_s* o )
+static void instance_s_discard( bcore_instance_s* o )
 {
     if( !o ) return;
-    bcore_instance_s_down( o );
+    instance_s_down( o );
     bcore_free( o );
 }
 
-bcore_instance_item_s* bcore_instance_s_push( bcore_instance_s* o )
+static bcore_signature_s* instance_s_create_signature( bcore_instance_s* o )
+{
+    return bcore_signature_s_create_an( 2, o->_.p_type, o->_.o_type );
+}
+
+static bcore_instance_item_s* instance_s_push( bcore_instance_s* o )
 {
     if( !o->body ) o->body = bcore_instance_body_s_create();
     return bcore_instance_body_s_push( o->body );
@@ -125,6 +131,17 @@ static void verify_aware_type( tp_t type, vc_t obj, sc_t context )
             ERR( "%s on undefined object; expected '%s'", context, ifnameof( type ) );
         }
     }
+}
+
+bcore_flect_self_s* bcore_instance_s_create_self()
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_instance_s" ), sizeof( bcore_instance_s ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )instance_s_init,             "bcore_fp_init",                    "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )instance_s_down,             "bcore_fp_down",                    "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )instance_s_create,           "bcore_fp_create",                  "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )instance_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )instance_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
+    return self;
 }
 
 /**********************************************************************************************************************/
@@ -956,7 +973,7 @@ static sz_t aligned_offset( sz_t align, sz_t raw_offset )
 
 bcore_instance_s* bcore_instance_s_create_from_self( const bcore_flect_self_s* self )
 {
-    bcore_instance_s* o = bcore_instance_s_create();
+    bcore_instance_s* o = instance_s_create();
     o->_.p_type  = bcore_name_enroll( "bcore_instance_s" );
     o->_.o_type  = self->type;
     o->init_flat = true;
@@ -1022,7 +1039,7 @@ bcore_instance_s* bcore_instance_s_create_from_self( const bcore_flect_self_s* s
             }
             else
             {
-                bcore_instance_item_s* inst_item = bcore_instance_s_push( o );
+                bcore_instance_item_s* inst_item = instance_s_push( o );
 
                 inst_item->flect_item = flect_item;
                 if( flect_item->type )
@@ -1158,8 +1175,21 @@ bcore_instance_s* bcore_instance_s_create_from_self( const bcore_flect_self_s* s
 
 /**********************************************************************************************************************/
 
-const bcore_instance_s* bcore_instance_s_get_typed( u2_t o_type )
+const bcore_instance_s* bcore_instance_s_get_typed( tp_t o_type )
 {
+    tp_t sig = bcore_signature_get_hash_na( 2, typeof( "bcore_instance_s" ), o_type );
+    const bcore_instance_s* instance_p = bcore_spect_try( sig );
+    if( !instance_p )
+    {
+        const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
+        bcore_instance_s* new_instance_p = bcore_instance_s_create_from_self( o_self );
+        bcore_spect_enroll_d( new_instance_p );
+        instance_p = new_instance_p;
+    }
+    return instance_p;
+
+
+/*
     u2_t p_type = typeof( "bcore_instance_s" );
     const bcore_instance_s* perspective = ( const bcore_instance_s* )bcore_perspective_try_perspective( p_type, o_type );
     if( !perspective )
@@ -1170,6 +1200,7 @@ const bcore_instance_s* bcore_instance_s_get_typed( u2_t o_type )
         perspective = new_perspective;
     }
     return perspective;
+*/
 }
 
 /**********************************************************************************************************************/

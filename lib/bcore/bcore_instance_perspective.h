@@ -74,6 +74,8 @@ typedef struct bcore_instance_s
     void ( *check_sanity )( const bcore_instance_s* p, vc_t o );
 } bcore_instance_s;
 
+bcore_flect_self_s* bcore_instance_s_create_self();
+
 const bcore_instance_s* bcore_instance_s_get_typed( tp_t type );
 const bcore_instance_s* bcore_instance_s_get_aware( vc_t obj );
 

@@ -62,7 +62,7 @@ void bcore_signature_s_push( bcore_signature_s* o, tp_t type )
     o->size++;
 }
 
-void bcore_signature_s_push_vn( bcore_signature_s* o, sz_t n, va_list args )
+void bcore_signature_s_push_nv( bcore_signature_s* o, sz_t n, va_list args )
 {
     if( o->size + n >= o->space )
     {
@@ -71,12 +71,17 @@ void bcore_signature_s_push_vn( bcore_signature_s* o, sz_t n, va_list args )
     for( sz_t i = 0; i < n; i++ ) o->data[ o->size++ ] = va_arg( args, tp_t );
 }
 
-void bcore_signature_s_push_an( bcore_signature_s* o, sz_t n, ... )
+void bcore_signature_s_push_na( bcore_signature_s* o, sz_t n, ... )
 {
     va_list args;
     va_start( args, n );
-    bcore_signature_s_push_vn( o, n, args );
+    bcore_signature_s_push_nv( o, n, args );
     va_end( args );
+}
+
+void bcore_signature_s_pop_n( bcore_signature_s* o, sz_t n )
+{
+    o->size = n < o->size ? o->size - n : 0;
 }
 
 tp_t bcore_signature_s_pop( bcore_signature_s* o )
@@ -85,6 +90,17 @@ tp_t bcore_signature_s_pop( bcore_signature_s* o )
     tp_t ret = o->data[ o->size ];
     o->size--;
     return ret;
+}
+
+bcore_string_s* bcore_signature_s_create_string( const bcore_signature_s* o )
+{
+    bcore_string_s* s = bcore_string_s_create();
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        bcore_string_s_push_sc( s, ifnameof( o->data[ i ] ) );
+        bcore_string_s_push_char( s, i == o->size - 1 ? ';' : ',' );
+    }
+    return s;
 }
 
 u2_t bcore_signature_s_cmp( const bcore_signature_s* sig1, const bcore_signature_s* sig2 )
@@ -118,7 +134,7 @@ tp_t bcore_signature_s_get_hash( const bcore_signature_s* o )
     return type;
 }
 
-tp_t bcore_signature_get_hash_vn( sz_t n, va_list args )
+tp_t bcore_signature_get_hash_nv( sz_t n, va_list args )
 {
     if( n == 0 ) return 0;
     tp_t type = bcore_fnv_hash_u2_u2( va_arg( args, tp_t ) );
@@ -129,11 +145,11 @@ tp_t bcore_signature_get_hash_vn( sz_t n, va_list args )
     return type;
 }
 
-tp_t bcore_signature_get_hash_an( sz_t n, ... )
+tp_t bcore_signature_get_hash_na( sz_t n, ... )
 {
     va_list args;
     va_start( args, n );
-    tp_t ret = bcore_signature_get_hash_vn( n, args );
+    tp_t ret = bcore_signature_get_hash_nv( n, args );
     va_end( args );
     return ret;
 }
@@ -256,16 +272,16 @@ tp_t bcore_signature_manager_enroll_d( bcore_signature_s* sig )
     return type;
 }
 
-tp_t bcore_signature_manager_enroll_vn( sz_t n, va_list args )
+tp_t bcore_signature_manager_enroll_nv( sz_t n, va_list args )
 {
     return bcore_signature_manager_enroll_d( bcore_signature_s_create_vn( n, args ) );
 }
 
-tp_t bcore_signature_manager_enroll_an( sz_t n, ... )
+tp_t bcore_signature_manager_enroll_na( sz_t n, ... )
 {
     va_list args;
     va_start( args, n );
-    tp_t ret = bcore_signature_manager_enroll_vn( n, args );
+    tp_t ret = bcore_signature_manager_enroll_nv( n, args );
     va_end( args );
     return ret;
 }

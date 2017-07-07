@@ -157,6 +157,7 @@ void                     bcore_flect_self_s_push_external_func( bcore_flect_self
 bcore_string_s*          bcore_flect_self_s_show( const bcore_flect_self_s* o );
 bcore_flect_self_s*      bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx, sz_t size_of );
 bcore_flect_self_s*      bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );
+fp_t                     bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type ); // returns external function pointer of given type; error when not present
 
 /// reflection on bcore_flect_self_s
 bcore_flect_self_s*      bcore_flect_self_s_create_self();

@@ -35,10 +35,13 @@ bcore_signature_s* bcore_signature_s_create_an( sz_t n, ... );          // creat
 
 void bcore_signature_s_clear(   bcore_signature_s* o );
 void bcore_signature_s_push(    bcore_signature_s* o, tp_t type );
-void bcore_signature_s_push_vn( bcore_signature_s* o, sz_t n, va_list args );
-void bcore_signature_s_push_an( bcore_signature_s* o, sz_t n, ... );
+void bcore_signature_s_push_nv( bcore_signature_s* o, sz_t n, va_list args );
+void bcore_signature_s_push_na( bcore_signature_s* o, sz_t n, ... );
 tp_t bcore_signature_s_pop(     bcore_signature_s* o ); // returns 0 when signature is empty
 void bcore_signature_s_pop_n(   bcore_signature_s* o, sz_t n );
+
+/// Converts signature into a string of associated type names
+bcore_string_s* bcore_signature_s_create_string( const bcore_signature_s* o );
 
 /** Compares two signatures introducing an ordering:
  *  Returns   0 when both signatures are equal
@@ -52,8 +55,8 @@ u2_t bcore_signature_s_cmp( const bcore_signature_s* sig1, const bcore_signature
 bool bcore_signature_s_equal( const bcore_signature_s* sig1, const bcore_signature_s* sig2 );
 
 tp_t bcore_signature_s_get_hash( const bcore_signature_s* o ); // converts signature to type
-tp_t bcore_signature_get_hash_vn( sz_t n, va_list args );      // converts signature given by argument list to type
-tp_t bcore_signature_get_hash_an( sz_t n, ...          );      // converts signature given by argument list to type
+tp_t bcore_signature_get_hash_nv( sz_t n, va_list args );      // converts signature given by argument list to type
+tp_t bcore_signature_get_hash_na( sz_t n, ...          );      // converts signature given by argument list to type
 
 bcore_flect_self_s* bcore_signature_s_create_self();
 
@@ -73,10 +76,10 @@ void bcore_signature_manager_close();
 tp_t bcore_signature_manager_enroll_d( bcore_signature_s* sig );
 
 /// enrolls signature via argument list; returns type; (thread safe)
-tp_t bcore_signature_manager_enroll_vn( sz_t n, va_list args );
+tp_t bcore_signature_manager_enroll_nv( sz_t n, va_list args );
 
 /// enrolls signature via argument list; returns type; (thread safe)
-tp_t bcore_signature_manager_enroll_an( sz_t n, ... );
+tp_t bcore_signature_manager_enroll_na( sz_t n, ... );
 
 /// type --> signature; returns NULL when not enrolled (thread safe)
 const bcore_signature_s* bcore_signature_manager_try( tp_t type );
