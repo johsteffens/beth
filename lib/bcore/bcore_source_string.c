@@ -78,7 +78,7 @@ static void parsevf( bcore_source_string_s* o, sc_t format, va_list args )
 
 bcore_flect_self_s* bcore_source_string_s_create_self()
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_source_string_s =  { aware_t _; bcore_string_s* string; sz_t index; }", sizeof( bcore_source_string_s ) );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_source_string_s = { aware_t _; bcore_string_s* string; sz_t index; }", sizeof( bcore_source_string_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )flow_src,  "bcore_fp_flow_src",       "flow_src"  );
     bcore_flect_self_s_push_external_func( self, ( fp_t )p_errorvf, "bcore_fp_logvf",          "p_errorvf" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )parsevf,   "bcore_source_fp_parsevf", "parsevf"   );
