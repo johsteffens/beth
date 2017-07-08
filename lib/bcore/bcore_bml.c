@@ -1,7 +1,7 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 #include "bcore_bml.h"
-#include "bcore_via_perspective.h"
+#include "bcore_spect_via.h"
 #include "bcore_sink_perspective.h"
 #include "bcore_source_perspective.h"
 #include "bcore_spect_array.h"

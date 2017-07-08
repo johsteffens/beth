@@ -13,7 +13,7 @@
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_spect_array.h"
-#include "bcore_via_perspective.h"
+#include "bcore_spect_via.h"
 #include "bcore_source_perspective.h"
 #include "bcore_sink_perspective.h"
 #include "bcore.h"

@@ -1,6 +1,6 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
-#include "bcore_via_perspective.h"
+#include "bcore_spect_via.h"
 #include "bcore_spect_array.h"
 #include "bcore_flect.h"
 #include "bcore_spect.h"
@@ -851,7 +851,7 @@ const bcore_via_s* bcore_via_s_get_typed( u2_t o_type )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_via_perspective_selftest()
+bcore_string_s* bcore_spect_via_selftest()
 {
     bcore_flect_parse_sc( "via_specs = { sz_t size; u2_t param1; s2_t; }" );
     vd_t via_specs = bcore_inst_typed_create( typeof( "via_specs" ) );

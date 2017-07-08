@@ -86,6 +86,6 @@ static inline const bcore_via_s* bcore_via_s_get_aware( vc_t obj )
 /**********************************************************************************************************************/
 // testing, debugging
 
-bcore_string_s* bcore_via_perspective_selftest();
+bcore_string_s* bcore_spect_via_selftest();
 
 #endif
