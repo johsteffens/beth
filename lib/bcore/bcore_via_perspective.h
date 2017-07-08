@@ -12,7 +12,7 @@
 #ifndef BCORE_VIA_PERSPECTIVE_H
 #define BCORE_VIA_PERSPECTIVE_H
 
-#include "bcore_instance_perspective.h"
+#include "bcore_spect_inst.h"
 #include "bcore_features.h"
 
 typedef struct bcore_via_s bcore_via_s;
@@ -42,7 +42,7 @@ typedef struct bcore_via_s
 
     sz_t                     size;       // number of elements
     bcore_vitem_s*           vitem_arr;  // array of vitem
-    const bcore_instance_s** inst_arr;   // pointers to instance perspectives
+    const bcore_inst_s** inst_arr;   // pointers to instance perspectives
 
     /// Access by index. Error when index is out of range.
     tp_t                 ( *iget_name     )( const bcore_via_s* p,         sz_t index ); // Returns name for given index

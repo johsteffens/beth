@@ -11,7 +11,7 @@
 #include "bcore_bml.h"
 #include "bcore_signature.h"
 #include "bcore_spect.h"
-#include "bcore_instance_perspective.h"
+#include "bcore_spect_inst.h"
 #include "bcore_array_perspective.h"
 #include "bcore_via_perspective.h"
 #include "bcore_source_perspective.h"
@@ -35,7 +35,7 @@ static void init_library_bcore_once()
     bcore_flect_define_creator( typeof( "bcore_life_s"            ), bcore_life_s_create_self            );
     bcore_flect_define_creator( typeof( "bcore_signature_s"       ), bcore_signature_s_create_self       );
 
-    bcore_flect_define_creator( typeof( "bcore_instance_s"        ), bcore_instance_s_create_self        );
+    bcore_flect_define_creator( typeof( "bcore_inst_s"            ), bcore_inst_s_create_self            );
     bcore_flect_define_creator( typeof( "bcore_array_s"           ), bcore_array_s_create_self           );
     bcore_flect_define_creator( typeof( "bcore_via_s"             ), bcore_via_s_create_self             );
     bcore_flect_define_creator( typeof( "bcore_source_s"          ), bcore_source_s_create_self          );

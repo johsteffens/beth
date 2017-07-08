@@ -1014,10 +1014,10 @@ static sz_t flow_snk( vd_t o, vc_t data, sz_t size )
 }
 
 /// sanity feature
-void bcore_instance_typed_check_sizeof( u2_t type, sz_t size );
+void bcore_inst_typed_check_sizeof( u2_t type, sz_t size );
 static void check_sanity( vc_t o )
 {
-    bcore_instance_typed_check_sizeof( TYPEOF_bcore_string_s, sizeof( bcore_string_s ) );
+    bcore_inst_typed_check_sizeof( TYPEOF_bcore_string_s, sizeof( bcore_string_s ) );
 
     if( TYPEOF_bcore_string_s != *(aware_t *)o ) ERR( "incorrect type value (%"PRIu32") (expected bcore_string_s)", *(aware_t *)o );
     const bcore_string_s* s = o;

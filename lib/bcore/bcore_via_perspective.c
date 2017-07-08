@@ -20,7 +20,7 @@ static void via_s_init( bcore_via_s* o )
 static void via_s_down( bcore_via_s* o )
 {
     if( o->vitem_arr ) bcore_un_alloc( sizeof( bcore_via_s       ), o->vitem_arr, o->size, 0, NULL );
-    if( o->inst_arr  ) bcore_un_alloc( sizeof( bcore_instance_s* ), o->inst_arr,  o->size, 0, NULL );
+    if( o->inst_arr  ) bcore_un_alloc( sizeof( bcore_inst_s* ), o->inst_arr,  o->size, 0, NULL );
 }
 
 static bcore_via_s* via_s_create()
@@ -194,7 +194,7 @@ static vd_t iset_c( const bcore_via_s* p, vd_t o, sz_t index, vc_t src )
         case BCORE_CAPS_STATIC:
         {
             vd_t dst = ( u0_t* )o + vitem->offs;
-            const bcore_instance_s* inst_p = p->inst_arr[ index ];
+            const bcore_inst_s* inst_p = p->inst_arr[ index ];
             inst_p->copy( inst_p, dst, src );
             return dst;
         }
@@ -202,7 +202,7 @@ static vd_t iset_c( const bcore_via_s* p, vd_t o, sz_t index, vc_t src )
         case BCORE_CAPS_STATIC_LINK:
         {
             bcore_static_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
-            const bcore_instance_s* inst_p = p->inst_arr[ index ];
+            const bcore_inst_s* inst_p = p->inst_arr[ index ];
             if( dst->link ) inst_p->discard( inst_p, dst->link );
             dst->link = inst_p->clone( inst_p, src );
             return dst->link;
@@ -213,7 +213,7 @@ static vd_t iset_c( const bcore_via_s* p, vd_t o, sz_t index, vc_t src )
             bcore_typed_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->type )
             {
-                const bcore_instance_s* inst_p = bcore_instance_s_get_typed( dst->type );
+                const bcore_inst_s* inst_p = bcore_inst_s_get_typed( dst->type );
                 if( dst->link ) inst_p->discard( inst_p, dst->link );
                 dst->link = inst_p->clone( inst_p, src );
             }
@@ -230,14 +230,14 @@ static vd_t iset_c( const bcore_via_s* p, vd_t o, sz_t index, vc_t src )
 
             if( dst->link )
             {
-                const bcore_instance_s* inst_p = bcore_instance_s_get_aware( dst->link );
+                const bcore_inst_s* inst_p = bcore_inst_s_get_aware( dst->link );
                 inst_p->discard( inst_p, dst->link );
                 dst->link = NULL;
             }
 
             if( src )
             {
-                const bcore_instance_s* inst_p = bcore_instance_s_get_aware( src );
+                const bcore_inst_s* inst_p = bcore_inst_s_get_aware( src );
                 dst->link = inst_p->clone( inst_p, src );
             }
 
@@ -250,7 +250,7 @@ static vd_t iset_c( const bcore_via_s* p, vd_t o, sz_t index, vc_t src )
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
-            const bcore_instance_s* inst_p = p->inst_arr[ index ];
+            const bcore_inst_s* inst_p = p->inst_arr[ index ];
             vd_t dst = ( ( u0_t* )o + vitem->offs );
             inst_p->copy( inst_p, dst, src );
             return dst;
@@ -278,7 +278,7 @@ static vd_t iset_d( const bcore_via_s* p, vd_t o, sz_t index, vd_t src )
         case BCORE_CAPS_STATIC:
         {
             vd_t dst = ( u0_t* )o + vitem->offs;
-            const bcore_instance_s* inst_p = p->inst_arr[ index ];
+            const bcore_inst_s* inst_p = p->inst_arr[ index ];
             inst_p->copy( inst_p, dst, src );
             inst_p->discard( inst_p, src );
             return dst;
@@ -287,7 +287,7 @@ static vd_t iset_d( const bcore_via_s* p, vd_t o, sz_t index, vd_t src )
         case BCORE_CAPS_STATIC_LINK:
         {
             bcore_static_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
-            const bcore_instance_s* inst_p = p->inst_arr[ index ];
+            const bcore_inst_s* inst_p = p->inst_arr[ index ];
             if( dst->link ) inst_p->discard( inst_p, dst->link );
             dst->link = src;
             return dst->link;
@@ -298,7 +298,7 @@ static vd_t iset_d( const bcore_via_s* p, vd_t o, sz_t index, vd_t src )
             bcore_typed_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->type )
             {
-                const bcore_instance_s* inst_p = bcore_instance_s_get_typed( dst->type );
+                const bcore_inst_s* inst_p = bcore_inst_s_get_typed( dst->type );
                 if( dst->link ) inst_p->discard( inst_p, dst->link );
                 dst->link = src;
             }
@@ -314,7 +314,7 @@ static vd_t iset_d( const bcore_via_s* p, vd_t o, sz_t index, vd_t src )
             bcore_aware_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->link )
             {
-                const bcore_instance_s* inst_p = bcore_instance_s_get_aware( dst->link );
+                const bcore_inst_s* inst_p = bcore_inst_s_get_aware( dst->link );
                 inst_p->discard( inst_p, dst->link );
             }
             dst->link = src;
@@ -369,7 +369,7 @@ static vd_t icreate( const bcore_via_s* p, vd_t o, sz_t index )
         case BCORE_CAPS_STATIC_LINK:
         {
             bcore_static_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
-            const bcore_instance_s* inst_p = p->inst_arr[ index ];
+            const bcore_inst_s* inst_p = p->inst_arr[ index ];
             if( dst->link ) inst_p->discard( inst_p, dst->link );
             dst->link = inst_p->create( inst_p );
             return dst->link;
@@ -380,7 +380,7 @@ static vd_t icreate( const bcore_via_s* p, vd_t o, sz_t index )
             bcore_typed_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->type )
             {
-                const bcore_instance_s* inst_p = bcore_instance_s_get_typed( dst->type );
+                const bcore_inst_s* inst_p = bcore_inst_s_get_typed( dst->type );
                 if( dst->link ) inst_p->discard( inst_p, dst->link );
                 dst->link = inst_p->create( inst_p );
             }
@@ -432,7 +432,7 @@ static vd_t ityped_create( const bcore_via_s* p, vd_t o, sz_t index, tp_t type )
 
         case BCORE_CAPS_STATIC_LINK:
         {
-            const bcore_instance_s* inst_p = p->inst_arr[ index ];
+            const bcore_inst_s* inst_p = p->inst_arr[ index ];
             if( inst_p->o_type != type )
             {
                ERR( "Element is static type '%s'. Requested type '%s'.", ifnameof( inst_p->o_type ), ifnameof( type ) );
@@ -449,11 +449,11 @@ static vd_t ityped_create( const bcore_via_s* p, vd_t o, sz_t index, tp_t type )
             bcore_typed_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->link )
             {
-                bcore_instance_typed_discard( dst->type, dst->link );
+                bcore_inst_typed_discard( dst->type, dst->link );
                 dst->link = NULL;
             }
             dst->type = type;
-            dst->link = bcore_instance_typed_create( dst->type );
+            dst->link = bcore_inst_typed_create( dst->type );
             return dst->link;
         }
 
@@ -462,10 +462,10 @@ static vd_t ityped_create( const bcore_via_s* p, vd_t o, sz_t index, tp_t type )
             bcore_aware_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->link )
             {
-                bcore_instance_aware_discard( dst->link );
+                bcore_inst_aware_discard( dst->link );
                 dst->link = NULL;
             }
-            dst->link = bcore_instance_typed_create( type );
+            dst->link = bcore_inst_typed_create( type );
             return dst->link;
         }
 
@@ -503,7 +503,7 @@ static void idiscard( const bcore_via_s* p, vd_t o, sz_t index )
 
         case BCORE_CAPS_STATIC_LINK:
         {
-            const bcore_instance_s* inst_p = p->inst_arr[ index ];
+            const bcore_inst_s* inst_p = p->inst_arr[ index ];
             bcore_static_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->link ) inst_p->discard( inst_p, dst->link );
             dst->link = NULL;
@@ -514,7 +514,7 @@ static void idiscard( const bcore_via_s* p, vd_t o, sz_t index )
             bcore_typed_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->link )
             {
-                bcore_instance_typed_discard( dst->type, dst->link );
+                bcore_inst_typed_discard( dst->type, dst->link );
                 dst->link = NULL;
             }
         }
@@ -524,7 +524,7 @@ static void idiscard( const bcore_via_s* p, vd_t o, sz_t index )
             bcore_aware_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->link )
             {
-                bcore_instance_aware_discard( dst->link );
+                bcore_inst_aware_discard( dst->link );
                 dst->link = NULL;
             }
         }
@@ -677,21 +677,21 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     o->p_type = bcore_name_enroll( "bcore_via_s" );
     o->o_type = self->type;
 
-    const bcore_instance_s* inst_p = bcore_instance_s_get_typed( self->type );
+    const bcore_inst_s* inst_p = bcore_inst_s_get_typed( self->type );
 
     sz_t size = self->body ? self->body->size : 0;
     sz_t index = 0;
 
     o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s       ), NULL, size, NULL );
-    o->inst_arr  = bcore_u_alloc( sizeof( bcore_instance_s* ), NULL, size, NULL );
+    o->inst_arr  = bcore_u_alloc( sizeof( bcore_inst_s* ), NULL, size, NULL );
     bcore_memzero( o->vitem_arr, sizeof( bcore_via_s       ) * size );
-    bcore_memzero( o->inst_arr,  sizeof( bcore_instance_s* ) * size );
+    bcore_memzero( o->inst_arr,  sizeof( bcore_inst_s* ) * size );
 
     if( inst_p->body )
     {
         for( sz_t i = 0; i < inst_p->body->size; i++ )
         {
-            const bcore_instance_item_s* inst_item = &inst_p->body->data[ i ];
+            const bcore_inst_item_s* inst_item = &inst_p->body->data[ i ];
             if( inst_item->no_trace ) continue;
 
             const bcore_flect_item_s*   flect_item = inst_item->flect_item;
@@ -755,7 +755,7 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
 
             if( vitem->type )
             {
-                o->inst_arr[ index ] = bcore_instance_s_get_typed( vitem->type );
+                o->inst_arr[ index ] = bcore_inst_s_get_typed( vitem->type );
             }
             index++;
         }
@@ -801,7 +801,7 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     if( o->size < size ) // realloc to save memory;
     {
         o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s       ), o->vitem_arr, o->size, NULL );
-        o->inst_arr  = bcore_u_alloc( sizeof( bcore_instance_s* ), o->inst_arr,  o->size, NULL );
+        o->inst_arr  = bcore_u_alloc( sizeof( bcore_inst_s* ), o->inst_arr,  o->size, NULL );
     }
 
     o->iget_name     = iget_name;
@@ -854,7 +854,7 @@ const bcore_via_s* bcore_via_s_get_typed( u2_t o_type )
 bcore_string_s* bcore_via_perspective_selftest()
 {
     bcore_flect_parse_sc( "via_specs = { sz_t size; u2_t param1; s2_t; }" );
-    vd_t via_specs = bcore_instance_typed_create( typeof( "via_specs" ) );
+    vd_t via_specs = bcore_inst_typed_create( typeof( "via_specs" ) );
     const bcore_via_s* via_specs_v = bcore_via_s_get_typed( typeof( "via_specs" ) );
 
     {
@@ -871,7 +871,7 @@ bcore_string_s* bcore_via_perspective_selftest()
     ASSERT( *( s2_t* )via_specs_v->nget_c( via_specs_v, via_specs, typeof( "" ) )       == -50 );
 
     bcore_flect_parse_sc( "via_specs_arr = { aware_t _; u3_t flags; via_specs [] arr; }" );
-    vd_t via_specs_arr = bcore_instance_typed_create( typeof( "via_specs_arr" ) );
+    vd_t via_specs_arr = bcore_inst_typed_create( typeof( "via_specs_arr" ) );
 
     const bcore_via_s* via_specs_arr_v = bcore_via_s_get_typed( typeof( "via_specs_arr" ) );
 
@@ -892,7 +892,7 @@ bcore_string_s* bcore_via_perspective_selftest()
         via_specs_v->nset_c( via_specs_v, via_specs_l, typeof( "size" ), &i );
     }
 
-    vd_t via_specs_arr2 = bcore_instance_typed_create( typeof( "via_specs_arr" ) );
+    vd_t via_specs_arr2 = bcore_inst_typed_create( typeof( "via_specs_arr" ) );
 
     via_specs_arr_v->nset_c( via_specs_arr_v, via_specs_arr2, typeof( "arr" ), via_specs_arr_v->nget_c( via_specs_arr_v, via_specs_arr, typeof( "arr" ) ) );
 
@@ -907,9 +907,9 @@ bcore_string_s* bcore_via_perspective_selftest()
     ASSERT( bcore_strcmp( nameof( arr_type ), "via_specs__static_array" ) == 0 );
     ASSERT( arr_p->get_size( arr_p, arr ) == arr_size );
 
-    bcore_instance_typed_discard( typeof( "via_specs" ), via_specs );
-    bcore_instance_aware_discard( via_specs_arr );
-    bcore_instance_aware_discard( via_specs_arr2 );
+    bcore_inst_typed_discard( typeof( "via_specs" ), via_specs );
+    bcore_inst_aware_discard( via_specs_arr );
+    bcore_inst_aware_discard( via_specs_arr2 );
 
     return NULL;
 }

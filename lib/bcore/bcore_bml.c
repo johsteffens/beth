@@ -16,32 +16,32 @@ void bcore_bml_translator_s_init( bcore_bml_translator_s* o )
     o->_ = typeof( "bcore_bml_translator_s" );
     o->tab_size = 4;
     o->suppress_aware = true;
-    bcore_instance_typed_check_sizeof( o->_, sizeof( bcore_bml_translator_s ) );
+    bcore_inst_typed_check_sizeof( o->_, sizeof( bcore_bml_translator_s ) );
 }
 
 void bcore_bml_translator_s_down( bcore_bml_translator_s* o )
 {
-    bcore_instance_aware_down( o );
+    bcore_inst_aware_down( o );
 }
 
 void bcore_bml_translator_s_copy( bcore_bml_translator_s* o, const bcore_bml_translator_s* src )
 {
-    bcore_instance_aware_copy( o, src );
+    bcore_inst_aware_copy( o, src );
 }
 
 bcore_bml_translator_s* bcore_bml_translator_s_create()
 {
-    return bcore_instance_typed_create( typeof( "bcore_bml_translator_s" ) );
+    return bcore_inst_typed_create( typeof( "bcore_bml_translator_s" ) );
 }
 
 bcore_bml_translator_s* bcore_bml_translator_s_clone( const bcore_bml_translator_s* o )
 {
-    return bcore_instance_aware_clone( o );
+    return bcore_inst_aware_clone( o );
 }
 
 void bcore_bml_translator_s_discard( bcore_bml_translator_s* o )
 {
-    bcore_instance_aware_discard( o );
+    bcore_inst_aware_discard( o );
 }
 
 bcore_flect_self_s* bcore_bml_translator_s_create_self()
@@ -57,7 +57,7 @@ bcore_flect_self_s* bcore_bml_translator_s_create_self()
 
 static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc_t obj, vd_t dst, sz_t indent )
 {
-    const bcore_instance_s* inst = bcore_instance_s_get_typed( type );
+    const bcore_inst_s* inst = bcore_inst_s_get_typed( type );
     const bcore_sink_s* snk = bcore_sink_s_get_aware( dst );
     if( !obj )
     {
@@ -98,7 +98,7 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
 
         for( sz_t i = 0; i < inst->body->size; i++ )
         {
-            const bcore_instance_item_s* inst_item = &inst->body->data[ i ];
+            const bcore_inst_item_s* inst_item = &inst->body->data[ i ];
             if( inst_item->no_trace ) continue;
 
             const bcore_flect_item_s* flect_item = inst_item->flect_item;
@@ -152,7 +152,7 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
                     const bcore_static_array_s* src = element;
                     snk->pushf( snk, dst, "[%zu]:", src->size );
                     tp_t src_type = flect_item->type;
-                    sz_t unit_size = src_type ? bcore_instance_s_get_typed( src_type )->size : 0;
+                    sz_t unit_size = src_type ? bcore_inst_s_get_typed( src_type )->size : 0;
                     vc_t item = src->data;
                     for( sz_t i = 0; i < src->size; i++ )
                     {
@@ -170,7 +170,7 @@ static void translate( const bcore_bml_translator_s* o, bool link, tp_t type, vc
                     tp_t src_type = src->type;
                     if( src_type ) snk->pushf( snk, dst, "!%s", nameof( src_type ) );
                     snk->pushf( snk, dst, "[%zu]:", src->size );
-                    sz_t unit_size = src_type ? bcore_instance_s_get_typed( src_type )->size : 0;
+                    sz_t unit_size = src_type ? bcore_inst_s_get_typed( src_type )->size : 0;
                     vc_t item = src->data;
                     for( sz_t i = 0; i < src->size; i++ )
                     {
@@ -259,32 +259,32 @@ void bcore_bml_interpreter_s_init( bcore_bml_interpreter_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = typeof( "bcore_bml_interpreter_s" );
-    bcore_instance_typed_check_sizeof( o->_, sizeof( bcore_bml_interpreter_s ) );
+    bcore_inst_typed_check_sizeof( o->_, sizeof( bcore_bml_interpreter_s ) );
 }
 
 void bcore_bml_interpreter_s_down( bcore_bml_interpreter_s* o )
 {
-    bcore_instance_aware_down( o );
+    bcore_inst_aware_down( o );
 }
 
 void bcore_bml_interpreter_s_copy( bcore_bml_interpreter_s* o, const bcore_bml_interpreter_s* src )
 {
-    bcore_instance_aware_copy( o, src );
+    bcore_inst_aware_copy( o, src );
 }
 
 bcore_bml_interpreter_s* bcore_bml_interpreter_s_create()
 {
-    return bcore_instance_typed_create( typeof( "bcore_bml_interpreter_s" ) );
+    return bcore_inst_typed_create( typeof( "bcore_bml_interpreter_s" ) );
 }
 
 bcore_bml_interpreter_s* bcore_bml_interpreter_s_clone( const bcore_bml_interpreter_s* o )
 {
-    return bcore_instance_aware_clone( o );
+    return bcore_inst_aware_clone( o );
 }
 
 void bcore_bml_interpreter_s_discard( bcore_bml_interpreter_s* o )
 {
-    bcore_instance_aware_discard( o );
+    bcore_inst_aware_discard( o );
 }
 
 bcore_flect_self_s* bcore_bml_interpreter_s_create_self()
@@ -323,7 +323,7 @@ static void to_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst )
     {
         tp_t type = dst.t;
         vd_t obj  = dst.o;
-        const bcore_instance_s* inst_p = bcore_instance_s_get_typed( type );
+        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( type );
         const bcore_via_s* via_p = bcore_via_s_get_typed( type );
         if( inst_p->body )
         {
@@ -479,8 +479,8 @@ static void enter_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst )
     else if( src_p->parse_boolf( src_p, src, " #?'<-'" ) )
     {
         dt_p dt_l = to_object( o, src );
-        bcore_instance_typed_copy_typed( dst.t, dst.o, dt_l.t, dt_l.o );
-        bcore_instance_typed_discard( dt_l.t, dt_l.o );
+        bcore_inst_typed_copy_typed( dst.t, dst.o, dt_l.t, dt_l.o );
+        bcore_inst_typed_discard( dt_l.t, dt_l.o );
     }
     else
     {
@@ -505,7 +505,7 @@ static dt_p to_object( const bcore_bml_interpreter_s* o, vd_t src )
         ret.t = typeof( s->sc );
         if( !bcore_flect_exists( ret.t ) ) src_p->parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
         bcore_string_s_discard( s );
-        ret.o = bcore_instance_typed_create( ret.t );
+        ret.o = bcore_inst_typed_create( ret.t );
         enter_body( o, src, ret );
     }
     else
@@ -530,7 +530,7 @@ static dt_p to_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t type )
 
     if( src_p->parse_boolf( src_p, src, " #?'!'" ) )
     {
-        ret.o = bcore_instance_typed_create( ret.t );
+        ret.o = bcore_inst_typed_create( ret.t );
         bcore_string_s* s = bcore_string_s_create();
         src_p->parsef( src_p, src, "#name", s );
         tp_t type_l = typeof( s->sc );
@@ -541,10 +541,10 @@ static dt_p to_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t type )
         {
             dt_p dt_l;
             dt_l.t = type_l;
-            dt_l.o = bcore_instance_typed_create( dt_l.t );
+            dt_l.o = bcore_inst_typed_create( dt_l.t );
             enter_body( o, src, dt_l );
-            bcore_instance_typed_copy_typed( ret.t, ret.o, dt_l.t, dt_l.o );
-            bcore_instance_typed_discard( dt_l.t, dt_l.o );
+            bcore_inst_typed_copy_typed( ret.t, ret.o, dt_l.t, dt_l.o );
+            bcore_inst_typed_discard( dt_l.t, dt_l.o );
         }
         else
         {
@@ -553,7 +553,7 @@ static dt_p to_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t type )
     }
     else
     {
-        ret.o = bcore_instance_typed_create( ret.t );
+        ret.o = bcore_inst_typed_create( ret.t );
         to_body( o, src, ret );
     }
     return ret;
@@ -599,7 +599,7 @@ static bcore_string_s* translate_selftest()
     );
     bcore_flect_parse_sc( "specs_arr = { aware_t _; aware * [] arr; }" );
 
-    vd_t specs = bcore_life_s_push_aware( l, bcore_instance_typed_create( typeof( "specs" ) ) );
+    vd_t specs = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "specs" ) ) );
 
     {
         const bcore_via_s * specs_v = bcore_via_s_get_aware( specs );
@@ -623,10 +623,10 @@ static bcore_string_s* translate_selftest()
             for( sz_t i = 0; i < 10; i++ ) strarr_p->push_d( strarr_p, strarr, bcore_string_s_createf( "<%zu>", i ) );
         }
 
-        specs_v->nset_d( specs_v, specs, typeof( "child"  ), bcore_instance_aware_clone( specs ) );
+        specs_v->nset_d( specs_v, specs, typeof( "child"  ), bcore_inst_aware_clone( specs ) );
     }
 
-    vd_t specs_arr = bcore_life_s_push_aware( l, bcore_instance_typed_create( typeof( "specs_arr" ) ) );
+    vd_t specs_arr = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "specs_arr" ) ) );
     {
         const bcore_array_s * arr_p = bcore_array_s_get_aware( specs_arr );
         for( sz_t i = 0; i < 2; i++ )

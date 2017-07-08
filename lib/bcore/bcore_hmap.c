@@ -1,7 +1,7 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 #include "bcore_hmap.h"
-#include "bcore_instance_perspective.h"
+#include "bcore_spect_inst.h"
 
 #include <time.h> // only for selftest
 
@@ -20,12 +20,12 @@ void node_u2vd_s_init( node_u2vd_s* o )
 
 void node_u2vd_s_down( node_u2vd_s* o )
 {
-    if( o->flag_holds && o->val ) bcore_instance_aware_discard( o->val );
+    if( o->flag_holds && o->val ) bcore_inst_aware_discard( o->val );
 }
 
 void node_u2vd_s_clear( node_u2vd_s* o )
 {
-    if( o->flag_holds && o->val ) bcore_instance_aware_discard( o->val );
+    if( o->flag_holds && o->val ) bcore_inst_aware_discard( o->val );
     o->val = 0;
     o->flag_holds = 0;
     o->key = 0;
@@ -35,7 +35,7 @@ void node_u2vd_s_copy( node_u2vd_s* o, const node_u2vd_s* src )
 {
     if( o->flag_holds && o->val )
     {
-        bcore_instance_aware_discard( o->val );
+        bcore_inst_aware_discard( o->val );
         o->val = 0;
     }
 
@@ -43,7 +43,7 @@ void node_u2vd_s_copy( node_u2vd_s* o, const node_u2vd_s* src )
 
     if( src->flag_holds && src->val )
     {
-        o->val = bcore_instance_aware_clone( src->val );
+        o->val = bcore_inst_aware_clone( src->val );
     }
 }
 
@@ -51,7 +51,7 @@ void node_u2vd_s_set_val( node_u2vd_s* o, vd_t val, bool hold )
 {
     if( o->flag_holds )
     {
-        if( o->val ) bcore_instance_aware_discard( o->val );
+        if( o->val ) bcore_inst_aware_discard( o->val );
         o->flag_holds = 0;
     }
     o->val = val;
@@ -348,7 +348,7 @@ void bcore_hmap_u2vd_s_remove_d( bcore_hmap_u2vd_s* o, u2_t key )
     if( idx < o->size )
     {
         node_u2vd_s* node = &o->data[ idx ];
-        if( node->flag_holds && node->val ) bcore_instance_aware_discard( node->val );
+        if( node->flag_holds && node->val ) bcore_inst_aware_discard( node->val );
         node->key = 0;
         node->val = 0;
         node->flag_holds = 0;

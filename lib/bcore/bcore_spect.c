@@ -3,7 +3,7 @@
 #include "bcore_spect.h"
 #include "bcore_hmap.h"
 #include "bcore_threads.h"
-#include "bcore_instance_perspective.h"
+#include "bcore_spect_inst.h"
 
 /**********************************************************************************************************************/
 // hash map
@@ -114,7 +114,7 @@ void bcore_spect_remove( tp_t sig )
 {
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    bcore_instance_aware_discard( bcore_hmap_u2vd_s_remove_h( hmap_s_g->map, sig ) );
+    bcore_inst_aware_discard( bcore_hmap_u2vd_s_remove_h( hmap_s_g->map, sig ) );
     bcore_mutex_unlock( &hmap_s_g->mutex );
 }
 

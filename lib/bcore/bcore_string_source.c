@@ -1,28 +1,28 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 #include "bcore_string_source.h"
-#include "bcore_instance_perspective.h"
+#include "bcore_spect_inst.h"
 #include "bcore_quicktypes.h"
 
 /**********************************************************************************************************************/
 
-void bcore_string_source_s_init(    bcore_string_source_s* o ) { bcore_instance_typed_init(    TYPEOF_bcore_string_source_s, o ); }
-void bcore_string_source_s_down(    bcore_string_source_s* o ) { bcore_instance_typed_down(    TYPEOF_bcore_string_source_s, o ); }
-void bcore_string_source_s_discard( bcore_string_source_s* o ) { bcore_instance_typed_discard( TYPEOF_bcore_string_source_s, o ); }
+void bcore_string_source_s_init(    bcore_string_source_s* o ) { bcore_inst_typed_init(    TYPEOF_bcore_string_source_s, o ); }
+void bcore_string_source_s_down(    bcore_string_source_s* o ) { bcore_inst_typed_down(    TYPEOF_bcore_string_source_s, o ); }
+void bcore_string_source_s_discard( bcore_string_source_s* o ) { bcore_inst_typed_discard( TYPEOF_bcore_string_source_s, o ); }
 
 void bcore_string_source_s_copy( bcore_string_source_s* o, const bcore_string_source_s* src )
 {
-    bcore_instance_typed_copy( TYPEOF_bcore_string_source_s, o, src );
+    bcore_inst_typed_copy( TYPEOF_bcore_string_source_s, o, src );
 }
 
 bcore_string_source_s* bcore_string_source_s_create()
 {
-    return bcore_instance_typed_create( TYPEOF_bcore_string_source_s );
+    return bcore_inst_typed_create( TYPEOF_bcore_string_source_s );
 }
 
 bcore_string_source_s* bcore_string_source_s_clone( const bcore_string_source_s* o )
 {
-    return bcore_instance_typed_clone( TYPEOF_bcore_string_source_s, o );
+    return bcore_inst_typed_clone( TYPEOF_bcore_string_source_s, o );
 }
 
 void bcore_string_source_s_rewind( bcore_string_source_s* o )
