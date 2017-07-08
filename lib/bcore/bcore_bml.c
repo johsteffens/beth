@@ -2,8 +2,8 @@
 
 #include "bcore_bml.h"
 #include "bcore_spect_via.h"
-#include "bcore_sink_perspective.h"
-#include "bcore_source_perspective.h"
+#include "bcore_spect_sink.h"
+#include "bcore_spect_source.h"
 #include "bcore_spect_array.h"
 #include "bcore_quicktypes.h"
 #include "bcore_string_source.h"

@@ -14,8 +14,8 @@
 #include "bcore_spect_inst.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect_via.h"
-#include "bcore_source_perspective.h"
-#include "bcore_sink_perspective.h"
+#include "bcore_spect_source.h"
+#include "bcore_spect_sink.h"
 #include "bcore.h"
 
 static void init_library_bcore_once()

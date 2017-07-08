@@ -3,7 +3,7 @@
 #ifndef BCORE_STRING_SOURCE_H
 #define BCORE_STRING_SOURCE_H
 
-#include "bcore_source_perspective.h"
+#include "bcore_spect_source.h"
 #include "bcore_string.h"
 #include "bcore_flect.h"
 

@@ -1,6 +1,6 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
-#include "bcore_source_perspective.h"
+#include "bcore_spect_source.h"
 #include "bcore_spect_inst.h"
 #include "bcore_flect.h"
 #include "bcore_spect.h"
