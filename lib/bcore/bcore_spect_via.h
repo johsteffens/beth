@@ -9,8 +9,8 @@
  *  Functions are referenced as pointers to function pointers.
  */
 
-#ifndef BCORE_VIA_PERSPECTIVE_H
-#define BCORE_VIA_PERSPECTIVE_H
+#ifndef BCORE_SPECT_VIA_H
+#define BCORE_SPECT_VIA_H
 
 #include "bcore_spect_inst.h"
 #include "bcore_features.h"

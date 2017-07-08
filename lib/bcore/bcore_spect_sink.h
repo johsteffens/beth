@@ -1,7 +1,7 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
-#ifndef BCORE_SINK_H
-#define BCORE_SINK_H
+#ifndef BCORE_SPECT_SINK_H
+#define BCORE_SPECT_SINK_H
 
 #include "bcore_first.h"
 #include "bcore_types.h"
@@ -33,4 +33,4 @@ static inline const bcore_sink_s* bcore_sink_s_get_aware( vc_t obj )
     return bcore_sink_s_get_typed( *( const aware_t* )obj );
 }
 
-#endif // BCORE_SINK_H
+#endif // BCORE_SPECT_SINK_H

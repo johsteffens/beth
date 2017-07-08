@@ -11,8 +11,8 @@
  */
 
 
-#ifndef BCORE_ARRAY_PERSPECTIVE_H
-#define BCORE_ARRAY_PERSPECTIVE_H
+#ifndef BCORE_SPECT_ARRAY_H
+#define BCORE_SPECT_ARRAY_H
 
 #include "bcore_spect_inst.h"
 #include "bcore_flect.h"

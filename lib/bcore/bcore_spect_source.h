@@ -1,15 +1,14 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
-#ifndef BCORE_SOURCE_H
-#define BCORE_SOURCE_H
+#ifndef BCORE_SPECT_SOURCE_H
+#define BCORE_SPECT_SOURCE_H
 
 #include "bcore_first.h"
 #include "bcore_types.h"
 #include "bcore_features.h"
 #include "bcore_flect.h"
 
-/// specific features
-
+/// source features
 typedef void (*bcore_source_fp_parsevf )( vd_t o, sc_t format, va_list args ); // parse function
 
 typedef struct bcore_source_s bcore_source_s;
@@ -37,4 +36,4 @@ static inline const bcore_source_s* bcore_source_s_get_aware( vc_t obj )
     return bcore_source_s_get_typed( *( const aware_t* )obj );
 }
 
-#endif // BCORE_SOURCE_H
+#endif // BCORE_SPECT_SOURCE_H

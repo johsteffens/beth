@@ -6,7 +6,7 @@
 #include "bcore_name_manager.h"
 #include "bcore_flect.h"
 #include "bcore_string.h"
-#include "bcore_string_source.h"
+#include "bcore_source_string.h"
 #include "bcore_life.h"
 #include "bcore_bml.h"
 #include "bcore_signature.h"
@@ -31,7 +31,7 @@ static void init_library_bcore_once()
     bcore_flect_define_basics();
     bcore_flect_define_creator( typeof( "bcore_bml_translator_s"  ), bcore_bml_translator_s_create_self  );
     bcore_flect_define_creator( typeof( "bcore_bml_interpreter_s" ), bcore_bml_interpreter_s_create_self );
-    bcore_flect_define_creator( typeof( "bcore_string_source_s"   ), bcore_string_source_s_create_self   );
+    bcore_flect_define_creator( typeof( "bcore_source_string_s"   ), bcore_source_string_s_create_self   );
     bcore_flect_define_creator( typeof( "bcore_life_s"            ), bcore_life_s_create_self            );
     bcore_flect_define_creator( typeof( "bcore_signature_s"       ), bcore_signature_s_create_self       );
 

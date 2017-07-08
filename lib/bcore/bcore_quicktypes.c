@@ -45,7 +45,7 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
 
     bcore_msg( "\n// frequently used types\n" );
     print_type( hash_l, "bcore_string_s" );
-    print_type( hash_l, "bcore_string_source_s" );
+    print_type( hash_l, "bcore_source_string_s" );
 
     bcore_msg( "\n// attributes\n" );
     print_type( hash_l, "private" );

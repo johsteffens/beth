@@ -6,7 +6,7 @@
 #include "bcore_spect_source.h"
 #include "bcore_spect_array.h"
 #include "bcore_quicktypes.h"
-#include "bcore_string_source.h"
+#include "bcore_source_string.h"
 
 /**********************************************************************************************************************/
 
@@ -646,7 +646,7 @@ static bcore_string_s* translate_selftest()
         bcore_string_s* buf = bcore_life_s_push_aware( l, bcore_string_s_create() );
         bcore_bml_translator_s_from_object( trans, typeof( "specs_arr" ), specs_arr, buf );
         bcore_bml_interpreter_s* intrp = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() );
-        bcore_string_source_s* str_src = bcore_life_s_push_aware( l, bcore_string_source_s_create_string( buf ) );
+        bcore_source_string_s* str_src = bcore_life_s_push_aware( l, bcore_source_string_s_create_string( buf ) );
         vd_t specs_arr_2 = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_to_object( intrp, str_src ).o );
         bcore_string_s_pushf( out, "\n =================specs_arr_2: ==================\n" );
         bcore_bml_translator_s_from_object( trans, typeof( "specs_arr" ), specs_arr_2, out );
@@ -676,7 +676,7 @@ static bcore_string_s* interpret_selftest()
     "}";
 
     bcore_bml_interpreter_s* intrp = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() );
-    bcore_string_source_s* str_src = bcore_life_s_push_aware( l, bcore_string_source_s_create_sc( src ) );
+    bcore_source_string_s* str_src = bcore_life_s_push_aware( l, bcore_source_string_s_create_sc( src ) );
     vd_t specs                     = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_to_object( intrp, str_src ).o );
     bcore_bml_translator_s* trans  = bcore_life_s_push_aware( l, bcore_bml_translator_s_create() );
     bcore_bml_translator_s_from_object( trans, typeof( "specs" ), specs, out );
