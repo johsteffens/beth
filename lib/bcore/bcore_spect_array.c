@@ -1,6 +1,6 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
-#include "bcore_array_perspective.h"
+#include "bcore_spect_array.h"
 #include "bcore_spect.h"
 
 /**********************************************************************************************************************/
@@ -1140,7 +1140,7 @@ static void test_string_array( sc_t type_sc )
     bcore_inst_aware_discard( arr );
 }
 
-bcore_string_s* bcore_array_perspective_selftest()
+bcore_string_s* bcore_spect_array_selftest()
 {
     bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "string_array = { aware_t _; bcore_string_s [] string_arr; }", 0 ) );
     vd_t arr = bcore_inst_typed_create( typeof( "string_array" ) );

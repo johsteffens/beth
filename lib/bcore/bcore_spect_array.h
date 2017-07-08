@@ -102,6 +102,6 @@ tp_t bcore_static_link_array_type_of( tp_t type );
 /**********************************************************************************************************************/
 // testing, debugging
 
-bcore_string_s* bcore_array_perspective_selftest();
+bcore_string_s* bcore_spect_array_selftest();
 
 #endif
