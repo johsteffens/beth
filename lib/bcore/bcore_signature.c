@@ -126,7 +126,8 @@ bool bcore_signature_s_equal( const bcore_signature_s* sig1, const bcore_signatu
 tp_t bcore_signature_s_get_hash( const bcore_signature_s* o )
 {
     if( o->size == 0 ) return 0;
-    tp_t type = bcore_fnv_hash_u2_u2( o->data[ 0 ] );
+//    tp_t type = bcore_fnv_hash_u2_u2( o->data[ 0 ] );
+    tp_t type = o->data[ 0 ];
     for( sz_t i = 1; i < o->size; i++ )
     {
         type = bcore_fnv_fold_u2_u2( type, o->data[ i ] );
@@ -137,7 +138,8 @@ tp_t bcore_signature_s_get_hash( const bcore_signature_s* o )
 tp_t bcore_signature_get_hash_nv( sz_t n, va_list args )
 {
     if( n == 0 ) return 0;
-    tp_t type = bcore_fnv_hash_u2_u2( va_arg( args, tp_t ) );
+//    tp_t type = bcore_fnv_hash_u2_u2( va_arg( args, tp_t ) );
+    tp_t type = va_arg( args, tp_t );
     for( sz_t i = 1; i < n; i++ )
     {
         type = bcore_fnv_fold_u2_u2( type, va_arg( args, tp_t ) );

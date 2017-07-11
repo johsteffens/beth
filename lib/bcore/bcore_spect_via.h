@@ -41,7 +41,7 @@ typedef struct bcore_via_s
     tp_t    o_type; // type of object
 
     sz_t                     size;       // number of elements
-    bcore_vitem_s*           vitem_arr;  // array of vitem
+    bcore_vitem_s*       vitem_arr;  // array of vitem
     const bcore_inst_s** inst_arr;   // pointers to instance perspectives
 
     /// Access by index. Error when index is out of range.

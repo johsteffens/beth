@@ -444,6 +444,18 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of )
     return ret;
 }
 
+fp_t bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type )
+{
+    if( !o->body ) return NULL;
+    const bcore_flect_body_s* body = o->body;
+    for( sz_t i = 0; i < body->size; i++ )
+    {
+        const bcore_flect_item_s* item = &body->data[ i ];
+        if( item->caps == BCORE_CAPS_EXTERNAL_FUNC && item->type == type ) return item->f_ptr;
+    }
+    return NULL;
+}
+
 fp_t bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type )
 {
     if( !o->body ) ERR( "Requesting feature '%s':\nReflection of '%s' has no body.", ifnameof( type ), ifnameof(o->type) );

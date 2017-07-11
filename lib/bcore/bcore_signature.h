@@ -6,7 +6,9 @@
 /** Signature management framework
  *  A signature is a list of types.
  *  This framework links signatures to hash values and vice versa.
- *  Hash value 0 is reserved. Signatures resulting in hash 0 are rejected.
+ *  Hash value 0 is reserved and can be associated with the empty signature;
+ *  The signature manager rejects signatures resulting in hash 0.
+ *  The hash of a signature with one element is identical to that element.
  */
 
 #include "bcore_first.h"
@@ -81,11 +83,11 @@ tp_t bcore_signature_manager_enroll_nv( sz_t n, va_list args );
 /// enrolls signature via argument list; returns type; (thread safe)
 tp_t bcore_signature_manager_enroll_na( sz_t n, ... );
 
-/// type --> signature; returns NULL when not enrolled (thread safe)
-const bcore_signature_s* bcore_signature_manager_try( tp_t type );
+/// sig-type --> signature; returns NULL when not enrolled (thread safe)
+const bcore_signature_s* bcore_signature_manager_try( tp_t sig );
 
-/// type --> signature; returns error when not enrolled (thread safe)
-const bcore_signature_s* bcore_signature_manager_get( tp_t type );
+/// sig-type --> signature; returns error when not enrolled (thread safe)
+const bcore_signature_s* bcore_signature_manager_get( tp_t sig );
 
 /// removes type and associated signature; no effect when not enrolled (thread safe)
 void bcore_signature_manager_remove( tp_t type );

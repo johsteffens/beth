@@ -125,7 +125,7 @@ static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
 
 /**********************************************************************************************************************/
 
-const bcore_sink_s* bcore_sink_s_get_typed( u2_t o_type )
+const bcore_sink_s* bcore_sink_s_get_typed( tp_t o_type )
 {
     tp_t sig = bcore_signature_get_hash_na( 2, typeof( "bcore_sink_s" ), o_type );
     const bcore_sink_s* sink_p = bcore_spect_try( sig );
