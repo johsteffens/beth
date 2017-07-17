@@ -12,7 +12,7 @@
 typedef float  flt32_t;
 typedef double flt64_t;
 
-// primitive types
+// leaf types
 typedef int64_t     s3_t;
 typedef int32_t     s2_t;
 typedef int16_t     s1_t;
@@ -28,8 +28,10 @@ typedef const char* sc_t; // const zero terminated string
 typedef size_t      sz_t;
 typedef void*       vd_t; // dynamic void pointer
 typedef const void* vc_t; // const void pointer
+typedef void*       nd_t; // pointer to a nucleus (signature of an amoeba)
 
 typedef void (*fp_t)();   // general function pointer (also for functions with different signature)
+typedef void (*ap_t)( nd_t nc ); // amoebal function pointer
 
 // types for special purposes
 typedef u2_t tp_t;    // object type identifier

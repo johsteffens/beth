@@ -48,9 +48,9 @@ typedef struct bcore_inst_s
     bool move_flat; // init_flat && copy_flat && down_flat
 
     /// these functions are only defined if they are part of object's reflection
-    bcore_fp_init         init_o;
-    bcore_fp_down         down_o;
-    bcore_fp_copy         copy_o;
+    fp_t init_o; // bcore_fp_init or ap_t
+    fp_t down_o; // bcore_fp_down or ap_t
+    fp_t copy_o; // bcore_fp_copy or ap_t
     bcore_fp_copy_typed   copy_typed_o;
     bcore_fp_move         move_o;
     bcore_fp_create       create_o;

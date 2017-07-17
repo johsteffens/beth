@@ -3,6 +3,7 @@
 #ifndef BCORE_CONTROL_H
 #define BCORE_CONTROL_H
 
+#include <stdarg.h>
 #include "bcore_first.h"
 #include "bcore_types.h"
 
@@ -17,7 +18,8 @@
 void bcore_msg( sc_t format, ... );
 
 /// formatted message + newline to stderr and abort
-void bcore_err( sc_t format, ... );
+void bcore_errv( sc_t format, va_list args );
+void bcore_err(  sc_t format, ... );
 
 /// extended formatted message + newline to stderr and abort
 void bcore_ext_err( sc_t f_name, sc_t file, int line, sc_t format, ... );

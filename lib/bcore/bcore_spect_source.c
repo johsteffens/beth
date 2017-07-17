@@ -52,11 +52,28 @@ bcore_flect_self_s* bcore_source_s_create_self()
 
 /**********************************************************************************************************************/
 
+static sz_t get_data( const bcore_source_s* p, vd_t o, vd_t data, sz_t size )
+{
+    return p->fp_flow_src( o, data, size );
+}
+
+static void parse_errvf( const bcore_source_s* p, vd_t o, sc_t format, va_list args )
+{
+    if( p->fp_parse_errvf )
+    {
+        p->fp_parse_errvf( o, format, args );
+    }
+    else
+    {
+        ERR( "Parse error:\n%s\n", bcore_string_s_createvf( format, args )->sc );
+    }
+}
+
 static void parse_errf( const bcore_source_s* p, vd_t o, sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    p->fp_parse_errvf( o, format, args );
+    parse_errvf( p, o, format, args );
     va_end( args );
 }
 
@@ -64,7 +81,14 @@ static void parsef( const bcore_source_s* p, vd_t o, sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    p->fp_parsevf( o, format, args );
+    if( p->fp_parse_errvf )
+    {
+        p->fp_parsevf( o, format, args );
+    }
+    else
+    {
+        ERR( "Object '%s' does not support feature 'bcore_source_fp_parsevf'.", nameof( p->o_type ) );
+    }
     va_end( args );
 }
 
@@ -79,43 +103,17 @@ static bool parse_boolf( const bcore_source_s* p, vd_t o, sc_t format )
 
 static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
 {
+    ASSERT( bcore_flect_self_s_is_aware( self ) );
     bcore_source_s* o = source_s_create();
     o->o_type = self->type;
-
-    const bcore_flect_body_s* flect_body = self->body;
-
-    for( sz_t i = 0; i < flect_body->size; i++ )
-    {
-        const bcore_flect_item_s* flect_item = &flect_body->data[ i ];
-
-        if( flect_item->caps == BCORE_CAPS_EXTERNAL_FUNC &&
-            flect_item->type == typeof( "bcore_fp_flow_src" ) )
-        {
-            o->fp_flow_src = ( bcore_fp_flow_src )flect_item->f_ptr;
-        }
-
-        if( flect_item->caps == BCORE_CAPS_EXTERNAL_FUNC &&
-            flect_item->type == typeof( "bcore_source_fp_parsevf" ) )
-        {
-            o->fp_parsevf = ( bcore_source_fp_parsevf )flect_item->f_ptr;
-        }
-
-        if( flect_item->caps == BCORE_CAPS_EXTERNAL_FUNC &&
-            flect_item->type == typeof( "bcore_fp_logvf" ) &&
-            flect_item->name == typeof( "p_errorvf" ) )
-        {
-            o->fp_parse_errvf = ( bcore_fp_logvf )flect_item->f_ptr;
-        }
-    }
-
-    if( !o->fp_flow_src    ) ERR( "%s needs feature 'bcore_fp_flow_src'",       ifnameof( self->type ) );
-    if( !o->fp_parsevf     ) ERR( "%s needs feature 'bcore_source_fp_parsevf'", ifnameof( self->type ) );
-    if( !o->fp_parse_errvf ) ERR( "%s needs feature 'bcore_fp_logvf' of name 'p_errorvf' to be used as error message handler", ifnameof( self->type ) );
-
+    o->fp_flow_src = ( bcore_fp_flow_src       )bcore_flect_self_s_get_external_fp( self, typeof( "bcore_fp_flow_src" ), 0 );
+    o->fp_parsevf  = ( bcore_source_fp_parsevf )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_source_fp_parsevf" ), 0 );
+    o->fp_parse_errvf = ( bcore_fp_logvf       )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_logvf" ), typeof( "p_errorvf" ) );
+    o->get_data    = get_data;
     o->parsef      = parsef;
+    o->parse_errvf = parse_errvf;
     o->parse_errf  = parse_errf;
     o->parse_boolf = parse_boolf;
-
     return o;
 }
 
@@ -137,3 +135,58 @@ const bcore_source_s* bcore_source_s_get_typed( tp_t o_type )
 
 /**********************************************************************************************************************/
 
+sz_t bcore_source_get_data( vd_t o, vd_t data, sz_t size )
+{
+    const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
+    return p->get_data( p, o, data, size );
+}
+
+void bcore_source_parsef( vd_t o, sc_t format, ... )
+{
+    const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
+    va_list args;
+    va_start( args, format );
+    if( p->fp_parse_errvf )
+    {
+        p->fp_parsevf( o, format, args );
+    }
+    else
+    {
+        ERR( "Object '%s' does not support feature 'bcore_source_fp_parsevf'.", nameof( p->o_type ) );
+    }
+    va_end( args );
+}
+
+void bcore_source_parse_errvf(  vd_t o, sc_t format, va_list args )
+{
+    const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
+    if( p->fp_parse_errvf )
+    {
+        p->fp_parse_errvf( o, format, args );
+    }
+    else
+    {
+        ERR( "Parse error:\n%s\n", bcore_string_s_createvf( format, args )->sc );
+    }
+}
+
+void bcore_source_parse_errf(  vd_t o, sc_t format, ... )
+{
+    const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
+    va_list args;
+    va_start( args, format );
+    if( p->fp_parse_errvf )
+    {
+        p->fp_parse_errvf( o, format, args );
+    }
+    else
+    {
+        ERR( "Parse error:\n%s\n", bcore_string_s_createvf( format, args )->sc );
+    }
+    va_end( args );
+}
+
+bool bcore_source_parse_boolf( vd_t o, sc_t format )
+{
+    return parse_boolf( bcore_source_s_get_typed( *( aware_t* )o ), o, format );
+}

@@ -42,6 +42,7 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 // frequently used types
 #define TYPEOF_bcore_string_s           2419449576
 #define TYPEOF_bcore_source_string_s    1049426656
+#define TYPEOF_bcore_source_buffer_s    0
 
 // attributes
 #define TYPEOF_private                  1657474316

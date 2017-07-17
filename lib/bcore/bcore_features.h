@@ -9,11 +9,12 @@
 
 /**********************************************************************************************************************/
 
-/// create, copy, discard
-typedef void (*bcore_fp_init   )( vd_t o );           // initialization (construction)
-typedef void (*bcore_fp_down   )( vd_t o );           // destruction
-typedef void (*bcore_fp_copy   )( vd_t o, vc_t src ); // deep copy
-typedef void (*bcore_fp_plant  )( vd_t o, vc_t src ); // init(o); copy(o, src);
+/// init, down, copy
+typedef void (*bcore_fp_init )( vd_t o );           // initialization (construction)
+typedef void (*bcore_fp_down )( vd_t o );           // destruction
+typedef void (*bcore_fp_copy )( vd_t o, vc_t src ); // deep copy
+
+/// create, discard, clone and move are derived from above features
 typedef void (*bcore_fp_move   )( vd_t o, vd_t src ); // init(o); copy(o, src); down(src)
 typedef vd_t (*bcore_fp_create )( void   );           // allocate & init
 typedef void (*bcore_fp_discard)( vd_t o );           // down & deallocate; o may be NULL in which case function does nothing

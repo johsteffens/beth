@@ -24,7 +24,7 @@ static void hmap_s_node_down( vd_t obj, u2_t key, vd_t val )
 {
     if( val )
     {
-        bcore_fp_discard discard = bcore_flect_self_s_get_external_fp( bcore_flect_get_self( *( aware_t *)val ), typeof( "bcore_fp_discard" ) );
+        bcore_fp_discard discard = bcore_flect_self_s_get_external_fp( bcore_flect_get_self( *( aware_t *)val ), typeof( "bcore_fp_discard" ), 0 );
         discard( val );
     }
 }
@@ -94,7 +94,7 @@ vc_t bcore_spect_get( tp_t sig )
 void bcore_spect_enroll_d( vd_t spect )
 {
     tp_t type = *( aware_t *)spect;
-    bcore_spect_fp_create_signature create_signature = ( bcore_spect_fp_create_signature )bcore_flect_self_s_get_external_fp( bcore_flect_get_self( type ), typeof( "bcore_spect_fp_create_signature" ) );
+    bcore_spect_fp_create_signature create_signature = ( bcore_spect_fp_create_signature )bcore_flect_self_s_get_external_fp( bcore_flect_get_self( type ), typeof( "bcore_spect_fp_create_signature" ), 0 );
     tp_t sig = bcore_signature_manager_enroll_d( create_signature( spect ) );
 
     assert( hmap_s_g != NULL );

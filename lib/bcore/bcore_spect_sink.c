@@ -98,28 +98,13 @@ static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
 {
     bcore_sink_s* o = sink_s_create();
     o->o_type = self->type;
-    if( !self->body ) ERR( "'%s' has no body", ifnameof( self->type ) );
-    const bcore_flect_body_s* body = self->body;
-
-    for( sz_t i = 0; i < body->size; i++ )
-    {
-        const bcore_flect_item_s* item = &body->data[ i ];
-        if( item->caps == BCORE_CAPS_EXTERNAL_FUNC && item->type == typeof( "bcore_fp_flow_snk" ) )
-        {
-            o->flow_snk = ( bcore_fp_flow_snk )item->f_ptr;
-            break;
-        }
-    }
-
-    if( !o->flow_snk ) ERR( "'%s' has no feature 'bcore_fp_flow_snk'", ifnameof( self->type ) );
-
+    o->flow_snk = ( bcore_fp_flow_snk )bcore_flect_self_s_get_external_fp( self, typeof( "bcore_fp_flow_snk" ), 0 );
     o->push_data     = push_data;
     o->pushf         = pushf;
     o->push_char     = push_char;
     o->push_sc       = push_sc;
     o->push_string   = push_string;
     o->push_string_d = push_string_d;
-
     return o;
 }
 

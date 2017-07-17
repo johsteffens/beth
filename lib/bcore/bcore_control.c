@@ -1,7 +1,6 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 #include <stdio.h>
-#include <stdarg.h>
 
 #include "bcore_control.h"
 #include "bcore_memory_manager.h"
@@ -12,6 +11,13 @@ void bcore_msg( sc_t format, ... )
 	va_start( args, format );
 	vfprintf( stdout, format, args );
 	va_end( args );
+}
+
+void bcore_errv( sc_t format, va_list args )
+{
+	vfprintf( stderr, format, args );
+	fprintf( stderr, "\n" );
+	abort();
 }
 
 void bcore_err( sc_t format, ... )

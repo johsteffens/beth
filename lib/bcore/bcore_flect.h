@@ -57,7 +57,7 @@ PLANNING:
   or more specific (e.g. private for instance and interpreter perspectives), flags <-> features.
   -> truly universal flag managements probably requires handling an arbitrary amount of
      different flags in arbitrary combinations.
-
+  -> signature framework probably suitable
 */
 
 /// conversion between enum and string
@@ -137,7 +137,7 @@ typedef struct bcore_flect_self_s
 
     /** Body of type. Exposing the body is optional.
      *  If the body is exposed, it must be complete. Otherwise, a perspective can not correctly compute the alignment of elements.
-     *  A leaf type never has a body.
+     *  A leaf type is defined as object without body.
      */
     bcore_flect_body_s* body;
 } bcore_flect_self_s;
@@ -157,8 +157,11 @@ void                     bcore_flect_self_s_push_external_func( bcore_flect_self
 bcore_string_s*          bcore_flect_self_s_show( const bcore_flect_self_s* o );
 bcore_flect_self_s*      bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx, sz_t size_of );
 bcore_flect_self_s*      bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );
-fp_t                     bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type ); // returns external function pointer of given type; NULL when not present
-fp_t                     bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type ); // returns external function pointer of given type; error when not present
+
+/// Query for external function of given type or name; either type or name may be 0 in which case it is interpreted as wildcard
+fp_t bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type, tp_t name ); // returns NULL when not found
+fp_t bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type, tp_t name ); // error when not found
+bool bcore_flect_self_s_is_aware(        const bcore_flect_self_s* o                       ); // object has body and is aware
 
 /// reflection on bcore_flect_self_s
 bcore_flect_self_s*      bcore_flect_self_s_create_self();
@@ -188,6 +191,28 @@ void bcore_flect_define_alias_sc(  sc_t alias, sc_t type ); // also enrolls name
 bool  bcore_flect_exists(                       tp_t type ); // checks existence of type
 const bcore_flect_self_s* bcore_flect_try_self( tp_t type ); // returns NULL when type does not exist
 const bcore_flect_self_s* bcore_flect_get_self( tp_t type ); // error when type does not exits
+
+/**********************************************************************************************************************/
+/// feature (function) handling
+typedef struct bcore_flect_fmap_s bcore_flect_fmap_s;
+
+void bcore_flect_fmap_s_init( bcore_flect_fmap_s* o );
+void bcore_flect_fmap_s_down( bcore_flect_fmap_s* o );
+void bcore_flect_fmap_s_copy( bcore_flect_fmap_s* o, const bcore_flect_fmap_s* src );
+
+bcore_flect_fmap_s* bcore_flect_fmap_s_create();
+void                bcore_flect_fmap_s_discard(     bcore_flect_fmap_s* o );
+bcore_flect_fmap_s* bcore_flect_fmap_s_clone( const bcore_flect_fmap_s* o );
+
+/** Registers association between perspective function pointer and function type.
+ *  type == 0: type is wildcard
+ *  name == 0: name is wildcard
+ *  In case multiple entries relate to the same target, the last such entry takes priority.
+ *  required refers to the target. apply composes runtime an error log for required targets
+ *  that remained NULL;
+ */
+void bcore_flect_fmap_s_push( bcore_flect_fmap_s* o, fp_t* fp, bool required, tp_t type, tp_t name );
+void bcore_flect_fmap_s_apply( const bcore_flect_fmap_s* o, const bcore_flect_self_s* self ); // applies associations from reflection
 
 /**********************************************************************************************************************/
 

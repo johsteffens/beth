@@ -444,29 +444,36 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of )
     return ret;
 }
 
-fp_t bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type )
+fp_t bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type, tp_t name )
 {
     if( !o->body ) return NULL;
     const bcore_flect_body_s* body = o->body;
     for( sz_t i = 0; i < body->size; i++ )
     {
         const bcore_flect_item_s* item = &body->data[ i ];
-        if( item->caps == BCORE_CAPS_EXTERNAL_FUNC && item->type == type ) return item->f_ptr;
+        if( ( item->caps == BCORE_CAPS_EXTERNAL_FUNC ) &&
+            ( type == 0 || item->type == type        ) &&
+            ( name == 0 || item->name == name        ) )
+        {
+            return item->f_ptr;
+        }
     }
     return NULL;
 }
 
-fp_t bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type )
+fp_t bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type, tp_t name )
 {
-    if( !o->body ) ERR( "Requesting feature '%s':\nReflection of '%s' has no body.", ifnameof( type ), ifnameof(o->type) );
+    fp_t fp = bcore_flect_self_s_try_external_fp( o, type, name );
+    if( !fp ) ERR( "Function '%s' of name '%s' not found in reflection '%s'.", ifnameof( type ), ifnameof( name ), ifnameof(o->type) );
+    return fp;
+}
+
+bool bcore_flect_self_s_is_aware( const bcore_flect_self_s* o )
+{
+    if( !o->body ) return false;
     const bcore_flect_body_s* body = o->body;
-    for( sz_t i = 0; i < body->size; i++ )
-    {
-        const bcore_flect_item_s* item = &body->data[ i ];
-        if( item->caps == BCORE_CAPS_EXTERNAL_FUNC && item->type == type ) return item->f_ptr;
-    }
-    ERR( "Feature '%s' not found in reflection '%s'.", ifnameof( type ), ifnameof(o->type) );
-    return NULL;
+    if( body->size == 0 ) return false;
+    return body->data[ 0 ].type == TYPEOF_aware_t;
 }
 
 bcore_flect_self_s* bcore_flect_self_s_create_self()
@@ -779,6 +786,7 @@ void bcore_flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "vc_t" ), sizeof( vc_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "fp_t" ), sizeof( fp_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bool" ), sizeof( bool ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "void" ), 0              ) );
 
     bcore_flect_define_alias( bcore_name_enroll( "int64_t" ),  typeof( "s3_t" ) );
     bcore_flect_define_alias( bcore_name_enroll( "int32_t" ),  typeof( "s2_t" ) );
@@ -820,6 +828,79 @@ void bcore_flect_define_basics()
     // specific objects
     bcore_flect_define_creator( typeof( "bcore_flect_self_s" ), bcore_flect_self_s_create_self ); // self
     bcore_flect_define_creator( typeof( "bcore_string_s" ),     bcore_string_s_create_self     ); // string
+}
+
+/**********************************************************************************************************************/
+/// feature (function) handling
+typedef struct fmap_s
+{
+    fp_t* fp;
+    bool required;
+    tp_t type;
+    tp_t name;
+} fmap_s;
+
+typedef struct bcore_flect_fmap_s
+{
+    fmap_s* data;
+    sz_t size, space;
+} bcore_flect_fmap_s;
+
+void bcore_flect_fmap_s_init( bcore_flect_fmap_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+}
+
+void bcore_flect_fmap_s_down( bcore_flect_fmap_s* o )
+{
+    if( o->data ) o->data = bcore_un_alloc( sizeof( *o ), o->data, o->space, 0, &o->space );
+}
+
+void bcore_flect_fmap_s_copy( bcore_flect_fmap_s* o, const bcore_flect_fmap_s* src )
+{
+    o->data = bcore_un_alloc( sizeof( *o ), o->data, o->space, src->size, &o->space );
+    bcore_u_memcpy( sizeof( *o ), o->data, src->data, src->size );
+    o->size = src->size;
+}
+
+DEFINE_FUNCTION_CREATE( bcore_flect_fmap_s )
+DEFINE_FUNCTION_DISCARD( bcore_flect_fmap_s )
+DEFINE_FUNCTION_CLONE( bcore_flect_fmap_s )
+
+void bcore_flect_fmap_s_push( bcore_flect_fmap_s* o, fp_t* fp, bool required, tp_t type, tp_t name )
+{
+    if( o->size == o->space ) o->data = bcore_un_alloc( sizeof( *o ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+    fmap_s* map = &o->data[ o->size ];
+    map->fp = fp;
+    map->required = required;
+    map->type = type;
+    map->name = name;
+    o->size++;
+}
+
+void bcore_flect_fmap_s_apply( const bcore_flect_fmap_s* o, const bcore_flect_self_s* self )
+{
+    bool check_for_errors = false;
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        const fmap_s* map = &o->data[ i ];
+        *map->fp = bcore_flect_self_s_try_external_fp( self, map->type, map->name );
+        check_for_errors = check_for_errors | map->required;
+    }
+    if( check_for_errors )
+    {
+        bcore_string_s* msg = NULL;
+        for( sz_t i = 0; i < o->size; i++ )
+        {
+            const fmap_s* map = &o->data[ i ];
+            if( *map->fp == NULL && map->required )
+            {
+                if( !msg ) msg = bcore_string_s_create();
+                bcore_string_s_pushf( msg, "  %s %s\n", ifnameof( map->type ), ifnameof( map->name ) );
+            }
+        }
+        if( msg ) ERR( "Following features are required but missing in object %s:\n%s", ifnameof( self->type ), msg->sc );
+    }
 }
 
 /**********************************************************************************************************************/
