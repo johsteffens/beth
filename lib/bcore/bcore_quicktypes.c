@@ -48,6 +48,7 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
     print_type( hash_l, "bcore_source_string_s" );
     print_type( hash_l, "bcore_source_buffer_s" );
     print_type( hash_l, "bcore_source_file_s" );
+    print_type( hash_l, "bcore_source_chain_s" );
 
     bcore_msg( "\n// attributes\n" );
     print_type( hash_l, "private" );

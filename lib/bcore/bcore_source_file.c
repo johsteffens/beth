@@ -148,7 +148,7 @@ bcore_flect_self_s* bcore_source_file_s_create_self()
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_file_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )init_a, "ap_t", "init" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )down_a, "ap_t", "down" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )down_a, "ap_t", "copy" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )copy_a, "ap_t", "copy" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )interpret_body_a, "ap_t", "interpret_body" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )flow_src,  "bcore_fp_flow_src", "flow_src"  );
     bcore_flect_self_s_push_external_func( self, ( fp_t )p_errorvf, "bcore_fp_logvf",    "p_errorvf" );

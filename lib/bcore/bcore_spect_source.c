@@ -77,10 +77,8 @@ static void parse_errf( const bcore_source_s* p, vd_t o, sc_t format, ... )
     va_end( args );
 }
 
-static void parsef( const bcore_source_s* p, vd_t o, sc_t format, ... )
+static void parsevf( const bcore_source_s* p, vd_t o, sc_t format, va_list args )
 {
-    va_list args;
-    va_start( args, format );
     if( p->fp_parse_errvf )
     {
         p->fp_parsevf( o, format, args );
@@ -89,6 +87,13 @@ static void parsef( const bcore_source_s* p, vd_t o, sc_t format, ... )
     {
         ERR( "Object '%s' does not support feature 'bcore_source_fp_parsevf'.", nameof( p->o_type ) );
     }
+}
+
+static void parsef( const bcore_source_s* p, vd_t o, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    parsevf( p, o, format, args );
     va_end( args );
 }
 
@@ -99,6 +104,18 @@ static bool parse_boolf( const bcore_source_s* p, vd_t o, sc_t format )
     return flag;
 }
 
+static void set_supplier( const bcore_source_s* p, vd_t o, vd_t supplier )
+{
+    if( p->fp_set_supplier )
+    {
+        p->fp_set_supplier( o, supplier );
+    }
+    else
+    {
+        ERR( "Object '%s' does not support feature 'bcore_source_fp_set_supplier'.", nameof( p->o_type ) );
+    }
+}
+
 /**********************************************************************************************************************/
 
 static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
@@ -106,14 +123,18 @@ static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
     ASSERT( bcore_flect_self_s_is_aware( self ) );
     bcore_source_s* o = source_s_create();
     o->o_type = self->type;
-    o->fp_flow_src = ( bcore_fp_flow_src       )bcore_flect_self_s_get_external_fp( self, typeof( "bcore_fp_flow_src" ), 0 );
-    o->fp_parsevf  = ( bcore_source_fp_parsevf )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_source_fp_parsevf" ), 0 );
-    o->fp_parse_errvf = ( bcore_fp_logvf       )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_logvf" ), typeof( "p_errorvf" ) );
-    o->get_data    = get_data;
-    o->parsef      = parsef;
-    o->parse_errvf = parse_errvf;
-    o->parse_errf  = parse_errf;
-    o->parse_boolf = parse_boolf;
+    o->fp_flow_src = ( bcore_fp_flow_src                )bcore_flect_self_s_get_external_fp( self, typeof( "bcore_fp_flow_src" ), 0 );
+    o->fp_parsevf  = ( bcore_source_fp_parsevf          )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_source_fp_parsevf" ), 0 );
+    o->fp_parse_errvf = ( bcore_fp_logvf                )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_logvf" ), typeof( "p_errorvf" ) );
+    o->fp_set_supplier = ( bcore_source_fp_set_supplier )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_source_fp_set_supplier" ), 0 );
+
+    o->get_data     = get_data;
+    o->parsevf      = parsevf;
+    o->parsef       = parsef;
+    o->parse_errvf  = parse_errvf;
+    o->parse_errf   = parse_errf;
+    o->parse_boolf  = parse_boolf;
+    o->set_supplier = set_supplier;
     return o;
 }
 
@@ -139,6 +160,19 @@ sz_t bcore_source_get_data( vd_t o, vd_t data, sz_t size )
 {
     const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
     return p->get_data( p, o, data, size );
+}
+
+void bcore_source_parsevf( vd_t o, sc_t format, va_list args )
+{
+    const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
+    if( p->fp_parse_errvf )
+    {
+        p->fp_parsevf( o, format, args );
+    }
+    else
+    {
+        ERR( "Object '%s' does not support feature 'bcore_source_fp_parsevf'.", nameof( p->o_type ) );
+    }
 }
 
 void bcore_source_parsef( vd_t o, sc_t format, ... )
@@ -189,4 +223,10 @@ void bcore_source_parse_errf(  vd_t o, sc_t format, ... )
 bool bcore_source_parse_boolf( vd_t o, sc_t format )
 {
     return parse_boolf( bcore_source_s_get_typed( *( aware_t* )o ), o, format );
+}
+
+void bcore_source_set_supplier( vd_t o, vd_t supplier )
+{
+    const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
+    p->set_supplier( p, o, supplier );
 }

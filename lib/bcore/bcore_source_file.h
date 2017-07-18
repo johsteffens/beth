@@ -7,7 +7,7 @@
 #include "bcore_string.h"
 #include "bcore_flect.h"
 
-/** File data source (copyable)
+/** File data source (copyable, serializable)
   * The 'open' state is not copied;
   */
 typedef struct bcore_source_file_s
