@@ -59,6 +59,7 @@ static bcore_translator_s* create_from_self( const bcore_flect_self_s* t_self, c
     o->o_type = o_self->type;
     o->translate_body = bcore_flect_self_s_try_external_fp( o_self, typeof( "bcore_fp_translate_body" ), 0 );
     if( !o->translate_body ) o->translate_body = bcore_flect_self_s_get_external_fp( t_self, typeof( "bcore_fp_translate_body" ), 0 );
+    o->translate_body_amoeba = bcore_flect_self_s_try_external_fp( o_self, typeof( "ap_t" ), typeof( "translate_body" ) );
     o->translate_object = bcore_flect_self_s_try_external_fp( o_self, typeof( "bcore_fp_translate_object" ), 0 );
     if( !o->translate_object ) o->translate_object = bcore_flect_self_s_get_external_fp( t_self, typeof( "bcore_fp_translate_object" ), 0 );
     return o;
@@ -83,28 +84,49 @@ const bcore_translator_s* bcore_translator_s_get_typed( tp_t t_type, tp_t o_type
 
 /**********************************************************************************************************************/
 
+typedef struct { ap_t ap; const bcore_translator_s* p; vc_t trans; tp_t type; vc_t obj; vd_t sink; } translate_body_nc;
+
+static void translate_body_amoeba( translate_body_nc* nc )
+{
+    nc->p->translate_body( nc->trans, nc->type, nc->obj, nc->sink );
+}
+
+void bcore_translate_spect_body( const bcore_translator_s* spect, vd_t trans, vc_t obj, vd_t sink )
+{
+    if( spect->translate_body_amoeba )
+    {
+        translate_body_nc nc = { ( ap_t )translate_body_amoeba, spect, trans, spect->o_type, obj, sink };
+        spect->translate_body_amoeba( &nc );
+    }
+    else
+    {
+        spect->translate_body( trans, spect->o_type, obj, sink );
+    }
+}
+
 void bcore_translate_typed_body( vd_t trans, tp_t o_type, vc_t obj, vd_t sink )
 {
-    const bcore_translator_s* spect = bcore_translator_s_get_typed( *( aware_t *)trans, o_type );
-    spect->translate_body( trans, o_type, obj, sink );
+    bcore_translate_spect_body( bcore_translator_s_get_typed( *( aware_t *)trans, o_type ), trans, obj, sink );
 }
 
 void bcore_translate_aware_body( vd_t trans, vc_t obj, vd_t sink )
 {
-    tp_t o_type = *( aware_t *)obj;
-    bcore_translate_typed_body( trans, o_type, obj, sink );
+    bcore_translate_typed_body( trans, *( aware_t *)obj, obj, sink );
+}
+
+void bcore_translate_spect_object( const bcore_translator_s* spect, vd_t trans, vc_t obj, vd_t sink )
+{
+    spect->translate_object( trans, spect->o_type, obj, sink );
 }
 
 void bcore_translate_typed_object( vd_t trans, tp_t o_type, vc_t obj, vd_t sink )
 {
-    const bcore_translator_s* spect = bcore_translator_s_get_typed( *( aware_t *)trans, o_type );
-    spect->translate_object( trans, o_type, obj, sink );
+    bcore_translate_spect_object( bcore_translator_s_get_typed( *( aware_t *)trans, o_type ), trans, obj, sink );
 }
 
-void bcore_translate_aware_object( vd_t trans,              vc_t obj, vd_t sink )
+void bcore_translate_aware_object( vd_t trans, vc_t obj, vd_t sink )
 {
-    tp_t o_type = *( aware_t *)obj;
-    bcore_translate_typed_object( trans, o_type, obj, sink );
+    bcore_translate_typed_object( trans, *( aware_t *)obj, obj, sink );
 }
 
 /**********************************************************************************************************************/

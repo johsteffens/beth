@@ -7,7 +7,7 @@
 #include "bcore_string.h"
 #include "bcore_flect.h"
 
-/// Memory based data source supporting bcore_source_s and bcore_array_s perspectives
+/// Memory based data source supporting source and array perspectives
 typedef struct bcore_source_buffer_s
 {
     aware_t _;
@@ -15,8 +15,8 @@ typedef struct bcore_source_buffer_s
     sz_t size, space;
     sz_t index;
 
-    vd_t ext_supplier;       // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_buffer_s)
-    sz_t prefetch_size;      // data amount prefetched from supplier (if present)
+    vd_t ext_supplier;  // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_buffer_s)
+    sz_t prefetch_size; // data amount prefetched from supplier (if present) (default: 4096)
 
 } bcore_source_buffer_s;
 
@@ -30,6 +30,6 @@ bcore_source_buffer_s* bcore_source_buffer_s_clone(   const bcore_source_buffer_
 bcore_flect_self_s*    bcore_source_buffer_s_create_self();
 
 /// Specifies an external supplier (source); supplier is not owned by this object
-void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier, sz_t prefetch_size );
+void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier );
 
 #endif // BCORE_SOURCE_BUFFER_H

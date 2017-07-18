@@ -9,6 +9,8 @@
  *  or requirements where the default behavior is insufficient.
  *  The translator-object should redirect translation of nested objects as indicated.
  *  The object can not redirect translation of itself back to the translation-object.
+ *
+ *  Object-Amoebic features: translate_body
  */
 
 #ifndef BCORE_SPECT_TRANSLATOR_H
@@ -22,18 +24,25 @@ typedef struct bcore_translator_s
     aware_t p_type; // perspective
     tp_t    t_type; // translator
     tp_t    o_type; // object
+
+    // do not call these functions from outside
     bcore_fp_translate_object translate_object;
     bcore_fp_translate_body   translate_body;
+    ap_t                      translate_body_amoeba;
 } bcore_translator_s;
 
 bcore_flect_self_s* bcore_translator_s_create_self();
 
 const bcore_translator_s* bcore_translator_s_get_typed( tp_t t_type, tp_t o_type );
 
-void bcore_translate_typed_body(   vd_t trans, tp_t o_type, vc_t obj, vd_t sink );
-void bcore_translate_aware_body(   vd_t trans,              vc_t obj, vd_t sink );
+// use functions below from outside
+void bcore_translate_spect_body( const bcore_translator_s* spect, vd_t trans, vc_t obj, vd_t sink );
+void bcore_translate_typed_body( vd_t trans, tp_t o_type, vc_t obj, vd_t sink );
+void bcore_translate_aware_body( vd_t trans, vc_t obj, vd_t sink );
+
+void bcore_translate_spect_object( const bcore_translator_s* spect, vd_t trans, vc_t obj, vd_t sink );
 void bcore_translate_typed_object( vd_t trans, tp_t o_type, vc_t obj, vd_t sink );
-void bcore_translate_aware_object( vd_t trans,              vc_t obj, vd_t sink );
+void bcore_translate_aware_object( vd_t trans, vc_t obj, vd_t sink );
 
 #endif  // BCORE_SPECT_TRANSLATOR_H
 

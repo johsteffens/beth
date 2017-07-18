@@ -6,9 +6,22 @@
 
 /**********************************************************************************************************************/
 
-void bcore_source_buffer_s_init(    bcore_source_buffer_s* o ) { bcore_inst_typed_init(    TYPEOF_bcore_source_buffer_s, o ); }
-void bcore_source_buffer_s_down(    bcore_source_buffer_s* o ) { bcore_inst_typed_down(    TYPEOF_bcore_source_buffer_s, o ); }
-void bcore_source_buffer_s_discard( bcore_source_buffer_s* o ) { bcore_inst_typed_discard( TYPEOF_bcore_source_buffer_s, o ); }
+void bcore_source_buffer_s_init( bcore_source_buffer_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+    o->_ = TYPEOF_bcore_source_buffer_s;
+    o->prefetch_size = 4096;
+}
+
+void bcore_source_buffer_s_down( bcore_source_buffer_s* o )
+{
+    bcore_inst_typed_down( TYPEOF_bcore_source_buffer_s, o );
+}
+
+void bcore_source_buffer_s_discard( bcore_source_buffer_s* o )
+{
+    bcore_inst_typed_discard( TYPEOF_bcore_source_buffer_s, o );
+}
 
 void bcore_source_buffer_s_copy( bcore_source_buffer_s* o, const bcore_source_buffer_s* src )
 {
@@ -43,6 +56,8 @@ static sz_t flow_src( bcore_source_buffer_s* o, vd_t data, sz_t size )
     size -= size1;
     o->size = o->index = 0;
     if( !o->ext_supplier ) return size1;
+
+    // the code below handles the case with supplier
 
     if( size > o->prefetch_size ) return bcore_source_get_data( o->ext_supplier, data, size ) + size1;
 
@@ -89,19 +104,20 @@ bcore_flect_self_s* bcore_source_buffer_s_create_self()
       "aware_t _; "
       "u0_t [] data; "
       "sz_t index; "
-      "external void * supplier; "
+      "vd_t supplier; "
       "sz_t prefetch_size; "
     "}";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_buffer_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )flow_src,  "bcore_fp_flow_src", "flow_src"  );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_source_buffer_s_init,  "bcore_fp_init",     "init"  );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )flow_src,                    "bcore_fp_flow_src", "flow_src"  );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )p_errorvf,                   "bcore_fp_logvf",    "p_errorvf" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_source_buffer_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
     return self;
 }
 
-void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier, sz_t prefetch_size )
+void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier )
 {
     o->ext_supplier = supplier;
-    o->prefetch_size = prefetch_size;
 }
 
 /**********************************************************************************************************************/

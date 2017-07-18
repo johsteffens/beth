@@ -34,6 +34,6 @@ bcore_flect_self_s*    bcore_source_string_s_create_self();
 /** Specifies an external supplier (source); supplier is not owned by this object.
  *  The supplier is automatically detached when empty.
  */
-void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier, sz_t refill_limit, sz_t prefetch_size );
+void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier );
 
 #endif // BCORE_SOURCE_STRING_H

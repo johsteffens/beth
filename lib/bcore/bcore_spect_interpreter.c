@@ -60,6 +60,7 @@ static bcore_interpreter_s* create_from_self( const bcore_flect_self_s* t_self, 
     o->o_type = o_self ? o_self->type : 0;
     o->interpret_body = o_self ? ( bcore_fp_interpret_body )bcore_flect_self_s_try_external_fp( o_self, typeof( "bcore_fp_interpret_body" ), 0 ) : NULL;
     if( !o->interpret_body ) o->interpret_body = ( bcore_fp_interpret_body )bcore_flect_self_s_get_external_fp( t_self, typeof( "bcore_fp_interpret_body" ), 0 );
+    o->interpret_body_amoeba = o_self ? bcore_flect_self_s_try_external_fp( o_self, typeof( "ap_t" ), typeof( "interpret_body" ) ) : NULL;
     o->interpret_object = o_self ? ( bcore_fp_interpret_object )bcore_flect_self_s_try_external_fp( o_self, typeof( "bcore_fp_interpret_object" ), 0 ) : NULL;
     if( !o->interpret_object ) o->interpret_object = ( bcore_fp_interpret_object )bcore_flect_self_s_get_external_fp( t_self, typeof( "bcore_fp_interpret_object" ), 0 );
     return o;
@@ -84,10 +85,29 @@ const bcore_interpreter_s* bcore_interpreter_s_get_typed( tp_t t_type, tp_t o_ty
 
 /**********************************************************************************************************************/
 
+typedef struct { ap_t ap; const bcore_interpreter_s* p; vc_t inter; vd_t source; tp_t type; vd_t obj; } interpret_body_nc;
+
+static void interpret_body_amoeba( interpret_body_nc* nc )
+{
+    nc->p->interpret_body( nc->inter, nc->source, nc->type, nc->obj );
+}
+
+void bcore_interpret_spect_body( const bcore_interpreter_s* spect, vd_t intrp, vd_t source, vd_t obj )
+{
+    if( spect->interpret_body_amoeba )
+    {
+        interpret_body_nc nc = { ( ap_t )interpret_body_amoeba, spect, intrp, source, spect->o_type, obj };
+        spect->interpret_body_amoeba( &nc );
+    }
+    else
+    {
+        spect->interpret_body( intrp, source, spect->o_type, obj );
+    }
+}
+
 void bcore_interpret_typed_body( vd_t intrp, vd_t source, tp_t o_type, vd_t obj )
 {
-    const bcore_interpreter_s* spect = bcore_interpreter_s_get_typed( *( aware_t *)intrp, o_type );
-    spect->interpret_body( intrp, source, o_type, obj );
+    bcore_interpret_spect_body( bcore_interpreter_s_get_typed( *( aware_t *)intrp, o_type ), intrp, source, obj );
 }
 
 void bcore_interpret_aware_body( vd_t intrp, vd_t source, vd_t obj )

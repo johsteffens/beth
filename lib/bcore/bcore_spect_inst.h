@@ -9,6 +9,8 @@
 /** The instance perspective is concerned with the representation of an object in memory and
  *  provides basic object related functionality covering construction, destruction, copying
  *  and (type-) conversion.
+ *
+ *  Amoebic features: init, down, copy
  */
 
 /**********************************************************************************************************************/
@@ -19,7 +21,7 @@ typedef struct bcore_inst_item_s
     sz_t size;
     sz_t align;
     bool no_trace; // do not recursively follow this item (could be private, cyclic or external)
-    const bcore_flect_item_s*      flect_item;
+    const bcore_flect_item_s*   flect_item;
     const struct bcore_inst_s* perspective;
 } bcore_inst_item_s;
 
