@@ -7,6 +7,7 @@
 #include "bcore_name_manager.h"
 #include "bcore_flect.h"
 #include "bcore_quicktypes.h"
+#include "bcore_life.h"
 
 void bcore_string_s_init( bcore_string_s* o )
 {
@@ -196,6 +197,22 @@ bcore_string_s* bcore_string_s_create_aware( vc_t src )
     return bcore_string_s_create_typed( *( aware_t* )src, src );
 }
 
+void bcore_string_s_set_min_space( bcore_string_s* o, sz_t min_space )
+{
+    if( min_space == 0 ) return;
+    if( o->space == 0 )
+    {
+        sz_t new_space = min_space > 8 ? min_space : 8;
+        o->data = bcore_bn_alloc( NULL, 0, new_space, &o->space );
+        o->data[ o->size ] = 0;
+    }
+    else if( o->space < min_space )
+    {
+        sz_t new_space = ( min_space > o->space * 2 ) ? min_space : o->space * 2;
+        o->data = bcore_bn_alloc( o->data, o->space, new_space, &o->space );
+    }
+}
+
 void bcore_string_s_discard( bcore_string_s* o )
 {
     if( !o ) return;
@@ -262,7 +279,10 @@ bcore_string_s* bcore_string_s_push_char( bcore_string_s* o, char c )
 
 bcore_string_s* bcore_string_s_push_char_n( bcore_string_s* o, char c, sz_t n )
 {
-    for( sz_t i = 0; i < n; i++ ) bcore_string_s_push_char( o, c );
+    bcore_string_s_set_min_space( o, o->size + n + 1 );
+    bcore_memset( o->data + o->size, c, n );
+    o->size += n;
+    o->data[ o->size ] = 0;
     return o;
 }
 

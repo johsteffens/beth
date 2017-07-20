@@ -6,9 +6,8 @@
 #include "bcore_name_manager.h"
 #include "bcore_flect.h"
 #include "bcore_string.h"
-#include "bcore_source_string.h"
-#include "bcore_source_buffer.h"
-#include "bcore_source_file.h"
+#include "bcore_sources.h"
+#include "bcore_sinks.h"
 #include "bcore_life.h"
 #include "bcore_bml.h"
 #include "bcore_signature.h"
@@ -38,16 +37,19 @@ static void init_library_bcore_once()
     bcore_flect_define_creator( typeof( "bcore_source_string_s"   ), bcore_source_string_s_create_self   );
     bcore_flect_define_creator( typeof( "bcore_source_buffer_s"   ), bcore_source_buffer_s_create_self   );
     bcore_flect_define_creator( typeof( "bcore_source_file_s"     ), bcore_source_file_s_create_self     );
+    bcore_flect_define_creator( typeof( "bcore_source_chain_s"    ), bcore_source_chain_s_create_self    );
+    bcore_flect_define_creator( typeof( "bcore_sink_buffer_s"     ), bcore_sink_buffer_s_create_self     );
+    bcore_flect_define_creator( typeof( "bcore_sink_file_s"       ), bcore_sink_file_s_create_self       );
+    bcore_flect_define_creator( typeof( "bcore_sink_chain_s"      ), bcore_sink_chain_s_create_self      );
     bcore_flect_define_creator( typeof( "bcore_life_s"            ), bcore_life_s_create_self            );
     bcore_flect_define_creator( typeof( "bcore_signature_s"       ), bcore_signature_s_create_self       );
-
     bcore_flect_define_creator( typeof( "bcore_inst_s"            ), bcore_inst_s_create_self            );
     bcore_flect_define_creator( typeof( "bcore_array_s"           ), bcore_array_s_create_self           );
     bcore_flect_define_creator( typeof( "bcore_via_s"             ), bcore_via_s_create_self             );
     bcore_flect_define_creator( typeof( "bcore_source_s"          ), bcore_source_s_create_self          );
     bcore_flect_define_creator( typeof( "bcore_sink_s"            ), bcore_sink_s_create_self            );
     bcore_flect_define_creator( typeof( "bcore_translator_s"      ), bcore_translator_s_create_self      );
-    bcore_flect_define_creator( typeof( "bcore_interpreter_s"     ), bcore_interpreter_s_create_self      );
+    bcore_flect_define_creator( typeof( "bcore_interpreter_s"     ), bcore_interpreter_s_create_self     );
 
     // run some critical quick-tests ...
     bcore_memory_manager_s_quicktest();

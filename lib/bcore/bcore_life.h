@@ -4,6 +4,7 @@
 #define BCORE_LIFE_H
 
 #include "bcore_features.h"
+#include "bcore_flect.h"
 
 /** Simple lifetime manager for objects.
  *  bcore_life assumes ownership of objects with respect to managing their lifetime.
@@ -20,8 +21,16 @@ typedef struct bcore_life_item_s
 typedef struct bcore_life_s
 {
     aware_t _;
-    bcore_life_item_s* data;
-    sz_t size; sz_t space;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            bcore_life_item_s* data;
+            sz_t size; sz_t space;
+        };
+    };
+
 } bcore_life_s;
 
 void                 bcore_life_s_init(      bcore_life_s* o );

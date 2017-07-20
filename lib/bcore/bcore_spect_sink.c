@@ -51,9 +51,14 @@ bcore_flect_self_s* bcore_sink_s_create_self()
 
 /**********************************************************************************************************************/
 
-static void push_data( const struct bcore_sink_s* p, vd_t o, vc_t data, sz_t size )
+static sz_t push_data( const struct bcore_sink_s* p, vd_t o, vc_t data, sz_t size )
 {
-    p->flow_snk( o, data, size );
+    return p->flow_snk( o, data, size );
+}
+
+static void flush( const struct bcore_sink_s* p, vd_t o )
+{
+    if( p->fp_flush ) p->fp_flush( o );
 }
 
 static void pushf( const struct bcore_sink_s* p, vd_t o, sc_t format, ... )
@@ -92,19 +97,36 @@ static void push_string_d( const struct bcore_sink_s* p, vd_t o, bcore_string_s*
     bcore_string_s_discard( string );
 }
 
+static void set_consumer( const bcore_sink_s* p, vd_t o, vd_t consumer )
+{
+    if( p->fp_set_consumer )
+    {
+        p->fp_set_consumer( o, consumer );
+    }
+    else
+    {
+        ERR( "Object '%s' does not support feature 'bcore_sink_fp_set_consumer'.", nameof( p->o_type ) );
+    }
+}
+
 /**********************************************************************************************************************/
 
 static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
 {
     bcore_sink_s* o = sink_s_create();
     o->o_type = self->type;
-    o->flow_snk = ( bcore_fp_flow_snk )bcore_flect_self_s_get_external_fp( self, typeof( "bcore_fp_flow_snk" ), 0 );
+    o->flow_snk        = ( bcore_fp_flow_snk          )bcore_flect_self_s_get_external_fp( self, typeof( "bcore_fp_flow_snk" ), 0 );
+    o->fp_set_consumer = ( bcore_sink_fp_set_consumer )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_sink_fp_set_consumer" ), 0 );
+    o->fp_flush        = ( bcore_sink_fp_flush        )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_sink_fp_flush" ), 0 );
+
     o->push_data     = push_data;
+    o->flush         = flush;
     o->pushf         = pushf;
     o->push_char     = push_char;
     o->push_sc       = push_sc;
     o->push_string   = push_string;
     o->push_string_d = push_string_d;
+    o->set_consumer  = set_consumer;
     return o;
 }
 
@@ -122,6 +144,23 @@ const bcore_sink_s* bcore_sink_s_get_typed( tp_t o_type )
         sink_p = new_sink_p;
     }
     return sink_p;
+}
+
+/**********************************************************************************************************************/
+
+sz_t bcore_sink_push_data( vd_t o, vc_t data, sz_t size )
+{
+    return push_data( bcore_sink_s_get_typed( *( aware_t* )o ), o, data, size );
+}
+
+void bcore_sink_flush( vd_t o )
+{
+    flush( bcore_sink_s_get_typed( *( aware_t* )o ), o );
+}
+
+void bcore_sink_set_consumer( vd_t o, vd_t consumer )
+{
+    set_consumer( bcore_sink_s_get_typed( *( aware_t* )o ), o, consumer );
 }
 
 /**********************************************************************************************************************/

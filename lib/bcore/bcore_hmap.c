@@ -1,6 +1,7 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 #include "bcore_hmap.h"
+#include "bcore_life.h"
 #include "bcore_spect_inst.h"
 
 #include <time.h> // only for selftest
@@ -62,9 +63,16 @@ void node_u2vd_s_set_val( node_u2vd_s* o, vd_t val, bool hold )
 
 typedef struct bcore_hmap_u2vd_s
 {
-    node_u2vd_s* data;
-    sz_t size;
-    sz_t space;
+    union
+    {
+        struct
+        {
+            node_u2vd_s* data;
+            sz_t size;
+            sz_t space;
+        };
+        bcore_static_array_s arr;
+    };
     sz_t depth_limit;
     sz_t size_limit;
     bcore_hash_u2u2 h1, h2, h3;

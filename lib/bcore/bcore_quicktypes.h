@@ -45,6 +45,9 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_bcore_source_buffer_s    3062724539
 #define TYPEOF_bcore_source_file_s         3236919
 #define TYPEOF_bcore_source_chain_s     1759345018
+#define TYPEOF_bcore_sink_buffer_s      4153788729
+#define TYPEOF_bcore_sink_file_s        3697603753
+#define TYPEOF_bcore_sink_chain_s       4212754772
 
 // attributes
 #define TYPEOF_private                  1657474316

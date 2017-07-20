@@ -17,7 +17,6 @@
 #include "bcore_first.h"
 #include "bcore_types.h"
 #include "bcore_control.h"
-#include "bcore_life.h"
 
 typedef struct bcore_string_s
 {
@@ -46,8 +45,11 @@ bcore_string_s* bcore_string_s_createf(      sc_t format, ... );
 bcore_string_s* bcore_string_s_create_sc(    sc_t sc );
 bcore_string_s* bcore_string_s_create_typed( tp_t type, vc_t src );
 bcore_string_s* bcore_string_s_create_aware(            vc_t src );
+void            bcore_string_s_set_min_space( bcore_string_s* o, sz_t min_space ); // ensures o->space >= min_space; reallocates if necessary
+
 
 /// create with lifetime manager
+typedef struct bcore_life_s bcore_life_s;
 bcore_string_s* bcore_string_s_create_l(     bcore_life_s* life );
 bcore_string_s* bcore_string_s_createf_l(    bcore_life_s* life, sc_t format, ... );
 bcore_string_s* bcore_string_s_create_l_sc(  bcore_life_s* life, sc_t sc );

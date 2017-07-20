@@ -533,7 +533,13 @@ static void creator_map_s_insert( creator_map_s* o, tp_t type, bcore_flect_creat
     {
         ERR( "Platform specific error: Cannot convert function pointer into data pointer." );
     }
+
+// Passing check above should ensures that function pointer always works, so we can disable the warning here
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
     bcore_hmap_u2vd_s_set( o->hmap, type, ( vd_t )fp, false );
+#pragma GCC diagnostic pop
+
     bcore_mutex_unlock( &o->mutex );
 }
 
@@ -542,7 +548,12 @@ static const bcore_flect_create_self_fp creator_map_s_get_fp( creator_map_s* o, 
     bcore_mutex_lock( &o->mutex );
     vd_t* p_val = bcore_hmap_u2vd_s_get( o->hmap, type );
     bcore_mutex_unlock( &o->mutex );
+
+// S. comment above
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
     return p_val ? ( bcore_flect_create_self_fp )*p_val : NULL;
+#pragma GCC diagnostic pop
 }
 
 static bool creator_map_s_exists( creator_map_s* o, tp_t type )
@@ -684,6 +695,12 @@ const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
         {
             self_map_s_insert( self_map_s_g, type, fp(), true );
             self = self_map_s_get_self( self_map_s_g, type );
+            if( self->type != type )
+            {
+                ERR( "Type of created reflection '%s' differs from requested type '%s'.\n"
+                     "Requested type was probably mapped to the wrong self-creator during registration.\n",
+                     ifnameof( self->type ), ifnameof( type ) );
+            }
         }
     }
     return self;

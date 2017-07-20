@@ -1,12 +1,13 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 #include "bcore_bml.h"
+#include "bcore_life.h"
 #include "bcore_spect_via.h"
 #include "bcore_spect_sink.h"
 #include "bcore_spect_source.h"
 #include "bcore_spect_array.h"
 #include "bcore_quicktypes.h"
-#include "bcore_source_string.h"
+#include "bcore_sources.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
 
@@ -18,6 +19,7 @@ void bcore_bml_translator_s_init( bcore_bml_translator_s* o )
     o->_ = typeof( "bcore_bml_translator_s" );
     o->tab_size = 4;
     o->suppress_aware = true;
+    o->break_leaf = false;
     bcore_inst_typed_check_sizeof( o->_, sizeof( bcore_bml_translator_s ) );
 }
 
@@ -48,7 +50,7 @@ void bcore_bml_translator_s_discard( bcore_bml_translator_s* o )
 
 bcore_flect_self_s* bcore_bml_translator_s_create_self()
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_translator_s = { aware_t _; sz_t tab_size; bool suppress_aware; }", sizeof( bcore_bml_translator_s ) );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_translator_s = { aware_t _; sz_t tab_size; bool suppress_aware; bool break_leaf;}", sizeof( bcore_bml_translator_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_init,        "bcore_fp_init",             "init"             );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_translate_object, "bcore_fp_translate_object", "translate_object" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_translate_body,   "bcore_fp_translate_body",   "translate_body"   );
@@ -76,6 +78,11 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
         bcore_string_s_replace_char_sc( s1, '\"', "\\\"" );
         bcore_string_s_replace_char_sc( s1, '\n', "\\n" );
         bcore_string_s_replace_char_sc( s1, '\r', "\\r" );
+        if( o->break_leaf )
+        {
+            snk->push_char( snk, dst, '\n' );
+            for( sz_t i = 0; i < o->tab_size * indent; i++ ) snk->push_char( snk, dst, ' ' );
+        }
         snk->push_char( snk, dst, '"' );
         snk->push_string_d( snk, dst, s1 );
         snk->push_char( snk, dst, '"' );
@@ -86,7 +93,6 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
         bcore_string_s_push_char_n( prefix, ' ', o->tab_size * indent );
         snk->pushf( snk, dst, "%s{", prefix->sc );
         bcore_string_s_push_char_n( prefix, ' ', o->tab_size );
-
 
         for( sz_t i = 0; i < inst->body->size; i++ )
         {
@@ -226,6 +232,11 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
     }
     else // leaf type
     {
+        if( o->break_leaf )
+        {
+            snk->push_char( snk, dst, '\n' );
+            for( sz_t i = 0; i < o->tab_size * indent; i++ ) snk->push_char( snk, dst, ' ' );
+        }
         snk->push_string_d( snk, dst, bcore_string_s_create_typed( type, obj ) );
     }
 }

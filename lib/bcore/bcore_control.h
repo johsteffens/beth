@@ -53,6 +53,9 @@ vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t
 /// sets memory to zero. When dst == NULL function allocates destination first, copies and returns address.
 vd_t bcore_memzero( vd_t dst, sz_t size );
 
+/// sets memory to val. When dst == NULL function allocates destination first, copies and returns address.
+vd_t bcore_memset(  vd_t dst, u0_t val, sz_t size );
+
 /// like stdlib memcpy but when dst == NULL function allocates destination first, copies and returns address; size == 0 allowed
 vd_t bcore_memcpy(                    vd_t dst, vc_t src, sz_t size );
 vd_t bcore_u_memcpy( sz_t unit_bytes, vd_t dst, vc_t src, sz_t size ); // copies multiple of a given unit size

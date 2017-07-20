@@ -17,6 +17,7 @@ typedef struct bcore_bml_translator_s
     aware_t _;
     sz_t tab_size;
     bool suppress_aware; // suppress (usually redundant) aware_t
+    bool break_leaf;     // line break before leaftypes (default: false);
 } bcore_bml_translator_s;
 
 void                    bcore_bml_translator_s_init(            bcore_bml_translator_s* o );
