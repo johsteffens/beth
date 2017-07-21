@@ -126,7 +126,6 @@ bool bcore_signature_s_equal( const bcore_signature_s* sig1, const bcore_signatu
 tp_t bcore_signature_s_get_hash( const bcore_signature_s* o )
 {
     if( o->size == 0 ) return 0;
-//    tp_t type = bcore_fnv_hash_u2_u2( o->data[ 0 ] );
     tp_t type = o->data[ 0 ];
     for( sz_t i = 1; i < o->size; i++ )
     {
@@ -138,7 +137,6 @@ tp_t bcore_signature_s_get_hash( const bcore_signature_s* o )
 tp_t bcore_signature_get_hash_nv( sz_t n, va_list args )
 {
     if( n == 0 ) return 0;
-//    tp_t type = bcore_fnv_hash_u2_u2( va_arg( args, tp_t ) );
     tp_t type = va_arg( args, tp_t );
     for( sz_t i = 1; i < n; i++ )
     {
@@ -154,6 +152,27 @@ tp_t bcore_signature_get_hash_na( sz_t n, ... )
     tp_t ret = bcore_signature_get_hash_nv( n, args );
     va_end( args );
     return ret;
+}
+
+tp_t bcore_signature_get_hash_arr( sz_t n, const tp_t* arr )
+{
+    if( n == 0 ) return 0;
+    tp_t type = arr[ 0 ];
+    for( sz_t i = 1; i < n; i++ )
+    {
+        type = bcore_fnv_fold_u2_u2( type, arr[ i ] );
+    }
+    return type;
+}
+
+tp_t bcore_signature_fold_hash_arr( tp_t hash, sz_t n, const tp_t* arr )
+{
+    tp_t type = hash;
+    for( sz_t i = 0; i < n; i++ )
+    {
+        type = bcore_fnv_fold_u2_u2( type, arr[ i ] );
+    }
+    return type;
 }
 
 bcore_flect_self_s* bcore_signature_s_create_self()

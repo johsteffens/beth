@@ -37,17 +37,6 @@ static bcore_signature_s* array_s_create_signature( bcore_array_s* o )
     return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
 }
 
-bcore_flect_self_s* bcore_array_s_create_self()
-{
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_array_s" ), sizeof( bcore_array_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_init,             "bcore_fp_init",                    "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_down,             "bcore_fp_down",                    "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_create,           "bcore_fp_create",                  "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
-    return self;
-}
-
 /**********************************************************************************************************************/
 
 static sz_t get_size_static( const bcore_array_s* p, vc_t o )
@@ -1109,20 +1098,23 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
+bcore_flect_self_s* bcore_array_s_create_self()
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_array_s" ), sizeof( bcore_array_s ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_init,             "bcore_fp_init",                    "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_down,             "bcore_fp_down",                    "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_create,           "bcore_fp_create",                  "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,         "bcore_spect_fp_create_from_self",  "create_from_self" );
+    return self;
+}
+
 /**********************************************************************************************************************/
 
 const bcore_array_s* bcore_array_s_get_typed( tp_t o_type )
 {
-    tp_t sig = bcore_signature_get_hash_na( 2, typeof( "bcore_array_s" ), o_type );
-    const bcore_array_s* array_p = bcore_spect_try( sig );
-    if( !array_p )
-    {
-        const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
-        bcore_array_s* new_array_p = create_from_self( o_self );
-        bcore_spect_enroll_d( new_array_p );
-        array_p = new_array_p;
-    }
-    return array_p;
+    return bcore_spect_get_typed( typeof( "bcore_array_s" ), o_type );
 }
 
 /**********************************************************************************************************************/

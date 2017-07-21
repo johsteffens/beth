@@ -3,7 +3,7 @@
 #include "bcore_spect_compare.h"
 #include "bcore_quicktypes.h"
 #include "bcore_spect_array.h"
-#include "bcore_signature.h"
+#include "bcore_spect.h"
 
 /**********************************************************************************************************************/
 // bcore_compare_s
@@ -39,17 +39,6 @@ static bcore_signature_s* compare_s_create_signature( bcore_compare_s* o )
     return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
 }
 
-bcore_flect_self_s* bcore_compare_s_create_self()
-{
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_compare_s" ), sizeof( bcore_compare_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_init,             "bcore_fp_init",                    "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_down,             "bcore_fp_down",                    "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_create,           "bcore_fp_create",                  "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
-    return self;
-}
-
 /**********************************************************************************************************************/
 
 static u2_t compare_o( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
@@ -58,37 +47,6 @@ static u2_t compare_o( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 }
 
 static u2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
-{
-}
-
-typedef struct { ap_t ap; const bcore_compare_s* p; vc_t obj1; vc_t obj2; u2_t ret } compare_nc;
-static void compare_amoeba( compare_nc* nc ) { compare_generic( nc->p, nc->obj1, nc->obj2 ); }
-
-static u2_t compare_amoebic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
-{
-    compare_nc nc = { ( ap_t )compare_amoeba, p, obj1, obj2 };
-    return p->fp_compare( &nc );
-}
-
-/**********************************************************************************************************************/
-
-static bcore_compare_s* create_from_self( const bcore_flect_self_s* self )
-{
-    bcore_compare_s* o = compare_s_create();
-    o->o_type  = self->type;
-    o->via     = bcore_via_s_get_typed( o->o_type );
-    fp_t cmp_a =                     bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "compare" ) );
-    fp_t cmp_o = ( cmp_a ) ? cmp_a : bcore_flect_self_s_try_external_fp( self, typeof( "bcore_compare_fp" ), 0 );
-
-    o->fp_compare = cmp_o;
-    o->compare    = cmp_a ? compare_amoebic : ( cmp_o ? compare_o : compare_generic );
-
-    return o;
-}
-
-/**********************************************************************************************************************/
-
-u2_t bcore_compare_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
     if( obj1 == NULL ) return ( obj2 == NULL ) ? 0 :  1;
     if( obj2 == NULL ) return ( obj1 == NULL ) ? 0 : -1;
@@ -137,8 +95,7 @@ u2_t bcore_compare_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
                 if( type1 != type2 ) return ( type1 < type2 ) ? 1 : -1;
                 if( type1 != 0 )
                 {
-                    const bcore_compare_s* p = bcore_compare_s_get_typed( type1 );
-                    u2_t c = bcore_compare_spect( p, via->iget_c( via, obj1, i ), via->iget_c( via, obj2, i ) );
+                    u2_t c = bcore_compare_typed( type1, arr_p->get_c( arr_p, o1, i ), arr_p->get_c( arr_p, o2, i ) );
                     if( c != 0 ) return c;
                 }
             }
@@ -150,8 +107,7 @@ u2_t bcore_compare_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
             if( type1 != type2 ) return ( type1 < type2 ) ? 1 : -1;
             if( type1 != 0 )
             {
-                const bcore_compare_s* p = bcore_compare_s_get_typed( type1 );
-                u2_t c = bcore_compare_spect( p, via->iget_c( via, obj1, i ), via->iget_c( via, obj2, i ) );
+                u2_t c = bcore_compare_typed( type1, via->iget_c( via, obj1, i ), via->iget_c( via, obj2, i ) );
                 if( c != 0 ) return c;
             }
         }
@@ -160,6 +116,71 @@ u2_t bcore_compare_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     return 0;
 }
 
-u2_t bcore_compare_typed( tp_t type, vc_t obj1, vc_t obj2 );
-u2_t bcore_compare_aware(            vc_t obj1, vc_t obj2 );
+typedef struct { ap_t ap; const bcore_compare_s* p; vc_t obj1; vc_t obj2; u2_t ret; } compare_nc;
+static void compare_amoeba( compare_nc* nc ) { compare_generic( nc->p, nc->obj1, nc->obj2 ); }
+
+static u2_t compare_amoebic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
+{
+    compare_nc nc = { ( ap_t )compare_amoeba, p, obj1, obj2, 0 };
+    p->fp_compare( &nc );
+    return nc.ret;
+}
+
+/**********************************************************************************************************************/
+
+static bcore_compare_s* create_from_self( const bcore_flect_self_s* self )
+{
+    bcore_compare_s* o = compare_s_create();
+    o->o_type  = self->type;
+    o->via     = bcore_via_s_get_typed( o->o_type );
+    fp_t cmp_a =                     bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "compare" ) );
+    fp_t cmp_o = ( cmp_a ) ? cmp_a : bcore_flect_self_s_try_external_fp( self, typeof( "bcore_compare_fp" ), 0 );
+
+    o->fp_compare = cmp_o;
+    o->compare    = cmp_a ? compare_amoebic : ( cmp_o ? compare_o : compare_generic );
+
+    return o;
+}
+
+/**********************************************************************************************************************/
+
+bcore_flect_self_s* bcore_compare_s_create_self()
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_compare_s" ), sizeof( bcore_compare_s ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_init,             "bcore_fp_init",                    "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_down,             "bcore_fp_down",                    "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_create,           "bcore_fp_create",                  "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,           "bcore_spect_fp_create_from_self",  "create_from_self" );
+    return self;
+}
+
+/**********************************************************************************************************************/
+
+const bcore_compare_s* bcore_compare_s_get_typed( tp_t type )
+{
+    return bcore_spect_get_typed( typeof( "bcore_compare_s" ), type );
+}
+
+u2_t bcore_compare_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
+{
+    return p->compare( p, obj1, obj2 );
+}
+
+u2_t bcore_compare_typed( tp_t type, vc_t obj1, vc_t obj2 )
+{
+    return bcore_compare_spect( bcore_compare_s_get_typed( type ), obj1, obj2 );
+}
+
+u2_t bcore_compare_aware( vc_t obj1, vc_t obj2 )
+{
+    if( !obj1 ) return obj2 ?  1 : 0;
+    if( !obj2 ) return obj1 ? -1 : 0;
+    tp_t type = *( aware_t* )obj1;
+    assert( type == *( aware_t* )obj2 );
+    return bcore_compare_typed( type, obj1, obj2 );
+}
+
+/**********************************************************************************************************************/
 

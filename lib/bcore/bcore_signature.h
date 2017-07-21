@@ -57,8 +57,10 @@ u2_t bcore_signature_s_cmp( const bcore_signature_s* sig1, const bcore_signature
 bool bcore_signature_s_equal( const bcore_signature_s* sig1, const bcore_signature_s* sig2 );
 
 tp_t bcore_signature_s_get_hash( const bcore_signature_s* o ); // converts signature to type
-tp_t bcore_signature_get_hash_nv( sz_t n, va_list args );      // converts signature given by argument list to type
-tp_t bcore_signature_get_hash_na( sz_t n, ...          );      // converts signature given by argument list to type
+tp_t bcore_signature_get_hash_nv(  sz_t n, va_list args    );  // converts signature given by argument list to type
+tp_t bcore_signature_get_hash_na(  sz_t n, ...             );  // converts signature given by argument list to type
+tp_t bcore_signature_get_hash_arr(             sz_t n, const tp_t* arr );  // converts signature given by argument list to type
+tp_t bcore_signature_fold_hash_arr( tp_t hash, sz_t n, const tp_t* arr );  // extends hash via folding
 
 bcore_flect_self_s* bcore_signature_s_create_self();
 

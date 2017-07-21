@@ -57,10 +57,10 @@ static bcore_translator_s* create_from_self( const bcore_flect_self_s* t_self, c
     bcore_translator_s* o = translator_s_create();
     o->t_type = t_self->type;
     o->o_type = o_self->type;
-    o->translate_body = bcore_flect_self_s_try_external_fp( o_self, typeof( "bcore_fp_translate_body" ), 0 );
+    o->translate_body = bcore_flect_self_s_try_external_fp( o_self, bcore_name_enroll( "bcore_fp_translate_body" ), 0 );
     if( !o->translate_body ) o->translate_body = bcore_flect_self_s_get_external_fp( t_self, typeof( "bcore_fp_translate_body" ), 0 );
-    o->translate_body_amoeba = bcore_flect_self_s_try_external_fp( o_self, typeof( "ap_t" ), typeof( "translate_body" ) );
-    o->translate_object = bcore_flect_self_s_try_external_fp( o_self, typeof( "bcore_fp_translate_object" ), 0 );
+    o->translate_body_amoeba = bcore_flect_self_s_try_external_fp( o_self, typeof( "ap_t" ), bcore_name_enroll( "translate_body" ) );
+    o->translate_object = bcore_flect_self_s_try_external_fp( o_self, bcore_name_enroll( "bcore_fp_translate_object" ), 0 );
     if( !o->translate_object ) o->translate_object = bcore_flect_self_s_get_external_fp( t_self, typeof( "bcore_fp_translate_object" ), 0 );
     return o;
 }

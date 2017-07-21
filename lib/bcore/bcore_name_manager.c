@@ -94,7 +94,7 @@ sc_t bcore_name_get_name( tp_t type )
     return name;
 }
 
-u2_t bcore_name_enroll( sc_t name )
+tp_t bcore_name_enroll( sc_t name )
 {
     assert( hmap_s_g != NULL );
     u2_t hash = bcore_name_get_hash( name );

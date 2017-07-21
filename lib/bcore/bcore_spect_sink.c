@@ -38,17 +38,6 @@ static bcore_signature_s* sink_s_create_signature( bcore_sink_s* o )
     return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
 }
 
-bcore_flect_self_s* bcore_sink_s_create_self()
-{
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_sink_s" ), sizeof( bcore_sink_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_init,             "bcore_fp_init",                    "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_down,             "bcore_fp_down",                    "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_create,           "bcore_fp_create",                  "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
-    return self;
-}
-
 /**********************************************************************************************************************/
 
 static sz_t push_data( const struct bcore_sink_s* p, vd_t o, vc_t data, sz_t size )
@@ -115,9 +104,9 @@ static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
 {
     bcore_sink_s* o = sink_s_create();
     o->o_type = self->type;
-    o->flow_snk        = ( bcore_fp_flow_snk          )bcore_flect_self_s_get_external_fp( self, typeof( "bcore_fp_flow_snk" ), 0 );
-    o->fp_set_consumer = ( bcore_sink_fp_set_consumer )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_sink_fp_set_consumer" ), 0 );
-    o->fp_flush        = ( bcore_sink_fp_flush        )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_sink_fp_flush" ), 0 );
+    o->flow_snk        = ( bcore_fp_flow_snk          )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_flow_snk" ), 0 );
+    o->fp_set_consumer = ( bcore_sink_fp_set_consumer )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_sink_fp_set_consumer" ), 0 );
+    o->fp_flush        = ( bcore_sink_fp_flush        )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_sink_fp_flush" ), 0 );
 
     o->push_data     = push_data;
     o->flush         = flush;
@@ -130,20 +119,23 @@ static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
+bcore_flect_self_s* bcore_sink_s_create_self()
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_sink_s" ), sizeof( bcore_sink_s ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_init,             "bcore_fp_init",                   "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_down,             "bcore_fp_down",                   "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_create,           "bcore_fp_create",                 "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_discard,          "bcore_fp_discard",                "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_create_signature, "bcore_spect_fp_create_signature", "create_signature" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self", "create_from_self" );
+    return self;
+}
+
 /**********************************************************************************************************************/
 
 const bcore_sink_s* bcore_sink_s_get_typed( tp_t o_type )
 {
-    tp_t sig = bcore_signature_get_hash_na( 2, typeof( "bcore_sink_s" ), o_type );
-    const bcore_sink_s* sink_p = bcore_spect_try( sig );
-    if( !sink_p )
-    {
-        const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
-        bcore_sink_s* new_sink_p = create_from_self( o_self );
-        bcore_spect_enroll_d( new_sink_p );
-        sink_p = new_sink_p;
-    }
-    return sink_p;
+    return bcore_spect_get_typed( typeof( "bcore_sink_s" ), o_type );
 }
 
 const bcore_sink_s* bcore_sink_s_get_aware( vc_t obj )
