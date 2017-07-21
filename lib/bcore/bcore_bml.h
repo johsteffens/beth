@@ -33,6 +33,12 @@ void bcore_bml_translator_s_translate_body(   const bcore_bml_translator_s* o, t
 
 /**********************************************************************************************************************/
 
+/// translate sugar
+void bcore_bml_typed_to_stdout( tp_t type, vc_t obj );
+void bcore_bml_aware_to_stdout( vc_t obj );
+
+/**********************************************************************************************************************/
+
 typedef struct bcore_bml_interpreter_s
 {
     aware_t _;
@@ -49,6 +55,7 @@ bcore_flect_self_s*      bcore_bml_interpreter_s_create_self();
 dt_p bcore_bml_interpreter_s_interpret_object( const bcore_bml_interpreter_s* o, vd_t source );
 dt_p bcore_bml_interpreter_s_interpret_typed(  const bcore_bml_interpreter_s* o, vd_t source, tp_t type );
 dt_p bcore_bml_interpreter_s_interpret_body(   const bcore_bml_interpreter_s* o, vd_t source, tp_t type, vd_t obj );
+
 
 /**********************************************************************************************************************/
 // testing, debugging

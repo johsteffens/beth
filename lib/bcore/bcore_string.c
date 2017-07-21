@@ -1056,7 +1056,7 @@ static void check_sanity( vc_t o )
 
 bcore_flect_self_s* bcore_string_s_create_self()
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_string_s =  { aware_t _; sd_t data; sz_t size; sz_t space; }", sizeof( bcore_string_s ) );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_string_s =  { aware_t _; private sd_t data; private sz_t size; private sz_t space; }", sizeof( bcore_string_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_init,         "bcore_fp_init",         "init"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_down,         "bcore_fp_down",         "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy,         "bcore_fp_copy",         "copy"         );
@@ -1068,6 +1068,8 @@ bcore_flect_self_s* bcore_string_s_create_self()
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create_typed, "bcore_fp_create_typed", "create_typed" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,                    "bcore_fp_flow_snk",     "flow_snk"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )check_sanity,                "bcore_fp_check_sanity", "check_sanity" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_cmp_string,   "bcore_compare_fp",      "cmp_string"   );
+
     return self;
 }
 

@@ -19,6 +19,7 @@
 #include "bcore_spect_sink.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
+#include "bcore_spect_compare.h"
 #include "bcore.h"
 
 static void init_library_bcore_once()
@@ -50,6 +51,7 @@ static void init_library_bcore_once()
     bcore_flect_define_creator( typeof( "bcore_sink_s"            ), bcore_sink_s_create_self            );
     bcore_flect_define_creator( typeof( "bcore_translator_s"      ), bcore_translator_s_create_self      );
     bcore_flect_define_creator( typeof( "bcore_interpreter_s"     ), bcore_interpreter_s_create_self     );
+    bcore_flect_define_creator( typeof( "bcore_compare_s"         ), bcore_compare_s_create_self         );
 
     // run some critical quick-tests ...
     bcore_memory_manager_s_quicktest();

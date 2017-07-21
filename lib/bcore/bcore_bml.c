@@ -269,6 +269,24 @@ void bcore_bml_translator_s_translate_object( const bcore_bml_translator_s* o, t
 
 /**********************************************************************************************************************/
 
+void bcore_bml_typed_to_stdout( tp_t type, vc_t obj )
+{
+    bcore_bml_translator_s* trans = bcore_bml_translator_s_create();
+    bcore_string_s* out = bcore_string_s_create();
+    bcore_translate_typed_object( trans, type, obj, out );
+    bcore_string_s_print_d( out );
+    bcore_bml_translator_s_discard( trans );
+}
+
+void bcore_bml_aware_to_stdout( vc_t obj )
+{
+    bcore_bml_typed_to_stdout( *( aware_t* )obj, obj );
+}
+
+/**********************************************************************************************************************/
+/// bcore_bml_interpreter
+/**********************************************************************************************************************/
+
 void bcore_bml_interpreter_s_init( bcore_bml_interpreter_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
