@@ -39,21 +39,16 @@ static bcore_signature_s* translator_s_create_signature( bcore_translator_s* o )
     return bcore_signature_s_create_an( 3, o->p_type, o->t_type, o->o_type );
 }
 
-bcore_flect_self_s* bcore_translator_s_create_self()
-{
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_translator_s" ), sizeof( bcore_translator_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )translator_s_init,             "bcore_fp_init",                    "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )translator_s_down,             "bcore_fp_down",                    "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )translator_s_create,           "bcore_fp_create",                  "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )translator_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )translator_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
-    return self;
-}
-
 /**********************************************************************************************************************/
 
-static bcore_translator_s* create_from_self( const bcore_flect_self_s* t_self, const bcore_flect_self_s* o_self )
+static bcore_translator_s* create_from_self( const bcore_flect_self_s** p_self )
 {
+    assert( p_self != NULL );
+    const bcore_flect_self_s* t_self = p_self[ 0 ];
+    const bcore_flect_self_s* o_self = p_self[ 1 ];
+    assert( t_self != NULL );
+    assert( o_self != NULL );
+
     bcore_translator_s* o = translator_s_create();
     o->t_type = t_self->type;
     o->o_type = o_self->type;
@@ -65,21 +60,24 @@ static bcore_translator_s* create_from_self( const bcore_flect_self_s* t_self, c
     return o;
 }
 
+bcore_flect_self_s* bcore_translator_s_create_self()
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_translator_s" ), sizeof( bcore_translator_s ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )translator_s_init,             "bcore_fp_init",                   "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )translator_s_down,             "bcore_fp_down",                   "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )translator_s_create,           "bcore_fp_create",                 "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )translator_s_discard,          "bcore_fp_discard",                "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )translator_s_create_signature, "bcore_spect_fp_create_signature", "create_signature" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,              "bcore_spect_fp_create_from_self", "create_from_self" );
+    return self;
+}
+
 /**********************************************************************************************************************/
 
 const bcore_translator_s* bcore_translator_s_get_typed( tp_t t_type, tp_t o_type )
 {
-    tp_t sig = bcore_signature_get_hash_na( 3, typeof( "bcore_translator_s" ), t_type , o_type );
-    const bcore_translator_s* spect_p = bcore_spect_try( sig );
-    if( !spect_p )
-    {
-        const bcore_flect_self_s* t_self = bcore_flect_get_self( t_type );
-        const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
-        bcore_translator_s* new_spect_p = create_from_self( t_self, o_self );
-        bcore_spect_enroll_d( new_spect_p );
-        spect_p = new_spect_p;
-    }
-    return spect_p;
+    tp_t type_arr[ 2 ] = { t_type, o_type };
+    return bcore_spect_get_typed_n( typeof( "bcore_translator_s" ), 2, type_arr );
 }
 
 /**********************************************************************************************************************/

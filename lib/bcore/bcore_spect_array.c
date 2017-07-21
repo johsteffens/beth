@@ -989,8 +989,12 @@ static void sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp
 
 /**********************************************************************************************************************/
 
-static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
+static bcore_array_s* create_from_self( const bcore_flect_self_s** p_self )
 {
+    assert( p_self != NULL );
+    const bcore_flect_self_s* self = *p_self;
+    assert( self != NULL );
+
     bcore_array_s* o = array_s_create();
     o->p_type = bcore_name_enroll( "bcore_array_s" );
     o->o_type = self->type;

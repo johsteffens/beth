@@ -128,32 +128,21 @@ vc_t bcore_spect_get_typed_n( tp_t p_type, sz_t n, const tp_t* arr )
     {
         fp_t create_from_self = bcore_flect_self_s_get_external_fp( bcore_flect_get_self( p_type ), bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
         vd_t new_spect_p = NULL;
-        if( n == 0 )
+        if( n == 1 )
         {
-            new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( NULL );
-        }
-        else if( n == 1 )
-        {
-            new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( bcore_flect_get_self( arr[ 0 ] ) );
+            const bcore_flect_self_s* self = bcore_flect_try_self( arr[ 0 ] );
+            new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( &self );
         }
         else if( n > 1 )
         {
-            bcore_flect_self_s* self_arr = bcore_un_alloc( sizeof( bcore_flect_self_s ), NULL, 0, n, NULL );
-            for( sz_t i = 0; i < n; i++ )
-            {
-                bcore_flect_self_s_init( &self_arr[ i ] );
-                bcore_flect_self_s_copy( &self_arr[ i ], bcore_flect_get_self( arr[ i ] ) );
-            }
+            const bcore_flect_self_s** self_arr = bcore_un_alloc( sizeof( bcore_flect_self_s* ), NULL, 0, n, NULL );
+            for( sz_t i = 0; i < n; i++ ) self_arr[ i ] = bcore_flect_try_self( arr[ i ] );
             new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( self_arr );
-            for( sz_t i = 0; i < n; i++ )
-            {
-                bcore_flect_self_s_down( &self_arr[ i ] );
-            }
-            bcore_un_alloc( sizeof( bcore_flect_self_s ), self_arr, n, 0, NULL );
+            bcore_un_alloc( sizeof( bcore_flect_self_s* ), self_arr, n, 0, NULL );
         }
         else
         {
-            new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( bcore_flect_get_self( arr[ 0 ] ) );
+            new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( NULL );
         }
         bcore_spect_enroll_d( new_spect_p );
         spect_p = new_spect_p;

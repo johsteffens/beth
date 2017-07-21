@@ -128,8 +128,12 @@ static u2_t compare_amoebic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 
 /**********************************************************************************************************************/
 
-static bcore_compare_s* create_from_self( const bcore_flect_self_s* self )
+static bcore_compare_s* create_from_self( const bcore_flect_self_s** p_self )
 {
+    assert( p_self != NULL );
+    const bcore_flect_self_s* self = *p_self;
+    assert( self != NULL );
+
     bcore_compare_s* o = compare_s_create();
     o->o_type  = self->type;
     o->via     = bcore_via_s_get_typed( o->o_type );

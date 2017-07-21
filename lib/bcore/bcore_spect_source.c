@@ -107,9 +107,13 @@ static void set_supplier( const bcore_source_s* p, vd_t o, vd_t supplier )
 
 /**********************************************************************************************************************/
 
-static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
+static bcore_source_s* create_from_self( const bcore_flect_self_s** p_self )
 {
-    ASSERT( bcore_flect_self_s_is_aware( self ) );
+    assert( p_self != NULL );
+    const bcore_flect_self_s* self = *p_self;
+    assert( self != NULL );
+    assert( bcore_flect_self_s_is_aware( self ) );
+
     bcore_source_s* o = source_s_create();
     o->o_type = self->type;
     o->fp_flow_src     = ( bcore_fp_flow_src            )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_flow_src" ), 0 );

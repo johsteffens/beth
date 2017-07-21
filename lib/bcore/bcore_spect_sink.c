@@ -100,8 +100,13 @@ static void set_consumer( const bcore_sink_s* p, vd_t o, vd_t consumer )
 
 /**********************************************************************************************************************/
 
-static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
+static bcore_sink_s* create_from_self( const bcore_flect_self_s** p_self )
 {
+    assert( p_self != NULL );
+    const bcore_flect_self_s* self = *p_self;
+    assert( self != NULL );
+    assert( bcore_flect_self_s_is_aware( self ) );
+
     bcore_sink_s* o = sink_s_create();
     o->o_type = self->type;
     o->flow_snk        = ( bcore_fp_flow_snk          )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_flow_snk" ), 0 );
