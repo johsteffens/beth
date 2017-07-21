@@ -146,6 +146,11 @@ const bcore_sink_s* bcore_sink_s_get_typed( tp_t o_type )
     return sink_p;
 }
 
+const bcore_sink_s* bcore_sink_s_get_aware( vc_t obj )
+{
+    return bcore_sink_s_get_typed( *( const aware_t* )obj );
+}
+
 /**********************************************************************************************************************/
 
 sz_t bcore_sink_push_data( vd_t o, vc_t data, sz_t size )

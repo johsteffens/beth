@@ -154,6 +154,11 @@ const bcore_source_s* bcore_source_s_get_typed( tp_t o_type )
     return source_p;
 }
 
+const bcore_source_s* bcore_source_s_get_aware( vc_t obj )
+{
+    return bcore_source_s_get_typed( *( const aware_t* )obj );
+}
+
 /**********************************************************************************************************************/
 
 sz_t bcore_source_get_data( vd_t o, vd_t data, sz_t size )

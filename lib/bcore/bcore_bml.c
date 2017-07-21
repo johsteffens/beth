@@ -406,8 +406,8 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                     }
                     src_p->parsef( src_p, src, " :" );
                     arr_p->set_size( arr_p, element, 0 );
-                    if( typed ) arr_p->set_type( arr_p, element, typed_type );
-                    tp_t type_l = arr_p->get_type( arr_p, element );
+                    if( typed ) arr_p->set_gtype( arr_p, element, typed_type );
+                    tp_t type_l = arr_p->get_gtype( arr_p, element );
                     while( !src_p->parse_boolf( src_p, src, " #?';'" ) )
                     {
                         if( arr_p->get_size( arr_p, element ) > 0 ) src_p->parsef( src_p, src, " ," );

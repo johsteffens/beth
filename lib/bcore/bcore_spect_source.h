@@ -39,11 +39,7 @@ typedef struct bcore_source_s
 bcore_flect_self_s* bcore_source_s_create_self();
 
 const bcore_source_s* bcore_source_s_get_typed( tp_t type );
-
-static inline const bcore_source_s* bcore_source_s_get_aware( vc_t obj )
-{
-    return bcore_source_s_get_typed( *( const aware_t* )obj );
-}
+const bcore_source_s* bcore_source_s_get_aware( vc_t obj );
 
 /// all sources are aware
 sz_t bcore_source_get_data(     vd_t o, vd_t data, sz_t size );

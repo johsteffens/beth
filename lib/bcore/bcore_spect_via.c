@@ -97,8 +97,8 @@ static tp_t iget_type( const bcore_via_s* p, vc_t o, sz_t index )
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         case BCORE_CAPS_AWARE_LINK_ARRAY:
-        case BCORE_CAPS_EXTERNAL_DATA:
-        case BCORE_CAPS_EXTERNAL_FUNC:
+//        case BCORE_CAPS_EXTERNAL_DATA:
+//        case BCORE_CAPS_EXTERNAL_FUNC:
             return vitem->type;
 
         default: break;
@@ -133,7 +133,7 @@ static vc_t iget_c( const bcore_via_s* p, vc_t o, sz_t index )
         {
             return ( vc_t )( ( u0_t* )o + vitem->offs );
         }
-
+/*
         case BCORE_CAPS_EXTERNAL_DATA:
         {
             return vitem->d_ptr;
@@ -143,7 +143,7 @@ static vc_t iget_c( const bcore_via_s* p, vc_t o, sz_t index )
         {
             return &vitem->f_ptr;
         }
-
+*/
         default: break;
     }
 
@@ -671,6 +671,20 @@ static vd_t ndetach( const bcore_via_s* p, vd_t o, tp_t name )
 
 /**********************************************************************************************************************/
 
+bool bcore_via_is_array( const bcore_via_s* p, sz_t index )
+{
+    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
+    return bcore_flect_caps_is_array( p->vitem_arr[ index ].caps );
+}
+
+const bcore_array_s* bcore_via_get_spect_array( const bcore_via_s* p, sz_t index )
+{
+    if( !bcore_flect_caps_is_array( p->vitem_arr[ index ].caps ) ) return NULL;
+    return bcore_array_s_get_typed( p->vitem_arr[ index ].type );
+}
+
+/**********************************************************************************************************************/
+
 static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
 {
     bcore_via_s* o = via_s_create();
@@ -682,10 +696,10 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     sz_t size = self->body ? self->body->size : 0;
     sz_t index = 0;
 
-    o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s       ), NULL, size, NULL );
+    o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s   ), NULL, size, NULL );
     o->inst_arr  = bcore_u_alloc( sizeof( bcore_inst_s* ), NULL, size, NULL );
-    bcore_memzero( o->vitem_arr, sizeof( bcore_via_s       ) * size );
-    bcore_memzero( o->inst_arr,  sizeof( bcore_inst_s* ) * size );
+    bcore_memzero( o->vitem_arr, sizeof( bcore_via_s    ) * size );
+    bcore_memzero( o->inst_arr,  sizeof( bcore_inst_s*  ) * size );
 
     if( inst_p->body )
     {
@@ -761,46 +775,10 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
         }
     }
 
-    if( self->body )
-    {
-        for( sz_t i = 0; i < self->body->size; i++ )
-        {
-            const bcore_flect_item_s* flect_item = &self->body->data[ i ];
-            switch( flect_item->caps )
-            {
-                case BCORE_CAPS_EXTERNAL_DATA:
-                {
-                    ASSERT( index < size );
-                    bcore_vitem_s* vitem = &o->vitem_arr[ index ];
-                    vitem->type  = flect_item->type;
-                    vitem->name  = flect_item->name;
-                    vitem->caps  = flect_item->caps;
-                    vitem->d_ptr = flect_item->d_ptr;
-                    index++;
-                }
-                break;
-
-                case BCORE_CAPS_EXTERNAL_FUNC:
-                {
-                    ASSERT( index < size );
-                    bcore_vitem_s* vitem = &o->vitem_arr[ index ];
-                    vitem->type  = flect_item->type;
-                    vitem->name  = flect_item->name;
-                    vitem->caps  = flect_item->caps;
-                    vitem->f_ptr = flect_item->f_ptr;
-                    index++;
-                }
-                break;
-
-                default: break;
-            }
-        }
-    }
-
     o->size = index;
     if( o->size < size ) // realloc to save memory;
     {
-        o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s       ), o->vitem_arr, o->size, NULL );
+        o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s   ), o->vitem_arr, o->size, NULL );
         o->inst_arr  = bcore_u_alloc( sizeof( bcore_inst_s* ), o->inst_arr,  o->size, NULL );
     }
 

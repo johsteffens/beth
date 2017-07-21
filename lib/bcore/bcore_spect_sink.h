@@ -36,11 +36,7 @@ typedef struct bcore_sink_s
 bcore_flect_self_s* bcore_sink_s_create_self();
 
 const bcore_sink_s* bcore_sink_s_get_typed( tp_t type );
-
-static inline const bcore_sink_s* bcore_sink_s_get_aware( vc_t obj )
-{
-    return bcore_sink_s_get_typed( *( const aware_t* )obj );
-}
+const bcore_sink_s* bcore_sink_s_get_aware( vc_t obj );
 
 sz_t bcore_sink_push_data( vd_t o, vc_t data, sz_t size );
 void bcore_sink_flush(     vd_t o );

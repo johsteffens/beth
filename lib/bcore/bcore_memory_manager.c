@@ -165,17 +165,17 @@ static void block_manager_s_free_to_empty( struct block_manager_s* o, token_mana
 
 static void token_manager_s_free( token_manager_s* o, void* ptr )
 {
-#ifndef NDEBUG
-    if( o->stack_index == 0 ) ERR( "Block manager is empty." );
-    if( ( sz_t )( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) > o->pool_size ) ERR( "Attempt to free memory outside pool." );
-#endif
+    #ifdef RTCHECKS
+        if( o->stack_index == 0 ) ERR( "Block manager is empty." );
+        if( ( sz_t )( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) > o->pool_size ) ERR( "Attempt to free memory outside pool." );
+    #endif
 
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
 
-#ifndef NDEBUG
-    if( token * o->block_size < sizeof( token_manager_s ) ) ERR( "Attempt to free reserved memory." );
-    for( sz_t i = o->stack_index; i < o->stack_size; i++ ) if( o->token_stack[ i ] == token ) ERR( "Attempt to free memory that is declared free." );
-#endif // NDEBUG
+    #ifdef RTCHECKS
+        if( token * o->block_size < sizeof( token_manager_s ) ) ERR( "Attempt to free reserved memory." );
+        for( sz_t i = o->stack_index; i < o->stack_size; i++ ) if( o->token_stack[ i ] == token ) ERR( "Attempt to free memory that is declared free." );
+    #endif // RTCHECKS
 
     if( o->token_stack[ o->stack_index ] == 0 ) block_manager_s_full_to_free( o->parent, o );
 
@@ -378,9 +378,9 @@ static void block_manager_s_free_to_empty( block_manager_s* o, token_manager_s* 
 
             if( bcore_btree_vd_s_remove( o->internal_btree, o->data[ o->size ] ) != 1 ) ERR( "Failed removing block address." );
 
-#ifndef NDEBUG
-            if( bcore_btree_vd_s_exists( o->internal_btree, o->data[ o->size ] ) )      ERR( "Removed block address still exists" );
-#endif
+            #ifdef RTCHECKS
+                if( bcore_btree_vd_s_exists( o->internal_btree, o->data[ o->size ] ) )      ERR( "Removed block address still exists" );
+            #endif
 
             token_manager_s_discard( o->data[ o->size ] );
             o->data[ o->size ] = NULL;

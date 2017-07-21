@@ -615,28 +615,28 @@ static vd_t set_d_aware_link( const bcore_array_s* p, vd_t o, sz_t index, vd_t s
 
 static vc_t get_c_first( const bcore_array_s* p, vc_t o )
 {
-    return p->get_c( p, 0, 0 );
+    return p->get_c( p, o, 0 );
 }
 
 /**********************************************************************************************************************/
 
 static vd_t get_d_first( const bcore_array_s* p, vd_t o )
 {
-    return p->get_d( p, 0, 0 );
+    return p->get_d( p, o, 0 );
 }
 
 /**********************************************************************************************************************/
 
 static vc_t get_c_last( const bcore_array_s* p, vc_t o )
 {
-    return p->get_c( p, 0, p->get_size( p, o ) - 1 );
+    return p->get_c( p, o, p->get_size( p, o ) - 1 );
 }
 
 /**********************************************************************************************************************/
 
 static vd_t get_d_last( const bcore_array_s* p, vd_t o )
 {
-    return p->get_d( p, 0, p->get_size( p, o ) - 1 );
+    return p->get_d( p, o, p->get_size( p, o ) - 1 );
 }
 
 /**********************************************************************************************************************/
@@ -663,7 +663,7 @@ static void pop( const bcore_array_s* p, vd_t o )
 
 /**********************************************************************************************************************/
 
-static tp_t get_type( const bcore_array_s* p, vc_t o )
+static tp_t get_gtype( const bcore_array_s* p, vc_t o )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
@@ -678,9 +678,22 @@ static tp_t get_type( const bcore_array_s* p, vc_t o )
     return 0;
 }
 
+static tp_t get_itype( const bcore_array_s* p, vc_t o, sz_t index )
+{
+    if( p->caps_type == BCORE_CAPS_AWARE_LINK_ARRAY )
+    {
+        vc_t obj = p->get_c( p, o, index );
+        return ( obj ) ? *( aware_t* )obj : 0;
+    }
+    else
+    {
+        return get_gtype( p, o );
+    }
+}
+
 /**********************************************************************************************************************/
 
-static void set_type( const bcore_array_s* p, vd_t o, tp_t type )
+static void set_gtype( const bcore_array_s* p, vd_t o, tp_t type )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
@@ -970,7 +983,7 @@ static void sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp
     }
     else
     {
-        const bcore_inst_s* item_p = p->is_typed( p ) ? bcore_inst_s_get_typed( p->get_type( p, o ) ) : p->item_p;
+        const bcore_inst_s* item_p = p->is_typed( p ) ? bcore_inst_s_get_typed( p->get_gtype( p, o ) ) : p->item_p;
         sz_t unit_size = item_p->size;
         vd_t data = ( u0_t* )p->get_d_data( p, o ) + start * unit_size;
 
@@ -1081,8 +1094,9 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
     o->push_c        = push_c;
     o->push_d        = push_d;
     o->pop           = pop;
-    o->get_type      = get_type;
-    o->set_type      = set_type;
+    o->get_itype     = get_itype;
+    o->get_gtype     = get_gtype;
+    o->set_gtype     = set_gtype;
     o->get_c_data    = get_c_data;
     o->get_d_data    = get_d_data;
     o->is_linked     = is_linked;
@@ -1118,7 +1132,7 @@ static void test_string_array( sc_t type_sc )
     vd_t arr = bcore_inst_typed_create( typeof( type_sc ) );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
 
-    arr_p->set_type( arr_p, arr, typeof( "bcore_string_s" ) );
+    arr_p->set_gtype( arr_p, arr, typeof( "bcore_string_s" ) );
     arr_p->set_size( arr_p, arr, 5 );
     arr_p->set_d( arr_p, arr, 0, bcore_string_s_createf( "test line a" ) );
     arr_p->set_d( arr_p, arr, 1, bcore_string_s_createf( "some nonsense: sakjd" ) );

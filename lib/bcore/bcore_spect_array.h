@@ -44,8 +44,9 @@ typedef struct bcore_array_s
     vd_t ( *push_c       )( const bcore_array_s* p, vd_t o, vc_t src );   // push by copying src if src != NULL; returns new entry
     vd_t ( *push_d       )( const bcore_array_s* p, vd_t o, vd_t src );   // push by taking ownership of item; returns new entry. (catenated arrays copy and discard src if src != NULL)
     void ( *pop          )( const bcore_array_s* p, vd_t o );             // removes last element from array
-    tp_t ( *get_type     )( const bcore_array_s* p, vc_t o            );  // retrieves item-type; returns 0 for aware-arrays
-    void ( *set_type     )( const bcore_array_s* p, vd_t o, tp_t type );  // changes item-type on empty arrays;
+    tp_t ( *get_itype    )( const bcore_array_s* p, vc_t o, sz_t index ); // retrieves indexed item-type
+    tp_t ( *get_gtype    )( const bcore_array_s* p, vc_t o             ); // retrieves global item-type; returns 0 for aware-arrays
+    void ( *set_gtype    )( const bcore_array_s* p, vd_t o, tp_t type  ); // changes global item-type on empty arrays;
 
     /// Direct data access (data pointer dereferencing and stepping depends on array structure)
     vc_t ( *get_c_data    )( const bcore_array_s* p, vc_t o ); // returns arr_caps->data (note that this is either vc_t or vc_t* depending on linkage-indirection

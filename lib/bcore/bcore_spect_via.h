@@ -15,6 +15,7 @@
 #include "bcore_spect_inst.h"
 #include "bcore_features.h"
 
+typedef struct bcore_array_s bcore_array_s;
 typedef struct bcore_via_s bcore_via_s;
 
 typedef struct bcore_vitem_s
@@ -26,12 +27,7 @@ typedef struct bcore_vitem_s
     tp_t type;
     tp_t name;
     u2_t caps;
-    union
-    {
-        sz_t offs;   // offset to member element
-        vc_t d_ptr;  // external data pointer
-        fp_t f_ptr;  // external function pointer
-    };
+    sz_t offs;   // offset to member element
     const bcore_via_s* via; // via of this item; NULL for leaf types
 } bcore_vitem_s;
 
@@ -40,7 +36,7 @@ typedef struct bcore_via_s
     aware_t p_type; // type of perspective
     tp_t    o_type; // type of object
 
-    sz_t                     size;       // number of elements
+    sz_t                 size;       // number of elements
     bcore_vitem_s*       vitem_arr;  // array of vitem
     const bcore_inst_s** inst_arr;   // pointers to instance perspectives
 
@@ -54,8 +50,8 @@ typedef struct bcore_via_s
     const bcore_vitem_s* ( *iget_vitem    )( const bcore_via_s* p,         sz_t index ); // Returns bcore_vitem_s structure;
     const bcore_via_s*   ( *iget_via      )( const bcore_via_s* p,         sz_t index ); // Returns bcore_vitem_s structure;
     vd_t                 ( *icreate       )( const bcore_via_s* p, vd_t o, sz_t index ); // creates item. No effect if already created. Error when type info is not available.
-    vd_t                 ( *ityped_create )( const bcore_via_s* p, vd_t o, sz_t index, tp_t type ); // creates item at given type. Error for static types.
-    void                 ( *idiscard      )( const bcore_via_s* p, vd_t o, sz_t index ); // Discards discardable element (do effect otherwise)
+    vd_t                 ( *ityped_create )( const bcore_via_s* p, vd_t o, sz_t index, tp_t type ); // creates item at given type. Error for static types or arrays.
+    void                 ( *idiscard      )( const bcore_via_s* p, vd_t o, sz_t index ); // Discards discardable element (no effect otherwise)
     vd_t                 ( *idetach       )( const bcore_via_s* p, vd_t o, sz_t index ); // moves ownership of item to caller. Error if not detachable
 
     /// Access by name. Error when object has no element of given name.
@@ -82,6 +78,10 @@ static inline const bcore_via_s* bcore_via_s_get_aware( vc_t obj )
 {
     return bcore_via_s_get_typed( *( const aware_t* )obj );
 }
+
+/// extended index-functionality
+bool                 bcore_via_is_array(        const bcore_via_s* p, sz_t index ); // checks if element is an array
+const bcore_array_s* bcore_via_get_spect_array( const bcore_via_s* p, sz_t index ); // returns correct array perspective if element is an array; NULL otherwise
 
 /**********************************************************************************************************************/
 // testing, debugging
