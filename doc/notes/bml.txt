@@ -1,0 +1,36 @@
+/// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
+
+Beth Markup Language Considerations (Started June 2017)
+
+assignment language elements
+
+instance 'o', type 't', body {...}, leaf #number, ""string, etc
+
+colon ':' followed by block {}: move name space to object before colon
+o:{ /* things inside o */ }
+
+o =  ... // declaration, referencing (pointer assignment)
+o <- ... // assignment possibly with type conversion
+
+assigning data to object
+
+o:
+{
+  n1        :{ ... } // n1 is static embedded
+  n2!t      :{ ... } // n2 is typed embedded
+  n3   = !t :{ ... } // n3 is a link (static, aware)
+  n3!t = !t :{ ... } // n3 is a typed link
+  n4[<space>]  :{}, {}, ... ; // n4 is static concatenated array; specifying <space> is optional and useful for preallocation; subsequent number of pushes need not be same as <space>
+  n5!t[<space>]:{}, {}, ... ; // n5 is typed concatenated array; .....
+  n6[<space>]  : !t:{}, !t:{}, ... ; // n6 is static or aware link array; .....
+
+  n7        : 12345                // n7 is an embedded numeric leaf type
+  n8        : "this is a string"   // n8 is an embedded (leaf) string
+  n9        = "this is a string"   // n9 is a static or aware link to a string  (aware only because strings are aware by definition)
+
+  n1    <- !t  :{ ... } // assignment to n1 with type conversion
+  n1: . <- !t  :{ ... } // same but alternative notation
+
+  n2!t1 <- !t2 :{ ... } // assignment to n2 with type conversion
+  n3    =  !t1 <- t2:{ ... } // n3 link to !t1 created via type conversion from t2
+}

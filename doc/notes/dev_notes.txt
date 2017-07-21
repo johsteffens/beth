@@ -1,0 +1,88 @@
+/// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
+
+Running notes about beth development.
+
+## Distinction of beth from other oop-languages: (June 2017) ## 
+
+    * reflective (type structure is known at runtime)
+
+    * all types are final (!)
+      --> no virtual types
+      --> no inheritance
+      --> no type casting (except from an anonymous type)
+      --> but: members of composite types can be of static or variable type
+
+    * Anonymous types
+      A type can contain anonymous types.
+      -> the actual type is stored in a variable
+      -> the variable can be owned by the enclosing type (typed objects)
+      -> the variable can be owned by the type itself (aware types)
+
+    * C-programs: type safety checked at runtime (--> not all type errors can be detected, though --> still careful programming required)
+    * beth-programs: type safety checked at compile time as best as possible
+
+    * Perspectives are stateless
+    * Interfaces are perspectives
+    * Operators (on composite-types) would be perspectives
+    * The perspective is a new programming paradigm located between OOP and procedural programming
+    * Perspectives can implement concepts once in a generic way (which would require a design pattern in other languages)
+    * Concepts are easily interchangeable (e.g. different ways of marshaling)
+
+## Cuckoo Hashing ## (experiments of 30 June 2017)
+    2 stage vs 3 or higher stage hashing:
+    - 2 stage achieves near 50% memory efficiency
+    - 3 stage achieves near 90% memory efficiency
+    - 3 stage can be several orders of magnitude slower than 2 stage when approaching the occupation limit.
+        The extra storage space does not seem justify the storage CPU overhead.
+
+  Hash functions (2 stage)
+    LCG mapping:
+      Simple lcg mapping for the key value is fastest but provides poor statistics to achieve
+      desired storage efficiency (EFF around 6% at 2^16).
+
+    XSG mapping:
+      (32 bit) xsg mapping is significantly better than LCG.
+      Statistical deficiency begins showing when the database size exceeds about 2^16 entries.
+      Space 2^16 : Eff. 45%
+      Space 2^26 : Eff. 20%
+      Space 2^29 : Eff. 10%
+
+    Fold-hashing:
+      Iterative 8 or 16 bit folding seems even better. (1-time 32 bit is not working well)
+      FNV can be used but it seems that any form hash = ( hash ^ data ) * <prime> with large enough prime and
+      large enough initial seems to work equally well. Preferably choose initial=const such that 
+      hash = ( hash ^ <const> ) * <prime> performs a full cycle.
+
+      Space 2^29 : Eff. 43%
+      Space 2^30 : Eff. 45%
+   
+   --> cuckoo hashing with minimal two-stage fold-hashing seems best
+   --> hmap shall be based on that concept
+
+
+## Amoebic Functions (July 17, 2017) ## 
+
+    Amoeba (-Function)
+      We introduce the term "amoeba" for a function-abstraction representing class of functions,
+      which signature is defined by an object passed by reference. We call this object nucleus.
+      The terms are borrowed from the biological term amoeba as being a organism without predefined shape.
+
+      The nucleus is owned/managed by the caller. 
+      
+      From the viewpoint of the language the signature of an amoeba is fixed
+      void (*)( void* ptr_to_nucleus ).
+
+      From the viewpoint of the program the function's signature and purpose is defined by the nucleus.
+      It contains fields used as arguments and fields for the return values. The amoeba is a simple way to
+      use functions as first class objects in languages that do not provide this feature natively.
+
+    Amoebic representation of a feature (Amoebic feature)
+      The amoebic feature describes a feature implementation where its fulfillment is spread
+      across two functions, one on the object side and one on the perspective-side. One of these is
+      an amoebic function, which controls the fulfillment. The function pointer points to the non-amoebic
+      function.
+
+      The nucleus of the amoebic feature has a well defined structure composed in this order: a function pointer, 
+      a perspective pointer, the list of arguments of the non-amoebic feature, return object/value 
+      (can be omitted when function returns void).
+
