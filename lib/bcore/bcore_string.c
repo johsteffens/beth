@@ -24,7 +24,7 @@ void bcore_string_s_initvf( bcore_string_s* o, sc_t format, va_list args )
     o->space = vsnprintf( NULL, 0, format, args1 ) + 1;
     va_end( args1 );
     if( o->space < 8 ) o->space = 8;
-    o->data = bcore_malloc( o->space );
+    o->data = bcore_b_alloc( NULL, o->space, &o->space );
     vsnprintf( o->data, o->space, format, args );
     o->size = bcore_strlen( o->sc );
 }
@@ -39,8 +39,8 @@ void bcore_string_s_initf( bcore_string_s* o, sc_t format, ... )
 
 void bcore_string_s_down( bcore_string_s* o )
 {
-    if( o->space ) bcore_free( o->data );
-    o->size = o->space = 0;
+    if( o->space ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
+    o->size = 0;
 }
 
 void bcore_string_s_copy( bcore_string_s* o, const bcore_string_s* src )
@@ -48,9 +48,9 @@ void bcore_string_s_copy( bcore_string_s* o, const bcore_string_s* src )
     if( o == src ) return;
     if( o->space <= src->size )
     {
-        if( o->space > 0 ) bcore_free( o->data );
+        if( o->space > 0 ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
         o->space = src->size < 8 ? 8 : src->size + 1;
-        o->data  = bcore_malloc( o->space );
+        o->data  = bcore_b_alloc( NULL, o->space, &o->space );
     }
     bcore_memcpy( o->data, src->data, src->size );
     o->size = src->size;
@@ -62,9 +62,9 @@ void bcore_string_s_copy_sc( bcore_string_s* o, sc_t sc )
     sz_t src_size = bcore_strlen( sc );
     if( o->space <= src_size )
     {
-        if( o->space > 0 ) bcore_free( o->data );
+        if( o->space > 0 ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
         o->space = src_size < 8 ? 8 : src_size + 1;
-        o->data  = bcore_malloc( o->space );
+        o->data  = bcore_b_alloc( NULL, o->space, &o->space );
     }
     bcore_memcpy( o->data, sc, src_size );
     o->size = src_size;
@@ -137,21 +137,21 @@ void bcore_string_s_move( bcore_string_s* o, bcore_string_s* src )
 
 bcore_string_s* bcore_string_s_create()
 {
-    bcore_string_s* o = bcore_malloc( sizeof( bcore_string_s ) );
+    bcore_string_s* o = bcore_b_alloc( NULL, sizeof( bcore_string_s ), NULL );
     bcore_string_s_init( o );
     return o;
 }
 
 bcore_string_s* bcore_string_s_createvf( sc_t format, va_list args )
 {
-    bcore_string_s* o = bcore_malloc( sizeof( bcore_string_s ) );
+    bcore_string_s* o = bcore_b_alloc( NULL, sizeof( bcore_string_s ), NULL );
     bcore_string_s_initvf( o, format, args );
     return o;
 }
 
 bcore_string_s* bcore_string_s_createf( sc_t format, ... )
 {
-    bcore_string_s* o = bcore_malloc( sizeof( bcore_string_s ) );
+    bcore_string_s* o = bcore_b_alloc( NULL, sizeof( bcore_string_s ), NULL );
     va_list args;
     va_start( args, format );
     bcore_string_s_initvf( o, format, args );
@@ -171,7 +171,7 @@ bcore_string_s* bcore_string_s_create_l( bcore_life_s* life )
 
 bcore_string_s* bcore_string_s_createf_l( bcore_life_s* life, sc_t format, ... )
 {
-    bcore_string_s* o = bcore_malloc( sizeof( bcore_string_s ) );
+    bcore_string_s* o = bcore_b_alloc( NULL, sizeof( bcore_string_s ), NULL );
     va_list args;
     va_start( args, format );
     bcore_string_s_initvf( o, format, args );
@@ -186,7 +186,7 @@ bcore_string_s* bcore_string_s_create_l_sc( bcore_life_s* life, sc_t sc )
 
 bcore_string_s* bcore_string_s_create_typed( tp_t type, vc_t src )
 {
-    bcore_string_s* o = bcore_malloc( sizeof( bcore_string_s ) );
+    bcore_string_s* o = bcore_b_alloc( NULL, sizeof( bcore_string_s ), NULL );
     bcore_string_s_init( o );
     bcore_string_s_copy_typed( o, type, src );
     return o;
@@ -217,7 +217,7 @@ void bcore_string_s_discard( bcore_string_s* o )
 {
     if( !o ) return;
     bcore_string_s_down( o );
-    bcore_free( o );
+    bcore_bn_alloc( o, sizeof( *o ), 0, NULL );
 }
 
 bcore_string_s* bcore_string_s_clone( const bcore_string_s* o )
@@ -235,7 +235,7 @@ bcore_string_s* bcore_string_s_crop( const bcore_string_s* o, sz_t start, sz_t e
     if( end_l <= start ) return s;
     s->space = end_l - start + 1;
     if( s->space < 8 ) s->space = 8;
-    s->data = bcore_malloc( s->space );
+    s->data = bcore_b_alloc( NULL, s->space, &s->space );
     s->size = end_l - start;
     bcore_memcpy( s->data, o->data + start, s->size );
     s->data[ s->size ] = 0;
@@ -264,12 +264,11 @@ bcore_string_s* bcore_string_s_push_char( bcore_string_s* o, char c )
     if( o->space == 0 )
     {
         o->space = 8;
-        o->data = bcore_malloc( o->space );
+        o->data = bcore_b_alloc( NULL, o->space, &o->space );
     }
     else if( o->space < o->size + 2 )
     {
-        o->space *= 2;
-        o->data = bcore_alloc( o->data, o->space );
+        o->data = bcore_bn_alloc( o->data, o->space, o->space * 2, &o->space );
     }
     o->data[ o->size ] = c;
     o->size++;
@@ -311,8 +310,7 @@ bcore_string_s* bcore_string_s_push_string( bcore_string_s* o, const bcore_strin
     }
     if( o->space < o->size + src->size + 1 )
     {
-        o->space = o->size + src->size + 1;
-        o->data = bcore_alloc( o->data, o->space );
+        o->data = bcore_bn_alloc( o->data, o->space, o->size + src->size + 1, &o->space );
     }
     bcore_memcpy( o->data + o->size, src->data, src->size );
     o->size += src->size;
@@ -338,8 +336,7 @@ bcore_string_s* bcore_string_s_push_sc( bcore_string_s* o, sc_t sc )
     sz_t src_size = bcore_strlen( sc );
     if( o->space < o->size + src_size + 1 )
     {
-        o->space = o->size + src_size + 1;
-        o->data = bcore_alloc( o->data, o->space );
+        o->data = bcore_bn_alloc( o->data, o->space, o->size + src_size + 1, &o->space );
     }
     bcore_memcpy( o->data + o->size, sc, src_size );
     o->size += src_size;
@@ -506,12 +503,11 @@ bcore_string_s* bcore_string_s_insert_char( bcore_string_s* o, sz_t start, char 
     if( o->space == 0 )
     {
         o->space = 8;
-        o->data = bcore_malloc( o->space );
+        o->data = bcore_b_alloc( NULL, o->space, &o->space );
     }
     else if( o->space < o->size + 2 )
     {
-        o->space *= 2;
-        o->data = bcore_alloc( o->data, o->space );
+        o->data = bcore_bn_alloc( o->data, o->space, o->space * 2, &o->space );
     }
     bcore_memmove( o->data + start + 1, o->data + start, o->size - start );
     o->data[ start ] = c;
@@ -537,8 +533,7 @@ bcore_string_s* bcore_string_s_insert_string( bcore_string_s* o, sz_t start, con
     }
     if( o->space < o->size + string->size + 1 )
     {
-        o->space = o->size + string->size + 1;
-        o->data = bcore_alloc( o->data, o->space );
+        o->data = bcore_bn_alloc( o->data, o->space, o->size + string->size + 1, &o->space );
     }
     bcore_memmove( o->data + start + string->size, o->data + start, o->size - start );
     bcore_memcpy(  o->data + start, string->sc, string->size );
@@ -566,8 +561,7 @@ bcore_string_s* bcore_string_s_insert_sc( bcore_string_s* o, sz_t start, sc_t sc
     sz_t src_size = bcore_strlen( sc );
     if( o->space < o->size + src_size + 1 )
     {
-        o->space = o->size + src_size + 1;
-        o->data = bcore_alloc( o->data, o->space );
+        o->data = bcore_bn_alloc( o->data, o->space, o->size + src_size + 1, &o->space );
     }
     bcore_memmove( o->data + start + src_size, o->data + start, o->size - start );
     bcore_memcpy(  o->data + start, sc, src_size );
