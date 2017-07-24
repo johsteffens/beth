@@ -603,7 +603,7 @@ bcore_string_s* bcore_sources_selftest( void )
     bcore_flect_parse_sc( "chain_test_aware_arr = { aware_t _; bcore_string_s [] arr; }" );
     vd_t arr_o = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "chain_test_aware_arr" ) ) );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr_o );
-    for( sz_t i = 0; i < 2000000; i++ ) arr_p->push_d( arr_p, arr_o, bcore_string_s_createf( "line of text %zu", i ) );
+    for( sz_t i = 0; i < 20000; i++ ) arr_p->push_d( arr_p, arr_o, bcore_string_s_createf( "line of text %zu", i ) );
 
     bcore_bml_translator_s* trans = bcore_life_s_push_aware( l, bcore_bml_translator_s_create() );
     trans->break_leaf = true;

@@ -53,26 +53,8 @@ typedef struct bcore_array_s
     vd_t ( *get_d_data    )( const bcore_array_s* p, vd_t o ); // returns arr_caps->data (note that this is either vd_t or vd_t* depending on linkage-indirection
     bool ( *is_linked     )( const bcore_array_s* p         ); // true in case of array of links; false otherwise
     bool ( *is_typed      )( const bcore_array_s* p         ); // true in case of typed-array; false otherwise
+    bool ( *is_aware      )( const bcore_array_s* p         ); // true in case of aware-array; false otherwise
     sz_t ( *get_unit_size )( const bcore_array_s* p, vc_t o ); // spacing between data elements (item_p->size or sizeof(vd_t))
-
-    /** Array operations
-     *  The specified limits cover the index range [start, end-1]
-     *  When end is larger than the array size, it is truncated to the array size.
-     *  Using '-1' as argument for 'end' is allowed, which sets 'end' equal to 'size'
-     *  When using non-negative values and start >= end the effective range is zero.
-     */
-
-    // maximum/minimum within range (order = -1: minimum)
-    vc_t ( *max         )( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_cmp cmp, s2_t order );
-    sz_t ( *max_index   )( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_cmp cmp, s2_t order );
-
-    // creates a cropped sub-array from o; caller assumes ownership
-    vd_t ( *crop        )( const bcore_array_s* p, vc_t o, sz_t start, sz_t end );
-    vd_t ( *crop_d      )( const bcore_array_s* p, vd_t o, sz_t start, sz_t end ); // takes ownership of o
-
-    // (merge-)sort within index range [start, end-1]
-    void ( *sort        )( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp_cmp cmp, s2_t order );
-
 
 } bcore_array_s;
 
@@ -99,6 +81,23 @@ tp_t bcore_static_array_type_of( tp_t type );
  *  <typename>__static_link_array = { <typename> * []; }
  */
 tp_t bcore_static_link_array_type_of( tp_t type );
+
+/**********************************************************************************************************************/
+
+/** Array operations
+ *  The specified limits cover the index range [start, end-1]
+ *  When end is larger than the array size, it is truncated to the array size.
+ *  Using '-1' as argument for 'end' is allowed, which sets 'end' equal to 'size'
+ *  When using non-negative values and start >= end the effective range is zero.
+ *  Operations implying an order (max, min, sort, ...) use compare perspective on objects
+ */
+
+// maximum/minimum within range (order = -1: minimum)
+vc_t bcore_array_max(       const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order );
+sz_t bcore_array_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order );
+
+// (merge-)sort within index range [start, end-1]
+void bcore_array_sort(      const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t order );
 
 /**********************************************************************************************************************/
 // testing, debugging

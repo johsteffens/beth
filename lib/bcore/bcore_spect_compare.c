@@ -178,13 +178,29 @@ s2_t bcore_compare_typed( tp_t type, vc_t obj1, vc_t obj2 )
     return bcore_compare_spect( bcore_compare_s_get_typed( type ), obj1, obj2 );
 }
 
+bool bcore_equal_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
+{
+    return bcore_compare_spect( p, obj1, obj2 ) == 0;
+}
+
+bool bcore_equal_typed( tp_t type, vc_t obj1, vc_t obj2 )
+{
+    return bcore_compare_typed( type, obj1, obj2 ) == 0;
+}
+
 s2_t bcore_compare_aware( vc_t obj1, vc_t obj2 )
 {
     if( !obj1 ) return obj2 ?  1 : 0;
     if( !obj2 ) return obj1 ? -1 : 0;
-    tp_t type = *( aware_t* )obj1;
-    assert( type == *( aware_t* )obj2 );
-    return bcore_compare_typed( type, obj1, obj2 );
+    tp_t type1 = *( aware_t* )obj1;
+    tp_t type2 = *( aware_t* )obj2;
+    if( type1 != type2 ) return type1 < type2 ? 1 : -1;
+    return bcore_compare_typed( type1, obj1, obj2 );
+}
+
+bool bcore_equal_aware( vc_t obj1, vc_t obj2 )
+{
+    return bcore_compare_aware( obj1, obj2 ) == 0;
 }
 
 /**********************************************************************************************************************/

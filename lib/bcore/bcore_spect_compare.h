@@ -33,7 +33,13 @@ const bcore_compare_s* bcore_compare_s_get_typed( tp_t type );
 
 s2_t bcore_compare_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
 s2_t bcore_compare_typed( tp_t type,                vc_t obj1, vc_t obj2 );
-s2_t bcore_compare_aware(                           vc_t obj1, vc_t obj2 );
+
+bool bcore_equal_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
+bool bcore_equal_typed( tp_t type,                vc_t obj1, vc_t obj2 );
+
+/// Aware operations allow handle objects of different type by imposing a type order.
+s2_t bcore_compare_aware( vc_t obj1, vc_t obj2 );
+bool bcore_equal_aware(   vc_t obj1, vc_t obj2 );
 
 /**********************************************************************************************************************/
 // testing, debugging
