@@ -66,8 +66,8 @@ void* bcore_external_u_alloc( sz_t unit_bytes, void* current_ptr, sz_t requested
  *  A free block is identified by a token representing its address. Tokens are managed in a stack.
  *  An alloc-request consumes the top token from stack. A free-request pushes the token back onto the stack.
  *
- *  The instance token_manager_s occupies (is header) the memory-pool. This allows efficient (O(log(n))
- *  determination of the correct token-manager by the memory-manager (s. below).
+ *  The instance token_manager_s occupies the memory-pool; being its header. This supports efficient (O(log(n))
+ *  determination of the correct token-manager by the memory-manager (s. algorithm below).
  *
  *  Token managers can be run in full-alignment-mode in which they are aligned to pool_size, which is
  *  a power of two. This allows O(1) lookup of the pool manager from any of its managed allocations.
@@ -218,7 +218,7 @@ static bcore_string_s* token_manager_s_status( const token_manager_s* o, int det
  *  A  'full'  token-manager has no space left for allocation
  *  A  'free'  token-manager has (some) space available for allocation.
  *  An 'empty' token-manager has all space available for allocation.
- *  Token managers are linearly arranged by thir state in the order full, free, empty.
+ *  Token managers are linearly arranged by state in the order: full, free, empty.
  *  An index (free_index) points to the full-free border.
  *
  *  Alloc request: O(1)
