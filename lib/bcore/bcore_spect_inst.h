@@ -33,6 +33,12 @@ typedef struct bcore_inst_body_s
 
 typedef struct bcore_inst_s bcore_inst_s;
 
+typedef struct bcore_inst_o
+{
+    const bcore_inst_s* p;
+    vd_t o;
+} bcore_inst_o;
+
 typedef struct bcore_inst_s
 {
     aware_t p_type; // type of perspective

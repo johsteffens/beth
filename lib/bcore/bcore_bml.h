@@ -33,9 +33,11 @@ void bcore_bml_translator_s_translate_body(   const bcore_bml_translator_s* o, t
 
 /**********************************************************************************************************************/
 
-/// translate sugar
+/// syntactic sugar
 void bcore_bml_typed_to_stdout( tp_t type, vc_t obj );
 void bcore_bml_aware_to_stdout( vc_t obj );
+void bcore_bml_typed_to_file(   tp_t type, vc_t obj, sc_t file );
+void bcore_bml_aware_to_file(   vc_t obj, sc_t file );
 
 /**********************************************************************************************************************/
 
@@ -56,6 +58,10 @@ dt_p bcore_bml_interpreter_s_interpret_object( const bcore_bml_interpreter_s* o,
 dt_p bcore_bml_interpreter_s_interpret_typed(  const bcore_bml_interpreter_s* o, vd_t source, tp_t type );
 dt_p bcore_bml_interpreter_s_interpret_body(   const bcore_bml_interpreter_s* o, vd_t source, tp_t type, vd_t obj );
 
+/**********************************************************************************************************************/
+
+/// syntactic sugar
+dt_p bcore_bml_object_from_file( tp_t type, vc_t obj, sc_t file );
 
 /**********************************************************************************************************************/
 // testing, debugging

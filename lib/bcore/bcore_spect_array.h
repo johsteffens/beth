@@ -89,7 +89,7 @@ tp_t bcore_static_link_array_type_of( tp_t type );
  *  When end is larger than the array size, it is truncated to the array size.
  *  Using '-1' as argument for 'end' is allowed, which sets 'end' equal to 'size'
  *  When using non-negative values and start >= end the effective range is zero.
- *  Operations implying an order (max, min, sort, ...) use compare perspective on objects
+ *  Operations (max, min, sort, ...) requiring an order on objects use the compare perspective.
  */
 
 // maximum/minimum within range (order = -1: minimum)

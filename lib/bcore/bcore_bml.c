@@ -8,6 +8,7 @@
 #include "bcore_spect_array.h"
 #include "bcore_quicktypes.h"
 #include "bcore_sources.h"
+#include "bcore_sinks.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
 
@@ -281,6 +282,21 @@ void bcore_bml_typed_to_stdout( tp_t type, vc_t obj )
 void bcore_bml_aware_to_stdout( vc_t obj )
 {
     bcore_bml_typed_to_stdout( *( aware_t* )obj, obj );
+}
+
+void bcore_bml_typed_to_file( tp_t type, vc_t obj, sc_t file )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    bcore_sink_chain_s* chain = bcore_life_s_push_aware( l, bcore_sink_chain_s_create() );
+    bcore_sink_chain_s_push_d( chain, bcore_sink_file_s_create_name( file ) );
+    bcore_sink_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_sink_buffer_s" ) ) );
+    bcore_translate_typed_object( bcore_life_s_push_aware( l, bcore_bml_translator_s_create() ), type, obj, chain );
+    bcore_life_s_discard( l );
+}
+
+void bcore_bml_aware_to_file( vc_t obj, sc_t file )
+{
+    bcore_bml_typed_to_file( *( aware_t* )obj, obj, file );
 }
 
 /**********************************************************************************************************************/
@@ -613,6 +629,19 @@ dt_p bcore_bml_interpreter_s_interpret_object( const bcore_bml_interpreter_s* o,
 dt_p bcore_bml_interpreter_s_interpret_typed( const bcore_bml_interpreter_s* o, vd_t fsrc, tp_t type )
 {
     return interpret_typed( o, fsrc, type );
+}
+
+/**********************************************************************************************************************/
+
+dt_p bcore_bml_object_from_file( tp_t type, vc_t obj, sc_t file )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_chain_s_create() );
+    bcore_source_chain_s_push_d( chain, bcore_source_file_s_create_name( file ) );
+    bcore_source_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_source_string_s" ) ) );
+    dt_p dt = bcore_interpret_object( bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() ), chain );
+    bcore_life_s_discard( l );
+    return dt;
 }
 
 /**********************************************************************************************************************/
