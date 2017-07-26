@@ -27,5 +27,5 @@ For the time being: If you wish to use/copy/fork/integrate all or parts of it (o
 
 Note that this software comes without any explicit or implied warranty for any purpose.
 
-*Copyright (C) 2017 Johannes Steffens johannes<dot>b<dot>steffens<at>gmail<dot>com. All rights reserved.*
+*Copyright (C) 2017 Johannes Steffens johannes.b.steffens@gmail.com. All rights reserved.*
 
