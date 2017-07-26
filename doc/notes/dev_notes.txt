@@ -3,12 +3,9 @@
 Running notes about beth development.
 
 ## Dynamic types (April-July 2017) ## 
-   * Dynamic type management is achieved by associating each object-type (including plain value types) with a unique
-   
-   * integer. That integer may be calculated from a text-based type-name via hashing or from the type signature 
-     (anonymous types)
-   
-   * (other associative ways are also thinkable).
+   * Dynamic type management is achieved by associating each object-type (including plain value types) with a unique    
+     integer. That integer may be calculated from a text-based type-name via hashing or from the type signature 
+     (anonymous types). Other associative ways are also thinkable.
 
 ## Aware types (April 2017) ## 
    * Aware types achieve type introspection via attribute-data pairing in their logical data model.
