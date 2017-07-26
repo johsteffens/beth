@@ -2,6 +2,38 @@
 
 Running notes about beth development.
 
+## Dynamic types (April-July 2017) ## 
+   * Dynamic type management is achieved by associating each object-type (including plain value types) with a unique
+   * integer. That integer may be calculated from a text-based type-name via hashing or from the type signature (anonymous types)
+   * (other associative ways are also thinkable).
+
+## Aware types (April 2017) ## 
+   * Aware types achieve type introspection via attribute-data pairing in their logical data model.
+     (s. also:  https://en.wikipedia.org/wiki/Attribute-value_pair; https://en.wikipedia.org/wiki/Type_introspection)
+   * The type-integer (s. above) is stored as first data element of the instance followed by the actual data (value) of the instance.
+     This allows a quick runtime type determination by interpreting a pointer to the instance as pointer to the type-integer.
+   * Suitable integer formats (32bit int, 64bit int) usually do not exceed the size of a pointer. Hence the storage overhead of aware objects 
+     is equal or below the storage overhead of (instances of) traditional oop-classes with virtual functions (e.g. C++).
+   * Not all types need be aware. Traditional (primitive) value-types should be allowed to remain unaware to allow maximal storage efficiency.
+     They can be converted to aware types when appropriate. (A related procedure in C# is called 'boxing').
+     This puts a load on the object model supporting dynamic typing as it has to support externally typed (short: 'typed objects') object as well as
+     aware objects.
+
+## Object-Interface-Association (May 2017) ##
+   * Interfaces shall be dynamically bound to objects via types (rather than statically or via (virtual) pointers, as done in C++).
+   * Associations are resolved via hash map; results can be cached as needed.
+   * Advantage:    Reduced dependencies between interface and object. Greater flexibility.
+   * Disadvantage: Extra overhead in resolving associations and cache management.
+
+## Reflection (April 2017) ##
+   * Each object has a reflection (a database of types), describing its data elements, associated functions, names and attributes.
+   * A reflection can be used to reconstruct the data model of an object and determine associated functions at runtime.
+
+## Perspective (May 2017) ##
+   * A perspective is a higher-order-object describing other objects and providing generic functionality for those object and/or 
+   * managing polymorphism.
+   * A perspective makes extensive use of reflection and object-interface-association (s. above).
+
 ## Distinction of beth from other oop-languages: (June 2017) ## 
 
     * reflective (type structure is known at runtime)
