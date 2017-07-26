@@ -4,6 +4,7 @@
 
 #include "bcore_spect_inst.h"
 #include "bcore_spect_via.h"
+#include "bcore_spect_array.h"
 #include "bcore_life.h"
 
 typedef struct bclos_tree_s
@@ -47,6 +48,18 @@ bclos_tree_s* bclos_tree_s_create()
     return bcore_inst_typed_create( typeof( "bclos_tree_s" ) );
 }
 
+bclos_tree_s* bclos_tree_s_create_d( vd_t closure )
+{
+    bclos_tree_s* o = bclos_tree_s_create();
+    bclos_tree_s_set_closure_d( o, closure );
+    return o;
+}
+
+bclos_tree_s* bclos_tree_s_create_typed( tp_t closure_type )
+{
+    return bclos_tree_s_create_d( bcore_inst_typed_create( closure_type ) );
+}
+
 bclos_tree_s* bclos_tree_s_clone( const bclos_tree_s* o )
 {
     return o ? bcore_inst_typed_clone( o->_, o ) : NULL;
@@ -60,6 +73,28 @@ static void tree_interpret_body_a( vd_t nc )
     nc_l->a( nc ); // default
     if( obj->closure_o ) obj->closure_p = bcore_closure_s_get_aware( obj->closure_o );
 }
+
+/**********************************************************************************************************************/
+// bclos_tree_s features
+
+void bclos_tree_s_set_closure_d( bclos_tree_s* o, vd_t closure )
+{
+    bcore_inst_aware_discard( o->closure_o );
+    o->closure_o = closure;
+    o->closure_p = bcore_closure_s_get_aware( o->closure_o );
+    const bcore_array_s* arr_p = bcore_array_s_get_aware( o );
+    arr_p->set_size( arr_p, o, bcore_closure_spect_n_args( o->closure_p, o->closure_o ) );
+}
+
+void bclos_tree_s_set_branch_d( bclos_tree_s* o, sz_t index, bclos_tree_s* branch )
+{
+    if( index >= o->size ) ERR( "indexing (%zu) array of size (%zu)", index, o->size );
+    bcore_inst_aware_discard( o->branch[ index ] );
+    o->branch[ index ] = branch;
+}
+
+/**********************************************************************************************************************/
+// closure features
 
 static vd_t func( bclos_tree_s* o, bcore_life_s* life, sz_t* p_size, vc_t** p_args )
 {
@@ -87,24 +122,24 @@ static vd_t func( bclos_tree_s* o, bcore_life_s* life, sz_t* p_size, vc_t** p_ar
     return ret;
 }
 
-static vd_t tree_func( bclos_tree_s* o, sz_t size, vc_t* args )
+vd_t bclos_tree_s_func( bclos_tree_s* o, sz_t size, vc_t* args )
 {
     return func( o, NULL, &size, &args );
 }
 
-static tp_t tree_tp_ret( const bclos_tree_s* o )
+tp_t bclos_tree_s_tp_ret( const bclos_tree_s* o )
 {
     return ( o->closure_o ) ? bcore_closure_spect_tp_ret( o->closure_p, o->closure_o ) : 0;
 }
 
-static sz_t tree_n_args( const bclos_tree_s* o )
+sz_t bclos_tree_s_n_args( const bclos_tree_s* o )
 {
     sz_t n_args = 0;
     for( sz_t i = 0; i < o->size; i++ )
     {
         if( o->branch[ i ] )
         {
-            n_args += tree_n_args( o->branch[ i ] );
+            n_args += bclos_tree_s_n_args( o->branch[ i ] );
         }
         else
         {
@@ -114,13 +149,13 @@ static sz_t tree_n_args( const bclos_tree_s* o )
     return n_args;
 }
 
-static tp_t tree_tp_arg( const bclos_tree_s* o, sz_t index )
+tp_t bclos_tree_s_tp_arg( const bclos_tree_s* o, sz_t index )
 {
     for( sz_t i = 0; i < o->size; i++ )
     {
         if( o->branch[ i ] )
         {
-            tp_t tp_arg = tree_tp_arg( o->branch[ i ], index );
+            tp_t tp_arg = bclos_tree_s_tp_arg( o->branch[ i ], index );
             if( tp_arg != 0 ) return tp_arg;
         }
         else
@@ -146,10 +181,12 @@ const bcore_flect_self_s* bclos_tree_s_create_self()
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_tree_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )tree_copy_a, "ap_t", "copy" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )tree_interpret_body_a, "ap_t", "interpret_body" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tree_func,   "bcore_closure_fp_func", "func" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tree_n_args, "bcore_closure_fp_n_args", "n_args" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tree_tp_ret, "bcore_closure_fp_tp_ret", "tp_ret" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tree_tp_arg, "bcore_closure_fp_tp_arg", "tp_arg" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_func,   "bcore_closure_fp_func", "func" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_n_args, "bcore_closure_fp_n_args", "n_args" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_tp_ret, "bcore_closure_fp_tp_ret", "tp_ret" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_tp_arg, "bcore_closure_fp_tp_arg", "tp_arg" );
 
     return self;
 }
+
+/**********************************************************************************************************************/
