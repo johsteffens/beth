@@ -25,8 +25,10 @@ void          bclos_tree_s_discard(     bclos_tree_s* o );
 bclos_tree_s* bclos_tree_s_clone( const bclos_tree_s* o );
 
 /// bclos_tree_s features
-void bclos_tree_s_set_closure_d( bclos_tree_s* o, vd_t closure );                     // sets internal closure
-void bclos_tree_s_set_branch_d(  bclos_tree_s* o, sz_t index, bclos_tree_s* branch ); // creates a branch at the indexed argument
+bclos_tree_s*bclos_tree_s_set_closure_d(     bclos_tree_s* o, vd_t closure );             // sets internal closure; returns o
+bclos_tree_s*bclos_tree_s_set_closure_typed( bclos_tree_s* o, tp_t type );                // sets internal closure; returns o
+bclos_tree_s*bclos_tree_s_set_branch_d(      bclos_tree_s* o, sz_t index, vd_t closure ); // creates a branch at the indexed argument; returns branch
+bclos_tree_s*bclos_tree_s_set_branch_typed(  bclos_tree_s* o, sz_t index, tp_t type );    // creates a branch at the indexed argument; returns branch
 
 /// closure features
 vd_t bclos_tree_s_func(         bclos_tree_s* o, vc_t* args, sz_t n_args );
@@ -38,5 +40,7 @@ bcore_flect_self_s* bclos_tree_s_create_self( void );
 
 /**********************************************************************************************************************/
 // testing, debugging
+
+bcore_string_s* bclos_tree_selftest();
 
 #endif // BCLOS_TREE_H

@@ -100,5 +100,29 @@ tp_t bcore_closure_spect_t_ret(  const bcore_closure_s* p, vc_t o )
     return p->fp_t_ret( o );
 }
 
+vd_t bcore_closure_aware_func( vd_t o, const vc_t* args, sz_t n_args )
+{
+    const bcore_closure_s* p = bcore_closure_s_get_aware( o );
+    return p->fp_func( o, args, n_args );
+}
+
+sz_t bcore_closure_aware_n_args( vc_t o )
+{
+    const bcore_closure_s* p = bcore_closure_s_get_aware( o );
+    return p->fp_n_args( o );
+}
+
+tp_t bcore_closure_aware_t_arg(  vc_t o, sz_t index )
+{
+    const bcore_closure_s* p = bcore_closure_s_get_aware( o );
+    return p->fp_t_arg( o, index );
+}
+
+tp_t bcore_closure_aware_t_ret(  vc_t o )
+{
+    const bcore_closure_s* p = bcore_closure_s_get_aware( o );
+    return p->fp_t_ret( o );
+}
+
 /**********************************************************************************************************************/
 

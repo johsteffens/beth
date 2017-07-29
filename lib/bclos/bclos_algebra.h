@@ -3,7 +3,7 @@
 #ifndef BCLOS_ALGEBRA_H
 #define BCLOS_ALGEBRA_H
 
-/// Collection of algebraic components defiens as closures
+/// Collection of algebraic components defined as closures
 
 void bclos_algebra_define_self_creators( void );
 

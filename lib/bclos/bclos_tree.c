@@ -77,20 +77,40 @@ static void tree_interpret_body_a( vd_t nc )
 /**********************************************************************************************************************/
 // bclos_tree_s features
 
-void bclos_tree_s_set_closure_d( bclos_tree_s* o, vd_t closure )
+bclos_tree_s* bclos_tree_s_set_closure_d( bclos_tree_s* o, vd_t closure )
 {
     bcore_inst_aware_discard( o->closure_o );
     o->closure_o = closure;
     o->closure_p = bcore_closure_s_get_aware( o->closure_o );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( o );
     arr_p->set_size( arr_p, o, bcore_closure_spect_n_args( o->closure_p, o->closure_o ) );
+    return o;
 }
 
-void bclos_tree_s_set_branch_d( bclos_tree_s* o, sz_t index, bclos_tree_s* branch )
+bclos_tree_s* bclos_tree_s_set_closure_typed( bclos_tree_s* o, tp_t type )
+{
+    return bclos_tree_s_set_closure_d( o, bcore_inst_typed_create( type ) );
+}
+
+bclos_tree_s* bclos_tree_s_set_branch_d( bclos_tree_s* o, sz_t index, vd_t closure )
 {
     if( index >= o->size ) ERR( "indexing (%zu) array of size (%zu)", index, o->size );
     bcore_inst_aware_discard( o->branch[ index ] );
-    o->branch[ index ] = branch;
+
+    if( ( *( aware_t* )closure ) == o->_ )
+    {
+        o->branch[ index ] = closure;
+    }
+    else
+    {
+        o->branch[ index ] = bclos_tree_s_create_d( closure );
+    }
+    return o->branch[ index ];
+}
+
+bclos_tree_s* bclos_tree_s_set_branch_typed(  bclos_tree_s* o, sz_t index, tp_t type )
+{
+    return bclos_tree_s_set_branch_d( o, index, bcore_inst_typed_create( type ) );
 }
 
 /**********************************************************************************************************************/
@@ -110,7 +130,10 @@ static vd_t func( bclos_tree_s* o, vc_t** p_args, sz_t* p_n_args )
         }
         else
         {
-            if( *p_n_args == 0 ) ERR( "Insufficient amount of arguments." );
+            if( *p_n_args == 0 )
+            {
+                ERR( "%zu arguments expected", bclos_tree_s_n_args( o ) );
+            }
             args_l[ i ] = *( *p_args )++;
             ( *p_n_args )--;
         }
@@ -178,7 +201,7 @@ bcore_flect_self_s* bclos_tree_s_create_self( void )
     "{ "
       "aware_t _; "
       "aware * closure_o; "
-      "external vd_t closure_p;"
+      "external void * closure_p;"
       "bclos_tree_s * [] branch; "
     "}";
 
@@ -187,8 +210,32 @@ bcore_flect_self_s* bclos_tree_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )tree_interpret_body_a, "ap_t", "interpret_body" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_func,   "bcore_closure_fp_func",   "func" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_n_args, "bcore_closure_fp_n_args", "n_args" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_t_arg,  "bcore_closure_fp_t_arg", "t_arg" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_t_ret,  "bcore_closure_fp_t_ret", "t_ret" );
 
     return self;
 }
 
 /**********************************************************************************************************************/
+
+bcore_string_s* bclos_tree_selftest()
+{
+    bcore_string_s* log = bcore_string_s_create();
+    bcore_life_s* l = bcore_life_s_create();
+
+    bclos_tree_s* tree = bcore_life_s_push_aware( l, bclos_tree_s_create_typed( typeof( "bclos_f3_mul" ) ) );
+    bclos_tree_s_set_branch_typed( bclos_tree_s_set_branch_typed( tree, 0, typeof( "bclos_f3_add" ) ), 1, typeof( "bclos_f3_mul" ) );
+    bclos_tree_s_set_branch_typed( tree, 1, typeof( "bclos_f3_add" ) );
+
+    f3_t v1 = 5.0;
+    f3_t v2 = 6.0;
+    f3_t v3 = 3.0;
+    f3_t v4 = 7.0;
+    f3_t v5 = 8.0;
+    const vc_t args[] = { &v1, &v2, &v3, &v4, &v5 };
+
+    ASSERT( ( v1 + ( v2 * v3 ) ) * ( v4 + v5 ) == *( f3_t* )bcore_life_s_push_typed( l, typeof( "f3_t" ), bcore_closure_aware_func( tree, args, 5 ) ) );
+
+    bcore_life_s_discard( l );
+    return log;
+}

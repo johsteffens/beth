@@ -40,4 +40,9 @@ sz_t bcore_closure_spect_n_args( const bcore_closure_s* p, vc_t o ); // number o
 tp_t bcore_closure_spect_t_arg(  const bcore_closure_s* p, vc_t o, sz_t index );
 tp_t bcore_closure_spect_t_ret(  const bcore_closure_s* p, vc_t o );
 
+vd_t bcore_closure_aware_func  ( vd_t o, const vc_t* args, sz_t n_args );
+sz_t bcore_closure_aware_n_args( vc_t o ); // number of expected args
+tp_t bcore_closure_aware_t_arg(  vc_t o, sz_t index );
+tp_t bcore_closure_aware_t_ret(  vc_t o );
+
 #endif // BCORE_SPECT_CLOSURE_H
