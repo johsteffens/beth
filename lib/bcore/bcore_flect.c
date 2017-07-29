@@ -262,7 +262,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
             ERR( "\n%s\nOnly links (*) can be external.", context->sc );
         }
 
-        item->attr = private ? TYPEOF_private : cyclic ? TYPEOF_cyclic : 0;
+        item->attr = private ? TYPEOF_private : cyclic ? TYPEOF_cyclic : external ? TYPEOF_external : 0;
 
         if( bcore_string_s_equal_sc( name1, "typed" ) )
         {
