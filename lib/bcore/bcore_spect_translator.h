@@ -31,7 +31,7 @@ typedef struct bcore_translator_s
     ap_t                      translate_body_amoeba;
 } bcore_translator_s;
 
-bcore_flect_self_s* bcore_translator_s_create_self();
+bcore_flect_self_s* bcore_translator_s_create_self( void );
 
 const bcore_translator_s* bcore_translator_s_get_typed( tp_t t_type, tp_t o_type );
 

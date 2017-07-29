@@ -42,8 +42,6 @@ void                bcore_sink_chain_s_flush(        bcore_sink_chain_s* o );
 sz_t                bcore_sink_chain_s_push_data(    bcore_sink_chain_s* o, vc_t data, sz_t size );
 void                bcore_sink_chain_s_set_consumer( bcore_sink_chain_s* o, vd_t consumer );
 
-bcore_flect_self_s* bcore_sink_chain_s_create_self();
-
 /**********************************************************************************************************************/
 
 /** Memory based data sink supporting sink and array perspectives.
@@ -76,8 +74,6 @@ bcore_sink_buffer_s* bcore_sink_buffer_s_clone( const bcore_sink_buffer_s* o );
 void                 bcore_sink_buffer_s_flush(       bcore_sink_buffer_s* o );
 sz_t                 bcore_sink_buffer_s_push_data(   bcore_sink_buffer_s* o, vc_t data, sz_t size );
 
-bcore_flect_self_s*  bcore_sink_buffer_s_create_self();
-
 /// Specifies an external consumer (sink); consumer is not owned by this object
 void bcore_sink_buffer_s_set_consumer( bcore_sink_buffer_s* o, vd_t consumer );
 
@@ -105,7 +101,9 @@ void                bcore_sink_file_s_close(       bcore_sink_file_s* o ); // cl
 void                bcore_sink_file_s_flush(       bcore_sink_file_s* o );
 sz_t                bcore_sink_file_s_push_data(   bcore_sink_file_s* o, vc_t data, sz_t size );
 
-bcore_flect_self_s* bcore_sink_file_s_create_self();
+/**********************************************************************************************************************/
+
+void bcore_sinks_define_self_creators( void );
 
 /**********************************************************************************************************************/
 

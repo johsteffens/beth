@@ -29,16 +29,14 @@ void bclos_tree_s_set_closure_d( bclos_tree_s* o, vd_t closure );               
 void bclos_tree_s_set_branch_d(  bclos_tree_s* o, sz_t index, bclos_tree_s* branch ); // creates a branch at the indexed argument
 
 /// closure features
-vd_t bclos_tree_s_func(         bclos_tree_s* o, sz_t size, vc_t* args );
-tp_t bclos_tree_s_tp_ret( const bclos_tree_s* o );
+vd_t bclos_tree_s_func(         bclos_tree_s* o, vc_t* args, sz_t n_args );
 sz_t bclos_tree_s_n_args( const bclos_tree_s* o );
-tp_t bclos_tree_s_tp_arg( const bclos_tree_s* o, sz_t index );
+tp_t bclos_tree_s_t_arg(  const bclos_tree_s* o, sz_t index );
+tp_t bclos_tree_s_t_ret(  const bclos_tree_s* o );
 
-const bcore_flect_self_s* bclos_tree_s_create_self();
+bcore_flect_self_s* bclos_tree_s_create_self( void );
 
 /**********************************************************************************************************************/
 // testing, debugging
-
-bcore_string_s* bclos_tree_selftest();
 
 #endif // BCLOS_TREE_H

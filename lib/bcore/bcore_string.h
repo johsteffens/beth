@@ -148,7 +148,7 @@ bcore_string_s* bcore_string_s_show_line_context( const bcore_string_s* o, sz_t 
 
 /// self reflection
 typedef struct bcore_flect_self_s bcore_flect_self_s;
-bcore_flect_self_s* bcore_string_s_create_self();
+bcore_flect_self_s* bcore_string_s_create_self( void );
 
 /**********************************************************************************************************************/
 // testing, debugging

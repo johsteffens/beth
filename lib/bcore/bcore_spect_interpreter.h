@@ -31,7 +31,7 @@ typedef struct bcore_interpreter_s
     ap_t                      interpret_body_amoeba;
 } bcore_interpreter_s;
 
-bcore_flect_self_s* bcore_interpreter_s_create_self();
+bcore_flect_self_s* bcore_interpreter_s_create_self( void );
 
 const bcore_interpreter_s* bcore_interpreter_s_get_typed( tp_t t_type, tp_t o_type );
 

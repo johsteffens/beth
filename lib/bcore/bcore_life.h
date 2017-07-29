@@ -46,6 +46,6 @@ vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type                 ); //
 
 /// self reflection
 typedef struct bcore_flect_self_s bcore_flect_self_s;
-bcore_flect_self_s* bcore_life_s_create_self();
+bcore_flect_self_s* bcore_life_s_create_self( void );
 
 #endif // BCORE_LIFE_H

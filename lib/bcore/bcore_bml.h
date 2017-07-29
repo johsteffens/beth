@@ -26,7 +26,6 @@ void                    bcore_bml_translator_s_copy(            bcore_bml_transl
 bcore_bml_translator_s* bcore_bml_translator_s_create();
 bcore_bml_translator_s* bcore_bml_translator_s_clone(     const bcore_bml_translator_s* o );
 void                    bcore_bml_translator_s_discard(         bcore_bml_translator_s* o );
-bcore_flect_self_s*     bcore_bml_translator_s_create_self();
 
 void bcore_bml_translator_s_translate_object( const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t sink );
 void bcore_bml_translator_s_translate_body(   const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t sink );
@@ -52,7 +51,6 @@ void                     bcore_bml_interpreter_s_copy(            bcore_bml_inte
 bcore_bml_interpreter_s* bcore_bml_interpreter_s_create();
 bcore_bml_interpreter_s* bcore_bml_interpreter_s_clone(     const bcore_bml_interpreter_s* o );
 void                     bcore_bml_interpreter_s_discard(         bcore_bml_interpreter_s* o );
-bcore_flect_self_s*      bcore_bml_interpreter_s_create_self();
 
 dt_p bcore_bml_interpreter_s_interpret_object( const bcore_bml_interpreter_s* o, vd_t source );
 dt_p bcore_bml_interpreter_s_interpret_typed(  const bcore_bml_interpreter_s* o, vd_t source, tp_t type );
@@ -62,6 +60,10 @@ dt_p bcore_bml_interpreter_s_interpret_body(   const bcore_bml_interpreter_s* o,
 
 /// syntactic sugar
 dt_p bcore_bml_object_from_file( tp_t type, vc_t obj, sc_t file );
+
+/**********************************************************************************************************************/
+
+void bcore_bml_define_self_creators( void );
 
 /**********************************************************************************************************************/
 // testing, debugging

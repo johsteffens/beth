@@ -104,7 +104,7 @@ sz_t bcore_sink_chain_s_push_data( bcore_sink_chain_s* o, vc_t data, sz_t size )
 
 /**********************************************************************************************************************/
 
-bcore_flect_self_s* bcore_sink_chain_s_create_self()
+static bcore_flect_self_s* chain_s_create_self( void )
 {
     sc_t def =
     "bcore_sink_chain_s = "
@@ -197,7 +197,7 @@ void bcore_sink_chain_s_set_consumer( bcore_sink_chain_s* o, vd_t consumer )
 
 /**********************************************************************************************************************/
 
-bcore_flect_self_s* bcore_sink_buffer_s_create_self()
+static bcore_flect_self_s* buffer_s_create_self( void )
 {
     sc_t def =
     "bcore_sink_buffer_s = "
@@ -351,7 +351,7 @@ sz_t bcore_sink_file_s_push_data( bcore_sink_file_s* o, vc_t data, sz_t size )
 
 /**********************************************************************************************************************/
 
-bcore_flect_self_s* bcore_sink_file_s_create_self()
+static bcore_flect_self_s* file_s_create_self( void )
 {
     sc_t def =
     "bcore_sink_file_s = "
@@ -369,6 +369,15 @@ bcore_flect_self_s* bcore_sink_file_s_create_self()
     bcore_flect_self_s_push_external_func( self, ( fp_t )file_flow_snk,           "bcore_fp_flow_snk", "flow_snk" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_sink_file_s_flush, "bcore_sink_fp_flush", "flush"  );
     return self;
+}
+
+/**********************************************************************************************************************/
+
+void bcore_sinks_define_self_creators( void )
+{
+    bcore_flect_define_creator( typeof( "bcore_sink_buffer_s" ), buffer_s_create_self );
+    bcore_flect_define_creator( typeof( "bcore_sink_file_s"   ), file_s_create_self   );
+    bcore_flect_define_creator( typeof( "bcore_sink_chain_s"  ), chain_s_create_self  );
 }
 
 /**********************************************************************************************************************/

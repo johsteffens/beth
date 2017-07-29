@@ -138,7 +138,7 @@ static void chain_parsevf( bcore_source_chain_s* o, sc_t format, va_list args )
     }
 }
 
-bcore_flect_self_s* bcore_source_chain_s_create_self()
+static bcore_flect_self_s* chain_s_create_self( void )
 {
     sc_t def =
 
@@ -259,7 +259,7 @@ static void buffer_p_errorvf( bcore_source_buffer_s* o, sc_t format, va_list arg
     }
 }
 
-bcore_flect_self_s* bcore_source_buffer_s_create_self()
+static bcore_flect_self_s* buffer_s_create_self( void )
 {
     sc_t def =
     "bcore_source_buffer_s = "
@@ -418,7 +418,7 @@ static void string_parsevf( bcore_source_string_s* o, sc_t format, va_list args 
     o->index = bcore_string_s_parsevf( o->string, o->index, o->string->size, format, args );
 }
 
-bcore_flect_self_s* bcore_source_string_s_create_self()
+static bcore_flect_self_s* string_s_create_self( void )
 {
     sc_t def =
     "bcore_source_string_s = "
@@ -569,7 +569,7 @@ static void file_p_errorvf( bcore_source_file_s* o, sc_t format, va_list args )
     ERR( "File name: %s\n%s\n", o->name->sc, bcore_string_s_createvf( format, args )->sc );
 }
 
-bcore_flect_self_s* bcore_source_file_s_create_self()
+static bcore_flect_self_s* file_s_create_self( void )
 {
     sc_t def =
     "bcore_source_file_s = "
@@ -587,6 +587,16 @@ bcore_flect_self_s* bcore_source_file_s_create_self()
     bcore_flect_self_s_push_external_func( self, ( fp_t )file_flow_src,  "bcore_fp_flow_src", "flow_src"  );
     bcore_flect_self_s_push_external_func( self, ( fp_t )file_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
     return self;
+}
+
+/**********************************************************************************************************************/
+
+void bcore_sources_define_self_creators( void )
+{
+    bcore_flect_define_creator( typeof( "bcore_source_string_s"   ), string_s_create_self );
+    bcore_flect_define_creator( typeof( "bcore_source_buffer_s"   ), buffer_s_create_self );
+    bcore_flect_define_creator( typeof( "bcore_source_file_s"     ), file_s_create_self   );
+    bcore_flect_define_creator( typeof( "bcore_source_chain_s"    ), chain_s_create_self  );
 }
 
 /**********************************************************************************************************************/

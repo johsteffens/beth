@@ -36,7 +36,7 @@ typedef struct bcore_source_s
 
 } bcore_source_s;
 
-bcore_flect_self_s* bcore_source_s_create_self();
+bcore_flect_self_s* bcore_source_s_create_self( void );
 
 const bcore_source_s* bcore_source_s_get_typed( tp_t type );
 const bcore_source_s* bcore_source_s_get_aware( vc_t obj );

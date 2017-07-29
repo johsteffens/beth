@@ -28,7 +28,7 @@ typedef struct bcore_compare_s
     s2_t ( *compare )( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
 } bcore_compare_s;
 
-bcore_flect_self_s* bcore_compare_s_create_self();
+bcore_flect_self_s* bcore_compare_s_create_self( void );
 const bcore_compare_s* bcore_compare_s_get_typed( tp_t type );
 
 s2_t bcore_compare_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );

@@ -96,40 +96,52 @@ void bclos_tree_s_set_branch_d( bclos_tree_s* o, sz_t index, bclos_tree_s* branc
 /**********************************************************************************************************************/
 // closure features
 
-static vd_t func( bclos_tree_s* o, bcore_life_s* life, sz_t* p_size, vc_t** p_args )
+static vd_t func( bclos_tree_s* o, vc_t** p_args, sz_t* p_n_args )
 {
     vc_t* args_l = bcore_un_alloc( sizeof( vc_t ), NULL, 0, o->size, NULL );
-    bcore_life_s* life_l = bcore_life_s_create();
-
+    bcore_life_s* l = bcore_life_s_create();
     for( sz_t i = 0; i < o->size; i++ )
     {
         if( o->branch[ i ] )
         {
-            args_l[ i ] = func( o->branch[ i ], life_l, p_size, p_args );
+            bclos_tree_s* tree = o->branch[ i ];
+            args_l[ i ] = func( tree, p_args, p_n_args );
+            bcore_life_s_push_typed( l, bclos_tree_s_t_ret( tree ), ( vd_t )args_l[ i ] );
         }
         else
         {
-            if( *p_size == 0 ) ERR( "Insufficient amount of arguments." );
+            if( *p_n_args == 0 ) ERR( "Insufficient amount of arguments." );
             args_l[ i ] = *( *p_args )++;
-            ( *p_size )--;
+            ( *p_n_args )--;
         }
     }
-    vd_t ret = bcore_closure_spect_func( o->closure_p, o, args_l, o->size );
-    bcore_life_s_discard( life_l );
+    vd_t ret = bcore_closure_spect_func( o->closure_p, o->closure_o, args_l, o->size );
+    bcore_life_s_discard( l );
     bcore_un_alloc( sizeof( vc_t ), args_l, o->size, 0, NULL );
-
-    if( life ) bcore_life_s_push_typed( life, bcore_closure_spect_tp_ret( o->closure_p, o ), ret );
     return ret;
 }
 
-vd_t bclos_tree_s_func( bclos_tree_s* o, sz_t size, vc_t* args )
+tp_t t_arg( const bclos_tree_s* o, sz_t* p_index )
 {
-    return func( o, NULL, &size, &args );
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        if( o->branch[ i ] )
+        {
+            tp_t type = t_arg( o->branch[ i ], p_index );
+            if( *p_index == 0 ) return type;
+        }
+        else
+        {
+            if( *p_index == 0 ) return bcore_closure_spect_t_arg( o->closure_p, o->closure_o, i );
+            ( *p_index )--;
+        }
+    }
+    return 0;
 }
 
-tp_t bclos_tree_s_tp_ret( const bclos_tree_s* o )
+vd_t bclos_tree_s_func( bclos_tree_s* o, vc_t* args, sz_t n_args )
 {
-    return ( o->closure_o ) ? bcore_closure_spect_tp_ret( o->closure_p, o->closure_o ) : 0;
+    return func( o, &args, &n_args );
 }
 
 sz_t bclos_tree_s_n_args( const bclos_tree_s* o )
@@ -149,25 +161,17 @@ sz_t bclos_tree_s_n_args( const bclos_tree_s* o )
     return n_args;
 }
 
-tp_t bclos_tree_s_tp_arg( const bclos_tree_s* o, sz_t index )
+tp_t bclos_tree_s_t_arg( const bclos_tree_s* o, sz_t index )
 {
-    for( sz_t i = 0; i < o->size; i++ )
-    {
-        if( o->branch[ i ] )
-        {
-            tp_t tp_arg = bclos_tree_s_tp_arg( o->branch[ i ], index );
-            if( tp_arg != 0 ) return tp_arg;
-        }
-        else
-        {
-            if( index == 0 ) return bcore_closure_spect_tp_arg( o->closure_p, o->closure_o, i );
-            index--;
-        }
-    }
-    return 0;
+    return t_arg( o, &index );
 }
 
-const bcore_flect_self_s* bclos_tree_s_create_self()
+tp_t bclos_tree_s_t_ret( const bclos_tree_s* o )
+{
+    return bcore_closure_spect_t_ret( o->closure_p, o->closure_o );
+}
+
+bcore_flect_self_s* bclos_tree_s_create_self( void )
 {
     sc_t def =
     "bclos_tree_s = "
@@ -181,10 +185,8 @@ const bcore_flect_self_s* bclos_tree_s_create_self()
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_tree_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )tree_copy_a, "ap_t", "copy" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )tree_interpret_body_a, "ap_t", "interpret_body" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_func,   "bcore_closure_fp_func", "func" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_func,   "bcore_closure_fp_func",   "func" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_n_args, "bcore_closure_fp_n_args", "n_args" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_tp_ret, "bcore_closure_fp_tp_ret", "tp_ret" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_tp_arg, "bcore_closure_fp_tp_arg", "tp_arg" );
 
     return self;
 }

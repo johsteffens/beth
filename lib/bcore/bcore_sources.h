@@ -45,8 +45,6 @@ void                  bcore_source_chain_s_push_type(    bcore_source_chain_s* o
 sz_t                  bcore_source_chain_s_get_data(     bcore_source_chain_s* o, vd_t data, sz_t size );
 void                  bcore_source_chain_s_set_supplier( bcore_source_chain_s* o, vd_t supplier );
 
-bcore_flect_self_s*   bcore_source_chain_s_create_self();
-
 /**********************************************************************************************************************/
 
 /** Memory based data source supporting source and array perspectives.
@@ -80,8 +78,6 @@ void                   bcore_source_buffer_s_discard(       bcore_source_buffer_
 bcore_source_buffer_s* bcore_source_buffer_s_clone(   const bcore_source_buffer_s* o );
 sz_t                   bcore_source_buffer_s_get_data(      bcore_source_buffer_s* o, vd_t data, sz_t size );
 
-bcore_flect_self_s*    bcore_source_buffer_s_create_self();
-
 /// Specifies an external supplier (source); supplier is not owned by this object
 void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier );
 
@@ -114,8 +110,6 @@ bcore_source_string_s* bcore_source_string_s_create_string_d(     bcore_string_s
 bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc );
 sz_t                   bcore_source_string_s_get_data(      bcore_source_string_s* o, vd_t data, sz_t size );
 
-bcore_flect_self_s*    bcore_source_string_s_create_self();
-
 /** Specifies an external supplier (source); supplier is not owned by this object.
  *  The supplier is automatically detached when empty.
  */
@@ -144,7 +138,9 @@ void                 bcore_source_file_s_open(          bcore_source_file_s* o )
 void                 bcore_source_file_s_close(         bcore_source_file_s* o ); // closes file if open
 sz_t                 bcore_source_file_s_get_data(      bcore_source_file_s* o, vd_t data, sz_t size );
 
-bcore_flect_self_s*  bcore_source_file_s_create_self();
+/**********************************************************************************************************************/
+
+void bcore_sources_define_self_creators( void );
 
 /**********************************************************************************************************************/
 

@@ -476,7 +476,7 @@ bool bcore_flect_self_s_is_aware( const bcore_flect_self_s* o )
     return body->data[ 0 ].type == TYPEOF_aware_t;
 }
 
-bcore_flect_self_s* bcore_flect_self_s_create_self()
+bcore_flect_self_s* bcore_flect_self_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_flect_self_s" ), sizeof( bcore_flect_self_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_init,         "bcore_fp_init",         "init"         );

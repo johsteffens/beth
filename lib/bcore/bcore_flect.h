@@ -164,7 +164,7 @@ fp_t bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type,
 bool bcore_flect_self_s_is_aware(        const bcore_flect_self_s* o                       ); // object has body and is aware
 
 /// reflection on bcore_flect_self_s
-bcore_flect_self_s*      bcore_flect_self_s_create_self();
+bcore_flect_self_s*      bcore_flect_self_s_create_self( void );
 
 /**********************************************************************************************************************/
 /// Global reflection manager (thread safe)

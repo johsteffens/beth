@@ -932,7 +932,7 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s** p_self )
     return o;
 }
 
-bcore_flect_self_s* bcore_array_s_create_self()
+bcore_flect_self_s* bcore_array_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_array_s" ), sizeof( bcore_array_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_init,             "bcore_fp_init",                    "init"         );

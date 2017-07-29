@@ -62,7 +62,7 @@ tp_t bcore_signature_get_hash_na(  sz_t n, ...             );  // converts signa
 tp_t bcore_signature_get_hash_arr(             sz_t n, const tp_t* arr );  // converts signature given by argument list to type
 tp_t bcore_signature_fold_hash_arr( tp_t hash, sz_t n, const tp_t* arr );  // extends hash via folding
 
-bcore_flect_self_s* bcore_signature_s_create_self();
+bcore_flect_self_s* bcore_signature_s_create_self( void );
 
 /**********************************************************************************************************************/
 

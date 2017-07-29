@@ -149,7 +149,7 @@ static bcore_compare_s* create_from_self( const bcore_flect_self_s** p_self )
 
 /**********************************************************************************************************************/
 
-bcore_flect_self_s* bcore_compare_s_create_self()
+bcore_flect_self_s* bcore_compare_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_compare_s" ), sizeof( bcore_compare_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )compare_s_init,             "bcore_fp_init",                    "init"         );

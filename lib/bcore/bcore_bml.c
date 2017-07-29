@@ -49,7 +49,7 @@ void bcore_bml_translator_s_discard( bcore_bml_translator_s* o )
     bcore_inst_aware_discard( o );
 }
 
-bcore_flect_self_s* bcore_bml_translator_s_create_self()
+static bcore_flect_self_s* translator_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_translator_s = { aware_t _; sz_t tab_size; bool suppress_aware; bool break_leaf;}", sizeof( bcore_bml_translator_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_init,        "bcore_fp_init",             "init"             );
@@ -335,7 +335,7 @@ void bcore_bml_interpreter_s_discard( bcore_bml_interpreter_s* o )
     bcore_inst_aware_discard( o );
 }
 
-bcore_flect_self_s* bcore_bml_interpreter_s_create_self()
+static bcore_flect_self_s* interpreter_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_interpreter_s = { aware_t _; }", sizeof( bcore_bml_interpreter_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_interpreter_s_init,      "bcore_fp_init",                "init"      );
@@ -642,6 +642,14 @@ dt_p bcore_bml_object_from_file( tp_t type, vc_t obj, sc_t file )
     dt_p dt = bcore_interpret_object( bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() ), chain );
     bcore_life_s_discard( l );
     return dt;
+}
+
+/**********************************************************************************************************************/
+
+void bcore_bml_define_self_creators( void )
+{
+    bcore_flect_define_creator( typeof( "bcore_bml_translator_s"  ), translator_s_create_self  );
+    bcore_flect_define_creator( typeof( "bcore_bml_interpreter_s" ), interpreter_s_create_self );
 }
 
 /**********************************************************************************************************************/

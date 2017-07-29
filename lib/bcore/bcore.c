@@ -5,24 +5,14 @@
 #include "bcore_memory_manager.h"
 #include "bcore_name_manager.h"
 #include "bcore_flect.h"
+#include "bcore_flect_center.h"
 #include "bcore_string.h"
-#include "bcore_sources.h"
-#include "bcore_sinks.h"
-#include "bcore_life.h"
-#include "bcore_bml.h"
-#include "bcore_signature.h"
 #include "bcore_spect.h"
-#include "bcore_spect_inst.h"
-#include "bcore_spect_array.h"
-#include "bcore_spect_via.h"
-#include "bcore_spect_source.h"
-#include "bcore_spect_sink.h"
-#include "bcore_spect_translator.h"
-#include "bcore_spect_interpreter.h"
-#include "bcore_spect_compare.h"
 #include "bcore.h"
 
-static void init_library_bcore_once()
+#include "bclos_flect_center.h"
+
+static void init_once()
 {
     // open global services ...
     bcore_memory_manager_open();
@@ -31,40 +21,25 @@ static void init_library_bcore_once()
     bcore_flect_open();
     bcore_spect_manager_open();
 
-    // define reflections ...
+    // define basic reflections ...
     bcore_flect_define_basics();
-    bcore_flect_define_creator( typeof( "bcore_bml_translator_s"  ), bcore_bml_translator_s_create_self  );
-    bcore_flect_define_creator( typeof( "bcore_bml_interpreter_s" ), bcore_bml_interpreter_s_create_self );
-    bcore_flect_define_creator( typeof( "bcore_source_string_s"   ), bcore_source_string_s_create_self   );
-    bcore_flect_define_creator( typeof( "bcore_source_buffer_s"   ), bcore_source_buffer_s_create_self   );
-    bcore_flect_define_creator( typeof( "bcore_source_file_s"     ), bcore_source_file_s_create_self     );
-    bcore_flect_define_creator( typeof( "bcore_source_chain_s"    ), bcore_source_chain_s_create_self    );
-    bcore_flect_define_creator( typeof( "bcore_sink_buffer_s"     ), bcore_sink_buffer_s_create_self     );
-    bcore_flect_define_creator( typeof( "bcore_sink_file_s"       ), bcore_sink_file_s_create_self       );
-    bcore_flect_define_creator( typeof( "bcore_sink_chain_s"      ), bcore_sink_chain_s_create_self      );
-    bcore_flect_define_creator( typeof( "bcore_life_s"            ), bcore_life_s_create_self            );
-    bcore_flect_define_creator( typeof( "bcore_signature_s"       ), bcore_signature_s_create_self       );
-    bcore_flect_define_creator( typeof( "bcore_inst_s"            ), bcore_inst_s_create_self            );
-    bcore_flect_define_creator( typeof( "bcore_array_s"           ), bcore_array_s_create_self           );
-    bcore_flect_define_creator( typeof( "bcore_via_s"             ), bcore_via_s_create_self             );
-    bcore_flect_define_creator( typeof( "bcore_source_s"          ), bcore_source_s_create_self          );
-    bcore_flect_define_creator( typeof( "bcore_sink_s"            ), bcore_sink_s_create_self            );
-    bcore_flect_define_creator( typeof( "bcore_translator_s"      ), bcore_translator_s_create_self      );
-    bcore_flect_define_creator( typeof( "bcore_interpreter_s"     ), bcore_interpreter_s_create_self     );
-    bcore_flect_define_creator( typeof( "bcore_compare_s"         ), bcore_compare_s_create_self         );
 
     // run some critical quick-tests ...
     bcore_memory_manager_s_quicktest();
     bcore_string_s_quicktest();
+
+    // define reflection creators
+    bcore_flect_define_self_creators();
+    bclos_flect_define_self_creators();
 }
 
-void init_library_bcore()
+void bcore_library_init()
 {
     static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, init_library_bcore_once );
+    bcore_once( &flag, init_once );
 }
 
-void down_library_bcore()
+void bcore_library_down()
 {
     sz_t space = bcore_memory_manager_granted_space();
     bcore_msg( "\n");

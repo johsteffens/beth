@@ -175,7 +175,7 @@ tp_t bcore_signature_fold_hash_arr( tp_t hash, sz_t n, const tp_t* arr )
     return type;
 }
 
-bcore_flect_self_s* bcore_signature_s_create_self()
+bcore_flect_self_s* bcore_signature_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_signature_s =  { aware_t _; tp_t[] data }", sizeof( bcore_signature_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_signature_s_init,         "bcore_fp_init",         "init"         );

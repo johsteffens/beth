@@ -4,9 +4,9 @@
 #define BCORE_H
 
 /// Global (once) initializer for library bcore
-void init_library_bcore( void );
+void bcore_library_init( void );
 
 /// Global closer for library bcore
-void down_library_bcore( void );
+void bcore_library_down( void );
 
 #endif // BCORE_H

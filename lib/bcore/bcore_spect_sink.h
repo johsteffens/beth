@@ -33,7 +33,7 @@ typedef struct bcore_sink_s
 
 } bcore_sink_s;
 
-bcore_flect_self_s* bcore_sink_s_create_self();
+bcore_flect_self_s* bcore_sink_s_create_self( void );
 
 const bcore_sink_s* bcore_sink_s_get_typed( tp_t type );
 const bcore_sink_s* bcore_sink_s_get_aware( vc_t obj );
