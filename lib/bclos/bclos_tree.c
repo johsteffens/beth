@@ -116,7 +116,7 @@ bclos_tree_s* bclos_tree_s_set_branch_typed(  bclos_tree_s* o, sz_t index, tp_t 
 /**********************************************************************************************************************/
 // closure features
 
-static vd_t func( bclos_tree_s* o, vc_t** p_args, sz_t* p_n_args )
+static vd_t func( const bclos_tree_s* o, vc_t** p_args, sz_t* p_n_args )
 {
     vc_t* args_l = bcore_un_alloc( sizeof( vc_t ), NULL, 0, o->size, NULL );
     bcore_life_s* l = bcore_life_s_create();
@@ -162,7 +162,7 @@ tp_t t_arg( const bclos_tree_s* o, sz_t* p_index )
     return 0;
 }
 
-vd_t bclos_tree_s_func( bclos_tree_s* o, vc_t* args, sz_t n_args )
+vd_t bclos_tree_s_func( const bclos_tree_s* o, vc_t* args, sz_t n_args )
 {
     return func( o, &args, &n_args );
 }
@@ -210,17 +210,16 @@ bcore_flect_self_s* bclos_tree_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )tree_interpret_body_a, "ap_t", "interpret_body" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_func,   "bcore_closure_fp_func",   "func" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_n_args, "bcore_closure_fp_n_args", "n_args" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_t_arg,  "bcore_closure_fp_t_arg", "t_arg" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_t_ret,  "bcore_closure_fp_t_ret", "t_ret" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_t_arg,  "bcore_closure_fp_t_arg",  "t_arg" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_t_ret,  "bcore_closure_fp_t_ret",  "t_ret" );
 
     return self;
 }
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bclos_tree_selftest()
+bcore_string_s* bclos_tree_selftest( void )
 {
-    bcore_string_s* log = bcore_string_s_create();
     bcore_life_s* l = bcore_life_s_create();
 
     bclos_tree_s* tree = bcore_life_s_push_aware( l, bclos_tree_s_create_typed( typeof( "bclos_f3_mul" ) ) );
@@ -237,5 +236,5 @@ bcore_string_s* bclos_tree_selftest()
     ASSERT( ( v1 + ( v2 * v3 ) ) * ( v4 + v5 ) == *( f3_t* )bcore_life_s_push_typed( l, typeof( "f3_t" ), bcore_closure_aware_func( tree, args, 5 ) ) );
 
     bcore_life_s_discard( l );
-    return log;
+    return NULL;
 }

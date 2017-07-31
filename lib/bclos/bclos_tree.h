@@ -31,7 +31,7 @@ bclos_tree_s*bclos_tree_s_set_branch_d(      bclos_tree_s* o, sz_t index, vd_t c
 bclos_tree_s*bclos_tree_s_set_branch_typed(  bclos_tree_s* o, sz_t index, tp_t type );    // creates a branch at the indexed argument; returns branch
 
 /// closure features
-vd_t bclos_tree_s_func(         bclos_tree_s* o, vc_t* args, sz_t n_args );
+vd_t bclos_tree_s_func(   const bclos_tree_s* o, vc_t* args, sz_t n_args );
 sz_t bclos_tree_s_n_args( const bclos_tree_s* o );
 tp_t bclos_tree_s_t_arg(  const bclos_tree_s* o, sz_t index );
 tp_t bclos_tree_s_t_ret(  const bclos_tree_s* o );
@@ -41,6 +41,6 @@ bcore_flect_self_s* bclos_tree_s_create_self( void );
 /**********************************************************************************************************************/
 // testing, debugging
 
-bcore_string_s* bclos_tree_selftest();
+bcore_string_s* bclos_tree_selftest( void );
 
 #endif // BCLOS_TREE_H

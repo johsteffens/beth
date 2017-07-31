@@ -10,6 +10,6 @@ void bclos_algebra_define_self_creators( void );
 /**********************************************************************************************************************/
 // testing, debugging
 
-bcore_string_s* bclos_algebra_selftest();
+bcore_string_s* bclos_algebra_selftest( void );
 
 #endif // BCLOS_ALGEBRA_H

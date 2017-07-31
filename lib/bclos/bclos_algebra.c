@@ -25,7 +25,7 @@ static bcore_flect_self_s* f3_bi_self( sc_t name, bcore_closure_fp_func func )
     return self;
 }
 
-static vd_t f3_bi_mul( vd_t o, const f3_t* const* args, sz_t n_args )
+static vd_t f3_bi_mul( vc_t o, const f3_t* const* args, sz_t n_args )
 {
     assert( n_args >= 2 );
     f3_t* f3p = bcore_alloc( NULL, sizeof( f3_t ) );
@@ -35,7 +35,7 @@ static vd_t f3_bi_mul( vd_t o, const f3_t* const* args, sz_t n_args )
 
 bcore_flect_self_s* f3_bi_mul_create_self( void ) { return f3_bi_self( "bclos_f3_mul", ( bcore_closure_fp_func )f3_bi_mul ); }
 
-static vd_t f3_bi_add( vd_t o, const f3_t* const* args, sz_t n_args )
+static vd_t f3_bi_add( vc_t o, const f3_t* const* args, sz_t n_args )
 {
     assert( n_args >= 2 );
     f3_t* f3p = bcore_alloc( NULL, sizeof( f3_t ) );
@@ -55,7 +55,7 @@ void bclos_algebra_define_self_creators( void )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bclos_algebra_selftest()
+bcore_string_s* bclos_algebra_selftest( void )
 {
     bcore_string_s* log = bcore_string_s_create();
     bcore_life_s* l = bcore_life_s_create();
