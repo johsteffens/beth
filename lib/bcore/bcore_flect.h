@@ -216,7 +216,7 @@ void bcore_flect_fmap_s_apply( const bcore_flect_fmap_s* o, const bcore_flect_se
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_flect_selftest();
+bcore_string_s* bcore_flect_selftest( void );
 
 #endif // BCORE_FLECT_H
 
