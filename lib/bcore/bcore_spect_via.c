@@ -825,7 +825,7 @@ const bcore_via_s* bcore_via_s_get_typed( u2_t o_type )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_spect_via_selftest()
+bcore_string_s* bcore_spect_via_selftest( void )
 {
     bcore_flect_parse_sc( "via_specs = { sz_t size; u2_t param1; s2_t; }" );
     vd_t via_specs = bcore_inst_typed_create( typeof( "via_specs" ) );

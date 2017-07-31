@@ -633,7 +633,7 @@ bcore_string_s* bcore_btree_ip_s_status( bcore_btree_ip_s* o )
     return string;
 }
 
-bcore_string_s* bcore_btree_ip_s_selftest()
+bcore_string_s* bcore_btree_ip_s_selftest( void )
 {
     bcore_string_s* log = bcore_string_s_create();
     bcore_btree_ip_s* t = bcore_btree_ip_s_create();
@@ -1423,7 +1423,7 @@ bcore_string_s* bcore_btree_ps_s_status( bcore_btree_ps_s* o )
     return string;
 }
 
-bcore_string_s* bcore_btree_ps_s_selftest()
+bcore_string_s* bcore_btree_ps_s_selftest( void )
 {
     bcore_string_s* log = bcore_string_s_create();
     bcore_btree_ps_s* t = bcore_btree_ps_s_create( NULL );
@@ -2211,7 +2211,7 @@ bcore_string_s* bcore_btree_vd_s_status( bcore_btree_vd_s* o )
     return string;
 }
 
-bcore_string_s* bcore_btree_vd_s_selftest()
+bcore_string_s* bcore_btree_vd_s_selftest( void )
 {
     bcore_string_s* log = bcore_string_s_create();
     bcore_btree_vd_s* t = bcore_btree_vd_s_create( NULL );

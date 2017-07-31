@@ -80,7 +80,7 @@ const bcore_closure_s* bcore_closure_s_get_aware( vc_t obj )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_closure_spect_func( const bcore_closure_s* p, vd_t o, const vc_t* args, sz_t n_args )
+vd_t bcore_closure_spect_func( const bcore_closure_s* p, vc_t o, const vc_t* args, sz_t n_args )
 {
     return p->fp_func( o, args, n_args );
 }

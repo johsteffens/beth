@@ -44,6 +44,6 @@ bool bcore_equal_aware(   vc_t obj1, vc_t obj2 );
 /**********************************************************************************************************************/
 // testing, debugging
 
-bcore_string_s* bcore_spect_compare_selftest();
+bcore_string_s* bcore_spect_compare_selftest( void );
 
 #endif // BCORE_SPECT_COMPARE_H

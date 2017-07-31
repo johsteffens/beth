@@ -1415,7 +1415,7 @@ void bcore_inst_typed_check_sizeof( tp_t type, sz_t size )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_spect_inst_selftest()
+bcore_string_s* bcore_spect_inst_selftest( void )
 {
     typedef struct { aware_t _; bcore_typed_link_array_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
 

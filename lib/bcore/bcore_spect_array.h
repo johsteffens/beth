@@ -102,6 +102,6 @@ void bcore_array_sort(      const bcore_array_s* p, vd_t o, sz_t start, sz_t end
 /**********************************************************************************************************************/
 // testing, debugging
 
-bcore_string_s* bcore_spect_array_selftest();
+bcore_string_s* bcore_spect_array_selftest( void );
 
 #endif

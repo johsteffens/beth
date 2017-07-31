@@ -86,6 +86,6 @@ const bcore_array_s* bcore_via_get_spect_array( const bcore_via_s* p, sz_t index
 /**********************************************************************************************************************/
 // testing, debugging
 
-bcore_string_s* bcore_spect_via_selftest();
+bcore_string_s* bcore_spect_via_selftest( void );
 
 #endif

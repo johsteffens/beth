@@ -68,7 +68,7 @@ void bcore_bml_define_self_creators( void );
 /**********************************************************************************************************************/
 // testing, debugging
 
-bcore_string_s* bcore_bml_selftest();
+bcore_string_s* bcore_bml_selftest( void );
 
 #endif // BCORE_BML_H
 

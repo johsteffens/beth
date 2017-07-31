@@ -980,7 +980,7 @@ static void test_string_array( sc_t type_sc )
     bcore_inst_aware_discard( arr );
 }
 
-bcore_string_s* bcore_spect_array_selftest()
+bcore_string_s* bcore_spect_array_selftest( void )
 {
     bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "string_array = { aware_t _; bcore_string_s [] string_arr; }", 0 ) );
     vd_t arr = bcore_inst_typed_create( typeof( "string_array" ) );

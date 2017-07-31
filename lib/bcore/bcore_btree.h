@@ -71,7 +71,7 @@ void bcore_btree_ip_s_run( const bcore_btree_ip_s* o, void(*func)( void* arg, bc
 bcore_string_s* bcore_btree_ip_s_show( struct bcore_btree_ip_s* o );
 
 /// selftest of the btree implementation; returns log string
-bcore_string_s* bcore_btree_ip_s_selftest();
+bcore_string_s* bcore_btree_ip_s_selftest( void );
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
@@ -130,7 +130,7 @@ sz_t bcore_btree_ps_s_depth( const bcore_btree_ps_s* o );
 bcore_string_s* bcore_btree_ps_s_show( struct bcore_btree_ps_s* o );
 
 /// selftest of the btree implementation; returns log string
-bcore_string_s* bcore_btree_ps_s_selftest();
+bcore_string_s* bcore_btree_ps_s_selftest( void );
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
@@ -187,7 +187,7 @@ sz_t bcore_btree_vd_s_depth( const bcore_btree_vd_s* o );
 bcore_string_s* bcore_btree_vd_s_show( struct bcore_btree_vd_s* o );
 
 /// selftest of the btree implementation; returns log string
-bcore_string_s* bcore_btree_vd_s_selftest();
+bcore_string_s* bcore_btree_vd_s_selftest( void );
 
 #endif // BCORE_BTREE_H
 

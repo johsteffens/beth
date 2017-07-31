@@ -654,7 +654,7 @@ void bcore_bml_define_self_creators( void )
 
 /**********************************************************************************************************************/
 
-static bcore_string_s* translate_selftest()
+static bcore_string_s* translate_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* out = bcore_string_s_create();
@@ -733,7 +733,7 @@ static bcore_string_s* translate_selftest()
     return out;
 }
 
-static bcore_string_s* interpret_selftest()
+static bcore_string_s* interpret_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* out = bcore_string_s_create();
@@ -763,7 +763,7 @@ static bcore_string_s* interpret_selftest()
     return out;
 }
 
-bcore_string_s* bcore_bml_selftest()
+bcore_string_s* bcore_bml_selftest( void )
 {
     bcore_string_s* out = bcore_string_s_create();
     bcore_string_s_push_string_d( out, translate_selftest() );

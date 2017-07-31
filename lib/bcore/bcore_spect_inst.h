@@ -132,7 +132,7 @@ void bcore_inst_typed_check_sizeof(             tp_t type, sz_t size );
 /**********************************************************************************************************************/
 // testing, debugging
 
-bcore_string_s* bcore_spect_inst_selftest();
+bcore_string_s* bcore_spect_inst_selftest( void );
 
 #endif // BCORE_SPECT_INST_H
 
