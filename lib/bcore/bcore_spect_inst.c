@@ -1126,9 +1126,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s** p_self )
                     inst_item->align = bcore_flect_caps_e_align( flect_item->caps );
                 }
 
-                if( flect_item->attr == TYPEOF_private ||
-                    flect_item->attr == TYPEOF_cyclic  ||
-                    flect_item->attr == TYPEOF_external )
+                if( flect_item->f_private || flect_item->f_external )
                 {
                     inst_item->no_trace = true;
                     o->copy_flat        = false;

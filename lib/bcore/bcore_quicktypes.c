@@ -52,11 +52,6 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
     print_type( hash_l, "bcore_sink_buffer_s"   );
     print_type( hash_l, "bcore_sink_file_s"     );
     print_type( hash_l, "bcore_sink_chain_s"    );
-
-    bcore_msg( "\n// attributes\n" );
-    print_type( hash_l, "private" );
-    print_type( hash_l, "cyclic" );
-    print_type( hash_l, "external" );
 }
 
 /**********************************************************************************************************************/

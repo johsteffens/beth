@@ -49,9 +49,4 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_bcore_sink_file_s        3697603753
 #define TYPEOF_bcore_sink_chain_s       4212754772
 
-// attributes
-#define TYPEOF_private                  1657474316
-#define TYPEOF_cyclic                   1833008818
-#define TYPEOF_external                  857568394
-
 #endif // BCORE_QUICKTYPES_H

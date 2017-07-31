@@ -75,9 +75,19 @@ typedef struct bcore_flect_item_s
 {
     tp_t type; // hash of type
     tp_t name; // hash of name
-    tp_t attr; // hash of type attribute (type qualifier)
-
     u2_t caps; // data encapsulation
+
+//    tp_t attr; // hash of type attribute (type qualifier)
+
+    union
+    {
+        tp_t flags; // collection of attribute flags
+        struct
+        {
+            unsigned f_private  : 1; // private flag
+            unsigned f_external : 1; // external flag
+        };
+    };
 
     union
     {
