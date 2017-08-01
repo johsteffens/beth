@@ -1,6 +1,63 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
-Running notes about beth development.
+Running notes about ongoing beth development.
+Writeup of my thoughts and notes (slightly less unreadable than the pen&paper doodly/scratchy stuff)
+to help me remember/record the 'when/what/why' of development. This might be the prelude for a more
+elaborate documentation.
+
+## Memory Management (March-May 2017) ## 
+
+   # Initial thoughts (March-April 2017) #
+   Why explicit memory management (vs just using the system's manager)?
+     --> allocator may grant client more memory than requested and tell him about it
+     --> deallocator can receive (optionally) extra information (e.g. granted amount) to quicker locate the descriptor
+     --> better monitoring of memory use
+     --> processing better optimized for handling small amounts
+
+   How to organize?
+     --> Desriptor location
+          - near memory block (+better size dynamics; -more descuctive in case of overwrites;)
+          - in dedicated area (+safe; -slower or need of advanced logic (s.below)
+          --> opt for the latter
+
+   # Serious Development (April-May 2017) #
+   alloc/free/realloc speed of small memory amounts matter most.
+   The client's use of memory is normally least as large as one write and one read cycle O(size).
+   --> Memory manager's footprint becomes significant for small amounts.
+   
+   Hypothesis: Particularly in OOP and/or polymorphic environments allocation frequency
+               of relates inverse exponentially to the size requested.
+               P given size ~ e^-(size^q); q > 0;
+
+   ==> Handle 'small' amounts; e.g. up to page size by own manager; redirect larger amounts to the system.
+
+   Current design:
+     Token manager:  manages blocks of equal size up to a fixed amount
+     Block manager:  Dynamically maintains multiple token managers (of same block size) according to running memory needs
+     Memory manager: Dynamically maintains multiple block managers of different block size; 
+                     Exponential block size distribution.
+
+    Additional feature: Token manager's state is header of designated memory area; Memory block is aligned by large value;
+                        O(1) time for finding header from any alloc address by projecting to aligned address;
+                        Token is calculated from distance to header.
+
+    Allocation request (O(1)): 
+       * Determine Block Manager via requested amount.
+       * Locate free token manager. (Allocate new one if all are full) 
+       * Take token.
+          * Check full state and possibly tell block manager
+       * Grant block size of token manager.
+
+    Deallocation request O(1) or O(log(n))
+       * Decide if internally or externally handled O(log(n) if size is unknown; O(1) if size is known.
+       * Locate token manager (via projection). O(1)
+       * Return token. O(1)
+          * Check free or empty state and possibly tell block manager
+       * When above O(1) methods are not possible, lookups is done via btree (O(log(n)).
+
+       * Current solution faster than system's malloc, free, the deallocating client tells mm about granted size.
+         (Telling about granted space is usually not a problem because in far most cases objects are aware 
+          of that size without the need to store additional data).
 
 ## Dynamic types (April-July 2017) ## 
    * Dynamic type management is achieved by associating each object-type (including plain value types) with a unique    
@@ -124,4 +181,34 @@ Running notes about beth development.
       The nucleus of the amoebic feature has a well defined structure composed in this order: a function pointer, 
       a perspective pointer, the list of arguments of the non-amoebic feature, return object/value 
       (can be omitted when function returns void).
+      This might be seen as the pespective-paradigm eqivalent to the overload-default relationship in the OOP-
+      paradigm.
+
+## Closures (July-Aug 2017) ##
+   Thinking about closures and various possible ways to implement them (so far) condensed into the following design:
+   We define a closure as (aware) object providing one function with following features
+     * A specified number of arguments
+     * A specified type per argument
+     * Specified attributes per argument (currently f_eval and f_const)
+       -> f_const argument is not changed by function
+       -> f_eval  argument's state influences result
+       --> for pure return type(s) f_const == false && f_eval == false;
+     * A specified const indicator, indicating if the function can changes the closure's 
+       inner state.
+
+   The state of specifiers is dynamic (retrievable via features) and determined by closure's inner state,
+   although it seems prudent to disallow a non-const closure have its state of specifiers modified by its
+   closure-function.
+
+   The closure's return value (if any) is part or the argument list (no explicit C-style return value)
+   More than one return values are possible.
+
+   All argument-objects are externally owned and created. (The closure does not create its return objects either.)
+   The caller creates these objects using the closure's specifier for return types.
+
+   A specific functor converts a closure by turning some arguments into inner parameters of the resulting closure.
+   Nevertheless, the ownership of corresponding objects stays outside the closure such that the validity of the 
+   closure's inner state may become (partially) the responsibility of the caller.
+   (This is a compromise across conflicting use cases saving us from introducing garbage collection)
+
 
