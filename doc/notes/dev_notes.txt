@@ -125,7 +125,8 @@ to help remember/record the 'when/what/why' of development.
     * Perspectives can implement concepts once in a generic way (which would require a design pattern in other languages)
     * Concepts are easily interchangeable (e.g. different ways of marshaling)
 
-## Cuckoo Hashing ## (experiments of 30 June 2017)
+## Cuckoo Hashing ## (June 2017)
+30 June 2017 (experimental results):
     2 stage vs 3 or higher stage hashing:
     - 2 stage achieves near 50% memory efficiency
     - 3 stage achieves near 90% memory efficiency
@@ -157,8 +158,8 @@ to help remember/record the 'when/what/why' of development.
    --> hmap shall be based on that concept
 
 
-## Amoebic Functions (July 17, 2017) ##
-
+## Amoebic Functions (July 2017) ##
+17 July 2017:
     Amoeba (-Function)
       We introduce the term "amoeba" for a function-abstraction representing class of functions,
       which signature is defined by an object passed by reference. We call this object nucleus.
@@ -186,7 +187,9 @@ to help remember/record the 'when/what/why' of development.
       paradigm.
 
 ## Closures (July-Aug 2017) ##
-   Thinking about closures and various possible ways to implement them (so far) condensed into the following design:
+
+1 Aug 2017:
+   Thoughts and experiments about c-style closures (so far) condensed into the following design:
    We define a closure as (aware) object providing one function with following features
      * A specified number of arguments
      * A specified type per argument
@@ -211,5 +214,15 @@ to help remember/record the 'when/what/why' of development.
    Nevertheless, the ownership of corresponding objects stays outside the closure such that the validity of the
    closure's inner state may become (partially) the responsibility of the caller.
    (This is a compromise across conflicting use cases in the absence of garbage collection)
+
+2 Aug 2017:
+   Principal goals currently pursued with the C-style closure framework
+   * Introducing function-objects (first class objects)
+   * Self-reflection for functions
+   * Lexical scope (runtime) function definition and execution
+   * --> framework becomes layer for higher language
+   * Functional programming
+   * Translation into static functions (compilation)
+   * Translation into an efficiently executable state at runtime (JIT compilation)
 
 
