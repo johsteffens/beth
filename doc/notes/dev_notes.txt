@@ -1,11 +1,11 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 Running notes about ongoing beth development.
-Writeup of my thoughts and notes (slightly less unreadable than the pen&paper doodly/scratchy stuff)
-to help me remember/record the 'when/what/why' of development. This might be the prelude for a more
-elaborate documentation.
 
-## Memory Management (March-May 2017) ## 
+My thoughts and notes (slightly less unreadable than the pen&paper doodly/scratchy stuff)
+to help remember/record the 'when/what/why' of development.
+
+## Memory Management (March-May 2017) ##
 
    # Initial thoughts (March-April 2017) #
    Why explicit memory management (vs just using the system's manager)?
@@ -24,7 +24,7 @@ elaborate documentation.
    alloc/free/realloc speed of small memory amounts matter most.
    The client's use of memory is normally least as large as one write and one read cycle O(size).
    --> Memory manager's footprint becomes significant for small amounts.
-   
+
    Hypothesis: Particularly in OOP and/or polymorphic environments allocation frequency
                of relates inverse exponentially to the size requested.
                P given size ~ e^-(size^q); q > 0;
@@ -34,16 +34,16 @@ elaborate documentation.
    Current design:
      Token manager:  manages blocks of equal size up to a fixed amount
      Block manager:  Dynamically maintains multiple token managers (of same block size) according to running memory needs
-     Memory manager: Dynamically maintains multiple block managers of different block size; 
+     Memory manager: Dynamically maintains multiple block managers of different block size;
                      Exponential block size distribution.
 
     Additional feature: Token manager's state is header of designated memory area; Memory block is aligned by large value;
                         O(1) time for finding header from any alloc address by projecting to aligned address;
                         Token is calculated from distance to header.
 
-    Allocation request (O(1)): 
+    Allocation request (O(1)):
        * Determine Block Manager via requested amount.
-       * Locate free token manager. (Allocate new one if all are full) 
+       * Locate free token manager. (Allocate new one if all are full)
        * Take token.
           * Check full state and possibly tell block manager
        * Grant block size of token manager.
@@ -56,33 +56,33 @@ elaborate documentation.
        * When above O(1) methods are not possible, lookups is done via btree (O(log(n)).
 
        * Current solution faster than system's malloc, free, the deallocating client tells mm about granted size.
-         (Telling about granted space is usually not a problem because in far most cases objects are aware 
+         (Telling about granted space is usually not a problem because in far most cases objects are aware
           of that size without the need to store additional data).
 
-## Dynamic types (April-July 2017) ## 
-   * Dynamic type management is achieved by associating each object-type (including plain value types) with a unique    
-     integer. That integer may be calculated from a text-based type-name via hashing or from the type signature 
+## Dynamic types (April-July 2017) ##
+   * Dynamic type management is achieved by associating each object-type (including plain value types) with a unique
+     integer. That integer may be calculated from a text-based type-name via hashing or from the type signature
      (anonymous types). Other associative ways are also thinkable.
 
-## Aware types (April 2017) ## 
+## Aware types (April 2017) ##
    * Aware types achieve type introspection via attribute-data pairing in their logical data model.
      (s. also:  https://en.wikipedia.org/wiki/Attribute-value_pair; https://en.wikipedia.org/wiki/Type_introspection)
-     
-   * The type-integer (s. above) is stored as first data element of the instance followed by the actual data (value) 
+
+   * The type-integer (s. above) is stored as first data element of the instance followed by the actual data (value)
      of the instance. This allows a quick runtime type determination by interpreting a pointer to the instance as pointer
      to the type-integer.
-     
-   * Suitable integer formats (32bit int, 64bit int) usually do not exceed the size of a pointer. Hence the storage 
-     overhead of aware objects is equal or below the storage overhead of (instances of) traditional oop-classes with 
+
+   * Suitable integer formats (32bit int, 64bit int) usually do not exceed the size of a pointer. Hence the storage
+     overhead of aware objects is equal or below the storage overhead of (instances of) traditional oop-classes with
      virtual functions (e.g. C++).
-     
-   * Not all types need be aware. Traditional (primitive) value-types should be allowed to remain unaware to allow optimal 
-     storage efficiency. They can be converted to aware types when appropriate. (A related procedure in C# is called 
+
+   * Not all types need be aware. Traditional (primitive) value-types should be allowed to remain unaware to allow optimal
+     storage efficiency. They can be converted to aware types when appropriate. (A related procedure in C# is called
      'boxing'). This puts a load on object models supporting dynamic typing, because support externally typed
      (short: 'typed objects') object as well as aware objects need to be carried along.
 
 ## Object-Interface-Association (May 2017) ##
-   * Interfaces shall be dynamically bound to objects via types (rather than statically or via (virtual) pointers, 
+   * Interfaces shall be dynamically bound to objects via types (rather than statically or via (virtual) pointers,
      as done in C++).
    * Associations are resolved via hash map; results can be cached as needed.
    * Advantage:    Reduced dependencies between interface and object. Greater flexibility.
@@ -92,13 +92,14 @@ elaborate documentation.
    * Each object has a reflection (a database of types), describing its data elements, associated functions, names
      and attributes.
    * A reflection can be used to reconstruct the data model of an object and determine associated functions at runtime.
+   * The reflection includes names of objects, which are hashed like types (s. above).
 
 ## Perspective (May 2017) ##
    * A perspective is a higher-order-object describing other objects and providing generic functionality for those
      object and/or managing polymorphism.
    * A perspective makes extensive use of reflection and object-interface-association (s. above).
 
-## Distinction of beth from other oop-languages: (June 2017) ## 
+## Distinction of beth from other oop-languages: (June 2017) ##
 
     * reflective (type structure is known at runtime)
 
@@ -146,25 +147,25 @@ elaborate documentation.
     Fold-hashing:
       Iterative 8 or 16 bit folding seems even better. (1-time 32 bit is not working well)
       FNV can be used but it seems that any form hash = ( hash ^ data ) * <prime> with large enough prime and
-      large enough initial seems to work equally well. Preferably choose initial=const such that 
+      large enough initial seems to work equally well. Preferably choose initial=const such that
       hash = ( hash ^ <const> ) * <prime> performs a full cycle.
 
       Space 2^29 : Eff. 43%
       Space 2^30 : Eff. 45%
-   
+
    --> cuckoo hashing with minimal two-stage fold-hashing seems best
    --> hmap shall be based on that concept
 
 
-## Amoebic Functions (July 17, 2017) ## 
+## Amoebic Functions (July 17, 2017) ##
 
     Amoeba (-Function)
       We introduce the term "amoeba" for a function-abstraction representing class of functions,
       which signature is defined by an object passed by reference. We call this object nucleus.
       The terms are borrowed from the biological term amoeba as being a organism without predefined shape.
 
-      The nucleus is owned/managed by the caller. 
-      
+      The nucleus is owned/managed by the caller.
+
       From the viewpoint of the language the signature of an amoeba is fixed
       void (*)( void* ptr_to_nucleus ).
 
@@ -178,8 +179,8 @@ elaborate documentation.
       an amoebic function, which controls the fulfillment. The function pointer points to the non-amoebic
       function.
 
-      The nucleus of the amoebic feature has a well defined structure composed in this order: a function pointer, 
-      a perspective pointer, the list of arguments of the non-amoebic feature, return object/value 
+      The nucleus of the amoebic feature has a well defined structure composed in this order: a function pointer,
+      a perspective pointer, the list of arguments of the non-amoebic feature, return object/value
       (can be omitted when function returns void).
       This might be seen as the pespective-paradigm eqivalent to the overload-default relationship in the OOP-
       paradigm.
@@ -193,7 +194,7 @@ elaborate documentation.
        -> f_const argument is not changed by function
        -> f_eval  argument's state influences result
        --> for pure return type(s) f_const == false && f_eval == false;
-     * A specified const indicator, indicating if the function can changes the closure's 
+     * A specified const indicator, indicating if the function can changes the closure's
        inner state.
 
    The state of specifiers is dynamic (retrievable via features) and determined by closure's inner state,
@@ -207,8 +208,8 @@ elaborate documentation.
    The caller creates these objects using the closure's specifier for return types.
 
    A specific functor converts a closure by turning some arguments into inner parameters of the resulting closure.
-   Nevertheless, the ownership of corresponding objects stays outside the closure such that the validity of the 
+   Nevertheless, the ownership of corresponding objects stays outside the closure such that the validity of the
    closure's inner state may become (partially) the responsibility of the caller.
-   (This is a compromise across conflicting use cases saving us from introducing garbage collection)
+   (This is a compromise across conflicting use cases in the absence of garbage collection)
 
 
