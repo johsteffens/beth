@@ -77,8 +77,6 @@ typedef struct bcore_flect_item_s
     tp_t name; // hash of name
     u2_t caps; // data encapsulation
 
-//    tp_t attr; // hash of type attribute (type qualifier)
-
     union
     {
         tp_t flags; // collection of attribute flags
@@ -134,7 +132,7 @@ typedef struct bcore_flect_self_s
     tp_t type;
 
     /** size
-     *  Represets sizeof(object-type);
+     *  Represents sizeof(object-type);
      *  Mandatory for leaf-types (which are basically types without body)
      *  Optional for types with body:
      *   = 0: sizeof(type) is calculated in the instance perspective (e.g. for runtime generated types)

@@ -23,9 +23,11 @@ typedef uint16_t    u1_t;
 typedef uint8_t     u0_t;
 typedef flt64_t     f3_t;
 typedef flt32_t     f2_t;
+typedef size_t      sz_t;
+typedef bool        bl_t;
+
 typedef char*       sd_t; // dynamic zero terminated string
 typedef const char* sc_t; // const zero terminated string
-typedef size_t      sz_t;
 typedef void*       vd_t; // dynamic void pointer
 typedef const void* vc_t; // const void pointer
 typedef void*       nd_t; // pointer to a nucleus (signature of an amoeba)

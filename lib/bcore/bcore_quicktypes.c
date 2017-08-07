@@ -39,7 +39,8 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
     print_type( hash_l, "vc_t" );
     print_type( hash_l, "fp_t" );
     print_type( hash_l, "tp_t" );
-    print_type( hash_l, "bool" );
+    print_type( hash_l, "bl_t" );
+//    print_type( hash_l, "bool" );
     print_type( hash_l, "aware_t" );
     print_type( hash_l, "bcore_flect_self_s" );
 

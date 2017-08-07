@@ -49,7 +49,7 @@ static bcore_closure_s* create_from_self( const bcore_flect_self_s** p_self )
     o->o_type = self->type;
     o->fp_func   = ( bcore_closure_fp_func   )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_closure_fp_func"   ), 0 );
     o->fp_n_args = ( bcore_closure_fp_n_args )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_closure_fp_n_args" ), 0 );
-    o->fp_t_arg  = ( bcore_closure_fp_t_arg  )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_closure_fp_t_arg"  ), 0 );
+    o->fp_d_arg  = ( bcore_closure_fp_d_arg  )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_closure_fp_d_arg"  ), 0 );
     o->fp_t_ret  = ( bcore_closure_fp_t_ret  )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_closure_fp_t_ret"  ), 0 );
     return o;
 }
@@ -80,7 +80,7 @@ const bcore_closure_s* bcore_closure_s_get_aware( vc_t obj )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_closure_spect_func( const bcore_closure_s* p, vc_t o, const vc_t* args, sz_t n_args )
+vd_t bcore_closure_spect_func( const bcore_closure_s* p, vc_t o, const vd_t* args, sz_t n_args )
 {
     return p->fp_func( o, args, n_args );
 }
@@ -90,9 +90,9 @@ sz_t bcore_closure_spect_n_args( const bcore_closure_s* p, vc_t o )
     return p->fp_n_args( o );
 }
 
-tp_t bcore_closure_spect_t_arg(  const bcore_closure_s* p, vc_t o, sz_t index )
+ad_s bcore_closure_spect_d_arg(  const bcore_closure_s* p, vc_t o, sz_t index )
 {
-    return p->fp_t_arg( o, index );
+    return p->fp_d_arg( o, index );
 }
 
 tp_t bcore_closure_spect_t_ret(  const bcore_closure_s* p, vc_t o )
@@ -100,7 +100,7 @@ tp_t bcore_closure_spect_t_ret(  const bcore_closure_s* p, vc_t o )
     return p->fp_t_ret( o );
 }
 
-vd_t bcore_closure_aware_func( vd_t o, const vc_t* args, sz_t n_args )
+vd_t bcore_closure_aware_func( vd_t o, const vd_t* args, sz_t n_args )
 {
     const bcore_closure_s* p = bcore_closure_s_get_aware( o );
     return p->fp_func( o, args, n_args );
@@ -112,10 +112,10 @@ sz_t bcore_closure_aware_n_args( vc_t o )
     return p->fp_n_args( o );
 }
 
-tp_t bcore_closure_aware_t_arg(  vc_t o, sz_t index )
+ad_s bcore_closure_aware_d_arg( vc_t o, sz_t index )
 {
     const bcore_closure_s* p = bcore_closure_s_get_aware( o );
-    return p->fp_t_arg( o, index );
+    return p->fp_d_arg( o, index );
 }
 
 tp_t bcore_closure_aware_t_ret(  vc_t o )

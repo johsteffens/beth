@@ -781,7 +781,7 @@ void bcore_flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "vd_t" ), sizeof( vd_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "vc_t" ), sizeof( vc_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "fp_t" ), sizeof( fp_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bool" ), sizeof( bool ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bl_t" ), sizeof( bool ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "void" ), 0              ) );
 
     bcore_flect_define_alias( bcore_name_enroll( "int64_t" ),  typeof( "s3_t" ) );
@@ -794,6 +794,7 @@ void bcore_flect_define_basics()
     bcore_flect_define_alias( bcore_name_enroll( "uint8_t" ),  typeof( "u0_t" ) );
     bcore_flect_define_alias( bcore_name_enroll( "double" ),   typeof( "f3_t" ) );
     bcore_flect_define_alias( bcore_name_enroll( "float" ),    typeof( "f2_t" ) );
+    bcore_flect_define_alias( bcore_name_enroll( "bool" ),     typeof( "bl_t" ) );
     bcore_flect_define_alias( bcore_name_enroll( "size_t" ),   typeof( "sz_t" ) );
 
     // special purpose types
