@@ -2,8 +2,9 @@
 
 Running notes about ongoing beth development.
 
-My thoughts and notes (slightly less unreadable than the pen&paper doodly/scratchy stuff)
-to help remember/record the 'when/what/why' of development.
+Some of my thoughts and notes (slightly less unreadable than the pen&paper doodly/scratchy stuff)
+to help remember/record the 'when/what/why' of development as well as pre-phrasing things
+for later (more elaborate) documentation.
 
 ## Memory Management (March-May 2017) ##
 
@@ -98,6 +99,7 @@ to help remember/record the 'when/what/why' of development.
    * A perspective is a higher-order-object describing other objects and providing generic functionality for those
      object and/or managing polymorphism.
    * A perspective makes extensive use of reflection and object-interface-association (s. above).
+   * The Perspective provides a solution for combining 'loose coupling', 'polymorphism' and 'genericity'.
 
 ## Distinction of beth from other oop-languages: (June 2017) ##
 
@@ -225,4 +227,25 @@ to help remember/record the 'when/what/why' of development.
    * Translation into static functions (compilation)
    * Translation into an efficiently executable state at runtime (JIT compilation)
 
+
+## Abstract Types / Traits (Aug 2017) ##
+2 Aug 2017:
+   We need an abstract typing system representing certain features of objects.
+   Devtime:     To group objects into categories and maintain overview of such groups
+   Compiletime: For extended type and feature checking to ensure code's integrity
+   Runtime:     Applying assumptions about (structure and features of) the object and accelerate processing
+
+   The best suitable term to use appears to be 'trait' although what it is meant to be in Beth seems not
+   literally the same as it is used in popular languages - but close enough...
+
+   In beth:
+   A trait imposes certain requirements to (final) types. A type associated with a trade grants fulfillment of all these requirements.
+   A trait has a unique name.
+   A trait can inheriting from other traits (-->tree structure)
+   A trait (optionally) has a method to test final types for the fulfillment of its associated requirements
+     That method is either invoked at compiletime or at runtime.
+
+   Immediately needed in closures.
+   Closures with certain argument structure (e.g. bi,tri,n-functions) whould be member of the corresponding trade.
+   Trees composed of closures would check for trade membership (instead of analyzing the argument structure at runtime)
 
