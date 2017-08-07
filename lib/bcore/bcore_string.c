@@ -98,7 +98,7 @@ void bcore_string_s_copy_typed( bcore_string_s* o, tp_t type, vc_t src )
         case TYPEOF_f2_t: bcore_string_s_copyf( o, "%g",      *(const f2_t*)src ); break;
         case TYPEOF_f3_t: bcore_string_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
         case TYPEOF_sz_t: bcore_string_s_copyf( o, "%zu",     *(const sz_t*)src ); break;
-        case TYPEOF_bool: bcore_string_s_copy_sc( o, *(const bool*)src ? "true" : "false" ); break;
+        case TYPEOF_bl_t: bcore_string_s_copy_sc( o, *(const bl_t*)src ? "true" : "false" ); break;
 
         case TYPEOF_tp_t:
         case TYPEOF_aware_t:

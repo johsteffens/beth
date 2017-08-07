@@ -67,7 +67,7 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
             case TYPEOF_sd_t: return bcore_strcmp( *( sd_t* )obj1, *( sd_t* )obj2 );
             case TYPEOF_sc_t: return bcore_strcmp( *( sc_t* )obj1, *( sc_t* )obj2 );
             case TYPEOF_tp_t: return ( *( tp_t* )obj1 == *( tp_t* )obj2 ) ? 0 : ( *( tp_t* )obj1 < *( tp_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_bool: return ( *( bool* )obj1 == *( bool* )obj2 ) ? 0 : ( *( bool* )obj1 < *( bool* )obj2 ) ? 1 : -1;
+            case TYPEOF_bl_t: return ( *( bl_t* )obj1 == *( bl_t* )obj2 ) ? 0 : ( *( bl_t* )obj1 < *( bl_t* )obj2 ) ? 1 : -1;
             case TYPEOF_aware_t: return ( *( aware_t* )obj1 == *( aware_t* )obj2 ) ? 0 : ( *( aware_t* )obj1 < *( aware_t* )obj2 ) ? 1 : -1;
             default: ERR( "Cannot compare instances of type %s.", ifnameof( p->o_type ) );
         }
