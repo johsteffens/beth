@@ -16,7 +16,7 @@
 #include "bcore_spect_via.h"
 
 /// optional features:
-typedef s2_t (*bcore_compare_fp)( vc_t obj1, vc_t obj2 );  // also supported as (ap_t, "compare")
+typedef s2_t (*bcore_fp_compare)( vc_t obj1, vc_t obj2 );  // also supported as (ap_t, "compare")
 
 typedef struct bcore_compare_s bcore_compare_s;
 typedef struct bcore_compare_s
@@ -24,7 +24,7 @@ typedef struct bcore_compare_s
     aware_t p_type;  // type of perspective
     tp_t    o_type;  // type of object
     const bcore_via_s* via;
-    fp_t fp_compare; // bcore_compare_fp or ap_t
+    fp_t fp_compare; // bcore_fp_compare or ap_t
     s2_t ( *compare )( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
 } bcore_compare_s;
 

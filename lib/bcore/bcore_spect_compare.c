@@ -42,7 +42,7 @@ static bcore_signature_s* compare_s_create_signature( bcore_compare_s* o )
 
 static s2_t compare_o( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
-    return ( ( bcore_compare_fp )p->fp_compare )( obj1, obj2 );
+    return ( ( bcore_fp_compare )p->fp_compare )( obj1, obj2 );
 }
 
 static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
@@ -135,7 +135,7 @@ static bcore_compare_s* create_from_self( const bcore_flect_self_s** p_self )
     o->o_type  = self->type;
     o->via     = bcore_via_s_get_typed( o->o_type );
     fp_t cmp_a =                     bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "compare" ) );
-    fp_t cmp_o = ( cmp_a ) ? cmp_a : bcore_flect_self_s_try_external_fp( self, typeof( "bcore_compare_fp" ), 0 );
+    fp_t cmp_o = ( cmp_a ) ? cmp_a : bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_compare" ), 0 );
 
     o->fp_compare = cmp_o;
     o->compare    = cmp_a ? compare_amoebic : ( cmp_o ? compare_o : compare_generic );
