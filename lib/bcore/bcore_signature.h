@@ -21,8 +21,15 @@
 typedef struct bcore_signature_s
 {
     aware_t _;
-    tp_t* data;
-    sz_t size, space;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            tp_t* data;
+            sz_t size, space;
+        };
+    };
 } bcore_signature_s;
 
 DECLARE_FUNCTION_INIT(    bcore_signature_s )
