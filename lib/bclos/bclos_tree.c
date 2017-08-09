@@ -10,10 +10,16 @@
 typedef struct bclos_tree_s
 {
     aware_t _;
-    vd_t closure_o;
-    vc_t closure_p;
-    bclos_tree_s** branch;
-    sz_t size, space; // size specifies the number of arguments expected by closure; a NULL branch consumes the specific argument from the args list
+    bcore_closure_op closure_op;
+    union
+    {
+        bcore_aware_link_array_s arr;
+        struct
+        {
+            bclos_tree_s** branch;
+            sz_t size, space; // size specifies the number of arguments expected by closure; a NULL branch consumes the specific argument from the args list
+        };
+    };
 } bclos_tree_s;
 
 void bclos_tree_s_init( bclos_tree_s* o )
@@ -24,13 +30,6 @@ void bclos_tree_s_init( bclos_tree_s* o )
 void bclos_tree_s_down( bclos_tree_s* o )
 {
     bcore_inst_typed_down( o->_, o );
-}
-
-static void tree_copy_a( vd_t nc )
-{
-    struct { ap_t a; vc_t p; bclos_tree_s* dst; const bclos_tree_s* src; } * nc_l = nc;
-    nc_l->a( nc ); // default
-    nc_l->dst->closure_p = nc_l->src->closure_p;
 }
 
 void bclos_tree_s_copy( bclos_tree_s* o, const bclos_tree_s* src )
@@ -65,25 +64,15 @@ bclos_tree_s* bclos_tree_s_clone( const bclos_tree_s* o )
     return o ? bcore_inst_typed_clone( o->_, o ) : NULL;
 }
 
-static void tree_interpret_body_a( vd_t nc )
-{
-    struct { ap_t a; vc_t p; vc_t inter; vd_t sink; tp_t type; bclos_tree_s* obj; } * nc_l = nc;
-    bclos_tree_s* obj = nc_l->obj;
-    obj->closure_p = NULL;
-    nc_l->a( nc ); // default
-    if( obj->closure_o ) obj->closure_p = bcore_closure_s_get_aware( obj->closure_o );
-}
-
 /**********************************************************************************************************************/
 // bclos_tree_s features
 
 bclos_tree_s* bclos_tree_s_set_closure_d( bclos_tree_s* o, vd_t closure )
 {
-    bcore_inst_aware_discard( o->closure_o );
-    o->closure_o = closure;
-    o->closure_p = bcore_closure_s_get_aware( o->closure_o );
+    bcore_inst_typed_down( typeof( "bcore_closure_op" ), &o->closure_op );
+    o->closure_op = as_bcore_closure( closure );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( o );
-    arr_p->set_size( arr_p, o, bcore_closure_spect_n_args( o->closure_p, o->closure_o ) );
+    arr_p->set_size( arr_p, o, bcore_closure_n_args( o->closure_op ) );
     return o;
 }
 
@@ -151,7 +140,7 @@ static vd_t func( const bclos_tree_s* o, vd_t** p_args, sz_t* p_n_args )
             ( *p_n_args )--;
         }
     }
-    vd_t ret = bcore_closure_spect_func( o->closure_p, o->closure_o, args_l, o->size );
+    vd_t ret = bcore_closure_func( o->closure_op, args_l, o->size );
     bcore_life_s_discard( l );
     bcore_un_alloc( sizeof( vc_t ), args_l, o->size, 0, NULL );
     return ret;
@@ -169,7 +158,7 @@ ad_s d_arg( const bclos_tree_s* o, sz_t* p_index )
         }
         else
         {
-            if( *p_index == 0 ) return bcore_closure_spect_d_arg( o->closure_p, o->closure_o, i );
+            if( *p_index == 0 ) return bcore_closure_d_arg( o->closure_op, i );
             ( *p_index )--;
         }
     }
@@ -205,7 +194,7 @@ ad_s bclos_tree_s_d_arg( const bclos_tree_s* o, sz_t index )
 
 tp_t bclos_tree_s_t_ret( const bclos_tree_s* o )
 {
-    return bcore_closure_spect_t_ret( o->closure_p, o->closure_o );
+    return bcore_closure_t_ret( o->closure_op );
 }
 
 bcore_flect_self_s* bclos_tree_s_create_self( void )
@@ -214,14 +203,11 @@ bcore_flect_self_s* bclos_tree_s_create_self( void )
     "bclos_tree_s = "
     "{ "
       "aware_t _; "
-      "aware * closure_o; "
-      "external void * closure_p;"
+      "bcore_closure_op closure_op;"
       "bclos_tree_s * [] branch; "
     "}";
 
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_tree_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tree_copy_a, "ap_t", "copy" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tree_interpret_body_a, "ap_t", "interpret_body" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_func,   "bcore_closure_fp_func",   "func" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_n_args, "bcore_closure_fp_n_args", "n_args" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_d_arg,  "bcore_closure_fp_d_arg",  "d_arg" );
@@ -240,6 +226,8 @@ bcore_string_s* bclos_tree_selftest( void )
     bclos_tree_s_set_branch_typed( bclos_tree_s_set_branch_typed( tree, 0, typeof( "bclos_f3_add_f3_f3" ) ), 1, typeof( "bclos_f3_mul_f3_f3" ) );
     bclos_tree_s_set_branch_typed( tree, 1, typeof( "bclos_f3_sub_f3_f3" ) );
 
+    bclos_tree_s* tree2 = bcore_life_s_push_aware( l, bclos_tree_s_clone( tree ) );
+
     f3_t v1 = 5.0;
     f3_t v2 = 6.0;
     f3_t v3 = 3.0;
@@ -247,7 +235,7 @@ bcore_string_s* bclos_tree_selftest( void )
     f3_t v5 = 8.0;
     const vd_t args[] = { &v1, &v2, &v3, &v4, &v5 };
 
-    ASSERT( ( v1 + ( v2 * v3 ) ) * ( v4 - v5 ) == *( f3_t* )bcore_life_s_push_typed( l, typeof( "f3_t" ), bcore_closure_aware_func( tree, args, 5 ) ) );
+    ASSERT( ( v1 + ( v2 * v3 ) ) * ( v4 - v5 ) == *( f3_t* )bcore_life_s_push_typed( l, typeof( "f3_t" ), bcore_closure_aware_func( tree2, args, 5 ) ) );
 
     bcore_life_s_discard( l );
     return NULL;
