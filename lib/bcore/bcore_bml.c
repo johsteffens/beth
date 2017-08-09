@@ -21,7 +21,6 @@ void bcore_bml_translator_s_init( bcore_bml_translator_s* o )
     o->tab_size = 4;
     o->suppress_aware = true;
     o->break_leaf = false;
-    bcore_inst_typed_check_sizeof( o->_, sizeof( bcore_bml_translator_s ) );
 }
 
 void bcore_bml_translator_s_down( bcore_bml_translator_s* o )
@@ -51,7 +50,7 @@ void bcore_bml_translator_s_discard( bcore_bml_translator_s* o )
 
 static bcore_flect_self_s* translator_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_translator_s = { aware_t _; sz_t tab_size; bool suppress_aware; bool break_leaf;}", sizeof( bcore_bml_translator_s ) );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bml_translator_s = { aware_t _; sz_t tab_size; bl_t suppress_aware; bl_t break_leaf;}", sizeof( bcore_bml_translator_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_init,        "bcore_fp_init",             "init"             );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_translate_object, "bcore_fp_translate_object", "translate_object" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_bml_translator_s_translate_body,   "bcore_fp_translate_body",   "translate_body"   );
@@ -670,7 +669,7 @@ static bcore_string_s* translate_selftest( void )
         "   s2_t param2;"
         "   specs * child;"
         "   sz_t [] numarr;"
-        "   bcore_string_s [] strarr; bool flag;"
+        "   bcore_string_s [] strarr; bl_t flag;"
         "}"
     );
     bcore_flect_parse_sc( "specs_arr = { aware_t _; aware * [] arr; }" );
