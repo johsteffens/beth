@@ -193,8 +193,9 @@ sc_t bcore_flect_parse_sc(      sc_t sc );
 typedef bcore_flect_self_s* (*bcore_flect_create_self_fp)( void ); // function pointer to reflection creating function
 void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator );
 
-void bcore_flect_define_alias(     u2_t alias, tp_t type ); // also enrolls name in name manager
-void bcore_flect_define_alias_sc(  sc_t alias, sc_t type ); // also enrolls name in name manager
+// deprecated (using alias causes problems with type binding)
+//void bcore_flect_define_alias(     u2_t alias, tp_t type ); // also enrolls name in name manager
+//void bcore_flect_define_alias_sc(  sc_t alias, sc_t type ); // also enrolls name in name manager
 
 bool  bcore_flect_exists(                       tp_t type ); // checks existence of type
 const bcore_flect_self_s* bcore_flect_try_self( tp_t type ); // returns NULL when type does not exist

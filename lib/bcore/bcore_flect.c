@@ -735,6 +735,7 @@ void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
     creator_map_s_insert( creator_map_s_g, type, creator );
 }
 
+/* deprecated
 void bcore_flect_define_alias( tp_t alias, tp_t type )
 {
     if( !self_map_s_g ) bcore_flect_open();
@@ -760,7 +761,7 @@ void bcore_flect_define_alias_sc( sc_t alias, sc_t type )
     tp_t type_l = bcore_name_get_hash( type );
     bcore_flect_define_alias( alias_l, type_l );
 }
-
+*/
 /**********************************************************************************************************************/
 
 void bcore_flect_define_basics()
@@ -781,9 +782,11 @@ void bcore_flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "vd_t" ), sizeof( vd_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "vc_t" ), sizeof( vc_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "fp_t" ), sizeof( fp_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bl_t" ), sizeof( bool ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bl_t" ), sizeof( bl_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "void" ), 0              ) );
 
+/*  !! do not use aliases !! occasionally requested type is assumed to be identical with reflection's type (actually different for aliases)
+    Should these types be needed, define them explicitly like above.
     bcore_flect_define_alias( bcore_name_enroll( "int64_t" ),  typeof( "s3_t" ) );
     bcore_flect_define_alias( bcore_name_enroll( "int32_t" ),  typeof( "s2_t" ) );
     bcore_flect_define_alias( bcore_name_enroll( "int16_t" ),  typeof( "s1_t" ) );
@@ -796,6 +799,7 @@ void bcore_flect_define_basics()
     bcore_flect_define_alias( bcore_name_enroll( "float" ),    typeof( "f2_t" ) );
     bcore_flect_define_alias( bcore_name_enroll( "bool" ),     typeof( "bl_t" ) );
     bcore_flect_define_alias( bcore_name_enroll( "size_t" ),   typeof( "sz_t" ) );
+*/
 
     // special purpose types
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "tp_t"    ), sizeof( tp_t    ) ) );
