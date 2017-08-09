@@ -104,7 +104,7 @@ static void interpret_body_amoeba( interpret_body_nc* nc )
     nc->p->interpret_body( nc->inter, nc->source, nc->type, nc->obj );
 }
 
-void bcore_interpret_spect_body( const bcore_interpreter_s* spect, vd_t intrp, vd_t source, vd_t obj )
+void bcore_interpret_spect_body( const bcore_interpreter_s* spect, vc_t intrp, vd_t source, vd_t obj )
 {
     if( spect->interpret_body_amoeba )
     {
@@ -117,18 +117,18 @@ void bcore_interpret_spect_body( const bcore_interpreter_s* spect, vd_t intrp, v
     }
 }
 
-void bcore_interpret_typed_body( vd_t intrp, vd_t source, tp_t o_type, vd_t obj )
+void bcore_interpret_typed_body( vc_t intrp, vd_t source, tp_t o_type, vd_t obj )
 {
     bcore_interpret_spect_body( bcore_interpreter_s_get_typed( *( aware_t *)intrp, o_type ), intrp, source, obj );
 }
 
-void bcore_interpret_aware_body( vd_t intrp, vd_t source, vd_t obj )
+void bcore_interpret_aware_body( vc_t intrp, vd_t source, vd_t obj )
 {
     tp_t o_type = *( aware_t *)obj;
     bcore_interpret_typed_body( intrp, source, o_type, obj );
 }
 
-dt_p bcore_interpret_object( vd_t intrp, vd_t source )
+dt_p bcore_interpret_object( vc_t intrp, vd_t source )
 {
     const bcore_interpreter_s* spect = bcore_interpreter_s_get_typed( *( aware_t *)intrp, 0 );
     return spect->interpret_object( intrp, source );

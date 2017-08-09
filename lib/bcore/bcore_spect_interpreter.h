@@ -35,10 +35,10 @@ bcore_flect_self_s* bcore_interpreter_s_create_self( void );
 
 const bcore_interpreter_s* bcore_interpreter_s_get_typed( tp_t t_type, tp_t o_type );
 
-void bcore_interpret_spect_body( const bcore_interpreter_s* spect, vd_t intrp, vd_t source, vd_t obj );
-void bcore_interpret_typed_body( vd_t intrp, vd_t source, tp_t o_type, vd_t obj );
-void bcore_interpret_aware_body( vd_t intrp, vd_t source,              vd_t obj );
-dt_p bcore_interpret_object( vd_t intrp, vd_t source );
+void bcore_interpret_spect_body( const bcore_interpreter_s* spect, vc_t intrp, vd_t source, vd_t obj );
+void bcore_interpret_typed_body( vc_t intrp, vd_t source, tp_t o_type, vd_t obj );
+void bcore_interpret_aware_body( vc_t intrp, vd_t source,              vd_t obj );
+dt_p bcore_interpret_object( vc_t intrp, vd_t source );
 
 #endif  // BCORE_SPECT_INTERPRETER_H
 

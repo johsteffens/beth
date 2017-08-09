@@ -36,13 +36,13 @@ bcore_flect_self_s* bcore_translator_s_create_self( void );
 const bcore_translator_s* bcore_translator_s_get_typed( tp_t t_type, tp_t o_type );
 
 // use functions below from outside
-void bcore_translate_spect_body( const bcore_translator_s* spect, vd_t trans, vc_t obj, vd_t sink );
-void bcore_translate_typed_body( vd_t trans, tp_t o_type, vc_t obj, vd_t sink );
-void bcore_translate_aware_body( vd_t trans, vc_t obj, vd_t sink );
+void bcore_translate_spect_body( const bcore_translator_s* spect, vc_t trans, vc_t obj, vd_t sink );
+void bcore_translate_typed_body( vc_t trans, tp_t o_type, vc_t obj, vd_t sink );
+void bcore_translate_aware_body( vc_t trans, vc_t obj, vd_t sink );
 
-void bcore_translate_spect_object( const bcore_translator_s* spect, vd_t trans, vc_t obj, vd_t sink );
-void bcore_translate_typed_object( vd_t trans, tp_t o_type, vc_t obj, vd_t sink );
-void bcore_translate_aware_object( vd_t trans, vc_t obj, vd_t sink );
+void bcore_translate_spect_object( const bcore_translator_s* spect, vc_t trans, vc_t obj, vd_t sink );
+void bcore_translate_typed_object( vc_t trans, tp_t o_type, vc_t obj, vd_t sink );
+void bcore_translate_aware_object( vc_t trans, vc_t obj, vd_t sink );
 
 #endif  // BCORE_SPECT_TRANSLATOR_H
 
