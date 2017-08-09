@@ -4,9 +4,7 @@
 #include "bcore_life.h"
 #include "bcore_spect_inst.h"
 
-#include <time.h> // only for selftest
-
-typedef struct node_u2vd_s
+typedef struct bcore_hnode_u2vd_s
 {
     u2_t key;
     unsigned flag_trace : 1; // used internally during rehashing
@@ -16,19 +14,19 @@ typedef struct node_u2vd_s
         vd_t dp; // data pointer
         fp_t fp; // function pointer
     };
-} node_u2vd_s;
+} bcore_hnode_u2vd_s;
 
-static void node_u2vd_s_init( node_u2vd_s* o )
+static void bcore_hnode_u2vd_s_init( bcore_hnode_u2vd_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
 }
 
-static void node_u2vd_s_down( node_u2vd_s* o )
+static void bcore_hnode_u2vd_s_down( bcore_hnode_u2vd_s* o )
 {
     if( o->flag_holds && o->dp ) bcore_inst_aware_discard( o->dp );
 }
 
-static void node_u2vd_s_clear( node_u2vd_s* o )
+static void bcore_hnode_u2vd_s_clear( bcore_hnode_u2vd_s* o )
 {
     if( o->flag_holds && o->dp ) bcore_inst_aware_discard( o->dp );
     o->dp = 0;
@@ -36,7 +34,7 @@ static void node_u2vd_s_clear( node_u2vd_s* o )
     o->key = 0;
 }
 
-static void node_u2vd_s_copy( node_u2vd_s* o, const node_u2vd_s* src )
+static void bcore_hnode_u2vd_s_copy( bcore_hnode_u2vd_s* o, const bcore_hnode_u2vd_s* src )
 {
     if( o->flag_holds && o->dp )
     {
@@ -52,7 +50,7 @@ static void node_u2vd_s_copy( node_u2vd_s* o, const node_u2vd_s* src )
     }
 }
 
-static void node_u2vd_s_set_val( node_u2vd_s* o, vd_t val, bool hold )
+static void bcore_hnode_u2vd_s_set_val( bcore_hnode_u2vd_s* o, vd_t val, bool hold )
 {
     if( o->flag_holds )
     {
@@ -63,7 +61,7 @@ static void node_u2vd_s_set_val( node_u2vd_s* o, vd_t val, bool hold )
     o->flag_holds = hold;
 }
 
-static void node_u2vd_s_set_func( node_u2vd_s* o, fp_t func )
+static void bcore_hnode_u2vd_s_set_func( bcore_hnode_u2vd_s* o, fp_t func )
 {
     if( o->flag_holds )
     {
@@ -75,24 +73,6 @@ static void node_u2vd_s_set_func( node_u2vd_s* o, fp_t func )
 }
 
 /**********************************************************************************************************************/
-
-typedef struct bcore_hmap_u2vd_s
-{
-    aware_t _;
-    union
-    {
-        struct
-        {
-            node_u2vd_s* data;
-            sz_t size;
-            sz_t space;
-        };
-        bcore_static_array_s arr;
-    };
-    sz_t depth_limit;
-    sz_t size_limit;
-    bcore_hash_u2u2 h1, h2, h3;
-} bcore_hmap_u2vd_s;
 
 /// hashing (non-cryptographic)
 static u2_t hash_u2u2_1( u2_t key )
@@ -122,38 +102,38 @@ void bcore_hmap_u2vd_s_init( bcore_hmap_u2vd_s* o )
 
 void bcore_hmap_u2vd_s_down( bcore_hmap_u2vd_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) node_u2vd_s_down( &o->data[ i ] );
-    bcore_un_alloc( sizeof( node_u2vd_s ), o->data, o->space, 0, NULL );
+    for( sz_t i = 0; i < o->size; i++ ) bcore_hnode_u2vd_s_down( &o->data[ i ] );
+    bcore_un_alloc( sizeof( bcore_hnode_u2vd_s ), o->data, o->space, 0, NULL );
 }
 
 void bcore_hmap_u2vd_s_copy( bcore_hmap_u2vd_s* o, const bcore_hmap_u2vd_s* src )
 {
-    for( sz_t i = 0; i < o->size; i++ ) node_u2vd_s_down( &o->data[ i ] );
+    for( sz_t i = 0; i < o->size; i++ ) bcore_hnode_u2vd_s_down( &o->data[ i ] );
     if( src->size > o->space )
     {
-        o->data = bcore_un_alloc( sizeof( node_u2vd_s ), o->data, o->space,  0, &o->space );
-        o->data = bcore_un_alloc( sizeof( node_u2vd_s ), o->data, 0, src->size, &o->space );
+        o->data = bcore_un_alloc( sizeof( bcore_hnode_u2vd_s ), o->data, o->space,  0, &o->space );
+        o->data = bcore_un_alloc( sizeof( bcore_hnode_u2vd_s ), o->data, 0, src->size, &o->space );
     }
     o->size = src->size;
     for( sz_t i = 0; i < o->size; i++ )
     {
-        node_u2vd_s_init( &o->data[ i ] );
-        node_u2vd_s_copy( &o->data[ i ], &src->data[ i ] );
+        bcore_hnode_u2vd_s_init( &o->data[ i ] );
+        bcore_hnode_u2vd_s_copy( &o->data[ i ], &src->data[ i ] );
     }
 }
 
 static void set_size( bcore_hmap_u2vd_s* o, sz_t size )
 {
-    for( sz_t i = 0; i < o->size; i++ ) node_u2vd_s_clear( &o->data[ i ] );
+    for( sz_t i = 0; i < o->size; i++ ) bcore_hnode_u2vd_s_clear( &o->data[ i ] );
 
     if( ( size & ( size - 1 ) ) != 0 ) ERR( "size %zu must be a power of two", size );
     if( size > o->space )
     {
-        o->data = bcore_un_alloc( sizeof( node_u2vd_s ), o->data, o->space, 0, &o->space );
-        o->data = bcore_un_alloc( sizeof( node_u2vd_s ), o->data, 0, size,  &o->space );
+        o->data = bcore_un_alloc( sizeof( bcore_hnode_u2vd_s ), o->data, o->space, 0, &o->space );
+        o->data = bcore_un_alloc( sizeof( bcore_hnode_u2vd_s ), o->data, 0, size,  &o->space );
     }
     o->size = size;
-    bcore_memzero( o->data, sizeof( node_u2vd_s ) * o->size );
+    bcore_memzero( o->data, sizeof( bcore_hnode_u2vd_s ) * o->size );
 
     // we set depth_limit to log2( size ) + 1;
     o->depth_limit = 1;
@@ -191,14 +171,14 @@ static sz_t find( const bcore_hmap_u2vd_s* o, u2_t key ) // returns valid index 
     return o->size;
 }
 
-static node_u2vd_s* set( const bcore_hmap_u2vd_s* o, node_u2vd_s node, sz_t depth ) // sets new node
+static bcore_hnode_u2vd_s* set( const bcore_hmap_u2vd_s* o, bcore_hnode_u2vd_s node, sz_t depth ) // sets new node
 {
     if( o->size == 0 ) return NULL;
     u2_t mask = o->size - 1;
     node.flag_trace = 0;
     if( depth == o->depth_limit ) return NULL;
 
-    node_u2vd_s* node1 = NULL;
+    bcore_hnode_u2vd_s* node1 = NULL;
     if( o->h1 )
     {
         node1 = &o->data[ o->h1( node.key ) & mask ];
@@ -209,7 +189,7 @@ static node_u2vd_s* set( const bcore_hmap_u2vd_s* o, node_u2vd_s node, sz_t dept
         }
     }
 
-    node_u2vd_s* node2 = NULL;
+    bcore_hnode_u2vd_s* node2 = NULL;
     if( o->h2 )
     {
         node2 = &o->data[ o->h2( node.key ) & mask ];
@@ -220,7 +200,7 @@ static node_u2vd_s* set( const bcore_hmap_u2vd_s* o, node_u2vd_s node, sz_t dept
         }
     }
 
-    node_u2vd_s* node3 = NULL;
+    bcore_hnode_u2vd_s* node3 = NULL;
     if( o->h3 )
     {
         node3 = &o->data[ o->h3( node.key ) & mask ];
@@ -310,26 +290,26 @@ void bcore_hmap_u2vd_s_set( bcore_hmap_u2vd_s* o, u2_t key, vd_t val, bool hold 
         sz_t idx = find( o, key );
         if( idx < o->size )
         {
-            node_u2vd_s_set_val( &o->data[ idx ], val, hold );
+            bcore_hnode_u2vd_s_set_val( &o->data[ idx ], val, hold );
             return;
         }
     }
 
     {
-        node_u2vd_s node;
-        node_u2vd_s_init( &node );
+        bcore_hnode_u2vd_s node;
+        bcore_hnode_u2vd_s_init( &node );
         node.key = key;
-        node_u2vd_s* p_node = set( o, node, 1 );
+        bcore_hnode_u2vd_s* p_node = set( o, node, 1 );
         if( p_node )
         {
-            node_u2vd_s_set_val( p_node, val, hold );
+            bcore_hnode_u2vd_s_set_val( p_node, val, hold );
             return;
         }
     }
 
     // rehash
     {
-        node_u2vd_s* buf_data  = o->data;
+        bcore_hnode_u2vd_s* buf_data  = o->data;
         sz_t         buf_size  = o->size;
         sz_t         buf_space = o->space;
         if( o->size > 0 )
@@ -343,14 +323,14 @@ void bcore_hmap_u2vd_s_set( bcore_hmap_u2vd_s* o, u2_t key, vd_t val, bool hold 
             o->depth_limit = 4;
         }
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
-        o->data = bcore_u_alloc( sizeof( node_u2vd_s ), NULL, o->size, &o->space );
-        bcore_memzero( o->data, sizeof( node_u2vd_s ) * o->size );
+        o->data = bcore_u_alloc( sizeof( bcore_hnode_u2vd_s ), NULL, o->size, &o->space );
+        bcore_memzero( o->data, sizeof( bcore_hnode_u2vd_s ) * o->size );
         for( sz_t i = 0; i < buf_size; i++ )
         {
-            node_u2vd_s* p_node = &buf_data[ i ];
+            bcore_hnode_u2vd_s* p_node = &buf_data[ i ];
             if( p_node->key ) bcore_hmap_u2vd_s_set( o, p_node->key, p_node->dp, p_node->flag_holds );
         }
-        bcore_un_alloc( sizeof( node_u2vd_s ), buf_data, buf_space, 0, NULL );
+        bcore_un_alloc( sizeof( bcore_hnode_u2vd_s ), buf_data, buf_space, 0, NULL );
     }
 
     bcore_hmap_u2vd_s_set( o, key, val, hold );
@@ -364,26 +344,26 @@ void bcore_hmap_u2vd_s_setf( bcore_hmap_u2vd_s* o, u2_t key, fp_t func )
         sz_t idx = find( o, key );
         if( idx < o->size )
         {
-            node_u2vd_s_set_func( &o->data[ idx ], func );
+            bcore_hnode_u2vd_s_set_func( &o->data[ idx ], func );
             return;
         }
     }
 
     {
-        node_u2vd_s node;
-        node_u2vd_s_init( &node );
+        bcore_hnode_u2vd_s node;
+        bcore_hnode_u2vd_s_init( &node );
         node.key = key;
-        node_u2vd_s* p_node = set( o, node, 1 );
+        bcore_hnode_u2vd_s* p_node = set( o, node, 1 );
         if( p_node )
         {
-            node_u2vd_s_set_func( p_node, func );
+            bcore_hnode_u2vd_s_set_func( p_node, func );
             return;
         }
     }
 
     // rehash
     {
-        node_u2vd_s* buf_data  = o->data;
+        bcore_hnode_u2vd_s* buf_data  = o->data;
         sz_t         buf_size  = o->size;
         sz_t         buf_space = o->space;
         if( o->size > 0 )
@@ -397,14 +377,14 @@ void bcore_hmap_u2vd_s_setf( bcore_hmap_u2vd_s* o, u2_t key, fp_t func )
             o->depth_limit = 4;
         }
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
-        o->data = bcore_u_alloc( sizeof( node_u2vd_s ), NULL, o->size, &o->space );
-        bcore_memzero( o->data, sizeof( node_u2vd_s ) * o->size );
+        o->data = bcore_u_alloc( sizeof( bcore_hnode_u2vd_s ), NULL, o->size, &o->space );
+        bcore_memzero( o->data, sizeof( bcore_hnode_u2vd_s ) * o->size );
         for( sz_t i = 0; i < buf_size; i++ )
         {
-            node_u2vd_s* p_node = &buf_data[ i ];
+            bcore_hnode_u2vd_s* p_node = &buf_data[ i ];
             if( p_node->key ) bcore_hmap_u2vd_s_set( o, p_node->key, p_node->dp, p_node->flag_holds );
         }
-        bcore_un_alloc( sizeof( node_u2vd_s ), buf_data, buf_space, 0, NULL );
+        bcore_un_alloc( sizeof( bcore_hnode_u2vd_s ), buf_data, buf_space, 0, NULL );
     }
 
     bcore_hmap_u2vd_s_setf( o, key, func );
@@ -417,7 +397,7 @@ vd_t bcore_hmap_u2vd_s_remove_h( bcore_hmap_u2vd_s* o, u2_t key )
     sz_t idx = find( o, key );
     if( idx < o->size )
     {
-        node_u2vd_s* node = &o->data[ idx ];
+        bcore_hnode_u2vd_s* node = &o->data[ idx ];
         vd_t ret = node->dp;
         node->key = 0;
         node->dp  = 0;
@@ -434,7 +414,7 @@ fp_t bcore_hmap_u2vd_s_removef_h( bcore_hmap_u2vd_s* o, u2_t key )
     sz_t idx = find( o, key );
     if( idx < o->size )
     {
-        node_u2vd_s* node = &o->data[ idx ];
+        bcore_hnode_u2vd_s* node = &o->data[ idx ];
         fp_t ret = node->fp;
         node->key = 0;
         node->dp  = 0;
@@ -450,7 +430,7 @@ void bcore_hmap_u2vd_s_remove_d( bcore_hmap_u2vd_s* o, u2_t key )
     sz_t idx = find( o, key );
     if( idx < o->size )
     {
-        node_u2vd_s* node = &o->data[ idx ];
+        bcore_hnode_u2vd_s* node = &o->data[ idx ];
         if( node->flag_holds && node->dp ) bcore_inst_aware_discard( node->dp );
         node->key = 0;
         node->dp = 0;
@@ -466,7 +446,7 @@ vd_t bcore_hmap_u2vd_s_detach_h( bcore_hmap_u2vd_s* o, u2_t key )
     sz_t idx = find( o, key );
     if( idx < o->size )
     {
-        node_u2vd_s* node = &o->data[ idx ];
+        bcore_hnode_u2vd_s* node = &o->data[ idx ];
         vd_t ret = node->dp;
         node->flag_holds = 0;
         return ret;
@@ -597,6 +577,10 @@ void bcore_hmap_u2vd_filltest()
 
     bcore_life_s_discard( life );
 }
+
+/**********************************************************************************************************************/
+
+#include <time.h> // only for selftest
 
 bcore_string_s* bcore_hmap_u2vd_selftest( void )
 {
