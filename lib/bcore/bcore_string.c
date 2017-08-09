@@ -861,6 +861,27 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                 idx += size;
                 if( idx > end_l ) idx = end_l;
             }
+            else if( ( bcore_strcmp( "#bl_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#bl_t" );
+                bl_t val = false;
+                if( ( bcore_strcmp( "true", o->sc + idx ) >> 1 ) == 0 )
+                {
+                    val = true;
+                    idx += strlen( "true" );
+                }
+                else if( ( bcore_strcmp( "false", o->sc + idx ) >> 1 ) == 0 )
+                {
+                    val = false;
+                    idx += strlen( "false" );
+                }
+                else
+                {
+                    ERR( "\n%s\nParsing #bl_t failed at (%zu:%zu): true or false expected.", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                *va_arg( args, bl_t* ) = val;
+                if( idx > end_l ) idx = end_l;
+            }
             else if( ( bcore_strcmp( "#bool", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "#bool" );
@@ -1062,7 +1083,7 @@ bcore_flect_self_s* bcore_string_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create_typed, "bcore_fp_create_typed", "create_typed" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,                    "bcore_fp_flow_snk",     "flow_snk"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )check_sanity,                "bcore_fp_check_sanity", "check_sanity" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_cmp_string,   "bcore_compare_fp",      "cmp_string"   );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_cmp_string,   "bcore_fp_compare",      "cmp_string"   );
 
     return self;
 }
