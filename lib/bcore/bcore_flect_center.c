@@ -19,13 +19,14 @@
 
 void bcore_flect_define_self_creators()
 {
+    bcore_inst_define_self_creators();
     bcore_bml_define_self_creators();
     bcore_sources_define_self_creators();
     bcore_sinks_define_self_creators();
+    bcore_closure_define_self_creators();
     bcore_flect_define_creator( typeof( "bcore_life_s"        ), bcore_life_s_create_self        );
     bcore_flect_define_creator( typeof( "bcore_hmap_u2vd_s_"  ), bcore_hmap_u2vd_s_create_self   );
     bcore_flect_define_creator( typeof( "bcore_signature_s"   ), bcore_signature_s_create_self   );
-    bcore_flect_define_creator( typeof( "bcore_inst_s"        ), bcore_inst_s_create_self        );
     bcore_flect_define_creator( typeof( "bcore_array_s"       ), bcore_array_s_create_self       );
     bcore_flect_define_creator( typeof( "bcore_via_s"         ), bcore_via_s_create_self         );
     bcore_flect_define_creator( typeof( "bcore_source_s"      ), bcore_source_s_create_self      );
@@ -33,6 +34,5 @@ void bcore_flect_define_self_creators()
     bcore_flect_define_creator( typeof( "bcore_translator_s"  ), bcore_translator_s_create_self  );
     bcore_flect_define_creator( typeof( "bcore_interpreter_s" ), bcore_interpreter_s_create_self );
     bcore_flect_define_creator( typeof( "bcore_compare_s"     ), bcore_compare_s_create_self     );
-    bcore_flect_define_creator( typeof( "bcore_closure_s"     ), bcore_closure_s_create_self     );
 }
 

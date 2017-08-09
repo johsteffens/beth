@@ -3,6 +3,9 @@
 #include "bcore_spect_inst.h"
 #include "bcore_quicktypes.h"
 #include "bcore_spect.h"
+#include "bcore_spect_compare.h"
+#include "bcore_spect_translator.h"
+#include "bcore_spect_interpreter.h"
 
 /**********************************************************************************************************************/
 
@@ -1190,7 +1193,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s** p_self )
     return o;
 }
 
-bcore_flect_self_s* bcore_inst_s_create_self( void )
+static bcore_flect_self_s* inst_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_inst_s" ), sizeof( bcore_inst_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                    "init"         );
@@ -1409,6 +1412,216 @@ void bcore_inst_typed_check_sizeof( tp_t type, sz_t size )
 {
     const bcore_inst_s* o = bcore_inst_s_get_typed( type );
     bcore_inst_spect_check_sizeof( o, size );
+}
+
+/**********************************************************************************************************************/
+// bcore_inst_op
+
+void bcore_inst_op_init( bcore_inst_op* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+}
+
+void bcore_inst_op_init_type( bcore_inst_op* o, tp_t type )
+{
+    o->p = bcore_inst_s_get_typed( type );
+    o->o = o->p->create( o->p );
+}
+
+void bcore_inst_op_init_type_d( bcore_inst_op* o, tp_t type, vd_t obj )
+{
+    o->p = bcore_inst_s_get_typed( type );
+    o->o = obj;
+}
+
+void bcore_inst_op_init_aware_d( bcore_inst_op* o, vd_t obj )
+{
+    bcore_inst_op_init_type_d( o, *( aware_t* )obj, obj );
+}
+
+void bcore_inst_op_down( bcore_inst_op* o )
+{
+    if( o->p ) o->p->discard( o->p, o->o );
+    o->p = NULL;
+    o->o = NULL;
+}
+
+void bcore_inst_op_copy( bcore_inst_op* o, const bcore_inst_op* src )
+{
+    if( ( o->p == src->p ) && src->p != NULL)
+    {
+        o->p->copy( o->p, o->o, src->o );
+    }
+    else
+    {
+        if( o->p ) o->p->discard( o->p, o->o );
+        if( src->p )
+        {
+            o->p = src->p;
+            o->o = src->p->clone( src->p, src->o );
+        }
+        else
+        {
+            o->p = NULL;
+            o->o = NULL;
+        }
+    }
+}
+
+void bcore_inst_op_copy_type( bcore_inst_op* o, tp_t type, vc_t src )
+{
+    if( o->p && o->p->o_type == type )
+    {
+        o->p->copy( o->p, o->o, src );
+    }
+    else
+    {
+        if( o->p ) o->p->discard( o->p, o->o );
+        if( type )
+        {
+            o->p = bcore_inst_s_get_typed( type );
+            o->o = o->p->clone( o->p, src );
+        }
+        else
+        {
+            o->p = NULL;
+            o->o = NULL;
+        }
+    }
+}
+
+void bcore_inst_op_copy_typed( bcore_inst_op* o, tp_t type, vc_t src )
+{
+    if( type == typeof( "bcore_inst_op" ) )
+    {
+        bcore_inst_op_copy( o, src );
+    }
+    else if( type == typeof( "bcore_typed_link_s" ) )
+    {
+        const bcore_typed_link_s* src_l = src;
+        bcore_inst_op_copy_type( o, src_l->type, src_l->link );
+    }
+    else
+    {
+        ERR( "Cannot convert '%s' into 'bcore_inst_op'.", ifnameof( type ) );
+    }
+}
+
+bcore_inst_op* bcore_inst_op_create()
+{
+    bcore_inst_op* o = bcore_u_alloc( sizeof( *o ), NULL, 1, NULL );
+    bcore_inst_op_init( o );
+    return o;
+}
+
+bcore_inst_op* bcore_inst_op_create_type( tp_t type )
+{
+    bcore_inst_op* o = bcore_inst_op_create();
+    bcore_inst_op_init_type( o, type );
+    return o;
+}
+
+bcore_inst_op* bcore_inst_op_create_type_d( tp_t type, vd_t obj )
+{
+    bcore_inst_op* o = bcore_inst_op_create();
+    bcore_inst_op_init_type_d( o, type, obj );
+    return o;
+}
+
+bcore_inst_op* bcore_inst_op_create_typed( tp_t type, vc_t obj )
+{
+    bcore_inst_op* o = bcore_inst_op_create();
+    bcore_inst_op_copy_typed( o, type, obj );
+    return o;
+}
+
+bcore_inst_op* bcore_inst_op_create_aware_d( vd_t obj )
+{
+    bcore_inst_op* o = bcore_inst_op_create();
+    bcore_inst_op_init_aware_d( o, obj );
+    return o;
+}
+
+void bcore_inst_op_discard( bcore_inst_op* o )
+{
+    if( !o ) return;
+    bcore_inst_op_down( o );
+    bcore_un_alloc( sizeof( *o ), o, 1, 0, NULL );
+}
+
+bcore_inst_op* bcore_inst_op_clone( const bcore_inst_op* o )
+{
+    bcore_inst_op* ret = bcore_inst_op_create();
+    bcore_inst_op_copy( ret, o );
+    return ret;
+}
+
+static bcore_typed_link_s inst_op_to_typed_link( bcore_inst_op op )
+{
+    bcore_typed_link_s ret;
+    if( op.p )
+    {
+        ret.link = op.o;
+        ret.type = op.p->o_type;
+    }
+    else
+    {
+        ret.link = NULL;
+        ret.type = 0;
+    }
+    return ret;
+}
+
+s2_t bcore_inst_op_compare( const bcore_inst_op* o1, const bcore_inst_op* o2 )
+{
+    if( !o1 ) return ( o2 ) ?  1 : 0;
+    if( !o2 ) return ( o1 ) ? -1 : 0;
+    bcore_typed_link_s tl1 = inst_op_to_typed_link( *o1 );
+    bcore_typed_link_s tl2 = inst_op_to_typed_link( *o2 );
+    return bcore_compare_typed( typeof( "bcore_typed_link_s" ), &tl1, &tl2 );
+}
+
+void bcore_inst_op_translate_body( vc_t trans, tp_t type, const bcore_inst_op* obj, vd_t sink )
+{
+    bcore_typed_link_s tl = inst_op_to_typed_link( *obj );
+    bcore_translate_typed_object( trans, typeof( "bcore_typed_link_s" ), &tl, sink );
+}
+
+dt_p bcore_inst_op_interpret_body( vc_t inter, vd_t source, tp_t type, bcore_inst_op* obj )
+{
+    tp_t tl_type = typeof( "bcore_typed_link_s" );
+    bcore_typed_link_s tl;
+    bcore_inst_typed_init( tl_type, &tl );
+    bcore_interpret_typed_body( inter, source, tl_type, &tl );
+    bcore_inst_op_copy_typed( obj, tl_type, &tl );
+    bcore_inst_typed_down( tl_type, &tl );
+    dt_p ret = { .o = obj, .t = type };
+    return ret;
+}
+
+static bcore_flect_self_s* inst_op_create_self( void )
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_inst_op" ), sizeof( bcore_inst_op ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_init,           "bcore_fp_init",           "init"           );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_down,           "bcore_fp_down",           "down"           );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_copy,           "bcore_fp_copy",           "copy"           );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_copy_typed,     "bcore_fp_copy_typed",     "copy_typed"     );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_create,         "bcore_fp_create",         "create"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_create_typed,   "bcore_fp_create",         "create typed"   );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_discard,        "bcore_fp_discard",        "discard"        );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_clone,          "bcore_fp_clone",          "clone"          );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_compare,        "bcore_fp_compare",        "compare"        );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_translate_body, "bcore_fp_translate_body", "translate_body" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_interpret_body, "bcore_fp_interpret_body", "interpret_body" );
+    return self;
+}
+
+/**********************************************************************************************************************/
+
+void bcore_inst_define_self_creators( void )
+{
+    bcore_flect_define_creator( typeof( "bcore_inst_s"  ), inst_s_create_self  );
+    bcore_flect_define_creator( typeof( "bcore_inst_op" ), inst_op_create_self );
 }
 
 /**********************************************************************************************************************/

@@ -82,8 +82,6 @@ typedef struct bcore_inst_s
     void ( *check_sanity )( const bcore_inst_s* p, vc_t o );
 } bcore_inst_s;
 
-bcore_flect_self_s* bcore_inst_s_create_self( void );
-
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t type );
 const bcore_inst_s* bcore_inst_s_get_aware( vc_t obj );
 
@@ -128,6 +126,35 @@ void bcore_inst_aware_check_sanity(                        vc_t obj );
  */
 void bcore_inst_spect_check_sizeof( const bcore_inst_s* o, sz_t size );
 void bcore_inst_typed_check_sizeof(             tp_t type, sz_t size );
+
+/**********************************************************************************************************************/
+
+/// object-instance_p combination; (with reflection; supports instance, serialization, comparison)
+typedef struct bcore_inst_op
+{
+    vd_t                o;
+    const bcore_inst_s* p;
+} bcore_inst_op;
+
+void           bcore_inst_op_init( bcore_inst_op* o );
+void           bcore_inst_op_init_type(    bcore_inst_op* o, tp_t type );
+void           bcore_inst_op_init_type_d(  bcore_inst_op* o, tp_t type, vd_t obj );
+void           bcore_inst_op_init_aware_d( bcore_inst_op* o, vd_t obj );
+void           bcore_inst_op_down( bcore_inst_op* o );
+void           bcore_inst_op_copy( bcore_inst_op* o, const bcore_inst_op* src );
+void           bcore_inst_op_copy_type(  bcore_inst_op* o, tp_t type, vc_t src ); // copy src to o->o
+void           bcore_inst_op_copy_typed( bcore_inst_op* o, tp_t type, vc_t src ); // copy converting type to bcore_inst_op
+bcore_inst_op* bcore_inst_op_create();
+bcore_inst_op* bcore_inst_op_create_type(   tp_t type );
+bcore_inst_op* bcore_inst_op_create_type_d( tp_t type, vd_t obj );
+bcore_inst_op* bcore_inst_op_create_typed(  tp_t type, vc_t obj ); // create with deep conversion
+bcore_inst_op* bcore_inst_op_create_aware_d( vd_t obj );
+void           bcore_inst_op_discard(     bcore_inst_op* o );
+bcore_inst_op* bcore_inst_op_clone( const bcore_inst_op* o );
+
+/**********************************************************************************************************************/
+
+void bcore_inst_define_self_creators( void );
 
 /**********************************************************************************************************************/
 // testing, debugging
