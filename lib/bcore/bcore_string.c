@@ -731,145 +731,148 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
         }
         else if( *fp == '#' )
         {
-            if( ( bcore_strcmp( "#u3_t", fp ) >> 1 ) == 0 )
+            fp++;
+            tp_t type = 0;
+            if( fp[ 2 ] == '_' && fp[ 3 ] == 't' ) // all types of format xy_t
             {
-                fp += strlen( "#u3_t" );
-                int size = 0;
-                if( sscanf( o->sc + idx, "%"SCNu64"%n", va_arg( args, u3_t* ), &size ) <= 0 )
+                switch( fp[ 0 ] )
                 {
-                    ERR( "\n%s\nParsing #u3_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                    case 'u':
+                    {
+                        switch( fp[ 1 ] )
+                        {
+                            case '0': type = TYPEOF_u0_t; break;
+                            case '1': type = TYPEOF_u1_t; break;
+                            case '2': type = TYPEOF_u2_t; break;
+                            case '3': type = TYPEOF_u3_t; break;
+                            default: break;
+                        }
+                    }
+                    break;
+
+                    case 's':
+                    {
+                        switch( fp[ 1 ] )
+                        {
+                            case '0': type = TYPEOF_s0_t; break;
+                            case '1': type = TYPEOF_s1_t; break;
+                            case '2': type = TYPEOF_s2_t; break;
+                            case '3': type = TYPEOF_s3_t; break;
+                            case 'z': type = TYPEOF_sz_t; break;
+                            default: break;
+                        }
+                    }
+                    break;
+
+                    case 'f':
+                    {
+                        switch( fp[ 1 ] )
+                        {
+                            case '2': type = TYPEOF_f2_t; break;
+                            case '3': type = TYPEOF_f3_t; break;
+                            default: break;
+                        }
+                    }
+                    break;
+
+                    case 't': type = ( fp[ 1 ] == 'p' ) ? TYPEOF_tp_t : 0; break;
+                    case 'b': type = ( fp[ 1 ] == 'l' ) ? TYPEOF_bl_t : 0; break;
+                    default: break;
+                }
+
+                if( type == 0 ) ERR( "Unknown format type specifier: '%s'.", fp );
+
+                fp += 4;
+                int size = 0;
+                int sres = -1;
+                uintmax_t mval = 0;
+                switch( type )
+                {
+                    case TYPEOF_u0_t: sres = sscanf( o->sc + idx, "%"SCNu8"%n",  va_arg( args, u0_t* ), &size ); break;
+                    case TYPEOF_u1_t: sres = sscanf( o->sc + idx, "%"SCNu16"%n", va_arg( args, u1_t* ), &size ); break;
+                    case TYPEOF_u2_t: sres = sscanf( o->sc + idx, "%"SCNu32"%n", va_arg( args, u2_t* ), &size ); break;
+                    case TYPEOF_u3_t: sres = sscanf( o->sc + idx, "%"SCNu64"%n", va_arg( args, u3_t* ), &size ); break;
+                    case TYPEOF_s0_t: sres = sscanf( o->sc + idx, "%"SCNi8"%n",  va_arg( args, s0_t* ), &size ); break;
+                    case TYPEOF_s1_t: sres = sscanf( o->sc + idx, "%"SCNi16"%n", va_arg( args, s1_t* ), &size ); break;
+                    case TYPEOF_s2_t: sres = sscanf( o->sc + idx, "%"SCNi32"%n", va_arg( args, s2_t* ), &size ); break;
+                    case TYPEOF_s3_t: sres = sscanf( o->sc + idx, "%"SCNi64"%n", va_arg( args, s3_t* ), &size ); break;
+                    case TYPEOF_sz_t: sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &mval, &size ); *va_arg( args, sz_t* ) = mval; break;
+                    case TYPEOF_f2_t: sres = sscanf( o->sc + idx, "%g%n",        va_arg( args, f2_t* ), &size ); break;
+                    case TYPEOF_f3_t: sres = sscanf( o->sc + idx, "%lg%n",       va_arg( args, f3_t* ), &size ); break;
+                    case TYPEOF_tp_t: sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &mval, &size ); *va_arg( args, tp_t* ) = mval; break;
+                    case TYPEOF_bl_t:
+                    {
+                        bl_t val = false;
+                        if( ( bcore_strcmp( "true", o->sc + idx ) >> 1 ) == 0 )
+                        {
+                            val = true;
+                            idx += strlen( "true" );
+                        }
+                        else if( ( bcore_strcmp( "false", o->sc + idx ) >> 1 ) == 0 )
+                        {
+                            val = false;
+                            idx += strlen( "false" );
+                        }
+                        else
+                        {
+                            ERR( "\n%s\nParsing #bl_t failed at (%zu:%zu): true or false expected.", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                        }
+                        *va_arg( args, bl_t* ) = val;
+                        size = 0;
+                        sres = 1;
+                    }
+                    break;
+                }
+
+                if( sres <= 0 )
+                {
+                    ERR( "\n%s\nParsing type #%s failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, ifnameof( type ), bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
                 }
                 idx += size;
                 if( idx > end_l ) idx = end_l;
             }
-            else if( ( bcore_strcmp( "#u2_t", fp ) >> 1 ) == 0 )
+            else if( *fp == '?' )
             {
-                fp += strlen( "#u2_t" );
-                int size = 0;
-                if( sscanf( o->sc + idx, "%"SCNu32"%n", va_arg( args, u2_t* ), &size ) <= 0 )
+                sc_t fp0 = fp;
+                sz_t idx0 = idx;
+                fp++;
+                bool* flag = va_arg( args, bool* );
+                *flag = true;
+                if( *fp == '\'' )
                 {
-                    ERR( "\n%s\nParsing #u2_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                    fp++;
+                    while( *fp != '\'' && *fp != 0 && idx < end_l )
+                    {
+                        if( *flag )
+                        {
+                            *flag = *fp == o->sc[ idx ];
+                            idx += ( idx < end_l );
+                        }
+                        fp++;
+                    }
+                    fp += ( *fp == '\'' );
+                    if( !*flag ) idx = idx0;
                 }
-                idx += size;
-                if( idx > end_l ) idx = end_l;
-            }
-            else if( ( bcore_strcmp( "#u1_t", fp ) >> 1 ) == 0 )
-            {
-                fp += strlen( "#u1_t" );
-                int size = 0;
-                if( sscanf( o->sc + idx, "%"SCNu16"%n", va_arg( args, u1_t* ), &size ) <= 0 )
+                else
                 {
-                    ERR( "\n%s\nParsing #u1_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                    ERR( "Unknown format directive: '%s'.", fp0 );
                 }
-                idx += size;
-                if( idx > end_l ) idx = end_l;
             }
-            else if( ( bcore_strcmp( "#u0_t", fp ) >> 1 ) == 0 )
+            else if( *fp == '#' )
             {
-                fp += strlen( "#u0_t" );
-                int size = 0;
-                if( sscanf( o->sc + idx, "%"SCNu8"%n", va_arg( args, u0_t* ), &size ) <= 0 )
+                if( '#' == o->sc[ idx ] )
                 {
-                    ERR( "\n%s\nParsing #u0_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                    idx++;
+                    fp++;
                 }
-                idx += size;
-                if( idx > end_l ) idx = end_l;
-            }
-            else if( ( bcore_strcmp( "#s3_t", fp ) >> 1 ) == 0 )
-            {
-                fp += strlen( "#s3_t" );
-                int size = 0;
-                if( sscanf( o->sc + idx, "%"SCNi64"%n", va_arg( args, s3_t* ), &size ) <= 0 )
+                else
                 {
-                    ERR( "\n%s\nParsing #s3_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                    ERR( "\n%s\nMatching format characters '%s' failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, fp, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
                 }
-                idx += size;
-                if( idx > end_l ) idx = end_l;
             }
-            else if( ( bcore_strcmp( "#s2_t", fp ) >> 1 ) == 0 )
+            else if( ( bcore_strcmp( "aware_t", fp ) >> 1 ) == 0 )
             {
-                fp += strlen( "#s2_t" );
-                int size = 0;
-                if( sscanf( o->sc + idx, "%"SCNi32"%n", va_arg( args, s2_t* ), &size ) <= 0 )
-                {
-                    ERR( "\n%s\nParsing #s2_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
-                }
-                idx += size;
-                if( idx > end_l ) idx = end_l;
-            }
-            else if( ( bcore_strcmp( "#s1_t", fp ) >> 1 ) == 0 )
-            {
-                fp += strlen( "#s1_t" );
-                int size = 0;
-                if( sscanf( o->sc + idx, "%"SCNi16"%n", va_arg( args, s1_t* ), &size ) <= 0 )
-                {
-                    ERR( "\n%s\nParsing #s1_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
-                }
-                idx += size;
-                if( idx > end_l ) idx = end_l;
-            }
-            else if( ( bcore_strcmp( "#s0_t", fp ) >> 1 ) == 0 )
-            {
-                fp += strlen( "#s0_t" );
-                int size = 0;
-                if( sscanf( o->sc + idx, "%"SCNi8"%n", va_arg( args, s0_t* ), &size ) <= 0 )
-                {
-                    ERR( "\n%s\nParsing #s0_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
-                }
-                idx += size;
-                if( idx > end_l ) idx = end_l;
-            }
-            else if( ( bcore_strcmp( "#f3_t", fp ) >> 1 ) == 0 )
-            {
-                fp += strlen( "#f3_t" );
-                int size = 0;
-                if( sscanf( o->sc + idx, "%lg%n", va_arg( args, f3_t* ), &size ) <= 0 )
-                {
-                    ERR( "\n%s\nParsing #f3_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
-                }
-                idx += size;
-                if( idx > end_l ) idx = end_l;
-            }
-            else if( ( bcore_strcmp( "#f2_t", fp ) >> 1 ) == 0 )
-            {
-                fp += strlen( "#f2_t" );
-                int size = 0;
-                if( sscanf( o->sc + idx, "%g%n", va_arg( args, f2_t* ), &size ) <= 0 )
-                {
-                    ERR( "\n%s\nParsing #f2_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
-                }
-                idx += size;
-                if( idx > end_l ) idx = end_l;
-            }
-            else if( ( bcore_strcmp( "#sz_t", fp ) >> 1 ) == 0 )
-            {
-                fp += strlen( "#sz_t" );
-                int size = 0;
-                uintmax_t val;
-                if( sscanf( o->sc + idx, "%"SCNuMAX"%n", &val, &size ) <= 0 )
-                {
-                    ERR( "\n%s\nParsing #sz_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
-                }
-                *va_arg( args, sz_t* ) = val;
-                idx += size;
-                if( idx > end_l ) idx = end_l;
-            }
-            else if( ( bcore_strcmp( "#tp_t", fp ) >> 1 ) == 0 )
-            {
-                fp += strlen( "#tp_t" );
-                int size = 0;
-                uintmax_t val;
-                if( sscanf( o->sc + idx, "%"SCNuMAX"%n", &val, &size ) <= 0 )
-                {
-                    ERR( "\n%s\nParsing #tp_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
-                }
-                *va_arg( args, tp_t* ) = val;
-                idx += size;
-                if( idx > end_l ) idx = end_l;
-            }
-            else if( ( bcore_strcmp( "#aware_t", fp ) >> 1 ) == 0 )
-            {
-                fp += strlen( "#aware_t" );
+                fp += strlen( "aware_t" );
                 int size = 0;
                 uintmax_t val;
                 if( sscanf( o->sc + idx, "%"SCNuMAX"%n", &val, &size ) <= 0 )
@@ -880,30 +883,9 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                 idx += size;
                 if( idx > end_l ) idx = end_l;
             }
-            else if( ( bcore_strcmp( "#bl_t", fp ) >> 1 ) == 0 )
+            else if( ( bcore_strcmp( "bool", fp ) >> 1 ) == 0 )
             {
-                fp += strlen( "#bl_t" );
-                bl_t val = false;
-                if( ( bcore_strcmp( "true", o->sc + idx ) >> 1 ) == 0 )
-                {
-                    val = true;
-                    idx += strlen( "true" );
-                }
-                else if( ( bcore_strcmp( "false", o->sc + idx ) >> 1 ) == 0 )
-                {
-                    val = false;
-                    idx += strlen( "false" );
-                }
-                else
-                {
-                    ERR( "\n%s\nParsing #bl_t failed at (%zu:%zu): true or false expected.", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
-                }
-                *va_arg( args, bl_t* ) = val;
-                if( idx > end_l ) idx = end_l;
-            }
-            else if( ( bcore_strcmp( "#bool", fp ) >> 1 ) == 0 )
-            {
-                fp += strlen( "#bool" );
+                fp += strlen( "bool" );
                 bool val = false;
                 if( ( bcore_strcmp( "true", o->sc + idx ) >> 1 ) == 0 )
                 {
@@ -922,9 +904,9 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                 *va_arg( args, bool* ) = val;
                 if( idx > end_l ) idx = end_l;
             }
-            else if( ( bcore_strcmp( "#name", fp ) >> 1 ) == 0 )
+            else if( ( bcore_strcmp( "name", fp ) >> 1 ) == 0 )
             {
-                fp += strlen( "#name" );
+                fp += strlen( "name" );
                 bcore_string_s* string = va_arg( args, bcore_string_s* );
                 bcore_string_s_clear( string );
                 char c = o->sc[ idx ];
@@ -950,9 +932,9 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                     }
                 }
             }
-            else if( ( bcore_strcmp( "#string", fp ) >> 1 ) == 0 )
+            else if( ( bcore_strcmp( "string", fp ) >> 1 ) == 0 )
             {
-                fp += strlen( "#string" );
+                fp += strlen( "string" );
                 bcore_string_s* string = va_arg( args, bcore_string_s* );
                 bcore_string_s_clear( string );
                 if( o->sc[ idx ] != '"' ) ERR( "\n%s\n'\"' expected at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
@@ -976,46 +958,6 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                     }
                 }
                 idx++;
-            }
-            else if( ( bcore_strcmp( "#?", fp ) >> 1 ) == 0 )
-            {
-                sc_t fp0 = fp;
-                sz_t idx0 = idx;
-                fp += strlen( "#?" );
-                bool* flag = va_arg( args, bool* );
-                *flag = true;
-                if( *fp == '\'' )
-                {
-                    fp++;
-                    while( *fp != '\'' && *fp != 0 && idx < end_l )
-                    {
-                        if( *flag )
-                        {
-                            *flag = *fp == o->sc[ idx ];
-                            idx += ( idx < end_l );
-                        }
-                        fp++;
-                    }
-                    fp += ( *fp == '\'' );
-                    if( !*flag ) idx = idx0;
-                }
-                else
-                {
-                    ERR( "Unknown format directive: '%s'.", fp0 );
-                }
-            }
-            else if( ( bcore_strcmp( "##", fp ) >> 1 ) == 0 )
-            {
-                if( '#' == o->sc[ idx ] )
-                {
-                    idx++;
-                    fp++;
-                }
-                else
-                {
-                    ERR( "\n%s\nMatching format characters '%s' failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, fp, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
-                }
-                fp += strlen( "##" );
             }
             else
             {
