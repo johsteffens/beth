@@ -5,6 +5,7 @@
 #include "bcore_spect_array.h"
 #include "bcore_spect.h"
 #include "bcore_life.h"
+#include "bcore_bml.h"
 
 /**********************************************************************************************************************/
 // bcore_compare_s
@@ -45,71 +46,68 @@ static s2_t compare_o( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     return ( ( bcore_fp_compare )p->fp_compare )( obj1, obj2 );
 }
 
+static s2_t compare_leaf( tp_t type, vc_t obj1, vc_t obj2 )
+{
+    switch( type )
+    {
+        case TYPEOF_s3_t: return ( *( s3_t* )obj1 == *( s3_t* )obj2 ) ? 0 : ( *( s3_t* )obj1 < *( s3_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_s2_t: return ( *( s2_t* )obj1 == *( s2_t* )obj2 ) ? 0 : ( *( s2_t* )obj1 < *( s2_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_s1_t: return ( *( s1_t* )obj1 == *( s1_t* )obj2 ) ? 0 : ( *( s1_t* )obj1 < *( s1_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_s0_t: return ( *( s0_t* )obj1 == *( s0_t* )obj2 ) ? 0 : ( *( s0_t* )obj1 < *( s0_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_u3_t: return ( *( u3_t* )obj1 == *( u3_t* )obj2 ) ? 0 : ( *( u3_t* )obj1 < *( u3_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_u2_t: return ( *( u2_t* )obj1 == *( u2_t* )obj2 ) ? 0 : ( *( u2_t* )obj1 < *( u2_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_u1_t: return ( *( u1_t* )obj1 == *( u1_t* )obj2 ) ? 0 : ( *( u1_t* )obj1 < *( u1_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_u0_t: return ( *( u0_t* )obj1 == *( u0_t* )obj2 ) ? 0 : ( *( u0_t* )obj1 < *( u0_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_f3_t: return ( *( f3_t* )obj1 == *( f3_t* )obj2 ) ? 0 : ( *( f3_t* )obj1 < *( f3_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_f2_t: return ( *( f2_t* )obj1 == *( f2_t* )obj2 ) ? 0 : ( *( f2_t* )obj1 < *( f2_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_sz_t: return ( *( sz_t* )obj1 == *( sz_t* )obj2 ) ? 0 : ( *( sz_t* )obj1 < *( sz_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_sd_t: return bcore_strcmp( *( sd_t* )obj1, *( sd_t* )obj2 );
+        case TYPEOF_sc_t: return bcore_strcmp( *( sc_t* )obj1, *( sc_t* )obj2 );
+        case TYPEOF_tp_t: return ( *( tp_t* )obj1 == *( tp_t* )obj2 ) ? 0 : ( *( tp_t* )obj1 < *( tp_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_bl_t: return ( *( bl_t* )obj1 == *( bl_t* )obj2 ) ? 0 : ( *( bl_t* )obj1 < *( bl_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_aware_t: return ( *( aware_t* )obj1 == *( aware_t* )obj2 ) ? 0 : ( *( aware_t* )obj1 < *( aware_t* )obj2 ) ? 1 : -1;
+        default: ERR( "Cannot compare instances of leaf type %s.", ifnameof( type ) );
+    }
+    return 0;
+}
+
 static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
-    if( obj1 == NULL ) return ( obj2 == NULL ) ? 0 :  1;
-    if( obj2 == NULL ) return ( obj1 == NULL ) ? 0 : -1;
-    if( p->via->size == 0 ) // leaf types
-    {
-        switch( p->o_type )
-        {
-            case TYPEOF_s3_t: return ( *( s3_t* )obj1 == *( s3_t* )obj2 ) ? 0 : ( *( s3_t* )obj1 < *( s3_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_s2_t: return ( *( s2_t* )obj1 == *( s2_t* )obj2 ) ? 0 : ( *( s2_t* )obj1 < *( s2_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_s1_t: return ( *( s1_t* )obj1 == *( s1_t* )obj2 ) ? 0 : ( *( s1_t* )obj1 < *( s1_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_s0_t: return ( *( s0_t* )obj1 == *( s0_t* )obj2 ) ? 0 : ( *( s0_t* )obj1 < *( s0_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_u3_t: return ( *( u3_t* )obj1 == *( u3_t* )obj2 ) ? 0 : ( *( u3_t* )obj1 < *( u3_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_u2_t: return ( *( u2_t* )obj1 == *( u2_t* )obj2 ) ? 0 : ( *( u2_t* )obj1 < *( u2_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_u1_t: return ( *( u1_t* )obj1 == *( u1_t* )obj2 ) ? 0 : ( *( u1_t* )obj1 < *( u1_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_u0_t: return ( *( u0_t* )obj1 == *( u0_t* )obj2 ) ? 0 : ( *( u0_t* )obj1 < *( u0_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_f3_t: return ( *( f3_t* )obj1 == *( f3_t* )obj2 ) ? 0 : ( *( f3_t* )obj1 < *( f3_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_f2_t: return ( *( f2_t* )obj1 == *( f2_t* )obj2 ) ? 0 : ( *( f2_t* )obj1 < *( f2_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_sz_t: return ( *( sz_t* )obj1 == *( sz_t* )obj2 ) ? 0 : ( *( sz_t* )obj1 < *( sz_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_sd_t: return bcore_strcmp( *( sd_t* )obj1, *( sd_t* )obj2 );
-            case TYPEOF_sc_t: return bcore_strcmp( *( sc_t* )obj1, *( sc_t* )obj2 );
-            case TYPEOF_tp_t: return ( *( tp_t* )obj1 == *( tp_t* )obj2 ) ? 0 : ( *( tp_t* )obj1 < *( tp_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_bl_t: return ( *( bl_t* )obj1 == *( bl_t* )obj2 ) ? 0 : ( *( bl_t* )obj1 < *( bl_t* )obj2 ) ? 1 : -1;
-            case TYPEOF_aware_t: return ( *( aware_t* )obj1 == *( aware_t* )obj2 ) ? 0 : ( *( aware_t* )obj1 < *( aware_t* )obj2 ) ? 1 : -1;
-            default: ERR( "Cannot compare instances of type %s.", ifnameof( p->o_type ) );
-        }
-        return 0;
-    }
-
+    if( obj1 == obj2 ) return  0;
+    if( obj1 == NULL ) return  1;
+    if( obj2 == NULL ) return -1;
+    if( p->via->size == 0 ) return compare_leaf( p->o_type, obj1, obj2 );
     const bcore_via_s* via = p->via;
     for( sz_t i = 0; i < via->size; i++ )
     {
         if( bcore_via_is_array( via, i ) )
         {
             const bcore_array_s* arr_p = bcore_via_get_spect_array( via, i );
-            vc_t o1    = via->iget_c( via, obj1, i );
-            vc_t o2    = via->iget_c( via, obj2, i );
-            sz_t size1 = arr_p->get_size( arr_p, o1 );
-            sz_t size2 = arr_p->get_size( arr_p, o2 );
+            vc_t o1_l  = via->iget_c( via, obj1, i );
+            vc_t o2_l  = via->iget_c( via, obj2, i );
+            sz_t size1 = arr_p->get_size( arr_p, o1_l );
+            sz_t size2 = arr_p->get_size( arr_p, o2_l );
             if( size1 != size2 ) return size1 < size2 ? 1 : -1;
-            for( sz_t i = 0; i < size1; i++ )
+            for( sz_t j = 0; j < size1; j++ )
             {
-                tp_t type1 = arr_p->get_itype( arr_p, obj1, i );
-                tp_t type2 = arr_p->get_itype( arr_p, obj2, i );
-                if( type1 != type2 ) return ( type1 < type2 ) ? 1 : -1;
-                if( type1 != 0 )
-                {
-                    s2_t c = bcore_compare_typed( type1, arr_p->get_c( arr_p, o1, i ), arr_p->get_c( arr_p, o2, i ) );
-                    if( c != 0 ) return c;
-                }
+                tp_t type1 = arr_p->get_itype( arr_p, o1_l, j );
+                tp_t type2 = arr_p->get_itype( arr_p, o2_l, j );
+                vc_t o1_ll = arr_p->get_c(     arr_p, o1_l, j );
+                vc_t o2_ll = arr_p->get_c(     arr_p, o2_l, j );
+                s2_t c = bcore_compare_bityped( type1, o1_ll, type2, o2_ll );
+                if( c != 0 ) return c;
             }
         }
         else
         {
             tp_t type1 = via->iget_type( via, obj1, i );
             tp_t type2 = via->iget_type( via, obj2, i );
-            if( type1 != type2 ) return ( type1 < type2 ) ? 1 : -1;
-            if( type1 != 0 )
-            {
-                s2_t c = bcore_compare_typed( type1, via->iget_c( via, obj1, i ), via->iget_c( via, obj2, i ) );
-                if( c != 0 ) return c;
-            }
+            vc_t o1_l  = via->iget_c(    via, obj1, i );
+            vc_t o2_l  = via->iget_c(    via, obj2, i );
+            s2_t c = bcore_compare_bityped( type1, o1_l, type2, o2_l );
+            if( c != 0 ) return c;
         }
     }
-
     return 0;
 }
 
@@ -121,6 +119,71 @@ static s2_t compare_amoebic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     compare_nc nc = { ( ap_t )compare_amoeba, p, obj1, obj2, 0 };
     p->fp_compare( &nc );
     return nc.ret;
+}
+
+static bcore_string_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
+{
+    if( obj1 == obj2 ) return NULL;
+    if( obj1 == NULL ) return bcore_string_s_createf( "obj1 == NULL, obj2!%s", ifnameof( p->o_type ) );
+    if( obj2 == NULL ) return bcore_string_s_createf( "obj1!%s, obj2 == NULL", ifnameof( p->o_type ) );
+    if( p->via->size == 0 )
+    {
+        s2_t c = compare_leaf( p->o_type, obj1, obj2 );
+        if( c != 0 )
+        {
+            bcore_string_s* s = bcore_string_s_create();
+            bcore_string_s_pushf( s, "!%s: obj1:", ifnameof( p->o_type ) );
+            bcore_string_s_push_typed( s, p->o_type, obj1 );
+            bcore_string_s_pushf( s, "obj2:", ifnameof( p->o_type ) );
+            bcore_string_s_push_typed( s, p->o_type, obj2 );
+            return s;
+        }
+    }
+    const bcore_via_s* via = p->via;
+    for( sz_t i = 0; i < via->size; i++ )
+    {
+        if( bcore_via_is_array( via, i ) )
+        {
+            const bcore_array_s* arr_p = bcore_via_get_spect_array( via, i );
+            vc_t o1_l  = via->iget_c( via, obj1, i );
+            vc_t o2_l  = via->iget_c( via, obj2, i );
+            sz_t size1 = arr_p->get_size( arr_p, o1_l );
+            sz_t size2 = arr_p->get_size( arr_p, o2_l );
+            if( size1 != size2 )
+            {
+                return bcore_string_s_createf( "!%s::%s: !%s: size1:%zu, size2:%zu",
+                                              ifnameof( p->o_type ), ifnameof( via->iget_name( via, i ) ),
+                                              ifnameof( via->iget_type( via, obj1, i ) ), size1, size2 );
+            }
+            for( sz_t j = 0; j < size1; j++ )
+            {
+                tp_t type1 = arr_p->get_itype( arr_p, o1_l, j );
+                tp_t type2 = arr_p->get_itype( arr_p, o2_l, j );
+                vc_t o1_ll = arr_p->get_c(     arr_p, o1_l, j );
+                vc_t o2_ll = arr_p->get_c(     arr_p, o2_l, j );
+                bcore_string_s* s = bcore_diff_bityped( type1, o1_ll, type2, o2_ll );
+                if( s != NULL )
+                {
+                    return bcore_string_s_pushf( s, "\n!%s::%s: !%s[%zu]",
+                                                ifnameof( p->o_type ), ifnameof( via->iget_name( via, i ) ),
+                                                ifnameof( via->iget_type( via, obj1, i ) ), j );
+                }
+            }
+        }
+        else
+        {
+            tp_t type1 = via->iget_type( via, obj1, i );
+            tp_t type2 = via->iget_type( via, obj2, i );
+            vc_t o1_l  = via->iget_c(    via, obj1, i );
+            vc_t o2_l  = via->iget_c(    via, obj2, i );
+            bcore_string_s* s = bcore_diff_bityped( type1, o1_l, type2, o2_l );
+            if( s != NULL )
+            {
+                return bcore_string_s_pushf( s, "\n!%s::%s", ifnameof( p->o_type ), ifnameof( via->iget_name( via, i ) ) );
+            }
+        }
+    }
+    return NULL;
 }
 
 /**********************************************************************************************************************/
@@ -174,6 +237,13 @@ s2_t bcore_compare_typed( tp_t type, vc_t obj1, vc_t obj2 )
     return bcore_compare_spect( bcore_compare_s_get_typed( type ), obj1, obj2 );
 }
 
+s2_t bcore_compare_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 )
+{
+    if( type1 != type2 ) return ( type1 < type2 ) ? 1 : -1;
+    if( type1 == 0     ) return 0;
+    return bcore_compare_typed( type1, obj1, obj2 );
+}
+
 bool bcore_equal_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
     return bcore_compare_spect( p, obj1, obj2 ) == 0;
@@ -184,19 +254,61 @@ bool bcore_equal_typed( tp_t type, vc_t obj1, vc_t obj2 )
     return bcore_compare_typed( type, obj1, obj2 ) == 0;
 }
 
+bool bcore_equal_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 )
+{
+    return bcore_compare_bityped( type1, obj1, type2, obj2 ) == 0;
+}
+
 s2_t bcore_compare_aware( vc_t obj1, vc_t obj2 )
 {
-    if( !obj1 ) return obj2 ?  1 : 0;
-    if( !obj2 ) return obj1 ? -1 : 0;
-    tp_t type1 = *( aware_t* )obj1;
-    tp_t type2 = *( aware_t* )obj2;
-    if( type1 != type2 ) return type1 < type2 ? 1 : -1;
-    return bcore_compare_typed( type1, obj1, obj2 );
+    tp_t type1 = obj1 ? *( aware_t* )obj1 : 0;
+    tp_t type2 = obj2 ? *( aware_t* )obj2 : 0;
+    return bcore_compare_bityped( type1, obj1, type2, obj2 );
 }
 
 bool bcore_equal_aware( vc_t obj1, vc_t obj2 )
 {
     return bcore_compare_aware( obj1, obj2 ) == 0;
+}
+
+bcore_string_s* bcore_diff_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
+{
+    if( p->compare == compare_generic )
+    {
+        return diff_generic( p, obj1, obj2 );
+    }
+    else
+    {
+        if( bcore_compare_spect( p, obj1, obj2 ) != 0 )
+        {
+            bcore_string_s* s = bcore_string_s_createf( "!%s: objects overloading comparison differ:", ifnameof( p->o_type ) );
+            bcore_string_s_pushf( s, "\n\tobj1: " );
+            bcore_bml_typed_to_string( p->o_type, obj1, s );
+            bcore_string_s_pushf( s, "\tobj2: " );
+            bcore_bml_typed_to_string( p->o_type, obj2, s );
+            return s;
+        }
+    }
+    return NULL;
+}
+
+bcore_string_s* bcore_diff_typed( tp_t type, vc_t obj1, vc_t obj2 )
+{
+    return bcore_diff_spect( bcore_compare_s_get_typed( type ), obj1, obj2 );
+}
+
+bcore_string_s* bcore_diff_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 )
+{
+    if( type1 != type2 ) return bcore_string_s_createf( "obj1 of '%s', obj2 of '%s'", ifnameof( type1 ), ifnameof( type2 ) );
+    if( type1 == 0 ) return NULL;
+    return bcore_diff_typed( type1, obj1, obj2 );
+}
+
+bcore_string_s* bcore_diff_aware( vc_t obj1, vc_t obj2 )
+{
+    tp_t type1 = obj1 ? *( aware_t* )obj1 : 0;
+    tp_t type2 = obj2 ? *( aware_t* )obj2 : 0;
+    return bcore_diff_bityped( type1, obj1, type2, obj2 );
 }
 
 /**********************************************************************************************************************/
