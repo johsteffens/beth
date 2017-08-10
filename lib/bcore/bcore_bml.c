@@ -11,6 +11,7 @@
 #include "bcore_sinks.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
+#include "bcore_spect_compare.h"
 
 /**********************************************************************************************************************/
 
@@ -76,8 +77,6 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
         const bcore_string_s* s0 = obj;
         bcore_string_s* s1 = bcore_string_s_clone( s0 );
         bcore_string_s_replace_char_sc( s1, '\"', "\\\"" );
-        bcore_string_s_replace_char_sc( s1, '\n', "\\n" );
-        bcore_string_s_replace_char_sc( s1, '\r', "\\r" );
         if( o->break_leaf )
         {
             snk->push_char( snk, dst, '\n' );
@@ -298,6 +297,18 @@ void bcore_bml_aware_to_file( vc_t obj, sc_t file )
     bcore_bml_typed_to_file( *( aware_t* )obj, obj, file );
 }
 
+void bcore_bml_typed_to_string( tp_t type, vc_t obj, bcore_string_s* string )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    bcore_translate_typed_object( bcore_life_s_push_aware( l, bcore_bml_translator_s_create() ), type, obj, string );
+    bcore_life_s_discard( l );
+}
+
+void bcore_bml_aware_to_string( vc_t obj, bcore_string_s* string )
+{
+    bcore_bml_typed_to_string( *( aware_t* )obj, obj, string );
+}
+
 /**********************************************************************************************************************/
 /// bcore_bml_interpreter
 /**********************************************************************************************************************/
@@ -395,11 +406,6 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                 }
 
                 const bcore_vitem_s* vitem = via_p->iget_vitem( via_p, index );
-                if( index == 0 && vitem->type == TYPEOF_aware_t )
-                {
-                    if( *(aware_t*)obj != type ) ERR( "Type of aware object '%s' different from expected type '%s'", ifnameof( *(aware_t*)obj ), type );
-                    continue;
-                }
 
                 vd_t element = ( u0_t* )obj + vitem->offs;
                 bool array = false, link = false, typed = false;
@@ -510,6 +516,10 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                         break;
                         default: break;
                     }
+                }
+                if( index == 0 && vitem->type == TYPEOF_aware_t )
+                {
+                    if( *(aware_t*)obj != type ) ERR( "Type of aware object '%s' different from expected type '%s'", ifnameof( *(aware_t*)obj ), type );
                 }
             }
         }
@@ -632,12 +642,22 @@ dt_p bcore_bml_interpreter_s_interpret_typed( const bcore_bml_interpreter_s* o, 
 
 /**********************************************************************************************************************/
 
-dt_p bcore_bml_object_from_file( tp_t type, vc_t obj, sc_t file )
+dt_p bcore_bml_object_from_file( sc_t file )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_chain_s_create() );
     bcore_source_chain_s_push_d( chain, bcore_source_file_s_create_name( file ) );
     bcore_source_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_source_string_s" ) ) );
+    dt_p dt = bcore_interpret_object( bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() ), chain );
+    bcore_life_s_discard( l );
+    return dt;
+}
+
+dt_p bcore_bml_object_from_string( const bcore_string_s* string )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_chain_s_create() );
+    bcore_source_chain_s_push_d( chain, bcore_source_string_s_create_string( string ) );
     dt_p dt = bcore_interpret_object( bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() ), chain );
     bcore_life_s_discard( l );
     return dt;
@@ -649,6 +669,36 @@ void bcore_bml_define_self_creators( void )
 {
     bcore_flect_define_creator( typeof( "bcore_bml_translator_s"  ), translator_s_create_self  );
     bcore_flect_define_creator( typeof( "bcore_bml_interpreter_s" ), interpreter_s_create_self );
+}
+
+/**********************************************************************************************************************/
+
+void bcore_bml_transfer_test_typed( tp_t type, vd_t obj )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    bcore_string_s* string = bcore_life_s_push_aware( l, bcore_string_s_create() );
+    bcore_bml_typed_to_string( type, obj, string );
+    dt_p dt = bcore_bml_object_from_string( string );
+    bcore_life_s_push_typed( l, dt.t, dt.o );
+    s2_t c = bcore_compare_bityped( type, obj, dt.t, dt.o );
+    if( c != 0 )
+    {
+        bcore_string_s* diff = bcore_life_s_push_aware( l, bcore_diff_bityped( type, obj, dt.t, dt.o ) );
+        if( diff )
+        {
+            ERR( "Comparison returned '%"PRIi32"':\n%s\n", c, diff->sc );
+        }
+        else
+        {
+            ERR( "Comparison returned '%"PRIi32"' but diff returned 'NULL'\n", c );
+        }
+    }
+    bcore_life_s_discard( l );
+}
+
+void bcore_bml_transfer_test_aware( vd_t obj )
+{
+    bcore_bml_transfer_test_typed( *( aware_t* )obj, obj );
 }
 
 /**********************************************************************************************************************/
@@ -684,8 +734,7 @@ static bcore_string_s* translate_selftest( void )
         specs_v->nset_c( specs_v, specs, typeof( "param2" ), &s3_v );
 
         bcore_string_s* s = specs_v->ncreate( specs_v, specs, typeof( "name" ) );
-        bcore_string_s_pushf( s, "\"my string\n\"" );
-
+        bcore_string_s_pushf( s, "\"my string\"" );
         {
             const bcore_array_s* numarr_p = bcore_array_s_get_typed( specs_v->nget_type( specs_v, specs, typeof( "numarr" ) ) );
             vd_t numarr = specs_v->nget_d( specs_v, specs, typeof( "numarr" ) );
@@ -712,11 +761,6 @@ static bcore_string_s* translate_selftest( void )
 
     bcore_bml_translator_s* tbml = bcore_life_s_push_aware( l, bcore_bml_translator_s_create() );
 
-//    bcore_translate_aware_object( tbml, specs_arr, out );
-//    bcore_translate_aware_object( tbml, tbml,      out );
-
-    // bcore_string_s_print( out );
-
     {
         bcore_string_s* buf1 = bcore_life_s_push_aware( l, bcore_string_s_create() );
         bcore_string_s* buf2 = bcore_life_s_push_aware( l, bcore_string_s_create() );
@@ -727,6 +771,8 @@ static bcore_string_s* translate_selftest( void )
         bcore_translate_aware_object( tbml, specs_arr_2, buf2 );
         ASSERT( bcore_string_s_cmp_string( buf1, buf2 ) == 0 );
     }
+
+    bcore_bml_transfer_test_aware( specs_arr );
 
     bcore_life_s_discard( l );
     return out;

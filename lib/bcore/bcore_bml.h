@@ -34,9 +34,11 @@ void bcore_bml_translator_s_translate_body(   const bcore_bml_translator_s* o, t
 
 /// syntactic sugar
 void bcore_bml_typed_to_stdout( tp_t type, vc_t obj );
-void bcore_bml_aware_to_stdout( vc_t obj );
+void bcore_bml_aware_to_stdout(            vc_t obj );
 void bcore_bml_typed_to_file(   tp_t type, vc_t obj, sc_t file );
-void bcore_bml_aware_to_file(   vc_t obj, sc_t file );
+void bcore_bml_aware_to_file(              vc_t obj, sc_t file );
+void bcore_bml_typed_to_string( tp_t type, vc_t obj, bcore_string_s* string );
+void bcore_bml_aware_to_string(            vc_t obj, bcore_string_s* string );
 
 /**********************************************************************************************************************/
 
@@ -59,7 +61,8 @@ dt_p bcore_bml_interpreter_s_interpret_body(   const bcore_bml_interpreter_s* o,
 /**********************************************************************************************************************/
 
 /// syntactic sugar
-dt_p bcore_bml_object_from_file( tp_t type, vc_t obj, sc_t file );
+dt_p bcore_bml_object_from_file( sc_t file );
+dt_p bcore_bml_object_from_string( const bcore_string_s* string );
 
 /**********************************************************************************************************************/
 
@@ -67,6 +70,10 @@ void bcore_bml_define_self_creators( void );
 
 /**********************************************************************************************************************/
 // testing, debugging
+
+/// translates to data, interprets data into a copy, compares copy with original, error if not identical
+void bcore_bml_transfer_test_typed( tp_t type, vd_t obj );
+void bcore_bml_transfer_test_aware(            vd_t obj );
 
 bcore_string_s* bcore_bml_selftest( void );
 
