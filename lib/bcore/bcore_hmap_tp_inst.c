@@ -199,7 +199,7 @@ vd_t bcore_hmap_tp_inst_s_get( const bcore_hmap_tp_inst_s* o, tp_t key )
 {
     if( !key ) return NULL;
     sz_t idx = find( o, key );
-    return ( idx < o->size ) ? &o->data[ idx ].val.o : NULL;
+    return ( idx < o->size ) ? o->data[ idx ].val.o : NULL;
 }
 
 const bcore_inst_op* bcore_hmap_tp_inst_s_get_op( const bcore_hmap_tp_inst_s* o, tp_t key )
@@ -388,7 +388,7 @@ void bcore_hmap_tp_inst_define_self_creators( void )
 }
 
 /**********************************************************************************************************************/
-
+/*
 bcore_string_s* bcore_hmap_tp_inst_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
@@ -412,8 +412,130 @@ bcore_string_s* bcore_hmap_tp_inst_selftest( void )
     bcore_life_s_discard( l );
     return NULL;
 }
-
+*/
 /**********************************************************************************************************************/
+// selftest
 
-#include <time.h> // only for selftest
+#include <time.h>
+#include "bcore_quicktypes.h"
+
+bcore_string_s* bcore_hmap_tp_inst_s_status( bcore_hmap_tp_inst_s* o )
+{
+    bcore_string_s* string = bcore_string_s_create();
+    sz_t keys = bcore_hmap_tp_inst_s_keys( o );
+    bcore_string_s_pushf( string, "keys ........... %zu\n", keys );
+    bcore_string_s_pushf( string, "nodes .......... %lu\n", o->size );
+    bcore_string_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
+    return string;
+}
+
+bcore_string_s* bcore_hmap_tp_inst_selftest( void )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    bcore_string_s* log = bcore_string_s_create();
+    bcore_hmap_tp_inst_s* map = bcore_life_s_push_aware( l, bcore_hmap_tp_inst_s_create() );
+    const sz_t cycles = 100000;
+
+    typedef struct
+    {
+        tp_t key;
+        u3_t val;
+    } kv_s;
+
+    kv_s* kvbuf = bcore_alloc( NULL, cycles * sizeof( kv_s ) );
+    sz_t kvbuf_size = 0;
+
+    clock_t time = clock();
+    bcore_string_s_pushf( log, "Mixed access: " );
+
+    {
+        u3_t rval1 = 1;
+        u3_t rval2 = 12345;
+        for( sz_t i = 0; i < cycles; i++ )
+        {
+            rval1 = bcore_xsg_u2( rval1 );
+            rval2 = bcore_xsg_u2( rval2 );
+            kv_s kv;
+            kv.key = ( tp_t )rval1;
+            kv.val = ( u3_t )rval2;
+            kvbuf[ kvbuf_size++ ] = kv;
+
+            // set
+            bcore_hmap_tp_inst_s_set_type_c( map, kv.key, TYPEOF_u3_t, &kv.val );
+
+            // retrieve
+            rval1 = bcore_xsg_u2( rval1 );
+            kv = kvbuf[ rval1 % kvbuf_size ];
+            u3_t* val_ptr = bcore_hmap_tp_inst_s_get( map, kv.key );
+            if( kv.val != *val_ptr ) ERR( "value mismatch (%lu vs %lu)", kv.val, *val_ptr );
+
+            // delete
+            rval1 = bcore_xsg_u2( rval1 );
+            if( ( ( rval1 >> 10 ) & 1 ) == 1 )
+            {
+                rval1 = bcore_xsg_u2( rval1 );
+                sz_t idx = rval1 % kvbuf_size;
+                kv_s kv = kvbuf[ idx ];
+                if( !bcore_hmap_tp_inst_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
+                bcore_hmap_tp_inst_s_remove_d( map, kv.key );
+                if( bcore_hmap_tp_inst_s_get( map, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
+                kvbuf_size--;
+                kvbuf[ idx ] = kvbuf[ kvbuf_size ];
+            }
+        }
+    }
+
+    time = clock() - time;
+    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    bcore_string_s_push_string_d( log, bcore_hmap_tp_inst_s_status( map ) );
+
+    time = clock();
+    bcore_hmap_tp_inst_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tp_inst_s_clone( map ) );
+    time = clock() - time;
+    bcore_string_s_pushf( log, "Clone .......... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+//    bcore_bml_aware_to_stdout( map );
+//    bcore_bml_aware_to_stdout( map2 );
+
+    time = clock();
+    ASSERT( bcore_compare_aware( map, map2 ) == 0 );
+    time = clock() - time;
+    bcore_string_s_pushf( log, "Comparison ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+
+    time = clock();
+    bcore_bml_transfer_test_aware( map );
+    time = clock() - time;
+    bcore_string_s_pushf( log, "BML Transfer ... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+
+    time = clock();
+    bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
+    sz_t read_cycles = 20;
+    for( sz_t j = 0; j < read_cycles; j++ )
+    {
+        for( sz_t i = 0; i < kvbuf_size; i++ )
+        {
+            u3_t val = *( u3_t* )bcore_hmap_tp_inst_s_get( map, kvbuf[ i ].key );
+            if( val != kvbuf[ i ].val ) ERR( "value mismatch (%lu vs %lu)", val, kvbuf[ i ].val );
+        }
+    }
+    time = clock() - time;
+    bcore_string_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
+
+    bcore_string_s_pushf( log, "\n" );
+    bcore_string_s_pushf( log, "Removal: " );
+    time = clock();
+    while( kvbuf_size )
+    {
+        kvbuf_size--;
+        kv_s kv = kvbuf[ kvbuf_size ];
+        if( !bcore_hmap_tp_inst_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
+        bcore_hmap_tp_inst_s_remove_d( map, kv.key );
+        if( bcore_hmap_tp_inst_s_get( map, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
+    }
+    time = clock() - time;
+    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    bcore_string_s_push_string_d( log, bcore_hmap_tp_inst_s_status( map ) );
+    bcore_alloc( kvbuf, 0 );
+    bcore_life_s_discard( l );
+    return log;
+}
 
