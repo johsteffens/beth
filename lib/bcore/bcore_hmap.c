@@ -120,6 +120,11 @@ void bcore_hmap_u2vd_s_copy( bcore_hmap_u2vd_s* o, const bcore_hmap_u2vd_s* src 
         bcore_hnode_u2vd_s_init( &o->data[ i ] );
         bcore_hnode_u2vd_s_copy( &o->data[ i ], &src->data[ i ] );
     }
+    o->depth_limit = src->depth_limit;
+    o->size_limit  = src->size_limit;
+    o->h1          = src->h1;
+    o->h2          = src->h2;
+    o->h3          = src->h3;
 }
 
 static void set_size( bcore_hmap_u2vd_s* o, sz_t size )
@@ -364,8 +369,8 @@ void bcore_hmap_u2vd_s_setf( bcore_hmap_u2vd_s* o, u2_t key, fp_t func )
     // rehash
     {
         bcore_hnode_u2vd_s* buf_data  = o->data;
-        sz_t         buf_size  = o->size;
-        sz_t         buf_space = o->space;
+        sz_t buf_size  = o->size;
+        sz_t buf_space = o->space;
         if( o->size > 0 )
         {
             o->size *= 2;

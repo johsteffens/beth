@@ -81,9 +81,9 @@ bool  bcore_hmap_u2vd_s_holds(     const bcore_hmap_u2vd_s* o, u2_t key ); // ch
 void  bcore_hmap_u2vd_s_clear(           bcore_hmap_u2vd_s* o           ); // removes all entries and frees memory
 sz_t  bcore_hmap_u2vd_s_keys(      const bcore_hmap_u2vd_s* o           ); // returns number of registered keys
 sz_t  bcore_hmap_u2vd_s_size(      const bcore_hmap_u2vd_s* o           ); // returns current size of the hash map (note that this includes empty places)
-u2_t  bcore_hmap_u2vd_s_idx_key(   const bcore_hmap_u2vd_s* o, sz_t idx ); // returns indexed key (idx indexs the entire table including empty places)
-bool  bcore_hmap_u2vd_s_idx_holds( const bcore_hmap_u2vd_s* o, sz_t idx ); // returns indexed hold-flag (idx indexs the entire table including empty places)
-vd_t  bcore_hmap_u2vd_s_idx_val(   const bcore_hmap_u2vd_s* o, sz_t idx ); // returns indexed value (idx indexs the entire table including empty places)
+u2_t  bcore_hmap_u2vd_s_idx_key(   const bcore_hmap_u2vd_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+bool  bcore_hmap_u2vd_s_idx_holds( const bcore_hmap_u2vd_s* o, sz_t idx ); // returns indexed hold-flag (idx indexes the entire table including empty places)
+vd_t  bcore_hmap_u2vd_s_idx_val(   const bcore_hmap_u2vd_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 void  bcore_hmap_u2vd_s_run_c(     const bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t  val ) ); // runs a function on all registered key-value pairs
 void  bcore_hmap_u2vd_s_run_d(           bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t* val ) ); // runs a function on all registered key-value pairs; value can be changed
 
