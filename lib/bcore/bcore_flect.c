@@ -735,33 +735,6 @@ void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
     creator_map_s_insert( creator_map_s_g, type, creator );
 }
 
-/* deprecated
-void bcore_flect_define_alias( tp_t alias, tp_t type )
-{
-    if( !self_map_s_g ) bcore_flect_open();
-    bcore_flect_self_s* self = ( bcore_flect_self_s* )bcore_flect_try_self( type );
-    if( !self )
-    {
-        const char* name = bcore_name_try_name( type );
-        if( !name )
-        {
-            ERR( "type '%u; has neither name nor self-reflection", type );
-        }
-        else
-        {
-            ERR( "type '%s' has no self-reflection", name );
-        }
-    }
-    self_map_s_insert( self_map_s_g, alias, self, false );
-}
-
-void bcore_flect_define_alias_sc( sc_t alias, sc_t type )
-{
-    tp_t alias_l = bcore_name_enroll( alias );
-    tp_t type_l = bcore_name_get_hash( type );
-    bcore_flect_define_alias( alias_l, type_l );
-}
-*/
 /**********************************************************************************************************************/
 
 void bcore_flect_define_basics()
@@ -817,14 +790,14 @@ void bcore_flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_create_typed" ), sizeof( bcore_fp_create_typed ) ) );
 
     // encapsulation structure
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_static_link_s       = { vd_t link; }",            sizeof( bcore_static_link_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_typed_link_s        = { vd_t link; tp_t type; }", sizeof( bcore_typed_link_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_aware_link_s        = { vd_t link; }",            sizeof( bcore_aware_link_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_static_link_s       = { vd_t link; }",    sizeof( bcore_static_link_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_typed_link_s        = { typed * link; }", sizeof( bcore_typed_link_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_aware_link_s        = { aware * link; }", sizeof( bcore_aware_link_s ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_static_array_s      = { vd_t  data; sz_t size; sz_t space; }", sizeof( bcore_static_array_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_typed_array_s       = { typed []; }",             sizeof( bcore_typed_array_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_typed_array_s       = { typed []; }",     sizeof( bcore_typed_array_s ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_static_link_array_s = { vd_t* data; sz_t size; sz_t space; }", sizeof( bcore_static_link_array_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_typed_link_array_s  = { typed* []; }",            sizeof( bcore_typed_link_array_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_aware_link_array_s  = { aware* []; }",            sizeof( bcore_aware_link_array_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_typed_link_array_s  = { typed* []; }",    sizeof( bcore_typed_link_array_s ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " bcore_aware_link_array_s  = { aware* []; }",    sizeof( bcore_aware_link_array_s ) ) );
 
     // specific objects
     bcore_flect_define_creator( typeof( "bcore_flect_self_s" ), bcore_flect_self_s_create_self ); // self
