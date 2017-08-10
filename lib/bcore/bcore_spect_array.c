@@ -845,6 +845,7 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s** p_self )
             o->caps_offset = body->data[ i ].offset;
             o->item_p = body->data[ i ].perspective;
             found = true;
+            break;
         }
     }
     if( !found ) ERR( "'%s' has no array", ifnameof( self->type ) );
