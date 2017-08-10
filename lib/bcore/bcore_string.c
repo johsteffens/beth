@@ -99,19 +99,12 @@ void bcore_string_s_copy_typed( bcore_string_s* o, tp_t type, vc_t src )
         case TYPEOF_f3_t: bcore_string_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
         case TYPEOF_sz_t: bcore_string_s_copyf( o, "%zu",     *(const sz_t*)src ); break;
         case TYPEOF_bl_t: bcore_string_s_copy_sc( o, *(const bl_t*)src ? "true" : "false" ); break;
-
         case TYPEOF_tp_t:
         case TYPEOF_aware_t:
         {
-            sc_t name = bcore_name_try_name( *(const tp_t*)src );
-            if( name )
-            {
-                bcore_string_s_copy_sc( o, name );
-            }
-            else
-            {
-                bcore_string_s_copyf( o, "%u", *(const tp_t*)src ); break;
-            }
+            // writing a text based name here is problematic because the corresponding parse feature expects a number
+            uintmax_t val = *(const tp_t*)src;
+            bcore_string_s_copyf( o, "%"PRIuMAX, val );
         }
         break;
 
@@ -858,6 +851,32 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                     ERR( "\n%s\nParsing #sz_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
                 }
                 *va_arg( args, sz_t* ) = val;
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#tp_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#tp_t" );
+                int size = 0;
+                uintmax_t val;
+                if( sscanf( o->sc + idx, "%"SCNuMAX"%n", &val, &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #tp_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                *va_arg( args, tp_t* ) = val;
+                idx += size;
+                if( idx > end_l ) idx = end_l;
+            }
+            else if( ( bcore_strcmp( "#aware_t", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "#aware_t" );
+                int size = 0;
+                uintmax_t val;
+                if( sscanf( o->sc + idx, "%"SCNuMAX"%n", &val, &size ) <= 0 )
+                {
+                    ERR( "\n%s\nParsing #aware_t failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                }
+                *va_arg( args, aware_t* ) = val;
                 idx += size;
                 if( idx > end_l ) idx = end_l;
             }
