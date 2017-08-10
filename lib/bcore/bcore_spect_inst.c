@@ -1434,12 +1434,49 @@ void bcore_inst_op_init_type_d( bcore_inst_op* o, tp_t type, vd_t obj )
     o->o = obj;
 }
 
+void bcore_inst_op_init_type_c( bcore_inst_op* o, tp_t type, vc_t obj )
+{
+    o->p = bcore_inst_s_get_typed( type );
+    o->o = o->p->clone( o->p, obj );
+}
+
 void bcore_inst_op_init_aware_d( bcore_inst_op* o, vd_t obj )
 {
     bcore_inst_op_init_type_d( o, *( aware_t* )obj, obj );
 }
 
+void bcore_inst_op_init_aware_c( bcore_inst_op* o, vc_t obj )
+{
+    bcore_inst_op_init_type_c( o, *( aware_t* )obj, obj );
+}
+
+void bcore_inst_op_set_type( bcore_inst_op* o, tp_t type )
+{
+    if( o->p ) o->p->discard( o->p, o->o );
+    o->p = bcore_inst_s_get_typed( type );
+    o->o = o->p->create( o->p );
+}
+
+void bcore_inst_op_set_type_d( bcore_inst_op* o, tp_t type, vd_t obj )
+{
+    if( o->p ) o->p->discard( o->p, o->o );
+    o->p = bcore_inst_s_get_typed( type );
+    o->o = obj;
+}
+
+void bcore_inst_op_set_aware_d( bcore_inst_op* o, vd_t obj )
+{
+    bcore_inst_op_set_type_d( o, *( aware_t* )obj, obj );
+}
+
 void bcore_inst_op_down( bcore_inst_op* o )
+{
+    if( o->p ) o->p->discard( o->p, o->o );
+    o->p = NULL;
+    o->o = NULL;
+}
+
+void bcore_inst_op_clear( bcore_inst_op* o )
 {
     if( o->p ) o->p->discard( o->p, o->o );
     o->p = NULL;
@@ -1584,7 +1621,7 @@ s2_t bcore_inst_op_compare( const bcore_inst_op* o1, const bcore_inst_op* o2 )
 void bcore_inst_op_translate_body( vc_t trans, tp_t type, const bcore_inst_op* obj, vd_t sink )
 {
     bcore_typed_link_s tl = inst_op_to_typed_link( *obj );
-    bcore_translate_typed_object( trans, typeof( "bcore_typed_link_s" ), &tl, sink );
+    bcore_translate_typed_body( trans, typeof( "bcore_typed_link_s" ), &tl, sink );
 }
 
 dt_p bcore_inst_op_interpret_body( vc_t inter, vd_t source, tp_t type, bcore_inst_op* obj )
@@ -1601,7 +1638,7 @@ dt_p bcore_inst_op_interpret_body( vc_t inter, vd_t source, tp_t type, bcore_ins
 
 static bcore_flect_self_s* inst_op_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_inst_op" ), sizeof( bcore_inst_op ) );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_inst_op = { private vd_t o; private vc_t p; }", sizeof( bcore_inst_op ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_init,           "bcore_fp_init",           "init"           );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_down,           "bcore_fp_down",           "down"           );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_copy,           "bcore_fp_copy",           "copy"           );

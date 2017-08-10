@@ -138,9 +138,15 @@ typedef struct bcore_inst_op
 
 void           bcore_inst_op_init( bcore_inst_op* o );
 void           bcore_inst_op_init_type(    bcore_inst_op* o, tp_t type );
-void           bcore_inst_op_init_type_d(  bcore_inst_op* o, tp_t type, vd_t obj );
-void           bcore_inst_op_init_aware_d( bcore_inst_op* o, vd_t obj );
-void           bcore_inst_op_down( bcore_inst_op* o );
+void           bcore_inst_op_init_type_d(  bcore_inst_op* o, tp_t type, vd_t obj ); // takes object
+void           bcore_inst_op_init_type_c(  bcore_inst_op* o, tp_t type, vc_t obj ); // copies object
+void           bcore_inst_op_init_aware_d( bcore_inst_op* o, vd_t obj ); // takes object
+void           bcore_inst_op_init_aware_c( bcore_inst_op* o, vc_t obj ); // copies objects
+void           bcore_inst_op_set_type(     bcore_inst_op* o, tp_t type );
+void           bcore_inst_op_set_type_d(   bcore_inst_op* o, tp_t type, vd_t obj );
+void           bcore_inst_op_set_aware_d(  bcore_inst_op* o, vd_t obj );
+void           bcore_inst_op_clear( bcore_inst_op* o ); // restores state directly after init
+void           bcore_inst_op_down(  bcore_inst_op* o );
 void           bcore_inst_op_copy( bcore_inst_op* o, const bcore_inst_op* src );
 void           bcore_inst_op_copy_type(  bcore_inst_op* o, tp_t type, vc_t src ); // copy src to o->o
 void           bcore_inst_op_copy_typed( bcore_inst_op* o, tp_t type, vc_t src ); // copy converting type to bcore_inst_op
