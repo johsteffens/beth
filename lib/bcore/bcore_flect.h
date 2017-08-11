@@ -69,7 +69,7 @@ sz_t bcore_flect_caps_e_size( u2_t caps );
 sz_t bcore_flect_caps_e_align( u2_t caps );
 
 /// checks if encapsulation is an array
-bool bcore_flect_caps_is_array( u2_t caps );
+bl_t bcore_flect_caps_is_array( u2_t caps );
 
 typedef struct bcore_flect_item_s
 {

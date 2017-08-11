@@ -388,31 +388,7 @@ void bcore_hmap_tp_inst_define_self_creators( void )
 }
 
 /**********************************************************************************************************************/
-/*
-bcore_string_s* bcore_hmap_tp_inst_selftest( void )
-{
-    bcore_life_s* l = bcore_life_s_create();
-    bcore_hmap_tp_inst_s* map = bcore_life_s_push_aware( l, bcore_hmap_tp_inst_s_create() );
 
-    bcore_hmap_tp_inst_s_set_aware_d( map, 37943, bcore_string_s_createf( "abc" ) );
-    bcore_hmap_tp_inst_s_set_aware_d( map, 23231, bcore_string_s_createf( "def" ) );
-    bcore_hmap_tp_inst_s_set_aware_d( map, 32914, bcore_string_s_createf( "xyz" ) );
-    bcore_hmap_tp_inst_s_set_aware_d( map, 32124, bcore_string_s_createf( "dfhdjsgf" ) );
-    bcore_hmap_tp_inst_s_set_aware_d( map, 34324, bcore_string_s_createf( "dsaldj" ) );
-    bcore_hmap_tp_inst_s_set_aware_d( map, 62541, bcore_string_s_createf( "dsd" ) );
-    bcore_hmap_tp_inst_s_set_aware_d( map, 73214, bcore_string_s_createf( "dsdd" ) );
-
-    bcore_hmap_tp_inst_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tp_inst_s_clone( map ) );
-//    bcore_bml_aware_to_stdout( map );
-//    bcore_bml_aware_to_stdout( map2 );
-
-    ASSERT( bcore_compare_aware( map, map2 ) == 0 );
-    bcore_bml_transfer_test_aware( map );
-
-    bcore_life_s_discard( l );
-    return NULL;
-}
-*/
 /**********************************************************************************************************************/
 // selftest
 
@@ -432,9 +408,12 @@ bcore_string_s* bcore_hmap_tp_inst_s_status( bcore_hmap_tp_inst_s* o )
 bcore_string_s* bcore_hmap_tp_inst_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
-    bcore_string_s* log = bcore_string_s_create();
+    bcore_string_s* log = bcore_string_s_createf( "== bcore_hmap_tp_inst_selftest " );
+    bcore_string_s_push_char_n( log, '=', 120 - log->size );
+    bcore_string_s_push_char( log, '\n' );
+
     bcore_hmap_tp_inst_s* map = bcore_life_s_push_aware( l, bcore_hmap_tp_inst_s_create() );
-    const sz_t cycles = 100000;
+    const sz_t cycles = 1000000;
 
     typedef struct
     {
@@ -501,10 +480,10 @@ bcore_string_s* bcore_hmap_tp_inst_selftest( void )
     time = clock() - time;
     bcore_string_s_pushf( log, "Comparison ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
-    time = clock();
-    bcore_bml_transfer_test_aware( map );
-    time = clock() - time;
-    bcore_string_s_pushf( log, "BML Transfer ... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+//    time = clock();
+//    bcore_bml_transfer_test_aware( map );
+//    time = clock() - time;
+//    bcore_string_s_pushf( log, "BML Transfer ... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
     time = clock();
     bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
@@ -536,6 +515,9 @@ bcore_string_s* bcore_hmap_tp_inst_selftest( void )
     bcore_string_s_push_string_d( log, bcore_hmap_tp_inst_s_status( map ) );
     bcore_alloc( kvbuf, 0 );
     bcore_life_s_discard( l );
+
+    bcore_string_s_push_char_n( log, '=', 120 );
+    bcore_string_s_push_char( log, '\n' );
     return log;
 }
 

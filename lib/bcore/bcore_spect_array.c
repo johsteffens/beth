@@ -1046,6 +1046,105 @@ tp_t bcore_static_link_array_type_of( tp_t type )
 
 /**********************************************************************************************************************/
 
+bl_t bcore_array_is_static( const bcore_array_s* p )
+{
+    switch( p->caps_type )
+    {
+        case BCORE_CAPS_STATIC_ARRAY:      return true;
+        case BCORE_CAPS_TYPED_ARRAY:       return false;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return true;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return false;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return false;
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+    }
+    return false;
+}
+
+bl_t bcore_array_is_mono_typed(  const bcore_array_s* p )
+{
+    return p->caps_type != BCORE_CAPS_AWARE_LINK_ARRAY;
+}
+
+bl_t bcore_array_is_mutable_mono_typed(  const bcore_array_s* p )
+{
+    switch( p->caps_type )
+    {
+        case BCORE_CAPS_STATIC_ARRAY:      return false;
+        case BCORE_CAPS_TYPED_ARRAY:       return true;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return false;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return true;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return false;
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+    }
+    return false;
+}
+
+bl_t bcore_array_is_multi_typed( const bcore_array_s* p )
+{
+    return p->caps_type == BCORE_CAPS_AWARE_LINK_ARRAY;
+}
+
+bl_t bcore_array_is_of_aware( const bcore_array_s* p )
+{
+    return p->caps_type == BCORE_CAPS_AWARE_LINK_ARRAY;
+}
+
+bl_t bcore_array_is_of_links( const bcore_array_s* p )
+{
+    switch( p->caps_type )
+    {
+        case BCORE_CAPS_STATIC_ARRAY:      return false;
+        case BCORE_CAPS_TYPED_ARRAY:       return false;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return true;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return true;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return true;
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+    }
+    return false;
+}
+
+tp_t bcore_array_get_static_type( const bcore_array_s* p )
+{
+    switch( p->caps_type )
+    {
+        case BCORE_CAPS_STATIC_ARRAY:      return p->item_p->o_type;
+        case BCORE_CAPS_TYPED_ARRAY:       return 0;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return p->item_p->o_type;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return 0;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return 0;
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+    }
+    return 0;
+}
+
+tp_t bcore_array_get_mono_type( const bcore_array_s* p, vc_t o )
+{
+    switch( p->caps_type )
+    {
+        case BCORE_CAPS_STATIC_ARRAY:      return p->item_p->o_type;
+        case BCORE_CAPS_TYPED_ARRAY:       return ( ( const bcore_typed_array_s*       )( ( u0_t* )o + p->caps_offset ) )->type;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return p->item_p->o_type;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_typed_link_array_s*  )( ( u0_t* )o + p->caps_offset ) )->type;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return 0;
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+    }
+    return 0;
+}
+
+tp_t bcore_array_get_type( const bcore_array_s* p, vc_t o, sz_t index )
+{
+    switch( p->caps_type )
+    {
+        case BCORE_CAPS_STATIC_ARRAY:      return p->item_p->o_type;
+        case BCORE_CAPS_TYPED_ARRAY:       return ( ( const bcore_typed_array_s*       )( ( u0_t* )o + p->caps_offset ) )->type;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return p->item_p->o_type;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_typed_link_array_s*  )( ( u0_t* )o + p->caps_offset ) )->type;
+        case BCORE_CAPS_AWARE_LINK_ARRAY: { vc_t obj = p->get_c( p, o, index ); return ( obj ) ? *( aware_t* )obj : 0; }
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+    }
+    return 0;
+}
+
 vc_t bcore_array_max( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order )
 {
     sz_t size = p->get_size( p, o );

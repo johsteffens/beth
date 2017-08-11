@@ -2,7 +2,7 @@
 
 Running notes about ongoing beth development.
 
-Some of my thoughts and notes (slightly less unreadable than the pen&paper doodly/scratchy stuff)
+Selection of thoughts and notes (slightly less unreadable than the pen&paper doodly/scratchy stuff)
 to help remember/record the 'when/what/why' of development as well as pre-phrasing things
 for later (more elaborate) documentation.
 
@@ -94,6 +94,10 @@ for later (more elaborate) documentation.
      and attributes.
    * A reflection can be used to reconstruct the data model of an object and determine associated functions at runtime.
    * The reflection includes names of objects, which are hashed like types (s. above).
+11 Aug 2017:
+   * Perspectives should use of function pointers only to resolve polymorphism.
+   * The current use as syntactic convenience for all sorts of functions (e.g. spect via) does not
+     scale well and puts an undue burden on the system for highly generic perspectives.
 
 ## Perspective (May 2017) ##
    * A perspective is a higher-order-object describing other objects and providing generic functionality for those
@@ -246,6 +250,6 @@ for later (more elaborate) documentation.
      That method is either invoked at compiletime or at runtime.
 
    Immediately needed in closures.
-   Closures with certain argument structure (e.g. bi,tri,n-functions) whould be member of the corresponding trade.
+   Closures with certain argument structure (e.g. bi,tri,n-functions) would be member of the corresponding trade.
    Trees composed of closures would check for trade membership (instead of analyzing the argument structure at runtime)
 

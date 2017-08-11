@@ -589,7 +589,10 @@ void bcore_hmap_u2vd_filltest()
 
 bcore_string_s* bcore_hmap_u2vd_selftest( void )
 {
-    bcore_string_s* log = bcore_string_s_create();
+    bcore_string_s* log = bcore_string_s_createf( "== bcore_hmap_u2vd_selftest " );
+    bcore_string_s_push_char_n( log, '=', 120 - log->size );
+    bcore_string_s_push_char( log, '\n' );
+
     bcore_hmap_u2vd_s* map = bcore_hmap_u2vd_s_create();
     const sz_t cycles = 1000000;
 
@@ -678,5 +681,8 @@ bcore_string_s* bcore_hmap_u2vd_selftest( void )
 
     bcore_hmap_u2vd_s_discard( map );
     bcore_alloc( kvbuf, 0 );
+
+    bcore_string_s_push_char_n( log, '=', 120 );
+    bcore_string_s_push_char( log, '\n' );
     return log;
 }

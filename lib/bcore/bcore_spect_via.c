@@ -122,17 +122,7 @@ static vc_t iget_c( const bcore_via_s* p, vc_t o, sz_t index )
         {
             return ( vc_t )( ( u0_t* )o + vitem->offs );
         }
-/*
-        case BCORE_CAPS_EXTERNAL_DATA:
-        {
-            return vitem->d_ptr;
-        }
 
-        case BCORE_CAPS_EXTERNAL_FUNC:
-        {
-            return &vitem->f_ptr;
-        }
-*/
         default: break;
     }
 
@@ -177,7 +167,7 @@ static vd_t iget_d( const bcore_via_s* p, vd_t o, sz_t index )
 static vd_t iset_c( const bcore_via_s* p, vd_t o, sz_t index, vc_t src )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
-    const bcore_vitem_s*    vitem  = &p->vitem_arr[ index ];
+    const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
     switch( vitem->caps )
     {
         case BCORE_CAPS_STATIC:
@@ -660,10 +650,48 @@ static vd_t ndetach( const bcore_via_s* p, vd_t o, tp_t name )
 
 /**********************************************************************************************************************/
 
-bool bcore_via_is_array( const bcore_via_s* p, sz_t index )
+bl_t bcore_via_is_array( const bcore_via_s* p, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     return bcore_flect_caps_is_array( p->vitem_arr[ index ].caps );
+}
+
+bl_t bcore_via_is_static( const bcore_via_s* p, sz_t index )
+{
+    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
+    switch( p->vitem_arr[ index ].caps )
+    {
+        case BCORE_CAPS_STATIC:            return true;
+        case BCORE_CAPS_STATIC_LINK:       return true;
+        case BCORE_CAPS_TYPED_LINK:        return false;
+        case BCORE_CAPS_AWARE_LINK:        return false;
+        case BCORE_CAPS_STATIC_ARRAY:      return true;
+        case BCORE_CAPS_TYPED_ARRAY:       return true;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return true;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return true;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return true;
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->vitem_arr[ index ].caps ) );
+    }
+    return false;
+}
+
+bl_t bcore_via_is_link( const bcore_via_s* p, sz_t index )
+{
+    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
+    switch( p->vitem_arr[ index ].caps )
+    {
+        case BCORE_CAPS_STATIC:            return false;
+        case BCORE_CAPS_STATIC_LINK:       return true;
+        case BCORE_CAPS_TYPED_LINK:        return true;
+        case BCORE_CAPS_AWARE_LINK:        return true;
+        case BCORE_CAPS_STATIC_ARRAY:      return false;
+        case BCORE_CAPS_TYPED_ARRAY:       return false;
+        case BCORE_CAPS_STATIC_LINK_ARRAY: return false;
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  return false;
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  return false;
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->vitem_arr[ index ].caps ) );
+    }
+    return false;
 }
 
 const bcore_array_s* bcore_via_get_spect_array( const bcore_via_s* p, sz_t index )

@@ -810,8 +810,13 @@ static bcore_string_s* interpret_selftest( void )
 
 bcore_string_s* bcore_bml_selftest( void )
 {
-    bcore_string_s* out = bcore_string_s_create();
-    bcore_string_s_push_string_d( out, translate_selftest() );
-    bcore_string_s_push_string_d( out, interpret_selftest() );
-    return out;
+    bcore_string_s* log = bcore_string_s_createf( "== bcore_bml_selftest " );
+    bcore_string_s_push_char_n( log, '=', 120 - log->size );
+    bcore_string_s_push_char( log, '\n' );
+    bcore_string_s_push_string_d( log, translate_selftest() );
+    bcore_string_s_push_string_d( log, interpret_selftest() );
+
+    bcore_string_s_push_char_n( log, '=', 120 );
+    bcore_string_s_push_char( log, '\n' );
+    return log;
 }

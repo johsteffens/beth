@@ -80,7 +80,10 @@ static inline const bcore_via_s* bcore_via_s_get_aware( vc_t obj )
 }
 
 /// extended index-functionality
-bool                 bcore_via_is_array(        const bcore_via_s* p, sz_t index ); // checks if element is an array
+bl_t bcore_via_is_array(  const bcore_via_s* p, sz_t index ); // checks if element is an array
+bl_t bcore_via_is_static( const bcore_via_s* p, sz_t index ); // checks if element is static (type need not be recorded)
+bl_t bcore_via_is_link(   const bcore_via_s* p, sz_t index ); // checks if element is a link (means that it can be NULL); an array is a distinct static object -> not a link)
+
 const bcore_array_s* bcore_via_get_spect_array( const bcore_via_s* p, sz_t index ); // returns correct array perspective if element is an array; NULL otherwise
 
 /**********************************************************************************************************************/

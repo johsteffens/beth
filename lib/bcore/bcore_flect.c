@@ -55,7 +55,7 @@ const sz_t bcore_flect_caps_e_align_arr[] =
     0,  // EXTERNAL_FUNCTION
 };
 
-bool bcore_flect_caps_is_array( u2_t caps )
+bl_t bcore_flect_caps_is_array( u2_t caps )
 {
     switch( caps )
     {
