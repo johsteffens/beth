@@ -33,8 +33,8 @@
 /**********************************************************************************************************************/
 
 /** bcore_hmap_u2vd_s:
- *    key-type: u2_d
- *    val-type: vd_t.
+ *    key-type: u2_t
+ *    val-type: vd_t or fp_t.
  *    Maximum number of keys: 2^32
  *    Map holds aware objects if so desired.
  *    Map can reference any object but hold only aware objects.
@@ -87,13 +87,65 @@ vd_t  bcore_hmap_u2vd_s_idx_val(   const bcore_hmap_u2vd_s* o, sz_t idx ); // re
 void  bcore_hmap_u2vd_s_run_c(     const bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t  val ) ); // runs a function on all registered key-value pairs
 void  bcore_hmap_u2vd_s_run_d(           bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t* val ) ); // runs a function on all registered key-value pairs; value can be changed
 
-/// self reflection
-typedef struct bcore_flect_self_s bcore_flect_self_s;
-bcore_flect_self_s* bcore_hmap_u2vd_s_create_self( void );
-
 bcore_string_s* bcore_hmap_u2vd_selftest( void );
 
 /**********************************************************************************************************************/
+
+/** bcore_hmap_tpsz_s:
+ *    key-type: u2_t
+ *    val-type: sz_t.
+ *    Maximum number of keys: 2^32
+ */
+typedef struct bcore_hnode_tpsz_s
+{
+    tp_t key;
+    bl_t flag_trace; // used internally during rehashing
+    sz_t val;
+} bcore_hnode_tpsz_s;
+
+typedef u2_t (*bcore_hash_tpu2)( tp_t v );
+
+typedef struct bcore_hmap_tpsz_s
+{
+    aware_t _;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            bcore_hnode_tpsz_s* data;
+            sz_t size, space;
+        };
+    };
+    sz_t depth_limit;
+    sz_t size_limit;
+    bcore_hash_tpu2 h1, h2, h3;
+} bcore_hmap_tpsz_s;
+
+DECLARE_FUNCTION_INIT(    bcore_hmap_tpsz_s )
+DECLARE_FUNCTION_DOWN(    bcore_hmap_tpsz_s )
+DECLARE_FUNCTION_COPY(    bcore_hmap_tpsz_s )
+DECLARE_FUNCTION_CREATE(  bcore_hmap_tpsz_s )
+DECLARE_FUNCTION_DISCARD( bcore_hmap_tpsz_s )
+DECLARE_FUNCTION_CLONE(   bcore_hmap_tpsz_s )
+
+void  bcore_hmap_tpsz_s_set_hash_function( bcore_hmap_tpsz_s* o, sz_t index, bcore_hash_tpu2 hf ); // optionally sets external hash function (up to three functions can be specified via index 0, 1, 2)
+sz_t* bcore_hmap_tpsz_s_get(     const bcore_hmap_tpsz_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
+sz_t* bcore_hmap_tpsz_s_fget(          bcore_hmap_tpsz_s* o, tp_t key, sz_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
+sz_t* bcore_hmap_tpsz_s_set(           bcore_hmap_tpsz_s* o, tp_t key, sz_t val ); // sets new key; sets/overwrites value and returns pointer to value location
+sz_t  bcore_hmap_tpsz_s_remove(        bcore_hmap_tpsz_s* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
+bl_t  bcore_hmap_tpsz_s_exists(  const bcore_hmap_tpsz_s* o, tp_t key ); // checks if key exists
+void  bcore_hmap_tpsz_s_clear(         bcore_hmap_tpsz_s* o           ); // removes all entries and frees memory
+sz_t  bcore_hmap_tpsz_s_keys(    const bcore_hmap_tpsz_s* o           ); // returns number of registered keys
+sz_t  bcore_hmap_tpsz_s_size(    const bcore_hmap_tpsz_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tpsz_s_idx_key( const bcore_hmap_tpsz_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+sz_t  bcore_hmap_tpsz_s_idx_val( const bcore_hmap_tpsz_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+
+bcore_string_s* bcore_hmap_tpsz_selftest( void );
+
+/**********************************************************************************************************************/
+
+void bcore_hmap_define_self_creators( void );
 
 #endif // BCORE_HMAP_H
 
