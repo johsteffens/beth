@@ -7,6 +7,7 @@
 #include "bcore_life.h"
 #include "bcore_quicktypes.h"
 #include "bcore_hmap.h"
+#include "bcore_signature.h"
 
 /**********************************************************************************************************************/
 
@@ -164,6 +165,29 @@ sz_t bcore_flect_aligned_offset( sz_t align, sz_t raw_offset )
     return offset;
 }
 
+bcore_signature_s* bcore_flect_item_s_push_to_signature( const bcore_flect_item_s* o, bcore_signature_s* sig )
+{
+    bcore_signature_s_push( sig, o->type );
+    bcore_signature_s_push( sig, o->name );
+    tp_t t = o->caps;
+    bcore_signature_s_push( sig, t );
+    bcore_signature_s_push( sig, o->flags );
+    if( o->d_ptr ) ERR( "Extending signature with external data reference is not allowed" );
+    if( o->f_ptr ) ERR( "Extending signature with external function is not allowed" );
+    return sig;
+}
+
+s2_t bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_item_s* o2 )
+{
+    if( o1->type != o2->type ) return ( o1->type < o2->type ) ? 1 : -1;
+    if( o1->name != o2->name ) return ( o1->name < o2->name ) ? 1 : -1;
+    if( o1->caps != o2->caps ) return ( o1->caps < o2->caps ) ? 1 : -1;
+    if( o1->flags != o2->flags ) return ( o1->flags < o2->flags ) ? 1 : -1;
+    if( o1->d_ptr != o2->d_ptr ) return ( o1->d_ptr < o2->d_ptr ) ? 1 : -1;
+    if( o1->f_ptr != o2->f_ptr ) return 1; // function pointers have no order om ISO C
+    return 0;
+}
+
 /**********************************************************************************************************************/
 
 DEFINE_FUNCTION_INIT_FLAT( bcore_flect_body_s )
@@ -300,6 +324,23 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
     return o;
 }
 
+bcore_signature_s* bcore_flect_body_s_push_to_signature( const bcore_flect_body_s* o, bcore_signature_s* sig )
+{
+    for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_push_to_signature( &o->data[ i ], sig );
+    return sig;
+}
+
+s2_t bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_body_s* o2 )
+{
+    if( o1->size != o2->size ) return ( o1->size < o2->size ) ? 1 : -1;
+    for( sz_t i = 0; i < o1->size; i++ )
+    {
+        s2_t c = bcore_flect_item_s_cmp( &o1->data[ i ], &o2->data[ i ] );
+        if( c != 0 ) return c;
+    }
+    return 0;
+}
+
 /**********************************************************************************************************************/
 // bcore_flect_self_s
 
@@ -401,14 +442,30 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, 
     sz_t idx = ( p_idx != NULL ) ? *p_idx : 0;
 
     bcore_string_s* name = bcore_string_s_create_l( life );
-    idx = bcore_string_s_parsef( text, idx, text->size, " #name = ", name );
-    o->type  = bcore_name_enroll( name->sc );
+    idx = bcore_string_s_parsef( text, idx, text->size, " #name ", name );
+    o->type = ( name->size > 0 ) ? bcore_name_enroll( name->sc ) : 0;
+    if( o->type ) idx = bcore_string_s_parsef( text, idx, text->size, "= ", name );
     if( text->sc[ idx ] == '{' )
     {
-        o->body  = bcore_flect_body_s_build_parse( text, &idx );
+        o->body = bcore_flect_body_s_build_parse( text, &idx );
+        if( !o->type )
+        {
+            bcore_signature_s* sig = bcore_signature_s_create();
+            bcore_flect_body_s_push_to_signature( o->body, sig );
+
+            // o->type = bcore_signature_manager_enroll_d( sig );
+            // we do not need to enroll the signature because anonymous reflections are tested directly for collisions
+
+            o->type = bcore_signature_s_get_hash( sig );
+        }
     }
     else
     {
+        if( !o->type )
+        {
+            bcore_string_s* context = bcore_life_s_push_aware( life, bcore_string_s_show_line_context( text, idx ) );
+            ERR( "\n%s\nAnonymous types need a body.", context->sc );
+        }
         idx = bcore_string_s_parsef( text, idx, text->size, "#name", name );
         const bcore_flect_self_s* self_l = bcore_flect_try_self( typeof( name->sc ) );
         if( !self_l )
@@ -432,6 +489,25 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of )
     bcore_flect_self_s* ret = bcore_flect_self_s_build_parse( string, NULL, size_of );
     bcore_string_s_discard( string );
     return ret;
+}
+
+bcore_signature_s* bcore_flect_self_s_push_to_signature( const bcore_flect_self_s* o, bcore_signature_s* sig )
+{
+    bcore_signature_s_push( sig, o->type );
+    if( o->body ) bcore_flect_body_s_push_to_signature( o->body, sig );
+    return sig;
+}
+
+s2_t bcore_flect_self_s_cmp( const bcore_flect_self_s* o1, const bcore_flect_self_s* o2 )
+{
+    if( o1->type != o2->type ) return ( o1->type < o2->type ) ? 1 : -1;
+    if( o1->body != o2->body )
+    {
+        if( !o1->body ) return  1;
+        if( !o2->body ) return -1;
+        return bcore_flect_body_s_cmp( o1->body, o2->body );
+    }
+    return 0;
 }
 
 fp_t bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type, tp_t name )
@@ -714,19 +790,59 @@ void bcore_flect_define_self_c( const bcore_flect_self_s* self )
     bcore_flect_define_self_d( bcore_flect_self_s_clone( self ) );
 }
 
-sz_t bcore_flect_parse( const bcore_string_s* string, sz_t idx )
+sz_t bcore_flect_define_parse( const bcore_string_s* string, sz_t idx )
 {
     bcore_flect_define_self_d( bcore_flect_self_s_build_parse( string, &idx, 0 ) );
     return idx;
 }
 
-sc_t bcore_flect_parse_sc( sc_t sc )
+sc_t bcore_flect_define_parse_sc( sc_t sc )
 {
     bcore_string_s* string = bcore_string_s_create_sc( sc );
     sz_t idx = 0;
-    idx = bcore_flect_parse( string, idx );
+    idx = bcore_flect_define_parse( string, idx );
     bcore_string_s_discard( string );
     return sc + idx;
+}
+
+tp_t bcore_flect_type_self_d( bcore_flect_self_s* self )
+{
+    const bcore_flect_self_s* self_l = bcore_flect_try_self( self->type );
+    if( self_l )
+    {
+        if( bcore_flect_self_s_cmp( self_l, self ) != 0 )
+        {
+            ERR( "Reflection collision detected. Type = '%s' (%"PRIu32")\nRegistered:\n%s\nNew:\n%s\n",
+                 ifnameof( self->type ), self->type,
+                bcore_flect_self_s_show( self_l ),
+                bcore_flect_self_s_show( self ) );
+        }
+        bcore_flect_self_s_discard( self );
+        return self_l->type;
+    }
+    else
+    {
+        bcore_flect_define_self_d( self );
+        return self->type;
+    }
+}
+
+tp_t bcore_flect_type_self_c( const bcore_flect_self_s* self )
+{
+    return bcore_flect_type_self_d( bcore_flect_self_s_clone( self ) );
+}
+
+tp_t bcore_flect_type_parse( const bcore_string_s* string, sz_t idx )
+{
+    return bcore_flect_type_self_d( bcore_flect_self_s_build_parse( string, &idx, 0 ) );
+}
+
+tp_t bcore_flect_type_parse_sc( sc_t sc )
+{
+    bcore_string_s* string = bcore_string_s_create_sc( sc );
+    tp_t ret = bcore_flect_type_parse( string, 0 );
+    bcore_string_s_discard( string );
+    return ret;
 }
 
 void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
@@ -882,15 +998,26 @@ void bcore_flect_fmap_s_apply( const bcore_flect_fmap_s* o, const bcore_flect_se
 bcore_string_s* bcore_flect_selftest( void )
 {
     {
-        bcore_flect_parse_sc(" teabag =    { u3_t leaves; s1_t flavor; s0_t color;  }" );
-        bcore_flect_parse_sc(" container = { u3_t elements; teabag*[] bags; u1_t flags; }" );
-        bcore_flect_parse_sc(" delivery =  { aware_t _; u3_t tag; container* cargo; aware*[] attachments; }" );
-        bcore_flect_parse_sc(" another = delivery" );
+        bcore_flect_define_parse_sc(" teabag =    { u3_t leaves; s1_t flavor; s0_t color;  }" );
+        bcore_flect_define_parse_sc(" container = { u3_t elements; teabag*[] bags; u1_t flags; }" );
+        bcore_flect_define_parse_sc(" delivery =  { aware_t _; u3_t tag; container* cargo; aware*[] attachments; }" );
+        bcore_flect_define_parse_sc(" another = delivery" );
     }
 
     bcore_string_s* s = bcore_string_s_create();
     bcore_string_s_push_string_d( s, bcore_flect_self_s_show( bcore_flect_get_self( typeof( "bcore_string_s" ) ) ) );
 
+    {
+        tp_t anonymous = bcore_flect_type_parse_sc( "{ u3_t leaves; s1_t flavor; s0_t color; }" );
+        bcore_string_s_push_string_d( s, bcore_flect_self_s_show( bcore_flect_get_self( anonymous ) ) );
+        bcore_string_s_pushf( s, "\n" );
+        bcore_string_s_pushf( s, "anonymous type %u\n", anonymous );
+    }
+
+    {
+        tp_t anonymous = bcore_flect_type_parse_sc( "{ u3_t leaves; s1_t flavor; s0_t color; }" );
+        bcore_string_s_pushf( s, "anonymous type %u (reentered)\n", anonymous );
+    }
 
     return s;
 }

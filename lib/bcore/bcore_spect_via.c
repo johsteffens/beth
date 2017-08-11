@@ -855,7 +855,7 @@ const bcore_via_s* bcore_via_s_get_typed( u2_t o_type )
 
 bcore_string_s* bcore_spect_via_selftest( void )
 {
-    bcore_flect_parse_sc( "via_specs = { sz_t size; u2_t param1; s2_t; }" );
+    bcore_flect_define_parse_sc( "via_specs = { sz_t size; u2_t param1; s2_t; }" );
     vd_t via_specs = bcore_inst_typed_create( typeof( "via_specs" ) );
     const bcore_via_s* via_specs_v = bcore_via_s_get_typed( typeof( "via_specs" ) );
 
@@ -872,7 +872,7 @@ bcore_string_s* bcore_spect_via_selftest( void )
     ASSERT( *( u2_t* )via_specs_v->nget_c( via_specs_v, via_specs, typeof( "param1" ) ) == 200 );
     ASSERT( *( s2_t* )via_specs_v->nget_c( via_specs_v, via_specs, typeof( "" ) )       == -50 );
 
-    bcore_flect_parse_sc( "via_specs_arr = { aware_t _; u3_t flags; via_specs [] arr; }" );
+    bcore_flect_define_parse_sc( "via_specs_arr = { aware_t _; u3_t flags; via_specs [] arr; }" );
     vd_t via_specs_arr = bcore_inst_typed_create( typeof( "via_specs_arr" ) );
 
     const bcore_via_s* via_specs_arr_v = bcore_via_s_get_typed( typeof( "via_specs_arr" ) );

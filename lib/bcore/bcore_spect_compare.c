@@ -318,7 +318,7 @@ bcore_string_s* bcore_spect_compare_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
 
-    bcore_flect_parse_sc( "cmp_specs = { aware_t _; sz_t size; u2_t param1; s2_t; }" );
+    bcore_flect_define_parse_sc( "cmp_specs = { aware_t _; sz_t size; u2_t param1; s2_t; }" );
     vd_t specs = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "cmp_specs" ) ) );
 
     {
@@ -331,7 +331,7 @@ bcore_string_s* bcore_spect_compare_selftest( void )
         v->nset_c( v, specs, typeof( ""       ), &param2 );
     }
 
-    bcore_flect_parse_sc( "cmp_specs_arr = { aware_t _; u3_t flags; cmp_specs [] arr; }" );
+    bcore_flect_define_parse_sc( "cmp_specs_arr = { aware_t _; u3_t flags; cmp_specs [] arr; }" );
     vd_t arr1 = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "cmp_specs_arr" ) ) );
 
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr1 );

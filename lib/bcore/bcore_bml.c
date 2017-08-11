@@ -708,7 +708,7 @@ static bcore_string_s* translate_selftest( void )
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* out = bcore_string_s_create();
 
-    bcore_flect_parse_sc
+    bcore_flect_define_parse_sc
     (
         "specs = "
         "{"
@@ -722,7 +722,7 @@ static bcore_string_s* translate_selftest( void )
         "   bcore_string_s [] strarr; bl_t flag;"
         "}"
     );
-    bcore_flect_parse_sc( "specs_arr = { aware_t _; aware * [] arr; }" );
+    bcore_flect_define_parse_sc( "specs_arr = { aware_t _; aware * [] arr; }" );
 
     vd_t specs = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "specs" ) ) );
 

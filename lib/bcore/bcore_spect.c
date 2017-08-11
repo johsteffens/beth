@@ -132,7 +132,7 @@ bcore_string_s* bcore_spect_status()
         bcore_string_s_push_sc( s, "registered perspectives " );
         bcore_string_s_push_char_n( s, '.', 32 - s->size );
         bcore_mutex_lock( &hmap_s_g->mutex );
-        bcore_string_s_pushf( s, " %zu\n", bcore_hmap_u2vd_s_keys( map ) );
+        bcore_string_s_pushf( s, "% 4zu\n", bcore_hmap_u2vd_s_keys( map ) );
         bcore_mutex_unlock( &hmap_s_g->mutex );
         bcore_string_s_push_string_d( log, s );
     }
@@ -154,7 +154,7 @@ bcore_string_s* bcore_spect_status()
             bcore_string_s* s = bcore_string_s_create();
             bcore_string_s_pushf( s, "%s ", ifnameof( key ) );
             bcore_string_s_push_char_n( s, '.', 32 - s->size );
-            bcore_string_s_pushf( s, " %zu\n", count );
+            bcore_string_s_pushf( s, "% 4zu\n", count );
             bcore_string_s_push_string_d( log, s );
         }
     }

@@ -1018,7 +1018,7 @@ tp_t bcore_static_array_type_of( tp_t type )
     if( !bcore_flect_try_self( arr_type ) )
     {
         bcore_string_s* code = bcore_string_s_createf( "%s = { %s []; }", arr_name->sc, name );
-        bcore_flect_parse( code, 0 );
+        bcore_flect_define_parse( code, 0 );
         bcore_string_s_discard( code );
 
     }
@@ -1037,7 +1037,7 @@ tp_t bcore_static_link_array_type_of( tp_t type )
     if( !bcore_flect_try_self( arr_type ) )
     {
         bcore_string_s* code = bcore_string_s_createf( "%s = { %s * []; }", arr_name->sc, name );
-        bcore_flect_parse( code, 0 );
+        bcore_flect_define_parse( code, 0 );
         bcore_string_s_discard( code );
     }
     bcore_string_s_discard( arr_name );

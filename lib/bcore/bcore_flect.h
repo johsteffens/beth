@@ -71,6 +71,8 @@ sz_t bcore_flect_caps_e_align( u2_t caps );
 /// checks if encapsulation is an array
 bl_t bcore_flect_caps_is_array( u2_t caps );
 
+typedef struct bcore_signature_s bcore_signature_s;
+
 typedef struct bcore_flect_item_s
 {
     tp_t type; // hash of type
@@ -105,6 +107,8 @@ bcore_flect_item_s* bcore_flect_item_s_create_external_func( fp_t func, sc_t typ
 void                bcore_flect_item_s_discard( bcore_flect_item_s* o );
 bcore_flect_item_s* bcore_flect_item_s_clone( const bcore_flect_item_s* o );
 bcore_string_s*     bcore_flect_item_s_show( const bcore_flect_item_s* o );
+bcore_signature_s*  bcore_flect_item_s_push_to_signature( const bcore_flect_item_s* o, bcore_signature_s* sig ); // appends item data to signature (external caps not supported --> error)
+s2_t                bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_item_s* o2 );        // compares two items
 
 /**********************************************************************************************************************/
 
@@ -121,6 +125,8 @@ void                bcore_flect_body_s_discard( bcore_flect_body_s* o );
 void                bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* item );
 void                bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flect_item_s* item );
 bcore_string_s*     bcore_flect_body_s_show( const bcore_flect_body_s* o );
+bcore_signature_s*  bcore_flect_body_s_push_to_signature( const bcore_flect_body_s* o, bcore_signature_s* sig );
+s2_t                bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_body_s* o2 );
 
 /**********************************************************************************************************************/
 
@@ -150,21 +156,23 @@ typedef struct bcore_flect_self_s
     bcore_flect_body_s* body;
 } bcore_flect_self_s;
 
-void                     bcore_flect_self_s_init( bcore_flect_self_s* o );
-void                     bcore_flect_self_s_init_plain( bcore_flect_self_s* o, tp_t type, sz_t size );
-void                     bcore_flect_self_s_down( bcore_flect_self_s* o );
-void                     bcore_flect_self_s_copy( bcore_flect_self_s* o, const bcore_flect_self_s* src );
-bcore_flect_self_s*      bcore_flect_self_s_create();
-bcore_flect_self_s*      bcore_flect_self_s_create_plain( tp_t type, sz_t size ); // plain (primitive) self contained type
-bcore_flect_self_s*      bcore_flect_self_s_clone( const bcore_flect_self_s* o );
-void                     bcore_flect_self_s_discard( bcore_flect_self_s* o );
-void                     bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item );
-void                     bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item );
-void                     bcore_flect_self_s_push_external_data( bcore_flect_self_s* o, vc_t data, sc_t type, sc_t name );
-void                     bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
-bcore_string_s*          bcore_flect_self_s_show( const bcore_flect_self_s* o );
-bcore_flect_self_s*      bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx, sz_t size_of );
-bcore_flect_self_s*      bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );
+void                bcore_flect_self_s_init( bcore_flect_self_s* o );
+void                bcore_flect_self_s_init_plain( bcore_flect_self_s* o, tp_t type, sz_t size );
+void                bcore_flect_self_s_down( bcore_flect_self_s* o );
+void                bcore_flect_self_s_copy( bcore_flect_self_s* o, const bcore_flect_self_s* src );
+bcore_flect_self_s* bcore_flect_self_s_create();
+bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, sz_t size ); // plain (primitive) self contained type
+bcore_flect_self_s* bcore_flect_self_s_clone( const bcore_flect_self_s* o );
+void                bcore_flect_self_s_discard( bcore_flect_self_s* o );
+void                bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item );
+void                bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item );
+void                bcore_flect_self_s_push_external_data( bcore_flect_self_s* o, vc_t data, sc_t type, sc_t name );
+void                bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
+bcore_string_s*     bcore_flect_self_s_show( const bcore_flect_self_s* o );
+bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx, sz_t size_of );
+bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );
+bcore_signature_s*  bcore_flect_self_s_push_to_signature( const bcore_flect_self_s* o, bcore_signature_s* sig );
+s2_t                bcore_flect_self_s_cmp( const bcore_flect_self_s* o1, const bcore_flect_self_s* o2 );
 
 /// Query for external function of given type or name; either type or name may be 0 in which case it is interpreted as wildcard
 fp_t bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type, tp_t name ); // returns NULL when not found
@@ -172,7 +180,7 @@ fp_t bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type,
 bool bcore_flect_self_s_is_aware(        const bcore_flect_self_s* o                       ); // object has body and is aware
 
 /// reflection on bcore_flect_self_s
-bcore_flect_self_s*      bcore_flect_self_s_create_self( void );
+bcore_flect_self_s* bcore_flect_self_s_create_self( void );
 
 /**********************************************************************************************************************/
 /// Global reflection manager (thread safe)
@@ -181,10 +189,27 @@ void bcore_flect_open();          // opens manager
 void bcore_flect_define_basics(); // defines basic types
 void bcore_flect_close();         // closes manager
 
+/** Define functions:
+ *  Registers a self reflection once.
+ *  Intended use for global registry.
+ *  Error in case the same reflection type is registered twice.
+ */
 void bcore_flect_define_self_d(       bcore_flect_self_s* self ); // takes over control of self
 void bcore_flect_define_self_c( const bcore_flect_self_s* self ); // stores a copy of self
-sz_t bcore_flect_parse(         const bcore_string_s* string, sz_t idx );
-sc_t bcore_flect_parse_sc(      sc_t sc );
+sz_t bcore_flect_define_parse( const bcore_string_s* string, sz_t idx );
+sc_t bcore_flect_define_parse_sc( sc_t sc );
+
+/** Type functions:
+ *  Registers new types like in define functions and returns type.
+ *  For existing types, the reflection's identity is verified and the type is returned. (Reentrant)
+ *  Intended use in reentrant contexts (e.g type generators, local types, anonymous types)
+ *  Collision-aware (--> Error in case of collision).
+ *  Anonymous types may not reference external objects because this can cause unpredictable collisions.
+ */
+tp_t bcore_flect_type_self_d(       bcore_flect_self_s* self ); // takes over control of self
+tp_t bcore_flect_type_self_c( const bcore_flect_self_s* self ); // stores a copy of self
+tp_t bcore_flect_type_parse( const bcore_string_s* string, sz_t idx );
+tp_t bcore_flect_type_parse_sc( sc_t sc );
 
 /** Defining reflection via creation function
  *  The function releases a newly created instance of self.
