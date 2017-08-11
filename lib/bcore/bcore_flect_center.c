@@ -25,9 +25,10 @@ void bcore_flect_define_self_creators()
     bcore_sources_define_self_creators();
     bcore_sinks_define_self_creators();
     bcore_closure_define_self_creators();
+    bcore_hmap_define_self_creators();
     bcore_hmap_tp_inst_define_self_creators();
+
     bcore_flect_define_creator( typeof( "bcore_life_s"        ), bcore_life_s_create_self        );
-    bcore_flect_define_creator( typeof( "bcore_hmap_u2vd_s_"  ), bcore_hmap_u2vd_s_create_self   );
     bcore_flect_define_creator( typeof( "bcore_signature_s"   ), bcore_signature_s_create_self   );
     bcore_flect_define_creator( typeof( "bcore_array_s"       ), bcore_array_s_create_self       );
     bcore_flect_define_creator( typeof( "bcore_via_s"         ), bcore_via_s_create_self         );

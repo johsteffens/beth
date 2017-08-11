@@ -4,6 +4,7 @@
 #include "bcore_hmap.h"
 #include "bcore_threads.h"
 #include "bcore_spect_inst.h"
+#include "bcore_life.h"
 
 /**********************************************************************************************************************/
 // hash map
@@ -116,6 +117,51 @@ void bcore_spect_remove( tp_t sig )
     bcore_mutex_lock( &hmap_s_g->mutex );
     bcore_inst_aware_discard( bcore_hmap_u2vd_s_remove_h( hmap_s_g->map, sig ) );
     bcore_mutex_unlock( &hmap_s_g->mutex );
+}
+
+bcore_string_s* bcore_spect_status()
+{
+    bcore_life_s* l = bcore_life_s_create();
+    assert( hmap_s_g      != NULL );
+    bcore_hmap_u2vd_s* map  = hmap_s_g->map;
+    bcore_hmap_tpsz_s* hist = bcore_life_s_push_aware( l, bcore_hmap_tpsz_s_create() );
+    bcore_string_s* log = bcore_string_s_create();
+
+    {
+        bcore_string_s* s = bcore_string_s_create();
+        bcore_string_s_push_sc( s, "registered perspectives " );
+        bcore_string_s_push_char_n( s, '.', 32 - s->size );
+        bcore_mutex_lock( &hmap_s_g->mutex );
+        bcore_string_s_pushf( s, " %zu\n", bcore_hmap_u2vd_s_keys( map ) );
+        bcore_mutex_unlock( &hmap_s_g->mutex );
+        bcore_string_s_push_string_d( log, s );
+    }
+
+    for( sz_t i = 0; i < map->size; i++ )
+    {
+        bcore_mutex_lock( &hmap_s_g->mutex );
+        vd_t val = bcore_hmap_u2vd_s_idx_val( map, i );
+        bcore_mutex_unlock( &hmap_s_g->mutex );
+        if( val ) ( *bcore_hmap_tpsz_s_fget( hist, *( aware_t* )val, 0 ) )++;
+    }
+
+    for( sz_t i = 0; i < hist->size; i++ )
+    {
+        tp_t key   = bcore_hmap_tpsz_s_idx_key( hist, i );
+        sz_t count = bcore_hmap_tpsz_s_idx_val( hist, i );
+        if( key )
+        {
+            bcore_string_s* s = bcore_string_s_create();
+            bcore_string_s_pushf( s, "%s ", ifnameof( key ) );
+            bcore_string_s_push_char_n( s, '.', 32 - s->size );
+            bcore_string_s_pushf( s, " %zu\n", count );
+            bcore_string_s_push_string_d( log, s );
+        }
+    }
+
+
+    bcore_life_s_discard( l );
+    return log;
 }
 
 /**********************************************************************************************************************/

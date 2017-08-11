@@ -69,7 +69,7 @@ static bcore_flect_self_s* hnode_tp_inst_s_create_self( void )
 // bcore_hmap_tp_inst_s
 
 /// hashing (non-cryptographic)
-static tp_t hash_tptp_1( tp_t key )
+static u2_t hash_tpu2_1( tp_t key )
 {
     u2_t h = ( 632432329 ^ ( ( key       ) & 0x0FFFFu ) ) * 88888888901;
          h = ( h         ^ ( ( key >> 16 ) & 0x0FFFFu ) ) * 88888888901;
@@ -77,7 +77,7 @@ static tp_t hash_tptp_1( tp_t key )
 }
 
 /// hashing (non-cryptographic)
-static tp_t hash_tptp_2( tp_t key )
+static u2_t hash_tpu2_2( tp_t key )
 {
     u2_t h = ( 368653234 ^ ( ( key       ) & 0x0FFFFu ) ) * 77777777827;
          h = ( h         ^ ( ( key >> 16 ) & 0x0FFFFu ) ) * 77777777827;
@@ -131,12 +131,12 @@ static sz_t find( const bcore_hmap_tp_inst_s* o, u2_t key ) // returns valid ind
     if( o->size == 0 ) return o->size;
     u2_t mask = o->size - 1;
     {
-        sz_t idx = hash_tptp_1( key ) & mask;
+        sz_t idx = hash_tpu2_1( key ) & mask;
         if( o->data[ idx ].key == key ) return idx;
     }
 
     {
-        sz_t idx = hash_tptp_2( key ) & mask;
+        sz_t idx = hash_tpu2_2( key ) & mask;
         if( o->data[ idx ].key == key ) return idx;
     }
 
@@ -150,14 +150,14 @@ static bcore_hnode_tp_inst_s* set( const bcore_hmap_tp_inst_s* o, bcore_hnode_tp
     node.flag_trace = 0;
     if( depth == o->depth_limit ) return NULL;
 
-    bcore_hnode_tp_inst_s* node1 = &o->data[ hash_tptp_1( node.key ) & mask ];
+    bcore_hnode_tp_inst_s* node1 = &o->data[ hash_tpu2_1( node.key ) & mask ];
     if( node1->key == 0 )
     {
         *node1 = node;
         return node1;
     }
 
-    bcore_hnode_tp_inst_s* node2 = &o->data[ hash_tptp_2( node.key ) & mask ];
+    bcore_hnode_tp_inst_s* node2 = &o->data[ hash_tpu2_2( node.key ) & mask ];
     if( node2->key == 0 )
     {
         *node2 = node;
