@@ -72,7 +72,7 @@ bclos_tree_s* bclos_tree_s_set_closure_d( bclos_tree_s* o, vd_t closure )
     bcore_inst_typed_down( typeof( "bcore_closure_op" ), &o->closure_op );
     o->closure_op = as_bcore_closure( closure );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( o );
-    arr_p->set_size( arr_p, o, bcore_closure_n_args( o->closure_op ) );
+    bcore_array_spect_set_size( arr_p, o, bcore_closure_n_args( o->closure_op ) );
     return o;
 }
 
