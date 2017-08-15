@@ -8,6 +8,7 @@
 #include "bcore_hmap_tp_inst.h"
 #include "bcore_signature.h"
 #include "bcore_bml.h"
+#include "bcore_txt_ml.h"
 #include "bcore_spect_inst.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect_via.h"
@@ -22,6 +23,7 @@ void bcore_flect_define_self_creators()
 {
     bcore_inst_define_self_creators();
     bcore_bml_define_self_creators();
+    bcore_txt_ml_define_self_creators();
     bcore_sources_define_self_creators();
     bcore_sinks_define_self_creators();
     bcore_closure_define_self_creators();

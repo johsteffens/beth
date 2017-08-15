@@ -402,10 +402,10 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                     tp_t tname = typeof( s->sc );
                     if( !bcore_name_try_name( tname ) ) src_p->parse_errf( src_p, src, "Unknown specifier '%s'.", s->sc );
                     bcore_string_s_discard( s );
-                    index = via_p->nget_index( via_p, tname );
+                    index = bcore_via_spect_nget_index( via_p, tname );
                 }
 
-                const bcore_vitem_s* vitem = via_p->iget_vitem( via_p, index );
+                const bcore_vitem_s* vitem = bcore_via_spect_iget_vitem( via_p, index );
 
                 vd_t element = ( u0_t* )obj + vitem->offs;
                 bool array = false, link = false, typed = false;
@@ -729,25 +729,25 @@ static bcore_string_s* translate_selftest( void )
     {
         const bcore_via_s * specs_v = bcore_via_s_get_aware( specs );
         u2_t u2_v = 10;
-        specs_v->nset_c( specs_v, specs, typeof( "param1" ), &u2_v );
+        bcore_via_spect_nset_c( specs_v, specs, typeof( "param1" ), &u2_v );
         s3_t s3_v = -3240;
-        specs_v->nset_c( specs_v, specs, typeof( "param2" ), &s3_v );
+        bcore_via_spect_nset_c( specs_v, specs, typeof( "param2" ), &s3_v );
 
-        bcore_string_s* s = specs_v->ncreate( specs_v, specs, typeof( "name" ) );
+        bcore_string_s* s = bcore_via_spect_ncreate( specs_v, specs, typeof( "name" ) );
         bcore_string_s_pushf( s, "\"my string\"" );
         {
-            const bcore_array_s* numarr_p = bcore_array_s_get_typed( specs_v->nget_type( specs_v, specs, typeof( "numarr" ) ) );
-            vd_t numarr = specs_v->nget_d( specs_v, specs, typeof( "numarr" ) );
+            const bcore_array_s* numarr_p = bcore_array_s_get_typed( bcore_via_spect_nget_type( specs_v, specs, typeof( "numarr" ) ) );
+            vd_t numarr = bcore_via_spect_nget_d( specs_v, specs, typeof( "numarr" ) );
             for( sz_t i = 0; i < 10; i++ ) numarr_p->push_c( numarr_p, numarr, &i );
         }
 
         {
-            const bcore_array_s* strarr_p = bcore_array_s_get_typed( specs_v->nget_type( specs_v, specs, typeof( "strarr" ) ) );
-            vd_t strarr = specs_v->nget_d( specs_v, specs, typeof( "strarr" ) );
+            const bcore_array_s* strarr_p = bcore_array_s_get_typed( bcore_via_spect_nget_type( specs_v, specs, typeof( "strarr" ) ) );
+            vd_t strarr = bcore_via_spect_nget_d( specs_v, specs, typeof( "strarr" ) );
             for( sz_t i = 0; i < 10; i++ ) strarr_p->push_d( strarr_p, strarr, bcore_string_s_createf( "<%zu>", i ) );
         }
 
-        specs_v->nset_d( specs_v, specs, typeof( "child"  ), bcore_inst_aware_clone( specs ) );
+        bcore_via_spect_nset_d( specs_v, specs, typeof( "child"  ), bcore_inst_aware_clone( specs ) );
     }
 
     vd_t specs_arr = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "specs_arr" ) ) );

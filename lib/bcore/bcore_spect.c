@@ -5,6 +5,8 @@
 #include "bcore_threads.h"
 #include "bcore_spect_inst.h"
 #include "bcore_life.h"
+#include "bcore_spect_array.h"
+#include "bcore_spect_via.h"
 
 /**********************************************************************************************************************/
 // hash map
@@ -130,7 +132,7 @@ bcore_string_s* bcore_spect_status()
     {
         bcore_string_s* s = bcore_string_s_create();
         bcore_string_s_push_sc( s, "registered perspectives " );
-        bcore_string_s_push_char_n( s, '.', 32 - s->size );
+        bcore_string_s_push_char_n( s, '.', 28 - s->size );
         bcore_mutex_lock( &hmap_s_g->mutex );
         bcore_string_s_pushf( s, "% 4zu\n", bcore_hmap_u2vd_s_keys( map ) );
         bcore_mutex_unlock( &hmap_s_g->mutex );
@@ -145,20 +147,35 @@ bcore_string_s* bcore_spect_status()
         if( val ) ( *bcore_hmap_tpsz_s_fget( hist, *( aware_t* )val, 0 ) )++;
     }
 
+    tp_t t_nc_arr  = bcore_flect_type_parsef( "{ aware_t _; { aware_t _; sz_t count; tp_t type; } [] arr; }" );
+    vd_t nc_arr    = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_nc_arr ) );
+    const bcore_array_s* nc_arr_a =  bcore_array_s_get_aware( nc_arr );
+
     for( sz_t i = 0; i < hist->size; i++ )
     {
         tp_t key   = bcore_hmap_tpsz_s_idx_key( hist, i );
         sz_t count = bcore_hmap_tpsz_s_idx_val( hist, i );
         if( key )
         {
-            bcore_string_s* s = bcore_string_s_create();
-            bcore_string_s_pushf( s, "%s ", ifnameof( key ) );
-            bcore_string_s_push_char_n( s, '.', 32 - s->size );
-            bcore_string_s_pushf( s, "% 4zu\n", count );
-            bcore_string_s_push_string_d( log, s );
+            vd_t pair = nc_arr_a->push_c( nc_arr_a, nc_arr, NULL );
+            bcore_via_aware_nset_c( pair, typeof( "type" ),  &key   );
+            bcore_via_aware_nset_c( pair, typeof( "count" ), &count );
         }
     }
 
+    bcore_array_sort( nc_arr_a, nc_arr, 0, -1, -1 );
+
+    for( sz_t i = 0; i < nc_arr_a->get_size( nc_arr_a, nc_arr ); i++ )
+    {
+        vc_t pair = nc_arr_a->get_c( nc_arr_a, nc_arr, i );
+        const tp_t* p_type  = bcore_via_aware_nget_c( pair, typeof( "type"  ) );
+        const sz_t* p_count = bcore_via_aware_nget_c( pair, typeof( "count" ) );
+        bcore_string_s* s = bcore_string_s_create();
+        bcore_string_s_pushf( s, "%s ", ifnameof( *p_type ) );
+        bcore_string_s_push_char_n( s, '.', 28 - s->size );
+        bcore_string_s_pushf( s, "% 4zu\n", *p_count );
+        bcore_string_s_push_string_d( log, s );
+    }
 
     bcore_life_s_discard( l );
     return log;

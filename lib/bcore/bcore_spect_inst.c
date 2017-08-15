@@ -1013,31 +1013,18 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s** p_self )
     o->align     = 0;
 
     /// amoebas
-    fp_t fp_init_a = NULL;
-    fp_t fp_down_a = NULL;
-    fp_t fp_copy_a = NULL;
-
-    // functions
-    {
-        bcore_flect_fmap_s* fmap = bcore_flect_fmap_s_create();
-        bcore_flect_fmap_s_push( fmap, (fp_t*)&o->init_o,         false, typeof( "bcore_fp_init" ),         0 );
-        bcore_flect_fmap_s_push( fmap, (fp_t*)&o->down_o,         false, typeof( "bcore_fp_down" ),         0 );
-        bcore_flect_fmap_s_push( fmap, (fp_t*)&o->copy_o,         false, typeof( "bcore_fp_copy" ),         0 );
-        bcore_flect_fmap_s_push( fmap, (fp_t*)&o->copy_typed_o,   false, typeof( "bcore_fp_copy_typed" ),   0 );
-        bcore_flect_fmap_s_push( fmap, (fp_t*)&o->create_o,       false, typeof( "bcore_fp_create" ),       0 );
-        bcore_flect_fmap_s_push( fmap, (fp_t*)&o->create_typed_o, false, typeof( "bcore_fp_create_typed" ), 0 );
-        bcore_flect_fmap_s_push( fmap, (fp_t*)&o->discard_o,      false, typeof( "bcore_fp_discard" ),      0 );
-        bcore_flect_fmap_s_push( fmap, (fp_t*)&o->clone_o,        false, typeof( "bcore_fp_clone" ),        0 );
-        bcore_flect_fmap_s_push( fmap, (fp_t*)&o->check_sanity_o, false, typeof( "bcore_fp_check_sanity" ), 0 );
-
-        // supported amoebas
-        bcore_flect_fmap_s_push( fmap, &fp_init_a, false, typeof( "ap_t" ), typeof( "init" ) );
-        bcore_flect_fmap_s_push( fmap, &fp_down_a, false, typeof( "ap_t" ), typeof( "down" ) );
-        bcore_flect_fmap_s_push( fmap, &fp_copy_a, false, typeof( "ap_t" ), typeof( "copy" ) );
-
-        bcore_flect_fmap_s_apply( fmap, self );
-        bcore_flect_fmap_s_discard( fmap );
-    }
+    fp_t fp_init_a    = bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "init" ) );
+    fp_t fp_down_a    = bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "down" ) );
+    fp_t fp_copy_a    = bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "copy" ) );
+    o->init_o         = ( bcore_fp_init         )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_init"         ), 0 );
+    o->down_o         = ( bcore_fp_down         )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_down"         ), 0 );
+    o->copy_o         = ( bcore_fp_copy         )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_copy"         ), 0 );
+    o->copy_typed_o   = ( bcore_fp_copy_typed   )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_copy_typed"   ), 0 );
+    o->create_o       = ( bcore_fp_create       )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_create"       ), 0 );
+    o->create_typed_o = ( bcore_fp_create_typed )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_create_typed" ), 0 );
+    o->discard_o      = ( bcore_fp_discard      )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_discard"      ), 0 );
+    o->clone_o        = ( bcore_fp_clone        )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_clone"        ), 0 );
+    o->check_sanity_o = ( bcore_fp_check_sanity )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_check_sanity" ), 0 );
 
     o->init_o = fp_init_a ? fp_init_a : o->init_o;
     o->down_o = fp_down_a ? fp_down_a : o->down_o;

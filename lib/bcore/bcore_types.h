@@ -41,5 +41,19 @@ typedef tp_t aware_t; // self-awareness type (first element in self-aware object
 typedef struct { vd_t o; tp_t t; } dt_p; // pair of object reference and type
 typedef struct { vc_t o; tp_t t; } ct_p; // pair of const object reference and type
 
+// extended scan and print format specifiers
+#define PRIs3_t PRIi64
+#define PRIs2_t PRIi32
+#define PRIs1_t PRIi16
+#define PRIs0_t PRIi8
+#define PRIu3_t PRIu64
+#define PRIu2_t PRIu32
+#define PRIu1_t PRIu16
+#define PRIu0_t PRIu8
+#define PRIf3_t "lg"
+#define PRIf2_t "g"
+#define PRIsz_t "zu"
+#define PRItp_t PRIu32
+
 #endif // BCORE_TYPE_H
 

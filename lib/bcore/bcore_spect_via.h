@@ -14,6 +14,7 @@
 
 #include "bcore_spect_inst.h"
 #include "bcore_features.h"
+#include <stdarg.h>
 
 typedef struct bcore_array_s bcore_array_s;
 typedef struct bcore_via_s bcore_via_s;
@@ -35,56 +36,78 @@ typedef struct bcore_via_s
 {
     aware_t p_type; // type of perspective
     tp_t    o_type; // type of object
-
     sz_t                 size;       // number of elements
     bcore_vitem_s*       vitem_arr;  // array of vitem
     const bcore_inst_s** inst_arr;   // pointers to instance perspectives
-
-    /// Access by index. Error when index is out of range.
-    tp_t                 ( *iget_name     )( const bcore_via_s* p,         sz_t index ); // Returns name for given index
-    tp_t                 ( *iget_type     )( const bcore_via_s* p, vc_t o, sz_t index ); // Returns type of element
-    vc_t                 ( *iget_c        )( const bcore_via_s* p, vc_t o, sz_t index ); // Returns indexed const item.
-    vd_t                 ( *iget_d        )( const bcore_via_s* p, vd_t o, sz_t index ); // Returns indexed item.
-    vd_t                 ( *iset_c        )( const bcore_via_s* p, vd_t o, sz_t index, vc_t src ); // Sets (internal) item at indexed position by copying src. External data by assigning the pointer
-    vd_t                 ( *iset_d        )( const bcore_via_s* p, vd_t o, sz_t index, vd_t src ); // Sets item at indexed position by taking ownership of src.
-    const bcore_vitem_s* ( *iget_vitem    )( const bcore_via_s* p,         sz_t index ); // Returns bcore_vitem_s structure;
-    const bcore_via_s*   ( *iget_via      )( const bcore_via_s* p,         sz_t index ); // Returns bcore_vitem_s structure;
-    vd_t                 ( *icreate       )( const bcore_via_s* p, vd_t o, sz_t index ); // creates item. No effect if already created. Error when type info is not available.
-    vd_t                 ( *ityped_create )( const bcore_via_s* p, vd_t o, sz_t index, tp_t type ); // creates item at given type. Error for static types or arrays.
-    void                 ( *idiscard      )( const bcore_via_s* p, vd_t o, sz_t index ); // Discards discardable element (no effect otherwise)
-    vd_t                 ( *idetach       )( const bcore_via_s* p, vd_t o, sz_t index ); // moves ownership of item to caller. Error if not detachable
-
-    /// Access by name. Error when object has no element of given name.
-    sz_t                 ( *nget_index    )( const bcore_via_s* p,         tp_t name ); // Returns index for given name
-    tp_t                 ( *nget_type     )( const bcore_via_s* p, vc_t o, tp_t name );
-    vc_t                 ( *nget_c        )( const bcore_via_s* p, vc_t o, tp_t name );
-    vd_t                 ( *nget_d        )( const bcore_via_s* p, vd_t o, tp_t name );
-    vd_t                 ( *nset_c        )( const bcore_via_s* p, vd_t o, tp_t name, vc_t src );
-    vd_t                 ( *nset_d        )( const bcore_via_s* p, vd_t o, tp_t name, vd_t src );
-    const bcore_vitem_s* ( *nget_vitem    )( const bcore_via_s* p,         tp_t name );
-    const bcore_via_s*   ( *nget_via      )( const bcore_via_s* p,         tp_t name );
-    vd_t                 ( *ncreate       )( const bcore_via_s* p, vd_t o, tp_t name );
-    vd_t                 ( *ntyped_create )( const bcore_via_s* p, vd_t o, tp_t name, tp_t type );
-    void                 ( *ndiscard      )( const bcore_via_s* p, vd_t o, tp_t name );
-    vd_t                 ( *ndetach       )( const bcore_via_s* p, vd_t o, tp_t name );
-
 } bcore_via_s;
 
 bcore_flect_self_s* bcore_via_s_create_self( void );
 
 const bcore_via_s* bcore_via_s_get_typed( u2_t type );
+const bcore_via_s* bcore_via_s_get_aware( vc_t obj  );
 
-static inline const bcore_via_s* bcore_via_s_get_aware( vc_t obj )
-{
-    return bcore_via_s_get_typed( *( const aware_t* )obj );
-}
+/// Access by index. Error when index is out of range.
+tp_t                 bcore_via_spect_iget_name     ( const bcore_via_s* p,         sz_t index ); // Returns name for given index
+tp_t                 bcore_via_spect_iget_type     ( const bcore_via_s* p, vc_t o, sz_t index ); // Returns type of element
+vc_t                 bcore_via_spect_iget_c        ( const bcore_via_s* p, vc_t o, sz_t index ); // Returns indexed const item.
+vd_t                 bcore_via_spect_iget_d        ( const bcore_via_s* p, vd_t o, sz_t index ); // Returns indexed item.
+vd_t                 bcore_via_spect_iset_c        ( const bcore_via_s* p, vd_t o, sz_t index, vc_t src ); // Sets (internal) item at indexed position by copying src. External data by assigning the pointer
+vd_t                 bcore_via_spect_iset_d        ( const bcore_via_s* p, vd_t o, sz_t index, vd_t src ); // Sets item at indexed position by taking ownership of src.
+const bcore_vitem_s* bcore_via_spect_iget_vitem    ( const bcore_via_s* p,         sz_t index ); // Returns bcore_vitem_s structure;
+const bcore_via_s*   bcore_via_spect_iget_via      ( const bcore_via_s* p,         sz_t index ); // Returns via perspective for item
+const bcore_array_s* bcore_via_spect_iget_array    ( const bcore_via_s* p,         sz_t index ); // Returns array perspective for item; return NULL when item is no array
+vc_t                 bcore_via_spect_iget_spect    ( const bcore_via_s* p, vc_t o, sz_t index, tp_t spect_type );
+vd_t                 bcore_via_spect_icreate       ( const bcore_via_s* p, vd_t o, sz_t index ); // creates item. No effect if already created. Error when type info is not available.
+vd_t                 bcore_via_spect_ityped_create ( const bcore_via_s* p, vd_t o, sz_t index, tp_t type ); // creates item at given type. Error for static types or arrays.
+void                 bcore_via_spect_idiscard      ( const bcore_via_s* p, vd_t o, sz_t index ); // Discards discardable element (no effect otherwise)
+vd_t                 bcore_via_spect_idetach       ( const bcore_via_s* p, vd_t o, sz_t index ); // moves ownership of item to caller. Error if not detachable
 
-/// extended index-functionality
-bl_t bcore_via_is_array(  const bcore_via_s* p, sz_t index ); // checks if element is an array
-bl_t bcore_via_is_static( const bcore_via_s* p, sz_t index ); // checks if element is static (type need not be recorded)
-bl_t bcore_via_is_link(   const bcore_via_s* p, sz_t index ); // checks if element is a link (means that it can be NULL); an array is a distinct static object -> not a link)
+/// Access by name. Error when object has no element of given name.
+sz_t                 bcore_via_spect_nget_index    ( const bcore_via_s* p,         tp_t name ); // Returns index for given name
+tp_t                 bcore_via_spect_nget_type     ( const bcore_via_s* p, vc_t o, tp_t name );
+vc_t                 bcore_via_spect_nget_c        ( const bcore_via_s* p, vc_t o, tp_t name );
+vd_t                 bcore_via_spect_nget_d        ( const bcore_via_s* p, vd_t o, tp_t name );
+vd_t                 bcore_via_spect_nset_c        ( const bcore_via_s* p, vd_t o, tp_t name, vc_t src );
+vd_t                 bcore_via_spect_nset_d        ( const bcore_via_s* p, vd_t o, tp_t name, vd_t src );
+const bcore_vitem_s* bcore_via_spect_nget_vitem    ( const bcore_via_s* p,         tp_t name );
+const bcore_via_s*   bcore_via_spect_nget_via      ( const bcore_via_s* p,         tp_t name );
+const bcore_array_s* bcore_via_spect_nget_array    ( const bcore_via_s* p,         tp_t name );
+vc_t                 bcore_via_spect_nget_spect    ( const bcore_via_s* p, vc_t o, tp_t name, tp_t spect_type );
+vd_t                 bcore_via_spect_ncreate       ( const bcore_via_s* p, vd_t o, tp_t name );
+vd_t                 bcore_via_spect_ntyped_create ( const bcore_via_s* p, vd_t o, tp_t name, tp_t type );
+void                 bcore_via_spect_ndiscard      ( const bcore_via_s* p, vd_t o, tp_t name );
+vd_t                 bcore_via_spect_ndetach       ( const bcore_via_s* p, vd_t o, tp_t name );
 
-const bcore_array_s* bcore_via_get_spect_array( const bcore_via_s* p, sz_t index ); // returns correct array perspective if element is an array; NULL otherwise
+sz_t                 bcore_via_typed_nget_index    ( tp_t type,         tp_t name );
+tp_t                 bcore_via_typed_nget_type     ( tp_t type, vc_t o, tp_t name );
+vc_t                 bcore_via_typed_nget_c        ( tp_t type, vc_t o, tp_t name );
+vd_t                 bcore_via_typed_nget_d        ( tp_t type, vd_t o, tp_t name );
+vd_t                 bcore_via_typed_nset_c        ( tp_t type, vd_t o, tp_t name, vc_t src );
+vd_t                 bcore_via_typed_nset_d        ( tp_t type, vd_t o, tp_t name, vd_t src );
+const bcore_vitem_s* bcore_via_typed_nget_vitem    ( tp_t type,         tp_t name );
+const bcore_via_s*   bcore_via_typed_nget_via      ( tp_t type,         tp_t name );
+const bcore_array_s* bcore_via_typed_nget_array    ( tp_t type,         tp_t name );
+vc_t                 bcore_via_typed_nget_spect    ( tp_t type, vc_t o, tp_t name, tp_t spect_type );
+vd_t                 bcore_via_typed_ncreate       ( tp_t type, vd_t o, tp_t name );
+vd_t                 bcore_via_typed_ntyped_create ( tp_t type, vd_t o, tp_t name, tp_t item_type );
+void                 bcore_via_typed_ndiscard      ( tp_t type, vd_t o, tp_t name );
+vd_t                 bcore_via_typed_ndetach       ( tp_t type, vd_t o, tp_t name );
+
+tp_t                 bcore_via_aware_nget_type     ( vc_t o, tp_t name );
+vc_t                 bcore_via_aware_nget_c        ( vc_t o, tp_t name );
+vd_t                 bcore_via_aware_nget_d        ( vd_t o, tp_t name );
+vd_t                 bcore_via_aware_nset_c        ( vd_t o, tp_t name, vc_t src );
+vd_t                 bcore_via_aware_nset_d        ( vd_t o, tp_t name, vd_t src );
+vc_t                 bcore_via_aware_nget_spect    ( vc_t o, tp_t name, tp_t spect_type );
+vd_t                 bcore_via_aware_ncreate       ( vd_t o, tp_t name );
+vd_t                 bcore_via_aware_ntyped_create ( vd_t o, tp_t name, tp_t type );
+void                 bcore_via_aware_ndiscard      ( vd_t o, tp_t name );
+vd_t                 bcore_via_aware_ndetach       ( vd_t o, tp_t name );
+
+bl_t bcore_via_spect_is_pure_array( const bcore_via_s* p             ); // checks if object is an array without additional elements
+bl_t bcore_via_spect_iis_array(     const bcore_via_s* p, sz_t index ); // checks if element is an array
+bl_t bcore_via_spect_iis_static(    const bcore_via_s* p, sz_t index ); // checks if element is static (type need not be recorded)
+bl_t bcore_via_spect_iis_link(      const bcore_via_s* p, sz_t index ); // checks if element is a link (means that it can be NULL); an array is a distinct static object -> not a link)
 
 /**********************************************************************************************************************/
 // testing, debugging

@@ -194,22 +194,25 @@ void bcore_flect_close();         // closes manager
  *  Intended use for global registry.
  *  Error in case the same reflection type is registered twice.
  */
-void bcore_flect_define_self_d(       bcore_flect_self_s* self ); // takes over control of self
-void bcore_flect_define_self_c( const bcore_flect_self_s* self ); // stores a copy of self
-sz_t bcore_flect_define_parse( const bcore_string_s* string, sz_t idx );
-sc_t bcore_flect_define_parse_sc( sc_t sc );
+tp_t bcore_flect_define_self_d(       bcore_flect_self_s* self ); // takes over control of self; error if same
+tp_t bcore_flect_define_self_c( const bcore_flect_self_s* self ); // stores a copy of self
+tp_t bcore_flect_define_parse( const bcore_string_s* string, sz_t* idx );
+tp_t bcore_flect_define_parse_sc( sc_t sc );
+tp_t bcore_flect_define_parsef( sc_t sc, ... );
 
 /** Type functions:
- *  Registers new types like in define functions and returns type.
- *  For existing types, the reflection's identity is verified and the type is returned. (Reentrant)
+ *  Reentrant define-function with advanced collision testing.
  *  Intended use in reentrant contexts (e.g type generators, local types, anonymous types)
- *  Collision-aware (--> Error in case of collision).
- *  Anonymous types may not reference external objects because this can cause unpredictable collisions.
+ *  Thread safe with extended collision-awareness (--> Error in case of any form of collision).
+ *  Error if anonymous type references external objects.
+ *  ( Rationale: Using addresses of external objects for type computation produces
+ *    different types at different run-times thwarting serialization and collision testing. )
  */
 tp_t bcore_flect_type_self_d(       bcore_flect_self_s* self ); // takes over control of self
 tp_t bcore_flect_type_self_c( const bcore_flect_self_s* self ); // stores a copy of self
-tp_t bcore_flect_type_parse( const bcore_string_s* string, sz_t idx );
+tp_t bcore_flect_type_parse(  const bcore_string_s* string, sz_t* idx );
 tp_t bcore_flect_type_parse_sc( sc_t sc );
+tp_t bcore_flect_type_parsef( sc_t format, ... );
 
 /** Defining reflection via creation function
  *  The function releases a newly created instance of self.
@@ -218,31 +221,9 @@ tp_t bcore_flect_type_parse_sc( sc_t sc );
 typedef bcore_flect_self_s* (*bcore_flect_create_self_fp)( void ); // function pointer to reflection creating function
 void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator );
 
-bool  bcore_flect_exists(                       tp_t type ); // checks existence of type
-const bcore_flect_self_s* bcore_flect_try_self( tp_t type ); // returns NULL when type does not exist
-const bcore_flect_self_s* bcore_flect_get_self( tp_t type ); // error when type does not exits
-
-/**********************************************************************************************************************/
-/// feature (function) handling
-typedef struct bcore_flect_fmap_s bcore_flect_fmap_s;
-
-void bcore_flect_fmap_s_init( bcore_flect_fmap_s* o );
-void bcore_flect_fmap_s_down( bcore_flect_fmap_s* o );
-void bcore_flect_fmap_s_copy( bcore_flect_fmap_s* o, const bcore_flect_fmap_s* src );
-
-bcore_flect_fmap_s* bcore_flect_fmap_s_create();
-void                bcore_flect_fmap_s_discard(     bcore_flect_fmap_s* o );
-bcore_flect_fmap_s* bcore_flect_fmap_s_clone( const bcore_flect_fmap_s* o );
-
-/** Registers association between perspective function pointer and function type.
- *  type == 0: type is wildcard
- *  name == 0: name is wildcard
- *  In case multiple entries relate to the same target, the last such entry takes priority.
- *  required refers to the target. apply composes runtime an error log for required targets
- *  that remained NULL;
- */
-void bcore_flect_fmap_s_push( bcore_flect_fmap_s* o, fp_t* fp, bool required, tp_t type, tp_t name );
-void bcore_flect_fmap_s_apply( const bcore_flect_fmap_s* o, const bcore_flect_self_s* self ); // applies associations from reflection
+bl_t  bcore_flect_exists(                       tp_t type ); // checks existence of type  (thread safe)
+const bcore_flect_self_s* bcore_flect_try_self( tp_t type ); // returns NULL when type does not exist  (thread safe)
+const bcore_flect_self_s* bcore_flect_get_self( tp_t type ); // error when type does not exits  (thread safe)
 
 /**********************************************************************************************************************/
 

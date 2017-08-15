@@ -127,6 +127,25 @@ void bcore_inst_aware_check_sanity(                        vc_t obj );
 void bcore_inst_spect_check_sizeof( const bcore_inst_s* o, sz_t size );
 void bcore_inst_typed_check_sizeof(             tp_t type, sz_t size );
 
+#define DEFINE_FUNCTION_INIT_SPECT( name ) \
+void name##_init( name* o ) \
+{ \
+    bcore_inst_typed_init( typeof( #name ), o ); \
+}
+
+#define DEFINE_FUNCTION_DOWN_SPECT( name ) \
+void name##_down( name* o ) \
+{ \
+    bcore_inst_typed_down( typeof( #name ), o ); \
+}
+
+#define DEFINE_FUNCTION_COPY_SPECT( name ) \
+void name##_copy( name* o, const name* src ) \
+{ \
+    if( o == src ) return; \
+    bcore_inst_typed_copy( typeof( #name ), o, src ); \
+}
+
 /**********************************************************************************************************************/
 
 /// object-instance_p combination; (with reflection; supports instance, serialization, comparison)

@@ -44,13 +44,13 @@ static bcore_signature_s* via_s_create_signature( bcore_via_s* o )
 
 /**********************************************************************************************************************/
 
-static tp_t iget_name( const bcore_via_s* p, sz_t index )
+tp_t bcore_via_spect_iget_name( const bcore_via_s* p, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     return p->vitem_arr[ index ].name;
 }
 
-static tp_t iget_type( const bcore_via_s* p, vc_t o, sz_t index )
+tp_t bcore_via_spect_iget_type( const bcore_via_s* p, vc_t o, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
@@ -96,7 +96,7 @@ static tp_t iget_type( const bcore_via_s* p, vc_t o, sz_t index )
     return 0;
 }
 
-static vc_t iget_c( const bcore_via_s* p, vc_t o, sz_t index )
+vc_t bcore_via_spect_iget_c( const bcore_via_s* p, vc_t o, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
@@ -129,7 +129,7 @@ static vc_t iget_c( const bcore_via_s* p, vc_t o, sz_t index )
     return NULL;
 }
 
-static vd_t iget_d( const bcore_via_s* p, vd_t o, sz_t index )
+vd_t bcore_via_spect_iget_d( const bcore_via_s* p, vd_t o, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
@@ -164,7 +164,7 @@ static vd_t iget_d( const bcore_via_s* p, vd_t o, sz_t index )
     return NULL;
 }
 
-static vd_t iset_c( const bcore_via_s* p, vd_t o, sz_t index, vc_t src )
+vd_t bcore_via_spect_iset_c( const bcore_via_s* p, vd_t o, sz_t index, vc_t src )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -248,7 +248,7 @@ static vd_t iset_c( const bcore_via_s* p, vd_t o, sz_t index, vc_t src )
     return NULL;
 }
 
-static vd_t iset_d( const bcore_via_s* p, vd_t o, sz_t index, vd_t src )
+vd_t bcore_via_spect_iset_d( const bcore_via_s* p, vd_t o, sz_t index, vd_t src )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -321,19 +321,30 @@ static vd_t iset_d( const bcore_via_s* p, vd_t o, sz_t index, vd_t src )
     return NULL;
 }
 
-static const bcore_vitem_s* iget_vitem( const bcore_via_s* p, sz_t index )
+const bcore_vitem_s* bcore_via_spect_iget_vitem( const bcore_via_s* p, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     return &p->vitem_arr[ index ];
 }
 
-static const bcore_via_s* iget_via( const bcore_via_s* p, sz_t index )
+const bcore_via_s* bcore_via_spect_iget_via( const bcore_via_s* p, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     return p->vitem_arr[ index ].via;
 }
 
-static vd_t icreate( const bcore_via_s* p, vd_t o, sz_t index )
+const bcore_array_s* bcore_via_spect_iget_array( const bcore_via_s* p, sz_t index )
+{
+    if( !bcore_flect_caps_is_array( p->vitem_arr[ index ].caps ) ) return NULL;
+    return bcore_array_s_get_typed( p->vitem_arr[ index ].type );
+}
+
+vc_t bcore_via_spect_iget_spect( const bcore_via_s* p, vc_t o, sz_t index, tp_t spect_type )
+{
+    return bcore_spect_get_typed( spect_type, bcore_via_spect_iget_type( p, o, index ) );
+}
+
+vd_t bcore_via_spect_icreate( const bcore_via_s* p, vd_t o, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -397,7 +408,7 @@ static vd_t icreate( const bcore_via_s* p, vd_t o, sz_t index )
     return NULL;
 }
 
-static vd_t ityped_create( const bcore_via_s* p, vd_t o, sz_t index, tp_t type )
+vd_t bcore_via_spect_ityped_create( const bcore_via_s* p, vd_t o, sz_t index, tp_t type )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -469,7 +480,7 @@ static vd_t ityped_create( const bcore_via_s* p, vd_t o, sz_t index, tp_t type )
     return NULL;
 }
 
-static void idiscard( const bcore_via_s* p, vd_t o, sz_t index )
+void bcore_via_spect_idiscard( const bcore_via_s* p, vd_t o, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -527,7 +538,7 @@ static void idiscard( const bcore_via_s* p, vd_t o, sz_t index )
     }
 }
 
-static vd_t idetach( const bcore_via_s* p, vd_t o, sz_t index )
+vd_t bcore_via_spect_idetach( const bcore_via_s* p, vd_t o, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -586,77 +597,67 @@ static vd_t idetach( const bcore_via_s* p, vd_t o, sz_t index )
 
 /**********************************************************************************************************************/
 
-static sz_t nget_index( const bcore_via_s* p, tp_t name )
+sz_t bcore_via_spect_nget_index( const bcore_via_s* p, tp_t name )
 {
     for( sz_t i = 0; i < p->size; i++ ) if( p->vitem_arr[ i ].name == name ) return i;
     ERR( "object '%s' has no element of name '%s'", ifnameof( p->o_type ), ifnameof( name ) );
     return 0;
 }
 
-static tp_t nget_type( const bcore_via_s* p, vc_t o, tp_t name )
-{
-    return iget_type( p, o, nget_index( p, name ) );
-}
+tp_t                 bcore_via_spect_nget_type(     const bcore_via_s* p, vc_t o, tp_t name )            { return bcore_via_spect_iget_type(  p, o, bcore_via_spect_nget_index( p, name ) ); }
+vc_t                 bcore_via_spect_nget_c(        const bcore_via_s* p, vc_t o, tp_t name )            { return bcore_via_spect_iget_c(     p, o, bcore_via_spect_nget_index( p, name ) ); }
+vd_t                 bcore_via_spect_nget_d(        const bcore_via_s* p, vd_t o, tp_t name )            { return bcore_via_spect_iget_d(     p, o, bcore_via_spect_nget_index( p, name ) ); }
+vd_t                 bcore_via_spect_nset_c(        const bcore_via_s* p, vd_t o, tp_t name, vc_t src )  { return bcore_via_spect_iset_c(     p, o, bcore_via_spect_nget_index( p, name ), src ); }
+vd_t                 bcore_via_spect_nset_d(        const bcore_via_s* p, vd_t o, tp_t name, vd_t src )  { return bcore_via_spect_iset_d(     p, o, bcore_via_spect_nget_index( p, name ), src ); }
+const bcore_vitem_s* bcore_via_spect_nget_vitem(    const bcore_via_s* p,         tp_t name )            { return bcore_via_spect_iget_vitem( p,    bcore_via_spect_nget_index( p, name ) ); }
+const bcore_via_s*   bcore_via_spect_nget_via(      const bcore_via_s* p,         tp_t name )            { return bcore_via_spect_iget_via(   p,    bcore_via_spect_nget_index( p, name ) ); }
+const bcore_array_s* bcore_via_spect_nget_array(    const bcore_via_s* p,         tp_t name )            { return bcore_via_spect_iget_array( p,    bcore_via_spect_nget_index( p, name ) ); }
+vc_t                 bcore_via_spect_nget_spect(    const bcore_via_s* p, vc_t o, tp_t name, tp_t spect_type ) { return bcore_via_spect_iget_spect( p, o, bcore_via_spect_nget_index( p, name ), spect_type ); }
+vd_t                 bcore_via_spect_ncreate(       const bcore_via_s* p, vd_t o, tp_t name )            { return bcore_via_spect_icreate(    p, o, bcore_via_spect_nget_index( p, name ) ); }
+vd_t                 bcore_via_spect_ntyped_create( const bcore_via_s* p, vd_t o, tp_t name, tp_t type ) { return bcore_via_spect_ityped_create(    p, o, bcore_via_spect_nget_index( p, name ), type ); }
+void                 bcore_via_spect_ndiscard(      const bcore_via_s* p, vd_t o, tp_t name )            {        bcore_via_spect_idiscard(   p, o, bcore_via_spect_nget_index( p, name ) ); }
+vd_t                 bcore_via_spect_ndetach(       const bcore_via_s* p, vd_t o, tp_t name )            { return bcore_via_spect_idetach(    p, o, bcore_via_spect_nget_index( p, name ) ); }
 
-static vc_t nget_c( const bcore_via_s* p, vc_t o, tp_t name )
-{
-    return iget_c( p, o, nget_index( p, name ) );
-}
+sz_t                 bcore_via_typed_nget_index(    tp_t type,         tp_t name )           { return bcore_via_spect_nget_index( bcore_via_s_get_typed( type ),    name ); }
+tp_t                 bcore_via_typed_nget_type(     tp_t type, vc_t o, tp_t name )           { return bcore_via_spect_nget_type(  bcore_via_s_get_typed( type ), o, name ); }
+vc_t                 bcore_via_typed_nget_c(        tp_t type, vc_t o, tp_t name )           { return bcore_via_spect_nget_c(     bcore_via_s_get_typed( type ), o, name ); }
+vd_t                 bcore_via_typed_nget_d(        tp_t type, vd_t o, tp_t name )           { return bcore_via_spect_nget_d(     bcore_via_s_get_typed( type ), o, name ); }
+vd_t                 bcore_via_typed_nset_c(        tp_t type, vd_t o, tp_t name, vc_t src ) { return bcore_via_spect_nset_c(     bcore_via_s_get_typed( type ), o, name, src ); }
+vd_t                 bcore_via_typed_nset_d(        tp_t type, vd_t o, tp_t name, vd_t src ) { return bcore_via_spect_nset_d(     bcore_via_s_get_typed( type ), o, name, src ); }
+const bcore_vitem_s* bcore_via_typed_nget_vitem(    tp_t type,         tp_t name )           { return bcore_via_spect_nget_vitem( bcore_via_s_get_typed( type ),    name ); }
+const bcore_via_s*   bcore_via_typed_nget_via(      tp_t type,         tp_t name )           { return bcore_via_spect_nget_via(   bcore_via_s_get_typed( type ),    name ); }
+const bcore_array_s* bcore_via_typed_nget_array(    tp_t type,         tp_t name )           { return bcore_via_spect_nget_array( bcore_via_s_get_typed( type ),    name ); }
+vc_t                 bcore_via_typed_nget_spect(    tp_t type, vc_t o, tp_t name, tp_t spect_type ) { return bcore_via_spect_nget_spect(    bcore_via_s_get_typed( type ), o, name, spect_type ); }
+vd_t                 bcore_via_typed_ncreate(       tp_t type, vd_t o, tp_t name )           { return bcore_via_spect_ncreate(    bcore_via_s_get_typed( type ), o, name ); }
+vd_t                 bcore_via_typed_ntyped_create( tp_t type, vd_t o, tp_t name, tp_t item_type )  { return bcore_via_spect_ntyped_create( bcore_via_s_get_typed( type ), o, name, item_type  ); }
+void                 bcore_via_typed_ndiscard(      tp_t type, vd_t o, tp_t name )           {        bcore_via_spect_ndiscard(   bcore_via_s_get_typed( type ), o, name ); }
+vd_t                 bcore_via_typed_ndetach(       tp_t type, vd_t o, tp_t name )           { return bcore_via_spect_ndetach(    bcore_via_s_get_typed( type ), o, name ); }
 
-static vd_t nget_d( const bcore_via_s* p, vd_t o, tp_t name )
-{
-    return iget_d( p, o, nget_index( p, name ) );
-}
-
-static vd_t nset_c( const bcore_via_s* p, vd_t o, tp_t name, vc_t src )
-{
-    return iset_c( p, o, nget_index( p, name ), src );
-}
-
-static vd_t nset_d( const bcore_via_s* p, vd_t o, tp_t name, vd_t src )
-{
-    return iset_d( p, o, nget_index( p, name ), src );
-}
-
-static const bcore_vitem_s* nget_vitem( const bcore_via_s* p, tp_t name )
-{
-    return iget_vitem( p, nget_index( p, name ) );
-}
-
-static const bcore_via_s* nget_via( const bcore_via_s* p, tp_t name )
-{
-    return iget_via( p, nget_index( p, name ) );
-}
-
-static vd_t ncreate( const bcore_via_s* p, vd_t o, tp_t name )
-{
-    return icreate( p, o, nget_index( p, name ) );
-}
-
-static vd_t ntyped_create( const bcore_via_s* p, vd_t o, tp_t name, tp_t type )
-{
-    return ityped_create( p, o, nget_index( p, name ), type );
-}
-
-static void ndiscard( const bcore_via_s* p, vd_t o, tp_t name )
-{
-    idiscard( p, o, nget_index( p, name ) );
-}
-
-static vd_t ndetach( const bcore_via_s* p, vd_t o, tp_t name )
-{
-    return idetach( p, o, nget_index( p, name ) );
-}
+tp_t                 bcore_via_aware_nget_type(     vc_t o, tp_t name )            { return bcore_via_typed_nget_type( *( aware_t* )o, o, name ); }
+vc_t                 bcore_via_aware_nget_c(        vc_t o, tp_t name )            { return bcore_via_typed_nget_c(    *( aware_t* )o, o, name ); }
+vd_t                 bcore_via_aware_nget_d(        vd_t o, tp_t name )            { return bcore_via_typed_nget_d(    *( aware_t* )o, o, name ); }
+vd_t                 bcore_via_aware_nset_c(        vd_t o, tp_t name, vc_t src )  { return bcore_via_typed_nset_c(    *( aware_t* )o, o, name, src ); }
+vd_t                 bcore_via_aware_nset_d(        vd_t o, tp_t name, vd_t src )  { return bcore_via_typed_nset_d(    *( aware_t* )o, o, name, src ); }
+vc_t                 bcore_via_aware_nget_spect(    vc_t o, tp_t name, tp_t spect_type ) { return bcore_via_typed_nget_spect( *( aware_t* )o, o, name, spect_type ); }
+vd_t                 bcore_via_aware_ncreate(       vd_t o, tp_t name )            { return bcore_via_typed_ncreate(   *( aware_t* )o, o, name ); }
+vd_t                 bcore_via_aware_ntyped_create( vd_t o, tp_t name, tp_t type ) { return bcore_via_typed_ntyped_create ( *( aware_t* )o, o, name, type ); }
+void                 bcore_via_aware_ndiscard(      vd_t o, tp_t name )            {        bcore_via_typed_ndiscard(  *( aware_t* )o, o, name ); }
+vd_t                 bcore_via_aware_ndetach(       vd_t o, tp_t name )            { return bcore_via_typed_ndetach(   *( aware_t* )o, o, name ); }
 
 /**********************************************************************************************************************/
 
-bl_t bcore_via_is_array( const bcore_via_s* p, sz_t index )
+bl_t bcore_via_spect_is_pure_array( const bcore_via_s* p )
+{
+    return ( ( p->size == 1 ) && bcore_via_spect_iis_array( p, 0 ) );
+}
+
+bl_t bcore_via_spect_iis_array( const bcore_via_s* p, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     return bcore_flect_caps_is_array( p->vitem_arr[ index ].caps );
 }
 
-bl_t bcore_via_is_static( const bcore_via_s* p, sz_t index )
+bl_t bcore_via_spect_iis_static( const bcore_via_s* p, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     switch( p->vitem_arr[ index ].caps )
@@ -675,7 +676,7 @@ bl_t bcore_via_is_static( const bcore_via_s* p, sz_t index )
     return false;
 }
 
-bl_t bcore_via_is_link( const bcore_via_s* p, sz_t index )
+bl_t bcore_via_spect_iis_link( const bcore_via_s* p, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     switch( p->vitem_arr[ index ].caps )
@@ -692,12 +693,6 @@ bl_t bcore_via_is_link( const bcore_via_s* p, sz_t index )
         default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->vitem_arr[ index ].caps ) );
     }
     return false;
-}
-
-const bcore_array_s* bcore_via_get_spect_array( const bcore_via_s* p, sz_t index )
-{
-    if( !bcore_flect_caps_is_array( p->vitem_arr[ index ].caps ) ) return NULL;
-    return bcore_array_s_get_typed( p->vitem_arr[ index ].type );
 }
 
 /**********************************************************************************************************************/
@@ -803,32 +798,6 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s** p_self )
         o->inst_arr  = bcore_u_alloc( sizeof( bcore_inst_s* ), o->inst_arr,  o->size, NULL );
     }
 
-    o->iget_name     = iget_name;
-    o->iget_c        = iget_c;
-    o->iget_d        = iget_d;
-    o->iset_c        = iset_c;
-    o->iset_d        = iset_d;
-    o->iget_vitem    = iget_vitem;
-    o->iget_via      = iget_via;
-    o->iget_type     = iget_type;
-    o->icreate       = icreate;
-    o->ityped_create = ityped_create;
-    o->idiscard      = idiscard;
-    o->idetach       = idetach;
-
-    o->nget_index    = nget_index;
-    o->nget_c        = nget_c;
-    o->nget_d        = nget_d;
-    o->nset_c        = nset_c;
-    o->nset_d        = nset_d;
-    o->nget_vitem    = nget_vitem;
-    o->nget_via      = nget_via;
-    o->nget_type     = nget_type;
-    o->ncreate       = ncreate;
-    o->ntyped_create = ntyped_create;
-    o->ndiscard      = ndiscard;
-    o->ndetach       = ndetach;
-
     return o;
 }
 
@@ -851,6 +820,11 @@ const bcore_via_s* bcore_via_s_get_typed( u2_t o_type )
     return bcore_spect_get_typed( typeof( "bcore_via_s" ), o_type );
 }
 
+const bcore_via_s* bcore_via_s_get_aware( vc_t obj )
+{
+    return bcore_via_s_get_typed( *( const aware_t* )obj );
+}
+
 /**********************************************************************************************************************/
 
 bcore_string_s* bcore_spect_via_selftest( void )
@@ -863,22 +837,22 @@ bcore_string_s* bcore_spect_via_selftest( void )
         sz_t size   =  10;
         u2_t param1 = 200;
         s2_t param2 = -50;
-        via_specs_v->nset_c( via_specs_v, via_specs, typeof( "size"   ), &size );
-        via_specs_v->nset_c( via_specs_v, via_specs, typeof( "param1" ), &param1 );
-        via_specs_v->nset_c( via_specs_v, via_specs, typeof( "" ), &param2 );
+        bcore_via_spect_nset_c( via_specs_v, via_specs, typeof( "size"   ), &size );
+        bcore_via_spect_nset_c( via_specs_v, via_specs, typeof( "param1" ), &param1 );
+        bcore_via_spect_nset_c( via_specs_v, via_specs, typeof( "" ), &param2 );
     }
 
-    ASSERT( *( sz_t* )via_specs_v->nget_c( via_specs_v, via_specs, typeof( "size"   ) ) ==  10 );
-    ASSERT( *( u2_t* )via_specs_v->nget_c( via_specs_v, via_specs, typeof( "param1" ) ) == 200 );
-    ASSERT( *( s2_t* )via_specs_v->nget_c( via_specs_v, via_specs, typeof( "" ) )       == -50 );
+    ASSERT( *( sz_t* )bcore_via_spect_nget_c( via_specs_v, via_specs, typeof( "size"   ) ) ==  10 );
+    ASSERT( *( u2_t* )bcore_via_spect_nget_c( via_specs_v, via_specs, typeof( "param1" ) ) == 200 );
+    ASSERT( *( s2_t* )bcore_via_spect_nget_c( via_specs_v, via_specs, typeof( "" ) )       == -50 );
 
     bcore_flect_define_parse_sc( "via_specs_arr = { aware_t _; u3_t flags; via_specs [] arr; }" );
     vd_t via_specs_arr = bcore_inst_typed_create( typeof( "via_specs_arr" ) );
 
     const bcore_via_s* via_specs_arr_v = bcore_via_s_get_typed( typeof( "via_specs_arr" ) );
 
-    vd_t arr = via_specs_arr_v->nget_d( via_specs_arr_v, via_specs_arr, typeof( "arr" ) );
-    tp_t arr_type = via_specs_arr_v->nget_type( via_specs_arr_v, via_specs_arr, typeof( "arr" ) );
+    vd_t arr = bcore_via_spect_nget_d( via_specs_arr_v, via_specs_arr, typeof( "arr" ) );
+    tp_t arr_type = bcore_via_spect_nget_type( via_specs_arr_v, via_specs_arr, typeof( "arr" ) );
     const bcore_array_s* arr_p = bcore_array_s_get_typed( arr_type );
 
     sz_t arr_size = 100000;
@@ -891,19 +865,19 @@ bcore_string_s* bcore_spect_via_selftest( void )
     for( sz_t i = 0; i < arr_size; i++ )
     {
         vd_t via_specs_l = arr_p->get_d( arr_p, arr, i );
-        via_specs_v->nset_c( via_specs_v, via_specs_l, typeof( "size" ), &i );
+        bcore_via_spect_nset_c( via_specs_v, via_specs_l, typeof( "size" ), &i );
     }
 
     vd_t via_specs_arr2 = bcore_inst_typed_create( typeof( "via_specs_arr" ) );
 
-    via_specs_arr_v->nset_c( via_specs_arr_v, via_specs_arr2, typeof( "arr" ), via_specs_arr_v->nget_c( via_specs_arr_v, via_specs_arr, typeof( "arr" ) ) );
+    bcore_via_spect_nset_c( via_specs_arr_v, via_specs_arr2, typeof( "arr" ), bcore_via_spect_nget_c( via_specs_arr_v, via_specs_arr, typeof( "arr" ) ) );
 
-    vd_t arr2 = via_specs_arr_v->nget_d( via_specs_arr_v, via_specs_arr2, typeof( "arr" ) );
+    vd_t arr2 = bcore_via_spect_nget_d( via_specs_arr_v, via_specs_arr2, typeof( "arr" ) );
 
     for( sz_t i = 0; i < arr_size; i++ )
     {
         vc_t via_specs_l = arr_p->get_c( arr_p, arr2, i );
-        ASSERT( i == *( sz_t* )via_specs_v->nget_c( via_specs_v, via_specs_l, typeof( "size" ) ) );
+        ASSERT( i == *( sz_t* )bcore_via_spect_nget_c( via_specs_v, via_specs_l, typeof( "size" ) ) );
     }
 
     ASSERT( bcore_strcmp( nameof( arr_type ), "via_specs__static_array" ) == 0 );
