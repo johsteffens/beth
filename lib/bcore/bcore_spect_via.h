@@ -57,6 +57,7 @@ vd_t                 bcore_via_spect_iset_typed_c  ( const bcore_via_s* p, vd_t 
 vd_t                 bcore_via_spect_iset_s3       ( const bcore_via_s* p, vd_t o, sz_t index, s3_t val ); // Sets (internal) item by converting s3_t into target type
 vd_t                 bcore_via_spect_iset_u3       ( const bcore_via_s* p, vd_t o, sz_t index, u3_t val ); // Sets (internal) item by converting u3_t into target type
 vd_t                 bcore_via_spect_iset_f3       ( const bcore_via_s* p, vd_t o, sz_t index, f3_t val ); // Sets (internal) item by converting f3_t into target type
+vd_t                 bcore_via_spect_iset_sz       ( const bcore_via_s* p, vd_t o, sz_t index, sz_t val ); // Sets (internal) item by converting sz_t into target type
 vd_t                 bcore_via_spect_iset_sc       ( const bcore_via_s* p, vd_t o, sz_t index, sc_t val ); // Sets (internal) item by converting sc_t into target type
 vd_t                 bcore_via_spect_iset_bl       ( const bcore_via_s* p, vd_t o, sz_t index, bl_t val ); // Sets (internal) item by converting bl_t into target type
 const bcore_vitem_s* bcore_via_spect_iget_vitem    ( const bcore_via_s* p,         sz_t index ); // Returns bcore_vitem_s structure;
@@ -79,6 +80,7 @@ vd_t                 bcore_via_spect_nset_typed_c  ( const bcore_via_s* p, vd_t 
 vd_t                 bcore_via_spect_nset_s3       ( const bcore_via_s* p, vd_t o, tp_t name, s3_t val );
 vd_t                 bcore_via_spect_nset_u3       ( const bcore_via_s* p, vd_t o, tp_t name, u3_t val );
 vd_t                 bcore_via_spect_nset_f3       ( const bcore_via_s* p, vd_t o, tp_t name, f3_t val );
+vd_t                 bcore_via_spect_nset_sz       ( const bcore_via_s* p, vd_t o, tp_t name, sz_t val );
 vd_t                 bcore_via_spect_nset_sc       ( const bcore_via_s* p, vd_t o, tp_t name, sc_t val );
 vd_t                 bcore_via_spect_nset_bl       ( const bcore_via_s* p, vd_t o, tp_t name, bl_t val );
 const bcore_vitem_s* bcore_via_spect_nget_vitem    ( const bcore_via_s* p,         tp_t name );
@@ -100,6 +102,7 @@ vd_t                 bcore_via_typed_nset_typed_c  ( tp_t tp, vd_t o, tp_t name,
 vd_t                 bcore_via_typed_nset_s3       ( tp_t tp, vd_t o, tp_t name, s3_t val );
 vd_t                 bcore_via_typed_nset_u3       ( tp_t tp, vd_t o, tp_t name, u3_t val );
 vd_t                 bcore_via_typed_nset_f3       ( tp_t tp, vd_t o, tp_t name, f3_t val );
+vd_t                 bcore_via_typed_nset_sz       ( tp_t tp, vd_t o, tp_t name, sz_t val );
 vd_t                 bcore_via_typed_nset_sc       ( tp_t tp, vd_t o, tp_t name, sc_t val );
 vd_t                 bcore_via_typed_nset_bl       ( tp_t tp, vd_t o, tp_t name, bl_t val );
 const bcore_vitem_s* bcore_via_typed_nget_vitem    ( tp_t tp,         tp_t name );
@@ -121,6 +124,7 @@ vd_t                 bcore_via_aware_nset_typed_c  ( vd_t o, tp_t name, tp_t otp
 vd_t                 bcore_via_aware_nset_s3       ( vd_t o, tp_t name, s3_t val );
 vd_t                 bcore_via_aware_nset_u3       ( vd_t o, tp_t name, u3_t val );
 vd_t                 bcore_via_aware_nset_f3       ( vd_t o, tp_t name, f3_t val );
+vd_t                 bcore_via_aware_nset_sz       ( vd_t o, tp_t name, sz_t val );
 vd_t                 bcore_via_aware_nset_sc       ( vd_t o, tp_t name, sc_t val );
 vd_t                 bcore_via_aware_nset_bl       ( vd_t o, tp_t name, bl_t val );
 const bcore_vitem_s* bcore_via_aware_nget_vitem    ( vc_t o, tp_t name );

@@ -3,6 +3,9 @@
 #include "bcore_spect_array.h"
 #include "bcore_spect_compare.h"
 #include "bcore_spect.h"
+#include "bcore_quicktypes.h"
+
+#define NPX( name ) bcore_array_##name
 
 /**********************************************************************************************************************/
 // bcore_array_s
@@ -104,7 +107,7 @@ static sz_t get_space_aware_link( const bcore_array_s* p, vc_t o )
 
 /**********************************************************************************************************************/
 
-static void set_space( const bcore_array_s* p, vd_t o, sz_t space )
+void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
@@ -237,10 +240,10 @@ static void set_space( const bcore_array_s* p, vd_t o, sz_t space )
 
 /**********************************************************************************************************************/
 
-static void set_size( const bcore_array_s* p, vd_t o, sz_t size )
+void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
 {
-    sz_t space = p->get_space( p, o );
-    if( size > space ) p->set_space( p, o, ( size <= space * 2 ) ? space * 2 : size );
+    sz_t space = bcore_array_spect_get_space( p, o );
+    if( size > space ) bcore_array_spect_set_space( p, o, ( size <= space * 2 ) ? space * 2 : size );
 
     vd_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
@@ -486,7 +489,7 @@ static vd_t set_c_static( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_static_array_s* arr = obj;
-    if( index >= arr->size ) set_size( p, o, index + 1 );
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     const bcore_inst_s* instance_p = p->item_p;
     vd_t dst = ( u0_t* )arr->data + instance_p->size * index;
     if( src ) instance_p->copy( instance_p, dst, src );
@@ -497,7 +500,7 @@ static vd_t set_c_typed( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_typed_array_s* arr = obj;
-    if( index >= arr->size ) set_size( p, o, index + 1 );
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     const bcore_inst_s* item_p = bcore_inst_s_get_typed( arr->type );
     vd_t dst = ( u0_t* )arr->data + item_p->size * index;
     item_p->copy( item_p, dst, src );
@@ -508,7 +511,7 @@ static vd_t set_c_static_link( const bcore_array_s* p, vd_t o, sz_t index, vc_t 
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_static_link_array_s* arr = obj;
-    if( index >= arr->size ) set_size( p, o, index + 1 );
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     const bcore_inst_s* instance_p = p->item_p;
     vd_t* dst = &arr->data[ index ];
     if( *dst ) instance_p->discard( instance_p, *dst );
@@ -520,7 +523,7 @@ static vd_t set_c_typed_link( const bcore_array_s* p, vd_t o, sz_t index, vc_t s
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_typed_link_array_s* arr = obj;
-    if( index >= arr->size ) set_size( p, o, index + 1 );
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     vd_t* dst = &arr->data[ index ];
     if( *dst ) bcore_inst_typed_discard( arr->type, *dst );
     *dst = bcore_inst_typed_clone( arr->type, src );
@@ -531,10 +534,79 @@ static vd_t set_c_aware_link( const bcore_array_s* p, vd_t o, sz_t index, vc_t s
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_aware_link_array_s* arr = obj;
-    if( index >= arr->size ) set_size( p, o, index + 1 );
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     vd_t* dst = &arr->data[ index ];
     if( *dst ) bcore_inst_aware_discard( *dst );
     *dst = bcore_inst_aware_clone( src );
+    return *dst;
+}
+
+/**********************************************************************************************************************/
+
+static vd_t set_typed_c_static( const bcore_array_s* p, vd_t o, sz_t index, tp_t type, vc_t src )
+{
+    vd_t obj = ( u0_t* )o + p->caps_offset;
+    bcore_static_array_s* arr = obj;
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
+    const bcore_inst_s* instance_p = p->item_p;
+    vd_t dst = ( u0_t* )arr->data + instance_p->size * index;
+    if( src ) instance_p->copy_typed( instance_p, dst, type, src );
+    return dst;
+}
+
+static vd_t set_typed_c_typed( const bcore_array_s* p, vd_t o, sz_t index, tp_t type, vc_t src )
+{
+    vd_t obj = ( u0_t* )o + p->caps_offset;
+    bcore_typed_array_s* arr = obj;
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
+    const bcore_inst_s* item_p = bcore_inst_s_get_typed( arr->type );
+    vd_t dst = ( u0_t* )arr->data + item_p->size * index;
+    item_p->copy_typed( item_p, dst, type, src );
+    return dst;
+}
+
+static vd_t set_typed_c_static_link( const bcore_array_s* p, vd_t o, sz_t index, tp_t type, vc_t src )
+{
+    vd_t obj = ( u0_t* )o + p->caps_offset;
+    bcore_static_link_array_s* arr = obj;
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
+    const bcore_inst_s* instance_p = p->item_p;
+    vd_t* dst = &arr->data[ index ];
+    if( *dst ) instance_p->discard( instance_p, *dst );
+    *dst = instance_p->create_typed( instance_p, type, src );
+    return *dst;
+}
+
+static vd_t set_typed_c_typed_link( const bcore_array_s* p, vd_t o, sz_t index, tp_t type, vc_t src )
+{
+    vd_t obj = ( u0_t* )o + p->caps_offset;
+    bcore_typed_link_array_s* arr = obj;
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
+    vd_t* dst = &arr->data[ index ];
+    if( *dst ) bcore_inst_typed_discard( arr->type, *dst );
+    *dst = bcore_inst_typed_create_typed( arr->type, type, src );
+    return *dst;
+}
+
+static vd_t set_typed_c_aware_link( const bcore_array_s* p, vd_t o, sz_t index, tp_t type, vc_t src )
+{
+    vd_t obj = ( u0_t* )o + p->caps_offset;
+    bcore_aware_link_array_s* arr = obj;
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
+    vd_t* dst = &arr->data[ index ];
+    if( *dst ) bcore_inst_aware_discard( *dst );
+
+
+    const bcore_inst_s* inst_p = bcore_inst_s_get_typed( type );
+    if( inst_p->aware )
+    {
+        *dst = bcore_inst_aware_clone( src );
+    }
+    else
+    {
+        ERR( "No method to convert '%s' into a self-aware type", ifnameof( type ) );
+    }
+
     return *dst;
 }
 
@@ -544,7 +616,7 @@ static vd_t set_d_static( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_static_array_s* arr = obj;
-    if( index >= arr->size ) set_size( p, o, index + 1 );
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     const bcore_inst_s* instance_p = p->item_p;
     vd_t dst = ( u0_t* )arr->data + instance_p->size * index;
     if( src )
@@ -559,7 +631,7 @@ static vd_t set_d_typed( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_typed_array_s* arr = obj;
-    if( index >= arr->size ) set_size( p, o, index + 1 );
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     const bcore_inst_s* item_p = bcore_inst_s_get_typed( arr->type );
     vd_t dst = ( u0_t* )arr->data + item_p->size * index;
     item_p->copy( item_p, dst, src );
@@ -571,7 +643,7 @@ static vd_t set_d_static_link( const bcore_array_s* p, vd_t o, sz_t index, vd_t 
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_static_link_array_s* arr = obj;
-    if( index >= arr->size ) set_size( p, o, index + 1 );
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     const bcore_inst_s* instance_p = p->item_p;
     vd_t* dst = &arr->data[ index ];
     if( *dst ) instance_p->discard( instance_p, *dst );
@@ -583,7 +655,7 @@ static vd_t set_d_typed_link( const bcore_array_s* p, vd_t o, sz_t index, vd_t s
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_typed_link_array_s* arr = obj;
-    if( index >= arr->size ) set_size( p, o, index + 1 );
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     vd_t* dst = &arr->data[ index ];
     if( *dst ) bcore_inst_typed_discard( arr->type, *dst );
     *dst = src;
@@ -594,7 +666,7 @@ static vd_t set_d_aware_link( const bcore_array_s* p, vd_t o, sz_t index, vd_t s
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_aware_link_array_s* arr = obj;
-    if( index >= arr->size ) set_size( p, o, index + 1 );
+    if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     vd_t* dst = &arr->data[ index ];
     if( *dst ) bcore_inst_aware_discard( *dst );
     *dst = src;
@@ -603,57 +675,33 @@ static vd_t set_d_aware_link( const bcore_array_s* p, vd_t o, sz_t index, vd_t s
 
 /**********************************************************************************************************************/
 
-static vc_t get_c_first( const bcore_array_s* p, vc_t o )
+static inline sz_t asz( const bcore_array_s* p, vc_t o ) { return bcore_array_spect_get_size( p, o ); }
+
+vc_t NPX(spect_get_c_first  )( const NPX(s)* p, vc_t o                     ) { return NPX(spect_get_c      )( p, o, 0 ); }
+vd_t NPX(spect_get_d_first  )( const NPX(s)* p, vd_t o                     ) { return NPX(spect_get_d      )( p, o, 0 ); }
+vc_t NPX(spect_get_c_last   )( const NPX(s)* p, vc_t o                     ) { return NPX(spect_get_c      )( p, o, asz( p, o ) - 1 ); }
+vd_t NPX(spect_get_d_last   )( const NPX(s)* p, vd_t o                     ) { return NPX(spect_get_d      )( p, o, asz( p, o ) - 1 ); }
+vd_t NPX(spect_push_c       )( const NPX(s)* p, vd_t o, vc_t src           ) { return NPX(spect_set_c      )( p, o, asz( p, o ), src ); }
+vd_t NPX(spect_push_typed_c )( const NPX(s)* p, vd_t o, tp_t otp, vc_t src ) { return NPX(spect_set_typed_c)( p, o, asz( p, o ), otp, src ); }
+vd_t NPX(spect_push_s3      )( const NPX(s)* p, vd_t o, s3_t val           ) { return NPX(spect_set_s3     )( p, o, asz( p, o ), val ); }
+vd_t NPX(spect_push_u3      )( const NPX(s)* p, vd_t o, u3_t val           ) { return NPX(spect_set_u3     )( p, o, asz( p, o ), val ); }
+vd_t NPX(spect_push_f3      )( const NPX(s)* p, vd_t o, f3_t val           ) { return NPX(spect_set_f3     )( p, o, asz( p, o ), val ); }
+vd_t NPX(spect_push_sz      )( const NPX(s)* p, vd_t o, sz_t val           ) { return NPX(spect_set_sz     )( p, o, asz( p, o ), val ); }
+vd_t NPX(spect_push_sc      )( const NPX(s)* p, vd_t o, sc_t val           ) { return NPX(spect_set_sc     )( p, o, asz( p, o ), val ); }
+vd_t NPX(spect_push_bl      )( const NPX(s)* p, vd_t o, bl_t val           ) { return NPX(spect_set_bl     )( p, o, asz( p, o ), val ); }
+vd_t NPX(spect_push_d       )( const NPX(s)* p, vd_t o, vd_t src           ) { return NPX(spect_set_d      )( p, o, asz( p, o ), src ); }
+
+/**********************************************************************************************************************/
+
+void bcore_array_spect_pop( const bcore_array_s* p, vd_t o )
 {
-    return p->get_c( p, o, 0 );
+    sz_t size = bcore_array_spect_get_size( p, o );
+    if( size > 0 ) bcore_array_spect_set_size( p, o, size - 1 );
 }
 
 /**********************************************************************************************************************/
 
-static vd_t get_d_first( const bcore_array_s* p, vd_t o )
-{
-    return p->get_d( p, o, 0 );
-}
-
-/**********************************************************************************************************************/
-
-static vc_t get_c_last( const bcore_array_s* p, vc_t o )
-{
-    return p->get_c( p, o, p->get_size( p, o ) - 1 );
-}
-
-/**********************************************************************************************************************/
-
-static vd_t get_d_last( const bcore_array_s* p, vd_t o )
-{
-    return p->get_d( p, o, p->get_size( p, o ) - 1 );
-}
-
-/**********************************************************************************************************************/
-
-static vd_t push_c( const bcore_array_s* p, vd_t o, vc_t src )
-{
-    return p->set_c( p, o, p->get_size( p, o ), src );
-}
-
-/**********************************************************************************************************************/
-
-static vd_t push_d( const bcore_array_s* p, vd_t o, vd_t src )
-{
-    return p->set_d( p, o, p->get_size( p, o ), src );
-}
-
-/**********************************************************************************************************************/
-
-static void pop( const bcore_array_s* p, vd_t o )
-{
-    sz_t size = p->get_size( p, o );
-    if( size > 0 ) p->set_size( p, o, size - 1 );
-}
-
-/**********************************************************************************************************************/
-
-static void set_gtype( const bcore_array_s* p, vd_t o, tp_t type )
+void bcore_array_spect_set_gtype( const bcore_array_s* p, vd_t o, tp_t type )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
@@ -707,7 +755,7 @@ static void set_gtype( const bcore_array_s* p, vd_t o, tp_t type )
 
 /**********************************************************************************************************************/
 
-static vc_t get_c_data( const bcore_array_s* p, vc_t o )
+vc_t bcore_array_spect_get_c_data( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
@@ -722,7 +770,7 @@ static vc_t get_c_data( const bcore_array_s* p, vc_t o )
     return NULL;
 }
 
-static vd_t get_d_data( const bcore_array_s* p, vd_t o )
+vd_t bcore_array_spect_get_d_data( const bcore_array_s* p, vd_t o )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
@@ -737,7 +785,7 @@ static vd_t get_d_data( const bcore_array_s* p, vd_t o )
     return NULL;
 }
 
-static sz_t get_unit_size( const bcore_array_s* p, vc_t o )
+sz_t bcore_array_spect_get_unit_size( const bcore_array_s* p, vc_t o )
 {
     switch( p->caps_type )
     {
@@ -791,77 +839,69 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s** p_self )
     {
         case BCORE_CAPS_STATIC_ARRAY:
         {
-            o->get_size  = get_size_static;
-            o->get_space = get_space_static;
-            o->get_c     = get_c_static;
-            o->get_d     = get_d_static;
-            o->set_c     = set_c_static;
-            o->set_d     = set_d_static;
+            o->get_size    = get_size_static;
+            o->get_space   = get_space_static;
+            o->get_c       = get_c_static;
+            o->get_d       = get_d_static;
+            o->set_c       = set_c_static;
+            o->set_typed_c = set_typed_c_static;
+            o->set_d       = set_d_static;
             if( !o->item_p ) ERR( "item_p is NULL on static-array" );
         }
         break;
 
         case BCORE_CAPS_TYPED_ARRAY:
         {
-            o->get_size  = get_size_typed;
-            o->get_space = get_space_typed;
-            o->get_c     = get_c_typed;
-            o->get_d     = get_d_typed;
-            o->set_c     = set_c_typed;
-            o->set_d     = set_d_typed;
+            o->get_size    = get_size_typed;
+            o->get_space   = get_space_typed;
+            o->get_c       = get_c_typed;
+            o->get_d       = get_d_typed;
+            o->set_c       = set_c_typed;
+            o->set_typed_c = set_typed_c_typed;
+            o->set_d       = set_d_typed;
         }
         break;
 
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         {
-            o->get_size   = get_size_static_link;
-            o->get_space  = get_space_static_link;
-            o->get_c      = get_c_static_link;
-            o->get_d      = get_d_static_link;
-            o->set_c      = set_c_static_link;
-            o->set_d      = set_d_static_link;
+            o->get_size    = get_size_static_link;
+            o->get_space   = get_space_static_link;
+            o->get_c       = get_c_static_link;
+            o->get_d       = get_d_static_link;
+            o->set_c       = set_c_static_link;
+            o->set_typed_c = set_typed_c_static_link;
+            o->set_d       = set_d_static_link;
             if( !o->item_p ) ERR( "item_p is NULL on static-link-array" );
         }
         break;
 
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         {
-            o->get_size  = get_size_typed_link;
-            o->get_space = get_space_typed_link;
-            o->get_c     = get_c_typed_link;
-            o->get_d     = get_d_typed_link;
-            o->set_c     = set_c_typed_link;
-            o->set_d     = set_d_typed_link;
+            o->get_size    = get_size_typed_link;
+            o->get_space   = get_space_typed_link;
+            o->get_c       = get_c_typed_link;
+            o->get_d       = get_d_typed_link;
+            o->set_c       = set_c_typed_link;
+            o->set_typed_c = set_typed_c_typed_link;
+            o->set_d       = set_d_typed_link;
         }
         break;
 
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
-            o->get_size  = get_size_aware_link;
-            o->get_space = get_space_aware_link;
-            o->get_c     = get_c_aware_link;
-            o->get_d     = get_d_aware_link;
-            o->set_c     = set_c_aware_link;
-            o->set_d     = set_d_aware_link;
+            o->get_size    = get_size_aware_link;
+            o->get_space   = get_space_aware_link;
+            o->get_c       = get_c_aware_link;
+            o->get_d       = get_d_aware_link;
+            o->set_c       = set_c_aware_link;
+            o->set_typed_c = set_typed_c_aware_link;
+            o->set_d       = set_d_aware_link;
         }
         break;
 
         default: ERR( "invalid caps_type %"PRIu32, ( u2_t )o->caps_type );
     }
 
-    o->set_size      = set_size;
-    o->set_space     = set_space;
-    o->get_c_first   = get_c_first;
-    o->get_d_first   = get_d_first;
-    o->get_c_last    = get_c_last;
-    o->get_d_last    = get_d_last;
-    o->push_c        = push_c;
-    o->push_d        = push_d;
-    o->pop           = pop;
-    o->set_gtype     = set_gtype;
-    o->get_c_data    = get_c_data;
-    o->get_d_data    = get_d_data;
-    o->get_unit_size = get_unit_size;
     return o;
 }
 
@@ -882,61 +922,6 @@ bcore_flect_self_s* bcore_array_s_create_self( void )
 const bcore_array_s* bcore_array_s_get_typed( tp_t o_type )
 {
     return bcore_spect_get_typed( typeof( "bcore_array_s" ), o_type );
-}
-
-/**********************************************************************************************************************/
-
-static void test_string_array( sc_t type_sc )
-{
-    vd_t arr = bcore_inst_typed_create( typeof( type_sc ) );
-    const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
-
-    arr_p->set_gtype( arr_p, arr, typeof( "bcore_string_s" ) );
-    arr_p->set_size( arr_p, arr, 5 );
-    arr_p->set_d( arr_p, arr, 0, bcore_string_s_createf( "test line a" ) );
-    arr_p->set_d( arr_p, arr, 1, bcore_string_s_createf( "some nonsense: sakjd" ) );
-    arr_p->set_d( arr_p, arr, 2, bcore_string_s_createf( "some nonsense: dspaud" ) );
-    arr_p->set_d( arr_p, arr, 7, bcore_string_s_createf( "test line x" ) );
-    arr_p->push_d( arr_p, arr, bcore_string_s_createf( "test line p" ) );
-    arr_p->set_space( arr_p, arr, 20 );
-
-    ASSERT( bcore_array_spect_max_index( arr_p, arr, 0, -1, 1 ) == 7 );
-    bcore_array_spect_sort( arr_p, arr, 0, -1, -1 );
-    ASSERT( bcore_array_spect_max_index( arr_p, arr, 0, -1, 1 ) == 0 );
-
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c( arr_p, arr, 0 ), "test line x" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c( arr_p, arr, 1 ), "test line p" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c( arr_p, arr, 2 ), "test line a" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c( arr_p, arr, 3 ), "some nonsense: sakjd" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c( arr_p, arr, 4 ), "some nonsense: dspaud" ) == 0 );
-    ASSERT( arr_p->get_size( arr_p, arr ) == 9 );
-    bcore_inst_aware_discard( arr );
-}
-
-bcore_string_s* bcore_spect_array_selftest( void )
-{
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "string_array = { aware_t _; bcore_string_s [] string_arr; }", 0 ) );
-    vd_t arr = bcore_inst_typed_create( typeof( "string_array" ) );
-    const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
-
-    arr_p->push_d( arr_p, arr, bcore_string_s_createf( "string_static_array      = { aware_t _; bcore_string_s   [] arr; }" ) );
-    arr_p->push_d( arr_p, arr, bcore_string_s_createf( "string_static_link_array = { aware_t _; bcore_string_s * [] arr; }" ) );
-    arr_p->push_d( arr_p, arr, bcore_string_s_createf( "string_typed_array       = { aware_t _; typed            [] arr; }" ) );
-    arr_p->push_d( arr_p, arr, bcore_string_s_createf( "string_typed_link_array  = { aware_t _; typed *          [] arr; }" ) );
-    arr_p->push_d( arr_p, arr, bcore_string_s_createf( "string_aware_link_array  = { aware_t _; aware *          [] arr; }" ) );
-
-    for( sz_t i = 0; i < arr_p->get_size( arr_p, arr ); i++ )
-    {
-        const bcore_string_s* code = arr_p->get_c( arr_p, arr, i );
-        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( code->sc, 0 );
-        bcore_flect_define_self_c( self );
-        test_string_array( nameof( self->type ) );
-        bcore_flect_self_s_discard( self );
-    }
-
-    bcore_inst_aware_discard( arr );
-
-    return NULL;
 }
 
 /**********************************************************************************************************************/
@@ -977,6 +962,20 @@ tp_t bcore_static_link_array_type_of( tp_t type )
 }
 
 /**********************************************************************************************************************/
+
+sz_t bcore_array_spect_get_size   ( const bcore_array_s* p, vc_t o )                                 { return p->get_size( p, o ); }
+sz_t bcore_array_spect_get_space  ( const bcore_array_s* p, vc_t o )                                 { return p->get_space( p, o ); }
+vc_t bcore_array_spect_get_c      ( const bcore_array_s* p, vc_t o, sz_t index )                     { return p->get_c( p, o, index ); }
+vd_t bcore_array_spect_get_d      ( const bcore_array_s* p, vd_t o, sz_t index )                     { return p->get_d( p, o, index ); }
+vd_t bcore_array_spect_set_c      ( const bcore_array_s* p, vd_t o, sz_t index, vc_t src )           { return p->set_c( p, o, index, src ); }
+vd_t bcore_array_spect_set_typed_c( const bcore_array_s* p, vd_t o, sz_t index, tp_t otp, vc_t src ) { return p->set_typed_c( p, o, index, otp, src ); }
+vd_t bcore_array_spect_set_s3     ( const bcore_array_s* p, vd_t o, sz_t index, s3_t val )           { return p->set_typed_c( p, o, index, TYPEOF_s3_t, &val ); }
+vd_t bcore_array_spect_set_u3     ( const bcore_array_s* p, vd_t o, sz_t index, u3_t val )           { return p->set_typed_c( p, o, index, TYPEOF_u3_t, &val ); }
+vd_t bcore_array_spect_set_f3     ( const bcore_array_s* p, vd_t o, sz_t index, f3_t val )           { return p->set_typed_c( p, o, index, TYPEOF_f3_t, &val ); }
+vd_t bcore_array_spect_set_sz     ( const bcore_array_s* p, vd_t o, sz_t index, sz_t val )           { return p->set_typed_c( p, o, index, TYPEOF_sz_t, &val ); }
+vd_t bcore_array_spect_set_sc     ( const bcore_array_s* p, vd_t o, sz_t index, sc_t val )           { return p->set_typed_c( p, o, index, TYPEOF_sc_t, &val ); }
+vd_t bcore_array_spect_set_bl     ( const bcore_array_s* p, vd_t o, sz_t index, bl_t val )           { return p->set_typed_c( p, o, index, TYPEOF_bl_t, &val ); }
+vd_t bcore_array_spect_set_d      ( const bcore_array_s* p, vd_t o, sz_t index, vd_t src )           { return p->set_d( p, o, index, src ); }
 
 bl_t bcore_array_spect_is_static( const bcore_array_s* p )
 {
@@ -1085,7 +1084,7 @@ vc_t bcore_array_spect_max( const bcore_array_s* p, vc_t o, sz_t start, sz_t end
 
     if( bcore_array_spect_is_of_aware( p ) )
     {
-        vc_t* data = ( vc_t* )p->get_c_data( p, o );
+        vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o );
         sz_t  idx = start;
         for( sz_t i = start + 1; i < end_l; i++ ) idx = ( bcore_compare_aware( data[ idx ], data[ i ] ) * order > 0 ) ? i : idx;
         return idx < end_l ? data[ idx ] : NULL;
@@ -1095,7 +1094,7 @@ vc_t bcore_array_spect_max( const bcore_array_s* p, vc_t o, sz_t start, sz_t end
 
     if( bcore_array_spect_is_of_links( p ) )
     {
-        vc_t* data = ( vc_t* )p->get_c_data( p, o );
+        vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o );
         sz_t  idx = start;
         for( sz_t i = start + 1; i < end_l; i++ ) idx = ( bcore_compare_spect( cmp_p, data[ idx ], data[ i ] ) * order > 0 ) ? i : idx;
         return idx < end_l ? data[ idx ] : NULL;
@@ -1103,8 +1102,8 @@ vc_t bcore_array_spect_max( const bcore_array_s* p, vc_t o, sz_t start, sz_t end
 
     // else
     {
-        sz_t unit_size = p->get_unit_size( p, o );
-        vc_t src = ( u0_t* )p->get_c_data( p, o ) + unit_size * start;
+        sz_t unit_size = bcore_array_spect_get_unit_size( p, o );
+        vc_t src = ( u0_t* )bcore_array_spect_get_c_data( p, o ) + unit_size * start;
         vc_t cur = src;
         for( sz_t i = start + 1; i < end_l; i++ )
         {
@@ -1126,7 +1125,7 @@ sz_t bcore_array_spect_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz
 
     if( bcore_array_spect_is_of_aware( p ) )
     {
-        vc_t* data = ( vc_t* )p->get_c_data( p, o );
+        vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o );
         sz_t  idx = start;
         for( sz_t i = start + 1; i < end_l; i++ ) idx = ( bcore_compare_aware( data[ idx ], data[ i ] ) * order > 0 ) ? i : idx;
         return idx;
@@ -1136,7 +1135,7 @@ sz_t bcore_array_spect_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz
 
     if( bcore_array_spect_is_of_links( p ) )
     {
-        vc_t* data = ( vc_t* )p->get_c_data( p, o );
+        vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o );
         sz_t  idx = start;
         for( sz_t i = start + 1; i < end_l; i++ ) idx = ( bcore_compare_spect( cmp_p, data[ idx ], data[ i ] ) * order > 0 ) ? i : idx;
         return idx;
@@ -1145,8 +1144,8 @@ sz_t bcore_array_spect_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz
 
     // else
     {
-        sz_t unit_size = p->get_unit_size( p, o );
-        vc_t src = ( u0_t* )p->get_c_data( p, o ) + unit_size * start;
+        sz_t unit_size = bcore_array_spect_get_unit_size( p, o );
+        vc_t src = ( u0_t* )bcore_array_spect_get_c_data( p, o ) + unit_size * start;
         vc_t cur = src;
         sz_t idx = start;
         for( sz_t i = start + 1; i < end_l; i++ )
@@ -1252,7 +1251,7 @@ void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t en
 
     if( bcore_array_spect_is_of_aware( p ) )
     {
-        vc_t* data = ( vc_t* )p->get_d_data( p, o ) + start;
+        vc_t* data = ( vc_t* )bcore_array_spect_get_d_data( p, o ) + start;
         vc_t* buf = bcore_un_alloc( sizeof( vd_t ), NULL, 0, range >> 1, NULL );
         buf_sort_aware( data, range, buf, order );
         bcore_un_alloc( sizeof( vd_t ), buf, range >> 1, 0, NULL );
@@ -1263,7 +1262,7 @@ void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t en
 
     if( bcore_array_spect_is_of_links( p ) )
     {
-        vc_t* data = ( vc_t* )p->get_d_data( p, o ) + start;
+        vc_t* data = ( vc_t* )bcore_array_spect_get_d_data( p, o ) + start;
         vc_t* buf = bcore_un_alloc( sizeof( vd_t ), NULL, 0, range >> 1, NULL );
         buf_sort_spect_link( data, range, buf, cmp_p, order );
         bcore_un_alloc( sizeof( vd_t ), buf, range >> 1, 0, NULL );
@@ -1274,7 +1273,7 @@ void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t en
     {
         const bcore_inst_s* item_p = bcore_array_spect_is_mutable_mono_typed( p ) ? bcore_inst_s_get_typed( bcore_array_spect_get_mono_type( p, o ) ) : p->item_p;
         sz_t unit_size = item_p->size;
-        vd_t data = ( u0_t* )p->get_d_data( p, o ) + start * unit_size;
+        vd_t data = ( u0_t* )bcore_array_spect_get_d_data( p, o ) + start * unit_size;
 
         sz_t range1 = range >> 1;
         vd_t buf = bcore_un_alloc( unit_size, NULL, 0, range1, NULL );
@@ -1289,3 +1288,142 @@ void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t en
 }
 
 /**********************************************************************************************************************/
+
+static inline const bcore_array_s* atpd( tp_t tp ) { return bcore_array_s_get_typed( tp ); }
+
+sz_t NPX(typed_get_size             )( tp_t tp, vc_t o                                 ) { return NPX(spect_get_size             )( atpd( tp ), o             ); }
+sz_t NPX(typed_get_space            )( tp_t tp, vc_t o                                 ) { return NPX(spect_get_space            )( atpd( tp ), o             ); }
+vc_t NPX(typed_get_c                )( tp_t tp, vc_t o, sz_t index                     ) { return NPX(spect_get_c                )( atpd( tp ), o, index      ); }
+vd_t NPX(typed_get_d                )( tp_t tp, vd_t o, sz_t index                     ) { return NPX(spect_get_d                )( atpd( tp ), o, index      ); }
+vd_t NPX(typed_set_c                )( tp_t tp, vd_t o, sz_t index, vc_t src           ) { return NPX(spect_set_c                )( atpd( tp ), o, index, src ); }
+vd_t NPX(typed_set_d                )( tp_t tp, vd_t o, sz_t index, vd_t src           ) { return NPX(spect_set_d                )( atpd( tp ), o, index, src ); }
+vd_t NPX(typed_set_typed_c          )( tp_t tp, vd_t o, sz_t index, tp_t otp, vc_t src ) { return NPX(spect_set_typed_c          )( atpd( tp ), o, index, otp, src ); }
+vd_t NPX(typed_set_s3               )( tp_t tp, vd_t o, sz_t index, s3_t val           ) { return NPX(spect_set_s3               )( atpd( tp ), o, index, val ); }
+vd_t NPX(typed_set_u3               )( tp_t tp, vd_t o, sz_t index, u3_t val           ) { return NPX(spect_set_u3               )( atpd( tp ), o, index, val ); }
+vd_t NPX(typed_set_f3               )( tp_t tp, vd_t o, sz_t index, f3_t val           ) { return NPX(spect_set_f3               )( atpd( tp ), o, index, val ); }
+vd_t NPX(typed_set_sz               )( tp_t tp, vd_t o, sz_t index, sz_t val           ) { return NPX(spect_set_sz               )( atpd( tp ), o, index, val ); }
+vd_t NPX(typed_set_sc               )( tp_t tp, vd_t o, sz_t index, sc_t val           ) { return NPX(spect_set_sc               )( atpd( tp ), o, index, val ); }
+vd_t NPX(typed_set_bl               )( tp_t tp, vd_t o, sz_t index, bl_t val           ) { return NPX(spect_set_bl               )( atpd( tp ), o, index, val ); }
+void NPX(typed_set_size             )( tp_t tp, vd_t o, sz_t size                      ) {        NPX(spect_set_size             )( atpd( tp ), o, size       ); }
+void NPX(typed_set_space            )( tp_t tp, vd_t o, sz_t space                     ) {        NPX(spect_set_space            )( atpd( tp ), o, space      ); }
+vc_t NPX(typed_get_c_first          )( tp_t tp, vc_t o                                 ) { return NPX(spect_get_c_first          )( atpd( tp ), o             ); }
+vd_t NPX(typed_get_d_first          )( tp_t tp, vd_t o                                 ) { return NPX(spect_get_d_first          )( atpd( tp ), o             ); }
+vc_t NPX(typed_get_c_last           )( tp_t tp, vc_t o                                 ) { return NPX(spect_get_c_last           )( atpd( tp ), o             ); }
+vd_t NPX(typed_get_d_last           )( tp_t tp, vd_t o                                 ) { return NPX(spect_get_d_last           )( atpd( tp ), o             ); }
+vd_t NPX(typed_push_c               )( tp_t tp, vd_t o, vc_t src                       ) { return NPX(spect_push_c               )( atpd( tp ), o, src        ); }
+vd_t NPX(typed_push_d               )( tp_t tp, vd_t o, vd_t src                       ) { return NPX(spect_push_d               )( atpd( tp ), o, src        ); }
+void NPX(typed_pop                  )( tp_t tp, vd_t o                                 ) {        NPX(spect_pop                  )( atpd( tp ), o             ); }
+void NPX(typed_set_gtype            )( tp_t tp, vd_t o, tp_t type                      ) {        NPX(spect_set_gtype            )( atpd( tp ), o, type       ); }
+bl_t NPX(typed_is_static            )( tp_t tp                                         ) { return NPX(spect_is_static            )( atpd( tp )                ); }
+bl_t NPX(typed_is_mono_typed        )( tp_t tp                                         ) { return NPX(spect_is_mono_typed        )( atpd( tp )                ); }
+bl_t NPX(typed_is_mutable_mono_typed)( tp_t tp                                         ) { return NPX(spect_is_mutable_mono_typed)( atpd( tp )                ); }
+bl_t NPX(typed_is_multi_typed       )( tp_t tp                                         ) { return NPX(spect_is_multi_typed       )( atpd( tp )                ); }
+bl_t NPX(typed_is_of_aware          )( tp_t tp                                         ) { return NPX(spect_is_of_aware          )( atpd( tp )                ); }
+bl_t NPX(typed_is_of_links          )( tp_t tp                                         ) { return NPX(spect_is_of_links          )( atpd( tp )                ); }
+tp_t NPX(typed_get_static_type      )( tp_t tp                                         ) { return NPX(spect_get_static_type      )( atpd( tp )                ); }
+tp_t NPX(typed_get_mono_type        )( tp_t tp, vc_t o                                 ) { return NPX(spect_get_mono_type        )( atpd( tp ), o             ); }
+tp_t NPX(typed_get_type             )( tp_t tp, vc_t o, sz_t index                     ) { return NPX(spect_get_type             )( atpd( tp ), o, index      ); }
+vc_t NPX(typed_get_c_data           )( tp_t tp, vc_t o                                 ) { return NPX(spect_get_c_data           )( atpd( tp ), o             ); }
+vd_t NPX(typed_get_d_data           )( tp_t tp, vd_t o                                 ) { return NPX(spect_get_d_data           )( atpd( tp ), o             ); }
+sz_t NPX(typed_get_unit_size        )( tp_t tp, vc_t o                                 ) { return NPX(spect_get_unit_size        )( atpd( tp ), o             ); }
+vc_t NPX(typed_max                  )( tp_t tp, vc_t o, sz_t st, sz_t nd, s2_t d       ) { return NPX(spect_max                  )( atpd( tp ), o, st, nd, d  ); }
+sz_t NPX(typed_max_index            )( tp_t tp, vc_t o, sz_t st, sz_t nd, s2_t d       ) { return NPX(spect_max_index            )( atpd( tp ), o, st, nd, d  ); }
+void NPX(typed_sort                 )( tp_t tp, vd_t o, sz_t st, sz_t nd, s2_t d       ) {        NPX(spect_sort                 )( atpd( tp ), o, st, nd, d  ); }
+
+sz_t NPX(aware_get_size             )( vc_t o                                 ) { return NPX(typed_get_size             )( *( aware_t* )o, o             ); }
+sz_t NPX(aware_get_space            )( vc_t o                                 ) { return NPX(typed_get_space            )( *( aware_t* )o, o             ); }
+vc_t NPX(aware_get_c                )( vc_t o, sz_t index                     ) { return NPX(typed_get_c                )( *( aware_t* )o, o, index      ); }
+vd_t NPX(aware_get_d                )( vd_t o, sz_t index                     ) { return NPX(typed_get_d                )( *( aware_t* )o, o, index      ); }
+vd_t NPX(aware_set_c                )( vd_t o, sz_t index, vc_t src           ) { return NPX(typed_set_c                )( *( aware_t* )o, o, index, src ); }
+vd_t NPX(aware_set_d                )( vd_t o, sz_t index, vd_t src           ) { return NPX(typed_set_d                )( *( aware_t* )o, o, index, src ); }
+vd_t NPX(aware_set_typed_c          )( vd_t o, sz_t index, tp_t otp, vc_t src ) { return NPX(typed_set_typed_c          )( *( aware_t* )o, o, index, otp, src ); }
+vd_t NPX(aware_set_s3               )( vd_t o, sz_t index, s3_t val           ) { return NPX(typed_set_s3               )( *( aware_t* )o, o, index, val ); }
+vd_t NPX(aware_set_u3               )( vd_t o, sz_t index, u3_t val           ) { return NPX(typed_set_u3               )( *( aware_t* )o, o, index, val ); }
+vd_t NPX(aware_set_f3               )( vd_t o, sz_t index, f3_t val           ) { return NPX(typed_set_f3               )( *( aware_t* )o, o, index, val ); }
+vd_t NPX(aware_set_sz               )( vd_t o, sz_t index, sz_t val           ) { return NPX(typed_set_sz               )( *( aware_t* )o, o, index, val ); }
+vd_t NPX(aware_set_sc               )( vd_t o, sz_t index, sc_t val           ) { return NPX(typed_set_sc               )( *( aware_t* )o, o, index, val ); }
+vd_t NPX(aware_set_bl               )( vd_t o, sz_t index, bl_t val           ) { return NPX(typed_set_bl               )( *( aware_t* )o, o, index, val ); }
+void NPX(aware_set_size             )( vd_t o, sz_t size                      ) {        NPX(typed_set_size             )( *( aware_t* )o, o, size       ); }
+void NPX(aware_set_space            )( vd_t o, sz_t space                     ) {        NPX(typed_set_space            )( *( aware_t* )o, o, space      ); }
+vc_t NPX(aware_get_c_first          )( vc_t o                                 ) { return NPX(typed_get_c_first          )( *( aware_t* )o, o             ); }
+vd_t NPX(aware_get_d_first          )( vd_t o                                 ) { return NPX(typed_get_d_first          )( *( aware_t* )o, o             ); }
+vc_t NPX(aware_get_c_last           )( vc_t o                                 ) { return NPX(typed_get_c_last           )( *( aware_t* )o, o             ); }
+vd_t NPX(aware_get_d_last           )( vd_t o                                 ) { return NPX(typed_get_d_last           )( *( aware_t* )o, o             ); }
+vd_t NPX(aware_push_c               )( vd_t o, vc_t src                       ) { return NPX(typed_push_c               )( *( aware_t* )o, o, src        ); }
+vd_t NPX(aware_push_d               )( vd_t o, vd_t src                       ) { return NPX(typed_push_d               )( *( aware_t* )o, o, src        ); }
+void NPX(aware_pop                  )( vd_t o                                 ) {        NPX(typed_pop                  )( *( aware_t* )o, o             ); }
+void NPX(aware_set_gtype            )( vd_t o, tp_t type                      ) {        NPX(typed_set_gtype            )( *( aware_t* )o, o, type       ); }
+bl_t NPX(aware_is_static            )( vc_t o                                 ) { return NPX(typed_is_static            )( *( aware_t* )o                ); }
+bl_t NPX(aware_is_mono_typed        )( vc_t o                                 ) { return NPX(typed_is_mono_typed        )( *( aware_t* )o                ); }
+bl_t NPX(aware_is_mutable_mono_typed)( vc_t o                                 ) { return NPX(typed_is_mutable_mono_typed)( *( aware_t* )o                ); }
+bl_t NPX(aware_is_multi_typed       )( vc_t o                                 ) { return NPX(typed_is_multi_typed       )( *( aware_t* )o                ); }
+bl_t NPX(aware_is_of_aware          )( vc_t o                                 ) { return NPX(typed_is_of_aware          )( *( aware_t* )o                ); }
+bl_t NPX(aware_is_of_links          )( vc_t o                                 ) { return NPX(typed_is_of_links          )( *( aware_t* )o                ); }
+tp_t NPX(aware_get_static_type      )( vc_t o                                 ) { return NPX(typed_get_static_type      )( *( aware_t* )o                ); }
+tp_t NPX(aware_get_mono_type        )( vc_t o                                 ) { return NPX(typed_get_mono_type        )( *( aware_t* )o, o             ); }
+tp_t NPX(aware_get_type             )( vc_t o, sz_t index                     ) { return NPX(typed_get_type             )( *( aware_t* )o, o, index      ); }
+vc_t NPX(aware_get_c_data           )( vc_t o                                 ) { return NPX(typed_get_c_data           )( *( aware_t* )o, o             ); }
+vd_t NPX(aware_get_d_data           )( vd_t o                                 ) { return NPX(typed_get_d_data           )( *( aware_t* )o, o             ); }
+sz_t NPX(aware_get_unit_size        )( vc_t o                                 ) { return NPX(typed_get_unit_size        )( *( aware_t* )o, o             ); }
+vc_t NPX(aware_max                  )( vc_t o, sz_t st, sz_t nd, s2_t d       ) { return NPX(typed_max                  )( *( aware_t* )o, o, st, nd, d  ); }
+sz_t NPX(aware_max_index            )( vc_t o, sz_t st, sz_t nd, s2_t d       ) { return NPX(typed_max_index            )( *( aware_t* )o, o, st, nd, d  ); }
+void NPX(aware_sort                 )( vd_t o, sz_t st, sz_t nd, s2_t d       ) {        NPX(typed_sort                 )( *( aware_t* )o, o, st, nd, d  ); }
+
+/**********************************************************************************************************************/
+// testing, debugging
+
+static void test_string_array( sc_t type_sc )
+{
+    vd_t arr = bcore_inst_typed_create( typeof( type_sc ) );
+    const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
+
+    bcore_array_spect_set_gtype( arr_p, arr, typeof( "bcore_string_s" ) );
+    bcore_array_spect_set_size( arr_p, arr, 5 );
+    arr_p->set_d( arr_p, arr, 0, bcore_string_s_createf( "test line a" ) );
+    arr_p->set_d( arr_p, arr, 1, bcore_string_s_createf( "some nonsense: sakjd" ) );
+    arr_p->set_d( arr_p, arr, 2, bcore_string_s_createf( "some nonsense: dspaud" ) );
+    arr_p->set_d( arr_p, arr, 7, bcore_string_s_createf( "test line x" ) );
+    bcore_array_spect_push_d( arr_p, arr, bcore_string_s_createf( "test line p" ) );
+    bcore_array_spect_set_space( arr_p, arr, 20 );
+
+    ASSERT( bcore_array_spect_max_index( arr_p, arr, 0, -1, 1 ) == 7 );
+    bcore_array_spect_sort( arr_p, arr, 0, -1, -1 );
+    ASSERT( bcore_array_spect_max_index( arr_p, arr, 0, -1, 1 ) == 0 );
+
+    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c( arr_p, arr, 0 ), "test line x" ) == 0 );
+    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c( arr_p, arr, 1 ), "test line p" ) == 0 );
+    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c( arr_p, arr, 2 ), "test line a" ) == 0 );
+    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c( arr_p, arr, 3 ), "some nonsense: sakjd" ) == 0 );
+    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get_c( arr_p, arr, 4 ), "some nonsense: dspaud" ) == 0 );
+    ASSERT( arr_p->get_size( arr_p, arr ) == 9 );
+    bcore_inst_aware_discard( arr );
+}
+
+bcore_string_s* bcore_spect_array_selftest( void )
+{
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "string_array = { aware_t _; bcore_string_s [] string_arr; }", 0 ) );
+    vd_t arr = bcore_inst_typed_create( typeof( "string_array" ) );
+    const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
+
+    bcore_array_spect_push_d( arr_p, arr, bcore_string_s_createf( "string_static_array      = { aware_t _; bcore_string_s   [] arr; }" ) );
+    bcore_array_spect_push_d( arr_p, arr, bcore_string_s_createf( "string_static_link_array = { aware_t _; bcore_string_s * [] arr; }" ) );
+    bcore_array_spect_push_d( arr_p, arr, bcore_string_s_createf( "string_typed_array       = { aware_t _; typed            [] arr; }" ) );
+    bcore_array_spect_push_d( arr_p, arr, bcore_string_s_createf( "string_typed_link_array  = { aware_t _; typed *          [] arr; }" ) );
+    bcore_array_spect_push_d( arr_p, arr, bcore_string_s_createf( "string_aware_link_array  = { aware_t _; aware *          [] arr; }" ) );
+
+    for( sz_t i = 0; i < arr_p->get_size( arr_p, arr ); i++ )
+    {
+        const bcore_string_s* code = arr_p->get_c( arr_p, arr, i );
+        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( code->sc, 0 );
+        bcore_flect_define_self_c( self );
+        test_string_array( nameof( self->type ) );
+        bcore_flect_self_s_discard( self );
+    }
+
+    bcore_inst_aware_discard( arr );
+
+    return NULL;
+}
+
+/**********************************************************************************************************************/
+

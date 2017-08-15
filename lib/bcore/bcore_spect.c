@@ -157,7 +157,7 @@ bcore_string_s* bcore_spect_status()
         sz_t count = bcore_hmap_tpsz_s_idx_val( hist, i );
         if( key )
         {
-            vd_t pair = nc_arr_a->push_c( nc_arr_a, nc_arr, NULL );
+            vd_t pair = bcore_array_spect_push_c( nc_arr_a, nc_arr, NULL );
             bcore_via_aware_nset_c( pair, typeof( "type" ),  &key   );
             bcore_via_aware_nset_c( pair, typeof( "count" ), &count );
         }
@@ -165,9 +165,9 @@ bcore_string_s* bcore_spect_status()
 
     bcore_array_spect_sort( nc_arr_a, nc_arr, 0, -1, -1 );
 
-    for( sz_t i = 0; i < nc_arr_a->get_size( nc_arr_a, nc_arr ); i++ )
+    for( sz_t i = 0; i < bcore_array_spect_get_size( nc_arr_a, nc_arr ); i++ )
     {
-        vc_t pair = nc_arr_a->get_c( nc_arr_a, nc_arr, i );
+        vc_t pair = bcore_array_spect_get_c( nc_arr_a, nc_arr, i );
         const tp_t* p_type  = bcore_via_aware_nget_c( pair, typeof( "type"  ) );
         const sz_t* p_count = bcore_via_aware_nget_c( pair, typeof( "count" ) );
         bcore_string_s* s = bcore_string_s_create();

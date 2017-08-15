@@ -336,7 +336,7 @@ bcore_string_s* bcore_spect_compare_selftest( void )
 
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr1 );
 
-    for( sz_t i = 0; i < 100; i++ ) arr_p->push_c( arr_p, arr1, specs );
+    for( sz_t i = 0; i < 100; i++ ) bcore_array_spect_push_c( arr_p, arr1, specs );
 
     for( sz_t i = 0; i < arr_p->get_size( arr_p, arr1 ); i++ )
     {

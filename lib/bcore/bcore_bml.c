@@ -435,21 +435,21 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                 if( array )
                 {
                     const bcore_array_s* arr_p = bcore_array_s_get_typed( vitem->type );
-                    arr_p->set_size( arr_p, element, 0 );
+                    bcore_array_spect_set_size( arr_p, element, 0 );
                     src_p->parsef( src_p, src, " [" );
                     if( !src_p->parse_boolf( src_p, src, " #?']'" ) )
                     {
                         sz_t space = 0;
                         src_p->parsef( src_p, src, " #sz_t ]", &space );
-                        arr_p->set_space( arr_p, element, space );
+                        bcore_array_spect_set_space( arr_p, element, space );
                     }
                     src_p->parsef( src_p, src, " :" );
-                    arr_p->set_size( arr_p, element, 0 );
-                    if( typed ) arr_p->set_gtype( arr_p, element, typed_type );
+                    bcore_array_spect_set_size( arr_p, element, 0 );
+                    if( typed ) bcore_array_spect_set_gtype( arr_p, element, typed_type );
                     tp_t type_l = bcore_array_spect_get_mono_type( arr_p, element );
                     while( !src_p->parse_boolf( src_p, src, " #?';'" ) )
                     {
-                        if( arr_p->get_size( arr_p, element ) > 0 ) src_p->parsef( src_p, src, " ," );
+                        if( bcore_array_spect_get_size( arr_p, element ) > 0 ) src_p->parsef( src_p, src, " ," );
                         if( link )
                         {
                             vd_t obj = NULL;
@@ -462,17 +462,17 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                                 obj = interpret_object( o, src ).o;
 
                             }
-                            arr_p->push_d( arr_p, element, obj );
+                            bcore_array_spect_push_d( arr_p, element, obj );
                         }
                         else
                         {
                             dt_p dst;
                             dst.t = type_l;
-                            dst.o = arr_p->push_c( arr_p, element, NULL );
+                            dst.o = bcore_array_spect_push_c( arr_p, element, NULL );
                             interpret_body( o, src, dst );
                         }
                     }
-                    if( typed && typed_type == 0 && arr_p->get_size( arr_p, element ) > 0 )
+                    if( typed && typed_type == 0 && bcore_array_spect_get_size( arr_p, element ) > 0 )
                     {
                         src_p->parse_errf( src_p, src, "Missing type specifier for nonempty typed array '%s'", ifnameof( vitem->name ) );
                     }
@@ -738,13 +738,13 @@ static bcore_string_s* translate_selftest( void )
         {
             const bcore_array_s* numarr_p = bcore_array_s_get_typed( bcore_via_spect_nget_type( specs_v, specs, typeof( "numarr" ) ) );
             vd_t numarr = bcore_via_spect_nget_d( specs_v, specs, typeof( "numarr" ) );
-            for( sz_t i = 0; i < 10; i++ ) numarr_p->push_c( numarr_p, numarr, &i );
+            for( sz_t i = 0; i < 10; i++ ) bcore_array_spect_push_c( numarr_p, numarr, &i );
         }
 
         {
             const bcore_array_s* strarr_p = bcore_array_s_get_typed( bcore_via_spect_nget_type( specs_v, specs, typeof( "strarr" ) ) );
             vd_t strarr = bcore_via_spect_nget_d( specs_v, specs, typeof( "strarr" ) );
-            for( sz_t i = 0; i < 10; i++ ) strarr_p->push_d( strarr_p, strarr, bcore_string_s_createf( "<%zu>", i ) );
+            for( sz_t i = 0; i < 10; i++ ) bcore_array_spect_push_d( strarr_p, strarr, bcore_string_s_createf( "<%zu>", i ) );
         }
 
         bcore_via_spect_nset_d( specs_v, specs, typeof( "child"  ), bcore_inst_aware_clone( specs ) );
@@ -755,7 +755,7 @@ static bcore_string_s* translate_selftest( void )
         const bcore_array_s * arr_p = bcore_array_s_get_aware( specs_arr );
         for( sz_t i = 0; i < 2; i++ )
         {
-            arr_p->push_c( arr_p, specs_arr, specs );
+            bcore_array_spect_push_c( arr_p, specs_arr, specs );
         }
     }
 

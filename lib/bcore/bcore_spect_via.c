@@ -345,6 +345,7 @@ vd_t bcore_via_spect_iset_typed_c( const bcore_via_s* p, vd_t o, sz_t index, tp_
 vd_t bcore_via_spect_iset_s3( const bcore_via_s* p, vd_t o, sz_t index, s3_t val ) { return bcore_via_spect_iset_typed_c( p, o, index, TYPEOF_s3_t, &val ); }
 vd_t bcore_via_spect_iset_u3( const bcore_via_s* p, vd_t o, sz_t index, u3_t val ) { return bcore_via_spect_iset_typed_c( p, o, index, TYPEOF_u3_t, &val ); }
 vd_t bcore_via_spect_iset_f3( const bcore_via_s* p, vd_t o, sz_t index, f3_t val ) { return bcore_via_spect_iset_typed_c( p, o, index, TYPEOF_f3_t, &val ); }
+vd_t bcore_via_spect_iset_sz( const bcore_via_s* p, vd_t o, sz_t index, sz_t val ) { return bcore_via_spect_iset_typed_c( p, o, index, TYPEOF_sz_t, &val ); }
 vd_t bcore_via_spect_iset_sc( const bcore_via_s* p, vd_t o, sz_t index, sc_t val ) { return bcore_via_spect_iset_typed_c( p, o, index, TYPEOF_sc_t, &val ); }
 vd_t bcore_via_spect_iset_bl( const bcore_via_s* p, vd_t o, sz_t index, bl_t val ) { return bcore_via_spect_iset_typed_c( p, o, index, TYPEOF_bl_t, &val ); }
 
@@ -714,6 +715,7 @@ vd_t                 NPX(spect_nset_typed_c )( const NPX(s)* p, vd_t o, tp_t n, 
 vd_t                 NPX(spect_nset_s3      )( const NPX(s)* p, vd_t o, tp_t n, s3_t val         ) { return NPX(spect_iset_s3      )( p, o, vidx( p, n ), val    ); }
 vd_t                 NPX(spect_nset_u3      )( const NPX(s)* p, vd_t o, tp_t n, u3_t val         ) { return NPX(spect_iset_u3      )( p, o, vidx( p, n ), val    ); }
 vd_t                 NPX(spect_nset_f3      )( const NPX(s)* p, vd_t o, tp_t n, f3_t val         ) { return NPX(spect_iset_f3      )( p, o, vidx( p, n ), val    ); }
+vd_t                 NPX(spect_nset_sz      )( const NPX(s)* p, vd_t o, tp_t n, sz_t val         ) { return NPX(spect_iset_sz      )( p, o, vidx( p, n ), val    ); }
 vd_t                 NPX(spect_nset_sc      )( const NPX(s)* p, vd_t o, tp_t n, sc_t val         ) { return NPX(spect_iset_sc      )( p, o, vidx( p, n ), val    ); }
 vd_t                 NPX(spect_nset_bl      )( const NPX(s)* p, vd_t o, tp_t n, bl_t val         ) { return NPX(spect_iset_bl      )( p, o, vidx( p, n ), val    ); }
 const bcore_vitem_s* NPX(spect_nget_vitem   )( const NPX(s)* p,         tp_t n                   ) { return NPX(spect_iget_vitem   )( p,    vidx( p, n )         ); }
@@ -736,6 +738,7 @@ vd_t                 NPX(typed_nset_typed_c )( tp_t tp, vd_t o, tp_t n, tp_t t, 
 vd_t                 NPX(typed_nset_s3      )( tp_t tp, vd_t o, tp_t n, s3_t val         ) { return NPX(spect_nset_s3      )( vtpd( tp ), o, n, val    ); }
 vd_t                 NPX(typed_nset_u3      )( tp_t tp, vd_t o, tp_t n, u3_t val         ) { return NPX(spect_nset_u3      )( vtpd( tp ), o, n, val    ); }
 vd_t                 NPX(typed_nset_f3      )( tp_t tp, vd_t o, tp_t n, f3_t val         ) { return NPX(spect_nset_f3      )( vtpd( tp ), o, n, val    ); }
+vd_t                 NPX(typed_nset_sz      )( tp_t tp, vd_t o, tp_t n, sz_t val         ) { return NPX(spect_nset_sz      )( vtpd( tp ), o, n, val    ); }
 vd_t                 NPX(typed_nset_sc      )( tp_t tp, vd_t o, tp_t n, sc_t val         ) { return NPX(spect_nset_sc      )( vtpd( tp ), o, n, val    ); }
 vd_t                 NPX(typed_nset_bl      )( tp_t tp, vd_t o, tp_t n, bl_t val         ) { return NPX(spect_nset_bl      )( vtpd( tp ), o, n, val    ); }
 const bcore_vitem_s* NPX(typed_nget_vitem   )( tp_t tp,         tp_t n                   ) { return NPX(spect_nget_vitem   )( vtpd( tp ),    n         ); }
@@ -756,6 +759,7 @@ vd_t                 NPX(aware_nset_typed_c )( vd_t o, tp_t n, tp_t t, vc_t src 
 vd_t                 NPX(aware_nset_s3      )( vd_t o, tp_t n, s3_t val         ) { return NPX(typed_nset_s3      )( *( aware_t* )o, o, n, val    ); }
 vd_t                 NPX(aware_nset_u3      )( vd_t o, tp_t n, u3_t val         ) { return NPX(typed_nset_u3      )( *( aware_t* )o, o, n, val    ); }
 vd_t                 NPX(aware_nset_f3      )( vd_t o, tp_t n, f3_t val         ) { return NPX(typed_nset_f3      )( *( aware_t* )o, o, n, val    ); }
+vd_t                 NPX(aware_nset_sz      )( vd_t o, tp_t n, sz_t val         ) { return NPX(typed_nset_sz      )( *( aware_t* )o, o, n, val    ); }
 vd_t                 NPX(aware_nset_sc      )( vd_t o, tp_t n, sc_t val         ) { return NPX(typed_nset_sc      )( *( aware_t* )o, o, n, val    ); }
 vd_t                 NPX(aware_nset_bl      )( vd_t o, tp_t n, bl_t val         ) { return NPX(typed_nset_bl      )( *( aware_t* )o, o, n, val    ); }
 const bcore_vitem_s* NPX(aware_nget_vitem   )( vc_t o, tp_t n                   ) { return NPX(typed_nget_vitem   )( *( aware_t* )o,    n         ); }
@@ -982,7 +986,7 @@ bcore_string_s* bcore_spect_via_selftest( void )
 
     for( sz_t i = 0; i < arr_size; i++ )
     {
-        arr_p->push_c( arr_p, arr, via_specs );
+        bcore_array_spect_push_c( arr_p, arr, via_specs );
     }
 
     for( sz_t i = 0; i < arr_size; i++ )

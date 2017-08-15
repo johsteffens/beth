@@ -152,11 +152,14 @@ static bcore_string_s* translate_selftest( void )
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_create();
 
-    tp_t t_specs = bcore_flect_type_parse_sc( "{ aware_t _; bcore_string_s* name; sz_t num; }" );
+    tp_t t_specs = bcore_flect_type_parse_sc( "{ aware_t _; bcore_string_s* name; sz_t num; bcore_string_s [] arr; }" );
     vd_t specs = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_specs ) );
 
     bcore_via_aware_nset_sc( specs, typeof( "name" ), "my string" );
     bcore_via_aware_nset_u3( specs, typeof( "num" ), 1235 );
+    const bcore_array_s* arr_p = bcore_via_aware_nget_array( specs, typeof( "arr" ) );
+    bcore_array_spect_set_s3( arr_p, bcore_via_aware_nget_d( specs, typeof( "arr" ) ), 5, -12 );
+    bcore_array_spect_push_sc( arr_p, bcore_via_aware_nget_d( specs, typeof( "arr" ) ), "abc" );
 
     bcore_txt_ml_translator_s* ttxt_ml = bcore_life_s_push_aware( l, bcore_txt_ml_translator_s_create() );
     bcore_translate_aware_object( ttxt_ml, specs, log );

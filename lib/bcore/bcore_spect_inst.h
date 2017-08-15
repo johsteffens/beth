@@ -108,6 +108,9 @@ void bcore_inst_aware_move(                        vd_t dst, vd_t src );
 vd_t bcore_inst_spect_create( const bcore_inst_s* o );
 vd_t bcore_inst_typed_create( tp_t type );
 
+vd_t bcore_inst_spect_create_typed( const bcore_inst_s* o, tp_t otp, vc_t obj );
+vd_t bcore_inst_typed_create_typed(             tp_t type, tp_t otp, vc_t obj );
+
 void bcore_inst_spect_discard( const bcore_inst_s* o, vd_t obj );
 void bcore_inst_typed_discard(             tp_t type, vd_t obj );
 void bcore_inst_aware_discard(                        vd_t obj );
