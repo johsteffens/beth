@@ -66,6 +66,7 @@ void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* 
                 bcore_txt_ml_translator_s_translate_body( o, type_l, arr_p->get_c( arr_p, obj, i ), sink );
             }
         }
+        sink_p->push_sc( sink_p, sink, ";\n" );
         return;
     }
 
@@ -151,57 +152,12 @@ static bcore_string_s* translate_selftest( void )
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_create();
 
-    bcore_flect_define_parse_sc
-    (
-        "specs = "
-        "{"
-        "   aware_t _;"
-        "   bcore_string_s* name;"
-        "   sz_t size;"
-        "   u2_t param1;"
-        "   s2_t param2;"
-        "   specs * child;"
-        "   sz_t [] numarr;"
-        "   bcore_string_s [] strarr; bl_t flag;"
-        "}"
-    );
-    bcore_flect_define_parse_sc( "specs_arr = { aware_t _; aware * [] arr; }" );
+    tp_t t_specs = bcore_flect_type_parse_sc( "{ aware_t _; bcore_string_s* name; sz_t num; }" );
+    vd_t specs = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_specs ) );
 
-    vd_t specs = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "specs" ) ) );
+    bcore_via_aware_nset_sc( specs, typeof( "name" ), "my string" );
+    bcore_via_aware_nset_u3( specs, typeof( "num" ), 1235 );
 
-    {
-        const bcore_via_s * specs_v = bcore_via_s_get_aware( specs );
-        u2_t u2_v = 10;
-        bcore_via_spect_nset_c( specs_v, specs, typeof( "param1" ), &u2_v );
-        s3_t s3_v = -3240;
-        bcore_via_spect_nset_c( specs_v, specs, typeof( "param2" ), &s3_v );
-
-        bcore_string_s* s = bcore_via_spect_ncreate( specs_v, specs, typeof( "name" ) );
-        bcore_string_s_pushf( s, "\"my string\"" );
-        {
-            const bcore_array_s* numarr_p = bcore_array_s_get_typed( bcore_via_spect_nget_type( specs_v, specs, typeof( "numarr" ) ) );
-            vd_t numarr = bcore_via_spect_nget_d( specs_v, specs, typeof( "numarr" ) );
-            for( sz_t i = 0; i < 10; i++ ) numarr_p->push_c( numarr_p, numarr, &i );
-        }
-
-        {
-            const bcore_array_s* strarr_p = bcore_array_s_get_typed( bcore_via_spect_nget_type( specs_v, specs, typeof( "strarr" ) ) );
-            vd_t strarr = bcore_via_spect_nget_d( specs_v, specs, typeof( "strarr" ) );
-            for( sz_t i = 0; i < 10; i++ ) strarr_p->push_d( strarr_p, strarr, bcore_string_s_createf( "<%zu>", i ) );
-        }
-
-        // bcore_via_spect_nset_d( specs_v, specs, typeof( "child"  ), bcore_inst_aware_clone( specs ) );
-    }
-/*
-    vd_t specs_arr = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "specs_arr" ) ) );
-    {
-        const bcore_array_s * arr_p = bcore_array_s_get_aware( specs_arr );
-        for( sz_t i = 0; i < 2; i++ )
-        {
-            arr_p->push_c( arr_p, specs_arr, specs );
-        }
-    }
-*/
     bcore_txt_ml_translator_s* ttxt_ml = bcore_life_s_push_aware( l, bcore_txt_ml_translator_s_create() );
     bcore_translate_aware_object( ttxt_ml, specs, log );
 

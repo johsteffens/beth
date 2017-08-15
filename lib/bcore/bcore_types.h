@@ -55,5 +55,8 @@ typedef struct { vc_t o; tp_t t; } ct_p; // pair of const object reference and t
 #define PRIsz_t "zu"
 #define PRItp_t PRIu32
 
+/// special purpose specifiers (do not use for other purposes)
+// NPX - used locally as name prefix in *.c files (e.g. #define NPX(name) bcore_translator_##name  ... #undef NPX)
+
 #endif // BCORE_TYPE_H
 
