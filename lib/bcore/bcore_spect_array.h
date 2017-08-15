@@ -46,25 +46,10 @@ typedef struct bcore_array_s
     void ( *pop          )( const bcore_array_s* p, vd_t o );             // removes last element from array
     void ( *set_gtype    )( const bcore_array_s* p, vd_t o, tp_t type  ); // changes global item-type on empty arrays;
 
-    /// deprecated --> use bcore_array_get_type
-    tp_t ( *get_itype    )( const bcore_array_s* p, vc_t o, sz_t index ); // retrieves indexed item-type
-
-    /// deprecated --> use bcore_array_get_monotype
-    tp_t ( *get_gtype    )( const bcore_array_s* p, vc_t o             ); // retrieves global item-type; returns 0 for aware-arrays
-
     /// Direct data access (data pointer dereferencing and stepping depends on array structure)
     vc_t ( *get_c_data    )( const bcore_array_s* p, vc_t o ); // returns arr_caps->data (note that this is either vc_t or vc_t* depending on linkage-indirection
     vd_t ( *get_d_data    )( const bcore_array_s* p, vd_t o ); // returns arr_caps->data (note that this is either vd_t or vd_t* depending on linkage-indirection
     sz_t ( *get_unit_size )( const bcore_array_s* p, vc_t o ); // spacing between data elements (item_p->size or sizeof(vd_t))
-
-    /// deprecated --> use bcore_array_is_of_links
-    bool ( *is_linked     )( const bcore_array_s* p         ); // true in case of array of links; false otherwise
-
-    /// deprecated --> use bcore_array_is_mutable_mono_typed
-    bool ( *is_typed      )( const bcore_array_s* p         ); // true in case of typed-array; false otherwise
-
-    /// deprecated --> use bcore_array_is_of_aware
-    bool ( *is_aware      )( const bcore_array_s* p         ); // true in case of aware-array; false otherwise
 
 } bcore_array_s;
 
@@ -94,17 +79,16 @@ tp_t bcore_static_link_array_type_of( tp_t type );
 
 /**********************************************************************************************************************/
 
-/// extended functionality
-bl_t bcore_array_is_static(              const bcore_array_s* p ); // checks if elements are static (type of elements need not be recorded)
-bl_t bcore_array_is_mono_typed(          const bcore_array_s* p ); // checks if elements have all the same type
-bl_t bcore_array_is_mutable_mono_typed(  const bcore_array_s* p ); // checks if mono_typed and type can be changed (non-static)
-bl_t bcore_array_is_multi_typed(         const bcore_array_s* p ); // checks if elements can have different types
-bl_t bcore_array_is_of_aware(    const bcore_array_s* p ); // checks if elements are all self-aware
-bl_t bcore_array_is_of_links(    const bcore_array_s* p ); // checks if elements are links (means they can be NULL);
-
-tp_t bcore_array_get_static_type( const bcore_array_s* p );         // returns type if static, 0 otherwise;
-tp_t bcore_array_get_mono_type(   const bcore_array_s* p, vc_t o ); // returns type if monotyped, 0 otherwise;
-tp_t bcore_array_get_type( const bcore_array_s* p, vc_t o, sz_t index ); // returns type of indexed element; returns 0 when type cannot be determined
+/// array functionality
+bl_t bcore_array_spect_is_static(             const bcore_array_s* p ); // checks if elements are static (type of elements need not be recorded)
+bl_t bcore_array_spect_is_mono_typed(         const bcore_array_s* p ); // checks if elements have all the same type
+bl_t bcore_array_spect_is_mutable_mono_typed( const bcore_array_s* p ); // checks if mono_typed and type can be changed (non-static)
+bl_t bcore_array_spect_is_multi_typed(        const bcore_array_s* p ); // checks if elements can have different types
+bl_t bcore_array_spect_is_of_aware(           const bcore_array_s* p ); // checks if elements are all self-aware
+bl_t bcore_array_spect_is_of_links(           const bcore_array_s* p ); // checks if elements are links (means they can be NULL);
+tp_t bcore_array_spect_get_static_type(       const bcore_array_s* p );         // returns type if static, 0 otherwise;
+tp_t bcore_array_spect_get_mono_type(         const bcore_array_s* p, vc_t o ); // returns type if monotyped, 0 otherwise;
+tp_t bcore_array_spect_get_type(              const bcore_array_s* p, vc_t o, sz_t index ); // returns type of indexed element; returns 0 when type cannot be determined
 
 /** Array operations
  *  The specified limits cover the index range [start, end-1]
@@ -115,11 +99,11 @@ tp_t bcore_array_get_type( const bcore_array_s* p, vc_t o, sz_t index ); // retu
  */
 
 // maximum/minimum within range (order = -1: minimum)
-vc_t bcore_array_max(       const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order );
-sz_t bcore_array_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order );
+vc_t bcore_array_spect_max(       const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order );
+sz_t bcore_array_spect_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order );
 
 // (merge-)sort within index range [start, end-1]
-void bcore_array_sort(      const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t order );
+void bcore_array_spect_sort(      const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t order );
 
 /**********************************************************************************************************************/
 // testing, debugging

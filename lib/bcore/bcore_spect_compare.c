@@ -90,8 +90,8 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
             if( size1 != size2 ) return size1 < size2 ? 1 : -1;
             for( sz_t j = 0; j < size1; j++ )
             {
-                tp_t type1 = arr_p->get_itype( arr_p, o1_l, j );
-                tp_t type2 = arr_p->get_itype( arr_p, o2_l, j );
+                tp_t type1 = bcore_array_spect_get_type( arr_p, o1_l, j );
+                tp_t type2 = bcore_array_spect_get_type( arr_p, o2_l, j );
                 vc_t o1_ll = arr_p->get_c(     arr_p, o1_l, j );
                 vc_t o2_ll = arr_p->get_c(     arr_p, o2_l, j );
                 s2_t c = bcore_compare_bityped( type1, o1_ll, type2, o2_ll );
@@ -157,8 +157,8 @@ static bcore_string_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t o
             }
             for( sz_t j = 0; j < size1; j++ )
             {
-                tp_t type1 = arr_p->get_itype( arr_p, o1_l, j );
-                tp_t type2 = arr_p->get_itype( arr_p, o2_l, j );
+                tp_t type1 = bcore_array_spect_get_type( arr_p, o1_l, j );
+                tp_t type2 = bcore_array_spect_get_type( arr_p, o2_l, j );
                 vc_t o1_ll = arr_p->get_c(     arr_p, o1_l, j );
                 vc_t o2_ll = arr_p->get_c(     arr_p, o2_l, j );
                 bcore_string_s* s = bcore_diff_bityped( type1, o1_ll, type2, o2_ll );

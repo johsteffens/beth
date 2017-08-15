@@ -48,10 +48,10 @@ void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* 
     {
         const bcore_array_s* arr_p = bcore_array_s_get_typed( type );
         sz_t size = arr_p->get_size( arr_p, obj );
-        if( bcore_array_is_mono_typed( arr_p ) )
+        if( bcore_array_spect_is_mono_typed( arr_p ) )
         {
-            tp_t type_l = arr_p->get_gtype( arr_p, obj );
-            if( !bcore_array_is_static( arr_p ) ) sink_p->pushf( sink_p, sink, "%s\n", ifnameof( type_l ) );
+            tp_t type_l = bcore_array_spect_get_mono_type( arr_p, obj );
+            if( !bcore_array_spect_is_static( arr_p ) ) sink_p->pushf( sink_p, sink, "%s\n", ifnameof( type_l ) );
             for( sz_t i = 0; i < size; i++ )
             {
                 bcore_txt_ml_translator_s_translate_body( o, type_l, arr_p->get_c( arr_p, obj, i ), sink );
@@ -61,7 +61,7 @@ void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* 
         {
             for( sz_t i = 0; i < size; i++ )
             {
-                tp_t type_l = arr_p->get_itype( arr_p, obj, i );
+                tp_t type_l = bcore_array_spect_get_type( arr_p, obj, i );
                 sink_p->pushf( sink_p, sink, "%s\n", ifnameof( type_l ) );
                 bcore_txt_ml_translator_s_translate_body( o, type_l, arr_p->get_c( arr_p, obj, i ), sink );
             }

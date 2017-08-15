@@ -163,7 +163,7 @@ bcore_string_s* bcore_spect_status()
         }
     }
 
-    bcore_array_sort( nc_arr_a, nc_arr, 0, -1, -1 );
+    bcore_array_spect_sort( nc_arr_a, nc_arr, 0, -1, -1 );
 
     for( sz_t i = 0; i < nc_arr_a->get_size( nc_arr_a, nc_arr ); i++ )
     {
