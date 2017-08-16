@@ -159,7 +159,7 @@ bcore_string_s* bcore_spect_status()
         if( key )
         {
             vd_t pair = bcore_array_spect_push_c( nc_arr_a, nc_arr, NULL );
-            bcore_via_aware_nrset( pair, typeof( "type" ), rf_wc( &key, TYPEOF_tp_t ) );
+            bcore_via_aware_nset_tp( pair, typeof( "type" ),  key   );
             bcore_via_aware_nset_sz( pair, typeof( "count" ), count );
         }
     }

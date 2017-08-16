@@ -98,7 +98,7 @@ tp_t bcore_via_spect_iget_type( const bcore_via_s* p, vc_t o, sz_t index )
     return 0;
 }
 
-rf_s bcore_via_spect_irget( const bcore_via_s* p, vc_t o, sz_t index         )
+rf_s bcore_via_spect_iget( const bcore_via_s* p, vc_t o, sz_t index         )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
@@ -142,7 +142,7 @@ rf_s bcore_via_spect_irget( const bcore_via_s* p, vc_t o, sz_t index         )
     return rf_wd( NULL, 0 );
 }
 
-rf_s bcore_via_spect_irset( const bcore_via_s* p, vd_t o, sz_t index, rf_s src )
+rf_s bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, rf_s src )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -274,25 +274,26 @@ rf_s bcore_via_spect_irset( const bcore_via_s* p, vd_t o, sz_t index, rf_s src )
 
 vc_t bcore_via_spect_iget_c( const bcore_via_s* p, vc_t o, sz_t index )
 {
-    rf_s r = bcore_via_spect_irget( p, o, index );
+    rf_s r = bcore_via_spect_iget( p, o, index );
     if( r.s ) ERR( "%s:%s yielded a strong reference", ifnameof( p->o_type ), ifnameof( bcore_via_spect_iget_name( p, index ) ) );
     return r.o;
 }
 
 vd_t bcore_via_spect_iget_d( const bcore_via_s* p, vd_t o, sz_t index )
 {
-    rf_s r = bcore_via_spect_irget( p, o, index );
+    rf_s r = bcore_via_spect_iget( p, o, index );
     if( r.c ) ERR( "%s:%s yielded a const reference", ifnameof( p->o_type ), ifnameof( bcore_via_spect_iget_name( p, index ) ) );
     if( r.s ) ERR( "%s:%s yielded a strong reference", ifnameof( p->o_type ), ifnameof( bcore_via_spect_iget_name( p, index ) ) );
     return r.o;
 }
 
-rf_s bcore_via_spect_iset_s3( const bcore_via_s* p, vd_t o, sz_t index, s3_t val ) { return bcore_via_spect_irset( p, o, index, rf_wc( &val, TYPEOF_s3_t ) ); }
-rf_s bcore_via_spect_iset_u3( const bcore_via_s* p, vd_t o, sz_t index, u3_t val ) { return bcore_via_spect_irset( p, o, index, rf_wc( &val, TYPEOF_u3_t ) ); }
-rf_s bcore_via_spect_iset_f3( const bcore_via_s* p, vd_t o, sz_t index, f3_t val ) { return bcore_via_spect_irset( p, o, index, rf_wc( &val, TYPEOF_f3_t ) ); }
-rf_s bcore_via_spect_iset_sz( const bcore_via_s* p, vd_t o, sz_t index, sz_t val ) { return bcore_via_spect_irset( p, o, index, rf_wc( &val, TYPEOF_sz_t ) ); }
-rf_s bcore_via_spect_iset_sc( const bcore_via_s* p, vd_t o, sz_t index, sc_t val ) { return bcore_via_spect_irset( p, o, index, rf_wc( &val, TYPEOF_sc_t ) ); }
-rf_s bcore_via_spect_iset_bl( const bcore_via_s* p, vd_t o, sz_t index, bl_t val ) { return bcore_via_spect_irset( p, o, index, rf_wc( &val, TYPEOF_bl_t ) ); }
+rf_s bcore_via_spect_iset_s3( const bcore_via_s* p, vd_t o, sz_t index, s3_t val ) { return bcore_via_spect_iset( p, o, index, rf_wc( &val, TYPEOF_s3_t ) ); }
+rf_s bcore_via_spect_iset_u3( const bcore_via_s* p, vd_t o, sz_t index, u3_t val ) { return bcore_via_spect_iset( p, o, index, rf_wc( &val, TYPEOF_u3_t ) ); }
+rf_s bcore_via_spect_iset_f3( const bcore_via_s* p, vd_t o, sz_t index, f3_t val ) { return bcore_via_spect_iset( p, o, index, rf_wc( &val, TYPEOF_f3_t ) ); }
+rf_s bcore_via_spect_iset_sz( const bcore_via_s* p, vd_t o, sz_t index, sz_t val ) { return bcore_via_spect_iset( p, o, index, rf_wc( &val, TYPEOF_sz_t ) ); }
+rf_s bcore_via_spect_iset_sc( const bcore_via_s* p, vd_t o, sz_t index, sc_t val ) { return bcore_via_spect_iset( p, o, index, rf_wc( &val, TYPEOF_sc_t ) ); }
+rf_s bcore_via_spect_iset_bl( const bcore_via_s* p, vd_t o, sz_t index, bl_t val ) { return bcore_via_spect_iset( p, o, index, rf_wc( &val, TYPEOF_bl_t ) ); }
+rf_s bcore_via_spect_iset_tp( const bcore_via_s* p, vd_t o, sz_t index, tp_t val ) { return bcore_via_spect_iset( p, o, index, rf_wc( &val, TYPEOF_tp_t ) ); }
 
 const bcore_vitem_s* bcore_via_spect_iget_vitem( const bcore_via_s* p, sz_t index )
 {
@@ -326,28 +327,29 @@ static inline sz_t vidx( const bcore_via_s* p, tp_t name )
     return 0;
 }
 
-sz_t                 NPX(spect_nget_index   )( const NPX(s)* p,         tp_t n                   ) { return vidx( p, n ); }
-tp_t                 NPX(spect_nget_type    )( const NPX(s)* p, vc_t o, tp_t n                   ) { return NPX(spect_iget_type    )( p, o, vidx( p, n )         ); }
-rf_s                 NPX(spect_nrget        )( const NPX(s)* p, vc_t o, tp_t n                   ) { return NPX(spect_irget        )( p, o, vidx( p, n )         ); }
-rf_s                 NPX(spect_nrset        )( const NPX(s)* p, vd_t o, tp_t n, rf_s src         ) { return NPX(spect_irset        )( p, o, vidx( p, n ), src    ); }
-vc_t                 NPX(spect_nget_c       )( const NPX(s)* p, vc_t o, tp_t n                   ) { return NPX(spect_iget_c       )( p, o, vidx( p, n )         ); }
-vd_t                 NPX(spect_nget_d       )( const NPX(s)* p, vd_t o, tp_t n                   ) { return NPX(spect_iget_d       )( p, o, vidx( p, n )         ); }
-rf_s                 NPX(spect_nset_s3      )( const NPX(s)* p, vd_t o, tp_t n, s3_t val         ) { return NPX(spect_iset_s3      )( p, o, vidx( p, n ), val    ); }
-rf_s                 NPX(spect_nset_u3      )( const NPX(s)* p, vd_t o, tp_t n, u3_t val         ) { return NPX(spect_iset_u3      )( p, o, vidx( p, n ), val    ); }
-rf_s                 NPX(spect_nset_f3      )( const NPX(s)* p, vd_t o, tp_t n, f3_t val         ) { return NPX(spect_iset_f3      )( p, o, vidx( p, n ), val    ); }
-rf_s                 NPX(spect_nset_sz      )( const NPX(s)* p, vd_t o, tp_t n, sz_t val         ) { return NPX(spect_iset_sz      )( p, o, vidx( p, n ), val    ); }
-rf_s                 NPX(spect_nset_sc      )( const NPX(s)* p, vd_t o, tp_t n, sc_t val         ) { return NPX(spect_iset_sc      )( p, o, vidx( p, n ), val    ); }
-rf_s                 NPX(spect_nset_bl      )( const NPX(s)* p, vd_t o, tp_t n, bl_t val         ) { return NPX(spect_iset_bl      )( p, o, vidx( p, n ), val    ); }
-const bcore_vitem_s* NPX(spect_nget_vitem   )( const NPX(s)* p,         tp_t n                   ) { return NPX(spect_iget_vitem   )( p,    vidx( p, n )         ); }
-const NPX(s)*        NPX(spect_nget_via     )( const NPX(s)* p,         tp_t n                   ) { return NPX(spect_iget_via     )( p,    vidx( p, n )         ); }
-const bcore_array_s* NPX(spect_nget_array   )( const NPX(s)* p,         tp_t n                   ) { return NPX(spect_iget_array   )( p,    vidx( p, n )         ); }
-vc_t                 NPX(spect_nget_spect   )( const NPX(s)* p, vc_t o, tp_t n, tp_t stp         ) { return NPX(spect_iget_spect   )( p, o, vidx( p, n ), stp    ); }
+sz_t                 NPX(spect_nget_index   )( const NPX(s)* p,         tp_t n           ) { return vidx( p, n ); }
+tp_t                 NPX(spect_nget_type    )( const NPX(s)* p, vc_t o, tp_t n           ) { return NPX(spect_iget_type  )( p, o, vidx( p, n )         ); }
+rf_s                 NPX(spect_nget         )( const NPX(s)* p, vc_t o, tp_t n           ) { return NPX(spect_iget       )( p, o, vidx( p, n )         ); }
+rf_s                 NPX(spect_nset         )( const NPX(s)* p, vd_t o, tp_t n, rf_s src ) { return NPX(spect_iset       )( p, o, vidx( p, n ), src    ); }
+vc_t                 NPX(spect_nget_c       )( const NPX(s)* p, vc_t o, tp_t n           ) { return NPX(spect_iget_c     )( p, o, vidx( p, n )         ); }
+vd_t                 NPX(spect_nget_d       )( const NPX(s)* p, vd_t o, tp_t n           ) { return NPX(spect_iget_d     )( p, o, vidx( p, n )         ); }
+rf_s                 NPX(spect_nset_s3      )( const NPX(s)* p, vd_t o, tp_t n, s3_t val ) { return NPX(spect_iset_s3    )( p, o, vidx( p, n ), val    ); }
+rf_s                 NPX(spect_nset_u3      )( const NPX(s)* p, vd_t o, tp_t n, u3_t val ) { return NPX(spect_iset_u3    )( p, o, vidx( p, n ), val    ); }
+rf_s                 NPX(spect_nset_f3      )( const NPX(s)* p, vd_t o, tp_t n, f3_t val ) { return NPX(spect_iset_f3    )( p, o, vidx( p, n ), val    ); }
+rf_s                 NPX(spect_nset_sz      )( const NPX(s)* p, vd_t o, tp_t n, sz_t val ) { return NPX(spect_iset_sz    )( p, o, vidx( p, n ), val    ); }
+rf_s                 NPX(spect_nset_sc      )( const NPX(s)* p, vd_t o, tp_t n, sc_t val ) { return NPX(spect_iset_sc    )( p, o, vidx( p, n ), val    ); }
+rf_s                 NPX(spect_nset_bl      )( const NPX(s)* p, vd_t o, tp_t n, bl_t val ) { return NPX(spect_iset_bl    )( p, o, vidx( p, n ), val    ); }
+rf_s                 NPX(spect_nset_tp      )( const NPX(s)* p, vd_t o, tp_t n, tp_t val ) { return NPX(spect_iset_tp    )( p, o, vidx( p, n ), val    ); }
+const bcore_vitem_s* NPX(spect_nget_vitem   )( const NPX(s)* p,         tp_t n           ) { return NPX(spect_iget_vitem )( p,    vidx( p, n )         ); }
+const NPX(s)*        NPX(spect_nget_via     )( const NPX(s)* p,         tp_t n           ) { return NPX(spect_iget_via   )( p,    vidx( p, n )         ); }
+const bcore_array_s* NPX(spect_nget_array   )( const NPX(s)* p,         tp_t n           ) { return NPX(spect_iget_array )( p,    vidx( p, n )         ); }
+vc_t                 NPX(spect_nget_spect   )( const NPX(s)* p, vc_t o, tp_t n, tp_t stp ) { return NPX(spect_iget_spect )( p, o, vidx( p, n ), stp    ); }
 
 static inline const bcore_via_s* vtpd( tp_t tp ) { return bcore_via_s_get_typed( tp ); }
 
 tp_t                 NPX(typed_nget_type    )( tp_t tp, vc_t o, tp_t n                   ) { return NPX(spect_nget_type    )( vtpd( tp ), o, n         ); }
-rf_s                 NPX(typed_nrget        )( tp_t tp, vc_t o, tp_t n                   ) { return NPX(spect_nrget        )( vtpd( tp ), o, n         ); }
-rf_s                 NPX(typed_nrset        )( tp_t tp, vd_t o, tp_t n, rf_s src         ) { return NPX(spect_nrset        )( vtpd( tp ), o, n, src    ); }
+rf_s                 NPX(typed_nget         )( tp_t tp, vc_t o, tp_t n                   ) { return NPX(spect_nget         )( vtpd( tp ), o, n         ); }
+rf_s                 NPX(typed_nset         )( tp_t tp, vd_t o, tp_t n, rf_s src         ) { return NPX(spect_nset         )( vtpd( tp ), o, n, src    ); }
 vc_t                 NPX(typed_nget_c       )( tp_t tp, vc_t o, tp_t n                   ) { return NPX(spect_nget_c       )( vtpd( tp ), o, n         ); }
 vd_t                 NPX(typed_nget_d       )( tp_t tp, vd_t o, tp_t n                   ) { return NPX(spect_nget_d       )( vtpd( tp ), o, n         ); }
 rf_s                 NPX(typed_nset_s3      )( tp_t tp, vd_t o, tp_t n, s3_t val         ) { return NPX(spect_nset_s3      )( vtpd( tp ), o, n, val    ); }
@@ -356,14 +358,15 @@ rf_s                 NPX(typed_nset_f3      )( tp_t tp, vd_t o, tp_t n, f3_t val
 rf_s                 NPX(typed_nset_sz      )( tp_t tp, vd_t o, tp_t n, sz_t val         ) { return NPX(spect_nset_sz      )( vtpd( tp ), o, n, val    ); }
 rf_s                 NPX(typed_nset_sc      )( tp_t tp, vd_t o, tp_t n, sc_t val         ) { return NPX(spect_nset_sc      )( vtpd( tp ), o, n, val    ); }
 rf_s                 NPX(typed_nset_bl      )( tp_t tp, vd_t o, tp_t n, bl_t val         ) { return NPX(spect_nset_bl      )( vtpd( tp ), o, n, val    ); }
+rf_s                 NPX(typed_nset_tp      )( tp_t tp, vd_t o, tp_t n, tp_t val         ) { return NPX(spect_nset_tp      )( vtpd( tp ), o, n, val    ); }
 const bcore_vitem_s* NPX(typed_nget_vitem   )( tp_t tp,         tp_t n                   ) { return NPX(spect_nget_vitem   )( vtpd( tp ),    n         ); }
 const NPX(s)*        NPX(typed_nget_via     )( tp_t tp,         tp_t n                   ) { return NPX(spect_nget_via     )( vtpd( tp ),    n         ); }
 const bcore_array_s* NPX(typed_nget_array   )( tp_t tp,         tp_t n                   ) { return NPX(spect_nget_array   )( vtpd( tp ),    n         ); }
 vc_t                 NPX(typed_nget_spect   )( tp_t tp, vc_t o, tp_t n, tp_t stp         ) { return NPX(spect_nget_spect   )( vtpd( tp ), o, n, stp    ); }
 
 tp_t                 NPX(aware_nget_type    )( vc_t o, tp_t n                   ) { return NPX(typed_nget_type    )( *( aware_t* )o, o, n         ); }
-rf_s                 NPX(aware_nrget        )( vc_t o, tp_t n                   ) { return NPX(typed_nrget        )( *( aware_t* )o, o, n         ); }
-rf_s                 NPX(aware_nrset        )( vd_t o, tp_t n, rf_s src         ) { return NPX(typed_nrset        )( *( aware_t* )o, o, n, src    ); }
+rf_s                 NPX(aware_nget         )( vc_t o, tp_t n                   ) { return NPX(typed_nget         )( *( aware_t* )o, o, n         ); }
+rf_s                 NPX(aware_nset         )( vd_t o, tp_t n, rf_s src         ) { return NPX(typed_nset         )( *( aware_t* )o, o, n, src    ); }
 vc_t                 NPX(aware_nget_c       )( vc_t o, tp_t n                   ) { return NPX(typed_nget_c       )( *( aware_t* )o, o, n         ); }
 vd_t                 NPX(aware_nget_d       )( vd_t o, tp_t n                   ) { return NPX(typed_nget_d       )( *( aware_t* )o, o, n         ); }
 rf_s                 NPX(aware_nset_s3      )( vd_t o, tp_t n, s3_t val         ) { return NPX(typed_nset_s3      )( *( aware_t* )o, o, n, val    ); }
@@ -372,6 +375,7 @@ rf_s                 NPX(aware_nset_f3      )( vd_t o, tp_t n, f3_t val         
 rf_s                 NPX(aware_nset_sz      )( vd_t o, tp_t n, sz_t val         ) { return NPX(typed_nset_sz      )( *( aware_t* )o, o, n, val    ); }
 rf_s                 NPX(aware_nset_sc      )( vd_t o, tp_t n, sc_t val         ) { return NPX(typed_nset_sc      )( *( aware_t* )o, o, n, val    ); }
 rf_s                 NPX(aware_nset_bl      )( vd_t o, tp_t n, bl_t val         ) { return NPX(typed_nset_bl      )( *( aware_t* )o, o, n, val    ); }
+rf_s                 NPX(aware_nset_tp      )( vd_t o, tp_t n, tp_t val         ) { return NPX(typed_nset_tp      )( *( aware_t* )o, o, n, val    ); }
 const bcore_vitem_s* NPX(aware_nget_vitem   )( vc_t o, tp_t n                   ) { return NPX(typed_nget_vitem   )( *( aware_t* )o,    n         ); }
 const NPX(s)*        NPX(aware_nget_via     )( vc_t o, tp_t n                   ) { return NPX(typed_nget_via     )( *( aware_t* )o,    n         ); }
 const bcore_array_s* NPX(aware_nget_array   )( vc_t o, tp_t n                   ) { return NPX(typed_nget_array   )( *( aware_t* )o,    n         ); }
@@ -600,7 +604,7 @@ bcore_string_s* bcore_spect_via_selftest( void )
 
     vd_t via_specs_arr2 = bcore_inst_typed_create( typeof( "via_specs_arr" ) );
 
-    bcore_via_spect_nrset( via_specs_arr_v, via_specs_arr2, typeof( "arr" ), bcore_via_spect_nrget( via_specs_arr_v, via_specs_arr, typeof( "arr" ) ) );
+    bcore_via_spect_nset( via_specs_arr_v, via_specs_arr2, typeof( "arr" ), bcore_via_spect_nget( via_specs_arr_v, via_specs_arr, typeof( "arr" ) ) );
 
     vd_t arr2 = bcore_via_spect_nget_d( via_specs_arr_v, via_specs_arr2, typeof( "arr" ) );
 
