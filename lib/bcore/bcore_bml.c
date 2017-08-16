@@ -728,13 +728,10 @@ static bcore_string_s* translate_selftest( void )
 
     {
         const bcore_via_s * specs_v = bcore_via_s_get_aware( specs );
-        u2_t u2_v = 10;
-        bcore_via_spect_nset_c( specs_v, specs, typeof( "param1" ), &u2_v );
-        s3_t s3_v = -3240;
-        bcore_via_spect_nset_c( specs_v, specs, typeof( "param2" ), &s3_v );
+        bcore_via_spect_nset_u3( specs_v, specs, typeof( "param1" ), 10 );
+        bcore_via_spect_nset_s3( specs_v, specs, typeof( "param2" ), -3240 );
+        bcore_via_spect_nrset(    specs_v, specs, typeof( "name" ), rf_asd( bcore_string_s_createf( "\"my string\"" ) ) );
 
-        bcore_string_s* s = bcore_via_spect_ncreate( specs_v, specs, typeof( "name" ) );
-        bcore_string_s_pushf( s, "\"my string\"" );
         {
             const bcore_array_s* numarr_p = bcore_array_s_get_typed( bcore_via_spect_nget_type( specs_v, specs, typeof( "numarr" ) ) );
             vd_t numarr = bcore_via_spect_nget_d( specs_v, specs, typeof( "numarr" ) );
@@ -747,7 +744,7 @@ static bcore_string_s* translate_selftest( void )
             for( sz_t i = 0; i < 10; i++ ) bcore_array_spect_push_d( strarr_p, strarr, bcore_string_s_createf( "<%zu>", i ) );
         }
 
-        bcore_via_spect_nset_d( specs_v, specs, typeof( "child"  ), bcore_inst_aware_clone( specs ) );
+        bcore_via_spect_nrset( specs_v, specs, typeof( "child"  ), rf_asd( bcore_inst_aware_clone( specs ) ) );
     }
 
     vd_t specs_arr = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "specs_arr" ) ) );

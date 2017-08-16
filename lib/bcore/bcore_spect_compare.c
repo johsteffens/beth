@@ -322,13 +322,10 @@ bcore_string_s* bcore_spect_compare_selftest( void )
     vd_t specs = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "cmp_specs" ) ) );
 
     {
-        sz_t size   =  10;
-        u2_t param1 = 200;
-        s2_t param2 = -50;
         const bcore_via_s* v = bcore_via_s_get_aware( specs );
-        bcore_via_spect_nset_c( v, specs, typeof( "size"   ), &size   );
-        bcore_via_spect_nset_c( v, specs, typeof( "param1" ), &param1 );
-        bcore_via_spect_nset_c( v, specs, typeof( ""       ), &param2 );
+        bcore_via_spect_nset_sz( v, specs, typeof( "size"   ), 10  );
+        bcore_via_spect_nset_u3( v, specs, typeof( "param1" ), 200 );
+        bcore_via_spect_nset_s3( v, specs, typeof( ""       ), -50 );
     }
 
     bcore_flect_define_parse_sc( "cmp_specs_arr = { aware_t _; u3_t flags; cmp_specs [] arr; }" );
@@ -342,18 +339,16 @@ bcore_string_s* bcore_spect_compare_selftest( void )
     {
         vd_t specs = arr_p->get_d( arr_p, arr1, i );
         const bcore_via_s* v = bcore_via_s_get_aware( specs );
-        bcore_via_spect_nset_c( v, specs, typeof( "size" ), &i );
+        bcore_via_spect_nset_sz( v, specs, typeof( "size" ), i );
     }
 
     const bcore_via_s* v = bcore_via_s_get_aware( specs );
     vd_t arr2 = bcore_life_s_push_aware( l, bcore_inst_aware_clone( arr1 ) );
 
     ASSERT( bcore_compare_aware( arr1, arr2 ) == 0 );
-    sz_t num = 20;
-    bcore_via_spect_nset_c( v, arr_p->get_d( arr_p, arr2, 5 ), typeof( "size" ), &num );
+    bcore_via_spect_nset_sz( v, arr_p->get_d( arr_p, arr2, 5 ), typeof( "size" ), 20 );
     ASSERT( bcore_compare_aware( arr1, arr2 ) >  0 );
-    num = 0;
-    bcore_via_spect_nset_c( v, arr_p->get_d( arr_p, arr2, 5 ), typeof( "size" ), &num );
+    bcore_via_spect_nset_sz( v, arr_p->get_d( arr_p, arr2, 5 ), typeof( "size" ), 0 );
     ASSERT( bcore_compare_aware( arr1, arr2 ) <  0 );
 
     bcore_life_s_discard( l );

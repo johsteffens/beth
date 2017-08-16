@@ -41,6 +41,24 @@ typedef tp_t aware_t; // self-awareness type (first element in self-aware object
 typedef struct { vd_t o; tp_t t; } dt_p; // pair of object reference and type
 typedef struct { vc_t o; tp_t t; } ct_p; // pair of const object reference and type
 
+// general purpose reference (e.g. for via)
+typedef struct
+{
+    vd_t o; // object
+    tp_t t; // type
+    bl_t s; // strong/weak reference (receiver of strong reference owns the object and takes care of its lifetime)
+    bl_t c; // const flag
+} rf_s;
+
+void bcore_inst_typed_discard( tp_t type, vd_t obj );
+static inline rf_s rf_wc(  vc_t o, tp_t t ) { return ( rf_s ){ .o = ( vd_t )o, .t = t, .s = 0, .c = 1 }; } // weak const reference
+static inline rf_s rf_wd(  vc_t o, tp_t t ) { return ( rf_s ){ .o = ( vd_t )o, .t = t, .s = 0, .c = 0 }; } // weak reference
+static inline rf_s rf_sd(  vd_t o, tp_t t ) { return ( rf_s ){ .o = ( vd_t )o, .t = t, .s = 1, .c = 0 }; } // strong reference
+static inline rf_s rf_awc( vc_t o )         { return ( rf_s ){ .o = ( vd_t )o, .t = o?*(aware_t*)o:0, .s = 0, .c = 1 }; } // aware weak const reference
+static inline rf_s rf_awd( vc_t o )         { return ( rf_s ){ .o = ( vd_t )o, .t = o?*(aware_t*)o:0, .s = 0, .c = 0 }; } // aware weak reference
+static inline rf_s rf_asd( vd_t o )         { return ( rf_s ){ .o = ( vd_t )o, .t = o?*(aware_t*)o:0, .s = 1, .c = 0 }; } // aware strong reference
+static inline void rf_s_down( rf_s o )      { if( o.s && o.o ) bcore_inst_typed_discard( o.t, o.o ); }     // discards object in case of strong reference
+
 // extended scan and print format specifiers
 #define PRIs3_t PRIi64
 #define PRIs2_t PRIi32
