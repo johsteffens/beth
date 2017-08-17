@@ -79,6 +79,12 @@ void bcore_inst_body_s_pop( bcore_inst_body_s* o )
     bcore_inst_item_s_down( &o->data[ o->size ] );
 }
 
+bcore_inst_item_s* bcore_inst_body_s_inst_item_of_flect_item( const bcore_inst_body_s* o, const bcore_flect_item_s* item )
+{
+    for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ].flect_item == item ) return &o->data[ i ];
+    return NULL;
+}
+
 /**********************************************************************************************************************/
 // bcore_inst_s
 

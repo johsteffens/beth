@@ -20,9 +20,9 @@ typedef struct bcore_inst_item_s
     sz_t offset;
     sz_t size;
     sz_t align;
-    bool no_trace; // do not recursively follow this item (could be private, cyclic or external)
     const bcore_flect_item_s*   flect_item;
     const struct bcore_inst_s* perspective;
+    bl_t no_trace;    // do not recursively follow this item (could be private, cyclic or external)
 } bcore_inst_item_s;
 
 typedef struct bcore_inst_body_s
@@ -30,6 +30,9 @@ typedef struct bcore_inst_body_s
     bcore_inst_item_s* data;
     sz_t size, space;
 } bcore_inst_body_s;
+
+/// returns corresponding instance item of flect_item_s or NULL if not existing
+bcore_inst_item_s* bcore_inst_body_s_inst_item_of_flect_item( const bcore_inst_body_s* o, const bcore_flect_item_s* item );
 
 typedef struct bcore_inst_s bcore_inst_s;
 

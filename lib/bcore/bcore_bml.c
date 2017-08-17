@@ -452,23 +452,23 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                         if( bcore_array_spect_get_size( arr_p, element ) > 0 ) src_p->parsef( src_p, src, " ," );
                         if( link )
                         {
-                            vd_t obj = NULL;
+                            dt_p obj;
                             if( type_l )
                             {
-                                obj = interpret_typed( o, src, type_l ).o;
+                                obj = interpret_typed( o, src, type_l );
                             }
                             else
                             {
-                                obj = interpret_object( o, src ).o;
+                                obj = interpret_object( o, src );
 
                             }
-                            bcore_array_spect_push_d( arr_p, element, obj );
+                            bcore_array_spect_push( arr_p, element, rf_sd( obj.o, obj.t ) );
                         }
                         else
                         {
                             dt_p dst;
                             dst.t = type_l;
-                            dst.o = bcore_array_spect_push_c( arr_p, element, NULL );
+                            dst.o = bcore_array_spect_push( arr_p, element, rf_null() ).o;
                             interpret_body( o, src, dst );
                         }
                     }
@@ -735,13 +735,13 @@ static bcore_string_s* translate_selftest( void )
         {
             const bcore_array_s* numarr_p = bcore_via_spect_nget_array( specs_v, typeof( "numarr" ) );
             vd_t numarr = bcore_via_spect_nget_d( specs_v, specs, typeof( "numarr" ) );
-            for( sz_t i = 0; i < 10; i++ ) bcore_array_spect_push_c( numarr_p, numarr, &i );
+            for( sz_t i = 0; i < 10; i++ ) bcore_array_spect_push_sz( numarr_p, numarr, i );
         }
 
         {
             const bcore_array_s* strarr_p = bcore_via_spect_nget_array( specs_v, typeof( "strarr" ) );
             vd_t strarr = bcore_via_spect_nget_d( specs_v, specs, typeof( "strarr" ) );
-            for( sz_t i = 0; i < 10; i++ ) bcore_array_spect_push_d( strarr_p, strarr, bcore_string_s_createf( "<%zu>", i ) );
+            for( sz_t i = 0; i < 10; i++ ) bcore_array_spect_push( strarr_p, strarr, rf_asd( bcore_string_s_createf( "<%zu>", i ) ) );
         }
 
         bcore_via_spect_nset( specs_v, specs, typeof( "child"  ), rf_asd( bcore_inst_aware_clone( specs ) ) );
@@ -752,7 +752,7 @@ static bcore_string_s* translate_selftest( void )
         const bcore_array_s * arr_p = bcore_array_s_get_aware( specs_arr );
         for( sz_t i = 0; i < 2; i++ )
         {
-            bcore_array_spect_push_c( arr_p, specs_arr, specs );
+            bcore_array_spect_push( arr_p, specs_arr, rf_awc( specs ) );
         }
     }
 

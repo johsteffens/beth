@@ -36,7 +36,7 @@ void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* 
 
     const bcore_via_s* via_p = bcore_via_s_get_typed( type );
 
-    if( via_p->size == 0 ) // leaf
+    if( bcore_via_spect_is_leaf( via_p ) )
     {
         bcore_string_s* string = bcore_string_s_create_typed( type, obj );
         sink_p->push_string_d( sink_p, sink, string );
@@ -54,7 +54,7 @@ void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* 
             if( !bcore_array_spect_is_static( arr_p ) ) sink_p->pushf( sink_p, sink, "<%s>", ifnameof( type_l ) );
             for( sz_t i = 0; i < size; i++ )
             {
-                bcore_txt_ml_translator_s_translate_body( o, type_l, arr_p->get_c( arr_p, obj, i ), sink );
+                bcore_txt_ml_translator_s_translate_body( o, type_l, arr_p->get( arr_p, obj, i ).o, sink );
             }
         }
         else
@@ -63,7 +63,7 @@ void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* 
             {
                 tp_t type_l = bcore_array_spect_get_type( arr_p, obj, i );
                 sink_p->pushf( sink_p, sink, "<%s>", ifnameof( type_l ) );
-                bcore_txt_ml_translator_s_translate_body( o, type_l, arr_p->get_c( arr_p, obj, i ), sink );
+                bcore_txt_ml_translator_s_translate_body( o, type_l, arr_p->get( arr_p, obj, i ).o, sink );
             }
         }
         sink_p->push_sc( sink_p, sink, ";\n" );
@@ -72,13 +72,11 @@ void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* 
 
     for( sz_t i = 0; i < via_p->size; i++ )
     {
-        tp_t type_l = bcore_via_spect_iget_type( via_p, obj, i );
-        if( i == 0 && type_l == TYPEOF_aware_t ) continue;
-        vc_t obj_l  = bcore_via_spect_iget_c( via_p, obj, i );
-        if( !bcore_via_spect_iis_static( via_p, i ) ) sink_p->pushf( sink_p, sink, "<%s>", ifnameof( type_l ) );
-
+        rf_s rf = bcore_via_spect_iget( via_p, obj, i );
+        if( !bcore_via_spect_iis_static( via_p, i ) ) sink_p->pushf( sink_p, sink, "<%s>", ifnameof( rf.t ) );
         sink_p->pushf( sink_p, sink, "%s:", ifnameof( bcore_via_spect_iget_name( via_p, i ) ) );
-        bcore_txt_ml_translator_s_translate_body( o, type_l, obj_l, sink );
+        bcore_txt_ml_translator_s_translate_body( o, rf.t, rf.o, sink );
+        rf_s_down( rf );
         sink_p->push_char( sink_p, sink, '\n' );
     }
 }
@@ -166,7 +164,7 @@ static bcore_string_s* translate_selftest( void )
     bcore_array_spect_push_sc( arr_p, bcore_via_aware_nget_d( specs, typeof( "arr" ) ), "abc" );
 
     vd_t array = bcore_life_s_push_aware( l, bcore_inst_typed_create( bcore_flect_type_parse_sc( "my_array = { aware_t _; aware * [] data; }" ) ) );
-    bcore_array_aware_set_c( array, 5, specs );
+    bcore_array_aware_set( array, 5, rf_awc( specs ) );
 
     bcore_txt_ml_translator_s* ttxt_ml = bcore_life_s_push_aware( l, bcore_txt_ml_translator_s_create() );
     bcore_translate_aware_object( ttxt_ml, array, log );

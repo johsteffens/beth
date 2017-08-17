@@ -29,6 +29,12 @@ typedef void (*bcore_fp_check_sanity )( vc_t o );
 
 /**********************************************************************************************************************/
 
+/// element access
+typedef rf_s (*bcore_fp_get )( vc_t o );
+typedef rf_s (*bcore_fp_set )( vc_t o, rf_s val );
+
+/**********************************************************************************************************************/
+
 /// formated logging
 typedef void (*bcore_fp_logvf )( vd_t o, sc_t format, va_list args );
 

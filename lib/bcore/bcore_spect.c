@@ -158,7 +158,7 @@ bcore_string_s* bcore_spect_status()
         sz_t count = bcore_hmap_tpsz_s_idx_val( hist, i );
         if( key )
         {
-            vd_t pair = bcore_array_spect_push_c( nc_arr_a, nc_arr, NULL );
+            vd_t pair = bcore_array_spect_push( nc_arr_a, nc_arr, rf_null() ).o;
             bcore_via_aware_nset_tp( pair, typeof( "type" ),  key   );
             bcore_via_aware_nset_sz( pair, typeof( "count" ), count );
         }
@@ -168,7 +168,7 @@ bcore_string_s* bcore_spect_status()
 
     for( sz_t i = 0; i < bcore_array_spect_get_size( nc_arr_a, nc_arr ); i++ )
     {
-        vc_t pair = bcore_array_spect_get_c( nc_arr_a, nc_arr, i );
+        vc_t pair = bcore_array_spect_get( nc_arr_a, nc_arr, i ).o;
         const tp_t* p_type  = bcore_via_aware_nget_c( pair, typeof( "type"  ) );
         const sz_t* p_count = bcore_via_aware_nget_c( pair, typeof( "count" ) );
         bcore_string_s* s = bcore_string_s_create();

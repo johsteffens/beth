@@ -5,6 +5,7 @@
 #include "bcore_flect.h"
 #include "bcore_spect.h"
 #include "bcore_quicktypes.h"
+#include "bcore_life.h"
 
 #define NPX( name ) bcore_via_##name
 
@@ -22,7 +23,7 @@ static void via_s_init( bcore_via_s* o )
 static void via_s_down( bcore_via_s* o )
 {
     if( o->vitem_arr ) bcore_un_alloc( sizeof( bcore_via_s       ), o->vitem_arr, o->size, 0, NULL );
-    if( o->inst_arr  ) bcore_un_alloc( sizeof( bcore_inst_s* ), o->inst_arr,  o->size, 0, NULL );
+//    if( o->inst_arr  ) bcore_un_alloc( sizeof( bcore_inst_s* ), o->inst_arr,  o->size, 0, NULL );
 }
 
 static bcore_via_s* via_s_create()
@@ -52,61 +53,16 @@ tp_t bcore_via_spect_iget_name( const bcore_via_s* p, sz_t index )
     return p->vitem_arr[ index ].name;
 }
 
-tp_t bcore_via_spect_iget_type( const bcore_via_s* p, vc_t o, sz_t index )
-{
-    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
-    const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
-    switch( vitem->caps )
-    {
-        case BCORE_CAPS_STATIC:
-        case BCORE_CAPS_STATIC_LINK:
-        {
-            return vitem->type;
-        }
-
-        case BCORE_CAPS_TYPED_LINK:
-        {
-            const bcore_typed_link_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
-            return dst->type;
-        }
-
-        case BCORE_CAPS_AWARE_LINK:
-        {
-            const bcore_aware_link_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
-            if( dst->link )
-            {
-                return *( aware_t* )dst->link;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        case BCORE_CAPS_STATIC_ARRAY:
-        case BCORE_CAPS_TYPED_ARRAY:
-        case BCORE_CAPS_STATIC_LINK_ARRAY:
-        case BCORE_CAPS_TYPED_LINK_ARRAY:
-        case BCORE_CAPS_AWARE_LINK_ARRAY:
-//        case BCORE_CAPS_EXTERNAL_DATA:
-//        case BCORE_CAPS_EXTERNAL_FUNC:
-            return vitem->type;
-
-        default: break;
-    }
-
-    return 0;
-}
-
 rf_s bcore_via_spect_iget( const bcore_via_s* p, vc_t o, sz_t index         )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
+    if( vitem->fp_get ) return vitem->fp_get( o );
     switch( vitem->caps )
     {
         case BCORE_CAPS_STATIC:
         {
-            return rf_wd( ( vc_t )( ( u0_t* )o + vitem->offs ), vitem->type );
+            return rf_wd( ( vd_t )( ( u0_t* )o + vitem->offs ), vitem->type );
         }
 
         case BCORE_CAPS_STATIC_LINK:
@@ -133,7 +89,7 @@ rf_s bcore_via_spect_iget( const bcore_via_s* p, vc_t o, sz_t index         )
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
-            return rf_wd( ( vc_t )( ( u0_t* )o + vitem->offs ), vitem->type );
+            return rf_wd( ( vd_t )( ( u0_t* )o + vitem->offs ), vitem->type );
         }
 
         default: break;
@@ -142,23 +98,39 @@ rf_s bcore_via_spect_iget( const bcore_via_s* p, vc_t o, sz_t index         )
     return rf_wd( NULL, 0 );
 }
 
+tp_t bcore_via_spect_iget_type( const bcore_via_s* p, vc_t o, sz_t index )
+{
+    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
+    const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
+    switch( vitem->caps )
+    {
+        case BCORE_CAPS_TYPED_LINK:
+        case BCORE_CAPS_AWARE_LINK:
+            return rf_s_type( bcore_via_spect_iget( p, o, index ) );
+
+        default: break;
+    }
+    return vitem->type;
+}
+
 rf_s bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, rf_s src )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
+    if( vitem->fp_get ) return vitem->fp_set( o, src );
     switch( vitem->caps )
     {
         case BCORE_CAPS_STATIC:
         {
             vd_t dst = ( u0_t* )o + vitem->offs;
-            const bcore_inst_s* inst_p = p->inst_arr[ index ];
+            const bcore_inst_s* inst_p = vitem->via_p->inst_p;
             if( src.t == vitem->type )
             {
-                inst_p->copy( inst_p, dst, src.o );
+                bcore_inst_spect_copy( inst_p, dst, src.o );
             }
             else
             {
-                inst_p->copy_typed( inst_p, dst, src.t, src.o );
+                bcore_inst_spect_copy_typed( inst_p, dst, src.t, src.o );
             }
             rf_s_down( src );
             return rf_wd( dst, vitem->type );
@@ -167,17 +139,16 @@ rf_s bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, rf_s src )
         case BCORE_CAPS_STATIC_LINK:
         {
             bcore_static_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
-            const bcore_inst_s* inst_p = p->inst_arr[ index ];
-            if( dst->link ) inst_p->discard( inst_p, dst->link );
-
+            const bcore_inst_s* inst_p = vitem->via_p->inst_p;
+            if( dst->link ) bcore_inst_spect_discard( inst_p, dst->link );
             if( src.t == vitem->type )
             {
-                dst->link = src.s ? src.o : inst_p->clone( inst_p, src.o );
+                dst->link = src.s ? src.o : bcore_inst_spect_clone( inst_p, src.o );
                 src.s = false;
             }
             else
             {
-                dst->link = inst_p->create_typed( inst_p, src.t, src.o );
+                dst->link = bcore_inst_spect_create_typed( inst_p, src.t, src.o );
             }
             rf_s_down( src );
             return rf_wd( dst->link, vitem->type );
@@ -191,14 +162,12 @@ rf_s bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, rf_s src )
                 bcore_inst_typed_discard( dst->type, dst->link );
                 dst->link = NULL;
             }
-
             if( src.t )
             {
                 dst->type = src.t;
                 dst->link = src.s ? src.o : bcore_inst_typed_clone( src.t, src.o );
                 src.s = false;
             }
-
             rf_s_down( src );
             return rf_wd( dst->link, dst->type );
         }
@@ -245,8 +214,8 @@ rf_s bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, rf_s src )
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
-            const bcore_inst_s* inst_p = p->inst_arr[ index ];
             vd_t dst = ( ( u0_t* )o + vitem->offs );
+            const bcore_inst_s* inst_p = vitem->via_p->inst_p;
             if( src.t == vitem->type )
             {
                 bcore_inst_spect_copy( inst_p, dst, src.o );
@@ -304,13 +273,21 @@ const bcore_vitem_s* bcore_via_spect_iget_vitem( const bcore_via_s* p, sz_t inde
 const bcore_via_s* bcore_via_spect_iget_via( const bcore_via_s* p, sz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
-    return p->vitem_arr[ index ].via;
+    return p->vitem_arr[ index ].via_p;
 }
 
 const bcore_array_s* bcore_via_spect_iget_array( const bcore_via_s* p, sz_t index )
 {
-    if( !bcore_flect_caps_is_array( p->vitem_arr[ index ].caps ) ) return NULL;
-    return bcore_array_s_get_typed( p->vitem_arr[ index ].type );
+    const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
+    if( !bcore_flect_caps_is_array( vitem->caps ) )
+    {
+        ERR( "%s::%s of type '%s' and capsulation '%s' is no array",
+             ifnameof( p->o_type ),
+             ifnameof( bcore_via_spect_iget_name( p, index ) ),
+             ifnameof( vitem->type ),
+             bcore_flect_caps_e_sc( vitem->caps )  );
+    }
+    return bcore_array_s_get_typed( vitem->type );
 }
 
 vc_t bcore_via_spect_iget_spect( const bcore_via_s* p, vc_t o, sz_t index, tp_t spect_type )
@@ -328,7 +305,6 @@ static inline sz_t vidx( const bcore_via_s* p, tp_t name )
 }
 
 sz_t                 NPX(spect_nget_index   )( const NPX(s)* p,         tp_t n           ) { return vidx( p, n ); }
-tp_t                 NPX(spect_nget_type    )( const NPX(s)* p, vc_t o, tp_t n           ) { return NPX(spect_iget_type  )( p, o, vidx( p, n )         ); }
 rf_s                 NPX(spect_nget         )( const NPX(s)* p, vc_t o, tp_t n           ) { return NPX(spect_iget       )( p, o, vidx( p, n )         ); }
 rf_s                 NPX(spect_nset         )( const NPX(s)* p, vd_t o, tp_t n, rf_s src ) { return NPX(spect_iset       )( p, o, vidx( p, n ), src    ); }
 vc_t                 NPX(spect_nget_c       )( const NPX(s)* p, vc_t o, tp_t n           ) { return NPX(spect_iget_c     )( p, o, vidx( p, n )         ); }
@@ -347,7 +323,6 @@ vc_t                 NPX(spect_nget_spect   )( const NPX(s)* p, vc_t o, tp_t n, 
 
 static inline const bcore_via_s* vtpd( tp_t tp ) { return bcore_via_s_get_typed( tp ); }
 
-tp_t                 NPX(typed_nget_type    )( tp_t tp, vc_t o, tp_t n                   ) { return NPX(spect_nget_type    )( vtpd( tp ), o, n         ); }
 rf_s                 NPX(typed_nget         )( tp_t tp, vc_t o, tp_t n                   ) { return NPX(spect_nget         )( vtpd( tp ), o, n         ); }
 rf_s                 NPX(typed_nset         )( tp_t tp, vd_t o, tp_t n, rf_s src         ) { return NPX(spect_nset         )( vtpd( tp ), o, n, src    ); }
 vc_t                 NPX(typed_nget_c       )( tp_t tp, vc_t o, tp_t n                   ) { return NPX(spect_nget_c       )( vtpd( tp ), o, n         ); }
@@ -364,7 +339,6 @@ const NPX(s)*        NPX(typed_nget_via     )( tp_t tp,         tp_t n          
 const bcore_array_s* NPX(typed_nget_array   )( tp_t tp,         tp_t n                   ) { return NPX(spect_nget_array   )( vtpd( tp ),    n         ); }
 vc_t                 NPX(typed_nget_spect   )( tp_t tp, vc_t o, tp_t n, tp_t stp         ) { return NPX(spect_nget_spect   )( vtpd( tp ), o, n, stp    ); }
 
-tp_t                 NPX(aware_nget_type    )( vc_t o, tp_t n                   ) { return NPX(typed_nget_type    )( *( aware_t* )o, o, n         ); }
 rf_s                 NPX(aware_nget         )( vc_t o, tp_t n                   ) { return NPX(typed_nget         )( *( aware_t* )o, o, n         ); }
 rf_s                 NPX(aware_nset         )( vd_t o, tp_t n, rf_s src         ) { return NPX(typed_nset         )( *( aware_t* )o, o, n, src    ); }
 vc_t                 NPX(aware_nget_c       )( vc_t o, tp_t n                   ) { return NPX(typed_nget_c       )( *( aware_t* )o, o, n         ); }
@@ -382,6 +356,11 @@ const bcore_array_s* NPX(aware_nget_array   )( vc_t o, tp_t n                   
 vc_t                 NPX(aware_nget_spect   )( vc_t o, tp_t n, tp_t stp         ) { return NPX(typed_nget_spect   )( *( aware_t* )o, o, n, stp    ); }
 
 /**********************************************************************************************************************/
+
+bl_t bcore_via_spect_is_leaf( const bcore_via_s* p )
+{
+    return p->size == 0;
+}
 
 bl_t bcore_via_spect_is_pure_array( const bcore_via_s* p )
 {
@@ -445,95 +424,101 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s** p_self )
     o->o_type = self->type;
 
     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( self->type );
+    o->inst_p = inst_p;
 
-    sz_t size = self->body ? self->body->size : 0;
-    sz_t index = 0;
+    o->vitem_arr = NULL;
+    sz_t vitem_arr_size  = 0;
+    sz_t vitem_arr_space = 0;
 
-    o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s   ), NULL, size, NULL );
-    o->inst_arr  = bcore_u_alloc( sizeof( bcore_inst_s* ), NULL, size, NULL );
-    bcore_memzero( o->vitem_arr, sizeof( bcore_via_s    ) * size );
-    bcore_memzero( o->inst_arr,  sizeof( bcore_inst_s*  ) * size );
-
-    if( inst_p->body )
+    if( self->body )
     {
-        for( sz_t i = 0; i < inst_p->body->size; i++ )
+        for( sz_t i = 0; i < self->body->size; i++ )
         {
-            const bcore_inst_item_s* inst_item = &inst_p->body->data[ i ];
-            if( inst_item->no_trace ) continue;
+            const bcore_flect_item_s* flect_item = &self->body->data[ i ];
+            const bcore_inst_item_s* inst_item = bcore_inst_body_s_inst_item_of_flect_item( inst_p->body, flect_item );
 
-            const bcore_flect_item_s*   flect_item = inst_item->flect_item;
-            ASSERT( index < size );
-            bcore_vitem_s* vitem = &o->vitem_arr[ index ];
-            vitem->name = flect_item->name;
-            vitem->caps = flect_item->caps;
-            vitem->offs = inst_item->offset;
-            switch( vitem->caps )
+            if( i == 0 && flect_item->type == TYPEOF_aware_t ) continue; // self-aware type is not accessible in via
+            if( inst_item && inst_item->no_trace             ) continue; // instance no-trace items (private, external, ...) are not accessible in via
+
+            bcore_vitem_s vitem;
+            bcore_memzero( &vitem, sizeof( bcore_vitem_s ) );
+            vitem.name = flect_item->name;
+            vitem.caps = flect_item->caps;
+            vitem.offs = inst_item ? inst_item->offset : 0;
+
+            switch( vitem.caps )
             {
                 case BCORE_CAPS_STATIC:
                 case BCORE_CAPS_STATIC_LINK:
                 {
-                    vitem->type = flect_item->type;
-                    if( flect_item->type == o->o_type )
-                    {
-                        vitem->via = o;
-                    }
-                    else
-                    {
-                        vitem->via = bcore_via_s_get_typed( vitem->type );
-                    }
+                    vitem.type = flect_item->type;
                 }
                 break;
 
                 case BCORE_CAPS_TYPED_LINK:
                 case BCORE_CAPS_AWARE_LINK:
-                    vitem->type = 0;
-                    vitem->via  = NULL;
+                    vitem.type = 0;
                     break;
 
                 case BCORE_CAPS_STATIC_ARRAY:
-                    vitem->type = bcore_static_array_type_of( flect_item->type );
-                    vitem->via  = NULL;
+                    vitem.type = bcore_static_array_type_of( flect_item->type );
                     break;
 
                 case BCORE_CAPS_TYPED_ARRAY:
-                    vitem->type = typeof( "bcore_typed_array_s" );
-                    vitem->via  = NULL;
+                    vitem.type = typeof( "bcore_typed_array_s" );
                     break;
 
                 case BCORE_CAPS_STATIC_LINK_ARRAY:
-                    vitem->type = bcore_static_link_array_type_of( flect_item->type );
-                    vitem->via  = NULL;
+                    vitem.type = bcore_static_link_array_type_of( flect_item->type );
                     break;
 
                 case BCORE_CAPS_TYPED_LINK_ARRAY:
-                    vitem->type = typeof( "bcore_typed_link_array_s" );
-                    vitem->via  = NULL;
+                    vitem.type = typeof( "bcore_typed_link_array_s" );
                     break;
 
                 case BCORE_CAPS_AWARE_LINK_ARRAY:
-                    vitem->type = typeof( "bcore_aware_link_array_s" );
-                    vitem->via  = NULL;
+                    vitem.type = typeof( "bcore_aware_link_array_s" );
+                    break;
+
+                case BCORE_CAPS_EXTERNAL_DATA:
+                case BCORE_CAPS_EXTERNAL_FUNC:
+                    continue; // external items are (currently) not accessible in via
                     break;
 
                 default:
-                    ERR( "Unexpected caps '%s'", bcore_flect_caps_e_sc( vitem->caps ) );
+                    ERR( "Unexpected caps '%s'", bcore_flect_caps_e_sc( vitem.caps ) );
                     break;
             }
 
-            if( vitem->type )
+            if( vitem.type )
             {
-                o->inst_arr[ index ] = bcore_inst_s_get_typed( vitem->type );
+                if( vitem.type == o->o_type )
+                {
+                    vitem.via_p = o;
+                }
+                else
+                {
+                    vitem.via_p = bcore_via_s_get_typed( vitem.type );
+                }
             }
-            index++;
+
+            // explicit setter, getter
+            {
+                bcore_life_s* l = bcore_life_s_create();
+                vitem.fp_get = ( bcore_fp_get )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_get" ), typeof( bcore_string_s_createf_l( l, "get_%s", ifnameof( vitem.name ) )->sc ) );
+                vitem.fp_set = ( bcore_fp_set )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_set" ), typeof( bcore_string_s_createf_l( l, "set_%s", ifnameof( vitem.name ) )->sc ) );
+                bcore_life_s_discard( l );
+            }
+
+            if( vitem_arr_size == vitem_arr_space )
+            {
+                o->vitem_arr = bcore_un_alloc( sizeof( bcore_vitem_s ), o->vitem_arr, vitem_arr_space, vitem_arr_space > 0 ? vitem_arr_space * 2 : 1, &vitem_arr_space );
+            }
+            o->vitem_arr[ vitem_arr_size++ ] = vitem;
         }
     }
 
-    o->size = index;
-    if( o->size < size ) // realloc to save memory;
-    {
-        o->vitem_arr = bcore_u_alloc( sizeof( bcore_via_s   ), o->vitem_arr, o->size, NULL );
-        o->inst_arr  = bcore_u_alloc( sizeof( bcore_inst_s* ), o->inst_arr,  o->size, NULL );
-    }
+    o->size = vitem_arr_size;
 
     return o;
 }
@@ -586,19 +571,18 @@ bcore_string_s* bcore_spect_via_selftest( void )
     const bcore_via_s* via_specs_arr_v = bcore_via_s_get_typed( typeof( "via_specs_arr" ) );
 
     vd_t arr = bcore_via_spect_nget_d( via_specs_arr_v, via_specs_arr, typeof( "arr" ) );
-    tp_t arr_type = bcore_via_spect_nget_type( via_specs_arr_v, via_specs_arr, typeof( "arr" ) );
-    const bcore_array_s* arr_p = bcore_array_s_get_typed( arr_type );
+    const bcore_array_s* arr_p = bcore_via_spect_nget_array( via_specs_arr_v, typeof( "arr" ) );
 
     sz_t arr_size = 100000;
 
     for( sz_t i = 0; i < arr_size; i++ )
     {
-        bcore_array_spect_push_c( arr_p, arr, via_specs );
+        bcore_array_spect_push( arr_p, arr, rf_wc( via_specs, typeof( "via_specs" ) ) );
     }
 
     for( sz_t i = 0; i < arr_size; i++ )
     {
-        vd_t via_specs_l = arr_p->get_d( arr_p, arr, i );
+        vd_t via_specs_l = arr_p->get( arr_p, arr, i ).o;
         bcore_via_spect_nset_sz( via_specs_v, via_specs_l, typeof( "size" ), i );
     }
 
@@ -610,11 +594,11 @@ bcore_string_s* bcore_spect_via_selftest( void )
 
     for( sz_t i = 0; i < arr_size; i++ )
     {
-        vc_t via_specs_l = arr_p->get_c( arr_p, arr2, i );
+        vc_t via_specs_l = arr_p->get( arr_p, arr2, i ).o;
         ASSERT( i == *( sz_t* )bcore_via_spect_nget_c( via_specs_v, via_specs_l, typeof( "size" ) ) );
     }
 
-    ASSERT( bcore_strcmp( nameof( arr_type ), "via_specs__static_array" ) == 0 );
+    ASSERT( bcore_strcmp( nameof( arr_p->o_type ), "via_specs__static_array" ) == 0 );
     ASSERT( arr_p->get_size( arr_p, arr ) == arr_size );
 
     bcore_inst_typed_discard( typeof( "via_specs" ), via_specs );

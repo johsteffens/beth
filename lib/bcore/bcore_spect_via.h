@@ -16,6 +16,10 @@
 #include "bcore_features.h"
 #include <stdarg.h>
 
+// Fetaures
+// optional bcore_fp_get and bcore_fp_set for explicit element access
+// If desired, the object must define the function under the name 'get_<name>', 'set_<name>'
+
 typedef struct bcore_array_s bcore_array_s;
 typedef struct bcore_via_s bcore_via_s;
 
@@ -29,16 +33,18 @@ typedef struct bcore_vitem_s
     tp_t name;
     u2_t caps;
     sz_t offs;   // offset to member element
-    const bcore_via_s* via; // via of this item; NULL for leaf types
+    const bcore_via_s* via_p;  // via perspective of this item
+    bcore_fp_get fp_get; // optional explicit getter
+    bcore_fp_set fp_set; // optional explicit setter
 } bcore_vitem_s;
 
 typedef struct bcore_via_s
 {
-    aware_t p_type; // type of perspective
-    tp_t    o_type; // type of object
-    sz_t                 size;       // number of elements
-    bcore_vitem_s*       vitem_arr;  // array of vitem
-    const bcore_inst_s** inst_arr;   // pointers to instance perspectives
+    aware_t p_type;             // type of perspective
+    tp_t    o_type;             // type of object
+    const bcore_inst_s* inst_p; // inst perspective of this item
+    sz_t  size;                 // number of elements
+    bcore_vitem_s* vitem_arr;   // array of vitem
 } bcore_via_s;
 
 bcore_flect_self_s* bcore_via_s_create_self( void );
@@ -48,9 +54,11 @@ const bcore_via_s* bcore_via_s_get_aware( vc_t obj  );
 
 /// Access by index. Error when index is out of range.
 tp_t                 bcore_via_spect_iget_name     ( const bcore_via_s* p,         sz_t index ); // Returns name for given index
-//tp_t                 bcore_via_spect_iget_type     ( const bcore_via_s* p, vc_t o, sz_t index ); // Returns type of element
 rf_s                 bcore_via_spect_iget          ( const bcore_via_s* p, vc_t o, sz_t index           ); // Returns indexed reference
 rf_s                 bcore_via_spect_iset          ( const bcore_via_s* p, vd_t o, sz_t index, rf_s src ); // Sets indexed const item.
+tp_t                 bcore_via_spect_iget_type     ( const bcore_via_s* p, vc_t o, sz_t index           ); // Returns type of object
+
+//TODO: remove iget_c and iget_d (incompatible with shell types)
 vc_t                 bcore_via_spect_iget_c        ( const bcore_via_s* p, vc_t o, sz_t index ); // Returns indexed const item.
 vd_t                 bcore_via_spect_iget_d        ( const bcore_via_s* p, vd_t o, sz_t index ); // Returns indexed item.
 rf_s                 bcore_via_spect_iset_s3       ( const bcore_via_s* p, vd_t o, sz_t index, s3_t val ); // Sets (internal) item by converting s3_t into target type
@@ -67,7 +75,6 @@ vc_t                 bcore_via_spect_iget_spect    ( const bcore_via_s* p, vc_t 
 
 /// Access by name. Error when object has no element of given name.
 sz_t                 bcore_via_spect_nget_index    ( const bcore_via_s* p,         tp_t name ); // Returns index for given name
-//tp_t                 bcore_via_spect_nget_type     ( const bcore_via_s* p, vc_t o, tp_t name );
 rf_s                 bcore_via_spect_nget          ( const bcore_via_s* p, vc_t o, tp_t name           );
 rf_s                 bcore_via_spect_nset          ( const bcore_via_s* p, vd_t o, tp_t name, rf_s src );
 vc_t                 bcore_via_spect_nget_c        ( const bcore_via_s* p, vc_t o, tp_t name );
@@ -85,7 +92,6 @@ const bcore_array_s* bcore_via_spect_nget_array    ( const bcore_via_s* p,      
 vc_t                 bcore_via_spect_nget_spect    ( const bcore_via_s* p, vc_t o, tp_t name, tp_t stp );
 
 /// Access by name for typed objects. Error when object has no element of given name.
-//tp_t                 bcore_via_typed_nget_type     ( tp_t tp, vc_t o, tp_t name );
 rf_s                 bcore_via_typed_nget          ( tp_t tp, vc_t o, tp_t name           );
 rf_s                 bcore_via_typed_nset          ( tp_t tp, vd_t o, tp_t name, rf_s src );
 vc_t                 bcore_via_typed_nget_c        ( tp_t tp, vc_t o, tp_t name );
@@ -103,7 +109,6 @@ const bcore_array_s* bcore_via_typed_nget_array    ( tp_t tp,         tp_t name 
 vc_t                 bcore_via_typed_nget_spect    ( tp_t tp, vc_t o, tp_t name, tp_t stp );
 
 /// Access by name for aware objects. Error when object has no element of given name.
-//tp_t                 bcore_via_aware_nget_type     ( vc_t o, tp_t name );
 rf_s                 bcore_via_aware_nget          ( vc_t o, tp_t name           );
 rf_s                 bcore_via_aware_nset          ( vd_t o, tp_t name, rf_s src );
 vc_t                 bcore_via_aware_nget_c        ( vc_t o, tp_t name );
@@ -120,7 +125,8 @@ const bcore_via_s*   bcore_via_aware_nget_via      ( vc_t o, tp_t name );
 const bcore_array_s* bcore_via_aware_nget_array    ( vc_t o, tp_t name );
 vc_t                 bcore_via_aware_nget_spect    ( vc_t o, tp_t name, tp_t stp );
 
-bl_t bcore_via_spect_is_pure_array( const bcore_via_s* p             ); // checks if object is an array without additional elements
+bl_t bcore_via_spect_is_leaf(       const bcore_via_s* p             ); // checks if object is a leaf (no elements)
+bl_t bcore_via_spect_is_pure_array( const bcore_via_s* p             ); // checks if object is an array without additional elements (pure arrays are not leafs)
 bl_t bcore_via_spect_iis_array(     const bcore_via_s* p, sz_t index ); // checks if element is an array
 bl_t bcore_via_spect_iis_static(    const bcore_via_s* p, sz_t index ); // checks if element is static (type need not be recorded)
 bl_t bcore_via_spect_iis_link(      const bcore_via_s* p, sz_t index ); // checks if element is a link (means that it can be NULL); an array is a distinct static object -> not a link)
