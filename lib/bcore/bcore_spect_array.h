@@ -121,7 +121,6 @@ sz_t bcore_array_spect_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz
 // (merge-)sort within index range [start, end-1]
 void bcore_array_spect_sort(      const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t order );
 
-
 sz_t bcore_array_typed_get_size             ( tp_t tp, vc_t o );
 sz_t bcore_array_typed_get_space            ( tp_t tp, vc_t o );
 rf_s bcore_array_typed_get                  ( tp_t tp, vc_t o, sz_t index );

@@ -89,11 +89,7 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
         if( size1 != size2 ) return size1 < size2 ? 1 : -1;
         for( sz_t j = 0; j < size1; j++ )
         {
-            tp_t type1 = bcore_array_spect_get_type( arr_p, obj1, j );
-            tp_t type2 = bcore_array_spect_get_type( arr_p, obj2, j );
-            vc_t o1_l = arr_p->get( arr_p, obj1, j ).o;
-            vc_t o2_l = arr_p->get( arr_p, obj2, j ).o;
-            s2_t c = bcore_compare_bityped( type1, o1_l, type2, o2_l );
+            s2_t c = bcore_compare_rf( arr_p->get( arr_p, obj1, j ), arr_p->get( arr_p, obj2, j ) );
             if( c != 0 ) return c;
         }
         return 0;
@@ -102,11 +98,7 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     const bcore_via_s* via = p->via;
     for( sz_t i = 0; i < via->size; i++ )
     {
-        rf_s rf1 = bcore_via_spect_iget( via, obj1, i );
-        rf_s rf2 = bcore_via_spect_iget( via, obj2, i );
-        s2_t c = bcore_compare_bityped( rf1.t, rf1.o, rf2.t, rf2.o );
-        rf_s_down( rf1 );
-        rf_s_down( rf2 );
+        s2_t c = bcore_compare_rf( bcore_via_spect_iget( via, obj1, i ), bcore_via_spect_iget( via, obj2, i ) );
         if( c != 0 ) return c;
     }
     return 0;
@@ -150,11 +142,7 @@ static bcore_string_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t o
         if( size1 != size2 ) return bcore_string_s_createf( "!%s: size1:%zu, size2:%zu", ifnameof( p->o_type ), size1, size2 );
         for( sz_t j = 0; j < size1; j++ )
         {
-            tp_t type1 = bcore_array_spect_get_type( arr_p, obj1, j );
-            tp_t type2 = bcore_array_spect_get_type( arr_p, obj2, j );
-            vc_t o1_l = arr_p->get( arr_p, obj1, j ).o;
-            vc_t o2_l = arr_p->get( arr_p, obj2, j ).o;
-            bcore_string_s* s = bcore_diff_bityped( type1, o1_l, type2, o2_l );
+            bcore_string_s* s = bcore_diff_rf( arr_p->get( arr_p, obj1, j ), arr_p->get( arr_p, obj2, j ) );
             if( s != NULL )
             {
                 bcore_string_s_pushf( s, "\n!%s:[%zu]",ifnameof( p->o_type ), j );
@@ -167,11 +155,7 @@ static bcore_string_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t o
     const bcore_via_s* via = p->via;
     for( sz_t i = 0; i < via->size; i++ )
     {
-        rf_s rf1 = bcore_via_spect_iget( via, obj1, i );
-        rf_s rf2 = bcore_via_spect_iget( via, obj2, i );
-        bcore_string_s* s = bcore_diff_bityped( rf1.t, rf1.o, rf2.t, rf2.o);
-        rf_s_down( rf1 );
-        rf_s_down( rf2 );
+        bcore_string_s* s = bcore_diff_rf( bcore_via_spect_iget( via, obj1, i ), bcore_via_spect_iget( via, obj2, i ) );
         if( s != NULL )
         {
             return bcore_string_s_pushf( s, "\n!%s::%s", ifnameof( p->o_type ), ifnameof( bcore_via_spect_iget_name( via, i ) ) );
@@ -229,6 +213,16 @@ s2_t bcore_compare_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 s2_t bcore_compare_typed( tp_t type, vc_t obj1, vc_t obj2 )
 {
     return bcore_compare_spect( bcore_compare_s_get_typed( type ), obj1, obj2 );
+}
+
+s2_t bcore_compare_rf( rf_s obj1, rf_s obj2 )
+{
+    if( obj1.t != obj2.t ) return ( obj1.t < obj2.t ) ? 1 : -1;
+    if( obj1.t == 0      ) return 0;
+    s2_t c = bcore_compare_typed( obj1.t, obj1.o, obj2.o );
+    rf_s_down( obj1 );
+    rf_s_down( obj2 );
+    return c;
 }
 
 s2_t bcore_compare_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 )
@@ -303,6 +297,16 @@ bcore_string_s* bcore_diff_aware( vc_t obj1, vc_t obj2 )
     tp_t type1 = obj1 ? *( aware_t* )obj1 : 0;
     tp_t type2 = obj2 ? *( aware_t* )obj2 : 0;
     return bcore_diff_bityped( type1, obj1, type2, obj2 );
+}
+
+bcore_string_s* bcore_diff_rf( rf_s obj1, rf_s obj2 )
+{
+    if( obj1.t != obj2.t ) return bcore_string_s_createf( "obj1 of '%s', obj2 of '%s'", ifnameof( obj1.t ), ifnameof( obj2.t ) );
+    if( obj1.t == 0 ) return NULL;
+    bcore_string_s* s = bcore_diff_typed( obj1.t, obj1.o, obj2.o );
+    rf_s_down( obj1 );
+    rf_s_down( obj2 );
+    return s;
 }
 
 /**********************************************************************************************************************/
