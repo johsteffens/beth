@@ -44,7 +44,7 @@ static void chain_copy_a( vd_t nc )
     struct { ap_t a; vc_t p; bcore_source_chain_s* dst; } * nc_l = nc;
     nc_l->a( nc ); // default
     bcore_source_chain_s* o = nc_l->dst;
-    for( sz_t i = 1; i < o->size; i++ ) bcore_source_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    for( sz_t i = 1; i < o->size; i++ ) bcore_source_aware_set_supplier( o->data[ i ], o->data[ i - 1 ] );
 }
 
 void bcore_source_chain_s_copy( bcore_source_chain_s* o, const bcore_source_chain_s* src )
@@ -72,14 +72,14 @@ static void chain_interpret_body_a( vd_t nc )
     struct { ap_t a; vc_t p; vc_t inter; vd_t source; tp_t type; vd_t obj; } * nc_l = nc;
     nc_l->a( nc ); // default
     bcore_source_chain_s* o = nc_l->obj;
-    for( sz_t i = 1; i < o->size; i++ ) bcore_source_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    for( sz_t i = 1; i < o->size; i++ ) bcore_source_aware_set_supplier( o->data[ i ], o->data[ i - 1 ] );
 }
 
 void bcore_source_chain_s_push_d( bcore_source_chain_s* o, vd_t source )
 {
     const bcore_array_s* arr_p = bcore_array_s_get_typed( TYPEOF_bcore_source_chain_s );
     bcore_array_spect_push( arr_p, o, rf_asd( source ) );
-    if( o->size > 1 ) bcore_source_set_supplier( o->data[ o->size - 1 ], o->data[ o->size - 2 ] );
+    if( o->size > 1 ) bcore_source_aware_set_supplier( o->data[ o->size - 1 ], o->data[ o->size - 2 ] );
 }
 
 void bcore_source_chain_s_push_type( bcore_source_chain_s* o, tp_t type )
@@ -89,7 +89,7 @@ void bcore_source_chain_s_push_type( bcore_source_chain_s* o, tp_t type )
 
 static sz_t chain_flow_src( bcore_source_chain_s* o, vd_t data, sz_t size )
 {
-    return ( o->size > 0 ) ? bcore_source_get_data( o->data[ o->size - 1 ], data, size ) : 0;
+    return ( o->size > 0 ) ? bcore_source_aware_get_data( o->data[ o->size - 1 ], data, size ) : 0;
 }
 
 sz_t bcore_source_chain_s_get_data(  bcore_source_chain_s* o, vd_t data, sz_t size )
@@ -100,7 +100,7 @@ sz_t bcore_source_chain_s_get_data(  bcore_source_chain_s* o, vd_t data, sz_t si
 void bcore_source_chain_s_set_supplier( bcore_source_chain_s* o, vd_t supplier )
 {
     if( o->size == 0 ) ERR( "chain is empty" );
-    bcore_source_set_supplier( o->data[ 0 ], supplier );
+    bcore_source_aware_set_supplier( o->data[ 0 ], supplier );
 }
 
 /**********************************************************************************************************************/
@@ -109,7 +109,7 @@ static void chain_p_errorvf( bcore_source_chain_s* o, sc_t format, va_list args 
 {
     if( o->size > 0 )
     {
-        bcore_source_parse_errvf( o->data[ o->size - 1 ], format, args );
+        bcore_source_aware_parse_errvf( o->data[ o->size - 1 ], format, args );
     }
     else
     {
@@ -215,14 +215,14 @@ static sz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, sz_t size )
 
     // the code below handles the case with supplier
 
-    if( size > o->prefetch_size ) return bcore_source_get_data( o->ext_supplier, data, size ) + size1;
+    if( size > o->prefetch_size ) return bcore_source_aware_get_data( o->ext_supplier, data, size ) + size1;
 
     if( o->space < o->prefetch_size )
     {
         o->data = bcore_bn_alloc( o->data, o->space,                0, &o->space );
         o->data = bcore_bn_alloc( o->data, o->space, o->prefetch_size, &o->space );
     }
-    o->size = bcore_source_get_data( o->ext_supplier, o->data, o->prefetch_size );
+    o->size = bcore_source_aware_get_data( o->ext_supplier, o->data, o->prefetch_size );
 
     if( o->size < o->prefetch_size ) o->ext_supplier = NULL;
 
@@ -251,7 +251,7 @@ static void buffer_p_errorvf( bcore_source_buffer_s* o, sc_t format, va_list arg
 {
     if( o->ext_supplier )
     {
-        bcore_source_parse_errvf( o->ext_supplier, format, args );
+        bcore_source_aware_parse_errvf( o->ext_supplier, format, args );
     }
     else
     {
@@ -356,7 +356,7 @@ static void string_refill( bcore_source_string_s* o, sz_t min_remaining_size )
         }
         sz_t refill_size = min_remaining_size - o->string->size > o->prefetch_size ? min_remaining_size - o->string->size : o->prefetch_size;
         bcore_string_s_set_min_space( o->string, o->string->size + refill_size + 1 );
-        sz_t bytes_received = bcore_source_get_data( o->ext_supplier, o->string->data + o->string->size, refill_size );
+        sz_t bytes_received = bcore_source_aware_get_data( o->ext_supplier, o->string->data + o->string->size, refill_size );
         if( bytes_received < refill_size ) o->ext_supplier = NULL; // detach supplier when empty
         o->string->size += bytes_received;
         o->string->data[ o->string->size ] = 0;

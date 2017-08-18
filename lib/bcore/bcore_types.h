@@ -61,6 +61,33 @@ static inline rf_s rf_null( void )          { return ( rf_s ){ .o = NULL, .t = 0
 static inline void rf_s_down( rf_s o )      { if( o.s && o.o ) bcore_inst_typed_discard( o.t, o.o ); } // discards object in case of strong reference
 static inline tp_t rf_s_type( rf_s o )      { rf_s_down( o ); return o.t;                            } // discards object in case of strong reference, returns type
 
+/// smart perspective based reference
+typedef struct
+{
+    vd_t o; // object
+    vc_t p; // perspective
+    tp_t f; // flags
+} sr_r;
+
+#define C_f 1  // const reference
+#define S_f 2  // strong reference (receiver assumes responsibility for managing lifetime)
+
+typedef struct bcore_inst_s bcore_inst_s;
+const bcore_inst_s* bcore_inst_s_get_typed(   tp_t type );
+void                bcore_inst_typed_discard( tp_t type, vd_t obj );
+static inline sr_r sr_nul(                ) { return ( sr_r ){ .o = NULL, .p = NULL, .f = 0                                          }; }
+static inline sr_r sr_twc( tp_t t, vc_t o ) { return ( sr_r ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = C_f }; }
+static inline sr_r sr_twd( tp_t t, vd_t o ) { return ( sr_r ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = 0   }; }
+static inline sr_r sr_tsd( tp_t t, vd_t o ) { return ( sr_r ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = S_f }; }
+static inline sr_r sr_awc(         vc_t o ) { return ( sr_r ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = C_f }; }
+static inline sr_r sr_awd(         vd_t o ) { return ( sr_r ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = 0   }; }
+static inline sr_r sr_asd(         vd_t o ) { return ( sr_r ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = S_f }; }
+static inline sr_r sr_pwc( vc_t p, vc_t o ) { return ( sr_r ){ .o = ( vd_t )o, .p = p                                             , .f = C_f }; }
+static inline sr_r sr_pwd( vc_t p, vd_t o ) { return ( sr_r ){ .o = ( vd_t )o, .p = p                                             , .f = 0   }; }
+static inline sr_r sr_psd( vc_t p, vd_t o ) { return ( sr_r ){ .o = ( vd_t )o, .p = p                                             , .f = S_f }; }
+
+#define TYPEOF_sr( sr ) ( sr.p ? ( ( tp_t* )sr.p )[ 1 ] : 0 )
+
 // extended scan and print format specifiers
 #define PRIs3_t PRIi64
 #define PRIs2_t PRIi32

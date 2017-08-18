@@ -157,13 +157,13 @@ const bcore_source_s* bcore_source_s_get_aware( vc_t obj )
 
 /**********************************************************************************************************************/
 
-sz_t bcore_source_get_data( vd_t o, vd_t data, sz_t size )
+sz_t bcore_source_aware_get_data( vd_t o, vd_t data, sz_t size )
 {
     const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
     return p->get_data( p, o, data, size );
 }
 
-void bcore_source_parsevf( vd_t o, sc_t format, va_list args )
+void bcore_source_aware_parsevf( vd_t o, sc_t format, va_list args )
 {
     const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
     if( p->fp_parse_errvf )
@@ -176,7 +176,7 @@ void bcore_source_parsevf( vd_t o, sc_t format, va_list args )
     }
 }
 
-void bcore_source_parsef( vd_t o, sc_t format, ... )
+void bcore_source_aware_parsef( vd_t o, sc_t format, ... )
 {
     const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
     va_list args;
@@ -192,7 +192,7 @@ void bcore_source_parsef( vd_t o, sc_t format, ... )
     va_end( args );
 }
 
-void bcore_source_parse_errvf(  vd_t o, sc_t format, va_list args )
+void bcore_source_aware_parse_errvf(  vd_t o, sc_t format, va_list args )
 {
     const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
     if( p->fp_parse_errvf )
@@ -205,7 +205,7 @@ void bcore_source_parse_errvf(  vd_t o, sc_t format, va_list args )
     }
 }
 
-void bcore_source_parse_errf(  vd_t o, sc_t format, ... )
+void bcore_source_aware_parse_errf(  vd_t o, sc_t format, ... )
 {
     const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
     va_list args;
@@ -221,12 +221,12 @@ void bcore_source_parse_errf(  vd_t o, sc_t format, ... )
     va_end( args );
 }
 
-bool bcore_source_parse_boolf( vd_t o, sc_t format )
+bool bcore_source_aware_parse_boolf( vd_t o, sc_t format )
 {
     return parse_boolf( bcore_source_s_get_typed( *( aware_t* )o ), o, format );
 }
 
-void bcore_source_set_supplier( vd_t o, vd_t supplier )
+void bcore_source_aware_set_supplier( vd_t o, vd_t supplier )
 {
     const bcore_source_s* p = bcore_source_s_get_typed( *( aware_t* )o );
     p->set_supplier( p, o, supplier );

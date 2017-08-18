@@ -61,5 +61,8 @@ bcore_string_s* bcore_spect_status();
 vc_t bcore_spect_get_typed_n( tp_t p_type, sz_t n, const tp_t* arr );
 vc_t bcore_spect_get_typed(   tp_t p_type, tp_t o_type ); // for n == 1
 
+
+
+
 #endif // BCORE_SPECT_H
 

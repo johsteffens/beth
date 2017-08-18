@@ -42,12 +42,12 @@ const bcore_source_s* bcore_source_s_get_typed( tp_t type );
 const bcore_source_s* bcore_source_s_get_aware( vc_t obj );
 
 /// all sources are aware
-sz_t bcore_source_get_data(     vd_t o, vd_t data, sz_t size );
-void bcore_source_parsevf(      vd_t o, sc_t format, va_list args );
-void bcore_source_parsef(       vd_t o, sc_t format, ... );
-void bcore_source_parse_errvf(  vd_t o, sc_t format, va_list args );
-void bcore_source_parse_errf(   vd_t o, sc_t format, ... );
-bool bcore_source_parse_boolf(  vd_t o, sc_t format      ); // format must yield just one bool, which is returned
-void bcore_source_set_supplier( vd_t o, vd_t supplier    ); // error when not supported
+sz_t bcore_source_aware_get_data(     vd_t o, vd_t data, sz_t size );
+void bcore_source_aware_parsevf(      vd_t o, sc_t format, va_list args );
+void bcore_source_aware_parsef(       vd_t o, sc_t format, ... );
+void bcore_source_aware_parse_errvf(  vd_t o, sc_t format, va_list args );
+void bcore_source_aware_parse_errf(   vd_t o, sc_t format, ... );
+bool bcore_source_aware_parse_boolf(  vd_t o, sc_t format      ); // format must yield just one bool, which is returned
+void bcore_source_aware_set_supplier( vd_t o, vd_t supplier    ); // error when not supported
 
 #endif // BCORE_SPECT_SOURCE_H

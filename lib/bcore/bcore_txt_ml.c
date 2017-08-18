@@ -16,76 +16,68 @@ DEFINE_FUNCTION_CREATE(     bcore_txt_ml_translator_s )
 DEFINE_FUNCTION_DISCARD(    bcore_txt_ml_translator_s )
 DEFINE_FUNCTION_CLONE(      bcore_txt_ml_translator_s )
 
-void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink )
+static void translate_body( const bcore_txt_ml_translator_s* o, sc_t name, rf_s obj, vd_t sink, sz_t depth )
 {
     const bcore_sink_s* sink_p = bcore_sink_s_get_aware( sink );
-    if( obj == NULL ) // NULL
-    {
-        sink_p->push_sc( sink_p, sink, "NIL " );
-        return;
-    }
+    const bcore_via_s* via_p   = obj.t ? bcore_via_s_get_typed( obj.t ) : NULL;
 
-    if( type == TYPEOF_bcore_string_s ) // strings
+    bcore_string_s* ind = bcore_string_s_push_char_n( bcore_string_s_create(), ' ', depth * 4 );
+
+    sink_p->pushf( sink_p, sink, "%s", ind->sc );
+    if( name ) sink_p->pushf( sink_p, sink, "%s:", name );
+
+    if( !obj.o ) // NULL
     {
-        bcore_string_s* string = bcore_string_s_clone( ( const bcore_string_s* )obj );
+        sink_p->pushf( sink_p, sink, "<NIL/>\n" );
+    }
+    else if( obj.t == TYPEOF_bcore_string_s ) // strings
+    {
+        bcore_string_s* string = bcore_string_s_clone( ( const bcore_string_s* )obj.o );
         bcore_string_s_replace_char_sc( string, '\"', "\\\"" );
-        sink_p->pushf( sink_p, sink, "\"%s\" ", string->sc );
+        sink_p->pushf( sink_p, sink, "\"%s\"\n", string->sc );
         bcore_string_s_discard( string );
-        return;
     }
-
-    const bcore_via_s* via_p = bcore_via_s_get_typed( type );
-
-    if( bcore_via_spect_is_leaf( via_p ) )
+    else if( bcore_via_spect_is_leaf( via_p ) )
     {
-        bcore_string_s* string = bcore_string_s_create_typed( type, obj );
+        sink_p->pushf( sink_p, sink, "<%s>", ifnameof( obj.t ) );
+        bcore_string_s* string = bcore_string_s_create_typed( obj.t, obj.o );
         sink_p->push_string_d( sink_p, sink, string );
-        sink_p->push_char( sink_p, sink, ' ' );
-        return;
+        sink_p->push_sc( sink_p, sink, "</>\n" );
     }
-
-    if( bcore_via_spect_is_pure_array( via_p ) )
+    else
     {
-        const bcore_array_s* arr_p = bcore_array_s_get_typed( type );
-        sz_t size = arr_p->get_size( arr_p, obj );
-        if( bcore_array_spect_is_mono_typed( arr_p ) )
+        sink_p->pushf( sink_p, sink, "<%s>\n", ifnameof( obj.t ) );
+        if( bcore_via_spect_is_pure_array( via_p ) )
         {
-            tp_t type_l = bcore_array_spect_get_mono_type( arr_p, obj );
-            if( !bcore_array_spect_is_static( arr_p ) ) sink_p->pushf( sink_p, sink, "<%s>", ifnameof( type_l ) );
+            const bcore_array_s* arr_p = bcore_array_s_get_typed( obj.t );
+            sz_t size = arr_p->get_size( arr_p, obj.o );
             for( sz_t i = 0; i < size; i++ )
             {
-                bcore_txt_ml_translator_s_translate_body( o, type_l, arr_p->get( arr_p, obj, i ).o, sink );
+                translate_body( o, NULL, arr_p->get( arr_p, obj.o, i ), sink, depth + 1 );
             }
         }
         else
         {
-            for( sz_t i = 0; i < size; i++ )
+            for( sz_t i = 0; i < via_p->size; i++ )
             {
-                tp_t type_l = bcore_array_spect_get_type( arr_p, obj, i );
-                sink_p->pushf( sink_p, sink, "<%s>", ifnameof( type_l ) );
-                bcore_txt_ml_translator_s_translate_body( o, type_l, arr_p->get( arr_p, obj, i ).o, sink );
+                translate_body( o, ifnameof( bcore_via_spect_iget_name( via_p, i ) ), bcore_via_spect_iget( via_p, obj.o, i ), sink, depth + 1 );
             }
         }
-        sink_p->push_sc( sink_p, sink, ";\n" );
-        return;
+        sink_p->pushf( sink_p, sink, "%s</>\n", ind->sc );
     }
 
-    for( sz_t i = 0; i < via_p->size; i++ )
-    {
-        rf_s rf = bcore_via_spect_iget( via_p, obj, i );
-        if( !bcore_via_spect_iis_static( via_p, i ) ) sink_p->pushf( sink_p, sink, "<%s>", ifnameof( rf.t ) );
-        sink_p->pushf( sink_p, sink, "%s:", ifnameof( bcore_via_spect_iget_name( via_p, i ) ) );
-        bcore_txt_ml_translator_s_translate_body( o, rf.t, rf.o, sink );
-        rf_s_down( rf );
-        sink_p->push_char( sink_p, sink, '\n' );
-    }
+    rf_s_down( obj );
+    bcore_string_s_discard( ind );
+}
+
+void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink )
+{
+    translate_body( o, NULL, rf_wc( obj, type ), sink, 0 );
 }
 
 void bcore_txt_ml_translator_s_translate_object( const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink )
 {
-    const bcore_sink_s* sink_p = bcore_sink_s_get_aware( sink );
-    sink_p->pushf( sink_p, sink, "<%s>", ifnameof( type ) );
-    bcore_txt_ml_translator_s_translate_body( o, type, obj, sink );
+    translate_body( o, NULL, rf_wc( obj, type ), sink, 0 );
 }
 
 static bcore_flect_self_s* translator_s_create_self( void )
@@ -153,21 +145,52 @@ static bcore_string_s* translate_selftest( void )
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_create();
 
-    tp_t t_specs = bcore_flect_type_parse_sc( "my_specs = { aware_t _; bcore_string_s* name; sz_t num; bcore_string_s * [] arr; }" );
+    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { aware_t _; bcore_string_s* type; f3_t weight; bcore_string_s * [] features; }" );
+    tp_t t_compound = bcore_flect_type_parse_sc( "compound = { aware_t _; u3_t id; sz_t area; animal * [] animals; }" );
+    tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { aware_t _; bcore_string_s* name; typed * [] compounds; }" );
 
-    vd_t specs = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_specs ) );
-
-    bcore_via_aware_nset_sc( specs, typeof( "name" ), "my string" );
-    bcore_via_aware_nset_u3( specs, typeof( "num" ), 1235 );
-    const bcore_array_s* arr_p = bcore_via_aware_nget_array( specs, typeof( "arr" ) );
-    bcore_array_spect_set_s3( arr_p, bcore_via_aware_nget_d( specs, typeof( "arr" ) ), 5, -12 );
-    bcore_array_spect_push_sc( arr_p, bcore_via_aware_nget_d( specs, typeof( "arr" ) ), "abc" );
-
-    vd_t array = bcore_life_s_push_aware( l, bcore_inst_typed_create( bcore_flect_type_parse_sc( "my_array = { aware_t _; aware * [] data; }" ) ) );
-    bcore_array_aware_set( array, 5, rf_awc( specs ) );
+    vd_t zoo = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_zoo ) );
+    bcore_via_aware_nset_sc( zoo, typeof( "name" ), "Lori" );
+    rf_s compounds = bcore_via_aware_nget( zoo, typeof( "compounds" ) );
+    {
+        vd_t compound = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_compound ) );
+        bcore_via_aware_nset_u3( compound, typeof( "id" ), 254 );
+        bcore_via_aware_nset_sz( compound, typeof( "area" ), 1000 );
+        rf_s animals = bcore_via_aware_nget( compound, typeof( "animals" ) );
+        {
+            vd_t bird = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_animal ) );
+            bcore_via_aware_nset_sc( bird, typeof( "type" ), "Bird" );
+            bcore_via_aware_nset_f3( bird, typeof( "weight" ), 2.5 );
+            rf_s features = bcore_via_aware_nget( bird, typeof( "features" ) );
+            {
+                const bcore_array_s* arr_p = bcore_array_s_get_typed( features.t );
+                bcore_array_spect_push_sc( arr_p, features.o, "Owl" );
+                bcore_array_spect_push_sc( arr_p, features.o, "Night active" );
+            }
+            const bcore_array_s* arr_p = bcore_array_s_get_typed( animals.t );
+            bcore_array_spect_push( arr_p, animals.o, rf_awc( bird ) );
+        }
+        {
+            vd_t bird = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_animal ) );
+            bcore_via_aware_nset_sc( bird, typeof( "type" ), "Bird" );
+            bcore_via_aware_nset_f3( bird, typeof( "weight" ), 2.5 );
+            rf_s features = bcore_via_aware_nget( bird, typeof( "features" ) );
+            {
+                const bcore_array_s* arr_p = bcore_array_s_get_typed( features.t );
+                bcore_array_spect_push_sc( arr_p, features.o, "Pidgin" );
+                bcore_array_spect_push_sc( arr_p, features.o, "Small" );
+            }
+            const bcore_array_s* arr_p = bcore_array_s_get_typed( animals.t );
+            bcore_array_spect_push( arr_p, animals.o, rf_awc( bird ) );
+        }
+        const bcore_array_s* arr_p = bcore_array_s_get_typed( compounds.t );
+        bcore_array_spect_push( arr_p, compounds.o, rf_awc( compound ) );
+        bcore_array_spect_push( arr_p, compounds.o, rf_null() );
+        bcore_array_spect_push( arr_p, compounds.o, rf_awc( compound ) );
+    }
 
     bcore_txt_ml_translator_s* ttxt_ml = bcore_life_s_push_aware( l, bcore_txt_ml_translator_s_create() );
-    bcore_translate_aware_object( ttxt_ml, array, log );
+    bcore_translate_aware_object( ttxt_ml, zoo, log );
 
     bcore_life_s_discard( l );
     return log;
