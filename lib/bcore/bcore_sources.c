@@ -124,7 +124,7 @@ static void chain_parsevf( bcore_source_chain_s* o, sc_t format, va_list args )
         const bcore_source_s* source_p = bcore_source_s_get_aware( o->data[ o->size - 1 ] );
         if( source_p->fp_parsevf )
         {
-            source_p->parsevf( source_p, o->data[ o->size - 1 ], format, args );
+            bcore_source_spect_parsevf( source_p, o->data[ o->size - 1 ], format, args );
         }
         else
         {

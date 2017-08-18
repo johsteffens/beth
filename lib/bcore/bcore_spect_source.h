@@ -26,14 +26,6 @@ typedef struct bcore_source_s
     bcore_source_fp_parsevf      fp_parsevf;
     bcore_source_fp_set_supplier fp_set_supplier;
 
-    sz_t (*get_data )(    const bcore_source_s* p, vd_t o, vd_t data, sz_t size );
-    void (*parsevf)(      const bcore_source_s* p, vd_t o, sc_t format, va_list args );
-    void (*parsef)(       const bcore_source_s* p, vd_t o, sc_t format, ... );
-    void (*parse_errvf)(  const bcore_source_s* p, vd_t o, sc_t format, va_list args );
-    void (*parse_errf)(   const bcore_source_s* p, vd_t o, sc_t format, ... );
-    bool (*parse_boolf)(  const bcore_source_s* p, vd_t o, sc_t format      ); // format must yield just one bool, which is returned
-    void (*set_supplier)( const bcore_source_s* p, vd_t o, vd_t supplier    ); // error when not supported
-
 } bcore_source_s;
 
 bcore_flect_self_s* bcore_source_s_create_self( void );
@@ -41,7 +33,14 @@ bcore_flect_self_s* bcore_source_s_create_self( void );
 const bcore_source_s* bcore_source_s_get_typed( tp_t type );
 const bcore_source_s* bcore_source_s_get_aware( vc_t obj );
 
-/// all sources are aware
+sz_t bcore_source_spect_get_data(     const bcore_source_s* p, vd_t o, vd_t data, sz_t size );
+void bcore_source_spect_parsevf(      const bcore_source_s* p, vd_t o, sc_t format, va_list args );
+void bcore_source_spect_parsef(       const bcore_source_s* p, vd_t o, sc_t format, ... );
+void bcore_source_spect_parse_errvf(  const bcore_source_s* p, vd_t o, sc_t format, va_list args );
+void bcore_source_spect_parse_errf(   const bcore_source_s* p, vd_t o, sc_t format, ... );
+bool bcore_source_spect_parse_boolf(  const bcore_source_s* p, vd_t o, sc_t format      ); // format must yield just one bool, which is returned
+void bcore_source_spect_set_supplier( const bcore_source_s* p, vd_t o, vd_t supplier    ); // error when not supported
+
 sz_t bcore_source_aware_get_data(     vd_t o, vd_t data, sz_t size );
 void bcore_source_aware_parsevf(      vd_t o, sc_t format, va_list args );
 void bcore_source_aware_parsef(       vd_t o, sc_t format, ... );

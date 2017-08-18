@@ -366,7 +366,7 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
 {
     const bcore_source_s* src_p = bcore_source_s_get_aware( src );
 
-    if( src_p->parse_boolf( src_p, src, " #?'.'" ) ) // stepping outside body
+    if( bcore_source_spect_parse_boolf( src_p, src, " #?'.'" ) ) // stepping outside body
     {
         enter_body( o, src, dst );
         return;
@@ -382,7 +382,7 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
     else if( dst.t == TYPEOF_bcore_string_s ) // treat as leaf type
     {
         if( ( *( aware_t* )dst.o ) != TYPEOF_bcore_string_s )  ERR( "dst.o is incorrect (must be bcore_string_s)" );
-        src_p->parsef( src_p, src, " #string", dst.o );
+        bcore_source_spect_parsef( src_p, src, " #string", dst.o );
     }
     else
     {
@@ -392,15 +392,15 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
         const bcore_via_s*   via_p = bcore_via_s_get_typed( type );
         if( inst_p->body )
         {
-            src_p->parsef( src_p, src, " {" );
-            while( !src_p->parse_boolf( src_p, src, " #?'}'" ) )
+            bcore_source_spect_parsef( src_p, src, " {" );
+            while( !bcore_source_spect_parse_boolf( src_p, src, " #?'}'" ) )
             {
                 sz_t index = 0;
                 {
                     bcore_string_s* s = bcore_string_s_create();
-                    src_p->parsef( src_p, src, " #name", s );
+                    bcore_source_spect_parsef( src_p, src, " #name", s );
                     tp_t tname = typeof( s->sc );
-                    if( !bcore_name_try_name( tname ) ) src_p->parse_errf( src_p, src, "Unknown specifier '%s'.", s->sc );
+                    if( !bcore_name_try_name( tname ) ) bcore_source_spect_parse_errf( src_p, src, "Unknown specifier '%s'.", s->sc );
                     bcore_string_s_discard( s );
                     index = bcore_via_spect_nget_index( via_p, tname );
                 }
@@ -423,12 +423,12 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                     default: break;
                 }
 
-                if( src_p->parse_boolf( src_p, src, " #?'!'" ) )
+                if( bcore_source_spect_parse_boolf( src_p, src, " #?'!'" ) )
                 {
                     bcore_string_s* s = bcore_string_s_create();
-                    src_p->parsef( src_p, src, " #name", s );
+                    bcore_source_spect_parsef( src_p, src, " #name", s );
                     typed_type = typeof( s->sc );
-                    if( !bcore_flect_try_self( typed_type ) ) src_p->parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
+                    if( !bcore_flect_try_self( typed_type ) ) bcore_source_spect_parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
                     bcore_string_s_discard( s );
                 }
 
@@ -436,20 +436,20 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                 {
                     const bcore_array_s* arr_p = bcore_array_s_get_typed( vitem->type );
                     bcore_array_spect_set_size( arr_p, element, 0 );
-                    src_p->parsef( src_p, src, " [" );
-                    if( !src_p->parse_boolf( src_p, src, " #?']'" ) )
+                    bcore_source_spect_parsef( src_p, src, " [" );
+                    if( !bcore_source_spect_parse_boolf( src_p, src, " #?']'" ) )
                     {
                         sz_t space = 0;
-                        src_p->parsef( src_p, src, " #sz_t ]", &space );
+                        bcore_source_spect_parsef( src_p, src, " #sz_t ]", &space );
                         bcore_array_spect_set_space( arr_p, element, space );
                     }
-                    src_p->parsef( src_p, src, " :" );
+                    bcore_source_spect_parsef( src_p, src, " :" );
                     bcore_array_spect_set_size( arr_p, element, 0 );
                     if( typed ) bcore_array_spect_set_gtype( arr_p, element, typed_type );
                     tp_t type_l = bcore_array_spect_get_mono_type( arr_p, element );
-                    while( !src_p->parse_boolf( src_p, src, " #?';'" ) )
+                    while( !bcore_source_spect_parse_boolf( src_p, src, " #?';'" ) )
                     {
-                        if( bcore_array_spect_get_size( arr_p, element ) > 0 ) src_p->parsef( src_p, src, " ," );
+                        if( bcore_array_spect_get_size( arr_p, element ) > 0 ) bcore_source_spect_parsef( src_p, src, " ," );
                         if( link )
                         {
                             dt_p obj;
@@ -474,7 +474,7 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                     }
                     if( typed && typed_type == 0 && bcore_array_spect_get_size( arr_p, element ) > 0 )
                     {
-                        src_p->parse_errf( src_p, src, "Missing type specifier for nonempty typed array '%s'", ifnameof( vitem->name ) );
+                        bcore_source_spect_parse_errf( src_p, src, "Missing type specifier for nonempty typed array '%s'", ifnameof( vitem->name ) );
                     }
                 }
                 else
@@ -490,27 +490,27 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
 
                         case BCORE_CAPS_STATIC_LINK:
                         {
-                            src_p->parsef( src_p, src, " =" );
+                            bcore_source_spect_parsef( src_p, src, " =" );
                             ( ( bcore_static_link_s* )element )->link = interpret_typed(  o, src, vitem->type ).o;
                         }
                         break;
 
                         case BCORE_CAPS_AWARE_LINK:
                         {
-                            src_p->parsef( src_p, src, " =" );
+                            bcore_source_spect_parsef( src_p, src, " =" );
                             ( ( bcore_aware_link_s* )element )->link = interpret_object( o, src ).o;
                         }
                         break;
 
                         case BCORE_CAPS_TYPED_LINK:
                         {
-                            src_p->parsef( src_p, src, " =" );
+                            bcore_source_spect_parsef( src_p, src, " =" );
                             bcore_typed_link_s* dst = element;
                             dst->type = typed_type;
                             dst->link = interpret_typed( o, src, dst->type ).o;
                             if( typed_type == 0 && dst->link != NULL )
                             {
-                                src_p->parse_errf( src_p, src, "Missing type specifier for nonzero typed object '%s'", ifnameof( vitem->name ) );
+                                bcore_source_spect_parse_errf( src_p, src, "Missing type specifier for nonzero typed object '%s'", ifnameof( vitem->name ) );
                             }
                         }
                         break;
@@ -527,7 +527,7 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
         {
             if( !obj ) ERR( "obj is NULL" );
             bcore_string_s* format = bcore_string_s_createf( " #%s", nameof( type ) );
-            src_p->parsef( src_p, src, format->sc, obj );
+            bcore_source_spect_parsef( src_p, src, format->sc, obj );
             bcore_string_s_discard( format );
         }
     }
@@ -536,11 +536,11 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
 static void enter_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst )
 {
     const bcore_source_s* src_p = bcore_source_s_get_aware( src );
-    if( src_p->parse_boolf( src_p, src, " #?':'" ) )
+    if( bcore_source_spect_parse_boolf( src_p, src, " #?':'" ) )
     {
         interpret_body( o, src, dst );
     }
-    else if( src_p->parse_boolf( src_p, src, " #?'<-'" ) )
+    else if( bcore_source_spect_parse_boolf( src_p, src, " #?'<-'" ) )
     {
         dt_p dt_l = interpret_object( o, src );
         bcore_inst_typed_copy_typed( dst.t, dst.o, dt_l.t, dt_l.o );
@@ -560,21 +560,21 @@ static dt_p interpret_object( const bcore_bml_interpreter_s* o, vd_t src )
     ret.o = NULL;
 
     const bcore_source_s* src_p = bcore_source_s_get_aware( src );
-    if( src_p->parse_boolf( src_p, src, " #?'NULL'" ) ) return ret;
+    if( bcore_source_spect_parse_boolf( src_p, src, " #?'NULL'" ) ) return ret;
 
-    if( src_p->parse_boolf( src_p, src, " #?'!'" ) )
+    if( bcore_source_spect_parse_boolf( src_p, src, " #?'!'" ) )
     {
         bcore_string_s* s = bcore_string_s_create();
-        src_p->parsef( src_p, src, "#name", s );
+        bcore_source_spect_parsef( src_p, src, "#name", s );
         ret.t = typeof( s->sc );
-        if( !bcore_flect_exists( ret.t ) ) src_p->parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
+        if( !bcore_flect_exists( ret.t ) ) bcore_source_spect_parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
         bcore_string_s_discard( s );
         ret.o = bcore_inst_typed_create( ret.t );
         enter_body( o, src, ret );
     }
     else
     {
-        src_p->parse_errf( src_p, src, "Instantiation (!<type>) expected." );
+        bcore_source_spect_parse_errf( src_p, src, "Instantiation (!<type>) expected." );
     }
     return ret;
 }
@@ -590,15 +590,15 @@ static dt_p interpret_typed( const bcore_bml_interpreter_s* o, vd_t src, tp_t ty
     ret.t = type;
     ret.o = NULL;
 
-    if( src_p->parse_boolf( src_p, src, " #?'NULL'" ) ) return ret;
+    if( bcore_source_spect_parse_boolf( src_p, src, " #?'NULL'" ) ) return ret;
 
-    if( src_p->parse_boolf( src_p, src, " #?'!'" ) )
+    if( bcore_source_spect_parse_boolf( src_p, src, " #?'!'" ) )
     {
         ret.o = bcore_inst_typed_create( ret.t );
         bcore_string_s* s = bcore_string_s_create();
-        src_p->parsef( src_p, src, "#name", s );
+        bcore_source_spect_parsef( src_p, src, "#name", s );
         tp_t type_l = typeof( s->sc );
-        if( !bcore_flect_exists( type_l ) ) src_p->parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
+        if( !bcore_flect_exists( type_l ) ) bcore_source_spect_parse_errf( src_p, src, "Unknown type '%s'.", s->sc );
         bcore_string_s_discard( s );
 
         if( type_l != type )
