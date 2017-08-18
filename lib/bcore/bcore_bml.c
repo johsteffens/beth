@@ -79,18 +79,18 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
         bcore_string_s_replace_char_sc( s1, '\"', "\\\"" );
         if( o->break_leaf )
         {
-            snk->push_char( snk, dst, '\n' );
-            for( sz_t i = 0; i < o->tab_size * indent; i++ ) snk->push_char( snk, dst, ' ' );
+            bcore_sink_spect_push_char( snk, dst, '\n' );
+            for( sz_t i = 0; i < o->tab_size * indent; i++ ) bcore_sink_spect_push_char( snk, dst, ' ' );
         }
-        snk->push_char( snk, dst, '"' );
-        snk->push_string_d( snk, dst, s1 );
-        snk->push_char( snk, dst, '"' );
+        bcore_sink_spect_push_char( snk, dst, '"' );
+        bcore_sink_spect_push_string_d( snk, dst, s1 );
+        bcore_sink_spect_push_char( snk, dst, '"' );
     }
     else if( inst->body )
     {
         bcore_string_s* prefix = bcore_string_s_create_sc( "\n" );
         bcore_string_s_push_char_n( prefix, ' ', o->tab_size * indent );
-        snk->pushf( snk, dst, "%s{", prefix->sc );
+        bcore_sink_spect_pushf( snk, dst, "%s{", prefix->sc );
         bcore_string_s_push_char_n( prefix, ' ', o->tab_size );
 
         for( sz_t i = 0; i < inst->body->size; i++ )
@@ -106,13 +106,13 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
             }
 
             vc_t element = ( u0_t* )obj + inst_item->offset;
-            snk->pushf( snk, dst, "%s%s", prefix->sc, nameof( flect_item->name ) );
+            bcore_sink_spect_pushf( snk, dst, "%s%s", prefix->sc, nameof( flect_item->name ) );
 
             switch( flect_item->caps )
             {
                 case BCORE_CAPS_STATIC:
                 {
-                    snk->pushf( snk, dst, ":" );
+                    bcore_sink_spect_pushf( snk, dst, ":" );
                     translate_body( o, flect_item->type, element, dst, indent + 1 );
                 }
                 break;
@@ -120,7 +120,7 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
                 case BCORE_CAPS_STATIC_LINK:
                 {
                     const bcore_static_link_s* src = element;
-                    snk->pushf( snk, dst, "=" );
+                    bcore_sink_spect_pushf( snk, dst, "=" );
                     translate_object( o, flect_item->type, src->link, dst, indent + 1 );
                 }
                 break;
@@ -129,8 +129,8 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
                 {
                     const bcore_typed_link_s* src = element;
                     tp_t src_type = src->type;
-                    if( src_type ) snk->pushf( snk, dst, "!%s", nameof( src_type ) );
-                    snk->pushf( snk, dst, "=" );
+                    if( src_type ) bcore_sink_spect_pushf( snk, dst, "!%s", nameof( src_type ) );
+                    bcore_sink_spect_pushf( snk, dst, "=" );
                     translate_object( o, src_type, src->link, dst, indent + 1 );
                 }
                 break;
@@ -138,7 +138,7 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
                 case BCORE_CAPS_AWARE_LINK:
                 {
                     const bcore_aware_link_s* src = element;
-                    snk->pushf( snk, dst, "=" );
+                    bcore_sink_spect_pushf( snk, dst, "=" );
                     tp_t src_type  = src->link ? *( aware_t* )src->link : 0;
                     translate_object( o, src_type, src->link, dst, indent + 1 );
                 }
@@ -147,17 +147,17 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
                 case BCORE_CAPS_STATIC_ARRAY:
                 {
                     const bcore_static_array_s* src = element;
-                    snk->pushf( snk, dst, "[%zu]:", src->size );
+                    bcore_sink_spect_pushf( snk, dst, "[%zu]:", src->size );
                     tp_t src_type = flect_item->type;
                     sz_t unit_size = src_type ? bcore_inst_s_get_typed( src_type )->size : 0;
                     vc_t item = src->data;
                     for( sz_t i = 0; i < src->size; i++ )
                     {
-                        if( i > 0 ) snk->push_char( snk, dst, ',' );
+                        if( i > 0 ) bcore_sink_spect_push_char( snk, dst, ',' );
                         translate_body( o, src_type, item, dst, indent + 1 );
                         item = ( u0_t* )item + unit_size;
                     }
-                    snk->push_char( snk, dst, ';' );
+                    bcore_sink_spect_push_char( snk, dst, ';' );
                 }
                 break;
 
@@ -165,31 +165,31 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
                 {
                     const bcore_typed_array_s* src = element;
                     tp_t src_type = src->type;
-                    if( src_type ) snk->pushf( snk, dst, "!%s", nameof( src_type ) );
-                    snk->pushf( snk, dst, "[%zu]:", src->size );
+                    if( src_type ) bcore_sink_spect_pushf( snk, dst, "!%s", nameof( src_type ) );
+                    bcore_sink_spect_pushf( snk, dst, "[%zu]:", src->size );
                     sz_t unit_size = src_type ? bcore_inst_s_get_typed( src_type )->size : 0;
                     vc_t item = src->data;
                     for( sz_t i = 0; i < src->size; i++ )
                     {
-                        if( i > 0 ) snk->push_char( snk, dst, ',' );
+                        if( i > 0 ) bcore_sink_spect_push_char( snk, dst, ',' );
                         translate_body( o, src_type, item, dst, indent + 1 );
                         item = ( u0_t* )item + unit_size;
                     }
-                    snk->push_char( snk, dst, ';' );
+                    bcore_sink_spect_push_char( snk, dst, ';' );
                 }
                 break;
 
                 case BCORE_CAPS_STATIC_LINK_ARRAY:
                 {
                     const bcore_static_link_array_s* src = element;
-                    snk->pushf( snk, dst, "[%zu]:", src->size );
+                    bcore_sink_spect_pushf( snk, dst, "[%zu]:", src->size );
                     tp_t src_type = flect_item->type;
                     for( sz_t i = 0; i < src->size; i++ )
                     {
-                        if( i > 0 ) snk->push_char( snk, dst, ',' );
+                        if( i > 0 ) bcore_sink_spect_push_char( snk, dst, ',' );
                         translate_object( o, src_type, src->data[ i ], dst, indent + 1 );
                     }
-                    snk->push_char( snk, dst, ';' );
+                    bcore_sink_spect_push_char( snk, dst, ';' );
                 }
                 break;
 
@@ -197,28 +197,28 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
                 {
                     const bcore_typed_link_array_s* src = element;
                     tp_t src_type = src->type;
-                    if( src_type ) snk->pushf( snk, dst, "!%s", nameof( src_type ) );
-                    snk->pushf( snk, dst, "[%zu]:", src->size );
+                    if( src_type ) bcore_sink_spect_pushf( snk, dst, "!%s", nameof( src_type ) );
+                    bcore_sink_spect_pushf( snk, dst, "[%zu]:", src->size );
                     for( sz_t i = 0; i < src->size; i++ )
                     {
-                        if( i > 0 ) snk->push_char( snk, dst, ',' );
+                        if( i > 0 ) bcore_sink_spect_push_char( snk, dst, ',' );
                         translate_object( o, src_type, src->data[ i ], dst, indent + 1 );
                     }
-                    snk->push_char( snk, dst, ';' );
+                    bcore_sink_spect_push_char( snk, dst, ';' );
                 }
                 break;
 
                 case BCORE_CAPS_AWARE_LINK_ARRAY:
                 {
                     const bcore_static_link_array_s* src = element;
-                    snk->pushf( snk, dst, "[%zu]:", src->size );
+                    bcore_sink_spect_pushf( snk, dst, "[%zu]:", src->size );
                     for( sz_t i = 0; i < src->size; i++ )
                     {
-                        if( i > 0 ) snk->push_char( snk, dst, ',' );
+                        if( i > 0 ) bcore_sink_spect_push_char( snk, dst, ',' );
                         tp_t src_type = *( aware_t* )src->data[ i ];
                         translate_object( o, src_type, src->data[ i ], dst, indent + 1 );
                     }
-                    snk->push_char( snk, dst, ';' );
+                    bcore_sink_spect_push_char( snk, dst, ';' );
                 }
                 break;
 
@@ -226,17 +226,17 @@ static void translate_body( const bcore_bml_translator_s* o, tp_t type, vc_t obj
             }
         }
         bcore_string_s_pop_n( prefix, o->tab_size );
-        snk->pushf( snk, dst, "%s}", prefix->sc );
+        bcore_sink_spect_pushf( snk, dst, "%s}", prefix->sc );
         bcore_string_s_discard( prefix );
     }
     else // leaf type
     {
         if( o->break_leaf )
         {
-            snk->push_char( snk, dst, '\n' );
-            for( sz_t i = 0; i < o->tab_size * indent; i++ ) snk->push_char( snk, dst, ' ' );
+            bcore_sink_spect_push_char( snk, dst, '\n' );
+            for( sz_t i = 0; i < o->tab_size * indent; i++ ) bcore_sink_spect_push_char( snk, dst, ' ' );
         }
-        snk->push_string_d( snk, dst, bcore_string_s_create_typed( type, obj ) );
+        bcore_sink_spect_push_string_d( snk, dst, bcore_string_s_create_typed( type, obj ) );
     }
 }
 
@@ -245,10 +245,10 @@ static void translate_object( const bcore_bml_translator_s* o, tp_t type, vc_t o
     const bcore_sink_s* snk = bcore_sink_s_get_aware( dst );
     if( !obj )
     {
-       snk->pushf( snk, dst, "NULL" );
+       bcore_sink_spect_pushf( snk, dst, "NULL" );
        return;
     }
-    snk->pushf( snk, dst, "!%s:", nameof( type ) );
+    bcore_sink_spect_pushf( snk, dst, "!%s:", nameof( type ) );
     translate_body( o, type, obj, dst, indent );
 }
 
@@ -256,14 +256,14 @@ void bcore_bml_translator_s_translate_body( const bcore_bml_translator_s* o, tp_
 {
     translate_body( o, type, obj, fsnk, 0 );
     const bcore_sink_s* snk_p = bcore_sink_s_get_aware( fsnk );
-    snk_p->pushf( snk_p, fsnk, "\n" );
+    bcore_sink_spect_pushf( snk_p, fsnk, "\n" );
 }
 
 void bcore_bml_translator_s_translate_object( const bcore_bml_translator_s* o, tp_t type, vc_t obj, vd_t fsnk )
 {
     translate_object( o, type, obj, fsnk, 0 );
     const bcore_sink_s* snk_p = bcore_sink_s_get_aware( fsnk );
-    snk_p->pushf( snk_p, fsnk, "\n" );
+    bcore_sink_spect_pushf( snk_p, fsnk, "\n" );
 }
 
 /**********************************************************************************************************************/

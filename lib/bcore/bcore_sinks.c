@@ -44,7 +44,7 @@ static void chain_copy_a( vd_t nc )
     struct { ap_t a; vc_t p; bcore_sink_chain_s* dst; } * nc_l = nc;
     nc_l->a( nc ); // default
     bcore_sink_chain_s* o = nc_l->dst;
-    for( sz_t i = 1; i < o->size; i++ ) bcore_sink_set_consumer( o->data[ i ], o->data[ i - 1 ] );
+    for( sz_t i = 1; i < o->size; i++ ) bcore_sink_aware_set_consumer( o->data[ i ], o->data[ i - 1 ] );
 }
 
 void bcore_sink_chain_s_copy( bcore_sink_chain_s* o, const bcore_sink_chain_s* src )
@@ -72,14 +72,14 @@ static void chain_interpret_body_a( vd_t nc )
     struct { ap_t a; vc_t p; vc_t inter; vd_t sink; tp_t type; vd_t obj; } * nc_l = nc;
     nc_l->a( nc ); // default
     bcore_sink_chain_s* o = nc_l->obj;
-    for( sz_t i = 1; i < o->size; i++ ) bcore_sink_set_consumer( o->data[ i ], o->data[ i - 1 ] );
+    for( sz_t i = 1; i < o->size; i++ ) bcore_sink_aware_set_consumer( o->data[ i ], o->data[ i - 1 ] );
 }
 
 void bcore_sink_chain_s_push_d( bcore_sink_chain_s* o, vd_t sink )
 {
     const bcore_array_s* arr_p = bcore_array_s_get_typed( TYPEOF_bcore_sink_chain_s );
     bcore_array_spect_push( arr_p, o, rf_asd( sink ) );
-    if( o->size > 1 ) bcore_sink_set_consumer( o->data[ o->size - 1 ], o->data[ o->size - 2 ] );
+    if( o->size > 1 ) bcore_sink_aware_set_consumer( o->data[ o->size - 1 ], o->data[ o->size - 2 ] );
 }
 
 void bcore_sink_chain_s_push_type( bcore_sink_chain_s* o, tp_t type )
@@ -89,12 +89,12 @@ void bcore_sink_chain_s_push_type( bcore_sink_chain_s* o, tp_t type )
 
 void bcore_sink_chain_s_flush( bcore_sink_chain_s* o )
 {
-    for( sz_t i = o->size; i > 0; i-- ) bcore_sink_flush( o->data[ i - 1 ] );
+    for( sz_t i = o->size; i > 0; i-- ) bcore_sink_aware_flush( o->data[ i - 1 ] );
 }
 
 static sz_t chain_flow_snk( bcore_sink_chain_s* o, vc_t data, sz_t size )
 {
-    return ( o->size > 0 ) ? bcore_sink_push_data( o->data[ o->size - 1 ], data, size ) : 0;
+    return ( o->size > 0 ) ? bcore_sink_aware_push_data( o->data[ o->size - 1 ], data, size ) : 0;
 }
 
 sz_t bcore_sink_chain_s_push_data( bcore_sink_chain_s* o, vc_t data, sz_t size )
@@ -164,7 +164,7 @@ void bcore_sink_buffer_s_flush( bcore_sink_buffer_s* o )
 {
     if( o->consumer && o->size > 0 )
     {
-        sz_t pushed_size = bcore_sink_push_data( o->consumer, o->data, o->size );
+        sz_t pushed_size = bcore_sink_aware_push_data( o->consumer, o->data, o->size );
         if( pushed_size != o->size ) ERR( "Consumer accepted %zu of %zu bytes.", pushed_size, o->size );
         o->size = 0;
     }
@@ -192,7 +192,7 @@ sz_t bcore_sink_buffer_s_push_data( bcore_sink_buffer_s* o, vc_t data, sz_t size
 void bcore_sink_chain_s_set_consumer( bcore_sink_chain_s* o, vd_t consumer )
 {
     if( o->size == 0 ) ERR( "chain is empty" );
-    bcore_sink_set_consumer( o->data[ 0 ], consumer );
+    bcore_sink_aware_set_consumer( o->data[ 0 ], consumer );
 }
 
 /**********************************************************************************************************************/

@@ -23,30 +23,30 @@ static void translate_body( const bcore_txt_ml_translator_s* o, sc_t name, rf_s 
 
     bcore_string_s* ind = bcore_string_s_push_char_n( bcore_string_s_create(), ' ', depth * 4 );
 
-    sink_p->pushf( sink_p, sink, "%s", ind->sc );
-    if( name ) sink_p->pushf( sink_p, sink, "%s:", name );
+    bcore_sink_spect_pushf( sink_p, sink, "%s", ind->sc );
+    if( name ) bcore_sink_spect_pushf( sink_p, sink, "%s:", name );
 
     if( !obj.o ) // NULL
     {
-        sink_p->pushf( sink_p, sink, "<NIL/>\n" );
+        bcore_sink_spect_pushf( sink_p, sink, "<NIL/>\n" );
     }
     else if( obj.t == TYPEOF_bcore_string_s ) // strings
     {
         bcore_string_s* string = bcore_string_s_clone( ( const bcore_string_s* )obj.o );
         bcore_string_s_replace_char_sc( string, '\"', "\\\"" );
-        sink_p->pushf( sink_p, sink, "\"%s\"\n", string->sc );
+        bcore_sink_spect_pushf( sink_p, sink, "\"%s\"\n", string->sc );
         bcore_string_s_discard( string );
     }
     else if( bcore_via_spect_is_leaf( via_p ) )
     {
-        sink_p->pushf( sink_p, sink, "<%s>", ifnameof( obj.t ) );
+        bcore_sink_spect_pushf( sink_p, sink, "<%s>", ifnameof( obj.t ) );
         bcore_string_s* string = bcore_string_s_create_typed( obj.t, obj.o );
-        sink_p->push_string_d( sink_p, sink, string );
-        sink_p->push_sc( sink_p, sink, "</>\n" );
+        bcore_sink_spect_push_string_d( sink_p, sink, string );
+        bcore_sink_spect_push_sc( sink_p, sink, "</>\n" );
     }
     else
     {
-        sink_p->pushf( sink_p, sink, "<%s>\n", ifnameof( obj.t ) );
+        bcore_sink_spect_pushf( sink_p, sink, "<%s>\n", ifnameof( obj.t ) );
         if( bcore_via_spect_is_pure_array( via_p ) )
         {
             const bcore_array_s* arr_p = bcore_array_s_get_typed( obj.t );
@@ -63,7 +63,7 @@ static void translate_body( const bcore_txt_ml_translator_s* o, sc_t name, rf_s 
                 translate_body( o, ifnameof( bcore_via_spect_iget_name( via_p, i ) ), bcore_via_spect_iget( via_p, obj.o, i ), sink, depth + 1 );
             }
         }
-        sink_p->pushf( sink_p, sink, "%s</>\n", ind->sc );
+        bcore_sink_spect_pushf( sink_p, sink, "%s</>\n", ind->sc );
     }
 
     rf_s_down( obj );
