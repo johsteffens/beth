@@ -153,23 +153,23 @@ static bcore_string_s* translate_selftest( void )
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_create();
 
-    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { aware_t _; bcore_string_s* type; f3_t weight; bcore_string_s * [] features; }" );
-    tp_t t_compound = bcore_flect_type_parse_sc( "compound = { aware_t _; u3_t id; sz_t area; animal * [] animals; }" );
-    tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { aware_t _; bcore_string_s* name; typed * [] compounds; }" );
+    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { bcore_string_s* type; f3_t weight; bcore_string_s * [] features; }" );
+    tp_t t_compound = bcore_flect_type_parse_sc( "compound = { u3_t id; sz_t area; animal * [] animals; }" );
+    tp_t t_zoo      = bcore_flect_type_parse_sc( "{ bcore_string_s* name; typed * [] compounds; }" );
 
-    vd_t zoo = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_zoo ) );
-    bcore_via_aware_nset_sc( zoo, typeof( "name" ), "Mesamurial" );
-    sr_s compounds = bcore_life_s_push_sr( l, bcore_via_aware_nget( zoo, typeof( "compounds" ) ) );
+    sr_s zoo = sr_cl( bcore_inst_typed_create_sr( t_zoo ), l );
+    bcore_via_nset_sc( zoo, typeof( "name" ), "Mesamurial" );
+    sr_s compounds = bcore_life_s_push_sr( l, bcore_via_nget( zoo, typeof( "compounds" ) ) );
     {
-        sr_s compound = bcore_life_s_push_sr( l, sr_asd( bcore_inst_typed_create( t_compound ) ) );
+        sr_s compound = sr_cl( bcore_inst_typed_create_sr( t_compound ), l );
         bcore_via_nset_u3( compound, typeof( "id" ), 254 );
         bcore_via_nset_sz( compound, typeof( "area" ), 1000 );
         sr_s animals = bcore_life_s_push_sr( l, bcore_via_nget( compound, typeof( "animals" ) ) );
         {
-            sr_s bird = bcore_life_s_push_sr( l, sr_asd( bcore_inst_typed_create( t_animal ) ) );
+            sr_s bird = sr_cl( bcore_inst_typed_create_sr( t_animal ), l );
             bcore_via_nset_sc( bird, typeof( "type" ), "Bird" );
             bcore_via_nset_f3( bird, typeof( "weight" ), 2.5 );
-            sr_s features = bcore_life_s_push_sr( l, bcore_via_nget( bird, typeof( "features" ) ) );
+            sr_s features = sr_cl( bcore_via_nget( bird, typeof( "features" ) ), l );
             {
                 bcore_array_push_sc( features, "Owl" );
                 bcore_array_push_sc( features, "Night active" );
@@ -177,10 +177,10 @@ static bcore_string_s* translate_selftest( void )
             bcore_array_push( animals, bird );
         }
         {
-            sr_s bird = bcore_life_s_push_sr( l, sr_asd( bcore_inst_typed_create( t_animal ) ) );
+            sr_s bird = sr_cl( bcore_inst_typed_create_sr( t_animal ), l );
             bcore_via_nset_sc( bird, typeof( "type" ), "Bird" );
-            bcore_via_nset_f3( bird, typeof( "weight" ), 2.5 );
-            sr_s features = bcore_life_s_push_sr( l, bcore_via_nget( bird, typeof( "features" ) ) );
+            bcore_via_nset_f3( bird, typeof( "weight" ), 0.5 );
+            sr_s features = sr_cl( bcore_via_nget( bird, typeof( "features" ) ), l );
             {
                 bcore_array_push_sc( features, "Pidgin" );
                 bcore_array_push_sc( features, "Small" );
@@ -193,7 +193,7 @@ static bcore_string_s* translate_selftest( void )
     }
 
     bcore_txt_ml_translator_s* ttxt_ml = bcore_life_s_push_aware( l, bcore_txt_ml_translator_s_create() );
-    bcore_translate_aware_object( ttxt_ml, zoo, log );
+    bcore_translate_typed_object( ttxt_ml, sr_type( zoo ), zoo.o, log );
 
     bcore_life_s_discard( l );
     return log;

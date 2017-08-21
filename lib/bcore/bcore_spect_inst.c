@@ -1337,6 +1337,11 @@ vd_t bcore_inst_spect_create_typed( const bcore_inst_s* o, tp_t otp, vc_t obj )
     return o->create_typed( o, otp, obj );
 }
 
+sr_s bcore_inst_typed_create_sr( tp_t type )
+{
+    return sr_tsd( type, bcore_inst_typed_create( type ) );
+}
+
 vd_t bcore_inst_typed_create_typed( tp_t type, tp_t otp, vc_t obj )
 {
     return bcore_inst_spect_create_typed( bcore_inst_s_get_typed( type ), otp, obj );

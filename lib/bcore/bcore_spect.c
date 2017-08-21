@@ -148,9 +148,7 @@ bcore_string_s* bcore_spect_status()
         if( val ) ( *bcore_hmap_tpsz_s_fget( hist, *( aware_t* )val, 0 ) )++;
     }
 
-    tp_t t_nc_arr  = bcore_flect_type_parsef( "{ aware_t _; { aware_t _; sz_t count; tp_t type; } [] arr; }" );
-    vd_t nc_arr    = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_nc_arr ) );
-    const bcore_array_s* nc_arr_a =  bcore_array_s_get_aware( nc_arr );
+    sr_s nc_arr = sr_cl( bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ { sz_t count; tp_t type; } [] arr; }" ) ), l );
 
     for( sz_t i = 0; i < hist->size; i++ )
     {
@@ -158,20 +156,20 @@ bcore_string_s* bcore_spect_status()
         sz_t count = bcore_hmap_tpsz_s_idx_val( hist, i );
         if( key )
         {
-            bcore_array_spect_push( nc_arr_a, nc_arr, sr_null() );
-            vd_t pair = bcore_array_spect_get_last( nc_arr_a, nc_arr ).o;
-            bcore_via_aware_nset_tp( pair, typeof( "type" ),  key   );
-            bcore_via_aware_nset_sz( pair, typeof( "count" ), count );
+            bcore_array_push( nc_arr, sr_null() );
+            sr_s pair = sr_cl( bcore_array_get_last( nc_arr ), l );
+            bcore_via_nset_tp( pair, typeof( "type" ),  key   );
+            bcore_via_nset_sz( pair, typeof( "count" ), count );
         }
     }
 
-    bcore_array_spect_sort( nc_arr_a, nc_arr, 0, -1, -1 );
+    bcore_array_sort( nc_arr, 0, -1, -1 );
 
-    for( sz_t i = 0; i < bcore_array_spect_get_size( nc_arr_a, nc_arr ); i++ )
+    for( sz_t i = 0; i < bcore_array_get_size( nc_arr ); i++ )
     {
-        vc_t pair = bcore_array_spect_get( nc_arr_a, nc_arr, i ).o;
-        const tp_t* p_type  = bcore_via_aware_nget_c( pair, typeof( "type"  ) );
-        const sz_t* p_count = bcore_via_aware_nget_c( pair, typeof( "count" ) );
+        sr_s pair = sr_cl( bcore_array_get( nc_arr, i ), l );
+        const tp_t* p_type  = sr_cl( bcore_via_nget( pair, typeof( "type"  ) ), l ).o;
+        const sz_t* p_count = sr_cl( bcore_via_nget( pair, typeof( "count" ) ), l ).o;
         bcore_string_s* s = bcore_string_s_create();
         bcore_string_s_pushf( s, "%s ", ifnameof( *p_type ) );
         bcore_string_s_push_char_n( s, '.', 28 - s->size );
