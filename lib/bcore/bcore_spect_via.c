@@ -366,7 +366,9 @@ inline static vc_t w_spect( sr_s o ) { if( o.f & C_f ) ERR( "Attempt to modify a
 inline static vc_t r_spect( sr_s o ) {                                                               return ch_spect( o.p, TYPEOF_bcore_via_s ); }
 inline static vc_t x_spect( sr_s o ) {                                                               return ch_spect( o.p, TYPEOF_bcore_via_s ); }
 
+
 sz_t                 NPX(get_size   )( sr_s o                   ) { sz_t r = NPX(spect_get_size   )( r_spect( o )              ); sr_down( o ); return r; }
+tp_t                 NPX(iget_name  )( sr_s o, sz_t i           ) { tp_t r = NPX(spect_iget_name  )( x_spect( o ),      i      ); sr_down( o ); return r; }
 rf_s                 NPX(iget       )( sr_s o, sz_t i           ) { rf_s r = NPX(spect_iget       )( x_spect( o ), o.o, i      ); sr_down( o ); r.c = ( o.f & C_f ) ? 1 : 0; return r; }
 rf_s                 NPX(iset       )( sr_s o, sz_t i, rf_s src ) { rf_s r = NPX(spect_iset       )( w_spect( o ), o.o, i, src ); sr_down( o ); return r; }
 vc_t                 NPX(iget_c     )( sr_s o, sz_t i           ) { vc_t r = NPX(spect_iget_c     )( r_spect( o ), o.o, i      ); sr_down( o ); return r; }

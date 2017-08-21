@@ -94,6 +94,18 @@ vd_t bcore_life_s_push_rf( bcore_life_s* o, rf_s object )
     }
 }
 
+sr_s bcore_life_s_push_sr( bcore_life_s* o, sr_s object )
+{
+    if( object.f & S_f )
+    {
+        return sr_pocs( object.p, bcore_life_s_push_typed( o, sr_type( object ), object.o ), object.f & C_f, false );
+    }
+    else
+    {
+        return object;
+    }
+}
+
 vd_t bcore_life_s_push_aware( bcore_life_s* o, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );

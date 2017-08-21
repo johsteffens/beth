@@ -33,11 +33,6 @@ typedef struct bcore_array_s
     sz_t ( *get_space   )( const bcore_array_s* p, vc_t o );             // returns space
     rf_s ( *get         )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL reference if index is out of range or the linked item is NULL
     rf_s ( *set         )( const bcore_array_s* p, vd_t o, sz_t index, rf_s src ); // sets item at indexed position; if index is out of size, size is increased
-//    vc_t ( *get_c       )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
-//    vd_t ( *get_d       )( const bcore_array_s* p, vd_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
-//    vd_t ( *set_c       )( const bcore_array_s* p, vd_t o, sz_t index, vc_t src ); // sets item at indexed position by copying src if src != NULL; if index is out of size, size is increased
-//    vd_t ( *set_typed_c )( const bcore_array_s* p, vd_t o, sz_t index, tp_t otp, vc_t src ); // sets item at indexed position by copying and converting src if src != NULL; if index is out of size, size is increased
-//    vd_t ( *set_d       )( const bcore_array_s* p, vd_t o, sz_t index, vd_t src ); // sets item at indexed position by taking ownership of src (catenated arrays copy and discard src if src != NULL)
 
 } bcore_array_s;
 
@@ -199,6 +194,46 @@ sz_t bcore_array_aware_get_unit_size        ( vc_t o );
 vc_t bcore_array_aware_max                  ( vc_t o, sz_t start, sz_t end, s2_t order );
 sz_t bcore_array_aware_max_index            ( vc_t o, sz_t start, sz_t end, s2_t order );
 void bcore_array_aware_sort                 ( vd_t o, sz_t start, sz_t end, s2_t order );
+
+sz_t bcore_array_get_size             ( sr_s o );
+sz_t bcore_array_get_space            ( sr_s o );
+rf_s bcore_array_get                  ( sr_s o, sz_t index );
+rf_s bcore_array_set                  ( sr_s o, sz_t index, rf_s src );
+rf_s bcore_array_set_c                ( sr_s o, sz_t index, rf_s src );
+rf_s bcore_array_set_s3               ( sr_s o, sz_t index, s3_t val );
+rf_s bcore_array_set_u3               ( sr_s o, sz_t index, u3_t val );
+rf_s bcore_array_set_f3               ( sr_s o, sz_t index, f3_t val );
+rf_s bcore_array_set_sz               ( sr_s o, sz_t index, sz_t val );
+rf_s bcore_array_set_sc               ( sr_s o, sz_t index, sc_t val );
+rf_s bcore_array_set_bl               ( sr_s o, sz_t index, bl_t val );
+void bcore_array_set_size             ( sr_s o, sz_t size  );
+void bcore_array_set_space            ( sr_s o, sz_t space );
+rf_s bcore_array_get_first            ( sr_s o );
+rf_s bcore_array_get_last             ( sr_s o );
+rf_s bcore_array_push                 ( sr_s o, rf_s src );
+rf_s bcore_array_push_s3              ( sr_s o, s3_t val );
+rf_s bcore_array_push_u3              ( sr_s o, u3_t val );
+rf_s bcore_array_push_f3              ( sr_s o, f3_t val );
+rf_s bcore_array_push_sz              ( sr_s o, sz_t val );
+rf_s bcore_array_push_sc              ( sr_s o, sc_t val );
+rf_s bcore_array_push_bl              ( sr_s o, bl_t val );
+void bcore_array_pop                  ( sr_s o );
+void bcore_array_set_gtype            ( sr_s o, tp_t type  );
+bl_t bcore_array_is_static            ( sr_s o );
+bl_t bcore_array_is_mono_typed        ( sr_s o );
+bl_t bcore_array_is_mutable_mono_typed( sr_s o );
+bl_t bcore_array_is_multi_typed       ( sr_s o );
+bl_t bcore_array_is_of_aware          ( sr_s o );
+bl_t bcore_array_is_of_links          ( sr_s o );
+tp_t bcore_array_get_static_type      ( sr_s o );
+tp_t bcore_array_get_mono_type        ( sr_s o );
+tp_t bcore_array_get_type             ( sr_s o, sz_t index );
+vc_t bcore_array_get_c_data           ( sr_s o );
+vd_t bcore_array_get_d_data           ( sr_s o );
+sz_t bcore_array_get_unit_size        ( sr_s o );
+vc_t bcore_array_max                  ( sr_s o, sz_t start, sz_t end, s2_t order );
+sz_t bcore_array_max_index            ( sr_s o, sz_t start, sz_t end, s2_t order );
+void bcore_array_sort                 ( sr_s o, sz_t start, sz_t end, s2_t order );
 
 /**********************************************************************************************************************/
 // testing, debugging

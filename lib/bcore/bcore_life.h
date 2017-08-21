@@ -41,6 +41,7 @@ void                 bcore_life_s_discard(   bcore_life_s* o );
 vd_t bcore_life_s_push(         bcore_life_s* o, fp_t discard, vd_t object ); // explicit discard
 vd_t bcore_life_s_push_typed(   bcore_life_s* o, tp_t type,    vd_t object ); // discard via bcore_inst_typed_discard
 vd_t bcore_life_s_push_rf(      bcore_life_s* o,               rf_s object ); // assumes control in case object is a strong reference
+sr_s bcore_life_s_push_sr(      bcore_life_s* o,               sr_s object ); // assumes control in case reference is strong, returns weak reference
 vd_t bcore_life_s_push_aware(   bcore_life_s* o,               vd_t object ); // object is aware
 vd_t bcore_life_s_push_free(    bcore_life_s* o,               vd_t object ); // uses bcore_free as discard function
 vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type                 ); // creates new object and manages its lifetime

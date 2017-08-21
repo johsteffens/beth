@@ -137,6 +137,7 @@ vc_t                 bcore_via_aware_nget_spect    ( vc_t o, tp_t name, tp_t stp
 
 sz_t                 bcore_via_get_size      ( sr_s o                      );
 
+tp_t                 bcore_via_iget_name     ( sr_s o, sz_t index ); // Returns name for given index
 rf_s                 bcore_via_iget          ( sr_s o, sz_t index           );
 rf_s                 bcore_via_iset          ( sr_s o, sz_t index, rf_s src );
 vc_t                 bcore_via_iget_c        ( sr_s o, sz_t index );

@@ -16,73 +16,74 @@ DEFINE_FUNCTION_CREATE(     bcore_txt_ml_translator_s )
 DEFINE_FUNCTION_DISCARD(    bcore_txt_ml_translator_s )
 DEFINE_FUNCTION_CLONE(      bcore_txt_ml_translator_s )
 
-static void translate_body( const bcore_txt_ml_translator_s* o, sc_t name, sr_s obj, sr_s sink, sz_t depth )
+
+static sc_t name_of( tp_t type, bcore_string_s* buf )
 {
-    sink.p = ch_spect( sink.p, TYPEOF_bcore_sink_s );
-    obj.p  = ch_spect( obj.p,  TYPEOF_bcore_via_s );
+    sc_t n = bcore_name_try_name( type );
+    if( n ) return n;
+    bcore_string_s_copy_typed( buf, TYPEOF_tp_t, &type );
+    return buf->sc;
+}
 
-    bcore_string_s* ind = bcore_string_s_push_char_n( bcore_string_s_create(), ' ', depth * 4 );
+static void translate_body( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, sz_t depth )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    sr_s sink_l         = sr_cl( sr_cp( sink, TYPEOF_bcore_sink_s ), l );
+    sr_s obj_l          = sr_cl( sr_cp( obj,  TYPEOF_bcore_via_s ),  l );
+    bcore_string_s* ind = bcore_string_s_push_char_n( bcore_string_s_create_l( l ), ' ', depth * 4 );
+    bcore_string_s* buf = bcore_string_s_create_l( l );
 
-    // TODO: we do not need to fork for every object usage - instead convert object into a nondestructible type (weak)
-    //      this can be made compatible with reference counting
+    bcore_sink_pushf( sink_l, "%s", ind->sc );
+    if( name ) bcore_sink_pushf( sink_l, "%s:", name_of( name, buf ) );
 
-    bcore_sink_pushf( sr_fork( sink ), "%s", ind->sc );
-    if( name ) bcore_sink_pushf( sr_fork( sink ), "%s:", name );
-
-    if( !obj.o ) // NULL
+    if( !obj_l.o ) // NULL
     {
-        bcore_sink_pushf( sr_fork( sink ), "<NIL/>\n" );
+        bcore_sink_pushf( sink_l, "<NIL/>\n" );
     }
-    else if( sr_type( obj ) == TYPEOF_bcore_string_s ) // strings
+    else if( sr_type( obj_l ) == TYPEOF_bcore_string_s ) // strings
     {
-        bcore_string_s* string = bcore_string_s_clone( ( const bcore_string_s* )obj.o );
+        bcore_string_s* string = bcore_string_s_clone( ( const bcore_string_s* )obj_l.o );
         bcore_string_s_replace_char_sc( string, '\"', "\\\"" );
-        bcore_sink_pushf( sr_fork( sink ), "\"%s\"\n", string->sc );
+        bcore_sink_pushf( sink_l, "\"%s\"\n", string->sc );
         bcore_string_s_discard( string );
     }
-    else if( bcore_via_is_leaf( sr_fork( obj ) ) )
+    else if( bcore_via_is_leaf( obj_l ) )
     {
-        bcore_sink_pushf( sr_fork( sink ), "<%s>", ifnameof( sr_type( obj ) ) );
-        bcore_string_s* string = bcore_string_s_create_typed( sr_type( obj ), obj.o );
-        bcore_sink_push_string_d( sr_fork( sink ), string );
-        bcore_sink_push_sc( sr_fork( sink ), "</>\n" );
+        bcore_sink_pushf( sink_l, "<%s>", name_of( sr_type( obj_l ), buf ) );
+        bcore_string_s* string = bcore_string_s_create_typed( sr_type( obj_l ), obj_l.o );
+        bcore_sink_push_string_d( sink_l, string );
+        bcore_sink_push_sc( sink_l, "</>\n" );
     }
     else
     {
-        bcore_sink_pushf( sr_fork( sink ), "<%s>\n", ifnameof( sr_type( obj ) ) );
-        if( bcore_via_is_pure_array( sr_fork( obj ) ) )
+        bcore_sink_pushf( sink_l, "<%s>\n", name_of( sr_type( obj_l ), buf ) );
+        if( bcore_via_is_pure_array( obj_l ) )
         {
-            const bcore_array_s* arr_p = bcore_array_s_get_typed( sr_type( obj ) );
-            sz_t size = arr_p->get_size( arr_p, obj.o );
-            for( sz_t i = 0; i < size; i++ )
-            {
-                translate_body( o, NULL, sr_rf( arr_p->get( arr_p, obj.o, i ) ), sr_fork( sink ), depth + 1 );
-            }
+            sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
+            sz_t size = bcore_array_get_size( arr_l );
+            for( sz_t i = 0; i < size; i++ ) translate_body( o, 0, sr_rf( bcore_array_get( arr_l, i ) ), sink_l, depth + 1 );
         }
         else
         {
-            sz_t size = bcore_via_spect_get_size( obj.p );
+            sz_t size = bcore_via_spect_get_size( obj_l.p );
             for( sz_t i = 0; i < size; i++ )
             {
-                translate_body( o, ifnameof( bcore_via_spect_iget_name( obj.p, i ) ), sr_rf( bcore_via_spect_iget( obj.p, obj.o, i ) ), sr_fork( sink ), depth + 1 );
+                translate_body( o, bcore_via_iget_name( obj_l, i ), sr_rf( bcore_via_iget( obj_l, i ) ), sink_l, depth + 1 );
             }
         }
-        bcore_sink_pushf( sr_fork( sink ), "%s</>\n", ind->sc );
+        bcore_sink_pushf( sink_l, "%s</>\n", ind->sc );
     }
-
-    sr_down( sink );
-    sr_down( obj );
-    bcore_string_s_discard( ind );
+    bcore_life_s_discard( l );
 }
 
 void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink )
 {
-    translate_body( o, NULL, sr_twc( type, obj ), sr_awd( sink ), 0 );
+    translate_body( o, 0, sr_twc( type, obj ), sr_awd( sink ), 0 );
 }
 
 void bcore_txt_ml_translator_s_translate_object( const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink )
 {
-    translate_body( o, NULL, sr_twc( type, obj ), sr_awd( sink ), 0 );
+    translate_body( o, 0, sr_twc( type, obj ), sr_awd( sink ), 0 );
 }
 
 static bcore_flect_self_s* translator_s_create_self( void )
@@ -155,7 +156,7 @@ static bcore_string_s* translate_selftest( void )
     tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { aware_t _; bcore_string_s* name; typed * [] compounds; }" );
 
     vd_t zoo = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_zoo ) );
-    bcore_via_aware_nset_sc( zoo, typeof( "name" ), "Lori" );
+    bcore_via_aware_nset_sc( zoo, typeof( "name" ), "Mesamurial" );
     rf_s compounds = bcore_via_aware_nget( zoo, typeof( "compounds" ) );
     {
         vd_t compound = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_compound ) );
