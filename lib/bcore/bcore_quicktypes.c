@@ -43,6 +43,15 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
 //    print_type( hash_l, "bool" );
     print_type( hash_l, "aware_t" );
     print_type( hash_l, "bcore_flect_self_s" );
+    print_type( hash_l, "bcore_inst_s" );
+    print_type( hash_l, "bcore_array_s" );
+    print_type( hash_l, "bcore_via_s" );
+    print_type( hash_l, "bcore_source_s" );
+    print_type( hash_l, "bcore_sink_s" );
+    print_type( hash_l, "bcore_compare_s" );
+    print_type( hash_l, "bcore_closure_s" );
+    print_type( hash_l, "bcore_interpreter_s" );
+    print_type( hash_l, "bcore_translator_s" );
 
     bcore_msg( "\n// frequently used types\n"   );
     print_type( hash_l, "bcore_string_s"        );

@@ -1417,6 +1417,20 @@ void bcore_inst_typed_check_sizeof( tp_t type, sz_t size )
     bcore_inst_spect_check_sizeof( o, size );
 }
 
+// only discards when o is a strong reference; does nothing otherwise
+void bcore_inst_discard( sr_s o )
+{
+    if( o.o && ( o.f & S_f ) ) bcore_inst_spect_discard( ch_spect( o.p, TYPEOF_bcore_inst_s ), o.o );
+}
+
+vd_t bcore_inst_clone( sr_s o )
+{
+    o.p = ch_spect( o.p, TYPEOF_bcore_inst_s );
+    vd_t ret = bcore_inst_spect_clone( o.p, o.o );
+    sr_down( o );
+    return ret;
+}
+
 /**********************************************************************************************************************/
 // bcore_inst_op
 

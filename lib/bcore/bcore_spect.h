@@ -61,8 +61,10 @@ bcore_string_s* bcore_spect_status();
 vc_t bcore_spect_get_typed_n( tp_t p_type, sz_t n, const tp_t* arr );
 vc_t bcore_spect_get_typed(   tp_t p_type, tp_t o_type ); // for n == 1
 
+/**********************************************************************************************************************/
 
-
+// syntactic sugar
+vc_t ch_spect( vc_t p, tp_t spect_type ); // if needed changes perspective to spect_type; returns NULL if p is NULL
 
 #endif // BCORE_SPECT_H
 

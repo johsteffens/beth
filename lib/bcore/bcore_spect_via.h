@@ -53,6 +53,7 @@ const bcore_via_s* bcore_via_s_get_typed( u2_t type );
 const bcore_via_s* bcore_via_s_get_aware( vc_t obj  );
 
 /// Access by index. Error when index is out of range.
+sz_t                 bcore_via_spect_get_size      ( const bcore_via_s* p                     ); // Number of items
 tp_t                 bcore_via_spect_iget_name     ( const bcore_via_s* p,         sz_t index ); // Returns name for given index
 rf_s                 bcore_via_spect_iget          ( const bcore_via_s* p, vc_t o, sz_t index           ); // Returns indexed reference
 rf_s                 bcore_via_spect_iset          ( const bcore_via_s* p, vd_t o, sz_t index, rf_s src ); // Sets indexed const item.
@@ -91,7 +92,15 @@ const bcore_via_s*   bcore_via_spect_nget_via      ( const bcore_via_s* p,      
 const bcore_array_s* bcore_via_spect_nget_array    ( const bcore_via_s* p,         tp_t name );
 vc_t                 bcore_via_spect_nget_spect    ( const bcore_via_s* p, vc_t o, tp_t name, tp_t stp );
 
+bl_t bcore_via_spect_is_leaf(       const bcore_via_s* p             ); // checks if object is a leaf (no elements)
+bl_t bcore_via_spect_is_pure_array( const bcore_via_s* p             ); // checks if object is an array without additional elements (pure arrays are not leafs)
+bl_t bcore_via_spect_iis_array(     const bcore_via_s* p, sz_t index ); // checks if element is an array
+bl_t bcore_via_spect_iis_static(    const bcore_via_s* p, sz_t index ); // checks if element is static (type need not be recorded)
+bl_t bcore_via_spect_iis_link(      const bcore_via_s* p, sz_t index ); // checks if element is a link (means that it can be NULL); an array is a distinct static object -> not a link)
+
+
 /// Access by name for typed objects. Error when object has no element of given name.
+sz_t                 bcore_via_typed_get_size      ( tp_t tp                              );
 rf_s                 bcore_via_typed_nget          ( tp_t tp, vc_t o, tp_t name           );
 rf_s                 bcore_via_typed_nset          ( tp_t tp, vd_t o, tp_t name, rf_s src );
 vc_t                 bcore_via_typed_nget_c        ( tp_t tp, vc_t o, tp_t name );
@@ -109,6 +118,7 @@ const bcore_array_s* bcore_via_typed_nget_array    ( tp_t tp,         tp_t name 
 vc_t                 bcore_via_typed_nget_spect    ( tp_t tp, vc_t o, tp_t name, tp_t stp );
 
 /// Access by name for aware objects. Error when object has no element of given name.
+sz_t                 bcore_via_aware_get_size      ( vc_t o                      );
 rf_s                 bcore_via_aware_nget          ( vc_t o, tp_t name           );
 rf_s                 bcore_via_aware_nset          ( vd_t o, tp_t name, rf_s src );
 vc_t                 bcore_via_aware_nget_c        ( vc_t o, tp_t name );
@@ -125,11 +135,45 @@ const bcore_via_s*   bcore_via_aware_nget_via      ( vc_t o, tp_t name );
 const bcore_array_s* bcore_via_aware_nget_array    ( vc_t o, tp_t name );
 vc_t                 bcore_via_aware_nget_spect    ( vc_t o, tp_t name, tp_t stp );
 
-bl_t bcore_via_spect_is_leaf(       const bcore_via_s* p             ); // checks if object is a leaf (no elements)
-bl_t bcore_via_spect_is_pure_array( const bcore_via_s* p             ); // checks if object is an array without additional elements (pure arrays are not leafs)
-bl_t bcore_via_spect_iis_array(     const bcore_via_s* p, sz_t index ); // checks if element is an array
-bl_t bcore_via_spect_iis_static(    const bcore_via_s* p, sz_t index ); // checks if element is static (type need not be recorded)
-bl_t bcore_via_spect_iis_link(      const bcore_via_s* p, sz_t index ); // checks if element is a link (means that it can be NULL); an array is a distinct static object -> not a link)
+sz_t                 bcore_via_get_size      ( sr_s o                      );
+
+rf_s                 bcore_via_iget          ( sr_s o, sz_t index           );
+rf_s                 bcore_via_iset          ( sr_s o, sz_t index, rf_s src );
+vc_t                 bcore_via_iget_c        ( sr_s o, sz_t index );
+vd_t                 bcore_via_iget_d        ( sr_s o, sz_t index );
+rf_s                 bcore_via_iset_s3       ( sr_s o, sz_t index, s3_t val );
+rf_s                 bcore_via_iset_u3       ( sr_s o, sz_t index, u3_t val );
+rf_s                 bcore_via_iset_f3       ( sr_s o, sz_t index, f3_t val );
+rf_s                 bcore_via_iset_sz       ( sr_s o, sz_t index, sz_t val );
+rf_s                 bcore_via_iset_sc       ( sr_s o, sz_t index, sc_t val );
+rf_s                 bcore_via_iset_bl       ( sr_s o, sz_t index, bl_t val );
+rf_s                 bcore_via_iset_tp       ( sr_s o, sz_t index, tp_t val );
+const bcore_vitem_s* bcore_via_iget_vitem    ( sr_s o, sz_t index );
+const bcore_via_s*   bcore_via_iget_via      ( sr_s o, sz_t index );
+const bcore_array_s* bcore_via_iget_array    ( sr_s o, sz_t index );
+vc_t                 bcore_via_iget_spect    ( sr_s o, sz_t index, tp_t stp );
+
+rf_s                 bcore_via_nget          ( sr_s o, tp_t name           );
+rf_s                 bcore_via_nset          ( sr_s o, tp_t name, rf_s src );
+vc_t                 bcore_via_nget_c        ( sr_s o, tp_t name );
+vd_t                 bcore_via_nget_d        ( sr_s o, tp_t name );
+rf_s                 bcore_via_nset_s3       ( sr_s o, tp_t name, s3_t val );
+rf_s                 bcore_via_nset_u3       ( sr_s o, tp_t name, u3_t val );
+rf_s                 bcore_via_nset_f3       ( sr_s o, tp_t name, f3_t val );
+rf_s                 bcore_via_nset_sz       ( sr_s o, tp_t name, sz_t val );
+rf_s                 bcore_via_nset_sc       ( sr_s o, tp_t name, sc_t val );
+rf_s                 bcore_via_nset_bl       ( sr_s o, tp_t name, bl_t val );
+rf_s                 bcore_via_nset_tp       ( sr_s o, tp_t name, tp_t val );
+const bcore_vitem_s* bcore_via_nget_vitem    ( sr_s o, tp_t name );
+const bcore_via_s*   bcore_via_nget_via      ( sr_s o, tp_t name );
+const bcore_array_s* bcore_via_nget_array    ( sr_s o, tp_t name );
+vc_t                 bcore_via_nget_spect    ( sr_s o, tp_t name, tp_t stp );
+
+bl_t bcore_via_is_leaf(       sr_s o             );
+bl_t bcore_via_is_pure_array( sr_s o             );
+bl_t bcore_via_iis_array(     sr_s o, sz_t index );
+bl_t bcore_via_iis_static(    sr_s o, sz_t index );
+bl_t bcore_via_iis_link(      sr_s o, sz_t index );
 
 /**********************************************************************************************************************/
 // testing, debugging

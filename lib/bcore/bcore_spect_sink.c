@@ -3,6 +3,7 @@
 #include "bcore_spect_sink.h"
 #include "bcore_flect.h"
 #include "bcore_spect.h"
+#include "bcore_quicktypes.h"
 
 /**********************************************************************************************************************/
 // bcore_sink_s
@@ -153,8 +154,20 @@ void bcore_sink_aware_push_sc      ( vd_t o, sc_t s                       ) { bc
 void bcore_sink_aware_push_string  ( vd_t o, const bcore_string_s* s      ) { bcore_sink_spect_push_string(   bcore_sink_s_get_typed( *( aware_t* )o ), o, s ); }
 void bcore_sink_aware_push_string_d( vd_t o,       bcore_string_s* s      ) { bcore_sink_spect_push_string_d( bcore_sink_s_get_typed( *( aware_t* )o ), o, s ); }
 void bcore_sink_aware_set_consumer(  vd_t o, vd_t c                       ) { bcore_sink_spect_set_consumer(  bcore_sink_s_get_typed( *( aware_t* )o ), o, c ); }
-
 void bcore_sink_aware_pushf        ( vd_t o, sc_t f, ...                  ) { va_list a; va_start( a, f ); bcore_sink_aware_pushvf( o, f, a ); va_end( a ); }
+
+inline static vc_t w_spect( sr_s o ) { if( o.f & C_f ) ERR( "Attempt to modify a constant object" ); return ch_spect( o.p, TYPEOF_bcore_sink_s ); }
+inline static vc_t r_spect( sr_s o ) { return ch_spect( o.p, TYPEOF_bcore_sink_s ); }
+
+sz_t bcore_sink_push_data    ( sr_s o, vc_t d, sz_t sz )   { sz_t r = bcore_sink_spect_push_data( w_spect( o ), o.o, d, sz ); sr_down( o ); return r; }
+void bcore_sink_flush        ( sr_s o                  )   { bcore_sink_spect_flush(  w_spect( o ), o.o        ); sr_down( o ); }
+void bcore_sink_pushvf       ( sr_s o, sc_t f, va_list a ) { bcore_sink_spect_pushvf( w_spect( o ), o.o, f, a  ); sr_down( o ); }
+void bcore_sink_pushf        ( sr_s o, sc_t f, ... )       { va_list a; va_start( a, f ); bcore_sink_pushvf( o, f, a ); va_end( a ); }
+void bcore_sink_push_char    ( sr_s o, char c )            { bcore_sink_spect_push_char( w_spect( o ), o.o, c ); sr_down( o ); }
+void bcore_sink_push_sc      ( sr_s o, sc_t s )            { bcore_sink_spect_push_sc( w_spect( o ), o.o, s ); sr_down( o ); }
+void bcore_sink_push_string  ( sr_s o, const bcore_string_s* s ) { bcore_sink_spect_push_string(   w_spect( o ), o.o, s ); sr_down( o ); }
+void bcore_sink_push_string_d( sr_s o,       bcore_string_s* s ) { bcore_sink_spect_push_string_d( w_spect( o ), o.o, s ); sr_down( o ); }
+void bcore_sink_set_consumer ( sr_s o, vd_t c )            { bcore_sink_spect_set_consumer( w_spect( o ), o.o, c ); sr_down( o ); }
 
 /**********************************************************************************************************************/
 

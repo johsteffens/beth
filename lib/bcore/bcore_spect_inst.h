@@ -88,43 +88,35 @@ typedef struct bcore_inst_s
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t type );
 const bcore_inst_s* bcore_inst_s_get_aware( vc_t obj );
 
-void bcore_inst_spect_init(  const bcore_inst_s* o, vd_t obj );
-void bcore_inst_typed_init(              tp_t type, vd_t obj );
-
-void bcore_inst_spect_down(  const bcore_inst_s* o, vd_t obj );
-void bcore_inst_typed_down(              tp_t type, vd_t obj );
-void bcore_inst_aware_down(                         vd_t obj );
-
-void bcore_inst_spect_copy(  const bcore_inst_s* o, vd_t dst, vc_t src );
-void bcore_inst_typed_copy(              tp_t type, vd_t dst, vc_t src );
-void bcore_inst_aware_copy(                         vd_t dst, vc_t src );
-
-// copy with type conversion
-void bcore_inst_spect_copy_typed( const bcore_inst_s* o, vd_t dst, tp_t src_type, vc_t src );
-void bcore_inst_typed_copy_typed(             tp_t type, vd_t dst, tp_t src_type, vc_t src );
-void bcore_inst_aware_copy_typed(                        vd_t dst, tp_t src_type, vc_t src );
-
-void bcore_inst_spect_move( const bcore_inst_s* o, vd_t dst, vd_t src );
-void bcore_inst_typed_move(             tp_t type, vd_t dst, vd_t src );
-void bcore_inst_aware_move(                        vd_t dst, vd_t src );
-
-vd_t bcore_inst_spect_create( const bcore_inst_s* o );
-vd_t bcore_inst_typed_create( tp_t type );
-
+void bcore_inst_spect_init(         const bcore_inst_s* o, vd_t obj );
+void bcore_inst_spect_down(         const bcore_inst_s* o, vd_t obj );
+void bcore_inst_spect_copy(         const bcore_inst_s* o, vd_t dst, vc_t src );
+void bcore_inst_spect_copy_typed(   const bcore_inst_s* o, vd_t dst, tp_t src_type, vc_t src );
+void bcore_inst_spect_move(         const bcore_inst_s* o, vd_t dst, vd_t src );
+vd_t bcore_inst_spect_create(       const bcore_inst_s* o );
 vd_t bcore_inst_spect_create_typed( const bcore_inst_s* o, tp_t otp, vc_t obj );
-vd_t bcore_inst_typed_create_typed(             tp_t type, tp_t otp, vc_t obj );
+void bcore_inst_spect_discard(      const bcore_inst_s* o, vd_t obj );
+vd_t bcore_inst_spect_clone(        const bcore_inst_s* o, vc_t obj );
 
-void bcore_inst_spect_discard( const bcore_inst_s* o, vd_t obj );
-void bcore_inst_typed_discard(             tp_t type, vd_t obj );
-void bcore_inst_aware_discard(                        vd_t obj );
+void bcore_inst_typed_init(         tp_t type, vd_t obj );
+void bcore_inst_typed_down(         tp_t type, vd_t obj );
+void bcore_inst_typed_copy(         tp_t type, vd_t dst, vc_t src );
+void bcore_inst_typed_copy_typed(   tp_t type, vd_t dst, tp_t src_type, vc_t src );
+vd_t bcore_inst_typed_create(       tp_t type );
+vd_t bcore_inst_typed_create_typed( tp_t type, tp_t otp, vc_t obj );
+void bcore_inst_typed_move(         tp_t type, vd_t dst, vd_t src );
+void bcore_inst_typed_discard(      tp_t type, vd_t obj );
+vd_t bcore_inst_typed_clone(        tp_t type, vc_t obj );
 
-vd_t bcore_inst_spect_clone( const bcore_inst_s* o, vc_t obj );
-vd_t bcore_inst_typed_clone(             tp_t type, vc_t obj );
-vd_t bcore_inst_aware_clone(                        vc_t obj );
+void bcore_inst_aware_down(         vd_t obj );
+void bcore_inst_aware_copy(         vd_t dst, vc_t src );
+void bcore_inst_aware_copy_typed(   vd_t dst, tp_t src_type, vc_t src );
+void bcore_inst_aware_move(         vd_t dst, vd_t src );
+void bcore_inst_aware_discard(      vd_t obj );
+vd_t bcore_inst_aware_clone(        vc_t obj );
 
-void bcore_inst_spect_check_sanity( const bcore_inst_s* o, vc_t obj );
-void bcore_inst_typed_check_sanity(             tp_t type, vc_t obj );
-void bcore_inst_aware_check_sanity(                        vc_t obj );
+void bcore_inst_discard( sr_s o ); // only discards when o is a strong reference; does nothing otherwise
+vd_t bcore_inst_clone(   sr_s o );
 
 /** This function checks the instance's size with c-style sizeof( object ).
  *  It can be used as low-level safeguard against changing the c-structure

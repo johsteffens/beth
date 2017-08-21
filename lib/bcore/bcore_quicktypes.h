@@ -38,6 +38,15 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_bl_t                     1848869304
 #define TYPEOF_aware_t                  1507719906
 #define TYPEOF_bcore_flect_self_s        556415048
+#define TYPEOF_bcore_inst_s             1413406849
+#define TYPEOF_bcore_array_s            3532252466
+#define TYPEOF_bcore_via_s              2457308211
+#define TYPEOF_bcore_source_s           3124187480
+#define TYPEOF_bcore_sink_s             3577023038
+#define TYPEOF_bcore_compare_s           310299276
+#define TYPEOF_bcore_closure_s          3994021118
+#define TYPEOF_bcore_interpreter_s       695223265
+#define TYPEOF_bcore_translator_s       1770092211
 
 // frequently used types
 #define TYPEOF_bcore_string_s           2419449576
