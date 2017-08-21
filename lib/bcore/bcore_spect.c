@@ -158,7 +158,8 @@ bcore_string_s* bcore_spect_status()
         sz_t count = bcore_hmap_tpsz_s_idx_val( hist, i );
         if( key )
         {
-            vd_t pair = bcore_array_spect_push( nc_arr_a, nc_arr, rf_null() ).o;
+            bcore_array_spect_push( nc_arr_a, nc_arr, rf_null() );
+            vd_t pair = bcore_array_spect_get_last( nc_arr_a, nc_arr ).o;
             bcore_via_aware_nset_tp( pair, typeof( "type" ),  key   );
             bcore_via_aware_nset_sz( pair, typeof( "count" ), count );
         }

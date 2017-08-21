@@ -468,7 +468,9 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                         {
                             dt_p dst;
                             dst.t = type_l;
-                            dst.o = bcore_array_spect_push( arr_p, element, rf_null() ).o;
+                            bcore_array_spect_push( arr_p, element, rf_null() );
+                            dst.o = bcore_array_spect_get_last( arr_p, element ).o;
+
                             interpret_body( o, src, dst );
                         }
                     }

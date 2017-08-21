@@ -56,19 +56,19 @@ const bcore_via_s* bcore_via_s_get_aware( vc_t obj  );
 sz_t                 bcore_via_spect_get_size      ( const bcore_via_s* p                     ); // Number of items
 tp_t                 bcore_via_spect_iget_name     ( const bcore_via_s* p,         sz_t index ); // Returns name for given index
 rf_s                 bcore_via_spect_iget          ( const bcore_via_s* p, vc_t o, sz_t index           ); // Returns indexed reference
-rf_s                 bcore_via_spect_iset          ( const bcore_via_s* p, vd_t o, sz_t index, rf_s src ); // Sets indexed const item.
+void                 bcore_via_spect_iset          ( const bcore_via_s* p, vd_t o, sz_t index, rf_s src ); // Sets indexed const item.
 tp_t                 bcore_via_spect_iget_type     ( const bcore_via_s* p, vc_t o, sz_t index           ); // Returns type of object
 
 //TODO: remove iget_c and iget_d (incompatible with shell types)
 vc_t                 bcore_via_spect_iget_c        ( const bcore_via_s* p, vc_t o, sz_t index ); // Returns indexed const item.
 vd_t                 bcore_via_spect_iget_d        ( const bcore_via_s* p, vd_t o, sz_t index ); // Returns indexed item.
-rf_s                 bcore_via_spect_iset_s3       ( const bcore_via_s* p, vd_t o, sz_t index, s3_t val ); // Sets (internal) item by converting s3_t into target type
-rf_s                 bcore_via_spect_iset_u3       ( const bcore_via_s* p, vd_t o, sz_t index, u3_t val ); // Sets (internal) item by converting u3_t into target type
-rf_s                 bcore_via_spect_iset_f3       ( const bcore_via_s* p, vd_t o, sz_t index, f3_t val ); // Sets (internal) item by converting f3_t into target type
-rf_s                 bcore_via_spect_iset_sz       ( const bcore_via_s* p, vd_t o, sz_t index, sz_t val ); // Sets (internal) item by converting sz_t into target type
-rf_s                 bcore_via_spect_iset_sc       ( const bcore_via_s* p, vd_t o, sz_t index, sc_t val ); // Sets (internal) item by converting sc_t into target type
-rf_s                 bcore_via_spect_iset_bl       ( const bcore_via_s* p, vd_t o, sz_t index, bl_t val ); // Sets (internal) item by converting bl_t into target type
-rf_s                 bcore_via_spect_iset_tp       ( const bcore_via_s* p, vd_t o, sz_t index, tp_t val ); // Sets (internal) item by converting tp_t into target type
+void                 bcore_via_spect_iset_s3       ( const bcore_via_s* p, vd_t o, sz_t index, s3_t val ); // Sets (internal) item by converting s3_t into target type
+void                 bcore_via_spect_iset_u3       ( const bcore_via_s* p, vd_t o, sz_t index, u3_t val ); // Sets (internal) item by converting u3_t into target type
+void                 bcore_via_spect_iset_f3       ( const bcore_via_s* p, vd_t o, sz_t index, f3_t val ); // Sets (internal) item by converting f3_t into target type
+void                 bcore_via_spect_iset_sz       ( const bcore_via_s* p, vd_t o, sz_t index, sz_t val ); // Sets (internal) item by converting sz_t into target type
+void                 bcore_via_spect_iset_sc       ( const bcore_via_s* p, vd_t o, sz_t index, sc_t val ); // Sets (internal) item by converting sc_t into target type
+void                 bcore_via_spect_iset_bl       ( const bcore_via_s* p, vd_t o, sz_t index, bl_t val ); // Sets (internal) item by converting bl_t into target type
+void                 bcore_via_spect_iset_tp       ( const bcore_via_s* p, vd_t o, sz_t index, tp_t val ); // Sets (internal) item by converting tp_t into target type
 const bcore_vitem_s* bcore_via_spect_iget_vitem    ( const bcore_via_s* p,         sz_t index ); // Returns bcore_vitem_s structure;
 const bcore_via_s*   bcore_via_spect_iget_via      ( const bcore_via_s* p,         sz_t index ); // Returns via perspective for item
 const bcore_array_s* bcore_via_spect_iget_array    ( const bcore_via_s* p,         sz_t index ); // Returns array perspective for item; return NULL when item is no array
@@ -77,16 +77,16 @@ vc_t                 bcore_via_spect_iget_spect    ( const bcore_via_s* p, vc_t 
 /// Access by name. Error when object has no element of given name.
 sz_t                 bcore_via_spect_nget_index    ( const bcore_via_s* p,         tp_t name ); // Returns index for given name
 rf_s                 bcore_via_spect_nget          ( const bcore_via_s* p, vc_t o, tp_t name           );
-rf_s                 bcore_via_spect_nset          ( const bcore_via_s* p, vd_t o, tp_t name, rf_s src );
+void                 bcore_via_spect_nset          ( const bcore_via_s* p, vd_t o, tp_t name, rf_s src );
 vc_t                 bcore_via_spect_nget_c        ( const bcore_via_s* p, vc_t o, tp_t name );
 vd_t                 bcore_via_spect_nget_d        ( const bcore_via_s* p, vd_t o, tp_t name );
-rf_s                 bcore_via_spect_nset_s3       ( const bcore_via_s* p, vd_t o, tp_t name, s3_t val );
-rf_s                 bcore_via_spect_nset_u3       ( const bcore_via_s* p, vd_t o, tp_t name, u3_t val );
-rf_s                 bcore_via_spect_nset_f3       ( const bcore_via_s* p, vd_t o, tp_t name, f3_t val );
-rf_s                 bcore_via_spect_nset_sz       ( const bcore_via_s* p, vd_t o, tp_t name, sz_t val );
-rf_s                 bcore_via_spect_nset_sc       ( const bcore_via_s* p, vd_t o, tp_t name, sc_t val );
-rf_s                 bcore_via_spect_nset_bl       ( const bcore_via_s* p, vd_t o, tp_t name, bl_t val );
-rf_s                 bcore_via_spect_nset_tp       ( const bcore_via_s* p, vd_t o, tp_t name, tp_t val );
+void                 bcore_via_spect_nset_s3       ( const bcore_via_s* p, vd_t o, tp_t name, s3_t val );
+void                 bcore_via_spect_nset_u3       ( const bcore_via_s* p, vd_t o, tp_t name, u3_t val );
+void                 bcore_via_spect_nset_f3       ( const bcore_via_s* p, vd_t o, tp_t name, f3_t val );
+void                 bcore_via_spect_nset_sz       ( const bcore_via_s* p, vd_t o, tp_t name, sz_t val );
+void                 bcore_via_spect_nset_sc       ( const bcore_via_s* p, vd_t o, tp_t name, sc_t val );
+void                 bcore_via_spect_nset_bl       ( const bcore_via_s* p, vd_t o, tp_t name, bl_t val );
+void                 bcore_via_spect_nset_tp       ( const bcore_via_s* p, vd_t o, tp_t name, tp_t val );
 const bcore_vitem_s* bcore_via_spect_nget_vitem    ( const bcore_via_s* p,         tp_t name );
 const bcore_via_s*   bcore_via_spect_nget_via      ( const bcore_via_s* p,         tp_t name );
 const bcore_array_s* bcore_via_spect_nget_array    ( const bcore_via_s* p,         tp_t name );
@@ -102,16 +102,16 @@ bl_t bcore_via_spect_iis_link(      const bcore_via_s* p, sz_t index ); // check
 /// Access by name for typed objects. Error when object has no element of given name.
 sz_t                 bcore_via_typed_get_size      ( tp_t tp                              );
 rf_s                 bcore_via_typed_nget          ( tp_t tp, vc_t o, tp_t name           );
-rf_s                 bcore_via_typed_nset          ( tp_t tp, vd_t o, tp_t name, rf_s src );
+void                 bcore_via_typed_nset          ( tp_t tp, vd_t o, tp_t name, rf_s src );
 vc_t                 bcore_via_typed_nget_c        ( tp_t tp, vc_t o, tp_t name );
 vd_t                 bcore_via_typed_nget_d        ( tp_t tp, vd_t o, tp_t name );
-rf_s                 bcore_via_typed_nset_s3       ( tp_t tp, vd_t o, tp_t name, s3_t val );
-rf_s                 bcore_via_typed_nset_u3       ( tp_t tp, vd_t o, tp_t name, u3_t val );
-rf_s                 bcore_via_typed_nset_f3       ( tp_t tp, vd_t o, tp_t name, f3_t val );
-rf_s                 bcore_via_typed_nset_sz       ( tp_t tp, vd_t o, tp_t name, sz_t val );
-rf_s                 bcore_via_typed_nset_sc       ( tp_t tp, vd_t o, tp_t name, sc_t val );
-rf_s                 bcore_via_typed_nset_bl       ( tp_t tp, vd_t o, tp_t name, bl_t val );
-rf_s                 bcore_via_typed_nset_tp       ( tp_t tp, vd_t o, tp_t name, tp_t val );
+void                 bcore_via_typed_nset_s3       ( tp_t tp, vd_t o, tp_t name, s3_t val );
+void                 bcore_via_typed_nset_u3       ( tp_t tp, vd_t o, tp_t name, u3_t val );
+void                 bcore_via_typed_nset_f3       ( tp_t tp, vd_t o, tp_t name, f3_t val );
+void                 bcore_via_typed_nset_sz       ( tp_t tp, vd_t o, tp_t name, sz_t val );
+void                 bcore_via_typed_nset_sc       ( tp_t tp, vd_t o, tp_t name, sc_t val );
+void                 bcore_via_typed_nset_bl       ( tp_t tp, vd_t o, tp_t name, bl_t val );
+void                 bcore_via_typed_nset_tp       ( tp_t tp, vd_t o, tp_t name, tp_t val );
 const bcore_vitem_s* bcore_via_typed_nget_vitem    ( tp_t tp,         tp_t name );
 const bcore_via_s*   bcore_via_typed_nget_via      ( tp_t tp,         tp_t name );
 const bcore_array_s* bcore_via_typed_nget_array    ( tp_t tp,         tp_t name );
@@ -120,16 +120,16 @@ vc_t                 bcore_via_typed_nget_spect    ( tp_t tp, vc_t o, tp_t name,
 /// Access by name for aware objects. Error when object has no element of given name.
 sz_t                 bcore_via_aware_get_size      ( vc_t o                      );
 rf_s                 bcore_via_aware_nget          ( vc_t o, tp_t name           );
-rf_s                 bcore_via_aware_nset          ( vd_t o, tp_t name, rf_s src );
+void                 bcore_via_aware_nset          ( vd_t o, tp_t name, rf_s src );
 vc_t                 bcore_via_aware_nget_c        ( vc_t o, tp_t name );
 vd_t                 bcore_via_aware_nget_d        ( vd_t o, tp_t name );
-rf_s                 bcore_via_aware_nset_s3       ( vd_t o, tp_t name, s3_t val );
-rf_s                 bcore_via_aware_nset_u3       ( vd_t o, tp_t name, u3_t val );
-rf_s                 bcore_via_aware_nset_f3       ( vd_t o, tp_t name, f3_t val );
-rf_s                 bcore_via_aware_nset_sz       ( vd_t o, tp_t name, sz_t val );
-rf_s                 bcore_via_aware_nset_sc       ( vd_t o, tp_t name, sc_t val );
-rf_s                 bcore_via_aware_nset_bl       ( vd_t o, tp_t name, bl_t val );
-rf_s                 bcore_via_aware_nset_tp       ( vd_t o, tp_t name, tp_t val );
+void                 bcore_via_aware_nset_s3       ( vd_t o, tp_t name, s3_t val );
+void                 bcore_via_aware_nset_u3       ( vd_t o, tp_t name, u3_t val );
+void                 bcore_via_aware_nset_f3       ( vd_t o, tp_t name, f3_t val );
+void                 bcore_via_aware_nset_sz       ( vd_t o, tp_t name, sz_t val );
+void                 bcore_via_aware_nset_sc       ( vd_t o, tp_t name, sc_t val );
+void                 bcore_via_aware_nset_bl       ( vd_t o, tp_t name, bl_t val );
+void                 bcore_via_aware_nset_tp       ( vd_t o, tp_t name, tp_t val );
 const bcore_vitem_s* bcore_via_aware_nget_vitem    ( vc_t o, tp_t name );
 const bcore_via_s*   bcore_via_aware_nget_via      ( vc_t o, tp_t name );
 const bcore_array_s* bcore_via_aware_nget_array    ( vc_t o, tp_t name );
@@ -139,32 +139,32 @@ sz_t                 bcore_via_get_size      ( sr_s o                      );
 
 tp_t                 bcore_via_iget_name     ( sr_s o, sz_t index ); // Returns name for given index
 rf_s                 bcore_via_iget          ( sr_s o, sz_t index           );
-rf_s                 bcore_via_iset          ( sr_s o, sz_t index, rf_s src );
+void                 bcore_via_iset          ( sr_s o, sz_t index, rf_s src );
 vc_t                 bcore_via_iget_c        ( sr_s o, sz_t index );
 vd_t                 bcore_via_iget_d        ( sr_s o, sz_t index );
-rf_s                 bcore_via_iset_s3       ( sr_s o, sz_t index, s3_t val );
-rf_s                 bcore_via_iset_u3       ( sr_s o, sz_t index, u3_t val );
-rf_s                 bcore_via_iset_f3       ( sr_s o, sz_t index, f3_t val );
-rf_s                 bcore_via_iset_sz       ( sr_s o, sz_t index, sz_t val );
-rf_s                 bcore_via_iset_sc       ( sr_s o, sz_t index, sc_t val );
-rf_s                 bcore_via_iset_bl       ( sr_s o, sz_t index, bl_t val );
-rf_s                 bcore_via_iset_tp       ( sr_s o, sz_t index, tp_t val );
+void                 bcore_via_iset_s3       ( sr_s o, sz_t index, s3_t val );
+void                 bcore_via_iset_u3       ( sr_s o, sz_t index, u3_t val );
+void                 bcore_via_iset_f3       ( sr_s o, sz_t index, f3_t val );
+void                 bcore_via_iset_sz       ( sr_s o, sz_t index, sz_t val );
+void                 bcore_via_iset_sc       ( sr_s o, sz_t index, sc_t val );
+void                 bcore_via_iset_bl       ( sr_s o, sz_t index, bl_t val );
+void                 bcore_via_iset_tp       ( sr_s o, sz_t index, tp_t val );
 const bcore_vitem_s* bcore_via_iget_vitem    ( sr_s o, sz_t index );
 const bcore_via_s*   bcore_via_iget_via      ( sr_s o, sz_t index );
 const bcore_array_s* bcore_via_iget_array    ( sr_s o, sz_t index );
 vc_t                 bcore_via_iget_spect    ( sr_s o, sz_t index, tp_t stp );
 
 rf_s                 bcore_via_nget          ( sr_s o, tp_t name           );
-rf_s                 bcore_via_nset          ( sr_s o, tp_t name, rf_s src );
+void                 bcore_via_nset          ( sr_s o, tp_t name, rf_s src );
 vc_t                 bcore_via_nget_c        ( sr_s o, tp_t name );
 vd_t                 bcore_via_nget_d        ( sr_s o, tp_t name );
-rf_s                 bcore_via_nset_s3       ( sr_s o, tp_t name, s3_t val );
-rf_s                 bcore_via_nset_u3       ( sr_s o, tp_t name, u3_t val );
-rf_s                 bcore_via_nset_f3       ( sr_s o, tp_t name, f3_t val );
-rf_s                 bcore_via_nset_sz       ( sr_s o, tp_t name, sz_t val );
-rf_s                 bcore_via_nset_sc       ( sr_s o, tp_t name, sc_t val );
-rf_s                 bcore_via_nset_bl       ( sr_s o, tp_t name, bl_t val );
-rf_s                 bcore_via_nset_tp       ( sr_s o, tp_t name, tp_t val );
+void                 bcore_via_nset_s3       ( sr_s o, tp_t name, s3_t val );
+void                 bcore_via_nset_u3       ( sr_s o, tp_t name, u3_t val );
+void                 bcore_via_nset_f3       ( sr_s o, tp_t name, f3_t val );
+void                 bcore_via_nset_sz       ( sr_s o, tp_t name, sz_t val );
+void                 bcore_via_nset_sc       ( sr_s o, tp_t name, sc_t val );
+void                 bcore_via_nset_bl       ( sr_s o, tp_t name, bl_t val );
+void                 bcore_via_nset_tp       ( sr_s o, tp_t name, tp_t val );
 const bcore_vitem_s* bcore_via_nget_vitem    ( sr_s o, tp_t name );
 const bcore_via_s*   bcore_via_nget_via      ( sr_s o, tp_t name );
 const bcore_array_s* bcore_via_nget_array    ( sr_s o, tp_t name );

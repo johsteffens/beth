@@ -32,7 +32,7 @@ typedef struct bcore_array_s
     sz_t ( *get_size    )( const bcore_array_s* p, vc_t o );             // returns size
     sz_t ( *get_space   )( const bcore_array_s* p, vc_t o );             // returns space
     rf_s ( *get         )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL reference if index is out of range or the linked item is NULL
-    rf_s ( *set         )( const bcore_array_s* p, vd_t o, sz_t index, rf_s src ); // sets item at indexed position; if index is out of size, size is increased
+    void ( *set         )( const bcore_array_s* p, vd_t o, sz_t index, rf_s src ); // sets item at indexed position; if index is out of size, size is increased
 
 } bcore_array_s;
 
@@ -65,24 +65,24 @@ tp_t bcore_static_link_array_type_of( tp_t type );
 sz_t bcore_array_spect_get_size     ( const bcore_array_s* p, vc_t o );             // returns size
 sz_t bcore_array_spect_get_space    ( const bcore_array_s* p, vc_t o );             // returns space
 rf_s bcore_array_spect_get          ( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL if index is out of range or the linked item is NULL
-rf_s bcore_array_spect_set          ( const bcore_array_s* p, vd_t o, sz_t index, rf_s src ); // sets item at indexed position
-rf_s bcore_array_spect_set_s3       ( const bcore_array_s* p, vd_t o, sz_t index, s3_t val ); // Sets item by converting s3_t into target type
-rf_s bcore_array_spect_set_u3       ( const bcore_array_s* p, vd_t o, sz_t index, u3_t val ); // Sets item by converting u3_t into target type
-rf_s bcore_array_spect_set_f3       ( const bcore_array_s* p, vd_t o, sz_t index, f3_t val ); // Sets item by converting f3_t into target type
-rf_s bcore_array_spect_set_sz       ( const bcore_array_s* p, vd_t o, sz_t index, sz_t val ); // Sets item by converting sz_t into target type
-rf_s bcore_array_spect_set_sc       ( const bcore_array_s* p, vd_t o, sz_t index, sc_t val ); // Sets item by converting sc_t into target type
-rf_s bcore_array_spect_set_bl       ( const bcore_array_s* p, vd_t o, sz_t index, bl_t val ); // Sets item by converting bl_t into target type
+void bcore_array_spect_set          ( const bcore_array_s* p, vd_t o, sz_t index, rf_s src ); // sets item at indexed position
+void bcore_array_spect_set_s3       ( const bcore_array_s* p, vd_t o, sz_t index, s3_t val ); // Sets item by converting s3_t into target type
+void bcore_array_spect_set_u3       ( const bcore_array_s* p, vd_t o, sz_t index, u3_t val ); // Sets item by converting u3_t into target type
+void bcore_array_spect_set_f3       ( const bcore_array_s* p, vd_t o, sz_t index, f3_t val ); // Sets item by converting f3_t into target type
+void bcore_array_spect_set_sz       ( const bcore_array_s* p, vd_t o, sz_t index, sz_t val ); // Sets item by converting sz_t into target type
+void bcore_array_spect_set_sc       ( const bcore_array_s* p, vd_t o, sz_t index, sc_t val ); // Sets item by converting sc_t into target type
+void bcore_array_spect_set_bl       ( const bcore_array_s* p, vd_t o, sz_t index, bl_t val ); // Sets item by converting bl_t into target type
 void bcore_array_spect_set_size     ( const bcore_array_s* p, vd_t o, sz_t size  ); // changes array size (keeping previous data); for linked arrays new items are NULL
 void bcore_array_spect_set_space    ( const bcore_array_s* p, vd_t o, sz_t space ); // changes space (can affect size; set space to zero means clearing the array)
 rf_s bcore_array_spect_get_first    ( const bcore_array_s* p, vc_t o );             // returns first item; NULL if array is empty
 rf_s bcore_array_spect_get_last     ( const bcore_array_s* p, vc_t o );             // returns last item; NULL if array is empty
-rf_s bcore_array_spect_push         ( const bcore_array_s* p, vd_t o, rf_s src );   // push
-rf_s bcore_array_spect_push_s3      ( const bcore_array_s* p, vd_t o, s3_t val );   // pushes (converted) value
-rf_s bcore_array_spect_push_u3      ( const bcore_array_s* p, vd_t o, u3_t val );   // pushes (converted) value
-rf_s bcore_array_spect_push_f3      ( const bcore_array_s* p, vd_t o, f3_t val );   // pushes (converted) value
-rf_s bcore_array_spect_push_sz      ( const bcore_array_s* p, vd_t o, sz_t val );   // pushes (converted) value
-rf_s bcore_array_spect_push_sc      ( const bcore_array_s* p, vd_t o, sc_t val );   // pushes (converted) value
-rf_s bcore_array_spect_push_bl      ( const bcore_array_s* p, vd_t o, bl_t val );   // pushes (converted) value
+void bcore_array_spect_push         ( const bcore_array_s* p, vd_t o, rf_s src );   // push
+void bcore_array_spect_push_s3      ( const bcore_array_s* p, vd_t o, s3_t val );   // pushes (converted) value
+void bcore_array_spect_push_u3      ( const bcore_array_s* p, vd_t o, u3_t val );   // pushes (converted) value
+void bcore_array_spect_push_f3      ( const bcore_array_s* p, vd_t o, f3_t val );   // pushes (converted) value
+void bcore_array_spect_push_sz      ( const bcore_array_s* p, vd_t o, sz_t val );   // pushes (converted) value
+void bcore_array_spect_push_sc      ( const bcore_array_s* p, vd_t o, sc_t val );   // pushes (converted) value
+void bcore_array_spect_push_bl      ( const bcore_array_s* p, vd_t o, bl_t val );   // pushes (converted) value
 void bcore_array_spect_pop          ( const bcore_array_s* p, vd_t o );             // removes last element from array
 void bcore_array_spect_set_gtype    ( const bcore_array_s* p, vd_t o, tp_t type  ); // changes global item-type on empty arrays;
 
@@ -119,24 +119,24 @@ void bcore_array_spect_sort(      const bcore_array_s* p, vd_t o, sz_t start, sz
 sz_t bcore_array_typed_get_size             ( tp_t tp, vc_t o );
 sz_t bcore_array_typed_get_space            ( tp_t tp, vc_t o );
 rf_s bcore_array_typed_get                  ( tp_t tp, vc_t o, sz_t index );
-rf_s bcore_array_typed_set                  ( tp_t tp, vd_t o, sz_t index, rf_s src );
-rf_s bcore_array_typed_set_s3               ( tp_t tp, vd_t o, sz_t index, s3_t val );
-rf_s bcore_array_typed_set_u3               ( tp_t tp, vd_t o, sz_t index, u3_t val );
-rf_s bcore_array_typed_set_f3               ( tp_t tp, vd_t o, sz_t index, f3_t val );
-rf_s bcore_array_typed_set_sz               ( tp_t tp, vd_t o, sz_t index, sz_t val );
-rf_s bcore_array_typed_set_sc               ( tp_t tp, vd_t o, sz_t index, sc_t val );
-rf_s bcore_array_typed_set_bl               ( tp_t tp, vd_t o, sz_t index, bl_t val );
+void bcore_array_typed_set                  ( tp_t tp, vd_t o, sz_t index, rf_s src );
+void bcore_array_typed_set_s3               ( tp_t tp, vd_t o, sz_t index, s3_t val );
+void bcore_array_typed_set_u3               ( tp_t tp, vd_t o, sz_t index, u3_t val );
+void bcore_array_typed_set_f3               ( tp_t tp, vd_t o, sz_t index, f3_t val );
+void bcore_array_typed_set_sz               ( tp_t tp, vd_t o, sz_t index, sz_t val );
+void bcore_array_typed_set_sc               ( tp_t tp, vd_t o, sz_t index, sc_t val );
+void bcore_array_typed_set_bl               ( tp_t tp, vd_t o, sz_t index, bl_t val );
 void bcore_array_typed_set_size             ( tp_t tp, vd_t o, sz_t size  );
 void bcore_array_typed_set_space            ( tp_t tp, vd_t o, sz_t space );
 rf_s bcore_array_typed_get_first            ( tp_t tp, vc_t o );
 rf_s bcore_array_typed_get_last             ( tp_t tp, vc_t o );
-rf_s bcore_array_typed_push                 ( tp_t tp, vd_t o, rf_s src );
-rf_s bcore_array_typed_push_s3              ( tp_t tp, vd_t o, s3_t val );
-rf_s bcore_array_typed_push_u3              ( tp_t tp, vd_t o, u3_t val );
-rf_s bcore_array_typed_push_f3              ( tp_t tp, vd_t o, f3_t val );
-rf_s bcore_array_typed_push_sz              ( tp_t tp, vd_t o, sz_t val );
-rf_s bcore_array_typed_push_sc              ( tp_t tp, vd_t o, sc_t val );
-rf_s bcore_array_typed_push_bl              ( tp_t tp, vd_t o, bl_t val );
+void bcore_array_typed_push                 ( tp_t tp, vd_t o, rf_s src );
+void bcore_array_typed_push_s3              ( tp_t tp, vd_t o, s3_t val );
+void bcore_array_typed_push_u3              ( tp_t tp, vd_t o, u3_t val );
+void bcore_array_typed_push_f3              ( tp_t tp, vd_t o, f3_t val );
+void bcore_array_typed_push_sz              ( tp_t tp, vd_t o, sz_t val );
+void bcore_array_typed_push_sc              ( tp_t tp, vd_t o, sc_t val );
+void bcore_array_typed_push_bl              ( tp_t tp, vd_t o, bl_t val );
 void bcore_array_typed_pop                  ( tp_t tp, vd_t o );
 void bcore_array_typed_set_gtype            ( tp_t tp, vd_t o, tp_t type  );
 bl_t bcore_array_typed_is_static            ( tp_t tp );
@@ -158,25 +158,25 @@ void bcore_array_typed_sort                 ( tp_t tp, vd_t o, sz_t start, sz_t 
 sz_t bcore_array_aware_get_size             ( vc_t o );
 sz_t bcore_array_aware_get_space            ( vc_t o );
 rf_s bcore_array_aware_get                  ( vc_t o, sz_t index );
-rf_s bcore_array_aware_set                  ( vd_t o, sz_t index, rf_s src );
-rf_s bcore_array_aware_set_c                ( vd_t o, sz_t index, rf_s src );
-rf_s bcore_array_aware_set_s3               ( vd_t o, sz_t index, s3_t val );
-rf_s bcore_array_aware_set_u3               ( vd_t o, sz_t index, u3_t val );
-rf_s bcore_array_aware_set_f3               ( vd_t o, sz_t index, f3_t val );
-rf_s bcore_array_aware_set_sz               ( vd_t o, sz_t index, sz_t val );
-rf_s bcore_array_aware_set_sc               ( vd_t o, sz_t index, sc_t val );
-rf_s bcore_array_aware_set_bl               ( vd_t o, sz_t index, bl_t val );
+void bcore_array_aware_set                  ( vd_t o, sz_t index, rf_s src );
+void bcore_array_aware_set_c                ( vd_t o, sz_t index, rf_s src );
+void bcore_array_aware_set_s3               ( vd_t o, sz_t index, s3_t val );
+void bcore_array_aware_set_u3               ( vd_t o, sz_t index, u3_t val );
+void bcore_array_aware_set_f3               ( vd_t o, sz_t index, f3_t val );
+void bcore_array_aware_set_sz               ( vd_t o, sz_t index, sz_t val );
+void bcore_array_aware_set_sc               ( vd_t o, sz_t index, sc_t val );
+void bcore_array_aware_set_bl               ( vd_t o, sz_t index, bl_t val );
 void bcore_array_aware_set_size             ( vd_t o, sz_t size  );
 void bcore_array_aware_set_space            ( vd_t o, sz_t space );
 rf_s bcore_array_aware_get_first            ( vc_t o );
 rf_s bcore_array_aware_get_last             ( vc_t o );
-rf_s bcore_array_aware_push                 ( vd_t o, rf_s src );
-rf_s bcore_array_aware_push_s3              ( vd_t o, s3_t val );
-rf_s bcore_array_aware_push_u3              ( vd_t o, u3_t val );
-rf_s bcore_array_aware_push_f3              ( vd_t o, f3_t val );
-rf_s bcore_array_aware_push_sz              ( vd_t o, sz_t val );
-rf_s bcore_array_aware_push_sc              ( vd_t o, sc_t val );
-rf_s bcore_array_aware_push_bl              ( vd_t o, bl_t val );
+void bcore_array_aware_push                 ( vd_t o, rf_s src );
+void bcore_array_aware_push_s3              ( vd_t o, s3_t val );
+void bcore_array_aware_push_u3              ( vd_t o, u3_t val );
+void bcore_array_aware_push_f3              ( vd_t o, f3_t val );
+void bcore_array_aware_push_sz              ( vd_t o, sz_t val );
+void bcore_array_aware_push_sc              ( vd_t o, sc_t val );
+void bcore_array_aware_push_bl              ( vd_t o, bl_t val );
 void bcore_array_aware_pop                  ( vd_t o );
 void bcore_array_aware_set_gtype            ( vd_t o, tp_t type  );
 bl_t bcore_array_aware_is_static            ( vc_t o );
@@ -198,25 +198,25 @@ void bcore_array_aware_sort                 ( vd_t o, sz_t start, sz_t end, s2_t
 sz_t bcore_array_get_size             ( sr_s o );
 sz_t bcore_array_get_space            ( sr_s o );
 rf_s bcore_array_get                  ( sr_s o, sz_t index );
-rf_s bcore_array_set                  ( sr_s o, sz_t index, rf_s src );
-rf_s bcore_array_set_c                ( sr_s o, sz_t index, rf_s src );
-rf_s bcore_array_set_s3               ( sr_s o, sz_t index, s3_t val );
-rf_s bcore_array_set_u3               ( sr_s o, sz_t index, u3_t val );
-rf_s bcore_array_set_f3               ( sr_s o, sz_t index, f3_t val );
-rf_s bcore_array_set_sz               ( sr_s o, sz_t index, sz_t val );
-rf_s bcore_array_set_sc               ( sr_s o, sz_t index, sc_t val );
-rf_s bcore_array_set_bl               ( sr_s o, sz_t index, bl_t val );
+void bcore_array_set                  ( sr_s o, sz_t index, rf_s src );
+void bcore_array_set_c                ( sr_s o, sz_t index, rf_s src );
+void bcore_array_set_s3               ( sr_s o, sz_t index, s3_t val );
+void bcore_array_set_u3               ( sr_s o, sz_t index, u3_t val );
+void bcore_array_set_f3               ( sr_s o, sz_t index, f3_t val );
+void bcore_array_set_sz               ( sr_s o, sz_t index, sz_t val );
+void bcore_array_set_sc               ( sr_s o, sz_t index, sc_t val );
+void bcore_array_set_bl               ( sr_s o, sz_t index, bl_t val );
 void bcore_array_set_size             ( sr_s o, sz_t size  );
 void bcore_array_set_space            ( sr_s o, sz_t space );
 rf_s bcore_array_get_first            ( sr_s o );
 rf_s bcore_array_get_last             ( sr_s o );
-rf_s bcore_array_push                 ( sr_s o, rf_s src );
-rf_s bcore_array_push_s3              ( sr_s o, s3_t val );
-rf_s bcore_array_push_u3              ( sr_s o, u3_t val );
-rf_s bcore_array_push_f3              ( sr_s o, f3_t val );
-rf_s bcore_array_push_sz              ( sr_s o, sz_t val );
-rf_s bcore_array_push_sc              ( sr_s o, sc_t val );
-rf_s bcore_array_push_bl              ( sr_s o, bl_t val );
+void bcore_array_push                 ( sr_s o, rf_s src );
+void bcore_array_push_s3              ( sr_s o, s3_t val );
+void bcore_array_push_u3              ( sr_s o, u3_t val );
+void bcore_array_push_f3              ( sr_s o, f3_t val );
+void bcore_array_push_sz              ( sr_s o, sz_t val );
+void bcore_array_push_sc              ( sr_s o, sc_t val );
+void bcore_array_push_bl              ( sr_s o, bl_t val );
 void bcore_array_pop                  ( sr_s o );
 void bcore_array_set_gtype            ( sr_s o, tp_t type  );
 bl_t bcore_array_is_static            ( sr_s o );

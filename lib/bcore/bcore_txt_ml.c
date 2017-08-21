@@ -16,7 +16,6 @@ DEFINE_FUNCTION_CREATE(     bcore_txt_ml_translator_s )
 DEFINE_FUNCTION_DISCARD(    bcore_txt_ml_translator_s )
 DEFINE_FUNCTION_CLONE(      bcore_txt_ml_translator_s )
 
-
 static sc_t name_of( tp_t type, bcore_string_s* buf )
 {
     sc_t n = bcore_name_try_name( type );
@@ -61,7 +60,10 @@ static void translate_body( const bcore_txt_ml_translator_s* o, tp_t name, sr_s 
         {
             sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
             sz_t size = bcore_array_get_size( arr_l );
-            for( sz_t i = 0; i < size; i++ ) translate_body( o, 0, sr_rf( bcore_array_get( arr_l, i ) ), sink_l, depth + 1 );
+            for( sz_t i = 0; i < size; i++ )
+            {
+                translate_body( o, 0, sr_rf( bcore_array_get( arr_l, i ) ), sink_l, depth + 1 );
+            }
         }
         else
         {
