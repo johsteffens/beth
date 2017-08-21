@@ -62,7 +62,7 @@ static void translate_body( const bcore_txt_ml_translator_s* o, tp_t name, sr_s 
             sz_t size = bcore_array_get_size( arr_l );
             for( sz_t i = 0; i < size; i++ )
             {
-                translate_body( o, 0, sr_rf( bcore_array_get( arr_l, i ) ), sink_l, depth + 1 );
+                translate_body( o, 0, bcore_array_get( arr_l, i ), sink_l, depth + 1 );
             }
         }
         else
@@ -70,7 +70,7 @@ static void translate_body( const bcore_txt_ml_translator_s* o, tp_t name, sr_s 
             sz_t size = bcore_via_spect_get_size( obj_l.p );
             for( sz_t i = 0; i < size; i++ )
             {
-                translate_body( o, bcore_via_iget_name( obj_l, i ), sr_rf( bcore_via_iget( obj_l, i ) ), sink_l, depth + 1 );
+                translate_body( o, bcore_via_iget_name( obj_l, i ), bcore_via_iget( obj_l, i ), sink_l, depth + 1 );
             }
         }
         bcore_sink_pushf( sink_l, "%s</>\n", ind->sc );
@@ -159,42 +159,37 @@ static bcore_string_s* translate_selftest( void )
 
     vd_t zoo = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_zoo ) );
     bcore_via_aware_nset_sc( zoo, typeof( "name" ), "Mesamurial" );
-    rf_s compounds = bcore_via_aware_nget( zoo, typeof( "compounds" ) );
+    sr_s compounds = bcore_life_s_push_sr( l, bcore_via_aware_nget( zoo, typeof( "compounds" ) ) );
     {
-        vd_t compound = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_compound ) );
-        bcore_via_aware_nset_u3( compound, typeof( "id" ), 254 );
-        bcore_via_aware_nset_sz( compound, typeof( "area" ), 1000 );
-        rf_s animals = bcore_via_aware_nget( compound, typeof( "animals" ) );
+        sr_s compound = bcore_life_s_push_sr( l, sr_asd( bcore_inst_typed_create( t_compound ) ) );
+        bcore_via_nset_u3( compound, typeof( "id" ), 254 );
+        bcore_via_nset_sz( compound, typeof( "area" ), 1000 );
+        sr_s animals = bcore_life_s_push_sr( l, bcore_via_nget( compound, typeof( "animals" ) ) );
         {
-            vd_t bird = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_animal ) );
-            bcore_via_aware_nset_sc( bird, typeof( "type" ), "Bird" );
-            bcore_via_aware_nset_f3( bird, typeof( "weight" ), 2.5 );
-            rf_s features = bcore_via_aware_nget( bird, typeof( "features" ) );
+            sr_s bird = bcore_life_s_push_sr( l, sr_asd( bcore_inst_typed_create( t_animal ) ) );
+            bcore_via_nset_sc( bird, typeof( "type" ), "Bird" );
+            bcore_via_nset_f3( bird, typeof( "weight" ), 2.5 );
+            sr_s features = bcore_life_s_push_sr( l, bcore_via_nget( bird, typeof( "features" ) ) );
             {
-                const bcore_array_s* arr_p = bcore_array_s_get_typed( features.t );
-                bcore_array_spect_push_sc( arr_p, features.o, "Owl" );
-                bcore_array_spect_push_sc( arr_p, features.o, "Night active" );
+                bcore_array_push_sc( features, "Owl" );
+                bcore_array_push_sc( features, "Night active" );
             }
-            const bcore_array_s* arr_p = bcore_array_s_get_typed( animals.t );
-            bcore_array_spect_push( arr_p, animals.o, rf_awc( bird ) );
+            bcore_array_push( animals, bird );
         }
         {
-            vd_t bird = bcore_life_s_push_aware( l, bcore_inst_typed_create( t_animal ) );
-            bcore_via_aware_nset_sc( bird, typeof( "type" ), "Bird" );
-            bcore_via_aware_nset_f3( bird, typeof( "weight" ), 2.5 );
-            rf_s features = bcore_via_aware_nget( bird, typeof( "features" ) );
+            sr_s bird = bcore_life_s_push_sr( l, sr_asd( bcore_inst_typed_create( t_animal ) ) );
+            bcore_via_nset_sc( bird, typeof( "type" ), "Bird" );
+            bcore_via_nset_f3( bird, typeof( "weight" ), 2.5 );
+            sr_s features = bcore_life_s_push_sr( l, bcore_via_nget( bird, typeof( "features" ) ) );
             {
-                const bcore_array_s* arr_p = bcore_array_s_get_typed( features.t );
-                bcore_array_spect_push_sc( arr_p, features.o, "Pidgin" );
-                bcore_array_spect_push_sc( arr_p, features.o, "Small" );
+                bcore_array_push_sc( features, "Pidgin" );
+                bcore_array_push_sc( features, "Small" );
             }
-            const bcore_array_s* arr_p = bcore_array_s_get_typed( animals.t );
-            bcore_array_spect_push( arr_p, animals.o, rf_awc( bird ) );
+            bcore_array_push( animals, bird );
         }
-        const bcore_array_s* arr_p = bcore_array_s_get_typed( compounds.t );
-        bcore_array_spect_push( arr_p, compounds.o, rf_awc( compound ) );
-        bcore_array_spect_push( arr_p, compounds.o, rf_null() );
-        bcore_array_spect_push( arr_p, compounds.o, rf_awc( compound ) );
+        bcore_array_push( compounds, compound );
+        bcore_array_push( compounds, sr_null() );
+        bcore_array_push( compounds, compound );
     }
 
     bcore_txt_ml_translator_s* ttxt_ml = bcore_life_s_push_aware( l, bcore_txt_ml_translator_s_create() );

@@ -462,13 +462,13 @@ static void interpret_body( const bcore_bml_interpreter_s* o, vd_t src, dt_p dst
                                 obj = interpret_object( o, src );
 
                             }
-                            bcore_array_spect_push( arr_p, element, rf_sd( obj.o, obj.t ) );
+                            bcore_array_spect_push( arr_p, element, sr_tsd( obj.t, obj.o ) );
                         }
                         else
                         {
                             dt_p dst;
                             dst.t = type_l;
-                            bcore_array_spect_push( arr_p, element, rf_null() );
+                            bcore_array_spect_push( arr_p, element, sr_null() );
                             dst.o = bcore_array_spect_get_last( arr_p, element ).o;
 
                             interpret_body( o, src, dst );
@@ -732,7 +732,7 @@ static bcore_string_s* translate_selftest( void )
         const bcore_via_s * specs_v = bcore_via_s_get_aware( specs );
         bcore_via_spect_nset_u3( specs_v, specs, typeof( "param1" ), 10 );
         bcore_via_spect_nset_s3( specs_v, specs, typeof( "param2" ), -3240 );
-        bcore_via_spect_nset(    specs_v, specs, typeof( "name" ), rf_asd( bcore_string_s_createf( "\"my string\"" ) ) );
+        bcore_via_spect_nset(    specs_v, specs, typeof( "name" ), sr_asd( bcore_string_s_createf( "\"my string\"" ) ) );
 
         {
             const bcore_array_s* numarr_p = bcore_via_spect_nget_array( specs_v, typeof( "numarr" ) );
@@ -743,10 +743,10 @@ static bcore_string_s* translate_selftest( void )
         {
             const bcore_array_s* strarr_p = bcore_via_spect_nget_array( specs_v, typeof( "strarr" ) );
             vd_t strarr = bcore_via_spect_nget_d( specs_v, specs, typeof( "strarr" ) );
-            for( sz_t i = 0; i < 10; i++ ) bcore_array_spect_push( strarr_p, strarr, rf_asd( bcore_string_s_createf( "<%zu>", i ) ) );
+            for( sz_t i = 0; i < 10; i++ ) bcore_array_spect_push( strarr_p, strarr, sr_asd( bcore_string_s_createf( "<%zu>", i ) ) );
         }
 
-        bcore_via_spect_nset( specs_v, specs, typeof( "child"  ), rf_asd( bcore_inst_aware_clone( specs ) ) );
+        bcore_via_spect_nset( specs_v, specs, typeof( "child"  ), sr_asd( bcore_inst_aware_clone( specs ) ) );
     }
 
     vd_t specs_arr = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "specs_arr" ) ) );
@@ -754,7 +754,7 @@ static bcore_string_s* translate_selftest( void )
         const bcore_array_s * arr_p = bcore_array_s_get_aware( specs_arr );
         for( sz_t i = 0; i < 2; i++ )
         {
-            bcore_array_spect_push( arr_p, specs_arr, rf_awc( specs ) );
+            bcore_array_spect_push( arr_p, specs_arr, sr_awc( specs ) );
         }
     }
 

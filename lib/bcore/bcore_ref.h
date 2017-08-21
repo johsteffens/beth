@@ -7,6 +7,7 @@
 
 #include "bcore_types.h"
 
+/*
 // general purpose reference (e.g. for via perspective)
 typedef struct
 {
@@ -26,7 +27,7 @@ static inline rf_s rf_asd( vd_t o )         { return ( rf_s ){ .o = ( vd_t )o, .
 static inline rf_s rf_null( void )          { return ( rf_s ){ .o = NULL, .t = 0, .s = 0, .c = 1 };  } // NULL reference
 static inline void rf_s_down( rf_s o )      { if( o.s && o.o ) bcore_inst_typed_discard( o.t, o.o ); } // discards object in case of strong reference
 static inline tp_t rf_s_type( rf_s o )      { rf_s_down( o ); return o.t;                            } // discards object in case of strong reference, returns type
-
+*/
 
 // Smart reference framework
 // Any function receiving a sr_s by value must terminate it.
@@ -51,7 +52,7 @@ const bcore_inst_s* bcore_inst_s_get_typed(   tp_t type );
 void bcore_inst_discard( sr_s o );
 vc_t ch_spect( vc_t p, tp_t spect_type );
 
-static inline sr_s sr_nul(                                              ) { return ( sr_s ){ .o = NULL, .p = NULL, .f = 0                                }; }
+static inline sr_s sr_null(                                             ) { return ( sr_s ){ .o = NULL, .p = NULL, .f = 0                                }; }
 static inline sr_s sr_pocs( vc_t p, vd_t o, bl_t const_f, bl_t strong_f ) { return ( sr_s ){ .o = o, .p = p, .f = ( const_f * C_f ) | ( strong_f * S_f ) }; }
 
 static inline sr_s sr_twc( tp_t t, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = C_f }; }
@@ -65,7 +66,7 @@ static inline sr_s sr_pwd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .
 static inline sr_s sr_psd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = S_f }; }
 
 // conversion from rf_s (temporary)
-static inline sr_s sr_rf(   rf_s o ) { return ( sr_s ){ .o = ( vd_t )o.o, .p = o.t ? bcore_inst_s_get_typed( o.t ) : NULL, .f = ( o.c ? C_f : 0 ) | ( o.s ? S_f : 0 ) }; }
+//static inline sr_s sr_rf(   rf_s o ) { return ( sr_s ){ .o = ( vd_t )o.o, .p = o.t ? bcore_inst_s_get_typed( o.t ) : NULL, .f = ( o.c ? C_f : 0 ) | ( o.s ? S_f : 0 ) }; }
 
 static inline sr_s sr_cw( sr_s o ) { o.f &= ~S_f; return o; } // turns a reference into a weak one;
 static inline sr_s sr_cc( sr_s o ) { o.f &= ~C_f; return o; } // turns a reference into a const one;
@@ -76,6 +77,10 @@ static inline sr_s sr_fork( sr_s o ) { o.f &= ~S_f; return o;              } // 
 static inline tp_t sr_type( sr_s o ) { return o.p ? ( (tp_t*)o.p )[1] : 0; } // returns type; does not terminate o
 
 static inline void sr_down( sr_s o ) { if( o.f & S_f ) bcore_inst_discard( o ); }  // explicit termination
+
+static inline bl_t sr_is_strong( sr_s o ) { return ( o.f & S_f ) ? true : false; }
+static inline bl_t sr_is_const(  sr_s o ) { return ( o.f & C_f ) ? true : false; }
+
 
 #define TYPEOF_sr( sr ) ( sr.p ? ( ( tp_t* )sr.p )[ 1 ] : 0 )
 

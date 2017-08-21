@@ -215,13 +215,13 @@ s2_t bcore_compare_typed( tp_t type, vc_t obj1, vc_t obj2 )
     return bcore_compare_spect( bcore_compare_s_get_typed( type ), obj1, obj2 );
 }
 
-s2_t bcore_compare_rf( rf_s obj1, rf_s obj2 )
+s2_t bcore_compare_rf( sr_s obj1, sr_s obj2 )
 {
-    if( obj1.t != obj2.t ) return ( obj1.t < obj2.t ) ? 1 : -1;
-    if( obj1.t == 0      ) return 0;
-    s2_t c = bcore_compare_typed( obj1.t, obj1.o, obj2.o );
-    rf_s_down( obj1 );
-    rf_s_down( obj2 );
+    if( sr_type( obj1 ) != sr_type( obj2 ) ) return ( sr_type( obj1 ) < sr_type( obj2 ) ) ? 1 : -1;
+    if( sr_type( obj1 ) == 0 ) return 0;
+    s2_t c = bcore_compare_typed( sr_type( obj1 ), obj1.o, obj2.o );
+    sr_down( obj1 );
+    sr_down( obj2 );
     return c;
 }
 
@@ -299,13 +299,13 @@ bcore_string_s* bcore_diff_aware( vc_t obj1, vc_t obj2 )
     return bcore_diff_bityped( type1, obj1, type2, obj2 );
 }
 
-bcore_string_s* bcore_diff_rf( rf_s obj1, rf_s obj2 )
+bcore_string_s* bcore_diff_rf( sr_s obj1, sr_s obj2 )
 {
-    if( obj1.t != obj2.t ) return bcore_string_s_createf( "obj1 of '%s', obj2 of '%s'", ifnameof( obj1.t ), ifnameof( obj2.t ) );
-    if( obj1.t == 0 ) return NULL;
-    bcore_string_s* s = bcore_diff_typed( obj1.t, obj1.o, obj2.o );
-    rf_s_down( obj1 );
-    rf_s_down( obj2 );
+    if( sr_type( obj1 ) != sr_type( obj2 ) ) return bcore_string_s_createf( "obj1 of '%s', obj2 of '%s'", ifnameof( sr_type( obj1 ) ), ifnameof( sr_type( obj2 ) ) );
+    if( sr_type( obj1 ) == 0 ) return NULL;
+    bcore_string_s* s = bcore_diff_typed( sr_type( obj1 ), obj1.o, obj2.o );
+    sr_down( obj1 );
+    sr_down( obj2 );
     return s;
 }
 
@@ -331,7 +331,7 @@ bcore_string_s* bcore_spect_compare_selftest( void )
 
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr1 );
 
-    for( sz_t i = 0; i < 100; i++ ) bcore_array_spect_push( arr_p, arr1, rf_awc( specs ) );
+    for( sz_t i = 0; i < 100; i++ ) bcore_array_spect_push( arr_p, arr1, sr_awc( specs ) );
 
     for( sz_t i = 0; i < arr_p->get_size( arr_p, arr1 ); i++ )
     {

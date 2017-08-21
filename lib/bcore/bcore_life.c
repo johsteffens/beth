@@ -82,18 +82,6 @@ vd_t bcore_life_s_push_typed( bcore_life_s* o, tp_t type, vd_t object )
     return object;
 }
 
-vd_t bcore_life_s_push_rf( bcore_life_s* o, rf_s object )
-{
-    if( object.s )
-    {
-        return bcore_life_s_push_typed( o, object.t, object.o );
-    }
-    else
-    {
-        return object.o;
-    }
-}
-
 sr_s bcore_life_s_push_sr( bcore_life_s* o, sr_s object )
 {
     if( object.f & S_f )
