@@ -59,9 +59,6 @@ sr_s                 bcore_via_spect_iget          ( const bcore_via_s* p, vc_t 
 void                 bcore_via_spect_iset          ( const bcore_via_s* p, vd_t o, sz_t index, sr_s src ); // Sets indexed const item.
 tp_t                 bcore_via_spect_iget_type     ( const bcore_via_s* p, vc_t o, sz_t index           ); // Returns type of object
 
-//TODO: remove iget_c and iget_d (incompatible with shell types)
-vc_t                 bcore_via_spect_iget_c        ( const bcore_via_s* p, vc_t o, sz_t index ); // Returns indexed const item.
-vd_t                 bcore_via_spect_iget_d        ( const bcore_via_s* p, vd_t o, sz_t index ); // Returns indexed item.
 void                 bcore_via_spect_iset_s3       ( const bcore_via_s* p, vd_t o, sz_t index, s3_t val ); // Sets (internal) item by converting s3_t into target type
 void                 bcore_via_spect_iset_u3       ( const bcore_via_s* p, vd_t o, sz_t index, u3_t val ); // Sets (internal) item by converting u3_t into target type
 void                 bcore_via_spect_iset_f3       ( const bcore_via_s* p, vd_t o, sz_t index, f3_t val ); // Sets (internal) item by converting f3_t into target type
@@ -78,8 +75,6 @@ vc_t                 bcore_via_spect_iget_spect    ( const bcore_via_s* p, vc_t 
 sz_t                 bcore_via_spect_nget_index    ( const bcore_via_s* p,         tp_t name ); // Returns index for given name
 sr_s                 bcore_via_spect_nget          ( const bcore_via_s* p, vc_t o, tp_t name           );
 void                 bcore_via_spect_nset          ( const bcore_via_s* p, vd_t o, tp_t name, sr_s src );
-vc_t                 bcore_via_spect_nget_c        ( const bcore_via_s* p, vc_t o, tp_t name );
-vd_t                 bcore_via_spect_nget_d        ( const bcore_via_s* p, vd_t o, tp_t name );
 void                 bcore_via_spect_nset_s3       ( const bcore_via_s* p, vd_t o, tp_t name, s3_t val );
 void                 bcore_via_spect_nset_u3       ( const bcore_via_s* p, vd_t o, tp_t name, u3_t val );
 void                 bcore_via_spect_nset_f3       ( const bcore_via_s* p, vd_t o, tp_t name, f3_t val );
@@ -103,8 +98,6 @@ bl_t bcore_via_spect_iis_link(      const bcore_via_s* p, sz_t index ); // check
 sz_t                 bcore_via_typed_get_size      ( tp_t tp                              );
 sr_s                 bcore_via_typed_nget          ( tp_t tp, vc_t o, tp_t name           );
 void                 bcore_via_typed_nset          ( tp_t tp, vd_t o, tp_t name, sr_s src );
-vc_t                 bcore_via_typed_nget_c        ( tp_t tp, vc_t o, tp_t name );
-vd_t                 bcore_via_typed_nget_d        ( tp_t tp, vd_t o, tp_t name );
 void                 bcore_via_typed_nset_s3       ( tp_t tp, vd_t o, tp_t name, s3_t val );
 void                 bcore_via_typed_nset_u3       ( tp_t tp, vd_t o, tp_t name, u3_t val );
 void                 bcore_via_typed_nset_f3       ( tp_t tp, vd_t o, tp_t name, f3_t val );
@@ -121,8 +114,6 @@ vc_t                 bcore_via_typed_nget_spect    ( tp_t tp, vc_t o, tp_t name,
 sz_t                 bcore_via_aware_get_size      ( vc_t o                      );
 sr_s                 bcore_via_aware_nget          ( vc_t o, tp_t name           );
 void                 bcore_via_aware_nset          ( vd_t o, tp_t name, sr_s src );
-vc_t                 bcore_via_aware_nget_c        ( vc_t o, tp_t name );
-vd_t                 bcore_via_aware_nget_d        ( vd_t o, tp_t name );
 void                 bcore_via_aware_nset_s3       ( vd_t o, tp_t name, s3_t val );
 void                 bcore_via_aware_nset_u3       ( vd_t o, tp_t name, u3_t val );
 void                 bcore_via_aware_nset_f3       ( vd_t o, tp_t name, f3_t val );
@@ -135,13 +126,10 @@ const bcore_via_s*   bcore_via_aware_nget_via      ( vc_t o, tp_t name );
 const bcore_array_s* bcore_via_aware_nget_array    ( vc_t o, tp_t name );
 vc_t                 bcore_via_aware_nget_spect    ( vc_t o, tp_t name, tp_t stp );
 
-sz_t                 bcore_via_get_size      ( sr_s o                      );
-
-tp_t                 bcore_via_iget_name     ( sr_s o, sz_t index ); // Returns name for given index
+sz_t                 bcore_via_get_size      ( sr_s o                       );
+tp_t                 bcore_via_iget_name     ( sr_s o, sz_t index           );
 sr_s                 bcore_via_iget          ( sr_s o, sz_t index           );
 void                 bcore_via_iset          ( sr_s o, sz_t index, sr_s src );
-vc_t                 bcore_via_iget_c        ( sr_s o, sz_t index );
-vd_t                 bcore_via_iget_d        ( sr_s o, sz_t index );
 void                 bcore_via_iset_s3       ( sr_s o, sz_t index, s3_t val );
 void                 bcore_via_iset_u3       ( sr_s o, sz_t index, u3_t val );
 void                 bcore_via_iset_f3       ( sr_s o, sz_t index, f3_t val );
@@ -157,8 +145,6 @@ vc_t                 bcore_via_iget_spect    ( sr_s o, sz_t index, tp_t stp );
 sz_t                 bcore_via_nget_index    ( sr_s o, tp_t name );
 sr_s                 bcore_via_nget          ( sr_s o, tp_t name           );
 void                 bcore_via_nset          ( sr_s o, tp_t name, sr_s src );
-vc_t                 bcore_via_nget_c        ( sr_s o, tp_t name );
-vd_t                 bcore_via_nget_d        ( sr_s o, tp_t name );
 void                 bcore_via_nset_s3       ( sr_s o, tp_t name, s3_t val );
 void                 bcore_via_nset_u3       ( sr_s o, tp_t name, u3_t val );
 void                 bcore_via_nset_f3       ( sr_s o, tp_t name, f3_t val );
