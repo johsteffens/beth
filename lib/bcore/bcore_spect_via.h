@@ -154,6 +154,7 @@ const bcore_via_s*   bcore_via_iget_via      ( sr_s o, sz_t index );
 const bcore_array_s* bcore_via_iget_array    ( sr_s o, sz_t index );
 vc_t                 bcore_via_iget_spect    ( sr_s o, sz_t index, tp_t stp );
 
+sz_t                 bcore_via_nget_index    ( sr_s o, tp_t name );
 sr_s                 bcore_via_nget          ( sr_s o, tp_t name           );
 void                 bcore_via_nset          ( sr_s o, tp_t name, sr_s src );
 vc_t                 bcore_via_nget_c        ( sr_s o, tp_t name );

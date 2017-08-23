@@ -867,7 +867,7 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                 }
                 else
                 {
-                    ERR( "\n%s\nMatching format characters '%s' failed at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, fp, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
+                    ERR( "\n%s\n'#' expected at (%zu:%zu).", bcore_string_s_show_line_context( o, idx )->sc, fp, bcore_string_s_lineof( o, idx ), bcore_string_s_colof( o, idx ) );
                 }
             }
             else if( ( bcore_strcmp( "aware_t", fp ) >> 1 ) == 0 )
@@ -958,6 +958,18 @@ sz_t bcore_string_s_parsevf( const bcore_string_s* o, sz_t start, sz_t end, sc_t
                     }
                 }
                 idx++;
+            }
+            else if( ( bcore_strcmp( "until", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "until" );
+                sc_t err_msg = "Format specifier 'until' must be followed by character enclosed in single quotes ''";
+                if( !*fp++ == '\'' ) ERR( err_msg );
+                char char_l = *fp++;
+                if(  char_l == 0   ) ERR( err_msg );
+                if( !*fp++ == '\'' ) ERR( err_msg );
+                bcore_string_s* string = va_arg( args, bcore_string_s* );
+                bcore_string_s_clear( string );
+                while ( o->sc[ idx ] != char_l ) bcore_string_s_push_char( string, o->sc[ idx++ ] );
             }
             else
             {

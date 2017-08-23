@@ -79,22 +79,7 @@ const bcore_interpreter_s* bcore_interpreter_s_get_typed( tp_t t_type, tp_t o_ty
     tp_t type_arr[ 2 ] = { t_type, o_type };
     return bcore_spect_get_typed_n( typeof( "bcore_interpreter_s" ), 2, type_arr );
 }
-/*
-const bcore_interpreter_s* bcore_interpreter_s_get_typed( tp_t t_type, tp_t o_type )
-{
-    tp_t sig = bcore_signature_get_hash_na( 3, typeof( "bcore_interpreter_s" ), t_type , o_type );
-    const bcore_interpreter_s* spect_p = bcore_spect_try( sig );
-    if( !spect_p )
-    {
-        const bcore_flect_self_s* t_self = bcore_flect_get_self( t_type );
-        const bcore_flect_self_s* o_self = o_type ? bcore_flect_get_self( o_type ) : NULL;
-        bcore_interpreter_s* new_spect_p = create_from_self( t_self, o_self );
-        bcore_spect_enroll_d( new_spect_p );
-        spect_p = new_spect_p;
-    }
-    return spect_p;
-}
-*/
+
 /**********************************************************************************************************************/
 
 typedef struct { ap_t ap; const bcore_interpreter_s* p; vc_t inter; vd_t source; tp_t type; vd_t obj; } interpret_body_nc;

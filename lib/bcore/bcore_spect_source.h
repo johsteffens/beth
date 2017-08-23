@@ -38,7 +38,7 @@ void bcore_source_spect_parsevf(      const bcore_source_s* p, vd_t o, sc_t form
 void bcore_source_spect_parsef(       const bcore_source_s* p, vd_t o, sc_t format, ... );
 void bcore_source_spect_parse_errvf(  const bcore_source_s* p, vd_t o, sc_t format, va_list args );
 void bcore_source_spect_parse_errf(   const bcore_source_s* p, vd_t o, sc_t format, ... );
-bool bcore_source_spect_parse_boolf(  const bcore_source_s* p, vd_t o, sc_t format      ); // format must yield just one bool, which is returned
+bl_t bcore_source_spect_parse_boolf(  const bcore_source_s* p, vd_t o, sc_t format      ); // format must yield just one bool, which is returned
 void bcore_source_spect_set_supplier( const bcore_source_s* p, vd_t o, vd_t supplier    ); // error when not supported
 
 sz_t bcore_source_aware_get_data(     vd_t o, vd_t data, sz_t size );
@@ -46,7 +46,15 @@ void bcore_source_aware_parsevf(      vd_t o, sc_t format, va_list args );
 void bcore_source_aware_parsef(       vd_t o, sc_t format, ... );
 void bcore_source_aware_parse_errvf(  vd_t o, sc_t format, va_list args );
 void bcore_source_aware_parse_errf(   vd_t o, sc_t format, ... );
-bool bcore_source_aware_parse_boolf(  vd_t o, sc_t format      ); // format must yield just one bool, which is returned
+bl_t bcore_source_aware_parse_boolf(  vd_t o, sc_t format      ); // format must yield just one bool, which is returned
 void bcore_source_aware_set_supplier( vd_t o, vd_t supplier    ); // error when not supported
+
+sz_t bcore_source_get_data(     sr_s o, vd_t data, sz_t size );
+void bcore_source_parsevf(      sr_s o, sc_t format, va_list args );
+void bcore_source_parsef(       sr_s o, sc_t format, ... );
+void bcore_source_parse_errvf(  sr_s o, sc_t format, va_list args );
+void bcore_source_parse_errf(   sr_s o, sc_t format, ... );
+bl_t bcore_source_parse_boolf(  sr_s o, sc_t format      ); // format must yield just one bool, which is returned
+void bcore_source_set_supplier( sr_s o, vd_t supplier    ); // error when not supported
 
 #endif // BCORE_SPECT_SOURCE_H

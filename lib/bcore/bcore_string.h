@@ -131,11 +131,12 @@ void bcore_string_s_print_d(     bcore_string_s* o ); // discards o
  *  Format rules
  *  "#name"   - scans a name-string consisting of valid name characters; argument: bcore_string_s*
  *  "#string" - scans a string enclosed in quotes '"'; Quotes inside the string are escaped '\"'; backslashes are escaped '\\'; argument: bcore_string_s*
- *  "#?'...'" - test presence and consumes the string literal between '' if exactly matching; argument: bool*
+ *  "#until'<char>'" - scans a string until <char> is reached; the character is not consumed; argument: bcore_string_s*
+ *  "#?'...'" - test presence and consumes the string literal between '' if exactly matching; argument: bl_t*
  *  " "       - consumes whitespaces including c-style comments
  *  "#<type>" - matches content to <type>; argument: <type>*
  *              Example: #u3_t matches to u3_t and requires u3_t* as argument.
- *              supported types: u*_t, s*_t, f*_t, sz_t, bool
+ *              supported types: u*_t, s*_t, f*_t, sz_t, bl_t
  *  Return:
  *     Index position after scan completes.
  *     This value would be be used as 'start' for continued scanning.

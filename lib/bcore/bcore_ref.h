@@ -8,10 +8,12 @@
 #include "bcore_types.h"
 
 // Smart reference framework
-// Any function receiving a sr_s by value must terminate it.
-// A sr_s is terminated by passing it to another function by value (except sr_fork, sr_type); function taking a reference of sr_s do not terminate it
-// After termination the instance of sr_s is invalid.
-// As long as there is no reference counting, the code must ensure that a strong reference does not terminate while its forks are in use.
+// Any function receiving a sr_s by value must terminate it or return it.
+// (Excemted are immediate sr-control functions sr_*.)
+// A sr_s is terminated by passing it to another function by value; function taking a reference of sr_s do not terminate it.
+// After termination the content sr_s is deemed invalid.
+
+// In principle sr_s could be extended to support reference counting.
 
 /// smart perspective based reference
 typedef struct

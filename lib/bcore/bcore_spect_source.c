@@ -4,6 +4,9 @@
 #include "bcore_spect_inst.h"
 #include "bcore_flect.h"
 #include "bcore_spect.h"
+#include "bcore_quicktypes.h"
+
+#define NPX( name ) bcore_source_##name
 
 /**********************************************************************************************************************/
 // bcore_source_s
@@ -86,9 +89,9 @@ void bcore_source_spect_parsef( const bcore_source_s* p, vd_t o, sc_t format, ..
     va_end( args );
 }
 
-bool bcore_source_spect_parse_boolf( const bcore_source_s* p, vd_t o, sc_t format )
+bl_t bcore_source_spect_parse_boolf( const bcore_source_s* p, vd_t o, sc_t format )
 {
-    bool flag = false;
+    bl_t flag = false;
     bcore_source_spect_parsef( p, o, format, &flag );
     return flag;
 }
@@ -149,46 +152,28 @@ const bcore_source_s* bcore_source_s_get_aware( vc_t obj )
 
 /**********************************************************************************************************************/
 
-sz_t bcore_source_aware_get_data( vd_t o, vd_t data, sz_t size )
-{
-    return bcore_source_spect_get_data( bcore_source_s_get_typed( *( aware_t* )o ), o, data, size );
-}
+static inline const bcore_source_s* gtpd( tp_t tp ) { return bcore_source_s_get_typed( tp ); }
 
-void bcore_source_aware_parsevf( vd_t o, sc_t format, va_list args )
-{
-    bcore_source_spect_parsevf( bcore_source_s_get_typed( *( aware_t* )o ), o, format, args );
-}
+sz_t NPX(aware_get_data    )( vd_t o, vd_t d, sz_t sz   ) { return NPX(spect_get_data    )( gtpd( *( aware_t* )o ), o, d, sz ); }
+void NPX(aware_parsevf     )( vd_t o, sc_t f, va_list a ) {        NPX(spect_parsevf     )( gtpd( *( aware_t* )o ), o, f, a  ); }
+void NPX(aware_parse_errvf )( vd_t o, sc_t f, va_list a ) {        NPX(spect_parse_errvf )( gtpd( *( aware_t* )o ), o, f, a  ); }
+bl_t NPX(aware_parse_boolf )( vd_t o, sc_t f            ) { return NPX(spect_parse_boolf )( gtpd( *( aware_t* )o ), o, f     ); }
+void NPX(aware_set_supplier)( vd_t o, vd_t s            ) {        NPX(spect_set_supplier)( gtpd( *( aware_t* )o ), o, s     ); }
 
-void bcore_source_aware_parsef( vd_t o, sc_t format, ... )
-{
-    va_list args;
-    va_start( args, format );
-    bcore_source_aware_parsevf( o, format, args );
-    va_end( args );
-}
+void NPX(aware_parsef      )( vd_t o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(aware_parsevf    )( o, f, a ); va_end( a ); }
+void NPX(aware_parse_errf  )( vd_t o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(aware_parse_errvf)( o, f, a ); va_end( a ); }
 
-void bcore_source_aware_parse_errvf(  vd_t o, sc_t format, va_list args )
-{
-    bcore_source_spect_parse_errvf( bcore_source_s_get_typed( *( aware_t* )o ), o, format, args );
-}
+inline static vc_t w_spect( sr_s o ) { if( o.f & C_f ) ERR( "Attempt to modify a constant object" ); return ch_spect( o.p, TYPEOF_bcore_source_s ); }
+inline static vc_t r_spect( sr_s o ) { return ch_spect( o.p, TYPEOF_bcore_source_s ); }
 
-void bcore_source_aware_parse_errf(  vd_t o, sc_t format, ... )
-{
-    va_list args;
-    va_start( args, format );
-    bcore_source_aware_parse_errvf( o, format, args );
-    va_end( args );
-}
+sz_t NPX(get_data    )( sr_s o, vd_t d, sz_t sz   ) { sz_t r = NPX(spect_get_data    )( w_spect( o ), o.o, d, sz ); sr_down( o ); return r; }
+void NPX(parsevf     )( sr_s o, sc_t f, va_list a ) {          NPX(spect_parsevf     )( w_spect( o ), o.o, f, a  ); sr_down( o ); }
+void NPX(parse_errvf )( sr_s o, sc_t f, va_list a ) {          NPX(spect_parse_errvf )( w_spect( o ), o.o, f, a  ); sr_down( o ); }
+bl_t NPX(parse_boolf )( sr_s o, sc_t f            ) { bl_t r = NPX(spect_parse_boolf )( w_spect( o ), o.o, f     ); sr_down( o ); return r; }
+void NPX(set_supplier)( sr_s o, vd_t s            ) {          NPX(spect_set_supplier)( w_spect( o ), o.o, s     ); sr_down( o ); }
 
-bool bcore_source_aware_parse_boolf( vd_t o, sc_t format )
-{
-    return bcore_source_spect_parse_boolf( bcore_source_s_get_typed( *( aware_t* )o ), o, format );
-}
-
-void bcore_source_aware_set_supplier( vd_t o, vd_t supplier )
-{
-    bcore_source_spect_set_supplier( bcore_source_s_get_typed( *( aware_t* )o ), o, supplier );
-}
+void NPX(parsef      )( sr_s o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(parsevf    )( o, f, a ); va_end( a ); }
+void NPX(parse_errf  )( sr_s o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(parse_errvf)( o, f, a ); va_end( a ); }
 
 /**********************************************************************************************************************/
 
