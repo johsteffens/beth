@@ -8,11 +8,16 @@
 #include "bcore_types.h"
 
 // Smart reference framework
+// Structure sr_s can be used by reference as object or as nested value.
+// Functions for nested usage have the form sr_<name>
+// Functions for referenced usage have the canonic form sr_s_<name>
+//
 // Any function receiving a sr_s by value must terminate it or return it.
-// (Excemted are immediate sr-control functions sr_*.)
-// A sr_s is terminated by passing it to another function by value; function taking a reference of sr_s do not terminate it.
-// After termination the content sr_s is deemed invalid.
+// A sr_s is terminated by passing it to another function by value;
+// Note: Some functions sr_... do not terminate the reference.
 
+// After termination the content sr_s is deemed invalid if it was a strong reference.
+// Termination can be skipped when the reference is 'weak'
 // In principle sr_s could be extended to support reference counting.
 
 /// smart perspective based reference
@@ -22,6 +27,19 @@ typedef struct
     vc_t p; // perspective
     tp_t f; // flags
 } sr_s;
+
+/**********************************************************************************************************************/
+// object usage
+
+void  sr_s_init(          sr_s* o );
+void  sr_s_down(          sr_s* o );
+void  sr_s_copy(          sr_s* o, const sr_s* src );
+sr_s* sr_s_create(                );
+sr_s* sr_s_clone(   const sr_s* o );
+void  sr_s_discard(       sr_s* o );
+
+/**********************************************************************************************************************/
+// embedded usage
 
 #define C_f ((tp_t)1)  // const reference
 #define S_f ((tp_t)2)  // strong reference (receiver assumes responsibility for managing lifetime)
@@ -55,10 +73,14 @@ static inline tp_t sr_type( sr_s o ) { return o.p ? ( (tp_t*)o.p )[1] : 0; } // 
 
 static inline void sr_down( sr_s o ) { if( o.f & S_f ) bcore_inst_discard( o ); }  // explicit termination
 
+static inline bl_t sr_is_weak(   sr_s o ) { return ( o.f & S_f ) ? false : true; }
 static inline bl_t sr_is_strong( sr_s o ) { return ( o.f & S_f ) ? true : false; }
 static inline bl_t sr_is_const(  sr_s o ) { return ( o.f & C_f ) ? true : false; }
 
-
 #define TYPEOF_sr( sr ) ( sr.p ? ( ( tp_t* )sr.p )[ 1 ] : 0 )
+
+/**********************************************************************************************************************/
+
+void bcore_ref_define_self_creators( void );
 
 #endif // BCORE_REF_H

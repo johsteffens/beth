@@ -116,8 +116,9 @@ void bcore_inst_aware_move(         vd_t dst, vd_t src );
 void bcore_inst_aware_discard(      vd_t obj );
 vd_t bcore_inst_aware_clone(        vc_t obj );
 
-void bcore_inst_discard( sr_s o ); // only discards when o is a strong reference; does nothing otherwise
-vd_t bcore_inst_clone(   sr_s o );
+void bcore_inst_discard(  sr_s o ); // only discards when o is a strong reference; does nothing otherwise
+vd_t bcore_inst_clone(    sr_s o );
+sr_s bcore_inst_clone_sr( sr_s o ); // returns perspective of o
 
 /** This function checks the instance's size with c-style sizeof( object ).
  *  It can be used as low-level safeguard against changing the c-structure

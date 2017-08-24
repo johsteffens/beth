@@ -23,7 +23,6 @@ static void via_s_init( bcore_via_s* o )
 static void via_s_down( bcore_via_s* o )
 {
     if( o->vitem_arr ) bcore_un_alloc( sizeof( bcore_via_s       ), o->vitem_arr, o->size, 0, NULL );
-//    if( o->inst_arr  ) bcore_un_alloc( sizeof( bcore_inst_s* ), o->inst_arr,  o->size, 0, NULL );
 }
 
 static bcore_via_s* via_s_create()
@@ -57,7 +56,10 @@ sr_s bcore_via_spect_iget( const bcore_via_s* p, vc_t o, sz_t index         )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
-    if( vitem->fp_get ) return vitem->fp_get( o );
+    if( vitem->fp_get )  // explicit getter
+    {
+        return vitem->fp_get( o );
+    }
     switch( vitem->caps )
     {
         case BCORE_CAPS_STATIC:
@@ -122,7 +124,11 @@ void bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, sr_s src )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
-    if( vitem->fp_set ) vitem->fp_set( o, src );
+    if( vitem->fp_set ) // explicit setter
+    {
+        vitem->fp_set( o, src );
+        return;
+    }
     switch( vitem->caps )
     {
         case BCORE_CAPS_STATIC:
@@ -463,6 +469,7 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
             vitem.name = flect_item->name;
             vitem.caps = flect_item->caps;
             vitem.offs = inst_item ? inst_item->offset : 0;
+            vitem.f_shell = flect_item->f_shell;
 
             switch( vitem.caps )
             {
@@ -522,9 +529,15 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
 
             // explicit setter, getter
             {
+
                 bcore_life_s* l = bcore_life_s_create();
                 vitem.fp_get = ( bcore_fp_get )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_get" ), typeof( bcore_string_s_createf_l( l, "get_%s", ifnameof( vitem.name ) )->sc ) );
                 vitem.fp_set = ( bcore_fp_set )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_set" ), typeof( bcore_string_s_createf_l( l, "set_%s", ifnameof( vitem.name ) )->sc ) );
+                if( vitem.f_shell )
+                {
+                    if( !vitem.fp_get ) ERR( "Object '%s' has shell '%s' but no function 'get_%s'.", ifnameof( o->o_type ), ifnameof( vitem.name ), ifnameof( vitem.name ) );
+                    if( !vitem.fp_set ) ERR( "Object '%s' has shell '%s' but no function 'set_%s'.", ifnameof( o->o_type ), ifnameof( vitem.name ), ifnameof( vitem.name ) );
+                }
                 bcore_life_s_discard( l );
             }
 

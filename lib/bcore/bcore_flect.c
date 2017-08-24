@@ -267,8 +267,8 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
         bcore_string_s* item_name = bcore_string_s_create_l( life );
         tp_t type_val = 0;
         bcore_flect_item_s* item = bcore_life_s_push( life, bcore_flect_item_s_discard, bcore_flect_item_s_create() );
-        bl_t f_private, f_external, f_link, f_arr;
-        idx = bcore_string_s_parsef( text, idx, text->size, "#?'private' #?'external' ",  &f_private, &f_external );
+        bl_t f_private, f_external, f_shell, f_link, f_arr;
+        idx = bcore_string_s_parsef( text, idx, text->size, "#?'private' #?'external' #?'shell' ",  &f_private, &f_external, &f_shell );
 
         // type can be specified by explicit type id number (anonymous types) or by name
         if( text->data[ idx ] == '{' ) // embedded anonymous type
@@ -294,6 +294,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
 
         item->f_private  = f_private;
         item->f_external = f_external;
+        item->f_shell    = f_shell;
 
         if( bcore_string_s_equal_sc( type_name, "typed" ) )
         {

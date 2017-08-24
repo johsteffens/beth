@@ -32,10 +32,18 @@ typedef struct bcore_vitem_s
     tp_t type;
     tp_t name;
     u2_t caps;
-    sz_t offs;   // offset to member element
+    union
+    {
+        tp_t flags; // collection of attribute flags
+        struct
+        {
+            unsigned f_shell : 1; // shell flag
+        };
+    };
+    sz_t offs;                 // offset to member element
     const bcore_via_s* via_p;  // via perspective of this item
-    bcore_fp_get fp_get; // optional explicit getter
-    bcore_fp_set fp_set; // optional explicit setter
+    bcore_fp_get fp_get;       // optional explicit getter
+    bcore_fp_set fp_set;       // optional explicit setter
 } bcore_vitem_s;
 
 typedef struct bcore_via_s

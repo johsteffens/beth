@@ -17,6 +17,7 @@
 #include "bcore_spect_interpreter.h"
 #include "bcore_spect_compare.h"
 #include "bcore_spect_closure.h"
+#include "bcore_ref.h"
 
 void bcore_flect_define_self_creators()
 {
@@ -27,6 +28,7 @@ void bcore_flect_define_self_creators()
     bcore_closure_define_self_creators();
     bcore_hmap_define_self_creators();
     bcore_hmap_tp_inst_define_self_creators();
+    bcore_ref_define_self_creators();
 
     bcore_flect_define_creator( typeof( "bcore_life_s"        ), bcore_life_s_create_self        );
     bcore_flect_define_creator( typeof( "bcore_signature_s"   ), bcore_signature_s_create_self   );

@@ -9,6 +9,7 @@
  *
  *  A perspective needs to satisfy following requirements:
  *    * self-awareness
+ *    * object-awareness (value after aware_t must be tp_t of the object's type)
  *    * Providing a reflection
  *    * Registering following features in its reflection:
  *      * bcore_fp_init

@@ -1041,6 +1041,8 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
         {
             const bcore_flect_item_s* flect_item = &flect_body->data[ i ];
 
+            if( flect_item->f_shell ) continue; // shells are completely invisible to instance (shells are handled by via perspective)
+
             if( flect_item->caps == BCORE_CAPS_EXTERNAL_FUNC || flect_item->caps == BCORE_CAPS_EXTERNAL_DATA )
             {
                 /* nothing yet or handled above */
@@ -1426,6 +1428,15 @@ vd_t bcore_inst_clone( sr_s o )
     o.p = ch_spect( o.p, TYPEOF_bcore_inst_s );
     vd_t ret = bcore_inst_spect_clone( o.p, o.o );
     sr_down( o );
+    return ret;
+}
+
+sr_s bcore_inst_clone_sr( sr_s o )
+{
+    sr_s ret;
+    ret.o = bcore_inst_spect_clone( ch_spect( o.p, TYPEOF_bcore_inst_s ), o.o );
+    ret.p = o.p;
+    ret.f = S_f;
     return ret;
 }
 

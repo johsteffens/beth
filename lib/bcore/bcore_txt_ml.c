@@ -360,6 +360,10 @@ bcore_string_s* bcore_txt_ml_selftest( void )
     bcore_string_s* log = bcore_string_s_create();
     sr_s zoo = bcore_life_s_push_sr( l, create_zoo() );
     bcore_txt_ml_transfer_test( zoo );
+
+    sr_s sr_sr = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "sr_s" ) ) );
+    bcore_txt_ml_to_stdout( sr_sr );
+
     bcore_life_s_discard( l );
     return log;
 }
