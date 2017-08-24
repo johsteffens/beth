@@ -1147,18 +1147,11 @@ bcore_string_s* bcore_hmap_tpsz_selftest( void )
     bcore_hmap_tpsz_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tpsz_s_clone( map ) );
     time = clock() - time;
     bcore_string_s_pushf( log, "Clone .......... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
-//    bcore_bml_aware_to_stdout( map );
-//    bcore_bml_aware_to_stdout( map2 );
 
     time = clock();
     ASSERT( bcore_compare_aware( map, map2 ) == 0 );
     time = clock() - time;
     bcore_string_s_pushf( log, "Comparison ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
-
-//    time = clock();
-//    bcore_bml_transfer_test_aware( map );
-//    time = clock() - time;
-//    bcore_string_s_pushf( log, "BML Transfer ... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
     time = clock();
     bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );

@@ -6,7 +6,6 @@
 #include "bcore_spect_array.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
-#include "bcore_bml.h"
 #include "bcore_life.h"
 
 #include <stdio.h>

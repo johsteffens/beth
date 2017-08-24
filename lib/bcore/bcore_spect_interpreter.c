@@ -4,6 +4,7 @@
 #include "bcore_spect_inst.h"
 #include "bcore_flect.h"
 #include "bcore_spect.h"
+#include "bcore_quicktypes.h"
 
 /**********************************************************************************************************************/
 // bcore_interpreter_s
@@ -57,6 +58,8 @@ static bcore_interpreter_s* create_from_self( const bcore_flect_self_s** p_self 
     o->interpret_body_amoeba = o_self ? bcore_flect_self_s_try_external_fp( o_self, typeof( "ap_t" ), bcore_name_enroll( "interpret_body" ) ) : NULL;
     o->interpret_object = o_self ? ( bcore_fp_interpret_object )bcore_flect_self_s_try_external_fp( o_self, bcore_name_enroll( "bcore_fp_interpret_object" ), 0 ) : NULL;
     if( !o->interpret_object ) o->interpret_object = ( bcore_fp_interpret_object )bcore_flect_self_s_get_external_fp( t_self, typeof( "bcore_fp_interpret_object" ), 0 );
+
+    o->fp_interpret = ( bcore_fp_interpret )bcore_flect_self_s_try_external_fp( t_self, bcore_name_enroll( "bcore_fp_interpret" ), 0 );
     return o;
 }
 
@@ -117,6 +120,15 @@ dt_p bcore_interpret_object( vc_t intrp, vd_t source )
 {
     const bcore_interpreter_s* spect = bcore_interpreter_s_get_typed( *( aware_t *)intrp, 0 );
     return spect->interpret_object( intrp, source );
+}
+
+sr_s bcore_interpret( sr_s o, sr_s source )
+{
+    const bcore_interpreter_s* p = ( *(aware_t*)o.p == TYPEOF_bcore_interpreter_s ) ? o.p : bcore_interpreter_s_get_typed( ( ( tp_t* )o.p )[ 1 ], 0 );
+    if( !p->fp_interpret ) ERR( "Interpreter '%s' does not support feature 'bcore_fp_interpret'", ifnameof( p->p_type ) );
+    sr_s ret = p->fp_interpret( o.o, source );
+    sr_down( o );
+    return ret;
 }
 
 /**********************************************************************************************************************/

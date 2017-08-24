@@ -119,12 +119,18 @@ void bcore_txt_ml_translator_s_translate_object( const bcore_txt_ml_translator_s
     translate( o, 0, sr_twc( type, obj ), sr_awd( sink ), 0 );
 }
 
+void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr_s obj, sr_s snk )
+{
+    translate( o, 0, obj, snk, 0 );
+}
+
 static bcore_flect_self_s* translator_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_txt_ml_translator_s = { aware_t _; sz_t indent; }", sizeof( bcore_txt_ml_translator_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_translator_s_init,             "bcore_fp_init", "init" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_translator_s_translate_object, "bcore_fp_translate_object", "translate_object" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_translator_s_translate_body,   "bcore_fp_translate_body",   "translate_body"   );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_translator_s_translate,        "bcore_fp_translate",        "translate"        );
     return self;
 }
 
@@ -291,12 +297,18 @@ dt_p bcore_txt_ml_interpreter_s_interpret_object( const bcore_txt_ml_interpreter
     return ( dt_p ){ .o = obj_l.o, .t = sr_type( obj_l ) };
 }
 
+sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, sr_s src )
+{
+    return interpret( o, sr_null(), src );
+}
+
 static bcore_flect_self_s* interpreter_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_txt_ml_interpreter_s = { aware_t _; }", sizeof( bcore_txt_ml_interpreter_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_interpreter_s_init,             "bcore_fp_init", "init" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_interpreter_s_interpret_object, "bcore_fp_interpret_object", "interpret_object" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_interpreter_s_interpret_body,   "bcore_fp_interpret_body",   "interpret_body"   );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_interpreter_s_interpret,        "bcore_fp_interpret",        "interpret"        );
     return self;
 }
 

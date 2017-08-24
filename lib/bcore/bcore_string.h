@@ -127,7 +127,7 @@ void bcore_string_s_print_d(     bcore_string_s* o ); // discards o
 
 /// parsing
 
-/** Functions supporting for text-parsing with specific rules.
+/** Functions supporting text-parsing with specific rules.
  *  Format rules
  *  "#name"   - scans a name-string consisting of valid name characters; argument: bcore_string_s*
  *  "#string" - scans a string enclosed in quotes '"'; Quotes inside the string are escaped '\"'; backslashes are escaped '\\'; argument: bcore_string_s*

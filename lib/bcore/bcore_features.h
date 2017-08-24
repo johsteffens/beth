@@ -53,12 +53,15 @@ typedef sz_t (*bcore_fp_flow_src )( vd_t o, vd_t data, sz_t size ); // flow_sour
 
 /**********************************************************************************************************************/
 
-/// marshaling, building, injection
+/// marshaling, building, injection  (to be deprecated)
 typedef void ( *bcore_fp_translate_object )( vc_t trans, tp_t type, vc_t obj, vd_t sink );   // translates object to be constructible via 'interpret_object'
 typedef void ( *bcore_fp_translate_body   )( vc_t trans, tp_t type, vc_t obj, vd_t sink );   // translates object to be constructible via 'interpret_body'
 typedef dt_p ( *bcore_fp_interpret_object )( vc_t inter, vd_t source );                      // constructs object (no information given)
-typedef dt_p ( *bcore_fp_interpret_typed  )( vc_t inter, vd_t source, tp_t type );           // constructs object of given type (possibly via type conversion)
 typedef dt_p ( *bcore_fp_interpret_body   )( vc_t inter, vd_t source, tp_t type, vd_t obj ); // injects into object instance of given type
+
+/// revised marshaling (o is translator or interpreter of mono-perspectives)
+typedef void ( *bcore_fp_translate )( vc_t o, sr_s obj, sr_s snk ); // translates object to be constructible via 'interpret_object'
+typedef sr_s ( *bcore_fp_interpret )( vc_t o,           sr_s src ); // constructs object (no information given)
 
 /**********************************************************************************************************************/
 /// Testing, Debugging. A test shall either complete safely or fail with a descriptive error (via bcore_err).

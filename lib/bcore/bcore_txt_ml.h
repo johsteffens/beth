@@ -28,6 +28,8 @@ DECLARE_FUNCTION_CLONE(   bcore_txt_ml_translator_s )
 void bcore_txt_ml_translator_s_translate_object( const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink );
 void bcore_txt_ml_translator_s_translate_body(   const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink );
 
+void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr_s obj, sr_s snk );
+
 /**********************************************************************************************************************/
 
 /// syntactic sugar
@@ -54,8 +56,9 @@ bcore_txt_ml_interpreter_s* bcore_txt_ml_interpreter_s_clone(     const bcore_tx
 void                        bcore_txt_ml_interpreter_s_discard(         bcore_txt_ml_interpreter_s* o );
 
 dt_p bcore_txt_ml_interpreter_s_interpret_object( const bcore_txt_ml_interpreter_s* o, vd_t source );
-dt_p bcore_txt_ml_interpreter_s_interpret_typed(  const bcore_txt_ml_interpreter_s* o, vd_t source, tp_t type );
 dt_p bcore_txt_ml_interpreter_s_interpret_body(   const bcore_txt_ml_interpreter_s* o, vd_t source, tp_t type, vd_t obj );
+
+sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, sr_s src );
 
 /**********************************************************************************************************************/
 

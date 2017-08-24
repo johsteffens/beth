@@ -6,7 +6,6 @@
 #include "bcore_spect_array.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
-#include "bcore_bml.h"
 #include "bcore_life.h"
 #include "bcore_sinks.h"
 
@@ -611,43 +610,28 @@ bcore_string_s* bcore_sources_selftest( void )
     bcore_life_s* l = bcore_life_s_create();
 
     bcore_flect_define_parse_sc( "chain_test_aware_arr = { aware_t _; bcore_string_s [] arr; }" );
-    vd_t arr_o = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "chain_test_aware_arr" ) ) );
-    const bcore_array_s* arr_p = bcore_array_s_get_aware( arr_o );
-    for( sz_t i = 0; i < 20000; i++ ) bcore_array_spect_push( arr_p, arr_o, sr_asd( bcore_string_s_createf( "line of text %zu", i ) ) );
-
-    bcore_bml_translator_s* trans = bcore_life_s_push_aware( l, bcore_bml_translator_s_create() );
-    trans->break_leaf = true;
+    sr_s arr = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "chain_test_aware_arr" ) ) );
+    arr = sr_cp( arr, TYPEOF_bcore_array_s );
+    for( sz_t i = 0; i < 20000; i++ ) bcore_array_push( arr, sr_asd( bcore_string_s_createf( "line of text %zu", i ) ) );
 
     // write object to file
     {
         bcore_sink_chain_s* chain = bcore_sink_chain_s_create();
         bcore_sink_chain_s_push_d( chain, bcore_sink_file_s_create_name( "test.txt" ) );
         bcore_sink_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_sink_buffer_s" ) ) );
-        bcore_translate_aware_object( trans, arr_o, chain );
+        bcore_translate( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), arr, sr_awd( chain ) );
         bcore_sink_chain_s_discard( chain );
     }
 
     // create object from file
     {
-//        bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_chain_s_create() );
-        bcore_source_chain_s* chain = bcore_source_chain_s_create();
+        bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_chain_s_create() );
         bcore_source_chain_s_push_d( chain, bcore_source_file_s_create_name( "test.txt" ) );
         bcore_source_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_source_buffer_s" ) ) );
-        bcore_bml_interpreter_s* inter = bcore_life_s_push_aware( l, bcore_bml_interpreter_s_create() );
-
-        vd_t chain_clone = bcore_inst_aware_clone( chain );
-        bcore_source_chain_s_discard( chain );
-
-        dt_p dt = bcore_interpret_object( inter, chain_clone );
-        bcore_source_chain_s_discard( chain_clone );
-
-        bcore_life_s_push_aware( l, dt.o );
-
-        ASSERT( bcore_compare_aware( dt.o, arr_o ) == 0 );
-
-
-        // inspect object
-        // bcore_translate_aware_object( trans, dt.o, msg );
+        sr_s chain_clone = sr_awd( bcore_life_s_push_aware( l, bcore_inst_aware_clone( chain ) ) );
+        sr_s sr = bcore_interpret( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain_clone );
+        sr = bcore_life_s_push_sr( l, sr );
+        ASSERT( bcore_compare_sr( sr, arr ) == 0 );
     }
 
     bcore_life_s_discard( l );

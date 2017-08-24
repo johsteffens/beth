@@ -29,6 +29,8 @@ typedef struct bcore_translator_s
     bcore_fp_translate_object translate_object;
     bcore_fp_translate_body   translate_body;
     ap_t                      translate_body_amoeba;
+
+    bcore_fp_translate        fp_translate;
 } bcore_translator_s;
 
 bcore_flect_self_s* bcore_translator_s_create_self( void );
@@ -43,6 +45,8 @@ void bcore_translate_aware_body( vc_t trans, vc_t obj, vd_t sink );
 void bcore_translate_spect_object( const bcore_translator_s* spect, vc_t trans, vc_t obj, vd_t sink );
 void bcore_translate_typed_object( vc_t trans, tp_t o_type, vc_t obj, vd_t sink );
 void bcore_translate_aware_object( vc_t trans, vc_t obj, vd_t sink );
+
+void bcore_translate( sr_s o, sr_s obj, sr_s sink );
 
 #endif  // BCORE_SPECT_TRANSLATOR_H
 

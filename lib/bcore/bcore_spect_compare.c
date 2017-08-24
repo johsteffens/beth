@@ -4,8 +4,8 @@
 #include "bcore_quicktypes.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect.h"
+#include "bcore_spect_translator.h"
 #include "bcore_life.h"
-#include "bcore_bml.h"
 
 /**********************************************************************************************************************/
 // bcore_compare_s
@@ -89,7 +89,7 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
         if( size1 != size2 ) return size1 < size2 ? 1 : -1;
         for( sz_t j = 0; j < size1; j++ )
         {
-            s2_t c = bcore_compare_rf( arr_p->get( arr_p, obj1, j ), arr_p->get( arr_p, obj2, j ) );
+            s2_t c = bcore_compare_sr( arr_p->get( arr_p, obj1, j ), arr_p->get( arr_p, obj2, j ) );
             if( c != 0 ) return c;
         }
         return 0;
@@ -98,7 +98,7 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     const bcore_via_s* via = p->via;
     for( sz_t i = 0; i < via->size; i++ )
     {
-        s2_t c = bcore_compare_rf( bcore_via_spect_iget( via, obj1, i ), bcore_via_spect_iget( via, obj2, i ) );
+        s2_t c = bcore_compare_sr( bcore_via_spect_iget( via, obj1, i ), bcore_via_spect_iget( via, obj2, i ) );
         if( c != 0 ) return c;
     }
     return 0;
@@ -142,7 +142,7 @@ static bcore_string_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t o
         if( size1 != size2 ) return bcore_string_s_createf( "!%s: size1:%zu, size2:%zu", ifnameof( p->o_type ), size1, size2 );
         for( sz_t j = 0; j < size1; j++ )
         {
-            bcore_string_s* s = bcore_diff_rf( arr_p->get( arr_p, obj1, j ), arr_p->get( arr_p, obj2, j ) );
+            bcore_string_s* s = bcore_diff_sr( arr_p->get( arr_p, obj1, j ), arr_p->get( arr_p, obj2, j ) );
             if( s != NULL )
             {
                 bcore_string_s_pushf( s, "\n!%s:[%zu]",ifnameof( p->o_type ), j );
@@ -155,7 +155,7 @@ static bcore_string_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t o
     const bcore_via_s* via = p->via;
     for( sz_t i = 0; i < via->size; i++ )
     {
-        bcore_string_s* s = bcore_diff_rf( bcore_via_spect_iget( via, obj1, i ), bcore_via_spect_iget( via, obj2, i ) );
+        bcore_string_s* s = bcore_diff_sr( bcore_via_spect_iget( via, obj1, i ), bcore_via_spect_iget( via, obj2, i ) );
         if( s != NULL )
         {
             return bcore_string_s_pushf( s, "\n!%s::%s", ifnameof( p->o_type ), ifnameof( bcore_via_spect_iget_name( via, i ) ) );
@@ -215,7 +215,7 @@ s2_t bcore_compare_typed( tp_t type, vc_t obj1, vc_t obj2 )
     return bcore_compare_spect( bcore_compare_s_get_typed( type ), obj1, obj2 );
 }
 
-s2_t bcore_compare_rf( sr_s obj1, sr_s obj2 )
+s2_t bcore_compare_sr( sr_s obj1, sr_s obj2 )
 {
     if( sr_type( obj1 ) != sr_type( obj2 ) ) return ( sr_type( obj1 ) < sr_type( obj2 ) ) ? 1 : -1;
     if( sr_type( obj1 ) == 0 ) return 0;
@@ -271,9 +271,9 @@ bcore_string_s* bcore_diff_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2
         {
             bcore_string_s* s = bcore_string_s_createf( "!%s: objects overloading comparison differ:", ifnameof( p->o_type ) );
             bcore_string_s_pushf( s, "\n\tobj1: " );
-            bcore_bml_typed_to_string( p->o_type, obj1, s );
+            bcore_translate( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), sr_twc( p->o_type, obj1 ), sr_awd( s ) );
             bcore_string_s_pushf( s, "\tobj2: " );
-            bcore_bml_typed_to_string( p->o_type, obj2, s );
+            bcore_translate( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), sr_twc( p->o_type, obj2 ), sr_awd( s ) );
             return s;
         }
     }
@@ -299,7 +299,7 @@ bcore_string_s* bcore_diff_aware( vc_t obj1, vc_t obj2 )
     return bcore_diff_bityped( type1, obj1, type2, obj2 );
 }
 
-bcore_string_s* bcore_diff_rf( sr_s obj1, sr_s obj2 )
+bcore_string_s* bcore_diff_sr( sr_s obj1, sr_s obj2 )
 {
     if( sr_type( obj1 ) != sr_type( obj2 ) ) return bcore_string_s_createf( "obj1 of '%s', obj2 of '%s'", ifnameof( sr_type( obj1 ) ), ifnameof( sr_type( obj2 ) ) );
     if( sr_type( obj1 ) == 0 ) return NULL;

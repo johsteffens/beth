@@ -29,6 +29,8 @@ typedef struct bcore_interpreter_s
     bcore_fp_interpret_object interpret_object;
     bcore_fp_interpret_body   interpret_body;
     ap_t                      interpret_body_amoeba;
+
+    bcore_fp_interpret        fp_interpret;
 } bcore_interpreter_s;
 
 bcore_flect_self_s* bcore_interpreter_s_create_self( void );
@@ -39,6 +41,8 @@ void bcore_interpret_spect_body( const bcore_interpreter_s* spect, vc_t intrp, v
 void bcore_interpret_typed_body( vc_t intrp, vd_t source, tp_t o_type, vd_t obj );
 void bcore_interpret_aware_body( vc_t intrp, vd_t source,              vd_t obj );
 dt_p bcore_interpret_object( vc_t intrp, vd_t source );
+
+sr_s bcore_interpret( sr_s o, sr_s source );
 
 #endif  // BCORE_SPECT_INTERPRETER_H
 
