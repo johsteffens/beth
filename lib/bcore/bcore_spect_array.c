@@ -36,11 +36,6 @@ static void array_s_discard( bcore_array_s* o )
     bcore_free( o );
 }
 
-static bcore_signature_s* array_s_create_signature( bcore_array_s* o )
-{
-    return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
-}
-
 /**********************************************************************************************************************/
 
 static sz_t get_size_static( const bcore_array_s* p, vc_t o )
@@ -788,7 +783,6 @@ bcore_flect_self_s* bcore_array_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_down,             "bcore_fp_down",                    "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_create,           "bcore_fp_create",                  "create"       );
     bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,         "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }

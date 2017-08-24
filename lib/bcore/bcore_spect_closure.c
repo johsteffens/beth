@@ -32,11 +32,6 @@ static void closure_s_discard( bcore_closure_s* o )
     bcore_free( o );
 }
 
-static bcore_signature_s* closure_s_create_signature( bcore_closure_s* o )
-{
-    return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
-}
-
 /**********************************************************************************************************************/
 
 static bcore_closure_s* create_from_self( const bcore_flect_self_s* self )
@@ -60,7 +55,6 @@ static bcore_flect_self_s* closure_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )closure_s_down,             "bcore_fp_down",                    "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )closure_s_create,           "bcore_fp_create",                  "create"       );
     bcore_flect_self_s_push_external_func( self, ( fp_t )closure_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )closure_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,           "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }

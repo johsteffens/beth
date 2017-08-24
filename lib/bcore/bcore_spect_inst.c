@@ -115,11 +115,6 @@ static void inst_s_discard( bcore_inst_s* o )
     bcore_free( o );
 }
 
-static bcore_signature_s* inst_s_create_signature( bcore_inst_s* o )
-{
-    return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
-}
-
 static bcore_inst_item_s* inst_s_push( bcore_inst_s* o )
 {
     if( !o->body ) o->body = bcore_inst_body_s_create();
@@ -1187,11 +1182,10 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
 static bcore_flect_self_s* inst_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_inst_s" ), sizeof( bcore_inst_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                    "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_down,             "bcore_fp_down",                    "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_create,           "bcore_fp_create",                  "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_create_signature, "bcore_spect_fp_create_signature",  "create_signature" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                   "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_down,             "bcore_fp_down",                   "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_create,           "bcore_fp_create",                 "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_discard,          "bcore_fp_discard",                "discard"      );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }
