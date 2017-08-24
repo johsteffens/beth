@@ -67,10 +67,9 @@ bcore_flect_self_s* bcore_translator_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-const bcore_translator_s* bcore_translator_s_get_typed( tp_t t_type, tp_t o_type )
+const bcore_translator_s* bcore_translator_s_get_typed( tp_t type )
 {
-    tp_t type_arr[ 2 ] = { t_type, o_type };
-    return bcore_spect_get_typed_n( typeof( "bcore_translator_s" ), 2, type_arr );
+    return bcore_spect_get_typed( typeof( "bcore_translator_s" ), type );
 }
 
 /**********************************************************************************************************************/

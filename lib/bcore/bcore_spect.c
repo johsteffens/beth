@@ -97,13 +97,15 @@ vc_t bcore_spect_get( tp_t sig )
 
 void bcore_spect_enroll_d( vd_t spect )
 {
-    tp_t type = *( aware_t *)spect;
-    bcore_spect_fp_create_signature create_signature = ( bcore_spect_fp_create_signature )bcore_flect_self_s_get_external_fp( bcore_flect_get_self( type ), bcore_name_enroll( "bcore_spect_fp_create_signature" ), 0 );
-    tp_t sig = bcore_signature_manager_enroll_d( create_signature( spect ) );
+//    tp_t type = *( aware_t *)spect;
+//    bcore_spect_fp_create_signature create_signature = ( bcore_spect_fp_create_signature )bcore_flect_self_s_get_external_fp( bcore_flect_get_self( type ), bcore_name_enroll( "bcore_spect_fp_create_signature" ), 0 );
+//    tp_t sig = bcore_signature_manager_enroll_d( create_signature( spect ) );
+
+    tp_t sig = bcore_signature_get_hash_tp_tp( ( (tp_t*)spect)[ 0 ], ( (tp_t*)spect)[ 1 ] );
 
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    if( bcore_hmap_u2vd_s_get( hmap_s_g->map, type ) )
+    if( bcore_hmap_u2vd_s_get( hmap_s_g->map, sig ) )
     {
         ERR( "Perspective with signature '%s' has already been enrolled.", bcore_signature_s_create_string( bcore_signature_manager_get( sig ) )->sc );
     }
@@ -183,39 +185,18 @@ bcore_string_s* bcore_spect_status()
 
 /**********************************************************************************************************************/
 
-vc_t bcore_spect_get_typed_n( tp_t p_type, sz_t n, const tp_t* arr )
+vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 {
-    tp_t sig = bcore_signature_fold_hash_arr( p_type, n, arr );
-    vc_t spect_p = bcore_spect_try( sig );
+    vc_t spect_p = bcore_spect_try( bcore_signature_get_hash_tp_tp( p_type, o_type ) );
     if( !spect_p )
     {
         fp_t create_from_self = bcore_flect_self_s_get_external_fp( bcore_flect_get_self( p_type ), bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
-        vd_t new_spect_p = NULL;
-        if( n == 1 )
-        {
-            const bcore_flect_self_s* self = bcore_flect_try_self( arr[ 0 ] );
-            new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( &self );
-        }
-        else if( n > 1 )
-        {
-            const bcore_flect_self_s** self_arr = bcore_un_alloc( sizeof( bcore_flect_self_s* ), NULL, 0, n, NULL );
-            for( sz_t i = 0; i < n; i++ ) self_arr[ i ] = bcore_flect_try_self( arr[ i ] );
-            new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( self_arr );
-            bcore_un_alloc( sizeof( bcore_flect_self_s* ), self_arr, n, 0, NULL );
-        }
-        else
-        {
-            new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( NULL );
-        }
+        const bcore_flect_self_s* self = bcore_flect_get_self( o_type );
+        vd_t new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( &self );
         bcore_spect_enroll_d( new_spect_p );
         spect_p = new_spect_p;
     }
     return spect_p;
-}
-
-vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
-{
-    return bcore_spect_get_typed_n( p_type, 1, &o_type );
 }
 
 /**********************************************************************************************************************/

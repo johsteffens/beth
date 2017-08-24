@@ -5,9 +5,6 @@
 
 /** Perspective management framework.
  *  The perspective establishes abstraction on via reflection and specified features.
- *  It is an approach to generalize functionality and can be seen as a hybrid of
- *  generic programming and abstract interfacing.
- *
  *  Perspective instances are managed here.
  *
  *  A perspective needs to satisfy following requirements:
@@ -16,7 +13,6 @@
  *    * Registering following features in its reflection:
  *      * bcore_fp_init
  *      * bcore_fp_down
- *      * bcore_spect_fp_create_signature
  *      * bcore_spect_fp_create_from_self
  */
 
@@ -27,7 +23,7 @@
 /// Features...
 
 /// Signature creation from a perspective-instance
-typedef bcore_signature_s* (*bcore_spect_fp_create_signature )( vc_t* spect );
+// typedef bcore_signature_s* (*bcore_spect_fp_create_signature )( vc_t* spect );
 
 /// perspective-instance creation from object reflections
 typedef bcore_flect_self_s* (*bcore_spect_fp_create_from_self )( const bcore_flect_self_s** self_arr );
@@ -55,11 +51,9 @@ bcore_string_s* bcore_spect_status();
 
 /** returns perspective according to perspective and object types. Enrolls automatically if needed. (thread safe)
  *  p_type : type of perspective
- *  n      : number of objects the perspective governs
- *  arr    : respective types as array maintained by caller
+ *  o_type : type of object
  */
-vc_t bcore_spect_get_typed_n( tp_t p_type, sz_t n, const tp_t* arr );
-vc_t bcore_spect_get_typed(   tp_t p_type, tp_t o_type ); // for n == 1
+vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
 
 /**********************************************************************************************************************/
 
