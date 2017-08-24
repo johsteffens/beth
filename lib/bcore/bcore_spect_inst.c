@@ -1641,24 +1641,6 @@ s2_t bcore_inst_op_compare( const bcore_inst_op* o1, const bcore_inst_op* o2 )
     return bcore_compare_typed( typeof( "bcore_typed_link_s" ), &tl1, &tl2 );
 }
 
-void bcore_inst_op_translate_body( vc_t trans, tp_t type, const bcore_inst_op* obj, vd_t sink )
-{
-    bcore_typed_link_s tl = inst_op_to_typed_link( *obj );
-    bcore_translate_typed_body( trans, typeof( "bcore_typed_link_s" ), &tl, sink );
-}
-
-dt_p bcore_inst_op_interpret_body( vc_t inter, vd_t source, tp_t type, bcore_inst_op* obj )
-{
-    tp_t tl_type = typeof( "bcore_typed_link_s" );
-    bcore_typed_link_s tl;
-    bcore_inst_typed_init( tl_type, &tl );
-    bcore_interpret_typed_body( inter, source, tl_type, &tl );
-    bcore_inst_op_copy_typed( obj, tl_type, &tl );
-    bcore_inst_typed_down( tl_type, &tl );
-    dt_p ret = { .o = obj, .t = type };
-    return ret;
-}
-
 static bcore_flect_self_s* inst_op_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_inst_op = { private vd_t o; private vc_t p; }", sizeof( bcore_inst_op ) );
@@ -1671,8 +1653,6 @@ static bcore_flect_self_s* inst_op_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_discard,        "bcore_fp_discard",        "discard"        );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_clone,          "bcore_fp_clone",          "clone"          );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_compare,        "bcore_fp_compare",        "compare"        );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_translate_body, "bcore_fp_translate_body", "translate_body" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_interpret_body, "bcore_fp_interpret_body", "interpret_body" );
     return self;
 }
 

@@ -109,16 +109,6 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
     bcore_life_s_discard( l );
 }
 
-void bcore_txt_ml_translator_s_translate_body( const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink )
-{
-    translate( o, 0, sr_twc( type, obj ), sr_awd( sink ), 0 );
-}
-
-void bcore_txt_ml_translator_s_translate_object( const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink )
-{
-    translate( o, 0, sr_twc( type, obj ), sr_awd( sink ), 0 );
-}
-
 void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr_s obj, sr_s snk )
 {
     translate( o, 0, obj, snk, 0 );
@@ -128,8 +118,6 @@ static bcore_flect_self_s* translator_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_txt_ml_translator_s = { aware_t _; sz_t indent; }", sizeof( bcore_txt_ml_translator_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_translator_s_init,             "bcore_fp_init", "init" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_translator_s_translate_object, "bcore_fp_translate_object", "translate_object" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_translator_s_translate_body,   "bcore_fp_translate_body",   "translate_body"   );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_translator_s_translate,        "bcore_fp_translate",        "translate"        );
     return self;
 }
@@ -138,53 +126,24 @@ static bcore_flect_self_s* translator_s_create_self( void )
 
 void bcore_txt_ml_to_stdout( sr_s obj )
 {
-    bcore_txt_ml_translator_s* trans = bcore_txt_ml_translator_s_create();
     bcore_string_s* out = bcore_string_s_create();
-    bcore_translate_typed_object( trans, sr_type( obj ), obj.o, out );
+    bcore_translate( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( out ) );
     bcore_string_s_print_d( out );
-    bcore_txt_ml_translator_s_discard( trans );
-    sr_down( obj );
 }
 
-void bcore_txt_ml_typed_to_stdout( tp_t type, vc_t obj )
-{
-    bcore_txt_ml_translator_s* trans = bcore_txt_ml_translator_s_create();
-    bcore_string_s* out = bcore_string_s_create();
-    bcore_translate_typed_object( trans, type, obj, out );
-    bcore_string_s_print_d( out );
-    bcore_txt_ml_translator_s_discard( trans );
-}
-
-void bcore_txt_ml_aware_to_stdout( vc_t obj )
-{
-    bcore_txt_ml_typed_to_stdout( *( aware_t* )obj, obj );
-}
-
-void bcore_txt_ml_typed_to_file( tp_t type, vc_t obj, sc_t file )
+void bcore_txt_ml_to_file( sr_s obj, sc_t file )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_sink_chain_s* chain = bcore_life_s_push_aware( l, bcore_sink_chain_s_create() );
     bcore_sink_chain_s_push_d( chain, bcore_sink_file_s_create_name( file ) );
     bcore_sink_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_sink_buffer_s" ) ) );
-    bcore_translate_typed_object( bcore_life_s_push_aware( l, bcore_txt_ml_translator_s_create() ), type, obj, chain );
+    bcore_translate( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( chain ) );
     bcore_life_s_discard( l );
 }
 
-void bcore_txt_ml_aware_to_file( vc_t obj, sc_t file )
+void bcore_txt_ml_to_string( sr_s obj, bcore_string_s* string )
 {
-    bcore_txt_ml_typed_to_file( *( aware_t* )obj, obj, file );
-}
-
-void bcore_txt_ml_typed_to_string( tp_t type, vc_t obj, bcore_string_s* string )
-{
-    bcore_life_s* l = bcore_life_s_create();
-    bcore_translate_typed_object( bcore_life_s_push_aware( l, bcore_txt_ml_translator_s_create() ), type, obj, string );
-    bcore_life_s_discard( l );
-}
-
-void bcore_txt_ml_aware_to_string( vc_t obj, bcore_string_s* string )
-{
-    bcore_txt_ml_typed_to_string( *( aware_t* )obj, obj, string );
+    bcore_translate( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( string ) );
 }
 
 /**********************************************************************************************************************/
@@ -279,24 +238,6 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
     return obj;
 }
 
-dt_p bcore_txt_ml_interpreter_s_interpret_body( const bcore_txt_ml_interpreter_s* o, vd_t fsrc, tp_t type, vd_t obj )
-{
-    bcore_life_s* l = bcore_life_s_create();
-    sr_s src_l = sr_awd( fsrc );
-    bcore_string_s* type_string = bcore_string_s_create_l( l );
-    bcore_source_parsef( src_l, " <#until'>'>", type_string );
-    if( type_of( type_string ) != type ) ERR ("type mismatch" );
-    sr_s obj_l = interpret( o, sr_twd( type, obj ), src_l );
-    bcore_life_s_discard( l );
-    return ( dt_p ){ .o = obj_l.o, .t = sr_type( obj_l ) };
-}
-
-dt_p bcore_txt_ml_interpreter_s_interpret_object( const bcore_txt_ml_interpreter_s* o, vd_t fsrc )
-{
-    sr_s obj_l = interpret( o, sr_null(), sr_awd( fsrc ) );
-    return ( dt_p ){ .o = obj_l.o, .t = sr_type( obj_l ) };
-}
-
 sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, sr_s src )
 {
     return interpret( o, sr_null(), src );
@@ -306,33 +247,27 @@ static bcore_flect_self_s* interpreter_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_txt_ml_interpreter_s = { aware_t _; }", sizeof( bcore_txt_ml_interpreter_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_interpreter_s_init,             "bcore_fp_init", "init" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_interpreter_s_interpret_object, "bcore_fp_interpret_object", "interpret_object" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_interpreter_s_interpret_body,   "bcore_fp_interpret_body",   "interpret_body"   );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_txt_ml_interpreter_s_interpret,        "bcore_fp_interpret",        "interpret"        );
     return self;
 }
 
 /**********************************************************************************************************************/
 
-dt_p bcore_txt_ml_object_from_file( sc_t file )
+sr_s bcore_txt_ml_from_file( sc_t file )
 {
-    bcore_life_s* l = bcore_life_s_create();
-    bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_chain_s_create() );
-    bcore_source_chain_s_push_d( chain, bcore_source_file_s_create_name( file ) );
-    bcore_source_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_source_string_s" ) ) );
-    dt_p dt = bcore_interpret_object( bcore_life_s_push_aware( l, bcore_txt_ml_interpreter_s_create() ), chain );
-    bcore_life_s_discard( l );
-    return dt;
+    sr_s chain = sr_asd( bcore_source_chain_s_create() );
+    bcore_source_chain_s_push_d( chain.o, bcore_source_file_s_create_name( file ) );
+    bcore_source_chain_s_push_d( chain.o, bcore_inst_typed_create( typeof( "bcore_source_string_s" ) ) );
+    sr_s ret = bcore_interpret( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain );
+    return ret;
 }
 
-dt_p bcore_txt_ml_object_from_string( const bcore_string_s* string )
+sr_s bcore_txt_ml_from_string( const bcore_string_s* string )
 {
-    bcore_life_s* l = bcore_life_s_create();
-    bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_chain_s_create() );
-    bcore_source_chain_s_push_d( chain, bcore_source_string_s_create_string( string ) );
-    dt_p dt = bcore_interpret_object( bcore_life_s_push_aware( l, bcore_txt_ml_interpreter_s_create() ), chain );
-    bcore_life_s_discard( l );
-    return dt;
+    sr_s chain = sr_asd( bcore_source_chain_s_create() );
+    bcore_source_chain_s_push_d( chain.o, bcore_source_string_s_create_string( string ) );
+    sr_s ret = bcore_interpret( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain );
+    return ret;
 }
 
 /**********************************************************************************************************************/
@@ -350,13 +285,12 @@ void bcore_txt_ml_transfer_test( sr_s obj )
     bcore_life_s* l = bcore_life_s_create();
     obj = bcore_life_s_push_sr( l, obj );
     bcore_string_s* string = bcore_life_s_push_aware( l, bcore_string_s_create() );
-    bcore_txt_ml_typed_to_string( sr_type( obj ), obj.o, string );
-    dt_p dt = bcore_txt_ml_object_from_string( string );
-    bcore_life_s_push_typed( l, dt.t, dt.o );
-    s2_t c = bcore_compare_bityped( sr_type( obj ), obj.o, dt.t, dt.o );
+    bcore_txt_ml_to_string( obj, string );
+    sr_s sr = bcore_life_s_push_sr( l, bcore_txt_ml_from_string( string ) );
+    s2_t c = bcore_compare_sr( obj, sr );
     if( c != 0 )
     {
-        bcore_string_s* diff = bcore_life_s_push_aware( l, bcore_diff_bityped( sr_type( obj ), obj.o, dt.t, dt.o ) );
+        bcore_string_s* diff = bcore_life_s_push_aware( l, bcore_diff_sr( obj, sr ) );
         if( diff )
         {
             ERR( "Comparison returned '%"PRIi32"':\n%s\n", c, diff->sc );

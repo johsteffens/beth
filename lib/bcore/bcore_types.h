@@ -38,8 +38,6 @@ typedef void (*ap_t)( nd_t nc ); // amoebal function pointer
 // types for special purposes
 typedef u2_t tp_t;    // object type identifier
 typedef tp_t aware_t; // self-awareness type (first element in self-aware object)
-typedef struct { vd_t o; tp_t t; } dt_p; // pair of object reference and type
-typedef struct { vc_t o; tp_t t; } ct_p; // pair of const object reference and type
 
 // extended scan and print format specifiers
 #define PRIs3_t PRIi64

@@ -25,21 +25,14 @@ DECLARE_FUNCTION_CREATE(  bcore_txt_ml_translator_s )
 DECLARE_FUNCTION_DISCARD( bcore_txt_ml_translator_s )
 DECLARE_FUNCTION_CLONE(   bcore_txt_ml_translator_s )
 
-void bcore_txt_ml_translator_s_translate_object( const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink );
-void bcore_txt_ml_translator_s_translate_body(   const bcore_txt_ml_translator_s* o, tp_t type, vc_t obj, vd_t sink );
-
 void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr_s obj, sr_s snk );
 
 /**********************************************************************************************************************/
 
 /// syntactic sugar
 void bcore_txt_ml_to_stdout( sr_s obj );
-void bcore_txt_ml_typed_to_stdout( tp_t type, vc_t obj );
-void bcore_txt_ml_aware_to_stdout(            vc_t obj );
-void bcore_txt_ml_typed_to_file(   tp_t type, vc_t obj, sc_t file );
-void bcore_txt_ml_aware_to_file(              vc_t obj, sc_t file );
-void bcore_txt_ml_typed_to_string( tp_t type, vc_t obj, bcore_string_s* string );
-void bcore_txt_ml_aware_to_string(            vc_t obj, bcore_string_s* string );
+void bcore_txt_ml_to_file(   sr_s obj, sc_t file );
+void bcore_txt_ml_to_string( sr_s obj, bcore_string_s* string );
 
 /**********************************************************************************************************************/
 
@@ -55,16 +48,13 @@ bcore_txt_ml_interpreter_s* bcore_txt_ml_interpreter_s_create();
 bcore_txt_ml_interpreter_s* bcore_txt_ml_interpreter_s_clone(     const bcore_txt_ml_interpreter_s* o );
 void                        bcore_txt_ml_interpreter_s_discard(         bcore_txt_ml_interpreter_s* o );
 
-dt_p bcore_txt_ml_interpreter_s_interpret_object( const bcore_txt_ml_interpreter_s* o, vd_t source );
-dt_p bcore_txt_ml_interpreter_s_interpret_body(   const bcore_txt_ml_interpreter_s* o, vd_t source, tp_t type, vd_t obj );
-
 sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, sr_s src );
 
 /**********************************************************************************************************************/
 
 /// syntactic sugar
-dt_p bcore_txt_ml_object_from_file( sc_t file );
-dt_p bcore_txt_ml_object_from_string( const bcore_string_s* string );
+sr_s bcore_txt_ml_from_file( sc_t file );
+sr_s bcore_txt_ml_from_string( const bcore_string_s* string );
 
 /**********************************************************************************************************************/
 

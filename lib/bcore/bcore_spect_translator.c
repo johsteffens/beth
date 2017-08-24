@@ -37,7 +37,7 @@ static void translator_s_discard( bcore_translator_s* o )
 
 static bcore_signature_s* translator_s_create_signature( bcore_translator_s* o )
 {
-    return bcore_signature_s_create_an( 3, o->p_type, o->t_type, o->o_type );
+    return bcore_signature_s_create_an( 2, o->p_type, o->o_type );
 }
 
 /**********************************************************************************************************************/
@@ -45,21 +45,11 @@ static bcore_signature_s* translator_s_create_signature( bcore_translator_s* o )
 static bcore_translator_s* create_from_self( const bcore_flect_self_s** p_self )
 {
     assert( p_self != NULL );
-    const bcore_flect_self_s* t_self = p_self[ 0 ];
-    const bcore_flect_self_s* o_self = p_self[ 1 ];
-    assert( t_self != NULL );
-    assert( o_self != NULL );
-
+    const bcore_flect_self_s* self = *p_self;
+    assert( self != NULL );
     bcore_translator_s* o = translator_s_create();
-    o->t_type = t_self->type;
-    o->o_type = o_self->type;
-    o->translate_body                              = bcore_flect_self_s_try_external_fp( o_self, bcore_name_enroll( "bcore_fp_translate_body" ), 0 );
-    if( !o->translate_body ) o->translate_body     = bcore_flect_self_s_get_external_fp( t_self, typeof( "bcore_fp_translate_body" ), 0 );
-    o->translate_body_amoeba                       = bcore_flect_self_s_try_external_fp( o_self, typeof( "ap_t" ), bcore_name_enroll( "translate_body" ) );
-    o->translate_object                            = bcore_flect_self_s_try_external_fp( o_self, bcore_name_enroll( "bcore_fp_translate_object" ), 0 );
-    if( !o->translate_object ) o->translate_object = bcore_flect_self_s_get_external_fp( t_self, typeof( "bcore_fp_translate_object" ), 0 );
-
-    o->fp_translate = ( bcore_fp_translate )bcore_flect_self_s_try_external_fp( t_self, bcore_name_enroll( "bcore_fp_translate" ), 0 );
+    o->o_type = self->type;
+    o->fp_translate = ( bcore_fp_translate )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_translate" ), 0 );
     return o;
 }
 
@@ -85,55 +75,9 @@ const bcore_translator_s* bcore_translator_s_get_typed( tp_t t_type, tp_t o_type
 
 /**********************************************************************************************************************/
 
-typedef struct { ap_t ap; const bcore_translator_s* p; vc_t trans; tp_t type; vc_t obj; vd_t sink; } translate_body_nc;
-
-static void translate_body_amoeba( translate_body_nc* nc )
-{
-    nc->p->translate_body( nc->trans, nc->type, nc->obj, nc->sink );
-}
-
-void bcore_translate_spect_body( const bcore_translator_s* spect, vc_t trans, vc_t obj, vd_t sink )
-{
-    if( spect->translate_body_amoeba )
-    {
-        translate_body_nc nc = { ( ap_t )translate_body_amoeba, spect, trans, spect->o_type, obj, sink };
-        spect->translate_body_amoeba( &nc );
-    }
-    else
-    {
-        spect->translate_body( trans, spect->o_type, obj, sink );
-    }
-}
-
-void bcore_translate_typed_body( vc_t trans, tp_t o_type, vc_t obj, vd_t sink )
-{
-    bcore_translate_spect_body( bcore_translator_s_get_typed( *( aware_t *)trans, o_type ), trans, obj, sink );
-}
-
-void bcore_translate_aware_body( vc_t trans, vc_t obj, vd_t sink )
-{
-    bcore_translate_typed_body( trans, *( aware_t *)obj, obj, sink );
-}
-
-void bcore_translate_spect_object( const bcore_translator_s* spect, vc_t trans, vc_t obj, vd_t sink )
-{
-    spect->translate_object( trans, spect->o_type, obj, sink );
-}
-
-void bcore_translate_typed_object( vc_t trans, tp_t o_type, vc_t obj, vd_t sink )
-{
-    bcore_translate_spect_object( bcore_translator_s_get_typed( *( aware_t *)trans, o_type ), trans, obj, sink );
-}
-
-void bcore_translate_aware_object( vc_t trans, vc_t obj, vd_t sink )
-{
-    bcore_translate_typed_object( trans, *( aware_t *)obj, obj, sink );
-}
-
 void bcore_translate( sr_s o, sr_s obj, sr_s sink )
 {
-    const bcore_translator_s* p = ( *(aware_t*)o.p == TYPEOF_bcore_translator_s ) ? o.p : bcore_translator_s_get_typed( ( ( tp_t* )o.p )[ 1 ], sr_type( obj ) );
-    if( !p->fp_translate ) ERR( "Translator '%s' does not support feature 'bcore_fp_translate'", ifnameof( p->p_type ) );
+    const bcore_translator_s* p = ch_spect( o.p, TYPEOF_bcore_translator_s );
     p->fp_translate( o.o, obj, sink );
     sr_down( o );
 }
