@@ -97,10 +97,6 @@ vc_t bcore_spect_get( tp_t sig )
 
 void bcore_spect_enroll_d( vd_t spect )
 {
-//    tp_t type = *( aware_t *)spect;
-//    bcore_spect_fp_create_signature create_signature = ( bcore_spect_fp_create_signature )bcore_flect_self_s_get_external_fp( bcore_flect_get_self( type ), bcore_name_enroll( "bcore_spect_fp_create_signature" ), 0 );
-//    tp_t sig = bcore_signature_manager_enroll_d( create_signature( spect ) );
-
     tp_t sig = bcore_signature_get_hash_tp_tp( ( (tp_t*)spect)[ 0 ], ( (tp_t*)spect)[ 1 ] );
 
     assert( hmap_s_g != NULL );
@@ -183,19 +179,31 @@ bcore_string_s* bcore_spect_status()
     return log;
 }
 
-/**********************************************************************************************************************/
-
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 {
-    vc_t spect_p = bcore_spect_try( bcore_signature_get_hash_tp_tp( p_type, o_type ) );
-    if( !spect_p )
+    assert( hmap_s_g != NULL );
+    bcore_mutex_lock( &hmap_s_g->mutex );
+    tp_t sig = bcore_signature_get_hash_tp_tp( p_type, o_type );
+    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, sig );
+    vc_t spect = vdp ? *vdp : NULL;
+    if( !spect )
     {
+        // Only register the key here. --> This ensures that this key cannot be registered in another thread
+        bcore_hmap_u2vd_s_set( hmap_s_g->map, sig, NULL, false );
+
+        // Unlock because create_from_self may make use of registry
+        bcore_mutex_unlock( &hmap_s_g->mutex );
+
         fp_t create_from_self = bcore_flect_self_s_get_external_fp( bcore_flect_get_self( p_type ), bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
-        vd_t new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( bcore_flect_get_self( o_type ) );
-        bcore_spect_enroll_d( new_spect_p );
-        spect_p = new_spect_p;
+        vd_t new_spect = ( ( bcore_spect_fp_create_from_self )create_from_self )( bcore_flect_get_self( o_type ) );
+
+        // Lock to register the perspective
+        bcore_mutex_lock( &hmap_s_g->mutex );
+        bcore_hmap_u2vd_s_set( hmap_s_g->map, sig, new_spect, false );
+        spect = new_spect;
     }
-    return spect_p;
+    bcore_mutex_unlock( &hmap_s_g->mutex );
+    return spect;
 }
 
 /**********************************************************************************************************************/

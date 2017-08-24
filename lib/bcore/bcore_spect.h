@@ -43,14 +43,14 @@ vc_t bcore_spect_get( tp_t sig );
 /// removes perspective instance according to its signature; no effect when not enrolled (thread safe)
 void bcore_spect_remove( tp_t sig );
 
-/// returns status information (thread safe)
-bcore_string_s* bcore_spect_status();
-
 /** returns perspective according to perspective and object types. Enrolls automatically if needed. (thread safe)
  *  p_type : type of perspective
  *  o_type : type of object
  */
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
+
+/// returns status information (thread safe)
+bcore_string_s* bcore_spect_status();
 
 /**********************************************************************************************************************/
 
