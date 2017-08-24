@@ -42,10 +42,8 @@ static bcore_signature_s* translator_s_create_signature( bcore_translator_s* o )
 
 /**********************************************************************************************************************/
 
-static bcore_translator_s* create_from_self( const bcore_flect_self_s** p_self )
+static bcore_translator_s* create_from_self( const bcore_flect_self_s* self )
 {
-    assert( p_self != NULL );
-    const bcore_flect_self_s* self = *p_self;
     assert( self != NULL );
     bcore_translator_s* o = translator_s_create();
     o->o_type = self->type;

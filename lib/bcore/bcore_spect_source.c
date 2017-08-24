@@ -110,10 +110,8 @@ void bcore_source_spect_set_supplier( const bcore_source_s* p, vd_t o, vd_t supp
 
 /**********************************************************************************************************************/
 
-static bcore_source_s* create_from_self( const bcore_flect_self_s** p_self )
+static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
 {
-    assert( p_self != NULL );
-    const bcore_flect_self_s* self = *p_self;
     assert( self != NULL );
     assert( bcore_flect_self_s_is_aware( self ) );
 

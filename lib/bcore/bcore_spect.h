@@ -26,7 +26,7 @@
 // typedef bcore_signature_s* (*bcore_spect_fp_create_signature )( vc_t* spect );
 
 /// perspective-instance creation from object reflections
-typedef bcore_flect_self_s* (*bcore_spect_fp_create_from_self )( const bcore_flect_self_s** self_arr );
+typedef bcore_flect_self_s* (*bcore_spect_fp_create_from_self )( const bcore_flect_self_s* self );
 
 /// initializes perspective instance manager
 void bcore_spect_manager_open();

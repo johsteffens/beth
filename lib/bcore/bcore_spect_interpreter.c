@@ -43,10 +43,8 @@ static bcore_signature_s* interpreter_s_create_signature( bcore_interpreter_s* o
 /**********************************************************************************************************************/
 
 // o_self can be NULL
-static bcore_interpreter_s* create_from_self( const bcore_flect_self_s** p_self )
+static bcore_interpreter_s* create_from_self( const bcore_flect_self_s* self )
 {
-    assert( p_self != NULL );
-    const bcore_flect_self_s* self = *p_self;
     assert( self != NULL );
     bcore_interpreter_s* o = interpreter_s_create();
     o->o_type = self->type;

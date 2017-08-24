@@ -105,10 +105,8 @@ void bcore_sink_spect_set_consumer( const bcore_sink_s* p, vd_t o, vd_t consumer
 
 /**********************************************************************************************************************/
 
-static bcore_sink_s* create_from_self( const bcore_flect_self_s** p_self )
+static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
 {
-    assert( p_self != NULL );
-    const bcore_flect_self_s* self = *p_self;
     assert( self != NULL );
     assert( bcore_flect_self_s_is_aware( self ) );
 

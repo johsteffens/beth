@@ -166,10 +166,8 @@ static bcore_string_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t o
 
 /**********************************************************************************************************************/
 
-static bcore_compare_s* create_from_self( const bcore_flect_self_s** p_self )
+static bcore_compare_s* create_from_self( const bcore_flect_self_s* self )
 {
-    assert( p_self != NULL );
-    const bcore_flect_self_s* self = *p_self;
     assert( self != NULL );
 
     bcore_compare_s* o = compare_s_create();

@@ -39,10 +39,8 @@ static bcore_signature_s* closure_s_create_signature( bcore_closure_s* o )
 
 /**********************************************************************************************************************/
 
-static bcore_closure_s* create_from_self( const bcore_flect_self_s** p_self )
+static bcore_closure_s* create_from_self( const bcore_flect_self_s* self )
 {
-    assert( p_self != NULL );
-    const bcore_flect_self_s* self = *p_self;
     assert( self != NULL );
     assert( bcore_flect_self_s_is_aware( self ) );
     bcore_closure_s* o = closure_s_create();

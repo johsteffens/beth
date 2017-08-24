@@ -191,8 +191,7 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     if( !spect_p )
     {
         fp_t create_from_self = bcore_flect_self_s_get_external_fp( bcore_flect_get_self( p_type ), bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
-        const bcore_flect_self_s* self = bcore_flect_get_self( o_type );
-        vd_t new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( &self );
+        vd_t new_spect_p = ( ( bcore_spect_fp_create_from_self )create_from_self )( bcore_flect_get_self( o_type ) );
         bcore_spect_enroll_d( new_spect_p );
         spect_p = new_spect_p;
     }

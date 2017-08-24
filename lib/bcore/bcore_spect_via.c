@@ -438,10 +438,8 @@ bl_t bcore_via_spect_iis_link( const bcore_via_s* p, sz_t index )
 
 /**********************************************************************************************************************/
 
-static bcore_via_s* create_from_self( const bcore_flect_self_s** p_self )
+static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
 {
-    assert( p_self != NULL );
-    const bcore_flect_self_s* self = *p_self;
     assert( self != NULL );
 
     bcore_via_s* o = via_s_create();

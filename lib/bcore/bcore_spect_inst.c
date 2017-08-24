@@ -1007,10 +1007,8 @@ static sz_t aligned_offset( sz_t align, sz_t raw_offset )
     return offset;
 }
 
-bcore_inst_s* create_from_self( const bcore_flect_self_s** p_self )
+bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
 {
-    assert( p_self != NULL );
-    const bcore_flect_self_s* self = *p_self;
     assert( self != NULL );
 
     bcore_inst_s* o = inst_s_create();
