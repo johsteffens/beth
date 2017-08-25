@@ -84,9 +84,9 @@ vd_t bcore_life_s_push_typed( bcore_life_s* o, tp_t type, vd_t object )
 
 sr_s bcore_life_s_push_sr( bcore_life_s* o, sr_s object )
 {
-    if( object.f & S_f )
+    if( sr_s_is_strong( &object ) )
     {
-        return sr_pocs( object.p, bcore_life_s_push_typed( o, sr_type( object ), object.o ), object.f & C_f, false );
+        return sr_pocs( object.p, bcore_life_s_push_typed( o, sr_type( object ), object.o ), sr_s_is_const( &object ), false );
     }
     else
     {

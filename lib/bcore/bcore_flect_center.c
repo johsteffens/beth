@@ -6,6 +6,7 @@
 #include "bcore_life.h"
 #include "bcore_hmap.h"
 #include "bcore_hmap_tp_inst.h"
+#include "bcore_hmap_tp_sr.h"
 #include "bcore_signature.h"
 #include "bcore_txt_ml.h"
 #include "bcore_spect_inst.h"
@@ -29,6 +30,7 @@ void bcore_flect_define_self_creators()
     bcore_hmap_define_self_creators();
     bcore_hmap_tp_inst_define_self_creators();
     bcore_ref_define_self_creators();
+    bcore_hmap_tp_sr_define_self_creators();
 
     bcore_flect_define_creator( typeof( "bcore_life_s"        ), bcore_life_s_create_self        );
     bcore_flect_define_creator( typeof( "bcore_signature_s"   ), bcore_signature_s_create_self   );

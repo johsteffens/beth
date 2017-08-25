@@ -456,7 +456,7 @@ bcore_string_s* bcore_hmap_tp_inst_selftest( void )
                 kv_s kv = kvbuf[ idx ];
                 if( !bcore_hmap_tp_inst_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
                 bcore_hmap_tp_inst_s_remove_d( map, kv.key );
-                if( bcore_hmap_tp_inst_s_get( map, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
+                if( bcore_hmap_tp_inst_s_get(  map, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
                 kvbuf_size--;
                 kvbuf[ idx ] = kvbuf[ kvbuf_size ];
             }

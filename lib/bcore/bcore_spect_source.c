@@ -155,7 +155,7 @@ void NPX(aware_set_supplier)( vd_t o, vd_t s            ) {        NPX(spect_set
 void NPX(aware_parsef      )( vd_t o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(aware_parsevf    )( o, f, a ); va_end( a ); }
 void NPX(aware_parse_errf  )( vd_t o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(aware_parse_errvf)( o, f, a ); va_end( a ); }
 
-inline static vc_t w_spect( sr_s o ) { if( o.f & C_f ) ERR( "Attempt to modify a constant object" ); return ch_spect( o.p, TYPEOF_bcore_source_s ); }
+inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect( o.p, TYPEOF_bcore_source_s ); }
 inline static vc_t r_spect( sr_s o ) { return ch_spect( o.p, TYPEOF_bcore_source_s ); }
 
 sz_t NPX(get_data    )( sr_s o, vd_t d, sz_t sz   ) { sz_t r = NPX(spect_get_data    )( w_spect( o ), o.o, d, sz ); sr_down( o ); return r; }

@@ -1117,7 +1117,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
                     inst_item->align = bcore_flect_caps_e_align( flect_item->caps );
                 }
 
-                if( flect_item->f_private || flect_item->f_external )
+                if( flect_item->f_private )
                 {
                     inst_item->no_trace = true;
                     o->copy_flat        = false;
@@ -1375,6 +1375,12 @@ vd_t bcore_inst_typed_clone( tp_t type, vc_t obj )
     return o->clone( o, obj );
 }
 
+sr_s bcore_inst_typed_clone_sr( tp_t type, vc_t obj )
+{
+    const bcore_inst_s* p = bcore_inst_s_get_typed( type );
+    return sr_psd( p, bcore_inst_spect_clone( p, obj ) );
+}
+
 vd_t bcore_inst_aware_clone( vc_t obj )
 {
     if( !obj ) return NULL;
@@ -1420,7 +1426,7 @@ void bcore_inst_typed_check_sizeof( tp_t type, sz_t size )
 // only discards when o is a strong reference; does nothing otherwise
 void bcore_inst_discard( sr_s o )
 {
-    if( o.o && ( o.f & S_f ) ) bcore_inst_spect_discard( ch_spect( o.p, TYPEOF_bcore_inst_s ), o.o );
+    if( o.o && sr_s_is_strong( &o ) ) bcore_inst_spect_discard( ch_spect( o.p, TYPEOF_bcore_inst_s ), o.o );
 }
 
 vd_t bcore_inst_clone( sr_s o )
@@ -1433,10 +1439,8 @@ vd_t bcore_inst_clone( sr_s o )
 
 sr_s bcore_inst_clone_sr( sr_s o )
 {
-    sr_s ret;
-    ret.o = bcore_inst_spect_clone( ch_spect( o.p, TYPEOF_bcore_inst_s ), o.o );
-    ret.p = o.p;
-    ret.f = S_f;
+    sr_s ret = sr_psd( o.p, bcore_inst_spect_clone( ch_spect( o.p, TYPEOF_bcore_inst_s ), o.o ) );
+    sr_down( o );
     return ret;
 }
 
@@ -1619,34 +1623,28 @@ bcore_inst_op* bcore_inst_op_clone( const bcore_inst_op* o )
     return ret;
 }
 
-static bcore_typed_link_s inst_op_to_typed_link( bcore_inst_op op )
+sr_s bcore_inst_op_get_obj( const bcore_inst_op* o )
 {
-    bcore_typed_link_s ret;
-    if( op.p )
+    return sr_pwd( o->p, o->o );
+}
+
+void bcore_inst_op_set_obj( bcore_inst_op* o, sr_s obj )
+{
+    if( sr_s_is_const( &obj ) )
     {
-        ret.link = op.o;
-        ret.type = op.p->o_type;
+        bcore_inst_op_copy_typed( o, sr_type( obj ), obj.o );
     }
     else
     {
-        ret.link = NULL;
-        ret.type = 0;
+        bcore_inst_op_clear( o );
+        o->o = obj.o;
+        o->p = obj.p;
     }
-    return ret;
-}
-
-s2_t bcore_inst_op_compare( const bcore_inst_op* o1, const bcore_inst_op* o2 )
-{
-    if( !o1 ) return ( o2 ) ?  1 : 0;
-    if( !o2 ) return ( o1 ) ? -1 : 0;
-    bcore_typed_link_s tl1 = inst_op_to_typed_link( *o1 );
-    bcore_typed_link_s tl2 = inst_op_to_typed_link( *o2 );
-    return bcore_compare_typed( typeof( "bcore_typed_link_s" ), &tl1, &tl2 );
 }
 
 static bcore_flect_self_s* inst_op_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_inst_op = { private vd_t o; private vc_t p; }", sizeof( bcore_inst_op ) );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_inst_op = { private vd_t o; private vc_t p; shell typed * obj; }", sizeof( bcore_inst_op ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_init,           "bcore_fp_init",           "init"           );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_down,           "bcore_fp_down",           "down"           );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_copy,           "bcore_fp_copy",           "copy"           );
@@ -1655,7 +1653,8 @@ static bcore_flect_self_s* inst_op_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_create_typed,   "bcore_fp_create",         "create typed"   );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_discard,        "bcore_fp_discard",        "discard"        );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_clone,          "bcore_fp_clone",          "clone"          );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_compare,        "bcore_fp_compare",        "compare"        );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_get_obj,        "bcore_fp_get",            "get_obj"        );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_inst_op_set_obj,        "bcore_fp_set",            "set_obj"        );
     return self;
 }
 

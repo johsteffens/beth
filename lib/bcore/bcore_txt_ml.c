@@ -221,7 +221,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                     {
                         sr_s item = bcore_via_iget( obj_l, idx );
                         if( item.o ) bcore_source_parsef( src_l, bcore_string_s_createf_l( l, " <%s>", name_of( sr_type( item ), buf ) )->sc );
-                        if( item.f & S_f )  // if item is detached --> refeed it
+                        if( sr_s_is_strong( &item ) )  // if item is detached --> refeed it
                         {
                             bcore_via_iset( obj_l, idx, interpret( o, item, src_l ) );
                         }

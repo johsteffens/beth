@@ -12,9 +12,10 @@
 // Functions for nested usage have the form sr_<name>
 // Functions for referenced usage have the canonic form sr_s_<name>
 //
-// Any function receiving a sr_s by value must terminate it or return it.
+// Any function receiving a 'strong' sr_s by value must terminate it or return it.
+// Termination may formally be done for any state to be sure capturing the strong ones.
 // A sr_s is terminated by passing it to another function by value;
-// Note: Some functions sr_... do not terminate the reference.
+// Note: A few exceptions of the form sr_... never terminate the reference.
 
 // After termination the content sr_s is deemed invalid if it was a strong reference.
 // Termination can be skipped when the reference is 'weak'
@@ -29,20 +30,10 @@ typedef struct
 } sr_s;
 
 /**********************************************************************************************************************/
-// object usage
-
-void  sr_s_init(          sr_s* o );
-void  sr_s_down(          sr_s* o );
-void  sr_s_copy(          sr_s* o, const sr_s* src );
-sr_s* sr_s_create(                );
-sr_s* sr_s_clone(   const sr_s* o );
-void  sr_s_discard(       sr_s* o );
-
-/**********************************************************************************************************************/
 // embedded usage
 
-#define C_f ((tp_t)1)  // const reference
-#define S_f ((tp_t)2)  // strong reference (receiver assumes responsibility for managing lifetime)
+#define CONST_f  ((tp_t)1)  // const reference
+#define STRONG_f ((tp_t)2)  // strong reference (receiver assumes responsibility for managing lifetime)
 
 typedef struct bcore_inst_s bcore_inst_s;
 typedef struct bcore_life_s bcore_life_s;
@@ -51,33 +42,51 @@ void bcore_inst_discard( sr_s o );
 vc_t ch_spect( vc_t p, tp_t spect_type );
 
 static inline sr_s sr_null(                                             ) { return ( sr_s ){ .o = NULL, .p = NULL, .f = 0                                }; }
-static inline sr_s sr_pocs( vc_t p, vd_t o, bl_t const_f, bl_t strong_f ) { return ( sr_s ){ .o = o, .p = p, .f = ( const_f * C_f ) | ( strong_f * S_f ) }; }
+static inline sr_s sr_pocs( vc_t p, vd_t o, bl_t const_f, bl_t strong_f ) { return ( sr_s ){ .o = o, .p = p, .f = ( const_f * CONST_f ) | ( strong_f * STRONG_f ) }; }
 
-static inline sr_s sr_twc( tp_t t, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = C_f }; }
+static inline sr_s sr_twc( tp_t t, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = CONST_f }; }
 static inline sr_s sr_twd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = 0   }; }
-static inline sr_s sr_tsd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = S_f }; }
-static inline sr_s sr_awc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = C_f }; }
+static inline sr_s sr_tsd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = STRONG_f }; }
+static inline sr_s sr_awc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = CONST_f }; }
 static inline sr_s sr_awd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = 0   }; }
-static inline sr_s sr_asd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = S_f }; }
-static inline sr_s sr_pwc( vc_t p, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = C_f }; }
+static inline sr_s sr_asd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = STRONG_f }; }
+static inline sr_s sr_pwc( vc_t p, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = CONST_f }; }
 static inline sr_s sr_pwd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = 0   }; }
-static inline sr_s sr_psd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = S_f }; }
+static inline sr_s sr_psd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = STRONG_f }; }
 
-static inline sr_s sr_cw( sr_s o ) { o.f &= ~S_f; return o; } // turns a reference into a weak one;
-static inline sr_s sr_cc( sr_s o ) { o.f &= ~C_f; return o; } // turns a reference into a const one;
+static inline sr_s sr_cw( sr_s o ) { o.f &= ~STRONG_f; return o; } // turns a reference into a weak one;
+static inline sr_s sr_cc( sr_s o ) { o.f &= ~CONST_f; return o; } // turns a reference into a const one;
 static inline sr_s sr_cp( sr_s o, tp_t spect_type ) { o.p = ch_spect( o.p, spect_type ); return o; } // changes perspective
               sr_s sr_cl( sr_s o, bcore_life_s* l ); // assigns to lifetime manager
 
-static inline sr_s sr_fork( sr_s o ) { o.f &= ~S_f; return o;              } // forks a reference; returned reference is weak; does not terminate o
+static inline sr_s sr_fork( sr_s o ) { o.f &= ~STRONG_f; return o;              } // forks a reference; returned reference is weak; does not terminate o
 static inline tp_t sr_type( sr_s o ) { return o.p ? ( (tp_t*)o.p )[1] : 0; } // returns type; does not terminate o
 
-static inline void sr_down( sr_s o ) { if( o.f & S_f ) bcore_inst_discard( o ); }  // explicit termination
+static inline void sr_down( sr_s o ) { if( o.f & STRONG_f ) bcore_inst_discard( o ); }  // explicit termination
 
-static inline bl_t sr_is_weak(   sr_s o ) { return ( o.f & S_f ) ? false : true; }
-static inline bl_t sr_is_strong( sr_s o ) { return ( o.f & S_f ) ? true : false; }
-static inline bl_t sr_is_const(  sr_s o ) { return ( o.f & C_f ) ? true : false; }
+/// creates a strong reference of a typed object (by cloning the object)
+sr_s sr_create_strong_typed( tp_t type, vc_t obj );
 
-#define TYPEOF_sr( sr ) ( sr.p ? ( ( tp_t* )sr.p )[ 1 ] : 0 )
+/**********************************************************************************************************************/
+// object usage
+
+void  sr_s_init(          sr_s* o );
+void  sr_s_down(          sr_s* o );
+void  sr_s_copy(          sr_s* o, const sr_s* src ); // applies only to reference; never copies or clones the object
+sr_s* sr_s_create(                );
+sr_s* sr_s_clone(   const sr_s* o );                  // applies only to reference; never copies or clones the object
+void  sr_s_discard(       sr_s* o );
+
+static inline bl_t sr_s_is_weak(   const sr_s* o ) { return ( o->f & STRONG_f ) ? false : true;  }
+static inline bl_t sr_s_is_strong( const sr_s* o ) { return ( o->f & STRONG_f ) ? true  : false; }
+static inline bl_t sr_s_is_const(  const sr_s* o ) { return ( o->f & CONST_f ) ? true  : false; }
+
+static inline void sr_s_set_strong( sr_s* o, bl_t flag ) { o->f = flag ? ( o->f | STRONG_f ) : ( o->f & ~STRONG_f ); }
+static inline void sr_s_set_const(  sr_s* o, bl_t flag ) { o->f = flag ? ( o->f | CONST_f ) : ( o->f & ~CONST_f ); }
+
+static inline void sr_s_clear( sr_s* o ) { if( o ) { sr_down( *o ); o->o = NULL; o->p = NULL; o->f = 0; } }
+static inline void sr_s_set(   sr_s* o, sr_s src ) { sr_down( *o ); *o = src; }
+static inline sr_s sr_s_get(   sr_s* o )           { return sr_cw( *o ); }
 
 /**********************************************************************************************************************/
 

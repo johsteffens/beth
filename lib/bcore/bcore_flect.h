@@ -85,7 +85,6 @@ typedef struct bcore_flect_item_s
         struct
         {
             unsigned f_private  : 1; // private flag
-            unsigned f_external : 1; // external flag
             unsigned f_shell    : 1; // shell flag
         };
     };

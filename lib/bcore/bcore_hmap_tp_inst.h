@@ -55,14 +55,14 @@ DECLARE_FUNCTION_CLONE(   bcore_hmap_tp_inst_s )
 
 vd_t                 bcore_hmap_tp_inst_s_get(    const bcore_hmap_tp_inst_s* o, tp_t key ); // returns pinter to object or NULL when key does not exist
 const bcore_inst_op* bcore_hmap_tp_inst_s_get_op( const bcore_hmap_tp_inst_s* o, tp_t key ); // returns pinter to bcore_inst_op or NULL when key does not exist
-const bcore_inst_op* bcore_hmap_tp_inst_s_set_type(    bcore_hmap_tp_inst_s* o, tp_t key, tp_t type );
-const bcore_inst_op* bcore_hmap_tp_inst_s_set_type_d(  bcore_hmap_tp_inst_s* o, tp_t key, tp_t type, vd_t obj ); // takes object
-const bcore_inst_op* bcore_hmap_tp_inst_s_set_type_c(  bcore_hmap_tp_inst_s* o, tp_t key, tp_t type, vc_t obj ); // copies object
-const bcore_inst_op* bcore_hmap_tp_inst_s_set_aware_d( bcore_hmap_tp_inst_s* o, tp_t key, vd_t obj ); // takes object
-const bcore_inst_op* bcore_hmap_tp_inst_s_set_aware_c( bcore_hmap_tp_inst_s* o, tp_t key, vc_t obj ); // copies object
-const bcore_inst_op* bcore_hmap_tp_inst_s_set_d(       bcore_hmap_tp_inst_s* o, tp_t key, bcore_inst_op op ); // takes state of bcore_inst_op
-bcore_inst_op        bcore_hmap_tp_inst_s_remove_h(    bcore_hmap_tp_inst_s* o, tp_t key ); // removes key, returns bcore_inst_op holding object. Returns empty bcore_inst_op if key did not exist.
-void                 bcore_hmap_tp_inst_s_remove_d(    bcore_hmap_tp_inst_s* o, tp_t key ); // removes key and discards object if held. No effect if key did not exist.
+const bcore_inst_op* bcore_hmap_tp_inst_s_set_type(     bcore_hmap_tp_inst_s* o, tp_t key, tp_t type );
+const bcore_inst_op* bcore_hmap_tp_inst_s_set_type_d(   bcore_hmap_tp_inst_s* o, tp_t key, tp_t type, vd_t obj ); // takes object
+const bcore_inst_op* bcore_hmap_tp_inst_s_set_type_c(   bcore_hmap_tp_inst_s* o, tp_t key, tp_t type, vc_t obj ); // copies object
+const bcore_inst_op* bcore_hmap_tp_inst_s_set_aware_d(  bcore_hmap_tp_inst_s* o, tp_t key, vd_t obj ); // takes object
+const bcore_inst_op* bcore_hmap_tp_inst_s_set_aware_c(  bcore_hmap_tp_inst_s* o, tp_t key, vc_t obj ); // copies object
+const bcore_inst_op* bcore_hmap_tp_inst_s_set_d(        bcore_hmap_tp_inst_s* o, tp_t key, bcore_inst_op op ); // takes state of bcore_inst_op
+bcore_inst_op        bcore_hmap_tp_inst_s_remove_h(     bcore_hmap_tp_inst_s* o, tp_t key ); // removes key, returns bcore_inst_op holding object. Returns empty bcore_inst_op if key did not exist.
+void                 bcore_hmap_tp_inst_s_remove_d(     bcore_hmap_tp_inst_s* o, tp_t key ); // removes key and discards object if held. No effect if key did not exist.
 
 bool  bcore_hmap_tp_inst_s_exists( const bcore_hmap_tp_inst_s* o, tp_t key ); // checks if key exists
 void  bcore_hmap_tp_inst_s_clear(        bcore_hmap_tp_inst_s* o           ); // removes all entries and frees memory

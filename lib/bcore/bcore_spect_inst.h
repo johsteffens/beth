@@ -108,6 +108,7 @@ sr_s bcore_inst_typed_create_sr(    tp_t type );
 void bcore_inst_typed_move(         tp_t type, vd_t dst, vd_t src );
 void bcore_inst_typed_discard(      tp_t type, vd_t obj );
 vd_t bcore_inst_typed_clone(        tp_t type, vc_t obj );
+sr_s bcore_inst_typed_clone_sr(     tp_t type, vc_t obj );
 
 void bcore_inst_aware_down(         vd_t obj );
 void bcore_inst_aware_copy(         vd_t dst, vc_t src );

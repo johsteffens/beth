@@ -5,6 +5,25 @@
 #include "bcore_spect_inst.h"
 
 /**********************************************************************************************************************/
+// embedded usage
+
+sr_s sr_spect( sr_s o, tp_t spect_type )
+{
+    o.p = ch_spect( o.p, spect_type );
+    return o;
+}
+
+sr_s sr_cl( sr_s o, bcore_life_s* l )
+{
+    return bcore_life_s_push_sr( l, o );
+}
+
+sr_s sr_create_strong_typed( tp_t type, vc_t obj )
+{
+    return bcore_inst_typed_clone_sr( type, obj );
+}
+
+/**********************************************************************************************************************/
 // object usage
 
 void sr_s_init( sr_s* o )
@@ -20,15 +39,7 @@ void sr_s_down( sr_s* o )
 void sr_s_copy( sr_s* o, const sr_s* src )
 {
     sr_down( *o );
-    if( sr_is_const( *src ) )
-    {
-        *o = bcore_inst_clone_sr( *src );
-    }
-    else
-    {
-        *o = *src;
-        o->f &= ~S_f;
-    }
+    *o = sr_cw( *src );
 }
 
 sr_s* sr_s_create()
@@ -74,20 +85,6 @@ static bcore_flect_self_s* sr_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )sr_s_get_obj, "bcore_fp_get",  "get_obj" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )sr_s_set_obj, "bcore_fp_set",  "set_obj" );
     return self;
-}
-
-/**********************************************************************************************************************/
-// embedded usage
-
-sr_s sr_spect( sr_s o, tp_t spect_type )
-{
-    o.p = ch_spect( o.p, spect_type );
-    return o;
-}
-
-sr_s sr_cl( sr_s o, bcore_life_s* l )
-{
-    return bcore_life_s_push_sr( l, o );
 }
 
 /**********************************************************************************************************************/
