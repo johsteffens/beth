@@ -63,6 +63,9 @@ void bcore_txt_ml_define_self_creators( void );
 /**********************************************************************************************************************/
 // testing, debugging
 
+/// converts object into stream; interprets stream and compares result to original
+void bcore_txt_ml_transfer_test( sr_s obj );
+
 bcore_string_s* bcore_txt_ml_selftest( void );
 
 #endif // BCORE_TXT_ML_H

@@ -248,8 +248,7 @@ bcore_string_s* bclos_tree_selftest( void )
 
     ASSERT( ( ( v1 + v2 ) - ( v3 * v4 ) ) * ( v5 - v6 ) == *( f3_t* )bcore_life_s_push_typed( l, typeof( "f3_t" ), bcore_closure_func( tclone, args, 6 ) ) );
 
-
-    bcore_txt_ml_to_stdout( tclone );
+    bcore_txt_ml_transfer_test( tclone );
 
     bcore_life_s_discard( l );
     return NULL;
