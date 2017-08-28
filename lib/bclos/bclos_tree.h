@@ -19,16 +19,14 @@ void bclos_tree_s_init( bclos_tree_s* o );
 void bclos_tree_s_down( bclos_tree_s* o );
 void bclos_tree_s_copy( bclos_tree_s* o, const bclos_tree_s* src );
 bclos_tree_s* bclos_tree_s_create();
-bclos_tree_s* bclos_tree_s_create_d(     vd_t closure );      // attaches closure as internal closure of the new tree
-bclos_tree_s* bclos_tree_s_create_typed( tp_t closure_type ); // attaches closure as internal closure of the new tree
 void          bclos_tree_s_discard(     bclos_tree_s* o );
 bclos_tree_s* bclos_tree_s_clone( const bclos_tree_s* o );
 
 /// bclos_tree_s features
-bclos_tree_s*bclos_tree_s_set_closure_d(     bclos_tree_s* o, vd_t closure );             // sets internal closure; returns o
-bclos_tree_s*bclos_tree_s_set_closure_typed( bclos_tree_s* o, tp_t type );                // sets internal closure; returns o
-bclos_tree_s*bclos_tree_s_set_branch_d(      bclos_tree_s* o, sz_t index, vd_t closure ); // creates a branch at the indexed argument; returns branch
-bclos_tree_s*bclos_tree_s_set_branch_typed(  bclos_tree_s* o, sz_t index, tp_t type );    // creates a branch at the indexed argument; returns branch
+void bclos_tree_s_set_closure( bclos_tree_s* o, sr_s closure );             // sets internal closure; returns o
+void bclos_tree_s_set_branch(  bclos_tree_s* o, sz_t index, sr_s closure ); // creates a branch at the indexed argument; returns branch
+bcore_closure_r bclos_tree_s_get_closure( bclos_tree_s* o );                // returns internal closure
+bcore_closure_r bclos_tree_s_get_branch(  bclos_tree_s* o, sz_t index );    // returns internal branch
 
 /// closure features
 vd_t bclos_tree_s_func(   const bclos_tree_s* o, vd_t* args, sz_t n_args );

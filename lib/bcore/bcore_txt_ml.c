@@ -68,19 +68,16 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
     else
     {
         bcore_sink_pushf( sink_l, "<%s>", name_of( sr_type( obj_l ), buf ) );
-        if( bcore_via_is_leaf( obj_l ) )
+        if( sr_type( obj_l ) == TYPEOF_bcore_string_s ) // strings
         {
-            if( sr_type( obj_l ) == TYPEOF_bcore_string_s ) // strings
-            {
-                bcore_string_s* string = bcore_string_s_clone( ( const bcore_string_s* )obj_l.o );
-                bcore_string_s_replace_char_sc( string, '\"', "\\\"" );
-                bcore_sink_pushf( sink_l, "\"%s\"", string->sc );
-                bcore_string_s_discard( string );
-            }
-            else
-            {
-                bcore_sink_push_string_d( sink_l, bcore_string_s_create_typed( sr_type( obj_l ), obj_l.o ) );
-            }
+            bcore_string_s* string = bcore_string_s_clone( ( const bcore_string_s* )obj_l.o );
+            bcore_string_s_replace_char_sc( string, '\"', "\\\"" );
+            bcore_sink_pushf( sink_l, "\"%s\"", string->sc );
+            bcore_string_s_discard( string );
+        }
+        else if( bcore_via_is_leaf( obj_l ) )
+        {
+            bcore_sink_push_string_d( sink_l, bcore_string_s_create_typed( sr_type( obj_l ), obj_l.o ) );
         }
         else
         {
@@ -185,16 +182,14 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
         obj = sr_cp( obj, TYPEOF_bcore_via_s );
         sr_s obj_l = sr_cw( obj );
         bcore_string_s* buf = bcore_string_s_create_l( l );
-        if( bcore_via_is_leaf( obj_l ) )
+        if( sr_type( obj_l ) == TYPEOF_bcore_string_s )
         {
-            if( sr_type( obj_l ) == TYPEOF_bcore_string_s )
-            {
-                bcore_source_parsef( src_l, " #string", obj_l.o );
-            }
-            else
-            {
-                bcore_source_parsef( src_l, bcore_string_s_createf_l( l, " #%s", name_of( sr_type( obj_l ), buf ) )->sc, obj_l.o );
-            }
+            bcore_source_parsef( src_l, " #string", obj_l.o );
+            bcore_source_parsef( src_l, " </>" );
+        }
+        else if( bcore_via_is_leaf( obj_l ) )
+        {
+            bcore_source_parsef( src_l, bcore_string_s_createf_l( l, " #%s", name_of( sr_type( obj_l ), buf ) )->sc, obj_l.o );
             bcore_source_parsef( src_l, " </>" );
         }
         else

@@ -42,6 +42,8 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
     print_type( hash_l, "bl_t" );
 //    print_type( hash_l, "bool" );
     print_type( hash_l, "aware_t" );
+
+    bcore_msg( "\n// frequently used types\n"   );
     print_type( hash_l, "bcore_flect_self_s" );
     print_type( hash_l, "bcore_inst_s" );
     print_type( hash_l, "bcore_array_s" );
@@ -52,8 +54,6 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
     print_type( hash_l, "bcore_closure_s" );
     print_type( hash_l, "bcore_interpreter_s" );
     print_type( hash_l, "bcore_translator_s" );
-
-    bcore_msg( "\n// frequently used types\n"   );
     print_type( hash_l, "bcore_string_s"        );
     print_type( hash_l, "bcore_source_string_s" );
     print_type( hash_l, "bcore_source_buffer_s" );
@@ -62,6 +62,35 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
     print_type( hash_l, "bcore_sink_buffer_s"   );
     print_type( hash_l, "bcore_sink_file_s"     );
     print_type( hash_l, "bcore_sink_chain_s"    );
+}
+
+bl_t bcore_type_is_leaf( tp_t type )
+{
+    switch( type )
+    {
+        case TYPEOF_s3_t:
+        case TYPEOF_s2_t:
+        case TYPEOF_s1_t:
+        case TYPEOF_s0_t:
+        case TYPEOF_u3_t:
+        case TYPEOF_u2_t:
+        case TYPEOF_u1_t:
+        case TYPEOF_u0_t:
+        case TYPEOF_f3_t:
+        case TYPEOF_f2_t:
+        case TYPEOF_sz_t:
+        case TYPEOF_sd_t:
+        case TYPEOF_sc_t:
+        case TYPEOF_vd_t:
+        case TYPEOF_vc_t:
+        case TYPEOF_fp_t:
+        case TYPEOF_tp_t:
+        case TYPEOF_bl_t:
+        case TYPEOF_aware_t:
+            return true;
+        default:
+            return false;
+    }
 }
 
 /**********************************************************************************************************************/

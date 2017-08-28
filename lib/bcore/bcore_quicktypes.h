@@ -1,9 +1,6 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
-/** Name registration framework
- *  This framework links names to hash values and vice versa.
- *  Hash value 0 is reserved. Names resulting is hash 0 are rejected.
- */
+// Quickly obtainable types.
 
 #ifndef BCORE_QUICKTYPES_H
 #define BCORE_QUICKTYPES_H
@@ -12,6 +9,9 @@
 
 /// This function computes and formats defines below to stdout
 void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
+
+/// identifies leaf types according to definition nbelow
+bl_t bcore_type_is_leaf( tp_t type );
 
 /** List of predefined types for quick access.
  *  Created via bcore_quicktypes_to_stdout( NULL );
@@ -37,6 +37,8 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_tp_t                      908158082
 #define TYPEOF_bl_t                     1848869304
 #define TYPEOF_aware_t                  1507719906
+
+// frequently used types
 #define TYPEOF_bcore_flect_self_s        556415048
 #define TYPEOF_bcore_inst_s             1413406849
 #define TYPEOF_bcore_array_s            3532252466
@@ -47,8 +49,6 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_bcore_closure_s          3994021118
 #define TYPEOF_bcore_interpreter_s       695223265
 #define TYPEOF_bcore_translator_s       1770092211
-
-// frequently used types
 #define TYPEOF_bcore_string_s           2419449576
 #define TYPEOF_bcore_source_string_s    1049426656
 #define TYPEOF_bcore_source_buffer_s    3062724539

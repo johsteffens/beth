@@ -2,6 +2,7 @@
 
 #include "bcore_ref.h"
 #include "bcore_life.h"
+#include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 
 /**********************************************************************************************************************/
@@ -38,8 +39,11 @@ void sr_s_down( sr_s* o )
 
 void sr_s_copy( sr_s* o, const sr_s* src )
 {
-    sr_down( *o );
-    *o = sr_cw( *src );
+    sr_s_clear( o );
+    if( src->o )
+    {
+        *o = sr_psd( src->p, bcore_inst_typed_clone( spect_tp_o( src->p ), src->o ) );
+    }
 }
 
 sr_s* sr_s_create()
@@ -63,17 +67,14 @@ void sr_s_discard( sr_s* o )
     sr_s_down( o );
 }
 
-static sr_s sr_s_get_obj( const sr_s* o )
+static sr_s sr_s_get_obj( sr_s* o )
 {
-    sr_s ret;
-    sr_s_init( &ret );
-    sr_s_copy( &ret, o );
-    return ret;
+    return sr_s_get( o );
 }
 
 static void sr_s_set_obj( sr_s* o, sr_s obj )
 {
-    sr_s_copy( o, &obj );
+    sr_s_set( o, obj );
 }
 
 static bcore_flect_self_s* sr_s_create_self( void )

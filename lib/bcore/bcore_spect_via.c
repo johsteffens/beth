@@ -385,7 +385,7 @@ bl_t NPX(iis_link     )( sr_s o, sz_t i ) { bl_t r = NPX(spect_iis_link     )( r
 
 bl_t bcore_via_spect_is_leaf( const bcore_via_s* p )
 {
-    return p->size == 0;
+    return p->is_leaf;
 }
 
 bl_t bcore_via_spect_is_pure_array( const bcore_via_s* p )
@@ -444,8 +444,9 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     assert( self != NULL );
 
     bcore_via_s* o = via_s_create();
-    o->p_type = bcore_name_enroll( "bcore_via_s" );
-    o->o_type = self->type;
+    o->p_type  = bcore_name_enroll( "bcore_via_s" );
+    o->o_type  = self->type;
+    o->is_leaf = bcore_type_is_leaf( self->type );
 
     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( self->type );
     o->inst_p = inst_p;

@@ -407,7 +407,11 @@ bcore_string_s* bcore_hmap_tp_sr_selftest( void )
     bcore_string_s_pushf( log, "Clone .......... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
     time = clock();
-    ASSERT( bcore_compare_aware( map, map2 ) == 0 );
+    if( bcore_compare_aware( map, map2 ) != 0 )
+    {
+        ERR( "comparison failed:\n%s", bcore_diff_aware( map, map2 )->sc );
+    }
+
     time = clock() - time;
     bcore_string_s_pushf( log, "Comparison ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 

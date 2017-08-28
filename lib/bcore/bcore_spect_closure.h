@@ -30,7 +30,7 @@ typedef struct ad_s
 typedef vd_t (*bcore_closure_fp_func    )( vc_t o, const vd_t* args, sz_t n_args );
 typedef sz_t (*bcore_closure_fp_n_args  )( vc_t o ); // number of required arguments
 typedef ad_s (*bcore_closure_fp_d_arg   )( vc_t o, sz_t index ); // descriptor of indexed argument
-typedef tp_t (*bcore_closure_fp_t_ret   )( vc_t o );             // type return object
+typedef tp_t (*bcore_closure_fp_t_ret   )( vc_t o );             // type of return object
 
 // Sets the (external) environment outside the closure (optional).
 // Closure does not assume ownership but has the right to modify it.
@@ -65,22 +65,37 @@ ad_s bcore_closure_aware_d_arg(   vc_t o, sz_t index );
 tp_t bcore_closure_aware_t_ret(   vc_t o );
 void bcore_closure_aware_set_env( vd_t o, vd_t env );
 
+vd_t bcore_closure_func  (  sr_s o, const vd_t* args, sz_t n_args );
+sz_t bcore_closure_n_args(  sr_s o ); // number of expected args
+ad_s bcore_closure_d_arg(   sr_s o, sz_t index );
+tp_t bcore_closure_t_ret(   sr_s o );
+void bcore_closure_set_env( sr_s o, vd_t env );
+
+vd_t bcore_closure_q_func  (  const sr_s* o, const vd_t* args, sz_t n_args );
+sz_t bcore_closure_q_n_args(  const sr_s* o ); // number of expected args
+ad_s bcore_closure_q_d_arg(   const sr_s* o, sz_t index );
+tp_t bcore_closure_q_t_ret(   const sr_s* o );
+void bcore_closure_q_set_env( const sr_s* o, vd_t env );
+
 /**********************************************************************************************************************/
 
-/// object-closure_p combination; (with reflection)
-typedef struct bcore_closure_op
+/// closure reference; (with reflection)
+typedef struct bcore_closure_r
 {
     vd_t                   o;
     const bcore_closure_s* p;
-} bcore_closure_op;
+} bcore_closure_r;
 
-bcore_closure_op as_bcore_closure( vd_t o );
-
-vd_t bcore_closure_func   ( bcore_closure_op op, const vd_t* args, sz_t n_args );
-sz_t bcore_closure_n_args ( bcore_closure_op op ); // number of expected args
-ad_s bcore_closure_d_arg  ( bcore_closure_op op, sz_t index );
-tp_t bcore_closure_t_ret  ( bcore_closure_op op );
-void bcore_closure_set_env( bcore_closure_op op, vd_t env );
+void bcore_closure_r_init(          bcore_closure_r* o );
+void bcore_closure_r_down(          bcore_closure_r* o );
+void bcore_closure_r_copy(          bcore_closure_r* o, const bcore_closure_r* src );
+void bcore_closure_r_set(           bcore_closure_r* o, sr_s src );
+sr_s bcore_closure_r_get(           bcore_closure_r* o );
+vd_t bcore_closure_r_func   ( const bcore_closure_r* o, const vd_t* args, sz_t n_args );
+sz_t bcore_closure_r_n_args ( const bcore_closure_r* o ); // number of expected args
+ad_s bcore_closure_r_d_arg  ( const bcore_closure_r* o, sz_t index );
+tp_t bcore_closure_r_t_ret  ( const bcore_closure_r* o );
+void bcore_closure_r_set_env( const bcore_closure_r* o, vd_t env );
 
 /**********************************************************************************************************************/
 

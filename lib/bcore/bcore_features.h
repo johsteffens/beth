@@ -32,7 +32,7 @@ typedef void (*bcore_fp_check_sanity )( vc_t o );
 
 /// element access
 typedef sr_s (*bcore_fp_get )( vc_t o );
-typedef void (*bcore_fp_set )( vc_t o, sr_s val );
+typedef void (*bcore_fp_set )( vd_t o, sr_s val );
 
 /**********************************************************************************************************************/
 

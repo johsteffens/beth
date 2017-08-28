@@ -631,7 +631,7 @@ bcore_string_s* bcore_sources_selftest( void )
         sr_s chain_clone = sr_awd( bcore_life_s_push_aware( l, bcore_inst_aware_clone( chain ) ) );
         sr_s sr = bcore_interpret( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain_clone );
         sr = bcore_life_s_push_sr( l, sr );
-        ASSERT( bcore_compare_sr( sr, arr ) == 0 );
+        if( bcore_compare_sr( sr, arr ) != 0 ) ERR( "%s", bcore_diff_sr( sr, arr )->sc );
     }
 
     bcore_life_s_discard( l );

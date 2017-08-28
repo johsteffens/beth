@@ -52,6 +52,7 @@ typedef struct bcore_via_s
     tp_t    o_type;             // type of object
     const bcore_inst_s* inst_p; // inst perspective of this item
     sz_t  size;                 // number of elements
+    bl_t  is_leaf;
     bcore_vitem_s* vitem_arr;   // array of vitem
 } bcore_via_s;
 
