@@ -255,9 +255,9 @@ for later (more elaborate) documentation.
 
 ## Arrays ##
 1 Sept 2017
-   Dynamic arrays should be allowed to describe data they do not own. This would be indicated
+   Dynamic arrays should be enabled to weakly reference external data. This would be indicated
    by size > 0 && space == 0. Destroying arrays with space == 0 will not discard array memory. 
-   Accesing existing elements does not change the ownership. 
-   Adding/Inserting/Deleting elements causes the array to copy over all referenced data and own it.
-   
+   Accesing existing elements (including modifying them) does not change the strength of a reference.
+   A weak array can turn itself into a strog one by copying over external data.
+   This happens automatically on all access types that affect the order, size and space of the array.
 
