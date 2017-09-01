@@ -37,7 +37,8 @@ void bcore_memory_manager_close( void );
  *
  *    current_bytes:
  *      Optional information to memory manager about last reserved or requested amount.
- *      Values: NULL or pointer to previously requested or reserved amount.
+ *      Allowed values: 0 or previously requested or reserved amount.
+ *                      0 makes the function ignore current_ptr (assumes it is NULL)
  *
  *    requested_bytes:
  *       > 0 for pure-allocation or re-allocation

@@ -287,7 +287,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             case BCORE_CAPS_STATIC_ARRAY:
             {
                 bcore_static_array_s* s = item_obj;
-                if( s->data )
+                if( s->space ) // space == 0 means array does not own data
                 {
                     const bcore_inst_s* perspective = inst_item->perspective;
                     if( !perspective->down_flat )
@@ -306,7 +306,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             case BCORE_CAPS_TYPED_ARRAY:
             {
                 bcore_typed_array_s* s = item_obj;
-                if( s->data )
+                if( s->space ) // space == 0 means array does not own data
                 {
                     const bcore_inst_s* perspective = bcore_inst_s_get_typed( s->type );
                     if( !perspective->down_flat )
@@ -325,7 +325,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             case BCORE_CAPS_STATIC_LINK_ARRAY:
             {
                 bcore_static_link_array_s* s = item_obj;
-                if( s->data )
+                if( s->space ) // space == 0 means array does not own data
                 {
                     const bcore_inst_s* perspective = inst_item->perspective;
                     for( sz_t i = 0; i < s->size; i++ ) perspective->discard( perspective, s->data[ i ] );
@@ -337,7 +337,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             case BCORE_CAPS_TYPED_LINK_ARRAY:
             {
                 bcore_typed_link_array_s* s = item_obj;
-                if( s->data )
+                if( s->space ) // space == 0 means array does not own data
                 {
                     const bcore_inst_s* perspective = bcore_inst_s_get_typed( s->type );
                     for( sz_t i = 0; i < s->size; i++ ) perspective->discard( perspective, s->data[ i ] );
@@ -349,7 +349,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             case BCORE_CAPS_AWARE_LINK_ARRAY:
             {
                 bcore_aware_link_array_s* s = item_obj;
-                if( s->data )
+                if( s->space ) // space == 0 means array does not own data
                 {
                     for( sz_t i = 0; i < s->size; i++ ) bcore_inst_aware_discard( s->data[ i ] );
                     s->data = bcore_un_alloc( sizeof( vd_t ), s->data, s->space, 0, &s->space );
@@ -503,9 +503,12 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 else
                 {
-                    for( sz_t i = 0; i < dst->size; i++ )
+                    if( dst->space > 0 ) // dst->space == 0 means array references external data
                     {
-                        perspective->down( perspective, ( u0_t* )dst->data + i * perspective->size );
+                        for( sz_t i = 0; i < dst->size; i++ )
+                        {
+                            perspective->down( perspective, ( u0_t* )dst->data + i * perspective->size );
+                        }
                     }
                     if( src->size > dst->space )
                     {
@@ -539,10 +542,11 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                             perspective->down( perspective, ( u0_t* )dst->data + i * perspective->size );
                         }
                     }
-                    dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, 0, &dst->space );
-                    dst->size = 0;
-                    dst->type = 0;
+                    bcore_un_alloc( perspective->size, dst->data, dst->space, 0, &dst->space );
                 }
+                dst->data = NULL;
+                dst->size = 0;
+                dst->type = 0;
                 if( src->space > 0 ) // fill dst with new data
                 {
                     const bcore_inst_s* perspective = bcore_inst_s_get_typed( src->type );
@@ -572,7 +576,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 bcore_static_link_array_s* dst = dst_obj;
                 bcore_static_link_array_s* src = src_obj;
                 const bcore_inst_s* perspective = inst_item->perspective;
-                for( sz_t i = 0; i < dst->size; i++ ) perspective->discard( perspective, dst->data[ i ] );
+                if( dst->space > 0 ) // dst->space == 0 means array references external data
+                {
+                    for( sz_t i = 0; i < dst->size; i++ ) perspective->discard( perspective, dst->data[ i ] );
+                }
                 if( src->size > dst->space )
                 {
                     dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
@@ -587,11 +594,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             {
                 bcore_typed_link_array_s* dst = dst_obj;
                 bcore_typed_link_array_s* src = src_obj;
-                if( dst->size > 0 )
+                if( dst->space > 0 ) // dst->space == 0 means array references external data
                 {
                     const bcore_inst_s* perspective = bcore_inst_s_get_typed( dst->type );
                     for( sz_t i = 0; i < dst->size; i++ ) perspective->discard( perspective, dst->data[ i ] );
-                    dst->size = 0;
                 }
                 if( src->size > 0 )
                 {
@@ -612,14 +618,13 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             {
                 bcore_aware_link_array_s* dst = dst_obj;
                 bcore_aware_link_array_s* src = src_obj;
-                if( dst->size > 0 )
+                if( dst->space > 0 )  // dst->space == 0 means array references external data
                 {
                     for( sz_t i = 0; i < dst->size; i++ )
                     {
                         const bcore_inst_s* perspective = bcore_inst_s_get_typed( *( aware_t* )dst->data[ i ] );
                         perspective->discard( perspective, dst->data[ i ] );
                     }
-                    dst->size = 0;
                 }
                 if( src->size > 0 )
                 {

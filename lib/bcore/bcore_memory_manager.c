@@ -734,15 +734,15 @@ void* bcore_memory_manager_s_bn_alloc( bcore_memory_manager_s* o, void* current_
     void* ret = NULL;
 	if( requested_bytes == 0 )
 	{
-		if( current_ptr )
+		if( current_bytes ) // 0 means current_ptr may not be used for free or realloc
         {
             bcore_memory_manager_s_free( o, current_ptr, &current_bytes );
-            if( granted_bytes ) *granted_bytes = 0;
         }
+        if( granted_bytes ) *granted_bytes = 0;
 	}
 	else
 	{
-        if( current_ptr )
+        if( current_bytes ) // 0 means current_ptr may not be used for free or realloc
         {
             ret = bcore_memory_manager_s_realloc( o, current_ptr, &current_bytes, requested_bytes, granted_bytes );
         }

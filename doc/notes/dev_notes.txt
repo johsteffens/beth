@@ -253,3 +253,11 @@ for later (more elaborate) documentation.
    Closures with certain argument structure (e.g. bi,tri,n-functions) would be member of the corresponding trade.
    Trees composed of closures would check for trade membership (instead of analyzing the argument structure at runtime)
 
+## Arrays ##
+1 Sept 2017
+   Dynamic arrays should be allowed to describe data they do not own. This would be indicated
+   by size > 0 && space == 0. Destroying arrays with space == 0 will not discard array memory. 
+   Accesing existing elements does not change the ownership. 
+   Adding/Inserting/Deleting elements causes the array to copy over all referenced data and own it.
+   
+
