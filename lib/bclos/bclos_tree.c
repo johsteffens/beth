@@ -80,7 +80,7 @@ void bclos_tree_s_set_branch( bclos_tree_s* o, sz_t index, sr_s closure )
              index,
              ifnameof( d.type ),
              ifnameof( t_ret ),
-             ifnameof( sr_type( closure ) ) );
+             ifnameof( sr_s_type( &closure ) ) );
     }
     bcore_closure_r_set( &o->branch[ index ], closure );
 }

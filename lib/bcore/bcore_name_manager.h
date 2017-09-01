@@ -32,8 +32,9 @@ sc_t bcore_name_get_name( tp_t type );
 void bcore_name_remove( tp_t type );
 
 /// syntactic sugar
-static inline u2_t typeof(   sc_t name ) { return bcore_name_get_hash( name ); }
-static inline sc_t nameof(   u2_t type ) { return bcore_name_get_name( type ); }
+static inline tp_t typeof(   sc_t name ) { return bcore_name_get_hash( name ); }
+static inline tp_t entypeof( sc_t name ) { return bcore_name_enroll(   name ); }
+static inline sc_t nameof(   u2_t type ) { return bcore_name_get_name(   type ); }
 static inline sc_t ifnameof( u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
 
 #endif // BCORE_NAME_MANAGER_H

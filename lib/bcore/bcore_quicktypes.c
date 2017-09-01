@@ -2,66 +2,102 @@
 
 #include "bcore_quicktypes.h"
 #include "bcore_string.h"
+#include "bcore_spect_inst.h"
+#include "bcore_spect_array.h"
 
 /**********************************************************************************************************************/
 
 typedef tp_t (*hf)( sc_t );
 
-static void print_type( hf hash, sc_t name )
+
+static bcore_string_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
 {
-    bcore_string_s* s = bcore_string_s_createf( "TYPEOF_%s", name );
-    sz_t align = 32;
+    sc_t name = ( ( bcore_string_s* )string.o )->sc;
+    bcore_string_s* s = bcore_string_s_createf( "#define TYPEOF_%s", name );
     sz_t pad = s->size < align ? align - s->size : 1;
     bcore_string_s_push_char_n( s, ' ', pad );
     bcore_string_s_pushf( s, "% 10"PRIu32, hash( name ) );
-    bcore_msg( "#define %s\n", s->sc );
-    bcore_string_s_discard( s );
+    bcore_string_s_push_char( s, '\n' );
+    sr_down( string );
+    return s;
+}
+
+static sr_s leaf_typelist()
+{
+    sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ bcore_string_s * [] arr; }" ) );
+    bcore_array_q_push_sc( &list, "s3_t" );
+    bcore_array_q_push_sc( &list, "s2_t" );
+    bcore_array_q_push_sc( &list, "s1_t" );
+    bcore_array_q_push_sc( &list, "s0_t" );
+    bcore_array_q_push_sc( &list, "u3_t" );
+    bcore_array_q_push_sc( &list, "u2_t" );
+    bcore_array_q_push_sc( &list, "u1_t" );
+    bcore_array_q_push_sc( &list, "u0_t" );
+    bcore_array_q_push_sc( &list, "f3_t" );
+    bcore_array_q_push_sc( &list, "f2_t" );
+    bcore_array_q_push_sc( &list, "sz_t" );
+    bcore_array_q_push_sc( &list, "sd_t" );
+    bcore_array_q_push_sc( &list, "sc_t" );
+    bcore_array_q_push_sc( &list, "vd_t" );
+    bcore_array_q_push_sc( &list, "vc_t" );
+    bcore_array_q_push_sc( &list, "fp_t" );
+    bcore_array_q_push_sc( &list, "tp_t" );
+    bcore_array_q_push_sc( &list, "bl_t" );
+//    bcore_array_q_push_sc( &list, "bool" );
+    bcore_array_q_push_sc( &list, "aware_t" );
+    bcore_array_q_sort( &list, 0, -1, 1 );
+    return list;
+}
+
+static sr_s typelist()
+{
+    sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ bcore_string_s * [] arr; }" ) );
+    bcore_array_q_push_sc( &list, "bcore_flect_self_s"    );
+    bcore_array_q_push_sc( &list, "bcore_inst_s"          );
+    bcore_array_q_push_sc( &list, "bcore_array_s"         );
+    bcore_array_q_push_sc( &list, "bcore_via_s"           );
+    bcore_array_q_push_sc( &list, "bcore_source_s"        );
+    bcore_array_q_push_sc( &list, "bcore_sink_s"          );
+    bcore_array_q_push_sc( &list, "bcore_compare_s"       );
+    bcore_array_q_push_sc( &list, "bcore_closure_s"       );
+    bcore_array_q_push_sc( &list, "bcore_interpreter_s"   );
+    bcore_array_q_push_sc( &list, "bcore_translator_s"    );
+    bcore_array_q_push_sc( &list, "bcore_string_s"        );
+    bcore_array_q_push_sc( &list, "bcore_source_string_s" );
+    bcore_array_q_push_sc( &list, "bcore_source_buffer_s" );
+    bcore_array_q_push_sc( &list, "bcore_source_file_s"   );
+    bcore_array_q_push_sc( &list, "bcore_source_chain_s"  );
+    bcore_array_q_push_sc( &list, "bcore_sink_buffer_s"   );
+    bcore_array_q_push_sc( &list, "bcore_sink_file_s"     );
+    bcore_array_q_push_sc( &list, "bcore_sink_chain_s"    );
+    bcore_array_q_push_sc( &list, "bcore_txt_ml_translator_s" );
+    bcore_array_q_push_sc( &list, "bcore_txt_ml_interpreter_s" );
+    bcore_array_q_sort( &list, 0, -1, 1 );
+    return list;
+}
+
+static sz_t max_len( const sr_s* list )
+{
+    sz_t len = 0;
+    for( sz_t i = 0; i < bcore_array_q_get_size( list ); i++ )
+    {
+        sz_t size = ( ( bcore_string_s* )bcore_array_q_get( list, i ).o )->size;
+        len = size > len ? size : len;
+    }
+    return len;
 }
 
 void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
 {
     hf hash_l = ( hash ) ? hash : typeof;
+    sr_s list = leaf_typelist();
     bcore_msg( "// leaf types\n" );
-    print_type( hash_l, "s3_t" );
-    print_type( hash_l, "s2_t" );
-    print_type( hash_l, "s1_t" );
-    print_type( hash_l, "s0_t" );
-    print_type( hash_l, "u3_t" );
-    print_type( hash_l, "u2_t" );
-    print_type( hash_l, "u1_t" );
-    print_type( hash_l, "u0_t" );
-    print_type( hash_l, "f3_t" );
-    print_type( hash_l, "f2_t" );
-    print_type( hash_l, "sz_t" );
-    print_type( hash_l, "sd_t" );
-    print_type( hash_l, "sc_t" );
-    print_type( hash_l, "vd_t" );
-    print_type( hash_l, "vc_t" );
-    print_type( hash_l, "fp_t" );
-    print_type( hash_l, "tp_t" );
-    print_type( hash_l, "bl_t" );
-//    print_type( hash_l, "bool" );
-    print_type( hash_l, "aware_t" );
-
-    bcore_msg( "\n// frequently used types\n"   );
-    print_type( hash_l, "bcore_flect_self_s" );
-    print_type( hash_l, "bcore_inst_s" );
-    print_type( hash_l, "bcore_array_s" );
-    print_type( hash_l, "bcore_via_s" );
-    print_type( hash_l, "bcore_source_s" );
-    print_type( hash_l, "bcore_sink_s" );
-    print_type( hash_l, "bcore_compare_s" );
-    print_type( hash_l, "bcore_closure_s" );
-    print_type( hash_l, "bcore_interpreter_s" );
-    print_type( hash_l, "bcore_translator_s" );
-    print_type( hash_l, "bcore_string_s"        );
-    print_type( hash_l, "bcore_source_string_s" );
-    print_type( hash_l, "bcore_source_buffer_s" );
-    print_type( hash_l, "bcore_source_file_s"   );
-    print_type( hash_l, "bcore_source_chain_s"  );
-    print_type( hash_l, "bcore_sink_buffer_s"   );
-    print_type( hash_l, "bcore_sink_file_s"     );
-    print_type( hash_l, "bcore_sink_chain_s"    );
+    for( sz_t i = 0; i < bcore_array_q_get_size( &list ); i++ ) bcore_string_s_print_d( get_def_quicktype( hash_l, bcore_array_q_get( &list, i ), 16 + max_len( &list ) ) );
+    sr_down( list );
+    list = typelist();
+    bcore_msg( "\n// other types\n" );
+    for( sz_t i = 0; i < bcore_array_q_get_size( &list ); i++ ) bcore_string_s_print_d( get_def_quicktype( hash_l, bcore_array_q_get( &list, i ), 16 + max_len( &list ) ) );
+    sr_down( list );
 }
 
 bl_t bcore_type_is_leaf( tp_t type )

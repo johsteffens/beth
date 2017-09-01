@@ -60,8 +60,8 @@ static inline sr_s sr_cc( sr_s o ) { o.f &= ~CONST_f; return o; } // turns a ref
 static inline sr_s sr_cp( sr_s o, tp_t spect_type ) { o.p = ch_spect( o.p, spect_type ); return o; } // changes perspective
               sr_s sr_cl( sr_s o, bcore_life_s* l ); // assigns to lifetime manager
 
-static inline sr_s sr_fork( sr_s o ) { o.f &= ~STRONG_f; return o;         } // forks a reference; returned reference is weak; does not terminate o
-static inline tp_t sr_type( sr_s o ) { return o.p ? ( (tp_t*)o.p )[1] : 0; } // returns type; does not terminate o
+//static inline sr_s sr_fork( sr_s o ) { o.f &= ~STRONG_f; return o;         } // forks a reference; returned reference is weak; does not terminate o
+//static inline tp_t sr_type( sr_s o ) { return o.p ? ( (tp_t*)o.p )[1] : 0; } // returns type; does not terminate o
 
 static inline sr_s sr_create( tp_t t ) { return sr_tsd( t, bcore_inst_typed_create( t ) ); }
 static inline void sr_down( sr_s o )   { if( o.f & STRONG_f ) bcore_inst_discard( o ); }  // explicit termination
@@ -79,6 +79,7 @@ sr_s* sr_s_create(                );
 sr_s* sr_s_clone(   const sr_s* o );                  // deep clone: (clones the object if present; returns a strong reference; perspective is retained)
 void  sr_s_discard(       sr_s* o );
 
+static inline tp_t sr_s_type(      const sr_s* o ) { return o ? ( o->p ? ( (tp_t*)o->p )[1] : 0 ) : 0; }
 static inline bl_t sr_s_is_weak(   const sr_s* o ) { return ( o->f & STRONG_f ) ? false : true;  }
 static inline bl_t sr_s_is_strong( const sr_s* o ) { return ( o->f & STRONG_f ) ? true  : false; }
 static inline bl_t sr_s_is_const(  const sr_s* o ) { return ( o->f & CONST_f  ) ? true  : false; }

@@ -3,7 +3,7 @@
 /** Reflection Framework.
  *  This framework managers self reflection of objects.
  *  Objects with self-reflection can participate in the
- *  'Perspective Framework' (see bcore_perspective.h)
+ *  'Perspective Framework' (see bcore_spect.h)
  *  Where appropriate we abbreviate 'reflection' as 'flect'
  */
 
