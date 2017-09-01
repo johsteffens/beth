@@ -15,7 +15,7 @@ static void array_s_down( bcore_array_s* o );
 static void array_s_init( bcore_array_s* o )
 {
     bcore_memzero( o, sizeof( bcore_array_s ) );
-    o->p_type = typeof( "bcore_array_s" );
+    o->p_type = TYPEOF_bcore_array_s;
 }
 
 static void array_s_down( bcore_array_s* o )
@@ -102,6 +102,102 @@ static sz_t get_space_aware_link( const bcore_array_s* p, vc_t o )
 
 /**********************************************************************************************************************/
 
+static void take_ownership( const bcore_array_s* p, vd_t o )
+{
+    vd_t obj = ( u0_t* )o + p->caps_offset;
+    switch( p->caps_type )
+    {
+        case BCORE_CAPS_STATIC_ARRAY:
+        {
+            bcore_static_array_s* arr = obj;
+            if( arr->size <= arr->space ) return;
+            const bcore_inst_s* instance_p = p->item_p;
+            sz_t unit_size = instance_p->size;
+            vc_t src_data = arr->data;
+            arr->data = bcore_u_alloc( unit_size, NULL, arr->size, &arr->space );
+            if( instance_p->move_flat )
+            {
+                bcore_u_memcpy( unit_size, arr->data, src_data, arr->size );
+            }
+            else
+            {
+                vd_t dst_data = arr->data;
+                for( sz_t i = 0; i < arr->size; i++ )
+                {
+                    instance_p->copy( instance_p, dst_data, src_data );
+                    dst_data = ( u0_t* )dst_data + unit_size;
+                    src_data = ( u0_t* )src_data + unit_size;
+                }
+            }
+        }
+        break;
+
+        case BCORE_CAPS_TYPED_ARRAY:
+        {
+            bcore_typed_array_s* arr = obj;
+            if( arr->size <= arr->space ) return;
+            if( !arr->type ) ERR( "attempt to take ownership of type-zero array" );
+            const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
+            sz_t unit_size = instance_p->size;
+            vc_t src_data = arr->data;
+            arr->data = bcore_u_alloc( unit_size, NULL, arr->size, &arr->space );
+            if( instance_p->move_flat )
+            {
+                bcore_u_memcpy( unit_size, arr->data, src_data, arr->size );
+            }
+            else
+            {
+                vd_t dst_data = arr->data;
+                for( sz_t i = 0; i < arr->size; i++ )
+                {
+                    instance_p->copy( instance_p, dst_data, src_data );
+                    dst_data = ( u0_t* )dst_data + unit_size;
+                    src_data = ( u0_t* )src_data + unit_size;
+                }
+            }
+        }
+        break;
+
+        case BCORE_CAPS_STATIC_LINK_ARRAY:
+        {
+            bcore_static_link_array_s* arr = obj;
+            if( arr->size <= arr->space ) return;
+            const bcore_inst_s* instance_p = p->item_p;
+            vd_t* src_data = arr->data;
+            arr->data = bcore_u_alloc( sizeof( vd_t ), NULL, arr->size, &arr->space );
+            vd_t* dst_data = arr->data;
+            for( sz_t i = 0; i < arr->size; i++ ) *dst_data++ = instance_p->clone( instance_p, *src_data++ );
+        }
+        break;
+
+        case BCORE_CAPS_TYPED_LINK_ARRAY:
+        {
+            bcore_typed_link_array_s* arr = obj;
+            if( arr->size <= arr->space ) return;
+            if( !arr->type ) ERR( "attempt to take ownership of type-zero array" );
+            const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
+            vd_t* src_data = arr->data;
+            arr->data = bcore_u_alloc( sizeof( vd_t ), NULL, arr->size, &arr->space );
+            vd_t* dst_data = arr->data;
+            for( sz_t i = 0; i < arr->size; i++ ) *dst_data++ = instance_p->clone( instance_p, *src_data++ );
+        }
+        break;
+
+        case BCORE_CAPS_AWARE_LINK_ARRAY:
+        {
+            bcore_aware_link_array_s* arr = obj;
+            if( arr->size <= arr->space ) return;
+            vd_t* src_data = arr->data;
+            arr->data = bcore_u_alloc( sizeof( vd_t ), NULL, arr->size, &arr->space );
+            vd_t* dst_data = arr->data;
+            for( sz_t i = 0; i < arr->size; i++ ) *dst_data++ = bcore_inst_aware_clone( *src_data++ );
+        }
+        break;
+
+        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
+    }
+}
+
 void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
@@ -110,6 +206,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_STATIC_ARRAY:
         {
             bcore_static_array_s* arr = obj;
+            if( arr->size > arr->space ) take_ownership( p, o );
             const bcore_inst_s* instance_p = p->item_p;
             sz_t unit_size = instance_p->size;
             if( instance_p->move_flat )
@@ -149,6 +246,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_TYPED_ARRAY:
         {
             bcore_typed_array_s* arr = obj;
+            if( arr->size > arr->space ) take_ownership( p, o );
             if( space == arr->space ) break;
             if( !arr->type ) ERR( "attempt to change space on type-zero array" );
             const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
@@ -190,6 +288,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         {
             bcore_static_link_array_s* arr = obj;
+            if( arr->size > arr->space ) take_ownership( p, o );
             const bcore_inst_s* instance_p = p->item_p;
             while( arr->size > space )
             {
@@ -203,6 +302,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         {
             bcore_typed_link_array_s* arr = obj;
+            if( arr->size > arr->space ) take_ownership( p, o );
             if( space < arr->size )
             {
                 if( !arr->type ) ERR( "type-zero array with non-zero size detected" );
@@ -220,6 +320,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
             bcore_aware_link_array_s* arr = obj;
+            if( arr->size > arr->space ) take_ownership( p, o );
             while( arr->size > space )
             {
                 arr->size--;
@@ -238,7 +339,11 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
 void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
 {
     sz_t space = bcore_array_spect_get_space( p, o );
+
     if( size > space ) bcore_array_spect_set_space( p, o, ( size <= space * 2 ) ? space * 2 : size );
+
+    // If array was referencing external data and size > 0, it has now copied over external data (taken ownership)
+    // If size == 0, array will release external references below
 
     vd_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
@@ -246,6 +351,11 @@ void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
         case BCORE_CAPS_STATIC_ARRAY:
         {
             bcore_static_array_s* arr = obj;
+            if( arr->size > arr->space )
+            {
+                arr->size = 0;
+                arr->data = NULL;
+            }
             const bcore_inst_s* instance_p = p->item_p;
             sz_t unit_size = instance_p->size;
             if( size < arr->size )
@@ -285,6 +395,11 @@ void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
         case BCORE_CAPS_TYPED_ARRAY:
         {
             bcore_typed_array_s* arr = obj;
+            if( arr->size > arr->space )
+            {
+                arr->size = 0;
+                arr->data = NULL;
+            }
             if( size == arr->size ) break;
             if( !arr->type ) ERR( "attempt to change size on type-zero array" );
             const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
@@ -326,6 +441,11 @@ void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         {
             bcore_static_link_array_s* arr = obj;
+            if( arr->size > arr->space )
+            {
+                arr->size = 0;
+                arr->data = NULL;
+            }
             const bcore_inst_s* instance_p = p->item_p;
             if( size < arr->size )
             {
@@ -346,6 +466,11 @@ void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         {
             bcore_typed_link_array_s* arr = obj;
+            if( arr->size > arr->space )
+            {
+                arr->size = 0;
+                arr->data = NULL;
+            }
             if( size < arr->size )
             {
                 const bcore_inst_s* instance_p = ( arr->type ) ? bcore_inst_s_get_typed( arr->type ) : NULL;
@@ -370,6 +495,11 @@ void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
             bcore_aware_link_array_s* arr = obj;
+            if( arr->size > arr->space )
+            {
+                arr->size = 0;
+                arr->data = NULL;
+            }
             if( size < arr->size )
             {
                 while( size < arr->size )
@@ -1112,6 +1242,7 @@ static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd
 void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t order )
 {
     sz_t size = p->get_size( p, o );
+    if( size > p->get_space( p, o ) ) take_ownership( p, o );
     sz_t end_l = end < size ? end : size;
     if( start >= end_l ) return;
     sz_t range = end_l - start;
