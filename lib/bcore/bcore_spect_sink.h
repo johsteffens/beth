@@ -58,4 +58,14 @@ void bcore_sink_push_string  ( sr_s o, const bcore_string_s* string );
 void bcore_sink_push_string_d( sr_s o,       bcore_string_s* string );
 void bcore_sink_set_consumer ( sr_s o, vd_t consumer ); // error when not supported
 
+sz_t bcore_sink_q_push_data    ( const sr_s* o, vc_t data, sz_t size );
+void bcore_sink_q_flush        ( const sr_s* o );
+void bcore_sink_q_pushvf       ( const sr_s* o, sc_t format, va_list args );
+void bcore_sink_q_pushf        ( const sr_s* o, sc_t format, ... );
+void bcore_sink_q_push_char    ( const sr_s* o, char c );
+void bcore_sink_q_push_sc      ( const sr_s* o, sc_t sc );
+void bcore_sink_q_push_string  ( const sr_s* o, const bcore_string_s* string );
+void bcore_sink_q_push_string_d( const sr_s* o,       bcore_string_s* string );
+void bcore_sink_q_set_consumer ( const sr_s* o, vd_t consumer ); // error when not supported
+
 #endif // BCORE_SPECT_SINK_H

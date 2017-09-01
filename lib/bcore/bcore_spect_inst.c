@@ -1446,6 +1446,18 @@ sr_s bcore_inst_clone_sr( sr_s o )
     return ret;
 }
 
+vd_t bcore_inst_q_clone( const sr_s* o )
+{
+    if( !o->o ) return NULL;
+    return bcore_inst_spect_clone( ch_spect( o->p, TYPEOF_bcore_inst_s ), o->o );
+}
+
+sr_s bcore_inst_q_clone_sr( const sr_s* o )
+{
+    if( !o->o ) return sr_null();
+    return sr_psd( o->p, bcore_inst_spect_clone( ch_spect( o->p, TYPEOF_bcore_inst_s ), o->o ) );
+}
+
 /**********************************************************************************************************************/
 // bcore_inst_op
 
@@ -1634,7 +1646,7 @@ void bcore_inst_op_set_obj( bcore_inst_op* o, sr_s obj )
 {
     if( sr_s_is_const( &obj ) )
     {
-        bcore_inst_op_copy_typed( o, sr_type( obj ), obj.o );
+        bcore_inst_op_copy_typed( o, sr_s_type( &obj ), obj.o );
     }
     else
     {

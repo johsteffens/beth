@@ -57,4 +57,12 @@ void bcore_source_parse_errf(   sr_s o, sc_t format, ... );
 bl_t bcore_source_parse_boolf(  sr_s o, sc_t format      ); // format must yield just one bool, which is returned
 void bcore_source_set_supplier( sr_s o, vd_t supplier    ); // error when not supported
 
+sz_t bcore_source_q_get_data(     const sr_s* o, vd_t data, sz_t size );
+void bcore_source_q_parsevf(      const sr_s* o, sc_t format, va_list args );
+void bcore_source_q_parsef(       const sr_s* o, sc_t format, ... );
+void bcore_source_q_parse_errvf(  const sr_s* o, sc_t format, va_list args );
+void bcore_source_q_parse_errf(   const sr_s* o, sc_t format, ... );
+bl_t bcore_source_q_parse_boolf(  const sr_s* o, sc_t format      ); // format must yield just one bool, which is returned
+void bcore_source_q_set_supplier( const sr_s* o, vd_t supplier    ); // error when not supported
+
 #endif // BCORE_SPECT_SOURCE_H

@@ -209,12 +209,19 @@ s2_t bcore_compare_typed( tp_t type, vc_t obj1, vc_t obj2 )
 
 s2_t bcore_compare_sr( sr_s obj1, sr_s obj2 )
 {
-    if( sr_type( obj1 ) != sr_type( obj2 ) ) return ( sr_type( obj1 ) < sr_type( obj2 ) ) ? 1 : -1;
-    if( sr_type( obj1 ) == 0 ) return 0;
-    s2_t c = bcore_compare_typed( sr_type( obj1 ), obj1.o, obj2.o );
+    if( sr_s_type( &obj1 ) != sr_s_type( &obj2 ) ) return ( sr_s_type( &obj1 ) < sr_s_type( &obj2 ) ) ? 1 : -1;
+    if( sr_s_type( &obj1 ) == 0 ) return 0;
+    s2_t c = bcore_compare_typed( sr_s_type( &obj1 ), obj1.o, obj2.o );
     sr_down( obj1 );
     sr_down( obj2 );
     return c;
+}
+
+s2_t bcore_compare_q_sr( const sr_s* obj1, const sr_s* obj2 )
+{
+    if( sr_s_type( obj1 ) != sr_s_type( obj2 ) ) return ( sr_s_type( obj1 ) < sr_s_type( obj2 ) ) ? 1 : -1;
+    if( sr_s_type( obj1 ) == 0 ) return 0;
+    return bcore_compare_typed( sr_s_type( obj1 ), obj1->o, obj2->o );
 }
 
 s2_t bcore_compare_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 )
@@ -293,12 +300,19 @@ bcore_string_s* bcore_diff_aware( vc_t obj1, vc_t obj2 )
 
 bcore_string_s* bcore_diff_sr( sr_s obj1, sr_s obj2 )
 {
-    if( sr_type( obj1 ) != sr_type( obj2 ) ) return bcore_string_s_createf( "obj1 of '%s', obj2 of '%s'", ifnameof( sr_type( obj1 ) ), ifnameof( sr_type( obj2 ) ) );
-    if( sr_type( obj1 ) == 0 ) return NULL;
-    bcore_string_s* s = bcore_diff_typed( sr_type( obj1 ), obj1.o, obj2.o );
+    if( sr_s_type( &obj1 ) != sr_s_type( &obj2 ) ) return bcore_string_s_createf( "obj1 of '%s', obj2 of '%s'", ifnameof( sr_s_type( &obj1 ) ), ifnameof( sr_s_type( &obj2 ) ) );
+    if( sr_s_type( &obj1 ) == 0 ) return NULL;
+    bcore_string_s* s = bcore_diff_typed( sr_s_type( &obj1 ), obj1.o, obj2.o );
     sr_down( obj1 );
     sr_down( obj2 );
     return s;
+}
+
+bcore_string_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 )
+{
+    if( sr_s_type( obj1 ) != sr_s_type( obj2 ) ) return bcore_string_s_createf( "obj1 of '%s', obj2 of '%s'", ifnameof( sr_s_type( obj1 ) ), ifnameof( sr_s_type( obj2 ) ) );
+    if( sr_s_type( obj1 ) == 0 ) return NULL;
+    return bcore_diff_typed( sr_s_type( obj1 ), obj1->o, obj2->o );
 }
 
 /**********************************************************************************************************************/

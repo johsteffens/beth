@@ -121,6 +121,9 @@ void bcore_inst_discard(  sr_s o ); // only discards when o is a strong referenc
 vd_t bcore_inst_clone(    sr_s o );
 sr_s bcore_inst_clone_sr( sr_s o ); // returns perspective of o
 
+vd_t bcore_inst_q_clone(    const sr_s* o );
+sr_s bcore_inst_q_clone_sr( const sr_s* o ); // returns perspective of o
+
 /** This function checks the instance's size with c-style sizeof( object ).
  *  It can be used as low-level safeguard against changing the c-structure
  *  but forgetting to update the self reflection.
@@ -131,20 +134,39 @@ void bcore_inst_typed_check_sizeof(             tp_t type, sz_t size );
 #define DEFINE_FUNCTION_INIT_SPECT( name ) \
 void name##_init( name* o ) \
 { \
-    bcore_inst_typed_init( typeof( #name ), o ); \
+    bcore_inst_typed_init( TYPEOF_##name, o ); \
 }
 
 #define DEFINE_FUNCTION_DOWN_SPECT( name ) \
 void name##_down( name* o ) \
 { \
-    bcore_inst_typed_down( typeof( #name ), o ); \
+    bcore_inst_typed_down( TYPEOF_##name, o ); \
 }
 
 #define DEFINE_FUNCTION_COPY_SPECT( name ) \
 void name##_copy( name* o, const name* src ) \
 { \
     if( o == src ) return; \
-    bcore_inst_typed_copy( typeof( #name ), o, src ); \
+    bcore_inst_typed_copy( TYPEOF_##name, o, src ); \
+}
+
+#define DEFINE_FUNCTION_CREATE_SPECT( name ) \
+name* name##_create() \
+{ \
+    return bcore_inst_typed_create( TYPEOF_##name ); \
+}
+
+#define DEFINE_FUNCTION_DISCARD_SPECT( name ) \
+void name##_discard( name* o ) \
+{ \
+    bcore_inst_typed_discard( TYPEOF_##name, o ); \
+}
+
+#define DEFINE_FUNCTION_CLONE_SPECT( name ) \
+name* name##_clone( const name* o ) \
+{ \
+    if( !o ) return NULL; \
+    return bcore_inst_typed_clone( TYPEOF_##name, o ); \
 }
 
 /**********************************************************************************************************************/

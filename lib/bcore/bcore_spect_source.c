@@ -167,5 +167,13 @@ void NPX(set_supplier)( sr_s o, vd_t s            ) {          NPX(spect_set_sup
 void NPX(parsef      )( sr_s o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(parsevf    )( o, f, a ); va_end( a ); }
 void NPX(parse_errf  )( sr_s o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(parse_errvf)( o, f, a ); va_end( a ); }
 
+sz_t NPX(q_get_data    )( const sr_s* o, vd_t d, sz_t sz   ) { return NPX(spect_get_data    )( w_spect( *o ), o->o, d, sz ); }
+void NPX(q_parsevf     )( const sr_s* o, sc_t f, va_list a ) {        NPX(spect_parsevf     )( w_spect( *o ), o->o, f, a  ); }
+void NPX(q_parse_errvf )( const sr_s* o, sc_t f, va_list a ) {        NPX(spect_parse_errvf )( w_spect( *o ), o->o, f, a  ); }
+bl_t NPX(q_parse_boolf )( const sr_s* o, sc_t f            ) { return NPX(spect_parse_boolf )( w_spect( *o ), o->o, f     ); }
+void NPX(q_set_supplier)( const sr_s* o, vd_t s            ) {        NPX(spect_set_supplier)( w_spect( *o ), o->o, s     ); }
+void NPX(q_parsef      )( const sr_s* o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(q_parsevf    )( o, f, a ); va_end( a ); }
+void NPX(q_parse_errf  )( const sr_s* o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(q_parse_errvf)( o, f, a ); va_end( a ); }
+
 /**********************************************************************************************************************/
 

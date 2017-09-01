@@ -75,5 +75,11 @@ sr_s bcore_interpret( sr_s o, sr_s source )
     return ret;
 }
 
+sr_s bcore_interpret_q( const sr_s* o, sr_s source )
+{
+    const bcore_interpreter_s* p = ch_spect( o->p, TYPEOF_bcore_interpreter_s );
+    return p->fp_interpret( o->o, source );
+}
+
 /**********************************************************************************************************************/
 

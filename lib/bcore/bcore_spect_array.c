@@ -450,13 +450,13 @@ static void set_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
     vd_t dst = ( u0_t* )arr->data + inst_p->size * index;
     if( src.o )
     {
-        if( sr_type( src ) == inst_p->o_type )
+        if( sr_s_type( &src ) == inst_p->o_type )
         {
             bcore_inst_spect_copy( inst_p, dst, src.o );
         }
         else
         {
-            bcore_inst_spect_copy_typed( inst_p, dst, sr_type( src ), src.o );
+            bcore_inst_spect_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
         }
     }
     sr_down( src );
@@ -466,19 +466,19 @@ static void set_typed( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_typed_array_s* arr = obj;
-    if( arr->type == 0 ) arr->type = sr_type( src );
+    if( arr->type == 0 ) arr->type = sr_s_type( &src );
     if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( arr->type );
     vd_t dst = ( u0_t* )arr->data + inst_p->size * index;
     if( src.o )
     {
-        if( sr_type( src ) == inst_p->o_type )
+        if( sr_s_type( &src ) == inst_p->o_type )
         {
             bcore_inst_spect_copy( inst_p, dst, src.o );
         }
         else
         {
-            bcore_inst_spect_copy_typed( inst_p, dst, sr_type( src ), src.o );
+            bcore_inst_spect_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
         }
     }
     sr_down( src );
@@ -495,14 +495,14 @@ static void set_static_link( const bcore_array_s* p, vd_t o, sz_t index, sr_s sr
     *dst = NULL;
     if( src.o )
     {
-        if( sr_type( src ) == inst_p->o_type )
+        if( sr_s_type( &src ) == inst_p->o_type )
         {
            *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_spect_clone( inst_p, src.o );
            src = sr_cw( src );
         }
         else
         {
-            *dst = bcore_inst_spect_create_typed( inst_p, sr_type( src ), src.o );
+            *dst = bcore_inst_spect_create_typed( inst_p, sr_s_type( &src ), src.o );
         }
     }
     sr_down( src );
@@ -512,7 +512,7 @@ static void set_typed_link( const bcore_array_s* p, vd_t o, sz_t index, sr_s src
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     bcore_typed_link_array_s* arr = obj;
-    if( arr->type == 0 ) arr->type = sr_type( src );
+    if( arr->type == 0 ) arr->type = sr_s_type( &src );
     if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( arr->type );
     vd_t* dst = &arr->data[ index ];
@@ -521,14 +521,14 @@ static void set_typed_link( const bcore_array_s* p, vd_t o, sz_t index, sr_s src
 
     if( src.o )
     {
-        if( sr_type( src ) == inst_p->o_type )
+        if( sr_s_type( &src ) == inst_p->o_type )
         {
            *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_spect_clone( inst_p, src.o );
            src = sr_cw( src );
         }
         else
         {
-            *dst = bcore_inst_spect_create_typed( inst_p, sr_type( src ), src.o );
+            *dst = bcore_inst_spect_create_typed( inst_p, sr_s_type( &src ), src.o );
         }
     }
 
@@ -544,9 +544,9 @@ static void set_aware_link( const bcore_array_s* p, vd_t o, sz_t index, sr_s src
     if( *dst ) bcore_inst_aware_discard( *dst );
     *dst = NULL;
 
-    if( sr_type( src ) )
+    if( sr_s_type( &src ) )
     {
-        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( sr_type( src ) );
+        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( sr_s_type( &src ) );
         if( inst_p->aware )
         {
             *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_spect_clone( inst_p, src.o );
@@ -554,7 +554,7 @@ static void set_aware_link( const bcore_array_s* p, vd_t o, sz_t index, sr_s src
         }
         else
         {
-            ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_type( src ) ) );
+            ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_s_type( &src ) ) );
         }
     }
     else
@@ -937,7 +937,7 @@ tp_t bcore_array_spect_get_type( const bcore_array_s* p, vc_t o, sz_t index )
         case BCORE_CAPS_TYPED_ARRAY:       return ( ( const bcore_typed_array_s*       )( ( u0_t* )o + p->caps_offset ) )->type;
         case BCORE_CAPS_STATIC_LINK_ARRAY: return p->item_p->o_type;
         case BCORE_CAPS_TYPED_LINK_ARRAY:  return ( ( const bcore_typed_link_array_s*  )( ( u0_t* )o + p->caps_offset ) )->type;
-        case BCORE_CAPS_AWARE_LINK_ARRAY:  { sr_s sr = p->get( p, o, index ); tp_t t = sr_type( sr ); sr_down( sr ); return t; }
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  { sr_s sr = p->get( p, o, index ); tp_t t = sr_s_type( &sr ); sr_down( sr ); return t; }
         default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
     }
     return 0;
@@ -1278,6 +1278,45 @@ sz_t NPX(get_unit_size        )( sr_s o                           ) { sz_t r = N
 vc_t NPX(max                  )( sr_s o, sz_t st, sz_t nd, s2_t d ) { vc_t r = NPX(spect_max                  )( r_spect( o ), o.o, st, nd, d  ); sr_down( o ); return r; }
 sz_t NPX(max_index            )( sr_s o, sz_t st, sz_t nd, s2_t d ) { sz_t r = NPX(spect_max_index            )( r_spect( o ), o.o, st, nd, d  ); sr_down( o ); return r; }
 void NPX(sort                 )( sr_s o, sz_t st, sz_t nd, s2_t d ) {          NPX(spect_sort                 )( w_spect( o ), o.o, st, nd, d  ); sr_down( o );           }
+
+sz_t NPX(q_get_size             )( const sr_s* o                           ) { return   NPX(spect_get_size             )( r_spect( *o ), o->o             ); }
+sz_t NPX(q_get_space            )( const sr_s* o                           ) { return   NPX(spect_get_space            )( r_spect( *o ), o->o             ); }
+sr_s NPX(q_get                  )( const sr_s* o, sz_t index               ) { sr_s r = NPX(spect_get                  )( x_spect( *o ), o->o, index      ); sr_s_set_const( &r, sr_s_is_const( o ) ); return r; }
+void NPX(q_set                  )( const sr_s* o, sz_t index, sr_s src     ) {          NPX(spect_set                  )( w_spect( *o ), o->o, index, src ); }
+void NPX(q_set_s3               )( const sr_s* o, sz_t index, s3_t val     ) {          NPX(spect_set_s3               )( w_spect( *o ), o->o, index, val ); }
+void NPX(q_set_u3               )( const sr_s* o, sz_t index, u3_t val     ) {          NPX(spect_set_u3               )( w_spect( *o ), o->o, index, val ); }
+void NPX(q_set_f3               )( const sr_s* o, sz_t index, f3_t val     ) {          NPX(spect_set_f3               )( w_spect( *o ), o->o, index, val ); }
+void NPX(q_set_sz               )( const sr_s* o, sz_t index, sz_t val     ) {          NPX(spect_set_sz               )( w_spect( *o ), o->o, index, val ); }
+void NPX(q_set_sc               )( const sr_s* o, sz_t index, sc_t val     ) {          NPX(spect_set_sc               )( w_spect( *o ), o->o, index, val ); }
+void NPX(q_set_bl               )( const sr_s* o, sz_t index, bl_t val     ) {          NPX(spect_set_bl               )( w_spect( *o ), o->o, index, val ); }
+void NPX(q_set_size             )( const sr_s* o, sz_t size                ) {          NPX(spect_set_size             )( w_spect( *o ), o->o, size       ); }
+void NPX(q_set_space            )( const sr_s* o, sz_t space               ) {          NPX(spect_set_space            )( w_spect( *o ), o->o, space      ); }
+sr_s NPX(q_get_first            )( const sr_s* o                           ) { return   NPX(spect_get_first            )( r_spect( *o ), o->o             ); }
+sr_s NPX(q_get_last             )( const sr_s* o                           ) { return   NPX(spect_get_last             )( r_spect( *o ), o->o             ); }
+void NPX(q_push                 )( const sr_s* o, sr_s src                 ) {          NPX(spect_push                 )( w_spect( *o ), o->o, src        ); }
+void NPX(q_push_s3              )( const sr_s* o, s3_t val                 ) {          NPX(spect_push_s3              )( w_spect( *o ), o->o, val        ); }
+void NPX(q_push_u3              )( const sr_s* o, u3_t val                 ) {          NPX(spect_push_u3              )( w_spect( *o ), o->o, val        ); }
+void NPX(q_push_f3              )( const sr_s* o, f3_t val                 ) {          NPX(spect_push_f3              )( w_spect( *o ), o->o, val        ); }
+void NPX(q_push_sz              )( const sr_s* o, sz_t val                 ) {          NPX(spect_push_sz              )( w_spect( *o ), o->o, val        ); }
+void NPX(q_push_sc              )( const sr_s* o, sc_t val                 ) {          NPX(spect_push_sc              )( w_spect( *o ), o->o, val        ); }
+void NPX(q_push_bl              )( const sr_s* o, bl_t val                 ) {          NPX(spect_push_bl              )( w_spect( *o ), o->o, val        ); }
+void NPX(q_pop                  )( const sr_s* o                           ) {          NPX(spect_pop                  )( w_spect( *o ), o->o             ); }
+void NPX(q_set_gtype            )( const sr_s* o, tp_t type                ) {          NPX(spect_set_gtype            )( w_spect( *o ), o->o, type       ); }
+bl_t NPX(q_is_static            )( const sr_s* o                           ) { return   NPX(spect_is_static            )( r_spect( *o )                   ); }
+bl_t NPX(q_is_mono_typed        )( const sr_s* o                           ) { return   NPX(spect_is_mono_typed        )( r_spect( *o )                   ); }
+bl_t NPX(q_is_mutable_mono_typed)( const sr_s* o                           ) { return   NPX(spect_is_mutable_mono_typed)( r_spect( *o )                   ); }
+bl_t NPX(q_is_multi_typed       )( const sr_s* o                           ) { return   NPX(spect_is_multi_typed       )( r_spect( *o )                   ); }
+bl_t NPX(q_is_of_aware          )( const sr_s* o                           ) { return   NPX(spect_is_of_aware          )( r_spect( *o )                   ); }
+bl_t NPX(q_is_of_links          )( const sr_s* o                           ) { return   NPX(spect_is_of_links          )( r_spect( *o )                   ); }
+tp_t NPX(q_get_static_type      )( const sr_s* o                           ) { return   NPX(spect_get_static_type      )( r_spect( *o )                   ); }
+tp_t NPX(q_get_mono_type        )( const sr_s* o                           ) { return   NPX(spect_get_mono_type        )( r_spect( *o ), o->o             ); }
+tp_t NPX(q_get_type             )( const sr_s* o, sz_t index               ) { return   NPX(spect_get_type             )( r_spect( *o ), o->o, index      ); }
+vc_t NPX(q_get_c_data           )( const sr_s* o                           ) { return   NPX(spect_get_c_data           )( r_spect( *o ), o->o             ); }
+vd_t NPX(q_get_d_data           )( const sr_s* o                           ) { return   NPX(spect_get_d_data           )( w_spect( *o ), o->o             ); }
+sz_t NPX(q_get_unit_size        )( const sr_s* o                           ) { return   NPX(spect_get_unit_size        )( r_spect( *o ), o->o             ); }
+vc_t NPX(q_max                  )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) { return   NPX(spect_max                  )( r_spect( *o ), o->o, st, nd, d  ); }
+sz_t NPX(q_max_index            )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) { return   NPX(spect_max_index            )( r_spect( *o ), o->o, st, nd, d  ); }
+void NPX(q_sort                 )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) {          NPX(spect_sort                 )( w_spect( *o ), o->o, st, nd, d  ); }
 
 /**********************************************************************************************************************/
 // testing, debugging

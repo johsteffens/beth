@@ -235,6 +235,46 @@ vc_t bcore_array_max                  ( sr_s o, sz_t start, sz_t end, s2_t order
 sz_t bcore_array_max_index            ( sr_s o, sz_t start, sz_t end, s2_t order );
 void bcore_array_sort                 ( sr_s o, sz_t start, sz_t end, s2_t order );
 
+sz_t bcore_array_q_get_size             ( const sr_s* o );
+sz_t bcore_array_q_get_space            ( const sr_s* o );
+sr_s bcore_array_q_get                  ( const sr_s* o, sz_t index );
+void bcore_array_q_set                  ( const sr_s* o, sz_t index, sr_s src );
+void bcore_array_q_set_c                ( const sr_s* o, sz_t index, sr_s src );
+void bcore_array_q_set_s3               ( const sr_s* o, sz_t index, s3_t val );
+void bcore_array_q_set_u3               ( const sr_s* o, sz_t index, u3_t val );
+void bcore_array_q_set_f3               ( const sr_s* o, sz_t index, f3_t val );
+void bcore_array_q_set_sz               ( const sr_s* o, sz_t index, sz_t val );
+void bcore_array_q_set_sc               ( const sr_s* o, sz_t index, sc_t val );
+void bcore_array_q_set_bl               ( const sr_s* o, sz_t index, bl_t val );
+void bcore_array_q_set_size             ( const sr_s* o, sz_t size  );
+void bcore_array_q_set_space            ( const sr_s* o, sz_t space );
+sr_s bcore_array_q_get_first            ( const sr_s* o );
+sr_s bcore_array_q_get_last             ( const sr_s* o );
+void bcore_array_q_push                 ( const sr_s* o, sr_s src );
+void bcore_array_q_push_s3              ( const sr_s* o, s3_t val );
+void bcore_array_q_push_u3              ( const sr_s* o, u3_t val );
+void bcore_array_q_push_f3              ( const sr_s* o, f3_t val );
+void bcore_array_q_push_sz              ( const sr_s* o, sz_t val );
+void bcore_array_q_push_sc              ( const sr_s* o, sc_t val );
+void bcore_array_q_push_bl              ( const sr_s* o, bl_t val );
+void bcore_array_q_pop                  ( const sr_s* o );
+void bcore_array_q_set_gtype            ( const sr_s* o, tp_t type  );
+bl_t bcore_array_q_is_static            ( const sr_s* o );
+bl_t bcore_array_q_is_mono_typed        ( const sr_s* o );
+bl_t bcore_array_q_is_mutable_mono_typed( const sr_s* o );
+bl_t bcore_array_q_is_multi_typed       ( const sr_s* o );
+bl_t bcore_array_q_is_of_aware          ( const sr_s* o );
+bl_t bcore_array_q_is_of_links          ( const sr_s* o );
+tp_t bcore_array_q_get_static_type      ( const sr_s* o );
+tp_t bcore_array_q_get_mono_type        ( const sr_s* o );
+tp_t bcore_array_q_get_type             ( const sr_s* o, sz_t index );
+vc_t bcore_array_q_get_c_data           ( const sr_s* o );
+vd_t bcore_array_q_get_d_data           ( const sr_s* o );
+sz_t bcore_array_q_get_unit_size        ( const sr_s* o );
+vc_t bcore_array_q_max                  ( const sr_s* o, sz_t start, sz_t end, s2_t order );
+sz_t bcore_array_q_max_index            ( const sr_s* o, sz_t start, sz_t end, s2_t order );
+void bcore_array_q_sort                 ( const sr_s* o, sz_t start, sz_t end, s2_t order );
+
 /**********************************************************************************************************************/
 // testing, debugging
 
