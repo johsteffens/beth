@@ -102,7 +102,7 @@ static sz_t get_space_aware_link( const bcore_array_s* p, vc_t o )
 
 /**********************************************************************************************************************/
 
-static void take_ownership( const bcore_array_s* p, vd_t o )
+void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
     switch( p->caps_type )
@@ -206,7 +206,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_STATIC_ARRAY:
         {
             bcore_static_array_s* arr = obj;
-            if( arr->size > arr->space ) take_ownership( p, o );
+            if( arr->size > arr->space ) bcore_array_spect_make_strong( p, o );
             const bcore_inst_s* instance_p = p->item_p;
             sz_t unit_size = instance_p->size;
             if( instance_p->move_flat )
@@ -246,7 +246,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_TYPED_ARRAY:
         {
             bcore_typed_array_s* arr = obj;
-            if( arr->size > arr->space ) take_ownership( p, o );
+            if( arr->size > arr->space ) bcore_array_spect_make_strong( p, o );
             if( space == arr->space ) break;
             if( !arr->type ) ERR( "attempt to change space on type-zero array" );
             const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
@@ -288,7 +288,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         {
             bcore_static_link_array_s* arr = obj;
-            if( arr->size > arr->space ) take_ownership( p, o );
+            if( arr->size > arr->space ) bcore_array_spect_make_strong( p, o );
             const bcore_inst_s* instance_p = p->item_p;
             while( arr->size > space )
             {
@@ -302,7 +302,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         {
             bcore_typed_link_array_s* arr = obj;
-            if( arr->size > arr->space ) take_ownership( p, o );
+            if( arr->size > arr->space ) bcore_array_spect_make_strong( p, o );
             if( space < arr->size )
             {
                 if( !arr->type ) ERR( "type-zero array with non-zero size detected" );
@@ -320,7 +320,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
             bcore_aware_link_array_s* arr = obj;
-            if( arr->size > arr->space ) take_ownership( p, o );
+            if( arr->size > arr->space ) bcore_array_spect_make_strong( p, o );
             while( arr->size > space )
             {
                 arr->size--;
@@ -1031,6 +1031,21 @@ bl_t bcore_array_spect_is_of_links( const bcore_array_s* p )
     return false;
 }
 
+bl_t bcore_array_spect_is_weak( const bcore_array_s* p, vc_t o )
+{
+    vd_t obj = ( u0_t* )o + p->caps_offset;
+    switch( p->caps_type )
+    {
+        case BCORE_CAPS_STATIC_ARRAY:      { bcore_static_array_s*      arr = obj; return arr->size > arr->space; }
+        case BCORE_CAPS_TYPED_ARRAY:       { bcore_typed_array_s*       arr = obj; return arr->size > arr->space; }
+        case BCORE_CAPS_STATIC_LINK_ARRAY: { bcore_static_link_array_s* arr = obj; return arr->size > arr->space; }
+        case BCORE_CAPS_TYPED_LINK_ARRAY:  { bcore_typed_link_array_s*  arr = obj; return arr->size > arr->space; }
+        case BCORE_CAPS_AWARE_LINK_ARRAY:  { bcore_aware_link_array_s*  arr = obj; return arr->size > arr->space; }
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+    }
+    return false;
+}
+
 tp_t bcore_array_spect_get_static_type( const bcore_array_s* p )
 {
     switch( p->caps_type )
@@ -1242,7 +1257,7 @@ static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd
 void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t order )
 {
     sz_t size = p->get_size( p, o );
-    if( size > p->get_space( p, o ) ) take_ownership( p, o );
+    if( size > p->get_space( p, o ) ) bcore_array_spect_make_strong( p, o );
     sz_t end_l = end < size ? end : size;
     if( start >= end_l ) return;
     sz_t range = end_l - start;
@@ -1301,15 +1316,16 @@ void NPX(typed_set_sc               )( tp_t tp, vd_t o, sz_t index, sc_t val    
 void NPX(typed_set_bl               )( tp_t tp, vd_t o, sz_t index, bl_t val           ) {        NPX(spect_set_bl               )( atpd( tp ), o, index, val ); }
 void NPX(typed_set_size             )( tp_t tp, vd_t o, sz_t size                      ) {        NPX(spect_set_size             )( atpd( tp ), o, size       ); }
 void NPX(typed_set_space            )( tp_t tp, vd_t o, sz_t space                     ) {        NPX(spect_set_space            )( atpd( tp ), o, space      ); }
+void NPX(typed_make_strong          )( tp_t tp, vd_t o                                 ) {        NPX(spect_make_strong          )( atpd( tp ), o             ); }
 sr_s NPX(typed_get_first            )( tp_t tp, vc_t o                                 ) { return NPX(spect_get_first            )( atpd( tp ), o             ); }
 sr_s NPX(typed_get_last             )( tp_t tp, vc_t o                                 ) { return NPX(spect_get_last             )( atpd( tp ), o             ); }
 void NPX(typed_push                 )( tp_t tp, vd_t o, sr_s src                       ) {        NPX(spect_push                 )( atpd( tp ), o, src        ); }
-void NPX(typed_push_s3              )( tp_t tp, vd_t o, s3_t val                       ) {        NPX(spect_push_s3               )( atpd( tp ), o, val ); }
-void NPX(typed_push_u3              )( tp_t tp, vd_t o, u3_t val                       ) {        NPX(spect_push_u3               )( atpd( tp ), o, val ); }
-void NPX(typed_push_f3              )( tp_t tp, vd_t o, f3_t val                       ) {        NPX(spect_push_f3               )( atpd( tp ), o, val ); }
-void NPX(typed_push_sz              )( tp_t tp, vd_t o, sz_t val                       ) {        NPX(spect_push_sz               )( atpd( tp ), o, val ); }
-void NPX(typed_push_sc              )( tp_t tp, vd_t o, sc_t val                       ) {        NPX(spect_push_sc               )( atpd( tp ), o, val ); }
-void NPX(typed_push_bl              )( tp_t tp, vd_t o, bl_t val                       ) {        NPX(spect_push_bl               )( atpd( tp ), o, val ); }
+void NPX(typed_push_s3              )( tp_t tp, vd_t o, s3_t val                       ) {        NPX(spect_push_s3              )( atpd( tp ), o, val        ); }
+void NPX(typed_push_u3              )( tp_t tp, vd_t o, u3_t val                       ) {        NPX(spect_push_u3              )( atpd( tp ), o, val        ); }
+void NPX(typed_push_f3              )( tp_t tp, vd_t o, f3_t val                       ) {        NPX(spect_push_f3              )( atpd( tp ), o, val        ); }
+void NPX(typed_push_sz              )( tp_t tp, vd_t o, sz_t val                       ) {        NPX(spect_push_sz              )( atpd( tp ), o, val        ); }
+void NPX(typed_push_sc              )( tp_t tp, vd_t o, sc_t val                       ) {        NPX(spect_push_sc              )( atpd( tp ), o, val        ); }
+void NPX(typed_push_bl              )( tp_t tp, vd_t o, bl_t val                       ) {        NPX(spect_push_bl              )( atpd( tp ), o, val        ); }
 void NPX(typed_pop                  )( tp_t tp, vd_t o                                 ) {        NPX(spect_pop                  )( atpd( tp ), o             ); }
 void NPX(typed_set_gtype            )( tp_t tp, vd_t o, tp_t type                      ) {        NPX(spect_set_gtype            )( atpd( tp ), o, type       ); }
 bl_t NPX(typed_is_static            )( tp_t tp                                         ) { return NPX(spect_is_static            )( atpd( tp )                ); }
@@ -1340,6 +1356,7 @@ void NPX(aware_set_sc               )( vd_t o, sz_t index, sc_t val           ) 
 void NPX(aware_set_bl               )( vd_t o, sz_t index, bl_t val           ) {        NPX(typed_set_bl               )( *( aware_t* )o, o, index, val ); }
 void NPX(aware_set_size             )( vd_t o, sz_t size                      ) {        NPX(typed_set_size             )( *( aware_t* )o, o, size       ); }
 void NPX(aware_set_space            )( vd_t o, sz_t space                     ) {        NPX(typed_set_space            )( *( aware_t* )o, o, space      ); }
+void NPX(aware_make_strong          )( vd_t o                                 ) {        NPX(typed_make_strong          )( *( aware_t* )o, o             ); }
 sr_s NPX(aware_get_first            )( vc_t o                                 ) { return NPX(typed_get_first            )( *( aware_t* )o, o             ); }
 sr_s NPX(aware_get_last             )( vc_t o                                 ) { return NPX(typed_get_last             )( *( aware_t* )o, o             ); }
 void NPX(aware_push                 )( vd_t o, sr_s src                       ) {        NPX(typed_push                 )( *( aware_t* )o, o, src        ); }
@@ -1383,6 +1400,7 @@ void NPX(set_sc               )( sr_s o, sz_t index, sc_t val     ) {          N
 void NPX(set_bl               )( sr_s o, sz_t index, bl_t val     ) {          NPX(spect_set_bl               )( w_spect( o ), o.o, index, val ); sr_down( o );           }
 void NPX(set_size             )( sr_s o, sz_t size                ) {          NPX(spect_set_size             )( w_spect( o ), o.o, size       ); sr_down( o );           }
 void NPX(set_space            )( sr_s o, sz_t space               ) {          NPX(spect_set_space            )( w_spect( o ), o.o, space      ); sr_down( o );           }
+void NPX(make_strong          )( sr_s o                           ) {          NPX(spect_make_strong          )( w_spect( o ), o.o             ); sr_down( o );           }
 sr_s NPX(get_first            )( sr_s o                           ) { sr_s r = NPX(spect_get_first            )( r_spect( o ), o.o             ); sr_down( o ); return r; }
 sr_s NPX(get_last             )( sr_s o                           ) { sr_s r = NPX(spect_get_last             )( r_spect( o ), o.o             ); sr_down( o ); return r; }
 void NPX(push                 )( sr_s o, sr_s src                 ) {          NPX(spect_push                 )( w_spect( o ), o.o, src        ); sr_down( o );           }
@@ -1422,6 +1440,7 @@ void NPX(q_set_sc               )( const sr_s* o, sz_t index, sc_t val     ) {  
 void NPX(q_set_bl               )( const sr_s* o, sz_t index, bl_t val     ) {          NPX(spect_set_bl               )( w_spect( *o ), o->o, index, val ); }
 void NPX(q_set_size             )( const sr_s* o, sz_t size                ) {          NPX(spect_set_size             )( w_spect( *o ), o->o, size       ); }
 void NPX(q_set_space            )( const sr_s* o, sz_t space               ) {          NPX(spect_set_space            )( w_spect( *o ), o->o, space      ); }
+void NPX(q_make_strong          )( const sr_s* o                           ) {          NPX(spect_make_strong          )( w_spect( *o ), o->o             ); }
 sr_s NPX(q_get_first            )( const sr_s* o                           ) { return   NPX(spect_get_first            )( r_spect( *o ), o->o             ); }
 sr_s NPX(q_get_last             )( const sr_s* o                           ) { return   NPX(spect_get_last             )( r_spect( *o ), o->o             ); }
 void NPX(q_push                 )( const sr_s* o, sr_s src                 ) {          NPX(spect_push                 )( w_spect( *o ), o->o, src        ); }

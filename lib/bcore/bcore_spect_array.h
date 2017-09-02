@@ -74,6 +74,7 @@ void bcore_array_spect_set_sc       ( const bcore_array_s* p, vd_t o, sz_t index
 void bcore_array_spect_set_bl       ( const bcore_array_s* p, vd_t o, sz_t index, bl_t val ); // Sets item by converting bl_t into target type
 void bcore_array_spect_set_size     ( const bcore_array_s* p, vd_t o, sz_t size  ); // changes array size (keeping previous data); for linked arrays new items are NULL
 void bcore_array_spect_set_space    ( const bcore_array_s* p, vd_t o, sz_t space ); // changes space (can affect size; set space to zero means clearing the array)
+void bcore_array_spect_make_strong  ( const bcore_array_s* p, vd_t o );             // turns a weak array reference into a strong one; no effect if array is strong
 sr_s bcore_array_spect_get_first    ( const bcore_array_s* p, vc_t o );             // returns first item; NULL if array is empty
 sr_s bcore_array_spect_get_last     ( const bcore_array_s* p, vc_t o );             // returns last item; NULL if array is empty
 void bcore_array_spect_push         ( const bcore_array_s* p, vd_t o, sr_s src );   // push
@@ -92,6 +93,7 @@ bl_t bcore_array_spect_is_mutable_mono_typed( const bcore_array_s* p ); // check
 bl_t bcore_array_spect_is_multi_typed       ( const bcore_array_s* p ); // checks if elements can have different types
 bl_t bcore_array_spect_is_of_aware          ( const bcore_array_s* p ); // checks if elements are all self-aware
 bl_t bcore_array_spect_is_of_links          ( const bcore_array_s* p ); // checks if elements are links (means they can be NULL);
+bl_t bcore_array_spect_is_weak              ( const bcore_array_s* p, vc_t o ); // checks if array is a weak reference (defined by size > space)
 tp_t bcore_array_spect_get_static_type      ( const bcore_array_s* p );         // returns type if static, 0 otherwise;
 tp_t bcore_array_spect_get_mono_type        ( const bcore_array_s* p, vc_t o ); // returns type if monotyped, 0 otherwise;
 tp_t bcore_array_spect_get_type             ( const bcore_array_s* p, vc_t o, sz_t index ); // returns type of indexed element; returns 0 when type cannot be determined
@@ -128,6 +130,7 @@ void bcore_array_typed_set_sc               ( tp_t tp, vd_t o, sz_t index, sc_t 
 void bcore_array_typed_set_bl               ( tp_t tp, vd_t o, sz_t index, bl_t val );
 void bcore_array_typed_set_size             ( tp_t tp, vd_t o, sz_t size  );
 void bcore_array_typed_set_space            ( tp_t tp, vd_t o, sz_t space );
+void bcore_array_typed_make_strong          ( tp_t tp, vd_t o );
 sr_s bcore_array_typed_get_first            ( tp_t tp, vc_t o );
 sr_s bcore_array_typed_get_last             ( tp_t tp, vc_t o );
 void bcore_array_typed_push                 ( tp_t tp, vd_t o, sr_s src );
@@ -168,6 +171,7 @@ void bcore_array_aware_set_sc               ( vd_t o, sz_t index, sc_t val );
 void bcore_array_aware_set_bl               ( vd_t o, sz_t index, bl_t val );
 void bcore_array_aware_set_size             ( vd_t o, sz_t size  );
 void bcore_array_aware_set_space            ( vd_t o, sz_t space );
+void bcore_array_aware_make_strong          ( vd_t o );
 sr_s bcore_array_aware_get_first            ( vc_t o );
 sr_s bcore_array_aware_get_last             ( vc_t o );
 void bcore_array_aware_push                 ( vd_t o, sr_s src );
@@ -208,6 +212,7 @@ void bcore_array_set_sc               ( sr_s o, sz_t index, sc_t val );
 void bcore_array_set_bl               ( sr_s o, sz_t index, bl_t val );
 void bcore_array_set_size             ( sr_s o, sz_t size  );
 void bcore_array_set_space            ( sr_s o, sz_t space );
+void bcore_array_make_strong          ( sr_s o );
 sr_s bcore_array_get_first            ( sr_s o );
 sr_s bcore_array_get_last             ( sr_s o );
 void bcore_array_push                 ( sr_s o, sr_s src );
@@ -248,6 +253,7 @@ void bcore_array_q_set_sc               ( const sr_s* o, sz_t index, sc_t val );
 void bcore_array_q_set_bl               ( const sr_s* o, sz_t index, bl_t val );
 void bcore_array_q_set_size             ( const sr_s* o, sz_t size  );
 void bcore_array_q_set_space            ( const sr_s* o, sz_t space );
+void bcore_array_q_make_strong          ( const sr_s* o );
 sr_s bcore_array_q_get_first            ( const sr_s* o );
 sr_s bcore_array_q_get_last             ( const sr_s* o );
 void bcore_array_q_push                 ( const sr_s* o, sr_s src );

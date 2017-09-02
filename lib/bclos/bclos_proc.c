@@ -263,7 +263,7 @@ bcore_flect_self_s* proc_arg_s_create_self( void )
     return bcore_flect_self_s_build_parse_sc( bclos_proc_arg_s_def, sizeof( bclos_proc_s ) );
 }
 
-bcore_flect_self_s* proc_s_create_self( void )
+static bcore_flect_self_s* proc_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( bclos_proc_s_def, sizeof( bclos_proc_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_proc_s_func,    "bcore_closure_fp_func",    "func" );

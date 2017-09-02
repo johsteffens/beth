@@ -36,7 +36,6 @@ typedef tp_t (*bcore_closure_fp_t_ret   )( vc_t o );             // type of retu
 // Closure does not assume ownership but has the right to modify it.
 typedef void (*bcore_closure_fp_set_env )( vd_t o, vd_t env );
 
-typedef struct bcore_closure_s bcore_closure_s;
 typedef struct bcore_closure_s
 {
     aware_t p_type; // type of perspective
