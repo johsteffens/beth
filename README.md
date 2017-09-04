@@ -8,7 +8,7 @@ framework which optimally leverages efficient application design with respect to
 
 ## Concepts
 
-Current focus is implementing a paradigm, called *Perspective*, which I initially conceived in May 2017.
+Current focus is implementing a paradigm, called *Perspective*, initially conceived in May 2017.
 
 Some of its objectives are...
    * Bridging the gap between procedural and object oriented programming.
