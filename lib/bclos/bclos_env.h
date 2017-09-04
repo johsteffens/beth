@@ -22,8 +22,9 @@ bclos_env_s* bclos_env_s_create();
 bclos_env_s* bclos_env_s_clone( const bclos_env_s* o );
 void         bclos_env_s_discard( bclos_env_s* o );
 
-sr_s*        bclos_env_s_get( bclos_env_s* o, tp_t name ); // returns NULL when not existing
-sr_s*        bclos_env_s_set( bclos_env_s* o, tp_t name, sr_s val );
+sr_s*        bclos_env_s_get(    bclos_env_s* o, tp_t name ); // returns NULL when not existing
+sr_s*        bclos_env_s_set(    bclos_env_s* o, tp_t name, sr_s val );
+sr_s         bclos_env_s_remove( bclos_env_s* o, tp_t name ); // removes element, returns value; call sr_down( remove(...) ) to eliminate entry
 
 void bclos_env_define_self_creators( void );
 

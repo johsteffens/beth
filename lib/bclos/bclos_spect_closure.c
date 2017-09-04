@@ -55,6 +55,25 @@ const bclos_closure_s* bclos_closure_s_get_aware( vc_t obj )
 
 /**********************************************************************************************************************/
 
+void bclos_closure_spect_def(  const bclos_closure_s* p, vd_t o, bclos_env_s* env )
+{
+    if( p->fp_def ) p->fp_def( o, env );
+}
+
+sr_s bclos_closure_spect_call( const bclos_closure_s* p, vc_t o, bclos_env_s* env, const bclos_args_s* args )
+{
+    assert( p->fp_call );
+    return p->fp_call( o, env, args );
+}
+
+sr_s bclos_closure_spect_sig(  const bclos_closure_s* p, vc_t o )
+{
+    assert( p->fp_sig );
+    return p->fp_sig( o );
+}
+
+/**********************************************************************************************************************/
+
 void bclos_spect_closure_define_self_creators( void )
 {
     bcore_flect_define_creator( typeof( "bclos_spect_closure_s" ), closure_s_create_self );

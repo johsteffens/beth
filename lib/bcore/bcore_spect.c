@@ -194,8 +194,11 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
         // Unlock because create_from_self may make use of registry
         bcore_mutex_unlock( &hmap_s_g->mutex );
 
-        fp_t create_from_self = bcore_flect_self_s_get_external_fp( bcore_flect_get_self( p_type ), bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
-        vd_t new_spect = ( ( bcore_spect_fp_create_from_self )create_from_self )( bcore_flect_get_self( o_type ) );
+        const bcore_flect_self_s* p_self = bcore_flect_get_self( p_type );
+        const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
+
+        fp_t create_from_self = bcore_flect_self_s_get_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
+        vd_t new_spect = ( ( bcore_spect_fp_create_from_self )create_from_self )( o_self );
 
         // Lock to register the perspective
         bcore_mutex_lock( &hmap_s_g->mutex );

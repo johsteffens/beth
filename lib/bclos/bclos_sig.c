@@ -16,7 +16,7 @@ DEFINE_FUNCTION_CLONE(     bclos_arg_sig_s )
 
 static bcore_flect_self_s* arg_sig_s_create_self( void )
 {
-    sc_t def = "bclos_arg_sig_s = { tp_t type; bl_t is_const; }";
+    sc_t def = "bclos_arg_sig_s = { tp_t name; tp_t type; bl_t is_const; }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_arg_sig_s ) );
     return self;
 }
@@ -39,7 +39,7 @@ void bclos_sig_s_push( bclos_sig_s* o, bclos_arg_sig_s arg_sig )
 
 static bcore_flect_self_s* sig_s_create_self( void )
 {
-    sc_t def = "bclos_sig_s = { bclos_arg_sig_s [] arr; tp_t ret; }";
+    sc_t def = "bclos_sig_s = { bclos_arg_sig_s [] arr; tp_t name; tp_t ret; }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_sig_s ) );
     return self;
 }

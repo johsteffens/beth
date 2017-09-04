@@ -9,6 +9,8 @@
 #include "bclos_args.h"
 #include "bclos_sig.h"
 #include "bclos_spect_closure.h"
+#include "bclos_statement.h"
+#include "bclos_procedure.h"
 
 void bclos_flect_define_self_creators( void )
 {
@@ -18,5 +20,7 @@ void bclos_flect_define_self_creators( void )
     bclos_args_define_self_creators();
     bclos_sig_define_self_creators();
     bclos_spect_closure_define_self_creators();
+    bclos_statement_define_self_creators();
+    bclos_procedure_define_self_creators();
 }
 

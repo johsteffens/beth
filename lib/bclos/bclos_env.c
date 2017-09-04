@@ -47,6 +47,11 @@ sr_s* bclos_env_s_set( bclos_env_s* o, tp_t name, sr_s val )
     return bcore_hmap_tp_sr_s_set( &o->map, name, val );
 }
 
+sr_s bclos_env_s_remove( bclos_env_s* o, tp_t name )
+{
+    return bcore_hmap_tp_sr_s_remove( &o->map, name );
+}
+
 bcore_flect_self_s* env_s_create_self( void )
 {
     sc_t def =

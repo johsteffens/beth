@@ -8,6 +8,7 @@
 
 typedef struct bclos_arg_sig_s
 {
+    tp_t name;
     tp_t type;
     bl_t is_const;
 } bclos_arg_sig_s;
@@ -30,7 +31,8 @@ typedef struct bclos_sig_s
             sz_t size, space;
         };
     };
-    tp_t ret; // return type: 0: no return;
+    tp_t name; // name of closure
+    tp_t ret;  // return type: 0: no return;
 } bclos_sig_s;
 
 DECLARE_FUNCTION_INIT(    bclos_sig_s )
