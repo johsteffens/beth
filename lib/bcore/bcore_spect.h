@@ -14,6 +14,7 @@
  *    * Registering following features in its reflection:
  *      * bcore_fp_init
  *      * bcore_fp_down
+ *      * bcore_fp_discard
  *      * bcore_spect_fp_create_from_self
  */
 
