@@ -31,7 +31,7 @@ sr_s typelist()
     bcore_array_q_push_sc( &list, "bclos_args_s" );
     bcore_array_q_push_sc( &list, "bclos_closure_s" );
     bcore_array_q_push_sc( &list, "bclos_arg_sig_s" );
-    bcore_array_q_push_sc( &list, "bclos_sig_s" );
+    bcore_array_q_push_sc( &list, "bclos_signature_s" );
     bcore_array_q_push_sc( &list, "bclos_statement_s" );
     bcore_array_q_push_sc( &list, "bclos_procedure_s" );
     bcore_array_q_sort( &list, 0, -1, 1 );

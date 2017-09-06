@@ -10,7 +10,7 @@
 
 /** A statement has the form: [define] <target> = operation( arg1, arg2, ... )
  *  Specifiers are considered bindings (==names) referring to a given environment.
- *  'define' indicates whether target is to be found in the environment (==0) or to
+ *  'define' indicates whether target is to be taken from the environment (==0) or to
  *  be newly instantiated in the local environment (!=0).
  *  In the latter case it specifies the type of the target, allowing runtime type checking.
  *  'operation' specifies a closure, followed by the assigned arguments.
@@ -38,10 +38,13 @@ DECLARE_FUNCTION_CREATE(  bclos_statement_s )
 DECLARE_FUNCTION_DISCARD( bclos_statement_s )
 DECLARE_FUNCTION_CLONE(   bclos_statement_s )
 
-void bclos_statement_s_push_arg( bclos_statement_s* o, tp_t arg );
+void               bclos_statement_s_push_arg(          bclos_statement_s* o, tp_t arg );
+bclos_args_s*      bclos_statement_s_create_args( const bclos_statement_s* o, bclos_env_s* env );
+void               bclos_statement_s_run(         const bclos_statement_s* o, bclos_env_s* env );
 
-bclos_args_s* bclos_statement_s_create_args( const bclos_statement_s* o, bclos_env_s* env );
-void bclos_statement_s_run( const bclos_statement_s* o, bclos_env_s* env );
+// Format: [<def-type>] <target> = <closure>( <name>, <name>, ... );
+bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source );
+bclos_statement_s* bclos_statement_s_parse_from_sc( sc_t sc );
 
 void bclos_statement_define_self_creators( void );
 

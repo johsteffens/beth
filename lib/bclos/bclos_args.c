@@ -14,10 +14,39 @@ DEFINE_FUNCTION_CREATE(     bclos_args_s )
 DEFINE_FUNCTION_DISCARD(    bclos_args_s )
 DEFINE_FUNCTION_CLONE(      bclos_args_s )
 
+bclos_args_s* bclos_args_s_create_nv( sz_t n, va_list v_args )
+{
+    bclos_args_s* args = bclos_args_s_create();
+    for( sz_t i = 0; i < n; i++ )
+    {
+        bclos_args_s_push( args, va_arg( v_args, sr_s ) );
+    }
+    return args;
+}
+
+bclos_args_s* bclos_args_s_create_na( sz_t n, ... )
+{
+    va_list args;
+    va_start( args, n );
+    bclos_args_s* ret = bclos_args_s_create_nv( n, args );
+    va_end( args );
+    return ret;
+}
+
 void bclos_args_s_push( bclos_args_s* o, sr_s sr )
 {
     if( o->size > o->space ) bcore_array_typed_make_strong( TYPEOF_bclos_args_s, o );
-    if( o->size == o->space ) bcore_un_alloc( sizeof( sr_s ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+    if( o->size == o->space )
+    {
+        o->data = bcore_un_alloc
+        (
+            sizeof( sr_s ),
+            o->data,
+            o->space,
+            o->space > 0 ? o->space * 2 : 1,
+            &o->space
+        );
+    }
     o->data[ o->size++ ] = sr;
 }
 

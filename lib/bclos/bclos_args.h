@@ -26,8 +26,11 @@ DECLARE_FUNCTION_CREATE(  bclos_args_s )
 DECLARE_FUNCTION_DISCARD( bclos_args_s )
 DECLARE_FUNCTION_CLONE(   bclos_args_s )
 
-void         bclos_args_s_push(            bclos_args_s* o, sr_s sr );
-bclos_args_s bclos_args_s_weak_crop( const bclos_args_s* src, sz_t start, sz_t end );
+bclos_args_s* bclos_args_s_create_nv( sz_t n, va_list args );
+bclos_args_s* bclos_args_s_create_na( sz_t n, ... );
+
+void          bclos_args_s_push(            bclos_args_s* o, sr_s sr );
+bclos_args_s  bclos_args_s_weak_crop( const bclos_args_s* src, sz_t start, sz_t end );
 
 void bclos_args_define_self_creators( void );
 

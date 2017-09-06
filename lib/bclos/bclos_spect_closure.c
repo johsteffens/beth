@@ -23,20 +23,20 @@ DEFINE_FUNCTION_DISCARD(    bclos_closure_s )
 static bclos_closure_s* create_from_self( const bcore_flect_self_s* self )
 {
     assert( self != NULL );
-    assert( bcore_flect_self_s_is_aware( self ) );
     bclos_closure_s* o = bclos_closure_s_create();
     o->o_type = self->type;
     o->fp_def  = ( bclos_closure_fp_def  )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bclos_closure_fp_def"  ), 0 );
     o->fp_call = ( bclos_closure_fp_call )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bclos_closure_fp_call" ), 0 );
-    o->fp_sig  = ( bclos_closure_fp_sig  )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bclos_closure_fp_sig"  ), 0 );
+    o->fp_sig  = ( bclos_closure_fp_sig  )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bclos_closure_fp_sig"  ), 0 );
     return o;
 }
 
 static bcore_flect_self_s* closure_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bclos_closure_s" ), sizeof( bclos_closure_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_init, "bcore_fp_init",                    "init"             );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_down, "bcore_fp_down",                    "down"             );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_init,    "bcore_fp_init",                 "init"             );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_down,    "bcore_fp_down",                 "down"             );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_discard, "bcore_fp_discard",              "discard"          );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,     "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
@@ -68,15 +68,63 @@ sr_s bclos_closure_spect_call( const bclos_closure_s* p, vc_t o, bclos_env_s* en
 
 sr_s bclos_closure_spect_sig(  const bclos_closure_s* p, vc_t o )
 {
-    assert( p->fp_sig );
-    return p->fp_sig( o );
+    return p->fp_sig ? p->fp_sig( o ) : sr_null();
+}
+
+sr_s bclos_closure_spect_call_nv( const bclos_closure_s* p, vc_t o, bclos_env_s* env, sz_t n, va_list v_args )
+{
+    bclos_args_s* args = bclos_args_s_create_nv( n, v_args );
+    sr_s ret = bclos_closure_spect_call( p, o, env, args );
+    bclos_args_s_discard( args );
+    return ret;
+}
+
+sr_s bclos_closure_spect_call_na( const bclos_closure_s* p, vc_t o, bclos_env_s* env, sz_t n, ... )
+{
+    va_list args;
+    va_start( args, n );
+    sr_s ret = bclos_closure_spect_call_nv( p, o, env, n, args );
+    va_end( args );
+    return ret;
+}
+
+inline static const bclos_closure_s* w_qp( const sr_s* o ) { assert( !sr_s_is_const( o ) ); return ch_spect( o->p, TYPEOF_bclos_closure_s ); }
+inline static const bclos_closure_s* r_qp( const sr_s* o ) {                                return ch_spect( o->p, TYPEOF_bclos_closure_s ); }
+
+void bclos_closure_q_def( const sr_s* o, bclos_env_s* env )
+{
+    bclos_closure_spect_def( w_qp( o ), o->o, env );
+}
+
+sr_s bclos_closure_q_call( const sr_s* o, bclos_env_s* env, const bclos_args_s* args )
+{
+    return bclos_closure_spect_call( r_qp( o ), o->o, env, args );
+}
+
+sr_s bclos_closure_q_sig( const sr_s* o )
+{
+    return bclos_closure_spect_sig( r_qp( o ), o->o );
+}
+
+sr_s bclos_closure_q_call_nv( const sr_s* o, bclos_env_s* env, sz_t n, va_list args )
+{
+    return bclos_closure_spect_call_nv( r_qp( o ), o->o, env, n, args );
+}
+
+sr_s bclos_closure_q_call_na( const sr_s* o, bclos_env_s* env, sz_t n, ... )
+{
+    va_list args;
+    va_start( args, n );
+    sr_s ret = bclos_closure_spect_call_nv( r_qp( o ), o->o, env, n, args );
+    va_end( args );
+    return ret;
 }
 
 /**********************************************************************************************************************/
 
 void bclos_spect_closure_define_self_creators( void )
 {
-    bcore_flect_define_creator( typeof( "bclos_spect_closure_s" ), closure_s_create_self );
+    bcore_flect_define_creator( typeof( "bclos_closure_s" ), closure_s_create_self );
 }
 
 /**********************************************************************************************************************/

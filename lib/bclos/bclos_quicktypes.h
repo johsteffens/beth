@@ -21,7 +21,7 @@ void bclos_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_bclos_proc_binding_s 1894874949
 #define TYPEOF_bclos_proc_s          282422711
 #define TYPEOF_bclos_procedure_s    3531902884
-#define TYPEOF_bclos_sig_s          2198608208
+#define TYPEOF_bclos_signature_s    3005312691
 #define TYPEOF_bclos_statement_s    4269937196
 #define TYPEOF_bclos_tree_s         1583508963
 
