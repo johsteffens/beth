@@ -37,6 +37,25 @@ void bcore_string_s_initf( bcore_string_s* o, sc_t format, ... )
     va_end( args );
 }
 
+void bcore_string_s_init_sc( bcore_string_s* o, sc_t sc )
+{
+    bcore_string_s_init( o );
+    sz_t src_size = bcore_strlen( sc );
+    o->space = src_size < 8 ? 8 : src_size + 1;
+    o->data  = bcore_b_alloc( NULL, o->space, &o->space );
+    bcore_memcpy( o->data, sc, src_size );
+    o->size = src_size;
+    o->data[ o->size ] = 0;
+}
+
+void bcore_string_s_init_weak_sc( bcore_string_s* o, sc_t sc )
+{
+    bcore_string_s_init( o );
+    sz_t src_size = bcore_strlen( sc );
+    o->sc    = sc;
+    o->size  = src_size;
+}
+
 void bcore_string_s_down( bcore_string_s* o )
 {
     if( o->space ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
@@ -69,6 +88,14 @@ void bcore_string_s_copy_sc( bcore_string_s* o, sc_t sc )
     bcore_memcpy( o->data, sc, src_size );
     o->size = src_size;
     o->data[ o->size ] = 0;
+}
+
+void bcore_string_s_assign_sc( bcore_string_s* o, sc_t sc )
+{
+    sz_t src_size = bcore_strlen( sc );
+    if( o->space > 0 ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
+    o->sc   = sc;
+    o->size = src_size;
 }
 
 void bcore_string_s_copyf( bcore_string_s* o, sc_t format, ...  )
@@ -154,7 +181,16 @@ bcore_string_s* bcore_string_s_createf( sc_t format, ... )
 
 bcore_string_s* bcore_string_s_create_sc( sc_t sc )
 {
-    return bcore_string_s_push_sc( bcore_string_s_create(), sc );
+    bcore_string_s* o = bcore_b_alloc( NULL, sizeof( bcore_string_s ), NULL );
+    bcore_string_s_init_sc( o, sc );
+    return o;
+}
+
+bcore_string_s* bcore_string_s_create_weak_sc( sc_t sc )
+{
+    bcore_string_s* o = bcore_b_alloc( NULL, sizeof( bcore_string_s ), NULL );
+    bcore_string_s_init_weak_sc( o, sc );
+    return o;
 }
 
 bcore_string_s* bcore_string_s_create_l( bcore_life_s* life )
@@ -190,9 +226,23 @@ bcore_string_s* bcore_string_s_create_aware( vc_t src )
     return bcore_string_s_create_typed( *( aware_t* )src, src );
 }
 
+bl_t bcore_string_s_is_weak( const bcore_string_s* o )
+{
+    return ( o->size > 0 ) && ( o->space == 0 );
+}
+
+void bcore_string_s_make_strong( bcore_string_s* o )
+{
+    if( !bcore_string_s_is_weak( o ) ) return;
+    sc_t src = o->sc;
+    o->size = 0;
+    bcore_string_s_copy_sc( o, src );
+}
+
 void bcore_string_s_set_min_space( bcore_string_s* o, sz_t min_space )
 {
     if( min_space == 0 ) return;
+    bcore_string_s_make_strong( o );
     if( o->space == 0 )
     {
         sz_t new_space = min_space > 8 ? min_space : 8;
@@ -246,14 +296,22 @@ bcore_string_s* bcore_string_s_clear( bcore_string_s* o )
 {
     if( o->size > 0 )
     {
+        if( o->space > 0 )
+        {
+            o->data[ o->size ] = 0;
+        }
+        else
+        {
+            o->sc = "";
+        }
         o->size = 0;
-        o->data[ o->size ] = 0;
     }
     return o;
 }
 
 bcore_string_s* bcore_string_s_push_char( bcore_string_s* o, char c )
 {
+    if( o->space == 0 ) bcore_string_s_make_strong( o );
     if( o->space == 0 )
     {
         o->space = 8;
@@ -280,7 +338,8 @@ bcore_string_s* bcore_string_s_push_char_n( bcore_string_s* o, char c, sz_t n )
 
 char bcore_string_s_pop_char( bcore_string_s* o )
 {
-    if( o->size == 0 ) return 0;
+    if( o->size  == 0 ) return 0;
+    if( o->space == 0 ) bcore_string_s_make_strong( o );
     o->size--;
     char c = o->data[ o->size ];
     o->data[ o->size ] = 0;
@@ -289,7 +348,8 @@ char bcore_string_s_pop_char( bcore_string_s* o )
 
 void bcore_string_s_pop_n( bcore_string_s* o, sz_t n )
 {
-    if( o->size == 0 ) return;
+    if( o->size  == 0 ) return;
+    if( o->space == 0 ) bcore_string_s_make_strong( o );
     o->size = ( o->size > n ) ? ( o->size - n ) : 0;
     o->data[ o->size ] = 0;
 }
@@ -303,6 +363,7 @@ bcore_string_s* bcore_string_s_push_string( bcore_string_s* o, const bcore_strin
     }
     if( o->space < o->size + src->size + 1 )
     {
+        if( o->space == 0 ) bcore_string_s_make_strong( o );
         o->data = bcore_bn_alloc( o->data, o->space, o->size + src->size + 1, &o->space );
     }
     bcore_memcpy( o->data + o->size, src->data, src->size );
@@ -325,10 +386,10 @@ bcore_string_s* bcore_string_s_push_sc( bcore_string_s* o, sc_t sc )
         bcore_string_s_copy_sc( o, sc );
         return o;
     }
-
     sz_t src_size = bcore_strlen( sc );
     if( o->space < o->size + src_size + 1 )
     {
+        if( o->space == 0 ) bcore_string_s_make_strong( o );
         o->data = bcore_bn_alloc( o->data, o->space, o->size + src_size + 1, &o->space );
     }
     bcore_memcpy( o->data + o->size, sc, src_size );
@@ -453,6 +514,7 @@ sz_t bcore_string_s_find_none_sc( const bcore_string_s* o, sz_t start, sz_t end,
 bcore_string_s* bcore_string_s_remove( bcore_string_s* o, sz_t start, sz_t size )
 {
     if( start >= o->size ) return o;
+    if( o->space == 0 ) bcore_string_s_make_strong( o );
     sz_t size_l = start + size > o->size ? o->size - start : size;
     bcore_memmove( o->data + start, o->data + start + size_l, o->size - start - size_l );
     o->size -= size_l;
@@ -493,6 +555,7 @@ sz_t bcore_string_s_count_string( const bcore_string_s* o, sz_t start, sz_t end,
 bcore_string_s* bcore_string_s_insert_char( bcore_string_s* o, sz_t start, char c )
 {
     if( start > o->size ) return o;
+    if( o->space == 0 ) bcore_string_s_make_strong( o );
     if( o->space == 0 )
     {
         o->space = 8;
@@ -519,6 +582,7 @@ bcore_string_s* bcore_string_s_insert_string( bcore_string_s* o, sz_t start, con
         return o;
     }
     if( start > o->size ) return o;
+    if( o->space == 0 ) bcore_string_s_make_strong( o );
     if( o->space == 0 )
     {
         bcore_string_s_copy( o, string );
@@ -545,6 +609,7 @@ bcore_string_s* bcore_string_s_insert_string_d( bcore_string_s* o, sz_t start, b
 bcore_string_s* bcore_string_s_insert_sc( bcore_string_s* o, sz_t start, sc_t sc )
 {
     if( start > o->size ) return o;
+    if( o->space == 0 ) bcore_string_s_make_strong( o );
     if( o->space == 0 )
     {
         bcore_string_s_copy_sc( o, sc );
@@ -567,6 +632,7 @@ bcore_string_s* bcore_string_s_replace_char_sc( bcore_string_s* o, char c, sc_t 
 {
     sz_t start = 0;
     sz_t sz_sc = bcore_strlen( sc );
+    if( o->space == 0 ) bcore_string_s_make_strong( o );
 
     while( ( start = bcore_string_s_find_char( o, start, o->size, c ) ) < o->size )
     {
@@ -594,6 +660,7 @@ bcore_string_s* bcore_string_s_replace_sc_sc( bcore_string_s* o, sc_t match, sc_
     sz_t start = 0;
     sz_t sz_match = bcore_strlen( match );
     sz_t sz_replace = bcore_strlen( replace );
+    if( o->space == 0 ) bcore_string_s_make_strong( o );
     while( ( start = bcore_string_s_find_sc( o, start, o->size, match ) ) < o->size )
     {
         bcore_string_s_remove(    o, start, sz_match );
@@ -1006,6 +1073,7 @@ static sz_t flow_snk( vd_t o, vc_t data, sz_t size )
 {
     if( *( aware_t*)o != TYPEOF_bcore_string_s ) ERR( "object 'o' of type %u ('%s') must be bcore_string_s", *( aware_t*)o, ifnameof( *( aware_t*)o ) );
     bcore_string_s* s = o;
+    if( s->space == 0 ) bcore_string_s_make_strong( s );
     if( s->space == 0 )
     {
         s->data = bcore_bn_alloc( NULL, 0, size < 7 ? 8 : size + 1, &s->space );
@@ -1021,6 +1089,32 @@ static sz_t flow_snk( vd_t o, vc_t data, sz_t size )
     return size;
 }
 
+static sz_t flow_src( vd_t o, vd_t data, sz_t size )
+{
+    if( *( aware_t*)o != TYPEOF_bcore_string_s ) ERR( "object 'o' of type %u ('%s') must be bcore_string_s", *( aware_t*)o, ifnameof( *( aware_t*)o ) );
+    bcore_string_s* s = o;
+    if( s->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
+    size = ( size > s->size ) ? s->size : size;
+    bcore_memcpy( data, s->data, size );
+    s->size -= size;
+    return size;
+}
+
+static void string_p_errorvf( const bcore_string_s* o, sc_t format, va_list args )
+{
+    bcore_string_s* context = bcore_string_s_show_line_context( o, 0 );
+    bcore_string_s* msg     = bcore_string_s_createvf( format, args );
+    bcore_err( "bcore_string_s source parse error:\n%s%s\n", context->sc, msg->sc );
+    bcore_string_s_discard( msg );
+    bcore_string_s_discard( context );
+}
+
+static void string_parsevf( bcore_string_s* o, sc_t format, va_list args )
+{
+    if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
+    o->data += bcore_string_s_parsevf( o, 0, o->size, format, args );
+}
+
 /// sanity feature
 void bcore_inst_typed_check_sizeof( u2_t type, sz_t size );
 static void check_sanity( vc_t o )
@@ -1030,9 +1124,7 @@ static void check_sanity( vc_t o )
     if( TYPEOF_bcore_string_s != *(aware_t *)o ) ERR( "incorrect type value (%"PRIu32") (expected bcore_string_s)", *(aware_t *)o );
     const bcore_string_s* s = o;
 
-    if( s->size  > 1000000000 )    ERR( "String of size (%zu) appears incorrect.", s->size );
-    if( s->space > 1000000000 )    ERR( "String of space (%zu) appears incorrect.", s->space );
-    if( s->space < s->size )       ERR( "space (%zu) < size (%zu)", s->space, s->size );
+    if( ( s->space > 0 ) && ( s->space < s->size ) ) ERR( "space (%zu) < size (%zu)", s->space, s->size );
     if( s->data[ s->size ] != 0 )  ERR( "data section does not terminate in zero" );
 
     for( sz_t i = 0; i < s->size; i++ )
@@ -1045,19 +1137,21 @@ static void check_sanity( vc_t o )
 bcore_flect_self_s* bcore_string_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_string_s =  { aware_t _; private sd_t data; private sz_t size; private sz_t space; }", sizeof( bcore_string_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_init,         "bcore_fp_init",         "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_down,         "bcore_fp_down",         "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy,         "bcore_fp_copy",         "copy"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_move,         "bcore_fp_move",         "move"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create,       "bcore_fp_create",       "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_clone,        "bcore_fp_clone",        "clone"        );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_discard,      "bcore_fp_discard",      "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy_typed,   "bcore_fp_copy_typed",   "copy_typed"   );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create_typed, "bcore_fp_create_typed", "create_typed" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,                    "bcore_fp_flow_snk",     "flow_snk"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )check_sanity,                "bcore_fp_check_sanity", "check_sanity" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_cmp_string,   "bcore_fp_compare",      "cmp_string"   );
-
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_init,         "bcore_fp_init",           "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_down,         "bcore_fp_down",           "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy,         "bcore_fp_copy",           "copy"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_move,         "bcore_fp_move",           "move"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create,       "bcore_fp_create",         "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_clone,        "bcore_fp_clone",          "clone"        );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_discard,      "bcore_fp_discard",        "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_copy_typed,   "bcore_fp_copy_typed",     "copy_typed"   );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_create_typed, "bcore_fp_create_typed",   "create_typed" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,                    "bcore_fp_flow_snk",       "flow_snk"     );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )flow_src,                    "bcore_fp_flow_src",       "flow_src"     );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )string_p_errorvf,            "bcore_fp_logvf",          "p_errorvf"    );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parsevf,              "bcore_source_fp_parsevf", "parsevf"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )check_sanity,                "bcore_fp_check_sanity",   "check_sanity" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_cmp_string,   "bcore_fp_compare",        "cmp_string"   );
     return self;
 }
 
@@ -1094,6 +1188,16 @@ void bcore_string_s_quicktest( void )
     idx = bcore_string_s_parsef( s, 0, s->size, "This number is #s3_t", &num1 );
     ASSERT( num1 == -12345 );
     ASSERT( bcore_strcmp( s->sc + idx, " and an integer" ) == 0 );
+
+    bcore_string_s* ws = bcore_life_s_push( life, bcore_string_s_discard, bcore_string_s_create() );
+    bcore_string_s_assign_sc( ws, "This is a weak string" );
+
+    ASSERT( bcore_string_s_cmp_sc( ws, "This is a weak string" ) == 0 );
+    ASSERT( ws->space == 0 );
+
+    bcore_string_s_replace_sc_sc( ws, "weak", "strong" );
+    ASSERT( bcore_string_s_cmp_sc( ws, "This is a strong string" ) == 0 );
+    ASSERT( ws->space > 0 );
 
     bcore_life_s_discard( life );
 

@@ -3,10 +3,17 @@
 /** Managed string of characters.
  *  The character array always terminates with '0'.
  *  'size' specifies the number of characters in the string (excluding the terminating '0')
- *  'space' specifies the amount of memory available for the string (including terminating '0')
- *  Except for the empty state when space = size = 0, space is >= size + 1;
+ *  'space' specifies the amount of memory managed by the string instance.
+ *  If space > 0, the string instance owns and manages all memory of the string; in that case it is space >= size + 1.
+ *  If space == 0, the string references an external (constant) 0-terminated string. (--> weak string)
+ *  Functions that cause modification of the string data, turn a weak string into a strong one.
  *  sc should be used with functions expecting a 0-terminated string.
  *  sc always represents a valid 0-terminated string. In case of the empty string, sc points to to an external constant "";
+ *
+ *  Strings support perspectives bcore_spect_source and bcore_spect_sink.
+ *  Strings used as bcore_spect_source must be weak. (Strong strings produce a runtime error)
+ *
+ *  Strings do not support perspective bcore_spect_array.
  */
 
 #ifndef BCORE_STRING_H
@@ -29,24 +36,29 @@ typedef struct bcore_string_s
     sz_t size, space;
 } bcore_string_s;
 
-void            bcore_string_s_init(       bcore_string_s* o );
-void            bcore_string_s_initvf(     bcore_string_s* o, sc_t format, va_list args );  // formatted initialization (like sprintf)
-void            bcore_string_s_initf(      bcore_string_s* o, sc_t format, ... );           // formatted initialization (like sprintf)
-void            bcore_string_s_down(       bcore_string_s* o );
-void            bcore_string_s_copy(       bcore_string_s* o, const bcore_string_s* src );
-void            bcore_string_s_copyf(      bcore_string_s* o, sc_t format, ...  );
-void            bcore_string_s_copy_sc(    bcore_string_s* o, sc_t sc );
-void            bcore_string_s_copy_typed( bcore_string_s* o, tp_t type, vc_t src ); // copy with type conversion
-void            bcore_string_s_copy_aware( bcore_string_s* o,            vc_t src ); // copy with type conversion
-void            bcore_string_s_move(       bcore_string_s* o, bcore_string_s* src );
+void            bcore_string_s_init(         bcore_string_s* o );
+void            bcore_string_s_initvf(       bcore_string_s* o, sc_t format, va_list args );  // formatted initialization (like sprintf)
+void            bcore_string_s_initf(        bcore_string_s* o, sc_t format, ... );           // formatted initialization (like sprintf)
+void            bcore_string_s_init_sc(      bcore_string_s* o, sc_t sc );                    // creates string from sc
+void            bcore_string_s_init_weak_sc( bcore_string_s* o, sc_t sc );                    // creates a weak string referencing sc
+void            bcore_string_s_down(         bcore_string_s* o );
+void            bcore_string_s_copy(         bcore_string_s* o, const bcore_string_s* src );
+void            bcore_string_s_copyf(        bcore_string_s* o, sc_t format, ...  );
+void            bcore_string_s_copy_sc(      bcore_string_s* o, sc_t sc );
+void            bcore_string_s_assign_sc(    bcore_string_s* o, sc_t sc ); // assignment producing a weak string
+void            bcore_string_s_copy_typed(   bcore_string_s* o, tp_t type, vc_t src ); // copy with type conversion
+void            bcore_string_s_copy_aware(   bcore_string_s* o,            vc_t src ); // copy with type conversion
+void            bcore_string_s_move(         bcore_string_s* o, bcore_string_s* src );
 bcore_string_s* bcore_string_s_create();
 bcore_string_s* bcore_string_s_createvf(     sc_t format, va_list args );
 bcore_string_s* bcore_string_s_createf(      sc_t format, ... );
 bcore_string_s* bcore_string_s_create_sc(    sc_t sc );
+bcore_string_s* bcore_string_s_create_weak_sc( sc_t sc );
 bcore_string_s* bcore_string_s_create_typed( tp_t type, vc_t src );
 bcore_string_s* bcore_string_s_create_aware(            vc_t src );
-void            bcore_string_s_set_min_space( bcore_string_s* o, sz_t min_space ); // ensures o->space >= min_space; reallocates if necessary
-
+bl_t            bcore_string_s_is_weak(       const bcore_string_s* o ); // A string is weak when size > 0 && space == 0
+void            bcore_string_s_make_strong(         bcore_string_s* o );
+void            bcore_string_s_set_min_space(       bcore_string_s* o, sz_t min_space ); // ensures o->space >= min_space; reallocates if necessary
 
 /// create with lifetime manager
 typedef struct bcore_life_s bcore_life_s;
