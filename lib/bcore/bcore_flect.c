@@ -313,7 +313,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
         }
         else
         {
-            item->type = ( type_val > 0 ) ? type_val : typeof( type_name->sc );
+            item->type = ( type_val > 0 ) ? type_val : bcore_name_enroll( type_name->sc );
             item->name = bcore_name_enroll( item_name->sc );
             item->caps = f_arr ? ( f_link ? BCORE_CAPS_STATIC_LINK_ARRAY : BCORE_CAPS_STATIC_ARRAY ) : ( f_link ? BCORE_CAPS_STATIC_LINK : BCORE_CAPS_STATIC );
         }
