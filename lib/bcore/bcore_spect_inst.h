@@ -51,12 +51,12 @@ typedef struct bcore_inst_s
 
     sz_t size;   // sizeof(type);
     sz_t align;  // alignof(type)
-    bool aware;  // object is self-aware meaning it defines its type (aware_t) as first element
+    bl_t aware;  // object is self-aware meaning it defines its type (aware_t) as first element
 
-    bool init_flat; // flat initialization possible
-    bool down_flat; // flat shut down possible
-    bool copy_flat; // flat copying possible
-    bool move_flat; // init_flat && copy_flat && down_flat
+    bl_t init_flat; // flat initialization possible
+    bl_t down_flat; // flat shut down possible
+    bl_t copy_flat; // flat copying possible
+    bl_t move_flat; // init_flat && copy_flat && down_flat
 
     /// these functions are only defined if they are part of object's reflection
     fp_t init_o; // bcore_fp_init or ap_t
@@ -68,21 +68,17 @@ typedef struct bcore_inst_s
     bcore_fp_create_typed create_typed_o;
     bcore_fp_discard      discard_o;
     bcore_fp_clone        clone_o;
-    bcore_fp_check_sanity check_sanity_o;
 
     /// these functions are always defined and represent the service this perspective offers
     void ( *init         )( const bcore_inst_s* p, vd_t o );
     void ( *down         )( const bcore_inst_s* p, vd_t o );
     void ( *copy         )( const bcore_inst_s* p, vd_t o,         vc_t src );
     void ( *copy_typed   )( const bcore_inst_s* p, vd_t o, tp_t t, vc_t src );
-    void ( *copy_aware   )( const bcore_inst_s* p, vd_t o,         vc_t src );
     void ( *move         )( const bcore_inst_s* p, vd_t o,         vd_t src );
     vd_t ( *create       )( const bcore_inst_s* p );
     vd_t ( *create_typed )( const bcore_inst_s* p, tp_t t, vc_t src );
-    vd_t ( *create_aware )( const bcore_inst_s* p,         vc_t src );
     void ( *discard      )( const bcore_inst_s* p, vd_t o );
     vd_t ( *clone        )( const bcore_inst_s* p, vc_t o );
-    void ( *check_sanity )( const bcore_inst_s* p, vc_t o );
 } bcore_inst_s;
 
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t type );

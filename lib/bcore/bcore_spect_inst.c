@@ -121,6 +121,7 @@ static bcore_inst_item_s* inst_s_push( bcore_inst_s* o )
     return bcore_inst_body_s_push( o->body );
 }
 
+#ifdef RTCHECKS
 static void verify_aware_type( tp_t type, vc_t obj, sc_t context )
 {
     if( type != *( aware_t* )obj )
@@ -136,6 +137,7 @@ static void verify_aware_type( tp_t type, vc_t obj, sc_t context )
         }
     }
 }
+#endif // RTCHECKS
 
 /**********************************************************************************************************************/
 
@@ -144,6 +146,8 @@ static void init_o( const bcore_inst_s* p, vd_t o )
     assert( o != NULL );
     p->init_o( o );
 }
+
+static void init_null( const bcore_inst_s* p, vd_t o ) { }
 
 static void init_flat( const bcore_inst_s* p, vd_t o )
 {
@@ -218,6 +222,8 @@ static void down_o( const bcore_inst_s* p, vd_t o )
     #endif // RTCHECKS
     p->down_o( o );
 }
+
+static void down_null( const bcore_inst_s* p, vd_t o ) { }
 
 static void down_flat( const bcore_inst_s* p, vd_t o )
 {
@@ -380,6 +386,8 @@ static void down_amoebic( const bcore_inst_s* p, vd_t o )
 }
 
 /**********************************************************************************************************************/
+
+static void copy_null( const bcore_inst_s* p, vd_t dst, vc_t src ) {}
 
 static void copy_o( const bcore_inst_s* p, vd_t dst, vc_t src )
 {
@@ -669,6 +677,8 @@ static void copy_amoebic( const bcore_inst_s* p, vd_t dst, vc_t src )
 
 /**********************************************************************************************************************/
 
+static void copy_typed_null( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src ) {}
+
 static void copy_typed_o( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
 {
     if( dst == src ) return;
@@ -907,12 +917,9 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
     }
 }
 
-static void copy_aware( const bcore_inst_s* p, vd_t dst, vc_t src )
-{
-    p->copy_typed( p, dst, *( aware_t* )src, src );
-}
-
 /**********************************************************************************************************************/
+
+static void move_null( const bcore_inst_s* p, vd_t dst, vd_t src ) {}
 
 static void move_o( const bcore_inst_s* p, vd_t dst, vd_t src )
 {
@@ -928,6 +935,8 @@ static void move( const bcore_inst_s* p, vd_t dst, vd_t src )
     p->down( p, src );
 }
 
+static vd_t create_null( const bcore_inst_s* p ) { return NULL; }
+
 static vd_t create_o( const bcore_inst_s* p )
 {
     return p->create_o();
@@ -939,6 +948,8 @@ static vd_t create( const bcore_inst_s* p )
     p->init( p, o );
     return o;
 }
+
+static vd_t create_typed_null( const bcore_inst_s* p, tp_t t, vc_t src ) { return NULL; }
 
 static vd_t create_typed_o( const bcore_inst_s* p, tp_t t, vc_t src )
 {
@@ -953,6 +964,8 @@ static vd_t create_typed( const bcore_inst_s* p, tp_t t, vc_t src )
     return o;
 }
 
+static void discard_null( const bcore_inst_s* p, vd_t o ) {}
+
 static void discard_o( const bcore_inst_s* p, vd_t o )
 {
     if( !o ) return;
@@ -966,6 +979,8 @@ static void discard( const bcore_inst_s* p, vd_t o )
     bcore_un_alloc( p->size, o, 1, 0, NULL);
 }
 
+static vd_t clone_null( const bcore_inst_s* p, vc_t src ) { return NULL; }
+
 static vd_t clone_o( const bcore_inst_s* p, vc_t src )
 {
     if( !src ) return NULL;
@@ -978,23 +993,6 @@ static vd_t clone( const bcore_inst_s* p, vc_t src )
     vd_t obj = p->create( p );
     p->copy( p, obj, src );
     return obj;
-}
-
-/**********************************************************************************************************************/
-
-static void check_sanity( const bcore_inst_s* p, vc_t o )
-{
-    if( p->check_sanity_o )
-    {
-        p->check_sanity_o( o );
-    }
-    else
-    {
-        if( p->aware )
-        {
-            verify_aware_type( p->o_type, o, "check_sanity" );
-        }
-    }
 }
 
 /**********************************************************************************************************************/
@@ -1028,7 +1026,6 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
     o->create_typed_o = ( bcore_fp_create_typed )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_create_typed" ), 0 );
     o->discard_o      = ( bcore_fp_discard      )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_discard"      ), 0 );
     o->clone_o        = ( bcore_fp_clone        )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_clone"        ), 0 );
-    o->check_sanity_o = ( bcore_fp_check_sanity )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_check_sanity" ), 0 );
 
     o->init_o = fp_init_a ? fp_init_a : o->init_o;
     o->down_o = fp_down_a ? fp_down_a : o->down_o;
@@ -1170,18 +1167,15 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
     if( o->copy_flat && !o->down_flat ) ERR( "copy_flat is not implying down_flat" );
     o->move_flat = o->init_flat && o->copy_flat && o->down_flat;
 
-    o->init         = o->init_o       ? ( fp_init_a ? init_amoebic : init_o ) : ( o->init_flat ? init_flat : init_generic );
-    o->down         = o->down_o       ? ( fp_down_a ? down_amoebic : down_o ) : ( o->down_flat ? down_flat : down_generic );
-    o->copy         = o->copy_o       ? ( fp_copy_a ? copy_amoebic : copy_o ) : ( o->copy_flat ? copy_flat : copy_generic );
-    o->copy_typed   = o->copy_typed_o ? copy_typed_o   : copy_typed;
-    o->move         = o->move_o       ? move_o         : move;
-    o->create       = o->create_o     ? create_o       : create;
-    o->create_typed = o->create_o     ? create_typed_o : create_typed;
-    o->discard      = o->discard_o    ? discard_o      : discard;
-    o->clone        = o->clone_o      ? clone_o        : clone;
-
-    o->copy_aware   = copy_aware;
-    o->check_sanity = check_sanity;
+    o->init         = o->init_o       ? ( fp_init_a ? init_amoebic : init_o ) : ( o->init_flat ? ( o->size > 0 ? init_flat : init_null ) : init_generic );
+    o->down         = o->down_o       ? ( fp_down_a ? down_amoebic : down_o ) : ( o->down_flat ? ( o->size > 0 ? down_flat : down_null ) : down_generic );
+    o->copy         = o->copy_o       ? ( fp_copy_a ? copy_amoebic : copy_o ) : ( o->copy_flat ? ( o->size > 0 ? copy_flat : copy_null ) : copy_generic );
+    o->copy_typed   = o->copy_typed_o ? copy_typed_o   : ( o->size > 0 ? copy_typed   : copy_typed_null   );
+    o->move         = o->move_o       ? move_o         : ( o->size > 0 ? move         : move_null         );
+    o->create       = o->create_o     ? create_o       : ( o->size > 0 ? create       : create_null       );
+    o->create_typed = o->create_o     ? create_typed_o : ( o->size > 0 ? create_typed : create_typed_null );
+    o->discard      = o->discard_o    ? discard_o      : ( o->size > 0 ? discard      : discard_null      );
+    o->clone        = o->clone_o      ? clone_o        : ( o->size > 0 ? clone        : clone_null        );
 
     return o;
 }
@@ -1391,26 +1385,6 @@ vd_t bcore_inst_aware_clone( vc_t obj )
     if( !obj ) return NULL;
     const bcore_inst_s* o = bcore_inst_s_get_aware( obj  );
     return o->clone( o, obj );
-}
-
-void bcore_inst_spect_check_sanity( const bcore_inst_s* o, vc_t obj )
-{
-    if( !obj ) return;
-    o->check_sanity( o, obj );
-}
-
-void bcore_inst_typed_check_sanity( tp_t type, vc_t obj )
-{
-    if( !obj ) return;
-    const bcore_inst_s* o = bcore_inst_s_get_typed( type );
-    o->check_sanity( o, obj );
-}
-
-void bcore_inst_aware_check_sanity( vc_t obj )
-{
-    if( !obj ) return;
-    const bcore_inst_s* o = bcore_inst_s_get_aware( obj  );
-    o->check_sanity( o, obj );
 }
 
 void bcore_inst_spect_check_sizeof( const bcore_inst_s* o, sz_t size )
