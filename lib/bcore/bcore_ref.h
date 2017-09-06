@@ -63,11 +63,28 @@ static inline sr_s sr_cp( sr_s o, tp_t spect_type ) { o.p = ch_spect( o.p, spect
 //static inline sr_s sr_fork( sr_s o ) { o.f &= ~STRONG_f; return o;         } // forks a reference; returned reference is weak; does not terminate o
 //static inline tp_t sr_type( sr_s o ) { return o.p ? ( (tp_t*)o.p )[1] : 0; } // returns type; does not terminate o
 
-static inline sr_s sr_create( tp_t t ) { return sr_tsd( t, bcore_inst_typed_create( t ) ); }
 static inline void sr_down( sr_s o )   { if( o.f & STRONG_f ) bcore_inst_discard( o ); }  // explicit termination
 
 /// creates a strong reference of a typed object (by cloning the object)
+static inline sr_s sr_create( tp_t t ) { return sr_tsd( t, bcore_inst_typed_create( t ) ); }
 sr_s sr_create_strong_typed( tp_t type, vc_t obj );
+
+/// copies specified leaf objects into a strong reference
+sr_s sr_s0( s0_t v );
+sr_s sr_s1( s1_t v );
+sr_s sr_s2( s2_t v );
+sr_s sr_s3( s3_t v );
+sr_s sr_u0( u0_t v );
+sr_s sr_u1( u1_t v );
+sr_s sr_u2( u2_t v );
+sr_s sr_u3( u3_t v );
+sr_s sr_f2( f2_t v );
+sr_s sr_f3( f3_t v );
+sr_s sr_sz( sz_t v );
+sr_s sr_tp( tp_t v );
+sr_s sr_bl( bl_t v );
+
+sr_s sr_string_sc( sc_t v ); // converts to bcore_string_s
 
 /**********************************************************************************************************************/
 // object usage

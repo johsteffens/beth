@@ -4,6 +4,7 @@
 #include "bcore_life.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
+#include "bcore_quicktypes.h"
 
 /**********************************************************************************************************************/
 // embedded usage
@@ -22,6 +23,27 @@ sr_s sr_cl( sr_s o, bcore_life_s* l )
 sr_s sr_create_strong_typed( tp_t type, vc_t obj )
 {
     return bcore_inst_typed_clone_sr( type, obj );
+}
+
+sr_s sr_s0( s0_t v ) { sr_s r = sr_create( TYPEOF_s0_t ); *( s0_t * )r.o = v; return r; }
+sr_s sr_s1( s1_t v ) { sr_s r = sr_create( TYPEOF_s1_t ); *( s1_t * )r.o = v; return r; }
+sr_s sr_s2( s2_t v ) { sr_s r = sr_create( TYPEOF_s2_t ); *( s2_t * )r.o = v; return r; }
+sr_s sr_s3( s3_t v ) { sr_s r = sr_create( TYPEOF_s3_t ); *( s3_t * )r.o = v; return r; }
+sr_s sr_u0( u0_t v ) { sr_s r = sr_create( TYPEOF_u0_t ); *( u0_t * )r.o = v; return r; }
+sr_s sr_u1( u1_t v ) { sr_s r = sr_create( TYPEOF_u1_t ); *( u1_t * )r.o = v; return r; }
+sr_s sr_u2( u2_t v ) { sr_s r = sr_create( TYPEOF_u2_t ); *( u2_t * )r.o = v; return r; }
+sr_s sr_u3( u3_t v ) { sr_s r = sr_create( TYPEOF_u3_t ); *( u3_t * )r.o = v; return r; }
+sr_s sr_f2( f2_t v ) { sr_s r = sr_create( TYPEOF_f2_t ); *( f2_t * )r.o = v; return r; }
+sr_s sr_f3( f3_t v ) { sr_s r = sr_create( TYPEOF_f3_t ); *( f3_t * )r.o = v; return r; }
+sr_s sr_sz( sz_t v ) { sr_s r = sr_create( TYPEOF_sz_t ); *( sz_t * )r.o = v; return r; }
+sr_s sr_tp( tp_t v ) { sr_s r = sr_create( TYPEOF_tp_t ); *( tp_t * )r.o = v; return r; }
+sr_s sr_bl( bl_t v ) { sr_s r = sr_create( TYPEOF_bl_t ); *( bl_t * )r.o = v; return r; }
+
+sr_s sr_string_sc( sc_t v )
+{
+    sr_s r = sr_create( TYPEOF_bcore_string_s );
+    bcore_string_s_copy_sc( r.o, v );
+    return r;
 }
 
 /**********************************************************************************************************************/
