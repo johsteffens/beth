@@ -276,7 +276,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
         idx = bcore_string_s_parsef( text, idx, text->size, "#?'private' #?'shell' ",  &f_private, &f_shell );
 
         // type can be specified by explicit type id number (anonymous types) or by name
-        if( text->data[ idx ] == '{' ) // embedded anonymous type
+        if( text->data[ idx ] == '{' ) // nested anonymous type
         {
             type_val = bcore_flect_type_parse( text, &idx );
         }
@@ -306,7 +306,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
             if( !f_link && !f_arr )
             {
                 bcore_string_s* context = bcore_string_s_show_line_context( text, bcore_string_s_find_sc( text, idx, 0, "typed" ) );
-                ERR( "\n%s\nTyped objects cannot be embedded. Use 'typed *' to clarify method of referencing.", context->sc );
+                ERR( "\n%s\nTyped objects cannot be nested. Use 'typed *' to clarify method of referencing.", context->sc );
             }
             item->type = 0;
             item->name = bcore_name_enroll( item_name->sc );
