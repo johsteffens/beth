@@ -128,7 +128,8 @@ static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
 
 bcore_flect_self_s* bcore_source_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_source_s" ), sizeof( bcore_source_s ) );
+    sc_t def = "bcore_source_s = spect { aware_t p_type; tp_t o_type; ... }";
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )source_s_init,             "bcore_fp_init",                    "init"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )source_s_down,             "bcore_fp_down",                    "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )source_s_create,           "bcore_fp_create",                  "create"       );

@@ -82,6 +82,11 @@ void bcore_spect_manager_close()
 /// tests if the object's self reflection satisfies the requirements of a perspective
 static bl_t supports( const bcore_flect_self_s* self )
 {
+    if( self->trait != typeof( "spect"                                                             ) ) return false;
+    if( !self->body                                                                                  ) return false;
+    if( self->body->size < 2                                                                         ) return false;
+    if( self->body->data[ 0 ].type != TYPEOF_aware_t                                                 ) return false;
+    if( self->body->data[ 1 ].type != TYPEOF_tp_t                                                    ) return false;
     if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_init"                    ), 0 ) ) return false;
     if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_down"                    ), 0 ) ) return false;
     if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_discard"                 ), 0 ) ) return false;

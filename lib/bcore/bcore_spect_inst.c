@@ -1146,7 +1146,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
             }
         }
 
-        if( last_inst_item )
+        if( flect_body->complete && last_inst_item )
         {
             o->size = aligned_offset( o->align, last_inst_item->offset + last_inst_item->size );
             bcore_inst_item_s_discard( last_inst_item );
@@ -1187,7 +1187,8 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
 
 static bcore_flect_self_s* inst_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_inst_s" ), sizeof( bcore_inst_s ) );
+    sc_t def = "bcore_inst_s = spect { aware_t p_type; tp_t o_type; ... }";
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_inst_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                   "init"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_down,             "bcore_fp_down",                   "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_create,           "bcore_fp_create",                 "create"       );

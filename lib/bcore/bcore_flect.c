@@ -288,6 +288,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
         {
             o->complete = false;
             idx += 3;
+            bcore_life_s_discard( life );
             break;
         }
         else // type is specified by name

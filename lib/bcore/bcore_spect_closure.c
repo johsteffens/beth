@@ -60,7 +60,8 @@ static bcore_closure_s* create_from_self( const bcore_flect_self_s* self )
 
 static bcore_flect_self_s* closure_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_closure_s" ), sizeof( bcore_closure_s ) );
+    sc_t def = "bcore_closure_s = spect { aware_t p_type; tp_t o_type; ... }";
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_closure_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )closure_s_init,             "bcore_fp_init",                    "init"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )closure_s_down,             "bcore_fp_down",                    "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )closure_s_create,           "bcore_fp_create",                  "create"       );

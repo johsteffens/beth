@@ -245,7 +245,7 @@ for later (more elaborate) documentation.
    In beth:
    A trait imposes certain requirements to (final) types. A type associated with a trade grants fulfillment of all these requirements.
    A trait has a unique name.
-   A trait can inheriting from other traits (-->tree structure)
+   A trait can inherit other traits (-->hirarchical structure)
    A trait (optionally) has a method to test final types for the fulfillment of its associated requirements
      That method is either invoked at compiletime or at runtime.
 
