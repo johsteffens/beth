@@ -453,13 +453,18 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, 
 
     sz_t idx = ( p_idx != NULL ) ? *p_idx : 0;
 
-    bcore_string_s* name = bcore_string_s_create_l( life );
-    idx = bcore_string_s_parsef( text, idx, text->size, " #name ", name );
-    o->type = ( name->size > 0 ) ? bcore_name_enroll( name->sc ) : 0;
+    bcore_string_s* type_name = bcore_string_s_create_l( life );
+    idx = bcore_string_s_parsef( text, idx, text->size, " #name ", type_name );
+    o->type = ( type_name->size > 0 ) ? bcore_name_enroll( type_name->sc ) : 0;
     if( o->type ) idx = bcore_string_s_parsef( text, idx, text->size, "= " );
+
+    bcore_string_s* assigned_name = bcore_string_s_create_l( life );
+    idx = bcore_string_s_parsef( text, idx, text->size, " #name ", assigned_name );
+    tp_t assigned_type = ( assigned_name->size > 0 ) ? bcore_name_enroll( assigned_name->sc ) : 0;
 
     if( text->sc[ idx ] == '{' )
     {
+        o->trait = assigned_type;
         o->body = bcore_flect_body_s_build_parse( text, &idx );
         if( !o->type )
         {
@@ -472,20 +477,20 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, 
     }
     else
     {
+        o->trait = 0;
         if( !o->type )
         {
             bcore_string_s* context = bcore_life_s_push_aware( life, bcore_string_s_show_line_context( text, idx ) );
             ERR( "\n%s\nAnonymous types need a body.", context->sc );
         }
-        idx = bcore_string_s_parsef( text, idx, text->size, "#name", name );
-        const bcore_flect_self_s* self_l = bcore_flect_try_self( typeof( name->sc ) );
+        const bcore_flect_self_s* self_l = bcore_flect_try_self( assigned_type );
         if( !self_l )
         {
             bcore_string_s* context = bcore_string_s_show_line_context( text, idx );
-            ERR( "\n%s\nType %s not defined", context->sc, name->sc );
+            ERR( "\n%s\nType %s not defined", context->sc, type_name->sc );
         }
-        o->body  = bcore_flect_body_s_clone( self_l->body );
-        o->size  = self_l->size;
+        o->body = bcore_flect_body_s_clone( self_l->body );
+        o->size = self_l->size;
     }
 
     if( p_idx != NULL ) *p_idx = idx;

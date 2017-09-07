@@ -137,6 +137,9 @@ typedef struct bcore_flect_self_s
     /// type of object being reflected
     tp_t type;
 
+    /// trait of object
+    tp_t trait;
+
     /** size
      *  Represents sizeof(object-type);
      *  Mandatory for leaf-types (which are basically types without body)
