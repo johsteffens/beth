@@ -116,6 +116,11 @@ typedef struct bcore_flect_body_s
 {
     bcore_flect_item_s* data;
     sz_t size, space;
+
+    // A complete body enables inst perspective to calculate the
+    // full object's size and alignment from the bodies structure.
+    // An incomplete body has unspecified trailing elements. (intermediate unspecified elements are not allowed)
+    bl_t complete;
 } bcore_flect_body_s;
 
 void                bcore_flect_body_s_init( bcore_flect_body_s* o );
@@ -188,6 +193,11 @@ bcore_string_s*     bcore_flect_self_s_show( const bcore_flect_self_s* o );
  *  qualifiers:
  *    * : link
  *    []: array
+ *
+ *  Special cases:
+ *    <type-name> = <assigned-name> : creates a copy of an existing reflection with new name
+ *    <type-name> = [<trait-name>] { <expr>; <expr>; ... } : Specifying '...' marks the body as incomplete
+ *
  */
 bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx, sz_t size_of );
 bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );

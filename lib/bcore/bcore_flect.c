@@ -190,7 +190,11 @@ s2_t bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_ite
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_FLAT( bcore_flect_body_s )
+void bcore_flect_body_s_init( bcore_flect_body_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+    o->complete = true;
+}
 
 void bcore_flect_body_s_down( bcore_flect_body_s* o )
 {
@@ -212,6 +216,7 @@ void bcore_flect_body_s_copy( bcore_flect_body_s* o, const bcore_flect_body_s* s
         bcore_flect_item_s_copy( &o->data[ i ], &src->data[ i ] );
     }
     o->size = src->size;
+    o->complete = src->complete;
 }
 
 DEFINE_FUNCTION_CREATE(  bcore_flect_body_s )
@@ -278,6 +283,12 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const bcore_string_s* text, 
         else if( text->data[ idx ] >= '0' && text->data[ idx ] <= '9' ) // type is specified by number
         {
             idx = bcore_string_s_parsef( text, idx, text->size, "#tp_t ",  &type_val );
+        }
+        else if( text->data[ idx ] == '.' && text->data[ idx + 1 ] == '.' && text->data[ idx + 2 ] == '.' )
+        {
+            o->complete = false;
+            idx += 3;
+            break;
         }
         else // type is specified by name
         {
@@ -487,7 +498,7 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, 
         if( !self_l )
         {
             bcore_string_s* context = bcore_string_s_show_line_context( text, idx );
-            ERR( "\n%s\nType %s not defined", context->sc, type_name->sc );
+            ERR( "\n%s\nType %s not defined", context->sc, assigned_name->sc );
         }
         o->body = bcore_flect_body_s_clone( self_l->body );
         o->size = self_l->size;
@@ -714,34 +725,49 @@ bool bcore_flect_exists( tp_t type )
 
 const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
 {
+    // try reflection registry
     assert( self_map_s_g != NULL );
-
     bcore_mutex_lock( &self_map_s_g->mutex );
     vd_t* p_val = bcore_hmap_u2vd_s_get( self_map_s_g->hmap, type );
-    bcore_flect_self_s* self = p_val ? *p_val : NULL;
+    bcore_mutex_unlock( &self_map_s_g->mutex );
+    if( p_val ) return *p_val;
 
-    if( !self )
+    // try constructing self by reflection creator
+    bcore_flect_self_s* self = NULL;
+    assert( creator_map_s_g != NULL );
+
+    bcore_mutex_lock( &creator_map_s_g->mutex );
+    fp_t* p_func = bcore_hmap_u2vd_s_getf( creator_map_s_g->hmap, type );
+    bcore_mutex_unlock( &creator_map_s_g->mutex );
+
+
+    if( p_func )
     {
-        assert( creator_map_s_g != NULL );
-
-        bcore_mutex_lock( &creator_map_s_g->mutex );
-        fp_t* p_func = bcore_hmap_u2vd_s_getf( creator_map_s_g->hmap, type );
-        bcore_mutex_unlock( &creator_map_s_g->mutex );
-
-        if( p_func )
+        self = ( ( bcore_flect_create_self_fp )*p_func )();
+        if( self->type != type )
         {
-            self = ( ( bcore_flect_create_self_fp )*p_func )();
-            if( self->type != type )
-            {
-                ERR( "Type of created reflection '%s' differs from requested type '%s'.\n"
-                     "Requested type was probably mapped to the wrong self-creator during registration.\n",
-                     ifnameof( self->type ), ifnameof( type ) );
-            }
+            ERR( "Type of created reflection '%s' differs from requested type '%s'.\n"
+                 "Requested type was probably mapped to the wrong self-creator during registration.\n",
+                 ifnameof( self->type ), ifnameof( type ) );
+        }
+
+
+        bcore_mutex_lock( &self_map_s_g->mutex );
+
+        if( bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) )
+        {
+            // If this reflection has meanwhile been registered by another thread,
+            // kill current self and retrieve registered version
+            bcore_flect_self_s_discard( self );
+            self = *bcore_hmap_u2vd_s_get( self_map_s_g->hmap, type );
+        }
+        else
+        {
+            // else: register current self
             bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
         }
+        bcore_mutex_unlock( &self_map_s_g->mutex );
     }
-
-    bcore_mutex_unlock( &self_map_s_g->mutex );
 
     return self;
 }
