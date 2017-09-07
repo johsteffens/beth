@@ -826,6 +826,16 @@ sz_t bcore_array_spect_get_unit_size( const bcore_array_s* p, vc_t o )
 
 /**********************************************************************************************************************/
 
+static bl_t supports( const bcore_flect_self_s* self )
+{
+    if( !self->body ) return false;
+    for( sz_t i = 0; i < self->body->size; i++ )
+    {
+        if( bcore_flect_caps_is_array( self->body->data[ i ].caps ) ) return true;
+    }
+    return false;
+}
+
 static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
 {
     assert( self != NULL );
@@ -913,6 +923,7 @@ bcore_flect_self_s* bcore_array_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_down,             "bcore_fp_down",                    "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_create,           "bcore_fp_create",                  "create"       );
     bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )supports,                 "bcore_spect_fp_supports",          "supports" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,         "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
@@ -1512,14 +1523,22 @@ bcore_string_s* bcore_spect_array_selftest( void )
 
     for( sz_t i = 0; i < arr_p->get_size( arr_p, arr ); i++ )
     {
+
         const bcore_string_s* code = arr_p->get( arr_p, arr, i ).o;
         bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( code->sc, 0 );
-        bcore_flect_define_self_c( self );
-        test_string_array( nameof( self->type ) );
+        ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), self->type ) );
+        tp_t type = bcore_flect_type_self_c( self );
+        ASSERT( bcore_spect_supports( typeof( "bcore_array_s" ), type ) );
+        test_string_array( nameof( type ) );
         bcore_flect_self_s_discard( self );
     }
 
     bcore_inst_aware_discard( arr );
+
+    // some non-arrays
+    ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), typeof( "bcore_string_s" ) ) );
+    ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), typeof( "f3_t" ) ) );
+    ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
 
     return NULL;
 }

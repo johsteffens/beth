@@ -20,6 +20,12 @@ DEFINE_FUNCTION_DISCARD(    bclos_closure_s )
 
 /**********************************************************************************************************************/
 
+static bl_t supports( const bcore_flect_self_s* self )
+{
+    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bclos_closure_fp_call" ), 0 ) ) return false;
+    return true;
+}
+
 static bclos_closure_s* create_from_self( const bcore_flect_self_s* self )
 {
     assert( self != NULL );
@@ -34,10 +40,11 @@ static bclos_closure_s* create_from_self( const bcore_flect_self_s* self )
 static bcore_flect_self_s* closure_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bclos_closure_s" ), sizeof( bclos_closure_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_init,    "bcore_fp_init",                 "init"             );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_down,    "bcore_fp_down",                 "down"             );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_discard, "bcore_fp_discard",              "discard"          );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,     "bcore_spect_fp_create_from_self",  "create_from_self" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_init,    "bcore_fp_init",                   "init"              );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_down,    "bcore_fp_down",                    "down"             );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_discard, "bcore_fp_discard",                 "discard"          );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )supports,                "bcore_spect_fp_supports",          "supports"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
 

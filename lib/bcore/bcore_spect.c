@@ -79,45 +79,76 @@ void bcore_spect_manager_close()
     discard_hmap_s();
 }
 
-vc_t bcore_spect_try( tp_t sig )
+/// tests if the object's self reflection satisfies the requirements of a perspective
+static bl_t supports( const bcore_flect_self_s* self )
+{
+    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_init"                    ), 0 ) ) return false;
+    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_down"                    ), 0 ) ) return false;
+    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_discard"                 ), 0 ) ) return false;
+    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_spect_fp_supports"          ), 0 ) ) return false;
+    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_spect_fp_create_from_self"  ), 0 ) ) return false;
+    return true;
+}
+
+bl_t bcore_spect_supports( tp_t p_type, tp_t o_type )
 {
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, sig );
+    tp_t sig = bcore_signature_get_hash_tp_tp( p_type, o_type );
+    bl_t exists = bcore_hmap_u2vd_s_exists( hmap_s_g->map, sig );
     bcore_mutex_unlock( &hmap_s_g->mutex );
-    return vdp ? *vdp : NULL;
+    if( exists ) return true;
+
+    const bcore_flect_self_s* p_self = bcore_flect_try_self( p_type );
+    if( !p_self ) return false;
+
+    const bcore_flect_self_s* o_self = bcore_flect_try_self( o_type );
+    if( !o_self ) return false;
+
+    fp_t supports = bcore_flect_self_s_get_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_supports" ), 0 );
+
+    return ( ( bcore_spect_fp_supports )supports )( o_self );
 }
 
-vc_t bcore_spect_get( tp_t sig )
+vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 {
-    vc_t ret = bcore_spect_try( sig );
-    if( !ret ) ERR( "perspective of signature %"PRIu32" has not been enrolled", sig );
-    return ret;
-}
-
-void bcore_spect_enroll_d( vd_t spect )
-{
-    tp_t sig = bcore_signature_get_hash_tp_tp( ( (tp_t*)spect)[ 0 ], ( (tp_t*)spect)[ 1 ] );
-
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    if( bcore_hmap_u2vd_s_get( hmap_s_g->map, sig ) )
+    tp_t sig = bcore_signature_get_hash_tp_tp( p_type, o_type );
+    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, sig );
+    if( vdp )
     {
-        ERR( "Perspective with signature '%s' has already been enrolled.", bcore_signature_s_create_string( bcore_signature_manager_get( sig ) )->sc );
+        bcore_mutex_unlock( &hmap_s_g->mutex );
+        return *vdp;
+    }
+
+    // Unlock because create_from_self may make use of registry
+    bcore_mutex_unlock( &hmap_s_g->mutex );
+
+    const bcore_flect_self_s* p_self = bcore_flect_get_self( p_type );
+    if( !supports( p_self ) ) ERR( "Object '%s' does not satisfy the requirements of a perspective.", ifnameof( p_type ) );
+    const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
+    fp_t create_from_self = bcore_flect_self_s_get_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
+    vd_t spect = ( ( bcore_spect_fp_create_from_self )create_from_self )( o_self );
+
+    // Lock for registering the perspective (if still not registered)
+    bcore_mutex_lock( &hmap_s_g->mutex );
+
+    // Due to the unlocked period, the perspective might have
+    // been registered by another thread meanwhile.
+    // In that case we discard spect and retrieve the registered version.
+    if( bcore_hmap_u2vd_s_exists( hmap_s_g->map, sig ) )
+    {
+        bcore_inst_aware_discard( spect );
+        spect = *bcore_hmap_u2vd_s_get( hmap_s_g->map, sig );
     }
     else
     {
         bcore_hmap_u2vd_s_set( hmap_s_g->map, sig, spect, false );
     }
-    bcore_mutex_unlock( &hmap_s_g->mutex );
-}
 
-void bcore_spect_remove( tp_t sig )
-{
-    assert( hmap_s_g != NULL );
-    bcore_mutex_lock( &hmap_s_g->mutex );
-    bcore_inst_aware_discard( bcore_hmap_u2vd_s_remove_h( hmap_s_g->map, sig ) );
     bcore_mutex_unlock( &hmap_s_g->mutex );
+    return spect;
 }
 
 bcore_string_s* bcore_spect_status()
@@ -177,36 +208,6 @@ bcore_string_s* bcore_spect_status()
 
     bcore_life_s_discard( l );
     return log;
-}
-
-vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
-{
-    assert( hmap_s_g != NULL );
-    bcore_mutex_lock( &hmap_s_g->mutex );
-    tp_t sig = bcore_signature_get_hash_tp_tp( p_type, o_type );
-    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, sig );
-    vc_t spect = vdp ? *vdp : NULL;
-    if( !spect )
-    {
-        // Only register the key here. --> This ensures that this key cannot be registered in another thread
-        bcore_hmap_u2vd_s_set( hmap_s_g->map, sig, NULL, false );
-
-        // Unlock because create_from_self may make use of registry
-        bcore_mutex_unlock( &hmap_s_g->mutex );
-
-        const bcore_flect_self_s* p_self = bcore_flect_get_self( p_type );
-        const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
-
-        fp_t create_from_self = bcore_flect_self_s_get_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
-        vd_t new_spect = ( ( bcore_spect_fp_create_from_self )create_from_self )( o_self );
-
-        // Lock to register the perspective
-        bcore_mutex_lock( &hmap_s_g->mutex );
-        bcore_hmap_u2vd_s_set( hmap_s_g->map, sig, new_spect, false );
-        spect = new_spect;
-    }
-    bcore_mutex_unlock( &hmap_s_g->mutex );
-    return spect;
 }
 
 /**********************************************************************************************************************/

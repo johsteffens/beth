@@ -472,6 +472,11 @@ bl_t bcore_via_spect_iis_link( const bcore_via_s* p, sz_t index )
 
 /**********************************************************************************************************************/
 
+static bl_t supports( const bcore_flect_self_s* self )
+{
+    return true;
+}
+
 static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
 {
     assert( self != NULL );
@@ -591,11 +596,12 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
 bcore_flect_self_s* bcore_via_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_via_s" ), sizeof( bcore_via_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_init,             "bcore_fp_init",                   "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_down,             "bcore_fp_down",                   "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_create,           "bcore_fp_create",                 "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_discard,          "bcore_fp_discard",                "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,       "bcore_spect_fp_create_from_self", "create_from_self" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_init,       "bcore_fp_init",                   "init"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_down,       "bcore_fp_down",                   "down"         );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_create,     "bcore_fp_create",                 "create"       );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_discard,    "bcore_fp_discard",                "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )supports,         "bcore_spect_fp_supports",         "supports" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self, "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }
 

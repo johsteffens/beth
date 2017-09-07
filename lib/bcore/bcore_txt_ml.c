@@ -11,6 +11,7 @@
 #include "bcore_spect_interpreter.h"
 #include "bcore_quicktypes.h"
 #include "bcore_spect_compare.h"
+#include "bcore_spect.h"
 
 void bcore_txt_ml_translator_s_init( bcore_txt_ml_translator_s* o )
 {
@@ -351,6 +352,9 @@ static sr_s create_zoo()
 
 bcore_string_s* bcore_txt_ml_selftest( void )
 {
+    ASSERT( bcore_spect_supports( typeof( "bcore_interpreter_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
+    ASSERT( bcore_spect_supports( typeof( "bcore_translator_s" ), typeof( "bcore_txt_ml_translator_s" ) ) );
+
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_create();
     sr_s zoo = bcore_life_s_push_sr( l, create_zoo() );

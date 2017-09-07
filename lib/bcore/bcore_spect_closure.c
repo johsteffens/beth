@@ -35,6 +35,15 @@ static void closure_s_discard( bcore_closure_s* o )
 
 /**********************************************************************************************************************/
 
+static bl_t supports( const bcore_flect_self_s* self )
+{
+    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_closure_fp_func"   ), 0 ) ) return false;
+    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_closure_fp_n_args" ), 0 ) ) return false;
+    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_closure_fp_d_arg"  ), 0 ) ) return false;
+    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_closure_fp_t_ret"  ), 0 ) ) return false;
+    return true;
+}
+
 static bcore_closure_s* create_from_self( const bcore_flect_self_s* self )
 {
     assert( self != NULL );
@@ -56,6 +65,7 @@ static bcore_flect_self_s* closure_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )closure_s_down,             "bcore_fp_down",                    "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )closure_s_create,           "bcore_fp_create",                  "create"       );
     bcore_flect_self_s_push_external_func( self, ( fp_t )closure_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )supports,                   "bcore_spect_fp_supports",          "supports"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,           "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
