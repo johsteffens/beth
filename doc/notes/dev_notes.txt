@@ -251,7 +251,7 @@ for later (more elaborate) documentation.
 
    Immediately needed in closures.
    Closures with certain argument structure (e.g. bi,tri,n-functions) would be member of the corresponding trade.
-   Trees composed of closures would check for trade membership (instead of analyzing the argument structure at runtime)
+   Trees composed of closures would check for trait membership (instead of analyzing the argument structure at runtime)
 
 ## Arrays ##
 1 Sept 2017
