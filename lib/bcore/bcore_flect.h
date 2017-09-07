@@ -169,8 +169,27 @@ void                bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flec
 void                bcore_flect_self_s_push_external_data( bcore_flect_self_s* o, vc_t data, sc_t type, sc_t name );
 void                bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
 bcore_string_s*     bcore_flect_self_s_show( const bcore_flect_self_s* o );
+
+/** Creating a reflection by parsing a string:
+ *  Typical Format:
+ *  <type-name> = [<trait-name>]
+ *  {
+ *      [private] [shell] <type> [<qualifiers>] <name>;
+ *      [private] [shell] <type> [<qualifiers>] <name>;
+ *      ....
+ *  }
+ *
+ *  <type>:
+ *    <type name> | <type number> | typed | aware
+ *
+ *  qualifiers:
+ *    * : link
+ *    []: array
+ */
 bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx, sz_t size_of );
 bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );
+
+
 bcore_signature_s*  bcore_flect_self_s_push_to_signature( const bcore_flect_self_s* o, bcore_signature_s* sig );
 s2_t                bcore_flect_self_s_cmp( const bcore_flect_self_s* o1, const bcore_flect_self_s* o2 );
 

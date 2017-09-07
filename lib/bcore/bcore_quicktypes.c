@@ -70,6 +70,10 @@ static sr_s typelist()
     bcore_array_q_push_sc( &list, "bcore_sink_buffer_s"   );
     bcore_array_q_push_sc( &list, "bcore_sink_file_s"     );
     bcore_array_q_push_sc( &list, "bcore_sink_chain_s"    );
+    bcore_array_q_push_sc( &list, "bcore_hmap_u2vd_s"     );
+    bcore_array_q_push_sc( &list, "bcore_hmap_tpsz_s"     );
+    bcore_array_q_push_sc( &list, "bcore_hmap_tp_s"       );
+    bcore_array_q_push_sc( &list, "bcore_hmap_tp_sr_s"    );
     bcore_array_q_push_sc( &list, "bcore_txt_ml_translator_s" );
     bcore_array_q_push_sc( &list, "bcore_txt_ml_interpreter_s" );
     bcore_array_q_sort( &list, 0, -1, 1 );

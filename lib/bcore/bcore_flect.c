@@ -456,7 +456,8 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, 
     bcore_string_s* name = bcore_string_s_create_l( life );
     idx = bcore_string_s_parsef( text, idx, text->size, " #name ", name );
     o->type = ( name->size > 0 ) ? bcore_name_enroll( name->sc ) : 0;
-    if( o->type ) idx = bcore_string_s_parsef( text, idx, text->size, "= ", name );
+    if( o->type ) idx = bcore_string_s_parsef( text, idx, text->size, "= " );
+
     if( text->sc[ idx ] == '{' )
     {
         o->body = bcore_flect_body_s_build_parse( text, &idx );
