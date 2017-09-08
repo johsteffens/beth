@@ -150,11 +150,8 @@ bcore_string_s* bcore_hmap_tpsz_selftest( void );
  *    val-type: no explicit value
  *    Maximum number of keys: 2^32
  */
-typedef struct bcore_hnode_tp_s
-{
-    tp_t key;
-    bl_t flag_trace; // used internally during rehashing
-} bcore_hnode_tp_s;
+/// This approach is clearly faster and less resource consuming than bcore_hmap_tp_s!
+/// Other hmaps should be adapted to this method
 
 typedef u2_t (*bcore_hash_tpu2)( tp_t v );
 
@@ -166,13 +163,15 @@ typedef struct bcore_hmap_tp_s
         bcore_static_array_s arr;
         struct
         {
-            bcore_hnode_tp_s* data;
+            tp_t* keys;
             sz_t size, space;
         };
     };
+
+    bl_t* flags; // flags for tracing
+
     sz_t depth_limit;
     sz_t size_limit;
-    bcore_hash_tpu2 h1, h2, h3;
 } bcore_hmap_tp_s;
 
 DECLARE_FUNCTION_INIT(    bcore_hmap_tp_s )
@@ -182,7 +181,6 @@ DECLARE_FUNCTION_CREATE(  bcore_hmap_tp_s )
 DECLARE_FUNCTION_DISCARD( bcore_hmap_tp_s )
 DECLARE_FUNCTION_CLONE(   bcore_hmap_tp_s )
 
-void  bcore_hmap_tp_s_set_hash_function( bcore_hmap_tp_s* o, sz_t index, bcore_hash_tpu2 hf ); // optionally sets external hash function (up to three functions can be specified via index 0, 1, 2)
 sz_t  bcore_hmap_tp_s_get(     const bcore_hmap_tp_s* o, tp_t key ); // returns index of key; if not existing, index is o->size
 sz_t  bcore_hmap_tp_s_set(           bcore_hmap_tp_s* o, tp_t key ); // sets new key if not already existing; returns index
 sz_t  bcore_hmap_tp_s_remove(        bcore_hmap_tp_s* o, tp_t key ); // removes key, returns old index
@@ -193,57 +191,6 @@ sz_t  bcore_hmap_tp_s_size(    const bcore_hmap_tp_s* o           ); // returns 
 tp_t  bcore_hmap_tp_s_idx_key( const bcore_hmap_tp_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
 
 bcore_string_s* bcore_hmap_tp_selftest( void );
-
-/**********************************************************************************************************************/
-
-/** bcore_hmap_tp_nt_s:  maps a key to automatic index (separate flags array for tracing) (no tracing is clearly slower)
- *    key-type: tp_t
- *    val-type: no explicit value
- *    Maximum number of keys: 2^32
- */
-/// This approach is clearly faster and less resource consuming than bcore_hmap_tp_s!
-/// Other hmaps should be adapted to this method
-
-typedef u2_t (*bcore_hash_tpu2)( tp_t v );
-
-typedef struct bcore_hmap_tp_nt_s
-{
-    aware_t _;
-    union
-    {
-        bcore_static_array_s arr;
-        struct
-        {
-            tp_t* data;
-            sz_t size, space;
-        };
-    };
-
-    bl_t* flags; // flags for tracing
-
-    sz_t depth_limit;
-    sz_t size_limit;
-    bcore_hash_tpu2 h1, h2, h3;
-} bcore_hmap_tp_nt_s;
-
-DECLARE_FUNCTION_INIT(    bcore_hmap_tp_nt_s )
-DECLARE_FUNCTION_DOWN(    bcore_hmap_tp_nt_s )
-DECLARE_FUNCTION_COPY(    bcore_hmap_tp_nt_s )
-DECLARE_FUNCTION_CREATE(  bcore_hmap_tp_nt_s )
-DECLARE_FUNCTION_DISCARD( bcore_hmap_tp_nt_s )
-DECLARE_FUNCTION_CLONE(   bcore_hmap_tp_nt_s )
-
-void  bcore_hmap_tp_nt_s_set_hash_function( bcore_hmap_tp_nt_s* o, sz_t index, bcore_hash_tpu2 hf ); // optionally sets external hash function (up to three functions can be specified via index 0, 1, 2)
-sz_t  bcore_hmap_tp_nt_s_get(     const bcore_hmap_tp_nt_s* o, tp_t key ); // returns index of key; if not existing, index is o->size
-sz_t  bcore_hmap_tp_nt_s_set(           bcore_hmap_tp_nt_s* o, tp_t key ); // sets new key if not already existing; returns index
-sz_t  bcore_hmap_tp_nt_s_remove(        bcore_hmap_tp_nt_s* o, tp_t key ); // removes key, returns old index
-bl_t  bcore_hmap_tp_nt_s_exists(  const bcore_hmap_tp_nt_s* o, tp_t key ); // checks if key exists
-void  bcore_hmap_tp_nt_s_clear(         bcore_hmap_tp_nt_s* o           ); // removes all entries and frees memory
-sz_t  bcore_hmap_tp_nt_s_keys(    const bcore_hmap_tp_nt_s* o           ); // returns number of registered keys
-sz_t  bcore_hmap_tp_nt_s_size(    const bcore_hmap_tp_nt_s* o           ); // returns current size of the hash map (note that this includes empty places)
-tp_t  bcore_hmap_tp_nt_s_idx_key( const bcore_hmap_tp_nt_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
-
-bcore_string_s* bcore_hmap_tp_nt_selftest( void );
 
 /**********************************************************************************************************************/
 

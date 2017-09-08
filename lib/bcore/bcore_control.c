@@ -113,6 +113,13 @@ vd_t bcore_memzero( vd_t dst, sz_t size )
     return dst;
 }
 
+vd_t bcore_u_memzero( sz_t unit_bytes, vd_t dst, sz_t size )
+{
+    if( !dst ) dst = bcore_alloc( NULL, unit_bytes * size );
+    memset( dst, 0, unit_bytes * size );
+    return dst;
+}
+
 vd_t bcore_memset(  vd_t dst, u0_t val, sz_t size )
 {
     if( !dst ) dst = bcore_alloc( NULL, size );
