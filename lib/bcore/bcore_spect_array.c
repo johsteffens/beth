@@ -933,7 +933,7 @@ bcore_flect_self_s* bcore_array_s_create_self( void )
 
 const bcore_array_s* bcore_array_s_get_typed( tp_t o_type )
 {
-    return bcore_spect_get_typed( typeof( "bcore_array_s" ), o_type );
+    return bcore_spect_get_typed( TYPEOF_bcore_array_s, o_type );
 }
 
 /**********************************************************************************************************************/
@@ -949,7 +949,6 @@ tp_t bcore_static_array_type_of( tp_t type )
         bcore_string_s* code = bcore_string_s_createf( "%s = { %s []; }", arr_name->sc, name );
         bcore_flect_define_parse( code, 0 );
         bcore_string_s_discard( code );
-
     }
     bcore_string_s_discard( arr_name );
     return arr_type;

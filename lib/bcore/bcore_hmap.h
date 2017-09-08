@@ -95,31 +95,24 @@ bcore_string_s* bcore_hmap_u2vd_selftest( void );
  *    key-type: tp_t
  *    val-type: sz_t.
  *    Maximum number of keys: 2^32
+ *    content shell { bcore_hnode_tpsz_s []; } data; }
  */
+typedef u2_t (*bcore_hash_tpu2)( tp_t v );
+
 typedef struct bcore_hnode_tpsz_s
 {
     tp_t key;
-    bl_t flag_trace; // used internally during rehashing
     sz_t val;
 } bcore_hnode_tpsz_s;
-
-typedef u2_t (*bcore_hash_tpu2)( tp_t v );
 
 typedef struct bcore_hmap_tpsz_s
 {
     aware_t _;
-    union
-    {
-        bcore_static_array_s arr;
-        struct
-        {
-            bcore_hnode_tpsz_s* data;
-            sz_t size, space;
-        };
-    };
+    bcore_hnode_tpsz_s* nodes;
+    bl_t* flags;
+    sz_t size;
     sz_t depth_limit;
     sz_t size_limit;
-    bcore_hash_tpu2 h1, h2, h3;
 } bcore_hmap_tpsz_s;
 
 DECLARE_FUNCTION_INIT(    bcore_hmap_tpsz_s )
@@ -129,7 +122,6 @@ DECLARE_FUNCTION_CREATE(  bcore_hmap_tpsz_s )
 DECLARE_FUNCTION_DISCARD( bcore_hmap_tpsz_s )
 DECLARE_FUNCTION_CLONE(   bcore_hmap_tpsz_s )
 
-void  bcore_hmap_tpsz_s_set_hash_function( bcore_hmap_tpsz_s* o, sz_t index, bcore_hash_tpu2 hf ); // optionally sets external hash function (up to three functions can be specified via index 0, 1, 2)
 sz_t* bcore_hmap_tpsz_s_get(     const bcore_hmap_tpsz_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
 sz_t* bcore_hmap_tpsz_s_fget(          bcore_hmap_tpsz_s* o, tp_t key, sz_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
 sz_t* bcore_hmap_tpsz_s_set(           bcore_hmap_tpsz_s* o, tp_t key, sz_t val ); // sets new key; sets/overwrites value and returns pointer to value location
@@ -149,27 +141,16 @@ bcore_string_s* bcore_hmap_tpsz_selftest( void );
  *    key-type: tp_t
  *    val-type: no explicit value
  *    Maximum number of keys: 2^32
+ *    content shell: { tp_t []; } data;
  */
-/// This approach is clearly faster and less resource consuming than bcore_hmap_tp_s!
-/// Other hmaps should be adapted to this method
-
 typedef u2_t (*bcore_hash_tpu2)( tp_t v );
 
 typedef struct bcore_hmap_tp_s
 {
     aware_t _;
-    union
-    {
-        bcore_static_array_s arr;
-        struct
-        {
-            tp_t* keys;
-            sz_t size, space;
-        };
-    };
-
+    tp_t* keys;
     bl_t* flags; // flags for tracing
-
+    sz_t size;
     sz_t depth_limit;
     sz_t size_limit;
 } bcore_hmap_tp_s;
