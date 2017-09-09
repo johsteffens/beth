@@ -32,3 +32,9 @@ void bcore_once( bcore_once_t* flag, void (*func)() )
     int ern = pthread_once( flag, func );
     if( ern ) ERR( "function returned error %i", ern );
 }
+
+vd_t bcore_threads_signal( tp_t target, tp_t signal, vd_t object )
+{
+    return NULL;
+}
+

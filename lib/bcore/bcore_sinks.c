@@ -379,5 +379,19 @@ void bcore_sinks_define_self_creators( void )
     bcore_flect_define_creator( typeof( "bcore_sink_chain_s"  ), chain_s_create_self  );
 }
 
+vd_t bcore_sinks_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_sinks" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_sink_buffer_s" ), buffer_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_sink_file_s"   ), file_s_create_self   );
+        bcore_flect_define_creator( typeof( "bcore_sink_chain_s"  ), chain_s_create_self  );
+    }
+
+    return NULL;
+}
+
 /**********************************************************************************************************************/
 

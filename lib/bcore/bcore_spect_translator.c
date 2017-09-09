@@ -52,7 +52,7 @@ static bcore_translator_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
-bcore_flect_self_s* bcore_translator_s_create_self( void )
+static bcore_flect_self_s* translator_s_create_self( void )
 {
     sc_t def = "bcore_translator_s = spect { aware_t p_type; tp_t o_type; ... }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_translator_s ) );
@@ -85,6 +85,20 @@ void bcore_translate_q( const sr_s* o, sr_s obj, sr_s sink )
 {
     const bcore_translator_s* p = ch_spect( o->p, TYPEOF_bcore_translator_s );
     p->fp_translate( o->o, obj, sink );
+}
+
+/**********************************************************************************************************************/
+
+vd_t bcore_spect_translator_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_translator" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_translator_s"  ), translator_s_create_self  );
+    }
+
+    return NULL;
 }
 
 /**********************************************************************************************************************/

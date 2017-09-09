@@ -274,6 +274,19 @@ void bcore_txt_ml_define_self_creators( void )
     bcore_flect_define_creator( typeof( "bcore_txt_ml_interpreter_s"  ), interpreter_s_create_self  );
 }
 
+vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_txt_ml" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_txt_ml_translator_s"  ), translator_s_create_self  );
+        bcore_flect_define_creator( typeof( "bcore_txt_ml_interpreter_s" ), interpreter_s_create_self );
+    }
+
+    return NULL;
+}
+
 /**********************************************************************************************************************/
 
 void bcore_txt_ml_transfer_test( sr_s obj )

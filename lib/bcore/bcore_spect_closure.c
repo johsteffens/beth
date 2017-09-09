@@ -218,8 +218,17 @@ static bcore_flect_self_s* closure_r_create_self( void )
 
 /**********************************************************************************************************************/
 
-void bcore_closure_define_self_creators( void )
+vd_t bcore_spect_closure_signal( tp_t target, tp_t signal, vd_t object )
 {
-    bcore_flect_define_creator( typeof( "bcore_closure_s"  ), closure_s_create_self  );
-    bcore_flect_define_creator( typeof( "bcore_closure_r" ), closure_r_create_self );
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_closure" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_closure_s"  ), closure_s_create_self  );
+        bcore_flect_define_creator( typeof( "bcore_closure_r" ), closure_r_create_self );
+    }
+
+    return NULL;
 }
+
+/**********************************************************************************************************************/

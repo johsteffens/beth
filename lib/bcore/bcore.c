@@ -8,6 +8,8 @@
 #include "bcore_flect_center.h"
 #include "bcore_string.h"
 #include "bcore_spect.h"
+#include "bcore_trait.h"
+#include "bcore_signal.h"
 #include "bcore.h"
 
 #include "bclos_flect_center.h"
@@ -20,15 +22,15 @@ static void init_once()
     bcore_signature_manager_open();
     bcore_flect_open();
     bcore_spect_manager_open();
-
-    // define basic reflections ...
-    bcore_flect_define_basics();
+    bcore_trait_manager_open();
 
     // run some critical quick-tests ...
     bcore_memory_manager_s_quicktest();
     bcore_string_s_quicktest();
 
-    // define reflection creators
+    // broadcast init signal
+    bcore_signal( typeof( "all" ), typeof( "init" ), NULL );
+
     bcore_flect_define_self_creators();
     bclos_flect_define_self_creators();
 }
@@ -41,19 +43,26 @@ void bcore_library_init()
 
 void bcore_library_down()
 {
+    // broadcast down signal
+    bcore_signal( typeof( "all" ), typeof( "down" ), NULL );
+
+    bcore_msg( "\nBeth global system's memory usage (bytes):\n");
     sz_t space = bcore_memory_manager_granted_space();
-    bcore_msg( "\n");
+    bcore_msg( "Total ................. % 6zu\n", space );
+    bcore_trait_manager_close();
+    bcore_msg( "  trait mananger ...... % 6zu\n", space - bcore_memory_manager_granted_space() );
+    space = bcore_memory_manager_granted_space();
     bcore_spect_manager_close();
-    bcore_msg( "spect mananger      : %zu bytes\n", space - bcore_memory_manager_granted_space() );
+    bcore_msg( "  spect mananger ...... % 6zu\n", space - bcore_memory_manager_granted_space() );
     space = bcore_memory_manager_granted_space();
     bcore_flect_close();
-    bcore_msg( "reflection mananger : %zu bytes\n", space - bcore_memory_manager_granted_space() );
+    bcore_msg( "  reflection mananger . % 6zu\n", space - bcore_memory_manager_granted_space() );
     space = bcore_memory_manager_granted_space();
     bcore_signature_manager_close();
-    bcore_msg( "signature mananger  : %zu bytes\n", space - bcore_memory_manager_granted_space() );
+    bcore_msg( "  signature mananger .. % 6zu\n", space - bcore_memory_manager_granted_space() );
     space = bcore_memory_manager_granted_space();
     bcore_name_manager_close();
-    bcore_msg( "name mananger       : %zu bytes\n", space - bcore_memory_manager_granted_space() );
+    bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_memory_manager_granted_space() );
     space = bcore_memory_manager_granted_space();
 
     if( space > 0 ) ERR( "Leaking memory: %zu bytes", space );

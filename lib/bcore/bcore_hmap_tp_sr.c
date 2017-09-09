@@ -320,7 +320,18 @@ void bcore_hmap_tp_sr_define_self_creators( void )
     bcore_flect_define_creator( typeof( "bcore_hmap_tp_sr_s"  ), hmap_tp_sr_s_create_self  );
 }
 
-/**********************************************************************************************************************/
+vd_t bcore_hmap_tp_sr_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_hmap_tp_sr" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_hnode_tp_sr_s" ), hnode_tp_sr_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_hmap_tp_sr_s"  ), hmap_tp_sr_s_create_self  );
+    }
+
+    return NULL;
+}
 
 /**********************************************************************************************************************/
 // selftest

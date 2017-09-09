@@ -58,6 +58,11 @@ typedef void ( *bcore_fp_translate )( vc_t o, sr_s obj, sr_s snk ); // translate
 typedef sr_s ( *bcore_fp_interpret )( vc_t o,           sr_s src ); // constructs object (no information given)
 
 /**********************************************************************************************************************/
+
+/// rudimentary signaling (the actual meaning arguments and return type is defined by the usage context)
+typedef vd_t ( *bcore_fp_signal )( tp_t target, tp_t signal, vd_t object );
+
+/**********************************************************************************************************************/
 /// Testing, Debugging. A test shall either complete safely or fail with a descriptive error (via bcore_err).
 
 typedef struct bcore_string_s bcore_string_s; // forward declaration

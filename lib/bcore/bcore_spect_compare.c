@@ -184,7 +184,7 @@ static bcore_compare_s* create_from_self( const bcore_flect_self_s* self )
 
 /**********************************************************************************************************************/
 
-bcore_flect_self_s* bcore_compare_s_create_self( void )
+static bcore_flect_self_s* compare_s_create_self( void )
 {
     sc_t def = "bcore_compare_s = spect { aware_t p_type; tp_t o_type; ... }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_compare_s ) );
@@ -320,6 +320,20 @@ bcore_string_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 )
     if( sr_s_type( obj1 ) != sr_s_type( obj2 ) ) return bcore_string_s_createf( "obj1 of '%s', obj2 of '%s'", ifnameof( sr_s_type( obj1 ) ), ifnameof( sr_s_type( obj2 ) ) );
     if( sr_s_type( obj1 ) == 0 ) return NULL;
     return bcore_diff_typed( sr_s_type( obj1 ), obj1->o, obj2->o );
+}
+
+/**********************************************************************************************************************/
+
+vd_t bcore_spect_compare_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_compare" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_compare_s"  ), compare_s_create_self  );
+    }
+
+    return NULL;
 }
 
 /**********************************************************************************************************************/

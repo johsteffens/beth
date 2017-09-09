@@ -907,7 +907,7 @@ void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
 
 /**********************************************************************************************************************/
 
-void bcore_flect_define_basics()
+static void flect_define_basics()
 {
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "s3_t" ), sizeof( s3_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "s2_t" ), sizeof( s2_t ) ) );
@@ -955,7 +955,18 @@ void bcore_flect_define_basics()
 
     // specific objects
     bcore_flect_define_creator( typeof( "bcore_flect_self_s" ), bcore_flect_self_s_create_self ); // self
-    bcore_flect_define_creator( typeof( "bcore_string_s" ),     bcore_string_s_create_self     ); // string
+}
+
+vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_flect" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        flect_define_basics();
+    }
+
+    return NULL;
 }
 
 /**********************************************************************************************************************/

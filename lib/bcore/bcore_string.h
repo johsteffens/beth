@@ -1,5 +1,8 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
+#ifndef BCORE_STRING_H
+#define BCORE_STRING_H
+
 /** Managed string of characters.
  *  The character array always terminates with '0'.
  *  'size' specifies the number of characters in the string (excluding the terminating '0')
@@ -15,9 +18,6 @@
  *
  *  Strings do not support perspective bcore_spect_array.
  */
-
-#ifndef BCORE_STRING_H
-#define BCORE_STRING_H
 
 #include <stdarg.h>
 
@@ -159,9 +159,7 @@ sz_t bcore_string_s_parsef(  const bcore_string_s* o, sz_t start, sz_t end, sc_t
 /// constructs a double-line with a visible position indicator (useful for context messages/warnings/errors with highlighted position)
 bcore_string_s* bcore_string_s_show_line_context( const bcore_string_s* o, sz_t pos );
 
-/// self reflection
-typedef struct bcore_flect_self_s bcore_flect_self_s;
-bcore_flect_self_s* bcore_string_s_create_self( void );
+vd_t bcore_string_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 // testing, debugging

@@ -53,7 +53,7 @@ static bcore_interpreter_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
-bcore_flect_self_s* bcore_interpreter_s_create_self( void )
+static bcore_flect_self_s* interpreter_s_create_self( void )
 {
     sc_t def = "bcore_interpreter_s = spect { aware_t p_type; tp_t o_type; ... }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_interpreter_s ) );
@@ -90,4 +90,19 @@ sr_s bcore_interpret_q( const sr_s* o, sr_s source )
 }
 
 /**********************************************************************************************************************/
+
+vd_t bcore_spect_interpreter_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_interpreter" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_interpreter_s"  ), interpreter_s_create_self  );
+    }
+
+    return NULL;
+}
+
+/**********************************************************************************************************************/
+
 

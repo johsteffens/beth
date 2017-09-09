@@ -23,8 +23,6 @@ typedef struct bcore_sink_s
     bcore_sink_fp_flush        fp_flush;
 } bcore_sink_s;
 
-bcore_flect_self_s* bcore_sink_s_create_self( void );
-
 const bcore_sink_s* bcore_sink_s_get_typed( tp_t type );
 const bcore_sink_s* bcore_sink_s_get_aware( vc_t obj );
 
@@ -67,5 +65,7 @@ void bcore_sink_q_push_sc      ( const sr_s* o, sc_t sc );
 void bcore_sink_q_push_string  ( const sr_s* o, const bcore_string_s* string );
 void bcore_sink_q_push_string_d( const sr_s* o,       bcore_string_s* string );
 void bcore_sink_q_set_consumer ( const sr_s* o, vd_t consumer ); // error when not supported
+
+vd_t bcore_spect_sink_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif // BCORE_SPECT_SINK_H

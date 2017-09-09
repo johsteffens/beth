@@ -71,3 +71,15 @@ void bclos_env_define_self_creators( void )
     bcore_flect_define_creator( typeof( "bclos_env_s" ), env_s_create_self );
 }
 
+vd_t bclos_env_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bclos_env" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bclos_env_s" ), env_s_create_self );
+    }
+
+    return NULL;
+}
+

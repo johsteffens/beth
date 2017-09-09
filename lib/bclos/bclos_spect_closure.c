@@ -135,6 +135,18 @@ void bclos_spect_closure_define_self_creators( void )
     bcore_flect_define_creator( typeof( "bclos_closure_s" ), closure_s_create_self );
 }
 
+vd_t bclos_spect_closure_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bclos_spect_closure" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bclos_closure_s" ), closure_s_create_self );
+    }
+
+    return NULL;
+}
+
 /**********************************************************************************************************************/
 
 

@@ -175,7 +175,7 @@ tp_t bcore_signature_fold_hash_arr( tp_t hash, sz_t n, const tp_t* arr )
     return type;
 }
 
-bcore_flect_self_s* bcore_signature_s_create_self( void )
+static bcore_flect_self_s* signature_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_signature_s =  { aware_t _; tp_t[] data; }", sizeof( bcore_signature_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_signature_s_init,         "bcore_fp_init",         "init"         );
@@ -314,6 +314,20 @@ void bcore_signature_manager_remove( tp_t type )
     bcore_signature_s* sig = bcore_hmap_u2vd_s_remove_h( hmap_s_g->map, type );
     bcore_signature_s_discard( sig );
     bcore_mutex_unlock( &hmap_s_g->mutex );
+}
+
+/**********************************************************************************************************************/
+
+vd_t bcore_signature_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_signature" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_signature_s" ), signature_s_create_self );
+    }
+
+    return NULL;
 }
 
 /**********************************************************************************************************************/

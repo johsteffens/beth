@@ -218,7 +218,6 @@ bcore_flect_self_s* bcore_flect_self_s_create_self( void );
 /// Global reflection manager (thread safe)
 
 void bcore_flect_open();          // opens manager
-void bcore_flect_define_basics(); // defines basic types
 void bcore_flect_close();         // closes manager
 
 /** Define functions:
@@ -256,6 +255,8 @@ void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
 bl_t  bcore_flect_exists(                       tp_t type ); // checks existence of type  (thread safe)
 const bcore_flect_self_s* bcore_flect_try_self( tp_t type ); // returns NULL when type does not exist  (thread safe)
 const bcore_flect_self_s* bcore_flect_get_self( tp_t type ); // error when type does not exits  (thread safe)
+
+vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 

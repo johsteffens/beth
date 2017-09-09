@@ -205,7 +205,7 @@ bcore_string_s* bcore_spect_status()
         const tp_t* p_type  = sr_cl( bcore_via_nget( pair, typeof( "type"  ) ), l ).o;
         const sz_t* p_count = sr_cl( bcore_via_nget( pair, typeof( "count" ) ), l ).o;
         bcore_string_s* s = bcore_string_s_create();
-        bcore_string_s_pushf( s, "%s ", ifnameof( *p_type ) );
+        bcore_string_s_pushf( s, "  %s ", ifnameof( *p_type ) );
         bcore_string_s_push_char_n( s, '.', 28 - s->size );
         bcore_string_s_pushf( s, "% 4zu\n", *p_count );
         bcore_string_s_push_string_d( log, s );
@@ -228,3 +228,8 @@ vc_t ch_spect( vc_t p, tp_t spect_type )
 }
 
 /**********************************************************************************************************************/
+
+vd_t bcore_spect_signal( tp_t target, tp_t signal, vd_t object )
+{
+    return NULL;
+}

@@ -15,10 +15,11 @@ typedef struct bcore_translator_s
     bcore_fp_translate fp_translate;
 } bcore_translator_s;
 
-bcore_flect_self_s* bcore_translator_s_create_self( void );
 const bcore_translator_s* bcore_translator_s_get_typed( tp_t type );
 void bcore_translate(   sr_s o, sr_s obj, sr_s sink );
 void bcore_translate_q( const sr_s* o, sr_s obj, sr_s sink );
+
+vd_t bcore_spect_translator_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif  // BCORE_SPECT_TRANSLATOR_H
 

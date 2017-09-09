@@ -70,8 +70,6 @@ tp_t bcore_signature_get_hash_arr(             sz_t n, const tp_t* arr );  // co
 tp_t bcore_signature_fold_hash_arr( tp_t hash, sz_t n, const tp_t* arr );  // extends hash via folding
 static inline tp_t bcore_signature_get_hash_tp_tp( tp_t t1, tp_t t2 ) { return bcore_fnv_fold_u2_u2( t1, t2 ); } // returns hash of two types
 
-bcore_flect_self_s* bcore_signature_s_create_self( void );
-
 /**********************************************************************************************************************/
 
 /// initializes signature manager
@@ -101,6 +99,8 @@ const bcore_signature_s* bcore_signature_manager_get( tp_t sig );
 
 /// removes type and associated signature; no effect when not enrolled (thread safe)
 void bcore_signature_manager_remove( tp_t type );
+
+vd_t bcore_signature_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 

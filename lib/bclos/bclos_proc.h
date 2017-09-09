@@ -4,6 +4,7 @@
 #define BCLOS_PROC_H
 
 #include "bcore_hmap_tp_sr.h"
+#include "bcore_spect_closure.h"
 
 /// Procedure - closure
 
@@ -27,6 +28,7 @@ tp_t bclos_proc_s_t_ret  ( const bclos_proc_s* o );
 void bclos_proc_s_set_env(       bclos_proc_s* o, vd_t env );
 
 void bclos_proc_define_self_creators( void );
+vd_t bclos_proc_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 // testing, debugging

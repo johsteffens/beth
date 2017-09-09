@@ -98,6 +98,6 @@ void bcore_closure_r_set_env( const bcore_closure_r* o, vd_t env );
 
 /**********************************************************************************************************************/
 
-void bcore_closure_define_self_creators( void );
+vd_t bcore_spect_closure_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif // BCORE_SPECT_CLOSURE_H

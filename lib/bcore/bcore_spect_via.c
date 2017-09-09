@@ -593,7 +593,7 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
-bcore_flect_self_s* bcore_via_s_create_self( void )
+static bcore_flect_self_s* via_s_create_self( void )
 {
     sc_t def = "bcore_via_s = spect { aware_t p_type; tp_t o_type; ... }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_via_s ) );
@@ -604,6 +604,18 @@ bcore_flect_self_s* bcore_via_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )supports,         "bcore_spect_fp_supports",         "supports" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self, "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
+}
+
+vd_t bcore_spect_via_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_via" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_via_s"  ), via_s_create_self  );
+    }
+
+    return NULL;
 }
 
 /**********************************************************************************************************************/

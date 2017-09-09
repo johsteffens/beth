@@ -1134,7 +1134,7 @@ static void check_sanity( vc_t o )
     }
 }
 
-bcore_flect_self_s* bcore_string_s_create_self( void )
+static bcore_flect_self_s* string_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_string_s = { aware_t _; private sd_t data; private sz_t size; private sz_t space; }", sizeof( bcore_string_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_init,         "bcore_fp_init",           "init"         );
@@ -1153,6 +1153,18 @@ bcore_flect_self_s* bcore_string_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )check_sanity,                "bcore_fp_check_sanity",   "check_sanity" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_string_s_cmp_string,   "bcore_fp_compare",        "cmp_string"   );
     return self;
+}
+
+vd_t bcore_string_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_string" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_string_s"  ), string_s_create_self  );
+    }
+
+    return NULL;
 }
 
 /**********************************************************************************************************************/

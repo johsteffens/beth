@@ -33,6 +33,7 @@ void          bclos_args_s_push(            bclos_args_s* o, sr_s sr );
 bclos_args_s  bclos_args_s_weak_crop( const bclos_args_s* src, sz_t start, sz_t end );
 
 void bclos_args_define_self_creators( void );
+vd_t bclos_args_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 

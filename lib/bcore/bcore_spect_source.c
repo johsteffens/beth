@@ -126,7 +126,7 @@ static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
-bcore_flect_self_s* bcore_source_s_create_self( void )
+static bcore_flect_self_s* source_s_create_self( void )
 {
     sc_t def = "bcore_source_s = spect { aware_t p_type; tp_t o_type; ... }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_s ) );
@@ -185,4 +185,19 @@ void NPX(q_parsef      )( const sr_s* o, sc_t f, ...       ) { va_list a; va_sta
 void NPX(q_parse_errf  )( const sr_s* o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(q_parse_errvf)( o, f, a ); va_end( a ); }
 
 /**********************************************************************************************************************/
+
+vd_t bcore_spect_source_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_source" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_source_s"  ), source_s_create_self  );
+    }
+
+    return NULL;
+}
+
+/**********************************************************************************************************************/
+
 

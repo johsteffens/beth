@@ -916,7 +916,7 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
-bcore_flect_self_s* bcore_array_s_create_self( void )
+static bcore_flect_self_s* array_s_create_self( void )
 {
     sc_t def = "bcore_array_s = spect { aware_t p_type; tp_t o_type; ... }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_array_s ) );
@@ -1478,6 +1478,20 @@ sz_t NPX(q_get_unit_size        )( const sr_s* o                           ) { r
 vc_t NPX(q_max                  )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) { return   NPX(spect_max                  )( r_spect( *o ), o->o, st, nd, d  ); }
 sz_t NPX(q_max_index            )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) { return   NPX(spect_max_index            )( r_spect( *o ), o->o, st, nd, d  ); }
 void NPX(q_sort                 )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) {          NPX(spect_sort                 )( w_spect( *o ), o->o, st, nd, d  ); }
+
+/**********************************************************************************************************************/
+
+vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_array" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_array_s"  ), array_s_create_self  );
+    }
+
+    return NULL;
+}
 
 /**********************************************************************************************************************/
 // testing, debugging

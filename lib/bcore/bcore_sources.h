@@ -141,6 +141,7 @@ sz_t                 bcore_source_file_s_get_data(      bcore_source_file_s* o, 
 /**********************************************************************************************************************/
 
 void bcore_sources_define_self_creators( void );
+vd_t bcore_sources_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 

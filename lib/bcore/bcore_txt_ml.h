@@ -59,6 +59,7 @@ sr_s bcore_txt_ml_from_string( const bcore_string_s* string );
 /**********************************************************************************************************************/
 
 void bcore_txt_ml_define_self_creators( void );
+vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 // testing, debugging

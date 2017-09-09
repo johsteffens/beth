@@ -62,5 +62,7 @@ vc_t ch_spect( vc_t p, tp_t spect_type ); // if needed changes perspective to sp
 static inline tp_t spect_tp_p( vc_t p ) { return ( ( tp_t* )p )[ 0 ]; } // type of perspective
 static inline tp_t spect_tp_o( vc_t p ) { return ( ( tp_t* )p )[ 1 ]; } // type of object
 
+vd_t bcore_spect_signal( tp_t target, tp_t signal, vd_t object );
+
 #endif // BCORE_SPECT_H
 

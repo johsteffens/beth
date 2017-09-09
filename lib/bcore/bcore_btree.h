@@ -189,6 +189,10 @@ bcore_string_s* bcore_btree_vd_s_show( struct bcore_btree_vd_s* o );
 /// selftest of the btree implementation; returns log string
 bcore_string_s* bcore_btree_vd_s_selftest( void );
 
+/**********************************************************************************************************************/
+
+vd_t bcore_btree_signal( tp_t target, tp_t signal, vd_t object );
+
 #endif // BCORE_BTREE_H
 
 

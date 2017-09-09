@@ -10,12 +10,7 @@
 
 /** Hashmap using tp_t as key and sr_s as value.
  *  (See bcore_hmap.h for algorithmic details)
- *  This version uses fixed internal hash functions and support generic perspectives.
- *
- *  Note: The default implementation never implicitly copies or clones referenced objects.
- *  This behavior might not always be expected as 'copy' is usually associated with deep-copying.
- *  A possible feature to be added later is a flag indicating that referenced objects are always owned
- *  by the map, causing copy and clone to be deep.
+ *  This version uses fixed internal hash functions and supports generic perspectives.
  */
 
 /**********************************************************************************************************************/
@@ -71,6 +66,7 @@ const sr_s* bcore_hmap_tp_sr_s_idx_val( const bcore_hmap_tp_sr_s* o, sz_t idx );
 /**********************************************************************************************************************/
 
 void bcore_hmap_tp_sr_define_self_creators( void );
+vd_t bcore_hmap_tp_sr_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 

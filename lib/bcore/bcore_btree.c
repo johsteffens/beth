@@ -2320,3 +2320,8 @@ bcore_string_s* bcore_btree_vd_s_selftest( void )
 
 /**********************************************************************************************************************/
 
+vd_t bcore_btree_signal( tp_t target, tp_t signal, vd_t object )
+{
+    return NULL;
+}
+

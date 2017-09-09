@@ -36,8 +36,6 @@ typedef struct bcore_array_s
 
 } bcore_array_s;
 
-bcore_flect_self_s* bcore_array_s_create_self( void );
-
 const bcore_array_s* bcore_array_s_get_typed( tp_t type );
 
 static inline const bcore_array_s* bcore_array_s_get_aware( vc_t obj )
@@ -280,6 +278,8 @@ sz_t bcore_array_q_get_unit_size        ( const sr_s* o );
 vc_t bcore_array_q_max                  ( const sr_s* o, sz_t start, sz_t end, s2_t order );
 sz_t bcore_array_q_max_index            ( const sr_s* o, sz_t start, sz_t end, s2_t order );
 void bcore_array_q_sort                 ( const sr_s* o, sz_t start, sz_t end, s2_t order );
+
+vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 // testing, debugging

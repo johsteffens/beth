@@ -77,10 +77,13 @@ static inline void  bcore_memory_manager_free(    void* ptr            ) {      
 sz_t bcore_memory_manager_granted_space( void );
 sz_t bcore_memory_manager_s_granted_space( bcore_memory_manager_s* o );
 
+vd_t bcore_memory_manager_signal( tp_t target, tp_t signal, vd_t object );
+
 /**********************************************************************************************************************/
 /// Testing, Debugging
 
 void            bcore_memory_manager_s_quicktest( void );
 bcore_string_s* bcore_memory_manager_s_selftest( void );
+
 
 #endif // BCORE_MEMORY_MANAGER_H

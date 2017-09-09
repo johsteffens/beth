@@ -34,7 +34,7 @@ sz_t bclos_tree_s_n_args( const bclos_tree_s* o );
 tp_t bclos_tree_s_t_arg(  const bclos_tree_s* o, sz_t index );
 tp_t bclos_tree_s_t_ret(  const bclos_tree_s* o );
 
-bcore_flect_self_s* bclos_tree_s_create_self( void );
+vd_t bclos_tree_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 // testing, debugging

@@ -224,6 +224,64 @@ void bclos_leaf_define_self_creators(void)
     bcore_flect_define_creator( typeof( "bclos_sz_div_sz_sz" ), crs_sz_div_sz_sz );
 }
 
+vd_t bclos_leaf_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bclos_leaf" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bclos_s3_add_s3_s3" ), crs_s3_add_s3_s3 );
+        bcore_flect_define_creator( typeof( "bclos_s2_add_s2_s2" ), crs_s2_add_s2_s2 );
+        bcore_flect_define_creator( typeof( "bclos_s1_add_s1_s1" ), crs_s1_add_s1_s1 );
+        bcore_flect_define_creator( typeof( "bclos_s0_add_s0_s0" ), crs_s0_add_s0_s0 );
+        bcore_flect_define_creator( typeof( "bclos_u3_add_u3_u3" ), crs_u3_add_u3_u3 );
+        bcore_flect_define_creator( typeof( "bclos_u2_add_u2_u2" ), crs_u2_add_u2_u2 );
+        bcore_flect_define_creator( typeof( "bclos_u1_add_u1_u1" ), crs_u1_add_u1_u1 );
+        bcore_flect_define_creator( typeof( "bclos_u0_add_u0_u0" ), crs_u0_add_u0_u0 );
+        bcore_flect_define_creator( typeof( "bclos_f3_add_f3_f3" ), crs_f3_add_f3_f3 );
+        bcore_flect_define_creator( typeof( "bclos_f2_add_f2_f2" ), crs_f2_add_f2_f2 );
+        bcore_flect_define_creator( typeof( "bclos_sz_add_sz_sz" ), crs_sz_add_sz_sz );
+
+        bcore_flect_define_creator( typeof( "bclos_s3_sub_s3_s3" ), crs_s3_sub_s3_s3 );
+        bcore_flect_define_creator( typeof( "bclos_s2_sub_s2_s2" ), crs_s2_sub_s2_s2 );
+        bcore_flect_define_creator( typeof( "bclos_s1_sub_s1_s1" ), crs_s1_sub_s1_s1 );
+        bcore_flect_define_creator( typeof( "bclos_s0_sub_s0_s0" ), crs_s0_sub_s0_s0 );
+        bcore_flect_define_creator( typeof( "bclos_u3_sub_u3_u3" ), crs_u3_sub_u3_u3 );
+        bcore_flect_define_creator( typeof( "bclos_u2_sub_u2_u2" ), crs_u2_sub_u2_u2 );
+        bcore_flect_define_creator( typeof( "bclos_u1_sub_u1_u1" ), crs_u1_sub_u1_u1 );
+        bcore_flect_define_creator( typeof( "bclos_u0_sub_u0_u0" ), crs_u0_sub_u0_u0 );
+        bcore_flect_define_creator( typeof( "bclos_f3_sub_f3_f3" ), crs_f3_sub_f3_f3 );
+        bcore_flect_define_creator( typeof( "bclos_f2_sub_f2_f2" ), crs_f2_sub_f2_f2 );
+        bcore_flect_define_creator( typeof( "bclos_sz_sub_sz_sz" ), crs_sz_sub_sz_sz );
+
+        bcore_flect_define_creator( typeof( "bclos_s3_mul_s3_s3" ), crs_s3_mul_s3_s3 );
+        bcore_flect_define_creator( typeof( "bclos_s2_mul_s2_s2" ), crs_s2_mul_s2_s2 );
+        bcore_flect_define_creator( typeof( "bclos_s1_mul_s1_s1" ), crs_s1_mul_s1_s1 );
+        bcore_flect_define_creator( typeof( "bclos_s0_mul_s0_s0" ), crs_s0_mul_s0_s0 );
+        bcore_flect_define_creator( typeof( "bclos_u3_mul_u3_u3" ), crs_u3_mul_u3_u3 );
+        bcore_flect_define_creator( typeof( "bclos_u2_mul_u2_u2" ), crs_u2_mul_u2_u2 );
+        bcore_flect_define_creator( typeof( "bclos_u1_mul_u1_u1" ), crs_u1_mul_u1_u1 );
+        bcore_flect_define_creator( typeof( "bclos_u0_mul_u0_u0" ), crs_u0_mul_u0_u0 );
+        bcore_flect_define_creator( typeof( "bclos_f3_mul_f3_f3" ), crs_f3_mul_f3_f3 );
+        bcore_flect_define_creator( typeof( "bclos_f2_mul_f2_f2" ), crs_f2_mul_f2_f2 );
+        bcore_flect_define_creator( typeof( "bclos_sz_mul_sz_sz" ), crs_sz_mul_sz_sz );
+
+        bcore_flect_define_creator( typeof( "bclos_s3_div_s3_s3" ), crs_s3_div_s3_s3 );
+        bcore_flect_define_creator( typeof( "bclos_s2_div_s2_s2" ), crs_s2_div_s2_s2 );
+        bcore_flect_define_creator( typeof( "bclos_s1_div_s1_s1" ), crs_s1_div_s1_s1 );
+        bcore_flect_define_creator( typeof( "bclos_s0_div_s0_s0" ), crs_s0_div_s0_s0 );
+        bcore_flect_define_creator( typeof( "bclos_u3_div_u3_u3" ), crs_u3_div_u3_u3 );
+        bcore_flect_define_creator( typeof( "bclos_u2_div_u2_u2" ), crs_u2_div_u2_u2 );
+        bcore_flect_define_creator( typeof( "bclos_u1_div_u1_u1" ), crs_u1_div_u1_u1 );
+        bcore_flect_define_creator( typeof( "bclos_u0_div_u0_u0" ), crs_u0_div_u0_u0 );
+        bcore_flect_define_creator( typeof( "bclos_f3_div_f3_f3" ), crs_f3_div_f3_f3 );
+        bcore_flect_define_creator( typeof( "bclos_f2_div_f2_f2" ), crs_f2_div_f2_f2 );
+        bcore_flect_define_creator( typeof( "bclos_sz_div_sz_sz" ), crs_sz_div_sz_sz );
+    }
+
+    return NULL;
+}
+
 /**********************************************************************************************************************/
 
 

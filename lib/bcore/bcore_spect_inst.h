@@ -198,7 +198,7 @@ bcore_inst_op* bcore_inst_op_clone( const bcore_inst_op* o );
 
 /**********************************************************************************************************************/
 
-void bcore_inst_define_self_creators( void );
+vd_t bcore_spect_inst_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 // testing, debugging

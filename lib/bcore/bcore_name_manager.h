@@ -37,4 +37,6 @@ static inline tp_t entypeof( sc_t name ) { return bcore_name_enroll(   name ); }
 static inline sc_t nameof(   u2_t type ) { return bcore_name_get_name(   type ); }
 static inline sc_t ifnameof( u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
 
+vd_t bcore_name_manager_signal( tp_t target, tp_t signal, vd_t object );
+
 #endif // BCORE_NAME_MANAGER_H

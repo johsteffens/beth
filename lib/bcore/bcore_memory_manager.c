@@ -902,6 +902,11 @@ bcore_string_s* bcore_memory_manager_s_status( bcore_memory_manager_s* o, int de
     return str;
 }
 
+vd_t bcore_memory_manager_signal( tp_t target, tp_t signal, vd_t object )
+{
+    return NULL;
+}
+
 /**********************************************************************************************************************/
 // Testing and evaluation
 

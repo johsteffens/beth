@@ -1660,10 +1660,17 @@ static bcore_flect_self_s* inst_op_create_self( void )
 
 /**********************************************************************************************************************/
 
-void bcore_inst_define_self_creators( void )
+vd_t bcore_spect_inst_signal( tp_t target, tp_t signal, vd_t object )
 {
-    bcore_flect_define_creator( typeof( "bcore_inst_s"  ), inst_s_create_self  );
-    bcore_flect_define_creator( typeof( "bcore_inst_op" ), inst_op_create_self );
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_inst" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_inst_s"  ), inst_s_create_self  );
+        bcore_flect_define_creator( typeof( "bcore_inst_op" ), inst_op_create_self );
+    }
+
+    return NULL;
 }
 
 /**********************************************************************************************************************/

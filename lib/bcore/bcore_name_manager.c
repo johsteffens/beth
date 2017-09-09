@@ -158,3 +158,7 @@ void bcore_name_print_predefined_list( tp_t (*hash)( sc_t name ) )
 
 /**********************************************************************************************************************/
 
+vd_t bcore_name_manager_signal( tp_t target, tp_t signal, vd_t object )
+{
+    return NULL;
+}

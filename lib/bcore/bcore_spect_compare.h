@@ -28,7 +28,6 @@ typedef struct bcore_compare_s
     s2_t ( *compare )( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
 } bcore_compare_s;
 
-bcore_flect_self_s* bcore_compare_s_create_self( void );
 const bcore_compare_s* bcore_compare_s_get_typed( tp_t type );
 
 s2_t bcore_compare_spect(   const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
@@ -52,6 +51,8 @@ bcore_string_s* bcore_diff_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2
 bcore_string_s* bcore_diff_aware( vc_t obj1, vc_t obj2 );
 bcore_string_s* bcore_diff_sr( sr_s obj1, sr_s obj2 );
 bcore_string_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 );
+
+vd_t bcore_spect_compare_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 // testing, debugging

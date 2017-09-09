@@ -188,3 +188,9 @@ bool bcore_strany( char c, sc_t str )
     return false;
 }
 
+/**********************************************************************************************************************/
+
+vd_t bcore_control_signal( tp_t target, tp_t signal, vd_t object )
+{
+    return NULL;
+}

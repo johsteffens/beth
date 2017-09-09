@@ -28,8 +28,6 @@ typedef struct bcore_source_s
 
 } bcore_source_s;
 
-bcore_flect_self_s* bcore_source_s_create_self( void );
-
 const bcore_source_s* bcore_source_s_get_typed( tp_t type );
 const bcore_source_s* bcore_source_s_get_aware( vc_t obj );
 
@@ -64,5 +62,7 @@ void bcore_source_q_parse_errvf(  const sr_s* o, sc_t format, va_list args );
 void bcore_source_q_parse_errf(   const sr_s* o, sc_t format, ... );
 bl_t bcore_source_q_parse_boolf(  const sr_s* o, sc_t format      ); // format must yield just one bool, which is returned
 void bcore_source_q_set_supplier( const sr_s* o, vd_t supplier    ); // error when not supported
+
+vd_t bcore_spect_source_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif // BCORE_SPECT_SOURCE_H

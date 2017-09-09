@@ -56,8 +56,6 @@ typedef struct bcore_via_s
     bcore_vitem_s* vitem_arr;   // array of vitem
 } bcore_via_s;
 
-bcore_flect_self_s* bcore_via_s_create_self( void );
-
 const bcore_via_s* bcore_via_s_get_typed( u2_t type );
 const bcore_via_s* bcore_via_s_get_aware( vc_t obj  );
 
@@ -204,6 +202,8 @@ bl_t                 bcore_via_q_is_pure_array ( const sr_s* o             );
 bl_t                 bcore_via_q_iis_array     ( const sr_s* o, sz_t index );
 bl_t                 bcore_via_q_iis_static    ( const sr_s* o, sz_t index );
 bl_t                 bcore_via_q_iis_link      ( const sr_s* o, sz_t index );
+
+vd_t bcore_spect_via_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 // testing, debugging

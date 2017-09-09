@@ -153,6 +153,10 @@ static inline u2_t bcore_fnv_hash_u2_u2(   u2_t val             ) { return bcore
 static inline u2_t bcore_fnv_hash_data_u2( vc_t data, sz_t size ) { return bcore_fnv_fold_data_u2( 0x811c9dc5u, data, size ); }
 
 /**********************************************************************************************************************/
+
+vd_t bcore_control_signal( tp_t target, tp_t signal, vd_t object );
+
+/**********************************************************************************************************************/
 /// Macros
 
 /// error message

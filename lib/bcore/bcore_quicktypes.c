@@ -49,7 +49,7 @@ static sr_s leaf_typelist()
     return list;
 }
 
-static sr_s typelist()
+static sr_s object_typelist()
 {
     sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ bcore_string_s * [] arr; }" ) );
     bcore_array_q_push_sc( &list, "bcore_flect_self_s"    );
@@ -72,6 +72,7 @@ static sr_s typelist()
     bcore_array_q_push_sc( &list, "bcore_sink_chain_s"    );
     bcore_array_q_push_sc( &list, "bcore_hmap_u2vd_s"     );
     bcore_array_q_push_sc( &list, "bcore_hmap_tpsz_s"     );
+    bcore_array_q_push_sc( &list, "bcore_hmap_tptp_s"     );
     bcore_array_q_push_sc( &list, "bcore_hmap_tp_s"       );
     bcore_array_q_push_sc( &list, "bcore_hmap_tp_sr_s"    );
     bcore_array_q_push_sc( &list, "bcore_txt_ml_translator_s" );
@@ -98,7 +99,7 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
     bcore_msg( "// leaf types\n" );
     for( sz_t i = 0; i < bcore_array_q_get_size( &list ); i++ ) bcore_string_s_print_d( get_def_quicktype( hash_l, bcore_array_q_get( &list, i ), 16 + max_len( &list ) ) );
     sr_down( list );
-    list = typelist();
+    list = object_typelist();
     bcore_msg( "\n// other types\n" );
     for( sz_t i = 0; i < bcore_array_q_get_size( &list ); i++ ) bcore_string_s_print_d( get_def_quicktype( hash_l, bcore_array_q_get( &list, i ), 16 + max_len( &list ) ) );
     sr_down( list );

@@ -731,7 +731,7 @@ static bcore_flect_self_s* hnode_tpsz_s_create_self( void )
 void bcore_hmap_tpsz_s_init( bcore_hmap_tpsz_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
-    o->_ = typeof( "bcore_hmap_tpsz_s" );
+    o->_ = TYPEOF_bcore_hmap_tpsz_s;
     o->size_limit = 0xFFFFFFFFu;
 }
 
@@ -1104,6 +1104,405 @@ bcore_string_s* bcore_hmap_tpsz_selftest( void )
     bcore_string_s_push_string_d( log, bcore_hmap_tpsz_s_status( map ) );
 
     bcore_hmap_tpsz_s_discard( map );
+    bcore_alloc( kvbuf, 0 );
+
+    bcore_life_s_discard( l );
+
+    bcore_string_s_push_char_n( log, '=', 120 );
+    bcore_string_s_push_char( log, '\n' );
+    return log;
+}
+
+/**********************************************************************************************************************/
+
+/**********************************************************************************************************************/
+// bcore_hmap_tptp_s
+
+static bcore_flect_self_s* hnode_tptp_s_create_self( void )
+{
+    sc_t def =
+    "bcore_hnode_tptp_s = \n"
+    "{ \n"
+        "tp_t key; \n"
+        "tp_t val; \n"
+    "}";
+    return bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hnode_tptp_s ) );
+}
+
+void bcore_hmap_tptp_s_init( bcore_hmap_tptp_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+    o->_ = TYPEOF_bcore_hmap_tptp_s;
+    o->size_limit = 0xFFFFFFFFu;
+}
+
+void bcore_hmap_tptp_s_down( bcore_hmap_tptp_s* o )
+{
+    o->nodes = bcore_alloc( o->nodes, 0 );
+    o->flags = bcore_alloc( o->flags, 0 );
+    o->size  = 0;
+}
+
+void bcore_hmap_tptp_s_copy( bcore_hmap_tptp_s* o, const bcore_hmap_tptp_s* src )
+{
+    o->nodes = bcore_alloc( o->nodes, 0 );
+    o->flags = bcore_alloc( o->flags, 0 );
+    o->size  = 0;
+    o->nodes = bcore_u_memcpy( sizeof( bcore_hnode_tptp_s ), o->nodes, src->nodes, src->size );
+    o->size  = src->size;
+    o->depth_limit = src->depth_limit;
+    o->size_limit  = src->size_limit;
+}
+
+DEFINE_FUNCTION_CREATE(  bcore_hmap_tptp_s )
+DEFINE_FUNCTION_DISCARD( bcore_hmap_tptp_s )
+DEFINE_FUNCTION_CLONE(   bcore_hmap_tptp_s )
+
+/**********************************************************************************************************************/
+
+static sz_t tptp_find( const bcore_hmap_tptp_s* o, tp_t key ) // returns valid index or o->size
+{
+    if( o->size == 0 ) return o->size;
+    u2_t mask = o->size - 1;
+    sz_t idx = hash_tpu2_1( key ) & mask;
+    if( o->nodes[ idx ].key == key ) return idx;
+    idx = hash_tpu2_2( key ) & mask;
+    if( o->nodes[ idx ].key == key ) return idx;
+    return o->size;
+}
+
+sz_t tptp_set( bcore_hmap_tptp_s* o, bcore_hnode_tptp_s node, sz_t depth ) // sets new node, returns valid index on success; o->size otherwise
+{
+    sz_t size = o->size;
+    if( size == 0 ) return size;
+    u2_t mask = o->size - 1;
+
+    if( depth == o->depth_limit ) return size;
+
+    sz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    if( !o->nodes[ idx1 ].key )
+    {
+        o->nodes[ idx1 ] = node;
+        return idx1;
+    }
+
+    sz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    if( !o->nodes[ idx2 ].key )
+    {
+        o->nodes[ idx2 ] = node;
+        return idx2;
+    }
+
+    if( !o->flags ) o->flags = bcore_u_memzero( sizeof( bl_t ), NULL, size );
+
+    if( !o->flags[ idx1 ] )
+    {
+        o->flags[ idx1 ] = true;
+        if( tptp_set( o, o->nodes[ idx1 ], depth + 1 ) < size )
+        {
+            o->flags[ idx1 ] = false;
+            o->nodes[ idx1 ] = node;
+            return idx1;
+        }
+        o->flags[ idx1 ] = false;
+    }
+
+    if( !o->flags[ idx2 ] )
+    {
+        o->flags[ idx2 ] = true;
+        if( tptp_set( o, o->nodes[ idx2 ], depth + 1 ) < size )
+        {
+            o->flags[ idx2 ] = false;
+            o->nodes[ idx2 ] = node;
+            return idx2;
+        }
+        o->flags[ idx2 ] = false;
+    }
+
+    return size;
+}
+
+tp_t* bcore_hmap_tptp_s_get( const bcore_hmap_tptp_s* o, tp_t key )
+{
+    if( !key ) return NULL;
+    sz_t idx = tptp_find( o, key );
+    return ( idx < o->size ) ? &o->nodes[ idx ].val : NULL;
+}
+
+tp_t* bcore_hmap_tptp_s_fget( bcore_hmap_tptp_s* o, tp_t key, tp_t init_val )
+{
+    if( !key ) ERR( "key is 0" );
+    sz_t idx = tptp_find( o, key );
+    if( idx < o->size )
+    {
+        return &o->nodes[ idx ].val;
+    }
+    else
+    {
+        return bcore_hmap_tptp_s_set( o, key, init_val );
+    }
+}
+
+tp_t* bcore_hmap_tptp_s_set( bcore_hmap_tptp_s* o, tp_t key, tp_t val )
+{
+    if( !key ) ERR( "key is zero" );
+
+    sz_t idx = tptp_find( o, key );
+    if( idx < o->size )
+    {
+        o->nodes[ idx ].val = val;
+        return &o->nodes[ idx ].val;
+    }
+
+    idx = tptp_set( o, ( bcore_hnode_tptp_s ){ .key = key, .val = val }, 1 );
+    if( idx < o->size ) return &o->nodes[ idx ].val;
+
+    // rehash
+    {
+        o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
+        bcore_hnode_tptp_s* buf_nodes = o->nodes;
+        sz_t  buf_size = o->size;
+        if( o->size > 0 )
+        {
+            o->size *= 2;
+            o->depth_limit++;
+        }
+        else
+        {
+            o->size = 8;
+            o->depth_limit = 4;
+        }
+        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
+
+        o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tptp_s ), NULL, o->size );
+
+        for( sz_t i = 0; i < buf_size; i++ )
+        {
+            if( buf_nodes[ i ].key ) bcore_hmap_tptp_s_set( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
+        }
+
+        bcore_alloc( buf_nodes, 0 );
+    }
+
+    return bcore_hmap_tptp_s_set( o, key, val );
+}
+
+tp_t bcore_hmap_tptp_s_remove( bcore_hmap_tptp_s* o, tp_t key )
+{
+    if( !key ) return 0;
+    sz_t idx = tptp_find( o, key );
+    if( idx < o->size )
+    {
+        tp_t val = o->nodes[ idx ].val;
+        o->nodes[ idx ].key = 0;
+        o->nodes[ idx ].val = 0;
+        return val;
+    }
+    return 0;
+}
+
+bl_t bcore_hmap_tptp_s_exists( const bcore_hmap_tptp_s* o, tp_t key )
+{
+    if( !key ) return false;
+    sz_t idx = tptp_find( o, key );
+    return ( idx < o->size );
+}
+
+void bcore_hmap_tptp_s_clear( bcore_hmap_tptp_s* o )
+{
+    o->nodes = bcore_alloc( o->nodes, 0 );
+    o->flags = bcore_alloc( o->flags, 0 );
+    o->size  = 0;
+}
+
+sz_t bcore_hmap_tptp_s_keys( const bcore_hmap_tptp_s* o )
+{
+    sz_t count = 0;
+    for( sz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
+    return count;
+}
+
+sz_t bcore_hmap_tptp_s_size( const bcore_hmap_tptp_s* o )
+{
+    return o->size;
+}
+
+tp_t bcore_hmap_tptp_s_idx_key( const bcore_hmap_tptp_s* o, sz_t idx )
+{
+    assert( idx < o->size );
+    return o->nodes[ idx ].key;
+}
+
+tp_t bcore_hmap_tptp_s_idx_val( const bcore_hmap_tptp_s* o, sz_t idx )
+{
+    assert( idx < o->size );
+    return o->nodes[ idx ].val;
+}
+
+static sr_s tptp_s_get_data( const bcore_hmap_tptp_s* o )
+{
+    tp_t t_data = bcore_flect_type_parse_sc( "{ bcore_hnode_tptp_s []; }" );
+    tp_t t_node = typeof( "bcore_hnode_tptp_s" );
+    sr_s sr = sr_cp( sr_create( t_data ), TYPEOF_bcore_array_s );
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        if( o->nodes[ i ].key ) bcore_array_q_push( &sr, sr_twc( t_node, &o->nodes[ i ] ) );
+    }
+    return sr;
+}
+
+static void tptp_s_set_data( bcore_hmap_tptp_s* o, sr_s data )
+{
+    bcore_hmap_tptp_s_clear( o );
+    assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ bcore_hnode_tptp_s []; }" ) );
+    sr_s sr = sr_cp( data, TYPEOF_bcore_array_s );
+    sz_t size = bcore_array_q_get_size( &sr );
+    const bcore_hnode_tptp_s* src = bcore_array_q_get_c_data( &sr );
+    for( sz_t i = 0; i < size; i++ ) bcore_hmap_tptp_s_set( o, src[ i ].key, src[ i ].val );
+}
+
+/**********************************************************************************************************************/
+
+static bcore_flect_self_s* hmap_tptp_s_create_self( void )
+{
+    sc_t def = "\
+        bcore_hmap_tptp_s = \
+            { \
+                aware_t _; \
+                private bcore_hnode_tptp_s* nodes; \
+                private bl_t* flags; \
+                private sz_t size; \
+                private sz_t depth_limit; \
+                private sz_t size_limit; \
+                shell { bcore_hnode_tptp_s []; } data; } \
+            }";
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tptp_s ) );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tptp_s_init,    "bcore_fp_init",  "init"     );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tptp_s_down,    "bcore_fp_down",  "down"     );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tptp_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )tptp_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )tptp_s_set_data,           "bcore_fp_set",   "set_data" );
+    return self;
+}
+
+/**********************************************************************************************************************/
+
+bcore_string_s* bcore_hmap_tptp_s_status( bcore_hmap_tptp_s* o )
+{
+    bcore_string_s* string = bcore_string_s_create();
+    sz_t keys = bcore_hmap_tptp_s_keys( o );
+    bcore_string_s_pushf( string, "keys ........... %zu\n", keys );
+    bcore_string_s_pushf( string, "nodes .......... %lu\n", o->size );
+    bcore_string_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
+    return string;
+}
+
+/**********************************************************************************************************************/
+
+bcore_string_s* bcore_hmap_tptp_selftest( void )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    bcore_string_s* log = bcore_string_s_createf( "== bcore_hmap_tptp_selftest " );
+    bcore_string_s_push_char_n( log, '=', 120 - log->size );
+    bcore_string_s_push_char( log, '\n' );
+
+    bcore_hmap_tptp_s* map = bcore_hmap_tptp_s_create();
+    const sz_t cycles = 1000000;
+
+    typedef struct
+    {
+        tp_t key;
+        tp_t val;
+    } kv_s;
+
+    kv_s* kvbuf = bcore_alloc( NULL, cycles * sizeof( kv_s ) );
+    sz_t kvbuf_size = 0;
+
+    clock_t time = clock();
+    bcore_string_s_pushf( log, "Mixed access: " );
+
+    {
+        u3_t rval1 = 1;
+        u3_t rval2 = 12345;
+        for( sz_t i = 0; i < cycles; i++ )
+        {
+            rval1 = bcore_xsg_u2( rval1 );
+            rval2 = bcore_xsg_u2( rval2 );
+            kv_s kv;
+            kv.key = ( tp_t )rval1;
+            kv.val = ( tp_t )rval2;
+            kvbuf[ kvbuf_size++ ] = kv;
+
+            // set
+            bcore_hmap_tptp_s_set( map, kv.key, kv.val );
+
+            // retrieve
+            rval1 = bcore_xsg_u2( rval1 );
+            kv = kvbuf[ rval1 % kvbuf_size ];
+            tp_t* val_ptr = bcore_hmap_tptp_s_get( map, kv.key );
+            if( kv.val != *val_ptr ) ERR( "value mismatch (%lu vs %lu)", kv.val, *val_ptr );
+
+            // delete
+            rval1 = bcore_xsg_u2( rval1 );
+            if( ( ( rval1 >> 10 ) & 1 ) == 1 )
+            {
+                rval1 = bcore_xsg_u2( rval1 );
+                sz_t idx = rval1 % kvbuf_size;
+                kv_s kv = kvbuf[ idx ];
+                if( !bcore_hmap_tptp_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
+                bcore_hmap_tptp_s_remove( map, kv.key );
+                if( bcore_hmap_tptp_s_get( map, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
+                kvbuf_size--;
+                kvbuf[ idx ] = kvbuf[ kvbuf_size ];
+            }
+        }
+    }
+
+    time = clock() - time;
+    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+
+    bcore_string_s_push_string_d( log, bcore_hmap_tptp_s_status( map ) );
+
+    time = clock();
+    bcore_hmap_tptp_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tptp_s_clone( map ) );
+    time = clock() - time;
+    bcore_string_s_pushf( log, "Clone .......... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+
+    time = clock();
+    ASSERT( bcore_compare_aware( map, map2 ) == 0 );
+    time = clock() - time;
+    bcore_string_s_pushf( log, "Comparison ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+
+    time = clock();
+    bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
+    sz_t read_cycles = 20;
+    for( sz_t j = 0; j < read_cycles; j++ )
+    {
+        for( sz_t i = 0; i < kvbuf_size; i++ )
+        {
+            if( *bcore_hmap_tptp_s_get( map, kvbuf[ i ].key ) != kvbuf[ i ].val ) ERR( "value mismatch (%lu vs %lu)", kvbuf[ i ].key, kvbuf[ i ].val );
+        }
+    }
+    time = clock() - time;
+    bcore_string_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
+
+    bcore_string_s_pushf( log, "\n" );
+    bcore_string_s_pushf( log, "Removal: " );
+    time = clock();
+    while( kvbuf_size )
+    {
+        kvbuf_size--;
+        kv_s kv = kvbuf[ kvbuf_size ];
+        if( !bcore_hmap_tptp_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
+        bcore_hmap_tptp_s_remove( map, kv.key );
+        if( bcore_hmap_tptp_s_get( map, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
+    }
+    time = clock() - time;
+    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+
+    bcore_string_s_push_string_d( log, bcore_hmap_tptp_s_status( map ) );
+
+    bcore_hmap_tptp_s_discard( map );
     bcore_alloc( kvbuf, 0 );
 
     bcore_life_s_discard( l );
@@ -1495,6 +1894,27 @@ void bcore_hmap_define_self_creators( void )
     bcore_flect_define_creator( TYPEOF_bcore_hmap_u2vd_s      , hmap_u2vd_s_create_self  );
     bcore_flect_define_creator( typeof( "bcore_hnode_tpsz_s" ), hnode_tpsz_s_create_self  );
     bcore_flect_define_creator( TYPEOF_bcore_hmap_tpsz_s      , hmap_tpsz_s_create_self  );
+    bcore_flect_define_creator( typeof( "bcore_hnode_tptp_s" ), hnode_tptp_s_create_self  );
+    bcore_flect_define_creator( TYPEOF_bcore_hmap_tptp_s      , hmap_tptp_s_create_self  );
     bcore_flect_define_creator( TYPEOF_bcore_hmap_tp_s        , hmap_tp_s_create_self    );
 }
+
+vd_t bcore_hmap_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_hmap" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( TYPEOF_bcore_hmap_u2vd_s      , hmap_u2vd_s_create_self  );
+        bcore_flect_define_creator( typeof( "bcore_hnode_tpsz_s" ), hnode_tpsz_s_create_self  );
+        bcore_flect_define_creator( TYPEOF_bcore_hmap_tpsz_s      , hmap_tpsz_s_create_self  );
+        bcore_flect_define_creator( typeof( "bcore_hnode_tptp_s" ), hnode_tptp_s_create_self  );
+        bcore_flect_define_creator( TYPEOF_bcore_hmap_tptp_s      , hmap_tptp_s_create_self  );
+        bcore_flect_define_creator( TYPEOF_bcore_hmap_tp_s        , hmap_tp_s_create_self    );
+    }
+
+    return NULL;
+}
+
+/**********************************************************************************************************************/
 

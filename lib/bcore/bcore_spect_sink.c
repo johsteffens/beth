@@ -120,7 +120,7 @@ static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
-bcore_flect_self_s* bcore_sink_s_create_self( void )
+static bcore_flect_self_s* sink_s_create_self( void )
 {
     sc_t def = "bcore_sink_s = spect { aware_t p_type; tp_t o_type; ... }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_sink_s ) );
@@ -179,6 +179,20 @@ void bcore_sink_q_push_sc      ( const sr_s* o, sc_t s )            {          b
 void bcore_sink_q_push_string  ( const sr_s* o, const bcore_string_s* s ) {    bcore_sink_spect_push_string(   w_spect( *o ), o->o, s ); }
 void bcore_sink_q_push_string_d( const sr_s* o,       bcore_string_s* s ) {    bcore_sink_spect_push_string_d( w_spect( *o ), o->o, s ); }
 void bcore_sink_q_set_consumer ( const sr_s* o, vd_t c )            {          bcore_sink_spect_set_consumer(  w_spect( *o ), o->o, c ); }
+
+/**********************************************************************************************************************/
+
+vd_t bcore_spect_sink_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_sink" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_sink_s"  ), sink_s_create_self  );
+    }
+
+    return NULL;
+}
 
 /**********************************************************************************************************************/
 

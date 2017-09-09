@@ -196,7 +196,7 @@ tp_t bclos_tree_s_t_ret( const bclos_tree_s* o )
     return bcore_closure_r_t_ret( &o->closure );
 }
 
-bcore_flect_self_s* bclos_tree_s_create_self( void )
+static bcore_flect_self_s* tree_s_create_self( void )
 {
     sc_t def =
     "bclos_tree_s = "
@@ -213,6 +213,18 @@ bcore_flect_self_s* bclos_tree_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_tree_s_t_ret,  "bcore_closure_fp_t_ret",  "t_ret" );
 
     return self;
+}
+
+vd_t bclos_tree_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bclos_tree" ) ) return NULL;
+
+    if( signal == typeof( "init" ) )
+    {
+        bcore_flect_define_creator( typeof( "bclos_tree_s"  ), tree_s_create_self  );
+    }
+
+    return NULL;
 }
 
 /**********************************************************************************************************************/

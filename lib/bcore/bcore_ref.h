@@ -111,5 +111,6 @@ static inline sr_s sr_s_get(   sr_s* o )           { return sr_cw( *o ); }
 /**********************************************************************************************************************/
 
 void bcore_ref_define_self_creators( void );
+vd_t bcore_ref_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif // BCORE_REF_H
