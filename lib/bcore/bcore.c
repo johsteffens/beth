@@ -5,14 +5,11 @@
 #include "bcore_memory_manager.h"
 #include "bcore_name_manager.h"
 #include "bcore_flect.h"
-#include "bcore_flect_center.h"
 #include "bcore_string.h"
 #include "bcore_spect.h"
 #include "bcore_trait.h"
 #include "bcore_signal.h"
 #include "bcore.h"
-
-#include "bclos_flect_center.h"
 
 static void init_once()
 {
@@ -28,11 +25,8 @@ static void init_once()
     bcore_memory_manager_s_quicktest();
     bcore_string_s_quicktest();
 
-    // broadcast init signal
+    // broadcast init signal to all systems
     bcore_signal( typeof( "all" ), typeof( "init" ), NULL );
-
-    bcore_flect_define_self_creators();
-    bclos_flect_define_self_creators();
 }
 
 void bcore_library_init()
@@ -43,9 +37,10 @@ void bcore_library_init()
 
 void bcore_library_down()
 {
-    // broadcast down signal
+    // broadcast down signal to all systems
     bcore_signal( typeof( "all" ), typeof( "down" ), NULL );
 
+    // shut down global services ...
     bcore_msg( "\nBeth global system's memory usage (bytes):\n");
     sz_t space = bcore_memory_manager_granted_space();
     bcore_msg( "Total ................. % 6zu\n", space );

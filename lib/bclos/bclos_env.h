@@ -26,7 +26,6 @@ sr_s*        bclos_env_s_get(    bclos_env_s* o, tp_t name ); // returns NULL wh
 sr_s*        bclos_env_s_set(    bclos_env_s* o, tp_t name, sr_s val );
 sr_s         bclos_env_s_remove( bclos_env_s* o, tp_t name ); // removes element, returns value; call sr_down( remove(...) ) to eliminate entry
 
-void bclos_env_define_self_creators( void );
 vd_t bclos_env_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/

@@ -27,7 +27,6 @@ ad_s bclos_proc_s_d_arg  ( const bclos_proc_s* o, sz_t index );
 tp_t bclos_proc_s_t_ret  ( const bclos_proc_s* o );
 void bclos_proc_s_set_env(       bclos_proc_s* o, vd_t env );
 
-void bclos_proc_define_self_creators( void );
 vd_t bclos_proc_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/

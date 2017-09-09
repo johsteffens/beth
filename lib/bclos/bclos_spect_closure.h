@@ -37,10 +37,6 @@ sr_s bclos_closure_q_sig(     const sr_s* o );
 sr_s bclos_closure_q_call_nv( const sr_s* o, bclos_env_s* env, sz_t n, va_list args ); // call with n arguments
 sr_s bclos_closure_q_call_na( const sr_s* o, bclos_env_s* env, sz_t n, ...          ); // call with n arguments
 
-
-
-
-void bclos_spect_closure_define_self_creators( void );
 vd_t bclos_spect_closure_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif // BCLOS_SPECT_CLOSURE_H

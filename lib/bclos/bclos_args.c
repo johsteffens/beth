@@ -67,11 +67,6 @@ static bcore_flect_self_s* args_s_create_self( void )
     return self;
 }
 
-void bclos_args_define_self_creators( void )
-{
-    bcore_flect_define_creator( typeof( "bclos_args_s"         ), args_s_create_self );
-}
-
 vd_t bclos_args_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bclos_args" ) ) return NULL;

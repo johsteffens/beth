@@ -112,11 +112,6 @@ static bcore_flect_self_s* sr_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-void bcore_ref_define_self_creators( void )
-{
-    bcore_flect_define_creator( typeof( "sr_s"  ), sr_s_create_self  );
-}
-
 vd_t bcore_ref_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_ref" ) ) return NULL;

@@ -50,7 +50,6 @@ bclos_signature_s* bclos_signature_s_parse_from_sc( sc_t sc );
 
 /**********************************************************************************************************************/
 
-void bclos_signature_define_self_creators( void );
 vd_t bclos_signature_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/

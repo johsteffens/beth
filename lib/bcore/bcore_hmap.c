@@ -1889,16 +1889,6 @@ bcore_string_s* bcore_hmap_tp_selftest( void )
 
 /**********************************************************************************************************************/
 
-void bcore_hmap_define_self_creators( void )
-{
-    bcore_flect_define_creator( TYPEOF_bcore_hmap_u2vd_s      , hmap_u2vd_s_create_self  );
-    bcore_flect_define_creator( typeof( "bcore_hnode_tpsz_s" ), hnode_tpsz_s_create_self  );
-    bcore_flect_define_creator( TYPEOF_bcore_hmap_tpsz_s      , hmap_tpsz_s_create_self  );
-    bcore_flect_define_creator( typeof( "bcore_hnode_tptp_s" ), hnode_tptp_s_create_self  );
-    bcore_flect_define_creator( TYPEOF_bcore_hmap_tptp_s      , hmap_tptp_s_create_self  );
-    bcore_flect_define_creator( TYPEOF_bcore_hmap_tp_s        , hmap_tp_s_create_self    );
-}
-
 vd_t bcore_hmap_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_hmap" ) ) return NULL;

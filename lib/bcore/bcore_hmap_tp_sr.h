@@ -65,7 +65,6 @@ const sr_s* bcore_hmap_tp_sr_s_idx_val( const bcore_hmap_tp_sr_s* o, sz_t idx );
 
 /**********************************************************************************************************************/
 
-void bcore_hmap_tp_sr_define_self_creators( void );
 vd_t bcore_hmap_tp_sr_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/

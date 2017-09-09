@@ -44,12 +44,11 @@ void bclos_procedure_s_def(  bclos_procedure_s* o, bclos_env_s* env );
 sr_s bclos_procedure_s_call( bclos_procedure_s* o, bclos_env_s* env, const bclos_args_s* args );
 sr_s bclos_procedure_s_sig(  const bclos_procedure_s* o );
 
-void bclos_procedure_define_self_creators( void );
+vd_t bclos_procedure_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 // testing, debugging
 
 bcore_string_s* bclos_procedure_selftest( void );
-vd_t bclos_procedure_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif // BCLOS_PROCEDURE_H

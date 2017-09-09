@@ -123,11 +123,6 @@ static bcore_flect_self_s* procedure_s_create_self( void )
     return self;
 }
 
-void bclos_procedure_define_self_creators( void )
-{
-    bcore_flect_define_creator( typeof( "bclos_procedure_s" ), procedure_s_create_self );
-}
-
 vd_t bclos_procedure_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bclos_procedure" ) ) return NULL;

@@ -46,7 +46,6 @@ void               bclos_statement_s_run(         const bclos_statement_s* o, bc
 bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source );
 bclos_statement_s* bclos_statement_s_parse_from_sc( sc_t sc );
 
-void bclos_statement_define_self_creators( void );
 vd_t bclos_statement_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/

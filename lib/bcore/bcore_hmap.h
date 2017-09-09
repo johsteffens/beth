@@ -221,7 +221,6 @@ bcore_string_s* bcore_hmap_tp_selftest( void );
 
 /**********************************************************************************************************************/
 
-void bcore_hmap_define_self_creators( void );
 vd_t bcore_hmap_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif // BCORE_HMAP_H

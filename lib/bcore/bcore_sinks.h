@@ -103,7 +103,6 @@ sz_t                bcore_sink_file_s_push_data(   bcore_sink_file_s* o, vc_t da
 
 /**********************************************************************************************************************/
 
-void bcore_sinks_define_self_creators( void );
 vd_t bcore_sinks_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/

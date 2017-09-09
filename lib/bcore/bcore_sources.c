@@ -590,14 +590,6 @@ static bcore_flect_self_s* file_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-void bcore_sources_define_self_creators( void )
-{
-    bcore_flect_define_creator( typeof( "bcore_source_string_s"   ), string_s_create_self );
-    bcore_flect_define_creator( typeof( "bcore_source_buffer_s"   ), buffer_s_create_self );
-    bcore_flect_define_creator( typeof( "bcore_source_file_s"     ), file_s_create_self   );
-    bcore_flect_define_creator( typeof( "bcore_source_chain_s"    ), chain_s_create_self  );
-}
-
 vd_t bcore_sources_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_sources" ) ) return NULL;
