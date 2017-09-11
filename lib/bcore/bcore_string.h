@@ -161,9 +161,4 @@ bcore_string_s* bcore_string_s_show_line_context( const bcore_string_s* o, sz_t 
 
 vd_t bcore_string_signal( tp_t target, tp_t signal, vd_t object );
 
-/**********************************************************************************************************************/
-// testing, debugging
-
-void bcore_string_s_quicktest( void );
-
 #endif //BCORE_STRING_H

@@ -281,9 +281,4 @@ void bcore_array_q_sort                 ( const sr_s* o, sz_t start, sz_t end, s
 
 vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object );
 
-/**********************************************************************************************************************/
-// testing, debugging
-
-bcore_string_s* bcore_spect_array_selftest( void );
-
 #endif

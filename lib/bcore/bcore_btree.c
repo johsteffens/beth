@@ -6,6 +6,7 @@
 
 #include "bcore_btree.h"
 #include "bcore_control.h"
+#include "bcore_name_manager.h"
 
 /**********************************************************************************************************************/
 
@@ -633,7 +634,7 @@ bcore_string_s* bcore_btree_ip_s_status( bcore_btree_ip_s* o )
     return string;
 }
 
-bcore_string_s* bcore_btree_ip_s_selftest( void )
+static bcore_string_s* btree_ip_s_selftest( void )
 {
     bcore_string_s* log = bcore_string_s_create();
     bcore_btree_ip_s* t = bcore_btree_ip_s_create();
@@ -1423,7 +1424,7 @@ bcore_string_s* bcore_btree_ps_s_status( bcore_btree_ps_s* o )
     return string;
 }
 
-bcore_string_s* bcore_btree_ps_s_selftest( void )
+static bcore_string_s* btree_ps_s_selftest( void )
 {
     bcore_string_s* log = bcore_string_s_create();
     bcore_btree_ps_s* t = bcore_btree_ps_s_create( NULL );
@@ -2211,7 +2212,7 @@ bcore_string_s* bcore_btree_vd_s_status( bcore_btree_vd_s* o )
     return string;
 }
 
-bcore_string_s* bcore_btree_vd_s_selftest( void )
+static bcore_string_s* btree_vd_s_selftest( void )
 {
     bcore_string_s* log = bcore_string_s_create();
     bcore_btree_vd_s* t = bcore_btree_vd_s_create( NULL );
@@ -2322,6 +2323,15 @@ bcore_string_s* bcore_btree_vd_s_selftest( void )
 
 vd_t bcore_btree_signal( tp_t target, tp_t signal, vd_t object )
 {
+    if( target != typeof( "all" ) && target != typeof( "bcore_btree" ) ) return NULL;
+
+    if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( btree_ip_s_selftest() );
+        bcore_string_s_print_d( btree_ps_s_selftest() );
+        bcore_string_s_print_d( btree_vd_s_selftest() );
+    }
+
     return NULL;
 }
 

@@ -54,9 +54,4 @@ bcore_string_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 );
 
 vd_t bcore_spect_compare_signal( tp_t target, tp_t signal, vd_t object );
 
-/**********************************************************************************************************************/
-// testing, debugging
-
-bcore_string_s* bcore_spect_compare_selftest( void );
-
 #endif // BCORE_SPECT_COMPARE_H

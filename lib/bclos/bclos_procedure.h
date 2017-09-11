@@ -46,9 +46,4 @@ sr_s bclos_procedure_s_sig(  const bclos_procedure_s* o );
 
 vd_t bclos_procedure_signal( tp_t target, tp_t signal, vd_t object );
 
-/**********************************************************************************************************************/
-// testing, debugging
-
-bcore_string_s* bclos_procedure_selftest( void );
-
 #endif // BCLOS_PROCEDURE_H

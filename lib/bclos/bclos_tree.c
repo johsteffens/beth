@@ -215,21 +215,9 @@ static bcore_flect_self_s* tree_s_create_self( void )
     return self;
 }
 
-vd_t bclos_tree_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bclos_tree" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bclos_tree_s"  ), tree_s_create_self  );
-    }
-
-    return NULL;
-}
-
 /**********************************************************************************************************************/
 
-bcore_string_s* bclos_tree_selftest( void )
+static bcore_string_s* tree_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
 
@@ -263,6 +251,25 @@ bcore_string_s* bclos_tree_selftest( void )
     bcore_txt_ml_transfer_test( tclone );
 
     bcore_life_s_discard( l );
+    return NULL;
+}
+
+/**********************************************************************************************************************/
+// signal
+
+vd_t bclos_tree_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bclos_tree" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bclos_tree_s"  ), tree_s_create_self  );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( tree_selftest() );
+    }
+
     return NULL;
 }
 

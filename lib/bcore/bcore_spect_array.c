@@ -1480,20 +1480,6 @@ sz_t NPX(q_max_index            )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) { r
 void NPX(q_sort                 )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) {          NPX(spect_sort                 )( w_spect( *o ), o->o, st, nd, d  ); }
 
 /**********************************************************************************************************************/
-
-vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bcore_spect_array" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_array_s"  ), array_s_create_self  );
-    }
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
 // testing, debugging
 
 static void test_string_array( sc_t type_sc )
@@ -1523,7 +1509,7 @@ static void test_string_array( sc_t type_sc )
     bcore_inst_aware_discard( arr );
 }
 
-bcore_string_s* bcore_spect_array_selftest( void )
+static bcore_string_s* spect_array_selftest( void )
 {
     bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "string_array = { aware_t _; bcore_string_s [] string_arr; }", 0 ) );
     vd_t arr = bcore_inst_typed_create( typeof( "string_array" ) );
@@ -1553,6 +1539,25 @@ bcore_string_s* bcore_spect_array_selftest( void )
     ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), typeof( "bcore_string_s" ) ) );
     ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), typeof( "f3_t" ) ) );
     ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
+
+    return NULL;
+}
+
+/**********************************************************************************************************************/
+// signal
+
+vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_array" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_array_s"  ), array_s_create_self  );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( spect_array_selftest() );
+    }
 
     return NULL;
 }

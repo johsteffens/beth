@@ -29,10 +29,5 @@ void bclos_proc_s_set_env(       bclos_proc_s* o, vd_t env );
 
 vd_t bclos_proc_signal( tp_t target, tp_t signal, vd_t object );
 
-/**********************************************************************************************************************/
-// testing, debugging
-
-bcore_string_s* bclos_proc_selftest( void );
-
 #endif // BCLOS_PROC_H
 

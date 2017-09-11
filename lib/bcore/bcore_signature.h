@@ -72,12 +72,6 @@ static inline tp_t bcore_signature_get_hash_tp_tp( tp_t t1, tp_t t2 ) { return b
 
 /**********************************************************************************************************************/
 
-/// initializes signature manager
-void bcore_signature_manager_open();
-
-/// closes signature manager and frees all memory
-void bcore_signature_manager_close();
-
 /** Enrolls signature in global manager (thread safe);
  *  checks for collisions; reentrant for identical signatures;
  *  returns type; takes over ownership of sig;

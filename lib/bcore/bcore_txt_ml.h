@@ -56,9 +56,6 @@ sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, 
 sr_s bcore_txt_ml_from_file( sc_t file );
 sr_s bcore_txt_ml_from_string( const bcore_string_s* string );
 
-/**********************************************************************************************************************/
-
-vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 // testing, debugging
@@ -66,7 +63,9 @@ vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object );
 /// converts object into stream; interprets stream and compares result to original
 void bcore_txt_ml_transfer_test( sr_s obj );
 
-bcore_string_s* bcore_txt_ml_selftest( void );
+/**********************************************************************************************************************/
+
+vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif // BCORE_TXT_ML_H
 

@@ -186,7 +186,7 @@ vd_t bcore_spect_sink_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_spect_sink" ) ) return NULL;
 
-    if( signal == typeof( "init" ) )
+    if( signal == typeof( "init1" ) )
     {
         bcore_flect_define_creator( typeof( "bcore_sink_s"  ), sink_s_create_self  );
     }

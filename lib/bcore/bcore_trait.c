@@ -5,6 +5,7 @@
 
 #include "bcore_hmap.h"
 #include "bcore_threads.h"
+#include "bcore_memory_manager.h"
 
 typedef struct system_s
 {
@@ -34,13 +35,13 @@ static void system_s_g_down()   { system_s_down( &system_s_g ); }
 static void system_s_g_lock()   { bcore_mutex_lock( &system_s_g.mutex   ); }
 static void system_s_g_unlock() { bcore_mutex_unlock( &system_s_g.mutex ); }
 
-void bcore_trait_manager_open()
+static void trait_manager_open()
 {
     static bcore_once_t flag = bcore_once_init;
     bcore_once( &flag, system_s_g_init );
 }
 
-void bcore_trait_manager_close()
+static void trait_manager_close()
 {
     system_s_g_down();
 }
@@ -92,8 +93,24 @@ bl_t bcore_trait_is( tp_t trait, tp_t ancestor )
     return flag;
 }
 
+/**********************************************************************************************************************/
+// signal
+
 vd_t bcore_trait_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_trait" ) ) return NULL;
+    if( signal == typeof( "init0" ) )
+    {
+        trait_manager_open();
+    }
+    else if( signal == typeof( "init1" ) )
+    {
+    }
+    else if( signal == typeof( "down0" ) )
+    {
+        sz_t space = bcore_memory_manager_granted_space();
+        trait_manager_close();
+        bcore_msg( "  trait mananger ...... % 6zu\n", space - bcore_memory_manager_granted_space() );
+    }
     return NULL;
 }

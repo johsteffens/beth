@@ -151,7 +151,7 @@ vd_t bclos_statement_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bclos_statement" ) ) return NULL;
 
-    if( signal == typeof( "init" ) )
+    if( signal == typeof( "init1" ) )
     {
         bcore_flect_define_creator( typeof( "bclos_statement_s" ), statement_s_create_self );
     }

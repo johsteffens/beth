@@ -87,8 +87,6 @@ vd_t  bcore_hmap_u2vd_s_idx_val(   const bcore_hmap_u2vd_s* o, sz_t idx ); // re
 void  bcore_hmap_u2vd_s_run_c(     const bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t  val ) ); // runs a function on all registered key-value pairs
 void  bcore_hmap_u2vd_s_run_d(           bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t* val ) ); // runs a function on all registered key-value pairs; value can be changed
 
-bcore_string_s* bcore_hmap_u2vd_selftest( void );
-
 /**********************************************************************************************************************/
 
 /** bcore_hmap_tpsz_s:
@@ -132,8 +130,6 @@ sz_t  bcore_hmap_tpsz_s_keys(    const bcore_hmap_tpsz_s* o           ); // retu
 sz_t  bcore_hmap_tpsz_s_size(    const bcore_hmap_tpsz_s* o           ); // returns current size of the hash map (note that this includes empty places)
 tp_t  bcore_hmap_tpsz_s_idx_key( const bcore_hmap_tpsz_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
 sz_t  bcore_hmap_tpsz_s_idx_val( const bcore_hmap_tpsz_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
-
-bcore_string_s* bcore_hmap_tpsz_selftest( void );
 
 /**********************************************************************************************************************/
 
@@ -179,8 +175,6 @@ sz_t  bcore_hmap_tptp_s_size(    const bcore_hmap_tptp_s* o           ); // retu
 tp_t  bcore_hmap_tptp_s_idx_key( const bcore_hmap_tptp_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
 tp_t  bcore_hmap_tptp_s_idx_val( const bcore_hmap_tptp_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
-bcore_string_s* bcore_hmap_tptp_selftest( void );
-
 /**********************************************************************************************************************/
 
 /** bcore_hmap_tp_s:  maps a key to automatic index
@@ -216,8 +210,6 @@ void  bcore_hmap_tp_s_clear(         bcore_hmap_tp_s* o           ); // removes 
 sz_t  bcore_hmap_tp_s_keys(    const bcore_hmap_tp_s* o           ); // returns number of registered keys
 sz_t  bcore_hmap_tp_s_size(    const bcore_hmap_tp_s* o           ); // returns current size of the hash map (note that this includes empty places)
 tp_t  bcore_hmap_tp_s_idx_key( const bcore_hmap_tp_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
-
-bcore_string_s* bcore_hmap_tp_selftest( void );
 
 /**********************************************************************************************************************/
 

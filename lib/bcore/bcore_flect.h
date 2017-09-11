@@ -217,9 +217,6 @@ bcore_flect_self_s* bcore_flect_self_s_create_self( void );
 /**********************************************************************************************************************/
 /// Global reflection manager (thread safe)
 
-void bcore_flect_open();          // opens manager
-void bcore_flect_close();         // closes manager
-
 /** Define functions:
  *  Registers a self reflection once.
  *  Intended use for global registry.
@@ -259,8 +256,6 @@ const bcore_flect_self_s* bcore_flect_get_self( tp_t type ); // error when type 
 vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
-
-bcore_string_s* bcore_flect_selftest( void );
 
 #endif // BCORE_FLECT_H
 

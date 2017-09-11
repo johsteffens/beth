@@ -36,9 +36,4 @@ tp_t bclos_tree_s_t_ret(  const bclos_tree_s* o );
 
 vd_t bclos_tree_signal( tp_t target, tp_t signal, vd_t object );
 
-/**********************************************************************************************************************/
-// testing, debugging
-
-bcore_string_s* bclos_tree_selftest( void );
-
 #endif // BCLOS_TREE_H

@@ -7,6 +7,8 @@
 #include "bcore_quicktypes.h"
 #include "bcore_spect_array.h"
 
+#include <time.h> // only needed for selftests
+
 /**********************************************************************************************************************/
 // hash functions
 
@@ -569,7 +571,7 @@ static bcore_flect_self_s* hmap_u2vd_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_hmap_u2vd_s_status( bcore_hmap_u2vd_s* o )
+static bcore_string_s* hmap_u2vd_s_status( bcore_hmap_u2vd_s* o )
 {
     bcore_string_s* string = bcore_string_s_create();
     sz_t keys = bcore_hmap_u2vd_s_keys( o );
@@ -602,7 +604,7 @@ void bcore_hmap_u2vd_filltest()
                 bcore_string_s_print_d( bcore_string_s_createf( "%zu/%zu (%f)\n", j, size1, size1 > 0 ? ( f3_t ) j / size1 : 0.0 ) );
             }
         }
-        bcore_string_s_print_d( bcore_hmap_u2vd_s_status( map ) );
+        bcore_string_s_print_d( hmap_u2vd_s_status( map ) );
     }
 
     bcore_life_s_discard( life );
@@ -610,9 +612,7 @@ void bcore_hmap_u2vd_filltest()
 
 /**********************************************************************************************************************/
 
-#include <time.h> // only for selftest
-
-bcore_string_s* bcore_hmap_u2vd_selftest( void )
+static bcore_string_s* hmap_u2vd_selftest( void )
 {
     bcore_string_s* log = bcore_string_s_createf( "== bcore_hmap_u2vd_selftest " );
     bcore_string_s_push_char_n( log, '=', 120 - log->size );
@@ -673,7 +673,7 @@ bcore_string_s* bcore_hmap_u2vd_selftest( void )
     time = clock() - time;
     bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
-    bcore_string_s_push_string_d( log, bcore_hmap_u2vd_s_status( map ) );
+    bcore_string_s_push_string_d( log, hmap_u2vd_s_status( map ) );
 
     time = clock();
     bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
@@ -702,7 +702,7 @@ bcore_string_s* bcore_hmap_u2vd_selftest( void )
     time = clock() - time;
     bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
-    bcore_string_s_push_string_d( log, bcore_hmap_u2vd_s_status( map ) );
+    bcore_string_s_push_string_d( log, hmap_u2vd_s_status( map ) );
 
     bcore_hmap_u2vd_s_discard( map );
     bcore_alloc( kvbuf, 0 );
@@ -988,7 +988,7 @@ static bcore_flect_self_s* hmap_tpsz_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_hmap_tpsz_s_status( bcore_hmap_tpsz_s* o )
+static bcore_string_s* hmap_tpsz_s_status( bcore_hmap_tpsz_s* o )
 {
     bcore_string_s* string = bcore_string_s_create();
     sz_t keys = bcore_hmap_tpsz_s_keys( o );
@@ -1000,7 +1000,7 @@ bcore_string_s* bcore_hmap_tpsz_s_status( bcore_hmap_tpsz_s* o )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_hmap_tpsz_selftest( void )
+static bcore_string_s* hmap_tpsz_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_createf( "== bcore_hmap_tpsz_selftest " );
@@ -1062,7 +1062,7 @@ bcore_string_s* bcore_hmap_tpsz_selftest( void )
     time = clock() - time;
     bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
-    bcore_string_s_push_string_d( log, bcore_hmap_tpsz_s_status( map ) );
+    bcore_string_s_push_string_d( log, hmap_tpsz_s_status( map ) );
 
     time = clock();
     bcore_hmap_tpsz_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tpsz_s_clone( map ) );
@@ -1101,7 +1101,7 @@ bcore_string_s* bcore_hmap_tpsz_selftest( void )
     time = clock() - time;
     bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
-    bcore_string_s_push_string_d( log, bcore_hmap_tpsz_s_status( map ) );
+    bcore_string_s_push_string_d( log, hmap_tpsz_s_status( map ) );
 
     bcore_hmap_tpsz_s_discard( map );
     bcore_alloc( kvbuf, 0 );
@@ -1387,7 +1387,7 @@ static bcore_flect_self_s* hmap_tptp_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_hmap_tptp_s_status( bcore_hmap_tptp_s* o )
+static bcore_string_s* hmap_tptp_s_status( bcore_hmap_tptp_s* o )
 {
     bcore_string_s* string = bcore_string_s_create();
     sz_t keys = bcore_hmap_tptp_s_keys( o );
@@ -1399,7 +1399,7 @@ bcore_string_s* bcore_hmap_tptp_s_status( bcore_hmap_tptp_s* o )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_hmap_tptp_selftest( void )
+static bcore_string_s* hmap_tptp_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_createf( "== bcore_hmap_tptp_selftest " );
@@ -1461,7 +1461,7 @@ bcore_string_s* bcore_hmap_tptp_selftest( void )
     time = clock() - time;
     bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
-    bcore_string_s_push_string_d( log, bcore_hmap_tptp_s_status( map ) );
+    bcore_string_s_push_string_d( log, hmap_tptp_s_status( map ) );
 
     time = clock();
     bcore_hmap_tptp_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tptp_s_clone( map ) );
@@ -1500,7 +1500,7 @@ bcore_string_s* bcore_hmap_tptp_selftest( void )
     time = clock() - time;
     bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
-    bcore_string_s_push_string_d( log, bcore_hmap_tptp_s_status( map ) );
+    bcore_string_s_push_string_d( log, hmap_tptp_s_status( map ) );
 
     bcore_hmap_tptp_s_discard( map );
     bcore_alloc( kvbuf, 0 );
@@ -1758,7 +1758,7 @@ static bcore_flect_self_s* hmap_tp_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_hmap_tp_s_status( bcore_hmap_tp_s* o )
+static bcore_string_s* hmap_tp_s_status( bcore_hmap_tp_s* o )
 {
     bcore_string_s* string = bcore_string_s_create();
     sz_t keys = bcore_hmap_tp_s_keys( o );
@@ -1772,7 +1772,7 @@ bcore_string_s* bcore_hmap_tp_s_status( bcore_hmap_tp_s* o )
 
 #include "bcore_txt_ml.h"
 
-bcore_string_s* bcore_hmap_tp_selftest( void )
+static bcore_string_s* hmap_tp_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_createf( "== bcore_hmap_tp_selftest " );
@@ -1831,7 +1831,7 @@ bcore_string_s* bcore_hmap_tp_selftest( void )
     time = clock() - time;
     bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
-    bcore_string_s_push_string_d( log, bcore_hmap_tp_s_status( map ) );
+    bcore_string_s_push_string_d( log, hmap_tp_s_status( map ) );
 
     time = clock();
     bcore_hmap_tp_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tp_s_clone( map ) );
@@ -1875,7 +1875,7 @@ bcore_string_s* bcore_hmap_tp_selftest( void )
     time = clock() - time;
     bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
-    bcore_string_s_push_string_d( log, bcore_hmap_tp_s_status( map ) );
+    bcore_string_s_push_string_d( log, hmap_tp_s_status( map ) );
 
     bcore_hmap_tp_s_discard( map );
     bcore_alloc( kvbuf, 0 );
@@ -1893,7 +1893,7 @@ vd_t bcore_hmap_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_hmap" ) ) return NULL;
 
-    if( signal == typeof( "init" ) )
+    if( signal == typeof( "init1" ) )
     {
         bcore_flect_define_creator( TYPEOF_bcore_hmap_u2vd_s      , hmap_u2vd_s_create_self  );
         bcore_flect_define_creator( typeof( "bcore_hnode_tpsz_s" ), hnode_tpsz_s_create_self  );
@@ -1901,6 +1901,13 @@ vd_t bcore_hmap_signal( tp_t target, tp_t signal, vd_t object )
         bcore_flect_define_creator( typeof( "bcore_hnode_tptp_s" ), hnode_tptp_s_create_self  );
         bcore_flect_define_creator( TYPEOF_bcore_hmap_tptp_s      , hmap_tptp_s_create_self  );
         bcore_flect_define_creator( TYPEOF_bcore_hmap_tp_s        , hmap_tp_s_create_self    );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( hmap_u2vd_selftest() );
+        bcore_string_s_print_d( hmap_tpsz_selftest() );
+        bcore_string_s_print_d( hmap_tptp_selftest() );
+        bcore_string_s_print_d( hmap_tp_selftest()   );
     }
 
     return NULL;

@@ -1660,22 +1660,7 @@ static bcore_flect_self_s* inst_op_create_self( void )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_spect_inst_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bcore_spect_inst" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_inst_s"  ), inst_s_create_self  );
-        bcore_flect_define_creator( typeof( "bcore_inst_op" ), inst_op_create_self );
-    }
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
-
-bcore_string_s* bcore_spect_inst_selftest( void )
+static bcore_string_s* spect_inst_selftest( void )
 {
     typedef struct { aware_t _; bcore_typed_link_array_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
 
@@ -1722,4 +1707,25 @@ bcore_string_s* bcore_spect_inst_selftest( void )
 
     return NULL;
 }
+
+/**********************************************************************************************************************/
+// signal
+
+vd_t bcore_spect_inst_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_inst" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_inst_s"  ), inst_s_create_self  );
+        bcore_flect_define_creator( typeof( "bcore_inst_op" ), inst_op_create_self );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( spect_inst_selftest() );
+    }
+
+    return NULL;
+}
+
 

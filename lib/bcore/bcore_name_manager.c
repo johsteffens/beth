@@ -1,6 +1,7 @@
 /// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
 
 #include "bcore_name_manager.h"
+#include "bcore_memory_manager.h"
 #include "bcore_string.h"
 #include "bcore_threads.h"
 #include "bcore_hmap.h"
@@ -61,13 +62,13 @@ static void discard_hmap_s()
     }
 }
 
-void bcore_name_manager_open()
+static void name_manager_open()
 {
     static bcore_once_t flag = bcore_once_init;
     bcore_once( &flag, create_hmap_s );
 }
 
-void bcore_name_manager_close()
+static void name_manager_close()
 {
     discard_hmap_s();
 }
@@ -126,39 +127,21 @@ void bcore_name_remove( tp_t type )
 }
 
 /**********************************************************************************************************************/
-
-static void bcore_name_print_predefined_type( tp_t (*hash)( sc_t name ), sc_t name )
-{
-    bcore_msg( "#define BCORE_TYPEOF_%s 0x%08x\n", name, hash( name ) );
-}
-
-void bcore_name_print_predefined_list( tp_t (*hash)( sc_t name ) )
-{
-    bcore_name_print_predefined_type( hash, "s3_t" );
-    bcore_name_print_predefined_type( hash, "s2_t" );
-    bcore_name_print_predefined_type( hash, "s1_t" );
-    bcore_name_print_predefined_type( hash, "s0_t" );
-    bcore_name_print_predefined_type( hash, "u3_t" );
-    bcore_name_print_predefined_type( hash, "u2_t" );
-    bcore_name_print_predefined_type( hash, "u1_t" );
-    bcore_name_print_predefined_type( hash, "u0_t" );
-    bcore_name_print_predefined_type( hash, "f3_t" );
-    bcore_name_print_predefined_type( hash, "f2_t" );
-    bcore_name_print_predefined_type( hash, "sz_t" );
-    bcore_name_print_predefined_type( hash, "sd_t" );
-    bcore_name_print_predefined_type( hash, "sc_t" );
-    bcore_name_print_predefined_type( hash, "vd_t" );
-    bcore_name_print_predefined_type( hash, "vc_t" );
-    bcore_name_print_predefined_type( hash, "fp_t" );
-    bcore_name_print_predefined_type( hash, "tp_t" );
-    bcore_name_print_predefined_type( hash, "bool" );
-    bcore_name_print_predefined_type( hash, "aware_t" );
-    bcore_name_print_predefined_type( hash, "bcore_string_s" );
-}
-
-/**********************************************************************************************************************/
+// signal
 
 vd_t bcore_name_manager_signal( tp_t target, tp_t signal, vd_t object )
 {
+    if( target != typeof( "all" ) && target != typeof( "bcore_name_manager" ) ) return NULL;
+    if( signal == typeof( "init0" ) )
+    {
+        name_manager_open();
+    }
+    else if( signal == typeof( "down0" ) )
+    {
+        sz_t space = bcore_memory_manager_granted_space();
+        name_manager_close();
+        bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_memory_manager_granted_space() );
+    }
     return NULL;
 }
+

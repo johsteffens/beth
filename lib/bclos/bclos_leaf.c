@@ -228,7 +228,7 @@ vd_t bclos_leaf_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bclos_leaf" ) ) return NULL;
 
-    if( signal == typeof( "init" ) )
+    if( signal == typeof( "init1" ) )
     {
         bcore_flect_define_creator( typeof( "bclos_s3_add_s3_s3" ), crs_s3_add_s3_s3 );
         bcore_flect_define_creator( typeof( "bclos_s2_add_s2_s2" ), crs_s2_add_s2_s2 );

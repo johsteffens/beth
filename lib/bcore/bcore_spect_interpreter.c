@@ -95,7 +95,7 @@ vd_t bcore_spect_interpreter_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_spect_interpreter" ) ) return NULL;
 
-    if( signal == typeof( "init" ) )
+    if( signal == typeof( "init1" ) )
     {
         bcore_flect_define_creator( typeof( "bcore_interpreter_s"  ), interpreter_s_create_self  );
     }

@@ -93,7 +93,7 @@ vd_t bcore_spect_translator_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_spect_translator" ) ) return NULL;
 
-    if( signal == typeof( "init" ) )
+    if( signal == typeof( "init1" ) )
     {
         bcore_flect_define_creator( typeof( "bcore_translator_s"  ), translator_s_create_self  );
     }

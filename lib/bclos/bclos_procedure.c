@@ -123,18 +123,6 @@ static bcore_flect_self_s* procedure_s_create_self( void )
     return self;
 }
 
-vd_t bclos_procedure_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bclos_procedure" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bclos_procedure_s" ), procedure_s_create_self );
-    }
-
-    return NULL;
-}
-
 /**********************************************************************************************************************/
 
 #include "bcore_txt_ml.h"
@@ -179,7 +167,7 @@ static sr_s test_mul( vc_t o, bclos_env_s* env, const bclos_args_s* args )
     return sr_null();
 }
 
-bcore_string_s* bclos_procedure_selftest( void )
+static bcore_string_s* procedure_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     {
@@ -223,3 +211,22 @@ bcore_string_s* bclos_procedure_selftest( void )
     bcore_life_s_discard( l );
     return NULL;
 }
+
+/**********************************************************************************************************************/
+
+vd_t bclos_procedure_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bclos_procedure" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bclos_procedure_s" ), procedure_s_create_self );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( procedure_selftest() );
+    }
+
+    return NULL;
+}
+

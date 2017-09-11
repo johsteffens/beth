@@ -606,18 +606,6 @@ static bcore_flect_self_s* via_s_create_self( void )
     return self;
 }
 
-vd_t bcore_spect_via_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bcore_spect_via" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_via_s"  ), via_s_create_self  );
-    }
-
-    return NULL;
-}
-
 /**********************************************************************************************************************/
 
 const bcore_via_s* bcore_via_s_get_typed( u2_t o_type )
@@ -632,7 +620,7 @@ const bcore_via_s* bcore_via_s_get_aware( vc_t obj )
 
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_spect_via_selftest( void )
+static bcore_string_s* spect_via_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_flect_define_parse_sc( "via_specs = { sz_t size; u2_t param1; s2_t; }" );
@@ -671,6 +659,25 @@ bcore_string_s* bcore_spect_via_selftest( void )
     ASSERT( bcore_array_get_size( arr ) == arr_size );
 
     bcore_life_s_discard( l );
+    return NULL;
+}
+
+/**********************************************************************************************************************/
+// signal
+
+vd_t bcore_spect_via_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_via" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_via_s"  ), via_s_create_self  );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( spect_via_selftest() );
+    }
+
     return NULL;
 }
 

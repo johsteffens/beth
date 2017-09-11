@@ -17,12 +17,6 @@ bcore_memory_manager_s* bcore_memory_manager_s_create(  sz_t pool_size, sz_t min
 
 void bcore_memory_manager_s_discard( bcore_memory_manager_s* o );
 
-/// called once by global init
-void bcore_memory_manager_open( void );
-
-/// called once by global down
-void bcore_memory_manager_close( void );
-
 /**********************************************************************************************************************/
 /** Advanced memory management using the internal manager (thread-safe).
  *  This function provides allocation, re-allocation and freeing of memory
@@ -78,12 +72,5 @@ sz_t bcore_memory_manager_granted_space( void );
 sz_t bcore_memory_manager_s_granted_space( bcore_memory_manager_s* o );
 
 vd_t bcore_memory_manager_signal( tp_t target, tp_t signal, vd_t object );
-
-/**********************************************************************************************************************/
-/// Testing, Debugging
-
-void            bcore_memory_manager_s_quicktest( void );
-bcore_string_s* bcore_memory_manager_s_selftest( void );
-
 
 #endif // BCORE_MEMORY_MANAGER_H

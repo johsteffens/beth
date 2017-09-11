@@ -29,12 +29,6 @@
 typedef bcore_flect_self_s* (*bcore_spect_fp_create_from_self )( const bcore_flect_self_s* self );
 typedef bl_t                (*bcore_spect_fp_supports         )( const bcore_flect_self_s* self );
 
-/// initializes perspective instance manager
-void bcore_spect_manager_open();
-
-/// closes perspective instance manager
-void bcore_spect_manager_close();
-
 /** Tests if perspective p_type supports object o_type. (thread safe)
  *  p_type : type of perspective
  *  o_type : type of object

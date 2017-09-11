@@ -1155,21 +1155,7 @@ static bcore_flect_self_s* string_s_create_self( void )
     return self;
 }
 
-vd_t bcore_string_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bcore_string" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_string_s"  ), string_s_create_self  );
-    }
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
-
-void bcore_string_s_quicktest( void )
+static void string_s_quicktest( void )
 {
     sz_t granted_space = bcore_memory_manager_granted_space();
 
@@ -1215,3 +1201,24 @@ void bcore_string_s_quicktest( void )
 
     ASSERT( granted_space == bcore_memory_manager_granted_space() );
 }
+
+/**********************************************************************************************************************/
+
+vd_t bcore_string_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_string" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_string_s"  ), string_s_create_self  );
+        string_s_quicktest();
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        string_s_quicktest();
+    }
+
+    return NULL;
+}
+
+/**********************************************************************************************************************/

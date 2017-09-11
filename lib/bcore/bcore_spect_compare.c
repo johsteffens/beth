@@ -323,23 +323,9 @@ bcore_string_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 )
 }
 
 /**********************************************************************************************************************/
-
-vd_t bcore_spect_compare_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bcore_spect_compare" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_compare_s"  ), compare_s_create_self  );
-    }
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
 /// testing
 
-bcore_string_s* bcore_spect_compare_selftest( void )
+static bcore_string_s* spect_compare_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
 
@@ -377,6 +363,24 @@ bcore_string_s* bcore_spect_compare_selftest( void )
     ASSERT( bcore_compare_aware( arr1, arr2 ) <  0 );
 
     bcore_life_s_discard( l );
+    return NULL;
+}
+
+/**********************************************************************************************************************/
+// signal
+
+vd_t bcore_spect_compare_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect_compare" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_compare_s"  ), compare_s_create_self  );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( spect_compare_selftest() );
+    }
     return NULL;
 }
 

@@ -589,29 +589,12 @@ static bcore_flect_self_s* file_s_create_self( void )
 }
 
 /**********************************************************************************************************************/
-
-vd_t bcore_sources_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bcore_sources" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_source_string_s"   ), string_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_source_buffer_s"   ), buffer_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_source_file_s"     ), file_s_create_self   );
-        bcore_flect_define_creator( typeof( "bcore_source_chain_s"    ), chain_s_create_self  );
-    }
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
 /// Testing
 /**********************************************************************************************************************/
 
 #include "bcore_spect_compare.h"
 
-bcore_string_s* bcore_sources_selftest( void )
+static bcore_string_s* sources_selftest( void )
 {
     bcore_string_s* msg = bcore_string_s_create();
     bcore_life_s* l = bcore_life_s_create();
@@ -646,3 +629,23 @@ bcore_string_s* bcore_sources_selftest( void )
 }
 
 /**********************************************************************************************************************/
+
+vd_t bcore_sources_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_sources" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_source_string_s"   ), string_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_source_buffer_s"   ), buffer_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_source_file_s"     ), file_s_create_self   );
+        bcore_flect_define_creator( typeof( "bcore_source_chain_s"    ), chain_s_create_self  );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( sources_selftest() );
+    }
+
+    return NULL;
+}
+

@@ -2,6 +2,7 @@
 
 #include "bcore_signature.h"
 #include "bcore_name_manager.h"
+#include "bcore_memory_manager.h"
 #include "bcore_hmap.h"
 #include "bcore_threads.h"
 
@@ -243,13 +244,13 @@ static void discard_hmap_s()
     }
 }
 
-void bcore_signature_manager_open()
+static void signature_manager_open()
 {
     static bcore_once_t flag = bcore_once_init;
     bcore_once( &flag, create_hmap_s );
 }
 
-void bcore_signature_manager_close()
+static void signature_manager_close()
 {
     discard_hmap_s();
 }
@@ -317,16 +318,25 @@ void bcore_signature_manager_remove( tp_t type )
 }
 
 /**********************************************************************************************************************/
+// signal
 
 vd_t bcore_signature_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_signature" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
+    if( signal == typeof( "init0" ) )
     {
-        bcore_flect_define_creator( typeof( "bcore_signature_s" ), signature_s_create_self );
+        signature_manager_open();
     }
-
+    else if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_signature_s"  ), signature_s_create_self  );
+    }
+    else if( signal == typeof( "down0" ) )
+    {
+        sz_t space = bcore_memory_manager_granted_space();
+        signature_manager_close();
+        bcore_msg( "  signature manager ... % 6zu\n", space - bcore_memory_manager_granted_space() );
+    }
     return NULL;
 }
 

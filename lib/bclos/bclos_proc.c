@@ -276,25 +276,9 @@ static bcore_flect_self_s* proc_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-vd_t bclos_proc_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bclos_proc" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bclos_proc_binding_s" ), proc_binding_s_create_self );
-        bcore_flect_define_creator( typeof( "bclos_proc_arg_s"     ), proc_arg_s_create_self );
-        bcore_flect_define_creator( typeof( "bclos_proc_s"         ), proc_s_create_self );
-    }
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
-
 #include "bcore_txt_ml.h"
 
-bcore_string_s* bclos_proc_selftest( void )
+static bcore_string_s* proc_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     bclos_env_s* env = bcore_life_s_push_aware( l, bclos_env_s_create() );
@@ -309,3 +293,25 @@ bcore_string_s* bclos_proc_selftest( void )
     bcore_life_s_discard( l );
     return NULL;
 }
+
+/**********************************************************************************************************************/
+// signal
+
+vd_t bclos_proc_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bclos_proc" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bclos_proc_binding_s" ), proc_binding_s_create_self );
+        bcore_flect_define_creator( typeof( "bclos_proc_arg_s"     ), proc_arg_s_create_self );
+        bcore_flect_define_creator( typeof( "bclos_proc_s"         ), proc_s_create_self );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( proc_selftest() );
+    }
+
+    return NULL;
+}
+

@@ -8,6 +8,7 @@
 #include "bcore_spect_array.h"
 #include "bcore_spect_via.h"
 #include "bcore_quicktypes.h"
+#include "bcore_memory_manager.h"
 
 /**********************************************************************************************************************/
 // hash map
@@ -68,13 +69,13 @@ static void discard_hmap_s()
     }
 }
 
-void bcore_spect_manager_open()
+static void spect_manager_open()
 {
     static bcore_once_t flag = bcore_once_init;
     bcore_once( &flag, create_hmap_s );
 }
 
-void bcore_spect_manager_close()
+static void spect_manager_close()
 {
     discard_hmap_s();
 }
@@ -228,8 +229,20 @@ vc_t ch_spect( vc_t p, tp_t spect_type )
 }
 
 /**********************************************************************************************************************/
+// signal
 
 vd_t bcore_spect_signal( tp_t target, tp_t signal, vd_t object )
 {
+    if( target != typeof( "all" ) && target != typeof( "bcore_spect" ) ) return NULL;
+    if( signal == typeof( "init0" ) )
+    {
+        spect_manager_open();
+    }
+    else if( signal == typeof( "down0" ) )
+    {
+        sz_t space = bcore_memory_manager_granted_space();
+        spect_manager_close();
+        bcore_msg( "  spect mananger ...... % 6zu\n", space - bcore_memory_manager_granted_space() );
+    }
     return NULL;
 }

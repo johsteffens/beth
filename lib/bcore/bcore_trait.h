@@ -16,9 +16,6 @@
  *  A trait instance is associated with its identifier via tp->vd map
  */
 
-void bcore_trait_manager_open();
-void bcore_trait_manager_close();
-
 /// associates requirements with a trait
 /// this can only be done on new (not yet defined) traits
 bl_t bcore_trait_require_function(  tp_t trait, tp_t function, tp_t name );

@@ -76,9 +76,5 @@ const bcore_inst_op* bcore_hmap_tp_inst_s_idx_op(  const bcore_hmap_tp_inst_s* o
 
 vd_t bcore_hmap_tp_inst_signal( tp_t target, tp_t signal, vd_t object );
 
-/**********************************************************************************************************************/
-
-bcore_string_s* bcore_hmap_tp_inst_selftest( void );
-
 #endif // BCORE_HMAP_TP_INST_H
 

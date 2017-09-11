@@ -190,7 +190,7 @@ vd_t bcore_spect_source_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_spect_source" ) ) return NULL;
 
-    if( signal == typeof( "init" ) )
+    if( signal == typeof( "init1" ) )
     {
         bcore_flect_define_creator( typeof( "bcore_source_s"  ), source_s_create_self  );
     }

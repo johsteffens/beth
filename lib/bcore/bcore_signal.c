@@ -31,38 +31,58 @@
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
 
-vd_t bcore_signal( tp_t t, tp_t s, vd_t o )
+vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
 {
-    vd_t ret = NULL;
-    if( ( ret = bcore_btree_signal             ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_control_signal           ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_flect_signal             ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_hmap_signal              ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_hmap_tp_inst_signal      ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_hmap_tp_sr_signal        ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_life_signal              ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_memory_manager_signal    ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_name_manager_signal      ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_ref_signal               ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_signature_signal         ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_sinks_signal             ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_sources_signal           ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_spect_signal             ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_spect_array_signal       ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_spect_closure_signal     ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_spect_compare_signal     ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_spect_inst_signal        ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_spect_interpreter_signal ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_spect_sink_signal        ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_spect_source_signal      ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_spect_translator_signal  ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_spect_via_signal         ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_string_signal            ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_threads_signal           ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_trait_signal             ( t, s, o ) ) ) return ret;
-    if( ( ret = bcore_txt_ml_signal            ( t, s, o ) ) ) return ret;
 
-    /// other sub-libraries
-    if( ( ret = bclos_signal                   ( t, s, o ) ) ) return ret;
+
+    bcore_fp_signal arr[] =
+    {
+        /// system critical items (keep order)
+        bcore_memory_manager_signal,
+        bcore_name_manager_signal,
+        bcore_signature_signal,
+        bcore_flect_signal,
+        bcore_spect_signal,
+        bcore_trait_signal,
+        bcore_string_signal,
+
+        /// other items
+        bcore_btree_signal,
+        bcore_control_signal,
+        bcore_hmap_signal,
+        bcore_hmap_tp_inst_signal,
+        bcore_hmap_tp_sr_signal,
+        bcore_life_signal,
+        bcore_ref_signal,
+        bcore_sinks_signal,
+        bcore_sources_signal,
+        bcore_spect_array_signal,
+        bcore_spect_closure_signal,
+        bcore_spect_compare_signal,
+        bcore_spect_inst_signal,
+        bcore_spect_interpreter_signal,
+        bcore_spect_sink_signal,
+        bcore_spect_source_signal,
+        bcore_spect_translator_signal,
+        bcore_spect_via_signal,
+        bcore_threads_signal,
+        bcore_txt_ml_signal,
+
+        /// sub libraries
+        bclos_signal
+    };
+
+    sz_t size = sizeof( arr ) / sizeof( bcore_fp_signal );
+    vd_t ret = NULL;
+
+    if( signal == typeof( "down0" ) || signal == typeof( "down1" ) )
+    {
+        for( sz_t i = size; i > 0; i-- ) if( ( ret = arr[ i - 1 ]( target, signal, object ) ) ) return ret;
+    }
+    else
+    {
+        for( sz_t i = 0; i < size; i++ ) if( ( ret = arr[ i     ]( target, signal, object ) ) ) return ret;
+    }
+
     return ret;
 }

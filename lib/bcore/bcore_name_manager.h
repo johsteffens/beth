@@ -10,12 +10,6 @@
 
 #include "bcore_control.h"
 
-/// initializes name manager
-void bcore_name_manager_open();
-
-/// closes name manager and frees all memory
-void bcore_name_manager_close();
-
 /// enroll name in global manager (thread safe); checks for collisions; returns hash
 tp_t bcore_name_enroll( sc_t name );
 

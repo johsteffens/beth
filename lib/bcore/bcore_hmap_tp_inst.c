@@ -379,27 +379,12 @@ static bcore_flect_self_s* hmap_tp_inst_s_create_self( void )
 }
 
 /**********************************************************************************************************************/
-
-vd_t bcore_hmap_tp_inst_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bcore_hmap_tp_inst" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_hnode_tp_inst_s" ), hnode_tp_inst_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_hmap_tp_inst_s"  ), hmap_tp_inst_s_create_self  );
-    }
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
 // selftest
 
 #include <time.h>
 #include "bcore_quicktypes.h"
 
-bcore_string_s* bcore_hmap_tp_inst_s_status( bcore_hmap_tp_inst_s* o )
+static bcore_string_s* hmap_tp_inst_s_status( bcore_hmap_tp_inst_s* o )
 {
     bcore_string_s* string = bcore_string_s_create();
     sz_t keys = bcore_hmap_tp_inst_s_keys( o );
@@ -409,7 +394,7 @@ bcore_string_s* bcore_hmap_tp_inst_s_status( bcore_hmap_tp_inst_s* o )
     return string;
 }
 
-bcore_string_s* bcore_hmap_tp_inst_selftest( void )
+static bcore_string_s* hmap_tp_inst_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_createf( "== bcore_hmap_tp_inst_selftest " );
@@ -470,7 +455,7 @@ bcore_string_s* bcore_hmap_tp_inst_selftest( void )
 
     time = clock() - time;
     bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
-    bcore_string_s_push_string_d( log, bcore_hmap_tp_inst_s_status( map ) );
+    bcore_string_s_push_string_d( log, hmap_tp_inst_s_status( map ) );
 
     time = clock();
     bcore_hmap_tp_inst_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tp_inst_s_clone( map ) );
@@ -509,7 +494,7 @@ bcore_string_s* bcore_hmap_tp_inst_selftest( void )
     }
     time = clock() - time;
     bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
-    bcore_string_s_push_string_d( log, bcore_hmap_tp_inst_s_status( map ) );
+    bcore_string_s_push_string_d( log, hmap_tp_inst_s_status( map ) );
     bcore_alloc( kvbuf, 0 );
     bcore_life_s_discard( l );
 
@@ -518,3 +503,22 @@ bcore_string_s* bcore_hmap_tp_inst_selftest( void )
     return log;
 }
 
+/**********************************************************************************************************************/
+// signal
+
+vd_t bcore_hmap_tp_inst_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_hmap_tp_inst" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_hnode_tp_inst_s" ), hnode_tp_inst_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_hmap_tp_inst_s"  ), hmap_tp_inst_s_create_self  );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( hmap_tp_inst_selftest() );
+    }
+
+    return NULL;
+}

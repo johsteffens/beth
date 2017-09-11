@@ -8,6 +8,7 @@
 #include "bcore_quicktypes.h"
 #include "bcore_hmap.h"
 #include "bcore_signature.h"
+#include "bcore_memory_manager.h"
 
 /**********************************************************************************************************************/
 
@@ -696,13 +697,13 @@ void bcore_discard_flect_maps()
     }
 }
 
-void bcore_flect_open()
+static void flect_open()
 {
     static bcore_once_t flag = bcore_once_init;
     bcore_once( &flag, bcore_create_flect_maps );
 }
 
-void bcore_flect_close()
+static void flect_close()
 {
     bcore_discard_flect_maps();
 }
@@ -957,21 +958,9 @@ static void flect_define_basics()
     bcore_flect_define_creator( typeof( "bcore_flect_self_s" ), bcore_flect_self_s_create_self ); // self
 }
 
-vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bcore_flect" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        flect_define_basics();
-    }
-
-    return NULL;
-}
-
 /**********************************************************************************************************************/
 
-bcore_string_s* bcore_flect_selftest( void )
+static bcore_string_s* flect_selftest( void )
 {
     {
         bcore_flect_define_parse_sc(" teabag =    { u3_t leaves; s1_t flavor; s0_t color;  }" );
@@ -1001,4 +990,31 @@ bcore_string_s* bcore_flect_selftest( void )
 }
 
 /**********************************************************************************************************************/
+// signal
+
+vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_flect" ) ) return NULL;
+
+    if( signal == typeof( "init0" ) )
+    {
+        flect_open();
+    }
+    else if( signal == typeof( "init1" ) )
+    {
+        flect_define_basics();
+    }
+    else if( signal == typeof( "down0" ) )
+    {
+        sz_t space = bcore_memory_manager_granted_space();
+        flect_close();
+        bcore_msg( "  reflection mananger . % 6zu\n", space - bcore_memory_manager_granted_space() );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( flect_selftest() );
+    }
+
+    return NULL;
+}
 

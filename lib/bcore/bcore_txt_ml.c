@@ -268,21 +268,6 @@ sr_s bcore_txt_ml_from_string( const bcore_string_s* string )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object )
-{
-    if( target != typeof( "all" ) && target != typeof( "bcore_txt_ml" ) ) return NULL;
-
-    if( signal == typeof( "init" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_txt_ml_translator_s"  ), translator_s_create_self  );
-        bcore_flect_define_creator( typeof( "bcore_txt_ml_interpreter_s" ), interpreter_s_create_self );
-    }
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
-
 void bcore_txt_ml_transfer_test( sr_s obj )
 {
     bcore_life_s* l = bcore_life_s_create();
@@ -357,7 +342,7 @@ static sr_s create_zoo()
     return ret;
 }
 
-bcore_string_s* bcore_txt_ml_selftest( void )
+static bcore_string_s* txt_ml_selftest( void )
 {
     ASSERT( bcore_spect_supports( typeof( "bcore_interpreter_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
     ASSERT( bcore_spect_supports( typeof( "bcore_translator_s" ), typeof( "bcore_txt_ml_translator_s" ) ) );
@@ -369,3 +354,24 @@ bcore_string_s* bcore_txt_ml_selftest( void )
     bcore_life_s_discard( l );
     return log;
 }
+
+/**********************************************************************************************************************/
+// signal
+
+vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_txt_ml" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_txt_ml_translator_s"  ), translator_s_create_self  );
+        bcore_flect_define_creator( typeof( "bcore_txt_ml_interpreter_s" ), interpreter_s_create_self );
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( txt_ml_selftest() );
+    }
+
+    return NULL;
+}
+

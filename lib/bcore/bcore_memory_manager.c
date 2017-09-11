@@ -5,6 +5,7 @@
 #include "bcore_btree.h"
 #include "bcore_string.h"
 #include "bcore_threads.h"
+#include "bcore_name_manager.h"
 #include <time.h>
 #include <math.h>
 
@@ -821,13 +822,13 @@ void bcore_discard_memory_manager()
     bcore_memory_manager_s_g = NULL;
 }
 
-void bcore_memory_manager_open()
+static void memory_manager_open()
 {
     static bcore_once_t flag = bcore_once_init;
     bcore_once( &flag, bcore_create_memory_manager );
 }
 
-void bcore_memory_manager_close()
+static void memory_manager_close()
 {
     void bcore_discard_memory_manager();
 }
@@ -900,11 +901,6 @@ bcore_string_s* bcore_memory_manager_s_status( bcore_memory_manager_s* o, int de
     }
 
     return str;
-}
-
-vd_t bcore_memory_manager_signal( tp_t target, tp_t signal, vd_t object )
-{
-    return NULL;
 }
 
 /**********************************************************************************************************************/
@@ -1093,7 +1089,7 @@ static bcore_string_s* bcore_memory_alloc_challenge( void* (*alloc)( void* curre
     return str;
 }
 
-void bcore_memory_manager_s_quicktest( void )
+static void memory_manager_s_quicktest( void )
 {
     sz_t table_size = 200;
     sz_t cycles     = 1;
@@ -1102,7 +1098,7 @@ void bcore_memory_manager_s_quicktest( void )
     bcore_string_s_discard( bcore_memory_alloc_challenge( bcore_memory_manager_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
 }
 
-bcore_string_s* bcore_memory_manager_s_selftest( void )
+static bcore_string_s* memory_manager_s_selftest( void )
 {
     bcore_string_s* str = bcore_string_s_create();
 
@@ -1126,3 +1122,32 @@ bcore_string_s* bcore_memory_manager_s_selftest( void )
 
     return str;
 }
+
+/**********************************************************************************************************************/
+// signal
+
+vd_t bcore_memory_manager_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_memory_manager" ) ) return NULL;
+    if( signal == typeof( "init0" ) )
+    {
+        memory_manager_open();
+    }
+    else if( signal == typeof( "init1" ) )
+    {
+        memory_manager_s_quicktest();
+    }
+    else if( signal == typeof( "down0" ) )
+    {
+        sz_t space = bcore_memory_manager_granted_space();
+        if( space > 0 ) ERR( "Leaking memory: %zu bytes", space );
+        memory_manager_close();
+    }
+    else if( signal == typeof( "selftest" ) )
+    {
+        bcore_string_s_print_d( memory_manager_s_selftest() );
+    }
+
+    return NULL;
+}
+
