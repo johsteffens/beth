@@ -13,17 +13,17 @@
  *  A trait can have a descriptive instance of the trait-object
  *  which reflects on trait characteristics and offers functionality
  *  for testing presence of these characteristics in objects.
- *  A trait instance is associated with its identifier via tp->vd map
+ *  A trait instance is associated with its identifier via tpto map
  */
 
 /// Support feature: Tests if object supports trait. In case of non-support a log != NULL may be filled with descriptive reasons
-typedef bl_t ( *bcore_fp_supports )( tp_t object, tp_t trait, bcore_string_s* log );
+typedef bl_t ( *bcore_trait_fp_supports )( tp_t object, tp_t trait, bcore_string_s* log );
 
 /// associates requirements with a trait
 /// this must be finished before the trait is defined below
-bl_t bcore_trait_require_function(  tp_t trait, tp_t function, tp_t name );
-bl_t bcore_trait_require_awareness( tp_t trait );
-bl_t bcore_trait_register_fp_support( tp_t trait, bcore_fp_supports f );
+void bcore_trait_require_awareness( tp_t trait );
+void bcore_trait_require_function(  tp_t trait, tp_t function, tp_t name );
+void bcore_trait_register_fp_support( tp_t trait, bcore_trait_fp_supports f );
 
 /// defines a trait; parent may be 0; reentrant; thread-safe
 void bcore_trait_define( tp_t trait, tp_t parent );

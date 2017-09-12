@@ -207,6 +207,7 @@ DECLARE_FUNCTION_CLONE(   bcore_hmap_tpto_s )
 void  bcore_hmap_tpto_s_set_type(      bcore_hmap_tpto_s* o, tp_t type ); // sets type; resets array in case of type difference
 vd_t* bcore_hmap_tpto_s_get(     const bcore_hmap_tpto_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
 vd_t* bcore_hmap_tpto_s_fget_d(        bcore_hmap_tpto_s* o, tp_t key, vd_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
+vd_t  bcore_hmap_tpto_s_fget(          bcore_hmap_tpto_s* o, tp_t key ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and the value crated according to type
 vd_t* bcore_hmap_tpto_s_set_d(         bcore_hmap_tpto_s* o, tp_t key, vd_t val ); // sets new key; sets/overwrites value and returns pointer to value location
 void  bcore_hmap_tpto_s_remove(        bcore_hmap_tpto_s* o, tp_t key ); // removes key, destroys associated object (if present)
 bl_t  bcore_hmap_tpto_s_exists(  const bcore_hmap_tpto_s* o, tp_t key ); // checks if key exists

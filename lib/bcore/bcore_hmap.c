@@ -1568,8 +1568,14 @@ void bcore_hmap_tpto_s_init( bcore_hmap_tpto_s* o )
 
 void bcore_hmap_tpto_s_down( bcore_hmap_tpto_s* o )
 {
-    const bcore_inst_s* inst_p = o->type ? bcore_inst_s_get_typed( o->type ) : NULL;
-    for( sz_t i = 0; i < o->size; i++ ) if( o->nodes[ i ].val ) bcore_inst_spect_discard( inst_p, o->nodes[ i ].val );
+    if( o->size > 0 )
+    {
+        const bcore_inst_s* inst_p = o->type ? bcore_inst_s_get_typed( o->type ) : NULL;
+        for( sz_t i = 0; i < o->size; i++ )
+        {
+            if( o->nodes[ i ].val ) bcore_inst_spect_discard( inst_p, o->nodes[ i ].val );
+        }
+    }
     o->nodes = bcore_alloc( o->nodes, 0 );
     o->flags = bcore_alloc( o->flags, 0 );
     o->size  = 0;
@@ -1691,6 +1697,7 @@ vd_t* bcore_hmap_tpto_s_get( const bcore_hmap_tpto_s* o, tp_t key )
 vd_t* bcore_hmap_tpto_s_fget_d( bcore_hmap_tpto_s* o, tp_t key, vd_t init_val )
 {
     if( !key ) ERR( "key is 0" );
+    if( !o->type ) ERR( "type is 0" );
     sz_t idx = tpto_find( o, key );
     if( idx < o->size )
     {
@@ -1701,6 +1708,13 @@ vd_t* bcore_hmap_tpto_s_fget_d( bcore_hmap_tpto_s* o, tp_t key, vd_t init_val )
     {
         return bcore_hmap_tpto_s_set_d( o, key, init_val );
     }
+}
+
+vd_t bcore_hmap_tpto_s_fget( bcore_hmap_tpto_s* o, tp_t key )
+{
+    vd_t* dst = bcore_hmap_tpto_s_fget_d( o, key, NULL );
+    if( !*dst ) *dst = bcore_inst_typed_create( o->type );
+    return *dst;
 }
 
 vd_t* bcore_hmap_tpto_s_set_d( bcore_hmap_tpto_s* o, tp_t key, vd_t val )
