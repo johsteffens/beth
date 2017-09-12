@@ -46,6 +46,7 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_bcore_hmap_tp_s            3944836652
 #define TYPEOF_bcore_hmap_tp_sr_s         2644016932
 #define TYPEOF_bcore_hmap_tpsz_s           232868893
+#define TYPEOF_bcore_hmap_tpto_s          3958767233
 #define TYPEOF_bcore_hmap_tptp_s          1873137304
 #define TYPEOF_bcore_hmap_u2vd_s          1475406309
 #define TYPEOF_bcore_inst_s               1413406849

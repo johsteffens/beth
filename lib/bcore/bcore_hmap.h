@@ -95,8 +95,6 @@ void  bcore_hmap_u2vd_s_run_d(           bcore_hmap_u2vd_s* o, vd_t obj, void (*
  *    Maximum number of keys: 2^32
  *    content shell { bcore_hnode_tpsz_s []; } data; }
  */
-typedef u2_t (*bcore_hash_tpu2)( tp_t v );
-
 typedef struct bcore_hnode_tpsz_s
 {
     tp_t key;
@@ -137,10 +135,8 @@ sz_t  bcore_hmap_tpsz_s_idx_val( const bcore_hmap_tpsz_s* o, sz_t idx ); // retu
  *    key-type: tp_t
  *    val-type: tp_t.
  *    Maximum number of keys: 2^32
- *    content shell { bcore_hnode_tptp_s []; } data; }
+ *    content shell { bcore_hnode_tptp_s []; } data;
  */
-typedef u2_t (*bcore_hash_tpu2)( tp_t v );
-
 typedef struct bcore_hnode_tptp_s
 {
     tp_t key;
@@ -177,14 +173,57 @@ tp_t  bcore_hmap_tptp_s_idx_val( const bcore_hmap_tptp_s* o, sz_t idx ); // retu
 
 /**********************************************************************************************************************/
 
+/** bcore_hmap_tpto_s:
+ *    key-type: tp_t
+ *    val-type: vd_t. (typed, owned)
+ *    All values are either NULL or of the same type.
+ *    Maximum number of keys: 2^32
+ *    shell: { tp_t type; { tp_t key; sr_s obj; } []; } data;
+ */
+typedef struct bcore_hnode_tpto_s
+{
+    tp_t key;
+    vd_t val;
+} bcore_hnode_tpto_s;
+
+typedef struct bcore_hmap_tpto_s
+{
+    aware_t _;
+    tp_t type;
+    bcore_hnode_tpto_s* nodes;
+    bl_t* flags;
+    sz_t size;
+    sz_t depth_limit;
+    sz_t size_limit;
+} bcore_hmap_tpto_s;
+
+DECLARE_FUNCTION_INIT(    bcore_hmap_tpto_s )
+DECLARE_FUNCTION_DOWN(    bcore_hmap_tpto_s )
+DECLARE_FUNCTION_COPY(    bcore_hmap_tpto_s )
+DECLARE_FUNCTION_CREATE(  bcore_hmap_tpto_s )
+DECLARE_FUNCTION_DISCARD( bcore_hmap_tpto_s )
+DECLARE_FUNCTION_CLONE(   bcore_hmap_tpto_s )
+
+void  bcore_hmap_tpto_s_set_type(      bcore_hmap_tpto_s* o, tp_t type ); // sets type; resets array in case of type difference
+vd_t* bcore_hmap_tpto_s_get(     const bcore_hmap_tpto_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
+vd_t* bcore_hmap_tpto_s_fget_d(        bcore_hmap_tpto_s* o, tp_t key, vd_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
+vd_t* bcore_hmap_tpto_s_set_d(         bcore_hmap_tpto_s* o, tp_t key, vd_t val ); // sets new key; sets/overwrites value and returns pointer to value location
+void  bcore_hmap_tpto_s_remove(        bcore_hmap_tpto_s* o, tp_t key ); // removes key, destroys associated object (if present)
+bl_t  bcore_hmap_tpto_s_exists(  const bcore_hmap_tpto_s* o, tp_t key ); // checks if key exists
+void  bcore_hmap_tpto_s_clear(         bcore_hmap_tpto_s* o           ); // removes all entries and frees memory
+sz_t  bcore_hmap_tpto_s_keys(    const bcore_hmap_tpto_s* o           ); // returns number of registered keys
+sz_t  bcore_hmap_tpto_s_size(    const bcore_hmap_tpto_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tpto_s_idx_key( const bcore_hmap_tpto_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+vd_t  bcore_hmap_tpto_s_idx_val( const bcore_hmap_tpto_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+
+/**********************************************************************************************************************/
+
 /** bcore_hmap_tp_s:  maps a key to automatic index
  *    key-type: tp_t
  *    val-type: no explicit value
  *    Maximum number of keys: 2^32
  *    content shell: { tp_t []; } data;
  */
-typedef u2_t (*bcore_hash_tpu2)( tp_t v );
-
 typedef struct bcore_hmap_tp_s
 {
     aware_t _;

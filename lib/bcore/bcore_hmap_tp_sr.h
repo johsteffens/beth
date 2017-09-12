@@ -17,7 +17,6 @@
 
 typedef struct bcore_hnode_tp_sr_s
 {
-    bl_t flag_trace; // used internally during rehashing
     tp_t key;
     sr_s val;
 } bcore_hnode_tp_sr_s;
@@ -32,15 +31,9 @@ DECLARE_FUNCTION_CLONE(   bcore_hnode_tp_sr_s )
 typedef struct bcore_hmap_tp_sr_s
 {
     aware_t _;
-    union
-    {
-        bcore_static_array_s arr;
-        struct
-        {
-            bcore_hnode_tp_sr_s* data;
-            sz_t size, space;
-        };
-    };
+    bcore_hnode_tp_sr_s* nodes;
+    bl_t* flags;
+    sz_t size;
     sz_t depth_limit;
     sz_t size_limit;
 } bcore_hmap_tp_sr_s;
