@@ -655,7 +655,6 @@ static bcore_string_s* spect_via_selftest( void )
         ASSERT( i == *( sz_t* )bcore_via_nget( via_specs_l, typeof( "size" ) ).o );
     }
 
-    ASSERT( bcore_strcmp( nameof( sr_s_type( &arr2 ) ), "via_specs__static_array" ) == 0 );
     ASSERT( bcore_array_get_size( arr ) == arr_size );
 
     bcore_life_s_discard( l );

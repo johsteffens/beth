@@ -940,36 +940,14 @@ const bcore_array_s* bcore_array_s_get_typed( tp_t o_type )
 
 tp_t bcore_static_array_type_of( tp_t type )
 {
-    sc_t name = bcore_name_try_name( type );
-    if( !name ) ERR( "type %u has no name", type );
-    bcore_string_s* arr_name = bcore_string_s_createf( "%s__static_array", name );
-    tp_t arr_type = typeof( arr_name->sc );
-    if( !bcore_flect_try_self( arr_type ) )
-    {
-        bcore_string_s* code = bcore_string_s_createf( "%s = { %s []; }", arr_name->sc, name );
-        bcore_flect_define_parse( code, 0 );
-        bcore_string_s_discard( code );
-    }
-    bcore_string_s_discard( arr_name );
-    return arr_type;
+    return bcore_flect_type_self_d( bcore_flect_self_s_create_static_array( type ) );
 }
 
 /**********************************************************************************************************************/
 
 tp_t bcore_static_link_array_type_of( tp_t type )
 {
-    sc_t name = bcore_name_try_name( type );
-    if( !name ) ERR( "type %u has no name", type );
-    bcore_string_s* arr_name = bcore_string_s_createf( "%s__static_link_array", name );
-    tp_t arr_type = typeof( arr_name->sc );
-    if( !bcore_flect_try_self( arr_type ) )
-    {
-        bcore_string_s* code = bcore_string_s_createf( "%s = { %s * []; }", arr_name->sc, name );
-        bcore_flect_define_parse( code, 0 );
-        bcore_string_s_discard( code );
-    }
-    bcore_string_s_discard( arr_name );
-    return arr_type;
+    return bcore_flect_type_self_d( bcore_flect_self_s_create_static_link_array( type ) );
 }
 
 /**********************************************************************************************************************/

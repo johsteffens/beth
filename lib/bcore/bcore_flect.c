@@ -394,13 +394,6 @@ bcore_flect_self_s* bcore_flect_self_s_create()
     return o;
 }
 
-bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, sz_t size )
-{
-    bcore_flect_self_s* o = bcore_flect_self_s_create();
-    bcore_flect_self_s_init_plain( o, type, size );
-    return o;
-}
-
 bcore_flect_self_s* bcore_flect_self_s_clone( const bcore_flect_self_s* o )
 {
     bcore_flect_self_s* dst = bcore_flect_self_s_create();
@@ -457,6 +450,47 @@ bcore_string_s* bcore_flect_self_s_show( const bcore_flect_self_s* o )
     if( o->body ) bcore_string_s_push_string_d( s, bcore_string_s_replace_char_sc( bcore_flect_body_s_show( o->body ), '\n', "\n    " ) );
     bcore_string_s_pushf( s, "\n}" );
     return s;
+}
+
+bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, sz_t size )
+{
+    bcore_flect_self_s* o = bcore_flect_self_s_create();
+    bcore_flect_self_s_init_plain( o, type, size );
+    return o;
+}
+
+bcore_flect_self_s* bcore_flect_self_s_create_static_array( tp_t item_type )
+{
+    bcore_flect_self_s* o = bcore_flect_self_s_create();
+    bcore_flect_item_s* item = bcore_flect_item_s_create();
+    item->caps = BCORE_CAPS_STATIC_ARRAY;
+    item->type = item_type;
+    bcore_flect_self_s_push( o, item );
+    bcore_flect_item_s_discard( item );
+
+    bcore_signature_s* sig = bcore_signature_s_create();
+    bcore_flect_body_s_push_to_signature( o->body, sig );
+    o->type = bcore_signature_s_get_hash( sig );
+    bcore_signature_s_discard( sig );
+
+    return o;
+}
+
+bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type )
+{
+    bcore_flect_self_s* o = bcore_flect_self_s_create();
+    bcore_flect_item_s* item = bcore_flect_item_s_create();
+    item->caps = BCORE_CAPS_STATIC_LINK_ARRAY;
+    item->type = item_type;
+    bcore_flect_self_s_push( o, item );
+    bcore_flect_item_s_discard( item );
+
+    bcore_signature_s* sig = bcore_signature_s_create();
+    bcore_flect_body_s_push_to_signature( o->body, sig );
+    o->type = bcore_signature_s_get_hash( sig );
+    bcore_signature_s_discard( sig );
+
+    return o;
 }
 
 bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx, sz_t size_of )
@@ -847,7 +881,6 @@ tp_t bcore_flect_define_parsef( sc_t format, ... )
 
 tp_t bcore_flect_type_self_d( bcore_flect_self_s* self )
 {
-
     const bcore_flect_self_s* self_l = bcore_flect_try_self( self->type );
     if( self_l )
     {
