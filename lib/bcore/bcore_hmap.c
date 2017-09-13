@@ -1570,10 +1570,14 @@ void bcore_hmap_tpto_s_down( bcore_hmap_tpto_s* o )
 {
     if( o->size > 0 )
     {
-        const bcore_inst_s* inst_p = o->type ? bcore_inst_s_get_typed( o->type ) : NULL;
+        const bcore_inst_s* inst_p = NULL;
         for( sz_t i = 0; i < o->size; i++ )
         {
-            if( o->nodes[ i ].val ) bcore_inst_spect_discard( inst_p, o->nodes[ i ].val );
+            if( o->nodes[ i ].val )
+            {
+                if( !inst_p ) inst_p = bcore_inst_s_get_typed( o->type );
+                bcore_inst_spect_discard( inst_p, o->nodes[ i ].val );
+            }
         }
     }
     o->nodes = bcore_alloc( o->nodes, 0 );

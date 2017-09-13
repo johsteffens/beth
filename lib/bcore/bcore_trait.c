@@ -9,6 +9,7 @@
 #include "bcore_trait.h"
 #include "bcore_quicktypes.h"
 #include "bcore_flect.h"
+#include "bcore_spect_inst.h"
 
 const char* trait_ft_s_def_g = "bcore_trait_ft_s = { tp_t type; tp_t name; }";
 typedef struct bcore_trait_ft_s { tp_t type; tp_t name; } bcore_trait_ft_s;
@@ -48,12 +49,19 @@ typedef struct bcore_trait_s
 
 } bcore_trait_s;
 
-DEFINE_FUNCTION_INIT_FLAT( bcore_trait_s )
-DEFINE_FUNCTION_DOWN_FLAT( bcore_trait_s )
-DEFINE_FUNCTION_COPY_FLAT( bcore_trait_s )
-DEFINE_FUNCTION_CREATE(    bcore_trait_s )
-DEFINE_FUNCTION_DISCARD(   bcore_trait_s )
-DEFINE_FUNCTION_CLONE(     bcore_trait_s )
+void bcore_trait_s_init( bcore_trait_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+}
+
+void bcore_trait_s_down( bcore_trait_s* o )
+{
+    if( o->ft_space ) o->ft_data = bcore_un_alloc( sizeof( bcore_trait_ft_s ), o->ft_data, o->ft_space, 0, &o->ft_space );
+    if( o->fp_space ) o->fp_data = bcore_un_alloc( sizeof( fp_t             ), o->fp_data, o->fp_space, 0, &o->fp_space );
+}
+
+DEFINE_FUNCTION_CREATE(  bcore_trait_s )
+DEFINE_FUNCTION_DISCARD( bcore_trait_s )
 
 static void trait_s_push_function( bcore_trait_s* o, tp_t function, tp_t name )
 {
@@ -91,8 +99,21 @@ static void system_s_init( system_s* o )
 static void system_s_down( system_s* o )
 {
     bcore_mutex_lock( &o->mutex );
-    bcore_hmap_tptp_s_down( &o->type_map );
+
+    /// we explicitly discard here to avoid implicitly creating an instance perspective
+    for( sz_t i = 0; i < o->trait_map.size; i++ )
+    {
+        tp_t key  = bcore_hmap_tpto_s_idx_key( &o->trait_map, i );
+        vd_t* dst = bcore_hmap_tpto_s_get( &o->trait_map, key );
+        if( dst )
+        {
+            bcore_trait_s_discard( *dst );
+            *dst = NULL;
+        }
+    }
+
     bcore_hmap_tpto_s_down( &o->trait_map );
+    bcore_hmap_tptp_s_down( &o->type_map );
     bcore_mutex_unlock( &o->mutex );
     bcore_mutex_down( &o->mutex );
 }
