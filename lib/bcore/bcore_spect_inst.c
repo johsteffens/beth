@@ -3,6 +3,7 @@
 #include "bcore_spect_inst.h"
 #include "bcore_quicktypes.h"
 #include "bcore_spect.h"
+#include "bcore_trait.h"
 #include "bcore_spect_compare.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
@@ -1005,9 +1006,9 @@ static sz_t aligned_offset( sz_t align, sz_t raw_offset )
     return offset;
 }
 
-static bl_t supports( const bcore_flect_self_s* self )
+static void inst_s_define_trait()
 {
-    return true;
+    bcore_trait_set( entypeof( "bcore_inst_s" ), 0 );
 }
 
 bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
@@ -1193,7 +1194,6 @@ static bcore_flect_self_s* inst_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_down,             "bcore_fp_down",                   "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_create,           "bcore_fp_create",                 "create"       );
     bcore_flect_self_s_push_external_func( self, ( fp_t )inst_s_discard,          "bcore_fp_discard",                "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )supports,                "bcore_spect_fp_supports",         "supports"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }
@@ -1717,6 +1717,7 @@ vd_t bcore_spect_inst_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "init1" ) )
     {
+        inst_s_define_trait();
         bcore_flect_define_creator( typeof( "bcore_inst_s"  ), inst_s_create_self  );
         bcore_flect_define_creator( typeof( "bcore_inst_op" ), inst_op_create_self );
     }

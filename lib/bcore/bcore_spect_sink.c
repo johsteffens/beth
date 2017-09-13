@@ -3,6 +3,7 @@
 #include "bcore_spect_sink.h"
 #include "bcore_flect.h"
 #include "bcore_spect.h"
+#include "bcore_trait.h"
 #include "bcore_quicktypes.h"
 
 /**********************************************************************************************************************/
@@ -100,11 +101,12 @@ void bcore_sink_spect_set_consumer( const bcore_sink_s* p, vd_t o, vd_t consumer
 
 /**********************************************************************************************************************/
 
-static bl_t supports( const bcore_flect_self_s* self )
+static void sink_s_define_trait()
 {
-    if( !bcore_flect_self_s_is_aware( self )                                          ) return false;
-    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_flow_snk" ), 0 ) ) return false;
-    return true;
+    tp_t trait = entypeof( "bcore_sink_s" );
+    bcore_trait_require_awareness( trait );
+    bcore_trait_require_function( trait, entypeof( "bcore_fp_flow_snk" ), 0 );
+    bcore_trait_set( trait, entypeof( "bcore_inst_s" ) );
 }
 
 static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
@@ -128,7 +130,6 @@ static bcore_flect_self_s* sink_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_down,             "bcore_fp_down",                   "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_create,           "bcore_fp_create",                 "create"       );
     bcore_flect_self_s_push_external_func( self, ( fp_t )sink_s_discard,          "bcore_fp_discard",                "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )supports,                "bcore_spect_fp_supports",         "supports"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }
@@ -188,6 +189,7 @@ vd_t bcore_spect_sink_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "init1" ) )
     {
+        sink_s_define_trait();
         bcore_flect_define_creator( typeof( "bcore_sink_s"  ), sink_s_create_self  );
     }
 

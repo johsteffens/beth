@@ -3,6 +3,7 @@
 #include "bcore_spect_array.h"
 #include "bcore_spect_compare.h"
 #include "bcore_spect.h"
+#include "bcore_trait.h"
 #include "bcore_quicktypes.h"
 
 #define NPX( name ) bcore_array_##name
@@ -826,14 +827,24 @@ sz_t bcore_array_spect_get_unit_size( const bcore_array_s* p, vc_t o )
 
 /**********************************************************************************************************************/
 
-static bl_t supports( const bcore_flect_self_s* self )
+static bl_t array_s_supports( const bcore_flect_self_s* self, bcore_string_s* log )
 {
-    if( !self->body ) return false;
-    for( sz_t i = 0; i < self->body->size; i++ )
+    if( self->body )
     {
-        if( bcore_flect_caps_is_array( self->body->data[ i ].caps ) ) return true;
+        for( sz_t i = 0; i < self->body->size; i++ )
+        {
+            if( bcore_flect_caps_is_array( self->body->data[ i ].caps ) ) return true;
+        }
     }
+    if( log ) bcore_string_s_pushf( log, "Object is no array." );
     return false;
+}
+
+static void array_s_define_trait()
+{
+    tp_t trait = entypeof( "bcore_array_s" );
+    bcore_trait_register_fp_support( trait, array_s_supports );
+    bcore_trait_set( trait, entypeof( "bcore_inst_s" ) );
 }
 
 static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
@@ -924,7 +935,6 @@ static bcore_flect_self_s* array_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_down,             "bcore_fp_down",                    "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_create,           "bcore_fp_create",                  "create"       );
     bcore_flect_self_s_push_external_func( self, ( fp_t )array_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )supports,                 "bcore_spect_fp_supports",          "supports" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,         "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
@@ -1504,9 +1514,9 @@ static bcore_string_s* spect_array_selftest( void )
 
         const bcore_string_s* code = arr_p->get( arr_p, arr, i ).o;
         bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( code->sc, 0 );
-        ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), self->type ) );
+        ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), self->type ) );
         tp_t type = bcore_flect_type_self_c( self );
-        ASSERT( bcore_spect_supports( typeof( "bcore_array_s" ), type ) );
+        ASSERT( bcore_spect_supported( typeof( "bcore_array_s" ), type ) );
         test_string_array( nameof( type ) );
         bcore_flect_self_s_discard( self );
     }
@@ -1514,9 +1524,9 @@ static bcore_string_s* spect_array_selftest( void )
     bcore_inst_aware_discard( arr );
 
     // some non-arrays
-    ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), typeof( "bcore_string_s" ) ) );
-    ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), typeof( "f3_t" ) ) );
-    ASSERT( !bcore_spect_supports( typeof( "bcore_array_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
+    ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "bcore_string_s" ) ) );
+    ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "f3_t" ) ) );
+    ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
 
     return NULL;
 }
@@ -1530,6 +1540,7 @@ vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "init1" ) )
     {
+        array_s_define_trait();
         bcore_flect_define_creator( typeof( "bcore_array_s"  ), array_s_create_self  );
     }
     else if( signal == typeof( "selftest" ) )

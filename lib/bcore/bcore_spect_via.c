@@ -4,6 +4,7 @@
 #include "bcore_spect_array.h"
 #include "bcore_flect.h"
 #include "bcore_spect.h"
+#include "bcore_trait.h"
 #include "bcore_quicktypes.h"
 #include "bcore_life.h"
 
@@ -472,9 +473,9 @@ bl_t bcore_via_spect_iis_link( const bcore_via_s* p, sz_t index )
 
 /**********************************************************************************************************************/
 
-static bl_t supports( const bcore_flect_self_s* self )
+static void via_s_define_trait()
 {
-    return true;
+    bcore_trait_set( entypeof( "bcore_via_s" ), entypeof( "bcore_inst_s" ) );
 }
 
 static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
@@ -482,7 +483,7 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     assert( self != NULL );
 
     bcore_via_s* o = via_s_create();
-    o->p_type  = bcore_name_enroll( "bcore_via_s" );
+    o->p_type  = entypeof( "bcore_via_s" );
     o->o_type  = self->type;
     o->is_leaf = bcore_type_is_leaf( self->type );
 
@@ -601,7 +602,6 @@ static bcore_flect_self_s* via_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_down,       "bcore_fp_down",                   "down"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_create,     "bcore_fp_create",                 "create"       );
     bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_discard,    "bcore_fp_discard",                "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )supports,         "bcore_spect_fp_supports",         "supports" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self, "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }
@@ -670,7 +670,8 @@ vd_t bcore_spect_via_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "init1" ) )
     {
-        bcore_flect_define_creator( typeof( "bcore_via_s"  ), via_s_create_self  );
+        via_s_define_trait();
+        bcore_flect_define_creator( typeof( "bcore_via_s" ), via_s_create_self );
     }
     else if( signal == typeof( "selftest" ) )
     {

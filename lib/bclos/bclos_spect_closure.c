@@ -4,6 +4,7 @@
 #include "bclos_quicktypes.h"
 #include "bcore_spect_inst.h"
 #include "bcore_spect.h"
+#include "bcore_trait.h"
 
 /**********************************************************************************************************************/
 // bclos_closure_s
@@ -20,10 +21,11 @@ DEFINE_FUNCTION_DISCARD(    bclos_closure_s )
 
 /**********************************************************************************************************************/
 
-static bl_t supports( const bcore_flect_self_s* self )
+static void closure_s_define_trait()
 {
-    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bclos_closure_fp_call" ), 0 ) ) return false;
-    return true;
+    tp_t trait = entypeof( "bclos_closure_s" );
+    bcore_trait_require_function( trait, entypeof( "bclos_closure_fp_call" ), 0 );
+    bcore_trait_set( trait, entypeof( "bcore_inst_s" ) );
 }
 
 static bclos_closure_s* create_from_self( const bcore_flect_self_s* self )
@@ -44,7 +46,6 @@ static bcore_flect_self_s* closure_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_init,    "bcore_fp_init",                   "init"              );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_down,    "bcore_fp_down",                    "down"             );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_closure_s_discard, "bcore_fp_discard",                 "discard"          );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )supports,                "bcore_spect_fp_supports",          "supports"         );
     bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
@@ -136,6 +137,7 @@ vd_t bclos_spect_closure_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "init1" ) )
     {
+        closure_s_define_trait();
         bcore_flect_define_creator( typeof( "bclos_closure_s" ), closure_s_create_self );
     }
 

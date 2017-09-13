@@ -9,6 +9,7 @@
 #include "bcore_hmap.h"
 #include "bcore_signature.h"
 #include "bcore_memory_manager.h"
+#include "bcore_trait.h"
 
 /**********************************************************************************************************************/
 
@@ -452,6 +453,19 @@ bcore_string_s* bcore_flect_self_s_show( const bcore_flect_self_s* o )
     return s;
 }
 
+void bcore_flect_self_s_check_consistency( const bcore_flect_self_s* o )
+{
+    if( o->trait )
+    {
+        bcore_string_s* log = bcore_string_s_create();
+        if( !bcore_trait_supported( o->trait, o, log ) )
+        {
+            ERR( "Reflection of '%s' does not support trait '%s': %s\n", ifnameof( o->type ), ifnameof( o->trait ), log->sc );
+        }
+        bcore_string_s_discard( log );
+    }
+}
+
 bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, sz_t size )
 {
     bcore_flect_self_s* o = bcore_flect_self_s_create();
@@ -786,7 +800,7 @@ const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
                  "Requested type was probably mapped to the wrong self-creator during registration.\n",
                  ifnameof( self->type ), ifnameof( type ) );
         }
-
+        bcore_flect_self_s_check_consistency( self );
 
         bcore_mutex_lock( &self_map_s_g->mutex );
 
@@ -829,6 +843,7 @@ const bcore_flect_self_s* bcore_flect_get_self( tp_t type )
 tp_t bcore_flect_define_self_d( bcore_flect_self_s* self )
 {
     assert( self_map_s_g != NULL );
+    bcore_flect_self_s_check_consistency( self );
     tp_t type = self->type;
     bcore_mutex_lock( &self_map_s_g->mutex );
     if( bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) ) ERR( "'%s' (%"PRItp_t") is already defined", ifnameof( type ), type );
@@ -840,6 +855,7 @@ tp_t bcore_flect_define_self_d( bcore_flect_self_s* self )
 static tp_t flect_define_self_rentrant_d( bcore_flect_self_s* self )
 {
     assert( self_map_s_g != NULL );
+    bcore_flect_self_s_check_consistency( self );
     tp_t type = self->type;
     bcore_mutex_lock( &self_map_s_g->mutex );
     if( !bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) ) bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
@@ -1032,10 +1048,10 @@ vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object )
     if( signal == typeof( "init0" ) )
     {
         flect_open();
+        flect_define_basics();
     }
     else if( signal == typeof( "init1" ) )
     {
-        flect_define_basics();
     }
     else if( signal == typeof( "down0" ) )
     {

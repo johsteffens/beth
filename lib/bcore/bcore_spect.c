@@ -8,6 +8,7 @@
 #include "bcore_spect_array.h"
 #include "bcore_spect_via.h"
 #include "bcore_quicktypes.h"
+#include "bcore_trait.h"
 #include "bcore_memory_manager.h"
 
 /**********************************************************************************************************************/
@@ -81,39 +82,38 @@ static void spect_manager_close()
 }
 
 /// tests if the object's self reflection satisfies the requirements of a perspective
-static bl_t supports( const bcore_flect_self_s* self )
+static bl_t supports( const bcore_flect_self_s* self, bcore_string_s* log )
 {
-    if( self->trait != typeof( "spect"                                                             ) ) return false;
-    if( !self->body                                                                                  ) return false;
-    if( self->body->size < 2                                                                         ) return false;
-    if( self->body->data[ 0 ].type != TYPEOF_aware_t                                                 ) return false;
-    if( self->body->data[ 1 ].type != TYPEOF_tp_t                                                    ) return false;
-    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_init"                    ), 0 ) ) return false;
-    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_down"                    ), 0 ) ) return false;
-    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_discard"                 ), 0 ) ) return false;
-    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_spect_fp_supports"          ), 0 ) ) return false;
-    if( !bcore_flect_self_s_try_external_fp( self, typeof( "bcore_spect_fp_create_from_self"  ), 0 ) ) return false;
+    if( !self->body                                  ) return false;
+    if( self->body->size < 2                         ) return false;
+    if( self->body->data[ 0 ].type != TYPEOF_aware_t ) return false;
+    if( self->body->data[ 1 ].type != TYPEOF_tp_t    ) return false;
     return true;
 }
 
-bl_t bcore_spect_supports( tp_t p_type, tp_t o_type )
+static void spect_define_trait()
 {
+    tp_t trait = entypeof( "spect" );
+    bcore_trait_require_awareness( trait );
+    bcore_trait_require_in_ancestry( trait );
+    bcore_trait_require_function(  trait, entypeof( "bcore_fp_init"                   ), 0 );
+    bcore_trait_require_function(  trait, entypeof( "bcore_fp_down"                   ), 0 );
+    bcore_trait_require_function(  trait, entypeof( "bcore_fp_discard"                ), 0 );
+    bcore_trait_require_function(  trait, entypeof( "bcore_spect_fp_create_from_self" ), 0 );
+    bcore_trait_register_fp_support( trait, supports );
+    bcore_trait_set( trait, 0 );
+}
+
+
+bl_t bcore_spect_supported( tp_t p_type, tp_t o_type )
+{
+    tp_t sig = bcore_signature_get_hash_tp_tp( p_type, o_type );
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    tp_t sig = bcore_signature_get_hash_tp_tp( p_type, o_type );
     bl_t exists = bcore_hmap_u2vd_s_exists( hmap_s_g->map, sig );
     bcore_mutex_unlock( &hmap_s_g->mutex );
     if( exists ) return true;
-
-    const bcore_flect_self_s* p_self = bcore_flect_try_self( p_type );
-    if( !p_self ) return false;
-
-    const bcore_flect_self_s* o_self = bcore_flect_try_self( o_type );
-    if( !o_self ) return false;
-
-    fp_t supports = bcore_flect_self_s_get_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_supports" ), 0 );
-
-    return ( ( bcore_spect_fp_supports )supports )( o_self );
+    return bcore_trait_satisfied_type( p_type, o_type, NULL );
 }
 
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
@@ -132,7 +132,6 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     bcore_mutex_unlock( &hmap_s_g->mutex );
 
     const bcore_flect_self_s* p_self = bcore_flect_get_self( p_type );
-    if( !supports( p_self ) ) ERR( "Object '%s' does not satisfy the requirements of a perspective.", ifnameof( p_type ) );
     const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
     fp_t create_from_self = bcore_flect_self_s_get_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
     vd_t spect = ( ( bcore_spect_fp_create_from_self )create_from_self )( o_self );
@@ -237,6 +236,10 @@ vd_t bcore_spect_signal( tp_t target, tp_t signal, vd_t object )
     if( signal == typeof( "init0" ) )
     {
         spect_manager_open();
+    }
+    else if( signal == typeof( "init1" ) )
+    {
+        spect_define_trait();
     }
     else if( signal == typeof( "down0" ) )
     {

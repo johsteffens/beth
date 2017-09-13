@@ -7,8 +7,6 @@
 #include "bcore_threads.h"
 #include "bcore_memory_manager.h"
 #include "bcore_trait.h"
-#include "bcore_spect_array.h"
-#include "bcore_spect_via.h"
 #include "bcore_quicktypes.h"
 #include "bcore_flect.h"
 
@@ -17,6 +15,7 @@ typedef struct bcore_trait_ft_s { tp_t type; tp_t name; } bcore_trait_ft_s;
 
 const char* trait_s_def_g =
 "bcore_trait_s = {"
+    "bl_t in_ancestry;"
     "bl_t awareness;"
     "bcore_trait_ft_s [] ft_arr;"
     "fp_t [] fp_arr;"
@@ -24,23 +23,55 @@ const char* trait_s_def_g =
 
 typedef struct bcore_trait_s
 {
+    bl_t in_ancestry; // trait must be declared in the ancestry of object's self.trait
     bl_t awareness;
 
     union
     {
         bcore_static_array_s ft_arr;
-        bcore_trait_ft_s * ft_data;
-        sz_t ft_size, ft_space;
+        struct
+        {
+            bcore_trait_ft_s * ft_data;
+            sz_t ft_size, ft_space;
+        };
     };
 
     union
     {
         bcore_static_array_s fp_arr;
-        bcore_trait_fp_supports * fp_data;
-        sz_t fp_size, fp_space;
+        struct
+        {
+            bcore_trait_fp_supports * fp_data;
+            sz_t fp_size, fp_space;
+        };
     };
 
 } bcore_trait_s;
+
+DEFINE_FUNCTION_INIT_FLAT( bcore_trait_s )
+DEFINE_FUNCTION_DOWN_FLAT( bcore_trait_s )
+DEFINE_FUNCTION_COPY_FLAT( bcore_trait_s )
+DEFINE_FUNCTION_CREATE(    bcore_trait_s )
+DEFINE_FUNCTION_DISCARD(   bcore_trait_s )
+DEFINE_FUNCTION_CLONE(     bcore_trait_s )
+
+static void trait_s_push_function( bcore_trait_s* o, tp_t function, tp_t name )
+{
+    if( o->ft_size == o->ft_space )
+    {
+        o->ft_data = bcore_un_alloc( sizeof( bcore_trait_ft_s ), o->ft_data, o->ft_space, o->ft_space > 0 ? o->ft_space * 2 : 1, &o->ft_space );
+    }
+    o->ft_data[ o->ft_size++ ] = ( bcore_trait_ft_s ) { function, name };
+}
+
+static void trait_s_push_fp_support( bcore_trait_s* o, bcore_trait_fp_supports f )
+{
+    if( o->fp_size == o->fp_space )
+    {
+        o->fp_data = bcore_un_alloc( sizeof( fp_t ), o->fp_data, o->fp_space, o->fp_space > 0 ? o->fp_space * 2 : 1, &o->fp_space );
+    }
+    o->fp_data[ o->fp_size++ ] = f;
+}
 
 typedef struct system_s
 {
@@ -85,31 +116,46 @@ static void trait_manager_close()
     system_s_g_down();
 }
 
+static bcore_trait_s* get_trait( tp_t trait )
+{
+    vd_t* trait_pp = bcore_hmap_tpto_s_get( &system_s_g.trait_map, trait );
+    if( trait_pp ) return *trait_pp;
+    return *bcore_hmap_tpto_s_set_d( &system_s_g.trait_map, trait, bcore_trait_s_create() );
+}
+
+void bcore_trait_require_in_ancestry( tp_t trait )
+{
+    assert( trait != 0 );
+    system_s_g_lock();
+    assert( !bcore_hmap_tptp_s_exists( &system_s_g.type_map, trait ) );
+    get_trait( trait )->in_ancestry = true;
+    system_s_g_unlock();
+}
+
 void bcore_trait_require_awareness( tp_t trait )
 {
-    system_s_g_lock();
     assert( trait != 0 );
-    sr_s trait_sr = sr_twd( system_s_g.trait_map.type, bcore_hmap_tpto_s_fget( &system_s_g.trait_map, trait ) );
-    bcore_via_nset_bl( trait_sr, typeof( "awareness" ), true );
+    system_s_g_lock();
+    assert( !bcore_hmap_tptp_s_exists( &system_s_g.type_map, trait ) );
+    get_trait( trait )->awareness = true;
     system_s_g_unlock();
 }
 
 void bcore_trait_require_function( tp_t trait, tp_t function, tp_t name )
 {
-    system_s_g_lock();
     assert( trait != 0 );
-    sr_s trait_sr = sr_twd( system_s_g.trait_map.type, bcore_hmap_tpto_s_fget( &system_s_g.trait_map, trait ) );
-    bcore_trait_ft_s node = { function, name };
-    bcore_array_push( bcore_via_nget( trait_sr, typeof( "ft_arr" ) ), sr_twc( typeof( "bcore_trait_ft_s" ), &node ) );
+    system_s_g_lock();
+    assert( !bcore_hmap_tptp_s_exists( &system_s_g.type_map, trait ) );
+    trait_s_push_function( get_trait( trait ), function, name );
     system_s_g_unlock();
 }
 
 void bcore_trait_register_fp_support( tp_t trait, bcore_trait_fp_supports f )
 {
-    system_s_g_lock();
     assert( trait != 0 );
-    sr_s trait_sr = sr_twd( system_s_g.trait_map.type, bcore_hmap_tpto_s_fget( &system_s_g.trait_map, trait ) );
-    bcore_array_push( bcore_via_nget( trait_sr, typeof( "fp_arr" ) ), sr_twc( TYPEOF_fp_t, &f ) );
+    system_s_g_lock();
+    assert( !bcore_hmap_tptp_s_exists( &system_s_g.type_map, trait ) );
+    trait_s_push_fp_support( get_trait( trait ), f );
     system_s_g_unlock();
 }
 
@@ -160,44 +206,30 @@ bl_t bcore_trait_is( tp_t trait, tp_t ancestor )
     return flag;
 }
 
-bl_t bcore_trait_supports( tp_t object, tp_t trait, bcore_string_s* log )
+bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, bcore_string_s* log )
 {
-    if( object == trait ) return true;
-
-    const bcore_flect_self_s* self = bcore_flect_try_self( object );
-
-    if( !self )
-    {
-        if( log )
-        {
-            bcore_string_s_pushf( log, "object '%s' (%u) has no self reflection\n", ifnameof( object ), object );
-        }
-        return false;
-    }
-
-    if( self->trait && bcore_trait_is( self->trait, trait ) ) return true;
+    if( !trait ) return true;
+    if( !bcore_trait_supported( bcore_trait_parent( trait ), self, log ) ) return false;
 
     system_s_g_lock();
     vd_t* trait_p = bcore_hmap_tpto_s_get( &system_s_g.trait_map, trait );
     system_s_g_unlock();
 
-    if( !trait_p )
-    {
-        if( log )
-        {
-            bcore_string_s_pushf
-            (
-                log,
-                "object '%s' (%u) is not of trait '%s' and the trait does not define requirements.\n",
-                ifnameof( object ),
-                object,
-                ifnameof( trait )
-            );
-        }
-        return false;
-    }
+    if( !trait_p ) return true;
 
     bcore_trait_s* trait_o = *trait_p;
+
+    if( trait_o->in_ancestry )
+    {
+        if( !bcore_trait_is( self->trait, trait ) )
+        {
+            if( log )
+            {
+                bcore_string_s_pushf( log, "Trait is not in ancestry." );
+            }
+            return false;
+        }
+    }
 
     if( trait_o->awareness )
     {
@@ -205,15 +237,7 @@ bl_t bcore_trait_supports( tp_t object, tp_t trait, bcore_string_s* log )
         {
             if( log )
             {
-                bcore_string_s_pushf
-                (
-                    log,
-                    "Object '%s' (%u) is not of of trait '%s'.\n",
-                    "Trait requires self awareness.\n",
-                    ifnameof( object ),
-                    object,
-                    ifnameof( trait )
-                );
+                bcore_string_s_pushf( log, "Self awareness missing." );
             }
             return false;
         }
@@ -226,17 +250,18 @@ bl_t bcore_trait_supports( tp_t object, tp_t trait, bcore_string_s* log )
         {
             if( log )
             {
-                bcore_string_s_pushf
-                (
-                    log,
-                    "Object '%s' (%u) is not of of trait '%s'.\n",
-                    "Trait requires function '%s' of name '%s'.\n",
-                    ifnameof( object ),
-                    object,
-                    ifnameof( trait ),
-                    ifnameof( ft_o.type ),
-                    ifnameof( ft_o.name )
-                );
+                if( ft_o.type && ft_o.name )
+                {
+                    bcore_string_s_pushf( log, "Missing function '%s' of name '%s'.", ifnameof( ft_o.type ), ifnameof( ft_o.name ) );
+                }
+                else if( ft_o.type )
+                {
+                    bcore_string_s_pushf( log, "Missing function '%s'.", ifnameof( ft_o.type ) );
+                }
+                else if( ft_o.name )
+                {
+                    bcore_string_s_pushf( log, "Missing function '%s'.", ifnameof( ft_o.name ) );
+                }
             }
             return false;
         }
@@ -245,11 +270,37 @@ bl_t bcore_trait_supports( tp_t object, tp_t trait, bcore_string_s* log )
     for( sz_t i = 0; i < trait_o->fp_size; i++ )
     {
         bcore_trait_fp_supports fp_o = trait_o->fp_data[ i ];
-        if( fp_o && !fp_o( object, trait, log ) ) return false;
+        if( fp_o && !fp_o( self, log ) ) return false;
     }
 
     return true;
 }
+
+bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, bcore_string_s* log )
+{
+    if( self->type == trait                       ) return true;
+    if( bcore_trait_is( self->trait, trait )      ) return true;
+    if( bcore_trait_supported( trait, self, log ) ) return true;
+    return false;
+}
+
+bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, bcore_string_s* log )
+{
+    if( object_type == trait                      ) return true;
+    const bcore_flect_self_s* self = bcore_flect_try_self( object_type );
+    if( !self )
+    {
+        if( log )
+        {
+            bcore_string_s_pushf( log, "Object '%s' has no self reflection.", ifnameof( object_type ) );
+        }
+        return false;
+    }
+    if( bcore_trait_satisfied_self( trait, self, log ) ) return true;
+    return false;
+}
+
+
 
 /**********************************************************************************************************************/
 // signal
@@ -268,9 +319,10 @@ vd_t bcore_trait_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
-        sz_t space = bcore_memory_manager_granted_space();
+        sz_t space1 = bcore_memory_manager_granted_space();
         trait_manager_close();
-        bcore_msg( "  trait mananger ...... % 6zu\n", space - bcore_memory_manager_granted_space() );
+        sz_t space2 = bcore_memory_manager_granted_space();
+        bcore_msg( "  trait mananger ...... % 6zu\n", space1 > space2 ? space1 - space2 : ( sz_t )0 );
     }
     return NULL;
 }

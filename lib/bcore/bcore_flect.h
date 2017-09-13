@@ -176,6 +176,7 @@ void                bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flec
 void                bcore_flect_self_s_push_external_data( bcore_flect_self_s* o, vc_t data, sc_t type, sc_t name );
 void                bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
 bcore_string_s*     bcore_flect_self_s_show( const bcore_flect_self_s* o );
+void                bcore_flect_self_s_check_consistency( const bcore_flect_self_s* o );
 
 /// special reflections
 bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, sz_t size ); // plain (primitive) self contained type

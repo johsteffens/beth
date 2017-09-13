@@ -344,8 +344,8 @@ static sr_s create_zoo()
 
 static bcore_string_s* txt_ml_selftest( void )
 {
-    ASSERT( bcore_spect_supports( typeof( "bcore_interpreter_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
-    ASSERT( bcore_spect_supports( typeof( "bcore_translator_s" ), typeof( "bcore_txt_ml_translator_s" ) ) );
+    ASSERT( bcore_spect_supported( typeof( "bcore_interpreter_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
+    ASSERT( bcore_spect_supported( typeof( "bcore_translator_s" ), typeof( "bcore_txt_ml_translator_s" ) ) );
 
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_create();
