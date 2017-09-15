@@ -40,6 +40,8 @@ bl_t bcore_type_is_leaf( tp_t type );
 
 // other types
 #define TYPEOF_bcore_array_s              3532252466
+#define TYPEOF_bcore_bin_ml_interpreter_s 3834633675
+#define TYPEOF_bcore_bin_ml_translator_s  1158670837
 #define TYPEOF_bcore_closure_s            3994021118
 #define TYPEOF_bcore_compare_s             310299276
 #define TYPEOF_bcore_flect_self_s          556415048

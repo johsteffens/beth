@@ -78,6 +78,8 @@ void                   bcore_source_buffer_s_discard(       bcore_source_buffer_
 bcore_source_buffer_s* bcore_source_buffer_s_clone(   const bcore_source_buffer_s* o );
 sz_t                   bcore_source_buffer_s_get_data(      bcore_source_buffer_s* o, vd_t data, sz_t size );
 
+bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, sz_t size );
+
 /// Specifies an external supplier (source); supplier is not owned by this object
 void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier );
 
@@ -105,8 +107,8 @@ bcore_source_string_s* bcore_source_string_s_create();
 void                   bcore_source_string_s_discard(       bcore_source_string_s* o );
 bcore_source_string_s* bcore_source_string_s_clone(   const bcore_source_string_s* o );
 
-bcore_source_string_s* bcore_source_string_s_create_string( const bcore_string_s* string );
-bcore_source_string_s* bcore_source_string_s_create_string_d(     bcore_string_s* string );
+bcore_source_string_s* bcore_source_string_s_create_from_string( const bcore_string_s* string );
+bcore_source_string_s* bcore_source_string_s_create_from_string_d(     bcore_string_s* string );
 bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc );
 sz_t                   bcore_source_string_s_get_data(      bcore_source_string_s* o, vd_t data, sz_t size );
 

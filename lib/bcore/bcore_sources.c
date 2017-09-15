@@ -239,6 +239,15 @@ static sz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, sz_t size )
     }
 }
 
+bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, sz_t size )
+{
+    bcore_source_buffer_s* buffer = bcore_source_buffer_s_create();
+    buffer->data = bcore_b_alloc( buffer->data, size, &buffer->space );
+    bcore_memcpy( buffer->data, data, size );
+    buffer->size = size;
+    return buffer;
+}
+
 sz_t bcore_source_buffer_s_get_data(  bcore_source_buffer_s* o, vd_t data, sz_t size )
 {
     return buffer_flow_src( o, data, size );
@@ -319,14 +328,14 @@ bcore_source_string_s* bcore_source_string_s_clone( const bcore_source_string_s*
     return bcore_inst_typed_clone( TYPEOF_bcore_source_string_s, o );
 }
 
-bcore_source_string_s* bcore_source_string_s_create_string( const bcore_string_s* string )
+bcore_source_string_s* bcore_source_string_s_create_from_string( const bcore_string_s* string )
 {
     bcore_source_string_s* o = bcore_source_string_s_create();
     o->string = bcore_string_s_clone( string );
     return o;
 }
 
-bcore_source_string_s* bcore_source_string_s_create_string_d( bcore_string_s* string )
+bcore_source_string_s* bcore_source_string_s_create_from_string_d( bcore_string_s* string )
 {
     bcore_source_string_s* o = bcore_source_string_s_create();
     o->string = string;

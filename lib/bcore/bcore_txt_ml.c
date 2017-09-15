@@ -15,7 +15,7 @@
 
 void bcore_txt_ml_translator_s_init( bcore_txt_ml_translator_s* o )
 {
-    o->_ = typeof( "bcore_txt_ml_translator_s" );
+    o->_ = TYPEOF_bcore_txt_ml_translator_s;
     o->indent = 4;
 }
 
@@ -150,7 +150,7 @@ void bcore_txt_ml_to_string( sr_s obj, bcore_string_s* string )
 
 void bcore_txt_ml_interpreter_s_init( bcore_txt_ml_interpreter_s* o )
 {
-    o->_ = typeof( "bcore_txt_ml_interpreter_s" );
+    o->_ = TYPEOF_bcore_txt_ml_interpreter_s;
 }
 
 DEFINE_FUNCTION_DOWN_SPECT( bcore_txt_ml_interpreter_s )
@@ -254,15 +254,15 @@ sr_s bcore_txt_ml_from_file( sc_t file )
     sr_s chain = sr_asd( bcore_source_chain_s_create() );
     bcore_source_chain_s_push_d( chain.o, bcore_source_file_s_create_name( file ) );
     bcore_source_chain_s_push_d( chain.o, bcore_inst_typed_create( typeof( "bcore_source_string_s" ) ) );
-    sr_s ret = bcore_interpret( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain );
+    sr_s ret = bcore_interpret( bcore_inst_typed_create_sr( TYPEOF_bcore_txt_ml_interpreter_s ), chain );
     return ret;
 }
 
 sr_s bcore_txt_ml_from_string( const bcore_string_s* string )
 {
     sr_s chain = sr_asd( bcore_source_chain_s_create() );
-    bcore_source_chain_s_push_d( chain.o, bcore_source_string_s_create_string( string ) );
-    sr_s ret = bcore_interpret( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain );
+    bcore_source_chain_s_push_d( chain.o, bcore_source_string_s_create_from_string( string ) );
+    sr_s ret = bcore_interpret( bcore_inst_typed_create_sr( TYPEOF_bcore_txt_ml_interpreter_s ), chain );
     return ret;
 }
 
@@ -291,66 +291,22 @@ void bcore_txt_ml_transfer_test( sr_s obj )
     bcore_life_s_discard( l );
 }
 
-static sr_s create_zoo()
-{
-    bcore_life_s* l = bcore_life_s_create();
-    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { bcore_string_s* type; f3_t weight; bcore_string_s * [] features; }" );
-    tp_t t_compound = bcore_flect_type_parse_sc( "compound = { u3_t id; sz_t area; animal * [] animals; }" );
-    tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { bcore_string_s* name; typed * [] compounds; }" );
-
-    sr_s ret = bcore_inst_typed_create_sr( t_zoo );
-    sr_s zoo = sr_cw( ret );
-
-    bcore_via_nset_sc( zoo, typeof( "name" ), "Mesamurial" );
-    sr_s compounds = bcore_life_s_push_sr( l, bcore_via_nget( zoo, typeof( "compounds" ) ) );
-    {
-        sr_s compound = sr_cl( bcore_inst_typed_create_sr( t_compound ), l );
-        bcore_via_nset_u3( compound, typeof( "id" ), 254 );
-        bcore_via_nset_sz( compound, typeof( "area" ), 1000 );
-        sr_s animals = bcore_life_s_push_sr( l, bcore_via_nget( compound, typeof( "animals" ) ) );
-        {
-            sr_s bird = sr_cl( bcore_inst_typed_create_sr( t_animal ), l );
-            bcore_via_nset_sc( bird, typeof( "type" ), "Owl" );
-            bcore_via_nset_f3( bird, typeof( "weight" ), 2.5 );
-            sr_s features = sr_cl( bcore_via_nget( bird, typeof( "features" ) ), l );
-            {
-                bcore_array_push_sc( features, "Night active" );
-                bcore_array_push_sc( features, "Can fly" );
-            }
-            bcore_array_push( animals, bird );
-        }
-        {
-            sr_s bird = sr_cl( bcore_inst_typed_create_sr( t_animal ), l );
-            bcore_via_nset_sc( bird, typeof( "type" ), "Pidgin" );
-            bcore_via_nset_f3( bird, typeof( "weight" ), 0.5 );
-            sr_s features = sr_cl( bcore_via_nget( bird, typeof( "features" ) ), l );
-            {
-                bcore_array_push_sc( features, "Day active" );
-                bcore_array_push_sc( features, "Can fly" );
-            }
-            bcore_array_push( animals, bird );
-        }
-        bcore_array_push( compounds, compound );
-        bcore_array_push( compounds, sr_null() );
-        bcore_array_push( compounds, compound );
-        bcore_array_push( compounds, sr_null() );
-        bcore_array_push( compounds, sr_null() );
-        //for( sz_t i = 0; i < 10000; i++ ) bcore_array_push( compounds, compound );
-    }
-    bcore_life_s_discard( l );
-
-    return ret;
-}
+#include <time.h>
 
 static bcore_string_s* txt_ml_selftest( void )
 {
-    ASSERT( bcore_spect_supported( typeof( "bcore_interpreter_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
-    ASSERT( bcore_spect_supported( typeof( "bcore_translator_s" ), typeof( "bcore_txt_ml_translator_s" ) ) );
+    ASSERT( bcore_spect_supported( typeof( "bcore_interpreter_s" ), TYPEOF_bcore_txt_ml_interpreter_s ) );
+    ASSERT( bcore_spect_supported( typeof( "bcore_translator_s" ), TYPEOF_bcore_txt_ml_translator_s ) );
 
     bcore_life_s* l = bcore_life_s_create();
     bcore_string_s* log = bcore_string_s_create();
-    sr_s zoo = bcore_life_s_push_sr( l, create_zoo() );
+
+    sr_s zoo = bcore_life_s_push_sr( l, bcore_spect_via_create_zoo( 1000 ) );
+    clock_t time = clock();
     bcore_txt_ml_transfer_test( zoo );
+    time = clock() - time;
+    bcore_string_s_pushf( log, "txt transfer %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+
     bcore_life_s_discard( l );
     return log;
 }
@@ -364,8 +320,8 @@ vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "init1" ) )
     {
-        bcore_flect_define_creator( typeof( "bcore_txt_ml_translator_s"  ), translator_s_create_self  );
-        bcore_flect_define_creator( typeof( "bcore_txt_ml_interpreter_s" ), interpreter_s_create_self );
+        bcore_flect_define_creator( TYPEOF_bcore_txt_ml_translator_s,  translator_s_create_self  );
+        bcore_flect_define_creator( TYPEOF_bcore_txt_ml_interpreter_s, interpreter_s_create_self );
     }
     else if( signal == typeof( "selftest" ) )
     {

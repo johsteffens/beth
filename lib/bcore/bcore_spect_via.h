@@ -208,6 +208,7 @@ vd_t bcore_spect_via_signal( tp_t target, tp_t signal, vd_t object );
 /**********************************************************************************************************************/
 // testing, debugging
 
-bcore_string_s* bcore_spect_via_selftest( void );
+/// creates a structured object for testing purposes
+sr_s bcore_spect_via_create_zoo( sz_t size );
 
 #endif

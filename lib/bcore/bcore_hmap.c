@@ -9,6 +9,7 @@
 
 // only needed for selftests...
 #include "bcore_txt_ml.h"
+#include "bcore_bin_ml.h"
 #include <time.h>
 
 /**********************************************************************************************************************/

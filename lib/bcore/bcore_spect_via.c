@@ -620,6 +620,57 @@ const bcore_via_s* bcore_via_s_get_aware( vc_t obj )
 
 /**********************************************************************************************************************/
 
+sr_s bcore_spect_via_create_zoo( sz_t size )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { bcore_string_s* type; f3_t weight; bcore_string_s * [] features; }" );
+    tp_t t_compound = bcore_flect_type_parse_sc( "compound = { u3_t id; sz_t area; animal * [] animals; }" );
+    tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { bcore_string_s* name; typed * [] compounds; }" );
+
+    sr_s ret = bcore_inst_typed_create_sr( t_zoo );
+    sr_s zoo = sr_cw( ret );
+
+    bcore_via_nset_sc( zoo, typeof( "name" ), "Mesamurial" );
+    sr_s compounds = bcore_life_s_push_sr( l, bcore_via_nget( zoo, typeof( "compounds" ) ) );
+    {
+        sr_s compound = sr_cl( bcore_inst_typed_create_sr( t_compound ), l );
+        bcore_via_nset_u3( compound, typeof( "id" ), 254 );
+        bcore_via_nset_sz( compound, typeof( "area" ), 1000 );
+        sr_s animals = bcore_life_s_push_sr( l, bcore_via_nget( compound, typeof( "animals" ) ) );
+        {
+            sr_s bird = sr_cl( bcore_inst_typed_create_sr( t_animal ), l );
+            bcore_via_nset_sc( bird, typeof( "type" ), "Owl" );
+            bcore_via_nset_f3( bird, typeof( "weight" ), 2.5 );
+            sr_s features = sr_cl( bcore_via_nget( bird, typeof( "features" ) ), l );
+            {
+                bcore_array_push_sc( features, "Night active" );
+                bcore_array_push_sc( features, "Can fly" );
+            }
+            bcore_array_push( animals, bird );
+        }
+        {
+            sr_s bird = sr_cl( bcore_inst_typed_create_sr( t_animal ), l );
+            bcore_via_nset_sc( bird, typeof( "type" ), "Pidgin" );
+            bcore_via_nset_f3( bird, typeof( "weight" ), 0.5 );
+            sr_s features = sr_cl( bcore_via_nget( bird, typeof( "features" ) ), l );
+            {
+                bcore_array_push_sc( features, "Day active" );
+                bcore_array_push_sc( features, "Can fly" );
+            }
+            bcore_array_push( animals, bird );
+        }
+        bcore_array_push( compounds, compound );
+        bcore_array_push( compounds, sr_null() );
+        bcore_array_push( compounds, compound );
+        bcore_array_push( compounds, sr_null() );
+        bcore_array_push( compounds, sr_null() );
+        for( sz_t i = 5; i < size; i++ ) bcore_array_push( compounds, compound );
+    }
+    bcore_life_s_discard( l );
+
+    return ret;
+}
+
 static bcore_string_s* spect_via_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();

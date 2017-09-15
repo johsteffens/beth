@@ -7,6 +7,7 @@
 #include "bcore_spect_array.h"
 #include "bcore_spect_source.h"
 #include "bcore_life.h"
+#include "bcore_trait.h"
 
 DEFINE_FUNCTION_INIT_FLAT(  bclos_statement_s )
 DEFINE_FUNCTION_DOWN_SPECT( bclos_statement_s )
@@ -62,7 +63,7 @@ void bclos_statement_s_run( const bclos_statement_s* o, bclos_env_s* env )
             {
                 if( o->define )
                 {
-                    if( o->define != sr_s_type( &ret_sr ) )
+                    if( bcore_trait_satisfied_type( o->define, sr_s_type( &ret_sr ), NULL ) )
                     {
                         ERR
                         (
@@ -79,6 +80,9 @@ void bclos_statement_s_run( const bclos_statement_s* o, bclos_env_s* env )
                 {
                     sr_s* target_sr = bclos_env_s_get( env, o->target );
                     if( !target_sr )  ERR( "Target '%s' not defined.", ifnameof( o->target ) );
+
+                    //TODO: store a trait constraint with the target variable and check trait-satisfication
+                    //instead of type equality
                     if( sr_s_type( target_sr ) != sr_s_type( &ret_sr ) )
                     {
                         ERR

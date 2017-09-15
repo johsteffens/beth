@@ -76,8 +76,10 @@ static sr_s object_typelist()
     bcore_array_q_push_sc( &list, "bcore_hmap_tpto_s"     );
     bcore_array_q_push_sc( &list, "bcore_hmap_tp_s"       );
     bcore_array_q_push_sc( &list, "bcore_hmap_tp_sr_s"    );
-    bcore_array_q_push_sc( &list, "bcore_txt_ml_translator_s" );
+    bcore_array_q_push_sc( &list, "bcore_txt_ml_translator_s"  );
     bcore_array_q_push_sc( &list, "bcore_txt_ml_interpreter_s" );
+    bcore_array_q_push_sc( &list, "bcore_bin_ml_translator_s"  );
+    bcore_array_q_push_sc( &list, "bcore_bin_ml_interpreter_s" );
     bcore_array_q_sort( &list, 0, -1, 1 );
     return list;
 }
