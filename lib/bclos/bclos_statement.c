@@ -46,8 +46,9 @@ bclos_args_s* bclos_statement_s_create_args( const bclos_statement_s* o, bclos_e
     return args;
 }
 
-void bclos_statement_s_run( const bclos_statement_s* o, bclos_env_s* env )
+sr_s bclos_statement_s_run( const bclos_statement_s* o, bclos_env_s* env )
 {
+    sr_s ret = sr_null();
     if( o->operation )
     {
         sr_s* operation = bclos_env_s_get( env, o->operation );
@@ -63,7 +64,7 @@ void bclos_statement_s_run( const bclos_statement_s* o, bclos_env_s* env )
             {
                 if( o->define )
                 {
-                    if( bcore_trait_satisfied_type( o->define, sr_s_type( &ret_sr ), NULL ) )
+                    if( !bcore_trait_satisfied_type( o->define, sr_s_type( &ret_sr ), NULL ) )
                     {
                         ERR
                         (
@@ -80,22 +81,12 @@ void bclos_statement_s_run( const bclos_statement_s* o, bclos_env_s* env )
                 {
                     sr_s* target_sr = bclos_env_s_get( env, o->target );
                     if( !target_sr )  ERR( "Target '%s' not defined.", ifnameof( o->target ) );
-
-                    //TODO: store a trait constraint with the target variable and check trait-satisfication
-                    //instead of type equality
-                    if( sr_s_type( target_sr ) != sr_s_type( &ret_sr ) )
-                    {
-                        ERR
-                        (
-                            "Closure '%s' returned '%s' but target '%s' is of type '%s'.",
-                            ifnameof( sr_s_type( operation ) ),
-                            ifnameof( sr_s_type( &ret_sr ) ),
-                            ifnameof( o->target ),
-                            ifnameof( sr_s_type( target_sr ) )
-                        );
-                    }
                     sr_s_set( target_sr, ret_sr );
                 }
+            }
+            else if( closure_p->o_type == typeof( "bclos_completion" ) )
+            {
+                ret = ret_sr;
             }
             else
             {
@@ -104,6 +95,7 @@ void bclos_statement_s_run( const bclos_statement_s* o, bclos_env_s* env )
             bclos_args_s_discard( args );
         }
     }
+    return ret;
 }
 
 bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source )
@@ -116,23 +108,55 @@ bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source )
     bcore_source_q_parsef( &source, " #name", name );
     if( bcore_source_q_parse_boolf( &source, " #?'='" ) )
     {
-        s->define = 0;
         s->target = bcore_name_enroll( name->sc );
+        bcore_source_q_parsef( &source, " #name", name );
+        if( bcore_source_q_parse_boolf( &source, " #?'('" ) )
+        {
+            s->operation = bcore_name_enroll( name->sc );
+            while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
+            {
+                if( s->args_size > 0 ) bcore_source_q_parsef( &source, " ," );
+                bcore_source_q_parsef( &source, " #name ", name );
+                bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
+            }
+        }
+        else
+        {
+            bcore_source_q_parsef( &source, " #name ", name );
+            bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
+        }
+    }
+    else if( bcore_source_q_parse_boolf( &source, " #?'('" ) )
+    {
+        s->operation = bcore_name_enroll( name->sc );
+        while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
+        {
+            if( s->args_size > 0 ) bcore_source_q_parsef( &source, " ," );
+            bcore_source_q_parsef( &source, " #name ", name );
+            bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
+        }
     }
     else
     {
         s->define = bcore_name_enroll( name->sc );
         bcore_source_q_parsef( &source, " #name =", name );
         s->target = bcore_name_enroll( name->sc );
-    }
-
-    bcore_source_q_parsef( &source, " #name ( ", name );
-    s->operation = bcore_name_enroll( name->sc );
-    while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
-    {
-        if( s->args_size > 0 ) bcore_source_q_parsef( &source, " ," );
-        bcore_source_q_parsef( &source, " #name ", name );
-        bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
+        bcore_source_q_parsef( &source, " #name", name );
+        if( bcore_source_q_parse_boolf( &source, " #?'('" ) )
+        {
+            s->operation = bcore_name_enroll( name->sc );
+            while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
+            {
+                if( s->args_size > 0 ) bcore_source_q_parsef( &source, " ," );
+                bcore_source_q_parsef( &source, " #name ", name );
+                bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
+            }
+        }
+        else
+        {
+            bcore_source_q_parsef( &source, " #name ", name );
+            bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
+        }
     }
 
     bcore_life_s_discard( l );
@@ -151,6 +175,22 @@ static bcore_flect_self_s* statement_s_create_self( void )
     return self;
 }
 
+/// function of the return closure
+static sr_s return_func( vc_t o, bclos_env_s* env, const bclos_args_s* args )
+{
+    ASSERT( args->size >= 1 );
+    return args->data[ 0 ];
+}
+
+// completion closure (takes one argument which is deemed to be the return value)
+// Statement returns the return of a completion (causing the procedure to return)
+static bcore_flect_self_s* return_create_self( void )
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_completion = bclos_closure_s {}", 0 );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )return_func, "bclos_closure_fp_call", "call" );
+    return self;
+}
+
 vd_t bclos_statement_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bclos_statement" ) ) return NULL;
@@ -158,6 +198,7 @@ vd_t bclos_statement_signal( tp_t target, tp_t signal, vd_t object )
     if( signal == typeof( "init1" ) )
     {
         bcore_flect_define_creator( typeof( "bclos_statement_s" ), statement_s_create_self );
+        bcore_flect_define_creator( typeof( "bclos_completion"  ), return_create_self );
     }
 
     return NULL;

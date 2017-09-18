@@ -8,6 +8,7 @@
 #include "bcore_spect_inst.h"
 #include "bcore_spect_array.h"
 #include "bcore_life.h"
+#include "bcore_trait.h"
 
 /**********************************************************************************************************************/
 
@@ -78,25 +79,21 @@ sr_s bclos_procedure_s_call( bclos_procedure_s* o, bclos_env_s* env, const bclos
         }
     }
 
+    sr_s ret = sr_null();
+
     for( sz_t i = 0; i < o->size; i++ )
     {
         const bclos_statement_s* statement = o->data[ i ];
-        bclos_statement_s_run( statement, local );
+        ret = bclos_statement_s_run( statement, local );
+        if( ret.o ) break;
     }
 
-    sr_s ret = sr_null();
 
     if( o->sig->ret )
     {
-        if( !bclos_env_s_get( local, o->sig->name ) )
+        if( !bcore_trait_satisfied_type( o->sig->ret, sr_s_type( &ret ), NULL ) )
         {
-            ERR( "Closure %s: Return object not defined in body", ifnameof( o->sig->name ) );
-        }
-
-        ret = bclos_env_s_remove( local, o->sig->name );
-        if( ( ret.p != NULL ) && ( o->sig->ret != sr_s_type( &ret ) ) )
-        {
-            ERR( "Closure %s: Return type mismatch (%s required; %s generated).",
+            ERR( "Closure %s: Return type mismatch ('%s' required; '%s' generated).",
                 ifnameof( o->sig->name ),
                 ifnameof( o->sig->ret ),
                 ifnameof( sr_s_type( &ret ) ) );
@@ -171,12 +168,12 @@ static bcore_string_s* procedure_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     {
-        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "test_add = {}", 0 );
+        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "test_add = bclos_closure_s {}", 0 );
         bcore_flect_self_s_push_external_func( self, ( fp_t )test_add, "bclos_closure_fp_call", "call" );
         bcore_flect_type_self_d( self );
     }
     {
-        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "test_mul = {}", 0 );
+        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "test_mul = bclos_closure_s {}", 0 );
         bcore_flect_self_s_push_external_func( self, ( fp_t )test_mul, "bclos_closure_fp_call", "call" );
         bcore_flect_type_self_d( self );
     }
@@ -191,6 +188,7 @@ static bcore_string_s* procedure_selftest( void )
     {
         bclos_env_s* env = bcore_life_s_push_aware( l, bclos_env_s_create() );
 
+        bclos_env_s_set( env, typeof( "return" ), sr_create( typeof( "bclos_completion" ) ) );
         bclos_env_s_set( env, typeof( "add" ), sr_create( typeof( "test_add" ) ) );
         bclos_env_s_set( env, typeof( "mul" ), sr_create( typeof( "test_mul" ) ) );
 
@@ -200,7 +198,8 @@ static bcore_string_s* procedure_selftest( void )
         bclos_procedure_s_push_sc( proc, "s3_t val1 = add( v1, v2 )" );
         bclos_procedure_s_push_sc( proc, "s3_t val2 = add( v1, v3 )" );
         bclos_procedure_s_push_sc( proc, "     val2 = mul( v1, v3 )" );
-        bclos_procedure_s_push_sc( proc, "s3_t test_operation = mul( val1, val2 )" );
+        bclos_procedure_s_push_sc( proc, "s3_t ret  = mul( val1, val2 )" );
+        bclos_procedure_s_push_sc( proc, "return( ret )" );
 
         bclos_closure_q_def( &proc_sr, env );
         sr_s res = bclos_closure_q_call_na( &proc_sr, NULL, 3, sr_s3( 2 ), sr_s3( 3 ), sr_s3( 4 ) );
