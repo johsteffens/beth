@@ -245,9 +245,9 @@ for later (more elaborate) documentation.
    In beth:
    A trait imposes certain requirements to (final) types. A type associated with a trade grants fulfillment of all these requirements.
    A trait has a unique name.
-   A trait can inherit other traits (-->hirarchical structure)
+   A trait can inherit other traits (-->hierarchical structure)
    A trait (optionally) has a method to test final types for the fulfillment of its associated requirements
-     That method is either invoked at compiletime or at runtime.
+     That method is either invoked at compile time or at runtime.
 
    Immediately needed in closures.
    Closures with certain argument structure (e.g. bi,tri,n-functions) would be member of the corresponding trade.
@@ -256,8 +256,34 @@ for later (more elaborate) documentation.
 ## Arrays ##
 1 Sept 2017
    Dynamic arrays should be enabled to weakly reference external data. This would be indicated
-   by size > 0 && space == 0. Destroying arrays with space == 0 will not discard array memory. 
+   by size > 0 && space == 0. Destroying arrays with space == 0 will not discard array memory.
    Accesing existing elements (including modifying them) does not change the strength of a reference.
    A weak array can turn itself into a strog one by copying over external data.
    This happens automatically on all access types that affect the order, size and space of the array.
+
+
+## Garbage Collection ##
+18 Sept 2017
+   Reference counting seems to be among the most efficient ways of implementing garbage collection.
+   There is a myriad of ways to implement it. Some efficient (but restricted) other more general but with
+   significant overhead. A good solution should catch the best of these worlds.
+   Desirable features:
+   - No (significant) overhead to memory and object management where garbage collection is not explicitly wanted
+     (e.g. object allocated on the stack). Applies to functions: init, down, create, discard.
+
+   - Any object located on the heap should yield a countable reference if so desired. Even if that object
+     is nested inside another object (meaning even if it's address is no key in the memory manager)
+
+   - Any existing instance can be be turned into a managed instance without restricting the (already happening)
+     'unmanaged' use of the object.
+
+   - A managed reference to a nested object should automatically delay destruction of the parent object
+     (-->Never tear down a house before all occupants left)
+
+   - A managed reference to a linked object should prevent the parent object from destroying it under
+     any circumstances.
+
+   Integrating ref counting inside the memory manager might be one of step towards a solution.
+   Might be time to spin-off current memory management before it gets to complicated for general
+   purpose usage.
 
