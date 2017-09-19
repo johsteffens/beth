@@ -83,7 +83,7 @@ typedef struct token_manager_s
 
     /** aligned
      *  The memory-pool is considered aligned when the integer-evaluation of its address
-     *  is a multiple of pool_size, which means that the pool address can be obtained by
+     *  is a multiple of pool_size, which means that the pool address can be obtained
      *  from any pointer inside the pool by a mere integer division.
      */
     bool aligned;
@@ -806,7 +806,7 @@ static sz_t bcore_memory_manager_s_total_space( const bcore_memory_manager_s* o 
 
 bcore_memory_manager_s* bcore_memory_manager_s_g = NULL;
 
-void bcore_create_memory_manager()
+static void bcore_create_memory_manager()
 {
     const sz_t pool_size       = 0x10000;
     const sz_t min_block_size  = 8;
@@ -816,7 +816,7 @@ void bcore_create_memory_manager()
     bcore_memory_manager_s_g = bcore_memory_manager_s_create( pool_size, min_block_size, max_block_size, stepping_method, full_align );
 }
 
-void bcore_discard_memory_manager()
+static void bcore_discard_memory_manager()
 {
     bcore_memory_manager_s_discard( bcore_memory_manager_s_g );
     bcore_memory_manager_s_g = NULL;
@@ -830,7 +830,7 @@ static void memory_manager_open()
 
 static void memory_manager_close()
 {
-    void bcore_discard_memory_manager();
+    bcore_discard_memory_manager();
 }
 
 void* bcore_memory_manager_b_alloc( void* current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
