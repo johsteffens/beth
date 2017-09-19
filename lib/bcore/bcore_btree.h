@@ -2,7 +2,7 @@
 
 /** btree on the basis of a self-balancing 2-3 tree structure.
  *  This structure can be used for well-scalable associative data management.
- *  Wost case complexity is O(log(n)) for access, insertion and deletion.
+ *  Worst case complexity is O(log(n)) for access, insertion and deletion.
  *
  *  Internally, this solution uses a node structure with three child pointers, one parent pointer
  *  and two key-value containers.
