@@ -10,7 +10,7 @@ One pivoting element is the so-called *Perspective*, which is a special abstract
 
 I conceived this approach in May 2017. This project is the attempt of bringing this (and other ideas) into tangible shape. So far the Perspective turned out useful for object-instance management, dynamic arrays, comparison, serialization and other concepts for which one might traditionally fall back to using 'design patterns'.
 
-(More specific documentation is yet to come.)
+*More specific documentation is yet to come...*
 
 Some of the objectives are...
    * Bridging the gap between procedural and object oriented programming.
