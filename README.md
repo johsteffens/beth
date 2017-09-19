@@ -8,7 +8,7 @@ In it I am re-thinking polymorphism, reflection-aided generic programming and fu
 
 One pivoting element is the so-called *Perspective*, which is a special abstraction for a generic framework with the character of a polymorphic interface but not following the tradition of object inheritance in OOP. Binding between Perspective and Object is dynamic. Neither Perspective nor Object need be aware of the other's existence at compiletime, yet a Perspective may act as generic source of functionality for an object as well as its abstract interface.
 
-I conceived this approach in May 2017. This project is the attempt of bringing this (and other ideas) into tangible shape. So far the Perspective turned out useful for object-instance management, dynamic arrays, comparison, serialization and other concepts for which one might traditionally fall back to using 'design patterns'.
+I conceived this approach in May 2017. This project is the attempt of bringing this (and other ideas) into tangible shape. So far the Perspective turned out useful for object-instance management, dynamic arrays, object-ordering, serialization and other concepts for which one might traditionally fall back to using 'design patterns'.
 
 *More specific documentation is yet to come...*
 
