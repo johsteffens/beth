@@ -22,8 +22,9 @@ Some of the objectives are...
 
 ## License Status
 
-This project is under development. Once the code structure has sufficiently settled, I’ll decide about a public license. 
-For the time being: If you wish to use/copy/fork/integrate all or parts of it (other than granted by Git Hub), please contact me for a personal license. - Thank you.
+This project is under development. Once the code structure has sufficiently settled, I’ll decide about a suitable free public license. 
+
+For the time being: If you wish to use/copy/fork/integrate/modify all or parts of it (outside the scope granted by Git Hub), please contact me first for a personal license. - Thank you.
 
 Note that this software comes without any explicit or implied warranty for any purpose.
 
