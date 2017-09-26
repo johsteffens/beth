@@ -1,4 +1,4 @@
-/// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
+/// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
 /** Array Perspective
  *  The array perspective addresses the first array element of an object and provide array

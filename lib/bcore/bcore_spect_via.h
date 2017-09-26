@@ -1,4 +1,4 @@
-/// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
+/// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
 /** The via-perspective provides access to object's elements.
  *  An object can be either be seen as container with 'size' ordered elements which

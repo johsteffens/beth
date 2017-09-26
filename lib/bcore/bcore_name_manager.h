@@ -1,4 +1,4 @@
-/// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
+/// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
 /** Name management framework
  *  This framework links names to hash values and vice versa.

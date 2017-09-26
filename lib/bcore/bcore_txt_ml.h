@@ -1,4 +1,4 @@
-/// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
+/// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
 /** Text based markup language for marshaling and creation of objects.
  *  Implements features translate, interpret and supports corresponding perspectives.

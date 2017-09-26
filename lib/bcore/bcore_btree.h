@@ -1,4 +1,4 @@
-/// Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>. All rights reserved.
+/// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
 /** btree on the basis of a self-balancing 2-3 tree structure.
  *  This structure can be used for well-scalable associative data management.

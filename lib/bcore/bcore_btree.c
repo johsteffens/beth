@@ -1,4 +1,4 @@
-/** Author & Copyright (C) 2017 Johannes Steffens <johannes.b.steffens@gmail.com>
+/** Author & Copyright (C) 2017 Johannes Bernhard Steffens
  *  All rights reserved.
  */
 
