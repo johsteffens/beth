@@ -27,14 +27,14 @@ static const bool   default_full_align      = true;
 
 vd_t bcore_external_b_alloc( vd_t current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
 {
-	if( requested_bytes == 0 )
-	{
-		if( current_ptr ) free( current_ptr );
-		current_ptr = NULL;
-		if( granted_bytes ) *granted_bytes = 0;
-	}
-	else
-	{
+    if( requested_bytes == 0 )
+    {
+        if( current_ptr ) free( current_ptr );
+        current_ptr = NULL;
+        if( granted_bytes ) *granted_bytes = 0;
+    }
+    else
+    {
         if( current_ptr )
         {
             current_ptr = realloc( current_ptr, requested_bytes );
@@ -46,7 +46,7 @@ vd_t bcore_external_b_alloc( vd_t current_ptr, sz_t requested_bytes, sz_t* grant
         if( !current_ptr ) ERR( "Failed allocating %zu bytes", requested_bytes );
         if( granted_bytes ) *granted_bytes = requested_bytes;
     }
-	return current_ptr;
+    return current_ptr;
 }
 
 vd_t bcore_external_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
@@ -911,16 +911,16 @@ vd_t bcore_memory_manager_s_b_alloc( bcore_memory_manager_s* o, vd_t current_ptr
 {
     bcore_mutex_lock( &o->mutex );
     vd_t ret = NULL;
-	if( requested_bytes == 0 )
-	{
-		if( current_ptr )
+    if( requested_bytes == 0 )
+    {
+        if( current_ptr )
         {
             bcore_memory_manager_s_free( o, current_ptr, NULL );
         }
         if( granted_bytes ) *granted_bytes = 0;
-	}
-	else
-	{
+    }
+    else
+    {
         if( current_ptr )
         {
             ret = bcore_memory_manager_s_realloc( o, current_ptr, NULL, requested_bytes, granted_bytes );
@@ -931,23 +931,23 @@ vd_t bcore_memory_manager_s_b_alloc( bcore_memory_manager_s* o, vd_t current_ptr
         }
     }
     bcore_mutex_unlock( &o->mutex );
-	return ret;
+    return ret;
 }
 
 vd_t bcore_memory_manager_s_bn_alloc( bcore_memory_manager_s* o, vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
 {
     bcore_mutex_lock( &o->mutex );
     vd_t ret = NULL;
-	if( requested_bytes == 0 )
-	{
-		if( current_bytes ) // 0 means current_ptr may not be used for free or realloc
+    if( requested_bytes == 0 )
+    {
+        if( current_bytes ) // 0 means current_ptr may not be used for free or realloc
         {
             bcore_memory_manager_s_free( o, current_ptr, &current_bytes );
         }
         if( granted_bytes ) *granted_bytes = 0;
-	}
-	else
-	{
+    }
+    else
+    {
         if( current_bytes ) // 0 means current_ptr may not be used for free or realloc
         {
             ret = bcore_memory_manager_s_realloc( o, current_ptr, &current_bytes, requested_bytes, granted_bytes );
@@ -958,7 +958,7 @@ vd_t bcore_memory_manager_s_bn_alloc( bcore_memory_manager_s* o, vd_t current_pt
         }
     }
     bcore_mutex_unlock( &o->mutex );
-	return ret;
+    return ret;
 }
 
 vd_t bcore_memory_manager_s_u_alloc( bcore_memory_manager_s* o, sz_t unit_bytes, vd_t current_ptr, sz_t requested_units, sz_t* reserved_units )

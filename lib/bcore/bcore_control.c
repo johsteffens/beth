@@ -7,38 +7,38 @@
 
 void bcore_msg( sc_t format, ... )
 {
-	va_list args;
-	va_start( args, format );
-	vfprintf( stdout, format, args );
-	va_end( args );
+    va_list args;
+    va_start( args, format );
+    vfprintf( stdout, format, args );
+    va_end( args );
 }
 
 void bcore_errv( sc_t format, va_list args )
 {
-	vfprintf( stderr, format, args );
-	fprintf( stderr, "\n" );
-	abort();
+    vfprintf( stderr, format, args );
+    fprintf( stderr, "\n" );
+    abort();
 }
 
 void bcore_err( sc_t format, ... )
 {
-	va_list args;
-	va_start( args, format );
-	vfprintf( stderr, format, args );
-	va_end( args );
-	fprintf( stderr, "\n" );
-	abort();
+    va_list args;
+    va_start( args, format );
+    vfprintf( stderr, format, args );
+    va_end( args );
+    fprintf( stderr, "\n" );
+    abort();
 }
 
 void bcore_ext_err( sc_t func, sc_t file, int line, sc_t format, ... )
 {
-	fprintf( stderr, "error in function %s (%s:%i):\n", func, file, line );
-	va_list args;
-	va_start( args, format );
-	vfprintf( stderr, format, args );
-	va_end( args );
-	fprintf( stderr, "\n" );
-	abort();
+    fprintf( stderr, "error in function %s (%s:%i):\n", func, file, line );
+    va_list args;
+    va_start( args, format );
+    vfprintf( stderr, format, args );
+    va_end( args );
+    fprintf( stderr, "\n" );
+    abort();
 }
 
 /**********************************************************************************************************************/
@@ -55,7 +55,7 @@ vd_t bcore_free( vd_t buf )
 #ifdef USE_BCORE_MEMORY_MANAGER
     return bcore_memory_manager_b_alloc( buf, 0, NULL );
 #else
-	return bcore_external_b_alloc(       buf, 0, NULL );
+    return bcore_external_b_alloc(       buf, 0, NULL );
 #endif // USE_BCORE_MEMORY_MANAGER
 }
 
@@ -64,7 +64,7 @@ vd_t bcore_alloc( vd_t buf, sz_t size )
 #ifdef USE_BCORE_MEMORY_MANAGER
     return bcore_memory_manager_b_alloc( buf, size, NULL );
 #else
-	return bcore_external_b_alloc( buf, size, NULL );
+    return bcore_external_b_alloc( buf, size, NULL );
 #endif // USE_BCORE_MEMORY_MANAGER
 }
 
@@ -73,7 +73,7 @@ vd_t bcore_b_alloc( vd_t current_ptr, sz_t requested_bytes, sz_t* granted_bytes 
 #ifdef USE_BCORE_MEMORY_MANAGER
     return bcore_memory_manager_b_alloc( current_ptr, requested_bytes, granted_bytes );
 #else
-	return bcore_external_b_alloc( current_ptr, requested_bytes, granted_bytes );
+    return bcore_external_b_alloc( current_ptr, requested_bytes, granted_bytes );
 #endif // USE_BCORE_MEMORY_MANAGER
 }
 
@@ -82,7 +82,7 @@ vd_t bcore_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes,
 #ifdef USE_BCORE_MEMORY_MANAGER
     return bcore_memory_manager_bn_alloc( current_ptr, current_bytes, requested_bytes, granted_bytes );
 #else
-	return bcore_external_bn_alloc( current_ptr, current_bytes, requested_bytes, granted_bytes );
+    return bcore_external_bn_alloc( current_ptr, current_bytes, requested_bytes, granted_bytes );
 #endif // USE_BCORE_MEMORY_MANAGER
 }
 
@@ -91,7 +91,7 @@ vd_t bcore_u_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t requested_units, sz_
 #ifdef USE_BCORE_MEMORY_MANAGER
     return bcore_memory_manager_u_alloc( unit_bytes, current_ptr, requested_units, granted_units );
 #else
-	return bcore_external_u_alloc( unit_bytes, current_ptr, requested_units, granted_units );
+    return bcore_external_u_alloc( unit_bytes, current_ptr, requested_units, granted_units );
 #endif // USE_BCORE_MEMORY_MANAGER
 }
 
@@ -100,7 +100,7 @@ vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t
 #ifdef USE_BCORE_MEMORY_MANAGER
     return bcore_memory_manager_un_alloc( unit_bytes, current_ptr, current_units, requested_units, granted_units );
 #else
-	return bcore_external_un_alloc( unit_bytes, current_ptr, current_units, requested_units, granted_units );
+    return bcore_external_un_alloc( unit_bytes, current_ptr, current_units, requested_units, granted_units );
 #endif // USE_BCORE_MEMORY_MANAGER
 }
 
@@ -129,9 +129,9 @@ vd_t bcore_memset(  vd_t dst, u0_t val, sz_t size )
 
 vd_t bcore_memcpy( vd_t dst, vc_t src, sz_t size )
 {
-	if( !dst ) dst = bcore_alloc( NULL, size );
-	if( size > 0 ) memcpy( dst, src, size );
-	return dst;
+    if( !dst ) dst = bcore_alloc( NULL, size );
+    if( size > 0 ) memcpy( dst, src, size );
+    return dst;
 }
 
 vd_t bcore_u_memcpy( sz_t unit_bytes, vd_t dst, vc_t src, sz_t size )
@@ -141,7 +141,7 @@ vd_t bcore_u_memcpy( sz_t unit_bytes, vd_t dst, vc_t src, sz_t size )
 
 vd_t bcore_memmove( vd_t dst, vc_t src, sz_t size )
 {
-	if( !dst )
+    if( !dst )
     {
         dst = bcore_memcpy( dst, src, size );
     }
@@ -150,16 +150,16 @@ vd_t bcore_memmove( vd_t dst, vc_t src, sz_t size )
         if( size > 0 ) memmove( dst, src, size );
 
     }
-	return dst;
+    return dst;
 }
 
 /**********************************************************************************************************************/
 
 sd_t bcore_strcpy( sd_t dst, sc_t src )
 {
-	dst = bcore_alloc( dst, strlen( src ) + 1 );
-	strcpy( dst, src );
-	return dst;
+    dst = bcore_alloc( dst, strlen( src ) + 1 );
+    strcpy( dst, src );
+    return dst;
 }
 
 int bcore_strcmp( sc_t str1, sc_t str2 )
