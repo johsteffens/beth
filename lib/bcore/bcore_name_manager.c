@@ -1,7 +1,7 @@
 /// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
 #include "bcore_name_manager.h"
-#include "bcore_memory_manager.h"
+#include "bcore_tbman.h"
 #include "bcore_string.h"
 #include "bcore_threads.h"
 #include "bcore_hmap.h"
@@ -138,9 +138,9 @@ vd_t bcore_name_manager_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
-        sz_t space = bcore_memory_manager_granted_space();
+        sz_t space = bcore_tbman_granted_space();
         name_manager_close();
-        bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_memory_manager_granted_space() );
+        bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_tbman_granted_space() );
     }
     return NULL;
 }

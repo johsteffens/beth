@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "bcore_string.h"
 #include "bcore_control.h"
-#include "bcore_memory_manager.h"
+#include "bcore_tbman.h"
 #include "bcore_name_manager.h"
 #include "bcore_flect.h"
 #include "bcore_quicktypes.h"
@@ -1157,7 +1157,7 @@ static bcore_flect_self_s* string_s_create_self( void )
 
 static void string_s_quicktest( void )
 {
-    sz_t granted_space = bcore_memory_manager_granted_space();
+    sz_t granted_space = bcore_tbman_granted_space();
 
     bcore_life_s* life = bcore_life_s_create();
     bcore_string_s* s = bcore_life_s_push( life, bcore_string_s_discard, bcore_string_s_create() );
@@ -1199,7 +1199,7 @@ static void string_s_quicktest( void )
 
     bcore_life_s_discard( life );
 
-    ASSERT( granted_space == bcore_memory_manager_granted_space() );
+    ASSERT( granted_space == bcore_tbman_granted_space() );
 }
 
 /**********************************************************************************************************************/

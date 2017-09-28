@@ -2,7 +2,7 @@
 
 #include "bcore_signature.h"
 #include "bcore_name_manager.h"
-#include "bcore_memory_manager.h"
+#include "bcore_tbman.h"
 #include "bcore_hmap.h"
 #include "bcore_threads.h"
 
@@ -333,9 +333,9 @@ vd_t bcore_signature_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
-        sz_t space = bcore_memory_manager_granted_space();
+        sz_t space = bcore_tbman_granted_space();
         signature_manager_close();
-        bcore_msg( "  signature manager ... % 6zu\n", space - bcore_memory_manager_granted_space() );
+        bcore_msg( "  signature manager ... % 6zu\n", space - bcore_tbman_granted_space() );
     }
     return NULL;
 }

@@ -8,7 +8,7 @@
 #include "bcore_quicktypes.h"
 #include "bcore_hmap.h"
 #include "bcore_signature.h"
-#include "bcore_memory_manager.h"
+#include "bcore_tbman.h"
 #include "bcore_trait.h"
 
 /**********************************************************************************************************************/
@@ -1055,9 +1055,9 @@ vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
-        sz_t space = bcore_memory_manager_granted_space();
+        sz_t space = bcore_tbman_granted_space();
         flect_close();
-        bcore_msg( "  reflection mananger . % 6zu\n", space - bcore_memory_manager_granted_space() );
+        bcore_msg( "  reflection mananger . % 6zu\n", space - bcore_tbman_granted_space() );
     }
     else if( signal == typeof( "selftest" ) )
     {

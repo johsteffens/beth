@@ -9,7 +9,7 @@
 #include "bcore_spect_via.h"
 #include "bcore_quicktypes.h"
 #include "bcore_trait.h"
-#include "bcore_memory_manager.h"
+#include "bcore_tbman.h"
 
 /**********************************************************************************************************************/
 // hash map
@@ -243,9 +243,9 @@ vd_t bcore_spect_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
-        sz_t space = bcore_memory_manager_granted_space();
+        sz_t space = bcore_tbman_granted_space();
         spect_manager_close();
-        bcore_msg( "  spect mananger ...... % 6zu\n", space - bcore_memory_manager_granted_space() );
+        bcore_msg( "  spect mananger ...... % 6zu\n", space - bcore_tbman_granted_space() );
     }
     return NULL;
 }

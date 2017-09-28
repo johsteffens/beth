@@ -2,7 +2,7 @@
 
 #include "bcore_control.h"
 #include "bcore_threads.h"
-#include "bcore_memory_manager.h"
+#include "bcore_tbman.h"
 #include "bcore_name_manager.h"
 #include "bcore_signal.h"
 #include "bcore.h"
@@ -24,7 +24,7 @@ void bcore_library_down()
     bcore_signal( typeof( "all" ), typeof( "down1" ), NULL );
 
     bcore_msg( "\nBeth global system's memory usage (bytes):\n");
-    sz_t space = bcore_memory_manager_granted_space();
+    sz_t space = bcore_tbman_granted_space();
     bcore_msg( "Total ................. % 6zu\n", space );
 
     bcore_signal( typeof( "all" ), typeof( "down0" ), NULL ); // down 0 shuts down critical services

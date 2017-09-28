@@ -10,7 +10,7 @@
 #include "bcore_hmap_tp_inst.h"
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_life.h"
-#include "bcore_memory_manager.h"
+#include "bcore_tbman.h"
 #include "bcore_name_manager.h"
 #include "bcore_ref.h"
 #include "bcore_signature.h"
@@ -39,7 +39,7 @@ vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
     bcore_fp_signal arr[] =
     {
         /// system critical items (keep order)
-        bcore_memory_manager_signal,
+        bcore_tbman_signal,
         bcore_name_manager_signal,
         bcore_signature_signal,
         bcore_flect_signal,

@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "bcore_control.h"
-#include "bcore_memory_manager.h"
+#include "bcore_tbman.h"
 
 void bcore_msg( sc_t format, ... )
 {
@@ -43,7 +43,7 @@ void bcore_ext_err( sc_t func, sc_t file, int line, sc_t format, ... )
 
 /**********************************************************************************************************************/
 
-// implemented in memory_manager
+// implemented in tbman
 vd_t bcore_external_b_alloc(  vd_t current_ptr,                     sz_t requested_bytes, sz_t* granted_bytes );
 vd_t bcore_external_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
 
@@ -52,56 +52,56 @@ vd_t bcore_external_un_alloc( sz_t unit_bytes,  vd_t current_ptr,   sz_t current
 
 vd_t bcore_free( vd_t buf )
 {
-#ifdef USE_BCORE_MEMORY_MANAGER
-    return bcore_memory_manager_b_alloc( buf, 0, NULL );
+#ifdef USE_BCORE_TBMAN
+    return bcore_tbman_b_alloc( buf, 0, NULL );
 #else
     return bcore_external_b_alloc(       buf, 0, NULL );
-#endif // USE_BCORE_MEMORY_MANAGER
+#endif // USE_BCORE_TBMAN
 }
 
 vd_t bcore_alloc( vd_t buf, sz_t size )
 {
-#ifdef USE_BCORE_MEMORY_MANAGER
-    return bcore_memory_manager_b_alloc( buf, size, NULL );
+#ifdef USE_BCORE_TBMAN
+    return bcore_tbman_b_alloc( buf, size, NULL );
 #else
     return bcore_external_b_alloc( buf, size, NULL );
-#endif // USE_BCORE_MEMORY_MANAGER
+#endif // USE_BCORE_TBMAN
 }
 
 vd_t bcore_b_alloc( vd_t current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
 {
-#ifdef USE_BCORE_MEMORY_MANAGER
-    return bcore_memory_manager_b_alloc( current_ptr, requested_bytes, granted_bytes );
+#ifdef USE_BCORE_TBMAN
+    return bcore_tbman_b_alloc( current_ptr, requested_bytes, granted_bytes );
 #else
     return bcore_external_b_alloc( current_ptr, requested_bytes, granted_bytes );
-#endif // USE_BCORE_MEMORY_MANAGER
+#endif // USE_BCORE_TBMAN
 }
 
 vd_t bcore_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
 {
-#ifdef USE_BCORE_MEMORY_MANAGER
-    return bcore_memory_manager_bn_alloc( current_ptr, current_bytes, requested_bytes, granted_bytes );
+#ifdef USE_BCORE_TBMAN
+    return bcore_tbman_bn_alloc( current_ptr, current_bytes, requested_bytes, granted_bytes );
 #else
     return bcore_external_bn_alloc( current_ptr, current_bytes, requested_bytes, granted_bytes );
-#endif // USE_BCORE_MEMORY_MANAGER
+#endif // USE_BCORE_TBMAN
 }
 
 vd_t bcore_u_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t requested_units, sz_t* granted_units )
 {
-#ifdef USE_BCORE_MEMORY_MANAGER
-    return bcore_memory_manager_u_alloc( unit_bytes, current_ptr, requested_units, granted_units );
+#ifdef USE_BCORE_TBMAN
+    return bcore_tbman_u_alloc( unit_bytes, current_ptr, requested_units, granted_units );
 #else
     return bcore_external_u_alloc( unit_bytes, current_ptr, requested_units, granted_units );
-#endif // USE_BCORE_MEMORY_MANAGER
+#endif // USE_BCORE_TBMAN
 }
 
 vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t requested_units, sz_t* granted_units )
 {
-#ifdef USE_BCORE_MEMORY_MANAGER
-    return bcore_memory_manager_un_alloc( unit_bytes, current_ptr, current_units, requested_units, granted_units );
+#ifdef USE_BCORE_TBMAN
+    return bcore_tbman_un_alloc( unit_bytes, current_ptr, current_units, requested_units, granted_units );
 #else
     return bcore_external_un_alloc( unit_bytes, current_ptr, current_units, requested_units, granted_units );
-#endif // USE_BCORE_MEMORY_MANAGER
+#endif // USE_BCORE_TBMAN
 }
 
 /**********************************************************************************************************************/
