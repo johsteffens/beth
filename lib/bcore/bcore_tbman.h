@@ -1,5 +1,9 @@
 /// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
+/** An adapted, simplified and stand-alone version of this memory manager has
+ *  been released on https://github.com/johsteffens/tbman under a public license.
+ */
+
 #ifndef BCORE_TBMAN_H
 #define BCORE_TBMAN_H
 
@@ -73,22 +77,44 @@ static inline void bcore_tbman_free(    vd_t ptr            ) {        bcore_tbm
 sz_t bcore_tbman_granted_space( void );
 sz_t bcore_tbman_s_granted_space( bcore_tbman_s* o );
 
-/// reference management
+/**********************************************************************************************************************/
+/// Reference Control
 
-vd_t bcore_tbman_s_rc_create(  bcore_tbman_s* o, tp_t type ); // creates an object setting up up reference control
-vd_t bcore_tbman_s_rc_fork(    bcore_tbman_s* o, vd_t ptr ); // forks a reference
-vd_t bcore_tbman_s_rc_discard( bcore_tbman_s* o, vd_t ptr ); // discards reference to object or array; returns NULL
+/// Forks a reference.
+vd_t bcore_tbman_s_rc_fork( bcore_tbman_s* o, vd_t ptr );
 
-vd_t bcore_tbman_s_rc_alloc
-(
-    bcore_tbman_s* o,
-    tp_t type,
-    vd_t current_ptr,
-    sz_t current_size,
-    sz_t requested_space,
-    sz_t* granted_space
-);
+/// Creates a root object with reference control.
+vd_t bcore_tbman_s_rc_create( bcore_tbman_s* o, tp_t type );
 
+/** Updates type of root object in rcp.
+ *  Sets up reference control if not existing.
+ *  Does not modify the object itself.
+ */
+void bcore_tbman_s_rc_update( bcore_tbman_s* o, vc_t ptr, tp_t type );
+
+/// Discards reference to object (ptr can also be an array); returns NULL
+vd_t bcore_tbman_s_rc_discard( bcore_tbman_s* o, vd_t ptr );
+
+/// Creates an array of given space and size 0 with reference control.
+vd_t bcore_tbman_s_rc_create_arr(  bcore_tbman_s* o, tp_t type, sz_t space );
+
+/** Updates array info of root object in rcp.
+ *  Sets up reference control if not existing.
+ *  Does not modify the array itself.
+ */
+void bcore_tbman_s_rc_update_arr(  bcore_tbman_s* o, vc_t arr_ptr, tp_t type, sz_t size );
+
+/// Discards array reference to object; Updated array info if necessary; returns NULL
+vd_t bcore_tbman_s_rc_discard_arr( bcore_tbman_s* o, vd_t arr_ptr, tp_t type, sz_t size );
+
+/// Above functions with internal memory manager
+vd_t bcore_tbman_rc_fork       ( vd_t ptr            );
+vd_t bcore_tbman_rc_create     (           tp_t type );
+void bcore_tbman_rc_update     ( vc_t ptr, tp_t type );
+vd_t bcore_tbman_rc_discard    ( vd_t ptr            );
+vd_t bcore_tbman_rc_create_arr (               tp_t type, sz_t space );
+void bcore_tbman_rc_update_arr ( vc_t arr_ptr, tp_t type, sz_t size  );
+vd_t bcore_tbman_rc_discard_arr( vd_t arr_ptr, tp_t type, sz_t size  );
 
 vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object );
 

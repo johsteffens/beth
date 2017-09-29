@@ -34,8 +34,6 @@
 
 vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
 {
-
-
     bcore_fp_signal arr[] =
     {
         /// system critical items (keep order)

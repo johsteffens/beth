@@ -1,5 +1,9 @@
 /// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
+/** An adapted, simplified and stand-alone version of this memory manager has
+ *  been released on https://github.com/johsteffens/tbman under a public license.
+ */
+
 #include "bcore_tbman.h"
 #include "bcore_control.h"
 #include "bcore_btree.h"
@@ -90,9 +94,9 @@ vd_t bcore_tbman_external_u_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t reque
  */
 typedef struct token_manager_s
 {
-    sz_t pool_size;
-    sz_t block_size;
-    u1_t stack_size;  // size of token-stack
+    sz_t pool_size;   // size of pool in bytes
+    sz_t block_size;  // size of block in bytes
+    u1_t stack_size;  // size of token-stack ( == pool_size / block_size )
     u1_t stack_index; // index into token-stack
 
     /** aligned
@@ -105,6 +109,8 @@ typedef struct token_manager_s
     struct block_manager_s* parent;
     sz_t parent_index;
 
+    vd_t* rc_arr; // array of reference controls
+
     u1_t  token_stack[]; // stack of block-tokens (part of pool)
 } token_manager_s;
 
@@ -116,6 +122,7 @@ static void token_manager_s_init( token_manager_s* o )
 
 static void token_manager_s_down( token_manager_s* o )
 {
+    if( o->rc_arr ) free( o->rc_arr );
 }
 
 static token_manager_s* token_manager_s_create( sz_t pool_size, sz_t block_size, bl_t align )
@@ -149,6 +156,15 @@ static token_manager_s* token_manager_s_create( sz_t pool_size, sz_t block_size,
     return o;
 }
 
+static void token_manager_s_setup_rc_arr( token_manager_s* o )
+{
+    if( o->rc_arr ) return;
+    sz_t size = sizeof( vd_t ) * o->stack_size;
+    o->rc_arr = malloc( size );
+    bcore_memzero( o->rc_arr, size );
+    if( !o->rc_arr ) ERR( "Failed allocating %zu bytes", size );
+}
+
 static void token_manager_s_discard( token_manager_s* o )
 {
     if( !o ) return;
@@ -172,6 +188,20 @@ static vd_t token_manager_s_alloc( token_manager_s* o )
     vd_t ret = ( u0_t* )o + o->token_stack[ o->stack_index ] * o->block_size;
     assert( ( u0_t* )ret >= ( u0_t* )o + sizeof( token_manager_s ) );
     o->stack_index++;
+    return ret;
+}
+
+static vd_t token_manager_s_alloc_rc( token_manager_s* o, vd_t rc )
+{
+    assert( !token_manager_s_is_full( o ) );
+    sz_t token = o->token_stack[ o->stack_index ];
+    vd_t ret = ( u0_t* )o + token * o->block_size;
+    assert( ( u0_t* )ret >= ( u0_t* )o + sizeof( token_manager_s ) );
+    o->stack_index++;
+
+    if( !o->rc_arr ) token_manager_s_setup_rc_arr( o );
+    o->rc_arr[ token ] = rc;
+
     return ret;
 }
 
@@ -339,6 +369,15 @@ static vd_t block_manager_s_alloc( block_manager_s* o )
     return ret;
 }
 
+static vd_t block_manager_s_alloc_rc( block_manager_s* o, vd_t rc )
+{
+    if( o->free_index == o->size ) block_manager_s_acquire_token_manager( o );
+    token_manager_s* child = o->data[ o->free_index ];
+    vd_t ret = token_manager_s_alloc_rc( child, rc );
+    if( token_manager_s_is_full( child ) ) o->free_index++;
+    return ret;
+}
+
 // A child reports turning full --> free
 static void block_manager_s_full_to_free( block_manager_s* o, token_manager_s* child )
 {
@@ -462,46 +501,49 @@ typedef struct ext_s // external item
 static void ext_s_init( ext_s* o ) { bcore_memzero( o, sizeof( ext_s ) ); }
 static void ext_s_down( ext_s* o ) {}
 
-typedef struct external_manager_s
+typedef struct extman_s
 {
     block_manager_s   bm_ext;
     bcore_btree_vd_s* tm_btree; // btree of token managers
+    bcore_btree_pp_s* ex_btree; // btree of external references
     sz_t              pool_size;
     bl_t              aligned;
-} external_manager_s;
+} extman_s;
 
 
-static void external_manager_s_lost_alignment( external_manager_s* o )
+static void extman_s_lost_alignment( extman_s* o )
 {
     o->aligned = false;
 }
 
-static void external_manager_s_init( external_manager_s* o, sz_t pool_size, bl_t full_align )
+static void extman_s_init( extman_s* o, sz_t pool_size, bl_t full_align )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->pool_size = pool_size;
     block_manager_s_init( &o->bm_ext, pool_size, sizeof( ext_s ), full_align );
     o->tm_btree = bcore_btree_vd_s_create( bcore_tbman_external_alloc );
+    o->ex_btree = bcore_btree_pp_s_create( bcore_tbman_external_alloc );
     o->bm_ext.internal_btree = o->tm_btree;
     o->bm_ext.parent = o;
-    o->bm_ext.fp_lost_alignment = external_manager_s_lost_alignment;
+    o->bm_ext.fp_lost_alignment = extman_s_lost_alignment;
     o->aligned = true;
 }
 
-static void external_manager_s_down( external_manager_s* o )
+static void extman_s_down( extman_s* o )
 {
     block_manager_s_down( &o->bm_ext );
     bcore_btree_vd_s_discard( o->tm_btree );
+    bcore_btree_pp_s_discard( o->ex_btree );
 }
 
-static ext_s* external_manager_s_new( external_manager_s* o )
+static ext_s* extman_s_new( extman_s* o )
 {
     ext_s* ext = block_manager_s_alloc( &o->bm_ext );
     ext_s_init( ext );
     return ext;
 }
 
-static void external_manager_s_del( external_manager_s* o, ext_s* ext )
+static void extman_s_del( extman_s* o, ext_s* ext )
 {
     ext_s_down( ext );
     if( o->aligned )
@@ -513,6 +555,58 @@ static void external_manager_s_del( external_manager_s* o, ext_s* ext )
     {
         token_manager_s_free( bcore_btree_vd_s_largest_below_equal( o->tm_btree, ext ), ext );
     }
+}
+
+static vd_t extman_s_malloc( extman_s* o, sz_t requested_bytes, sz_t* granted_bytes )
+{
+    vd_t ptr = aligned_alloc( TBMAN_ALIGN, requested_bytes );
+    if( !ptr ) ERR( "Failed allocating %zu bytes.", requested_bytes );
+    if( granted_bytes ) *granted_bytes = requested_bytes;
+    ext_s* ext = extman_s_new( o );
+    ext->size = requested_bytes;
+    if( bcore_btree_pp_s_set( o->ex_btree, ptr, ext ) != 1 ) ERR( "Registering new address failed" );
+    return ptr;
+}
+
+static vd_t extman_s_malloc_rc( extman_s* o, sz_t requested_bytes, sz_t* granted_bytes, vd_t rc )
+{
+    vd_t ptr = aligned_alloc( TBMAN_ALIGN, requested_bytes );
+    if( !ptr ) ERR( "Failed allocating %zu bytes.", requested_bytes );
+    if( granted_bytes ) *granted_bytes = requested_bytes;
+    ext_s* ext = extman_s_new( o );
+    ext->size = requested_bytes;
+    ext->rc = rc;
+    if( bcore_btree_pp_s_set( o->ex_btree, ptr, ext ) != 1 ) ERR( "Registering new address failed" );
+    return ptr;
+}
+
+static void extman_free( extman_s* o, vd_t ptr )
+{
+    vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
+    if( !ext_p ) ERR( "Attempt to free invalid memory" );
+    ext_s* ext = *ext_p;
+    bcore_btree_pp_s_remove( o->ex_btree, ptr );
+    extman_s_del( o, ext );
+    free( ptr );
+}
+
+static sz_t extman_s_granted_bytes( extman_s* o, vd_t ptr )
+{
+    vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
+    if( !ext_p ) ERR( "Could not retrieve current external memory" );
+    return ( ( ext_s* )*ext_p )->size;
+}
+
+static void ext_sum( vd_t val, bcore_btree_pp_kv_s kv )
+{
+    *(sz_t*)val += ( ( ext_s* )kv.val )->size;
+}
+
+static sz_t extman_s_total_alloc( const extman_s* o )
+{
+    sz_t size = 0;
+    bcore_btree_pp_s_run( o->ex_btree, ext_sum, &size );
+    return size;
 }
 
 /**********************************************************************************************************************/
@@ -528,11 +622,9 @@ typedef struct rcp_s // reference control of a plain item
 
 typedef struct rca_s // reference control of an array-item
 {
-    sz_t count;          // reference counter
-    const bcore_inst_s* inst;  // instance perspective of array-item
-    sz_t size;           // number of active elements of array (array memory may be bigger)
+    rcp_s rcp;
+    sz_t size; // number of active elements of array (array memory may be bigger)
 } rca_s;
-
 
 static void rcp_s_init( rcp_s* o ) { bcore_memzero( o, sizeof( rcp_s ) ); }
 static void rca_s_init( rca_s* o ) { bcore_memzero( o, sizeof( rca_s ) ); }
@@ -546,7 +638,7 @@ typedef struct rcman_s
     bl_t              aligned;
 } rcman_s;
 
-static void rcman_s_lost_alignment( external_manager_s* o )
+static void rcman_s_lost_alignment( extman_s* o )
 {
     o->aligned = false;
 }
@@ -588,16 +680,15 @@ static rca_s* rcman_s_new_rca( rcman_s* o )
     return rca;
 }
 
-static void rcman_s_del( rcman_s* o, vd_t rc )
+static token_manager_s* rcman_s_get_tm( rcman_s* o, vd_t rc )
 {
     if( o->aligned )
     {
-        token_manager_s* token_manager = ( token_manager_s* )( ( intptr_t )rc & ~( intptr_t )( o->pool_size - 1 ) );
-        token_manager_s_free( token_manager, rc );
+        return ( token_manager_s* )( ( intptr_t )rc & ~( intptr_t )( o->pool_size - 1 ) );
     }
     else
     {
-        token_manager_s_free( bcore_btree_vd_s_largest_below_equal( o->tm_btree, rc ), rc );
+        return bcore_btree_vd_s_largest_below_equal( o->tm_btree, rc );
     }
 }
 
@@ -631,19 +722,17 @@ typedef struct bcore_tbman_s
     bl_t aligned;                 // all token managers are aligned
     sz_t* block_size_array;       // copy of block size values (for fast access)
     bcore_btree_vd_s* internal_btree;
-    bcore_btree_pp_s* external_btree;
-    external_manager_s  external_manager;
-    rcman_s rcman;
-
+    extman_s  extman;
+    rcman_s   rcman;
     bcore_mutex_t mutex;
 } bcore_tbman_s;
 
-static inline void bcore_tbman_s_lock( bcore_tbman_s* o )
+static inline void tbman_s_lock( bcore_tbman_s* o )
 {
     bcore_mutex_lock( &o->mutex );
 }
 
-static inline void bcore_tbman_s_unlock( bcore_tbman_s* o )
+static inline void tbman_s_unlock( bcore_tbman_s* o )
 {
     bcore_mutex_unlock( &o->mutex );
 }
@@ -659,7 +748,6 @@ void bcore_tbman_s_init( bcore_tbman_s* o, sz_t pool_size, sz_t min_block_size, 
     bcore_mutex_init( &o->mutex );
 
     o->internal_btree = bcore_btree_vd_s_create( bcore_tbman_external_alloc );
-    o->external_btree = bcore_btree_pp_s_create( bcore_tbman_external_alloc );
 
     /// The following three values are configurable parameters of memory manager
     o->pool_size      = pool_size;
@@ -713,14 +801,14 @@ void bcore_tbman_s_init( bcore_tbman_s* o, sz_t pool_size, sz_t min_block_size, 
         o->block_size_array[ i ] = o->data[ i ]->block_size;
     }
 
-    external_manager_s_init( &o->external_manager, pool_size, full_align );
+    extman_s_init( &o->extman, pool_size, full_align );
     rcman_s_init( &o->rcman, pool_size, full_align );
 }
 
 void bcore_tbman_s_down( bcore_tbman_s* o )
 {
-    bcore_mutex_lock( &o->mutex );
-    external_manager_s_down( &o->external_manager );
+    tbman_s_lock( o );
+    extman_s_down( &o->extman );
     rcman_s_down( &o->rcman );
 
     if( o->data )
@@ -730,9 +818,8 @@ void bcore_tbman_s_down( bcore_tbman_s* o )
     }
 
     bcore_btree_vd_s_discard( o->internal_btree );
-    bcore_btree_pp_s_discard( o->external_btree );
 
-    bcore_mutex_unlock( &o->mutex );
+    tbman_s_unlock( o );
     bcore_mutex_down( &o->mutex );
 }
 
@@ -751,7 +838,7 @@ void bcore_tbman_s_discard( bcore_tbman_s* o )
     free( o );
 }
 
-static vd_t bcore_tbman_s_malloc( bcore_tbman_s* o, sz_t requested_bytes, sz_t* granted_bytes )
+static vd_t tbman_s_malloc( bcore_tbman_s* o, sz_t requested_bytes, sz_t* granted_bytes )
 {
     block_manager_s* block_manager = NULL;
     for( sz_t i = 0; i < o->size; i++ )
@@ -771,19 +858,41 @@ static vd_t bcore_tbman_s_malloc( bcore_tbman_s* o, sz_t requested_bytes, sz_t* 
     }
     else
     {
-        reserved_ptr = aligned_alloc( TBMAN_ALIGN, requested_bytes );
-        if( !reserved_ptr ) ERR( "Failed allocating %zu bytes.", requested_bytes );
-        if( granted_bytes ) *granted_bytes = requested_bytes;
-
-        ext_s* ext = external_manager_s_new( &o->external_manager );
-        ext->size = requested_bytes;
-        if( bcore_btree_pp_s_set( o->external_btree, reserved_ptr, ext ) != 1 ) ERR( "Registering new address failed" );
+        reserved_ptr = extman_s_malloc( &o->extman, requested_bytes, granted_bytes );
     }
 
     return reserved_ptr;
 }
 
-static void bcore_tbman_s_free( bcore_tbman_s* o, vd_t current_ptr, const sz_t* current_bytes )
+/// alloc with runtime control
+static vd_t tbman_s_malloc_rc( bcore_tbman_s* o, sz_t requested_bytes, sz_t* granted_bytes, vd_t rc )
+{
+    block_manager_s* block_manager = NULL;
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        if( requested_bytes <= o->block_size_array[ i ] )
+        {
+            block_manager = o->data[ i ];
+            break;
+        }
+    }
+
+    vd_t reserved_ptr = NULL;
+    if( block_manager )
+    {
+        reserved_ptr = block_manager_s_alloc_rc( block_manager, rc );
+        if( granted_bytes ) *granted_bytes = block_manager->block_size;
+
+    }
+    else
+    {
+        reserved_ptr = extman_s_malloc_rc( &o->extman, requested_bytes, granted_bytes, rc );
+    }
+
+    return reserved_ptr;
+}
+
+static void tbman_s_free( bcore_tbman_s* o, vd_t current_ptr, const sz_t* current_bytes )
 {
     if( current_bytes && *current_bytes <= o->max_block_size && o->aligned )
     {
@@ -799,17 +908,12 @@ static void bcore_tbman_s_free( bcore_tbman_s* o, vd_t current_ptr, const sz_t* 
         }
         else
         {
-            vd_t* ext_p = bcore_btree_pp_s_val( o->external_btree, current_ptr );
-            if( !ext_p ) ERR( "Attempt to free invalid memory" );
-            ext_s* ext = *ext_p;
-            bcore_btree_pp_s_remove( o->external_btree, current_ptr );
-            external_manager_s_del( &o->external_manager, ext );
-            free( current_ptr );
+            extman_free( &o->extman, current_ptr );
         }
     }
 }
 
-static vd_t bcore_tbman_s_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t* current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
+static vd_t tbman_s_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t* current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
 {
     token_manager_s* token_manager = NULL;
     if( current_bytes && *current_bytes <= o->max_block_size && o->aligned )
@@ -826,7 +930,7 @@ static vd_t bcore_tbman_s_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_
     {
         if( requested_bytes > token_manager->block_size )
         {
-            vd_t reserved_ptr = bcore_tbman_s_malloc( o, requested_bytes, granted_bytes );
+            vd_t reserved_ptr = tbman_s_malloc( o, requested_bytes, granted_bytes );
             bcore_memcpy( reserved_ptr, current_ptr, token_manager->block_size );
             token_manager_s_free( token_manager, current_ptr );
             return reserved_ptr;
@@ -863,55 +967,27 @@ static vd_t bcore_tbman_s_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_
     {
         if( requested_bytes <= o->max_block_size ) // new size fits into manager, old size was outside manager
         {
-            vd_t reserved_ptr = bcore_tbman_s_malloc( o, requested_bytes, granted_bytes );
+            vd_t reserved_ptr = tbman_s_malloc( o, requested_bytes, granted_bytes );
             bcore_memcpy( reserved_ptr, current_ptr, requested_bytes );
-            vd_t* ext_p = bcore_btree_pp_s_val( o->external_btree, current_ptr );
-            if( !ext_p ) ERR( "Attempt to free invalid memory" );
-            ext_s* ext = *ext_p;
-            bcore_btree_pp_s_remove( o->external_btree, current_ptr );
-            external_manager_s_del( &o->external_manager, ext );
-            free( current_ptr );
+            extman_free( &o->extman, current_ptr );
             return reserved_ptr;
         }
         else // neither old nor new size handled by this manager
         {
-            sz_t current_ext_bytes;
-            {
-                vd_t* ext_p = bcore_btree_pp_s_val( o->external_btree, current_ptr );
-                if( !ext_p ) ERR( "Could not retrieve current external memory" );
-                current_ext_bytes = ( ( ext_s* )*ext_p )->size;
-            }
 
-            // is requested bytes is less but not significantly less than current bytes, keep current memory
+            sz_t current_ext_bytes = extman_s_granted_bytes( &o->extman, current_ptr );
+
+            // if requested bytes is less but not significantly less than current bytes, keep current memory
             if( ( requested_bytes < current_ext_bytes ) && ( requested_bytes >= ( current_ext_bytes >> 1 ) ) )
             {
                 if( granted_bytes ) *granted_bytes = current_ext_bytes;
                 return current_ptr;
             }
 
-            vd_t reserved_ptr = aligned_alloc( TBMAN_ALIGN, requested_bytes );
-            if( !reserved_ptr ) ERR( "Failed allocating %zu bytes.", requested_bytes );
-            if( granted_bytes ) *granted_bytes = requested_bytes;
-
-
-            {
-                ext_s* ext = external_manager_s_new( &o->external_manager );
-                ext->size = requested_bytes;
-                if( bcore_btree_pp_s_set( o->external_btree, reserved_ptr, ext ) != 1 ) ERR( "Registering new address failed" );
-            }
-
+            vd_t reserved_ptr = extman_s_malloc( &o->extman, requested_bytes, granted_bytes );
             sz_t copy_bytes = ( requested_bytes < current_ext_bytes ) ? requested_bytes : current_ext_bytes;
             bcore_memcpy( reserved_ptr, current_ptr, copy_bytes );
-
-            {
-                vd_t* ext_p = bcore_btree_pp_s_val( o->external_btree, current_ptr );
-                if( !ext_p ) ERR( "Attempt to free invalid memory" );
-                ext_s* ext = *ext_p;
-                bcore_btree_pp_s_remove( o->external_btree, current_ptr );
-                external_manager_s_del( &o->external_manager, ext );
-            }
-
-            free( current_ptr );
+            extman_free( &o->extman, current_ptr );
             return reserved_ptr;
         }
     }
@@ -919,13 +995,13 @@ static vd_t bcore_tbman_s_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_
 
 vd_t bcore_tbman_s_b_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
 {
-    bcore_mutex_lock( &o->mutex );
+    tbman_s_lock( o );
     vd_t ret = NULL;
     if( requested_bytes == 0 )
     {
         if( current_ptr )
         {
-            bcore_tbman_s_free( o, current_ptr, NULL );
+            tbman_s_free( o, current_ptr, NULL );
         }
         if( granted_bytes ) *granted_bytes = 0;
     }
@@ -933,26 +1009,26 @@ vd_t bcore_tbman_s_b_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t requested_b
     {
         if( current_ptr )
         {
-            ret = bcore_tbman_s_realloc( o, current_ptr, NULL, requested_bytes, granted_bytes );
+            ret = tbman_s_realloc( o, current_ptr, NULL, requested_bytes, granted_bytes );
         }
         else
         {
-            ret = bcore_tbman_s_malloc( o, requested_bytes, granted_bytes );
+            ret = tbman_s_malloc( o, requested_bytes, granted_bytes );
         }
     }
-    bcore_mutex_unlock( &o->mutex );
+    tbman_s_unlock( o );
     return ret;
 }
 
 vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
 {
-    bcore_mutex_lock( &o->mutex );
+    tbman_s_lock( o );
     vd_t ret = NULL;
     if( requested_bytes == 0 )
     {
         if( current_bytes ) // 0 means current_ptr may not be used for free or realloc
         {
-            bcore_tbman_s_free( o, current_ptr, &current_bytes );
+            tbman_s_free( o, current_ptr, &current_bytes );
         }
         if( granted_bytes ) *granted_bytes = 0;
     }
@@ -960,14 +1036,14 @@ vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t current_by
     {
         if( current_bytes ) // 0 means current_ptr may not be used for free or realloc
         {
-            ret = bcore_tbman_s_realloc( o, current_ptr, &current_bytes, requested_bytes, granted_bytes );
+            ret = tbman_s_realloc( o, current_ptr, &current_bytes, requested_bytes, granted_bytes );
         }
         else
         {
-            ret = bcore_tbman_s_malloc( o, requested_bytes, granted_bytes );
+            ret = tbman_s_malloc( o, requested_bytes, granted_bytes );
         }
     }
-    bcore_mutex_unlock( &o->mutex );
+    tbman_s_unlock( o );
     return ret;
 }
 
@@ -985,19 +1061,7 @@ vd_t bcore_tbman_s_un_alloc( bcore_tbman_s* o, sz_t unit_bytes, vd_t current_ptr
     return reserved_ptr;
 }
 
-static void ext_sum( vd_t val, bcore_btree_pp_kv_s kv )
-{
-    *(sz_t*)val += ( ( ext_s* )kv.val )->size;
-}
-
-static sz_t bcore_tbman_s_total_external_alloc( const bcore_tbman_s* o )
-{
-    sz_t size = 0;
-    bcore_btree_pp_s_run( o->external_btree, ext_sum, &size );
-    return size;
-}
-
-static sz_t bcore_tbman_s_total_internal_alloc( const bcore_tbman_s* o )
+static sz_t tbman_s_total_internal_alloc( const bcore_tbman_s* o )
 {
     sz_t sum = 0;
     for( sz_t i = 0; i < o->size; i++ )
@@ -1007,20 +1071,19 @@ static sz_t bcore_tbman_s_total_internal_alloc( const bcore_tbman_s* o )
     return sum;
 }
 
-static sz_t bcore_tbman_s_total_alloc( const bcore_tbman_s* o )
+static sz_t tbman_s_total_alloc( const bcore_tbman_s* o )
 {
-    return bcore_tbman_s_total_external_alloc( o )
-         + bcore_tbman_s_total_internal_alloc( o );
+    return extman_s_total_alloc( &o->extman ) + tbman_s_total_internal_alloc( o );
 }
 
-static sz_t bcore_tbman_s_total_space( const bcore_tbman_s* o )
+static sz_t tbman_s_total_space( const bcore_tbman_s* o )
 {
     sz_t sum = 0;
     for( sz_t i = 0; i < o->size; i++ )
     {
         sum += block_manager_s_total_space( o->data[ i ] );
     }
-    sum += block_manager_s_total_space( &o->external_manager.bm_ext );
+    sum += block_manager_s_total_space( &o->extman.bm_ext );
     return sum;
 }
 
@@ -1028,14 +1091,234 @@ static sz_t bcore_tbman_s_total_space( const bcore_tbman_s* o )
 /**********************************************************************************************************************/
 /** Reference-Control */
 
+vd_t bcore_tbman_s_rc_create( bcore_tbman_s* o, tp_t type )
+{
+    tbman_s_lock( o );
+    const bcore_inst_s* inst = bcore_inst_s_get_typed( type );
+    rcp_s* rcp = rcman_s_new_rcp( &o->rcman );
+    rcp->inst = inst;
+    vd_t ptr = tbman_s_malloc_rc( o, inst->size, NULL, rcp );
+    tbman_s_unlock( o );
+
+    bcore_inst_spect_init( inst, ptr );
+    return ptr;
+}
+
+// updates array rc settings
+static void tbman_s_rc_update( bcore_tbman_s* o, rcp_s* rcp, tp_t type )
+{
+    token_manager_s* rc_tm = rcman_s_get_tm( &o->rcman, rcp );
+    if( rcp->inst && !rcp->inst->down_flat )
+    {
+        if( ( rc_tm->parent == &o->rcman.bm_rca ) )
+        {
+            ERR( "Target is an array." );
+        }
+        rcp->inst = ch_spect( rcp->inst, type );
+    }
+}
+
+/// Obtains reference control for root object; Creates empty rc it if not existing
+static rcp_s** tbman_s_fgetprc( bcore_tbman_s* o, vc_t ptr )
+{
+    vd_t block_ptr = bcore_btree_vd_s_largest_below_equal( o->internal_btree, ( vd_t )ptr );
+    rcp_s** p_rc;
+    if( block_ptr && ( ( ptrdiff_t )( (u0_t*)ptr - (u0_t*)block_ptr ) < o->pool_size ) )
+    {
+        token_manager_s* tm = block_ptr;
+        sz_t offset = ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )tm );
+        sz_t token = offset / tm->block_size;
+        if( token * tm->block_size != offset )
+        {
+            ERR( "Target and root_address differ. Target seems to be a nested object.");
+        }
+        if( !tm->rc_arr ) token_manager_s_setup_rc_arr( tm );
+        p_rc = ( rcp_s** )&tm->rc_arr[ token ];
+    }
+    else
+    {
+        vd_t* ext_p = bcore_btree_pp_s_val( o->extman.ex_btree, ( vd_t )ptr );
+        if( !ext_p ) ERR( "Attempt to update an invalid reference." );
+        p_rc = ( rcp_s** )&( ( ext_s* )*ext_p )->rc;
+    }
+    return p_rc;
+}
+
+void bcore_tbman_s_rc_update( bcore_tbman_s* o, vc_t ptr, tp_t type )
+{
+    tbman_s_lock( o );
+    rcp_s** p_rc = tbman_s_fgetprc( o, ptr );
+    if( !*p_rc ) *p_rc = rcman_s_new_rcp( &o->rcman );
+    rcp_s* rcp = *p_rc;
+    tbman_s_rc_update( o, rcp, type );
+    tbman_s_unlock( o );
+}
+
+vd_t bcore_tbman_s_rc_fork( bcore_tbman_s* o, vd_t ptr )
+{
+    tbman_s_lock( o );
+    vd_t block_ptr = bcore_btree_vd_s_largest_below_equal( o->internal_btree, ptr );
+    rcp_s* rcp;
+    if( block_ptr && ( ( ptrdiff_t )( (u0_t*)ptr - (u0_t*)block_ptr ) < o->pool_size ) )
+    {
+        token_manager_s* tm = block_ptr;
+        if( !tm->rc_arr ) ERR( "Token manager of target is not under reference control.");
+        sz_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )tm ) ) / tm->block_size;
+        rcp = tm->rc_arr[ token ];
+    }
+    else
+    {
+        bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->extman.ex_btree, ptr );
+        if( !kv || !kv->val ) ERR( "Attempt to discard an invalid reference." );
+        ext_s* ext = kv->val;
+        vd_t root_obj = kv->key;
+        if( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )root_obj ) >= ext->size ) ERR( "Attempt to discard an invalid reference." );
+        rcp = ext->rc;
+    }
+
+    if( !rcp ) ERR( "Target is not under reference control.");
+    rcp->count++;
+    tbman_s_unlock( o );
+    return ptr;
+}
+
+// shuts down object and reference control; assumes o is currently locked
+static void tbman_s_rc_down( bcore_tbman_s* o, rcp_s* rcp, vd_t obj )
+{
+    token_manager_s* rc_tm = rcman_s_get_tm( &o->rcman, rcp );
+    if( rcp->inst && !rcp->inst->down_flat ) // shut down root object
+    {
+        const bcore_inst_s* inst = rcp->inst;
+        if( rc_tm->parent == &o->rcman.bm_rca ) // root object is an array
+        {
+            sz_t size = ( ( rca_s* )rcp )->size;
+            token_manager_s_free( rc_tm, rcp );
+            if( size > 0 )
+            {
+                sz_t item_size = inst->size;
+                tbman_s_unlock( o );
+                for( sz_t i = 0; i < size; i++ ) bcore_inst_spect_down( inst, ( ( u0_t* )obj ) + i * item_size );
+                tbman_s_lock( o );
+            }
+        }
+        else
+        {
+            token_manager_s_free( rc_tm, rcp );
+            tbman_s_unlock( o );
+            bcore_inst_spect_down( inst, obj );
+            tbman_s_lock( o );
+        }
+    }
+}
+
+vd_t bcore_tbman_s_rc_discard( bcore_tbman_s* o, vd_t ptr )
+{
+    tbman_s_lock( o );
+    vd_t block_ptr = bcore_btree_vd_s_largest_below_equal( o->internal_btree, ptr );
+    if( block_ptr && ( ( ptrdiff_t )( (u0_t*)ptr - (u0_t*)block_ptr ) < o->pool_size ) )
+    {
+        token_manager_s* tm = block_ptr;
+        if( !tm->rc_arr ) ERR( "Token manager of target is not under reference control.");
+        sz_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )tm ) ) / tm->block_size;
+
+        rcp_s* rcp = tm->rc_arr[ token ];
+        if( !rcp ) ERR( "Target is not under reference control.");
+
+        if( rcp->count )
+        {
+            rcp->count--;
+        }
+        else
+        {
+            tm->rc_arr[ token ] = NULL;
+
+            // root object referenced by ptr
+            vd_t root_obj = ( ( u0_t* )tm ) + tm->block_size * token;
+
+            // at this point the root object is no longer externally referenced
+            tbman_s_rc_down( o, rcp, root_obj );
+            token_manager_s_free( tm, root_obj );
+        }
+    }
+    else
+    {
+        bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->extman.ex_btree, ptr );
+        if( !kv || !kv->val ) ERR( "Attempt to discard an invalid reference." );
+        ext_s* ext = kv->val;
+        vd_t root_obj = kv->key;
+        if( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )root_obj ) >= ext->size ) ERR( "Attempt to discard an invalid reference." );
+
+        rcp_s* rcp = ext->rc;
+        if( !rcp ) ERR( "Target is not under reference control.");
+
+        if( rcp->count )
+        {
+            rcp->count--;
+        }
+        else
+        {
+            tbman_s_rc_down( o, rcp, root_obj );
+            extman_free( &o->extman, root_obj );
+        }
+
+    }
+    tbman_s_unlock( o );
+    return NULL;
+}
+
+vd_t bcore_tbman_s_rc_create_arr( bcore_tbman_s* o, tp_t type, sz_t space )
+{
+    tbman_s_lock( o );
+    const bcore_inst_s* inst = bcore_inst_s_get_typed( type );
+    rca_s* rca = rcman_s_new_rca( &o->rcman );
+    rca->rcp.inst = inst;
+    vd_t ptr = tbman_s_malloc_rc( o, inst->size * space, NULL, rca );
+    tbman_s_unlock( o );
+    return ptr;
+}
+
+// updates array rc settings
+static void tbman_s_rc_update_arr( bcore_tbman_s* o, rcp_s* rcp, tp_t type, sz_t size )
+{
+    token_manager_s* rc_tm = rcman_s_get_tm( &o->rcman, rcp );
+    if( rcp->inst && !rcp->inst->down_flat )
+    {
+        rcp->inst = ch_spect( rcp->inst, type );
+        if( ( rc_tm->parent == &o->rcman.bm_rca ) )
+        {
+            ( ( rca_s* )rcp )->size = size;
+        }
+        else
+        {
+            ERR( "Target is no array." );
+        }
+    }
+}
+
+void bcore_tbman_s_rc_update_arr( bcore_tbman_s* o, vc_t arr_ptr, tp_t type, sz_t size )
+{
+    tbman_s_lock( o );
+    rcp_s** p_rc = tbman_s_fgetprc( o, arr_ptr );
+    if( !*p_rc ) *p_rc = ( rcp_s* )rcman_s_new_rca( &o->rcman );
+    rcp_s* rcp = *p_rc;
+    tbman_s_rc_update_arr( o, rcp, type, size );
+    tbman_s_unlock( o );
+}
+
+vd_t bcore_tbman_s_rc_discard_arr( bcore_tbman_s* o, vd_t arr_ptr, tp_t type, sz_t size )
+{
+    bcore_tbman_s_rc_update_arr( o, arr_ptr, type, size );
+    return bcore_tbman_s_rc_discard( o, arr_ptr );
+}
+
 /**********************************************************************************************************************/
 // Global manager
 
-bcore_tbman_s* bcore_tbman_s_g = NULL;
+static bcore_tbman_s* tbman_s_g = NULL;
 
-static void bcore_create_tbman()
+static void create_tbman()
 {
-    bcore_tbman_s_g = bcore_tbman_s_create
+    tbman_s_g = bcore_tbman_s_create
     (
         default_pool_size,
         default_min_block_size,
@@ -1045,33 +1328,33 @@ static void bcore_create_tbman()
     );
 }
 
-static void bcore_discard_tbman()
+static void discard_tbman()
 {
-    bcore_tbman_s_discard( bcore_tbman_s_g );
-    bcore_tbman_s_g = NULL;
+    bcore_tbman_s_discard( tbman_s_g );
+    tbman_s_g = NULL;
 }
 
 static void tbman_open()
 {
     static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, bcore_create_tbman );
+    bcore_once( &flag, create_tbman );
 }
 
 static void tbman_close()
 {
-    bcore_discard_tbman();
+    discard_tbman();
 }
 
 vd_t bcore_tbman_b_alloc( vd_t current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
 {
-    assert( bcore_tbman_s_g != NULL );
-    return bcore_tbman_s_b_alloc( bcore_tbman_s_g, current_ptr, requested_bytes, granted_bytes );
+    assert( tbman_s_g != NULL );
+    return bcore_tbman_s_b_alloc( tbman_s_g, current_ptr, requested_bytes, granted_bytes );
 }
 
 vd_t bcore_tbman_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
 {
-    assert( bcore_tbman_s_g != NULL );
-    return bcore_tbman_s_bn_alloc( bcore_tbman_s_g, current_ptr, current_bytes, requested_bytes, granted_bytes );
+    assert( tbman_s_g != NULL );
+    return bcore_tbman_s_bn_alloc( tbman_s_g, current_ptr, current_bytes, requested_bytes, granted_bytes );
 }
 
 vd_t bcore_tbman_u_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t requested_units, sz_t* reserved_units )
@@ -1088,21 +1371,19 @@ vd_t bcore_tbman_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units
     return reserved_ptr;
 }
 
-sz_t bcore_tbman_s_granted_space( bcore_tbman_s* o )
+sz_t tbman_s_granted_space( bcore_tbman_s* o )
 {
-    bcore_mutex_lock( &o->mutex );
-    sz_t space = bcore_tbman_s_total_alloc( o );
-    bcore_mutex_unlock( &o->mutex );
+    tbman_s_lock( o );
+    sz_t space = tbman_s_total_alloc( o );
+    tbman_s_unlock( o );
     return space;
 }
 
 sz_t bcore_tbman_granted_space()
 {
-    assert( bcore_tbman_s_g != NULL );
-    return bcore_tbman_s_granted_space( bcore_tbman_s_g );
+    assert( tbman_s_g != NULL );
+    return tbman_s_granted_space( tbman_s_g );
 }
-
-
 
 // not thread-safe
 bcore_string_s* bcore_tbman_s_status( bcore_tbman_s* o, int detail_level )
@@ -1114,26 +1395,26 @@ bcore_string_s* bcore_tbman_s_status( bcore_tbman_s* o, int detail_level )
     bcore_string_s_pushf( str, "  pool_size:            %zu\n", o->pool_size );
     bcore_string_s_pushf( str, "  block managers:       %zu\n", o->size );
     bcore_string_s_pushf( str, "  token managers:       %zu\n", bcore_btree_vd_s_count( o->internal_btree, NULL, NULL ) );
-    bcore_string_s_pushf( str, "  external allocs:      %zu\n", bcore_btree_pp_s_count( o->external_btree, NULL, NULL ) );
+    bcore_string_s_pushf( str, "  external allocs:      %zu\n", bcore_btree_pp_s_count( o->extman.ex_btree, NULL, NULL ) );
     bcore_string_s_pushf( str, "  internal_btree depth: %zu\n", bcore_btree_vd_s_depth( o->internal_btree ) );
-    bcore_string_s_pushf( str, "  external_btree depth: %zu\n", bcore_btree_pp_s_depth( o->external_btree ) );
+    bcore_string_s_pushf( str, "  external_btree depth: %zu\n", bcore_btree_pp_s_depth( o->extman.ex_btree ) );
     bcore_string_s_pushf( str, "  min_block_size:       %zu\n", o->size > 0 ? o->data[ 0 ]->block_size : 0 );
     bcore_string_s_pushf( str, "  max_block_size:       %zu\n", o->size > 0 ? o->data[ o->size - 1 ]->block_size : 0 );
     bcore_string_s_pushf( str, "  aligned:              %s\n",  o->aligned ? "true" : "false" );
 
     bcore_string_s_pushf( str, "external manager\n" );
-    bcore_string_s_pushf( str, "  pool_size:            %zu\n", o->external_manager.pool_size );
-    bcore_string_s_pushf( str, "  token managers:       %zu\n", bcore_btree_vd_s_count( o->external_manager.tm_btree, NULL, NULL ) );
-    bcore_string_s_pushf( str, "  aligned:              %s\n",  o->external_manager.aligned ? "true" : "false" );
+    bcore_string_s_pushf( str, "  pool_size:            %zu\n", o->extman.pool_size );
+    bcore_string_s_pushf( str, "  token managers:       %zu\n", bcore_btree_vd_s_count( o->extman.tm_btree, NULL, NULL ) );
+    bcore_string_s_pushf( str, "  aligned:              %s\n",  o->extman.aligned ? "true" : "false" );
     bcore_string_s_pushf( str, "  item size:            %zu\n", sizeof( ext_s ) );
-    bcore_string_s_pushf( str, "  items:                %zu\n", block_manager_s_total_alloc( &o->external_manager.bm_ext ) / sizeof( ext_s ) );
-    bcore_string_s_pushf( str, "  alloc:                %zu\n", block_manager_s_total_alloc( &o->external_manager.bm_ext ) );
-    bcore_string_s_pushf( str, "  space:                %zu\n", block_manager_s_total_space( &o->external_manager.bm_ext ) );
+    bcore_string_s_pushf( str, "  items:                %zu\n", block_manager_s_total_alloc( &o->extman.bm_ext ) / sizeof( ext_s ) );
+    bcore_string_s_pushf( str, "  alloc:                %zu\n", block_manager_s_total_alloc( &o->extman.bm_ext ) );
+    bcore_string_s_pushf( str, "  space:                %zu\n", block_manager_s_total_space( &o->extman.bm_ext ) );
 
     bcore_string_s_pushf( str, "overall space\n" );
-    bcore_string_s_pushf( str, "  external granted:     %zu\n", bcore_tbman_s_total_external_alloc( o ) );
-    bcore_string_s_pushf( str, "  internal granted:     %zu\n", bcore_tbman_s_total_internal_alloc( o ) );
-    bcore_string_s_pushf( str, "  internal used:        %zu\n", bcore_tbman_s_total_space( o ) );
+    bcore_string_s_pushf( str, "  external granted:     %zu\n", extman_s_total_alloc( &o->extman ) );
+    bcore_string_s_pushf( str, "  internal granted:     %zu\n", tbman_s_total_internal_alloc( o ) );
+    bcore_string_s_pushf( str, "  internal used:        %zu\n", tbman_s_total_space( o ) );
     if( detail_level > 1 )
     {
         for( sz_t i = 0; i < o->size; i++ )
@@ -1146,11 +1427,63 @@ bcore_string_s* bcore_tbman_s_status( bcore_tbman_s* o, int detail_level )
     return str;
 }
 
+vd_t bcore_tbman_rc_fork( vd_t ptr )
+{
+    assert( tbman_s_g != NULL );
+    return bcore_tbman_s_rc_fork( tbman_s_g, ptr );
+}
+
+vd_t bcore_tbman_rc_create( tp_t type )
+{
+    assert( tbman_s_g != NULL );
+    return bcore_tbman_s_rc_create( tbman_s_g, type );
+}
+
+void bcore_tbman_rc_update( vc_t ptr, tp_t type )
+{
+    assert( tbman_s_g != NULL );
+    bcore_tbman_s_rc_update( tbman_s_g, ptr, type );
+}
+
+vd_t bcore_tbman_rc_discard( vd_t ptr )
+{
+    assert( tbman_s_g != NULL );
+    return bcore_tbman_s_rc_discard( tbman_s_g, ptr );
+}
+
+vd_t bcore_tbman_rc_create_arr( tp_t type, sz_t space )
+{
+    assert( tbman_s_g != NULL );
+    return bcore_tbman_s_rc_create_arr( tbman_s_g, type, space );
+}
+
+void bcore_tbman_rc_update_arr( vc_t arr_ptr, tp_t type, sz_t size  )
+{
+    assert( tbman_s_g != NULL );
+    bcore_tbman_s_rc_update_arr( tbman_s_g, arr_ptr, type, size );
+}
+
+vd_t bcore_tbman_rc_discard_arr( vd_t arr_ptr, tp_t type, sz_t size  )
+{
+    assert( tbman_s_g != NULL );
+    return bcore_tbman_s_rc_discard_arr( tbman_s_g, arr_ptr, type, size );
+}
+
 /**********************************************************************************************************************/
 // Testing and evaluation
 
-static bcore_string_s* bcore_memory_alloc_challenge( vd_t (*alloc)( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes ),
-                                                     sz_t table_size, sz_t cycles, sz_t max_alloc, u2_t seed, bl_t cleanup, bl_t verbose )
+typedef vd_t (*fp_alloc)( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
+
+static bcore_string_s* tbman_alloc_challenge
+(
+    fp_alloc alloc,
+    sz_t table_size,
+    sz_t cycles,
+    sz_t max_alloc,
+    u2_t seed,
+    bl_t cleanup,
+    bl_t verbose
+)
 {
     bcore_string_s* str = bcore_string_s_create();
 
@@ -1282,7 +1615,6 @@ static bcore_string_s* bcore_memory_alloc_challenge( vd_t (*alloc)( vd_t current
         bcore_string_s_pushf( str, "  failures  .......... %zu\n", free_failures );
     }
 
-
     // speed test
     {
         clock_t time = clock();
@@ -1338,12 +1670,40 @@ static void tbman_s_quicktest( void )
     sz_t cycles     = 1;
     sz_t max_alloc  = 4096;
     sz_t seed       = 5479;
-    bcore_string_s_discard( bcore_memory_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
+    bcore_string_s_discard( tbman_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
 }
 
-static bcore_string_s* tbman_s_selftest( void )
+/// testing reference control
+static bcore_string_s* tbman_s_rctest( void )
 {
-    bcore_string_s* log = bcore_string_s_createf( "== tbman_s_selftest " );
+    bcore_string_s* log = bcore_string_s_createf( "== tbman_s_rctest " );
+    bcore_string_s_push_char_n( log, '=', 120 - log->size );
+    bcore_string_s_push_char( log, '\n' );
+
+    typedef struct myclass
+    {
+        bcore_string_s  name1;
+        bcore_string_s* name2;
+        u3_t  v1;
+        u3_t* v2;
+    } myclass;
+
+    tp_t t_myclass = bcore_flect_type_parse_sc( "class = { bcore_string_s name1; bcore_string_s* name2; u3_t v1; u3_t* v2; }" );
+    bcore_inst_typed_discard( t_myclass, bcore_inst_typed_create( t_myclass ) ); // cycle once to get all perspectives alive
+
+    sz_t space0 = bcore_tbman_granted_space();
+    myclass* obj = bcore_inst_typed_create( t_myclass );
+    sz_t space1 = bcore_tbman_granted_space();
+    bcore_string_s_pushf( log, "%zu\n", space1 - space0 );
+
+    bcore_string_s_push_char_n( log, '=', 120 );
+    bcore_string_s_push_char( log, '\n' );
+    return log;
+}
+
+static bcore_string_s* tbman_s_memtest( void )
+{
+    bcore_string_s* log = bcore_string_s_createf( "== tbman_s_memtest " );
     bcore_string_s_push_char_n( log, '=', 120 - log->size );
     bcore_string_s_push_char( log, '\n' );
 
@@ -1354,15 +1714,15 @@ static bcore_string_s* tbman_s_selftest( void )
 
     {
         bcore_string_s_pushf( log, "\nbcore_internal_alloc:\n");
-        bcore_string_s_push_string_d( log, bcore_memory_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
-        bcore_string_s_push_string_d( log, bcore_tbman_s_status( bcore_tbman_s_g, 1 ) );
+        bcore_string_s_push_string_d( log, tbman_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
+        bcore_string_s_push_string_d( log, bcore_tbman_s_status( tbman_s_g, 1 ) );
 //        bcore_string_s_push_string_d( log, bcore_btree_vd_s_status( m->internal_btree ) );
 
     }
 
     {
         bcore_string_s_pushf( log, "\nbcore_external_alloc:\n");
-        bcore_string_s_push_string_d( log, bcore_memory_alloc_challenge( bcore_tbman_external_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
+        bcore_string_s_push_string_d( log, tbman_alloc_challenge( bcore_tbman_external_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
     }
 
     bcore_string_s_push_char_n( log, '=', 120 );
@@ -1382,7 +1742,7 @@ vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "init1" ) )
     {
-        tbman_s_quicktest();
+        tbman_s_quicktest(); // system critical test
     }
     else if( signal == typeof( "down0" ) )
     {
@@ -1392,7 +1752,8 @@ vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( tbman_s_selftest() );
+        bcore_string_s_print_d( tbman_s_rctest() );
+        //bcore_string_s_print_d( tbman_s_memtest() );
     }
 
     return NULL;

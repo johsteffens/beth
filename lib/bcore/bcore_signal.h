@@ -8,7 +8,7 @@
 
 #include "bcore_features.h"
 
-/// broadcasts a signal within the library
+/// broadcasts a signal to this library and all dependents
 vd_t bcore_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif  // BCORE_SIGNAL_H
