@@ -49,7 +49,9 @@ bcore_string_s* bcore_spect_status();
 /**********************************************************************************************************************/
 
 // syntactic sugar
-vc_t ch_spect( vc_t p, tp_t spect_type ); // if needed changes perspective to spect_type; returns NULL if p is NULL
+vc_t ch_spect_p( vc_t p, tp_t ptype ); // if needed changes perspective to spect_type; returns NULL if p is NULL
+vc_t ch_spect_o( vc_t p, tp_t otype ); // if needed changes perspective to object_type; returns NULL if p is NULL
+
 static inline tp_t spect_tp_p( vc_t p ) { return ( ( tp_t* )p )[ 0 ]; } // type of perspective
 static inline tp_t spect_tp_o( vc_t p ) { return ( ( tp_t* )p )[ 1 ]; } // type of object
 

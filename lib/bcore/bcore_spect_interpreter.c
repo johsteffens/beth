@@ -78,7 +78,7 @@ const bcore_interpreter_s* bcore_interpreter_s_get_typed( tp_t type )
 
 sr_s bcore_interpret( sr_s o, sr_s source )
 {
-    const bcore_interpreter_s* p = ch_spect( o.p, TYPEOF_bcore_interpreter_s );
+    const bcore_interpreter_s* p = ch_spect_p( o.p, TYPEOF_bcore_interpreter_s );
     sr_s ret = p->fp_interpret( o.o, source );
     sr_down( o );
     return ret;
@@ -86,7 +86,7 @@ sr_s bcore_interpret( sr_s o, sr_s source )
 
 sr_s bcore_interpret_q( const sr_s* o, sr_s source )
 {
-    const bcore_interpreter_s* p = ch_spect( o->p, TYPEOF_bcore_interpreter_s );
+    const bcore_interpreter_s* p = ch_spect_p( o->p, TYPEOF_bcore_interpreter_s );
     return p->fp_interpret( o->o, source );
 }
 

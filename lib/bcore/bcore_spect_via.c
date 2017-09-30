@@ -341,9 +341,9 @@ const NPX(s)*        NPX(aware_nget_via     )( vc_t o, tp_t n                   
 const bcore_array_s* NPX(aware_nget_array   )( vc_t o, tp_t n                   ) { return NPX(typed_nget_array   )( *( aware_t* )o,    n         ); }
 vc_t                 NPX(aware_nget_spect   )( vc_t o, tp_t n, tp_t stp         ) { return NPX(typed_nget_spect   )( *( aware_t* )o, o, n, stp    ); }
 
-inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect( o.p, TYPEOF_bcore_via_s ); }
-inline static vc_t r_spect( sr_s o ) {                                                               return ch_spect( o.p, TYPEOF_bcore_via_s ); }
-inline static vc_t x_spect( sr_s o ) {                                                               return ch_spect( o.p, TYPEOF_bcore_via_s ); }
+inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_via_s ); }
+inline static vc_t r_spect( sr_s o ) {                                                               return ch_spect_p( o.p, TYPEOF_bcore_via_s ); }
+inline static vc_t x_spect( sr_s o ) {                                                               return ch_spect_p( o.p, TYPEOF_bcore_via_s ); }
 
 sz_t                 NPX(get_size     )( sr_s o                   ) { sz_t r = NPX(spect_get_size     )( r_spect( o )              ); sr_down( o ); return r; }
 tp_t                 NPX(iget_name    )( sr_s o, sz_t i           ) { tp_t r = NPX(spect_iget_name    )( x_spect( o ),      i      ); sr_down( o ); return r; }

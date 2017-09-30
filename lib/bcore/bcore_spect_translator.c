@@ -77,14 +77,14 @@ const bcore_translator_s* bcore_translator_s_get_typed( tp_t type )
 
 void bcore_translate( sr_s o, sr_s obj, sr_s sink )
 {
-    const bcore_translator_s* p = ch_spect( o.p, TYPEOF_bcore_translator_s );
+    const bcore_translator_s* p = ch_spect_p( o.p, TYPEOF_bcore_translator_s );
     p->fp_translate( o.o, obj, sink );
     sr_down( o );
 }
 
 void bcore_translate_q( const sr_s* o, sr_s obj, sr_s sink )
 {
-    const bcore_translator_s* p = ch_spect( o->p, TYPEOF_bcore_translator_s );
+    const bcore_translator_s* p = ch_spect_p( o->p, TYPEOF_bcore_translator_s );
     p->fp_translate( o->o, obj, sink );
 }
 

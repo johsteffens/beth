@@ -40,7 +40,7 @@ typedef struct bcore_life_s bcore_life_s;
 const bcore_inst_s* bcore_inst_s_get_typed(    tp_t type );
 vd_t bcore_inst_typed_create( tp_t type );
 void bcore_inst_discard( sr_s o );
-vc_t ch_spect( vc_t p, tp_t spect_type );
+vc_t ch_spect_p( vc_t p, tp_t spect_type );
 
 static inline sr_s sr_null(                                             ) { return ( sr_s ){ .o = NULL, .p = NULL, .f = 0                                }; }
 static inline sr_s sr_pocs( vc_t p, vd_t o, bl_t const_f, bl_t strong_f ) { return ( sr_s ){ .o = o, .p = p, .f = ( const_f * CONST_f ) | ( strong_f * STRONG_f ) }; }
@@ -57,7 +57,7 @@ static inline sr_s sr_psd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .
 
 static inline sr_s sr_cw( sr_s o ) { o.f &= ~STRONG_f; return o; } // turns a reference into a weak one;
 static inline sr_s sr_cc( sr_s o ) { o.f &= ~CONST_f; return o; } // turns a reference into a const one;
-static inline sr_s sr_cp( sr_s o, tp_t spect_type ) { o.p = ch_spect( o.p, spect_type ); return o; } // changes perspective
+static inline sr_s sr_cp( sr_s o, tp_t spect_type ) { o.p = ch_spect_p( o.p, spect_type ); return o; } // changes perspective
               sr_s sr_cl( sr_s o, bcore_life_s* l ); // assigns to lifetime manager
 
 //static inline sr_s sr_fork( sr_s o ) { o.f &= ~STRONG_f; return o;         } // forks a reference; returned reference is weak; does not terminate o

@@ -54,7 +54,7 @@ sr_s bclos_statement_s_run( const bclos_statement_s* o, bclos_env_s* env )
         sr_s* operation = bclos_env_s_get( env, o->operation );
         if( !operation )  ERR( "Operation '%s' not defined.", ifnameof( o->operation ) );
 
-        const bclos_closure_s* closure_p = ch_spect( operation->p, TYPEOF_bclos_closure_s );
+        const bclos_closure_s* closure_p = ch_spect_p( operation->p, TYPEOF_bclos_closure_s );
 
         {
             bclos_args_s* args = bclos_statement_s_create_args( o, env );

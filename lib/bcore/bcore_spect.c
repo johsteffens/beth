@@ -218,11 +218,20 @@ bcore_string_s* bcore_spect_status()
 /**********************************************************************************************************************/
 // syntactic sugar
 
-vc_t ch_spect( vc_t p, tp_t spect_type )
+vc_t ch_spect_p( vc_t p, tp_t spect_type )
 {
     if( p && ( *(aware_t*)p != spect_type ) )
     {
         return bcore_spect_get_typed( spect_type, ( ( tp_t* )p )[ 1 ] );
+    }
+    return p;
+}
+
+vc_t ch_spect_o( vc_t p, tp_t obj_type )
+{
+    if( p && ( ( ( tp_t* )p )[ 1 ] != obj_type ) )
+    {
+        return bcore_spect_get_typed( *(aware_t*)p, obj_type );
     }
     return p;
 }

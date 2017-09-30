@@ -158,8 +158,8 @@ void bcore_sink_aware_push_string_d( vd_t o,       bcore_string_s* s      ) { bc
 void bcore_sink_aware_set_consumer(  vd_t o, vd_t c                       ) { bcore_sink_spect_set_consumer(  bcore_sink_s_get_typed( *( aware_t* )o ), o, c ); }
 void bcore_sink_aware_pushf        ( vd_t o, sc_t f, ...                  ) { va_list a; va_start( a, f ); bcore_sink_aware_pushvf( o, f, a ); va_end( a ); }
 
-inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect( o.p, TYPEOF_bcore_sink_s ); }
-inline static vc_t r_spect( sr_s o ) { return ch_spect( o.p, TYPEOF_bcore_sink_s ); }
+inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_sink_s ); }
+inline static vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_sink_s ); }
 
 sz_t bcore_sink_push_data    ( sr_s o, vc_t d, sz_t sz )   { sz_t r = bcore_sink_spect_push_data(     w_spect( o ), o.o, d, sz ); sr_down( o ); return r; }
 void bcore_sink_flush        ( sr_s o                  )   {          bcore_sink_spect_flush(         w_spect( o ), o.o        ); sr_down( o ); }

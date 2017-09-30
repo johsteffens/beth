@@ -1383,9 +1383,9 @@ vc_t NPX(aware_max                  )( vc_t o, sz_t st, sz_t nd, s2_t d       ) 
 sz_t NPX(aware_max_index            )( vc_t o, sz_t st, sz_t nd, s2_t d       ) { return NPX(typed_max_index            )( *( aware_t* )o, o, st, nd, d  ); }
 void NPX(aware_sort                 )( vd_t o, sz_t st, sz_t nd, s2_t d       ) {        NPX(typed_sort                 )( *( aware_t* )o, o, st, nd, d  ); }
 
-inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect( o.p, TYPEOF_bcore_array_s ); }
-inline static vc_t r_spect( sr_s o ) { return ch_spect( o.p, TYPEOF_bcore_array_s ); }
-inline static vc_t x_spect( sr_s o ) { return ch_spect( o.p, TYPEOF_bcore_array_s ); }
+inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_array_s ); }
+inline static vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_array_s ); }
+inline static vc_t x_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_array_s ); }
 
 sz_t NPX(get_size             )( sr_s o                           ) { sz_t r = NPX(spect_get_size             )( r_spect( o ), o.o             ); sr_down( o ); return r; }
 sz_t NPX(get_space            )( sr_s o                           ) { sz_t r = NPX(spect_get_space            )( r_spect( o ), o.o             ); sr_down( o ); return r; }

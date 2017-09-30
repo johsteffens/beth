@@ -73,9 +73,16 @@ static inline vd_t bcore_tbman_malloc(            sz_t size ) { return bcore_tbm
 static inline vd_t bcore_tbman_realloc( vd_t ptr, sz_t size ) { return bcore_tbman_b_alloc( ptr,  size, NULL ); }
 static inline void bcore_tbman_free(    vd_t ptr            ) {        bcore_tbman_b_alloc( ptr,  0,    NULL ); }
 
-/// returns currently granted space (thread-safe) (use this function to test for memory leaks)
+/// Current allocations (thread-safe)
+sz_t bcore_tbman_s_granted_space( bcore_tbman_s* o ); // total granted space
+sz_t bcore_tbman_s_instances( bcore_tbman_s* o );     // total instances
+sz_t bcore_tbman_s_rc_instances( bcore_tbman_s* o );  // total instances under reference control
+sz_t bcore_tbman_s_rc_references( bcore_tbman_s* o ); // total references
+
 sz_t bcore_tbman_granted_space( void );
-sz_t bcore_tbman_s_granted_space( bcore_tbman_s* o );
+sz_t bcore_tbman_instances( void );
+sz_t bcore_tbman_rc_instances( void );
+sz_t bcore_tbman_rc_references( void );
 
 /**********************************************************************************************************************/
 /// Reference Control
@@ -92,8 +99,8 @@ vd_t bcore_tbman_s_rc_create( bcore_tbman_s* o, tp_t type );
  */
 void bcore_tbman_s_rc_update( bcore_tbman_s* o, vc_t ptr, tp_t type );
 
-/// Discards reference to object (ptr can also be an array); returns NULL
-vd_t bcore_tbman_s_rc_discard( bcore_tbman_s* o, vd_t ptr );
+/// Releases reference to object (ptr can also be an array); returns NULL
+vd_t bcore_tbman_s_rc_release( bcore_tbman_s* o, vd_t ptr );
 
 /// Creates an array of given space and size 0 with reference control.
 vd_t bcore_tbman_s_rc_create_arr(  bcore_tbman_s* o, tp_t type, sz_t space );
@@ -104,17 +111,17 @@ vd_t bcore_tbman_s_rc_create_arr(  bcore_tbman_s* o, tp_t type, sz_t space );
  */
 void bcore_tbman_s_rc_update_arr(  bcore_tbman_s* o, vc_t arr_ptr, tp_t type, sz_t size );
 
-/// Discards array reference to object; Updated array info if necessary; returns NULL
-vd_t bcore_tbman_s_rc_discard_arr( bcore_tbman_s* o, vd_t arr_ptr, tp_t type, sz_t size );
+/// Releases array reference to object; Updated array info if necessary; returns NULL
+vd_t bcore_tbman_s_rc_release_arr( bcore_tbman_s* o, vd_t arr_ptr, tp_t type, sz_t size );
 
 /// Above functions with internal memory manager
 vd_t bcore_tbman_rc_fork       ( vd_t ptr            );
 vd_t bcore_tbman_rc_create     (           tp_t type );
 void bcore_tbman_rc_update     ( vc_t ptr, tp_t type );
-vd_t bcore_tbman_rc_discard    ( vd_t ptr            );
+vd_t bcore_tbman_rc_release    ( vd_t ptr            );
 vd_t bcore_tbman_rc_create_arr (               tp_t type, sz_t space );
 void bcore_tbman_rc_update_arr ( vc_t arr_ptr, tp_t type, sz_t size  );
-vd_t bcore_tbman_rc_discard_arr( vd_t arr_ptr, tp_t type, sz_t size  );
+vd_t bcore_tbman_rc_release_arr( vd_t arr_ptr, tp_t type, sz_t size  );
 
 vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object );
 

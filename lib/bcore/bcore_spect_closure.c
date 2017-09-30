@@ -142,8 +142,8 @@ void bcore_closure_aware_set_env( vd_t o, vd_t env )
     if( p->fp_set_env ) p->fp_set_env( o, env );
 }
 
-inline static const bcore_closure_s* w_p( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect( o.p, TYPEOF_bcore_closure_s ); }
-inline static const bcore_closure_s* r_p( sr_s o ) {                                                                         return ch_spect( o.p, TYPEOF_bcore_closure_s ); }
+inline static const bcore_closure_s* w_p( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_closure_s ); }
+inline static const bcore_closure_s* r_p( sr_s o ) {                                                                         return ch_spect_p( o.p, TYPEOF_bcore_closure_s ); }
 
 vd_t bcore_closure_func   ( sr_s o, const vd_t* a, sz_t n ){ vd_t r = w_p( o )->fp_func   ( o.o, a, n ); sr_down( o ); return r; }
 sz_t bcore_closure_n_args ( sr_s o                        ){ sz_t r = r_p( o )->fp_n_args ( o.o );       sr_down( o ); return r; }
@@ -183,7 +183,7 @@ void bcore_closure_r_copy( bcore_closure_r* o, const bcore_closure_r* src )
 void bcore_closure_r_set( bcore_closure_r* o, sr_s src )
 {
     bcore_closure_r_down( o );
-    o->p = ch_spect( src.p, TYPEOF_bcore_closure_s );
+    o->p = ch_spect_p( src.p, TYPEOF_bcore_closure_s );
     if( sr_s_is_strong( &src ) )
     {
         o->o = src.o;

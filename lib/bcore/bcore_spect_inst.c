@@ -1412,13 +1412,13 @@ void bcore_inst_typed_check_sizeof( tp_t type, sz_t size )
 // only discards when o is a strong reference; does nothing otherwise
 void bcore_inst_discard( sr_s o )
 {
-    if( o.o && sr_s_is_strong( &o ) ) bcore_inst_spect_discard( ch_spect( o.p, TYPEOF_bcore_inst_s ), o.o );
+    if( o.o && sr_s_is_strong( &o ) ) bcore_inst_spect_discard( ch_spect_p( o.p, TYPEOF_bcore_inst_s ), o.o );
 }
 
 vd_t bcore_inst_clone( sr_s o )
 {
     if( !o.o ) return NULL;
-    o.p = ch_spect( o.p, TYPEOF_bcore_inst_s );
+    o.p = ch_spect_p( o.p, TYPEOF_bcore_inst_s );
     vd_t ret = bcore_inst_spect_clone( o.p, o.o );
     sr_down( o );
     return ret;
@@ -1427,7 +1427,7 @@ vd_t bcore_inst_clone( sr_s o )
 sr_s bcore_inst_clone_sr( sr_s o )
 {
     if( !o.o ) return sr_null();
-    sr_s ret = sr_psd( o.p, bcore_inst_spect_clone( ch_spect( o.p, TYPEOF_bcore_inst_s ), o.o ) );
+    sr_s ret = sr_psd( o.p, bcore_inst_spect_clone( ch_spect_p( o.p, TYPEOF_bcore_inst_s ), o.o ) );
     sr_down( o );
     return ret;
 }
@@ -1435,13 +1435,13 @@ sr_s bcore_inst_clone_sr( sr_s o )
 vd_t bcore_inst_q_clone( const sr_s* o )
 {
     if( !o->o ) return NULL;
-    return bcore_inst_spect_clone( ch_spect( o->p, TYPEOF_bcore_inst_s ), o->o );
+    return bcore_inst_spect_clone( ch_spect_p( o->p, TYPEOF_bcore_inst_s ), o->o );
 }
 
 sr_s bcore_inst_q_clone_sr( const sr_s* o )
 {
     if( !o->o ) return sr_null();
-    return sr_psd( o->p, bcore_inst_spect_clone( ch_spect( o->p, TYPEOF_bcore_inst_s ), o->o ) );
+    return sr_psd( o->p, bcore_inst_spect_clone( ch_spect_p( o->p, TYPEOF_bcore_inst_s ), o->o ) );
 }
 
 /**********************************************************************************************************************/
