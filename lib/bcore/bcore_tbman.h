@@ -10,6 +10,11 @@
 #include "bcore_types.h"
 #include "bcore_string.h"
 
+typedef void (*fp_down_obj)(           vd_t obj );
+typedef void (*fp_down_arg)( vc_t arg, vd_t obj );
+
+/**********************************************************************************************************************/
+
 typedef struct bcore_tbman_s bcore_tbman_s;
 
 bcore_tbman_s* bcore_tbman_s_create
@@ -73,55 +78,66 @@ static inline vd_t bcore_tbman_malloc(            sz_t size ) { return bcore_tbm
 static inline vd_t bcore_tbman_realloc( vd_t ptr, sz_t size ) { return bcore_tbman_b_alloc( ptr,  size, NULL ); }
 static inline void bcore_tbman_free(    vd_t ptr            ) {        bcore_tbman_b_alloc( ptr,  0,    NULL ); }
 
+
+/**********************************************************************************************************************/
+/// Reference Control (thread-safe)
+
+/**
+ * Functions below make use of automatic reference control for the lifetime of a root object.
+ * A root object is an object which address coincides with a memory address allocated by tbman.
+ * A reference to a nested object is counted as references to its respective root.
+ *
+ * Control data is lazily set up for root objects and only allocated when needed.
+ * Objects on the stack have no root. Using reference management on those produces an error.
+ *
+ * For an object under reference control the destruction by functions free, alloc( size = 0 ), realloc
+ * is delayed until the last reference is terminated.
+ *
+ * Functions:
+ *  fork
+ *    Creates a new reference, which must be terminated via release;
+ *
+ *  release
+ *    Termination of a forked reference. Termination by owner for objects without destructor.
+ *    Terminates the object when no longer referenced.
+ *
+ *  release_*
+ *    Advanced release functions for root objects with destructor.
+ *    The owner calls the proper function for release and to specify how the object is to be destroyed
+ *    when last reference terminates. The function can be called any time during the object's lifetime.
+ *    Release discriminates single objects, arrays, objects with single-argument destructor
+ *    and objects with two-argument destructor. The latter can be used for a destructor served by a perspective.
+ *    down == NULL indicates that the object needs no destructor.
+ */
+
+vd_t bcore_tbman_s_fork           ( bcore_tbman_s* o,                             vd_t ptr );
+void bcore_tbman_s_release        ( bcore_tbman_s* o,                             vd_t ptr );
+void bcore_tbman_s_release_obj    ( bcore_tbman_s* o, fp_down_obj down,           vd_t ptr );
+void bcore_tbman_s_release_arg    ( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr );
+void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down,           vd_t ptr, sz_t size, sz_t step );
+void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step );
+
+vd_t bcore_tbman_fork           (                             vd_t ptr );
+void bcore_tbman_release        (                             vd_t ptr );
+void bcore_tbman_release_obj    ( fp_down_obj down,           vd_t ptr );
+void bcore_tbman_release_arg    ( fp_down_arg down, vc_t arg, vd_t ptr );
+void bcore_tbman_release_obj_arr( fp_down_obj down,           vd_t ptr, sz_t size, sz_t step );
+void bcore_tbman_release_arg_arr( fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step );
+
+/**********************************************************************************************************************/
+/// Diagnostics
+
 /// Current allocations (thread-safe)
 sz_t bcore_tbman_s_granted_space( bcore_tbman_s* o ); // total granted space
 sz_t bcore_tbman_s_instances( bcore_tbman_s* o );     // total instances
-sz_t bcore_tbman_s_rc_instances( bcore_tbman_s* o );  // total instances under reference control
-sz_t bcore_tbman_s_rc_references( bcore_tbman_s* o ); // total references
+sz_t bcore_tbman_s_references( bcore_tbman_s* o );    // total references
 
 sz_t bcore_tbman_granted_space( void );
 sz_t bcore_tbman_instances( void );
-sz_t bcore_tbman_rc_instances( void );
-sz_t bcore_tbman_rc_references( void );
+sz_t bcore_tbman_references( void );
 
 /**********************************************************************************************************************/
-/// Reference Control
-
-/// Forks a reference.
-vd_t bcore_tbman_s_rc_fork( bcore_tbman_s* o, vd_t ptr );
-
-/// Creates a root object with reference control.
-vd_t bcore_tbman_s_rc_create( bcore_tbman_s* o, tp_t type );
-
-/** Updates type of root object in rcp.
- *  Sets up reference control if not existing.
- *  Does not modify the object itself.
- */
-void bcore_tbman_s_rc_update( bcore_tbman_s* o, vc_t ptr, tp_t type );
-
-/// Releases reference to object (ptr can also be an array); returns NULL
-vd_t bcore_tbman_s_rc_release( bcore_tbman_s* o, vd_t ptr );
-
-/// Creates an array of given space and size 0 with reference control.
-vd_t bcore_tbman_s_rc_create_arr(  bcore_tbman_s* o, tp_t type, sz_t space );
-
-/** Updates array info of root object in rcp.
- *  Sets up reference control if not existing.
- *  Does not modify the array itself.
- */
-void bcore_tbman_s_rc_update_arr(  bcore_tbman_s* o, vc_t arr_ptr, tp_t type, sz_t size );
-
-/// Releases array reference to object; Updated array info if necessary; returns NULL
-vd_t bcore_tbman_s_rc_release_arr( bcore_tbman_s* o, vd_t arr_ptr, tp_t type, sz_t size );
-
-/// Above functions with internal memory manager
-vd_t bcore_tbman_rc_fork       ( vd_t ptr            );
-vd_t bcore_tbman_rc_create     (           tp_t type );
-void bcore_tbman_rc_update     ( vc_t ptr, tp_t type );
-vd_t bcore_tbman_rc_release    ( vd_t ptr            );
-vd_t bcore_tbman_rc_create_arr (               tp_t type, sz_t space );
-void bcore_tbman_rc_update_arr ( vc_t arr_ptr, tp_t type, sz_t size  );
-vd_t bcore_tbman_rc_release_arr( vd_t arr_ptr, tp_t type, sz_t size  );
+/// Signal
 
 vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object );
 
