@@ -112,8 +112,7 @@ static bcore_inst_s* inst_s_create()
 static void inst_s_discard( bcore_inst_s* o )
 {
     if( !o ) return;
-    inst_s_down( o );
-    bcore_free( o );
+    bcore_release_obj( inst_s_down, o );
 }
 
 static bcore_inst_item_s* inst_s_push( bcore_inst_s* o )
@@ -299,13 +298,14 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                     const bcore_inst_s* perspective = inst_item->perspective;
                     if( !perspective->down_flat )
                     {
-                        for( sz_t i = 0; i < s->size; i++ )
-                        {
-                            vd_t obj = ( u0_t* )s->data + perspective->size * i;
-                            perspective->down( perspective, obj );
-                        }
+                        bcore_release_arg_arr( perspective->down, perspective, s->data, s->size, perspective->size );
                     }
-                    s->data = bcore_un_alloc( perspective->size, s->data, s->space, 0, &s->space );
+                    else
+                    {
+                        bcore_free( s->data );
+                    }
+                    s->data = NULL;
+                    s->space = 0;
                 }
             }
             break;
@@ -318,13 +318,14 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                     const bcore_inst_s* perspective = bcore_inst_s_get_typed( s->type );
                     if( !perspective->down_flat )
                     {
-                        for( sz_t i = 0; i < s->size; i++ )
-                        {
-                            vd_t obj = ( u0_t* )s->data + perspective->size * i;
-                            perspective->down( perspective, obj );
-                        }
+                        bcore_release_arg_arr( perspective->down, perspective, s->data, s->size, perspective->size );
                     }
-                    s->data = bcore_un_alloc( perspective->size, s->data, s->space, 0, &s->space );
+                    else
+                    {
+                        bcore_free( s->data );
+                    }
+                    s->data = NULL;
+                    s->space = 0;
                 }
             }
             break;
@@ -336,7 +337,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                 {
                     const bcore_inst_s* perspective = inst_item->perspective;
                     for( sz_t i = 0; i < s->size; i++ ) perspective->discard( perspective, s->data[ i ] );
-                    s->data = bcore_un_alloc( sizeof( vd_t ), s->data, s->space, 0, &s->space );
+                    bcore_free( s->data );
+                    s->data = NULL;
+                    s->space = 0;
                 }
             }
             break;
@@ -348,7 +351,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                 {
                     const bcore_inst_s* perspective = bcore_inst_s_get_typed( s->type );
                     for( sz_t i = 0; i < s->size; i++ ) perspective->discard( perspective, s->data[ i ] );
-                    s->data = bcore_un_alloc( sizeof( vd_t ), s->data, s->space, 0, &s->space );
+                    bcore_free( s->data );
+                    s->data = NULL;
+                    s->space = 0;
                 }
             }
             break;
@@ -359,7 +364,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                 if( s->space ) // space == 0 means array does not own data
                 {
                     for( sz_t i = 0; i < s->size; i++ ) bcore_inst_aware_discard( s->data[ i ] );
-                    s->data = bcore_un_alloc( sizeof( vd_t ), s->data, s->space, 0, &s->space );
+                    bcore_free( s->data );
+                    s->data = NULL;
+                    s->space = 0;
                 }
             }
             break;
@@ -514,16 +521,19 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 {
                     if( dst->space > 0 ) // dst->space == 0 means array references external data
                     {
-                        for( sz_t i = 0; i < dst->size; i++ )
+                        if( !perspective->down_flat )
                         {
-                            perspective->down( perspective, ( u0_t* )dst->data + i * perspective->size );
+                            bcore_release_arg_arr( perspective->down, perspective, dst->data, dst->size, perspective->size );
                         }
+                        else
+                        {
+                            bcore_free( dst->data );
+                        }
+                        dst->data = NULL;
+                        dst->size = 0;
+                        dst->space = 0;
                     }
-                    if( src->size > dst->space )
-                    {
-                        dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, 0,         &dst->space );
-                        dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, src->size, &dst->space );
-                    }
+                    dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, src->size, &dst->space );
                     for( sz_t i = 0; i < src->size; i++ )
                     {
                         vd_t dst_obj = ( u0_t* )dst->data + i * perspective->size;
@@ -546,12 +556,12 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     const bcore_inst_s* perspective = bcore_inst_s_get_typed( dst->type );
                     if( !perspective->down_flat )
                     {
-                        for( sz_t i = 0; i < dst->size; i++ )
-                        {
-                            perspective->down( perspective, ( u0_t* )dst->data + i * perspective->size );
-                        }
+                        bcore_release_arg_arr( perspective->down, perspective, dst->data, dst->size, perspective->size );
                     }
-                    bcore_un_alloc( perspective->size, dst->data, dst->space, 0, &dst->space );
+                    else
+                    {
+                        bcore_free( dst->data );
+                    }
                 }
                 dst->data = NULL;
                 dst->size = 0;
@@ -976,8 +986,7 @@ static void discard_o( const bcore_inst_s* p, vd_t o )
 static void discard( const bcore_inst_s* p, vd_t o )
 {
     if( !o ) return;
-    p->down( p, o );
-    bcore_un_alloc( p->size, o, 1, 0, NULL);
+    bcore_release_arg( p->down, p, o );
 }
 
 static vd_t clone_null( const bcore_inst_s* p, vc_t src ) { return NULL; }
@@ -1612,8 +1621,7 @@ bcore_inst_op* bcore_inst_op_create_aware_d( vd_t obj )
 void bcore_inst_op_discard( bcore_inst_op* o )
 {
     if( !o ) return;
-    bcore_inst_op_down( o );
-    bcore_un_alloc( sizeof( *o ), o, 1, 0, NULL );
+    bcore_release_obj( bcore_inst_op_down, o );
 }
 
 bcore_inst_op* bcore_inst_op_clone( const bcore_inst_op* o )

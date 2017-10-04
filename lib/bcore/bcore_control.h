@@ -25,27 +25,35 @@ void bcore_err(  sc_t format, ... );
 void bcore_ext_err( sc_t f_name, sc_t file, int line, sc_t format, ... );
 
 /**********************************************************************************************************************/
-/// memory management
-
-/** When USE_BCORE_TBMAN is defined, memory management functions below use bcore_memory manager
- *  otherwise they fall back to directly using stdlib functions malloc, realloc and free.
+/** Memory Management
+ *  Most functions wrap a corresponding function in bcore_tbman.h.
+ *  See bcore_tbman.h for implementation and usage details
  */
-#define USE_BCORE_TBMAN
-
-/// checks NULL; frees memory in case !NULL; returns NULL
-vd_t bcore_free( vd_t buf );
 
 /// buf == NULL: malloc; buf != NULL && size == 0: free; buf != NULL && size != 0: realloc; returns a valid address or NULL; alloc failure produces error
-vd_t bcore_alloc( vd_t buf, sz_t size );
+vd_t bcore_alloc  ( vd_t ptr, sz_t size );
+vd_t bcore_malloc (           sz_t size );
+vd_t bcore_realloc( vd_t ptr, sz_t size );
+vd_t bcore_free   ( vd_t ptr            );
 
-static inline vd_t bcore_malloc( sz_t size ) { return bcore_alloc( NULL, size ); }
-static inline vd_t bcore_realloc( vd_t buf, sz_t size ) { return bcore_alloc( buf, size ); }
+vd_t bcore_b_alloc(  vd_t current_ptr,                     sz_t requested_bytes, sz_t* granted_bytes );
+vd_t bcore_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
 
-/// advanced alloc (see description of bcore_tbman_b(n)_alloc)
-vd_t bcore_b_alloc(                   vd_t current_ptr,                     sz_t requested_bytes, sz_t* granted_bytes );
-vd_t bcore_bn_alloc(                  vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
 vd_t bcore_u_alloc(  sz_t unit_bytes, vd_t current_ptr,                     sz_t requested_units, sz_t* granted_units );
 vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t requested_units, sz_t* granted_units );
+
+/**********************************************************************************************************************/
+/** Reference Management
+ *  Most functions wrap a corresponding function in bcore_tbman.h.
+ *  See bcore_tbman.h for implementation and usage details
+ */
+
+vd_t bcore_fork           (                      vd_t ptr );
+void bcore_release        (                      vd_t ptr );
+void bcore_release_obj    ( fp_t down,           vd_t ptr );
+void bcore_release_arg    ( fp_t down, vc_t arg, vd_t ptr );
+void bcore_release_obj_arr( fp_t down,           vd_t ptr, sz_t size, sz_t step );
+void bcore_release_arg_arr( fp_t down, vc_t arg, vd_t ptr, sz_t size, sz_t step );
 
 /**********************************************************************************************************************/
 /// memory set, copy, move
@@ -210,8 +218,7 @@ name* name##_create() \
 void name##_discard( name* o ) \
 { \
     if( !o ) return; \
-    name##_down( o ); \
-    bcore_bn_alloc( o, sizeof( name ), 0, NULL ); \
+    bcore_release_obj( name##_down, o );\
 }
 
 #define DEFINE_FUNCTION_CLONE( name ) \

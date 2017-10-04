@@ -108,6 +108,12 @@ static inline void bcore_tbman_free(    vd_t ptr            ) {        bcore_tbm
  *    Release discriminates single objects, arrays, objects with single-argument destructor
  *    and objects with two-argument destructor. The latter can be used for a destructor served by a perspective.
  *    down == NULL indicates that the object needs no destructor.
+ *
+ *  references
+ *    Returns the total number of references of the root object.
+ *    Returns 0 when *ptr has no root.
+ *    Returning 0 implies an invalid pointer. But not all invalid pointers produce 0.
+ *    --> A test for 0 is not stable.
  */
 
 vd_t bcore_tbman_s_fork           ( bcore_tbman_s* o,                             vd_t ptr );
@@ -116,6 +122,7 @@ void bcore_tbman_s_release_obj    ( bcore_tbman_s* o, fp_down_obj down,         
 void bcore_tbman_s_release_arg    ( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr );
 void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down,           vd_t ptr, sz_t size, sz_t step );
 void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step );
+sz_t bcore_tbman_s_references     ( bcore_tbman_s* o,                             vc_t ptr );
 
 vd_t bcore_tbman_fork           (                             vd_t ptr );
 void bcore_tbman_release        (                             vd_t ptr );
@@ -123,18 +130,19 @@ void bcore_tbman_release_obj    ( fp_down_obj down,           vd_t ptr );
 void bcore_tbman_release_arg    ( fp_down_arg down, vc_t arg, vd_t ptr );
 void bcore_tbman_release_obj_arr( fp_down_obj down,           vd_t ptr, sz_t size, sz_t step );
 void bcore_tbman_release_arg_arr( fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step );
+sz_t bcore_tbman_references     (                             vc_t ptr );
 
 /**********************************************************************************************************************/
 /// Diagnostics
 
 /// Current allocations (thread-safe)
-sz_t bcore_tbman_s_granted_space( bcore_tbman_s* o ); // total granted space
-sz_t bcore_tbman_s_instances( bcore_tbman_s* o );     // total instances
-sz_t bcore_tbman_s_references( bcore_tbman_s* o );    // total references
+sz_t bcore_tbman_s_granted_space(    bcore_tbman_s* o );
+sz_t bcore_tbman_s_total_instances(  bcore_tbman_s* o );
+sz_t bcore_tbman_s_total_references( bcore_tbman_s* o );
 
 sz_t bcore_tbman_granted_space( void );
-sz_t bcore_tbman_instances( void );
-sz_t bcore_tbman_references( void );
+sz_t bcore_tbman_total_instances( void );
+sz_t bcore_tbman_total_references( void );
 
 /**********************************************************************************************************************/
 /// Signal

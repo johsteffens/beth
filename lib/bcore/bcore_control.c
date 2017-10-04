@@ -43,65 +43,77 @@ void bcore_ext_err( sc_t func, sc_t file, int line, sc_t format, ... )
 
 /**********************************************************************************************************************/
 
-// implemented in tbman
-vd_t bcore_external_b_alloc(  vd_t current_ptr,                     sz_t requested_bytes, sz_t* granted_bytes );
-vd_t bcore_external_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
-
-vd_t bcore_external_u_alloc(  sz_t unit_bytes,  vd_t current_ptr,                       sz_t requested_units, sz_t* reserved_units );
-vd_t bcore_external_un_alloc( sz_t unit_bytes,  vd_t current_ptr,   sz_t current_units, sz_t requested_units, sz_t* reserved_units );
-
-vd_t bcore_free( vd_t buf )
+vd_t bcore_free( vd_t ptr )
 {
-#ifdef USE_BCORE_TBMAN
-    return bcore_tbman_b_alloc( buf, 0, NULL );
-#else
-    return bcore_external_b_alloc(       buf, 0, NULL );
-#endif // USE_BCORE_TBMAN
+    bcore_tbman_free( ptr );
+    return NULL;
 }
 
-vd_t bcore_alloc( vd_t buf, sz_t size )
+/// ptr == NULL: malloc; ptr != NULL && size == 0: free; ptr != NULL && size != 0: realloc; returns a valid address or NULL; alloc failure produces error
+vd_t bcore_alloc( vd_t ptr, sz_t size )
 {
-#ifdef USE_BCORE_TBMAN
-    return bcore_tbman_b_alloc( buf, size, NULL );
-#else
-    return bcore_external_b_alloc( buf, size, NULL );
-#endif // USE_BCORE_TBMAN
+    return bcore_tbman_alloc( ptr, size );
 }
 
+vd_t bcore_malloc( sz_t size )
+{
+    return bcore_alloc( NULL, size );
+}
+
+vd_t bcore_realloc( vd_t ptr, sz_t size )
+{
+    return bcore_alloc( ptr, size );
+}
+
+/// advanced alloc (see description of bcore_tbman_b(n)_alloc)
 vd_t bcore_b_alloc( vd_t current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
 {
-#ifdef USE_BCORE_TBMAN
     return bcore_tbman_b_alloc( current_ptr, requested_bytes, granted_bytes );
-#else
-    return bcore_external_b_alloc( current_ptr, requested_bytes, granted_bytes );
-#endif // USE_BCORE_TBMAN
 }
 
 vd_t bcore_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
 {
-#ifdef USE_BCORE_TBMAN
     return bcore_tbman_bn_alloc( current_ptr, current_bytes, requested_bytes, granted_bytes );
-#else
-    return bcore_external_bn_alloc( current_ptr, current_bytes, requested_bytes, granted_bytes );
-#endif // USE_BCORE_TBMAN
 }
 
 vd_t bcore_u_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t requested_units, sz_t* granted_units )
 {
-#ifdef USE_BCORE_TBMAN
     return bcore_tbman_u_alloc( unit_bytes, current_ptr, requested_units, granted_units );
-#else
-    return bcore_external_u_alloc( unit_bytes, current_ptr, requested_units, granted_units );
-#endif // USE_BCORE_TBMAN
 }
 
 vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t requested_units, sz_t* granted_units )
 {
-#ifdef USE_BCORE_TBMAN
     return bcore_tbman_un_alloc( unit_bytes, current_ptr, current_units, requested_units, granted_units );
-#else
-    return bcore_external_un_alloc( unit_bytes, current_ptr, current_units, requested_units, granted_units );
-#endif // USE_BCORE_TBMAN
+}
+
+vd_t bcore_fork( vd_t ptr )
+{
+    return bcore_tbman_fork( ptr );
+}
+
+void bcore_release( vd_t ptr )
+{
+    bcore_tbman_release( ptr );
+}
+
+void bcore_release_obj( fp_t down, vd_t ptr )
+{
+    bcore_tbman_release_obj( down, ptr );
+}
+
+void bcore_release_arg( fp_t down, vc_t arg, vd_t ptr )
+{
+    bcore_tbman_release_arg( down, arg, ptr );
+}
+
+void bcore_release_obj_arr( fp_t down, vd_t ptr, sz_t size, sz_t step )
+{
+    bcore_tbman_release_obj_arr( down, ptr, size, step );
+}
+
+void bcore_release_arg_arr( fp_t down, vc_t arg, vd_t ptr, sz_t size, sz_t step )
+{
+    bcore_tbman_release_arg_arr( down, arg, ptr, size, step );
 }
 
 /**********************************************************************************************************************/
