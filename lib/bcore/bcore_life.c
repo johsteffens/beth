@@ -38,11 +38,7 @@ void bcore_life_s_init( struct bcore_life_s* o )
 
 void bcore_life_s_down( struct bcore_life_s* o )
 {
-    if( o->data )
-    {
-        for( sz_t i = 0; i < o->size; i++ ) bcore_life_item_s_down( &o->data[ i ] );
-        bcore_free( o->data );
-    }
+    bcore_release_obj_arr( bcore_life_item_s_down, o->data, o->size, sizeof( bcore_life_item_s ) );
 }
 
 DEFINE_FUNCTION_CREATE(  bcore_life_s )

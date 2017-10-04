@@ -34,8 +34,7 @@ static bcore_source_s* source_s_create()
 static void source_s_discard( bcore_source_s* o )
 {
     if( !o ) return;
-    source_s_down( o );
-    bcore_free( o );
+    bcore_release_obj( source_s_down, o );
 }
 
 /**********************************************************************************************************************/

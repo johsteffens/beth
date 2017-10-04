@@ -30,8 +30,7 @@ static bcore_closure_s* closure_s_create()
 static void closure_s_discard( bcore_closure_s* o )
 {
     if( !o ) return;
-    closure_s_down( o );
-    bcore_free( o );
+    bcore_release_obj( closure_s_down, o );
 }
 
 /**********************************************************************************************************************/

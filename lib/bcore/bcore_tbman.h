@@ -140,9 +140,19 @@ sz_t bcore_tbman_s_granted_space(    bcore_tbman_s* o );
 sz_t bcore_tbman_s_total_instances(  bcore_tbman_s* o );
 sz_t bcore_tbman_s_total_references( bcore_tbman_s* o );
 
+/// applies a function to all instances
+void bcore_tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg );
+
+/// runs instance diagnostics (e.g. to determine the cause of memory leaks)
+void bcore_tbman_s_instance_disgnostics( bcore_tbman_s* o );
+
 sz_t bcore_tbman_granted_space( void );
 sz_t bcore_tbman_total_instances( void );
 sz_t bcore_tbman_total_references( void );
+void bcore_tbman_for_all_instances( void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg );
+void bcore_tbman_s_instance_disgnostics();
+
+
 
 /**********************************************************************************************************************/
 /// Signal

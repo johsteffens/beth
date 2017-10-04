@@ -36,8 +36,7 @@ static bcore_via_s* via_s_create()
 static void via_s_discard( bcore_via_s* o )
 {
     if( !o ) return;
-    via_s_down( o );
-    bcore_free( o );
+    bcore_release_obj( via_s_down, o );
 }
 
 /**********************************************************************************************************************/

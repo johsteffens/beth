@@ -496,6 +496,15 @@ static sz_t token_manager_s_total_space( const token_manager_s* o )
     return o->pool_size + o->stack_size * sizeof( u1_t );
 }
 
+static void token_manager_s_for_all_instances( token_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+{
+    for( sz_t i = 0; i < o->stack_index; i++ )
+    {
+        sz_t token = o->token_stack[ i ];
+        if( fp ) fp( arg, ( u0_t* )o + token * o->block_size, o->block_size );
+    }
+}
+
 static bcore_string_s* token_manager_s_status( const token_manager_s* o, int detail_level )
 {
     bcore_string_s* str = bcore_string_s_create();
@@ -758,6 +767,11 @@ static sz_t block_manager_s_total_space( const block_manager_s* o )
     return sum;
 }
 
+static void block_manager_s_for_all_instances( block_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+{
+    for( sz_t i = 0; i < o->size; i++ ) token_manager_s_for_all_instances( o->data[ i ], fp, arg );
+}
+
 static bcore_string_s* block_manager_s_status( const block_manager_s* o, int detail_level )
 {
     bcore_string_s* str = bcore_string_s_create();
@@ -949,6 +963,25 @@ static sz_t external_manager_s_total_references( const external_manager_s* o )
     bcore_btree_pp_s_run( o->ex_btree, ext_rc_ref_count, &size );
     return size;
 }
+
+typedef struct ext_for_instance_arg
+{
+    fp_t fp;
+    vd_t arg;
+} ext_for_instance_arg;
+
+static void ext_for_instance( vd_t val, bcore_btree_pp_kv_s kv )
+{
+    ext_for_instance_arg* iarg = val;
+    iarg->fp( iarg->arg, kv.key, ( ( ext_s* )kv.val )->size );
+}
+
+static void external_manager_s_for_all_instances( external_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+{
+    ext_for_instance_arg iarg = { .fp = fp, .arg = arg };
+    bcore_btree_pp_s_run( o->ex_btree, ext_for_instance, &iarg );
+}
+
 
 static sz_t external_manager_s_references( external_manager_s* o, vc_t ptr )
 {
@@ -1609,6 +1642,7 @@ static vd_t tbman_s_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t* cur
 
 vd_t bcore_tbman_s_fork( bcore_tbman_s* o, vd_t ptr )
 {
+    if( !ptr ) return NULL;
     tbman_s_lock( o );
     tbman_s_fork( o, ptr );
     tbman_s_unlock( o );
@@ -1617,6 +1651,7 @@ vd_t bcore_tbman_s_fork( bcore_tbman_s* o, vd_t ptr )
 
 void bcore_tbman_s_release( bcore_tbman_s* o, vd_t ptr )
 {
+    if( !ptr ) return;
     tbman_s_lock( o );
     tbman_s_release( o, ptr );
     tbman_s_unlock( o );
@@ -1624,6 +1659,7 @@ void bcore_tbman_s_release( bcore_tbman_s* o, vd_t ptr )
 
 void bcore_tbman_s_release_obj( bcore_tbman_s* o, fp_down_obj down, vd_t ptr )
 {
+    if( !ptr ) return;
     tbman_s_lock( o );
     tbman_s_release_obj( o, down, ptr );
     tbman_s_unlock( o );
@@ -1631,6 +1667,7 @@ void bcore_tbman_s_release_obj( bcore_tbman_s* o, fp_down_obj down, vd_t ptr )
 
 void bcore_tbman_s_release_arg( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr )
 {
+    if( !ptr ) return;
     tbman_s_lock( o );
     tbman_s_release_arg( o, down, arg, ptr );
     tbman_s_unlock( o );
@@ -1638,6 +1675,7 @@ void bcore_tbman_s_release_arg( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd
 
 void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t ptr, sz_t size, sz_t step )
 {
+    if( !ptr ) return;
     tbman_s_lock( o );
     tbman_s_release_obj_arr( o, down, ptr, size, step );
     tbman_s_unlock( o );
@@ -1645,6 +1683,7 @@ void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t ptr
 
 void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step )
 {
+    if( !ptr ) return;
     tbman_s_lock( o );
     tbman_s_release_arg_arr( o, down, arg, ptr, size, step );
     tbman_s_unlock( o );
@@ -1652,6 +1691,7 @@ void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg
 
 sz_t bcore_tbman_s_references( bcore_tbman_s* o, vc_t ptr )
 {
+    if( !ptr ) return 0;
     tbman_s_lock( o );
     sz_t n = tbman_s_references( o, ptr );
     tbman_s_unlock( o );
@@ -1780,6 +1820,15 @@ static sz_t tbman_s_total_space( const bcore_tbman_s* o )
     }
     sum += block_manager_s_total_space( &o->external_manager.bm_ext );
     return sum;
+}
+
+static void tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+{
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        block_manager_s_for_all_instances( o->data[ i ], fp, arg );
+    }
+    external_manager_s_for_all_instances( &o->external_manager, fp, arg );
 }
 
 /**********************************************************************************************************************/
@@ -1912,6 +1961,13 @@ sz_t bcore_tbman_s_total_references( bcore_tbman_s* o )
     return space;
 }
 
+void bcore_tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+{
+    tbman_s_lock( o );
+    tbman_s_for_all_instances( o, fp, arg );
+    tbman_s_unlock( o );
+}
+
 sz_t bcore_tbman_granted_space()
 {
     assert( tbman_s_g != NULL );
@@ -1928,6 +1984,12 @@ sz_t bcore_tbman_total_references()
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_total_references( tbman_s_g );
+}
+
+void bcore_tbman_for_all_instances( void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+{
+    assert( tbman_s_g != NULL );
+    bcore_tbman_s_for_all_instances( tbman_s_g, fp, arg );
 }
 
 // not thread-safe
@@ -1998,6 +2060,31 @@ bcore_string_s* bcore_tbman_s_status( bcore_tbman_s* o, int detail_level )
     }
 
     return str;
+}
+
+#include <stdio.h>
+static void instance_diagnostics( vd_t arg, vd_t ptr, sz_t space )
+{
+    printf( "ptr = %p, space = %5zu", ptr, space );
+    if( bcore_name_try_name( ( ( tp_t* )ptr )[ 0 ] ) )
+    {
+        printf( ", aware of = '%s'", nameof( ( ( tp_t* )ptr )[ 0 ] ) );
+        if( bcore_name_try_name( ( ( tp_t* )ptr )[ 1 ] ) )
+        {
+            printf( ", spect of = '%s'", nameof( ( ( tp_t* )ptr )[ 1 ] ) );
+        }
+    }
+    printf( "\n" );
+}
+
+void bcore_tbman_s_instance_disgnostics( bcore_tbman_s* o )
+{
+    bcore_tbman_s_for_all_instances( o, instance_diagnostics, NULL );
+}
+
+void bcore_tbman_instance_disgnostics()
+{
+    bcore_tbman_for_all_instances( instance_diagnostics, NULL );
 }
 
 /**********************************************************************************************************************/
@@ -2360,6 +2447,7 @@ vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object )
         {
             sz_t instances = bcore_tbman_total_instances();
             sz_t references = bcore_tbman_total_references();
+            bcore_string_s_print_d( bcore_tbman_s_status( tbman_s_g, 1 ) );
             ERR
             (
                 "Leaking memory .... %zu bytes\n"

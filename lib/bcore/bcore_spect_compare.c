@@ -31,8 +31,7 @@ static bcore_compare_s* compare_s_create()
 static void compare_s_discard( bcore_compare_s* o )
 {
     if( !o ) return;
-    compare_s_down( o );
-    bcore_free( o );
+    bcore_release_obj( compare_s_down, o );
 }
 
 /**********************************************************************************************************************/

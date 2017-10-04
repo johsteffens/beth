@@ -57,8 +57,8 @@ static void discard_hmap_s()
 {
     if( hmap_s_g )
     {
-        hmap_s_down( hmap_s_g );
-        hmap_s_g = bcore_free( hmap_s_g );
+        bcore_release_obj( hmap_s_down, hmap_s_g );
+        hmap_s_g = NULL;
     }
 }
 
@@ -138,6 +138,8 @@ vd_t bcore_name_manager_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
+        // bcore_tbman_instance_disgnostics();
+
         sz_t space = bcore_tbman_granted_space();
         name_manager_close();
         bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_tbman_granted_space() );

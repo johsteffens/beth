@@ -405,8 +405,7 @@ bcore_flect_self_s* bcore_flect_self_s_clone( const bcore_flect_self_s* o )
 void bcore_flect_self_s_discard( bcore_flect_self_s* o )
 {
     if( !o ) return;
-    bcore_flect_self_s_down( o );
-    bcore_free( o );
+    bcore_release_obj( bcore_flect_self_s_down, o );
 }
 
 void bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item )
@@ -664,8 +663,7 @@ static creator_map_s* creator_map_s_create()
 static void creator_map_s_discard( creator_map_s* o )
 {
     if( !o ) return;
-    creator_map_s_down( o );
-    bcore_free( o );
+    bcore_release_obj( creator_map_s_down, o );
 }
 
 /**********************************************************************************************************************/
@@ -715,8 +713,7 @@ static self_map_s* self_map_s_create()
 static void self_map_s_discard( self_map_s* o )
 {
     if( !o ) return;
-    self_map_s_down( o );
-    bcore_free( o );
+    bcore_release_obj( self_map_s_down, o );
 }
 
 /**********************************************************************************************************************/

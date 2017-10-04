@@ -31,8 +31,7 @@ static bcore_sink_s* sink_s_create()
 static void sink_s_discard( bcore_sink_s* o )
 {
     if( !o ) return;
-    sink_s_down( o );
-    bcore_free( o );
+    bcore_release_obj( sink_s_down, o );
 }
 
 /**********************************************************************************************************************/

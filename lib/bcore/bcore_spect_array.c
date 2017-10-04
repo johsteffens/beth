@@ -33,8 +33,7 @@ static bcore_array_s* array_s_create()
 static void array_s_discard( bcore_array_s* o )
 {
     if( !o ) return;
-    array_s_down( o );
-    bcore_free( o );
+    bcore_release_obj( array_s_down, o );
 }
 
 /**********************************************************************************************************************/
