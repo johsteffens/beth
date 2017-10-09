@@ -2,15 +2,12 @@
 
 #include "bclos_signal.h"
 
-#include "bclos_leaf.h"
-#include "bclos_proc.h"
 #include "bclos_env.h"
 #include "bclos_args.h"
 #include "bclos_signature.h"
 #include "bclos_spect_closure.h"
 #include "bclos_statement.h"
 #include "bclos_procedure.h"
-#include "bclos_tree.h"
 
 vd_t bclos_signal( tp_t target, tp_t signal, vd_t object )
 {
@@ -18,13 +15,10 @@ vd_t bclos_signal( tp_t target, tp_t signal, vd_t object )
     {
         bclos_args_signal,
         bclos_env_signal,
-        bclos_leaf_signal,
-        bclos_proc_signal,
         bclos_procedure_signal,
         bclos_signature_signal,
         bclos_spect_closure_signal,
         bclos_statement_signal,
-        bclos_tree_signal
     };
 
     sz_t size = sizeof( arr ) / sizeof( bcore_fp_signal );

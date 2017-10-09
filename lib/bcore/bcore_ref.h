@@ -15,11 +15,9 @@
 // Any function receiving a 'strong' sr_s by value must terminate it or return it.
 // Termination may formally be done for any state to be sure capturing the strong ones.
 // A sr_s is terminated by passing it to another function by value;
-// Note: A few exceptions of the form sr_... never terminate the reference.
 
 // After termination the content sr_s is deemed invalid if it was a strong reference.
 // Termination can be skipped when the reference is 'weak'
-// In principle sr_s could be extended to support reference counting.
 
 /// smart perspective based reference
 typedef struct
@@ -30,17 +28,21 @@ typedef struct
 } sr_s;
 
 /**********************************************************************************************************************/
+// forward declarations
+
+typedef struct bcore_inst_s bcore_inst_s;
+typedef struct bcore_life_s bcore_life_s;
+const bcore_inst_s* bcore_inst_s_get_typed( tp_t type );
+vd_t bcore_inst_typed_create( tp_t type );
+void bcore_inst_discard( sr_s o );
+vc_t ch_spect_p( vc_t p, tp_t spect_type );
+vd_t bcore_fork( vd_t ptr );
+
+/**********************************************************************************************************************/
 // embedded usage
 
 #define CONST_f  ((tp_t)1)  // const reference
 #define STRONG_f ((tp_t)2)  // strong reference (receiver assumes responsibility for managing lifetime)
-
-typedef struct bcore_inst_s bcore_inst_s;
-typedef struct bcore_life_s bcore_life_s;
-const bcore_inst_s* bcore_inst_s_get_typed(    tp_t type );
-vd_t bcore_inst_typed_create( tp_t type );
-void bcore_inst_discard( sr_s o );
-vc_t ch_spect_p( vc_t p, tp_t spect_type );
 
 static inline sr_s sr_null(                                             ) { return ( sr_s ){ .o = NULL, .p = NULL, .f = 0                                }; }
 static inline sr_s sr_pocs( vc_t p, vd_t o, bl_t const_f, bl_t strong_f ) { return ( sr_s ){ .o = o, .p = p, .f = ( const_f * CONST_f ) | ( strong_f * STRONG_f ) }; }
@@ -60,10 +62,9 @@ static inline sr_s sr_cc( sr_s o ) { o.f &= ~CONST_f; return o; } // turns a ref
 static inline sr_s sr_cp( sr_s o, tp_t spect_type ) { o.p = ch_spect_p( o.p, spect_type ); return o; } // changes perspective
               sr_s sr_cl( sr_s o, bcore_life_s* l ); // assigns to lifetime manager
 
-//static inline sr_s sr_fork( sr_s o ) { o.f &= ~STRONG_f; return o;         } // forks a reference; returned reference is weak; does not terminate o
-//static inline tp_t sr_type( sr_s o ) { return o.p ? ( (tp_t*)o.p )[1] : 0; } // returns type; does not terminate o
-
-static inline void sr_down( sr_s o )   { if( o.f & STRONG_f ) bcore_inst_discard( o ); }  // explicit termination
+// returns a strong reference; terminates o
+static inline sr_s sr_fork( sr_s o ) { return ( sr_s ) { .o = ( o.f & STRONG_f ) ? o.o : bcore_fork( o.o ), .p = o.p, .f = o.f | STRONG_f }; }
+static inline void sr_down( sr_s o ) { if( o.f & STRONG_f ) bcore_inst_discard( o ); }  // explicit termination
 
 /// creates a strong reference of a typed object (by cloning the object)
 static inline sr_s sr_create( tp_t t ) { return sr_tsd( t, bcore_inst_typed_create( t ) ); }
@@ -107,6 +108,12 @@ static inline void sr_s_set_const(  sr_s* o, bl_t flag ) { o->f = flag ? ( o->f 
 static inline void sr_s_clear( sr_s* o ) { if( o ) { sr_down( *o ); o->o = NULL; o->p = NULL; o->f = 0; } }
 static inline void sr_s_set(   sr_s* o, sr_s src ) { sr_s_clear( o ); if( sr_s_is_strong( &src ) ) { *o = src; } else { sr_s_copy( o, &src ); sr_down( src ); } }
 static inline sr_s sr_s_get(   sr_s* o )           { return sr_cw( *o ); }
+
+/** Fork seizes ownership via reference control. Even from a weak reference.
+ *  This guarantees the lifetime of the object at least for the lifetime of the forked reference.
+ *  The original object is always referenced (never copied).
+ */
+static inline sr_s sr_s_fork( sr_s* o ) { return ( sr_s ) { .o = bcore_fork( o->o ), .p = o->p, .f = o->f | STRONG_f }; }
 
 /**********************************************************************************************************************/
 

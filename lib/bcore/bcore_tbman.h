@@ -96,6 +96,7 @@ static inline void bcore_tbman_free(    vd_t ptr            ) {        bcore_tbm
  * Functions:
  *  fork
  *    Creates a new reference, which must be terminated via release;
+ *    Returns NULL if argument is NULL.
  *
  *  release
  *    Termination of a forked reference. Termination by owner for objects without destructor.
@@ -112,8 +113,7 @@ static inline void bcore_tbman_free(    vd_t ptr            ) {        bcore_tbm
  *  references
  *    Returns the total number of references of the root object.
  *    Returns 0 when *ptr has no root.
- *    Returning 0 implies an invalid pointer. But not all invalid pointers produce 0.
- *    --> A test for 0 is not stable.
+ *    Returning 0 implies an invalid pointer. But the inverse is not necessarily true.
  */
 
 vd_t bcore_tbman_s_fork           ( bcore_tbman_s* o,                             vd_t ptr );

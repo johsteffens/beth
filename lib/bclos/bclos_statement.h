@@ -38,9 +38,9 @@ DECLARE_FUNCTION_CREATE(  bclos_statement_s )
 DECLARE_FUNCTION_DISCARD( bclos_statement_s )
 DECLARE_FUNCTION_CLONE(   bclos_statement_s )
 
-void               bclos_statement_s_push_arg(          bclos_statement_s* o, tp_t arg );
-bclos_args_s*      bclos_statement_s_create_args( const bclos_statement_s* o, bclos_env_s* env );
-sr_s               bclos_statement_s_run(         const bclos_statement_s* o, bclos_env_s* env );
+void          bclos_statement_s_push_arg(          bclos_statement_s* o, tp_t arg );
+bclos_args_s* bclos_statement_s_create_args( const bclos_statement_s* o, bclos_env_s* env );
+sr_s          bclos_statement_s_run(         const bclos_statement_s* o, bclos_env_s* env );
 
 // Format: [<def-type>] <target> = <closure>( <name>, <name>, ... );
 bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source );

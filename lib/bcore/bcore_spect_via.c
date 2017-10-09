@@ -23,7 +23,7 @@ static void via_s_init( bcore_via_s* o )
 
 static void via_s_down( bcore_via_s* o )
 {
-    if( o->vitem_arr ) bcore_un_alloc( sizeof( bcore_via_s       ), o->vitem_arr, o->size, 0, NULL );
+    if( o->vitem_arr ) bcore_release( o->vitem_arr );
 }
 
 static bcore_via_s* via_s_create()

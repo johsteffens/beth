@@ -86,7 +86,7 @@ sr_s bclos_statement_s_run( const bclos_statement_s* o, bclos_env_s* env )
             }
             else if( closure_p->o_type == typeof( "bclos_completion" ) )
             {
-                ret = ret_sr;
+                ret = sr_fork( ret_sr );
             }
             else
             {

@@ -200,17 +200,19 @@ void bcore_flect_body_s_init( bcore_flect_body_s* o )
 
 void bcore_flect_body_s_down( bcore_flect_body_s* o )
 {
-    if( o->data )
-    {
-        for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_down( &o->data[ i ] );
-        o->data = bcore_un_alloc( sizeof( bcore_flect_item_s ), o->data, o->space, 0, &o->space );
-    }
+    bcore_release_obj_arr( bcore_flect_item_s_down, o->data, o->size, sizeof( bcore_flect_item_s ) );
+    o->data  = NULL;
+    o->size  = 0;
+    o->space = 0;
 }
 
 void bcore_flect_body_s_copy( bcore_flect_body_s* o, const bcore_flect_body_s* src )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_down( &o->data[ i ] );
-    o->data = bcore_un_alloc( sizeof( bcore_flect_item_s ), o->data, o->space,         0, &o->space );
+    bcore_release_obj_arr( bcore_flect_item_s_down, o->data, o->size, sizeof( bcore_flect_item_s ) );
+    o->data = NULL;
+    o->size = 0;
+    o->space = 0;
+
     o->data = bcore_un_alloc( sizeof( bcore_flect_item_s ), o->data, o->space, src->size, &o->space );
     for( sz_t i = 0; i < src->size; i++ )
     {
@@ -229,11 +231,10 @@ void bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* i
 {
     if( o->size == o->space )
     {
-        sz_t old_space = o->space;
         bcore_flect_item_s* old_data = o->data;
         o->data = bcore_u_alloc( sizeof( bcore_flect_item_s ), NULL, o->space > 0 ? o->space * 2 : 1, &o->space );
         for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_move( &o->data[ i ], &old_data[ i ] );
-        bcore_un_alloc( sizeof( bcore_flect_item_s ), old_data, old_space, 0, NULL );
+        bcore_release( old_data );
     }
     bcore_flect_item_s_init( &o->data[ o->size ] );
     bcore_flect_item_s_copy( &o->data[ o->size ], item );

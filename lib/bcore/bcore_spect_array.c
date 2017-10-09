@@ -231,14 +231,16 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
                         }
                     }
                 }
-                vd_t old_data  = arr->data;
-                sz_t old_space = arr->space;
+                vd_t old_data = arr->data;
                 arr->data = bcore_un_alloc( unit_size, NULL, 0, space, &arr->space );
                 for( sz_t i = 0; i < arr->size; i++ )
                 {
-                    instance_p->move( instance_p, ( u0_t* )arr->data + unit_size * i, ( u0_t* )old_data + unit_size * i );
+                    vd_t dst = ( u0_t* )arr->data + unit_size * i;
+                    vc_t src = ( u0_t* )old_data  + unit_size * i;
+                    instance_p->init( instance_p, dst );
+                    instance_p->copy( instance_p, dst, src );
                 }
-                bcore_un_alloc( unit_size, old_data, old_space, 0, NULL );
+                bcore_release_arg_arr( instance_p->down, instance_p, old_data, arr->size, unit_size );
             }
         }
         break;
@@ -273,14 +275,17 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
                         }
                     }
                 }
-                vd_t old_data  = arr->data;
-                sz_t old_space = arr->space;
+
+                vd_t old_data = arr->data;
                 arr->data = bcore_un_alloc( unit_size, NULL, 0, space, &arr->space );
                 for( sz_t i = 0; i < arr->size; i++ )
                 {
-                    instance_p->move( instance_p, ( u0_t* )arr->data + unit_size * i, ( u0_t* )old_data + unit_size * i );
+                    vd_t dst = ( u0_t* )arr->data + unit_size * i;
+                    vc_t src = ( u0_t* )old_data  + unit_size * i;
+                    instance_p->init( instance_p, dst );
+                    instance_p->copy( instance_p, dst, src );
                 }
-                bcore_un_alloc( unit_size, old_data, old_space, 0, NULL );
+                bcore_release_arg_arr( instance_p->down, instance_p, old_data, arr->size, unit_size );
             }
         }
         break;

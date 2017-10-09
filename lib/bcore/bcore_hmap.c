@@ -741,14 +741,14 @@ void bcore_hmap_tpsz_s_init( bcore_hmap_tpsz_s* o )
 void bcore_hmap_tpsz_s_down( bcore_hmap_tpsz_s* o )
 {
     o->nodes = bcore_u_alloc( sizeof( bcore_hnode_tpsz_s ), o->nodes, 0, NULL );
-    o->flags = bcore_u_alloc( sizeof( bl_t ),                  o->flags, 0, NULL );
+    o->flags = bcore_u_alloc( sizeof( bl_t ),               o->flags, 0, NULL );
     o->size  = 0;
 }
 
 void bcore_hmap_tpsz_s_copy( bcore_hmap_tpsz_s* o, const bcore_hmap_tpsz_s* src )
 {
     o->nodes = bcore_u_alloc( sizeof( bcore_hnode_tpsz_s ), o->nodes, 0, NULL );
-    o->flags = bcore_u_alloc( sizeof( bl_t ),                  o->flags, 0, NULL );
+    o->flags = bcore_u_alloc( sizeof( bl_t ),               o->flags, 0, NULL );
     o->size  = 0;
 
     o->nodes = bcore_u_memcpy( sizeof( bcore_hnode_tpsz_s ), o->nodes, src->nodes, src->size );

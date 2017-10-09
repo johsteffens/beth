@@ -18,7 +18,6 @@
 #include "bcore_sources.h"
 #include "bcore_spect.h"
 #include "bcore_spect_array.h"
-#include "bcore_spect_closure.h"
 #include "bcore_spect_compare.h"
 #include "bcore_spect_inst.h"
 #include "bcore_spect_interpreter.h"
@@ -56,7 +55,6 @@ vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
         bcore_sinks_signal,
         bcore_sources_signal,
         bcore_spect_array_signal,
-        bcore_spect_closure_signal,
         bcore_spect_compare_signal,
         bcore_spect_inst_signal,
         bcore_spect_interpreter_signal,

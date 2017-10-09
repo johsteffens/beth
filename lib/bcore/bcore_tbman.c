@@ -275,15 +275,8 @@ static vd_t token_manager_s_alloc( token_manager_s* o )
 static void block_manager_s_full_to_free( struct block_manager_s* o, token_manager_s* child );
 static void block_manager_s_free_to_empty( struct block_manager_s* o, token_manager_s* child );
 
-static void token_manager_s_free( token_manager_s* o, vd_t ptr )
+static void token_manager_s_free_token( token_manager_s* o, u1_t token )
 {
-    #ifdef RTCHECKS
-        if( o->stack_index == 0 ) ERR( "Block manager is empty." );
-        if( ( sz_t )( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) > o->pool_size ) ERR( "Attempt to free memory outside pool." );
-    #endif
-
-    u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
-
     #ifdef RTCHECKS
         if( token * o->block_size < sizeof( token_manager_s ) ) ERR( "Attempt to free reserved memory." );
         for( sz_t i = o->stack_index; i < o->stack_size; i++ ) if( o->token_stack[ i ] == token ) ERR( "Attempt to free memory that is declared free." );
@@ -319,6 +312,15 @@ static void token_manager_s_free( token_manager_s* o, vd_t ptr )
     if( o->stack_index == 0 ) block_manager_s_free_to_empty( o->parent, o );
 }
 
+static void token_manager_s_free( token_manager_s* o, vd_t ptr )
+{
+    #ifdef RTCHECKS
+        if( o->stack_index == 0 ) ERR( "Block manager is empty." );
+        if( ( sz_t )( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) > o->pool_size ) ERR( "Attempt to free memory outside pool." );
+    #endif
+    token_manager_s_free_token( o, ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size );
+}
+
 static void token_manager_s_create_rc_count_arr( token_manager_s* o )
 {
     sz_t alloc_size = sizeof( sz_t ) * o->stack_size;
@@ -343,6 +345,12 @@ static sz_t token_manager_s_references( token_manager_s* o, vc_t ptr )
 static void token_manager_s_fork( token_manager_s* o, vd_t ptr )
 {
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
+
+    #ifdef RTCHECKS
+        if( token * o->block_size < sizeof( token_manager_s ) ) ERR( "Attempt to fork reserved memory." );
+        for( sz_t i = o->stack_index; i < o->stack_size; i++ ) if( o->token_stack[ i ] == token ) ERR( "Attempt to fork memory that is declared free." );
+    #endif // RTCHECKS
+
     if( !o->rc_count_arr ) token_manager_s_create_rc_count_arr( o );
     o->rc_count_arr[ token ]++;
     assert( o->rc_count_arr[ token ] ); // overflow check
@@ -361,7 +369,7 @@ static void token_manager_s_release_obj( token_manager_s* o, fp_down_obj down, v
         bcore_mutex_unlock( o->mutex );
         down( ptr );
         bcore_mutex_lock( o->mutex );
-        token_manager_s_free( o, ptr );
+        token_manager_s_free_token( o, token );
         return;
     }
 
@@ -369,17 +377,17 @@ static void token_manager_s_release_obj( token_manager_s* o, fp_down_obj down, v
     {
         o->rc_count_arr[ token ]--;
         if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
-        if( o->rc_down_arr[ token ] ) ERR( "Shutdown function has already been defined." );
-        assert( o->down_manager );
-        o->rc_down_arr[ token ] = down_obj_s_create( o->down_manager, down );
+        if( !o->rc_down_arr[ token ] ) o->rc_down_arr[ token ] = down_obj_s_create( o->down_manager, down );
         return;
     }
 
-    if( o->rc_down_arr && o->rc_down_arr[ token ] ) ERR( "Shutdown function has already been defined." );
-    bcore_mutex_unlock( o->mutex );
-    down( ptr );
-    bcore_mutex_lock( o->mutex );
-    token_manager_s_free( o, ptr );
+    if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
+    {
+        bcore_mutex_unlock( o->mutex );
+        down( ptr );
+        bcore_mutex_lock( o->mutex );
+    }
+    token_manager_s_free_token( o, token );
 }
 
 static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr )
@@ -390,7 +398,7 @@ static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, v
         bcore_mutex_unlock( o->mutex );
         down( arg, ptr );
         bcore_mutex_lock( o->mutex );
-        token_manager_s_free( o, ptr );
+        token_manager_s_free_token( o, token );
         return;
     }
 
@@ -398,17 +406,18 @@ static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, v
     {
         o->rc_count_arr[ token ]--;
         if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
-        if( o->rc_down_arr[ token ] ) ERR( "Shutdown function has already been defined." );
-        assert( o->down_manager );
-        o->rc_down_arr[ token ] = down_arg_s_create( o->down_manager, down, arg );
+        if( !o->rc_down_arr[ token ] ) o->rc_down_arr[ token ] = down_arg_s_create( o->down_manager, down, arg );
         return;
     }
 
-    if( o->rc_down_arr && o->rc_down_arr[ token ] ) ERR( "Shutdown function has already been defined." );
-    bcore_mutex_unlock( o->mutex );
-    down( arg, ptr );
-    bcore_mutex_lock( o->mutex );
-    token_manager_s_free( o, ptr );
+    if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
+    {
+        bcore_mutex_unlock( o->mutex );
+        down( arg, ptr );
+        bcore_mutex_lock( o->mutex );
+    }
+
+    token_manager_s_free_token( o, token );
 }
 
 static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj down, vd_t ptr, sz_t size, sz_t step )
@@ -419,7 +428,7 @@ static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj dow
         bcore_mutex_unlock( o->mutex );
         for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
         bcore_mutex_lock( o->mutex );
-        token_manager_s_free( o, ptr );
+        token_manager_s_free_token( o, token );
         return;
     }
 
@@ -427,17 +436,17 @@ static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj dow
     {
         o->rc_count_arr[ token ]--;
         if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
-        if( o->rc_down_arr[ token ] ) ERR( "Shutdown function has already been defined." );
-        assert( o->down_manager );
-        o->rc_down_arr[ token ] = down_obj_arr_s_create( o->down_manager, down, size, step );
+        if( !o->rc_down_arr[ token ] ) o->rc_down_arr[ token ] = down_obj_arr_s_create( o->down_manager, down, size, step );
         return;
     }
 
-    if( o->rc_down_arr && o->rc_down_arr[ token ] ) ERR( "Shutdown function has already been defined." );
-    bcore_mutex_unlock( o->mutex );
-    for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
-    bcore_mutex_lock( o->mutex );
-    token_manager_s_free( o, ptr );
+    if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
+    {
+        bcore_mutex_unlock( o->mutex );
+        for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
+        bcore_mutex_lock( o->mutex );
+    }
+    token_manager_s_free_token( o, token );
 }
 
 static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step )
@@ -448,7 +457,7 @@ static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg dow
         bcore_mutex_unlock( o->mutex );
         for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
         bcore_mutex_lock( o->mutex );
-        token_manager_s_free( o, ptr );
+        token_manager_s_free_token( o, token );
         return;
     }
 
@@ -456,17 +465,18 @@ static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg dow
     {
         o->rc_count_arr[ token ]--;
         if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
-        if( o->rc_down_arr[ token ] ) ERR( "Shutdown function has already been defined." );
-        assert( o->down_manager );
-        o->rc_down_arr[ token ] = down_arg_arr_s_create( o->down_manager, down, arg, size, step );
+        if( !o->rc_down_arr[ token ] ) o->rc_down_arr[ token ] = down_arg_arr_s_create( o->down_manager, down, arg, size, step );
         return;
     }
 
-    if( o->rc_down_arr && o->rc_down_arr[ token ] ) ERR( "Shutdown function has already been defined." );
-    bcore_mutex_unlock( o->mutex );
-    for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
-    bcore_mutex_lock( o->mutex );
-    token_manager_s_free( o, ptr );
+    if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
+    {
+        bcore_mutex_unlock( o->mutex );
+        for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
+        bcore_mutex_lock( o->mutex );
+    }
+
+    token_manager_s_free_token( o, token );
 }
 
 static sz_t token_manager_s_total_alloc( const token_manager_s* o )
@@ -898,12 +908,8 @@ static vd_t external_manager_s_malloc( external_manager_s* o, sz_t requested_byt
     return ptr;
 }
 
-static void external_manager_s_free( external_manager_s* o, vd_t ptr )
+static void external_manager_s_free_ext( external_manager_s* o, vd_t ptr, ext_s* ext )
 {
-    vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
-    if( !ext_p ) ERR( "Attempt to free invalid memory" );
-    ext_s* ext = *ext_p;
-
     // reference control
     if( ext->rc_count )
     {
@@ -925,6 +931,13 @@ static void external_manager_s_free( external_manager_s* o, vd_t ptr )
     bcore_btree_pp_s_remove( o->ex_btree, ptr );
     ext_s_discard( o, ext );
     free( ptr );
+}
+
+static void external_manager_s_free( external_manager_s* o, vd_t ptr )
+{
+    vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
+    if( !ext_p ) ERR( "Attempt to free invalid memory" );
+    external_manager_s_free_ext( o, ptr, *ext_p );
 }
 
 static sz_t external_manager_s_granted_bytes( external_manager_s* o, vd_t ptr )
@@ -1008,8 +1021,7 @@ static void external_manager_s_release( external_manager_s* o, vd_t ptr )
     if( !kv ) ERR( "Object has no root." );
     ext_s* ext = kv->val;
     if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) > ext->size ) ERR( "Object has no root." );
-
-    external_manager_s_free( o, kv->key );
+    external_manager_s_free_ext( o, kv->key, ext );
 }
 
 static void external_manager_s_release_obj( external_manager_s* o, fp_down_obj down, vd_t ptr )
@@ -1017,19 +1029,20 @@ static void external_manager_s_release_obj( external_manager_s* o, fp_down_obj d
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Object is not root." );
     ext_s* ext = *ext_p;
-    if( ext->rc_down ) ERR( "Shutdown function has already been defined." );
     if( ext->rc_count )
     {
         ext->rc_count--;
-        assert( o->down_manager );
-        ext->rc_down = down_obj_s_create( o->down_manager, down );
+        if( !ext->rc_down ) ext->rc_down = down_obj_s_create( o->down_manager, down );
     }
     else
     {
-        bcore_mutex_unlock( o->mutex );
-        down( ptr );
-        bcore_mutex_lock( o->mutex );
-        external_manager_s_free( o, ptr );
+        if( !ext->rc_down )
+        {
+            bcore_mutex_unlock( o->mutex );
+            down( ptr );
+            bcore_mutex_lock( o->mutex );
+        }
+        external_manager_s_free_ext( o, ptr, ext );
     }
 }
 
@@ -1038,19 +1051,21 @@ static void external_manager_s_release_arg( external_manager_s* o, fp_down_arg d
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Object is not root." );
     ext_s* ext = *ext_p;
-    if( ext->rc_down ) ERR( "Shutdown function has already been defined." );
     if( ext->rc_count )
     {
         ext->rc_count--;
         assert( o->down_manager );
-        ext->rc_down = down_arg_s_create( o->down_manager, down, arg );
+        if( !ext->rc_down ) ext->rc_down = down_arg_s_create( o->down_manager, down, arg );
     }
     else
     {
-        bcore_mutex_unlock( o->mutex );
-        down( arg, ptr );
-        bcore_mutex_lock( o->mutex );
-        external_manager_s_free( o, ptr );
+        if( !ext->rc_down )
+        {
+            bcore_mutex_unlock( o->mutex );
+            down( arg, ptr );
+            bcore_mutex_lock( o->mutex );
+        }
+        external_manager_s_free_ext( o, ptr, ext );
     }
 }
 
@@ -1059,19 +1074,21 @@ static void external_manager_s_release_obj_arr( external_manager_s* o, fp_down_o
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Object is not root." );
     ext_s* ext = *ext_p;
-    if( ext->rc_down ) ERR( "Shutdown function has already been defined." );
     if( ext->rc_count )
     {
         ext->rc_count--;
         assert( o->down_manager );
-        ext->rc_down = down_obj_arr_s_create( o->down_manager, down, size, step );
+        if( !ext->rc_down ) ext->rc_down = down_obj_arr_s_create( o->down_manager, down, size, step );
     }
     else
     {
-        bcore_mutex_unlock( o->mutex );
-        for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
-        bcore_mutex_lock( o->mutex );
-        external_manager_s_free( o, ptr );
+        if( !ext->rc_down )
+        {
+            bcore_mutex_unlock( o->mutex );
+            for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
+            bcore_mutex_lock( o->mutex );
+        }
+        external_manager_s_free_ext( o, ptr, ext );
     }
 }
 
@@ -1080,19 +1097,21 @@ static void external_manager_s_release_arg_arr( external_manager_s* o, fp_down_a
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Object is not root." );
     ext_s* ext = *ext_p;
-    if( ext->rc_down ) ERR( "Shutdown function has already been defined." );
     if( ext->rc_count )
     {
         ext->rc_count--;
         assert( o->down_manager );
-        ext->rc_down = down_arg_arr_s_create( o->down_manager, down, arg, size, step );
+        if( !ext->rc_down ) ext->rc_down = down_arg_arr_s_create( o->down_manager, down, arg, size, step );
     }
     else
     {
-        bcore_mutex_unlock( o->mutex );
-        for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
-        bcore_mutex_lock( o->mutex );
-        external_manager_s_free( o, ptr );
+        if( !ext->rc_down )
+        {
+            bcore_mutex_unlock( o->mutex );
+            for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
+            bcore_mutex_lock( o->mutex );
+        }
+        external_manager_s_free_ext( o, ptr, ext );
     }
 }
 

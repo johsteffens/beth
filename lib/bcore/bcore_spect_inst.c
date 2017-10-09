@@ -39,15 +39,16 @@ DEFINE_FUNCTION_INIT_FLAT( bcore_inst_body_s )
 
 void bcore_inst_body_s_down( bcore_inst_body_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_inst_item_s_down( &o->data[ i ] );
-    o->data = bcore_un_alloc( sizeof( bcore_inst_item_s ), o->data, o->space, 0, &o->space );
-    o->size = 0;
+    bcore_release_obj_arr( bcore_inst_item_s_down, o->data, o->size, sizeof( bcore_inst_item_s ) );
+    o->data = NULL;
+    o->size = o->space = 0;
 }
 
 void bcore_inst_body_s_copy( bcore_inst_body_s* o, const bcore_inst_body_s* src )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_inst_item_s_down( &o->data[ i ] );
-    o->data = bcore_un_alloc( sizeof( bcore_inst_item_s ), o->data, o->space, 0,         &o->space );
+    bcore_release_obj_arr( bcore_inst_item_s_down, o->data, o->size, sizeof( bcore_inst_item_s ) );
+    o->data = NULL;
+    o->size = o->space = 0;
     o->data = bcore_un_alloc( sizeof( bcore_inst_item_s ), o->data, o->space, src->size, &o->space );
     for( sz_t i = 0; i < src->size; i++ ) bcore_inst_item_s_copy( &o->data[ i ], &src->data[ i ] );
     o->size = src->size;
@@ -61,11 +62,14 @@ bcore_inst_item_s* bcore_inst_body_s_push( bcore_inst_body_s* o )
 {
     if( o->size == o->space )
     {
-        sz_t old_space = o->space;
         bcore_inst_item_s* old_data = o->data;
         o->data = bcore_u_alloc( sizeof( bcore_inst_item_s ), NULL, o->space > 0 ? o->space * 2 : 1, &o->space );
-        for( sz_t i = 0; i < o->size; i++  ) bcore_inst_item_s_move( &o->data[ i ], &old_data[ i ] );
-        bcore_un_alloc( sizeof( bcore_inst_item_s ), old_data, old_space, 0, NULL );
+        for( sz_t i = 0; i < o->size; i++  )
+        {
+            bcore_inst_item_s_init( &o->data[ i ] );
+            bcore_inst_item_s_copy( &o->data[ i ], &old_data[ i ] );
+        }
+        bcore_release_obj_arr( bcore_inst_item_s_down, old_data, o->size, sizeof( bcore_inst_item_s ) );
     }
     bcore_inst_item_s* item = &o->data[ o->size ];
     o->size++;
@@ -955,7 +959,7 @@ static vd_t create_o( const bcore_inst_s* p )
 
 static vd_t create( const bcore_inst_s* p )
 {
-    vd_t o = bcore_u_alloc( p->size, NULL, 1, NULL);
+    vd_t o = bcore_u_alloc( p->size, NULL, 1, NULL );
     p->init( p, o );
     return o;
 }

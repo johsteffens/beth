@@ -59,7 +59,6 @@ static sr_s object_typelist()
     bcore_array_q_push_sc( &list, "bcore_source_s"        );
     bcore_array_q_push_sc( &list, "bcore_sink_s"          );
     bcore_array_q_push_sc( &list, "bcore_compare_s"       );
-    bcore_array_q_push_sc( &list, "bcore_closure_s"       );
     bcore_array_q_push_sc( &list, "bcore_interpreter_s"   );
     bcore_array_q_push_sc( &list, "bcore_translator_s"    );
     bcore_array_q_push_sc( &list, "bcore_string_s"        );

@@ -37,7 +37,6 @@ void bclos_procedure_s_push_sc( bclos_procedure_s* o, sc_t statement )
     );
 }
 
-
 void bclos_procedure_s_def( bclos_procedure_s* o, bclos_env_s* env )
 {
     o->lexical = env;
@@ -204,6 +203,7 @@ static bcore_string_s* procedure_selftest( void )
         bclos_closure_q_def( &proc_sr, env );
         sr_s res = bclos_closure_q_call_na( &proc_sr, NULL, 3, sr_s3( 2 ), sr_s3( 3 ), sr_s3( 4 ) );
         ASSERT( *( s3_t* )res.o == 40 );
+
         sr_down( res );
     }
 

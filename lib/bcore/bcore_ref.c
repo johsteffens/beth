@@ -110,6 +110,7 @@ static bcore_flect_self_s* sr_s_create_self( void )
     return self;
 }
 
+
 /**********************************************************************************************************************/
 
 vd_t bcore_ref_signal( tp_t target, tp_t signal, vd_t object )
