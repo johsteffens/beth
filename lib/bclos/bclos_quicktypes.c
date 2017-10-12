@@ -24,9 +24,9 @@ static bcore_string_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
 sr_s typelist()
 {
     sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ bcore_string_s * [] arr; }" ) );
-    bcore_array_q_push_sc( &list, "bclos_env_s"  );
+    bcore_array_q_push_sc( &list, "bclos_environment_s"  );
     bcore_array_q_push_sc( &list, "bclos_proc_binding_s" );
-    bcore_array_q_push_sc( &list, "bclos_args_s" );
+    bcore_array_q_push_sc( &list, "bclos_arguments_s" );
     bcore_array_q_push_sc( &list, "bclos_closure_s" );
     bcore_array_q_push_sc( &list, "bclos_arg_sig_s" );
     bcore_array_q_push_sc( &list, "bclos_signature_s" );

@@ -6,6 +6,7 @@
 #define BCLOS_QUICKTYPES_H
 
 #include "bcore_name_manager.h"
+#include "bcore_quicktypes.h"
 
 /// This function computes and formats defines below to stdout
 void bclos_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
@@ -15,9 +16,9 @@ void bclos_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
  */
 
 #define TYPEOF_bclos_arg_sig_s      1403124995
-#define TYPEOF_bclos_args_s         2174318074
+#define TYPEOF_bclos_arguments_s      94569669
 #define TYPEOF_bclos_closure_s      1095539800
-#define TYPEOF_bclos_env_s          1590357050
+#define TYPEOF_bclos_environment_s  2941159560
 #define TYPEOF_bclos_proc_binding_s 1894874949
 #define TYPEOF_bclos_procedure_s    3531902884
 #define TYPEOF_bclos_signature_s    3005312691

@@ -3,10 +3,12 @@
 #ifndef BCORE_H
 #define BCORE_H
 
+#include "bcore_features.h"
+
 /// Global (once) initializer for library bcore
-void bcore_library_init( void );
+void bcore_library_init( bcore_fp_signal signal );
 
 /// Global closer for library bcore
-void bcore_library_down( void );
+void bcore_library_down( bl_t verbose );
 
 #endif // BCORE_H

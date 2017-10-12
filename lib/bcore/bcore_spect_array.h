@@ -1,7 +1,7 @@
 /// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
 /** Array Perspective
- *  The array perspective addresses the first array element of an object and provide array
+ *  The array perspective addresses the first array element of an object and provideS array
  *  related functionality.
  *  'size'  specifies the number of valid elements in the array
  *  'space' represents internally preallocated memory area.

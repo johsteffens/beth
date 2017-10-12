@@ -333,9 +333,16 @@ vd_t bcore_signature_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
-        sz_t space = bcore_tbman_granted_space();
-        signature_manager_close();
-        bcore_msg( "  signature manager ... % 6zu\n", space - bcore_tbman_granted_space() );
+        if( object && ( *( bl_t* )object ) )
+        {
+            sz_t space = bcore_tbman_granted_space();
+            signature_manager_close();
+            bcore_msg( "  signature manager ... % 6zu\n", space - bcore_tbman_granted_space() );
+        }
+        else
+        {
+            signature_manager_close();
+        }
     }
     return NULL;
 }

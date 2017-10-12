@@ -208,7 +208,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 {
                     bcore_string_s* name = bcore_string_s_create_l( l );
                     bcore_source_parsef( src_l, " #name :", name );
-                    sz_t idx = bcore_via_nget_index( obj_l, typeof( name->sc ) );
+                    sz_t idx = bcore_via_nget_index( obj_l, entypeof( name->sc ) );
                     if( bcore_via_iis_link( obj_l, idx ) )
                     {
                         bcore_via_iset( obj_l, idx, interpret( o, sr_null(), src_l ) );

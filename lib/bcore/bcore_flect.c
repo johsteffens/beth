@@ -611,6 +611,19 @@ fp_t bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type,
     return fp;
 }
 
+vd_t bcore_flect_self_s_get_static( const bcore_flect_self_s* o, tp_t type, tp_t name )
+{
+    bcore_fp_create fp = ( bcore_fp_create )bcore_flect_self_s_try_external_fp( o, type, name );
+    if( !fp ) ERR( "Static creator '%s' of name '%s' not found in reflection '%s'.", ifnameof( type ), ifnameof( name ), ifnameof(o->type) );
+    return fp();
+}
+
+vd_t bcore_flect_self_s_try_static( const bcore_flect_self_s* o, tp_t type, tp_t name )
+{
+    bcore_fp_create fp = ( bcore_fp_create )bcore_flect_self_s_try_external_fp( o, type, name );
+    return fp ? fp() : NULL;
+}
+
 bool bcore_flect_self_s_is_aware( const bcore_flect_self_s* o )
 {
     if( !o->body ) return false;
@@ -1053,9 +1066,16 @@ vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
-        sz_t space = bcore_tbman_granted_space();
-        flect_close();
-        bcore_msg( "  reflection mananger . % 6zu\n", space - bcore_tbman_granted_space() );
+        if( object && ( *( bl_t* )object ) )
+        {
+            sz_t space = bcore_tbman_granted_space();
+            flect_close();
+            bcore_msg( "  reflection mananger . % 6zu\n", space - bcore_tbman_granted_space() );
+        }
+        else
+        {
+            flect_close();
+        }
     }
     else if( signal == typeof( "selftest" ) )
     {

@@ -340,10 +340,17 @@ vd_t bcore_trait_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
-        sz_t space1 = bcore_tbman_granted_space();
-        trait_manager_close();
-        sz_t space2 = bcore_tbman_granted_space();
-        bcore_msg( "  trait mananger ...... % 6zu\n", space1 > space2 ? space1 - space2 : ( sz_t )0 );
+        if( object && ( *( bl_t* )object ) )
+        {
+            sz_t space1 = bcore_tbman_granted_space();
+            trait_manager_close();
+            sz_t space2 = bcore_tbman_granted_space();
+            bcore_msg( "  trait mananger ...... % 6zu\n", space1 > space2 ? space1 - space2 : ( sz_t )0 );
+        }
+        else
+        {
+            trait_manager_close();
+        }
     }
     return NULL;
 }

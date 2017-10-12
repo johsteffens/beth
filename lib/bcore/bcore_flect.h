@@ -217,6 +217,12 @@ fp_t bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type,
 fp_t bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type, tp_t name ); // error when not found
 bool bcore_flect_self_s_is_aware(        const bcore_flect_self_s* o                       ); // object has body and is aware
 
+/** Returns a static object to be stored in the perspective.
+ *  'type' specifies a function compatible to bcore_fp_create creating the static object.
+ */
+vd_t bcore_flect_self_s_get_static( const bcore_flect_self_s* o, tp_t type, tp_t name ); // error when not found
+vd_t bcore_flect_self_s_try_static( const bcore_flect_self_s* o, tp_t type, tp_t name ); // returns NULL when not found
+
 /// reflection on bcore_flect_self_s
 bcore_flect_self_s* bcore_flect_self_s_create_self( void );
 

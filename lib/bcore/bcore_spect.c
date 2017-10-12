@@ -252,9 +252,16 @@ vd_t bcore_spect_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
-        sz_t space = bcore_tbman_granted_space();
-        spect_manager_close();
-        bcore_msg( "  spect mananger ...... % 6zu\n", space - bcore_tbman_granted_space() );
+        if( object && ( *( bl_t* )object ) )
+        {
+            sz_t space = bcore_tbman_granted_space();
+            spect_manager_close();
+            bcore_msg( "  spect mananger ...... % 6zu\n", space - bcore_tbman_granted_space() );
+        }
+        else
+        {
+            spect_manager_close();
+        }
     }
     return NULL;
 }

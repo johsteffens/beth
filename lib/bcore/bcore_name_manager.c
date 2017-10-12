@@ -140,9 +140,16 @@ vd_t bcore_name_manager_signal( tp_t target, tp_t signal, vd_t object )
     {
         // bcore_tbman_instance_disgnostics();
 
-        sz_t space = bcore_tbman_granted_space();
-        name_manager_close();
-        bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_tbman_granted_space() );
+        if( object && ( *( bl_t* )object ) )
+        {
+            sz_t space = bcore_tbman_granted_space();
+            name_manager_close();
+            bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_tbman_granted_space() );
+        }
+        else
+        {
+            name_manager_close();
+        }
     }
     return NULL;
 }
