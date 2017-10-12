@@ -60,7 +60,7 @@ bclos_arguments_s bclos_arguments_s_weak_crop( const bclos_arguments_s* src, sz_
     return args;
 }
 
-static bcore_flect_self_s* args_s_create_self( void )
+static bcore_flect_self_s* arguments_s_create_self( void )
 {
     sc_t def = "bclos_arguments_s = { sr_s [] arr; }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_arguments_s ) );
@@ -69,11 +69,11 @@ static bcore_flect_self_s* args_s_create_self( void )
 
 vd_t bclos_arguments_signal( tp_t target, tp_t signal, vd_t object )
 {
-    if( target != typeof( "all" ) && target != typeof( "bclos_args" ) ) return NULL;
+    if( target != typeof( "all" ) && target != typeof( "bclos_arguments" ) ) return NULL;
 
     if( signal == typeof( "init1" ) )
     {
-        bcore_flect_define_creator( typeof( "bclos_arguments_s" ), args_s_create_self );
+        bcore_flect_define_creator( typeof( "bclos_arguments_s" ), arguments_s_create_self );
     }
 
     return NULL;

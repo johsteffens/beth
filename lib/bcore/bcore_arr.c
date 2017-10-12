@@ -1,0 +1,122 @@
+/// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
+
+#include "bcore_arr.h"
+#include "bcore_quicktypes.h"
+#include "bcore_spect_inst.h"
+#include "bcore_spect_array.h"
+
+/**********************************************************************************************************************/
+
+DEFINE_FUNCTION_INIT_SPECT( bcore_arr_sz_s )
+DEFINE_FUNCTION_DOWN_SPECT( bcore_arr_sz_s )
+DEFINE_FUNCTION_COPY_SPECT( bcore_arr_sz_s )
+DEFINE_FUNCTION_CREATE(     bcore_arr_sz_s )
+DEFINE_FUNCTION_DISCARD(    bcore_arr_sz_s )
+DEFINE_FUNCTION_CLONE(      bcore_arr_sz_s )
+
+static bcore_flect_self_s* arr_sz_s_create_self( void )
+{
+    return bcore_flect_self_s_build_parse_sc( "bcore_arr_sz_s = { aware_t _; sz_t [] arr; }", sizeof( bcore_arr_sz_s ) );
+}
+
+void bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, sz_t space )
+{
+    if( o->space == 0 )
+    {
+        o->data = bcore_u_alloc( sizeof( sz_t ), NULL, space, &o->space );
+    }
+    else
+    {
+        o->data = bcore_un_alloc( sizeof( sz_t ), o->data, o->space, space, &o->space );
+    }
+    if( o->size > space ) o->size = space;
+}
+
+void bcore_arr_sz_s_make_strong( bcore_arr_sz_s* o )
+{
+    if( o->size > o->space )
+    {
+        sz_t* data = o->data;
+        o->data = bcore_u_alloc( sizeof( sz_t ), NULL, o->size, &o->space );
+        bcore_u_memcpy( sizeof( sz_t ), o->data, data, o->size );
+    }
+}
+
+void bcore_arr_sz_s_push( bcore_arr_sz_s* o, sz_t v )
+{
+    if( o->size >  o->space ) bcore_arr_sz_s_make_strong( o );
+    if( o->size == o->space )
+    {
+        o->data = bcore_un_alloc( sizeof( sz_t ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+    }
+    o->data[ o->size++ ] = v;
+}
+
+sz_t bcore_arr_sz_s_pop( bcore_arr_sz_s* o )
+{
+    if( o->size == 0 ) return 0;
+    o->size--;
+    return o->data[ o->size ];
+}
+
+static void sz_sort( sz_t* data, sz_t size, sz_t* buf, s2_t order )
+{
+    if( size < 2 ) return;
+    sz_t size1 = size >> 1;
+    sz_sort( data,         size1       , buf, order );
+    sz_sort( data + size1, size - size1, buf, order );
+    bcore_u_memcpy( sizeof( sz_t ), buf, data, size1 );
+    if( order > 0 )
+    {
+        for( sz_t i = 0, w = 0, r = size1; i < size1; )
+        {
+            data[ w++ ] = ( r == size || buf[ i ] <= data[ r ] ) ? buf[ i++ ] : data[ r++ ];
+        }
+    }
+    else
+    {
+        for( sz_t i = 0, w = 0, r = size1; i < size1; )
+        {
+            data[ w++ ] = ( r == size || buf[ i ] >= data[ r ] ) ? buf[ i++ ] : data[ r++ ];
+        }
+    }
+}
+
+void bcore_arr_sz_s_sort( bcore_arr_sz_s* o, s2_t order ) // stable mergesort
+{
+    if( o->space < o->size ) bcore_arr_sz_s_make_strong( o );
+    size_t* buf = bcore_u_alloc( sizeof( size_t ), NULL, o->size >> 1, NULL );
+    sz_sort( o->data, o->size, buf, order );
+    bcore_free( buf );
+}
+
+void bcore_arr_sz_s_reorder( bcore_arr_sz_s* o, const bcore_arr_sz_s* order )
+{
+    if( o->space < o->size ) bcore_arr_sz_s_make_strong( o );
+    sz_t buf_space = 0;
+    sz_t* buf = bcore_u_alloc( sizeof( sz_t ), NULL, order->size, &buf_space );
+    for( sz_t i = 0; i < order->size; i++ )
+    {
+        assert( order->data[ i ] < o->size );
+        buf[ i ] = o->data[ order->data[ i ] ];
+    }
+    bcore_un_alloc( sizeof( sz_t ), o->data, o->space, 0, &o->space );
+    o->data = buf;
+    o->space = buf_space;
+    o->size = order->size;
+}
+
+/**********************************************************************************************************************/
+
+vd_t bcore_arr_signal( tp_t target, tp_t signal, vd_t object )
+{
+    if( target != typeof( "all" ) && target != typeof( "bcore_arr" ) ) return NULL;
+
+    if( signal == typeof( "init1" ) )
+    {
+        bcore_flect_define_creator( typeof( "bcore_arr_sz_s" ), arr_sz_s_create_self );
+    }
+
+    return NULL;
+}
+

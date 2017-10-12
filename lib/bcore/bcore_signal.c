@@ -30,6 +30,7 @@
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
 #include "bcore_bin_ml.h"
+#include "bcore_arr.h"
 
 vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
 {
@@ -65,6 +66,7 @@ vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
         bcore_threads_signal,
         bcore_txt_ml_signal,
         bcore_bin_ml_signal,
+        bcore_arr_signal,
 
         /// sub libraries
         bclos_signal
