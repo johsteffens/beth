@@ -19,6 +19,12 @@ static bcore_flect_self_s* arr_sz_s_create_self( void )
     return bcore_flect_self_s_build_parse_sc( "bcore_arr_sz_s = { aware_t _; sz_t [] arr; }", sizeof( bcore_arr_sz_s ) );
 }
 
+void bcore_arr_sz_s_clear( bcore_arr_sz_s* o )
+{
+    o->size = 0;
+    if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+}
+
 void bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, sz_t space )
 {
     if( o->space == 0 )
@@ -30,6 +36,25 @@ void bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, sz_t space )
         o->data = bcore_un_alloc( sizeof( sz_t ), o->data, o->space, space, &o->space );
     }
     if( o->size > space ) o->size = space;
+}
+
+void bcore_arr_sz_s_fill( bcore_arr_sz_s* o, sz_t size, sz_t v )
+{
+    bcore_arr_sz_s_set_space( o, size );
+    for( sz_t i = 0; i < size; i++ ) o->data[ i ] = v;
+    o->size = size;
+}
+
+void bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, s3_t step, sz_t size )
+{
+    bcore_arr_sz_s_set_space( o, size );
+    sz_t v = v_start;
+    for( sz_t i = 0; i < size; i++ )
+    {
+        o->data[ i ] = v;
+        v += step;
+    }
+    o->size = size;
 }
 
 void bcore_arr_sz_s_make_strong( bcore_arr_sz_s* o )
@@ -104,6 +129,25 @@ void bcore_arr_sz_s_reorder( bcore_arr_sz_s* o, const bcore_arr_sz_s* order )
     o->data = buf;
     o->space = buf_space;
     o->size = order->size;
+}
+
+bcore_arr_sz_s* bcore_arr_sz_s_create_random_permutation( u2_t ( *rg )( u2_t ), u2_t rval, sz_t size )
+{
+    bcore_arr_sz_s* o = bcore_arr_sz_s_create();
+    if( size == 0 ) return o;
+
+    bcore_arr_sz_s_step_fill( o, 0, 1, size );
+    sz_t idx = 0;
+
+    for( sz_t i = 0; i < size; i++ )
+    {
+        idx = i + ( ( idx + ( rval = rg( rval ) ) ) % ( size - i ) );
+        sz_t t = o->data[ i ];
+        o->data[ i ] = o->data[ idx ];
+        o->data[ idx ] = t;
+    }
+
+    return o;
 }
 
 /**********************************************************************************************************************/

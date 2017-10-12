@@ -1632,6 +1632,20 @@ static bcore_string_s* spect_array_selftest( void )
     ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "f3_t" ) ) );
     ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
 
+    // sorting a permutation
+    {
+        bcore_arr_sz_s* arr = bcore_arr_sz_s_create_random_permutation( bcore_xsg_u2, 2, 1000 );
+        bcore_array_aware_sort( arr, 0, -1, 1 );
+        for( sz_t i = 0; i < arr->size; i++ ) ASSERT( arr->data[ i ] == i );
+        bcore_arr_sz_s_discard( arr );
+    }
+    {
+        bcore_arr_sz_s* arr = bcore_arr_sz_s_create_random_permutation( bcore_xsg_u2, 2, 1000 );
+        bcore_arr_sz_s_sort( arr, 1 );
+        for( sz_t i = 0; i < arr->size; i++ ) ASSERT( arr->data[ i ] == i );
+        bcore_arr_sz_s_discard( arr );
+    }
+
     return NULL;
 }
 
