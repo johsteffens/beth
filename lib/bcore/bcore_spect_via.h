@@ -79,6 +79,7 @@ const bcore_array_s* bcore_via_spect_iget_array    ( const bcore_via_s* p,      
 vc_t                 bcore_via_spect_iget_spect    ( const bcore_via_s* p, vc_t o, sz_t index, tp_t stp );
 
 /// Access by name. Error when object has no element of given name.
+bl_t                 bcore_via_spect_nexists       ( const bcore_via_s* p,         tp_t name ); // Checks if given name exists
 sz_t                 bcore_via_spect_nget_index    ( const bcore_via_s* p,         tp_t name ); // Returns index for given name
 sr_s                 bcore_via_spect_nget          ( const bcore_via_s* p, vc_t o, tp_t name           );
 void                 bcore_via_spect_nset          ( const bcore_via_s* p, vd_t o, tp_t name, sr_s src );
@@ -148,6 +149,7 @@ const bcore_vitem_s* bcore_via_iget_vitem    ( sr_s o, sz_t index );
 const bcore_via_s*   bcore_via_iget_via      ( sr_s o, sz_t index );
 const bcore_array_s* bcore_via_iget_array    ( sr_s o, sz_t index );
 vc_t                 bcore_via_iget_spect    ( sr_s o, sz_t index, tp_t stp );
+bl_t                 bcore_via_nexists       ( sr_s o, tp_t name );
 sz_t                 bcore_via_nget_index    ( sr_s o, tp_t name );
 sr_s                 bcore_via_nget          ( sr_s o, tp_t name           );
 void                 bcore_via_nset          ( sr_s o, tp_t name, sr_s src );
@@ -183,6 +185,7 @@ const bcore_vitem_s* bcore_via_q_iget_vitem    ( const sr_s* o, sz_t index );
 const bcore_via_s*   bcore_via_q_iget_via      ( const sr_s* o, sz_t index );
 const bcore_array_s* bcore_via_q_iget_array    ( const sr_s* o, sz_t index );
 vc_t                 bcore_via_q_iget_spect    ( const sr_s* o, sz_t index, tp_t stp );
+bl_t                 bcore_via_q_nexists       ( const sr_s* o, tp_t name );
 sz_t                 bcore_via_q_nget_index    ( const sr_s* o, tp_t name );
 sr_s                 bcore_via_q_nget          ( const sr_s* o, tp_t name           );
 void                 bcore_via_q_nset          ( const sr_s* o, tp_t name, sr_s src );

@@ -431,6 +431,16 @@ void bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc
     bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_external_func( func, type, name ) );
 }
 
+void bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name )
+{
+    bcore_flect_self_s_push_external_func( o, (fp_t )func, "bcore_fp_set", name );
+}
+
+void bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name )
+{
+    bcore_flect_self_s_push_external_func( o, (fp_t )func, "bcore_fp_get", name );
+}
+
 void bcore_flect_self_s_init_plain( bcore_flect_self_s* o, tp_t type, sz_t size )
 {
     bcore_flect_self_s_init( o );
@@ -767,7 +777,7 @@ static void flect_close()
     bcore_discard_flect_maps();
 }
 
-bool bcore_flect_exists( tp_t type )
+bl_t bcore_flect_exists( tp_t type )
 {
     assert( self_map_s_g != NULL );
     bl_t exists = false;

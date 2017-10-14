@@ -54,7 +54,8 @@ typedef tp_t aware_t; // self-awareness type (first element in self-aware object
 #define PRItp_t PRIu32
 
 /// special purpose specifiers (do not use for other purposes)
-// NPX - used locally as name prefix in *.c files (e.g. #define NPX(name) bcore_translator_##name  ... #undef NPX)
+// NPX  - used locally as name prefix in *.c files (e.g. #define NPX(name) bcore_translator_##name  ... #undef NPX)
+// st_s - reserved for strings
 
 #endif // BCORE_TYPE_H
 

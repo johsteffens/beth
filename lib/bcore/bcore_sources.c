@@ -108,7 +108,28 @@ static void chain_p_errorvf( bcore_source_chain_s* o, sc_t format, va_list args 
 {
     if( o->size > 0 )
     {
-        bcore_source_aware_parse_errvf( o->data[ o->size - 1 ], format, args );
+        bcore_string_s* msg       = bcore_string_s_create();
+        bcore_string_s_pushf( msg, "Parse error" );
+        if( o->data[ 0 ] && ( *( aware_t* )o->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
+        {
+            bcore_source_file_s* fo = o->data[ 0 ];
+            bcore_string_s_pushf( msg, " in file '%s'", fo->name->sc );
+        }
+
+        if( o->data[ o->size - 1 ] && ( *( aware_t* )o->data[ o->size - 1 ] ) == TYPEOF_bcore_source_string_s )
+        {
+            bcore_source_string_s* so = o->data[ o->size - 1 ];
+            bcore_string_s* context   = bcore_string_s_show_line_context( so->string, so->index );
+            sz_t line = bcore_string_s_lineof( so->string, so->index );
+            sz_t col  = bcore_string_s_colof( so->string, so->index );
+            bcore_string_s_pushf( msg, " at line %zu, col %zu", line + so->preceding_lines, col );
+            bcore_string_s_pushf( msg, "\n%s", context->sc );
+            bcore_string_s_discard( context );
+        }
+
+        bcore_string_s_push_string_d( msg, bcore_string_s_createvf( format, args ) );
+        bcore_err( "\n%s", msg->sc );
+        bcore_string_s_discard( msg );
     }
     else
     {
@@ -275,7 +296,7 @@ static bcore_flect_self_s* buffer_s_create_self( void )
       "aware_t _; "
       "u0_t [] data; "
       "sz_t index; "
-      "vd_t supplier; "
+      "aware* supplier; "
       "sz_t prefetch_size; "
     "}";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_buffer_s ) );
@@ -410,11 +431,15 @@ sz_t bcore_source_string_s_get_data(  bcore_source_string_s* o, vd_t data, sz_t 
 
 static void string_p_errorvf( bcore_source_string_s* o, sc_t format, va_list args )
 {
-    bcore_string_s* context = bcore_string_s_show_line_context( o->string, o->index );
-    bcore_string_s* msg     = bcore_string_s_createvf( format, args );
+    bcore_string_s* context   = bcore_string_s_show_line_context( o->string, o->index );
+    bcore_string_s* msg       = bcore_string_s_create();
+    bcore_string_s_pushf( msg, "Parse error" );
     sz_t line = bcore_string_s_lineof( o->string, o->index );
     sz_t col  = bcore_string_s_colof( o->string, o->index );
-    bcore_err( "bcore_source_string_s parse error at line %zu, col %zu:\n%s%s\n", line + o->preceding_lines, col, context->sc, msg->sc );
+    bcore_string_s_pushf( msg, " at line %zu, col %zu:", line + o->preceding_lines, col );
+    bcore_string_s_pushf( msg, "\n%s\n", context->sc );
+    bcore_string_s_push_string_d( msg, bcore_string_s_createvf( format, args ) );
+    bcore_err( "%s", msg->sc );
     bcore_string_s_discard( msg );
     bcore_string_s_discard( context );
 }
@@ -434,7 +459,7 @@ static bcore_flect_self_s* string_s_create_self( void )
       "aware_t _; "
       "bcore_string_s* string; "
       "sz_t index; "
-      "vd_t supplier; "
+      "aware* supplier; "
       "sz_t preceding_lines; "
       "sz_t refill_limit;    "
       "sz_t prefetch_size;   "

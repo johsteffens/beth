@@ -43,7 +43,7 @@ static sr_s leaf_typelist()
     bcore_array_q_push_sc( &list, "fp_t" );
     bcore_array_q_push_sc( &list, "tp_t" );
     bcore_array_q_push_sc( &list, "bl_t" );
-//    bcore_array_q_push_sc( &list, "bool" );
+    bcore_array_q_push_sc( &list, "st_s" );
     bcore_array_q_push_sc( &list, "aware_t" );
     bcore_array_q_sort( &list, 0, -1, 1 );
     return list;

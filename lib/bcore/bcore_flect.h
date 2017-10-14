@@ -15,6 +15,7 @@
 #include "bcore_control.h"
 #include "bcore_name_manager.h"
 #include "bcore_string.h"
+#include "bcore_features.h"
 
 /// data encapsulation methods
 enum
@@ -175,6 +176,8 @@ void                bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_
 void                bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item );
 void                bcore_flect_self_s_push_external_data( bcore_flect_self_s* o, vc_t data, sc_t type, sc_t name );
 void                bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
+void                bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name );
+void                bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name );
 bcore_string_s*     bcore_flect_self_s_show( const bcore_flect_self_s* o );
 void                bcore_flect_self_s_check_consistency( const bcore_flect_self_s* o );
 

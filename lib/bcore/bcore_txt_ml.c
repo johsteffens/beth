@@ -2,6 +2,7 @@
 
 #include "bcore_txt_ml.h"
 #include "bcore_life.h"
+#include "bcore_st.h"
 #include "bcore_sinks.h"
 #include "bcore_sources.h"
 #include "bcore_spect_via.h"
@@ -75,6 +76,13 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
             bcore_string_s_replace_char_sc( string, '\"', "\\\"" );
             bcore_sink_pushf( sink_l, "\"%s\"", string->sc );
             bcore_string_s_discard( string );
+        }
+        else if( sr_s_type( &obj_l ) == TYPEOF_st_s ) // strings (st_s)
+        {
+            st_s* string = st_s_clone( ( const st_s* )obj_l.o );
+            st_s_replace_char_sc( string, '\"', "\\\"" );
+            bcore_sink_pushf( sink_l, "\"%s\"", string->sc );
+            st_s_discard( string );
         }
         else if( bcore_via_is_leaf( obj_l ) )
         {
@@ -171,6 +179,10 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
         tp_t type = type_of( type_string );
         if( type )
         {
+            if( !bcore_flect_exists( type ) )
+            {
+                bcore_source_q_parse_errf( &src_l, "Type '%s' has no reflection.", type_string->sc );
+            }
             obj = interpret( o, bcore_inst_typed_create_sr( type ), src_l );
         }
         else
@@ -187,6 +199,14 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
         {
             bcore_source_parsef( src_l, " #string", obj_l.o );
             bcore_source_parsef( src_l, " </>" );
+        }
+        else if( sr_s_type( &obj_l ) == TYPEOF_st_s )
+        {
+            bcore_string_s* s = bcore_string_s_create();
+            bcore_source_parsef( src_l, " #string", s );
+            bcore_source_parsef( src_l, " </>" );
+            st_s_copy_sc( obj_l.o, s->sc );
+            bcore_string_s_discard( s );
         }
         else if( bcore_via_is_leaf( obj_l ) )
         {
@@ -208,7 +228,14 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 {
                     bcore_string_s* name = bcore_string_s_create_l( l );
                     bcore_source_parsef( src_l, " #name :", name );
-                    sz_t idx = bcore_via_nget_index( obj_l, entypeof( name->sc ) );
+
+                    tp_t ntype = typeof( name->sc );
+                    if( !bcore_via_q_nexists( &obj_l, ntype ) )
+                    {
+                        bcore_source_q_parse_errf( &src_l, "Object '%s' has no element of name '%s'.", ifnameof( sr_s_type( &obj_l ) ), name->sc );
+                    }
+
+                    sz_t idx = bcore_via_nget_index( obj_l, ntype );
                     if( bcore_via_iis_link( obj_l, idx ) )
                     {
                         bcore_via_iset( obj_l, idx, interpret( o, sr_null(), src_l ) );

@@ -26,6 +26,7 @@
 #include "bcore_spect_translator.h"
 #include "bcore_spect_via.h"
 #include "bcore_string.h"
+#include "bcore_st.h"
 #include "bcore_threads.h"
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
@@ -44,6 +45,7 @@ vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
         bcore_spect_signal,
         bcore_trait_signal,
         bcore_string_signal,
+        bcore_st_signal,
 
         /// other items
         bcore_btree_signal,
