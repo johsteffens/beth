@@ -85,7 +85,7 @@ sr_s sr_sz( sz_t v );
 sr_s sr_tp( tp_t v );
 sr_s sr_bl( bl_t v );
 
-sr_s sr_string_sc( sc_t v ); // converts to bcore_string_s
+sr_s sr_string_sc( sc_t v ); // converts to st_s
 
 /**********************************************************************************************************************/
 // object usage

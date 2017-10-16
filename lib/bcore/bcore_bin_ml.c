@@ -40,9 +40,9 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
     else
     {
         push_type( sink_l, sr_s_type( &obj_l ) );
-        if( sr_s_type( &obj_l ) == TYPEOF_bcore_string_s ) // strings
+        if( sr_s_type( &obj_l ) == TYPEOF_st_s ) // strings
         {
-            const bcore_string_s* string = obj_l.o;
+            const st_s* string = obj_l.o;
             bcore_sink_push_data( sink_l, string->data, string->size + 1 ); // push string including terminating 0
         }
         else if( bcore_via_is_leaf( obj_l ) )
@@ -160,14 +160,14 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
     {
         obj = sr_cp( obj, TYPEOF_bcore_via_s );
         sr_s obj_l = sr_cw( obj );
-        if( sr_s_type( &obj_l ) == TYPEOF_bcore_string_s )
+        if( sr_s_type( &obj_l ) == TYPEOF_st_s )
         {
-            bcore_string_s* string = obj_l.o;
+            st_s* string = obj_l.o;
             u0_t c = 0;
             bcore_source_get_data( src_l, &c, sizeof( c ) );
             while( c != 0 )
             {
-                bcore_string_s_push_char( string, c );
+                st_s_push_char( string, c );
                 bcore_source_get_data( src_l, &c, sizeof( c ) );
             }
         }
@@ -276,7 +276,7 @@ void bcore_bin_ml_transfer_test( sr_s obj )
     s2_t c = bcore_compare_sr( obj, sr );
     if( c != 0 )
     {
-        bcore_string_s* diff = bcore_life_s_push_aware( l, bcore_diff_sr( obj, sr ) );
+        st_s* diff = bcore_life_s_push_aware( l, bcore_diff_sr( obj, sr ) );
         if( diff )
         {
             ERR( "Comparison returned '%"PRIi32"':\n%s\n", c, diff->sc );
@@ -291,18 +291,18 @@ void bcore_bin_ml_transfer_test( sr_s obj )
 
 #include <time.h>
 
-static bcore_string_s* bin_ml_selftest( void )
+static st_s* bin_ml_selftest( void )
 {
     ASSERT( bcore_spect_supported( typeof( "bcore_interpreter_s" ), typeof( "bcore_bin_ml_interpreter_s" ) ) );
     ASSERT( bcore_spect_supported( typeof( "bcore_translator_s" ), typeof( "bcore_bin_ml_translator_s" ) ) );
 
     bcore_life_s* l = bcore_life_s_create();
-    bcore_string_s* log = bcore_string_s_create();
+    st_s* log = st_s_create();
     sr_s zoo = bcore_life_s_push_sr( l, bcore_spect_via_create_zoo( 1000 ) );
     clock_t time = clock();
     bcore_bin_ml_transfer_test( zoo );
     time = clock() - time;
-    bcore_string_s_pushf( log, "bin transfer %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "bin transfer %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
     bcore_life_s_discard( l );
     return log;
@@ -322,7 +322,7 @@ vd_t bcore_bin_ml_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( bin_ml_selftest() );
+        st_s_print_d( bin_ml_selftest() );
     }
 
     return NULL;

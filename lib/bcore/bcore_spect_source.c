@@ -52,7 +52,7 @@ void bcore_source_spect_parse_errvf( const bcore_source_s* p, vd_t o, sc_t forma
     }
     else
     {
-        ERR( "Parse error:\n%s\n", bcore_string_s_createvf( format, args )->sc );
+        ERR( "Parse error:\n%s\n", st_s_createvf( format, args )->sc );
     }
 }
 

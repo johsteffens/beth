@@ -44,7 +44,7 @@ bl_t bcore_spect_supported( tp_t p_type, tp_t o_type );
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
 
 /// returns status information (thread safe)
-bcore_string_s* bcore_spect_status();
+st_s* bcore_spect_status();
 
 /**********************************************************************************************************************/
 

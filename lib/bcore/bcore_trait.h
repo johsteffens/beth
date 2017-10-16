@@ -17,7 +17,7 @@
  */
 
 /// Support feature: Tests if object supports certain requirements. In case of non-support a log != NULL may be filled with descriptive reasons
-typedef bl_t ( *bcore_trait_fp_supports )( const bcore_flect_self_s* self, bcore_string_s* log );
+typedef bl_t ( *bcore_trait_fp_supports )( const bcore_flect_self_s* self, st_s* log );
 
 /// associates requirements with a trait
 /// this must be finished before the trait is defined below
@@ -39,13 +39,13 @@ tp_t bcore_trait_parent( tp_t trait );
 bl_t bcore_trait_is( tp_t trait, tp_t ancestor );
 
 /// checks if a reflection supports a trait including all ancestors (ignores trait specification in reflection)
-bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, bcore_string_s* log );
+bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* log );
 
 /// checks if trait is satisfied by object (this is true when trait is ancestor of self->trait or when bcore_trait_supports returns true)
-bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, bcore_string_s* log );
+bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, st_s* log );
 
 /// checks if trait is satisfied by object (this is true when trait is ancestor of self->trait or when bcore_trait_supports returns true)
-bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, bcore_string_s* log );
+bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log );
 
 vd_t bcore_trait_signal( tp_t target, tp_t signal, vd_t object );
 

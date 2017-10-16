@@ -582,8 +582,8 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
             {
 
                 bcore_life_s* l = bcore_life_s_create();
-                vitem.fp_get = ( bcore_fp_get )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_get" ), typeof( bcore_string_s_createf_l( l, "get_%s", ifnameof( vitem.name ) )->sc ) );
-                vitem.fp_set = ( bcore_fp_set )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_set" ), typeof( bcore_string_s_createf_l( l, "set_%s", ifnameof( vitem.name ) )->sc ) );
+                vitem.fp_get = ( bcore_fp_get )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_get" ), typeof( st_s_createf_l( l, "get_%s", ifnameof( vitem.name ) )->sc ) );
+                vitem.fp_set = ( bcore_fp_set )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_set" ), typeof( st_s_createf_l( l, "set_%s", ifnameof( vitem.name ) )->sc ) );
                 if( vitem.f_shell )
                 {
                     if( !vitem.fp_get ) ERR( "Object '%s' has shell '%s' but no function 'get_%s'.", ifnameof( o->o_type ), ifnameof( vitem.name ), ifnameof( vitem.name ) );
@@ -634,9 +634,9 @@ const bcore_via_s* bcore_via_s_get_aware( vc_t obj )
 sr_s bcore_spect_via_create_zoo( sz_t size )
 {
     bcore_life_s* l = bcore_life_s_create();
-    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { bcore_string_s* type; f3_t weight; bcore_string_s * [] features; }" );
+    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { st_s* type; f3_t weight; st_s * [] features; }" );
     tp_t t_compound = bcore_flect_type_parse_sc( "compound = { u3_t id; sz_t area; animal * [] animals; }" );
-    tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { bcore_string_s* name; typed * [] compounds; }" );
+    tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { st_s* name; typed * [] compounds; }" );
 
     sr_s ret = bcore_inst_typed_create_sr( t_zoo );
     sr_s zoo = sr_cw( ret );
@@ -682,7 +682,7 @@ sr_s bcore_spect_via_create_zoo( sz_t size )
     return ret;
 }
 
-static bcore_string_s* spect_via_selftest( void )
+static st_s* spect_via_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_flect_define_parse_sc( "via_specs = { sz_t size; u2_t param1; s2_t; }" );
@@ -737,7 +737,7 @@ vd_t bcore_spect_via_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( spect_via_selftest() );
+        st_s_print_d( spect_via_selftest() );
     }
 
     return NULL;

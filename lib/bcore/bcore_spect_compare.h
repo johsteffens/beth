@@ -45,12 +45,12 @@ s2_t bcore_compare_aware( vc_t obj1, vc_t obj2 );
 bool bcore_equal_aware(   vc_t obj1, vc_t obj2 );
 
 /// diff: in case values differ, a string is created describing the nature of difference
-bcore_string_s* bcore_diff_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
-bcore_string_s* bcore_diff_typed( tp_t type,                vc_t obj1, vc_t obj2 );
-bcore_string_s* bcore_diff_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 );
-bcore_string_s* bcore_diff_aware( vc_t obj1, vc_t obj2 );
-bcore_string_s* bcore_diff_sr( sr_s obj1, sr_s obj2 );
-bcore_string_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 );
+st_s* bcore_diff_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
+st_s* bcore_diff_typed( tp_t type,                vc_t obj1, vc_t obj2 );
+st_s* bcore_diff_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 );
+st_s* bcore_diff_aware( vc_t obj1, vc_t obj2 );
+st_s* bcore_diff_sr( sr_s obj1, sr_s obj2 );
+st_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 );
 
 vd_t bcore_spect_compare_signal( tp_t target, tp_t signal, vd_t object );
 

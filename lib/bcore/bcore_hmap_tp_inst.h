@@ -4,7 +4,7 @@
 #define BCORE_HMAP_TP_INST_H
 
 #include "bcore_features.h"
-#include "bcore_string.h"
+#include "bcore_st.h"
 #include "bcore_flect.h"
 #include "bcore_spect_inst.h"
 

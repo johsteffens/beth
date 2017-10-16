@@ -227,7 +227,7 @@ bl_t bcore_trait_is( tp_t trait, tp_t ancestor )
     return flag;
 }
 
-bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, bcore_string_s* log )
+bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* log )
 {
     if( !trait ) return true;
     if( !bcore_trait_supported( bcore_trait_parent( trait ), self, log ) ) return false;
@@ -246,7 +246,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, bcore_st
         {
             if( log )
             {
-                bcore_string_s_pushf( log, "Trait is not in ancestry." );
+                st_s_pushf( log, "Trait is not in ancestry." );
             }
             return false;
         }
@@ -258,7 +258,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, bcore_st
         {
             if( log )
             {
-                bcore_string_s_pushf( log, "Self awareness missing." );
+                st_s_pushf( log, "Self awareness missing." );
             }
             return false;
         }
@@ -273,15 +273,15 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, bcore_st
             {
                 if( ft_o.type && ft_o.name )
                 {
-                    bcore_string_s_pushf( log, "Missing function '%s' of name '%s'.", ifnameof( ft_o.type ), ifnameof( ft_o.name ) );
+                    st_s_pushf( log, "Missing function '%s' of name '%s'.", ifnameof( ft_o.type ), ifnameof( ft_o.name ) );
                 }
                 else if( ft_o.type )
                 {
-                    bcore_string_s_pushf( log, "Missing function '%s'.", ifnameof( ft_o.type ) );
+                    st_s_pushf( log, "Missing function '%s'.", ifnameof( ft_o.type ) );
                 }
                 else if( ft_o.name )
                 {
-                    bcore_string_s_pushf( log, "Missing function '%s'.", ifnameof( ft_o.name ) );
+                    st_s_pushf( log, "Missing function '%s'.", ifnameof( ft_o.name ) );
                 }
             }
             return false;
@@ -297,7 +297,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, bcore_st
     return true;
 }
 
-bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, bcore_string_s* log )
+bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, st_s* log )
 {
     if( self->type == trait                       ) return true;
     if( bcore_trait_is( self->trait, trait )      ) return true;
@@ -305,7 +305,7 @@ bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, bco
     return false;
 }
 
-bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, bcore_string_s* log )
+bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log )
 {
     if( object_type == trait                      ) return true;
     const bcore_flect_self_s* self = bcore_flect_try_self( object_type );
@@ -313,7 +313,7 @@ bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, bcore_string_s* l
     {
         if( log )
         {
-            bcore_string_s_pushf( log, "Object '%s' has no self reflection.", ifnameof( object_type ) );
+            st_s_pushf( log, "Object '%s' has no self reflection.", ifnameof( object_type ) );
         }
         return false;
     }

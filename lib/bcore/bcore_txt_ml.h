@@ -32,7 +32,7 @@ void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr
 /// syntactic sugar
 void bcore_txt_ml_to_stdout( sr_s obj );
 void bcore_txt_ml_to_file(   sr_s obj, sc_t file );
-void bcore_txt_ml_to_string( sr_s obj, bcore_string_s* string );
+void bcore_txt_ml_to_string( sr_s obj, st_s* string );
 
 /**********************************************************************************************************************/
 
@@ -54,7 +54,7 @@ sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, 
 
 /// syntactic sugar
 sr_s bcore_txt_ml_from_file( sc_t file );
-sr_s bcore_txt_ml_from_string( const bcore_string_s* string );
+sr_s bcore_txt_ml_from_string( const st_s* string );
 
 
 /**********************************************************************************************************************/

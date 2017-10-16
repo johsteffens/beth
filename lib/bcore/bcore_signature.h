@@ -50,7 +50,7 @@ tp_t bcore_signature_s_pop(     bcore_signature_s* o ); // returns 0 when signat
 void bcore_signature_s_pop_n(   bcore_signature_s* o, sz_t n );
 
 /// Converts signature into a string of associated type names
-bcore_string_s* bcore_signature_s_create_string( const bcore_signature_s* o );
+st_s* bcore_signature_s_create_string( const bcore_signature_s* o );
 
 /** Compares two signatures introducing an ordering:
  *  Returns   0 when both signatures are equal

@@ -26,15 +26,15 @@ DEFINE_FUNCTION_CREATE(     bcore_txt_ml_translator_s )
 DEFINE_FUNCTION_DISCARD(    bcore_txt_ml_translator_s )
 DEFINE_FUNCTION_CLONE(      bcore_txt_ml_translator_s )
 
-static sc_t name_of( tp_t type, bcore_string_s* buf )
+static sc_t name_of( tp_t type, st_s* buf )
 {
     sc_t n = bcore_name_try_name( type );
     if( n ) return n;
-    bcore_string_s_copy_typed( buf, TYPEOF_tp_t, &type );
+    st_s_copy_typed( buf, TYPEOF_tp_t, &type );
     return buf->sc;
 }
 
-static tp_t type_of( const bcore_string_s* name )
+static tp_t type_of( const st_s* name )
 {
     tp_t tp = 0;
     if( name->size == 0 )
@@ -43,7 +43,7 @@ static tp_t type_of( const bcore_string_s* name )
     }
     else if( name->sc[ 0 ] >= '0' && name->sc[ 0 ] <= '9' )
     {
-        bcore_string_s_parsef( name, 0, -1, "#tp_t", &tp );
+        st_s_parsef( name, 0, -1, "#tp_t", &tp );
     }
     else
     {
@@ -57,8 +57,8 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
     bcore_life_s* l = bcore_life_s_create();
     sr_s sink_l         = sr_cl( sr_cp( sink, TYPEOF_bcore_sink_s ), l );
     sr_s obj_l          = sr_cl( sr_cp( obj,  TYPEOF_bcore_via_s ),  l );
-    bcore_string_s* ind = bcore_string_s_push_char_n( bcore_string_s_create_l( l ), ' ', depth * o->indent );
-    bcore_string_s* buf = bcore_string_s_create_l( l );
+    st_s* ind = st_s_push_char_n( st_s_create_l( l ), ' ', depth * o->indent );
+    st_s* buf = st_s_create_l( l );
 
     bcore_sink_pushf( sink_l, "%s", ind->sc );
     if( name ) bcore_sink_pushf( sink_l, "%s:", name_of( name, buf ) );
@@ -70,14 +70,7 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
     else
     {
         bcore_sink_pushf( sink_l, "<%s>", name_of( sr_s_type( &obj_l ), buf ) );
-        if( sr_s_type( &obj_l ) == TYPEOF_bcore_string_s ) // strings
-        {
-            bcore_string_s* string = bcore_string_s_clone( ( const bcore_string_s* )obj_l.o );
-            bcore_string_s_replace_char_sc( string, '\"', "\\\"" );
-            bcore_sink_pushf( sink_l, "\"%s\"", string->sc );
-            bcore_string_s_discard( string );
-        }
-        else if( sr_s_type( &obj_l ) == TYPEOF_st_s ) // strings (st_s)
+        if( sr_s_type( &obj_l ) == TYPEOF_st_s ) // strings
         {
             st_s* string = st_s_clone( ( const st_s* )obj_l.o );
             st_s_replace_char_sc( string, '\"', "\\\"" );
@@ -86,7 +79,7 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
         }
         else if( bcore_via_is_leaf( obj_l ) )
         {
-            bcore_sink_push_string_d( sink_l, bcore_string_s_create_typed( sr_s_type( &obj_l ), obj_l.o ) );
+            bcore_sink_push_string_d( sink_l, st_s_create_typed( sr_s_type( &obj_l ), obj_l.o ) );
         }
         else
         {
@@ -132,9 +125,9 @@ static bcore_flect_self_s* translator_s_create_self( void )
 
 void bcore_txt_ml_to_stdout( sr_s obj )
 {
-    bcore_string_s* out = bcore_string_s_create();
+    st_s* out = st_s_create();
     bcore_translate( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( out ) );
-    bcore_string_s_print_d( out );
+    st_s_print_d( out );
 }
 
 void bcore_txt_ml_to_file( sr_s obj, sc_t file )
@@ -147,7 +140,7 @@ void bcore_txt_ml_to_file( sr_s obj, sc_t file )
     bcore_life_s_discard( l );
 }
 
-void bcore_txt_ml_to_string( sr_s obj, bcore_string_s* string )
+void bcore_txt_ml_to_string( sr_s obj, st_s* string )
 {
     bcore_translate( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( string ) );
 }
@@ -174,7 +167,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
 
     if( !obj.o )
     {
-        bcore_string_s* type_string = bcore_string_s_create_l( l );
+        st_s* type_string = st_s_create_l( l );
         bcore_source_parsef( src_l, " <#until'>'>", type_string );
         tp_t type = type_of( type_string );
         if( type )
@@ -194,23 +187,15 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
     {
         obj = sr_cp( obj, TYPEOF_bcore_via_s );
         sr_s obj_l = sr_cw( obj );
-        bcore_string_s* buf = bcore_string_s_create_l( l );
-        if( sr_s_type( &obj_l ) == TYPEOF_bcore_string_s )
+        st_s* buf = st_s_create_l( l );
+        if( sr_s_type( &obj_l ) == TYPEOF_st_s )
         {
             bcore_source_parsef( src_l, " #string", obj_l.o );
             bcore_source_parsef( src_l, " </>" );
         }
-        else if( sr_s_type( &obj_l ) == TYPEOF_st_s )
-        {
-            bcore_string_s* s = bcore_string_s_create();
-            bcore_source_parsef( src_l, " #string", s );
-            bcore_source_parsef( src_l, " </>" );
-            st_s_copy_sc( obj_l.o, s->sc );
-            bcore_string_s_discard( s );
-        }
         else if( bcore_via_is_leaf( obj_l ) )
         {
-            bcore_source_parsef( src_l, bcore_string_s_createf_l( l, " #%s", name_of( sr_s_type( &obj_l ), buf ) )->sc, obj_l.o );
+            bcore_source_parsef( src_l, st_s_createf_l( l, " #%s", name_of( sr_s_type( &obj_l ), buf ) )->sc, obj_l.o );
             bcore_source_parsef( src_l, " </>" );
         }
         else
@@ -223,10 +208,10 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
             }
             else
             {
-                bcore_string_s* buf = bcore_string_s_create_l( l );
+                st_s* buf = st_s_create_l( l );
                 while( !bcore_source_parse_boolf( src_l, " #?'</>'" ) )
                 {
-                    bcore_string_s* name = bcore_string_s_create_l( l );
+                    st_s* name = st_s_create_l( l );
                     bcore_source_parsef( src_l, " #name :", name );
 
                     tp_t ntype = typeof( name->sc );
@@ -243,7 +228,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                     else
                     {
                         sr_s item = bcore_via_iget( obj_l, idx );
-                        if( item.o ) bcore_source_parsef( src_l, bcore_string_s_createf_l( l, " <%s>", name_of( sr_s_type( &item ), buf ) )->sc );
+                        if( item.o ) bcore_source_parsef( src_l, st_s_createf_l( l, " <%s>", name_of( sr_s_type( &item ), buf ) )->sc );
                         if( sr_s_is_strong( &item ) )  // if item is detached --> refeed it
                         {
                             bcore_via_iset( obj_l, idx, interpret( o, item, src_l ) );
@@ -285,7 +270,7 @@ sr_s bcore_txt_ml_from_file( sc_t file )
     return ret;
 }
 
-sr_s bcore_txt_ml_from_string( const bcore_string_s* string )
+sr_s bcore_txt_ml_from_string( const st_s* string )
 {
     sr_s chain = sr_asd( bcore_source_chain_s_create() );
     bcore_source_chain_s_push_d( chain.o, bcore_source_string_s_create_from_string( string ) );
@@ -299,13 +284,13 @@ void bcore_txt_ml_transfer_test( sr_s obj )
 {
     bcore_life_s* l = bcore_life_s_create();
     obj = bcore_life_s_push_sr( l, obj );
-    bcore_string_s* string = bcore_life_s_push_aware( l, bcore_string_s_create() );
+    st_s* string = bcore_life_s_push_aware( l, st_s_create() );
     bcore_txt_ml_to_string( obj, string );
     sr_s sr = bcore_life_s_push_sr( l, bcore_txt_ml_from_string( string ) );
     s2_t c = bcore_compare_sr( obj, sr );
     if( c != 0 )
     {
-        bcore_string_s* diff = bcore_life_s_push_aware( l, bcore_diff_sr( obj, sr ) );
+        st_s* diff = bcore_life_s_push_aware( l, bcore_diff_sr( obj, sr ) );
         if( diff )
         {
             ERR( "Comparison returned '%"PRIi32"':\n%s\n", c, diff->sc );
@@ -320,19 +305,19 @@ void bcore_txt_ml_transfer_test( sr_s obj )
 
 #include <time.h>
 
-static bcore_string_s* txt_ml_selftest( void )
+static st_s* txt_ml_selftest( void )
 {
     ASSERT( bcore_spect_supported( typeof( "bcore_interpreter_s" ), TYPEOF_bcore_txt_ml_interpreter_s ) );
     ASSERT( bcore_spect_supported( typeof( "bcore_translator_s" ), TYPEOF_bcore_txt_ml_translator_s ) );
 
     bcore_life_s* l = bcore_life_s_create();
-    bcore_string_s* log = bcore_string_s_create();
+    st_s* log = st_s_create();
 
     sr_s zoo = bcore_life_s_push_sr( l, bcore_spect_via_create_zoo( 1000 ) );
     clock_t time = clock();
     bcore_txt_ml_transfer_test( zoo );
     time = clock() - time;
-    bcore_string_s_pushf( log, "txt transfer %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "txt transfer %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
     bcore_life_s_discard( l );
     return log;
@@ -352,7 +337,7 @@ vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( txt_ml_selftest() );
+        st_s_print_d( txt_ml_selftest() );
     }
 
     return NULL;

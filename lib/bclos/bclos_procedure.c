@@ -163,7 +163,7 @@ static sr_s test_mul( vc_t o, bclos_environment_s* env, const bclos_arguments_s*
     return sr_null();
 }
 
-static bcore_string_s* procedure_selftest( void )
+static st_s* procedure_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     {
@@ -223,7 +223,7 @@ vd_t bclos_procedure_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( procedure_selftest() );
+        st_s_print_d( procedure_selftest() );
     }
 
     return NULL;

@@ -272,7 +272,7 @@ bcore_sink_file_s* bcore_sink_file_s_create()
 bcore_sink_file_s* bcore_sink_file_s_create_name( sc_t name )
 {
     bcore_sink_file_s* o = bcore_sink_file_s_create();
-    o->name = bcore_string_s_create_sc( name );
+    o->name = st_s_create_sc( name );
     return o;
 }
 
@@ -288,9 +288,9 @@ void bcore_sink_file_s_open( bcore_sink_file_s* o )
     o->handle = fopen( o->name->sc, "wb" );
     if( !o->handle )
     {
-        bcore_string_s* msg = bcore_string_s_createf( "Error opening file %s:\n", o->name->sc );
+        st_s* msg = st_s_createf( "Error opening file %s:\n", o->name->sc );
         perror( msg->sc );
-        bcore_string_s_discard( msg );
+        st_s_discard( msg );
         abort();
     }
 }
@@ -300,9 +300,9 @@ void bcore_sink_file_s_close( bcore_sink_file_s* o )
     if( !o->handle ) return;
     if( fclose( o->handle ) != 0 )
     {
-        bcore_string_s* msg = bcore_string_s_createf( "Error closing file %s:\n", o->name->sc );
+        st_s* msg = st_s_createf( "Error closing file %s:\n", o->name->sc );
         perror( msg->sc );
-        bcore_string_s_discard( msg );
+        st_s_discard( msg );
         abort();
     }
     o->handle = NULL;
@@ -313,9 +313,9 @@ void bcore_sink_file_s_flush( bcore_sink_file_s* o )
     if( !o->handle ) return;
     if( fflush( o->handle ) != 0 )
     {
-        bcore_string_s* msg = bcore_string_s_createf( "Error flushing file %s:\n", o->name->sc );
+        st_s* msg = st_s_createf( "Error flushing file %s:\n", o->name->sc );
         perror( msg->sc );
-        bcore_string_s_discard( msg );
+        st_s_discard( msg );
         abort();
     }
 }
@@ -335,9 +335,9 @@ static sz_t file_flow_snk( bcore_sink_file_s* o, vc_t data, sz_t size )
     {
         if( ferror( o->handle ) )
         {
-            bcore_string_s* msg = bcore_string_s_createf( "Error writing to file %s:\n", o->name->sc );
+            st_s* msg = st_s_createf( "Error writing to file %s:\n", o->name->sc );
             perror( msg->sc );
-            bcore_string_s_discard( msg );
+            st_s_discard( msg );
         }
     }
     return wsize;
@@ -356,7 +356,7 @@ static bcore_flect_self_s* file_s_create_self( void )
     "bcore_sink_file_s = "
     "{ "
       "aware_t _; "
-      "bcore_string_s* name; "
+      "st_s* name; "
       "private vd_t handle; "
     "}";
 

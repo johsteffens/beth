@@ -56,7 +56,7 @@ bclos_signature_s* bclos_signature_s_parse_from_source( sr_s source )
     source = bcore_life_s_push_sr( l, source );
     bclos_signature_s* s = bclos_signature_s_create();
 
-    bcore_string_s* name = bcore_string_s_create_l( l );
+    st_s* name = st_s_create_l( l );
     bcore_source_q_parsef( &source, " #name", name );
     if( bcore_source_q_parse_boolf( &source, " #?'('" ) )
     {
@@ -88,7 +88,7 @@ bclos_signature_s* bclos_signature_s_parse_from_source( sr_s source )
 
 bclos_signature_s* bclos_signature_s_parse_from_sc( sc_t sc )
 {
-    return bclos_signature_s_parse_from_source( sr_asd( bcore_string_s_create_weak_sc( sc ) ) );
+    return bclos_signature_s_parse_from_source( sr_asd( st_s_create_weak_sc( sc ) ) );
 }
 
 static bcore_flect_self_s* sig_s_create_self( void )

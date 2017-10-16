@@ -48,9 +48,9 @@ void bcore_sink_spect_flush( const bcore_sink_s* p, vd_t o )
 
 void bcore_sink_spect_pushvf( const bcore_sink_s* p, vd_t o, sc_t format, va_list args )
 {
-    bcore_string_s* s = bcore_string_s_createvf( format, args );
+    st_s* s = st_s_createvf( format, args );
     p->flow_snk( o, s->data, s->size );
-    bcore_string_s_discard( s );
+    st_s_discard( s );
 }
 
 void bcore_sink_spect_pushf( const bcore_sink_s* p, vd_t o, sc_t f, ... )
@@ -75,15 +75,15 @@ void bcore_sink_spect_push_sc( const bcore_sink_s* p, vd_t o, sc_t sc )
     }
 }
 
-void bcore_sink_spect_push_string( const bcore_sink_s* p, vd_t o, const bcore_string_s* string )
+void bcore_sink_spect_push_string( const bcore_sink_s* p, vd_t o, const st_s* string )
 {
     p->flow_snk( o, string->data, string->size );
 }
 
-void bcore_sink_spect_push_string_d( const bcore_sink_s* p, vd_t o, bcore_string_s* string )
+void bcore_sink_spect_push_string_d( const bcore_sink_s* p, vd_t o, st_s* string )
 {
     p->flow_snk( o, string->data, string->size );
-    bcore_string_s_discard( string );
+    st_s_discard( string );
 }
 
 void bcore_sink_spect_set_consumer( const bcore_sink_s* p, vd_t o, vd_t consumer )
@@ -152,8 +152,8 @@ void bcore_sink_aware_flush        ( vd_t o                               ) { bc
 void bcore_sink_aware_pushvf       ( vd_t o, sc_t f, va_list a            ) { bcore_sink_spect_pushvf(        bcore_sink_s_get_typed( *( aware_t* )o ), o, f, a ); }
 void bcore_sink_aware_push_char    ( vd_t o, char c                       ) { bcore_sink_spect_push_char(     bcore_sink_s_get_typed( *( aware_t* )o ), o, c ); }
 void bcore_sink_aware_push_sc      ( vd_t o, sc_t s                       ) { bcore_sink_spect_push_sc(       bcore_sink_s_get_typed( *( aware_t* )o ), o, s ); }
-void bcore_sink_aware_push_string  ( vd_t o, const bcore_string_s* s      ) { bcore_sink_spect_push_string(   bcore_sink_s_get_typed( *( aware_t* )o ), o, s ); }
-void bcore_sink_aware_push_string_d( vd_t o,       bcore_string_s* s      ) { bcore_sink_spect_push_string_d( bcore_sink_s_get_typed( *( aware_t* )o ), o, s ); }
+void bcore_sink_aware_push_string  ( vd_t o, const st_s* s      ) { bcore_sink_spect_push_string(   bcore_sink_s_get_typed( *( aware_t* )o ), o, s ); }
+void bcore_sink_aware_push_string_d( vd_t o,       st_s* s      ) { bcore_sink_spect_push_string_d( bcore_sink_s_get_typed( *( aware_t* )o ), o, s ); }
 void bcore_sink_aware_set_consumer(  vd_t o, vd_t c                       ) { bcore_sink_spect_set_consumer(  bcore_sink_s_get_typed( *( aware_t* )o ), o, c ); }
 void bcore_sink_aware_pushf        ( vd_t o, sc_t f, ...                  ) { va_list a; va_start( a, f ); bcore_sink_aware_pushvf( o, f, a ); va_end( a ); }
 
@@ -166,8 +166,8 @@ void bcore_sink_pushvf       ( sr_s o, sc_t f, va_list a ) {          bcore_sink
 void bcore_sink_pushf        ( sr_s o, sc_t f, ... )       { va_list a; va_start( a, f ); bcore_sink_pushvf( o, f, a ); va_end( a ); }
 void bcore_sink_push_char    ( sr_s o, char c )            {          bcore_sink_spect_push_char(     w_spect( o ), o.o, c ); sr_down( o ); }
 void bcore_sink_push_sc      ( sr_s o, sc_t s )            {          bcore_sink_spect_push_sc(       w_spect( o ), o.o, s ); sr_down( o ); }
-void bcore_sink_push_string  ( sr_s o, const bcore_string_s* s ) {    bcore_sink_spect_push_string(   w_spect( o ), o.o, s ); sr_down( o ); }
-void bcore_sink_push_string_d( sr_s o,       bcore_string_s* s ) {    bcore_sink_spect_push_string_d( w_spect( o ), o.o, s ); sr_down( o ); }
+void bcore_sink_push_string  ( sr_s o, const st_s* s ) {    bcore_sink_spect_push_string(   w_spect( o ), o.o, s ); sr_down( o ); }
+void bcore_sink_push_string_d( sr_s o,       st_s* s ) {    bcore_sink_spect_push_string_d( w_spect( o ), o.o, s ); sr_down( o ); }
 void bcore_sink_set_consumer ( sr_s o, vd_t c )            {          bcore_sink_spect_set_consumer(  w_spect( o ), o.o, c ); sr_down( o ); }
 
 sz_t bcore_sink_q_push_data    ( const sr_s* o, vc_t d, sz_t sz )   { return   bcore_sink_spect_push_data(     w_spect( *o ), o->o, d, sz ); }
@@ -176,8 +176,8 @@ void bcore_sink_q_pushvf       ( const sr_s* o, sc_t f, va_list a ) {          b
 void bcore_sink_q_pushf        ( const sr_s* o, sc_t f, ... )       { va_list a; va_start( a, f ); bcore_sink_q_pushvf( o, f, a ); va_end( a ); }
 void bcore_sink_q_push_char    ( const sr_s* o, char c )            {          bcore_sink_spect_push_char(     w_spect( *o ), o->o, c ); }
 void bcore_sink_q_push_sc      ( const sr_s* o, sc_t s )            {          bcore_sink_spect_push_sc(       w_spect( *o ), o->o, s ); }
-void bcore_sink_q_push_string  ( const sr_s* o, const bcore_string_s* s ) {    bcore_sink_spect_push_string(   w_spect( *o ), o->o, s ); }
-void bcore_sink_q_push_string_d( const sr_s* o,       bcore_string_s* s ) {    bcore_sink_spect_push_string_d( w_spect( *o ), o->o, s ); }
+void bcore_sink_q_push_string  ( const sr_s* o, const st_s* s ) {    bcore_sink_spect_push_string(   w_spect( *o ), o->o, s ); }
+void bcore_sink_q_push_string_d( const sr_s* o,       st_s* s ) {    bcore_sink_spect_push_string_d( w_spect( *o ), o->o, s ); }
 void bcore_sink_q_set_consumer ( const sr_s* o, vd_t c )            {          bcore_sink_spect_set_consumer(  w_spect( *o ), o->o, c ); }
 
 /**********************************************************************************************************************/

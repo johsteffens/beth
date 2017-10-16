@@ -8,7 +8,7 @@
 #include "bcore_tbman.h"
 #include "bcore_control.h"
 #include "bcore_btree.h"
-#include "bcore_string.h"
+#include "bcore_st.h"
 #include "bcore_threads.h"
 #include "bcore_name_manager.h"
 #include "bcore_quicktypes.h"
@@ -515,17 +515,17 @@ static void token_manager_s_for_all_instances( token_manager_s* o, void (*fp)( v
     }
 }
 
-static bcore_string_s* token_manager_s_status( const token_manager_s* o, int detail_level )
+static st_s* token_manager_s_status( const token_manager_s* o, int detail_level )
 {
-    bcore_string_s* str = bcore_string_s_create();
+    st_s* str = st_s_create();
     if( detail_level <= 0 ) return str;
-    bcore_string_s_pushf( str, "    pool_size:   %zu\n",  o->pool_size );
-    bcore_string_s_pushf( str, "    block_size:  %zu\n",  o->block_size );
-    bcore_string_s_pushf( str, "    stack_size:  %zu\n",  o->stack_size );
-    bcore_string_s_pushf( str, "    aligned:     %s\n",   o->aligned ? "true" : "false" );
-    bcore_string_s_pushf( str, "    stack_index: %zu\n",  ( sz_t )o->stack_index );
-    bcore_string_s_pushf( str, "    total alloc: %zu\n", token_manager_s_total_alloc( o ) );
-    bcore_string_s_pushf( str, "    total space: %zu\n", token_manager_s_total_space( o ) );
+    st_s_pushf( str, "    pool_size:   %zu\n",  o->pool_size );
+    st_s_pushf( str, "    block_size:  %zu\n",  o->block_size );
+    st_s_pushf( str, "    stack_size:  %zu\n",  o->stack_size );
+    st_s_pushf( str, "    aligned:     %s\n",   o->aligned ? "true" : "false" );
+    st_s_pushf( str, "    stack_index: %zu\n",  ( sz_t )o->stack_index );
+    st_s_pushf( str, "    total alloc: %zu\n", token_manager_s_total_alloc( o ) );
+    st_s_pushf( str, "    total space: %zu\n", token_manager_s_total_space( o ) );
     return str;
 }
 
@@ -782,25 +782,25 @@ static void block_manager_s_for_all_instances( block_manager_s* o, void (*fp)( v
     for( sz_t i = 0; i < o->size; i++ ) token_manager_s_for_all_instances( o->data[ i ], fp, arg );
 }
 
-static bcore_string_s* block_manager_s_status( const block_manager_s* o, int detail_level )
+static st_s* block_manager_s_status( const block_manager_s* o, int detail_level )
 {
-    bcore_string_s* str = bcore_string_s_create();
+    st_s* str = st_s_create();
     if( detail_level <= 0 ) return str;
-    bcore_string_s_pushf( str, "  pool_size:        %zu\n", o->pool_size );
-    bcore_string_s_pushf( str, "  block_size:       %zu\n", o->block_size );
-    bcore_string_s_pushf( str, "  sweep_hysteresis: %g\n",  o->sweep_hysteresis );
-    bcore_string_s_pushf( str, "  aligned:          %s\n",  o->aligned ? "true" : "false" );
-    bcore_string_s_pushf( str, "  token_managers:   %zu\n", o->size );
-    bcore_string_s_pushf( str, "      full:         %zu\n", o->free_index );
-    bcore_string_s_pushf( str, "      empty:        %zu\n", block_manager_s_empty_tail( o ) );
-    bcore_string_s_pushf( str, "  total alloc:      %zu\n", block_manager_s_total_alloc( o ) );
-    bcore_string_s_pushf( str, "  total space:      %zu\n", block_manager_s_total_space( o ) );
+    st_s_pushf( str, "  pool_size:        %zu\n", o->pool_size );
+    st_s_pushf( str, "  block_size:       %zu\n", o->block_size );
+    st_s_pushf( str, "  sweep_hysteresis: %g\n",  o->sweep_hysteresis );
+    st_s_pushf( str, "  aligned:          %s\n",  o->aligned ? "true" : "false" );
+    st_s_pushf( str, "  token_managers:   %zu\n", o->size );
+    st_s_pushf( str, "      full:         %zu\n", o->free_index );
+    st_s_pushf( str, "      empty:        %zu\n", block_manager_s_empty_tail( o ) );
+    st_s_pushf( str, "  total alloc:      %zu\n", block_manager_s_total_alloc( o ) );
+    st_s_pushf( str, "  total space:      %zu\n", block_manager_s_total_space( o ) );
     if( detail_level > 1 )
     {
         for( sz_t i = 0; i < o->size; i++ )
         {
-            bcore_string_s_pushf( str, "\nblock manager %zu:\n", i );
-            bcore_string_s_push_string_d( str, token_manager_s_status( o->data[ i ], detail_level - 1 ) );
+            st_s_pushf( str, "\nblock manager %zu:\n", i );
+            st_s_push_st_d( str, token_manager_s_status( o->data[ i ], detail_level - 1 ) );
         }
     }
     return str;
@@ -2012,69 +2012,69 @@ void bcore_tbman_for_all_instances( void (*fp)( vd_t arg, vd_t ptr, sz_t space )
 }
 
 // not thread-safe
-bcore_string_s* bcore_tbman_s_status( bcore_tbman_s* o, int detail_level )
+st_s* bcore_tbman_s_status( bcore_tbman_s* o, int detail_level )
 {
     if( detail_level <= 0 ) return NULL;
 
-    bcore_string_s* str = bcore_string_s_create();
-    bcore_string_s_pushf( str, "main manager\n" );
-    bcore_string_s_pushf( str, "  pool_size ........... %zu\n", o->pool_size );
-    bcore_string_s_pushf( str, "  block managers ...... %zu\n", o->size );
-    bcore_string_s_pushf( str, "  token managers ...... %zu\n", bcore_btree_vd_s_count( o->internal_btree, NULL, NULL ) );
-    bcore_string_s_pushf( str, "  external allocs ..... %zu\n", bcore_btree_pp_s_count( o->external_manager.ex_btree, NULL, NULL ) );
-    bcore_string_s_pushf( str, "  internal_btree depth  %zu\n", bcore_btree_vd_s_depth( o->internal_btree ) );
-    bcore_string_s_pushf( str, "  external_btree depth  %zu\n", bcore_btree_pp_s_depth( o->external_manager.ex_btree ) );
-    bcore_string_s_pushf( str, "  min_block_size ...... %zu\n", o->size > 0 ? o->data[ 0 ]->block_size : 0 );
-    bcore_string_s_pushf( str, "  max_block_size ...... %zu\n", o->size > 0 ? o->data[ o->size - 1 ]->block_size : 0 );
-    bcore_string_s_pushf( str, "  aligned ............. %s\n",  o->aligned ? "true" : "false" );
+    st_s* str = st_s_create();
+    st_s_pushf( str, "main manager\n" );
+    st_s_pushf( str, "  pool_size ........... %zu\n", o->pool_size );
+    st_s_pushf( str, "  block managers ...... %zu\n", o->size );
+    st_s_pushf( str, "  token managers ...... %zu\n", bcore_btree_vd_s_count( o->internal_btree, NULL, NULL ) );
+    st_s_pushf( str, "  external allocs ..... %zu\n", bcore_btree_pp_s_count( o->external_manager.ex_btree, NULL, NULL ) );
+    st_s_pushf( str, "  internal_btree depth  %zu\n", bcore_btree_vd_s_depth( o->internal_btree ) );
+    st_s_pushf( str, "  external_btree depth  %zu\n", bcore_btree_pp_s_depth( o->external_manager.ex_btree ) );
+    st_s_pushf( str, "  min_block_size ...... %zu\n", o->size > 0 ? o->data[ 0 ]->block_size : 0 );
+    st_s_pushf( str, "  max_block_size ...... %zu\n", o->size > 0 ? o->data[ o->size - 1 ]->block_size : 0 );
+    st_s_pushf( str, "  aligned ............. %s\n",  o->aligned ? "true" : "false" );
 
-    bcore_string_s_pushf( str, "external manager\n" );
-    bcore_string_s_pushf( str, "  pool_size ........... %zu\n", o->external_manager.pool_size );
-    bcore_string_s_pushf( str, "  token managers ...... %zu\n", bcore_btree_vd_s_count( o->external_manager.tm_btree, NULL, NULL ) );
-    bcore_string_s_pushf( str, "  aligned ............. %s\n",  o->external_manager.aligned ? "true" : "false" );
-    bcore_string_s_pushf( str, "  item size ........... %zu\n", sizeof( ext_s ) );
-    bcore_string_s_pushf( str, "  items ............... %zu\n", block_manager_s_total_alloc( &o->external_manager.bm_ext ) / sizeof( ext_s ) );
-    bcore_string_s_pushf( str, "  alloc ............... %zu\n", block_manager_s_total_alloc( &o->external_manager.bm_ext ) );
-    bcore_string_s_pushf( str, "  space ............... %zu\n", block_manager_s_total_space( &o->external_manager.bm_ext ) );
+    st_s_pushf( str, "external manager\n" );
+    st_s_pushf( str, "  pool_size ........... %zu\n", o->external_manager.pool_size );
+    st_s_pushf( str, "  token managers ...... %zu\n", bcore_btree_vd_s_count( o->external_manager.tm_btree, NULL, NULL ) );
+    st_s_pushf( str, "  aligned ............. %s\n",  o->external_manager.aligned ? "true" : "false" );
+    st_s_pushf( str, "  item size ........... %zu\n", sizeof( ext_s ) );
+    st_s_pushf( str, "  items ............... %zu\n", block_manager_s_total_alloc( &o->external_manager.bm_ext ) / sizeof( ext_s ) );
+    st_s_pushf( str, "  alloc ............... %zu\n", block_manager_s_total_alloc( &o->external_manager.bm_ext ) );
+    st_s_pushf( str, "  space ............... %zu\n", block_manager_s_total_space( &o->external_manager.bm_ext ) );
 
-    bcore_string_s_pushf( str, "down manager\n" );
-    bcore_string_s_pushf( str, "  pool_size ........... %zu\n", o->down_manager.pool_size );
-    bcore_string_s_pushf( str, "  token managers ...... %zu\n", bcore_btree_vd_s_count( o->down_manager.tm_btree, NULL, NULL ) );
-    bcore_string_s_pushf( str, "  aligned ............. %s\n",  o->down_manager.aligned ? "true" : "false" );
-    bcore_string_s_pushf( str, "  down_obj_s size ..... %zu\n", sizeof( down_obj_s ) );
-    bcore_string_s_pushf( str, "  down_obj_s items .... %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_obj ) / sizeof( down_obj_s ) );
-    bcore_string_s_pushf( str, "  down_obj_s alloc .... %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_obj ) );
-    bcore_string_s_pushf( str, "  down_obj_s space .... %zu\n", block_manager_s_total_space( &o->down_manager.bm_down_obj ) );
-    bcore_string_s_pushf( str, "  down_arg_s size ..... %zu\n", sizeof( down_arg_s ) );
-    bcore_string_s_pushf( str, "  down_arg_s items .... %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_arg ) / sizeof( down_arg_s ) );
-    bcore_string_s_pushf( str, "  down_arg_s alloc .... %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_arg ) );
-    bcore_string_s_pushf( str, "  down_arg_s space .... %zu\n", block_manager_s_total_space( &o->down_manager.bm_down_arg ) );
-    bcore_string_s_pushf( str, "  down_obj_arr_s size   %zu\n", sizeof( down_obj_arr_s ) );
-    bcore_string_s_pushf( str, "  down_obj_arr_s items  %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_obj_arr ) / sizeof( down_obj_arr_s ) );
-    bcore_string_s_pushf( str, "  down_obj_arr_s alloc  %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_obj_arr ) );
-    bcore_string_s_pushf( str, "  down_obj_arr_s space  %zu\n", block_manager_s_total_space( &o->down_manager.bm_down_obj_arr ) );
-    bcore_string_s_pushf( str, "  down_arg_arr_s size   %zu\n", sizeof( down_arg_arr_s ) );
-    bcore_string_s_pushf( str, "  down_arg_arr_s items  %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_arg_arr ) / sizeof( down_arg_arr_s ) );
-    bcore_string_s_pushf( str, "  down_arg_arr_s alloc  %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_arg_arr ) );
-    bcore_string_s_pushf( str, "  down_arg_arr_s space  %zu\n", block_manager_s_total_space( &o->down_manager.bm_down_arg_arr ) );
+    st_s_pushf( str, "down manager\n" );
+    st_s_pushf( str, "  pool_size ........... %zu\n", o->down_manager.pool_size );
+    st_s_pushf( str, "  token managers ...... %zu\n", bcore_btree_vd_s_count( o->down_manager.tm_btree, NULL, NULL ) );
+    st_s_pushf( str, "  aligned ............. %s\n",  o->down_manager.aligned ? "true" : "false" );
+    st_s_pushf( str, "  down_obj_s size ..... %zu\n", sizeof( down_obj_s ) );
+    st_s_pushf( str, "  down_obj_s items .... %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_obj ) / sizeof( down_obj_s ) );
+    st_s_pushf( str, "  down_obj_s alloc .... %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_obj ) );
+    st_s_pushf( str, "  down_obj_s space .... %zu\n", block_manager_s_total_space( &o->down_manager.bm_down_obj ) );
+    st_s_pushf( str, "  down_arg_s size ..... %zu\n", sizeof( down_arg_s ) );
+    st_s_pushf( str, "  down_arg_s items .... %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_arg ) / sizeof( down_arg_s ) );
+    st_s_pushf( str, "  down_arg_s alloc .... %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_arg ) );
+    st_s_pushf( str, "  down_arg_s space .... %zu\n", block_manager_s_total_space( &o->down_manager.bm_down_arg ) );
+    st_s_pushf( str, "  down_obj_arr_s size   %zu\n", sizeof( down_obj_arr_s ) );
+    st_s_pushf( str, "  down_obj_arr_s items  %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_obj_arr ) / sizeof( down_obj_arr_s ) );
+    st_s_pushf( str, "  down_obj_arr_s alloc  %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_obj_arr ) );
+    st_s_pushf( str, "  down_obj_arr_s space  %zu\n", block_manager_s_total_space( &o->down_manager.bm_down_obj_arr ) );
+    st_s_pushf( str, "  down_arg_arr_s size   %zu\n", sizeof( down_arg_arr_s ) );
+    st_s_pushf( str, "  down_arg_arr_s items  %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_arg_arr ) / sizeof( down_arg_arr_s ) );
+    st_s_pushf( str, "  down_arg_arr_s alloc  %zu\n", block_manager_s_total_alloc( &o->down_manager.bm_down_arg_arr ) );
+    st_s_pushf( str, "  down_arg_arr_s space  %zu\n", block_manager_s_total_space( &o->down_manager.bm_down_arg_arr ) );
 
-    bcore_string_s_pushf( str, "overall allocations\n" );
-    bcore_string_s_pushf( str, "  total bytes granted . %zu\n", tbman_s_total_alloc( o ) );
-    bcore_string_s_pushf( str, "    external .......... %zu\n", external_manager_s_total_alloc( &o->external_manager ) );
-    bcore_string_s_pushf( str, "    internal .......... %zu\n", tbman_s_internal_total_alloc( o ) );
-    bcore_string_s_pushf( str, "  internal used ....... %zu\n", tbman_s_total_space( o ) );
-    bcore_string_s_pushf( str, "  total instances ..... %zu\n", tbman_s_total_instances( o ) );
-    bcore_string_s_pushf( str, "    external .......... %zu\n", external_manager_s_total_instances( &o->external_manager ) );
-    bcore_string_s_pushf( str, "    internal .......... %zu\n", tbman_s_internal_total_instances( o ) );
-    bcore_string_s_pushf( str, "  total references .... %zu\n", tbman_s_total_references( o ) );
-    bcore_string_s_pushf( str, "    external .......... %zu\n", external_manager_s_total_references( &o->external_manager ) );
-    bcore_string_s_pushf( str, "    internal .......... %zu\n", tbman_s_internal_total_references( o ) );
+    st_s_pushf( str, "overall allocations\n" );
+    st_s_pushf( str, "  total bytes granted . %zu\n", tbman_s_total_alloc( o ) );
+    st_s_pushf( str, "    external .......... %zu\n", external_manager_s_total_alloc( &o->external_manager ) );
+    st_s_pushf( str, "    internal .......... %zu\n", tbman_s_internal_total_alloc( o ) );
+    st_s_pushf( str, "  internal used ....... %zu\n", tbman_s_total_space( o ) );
+    st_s_pushf( str, "  total instances ..... %zu\n", tbman_s_total_instances( o ) );
+    st_s_pushf( str, "    external .......... %zu\n", external_manager_s_total_instances( &o->external_manager ) );
+    st_s_pushf( str, "    internal .......... %zu\n", tbman_s_internal_total_instances( o ) );
+    st_s_pushf( str, "  total references .... %zu\n", tbman_s_total_references( o ) );
+    st_s_pushf( str, "    external .......... %zu\n", external_manager_s_total_references( &o->external_manager ) );
+    st_s_pushf( str, "    internal .......... %zu\n", tbman_s_internal_total_references( o ) );
     if( detail_level > 1 )
     {
         for( sz_t i = 0; i < o->size; i++ )
         {
-            bcore_string_s_pushf( str, "\nblock manager %zu:\n", i );
-            bcore_string_s_push_string_d( str, block_manager_s_status( o->data[ i ], detail_level - 1 ) );
+            st_s_pushf( str, "\nblock manager %zu:\n", i );
+            st_s_push_st_d( str, block_manager_s_status( o->data[ i ], detail_level - 1 ) );
         }
     }
 
@@ -2114,7 +2114,7 @@ void bcore_tbman_instance_disgnostics()
 
 typedef vd_t (*fp_alloc)( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
 
-static bcore_string_s* tbman_alloc_challenge
+static st_s* tbman_alloc_challenge
 (
     fp_alloc alloc,
     sz_t table_size,
@@ -2125,7 +2125,7 @@ static bcore_string_s* tbman_alloc_challenge
     bl_t verbose
 )
 {
-    bcore_string_s* str = bcore_string_s_create();
+    st_s* str = st_s_create();
 
     vd_t* data_table = malloc( table_size * sizeof( vd_t ) );
     sz_t* size_table = malloc( table_size * sizeof( sz_t ) );
@@ -2239,20 +2239,20 @@ static bcore_string_s* tbman_alloc_challenge
 
     if( verbose )
     {
-        bcore_string_s_pushf( str, "cycles ............... %zu\n", cycles );
-        bcore_string_s_pushf( str, "max alloc ............ %zu\n", max_alloc );
-        bcore_string_s_pushf( str, "Instances\n" );
-        bcore_string_s_pushf( str, "  total .............. %zu\n", table_size );
-        bcore_string_s_pushf( str, "  allocated .......... %zu\n", allocated_table_size );
-        bcore_string_s_pushf( str, "Alloc\n" );
-        bcore_string_s_pushf( str, "  attempts  .......... %zu\n", alloc_attempts );
-        bcore_string_s_pushf( str, "  failures  .......... %zu\n", alloc_failures );
-        bcore_string_s_pushf( str, "Realloc\n" );
-        bcore_string_s_pushf( str, "  attempts  .......... %zu\n", realloc_attempts );
-        bcore_string_s_pushf( str, "  failures  .......... %zu\n", realloc_failures );
-        bcore_string_s_pushf( str, "Free\n" );
-        bcore_string_s_pushf( str, "  attempts  .......... %zu\n", free_attempts );
-        bcore_string_s_pushf( str, "  failures  .......... %zu\n", free_failures );
+        st_s_pushf( str, "cycles ............... %zu\n", cycles );
+        st_s_pushf( str, "max alloc ............ %zu\n", max_alloc );
+        st_s_pushf( str, "Instances\n" );
+        st_s_pushf( str, "  total .............. %zu\n", table_size );
+        st_s_pushf( str, "  allocated .......... %zu\n", allocated_table_size );
+        st_s_pushf( str, "Alloc\n" );
+        st_s_pushf( str, "  attempts  .......... %zu\n", alloc_attempts );
+        st_s_pushf( str, "  failures  .......... %zu\n", alloc_failures );
+        st_s_pushf( str, "Realloc\n" );
+        st_s_pushf( str, "  attempts  .......... %zu\n", realloc_attempts );
+        st_s_pushf( str, "  failures  .......... %zu\n", realloc_failures );
+        st_s_pushf( str, "Free\n" );
+        st_s_pushf( str, "  attempts  .......... %zu\n", free_attempts );
+        st_s_pushf( str, "  failures  .......... %zu\n", free_failures );
     }
 
     // speed test
@@ -2276,7 +2276,7 @@ static bcore_string_s* tbman_alloc_challenge
             }
         }
         time = clock() - time;
-        bcore_string_s_pushf( str, "speed test alloc-free: %5.3gs\n", ( double )time / ( CLOCKS_PER_SEC  * cycles  * table_size ) );
+        st_s_pushf( str, "speed test alloc-free: %5.3gs\n", ( double )time / ( CLOCKS_PER_SEC  * cycles  * table_size ) );
     }
     // speed test
     {
@@ -2293,7 +2293,7 @@ static bcore_string_s* tbman_alloc_challenge
             }
         }
         time = clock() - time;
-        bcore_string_s_pushf( str, "speed test realloc:    %5.3gs\n", ( double )time / ( CLOCKS_PER_SEC  * cycles  * table_size ) );
+        st_s_pushf( str, "speed test realloc:    %5.3gs\n", ( double )time / ( CLOCKS_PER_SEC  * cycles  * table_size ) );
     }
 
     // cleanup
@@ -2310,25 +2310,25 @@ static void tbman_s_quicktest( void )
     sz_t cycles     = 1;
     sz_t max_alloc  = 4096;
     sz_t seed       = 5479;
-    bcore_string_s_discard( tbman_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
+    st_s_discard( tbman_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
 }
 
 /// testing reference control
-static bcore_string_s* tbman_s_rctest( void )
+static st_s* tbman_s_rctest( void )
 {
-    bcore_string_s* log = bcore_string_s_createf( "== tbman_s_rctest " );
-    bcore_string_s_push_char_n( log, '=', 120 - log->size );
-    bcore_string_s_push_char( log, '\n' );
+    st_s* log = st_s_createf( "== tbman_s_rctest " );
+    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char( log, '\n' );
 
     typedef struct myclass
     {
-        bcore_string_s  name1;
-        bcore_string_s* name2;
+        st_s  name1;
+        st_s* name2;
         u3_t  v1;
         u3_t* v2;
     } myclass;
 
-    tp_t t_myclass = bcore_flect_type_parse_sc( "{ bcore_string_s name1; bcore_string_s* name2; u3_t v1; u3_t* v2; }" );
+    tp_t t_myclass = bcore_flect_type_parse_sc( "{ st_s name1; st_s* name2; u3_t v1; u3_t* v2; }" );
     bcore_inst_typed_discard( t_myclass, bcore_inst_typed_create( t_myclass ) ); // cycle once to get all perspectives alive
 
     myclass* obj1 = bcore_inst_typed_create( t_myclass );
@@ -2339,8 +2339,8 @@ static bcore_string_s* tbman_s_rctest( void )
     for( sz_t i = 0; i < arr_size; i++ )
     {
         bcore_inst_typed_init( t_myclass, &obj_arr[ i ] );
-        bcore_string_s_pushf( &obj_arr[ i ].name1, "Hi!" );
-        obj_arr[ i ].name2 = bcore_string_s_createf( "Ho!" );
+        st_s_pushf( &obj_arr[ i ].name1, "Hi!" );
+        obj_arr[ i ].name2 = st_s_createf( "Ho!" );
     }
 
     obj_arr = bcore_tbman_fork( obj_arr );
@@ -2356,7 +2356,7 @@ static bcore_string_s* tbman_s_rctest( void )
             ref_arr1[ i ] = bcore_tbman_fork( &obj_arr[ i ].name1 );
         }
         time = clock() - time;
-        bcore_string_s_pushf( log, "fork 1 ..... %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
+        st_s_pushf( log, "fork 1 ..... %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
     }
 
     {
@@ -2366,19 +2366,19 @@ static bcore_string_s* tbman_s_rctest( void )
             ref_arr2[ i ] = bcore_tbman_fork( &obj_arr[ i ].name1 );
         }
         time = clock() - time;
-        bcore_string_s_pushf( log, "fork 2 ..... %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
+        st_s_pushf( log, "fork 2 ..... %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
     }
 
-    bcore_string_s* obj2_name1 = bcore_tbman_fork( &obj2->name1 );
+    st_s* obj2_name1 = bcore_tbman_fork( &obj2->name1 );
 
-    bcore_string_s_pushf( obj2_name1, "Hi!" );
+    st_s_pushf( obj2_name1, "Hi!" );
 
     bcore_tbman_release_arg( ( fp_t )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj1 );
     bcore_tbman_release_arg( ( fp_t )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj2 );
 
     bcore_tbman_release( obj2_name1 );
 
-    bcore_string_s_pushf( log, "obj_arr references %zu\n", bcore_tbman_references( obj_arr ) );
+    st_s_pushf( log, "obj_arr references %zu\n", bcore_tbman_references( obj_arr ) );
 
     {
         clock_t time = clock();
@@ -2387,7 +2387,7 @@ static bcore_string_s* tbman_s_rctest( void )
             bcore_tbman_release( ref_arr1[ i ] );
         }
         time = clock() - time;
-        bcore_string_s_pushf( log, "release 1 .. %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
+        st_s_pushf( log, "release 1 .. %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
     }
 
     {
@@ -2397,30 +2397,30 @@ static bcore_string_s* tbman_s_rctest( void )
             bcore_tbman_release( ref_arr2[ i ] );
         }
         time = clock() - time;
-        bcore_string_s_pushf( log, "release 2 .. %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
+        st_s_pushf( log, "release 2 .. %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
     }
 
-    bcore_string_s_pushf( log, "obj_arr references %zu\n", bcore_tbman_references( obj_arr ) );
+    st_s_pushf( log, "obj_arr references %zu\n", bcore_tbman_references( obj_arr ) );
 
     bcore_tbman_release( obj_arr );
 
-    bcore_string_s_pushf( log, "obj_arr references %zu\n", bcore_tbman_references( obj_arr ) );
+    st_s_pushf( log, "obj_arr references %zu\n", bcore_tbman_references( obj_arr ) );
 
     bcore_tbman_release( ref_arr1 );
     bcore_tbman_release( ref_arr2 );
 
-    bcore_string_s_push_char_n( log, '=', 120 );
-    bcore_string_s_push_char( log, '\n' );
+    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char( log, '\n' );
 
-    bcore_string_s_push_string_d( log, bcore_tbman_s_status( tbman_s_g, 1 ) );
+    st_s_push_st_d( log, bcore_tbman_s_status( tbman_s_g, 1 ) );
     return log;
 }
 
-static bcore_string_s* tbman_s_memtest( void )
+static st_s* tbman_s_memtest( void )
 {
-    bcore_string_s* log = bcore_string_s_createf( "== tbman_s_memtest " );
-    bcore_string_s_push_char_n( log, '=', 120 - log->size );
-    bcore_string_s_push_char( log, '\n' );
+    st_s* log = st_s_createf( "== tbman_s_memtest " );
+    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char( log, '\n' );
 
     sz_t table_size = 100000;
     sz_t cycles     = 5;
@@ -2428,20 +2428,20 @@ static bcore_string_s* tbman_s_memtest( void )
     sz_t seed       = 1237;
 
     {
-        bcore_string_s_pushf( log, "\nbcore_internal_alloc:\n");
-        bcore_string_s_push_string_d( log, tbman_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
-        bcore_string_s_push_string_d( log, bcore_tbman_s_status( tbman_s_g, 1 ) );
-//        bcore_string_s_push_string_d( log, bcore_btree_vd_s_status( m->internal_btree ) );
+        st_s_pushf( log, "\nbcore_internal_alloc:\n");
+        st_s_push_st_d( log, tbman_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
+        st_s_push_st_d( log, bcore_tbman_s_status( tbman_s_g, 1 ) );
+//        st_s_push_st_d( log, bcore_btree_vd_s_status( m->internal_btree ) );
 
     }
 
     {
-        bcore_string_s_pushf( log, "\nbcore_external_alloc:\n");
-        bcore_string_s_push_string_d( log, tbman_alloc_challenge( bcore_tbman_external_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
+        st_s_pushf( log, "\nbcore_external_alloc:\n");
+        st_s_push_st_d( log, tbman_alloc_challenge( bcore_tbman_external_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
     }
 
-    bcore_string_s_push_char_n( log, '=', 120 );
-    bcore_string_s_push_char( log, '\n' );
+    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char( log, '\n' );
     return log;
 }
 
@@ -2466,7 +2466,7 @@ vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object )
         {
             sz_t instances = bcore_tbman_total_instances();
             sz_t references = bcore_tbman_total_references();
-            bcore_string_s_print_d( bcore_tbman_s_status( tbman_s_g, 1 ) );
+            st_s_print_d( bcore_tbman_s_status( tbman_s_g, 1 ) );
             ERR
             (
                 "Leaking memory .... %zu bytes\n"
@@ -2481,8 +2481,8 @@ vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( tbman_s_rctest() );
-        bcore_string_s_print_d( tbman_s_memtest() );
+        st_s_print_d( tbman_s_rctest() );
+        st_s_print_d( tbman_s_memtest() );
     }
 
     return NULL;

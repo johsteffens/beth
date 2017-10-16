@@ -277,11 +277,11 @@ void bcore_arr_st_s_reorder( bcore_arr_st_s* o, const bcore_arr_sz_s* order )
 
 #include <time.h>
 
-bcore_string_s* bcore_arr_sz_selftest( void )
+st_s* bcore_arr_sz_selftest( void )
 {
-    bcore_string_s* log = bcore_string_s_createf( "== bcore_arr_sz_selftest " );
-    bcore_string_s_push_char_n( log, '=', 120 - log->size );
-    bcore_string_s_push_char( log, '\n' );
+    st_s* log = st_s_createf( "== bcore_arr_sz_selftest " );
+    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char( log, '\n' );
 
     bcore_arr_sz_s* sz_arr1 = bcore_arr_sz_s_create();
     bcore_arr_sz_s* sz_arr2 = bcore_arr_sz_s_create();
@@ -295,7 +295,7 @@ bcore_string_s* bcore_arr_sz_selftest( void )
             bcore_arr_sz_s_push( sz_arr1, rval );
         }
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_arr_sz_s_push ........ %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_arr_sz_s_push ........ %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     const bcore_array_s* array_p = bcore_array_s_get_typed( TYPEOF_bcore_arr_sz_s );
@@ -310,7 +310,7 @@ bcore_string_s* bcore_arr_sz_selftest( void )
             bcore_array_spect_push( array_p, sz_arr2, sr_pwc( u2_t_p, &rval ) );
         }
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_array_spect_push ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_spect_push ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     ASSERT( bcore_compare_aware( sz_arr1, sz_arr2 ) == 0 );
@@ -319,14 +319,14 @@ bcore_string_s* bcore_arr_sz_selftest( void )
         clock_t time = clock();
         bcore_arr_sz_s_sort( sz_arr1, 1 );
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_arr_sz_s_sort ........ %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_arr_sz_s_sort ........ %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
         clock_t time = clock();
         bcore_array_aware_sort( sz_arr2, 0, -1, 1 );
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_array_aware_sort ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_aware_sort ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     bcore_arr_sz_s* permutation = bcore_arr_sz_s_create_random_permutation( bcore_xsg2_u2, 1, size );
@@ -335,14 +335,14 @@ bcore_string_s* bcore_arr_sz_selftest( void )
         clock_t time = clock();
         bcore_arr_sz_s_reorder( sz_arr1, permutation );
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_arr_sz_s_reorder ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_arr_sz_s_reorder ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
         clock_t time = clock();
         bcore_array_aware_reorder( sz_arr2, permutation );
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_array_aware_reorder .. %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_aware_reorder .. %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     ASSERT( bcore_compare_aware( sz_arr1, sz_arr2 ) == 0 );
@@ -353,17 +353,17 @@ bcore_string_s* bcore_arr_sz_selftest( void )
     bcore_arr_sz_s_discard( sz_arr1 );
     bcore_arr_sz_s_discard( sz_arr2 );
 
-    bcore_string_s_push_char_n( log, '=', 120 );
-    bcore_string_s_push_char( log, '\n' );
+    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char( log, '\n' );
     return log;
 
 }
 
-bcore_string_s* bcore_arr_st_selftest( void )
+st_s* bcore_arr_st_selftest( void )
 {
-    bcore_string_s* log = bcore_string_s_createf( "== bcore_arr_st_selftest " );
-    bcore_string_s_push_char_n( log, '=', 120 - log->size );
-    bcore_string_s_push_char( log, '\n' );
+    st_s* log = st_s_createf( "== bcore_arr_st_selftest " );
+    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char( log, '\n' );
 
     bcore_arr_st_s* st_arr1 = bcore_arr_st_s_create();
     bcore_arr_st_s* st_arr2 = bcore_arr_st_s_create();
@@ -377,7 +377,7 @@ bcore_string_s* bcore_arr_st_selftest( void )
             bcore_arr_st_s_push_st_d( st_arr1, st_s_createf( "%u", rval ) );
         }
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_arr_st_s_push_st_d ... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_arr_st_s_push_st_d ... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
@@ -389,21 +389,21 @@ bcore_string_s* bcore_arr_st_selftest( void )
             bcore_array_aware_push( st_arr2, sr_asd( st_s_createf( "%u", rval ) ) );
         }
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_array_aware_push ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_aware_push ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
         clock_t time = clock();
         bcore_arr_st_s_sort( st_arr1, 1 );
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_arr_st_s_sort ........ %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_arr_st_s_sort ........ %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
         clock_t time = clock();
         bcore_array_aware_sort( st_arr2, 0, -1, 1 );
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_array_aware_sort ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_aware_sort ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     bcore_arr_sz_s* permutation = bcore_arr_sz_s_create_random_permutation( bcore_xsg2_u2, 1, size );
@@ -412,14 +412,14 @@ bcore_string_s* bcore_arr_st_selftest( void )
         clock_t time = clock();
         bcore_arr_st_s_reorder( st_arr1, permutation );
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_arr_st_s_reorder ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_arr_st_s_reorder ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
         clock_t time = clock();
         bcore_array_aware_reorder( st_arr2, permutation );
         time = clock() - time;
-        bcore_string_s_pushf( log, "bcore_array_aware_reorder .. %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_aware_reorder .. %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     ASSERT( bcore_compare_aware( st_arr1, st_arr2 ) == 0 );
@@ -430,8 +430,8 @@ bcore_string_s* bcore_arr_st_selftest( void )
     bcore_arr_st_s_discard( st_arr1 );
     bcore_arr_st_s_discard( st_arr2 );
 
-    bcore_string_s_push_char_n( log, '=', 120 );
-    bcore_string_s_push_char( log, '\n' );
+    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char( log, '\n' );
     return log;
 
 }
@@ -449,8 +449,8 @@ vd_t bcore_arr_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( bcore_arr_sz_selftest() );
-        bcore_string_s_print_d( bcore_arr_st_selftest() );
+        st_s_print_d( bcore_arr_sz_selftest() );
+        st_s_print_d( bcore_arr_st_selftest() );
     }
 
     return NULL;

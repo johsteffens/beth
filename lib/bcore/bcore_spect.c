@@ -82,7 +82,7 @@ static void spect_manager_close()
 }
 
 /// tests if the object's self reflection satisfies the requirements of a perspective
-static bl_t supports( const bcore_flect_self_s* self, bcore_string_s* log )
+static bl_t supports( const bcore_flect_self_s* self, st_s* log )
 {
     if( !self->body                                  ) return false;
     if( self->body->size < 2                         ) return false;
@@ -156,22 +156,22 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     return spect;
 }
 
-bcore_string_s* bcore_spect_status()
+st_s* bcore_spect_status()
 {
     bcore_life_s* l = bcore_life_s_create();
     assert( hmap_s_g      != NULL );
     bcore_hmap_u2vd_s* map  = hmap_s_g->map;
     bcore_hmap_tpsz_s* hist = bcore_life_s_push_aware( l, bcore_hmap_tpsz_s_create() );
-    bcore_string_s* log = bcore_string_s_create();
+    st_s* log = st_s_create();
 
     {
-        bcore_string_s* s = bcore_string_s_create();
-        bcore_string_s_push_sc( s, "registered perspectives " );
-        bcore_string_s_push_char_n( s, '.', 28 - s->size );
+        st_s* s = st_s_create();
+        st_s_push_sc( s, "registered perspectives " );
+        st_s_push_char_n( s, '.', 28 - s->size );
         bcore_mutex_lock( &hmap_s_g->mutex );
-        bcore_string_s_pushf( s, "% 4zu\n", bcore_hmap_u2vd_s_keys( map ) );
+        st_s_pushf( s, "% 4zu\n", bcore_hmap_u2vd_s_keys( map ) );
         bcore_mutex_unlock( &hmap_s_g->mutex );
-        bcore_string_s_push_string_d( log, s );
+        st_s_push_st_d( log, s );
     }
 
     for( sz_t i = 0; i < map->size; i++ )
@@ -204,11 +204,11 @@ bcore_string_s* bcore_spect_status()
         sr_s pair = sr_cl( bcore_array_get( nc_arr, i ), l );
         const tp_t* p_type  = sr_cl( bcore_via_nget( pair, typeof( "type"  ) ), l ).o;
         const sz_t* p_count = sr_cl( bcore_via_nget( pair, typeof( "count" ) ), l ).o;
-        bcore_string_s* s = bcore_string_s_create();
-        bcore_string_s_pushf( s, "  %s ", ifnameof( *p_type ) );
-        bcore_string_s_push_char_n( s, '.', 28 - s->size );
-        bcore_string_s_pushf( s, "% 4zu\n", *p_count );
-        bcore_string_s_push_string_d( log, s );
+        st_s* s = st_s_create();
+        st_s_pushf( s, "  %s ", ifnameof( *p_type ) );
+        st_s_push_char_n( s, '.', 28 - s->size );
+        st_s_pushf( s, "% 4zu\n", *p_count );
+        st_s_push_st_d( log, s );
     }
 
     bcore_life_s_discard( l );

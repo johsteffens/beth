@@ -831,7 +831,7 @@ sz_t bcore_array_spect_get_unit_size( const bcore_array_s* p, vc_t o )
 
 /**********************************************************************************************************************/
 
-static bl_t array_s_supports( const bcore_flect_self_s* self, bcore_string_s* log )
+static bl_t array_s_supports( const bcore_flect_self_s* self, st_s* log )
 {
     if( self->body )
     {
@@ -840,7 +840,7 @@ static bl_t array_s_supports( const bcore_flect_self_s* self, bcore_string_s* lo
             if( bcore_flect_caps_is_array( self->body->data[ i ].caps ) ) return true;
         }
     }
-    if( log ) bcore_string_s_pushf( log, "Object is no array." );
+    if( log ) st_s_pushf( log, "Object is no array." );
     return false;
 }
 
@@ -1578,24 +1578,24 @@ static void test_string_array( sc_t type_sc )
     vd_t arr = bcore_inst_typed_create( typeof( type_sc ) );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
 
-    bcore_array_spect_set_gtype( arr_p, arr, typeof( "bcore_string_s" ) );
+    bcore_array_spect_set_gtype( arr_p, arr, typeof( "st_s" ) );
     bcore_array_spect_set_size( arr_p, arr, 5 );
-    arr_p->set( arr_p, arr, 0, sr_asd( bcore_string_s_createf( "test line a" ) ) );
-    arr_p->set( arr_p, arr, 1, sr_asd( bcore_string_s_createf( "some nonsense: sakjd" ) ) );
-    arr_p->set( arr_p, arr, 2, sr_asd( bcore_string_s_createf( "some nonsense: dspaud" ) ) );
-    arr_p->set( arr_p, arr, 7, sr_asd( bcore_string_s_createf( "test line x" ) ) );
-    bcore_array_spect_push( arr_p, arr, sr_asd( bcore_string_s_createf( "test line p" ) ) );
+    arr_p->set( arr_p, arr, 0, sr_asd( st_s_createf( "test line a" ) ) );
+    arr_p->set( arr_p, arr, 1, sr_asd( st_s_createf( "some nonsense: sakjd" ) ) );
+    arr_p->set( arr_p, arr, 2, sr_asd( st_s_createf( "some nonsense: dspaud" ) ) );
+    arr_p->set( arr_p, arr, 7, sr_asd( st_s_createf( "test line x" ) ) );
+    bcore_array_spect_push( arr_p, arr, sr_asd( st_s_createf( "test line p" ) ) );
     bcore_array_spect_set_space( arr_p, arr, 20 );
 
     ASSERT( bcore_array_spect_max_index( arr_p, arr, 0, -1, 1 ) == 7 );
     bcore_array_spect_sort( arr_p, arr, 0, -1, -1 );
     ASSERT( bcore_array_spect_max_index( arr_p, arr, 0, -1, 1 ) == 0 );
 
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 0 ).o, "test line x" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 1 ).o, "test line p" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 2 ).o, "test line a" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 3 ).o, "some nonsense: sakjd" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 4 ).o, "some nonsense: dspaud" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 0 ).o, "test line x" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 1 ).o, "test line p" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 2 ).o, "test line a" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 3 ).o, "some nonsense: sakjd" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 4 ).o, "some nonsense: dspaud" ) == 0 );
     ASSERT( arr_p->get_size( arr_p, arr ) == 9 );
 
     bcore_arr_sz_s* order = bcore_arr_sz_s_create();
@@ -1609,33 +1609,33 @@ static void test_string_array( sc_t type_sc )
     bcore_array_spect_reorder( arr_p, arr, order );
     ASSERT( arr_p->get_size( arr_p, arr ) == order->size );
 
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 0 ).o, "test line a" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 1 ).o, "test line a" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 2 ).o, "test line p" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 3 ).o, "test line x" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 4 ).o, "some nonsense: sakjd" ) == 0 );
-    ASSERT( bcore_string_s_cmp_sc( ( const bcore_string_s* )arr_p->get( arr_p, arr, 5 ).o, "some nonsense: dspaud" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 0 ).o, "test line a" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 1 ).o, "test line a" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 2 ).o, "test line p" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 3 ).o, "test line x" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 4 ).o, "some nonsense: sakjd" ) == 0 );
+    ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 5 ).o, "some nonsense: dspaud" ) == 0 );
 
     bcore_arr_sz_s_discard( order );
     bcore_inst_aware_discard( arr );
 }
 
-static bcore_string_s* spect_array_selftest( void )
+static st_s* spect_array_selftest( void )
 {
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "string_array = { aware_t _; bcore_string_s [] string_arr; }", 0 ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "string_array = { aware_t _; st_s [] string_arr; }", 0 ) );
     vd_t arr = bcore_inst_typed_create( typeof( "string_array" ) );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
 
-    bcore_array_spect_push( arr_p, arr, sr_asd( bcore_string_s_createf( "string_static_array      = { aware_t _; bcore_string_s   [] arr; }" ) ) );
-    bcore_array_spect_push( arr_p, arr, sr_asd( bcore_string_s_createf( "string_static_link_array = { aware_t _; bcore_string_s * [] arr; }" ) ) );
-    bcore_array_spect_push( arr_p, arr, sr_asd( bcore_string_s_createf( "string_typed_array       = { aware_t _; typed            [] arr; }" ) ) );
-    bcore_array_spect_push( arr_p, arr, sr_asd( bcore_string_s_createf( "string_typed_link_array  = { aware_t _; typed *          [] arr; }" ) ) );
-    bcore_array_spect_push( arr_p, arr, sr_asd( bcore_string_s_createf( "string_aware_link_array  = { aware_t _; aware *          [] arr; }" ) ) );
+    bcore_array_spect_push( arr_p, arr, sr_asd( st_s_createf( "string_static_array      = { aware_t _; st_s   [] arr; }" ) ) );
+    bcore_array_spect_push( arr_p, arr, sr_asd( st_s_createf( "string_static_link_array = { aware_t _; st_s * [] arr; }" ) ) );
+    bcore_array_spect_push( arr_p, arr, sr_asd( st_s_createf( "string_typed_array       = { aware_t _; typed            [] arr; }" ) ) );
+    bcore_array_spect_push( arr_p, arr, sr_asd( st_s_createf( "string_typed_link_array  = { aware_t _; typed *          [] arr; }" ) ) );
+    bcore_array_spect_push( arr_p, arr, sr_asd( st_s_createf( "string_aware_link_array  = { aware_t _; aware *          [] arr; }" ) ) );
 
     for( sz_t i = 0; i < arr_p->get_size( arr_p, arr ); i++ )
     {
 
-        const bcore_string_s* code = arr_p->get( arr_p, arr, i ).o;
+        const st_s* code = arr_p->get( arr_p, arr, i ).o;
         bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( code->sc, 0 );
         ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), self->type ) );
         tp_t type = bcore_flect_type_self_c( self );
@@ -1647,7 +1647,7 @@ static bcore_string_s* spect_array_selftest( void )
     bcore_inst_aware_discard( arr );
 
     // some non-arrays
-    ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "bcore_string_s" ) ) );
+    ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "st_s" ) ) );
     ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "f3_t" ) ) );
     ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
 
@@ -1682,7 +1682,7 @@ vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( spect_array_selftest() );
+        st_s_print_d( spect_array_selftest() );
     }
 
     return NULL;

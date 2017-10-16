@@ -65,7 +65,7 @@ typedef vd_t ( *bcore_fp_signal )( tp_t target, tp_t signal, vd_t object );
 /**********************************************************************************************************************/
 /// Testing, Debugging. A test shall either complete safely or fail with a descriptive error (via bcore_err).
 
-typedef struct bcore_string_s bcore_string_s; // forward declaration
+typedef struct st_s st_s; // forward declaration
 
 /// Silent and fast ( <10ms )
 typedef void (*bcore_fp_quicktest)(void);
@@ -73,7 +73,7 @@ typedef void (*bcore_fp_quicktest)(void);
 /** A selftest may be extensive and verbose but should complete in reasonable time (seconds).
  *  Selftest may return a log-string or NULL. The caller takes ownership of the returned string.
  */
-typedef bcore_string_s* (*bcore_fp_selftest)(void);
+typedef st_s* (*bcore_fp_selftest)(void);
 
 #endif // BCORE_FEATURES_H
 

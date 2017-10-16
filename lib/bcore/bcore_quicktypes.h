@@ -64,7 +64,6 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_bcore_source_file_s           3236919
 #define TYPEOF_bcore_source_s             3124187480
 #define TYPEOF_bcore_source_string_s      1049426656
-#define TYPEOF_bcore_string_s             2419449576
 #define TYPEOF_bcore_translator_s         1770092211
 #define TYPEOF_bcore_txt_ml_interpreter_s 2340656236
 #define TYPEOF_bcore_txt_ml_translator_s  2915184580

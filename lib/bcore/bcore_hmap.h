@@ -4,7 +4,7 @@
 #define BCORE_HMAP_H
 
 #include "bcore_features.h"
-#include "bcore_string.h"
+#include "bcore_st.h"
 #include "bcore_flect.h"
 
 /** Hashmap implementing a flavor of "cuckoo hashing" with single monolithic storage and

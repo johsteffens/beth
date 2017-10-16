@@ -108,32 +108,32 @@ static void chain_p_errorvf( bcore_source_chain_s* o, sc_t format, va_list args 
 {
     if( o->size > 0 )
     {
-        bcore_string_s* msg       = bcore_string_s_create();
-        bcore_string_s_pushf( msg, "Parse error" );
+        st_s* msg       = st_s_create();
+        st_s_pushf( msg, "Parse error" );
         if( o->data[ 0 ] && ( *( aware_t* )o->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
         {
             bcore_source_file_s* fo = o->data[ 0 ];
-            bcore_string_s_pushf( msg, " in file '%s'", fo->name->sc );
+            st_s_pushf( msg, " in file '%s'", fo->name->sc );
         }
 
         if( o->data[ o->size - 1 ] && ( *( aware_t* )o->data[ o->size - 1 ] ) == TYPEOF_bcore_source_string_s )
         {
             bcore_source_string_s* so = o->data[ o->size - 1 ];
-            bcore_string_s* context   = bcore_string_s_show_line_context( so->string, so->index );
-            sz_t line = bcore_string_s_lineof( so->string, so->index );
-            sz_t col  = bcore_string_s_colof( so->string, so->index );
-            bcore_string_s_pushf( msg, " at line %zu, col %zu", line + so->preceding_lines, col );
-            bcore_string_s_pushf( msg, "\n%s", context->sc );
-            bcore_string_s_discard( context );
+            st_s* context   = st_s_show_line_context( so->string, so->index );
+            sz_t line = st_s_lineof( so->string, so->index );
+            sz_t col  = st_s_colof( so->string, so->index );
+            st_s_pushf( msg, " at line %zu, col %zu", line + so->preceding_lines, col );
+            st_s_pushf( msg, "\n%s", context->sc );
+            st_s_discard( context );
         }
 
-        bcore_string_s_push_string_d( msg, bcore_string_s_createvf( format, args ) );
+        st_s_push_st_d( msg, st_s_createvf( format, args ) );
         bcore_err( "\n%s", msg->sc );
-        bcore_string_s_discard( msg );
+        st_s_discard( msg );
     }
     else
     {
-        ERR( "bcore_source_chain_s:\n%s\n", bcore_string_s_createvf( format, args )->sc );
+        ERR( "bcore_source_chain_s:\n%s\n", st_s_createvf( format, args )->sc );
     }
 }
 
@@ -349,14 +349,14 @@ bcore_source_string_s* bcore_source_string_s_clone( const bcore_source_string_s*
     return bcore_inst_typed_clone( TYPEOF_bcore_source_string_s, o );
 }
 
-bcore_source_string_s* bcore_source_string_s_create_from_string( const bcore_string_s* string )
+bcore_source_string_s* bcore_source_string_s_create_from_string( const st_s* string )
 {
     bcore_source_string_s* o = bcore_source_string_s_create();
-    o->string = bcore_string_s_clone( string );
+    o->string = st_s_clone( string );
     return o;
 }
 
-bcore_source_string_s* bcore_source_string_s_create_from_string_d( bcore_string_s* string )
+bcore_source_string_s* bcore_source_string_s_create_from_string_d( st_s* string )
 {
     bcore_source_string_s* o = bcore_source_string_s_create();
     o->string = string;
@@ -366,25 +366,25 @@ bcore_source_string_s* bcore_source_string_s_create_from_string_d( bcore_string_
 bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc )
 {
     bcore_source_string_s* o = bcore_source_string_s_create();
-    o->string = bcore_string_s_create_sc( sc );
+    o->string = st_s_create_sc( sc );
     return o;
 }
 
 static void string_refill( bcore_source_string_s* o, sz_t min_remaining_size )
 {
-    if( !o->string ) o->string = bcore_string_s_create();
+    if( !o->string ) o->string = st_s_create();
     if( o->string->size - o->index <= min_remaining_size )
     {
         if( o->index > 0 )
         {
-            o->preceding_lines += bcore_string_s_count_char( o->string, 0, o->index, '\n' );
+            o->preceding_lines += st_s_count_char( o->string, 0, o->index, '\n' );
             bcore_memmove( o->string->data, o->string->data + o->index, o->string->size - o->index );
             o->string->size -= o->index;
             o->string->data[ o->string->size ] = 0;
             o->index = 0;
         }
         sz_t refill_size = min_remaining_size - o->string->size > o->prefetch_size ? min_remaining_size - o->string->size : o->prefetch_size;
-        bcore_string_s_set_min_space( o->string, o->string->size + refill_size + 1 );
+        st_s_set_min_space( o->string, o->string->size + refill_size + 1 );
         sz_t bytes_received = bcore_source_aware_get_data( o->ext_supplier, o->string->data + o->string->size, refill_size );
         if( bytes_received < refill_size ) o->ext_supplier = NULL; // detach supplier when empty
         o->string->size += bytes_received;
@@ -394,7 +394,7 @@ static void string_refill( bcore_source_string_s* o, sz_t min_remaining_size )
 
 static sz_t string_flow_src( bcore_source_string_s* o, vd_t data, sz_t size )
 {
-    if( !o->string ) o->string = bcore_string_s_create();
+    if( !o->string ) o->string = st_s_create();
     if( size > o->string->size - o->index )
     {
         // first send rest of buffer
@@ -431,24 +431,24 @@ sz_t bcore_source_string_s_get_data(  bcore_source_string_s* o, vd_t data, sz_t 
 
 static void string_p_errorvf( bcore_source_string_s* o, sc_t format, va_list args )
 {
-    bcore_string_s* context   = bcore_string_s_show_line_context( o->string, o->index );
-    bcore_string_s* msg       = bcore_string_s_create();
-    bcore_string_s_pushf( msg, "Parse error" );
-    sz_t line = bcore_string_s_lineof( o->string, o->index );
-    sz_t col  = bcore_string_s_colof( o->string, o->index );
-    bcore_string_s_pushf( msg, " at line %zu, col %zu:", line + o->preceding_lines, col );
-    bcore_string_s_pushf( msg, "\n%s\n", context->sc );
-    bcore_string_s_push_string_d( msg, bcore_string_s_createvf( format, args ) );
+    st_s* context   = st_s_show_line_context( o->string, o->index );
+    st_s* msg       = st_s_create();
+    st_s_pushf( msg, "Parse error" );
+    sz_t line = st_s_lineof( o->string, o->index );
+    sz_t col  = st_s_colof( o->string, o->index );
+    st_s_pushf( msg, " at line %zu, col %zu:", line + o->preceding_lines, col );
+    st_s_pushf( msg, "\n%s\n", context->sc );
+    st_s_push_st_d( msg, st_s_createvf( format, args ) );
     bcore_err( "%s", msg->sc );
-    bcore_string_s_discard( msg );
-    bcore_string_s_discard( context );
+    st_s_discard( msg );
+    st_s_discard( context );
 }
 
 static void string_parsevf( bcore_source_string_s* o, sc_t format, va_list args )
 {
     if( o->ext_supplier ) string_refill( o, o->refill_limit );
     if( !o->string ) ERR( "No string defined." );
-    o->index = bcore_string_s_parsevf( o->string, o->index, o->string->size, format, args );
+    o->index = st_s_parsevf( o->string, o->index, o->string->size, format, args );
 }
 
 static bcore_flect_self_s* string_s_create_self( void )
@@ -457,7 +457,7 @@ static bcore_flect_self_s* string_s_create_self( void )
     "bcore_source_string_s = "
     "{ "
       "aware_t _; "
-      "bcore_string_s* string; "
+      "st_s* string; "
       "sz_t index; "
       "private vd_t supplier; "
       "sz_t preceding_lines; "
@@ -531,7 +531,7 @@ bcore_source_file_s* bcore_source_file_s_create()
 bcore_source_file_s* bcore_source_file_s_create_name( sc_t name )
 {
     bcore_source_file_s* o = bcore_source_file_s_create();
-    o->name = bcore_string_s_create_sc( name );
+    o->name = st_s_create_sc( name );
     return o;
 }
 
@@ -547,9 +547,9 @@ void bcore_source_file_s_open( bcore_source_file_s* o )
     o->handle = fopen( o->name->sc, "rb" );
     if( !o->handle )
     {
-        bcore_string_s* msg = bcore_string_s_createf( "Error opening file %s:\n", o->name->sc );
+        st_s* msg = st_s_createf( "Error opening file %s:\n", o->name->sc );
         perror( msg->sc );
-        bcore_string_s_discard( msg );
+        st_s_discard( msg );
         abort();
     }
 }
@@ -559,9 +559,9 @@ void bcore_source_file_s_close( bcore_source_file_s* o )
     if( !o->handle ) return;
     if( fclose( o->handle ) != 0 )
     {
-        bcore_string_s* msg = bcore_string_s_createf( "Error closing file %s:\n", o->name->sc );
+        st_s* msg = st_s_createf( "Error closing file %s:\n", o->name->sc );
         perror( msg->sc );
-        bcore_string_s_discard( msg );
+        st_s_discard( msg );
         abort();
     }
     o->handle = NULL;
@@ -582,9 +582,9 @@ static sz_t file_flow_src( bcore_source_file_s* o, vd_t data, sz_t size )
     {
         if( ferror( o->handle ) )
         {
-            bcore_string_s* msg = bcore_string_s_createf( "Error reading file %s:\n", o->name->sc );
+            st_s* msg = st_s_createf( "Error reading file %s:\n", o->name->sc );
             perror( msg->sc );
-            bcore_string_s_discard( msg );
+            st_s_discard( msg );
         }
     }
     return rsize;
@@ -599,7 +599,7 @@ sz_t bcore_source_file_s_get_data(  bcore_source_file_s* o, vd_t data, sz_t size
 
 static void file_p_errorvf( bcore_source_file_s* o, sc_t format, va_list args )
 {
-    ERR( "File name: %s\n%s\n", o->name->sc, bcore_string_s_createvf( format, args )->sc );
+    ERR( "File name: %s\n%s\n", o->name->sc, st_s_createvf( format, args )->sc );
 }
 
 static bcore_flect_self_s* file_s_create_self( void )
@@ -608,7 +608,7 @@ static bcore_flect_self_s* file_s_create_self( void )
     "bcore_source_file_s = "
     "{ "
       "aware_t _; "
-      "bcore_string_s* name; "
+      "st_s* name; "
       "private vd_t handle; "
     "}";
 
@@ -628,15 +628,15 @@ static bcore_flect_self_s* file_s_create_self( void )
 
 #include "bcore_spect_compare.h"
 
-static bcore_string_s* sources_selftest( void )
+static st_s* sources_selftest( void )
 {
-    bcore_string_s* msg = bcore_string_s_create();
+    st_s* msg = st_s_create();
     bcore_life_s* l = bcore_life_s_create();
 
-    bcore_flect_define_parse_sc( "chain_test_aware_arr = { aware_t _; bcore_string_s [] arr; }" );
+    bcore_flect_define_parse_sc( "chain_test_aware_arr = { aware_t _; st_s [] arr; }" );
     sr_s arr = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "chain_test_aware_arr" ) ) );
     arr = sr_cp( arr, TYPEOF_bcore_array_s );
-    for( sz_t i = 0; i < 20000; i++ ) bcore_array_push( arr, sr_asd( bcore_string_s_createf( "line of text %zu", i ) ) );
+    for( sz_t i = 0; i < 20000; i++ ) bcore_array_push( arr, sr_asd( st_s_createf( "line of text %zu", i ) ) );
 
     // write object to file
     {
@@ -677,7 +677,7 @@ vd_t bcore_sources_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( sources_selftest() );
+        st_s_print_d( sources_selftest() );
     }
 
     return NULL;

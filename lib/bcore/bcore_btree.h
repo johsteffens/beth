@@ -21,7 +21,7 @@
 #define BCORE_BTREE_H
 
 #include "bcore_first.h"
-#include "bcore_string.h"
+#include "bcore_st.h"
 #include "bcore_types.h"
 
 /**********************************************************************************************************************/
@@ -68,7 +68,7 @@ void bcore_btree_ip_s_run( const bcore_btree_ip_s* o, void(*func)( vd_t arg, bco
 // Testing and debugging
 
 /// shows the tree structure as text string
-bcore_string_s* bcore_btree_ip_s_show( struct bcore_btree_ip_s* o );
+st_s* bcore_btree_ip_s_show( struct bcore_btree_ip_s* o );
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
@@ -124,7 +124,7 @@ sz_t bcore_btree_ps_s_depth( const bcore_btree_ps_s* o );
 // Testing and debugging
 
 /// shows the tree structure as text string
-bcore_string_s* bcore_btree_ps_s_show( struct bcore_btree_ps_s* o );
+st_s* bcore_btree_ps_s_show( struct bcore_btree_ps_s* o );
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
@@ -189,7 +189,7 @@ sz_t bcore_btree_pp_s_depth( const bcore_btree_pp_s* o );
 // Testing and debugging
 
 /// shows the tree structure as text string
-bcore_string_s* bcore_btree_pp_s_show( struct bcore_btree_pp_s* o );
+st_s* bcore_btree_pp_s_show( struct bcore_btree_pp_s* o );
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
@@ -243,7 +243,7 @@ sz_t bcore_btree_vd_s_depth( const bcore_btree_vd_s* o );
 // Testing and debugging
 
 /// shows the tree structure as text string
-bcore_string_s* bcore_btree_vd_s_show( struct bcore_btree_vd_s* o );
+st_s* bcore_btree_vd_s_show( struct bcore_btree_vd_s* o );
 
 /**********************************************************************************************************************/
 

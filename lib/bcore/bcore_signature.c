@@ -93,13 +93,13 @@ tp_t bcore_signature_s_pop( bcore_signature_s* o )
     return ret;
 }
 
-bcore_string_s* bcore_signature_s_create_string( const bcore_signature_s* o )
+st_s* bcore_signature_s_create_string( const bcore_signature_s* o )
 {
-    bcore_string_s* s = bcore_string_s_create();
+    st_s* s = st_s_create();
     for( sz_t i = 0; i < o->size; i++ )
     {
-        bcore_string_s_push_sc( s, ifnameof( o->data[ i ] ) );
-        bcore_string_s_push_char( s, i == o->size - 1 ? ';' : ',' );
+        st_s_push_sc( s, ifnameof( o->data[ i ] ) );
+        st_s_push_char( s, i == o->size - 1 ? ';' : ',' );
     }
     return s;
 }

@@ -350,22 +350,22 @@ static bcore_flect_self_s* hmap_tp_sr_s_create_self( void )
 #include <time.h>
 #include "bcore_quicktypes.h"
 
-static bcore_string_s* hmap_tp_sr_s_status( bcore_hmap_tp_sr_s* o )
+static st_s* hmap_tp_sr_s_status( bcore_hmap_tp_sr_s* o )
 {
-    bcore_string_s* string = bcore_string_s_create();
+    st_s* string = st_s_create();
     sz_t keys = bcore_hmap_tp_sr_s_keys( o );
-    bcore_string_s_pushf( string, "keys ........... %zu\n", keys );
-    bcore_string_s_pushf( string, "nodes .......... %lu\n", o->size );
-    bcore_string_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
+    st_s_pushf( string, "keys ........... %zu\n", keys );
+    st_s_pushf( string, "nodes .......... %lu\n", o->size );
+    st_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
     return string;
 }
 
-static bcore_string_s* hmap_tp_sr_selftest( void )
+static st_s* hmap_tp_sr_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
-    bcore_string_s* log = bcore_string_s_createf( "== bcore_hmap_tp_sr_selftest " );
-    bcore_string_s_push_char_n( log, '=', 120 - log->size );
-    bcore_string_s_push_char( log, '\n' );
+    st_s* log = st_s_createf( "== bcore_hmap_tp_sr_selftest " );
+    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char( log, '\n' );
 
     bcore_hmap_tp_sr_s* map = bcore_life_s_push_aware( l, bcore_hmap_tp_sr_s_create() );
     const sz_t cycles = 200000;
@@ -380,7 +380,7 @@ static bcore_string_s* hmap_tp_sr_selftest( void )
     sz_t kvbuf_size = 0;
 
     clock_t time = clock();
-    bcore_string_s_pushf( log, "Mixed access: " );
+    st_s_pushf( log, "Mixed access: " );
 
     {
         u3_t rval1 = 1;
@@ -420,13 +420,13 @@ static bcore_string_s* hmap_tp_sr_selftest( void )
     }
 
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
-    bcore_string_s_push_string_d( log, hmap_tp_sr_s_status( map ) );
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_push_st_d( log, hmap_tp_sr_s_status( map ) );
 
     time = clock();
     bcore_hmap_tp_sr_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tp_sr_s_clone( map ) );
     time = clock() - time;
-    bcore_string_s_pushf( log, "Clone .......... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "Clone .......... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
     time = clock();
     if( bcore_compare_aware( map, map2 ) != 0 )
@@ -435,13 +435,13 @@ static bcore_string_s* hmap_tp_sr_selftest( void )
     }
 
     time = clock() - time;
-    bcore_string_s_pushf( log, "Comparison ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "Comparison ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
     time = clock();
     bcore_hmap_tp_sr_s* map3 = bcore_life_s_push_aware( l, bcore_hmap_tp_sr_s_create() );
     bcore_via_aware_nset( map3, typeof( "data" ), bcore_via_aware_nget( map, typeof( "data" ) ) );
     time = clock() - time;
-    bcore_string_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
     time = clock();
     for( sz_t i = 0; i < map->size; i++ )
     {
@@ -454,10 +454,10 @@ static bcore_string_s* hmap_tp_sr_selftest( void )
         }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "verify assign .. %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "verify assign .. %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
     time = clock();
-    bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
+    st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
     sz_t read_cycles = 20;
     for( sz_t j = 0; j < read_cycles; j++ )
     {
@@ -468,10 +468,10 @@ static bcore_string_s* hmap_tp_sr_selftest( void )
         }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
+    st_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
 
-    bcore_string_s_pushf( log, "\n" );
-    bcore_string_s_pushf( log, "Removal: " );
+    st_s_pushf( log, "\n" );
+    st_s_pushf( log, "Removal: " );
     time = clock();
     while( kvbuf_size )
     {
@@ -482,13 +482,13 @@ static bcore_string_s* hmap_tp_sr_selftest( void )
         if( bcore_hmap_tp_sr_s_get( map, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
-    bcore_string_s_push_string_d( log, hmap_tp_sr_s_status( map ) );
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_push_st_d( log, hmap_tp_sr_s_status( map ) );
     bcore_alloc( kvbuf, 0 );
     bcore_life_s_discard( l );
 
-    bcore_string_s_push_char_n( log, '=', 120 );
-    bcore_string_s_push_char( log, '\n' );
+    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char( log, '\n' );
     return log;
 }
 
@@ -506,7 +506,7 @@ vd_t bcore_hmap_tp_sr_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( hmap_tp_sr_selftest() );
+        st_s_print_d( hmap_tp_sr_selftest() );
     }
 
     return NULL;

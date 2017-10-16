@@ -14,7 +14,7 @@
 #include "bcore_types.h"
 #include "bcore_control.h"
 #include "bcore_name_manager.h"
-#include "bcore_string.h"
+#include "bcore_st.h"
 #include "bcore_features.h"
 
 /// data encapsulation methods
@@ -112,7 +112,7 @@ bcore_flect_item_s* bcore_flect_item_s_create_external_data( vc_t data, sc_t typ
 bcore_flect_item_s* bcore_flect_item_s_create_external_func( fp_t func, sc_t type, sc_t name );
 void                bcore_flect_item_s_discard( bcore_flect_item_s* o );
 bcore_flect_item_s* bcore_flect_item_s_clone( const bcore_flect_item_s* o );
-bcore_string_s*     bcore_flect_item_s_show( const bcore_flect_item_s* o );
+st_s*     bcore_flect_item_s_show( const bcore_flect_item_s* o );
 bcore_signature_s*  bcore_flect_item_s_push_to_signature( const bcore_flect_item_s* o, bcore_signature_s* sig ); // appends item data to signature (external caps not supported --> error)
 s2_t                bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_item_s* o2 );        // compares two items
 
@@ -135,7 +135,7 @@ bcore_flect_body_s* bcore_flect_body_s_create();
 void                bcore_flect_body_s_discard( bcore_flect_body_s* o );
 void                bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* item );
 void                bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flect_item_s* item );
-bcore_string_s*     bcore_flect_body_s_show( const bcore_flect_body_s* o );
+st_s*     bcore_flect_body_s_show( const bcore_flect_body_s* o );
 bcore_signature_s*  bcore_flect_body_s_push_to_signature( const bcore_flect_body_s* o, bcore_signature_s* sig );
 s2_t                bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_body_s* o2 );
 
@@ -183,7 +183,7 @@ void                bcore_flect_self_s_push_external_data( bcore_flect_self_s* o
 void                bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
 void                bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name );
 void                bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name );
-bcore_string_s*     bcore_flect_self_s_show( const bcore_flect_self_s* o );
+st_s*     bcore_flect_self_s_show( const bcore_flect_self_s* o );
 void                bcore_flect_self_s_check_consistency( const bcore_flect_self_s* o );
 
 /// special reflections
@@ -213,7 +213,7 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type 
  *    <type-name> = [<trait-name>] { <expr>; <expr>; ... } : Specifying '...' marks the body as incomplete
  *
  */
-bcore_flect_self_s* bcore_flect_self_s_build_parse( const bcore_string_s* text, sz_t* p_idx, sz_t size_of );
+bcore_flect_self_s* bcore_flect_self_s_build_parse( const st_s* text, sz_t* p_idx, sz_t size_of );
 bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );
 
 
@@ -244,7 +244,7 @@ bcore_flect_self_s* bcore_flect_self_s_create_self( void );
  */
 tp_t bcore_flect_define_self_d(       bcore_flect_self_s* self ); // takes over control of self; error if same
 tp_t bcore_flect_define_self_c( const bcore_flect_self_s* self ); // stores a copy of self
-tp_t bcore_flect_define_parse( const bcore_string_s* string, sz_t* idx );
+tp_t bcore_flect_define_parse( const st_s* string, sz_t* idx );
 tp_t bcore_flect_define_parse_sc( sc_t sc );
 tp_t bcore_flect_define_parsef( sc_t sc, ... );
 
@@ -258,7 +258,7 @@ tp_t bcore_flect_define_parsef( sc_t sc, ... );
  */
 tp_t bcore_flect_type_self_d(       bcore_flect_self_s* self ); // takes over control of self
 tp_t bcore_flect_type_self_c( const bcore_flect_self_s* self ); // stores a copy of self
-tp_t bcore_flect_type_parse(  const bcore_string_s* string, sz_t* idx );
+tp_t bcore_flect_type_parse(  const st_s* string, sz_t* idx );
 tp_t bcore_flect_type_parse_sc( sc_t sc );
 tp_t bcore_flect_type_parsef( sc_t format, ... );
 

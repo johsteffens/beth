@@ -32,8 +32,8 @@ void bcore_sink_spect_pushvf       ( const bcore_sink_s* p, vd_t o, sc_t format,
 void bcore_sink_spect_pushf        ( const bcore_sink_s* p, vd_t o, sc_t format, ... );
 void bcore_sink_spect_push_char    ( const bcore_sink_s* p, vd_t o, char c );
 void bcore_sink_spect_push_sc      ( const bcore_sink_s* p, vd_t o, sc_t sc );
-void bcore_sink_spect_push_string  ( const bcore_sink_s* p, vd_t o, const bcore_string_s* string );
-void bcore_sink_spect_push_string_d( const bcore_sink_s* p, vd_t o,       bcore_string_s* string );
+void bcore_sink_spect_push_string  ( const bcore_sink_s* p, vd_t o, const st_s* string );
+void bcore_sink_spect_push_string_d( const bcore_sink_s* p, vd_t o,       st_s* string );
 void bcore_sink_spect_set_consumer ( const bcore_sink_s* p, vd_t o, vd_t consumer ); // error when not supported
 
 sz_t bcore_sink_aware_push_data    ( vd_t o, vc_t data, sz_t size );
@@ -42,8 +42,8 @@ void bcore_sink_aware_pushvf       ( vd_t o, sc_t format, va_list args );
 void bcore_sink_aware_pushf        ( vd_t o, sc_t format, ... );
 void bcore_sink_aware_push_char    ( vd_t o, char c );
 void bcore_sink_aware_push_sc      ( vd_t o, sc_t sc );
-void bcore_sink_aware_push_string  ( vd_t o, const bcore_string_s* string );
-void bcore_sink_aware_push_string_d( vd_t o,       bcore_string_s* string );
+void bcore_sink_aware_push_string  ( vd_t o, const st_s* string );
+void bcore_sink_aware_push_string_d( vd_t o,       st_s* string );
 void bcore_sink_aware_set_consumer ( vd_t o, vd_t consumer ); // error when not supported
 
 sz_t bcore_sink_push_data    ( sr_s o, vc_t data, sz_t size );
@@ -52,8 +52,8 @@ void bcore_sink_pushvf       ( sr_s o, sc_t format, va_list args );
 void bcore_sink_pushf        ( sr_s o, sc_t format, ... );
 void bcore_sink_push_char    ( sr_s o, char c );
 void bcore_sink_push_sc      ( sr_s o, sc_t sc );
-void bcore_sink_push_string  ( sr_s o, const bcore_string_s* string );
-void bcore_sink_push_string_d( sr_s o,       bcore_string_s* string );
+void bcore_sink_push_string  ( sr_s o, const st_s* string );
+void bcore_sink_push_string_d( sr_s o,       st_s* string );
 void bcore_sink_set_consumer ( sr_s o, vd_t consumer ); // error when not supported
 
 sz_t bcore_sink_q_push_data    ( const sr_s* o, vc_t data, sz_t size );
@@ -62,8 +62,8 @@ void bcore_sink_q_pushvf       ( const sr_s* o, sc_t format, va_list args );
 void bcore_sink_q_pushf        ( const sr_s* o, sc_t format, ... );
 void bcore_sink_q_push_char    ( const sr_s* o, char c );
 void bcore_sink_q_push_sc      ( const sr_s* o, sc_t sc );
-void bcore_sink_q_push_string  ( const sr_s* o, const bcore_string_s* string );
-void bcore_sink_q_push_string_d( const sr_s* o,       bcore_string_s* string );
+void bcore_sink_q_push_string  ( const sr_s* o, const st_s* string );
+void bcore_sink_q_push_string_d( const sr_s* o,       st_s* string );
 void bcore_sink_q_set_consumer ( const sr_s* o, vd_t consumer ); // error when not supported
 
 vd_t bcore_spect_sink_signal( tp_t target, tp_t signal, vd_t object );

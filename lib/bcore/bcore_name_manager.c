@@ -2,7 +2,7 @@
 
 #include "bcore_name_manager.h"
 #include "bcore_tbman.h"
-#include "bcore_string.h"
+#include "bcore_st.h"
 #include "bcore_threads.h"
 #include "bcore_hmap.h"
 
@@ -23,8 +23,8 @@ static void hmap_s_init( hmap_s* o )
 
 static void hmap_s_node_down( vd_t obj, u2_t key, vd_t val )
 {
-    bcore_string_s* string = val;
-    bcore_string_s_discard( string );
+    st_s* string = val;
+    st_s_discard( string );
 }
 
 static void hmap_s_down( hmap_s* o )
@@ -81,7 +81,7 @@ sc_t bcore_name_try_name( tp_t type )
     sc_t name = NULL;
     if( vdp )
     {
-        bcore_string_s* s = *vdp;
+        st_s* s = *vdp;
         name = s->sc;
     }
     bcore_mutex_unlock( &hmap_s_g->mutex );
@@ -105,13 +105,13 @@ tp_t bcore_name_enroll( sc_t name )
     vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, hash );
     if( vdp )
     {
-        const bcore_string_s* string = *vdp;
-        if( !bcore_string_s_equal_sc( string, name ) ) ERR( "%s collides with %s", name, string->sc );
+        const st_s* string = *vdp;
+        if( !st_s_equal_sc( string, name ) ) ERR( "%s collides with %s", name, string->sc );
     }
     else
     {
         // name manager owns string because lifetime of name management exceeds that of perspective management
-        bcore_hmap_u2vd_s_set( hmap_s_g->map, hash, bcore_string_s_create_sc( name ), false );
+        bcore_hmap_u2vd_s_set( hmap_s_g->map, hash, st_s_create_sc( name ), false );
     }
     bcore_mutex_unlock( &hmap_s_g->mutex );
     return hash;
@@ -121,8 +121,8 @@ void bcore_name_remove( tp_t type )
 {
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    bcore_string_s* s = bcore_hmap_u2vd_s_remove_h( hmap_s_g->map, type );
-    bcore_string_s_discard( s );
+    st_s* s = bcore_hmap_u2vd_s_remove_h( hmap_s_g->map, type );
+    st_s_discard( s );
     bcore_mutex_unlock( &hmap_s_g->mutex );
 }
 

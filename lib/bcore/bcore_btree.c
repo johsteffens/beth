@@ -146,26 +146,26 @@ void bcore_btree_node_ip_s_check_consistency( bcore_btree_node_ip_s* o )
     }
 }
 
-bcore_string_s* bcore_btree_node_ip_s_show( bcore_btree_node_ip_s* o, sz_t depth )
+st_s* bcore_btree_node_ip_s_show( bcore_btree_node_ip_s* o, sz_t depth )
 {
-    bcore_string_s* string = bcore_string_s_create();
+    st_s* string = st_s_create();
     if( !o )
     {
-        bcore_string_s_pushf( string, "()\n" );
+        st_s_pushf( string, "()\n" );
         return string;
     }
     if( o->child1 )
     {
-        if( o->child0 && o->child0 != BNUL_IP ) bcore_string_s_push_string_d( string, bcore_btree_node_ip_s_show( o->child0, depth + 1 ) );
-        for( sz_t i = 0; i < depth; i++ ) bcore_string_s_pushf( string, "    " );
-        bcore_string_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv1.key, ( int64_t )o->kv1.val );
-        if( o->child1 && o->child1 != BNUL_IP ) bcore_string_s_pushf( string, "    " );
+        if( o->child0 && o->child0 != BNUL_IP ) st_s_push_st_d( string, bcore_btree_node_ip_s_show( o->child0, depth + 1 ) );
+        for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
+        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv1.key, ( int64_t )o->kv1.val );
+        if( o->child1 && o->child1 != BNUL_IP ) st_s_pushf( string, "    " );
     }
     if( o->child2 )
     {
-        for( sz_t i = 0; i < depth; i++ ) bcore_string_s_pushf( string, "    " );
-        bcore_string_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv2.key, ( int64_t )o->kv2.val );
-        if( o->child2 && o->child2 != BNUL_IP ) bcore_string_s_push_string_d( string, bcore_btree_node_ip_s_show( o->child2, depth + 1 ) );
+        for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
+        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv2.key, ( int64_t )o->kv2.val );
+        if( o->child2 && o->child2 != BNUL_IP ) st_s_push_st_d( string, bcore_btree_node_ip_s_show( o->child2, depth + 1 ) );
     }
     return string;
 }
@@ -589,15 +589,15 @@ void bcore_btree_ip_s_run( const bcore_btree_ip_s* o, void(*func)( vd_t arg, bco
     bcore_btree_node_ip_s_run( o->root, func, arg );
 }
 
-bcore_string_s* bcore_btree_ip_s_show( bcore_btree_ip_s* o )
+st_s* bcore_btree_ip_s_show( bcore_btree_ip_s* o )
 {
     bcore_btree_node_ip_s_check_consistency( o->root );
-    bcore_string_s* s = bcore_btree_node_ip_s_show( o->root, 0 );
-    bcore_string_s_pushf( s, "\n" );
+    st_s* s = bcore_btree_node_ip_s_show( o->root, 0 );
+    st_s_pushf( s, "\n" );
     return s;
 }
 
-bcore_string_s* bcore_btree_ip_s_status( bcore_btree_ip_s* o )
+st_s* bcore_btree_ip_s_status( bcore_btree_ip_s* o )
 {
     sz_t blocks = 0;
     sz_t nodes = 0;
@@ -622,23 +622,23 @@ bcore_string_s* bcore_btree_ip_s_status( bcore_btree_ip_s* o )
         }
     }
 
-    bcore_string_s* string = bcore_string_s_create();
+    st_s* string = st_s_create();
     sz_t used_nodes = nodes - deleted_nodes;
-    bcore_string_s_pushf( string, "keys ........... %lu\n", bcore_btree_node_ip_s_keys( o->root ) );
-    bcore_string_s_pushf( string, "nodes .......... %lu\n", used_nodes );
-    bcore_string_s_pushf( string, "keys/nodes ..... %5.4f\n", used_nodes > 0 ? ( double )( bcore_btree_node_ip_s_keys( o->root ) ) / used_nodes : 0 );
-    bcore_string_s_pushf( string, "depth .......... %lu\n", bcore_btree_node_ip_s_depth( o->root ) );
-    bcore_string_s_pushf( string, "block size ..... %lu\n", o->block_size );
-    bcore_string_s_pushf( string, "blocks ......... %lu\n", blocks );
-    bcore_string_s_pushf( string, "deleted nodes .. %lu\n", deleted_nodes );
+    st_s_pushf( string, "keys ........... %lu\n", bcore_btree_node_ip_s_keys( o->root ) );
+    st_s_pushf( string, "nodes .......... %lu\n", used_nodes );
+    st_s_pushf( string, "keys/nodes ..... %5.4f\n", used_nodes > 0 ? ( double )( bcore_btree_node_ip_s_keys( o->root ) ) / used_nodes : 0 );
+    st_s_pushf( string, "depth .......... %lu\n", bcore_btree_node_ip_s_depth( o->root ) );
+    st_s_pushf( string, "block size ..... %lu\n", o->block_size );
+    st_s_pushf( string, "blocks ......... %lu\n", blocks );
+    st_s_pushf( string, "deleted nodes .. %lu\n", deleted_nodes );
     return string;
 }
 
-static bcore_string_s* btree_ip_s_selftest( void )
+static st_s* btree_ip_s_selftest( void )
 {
-    bcore_string_s* log = bcore_string_s_createf( "== btree_ip_s_selftest " );
-    bcore_string_s_push_char_n( log, '=', 120 - log->size );
-    bcore_string_s_push_char( log, '\n' );
+    st_s* log = st_s_createf( "== btree_ip_s_selftest " );
+    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char( log, '\n' );
     bcore_btree_ip_s* t = bcore_btree_ip_s_create();
     const sz_t cycles = 200000;
 
@@ -646,7 +646,7 @@ static bcore_string_s* btree_ip_s_selftest( void )
     sz_t kvbuf_size = 0;
 
     clock_t time = clock();
-    bcore_string_s_pushf( log, "Mixed access: " );
+    st_s_pushf( log, "Mixed access: " );
 
     {
         u3_t rval1 = 1;
@@ -686,13 +686,13 @@ static bcore_string_s* btree_ip_s_selftest( void )
     }
 
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
     bcore_btree_node_ip_s_check_consistency( t->root );
-    bcore_string_s_push_string_d( log, bcore_btree_ip_s_status( t ) );
+    st_s_push_st_d( log, bcore_btree_ip_s_status( t ) );
 
     time = clock();
-    bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
+    st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
     sz_t read_cycles = 20;
     for( sz_t j = 0; j < read_cycles; j++ )
     {
@@ -702,10 +702,10 @@ static bcore_string_s* btree_ip_s_selftest( void )
         }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
+    st_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
 
-    bcore_string_s_pushf( log, "\n" );
-    bcore_string_s_pushf( log, "Removal: " );
+    st_s_pushf( log, "\n" );
+    st_s_pushf( log, "Removal: " );
     time = clock();
     while( kvbuf_size )
     {
@@ -716,16 +716,16 @@ static bcore_string_s* btree_ip_s_selftest( void )
         if( bcore_btree_ip_s_val( t, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
     if( t->root ) ERR( "root still exists" );
 
-    bcore_string_s_push_string_d( log, bcore_btree_ip_s_status( t ) );
+    st_s_push_st_d( log, bcore_btree_ip_s_status( t ) );
 
     bcore_btree_ip_s_discard( t );
     bcore_alloc( kvbuf, 0 );
-    bcore_string_s_push_char_n( log, '=', 120 );
-    bcore_string_s_push_char( log, '\n' );
+    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char( log, '\n' );
     return log;
 }
 
@@ -913,26 +913,26 @@ void bcore_btree_node_ps_s_check_consistency( bcore_btree_node_ps_s* o )
     }
 }
 
-bcore_string_s* bcore_btree_node_ps_s_show( bcore_btree_node_ps_s* o, sz_t depth )
+st_s* bcore_btree_node_ps_s_show( bcore_btree_node_ps_s* o, sz_t depth )
 {
-    bcore_string_s* string = bcore_string_s_create();
+    st_s* string = st_s_create();
     if( !o )
     {
-        bcore_string_s_pushf( string, "()\n" );
+        st_s_pushf( string, "()\n" );
         return string;
     }
     if( o->child1 )
     {
-        if( o->child0 && o->child0 != BNUL_PS ) bcore_string_s_push_string_d( string, bcore_btree_node_ps_s_show( o->child0, depth + 1 ) );
-        for( sz_t i = 0; i < depth; i++ ) bcore_string_s_pushf( string, "    " );
-        bcore_string_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv1.key, ( int64_t )o->kv1.val );
-        if( o->child1 && o->child1 != BNUL_PS ) bcore_string_s_pushf( string, "    " );
+        if( o->child0 && o->child0 != BNUL_PS ) st_s_push_st_d( string, bcore_btree_node_ps_s_show( o->child0, depth + 1 ) );
+        for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
+        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv1.key, ( int64_t )o->kv1.val );
+        if( o->child1 && o->child1 != BNUL_PS ) st_s_pushf( string, "    " );
     }
     if( o->child2 )
     {
-        for( sz_t i = 0; i < depth; i++ ) bcore_string_s_pushf( string, "    " );
-        bcore_string_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv2.key, ( int64_t )o->kv2.val );
-        if( o->child2 && o->child2 != BNUL_PS ) bcore_string_s_push_string_d( string, bcore_btree_node_ps_s_show( o->child2, depth + 1 ) );
+        for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
+        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv2.key, ( int64_t )o->kv2.val );
+        if( o->child2 && o->child2 != BNUL_PS ) st_s_push_st_d( string, bcore_btree_node_ps_s_show( o->child2, depth + 1 ) );
     }
     return string;
 }
@@ -1382,15 +1382,15 @@ sz_t bcore_btree_ps_s_depth( const bcore_btree_ps_s* o )
     return bcore_btree_node_ps_s_depth( o->root );
 }
 
-bcore_string_s* bcore_btree_ps_s_show( bcore_btree_ps_s* o )
+st_s* bcore_btree_ps_s_show( bcore_btree_ps_s* o )
 {
     bcore_btree_node_ps_s_check_consistency( o->root );
-    bcore_string_s* s = bcore_btree_node_ps_s_show( o->root, 0 );
-    bcore_string_s_pushf( s, "\n" );
+    st_s* s = bcore_btree_node_ps_s_show( o->root, 0 );
+    st_s_pushf( s, "\n" );
     return s;
 }
 
-bcore_string_s* bcore_btree_ps_s_status( bcore_btree_ps_s* o )
+st_s* bcore_btree_ps_s_status( bcore_btree_ps_s* o )
 {
     sz_t blocks = 0;
     sz_t nodes = 0;
@@ -1415,23 +1415,23 @@ bcore_string_s* bcore_btree_ps_s_status( bcore_btree_ps_s* o )
         }
     }
 
-    bcore_string_s* string = bcore_string_s_create();
+    st_s* string = st_s_create();
     sz_t used_nodes = nodes - deleted_nodes;
-    bcore_string_s_pushf( string, "keys ........... %lu\n", bcore_btree_node_ps_s_keys( o->root ) );
-    bcore_string_s_pushf( string, "nodes .......... %lu\n", used_nodes );
-    bcore_string_s_pushf( string, "keys/nodes ..... %5.4f\n", used_nodes > 0 ? ( double )( bcore_btree_node_ps_s_keys( o->root ) ) / used_nodes : 0 );
-    bcore_string_s_pushf( string, "depth .......... %lu\n", bcore_btree_node_ps_s_depth( o->root ) );
-    bcore_string_s_pushf( string, "block size ..... %lu\n", o->block_size );
-    bcore_string_s_pushf( string, "blocks ......... %lu\n", blocks );
-    bcore_string_s_pushf( string, "deleted nodes .. %lu\n", deleted_nodes );
+    st_s_pushf( string, "keys ........... %lu\n", bcore_btree_node_ps_s_keys( o->root ) );
+    st_s_pushf( string, "nodes .......... %lu\n", used_nodes );
+    st_s_pushf( string, "keys/nodes ..... %5.4f\n", used_nodes > 0 ? ( double )( bcore_btree_node_ps_s_keys( o->root ) ) / used_nodes : 0 );
+    st_s_pushf( string, "depth .......... %lu\n", bcore_btree_node_ps_s_depth( o->root ) );
+    st_s_pushf( string, "block size ..... %lu\n", o->block_size );
+    st_s_pushf( string, "blocks ......... %lu\n", blocks );
+    st_s_pushf( string, "deleted nodes .. %lu\n", deleted_nodes );
     return string;
 }
 
-static bcore_string_s* btree_ps_s_selftest( void )
+static st_s* btree_ps_s_selftest( void )
 {
-    bcore_string_s* log = bcore_string_s_createf( "== btree_ps_s_selftest " );
-    bcore_string_s_push_char_n( log, '=', 120 - log->size );
-    bcore_string_s_push_char( log, '\n' );
+    st_s* log = st_s_createf( "== btree_ps_s_selftest " );
+    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char( log, '\n' );
     bcore_btree_ps_s* t = bcore_btree_ps_s_create( NULL );
     const sz_t cycles = 200000;
 
@@ -1439,7 +1439,7 @@ static bcore_string_s* btree_ps_s_selftest( void )
     sz_t kvbuf_size = 0;
 
     clock_t time = clock();
-    bcore_string_s_pushf( log, "Mixed access: " );
+    st_s_pushf( log, "Mixed access: " );
 
     {
         u3_t rval1 = 1;
@@ -1479,13 +1479,13 @@ static bcore_string_s* btree_ps_s_selftest( void )
     }
 
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
     bcore_btree_node_ps_s_check_consistency( t->root );
-    bcore_string_s_push_string_d( log, bcore_btree_ps_s_status( t ) );
+    st_s_push_st_d( log, bcore_btree_ps_s_status( t ) );
 
     time = clock();
-    bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
+    st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
     sz_t read_cycles = 20;
     for( sz_t j = 0; j < read_cycles; j++ )
     {
@@ -1495,10 +1495,10 @@ static bcore_string_s* btree_ps_s_selftest( void )
         }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
+    st_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
 
-    bcore_string_s_pushf( log, "\n" );
-    bcore_string_s_pushf( log, "Removal: " );
+    st_s_pushf( log, "\n" );
+    st_s_pushf( log, "Removal: " );
     time = clock();
     while( kvbuf_size )
     {
@@ -1509,16 +1509,16 @@ static bcore_string_s* btree_ps_s_selftest( void )
         if( bcore_btree_ps_s_val( t, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
     if( t->root ) ERR( "root still exists" );
 
-    bcore_string_s_push_string_d( log, bcore_btree_ps_s_status( t ) );
+    st_s_push_st_d( log, bcore_btree_ps_s_status( t ) );
 
     bcore_btree_ps_s_discard( t );
     bcore_alloc( kvbuf, 0 );
-    bcore_string_s_push_char_n( log, '=', 120 );
-    bcore_string_s_push_char( log, '\n' );
+    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char( log, '\n' );
     return log;
 }
 
@@ -1703,26 +1703,26 @@ void bcore_btree_node_pp_s_check_consistency( bcore_btree_node_pp_s* o )
     }
 }
 
-bcore_string_s* bcore_btree_node_pp_s_show( bcore_btree_node_pp_s* o, sz_t depth )
+st_s* bcore_btree_node_pp_s_show( bcore_btree_node_pp_s* o, sz_t depth )
 {
-    bcore_string_s* string = bcore_string_s_create();
+    st_s* string = st_s_create();
     if( !o )
     {
-        bcore_string_s_pushf( string, "()\n" );
+        st_s_pushf( string, "()\n" );
         return string;
     }
     if( o->child1 )
     {
-        if( o->child0 && o->child0 != BNUL_PP ) bcore_string_s_push_string_d( string, bcore_btree_node_pp_s_show( o->child0, depth + 1 ) );
-        for( sz_t i = 0; i < depth; i++ ) bcore_string_s_pushf( string, "    " );
-        bcore_string_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv1.key, ( int64_t )o->kv1.val );
-        if( o->child1 && o->child1 != BNUL_PP ) bcore_string_s_pushf( string, "    " );
+        if( o->child0 && o->child0 != BNUL_PP ) st_s_push_st_d( string, bcore_btree_node_pp_s_show( o->child0, depth + 1 ) );
+        for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
+        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv1.key, ( int64_t )o->kv1.val );
+        if( o->child1 && o->child1 != BNUL_PP ) st_s_pushf( string, "    " );
     }
     if( o->child2 )
     {
-        for( sz_t i = 0; i < depth; i++ ) bcore_string_s_pushf( string, "    " );
-        bcore_string_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv2.key, ( int64_t )o->kv2.val );
-        if( o->child2 && o->child2 != BNUL_PP ) bcore_string_s_push_string_d( string, bcore_btree_node_pp_s_show( o->child2, depth + 1 ) );
+        for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
+        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv2.key, ( int64_t )o->kv2.val );
+        if( o->child2 && o->child2 != BNUL_PP ) st_s_push_st_d( string, bcore_btree_node_pp_s_show( o->child2, depth + 1 ) );
     }
     return string;
 }
@@ -2182,15 +2182,15 @@ sz_t bcore_btree_pp_s_depth( const bcore_btree_pp_s* o )
     return bcore_btree_node_pp_s_depth( o->root );
 }
 
-bcore_string_s* bcore_btree_pp_s_show( bcore_btree_pp_s* o )
+st_s* bcore_btree_pp_s_show( bcore_btree_pp_s* o )
 {
     bcore_btree_node_pp_s_check_consistency( o->root );
-    bcore_string_s* s = bcore_btree_node_pp_s_show( o->root, 0 );
-    bcore_string_s_pushf( s, "\n" );
+    st_s* s = bcore_btree_node_pp_s_show( o->root, 0 );
+    st_s_pushf( s, "\n" );
     return s;
 }
 
-bcore_string_s* bcore_btree_pp_s_status( bcore_btree_pp_s* o )
+st_s* bcore_btree_pp_s_status( bcore_btree_pp_s* o )
 {
     sz_t blocks = 0;
     sz_t nodes = 0;
@@ -2215,23 +2215,23 @@ bcore_string_s* bcore_btree_pp_s_status( bcore_btree_pp_s* o )
         }
     }
 
-    bcore_string_s* string = bcore_string_s_create();
+    st_s* string = st_s_create();
     sz_t used_nodes = nodes - deleted_nodes;
-    bcore_string_s_pushf( string, "keys ........... %lu\n", bcore_btree_node_pp_s_keys( o->root ) );
-    bcore_string_s_pushf( string, "nodes .......... %lu\n", used_nodes );
-    bcore_string_s_pushf( string, "keys/nodes ..... %5.4f\n", used_nodes > 0 ? ( double )( bcore_btree_node_pp_s_keys( o->root ) ) / used_nodes : 0 );
-    bcore_string_s_pushf( string, "depth .......... %lu\n", bcore_btree_node_pp_s_depth( o->root ) );
-    bcore_string_s_pushf( string, "block size ..... %lu\n", o->block_size );
-    bcore_string_s_pushf( string, "blocks ......... %lu\n", blocks );
-    bcore_string_s_pushf( string, "deleted nodes .. %lu\n", deleted_nodes );
+    st_s_pushf( string, "keys ........... %lu\n", bcore_btree_node_pp_s_keys( o->root ) );
+    st_s_pushf( string, "nodes .......... %lu\n", used_nodes );
+    st_s_pushf( string, "keys/nodes ..... %5.4f\n", used_nodes > 0 ? ( double )( bcore_btree_node_pp_s_keys( o->root ) ) / used_nodes : 0 );
+    st_s_pushf( string, "depth .......... %lu\n", bcore_btree_node_pp_s_depth( o->root ) );
+    st_s_pushf( string, "block size ..... %lu\n", o->block_size );
+    st_s_pushf( string, "blocks ......... %lu\n", blocks );
+    st_s_pushf( string, "deleted nodes .. %lu\n", deleted_nodes );
     return string;
 }
 
-static bcore_string_s* btree_pp_s_selftest( void )
+static st_s* btree_pp_s_selftest( void )
 {
-    bcore_string_s* log = bcore_string_s_createf( "== btree_pp_s_selftest " );
-    bcore_string_s_push_char_n( log, '=', 120 - log->size );
-    bcore_string_s_push_char( log, '\n' );
+    st_s* log = st_s_createf( "== btree_pp_s_selftest " );
+    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char( log, '\n' );
     bcore_btree_pp_s* t = bcore_btree_pp_s_create( NULL );
     const sz_t cycles = 200000;
 
@@ -2239,7 +2239,7 @@ static bcore_string_s* btree_pp_s_selftest( void )
     sz_t kvbuf_size = 0;
 
     clock_t time = clock();
-    bcore_string_s_pushf( log, "Mixed access: " );
+    st_s_pushf( log, "Mixed access: " );
 
     {
         u3_t rval1 = 1;
@@ -2280,13 +2280,13 @@ static bcore_string_s* btree_pp_s_selftest( void )
     }
 
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
     bcore_btree_node_pp_s_check_consistency( t->root );
-    bcore_string_s_push_string_d( log, bcore_btree_pp_s_status( t ) );
+    st_s_push_st_d( log, bcore_btree_pp_s_status( t ) );
 
     time = clock();
-    bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
+    st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
     sz_t read_cycles = 20;
     for( sz_t j = 0; j < read_cycles; j++ )
     {
@@ -2296,10 +2296,10 @@ static bcore_string_s* btree_pp_s_selftest( void )
         }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
+    st_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
 
     time = clock();
-    bcore_string_s_pushf( log, "largest_below_equal - test: ", kvbuf_size );
+    st_s_pushf( log, "largest_below_equal - test: ", kvbuf_size );
     if( bcore_btree_pp_s_largest_below_equal( t, (bcore_btree_pp_key_t)1 ) != NULL ) ERR( "largest_below_equal( 1 ) failed" );
     for( sz_t j = 0; j < 10; j++ )
     {
@@ -2313,10 +2313,10 @@ static bcore_string_s* btree_pp_s_selftest( void )
         }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3gs per test)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * 10 ) );
+    st_s_pushf( log, "(%5.3gs per test)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * 10 ) );
 
-    bcore_string_s_pushf( log, "\n" );
-    bcore_string_s_pushf( log, "Removal: " );
+    st_s_pushf( log, "\n" );
+    st_s_pushf( log, "Removal: " );
     time = clock();
     while( kvbuf_size )
     {
@@ -2327,16 +2327,16 @@ static bcore_string_s* btree_pp_s_selftest( void )
         if( bcore_btree_pp_s_val( t, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
     if( t->root ) ERR( "root still exists" );
 
-    bcore_string_s_push_string_d( log, bcore_btree_pp_s_status( t ) );
+    st_s_push_st_d( log, bcore_btree_pp_s_status( t ) );
 
     bcore_btree_pp_s_discard( t );
     bcore_alloc( kvbuf, 0 );
-    bcore_string_s_push_char_n( log, '=', 120 );
-    bcore_string_s_push_char( log, '\n' );
+    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char( log, '\n' );
     return log;
 }
 
@@ -2524,26 +2524,26 @@ void bcore_btree_node_vd_s_check_consistency( bcore_btree_node_vd_s* o )
     }
 }
 
-bcore_string_s* bcore_btree_node_vd_s_show( bcore_btree_node_vd_s* o, sz_t depth )
+st_s* bcore_btree_node_vd_s_show( bcore_btree_node_vd_s* o, sz_t depth )
 {
-    bcore_string_s* string = bcore_string_s_create();
+    st_s* string = st_s_create();
     if( !o )
     {
-        bcore_string_s_pushf( string, "()\n" );
+        st_s_pushf( string, "()\n" );
         return string;
     }
     if( o->child1 )
     {
-        if( o->child0 && o->child0 != BNUL_VP ) bcore_string_s_push_string_d( string, bcore_btree_node_vd_s_show( o->child0, depth + 1 ) );
-        for( sz_t i = 0; i < depth; i++ ) bcore_string_s_pushf( string, "    " );
-        bcore_string_s_pushf( string, "(%lu)\n", ( int64_t )o->kv1.key );
-        if( o->child1 && o->child1 != BNUL_VP ) bcore_string_s_pushf( string, "    " );
+        if( o->child0 && o->child0 != BNUL_VP ) st_s_push_st_d( string, bcore_btree_node_vd_s_show( o->child0, depth + 1 ) );
+        for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
+        st_s_pushf( string, "(%lu)\n", ( int64_t )o->kv1.key );
+        if( o->child1 && o->child1 != BNUL_VP ) st_s_pushf( string, "    " );
     }
     if( o->child2 )
     {
-        for( sz_t i = 0; i < depth; i++ ) bcore_string_s_pushf( string, "    " );
-        bcore_string_s_pushf( string, "(%lu)\n", ( int64_t )o->kv2.key );
-        if( o->child2 && o->child2 != BNUL_VP ) bcore_string_s_push_string_d( string, bcore_btree_node_vd_s_show( o->child2, depth + 1 ) );
+        for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
+        st_s_pushf( string, "(%lu)\n", ( int64_t )o->kv2.key );
+        if( o->child2 && o->child2 != BNUL_VP ) st_s_push_st_d( string, bcore_btree_node_vd_s_show( o->child2, depth + 1 ) );
     }
     return string;
 }
@@ -2991,15 +2991,15 @@ sz_t bcore_btree_vd_s_depth( const bcore_btree_vd_s* o )
     return bcore_btree_node_vd_s_depth( o->root );
 }
 
-bcore_string_s* bcore_btree_vd_s_show( bcore_btree_vd_s* o )
+st_s* bcore_btree_vd_s_show( bcore_btree_vd_s* o )
 {
     bcore_btree_node_vd_s_check_consistency( o->root );
-    bcore_string_s* s = bcore_btree_node_vd_s_show( o->root, 0 );
-    bcore_string_s_pushf( s, "\n" );
+    st_s* s = bcore_btree_node_vd_s_show( o->root, 0 );
+    st_s_pushf( s, "\n" );
     return s;
 }
 
-bcore_string_s* bcore_btree_vd_s_status( bcore_btree_vd_s* o )
+st_s* bcore_btree_vd_s_status( bcore_btree_vd_s* o )
 {
     sz_t blocks = 0;
     sz_t nodes = 0;
@@ -3024,23 +3024,23 @@ bcore_string_s* bcore_btree_vd_s_status( bcore_btree_vd_s* o )
         }
     }
 
-    bcore_string_s* string = bcore_string_s_create();
+    st_s* string = st_s_create();
     sz_t used_nodes = nodes - deleted_nodes;
-    bcore_string_s_pushf( string, "keys ........... %lu\n", bcore_btree_node_vd_s_keys( o->root ) );
-    bcore_string_s_pushf( string, "nodes .......... %lu\n", used_nodes );
-    bcore_string_s_pushf( string, "keys/nodes ..... %5.4f\n", used_nodes > 0 ? ( double )( bcore_btree_node_vd_s_keys( o->root ) ) / used_nodes : 0 );
-    bcore_string_s_pushf( string, "depth .......... %lu\n", bcore_btree_node_vd_s_depth( o->root ) );
-    bcore_string_s_pushf( string, "block size ..... %lu\n", o->block_size );
-    bcore_string_s_pushf( string, "blocks ......... %lu\n", blocks );
-    bcore_string_s_pushf( string, "deleted nodes .. %lu\n", deleted_nodes );
+    st_s_pushf( string, "keys ........... %lu\n", bcore_btree_node_vd_s_keys( o->root ) );
+    st_s_pushf( string, "nodes .......... %lu\n", used_nodes );
+    st_s_pushf( string, "keys/nodes ..... %5.4f\n", used_nodes > 0 ? ( double )( bcore_btree_node_vd_s_keys( o->root ) ) / used_nodes : 0 );
+    st_s_pushf( string, "depth .......... %lu\n", bcore_btree_node_vd_s_depth( o->root ) );
+    st_s_pushf( string, "block size ..... %lu\n", o->block_size );
+    st_s_pushf( string, "blocks ......... %lu\n", blocks );
+    st_s_pushf( string, "deleted nodes .. %lu\n", deleted_nodes );
     return string;
 }
 
-static bcore_string_s* btree_vd_s_selftest( void )
+static st_s* btree_vd_s_selftest( void )
 {
-    bcore_string_s* log = bcore_string_s_createf( "== btree_vd_s_selftest " );
-    bcore_string_s_push_char_n( log, '=', 120 - log->size );
-    bcore_string_s_push_char( log, '\n' );
+    st_s* log = st_s_createf( "== btree_vd_s_selftest " );
+    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char( log, '\n' );
 
     bcore_btree_vd_s* t = bcore_btree_vd_s_create( NULL );
     const sz_t cycles = 200000;
@@ -3049,7 +3049,7 @@ static bcore_string_s* btree_vd_s_selftest( void )
     sz_t kvbuf_size = 0;
 
     clock_t time = clock();
-    bcore_string_s_pushf( log, "Mixed access: " );
+    st_s_pushf( log, "Mixed access: " );
 
     {
         u3_t rval = 1;
@@ -3087,13 +3087,13 @@ static bcore_string_s* btree_vd_s_selftest( void )
     }
 
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
     bcore_btree_node_vd_s_check_consistency( t->root );
-    bcore_string_s_push_string_d( log, bcore_btree_vd_s_status( t ) );
+    st_s_push_st_d( log, bcore_btree_vd_s_status( t ) );
 
     time = clock();
-    bcore_string_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
+    st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
     sz_t read_cycles = 20;
     for( sz_t j = 0; j < read_cycles; j++ )
     {
@@ -3103,10 +3103,10 @@ static bcore_string_s* btree_vd_s_selftest( void )
         }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
+    st_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
 
     time = clock();
-    bcore_string_s_pushf( log, "largest_below_equal - test: ", kvbuf_size );
+    st_s_pushf( log, "largest_below_equal - test: ", kvbuf_size );
     if( bcore_btree_vd_s_largest_below_equal( t, (bcore_btree_vd_key_t)1 ) != 0 ) ERR( "largest_below_equal( 1 ) failed" );
     for( sz_t j = 0; j < 10; j++ )
     {
@@ -3119,11 +3119,11 @@ static bcore_string_s* btree_vd_s_selftest( void )
         }
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3gs per test)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * 10 ) );
+    st_s_pushf( log, "(%5.3gs per test)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * 10 ) );
 
 
-    bcore_string_s_pushf( log, "\n" );
-    bcore_string_s_pushf( log, "Removal: " );
+    st_s_pushf( log, "\n" );
+    st_s_pushf( log, "Removal: " );
     time = clock();
     while( kvbuf_size )
     {
@@ -3134,16 +3134,16 @@ static bcore_string_s* btree_vd_s_selftest( void )
         if( bcore_btree_vd_s_exists( t, kv.key ) ) ERR( "deleted key still exists (%lu)", kv.key );
     }
     time = clock() - time;
-    bcore_string_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
     if( t->root ) ERR( "root still exists" );
 
-    bcore_string_s_push_string_d( log, bcore_btree_vd_s_status( t ) );
+    st_s_push_st_d( log, bcore_btree_vd_s_status( t ) );
 
     bcore_btree_vd_s_discard( t );
     bcore_alloc( kvbuf, 0 );
-    bcore_string_s_push_char_n( log, '=', 120 );
-    bcore_string_s_push_char( log, '\n' );
+    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char( log, '\n' );
     return log;
 }
 
@@ -3155,10 +3155,10 @@ vd_t bcore_btree_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( btree_ip_s_selftest() );
-        bcore_string_s_print_d( btree_ps_s_selftest() );
-        bcore_string_s_print_d( btree_pp_s_selftest() );
-        bcore_string_s_print_d( btree_vd_s_selftest() );
+        st_s_print_d( btree_ip_s_selftest() );
+        st_s_print_d( btree_ps_s_selftest() );
+        st_s_print_d( btree_pp_s_selftest() );
+        st_s_print_d( btree_vd_s_selftest() );
     }
 
     return NULL;

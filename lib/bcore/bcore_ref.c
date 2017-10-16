@@ -41,8 +41,8 @@ sr_s sr_bl( bl_t v ) { sr_s r = sr_create( TYPEOF_bl_t ); *( bl_t * )r.o = v; re
 
 sr_s sr_string_sc( sc_t v )
 {
-    sr_s r = sr_create( TYPEOF_bcore_string_s );
-    bcore_string_s_copy_sc( r.o, v );
+    sr_s r = sr_create( TYPEOF_st_s );
+    st_s_copy_sc( r.o, v );
     return r;
 }
 

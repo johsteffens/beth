@@ -85,7 +85,7 @@ void bcore_sink_buffer_s_set_consumer( bcore_sink_buffer_s* o, vd_t consumer );
 typedef struct bcore_sink_file_s
 {
     aware_t _;
-    bcore_string_s* name;
+    st_s* name;
     vd_t handle;
 } bcore_sink_file_s;
 

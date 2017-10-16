@@ -1672,7 +1672,7 @@ static bcore_flect_self_s* inst_op_create_self( void )
 
 /**********************************************************************************************************************/
 
-static bcore_string_s* spect_inst_selftest( void )
+static st_s* spect_inst_selftest( void )
 {
     typedef struct { aware_t _; bcore_typed_link_array_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
 
@@ -1692,11 +1692,11 @@ static bcore_string_s* spect_inst_selftest( void )
     o1->val2 = 1000000000001;
     o1->val3 = -5;
 
-    o1->string_arr.type = typeof( "bcore_string_s" );
+    o1->string_arr.type = typeof( "st_s" );
     o1->string_arr.space = 20;
     o1->string_arr.data = bcore_u_alloc( sizeof( vd_t ), NULL, o1->string_arr.space, &o1->string_arr.space );
     o1->string_arr.size = 10;
-    for( sz_t i = 0; i < o1->string_arr.size; i++ ) o1->string_arr.data[ i ] = bcore_string_s_createf( "String number %04i", i );
+    for( sz_t i = 0; i < o1->string_arr.size; i++ ) o1->string_arr.data[ i ] = st_s_createf( "String number %04i", i );
     test_object2_s* o2 = bcore_inst_typed_create( typeof( "test_object2_s" ) );
     o2->o1 = bcore_inst_aware_clone( o1 );
 
@@ -1708,9 +1708,9 @@ static bcore_string_s* spect_inst_selftest( void )
     ASSERT( o3->o1->val3 == -5 );
     for( sz_t i = 0; i < o3->o1->string_arr.size; i++ )
     {
-        bcore_string_s* s = bcore_string_s_createf( "String number %04i", i );
-        ASSERT( bcore_strcmp( ( ( bcore_string_s* )o3->o1->string_arr.data[ i ] )->sc, s->sc ) == 0 );
-        bcore_string_s_discard( s );
+        st_s* s = st_s_createf( "String number %04i", i );
+        ASSERT( bcore_strcmp( ( ( st_s* )o3->o1->string_arr.data[ i ] )->sc, s->sc ) == 0 );
+        st_s_discard( s );
     }
 
     bcore_inst_aware_discard( o1 );
@@ -1735,7 +1735,7 @@ vd_t bcore_spect_inst_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        bcore_string_s_print_d( spect_inst_selftest() );
+        st_s_print_d( spect_inst_selftest() );
     }
 
     return NULL;

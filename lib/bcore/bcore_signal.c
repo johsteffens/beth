@@ -25,7 +25,6 @@
 #include "bcore_spect_source.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_via.h"
-#include "bcore_string.h"
 #include "bcore_st.h"
 #include "bcore_threads.h"
 #include "bcore_trait.h"
@@ -44,7 +43,6 @@ vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
         bcore_flect_signal,
         bcore_spect_signal,
         bcore_trait_signal,
-        bcore_string_signal,
         bcore_st_signal,
 
         /// other items

@@ -1,7 +1,7 @@
 /// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
 #include "bcore_quicktypes.h"
-#include "bcore_string.h"
+#include "bcore_st.h"
 #include "bcore_spect_inst.h"
 #include "bcore_spect_array.h"
 
@@ -10,21 +10,21 @@
 typedef tp_t (*hf)( sc_t );
 
 
-static bcore_string_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
+static st_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
 {
-    sc_t name = ( ( bcore_string_s* )string.o )->sc;
-    bcore_string_s* s = bcore_string_s_createf( "#define TYPEOF_%s", name );
+    sc_t name = ( ( st_s* )string.o )->sc;
+    st_s* s = st_s_createf( "#define TYPEOF_%s", name );
     sz_t pad = s->size < align ? align - s->size : 1;
-    bcore_string_s_push_char_n( s, ' ', pad );
-    bcore_string_s_pushf( s, "% 10"PRIu32, hash( name ) );
-    bcore_string_s_push_char( s, '\n' );
+    st_s_push_char_n( s, ' ', pad );
+    st_s_pushf( s, "% 10"PRIu32, hash( name ) );
+    st_s_push_char( s, '\n' );
     sr_down( string );
     return s;
 }
 
 static sr_s leaf_typelist()
 {
-    sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ bcore_string_s * [] arr; }" ) );
+    sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ st_s * [] arr; }" ) );
     bcore_array_q_push_sc( &list, "s3_t" );
     bcore_array_q_push_sc( &list, "s2_t" );
     bcore_array_q_push_sc( &list, "s1_t" );
@@ -51,7 +51,7 @@ static sr_s leaf_typelist()
 
 static sr_s object_typelist()
 {
-    sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ bcore_string_s * [] arr; }" ) );
+    sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ st_s * [] arr; }" ) );
     bcore_array_q_push_sc( &list, "bcore_flect_self_s"    );
     bcore_array_q_push_sc( &list, "bcore_inst_s"          );
     bcore_array_q_push_sc( &list, "bcore_array_s"         );
@@ -61,7 +61,7 @@ static sr_s object_typelist()
     bcore_array_q_push_sc( &list, "bcore_compare_s"       );
     bcore_array_q_push_sc( &list, "bcore_interpreter_s"   );
     bcore_array_q_push_sc( &list, "bcore_translator_s"    );
-    bcore_array_q_push_sc( &list, "bcore_string_s"        );
+    bcore_array_q_push_sc( &list, "st_s"        );
     bcore_array_q_push_sc( &list, "bcore_source_string_s" );
     bcore_array_q_push_sc( &list, "bcore_source_buffer_s" );
     bcore_array_q_push_sc( &list, "bcore_source_file_s"   );
@@ -90,7 +90,7 @@ static sz_t max_len( const sr_s* list )
     sz_t len = 0;
     for( sz_t i = 0; i < bcore_array_q_get_size( list ); i++ )
     {
-        sz_t size = ( ( bcore_string_s* )bcore_array_q_get( list, i ).o )->size;
+        sz_t size = ( ( st_s* )bcore_array_q_get( list, i ).o )->size;
         len = size > len ? size : len;
     }
     return len;
@@ -101,11 +101,11 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
     hf hash_l = ( hash ) ? hash : typeof;
     sr_s list = leaf_typelist();
     bcore_msg( "// leaf types\n" );
-    for( sz_t i = 0; i < bcore_array_q_get_size( &list ); i++ ) bcore_string_s_print_d( get_def_quicktype( hash_l, bcore_array_q_get( &list, i ), 16 + max_len( &list ) ) );
+    for( sz_t i = 0; i < bcore_array_q_get_size( &list ); i++ ) st_s_print_d( get_def_quicktype( hash_l, bcore_array_q_get( &list, i ), 16 + max_len( &list ) ) );
     sr_down( list );
     list = object_typelist();
     bcore_msg( "\n// other types\n" );
-    for( sz_t i = 0; i < bcore_array_q_get_size( &list ); i++ ) bcore_string_s_print_d( get_def_quicktype( hash_l, bcore_array_q_get( &list, i ), 16 + max_len( &list ) ) );
+    for( sz_t i = 0; i < bcore_array_q_get_size( &list ); i++ ) st_s_print_d( get_def_quicktype( hash_l, bcore_array_q_get( &list, i ), 16 + max_len( &list ) ) );
     sr_down( list );
 }
 

@@ -6,7 +6,7 @@
 /// Objects supporting source perspective
 
 #include "bcore_spect_source.h"
-#include "bcore_string.h"
+#include "bcore_st.h"
 #include "bcore_flect.h"
 
 /**********************************************************************************************************************/
@@ -92,7 +92,7 @@ void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier
 typedef struct bcore_source_string_s
 {
     aware_t _;
-    bcore_string_s* string;
+    st_s* string;
     sz_t index;
     vd_t ext_supplier;       // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_string_s)
     sz_t preceding_lines;    // line counter (only for lines processed and removed from string)
@@ -107,8 +107,8 @@ bcore_source_string_s* bcore_source_string_s_create();
 void                   bcore_source_string_s_discard(       bcore_source_string_s* o );
 bcore_source_string_s* bcore_source_string_s_clone(   const bcore_source_string_s* o );
 
-bcore_source_string_s* bcore_source_string_s_create_from_string( const bcore_string_s* string );
-bcore_source_string_s* bcore_source_string_s_create_from_string_d(     bcore_string_s* string );
+bcore_source_string_s* bcore_source_string_s_create_from_string( const st_s* string );
+bcore_source_string_s* bcore_source_string_s_create_from_string_d(     st_s* string );
 bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc );
 sz_t                   bcore_source_string_s_get_data(      bcore_source_string_s* o, vd_t data, sz_t size );
 
@@ -125,7 +125,7 @@ void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier
 typedef struct bcore_source_file_s
 {
     aware_t _;
-    bcore_string_s* name;
+    st_s* name;
     vd_t handle;
 } bcore_source_file_s;
 

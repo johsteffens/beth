@@ -8,7 +8,7 @@
 #define BCORE_TBMAN_H
 
 #include "bcore_types.h"
-#include "bcore_string.h"
+#include "bcore_st.h"
 
 typedef void (*fp_down_obj)(           vd_t obj );
 typedef void (*fp_down_arg)( vc_t arg, vd_t obj );
