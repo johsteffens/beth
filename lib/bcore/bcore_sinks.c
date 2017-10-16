@@ -203,7 +203,7 @@ static bcore_flect_self_s* buffer_s_create_self( void )
     "{ "
       "aware_t _; "
       "u0_t [] data; "
-      "vd_t consumer; "
+      "private vd_t consumer; "
       "sz_t entrepot_size; "
     "}";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_sink_buffer_s ) );

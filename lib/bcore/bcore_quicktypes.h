@@ -41,6 +41,7 @@ bl_t bcore_type_is_leaf( tp_t type );
 
 // other types
 #define TYPEOF_bcore_arr_sz_s             1469651844
+#define TYPEOF_bcore_arr_st_s             typeof( "bcore_arr_st_s" )
 #define TYPEOF_bcore_array_s              3532252466
 #define TYPEOF_bcore_bin_ml_interpreter_s 3834633675
 #define TYPEOF_bcore_bin_ml_translator_s  1158670837

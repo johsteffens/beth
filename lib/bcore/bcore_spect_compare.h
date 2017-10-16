@@ -25,7 +25,7 @@ typedef struct bcore_compare_s
     tp_t    o_type;  // type of object
     const bcore_via_s* via;
     fp_t fp_compare; // bcore_fp_compare or ap_t
-    s2_t ( *compare )( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
+    s2_t ( *compare )( const bcore_compare_s* p, vc_t obj1, vc_t obj2 ); // internal compare function
 } bcore_compare_s;
 
 const bcore_compare_s* bcore_compare_s_get_typed( tp_t type );

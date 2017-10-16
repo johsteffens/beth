@@ -259,8 +259,7 @@ void st_s_set_min_space( st_s* o, sz_t min_space )
 void st_s_discard( st_s* o )
 {
     if( !o ) return;
-    st_s_down( o );
-    bcore_bn_alloc( o, sizeof( *o ), 0, NULL );
+    bcore_release_obj( st_s_down, o );
 }
 
 st_s* st_s_clone( const st_s* o )
@@ -354,7 +353,7 @@ void st_s_pop_n( st_s* o, sz_t n )
     o->data[ o->size ] = 0;
 }
 
-st_s* st_s_push_string( st_s* o, const st_s* src )
+st_s* st_s_push_st( st_s* o, const st_s* src )
 {
     if( o->size == 0 )
     {
@@ -372,9 +371,9 @@ st_s* st_s_push_string( st_s* o, const st_s* src )
     return o;
 }
 
-st_s* st_s_push_string_d( st_s* o, st_s* src )
+st_s* st_s_push_st_d( st_s* o, st_s* src )
 {
-    st_s_push_string( o, src );
+    st_s_push_st( o, src );
     st_s_discard( src );
     return o;
 }
@@ -402,7 +401,7 @@ st_s* st_s_push_typed( st_s* o, tp_t type, vc_t src )
 {
     st_s* s = st_s_create();
     st_s_copy_typed( s, type, src );
-    return st_s_push_string_d( o, s );
+    return st_s_push_st_d( o, s );
 }
 
 st_s* st_s_pushf( st_s* o, sc_t format, ... )
@@ -412,7 +411,7 @@ st_s* st_s_pushf( st_s* o, sc_t format, ... )
     st_s s;
     st_s_initvf( &s, format, args );
     va_end( args );
-    st_s_push_string( o, &s );
+    st_s_push_st( o, &s );
     st_s_down( &s );
     return o;
 }
@@ -547,9 +546,9 @@ sz_t st_s_count_sc( const st_s* o, sz_t start, sz_t end, sc_t sc )
     return count;
 }
 
-sz_t st_s_count_string( const st_s* o, sz_t start, sz_t end, const st_s* string )
+sz_t st_s_count_st( const st_s* o, sz_t start, sz_t end, const st_s* st )
 {
-    return st_s_count_sc( o, start, end, string->sc );
+    return st_s_count_sc( o, start, end, st->sc );
 }
 
 st_s* st_s_insert_char( st_s* o, sz_t start, char c )
@@ -572,12 +571,12 @@ st_s* st_s_insert_char( st_s* o, sz_t start, char c )
     return o;
 }
 
-st_s* st_s_insert_string( st_s* o, sz_t start, const st_s* string )
+st_s* st_s_insert_st( st_s* o, sz_t start, const st_s* string )
 {
     if( o == string )
     {
         st_s* string_l = st_s_clone( string );
-        st_s_insert_string( o, start, string_l );
+        st_s_insert_st( o, start, string_l );
         st_s_discard( string_l );
         return o;
     }
@@ -599,9 +598,9 @@ st_s* st_s_insert_string( st_s* o, sz_t start, const st_s* string )
     return o;
 }
 
-st_s* st_s_insert_string_d( st_s* o, sz_t start, st_s* string )
+st_s* st_s_insert_st_d( st_s* o, sz_t start, st_s* string )
 {
-    st_s_insert_string( o, start, string );
+    st_s_insert_st( o, start, string );
     st_s_discard( string );
     return o;
 }
@@ -643,12 +642,12 @@ st_s* st_s_replace_char_sc( st_s* o, char c, sc_t sc )
     return o;
 }
 
-st_s* st_s_replace_char_string( st_s* o, char c, const st_s* string )
+st_s* st_s_replace_char_st( st_s* o, char c, const st_s* string )
 {
     return st_s_replace_char_sc( o, c, string->sc );
 }
 
-st_s* st_s_replace_char_string_d( st_s* o, char c, st_s* string )
+st_s* st_s_replace_char_st_d( st_s* o, char c, st_s* string )
 {
     st_s_replace_char_sc( o, c, string->sc );
     st_s_discard( string );
@@ -670,14 +669,14 @@ st_s* st_s_replace_sc_sc( st_s* o, sc_t match, sc_t replace )
     return o;
 }
 
-st_s* st_s_replace_string_string( st_s* o, const st_s* match, const st_s* replace )
+st_s* st_s_replace_st_st( st_s* o, const st_s* match, const st_s* replace )
 {
     return st_s_replace_sc_sc( o, match->sc, replace->sc );
 }
 
-st_s* st_s_replace_string_d_string_d( st_s* o, st_s* match, st_s* replace )
+st_s* st_s_replace_st_d_st_d( st_s* o, st_s* match, st_s* replace )
 {
-    st_s_replace_string_string( o, match, replace );
+    st_s_replace_st_st( o, match, replace );
     st_s_discard( match );
     st_s_discard( replace );
     return o;
@@ -749,7 +748,7 @@ st_s* st_s_show_line_context( const st_s* o, sz_t pos )
     sz_t start = st_s_posofline( o, pos );
     sz_t end = st_s_find_char( o, pos, o->size, '\n' );
     st_s* s = st_s_create();
-    st_s_push_string_d( s, st_s_crop( o, start, end ) );
+    st_s_push_st_d( s, st_s_crop( o, start, end ) );
     st_s_push_char( s, '\n' );
     st_s_push_char_n( s, ' ', pos - start );
     st_s_push_char(   s, '^' );

@@ -259,8 +259,7 @@ void bcore_string_s_set_min_space( bcore_string_s* o, sz_t min_space )
 void bcore_string_s_discard( bcore_string_s* o )
 {
     if( !o ) return;
-    bcore_string_s_down( o );
-    bcore_bn_alloc( o, sizeof( *o ), 0, NULL );
+    bcore_release_obj( bcore_string_s_down, o );
 }
 
 bcore_string_s* bcore_string_s_clone( const bcore_string_s* o )

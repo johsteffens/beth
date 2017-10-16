@@ -296,7 +296,7 @@ static bcore_flect_self_s* buffer_s_create_self( void )
       "aware_t _; "
       "u0_t [] data; "
       "sz_t index; "
-      "aware* supplier; "
+      "private vd_t supplier; "
       "sz_t prefetch_size; "
     "}";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_buffer_s ) );
@@ -459,7 +459,7 @@ static bcore_flect_self_s* string_s_create_self( void )
       "aware_t _; "
       "bcore_string_s* string; "
       "sz_t index; "
-      "aware* supplier; "
+      "private vd_t supplier; "
       "sz_t preceding_lines; "
       "sz_t refill_limit;    "
       "sz_t prefetch_size;   "

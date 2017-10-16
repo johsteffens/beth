@@ -36,6 +36,66 @@ static void compare_s_discard( bcore_compare_s* o )
 
 /**********************************************************************************************************************/
 
+static s2_t compare_s3_t( const bcore_compare_s* p, const s3_t* o1, const s3_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_s2_t( const bcore_compare_s* p, const s2_t* o1, const s2_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_s1_t( const bcore_compare_s* p, const s1_t* o1, const s1_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_s0_t( const bcore_compare_s* p, const s0_t* o1, const s0_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_u3_t( const bcore_compare_s* p, const u3_t* o1, const u3_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_u2_t( const bcore_compare_s* p, const u2_t* o1, const u2_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_u1_t( const bcore_compare_s* p, const u1_t* o1, const u1_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_u0_t( const bcore_compare_s* p, const u0_t* o1, const u0_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_f3_t( const bcore_compare_s* p, const f3_t* o1, const f3_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_f2_t( const bcore_compare_s* p, const f2_t* o1, const f2_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_sz_t( const bcore_compare_s* p, const sz_t* o1, const sz_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_tp_t( const bcore_compare_s* p, const tp_t* o1, const tp_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
 static s2_t compare_o( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
     return ( ( bcore_fp_compare )p->fp_compare )( obj1, obj2 );
@@ -166,6 +226,7 @@ static void compare_s_define_trait()
     bcore_trait_set( entypeof( "bcore_compare_s" ), entypeof( "bcore_inst_s" ) );
 }
 
+
 static bcore_compare_s* create_from_self( const bcore_flect_self_s* self )
 {
     assert( self != NULL );
@@ -177,7 +238,29 @@ static bcore_compare_s* create_from_self( const bcore_flect_self_s* self )
     fp_t cmp_o = ( cmp_a ) ? cmp_a : bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_compare" ), 0 );
 
     o->fp_compare = cmp_o;
-    o->compare    = cmp_a ? compare_amoebic : ( cmp_o ? compare_o : compare_generic );
+
+    typedef s2_t (*fp_icmp)( const bcore_compare_s*, vc_t, vc_t );
+
+    switch( o->o_type )
+    {
+        case TYPEOF_s3_t: o->compare = ( fp_icmp )compare_s3_t; break;
+        case TYPEOF_s2_t: o->compare = ( fp_icmp )compare_s2_t; break;
+        case TYPEOF_s1_t: o->compare = ( fp_icmp )compare_s1_t; break;
+        case TYPEOF_s0_t: o->compare = ( fp_icmp )compare_s0_t; break;
+        case TYPEOF_u3_t: o->compare = ( fp_icmp )compare_u3_t; break;
+        case TYPEOF_u2_t: o->compare = ( fp_icmp )compare_u2_t; break;
+        case TYPEOF_u1_t: o->compare = ( fp_icmp )compare_u1_t; break;
+        case TYPEOF_u0_t: o->compare = ( fp_icmp )compare_u0_t; break;
+        case TYPEOF_f3_t: o->compare = ( fp_icmp )compare_f3_t; break;
+        case TYPEOF_f2_t: o->compare = ( fp_icmp )compare_f2_t; break;
+        case TYPEOF_sz_t: o->compare = ( fp_icmp )compare_sz_t; break;
+        case TYPEOF_tp_t: o->compare = ( fp_icmp )compare_tp_t; break;
+        default:
+        {
+            o->compare = cmp_a ? compare_amoebic : ( cmp_o ? compare_o : compare_generic );
+        }
+        break;
+    }
 
     return o;
 }

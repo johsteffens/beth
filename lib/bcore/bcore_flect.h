@@ -52,13 +52,9 @@ PLANNING:
 * Name management: Ensure all names in a structure have unique names (already at definition level).
   --> should multiple unnamed (special purpose) members be allowed ? (aware_t, parent-pointer, ... ?)
 
-* Use hashtable for (extended) name management.
+* Use hashtable for (extended) name management, or
+* think about a simpler (faster) mapping function in case there are only few items to be considered
 
-* Use type qualifiers (possibly flags). Qualifier may be of a general nature (e.g. 'private')
-  or more specific (e.g. private for instance and interpreter perspectives), flags <-> features.
-  -> truly universal flag managements probably requires handling an arbitrary amount of
-     different flags in arbitrary combinations.
-  -> signature framework probably suitable
 */
 
 /// conversion between enum and string
@@ -85,8 +81,17 @@ typedef struct bcore_flect_item_s
         tp_t flags; // collection of attribute flags
         struct
         {
-            unsigned f_private  : 1; // private flag
+            // invisible to all perspectives (inst spect may only initialize the field)
+            unsigned f_private  : 1;
+
+            // interpreted type (no physical representation)
+            // invisible to inst spect
+            // used by via spect
             unsigned f_shell    : 1; // shell flag
+
+            // visible to inst spect
+            // hidden from via spect
+            unsigned f_hidden   : 1; // hidden flag
         };
     };
 

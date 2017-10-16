@@ -77,8 +77,8 @@ st_s* st_s_push_char(     st_s* o, char c );
 st_s* st_s_push_char_n(   st_s* o, char c, sz_t n ); // pushes c n times
 char  st_s_pop_char(      st_s* o );                 // removes last character and returns it
 void  st_s_pop_n(         st_s* o,         sz_t n ); // removes n last characters
-st_s* st_s_push_string(   st_s* o, const st_s* src );
-st_s* st_s_push_string_d( st_s* o, st_s* src ); // discards src
+st_s* st_s_push_st(       st_s* o, const st_s* src );
+st_s* st_s_push_st_d(     st_s* o, st_s* src ); // discards src
 st_s* st_s_push_sc(       st_s* o, sc_t sc );
 st_s* st_s_push_typed(    st_s* o, tp_t type, vc_t src ); // push with type conversion
 st_s* st_s_pushf(         st_s* o, sc_t format, ... );
@@ -104,28 +104,28 @@ sz_t st_s_find_any_sc(  const st_s* o, sz_t start, sz_t end, sc_t sc ); // any c
 sz_t st_s_find_none_sc( const st_s* o, sz_t start, sz_t end, sc_t sc ); // any character not in sc
 
 /// Counting (expects start >= end)
-sz_t st_s_count_char(   const st_s* o, sz_t start, sz_t end, char c );
-sz_t st_s_count_sc(     const st_s* o, sz_t start, sz_t end, sc_t sc );
-sz_t st_s_count_string( const st_s* o, sz_t start, sz_t end, const st_s* string );
+sz_t st_s_count_char( const st_s* o, sz_t start, sz_t end, char c );
+sz_t st_s_count_sc(   const st_s* o, sz_t start, sz_t end, sc_t sc );
+sz_t st_s_count_st(   const st_s* o, sz_t start, sz_t end, const st_s* st );
 
 /// Inserts at position <start>
-st_s* st_s_insert_char(     st_s* o, sz_t start, char c );
-st_s* st_s_insert_sc(       st_s* o, sz_t start, sc_t sc );
-st_s* st_s_insert_string(   st_s* o, sz_t start, const st_s* string );
-st_s* st_s_insert_string_d( st_s* o, sz_t start, st_s* string ); // discards string
+st_s* st_s_insert_char( st_s* o, sz_t start, char c );
+st_s* st_s_insert_sc(   st_s* o, sz_t start, sc_t sc );
+st_s* st_s_insert_st(   st_s* o, sz_t start, const st_s* st );
+st_s* st_s_insert_st_d( st_s* o, sz_t start, st_s* st ); // discards string
 
 /// Removes from position start: <size> characters. If not enough characters left, the entire tail is removed. Returns o.
 st_s* st_s_remove( st_s* o, sz_t start, sz_t size );
 
-/// Replaces all occurrences of <c> with <string>
-st_s* st_s_replace_char_sc(       st_s* o, char c, sc_t sc );
-st_s* st_s_replace_char_string(   st_s* o, char c, const st_s* string );
-st_s* st_s_replace_char_string_d( st_s* o, char c, st_s* string );
+/// Replaces all occurrences of <c> with <st>
+st_s* st_s_replace_char_sc(   st_s* o, char c, sc_t sc );
+st_s* st_s_replace_char_st(   st_s* o, char c, const st_s* st );
+st_s* st_s_replace_char_st_d( st_s* o, char c, st_s* st );
 
 /// Replaces all occurrences of <match> with <replace>
-st_s* st_s_replace_sc_sc(             st_s* o, sc_t match, sc_t replace );
-st_s* st_s_replace_string_string(     st_s* o, const st_s* match, const st_s* replace );
-st_s* st_s_replace_string_d_string_d( st_s* o, st_s* match, st_s* replace ); // discards input strings
+st_s* st_s_replace_sc_sc(     st_s* o, sc_t match, sc_t replace );
+st_s* st_s_replace_st_st(     st_s* o, const st_s* match, const st_s* replace );
+st_s* st_s_replace_st_d_st_d( st_s* o, st_s* match, st_s* replace ); // discards input strings
 
 /// Text navigation
 sz_t st_s_lineof(    const st_s* o, sz_t pos );            // line number of character position in text (line counting starts with '1')

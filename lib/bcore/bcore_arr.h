@@ -5,8 +5,11 @@
 
 #include "bcore_flect.h"
 #include "bcore_features.h"
+#include "bcore_st.h"
 
-/** Collection of frequently used specific arrays compatible with bcore_array_s */
+/** Collection of frequently used specific arrays compatible with bcore_array_s
+ *  Standard functions are directly implemented.
+ */
 
 /**********************************************************************************************************************/
 
@@ -41,6 +44,38 @@ void bcore_arr_sz_s_sort(      bcore_arr_sz_s* o, s2_t order ); // stable
 void bcore_arr_sz_s_reorder(   bcore_arr_sz_s* o, const bcore_arr_sz_s* order );
 
 bcore_arr_sz_s* bcore_arr_sz_s_create_random_permutation( u2_t ( *rg )( u2_t ), u2_t seed, sz_t size );
+
+/**********************************************************************************************************************/
+
+typedef struct bcore_arr_st_s
+{
+    aware_t _;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            st_s** data;
+            sz_t size, space;
+        };
+    };
+} bcore_arr_st_s;
+
+DECLARE_FUNCTION_INIT(    bcore_arr_st_s )
+DECLARE_FUNCTION_DOWN(    bcore_arr_st_s )
+DECLARE_FUNCTION_COPY(    bcore_arr_st_s )
+DECLARE_FUNCTION_CREATE(  bcore_arr_st_s )
+DECLARE_FUNCTION_DISCARD( bcore_arr_st_s )
+DECLARE_FUNCTION_CLONE(   bcore_arr_st_s )
+
+void bcore_arr_st_s_clear(     bcore_arr_st_s* o ); // sets size to zero
+void bcore_arr_st_s_set_space( bcore_arr_st_s* o, sz_t space );
+void bcore_arr_st_s_push_st(   bcore_arr_st_s* o, const st_s* st );
+void bcore_arr_st_s_push_st_d( bcore_arr_st_s* o, st_s* st );
+void bcore_arr_st_s_push_sc(   bcore_arr_st_s* o, sc_t sc );
+void bcore_arr_st_s_pop(       bcore_arr_st_s* o );
+void bcore_arr_st_s_sort(      bcore_arr_st_s* o, s2_t order ); // stable
+void bcore_arr_st_s_reorder(   bcore_arr_st_s* o, const bcore_arr_sz_s* order );
 
 /**********************************************************************************************************************/
 

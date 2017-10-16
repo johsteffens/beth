@@ -1357,25 +1357,44 @@ void bcore_array_spect_reorder( const bcore_array_s* p, vd_t o, const bcore_arr_
         // nested elements are always mono-typed
         tp_t mono_type = bcore_array_spect_get_mono_type( p, o );
         const bcore_inst_s* inst = bcore_inst_s_get_typed( mono_type );
-        sz_t buf_space = 0;
-        vd_t buf = bcore_u_alloc( inst->size, NULL, order->size, &buf_space );
-        vd_t data = bcore_array_spect_get_d_data( p, o );
-        for( sz_t i = 0; i < order->size; i++ )
+        if( inst->init_flat && inst->copy_flat && inst->down_flat ) // all flat
         {
-            assert( order->data[ i ] < arr_size );
-            vd_t dst = ( u0_t* )buf  + i * inst->size;
-            vc_t src = ( u0_t* )data + order->data[ i ] * inst->size;
-            bcore_inst_spect_init( inst, dst );
-            bcore_inst_spect_copy( inst, dst, src );
+            sz_t buf_space = 0;
+            vd_t buf = bcore_u_alloc( inst->size, NULL, order->size, &buf_space );
+            vd_t data = bcore_array_spect_get_d_data( p, o );
+            vd_t dst = buf;
+            for( sz_t i = 0; i < order->size; i++ )
+            {
+                assert( order->data[ i ] < arr_size );
+                bcore_memcpy( dst, ( u0_t* )data + order->data[ i ] * inst->size, inst->size );
+                dst = ( u0_t* )dst + inst->size;
+            }
+            bcore_array_spect_set_size( p, o, order->size );
+            bcore_u_memcpy( inst->size, bcore_array_spect_get_d_data( p, o ), buf, order->size );
+            bcore_un_alloc( inst->size, buf, buf_space, 0, NULL );
         }
-        bcore_array_spect_set_size( p, o, 0 );
-        for( sz_t i = 0; i < order->size; i++ )
+        else
         {
-            vd_t src = ( u0_t* )buf + i * inst->size;
-            bcore_array_spect_push( p, o, sr_pwc( inst, src ) );
-            bcore_inst_spect_down( inst, src );
+            sz_t buf_space = 0;
+            vd_t buf = bcore_u_alloc( inst->size, NULL, order->size, &buf_space );
+            vd_t data = bcore_array_spect_get_d_data( p, o );
+            for( sz_t i = 0; i < order->size; i++ )
+            {
+                assert( order->data[ i ] < arr_size );
+                vd_t dst = ( u0_t* )buf  + i * inst->size;
+                vc_t src = ( u0_t* )data + order->data[ i ] * inst->size;
+                bcore_inst_spect_init( inst, dst );
+                bcore_inst_spect_copy( inst, dst, src );
+            }
+            bcore_array_spect_set_size( p, o, 0 );
+            for( sz_t i = 0; i < order->size; i++ )
+            {
+                vd_t src = ( u0_t* )buf + i * inst->size;
+                bcore_array_spect_push( p, o, sr_pwc( inst, src ) );
+                bcore_inst_spect_down( inst, src );
+            }
+            bcore_un_alloc( inst->size, buf, buf_space, 0, NULL );
         }
-        bcore_un_alloc( inst->size, buf, buf_space, 0, NULL );
     }
 }
 
