@@ -181,6 +181,14 @@ vd_t bcore_control_signal( tp_t target, tp_t signal, vd_t object );
 #define DECLARE_FUNCTION_DISCARD( name ) void name##_discard( name* o );
 #define DECLARE_FUNCTION_CLONE( name )  name* name##_clone( const name* o );
 
+#define DECLARE_STD_FUNCTIONS( name )\
+    void name##_init( name* o ); \
+    void name##_down( name* o ); \
+    void name##_copy( name* o, const name* src ); \
+    name* name##_create(); \
+    void name##_discard( name* o ); \
+    name* name##_clone( const name* o );
+
 #define DEFINE_FUNCTION_INIT_FLAT( name ) \
 void name##_init( name* o ) \
 { \
@@ -196,6 +204,19 @@ void name##_copy( name* o, const name* src ) \
     if( o == src ) return; \
     bcore_memcpy( o, src, sizeof( name ) ); \
 }
+
+#define DEFINE_IDC_FUNCTIONS_FLAT( name )\
+void name##_init( name* o ) \
+{ \
+    bcore_memzero( o, sizeof( name ) ); \
+}\
+void name##_down( name* o ) {} \
+void name##_copy( name* o, const name* src ) \
+{ \
+    if( o == src ) return; \
+    bcore_memcpy( o, src, sizeof( name ) ); \
+}\
+
 
 #define DEFINE_FUNCTION_MOVE( name ) \
 void name##_move( name* o, name* src ) \
@@ -222,6 +243,26 @@ void name##_discard( name* o ) \
 }
 
 #define DEFINE_FUNCTION_CLONE( name ) \
+name* name##_clone( const name* o ) \
+{ \
+    if( !o ) return NULL; \
+    name* o_l = name##_create(); \
+    name##_copy( o_l, o ); \
+    return o_l; \
+}
+
+#define DEFINE_CDC_FUNCTIONS( name )\
+name* name##_create() \
+{ \
+    name* o = bcore_alloc( NULL, sizeof( name ) ); \
+    name##_init( o ); \
+    return o; \
+} \
+void name##_discard( name* o ) \
+{ \
+    if( !o ) return; \
+    bcore_release_obj( name##_down, o );\
+} \
 name* name##_clone( const name* o ) \
 { \
     if( !o ) return NULL; \
