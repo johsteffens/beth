@@ -31,7 +31,7 @@ static bcore_compare_s* compare_s_create()
 static void compare_s_discard( bcore_compare_s* o )
 {
     if( !o ) return;
-    bcore_release_obj( compare_s_down, o );
+    bcore_release_obj( ( fp_t )compare_s_down, o );
 }
 
 /**********************************************************************************************************************/
@@ -165,7 +165,7 @@ static void compare_amoeba( compare_nc* nc ) { compare_generic( nc->p, nc->obj1,
 static s2_t compare_amoebic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
     compare_nc nc = { ( ap_t )compare_amoeba, p, obj1, obj2, 0 };
-    p->fp_compare( &nc );
+    ( ( ap_t )p->fp_compare )( &nc );
     return nc.ret;
 }
 

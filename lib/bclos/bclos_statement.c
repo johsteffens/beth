@@ -105,24 +105,24 @@ bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source )
     bclos_statement_s* s = bclos_statement_s_create();
 
     st_s* name = st_s_create_l( l );
-    bcore_source_q_parsef( &source, " #name", name );
+    bcore_source_q_parse_fa( &source, " #name", name );
     if( bcore_source_q_parse_boolf( &source, " #?'='" ) )
     {
         s->target = bcore_name_enroll( name->sc );
-        bcore_source_q_parsef( &source, " #name", name );
+        bcore_source_q_parse_fa( &source, " #name", name );
         if( bcore_source_q_parse_boolf( &source, " #?'('" ) )
         {
             s->operation = bcore_name_enroll( name->sc );
             while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
             {
-                if( s->args_size > 0 ) bcore_source_q_parsef( &source, " ," );
-                bcore_source_q_parsef( &source, " #name ", name );
+                if( s->args_size > 0 ) bcore_source_q_parse_fa( &source, " ," );
+                bcore_source_q_parse_fa( &source, " #name ", name );
                 bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
             }
         }
         else
         {
-            bcore_source_q_parsef( &source, " #name ", name );
+            bcore_source_q_parse_fa( &source, " #name ", name );
             bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
         }
     }
@@ -131,30 +131,30 @@ bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source )
         s->operation = bcore_name_enroll( name->sc );
         while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
         {
-            if( s->args_size > 0 ) bcore_source_q_parsef( &source, " ," );
-            bcore_source_q_parsef( &source, " #name ", name );
+            if( s->args_size > 0 ) bcore_source_q_parse_fa( &source, " ," );
+            bcore_source_q_parse_fa( &source, " #name ", name );
             bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
         }
     }
     else
     {
         s->define = bcore_name_enroll( name->sc );
-        bcore_source_q_parsef( &source, " #name =", name );
+        bcore_source_q_parse_fa( &source, " #name =", name );
         s->target = bcore_name_enroll( name->sc );
-        bcore_source_q_parsef( &source, " #name", name );
+        bcore_source_q_parse_fa( &source, " #name", name );
         if( bcore_source_q_parse_boolf( &source, " #?'('" ) )
         {
             s->operation = bcore_name_enroll( name->sc );
             while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
             {
-                if( s->args_size > 0 ) bcore_source_q_parsef( &source, " ," );
-                bcore_source_q_parsef( &source, " #name ", name );
+                if( s->args_size > 0 ) bcore_source_q_parse_fa( &source, " ," );
+                bcore_source_q_parse_fa( &source, " #name ", name );
                 bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
             }
         }
         else
         {
-            bcore_source_q_parsef( &source, " #name ", name );
+            bcore_source_q_parse_fa( &source, " #name ", name );
             bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
         }
     }

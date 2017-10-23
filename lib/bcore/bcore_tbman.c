@@ -33,6 +33,7 @@ static const bool   default_full_align      = true;
 
 typedef struct block_manager_s block_manager_s;
 typedef struct down_manager_s  down_manager_s;
+typedef void (*fp_lost_alignment)( vd_t );
 
 /**********************************************************************************************************************/
 // shutdown-management
@@ -67,7 +68,7 @@ static down_arg_s* down_arg_s_create( down_manager_s* o, fp_down_arg fp, vc_t ar
 typedef struct down_obj_arr_s
 {
     down_s _; // internal down function
-    fp_t fp;   // external down function
+    fp_down_obj fp;   // external down function
     sz_t size; // number of active array elements
     sz_t step; // stepping between array elements in bytes
 } down_obj_arr_s;
@@ -86,7 +87,7 @@ static down_obj_arr_s* down_obj_arr_s_create( down_manager_s* o, fp_down_obj fp,
 typedef struct down_arg_arr_s
 {
     down_s _; // internal down function
-    fp_t fp;   // external down function
+    fp_down_arg fp; // external down function
     vc_t arg;  // argument for external function
     sz_t size; // number of active array elements
     sz_t step; // stepping between array elements in bytes
@@ -567,7 +568,7 @@ typedef struct block_manager_s
     f3_t sweep_hysteresis; // if ( empty token-managers ) / ( used token-managers ) < sweep_hysteresis, empty token-managers are discarded
     bl_t aligned;          // all token managers are aligned to pool_size
     vd_t parent;           // parent
-    fp_t fp_lost_alignment; // callback for lost alignment
+    fp_lost_alignment lost_alignment_fp; // callback for lost alignment
     bcore_btree_vd_s* internal_btree;
     down_manager_s* down_manager;
     bcore_mutex_t* mutex;  // governing mutex
@@ -580,7 +581,7 @@ static void block_manager_s_init
         sz_t pool_size,
         sz_t block_size,
         bl_t align,
-        fp_t fp_lost_alignment,
+        fp_lost_alignment lost_alignment_fp,
         bcore_btree_vd_s* internal_btree,
         down_manager_s* down_manager,
         bcore_mutex_t* mutex
@@ -593,7 +594,7 @@ static void block_manager_s_init
     o->pool_size = pool_size;
     o->block_size = block_size;
     o->align = align;
-    o->fp_lost_alignment = fp_lost_alignment;
+    o->lost_alignment_fp = lost_alignment_fp;
     o->internal_btree = internal_btree;
     o->down_manager = down_manager;
     o->mutex = mutex;
@@ -616,7 +617,7 @@ static block_manager_s* block_manager_s_create
         sz_t pool_size,
         sz_t block_size,
         bl_t align,
-        fp_t fp_lost_alignment,
+        fp_lost_alignment lost_alignment_fp,
         bcore_btree_vd_s* internal_btree,
         down_manager_s* down_manager,
         bcore_mutex_t* mutex
@@ -624,7 +625,7 @@ static block_manager_s* block_manager_s_create
 {
     block_manager_s* o = malloc( sizeof( block_manager_s ) );
     if( !o ) ERR( "Failed allocating %zu bytes", sizeof( block_manager_s ) );
-    block_manager_s_init( o, parent, pool_size, block_size, align, fp_lost_alignment, internal_btree, down_manager, mutex );
+    block_manager_s_init( o, parent, pool_size, block_size, align, lost_alignment_fp, internal_btree, down_manager, mutex );
     return o;
 }
 
@@ -658,7 +659,7 @@ static void block_manager_s_acquire_token_manager( block_manager_s* o )
     if( o->aligned && !o->data[ o->size ]->aligned )
     {
         o->aligned = false;
-        if( o->fp_lost_alignment ) o->fp_lost_alignment( o->parent );
+        if( o->lost_alignment_fp ) o->lost_alignment_fp( o->parent );
     }
     if( bcore_btree_vd_s_set( o->internal_btree, o->data[ o->size ] ) != 1 ) ERR( "Failed registering block address." );
     o->size++;
@@ -859,7 +860,7 @@ static void external_manager_s_init
             pool_size,
             sizeof( ext_s ),
             full_align,
-            external_manager_s_lost_alignment,
+            ( fp_lost_alignment )external_manager_s_lost_alignment,
             o->tm_btree,
             NULL,
             mutex
@@ -979,7 +980,7 @@ static sz_t external_manager_s_total_references( const external_manager_s* o )
 
 typedef struct ext_for_instance_arg
 {
-    fp_t fp;
+    void (*fp)( vd_t arg, vd_t ptr, sz_t space );
     vd_t arg;
 } ext_for_instance_arg;
 
@@ -1149,7 +1150,7 @@ static void down_manager_s_init( down_manager_s* o, sz_t pool_size, bl_t full_al
         pool_size,
         sizeof( down_obj_s ),
         full_align,
-        down_manager_s_lost_alignment,
+        ( fp_lost_alignment )down_manager_s_lost_alignment,
         o->tm_btree,
         NULL,
         mutex
@@ -1162,7 +1163,7 @@ static void down_manager_s_init( down_manager_s* o, sz_t pool_size, bl_t full_al
         pool_size,
         sizeof( down_arg_s ),
         full_align,
-        down_manager_s_lost_alignment,
+        ( fp_lost_alignment )down_manager_s_lost_alignment,
         o->tm_btree,
         NULL,
         mutex
@@ -1175,7 +1176,7 @@ static void down_manager_s_init( down_manager_s* o, sz_t pool_size, bl_t full_al
         pool_size,
         sizeof( down_obj_arr_s ),
         full_align,
-        down_manager_s_lost_alignment,
+        ( fp_lost_alignment )down_manager_s_lost_alignment,
         o->tm_btree,
         NULL,
         mutex
@@ -1188,7 +1189,7 @@ static void down_manager_s_init( down_manager_s* o, sz_t pool_size, bl_t full_al
         pool_size,
         sizeof( down_arg_arr_s ),
         full_align,
-        down_manager_s_lost_alignment,
+        ( fp_lost_alignment )down_manager_s_lost_alignment,
         o->tm_btree,
         NULL,
         mutex
@@ -1351,7 +1352,7 @@ void bcore_tbman_s_init( bcore_tbman_s* o, sz_t pool_size, sz_t min_block_size, 
                 o->pool_size,
                 block_size,
                 full_align,
-                tbman_s_lost_alignment,
+                ( fp_lost_alignment )tbman_s_lost_alignment,
                 o->internal_btree,
                 &o->down_manager,
                 &o->mutex
@@ -2344,7 +2345,7 @@ static st_s* tbman_s_rctest( void )
     }
 
     obj_arr = bcore_tbman_fork( obj_arr );
-    bcore_tbman_release_arg_arr( ( fp_t )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj_arr, arr_size, sizeof( myclass ) );
+    bcore_tbman_release_arg_arr( ( fp_down_arg )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj_arr, arr_size, sizeof( myclass ) );
 
     vd_t* ref_arr1 = bcore_tbman_u_alloc( sizeof( vd_t ), NULL, arr_size, NULL );
     vd_t* ref_arr2 = bcore_tbman_u_alloc( sizeof( vd_t ), NULL, arr_size, NULL );
@@ -2373,8 +2374,8 @@ static st_s* tbman_s_rctest( void )
 
     st_s_pushf( obj2_name1, "Hi!" );
 
-    bcore_tbman_release_arg( ( fp_t )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj1 );
-    bcore_tbman_release_arg( ( fp_t )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj2 );
+    bcore_tbman_release_arg( ( fp_down_arg )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj1 );
+    bcore_tbman_release_arg( ( fp_down_arg )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj2 );
 
     bcore_tbman_release( obj2_name1 );
 

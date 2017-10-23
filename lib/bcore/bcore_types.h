@@ -32,8 +32,27 @@ typedef void*       vd_t; // dynamic void pointer
 typedef const void* vc_t; // const void pointer
 typedef void*       nd_t; // pointer to a nucleus (signature of an amoeba)
 
-typedef void (*fp_t)();   // general function pointer (also for functions with different signature)
-typedef void (*ap_t)( nd_t nc ); // amoebal function pointer
+//TODO: calling old stile functions may trigger unwanted parameter promotion
+//      check that this never happens; possibly change to typedef void (*fp_t)( void )
+//      and fix compiler warnings
+
+/** General function pointer (also for functions with different signature)
+ *  Function pointers need to be casted to the right signature before use.
+ *  We avoid a definition like void (*fp_t)() (old style arguments)
+ *  because old style calls can cause undesired/unexpected (platform specific) argument
+ *  propagation.
+ */
+typedef void (*fp_t)( void );
+
+//
+/** Amoebal function pointer.
+ *  The nucleus (nc) of the amoebic feature has a well defined structure composed in this order:
+    * function pointer
+    * perspective pointer
+    * the list of arguments of the non-amoebic feature
+    * return object/value (can be omitted when function returns void).
+ */
+typedef void (*ap_t)( nd_t nc );
 
 // types for special purposes
 typedef u2_t tp_t;    // object type identifier

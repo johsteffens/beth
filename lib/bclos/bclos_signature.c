@@ -57,7 +57,7 @@ bclos_signature_s* bclos_signature_s_parse_from_source( sr_s source )
     bclos_signature_s* s = bclos_signature_s_create();
 
     st_s* name = st_s_create_l( l );
-    bcore_source_q_parsef( &source, " #name", name );
+    bcore_source_q_parse_fa( &source, " #name", name );
     if( bcore_source_q_parse_boolf( &source, " #?'('" ) )
     {
         s->ret = 0;
@@ -66,18 +66,18 @@ bclos_signature_s* bclos_signature_s_parse_from_source( sr_s source )
     else
     {
         s->ret = bcore_name_enroll( name->sc );
-        bcore_source_q_parsef( &source, " #name (", name );
+        bcore_source_q_parse_fa( &source, " #name (", name );
         s->name = bcore_name_enroll( name->sc );
     }
 
     while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
     {
-        if( s->size > 0 ) bcore_source_q_parsef( &source, " ," );
+        if( s->size > 0 ) bcore_source_q_parse_fa( &source, " ," );
         bclos_signature_arg_s arg;
         arg.is_const = bcore_source_q_parse_boolf( &source, " #?'const'" );
-        bcore_source_q_parsef( &source, " #name ", name );
+        bcore_source_q_parse_fa( &source, " #name ", name );
         arg.type = bcore_name_enroll( name->sc );
-        bcore_source_q_parsef( &source, " #name ", name );
+        bcore_source_q_parse_fa( &source, " #name ", name );
         arg.name = bcore_name_enroll( name->sc );
         bclos_signature_s_push( s, arg );
     }

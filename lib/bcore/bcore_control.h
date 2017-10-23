@@ -239,7 +239,7 @@ name* name##_create() \
 void name##_discard( name* o ) \
 { \
     if( !o ) return; \
-    bcore_release_obj( name##_down, o );\
+    bcore_release_obj( (fp_t)name##_down, o );\
 }
 
 #define DEFINE_FUNCTION_CLONE( name ) \
@@ -261,7 +261,7 @@ name* name##_create() \
 void name##_discard( name* o ) \
 { \
     if( !o ) return; \
-    bcore_release_obj( name##_down, o );\
+    bcore_release_obj( (fp_t)name##_down, o );\
 } \
 name* name##_clone( const name* o ) \
 { \

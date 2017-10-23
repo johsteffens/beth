@@ -239,7 +239,7 @@ static void discard_hmap_s()
 {
     if( hmap_s_g )
     {
-        bcore_release_obj( hmap_s_down, hmap_s_g );
+        bcore_release_obj( ( fp_t )hmap_s_down, hmap_s_g );
         hmap_s_g = NULL;
     }
 }

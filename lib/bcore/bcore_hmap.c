@@ -587,7 +587,7 @@ static st_s* hmap_u2vd_s_status( bcore_hmap_u2vd_s* o )
 void bcore_hmap_u2vd_filltest()
 {
     bcore_life_s* life = bcore_life_s_create();
-    bcore_hmap_u2vd_s* map = bcore_life_s_push( life, bcore_hmap_u2vd_s_discard, bcore_hmap_u2vd_s_create() );
+    bcore_hmap_u2vd_s* map = bcore_life_s_push( life, ( bcore_fp_discard )bcore_hmap_u2vd_s_discard, bcore_hmap_u2vd_s_create() );
 
     sz_t cycles = 2;
     sz_t size = 65536 * 64;

@@ -30,7 +30,7 @@ static void hmap_s_node_down( vd_t obj, u2_t key, vd_t val )
 {
     if( val )
     {
-        bcore_fp_discard discard = bcore_flect_self_s_get_external_fp( bcore_flect_get_self( *( aware_t *)val ), typeof( "bcore_fp_discard" ), 0 );
+        bcore_fp_discard discard = ( bcore_fp_discard )bcore_flect_self_s_get_external_fp( bcore_flect_get_self( *( aware_t *)val ), typeof( "bcore_fp_discard" ), 0 );
         discard( val );
     }
 }
@@ -65,7 +65,7 @@ static void discard_hmap_s()
 {
     if( hmap_s_g )
     {
-        bcore_release_obj( hmap_s_down, hmap_s_g );
+        bcore_release_obj( ( fp_t )hmap_s_down, hmap_s_g );
         hmap_s_g = NULL;
     }
 }
@@ -182,7 +182,7 @@ st_s* bcore_spect_status()
         if( val ) ( *bcore_hmap_tpsz_s_fget( hist, *( aware_t* )val, 0 ) )++;
     }
 
-    sr_s nc_arr = sr_cl( bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ { sz_t count; tp_t type; } [] arr; }" ) ), l );
+    sr_s nc_arr = sr_cl( bcore_inst_typed_create_sr( bcore_flect_type_parse_fa( "{ { sz_t count; tp_t type; } [] arr; }" ) ), l );
 
     for( sz_t i = 0; i < hist->size; i++ )
     {

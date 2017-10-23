@@ -17,7 +17,7 @@
   * The last element provides the chain's data source functions.
   * All elements except the first one must accept a supplier.
   *
-  * The chain lazily supports bcore_source_fp_parsevf by pushing source_string
+  * The chain lazily supports bcore_source_fp_parse_fv by pushing source_string
   * if not already supported by the last element.
   */
 typedef struct bcore_source_chain_s
@@ -87,7 +87,7 @@ void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier
 
 /** String based data source supporting bcore_source_s perspective.
  *  Can be used as buffer in a source-chain or as initial data source.
- *  Implements feature bcore_source_fp_parsevf.
+ *  Implements feature bcore_source_fp_parse_fv.
  */
 typedef struct bcore_source_string_s
 {

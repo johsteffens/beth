@@ -98,22 +98,22 @@ void bcore_release( vd_t ptr )
 
 void bcore_release_obj( fp_t down, vd_t ptr )
 {
-    bcore_tbman_release_obj( down, ptr );
+    bcore_tbman_release_obj( ( fp_down_obj )down, ptr );
 }
 
 void bcore_release_arg( fp_t down, vc_t arg, vd_t ptr )
 {
-    bcore_tbman_release_arg( down, arg, ptr );
+    bcore_tbman_release_arg( ( fp_down_arg )down, arg, ptr );
 }
 
 void bcore_release_obj_arr( fp_t down, vd_t ptr, sz_t size, sz_t step )
 {
-    bcore_tbman_release_obj_arr( down, ptr, size, step );
+    bcore_tbman_release_obj_arr( ( fp_down_obj )down, ptr, size, step );
 }
 
 void bcore_release_arg_arr( fp_t down, vc_t arg, vd_t ptr, sz_t size, sz_t step )
 {
-    bcore_tbman_release_arg_arr( down, arg, ptr, size, step );
+    bcore_tbman_release_arg_arr( ( fp_down_arg )down, arg, ptr, size, step );
 }
 
 /**********************************************************************************************************************/

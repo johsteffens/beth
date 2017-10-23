@@ -23,7 +23,7 @@ static st_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
 
 sr_s typelist()
 {
-    sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parsef( "{ st_s * [] arr; }" ) );
+    sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parse_fa( "{ st_s * [] arr; }" ) );
     bcore_array_q_push_sc( &list, "bclos_environment_s"  );
     bcore_array_q_push_sc( &list, "bclos_proc_binding_s" );
     bcore_array_q_push_sc( &list, "bclos_arguments_s" );

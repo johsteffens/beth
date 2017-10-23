@@ -246,7 +246,7 @@ tp_t bcore_flect_define_self_d(       bcore_flect_self_s* self ); // takes over 
 tp_t bcore_flect_define_self_c( const bcore_flect_self_s* self ); // stores a copy of self
 tp_t bcore_flect_define_parse( const st_s* string, sz_t* idx );
 tp_t bcore_flect_define_parse_sc( sc_t sc );
-tp_t bcore_flect_define_parsef( sc_t sc, ... );
+tp_t bcore_flect_define_parse_fa( sc_t sc, ... );
 
 /** Type functions:
  *  Reentrant define-function with advanced collision testing.
@@ -260,7 +260,7 @@ tp_t bcore_flect_type_self_d(       bcore_flect_self_s* self ); // takes over co
 tp_t bcore_flect_type_self_c( const bcore_flect_self_s* self ); // stores a copy of self
 tp_t bcore_flect_type_parse(  const st_s* string, sz_t* idx );
 tp_t bcore_flect_type_parse_sc( sc_t sc );
-tp_t bcore_flect_type_parsef( sc_t format, ... );
+tp_t bcore_flect_type_parse_fa( sc_t format, ... );
 
 /** Defining reflection via creation function
  *  The function releases a newly created instance of self.

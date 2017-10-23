@@ -32,7 +32,7 @@ static bcore_interpreter_s* interpreter_s_create()
 static void interpreter_s_discard( bcore_interpreter_s* o )
 {
     if( !o ) return;
-    bcore_release_obj( interpreter_s_down, o );
+    bcore_release_obj( ( fp_t )interpreter_s_down, o );
 }
 
 /**********************************************************************************************************************/

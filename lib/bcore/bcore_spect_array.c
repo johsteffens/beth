@@ -33,7 +33,7 @@ static bcore_array_s* array_s_create()
 static void array_s_discard( bcore_array_s* o )
 {
     if( !o ) return;
-    bcore_release_obj( array_s_down, o );
+    bcore_release_obj( ( fp_t )array_s_down, o );
 }
 
 /**********************************************************************************************************************/
@@ -240,7 +240,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
                     instance_p->init( instance_p, dst );
                     instance_p->copy( instance_p, dst, src );
                 }
-                bcore_release_arg_arr( instance_p->down, instance_p, old_data, arr->size, unit_size );
+                bcore_release_arg_arr( ( fp_t )instance_p->down, instance_p, old_data, arr->size, unit_size );
             }
         }
         break;
@@ -285,7 +285,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
                     instance_p->init( instance_p, dst );
                     instance_p->copy( instance_p, dst, src );
                 }
-                bcore_release_arg_arr( instance_p->down, instance_p, old_data, arr->size, unit_size );
+                bcore_release_arg_arr( ( fp_t )instance_p->down, instance_p, old_data, arr->size, unit_size );
             }
         }
         break;
@@ -1328,7 +1328,7 @@ void bcore_array_spect_reorder( const bcore_array_s* p, vd_t o, const bcore_arr_
             const bcore_inst_s* inst = bcore_inst_s_get_typed( mono_type );
             for( sz_t i = 0; i < arr_size; i++ )
             {
-                bcore_release_arg( bcore_inst_spect_down, inst, data[ i ] );
+                bcore_release_arg( ( fp_t )bcore_inst_spect_down, inst, data[ i ] );
                 data[ i ] = NULL;
             }
         }
@@ -1336,7 +1336,7 @@ void bcore_array_spect_reorder( const bcore_array_s* p, vd_t o, const bcore_arr_
         {
             for( sz_t i = 0; i < arr_size; i++ )
             {
-                bcore_release_obj( bcore_inst_aware_down, data[ i ] );
+                bcore_release_obj( ( fp_t )bcore_inst_aware_down, data[ i ] );
                 data[ i ] = NULL;
             }
         }

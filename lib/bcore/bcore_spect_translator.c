@@ -32,7 +32,7 @@ static bcore_translator_s* translator_s_create()
 static void translator_s_discard( bcore_translator_s* o )
 {
     if( !o ) return;
-    bcore_release_obj( translator_s_down, o );
+    bcore_release_obj( ( fp_t )translator_s_down, o );
 }
 
 /**********************************************************************************************************************/

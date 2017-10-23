@@ -39,14 +39,14 @@ DEFINE_FUNCTION_INIT_FLAT( bcore_inst_body_s )
 
 void bcore_inst_body_s_down( bcore_inst_body_s* o )
 {
-    bcore_release_obj_arr( bcore_inst_item_s_down, o->data, o->size, sizeof( bcore_inst_item_s ) );
+    bcore_release_obj_arr( ( fp_t )bcore_inst_item_s_down, o->data, o->size, sizeof( bcore_inst_item_s ) );
     o->data = NULL;
     o->size = o->space = 0;
 }
 
 void bcore_inst_body_s_copy( bcore_inst_body_s* o, const bcore_inst_body_s* src )
 {
-    bcore_release_obj_arr( bcore_inst_item_s_down, o->data, o->size, sizeof( bcore_inst_item_s ) );
+    bcore_release_obj_arr( ( fp_t )bcore_inst_item_s_down, o->data, o->size, sizeof( bcore_inst_item_s ) );
     o->data = NULL;
     o->size = o->space = 0;
     o->data = bcore_un_alloc( sizeof( bcore_inst_item_s ), o->data, o->space, src->size, &o->space );
@@ -69,7 +69,7 @@ bcore_inst_item_s* bcore_inst_body_s_push( bcore_inst_body_s* o )
             bcore_inst_item_s_init( &o->data[ i ] );
             bcore_inst_item_s_copy( &o->data[ i ], &old_data[ i ] );
         }
-        bcore_release_obj_arr( bcore_inst_item_s_down, old_data, o->size, sizeof( bcore_inst_item_s ) );
+        bcore_release_obj_arr( ( fp_t )bcore_inst_item_s_down, old_data, o->size, sizeof( bcore_inst_item_s ) );
     }
     bcore_inst_item_s* item = &o->data[ o->size ];
     o->size++;
@@ -116,7 +116,7 @@ static bcore_inst_s* inst_s_create()
 static void inst_s_discard( bcore_inst_s* o )
 {
     if( !o ) return;
-    bcore_release_obj( inst_s_down, o );
+    bcore_release_obj( ( fp_t )inst_s_down, o );
 }
 
 static bcore_inst_item_s* inst_s_push( bcore_inst_s* o )
@@ -148,7 +148,7 @@ static void verify_aware_type( tp_t type, vc_t obj, sc_t context )
 static void init_o( const bcore_inst_s* p, vd_t o )
 {
     assert( o != NULL );
-    p->init_o( o );
+    ( ( bcore_fp_init )p->init_o )( o );
 }
 
 static void init_null( const bcore_inst_s* p, vd_t o ) { }
@@ -213,7 +213,7 @@ static void init_amoebic( const bcore_inst_s* p, vd_t o )
 {
     assert( o != NULL );
     init_nc nc = { ( ap_t )init_amoeba, p, o };
-    p->init_o( &nc );
+    ( ( ap_t )p->init_o )( &nc );
 }
 
 /**********************************************************************************************************************/
@@ -224,7 +224,7 @@ static void down_o( const bcore_inst_s* p, vd_t o )
         assert( o != NULL );
         if( p->aware ) verify_aware_type( p->o_type, o, __func__ );
     #endif // RTCHECKS
-    p->down_o( o );
+    ( ( bcore_fp_down )p->down_o )( o );
 }
 
 static void down_null( const bcore_inst_s* p, vd_t o ) { }
@@ -302,7 +302,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                     const bcore_inst_s* perspective = inst_item->perspective;
                     if( !perspective->down_flat )
                     {
-                        bcore_release_arg_arr( perspective->down, perspective, s->data, s->size, perspective->size );
+                        bcore_release_arg_arr( ( fp_t )perspective->down, perspective, s->data, s->size, perspective->size );
                     }
                     else
                     {
@@ -322,7 +322,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                     const bcore_inst_s* perspective = bcore_inst_s_get_typed( s->type );
                     if( !perspective->down_flat )
                     {
-                        bcore_release_arg_arr( perspective->down, perspective, s->data, s->size, perspective->size );
+                        bcore_release_arg_arr( ( fp_t )perspective->down, perspective, s->data, s->size, perspective->size );
                     }
                     else
                     {
@@ -394,7 +394,7 @@ static void down_amoebic( const bcore_inst_s* p, vd_t o )
 {
     assert( o != NULL );
     down_nc nc = { ( ap_t )down_amoeba, p, o };
-    p->down_o( &nc );
+    ( ( ap_t )p->down_o )( &nc );
 }
 
 /**********************************************************************************************************************/
@@ -413,7 +413,7 @@ static void copy_o( const bcore_inst_s* p, vd_t dst, vc_t src )
             verify_aware_type( p->o_type, src, __func__ );
         }
     #endif // RTCHECKS
-    p->copy_o( dst, src );
+    ( ( bcore_fp_copy )p->copy_o )( dst, src );
 }
 
 static void copy_flat( const bcore_inst_s* p, vd_t dst, vc_t src )
@@ -527,7 +527,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     {
                         if( !perspective->down_flat )
                         {
-                            bcore_release_arg_arr( perspective->down, perspective, dst->data, dst->size, perspective->size );
+                            bcore_release_arg_arr( ( fp_t )perspective->down, perspective, dst->data, dst->size, perspective->size );
                         }
                         else
                         {
@@ -560,7 +560,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     const bcore_inst_s* perspective = bcore_inst_s_get_typed( dst->type );
                     if( !perspective->down_flat )
                     {
-                        bcore_release_arg_arr( perspective->down, perspective, dst->data, dst->size, perspective->size );
+                        bcore_release_arg_arr( ( fp_t )perspective->down, perspective, dst->data, dst->size, perspective->size );
                     }
                     else
                     {
@@ -687,7 +687,7 @@ static void copy_amoebic( const bcore_inst_s* p, vd_t dst, vc_t src )
     assert( dst != NULL );
     assert( src != NULL );
     copy_nc nc = { ( ap_t )copy_amoeba, p, dst, src };
-    p->copy_o( &nc );
+    ( ( ap_t )p->copy_o )( &nc );
 }
 
 /**********************************************************************************************************************/
@@ -990,7 +990,7 @@ static void discard_o( const bcore_inst_s* p, vd_t o )
 static void discard( const bcore_inst_s* p, vd_t o )
 {
     if( !o ) return;
-    bcore_release_arg( p->down, p, o );
+    bcore_release_arg( ( fp_t )p->down, p, o );
 }
 
 static vd_t clone_null( const bcore_inst_s* p, vc_t src ) { return NULL; }
@@ -1037,9 +1037,9 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
     fp_t fp_init_a    = bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "init" ) );
     fp_t fp_down_a    = bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "down" ) );
     fp_t fp_copy_a    = bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "copy" ) );
-    o->init_o         = ( bcore_fp_init         )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_init"         ), 0 );
-    o->down_o         = ( bcore_fp_down         )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_down"         ), 0 );
-    o->copy_o         = ( bcore_fp_copy         )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_copy"         ), 0 );
+    o->init_o         = bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_init"         ), 0 );
+    o->down_o         = bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_down"         ), 0 );
+    o->copy_o         = bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_copy"         ), 0 );
     o->copy_typed_o   = ( bcore_fp_copy_typed   )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_copy_typed"   ), 0 );
     o->create_o       = ( bcore_fp_create       )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_create"       ), 0 );
     o->create_typed_o = ( bcore_fp_create_typed )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_create_typed" ), 0 );
@@ -1625,7 +1625,7 @@ bcore_inst_op* bcore_inst_op_create_aware_d( vd_t obj )
 void bcore_inst_op_discard( bcore_inst_op* o )
 {
     if( !o ) return;
-    bcore_release_obj( bcore_inst_op_down, o );
+    bcore_release_obj( ( fp_t )bcore_inst_op_down, o );
 }
 
 bcore_inst_op* bcore_inst_op_clone( const bcore_inst_op* o )

@@ -137,19 +137,19 @@ static void chain_p_errorvf( bcore_source_chain_s* o, sc_t format, va_list args 
     }
 }
 
-static void chain_parsevf( bcore_source_chain_s* o, sc_t format, va_list args )
+static void chain_parse_fv( bcore_source_chain_s* o, sc_t format, va_list args )
 {
     if( o->size > 0 )
     {
         const bcore_source_s* source_p = bcore_source_s_get_aware( o->data[ o->size - 1 ] );
-        if( source_p->fp_parsevf )
+        if( source_p->fp_parse_fv )
         {
-            bcore_source_spect_parsevf( source_p, o->data[ o->size - 1 ], format, args );
+            bcore_source_spect_parse_fv( source_p, o->data[ o->size - 1 ], format, args );
         }
         else
         {
             bcore_source_chain_s_push_type( o, TYPEOF_bcore_source_string_s );
-            chain_parsevf( o, format, args );
+            chain_parse_fv( o, format, args );
         }
     }
     else
@@ -175,7 +175,7 @@ static bcore_flect_self_s* chain_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )chain_interpret_body_a, "ap_t", "interpret_body" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )chain_flow_src,  "bcore_fp_flow_src", "flow_src"  );
     bcore_flect_self_s_push_external_func( self, ( fp_t )chain_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_parsevf,   "bcore_source_fp_parsevf", "parsevf" );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_source_chain_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
     return self;
 }
@@ -444,11 +444,11 @@ static void string_p_errorvf( bcore_source_string_s* o, sc_t format, va_list arg
     st_s_discard( context );
 }
 
-static void string_parsevf( bcore_source_string_s* o, sc_t format, va_list args )
+static void string_parse_fv( bcore_source_string_s* o, sc_t format, va_list args )
 {
     if( o->ext_supplier ) string_refill( o, o->refill_limit );
     if( !o->string ) ERR( "No string defined." );
-    o->index = st_s_parsevf( o->string, o->index, o->string->size, format, args );
+    o->index = st_s_parse_fv( o->string, o->index, o->string->size, format, args );
 }
 
 static bcore_flect_self_s* string_s_create_self( void )
@@ -468,7 +468,7 @@ static bcore_flect_self_s* string_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_source_string_s_init,  "bcore_fp_init", "init" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )string_flow_src,  "bcore_fp_flow_src",       "flow_src"  );
     bcore_flect_self_s_push_external_func( self, ( fp_t )string_p_errorvf, "bcore_fp_logvf",          "p_errorvf" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parsevf,   "bcore_source_fp_parsevf", "parsevf"   );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv"   );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_source_string_s_set_supplier,   "bcore_source_fp_set_supplier", "set_supplier"   );
     return self;
 }

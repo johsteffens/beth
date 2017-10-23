@@ -38,7 +38,7 @@ void bcore_life_s_init( struct bcore_life_s* o )
 
 void bcore_life_s_down( struct bcore_life_s* o )
 {
-    bcore_release_obj_arr( bcore_life_item_s_down, o->data, o->size, sizeof( bcore_life_item_s ) );
+    bcore_release_obj_arr( ( fp_t )bcore_life_item_s_down, o->data, o->size, sizeof( bcore_life_item_s ) );
 }
 
 DEFINE_FUNCTION_CREATE(  bcore_life_s )
@@ -101,7 +101,7 @@ vd_t bcore_life_s_push_aware( bcore_life_s* o, vd_t object )
 vd_t bcore_life_s_push_free( bcore_life_s* o, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );
-    item->discard = ( fp_t )bcore_free;
+    item->discard = ( bcore_fp_discard )bcore_free;
     item->object  = object;
     return object;
 }

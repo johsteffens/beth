@@ -43,7 +43,7 @@ static tp_t type_of( const st_s* name )
     }
     else if( name->sc[ 0 ] >= '0' && name->sc[ 0 ] <= '9' )
     {
-        st_s_parsef( name, 0, -1, "#tp_t", &tp );
+        st_s_parse_fa( name, 0, -1, "#tp_t", &tp );
     }
     else
     {
@@ -168,7 +168,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
     if( !obj.o )
     {
         st_s* type_string = st_s_create_l( l );
-        bcore_source_parsef( src_l, " <#until'>'>", type_string );
+        bcore_source_parse_fa( src_l, " <#until'>'>", type_string );
         tp_t type = type_of( type_string );
         if( type )
         {
@@ -180,7 +180,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
         }
         else
         {
-            bcore_source_parsef( src_l, " </>" );
+            bcore_source_parse_fa( src_l, " </>" );
         }
     }
     else
@@ -190,13 +190,13 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
         st_s* buf = st_s_create_l( l );
         if( sr_s_type( &obj_l ) == TYPEOF_st_s )
         {
-            bcore_source_parsef( src_l, " #string", obj_l.o );
-            bcore_source_parsef( src_l, " </>" );
+            bcore_source_parse_fa( src_l, " #string", obj_l.o );
+            bcore_source_parse_fa( src_l, " </>" );
         }
         else if( bcore_via_is_leaf( obj_l ) )
         {
-            bcore_source_parsef( src_l, st_s_createf_l( l, " #%s", name_of( sr_s_type( &obj_l ), buf ) )->sc, obj_l.o );
-            bcore_source_parsef( src_l, " </>" );
+            bcore_source_parse_fa( src_l, st_s_createf_l( l, " #%s", name_of( sr_s_type( &obj_l ), buf ) )->sc, obj_l.o );
+            bcore_source_parse_fa( src_l, " </>" );
         }
         else
         {
@@ -212,7 +212,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 while( !bcore_source_parse_boolf( src_l, " #?'</>'" ) )
                 {
                     st_s* name = st_s_create_l( l );
-                    bcore_source_parsef( src_l, " #name :", name );
+                    bcore_source_parse_fa( src_l, " #name :", name );
 
                     tp_t ntype = typeof( name->sc );
                     if( !bcore_via_q_nexists( &obj_l, ntype ) )
@@ -228,7 +228,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                     else
                     {
                         sr_s item = bcore_via_iget( obj_l, idx );
-                        if( item.o ) bcore_source_parsef( src_l, st_s_createf_l( l, " <%s>", name_of( sr_s_type( &item ), buf ) )->sc );
+                        if( item.o ) bcore_source_parse_fa( src_l, st_s_createf_l( l, " <%s>", name_of( sr_s_type( &item ), buf ) )->sc );
                         if( sr_s_is_strong( &item ) )  // if item is detached --> refeed it
                         {
                             bcore_via_iset( obj_l, idx, interpret( o, item, src_l ) );

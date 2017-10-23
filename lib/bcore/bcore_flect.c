@@ -200,7 +200,7 @@ void bcore_flect_body_s_init( bcore_flect_body_s* o )
 
 void bcore_flect_body_s_down( bcore_flect_body_s* o )
 {
-    bcore_release_obj_arr( bcore_flect_item_s_down, o->data, o->size, sizeof( bcore_flect_item_s ) );
+    bcore_release_obj_arr( ( fp_t )bcore_flect_item_s_down, o->data, o->size, sizeof( bcore_flect_item_s ) );
     o->data  = NULL;
     o->size  = 0;
     o->space = 0;
@@ -208,7 +208,7 @@ void bcore_flect_body_s_down( bcore_flect_body_s* o )
 
 void bcore_flect_body_s_copy( bcore_flect_body_s* o, const bcore_flect_body_s* src )
 {
-    bcore_release_obj_arr( bcore_flect_item_s_down, o->data, o->size, sizeof( bcore_flect_item_s ) );
+    bcore_release_obj_arr( ( fp_t )bcore_flect_item_s_down, o->data, o->size, sizeof( bcore_flect_item_s ) );
     o->data = NULL;
     o->size = 0;
     o->space = 0;
@@ -266,7 +266,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
     bcore_life_s* life = bcore_life_s_create();
     bcore_flect_body_s* o = bcore_flect_body_s_create();
     sz_t idx = ( p_idx != NULL ) ? *p_idx : 0;
-    idx = st_s_parsef( text, idx, text->size, " { " );
+    idx = st_s_parse_fa( text, idx, text->size, " { " );
 
     while( text->sc[ idx ] != '}' )
     {
@@ -274,9 +274,9 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
         st_s* type_name = st_s_create_l( life );
         st_s* item_name = st_s_create_l( life );
         tp_t type_val = 0;
-        bcore_flect_item_s* item = bcore_life_s_push( life, bcore_flect_item_s_discard, bcore_flect_item_s_create() );
+        bcore_flect_item_s* item = bcore_life_s_push( life, ( bcore_fp_discard )bcore_flect_item_s_discard, bcore_flect_item_s_create() );
         bl_t f_private, f_hidden, f_shell, f_link, f_arr;
-        idx = st_s_parsef( text, idx, text->size, "#?'private' #?'hidden' #?'shell' ",  &f_private, &f_hidden, &f_shell );
+        idx = st_s_parse_fa( text, idx, text->size, "#?'private' #?'hidden' #?'shell' ",  &f_private, &f_hidden, &f_shell );
 
         // type can be specified by explicit type id number (anonymous types) or by name
         if( text->data[ idx ] == '{' ) // nested anonymous type
@@ -285,7 +285,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
         }
         else if( text->data[ idx ] >= '0' && text->data[ idx ] <= '9' ) // type is specified by number
         {
-            idx = st_s_parsef( text, idx, text->size, "#tp_t ",  &type_val );
+            idx = st_s_parse_fa( text, idx, text->size, "#tp_t ",  &type_val );
         }
         else if( text->data[ idx ] == '.' && text->data[ idx + 1 ] == '.' && text->data[ idx + 2 ] == '.' )
         {
@@ -296,10 +296,10 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
         }
         else // type is specified by name
         {
-            idx = st_s_parsef( text, idx, text->size, "#name ",  type_name );
+            idx = st_s_parse_fa( text, idx, text->size, "#name ",  type_name );
         }
 
-        idx = st_s_parsef( text, idx, text->size, "#?'*' #?'[]' #name ; ", &f_link, &f_arr, item_name );
+        idx = st_s_parse_fa( text, idx, text->size, "#?'*' #?'[]' #name ; ", &f_link, &f_arr, item_name );
 
         item->f_private  = f_private;
         item->f_hidden   = f_hidden;
@@ -345,7 +345,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
         bcore_flect_body_s_push( o, item );
         bcore_life_s_discard( life );
     }
-    idx = st_s_parsef( text, idx, text->size, " } " );
+    idx = st_s_parse_fa( text, idx, text->size, " } " );
 
     if ( p_idx != NULL ) *p_idx = idx;
     bcore_life_s_discard( life );
@@ -407,7 +407,7 @@ bcore_flect_self_s* bcore_flect_self_s_clone( const bcore_flect_self_s* o )
 void bcore_flect_self_s_discard( bcore_flect_self_s* o )
 {
     if( !o ) return;
-    bcore_release_obj( bcore_flect_self_s_down, o );
+    bcore_release_obj( ( fp_t )bcore_flect_self_s_down, o );
 }
 
 void bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item )
@@ -526,12 +526,12 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const st_s* text, sz_t* p_id
     sz_t idx = ( p_idx != NULL ) ? *p_idx : 0;
 
     st_s* type_name = st_s_create_l( life );
-    idx = st_s_parsef( text, idx, text->size, " #name ", type_name );
+    idx = st_s_parse_fa( text, idx, text->size, " #name ", type_name );
     o->type = ( type_name->size > 0 ) ? bcore_name_enroll( type_name->sc ) : 0;
-    if( o->type ) idx = st_s_parsef( text, idx, text->size, "= " );
+    if( o->type ) idx = st_s_parse_fa( text, idx, text->size, "= " );
 
     st_s* assigned_name = st_s_create_l( life );
-    idx = st_s_parsef( text, idx, text->size, " #name ", assigned_name );
+    idx = st_s_parse_fa( text, idx, text->size, " #name ", assigned_name );
     tp_t assigned_type = ( assigned_name->size > 0 ) ? bcore_name_enroll( assigned_name->sc ) : 0;
 
     if( text->sc[ idx ] == '{' )
@@ -688,7 +688,7 @@ static creator_map_s* creator_map_s_create()
 static void creator_map_s_discard( creator_map_s* o )
 {
     if( !o ) return;
-    bcore_release_obj( creator_map_s_down, o );
+    bcore_release_obj( ( fp_t )creator_map_s_down, o );
 }
 
 /**********************************************************************************************************************/
@@ -738,7 +738,7 @@ static self_map_s* self_map_s_create()
 static void self_map_s_discard( self_map_s* o )
 {
     if( !o ) return;
-    bcore_release_obj( self_map_s_down, o );
+    bcore_release_obj( ( fp_t )self_map_s_down, o );
 }
 
 /**********************************************************************************************************************/
@@ -904,7 +904,7 @@ tp_t bcore_flect_define_parse_sc( sc_t sc )
     return type;
 }
 
-tp_t bcore_flect_define_parsef( sc_t format, ... )
+tp_t bcore_flect_define_parse_fa( sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
@@ -957,7 +957,7 @@ tp_t bcore_flect_type_parse_sc( sc_t sc )
     return ret;
 }
 
-tp_t bcore_flect_type_parsef( sc_t format, ... )
+tp_t bcore_flect_type_parse_fa( sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
@@ -1045,7 +1045,7 @@ static st_s* flect_selftest( void )
 
     {
         tp_t t_teabag    = bcore_flect_type_parse_sc( "{ u3_t leaves; s1_t flavor; s0_t color; }" );
-        tp_t t_container = bcore_flect_type_parsef( "{ u3_t elements; %"PRItp_t" bag; u1_t flags; }", t_teabag );
+        tp_t t_container = bcore_flect_type_parse_fa( "{ u3_t elements; %"PRItp_t" bag; u1_t flags; }", t_teabag );
 
         st_s_push_st_d( s, bcore_flect_self_s_show( bcore_flect_get_self( t_container ) ) );
         st_s_pushf( s, "\n" );
