@@ -141,20 +141,44 @@ void st_s_print_d(     st_s* o ); // discards o
 
 /** Functions supporting text-parsing with specific rules.
  *  Format rules
- *  "#name"   - scans a name-string consisting of valid name characters; argument: st_s*
- *  "#string" - scans a string enclosed in quotes '"'; Quotes inside the string are escaped '\"'; backslashes are escaped '\\'; argument: st_s*
- *  "#until'<char>'" - scans a string until <char> is reached; the character is not consumed; argument: st_s*
- *  "#?'...'" - test presence and consumes the string literal between '' if exactly matching; argument: bl_t*
- *  " "       - consumes whitespaces including c-style comments
- *  "#<type>" - matches content to <type>; argument: <type>*
- *              Example: #u3_t matches to u3_t and requires u3_t* as argument.
- *              supported types: u*_t, s*_t, f*_t, sz_t, bl_t
+ *  "#name"
+ *      Argument: st_s*
+ *      Consumes a name-string consisting of valid name characters.
+ *
+ *  "#string"
+ *      Argument: st_s*
+ *      Consumes a string in o enclosed in quotes '"'.
+ *      Quotes inside the string are to be escaped '\"'.
+ *      Backslashes are to be escaped '\\'.
+ *
+ *  "#until'<char>'"
+ *      Consumes a string until <char> is reached.
+ *      The character is not consumed.
+ *
+ *  "#?'...'"
+ *      Argument: bl_t*
+ *      Consumes the string literal ... if exactly matching.
+ *      Consumes nothing if not exactly matching.
+ *      Sets argument 'true' on exact match, false otherwise.
+ *      Character ' can be replaced by any other character not occurring in the literal.
+ *
+ *  "#<type>"
+ *      Argument: <type>*
+ *      Matches content to <type>.
+ *      Example: #u3_t matches to u3_t and requires u3_t* as argument.
+ *      Supported types: u*_t, s*_t, f*_t, sz_t, bl_t.
+ *
+ *  "#-..."
+ *      Argument: none
+ *      For any above rule: If '-' is inserted after '#', the rule applies but
+ *      no argument in the argument list is accessed or consumed.
+ *
  *  Return:
  *     Index position after scan completes.
  *     This value would be be used as 'start' for continued scanning.
  */
-sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list args );
-sz_t st_s_parsef(  const st_s* o, sz_t start, sz_t end, sc_t format, ... );
+sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list args );
+sz_t st_s_parse_fa( const st_s* o, sz_t start, sz_t end, sc_t format, ... );
 
 /// constructs a double-line with a visible position indicator (useful for context messages/warnings/errors with highlighted position)
 st_s* st_s_show_line_context( const st_s* o, sz_t pos );

@@ -16,12 +16,202 @@ void st_s_init( st_s* o )
     o->size = o->space = 0;
 }
 
+/*
+// Returns number of characters in the formatted string (excluding terminating 0)
+sz_t conv_fv( sd_t dst, sz_t space, sc_t format, va_list args )
+{
+    if( !dst ) space = 0;
+    sc_t fp = format;
+    sz_t ret_size = 0;
+    while( *fp )
+    {
+        if( *fp == '#' )
+        {
+            fp++;
+            tp_t type = 0;
+            if( fp[ 0 ] != 0 && fp[ 1 ] != 0 && fp[ 2 ] == '_' && fp[ 3 ] == 't' ) // all types of format xy_t
+            {
+                switch( fp[ 0 ] )
+                {
+                    case 'u':
+                    {
+                        switch( fp[ 1 ] )
+                        {
+                            case '0': type = TYPEOF_u0_t; break;
+                            case '1': type = TYPEOF_u1_t; break;
+                            case '2': type = TYPEOF_u2_t; break;
+                            case '3': type = TYPEOF_u3_t; break;
+                            default: break;
+                        }
+                    }
+                    break;
+
+                    case 's':
+                    {
+                        switch( fp[ 1 ] )
+                        {
+                            case '0': type = TYPEOF_s0_t; break;
+                            case '1': type = TYPEOF_s1_t; break;
+                            case '2': type = TYPEOF_s2_t; break;
+                            case '3': type = TYPEOF_s3_t; break;
+                            case 'z': type = TYPEOF_sz_t; break;
+                            default: break;
+                        }
+                    }
+                    break;
+
+                    case 'f':
+                    {
+                        switch( fp[ 1 ] )
+                        {
+                            case '2': type = TYPEOF_f2_t; break;
+                            case '3': type = TYPEOF_f3_t; break;
+                            default: break;
+                        }
+                    }
+                    break;
+
+                    case 't': type = ( fp[ 1 ] == 'p' ) ? TYPEOF_tp_t : 0; break;
+                    case 'b': type = ( fp[ 1 ] == 'l' ) ? TYPEOF_bl_t : 0; break;
+                    default: break;
+                }
+
+                if( type == 0 ) ERR( "Unknown format type specifier: '%s'.", fp );
+
+                fp += 4;
+                int size = 0;
+                int sres = -1;
+
+                switch( type )
+                {
+                    case TYPEOF_u0_t:
+                    {
+                        u0_t v = va_arg( args, u0_t );
+                        sres = snprintf( dst, space, "%"PRIu0_t"%n", v, &size );
+                        break;
+                    }
+
+                    case TYPEOF_u1_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRIu1_t"%n", va_arg( args, u1_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_u2_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRIu2_t"%n", va_arg( args, u2_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_u3_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRIu3_t"%n", va_arg( args, u3_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_s0_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRIs0_t"%n", va_arg( args, s0_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_s1_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRIs1_t"%n", va_arg( args, s1_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_s2_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRIs2_t"%n", va_arg( args, s2_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_s3_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRIs3_t"%n", va_arg( args, s3_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_sz_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRIsz_t"%n", va_arg( args, sz_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_f2_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRIf2_t"%n", va_arg( args, f2_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_f3_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRIf3_t"%n", va_arg( args, f3_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_tp_t:
+                    {
+                        sres = snprintf( dst, space, "%"PRItp_t"%n", va_arg( args, tp_t ), &size );
+                        break;
+                    }
+
+                    case TYPEOF_bl_t:
+                    {
+                        if( va_arg( args, bl_t ) )
+                        {
+                            sres = snprintf( dst, space, "true%n", &size );
+                        }
+                        else
+                        {
+                            sres = snprintf( dst, space, "false%n", &size );
+                        }
+                    }
+                    break;
+                }
+
+                if( sres <= 0 )
+                {
+                    ERR( "\n%s\nProcessing format '%s' failed.", format );
+                }
+
+                dst += size;
+                space -= size;
+                ret_size += sres;
+            }
+            else if( *fp == '#' )
+            {
+                if( space > 1 )
+                {
+                    *dst++ = *fp++;
+                    space--;
+                }
+                ret_size++;
+            }
+        }
+        else
+        {
+            if( space > 1 )
+            {
+                *dst++ = *fp++;
+                space--;
+            }
+            ret_size++;
+        }
+    }
+    if( space > 0 ) *dst = 0;
+    return ret_size;
+}
+*/
 void st_s_initvf( st_s* o, sc_t format, va_list args )
 {
     st_s_init( o );
     va_list args1;
     va_copy( args1, args );
-    o->space = vsnprintf( NULL, 0, format, args1 ) + 1;
+    s3_t n = vsnprintf( NULL, 0, format, args1 );
+    if( n < 0 ) ERR( "Format error in '%s'\n", format );
+    o->space = n + 1;
     va_end( args1 );
     if( o->space < 8 ) o->space = 8;
     o->data = bcore_b_alloc( NULL, o->space, &o->space );
@@ -195,7 +385,7 @@ st_s* st_s_create_weak_sc( sc_t sc )
 
 st_s* st_s_create_l( bcore_life_s* life )
 {
-    return bcore_life_s_push( life, st_s_discard, st_s_create() );
+    return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create() );
 }
 
 st_s* st_s_createf_l( bcore_life_s* life, sc_t format, ... )
@@ -205,12 +395,12 @@ st_s* st_s_createf_l( bcore_life_s* life, sc_t format, ... )
     va_start( args, format );
     st_s_initvf( o, format, args );
     va_end( args );
-    return bcore_life_s_push( life, st_s_discard, o );
+    return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, o );
 }
 
 st_s* st_s_create_l_sc( bcore_life_s* life, sc_t sc )
 {
-    return bcore_life_s_push( life, st_s_discard, st_s_create_sc( sc ) );
+    return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create_sc( sc ) );
 }
 
 st_s* st_s_create_typed( tp_t type, vc_t src )
@@ -259,7 +449,7 @@ void st_s_set_min_space( st_s* o, sz_t min_space )
 void st_s_discard( st_s* o )
 {
     if( !o ) return;
-    bcore_release_obj( st_s_down, o );
+    bcore_release_obj( ( fp_t )st_s_down, o );
 }
 
 st_s* st_s_clone( const st_s* o )
@@ -756,7 +946,7 @@ st_s* st_s_show_line_context( const st_s* o, sz_t pos )
     return s;
 }
 
-sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list args )
+sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list args )
 {
     sz_t end_l = end < o->size ? end : o->size;
     sz_t idx = start;
@@ -798,8 +988,14 @@ sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list arg
         else if( *fp == '#' )
         {
             fp++;
+            bl_t set_arg = true;
+            if( *fp == '-' )
+            {
+                fp++;
+                set_arg = false;
+            }
             tp_t type = 0;
-            if( fp[ 2 ] == '_' && fp[ 3 ] == 't' ) // all types of format xy_t
+            if( fp[ 0 ] != 0 && fp[ 1 ] != 0 && fp[ 2 ] == '_' && fp[ 3 ] == 't' ) // all types of format xy_t
             {
                 switch( fp[ 0 ] )
                 {
@@ -851,21 +1047,105 @@ sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list arg
                 fp += 4;
                 int size = 0;
                 int sres = -1;
-                uintmax_t mval = 0;
+
                 switch( type )
                 {
-                    case TYPEOF_u0_t: sres = sscanf( o->sc + idx, "%"SCNu8"%n",  va_arg( args, u0_t* ), &size ); break;
-                    case TYPEOF_u1_t: sres = sscanf( o->sc + idx, "%"SCNu16"%n", va_arg( args, u1_t* ), &size ); break;
-                    case TYPEOF_u2_t: sres = sscanf( o->sc + idx, "%"SCNu32"%n", va_arg( args, u2_t* ), &size ); break;
-                    case TYPEOF_u3_t: sres = sscanf( o->sc + idx, "%"SCNu64"%n", va_arg( args, u3_t* ), &size ); break;
-                    case TYPEOF_s0_t: sres = sscanf( o->sc + idx, "%"SCNi8"%n",  va_arg( args, s0_t* ), &size ); break;
-                    case TYPEOF_s1_t: sres = sscanf( o->sc + idx, "%"SCNi16"%n", va_arg( args, s1_t* ), &size ); break;
-                    case TYPEOF_s2_t: sres = sscanf( o->sc + idx, "%"SCNi32"%n", va_arg( args, s2_t* ), &size ); break;
-                    case TYPEOF_s3_t: sres = sscanf( o->sc + idx, "%"SCNi64"%n", va_arg( args, s3_t* ), &size ); break;
-                    case TYPEOF_sz_t: sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &mval, &size ); *va_arg( args, sz_t* ) = mval; break;
-                    case TYPEOF_f2_t: sres = sscanf( o->sc + idx, "%g%n",        va_arg( args, f2_t* ), &size ); break;
-                    case TYPEOF_f3_t: sres = sscanf( o->sc + idx, "%lg%n",       va_arg( args, f3_t* ), &size ); break;
-                    case TYPEOF_tp_t: sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &mval, &size ); *va_arg( args, tp_t* ) = mval; break;
+                    case TYPEOF_u0_t:
+                    {
+                        u0_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNu8"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, u0_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_u1_t:
+                    {
+                        u1_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNu16"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, u1_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_u2_t:
+                    {
+                        u2_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNu32"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, u2_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_u3_t:
+                    {
+                        u3_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNu64"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, u3_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_s0_t:
+                    {
+                        s0_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNi8"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, s0_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_s1_t:
+                    {
+                        s1_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNi16"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, s1_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_s2_t:
+                    {
+                        s2_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNi32"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, s2_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_s3_t:
+                    {
+                        s3_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNi64"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, s3_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_sz_t:
+                    {
+                        uintmax_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, sz_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_f2_t:
+                    {
+                        f2_t v;
+                        sres = sscanf( o->sc + idx, "%g%n", &v, &size );
+                        if( set_arg ) *va_arg( args, f2_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_f3_t:
+                    {
+                        f3_t v;
+                        sres = sscanf( o->sc + idx, "%lg%n", &v, &size );
+                        if( set_arg ) *va_arg( args, f3_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_tp_t:
+                    {
+                        uintmax_t v = 0;
+                        sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, tp_t* ) = v;
+                        break;
+                    }
+
                     case TYPEOF_bl_t:
                     {
                         bl_t val = false;
@@ -883,7 +1163,7 @@ sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list arg
                         {
                             ERR( "\n%s\nParsing #bl_t failed at (%zu:%zu): true or false expected.", st_s_show_line_context( o, idx )->sc, st_s_lineof( o, idx ), st_s_colof( o, idx ) );
                         }
-                        *va_arg( args, bl_t* ) = val;
+                        if( set_arg ) *va_arg( args, bl_t* ) = val;
                         size = 0;
                         sres = 1;
                     }
@@ -902,27 +1182,27 @@ sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list arg
                 sc_t fp0 = fp;
                 sz_t idx0 = idx;
                 fp++;
-                bool* flag = va_arg( args, bool* );
-                *flag = true;
-                if( *fp == '\'' )
+                bl_t flag = true;
+                if( *fp )
                 {
-                    fp++;
-                    while( *fp != '\'' && *fp != 0 && idx < end_l )
+                    char term = *fp++;
+                    while( *fp != term && *fp != 0 && idx < end_l )
                     {
-                        if( *flag )
+                        if( flag )
                         {
-                            *flag = *fp == o->sc[ idx ];
+                            flag = *fp == o->sc[ idx ];
                             idx += ( idx < end_l );
                         }
                         fp++;
                     }
-                    fp += ( *fp == '\'' );
-                    if( !*flag ) idx = idx0;
+                    fp += ( *fp == term );
+                    if( !flag ) idx = idx0;
                 }
                 else
                 {
                     ERR( "Unknown format directive: '%s'.", fp0 );
                 }
+                if( set_arg ) *va_arg( args, bl_t* ) = flag;
             }
             else if( *fp == '#' )
             {
@@ -945,7 +1225,7 @@ sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list arg
                 {
                     ERR( "\n%s\nParsing #aware_t failed at (%zu:%zu).", st_s_show_line_context( o, idx )->sc, st_s_lineof( o, idx ), st_s_colof( o, idx ) );
                 }
-                *va_arg( args, aware_t* ) = val;
+                if( set_arg ) *va_arg( args, aware_t* ) = val;
                 idx += size;
                 if( idx > end_l ) idx = end_l;
             }
@@ -967,27 +1247,28 @@ sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list arg
                 {
                     ERR( "\n%s\nParsing #bool failed at (%zu:%zu): true or false expected.", st_s_show_line_context( o, idx )->sc, st_s_lineof( o, idx ), st_s_colof( o, idx ) );
                 }
-                *va_arg( args, bool* ) = val;
+                if( set_arg ) *va_arg( args, bool* ) = val;
                 if( idx > end_l ) idx = end_l;
             }
             else if( ( bcore_strcmp( "name", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "name" );
-                st_s* string = va_arg( args, st_s* );
-                st_s_clear( string );
+                st_s* string = NULL;
+                if( set_arg ) string = va_arg( args, st_s* );
+                if( set_arg ) st_s_clear( string );
                 char c = o->sc[ idx ];
                 if( ( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' ) || c == '_' )
                 {
                     if( idx < end_l )
                     {
                         idx++;
-                        st_s_push_char( string, c );
+                        if( set_arg ) st_s_push_char( string, c );
                         for(;;)
                         {
                             c = o->sc[ idx ];
                             if( idx < end_l && ( ( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' ) || ( c >= '0' && c <= '9' ) || c == '_' ) )
                             {
-                                st_s_push_char( string, c );
+                                if( set_arg ) st_s_push_char( string, c );
                                 idx++;
                             }
                             else
@@ -1001,25 +1282,26 @@ sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list arg
             else if( ( bcore_strcmp( "string", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "string" );
-                st_s* string = va_arg( args, st_s* );
-                st_s_clear( string );
+                st_s* string = NULL;
+                if( set_arg ) string = va_arg( args, st_s* );
+                if( set_arg ) st_s_clear( string );
                 if( o->sc[ idx ] != '"' ) ERR( "\n%s\n'\"' expected at (%zu:%zu).", st_s_show_line_context( o, idx )->sc, st_s_lineof( o, idx ), st_s_colof( o, idx ) );
                 idx++;
                 while ( o->sc[ idx ] != '"' )
                 {
                     if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\"' )
                     {
-                        st_s_push_char( string, '\"' );
+                        if( set_arg ) st_s_push_char( string, '\"' );
                         idx += 2;
                     }
                     else if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\\' )
                     {
-                        st_s_push_char( string, '\\' );
+                        if( set_arg ) st_s_push_char( string, '\\' );
                         idx += 2;
                     }
                     else
                     {
-                        st_s_push_char( string, o->sc[ idx ] );
+                        if( set_arg ) st_s_push_char( string, o->sc[ idx ] );
                         idx++;
                     }
                 }
@@ -1033,9 +1315,13 @@ sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list arg
                 char char_l = *fp++;
                 if(  char_l == 0  ) ERR( err_msg );
                 if( *fp++ != '\'' ) ERR( err_msg );
-                st_s* string = va_arg( args, st_s* );
-                st_s_clear( string );
-                while ( o->sc[ idx ] != char_l ) st_s_push_char( string, o->sc[ idx++ ] );
+                st_s* string = NULL;
+                if( set_arg ) string = va_arg( args, st_s* );
+                if( set_arg ) st_s_clear( string );
+                while ( o->sc[ idx ] != char_l )
+                {
+                    if( set_arg ) st_s_push_char( string, o->sc[ idx++ ] );
+                }
             }
             else
             {
@@ -1059,11 +1345,11 @@ sz_t st_s_parsevf( const st_s* o, sz_t start, sz_t end, sc_t format, va_list arg
     return idx;
 }
 
-sz_t st_s_parsef(  const st_s* o, sz_t start, sz_t end, sc_t format, ... )
+sz_t st_s_parse_fa(  const st_s* o, sz_t start, sz_t end, sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    sz_t idx = st_s_parsevf( o, start, end, format, args );
+    sz_t idx = st_s_parse_fv( o, start, end, format, args );
     va_end( args );
     return idx;
 }
@@ -1108,10 +1394,10 @@ static void string_p_errorvf( const st_s* o, sc_t format, va_list args )
     st_s_discard( context );
 }
 
-static void string_parsevf( st_s* o, sc_t format, va_list args )
+static void string_parse_fv( st_s* o, sc_t format, va_list args )
 {
     if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
-    o->data += st_s_parsevf( o, 0, o->size, format, args );
+    o->data += st_s_parse_fv( o, 0, o->size, format, args );
 }
 
 /// sanity feature
@@ -1148,7 +1434,7 @@ static bcore_flect_self_s* st_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,          "bcore_fp_flow_snk",       "flow_snk"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )flow_src,          "bcore_fp_flow_src",       "flow_src"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )string_p_errorvf,  "bcore_fp_logvf",          "p_errorvf"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parsevf,    "bcore_source_fp_parsevf", "parsevf"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parse_fv,    "bcore_source_fp_parse_fv", "parse_fv"      );
     bcore_flect_self_s_push_external_func( self, ( fp_t )check_sanity,      "bcore_fp_check_sanity",   "check_sanity" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",        "cmp_st"       );
     return self;
@@ -1159,7 +1445,7 @@ static void st_s_quicktest( void )
     sz_t granted_space = bcore_tbman_granted_space();
 
     bcore_life_s* life = bcore_life_s_create();
-    st_s* s = bcore_life_s_push( life, st_s_discard, st_s_create() );
+    st_s* s = bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create() );
 
     ASSERT( s->size == 0 );
     ASSERT( s->space == 0 );
@@ -1170,8 +1456,8 @@ static void st_s_quicktest( void )
 
     bool is_green = false;
     bool is_blue  = false;
-    st_s* name = bcore_life_s_push( life, st_s_discard, st_s_create() );
-    sz_t idx = st_s_parsef( s, 0, s->size, "My #name #?'blue' #?'green' eleph", name, &is_blue, &is_green );
+    st_s* name = bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create() );
+    sz_t idx = st_s_parse_fa( s, 0, s->size, "My #name #?'blue' #?'green' eleph", name, &is_blue, &is_green );
     ASSERT( st_s_equal_sc( name, "little" ) );
     ASSERT( is_green );
     ASSERT( !is_blue );
@@ -1182,11 +1468,11 @@ static void st_s_quicktest( void )
     st_s_push_typed( s, typeof( "s2_t" ), &num0 );
     st_s_push_sc( s, " and an integer" );
     s3_t num1 = 0;
-    idx = st_s_parsef( s, 0, s->size, "This number is #s3_t", &num1 );
+    idx = st_s_parse_fa( s, 0, s->size, "This number is #s3_t", &num1 );
     ASSERT( num1 == -12345 );
     ASSERT( bcore_strcmp( s->sc + idx, " and an integer" ) == 0 );
 
-    st_s* ws = bcore_life_s_push( life, st_s_discard, st_s_create() );
+    st_s* ws = bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create() );
     st_s_assign_sc( ws, "This is a weak string" );
 
     ASSERT( st_s_cmp_sc( ws, "This is a weak string" ) == 0 );
@@ -1221,3 +1507,4 @@ vd_t bcore_st_signal( tp_t target, tp_t signal, vd_t object )
 }
 
 /**********************************************************************************************************************/
+
