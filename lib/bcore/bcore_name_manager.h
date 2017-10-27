@@ -11,10 +11,12 @@
 #include "bcore_control.h"
 
 /// enroll name in global manager (thread safe); checks for collisions; returns hash
-tp_t bcore_name_enroll( sc_t name );
+tp_t bcore_name_enroll(   sc_t name );
+tp_t bcore_name_enroll_n( sc_t name, sz_t n );
 
 /// name --> hash
-static inline tp_t bcore_name_get_hash( sc_t name ) { return bcore_fnv_hash_text_u2( name ); }
+static inline tp_t bcore_name_get_hash(   sc_t name         ) { return bcore_fnv_hash_text_u2( name    ); }
+static inline tp_t bcore_name_get_hash_n( sc_t name, sz_t n ) { return bcore_fnv_hash_data_u2( name, n ); }
 
 /// hash --> name; returns NULL when not enrolled (thread safe)
 sc_t bcore_name_try_name( tp_t type );
@@ -27,7 +29,9 @@ void bcore_name_remove( tp_t type );
 
 /// syntactic sugar
 static inline tp_t typeof(   sc_t name ) { return bcore_name_get_hash( name ); }
+static inline tp_t typeof_n( sc_t name, sz_t n ) { return bcore_name_get_hash_n( name, n ); }
 static inline tp_t entypeof( sc_t name ) { return bcore_name_enroll(   name ); }
+static inline tp_t entypeof_n( sc_t name, sz_t n ) { return bcore_name_enroll_n( name, n ); }
 static inline sc_t nameof(   u2_t type ) { return bcore_name_get_name(   type ); }
 static inline sc_t ifnameof( u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
 

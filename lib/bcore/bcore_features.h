@@ -41,9 +41,9 @@ typedef void (*bcore_fp_logvf )( vd_t o, sc_t format, va_list args );
 
 /*********************************************************************************************************************/
 
-/// bifunctions
-typedef s2_t (*bcore_fp_cmp  )( vc_t v1,  vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
-typedef vd_t (*bcore_fp_fold )( vd_t acc, vc_t arg ); // folding
+/// comparison
+typedef s2_t (*bcore_fp_cmp  )(         vc_t v1, vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
+typedef s2_t (*bcore_fp_ocmp )( vc_t o, vc_t v1, vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
 
 /**********************************************************************************************************************/
 

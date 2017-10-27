@@ -95,26 +95,31 @@ sc_t bcore_name_get_name( tp_t type )
     return name;
 }
 
-tp_t bcore_name_enroll( sc_t name )
+tp_t bcore_name_enroll_n( sc_t name, sz_t n )
 {
     assert( hmap_s_g != NULL );
-    u2_t hash = bcore_name_get_hash( name );
-    if( hash == 0 ) ERR( "Hash of '%s' is zero. Zero is a reserved value.", name );
+    u2_t hash = bcore_name_get_hash_n( name, n );
+    if( hash == 0 ) ERR( "Hash of '%s' is zero. Zero is a reserved value.", st_s_create_sc_n( name, n )->sc );
     bcore_mutex_lock( &hmap_s_g->mutex );
     if( !hmap_s_g->map ) hmap_s_g->map = bcore_hmap_u2vd_s_create();
     vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, hash );
     if( vdp )
     {
         const st_s* string = *vdp;
-        if( !st_s_equal_sc( string, name ) ) ERR( "%s collides with %s", name, string->sc );
+        if( !st_s_equal_sc_n( string, name, n ) ) ERR( "%s collides with %s", st_s_create_sc_n( name, n )->sc, string->sc );
     }
     else
     {
         // name manager owns string because lifetime of name management exceeds that of perspective management
-        bcore_hmap_u2vd_s_set( hmap_s_g->map, hash, st_s_create_sc( name ), false );
+        bcore_hmap_u2vd_s_set( hmap_s_g->map, hash, st_s_create_sc_n( name, n ), false );
     }
     bcore_mutex_unlock( &hmap_s_g->mutex );
     return hash;
+}
+
+tp_t bcore_name_enroll( sc_t name )
+{
+    return bcore_name_enroll_n( name, bcore_strlen( name ) );
 }
 
 void bcore_name_remove( tp_t type )

@@ -39,11 +39,18 @@ typedef struct st_s
 void  st_s_init(         st_s* o );
 void  st_s_initvf(       st_s* o, sc_t format, va_list args );  // formatted initialization (like sprintf)
 void  st_s_initf(        st_s* o, sc_t format, ... );           // formatted initialization (like sprintf)
+void  st_s_init_fv(      st_s* o, sc_t format, va_list args );  // formatted initialization
+void  st_s_init_fa(      st_s* o, sc_t format, ... );           // formatted initialization
+void  st_s_init_sc_n(    st_s* o, sc_t sc, sz_t n );            // creates string from first n characters of sc
 void  st_s_init_sc(      st_s* o, sc_t sc );                    // creates string from sc
 void  st_s_init_weak_sc( st_s* o, sc_t sc );                    // creates a weak string referencing sc
 void  st_s_down(         st_s* o );
 void  st_s_copy(         st_s* o, const st_s* src );
+void  st_s_copyvf(       st_s* o, sc_t format, va_list args  );
 void  st_s_copyf(        st_s* o, sc_t format, ...  );
+void  st_s_copy_fv(      st_s* o, sc_t format, va_list args  );
+void  st_s_copy_fa(      st_s* o, sc_t format, ...  );
+void  st_s_copy_sc_n(    st_s* o, sc_t sc, sz_t n );
 void  st_s_copy_sc(      st_s* o, sc_t sc );
 void  st_s_assign_sc(    st_s* o, sc_t sc ); // assignment producing a weak string
 void  st_s_copy_typed(   st_s* o, tp_t type, vc_t src ); // copy with type conversion
@@ -52,6 +59,9 @@ void  st_s_move(         st_s* o, st_s* src );
 st_s* st_s_create();
 st_s* st_s_createvf(     sc_t format, va_list args );
 st_s* st_s_createf(      sc_t format, ... );
+st_s* st_s_create_fv(    sc_t format, va_list args );
+st_s* st_s_create_fa(    sc_t format, ... );
+st_s* st_s_create_sc_n(  sc_t sc, sz_t n );
 st_s* st_s_create_sc(    sc_t sc );
 st_s* st_s_create_weak_sc( sc_t sc );
 st_s* st_s_create_typed( tp_t type, vc_t src );
@@ -62,9 +72,10 @@ void  st_s_set_min_space(       st_s* o, sz_t min_space ); // ensures o->space >
 
 /// create with lifetime manager
 typedef struct bcore_life_s bcore_life_s;
-st_s* st_s_create_l(     bcore_life_s* life );
-st_s* st_s_createf_l(    bcore_life_s* life, sc_t format, ... );
-st_s* st_s_create_l_sc(  bcore_life_s* life, sc_t sc );
+st_s* st_s_create_l(      bcore_life_s* life );
+st_s* st_s_createf_l(     bcore_life_s* life, sc_t format, ... );
+st_s* st_s_create_l_sc_n( bcore_life_s* life, sc_t sc, sz_t n );
+st_s* st_s_create_l_sc(   bcore_life_s* life, sc_t sc );
 
 void  st_s_discard(       st_s* o );
 st_s* st_s_clone(   const st_s* o );
@@ -73,21 +84,27 @@ st_s* st_s_crop_d(        st_s* o, sz_t start, sz_t end ); // discards o;
 
 st_s* st_s_clear( st_s* o ); // empties string
 
-st_s* st_s_push_char(     st_s* o, char c );
-st_s* st_s_push_char_n(   st_s* o, char c, sz_t n ); // pushes c n times
-char  st_s_pop_char(      st_s* o );                 // removes last character and returns it
-void  st_s_pop_n(         st_s* o,         sz_t n ); // removes n last characters
-st_s* st_s_push_st(       st_s* o, const st_s* src );
-st_s* st_s_push_st_d(     st_s* o, st_s* src ); // discards src
-st_s* st_s_push_sc(       st_s* o, sc_t sc );
-st_s* st_s_push_typed(    st_s* o, tp_t type, vc_t src ); // push with type conversion
-st_s* st_s_pushf(         st_s* o, sc_t format, ... );
+st_s* st_s_push_char(   st_s* o, char c );
+st_s* st_s_push_char_n( st_s* o, char c, sz_t n ); // pushes c n times
+char  st_s_pop_char(    st_s* o );                 // removes last character and returns it
+void  st_s_pop_n(       st_s* o,         sz_t n ); // removes n last characters
+st_s* st_s_push_st(     st_s* o, const st_s* src );
+st_s* st_s_push_st_d(   st_s* o, st_s* src ); // discards src
+st_s* st_s_push_sc_n(   st_s* o, sc_t sc, sz_t n );
+st_s* st_s_push_sc(     st_s* o, sc_t sc );
+st_s* st_s_push_typed(  st_s* o, tp_t type, vc_t src ); // push with type conversion
+st_s* st_s_pushvf(      st_s* o, sc_t format, va_list args );
+st_s* st_s_pushf(       st_s* o, sc_t format, ... );
+st_s* st_s_push_fv(     st_s* o, sc_t format, va_list args );
+st_s* st_s_push_fa(     st_s* o, sc_t format, ... );
 
 /// comparison and equality (for return of comparison 'cmp' see bcore_strcmp)
-static inline s2_t st_s_cmp_sc(   const st_s* o, sc_t sc )        { return bcore_strcmp( o ? o->sc : NULL, sc ); }
-static inline s2_t st_s_cmp_st(   const st_s* o, const st_s* st ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ); }
-static inline bool st_s_equal_sc( const st_s* o, sc_t sc )        { return bcore_strcmp( o ? o->sc : NULL, sc ) == 0; }
-static inline bool st_s_equal_st( const st_s* o, const st_s* st ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ) == 0; }
+static inline s2_t st_s_cmp_sc(     const st_s* o, sc_t sc         ) { return bcore_strcmp( o ? o->sc : NULL, sc ); }
+static inline s2_t st_s_cmp_sc_n(   const st_s* o, sc_t sc, sz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ); }
+static inline s2_t st_s_cmp_st(     const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ); }
+static inline bool st_s_equal_sc(   const st_s* o, sc_t sc         ) { return bcore_strcmp( o ? o->sc : NULL, sc ) == 0; }
+static inline bool st_s_equal_sc_n( const st_s* o, sc_t sc, sz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ) == 0; }
+static inline bool st_s_equal_st(   const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ) == 0; }
 
 /** Search:
  *  Search involving positions between start to end in direction start --> end
@@ -113,6 +130,12 @@ st_s* st_s_insert_char( st_s* o, sz_t start, char c );
 st_s* st_s_insert_sc(   st_s* o, sz_t start, sc_t sc );
 st_s* st_s_insert_st(   st_s* o, sz_t start, const st_s* st );
 st_s* st_s_insert_st_d( st_s* o, sz_t start, st_s* st ); // discards string
+
+/// Replaces existing characters at position <start> (string length does not change)
+st_s* st_s_replace_char( st_s* o, sz_t start, char c );
+st_s* st_s_replace_sc(   st_s* o, sz_t start, sc_t sc );
+st_s* st_s_replace_st(   st_s* o, sz_t start, const st_s* st );
+st_s* st_s_replace_st_d( st_s* o, sz_t start, st_s* st ); // discards string
 
 /// Removes from position start: <size> characters. If not enough characters left, the entire tail is removed. Returns o.
 st_s* st_s_remove( st_s* o, sz_t start, sz_t size );
@@ -151,27 +174,28 @@ void st_s_print_d(     st_s* o ); // discards o
  *      Quotes inside the string are to be escaped '\"'.
  *      Backslashes are to be escaped '\\'.
  *
- *  "#until'<char>'"
+ *  "#until'<char>'"  (Example: "#until'\n'")
  *      Consumes a string until <char> is reached.
  *      The character is not consumed.
  *
- *  "#?'...'"
+ *  "#?'...'"  (Example: "#?'hidden'")
  *      Argument: bl_t*
  *      Consumes the string literal ... if exactly matching.
  *      Consumes nothing if not exactly matching.
  *      Sets argument 'true' on exact match, false otherwise.
  *      Character ' can be replaced by any other character not occurring in the literal.
  *
- *  "#<type>"
+ *  "#<type>"  (Example: "#u3_t" or "#<u3_t>")
  *      Argument: <type>*
  *      Matches content to <type>.
  *      Example: #u3_t matches to u3_t and requires u3_t* as argument.
  *      Supported types: u*_t, s*_t, f*_t, sz_t, bl_t.
  *
- *  "#-..."
+ *  "#-..."  (Example: "#-<u3_t>" )
  *      Argument: none
- *      For any above rule: If '-' is inserted after '#', the rule applies but
- *      no argument in the argument list is accessed or consumed.
+ *      For any above rule: If '-' is inserted after '#', the rule applies
+ *      only to consume characters. No argument in the argument list is
+ *      accessed or consumed.
  *
  *  Return:
  *     Index position after scan completes.

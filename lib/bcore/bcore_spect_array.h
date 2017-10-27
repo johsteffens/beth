@@ -110,14 +110,24 @@ sz_t bcore_array_spect_get_unit_size ( const bcore_array_s* p, vc_t o ); // spac
  *  Operations (max, min, sort, ...) use the compare perspective.
  */
 
-// maximum/minimum within range (order = -1: minimum)
-vc_t bcore_array_spect_max(       const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order );
-sz_t bcore_array_spect_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order );
+// max/min/(merge-)sort within range (for minimum, set direction == -1)
+vc_t bcore_array_spect_max_f(       const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+sz_t bcore_array_spect_max_index_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+void bcore_array_spect_sort_f(      const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+vc_t bcore_array_spect_max(         const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction );
+sz_t bcore_array_spect_max_index(   const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction );
+void bcore_array_spect_sort(        const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t direction );
 
-// (merge-)sort within index range [start, end-1]
-void bcore_array_spect_sort(      const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t order );
+/** Computes a sorted order from the array (array itself remains unchanged).
+ *  The returned order has size end - start and refers to the array section
+ *  specified by start and end.
+ *  Computing an order can be more efficient than sorting the array itself
+ *  when the array consists of nested elements.
+ */
+bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+bcore_arr_sz_s* bcore_array_spect_create_sorted_order(   const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction );
 
-void bcore_array_spect_reorder(   const bcore_array_s* p, vd_t o, const bcore_arr_sz_s* order );
+void bcore_array_spect_reorder( const bcore_array_s* p, vd_t o, const bcore_arr_sz_s* order );
 
 
 sz_t bcore_array_typed_get_size             ( tp_t tp, vc_t o );
@@ -156,9 +166,9 @@ tp_t bcore_array_typed_get_type             ( tp_t tp, vc_t o, sz_t index );
 vc_t bcore_array_typed_get_c_data           ( tp_t tp, vc_t o );
 vd_t bcore_array_typed_get_d_data           ( tp_t tp, vd_t o );
 sz_t bcore_array_typed_get_unit_size        ( tp_t tp, vc_t o );
-vc_t bcore_array_typed_max                  ( tp_t tp, vc_t o, sz_t start, sz_t end, s2_t order );
-sz_t bcore_array_typed_max_index            ( tp_t tp, vc_t o, sz_t start, sz_t end, s2_t order );
-void bcore_array_typed_sort                 ( tp_t tp, vd_t o, sz_t start, sz_t end, s2_t order );
+vc_t bcore_array_typed_max                  ( tp_t tp, vc_t o, sz_t start, sz_t end, s2_t direction );
+sz_t bcore_array_typed_max_index            ( tp_t tp, vc_t o, sz_t start, sz_t end, s2_t direction );
+void bcore_array_typed_sort                 ( tp_t tp, vd_t o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_typed_reorder              ( tp_t tp, vd_t o, const bcore_arr_sz_s* order );
 
 sz_t bcore_array_aware_get_size             ( vc_t o );
@@ -198,9 +208,9 @@ tp_t bcore_array_aware_get_type             ( vc_t o, sz_t index );
 vc_t bcore_array_aware_get_c_data           ( vc_t o );
 vd_t bcore_array_aware_get_d_data           ( vd_t o );
 sz_t bcore_array_aware_get_unit_size        ( vc_t o );
-vc_t bcore_array_aware_max                  ( vc_t o, sz_t start, sz_t end, s2_t order );
-sz_t bcore_array_aware_max_index            ( vc_t o, sz_t start, sz_t end, s2_t order );
-void bcore_array_aware_sort                 ( vd_t o, sz_t start, sz_t end, s2_t order );
+vc_t bcore_array_aware_max                  ( vc_t o, sz_t start, sz_t end, s2_t direction );
+sz_t bcore_array_aware_max_index            ( vc_t o, sz_t start, sz_t end, s2_t direction );
+void bcore_array_aware_sort                 ( vd_t o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_aware_reorder              ( vd_t o, const bcore_arr_sz_s* order );
 
 sz_t bcore_array_get_size             ( sr_s o );
@@ -240,9 +250,9 @@ tp_t bcore_array_get_type             ( sr_s o, sz_t index );
 vc_t bcore_array_get_c_data           ( sr_s o );
 vd_t bcore_array_get_d_data           ( sr_s o );
 sz_t bcore_array_get_unit_size        ( sr_s o );
-vc_t bcore_array_max                  ( sr_s o, sz_t start, sz_t end, s2_t order );
-sz_t bcore_array_max_index            ( sr_s o, sz_t start, sz_t end, s2_t order );
-void bcore_array_sort                 ( sr_s o, sz_t start, sz_t end, s2_t order );
+vc_t bcore_array_max                  ( sr_s o, sz_t start, sz_t end, s2_t direction );
+sz_t bcore_array_max_index            ( sr_s o, sz_t start, sz_t end, s2_t direction );
+void bcore_array_sort                 ( sr_s o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_reorder              ( sr_s o, const bcore_arr_sz_s* order );
 
 sz_t bcore_array_q_get_size             ( const sr_s* o );
@@ -282,9 +292,9 @@ tp_t bcore_array_q_get_type             ( const sr_s* o, sz_t index );
 vc_t bcore_array_q_get_c_data           ( const sr_s* o );
 vd_t bcore_array_q_get_d_data           ( const sr_s* o );
 sz_t bcore_array_q_get_unit_size        ( const sr_s* o );
-vc_t bcore_array_q_max                  ( const sr_s* o, sz_t start, sz_t end, s2_t order );
-sz_t bcore_array_q_max_index            ( const sr_s* o, sz_t start, sz_t end, s2_t order );
-void bcore_array_q_sort                 ( const sr_s* o, sz_t start, sz_t end, s2_t order );
+vc_t bcore_array_q_max                  ( const sr_s* o, sz_t start, sz_t end, s2_t direction );
+sz_t bcore_array_q_max_index            ( const sr_s* o, sz_t start, sz_t end, s2_t direction );
+void bcore_array_q_sort                 ( const sr_s* o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_q_reorder              ( const sr_s* o, const bcore_arr_sz_s* order );
 
 vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object );

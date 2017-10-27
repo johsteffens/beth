@@ -196,7 +196,7 @@ void bcore_arr_st_s_make_strong( bcore_arr_st_s* o )
     }
 }
 
-void bcore_arr_st_s_push_st( bcore_arr_st_s* o, const st_s* st )
+st_s* bcore_arr_st_s_push_st( bcore_arr_st_s* o, const st_s* st )
 {
     if( o->size >  o->space ) bcore_arr_st_s_make_strong( o );
     if( o->size == o->space )
@@ -211,9 +211,10 @@ void bcore_arr_st_s_push_st( bcore_arr_st_s* o, const st_s* st )
     {
         o->data[ o->size++ ] = NULL;
     }
+    return o->data[ o->size - 1 ];
 }
 
-void bcore_arr_st_s_push_st_d( bcore_arr_st_s* o, st_s* st )
+st_s* bcore_arr_st_s_push_st_d( bcore_arr_st_s* o, st_s* st )
 {
     if( o->size >  o->space ) bcore_arr_st_s_make_strong( o );
     if( o->size == o->space )
@@ -221,11 +222,12 @@ void bcore_arr_st_s_push_st_d( bcore_arr_st_s* o, st_s* st )
         o->data = bcore_un_alloc( sizeof( st_s* ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
     }
     o->data[ o->size++ ] = st;
+    return o->data[ o->size - 1 ];
 }
 
-void bcore_arr_st_s_push_sc( bcore_arr_st_s* o, sc_t sc )
+st_s* bcore_arr_st_s_push_sc( bcore_arr_st_s* o, sc_t sc )
 {
-    bcore_arr_st_s_push_st_d( o, st_s_create_sc( sc ) );
+    return bcore_arr_st_s_push_st_d( o, st_s_create_sc( sc ) );
 }
 
 void bcore_arr_st_s_pop( bcore_arr_st_s* o )

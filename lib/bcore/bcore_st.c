@@ -9,6 +9,401 @@
 #include "bcore_quicktypes.h"
 #include "bcore_life.h"
 
+/** Scans type; returns number of characters consumed; returns -1 in case of syntax error
+ *  Syntax:
+ *    - Elementary types may be expressed as is, e.g. sz_t.
+ *    - Any type may be enclosed in <>
+ *    - A pointer is specified via <...*> e.g. <u3_t*>
+ *    - no whitespaces permitted
+ */
+static int scan_type( sc_t format, tp_t* p_type, bl_t* p_is_ptr )
+{
+    sc_t fp = format;
+    if( fp[ 0 ] == 0 ) return -1;
+    tp_t type = 0;
+    if( fp[ 0 ] == '<' )
+    {
+        fp++;
+        sc_t fp0 = fp;
+        while( *fp != 0 && *fp != '>' ) fp++;
+        if( *fp != '>' ) return -1;
+        sc_t fp1 = fp++;
+        if( fp1[ -1 ] == '*' )
+        {
+            fp1--;
+            if( p_is_ptr ) *p_is_ptr = true;
+        }
+        else
+        {
+            if( p_is_ptr ) *p_is_ptr = false;
+        }
+        type = typeof_n( fp0, fp1 - fp0 );
+    }
+    else if( fp[ 1 ] != 0 && fp[ 2 ] == '_' && fp[ 3 ] == 't' ) // all types of format xy_t
+    {
+        type = typeof_n( fp, 4 );
+        fp += 4;
+    }
+    else
+    {
+        return -1;
+    }
+    if( p_type ) *p_type = type;
+    return fp - format;
+}
+
+// Returns number of characters in the formatted string (excluding terminating 0)
+sz_t conv_fnv( sd_t dst, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
+{
+    if( !dst ) space = 0;
+    sz_t i = 0;
+    sz_t ret_size = 0;
+    while( i < fsize )
+    {
+        if( f[ i ] == '#' )
+        {
+            i++;
+            tp_t type = 0;
+            int inc = 0;
+            bl_t is_ptr = false;
+
+            if( f[ i ] == 'r' ) // repeating (repetition of a string resulting from 1-pass format-block evaluation)
+            {
+                i++;
+                sz_t n = 0;
+                if( f[ i ] >= '0' && f[ i ] <= '9' )
+                {
+                    n = atoi( f + i );
+                    while( f[ i ] >= '0' && f[ i ] <= '9' ) i++;
+                }
+                else if( f[ i ] == 'n' )  // get number of repetitions from sz_t argument
+                {
+                    i++;
+                    n = va_arg( *p_args, sz_t );
+                }
+                else
+                {
+                    ERR( "Could not obtain number of repetitions repeat-expression '%s'.", f );
+                }
+                char start_char = f[ i ];
+                sz_t start_block = i + 1;
+                char stop_char = 0;
+                switch( start_char )
+                {
+                    case '(': stop_char = ')'; break;
+                    case '{': stop_char = '}'; break;
+                    case '[': stop_char = ']'; break;
+                    case '<': stop_char = '>'; break;
+                    default: ERR( "Invalid bracket character '%c' in format string '%s'.", start_char, f ); break;
+                }
+
+                sz_t count = 1;
+                while( i < fsize && count > 0 )
+                {
+                    i++;
+                    if     ( f[ i ] == stop_char  ) count--;
+                    else if( f[ i ] == start_char ) count++;
+                }
+                if( count > 0 ) ERR( "Missing block termination in format string '%s'.", start_char, f );
+                sz_t stop_block = i;
+                i++;
+
+                if( n > 0 )
+                {
+                    sz_t txt_size = 0;
+                    txt_size = conv_fnv( dst, space, f + start_block, stop_block - start_block, p_args );
+                    sc_t src = dst;
+                    dst   += ( txt_size < space ) ? txt_size : space;
+                    space -= ( txt_size < space ) ? txt_size : space;
+                    ret_size += txt_size;
+                    for( sz_t i = 1; i < n; i++ )
+                    {
+                        for( sz_t i = 0; i < txt_size; i++ )
+                        {
+                            if( space > 0 )
+                            {
+                                *dst++ = src[ i ];
+                                space--;
+                            }
+                        }
+                        ret_size += txt_size;
+                    }
+                }
+
+            }
+            else if( f[ i ] == 'p' ) // padding
+            {
+                i++;
+                bl_t left = false;
+                if( f[ i ] == 'l' ) // left padding
+                {
+                    i++;
+                    left = true;
+                }
+                sz_t n = 0;
+                if( f[ i ] >= '0' && f[ i ] <= '9' )
+                {
+                    n = atoi( f + i );
+                    while( f[ i ] >= '0' && f[ i ] <= '9' ) i++;
+                }
+                else if( f[ i ] == 'n' )  // get padding size from sz_t argument
+                {
+                    i++;
+                    n = va_arg( *p_args, sz_t );
+                }
+                else
+                {
+                    ERR( "Could not obtain target size in padding expression '%s'.", f );
+                }
+                char pad_char = f[ i++ ];
+                char start_char = f[ i ];
+                sz_t start_block = i + 1;
+                char stop_char = 0;
+                switch( start_char )
+                {
+                    case '(': stop_char = ')'; break;
+                    case '{': stop_char = '}'; break;
+                    case '[': stop_char = ']'; break;
+                    case '<': stop_char = '>'; break;
+                    default: ERR( "Invalid bracket character '%c' in format string '%s'.", start_char, f ); break;
+                }
+
+                sz_t count = 1;
+                while( i < fsize && count > 0 )
+                {
+                    i++;
+                    if     ( f[ i ] == stop_char  ) count--;
+                    else if( f[ i ] == start_char ) count++;
+                }
+                if( count > 0 ) ERR( "Missing block termination in format string '%s'.", start_char, f );
+                sz_t stop_block = i;
+                i++;
+                sz_t txt_size = 0;
+                if( left ) // compute space
+                {
+                    va_list argsl;
+                    va_copy( argsl, *p_args );
+                    txt_size = conv_fnv( NULL, 0, f + start_block, stop_block - start_block, &argsl );
+                    va_end( argsl );
+                }
+                else
+                {
+                    txt_size = conv_fnv( dst, space, f + start_block, stop_block - start_block, p_args );
+                    dst   += ( txt_size < space ) ? txt_size : space;
+                    space -= ( txt_size < space ) ? txt_size : space;
+                    ret_size += txt_size;
+                }
+
+                // padding
+                if( txt_size < n )
+                {
+                    for( sz_t i = n - txt_size; i > 0; i-- )
+                    {
+                        if( space > 1 )
+                        {
+                            *dst++ = pad_char;
+                            space--;
+                        }
+                        ret_size++;
+                    }
+                }
+
+                if( left )
+                {
+                    if( space > 0 )
+                    {
+                        txt_size = conv_fnv( dst, space, f + start_block, stop_block - start_block, p_args );
+                        dst   += ( txt_size < space ) ? txt_size : space;
+                        space -= ( txt_size < space ) ? txt_size : space;
+                    }
+                    ret_size += txt_size;
+                }
+            }
+            else if( ( inc = scan_type( f + i, &type, &is_ptr ) ) >= 0 )
+            {
+                int sres = 0;
+                if( is_ptr )
+                {
+                    switch( type )
+                    {
+                        case TYPEOF_u0_t:
+                        {
+                            u0_t* v = va_arg( *p_args, u0_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIu0_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_u1_t:
+                        {
+                            u1_t* v = va_arg( *p_args, u1_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIu1_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_u2_t:
+                        {
+                            u2_t* v = va_arg( *p_args, u2_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIu2_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_u3_t:
+                        {
+                            u3_t* v = va_arg( *p_args, u3_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIu3_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_s0_t:
+                        {
+                            s0_t* v = va_arg( *p_args, s0_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIs0_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_s1_t:
+                        {
+                            s1_t* v = va_arg( *p_args, s1_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIs1_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_s2_t:
+                        {
+                            s2_t* v = va_arg( *p_args, s2_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIs2_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_s3_t:
+                        {
+                            s3_t* v = va_arg( *p_args, s3_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIs3_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_sz_t:
+                        {
+                            sz_t* v = va_arg( *p_args, sz_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIsz_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_f2_t:
+                        {
+                            f2_t* v = va_arg( *p_args, f2_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIf2_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_f3_t:
+                        {
+                            f3_t* v = va_arg( *p_args, f3_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIf3_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_tp_t:
+                        {
+                            tp_t* v = va_arg( *p_args, tp_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRItp_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_bl_t:
+                        {
+                            bl_t* v = va_arg( *p_args, bl_t* );
+                            if( v ) sres = snprintf( dst, space, *v ? "true" : "false" );
+                        }
+                        break;
+
+                        case TYPEOF_sc_t:
+                        case TYPEOF_sd_t:
+                        {
+                            sc_t* v = va_arg( *p_args, sc_t* );
+                            if( v ) sres = snprintf( dst, space, "%s", *v );
+                        }
+                        break;
+
+                        case TYPEOF_st_s:
+                        {
+                            st_s* v = va_arg( *p_args, st_s* );
+                            if( v ) sres = snprintf( dst, space, "%s", v->sc );
+                        }
+                        break;
+
+                        default: ERR( "Unhandled type specifier '%s'.", f + i ); break;
+                    }
+                }
+                else
+                {
+                    switch( type )
+                    {
+                        case TYPEOF_u0_t: // u0 and u1 is promoted to unsigned int
+                        case TYPEOF_u1_t: sres = snprintf( dst, space, "%u", va_arg( *p_args, unsigned int ) ); break;
+                        case TYPEOF_u2_t: sres = snprintf( dst, space, "%"PRIu2_t"", va_arg( *p_args, u2_t ) ); break;
+                        case TYPEOF_u3_t: sres = snprintf( dst, space, "%"PRIu3_t"", va_arg( *p_args, u3_t ) ); break;
+                        case TYPEOF_s0_t: // s0 and s1 is promoted to int
+                        case TYPEOF_s1_t: sres = snprintf( dst, space, "%i",         va_arg( *p_args, int  ) ); break;
+                        case TYPEOF_s2_t: sres = snprintf( dst, space, "%"PRIs2_t"", va_arg( *p_args, s2_t ) ); break;
+                        case TYPEOF_s3_t: sres = snprintf( dst, space, "%"PRIs3_t"", va_arg( *p_args, s3_t ) ); break;
+                        case TYPEOF_sz_t: sres = snprintf( dst, space, "%"PRIsz_t"", va_arg( *p_args, sz_t ) ); break;
+                        // f2_t is promoted to double
+                        case TYPEOF_f2_t: sres = snprintf( dst, space, "%g",       va_arg( *p_args, double ) ); break;
+                        case TYPEOF_f3_t: sres = snprintf( dst, space, "%"PRIf3_t"", va_arg( *p_args, f3_t ) ); break;
+                        case TYPEOF_tp_t: sres = snprintf( dst, space, "%"PRItp_t"", va_arg( *p_args, tp_t ) ); break;
+                        // bl_t is promoted to int
+                        case TYPEOF_bl_t: sres = snprintf( dst, space, va_arg( *p_args, int ) ? "true" : "false" ); break;
+                        case TYPEOF_sc_t: sres = snprintf( dst, space, "%s", va_arg( *p_args, sc_t ) ); break;
+                        case TYPEOF_sd_t: sres = snprintf( dst, space, "%s", va_arg( *p_args, sd_t ) ); break;
+                        case TYPEOF_st_s: sres = snprintf( dst, space, "%s", va_arg( *p_args, st_s ).sc ); break;
+                        default: ERR( "Unhandled type specifier '%s", f + i ); break;
+                    }
+                }
+                if( sres < 0 ) ERR( "Format error '%s", f + i );
+                i += inc;
+                ret_size += sres;
+                if( sres < space )
+                {
+                    dst += sres;
+                    space -= sres;
+                }
+                else
+                {
+                    dst += space;
+                    space = 0;
+                }
+            }
+            else if( f[ i ] == '#' )
+            {
+                if( space > 1 )
+                {
+                    *dst++ = f[ i ];
+                    space--;
+                }
+                ret_size++;
+                i++;
+            }
+            else
+            {
+                ERR( "Format directive in '%s' not recognized", f );
+            }
+        }
+        else
+        {
+            if( space > 1 )
+            {
+                *dst++ = f[ i ];
+                space--;
+            }
+            ret_size++;
+            i++;
+        }
+    }
+    if( space > 0 ) *dst = 0;
+    return ret_size;
+}
+
 void st_s_init( st_s* o )
 {
     o->_ = TYPEOF_st_s;
@@ -16,194 +411,6 @@ void st_s_init( st_s* o )
     o->size = o->space = 0;
 }
 
-/*
-// Returns number of characters in the formatted string (excluding terminating 0)
-sz_t conv_fv( sd_t dst, sz_t space, sc_t format, va_list args )
-{
-    if( !dst ) space = 0;
-    sc_t fp = format;
-    sz_t ret_size = 0;
-    while( *fp )
-    {
-        if( *fp == '#' )
-        {
-            fp++;
-            tp_t type = 0;
-            if( fp[ 0 ] != 0 && fp[ 1 ] != 0 && fp[ 2 ] == '_' && fp[ 3 ] == 't' ) // all types of format xy_t
-            {
-                switch( fp[ 0 ] )
-                {
-                    case 'u':
-                    {
-                        switch( fp[ 1 ] )
-                        {
-                            case '0': type = TYPEOF_u0_t; break;
-                            case '1': type = TYPEOF_u1_t; break;
-                            case '2': type = TYPEOF_u2_t; break;
-                            case '3': type = TYPEOF_u3_t; break;
-                            default: break;
-                        }
-                    }
-                    break;
-
-                    case 's':
-                    {
-                        switch( fp[ 1 ] )
-                        {
-                            case '0': type = TYPEOF_s0_t; break;
-                            case '1': type = TYPEOF_s1_t; break;
-                            case '2': type = TYPEOF_s2_t; break;
-                            case '3': type = TYPEOF_s3_t; break;
-                            case 'z': type = TYPEOF_sz_t; break;
-                            default: break;
-                        }
-                    }
-                    break;
-
-                    case 'f':
-                    {
-                        switch( fp[ 1 ] )
-                        {
-                            case '2': type = TYPEOF_f2_t; break;
-                            case '3': type = TYPEOF_f3_t; break;
-                            default: break;
-                        }
-                    }
-                    break;
-
-                    case 't': type = ( fp[ 1 ] == 'p' ) ? TYPEOF_tp_t : 0; break;
-                    case 'b': type = ( fp[ 1 ] == 'l' ) ? TYPEOF_bl_t : 0; break;
-                    default: break;
-                }
-
-                if( type == 0 ) ERR( "Unknown format type specifier: '%s'.", fp );
-
-                fp += 4;
-                int size = 0;
-                int sres = -1;
-
-                switch( type )
-                {
-                    case TYPEOF_u0_t:
-                    {
-                        u0_t v = va_arg( args, u0_t );
-                        sres = snprintf( dst, space, "%"PRIu0_t"%n", v, &size );
-                        break;
-                    }
-
-                    case TYPEOF_u1_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRIu1_t"%n", va_arg( args, u1_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_u2_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRIu2_t"%n", va_arg( args, u2_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_u3_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRIu3_t"%n", va_arg( args, u3_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_s0_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRIs0_t"%n", va_arg( args, s0_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_s1_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRIs1_t"%n", va_arg( args, s1_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_s2_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRIs2_t"%n", va_arg( args, s2_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_s3_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRIs3_t"%n", va_arg( args, s3_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_sz_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRIsz_t"%n", va_arg( args, sz_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_f2_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRIf2_t"%n", va_arg( args, f2_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_f3_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRIf3_t"%n", va_arg( args, f3_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_tp_t:
-                    {
-                        sres = snprintf( dst, space, "%"PRItp_t"%n", va_arg( args, tp_t ), &size );
-                        break;
-                    }
-
-                    case TYPEOF_bl_t:
-                    {
-                        if( va_arg( args, bl_t ) )
-                        {
-                            sres = snprintf( dst, space, "true%n", &size );
-                        }
-                        else
-                        {
-                            sres = snprintf( dst, space, "false%n", &size );
-                        }
-                    }
-                    break;
-                }
-
-                if( sres <= 0 )
-                {
-                    ERR( "\n%s\nProcessing format '%s' failed.", format );
-                }
-
-                dst += size;
-                space -= size;
-                ret_size += sres;
-            }
-            else if( *fp == '#' )
-            {
-                if( space > 1 )
-                {
-                    *dst++ = *fp++;
-                    space--;
-                }
-                ret_size++;
-            }
-        }
-        else
-        {
-            if( space > 1 )
-            {
-                *dst++ = *fp++;
-                space--;
-            }
-            ret_size++;
-        }
-    }
-    if( space > 0 ) *dst = 0;
-    return ret_size;
-}
-*/
 void st_s_initvf( st_s* o, sc_t format, va_list args )
 {
     st_s_init( o );
@@ -219,6 +426,32 @@ void st_s_initvf( st_s* o, sc_t format, va_list args )
     o->size = bcore_strlen( o->sc );
 }
 
+void st_s_init_fv( st_s* o, sc_t format, va_list args )
+{
+    st_s_init( o );
+    sz_t format_size = bcore_strlen( format );
+    s3_t n = 0;
+    {
+        va_list argsl;
+        va_copy( argsl, args );
+        n = conv_fnv( NULL, 0, format, format_size, &argsl );
+        va_end( argsl );
+    }
+    if( n < 0 ) ERR( "Format error in '%s'\n", format );
+    o->space = n + 1;
+    if( o->space < 8 ) o->space = 8;
+    o->data = bcore_b_alloc( NULL, o->space, &o->space );
+
+    {
+        va_list argsl;
+        va_copy( argsl, args );
+        conv_fnv( o->data, o->space, format, format_size, &argsl );
+        va_end( argsl );
+    }
+
+    o->size = bcore_strlen( o->sc );
+}
+
 void st_s_initf( st_s* o, sc_t format, ... )
 {
     va_list args;
@@ -227,23 +460,34 @@ void st_s_initf( st_s* o, sc_t format, ... )
     va_end( args );
 }
 
-void st_s_init_sc( st_s* o, sc_t sc )
+void st_s_init_fa( st_s* o, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    st_s_init_fv( o, format, args );
+    va_end( args );
+}
+
+void st_s_init_sc_n( st_s* o, sc_t sc, sz_t sc_size )
 {
     st_s_init( o );
-    sz_t src_size = bcore_strlen( sc );
-    o->space = src_size < 8 ? 8 : src_size + 1;
+    o->space = sc_size < 8 ? 8 : sc_size + 1;
     o->data  = bcore_b_alloc( NULL, o->space, &o->space );
-    bcore_memcpy( o->data, sc, src_size );
-    o->size = src_size;
+    bcore_memcpy( o->data, sc, sc_size );
+    o->size = sc_size;
     o->data[ o->size ] = 0;
+}
+
+void st_s_init_sc( st_s* o, sc_t sc )
+{
+    st_s_init_sc_n( o, sc, bcore_strlen( sc ) );
 }
 
 void st_s_init_weak_sc( st_s* o, sc_t sc )
 {
     st_s_init( o );
-    sz_t src_size = bcore_strlen( sc );
     o->sc    = sc;
-    o->size  = src_size;
+    o->size  = bcore_strlen( sc );
 }
 
 void st_s_down( st_s* o )
@@ -266,18 +510,22 @@ void st_s_copy( st_s* o, const st_s* src )
     o->data[ o->size ] = 0;
 }
 
-void st_s_copy_sc( st_s* o, sc_t sc )
+void st_s_copy_sc_n( st_s* o, sc_t sc, sz_t sc_size )
 {
-    sz_t src_size = bcore_strlen( sc );
-    if( o->space <= src_size )
+    if( o->space <= sc_size )
     {
         if( o->space > 0 ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
-        o->space = src_size < 8 ? 8 : src_size + 1;
+        o->space = sc_size < 8 ? 8 : sc_size + 1;
         o->data  = bcore_b_alloc( NULL, o->space, &o->space );
     }
-    bcore_memcpy( o->data, sc, src_size );
-    o->size = src_size;
+    bcore_memcpy( o->data, sc, sc_size );
+    o->size = sc_size;
     o->data[ o->size ] = 0;
+}
+
+void st_s_copy_sc( st_s* o, sc_t sc )
+{
+    st_s_copy_sc_n( o, sc, bcore_strlen( sc ) );
 }
 
 void st_s_assign_sc( st_s* o, sc_t sc )
@@ -288,12 +536,31 @@ void st_s_assign_sc( st_s* o, sc_t sc )
     o->size = src_size;
 }
 
-void st_s_copyf( st_s* o, sc_t format, ...  )
+void st_s_copyvf( st_s* o, sc_t format, va_list args  )
 {
     st_s_down( o );
+    st_s_initvf( o, format, args );
+}
+
+void st_s_copyf( st_s* o, sc_t format, ...  )
+{
     va_list args;
     va_start( args, format );
-    st_s_initvf( o, format, args );
+    st_s_copyvf( o, format, args );
+    va_end( args );
+}
+
+void st_s_copy_fv( st_s* o, sc_t format, va_list args  )
+{
+    st_s_down( o );
+    st_s_init_fv( o, format, args );
+}
+
+void st_s_copy_fa( st_s* o, sc_t format, ...  )
+{
+    va_list args;
+    va_start( args, format );
+    st_s_copy_fv( o, format, args );
     va_end( args );
 }
 
@@ -361,19 +628,39 @@ st_s* st_s_createvf( sc_t format, va_list args )
 
 st_s* st_s_createf( sc_t format, ... )
 {
-    st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
     va_list args;
     va_start( args, format );
-    st_s_initvf( o, format, args );
+    st_s* o = st_s_createvf( format, args );
     va_end( args );
+    return o;
+}
+
+st_s* st_s_create_fv( sc_t format, va_list args )
+{
+    st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
+    st_s_init_fv( o, format, args );
+    return o;
+}
+
+st_s* st_s_create_fa( sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    st_s* o = st_s_create_fv( format, args );
+    va_end( args );
+    return o;
+}
+
+st_s* st_s_create_sc_n( sc_t sc, sz_t sc_size )
+{
+    st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
+    st_s_init_sc_n( o, sc, sc_size );
     return o;
 }
 
 st_s* st_s_create_sc( sc_t sc )
 {
-    st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
-    st_s_init_sc( o, sc );
-    return o;
+    return st_s_create_sc_n( sc, bcore_strlen( sc ) );
 }
 
 st_s* st_s_create_weak_sc( sc_t sc )
@@ -396,6 +683,11 @@ st_s* st_s_createf_l( bcore_life_s* life, sc_t format, ... )
     st_s_initvf( o, format, args );
     va_end( args );
     return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, o );
+}
+
+st_s* st_s_create_l_sc_n( bcore_life_s* life, sc_t sc, sz_t sc_size )
+{
+    return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create_sc_n( sc, sc_size ) );
 }
 
 st_s* st_s_create_l_sc( bcore_life_s* life, sc_t sc )
@@ -487,7 +779,7 @@ st_s* st_s_clear( st_s* o )
     {
         if( o->space > 0 )
         {
-            o->data[ o->size ] = 0;
+            o->data[ 0 ] = 0;
         }
         else
         {
@@ -568,23 +860,27 @@ st_s* st_s_push_st_d( st_s* o, st_s* src )
     return o;
 }
 
-st_s* st_s_push_sc( st_s* o, sc_t sc )
+st_s* st_s_push_sc_n( st_s* o, sc_t sc, sz_t sc_size )
 {
     if( o->size == 0 )
     {
         st_s_copy_sc( o, sc );
         return o;
     }
-    sz_t src_size = bcore_strlen( sc );
-    if( o->space < o->size + src_size + 1 )
+    if( o->space < o->size + sc_size + 1 )
     {
         if( o->space == 0 ) st_s_make_strong( o );
-        o->data = bcore_bn_alloc( o->data, o->space, o->size + src_size + 1, &o->space );
+        o->data = bcore_bn_alloc( o->data, o->space, o->size + sc_size + 1, &o->space );
     }
-    bcore_memcpy( o->data + o->size, sc, src_size );
-    o->size += src_size;
+    bcore_memcpy( o->data + o->size, sc, sc_size );
+    o->size += sc_size;
     o->data[ o->size ] = 0;
     return o;
+}
+
+st_s* st_s_push_sc( st_s* o, sc_t sc )
+{
+    return st_s_push_sc_n( o, sc, bcore_strlen( sc ) );
 }
 
 st_s* st_s_push_typed( st_s* o, tp_t type, vc_t src )
@@ -594,15 +890,39 @@ st_s* st_s_push_typed( st_s* o, tp_t type, vc_t src )
     return st_s_push_st_d( o, s );
 }
 
+st_s* st_s_pushvf( st_s* o, sc_t format, va_list args )
+{
+    st_s s;
+    st_s_initvf( &s, format, args );
+    st_s_push_st( o, &s );
+    st_s_down( &s );
+    return o;
+}
+
 st_s* st_s_pushf( st_s* o, sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    st_s s;
-    st_s_initvf( &s, format, args );
+    st_s_pushvf( o, format, args );
     va_end( args );
+    return o;
+}
+
+st_s* st_s_push_fv( st_s* o, sc_t format, va_list args )
+{
+    st_s s;
+    st_s_init_fv( &s, format, args );
     st_s_push_st( o, &s );
     st_s_down( &s );
+    return o;
+}
+
+st_s* st_s_push_fa( st_s* o, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    st_s_push_fv( o, format, args );
+    va_end( args );
     return o;
 }
 
@@ -817,6 +1137,54 @@ st_s* st_s_insert_sc( st_s* o, sz_t start, sc_t sc )
     return o;
 }
 
+st_s* st_s_replace_char( st_s* o, sz_t start, char c )
+{
+    if( start >= o->size ) return o;
+    if( o->space == 0 ) st_s_make_strong( o );
+    o->data[ start ] = c;
+    return o;
+}
+
+st_s* st_s_replace_st( st_s* o, sz_t start, const st_s* string )
+{
+    if( o == string )
+    {
+        st_s* string_l = st_s_clone( string );
+        st_s_replace_st( o, start, string_l );
+        st_s_discard( string_l );
+        return o;
+    }
+    if( start >= o->size ) return o;
+    if( o->space == 0 ) st_s_make_strong( o );
+    for( sz_t i = 0; i < string->size; i++ )
+    {
+        sz_t idx = i + start;
+        if( idx == o->size ) break;
+        o->data[ idx ] = string->data[ i ];
+    }
+    return o;
+}
+
+st_s* st_s_replace_st_d( st_s* o, sz_t start, st_s* string )
+{
+    st_s_replace_st( o, start, string );
+    st_s_discard( string );
+    return o;
+}
+
+st_s* st_s_replace_sc( st_s* o, sz_t start, sc_t sc )
+{
+    if( start >= o->size ) return o;
+    if( o->space == 0 ) st_s_make_strong( o );
+    for( sz_t i = 0; *sc != 0; i++ )
+    {
+        sz_t idx = i + start;
+        if( idx == o->size ) break;
+        o->data[ idx ] = *sc++;
+    }
+    return o;
+}
+
 st_s* st_s_replace_char_sc( st_s* o, char c, sc_t sc )
 {
     sz_t start = 0;
@@ -995,59 +1363,14 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
                 set_arg = false;
             }
             tp_t type = 0;
-            if( fp[ 0 ] != 0 && fp[ 1 ] != 0 && fp[ 2 ] == '_' && fp[ 3 ] == 't' ) // all types of format xy_t
+            int fp_inc = 0;
+            bl_t is_ptr = true;
+            if( ( fp_inc = scan_type( fp, &type, &is_ptr ) ) >= 0 )
             {
-                switch( fp[ 0 ] )
-                {
-                    case 'u':
-                    {
-                        switch( fp[ 1 ] )
-                        {
-                            case '0': type = TYPEOF_u0_t; break;
-                            case '1': type = TYPEOF_u1_t; break;
-                            case '2': type = TYPEOF_u2_t; break;
-                            case '3': type = TYPEOF_u3_t; break;
-                            default: break;
-                        }
-                    }
-                    break;
-
-                    case 's':
-                    {
-                        switch( fp[ 1 ] )
-                        {
-                            case '0': type = TYPEOF_s0_t; break;
-                            case '1': type = TYPEOF_s1_t; break;
-                            case '2': type = TYPEOF_s2_t; break;
-                            case '3': type = TYPEOF_s3_t; break;
-                            case 'z': type = TYPEOF_sz_t; break;
-                            default: break;
-                        }
-                    }
-                    break;
-
-                    case 'f':
-                    {
-                        switch( fp[ 1 ] )
-                        {
-                            case '2': type = TYPEOF_f2_t; break;
-                            case '3': type = TYPEOF_f3_t; break;
-                            default: break;
-                        }
-                    }
-                    break;
-
-                    case 't': type = ( fp[ 1 ] == 'p' ) ? TYPEOF_tp_t : 0; break;
-                    case 'b': type = ( fp[ 1 ] == 'l' ) ? TYPEOF_bl_t : 0; break;
-                    default: break;
-                }
-
-                if( type == 0 ) ERR( "Unknown format type specifier: '%s'.", fp );
-
-                fp += 4;
+                if( !is_ptr ) ERR( "Type specifier '%s' must be a pointer. Use syntax <...*>.", fp );
+                fp += fp_inc;
                 int size = 0;
                 int sres = -1;
-
                 switch( type )
                 {
                     case TYPEOF_u0_t:
@@ -1166,6 +1489,12 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
                         if( set_arg ) *va_arg( args, bl_t* ) = val;
                         size = 0;
                         sres = 1;
+                    }
+                    break;
+
+                    default:
+                    {
+                        ERR( "Unknown format type specifier: '%s'.", fp );
                     }
                     break;
                 }
@@ -1434,7 +1763,7 @@ static bcore_flect_self_s* st_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,          "bcore_fp_flow_snk",       "flow_snk"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )flow_src,          "bcore_fp_flow_src",       "flow_src"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )string_p_errorvf,  "bcore_fp_logvf",          "p_errorvf"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parse_fv,    "bcore_source_fp_parse_fv", "parse_fv"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv"      );
     bcore_flect_self_s_push_external_func( self, ( fp_t )check_sanity,      "bcore_fp_check_sanity",   "check_sanity" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",        "cmp_st"       );
     return self;
@@ -1468,6 +1797,10 @@ static void st_s_quicktest( void )
     st_s_push_typed( s, typeof( "s2_t" ), &num0 );
     st_s_push_sc( s, " and an integer" );
     s3_t num1 = 0;
+    idx = st_s_parse_fa( s, 0, s->size, "This number is #<s3_t*>", &num1 );
+    ASSERT( num1 == -12345 );
+    ASSERT( bcore_strcmp( s->sc + idx, " and an integer" ) == 0 );
+
     idx = st_s_parse_fa( s, 0, s->size, "This number is #s3_t", &num1 );
     ASSERT( num1 == -12345 );
     ASSERT( bcore_strcmp( s->sc + idx, " and an integer" ) == 0 );
@@ -1481,6 +1814,34 @@ static void st_s_quicktest( void )
     st_s_replace_sc_sc( ws, "weak", "strong" );
     ASSERT( st_s_cmp_sc( ws, "This is a strong string" ) == 0 );
     ASSERT( ws->space > 0 );
+
+    // beth formatting
+    s2_t v = -100;
+
+    st_s_clear( s );
+    st_s_push_fa( s, "abc#<s2_t>def", v );
+    ASSERT( st_s_cmp_sc( s, "abc-100def" ) == 0 );
+    st_s_clear( s );
+    st_s_push_fa( s, "abc#s2_tdef", v );
+    ASSERT( st_s_cmp_sc( s, "abc-100def" ) == 0 );
+    st_s_clear( s );
+    st_s_push_fa( s, "abc#<s2_t*>def", &v );
+    ASSERT( st_s_cmp_sc( s, "abc-100def" ) == 0 );
+    st_s_clear( s );
+    st_s_push_fa( s, "#p10.{#<s2_t*>}\n", &v );
+    ASSERT( st_s_cmp_sc( s, "-100......\n" ) == 0 );
+    st_s_clear( s );
+    st_s_push_fa( s, "#pl10.{#<s2_t*>}\n", &v );
+    ASSERT( st_s_cmp_sc( s, "......-100\n" ) == 0 );
+    st_s_clear( s );
+    st_s_push_fa( s, "#p3.{#<s2_t*>}\n", &v );
+    ASSERT( st_s_cmp_sc( s, "-100\n" ) == 0 );
+    st_s_clear( s );
+    st_s_push_fa( s, "#pl10.{#pn*{#<s2_t*>}}\n", ( sz_t )6, &v );
+    ASSERT( st_s_cmp_sc( s, "....-100**\n" ) == 0 );
+    st_s_clear( s );
+    st_s_push_fa( s, "#r3{#<s2_t*>}\n", &v );
+    ASSERT( st_s_cmp_sc( s, "-100-100-100\n" ) == 0 );
 
     bcore_life_s_discard( life );
 

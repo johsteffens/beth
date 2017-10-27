@@ -177,7 +177,7 @@ sd_t bcore_strcpy( sd_t dst, sc_t src )
 int bcore_strcmp( sc_t str1, sc_t str2 )
 {
     if( str1 == NULL ) return ( str2 == NULL ) ? 0 :  1;
-    if( str2 == NULL ) return ( str1 == NULL ) ? 0 : -1;
+    if( str2 == NULL ) return -1;
     while( ( *str1 != 0 ) && ( *str2 != 0 ) )
     {
         if( *str1 != *str2 ) return ( *str1 < *str2 ) ? 2 : -2;
@@ -185,6 +185,23 @@ int bcore_strcmp( sc_t str1, sc_t str2 )
         str2++;
     }
     return ( *str1 == 0 ) ? ( ( *str2 == 0 ) ? 0 : +1 ) : -1;
+}
+
+int bcore_strcmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 )
+{
+    if( str1 == NULL ) return ( str2 == NULL ) ? 0 :  1;
+    if( str2 == NULL ) return -1;
+    if( n1 == 0 ) return ( n2 == 0 ) ? 0 :  1;
+    if( n2 == 0 ) return -1;
+    sz_t i1 = 0;
+    sz_t i2 = 0;
+    while( ( i1 < n1 ) && ( i2 < n2 ) )
+    {
+        if( str1[ i1 ] != str2[ i2 ] ) return ( str1[ i1 ] < str2[ i2 ] ) ? 2 : -2;
+        i1++;
+        i2++;
+    }
+    return ( i1 == n1 ) ? ( ( i2 == n2 ) ? 0 : +1 ) : -1;
 }
 
 sz_t bcore_strlen( sc_t str )

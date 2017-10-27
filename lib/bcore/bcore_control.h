@@ -95,12 +95,13 @@ sd_t bcore_strcpy( sd_t dst, sc_t src );
  *
  */
 s2_t bcore_strcmp( sc_t str1, sc_t str2 );
+s2_t bcore_strcmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 );
 
 /// like strlen but also accepts NULL
 sz_t bcore_strlen( sc_t str );
 
 /// returns true iff c occurs in str
-bool bcore_strany( char c, sc_t str );
+bl_t bcore_strany( char c, sc_t str );
 
 /**********************************************************************************************************************/
 /// Pseudo random generators (non-cryptographic)

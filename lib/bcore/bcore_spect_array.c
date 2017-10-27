@@ -1091,31 +1091,26 @@ tp_t bcore_array_spect_get_type( const bcore_array_s* p, vc_t o, sz_t index )
     return 0;
 }
 
-vc_t bcore_array_spect_max( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order )
+static s2_t cmp_aware( vc_t o, vc_t obj1, vc_t obj2 )
+{
+    return bcore_compare_aware( obj1, obj2 );
+}
+
+vc_t bcore_array_spect_max_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
 {
     sz_t size = p->get_size( p, o );
     sz_t end_l = end < size ? end : size;
     if( start >= end_l ) return NULL;
-
-    if( bcore_array_spect_is_of_aware( p ) )
-    {
-        vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o );
-        sz_t  idx = start;
-        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( bcore_compare_aware( data[ idx ], data[ i ] ) * order > 0 ) ? i : idx;
-        return idx < end_l ? data[ idx ] : NULL;
-    }
-
-    const bcore_compare_s* cmp_p = bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
+    vc_t ret;
 
     if( bcore_array_spect_is_of_links( p ) )
     {
         vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o );
         sz_t  idx = start;
-        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( bcore_compare_spect( cmp_p, data[ idx ], data[ i ] ) * order > 0 ) ? i : idx;
-        return idx < end_l ? data[ idx ] : NULL;
+        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( cmp_f( cmp_o, data[ idx ], data[ i ] ) * direction > 0 ) ? i : idx;
+        ret = idx < end_l ? data[ idx ] : NULL;
     }
-
-    // else
+    else
     {
         sz_t unit_size = bcore_array_spect_get_unit_size( p, o );
         vc_t src = ( u0_t* )bcore_array_spect_get_c_data( p, o ) + unit_size * start;
@@ -1123,41 +1118,39 @@ vc_t bcore_array_spect_max( const bcore_array_s* p, vc_t o, sz_t start, sz_t end
         for( sz_t i = start + 1; i < end_l; i++ )
         {
             src = ( u0_t* )src + unit_size;
-            cur = ( bcore_compare_spect( cmp_p, cur, src ) * order > 0 ) ? src : cur;
+            cur = ( cmp_f( cmp_o, cur, src ) * direction > 0 ) ? src : cur;
         }
-        return cur;
+        ret = cur;
     }
+    return ret;
+}
+
+vc_t bcore_array_spect_max( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction )
+{
+    bl_t is_of_aware = bcore_array_spect_is_of_aware( p );
+    bcore_fp_ocmp cmp_f = is_of_aware ? cmp_aware : ( bcore_fp_ocmp )bcore_compare_spect;
+    vc_t          cmp_o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
+    return bcore_array_spect_max_f( p, o, start, end, cmp_f, cmp_o, direction );
 }
 
 /**********************************************************************************************************************/
 
-sz_t bcore_array_spect_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t order )
+sz_t bcore_array_spect_max_index_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
 {
     sz_t size = p->get_size( p, o );
     sz_t end_l = end < size ? end : size;
     if( start >= end_l ) return end_l;
 
-
-    if( bcore_array_spect_is_of_aware( p ) )
-    {
-        vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o );
-        sz_t  idx = start;
-        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( bcore_compare_aware( data[ idx ], data[ i ] ) * order > 0 ) ? i : idx;
-        return idx;
-    }
-
-    const bcore_compare_s* cmp_p = bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
+    sz_t ret;
 
     if( bcore_array_spect_is_of_links( p ) )
     {
         vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o );
         sz_t  idx = start;
-        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( bcore_compare_spect( cmp_p, data[ idx ], data[ i ] ) * order > 0 ) ? i : idx;
-        return idx;
+        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( cmp_f( cmp_o, data[ idx ], data[ i ] ) * direction > 0 ) ? i : idx;
+        ret = idx;
     }
-
-
-    // else
+    else
     {
         sz_t unit_size = bcore_array_spect_get_unit_size( p, o );
         vc_t src = ( u0_t* )bcore_array_spect_get_c_data( p, o ) + unit_size * start;
@@ -1166,52 +1159,48 @@ sz_t bcore_array_spect_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz
         for( sz_t i = start + 1; i < end_l; i++ )
         {
             src = ( u0_t* )src + unit_size;
-            if( bcore_compare_spect( cmp_p, cur, src ) * order > 0 )
+            if( cmp_f( cmp_o, cur, src ) * direction > 0 )
             {
                 cur = src;
                 idx = i;
             }
         }
-        return idx;
+        ret = idx;
     }
+    return ret;
+}
+
+sz_t bcore_array_spect_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction )
+{
+    bl_t is_of_aware = bcore_array_spect_is_of_aware( p );
+    bcore_fp_ocmp cmp_f = is_of_aware ? cmp_aware : ( bcore_fp_ocmp )bcore_compare_spect;
+    vc_t          cmp_o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
+    return bcore_array_spect_max_index_f( p, o, start, end, cmp_f, cmp_o, direction );
 }
 
 /**********************************************************************************************************************/
 
-static void buf_sort_spect_link( vc_t* data, sz_t size, vc_t* buf, const bcore_compare_s* cmp_p, s2_t order )
+static void buf_sort_link( vc_t* data, sz_t size, vc_t* buf, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
 {
     if( size < 2 ) return;
     sz_t size1 = size >> 1;
-    buf_sort_spect_link( data,         size1       , buf, cmp_p, order );
-    buf_sort_spect_link( data + size1, size - size1, buf, cmp_p, order );
+    buf_sort_link( data,         size1       , buf, cmp_f, cmp_o, direction );
+    buf_sort_link( data + size1, size - size1, buf, cmp_f, cmp_o, direction );
     bcore_memcpy( buf, data, size1 * sizeof( vc_t ) );
     for( sz_t i = 0, w = 0, r = size1; i < size1; )
     {
-        data[ w++ ] = ( r == size || bcore_compare_spect( cmp_p, buf[ i ], data[ r ] ) * order > 0 ) ? buf[ i++ ] : data[ r++ ];
+        data[ w++ ] = ( r == size || cmp_f( cmp_o, buf[ i ], data[ r ] ) * direction >= 0 ) ? buf[ i++ ] : data[ r++ ];
     }
 }
 
-static void buf_sort_aware( vc_t* data, sz_t size, vc_t* buf, s2_t order )
-{
-    if( size < 2 ) return;
-    sz_t size1 = size >> 1;
-    buf_sort_aware( data,         size1       , buf, order );
-    buf_sort_aware( data + size1, size - size1, buf, order );
-    bcore_memcpy( buf, data, size1 * sizeof( vc_t ) );
-    for( sz_t i = 0, w = 0, r = size1; i < size1; )
-    {
-        data[ w++ ] = ( r == size || bcore_compare_aware( buf[ i ], data[ r ] ) * order > 0 ) ? buf[ i++ ] : data[ r++ ];
-    }
-}
-
-static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd_t buf, const bcore_compare_s* cmp_p, s2_t order )
+static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd_t buf, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
 {
     if( size < 2 ) return;
 
     sz_t unit_size = p->size;
     sz_t size1 = size >> 1;
-    buf_sort_spect_empl( p, data,                              size1       , buf, cmp_p, order );
-    buf_sort_spect_empl( p, ( u0_t* )data + size1 * unit_size, size - size1, buf, cmp_p, order );
+    buf_sort_spect_empl( p, data,                              size1       , buf, cmp_f, cmp_o, direction );
+    buf_sort_spect_empl( p, ( u0_t* )data + size1 * unit_size, size - size1, buf, cmp_f, cmp_o, direction );
 
     if( p->copy_flat )
     {
@@ -1227,7 +1216,7 @@ static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd
         vc_t src1 = ( u0_t* )buf  + i * unit_size;
         vc_t src2 = ( u0_t* )data + r * unit_size;
         vd_t dst =  ( u0_t* )data + w * unit_size;
-        if( r == size || bcore_compare_spect( cmp_p, src1, src2 ) * order > 0 )
+        if( r == size || cmp_f( cmp_o, src1, src2 ) * direction >= 0 )
         {
             if( p->copy_flat )
             {
@@ -1257,7 +1246,7 @@ static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd
     }
 }
 
-void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t order )
+void bcore_array_spect_sort_f( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
 {
     sz_t size = p->get_size( p, o );
     if( size > p->get_space( p, o ) ) bcore_array_spect_make_strong( p, o );
@@ -1265,27 +1254,14 @@ void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t en
     if( start >= end_l ) return;
     sz_t range = end_l - start;
 
-    if( bcore_array_spect_is_of_aware( p ) )
-    {
-        vc_t* data = ( vc_t* )bcore_array_spect_get_d_data( p, o ) + start;
-        vc_t* buf = bcore_un_alloc( sizeof( vd_t ), NULL, 0, range >> 1, NULL );
-        buf_sort_aware( data, range, buf, order );
-        bcore_un_alloc( sizeof( vd_t ), buf, range >> 1, 0, NULL );
-        return;
-    }
-
-    const bcore_compare_s* cmp_p = bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
-
     if( bcore_array_spect_is_of_links( p ) )
     {
         vc_t* data = ( vc_t* )bcore_array_spect_get_d_data( p, o ) + start;
         vc_t* buf = bcore_un_alloc( sizeof( vd_t ), NULL, 0, range >> 1, NULL );
-        buf_sort_spect_link( data, range, buf, cmp_p, order );
+        buf_sort_link( data, range, buf, cmp_f, cmp_o, direction );
         bcore_un_alloc( sizeof( vd_t ), buf, range >> 1, 0, NULL );
-        return;
     }
-
-    /// else
+    else
     {
         const bcore_inst_s* item_p = bcore_array_spect_is_mutable_mono_typed( p ) ? bcore_inst_s_get_typed( bcore_array_spect_get_mono_type( p, o ) ) : p->item_p;
         sz_t unit_size = item_p->size;
@@ -1295,12 +1271,78 @@ void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t en
         vd_t buf = bcore_un_alloc( unit_size, NULL, 0, range1, NULL );
         for( sz_t i = 0; i < range1; i++ ) item_p->init( item_p, ( u0_t* )buf + i * unit_size );
 
-        buf_sort_spect_empl( item_p, data, range, buf, cmp_p, order );
+        buf_sort_spect_empl( item_p, data, range, buf, cmp_f, cmp_o, direction );
 
         for( sz_t i = 0; i < range1; i++ ) item_p->down( item_p, ( u0_t* )buf + i * unit_size );
         bcore_un_alloc( unit_size, buf, range1, 0, NULL );
-        return;
     }
+}
+
+void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t direction )
+{
+    bl_t is_of_aware = bcore_array_spect_is_of_aware( p );
+    bcore_fp_ocmp cmp_f = is_of_aware ? cmp_aware : ( bcore_fp_ocmp )bcore_compare_spect;
+    vc_t          cmp_o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
+    bcore_array_spect_sort_f( p, o, start, end, cmp_f, cmp_o, direction );
+}
+
+/**********************************************************************************************************************/
+
+static void buf_order_sort( vc_t* data, sz_t* order, sz_t size, sz_t* buf, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
+{
+    if( size < 2 ) return;
+    sz_t size1 = size >> 1;
+    buf_order_sort( data, order,         size1       , buf, cmp_f, cmp_o, direction );
+    buf_order_sort( data, order + size1, size - size1, buf, cmp_f, cmp_o, direction );
+    bcore_memcpy( buf, order, size1 * sizeof( sz_t ) );
+    for( sz_t i = 0, w = 0, r = size1; i < size1; )
+    {
+        order[ w++ ] = ( r == size || cmp_f( cmp_o, data[ buf[ i ] ], data[ order[ r ] ] ) * direction >= 0 ) ? buf[ i++ ] : order[ r++ ];
+    }
+}
+
+bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
+{
+    bcore_arr_sz_s* order = bcore_arr_sz_s_create();
+    sz_t size = p->get_size( p, o );
+    sz_t end_l = end < size ? end : size;
+    if( start >= end_l ) return order;
+    sz_t range = end_l - start;
+
+    bcore_arr_sz_s_step_fill( order, 0, 1, range );
+
+    if( bcore_array_spect_is_of_links( p ) )
+    {
+        vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o ) + start;
+        sz_t* buf = bcore_un_alloc( sizeof( sz_t ), NULL, 0, range >> 1, NULL );
+        buf_order_sort( data, order->data, range, buf, cmp_f, cmp_o, direction );
+        bcore_un_alloc( sizeof( sz_t ), buf, range >> 1, 0, NULL );
+    }
+    else
+    {
+        const bcore_inst_s* item_p = bcore_array_spect_is_mutable_mono_typed( p ) ? bcore_inst_s_get_typed( bcore_array_spect_get_mono_type( p, o ) ) : p->item_p;
+        sz_t unit_size = item_p->size;
+        vc_t src = ( u0_t* )bcore_array_spect_get_c_data( p, o ) + start * unit_size;
+        vc_t* data = bcore_un_alloc( sizeof( vc_t ), NULL, 0, range, NULL );
+        for( sz_t i = 0; i < range; i++ ) data[ i ] = ( u0_t* )src + i * unit_size;
+
+        sz_t* buf = bcore_un_alloc( sizeof( sz_t ), NULL, 0, range >> 1, NULL );
+        buf_order_sort( data, order->data, range, buf, cmp_f, cmp_o, direction );
+        bcore_un_alloc( sizeof( sz_t ), buf,  range >> 1, 0, NULL );
+        bcore_un_alloc( sizeof( vc_t ), data, range,      0, NULL );
+    }
+
+    for( sz_t i = 0; i < order->size; i++ ) order->data[ i ] += start;
+
+    return order;
+}
+
+bcore_arr_sz_s* bcore_array_spect_create_sorted_order( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction )
+{
+    bl_t is_of_aware = bcore_array_spect_is_of_aware( p );
+    bcore_fp_ocmp cmp_f = is_of_aware ? cmp_aware : ( bcore_fp_ocmp )bcore_compare_spect;
+    vc_t          cmp_o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
+    return bcore_array_spect_create_sorted_order_f( p, o, start, end, cmp_f, cmp_o, direction );
 }
 
 /**********************************************************************************************************************/
@@ -1588,7 +1630,14 @@ static void test_string_array( sc_t type_sc )
     bcore_array_spect_set_space( arr_p, arr, 20 );
 
     ASSERT( bcore_array_spect_max_index( arr_p, arr, 0, -1, 1 ) == 7 );
-    bcore_array_spect_sort( arr_p, arr, 0, -1, -1 );
+
+    bcore_array_spect_sort( arr_p, arr, 0, -1, 1 );
+    {
+        bcore_arr_sz_s* order = bcore_array_spect_create_sorted_order( arr_p, arr, 0, -1, -1 );
+        bcore_array_spect_reorder( arr_p, arr, order );
+        bcore_arr_sz_s_discard( order );
+    }
+
     ASSERT( bcore_array_spect_max_index( arr_p, arr, 0, -1, 1 ) == 0 );
 
     ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 0 ).o, "test line x" ) == 0 );
