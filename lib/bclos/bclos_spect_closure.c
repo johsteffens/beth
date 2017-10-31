@@ -65,15 +65,15 @@ const bclos_closure_s* bclos_closure_s_get_aware( vc_t obj )
 
 /**********************************************************************************************************************/
 
-void bclos_closure_spect_def(  const bclos_closure_s* p, vd_t o, bclos_environment_s* env )
+void bclos_closure_spect_def(  const bclos_closure_s* p, vd_t o, bclos_frame_s* frm )
 {
-    if( p->fp_def ) p->fp_def( o, env );
+    if( p->fp_def ) p->fp_def( o, frm );
 }
 
-sr_s bclos_closure_spect_call( const bclos_closure_s* p, vc_t o, bclos_environment_s* env, const bclos_arguments_s* args )
+sr_s bclos_closure_spect_call( const bclos_closure_s* p, vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
     assert( p->fp_call );
-    return p->fp_call( o, env, args );
+    return p->fp_call( o, frm, args );
 }
 
 sr_s bclos_closure_spect_sig(  const bclos_closure_s* p, vc_t o )
@@ -81,19 +81,19 @@ sr_s bclos_closure_spect_sig(  const bclos_closure_s* p, vc_t o )
     return p->fp_sig ? p->fp_sig( o ) : ( p->static_sig ? sr_twc( TYPEOF_bclos_signature_s, p->static_sig ) : sr_null() );
 }
 
-sr_s bclos_closure_spect_call_nv( const bclos_closure_s* p, vc_t o, bclos_environment_s* env, sz_t n, va_list v_args )
+sr_s bclos_closure_spect_call_nv( const bclos_closure_s* p, vc_t o, bclos_frame_s* frm, sz_t n, va_list v_args )
 {
     bclos_arguments_s* args = bclos_arguments_s_create_nv( n, v_args );
-    sr_s ret = bclos_closure_spect_call( p, o, env, args );
+    sr_s ret = bclos_closure_spect_call( p, o, frm, args );
     bclos_arguments_s_discard( args );
     return ret;
 }
 
-sr_s bclos_closure_spect_call_na( const bclos_closure_s* p, vc_t o, bclos_environment_s* env, sz_t n, ... )
+sr_s bclos_closure_spect_call_na( const bclos_closure_s* p, vc_t o, bclos_frame_s* frm, sz_t n, ... )
 {
     va_list args;
     va_start( args, n );
-    sr_s ret = bclos_closure_spect_call_nv( p, o, env, n, args );
+    sr_s ret = bclos_closure_spect_call_nv( p, o, frm, n, args );
     va_end( args );
     return ret;
 }
@@ -101,14 +101,14 @@ sr_s bclos_closure_spect_call_na( const bclos_closure_s* p, vc_t o, bclos_enviro
 inline static const bclos_closure_s* w_qp( const sr_s* o ) { assert( !sr_s_is_const( o ) ); return ch_spect_p( o->p, TYPEOF_bclos_closure_s ); }
 inline static const bclos_closure_s* r_qp( const sr_s* o ) {                                return ch_spect_p( o->p, TYPEOF_bclos_closure_s ); }
 
-void bclos_closure_q_def( const sr_s* o, bclos_environment_s* env )
+void bclos_closure_q_def( const sr_s* o, bclos_frame_s* frm )
 {
-    bclos_closure_spect_def( w_qp( o ), o->o, env );
+    bclos_closure_spect_def( w_qp( o ), o->o, frm );
 }
 
-sr_s bclos_closure_q_call( const sr_s* o, bclos_environment_s* env, const bclos_arguments_s* args )
+sr_s bclos_closure_q_call( const sr_s* o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
-    return bclos_closure_spect_call( r_qp( o ), o->o, env, args );
+    return bclos_closure_spect_call( r_qp( o ), o->o, frm, args );
 }
 
 sr_s bclos_closure_q_sig( const sr_s* o )
@@ -116,16 +116,16 @@ sr_s bclos_closure_q_sig( const sr_s* o )
     return bclos_closure_spect_sig( r_qp( o ), o->o );
 }
 
-sr_s bclos_closure_q_call_nv( const sr_s* o, bclos_environment_s* env, sz_t n, va_list args )
+sr_s bclos_closure_q_call_nv( const sr_s* o, bclos_frame_s* frm, sz_t n, va_list args )
 {
-    return bclos_closure_spect_call_nv( r_qp( o ), o->o, env, n, args );
+    return bclos_closure_spect_call_nv( r_qp( o ), o->o, frm, n, args );
 }
 
-sr_s bclos_closure_q_call_na( const sr_s* o, bclos_environment_s* env, sz_t n, ... )
+sr_s bclos_closure_q_call_na( const sr_s* o, bclos_frame_s* frm, sz_t n, ... )
 {
     va_list args;
     va_start( args, n );
-    sr_s ret = bclos_closure_spect_call_nv( r_qp( o ), o->o, env, n, args );
+    sr_s ret = bclos_closure_spect_call_nv( r_qp( o ), o->o, frm, n, args );
     va_end( args );
     return ret;
 }

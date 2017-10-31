@@ -5,13 +5,13 @@
 
 #include "bcore_flect.h"
 #include "bcore_ref.h"
-#include "bclos_environment.h"
+#include "bclos_frame.h"
 #include "bclos_arguments.h"
 
 /** A statement has the form: [define] <target> = operation( arg1, arg2, ... )
- *  Specifiers are considered bindings (==names) referring to a given environment.
- *  'define' indicates whether target is to be taken from the environment (==0) or to
- *  be newly instantiated in the local environment (!=0).
+ *  Specifiers are considered bindings (==names) referring to a given frame.
+ *  'define' indicates whether target is to be taken from the frame (==0) or to
+ *  be newly instantiated in the local frame (!=0).
  *  In the latter case it specifies the type of the target, allowing runtime type checking.
  *  'operation' specifies a closure, followed by the assigned arguments.
  */
@@ -39,8 +39,8 @@ DECLARE_FUNCTION_DISCARD( bclos_statement_s )
 DECLARE_FUNCTION_CLONE(   bclos_statement_s )
 
 void          bclos_statement_s_push_arg(          bclos_statement_s* o, tp_t arg );
-bclos_arguments_s* bclos_statement_s_create_args( const bclos_statement_s* o, bclos_environment_s* env );
-sr_s          bclos_statement_s_run(         const bclos_statement_s* o, bclos_environment_s* env );
+bclos_arguments_s* bclos_statement_s_create_args( const bclos_statement_s* o, bclos_frame_s* frm );
+sr_s          bclos_statement_s_run(         const bclos_statement_s* o, bclos_frame_s* frm );
 
 // Format: [<def-type>] <target> = <closure>( <name>, <name>, ... );
 bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source );

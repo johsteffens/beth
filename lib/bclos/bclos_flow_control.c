@@ -16,7 +16,7 @@ static vd_t branch_create_static_sig()
     return bclos_signature_s_parse_from_sc( "bcore_inst_s branch( bl_t cond, bcore_inst_s true_obj, bcore_inst_s false_obj )" );
 }
 
-static sr_s branch_func( vc_t o, bclos_environment_s* env, const bclos_arguments_s* args )
+static sr_s branch_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
     ASSERT( args->size >= 3 );
     assert( sr_s_type( &args->data[ 0 ] ) == TYPEOF_bl_t );
@@ -44,14 +44,14 @@ static vd_t loop_create_static_sig()
     return bclos_signature_s_parse_from_sc( "bcore_inst_s loop( bcore_closure_s obj )" );
 }
 
-static sr_s loop_func( vc_t o, bclos_environment_s* env, const bclos_arguments_s* args )
+static sr_s loop_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
     ASSERT( args->size >= 1 );
     sr_s* q_closure = &args->data[ 0 ];
     assert( bcore_trait_satisfied_type( TYPEOF_bclos_closure_s, sr_s_type( q_closure ), NULL ) );
     bclos_arguments_s trail_args = bclos_arguments_s_weak_crop( args, 1, -1 );
     sr_s ret = sr_null();
-    while( !( ret = bclos_closure_q_call( q_closure, env, &trail_args ) ).p ) {}
+    while( !( ret = bclos_closure_q_call( q_closure, frm, &trail_args ) ).p ) {}
     return ret;
 }
 

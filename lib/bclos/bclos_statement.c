@@ -33,32 +33,32 @@ void bclos_statement_s_push_arg( bclos_statement_s* o, tp_t arg )
     o->args_data[ o->args_size++ ] = arg;
 }
 
-bclos_arguments_s* bclos_statement_s_create_args( const bclos_statement_s* o, bclos_environment_s* env )
+bclos_arguments_s* bclos_statement_s_create_args( const bclos_statement_s* o, bclos_frame_s* frm )
 {
     bclos_arguments_s* args = bclos_arguments_s_create();
     for( sz_t i = 0; i < o->args_size; i++ )
     {
         tp_t name = o->args_data[ i ];
-        sr_s* sr = bclos_environment_s_get( env, name );
-        if( !sr ) ERR( "'%s' not found in environment", ifnameof( name ) );
+        sr_s* sr = bclos_frame_s_get( frm, name );
+        if( !sr ) ERR( "'%s' not found in frame", ifnameof( name ) );
         bclos_arguments_s_push( args, sr_cw( *sr ) );
     }
     return args;
 }
 
-sr_s bclos_statement_s_run( const bclos_statement_s* o, bclos_environment_s* env )
+sr_s bclos_statement_s_run( const bclos_statement_s* o, bclos_frame_s* frm )
 {
     sr_s ret = sr_null();
     if( o->operation )
     {
-        sr_s* operation = bclos_environment_s_get( env, o->operation );
+        sr_s* operation = bclos_frame_s_get( frm, o->operation );
         if( !operation )  ERR( "Operation '%s' not defined.", ifnameof( o->operation ) );
 
         const bclos_closure_s* closure_p = ch_spect_p( operation->p, TYPEOF_bclos_closure_s );
 
         {
-            bclos_arguments_s* args = bclos_statement_s_create_args( o, env );
-            sr_s ret_sr = bclos_closure_spect_call( closure_p, operation->o, env, args );
+            bclos_arguments_s* args = bclos_statement_s_create_args( o, frm );
+            sr_s ret_sr = bclos_closure_spect_call( closure_p, operation->o, frm, args );
 
             if( o->target )
             {
@@ -75,11 +75,11 @@ sr_s bclos_statement_s_run( const bclos_statement_s* o, bclos_environment_s* env
                             ifnameof( o->define )
                         );
                     }
-                    bclos_environment_s_set( env, o->target, ret_sr );
+                    bclos_frame_s_set( frm, o->target, ret_sr );
                 }
                 else
                 {
-                    sr_s* target_sr = bclos_environment_s_get( env, o->target );
+                    sr_s* target_sr = bclos_frame_s_get( frm, o->target );
                     if( !target_sr )  ERR( "Target '%s' not defined.", ifnameof( o->target ) );
                     sr_s_set( target_sr, ret_sr );
                 }
@@ -176,7 +176,7 @@ static bcore_flect_self_s* statement_s_create_self( void )
 }
 
 /// function of the return closure
-static sr_s return_func( vc_t o, bclos_environment_s* env, const bclos_arguments_s* args )
+static sr_s return_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
     ASSERT( args->size >= 1 );
     return args->data[ 0 ];
@@ -190,6 +190,8 @@ static bcore_flect_self_s* return_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )return_func, "bclos_closure_fp_call", "call" );
     return self;
 }
+
+/**********************************************************************************************************************/
 
 vd_t bclos_statement_signal( tp_t target, tp_t signal, vd_t object )
 {

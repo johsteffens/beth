@@ -1,7 +1,7 @@
 /// Author & Copyright (C) 2017 Johannes Bernhard Steffens. All rights reserved.
 
 #include "bclos_procedure.h"
-#include "bclos_environment.h"
+#include "bclos_frame.h"
 #include "bclos_quicktypes.h"
 #include "bcore_quicktypes.h"
 #include "bclos_spect_closure.h"
@@ -37,15 +37,15 @@ void bclos_procedure_s_push_sc( bclos_procedure_s* o, sc_t statement )
     );
 }
 
-void bclos_procedure_s_def( bclos_procedure_s* o, bclos_environment_s* env )
+void bclos_procedure_s_def( bclos_procedure_s* o, bclos_frame_s* frm )
 {
-    o->lexical = env;
+    o->lexical = frm;
 }
 
-sr_s bclos_procedure_s_call( bclos_procedure_s* o, bclos_environment_s* env, const bclos_arguments_s* args )
+sr_s bclos_procedure_s_call( bclos_procedure_s* o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
-    bclos_environment_s* local = bclos_environment_s_create(); // local environment
-    local->external = o->lexical ? o->lexical : env;
+    bclos_frame_s* local = bclos_frame_s_create(); // local frame
+    local->external = o->lexical ? o->lexical : frm;
 
     if( o->sig )
     {
@@ -74,7 +74,7 @@ sr_s bclos_procedure_s_call( bclos_procedure_s* o, bclos_environment_s* env, con
                     ifnameof( sig_arg.name ),
                     ifnameof( sr_s_type( &arg_obj ) ) );
             }
-            bclos_environment_s_set( local, sig_arg.name, arg_obj );
+            bclos_frame_s_set( local, sig_arg.name, arg_obj );
         }
     }
 
@@ -99,7 +99,7 @@ sr_s bclos_procedure_s_call( bclos_procedure_s* o, bclos_environment_s* env, con
         }
     }
 
-    bclos_environment_s_discard( local );
+    bclos_frame_s_discard( local );
 
     return ret;
 }
@@ -111,7 +111,7 @@ sr_s bclos_procedure_s_sig( const bclos_procedure_s* o )
 
 static bcore_flect_self_s* procedure_s_create_self( void )
 {
-    sc_t def = "bclos_procedure_s = { aware_t _; bclos_statement_s * [] arr; bclos_signature_s* sig; private bclos_environment_s * lexcal; }";
+    sc_t def = "bclos_procedure_s = { aware_t _; bclos_statement_s * [] arr; bclos_signature_s* sig; private bclos_frame_s * lexcal; }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_procedure_s ) );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_procedure_s_def,  "bclos_closure_fp_def",  "def"  );
     bcore_flect_self_s_push_external_func( self, ( fp_t )bclos_procedure_s_call, "bclos_closure_fp_call", "call" );
@@ -123,7 +123,7 @@ static bcore_flect_self_s* procedure_s_create_self( void )
 
 #include "bcore_txt_ml.h"
 
-static sr_s test_add( vc_t o, bclos_environment_s* env, const bclos_arguments_s* args )
+static sr_s test_add( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
     assert( args->size >= 2 );
     assert( sr_s_type( &args->data[ 0 ] ) == sr_s_type( &args->data[ 1 ] ) );
@@ -143,7 +143,7 @@ static sr_s test_add( vc_t o, bclos_environment_s* env, const bclos_arguments_s*
     return sr_null();
 }
 
-static sr_s test_mul( vc_t o, bclos_environment_s* env, const bclos_arguments_s* args )
+static sr_s test_mul( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
     assert( args->size >= 2 );
     assert( sr_s_type( &args->data[ 0 ] ) == sr_s_type( &args->data[ 1 ] ) );
@@ -185,11 +185,11 @@ static st_s* procedure_selftest( void )
     }
 
     {
-        bclos_environment_s* env = bcore_life_s_push_aware( l, bclos_environment_s_create() );
+        bclos_frame_s* frm = bcore_life_s_push_aware( l, bclos_frame_s_create() );
 
-        bclos_environment_s_set( env, typeof( "return" ), sr_create( typeof( "bclos_completion" ) ) );
-        bclos_environment_s_set( env, typeof( "add" ), sr_create( typeof( "test_add" ) ) );
-        bclos_environment_s_set( env, typeof( "mul" ), sr_create( typeof( "test_mul" ) ) );
+        bclos_frame_s_set( frm, typeof( "return" ), sr_create( typeof( "bclos_completion" ) ) );
+        bclos_frame_s_set( frm, typeof( "add" ), sr_create( typeof( "test_add" ) ) );
+        bclos_frame_s_set( frm, typeof( "mul" ), sr_create( typeof( "test_mul" ) ) );
 
         sr_s proc_sr = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( TYPEOF_bclos_procedure_s ) );
         bclos_procedure_s* proc = proc_sr.o;
@@ -200,7 +200,7 @@ static st_s* procedure_selftest( void )
         bclos_procedure_s_push_sc( proc, "s3_t ret  = mul( val1, val2 )" );
         bclos_procedure_s_push_sc( proc, "return( ret )" );
 
-        bclos_closure_q_def( &proc_sr, env );
+        bclos_closure_q_def( &proc_sr, frm );
         sr_s res = bclos_closure_q_call_na( &proc_sr, NULL, 3, sr_s3( 2 ), sr_s3( 3 ), sr_s3( 4 ) );
         ASSERT( *( s3_t* )res.o == 40 );
 

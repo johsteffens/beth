@@ -2,7 +2,7 @@
 
 #include "bclos_signal.h"
 
-#include "bclos_environment.h"
+#include "bclos_frame.h"
 #include "bclos_arguments.h"
 #include "bclos_signature.h"
 #include "bclos_spect_closure.h"
@@ -14,7 +14,7 @@ vd_t bclos_signal( tp_t target, tp_t signal, vd_t object )
     bcore_fp_signal arr[] =
     {
         bclos_arguments_signal,
-        bclos_environment_signal,
+        bclos_frame_signal,
         bclos_procedure_signal,
         bclos_signature_signal,
         bclos_spect_closure_signal,
