@@ -131,7 +131,7 @@ sz_t conv_fnv( sd_t dst, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                 }
 
             }
-            else if( f[ i ] == 'p' ) // padding
+            else if( f[ i ] == 'p' ) // size control with padding: resulting string can not be smaller than target size
             {
                 i++;
                 bl_t left = false;
@@ -146,7 +146,7 @@ sz_t conv_fnv( sd_t dst, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     n = atoi( f + i );
                     while( f[ i ] >= '0' && f[ i ] <= '9' ) i++;
                 }
-                else if( f[ i ] == 'n' )  // get padding size from sz_t argument
+                else if( f[ i ] == 'n' )  // get target size from sz_t argument
                 {
                     i++;
                     n = va_arg( *p_args, sz_t );
@@ -216,6 +216,80 @@ sz_t conv_fnv( sd_t dst, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                         dst   += ( txt_size < space ) ? txt_size : space;
                         space -= ( txt_size < space ) ? txt_size : space;
                     }
+                    ret_size += txt_size;
+                }
+            }
+            else if( f[ i ] == 't' ) // size control with truncation: resulting string can not be bigger than target size
+            {
+                i++;
+                bl_t left = false;
+                if( f[ i ] == 'l' ) // left truncation
+                {
+                    i++;
+                    left = true;
+                }
+                sz_t n = 0;
+                if( f[ i ] >= '0' && f[ i ] <= '9' )
+                {
+                    n = atoi( f + i );
+                    while( f[ i ] >= '0' && f[ i ] <= '9' ) i++;
+                }
+                else if( f[ i ] == 'n' )  // get target size from sz_t argument
+                {
+                    i++;
+                    n = va_arg( *p_args, sz_t );
+                }
+                else
+                {
+                    ERR( "Could not obtain target size in padding expression '%s'.", f );
+                }
+                char start_char = f[ i ];
+                sz_t start_block = i + 1;
+                char stop_char = 0;
+                switch( start_char )
+                {
+                    case '(': stop_char = ')'; break;
+                    case '{': stop_char = '}'; break;
+                    case '[': stop_char = ']'; break;
+                    case '<': stop_char = '>'; break;
+                    default: ERR( "Invalid bracket character '%c' in format string '%s'.", start_char, f ); break;
+                }
+
+                sz_t count = 1;
+                while( i < fsize && count > 0 )
+                {
+                    i++;
+                    if     ( f[ i ] == stop_char  ) count--;
+                    else if( f[ i ] == start_char ) count++;
+                }
+                if( count > 0 ) ERR( "Missing block termination in format string '%s'.", start_char, f );
+                sz_t stop_block = i;
+                i++;
+                sz_t txt_size = 0;
+                // compute space
+                {
+                    va_list argsl;
+                    va_copy( argsl, *p_args );
+                    txt_size = conv_fnv( NULL, 0, f + start_block, stop_block - start_block, &argsl );
+                    va_end( argsl );
+                }
+                if( txt_size > n )
+                {
+                    sd_t buf = bcore_malloc( txt_size + 1 );
+                    conv_fnv( buf, txt_size + 1, f + start_block, stop_block - start_block, p_args );
+                    sc_t src = left ? buf + txt_size - n : buf;
+                    sz_t ncpy = ( n < space ) ? n : space;
+                    bcore_memcpy( dst, src, ncpy );
+                    dst   += ncpy;
+                    space -= ncpy;
+                    bcore_free( buf );
+                    ret_size += n;
+                }
+                else
+                {
+                    txt_size = conv_fnv( dst, space, f + start_block, stop_block - start_block, p_args );
+                    dst   += ( txt_size < space ) ? txt_size : space;
+                    space -= ( txt_size < space ) ? txt_size : space;
                     ret_size += txt_size;
                 }
             }
@@ -383,6 +457,17 @@ sz_t conv_fnv( sd_t dst, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                 }
                 ret_size++;
                 i++;
+            }
+            else if( ( bcore_strcmp( "char", &f[ i ] ) & 2 ) == 0 )
+            {
+                i += 4;
+                snprintf( dst, space, "%c", va_arg( *p_args, unsigned int ) );
+                if( space > 1 )
+                {
+                    space--;
+                    dst++;
+                }
+                ret_size++;
             }
             else
             {
@@ -1842,6 +1927,15 @@ static void st_s_quicktest( void )
     st_s_clear( s );
     st_s_push_fa( s, "#r3{#<s2_t*>}\n", &v );
     ASSERT( st_s_cmp_sc( s, "-100-100-100\n" ) == 0 );
+    st_s_clear( s );
+    st_s_push_fa( s, "#t3{#<s2_t*>}\n", &v );
+    ASSERT( st_s_cmp_sc( s, "-10\n" ) == 0 );
+    st_s_clear( s );
+    st_s_push_fa( s, "#tl3{#<s2_t*>}\n", &v );
+    ASSERT( st_s_cmp_sc( s, "100\n" ) == 0 );
+    st_s_clear( s );
+    st_s_push_fa( s, "#tl5{#<s2_t*>}\n", &v );
+    ASSERT( st_s_cmp_sc( s, "-100\n" ) == 0 );
 
     bcore_life_s_discard( life );
 
