@@ -1028,7 +1028,7 @@ static s2_t cmp_aware( vc_t o, vc_t obj1, vc_t obj2 )
     return bcore_compare_aware( obj1, obj2 );
 }
 
-vc_t bcore_array_spect_max_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
+vc_t bcore_array_spect_max_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction )
 {
     sz_t size = get_size( p, o );
     sz_t end_l = end < size ? end : size;
@@ -1039,7 +1039,7 @@ vc_t bcore_array_spect_max_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t e
     {
         vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o );
         sz_t  idx = start;
-        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( cmp_f( cmp_o, data[ idx ], data[ i ] ) * direction > 0 ) ? i : idx;
+        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( cmp.f( cmp.o, data[ idx ], data[ i ] ) * direction > 0 ) ? i : idx;
         ret = idx < end_l ? data[ idx ] : NULL;
     }
     else
@@ -1050,7 +1050,7 @@ vc_t bcore_array_spect_max_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t e
         for( sz_t i = start + 1; i < end_l; i++ )
         {
             src = ( u0_t* )src + unit_size;
-            cur = ( cmp_f( cmp_o, cur, src ) * direction > 0 ) ? src : cur;
+            cur = ( cmp.f( cmp.o, cur, src ) * direction > 0 ) ? src : cur;
         }
         ret = cur;
     }
@@ -1060,14 +1060,17 @@ vc_t bcore_array_spect_max_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t e
 vc_t bcore_array_spect_max( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_spect_is_of_aware( p );
-    bcore_fp_ocmp cmp_f = is_of_aware ? cmp_aware : ( bcore_fp_ocmp )bcore_compare_spect;
-    vc_t          cmp_o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
-    return bcore_array_spect_max_f( p, o, start, end, cmp_f, cmp_o, direction );
+    bcore_cmp_f cmp =
+    {
+        .f = is_of_aware ? cmp_aware : ( bcore_fp_cmp_o )bcore_compare_spect,
+        .o = is_of_aware ? NULL : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) )
+    };
+    return bcore_array_spect_max_f( p, o, start, end, cmp, direction );
 }
 
 /**********************************************************************************************************************/
 
-sz_t bcore_array_spect_max_index_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
+sz_t bcore_array_spect_max_index_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction )
 {
     sz_t size = get_size( p, o );
     sz_t end_l = end < size ? end : size;
@@ -1079,7 +1082,7 @@ sz_t bcore_array_spect_max_index_f( const bcore_array_s* p, vc_t o, sz_t start, 
     {
         vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o );
         sz_t  idx = start;
-        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( cmp_f( cmp_o, data[ idx ], data[ i ] ) * direction > 0 ) ? i : idx;
+        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( cmp.f( cmp.o, data[ idx ], data[ i ] ) * direction > 0 ) ? i : idx;
         ret = idx;
     }
     else
@@ -1091,7 +1094,7 @@ sz_t bcore_array_spect_max_index_f( const bcore_array_s* p, vc_t o, sz_t start, 
         for( sz_t i = start + 1; i < end_l; i++ )
         {
             src = ( u0_t* )src + unit_size;
-            if( cmp_f( cmp_o, cur, src ) * direction > 0 )
+            if( cmp.f( cmp.o, cur, src ) * direction > 0 )
             {
                 cur = src;
                 idx = i;
@@ -1105,34 +1108,37 @@ sz_t bcore_array_spect_max_index_f( const bcore_array_s* p, vc_t o, sz_t start, 
 sz_t bcore_array_spect_max_index( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_spect_is_of_aware( p );
-    bcore_fp_ocmp cmp_f = is_of_aware ? cmp_aware : ( bcore_fp_ocmp )bcore_compare_spect;
-    vc_t          cmp_o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
-    return bcore_array_spect_max_index_f( p, o, start, end, cmp_f, cmp_o, direction );
+    bcore_cmp_f cmp =
+    {
+        .f = is_of_aware ? cmp_aware : ( bcore_fp_cmp_o )bcore_compare_spect,
+        .o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) )
+    };
+    return bcore_array_spect_max_index_f( p, o, start, end, cmp, direction );
 }
 
 /**********************************************************************************************************************/
 
-static void buf_sort_link( vc_t* data, sz_t size, vc_t* buf, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
+static void buf_sort_link( vc_t* data, sz_t size, vc_t* buf, bcore_cmp_f cmp, s2_t direction )
 {
     if( size < 2 ) return;
     sz_t size1 = size >> 1;
-    buf_sort_link( data,         size1       , buf, cmp_f, cmp_o, direction );
-    buf_sort_link( data + size1, size - size1, buf, cmp_f, cmp_o, direction );
+    buf_sort_link( data,         size1       , buf, cmp, direction );
+    buf_sort_link( data + size1, size - size1, buf, cmp, direction );
     bcore_memcpy( buf, data, size1 * sizeof( vc_t ) );
     for( sz_t i = 0, w = 0, r = size1; i < size1; )
     {
-        data[ w++ ] = ( r == size || cmp_f( cmp_o, buf[ i ], data[ r ] ) * direction >= 0 ) ? buf[ i++ ] : data[ r++ ];
+        data[ w++ ] = ( r == size || cmp.f( cmp.o, buf[ i ], data[ r ] ) * direction >= 0 ) ? buf[ i++ ] : data[ r++ ];
     }
 }
 
-static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd_t buf, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
+static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd_t buf, bcore_cmp_f cmp, s2_t direction )
 {
     if( size < 2 ) return;
 
     sz_t unit_size = p->size;
     sz_t size1 = size >> 1;
-    buf_sort_spect_empl( p, data,                              size1       , buf, cmp_f, cmp_o, direction );
-    buf_sort_spect_empl( p, ( u0_t* )data + size1 * unit_size, size - size1, buf, cmp_f, cmp_o, direction );
+    buf_sort_spect_empl( p, data,                              size1       , buf, cmp, direction );
+    buf_sort_spect_empl( p, ( u0_t* )data + size1 * unit_size, size - size1, buf, cmp, direction );
 
     if( p->copy_flat )
     {
@@ -1148,7 +1154,7 @@ static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd
         vc_t src1 = ( u0_t* )buf  + i * unit_size;
         vc_t src2 = ( u0_t* )data + r * unit_size;
         vd_t dst =  ( u0_t* )data + w * unit_size;
-        if( r == size || cmp_f( cmp_o, src1, src2 ) * direction >= 0 )
+        if( r == size || cmp.f( cmp.o, src1, src2 ) * direction >= 0 )
         {
             if( p->copy_flat )
             {
@@ -1178,7 +1184,7 @@ static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd
     }
 }
 
-void bcore_array_spect_sort_f( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
+void bcore_array_spect_sort_f( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction )
 {
     sz_t size = get_size( p, o );
     if( size > get_space( p, o ) ) bcore_array_spect_make_strong( p, o );
@@ -1190,7 +1196,7 @@ void bcore_array_spect_sort_f( const bcore_array_s* p, vd_t o, sz_t start, sz_t 
     {
         vc_t* data = ( vc_t* )bcore_array_spect_get_d_data( p, o ) + start;
         vc_t* buf = bcore_un_alloc( sizeof( vd_t ), NULL, 0, range >> 1, NULL );
-        buf_sort_link( data, range, buf, cmp_f, cmp_o, direction );
+        buf_sort_link( data, range, buf, cmp, direction );
         bcore_un_alloc( sizeof( vd_t ), buf, range >> 1, 0, NULL );
     }
     else
@@ -1203,7 +1209,7 @@ void bcore_array_spect_sort_f( const bcore_array_s* p, vd_t o, sz_t start, sz_t 
         vd_t buf = bcore_un_alloc( unit_size, NULL, 0, range1, NULL );
         for( sz_t i = 0; i < range1; i++ ) item_p->init( item_p, ( u0_t* )buf + i * unit_size );
 
-        buf_sort_spect_empl( item_p, data, range, buf, cmp_f, cmp_o, direction );
+        buf_sort_spect_empl( item_p, data, range, buf, cmp, direction );
 
         for( sz_t i = 0; i < range1; i++ ) item_p->down( item_p, ( u0_t* )buf + i * unit_size );
         bcore_un_alloc( unit_size, buf, range1, 0, NULL );
@@ -1213,27 +1219,30 @@ void bcore_array_spect_sort_f( const bcore_array_s* p, vd_t o, sz_t start, sz_t 
 void bcore_array_spect_sort( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_spect_is_of_aware( p );
-    bcore_fp_ocmp cmp_f = is_of_aware ? cmp_aware : ( bcore_fp_ocmp )bcore_compare_spect;
-    vc_t          cmp_o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
-    bcore_array_spect_sort_f( p, o, start, end, cmp_f, cmp_o, direction );
+    bcore_cmp_f cmp =
+    {
+        .f = is_of_aware ? cmp_aware : ( bcore_fp_cmp_o )bcore_compare_spect,
+        .o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) )
+    };
+    bcore_array_spect_sort_f( p, o, start, end, cmp, direction );
 }
 
 /**********************************************************************************************************************/
 
-static void buf_order_sort( vc_t* data, sz_t* order, sz_t size, sz_t* buf, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
+static void buf_order_sort( vc_t* data, sz_t* order, sz_t size, sz_t* buf, bcore_cmp_f cmp, s2_t direction )
 {
     if( size < 2 ) return;
     sz_t size1 = size >> 1;
-    buf_order_sort( data, order,         size1       , buf, cmp_f, cmp_o, direction );
-    buf_order_sort( data, order + size1, size - size1, buf, cmp_f, cmp_o, direction );
+    buf_order_sort( data, order,         size1       , buf, cmp, direction );
+    buf_order_sort( data, order + size1, size - size1, buf, cmp, direction );
     bcore_memcpy( buf, order, size1 * sizeof( sz_t ) );
     for( sz_t i = 0, w = 0, r = size1; i < size1; )
     {
-        order[ w++ ] = ( r == size || cmp_f( cmp_o, data[ buf[ i ] ], data[ order[ r ] ] ) * direction >= 0 ) ? buf[ i++ ] : order[ r++ ];
+        order[ w++ ] = ( r == size || cmp.f( cmp.o, data[ buf[ i ] ], data[ order[ r ] ] ) * direction >= 0 ) ? buf[ i++ ] : order[ r++ ];
     }
 }
 
-bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
+bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction )
 {
     bcore_arr_sz_s* order = bcore_arr_sz_s_create();
     sz_t size = get_size( p, o );
@@ -1247,7 +1256,7 @@ bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p,
     {
         vc_t* data = ( vc_t* )bcore_array_spect_get_c_data( p, o ) + start;
         sz_t* buf = bcore_un_alloc( sizeof( sz_t ), NULL, 0, range >> 1, NULL );
-        buf_order_sort( data, order->data, range, buf, cmp_f, cmp_o, direction );
+        buf_order_sort( data, order->data, range, buf, cmp, direction );
         bcore_un_alloc( sizeof( sz_t ), buf, range >> 1, 0, NULL );
     }
     else
@@ -1259,7 +1268,7 @@ bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p,
         for( sz_t i = 0; i < range; i++ ) data[ i ] = ( u0_t* )src + i * unit_size;
 
         sz_t* buf = bcore_un_alloc( sizeof( sz_t ), NULL, 0, range >> 1, NULL );
-        buf_order_sort( data, order->data, range, buf, cmp_f, cmp_o, direction );
+        buf_order_sort( data, order->data, range, buf, cmp, direction );
         bcore_un_alloc( sizeof( sz_t ), buf,  range >> 1, 0, NULL );
         bcore_un_alloc( sizeof( vc_t ), data, range,      0, NULL );
     }
@@ -1272,9 +1281,12 @@ bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p,
 bcore_arr_sz_s* bcore_array_spect_create_sorted_order( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_spect_is_of_aware( p );
-    bcore_fp_ocmp cmp_f = is_of_aware ? cmp_aware : ( bcore_fp_ocmp )bcore_compare_spect;
-    vc_t          cmp_o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) );
-    return bcore_array_spect_create_sorted_order_f( p, o, start, end, cmp_f, cmp_o, direction );
+    bcore_cmp_f cmp =
+    {
+        .f = is_of_aware ? cmp_aware : ( bcore_fp_cmp_o )bcore_compare_spect,
+        .o = is_of_aware ? NULL      : bcore_compare_s_get_typed( bcore_array_spect_get_mono_type( p, o ) )
+    };
+    return bcore_array_spect_create_sorted_order_f( p, o, start, end, cmp, direction );
 }
 
 /**********************************************************************************************************************/
@@ -1416,11 +1428,11 @@ vc_t NPX(typed_max                  )( tp_t tp, vc_t o, sz_t st, sz_t nd, s2_t d
 sz_t NPX(typed_max_index            )( tp_t tp, vc_t o, sz_t st, sz_t nd, s2_t d       ) { return NPX(spect_max_index            )( atpd( tp ), o, st, nd, d  ); }
 void NPX(typed_sort                 )( tp_t tp, vd_t o, sz_t st, sz_t nd, s2_t d       ) {        NPX(spect_sort                 )( atpd( tp ), o, st, nd, d  ); }
 void NPX(typed_reorder              )( tp_t tp, vd_t o, const bcore_arr_sz_s* od       ) {        NPX(spect_reorder              )( atpd( tp ), o, od         ); }
-vc_t NPX(typed_max_f                )( tp_t tp, vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_max_f       )( atpd( tp ), o, st, nd, f, fo, d ); }
-sz_t NPX(typed_max_index_f          )( tp_t tp, vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_max_index_f )( atpd( tp ), o, st, nd, f, fo, d ); }
-void NPX(typed_sort_f               )( tp_t tp, vd_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) {        NPX(spect_sort_f      )( atpd( tp ), o, st, nd, f, fo, d ); }
-bcore_arr_sz_s* NPX(typed_create_sorted_order  )( tp_t tp, vc_t o, sz_t st, sz_t nd, s2_t d                           ) { return NPX(spect_create_sorted_order   )( atpd( tp ), o, st, nd,        d ); }
-bcore_arr_sz_s* NPX(typed_create_sorted_order_f)( tp_t tp, vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_create_sorted_order_f )( atpd( tp ), o, st, nd, f, fo, d ); }
+vc_t NPX(typed_max_f                )( tp_t tp, vc_t o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { return NPX(spect_max_f       )( atpd( tp ), o, st, nd, c, d ); }
+sz_t NPX(typed_max_index_f          )( tp_t tp, vc_t o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { return NPX(spect_max_index_f )( atpd( tp ), o, st, nd, c, d ); }
+void NPX(typed_sort_f               )( tp_t tp, vd_t o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) {        NPX(spect_sort_f      )( atpd( tp ), o, st, nd, c, d ); }
+bcore_arr_sz_s* NPX(typed_create_sorted_order  )( tp_t tp, vc_t o, sz_t st, sz_t nd, s2_t d                ) { return NPX(spect_create_sorted_order   )( atpd( tp ), o, st, nd, d ); }
+bcore_arr_sz_s* NPX(typed_create_sorted_order_f)( tp_t tp, vc_t o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { return NPX(spect_create_sorted_order_f )( atpd( tp ), o, st, nd, c, d ); }
 
 sz_t NPX(aware_get_size             )( vc_t o                                 ) { return NPX(typed_get_size             )( *( aware_t* )o, o             ); }
 sz_t NPX(aware_get_space            )( vc_t o                                 ) { return NPX(typed_get_space            )( *( aware_t* )o, o             ); }
@@ -1462,11 +1474,11 @@ vc_t NPX(aware_max                  )( vc_t o, sz_t st, sz_t nd, s2_t d       ) 
 sz_t NPX(aware_max_index            )( vc_t o, sz_t st, sz_t nd, s2_t d       ) { return NPX(typed_max_index            )( *( aware_t* )o, o, st, nd, d  ); }
 void NPX(aware_sort                 )( vd_t o, sz_t st, sz_t nd, s2_t d       ) {        NPX(typed_sort                 )( *( aware_t* )o, o, st, nd, d  ); }
 void NPX(aware_reorder              )( vd_t o, const bcore_arr_sz_s* od       ) {        NPX(typed_reorder              )( *( aware_t* )o, o, od         ); }
-vc_t NPX(aware_max_f                )( vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(typed_max_f       )( *( aware_t* )o, o, st, nd, f, fo, d ); }
-sz_t NPX(aware_max_index_f          )( vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(typed_max_index_f )( *( aware_t* )o, o, st, nd, f, fo, d ); }
-void NPX(aware_sort_f               )( vd_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) {        NPX(typed_sort_f      )( *( aware_t* )o, o, st, nd, f, fo, d ); }
-bcore_arr_sz_s* NPX(aware_create_sorted_order  )( vc_t o, sz_t st, sz_t nd, s2_t d                           ) { return NPX(typed_create_sorted_order   )( *( aware_t* )o, o, st, nd,        d ); }
-bcore_arr_sz_s* NPX(aware_create_sorted_order_f)( vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(typed_create_sorted_order_f )( *( aware_t* )o, o, st, nd, f, fo, d ); }
+vc_t NPX(aware_max_f                )( vc_t o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { return NPX(typed_max_f       )( *( aware_t* )o, o, st, nd, c, d ); }
+sz_t NPX(aware_max_index_f          )( vc_t o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { return NPX(typed_max_index_f )( *( aware_t* )o, o, st, nd, c, d ); }
+void NPX(aware_sort_f               )( vd_t o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) {        NPX(typed_sort_f      )( *( aware_t* )o, o, st, nd, c, d ); }
+bcore_arr_sz_s* NPX(aware_create_sorted_order  )( vc_t o, sz_t st, sz_t nd, s2_t d                ) { return NPX(typed_create_sorted_order   )( *( aware_t* )o, o, st, nd, d ); }
+bcore_arr_sz_s* NPX(aware_create_sorted_order_f)( vc_t o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { return NPX(typed_create_sorted_order_f )( *( aware_t* )o, o, st, nd, c, d ); }
 
 inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_array_s ); }
 inline static vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_array_s ); }
@@ -1512,11 +1524,11 @@ vc_t NPX(max                  )( sr_s o, sz_t st, sz_t nd, s2_t d ) { vc_t r = N
 sz_t NPX(max_index            )( sr_s o, sz_t st, sz_t nd, s2_t d ) { sz_t r = NPX(spect_max_index            )( r_spect( o ), o.o, st, nd, d  ); sr_down( o ); return r; }
 void NPX(sort                 )( sr_s o, sz_t st, sz_t nd, s2_t d ) {          NPX(spect_sort                 )( w_spect( o ), o.o, st, nd, d  ); sr_down( o );           }
 void NPX(reorder              )( sr_s o, const bcore_arr_sz_s* od ) {          NPX(spect_reorder              )( w_spect( o ), o.o, od         ); sr_down( o );           }
-vc_t NPX(max_f                )( sr_s o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { vc_t r = NPX(spect_max_f       )( r_spect( o ), o.o, st, nd, f, fo, d ); sr_down( o ); return r; }
-sz_t NPX(max_index_f          )( sr_s o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { sz_t r = NPX(spect_max_index_f )( r_spect( o ), o.o, st, nd, f, fo, d ); sr_down( o ); return r; }
-void NPX(sort_f               )( sr_s o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) {          NPX(spect_sort_f      )( w_spect( o ), o.o, st, nd, f, fo, d ); sr_down( o );           }
-bcore_arr_sz_s* NPX(create_sorted_order  )( sr_s o, sz_t st, sz_t nd, s2_t d                           ) { bcore_arr_sz_s* r = NPX(spect_create_sorted_order   )( r_spect( o ), o.o, st, nd,        d ); sr_down( o ); return r; }
-bcore_arr_sz_s* NPX(create_sorted_order_f)( sr_s o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { bcore_arr_sz_s* r = NPX(spect_create_sorted_order_f )( r_spect( o ), o.o, st, nd, f, fo, d ); sr_down( o ); return r; }
+vc_t NPX(max_f                )( sr_s o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { vc_t r = NPX(spect_max_f       )( r_spect( o ), o.o, st, nd, c, d ); sr_down( o ); return r; }
+sz_t NPX(max_index_f          )( sr_s o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { sz_t r = NPX(spect_max_index_f )( r_spect( o ), o.o, st, nd, c, d ); sr_down( o ); return r; }
+void NPX(sort_f               )( sr_s o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) {          NPX(spect_sort_f      )( w_spect( o ), o.o, st, nd, c, d ); sr_down( o );           }
+bcore_arr_sz_s* NPX(create_sorted_order  )( sr_s o, sz_t st, sz_t nd, s2_t d                ) { bcore_arr_sz_s* r = NPX(spect_create_sorted_order   )( r_spect( o ), o.o, st, nd, d    ); sr_down( o ); return r; }
+bcore_arr_sz_s* NPX(create_sorted_order_f)( sr_s o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { bcore_arr_sz_s* r = NPX(spect_create_sorted_order_f )( r_spect( o ), o.o, st, nd, c, d ); sr_down( o ); return r; }
 
 sz_t NPX(q_get_size             )( const sr_s* o                           ) { return   NPX(spect_get_size             )( r_spect( *o ), o->o             ); }
 sz_t NPX(q_get_space            )( const sr_s* o                           ) { return   NPX(spect_get_space            )( r_spect( *o ), o->o             ); }
@@ -1558,11 +1570,11 @@ vc_t NPX(q_max                  )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) { r
 sz_t NPX(q_max_index            )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) { return   NPX(spect_max_index            )( r_spect( *o ), o->o, st, nd, d  ); }
 void NPX(q_sort                 )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) {          NPX(spect_sort                 )( w_spect( *o ), o->o, st, nd, d  ); }
 void NPX(q_reorder              )( const sr_s* o, const bcore_arr_sz_s* od ) {          NPX(spect_reorder              )( w_spect( *o ), o->o, od         ); }
-vc_t NPX(q_max_f                )( const sr_s* o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_max_f       )( r_spect( *o ), o->o, st, nd, f, fo, d ); }
-sz_t NPX(q_max_index_f          )( const sr_s* o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_max_index_f )( r_spect( *o ), o->o, st, nd, f, fo, d ); }
-void NPX(q_sort_f               )( const sr_s* o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) {        NPX(spect_sort_f      )( w_spect( *o ), o->o, st, nd, f, fo, d ); }
-bcore_arr_sz_s* NPX(q_create_sorted_order  )( const sr_s* o, sz_t st, sz_t nd, s2_t d                           ) { return NPX(spect_create_sorted_order   )( r_spect( *o ), o->o, st, nd,        d ); }
-bcore_arr_sz_s* NPX(q_create_sorted_order_f)( const sr_s* o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_create_sorted_order_f )( r_spect( *o ), o->o, st, nd, f, fo, d ); }
+vc_t NPX(q_max_f                )( const sr_s* o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { return NPX(spect_max_f       )( r_spect( *o ), o->o, st, nd, c, d ); }
+sz_t NPX(q_max_index_f          )( const sr_s* o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { return NPX(spect_max_index_f )( r_spect( *o ), o->o, st, nd, c, d ); }
+void NPX(q_sort_f               )( const sr_s* o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) {        NPX(spect_sort_f      )( w_spect( *o ), o->o, st, nd, c, d ); }
+bcore_arr_sz_s* NPX(q_create_sorted_order  )( const sr_s* o, sz_t st, sz_t nd, s2_t d                ) { return NPX(spect_create_sorted_order   )( r_spect( *o ), o->o, st, nd, d    ); }
+bcore_arr_sz_s* NPX(q_create_sorted_order_f)( const sr_s* o, sz_t st, sz_t nd, bcore_cmp_f c, s2_t d ) { return NPX(spect_create_sorted_order_f )( r_spect( *o ), o->o, st, nd, c, d ); }
 
 /**********************************************************************************************************************/
 // testing, debugging

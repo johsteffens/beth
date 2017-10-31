@@ -109,9 +109,9 @@ sz_t bcore_array_spect_get_unit_size ( const bcore_array_s* p, vc_t o ); // spac
  */
 
 // max/min/(merge-)sort within range (for minimum, set direction == -1)
-vc_t bcore_array_spect_max_f(       const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
-sz_t bcore_array_spect_max_index_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
-void bcore_array_spect_sort_f(      const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+vc_t bcore_array_spect_max_f(       const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+sz_t bcore_array_spect_max_index_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+void bcore_array_spect_sort_f(      const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 vc_t bcore_array_spect_max(         const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction );
 sz_t bcore_array_spect_max_index(   const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_spect_sort(        const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t direction );
@@ -122,7 +122,7 @@ void bcore_array_spect_sort(        const bcore_array_s* p, vd_t o, sz_t start, 
  *  Computing an order can be more efficient than sorting the array itself
  *  when the array consists of nested elements.
  */
-bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 bcore_arr_sz_s* bcore_array_spect_create_sorted_order(   const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction );
 
 void bcore_array_spect_reorder( const bcore_array_s* p, vd_t o, const bcore_arr_sz_s* order );
@@ -166,12 +166,12 @@ sz_t bcore_array_typed_get_unit_size        ( tp_t tp, vc_t o );
 vc_t bcore_array_typed_max                  ( tp_t tp, vc_t o, sz_t start, sz_t end, s2_t direction );
 sz_t bcore_array_typed_max_index            ( tp_t tp, vc_t o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_typed_sort                 ( tp_t tp, vd_t o, sz_t start, sz_t end, s2_t direction );
-vc_t bcore_array_typed_max_f                ( tp_t tp, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
-sz_t bcore_array_typed_max_index_f          ( tp_t tp, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
-void bcore_array_typed_sort_f               ( tp_t tp, vd_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+vc_t bcore_array_typed_max_f                ( tp_t tp, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+sz_t bcore_array_typed_max_index_f          ( tp_t tp, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+void bcore_array_typed_sort_f               ( tp_t tp, vd_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 void bcore_array_typed_reorder              ( tp_t tp, vd_t o, const bcore_arr_sz_s* order );
 bcore_arr_sz_s* bcore_array_typed_create_sorted_order(   tp_t tp, vc_t o, sz_t start, sz_t end, s2_t direction );
-bcore_arr_sz_s* bcore_array_typed_create_sorted_order_f( tp_t tp, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+bcore_arr_sz_s* bcore_array_typed_create_sorted_order_f( tp_t tp, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 
 sz_t bcore_array_aware_get_size             ( vc_t o );
 sz_t bcore_array_aware_get_space            ( vc_t o );
@@ -213,12 +213,12 @@ sz_t bcore_array_aware_get_unit_size        ( vc_t o );
 vc_t bcore_array_aware_max                  ( vc_t o, sz_t start, sz_t end, s2_t direction );
 sz_t bcore_array_aware_max_index            ( vc_t o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_aware_sort                 ( vd_t o, sz_t start, sz_t end, s2_t direction );
-vc_t bcore_array_aware_max_f                ( vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
-sz_t bcore_array_aware_max_index_f          ( vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
-void bcore_array_aware_sort_f               ( vd_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+vc_t bcore_array_aware_max_f                ( vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+sz_t bcore_array_aware_max_index_f          ( vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+void bcore_array_aware_sort_f               ( vd_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 void bcore_array_aware_reorder              ( vd_t o, const bcore_arr_sz_s* order );
 bcore_arr_sz_s* bcore_array_aware_create_sorted_order(   vc_t o, sz_t start, sz_t end, s2_t direction );
-bcore_arr_sz_s* bcore_array_aware_create_sorted_order_f( vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+bcore_arr_sz_s* bcore_array_aware_create_sorted_order_f( vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 
 sz_t bcore_array_get_size             ( sr_s o );
 sz_t bcore_array_get_space            ( sr_s o );
@@ -260,12 +260,12 @@ sz_t bcore_array_get_unit_size        ( sr_s o );
 vc_t bcore_array_max                  ( sr_s o, sz_t start, sz_t end, s2_t direction );
 sz_t bcore_array_max_index            ( sr_s o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_sort                 ( sr_s o, sz_t start, sz_t end, s2_t direction );
-vc_t bcore_array_max_f                ( sr_s o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
-sz_t bcore_array_max_index_f          ( sr_s o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
-void bcore_array_sort_f               ( sr_s o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+vc_t bcore_array_max_f                ( sr_s o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+sz_t bcore_array_max_index_f          ( sr_s o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+void bcore_array_sort_f               ( sr_s o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 void bcore_array_reorder              ( sr_s o, const bcore_arr_sz_s* order );
 bcore_arr_sz_s* bcore_array_create_sorted_order(   sr_s o, sz_t start, sz_t end, s2_t direction );
-bcore_arr_sz_s* bcore_array_create_sorted_order_f( sr_s o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+bcore_arr_sz_s* bcore_array_create_sorted_order_f( sr_s o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 
 sz_t bcore_array_q_get_size             ( const sr_s* o );
 sz_t bcore_array_q_get_space            ( const sr_s* o );
@@ -307,12 +307,12 @@ sz_t bcore_array_q_get_unit_size        ( const sr_s* o );
 vc_t bcore_array_q_max                  ( const sr_s* o, sz_t start, sz_t end, s2_t direction );
 sz_t bcore_array_q_max_index            ( const sr_s* o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_q_sort                 ( const sr_s* o, sz_t start, sz_t end, s2_t direction );
-vc_t bcore_array_q_max_f                ( const sr_s* o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
-sz_t bcore_array_q_max_index_f          ( const sr_s* o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
-void bcore_array_q_sort_f               ( const sr_s* o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+vc_t bcore_array_q_max_f                ( const sr_s* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+sz_t bcore_array_q_max_index_f          ( const sr_s* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+void bcore_array_q_sort_f               ( const sr_s* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 void bcore_array_q_reorder              ( const sr_s* o, const bcore_arr_sz_s* order );
 bcore_arr_sz_s* bcore_array_q_create_sorted_order(   const sr_s* o, sz_t start, sz_t end, s2_t direction );
-bcore_arr_sz_s* bcore_array_q_create_sorted_order_f( const sr_s* o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction );
+bcore_arr_sz_s* bcore_array_q_create_sorted_order_f( const sr_s* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 
 vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object );
 

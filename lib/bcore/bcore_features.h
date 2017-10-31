@@ -42,8 +42,9 @@ typedef void (*bcore_fp_logvf )( vd_t o, sc_t format, va_list args );
 /*********************************************************************************************************************/
 
 /// comparison
-typedef s2_t (*bcore_fp_cmp  )(         vc_t v1, vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
-typedef s2_t (*bcore_fp_ocmp )( vc_t o, vc_t v1, vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
+typedef s2_t (*bcore_fp_cmp   )(         vc_t v1, vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
+typedef s2_t (*bcore_fp_cmp_o )( vc_t o, vc_t v1, vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
+typedef struct bcore_cmp_f { bcore_fp_cmp_o f; vc_t o; } bcore_cmp_f; // comparison functor
 
 /**********************************************************************************************************************/
 
@@ -63,17 +64,6 @@ typedef sr_s ( *bcore_fp_interpret )( vc_t o,           sr_s src ); // construct
 typedef vd_t ( *bcore_fp_signal )( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
-/// Testing, Debugging. A test shall either complete safely or fail with a descriptive error (via bcore_err).
-
-typedef struct st_s st_s; // forward declaration
-
-/// Silent and fast ( <10ms )
-typedef void (*bcore_fp_quicktest)(void);
-
-/** A selftest may be extensive and verbose but should complete in reasonable time (seconds).
- *  Selftest may return a log-string or NULL. The caller takes ownership of the returned string.
- */
-typedef st_s* (*bcore_fp_selftest)(void);
 
 #endif // BCORE_FEATURES_H
 
