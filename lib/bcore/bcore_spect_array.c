@@ -38,66 +38,16 @@ static void array_s_discard( bcore_array_s* o )
 
 /**********************************************************************************************************************/
 
-static sz_t get_size_static( const bcore_array_s* p, vc_t o )
+static sz_t get_size( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_static_array_s* )obj )->size;
+    return ( ( bcore_array_head_s* )obj )->size;
 }
 
-static sz_t get_size_typed( const bcore_array_s* p, vc_t o )
+static sz_t get_space( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_typed_array_s* )obj )->size;
-}
-
-static sz_t get_size_static_link( const bcore_array_s* p, vc_t o )
-{
-    vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_static_link_array_s* )obj )->size;
-}
-
-static sz_t get_size_typed_link( const bcore_array_s* p, vc_t o )
-{
-    vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_typed_link_array_s* )obj )->size;
-}
-
-static sz_t get_size_aware_link( const bcore_array_s* p, vc_t o )
-{
-    vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_aware_link_array_s* )obj )->size;
-}
-
-/**********************************************************************************************************************/
-
-static sz_t get_space_static( const bcore_array_s* p, vc_t o )
-{
-    vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_static_array_s* )obj )->space;
-}
-
-static sz_t get_space_typed( const bcore_array_s* p, vc_t o )
-{
-    vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_typed_array_s* )obj )->space;
-}
-
-static sz_t get_space_static_link( const bcore_array_s* p, vc_t o )
-{
-    vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_static_link_array_s* )obj )->space;
-}
-
-static sz_t get_space_typed_link( const bcore_array_s* p, vc_t o )
-{
-    vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_typed_link_array_s* )obj )->space;
-}
-
-static sz_t get_space_aware_link( const bcore_array_s* p, vc_t o )
-{
-    vc_t obj = ( u0_t* )o + p->caps_offset;
-    return ( ( bcore_aware_link_array_s* )obj )->space;
+    return ( ( bcore_array_head_s* )obj )->space;
 }
 
 /**********************************************************************************************************************/
@@ -105,12 +55,12 @@ static sz_t get_space_aware_link( const bcore_array_s* p, vc_t o )
 void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
+    if( ( ( bcore_array_head_s* )obj )->size <= ( ( bcore_array_head_s* )obj )->space ) return;
     switch( p->caps_type )
     {
         case BCORE_CAPS_STATIC_ARRAY:
         {
             bcore_static_array_s* arr = obj;
-            if( arr->size <= arr->space ) return;
             const bcore_inst_s* instance_p = p->item_p;
             sz_t unit_size = instance_p->size;
             vc_t src_data = arr->data;
@@ -135,7 +85,6 @@ void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
         case BCORE_CAPS_TYPED_ARRAY:
         {
             bcore_typed_array_s* arr = obj;
-            if( arr->size <= arr->space ) return;
             if( !arr->type ) ERR( "attempt to take ownership of type-zero array" );
             const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
             sz_t unit_size = instance_p->size;
@@ -161,7 +110,6 @@ void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         {
             bcore_static_link_array_s* arr = obj;
-            if( arr->size <= arr->space ) return;
             const bcore_inst_s* instance_p = p->item_p;
             vd_t* src_data = arr->data;
             arr->data = bcore_u_alloc( sizeof( vd_t ), NULL, arr->size, &arr->space );
@@ -173,7 +121,6 @@ void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         {
             bcore_typed_link_array_s* arr = obj;
-            if( arr->size <= arr->space ) return;
             if( !arr->type ) ERR( "attempt to take ownership of type-zero array" );
             const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
             vd_t* src_data = arr->data;
@@ -186,7 +133,6 @@ void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
             bcore_aware_link_array_s* arr = obj;
-            if( arr->size <= arr->space ) return;
             vd_t* src_data = arr->data;
             arr->data = bcore_u_alloc( sizeof( vd_t ), NULL, arr->size, &arr->space );
             vd_t* dst_data = arr->data;
@@ -201,12 +147,12 @@ void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
 void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
 {
     vd_t obj = ( u0_t* )o + p->caps_offset;
+    if( ( ( bcore_array_head_s* )obj )->size > ( ( bcore_array_head_s* )obj )->space ) bcore_array_spect_make_strong( p, o );
     switch( p->caps_type )
     {
         case BCORE_CAPS_STATIC_ARRAY:
         {
             bcore_static_array_s* arr = obj;
-            if( arr->size > arr->space ) bcore_array_spect_make_strong( p, o );
             const bcore_inst_s* instance_p = p->item_p;
             sz_t unit_size = instance_p->size;
             if( instance_p->move_flat )
@@ -248,7 +194,6 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_TYPED_ARRAY:
         {
             bcore_typed_array_s* arr = obj;
-            if( arr->size > arr->space ) bcore_array_spect_make_strong( p, o );
             if( space == arr->space ) break;
             if( !arr->type ) ERR( "attempt to change space on type-zero array" );
             const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
@@ -293,7 +238,6 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         {
             bcore_static_link_array_s* arr = obj;
-            if( arr->size > arr->space ) bcore_array_spect_make_strong( p, o );
             const bcore_inst_s* instance_p = p->item_p;
             while( arr->size > space )
             {
@@ -307,7 +251,6 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         {
             bcore_typed_link_array_s* arr = obj;
-            if( arr->size > arr->space ) bcore_array_spect_make_strong( p, o );
             if( space < arr->size )
             {
                 if( !arr->type ) ERR( "type-zero array with non-zero size detected" );
@@ -325,7 +268,6 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
             bcore_aware_link_array_s* arr = obj;
-            if( arr->size > arr->space ) bcore_array_spect_make_strong( p, o );
             while( arr->size > space )
             {
                 arr->size--;
@@ -880,8 +822,6 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
     {
         case BCORE_CAPS_STATIC_ARRAY:
         {
-            o->get_size    = get_size_static;
-            o->get_space   = get_space_static;
             o->get         = get_static;
             o->set         = set_static;
             if( !o->item_p ) ERR( "item_p is NULL on static-array" );
@@ -890,8 +830,6 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
 
         case BCORE_CAPS_TYPED_ARRAY:
         {
-            o->get_size    = get_size_typed;
-            o->get_space   = get_space_typed;
             o->get         = get_typed;
             o->set         = set_typed;
         }
@@ -899,8 +837,6 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
 
         case BCORE_CAPS_STATIC_LINK_ARRAY:
         {
-            o->get_size    = get_size_static_link;
-            o->get_space   = get_space_static_link;
             o->get         = get_static_link;
             o->set         = set_static_link;
             if( !o->item_p ) ERR( "item_p is NULL on static-link-array" );
@@ -909,8 +845,6 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
 
         case BCORE_CAPS_TYPED_LINK_ARRAY:
         {
-            o->get_size    = get_size_typed_link;
-            o->get_space   = get_space_typed_link;
             o->get         = get_typed_link;
             o->set         = set_typed_link;
         }
@@ -918,8 +852,6 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
 
         case BCORE_CAPS_AWARE_LINK_ARRAY:
         {
-            o->get_size    = get_size_aware_link;
-            o->get_space   = get_space_aware_link;
             o->get         = get_aware_link;
             o->set         = set_aware_link;
         }
@@ -966,8 +898,8 @@ tp_t bcore_static_link_array_type_of( tp_t type )
 
 /**********************************************************************************************************************/
 
-sz_t bcore_array_spect_get_size   ( const bcore_array_s* p, vc_t o )                                 { return p->get_size( p, o ); }
-sz_t bcore_array_spect_get_space  ( const bcore_array_s* p, vc_t o )                                 { return p->get_space( p, o ); }
+sz_t bcore_array_spect_get_size   ( const bcore_array_s* p, vc_t o )                                 { return get_size( p, o ); }
+sz_t bcore_array_spect_get_space  ( const bcore_array_s* p, vc_t o )                                 { return get_space( p, o ); }
 sr_s bcore_array_spect_get        ( const bcore_array_s* p, vc_t o, sz_t index )                     { return p->get( p, o, index ); }
 void bcore_array_spect_set        ( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )           {        p->set( p, o, index, src ); }
 void bcore_array_spect_set_s3     ( const bcore_array_s* p, vd_t o, sz_t index, s3_t val )           {        p->set( p, o, index, sr_twc( TYPEOF_s3_t, &val ) ); }
@@ -1098,7 +1030,7 @@ static s2_t cmp_aware( vc_t o, vc_t obj1, vc_t obj2 )
 
 vc_t bcore_array_spect_max_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
 {
-    sz_t size = p->get_size( p, o );
+    sz_t size = get_size( p, o );
     sz_t end_l = end < size ? end : size;
     if( start >= end_l ) return NULL;
     vc_t ret;
@@ -1137,7 +1069,7 @@ vc_t bcore_array_spect_max( const bcore_array_s* p, vc_t o, sz_t start, sz_t end
 
 sz_t bcore_array_spect_max_index_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
 {
-    sz_t size = p->get_size( p, o );
+    sz_t size = get_size( p, o );
     sz_t end_l = end < size ? end : size;
     if( start >= end_l ) return end_l;
 
@@ -1248,8 +1180,8 @@ static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd
 
 void bcore_array_spect_sort_f( const bcore_array_s* p, vd_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
 {
-    sz_t size = p->get_size( p, o );
-    if( size > p->get_space( p, o ) ) bcore_array_spect_make_strong( p, o );
+    sz_t size = get_size( p, o );
+    if( size > get_space( p, o ) ) bcore_array_spect_make_strong( p, o );
     sz_t end_l = end < size ? end : size;
     if( start >= end_l ) return;
     sz_t range = end_l - start;
@@ -1304,7 +1236,7 @@ static void buf_order_sort( vc_t* data, sz_t* order, sz_t size, sz_t* buf, bcore
 bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p, vc_t o, sz_t start, sz_t end, bcore_fp_ocmp cmp_f, vc_t cmp_o, s2_t direction )
 {
     bcore_arr_sz_s* order = bcore_arr_sz_s_create();
-    sz_t size = p->get_size( p, o );
+    sz_t size = get_size( p, o );
     sz_t end_l = end < size ? end : size;
     if( start >= end_l ) return order;
     sz_t range = end_l - start;
@@ -1350,7 +1282,7 @@ bcore_arr_sz_s* bcore_array_spect_create_sorted_order( const bcore_array_s* p, v
 void bcore_array_spect_reorder( const bcore_array_s* p, vd_t o, const bcore_arr_sz_s* order )
 {
     sz_t arr_size = bcore_array_spect_get_size( p, o );
-    if( arr_size > p->get_space( p, o ) ) bcore_array_spect_make_strong( p, o );
+    if( arr_size > get_space( p, o ) ) bcore_array_spect_make_strong( p, o );
 
     if( bcore_array_spect_is_of_links( p ) )
     {
@@ -1665,7 +1597,7 @@ static void test_string_array( sc_t type_sc )
     ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 2 ).o, "test line a" ) == 0 );
     ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 3 ).o, "some nonsense: sakjd" ) == 0 );
     ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 4 ).o, "some nonsense: dspaud" ) == 0 );
-    ASSERT( arr_p->get_size( arr_p, arr ) == 9 );
+    ASSERT( get_size( arr_p, arr ) == 9 );
 
     bcore_arr_sz_s* order = bcore_arr_sz_s_create();
     bcore_arr_sz_s_push( order, 2 );
@@ -1676,7 +1608,7 @@ static void test_string_array( sc_t type_sc )
     bcore_arr_sz_s_push( order, 4 );
 
     bcore_array_spect_reorder( arr_p, arr, order );
-    ASSERT( arr_p->get_size( arr_p, arr ) == order->size );
+    ASSERT( get_size( arr_p, arr ) == order->size );
 
     ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 0 ).o, "test line a" ) == 0 );
     ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 1 ).o, "test line a" ) == 0 );
@@ -1701,7 +1633,7 @@ static st_s* spect_array_selftest( void )
     bcore_array_spect_push( arr_p, arr, sr_asd( st_s_createf( "string_typed_link_array  = { aware_t _; typed *          [] arr; }" ) ) );
     bcore_array_spect_push( arr_p, arr, sr_asd( st_s_createf( "string_aware_link_array  = { aware_t _; aware *          [] arr; }" ) ) );
 
-    for( sz_t i = 0; i < arr_p->get_size( arr_p, arr ); i++ )
+    for( sz_t i = 0; i < get_size( arr_p, arr ); i++ )
     {
 
         const st_s* code = arr_p->get( arr_p, arr, i ).o;

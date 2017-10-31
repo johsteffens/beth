@@ -17,7 +17,6 @@ typedef struct bcore_sink_s
 {
     aware_t p_type; // type of perspective
     tp_t    o_type; // type of object
-
     bcore_fp_flow_snk          flow_snk;
     bcore_sink_fp_set_consumer fp_set_consumer;
     bcore_sink_fp_flush        fp_flush;
@@ -30,6 +29,8 @@ sz_t bcore_sink_spect_push_data    ( const bcore_sink_s* p, vd_t o, vc_t data, s
 void bcore_sink_spect_flush        ( const bcore_sink_s* p, vd_t o );
 void bcore_sink_spect_pushvf       ( const bcore_sink_s* p, vd_t o, sc_t format, va_list args );
 void bcore_sink_spect_pushf        ( const bcore_sink_s* p, vd_t o, sc_t format, ... );
+void bcore_sink_spect_push_fv      ( const bcore_sink_s* p, vd_t o, sc_t format, va_list args );
+void bcore_sink_spect_push_fa      ( const bcore_sink_s* p, vd_t o, sc_t format, ... );
 void bcore_sink_spect_push_char    ( const bcore_sink_s* p, vd_t o, char c );
 void bcore_sink_spect_push_sc      ( const bcore_sink_s* p, vd_t o, sc_t sc );
 void bcore_sink_spect_push_string  ( const bcore_sink_s* p, vd_t o, const st_s* string );
@@ -40,6 +41,8 @@ sz_t bcore_sink_aware_push_data    ( vd_t o, vc_t data, sz_t size );
 void bcore_sink_aware_flush        ( vd_t o );
 void bcore_sink_aware_pushvf       ( vd_t o, sc_t format, va_list args );
 void bcore_sink_aware_pushf        ( vd_t o, sc_t format, ... );
+void bcore_sink_aware_push_fv      ( vd_t o, sc_t format, va_list args );
+void bcore_sink_aware_push_fa      ( vd_t o, sc_t format, ... );
 void bcore_sink_aware_push_char    ( vd_t o, char c );
 void bcore_sink_aware_push_sc      ( vd_t o, sc_t sc );
 void bcore_sink_aware_push_string  ( vd_t o, const st_s* string );
@@ -50,6 +53,8 @@ sz_t bcore_sink_push_data    ( sr_s o, vc_t data, sz_t size );
 void bcore_sink_flush        ( sr_s o );
 void bcore_sink_pushvf       ( sr_s o, sc_t format, va_list args );
 void bcore_sink_pushf        ( sr_s o, sc_t format, ... );
+void bcore_sink_push_fv      ( sr_s o, sc_t format, va_list args );
+void bcore_sink_push_fa      ( sr_s o, sc_t format, ... );
 void bcore_sink_push_char    ( sr_s o, char c );
 void bcore_sink_push_sc      ( sr_s o, sc_t sc );
 void bcore_sink_push_string  ( sr_s o, const st_s* string );
@@ -60,6 +65,8 @@ sz_t bcore_sink_q_push_data    ( const sr_s* o, vc_t data, sz_t size );
 void bcore_sink_q_flush        ( const sr_s* o );
 void bcore_sink_q_pushvf       ( const sr_s* o, sc_t format, va_list args );
 void bcore_sink_q_pushf        ( const sr_s* o, sc_t format, ... );
+void bcore_sink_q_push_fv      ( const sr_s* o, sc_t format, va_list args );
+void bcore_sink_q_push_fa      ( const sr_s* o, sc_t format, ... );
 void bcore_sink_q_push_char    ( const sr_s* o, char c );
 void bcore_sink_q_push_sc      ( const sr_s* o, sc_t sc );
 void bcore_sink_q_push_string  ( const sr_s* o, const st_s* string );

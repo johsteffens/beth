@@ -139,8 +139,8 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     if( bcore_via_spect_is_pure_array( p->via ) )
     {
         const bcore_array_s* arr_p = bcore_array_s_get_typed( p->via->o_type );
-        sz_t size1 = arr_p->get_size( arr_p, obj1 );
-        sz_t size2 = arr_p->get_size( arr_p, obj2 );
+        sz_t size1 = bcore_array_spect_get_size( arr_p, obj1 );
+        sz_t size2 = bcore_array_spect_get_size( arr_p, obj2 );
         if( size1 != size2 ) return size1 < size2 ? 1 : -1;
         for( sz_t j = 0; j < size1; j++ )
         {
@@ -192,8 +192,8 @@ static st_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     if( bcore_via_spect_is_pure_array( p->via ) )
     {
         const bcore_array_s* arr_p = bcore_array_s_get_typed( p->via->o_type );
-        sz_t size1 = arr_p->get_size( arr_p, obj1 );
-        sz_t size2 = arr_p->get_size( arr_p, obj2 );
+        sz_t size1 = bcore_array_spect_get_size( arr_p, obj1 );
+        sz_t size2 = bcore_array_spect_get_size( arr_p, obj2 );
         if( size1 != size2 ) return st_s_createf( "!%s: size1:%zu, size2:%zu", ifnameof( p->o_type ), size1, size2 );
         for( sz_t j = 0; j < size1; j++ )
         {
@@ -428,7 +428,7 @@ static st_s* spect_compare_selftest( void )
 
     for( sz_t i = 0; i < 100; i++ ) bcore_array_spect_push( arr_p, arr1, sr_awc( specs ) );
 
-    for( sz_t i = 0; i < arr_p->get_size( arr_p, arr1 ); i++ )
+    for( sz_t i = 0; i < bcore_array_spect_get_size( arr_p, arr1 ); i++ )
     {
         vd_t specs = arr_p->get( arr_p, arr1, i ).o;
         const bcore_via_s* v = bcore_via_s_get_aware( specs );

@@ -30,10 +30,8 @@ typedef struct bcore_array_s
     sz_t caps_offset;
     const bcore_inst_s* item_p;  // item-perspective; NULL for typed or aware arrays
 
-    sz_t ( *get_size    )( const bcore_array_s* p, vc_t o );             // returns size
-    sz_t ( *get_space   )( const bcore_array_s* p, vc_t o );             // returns space
-    sr_s ( *get         )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL reference if index is out of range or the linked item is NULL
-    void ( *set         )( const bcore_array_s* p, vd_t o, sz_t index, sr_s src ); // sets item at indexed position; if index is out of size, size is increased
+    sr_s ( *get )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL reference if index is out of range or the linked item is NULL
+    void ( *set )( const bcore_array_s* p, vd_t o, sz_t index, sr_s src ); // sets item at indexed position; if index is out of size, size is increased
 
 } bcore_array_s;
 
@@ -45,7 +43,7 @@ static inline const bcore_array_s* bcore_array_s_get_aware( vc_t obj )
 }
 
 /**********************************************************************************************************************/
-// array construction
+// array type construction
 
 /** Constructs and returns an array of type if not already existing.
  *  The array type constructed is
@@ -128,7 +126,6 @@ bcore_arr_sz_s* bcore_array_spect_create_sorted_order_f( const bcore_array_s* p,
 bcore_arr_sz_s* bcore_array_spect_create_sorted_order(   const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction );
 
 void bcore_array_spect_reorder( const bcore_array_s* p, vd_t o, const bcore_arr_sz_s* order );
-
 
 sz_t bcore_array_typed_get_size             ( tp_t tp, vc_t o );
 sz_t bcore_array_typed_get_space            ( tp_t tp, vc_t o );

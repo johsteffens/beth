@@ -37,6 +37,13 @@ enum
 typedef struct { vd_t  link;                                   } bcore_static_link_s;
 typedef struct { vd_t  link; tp_t type;                        } bcore_typed_link_s;
 typedef struct { vd_t  link;                                   } bcore_aware_link_s;
+
+
+/** bcore_array_head_s matches the beginning of every array structure below
+ *  ptr has different meanings (either vd_t or vd_t*)
+ */
+typedef struct { vd_t   ptr; sz_t size; sz_t space;            } bcore_array_head_s;
+
 typedef struct { vd_t  data; sz_t size; sz_t space;            } bcore_static_array_s;
 typedef struct { vd_t  data; sz_t size; sz_t space; tp_t type; } bcore_typed_array_s;
 typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_static_link_array_s;
@@ -215,7 +222,6 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type 
  */
 bcore_flect_self_s* bcore_flect_self_s_build_parse( const st_s* text, sz_t* p_idx, sz_t size_of );
 bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );
-
 
 bcore_signature_s*  bcore_flect_self_s_push_to_signature( const bcore_flect_self_s* o, bcore_signature_s* sig );
 s2_t                bcore_flect_self_s_cmp( const bcore_flect_self_s* o1, const bcore_flect_self_s* o2 );
