@@ -102,6 +102,12 @@ void                bcore_sink_file_s_flush(       bcore_sink_file_s* o );
 sz_t                bcore_sink_file_s_push_data(   bcore_sink_file_s* o, vc_t data, sz_t size );
 
 /**********************************************************************************************************************/
+// syntactic sugar
+
+/// opens a file for writing
+vd_t bcore_sink_create_file( sc_t file_name );
+
+/**********************************************************************************************************************/
 
 vd_t bcore_sinks_signal( tp_t target, tp_t signal, vd_t object );
 

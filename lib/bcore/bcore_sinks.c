@@ -372,6 +372,16 @@ static bcore_flect_self_s* file_s_create_self( void )
 
 /**********************************************************************************************************************/
 
+vd_t bcore_sink_create_file( sc_t file_name )
+{
+    bcore_sink_chain_s* chain = bcore_sink_chain_s_create();
+    bcore_sink_chain_s_push_d( chain, bcore_sink_file_s_create_name( file_name ) );
+    bcore_sink_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_sink_buffer_s" ) ) );
+    return chain;
+}
+
+/**********************************************************************************************************************/
+
 vd_t bcore_sinks_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bcore_sinks" ) ) return NULL;
