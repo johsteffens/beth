@@ -1484,6 +1484,11 @@ vc_t NPX(typed_max                  )( tp_t tp, vc_t o, sz_t st, sz_t nd, s2_t d
 sz_t NPX(typed_max_index            )( tp_t tp, vc_t o, sz_t st, sz_t nd, s2_t d       ) { return NPX(spect_max_index            )( atpd( tp ), o, st, nd, d  ); }
 void NPX(typed_sort                 )( tp_t tp, vd_t o, sz_t st, sz_t nd, s2_t d       ) {        NPX(spect_sort                 )( atpd( tp ), o, st, nd, d  ); }
 void NPX(typed_reorder              )( tp_t tp, vd_t o, const bcore_arr_sz_s* od       ) {        NPX(spect_reorder              )( atpd( tp ), o, od         ); }
+vc_t NPX(typed_max_f                )( tp_t tp, vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_max_f       )( atpd( tp ), o, st, nd, f, fo, d ); }
+sz_t NPX(typed_max_index_f          )( tp_t tp, vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_max_index_f )( atpd( tp ), o, st, nd, f, fo, d ); }
+void NPX(typed_sort_f               )( tp_t tp, vd_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) {        NPX(spect_sort_f      )( atpd( tp ), o, st, nd, f, fo, d ); }
+bcore_arr_sz_s* NPX(typed_create_sorted_order  )( tp_t tp, vc_t o, sz_t st, sz_t nd, s2_t d                           ) { return NPX(spect_create_sorted_order   )( atpd( tp ), o, st, nd,        d ); }
+bcore_arr_sz_s* NPX(typed_create_sorted_order_f)( tp_t tp, vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_create_sorted_order_f )( atpd( tp ), o, st, nd, f, fo, d ); }
 
 sz_t NPX(aware_get_size             )( vc_t o                                 ) { return NPX(typed_get_size             )( *( aware_t* )o, o             ); }
 sz_t NPX(aware_get_space            )( vc_t o                                 ) { return NPX(typed_get_space            )( *( aware_t* )o, o             ); }
@@ -1525,6 +1530,11 @@ vc_t NPX(aware_max                  )( vc_t o, sz_t st, sz_t nd, s2_t d       ) 
 sz_t NPX(aware_max_index            )( vc_t o, sz_t st, sz_t nd, s2_t d       ) { return NPX(typed_max_index            )( *( aware_t* )o, o, st, nd, d  ); }
 void NPX(aware_sort                 )( vd_t o, sz_t st, sz_t nd, s2_t d       ) {        NPX(typed_sort                 )( *( aware_t* )o, o, st, nd, d  ); }
 void NPX(aware_reorder              )( vd_t o, const bcore_arr_sz_s* od       ) {        NPX(typed_reorder              )( *( aware_t* )o, o, od         ); }
+vc_t NPX(aware_max_f                )( vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(typed_max_f       )( *( aware_t* )o, o, st, nd, f, fo, d ); }
+sz_t NPX(aware_max_index_f          )( vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(typed_max_index_f )( *( aware_t* )o, o, st, nd, f, fo, d ); }
+void NPX(aware_sort_f               )( vd_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) {        NPX(typed_sort_f      )( *( aware_t* )o, o, st, nd, f, fo, d ); }
+bcore_arr_sz_s* NPX(aware_create_sorted_order  )( vc_t o, sz_t st, sz_t nd, s2_t d                           ) { return NPX(typed_create_sorted_order   )( *( aware_t* )o, o, st, nd,        d ); }
+bcore_arr_sz_s* NPX(aware_create_sorted_order_f)( vc_t o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(typed_create_sorted_order_f )( *( aware_t* )o, o, st, nd, f, fo, d ); }
 
 inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_array_s ); }
 inline static vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_array_s ); }
@@ -1570,6 +1580,11 @@ vc_t NPX(max                  )( sr_s o, sz_t st, sz_t nd, s2_t d ) { vc_t r = N
 sz_t NPX(max_index            )( sr_s o, sz_t st, sz_t nd, s2_t d ) { sz_t r = NPX(spect_max_index            )( r_spect( o ), o.o, st, nd, d  ); sr_down( o ); return r; }
 void NPX(sort                 )( sr_s o, sz_t st, sz_t nd, s2_t d ) {          NPX(spect_sort                 )( w_spect( o ), o.o, st, nd, d  ); sr_down( o );           }
 void NPX(reorder              )( sr_s o, const bcore_arr_sz_s* od ) {          NPX(spect_reorder              )( w_spect( o ), o.o, od         ); sr_down( o );           }
+vc_t NPX(max_f                )( sr_s o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { vc_t r = NPX(spect_max_f       )( r_spect( o ), o.o, st, nd, f, fo, d ); sr_down( o ); return r; }
+sz_t NPX(max_index_f          )( sr_s o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { sz_t r = NPX(spect_max_index_f )( r_spect( o ), o.o, st, nd, f, fo, d ); sr_down( o ); return r; }
+void NPX(sort_f               )( sr_s o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) {          NPX(spect_sort_f      )( w_spect( o ), o.o, st, nd, f, fo, d ); sr_down( o );           }
+bcore_arr_sz_s* NPX(create_sorted_order  )( sr_s o, sz_t st, sz_t nd, s2_t d                           ) { bcore_arr_sz_s* r = NPX(spect_create_sorted_order   )( r_spect( o ), o.o, st, nd,        d ); sr_down( o ); return r; }
+bcore_arr_sz_s* NPX(create_sorted_order_f)( sr_s o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { bcore_arr_sz_s* r = NPX(spect_create_sorted_order_f )( r_spect( o ), o.o, st, nd, f, fo, d ); sr_down( o ); return r; }
 
 sz_t NPX(q_get_size             )( const sr_s* o                           ) { return   NPX(spect_get_size             )( r_spect( *o ), o->o             ); }
 sz_t NPX(q_get_space            )( const sr_s* o                           ) { return   NPX(spect_get_space            )( r_spect( *o ), o->o             ); }
@@ -1611,6 +1626,11 @@ vc_t NPX(q_max                  )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) { r
 sz_t NPX(q_max_index            )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) { return   NPX(spect_max_index            )( r_spect( *o ), o->o, st, nd, d  ); }
 void NPX(q_sort                 )( const sr_s* o, sz_t st, sz_t nd, s2_t d ) {          NPX(spect_sort                 )( w_spect( *o ), o->o, st, nd, d  ); }
 void NPX(q_reorder              )( const sr_s* o, const bcore_arr_sz_s* od ) {          NPX(spect_reorder              )( w_spect( *o ), o->o, od         ); }
+vc_t NPX(q_max_f                )( const sr_s* o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_max_f       )( r_spect( *o ), o->o, st, nd, f, fo, d ); }
+sz_t NPX(q_max_index_f          )( const sr_s* o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_max_index_f )( r_spect( *o ), o->o, st, nd, f, fo, d ); }
+void NPX(q_sort_f               )( const sr_s* o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) {        NPX(spect_sort_f      )( w_spect( *o ), o->o, st, nd, f, fo, d ); }
+bcore_arr_sz_s* NPX(q_create_sorted_order  )( const sr_s* o, sz_t st, sz_t nd, s2_t d                           ) { return NPX(spect_create_sorted_order   )( r_spect( *o ), o->o, st, nd,        d ); }
+bcore_arr_sz_s* NPX(q_create_sorted_order_f)( const sr_s* o, sz_t st, sz_t nd, bcore_fp_ocmp f, vc_t fo, s2_t d ) { return NPX(spect_create_sorted_order_f )( r_spect( *o ), o->o, st, nd, f, fo, d ); }
 
 /**********************************************************************************************************************/
 // testing, debugging
