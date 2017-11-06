@@ -3155,10 +3155,12 @@ vd_t bcore_btree_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "selftest" ) )
     {
-        st_s_print_d( btree_ip_s_selftest() );
-        st_s_print_d( btree_ps_s_selftest() );
-        st_s_print_d( btree_pp_s_selftest() );
-        st_s_print_d( btree_vd_s_selftest() );
+        st_s* log = st_s_create();
+        st_s_push_st_d( log, btree_ip_s_selftest() );
+        st_s_push_st_d( log, btree_ps_s_selftest() );
+        st_s_push_st_d( log, btree_pp_s_selftest() );
+        st_s_push_st_d( log, btree_vd_s_selftest() );
+        return log;
     }
 
     return NULL;

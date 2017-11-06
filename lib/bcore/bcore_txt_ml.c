@@ -337,7 +337,7 @@ vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        st_s_print_d( txt_ml_selftest() );
+        return txt_ml_selftest();
     }
 
     return NULL;

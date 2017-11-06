@@ -1695,7 +1695,7 @@ vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        st_s_print_d( spect_array_selftest() );
+        return spect_array_selftest();
     }
 
     return NULL;

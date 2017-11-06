@@ -2451,11 +2451,13 @@ vd_t bcore_hmap_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        st_s_print_d( hmap_u2vd_selftest() );
-        st_s_print_d( hmap_tpsz_selftest() );
-        st_s_print_d( hmap_tptp_selftest() );
-        st_s_print_d( hmap_tpto_selftest() );
-        st_s_print_d( hmap_tp_selftest()   );
+        st_s* log = st_s_create();
+        st_s_push_st_d( log, hmap_u2vd_selftest() );
+        st_s_push_st_d( log, hmap_tpsz_selftest() );
+        st_s_push_st_d( log, hmap_tptp_selftest() );
+        st_s_push_st_d( log, hmap_tpto_selftest() );
+        st_s_push_st_d( log, hmap_tp_selftest()   );
+        return log;
     }
 
     return NULL;

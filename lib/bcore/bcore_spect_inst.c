@@ -1735,7 +1735,7 @@ vd_t bcore_spect_inst_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        st_s_print_d( spect_inst_selftest() );
+        return spect_inst_selftest();
     }
 
     return NULL;

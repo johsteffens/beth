@@ -451,8 +451,10 @@ vd_t bcore_arr_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        st_s_print_d( bcore_arr_sz_selftest() );
-        st_s_print_d( bcore_arr_st_selftest() );
+        st_s* log = st_s_create();
+        st_s_push_st_d( log, bcore_arr_sz_selftest() );
+        st_s_push_st_d( log, bcore_arr_st_selftest() );
+        return log;
     }
 
     return NULL;

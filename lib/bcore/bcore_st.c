@@ -1956,6 +1956,7 @@ vd_t bcore_st_signal( tp_t target, tp_t signal, vd_t object )
     else if( signal == typeof( "selftest" ) )
     {
         st_s_quicktest();
+        return NULL;
     }
 
     return NULL;

@@ -2482,8 +2482,10 @@ vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "selftest" ) )
     {
-        st_s_print_d( tbman_s_rctest() );
-        st_s_print_d( tbman_s_memtest() );
+        st_s* log = st_s_create();
+        st_s_push_st_d( log, tbman_s_rctest() );
+        st_s_push_st_d( log, tbman_s_memtest() );
+        return log;
     }
 
     return NULL;
