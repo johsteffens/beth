@@ -685,8 +685,13 @@ sr_s bcore_spect_via_create_zoo( sz_t size )
 static st_s* spect_via_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
-    bcore_flect_define_parse_sc( "via_specs = { sz_t size; u2_t param1; s2_t; }" );
+    bcore_flect_define_parse_sc( "via_specs = { sz_t size = 3; u2_t param1 = 1234; s2_t = -5; }" );
     sr_s via_specs = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "via_specs" ) ) );
+
+    ASSERT( *( sz_t* )bcore_via_nget( via_specs, typeof( "size"   ) ).o == 3 );
+    ASSERT( *( u2_t* )bcore_via_nget( via_specs, typeof( "param1" ) ).o == 1234 );
+    ASSERT( *( s2_t* )bcore_via_nget( via_specs, typeof( "" ) ).o       == -5 );
+
     {
         bcore_via_nset_sz( via_specs, typeof( "size"   ),  10 );
         bcore_via_nset_u3( via_specs, typeof( "param1" ), 200 );

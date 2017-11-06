@@ -8,6 +8,7 @@
 #include "bcore_quicktypes.h"
 #include "bcore_hmap.h"
 #include "bcore_signature.h"
+#include "bcore_function_manager.h"
 #include "bcore_tbman.h"
 #include "bcore_trait.h"
 
@@ -121,12 +122,14 @@ DEFINE_FUNCTION_CLONE(     bcore_flect_item_s )
 st_s* bcore_flect_item_s_show( const bcore_flect_item_s* o )
 {
     st_s* s = st_s_create();
-    st_s_pushf( s, "bcore_flect_item_s" );
-    st_s_pushf( s, "\n{" );
-    st_s_pushf( s, "\n    type  : %x '%s'", o->type, ifnameof( o->type ) );
-    st_s_pushf( s, "\n    name  : %x '%s'", o->name, ifnameof( o->name ) );
-    st_s_pushf( s, "\n    flags : %u",  ( u2_t )o->flags );
-    st_s_pushf( s, "\n    caps  : %s",  bcore_flect_caps_e_sc( o->caps ) );
+    st_s_push_fa( s, "bcore_flect_item_s" );
+    st_s_push_fa( s, "\n{" );
+    st_s_push_fa( s, "\n    type    : #<tp_t> '#<sc_t>'", o->type, ifnameof( o->type ) );
+    st_s_push_fa( s, "\n    name    : #<tp_t> '#<sc_t>'", o->name, ifnameof( o->name ) );
+    st_s_push_fa( s, "\n    flags   : #<tp_t>",  o->flags );
+    st_s_push_fa( s, "\n    caps    : #<sc_t>",  bcore_flect_caps_e_sc( o->caps ) );
+    st_s_push_fa( s, "\n    default : #<s3_t>",  o->default_s3 );
+/*
     if( o->caps == BCORE_CAPS_EXTERNAL_DATA )
     {
         st_s_pushf( s, "\n    d_ptr : %p", o->d_ptr );
@@ -135,10 +138,11 @@ st_s* bcore_flect_item_s_show( const bcore_flect_item_s* o )
     {
         st_s_pushf( s, "\n    f_ptr : %p", o->f_ptr );
     }
+*/
     st_s_pushf( s, "\n}" );
     return s;
 }
-
+/*
 bcore_flect_item_s* bcore_flect_item_s_create_external_data( vc_t data, sc_t type, sc_t name )
 {
     bcore_flect_item_s* o = bcore_flect_item_s_create();
@@ -148,7 +152,7 @@ bcore_flect_item_s* bcore_flect_item_s_create_external_data( vc_t data, sc_t typ
     o->name  = bcore_name_enroll( name );
     return o;
 }
-
+*/
 bcore_flect_item_s* bcore_flect_item_s_create_external_func( fp_t func, sc_t type, sc_t name )
 {
     bcore_flect_item_s* o = bcore_flect_item_s_create();
@@ -174,18 +178,19 @@ bcore_signature_s* bcore_flect_item_s_push_to_signature( const bcore_flect_item_
     tp_t t = o->caps;
     bcore_signature_s_push( sig, t );
     bcore_signature_s_push( sig, o->flags );
-    if( o->d_ptr ) ERR( "Extending signature with external data reference is not allowed" );
+//    if( o->d_ptr ) ERR( "Extending signature with external data reference is not allowed" );
     if( o->f_ptr ) ERR( "Extending signature with external function is not allowed" );
     return sig;
 }
 
 s2_t bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_item_s* o2 )
 {
-    if( o1->type != o2->type ) return ( o1->type < o2->type ) ? 1 : -1;
-    if( o1->name != o2->name ) return ( o1->name < o2->name ) ? 1 : -1;
-    if( o1->caps != o2->caps ) return ( o1->caps < o2->caps ) ? 1 : -1;
-    if( o1->flags != o2->flags ) return ( o1->flags < o2->flags ) ? 1 : -1;
-    if( o1->d_ptr != o2->d_ptr ) return ( o1->d_ptr < o2->d_ptr ) ? 1 : -1;
+    if( o1->type       != o2->type  ) return ( o1->type < o2->type ) ? 1 : -1;
+    if( o1->name       != o2->name  ) return ( o1->name < o2->name ) ? 1 : -1;
+    if( o1->caps       != o2->caps  ) return ( o1->caps < o2->caps ) ? 1 : -1;
+    if( o1->flags      != o2->flags ) return ( o1->flags < o2->flags ) ? 1 : -1;
+    if( o1->default_u3 != o2->default_u3 ) return ( o1->default_u3 < o2->default_u3 ) ? 1 : -1;
+//    if( o1->d_ptr != o2->d_ptr ) return ( o1->d_ptr < o2->d_ptr ) ? 1 : -1;
     if( o1->f_ptr != o2->f_ptr ) return 1; // function pointers have no order om ISO C
     return 0;
 }
@@ -276,6 +281,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
         tp_t type_val = 0;
         bcore_flect_item_s* item = bcore_life_s_push( life, ( bcore_fp_discard )bcore_flect_item_s_discard, bcore_flect_item_s_create() );
         bl_t f_private, f_hidden, f_shell, f_link, f_arr;
+
         idx = st_s_parse_fa( text, idx, text->size, "#?'private' #?'hidden' #?'shell' ",  &f_private, &f_hidden, &f_shell );
 
         // type can be specified by explicit type id number (anonymous types) or by name
@@ -299,7 +305,8 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
             idx = st_s_parse_fa( text, idx, text->size, "#name ",  type_name );
         }
 
-        idx = st_s_parse_fa( text, idx, text->size, "#?'*' #?'[]' #name ; ", &f_link, &f_arr, item_name );
+        bl_t assign_default = false;
+        idx = st_s_parse_fa( text, idx, text->size, "#?'*' #?'[]' #name #?'=' ", &f_link, &f_arr, item_name, &assign_default );
 
         item->f_private  = f_private;
         item->f_hidden   = f_hidden;
@@ -342,6 +349,51 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
                 ERR( "\n%s\n'aware-t' must be first element in body and not used elsewhere.", context->sc );
             }
         }
+
+        if( assign_default )
+        {
+            if( item->caps == BCORE_CAPS_STATIC )
+            {
+                switch( item->type )
+                {
+                    case TYPEOF_s0_t:
+                    case TYPEOF_s1_t:
+                    case TYPEOF_s2_t:
+                    case TYPEOF_s3_t:
+                        idx = st_s_parse_fa( text, idx, text->size, "#s3_t", &item->default_s3 );
+                        break;
+                    case TYPEOF_u0_t:
+                    case TYPEOF_u1_t:
+                    case TYPEOF_u2_t:
+                    case TYPEOF_u3_t:
+                    case TYPEOF_sz_t:
+                    case TYPEOF_tp_t:
+                        idx = st_s_parse_fa( text, idx, text->size, "#u3_t", &item->default_u3 );
+                        break;
+                    case TYPEOF_f2_t:
+                    case TYPEOF_f3_t:
+                        idx = st_s_parse_fa( text, idx, text->size, "#f3_t", &item->default_f3 );
+                        break;
+
+                    case TYPEOF_bl_t:
+                    {
+                        bl_t flag = false;
+                        idx = st_s_parse_fa( text, idx, text->size, "#bl_t", &flag );
+                        item->default_u3 = flag;
+                    }
+
+                    default: ERR( "Cannot assign default value to type '%s'", ifnameof( item->type ) );
+                }
+            }
+            else
+            {
+                st_s* context = st_s_show_line_context( text, idx );
+                ERR( "\n%s\nAssignment of default value only for static capsulation.", context->sc );
+            }
+        }
+
+        idx = st_s_parse_fa( text, idx, text->size, " ; " );
+
         bcore_flect_body_s_push( o, item );
         bcore_life_s_discard( life );
     }
@@ -421,12 +473,12 @@ void bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item 
     bcore_flect_self_s_push( o, item );
     bcore_flect_item_s_discard( item );
 }
-
+/*
 void bcore_flect_self_s_push_external_data( bcore_flect_self_s* o, vc_t data, sc_t type, sc_t name )
 {
     bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_external_data( data, type, name ) );
 }
-
+*/
 void bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name )
 {
     bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_external_func( func, type, name ) );
@@ -1045,7 +1097,7 @@ static st_s* flect_selftest( void )
 
     {
         tp_t t_teabag    = bcore_flect_type_parse_sc( "{ u3_t leaves; s1_t flavor; s0_t color; }" );
-        tp_t t_container = bcore_flect_type_parse_fa( "{ u3_t elements; %"PRItp_t" bag; u1_t flags; }", t_teabag );
+        tp_t t_container = bcore_flect_type_parse_fa( "{ u3_t elements = 343; %"PRItp_t" bag; u1_t flags; }", t_teabag );
 
         st_s_push_st_d( s, bcore_flect_self_s_show( bcore_flect_get_self( t_container ) ) );
         st_s_pushf( s, "\n" );

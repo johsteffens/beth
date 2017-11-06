@@ -131,6 +131,48 @@ sz_t  bcore_hmap_tpsz_s_idx_val( const bcore_hmap_tpsz_s* o, sz_t idx ); // retu
 
 /**********************************************************************************************************************/
 
+/** bcore_hmap_tpfp_s:
+ *    key-type: tp_t
+ *    val-type: fp_t.
+ *    Maximum number of keys: 2^32
+ *    Not serializable
+ */
+typedef struct bcore_hnode_tpfp_s
+{
+    tp_t key;
+    fp_t val;
+} bcore_hnode_tpfp_s;
+
+typedef struct bcore_hmap_tpfp_s
+{
+    aware_t _;
+    bcore_hnode_tpfp_s* nodes;
+    bl_t* flags;
+    sz_t size;
+    sz_t depth_limit;
+    sz_t size_limit;
+} bcore_hmap_tpfp_s;
+
+DECLARE_FUNCTION_INIT(    bcore_hmap_tpfp_s )
+DECLARE_FUNCTION_DOWN(    bcore_hmap_tpfp_s )
+DECLARE_FUNCTION_COPY(    bcore_hmap_tpfp_s )
+DECLARE_FUNCTION_CREATE(  bcore_hmap_tpfp_s )
+DECLARE_FUNCTION_DISCARD( bcore_hmap_tpfp_s )
+DECLARE_FUNCTION_CLONE(   bcore_hmap_tpfp_s )
+
+fp_t* bcore_hmap_tpfp_s_get(     const bcore_hmap_tpfp_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
+fp_t* bcore_hmap_tpfp_s_fget(          bcore_hmap_tpfp_s* o, tp_t key, fp_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
+fp_t* bcore_hmap_tpfp_s_set(           bcore_hmap_tpfp_s* o, tp_t key, fp_t val ); // sets new key; sets/overwrites value and returns pointer to value location
+fp_t  bcore_hmap_tpfp_s_remove(        bcore_hmap_tpfp_s* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
+bl_t  bcore_hmap_tpfp_s_exists(  const bcore_hmap_tpfp_s* o, tp_t key ); // checks if key exists
+void  bcore_hmap_tpfp_s_clear(         bcore_hmap_tpfp_s* o           ); // removes all entries and frees memory
+sz_t  bcore_hmap_tpfp_s_keys(    const bcore_hmap_tpfp_s* o           ); // returns number of registered keys
+sz_t  bcore_hmap_tpfp_s_size(    const bcore_hmap_tpfp_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tpfp_s_idx_key( const bcore_hmap_tpfp_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+fp_t  bcore_hmap_tpfp_s_idx_val( const bcore_hmap_tpfp_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+
+/**********************************************************************************************************************/
+
 /** bcore_hmap_tptp_s:
  *    key-type: tp_t
  *    val-type: tp_t.
@@ -173,7 +215,7 @@ tp_t  bcore_hmap_tptp_s_idx_val( const bcore_hmap_tptp_s* o, sz_t idx ); // retu
 
 /**********************************************************************************************************************/
 
-/** bcore_hmap_tpto_s:
+/** bcore_hmap_tpto_s: maps keys to objects of same type
  *    key-type: tp_t
  *    val-type: vd_t. (typed, owned)
  *    All values are either NULL or of the same type.

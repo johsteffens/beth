@@ -171,16 +171,36 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
     }
     for( sz_t i = first; i < p->body->size; i++ )
     {
-        const bcore_inst_item_s* inst_item = &p->body->data[ i ];
-        const bcore_flect_item_s*   flect_item = inst_item->flect_item;
-        void* item_obj = ( u0_t* )o + inst_item->offset;
+        const bcore_inst_item_s*  inst_item = &p->body->data[ i ];
+        const bcore_flect_item_s* flect_item = inst_item->flect_item;
+        vd_t dst_obj = ( u0_t* )o + inst_item->offset;
 
         switch( flect_item->caps )
         {
             case BCORE_CAPS_STATIC:
             {
                 const bcore_inst_s* perspective = inst_item->perspective;
-                if( !perspective->init_flat ) perspective->init( perspective, item_obj );
+                if( !perspective->init_flat ) perspective->init( perspective, dst_obj );
+                if( flect_item->default_u3 )
+                {
+                    switch( flect_item->type )
+                    {
+                        case TYPEOF_u0_t: *( u0_t* )dst_obj = flect_item->default_u3; break;
+                        case TYPEOF_u1_t: *( u1_t* )dst_obj = flect_item->default_u3; break;
+                        case TYPEOF_u2_t: *( u2_t* )dst_obj = flect_item->default_u3; break;
+                        case TYPEOF_u3_t: *( u3_t* )dst_obj = flect_item->default_u3; break;
+                        case TYPEOF_s0_t: *( s0_t* )dst_obj = flect_item->default_s3; break;
+                        case TYPEOF_s1_t: *( s1_t* )dst_obj = flect_item->default_s3; break;
+                        case TYPEOF_s2_t: *( s2_t* )dst_obj = flect_item->default_s3; break;
+                        case TYPEOF_s3_t: *( s3_t* )dst_obj = flect_item->default_s3; break;
+                        case TYPEOF_f2_t: *( f2_t* )dst_obj = flect_item->default_f3; break;
+                        case TYPEOF_f3_t: *( f3_t* )dst_obj = flect_item->default_f3; break;
+                        case TYPEOF_sz_t: *( sz_t* )dst_obj = flect_item->default_u3; break;
+                        case TYPEOF_tp_t: *( tp_t* )dst_obj = flect_item->default_u3; break;
+                        case TYPEOF_bl_t: *( bl_t* )dst_obj = flect_item->default_u3; break;
+                        default: ERR( "Default value not supported for type '%s'", ifnameof( flect_item->type ) );
+                    }
+                }
             }
             break;
 
@@ -569,8 +589,8 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 dst->data = NULL;
                 dst->size = 0;
-                dst->type = 0;
-                if( src->space > 0 ) // fill dst with new data
+                dst->type = src->type;
+                if( src->size > 0 ) // fill dst with new data
                 {
                     const bcore_inst_s* perspective = bcore_inst_s_get_typed( src->type );
                     dst->data = bcore_un_alloc( perspective->size, dst->data, dst->space, src->size, &dst->space );
@@ -589,7 +609,6 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                         }
                     }
                     dst->size = src->size;
-                    dst->type = src->type;
                 }
             }
             break;
@@ -1062,7 +1081,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
         {
             const bcore_flect_item_s* flect_item = &flect_body->data[ i ];
 
-            if( flect_item->f_shell ) continue; // shells are completely invisible to instance (shells are handled by via perspective)
+            if( flect_item->f_shell ) continue; // shells are invisible to instance (but handled in via-perspective)
 
             if( flect_item->caps == BCORE_CAPS_EXTERNAL_FUNC || flect_item->caps == BCORE_CAPS_EXTERNAL_DATA )
             {
@@ -1103,6 +1122,9 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
                         o->init_flat = false;
                         o->aware = true;
                     }
+
+                    if( flect_item->default_u3 != 0 ) o->init_flat = false;
+
                     o->init_flat = o->init_flat & inst_item->perspective->init_flat;
                     o->copy_flat = o->copy_flat & inst_item->perspective->copy_flat;
                     o->down_flat = o->down_flat & inst_item->perspective->down_flat;
