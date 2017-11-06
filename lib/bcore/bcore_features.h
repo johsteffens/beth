@@ -36,15 +36,21 @@ typedef void (*bcore_fp_set )( vd_t o, sr_s val );
 
 /**********************************************************************************************************************/
 
-/// formated logging
+/// formatted logging
 typedef void (*bcore_fp_logvf )( vd_t o, sc_t format, va_list args );
 
 /*********************************************************************************************************************/
 
 /// comparison
-typedef s2_t (*bcore_fp_cmp   )(         vc_t v1, vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
-typedef s2_t (*bcore_fp_cmp_o )( vc_t o, vc_t v1, vc_t v2  ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
+typedef s2_t (*bcore_fp_cmp   )(         vc_t v1, vc_t v2 ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
+typedef s2_t (*bcore_fp_cmp_o )( vc_t o, vc_t v1, vc_t v2 ); // comparison: ==0: equal; >0: v1 before v2; <0 :v1 after v2
 typedef struct bcore_cmp_f { bcore_fp_cmp_o f; vc_t o; } bcore_cmp_f; // comparison functor
+
+/**********************************************************************************************************************/
+
+/// generator
+typedef bl_t (*bcore_fp_gen_o )( vc_t o, sz_t idx, vd_t dst ); // generator (on valid index: sets *dst (if dst != NULL) and returns true)
+typedef struct bcore_gen_f { bcore_fp_gen_o f; vc_t o; } bcore_gen_f; // generator functor
 
 /**********************************************************************************************************************/
 
@@ -60,7 +66,7 @@ typedef sr_s ( *bcore_fp_interpret )( vc_t o,           sr_s src ); // construct
 
 /**********************************************************************************************************************/
 
-/// rudimentary signaling (the actual meaning arguments and return type is defined by the usage context)
+/// rudimentary signaling (the actual meaning of arguments and return type is defined by the usage context)
 typedef vd_t ( *bcore_fp_signal )( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/

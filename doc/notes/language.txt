@@ -1,0 +1,52 @@
+Language notes:
+
+// declaring a variable
+<type> <name>;
+// Example:
+s3_t v;
+
+<type> can be any type capable to spawn a variable.
+This includes generic types such a traits.
+
+// assigning values
+'=' is used to specify assignment. It usually means copying the content of the object.
+If the object is a pointer, then it means copying the address.
+
+// defining a constant
+<name> := <expression>;
+// Example:
+v := 100;
+
+<expression> can have any valid form. The object <name> assumes the properties of the expression.
+Typical usage:
+
+Functions:
+Functions are first class objects.
+
+Function definition:
+getchar := ( u0_t <- st_s string, sz_t index )
+{
+    return string[ index ];
+}
+
+Class definition:
+person := class root
+{
+    aware_t _;
+    st_s name;
+    sz_t age;
+};
+
+Function variable:
+
+A function variable can have the form
+( <ret> <- <args...> ) fv;
+This is a function with defined signature but variable body.
+
+Assigning a body can have the form. The signature must be compatible with the variable's definition.
+fv = ( <ret> <- <args...> ){ ... }
+alternatively:
+fv = { ... }, in which case the signature is assumed to match exactly that of the declaration.
+
+
+

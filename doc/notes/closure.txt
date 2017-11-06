@@ -1,0 +1,17 @@
+Syntax
+
+statement:
+
+[define] <target> = operation( arg1, arg2, ... )
+
+statement-list:
+
+{
+    statement1,
+    statement2,
+    statement3,
+}
+
+Branch:
+
+if/while( cond-closure, true-closure, false-closure )

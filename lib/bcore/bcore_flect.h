@@ -119,7 +119,7 @@ bcore_flect_item_s* bcore_flect_item_s_create_external_data( vc_t data, sc_t typ
 bcore_flect_item_s* bcore_flect_item_s_create_external_func( fp_t func, sc_t type, sc_t name );
 void                bcore_flect_item_s_discard( bcore_flect_item_s* o );
 bcore_flect_item_s* bcore_flect_item_s_clone( const bcore_flect_item_s* o );
-st_s*     bcore_flect_item_s_show( const bcore_flect_item_s* o );
+st_s*               bcore_flect_item_s_show( const bcore_flect_item_s* o );
 bcore_signature_s*  bcore_flect_item_s_push_to_signature( const bcore_flect_item_s* o, bcore_signature_s* sig ); // appends item data to signature (external caps not supported --> error)
 s2_t                bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_item_s* o2 );        // compares two items
 

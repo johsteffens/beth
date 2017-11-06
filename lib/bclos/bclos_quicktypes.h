@@ -24,5 +24,7 @@ void bclos_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_bclos_signature_s    3005312691
 #define TYPEOF_bclos_statement_s    4269937196
 #define TYPEOF_bclos_syntax_s       1644286864
+#define TYPEOF_bclos_library_s      typeof( "bclos_library_s" )
+#define TYPEOF_bclos_library_arr_s  typeof( "bclos_library_arr_s" )
 
 #endif // BCLOS_QUICKTYPES_H

@@ -33,6 +33,8 @@ sr_s typelist()
     bcore_array_q_push_sc( &list, "bclos_statement_s" );
     bcore_array_q_push_sc( &list, "bclos_procedure_s" );
     bcore_array_q_push_sc( &list, "bclos_syntax_s" );
+    bcore_array_q_push_sc( &list, "bclos_library_s" );
+    bcore_array_q_push_sc( &list, "bclos_library_arr_s" );
     bcore_array_q_sort( &list, 0, -1, 1 );
     return list;
 }

@@ -167,6 +167,8 @@ void st_s_print_d(     st_s* o ); // discards o
  *  "#name"
  *      Argument: st_s*
  *      Consumes a name-string consisting of valid name characters.
+ *      A valid first character: letter  | '_'.
+ *      A valid non-first character: <valid first character> | digit.
  *
  *  "#string"
  *      Argument: st_s*

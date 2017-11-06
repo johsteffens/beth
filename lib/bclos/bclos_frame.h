@@ -17,16 +17,16 @@ typedef struct bclos_frame_s
     bcore_hmap_tp_sr_s map;
 } bclos_frame_s;
 
-void         bclos_frame_s_init( bclos_frame_s* o );
-void         bclos_frame_s_down( bclos_frame_s* o );
-void         bclos_frame_s_copy( bclos_frame_s* o, const bclos_frame_s* src );
+void           bclos_frame_s_init( bclos_frame_s* o );
+void           bclos_frame_s_down( bclos_frame_s* o );
+void           bclos_frame_s_copy( bclos_frame_s* o, const bclos_frame_s* src );
 bclos_frame_s* bclos_frame_s_create();
 bclos_frame_s* bclos_frame_s_clone( const bclos_frame_s* o );
-void         bclos_frame_s_discard( bclos_frame_s* o );
+void           bclos_frame_s_discard( bclos_frame_s* o );
 
-sr_s*        bclos_frame_s_get(    bclos_frame_s* o, tp_t name ); // returns NULL when not existing
-sr_s*        bclos_frame_s_set(    bclos_frame_s* o, tp_t name, sr_s val );
-sr_s         bclos_frame_s_remove( bclos_frame_s* o, tp_t name ); // removes element, returns value; call sr_down( remove(...) ) to eliminate entry
+sr_s*          bclos_frame_s_get(    bclos_frame_s* o, tp_t name ); // returns NULL when not existing
+sr_s*          bclos_frame_s_set(    bclos_frame_s* o, tp_t name, sr_s val );
+sr_s           bclos_frame_s_remove( bclos_frame_s* o, tp_t name ); // removes element, returns value; call sr_down( remove(...) ) to eliminate entry
 
 vd_t bclos_frame_signal( tp_t target, tp_t signal, vd_t object );
 

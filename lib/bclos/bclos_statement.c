@@ -106,14 +106,14 @@ bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source )
 
     st_s* name = st_s_create_l( l );
     bcore_source_q_parse_fa( &source, " #name", name );
-    if( bcore_source_q_parse_boolf( &source, " #?'='" ) )
+    if( bcore_source_q_parse_bool_f( &source, " #?'='" ) )
     {
         s->target = bcore_name_enroll( name->sc );
         bcore_source_q_parse_fa( &source, " #name", name );
-        if( bcore_source_q_parse_boolf( &source, " #?'('" ) )
+        if( bcore_source_q_parse_bool_f( &source, " #?'('" ) )
         {
             s->operation = bcore_name_enroll( name->sc );
-            while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
+            while( !bcore_source_q_parse_bool_f( &source, " #?')'" ) )
             {
                 if( s->args_size > 0 ) bcore_source_q_parse_fa( &source, " ," );
                 bcore_source_q_parse_fa( &source, " #name ", name );
@@ -126,10 +126,10 @@ bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source )
             bclos_statement_s_push_arg( s, bcore_name_enroll( name->sc ) );
         }
     }
-    else if( bcore_source_q_parse_boolf( &source, " #?'('" ) )
+    else if( bcore_source_q_parse_bool_f( &source, " #?'('" ) )
     {
         s->operation = bcore_name_enroll( name->sc );
-        while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
+        while( !bcore_source_q_parse_bool_f( &source, " #?')'" ) )
         {
             if( s->args_size > 0 ) bcore_source_q_parse_fa( &source, " ," );
             bcore_source_q_parse_fa( &source, " #name ", name );
@@ -142,10 +142,10 @@ bclos_statement_s* bclos_statement_s_parse_from_source( sr_s source )
         bcore_source_q_parse_fa( &source, " #name =", name );
         s->target = bcore_name_enroll( name->sc );
         bcore_source_q_parse_fa( &source, " #name", name );
-        if( bcore_source_q_parse_boolf( &source, " #?'('" ) )
+        if( bcore_source_q_parse_bool_f( &source, " #?'('" ) )
         {
             s->operation = bcore_name_enroll( name->sc );
-            while( !bcore_source_q_parse_boolf( &source, " #?')'" ) )
+            while( !bcore_source_q_parse_bool_f( &source, " #?')'" ) )
             {
                 if( s->args_size > 0 ) bcore_source_q_parse_fa( &source, " ," );
                 bcore_source_q_parse_fa( &source, " #name ", name );
