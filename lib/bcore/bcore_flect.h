@@ -14,6 +14,7 @@
 #include "bcore_types.h"
 #include "bcore_control.h"
 #include "bcore_name_manager.h"
+#include "bcore_function_manager.h"
 #include "bcore_st.h"
 #include "bcore_features.h"
 
@@ -213,7 +214,8 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type 
  *  <type-name> = [<trait-name>]
  *  {
  *      [private] [shell] [hidden] <type> [<qualifiers>] <name> [ = default ];
- *      [private] [shell] [hidden] <type> [<qualifiers>] <name> [ = default ];
+ *
+ *      func <type> <name> = <ftype>;
  *      ....
  *  }
  *

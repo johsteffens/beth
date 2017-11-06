@@ -94,6 +94,11 @@ void bcore_function_set( tp_t t, fp_t f )
     bcore_mutex_unlock( &hmap_s_g->mutex );
 }
 
+void bcore_function_set_sc( sc_t name, fp_t f )
+{
+    bcore_function_set( entypeof( name ), f );
+}
+
 void bcore_function_remove( tp_t t )
 {
     assert( hmap_s_g != NULL );

@@ -688,9 +688,9 @@ static st_s* spect_via_selftest( void )
     bcore_flect_define_parse_sc( "via_specs = { sz_t size = 3; u2_t param1 = 1234; s2_t = -5; }" );
     sr_s via_specs = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "via_specs" ) ) );
 
-    ASSERT( *( sz_t* )bcore_via_nget( via_specs, typeof( "size"   ) ).o == 3 );
+    ASSERT( *( sz_t* )bcore_via_nget( via_specs, typeof( "size"   ) ).o ==    3 );
     ASSERT( *( u2_t* )bcore_via_nget( via_specs, typeof( "param1" ) ).o == 1234 );
-    ASSERT( *( s2_t* )bcore_via_nget( via_specs, typeof( "" ) ).o       == -5 );
+    ASSERT( *( s2_t* )bcore_via_nget( via_specs, typeof( "" ) ).o       ==   -5 );
 
     {
         bcore_via_nset_sz( via_specs, typeof( "size"   ),  10 );

@@ -1848,7 +1848,7 @@ static bcore_flect_self_s* st_s_create_self( void )
     bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,          "bcore_fp_flow_snk",       "flow_snk"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )flow_src,          "bcore_fp_flow_src",       "flow_src"     );
     bcore_flect_self_s_push_external_func( self, ( fp_t )string_p_errorvf,  "bcore_fp_logvf",          "p_errorvf"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv"      );
+    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv"    );
     bcore_flect_self_s_push_external_func( self, ( fp_t )check_sanity,      "bcore_fp_check_sanity",   "check_sanity" );
     bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",        "cmp_st"       );
     return self;

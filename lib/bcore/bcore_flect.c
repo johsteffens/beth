@@ -8,7 +8,6 @@
 #include "bcore_quicktypes.h"
 #include "bcore_hmap.h"
 #include "bcore_signature.h"
-#include "bcore_function_manager.h"
 #include "bcore_tbman.h"
 #include "bcore_trait.h"
 
@@ -129,16 +128,6 @@ st_s* bcore_flect_item_s_show( const bcore_flect_item_s* o )
     st_s_push_fa( s, "\n    flags   : #<tp_t>",  o->flags );
     st_s_push_fa( s, "\n    caps    : #<sc_t>",  bcore_flect_caps_e_sc( o->caps ) );
     st_s_push_fa( s, "\n    default : #<s3_t>",  o->default_s3 );
-/*
-    if( o->caps == BCORE_CAPS_EXTERNAL_DATA )
-    {
-        st_s_pushf( s, "\n    d_ptr : %p", o->d_ptr );
-    }
-    else if( o->caps == BCORE_CAPS_EXTERNAL_FUNC )
-    {
-        st_s_pushf( s, "\n    f_ptr : %p", o->f_ptr );
-    }
-*/
     st_s_pushf( s, "\n}" );
     return s;
 }
@@ -177,9 +166,15 @@ bcore_signature_s* bcore_flect_item_s_push_to_signature( const bcore_flect_item_
     bcore_signature_s_push( sig, o->name );
     tp_t t = o->caps;
     bcore_signature_s_push( sig, t );
-    bcore_signature_s_push( sig, o->flags );
+    t = o->default_u3;
+    bcore_signature_s_push( sig, t );
+    if( sizeof( t ) < sizeof( o->default_u3 ) )
+    {
+        t = o->default_u3 >> ( sizeof( t ) * 8 );
+        bcore_signature_s_push( sig, t );
+    }
 //    if( o->d_ptr ) ERR( "Extending signature with external data reference is not allowed" );
-    if( o->f_ptr ) ERR( "Extending signature with external function is not allowed" );
+//    if( o->f_ptr ) ERR( "Extending signature with external function is not allowed" );
     return sig;
 }
 
@@ -278,117 +273,133 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
         bcore_life_s* life = bcore_life_s_create();
         st_s* type_name = st_s_create_l( life );
         st_s* item_name = st_s_create_l( life );
-        tp_t type_val = 0;
         bcore_flect_item_s* item = bcore_life_s_push( life, ( bcore_fp_discard )bcore_flect_item_s_discard, bcore_flect_item_s_create() );
-        bl_t f_private, f_hidden, f_shell, f_link, f_arr;
+        bl_t f_private = false, f_hidden = false, f_shell = false, f_func = false, f_link = false, f_arr = false;
 
-        idx = st_s_parse_fa( text, idx, text->size, "#?'private' #?'hidden' #?'shell' ",  &f_private, &f_hidden, &f_shell );
+        idx = st_s_parse_fa( text, idx, text->size, " #?'func' ", &f_func );
 
-        // type can be specified by explicit type id number (anonymous types) or by name
-        if( text->data[ idx ] == '{' ) // nested anonymous type
+        if( f_func ) // function declaration
         {
-            type_val = bcore_flect_type_parse( text, &idx );
-        }
-        else if( text->data[ idx ] >= '0' && text->data[ idx ] <= '9' ) // type is specified by number
-        {
-            idx = st_s_parse_fa( text, idx, text->size, "#tp_t ",  &type_val );
-        }
-        else if( text->data[ idx ] == '.' && text->data[ idx + 1 ] == '.' && text->data[ idx + 2 ] == '.' )
-        {
-            o->complete = false;
-            idx += 3;
-            bcore_life_s_discard( life );
-            break;
-        }
-        else // type is specified by name
-        {
-            idx = st_s_parse_fa( text, idx, text->size, "#name ",  type_name );
-        }
-
-        bl_t assign_default = false;
-        idx = st_s_parse_fa( text, idx, text->size, "#?'*' #?'[]' #name #?'=' ", &f_link, &f_arr, item_name, &assign_default );
-
-        item->f_private  = f_private;
-        item->f_hidden   = f_hidden;
-        item->f_shell    = f_shell;
-
-        if( st_s_equal_sc( type_name, "typed" ) )
-        {
-            if( !f_link && !f_arr )
-            {
-                st_s* context = st_s_show_line_context( text, st_s_find_sc( text, idx, 0, "typed" ) );
-                ERR( "\n%s\nTyped objects cannot be nested. Use 'typed *' to clarify method of referencing.", context->sc );
-            }
-            item->type = 0;
+            st_s* assign_name = st_s_create_l( life );
+            idx = st_s_parse_fa( text, idx, text->size, "#name #name = #name", type_name, item_name, assign_name );
+            item->type = bcore_name_enroll( type_name->sc );
             item->name = bcore_name_enroll( item_name->sc );
-            item->caps = f_arr ? ( f_link ? BCORE_CAPS_TYPED_LINK_ARRAY : BCORE_CAPS_TYPED_ARRAY ) : BCORE_CAPS_TYPED_LINK;
+            item->caps = BCORE_CAPS_EXTERNAL_FUNC;
+            item->default_tp = bcore_name_enroll( item_name->sc );
         }
-        else if( st_s_equal_sc( type_name, "aware" ) )
+        else // data type declaration
         {
-            if( !f_link )
-            {
-                st_s* context = st_s_show_line_context( text, st_s_find_sc( text, idx, 0, "aware" ) );
-                ERR( "\n%s\nSelf-aware objects must be referenced by a link. Use 'aware *' to clarify method of referencing.", context->sc );
-            }
-            item->type = 0;
-            item->name = bcore_name_enroll( item_name->sc );
-            item->caps = f_arr ? BCORE_CAPS_AWARE_LINK_ARRAY : BCORE_CAPS_AWARE_LINK;
-        }
-        else
-        {
-            item->type = ( type_val > 0 ) ? type_val : bcore_name_enroll( type_name->sc );
-            item->name = bcore_name_enroll( item_name->sc );
-            item->caps = f_arr ? ( f_link ? BCORE_CAPS_STATIC_LINK_ARRAY : BCORE_CAPS_STATIC_ARRAY ) : ( f_link ? BCORE_CAPS_STATIC_LINK : BCORE_CAPS_STATIC );
-        }
+            idx = st_s_parse_fa( text, idx, text->size, "#?'private' #?'hidden' #?'shell'",  &f_private, &f_hidden, &f_shell );
 
-        if( item->type == typeof( "aware_t" ) )
-        {
-            if( o->size > 0 )
+            // type can be specified by explicit type id number (anonymous types) or by name
+            tp_t type_val = 0;
+            idx = st_s_parse_fa( text, idx, text->size, " " );
+            if( text->data[ idx ] == '{' ) // nested anonymous type
             {
-                st_s* context = st_s_show_line_context( text, idx );
-                ERR( "\n%s\n'aware-t' must be first element in body and not used elsewhere.", context->sc );
+                type_val = bcore_flect_type_parse( text, &idx );
             }
-        }
-
-        if( assign_default )
-        {
-            if( item->caps == BCORE_CAPS_STATIC )
+            else if( text->data[ idx ] >= '0' && text->data[ idx ] <= '9' ) // type is specified by number
             {
-                switch( item->type )
+                idx = st_s_parse_fa( text, idx, text->size, "#tp_t ",  &type_val );
+            }
+            else if( text->data[ idx ] == '.' && text->data[ idx + 1 ] == '.' && text->data[ idx + 2 ] == '.' )
+            {
+                o->complete = false;
+                idx += 3;
+                bcore_life_s_discard( life );
+                break;
+            }
+            else // type is specified by name
+            {
+                idx = st_s_parse_fa( text, idx, text->size, "#name ",  type_name );
+            }
+
+            bl_t assign_default = false;
+
+            idx = st_s_parse_fa( text, idx, text->size, "#?'*' #?'[]' #name #?'=' ", &f_link, &f_arr, item_name, &assign_default );
+
+            item->f_private  = f_private;
+            item->f_hidden   = f_hidden;
+            item->f_shell    = f_shell;
+
+            if( st_s_equal_sc( type_name, "typed" ) )
+            {
+                if( !f_link && !f_arr )
                 {
-                    case TYPEOF_s0_t:
-                    case TYPEOF_s1_t:
-                    case TYPEOF_s2_t:
-                    case TYPEOF_s3_t:
-                        idx = st_s_parse_fa( text, idx, text->size, "#s3_t", &item->default_s3 );
-                        break;
-                    case TYPEOF_u0_t:
-                    case TYPEOF_u1_t:
-                    case TYPEOF_u2_t:
-                    case TYPEOF_u3_t:
-                    case TYPEOF_sz_t:
-                    case TYPEOF_tp_t:
-                        idx = st_s_parse_fa( text, idx, text->size, "#u3_t", &item->default_u3 );
-                        break;
-                    case TYPEOF_f2_t:
-                    case TYPEOF_f3_t:
-                        idx = st_s_parse_fa( text, idx, text->size, "#f3_t", &item->default_f3 );
-                        break;
-
-                    case TYPEOF_bl_t:
-                    {
-                        bl_t flag = false;
-                        idx = st_s_parse_fa( text, idx, text->size, "#bl_t", &flag );
-                        item->default_u3 = flag;
-                    }
-
-                    default: ERR( "Cannot assign default value to type '%s'", ifnameof( item->type ) );
+                    st_s* context = st_s_show_line_context( text, st_s_find_sc( text, idx, 0, "typed" ) );
+                    ERR( "\n%s\nTyped objects cannot be nested. Use 'typed *' to clarify method of referencing.", context->sc );
                 }
+                item->type = 0;
+                item->name = bcore_name_enroll( item_name->sc );
+                item->caps = f_arr ? ( f_link ? BCORE_CAPS_TYPED_LINK_ARRAY : BCORE_CAPS_TYPED_ARRAY ) : BCORE_CAPS_TYPED_LINK;
+            }
+            else if( st_s_equal_sc( type_name, "aware" ) )
+            {
+                if( !f_link )
+                {
+                    st_s* context = st_s_show_line_context( text, st_s_find_sc( text, idx, 0, "aware" ) );
+                    ERR( "\n%s\nSelf-aware objects must be referenced by a link. Use 'aware *' to clarify method of referencing.", context->sc );
+                }
+                item->type = 0;
+                item->name = bcore_name_enroll( item_name->sc );
+                item->caps = f_arr ? BCORE_CAPS_AWARE_LINK_ARRAY : BCORE_CAPS_AWARE_LINK;
             }
             else
             {
-                st_s* context = st_s_show_line_context( text, idx );
-                ERR( "\n%s\nAssignment of default value only for static capsulation.", context->sc );
+                item->type = ( type_val > 0 ) ? type_val : bcore_name_enroll( type_name->sc );
+                item->name = bcore_name_enroll( item_name->sc );
+                item->caps = f_arr ? ( f_link ? BCORE_CAPS_STATIC_LINK_ARRAY : BCORE_CAPS_STATIC_ARRAY ) : ( f_link ? BCORE_CAPS_STATIC_LINK : BCORE_CAPS_STATIC );
+            }
+
+            if( item->type == typeof( "aware_t" ) )
+            {
+                if( o->size > 0 )
+                {
+                    st_s* context = st_s_show_line_context( text, idx );
+                    ERR( "\n%s\n'aware-t' must be first element in body and not used elsewhere.", context->sc );
+                }
+            }
+            if( assign_default )
+            {
+                if( item->caps == BCORE_CAPS_STATIC )
+                {
+                    switch( item->type )
+                    {
+                        case TYPEOF_s0_t:
+                        case TYPEOF_s1_t:
+                        case TYPEOF_s2_t:
+                        case TYPEOF_s3_t:
+                            idx = st_s_parse_fa( text, idx, text->size, "#s3_t", &item->default_s3 );
+                            break;
+                        case TYPEOF_u0_t:
+                        case TYPEOF_u1_t:
+                        case TYPEOF_u2_t:
+                        case TYPEOF_u3_t:
+                        case TYPEOF_sz_t:
+                        case TYPEOF_tp_t:
+                            idx = st_s_parse_fa( text, idx, text->size, "#u3_t", &item->default_u3 );
+                            break;
+                        case TYPEOF_f2_t:
+                        case TYPEOF_f3_t:
+                            idx = st_s_parse_fa( text, idx, text->size, "#f3_t", &item->default_f3 );
+                            break;
+
+                        case TYPEOF_bl_t:
+                        {
+                            bl_t flag = false;
+                            idx = st_s_parse_fa( text, idx, text->size, "#bl_t", &flag );
+                            item->default_u3 = flag;
+                        }
+                        break;
+
+                        default: ERR( "Cannot assign default value to type '%s'", ifnameof( item->type ) );
+                    }
+                }
+                else
+                {
+                    st_s* context = st_s_show_line_context( text, idx );
+                    ERR( "\n%s\nAssignment of default value only for static capsulation.", context->sc );
+                }
             }
         }
 
@@ -661,7 +672,16 @@ fp_t bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type,
             ( type == 0 || item->type == type        ) &&
             ( name == 0 || item->name == name        ) )
         {
-            return item->f_ptr;
+            if( item->default_tp )
+            {
+                fp_t fp = bcore_function_get( item->default_tp );
+                if( !fp ) ERR( "Function '%s' (%"PRItp_t") not registered in function manager.", ifnameof(item->default_tp ), item->default_tp );
+                return fp;
+            }
+            else
+            {
+                return item->f_ptr;
+            }
         }
     }
     return NULL;

@@ -12,6 +12,7 @@
 
 /// enrolls function in global manager (thread safe); checks for collisions;
 void bcore_function_set( tp_t t, fp_t f );
+void bcore_function_set_sc( sc_t name, fp_t f );
 
 /// returns function associated with t or NULL if not enrolled (thread safe)
 fp_t bcore_function_get( tp_t t );
