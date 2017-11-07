@@ -129,8 +129,15 @@ s2_t                bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const 
 
 typedef struct bcore_flect_body_s
 {
-    bcore_flect_item_s* data;
-    sz_t size, space;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            bcore_flect_item_s* data;
+            sz_t size, space;
+        };
+    };
 
     // A complete body enables inst perspective to calculate the
     // full object's size and alignment from the bodies structure.
@@ -240,9 +247,6 @@ bool bcore_flect_self_s_is_aware(        const bcore_flect_self_s* o            
  */
 vd_t bcore_flect_self_s_get_static( const bcore_flect_self_s* o, tp_t type, tp_t name ); // error when not found
 vd_t bcore_flect_self_s_try_static( const bcore_flect_self_s* o, tp_t type, tp_t name ); // returns NULL when not found
-
-/// reflection on bcore_flect_self_s
-bcore_flect_self_s* bcore_flect_self_s_create_self( void );
 
 /**********************************************************************************************************************/
 /// Global reflection manager (thread safe)

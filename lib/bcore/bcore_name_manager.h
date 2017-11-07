@@ -38,6 +38,11 @@ static inline tp_t entypeof_n( sc_t name, sz_t n ) { return bcore_name_enroll_n(
 static inline sc_t nameof(   u2_t type ) { return bcore_name_get_name(   type ); }
 static inline sc_t ifnameof( u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
 
+/// statistics
+typedef struct st_s st_s;
+sz_t  bcore_name_size(); // number of registered names
+st_s* bcore_name_show(); // store all names in a string, separated by newline
+
 vd_t bcore_name_manager_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif // BCORE_NAME_MANAGER_H

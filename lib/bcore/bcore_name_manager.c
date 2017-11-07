@@ -131,6 +131,34 @@ void bcore_name_remove( tp_t type )
     bcore_mutex_unlock( &hmap_s_g->mutex );
 }
 
+sz_t  bcore_name_size()
+{
+    assert( hmap_s_g != NULL );
+    bcore_mutex_lock( &hmap_s_g->mutex );
+    sz_t size = bcore_hmap_u2vd_s_keys( hmap_s_g->map );
+    bcore_mutex_unlock( &hmap_s_g->mutex );
+    return size;
+}
+
+st_s* bcore_name_show()
+{
+    assert( hmap_s_g != NULL );
+    bcore_mutex_lock( &hmap_s_g->mutex );
+    st_s* log = st_s_create();
+    sz_t size = bcore_hmap_u2vd_s_size( hmap_s_g->map );
+    for( sz_t i = 0; i < size; i++ )
+    {
+        st_s* s = bcore_hmap_u2vd_s_idx_val( hmap_s_g->map, i );
+        if( s )
+        {
+            st_s_push_st( log, s );
+            st_s_push_char( log, '\n' );
+        }
+    }
+    bcore_mutex_unlock( &hmap_s_g->mutex );
+    return log;
+}
+
 /**********************************************************************************************************************/
 // signal
 

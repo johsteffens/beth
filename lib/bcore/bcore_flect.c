@@ -113,7 +113,6 @@ DEFINE_FUNCTION_INIT_FLAT( bcore_flect_item_s )
 DEFINE_FUNCTION_DOWN_FLAT( bcore_flect_item_s )
 DEFINE_FUNCTION_COPY_FLAT( bcore_flect_item_s )
 DEFINE_FUNCTION_MOVE (     bcore_flect_item_s )
-
 DEFINE_FUNCTION_CREATE(    bcore_flect_item_s )
 DEFINE_FUNCTION_DISCARD(   bcore_flect_item_s )
 DEFINE_FUNCTION_CLONE(     bcore_flect_item_s )
@@ -174,6 +173,29 @@ s2_t bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_ite
     if( o1->flags      != o2->flags      ) return ( o1->flags < o2->flags ) ? 1 : -1;
     if( o1->default_u3 != o2->default_u3 ) return ( o1->default_u3 < o2->default_u3 ) ? 1 : -1;
     return 0;
+}
+
+static bcore_flect_self_s* flect_item_s_create_self( void )
+{
+    sc_t def =
+    "bcore_flect_item_s ="
+    "{"
+        "tp_t type;"    // hash of type
+        "tp_t name;"    // hash of name
+        "u2_t caps;"    // data encapsulation
+        "tp_t flags;"   // collection of attribute flags
+        "u3_t default;" // container of default data
+    "}";
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_flect_item_s ) );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_item_s_init,    "bcore_fp_init",    "init"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_item_s_down,    "bcore_fp_down",    "down"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_item_s_copy,    "bcore_fp_copy",    "copy"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_item_s_move,    "bcore_fp_move",    "move"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_item_s_create,  "bcore_fp_create",  "create"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_item_s_clone,   "bcore_fp_clone",   "clone"   );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_item_s_discard, "bcore_fp_discard", "discard" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_item_s_cmp,     "bcore_fp_compare", "cmp"     );
+    return self;
 }
 
 /**********************************************************************************************************************/
@@ -418,6 +440,24 @@ s2_t bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_bod
     return 0;
 }
 
+static bcore_flect_self_s* flect_body_s_create_self( void )
+{
+    sc_t def =
+    "bcore_flect_body_s ="
+    "{"
+        "bcore_flect_item_s [] arr;"
+        "bl_t complete;"
+    "}";
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_flect_body_s ) );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_body_s_init,    "bcore_fp_init",    "init"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_body_s_down,    "bcore_fp_down",    "down"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_body_s_copy,    "bcore_fp_copy",    "copy"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_body_s_create,  "bcore_fp_create",  "create"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_body_s_clone,   "bcore_fp_clone",   "clone"   );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_body_s_discard, "bcore_fp_discard", "discard" );
+    return self;
+}
+
 /**********************************************************************************************************************/
 // bcore_flect_self_s
 
@@ -633,6 +673,7 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of )
 bcore_signature_s* bcore_flect_self_s_push_to_signature( const bcore_flect_self_s* o, bcore_signature_s* sig )
 {
     bcore_signature_s_push( sig, o->type );
+    bcore_signature_s_push( sig, o->trait );
     if( o->body ) bcore_flect_body_s_push_to_signature( o->body, sig );
     return sig;
 }
@@ -703,9 +744,18 @@ bool bcore_flect_self_s_is_aware( const bcore_flect_self_s* o )
     return body->data[ 0 ].type == TYPEOF_aware_t;
 }
 
-bcore_flect_self_s* bcore_flect_self_s_create_self( void )
+static bcore_flect_self_s* flect_self_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_flect_self_s" ), sizeof( bcore_flect_self_s ) );
+    sc_t def =
+    "bcore_flect_self_s ="
+    "{"
+        "aware_t _;"
+        "tp_t type;"
+        "tp_t trait;"
+        "sz_t size;"
+        "bcore_flect_body_s* body;"
+    "}";
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_flect_self_s ) );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_self_s_init,         "bcore_fp_init",         "init"         );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_self_s_down,         "bcore_fp_down",         "down"         );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_self_s_copy,         "bcore_fp_copy",         "copy"         );
@@ -1086,7 +1136,9 @@ static void flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "bcore_aware_link_array_s  = { aware* []; }",    sizeof( bcore_aware_link_array_s ) ) );
 
     // specific objects
-    bcore_flect_define_creator( typeof( "bcore_flect_self_s" ), bcore_flect_self_s_create_self ); // self
+    bcore_flect_define_creator( typeof( "bcore_flect_item_s" ), flect_item_s_create_self );
+    bcore_flect_define_creator( typeof( "bcore_flect_body_s" ), flect_body_s_create_self );
+    bcore_flect_define_creator( typeof( "bcore_flect_self_s" ), flect_self_s_create_self );
 }
 
 /**********************************************************************************************************************/
