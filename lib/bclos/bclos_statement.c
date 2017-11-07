@@ -187,7 +187,7 @@ static sr_s return_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* ar
 static bcore_flect_self_s* return_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_completion = bclos_closure_s {}", 0 );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )return_func, "bclos_closure_fp_call", "call" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )return_func, "bclos_closure_fp_call", "call" );
     return self;
 }
 

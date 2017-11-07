@@ -113,13 +113,13 @@ static bcore_flect_self_s* chain_s_create_self( void )
     "}";
 
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_sink_chain_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_init_a, "ap_t", "init" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_down_a, "ap_t", "down" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_copy_a, "ap_t", "copy" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_interpret_body_a,   "ap_t", "interpret_body" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_flow_snk,           "bcore_fp_flow_snk",   "flow_snk" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_sink_chain_s_set_consumer, "bcore_sink_fp_set_consumer", "set_consumer" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_sink_chain_s_flush, "bcore_sink_fp_flush", "flush"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_init_a, "ap_t", "init" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_down_a, "ap_t", "down" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_copy_a, "ap_t", "copy" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_interpret_body_a,   "ap_t", "interpret_body" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_flow_snk,           "bcore_fp_flow_snk",   "flow_snk" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_sink_chain_s_set_consumer, "bcore_sink_fp_set_consumer", "set_consumer" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_sink_chain_s_flush, "bcore_sink_fp_flush", "flush"    );
     return self;
 }
 
@@ -207,10 +207,10 @@ static bcore_flect_self_s* buffer_s_create_self( void )
       "sz_t entrepot_size; "
     "}";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_sink_buffer_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_sink_buffer_s_init,         "bcore_fp_init",              "init"  );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )buffer_flow_snk,                  "bcore_fp_flow_snk",          "flow_snk"  );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_sink_buffer_s_set_consumer, "bcore_sink_fp_set_consumer", "set_consumer" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_sink_buffer_s_flush,        "bcore_sink_fp_flush",        "flush" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_sink_buffer_s_init,         "bcore_fp_init",              "init"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )buffer_flow_snk,                  "bcore_fp_flow_snk",          "flow_snk"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_sink_buffer_s_set_consumer, "bcore_sink_fp_set_consumer", "set_consumer" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_sink_buffer_s_flush,        "bcore_sink_fp_flush",        "flush" );
     return self;
 }
 
@@ -361,12 +361,12 @@ static bcore_flect_self_s* file_s_create_self( void )
     "}";
 
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_sink_file_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_init_a, "ap_t", "init" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_down_a, "ap_t", "down" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_copy_a, "ap_t", "copy" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_interpret_body_a,   "ap_t", "interpret_body"        );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_flow_snk,           "bcore_fp_flow_snk", "flow_snk" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_sink_file_s_flush, "bcore_sink_fp_flush", "flush"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_init_a, "ap_t", "init" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_down_a, "ap_t", "down" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_copy_a, "ap_t", "copy" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_interpret_body_a,   "ap_t", "interpret_body"        );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_flow_snk,           "bcore_fp_flow_snk", "flow_snk" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_sink_file_s_flush, "bcore_sink_fp_flush", "flush"  );
     return self;
 }
 

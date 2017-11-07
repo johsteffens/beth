@@ -131,24 +131,14 @@ st_s* bcore_flect_item_s_show( const bcore_flect_item_s* o )
     st_s_pushf( s, "\n}" );
     return s;
 }
-/*
-bcore_flect_item_s* bcore_flect_item_s_create_external_data( vc_t data, sc_t type, sc_t name )
-{
-    bcore_flect_item_s* o = bcore_flect_item_s_create();
-    o->caps  = BCORE_CAPS_EXTERNAL_DATA;
-    o->d_ptr = data;
-    o->type  = typeof( type );
-    o->name  = bcore_name_enroll( name );
-    return o;
-}
-*/
-bcore_flect_item_s* bcore_flect_item_s_create_external_func( fp_t func, sc_t type, sc_t name )
+
+bcore_flect_item_s* bcore_flect_item_s_create_func( sc_t fname, fp_t func, sc_t type, sc_t name )
 {
     bcore_flect_item_s* o = bcore_flect_item_s_create();
     o->caps  = BCORE_CAPS_EXTERNAL_FUNC;
-    o->f_ptr = func;
-    o->type  = typeof( type );
-    o->name  = bcore_name_enroll( name );
+    o->type  = entypeof( type );
+    o->name  = entypeof( name );
+    o->default_tp = bcore_function_set_sc( fname, func );
     return o;
 }
 
@@ -173,20 +163,16 @@ bcore_signature_s* bcore_flect_item_s_push_to_signature( const bcore_flect_item_
         t = o->default_u3 >> ( sizeof( t ) * 8 );
         bcore_signature_s_push( sig, t );
     }
-//    if( o->d_ptr ) ERR( "Extending signature with external data reference is not allowed" );
-//    if( o->f_ptr ) ERR( "Extending signature with external function is not allowed" );
     return sig;
 }
 
 s2_t bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_item_s* o2 )
 {
-    if( o1->type       != o2->type  ) return ( o1->type < o2->type ) ? 1 : -1;
-    if( o1->name       != o2->name  ) return ( o1->name < o2->name ) ? 1 : -1;
-    if( o1->caps       != o2->caps  ) return ( o1->caps < o2->caps ) ? 1 : -1;
-    if( o1->flags      != o2->flags ) return ( o1->flags < o2->flags ) ? 1 : -1;
+    if( o1->type       != o2->type       ) return ( o1->type < o2->type ) ? 1 : -1;
+    if( o1->name       != o2->name       ) return ( o1->name < o2->name ) ? 1 : -1;
+    if( o1->caps       != o2->caps       ) return ( o1->caps < o2->caps ) ? 1 : -1;
+    if( o1->flags      != o2->flags      ) return ( o1->flags < o2->flags ) ? 1 : -1;
     if( o1->default_u3 != o2->default_u3 ) return ( o1->default_u3 < o2->default_u3 ) ? 1 : -1;
-//    if( o1->d_ptr != o2->d_ptr ) return ( o1->d_ptr < o2->d_ptr ) ? 1 : -1;
-    if( o1->f_ptr != o2->f_ptr ) return 1; // function pointers have no order om ISO C
     return 0;
 }
 
@@ -484,25 +470,27 @@ void bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item 
     bcore_flect_self_s_push( o, item );
     bcore_flect_item_s_discard( item );
 }
-/*
-void bcore_flect_self_s_push_external_data( bcore_flect_self_s* o, vc_t data, sc_t type, sc_t name )
+
+void bcore_flect_self_s_push_func( bcore_flect_self_s* o, sc_t fname, fp_t func, sc_t type, sc_t name )
 {
-    bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_external_data( data, type, name ) );
+    bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_func( fname, func, type, name ) );
 }
-*/
-void bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name )
+
+void bcore_flect_self_s_push_ns_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name )
 {
-    bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_external_func( func, type, name ) );
+    st_s* fname = st_s_create_fa( "#<sc_t>_#<sc_t>", nameof( o->type ), name );
+    bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_func( fname->sc, func, type, name ) );
+    st_s_discard( fname );
 }
 
 void bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name )
 {
-    bcore_flect_self_s_push_external_func( o, (fp_t )func, "bcore_fp_set", name );
+    bcore_flect_self_s_push_ns_func( o, (fp_t )func, "bcore_fp_set", name );
 }
 
 void bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name )
 {
-    bcore_flect_self_s_push_external_func( o, (fp_t )func, "bcore_fp_get", name );
+    bcore_flect_self_s_push_ns_func( o, (fp_t )func, "bcore_fp_get", name );
 }
 
 void bcore_flect_self_s_init_plain( bcore_flect_self_s* o, tp_t type, sz_t size )
@@ -680,7 +668,7 @@ fp_t bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type,
             }
             else
             {
-                return item->f_ptr;
+                ERR( "Object '%s': Function '%s' declared but not assigned.", ifnameof( o->type ), ifnameof( name ) );
             }
         }
     }
@@ -718,12 +706,12 @@ bool bcore_flect_self_s_is_aware( const bcore_flect_self_s* o )
 bcore_flect_self_s* bcore_flect_self_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_flect_self_s" ), sizeof( bcore_flect_self_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_init,         "bcore_fp_init",         "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_down,         "bcore_fp_down",         "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_copy,         "bcore_fp_copy",         "copy"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_create,       "bcore_fp_create",       "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_clone,        "bcore_fp_clone",        "clone"        );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_flect_self_s_discard,      "bcore_fp_discard",      "discard"      );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_self_s_init,         "bcore_fp_init",         "init"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_self_s_down,         "bcore_fp_down",         "down"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_self_s_copy,         "bcore_fp_copy",         "copy"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_self_s_create,       "bcore_fp_create",       "create"       );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_self_s_clone,        "bcore_fp_clone",        "clone"        );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_flect_self_s_discard,      "bcore_fp_discard",      "discard"      );
     return self;
 }
 

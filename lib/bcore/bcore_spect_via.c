@@ -609,11 +609,11 @@ static bcore_flect_self_s* via_s_create_self( void )
 {
     sc_t def = "bcore_via_s = spect { aware_t p_type; tp_t o_type; ... }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_via_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_init,       "bcore_fp_init",                   "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_down,       "bcore_fp_down",                   "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_create,     "bcore_fp_create",                 "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )via_s_discard,    "bcore_fp_discard",                "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )create_from_self, "bcore_spect_fp_create_from_self", "create_from_self" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )via_s_init,       "bcore_fp_init",                   "init"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )via_s_down,       "bcore_fp_down",                   "down"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )via_s_create,     "bcore_fp_create",                 "create"       );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )via_s_discard,    "bcore_fp_discard",                "discard"      );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )create_from_self, "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }
 

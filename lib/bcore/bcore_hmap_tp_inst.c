@@ -58,9 +58,9 @@ static bcore_flect_self_s* hnode_tp_inst_s_create_self( void )
             bcore_inst_op val; \
         }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hnode_tp_inst_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hnode_tp_inst_s_init, "bcore_fp_init", "init" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hnode_tp_inst_s_down, "bcore_fp_down", "down" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hnode_tp_inst_s_copy, "bcore_fp_copy", "copy" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hnode_tp_inst_s_init, "bcore_fp_init", "init" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hnode_tp_inst_s_down, "bcore_fp_down", "down" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hnode_tp_inst_s_copy, "bcore_fp_copy", "copy" );
     return self;
 }
 
@@ -373,8 +373,8 @@ static bcore_flect_self_s* hmap_tp_inst_s_create_self( void )
             sz_t size_limit; \
         }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tp_inst_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tp_inst_s_init,    "bcore_fp_init",    "init"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tp_inst_s_down,    "bcore_fp_down",    "down"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_inst_s_init,    "bcore_fp_init",    "init"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_inst_s_down,    "bcore_fp_down",    "down"    );
     return self;
 }
 

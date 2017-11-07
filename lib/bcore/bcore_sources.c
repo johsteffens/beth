@@ -169,14 +169,14 @@ static bcore_flect_self_s* chain_s_create_self( void )
     "}";
 
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_chain_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_init_a, "ap_t", "init" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_down_a, "ap_t", "down" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_copy_a, "ap_t", "copy" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_interpret_body_a, "ap_t", "interpret_body" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_flow_src,  "bcore_fp_flow_src", "flow_src"  );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )chain_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_source_chain_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_init_a, "ap_t", "init" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_down_a, "ap_t", "down" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_copy_a, "ap_t", "copy" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_interpret_body_a, "ap_t", "interpret_body" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_flow_src,  "bcore_fp_flow_src", "flow_src"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
     return self;
 }
 
@@ -300,10 +300,10 @@ static bcore_flect_self_s* buffer_s_create_self( void )
       "sz_t prefetch_size; "
     "}";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_buffer_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_source_buffer_s_init,  "bcore_fp_init",     "init"  );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )buffer_flow_src,             "bcore_fp_flow_src", "flow_src"  );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )buffer_p_errorvf,            "bcore_fp_logvf",    "p_errorvf" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_source_buffer_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_init,  "bcore_fp_init",     "init"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )buffer_flow_src,             "bcore_fp_flow_src", "flow_src"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )buffer_p_errorvf,            "bcore_fp_logvf",    "p_errorvf" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
     return self;
 }
 
@@ -465,11 +465,11 @@ static bcore_flect_self_s* string_s_create_self( void )
       "sz_t prefetch_size;   "
     "}";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_string_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_source_string_s_init,  "bcore_fp_init", "init" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )string_flow_src,  "bcore_fp_flow_src",       "flow_src"  );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )string_p_errorvf, "bcore_fp_logvf",          "p_errorvf" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv"   );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_source_string_s_set_supplier,   "bcore_source_fp_set_supplier", "set_supplier"   );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_init,  "bcore_fp_init", "init" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_flow_src,  "bcore_fp_flow_src",       "flow_src"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_p_errorvf, "bcore_fp_logvf",          "p_errorvf" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv"   );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_supplier,   "bcore_source_fp_set_supplier", "set_supplier"   );
     return self;
 }
 
@@ -613,12 +613,12 @@ static bcore_flect_self_s* file_s_create_self( void )
     "}";
 
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_file_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_init_a, "ap_t", "init" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_down_a, "ap_t", "down" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_copy_a, "ap_t", "copy" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_interpret_body_a, "ap_t", "interpret_body" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_flow_src,  "bcore_fp_flow_src", "flow_src"  );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )file_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_init_a, "ap_t", "init" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_down_a, "ap_t", "down" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_copy_a, "ap_t", "copy" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_interpret_body_a, "ap_t", "interpret_body" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_flow_src,  "bcore_fp_flow_src", "flow_src"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
     return self;
 }
 

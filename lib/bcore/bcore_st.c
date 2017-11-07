@@ -1799,7 +1799,7 @@ static sz_t flow_src( vd_t o, vd_t data, sz_t size )
     return size;
 }
 
-static void string_p_errorvf( const st_s* o, sc_t format, va_list args )
+static void p_errorvf( const st_s* o, sc_t format, va_list args )
 {
     st_s* context = st_s_show_line_context( o, 0 );
     st_s* msg     = st_s_createvf( format, args );
@@ -1808,7 +1808,7 @@ static void string_p_errorvf( const st_s* o, sc_t format, va_list args )
     st_s_discard( context );
 }
 
-static void string_parse_fv( st_s* o, sc_t format, va_list args )
+static void parse_fv( st_s* o, sc_t format, va_list args )
 {
     if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
     o->data += st_s_parse_fv( o, 0, o->size, format, args );
@@ -1836,21 +1836,21 @@ static void check_sanity( vc_t o )
 static bcore_flect_self_s* st_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "st_s = { aware_t _; private sd_t data; private sz_t size; private sz_t space; }", sizeof( st_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_init,         "bcore_fp_init",           "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_down,         "bcore_fp_down",           "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_copy,         "bcore_fp_copy",           "copy"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_move,         "bcore_fp_move",           "move"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_create,       "bcore_fp_create",         "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_clone,        "bcore_fp_clone",          "clone"        );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_discard,      "bcore_fp_discard",        "discard"      );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_copy_typed,   "bcore_fp_copy_typed",     "copy_typed"   );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_create_typed, "bcore_fp_create_typed",   "create_typed" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )flow_snk,          "bcore_fp_flow_snk",       "flow_snk"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )flow_src,          "bcore_fp_flow_src",       "flow_src"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )string_p_errorvf,  "bcore_fp_logvf",          "p_errorvf"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )string_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )check_sanity,      "bcore_fp_check_sanity",   "check_sanity" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",        "cmp_st"       );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_init,         "bcore_fp_init",            "init"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_down,         "bcore_fp_down",            "down"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_copy,         "bcore_fp_copy",            "copy"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_move,         "bcore_fp_move",            "move"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_create,       "bcore_fp_create",          "create"       );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_clone,        "bcore_fp_clone",           "clone"        );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_discard,      "bcore_fp_discard",         "discard"      );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_copy_typed,   "bcore_fp_copy_typed",      "copy_typed"   );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_create_typed, "bcore_fp_create_typed",    "create_typed" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )flow_snk,          "bcore_fp_flow_snk",        "flow_snk"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )flow_src,          "bcore_fp_flow_src",        "flow_src"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )p_errorvf,         "bcore_fp_logvf",           "p_errorvf"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )parse_fv,          "bcore_source_fp_parse_fv", "parse_fv"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )check_sanity,      "bcore_fp_check_sanity",    "check_sanity" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",         "cmp_st"       );
     return self;
 }
 
@@ -1896,6 +1896,7 @@ static void st_s_quicktest( void )
     ASSERT( st_s_cmp_sc( ws, "This is a weak string" ) == 0 );
     ASSERT( ws->space == 0 );
 
+    // replacing data forces weak strings to become strong
     st_s_replace_sc_sc( ws, "weak", "strong" );
     ASSERT( st_s_cmp_sc( ws, "This is a strong string" ) == 0 );
     ASSERT( ws->space > 0 );

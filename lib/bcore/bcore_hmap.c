@@ -347,16 +347,8 @@ void bcore_hmap_u2vd_s_set( bcore_hmap_u2vd_s* o, u2_t key, vd_t val, bool hold 
         bcore_hnode_u2vd_s* buf_data  = o->data;
         sz_t         buf_size  = o->size;
         sz_t         buf_space = o->space;
-        if( o->size > 0 )
-        {
-            o->size *= 2;
-            o->depth_limit++;
-        }
-        else
-        {
-            o->size = 8;
-            o->depth_limit = 4;
-        }
+        o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
+        o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->data = bcore_u_alloc( sizeof( bcore_hnode_u2vd_s ), NULL, o->size, &o->space );
         bcore_memzero( o->data, sizeof( bcore_hnode_u2vd_s ) * o->size );
@@ -401,16 +393,8 @@ void bcore_hmap_u2vd_s_setf( bcore_hmap_u2vd_s* o, u2_t key, fp_t func )
         bcore_hnode_u2vd_s* buf_data  = o->data;
         sz_t buf_size  = o->size;
         sz_t buf_space = o->space;
-        if( o->size > 0 )
-        {
-            o->size *= 2;
-            o->depth_limit++;
-        }
-        else
-        {
-            o->size = 8;
-            o->depth_limit = 4;
-        }
+        o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
+        o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->data = bcore_u_alloc( sizeof( bcore_hnode_u2vd_s ), NULL, o->size, &o->space );
         bcore_memzero( o->data, sizeof( bcore_hnode_u2vd_s ) * o->size );
@@ -563,12 +547,12 @@ static bcore_flect_self_s* hmap_u2vd_s_create_self( void )
                 private fp_t h3; \
             }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_u2vd_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_u2vd_s_init,    "bcore_fp_init",    "init"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_u2vd_s_down,    "bcore_fp_down",    "down"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_u2vd_s_copy,    "bcore_fp_copy",    "copy"    );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_u2vd_s_create,  "bcore_fp_create",  "create"  );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_u2vd_s_clone,   "bcore_fp_clone",   "clone"   );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_u2vd_s_discard, "bcore_fp_discard", "discard" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_init,    "bcore_fp_init",    "init"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_down,    "bcore_fp_down",    "down"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_copy,    "bcore_fp_copy",    "copy"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_create,  "bcore_fp_create",  "create"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_clone,   "bcore_fp_clone",   "clone"   );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_discard, "bcore_fp_discard", "discard" );
     return self;
 }
 
@@ -866,25 +850,14 @@ sz_t* bcore_hmap_tpsz_s_set( bcore_hmap_tpsz_s* o, tp_t key, sz_t val )
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         bcore_hnode_tpsz_s* buf_nodes = o->nodes;
         sz_t  buf_size = o->size;
-        if( o->size > 0 )
-        {
-            o->size *= 2;
-            o->depth_limit++;
-        }
-        else
-        {
-            o->size = 8;
-            o->depth_limit = 4;
-        }
+        o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
+        o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
-
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpsz_s ), NULL, o->size );
-
         for( sz_t i = 0; i < buf_size; i++ )
         {
             if( buf_nodes[ i ].key ) bcore_hmap_tpsz_s_set( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
         }
-
         bcore_alloc( buf_nodes, 0 );
     }
 
@@ -982,11 +955,11 @@ static bcore_flect_self_s* hmap_tpsz_s_create_self( void )
                 shell { bcore_hnode_tpsz_s []; } data; } \
             }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpsz_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tpsz_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tpsz_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tpsz_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tpsz_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tpsz_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpsz_s_init,    "bcore_fp_init",  "init"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpsz_s_down,    "bcore_fp_down",  "down"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpsz_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpsz_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpsz_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 
@@ -1287,25 +1260,14 @@ fp_t* bcore_hmap_tpfp_s_set( bcore_hmap_tpfp_s* o, tp_t key, fp_t val )
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         bcore_hnode_tpfp_s* buf_nodes = o->nodes;
         sz_t  buf_size = o->size;
-        if( o->size > 0 )
-        {
-            o->size *= 2;
-            o->depth_limit++;
-        }
-        else
-        {
-            o->size = 8;
-            o->depth_limit = 4;
-        }
+        o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
+        o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
-
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpfp_s ), NULL, o->size );
-
         for( sz_t i = 0; i < buf_size; i++ )
         {
             if( buf_nodes[ i ].key ) bcore_hmap_tpfp_s_set( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
         }
-
         bcore_alloc( buf_nodes, 0 );
     }
 
@@ -1403,11 +1365,11 @@ static bcore_flect_self_s* hmap_tpfp_s_create_self( void )
                 shell { bcore_hnode_tpfp_s []; } data; } \
             }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpfp_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tpfp_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tpfp_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tpfp_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tpfp_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tpfp_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpfp_s_init,    "bcore_fp_init",  "init"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpfp_s_down,    "bcore_fp_down",  "down"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpfp_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpfp_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpfp_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 
@@ -1701,25 +1663,14 @@ tp_t* bcore_hmap_tptp_s_set( bcore_hmap_tptp_s* o, tp_t key, tp_t val )
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         bcore_hnode_tptp_s* buf_nodes = o->nodes;
         sz_t  buf_size = o->size;
-        if( o->size > 0 )
-        {
-            o->size *= 2;
-            o->depth_limit++;
-        }
-        else
-        {
-            o->size = 8;
-            o->depth_limit = 4;
-        }
+        o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
+        o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
-
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tptp_s ), NULL, o->size );
-
         for( sz_t i = 0; i < buf_size; i++ )
         {
             if( buf_nodes[ i ].key ) bcore_hmap_tptp_s_set( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
         }
-
         bcore_alloc( buf_nodes, 0 );
     }
 
@@ -1817,11 +1768,11 @@ static bcore_flect_self_s* hmap_tptp_s_create_self( void )
                 shell { bcore_hnode_tptp_s []; } data; } \
             }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tptp_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tptp_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tptp_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tptp_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tptp_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tptp_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tptp_s_init,    "bcore_fp_init",  "init"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tptp_s_down,    "bcore_fp_down",  "down"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tptp_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )tptp_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )tptp_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 
@@ -2159,25 +2110,14 @@ vd_t* bcore_hmap_tpto_s_set_d( bcore_hmap_tpto_s* o, tp_t key, vd_t val )
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         bcore_hnode_tpto_s* buf_nodes = o->nodes;
         sz_t  buf_size = o->size;
-        if( o->size > 0 )
-        {
-            o->size *= 2;
-            o->depth_limit++;
-        }
-        else
-        {
-            o->size = 8;
-            o->depth_limit = 4;
-        }
+        o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
+        o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
-
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpto_s ), NULL, o->size );
-
         for( sz_t i = 0; i < buf_size; i++ )
         {
             if( buf_nodes[ i ].key ) bcore_hmap_tpto_s_set_d( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
         }
-
         bcore_alloc( buf_nodes, 0 ); // rehashing does not destroy any object (only rearranges nodes)
     }
 
@@ -2307,11 +2247,11 @@ static bcore_flect_self_s* hmap_tpto_s_create_self( void )
                 shell { tp_t type; { tp_t key; sr_s obj; } []; } data; } \
             }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpto_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tpto_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tpto_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tpto_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tpto_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tpto_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpto_s_init,    "bcore_fp_init",  "init"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpto_s_down,    "bcore_fp_down",  "down"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpto_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpto_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpto_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 
@@ -2598,16 +2538,8 @@ sz_t bcore_hmap_tp_s_set( bcore_hmap_tp_s* o, tp_t key )
         tp_t* buf_keys  = o->keys;
         sz_t  buf_size  = o->size;
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
-        if( o->size > 0 )
-        {
-            o->size *= 2;
-            o->depth_limit++;
-        }
-        else
-        {
-            o->size = 8;
-            o->depth_limit = 4;
-        }
+        o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
+        o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->keys = bcore_u_memzero( sizeof( tp_t ), NULL, o->size );
         for( sz_t i = 0; i < buf_size; i++ )
@@ -2701,11 +2633,11 @@ static bcore_flect_self_s* hmap_tp_s_create_self( void )
                 shell { tp_t []; } data; } \
             }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tp_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tp_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tp_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_hmap_tp_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tp_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )tp_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_s_init,    "bcore_fp_init",  "init"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_s_down,    "bcore_fp_down",  "down"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )tp_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )tp_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 

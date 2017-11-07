@@ -3,6 +3,9 @@
 /** Name management framework
  *  This framework links names to hash values and vice versa.
  *  Hash value 0 is reserved. Names resulting in hash 0 are rejected.
+ *  'ns' appreviates 'namespace':
+ *  bcore_name_get_hash( "prefix_postfix" ) ==
+ *  bcore_name_ns_get_hash( bcore_name_get_hash( "prefix" ), "postfix" )
  */
 
 #ifndef BCORE_NAME_MANAGER_H

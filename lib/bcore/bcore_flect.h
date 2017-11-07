@@ -111,13 +111,6 @@ typedef struct bcore_flect_item_s
         tp_t default_tp; // serves tp_t and external functions
     };
 
-    // will be replaced by const declaration with default value and function types
-    union
-    {
-//        vc_t d_ptr;  // external data pointer
-        fp_t f_ptr;  // external function pointer
-    };
-
 } bcore_flect_item_s;
 
 void                bcore_flect_item_s_init( bcore_flect_item_s* o );
@@ -125,8 +118,7 @@ void                bcore_flect_item_s_down( bcore_flect_item_s* o );
 void                bcore_flect_item_s_copy( bcore_flect_item_s* o, const bcore_flect_item_s* src );
 void                bcore_flect_item_s_move( bcore_flect_item_s* o,       bcore_flect_item_s* src );
 bcore_flect_item_s* bcore_flect_item_s_create();
-//bcore_flect_item_s* bcore_flect_item_s_create_external_data( vc_t data, sc_t type, sc_t name );
-bcore_flect_item_s* bcore_flect_item_s_create_external_func( fp_t func, sc_t type, sc_t name );
+bcore_flect_item_s* bcore_flect_item_s_create_func( sc_t fname, fp_t func, sc_t type, sc_t name );
 void                bcore_flect_item_s_discard( bcore_flect_item_s* o );
 bcore_flect_item_s* bcore_flect_item_s_clone( const bcore_flect_item_s* o );
 st_s*               bcore_flect_item_s_show( const bcore_flect_item_s* o );
@@ -196,11 +188,12 @@ bcore_flect_self_s* bcore_flect_self_s_clone( const bcore_flect_self_s* o );
 void                bcore_flect_self_s_discard( bcore_flect_self_s* o );
 void                bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item );
 void                bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item );
-//void                bcore_flect_self_s_push_external_data( bcore_flect_self_s* o, vc_t data, sc_t type, sc_t name );
-void                bcore_flect_self_s_push_external_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
+void                bcore_flect_self_s_push_func( bcore_flect_self_s* o, sc_t fname, fp_t func, sc_t type, sc_t name );
+// namespace: function address constructed from object name and function name
+void                bcore_flect_self_s_push_ns_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
 void                bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name );
 void                bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name );
-st_s*     bcore_flect_self_s_show( const bcore_flect_self_s* o );
+st_s*               bcore_flect_self_s_show( const bcore_flect_self_s* o );
 void                bcore_flect_self_s_check_consistency( const bcore_flect_self_s* o );
 
 /// special reflections

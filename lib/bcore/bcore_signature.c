@@ -179,12 +179,12 @@ tp_t bcore_signature_fold_hash_arr( tp_t hash, sz_t n, const tp_t* arr )
 static bcore_flect_self_s* signature_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " bcore_signature_s =  { aware_t _; tp_t[] data; }", sizeof( bcore_signature_s ) );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_signature_s_init,         "bcore_fp_init",         "init"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_signature_s_down,         "bcore_fp_down",         "down"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_signature_s_copy,         "bcore_fp_copy",         "copy"         );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_signature_s_create,       "bcore_fp_create",       "create"       );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_signature_s_clone,        "bcore_fp_clone",        "clone"        );
-    bcore_flect_self_s_push_external_func( self, ( fp_t )bcore_signature_s_discard,      "bcore_fp_discard",      "discard"      );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_signature_s_init,         "bcore_fp_init",         "init"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_signature_s_down,         "bcore_fp_down",         "down"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_signature_s_copy,         "bcore_fp_copy",         "copy"         );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_signature_s_create,       "bcore_fp_create",       "create"       );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_signature_s_clone,        "bcore_fp_clone",        "clone"        );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_signature_s_discard,      "bcore_fp_discard",      "discard"      );
     return self;
 }
 
