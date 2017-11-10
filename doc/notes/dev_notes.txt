@@ -287,3 +287,11 @@ for later (more elaborate) documentation.
    Might be time to spin-off current memory management before it gets to complicated for general
    purpose usage.
 
+## Namespaces ##
+10 Nov 2017
+   Names sall be organized in trees. The parent of each node represents the namespace of the node.
+   A namespace is specified by a name (string) and associated type (typeof( name ))
+   A sub-name-space is introduced by catenating a delimiter ':' and a name
+   The name-manager can be converted to this structure by prefixing the type of the namespace for each item.
+   Root elements shall belong to the namespace '0'
+
