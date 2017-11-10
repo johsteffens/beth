@@ -3,23 +3,20 @@
 /** Name management framework
  *  This framework links names to hash values and vice versa.
  *  Hash value 0 is reserved. Names resulting in hash 0 are rejected.
- *  'ns' appreviates 'namespace':
- *  bcore_name_get_hash( "prefix_postfix" ) ==
- *  bcore_name_ns_get_hash( bcore_name_get_hash( "prefix" ), "postfix" )
  */
 
 #ifndef BCORE_NAME_MANAGER_H
 #define BCORE_NAME_MANAGER_H
 
-#include "bcore_control.h"
+#include "bcore_tp.h"
 
 /// enroll name in global manager (thread safe); checks for collisions; returns hash
 tp_t bcore_name_enroll(   sc_t name );
 tp_t bcore_name_enroll_n( sc_t name, sz_t n );
 
 /// name --> hash
-static inline tp_t bcore_name_get_hash(   sc_t name         ) { return bcore_fnv_hash_text_u2( name    ); }
-static inline tp_t bcore_name_get_hash_n( sc_t name, sz_t n ) { return bcore_fnv_hash_data_u2( name, n ); }
+static inline tp_t bcore_name_get_hash(   sc_t name         ) { return bcore_tp_hash_sc( name    ); }
+static inline tp_t bcore_name_get_hash_n( sc_t name, sz_t n ) { return bcore_tp_hash_vc( name, n ); }
 
 /// hash --> name; returns NULL when not enrolled (thread safe)
 sc_t bcore_name_try_name( tp_t type );

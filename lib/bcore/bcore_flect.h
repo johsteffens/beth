@@ -76,8 +76,6 @@ sz_t bcore_flect_caps_e_align( u2_t caps );
 /// checks if encapsulation is an array
 bl_t bcore_flect_caps_is_array( u2_t caps );
 
-typedef struct bcore_signature_s bcore_signature_s;
-
 typedef struct bcore_flect_item_s
 {
     tp_t type; // hash of type
@@ -123,7 +121,7 @@ bcore_flect_item_s* bcore_flect_item_s_create_func( sc_t fname, fp_t func, sc_t 
 void                bcore_flect_item_s_discard( bcore_flect_item_s* o );
 bcore_flect_item_s* bcore_flect_item_s_clone( const bcore_flect_item_s* o );
 st_s*               bcore_flect_item_s_show( const bcore_flect_item_s* o );
-bcore_signature_s*  bcore_flect_item_s_push_to_signature( const bcore_flect_item_s* o, bcore_signature_s* sig ); // appends item data to signature (external caps not supported --> error)
+tp_t                bcore_flect_item_s_fold_tp( const bcore_flect_item_s* o, tp_t tp );
 s2_t                bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_item_s* o2 );        // compares two items
 
 /**********************************************************************************************************************/
@@ -153,7 +151,7 @@ void                bcore_flect_body_s_discard( bcore_flect_body_s* o );
 bcore_flect_item_s* bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* item );
 bcore_flect_item_s* bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flect_item_s* item );
 st_s*               bcore_flect_body_s_show( const bcore_flect_body_s* o );
-bcore_signature_s*  bcore_flect_body_s_push_to_signature( const bcore_flect_body_s* o, bcore_signature_s* sig );
+tp_t                bcore_flect_body_s_fold_tp( const bcore_flect_body_s* o, tp_t tp );
 s2_t                bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_body_s* o2 );
 
 /**********************************************************************************************************************/
@@ -235,7 +233,7 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type 
 bcore_flect_self_s* bcore_flect_self_s_build_parse_src( sr_s src, sz_t size_of );
 bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );
 
-bcore_signature_s*  bcore_flect_self_s_push_to_signature( const bcore_flect_self_s* o, bcore_signature_s* sig );
+tp_t                bcore_flect_self_s_fold_tp( const bcore_flect_self_s* o, tp_t tp );
 s2_t                bcore_flect_self_s_cmp( const bcore_flect_self_s* o1, const bcore_flect_self_s* o2 );
 
 /// Query for external function of given type or name; either type or name may be 0 in which case it is interpreted as wildcard

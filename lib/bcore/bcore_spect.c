@@ -107,7 +107,7 @@ static void spect_define_trait()
 
 bl_t bcore_spect_supported( tp_t p_type, tp_t o_type )
 {
-    tp_t sig = bcore_signature_get_hash_tp_tp( p_type, o_type );
+    tp_t sig = bcore_tp_fold_tp( p_type, o_type );
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
     bl_t exists = bcore_hmap_u2vd_s_exists( hmap_s_g->map, sig );
@@ -120,7 +120,7 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 {
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    tp_t sig = bcore_signature_get_hash_tp_tp( p_type, o_type );
+    tp_t sig = bcore_tp_fold_tp( p_type, o_type );
     vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, sig );
     if( vdp )
     {

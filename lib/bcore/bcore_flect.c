@@ -7,7 +7,6 @@
 #include "bcore_life.h"
 #include "bcore_quicktypes.h"
 #include "bcore_hmap.h"
-#include "bcore_signature.h"
 #include "bcore_tbman.h"
 #include "bcore_trait.h"
 #include "bcore_spect_source.h"
@@ -159,20 +158,13 @@ sz_t bcore_flect_aligned_offset( sz_t align, sz_t raw_offset )
     return offset;
 }
 
-bcore_signature_s* bcore_flect_item_s_push_to_signature( const bcore_flect_item_s* o, bcore_signature_s* sig )
+tp_t bcore_flect_item_s_fold_tp( const bcore_flect_item_s* o, tp_t tp )
 {
-    bcore_signature_s_push( sig, o->type );
-    bcore_signature_s_push( sig, o->name );
-    tp_t t = o->caps;
-    bcore_signature_s_push( sig, t );
-    t = o->default_u3;
-    bcore_signature_s_push( sig, t );
-    if( sizeof( t ) < sizeof( o->default_u3 ) )
-    {
-        t = o->default_u3 >> ( sizeof( t ) * 8 );
-        bcore_signature_s_push( sig, t );
-    }
-    return sig;
+    tp = bcore_tp_fold_tp( tp, o->type );
+    tp = bcore_tp_fold_tp( tp, o->name );
+    tp = bcore_tp_fold_u2( tp, o->caps );
+    tp = bcore_tp_fold_u3( tp, o->default_u3 );
+    return tp;
 }
 
 s2_t bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_item_s* o2 )
@@ -425,10 +417,10 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
     return o;
 }
 
-bcore_signature_s* bcore_flect_body_s_push_to_signature( const bcore_flect_body_s* o, bcore_signature_s* sig )
+tp_t bcore_flect_body_s_fold_tp( const bcore_flect_body_s* o, tp_t tp )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_push_to_signature( &o->data[ i ], sig );
-    return sig;
+    for( sz_t i = 0; i < o->size; i++ ) tp = bcore_flect_item_s_fold_tp( &o->data[ i ], tp );
+    return tp;
 }
 
 s2_t bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_body_s* o2 )
@@ -587,12 +579,7 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_array( tp_t item_type )
     item->type = item_type;
     bcore_flect_self_s_push( o, item );
     bcore_flect_item_s_discard( item );
-
-    bcore_signature_s* sig = bcore_signature_s_create();
-    bcore_flect_body_s_push_to_signature( o->body, sig );
-    o->type = bcore_signature_s_get_hash( sig );
-    bcore_signature_s_discard( sig );
-
+    o->type = bcore_flect_body_s_fold_tp( o->body, bcore_tp_init() );
     return o;
 }
 
@@ -604,12 +591,7 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type 
     item->type = item_type;
     bcore_flect_self_s_push( o, item );
     bcore_flect_item_s_discard( item );
-
-    bcore_signature_s* sig = bcore_signature_s_create();
-    bcore_flect_body_s_push_to_signature( o->body, sig );
-    o->type = bcore_signature_s_get_hash( sig );
-    bcore_signature_s_discard( sig );
-
+    o->type = bcore_flect_body_s_fold_tp( o->body, bcore_tp_init() );
     return o;
 }
 
@@ -634,11 +616,7 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse_src( sr_s src, sz_t size_of )
         o->body = body_s_build_parse_src( src );
         if( !o->type )
         {
-            bcore_signature_s* sig = bcore_life_s_push_aware( l, bcore_signature_s_create() );
-            bcore_flect_body_s_push_to_signature( o->body, sig );
-
-            // we do not need to enroll the signature because anonymous reflections are tested directly for collisions
-            o->type = bcore_signature_s_get_hash( sig );
+            o->type = bcore_flect_body_s_fold_tp( o->body, bcore_tp_init() );
         }
     }
     else
@@ -661,12 +639,12 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of )
     return bcore_flect_self_s_build_parse_src( sr_asd( st_s_create_weak_sc( text ) ), size_of );
 }
 
-bcore_signature_s* bcore_flect_self_s_push_to_signature( const bcore_flect_self_s* o, bcore_signature_s* sig )
+tp_t bcore_flect_self_s_fold_tp( const bcore_flect_self_s* o, tp_t tp )
 {
-    bcore_signature_s_push( sig, o->type );
-    bcore_signature_s_push( sig, o->trait );
-    if( o->body ) bcore_flect_body_s_push_to_signature( o->body, sig );
-    return sig;
+    tp = bcore_tp_fold_tp( tp, o->type );
+    tp = bcore_tp_fold_tp( tp, o->trait );
+    if( o->body ) tp = bcore_flect_body_s_fold_tp( o->body, tp );
+    return tp;
 }
 
 s2_t bcore_flect_self_s_cmp( const bcore_flect_self_s* o1, const bcore_flect_self_s* o2 )

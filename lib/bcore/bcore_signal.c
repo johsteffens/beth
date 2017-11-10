@@ -14,7 +14,6 @@
 #include "bcore_name_manager.h"
 #include "bcore_function_manager.h"
 #include "bcore_ref.h"
-#include "bcore_signature.h"
 #include "bcore_sinks.h"
 #include "bcore_sources.h"
 #include "bcore_spect.h"
@@ -28,6 +27,7 @@
 #include "bcore_spect_via.h"
 #include "bcore_sc.h"
 #include "bcore_st.h"
+#include "bcore_tp.h"
 #include "bcore_threads.h"
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
@@ -40,9 +40,9 @@ vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
     {
         /// system critical items (keep order)
         bcore_tbman_signal,
+        bcore_tp_signal,
         bcore_name_manager_signal,
         bcore_function_manager_signal,
-        bcore_signature_signal,
         bcore_flect_signal,
         bcore_spect_signal,
         bcore_trait_signal,
