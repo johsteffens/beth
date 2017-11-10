@@ -81,6 +81,16 @@ static void trait_s_push_fp_support( bcore_trait_s* o, bcore_trait_fp_supports f
     o->fp_data[ o->fp_size++ ] = f;
 }
 
+static bcore_flect_self_s* trait_ft_s_create_self( void )
+{
+    return bcore_flect_self_s_build_parse_sc( trait_ft_s_def_g, sizeof( bcore_trait_ft_s ) );
+}
+
+static bcore_flect_self_s* trait_s_create_self( void )
+{
+    return bcore_flect_self_s_build_parse_sc( trait_s_def_g, sizeof( bcore_trait_s ) );
+}
+
 typedef struct system_s
 {
     bcore_hmap_tptp_s type_map;
@@ -335,8 +345,8 @@ vd_t bcore_trait_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "init1" ) )
     {
-        bcore_flect_define_parse_sc( trait_ft_s_def_g );
-        bcore_flect_define_parse_sc( trait_s_def_g );
+        bcore_flect_define_creator( typeof( "bcore_trait_ft_s" ), trait_ft_s_create_self  );
+        bcore_flect_define_creator( typeof( "bcore_trait_s"    ), trait_s_create_self  );
     }
     else if( signal == typeof( "down0" ) )
     {

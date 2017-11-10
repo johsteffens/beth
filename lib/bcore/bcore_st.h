@@ -160,9 +160,11 @@ sz_t st_s_posofline( const st_s* o, sz_t pos );            // returns the positi
 void st_s_print( const st_s* o );
 void st_s_print_d(     st_s* o ); // discards o
 
-/// parsing
-
-/** Functions supporting text-parsing with specific rules.
+/** Parsing strings:
+ *  The format string contains characters and rules to parse an input string.
+ *  Characters that do not belong to a conversion rule are simply consumed as is.
+ *  A space ' ' in the format string consumes all whitespaces {' ', '\t', '\n', '\r', c-style comments}
+ *
  *  Format rules
  *  "#name"
  *      Argument: st_s*
@@ -185,9 +187,27 @@ void st_s_print_d(     st_s* o ); // discards o
  *      Consumes the string literal ... if exactly matching.
  *      Consumes nothing if not exactly matching.
  *      Sets argument 'true' on exact match, false otherwise.
- *      Character ' can be replaced by any other character not occurring in the literal.
+ *      Enclosure ' should be preferred. It can be replaced by suitable character
+ *      from "|*.-+=/ in case the enclosure occurs in the in the literal.
  *
- *  "#<type>"  (Example: "#u3_t" or "#<u3_t>")
+ *  "#?(...)"
+ *      Argument: bl_t*
+ *      Evaluates a logical expression (...) on string characters ahead.
+ *      Consumes no characters.
+ *      Valid relations: ==,!=,>=,<=,>,<
+ *      Valid operators: &&,||,!
+ *      Expression may not contain whitespaces.
+ *      Expressions can be arbitrarily nested inside extra brackets (...).
+ *      Examples:
+ *          "#?([0]=='H'&&[1]=='A'&&[2]=='L')" behaves as "#=?'HAL'"
+ *          Test for a digit:  "#?([0]>='0'&&[0]<='9')"
+ *          Test for a letter: "#?(([0]>='A'&&[0]<='Z')&&([0]>='a'&&[0]<='z'))"
+ *
+ *  "#?!..."
+ *      Argument: bl_t*
+ *      Performs a boolean evaluation #?... and inverts the result.
+ *
+ *  "#<type>"  (Example: "#u3_t" or "#<u3_t*>")
  *      Argument: <type>*
  *      Matches content to <type>.
  *      Example: #u3_t matches to u3_t and requires u3_t* as argument.
@@ -198,6 +218,11 @@ void st_s_print_d(     st_s* o ); // discards o
  *      For any above rule: If '-' is inserted after '#', the rule applies
  *      only to consume characters. No argument in the argument list is
  *      accessed or consumed.
+ *
+ *  "#=..."  (Example: "#=?'{'" )
+ *      Argument: according to rule
+ *      For any above rule: If '=' is inserted after '#', the rule applies
+ *      without consuming characters. Arguments are served and consumed as intended.
  *
  *  Return:
  *     Index position after scan completes.

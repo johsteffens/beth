@@ -1223,8 +1223,15 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
 
 static bcore_flect_self_s* inst_s_create_self( void )
 {
-    sc_t def = "bcore_inst_s = spect { aware_t p_type; tp_t o_type; ... }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_inst_s ) );
+//    sc_t def = "bcore_inst_s = spect { aware_t p_type; tp_t o_type; ... }";
+//    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_inst_s ) );
+
+//  We need to create this reflection manually because self_s_build_parse uses it.
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "bcore_inst_s" ), sizeof( bcore_inst_s ) );
+    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
+    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
+    self->body->complete = false;
+
     bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                   "init"         );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_down,             "bcore_fp_down",                   "down"         );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_create,           "bcore_fp_create",                 "create"       );

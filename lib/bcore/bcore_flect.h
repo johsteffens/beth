@@ -118,6 +118,7 @@ void                bcore_flect_item_s_down( bcore_flect_item_s* o );
 void                bcore_flect_item_s_copy( bcore_flect_item_s* o, const bcore_flect_item_s* src );
 void                bcore_flect_item_s_move( bcore_flect_item_s* o,       bcore_flect_item_s* src );
 bcore_flect_item_s* bcore_flect_item_s_create();
+bcore_flect_item_s* bcore_flect_item_s_create_plain( u2_t caps, tp_t type, tp_t name );
 bcore_flect_item_s* bcore_flect_item_s_create_func( sc_t fname, fp_t func, sc_t type, sc_t name );
 void                bcore_flect_item_s_discard( bcore_flect_item_s* o );
 bcore_flect_item_s* bcore_flect_item_s_clone( const bcore_flect_item_s* o );
@@ -149,9 +150,9 @@ void                bcore_flect_body_s_init( bcore_flect_body_s* o );
 void                bcore_flect_body_s_down( bcore_flect_body_s* o );
 bcore_flect_body_s* bcore_flect_body_s_create();
 void                bcore_flect_body_s_discard( bcore_flect_body_s* o );
-void                bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* item );
-void                bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flect_item_s* item );
-st_s*     bcore_flect_body_s_show( const bcore_flect_body_s* o );
+bcore_flect_item_s* bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* item );
+bcore_flect_item_s* bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flect_item_s* item );
+st_s*               bcore_flect_body_s_show( const bcore_flect_body_s* o );
 bcore_signature_s*  bcore_flect_body_s_push_to_signature( const bcore_flect_body_s* o, bcore_signature_s* sig );
 s2_t                bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_body_s* o2 );
 
@@ -193,13 +194,13 @@ void                bcore_flect_self_s_copy( bcore_flect_self_s* o, const bcore_
 bcore_flect_self_s* bcore_flect_self_s_create();
 bcore_flect_self_s* bcore_flect_self_s_clone( const bcore_flect_self_s* o );
 void                bcore_flect_self_s_discard( bcore_flect_self_s* o );
-void                bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item );
-void                bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item );
-void                bcore_flect_self_s_push_func( bcore_flect_self_s* o, sc_t fname, fp_t func, sc_t type, sc_t name );
+bcore_flect_item_s* bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item );
+bcore_flect_item_s* bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item );
+bcore_flect_item_s* bcore_flect_self_s_push_func( bcore_flect_self_s* o, sc_t fname, fp_t func, sc_t type, sc_t name );
 // namespace: function address constructed from object name and function name
-void                bcore_flect_self_s_push_ns_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
-void                bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name );
-void                bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name );
+bcore_flect_item_s* bcore_flect_self_s_push_ns_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
+bcore_flect_item_s* bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name );
+bcore_flect_item_s* bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name );
 st_s*               bcore_flect_self_s_show( const bcore_flect_self_s* o );
 void                bcore_flect_self_s_check_consistency( const bcore_flect_self_s* o );
 
@@ -231,7 +232,7 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type 
  *    <type-name> = [<trait-name>] { <expr>; <expr>; ... } : Specifying '...' marks the body as incomplete
  *
  */
-bcore_flect_self_s* bcore_flect_self_s_build_parse( const st_s* text, sz_t* p_idx, sz_t size_of );
+bcore_flect_self_s* bcore_flect_self_s_build_parse_src( sr_s src, sz_t size_of );
 bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of );
 
 bcore_signature_s*  bcore_flect_self_s_push_to_signature( const bcore_flect_self_s* o, bcore_signature_s* sig );
@@ -258,7 +259,7 @@ vd_t bcore_flect_self_s_try_static( const bcore_flect_self_s* o, tp_t type, tp_t
  */
 tp_t bcore_flect_define_self_d(       bcore_flect_self_s* self ); // takes over control of self; error if same
 tp_t bcore_flect_define_self_c( const bcore_flect_self_s* self ); // stores a copy of self
-tp_t bcore_flect_define_parse( const st_s* string, sz_t* idx );
+tp_t bcore_flect_define_parse_src( sr_s src );
 tp_t bcore_flect_define_parse_sc( sc_t sc );
 tp_t bcore_flect_define_parse_fa( sc_t sc, ... );
 
@@ -272,9 +273,9 @@ tp_t bcore_flect_define_parse_fa( sc_t sc, ... );
  */
 tp_t bcore_flect_type_self_d(       bcore_flect_self_s* self ); // takes over control of self
 tp_t bcore_flect_type_self_c( const bcore_flect_self_s* self ); // stores a copy of self
-tp_t bcore_flect_type_parse(  const st_s* string, sz_t* idx );
-tp_t bcore_flect_type_parse_sc( sc_t sc );
-tp_t bcore_flect_type_parse_fa( sc_t format, ... );
+tp_t bcore_flect_type_parse_src( sr_s src );
+tp_t bcore_flect_type_parse_sc(  sc_t sc );
+tp_t bcore_flect_type_parse_fa(  sc_t format, ... );
 
 /** Defining reflection via creation function
  *  The function releases a newly created instance of self.
@@ -288,6 +289,13 @@ const bcore_flect_self_s* bcore_flect_try_self( tp_t type ); // returns NULL whe
 const bcore_flect_self_s* bcore_flect_get_self( tp_t type ); // error when type does not exits  (thread safe)
 
 vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object );
+
+// Macros
+#define DEFINE_CREATE_SELF( name, def )\
+  static bcore_flect_self_s* name##_create_self( void ) \
+  {\
+      return bcore_flect_self_s_build_parse_sc( def, sizeof( name ) ); \
+  }\
 
 /**********************************************************************************************************************/
 

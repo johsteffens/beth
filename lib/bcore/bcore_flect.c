@@ -10,6 +10,7 @@
 #include "bcore_signature.h"
 #include "bcore_tbman.h"
 #include "bcore_trait.h"
+#include "bcore_spect_source.h"
 
 /**********************************************************************************************************************/
 
@@ -131,6 +132,15 @@ st_s* bcore_flect_item_s_show( const bcore_flect_item_s* o )
     return s;
 }
 
+bcore_flect_item_s* bcore_flect_item_s_create_plain( u2_t caps, tp_t type, tp_t name )
+{
+    bcore_flect_item_s* o = bcore_flect_item_s_create();
+    o->caps  = caps;
+    o->type  = type;
+    o->name  = name;
+    return o;
+}
+
 bcore_flect_item_s* bcore_flect_item_s_create_func( sc_t fname, fp_t func, sc_t type, sc_t name )
 {
     bcore_flect_item_s* o = bcore_flect_item_s_create();
@@ -235,7 +245,7 @@ DEFINE_FUNCTION_CREATE(  bcore_flect_body_s )
 DEFINE_FUNCTION_DISCARD( bcore_flect_body_s )
 DEFINE_FUNCTION_CLONE(   bcore_flect_body_s )
 
-void bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* item )
+bcore_flect_item_s* bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* item )
 {
     if( o->size == o->space )
     {
@@ -247,12 +257,14 @@ void bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* i
     bcore_flect_item_s_init( &o->data[ o->size ] );
     bcore_flect_item_s_copy( &o->data[ o->size ], item );
     o->size++;
+    return &o->data[ o->size -1 ];
 }
 
-void bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flect_item_s* item )
+bcore_flect_item_s* bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flect_item_s* item )
 {
-    bcore_flect_body_s_push( o, item );
+    bcore_flect_item_s* ret = bcore_flect_body_s_push( o, item );
     bcore_flect_item_s_discard( item );
+    return ret;
 }
 
 st_s* bcore_flect_body_s_show( const bcore_flect_body_s* o )
@@ -269,27 +281,30 @@ st_s* bcore_flect_body_s_show( const bcore_flect_body_s* o )
     return s;
 }
 
-bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_idx )
+static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
 {
-    bcore_life_s* life = bcore_life_s_create();
+    bcore_life_s* l = bcore_life_s_create();
+    src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
     bcore_flect_body_s* o = bcore_flect_body_s_create();
-    sz_t idx = ( p_idx != NULL ) ? *p_idx : 0;
-    idx = st_s_parse_fa( text, idx, text->size, " { " );
+    bcore_source_q_parse_fa( &src, " { " );
 
-    while( text->sc[ idx ] != '}' )
+    while( !bcore_source_q_parse_bool_f( &src, " #?'}' " ) )
     {
-        bcore_life_s* life = bcore_life_s_create();
-        st_s* type_name = st_s_create_l( life );
-        st_s* item_name = st_s_create_l( life );
-        bcore_flect_item_s* item = bcore_life_s_push( life, ( bcore_fp_discard )bcore_flect_item_s_discard, bcore_flect_item_s_create() );
-        bl_t f_private = false, f_hidden = false, f_shell = false, f_func = false, f_link = false, f_arr = false;
-
-        idx = st_s_parse_fa( text, idx, text->size, " #?'func' ", &f_func );
-
-        if( f_func ) // function declaration
+        if( bcore_source_q_parse_bool_f( &src, " #?'...'" ) )
         {
-            st_s* assign_name = st_s_create_l( life );
-            idx = st_s_parse_fa( text, idx, text->size, "#name #name = #name", type_name, item_name, assign_name );
+            o->complete = false;
+            break;
+        }
+
+        bcore_life_s* l = bcore_life_s_create();
+        st_s* type_name = st_s_create_l( l );
+        st_s* item_name = st_s_create_l( l );
+        bcore_flect_item_s* item = bcore_flect_item_s_create();
+
+        if( bcore_source_q_parse_bool_f( &src, " #?'func' " ) ) // function declaration
+        {
+            st_s* assign_name = st_s_create_l( l );
+            bcore_source_q_parse_fa( &src, "#name #name = #name", type_name, item_name, assign_name );
             item->type = bcore_name_enroll( type_name->sc );
             item->name = bcore_name_enroll( item_name->sc );
             item->caps = BCORE_CAPS_EXTERNAL_FUNC;
@@ -297,34 +312,27 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
         }
         else // data type declaration
         {
-            idx = st_s_parse_fa( text, idx, text->size, "#?'private' #?'hidden' #?'shell'",  &f_private, &f_hidden, &f_shell );
+            bl_t f_private = false, f_hidden = false, f_shell = false, f_link = false, f_arr = false;
+            bcore_source_q_parse_fa( &src, "#?'private' #?'hidden' #?'shell'",  &f_private, &f_hidden, &f_shell );
 
             // type can be specified by explicit type id number (anonymous types) or by name
             tp_t type_val = 0;
-            idx = st_s_parse_fa( text, idx, text->size, " " );
-            if( text->data[ idx ] == '{' ) // nested anonymous type
+            if( bcore_source_q_parse_bool_f( &src, " #?([0]=='{')" ) ) // nested anonymous type
             {
-                type_val = bcore_flect_type_parse( text, &idx );
+                type_val = bcore_flect_type_parse_src( src );
             }
-            else if( text->data[ idx ] >= '0' && text->data[ idx ] <= '9' ) // type is specified by number
+            else if( bcore_source_q_parse_bool_f( &src, " #?([0]>='0'&&[0]<='9')" ) ) // type is specified by number
             {
-                idx = st_s_parse_fa( text, idx, text->size, "#tp_t ",  &type_val );
-            }
-            else if( text->data[ idx ] == '.' && text->data[ idx + 1 ] == '.' && text->data[ idx + 2 ] == '.' )
-            {
-                o->complete = false;
-                idx += 3;
-                bcore_life_s_discard( life );
-                break;
+                bcore_source_q_parse_fa( &src, "#<tp_t*> ", &type_val );
             }
             else // type is specified by name
             {
-                idx = st_s_parse_fa( text, idx, text->size, "#name ",  type_name );
+                bcore_source_q_parse_fa( &src, "#name ", type_name );
             }
 
             bl_t assign_default = false;
 
-            idx = st_s_parse_fa( text, idx, text->size, "#?'*' #?'[]' #name #?'=' ", &f_link, &f_arr, item_name, &assign_default );
+            bcore_source_q_parse_fa( &src, "#?'*' #?'[]' #name #?'=' ", &f_link, &f_arr, item_name, &assign_default );
 
             item->f_private  = f_private;
             item->f_hidden   = f_hidden;
@@ -334,8 +342,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
             {
                 if( !f_link && !f_arr )
                 {
-                    st_s* context = st_s_show_line_context( text, st_s_find_sc( text, idx, 0, "typed" ) );
-                    ERR( "\n%s\nTyped objects cannot be nested. Use 'typed *' to clarify method of referencing.", context->sc );
+                    bcore_source_q_parse_errf( &src, "Typed objects cannot be nested. Use 'typed *' to clarify method of referencing." );
                 }
                 item->type = 0;
                 item->name = bcore_name_enroll( item_name->sc );
@@ -345,8 +352,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
             {
                 if( !f_link )
                 {
-                    st_s* context = st_s_show_line_context( text, st_s_find_sc( text, idx, 0, "aware" ) );
-                    ERR( "\n%s\nSelf-aware objects must be referenced by a link. Use 'aware *' to clarify method of referencing.", context->sc );
+                    bcore_source_q_parse_errf( &src, "Self-aware objects must be referenced by a link. Use 'aware *' to clarify method of referencing." );
                 }
                 item->type = 0;
                 item->name = bcore_name_enroll( item_name->sc );
@@ -363,8 +369,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
             {
                 if( o->size > 0 )
                 {
-                    st_s* context = st_s_show_line_context( text, idx );
-                    ERR( "\n%s\n'aware-t' must be first element in body and not used elsewhere.", context->sc );
+                    bcore_source_q_parse_errf( &src, "'aware_t' must be first element in body and not used elsewhere." );
                 }
             }
             if( assign_default )
@@ -377,7 +382,7 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
                         case TYPEOF_s1_t:
                         case TYPEOF_s2_t:
                         case TYPEOF_s3_t:
-                            idx = st_s_parse_fa( text, idx, text->size, "#s3_t", &item->default_s3 );
+                            bcore_source_q_parse_fa( &src, " #<s3_t*>", &item->default_s3 );
                             break;
                         case TYPEOF_u0_t:
                         case TYPEOF_u1_t:
@@ -385,41 +390,38 @@ bcore_flect_body_s* bcore_flect_body_s_build_parse( const st_s* text, sz_t* p_id
                         case TYPEOF_u3_t:
                         case TYPEOF_sz_t:
                         case TYPEOF_tp_t:
-                            idx = st_s_parse_fa( text, idx, text->size, "#u3_t", &item->default_u3 );
+                            bcore_source_q_parse_fa( &src, " #<u3_t*>", &item->default_u3 );
                             break;
                         case TYPEOF_f2_t:
                         case TYPEOF_f3_t:
-                            idx = st_s_parse_fa( text, idx, text->size, "#f3_t", &item->default_f3 );
+                            bcore_source_q_parse_fa( &src, " #<f3_t*>", &item->default_f3 );
                             break;
 
                         case TYPEOF_bl_t:
                         {
                             bl_t flag = false;
-                            idx = st_s_parse_fa( text, idx, text->size, "#bl_t", &flag );
+                            bcore_source_q_parse_fa( &src, " #<bl_t*>", &flag );
                             item->default_u3 = flag;
                         }
                         break;
 
-                        default: ERR( "Cannot assign default value to type '%s'", ifnameof( item->type ) );
+                        default: bcore_source_q_parse_errf( &src, "Cannot assign default value to type '%s'", ifnameof( item->type ) );
                     }
                 }
                 else
                 {
-                    st_s* context = st_s_show_line_context( text, idx );
-                    ERR( "\n%s\nAssignment of default value only for static capsulation.", context->sc );
+                    bcore_source_q_parse_errf( &src, "Assignment of default value only for static nesting." );
                 }
             }
         }
 
-        idx = st_s_parse_fa( text, idx, text->size, " ; " );
+        bcore_source_q_parse_fa( &src, " ; " );
 
-        bcore_flect_body_s_push( o, item );
-        bcore_life_s_discard( life );
+        bcore_flect_body_s_push_d( o, item );
+        bcore_life_s_discard( l );
     }
-    idx = st_s_parse_fa( text, idx, text->size, " } " );
 
-    if ( p_idx != NULL ) *p_idx = idx;
-    bcore_life_s_discard( life );
+    bcore_life_s_discard( l );
     return o;
 }
 
@@ -499,38 +501,40 @@ void bcore_flect_self_s_discard( bcore_flect_self_s* o )
     bcore_release_obj( ( fp_t )bcore_flect_self_s_down, o );
 }
 
-void bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item )
+bcore_flect_item_s* bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item )
 {
     if( !o->body ) o->body = bcore_flect_body_s_create();
-    bcore_flect_body_s_push( o->body, item );
+    return bcore_flect_body_s_push( o->body, item );
 }
 
-void bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item )
+bcore_flect_item_s* bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item )
 {
-    bcore_flect_self_s_push( o, item );
+    bcore_flect_item_s* ret = bcore_flect_self_s_push( o, item );
     bcore_flect_item_s_discard( item );
+    return ret;
 }
 
-void bcore_flect_self_s_push_func( bcore_flect_self_s* o, sc_t fname, fp_t func, sc_t type, sc_t name )
+bcore_flect_item_s* bcore_flect_self_s_push_func( bcore_flect_self_s* o, sc_t fname, fp_t func, sc_t type, sc_t name )
 {
-    bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_func( fname, func, type, name ) );
+    return bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_func( fname, func, type, name ) );
 }
 
-void bcore_flect_self_s_push_ns_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name )
+bcore_flect_item_s* bcore_flect_self_s_push_ns_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name )
 {
     st_s* fname = st_s_create_fa( "#<sc_t>_#<sc_t>", nameof( o->type ), name );
-    bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_func( fname->sc, func, type, name ) );
+    bcore_flect_item_s* ret = bcore_flect_self_s_push_d( o, bcore_flect_item_s_create_func( fname->sc, func, type, name ) );
     st_s_discard( fname );
+    return ret;
 }
 
-void bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name )
+bcore_flect_item_s* bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name )
 {
-    bcore_flect_self_s_push_ns_func( o, (fp_t )func, "bcore_fp_set", name );
+    return bcore_flect_self_s_push_ns_func( o, (fp_t )func, "bcore_fp_set", name );
 }
 
-void bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name )
+bcore_flect_item_s* bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name )
 {
-    bcore_flect_self_s_push_ns_func( o, (fp_t )func, "bcore_fp_get", name );
+    return bcore_flect_self_s_push_ns_func( o, (fp_t )func, "bcore_fp_get", name );
 }
 
 void bcore_flect_self_s_init_plain( bcore_flect_self_s* o, tp_t type, sz_t size )
@@ -609,29 +613,28 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type 
     return o;
 }
 
-bcore_flect_self_s* bcore_flect_self_s_build_parse( const st_s* text, sz_t* p_idx, sz_t size_of )
+bcore_flect_self_s* bcore_flect_self_s_build_parse_src( sr_s src, sz_t size_of )
 {
-    bcore_life_s* life = bcore_life_s_create();
+    bcore_life_s* l = bcore_life_s_create();
+    src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
     bcore_flect_self_s* o = bcore_flect_self_s_create();
 
-    sz_t idx = ( p_idx != NULL ) ? *p_idx : 0;
-
-    st_s* type_name = st_s_create_l( life );
-    idx = st_s_parse_fa( text, idx, text->size, " #name ", type_name );
+    st_s* type_name = st_s_create_l( l );
+    bcore_source_q_parse_fa( &src, " #name", type_name );
     o->type = ( type_name->size > 0 ) ? bcore_name_enroll( type_name->sc ) : 0;
-    if( o->type ) idx = st_s_parse_fa( text, idx, text->size, "= " );
+    if( o->type ) bcore_source_q_parse_fa( &src, " =" );
 
-    st_s* assigned_name = st_s_create_l( life );
-    idx = st_s_parse_fa( text, idx, text->size, " #name ", assigned_name );
+    st_s* assigned_name = st_s_create_l( l );
+    bcore_source_q_parse_fa( &src, " #name", assigned_name );
     tp_t assigned_type = ( assigned_name->size > 0 ) ? bcore_name_enroll( assigned_name->sc ) : 0;
 
-    if( text->sc[ idx ] == '{' )
+    if( bcore_source_q_parse_bool_f( &src, " #=?'{'" ) )
     {
         o->trait = assigned_type;
-        o->body = bcore_flect_body_s_build_parse( text, &idx );
+        o->body = body_s_build_parse_src( src );
         if( !o->type )
         {
-            bcore_signature_s* sig = bcore_life_s_push_aware( life, bcore_signature_s_create() );
+            bcore_signature_s* sig = bcore_life_s_push_aware( l, bcore_signature_s_create() );
             bcore_flect_body_s_push_to_signature( o->body, sig );
 
             // we do not need to enroll the signature because anonymous reflections are tested directly for collisions
@@ -641,33 +644,21 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse( const st_s* text, sz_t* p_id
     else
     {
         o->trait = 0;
-        if( !o->type )
-        {
-            st_s* context = bcore_life_s_push_aware( life, st_s_show_line_context( text, idx ) );
-            ERR( "\n%s\nAnonymous types need a body.", context->sc );
-        }
+        if( !o->type ) bcore_source_q_parse_errf( &src, "Anonymous types need a body." );
         const bcore_flect_self_s* self_l = bcore_flect_try_self( assigned_type );
-        if( !self_l )
-        {
-            st_s* context = st_s_show_line_context( text, idx );
-            ERR( "\n%s\nType %s not defined", context->sc, assigned_name->sc );
-        }
+        if( !self_l ) bcore_source_q_parse_errf( &src, "Type %s not defined.", assigned_name->sc );
         o->body = bcore_flect_body_s_clone( self_l->body );
         o->size = self_l->size;
     }
 
-    if( p_idx != NULL ) *p_idx = idx;
     o->size = size_of;
-    bcore_life_s_discard( life );
+    bcore_life_s_discard( l );
     return o;
 }
 
 bcore_flect_self_s* bcore_flect_self_s_build_parse_sc( sc_t text, sz_t size_of )
 {
-    st_s* string = st_s_create_sc( text );
-    bcore_flect_self_s* ret = bcore_flect_self_s_build_parse( string, NULL, size_of );
-    st_s_discard( string );
-    return ret;
+    return bcore_flect_self_s_build_parse_src( sr_asd( st_s_create_weak_sc( text ) ), size_of );
 }
 
 bcore_signature_s* bcore_flect_self_s_push_to_signature( const bcore_flect_self_s* o, bcore_signature_s* sig )
@@ -1000,18 +991,14 @@ tp_t bcore_flect_define_self_c( const bcore_flect_self_s* self )
     return bcore_flect_define_self_d( bcore_flect_self_s_clone( self ) );
 }
 
-tp_t bcore_flect_define_parse( const st_s* string, sz_t* idx )
+tp_t bcore_flect_define_parse_src( sr_s src )
 {
-    return bcore_flect_define_self_d( bcore_flect_self_s_build_parse( string, idx, 0 ) );
+    return bcore_flect_define_self_d( bcore_flect_self_s_build_parse_src( src, 0 ) );
 }
 
 tp_t bcore_flect_define_parse_sc( sc_t sc )
 {
-    st_s* string = st_s_create_sc( sc );
-    sz_t idx = 0;
-    tp_t type = bcore_flect_define_parse( string, &idx );
-    st_s_discard( string );
-    return type;
+    return bcore_flect_define_parse_src( sr_asd( st_s_create_weak_sc( sc ) ) );
 }
 
 tp_t bcore_flect_define_parse_fa( sc_t format, ... )
@@ -1020,9 +1007,7 @@ tp_t bcore_flect_define_parse_fa( sc_t format, ... )
     va_start( args, format );
     st_s* string = st_s_createvf( format, args );
     va_end( args );
-    sz_t idx = 0;
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse( string, &idx, 0 );
-    tp_t type = bcore_flect_define_self_d( self );
+    tp_t type = bcore_flect_define_parse_sc( string->sc );
     st_s_discard( string );
     return type;
 }
@@ -1054,17 +1039,14 @@ tp_t bcore_flect_type_self_c( const bcore_flect_self_s* self )
     return bcore_flect_type_self_d( bcore_flect_self_s_clone( self ) );
 }
 
-tp_t bcore_flect_type_parse( const st_s* string, sz_t* idx )
+tp_t bcore_flect_type_parse_src( sr_s src )
 {
-    return bcore_flect_type_self_d( bcore_flect_self_s_build_parse( string, idx, 0 ) );
+    return bcore_flect_type_self_d( bcore_flect_self_s_build_parse_src( src, 0 ) );
 }
 
 tp_t bcore_flect_type_parse_sc( sc_t sc )
 {
-    st_s* string = st_s_create_sc( sc );
-    tp_t ret = bcore_flect_type_parse( string, 0 );
-    st_s_discard( string );
-    return ret;
+    return bcore_flect_type_parse_src( sr_asd( st_s_create_weak_sc( sc ) ) );
 }
 
 tp_t bcore_flect_type_parse_fa( sc_t format, ... )
@@ -1073,7 +1055,7 @@ tp_t bcore_flect_type_parse_fa( sc_t format, ... )
     va_start( args, format );
     st_s* string = st_s_createvf( format, args );
     va_end( args );
-    tp_t type = bcore_flect_type_parse( string, 0 );
+    tp_t type = bcore_flect_type_parse_sc( string->sc );
     st_s_discard( string );
     return type;
 }
@@ -1125,21 +1107,21 @@ static void flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_copy_typed"   ), sizeof( bcore_fp_copy_typed ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( bcore_name_enroll( "bcore_fp_create_typed" ), sizeof( bcore_fp_create_typed ) ) );
 
-    // encapsulation structure
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "bcore_static_link_s       = { vd_t    link; }", sizeof( bcore_static_link_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "bcore_typed_link_s        = { typed * link; }", sizeof( bcore_typed_link_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "bcore_aware_link_s        = { aware * link; }", sizeof( bcore_aware_link_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "bcore_static_array_s      = { vd_t  data; sz_t size; sz_t space; }", sizeof( bcore_static_array_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "bcore_typed_array_s       = { typed  []; }",    sizeof( bcore_typed_array_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "bcore_static_link_array_s = { vd_t* data; sz_t size; sz_t space; }", sizeof( bcore_static_link_array_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "bcore_typed_link_array_s  = { typed* []; }",    sizeof( bcore_typed_link_array_s ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "bcore_aware_link_array_s  = { aware* []; }",    sizeof( bcore_aware_link_array_s ) ) );
-
     // specific objects
     bcore_flect_define_creator( typeof( "bcore_flect_item_s" ), flect_item_s_create_self );
     bcore_flect_define_creator( typeof( "bcore_flect_body_s" ), flect_body_s_create_self );
     bcore_flect_define_creator( typeof( "bcore_flect_self_s" ), flect_self_s_create_self );
 }
+
+/// encapsulation structures
+DEFINE_CREATE_SELF( bcore_static_link_s,       "bcore_static_link_s       = { vd_t    link; }" )
+DEFINE_CREATE_SELF( bcore_typed_link_s,        "bcore_typed_link_s        = { typed * link; }" )
+DEFINE_CREATE_SELF( bcore_aware_link_s,        "bcore_aware_link_s        = { aware * link; }" )
+DEFINE_CREATE_SELF( bcore_static_array_s,      "bcore_static_array_s      = { vd_t  data; sz_t size; sz_t space; }" )
+DEFINE_CREATE_SELF( bcore_typed_array_s,       "bcore_typed_array_s       = { typed  []; }" )
+DEFINE_CREATE_SELF( bcore_static_link_array_s, "bcore_static_link_array_s = { vd_t* data; sz_t size; sz_t space; }" )
+DEFINE_CREATE_SELF( bcore_typed_link_array_s,  "bcore_typed_link_array_s  = { typed* []; }" )
+DEFINE_CREATE_SELF( bcore_aware_link_array_s,  "bcore_aware_link_array_s  = { aware* []; }" )
 
 /**********************************************************************************************************************/
 
@@ -1186,6 +1168,14 @@ vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "init1" ) )
     {
+        bcore_flect_define_creator( typeof( "bcore_static_link_s"       ), bcore_static_link_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_typed_link_s"        ), bcore_typed_link_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_aware_link_s"        ), bcore_aware_link_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_static_array_s"      ), bcore_static_array_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_typed_array_s"       ), bcore_typed_array_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_static_link_array_s" ), bcore_static_link_array_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_typed_link_array_s"  ), bcore_typed_link_array_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_aware_link_array_s"  ), bcore_aware_link_array_s_create_self );
     }
     else if( signal == typeof( "down0" ) )
     {

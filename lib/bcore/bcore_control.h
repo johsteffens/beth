@@ -15,14 +15,18 @@
 /// basic messaging
 
 /// formatted message to stdout
-void bcore_msg( sc_t format, ... );
+void bcore_msg   ( sc_t format, ... );
+void bcore_msg_fa( sc_t format, ... ); // beth format
 
 /// formatted message + newline to stderr and abort
-void bcore_errv( sc_t format, va_list args );
-void bcore_err(  sc_t format, ... );
+void bcore_errv  ( sc_t format, va_list args );
+void bcore_err   ( sc_t format, ... );
+void bcore_err_fv( sc_t format, va_list args ); // beth format (avoid on low-level errors)
+void bcore_err_fa( sc_t format, ... );          // beth format (avoid on low-level errors)
 
 /// extended formatted message + newline to stderr and abort
-void bcore_ext_err( sc_t f_name, sc_t file, int line, sc_t format, ... );
+void bcore_ext_err   ( sc_t f_name, sc_t file, int line, sc_t format, ... );
+void bcore_ext_err_fa( sc_t f_name, sc_t file, int line, sc_t format, ... ); // beth format (avoid on low-level errors)
 
 /**********************************************************************************************************************/
 /** Memory Management
@@ -170,6 +174,7 @@ vd_t bcore_control_signal( tp_t target, tp_t signal, vd_t object );
 
 /// error message
 #define ERR( ... ) bcore_ext_err( __func__, __FILE__, __LINE__, __VA_ARGS__ )
+#define ERR_fa( ... ) bcore_ext_err_fa( __func__, __FILE__, __LINE__, __VA_ARGS__ )
 
 /// same purpose as assert() but cannot be switched off via NDEBUG; typically used in selftests
 #define ASSERT( condition ) if( !(condition) ) bcore_err( "assertion '%s' failed in function %s (%s line %i)\n", #condition, __func__, __FILE__, __LINE__ )
