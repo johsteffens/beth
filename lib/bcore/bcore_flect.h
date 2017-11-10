@@ -267,9 +267,6 @@ tp_t bcore_flect_define_parse_fa( sc_t sc, ... );
  *  Reentrant define-function with advanced collision testing.
  *  Intended use in reentrant contexts (e.g type generators, local types, anonymous types)
  *  Thread safe with extended collision-awareness (--> Error in case of any form of collision).
- *  Error if anonymous type references external objects.
- *  ( Rationale: Using addresses of external objects for type computation produces
- *    different types at different run-times thwarting serialization and collision testing. )
  */
 tp_t bcore_flect_type_self_d(       bcore_flect_self_s* self ); // takes over control of self
 tp_t bcore_flect_type_self_c( const bcore_flect_self_s* self ); // stores a copy of self
@@ -286,7 +283,7 @@ void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
 
 bl_t  bcore_flect_exists(                       tp_t type ); // checks existence of type  (thread safe)
 const bcore_flect_self_s* bcore_flect_try_self( tp_t type ); // returns NULL when type does not exist  (thread safe)
-const bcore_flect_self_s* bcore_flect_get_self( tp_t type ); // error when type does not exits  (thread safe)
+const bcore_flect_self_s* bcore_flect_get_self( tp_t type ); // error when type does not exist  (thread safe)
 
 vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object );
 

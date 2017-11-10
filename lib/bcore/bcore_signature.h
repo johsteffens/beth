@@ -72,28 +72,6 @@ static inline tp_t bcore_signature_get_hash_tp_tp( tp_t t1, tp_t t2 ) { return b
 
 /**********************************************************************************************************************/
 
-/** Enrolls signature in global manager (thread safe);
- *  checks for collisions; reentrant for identical signatures;
- *  returns type; takes over ownership of sig;
- *  discards sig when already enrolled
- */
-tp_t bcore_signature_manager_enroll_d( bcore_signature_s* sig );
-
-/// enrolls signature via argument list; returns type; (thread safe)
-tp_t bcore_signature_manager_enroll_nv( sz_t n, va_list args );
-
-/// enrolls signature via argument list; returns type; (thread safe)
-tp_t bcore_signature_manager_enroll_na( sz_t n, ... );
-
-/// sig-type --> signature; returns NULL when not enrolled (thread safe)
-const bcore_signature_s* bcore_signature_manager_try( tp_t sig );
-
-/// sig-type --> signature; returns error when not enrolled (thread safe)
-const bcore_signature_s* bcore_signature_manager_get( tp_t sig );
-
-/// removes type and associated signature; no effect when not enrolled (thread safe)
-void bcore_signature_manager_remove( tp_t type );
-
 vd_t bcore_signature_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/

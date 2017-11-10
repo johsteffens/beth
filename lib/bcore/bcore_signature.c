@@ -189,135 +189,6 @@ static bcore_flect_self_s* signature_s_create_self( void )
 }
 
 /**********************************************************************************************************************/
-// hash map
-
-typedef struct hmap_s
-{
-    bcore_hmap_u2vd_s* map;
-    bcore_mutex_t mutex;
-} hmap_s;
-
-static void hmap_s_init( hmap_s* o )
-{
-    o->map = NULL;
-    bcore_mutex_init( &o->mutex );
-}
-
-static void hmap_s_node_down( vd_t obj, u2_t key, vd_t val )
-{
-    bcore_signature_s* sig = val;
-    bcore_signature_s_discard( sig );
-}
-
-static void hmap_s_down( hmap_s* o )
-{
-    bcore_mutex_lock( &o->mutex );
-    if( o->map )
-    {
-        bcore_hmap_u2vd_s_run_c( o->map, NULL, hmap_s_node_down );
-        bcore_hmap_u2vd_s_discard( o->map );
-        o->map = NULL;
-    }
-    bcore_mutex_unlock( &o->mutex );
-    bcore_mutex_down( &o->mutex );
-}
-
-/**********************************************************************************************************************/
-
-static hmap_s* hmap_s_g = NULL;
-
-static void create_hmap_s()
-{
-    if( hmap_s_g == NULL )
-    {
-        hmap_s_g = bcore_alloc( NULL, sizeof( hmap_s ) );
-        hmap_s_init( hmap_s_g );
-    }
-}
-
-static void discard_hmap_s()
-{
-    if( hmap_s_g )
-    {
-        bcore_release_obj( ( fp_t )hmap_s_down, hmap_s_g );
-        hmap_s_g = NULL;
-    }
-}
-
-static void signature_manager_open()
-{
-    static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, create_hmap_s );
-}
-
-static void signature_manager_close()
-{
-    discard_hmap_s();
-}
-
-const bcore_signature_s* bcore_signature_manager_try( tp_t type )
-{
-    assert( hmap_s_g != NULL );
-    bcore_mutex_lock( &hmap_s_g->mutex );
-    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, type );
-    const bcore_signature_s* sig = vdp ? *vdp : NULL;
-    bcore_mutex_unlock( &hmap_s_g->mutex );
-    return sig;
-}
-
-const bcore_signature_s* bcore_signature_manager_get( tp_t type )
-{
-    const bcore_signature_s* sig = bcore_signature_manager_try( type );
-    if( !sig ) ERR( "type %"PRIu32" has no signature", type );
-    return sig;
-}
-
-tp_t bcore_signature_manager_enroll_d( bcore_signature_s* sig )
-{
-    assert( hmap_s_g != NULL );
-    u2_t type = bcore_signature_s_get_hash( sig );
-    if( type == 0 ) ERR( "Type of signature is zero. Zero is a reserved value.", type );
-    bcore_mutex_lock( &hmap_s_g->mutex );
-    if( !hmap_s_g->map ) hmap_s_g->map = bcore_hmap_u2vd_s_create();
-    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, type );
-    if( vdp )
-    {
-        const bcore_signature_s* sig_l = *vdp;
-        if( !bcore_signature_s_equal( sig, sig_l ) ) ERR( "Signature collision detected." );
-        bcore_signature_s_discard( sig );
-    }
-    else
-    {
-        bcore_hmap_u2vd_s_set( hmap_s_g->map, type, sig, false );
-    }
-    bcore_mutex_unlock( &hmap_s_g->mutex );
-    return type;
-}
-
-tp_t bcore_signature_manager_enroll_nv( sz_t n, va_list args )
-{
-    return bcore_signature_manager_enroll_d( bcore_signature_s_create_vn( n, args ) );
-}
-
-tp_t bcore_signature_manager_enroll_na( sz_t n, ... )
-{
-    va_list args;
-    va_start( args, n );
-    tp_t ret = bcore_signature_manager_enroll_nv( n, args );
-    va_end( args );
-    return ret;
-}
-
-void bcore_signature_manager_remove( tp_t type )
-{
-    assert( hmap_s_g != NULL );
-    bcore_mutex_lock( &hmap_s_g->mutex );
-    bcore_signature_s* sig = bcore_hmap_u2vd_s_remove_h( hmap_s_g->map, type );
-    bcore_signature_s_discard( sig );
-    bcore_mutex_unlock( &hmap_s_g->mutex );
-}
-
-/**********************************************************************************************************************/
 // signal
 
 vd_t bcore_signature_signal( tp_t target, tp_t signal, vd_t object )
@@ -325,7 +196,6 @@ vd_t bcore_signature_signal( tp_t target, tp_t signal, vd_t object )
     if( target != typeof( "all" ) && target != typeof( "bcore_signature" ) ) return NULL;
     if( signal == typeof( "init0" ) )
     {
-        signature_manager_open();
     }
     else if( signal == typeof( "init1" ) )
     {
@@ -333,16 +203,6 @@ vd_t bcore_signature_signal( tp_t target, tp_t signal, vd_t object )
     }
     else if( signal == typeof( "down0" ) )
     {
-        if( object && ( *( bl_t* )object ) )
-        {
-            sz_t space = bcore_tbman_granted_space();
-            signature_manager_close();
-            bcore_msg( "  signature manager ... % 6zu\n", space - bcore_tbman_granted_space() );
-        }
-        else
-        {
-            signature_manager_close();
-        }
     }
     return NULL;
 }
