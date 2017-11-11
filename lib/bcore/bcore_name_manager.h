@@ -10,13 +10,63 @@
 
 #include "bcore_tp.h"
 
-/// enroll name in global manager (thread safe); checks for collisions; returns hash
-tp_t bcore_name_enroll(   sc_t name );
-tp_t bcore_name_enroll_n( sc_t name, sz_t n );
+/** Names and Name-Spaces
+ *  Each name has an associated name-space.
+ *  The root name space (default) has type 0.
+ *  Each name-type can be used as name-space.
+ *  Functions with postfix _s explicitly consider name spaces:
+ *     Functions returning a string construct a full name using ':' to catenate name spaces.
+ *     Functions returning a type expect the name space as argument
+ *  It is
+ *  typeof( typeof( "mynamespace" ), "myname" ) == typeof( "mynamespace:myname" ).
+ *
+ *  Accordingly...
+ *    entypeof_s( typeof( "mynamespace" ), "myname" )
+ *  or
+ *    entypeof( "mynamespace:myname" )
+ *  ... produce the same type value.
+ *  However, since nameof( type ) yields different names in either case,
+ *  trying to enroll both, causes a collision error.
+ *  Best practice: Avoid colons inside regular names.
+ */
+
+/// forward declarations
+typedef struct st_s st_s;
+st_s* st_s_create();
 
 /// name --> hash
 static inline tp_t bcore_name_get_hash(   sc_t name         ) { return bcore_tp_hash_sc( name    ); }
 static inline tp_t bcore_name_get_hash_n( sc_t name, sz_t n ) { return bcore_tp_hash_vc( name, n ); }
+
+static inline tp_t bcore_name_get_hash_s( tp_t name_space, sc_t name )
+{
+    if( name_space )
+    {
+        return bcore_tp_fold_sc( bcore_tp_fold_u0( name_space, ':' ), name );
+    }
+    else
+    {
+        return bcore_name_get_hash( name );
+    }
+}
+
+static inline tp_t bcore_name_get_hash_sn( tp_t name_space, sc_t name, sz_t n )
+{
+    if( name_space )
+    {
+        return bcore_tp_fold_vc( bcore_tp_fold_u0( name_space, ':' ), name, n );
+    }
+    else
+    {
+        return bcore_name_get_hash_n( name, n );
+    }
+}
+
+/// enroll name in global manager (thread safe); checks for collisions; returns hash
+tp_t bcore_name_enroll(                     sc_t name );
+tp_t bcore_name_enroll_n(                   sc_t name, sz_t n );
+tp_t bcore_name_enroll_s(  tp_t name_space, sc_t name );
+tp_t bcore_name_enroll_sn( tp_t name_space, sc_t name, sz_t n );
 
 /// hash --> name; returns NULL when not enrolled (thread safe)
 sc_t bcore_name_try_name( tp_t type );
@@ -24,16 +74,30 @@ sc_t bcore_name_try_name( tp_t type );
 /// hash --> name; returns error when not enrolled (thread safe)
 sc_t bcore_name_get_name( tp_t type );
 
+/// hash --> full name; returns NULL when not enrolled (thread safe); passes ownership
+st_s* bcore_name_try_name_s( tp_t type );
+
+/// hash --> full name; returns error when not enrolled (thread safe); passes ownership
+st_s* bcore_name_get_name_s( tp_t type );
+
 /// removes hash and associated name; no effect when not enrolled (thread safe)
 void bcore_name_remove( tp_t type );
 
 /// syntactic sugar
-static inline tp_t typeof(   sc_t name ) { return bcore_name_get_hash( name ); }
-static inline tp_t typeof_n( sc_t name, sz_t n ) { return bcore_name_get_hash_n( name, n ); }
-static inline tp_t entypeof( sc_t name ) { return bcore_name_enroll(   name ); }
-static inline tp_t entypeof_n( sc_t name, sz_t n ) { return bcore_name_enroll_n( name, n ); }
-static inline sc_t nameof(   u2_t type ) { return bcore_name_get_name(   type ); }
-static inline sc_t ifnameof( u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
+static inline tp_t typeof(             sc_t name         ) { return bcore_name_get_hash(        name    ); }
+static inline tp_t typeof_n(           sc_t name, sz_t n ) { return bcore_name_get_hash_n(      name, n ); }
+static inline tp_t typeof_s(  tp_t ns, sc_t name         ) { return bcore_name_get_hash_s(  ns, name    ); }
+static inline tp_t typeof_sn( tp_t ns, sc_t name, sz_t n ) { return bcore_name_get_hash_sn( ns, name, n ); }
+
+static inline tp_t entypeof(             sc_t name         ) { return bcore_name_enroll(        name    ); }
+static inline tp_t entypeof_n(           sc_t name, sz_t n ) { return bcore_name_enroll_n(      name, n ); }
+static inline tp_t entypeof_s(  tp_t ns, sc_t name         ) { return bcore_name_enroll_s(  ns, name    ); }
+static inline tp_t entypeof_sn( tp_t ns, sc_t name, sz_t n ) { return bcore_name_enroll_sn( ns, name, n ); }
+
+static inline sc_t    nameof(   u2_t type ) { return bcore_name_get_name( type ); }
+static inline sc_t  ifnameof(   u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
+static inline st_s*   nameof_s( u2_t type ) { return bcore_name_get_name_s( type ); }
+static inline st_s* ifnameof_s( u2_t type ) { st_s* n = bcore_name_try_name_s( type ); return n ? n : st_s_create(); }
 
 /// statistics
 typedef struct st_s st_s;
