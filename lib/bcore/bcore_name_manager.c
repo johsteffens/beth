@@ -256,13 +256,13 @@ st_s* bcore_name_show()
 
 st_s* bcore_name_manager_selftest()
 {
-    tp_t t0 = entypeof( "mynamespace" );
-    st_s_print_d( st_s_create_fa( "#<tp_t>\n", t0 ) );
-    st_s_print_d( st_s_create_fa( "#<tp_t>\n", entypeof( "myname" ) ) );
-    st_s_print_d( st_s_create_fa( "#<tp_t>\n", entypeof_s( t0, "myname" ) ) );
-    st_s_print_d( st_s_create_fa( "#<tp_t>\n", typeof( "mynamespace:myname" ) ) );
-
-    return bcore_name_show();
+    tp_t mynamespace_t = entypeof( "mynamespace" );
+    tp_t myname_t = entypeof_s( mynamespace_t, "myname" );
+    ASSERT( myname_t == typeof( "mynamespace:myname" ) );
+    st_s* cname = nameof_s( myname_t );
+    ASSERT( st_s_cmp_sc( cname, "mynamespace:myname" ) == 0 );
+    st_s_discard( cname );
+    return NULL;
 }
 
 /**********************************************************************************************************************/

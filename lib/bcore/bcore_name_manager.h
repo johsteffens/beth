@@ -18,15 +18,15 @@
  *     Functions returning a string construct a full name using ':' to catenate name spaces.
  *     Functions returning a type expect the name space as argument
  *  It is
- *  typeof( typeof( "mynamespace" ), "myname" ) == typeof( "mynamespace:myname" ).
+ *  typeof_s( typeof( "mynamespace" ), "myname" ) == typeof( "mynamespace:myname" ).
  *
  *  Accordingly...
- *    entypeof_s( typeof( "mynamespace" ), "myname" )
+ *    tp_t type = entypeof_s( typeof( "mynamespace" ), "myname" )
  *  or
- *    entypeof( "mynamespace:myname" )
- *  ... produce the same type value.
- *  However, since nameof( type ) yields different names in either case,
- *  trying to enroll both, causes a collision error.
+ *    tp_t type = entypeof( "mynamespace:myname" )
+ *  ... would produce the same value of type.
+ *  However, nameof( type ) would yield different names.
+ *  Therefore, trying to enroll both, causes a collision error.
  *  Best practice: Avoid colons inside regular names.
  */
 
