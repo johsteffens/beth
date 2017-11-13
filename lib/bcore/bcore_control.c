@@ -219,8 +219,11 @@ vd_t bcore_memmove( vd_t dst, vc_t src, sz_t size )
 
 sd_t bcore_strcpy( sd_t dst, sc_t src )
 {
-    dst = bcore_alloc( dst, strlen( src ) + 1 );
-    strcpy( dst, src );
+    if( !dst && !src ) return NULL;
+    sz_t len = src ? strlen( src ) : 0;
+    dst = bcore_alloc( dst, len + 1 );
+    bcore_memcpy( dst, src, len );
+    dst[ len ] = 0;
     return dst;
 }
 

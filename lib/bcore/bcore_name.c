@@ -3,6 +3,8 @@
 #include "bcore_name.h"
 #include "bcore_name_manager.h"
 #include "bcore_quicktypes.h"
+#include "bcore_flect.h"
+#include "bcore_spect_array.h"
 
 /// hashing (non-cryptographic)
 static u2_t hash_tpu2_1( tp_t key )
@@ -48,6 +50,38 @@ void bcore_name_s_copy( bcore_name_s* o, const bcore_name_s* src )
 DEFINE_FUNCTION_CREATE( bcore_name_s )
 DEFINE_FUNCTION_CLONE( bcore_name_s )
 DEFINE_FUNCTION_DISCARD( bcore_name_s )
+
+static sr_s name_s_get_name_st( bcore_name_s* o )
+{
+    return sr_asd( st_s_create_sc( o->name ) );
+}
+
+static void name_s_set_name_st( bcore_name_s* o, sr_s sr )
+{
+    bcore_release( o->name );
+    assert( sr_s_type( &sr ) == TYPEOF_st_s );
+    o->name = bcore_strcpy( NULL, ( ( st_s* )sr.o )->sc );
+    sr_down( sr );
+}
+
+static bcore_flect_self_s* name_s_create_self( void )
+{
+    sc_t def = "\
+        bcore_name_s = \
+        { \
+            tp_t key;\
+            tp_t name_space;\
+            private sd_t name;\
+            shell st_s name_st;\
+        }";
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_name_s ) );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_s_init,    "bcore_fp_init",  "init"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_s_down,    "bcore_fp_down",  "down"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )name_s_get_name_st,   "bcore_fp_get",   "get_name_st" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )name_s_set_name_st,   "bcore_fp_set",   "set_name_st" );
+    return self;
+}
 
 /// creation using default hashing
 bcore_name_s bcore_name_sc( sc_t name )
@@ -235,10 +269,6 @@ bcore_name_s* bcore_name_map_s_get( const bcore_name_map_s* o, tp_t key )
 
 void bcore_name_map_s_set( bcore_name_map_s* o, bcore_name_s name )
 {
-    if( name.name_space && !bcore_name_map_s_exists( o, name.name_space ) )
-    {
-        ERR( "Namespace %"PRItp_t" not found", name.name_space );
-    }
     set_rehash( o, name );
 }
 
@@ -270,6 +300,55 @@ bcore_name_s* bcore_name_map_s_idx_name( const bcore_name_map_s* o, sz_t idx )
     return idx < o->size ? &o->data[ idx ] : NULL;
 }
 
+static sr_s name_map_s_get_data( const bcore_name_map_s* o )
+{
+    tp_t t_data = bcore_flect_type_parse_sc( "{ bcore_name_s []; }" );
+    tp_t t_node = typeof( "bcore_name_s" );
+    sr_s data = sr_cp( sr_create( t_data ), TYPEOF_bcore_array_s );
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        if( o->data[ i ].key ) bcore_array_q_push( &data, sr_twc( t_node, &o->data[ i ] ) );
+    }
+    return data;
+}
+
+static void name_map_s_set_data( bcore_name_map_s* o, sr_s data )
+{
+    bcore_name_map_s_clear( o );
+    assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ bcore_name_s []; }" ) );
+    data = sr_cp( data, TYPEOF_bcore_array_s );
+    sz_t size = bcore_array_q_get_size( &data );
+    bcore_name_s* src = bcore_array_q_get_d_data( &data );
+    for( sz_t i = 0; i < size; i++ )
+    {
+        bcore_name_map_s_set( o, src[ i ] );
+        src[ i ].name = NULL;
+    }
+    sr_down( data );
+}
+
+static bcore_flect_self_s* name_map_s_create_self( void )
+{
+    sc_t def = "\
+        bcore_name_map_s = \
+            { \
+                aware_t _; \
+                private bcore_name_s* data; \
+                private bl_t* flags; \
+                private sz_t size; \
+                private sz_t depth_limit; \
+                private sz_t size_limit; \
+                shell { bcore_name_s []; } data; } \
+            }";
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_name_map_s ) );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_map_s_init,    "bcore_fp_init",  "init"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_map_s_down,    "bcore_fp_down",  "down"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_map_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )name_map_s_get_data,      "bcore_fp_get",   "get_data" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )name_map_s_set_data,      "bcore_fp_set",   "set_data" );
+    return self;
+}
+
 /**********************************************************************************************************************/
 // signal
 
@@ -278,6 +357,8 @@ vd_t bcore_name_signal( tp_t target, tp_t signal, vd_t object )
     if( target != typeof( "all" ) && target != typeof( "bcore_name" ) ) return NULL;
     if( signal == typeof( "init1" ) )
     {
+        bcore_flect_define_creator( TYPEOF_bcore_name_s,     name_s_create_self );
+        bcore_flect_define_creator( TYPEOF_bcore_name_map_s, name_map_s_create_self );
     }
     else if( signal == typeof( "selftest" ) )
     {

@@ -134,6 +134,7 @@ tp_t bcore_name_enroll_sn( tp_t name_space, sc_t name, sz_t n )
     }
     else
     {
+        if( name_space && !bcore_name_map_s_exists( &hmap_s_g->map, name_space ) ) ERR( "Namespace %"PRItp_t" not found", name_space );
         bcore_name_map_s_set( &hmap_s_g->map, bcore_name_ns_sc_n( name_space, name, n ) );
     }
     bcore_mutex_unlock( &hmap_s_g->mutex );
@@ -191,6 +192,15 @@ st_s* bcore_name_show()
     }
     bcore_mutex_unlock( &hmap_s_g->mutex );
     return log;
+}
+
+bcore_name_map_s* bcore_name_create_name_map()
+{
+    assert( hmap_s_g != NULL );
+    bcore_mutex_lock( &hmap_s_g->mutex );
+    bcore_name_map_s* ret = bcore_name_map_s_clone( &hmap_s_g->map );
+    bcore_mutex_unlock( &hmap_s_g->mutex );
+    return ret;
 }
 
 /**********************************************************************************************************************/

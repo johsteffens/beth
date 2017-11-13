@@ -76,6 +76,8 @@ typedef struct st_s st_s;
 sz_t  bcore_name_size(); // number of registered names
 st_s* bcore_name_show(); // store all names in a string, separated by newline
 
+bcore_name_map_s* bcore_name_create_name_map();
+
 vd_t bcore_name_manager_signal( tp_t target, tp_t signal, vd_t object );
 
 #endif // BCORE_NAME_MANAGER_H

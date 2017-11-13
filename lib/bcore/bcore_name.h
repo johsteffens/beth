@@ -33,6 +33,8 @@ static inline tp_t bcore_name_key_ns_n( tp_t name_space, sc_t name, sz_t n )
     }
 }
 
+/**********************************************************************************************************************/
+
 typedef struct bcore_name_s
 {
     tp_t key;
@@ -47,11 +49,12 @@ DECLARE_FUNCTION_CREATE(  bcore_name_s )
 DECLARE_FUNCTION_DISCARD( bcore_name_s )
 DECLARE_FUNCTION_CLONE(   bcore_name_s )
 
-/// creation using default hashing
-bcore_name_s bcore_name_sc( sc_t name );
-bcore_name_s bcore_name_ns_sc( tp_t name_space, sc_t name );
-bcore_name_s bcore_name_sc_n( sc_t name, sz_t n );
+bcore_name_s bcore_name_sc(                       sc_t name );
+bcore_name_s bcore_name_ns_sc(   tp_t name_space, sc_t name );
+bcore_name_s bcore_name_sc_n(                     sc_t name, sz_t n );
 bcore_name_s bcore_name_ns_sc_n( tp_t name_space, sc_t name, sz_t n );
+
+/**********************************************************************************************************************/
 
 typedef struct bcore_name_map_s
 {
@@ -59,8 +62,8 @@ typedef struct bcore_name_map_s
     bcore_name_s* data;
     bl_t* flags; // flags for tracing
     sz_t size;
-    sz_t size_limit;
     sz_t depth_limit;
+    sz_t size_limit;
 } bcore_name_map_s;
 
 DECLARE_FUNCTION_INIT(    bcore_name_map_s )
@@ -78,6 +81,8 @@ void          bcore_name_map_s_clear(          bcore_name_map_s* o           ); 
 sz_t          bcore_name_map_s_keys(     const bcore_name_map_s* o           ); // returns number of registered names
 sz_t          bcore_name_map_s_size(     const bcore_name_map_s* o           ); // returns current size of the hash map (note that this includes empty places)
 bcore_name_s* bcore_name_map_s_idx_name( const bcore_name_map_s* o, sz_t idx ); // returns indexed name (idx indexes the entire table including empty places)
+
+/**********************************************************************************************************************/
 
 vd_t bcore_name_signal( tp_t target, tp_t signal, vd_t object );
 
