@@ -2451,7 +2451,7 @@ static sz_t tp_find( const bcore_hmap_tp_s* o, tp_t key ) // returns valid index
     return o->size;
 }
 
-sz_t tp_set( bcore_hmap_tp_s* o, tp_t key, sz_t depth ) // sets new node, returns valid index on success; o->size otherwise
+static sz_t tp_set( bcore_hmap_tp_s* o, tp_t key, sz_t depth ) // sets new node, returns valid index on success; o->size otherwise
 {
     sz_t size = o->size;
     if( size == 0 ) return size;

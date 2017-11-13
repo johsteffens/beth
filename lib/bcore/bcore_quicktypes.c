@@ -61,7 +61,7 @@ static sr_s object_typelist()
     bcore_array_q_push_sc( &list, "bcore_compare_s"       );
     bcore_array_q_push_sc( &list, "bcore_interpreter_s"   );
     bcore_array_q_push_sc( &list, "bcore_translator_s"    );
-    bcore_array_q_push_sc( &list, "st_s"        );
+    bcore_array_q_push_sc( &list, "st_s"                  );
     bcore_array_q_push_sc( &list, "bcore_source_string_s" );
     bcore_array_q_push_sc( &list, "bcore_source_buffer_s" );
     bcore_array_q_push_sc( &list, "bcore_source_file_s"   );
@@ -82,6 +82,8 @@ static sr_s object_typelist()
     bcore_array_q_push_sc( &list, "bcore_bin_ml_interpreter_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_sz_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_st_s" );
+    bcore_array_q_push_sc( &list, "bcore_name_s" );
+    bcore_array_q_push_sc( &list, "bcore_name_map_s" );
     bcore_array_q_sort( &list, 0, -1, 1 );
     return list;
 }

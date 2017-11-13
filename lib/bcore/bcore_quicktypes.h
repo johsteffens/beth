@@ -69,5 +69,6 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_bcore_txt_ml_interpreter_s 2340656236
 #define TYPEOF_bcore_txt_ml_translator_s  2915184580
 #define TYPEOF_bcore_via_s                2457308211
-
+#define TYPEOF_bcore_name_s               typeof( "bcore_name_s" )
+#define TYPEOF_bcore_name_map_s           typeof( "bcore_name_map_s" )
 #endif // BCORE_QUICKTYPES_H

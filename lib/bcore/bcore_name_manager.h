@@ -8,7 +8,7 @@
 #ifndef BCORE_NAME_MANAGER_H
 #define BCORE_NAME_MANAGER_H
 
-#include "bcore_tp.h"
+#include "bcore_name.h"
 
 /** Names and Name-Spaces
  *  Each name has an associated name-space.
@@ -34,34 +34,6 @@
 typedef struct st_s st_s;
 st_s* st_s_create();
 
-/// name --> hash
-static inline tp_t bcore_name_get_hash(   sc_t name         ) { return bcore_tp_hash_sc( name    ); }
-static inline tp_t bcore_name_get_hash_n( sc_t name, sz_t n ) { return bcore_tp_hash_vc( name, n ); }
-
-static inline tp_t bcore_name_get_hash_s( tp_t name_space, sc_t name )
-{
-    if( name_space )
-    {
-        return bcore_tp_fold_sc( bcore_tp_fold_u0( name_space, ':' ), name );
-    }
-    else
-    {
-        return bcore_name_get_hash( name );
-    }
-}
-
-static inline tp_t bcore_name_get_hash_sn( tp_t name_space, sc_t name, sz_t n )
-{
-    if( name_space )
-    {
-        return bcore_tp_fold_vc( bcore_tp_fold_u0( name_space, ':' ), name, n );
-    }
-    else
-    {
-        return bcore_name_get_hash_n( name, n );
-    }
-}
-
 /// enroll name in global manager (thread safe); checks for collisions; returns hash
 tp_t bcore_name_enroll(                     sc_t name );
 tp_t bcore_name_enroll_n(                   sc_t name, sz_t n );
@@ -84,15 +56,15 @@ st_s* bcore_name_get_name_s( tp_t type );
 void bcore_name_remove( tp_t type );
 
 /// syntactic sugar
-static inline tp_t typeof(             sc_t name         ) { return bcore_name_get_hash(        name    ); }
-static inline tp_t typeof_n(           sc_t name, sz_t n ) { return bcore_name_get_hash_n(      name, n ); }
-static inline tp_t typeof_s(  tp_t ns, sc_t name         ) { return bcore_name_get_hash_s(  ns, name    ); }
-static inline tp_t typeof_sn( tp_t ns, sc_t name, sz_t n ) { return bcore_name_get_hash_sn( ns, name, n ); }
+static inline tp_t typeof(               sc_t name         ) { return bcore_name_key(          name    ); }
+static inline tp_t typeof_n(             sc_t name, sz_t n ) { return bcore_name_key_n(        name, n ); }
+static inline tp_t typeof_ns(   tp_t ns, sc_t name         ) { return bcore_name_key_ns(   ns, name    ); }
+static inline tp_t typeof_ns_n( tp_t ns, sc_t name, sz_t n ) { return bcore_name_key_ns_n( ns, name, n ); }
 
-static inline tp_t entypeof(             sc_t name         ) { return bcore_name_enroll(        name    ); }
-static inline tp_t entypeof_n(           sc_t name, sz_t n ) { return bcore_name_enroll_n(      name, n ); }
-static inline tp_t entypeof_s(  tp_t ns, sc_t name         ) { return bcore_name_enroll_s(  ns, name    ); }
-static inline tp_t entypeof_sn( tp_t ns, sc_t name, sz_t n ) { return bcore_name_enroll_sn( ns, name, n ); }
+static inline tp_t entypeof(               sc_t name         ) { return bcore_name_enroll(        name    ); }
+static inline tp_t entypeof_n(             sc_t name, sz_t n ) { return bcore_name_enroll_n(      name, n ); }
+static inline tp_t entypeof_ns(   tp_t ns, sc_t name         ) { return bcore_name_enroll_s(  ns, name    ); }
+static inline tp_t entypeof_ns_n( tp_t ns, sc_t name, sz_t n ) { return bcore_name_enroll_sn( ns, name, n ); }
 
 static inline sc_t    nameof(   u2_t type ) { return bcore_name_get_name( type ); }
 static inline sc_t  ifnameof(   u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }

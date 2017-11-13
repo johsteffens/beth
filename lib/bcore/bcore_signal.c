@@ -10,6 +10,7 @@
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_life.h"
 #include "bcore_tbman.h"
+#include "bcore_name.h"
 #include "bcore_name_manager.h"
 #include "bcore_function_manager.h"
 #include "bcore_ref.h"
@@ -49,6 +50,7 @@ vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
         bcore_st_signal,
 
         /// other items
+        bcore_name_signal,
         bcore_btree_signal,
         bcore_control_signal,
         bcore_hmap_signal,

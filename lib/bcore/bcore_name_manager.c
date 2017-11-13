@@ -4,67 +4,26 @@
 #include "bcore_tbman.h"
 #include "bcore_st.h"
 #include "bcore_threads.h"
-#include "bcore_hmap.h"
 
 /**********************************************************************************************************************/
 // hash map
 
-typedef struct hnode_s
-{
-    tp_t name_space;
-    st_s name;
-} hnode_s;
-
-static void hnode_s_init( hnode_s* o )
-{
-    o->name_space = 0;
-    st_s_init( &o->name );
-}
-
-static void hnode_s_down( hnode_s* o )
-{
-    st_s_down( &o->name );
-}
-
-static hnode_s* hnode_s_create()
-{
-    hnode_s* o = bcore_alloc( NULL, sizeof( hnode_s ) );
-    hnode_s_init( o );
-    return o;
-}
-
-static void hnode_s_discard( hnode_s* o )
-{
-    bcore_release_obj( ( fp_t )hnode_s_down, o );
-}
-
 typedef struct hmap_s
 {
-    bcore_hmap_u2vd_s* map;
+    bcore_name_map_s map;
     bcore_mutex_t mutex;
 } hmap_s;
 
 static void hmap_s_init( hmap_s* o )
 {
-    o->map = NULL;
+    bcore_name_map_s_init( &o->map );
     bcore_mutex_init( &o->mutex );
-}
-
-static void hmap_s_node_down( vd_t obj, u2_t key, vd_t val )
-{
-    hnode_s* node = val;
-    hnode_s_discard( node );
 }
 
 static void hmap_s_down( hmap_s* o )
 {
     bcore_mutex_lock( &o->mutex );
-    if( o->map )
-    {
-        bcore_hmap_u2vd_s_run_c( o->map, NULL, hmap_s_node_down );
-        bcore_hmap_u2vd_s_discard( o->map );
-        o->map = NULL;
-    }
+    bcore_name_map_s_down( &o->map );
     bcore_mutex_unlock( &o->mutex );
     bcore_mutex_down( &o->mutex );
 }
@@ -102,7 +61,7 @@ static void name_manager_close()
     discard_hmap_s();
 }
 
-st_s* cat_name_sn( tp_t name_space, sc_t name, sz_t n )
+st_s* cat_name_ns_n( tp_t name_space, sc_t name, sz_t n )
 {
     st_s* cat_name = st_s_create();
     if( name_space )
@@ -114,24 +73,18 @@ st_s* cat_name_sn( tp_t name_space, sc_t name, sz_t n )
     return cat_name;
 }
 
-st_s* cat_name_s( tp_t name_space, sc_t name )
+st_s* cat_name_ns( tp_t name_space, sc_t name )
 {
-    return cat_name_sn( name_space, name, bcore_strlen( name ) );
+    return cat_name_ns_n( name_space, name, bcore_strlen( name ) );
 }
 
 sc_t bcore_name_try_name( tp_t type )
 {
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, type );
-    sc_t name = NULL;
-    if( vdp )
-    {
-        hnode_s* node = *vdp;
-        name = node->name.sc;
-    }
+    bcore_name_s* name = bcore_name_map_s_get( &hmap_s_g->map, type );
     bcore_mutex_unlock( &hmap_s_g->mutex );
-    return name;
+    return name ? name->name : NULL;
 }
 
 sc_t bcore_name_get_name( tp_t type )
@@ -145,12 +98,12 @@ st_s* bcore_name_try_name_s( tp_t type )
 {
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, type );
+    bcore_name_s* name = bcore_name_map_s_get( &hmap_s_g->map, type );
     bcore_mutex_unlock( &hmap_s_g->mutex );
-    if( vdp )
+
+    if( name )
     {
-        hnode_s* node = *vdp;
-        return cat_name_sn( node->name_space, node->name.sc, node->name.size );
+        return cat_name_ns( name->name_space, name->name );
     }
     return NULL;
 }
@@ -166,36 +119,25 @@ st_s* bcore_name_get_name_s( tp_t type )
 tp_t bcore_name_enroll_sn( tp_t name_space, sc_t name, sz_t n )
 {
     assert( hmap_s_g != NULL );
-    tp_t hash = bcore_name_get_hash_sn( name_space, name, n );
-    if( hash == 0 ) ERR( "Hash of '%s' is zero. Zero is a reserved value.", cat_name_sn( name_space, name, n )->sc );
+    tp_t key = bcore_name_key_ns_n( name_space, name, n );
+    if( key == 0 ) ERR( "Hash of '%s' is zero. Zero is a reserved value.", cat_name_ns_n( name_space, name, n )->sc );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    if( !hmap_s_g->map ) hmap_s_g->map = bcore_hmap_u2vd_s_create();
-    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, hash );
-    if( vdp )
+    bcore_name_s* node = bcore_name_map_s_get( &hmap_s_g->map, key );
+    if( node )
     {
-        const hnode_s* node = *vdp;
-        if( node->name_space != name_space || ( !st_s_equal_sc_n( &node->name, name, n ) ) )
+        if( node->name_space != name_space || ( bcore_strcmp_n( name, n, node->name, bcore_strlen( node->name ) ) != 0 ) )
         {
             bcore_mutex_unlock( &hmap_s_g->mutex );
-            ERR( "'%s' collides with '%s' at %"PRItp_t"", cat_name_sn( name_space, name, n )->sc, cat_name_s( node->name_space, node->name.sc )->sc, hash );
+            ERR( "'%s' collides with '%s' at %"PRItp_t"", cat_name_ns_n( name_space, name, n )->sc, cat_name_ns( node->name_space, node->name )->sc, key );
             bcore_mutex_lock( &hmap_s_g->mutex );
         }
     }
     else
     {
-        if( name_space && !bcore_hmap_u2vd_s_get( hmap_s_g->map, name_space ) )
-        {
-            bcore_mutex_unlock( &hmap_s_g->mutex );
-            ERR( "Namespace '%u' has not been enrolled\n", name_space );
-            bcore_mutex_lock( &hmap_s_g->mutex );
-        }
-        hnode_s* node = hnode_s_create();
-        node->name_space = name_space;
-        st_s_copy_sc_n( &node->name, name, n );
-        bcore_hmap_u2vd_s_set( hmap_s_g->map, hash, node, false );
+        bcore_name_map_s_set( &hmap_s_g->map, bcore_name_ns_sc_n( name_space, name, n ) );
     }
     bcore_mutex_unlock( &hmap_s_g->mutex );
-    return hash;
+    return key;
 }
 
 tp_t bcore_name_enroll_s( tp_t name_space, sc_t name )
@@ -217,8 +159,7 @@ void bcore_name_remove( tp_t type )
 {
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    hnode_s* node = bcore_hmap_u2vd_s_remove_h( hmap_s_g->map, type );
-    hnode_s_discard( node );
+    bcore_name_map_s_remove( &hmap_s_g->map, type );
     bcore_mutex_unlock( &hmap_s_g->mutex );
 }
 
@@ -226,7 +167,7 @@ sz_t  bcore_name_size()
 {
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    sz_t size = bcore_hmap_u2vd_s_keys( hmap_s_g->map );
+    sz_t size = bcore_name_map_s_keys( &hmap_s_g->map );
     bcore_mutex_unlock( &hmap_s_g->mutex );
     return size;
 }
@@ -236,14 +177,14 @@ st_s* bcore_name_show()
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
     st_s* log = st_s_create();
-    sz_t size = bcore_hmap_u2vd_s_size( hmap_s_g->map );
+    sz_t size = bcore_name_map_s_size( &hmap_s_g->map );
     for( sz_t i = 0; i < size; i++ )
     {
-        hnode_s* node = bcore_hmap_u2vd_s_idx_val( hmap_s_g->map, i );
-        if( node )
+        bcore_name_s* node = bcore_name_map_s_idx_name( &hmap_s_g->map, i );
+        if( node->key )
         {
             bcore_mutex_unlock( &hmap_s_g->mutex );
-            st_s_push_st_d( log, cat_name_s( node->name_space, node->name.sc ) );
+            st_s_push_st_d( log, cat_name_ns( node->name_space, node->name ) );
             bcore_mutex_lock( &hmap_s_g->mutex );
             st_s_push_char( log, '\n' );
         }
@@ -257,7 +198,7 @@ st_s* bcore_name_show()
 st_s* bcore_name_manager_selftest()
 {
     tp_t mynamespace_t = entypeof( "mynamespace" );
-    tp_t myname_t = entypeof_s( mynamespace_t, "myname" );
+    tp_t myname_t = entypeof_ns( mynamespace_t, "myname" );
     ASSERT( myname_t == typeof( "mynamespace:myname" ) );
     st_s* cname = nameof_s( myname_t );
     ASSERT( st_s_cmp_sc( cname, "mynamespace:myname" ) == 0 );
