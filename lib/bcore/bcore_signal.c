@@ -7,7 +7,6 @@
 #include "bcore_control.h"
 #include "bcore_flect.h"
 #include "bcore_hmap.h"
-#include "bcore_hmap_tp_inst.h"
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_life.h"
 #include "bcore_tbman.h"
@@ -53,7 +52,6 @@ vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
         bcore_btree_signal,
         bcore_control_signal,
         bcore_hmap_signal,
-        bcore_hmap_tp_inst_signal,
         bcore_hmap_tp_sr_signal,
         bcore_life_signal,
         bcore_ref_signal,
