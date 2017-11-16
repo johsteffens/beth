@@ -5,7 +5,16 @@
 
 #include "bcore_flect.h"
 #include "bcore_ref.h"
+#include "bclos_frame.h"
+#include "bclos_quicktypes.h"
 
+/** Arguments are represented by an array of objects.
+ *  If an argument is bclos_expression_s, the intended closure-argument is the evaluation
+ *  of the expression.
+ *  If an argument is bclos_address_s, the intended closure-argument is the evaluation
+ *  of the address.
+ *  Closures are supposed to retrieve evaluated arguments via function bclos_arguments_s_get.
+ */
 typedef struct bclos_arguments_s
 {
     union
@@ -26,12 +35,55 @@ DECLARE_FUNCTION_CREATE(  bclos_arguments_s )
 DECLARE_FUNCTION_DISCARD( bclos_arguments_s )
 DECLARE_FUNCTION_CLONE(   bclos_arguments_s )
 
+void bclos_arguments_s_clear( bclos_arguments_s* o );
 bclos_arguments_s* bclos_arguments_s_create_nv( sz_t n, va_list args );
 bclos_arguments_s* bclos_arguments_s_create_na( sz_t n, ... );
 
 void bclos_arguments_s_push( bclos_arguments_s* o, sr_s sr );
 
 bclos_arguments_s bclos_arguments_s_weak_crop( const bclos_arguments_s* src, sz_t start, sz_t end );
+
+// Format: ( <expression>, <expression>, ... )
+void bclos_arguments_s_parse_from_source( bclos_arguments_s* o, sr_s source );
+
+/**********************************************************************************************************************/
+
+/** A expression represents an operation (closure) with arguments.
+ *  If an argument is an expression, the intended closure-argument is the evaluation
+ *  of the expression. An the expression-object occurring in the argument list is never
+ *  the intended closure-argument itself but the carrier/producer of the argument.
+ *  Closures are supposed to evaluate expressions.
+ */
+typedef struct bclos_expression_s
+{
+    sr_s closure; // reference | expression | address (all yielding a closure)
+    bclos_arguments_s args;
+} bclos_expression_s;
+
+DECLARE_STD_FUNCTIONS( bclos_expression_s )
+
+void bclos_expression_s_clear( bclos_expression_s* o );
+
+// Format: <expression>( <name>, <name>, ... )
+void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source );
+
+sr_s bclos_expression_s_run( const bclos_expression_s* o, bclos_frame_s* frm );
+
+static inline sr_s bclos_arguments_s_get( const bclos_arguments_s* o, sz_t idx, bclos_frame_s* frm )
+{
+    assert( idx < o->size );
+    sr_s* sr = &o->data[ idx ];
+    tp_t type = sr_s_type( sr );
+    switch( type )
+    {
+        case TYPEOF_bclos_address_s:    return sr_cw( *bclos_frame_s_get( frm, ( ( const bclos_address_s* )sr->o )->name ) );
+        case TYPEOF_bclos_expression_s: return bclos_expression_s_run( sr->o, frm );
+        default: break;
+    }
+    return sr_cw( *sr );
+}
+
+/**********************************************************************************************************************/
 
 vd_t bclos_arguments_signal( tp_t target, tp_t signal, vd_t object );
 

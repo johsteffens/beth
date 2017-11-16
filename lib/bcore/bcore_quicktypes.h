@@ -40,8 +40,8 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_vd_t    1618651012
 
 // other types
+#define TYPEOF_bcore_arr_st_s             1663834730
 #define TYPEOF_bcore_arr_sz_s             1469651844
-#define TYPEOF_bcore_arr_st_s             typeof( "bcore_arr_st_s" )
 #define TYPEOF_bcore_array_s              3532252466
 #define TYPEOF_bcore_bin_ml_interpreter_s 3834633675
 #define TYPEOF_bcore_bin_ml_translator_s  1158670837
@@ -49,13 +49,15 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_bcore_flect_self_s          556415048
 #define TYPEOF_bcore_hmap_tp_s            3944836652
 #define TYPEOF_bcore_hmap_tp_sr_s         2644016932
+#define TYPEOF_bcore_hmap_tpfp_s          2363371350
 #define TYPEOF_bcore_hmap_tpsz_s           232868893
 #define TYPEOF_bcore_hmap_tpto_s          3958767233
-#define TYPEOF_bcore_hmap_tpfp_s          typeof( "bcore_hmap_tpfp_s" )
 #define TYPEOF_bcore_hmap_tptp_s          1873137304
 #define TYPEOF_bcore_hmap_u2vd_s          1475406309
 #define TYPEOF_bcore_inst_s               1413406849
 #define TYPEOF_bcore_interpreter_s         695223265
+#define TYPEOF_bcore_name_map_s           2156406683
+#define TYPEOF_bcore_name_s               2158870146
 #define TYPEOF_bcore_sink_buffer_s        4153788729
 #define TYPEOF_bcore_sink_chain_s         4212754772
 #define TYPEOF_bcore_sink_file_s          3697603753
@@ -69,6 +71,6 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_bcore_txt_ml_interpreter_s 2340656236
 #define TYPEOF_bcore_txt_ml_translator_s  2915184580
 #define TYPEOF_bcore_via_s                2457308211
-#define TYPEOF_bcore_name_s               typeof( "bcore_name_s" )
-#define TYPEOF_bcore_name_map_s           typeof( "bcore_name_map_s" )
+#define TYPEOF_st_s                       3358332604
+
 #endif // BCORE_QUICKTYPES_H

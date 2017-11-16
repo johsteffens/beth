@@ -38,6 +38,7 @@ sr_s* bclos_frame_s_get( bclos_frame_s* o, tp_t name )
 {
     sr_s* val = bcore_hmap_tp_sr_s_get( &o->map, name );
     if( !val && o->external ) val = bclos_frame_s_get( o->external, name );
+    if( !val ) ERR( "Address '%s' does not exist.", ifnameof( name ) );
     return val;
 }
 
@@ -65,12 +66,28 @@ bcore_flect_self_s* frame_s_create_self( void )
     return self;
 }
 
+/**********************************************************************************************************************/
+
+DEFINE_IDC_FUNCTIONS_FLAT( bclos_address_s )
+DEFINE_CDC_FUNCTIONS(      bclos_address_s )
+bclos_address_s* bclos_address_s_create_tp( tp_t name )
+{
+    bclos_address_s* o = bclos_address_s_create();
+    o->name = name;
+    return o;
+}
+
+DEFINE_CREATE_SELF( bclos_address_s, "bclos_address_s = { tp_t name; }" )
+
+/**********************************************************************************************************************/
+
 vd_t bclos_frame_signal( tp_t target, tp_t signal, vd_t object )
 {
     if( target != typeof( "all" ) && target != typeof( "bclos_frame" ) ) return NULL;
 
     if( signal == typeof( "init1" ) )
     {
+        bcore_flect_define_creator( typeof( "bclos_address_s" ), bclos_address_s_create_self );
         bcore_flect_define_creator( typeof( "bclos_frame_s" ), frame_s_create_self );
     }
 

@@ -28,6 +28,14 @@ sr_s*          bclos_frame_s_get(    bclos_frame_s* o, tp_t name ); // returns N
 sr_s*          bclos_frame_s_set(    bclos_frame_s* o, tp_t name, sr_s val );
 sr_s           bclos_frame_s_remove( bclos_frame_s* o, tp_t name ); // removes element, returns value; call sr_down( remove(...) ) to eliminate entry
 
+/**********************************************************************************************************************/
+
+/// An address is a name intended to address an element of a frame
+typedef struct bclos_address_s { tp_t name; } bclos_address_s;
+DECLARE_STD_FUNCTIONS( bclos_address_s )
+
+bclos_address_s* bclos_address_s_create_tp( tp_t name );
+
 vd_t bclos_frame_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/

@@ -32,7 +32,7 @@ void bclos_procedure_s_push_sc( bclos_procedure_s* o, sc_t statement )
         sr_tsd
         (
             TYPEOF_bclos_statement_s,
-            bclos_statement_s_parse_from_sc( statement )
+            bclos_statement_s_create_sc( statement )
         )
     );
 }
@@ -56,7 +56,7 @@ sr_s bclos_procedure_s_call( bclos_procedure_s* o, bclos_frame_s* frm, const bcl
         for( sz_t i = 0; i < o->sig->size; i++ )
         {
             bclos_signature_arg_s sig_arg = o->sig->data[ i ];
-            sr_s arg_obj = sr_cw( args->data[ i ] );
+            sr_s arg_obj = bclos_arguments_s_get( args, i, frm );
             if( sr_s_is_const( &arg_obj ) && !sig_arg.is_const )
             {
                 ERR( "Closure %s: Argument %u (%s %s): const violation.",
@@ -126,41 +126,47 @@ static bcore_flect_self_s* procedure_s_create_self( void )
 static sr_s test_add( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
     assert( args->size >= 2 );
-    assert( sr_s_type( &args->data[ 0 ] ) == sr_s_type( &args->data[ 1 ] ) );
-    vc_t a0 = args->data[ 0 ].o;
-    vc_t a1 = args->data[ 1 ].o;
-    tp_t t = sr_s_type( &args->data[ 0 ] );
+    sr_s a0 = bclos_arguments_s_get( args, 0, frm );
+    sr_s a1 = bclos_arguments_s_get( args, 1, frm );
+    sr_s ret = sr_null();
+    assert( sr_s_type( &a0 ) == sr_s_type( &a1 ) );
+    tp_t t = sr_s_type( &a0 );
     switch( t )
     {
-        case TYPEOF_s2_t: return sr_s2( *( s2_t* )a0 + *( s2_t* )a1 );
-        case TYPEOF_s3_t: return sr_s3( *( s3_t* )a0 + *( s3_t* )a1 );
-        case TYPEOF_u2_t: return sr_u2( *( u2_t* )a0 + *( u2_t* )a1 );
-        case TYPEOF_u3_t: return sr_u3( *( u3_t* )a0 + *( u3_t* )a1 );
-        case TYPEOF_f2_t: return sr_f2( *( f2_t* )a0 + *( f2_t* )a1 );
-        case TYPEOF_f3_t: return sr_f3( *( f3_t* )a0 + *( f3_t* )a1 );
+        case TYPEOF_s2_t: ret = sr_s2( *( s2_t* )a0.o + *( s2_t* )a1.o ); break;
+        case TYPEOF_s3_t: ret = sr_s3( *( s3_t* )a0.o + *( s3_t* )a1.o ); break;
+        case TYPEOF_u2_t: ret = sr_u2( *( u2_t* )a0.o + *( u2_t* )a1.o ); break;
+        case TYPEOF_u3_t: ret = sr_u3( *( u3_t* )a0.o + *( u3_t* )a1.o ); break;
+        case TYPEOF_f2_t: ret = sr_f2( *( f2_t* )a0.o + *( f2_t* )a1.o ); break;
+        case TYPEOF_f3_t: ret = sr_f3( *( f3_t* )a0.o + *( f3_t* )a1.o ); break;
         default: ERR( "cannot add type '%s'", ifnameof( t ) );
     }
-    return sr_null();
+    sr_down( a0 );
+    sr_down( a1 );
+    return ret;
 }
 
 static sr_s test_mul( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
     assert( args->size >= 2 );
-    assert( sr_s_type( &args->data[ 0 ] ) == sr_s_type( &args->data[ 1 ] ) );
-    vc_t a0 = args->data[ 0 ].o;
-    vc_t a1 = args->data[ 1 ].o;
-    tp_t t = sr_s_type( &args->data[ 0 ] );
+    sr_s a0 = bclos_arguments_s_get( args, 0, frm );
+    sr_s a1 = bclos_arguments_s_get( args, 1, frm );
+    sr_s ret = sr_null();
+    assert( sr_s_type( &a0 ) == sr_s_type( &a1 ) );
+    tp_t t = sr_s_type( &a0 );
     switch( t )
     {
-        case TYPEOF_s2_t: return sr_s2( *( s2_t* )a0 * *( s2_t* )a1 );
-        case TYPEOF_s3_t: return sr_s3( *( s3_t* )a0 * *( s3_t* )a1 );
-        case TYPEOF_u2_t: return sr_u2( *( u2_t* )a0 * *( u2_t* )a1 );
-        case TYPEOF_u3_t: return sr_u3( *( u3_t* )a0 * *( u3_t* )a1 );
-        case TYPEOF_f2_t: return sr_f2( *( f2_t* )a0 * *( f2_t* )a1 );
-        case TYPEOF_f3_t: return sr_f3( *( f3_t* )a0 * *( f3_t* )a1 );
+        case TYPEOF_s2_t: ret = sr_s2( *( s2_t* )a0.o * *( s2_t* )a1.o ); break;
+        case TYPEOF_s3_t: ret = sr_s3( *( s3_t* )a0.o * *( s3_t* )a1.o ); break;
+        case TYPEOF_u2_t: ret = sr_u2( *( u2_t* )a0.o * *( u2_t* )a1.o ); break;
+        case TYPEOF_u3_t: ret = sr_u3( *( u3_t* )a0.o * *( u3_t* )a1.o ); break;
+        case TYPEOF_f2_t: ret = sr_f2( *( f2_t* )a0.o * *( f2_t* )a1.o ); break;
+        case TYPEOF_f3_t: ret = sr_f3( *( f3_t* )a0.o * *( f3_t* )a1.o ); break;
         default: ERR( "cannot multiply type '%s'", ifnameof( t ) );
     }
-    return sr_null();
+    sr_down( a0 );
+    sr_down( a1 );
+    return ret;
 }
 
 static st_s* procedure_selftest( void )
@@ -187,18 +193,19 @@ static st_s* procedure_selftest( void )
     {
         bclos_frame_s* frm = bcore_life_s_push_aware( l, bclos_frame_s_create() );
 
-        bclos_frame_s_set( frm, typeof( "return" ), sr_create( typeof( "bclos_completion" ) ) );
+//        bclos_frame_s_set( frm, typeof( "return" ), sr_create( typeof( "bclos_completion" ) ) );
         bclos_frame_s_set( frm, typeof( "add" ), sr_create( typeof( "test_add" ) ) );
         bclos_frame_s_set( frm, typeof( "mul" ), sr_create( typeof( "test_mul" ) ) );
 
         sr_s proc_sr = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( TYPEOF_bclos_procedure_s ) );
         bclos_procedure_s* proc = proc_sr.o;
         proc->sig = bclos_signature_s_parse_from_sc( "s3_t test_operation( const s3_t v1, const s3_t v2, const s3_t v3 )" );
-        bclos_procedure_s_push_sc( proc, "s3_t val1 = add( v1, v2 )" );
-        bclos_procedure_s_push_sc( proc, "s3_t val2 = add( v1, v3 )" );
-        bclos_procedure_s_push_sc( proc, "     val2 = mul( v1, v3 )" );
-        bclos_procedure_s_push_sc( proc, "s3_t ret  = mul( val1, val2 )" );
-        bclos_procedure_s_push_sc( proc, "return( ret )" );
+  //      bclos_procedure_s_push_sc( proc, "add( v1, v2 )     -> s3_t val1;" );
+        //bclos_procedure_s_push_sc( proc, "add( v1, v3 )     -> s3_t val2;" );
+//        bclos_procedure_s_push_sc( proc, "mul( v1, v3 )     ->   s3_t val2;" );
+        bclos_procedure_s_push_sc( proc, "mul( add( v1, v2 ), mul( v1, v3 ) ) ->;" );
+        //bclos_procedure_s_push_sc( proc, "mul( val1, val2 ) ->;" );
+        //bclos_procedure_s_push_sc( proc, "ret ->;" );
 
         bclos_closure_q_def( &proc_sr, frm );
         sr_s res = bclos_closure_q_call_na( &proc_sr, NULL, 3, sr_s3( 2 ), sr_s3( 3 ), sr_s3( 4 ) );

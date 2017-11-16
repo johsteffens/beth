@@ -4,6 +4,7 @@
 #include "bclos_quicktypes.h"
 #include "bcore_spect_inst.h"
 #include "bcore_life.h"
+#include "bcore_name.h"
 #include "bcore_spect_source.h"
 
 /**********************************************************************************************************************/
@@ -21,15 +22,7 @@ static bcore_flect_self_s* syntax_s_create_self( void )
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_syntax_s ) );
     return self;
 }
-
-
-
 /*
-TODO:
-- we want to rememmber names but not store them in name manager yet
-- the library has a container for names (portable version of name manager)
-- hashtables should be better serializable (currently they are copied to an array (extra memory)
-- --> alternative: use a shell-generator, hidden content, used by streaming functions (serialization)
 static sr_s parse_expression( sr_s src )
 {
     bcore_life_s* l = bcore_life_s_create();
@@ -37,12 +30,22 @@ static sr_s parse_expression( sr_s src )
 
     sr_s ret = sr_null();
 
+    bcore_name_map_s* name_map = bcore_name_map_s_create();
+
     if( bcore_source_q_parse_bool_f( &src, " #?'class' " ) )
     {
-        bcore_flect_self_s self = bcore_flect_self_s_create();
+        bcore_flect_self_s* self = bcore_flect_self_s_create();
         st_s* string = st_s_create();
         bcore_source_q_parse_fa( &src, "#name { ", string );
-        if( string ) self->trait = !remember name! typeof( string->sc );
+        if( string )
+        {
+            bcore_name_map_s_set( name_map, bcore_name_sc( string->sc ) );
+            self->trait = typeof( string->sc );
+        }
+        while( !bcore_source_q_parse_bool_f( &src, " #?'}' " ) )
+        {
+
+        }
 
         st_s_discard( string );
     }
