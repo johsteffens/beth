@@ -223,7 +223,7 @@ static st_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 
 static void compare_s_define_trait()
 {
-    bcore_trait_set( entypeof( "bcore_compare_s" ), entypeof( "bcore_inst_s" ) );
+    bcore_trait_set( entypeof( "bcore_compare" ), entypeof( "bcore_inst" ) );
 }
 
 

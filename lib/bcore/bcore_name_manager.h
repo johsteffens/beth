@@ -42,6 +42,7 @@ tp_t bcore_name_enroll_sn( tp_t name_space, sc_t name, sz_t n );
 
 /// hash --> name; returns NULL when not enrolled (thread safe)
 sc_t bcore_name_try_name( tp_t type );
+static inline bl_t bcore_name_exists( tp_t type ) { return bcore_name_try_name( type ) != NULL; }
 
 /// hash --> name; returns error when not enrolled (thread safe)
 sc_t bcore_name_get_name( tp_t type );

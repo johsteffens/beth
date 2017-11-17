@@ -15,7 +15,7 @@ DEFINE_FUNCTION_CLONE(      bclos_library_s )
 
 static bcore_flect_self_s* library_s_create_self( void )
 {
-    sc_t def = "bclos_library_s = bcore_inst_s { aware_t _; bcore_hmap_tp_sr_s map; bclos_library_arr_s* deps; }";
+    sc_t def = "bclos_library_s = bcore_inst { aware_t _; bcore_hmap_tp_sr_s map; bclos_library_arr_s* deps; }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_library_s ) );
     return self;
 }

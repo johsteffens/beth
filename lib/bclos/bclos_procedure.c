@@ -111,7 +111,7 @@ sr_s bclos_procedure_s_sig( const bclos_procedure_s* o )
 
 static bcore_flect_self_s* procedure_s_create_self( void )
 {
-    sc_t def = "bclos_procedure_s = bclos_closure_s { aware_t _; bclos_statement_s * [] arr; bclos_signature_s* sig; private bclos_frame_s * lexcal; }";
+    sc_t def = "bclos_procedure_s = bclos_closure { aware_t _; bclos_statement_s * [] arr; bclos_signature_s* sig; private bclos_frame_s * lexcal; }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_procedure_s ) );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_procedure_s_def,  "bclos_closure_fp_def",  "def"  );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_procedure_s_call, "bclos_closure_fp_call", "call" );
@@ -173,12 +173,12 @@ static st_s* procedure_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     {
-        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "test_add = bclos_closure_s {}", 0 );
+        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "test_add = bclos_closure {}", 0 );
         bcore_flect_self_s_push_ns_func( self, ( fp_t )test_add, "bclos_closure_fp_call", "call" );
         bcore_flect_type_self_d( self );
     }
     {
-        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "test_mul = bclos_closure_s {}", 0 );
+        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "test_mul = bclos_closure {}", 0 );
         bcore_flect_self_s_push_ns_func( self, ( fp_t )test_mul, "bclos_closure_fp_call", "call" );
         bcore_flect_type_self_d( self );
     }

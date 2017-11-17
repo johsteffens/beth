@@ -59,7 +59,7 @@ sr_s* bcore_hnode_tp_sr_s_set( bcore_hnode_tp_sr_s* o, sr_s obj )
 static bcore_flect_self_s* hnode_tp_sr_s_create_self( void )
 {
     sc_t def = "\
-        bcore_hnode_tp_sr_s = bcore_inst_s \
+        bcore_hnode_tp_sr_s = bcore_inst \
         { \
             tp_t key; \
             sr_s val; \
@@ -325,7 +325,7 @@ static void tp_sr_s_set_data( bcore_hmap_tp_sr_s* o, sr_s data )
 static bcore_flect_self_s* hmap_tp_sr_s_create_self( void )
 {
     sc_t def = "\
-        bcore_hmap_tp_sr_s = bcore_inst_s \
+        bcore_hmap_tp_sr_s = bcore_inst \
         { \
             aware_t _; \
             private bcore_hnode_tp_sr_s* nodes; \

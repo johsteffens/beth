@@ -57,7 +57,7 @@ static sr_s writeln_s_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s*
 
 static bcore_flect_self_s* writeln_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_writeln_s = bclos_closure_s {}", 0 );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_writeln_s = bclos_lang_closure {}", 0 );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )writeln_s_func, "bclos_closure_fp_call", "call" );
     return self;
 }
@@ -73,7 +73,7 @@ static sr_s identity_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* 
 
 static bcore_flect_self_s* identity_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_identity_s = bclos_closure_s {}", 0 );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_identity_s = bclos_closure {}", 0 );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )identity_func, "bclos_closure_fp_call", "call" );
     return self;
 }
@@ -102,7 +102,7 @@ static sr_s branch_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* ar
 
 static bcore_flect_self_s* branch_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_branch = bclos_closure_s {}", 0 );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_branch = bclos_closure {}", 0 );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )branch_func, "bclos_closure_fp_call", "call" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )branch_create_static_sig, "bclos_closure_fp_create_static_sig", "static_sig" );
     return self;
@@ -134,7 +134,7 @@ static sr_s loop_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args
 
 static bcore_flect_self_s* loop_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_loop = bclos_closure_s {}", 0 );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_loop = bclos_closure {}", 0 );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )loop_func, "bclos_closure_fp_call", "call" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )loop_create_static_sig, "bclos_closure_fp_create_static_sig", "static_sig" );
     return self;

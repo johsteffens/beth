@@ -483,7 +483,7 @@ bl_t bcore_via_spect_iis_link( const bcore_via_s* p, sz_t index )
 
 static void via_s_define_trait()
 {
-    bcore_trait_set( entypeof( "bcore_via_s" ), entypeof( "bcore_inst_s" ) );
+    bcore_trait_set( entypeof( "bcore_via" ), entypeof( "bcore_inst" ) );
 }
 
 static bcore_via_s* create_from_self( const bcore_flect_self_s* self )

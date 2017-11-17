@@ -107,10 +107,10 @@ void bcore_source_spect_set_supplier( const bcore_source_s* p, vd_t o, vd_t supp
 
 static void source_s_define_trait()
 {
-    tp_t trait = entypeof( "bcore_source_s" );
+    tp_t trait = entypeof( "bcore_source" );
     bcore_trait_require_awareness( trait );
     bcore_trait_require_function( trait, entypeof( "bcore_fp_flow_src" ), 0 );
-    bcore_trait_set( trait, entypeof( "bcore_inst_s" ) );
+    bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
 static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
@@ -133,8 +133,7 @@ static bcore_flect_self_s* source_s_create_self( void )
 //    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_s ) );
 
 //  We need to create this reflection manually because self_s_build_parse uses it.
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "bcore_source_s" ), sizeof( bcore_source_s ) );
-    self->trait = typeof( "spect" );
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "bcore_source_s" ), typeof( "spect" ), sizeof( bcore_source_s ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
     self->body->complete = false;

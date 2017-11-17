@@ -26,7 +26,10 @@ void bcore_trait_require_awareness(   tp_t trait );
 void bcore_trait_require_function(    tp_t trait, tp_t function, tp_t name );
 void bcore_trait_register_fp_support( tp_t trait, bcore_trait_fp_supports f );
 
-/// defines a trait; parent may be 0; reentrant; thread-safe
+/** defines a trait; parent may be 0; reentrant; thread-safe
+ *  This function does not register reflections and can therefore be used
+ *  inside the reflection-registry-lock.
+ */
 void bcore_trait_set( tp_t trait, tp_t parent );
 
 /// trait existence; thread-safe
@@ -46,6 +49,9 @@ bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, st_
 
 /// checks if trait is satisfied by object (this is true when trait is ancestor of self->trait or when bcore_trait_supports returns true)
 bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log );
+
+sz_t  bcore_trait_size(); // number of registered names
+st_s* bcore_trait_show(); // store all registered traits with ancestry in a string, separated by newline
 
 vd_t bcore_trait_signal( tp_t target, tp_t signal, vd_t object );
 

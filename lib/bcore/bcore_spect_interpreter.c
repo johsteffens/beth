@@ -39,10 +39,10 @@ static void interpreter_s_discard( bcore_interpreter_s* o )
 
 static void interpreter_s_define_trait()
 {
-    tp_t trait = entypeof( "bcore_interpreter_s" );
+    tp_t trait = entypeof( "bcore_interpreter" );
     bcore_trait_require_awareness( trait );
     bcore_trait_require_function( trait, entypeof( "bcore_fp_interpret" ), 0 );
-    bcore_trait_set( trait, entypeof( "bcore_inst_s" ) );
+    bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
 static bcore_interpreter_s* create_from_self( const bcore_flect_self_s* self )

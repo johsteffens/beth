@@ -28,13 +28,12 @@
 typedef bcore_flect_self_s* (*bcore_spect_fp_create_from_self )( const bcore_flect_self_s* self );
 typedef bl_t                (*bcore_spect_fp_supports         )( const bcore_flect_self_s* self );
 
-/** Tests if perspective p_type is supported by object o_type. (thread safe)
+/** Tests if perspective indicated by spect_trait is supported by object o_type. (thread safe)
  *  This function is fast and does not actually construct the perspective.
  *  Returns true if p_type or o_type exist and support each other.
  *  Returns false otherwise.
- *  (thread safe)
  */
-bl_t bcore_spect_supported( tp_t p_type, tp_t o_type );
+bl_t bcore_spect_trait_supported( tp_t spect_trait, tp_t o_type );
 
 /** Returns perspective according to perspective and object types. Enrolls automatically if needed. (thread safe)
  *  Error if combination is not supported.

@@ -788,9 +788,9 @@ static bl_t array_s_supports( const bcore_flect_self_s* self, st_s* log )
 
 static void array_s_define_trait()
 {
-    tp_t trait = entypeof( "bcore_array_s" );
+    tp_t trait = entypeof( "bcore_array" );
     bcore_trait_register_fp_support( trait, array_s_supports );
-    bcore_trait_set( trait, entypeof( "bcore_inst_s" ) );
+    bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
 static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
@@ -1650,9 +1650,9 @@ static st_s* spect_array_selftest( void )
 
         const st_s* code = arr_p->get( arr_p, arr, i ).o;
         bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( code->sc, 0 );
-        ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), self->type ) );
+        ASSERT( !bcore_spect_trait_supported( typeof( "bcore_array" ), self->type ) );
         tp_t type = bcore_flect_type_self_c( self );
-        ASSERT( bcore_spect_supported( typeof( "bcore_array_s" ), type ) );
+        ASSERT( bcore_spect_trait_supported( typeof( "bcore_array" ), type ) );
         test_string_array( nameof( type ) );
         bcore_flect_self_s_discard( self );
     }
@@ -1660,9 +1660,9 @@ static st_s* spect_array_selftest( void )
     bcore_inst_aware_discard( arr );
 
     // some non-arrays
-    ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "st_s" ) ) );
-    ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "f3_t" ) ) );
-    ASSERT( !bcore_spect_supported( typeof( "bcore_array_s" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
+    ASSERT( !bcore_spect_trait_supported( typeof( "bcore_array" ), typeof( "st_s" ) ) );
+    ASSERT( !bcore_spect_trait_supported( typeof( "bcore_array" ), typeof( "f3_t" ) ) );
+    ASSERT( !bcore_spect_trait_supported( typeof( "bcore_array" ), typeof( "bcore_txt_ml_interpreter_s" ) ) );
 
     // sorting a permutation
     {

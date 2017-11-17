@@ -23,9 +23,9 @@ DEFINE_FUNCTION_DISCARD(    bclos_closure_s )
 
 static void closure_s_define_trait()
 {
-    tp_t trait = entypeof( "bclos_closure_s" );
+    tp_t trait = entypeof( "bclos_closure" );
     bcore_trait_require_function( trait, entypeof( "bclos_closure_fp_call" ), 0 );
-    bcore_trait_set( trait, entypeof( "bcore_inst_s" ) );
+    bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
 static bclos_closure_s* create_from_self( const bcore_flect_self_s* self )
@@ -142,9 +142,7 @@ vd_t bclos_spect_closure_signal( tp_t target, tp_t signal, vd_t object )
         bcore_flect_define_creator( typeof( "bclos_closure_s" ), closure_s_create_self );
 
         /// language specific closures
-//        tp_t trait = entypeof( "bclos_closure_s" );
-//        bcore_trait_require_function( trait, entypeof( "bclos_closure_fp_call" ), 0 );
-//        bcore_trait_set( trait, entypeof( "bcore_inst_s" ) );
+        bcore_trait_set( typeof( "bclos_lang_closure" ), typeof( "bclos_closure" ) );
 
     }
 

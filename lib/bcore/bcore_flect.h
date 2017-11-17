@@ -188,7 +188,7 @@ typedef struct bcore_flect_self_s
 } bcore_flect_self_s;
 
 void                bcore_flect_self_s_init( bcore_flect_self_s* o );
-void                bcore_flect_self_s_init_plain( bcore_flect_self_s* o, tp_t type, sz_t size );
+void                bcore_flect_self_s_init_plain( bcore_flect_self_s* o, tp_t type, tp_t trait, sz_t size );
 void                bcore_flect_self_s_down( bcore_flect_self_s* o );
 void                bcore_flect_self_s_copy( bcore_flect_self_s* o, const bcore_flect_self_s* src );
 bcore_flect_self_s* bcore_flect_self_s_create();
@@ -205,7 +205,7 @@ st_s*               bcore_flect_self_s_show( const bcore_flect_self_s* o );
 void                bcore_flect_self_s_check_integrity( const bcore_flect_self_s* o );
 
 /// special reflections
-bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, sz_t size ); // plain (primitive) self contained type
+bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, tp_t trait, sz_t size ); // plain (primitive) self contained type
 bcore_flect_self_s* bcore_flect_self_s_create_static_array( tp_t item_type ); // creates an (anonymous) static array of item_type
 bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type ); // creates an (anonymous) static link array of item_type
 

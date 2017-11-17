@@ -536,7 +536,7 @@ void bcore_hmap_u2vd_s_run_d( bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t o
 static bcore_flect_self_s* hmap_u2vd_s_create_self( void )
 {
     sc_t def = "\
-        bcore_hmap_u2vd_s = bcore_inst_s \
+        bcore_hmap_u2vd_s = bcore_inst \
             { \
                 aware_t _; \
                 private bcore_static_array_s arr; \
@@ -707,7 +707,7 @@ static st_s* hmap_u2vd_selftest( void )
 static bcore_flect_self_s* hnode_tpsz_s_create_self( void )
 {
     sc_t def =
-    "bcore_hnode_tpsz_s = bcore_inst_s"
+    "bcore_hnode_tpsz_s = bcore_inst"
     "{"
         "tp_t key;"
         "sz_t val;"
@@ -944,7 +944,7 @@ static void tpsz_s_set_data( bcore_hmap_tpsz_s* o, sr_s data )
 static bcore_flect_self_s* hmap_tpsz_s_create_self( void )
 {
     sc_t def = "\
-        bcore_hmap_tpsz_s = bcore_inst_s \
+        bcore_hmap_tpsz_s = bcore_inst \
             { \
                 aware_t _; \
                 private bcore_hnode_tpsz_s* nodes; \
@@ -1117,7 +1117,7 @@ static st_s* hmap_tpsz_selftest( void )
 static bcore_flect_self_s* hnode_tpfp_s_create_self( void )
 {
     sc_t def =
-    "bcore_hnode_tpfp_s = bcore_inst_s"
+    "bcore_hnode_tpfp_s = bcore_inst"
     "{"
         "tp_t key;"
         "fp_t val;"
@@ -1354,7 +1354,7 @@ static void tpfp_s_set_data( bcore_hmap_tpfp_s* o, sr_s data )
 static bcore_flect_self_s* hmap_tpfp_s_create_self( void )
 {
     sc_t def = "\
-        bcore_hmap_tpfp_s = bcore_inst_s \
+        bcore_hmap_tpfp_s = bcore_inst \
             { \
                 aware_t _; \
                 private bcore_hnode_tpfp_s* nodes; \
@@ -1522,7 +1522,7 @@ static st_s* hmap_tpfp_selftest( void )
 static bcore_flect_self_s* hnode_tptp_s_create_self( void )
 {
     sc_t def =
-    "bcore_hnode_tptp_s = bcore_inst_s"
+    "bcore_hnode_tptp_s = bcore_inst"
     "{"
         "tp_t key;"
         "tp_t val;"
@@ -1757,7 +1757,7 @@ static void tptp_s_set_data( bcore_hmap_tptp_s* o, sr_s data )
 static bcore_flect_self_s* hmap_tptp_s_create_self( void )
 {
     sc_t def = "\
-        bcore_hmap_tptp_s = bcore_inst_s \
+        bcore_hmap_tptp_s = bcore_inst \
             { \
                 aware_t _; \
                 private bcore_hnode_tptp_s* nodes; \
@@ -2235,7 +2235,7 @@ static void tpto_s_set_data( bcore_hmap_tpto_s* o, sr_s data )
 static bcore_flect_self_s* hmap_tpto_s_create_self( void )
 {
     sc_t def = "\
-        bcore_hmap_tpto_s = bcore_inst_s \
+        bcore_hmap_tpto_s = bcore_inst \
             { \
                 aware_t _; \
                 private tp_t type; \
@@ -2622,7 +2622,7 @@ static void tp_s_set_data( bcore_hmap_tp_s* o, sr_s data )
 static bcore_flect_self_s* hmap_tp_s_create_self( void )
 {
     sc_t def = "\
-        bcore_hmap_tp_s = bcore_inst_s \
+        bcore_hmap_tp_s = bcore_inst \
             { \
                 aware_t _; \
                 private tp_t * keys; \

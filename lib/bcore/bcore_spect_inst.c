@@ -1040,7 +1040,7 @@ static sz_t aligned_offset( sz_t align, sz_t raw_offset )
 
 static void inst_s_define_trait()
 {
-    bcore_trait_set( entypeof( "bcore_inst_s" ), 0 );
+    bcore_trait_set( entypeof( "bcore_inst" ), entypeof( "root" ) );
 }
 
 bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
@@ -1227,8 +1227,7 @@ static bcore_flect_self_s* inst_s_create_self( void )
 //    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_inst_s ) );
 
 //  We need to create this reflection manually because self_s_build_parse uses it.
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "bcore_inst_s" ), sizeof( bcore_inst_s ) );
-    self->trait = typeof( "spect" );
+    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "bcore_inst_s" ), typeof( "spect" ), sizeof( bcore_inst_s ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
     self->body->complete = false;

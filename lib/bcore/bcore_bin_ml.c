@@ -101,7 +101,7 @@ void bcore_bin_ml_translator_s_translate( const bcore_bin_ml_translator_s* o, sr
 
 static bcore_flect_self_s* translator_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bin_ml_translator_s = bcore_translator_s { aware_t _; }", sizeof( bcore_bin_ml_translator_s ) );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bin_ml_translator_s = bcore_translator { aware_t _; }", sizeof( bcore_bin_ml_translator_s ) );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_bin_ml_translator_s_translate, "bcore_fp_translate", "translate"        );
     return self;
 }
@@ -241,7 +241,7 @@ sr_s bcore_bin_ml_interpreter_s_interpret( const bcore_bin_ml_interpreter_s* o, 
 
 static bcore_flect_self_s* interpreter_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bin_ml_interpreter_s = bcore_interpreter_s { aware_t _; }", sizeof( bcore_bin_ml_interpreter_s ) );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bin_ml_interpreter_s = bcore_interpreter { aware_t _; }", sizeof( bcore_bin_ml_interpreter_s ) );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_bin_ml_interpreter_s_interpret, "bcore_fp_interpret", "interpret" );
     return self;
 }
@@ -293,8 +293,8 @@ void bcore_bin_ml_transfer_test( sr_s obj )
 
 static st_s* bin_ml_selftest( void )
 {
-    ASSERT( bcore_spect_supported( typeof( "bcore_interpreter_s" ), typeof( "bcore_bin_ml_interpreter_s" ) ) );
-    ASSERT( bcore_spect_supported( typeof( "bcore_translator_s" ), typeof( "bcore_bin_ml_translator_s" ) ) );
+    ASSERT( bcore_spect_trait_supported( typeof( "bcore_interpreter" ), typeof( "bcore_bin_ml_interpreter_s" ) ) );
+    ASSERT( bcore_spect_trait_supported( typeof( "bcore_translator" ), typeof( "bcore_bin_ml_translator_s" ) ) );
 
     bcore_life_s* l = bcore_life_s_create();
     st_s* log = st_s_create();

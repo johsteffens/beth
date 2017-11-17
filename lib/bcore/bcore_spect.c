@@ -101,18 +101,19 @@ static void spect_define_trait()
     bcore_trait_require_function(  trait, entypeof( "bcore_fp_discard"                ), 0 );
     bcore_trait_require_function(  trait, entypeof( "bcore_spect_fp_create_from_self" ), 0 );
     bcore_trait_register_fp_support( trait, supports );
-    bcore_trait_set( trait, typeof( "bcore_inst_s" ) );
+    bcore_trait_set( trait, typeof( "bcore_inst" ) );
 }
 
-bl_t bcore_spect_supported( tp_t p_type, tp_t o_type )
+bl_t bcore_spect_trait_supported( tp_t spect_trait, tp_t o_type )
 {
+    tp_t p_type = bcore_tp_fold_sc( spect_trait, "_s" );
     tp_t sig = bcore_tp_fold_tp( p_type, o_type );
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
     bl_t exists = bcore_hmap_u2vd_s_exists( hmap_s_g->map, sig );
     bcore_mutex_unlock( &hmap_s_g->mutex );
     if( exists ) return true;
-    return bcore_trait_satisfied_type( p_type, o_type, NULL );
+    return bcore_trait_satisfied_type( spect_trait, o_type, NULL );
 }
 
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
