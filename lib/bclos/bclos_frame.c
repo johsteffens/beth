@@ -55,7 +55,7 @@ sr_s bclos_frame_s_remove( bclos_frame_s* o, tp_t name )
 bcore_flect_self_s* frame_s_create_self( void )
 {
     sc_t def =
-    "bclos_frame_s = "
+    "bclos_frame_s = bcore_inst_s"
     "{ "
         "aware_t _;"
         "private bclos_frame_s* external;"

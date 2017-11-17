@@ -177,10 +177,15 @@ s2_t bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_ite
     return 0;
 }
 
+void bcore_flect_item_s_check_integrity( const bcore_flect_item_s* o )
+{
+    /// nothing yet;
+}
+
 static bcore_flect_self_s* flect_item_s_create_self( void )
 {
     sc_t def =
-    "bcore_flect_item_s ="
+    "bcore_flect_item_s = bcore_inst_s"
     "{"
         "tp_t type;"    // hash of type
         "tp_t name;"    // hash of name
@@ -434,10 +439,15 @@ s2_t bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_bod
     return 0;
 }
 
+void bcore_flect_body_s_check_integrity( const bcore_flect_body_s* o )
+{
+    for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_check_integrity( &o->data[ i ] );
+}
+
 static bcore_flect_self_s* flect_body_s_create_self( void )
 {
     sc_t def =
-    "bcore_flect_body_s ="
+    "bcore_flect_body_s = bcore_inst_s"
     "{"
         "bcore_flect_item_s [] arr;"
         "bl_t complete;"
@@ -549,19 +559,6 @@ st_s* bcore_flect_self_s_show( const bcore_flect_self_s* o )
     if( o->body ) st_s_push_st_d( s, st_s_replace_char_sc( bcore_flect_body_s_show( o->body ), '\n', "\n    " ) );
     st_s_pushf( s, "\n}" );
     return s;
-}
-
-void bcore_flect_self_s_check_consistency( const bcore_flect_self_s* o )
-{
-    if( o->trait )
-    {
-        st_s* log = st_s_create();
-        if( !bcore_trait_supported( o->trait, o, log ) )
-        {
-            ERR( "Reflection of '%s' does not support trait '%s': %s\n", ifnameof( o->type ), ifnameof( o->trait ), log->sc );
-        }
-        st_s_discard( log );
-    }
 }
 
 bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, sz_t size )
@@ -692,6 +689,14 @@ fp_t bcore_flect_self_s_get_external_fp( const bcore_flect_self_s* o, tp_t type,
     return fp;
 }
 
+bool bcore_flect_self_s_is_aware( const bcore_flect_self_s* o )
+{
+    if( !o->body ) return false;
+    const bcore_flect_body_s* body = o->body;
+    if( body->size == 0 ) return false;
+    return body->data[ 0 ].type == TYPEOF_aware_t;
+}
+
 vd_t bcore_flect_self_s_get_static( const bcore_flect_self_s* o, tp_t type, tp_t name )
 {
     bcore_fp_create fp = ( bcore_fp_create )bcore_flect_self_s_try_external_fp( o, type, name );
@@ -705,18 +710,22 @@ vd_t bcore_flect_self_s_try_static( const bcore_flect_self_s* o, tp_t type, tp_t
     return fp ? fp() : NULL;
 }
 
-bool bcore_flect_self_s_is_aware( const bcore_flect_self_s* o )
+void bcore_flect_self_s_check_integrity( const bcore_flect_self_s* o )
 {
-    if( !o->body ) return false;
-    const bcore_flect_body_s* body = o->body;
-    if( body->size == 0 ) return false;
-    return body->data[ 0 ].type == TYPEOF_aware_t;
+    if( !bcore_trait_supported( o->trait, o, NULL ) )
+    {
+        st_s* log = st_s_create();
+        bcore_trait_supported( o->trait, o, log );
+        ERR( "Reflection '%s' is of trait '%s' but does not support it.\nReason: %s\n", ifnameof( o->type ), ifnameof( o->trait ), log->sc );
+        st_s_discard( log );
+    }
+    if( o->body ) bcore_flect_body_s_check_integrity( o->body );
 }
 
 static bcore_flect_self_s* flect_self_s_create_self( void )
 {
     sc_t def =
-    "bcore_flect_self_s ="
+    "bcore_flect_self_s = bcore_inst_s"
     "{"
         "aware_t _;"
         "tp_t type;"
@@ -901,7 +910,8 @@ const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
                  "Requested type was probably mapped to the wrong self-creator during registration.\n",
                  ifnameof( self->type ), ifnameof( type ) );
         }
-        bcore_flect_self_s_check_consistency( self );
+
+        bcore_flect_self_s_check_integrity( self );
 
         bcore_mutex_lock( &self_map_s_g->mutex );
 
@@ -944,7 +954,7 @@ const bcore_flect_self_s* bcore_flect_get_self( tp_t type )
 tp_t bcore_flect_define_self_d( bcore_flect_self_s* self )
 {
     assert( self_map_s_g != NULL );
-    bcore_flect_self_s_check_consistency( self );
+    bcore_flect_self_s_check_integrity( self );
     tp_t type = self->type;
     bcore_mutex_lock( &self_map_s_g->mutex );
     if( bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) ) ERR( "'%s' (%"PRItp_t") is already defined", ifnameof( type ), type );
@@ -956,7 +966,7 @@ tp_t bcore_flect_define_self_d( bcore_flect_self_s* self )
 static tp_t flect_define_self_rentrant_d( bcore_flect_self_s* self )
 {
     assert( self_map_s_g != NULL );
-    bcore_flect_self_s_check_consistency( self );
+    bcore_flect_self_s_check_integrity( self );
     tp_t type = self->type;
     bcore_mutex_lock( &self_map_s_g->mutex );
     if( !bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) ) bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );

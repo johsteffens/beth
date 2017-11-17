@@ -1483,6 +1483,7 @@ static bcore_flect_self_s* st_s_create_self( void )
 
 //  We need to create this reflection manually because self_s_build_parse uses it.
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "st_s" ), sizeof( st_s ) );
+    self->trait = typeof( "bcore_inst_s" );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_aware_t, entypeof( "_"  ) ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_sd_t, entypeof( "data"  ) ) )->f_private = true;
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_sz_t, entypeof( "size"  ) ) )->f_private = true;
@@ -1500,7 +1501,7 @@ static bcore_flect_self_s* st_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )flow_snk,          "bcore_fp_flow_snk",        "flow_snk"     );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )flow_src,          "bcore_fp_flow_src",        "flow_src"     );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )p_errorvf,         "bcore_fp_logvf",           "p_errorvf"    );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )parse_fv,          "bcore_source_fp_parse_fv", "parse_fv"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )parse_fv,          "bcore_source_fp_parse_fv", "parse_fv"     );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )check_sanity,      "bcore_fp_check_sanity",    "check_sanity" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",         "cmp_st"       );
     return self;

@@ -49,4 +49,24 @@ alternatively:
 fv = { ... }, in which case the signature is assumed to match exactly that of the declaration.
 
 
+16 Nov 2017:
+
+All functionality can be represented by functions func := ret( arg1, arg2, ... ). This includes declaration, type construction, assignment, etc
+- We use operator overloading for the more convenient details of the language. Operators need not be built in (they can be created form source code)
+  - Space-operator (operator represented by mere whitespace between two identifiers. (Note that such a constellation does not occur in the pure functional notation)
+    Example:
+        Variable declaration could be represented by function 'decl_var := void( type, address )'
+        The binary space-operator 'type' 'space' 'address' would be mapped to def_var
+        Thus a familiar declaration like 'sz_t size' is bound to 'decl_var( sz_t, size )'
+        
+Type checking:
+- Types (actually traits) are to be checked as parsetime
+- All functions have a signature.
+- Since all functionality can be expressed by functions, typechecking can be reduced to evaluating
+  those signatures (O(1)).
+- The library contains a map of each address to the object trait such that traits can always been retrieved.
+  
+
+
+
 

@@ -31,7 +31,6 @@ typedef struct bclos_closure_s
     bclos_signature_s*    static_sig; // static signature
 } bclos_closure_s;
 
-bcore_flect_self_s*    bclos_closure_s_create_self( void );
 const bclos_closure_s* bclos_closure_s_get_typed( tp_t type );
 const bclos_closure_s* bclos_closure_s_get_aware( vc_t o );
 

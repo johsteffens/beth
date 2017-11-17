@@ -162,7 +162,7 @@ static bcore_flect_self_s* chain_s_create_self( void )
 {
     sc_t def =
 
-    "bcore_source_chain_s = "
+    "bcore_source_chain_s = bcore_source_s"
     "{ "
       "aware_t _; "
       "aware * [] data; "
@@ -291,7 +291,7 @@ static void buffer_p_errorvf( bcore_source_buffer_s* o, sc_t format, va_list arg
 static bcore_flect_self_s* buffer_s_create_self( void )
 {
     sc_t def =
-    "bcore_source_buffer_s = "
+    "bcore_source_buffer_s = bcore_source_s"
     "{ "
       "aware_t _; "
       "u0_t [] data; "
@@ -454,7 +454,7 @@ static void string_parse_fv( bcore_source_string_s* o, sc_t format, va_list args
 static bcore_flect_self_s* string_s_create_self( void )
 {
     sc_t def =
-    "bcore_source_string_s = "
+    "bcore_source_string_s = bcore_source_s "
     "{ "
       "aware_t _; "
       "st_s* string; "
@@ -605,7 +605,7 @@ static void file_p_errorvf( bcore_source_file_s* o, sc_t format, va_list args )
 static bcore_flect_self_s* file_s_create_self( void )
 {
     sc_t def =
-    "bcore_source_file_s = "
+    "bcore_source_file_s = bcore_source_s "
     "{ "
       "aware_t _; "
       "st_s* name; "

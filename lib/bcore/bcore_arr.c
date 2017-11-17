@@ -18,7 +18,7 @@ DEFINE_FUNCTION_CLONE(      bcore_arr_sz_s )
 
 static bcore_flect_self_s* arr_sz_s_create_self( void )
 {
-    return bcore_flect_self_s_build_parse_sc( "bcore_arr_sz_s = { aware_t _; sz_t [] arr; }", sizeof( bcore_arr_sz_s ) );
+    return bcore_flect_self_s_build_parse_sc( "bcore_arr_sz_s = bcore_array_s { aware_t _; sz_t [] arr; }", sizeof( bcore_arr_sz_s ) );
 }
 
 void bcore_arr_sz_s_clear( bcore_arr_sz_s* o )
@@ -163,7 +163,7 @@ DEFINE_FUNCTION_CLONE(      bcore_arr_st_s )
 
 static bcore_flect_self_s* arr_st_s_create_self( void )
 {
-    return bcore_flect_self_s_build_parse_sc( "bcore_arr_st_s = { aware_t _; st_s* [] arr; }", sizeof( bcore_arr_st_s ) );
+    return bcore_flect_self_s_build_parse_sc( "bcore_arr_st_s = bcore_array_s { aware_t _; st_s* [] arr; }", sizeof( bcore_arr_st_s ) );
 }
 
 void bcore_arr_st_s_clear( bcore_arr_st_s* o )

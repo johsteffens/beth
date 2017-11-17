@@ -106,7 +106,7 @@ static inline void sr_s_set_strong( sr_s* o, bl_t flag ) { o->f = flag ? ( o->f 
 static inline void sr_s_set_const(  sr_s* o, bl_t flag ) { o->f = flag ? ( o->f | CONST_f  ) : ( o->f & ~CONST_f  ); }
 
 static inline void sr_s_clear( sr_s* o ) { if( o ) { sr_down( *o ); o->o = NULL; o->p = NULL; o->f = 0; } }
-static inline void sr_s_set(   sr_s* o, sr_s src ) { sr_s_clear( o ); if( sr_s_is_strong( &src ) ) { *o = src; } else { sr_s_copy( o, &src ); sr_down( src ); } }
+static inline void sr_s_set(   sr_s* o, sr_s src ) { sr_s_clear( o ); *o = sr_fork( src ); }
 static inline sr_s sr_s_get(   sr_s* o )           { return sr_cw( *o ); }
 
 /** Fork seizes ownership via reference control. Even from a weak reference.

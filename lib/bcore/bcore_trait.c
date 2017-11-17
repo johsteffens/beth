@@ -11,11 +11,11 @@
 #include "bcore_flect.h"
 #include "bcore_spect_inst.h"
 
-const char* trait_ft_s_def_g = "bcore_trait_ft_s = { tp_t type; tp_t name; }";
+const char* trait_ft_s_def_g = "bcore_trait_ft_s = bcore_inst_s { tp_t type; tp_t name; }";
 typedef struct bcore_trait_ft_s { tp_t type; tp_t name; } bcore_trait_ft_s;
 
 const char* trait_s_def_g =
-"bcore_trait_s = {"
+"bcore_trait_s = bcore_inst_s {"
     "bl_t in_ancestry;"
     "bl_t awareness;"
     "bcore_trait_ft_s [] ft_arr;"
@@ -240,13 +240,21 @@ bl_t bcore_trait_is( tp_t trait, tp_t ancestor )
 bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* log )
 {
     if( !trait ) return true;
+    if( !bcore_trait_exists( trait ) )
+    {
+        if( log )
+        {
+            st_s_pushf( log, "Trait is not defined." );
+        }
+        return false;
+    }
     if( !bcore_trait_supported( bcore_trait_parent( trait ), self, log ) ) return false;
 
     system_s_g_lock();
     vd_t* trait_p = bcore_hmap_tpto_s_get( &system_s_g.trait_map, trait );
     system_s_g_unlock();
 
-    if( !trait_p ) return true;
+    if( !trait_p ) return true; // no restrictions
 
     bcore_trait_s* trait_o = *trait_p;
 

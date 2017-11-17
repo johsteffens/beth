@@ -19,7 +19,7 @@ DEFINE_FUNCTION_CLONE(     bclos_signature_arg_s )
 
 static bcore_flect_self_s* arg_signature_s_create_self( void )
 {
-    sc_t def = "bclos_signature_arg_s = { tp_t name; tp_t type; bl_t is_const; }";
+    sc_t def = "bclos_signature_arg_s = bcore_inst_s { tp_t name; tp_t type; bl_t is_const; }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_signature_arg_s ) );
     return self;
 }
@@ -93,7 +93,7 @@ bclos_signature_s* bclos_signature_s_parse_from_sc( sc_t sc )
 
 static bcore_flect_self_s* sig_s_create_self( void )
 {
-    sc_t def = "bclos_signature_s = { bclos_signature_arg_s [] arr; tp_t name; tp_t ret; }";
+    sc_t def = "bclos_signature_s = bcore_inst_s { bclos_signature_arg_s [] arr; tp_t name; tp_t ret; }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_signature_s ) );
     return self;
 }

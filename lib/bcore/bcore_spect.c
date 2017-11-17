@@ -101,9 +101,8 @@ static void spect_define_trait()
     bcore_trait_require_function(  trait, entypeof( "bcore_fp_discard"                ), 0 );
     bcore_trait_require_function(  trait, entypeof( "bcore_spect_fp_create_from_self" ), 0 );
     bcore_trait_register_fp_support( trait, supports );
-    bcore_trait_set( trait, 0 );
+    bcore_trait_set( trait, typeof( "bcore_inst_s" ) );
 }
-
 
 bl_t bcore_spect_supported( tp_t p_type, tp_t o_type )
 {

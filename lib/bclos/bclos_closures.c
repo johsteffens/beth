@@ -4,6 +4,65 @@
 #include "bclos_spect_closure.h"
 #include "bclos_quicktypes.h"
 #include "bcore_trait.h"
+#include "bcore_txt_ml.h"
+
+/// sends object to stdout with ending newline
+static sr_s writeln_s_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
+{
+    ASSERT( args->size >= 1 );
+    sr_s sr = bclos_arguments_s_get( args, 0, frm );
+    if( sr.o )
+    {
+        switch( sr_s_type( &sr ) )
+        {
+            case TYPEOF_st_s:
+            case TYPEOF_sc_t:
+            case TYPEOF_sd_t:
+            case TYPEOF_s0_t:
+            case TYPEOF_s1_t:
+            case TYPEOF_s2_t:
+            case TYPEOF_s3_t:
+            case TYPEOF_u0_t:
+            case TYPEOF_u1_t:
+            case TYPEOF_u2_t:
+            case TYPEOF_u3_t:
+            case TYPEOF_f2_t:
+            case TYPEOF_f3_t:
+            case TYPEOF_sz_t:
+            case TYPEOF_bl_t:
+            case TYPEOF_tp_t:
+            case TYPEOF_aware_t:
+            {
+                st_s* s = st_s_create_typed( sr_s_type( &sr ), sr.o );
+                st_s_print_d( st_s_create_fa( "#<sc_t>\n", s->sc ) );
+                st_s_discard( s );
+            }
+            break;
+
+            default:
+            {
+                bcore_txt_ml_to_stdout( sr_cw( sr ) );
+                st_s_print_d( st_s_create_fa( "\n" ) );
+            }
+            break;
+        }
+    }
+    else
+    {
+        st_s_print_d( st_s_create_fa( "NULL\n" ) );
+    }
+    sr_down( sr );
+    return sr_null();
+}
+
+static bcore_flect_self_s* writeln_s_create_self( void )
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_writeln_s = bclos_closure_s {}", 0 );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )writeln_s_func, "bclos_closure_fp_call", "call" );
+    return self;
+}
+
+/**********************************************************************************************************************/
 
 /// Identity closure (takes one argument which is deemed to be the return value)
 static sr_s identity_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
@@ -89,9 +148,10 @@ vd_t bclos_closures_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "init1" ) )
     {
-        bcore_flect_define_creator( typeof( "bclos_identity_s"  ), identity_s_create_self );
-        bcore_flect_define_creator( typeof( "bclos_branch_s" ), branch_create_self );
-        bcore_flect_define_creator( typeof( "bclos_loop_s"   ), loop_create_self );
+        bcore_flect_define_creator( typeof( "bclos_writeln_s"  ), writeln_s_create_self );
+        bcore_flect_define_creator( typeof( "bclos_identity_s" ), identity_s_create_self );
+        bcore_flect_define_creator( typeof( "bclos_branch_s"   ), branch_create_self );
+        bcore_flect_define_creator( typeof( "bclos_loop_s"     ), loop_create_self );
     }
 
     return NULL;

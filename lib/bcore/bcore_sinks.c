@@ -106,7 +106,7 @@ sz_t bcore_sink_chain_s_push_data( bcore_sink_chain_s* o, vc_t data, sz_t size )
 static bcore_flect_self_s* chain_s_create_self( void )
 {
     sc_t def =
-    "bcore_sink_chain_s = "
+    "bcore_sink_chain_s = bcore_sink_s"
     "{ "
       "aware_t _; "
       "aware * [] data; "
@@ -199,7 +199,7 @@ void bcore_sink_chain_s_set_consumer( bcore_sink_chain_s* o, vd_t consumer )
 static bcore_flect_self_s* buffer_s_create_self( void )
 {
     sc_t def =
-    "bcore_sink_buffer_s = "
+    "bcore_sink_buffer_s = bcore_sink_s"
     "{ "
       "aware_t _; "
       "u0_t [] data; "
@@ -353,7 +353,7 @@ sz_t bcore_sink_file_s_push_data( bcore_sink_file_s* o, vc_t data, sz_t size )
 static bcore_flect_self_s* file_s_create_self( void )
 {
     sc_t def =
-    "bcore_sink_file_s = "
+    "bcore_sink_file_s = bcore_sink_s"
     "{ "
       "aware_t _; "
       "st_s* name; "

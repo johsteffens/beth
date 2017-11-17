@@ -8,6 +8,7 @@
 #include "bclos_spect_closure.h"
 #include "bclos_statement.h"
 #include "bclos_closures.h"
+#include "bclos_objects.h"
 #include "bclos_procedure.h"
 
 vd_t bclos_signal( tp_t target, tp_t signal, vd_t object )
@@ -16,6 +17,7 @@ vd_t bclos_signal( tp_t target, tp_t signal, vd_t object )
     {
         bclos_arguments_signal,
         bclos_frame_signal,
+        bclos_objects_signal,
         bclos_closures_signal,
         bclos_procedure_signal,
         bclos_signature_signal,

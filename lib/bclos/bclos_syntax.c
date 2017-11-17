@@ -18,7 +18,7 @@ DEFINE_FUNCTION_CLONE(      bclos_syntax_s )
 
 static bcore_flect_self_s* syntax_s_create_self( void )
 {
-    sc_t def = "bclos_syntax_s = { aware_t _; }";
+    sc_t def = "bclos_syntax_s = bcore_inst_s { aware_t _; }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_syntax_s ) );
     return self;
 }

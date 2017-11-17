@@ -95,7 +95,7 @@ void bclos_arguments_s_parse_from_source( bclos_arguments_s* o, sr_s source )
 
 static bcore_flect_self_s* arguments_s_create_self( void )
 {
-    sc_t def = "bclos_arguments_s = { sr_s [] arr; }";
+    sc_t def = "bclos_arguments_s = bcore_inst_s { sr_s [] arr; }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_arguments_s ) );
     return self;
 }

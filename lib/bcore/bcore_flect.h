@@ -123,6 +123,7 @@ bcore_flect_item_s* bcore_flect_item_s_clone( const bcore_flect_item_s* o );
 st_s*               bcore_flect_item_s_show( const bcore_flect_item_s* o );
 tp_t                bcore_flect_item_s_fold_tp( const bcore_flect_item_s* o, tp_t tp );
 s2_t                bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_item_s* o2 );        // compares two items
+void                bcore_flect_item_s_check_integrity( const bcore_flect_item_s* o );
 
 /**********************************************************************************************************************/
 
@@ -153,6 +154,7 @@ bcore_flect_item_s* bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flec
 st_s*               bcore_flect_body_s_show( const bcore_flect_body_s* o );
 tp_t                bcore_flect_body_s_fold_tp( const bcore_flect_body_s* o, tp_t tp );
 s2_t                bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_body_s* o2 );
+void                bcore_flect_body_s_check_integrity( const bcore_flect_body_s* o );
 
 /**********************************************************************************************************************/
 
@@ -200,7 +202,7 @@ bcore_flect_item_s* bcore_flect_self_s_push_ns_func( bcore_flect_self_s* o, fp_t
 bcore_flect_item_s* bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name );
 bcore_flect_item_s* bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name );
 st_s*               bcore_flect_self_s_show( const bcore_flect_self_s* o );
-void                bcore_flect_self_s_check_consistency( const bcore_flect_self_s* o );
+void                bcore_flect_self_s_check_integrity( const bcore_flect_self_s* o );
 
 /// special reflections
 bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, sz_t size ); // plain (primitive) self contained type
@@ -208,7 +210,7 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_array( tp_t item_type ); //
 bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type ); // creates an (anonymous) static link array of item_type
 
 
-/** Creating a reflection by parsing a string:
+/** Creating a reflection by parsing a stream:
  *  Typical Format:
  *  <type-name> = [<trait-name>]
  *  {
@@ -243,9 +245,17 @@ bool bcore_flect_self_s_is_aware(        const bcore_flect_self_s* o            
 
 /** Returns a static object to be stored in the perspective.
  *  'type' specifies a function compatible to bcore_fp_create creating the static object.
+ *  The static object is created in this function by calling bcore_fp_create.
  */
 vd_t bcore_flect_self_s_get_static( const bcore_flect_self_s* o, tp_t type, tp_t name ); // error when not found
 vd_t bcore_flect_self_s_try_static( const bcore_flect_self_s* o, tp_t type, tp_t name ); // returns NULL when not found
+
+/** Checks proper definition of dependencies (existence);
+ *  This check should be executed at a central place not before the reflection is ready to be used for generating instances.
+ *  Proper places: When reflection is registered or when the instance is being created.
+ *  At earlier times the reflection may be inconsistent (e.g. not all dependencies exist yet).
+ */
+void bcore_flect_self_s_check_integrity( const bcore_flect_self_s* o );
 
 /**********************************************************************************************************************/
 /// Global reflection manager (thread safe)

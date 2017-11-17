@@ -67,7 +67,7 @@ static void name_s_set_name_st( bcore_name_s* o, sr_s sr )
 static bcore_flect_self_s* name_s_create_self( void )
 {
     sc_t def = "\
-        bcore_name_s = \
+        bcore_name_s = bcore_inst_s \
         { \
             tp_t key;\
             tp_t name_space;\
@@ -330,7 +330,7 @@ static void name_map_s_set_data( bcore_name_map_s* o, sr_s data )
 static bcore_flect_self_s* name_map_s_create_self( void )
 {
     sc_t def = "\
-        bcore_name_map_s = \
+        bcore_name_map_s = bcore_inst_s \
             { \
                 aware_t _; \
                 private bcore_name_s* data; \

@@ -140,6 +140,12 @@ vd_t bclos_spect_closure_signal( tp_t target, tp_t signal, vd_t object )
     {
         closure_s_define_trait();
         bcore_flect_define_creator( typeof( "bclos_closure_s" ), closure_s_create_self );
+
+        /// language specific closures
+//        tp_t trait = entypeof( "bclos_closure_s" );
+//        bcore_trait_require_function( trait, entypeof( "bclos_closure_fp_call" ), 0 );
+//        bcore_trait_set( trait, entypeof( "bcore_inst_s" ) );
+
     }
 
     return NULL;
