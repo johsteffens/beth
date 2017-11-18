@@ -136,6 +136,11 @@ vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t
     return bcore_tbman_un_alloc( unit_bytes, current_ptr, current_units, requested_units, granted_units );
 }
 
+sz_t bcore_references( vc_t ptr )
+{
+    return bcore_tbman_references( ptr );
+}
+
 vd_t bcore_fork( vd_t ptr )
 {
     return bcore_tbman_fork( ptr );

@@ -15,9 +15,13 @@ void bclos_closure_s_init( bclos_closure_s* o )
     o->p_type = TYPEOF_bclos_closure_s;
 }
 
-DEFINE_FUNCTION_DOWN_FLAT(  bclos_closure_s )
-DEFINE_FUNCTION_CREATE(     bclos_closure_s )
-DEFINE_FUNCTION_DISCARD(    bclos_closure_s )
+void bclos_closure_s_down( bclos_closure_s* o )
+{
+    bclos_signature_s_discard( o->static_sig );
+}
+
+DEFINE_FUNCTION_CREATE(  bclos_closure_s )
+DEFINE_FUNCTION_DISCARD( bclos_closure_s )
 
 /**********************************************************************************************************************/
 
@@ -42,7 +46,7 @@ static bclos_closure_s* create_from_self( const bcore_flect_self_s* self )
 
 static bcore_flect_self_s* closure_s_create_self( void )
 {
-    sc_t def = "bclos_closure_s = spect { aware_t p_type; tp_t o_type; ... }";
+    sc_t def = "bclos_closure_s = spect { aware_t p_type; tp_t o_type; bclos_signature_s* static_sig; ... }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_closure_s ) );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_init,    "bcore_fp_init",                   "init"              );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_down,    "bcore_fp_down",                    "down"             );
@@ -142,7 +146,7 @@ vd_t bclos_spect_closure_signal( tp_t target, tp_t signal, vd_t object )
         bcore_flect_define_creator( typeof( "bclos_closure_s" ), closure_s_create_self );
 
         /// language specific closures
-        bcore_trait_set( typeof( "bclos_lang_closure" ), typeof( "bclos_closure" ) );
+        bcore_trait_set( typeof( "bclos_language_closure" ), typeof( "bclos_closure" ) );
 
     }
 

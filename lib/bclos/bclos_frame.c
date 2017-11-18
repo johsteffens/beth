@@ -68,8 +68,8 @@ bcore_flect_self_s* frame_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-DEFINE_IDC_FUNCTIONS_FLAT( bclos_address_s )
-DEFINE_CDC_FUNCTIONS(      bclos_address_s )
+DEFINE_FUNCTIONS_IDC_FLAT( bclos_address_s )
+DEFINE_FUNCTIONS_CDC(      bclos_address_s )
 bclos_address_s* bclos_address_s_create_tp( tp_t name )
 {
     bclos_address_s* o = bclos_address_s_create();

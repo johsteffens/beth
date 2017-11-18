@@ -9,9 +9,9 @@
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_SPECT( bclos_syntax_s )
-DEFINE_FUNCTION_DOWN_SPECT( bclos_syntax_s )
-DEFINE_FUNCTION_COPY_SPECT( bclos_syntax_s )
+DEFINE_FUNCTION_INIT_INST( bclos_syntax_s )
+DEFINE_FUNCTION_DOWN_INST( bclos_syntax_s )
+DEFINE_FUNCTION_COPY_INST( bclos_syntax_s )
 DEFINE_FUNCTION_CREATE(     bclos_syntax_s )
 DEFINE_FUNCTION_DISCARD(    bclos_syntax_s )
 DEFINE_FUNCTION_CLONE(      bclos_syntax_s )

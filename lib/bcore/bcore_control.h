@@ -52,6 +52,7 @@ vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t
  *  See bcore_tbman.h for implementation and usage details
  */
 
+sz_t bcore_references     (                      vc_t ptr );
 vd_t bcore_fork           (                      vd_t ptr );
 void bcore_release        (                      vd_t ptr );
 void bcore_release_obj    ( fp_t down,           vd_t ptr );
@@ -189,13 +190,13 @@ vd_t bcore_control_signal( tp_t target, tp_t signal, vd_t object );
 #define DECLARE_FUNCTION_DISCARD( name ) void name##_discard( name* o );
 #define DECLARE_FUNCTION_CLONE( name )  name* name##_clone( const name* o );
 
-#define DECLARE_STD_FUNCTIONS( name )\
-    void name##_init( name* o ); \
-    void name##_down( name* o ); \
-    void name##_copy( name* o, const name* src ); \
-    name* name##_create(); \
-    void name##_discard( name* o ); \
-    name* name##_clone( const name* o );
+#define DECLARE_FUNCTIONS_OBJ( name )\
+    DECLARE_FUNCTION_INIT( name ) \
+    DECLARE_FUNCTION_DOWN( name ) \
+    DECLARE_FUNCTION_COPY( name ) \
+    DECLARE_FUNCTION_CREATE( name ) \
+    DECLARE_FUNCTION_DISCARD( name ) \
+    DECLARE_FUNCTION_CLONE( name )
 
 #define DEFINE_FUNCTION_INIT_FLAT( name ) \
 void name##_init( name* o ) \
@@ -213,18 +214,10 @@ void name##_copy( name* o, const name* src ) \
     bcore_memcpy( o, src, sizeof( name ) ); \
 }
 
-#define DEFINE_IDC_FUNCTIONS_FLAT( name )\
-void name##_init( name* o ) \
-{ \
-    bcore_memzero( o, sizeof( name ) ); \
-}\
-void name##_down( name* o ) {} \
-void name##_copy( name* o, const name* src ) \
-{ \
-    if( o == src ) return; \
-    bcore_memcpy( o, src, sizeof( name ) ); \
-}\
-
+#define DEFINE_FUNCTIONS_IDC_FLAT( name )\
+    DEFINE_FUNCTION_INIT_FLAT( name )\
+    DEFINE_FUNCTION_DOWN_FLAT( name )\
+    DEFINE_FUNCTION_COPY_FLAT( name )\
 
 #define DEFINE_FUNCTION_MOVE( name ) \
 void name##_move( name* o, name* src ) \
@@ -259,24 +252,13 @@ name* name##_clone( const name* o ) \
     return o_l; \
 }
 
-#define DEFINE_CDC_FUNCTIONS( name )\
-name* name##_create() \
-{ \
-    name* o = bcore_alloc( NULL, sizeof( name ) ); \
-    name##_init( o ); \
-    return o; \
-} \
-void name##_discard( name* o ) \
-{ \
-    if( !o ) return; \
-    bcore_release_obj( (fp_t)name##_down, o );\
-} \
-name* name##_clone( const name* o ) \
-{ \
-    if( !o ) return NULL; \
-    name* o_l = name##_create(); \
-    name##_copy( o_l, o ); \
-    return o_l; \
-}
+#define DEFINE_FUNCTIONS_CDC( name )\
+    DEFINE_FUNCTION_CREATE( name )\
+    DEFINE_FUNCTION_DISCARD( name )\
+    DEFINE_FUNCTION_CLONE( name )\
+
+#define DEFINE_FUNCTIONS_OBJ_FLAT( name )\
+    DEFINE_FUNCTIONS_IDC_FLAT( name )\
+    DEFINE_FUNCTIONS_CDC( name )
 
 #endif // BCORE_CONTROL_H

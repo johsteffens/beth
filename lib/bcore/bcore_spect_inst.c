@@ -113,7 +113,7 @@ static bcore_inst_s* inst_s_create()
     return o;
 }
 
-static void inst_s_discard( bcore_inst_s* o )
+void bcore_inst_s_discard( bcore_inst_s* o )
 {
     if( !o ) return;
     bcore_release_obj( ( fp_t )inst_s_down, o );
@@ -1072,9 +1072,12 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
     o->down_flat = ( o->down_o == NULL );
     o->copy_flat = ( o->copy_o == NULL );
 
+    bl_t body_undefined_or_complete = true;
+
     if( self->body && self->body->size > 0 )
     {
         const bcore_flect_body_s* flect_body = self->body;
+        body_undefined_or_complete = flect_body->complete;
         bcore_inst_item_s* last_inst_item = NULL;
 
         for( sz_t i = 0; i < flect_body->size; i++ )
@@ -1185,12 +1188,13 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
         if( flect_body->complete && last_inst_item )
         {
             o->size = aligned_offset( o->align, last_inst_item->offset + last_inst_item->size );
-            bcore_inst_item_s_discard( last_inst_item );
         }
         else
         {
-            o->size = 0;
+            o->size = self->size;
         }
+
+        bcore_inst_item_s_discard( last_inst_item );
     }
     else
     {
@@ -1198,14 +1202,14 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
         o->align = self->size;
     }
 
-    if( ( self->size > 0 ) && ( self->size != o->size ) )
+    if( body_undefined_or_complete && ( self->size > 0 ) && ( self->size != o->size ) )
     {
         ERR( "Size mismatch: sizeof(%s):%zu differs from reflective body size:%zu.\n"
              "The object's reflection is probably out of sync with its compile-time definition.\n",
             ifnameof( self->type ), self->size, o->size );
     }
 
-    if( o->copy_flat && !o->down_flat ) ERR( "copy_flat is not implying down_flat" );
+    if( !o->down_flat ) o->copy_flat = false;
     o->move_flat = o->init_flat && o->copy_flat && o->down_flat;
 
     o->init         = o->init_o       ? ( fp_init_a ? init_amoebic : init_o ) : ( o->init_flat ? ( o->size > 0 ? init_flat : init_null ) : init_generic );
@@ -1235,7 +1239,7 @@ static bcore_flect_self_s* inst_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                   "init"         );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_down,             "bcore_fp_down",                   "down"         );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_create,           "bcore_fp_create",                 "create"       );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_discard,          "bcore_fp_discard",                "discard"      );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_inst_s_discard,    "bcore_fp_discard",                "discard"      );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }

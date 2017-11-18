@@ -12,9 +12,9 @@
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_SPECT( bclos_procedure_s )
-DEFINE_FUNCTION_DOWN_SPECT( bclos_procedure_s )
-DEFINE_FUNCTION_COPY_SPECT( bclos_procedure_s )
+DEFINE_FUNCTION_INIT_INST( bclos_procedure_s )
+DEFINE_FUNCTION_DOWN_INST( bclos_procedure_s )
+DEFINE_FUNCTION_COPY_INST( bclos_procedure_s )
 DEFINE_FUNCTION_CREATE(     bclos_procedure_s )
 DEFINE_FUNCTION_DISCARD(    bclos_procedure_s )
 DEFINE_FUNCTION_CLONE(      bclos_procedure_s )
@@ -205,10 +205,13 @@ static st_s* procedure_selftest( void )
         //bclos_procedure_s_push_sc( proc, "add( v1, v3 )     -> s3_t val2;" );
         bclos_procedure_s_push_sc( proc, "mul( v1, v3 )     ->   s3_t val2;" );
 //        bclos_procedure_s_push_sc( proc, "mul( add( v1, v2 ), mul( v1, v3 ) ) ->;" );
-        bclos_procedure_s_push_sc( proc, "mul( val1, val2 ) -> s3_t ret;" );
+//        bclos_procedure_s_push_sc( proc, "mul( val1, val2 ) -> s3_t ret;" );
+        bclos_procedure_s_push_sc( proc, "v1 -> s3_t ret;" );
+        bclos_procedure_s_push_sc( proc, "bclos_assign_s( mul( val1, val2 ), ret );" );
 //        bclos_procedure_s_push_sc( proc, "val2 -> ret;" );
 //        bclos_procedure_s_push_sc( proc, "val1 -> val2;" );
-//        bclos_procedure_s_push_sc( proc, "print( ret );" );
+        bclos_procedure_s_push_sc( proc, "print( ret );" );
+        bclos_procedure_s_push_sc( proc, "bclos_writeln_s( ret );" );
 //        bclos_procedure_s_push_sc( proc, "print( val1 );" );
 //        bclos_procedure_s_push_sc( proc, "print( val2 );" );
         bclos_procedure_s_push_sc( proc, "ret ->;" );

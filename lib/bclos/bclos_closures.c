@@ -6,6 +6,60 @@
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
 
+/**********************************************************************************************************************/
+// assign_s
+
+/** Makes a (right-)assignment [0] -> [1] ensuring that the destination is not (strongly) referenced
+ *  elsewhere (outside the argument list).
+ *  The function analyzes the reference state of source. A deep copy is only induced if the above
+ *  cannot be guaranteed by passing the reference.
+ *  The target will be a strong reference.
+ *  Returns a weak reference to the target .
+ */
+static sr_s assign_s_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
+{
+    ASSERT( args->size >= 2 );
+    sr_s* dst = &args->data[ 1 ];
+    if( dst && sr_s_type( dst ) == TYPEOF_bclos_address_s )
+    {
+        sr_s src = bclos_arguments_s_get( args, 0, frm );
+        tp_t dst_name = ( ( const bclos_address_s* )dst->o )->name;
+        sr_s* dst_sr  = bclos_frame_s_get( frm, dst_name );
+        if( !dst_sr ) ERR( "Target '%s' was not defined.", ifnameof( dst_name ) );
+        if( sr_s_is_strong( &src ) && sr_s_references( &src ) <= 1 )
+        {
+            sr_down( *dst_sr );
+            *dst_sr = sr_s_fork( &src );
+        }
+        else
+        {
+            sr_s_copy( dst_sr, &src );
+        }
+        sr_down( src );
+        return sr_cw( *dst );
+    }
+    else
+    {
+        ERR( "Target must be an address." );
+    }
+    return sr_null();
+}
+
+static vd_t assign_s_create_static_sig()
+{
+    return bclos_signature_s_parse_from_sc( "bcore_inst_s bclos_assign_s( bcore_inst_s src, bclos_address_s dst )" );
+}
+
+static bcore_flect_self_s* assign_s_create_self( void )
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_assign_s = bclos_language_closure {}", 0 );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )assign_s_func, "bclos_closure_fp_call", "call" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )assign_s_create_static_sig, "bclos_closure_fp_create_static_sig", "static_sig" );
+    return self;
+}
+
+/**********************************************************************************************************************/
+
 /// sends object to stdout with ending newline
 static sr_s writeln_s_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args )
 {
@@ -55,10 +109,16 @@ static sr_s writeln_s_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s*
     return sr_null();
 }
 
+static vd_t writeln_s_create_static_sig()
+{
+    return bclos_signature_s_parse_from_sc( "void bclos_writeln_s( bcore_inst_s obj )" );
+}
+
 static bcore_flect_self_s* writeln_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_writeln_s = bclos_lang_closure {}", 0 );
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bclos_writeln_s = bclos_language_closure {}", 0 );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )writeln_s_func, "bclos_closure_fp_call", "call" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )writeln_s_create_static_sig, "bclos_closure_fp_create_static_sig", "static_sig" );
     return self;
 }
 
@@ -148,6 +208,7 @@ vd_t bclos_closures_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "init1" ) )
     {
+        bcore_flect_define_creator( typeof( "bclos_assign_s"  ),  assign_s_create_self );
         bcore_flect_define_creator( typeof( "bclos_writeln_s"  ), writeln_s_create_self );
         bcore_flect_define_creator( typeof( "bclos_identity_s" ), identity_s_create_self );
         bcore_flect_define_creator( typeof( "bclos_branch_s"   ), branch_create_self );

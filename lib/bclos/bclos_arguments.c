@@ -7,15 +7,12 @@
 #include "bcore_spect_array.h"
 #include "bcore_spect_source.h"
 #include "bcore_life.h"
+#include "bcore_trait.h"
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_SPECT( bclos_arguments_s )
-DEFINE_FUNCTION_DOWN_SPECT( bclos_arguments_s )
-DEFINE_FUNCTION_COPY_SPECT( bclos_arguments_s )
-DEFINE_FUNCTION_CREATE(     bclos_arguments_s )
-DEFINE_FUNCTION_DISCARD(    bclos_arguments_s )
-DEFINE_FUNCTION_CLONE(      bclos_arguments_s )
+DEFINE_FUNCTIONS_OBJ_INST( bclos_arguments_s )
+DEFINE_CREATE_SELF( bclos_arguments_s, "bclos_arguments_s = bcore_inst { sr_s [] arr; }" )
 
 void bclos_arguments_s_clear( bclos_arguments_s* o )
 {
@@ -93,17 +90,9 @@ void bclos_arguments_s_parse_from_source( bclos_arguments_s* o, sr_s source )
     bcore_life_s_discard( l );
 }
 
-static bcore_flect_self_s* arguments_s_create_self( void )
-{
-    sc_t def = "bclos_arguments_s = bcore_inst { sr_s [] arr; }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_arguments_s ) );
-    return self;
-}
-
 /**********************************************************************************************************************/
 
-DEFINE_IDC_FUNCTIONS_SPECT( bclos_expression_s )
-DEFINE_CDC_FUNCTIONS(       bclos_expression_s )
+DEFINE_FUNCTIONS_OBJ_INST( bclos_expression_s )
 DEFINE_CREATE_SELF( bclos_expression_s, "bclos_expression_s = { sr_s closure; bclos_arguments_s args; }" )
 
 void bclos_expression_s_clear( bclos_expression_s* o )
@@ -129,17 +118,29 @@ void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source )
         st_s* identifier = st_s_create_l( l );
         bcore_source_q_parse_fa( &source, " #name", identifier );
         if( identifier->size == 0 ) bcore_source_q_parse_errf( &source, "Identifier expected." );
-        sr_s identifier_address = sr_tsd( TYPEOF_bclos_address_s, bclos_address_s_create_tp( entypeof( identifier->sc ) ) );
+        tp_t identifier_tp = entypeof( identifier->sc );
+        sr_s closure = sr_null();
+
+        const bcore_flect_self_s* closure_self = bcore_flect_try_self( identifier_tp );
+
+        if( closure_self && closure_self->trait == typeof( "bclos_language_closure" ) )
+        {
+            closure = bcore_inst_typed_create_sr( identifier_tp );
+        }
+        else
+        {
+            closure = sr_tsd( TYPEOF_bclos_address_s, bclos_address_s_create_tp( identifier_tp ) );
+        }
 
         if( bcore_source_q_parse_bool_f( &source, " #=?'('" ) )
         {
-            o->closure = identifier_address;
+            o->closure = closure;
             bclos_arguments_s_parse_from_source( &o->args, source );
         }
         else
         {
             o->closure = sr_cp( bcore_inst_typed_create_sr( TYPEOF_bclos_identity_s ), TYPEOF_bclos_closure_s );
-            bclos_arguments_s_push( &o->args, identifier_address );
+            bclos_arguments_s_push( &o->args, closure );
         }
     }
 
@@ -195,7 +196,7 @@ vd_t bclos_arguments_signal( tp_t target, tp_t signal, vd_t object )
 
     if( signal == typeof( "init1" ) )
     {
-        bcore_flect_define_creator( typeof( "bclos_arguments_s" ), arguments_s_create_self );
+        bcore_flect_define_creator( typeof( "bclos_arguments_s"  ), bclos_arguments_s_create_self );
         bcore_flect_define_creator( typeof( "bclos_expression_s" ), bclos_expression_s_create_self );
     }
 

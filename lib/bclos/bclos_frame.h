@@ -32,7 +32,7 @@ sr_s           bclos_frame_s_remove( bclos_frame_s* o, tp_t name ); // removes e
 
 /// An address is a name intended to address an element of a frame
 typedef struct bclos_address_s { tp_t name; } bclos_address_s;
-DECLARE_STD_FUNCTIONS( bclos_address_s )
+DECLARE_FUNCTIONS_OBJ( bclos_address_s )
 
 bclos_address_s* bclos_address_s_create_tp( tp_t name );
 

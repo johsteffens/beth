@@ -44,8 +44,8 @@ vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
         bcore_name_manager_signal,
         bcore_function_manager_signal,
         bcore_flect_signal,
-        bcore_spect_signal,
         bcore_trait_signal,
+        bcore_spect_signal,
         bcore_sc_signal,
         bcore_st_signal,
 

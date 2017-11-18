@@ -109,6 +109,17 @@ static inline void sr_s_clear( sr_s* o ) { if( o ) { sr_down( *o ); o->o = NULL;
 static inline void sr_s_set(   sr_s* o, sr_s src ) { sr_s_clear( o ); *o = sr_fork( src ); }
 static inline sr_s sr_s_get(   sr_s* o )           { return sr_cw( *o ); }
 
+/* reference control */
+
+/** Number of (strong) references to the object.
+ *  Return value
+ *    0: This reference is null
+ *    1: Only one strong reference. If this reference is strong, it is the only existing.
+ *   >1: Multible strong references exist.
+ */
+sz_t bcore_references( vc_t ptr );
+static inline sz_t sr_s_references( const sr_s* o ) { return o->o ? bcore_references( o->o ) : 0; }
+
 /** Fork seizes ownership via reference control. Even from a weak reference.
  *  This guarantees the lifetime of the object at least for the lifetime of the forked reference.
  *  The original object is always referenced (never copied).

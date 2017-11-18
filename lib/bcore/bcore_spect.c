@@ -16,34 +16,61 @@
 
 typedef struct hmap_s
 {
-    bcore_hmap_u2vd_s* map;
+    /** We use the the array to keep instances in the order created.
+     *  Shut down happens in the reverse order.
+     *  This ensures that references to perspectives created during
+     *  initialization are still valid during shutting down.
+     *  Cyclic references are not possible because perspectives are stateless.
+     */
+    bcore_arr_vd_s arr;
+
+    /// The map is used to access instances.
+    bcore_hmap_u2vd_s map;
+
     bcore_mutex_t mutex;
 } hmap_s;
 
 static void hmap_s_init( hmap_s* o )
 {
-    o->map = bcore_hmap_u2vd_s_create();
+    bcore_arr_vd_s_init(    &o->arr );
+    bcore_hmap_u2vd_s_init( &o->map );
     bcore_mutex_init( &o->mutex );
-}
-
-static void hmap_s_node_down( vd_t obj, u2_t key, vd_t val )
-{
-    if( val )
-    {
-        bcore_fp_discard discard = ( bcore_fp_discard )bcore_flect_self_s_get_external_fp( bcore_flect_get_self( *( aware_t *)val ), typeof( "bcore_fp_discard" ), 0 );
-        discard( val );
-    }
 }
 
 static void hmap_s_down( hmap_s* o )
 {
     bcore_mutex_lock( &o->mutex );
-    if( o->map )
+
+    // shut down in reverse order of creation
+    while( o->arr.size > 0 )
     {
-        bcore_hmap_u2vd_s_run_c( o->map, NULL, hmap_s_node_down );
-        bcore_hmap_u2vd_s_discard( o->map );
-        o->map = NULL;
+        vd_t spect = bcore_arr_vd_s_pop( &o->arr );
+        tp_t p_type = ( ( tp_t* )spect )[ 0 ];
+        tp_t o_type = ( ( tp_t* )spect )[ 1 ];
+        tp_t sig    = bcore_tp_fold_tp( p_type, o_type );
+        bcore_hmap_u2vd_s_remove_h( &o->map, sig );
+
+        /** During discard we lift the lock because the spect's destructor
+         *  may still need to retrieve (even re-instantiate) other perspectives.
+         *
+         *  This may actually add perspectives again that have already been destroyed.
+         *  This is allowed and can be handled safely at this point.
+         *  Newly added perspectives will be part of o->arr and eventually taken down again.
+         */
+        bcore_mutex_unlock( &o->mutex );
+        if( p_type == TYPEOF_bcore_inst_s )
+        {
+            bcore_inst_s_discard( spect );
+        }
+        else
+        {
+            bcore_inst_aware_discard( spect );
+        }
+        bcore_mutex_lock( &o->mutex );
     }
+
+    bcore_hmap_u2vd_s_down( &o->map );
+    bcore_arr_vd_s_down(    &o->arr );
     bcore_mutex_unlock( &o->mutex );
     bcore_mutex_down( &o->mutex );
 }
@@ -96,9 +123,9 @@ static void spect_define_trait()
     tp_t trait = entypeof( "spect" );
     bcore_trait_require_awareness( trait );
     bcore_trait_require_in_ancestry( trait );
-    bcore_trait_require_function(  trait, entypeof( "bcore_fp_init"                   ), 0 );
-    bcore_trait_require_function(  trait, entypeof( "bcore_fp_down"                   ), 0 );
-    bcore_trait_require_function(  trait, entypeof( "bcore_fp_discard"                ), 0 );
+//    bcore_trait_require_function(  trait, entypeof( "bcore_fp_init"                   ), 0 );
+//    bcore_trait_require_function(  trait, entypeof( "bcore_fp_down"                   ), 0 );
+//    bcore_trait_require_function(  trait, entypeof( "bcore_fp_discard"                ), 0 );
     bcore_trait_require_function(  trait, entypeof( "bcore_spect_fp_create_from_self" ), 0 );
     bcore_trait_register_fp_support( trait, supports );
     bcore_trait_set( trait, typeof( "bcore_inst" ) );
@@ -110,7 +137,7 @@ bl_t bcore_spect_trait_supported( tp_t spect_trait, tp_t o_type )
     tp_t sig = bcore_tp_fold_tp( p_type, o_type );
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
-    bl_t exists = bcore_hmap_u2vd_s_exists( hmap_s_g->map, sig );
+    bl_t exists = bcore_hmap_u2vd_s_exists( &hmap_s_g->map, sig );
     bcore_mutex_unlock( &hmap_s_g->mutex );
     if( exists ) return true;
     return bcore_trait_satisfied_type( spect_trait, o_type, NULL );
@@ -121,7 +148,7 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     assert( hmap_s_g != NULL );
     bcore_mutex_lock( &hmap_s_g->mutex );
     tp_t sig = bcore_tp_fold_tp( p_type, o_type );
-    vd_t* vdp = bcore_hmap_u2vd_s_get( hmap_s_g->map, sig );
+    vd_t* vdp = bcore_hmap_u2vd_s_get( &hmap_s_g->map, sig );
     if( vdp )
     {
         bcore_mutex_unlock( &hmap_s_g->mutex );
@@ -142,14 +169,15 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     // Due to the unlocked period, the perspective might have
     // been registered by another thread meanwhile.
     // In that case we discard spect and retrieve the registered version.
-    if( bcore_hmap_u2vd_s_exists( hmap_s_g->map, sig ) )
+    if( bcore_hmap_u2vd_s_exists( &hmap_s_g->map, sig ) )
     {
         bcore_inst_aware_discard( spect );
-        spect = *bcore_hmap_u2vd_s_get( hmap_s_g->map, sig );
+        spect = *bcore_hmap_u2vd_s_get( &hmap_s_g->map, sig );
     }
     else
     {
-        bcore_hmap_u2vd_s_set( hmap_s_g->map, sig, spect, false );
+        bcore_arr_vd_s_push( &hmap_s_g->arr, spect );
+        bcore_hmap_u2vd_s_set( &hmap_s_g->map, sig, spect, false );
     }
 
     bcore_mutex_unlock( &hmap_s_g->mutex );
@@ -160,7 +188,7 @@ st_s* bcore_spect_status()
 {
     bcore_life_s* l = bcore_life_s_create();
     assert( hmap_s_g      != NULL );
-    bcore_hmap_u2vd_s* map  = hmap_s_g->map;
+    const bcore_hmap_u2vd_s* map  = &hmap_s_g->map;
     bcore_hmap_tpsz_s* hist = bcore_life_s_push_aware( l, bcore_hmap_tpsz_s_create() );
     st_s* log = st_s_create();
 

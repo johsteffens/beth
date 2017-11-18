@@ -25,10 +25,10 @@ typedef struct bclos_closure_s
 {
     aware_t p_type; // type of perspective
     tp_t    o_type; // type of object
+    bclos_signature_s*    static_sig; // static signature
     bclos_closure_fp_def  fp_def;
     bclos_closure_fp_call fp_call;
     bclos_closure_fp_sig  fp_sig; // dynamic signature
-    bclos_signature_s*    static_sig; // static signature
 } bclos_closure_s;
 
 const bclos_closure_s* bclos_closure_s_get_typed( tp_t type );

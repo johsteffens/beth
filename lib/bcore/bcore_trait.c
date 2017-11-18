@@ -106,6 +106,13 @@ static void system_s_init( system_s* o )
     bcore_mutex_init( &o->mutex );
 }
 
+static system_s* system_s_create()
+{
+    system_s* o = bcore_alloc( NULL, sizeof( system_s ) );
+    system_s_init( o );
+    return o;
+}
+
 static void system_s_down( system_s* o )
 {
     bcore_mutex_lock( &o->mutex );
@@ -128,13 +135,20 @@ static void system_s_down( system_s* o )
     bcore_mutex_down( &o->mutex );
 }
 
+static void system_s_discard( system_s* o )
+{
+    if( !o ) return;
+    system_s_down( o );
+    bcore_release( o );
+}
+
 /**********************************************************************************************************************/
 
-static system_s system_s_g = { 0 };
-static void system_s_g_init()   { system_s_init( &system_s_g ); }
-static void system_s_g_down()   { system_s_down( &system_s_g ); }
-static void system_s_g_lock()   { assert( system_s_g.type_map.size_limit > 0 ); bcore_mutex_lock( &system_s_g.mutex   ); }
-static void system_s_g_unlock() { bcore_mutex_unlock( &system_s_g.mutex ); }
+static system_s* system_s_g = NULL;
+static void system_s_g_init()   { system_s_g = system_s_create(); }
+static void system_s_g_down()   { system_s_discard( system_s_g ); system_s_g = NULL; }
+static void system_s_g_lock()   { assert( system_s_g != NULL ); bcore_mutex_lock( &system_s_g->mutex   ); }
+static void system_s_g_unlock() { bcore_mutex_unlock( &system_s_g->mutex ); }
 
 static void trait_manager_open()
 {
@@ -149,16 +163,16 @@ static void trait_manager_close()
 
 static bcore_trait_s* get_trait( tp_t trait )
 {
-    vd_t* trait_pp = bcore_hmap_tpto_s_get( &system_s_g.trait_map, trait );
+    vd_t* trait_pp = bcore_hmap_tpto_s_get( &system_s_g->trait_map, trait );
     if( trait_pp ) return *trait_pp;
-    return *bcore_hmap_tpto_s_set_d( &system_s_g.trait_map, trait, bcore_trait_s_create() );
+    return *bcore_hmap_tpto_s_set_d( &system_s_g->trait_map, trait, bcore_trait_s_create() );
 }
 
 void bcore_trait_require_in_ancestry( tp_t trait )
 {
     assert( trait != 0 );
     system_s_g_lock();
-    assert( !bcore_hmap_tptp_s_exists( &system_s_g.type_map, trait ) );
+    assert( !bcore_hmap_tptp_s_exists( &system_s_g->type_map, trait ) );
     get_trait( trait )->in_ancestry = true;
     system_s_g_unlock();
 }
@@ -167,7 +181,7 @@ void bcore_trait_require_awareness( tp_t trait )
 {
     assert( trait != 0 );
     system_s_g_lock();
-    assert( !bcore_hmap_tptp_s_exists( &system_s_g.type_map, trait ) );
+    assert( !bcore_hmap_tptp_s_exists( &system_s_g->type_map, trait ) );
     get_trait( trait )->awareness = true;
     system_s_g_unlock();
 }
@@ -176,7 +190,7 @@ void bcore_trait_require_function( tp_t trait, tp_t function, tp_t name )
 {
     assert( trait != 0 );
     system_s_g_lock();
-    assert( !bcore_hmap_tptp_s_exists( &system_s_g.type_map, trait ) );
+    assert( !bcore_hmap_tptp_s_exists( &system_s_g->type_map, trait ) );
     trait_s_push_function( get_trait( trait ), function, name );
     system_s_g_unlock();
 }
@@ -185,7 +199,7 @@ void bcore_trait_register_fp_support( tp_t trait, bcore_trait_fp_supports f )
 {
     assert( trait != 0 );
     system_s_g_lock();
-    assert( !bcore_hmap_tptp_s_exists( &system_s_g.type_map, trait ) );
+    assert( !bcore_hmap_tptp_s_exists( &system_s_g->type_map, trait ) );
     trait_s_push_fp_support( get_trait( trait ), f );
     system_s_g_unlock();
 }
@@ -195,7 +209,7 @@ static bl_t trait_is( tp_t trait, tp_t ancestor )
     for(;;)
     {
         if( trait == ancestor ) return true;
-        tp_t* parent = bcore_hmap_tptp_s_get( &system_s_g.type_map, trait );
+        tp_t* parent = bcore_hmap_tptp_s_get( &system_s_g->type_map, trait );
         if( !parent || !(*parent) ) return false;
         trait = *parent;
     }
@@ -209,14 +223,14 @@ void bcore_trait_set( tp_t trait, tp_t parent )
         system_s_g_unlock();
         ERR( "Declaring trait '%s' with parent '%s' causes cyclic ancestry.", ifnameof( trait ), ifnameof( parent ) );
     }
-    bcore_hmap_tptp_s_set( &system_s_g.type_map, trait, parent );
+    bcore_hmap_tptp_s_set( &system_s_g->type_map, trait, parent );
     system_s_g_unlock();
 }
 
 bl_t bcore_trait_exists( tp_t trait )
 {
     system_s_g_lock();
-    bl_t flag = bcore_hmap_tptp_s_exists( &system_s_g.type_map, trait );
+    bl_t flag = bcore_hmap_tptp_s_exists( &system_s_g->type_map, trait );
     system_s_g_unlock();
     return flag;
 }
@@ -224,7 +238,7 @@ bl_t bcore_trait_exists( tp_t trait )
 tp_t bcore_trait_parent( tp_t trait )
 {
     system_s_g_lock();
-    tp_t* parent = bcore_hmap_tptp_s_get( &system_s_g.type_map, trait );
+    tp_t* parent = bcore_hmap_tptp_s_get( &system_s_g->type_map, trait );
     system_s_g_unlock();
     return parent ? *parent : 0;
 }
@@ -251,7 +265,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* lo
     if( !bcore_trait_supported( bcore_trait_parent( trait ), self, log ) ) return false;
 
     system_s_g_lock();
-    vd_t* trait_p = bcore_hmap_tpto_s_get( &system_s_g.trait_map, trait );
+    vd_t* trait_p = bcore_hmap_tpto_s_get( &system_s_g->trait_map, trait );
     system_s_g_unlock();
 
     if( !trait_p ) return true; // no restrictions
@@ -342,7 +356,7 @@ bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log )
 sz_t  bcore_trait_size()
 {
     system_s_g_lock();
-    sz_t size = bcore_hmap_tptp_s_keys( &system_s_g.type_map );
+    sz_t size = bcore_hmap_tptp_s_keys( &system_s_g->type_map );
     system_s_g_unlock();
     return size;
 }
@@ -351,13 +365,13 @@ st_s* bcore_trait_show()
 {
     system_s_g_lock();
     st_s* log = st_s_create();
-    sz_t size = bcore_hmap_tptp_s_size( &system_s_g.type_map );
+    sz_t size = bcore_hmap_tptp_s_size( &system_s_g->type_map );
     for( sz_t i = 0; i < size; i++ )
     {
-        tp_t key = bcore_hmap_tptp_s_idx_key( &system_s_g.type_map, i );
+        tp_t key = bcore_hmap_tptp_s_idx_key( &system_s_g->type_map, i );
         if( key )
         {
-            tp_t val = bcore_hmap_tptp_s_idx_val( &system_s_g.type_map, i );
+            tp_t val = bcore_hmap_tptp_s_idx_val( &system_s_g->type_map, i );
             system_s_g_unlock();
             if( bcore_name_exists( key ) )
             {
@@ -374,7 +388,7 @@ st_s* bcore_trait_show()
                 system_s_g_unlock();
                 st_s_push_fa( log, "->#<sc_t>", ifnameof( val ) );
                 system_s_g_lock();
-                val = *bcore_hmap_tptp_s_get( &system_s_g.type_map, val );
+                val = *bcore_hmap_tptp_s_get( &system_s_g->type_map, val );
             }
             system_s_g_unlock();
             st_s_push_char( log, '\n' );
@@ -408,7 +422,7 @@ vd_t bcore_trait_signal( tp_t target, tp_t signal, vd_t object )
             sz_t space1 = bcore_tbman_granted_space();
             trait_manager_close();
             sz_t space2 = bcore_tbman_granted_space();
-            bcore_msg( "  trait mananger ...... % 6zu\n", space1 > space2 ? space1 - space2 : ( sz_t )0 );
+            bcore_msg( "  trait manager ....... % 6zu\n", space1 > space2 ? space1 - space2 : ( sz_t )0 );
         }
         else
         {

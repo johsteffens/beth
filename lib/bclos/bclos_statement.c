@@ -13,9 +13,9 @@
 /**********************************************************************************************************************/
 
 DEFINE_FUNCTION_INIT_FLAT(  bclos_statement_s )
-DEFINE_FUNCTION_DOWN_SPECT( bclos_statement_s )
-DEFINE_FUNCTION_COPY_SPECT( bclos_statement_s )
-DEFINE_CDC_FUNCTIONS(       bclos_statement_s )
+DEFINE_FUNCTION_DOWN_INST( bclos_statement_s )
+DEFINE_FUNCTION_COPY_INST( bclos_statement_s )
+DEFINE_FUNCTIONS_CDC(       bclos_statement_s )
 
 void bclos_statement_s_parse_from_source( bclos_statement_s* o, sr_s source )
 {

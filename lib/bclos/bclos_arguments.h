@@ -28,12 +28,7 @@ typedef struct bclos_arguments_s
     };
 } bclos_arguments_s;
 
-DECLARE_FUNCTION_INIT(    bclos_arguments_s )
-DECLARE_FUNCTION_DOWN(    bclos_arguments_s )
-DECLARE_FUNCTION_COPY(    bclos_arguments_s )
-DECLARE_FUNCTION_CREATE(  bclos_arguments_s )
-DECLARE_FUNCTION_DISCARD( bclos_arguments_s )
-DECLARE_FUNCTION_CLONE(   bclos_arguments_s )
+DECLARE_FUNCTIONS_OBJ(    bclos_arguments_s )
 
 void bclos_arguments_s_clear( bclos_arguments_s* o );
 bclos_arguments_s* bclos_arguments_s_create_nv( sz_t n, va_list args );
@@ -60,7 +55,7 @@ typedef struct bclos_expression_s
     bclos_arguments_s args;
 } bclos_expression_s;
 
-DECLARE_STD_FUNCTIONS( bclos_expression_s )
+DECLARE_FUNCTIONS_OBJ( bclos_expression_s )
 
 void bclos_expression_s_clear( bclos_expression_s* o );
 

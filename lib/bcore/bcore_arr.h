@@ -27,12 +27,7 @@ typedef struct bcore_arr_sz_s
     };
 } bcore_arr_sz_s;
 
-DECLARE_FUNCTION_INIT(    bcore_arr_sz_s )
-DECLARE_FUNCTION_DOWN(    bcore_arr_sz_s )
-DECLARE_FUNCTION_COPY(    bcore_arr_sz_s )
-DECLARE_FUNCTION_CREATE(  bcore_arr_sz_s )
-DECLARE_FUNCTION_DISCARD( bcore_arr_sz_s )
-DECLARE_FUNCTION_CLONE(   bcore_arr_sz_s )
+DECLARE_FUNCTIONS_OBJ(    bcore_arr_sz_s )
 
 void bcore_arr_sz_s_clear(     bcore_arr_sz_s* o ); // sets size to zero
 void bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, sz_t space );
@@ -52,7 +47,7 @@ typedef struct bcore_arr_st_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_static_link_array_s arr;
         struct
         {
             st_s** data;
@@ -61,12 +56,7 @@ typedef struct bcore_arr_st_s
     };
 } bcore_arr_st_s;
 
-DECLARE_FUNCTION_INIT(    bcore_arr_st_s )
-DECLARE_FUNCTION_DOWN(    bcore_arr_st_s )
-DECLARE_FUNCTION_COPY(    bcore_arr_st_s )
-DECLARE_FUNCTION_CREATE(  bcore_arr_st_s )
-DECLARE_FUNCTION_DISCARD( bcore_arr_st_s )
-DECLARE_FUNCTION_CLONE(   bcore_arr_st_s )
+DECLARE_FUNCTIONS_OBJ( bcore_arr_st_s )
 
 void  bcore_arr_st_s_clear(     bcore_arr_st_s* o ); // sets size to zero
 void  bcore_arr_st_s_set_space( bcore_arr_st_s* o, sz_t space );
@@ -76,6 +66,32 @@ st_s* bcore_arr_st_s_push_sc(   bcore_arr_st_s* o, sc_t sc );
 void  bcore_arr_st_s_pop(       bcore_arr_st_s* o );
 void  bcore_arr_st_s_sort(      bcore_arr_st_s* o, s2_t order ); // stable
 void  bcore_arr_st_s_reorder(   bcore_arr_st_s* o, const bcore_arr_sz_s* order );
+
+/**********************************************************************************************************************/
+
+// array does not own objects referenced by elements
+typedef struct bcore_arr_vd_s
+{
+    aware_t _;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            vd_t* data;
+            sz_t size, space;
+        };
+    };
+} bcore_arr_vd_s;
+
+DECLARE_FUNCTIONS_OBJ( bcore_arr_vd_s )
+
+void bcore_arr_vd_s_clear(     bcore_arr_vd_s* o ); // sets size to zero
+void bcore_arr_vd_s_set_space( bcore_arr_vd_s* o, sz_t space );
+void bcore_arr_vd_s_fill(      bcore_arr_vd_s* o, sz_t size, vd_t v ); // creates filled array of size <size>
+void bcore_arr_vd_s_push(      bcore_arr_vd_s* o, vd_t v );
+vd_t bcore_arr_vd_s_pop(       bcore_arr_vd_s* o );
+void bcore_arr_vd_s_reorder(   bcore_arr_vd_s* o, const bcore_arr_sz_s* order );
 
 /**********************************************************************************************************************/
 

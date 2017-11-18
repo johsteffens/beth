@@ -6,9 +6,9 @@
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_SPECT( bclos_library_s )
-DEFINE_FUNCTION_DOWN_SPECT( bclos_library_s )
-DEFINE_FUNCTION_COPY_SPECT( bclos_library_s )
+DEFINE_FUNCTION_INIT_INST( bclos_library_s )
+DEFINE_FUNCTION_DOWN_INST( bclos_library_s )
+DEFINE_FUNCTION_COPY_INST( bclos_library_s )
 DEFINE_FUNCTION_CREATE(     bclos_library_s )
 DEFINE_FUNCTION_DISCARD(    bclos_library_s )
 DEFINE_FUNCTION_CLONE(      bclos_library_s )
@@ -22,9 +22,9 @@ static bcore_flect_self_s* library_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_SPECT( bclos_library_arr_s )
-DEFINE_FUNCTION_DOWN_SPECT( bclos_library_arr_s )
-DEFINE_FUNCTION_COPY_SPECT( bclos_library_arr_s )
+DEFINE_FUNCTION_INIT_INST( bclos_library_arr_s )
+DEFINE_FUNCTION_DOWN_INST( bclos_library_arr_s )
+DEFINE_FUNCTION_COPY_INST( bclos_library_arr_s )
 DEFINE_FUNCTION_CREATE(     bclos_library_arr_s )
 DEFINE_FUNCTION_DISCARD(    bclos_library_arr_s )
 DEFINE_FUNCTION_CLONE(      bclos_library_arr_s )

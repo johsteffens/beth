@@ -181,7 +181,8 @@ typedef struct bcore_flect_self_s
     sz_t size;
 
     /** Body of type. Exposing the body is optional.
-     *  If the body is exposed, it must be complete. Otherwise, a perspective can not correctly compute the alignment of elements.
+     *  If the body is exposed, declarations must be complete up to the last declared element.
+     *  Otherwise, a perspective can not correctly compute the alignment of elements.
      *  A leaf type is defined as object without body.
      */
     bcore_flect_body_s* body;
