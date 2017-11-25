@@ -68,6 +68,12 @@ void sr_s_copy( sr_s* o, const sr_s* src )
     }
 }
 
+static void sr_s_copy_typed( sr_s* o, tp_t type, vc_t src )
+{
+    sr_s sr = sr_twc( type, src );
+    sr_s_copy( o, &sr );
+}
+
 sr_s* sr_s_create()
 {
     sr_s* o = bcore_u_alloc( sizeof( sr_s ), NULL, 1, NULL );
@@ -107,6 +113,8 @@ static bcore_flect_self_s* sr_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )sr_s_copy,    "bcore_fp_copy", "copy"    );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )sr_s_get_obj, "bcore_fp_get",  "get_obj" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )sr_s_set_obj, "bcore_fp_set",  "set_obj" );
+
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )sr_s_copy_typed, "bcore_fp_copy_typed", "copy_typed"  );
     return self;
 }
 

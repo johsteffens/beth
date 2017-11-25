@@ -104,7 +104,7 @@ sz_t                bcore_sink_file_s_push_data(   bcore_sink_file_s* o, vc_t da
 /**********************************************************************************************************************/
 // syntactic sugar
 
-/// opens a file for writing
+/// opens a buffered file for writing
 vd_t bcore_sink_create_file( sc_t file_name );
 
 /**********************************************************************************************************************/

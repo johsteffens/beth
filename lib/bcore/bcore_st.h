@@ -159,6 +159,8 @@ sz_t st_s_posofline( const st_s* o, sz_t pos );            // returns the positi
 /// string to stdout
 void st_s_print( const st_s* o );
 void st_s_print_d(     st_s* o ); // discards o
+void st_s_print_fv( sc_t format, va_list args );
+void st_s_print_fa( sc_t format, ... );
 
 /** Parsing strings:
  *  The format string contains characters and rules to parse an input string.

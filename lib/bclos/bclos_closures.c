@@ -145,7 +145,6 @@ static bcore_flect_self_s* identity_s_create_self( void )
  *  Extra arguments are passed to executing closure.
  *  Returns true or false object depending on condition
  */
-
 static vd_t branch_create_static_sig()
 {
     return bclos_signature_s_parse_from_sc( "bcore_inst_s branch( bl_t cond, bcore_inst_s true_obj, bcore_inst_s false_obj )" );

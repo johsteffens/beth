@@ -907,6 +907,19 @@ void st_s_print_d( st_s* o )
     st_s_discard( o );
 }
 
+void st_s_print_fv( sc_t format, va_list args )
+{
+    st_s_print_d( st_s_create_fv( format, args ) );
+}
+
+void st_s_print_fa( sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    st_s_print_fv( format, args );
+    va_end( args );
+}
+
 st_s* st_s_show_line_context( const st_s* o, sz_t pos )
 {
     sz_t start = st_s_posofline( o, pos );

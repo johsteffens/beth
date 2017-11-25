@@ -28,7 +28,7 @@ typedef struct bclos_arguments_s
     };
 } bclos_arguments_s;
 
-DECLARE_FUNCTIONS_OBJ(    bclos_arguments_s )
+DECLARE_FUNCTIONS_OBJ( bclos_arguments_s )
 
 void bclos_arguments_s_clear( bclos_arguments_s* o );
 bclos_arguments_s* bclos_arguments_s_create_nv( sz_t n, va_list args );

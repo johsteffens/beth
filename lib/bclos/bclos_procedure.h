@@ -30,12 +30,7 @@ typedef struct bclos_procedure_s
 } bclos_procedure_s;
 
 
-DECLARE_FUNCTION_INIT(    bclos_procedure_s )
-DECLARE_FUNCTION_DOWN(    bclos_procedure_s )
-DECLARE_FUNCTION_COPY(    bclos_procedure_s )
-DECLARE_FUNCTION_CREATE(  bclos_procedure_s )
-DECLARE_FUNCTION_DISCARD( bclos_procedure_s )
-DECLARE_FUNCTION_CLONE(   bclos_procedure_s )
+DECLARE_FUNCTIONS_OBJ(    bclos_procedure_s )
 
 void bclos_procedure_s_push(    bclos_procedure_s* o, sr_s statement );
 void bclos_procedure_s_push_sc( bclos_procedure_s* o, sc_t statement );

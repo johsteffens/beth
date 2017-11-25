@@ -97,7 +97,10 @@ sr_s* sr_s_create(                );
 sr_s* sr_s_clone(   const sr_s* o );                  // deep clone: (clones the object if present; returns a strong reference; perspective is retained)
 void  sr_s_discard(       sr_s* o );
 
-static inline tp_t sr_s_type(      const sr_s* o ) { return o ? ( o->p ? ( (tp_t*)o->p )[1] : 0 ) : 0; }
+static inline tp_t sr_s_p_type( const sr_s* o ) { return o ? ( o->p ? ( (tp_t*)o->p )[0] : 0 ) : 0; }
+static inline tp_t sr_s_o_type( const sr_s* o ) { return o ? ( o->p ? ( (tp_t*)o->p )[1] : 0 ) : 0; }
+static inline tp_t sr_s_type(   const sr_s* o ) { return sr_s_o_type( o ); }
+
 static inline bl_t sr_s_is_weak(   const sr_s* o ) { return ( o->f & STRONG_f ) ? false : true;  }
 static inline bl_t sr_s_is_strong( const sr_s* o ) { return ( o->f & STRONG_f ) ? true  : false; }
 static inline bl_t sr_s_is_const(  const sr_s* o ) { return ( o->f & CONST_f  ) ? true  : false; }

@@ -12,12 +12,7 @@
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_INST( bclos_procedure_s )
-DEFINE_FUNCTION_DOWN_INST( bclos_procedure_s )
-DEFINE_FUNCTION_COPY_INST( bclos_procedure_s )
-DEFINE_FUNCTION_CREATE(     bclos_procedure_s )
-DEFINE_FUNCTION_DISCARD(    bclos_procedure_s )
-DEFINE_FUNCTION_CLONE(      bclos_procedure_s )
+DEFINE_FUNCTIONS_OBJ_INST( bclos_procedure_s )
 
 void bclos_procedure_s_push( bclos_procedure_s* o, sr_s statement )
 {
@@ -210,8 +205,8 @@ static st_s* procedure_selftest( void )
         bclos_procedure_s_push_sc( proc, "bclos_assign_s( mul( val1, val2 ), ret );" );
 //        bclos_procedure_s_push_sc( proc, "val2 -> ret;" );
 //        bclos_procedure_s_push_sc( proc, "val1 -> val2;" );
-        bclos_procedure_s_push_sc( proc, "print( ret );" );
-        bclos_procedure_s_push_sc( proc, "bclos_writeln_s( ret );" );
+//        bclos_procedure_s_push_sc( proc, "print( ret );" );
+//        bclos_procedure_s_push_sc( proc, "bclos_writeln_s( ret );" );
 //        bclos_procedure_s_push_sc( proc, "print( val1 );" );
 //        bclos_procedure_s_push_sc( proc, "print( val2 );" );
         bclos_procedure_s_push_sc( proc, "ret ->;" );
