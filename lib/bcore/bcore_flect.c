@@ -309,8 +309,8 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
         }
         else // data type declaration
         {
-            bl_t f_private = false, f_hidden = false, f_shell = false, f_link = false, f_arr = false;
-            bcore_source_q_parse_fa( &src, "#?'private' #?'hidden' #?'shell'",  &f_private, &f_hidden, &f_shell );
+            bl_t f_private = false, f_hidden = false, f_shell = false, f_link = false, f_arr = false, f_spect = false;
+            bcore_source_q_parse_fa( &src, "#?'private' #?'hidden' #?'shell' #?'spect'",  &f_private, &f_hidden, &f_shell, &f_spect );
 
             // type can be specified by explicit type id number (anonymous types) or by name
             tp_t type_val = 0;
@@ -331,9 +331,15 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
 
             bcore_source_q_parse_fa( &src, "#?'*' #?'[]' #name #?'=' ", &f_link, &f_arr, item_name, &assign_default );
 
-            item->f_private  = f_private;
+            item->f_private  = f_private || f_spect;
             item->f_hidden   = f_hidden;
             item->f_shell    = f_shell;
+            item->f_spect    = f_spect;
+
+            if( f_spect && !f_link )
+            {
+                bcore_source_q_parse_errf( &src, "Perspectives are links. Use 'spect %s *' to clarify method of referencing.", type_name->sc );
+            }
 
             if( st_s_equal_sc( type_name, "typed" ) )
             {

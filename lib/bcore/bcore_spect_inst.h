@@ -6,7 +6,7 @@
 #include "bcore_flect.h"
 #include "bcore_features.h"
 
-/** The instance perspective is concerned with the representation of an object in memory and
+/** The instance inst_p is concerned with the representation of an object in memory and
  *  provides basic object related functionality covering construction, destruction, copying
  *  and (type-) conversion.
  *
@@ -20,8 +20,8 @@ typedef struct bcore_inst_item_s
     sz_t offset;
     sz_t size;
     sz_t align;
-    const bcore_flect_item_s*   flect_item;
-    const struct bcore_inst_s* perspective;
+    const bcore_flect_item_s*  flect_item;
+    const struct bcore_inst_s* inst_p;
     bl_t no_trace;    // do not recursively follow this item (could be private, cyclic or external)
 } bcore_inst_item_s;
 
@@ -44,7 +44,7 @@ typedef struct bcore_inst_o
 
 typedef struct bcore_inst_s
 {
-    aware_t p_type; // type of perspective
+    aware_t p_type; // type of inst_p
     tp_t    o_type; // type of object
 
     bcore_inst_body_s* body;

@@ -811,7 +811,7 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
         {
             o->caps_type = body->data[ i ].flect_item->caps;
             o->caps_offset = body->data[ i ].offset;
-            o->item_p = body->data[ i ].perspective;
+            o->item_p = body->data[ i ].inst_p;
             found = true;
             break;
         }

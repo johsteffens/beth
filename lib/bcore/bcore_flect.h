@@ -98,6 +98,9 @@ typedef struct bcore_flect_item_s
             // visible to inst spect
             // hidden from via spect
             unsigned f_hidden   : 1; // hidden flag
+
+            // visible to inst spect (automatically coupled with f_private)
+            unsigned f_spect   : 1; // static link to perspective of this item
         };
     };
 
@@ -215,7 +218,7 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type 
  *  Typical Format:
  *  <type-name> = [<trait-name>]
  *  {
- *      [private] [shell] [hidden] <type> [<qualifiers>] <name> [ = default ];
+ *      [private|shell|hidden|spect] <type> [<qualifiers>] <name> [ = default ];
  *
  *      func <type> <name> = <ftype>;
  *      ....
