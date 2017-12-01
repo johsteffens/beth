@@ -1106,7 +1106,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
                     if( !bcore_flect_exists( flect_item->type ) )
                     {
                         ERR( "Constructing bcore_inst_s of %s:\n"
-                             "Type '%s' (%"PRIu32") does not exist.", ifnameof( self->type ), ifnameof( flect_item->type ) );
+                             "Type '%s' (%"PRIu32") does not exist.", ifnameof( self->type ), ifnameof( flect_item->type ), flect_item->type );
                     }
                     else if( flect_item->type == self->type )
                     {
@@ -1114,7 +1114,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
                         {
                             ERR( "Constructing bcore_inst_s of %s:\n"
                                  "Type '%s' (%"PRIu32") is static member of itself, which is inconstructible.\n"
-                                 "A static link might be a viable alternative.\n" , ifnameof( self->type ), ifnameof( flect_item->type ) );
+                                 "A static link might be a viable alternative.\n" , ifnameof( self->type ), ifnameof( flect_item->type ), flect_item->type );
                         }
                         else
                         {
@@ -1173,6 +1173,12 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
                 {
                     inst_item->no_trace = true;
                     if( !flect_item->f_spect ) o->copy_flat = false;
+                }
+
+                if( flect_item->f_spect )
+                {
+                    inst_item->no_trace = true;
+                    o->init_flat = false;
                 }
 
                 if( last_inst_item )

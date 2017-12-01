@@ -298,7 +298,7 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
         st_s* item_name = st_s_create_l( l );
         bcore_flect_item_s* item = bcore_flect_item_s_create();
 
-        if( bcore_source_q_parse_bool_f( &src, " #?'func' " ) ) // function declaration
+        if( bcore_source_q_parse_bool_f( &src, " #?w'func' " ) ) // function declaration
         {
             st_s* assign_name = st_s_create_l( l );
             bcore_source_q_parse_fa( &src, "#name #name = #name", type_name, item_name, assign_name );
@@ -310,7 +310,7 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
         else // data type declaration
         {
             bl_t f_private = false, f_hidden = false, f_shell = false, f_link = false, f_arr = false, f_spect = false;
-            bcore_source_q_parse_fa( &src, "#?'private' #?'hidden' #?'shell' #?'spect'",  &f_private, &f_hidden, &f_shell, &f_spect );
+            bcore_source_q_parse_fa( &src, "#?w'private' #?w'hidden' #?w'shell' #?w'spect'",  &f_private, &f_hidden, &f_shell, &f_spect );
 
             // type can be specified by explicit type id number (anonymous types) or by name
             tp_t type_val = 0;
