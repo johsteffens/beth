@@ -10,6 +10,7 @@ void bcore_msg( sc_t format, ... )
     va_list args;
     va_start( args, format );
     vfprintf( stdout, format, args );
+    fflush( stdout );
     va_end( args );
 }
 
@@ -63,6 +64,7 @@ void bcore_msg_fa( sc_t format, ... )
     va_list args;
     va_start( args, format );
     bcore_writeln_fv( stdout, format, args );
+    fflush( stdout );
     va_end( args );
 }
 

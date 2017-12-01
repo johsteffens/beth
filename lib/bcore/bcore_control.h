@@ -125,6 +125,8 @@ static inline u2_t bcore_lcg3_u2( u2_t val ) { return val *  76157 + 1175399809;
  *  Generators below should have a period of 2^n - 1 with 0 being the fix-point; (-> 0 cannot be used as as seed)
  *  They belong to the family of xorshift generators discovered by George Marsaglia (http://www.jstatsoft.org/v08/i14/paper)
  *  These generators exhibit better randomness than LCG but require about 50% more CPU time.
+ *
+ *  Note: xsg, xsg2 produce structured distributions in 3d polar coordinates.
  */
 static inline u2_t bcore_xsg_u2(  u2_t rval ) { rval ^= ( rval >>  7 ); rval ^= ( rval << 25 ); return rval ^ ( rval >> 12 ); } // period verified
 static inline u2_t bcore_xsg1_u2( u2_t rval ) { rval ^= ( rval >> 11 ); rval ^= ( rval << 21 ); return rval ^ ( rval >> 13 ); } // period verified
