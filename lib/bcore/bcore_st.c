@@ -897,7 +897,7 @@ sz_t st_s_posofline( const st_s* o, sz_t pos )
 void st_s_print( const st_s* o )
 {
     if( !o ) return;
-    printf( "%s", o->sc );
+    bcore_msg( "%s", o->sc );
 }
 
 void st_s_print_d( st_s* o )
@@ -1037,16 +1037,19 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
     sc_t fp = format;
     while( *fp )
     {
+        // skip whitespaces
         if( *fp == ' ' || *fp == '\n' || *fp == '\t' )
         {
             fp++;
             while( idx < end_l )
             {
                 char c = o->data[ idx ];
+                // common whitespaces
                 if( c == ' ' || c == '\t' || c == '\r' || c == '\n' )
                 {
                     idx++;
                 }
+                // c-style comments
                 else if( ( c == '/' ) && ( idx < end_l - 1 ) )
                 {
                     if( o->data[ idx + 1 ] == '/' )
@@ -1061,6 +1064,13 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
                         while( ( idx < end_l - 1 ) && !( ( o->data[ idx ] == '*' ) && ( o->data[ idx + 1 ] == '/' ) ) ) idx++;
                         idx += 2 * ( ( o->data[ idx ] == '*' ) && ( o->data[ idx + 1 ] == '/' ) );
                     }
+                }
+                // '#!' is treated as line-comment to allow the use of posix shebang
+                else if( ( c == '#' ) && ( idx < end_l - 1 ) && o->data[ idx + 1 ] == '!' )
+                {
+                    idx += 2;
+                    while(   ( idx < end_l ) && ( o->data[ idx ] != '\n' ) ) idx++;
+                    idx += ( ( idx < end_l ) && ( o->data[ idx ] == '\n' ) );
                 }
                 else
                 {
@@ -1248,6 +1258,13 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
                 }
                 else
                 {
+                    bl_t word = false;
+                    if( *fp == 'w' )
+                    {
+                        fp++;
+                        word = true;
+                    }
+
                     sz_t idx0 = idx;
                     if( *fp )
                     {
@@ -1263,6 +1280,17 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
                             fp++;
                         }
                         fp += ( *fp == term );
+                        if( flag && word )
+                        {
+                            if( ( idx < end_l ) )
+                            {
+                                char c = o->sc[ idx ];
+                                if(      c >= 'A' && c <= 'Z' ) flag = false;
+                                else if( c >= 'a' && c <= 'z' ) flag = false;
+                                else if( c >= '0' && c <= '9' ) flag = false;
+                                else if( c == '_'             ) flag = false;
+                            }
+                        }
                         if( !flag ) idx = idx0;
                     }
                     else
@@ -1536,7 +1564,7 @@ static void st_s_quicktest( void )
     bool is_green = false;
     bool is_blue  = false;
     st_s* name = bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create() );
-    sz_t idx = st_s_parse_fa( s, 0, s->size, "My #name #?'blue' #?'green' eleph", name, &is_blue, &is_green );
+    sz_t idx = st_s_parse_fa( s, 0, s->size, "My #name #?w'blue' #?w'green' eleph", name, &is_blue, &is_green );
     ASSERT( st_s_equal_sc( name, "little" ) );
     ASSERT( is_green );
     ASSERT( !is_blue );

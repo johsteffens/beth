@@ -184,13 +184,18 @@ void st_s_print_fa( sc_t format, ... );
  *      Consumes a string until <char> is reached.
  *      The character is not consumed.
  *
- *  "#?'...'"  (Example: "#?'hidden'")
+ *  "#?'...'"  (Example: "#?'->'")
  *      Argument: bl_t*
  *      Consumes the string literal ... if exactly matching.
  *      Consumes nothing if not exactly matching.
  *      Sets argument 'true' on exact match, false otherwise.
  *      Enclosure ' should be preferred. It can be replaced by suitable character
  *      from "|*.-+=/ in case the enclosure occurs in the in the literal.
+ *
+ *  "#w?'...'"  word-match (Example: "#?w'hidden'")
+ *      Argument: bl_t*
+ *      Like "#?'...'" except that the matching criterion fails if the character following
+ *      the matched string is a letter or digit. The letter following is never consumed.
  *
  *  "#?(...)"
  *      Argument: bl_t*
