@@ -74,7 +74,7 @@ bclos_signature_s* bclos_signature_s_parse_from_source( sr_s source )
     {
         if( s->size > 0 ) bcore_source_q_parse_fa( &source, " ," );
         bclos_signature_arg_s arg;
-        arg.is_const = bcore_source_q_parse_bool_f( &source, " #?'const'" );
+        arg.is_const = bcore_source_q_parse_bool_f( &source, " #?w'const'" );
         bcore_source_q_parse_fa( &source, " #name ", name );
         arg.type = bcore_name_enroll( name->sc );
         bcore_source_q_parse_fa( &source, " #name ", name );
