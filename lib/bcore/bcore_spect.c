@@ -162,6 +162,7 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
     fp_t create_from_self = bcore_flect_self_s_get_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
     vd_t spect = ( ( bcore_spect_fp_create_from_self )create_from_self )( o_self );
+    vd_t discard_spect = NULL; // in case multiple threads try to register, redundant creations must be discarded
 
     // Lock for registering the perspective (if still not registered)
     bcore_mutex_lock( &hmap_s_g->mutex );
@@ -171,7 +172,7 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     // In that case we discard spect and retrieve the registered version.
     if( bcore_hmap_u2vd_s_exists( &hmap_s_g->map, sig ) )
     {
-        bcore_inst_aware_discard( spect );
+        discard_spect = spect;
         spect = *bcore_hmap_u2vd_s_get( &hmap_s_g->map, sig );
     }
     else
@@ -181,6 +182,8 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     }
 
     bcore_mutex_unlock( &hmap_s_g->mutex );
+
+    if( discard_spect ) bcore_inst_aware_discard( discard_spect );
     return spect;
 }
 
