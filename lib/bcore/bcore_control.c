@@ -42,6 +42,22 @@ void bcore_ext_err( sc_t func, sc_t file, int line, sc_t format, ... )
     abort();
 }
 
+void bcore_write_fv( FILE* file, sc_t format, va_list args )
+{
+    st_s* s = st_s_create_fv( format, args );
+    fwrite( s->sc, 1, s->size, file );
+    fflush( file );
+    st_s_discard( s );
+}
+
+void bcore_write_fa( FILE* file, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    bcore_write_fv( file, format, args );
+    va_end( args );
+}
+
 void bcore_writeln_fv( FILE* file, sc_t format, va_list args )
 {
     st_s* s = st_s_create_fv( format, args );
@@ -63,7 +79,7 @@ void bcore_msg_fa( sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    bcore_writeln_fv( stdout, format, args );
+    bcore_write_fv( stdout, format, args );
     fflush( stdout );
     va_end( args );
 }

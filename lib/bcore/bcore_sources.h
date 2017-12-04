@@ -95,9 +95,10 @@ typedef struct bcore_source_string_s
     st_s* string;
     sz_t index;
     vd_t ext_supplier;       // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_string_s)
-    sz_t preceding_lines;    // line counter (only for lines processed and removed from string)
+    sz_t preceding_lines;    // line counter (only for lines processed and removed from string; used for text navigation in error messages)
     sz_t refill_limit;       // size size limit to request refill from supplier (if present)
     sz_t prefetch_size;      // data amount prefetched from supplier (if present)
+    st_s* supply_info;       // optional info about supplier; e.g. file name (used for enhanced navigation in error messages)
 } bcore_source_string_s;
 
 void                   bcore_source_string_s_init(          bcore_source_string_s* o );

@@ -429,26 +429,35 @@ sz_t bcore_source_string_s_get_data(  bcore_source_string_s* o, vd_t data, sz_t 
 
 /**********************************************************************************************************************/
 
-static void string_p_errorvf( bcore_source_string_s* o, sc_t format, va_list args )
+static sz_t string_s_parse_err( vd_t arg, const st_s* string, sz_t idx, st_s* ext_msg )
 {
-    st_s* context   = st_s_show_line_context( o->string, o->index );
+    bcore_source_string_s* o = arg;
+    st_s* context   = st_s_show_line_context( string, idx );
     st_s* msg       = st_s_create();
     st_s_pushf( msg, "Parse error" );
-    sz_t line = st_s_lineof( o->string, o->index );
-    sz_t col  = st_s_colof( o->string, o->index );
+    if( o->supply_info ) st_s_pushf( msg, " in '%s'", o->supply_info->sc );
+    sz_t line = st_s_lineof( string, idx );
+    sz_t col  = st_s_colof( string, idx );
     st_s_pushf( msg, " at line %zu, col %zu:", line + o->preceding_lines, col );
     st_s_pushf( msg, "\n%s\n", context->sc );
-    st_s_push_st_d( msg, st_s_createvf( format, args ) );
+    st_s_push_st_d( msg, ext_msg );
     bcore_err( "%s", msg->sc );
+
     st_s_discard( msg );
     st_s_discard( context );
+    return idx;
+}
+
+static void string_s_errorvf( bcore_source_string_s* o, sc_t format, va_list args )
+{
+    string_s_parse_err( o, o->string, o->index, st_s_createvf( format, args ) );
 }
 
 static void string_parse_fv( bcore_source_string_s* o, sc_t format, va_list args )
 {
     if( o->ext_supplier ) string_refill( o, o->refill_limit );
     if( !o->string ) ERR( "No string defined." );
-    o->index = st_s_parse_fv( o->string, o->index, o->string->size, format, args );
+    o->index = st_s_parse_efv( o->string, o->index, o->string->size, string_s_parse_err, o, format, args );
 }
 
 static bcore_flect_self_s* string_s_create_self( void )
@@ -463,19 +472,26 @@ static bcore_flect_self_s* string_s_create_self( void )
       "sz_t preceding_lines; "
       "sz_t refill_limit;    "
       "sz_t prefetch_size;   "
+      "st_s* supply_info;    "
     "}";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_string_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_init,  "bcore_fp_init", "init" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_flow_src,  "bcore_fp_flow_src",       "flow_src"  );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_p_errorvf, "bcore_fp_logvf",          "p_errorvf" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv"   );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_supplier,   "bcore_source_fp_set_supplier", "set_supplier"   );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_init,         "bcore_fp_init", "init" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_flow_src,                    "bcore_fp_flow_src",       "flow_src"  );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_s_errorvf,                   "bcore_fp_logvf",          "p_errorvf" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_parse_fv,                    "bcore_source_fp_parse_fv", "parse_fv"   );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier"   );
     return self;
 }
 
 void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier )
 {
     o->ext_supplier = supplier;
+    if( supplier && ( *(aware_t*)supplier ) == TYPEOF_bcore_source_file_s )
+    {
+        const bcore_source_file_s* file_supplier = supplier;
+        st_s_discard( o->supply_info );
+        o->supply_info = st_s_clone( file_supplier->name );
+    }
 }
 
 /**********************************************************************************************************************/

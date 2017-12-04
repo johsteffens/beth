@@ -104,7 +104,7 @@ void st_s_down( st_s* o )
 
 void st_s_copy( st_s* o, const st_s* src )
 {
-    if( o == src ) return;
+    if( !src || o == src ) return;
     if( o->space <= src->size )
     {
         if( o->space > 0 ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
@@ -443,6 +443,7 @@ void st_s_pop_n( st_s* o, sz_t n )
 
 st_s* st_s_push_st( st_s* o, const st_s* src )
 {
+    if( !src ) return o;
     if( o->size == 0 )
     {
         st_s_copy( o, src );
@@ -1029,7 +1030,13 @@ static bl_t c_match( sc_t o, sz_t on, sc_t f, sz_t* fi )
     return false;
 }
 
-sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list args )
+sz_t st_s_parse_err( vd_t arg, const st_s* o, sz_t idx, st_s* msg )
+{
+    ERR( "Parse error at (%zu:%zu):\n%s\n%s\n", st_s_lineof( o, idx ), st_s_colof( o, idx ), st_s_show_line_context( o, idx )->sc, msg->sc );
+    return idx;
+}
+
+sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, va_list args )
 {
     sz_t end_l = end < o->size ? end : o->size;
     sz_t idx = start;
@@ -1217,7 +1224,7 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
                         }
                         else
                         {
-                            ERR( "\n%s\nParsing #bl_t failed at (%zu:%zu): true or false expected.", st_s_show_line_context( o, idx )->sc, st_s_lineof( o, idx ), st_s_colof( o, idx ) );
+                            return errfp( arg, o, idx, st_s_createf( "Parsing #bl_t failed; true or false expected." ) );
                         }
                         if( set_arg ) *va_arg( args, bl_t* ) = val;
                         size = 0;
@@ -1234,7 +1241,7 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
 
                 if( sres <= 0 )
                 {
-                    ERR( "\n%s\nParsing type #%s failed at (%zu:%zu).", st_s_show_line_context( o, idx )->sc, ifnameof( type ), st_s_lineof( o, idx ), st_s_colof( o, idx ) );
+                    return errfp( arg, o, idx, st_s_createf( "Parsing type #%s failed.", ifnameof( type ) ) );
                 }
                 idx += size;
                 if( idx > end_l ) idx = end_l;
@@ -1310,7 +1317,7 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
                 }
                 else
                 {
-                    ERR( "\n%s\n'#' expected at (%zu:%zu).", st_s_show_line_context( o, idx )->sc, fp, st_s_lineof( o, idx ), st_s_colof( o, idx ) );
+                    return errfp( arg, o, idx, st_s_createf( "'#' expected." ) );
                 }
             }
             else if( ( bcore_strcmp( "aware_t", fp ) >> 1 ) == 0 )
@@ -1320,7 +1327,7 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
                 uintmax_t val;
                 if( sscanf( o->sc + idx, "%"SCNuMAX"%n", &val, &size ) <= 0 )
                 {
-                    ERR( "\n%s\nParsing #aware_t failed at (%zu:%zu).", st_s_show_line_context( o, idx )->sc, st_s_lineof( o, idx ), st_s_colof( o, idx ) );
+                    return errfp( arg, o, idx, st_s_createf( "Parsing #aware_t failed." ) );
                 }
                 if( set_arg ) *va_arg( args, aware_t* ) = val;
                 idx += size;
@@ -1342,7 +1349,7 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
                 }
                 else
                 {
-                    ERR( "\n%s\nParsing #bool failed at (%zu:%zu): true or false expected.", st_s_show_line_context( o, idx )->sc, st_s_lineof( o, idx ), st_s_colof( o, idx ) );
+                    return errfp( arg, o, idx, st_s_createf( "Parsing #bool failed: true or false expected." ) );
                 }
                 if( set_arg ) *va_arg( args, bool* ) = val;
                 if( idx > end_l ) idx = end_l;
@@ -1382,7 +1389,10 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
                 st_s* string = NULL;
                 if( set_arg ) string = va_arg( args, st_s* );
                 if( set_arg ) st_s_clear( string );
-                if( o->sc[ idx ] != '"' ) ERR( "\n%s\n'\"' expected at (%zu:%zu).", st_s_show_line_context( o, idx )->sc, st_s_lineof( o, idx ), st_s_colof( o, idx ) );
+                if( o->sc[ idx ] != '"' )
+                {
+                    return errfp( arg, o, idx, st_s_createf( "'\"' expected." ) );
+                }
                 idx++;
                 while ( o->sc[ idx ] != '"' )
                 {
@@ -1437,14 +1447,28 @@ sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list ar
             }
             else
             {
-                ERR( "\n%s\nMatching format characters '%s' failed at (%zu:%zu).", st_s_show_line_context( o, idx )->sc, fp0, st_s_lineof( o, idx ), st_s_colof( o, idx ) );
+                return errfp( arg, o, idx, st_s_createf( "Matching format characters '%s' failed", fp0 ) );
             }
         }
     }
     return idx;
 }
 
-sz_t st_s_parse_fa(  const st_s* o, sz_t start, sz_t end, sc_t format, ... )
+sz_t st_s_parse_efa( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    sz_t idx = st_s_parse_efv( o, start, end, errfp, arg, format, args );
+    va_end( args );
+    return idx;
+}
+
+sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list args )
+{
+    return st_s_parse_efv( o, start, end, st_s_parse_err, NULL, format, args );
+}
+
+sz_t st_s_parse_fa( const st_s* o, sz_t start, sz_t end, sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
