@@ -14,6 +14,7 @@
 #include "bcore_quicktypes.h"
 #include <time.h>
 #include <math.h>
+#include <pthread.h>
 
 /**********************************************************************************************************************/
 // default parameters
@@ -2446,6 +2447,69 @@ static st_s* tbman_s_memtest( void )
     return log;
 }
 
+vd_t tbman_s_thread_func( vd_t o )
+{
+    st_s* log = st_s_create();
+    sz_t table_size = 10000;
+    sz_t cycles     = 5;
+    sz_t max_alloc  = 65536;
+    sz_t seed       = 1237;
+    st_s_push_st_d( log, tbman_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
+//    st_s_push_st_d( log, tbman_alloc_challenge( bcore_tbman_external_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
+    return log;
+}
+
+static st_s* tbman_s_thread_test( void )
+{
+    st_s* log = st_s_create();
+
+    pthread_t th1, th2, th3, th4;
+    pthread_create( &th1, NULL, tbman_s_thread_func, &th1 );
+
+    {
+        st_s* log_l = NULL;
+        pthread_join( th1, ( vd_t* )&log_l );
+        st_s_push_fa( log, "single thread:\n#<st_s*>\n", log_l );
+        st_s_discard( log_l );
+    }
+
+    pthread_create( &th1, NULL, tbman_s_thread_func, &th1 );
+    pthread_create( &th2, NULL, tbman_s_thread_func, &th2 );
+    pthread_create( &th3, NULL, tbman_s_thread_func, &th3 );
+    pthread_create( &th4, NULL, tbman_s_thread_func, &th4 );
+
+    {
+        st_s* log_l = NULL;
+        pthread_join( th1, ( vd_t* )&log_l );
+        st_s_push_fa( log, "thread1:\n#<st_s*>\n", log_l );
+        st_s_discard( log_l );
+    }
+
+    {
+        st_s* log_l = NULL;
+        pthread_join( th2, ( vd_t* )&log_l );
+        st_s_push_fa( log, "thread2:\n#<st_s*>\n", log_l );
+        st_s_discard( log_l );
+    }
+
+    {
+        st_s* log_l = NULL;
+        pthread_join( th3, ( vd_t* )&log_l );
+        st_s_push_fa( log, "thread3:\n#<st_s*>\n", log_l );
+        st_s_discard( log_l );
+    }
+
+    {
+        st_s* log_l = NULL;
+        pthread_join( th4, ( vd_t* )&log_l );
+        st_s_push_fa( log, "thread4:\n#<st_s*>\n", log_l );
+        st_s_discard( log_l );
+    }
+
+    return log;
+}
+
+
 /**********************************************************************************************************************/
 // signal
 
@@ -2483,6 +2547,7 @@ vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object )
     else if( signal == typeof( "selftest" ) )
     {
         st_s* log = st_s_create();
+        st_s_push_st_d( log, tbman_s_thread_test() );
         st_s_push_st_d( log, tbman_s_rctest() );
         st_s_push_st_d( log, tbman_s_memtest() );
         return log;
