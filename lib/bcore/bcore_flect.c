@@ -910,6 +910,8 @@ const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
     if( p_func )
     {
         self = ( ( bcore_flect_create_self_fp )*p_func )();
+        bcore_flect_self_s* discard_self = NULL; // in case multiple threads land here, redundant creations are discarded again
+
         if( self->type != type )
         {
             ERR( "Type of created reflection '%s' differs from requested type '%s'.\n"
@@ -926,7 +928,7 @@ const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
         {
             // If this reflection has meanwhile been registered by another thread,
             // kill current self and retrieve registered version
-            bcore_flect_self_s_discard( self );
+            discard_self = self;
             self = *bcore_hmap_u2vd_s_get( self_map_s_g->hmap, type );
         }
         else
@@ -935,6 +937,8 @@ const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
             bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
         }
         bcore_mutex_unlock( &self_map_s_g->mutex );
+
+        if( discard_self ) bcore_flect_self_s_discard( discard_self );
     }
 
     return self;
