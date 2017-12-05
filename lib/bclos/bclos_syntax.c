@@ -32,7 +32,7 @@ static sr_s parse_expression( sr_s src )
 
     bcore_name_map_s* name_map = bcore_name_map_s_create();
 
-    if( bcore_source_q_parse_bool_f( &src, " #?w'class' " ) )
+    if( bcore_source_q_parse_bl_fa( &src, " #?w'class' " ) )
     {
         bcore_flect_self_s* self = bcore_flect_self_s_create();
         st_s* string = st_s_create();
@@ -42,7 +42,7 @@ static sr_s parse_expression( sr_s src )
             bcore_name_map_s_set( name_map, bcore_name_sc( string->sc ) );
             self->trait = typeof( string->sc );
         }
-        while( !bcore_source_q_parse_bool_f( &src, " #?'}' " ) )
+        while( !bcore_source_q_parse_bl_fa( &src, " #?'}' " ) )
         {
 
         }

@@ -285,9 +285,9 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
     bcore_flect_body_s* o = bcore_flect_body_s_create();
     bcore_source_q_parse_fa( &src, " { " );
 
-    while( !bcore_source_q_parse_bool_f( &src, " #?'}' " ) )
+    while( !bcore_source_q_parse_bl_fa( &src, " #?'}' " ) )
     {
-        if( bcore_source_q_parse_bool_f( &src, " #?'...'" ) )
+        if( bcore_source_q_parse_bl_fa( &src, " #?'...'" ) )
         {
             o->complete = false;
             break;
@@ -298,7 +298,7 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
         st_s* item_name = st_s_create_l( l );
         bcore_flect_item_s* item = bcore_flect_item_s_create();
 
-        if( bcore_source_q_parse_bool_f( &src, " #?w'func' " ) ) // function declaration
+        if( bcore_source_q_parse_bl_fa( &src, " #?w'func' " ) ) // function declaration
         {
             st_s* assign_name = st_s_create_l( l );
             bcore_source_q_parse_fa( &src, "#name #name = #name", type_name, item_name, assign_name );
@@ -314,11 +314,11 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
 
             // type can be specified by explicit type id number (anonymous types) or by name
             tp_t type_val = 0;
-            if( bcore_source_q_parse_bool_f( &src, " #?([0]=='{')" ) ) // nested anonymous type
+            if( bcore_source_q_parse_bl_fa( &src, " #?([0]=='{')" ) ) // nested anonymous type
             {
                 type_val = bcore_flect_type_parse_src( src );
             }
-            else if( bcore_source_q_parse_bool_f( &src, " #?([0]>='0'&&[0]<='9')" ) ) // type is specified by number
+            else if( bcore_source_q_parse_bl_fa( &src, " #?([0]>='0'&&[0]<='9')" ) ) // type is specified by number
             {
                 bcore_source_q_parse_fa( &src, "#<tp_t*> ", &type_val );
             }
@@ -613,7 +613,7 @@ bcore_flect_self_s* bcore_flect_self_s_build_parse_src( sr_s src, sz_t size_of )
     bcore_source_q_parse_fa( &src, " #name", identifier );
     tp_t type2 = ( identifier->size > 0 ) ? entypeof( identifier->sc ) : 0;
 
-    if( bcore_source_q_parse_bool_f( &src, " #=?'{'" ) )
+    if( bcore_source_q_parse_bl_fa( &src, " #=?'{'" ) )
     {
         o->trait = type2 ? type2 : typeof( "bcore_inst" );
         o->body = body_s_build_parse_src( src );

@@ -204,12 +204,12 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
                 bcore_array_set_size( arr_l, 0 );
-                while( !bcore_source_parse_bool_f( src_l, " #?'</>'" ) ) bcore_array_push( arr_l, interpret( o, sr_null(), src_l ) );
+                while( !bcore_source_parse_bl_fa( src_l, " #?'</>'" ) ) bcore_array_push( arr_l, interpret( o, sr_null(), src_l ) );
             }
             else
             {
                 st_s* buf = st_s_create_l( l );
-                while( !bcore_source_parse_bool_f( src_l, " #?'</>'" ) )
+                while( !bcore_source_parse_bl_fa( src_l, " #?'</>'" ) )
                 {
                     st_s* name = st_s_create_l( l );
                     bcore_source_parse_fa( src_l, " #name :", name );

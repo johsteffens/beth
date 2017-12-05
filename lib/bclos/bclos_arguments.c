@@ -72,7 +72,7 @@ void bclos_arguments_s_parse_from_source( bclos_arguments_s* o, sr_s source )
     source = bcore_life_s_push_sr( l, source );
     bclos_arguments_s_clear( o );
     bcore_source_q_parse_fa( &source, " ( " );
-    while( !bcore_source_q_parse_bool_f( &source, " #?')'" ) )
+    while( !bcore_source_q_parse_bl_fa( &source, " #?')'" ) )
     {
         if( o->size > 0 ) bcore_source_q_parse_fa( &source, " ," );
         bclos_expression_s* expr = bclos_expression_s_create();
@@ -108,7 +108,7 @@ void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source )
     source = bcore_life_s_push_sr( l, source );
     bclos_expression_s_clear( o );
 
-    if( bcore_source_q_parse_bool_f( &source, " #?'('" ) )
+    if( bcore_source_q_parse_bl_fa( &source, " #?'('" ) )
     {
         bclos_expression_s_parse_from_source( o, source );
         bcore_source_q_parse_fa( &source, " )" );
@@ -132,7 +132,7 @@ void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source )
             closure = sr_tsd( TYPEOF_bclos_address_s, bclos_address_s_create_tp( identifier_tp ) );
         }
 
-        if( bcore_source_q_parse_bool_f( &source, " #=?'('" ) )
+        if( bcore_source_q_parse_bl_fa( &source, " #=?'('" ) )
         {
             o->closure = closure;
             bclos_arguments_s_parse_from_source( &o->args, source );
@@ -145,7 +145,7 @@ void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source )
     }
 
     /// expression so far is closure; true arguments are yet to come
-    if( bcore_source_q_parse_bool_f( &source, " #=?'('" ) )
+    if( bcore_source_q_parse_bl_fa( &source, " #=?'('" ) )
     {
         sr_s closure = sr_tsd( TYPEOF_bclos_expression_s, bclos_expression_s_clone( o ) );
         bclos_expression_s_clear( o );
