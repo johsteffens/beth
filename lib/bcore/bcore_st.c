@@ -1071,6 +1071,10 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
                         while( ( idx < end_l - 1 ) && !( ( o->data[ idx ] == '*' ) && ( o->data[ idx + 1 ] == '/' ) ) ) idx++;
                         idx += 2 * ( ( o->data[ idx ] == '*' ) && ( o->data[ idx + 1 ] == '/' ) );
                     }
+                    else
+                    {
+                        break;
+                    }
                 }
                 // '#!' is treated as line-comment to allow the use of posix shebang
                 else if( ( c == '#' ) && ( idx < end_l - 1 ) && o->data[ idx + 1 ] == '!' )
@@ -1504,6 +1508,7 @@ static sz_t flow_src( vd_t o, vd_t data, sz_t size )
     if( s->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
     size = ( size > s->size ) ? s->size : size;
     bcore_memcpy( data, s->data, size );
+    s->data += size;
     s->size -= size;
     return size;
 }
@@ -1520,7 +1525,9 @@ static void p_errorvf( const st_s* o, sc_t format, va_list args )
 static void parse_fv( st_s* o, sc_t format, va_list args )
 {
     if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
-    o->data += st_s_parse_fv( o, 0, o->size, format, args );
+    sz_t size = st_s_parse_fv( o, 0, o->size, format, args );
+    o->data += size;
+    o->size -= size;
 }
 
 /// sanity feature
