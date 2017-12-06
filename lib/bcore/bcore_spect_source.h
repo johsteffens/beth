@@ -31,7 +31,7 @@ typedef struct bcore_source_s
 const bcore_source_s* bcore_source_s_get_typed( tp_t type );
 const bcore_source_s* bcore_source_s_get_aware( vc_t obj );
 
-sz_t bcore_source_spect_get_data(     const bcore_source_s* p, vd_t o, vd_t data, sz_t size );
+sz_t bcore_source_spect_get_data(     const bcore_source_s* p, vd_t o, vd_t data, sz_t size ); // returns number of bytes read
 void bcore_source_spect_parse_fv(     const bcore_source_s* p, vd_t o, sc_t format, va_list args );
 void bcore_source_spect_parse_fa(     const bcore_source_s* p, vd_t o, sc_t format, ... );
 void bcore_source_spect_parse_errvf(  const bcore_source_s* p, vd_t o, sc_t format, va_list args );

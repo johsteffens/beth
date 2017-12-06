@@ -81,7 +81,7 @@ void bcore_source_spect_parse_err_fa( const bcore_source_s* p, vd_t o, sc_t form
 
 void bcore_source_spect_parse_fv( const bcore_source_s* p, vd_t o, sc_t format, va_list args )
 {
-    if( p->fp_parse_errvf )
+    if( p->fp_parse_fv )
     {
         p->fp_parse_fv( o, format, args );
     }
@@ -136,7 +136,7 @@ static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
     bcore_source_s* o = source_s_create();
     o->o_type = self->type;
     o->fp_flow_src     = ( bcore_fp_flow_src            )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_flow_src" ), 0 );
-    o->fp_parse_fv      = ( bcore_source_fp_parse_fv      )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_parse_fv" ), 0 );
+    o->fp_parse_fv     = ( bcore_source_fp_parse_fv     )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_parse_fv" ), 0 );
     o->fp_parse_errvf  = ( bcore_fp_logvf               )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_fp_logvf" ), bcore_name_enroll( "p_errorvf" ) );
     o->fp_set_supplier = ( bcore_source_fp_set_supplier )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_supplier" ), 0 );
     return o;
