@@ -23,7 +23,7 @@ void bcore_arr_sz_s_down( bcore_arr_sz_s* o )
 
 void bcore_arr_sz_s_copy( bcore_arr_sz_s* o, const bcore_arr_sz_s* src )
 {
-    if( o->space < o->size )
+    if( o->space < src->size )
     {
         if( o->space > 0 ) o->data = bcore_un_alloc( sizeof( sz_t ), o->data, o->space, 0, &o->space );
         o->data = bcore_un_alloc( sizeof( sz_t ), NULL, o->space, src->size, &o->space );
@@ -479,7 +479,7 @@ void bcore_arr_vd_s_down( bcore_arr_vd_s* o )
 
 void bcore_arr_vd_s_copy( bcore_arr_vd_s* o, const bcore_arr_vd_s* src )
 {
-    if( o->space < o->size )
+    if( o->space < src->size )
     {
         if( o->space > 0 ) o->data = bcore_un_alloc( sizeof( vd_t ), o->data, o->space, 0, &o->space );
         o->data = bcore_un_alloc( sizeof( vd_t ), NULL, o->space, src->size, &o->space );
@@ -571,6 +571,87 @@ void bcore_arr_vd_s_reorder( bcore_arr_vd_s* o, const bcore_arr_sz_s* order )
 }
 
 /**********************************************************************************************************************/
+// bcore_arr_sr_s
+
+DEFINE_FUNCTION_INIT_INST( bcore_arr_sr_s )
+DEFINE_FUNCTION_DOWN_INST( bcore_arr_sr_s )
+DEFINE_FUNCTION_COPY_INST( bcore_arr_sr_s )
+DEFINE_FUNCTION_CREATE(    bcore_arr_sr_s )
+DEFINE_FUNCTION_DISCARD(   bcore_arr_sr_s )
+DEFINE_FUNCTION_CLONE(     bcore_arr_sr_s )
+
+static bcore_flect_self_s* arr_sr_s_create_self( void )
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_arr_sr_s = bcore_array { aware_t _; sr_s [] arr; }", sizeof( bcore_arr_sr_s ) );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_arr_sr_s_init, "bcore_fp_init", "init" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_arr_sr_s_down, "bcore_fp_down", "down" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_arr_sr_s_copy, "bcore_fp_copy", "copy" );
+    return self;
+}
+
+void bcore_arr_sr_s_clear( bcore_arr_sr_s* o )
+{
+    if( o->space == 0 )
+    {
+        o->data = NULL; // in case array is referencing external data
+        o->size = 0;
+    }
+
+    for( sz_t i = 0; i < o->size; i++ ) sr_down( o->data[ i ] );
+    o->size = 0;
+}
+
+void bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, sz_t space )
+{
+    bcore_array_aware_set_space( o, space );
+}
+
+void bcore_arr_sr_s_make_strong( bcore_arr_sr_s* o )
+{
+    bcore_array_aware_make_strong( o );
+}
+
+sr_s* bcore_arr_sr_s_push_sr( bcore_arr_sr_s* o, sr_s v )
+{
+    if( o->size > o->space ) bcore_arr_sr_s_make_strong( o );
+    if( o->size == o->space )
+    {
+        o->data = bcore_un_alloc( sizeof( st_s* ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+    }
+    o->data[ o->size++ ] = v;
+    return &o->data[ o->size - 1 ];
+}
+
+sr_s* bcore_arr_sr_s_push_tp( bcore_arr_sr_s* o, tp_t type )
+{
+    if( o->size > o->space ) bcore_arr_sr_s_make_strong( o );
+    if( o->size == o->space )
+    {
+        o->data = bcore_un_alloc( sizeof( st_s* ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+    }
+    o->data[ o->size++ ] = sr_create( type );
+    return &o->data[ o->size - 1 ];
+}
+
+
+sr_s bcore_arr_sr_s_pop( bcore_arr_sr_s* o )
+{
+    if( o->size == 0 ) return sr_null();
+    o->size--;
+    return o->data[ o->size ];
+}
+
+void bcore_arr_sr_s_sort( bcore_arr_sr_s* o, s2_t order )
+{
+    bcore_array_aware_sort( o, 0, o->size, order );
+}
+
+void bcore_arr_sr_s_reorder( bcore_arr_sr_s* o, const bcore_arr_sz_s* order )
+{
+    bcore_array_aware_reorder( o, order);
+}
+
+/**********************************************************************************************************************/
 
 vd_t bcore_arr_signal( tp_t target, tp_t signal, vd_t object )
 {
@@ -581,6 +662,7 @@ vd_t bcore_arr_signal( tp_t target, tp_t signal, vd_t object )
         bcore_flect_define_creator( typeof( "bcore_arr_sz_s" ), arr_sz_s_create_self );
         bcore_flect_define_creator( typeof( "bcore_arr_st_s" ), arr_st_s_create_self );
         bcore_flect_define_creator( typeof( "bcore_arr_vd_s" ), arr_vd_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_arr_sr_s" ), arr_sr_s_create_self );
     }
     else if( signal == typeof( "selftest" ) )
     {

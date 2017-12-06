@@ -6,6 +6,7 @@
 #include "bcore_flect.h"
 #include "bcore_features.h"
 #include "bcore_st.h"
+#include "bcore_ref.h"
 
 /** Collection of frequently used specific arrays compatible with bcore_array_s
  *  Standard functions are directly implemented.
@@ -92,6 +93,31 @@ void bcore_arr_vd_s_fill(      bcore_arr_vd_s* o, sz_t size, vd_t v ); // create
 void bcore_arr_vd_s_push(      bcore_arr_vd_s* o, vd_t v );
 vd_t bcore_arr_vd_s_pop(       bcore_arr_vd_s* o );
 void bcore_arr_vd_s_reorder(   bcore_arr_vd_s* o, const bcore_arr_sz_s* order );
+
+/**********************************************************************************************************************/
+
+typedef struct bcore_arr_sr_s
+{
+    aware_t _;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            sr_s* data;
+            sz_t size, space;
+        };
+    };
+} bcore_arr_sr_s;
+
+DECLARE_FUNCTIONS_OBJ( bcore_arr_sr_s )
+
+void  bcore_arr_sr_s_clear(     bcore_arr_sr_s* o ); // sets size to zero
+void  bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, sz_t space );
+sr_s* bcore_arr_sr_s_push_sr(   bcore_arr_sr_s* o, sr_s v );
+sr_s* bcore_arr_sr_s_push_tp(   bcore_arr_sr_s* o, tp_t type );
+sr_s  bcore_arr_sr_s_pop(       bcore_arr_sr_s* o );
+void  bcore_arr_sr_s_reorder(   bcore_arr_sr_s* o, const bcore_arr_sz_s* order );
 
 /**********************************************************************************************************************/
 
