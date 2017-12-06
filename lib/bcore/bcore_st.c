@@ -1281,7 +1281,7 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
                     {
                         char term = *fp++;
                         flag = true;
-                        while( *fp != term && *fp != 0 && idx < end_l )
+                        while( *fp != term && *fp != 0 )
                         {
                             if( flag )
                             {

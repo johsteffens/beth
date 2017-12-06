@@ -192,7 +192,7 @@ void st_s_print_fa( sc_t format, ... );
  *      Enclosure ' should be preferred. It can be replaced by suitable character
  *      from "|*.-+=/ in case the enclosure occurs in the in the literal.
  *
- *  "#w?'...'"  word-match (Example: "#?w'hidden'")
+ *  "#?w'...'"  word-match (Example: "#?w'hidden'")
  *      Argument: bl_t*
  *      Like "#?'...'" except that the matching criterion fails if the character following
  *      the matched string is a letter or digit. The letter following is not consumed.
