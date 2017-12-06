@@ -6,6 +6,10 @@
 #include "bcore_spect.h"
 #include "bcore_trait.h"
 #include "bcore_quicktypes.h"
+#include "bcore_life.h"
+#include "bcore_txt_ml.h"
+#include "bcore_spect_source.h"
+#include "bcore_sources.h"
 
 /**********************************************************************************************************************/
 // bcore_interpreter_s
@@ -52,6 +56,36 @@ static bcore_interpreter_s* create_from_self( const bcore_flect_self_s* self )
     o->o_type = self->type;
     o->fp_interpret = ( bcore_fp_interpret )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_interpret" ), 0 );
     return o;
+}
+
+sr_s bcore_interpret_auto( sr_s source )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    sr_s src = sr_cp( bcore_life_s_push_sr( l, source ), TYPEOF_bcore_source_s );
+    bcore_txt_ml_interpreter_s* txt_ml = bcore_life_s_push_aware( l, bcore_txt_ml_interpreter_s_create() );
+    sr_s interpreter = bcore_txt_ml_interpreter_s_interpret( txt_ml, src );
+
+    if( !interpreter.o ) bcore_source_parse_err_fa( src, "No interpreter specified." );
+    if( !bcore_trait_is( sr_s_type( &interpreter ), typeof( "bcore_interpreter" ) ) )
+    {
+        bcore_source_parse_err_fa( src, "Object '#<sc_t>' is no interpreter.", ifnameof( sr_s_type( &interpreter ) ) );
+    }
+
+    sr_s obj = bcore_interpret( interpreter, src );
+
+    bcore_life_s_discard( l );
+
+    return obj;
+}
+
+sr_s bcore_interpret_auto_file( sc_t file )
+{
+    sr_s chain = sr_asd( bcore_source_chain_s_create() );
+    bcore_source_chain_s_push_d( chain.o, bcore_source_file_s_create_name( file ) );
+    // TODO: test if bcore_source_string_s works correctly on binary files
+    bcore_source_chain_s_push_d( chain.o, bcore_inst_typed_create( typeof( "bcore_source_string_s" ) ) );
+    sr_s ret = bcore_interpret_auto( chain );
+    return ret;
 }
 
 static bcore_flect_self_s* interpreter_s_create_self( void )
