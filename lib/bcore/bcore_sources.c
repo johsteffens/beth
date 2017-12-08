@@ -102,6 +102,18 @@ void bcore_source_chain_s_set_supplier( bcore_source_chain_s* o, vd_t supplier )
     bcore_source_aware_set_supplier( o->data[ 0 ], supplier );
 }
 
+bl_t bcore_source_chain_s_eos( const bcore_source_chain_s* o )
+{
+    if( o->size == 0 ) return true;
+    return bcore_source_aware_eos( o->data[ o->size - 1 ] );
+}
+
+sc_t bcore_source_chain_s_file( const bcore_source_chain_s* o )
+{
+    if( o->size == 0 ) return "";
+    return bcore_source_aware_file( o->data[ 0 ] );
+}
+
 /**********************************************************************************************************************/
 
 static void chain_p_errorvf( bcore_source_chain_s* o, sc_t format, va_list args )
@@ -177,6 +189,8 @@ static bcore_flect_self_s* chain_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_eos,          "bcore_source_fp_eos",  "eos" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_file,         "bcore_source_fp_file", "file" );
     return self;
 }
 
@@ -274,6 +288,19 @@ sz_t bcore_source_buffer_s_get_data(  bcore_source_buffer_s* o, vd_t data, sz_t 
     return buffer_flow_src( o, data, size );
 }
 
+bl_t bcore_source_buffer_s_eos( const bcore_source_buffer_s* o )
+{
+    if( o->index < o->size ) return false;
+    if( o->ext_supplier    ) return bcore_source_aware_eos( o->ext_supplier );
+    return true;
+}
+
+sc_t bcore_source_buffer_s_file( const bcore_source_buffer_s* o )
+{
+    if( o->ext_supplier ) return bcore_source_aware_file( o->ext_supplier );
+    return "";
+}
+
 /**********************************************************************************************************************/
 
 static void buffer_p_errorvf( bcore_source_buffer_s* o, sc_t format, va_list args )
@@ -304,6 +331,8 @@ static bcore_flect_self_s* buffer_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )buffer_flow_src,             "bcore_fp_flow_src", "flow_src"  );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )buffer_p_errorvf,            "bcore_fp_logvf",    "p_errorvf" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_eos,          "bcore_source_fp_eos",  "eos" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_file,         "bcore_source_fp_file", "file" );
     return self;
 }
 
@@ -427,6 +456,26 @@ sz_t bcore_source_string_s_get_data(  bcore_source_string_s* o, vd_t data, sz_t 
     return string_flow_src( o, data, size );
 }
 
+bl_t bcore_source_string_s_eos( const bcore_source_string_s* o )
+{
+    if( !o->string )
+    {
+        if( o->ext_supplier ) return bcore_source_aware_eos( o->ext_supplier );
+        return true;
+    }
+
+    if( o->index < o->string->size ) return false;
+    if( o->ext_supplier ) return bcore_source_aware_eos( o->ext_supplier );
+
+    return true;
+}
+
+sc_t bcore_source_string_s_file( const bcore_source_string_s* o )
+{
+    if( o->ext_supplier ) return bcore_source_aware_file( o->ext_supplier );
+    return "";
+}
+
 /**********************************************************************************************************************/
 
 static sz_t string_s_parse_err( vd_t arg, const st_s* string, sz_t idx, st_s* ext_msg )
@@ -480,6 +529,8 @@ static bcore_flect_self_s* string_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )string_s_errorvf,                   "bcore_fp_logvf",          "p_errorvf" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )string_parse_fv,                    "bcore_source_fp_parse_fv", "parse_fv"   );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier"   );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_eos,          "bcore_source_fp_eos",  "eos" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_file,         "bcore_source_fp_file", "file" );
     return self;
 }
 
@@ -611,6 +662,22 @@ sz_t bcore_source_file_s_get_data(  bcore_source_file_s* o, vd_t data, sz_t size
     return file_flow_src( o, data, size );
 }
 
+bl_t bcore_source_file_s_eos( const bcore_source_file_s* o )
+{
+    if( !o->handle )
+    {
+        if( o->name ) return false;
+        return true;
+    }
+
+    return feof( o->handle );
+}
+
+sc_t bcore_source_file_s_file( const bcore_source_file_s* o )
+{
+    return o->name->sc;
+}
+
 /**********************************************************************************************************************/
 
 static void file_p_errorvf( bcore_source_file_s* o, sc_t format, va_list args )
@@ -635,6 +702,8 @@ static bcore_flect_self_s* file_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )file_interpret_body_a, "ap_t", "interpret_body" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )file_flow_src,  "bcore_fp_flow_src", "flow_src"  );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )file_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_eos,  "bcore_source_fp_eos",  "eos" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_file, "bcore_source_fp_file", "file" );
     return self;
 }
 

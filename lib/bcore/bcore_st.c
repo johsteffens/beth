@@ -1530,6 +1530,12 @@ static void parse_fv( st_s* o, sc_t format, va_list args )
     o->size -= size;
 }
 
+static bl_t eos( const st_s* o )
+{
+    if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
+    return o->size == 0;
+}
+
 /// sanity feature
 void bcore_inst_typed_check_sizeof( u2_t type, sz_t size );
 static void check_sanity( vc_t o )
@@ -1573,6 +1579,7 @@ static bcore_flect_self_s* st_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )flow_src,          "bcore_fp_flow_src",        "flow_src"     );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )p_errorvf,         "bcore_fp_logvf",           "p_errorvf"    );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )parse_fv,          "bcore_source_fp_parse_fv", "parse_fv"     );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )eos,               "bcore_source_fp_eos",      "eos"          );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )check_sanity,      "bcore_fp_check_sanity",    "check_sanity" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",         "cmp_st"       );
     return self;

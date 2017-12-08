@@ -118,6 +118,17 @@ void bcore_source_spect_set_supplier( const bcore_source_s* p, vd_t o, vd_t supp
     }
 }
 
+bl_t bcore_source_spect_eos( const bcore_source_s* p, vc_t o )
+{
+    return p->fp_eos( o );
+}
+
+sc_t bcore_source_spect_file( const bcore_source_s* p, vc_t o )
+{
+    if( p->fp_file ) return p->fp_file( o );
+    return "";
+}
+
 /**********************************************************************************************************************/
 
 static void source_s_define_trait()
@@ -125,6 +136,7 @@ static void source_s_define_trait()
     tp_t trait = entypeof( "bcore_source" );
     bcore_trait_require_awareness( trait );
     bcore_trait_require_function( trait, entypeof( "bcore_fp_flow_src" ), 0 );
+    bcore_trait_require_function( trait, entypeof( "bcore_source_fp_eos" ), 0 );
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
@@ -139,6 +151,8 @@ static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
     o->fp_parse_fv     = ( bcore_source_fp_parse_fv     )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_parse_fv" ), 0 );
     o->fp_parse_errvf  = ( bcore_fp_logvf               )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_fp_logvf" ), bcore_name_enroll( "p_errorvf" ) );
     o->fp_set_supplier = ( bcore_source_fp_set_supplier )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_supplier" ), 0 );
+    o->fp_eos          = ( bcore_source_fp_eos          )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_source_fp_eos" ), 0 );
+    o->fp_file         = ( bcore_source_fp_file         )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_file" ), 0 );
     return o;
 }
 
@@ -181,12 +195,16 @@ sz_t NPX(aware_get_data    )( vd_t o, vd_t d, sz_t sz   ) { return NPX(spect_get
 void NPX(aware_parse_fv    )( vd_t o, sc_t f, va_list a ) {        NPX(spect_parse_fv    )( gtpd( *( aware_t* )o ), o, f, a  ); }
 void NPX(aware_parse_errvf )( vd_t o, sc_t f, va_list a ) {        NPX(spect_parse_errvf )( gtpd( *( aware_t* )o ), o, f, a  ); }
 void NPX(aware_parse_err_fv)( vd_t o, sc_t f, va_list a ) {        NPX(spect_parse_err_fv)( gtpd( *( aware_t* )o ), o, f, a  ); }
-bl_t NPX(aware_parse_bl_fa )( vd_t o, sc_t f            ) { return NPX(spect_parse_bl_fa)( gtpd( *( aware_t* )o ), o, f     ); }
+bl_t NPX(aware_parse_bl_fa )( vd_t o, sc_t f            ) { return NPX(spect_parse_bl_fa )( gtpd( *( aware_t* )o ), o, f     ); }
 void NPX(aware_set_supplier)( vd_t o, vd_t s            ) {        NPX(spect_set_supplier)( gtpd( *( aware_t* )o ), o, s     ); }
+bl_t NPX(aware_eos         )( vc_t o                    ) { return NPX(spect_eos         )( gtpd( *( aware_t* )o ), o        ); }
+sc_t NPX(aware_file        )( vc_t o                    ) { return NPX(spect_file        )( gtpd( *( aware_t* )o ), o        ); }
 
 void NPX(aware_parse_fa    )( vd_t o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(aware_parse_fv    )( o, f, a ); va_end( a ); }
 void NPX(aware_parse_errf  )( vd_t o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(aware_parse_errvf )( o, f, a ); va_end( a ); }
 void NPX(aware_parse_err_fa)( vd_t o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(aware_parse_err_fv)( o, f, a ); va_end( a ); }
+
+/**********************************************************************************************************************/
 
 inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_source_s ); }
 inline static vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_source_s ); }
@@ -195,19 +213,25 @@ sz_t NPX(get_data    )( sr_s o, vd_t d, sz_t sz   ) { sz_t r = NPX(spect_get_dat
 void NPX(parse_fv    )( sr_s o, sc_t f, va_list a ) {          NPX(spect_parse_fv    )( w_spect( o ), o.o, f, a  ); sr_down( o ); }
 void NPX(parse_errvf )( sr_s o, sc_t f, va_list a ) {          NPX(spect_parse_errvf )( w_spect( o ), o.o, f, a  ); sr_down( o ); }
 void NPX(parse_err_fv)( sr_s o, sc_t f, va_list a ) {          NPX(spect_parse_err_fv)( w_spect( o ), o.o, f, a  ); sr_down( o ); }
-bl_t NPX(parse_bl_fa )( sr_s o, sc_t f            ) { bl_t r = NPX(spect_parse_bl_fa)( w_spect( o ), o.o, f     ); sr_down( o ); return r; }
+bl_t NPX(parse_bl_fa )( sr_s o, sc_t f            ) { bl_t r = NPX(spect_parse_bl_fa )( w_spect( o ), o.o, f     ); sr_down( o ); return r; }
 void NPX(set_supplier)( sr_s o, vd_t s            ) {          NPX(spect_set_supplier)( w_spect( o ), o.o, s     ); sr_down( o ); }
+bl_t NPX(eos         )( sr_s o                    ) { bl_t r = NPX(spect_eos         )( r_spect( o ), o.o        ); sr_down( o ); return r; }
+sc_t NPX(file        )( sr_s o                    ) { sc_t r = NPX(spect_file        )( r_spect( o ), o.o        ); sr_down( o ); return r; }
 
 void NPX(parse_fa    )( sr_s o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(parse_fv    )( o, f, a ); va_end( a ); }
 void NPX(parse_errf  )( sr_s o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(parse_errvf )( o, f, a ); va_end( a ); }
 void NPX(parse_err_fa)( sr_s o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(parse_err_fv)( o, f, a ); va_end( a ); }
 
+/**********************************************************************************************************************/
+
 sz_t NPX(q_get_data    )( const sr_s* o, vd_t d, sz_t sz   ) { return NPX(spect_get_data    )( w_spect( *o ), o->o, d, sz ); }
 void NPX(q_parse_fv    )( const sr_s* o, sc_t f, va_list a ) {        NPX(spect_parse_fv    )( w_spect( *o ), o->o, f, a  ); }
 void NPX(q_parse_errvf )( const sr_s* o, sc_t f, va_list a ) {        NPX(spect_parse_errvf )( w_spect( *o ), o->o, f, a  ); }
 void NPX(q_parse_err_fv)( const sr_s* o, sc_t f, va_list a ) {        NPX(spect_parse_err_fv)( w_spect( *o ), o->o, f, a  ); }
-bl_t NPX(q_parse_bl_fa )( const sr_s* o, sc_t f            ) { return NPX(spect_parse_bl_fa)( w_spect( *o ), o->o, f     ); }
+bl_t NPX(q_parse_bl_fa )( const sr_s* o, sc_t f            ) { return NPX(spect_parse_bl_fa )( w_spect( *o ), o->o, f     ); }
 void NPX(q_set_supplier)( const sr_s* o, vd_t s            ) {        NPX(spect_set_supplier)( w_spect( *o ), o->o, s     ); }
+bl_t NPX(q_eos         )( const sr_s* o                    ) { return NPX(spect_eos         )( r_spect( *o ), o->o        ); }
+sc_t NPX(q_file        )( const sr_s* o                    ) { return NPX(spect_file        )( r_spect( *o ), o->o        ); }
 void NPX(q_parse_fa    )( const sr_s* o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(q_parse_fv    )( o, f, a ); va_end( a ); }
 void NPX(q_parse_errf  )( const sr_s* o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(q_parse_errvf )( o, f, a ); va_end( a ); }
 void NPX(q_parse_err_fa)( const sr_s* o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(q_parse_err_fv)( o, f, a ); va_end( a ); }

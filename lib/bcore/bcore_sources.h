@@ -44,6 +44,8 @@ void                  bcore_source_chain_s_push_d(       bcore_source_chain_s* o
 void                  bcore_source_chain_s_push_type(    bcore_source_chain_s* o, tp_t type );
 sz_t                  bcore_source_chain_s_get_data(     bcore_source_chain_s* o, vd_t data, sz_t size );
 void                  bcore_source_chain_s_set_supplier( bcore_source_chain_s* o, vd_t supplier );
+bl_t                  bcore_source_chain_s_eos(  const bcore_source_chain_s* o );
+sc_t                  bcore_source_chain_s_file( const bcore_source_chain_s* o );
 
 /**********************************************************************************************************************/
 
@@ -83,6 +85,9 @@ bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, sz_t s
 /// Specifies an external supplier (source); supplier is not owned by this object
 void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier );
 
+bl_t bcore_source_buffer_s_eos(  const bcore_source_buffer_s* o );
+sc_t bcore_source_buffer_s_file( const bcore_source_buffer_s* o );
+
 /**********************************************************************************************************************/
 
 /** String based data source supporting bcore_source_s perspective.
@@ -118,6 +123,9 @@ sz_t                   bcore_source_string_s_get_data(      bcore_source_string_
  */
 void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier );
 
+bl_t bcore_source_string_s_eos(  const bcore_source_string_s* o );
+sc_t bcore_source_string_s_file( const bcore_source_string_s* o );
+
 /**********************************************************************************************************************/
 
 /** File data source (copyable, serializable)
@@ -140,6 +148,8 @@ bcore_source_file_s* bcore_source_file_s_clone(   const bcore_source_file_s* o )
 void                 bcore_source_file_s_open(          bcore_source_file_s* o ); // (re)opens file
 void                 bcore_source_file_s_close(         bcore_source_file_s* o ); // closes file if open
 sz_t                 bcore_source_file_s_get_data(      bcore_source_file_s* o, vd_t data, sz_t size );
+bl_t                 bcore_source_file_s_eos(     const bcore_source_file_s* o );
+sc_t                 bcore_source_file_s_file(    const bcore_source_file_s* o );
 
 /**********************************************************************************************************************/
 

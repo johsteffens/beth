@@ -427,7 +427,19 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                         case TYPEOF_sc_t: sres = snprintf( dst, space, "%s", va_arg( *p_args, sc_t ) ); break;
                         case TYPEOF_sd_t: sres = snprintf( dst, space, "%s", va_arg( *p_args, sd_t ) ); break;
                         case TYPEOF_st_s: sres = snprintf( dst, space, "%s", va_arg( *p_args, st_s ).sc ); break;
-                        default: ERR( "Unhandled type specifier '%s", f + i ); break;
+
+                        default:
+                        {
+                            /// some special types
+                            if( type == typeof( "char" ) )
+                            {
+                                sres = snprintf( dst, space, "%c", va_arg( *p_args, unsigned int ) );
+                            }
+                            else
+                            {
+                                ERR( "Unhandled type specifier '%s", f + i ); break;
+                            }
+                        }
                     }
                 }
                 if( sres < 0 ) ERR( "Format error '%s", f + i );
