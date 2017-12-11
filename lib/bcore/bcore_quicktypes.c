@@ -25,6 +25,7 @@ static st_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
 static sr_s leaf_typelist()
 {
     sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parse_fa( "{ st_s * [] arr; }" ) );
+    bcore_array_q_push_sc( &list, "char" );
     bcore_array_q_push_sc( &list, "s3_t" );
     bcore_array_q_push_sc( &list, "s2_t" );
     bcore_array_q_push_sc( &list, "s1_t" );
@@ -81,6 +82,7 @@ static sr_s object_typelist()
     bcore_array_q_push_sc( &list, "bcore_bin_ml_translator_s"  );
     bcore_array_q_push_sc( &list, "bcore_bin_ml_interpreter_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_sz_s" );
+    bcore_array_q_push_sc( &list, "bcore_arr_tp_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_st_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_vd_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_sr_s" );

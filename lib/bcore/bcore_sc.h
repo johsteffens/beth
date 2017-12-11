@@ -37,6 +37,10 @@
  *      Supported types: u*_t, s*_t, f*_t, sz_t, bl_t.
  *      Example: "#<u3_t>"
  *
+ *  "#<char>" or "#<char*>"
+ *      Converts single character.
+ *      Argument: char or char*
+ *
  *  Truncation:
  *    "#t<num>{<expression>}"
  *    "#tl<num>{<expression>}"

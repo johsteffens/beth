@@ -20,6 +20,7 @@ bl_t bcore_type_is_leaf( tp_t type );
 // leaf types
 #define TYPEOF_aware_t 1507719906
 #define TYPEOF_bl_t    1848869304
+#define TYPEOF_char    2823553821
 #define TYPEOF_f2_t    1418046714
 #define TYPEOF_f3_t    3646813157
 #define TYPEOF_fp_t    2940508440
@@ -40,10 +41,11 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_vd_t    1618651012
 
 // other types
+#define TYPEOF_bcore_arr_sr_s             3772348668
 #define TYPEOF_bcore_arr_st_s             1663834730
 #define TYPEOF_bcore_arr_sz_s             1469651844
-#define TYPEOF_bcore_arr_vd_s             typeof( "bcore_arr_vd_s" )
-#define TYPEOF_bcore_arr_sr_s             typeof( "bcore_arr_sr_s" )
+#define TYPEOF_bcore_arr_tp_s             typeof( "bcore_arr_tp_s" )
+#define TYPEOF_bcore_arr_vd_s              814426351
 #define TYPEOF_bcore_array_s              3532252466
 #define TYPEOF_bcore_bin_ml_interpreter_s 3834633675
 #define TYPEOF_bcore_bin_ml_translator_s  1158670837

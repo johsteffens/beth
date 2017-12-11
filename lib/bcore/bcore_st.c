@@ -1117,6 +1117,14 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
                 int sres = -1;
                 switch( type )
                 {
+                    case TYPEOF_char:
+                    {
+                        u0_t v;
+                        sres = sscanf( o->sc + idx, "%c%n", &v, &size );
+                        if( set_arg ) *va_arg( args, char* ) = v;
+                        break;
+                    }
+
                     case TYPEOF_u0_t:
                     {
                         u0_t v;

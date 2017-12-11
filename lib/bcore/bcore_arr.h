@@ -43,6 +43,32 @@ bcore_arr_sz_s* bcore_arr_sz_s_create_random_permutation( u2_t ( *rg )( u2_t ), 
 
 /**********************************************************************************************************************/
 
+typedef struct bcore_arr_tp_s
+{
+    aware_t _;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            tp_t* data;
+            sz_t size, space;
+        };
+    };
+} bcore_arr_tp_s;
+
+DECLARE_FUNCTIONS_OBJ(    bcore_arr_tp_s )
+
+void bcore_arr_tp_s_clear(     bcore_arr_tp_s* o ); // sets size to zero
+void bcore_arr_tp_s_set_space( bcore_arr_tp_s* o, sz_t space );
+void bcore_arr_tp_s_fill(      bcore_arr_tp_s* o, sz_t size, tp_t v ); // creates filled array of size <size>
+void bcore_arr_tp_s_push(      bcore_arr_tp_s* o, tp_t v );
+tp_t bcore_arr_tp_s_pop(       bcore_arr_tp_s* o );
+void bcore_arr_tp_s_sort(      bcore_arr_tp_s* o, s2_t order ); // stable
+void bcore_arr_tp_s_reorder(   bcore_arr_tp_s* o, const bcore_arr_sz_s* order );
+
+/**********************************************************************************************************************/
+
 typedef struct bcore_arr_st_s
 {
     aware_t _;

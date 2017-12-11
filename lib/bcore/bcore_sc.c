@@ -431,9 +431,9 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                         default:
                         {
                             /// some special types
-                            if( type == typeof( "char" ) )
+                            if( type == TYPEOF_char )
                             {
-                                sres = snprintf( dst, space, "%c", va_arg( *p_args, unsigned int ) );
+                                sres = snprintf( dst, space, "%c", va_arg( *p_args, int ) );
                             }
                             else
                             {

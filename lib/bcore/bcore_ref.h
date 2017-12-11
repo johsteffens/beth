@@ -64,6 +64,10 @@ static inline sr_s sr_cp( sr_s o, tp_t spect_type ) { o.p = ch_spect_p( o.p, spe
 
 // returns a strong reference; terminates o
 static inline sr_s sr_fork( sr_s o ) { return ( sr_s ) { .o = ( o.f & STRONG_f ) ? o.o : bcore_fork( o.o ), .p = o.p, .f = o.f | STRONG_f }; }
+
+// deep clone
+sr_s sr_clone( sr_s o );
+
 static inline void sr_down( sr_s o ) { if( o.f & STRONG_f ) bcore_inst_discard( o ); }  // explicit termination
 
 /// creates a strong reference of a typed object (by cloning the object)

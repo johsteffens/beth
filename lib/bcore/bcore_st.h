@@ -109,9 +109,9 @@ static inline bool st_s_equal_st(   const st_s* o, const st_s* st  ) { return bc
 /** Search:
  *  Search involving positions between start to end in direction start --> end
  *  Detects first position nearest to start.
- *  'start' may be bigger then 'end' in which case the search direction is backwards.
+ *  'start' may be larger then 'end' in which case the search direction is backwards.
  *  The search range is [start, end-1] when start < end and [end, start-1] otherwise.
- *  if not found, the function returns the bigger of (start, end) but maximally o->size.
+ *  if not found, the function returns the larger of (start, end) but maximally o->size.
  */
 sz_t st_s_find_char(    const st_s* o, sz_t start, sz_t end, char c );
 sz_t st_s_find_sc(      const st_s* o, sz_t start, sz_t end, sc_t sc );

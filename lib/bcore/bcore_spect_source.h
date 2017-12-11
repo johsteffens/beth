@@ -36,6 +36,7 @@ const bcore_source_s* bcore_source_s_get_typed( tp_t type );
 const bcore_source_s* bcore_source_s_get_aware( vc_t obj );
 
 sz_t bcore_source_spect_get_data    ( const bcore_source_s* p, vd_t o, vd_t data, sz_t size ); // returns number of bytes read
+u0_t bcore_source_spect_get_u0      ( const bcore_source_s* p, vd_t o ); // reads single byte and returns it (returns 0 in case eos is reached
 void bcore_source_spect_parse_fv    ( const bcore_source_s* p, vd_t o, sc_t format, va_list args );
 void bcore_source_spect_parse_fa    ( const bcore_source_s* p, vd_t o, sc_t format, ... );
 void bcore_source_spect_parse_errvf ( const bcore_source_s* p, vd_t o, sc_t format, va_list args );
@@ -48,6 +49,7 @@ bl_t bcore_source_spect_eos         ( const bcore_source_s* p, vc_t o );
 sc_t bcore_source_spect_file        ( const bcore_source_s* p, vc_t o );
 
 sz_t bcore_source_aware_get_data    ( vd_t o, vd_t data, sz_t size );
+u0_t bcore_source_aware_get_u0      ( vd_t o );
 void bcore_source_aware_parse_fv    ( vd_t o, sc_t format, va_list args );
 void bcore_source_aware_parse_fa    ( vd_t o, sc_t format, ... );
 void bcore_source_aware_parse_errvf ( vd_t o, sc_t format, va_list args );
@@ -60,6 +62,7 @@ bl_t bcore_source_aware_eos         ( vc_t o );
 sc_t bcore_source_aware_file        ( vc_t o );
 
 sz_t bcore_source_get_data    ( sr_s o, vd_t data, sz_t size );
+u0_t bcore_source_get_u0      ( sr_s o );
 void bcore_source_parse_fv    ( sr_s o, sc_t format, va_list args );
 void bcore_source_parse_fa    ( sr_s o, sc_t format, ... );
 void bcore_source_parse_errvf ( sr_s o, sc_t format, va_list args );
@@ -72,6 +75,7 @@ bl_t bcore_source_eos         ( sr_s o );
 sc_t bcore_source_file        ( sr_s o );
 
 sz_t bcore_source_q_get_data    ( const sr_s* o, vd_t data, sz_t size );
+u0_t bcore_source_q_get_u0      ( const sr_s* o );
 void bcore_source_q_parse_fv    ( const sr_s* o, sc_t format, va_list args );
 void bcore_source_q_parse_fa    ( const sr_s* o, sc_t format, ... );
 void bcore_source_q_parse_errvf ( const sr_s* o, sc_t format, va_list args );

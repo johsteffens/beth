@@ -178,6 +178,146 @@ bcore_arr_sz_s* bcore_arr_sz_s_create_random_permutation( u2_t ( *rg )( u2_t ), 
 
 /**********************************************************************************************************************/
 
+/**********************************************************************************************************************/
+// bcore_arr_tp_s
+
+void bcore_arr_tp_s_init( bcore_arr_tp_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+    o->_ = TYPEOF_bcore_arr_tp_s;
+}
+
+void bcore_arr_tp_s_down( bcore_arr_tp_s* o )
+{
+    if( o->space > 0 ) bcore_un_alloc( sizeof( tp_t ), o->data, o->space, 0, NULL );
+}
+
+void bcore_arr_tp_s_copy( bcore_arr_tp_s* o, const bcore_arr_tp_s* src )
+{
+    if( o->space < src->size )
+    {
+        if( o->space > 0 ) o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, 0, &o->space );
+        o->data = bcore_un_alloc( sizeof( tp_t ), NULL, o->space, src->size, &o->space );
+    }
+    bcore_u_memcpy( sizeof( tp_t ), o->data, src->data, src->size );
+    o->size = src->size;
+}
+
+DEFINE_FUNCTION_CREATE(  bcore_arr_tp_s )
+DEFINE_FUNCTION_DISCARD( bcore_arr_tp_s )
+DEFINE_FUNCTION_CLONE(   bcore_arr_tp_s )
+
+static bcore_flect_self_s* arr_tp_s_create_self( void )
+{
+    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_arr_tp_s = bcore_array { aware_t _; tp_t [] arr; }", sizeof( bcore_arr_tp_s ) );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_arr_tp_s_init, "bcore_fp_init", "init" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_arr_tp_s_down, "bcore_fp_down", "down" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_arr_tp_s_copy, "bcore_fp_copy", "copy" );
+    return self;
+}
+
+void bcore_arr_tp_s_clear( bcore_arr_tp_s* o )
+{
+    o->size = 0;
+    if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+}
+
+void bcore_arr_tp_s_set_space( bcore_arr_tp_s* o, sz_t space )
+{
+    if( o->space == 0 )
+    {
+        o->data = bcore_u_alloc( sizeof( tp_t ), NULL, space, &o->space );
+    }
+    else
+    {
+        o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, space, &o->space );
+    }
+    if( o->size > space ) o->size = space;
+}
+
+void bcore_arr_tp_s_fill( bcore_arr_tp_s* o, sz_t size, tp_t v )
+{
+    bcore_arr_tp_s_set_space( o, size );
+    for( sz_t i = 0; i < size; i++ ) o->data[ i ] = v;
+    o->size = size;
+}
+
+void bcore_arr_tp_s_make_strong( bcore_arr_tp_s* o )
+{
+    if( o->size > o->space )
+    {
+        tp_t* data = o->data;
+        o->data = bcore_u_alloc( sizeof( tp_t ), NULL, o->size, &o->space );
+        bcore_u_memcpy( sizeof( tp_t ), o->data, data, o->size );
+    }
+}
+
+void bcore_arr_tp_s_push( bcore_arr_tp_s* o, tp_t v )
+{
+    if( o->size >  o->space ) bcore_arr_tp_s_make_strong( o );
+    if( o->size == o->space )
+    {
+        o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+    }
+    o->data[ o->size++ ] = v;
+}
+
+tp_t bcore_arr_tp_s_pop( bcore_arr_tp_s* o )
+{
+    if( o->size == 0 ) return 0;
+    o->size--;
+    return o->data[ o->size ];
+}
+
+static void tp_sort( tp_t* data, sz_t size, tp_t* buf, s2_t order )
+{
+    if( size < 2 ) return;
+    sz_t size1 = size >> 1;
+    tp_sort( data,         size1       , buf, order );
+    tp_sort( data + size1, size - size1, buf, order );
+    bcore_u_memcpy( sizeof( tp_t ), buf, data, size1 );
+    if( order > 0 )
+    {
+        for( sz_t i = 0, w = 0, r = size1; i < size1; )
+        {
+            data[ w++ ] = ( r == size || buf[ i ] <= data[ r ] ) ? buf[ i++ ] : data[ r++ ];
+        }
+    }
+    else
+    {
+        for( sz_t i = 0, w = 0, r = size1; i < size1; )
+        {
+            data[ w++ ] = ( r == size || buf[ i ] >= data[ r ] ) ? buf[ i++ ] : data[ r++ ];
+        }
+    }
+}
+
+void bcore_arr_tp_s_sort( bcore_arr_tp_s* o, s2_t order ) // stable mergesort
+{
+    if( o->space < o->size ) bcore_arr_tp_s_make_strong( o );
+    tp_t* buf = bcore_u_alloc( sizeof( tp_t ), NULL, o->size >> 1, NULL );
+    tp_sort( o->data, o->size, buf, order );
+    bcore_free( buf );
+}
+
+void bcore_arr_tp_s_reorder( bcore_arr_tp_s* o, const bcore_arr_sz_s* order )
+{
+    if( o->space < o->size ) bcore_arr_tp_s_make_strong( o );
+    sz_t buf_space = 0;
+    tp_t* buf = bcore_u_alloc( sizeof( tp_t ), NULL, order->size, &buf_space );
+    for( sz_t i = 0; i < order->size; i++ )
+    {
+        assert( order->data[ i ] < o->size );
+        buf[ i ] = o->data[ order->data[ i ] ];
+    }
+    bcore_un_alloc( sizeof( tp_t ), o->data, o->space, 0, &o->space );
+    o->data = buf;
+    o->space = buf_space;
+    o->size = order->size;
+}
+
+/**********************************************************************************************************************/
+
 DEFINE_FUNCTION_INIT_INST( bcore_arr_st_s )
 DEFINE_FUNCTION_DOWN_INST( bcore_arr_st_s )
 DEFINE_FUNCTION_COPY_INST( bcore_arr_st_s )
@@ -583,9 +723,6 @@ DEFINE_FUNCTION_CLONE(     bcore_arr_sr_s )
 static bcore_flect_self_s* arr_sr_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_arr_sr_s = bcore_array { aware_t _; sr_s [] arr; }", sizeof( bcore_arr_sr_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_arr_sr_s_init, "bcore_fp_init", "init" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_arr_sr_s_down, "bcore_fp_down", "down" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_arr_sr_s_copy, "bcore_fp_copy", "copy" );
     return self;
 }
 
@@ -616,7 +753,7 @@ sr_s* bcore_arr_sr_s_push_sr( bcore_arr_sr_s* o, sr_s v )
     if( o->size > o->space ) bcore_arr_sr_s_make_strong( o );
     if( o->size == o->space )
     {
-        o->data = bcore_un_alloc( sizeof( st_s* ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+        o->data = bcore_un_alloc( sizeof( sr_s ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
     }
     o->data[ o->size++ ] = v;
     return &o->data[ o->size - 1 ];
@@ -627,7 +764,7 @@ sr_s* bcore_arr_sr_s_push_tp( bcore_arr_sr_s* o, tp_t type )
     if( o->size > o->space ) bcore_arr_sr_s_make_strong( o );
     if( o->size == o->space )
     {
-        o->data = bcore_un_alloc( sizeof( st_s* ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+        o->data = bcore_un_alloc( sizeof( sr_s ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
     }
     o->data[ o->size++ ] = sr_create( type );
     return &o->data[ o->size - 1 ];
@@ -660,6 +797,7 @@ vd_t bcore_arr_signal( tp_t target, tp_t signal, vd_t object )
     if( signal == typeof( "init1" ) )
     {
         bcore_flect_define_creator( typeof( "bcore_arr_sz_s" ), arr_sz_s_create_self );
+        bcore_flect_define_creator( typeof( "bcore_arr_tp_s" ), arr_tp_s_create_self );
         bcore_flect_define_creator( typeof( "bcore_arr_st_s" ), arr_st_s_create_self );
         bcore_flect_define_creator( typeof( "bcore_arr_vd_s" ), arr_vd_s_create_self );
         bcore_flect_define_creator( typeof( "bcore_arr_sr_s" ), arr_sr_s_create_self );

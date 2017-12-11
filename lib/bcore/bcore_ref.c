@@ -9,6 +9,17 @@
 /**********************************************************************************************************************/
 // embedded usage
 
+sr_s sr_clone( sr_s o )
+{
+    if( !o.o ) return sr_null();
+    sr_s sr;
+    sr.o = bcore_inst_typed_clone( sr_s_type( &o ), o.o );
+    sr.p = o.p;
+    sr.f = STRONG_f;
+    sr_down( o );
+    return sr;
+}
+
 sr_s sr_spect( sr_s o, tp_t spect_type )
 {
     o.p = ch_spect_p( o.p, spect_type );

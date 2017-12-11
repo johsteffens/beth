@@ -240,7 +240,11 @@ sz_t set_rehash( bcore_name_map_s* o, bcore_name_s name )
     // set
     {
         sz_t idx = find( o, name.key );
-        if( idx < o->size ) return idx;
+        if( idx < o->size )
+        {
+            bcore_name_s_down( &name );
+            return idx;
+        }
         idx = set( o, name, 1 );
         if( idx < o->size ) return idx;
     }
