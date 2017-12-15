@@ -501,7 +501,14 @@ static sr_s get_typed_link( const bcore_array_s* p, vc_t o, sz_t index )
 {
     vc_t obj = ( u0_t* )o + p->caps_offset;
     const bcore_typed_link_array_s* arr = obj;
-    return ( index < arr->size ) ? sr_twd( arr->type, arr->data[ index ] ) : sr_null();
+    if( index < arr->size && arr->data[ index ] )
+    {
+        return  sr_twd( arr->type, arr->data[ index ] );
+    }
+    else
+    {
+        return sr_null();
+    }
 }
 
 static sr_s get_aware_link( const bcore_array_s* p, vc_t o, sz_t index )

@@ -89,6 +89,16 @@ sr_s sr_sz( sz_t v );
 sr_s sr_tp( tp_t v );
 sr_s sr_bl( bl_t v );
 
+/// converts a reference to a leaf type
+f3_t sr_f3_sr_s( const sr_s* o );
+u3_t sr_u3_sr_s( const sr_s* o );
+s3_t sr_s3_sr_s( const sr_s* o );
+bl_t sr_bl_sr_s( const sr_s* o );
+static inline f3_t sr_f3_sr( sr_s o ) { f3_t r = sr_f3_sr_s( &o ); sr_down( o ); return r; }
+static inline u3_t sr_u3_sr( sr_s o ) { u3_t r = sr_u3_sr_s( &o ); sr_down( o ); return r; }
+static inline s3_t sr_s3_sr( sr_s o ) { s3_t r = sr_s3_sr_s( &o ); sr_down( o ); return r; }
+static inline bl_t sr_bl_sr( sr_s o ) { bl_t r = sr_bl_sr_s( &o ); sr_down( o ); return r; }
+
 sr_s sr_string_sc( sc_t v ); // converts to st_s
 
 /**********************************************************************************************************************/

@@ -66,9 +66,11 @@ sr_s bcore_interpret_auto( sr_s source )
     sr_s interpreter = bcore_txt_ml_interpreter_s_interpret( txt_ml, src );
 
     if( !interpreter.o ) bcore_source_parse_err_fa( src, "No interpreter specified." );
-    if( !bcore_trait_is( sr_s_type( &interpreter ), typeof( "bcore_interpreter" ) ) )
+
+    st_s* log = bcore_life_s_push_aware( l, st_s_create() );
+    if( !bcore_trait_satisfied_type( typeof( "bcore_interpreter" ), sr_s_type( &interpreter ), log ) )
     {
-        bcore_source_parse_err_fa( src, "Object '#<sc_t>' is no interpreter.", ifnameof( sr_s_type( &interpreter ) ) );
+        bcore_source_parse_err_fa( src, "Object '#<sc_t>' is no interpreter.\nReason: #<sc_t>", ifnameof( sr_s_type( &interpreter ) ), log->sc );
     }
 
     sr_s obj = bcore_interpret( interpreter, src );

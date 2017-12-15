@@ -95,7 +95,7 @@ const bcore_via_s*   bcore_via_spect_nget_via      ( const bcore_via_s* p,      
 const bcore_array_s* bcore_via_spect_nget_array    ( const bcore_via_s* p,         tp_t name );
 vc_t                 bcore_via_spect_nget_spect    ( const bcore_via_s* p, vc_t o, tp_t name, tp_t stp );
 
-bl_t bcore_via_spect_is_leaf(       const bcore_via_s* p             ); // checks if object is a leaf (no elements)
+bl_t bcore_via_spect_is_leaf(       const bcore_via_s* p             ); // leaf type according to function bcore_type_is_leaf
 bl_t bcore_via_spect_is_pure_array( const bcore_via_s* p             ); // checks if object is an array without additional elements (pure arrays are not leafs)
 bl_t bcore_via_spect_iis_array(     const bcore_via_s* p, sz_t index ); // checks if element is an array
 bl_t bcore_via_spect_iis_static(    const bcore_via_s* p, sz_t index ); // checks if element is static (type need not be recorded)

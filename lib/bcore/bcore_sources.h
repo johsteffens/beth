@@ -44,8 +44,10 @@ void                  bcore_source_chain_s_push_d(       bcore_source_chain_s* o
 void                  bcore_source_chain_s_push_type(    bcore_source_chain_s* o, tp_t type );
 sz_t                  bcore_source_chain_s_get_data(     bcore_source_chain_s* o, vd_t data, sz_t size );
 void                  bcore_source_chain_s_set_supplier( bcore_source_chain_s* o, vd_t supplier );
-bl_t                  bcore_source_chain_s_eos(  const bcore_source_chain_s* o );
-sc_t                  bcore_source_chain_s_file( const bcore_source_chain_s* o );
+bl_t                  bcore_source_chain_s_eos(       const bcore_source_chain_s* o );
+sc_t                  bcore_source_chain_s_get_file(  const bcore_source_chain_s* o );
+s3_t                  bcore_source_chain_s_get_index( const bcore_source_chain_s* o );
+void                  bcore_source_chain_s_set_index(       bcore_source_chain_s* o, s3_t index );
 
 /**********************************************************************************************************************/
 
@@ -85,8 +87,10 @@ bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, sz_t s
 /// Specifies an external supplier (source); supplier is not owned by this object
 void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier );
 
-bl_t bcore_source_buffer_s_eos(  const bcore_source_buffer_s* o );
-sc_t bcore_source_buffer_s_file( const bcore_source_buffer_s* o );
+bl_t bcore_source_buffer_s_eos(       const bcore_source_buffer_s* o );
+sc_t bcore_source_buffer_s_get_file(  const bcore_source_buffer_s* o );
+s3_t bcore_source_buffer_s_get_index( const bcore_source_buffer_s* o );
+void bcore_source_buffer_s_set_index(       bcore_source_buffer_s* o, s3_t index );
 
 /**********************************************************************************************************************/
 
@@ -100,10 +104,8 @@ typedef struct bcore_source_string_s
     st_s* string;
     sz_t index;
     vd_t ext_supplier;       // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_string_s)
-    sz_t preceding_lines;    // line counter (only for lines processed and removed from string; used for text navigation in error messages)
     sz_t refill_limit;       // size size limit to request refill from supplier (if present)
     sz_t prefetch_size;      // data amount prefetched from supplier (if present)
-    st_s* supply_info;       // optional info about supplier; e.g. file name (used for enhanced navigation in error messages)
 } bcore_source_string_s;
 
 void                   bcore_source_string_s_init(          bcore_source_string_s* o );
@@ -124,7 +126,9 @@ sz_t                   bcore_source_string_s_get_data(      bcore_source_string_
 void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier );
 
 bl_t bcore_source_string_s_eos(  const bcore_source_string_s* o );
-sc_t bcore_source_string_s_file( const bcore_source_string_s* o );
+sc_t bcore_source_string_s_get_file(  const bcore_source_string_s* o );
+s3_t bcore_source_string_s_get_index( const bcore_source_string_s* o );
+void bcore_source_string_s_set_index(       bcore_source_string_s* o, s3_t index );
 
 /**********************************************************************************************************************/
 
@@ -143,13 +147,24 @@ void                 bcore_source_file_s_down( bcore_source_file_s* o );
 void                 bcore_source_file_s_copy( bcore_source_file_s* o, const bcore_source_file_s* src );
 bcore_source_file_s* bcore_source_file_s_create();
 bcore_source_file_s* bcore_source_file_s_create_name( sc_t name );        // file is opened lazily when needed
-void                 bcore_source_file_s_discard(       bcore_source_file_s* o );
-bcore_source_file_s* bcore_source_file_s_clone(   const bcore_source_file_s* o );
-void                 bcore_source_file_s_open(          bcore_source_file_s* o ); // (re)opens file
-void                 bcore_source_file_s_close(         bcore_source_file_s* o ); // closes file if open
-sz_t                 bcore_source_file_s_get_data(      bcore_source_file_s* o, vd_t data, sz_t size );
-bl_t                 bcore_source_file_s_eos(     const bcore_source_file_s* o );
-sc_t                 bcore_source_file_s_file(    const bcore_source_file_s* o );
+void                 bcore_source_file_s_discard(         bcore_source_file_s* o );
+bcore_source_file_s* bcore_source_file_s_clone(     const bcore_source_file_s* o );
+void                 bcore_source_file_s_open(            bcore_source_file_s* o ); // (re)opens file
+void                 bcore_source_file_s_close(           bcore_source_file_s* o ); // closes file if open
+sz_t                 bcore_source_file_s_get_data(        bcore_source_file_s* o, vd_t data, sz_t size );
+bl_t                 bcore_source_file_s_eos(       const bcore_source_file_s* o );
+sc_t                 bcore_source_file_s_get_file(  const bcore_source_file_s* o );
+s3_t                 bcore_source_file_s_get_index( const bcore_source_file_s* o );
+void                 bcore_source_file_s_set_index(       bcore_source_file_s* o, s3_t index );
+
+/// obtains context information for index position (only for text files)
+void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t index, sz_t* p_line, sz_t* p_col, st_s* context );
+
+/**********************************************************************************************************************/
+// syntactic sugar
+
+/// opens a (string-)buffered file for reading
+bcore_source_chain_s* bcore_source_open_file( sc_t file_name );
 
 /**********************************************************************************************************************/
 

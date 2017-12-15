@@ -34,11 +34,10 @@ void bclos_frame_s_discard( bclos_frame_s* o )
     bcore_inst_typed_discard( TYPEOF_bclos_frame_s, o );
 }
 
-sr_s* bclos_frame_s_get( bclos_frame_s* o, tp_t name )
+sr_s* bclos_frame_s_get( const bclos_frame_s* o, tp_t name )
 {
     sr_s* val = bcore_hmap_tp_sr_s_get( &o->map, name );
     if( !val && o->external ) val = bclos_frame_s_get( o->external, name );
-    if( !val ) ERR( "Address '%s' does not exist.", ifnameof( name ) );
     return val;
 }
 

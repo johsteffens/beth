@@ -39,6 +39,9 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_u3_t     629390130
 #define TYPEOF_vc_t     283133669
 #define TYPEOF_vd_t    1618651012
+#define TYPEOF_leaf    typeof( "leaf" )
+#define TYPEOF_num     typeof( "num" )
+#define TYPEOF_type    typeof( "type" )
 
 // other types
 #define TYPEOF_bcore_arr_sr_s             3772348668

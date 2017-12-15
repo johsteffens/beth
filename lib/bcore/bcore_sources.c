@@ -100,6 +100,11 @@ void bcore_source_chain_s_set_supplier( bcore_source_chain_s* o, vd_t supplier )
 {
     if( o->size == 0 ) ERR( "chain is empty" );
     bcore_source_aware_set_supplier( o->data[ 0 ], supplier );
+    for( sz_t i = 1; i < o->size; i++ )
+    {
+        // resetting the supplier also resets of the internal state of each element
+        bcore_source_aware_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    }
 }
 
 bl_t bcore_source_chain_s_eos( const bcore_source_chain_s* o )
@@ -108,10 +113,33 @@ bl_t bcore_source_chain_s_eos( const bcore_source_chain_s* o )
     return bcore_source_aware_eos( o->data[ o->size - 1 ] );
 }
 
-sc_t bcore_source_chain_s_file( const bcore_source_chain_s* o )
+sc_t bcore_source_chain_s_get_file( const bcore_source_chain_s* o )
 {
     if( o->size == 0 ) return "";
-    return bcore_source_aware_file( o->data[ 0 ] );
+    return bcore_source_aware_get_file( o->data[ 0 ] );
+}
+
+s3_t bcore_source_chain_s_get_index( const bcore_source_chain_s* o )
+{
+    s3_t index = 0;
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        index += bcore_source_aware_get_index( o->data[ i ] );
+    }
+    return index;
+}
+
+void bcore_source_chain_s_set_index( bcore_source_chain_s* o, s3_t index )
+{
+    if( o->size == 0 ) ERR( "Chain is empty." );
+    s3_t cur_index = bcore_source_chain_s_get_index( o );
+    if( index == cur_index ) return;
+    bcore_source_aware_set_index( o->data[ 0 ], index );
+    for( sz_t i = 1; i < o->size; i++ )
+    {
+        // resetting the supplier also resets of the internal state of each element
+        bcore_source_aware_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    }
 }
 
 /**********************************************************************************************************************/
@@ -126,15 +154,11 @@ static void chain_p_errorvf( bcore_source_chain_s* o, sc_t format, va_list args 
         {
             bcore_source_file_s* fo = o->data[ 0 ];
             st_s_pushf( msg, " in file '%s'", fo->name->sc );
-        }
-
-        if( o->data[ o->size - 1 ] && ( *( aware_t* )o->data[ o->size - 1 ] ) == TYPEOF_bcore_source_string_s )
-        {
-            bcore_source_string_s* so = o->data[ o->size - 1 ];
-            st_s* context   = st_s_show_line_context( so->string, so->index );
-            sz_t line = st_s_lineof( so->string, so->index );
-            sz_t col  = st_s_colof( so->string, so->index );
-            st_s_pushf( msg, " at line %zu, col %zu", line + so->preceding_lines, col );
+            sz_t index = bcore_source_chain_s_get_index( o );
+            sz_t line, col;
+            st_s* context = st_s_create();
+            bcore_source_file_s_get_line_col_context( fo, index, &line, &col, context );
+            st_s_pushf( msg, " at line %zu, col %zu", line, col );
             st_s_pushf( msg, "\n%s", context->sc );
             st_s_discard( context );
         }
@@ -189,8 +213,10 @@ static bcore_flect_self_s* chain_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_eos,          "bcore_source_fp_eos",  "eos" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_file,         "bcore_source_fp_file", "file" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_eos,          "bcore_source_fp_eos",       "eos" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_get_file,     "bcore_source_fp_get_file",  "get_file" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_get_index,    "bcore_source_fp_get_index", "get_index" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_set_index,    "bcore_source_fp_set_index", "set_index" );
     return self;
 }
 
@@ -295,10 +321,22 @@ bl_t bcore_source_buffer_s_eos( const bcore_source_buffer_s* o )
     return true;
 }
 
-sc_t bcore_source_buffer_s_file( const bcore_source_buffer_s* o )
+sc_t bcore_source_buffer_s_get_file( const bcore_source_buffer_s* o )
 {
-    if( o->ext_supplier ) return bcore_source_aware_file( o->ext_supplier );
+    if( o->ext_supplier ) return bcore_source_aware_get_file( o->ext_supplier );
     return "";
+}
+
+s3_t bcore_source_buffer_s_get_index( const bcore_source_buffer_s* o )
+{
+    return o->index - o->size;
+}
+
+void bcore_source_buffer_s_set_index( bcore_source_buffer_s* o, s3_t index )
+{
+    s3_t size = o->size;
+    if( index < -size || index > 0 ) ERR( "Index is out of range." );
+    o->index = index + size;
 }
 
 /**********************************************************************************************************************/
@@ -313,6 +351,13 @@ static void buffer_p_errorvf( bcore_source_buffer_s* o, sc_t format, va_list arg
     {
         bcore_errv( "bcore_source_buffer_s error:\n%s\n", args );
     }
+}
+
+void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier )
+{
+    o->ext_supplier = supplier;
+    o->index = 0;
+    o->size = 0;
 }
 
 static bcore_flect_self_s* buffer_s_create_self( void )
@@ -332,13 +377,10 @@ static bcore_flect_self_s* buffer_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )buffer_p_errorvf,            "bcore_fp_logvf",    "p_errorvf" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_eos,          "bcore_source_fp_eos",  "eos" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_file,         "bcore_source_fp_file", "file" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_get_file,     "bcore_source_fp_get_file",  "get_file" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_get_index,    "bcore_source_fp_get_index", "get_index" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_set_index,    "bcore_source_fp_set_index", "set_index" );
     return self;
-}
-
-void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier )
-{
-    o->ext_supplier = supplier;
 }
 
 /**********************************************************************************************************************/
@@ -406,7 +448,6 @@ static void string_refill( bcore_source_string_s* o, sz_t min_remaining_size )
     {
         if( o->index > 0 )
         {
-            o->preceding_lines += st_s_count_char( o->string, 0, o->index, '\n' );
             bcore_memmove( o->string->data, o->string->data + o->index, o->string->size - o->index );
             o->string->size -= o->index;
             o->string->data[ o->string->size ] = 0;
@@ -470,28 +511,38 @@ bl_t bcore_source_string_s_eos( const bcore_source_string_s* o )
     return true;
 }
 
-sc_t bcore_source_string_s_file( const bcore_source_string_s* o )
+sc_t bcore_source_string_s_get_file( const bcore_source_string_s* o )
 {
-    if( o->ext_supplier ) return bcore_source_aware_file( o->ext_supplier );
+    if( o->ext_supplier ) return bcore_source_aware_get_file( o->ext_supplier );
     return "";
+}
+
+s3_t bcore_source_string_s_get_index( const bcore_source_string_s* o )
+{
+    s3_t size = o->string ? o->string->size : 0;
+    return o->index - size;
+}
+
+void bcore_source_string_s_set_index( bcore_source_string_s* o, s3_t index )
+{
+    s3_t size = o->string ? o->string->size : 0;
+    if( index < -size || index > 0 ) ERR( "Index is out of range." );
+    o->index = index + size;
 }
 
 /**********************************************************************************************************************/
 
 static sz_t string_s_parse_err( vd_t arg, const st_s* string, sz_t idx, st_s* ext_msg )
 {
-    bcore_source_string_s* o = arg;
     st_s* context   = st_s_show_line_context( string, idx );
     st_s* msg       = st_s_create();
     st_s_pushf( msg, "Parse error" );
-    if( o->supply_info ) st_s_pushf( msg, " in '%s'", o->supply_info->sc );
     sz_t line = st_s_lineof( string, idx );
     sz_t col  = st_s_colof( string, idx );
-    st_s_pushf( msg, " at line %zu, col %zu:", line + o->preceding_lines, col );
+    st_s_pushf( msg, " at line %zu, col %zu:", line, col );
     st_s_pushf( msg, "\n%s\n", context->sc );
     st_s_push_st_d( msg, ext_msg );
     bcore_err( "%s", msg->sc );
-
     st_s_discard( msg );
     st_s_discard( context );
     return idx;
@@ -509,6 +560,13 @@ static void string_parse_fv( bcore_source_string_s* o, sc_t format, va_list args
     o->index = st_s_parse_efv( o->string, o->index, o->string->size, string_s_parse_err, o, format, args );
 }
 
+void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier )
+{
+    o->ext_supplier = supplier;
+    o->index = 0;
+    if( o->string ) o->string->size = 0;
+}
+
 static bcore_flect_self_s* string_s_create_self( void )
 {
     sc_t def =
@@ -518,10 +576,8 @@ static bcore_flect_self_s* string_s_create_self( void )
       "st_s* string; "
       "sz_t index; "
       "private vd_t supplier; "
-      "sz_t preceding_lines; "
       "sz_t refill_limit;    "
       "sz_t prefetch_size;   "
-      "st_s* supply_info;    "
     "}";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_string_s ) );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_init,         "bcore_fp_init", "init" );
@@ -529,20 +585,11 @@ static bcore_flect_self_s* string_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )string_s_errorvf,                   "bcore_fp_logvf",          "p_errorvf" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )string_parse_fv,                    "bcore_source_fp_parse_fv", "parse_fv"   );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier"   );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_eos,          "bcore_source_fp_eos",  "eos" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_file,         "bcore_source_fp_file", "file" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_eos,          "bcore_source_fp_eos",       "eos" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_get_file,     "bcore_source_fp_get_file",  "get_file" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_get_index,    "bcore_source_fp_get_index", "get_index" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_index,    "bcore_source_fp_set_index", "set_index" );
     return self;
-}
-
-void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier )
-{
-    o->ext_supplier = supplier;
-    if( supplier && ( *(aware_t*)supplier ) == TYPEOF_bcore_source_file_s )
-    {
-        const bcore_source_file_s* file_supplier = supplier;
-        st_s_discard( o->supply_info );
-        o->supply_info = st_s_clone( file_supplier->name );
-    }
 }
 
 /**********************************************************************************************************************/
@@ -673,9 +720,67 @@ bl_t bcore_source_file_s_eos( const bcore_source_file_s* o )
     return feof( o->handle );
 }
 
-sc_t bcore_source_file_s_file( const bcore_source_file_s* o )
+sc_t bcore_source_file_s_get_file( const bcore_source_file_s* o )
 {
     return o->name->sc;
+}
+
+s3_t bcore_source_file_s_get_index( const bcore_source_file_s* o )
+{
+    if( !o->handle ) return 0;
+    return ftell( o->handle );
+}
+
+void bcore_source_file_s_set_index( bcore_source_file_s* o, s3_t index )
+{
+    if( !o->handle ) bcore_source_file_s_open( o );
+    fseek( o->handle, index, SEEK_SET );
+}
+
+void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t index, sz_t* p_line, sz_t* p_col, st_s* context )
+{
+    if( !o->handle ) bcore_source_file_s_open( o );
+    s3_t cur_index = ftell( o->handle );
+    fseek( o->handle, 0, SEEK_SET );
+
+    sz_t line = 1;
+    sz_t col = 1;
+    sz_t line_start = 0;
+
+    for( s3_t i = 0; i < index; i++ )
+    {
+        char c = fgetc( o->handle );
+        if( c == '\n' )
+        {
+            line++;
+            col = 1;
+            line_start = i + 1;
+        }
+        else
+        {
+            col++;
+        }
+    }
+
+    if( p_line ) *p_line = line;
+    if( p_col  ) *p_col  = col;
+
+    if( context )
+    {
+        fseek( o->handle, line_start, SEEK_SET );
+        for( sz_t i = 0; i < 128; i++ )
+        {
+            char c = fgetc( o->handle );
+            if( c == '\n' || c == 0 ) break;
+            st_s_push_char( context, c );
+        }
+        st_s_push_char( context, '\n' );
+        for( sz_t i = 1; i < col; i++ ) st_s_push_char( context, ' ' );
+        st_s_push_char( context, '^' );
+        st_s_push_char( context, '\n' );
+    }
+
+    fseek( o->handle, cur_index, SEEK_SET );
 }
 
 /**********************************************************************************************************************/
@@ -702,9 +807,21 @@ static bcore_flect_self_s* file_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )file_interpret_body_a, "ap_t", "interpret_body" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )file_flow_src,  "bcore_fp_flow_src", "flow_src"  );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )file_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_eos,  "bcore_source_fp_eos",  "eos" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_file, "bcore_source_fp_file", "file" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_eos,       "bcore_source_fp_eos",       "eos" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_get_file,  "bcore_source_fp_get_file",  "get_file" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_get_index, "bcore_source_fp_get_index", "get_index" );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_set_index, "bcore_source_fp_set_index", "set_index" );
     return self;
+}
+
+/**********************************************************************************************************************/
+
+bcore_source_chain_s* bcore_source_open_file( sc_t file_name )
+{
+    bcore_source_chain_s* chain = bcore_source_chain_s_create();
+    bcore_source_chain_s_push_d( chain, bcore_source_file_s_create_name( file_name ) );
+    bcore_source_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_source_string_s" ) ) );
+    return chain;
 }
 
 /**********************************************************************************************************************/
@@ -725,22 +842,54 @@ static st_s* sources_selftest( void )
 
     // write object to file
     {
-        bcore_sink_chain_s* chain = bcore_sink_chain_s_create();
-        bcore_sink_chain_s_push_d( chain, bcore_sink_file_s_create_name( "test.txt" ) );
-        bcore_sink_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_sink_buffer_s" ) ) );
+        bcore_sink_chain_s* chain = bcore_sink_create_file( "test01.txt" );
         bcore_translate( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), arr, sr_awd( chain ) );
         bcore_sink_chain_s_discard( chain );
     }
 
     // create object from file
     {
-        bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_chain_s_create() );
-        bcore_source_chain_s_push_d( chain, bcore_source_file_s_create_name( "test.txt" ) );
-        bcore_source_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_source_buffer_s" ) ) );
+        bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_open_file( "test01.txt" ) );
         sr_s chain_clone = sr_awd( bcore_life_s_push_aware( l, bcore_inst_aware_clone( chain ) ) );
         sr_s sr = bcore_interpret( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain_clone );
         sr = bcore_life_s_push_sr( l, sr );
         if( bcore_compare_sr( sr, arr ) != 0 ) ERR( "%s", bcore_diff_sr( sr, arr )->sc );
+    }
+
+    // random access
+    {
+        {
+            bcore_sink_chain_s* chain = bcore_sink_create_file( "test02.txt" );
+            for( sz_t i = 0; i < 10000; i++ ) bcore_sink_aware_push_string_d( chain, st_s_create_fa( "line of text #<sz_t>\n", i ) );
+            bcore_sink_chain_s_discard( chain );
+        }
+
+        {
+            bcore_source_chain_s* chain = bcore_source_open_file( "test02.txt" );
+            bcore_arr_sz_s* arr = bcore_arr_sz_s_create();
+            for( sz_t i = 0; i < 10000; i++ )
+            {
+                bcore_arr_sz_s_push( arr, bcore_source_aware_get_index( chain ) );
+                sz_t v = 0;
+                bcore_source_aware_parse_fa( chain, "line of text #<sz_t*>\n", &v );
+                ASSERT( i == v );
+            }
+
+            u2_t rv = 1234;
+
+            for( sz_t i = 0; i < 10000; i++ )
+            {
+                rv = bcore_xsg1_u2( rv );
+                sz_t idx = rv % arr->size;
+                bcore_source_aware_set_index( chain, arr->data[ idx ] );
+                sz_t v = 0;
+                bcore_source_aware_parse_fa( chain, "line of text #<sz_t*>\n", &v );
+                ASSERT( idx == v );
+            }
+
+            bcore_arr_sz_s_discard( arr );
+            bcore_source_chain_s_discard( chain );
+        }
     }
 
     bcore_life_s_discard( l );

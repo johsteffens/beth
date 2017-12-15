@@ -1544,6 +1544,23 @@ static bl_t eos( const st_s* o )
     return o->size == 0;
 }
 
+static s3_t get_index( const st_s* o )
+{
+    if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
+    return -( s3_t )o->size;
+}
+
+/** Set index with st_s has only limited error detection capability.
+  * Beware that an invalid index may set o->data to invalid memory
+  */
+static void set_index( st_s* o, s3_t index )
+{
+    if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
+    if( index > 0    ) ERR( "Index is out of range." );
+    o->data = o->data + o->size + index;
+    o->size = -index;
+}
+
 /// sanity feature
 void bcore_inst_typed_check_sizeof( u2_t type, sz_t size );
 static void check_sanity( vc_t o )
@@ -1588,6 +1605,8 @@ static bcore_flect_self_s* st_s_create_self( void )
     bcore_flect_self_s_push_ns_func( self, ( fp_t )p_errorvf,         "bcore_fp_logvf",           "p_errorvf"    );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )parse_fv,          "bcore_source_fp_parse_fv", "parse_fv"     );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )eos,               "bcore_source_fp_eos",      "eos"          );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )get_index,         "bcore_source_fp_get_index","get_index"    );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )set_index,         "bcore_source_fp_set_index","set_index"    );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )check_sanity,      "bcore_fp_check_sanity",    "check_sanity" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",         "cmp_st"       );
     return self;

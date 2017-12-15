@@ -1074,40 +1074,39 @@ void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
 
 static void flect_define_basics()
 {
-    tp_t leaf = typeof( "leaf" );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "s3_t" ), leaf, sizeof( s3_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "s2_t" ), leaf, sizeof( s2_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "s1_t" ), leaf, sizeof( s1_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "s0_t" ), leaf, sizeof( s0_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "u3_t" ), leaf, sizeof( u3_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "u2_t" ), leaf, sizeof( u2_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "u1_t" ), leaf, sizeof( u1_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "u0_t" ), leaf, sizeof( u0_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "f3_t" ), leaf, sizeof( f3_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "f2_t" ), leaf, sizeof( f2_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "sz_t" ), leaf, sizeof( sz_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "sd_t" ), leaf, sizeof( sd_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "sc_t" ), leaf, sizeof( sc_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "vd_t" ), leaf, sizeof( vd_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "vc_t" ), leaf, sizeof( vc_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "fp_t" ), leaf, sizeof( fp_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bl_t" ), leaf, sizeof( bl_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "void" ), leaf, 0              ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "s3_t" ), typeof( "num"  ), sizeof( s3_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "s2_t" ), typeof( "num"  ), sizeof( s2_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "s1_t" ), typeof( "num"  ), sizeof( s1_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "s0_t" ), typeof( "num"  ), sizeof( s0_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "u3_t" ), typeof( "num"  ), sizeof( u3_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "u2_t" ), typeof( "num"  ), sizeof( u2_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "u1_t" ), typeof( "num"  ), sizeof( u1_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "u0_t" ), typeof( "num"  ), sizeof( u0_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "f3_t" ), typeof( "num"  ), sizeof( f3_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "f2_t" ), typeof( "num"  ), sizeof( f2_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "sz_t" ), typeof( "num"  ), sizeof( sz_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "sd_t" ), typeof( "leaf" ), sizeof( sd_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "sc_t" ), typeof( "leaf" ), sizeof( sc_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "vd_t" ), typeof( "leaf" ), sizeof( vd_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "vc_t" ), typeof( "leaf" ), sizeof( vc_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "fp_t" ), typeof( "leaf" ), sizeof( fp_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bl_t" ), typeof( "num"  ), sizeof( bl_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "void" ), typeof( "leaf" ), 0               ) );
 
     // special purpose types
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "tp_t"    ), leaf, sizeof( tp_t    ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "aware_t" ), leaf, sizeof( aware_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "tp_t"    ), typeof( "type" ), sizeof( tp_t    ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "aware_t" ), typeof( "type" ), sizeof( aware_t ) ) );
 
     // special purpose functions
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_init"    ), leaf, sizeof( bcore_fp_init ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_down"    ), leaf, sizeof( bcore_fp_down ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_copy"    ), leaf, sizeof( bcore_fp_copy ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_move"    ), leaf, sizeof( bcore_fp_move ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_create"  ), leaf, sizeof( bcore_fp_create ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_discard" ), leaf, sizeof( bcore_fp_discard ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_clone"   ), leaf, sizeof( bcore_fp_clone ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_copy_typed"   ), leaf, sizeof( bcore_fp_copy_typed ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_create_typed" ), leaf, sizeof( bcore_fp_create_typed ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_init"    ), typeof( "leaf" ), sizeof( bcore_fp_init ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_down"    ), typeof( "leaf" ), sizeof( bcore_fp_down ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_copy"    ), typeof( "leaf" ), sizeof( bcore_fp_copy ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_move"    ), typeof( "leaf" ), sizeof( bcore_fp_move ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_create"  ), typeof( "leaf" ), sizeof( bcore_fp_create ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_discard" ), typeof( "leaf" ), sizeof( bcore_fp_discard ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_clone"   ), typeof( "leaf" ), sizeof( bcore_fp_clone ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_copy_typed"   ), typeof( "leaf" ), sizeof( bcore_fp_copy_typed ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_create_typed" ), typeof( "leaf" ), sizeof( bcore_fp_create_typed ) ) );
 
     // specific objects
     bcore_flect_define_creator( typeof( "bcore_flect_item_s" ), flect_item_s_create_self );
@@ -1173,6 +1172,8 @@ vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object )
         bcore_trait_set( entypeof( "root" ), 0 ); // root trait (all traits should end in root)
         bcore_trait_set( entypeof( "bcore_inst" ), typeof( "root" ) ); // all (instantiable) reflections should inherit bcore_inst
         bcore_trait_set( entypeof( "leaf" ), typeof( "bcore_inst" ) ); // leaf trait
+        bcore_trait_set( entypeof( "num"  ), typeof( "leaf" ) );       // a number is a leaf type
+        bcore_trait_set( entypeof( "type" ), typeof( "num"  ) );       // type is encoded as number
 
         flect_define_basics();
         bcore_flect_define_creator( typeof( "bcore_static_link_s"       ), bcore_static_link_s_create_self );

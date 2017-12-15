@@ -76,7 +76,7 @@ sr_s bcore_via_spect_iget( const bcore_via_s* p, vc_t o, sz_t index         )
         case BCORE_CAPS_TYPED_LINK:
         {
             const bcore_typed_link_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
-            return sr_twd( dst->type, dst->link );
+            return dst->link ? sr_twd( dst->type, dst->link ) : sr_null();
         }
 
         case BCORE_CAPS_AWARE_LINK:
@@ -502,7 +502,7 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     sz_t vitem_arr_size  = 0;
     sz_t vitem_arr_space = 0;
 
-    if( self->body )
+    if( self->body && inst_p->body )
     {
         for( sz_t i = 0; i < self->body->size; i++ )
         {

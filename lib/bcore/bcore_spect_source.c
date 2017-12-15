@@ -131,10 +131,22 @@ bl_t bcore_source_spect_eos( const bcore_source_s* p, vc_t o )
     return p->fp_eos( o );
 }
 
-sc_t bcore_source_spect_file( const bcore_source_s* p, vc_t o )
+sc_t bcore_source_spect_get_file( const bcore_source_s* p, vc_t o )
 {
-    if( p->fp_file ) return p->fp_file( o );
+    if( p->fp_get_file ) return p->fp_get_file( o );
     return "";
+}
+
+s3_t bcore_source_spect_get_index( const bcore_source_s* p, vc_t o )
+{
+    if( p->fp_get_index ) return p->fp_get_index( o );
+    return 0;
+}
+
+void bcore_source_spect_set_index( const bcore_source_s* p, vd_t o, s3_t index )
+{
+    if( !p->fp_set_index ) ERR( "Object '%s' does not support feature 'bcore_source_fp_set_index'.", nameof( p->o_type ) );
+    p->fp_set_index( o, index );
 }
 
 /**********************************************************************************************************************/
@@ -160,7 +172,9 @@ static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
     o->fp_parse_errvf  = ( bcore_fp_logvf               )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_fp_logvf" ), bcore_name_enroll( "p_errorvf" ) );
     o->fp_set_supplier = ( bcore_source_fp_set_supplier )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_supplier" ), 0 );
     o->fp_eos          = ( bcore_source_fp_eos          )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_source_fp_eos" ), 0 );
-    o->fp_file         = ( bcore_source_fp_file         )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_file" ), 0 );
+    o->fp_get_file     = ( bcore_source_fp_get_file     )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_get_file" ), 0 );
+    o->fp_get_index    = ( bcore_source_fp_get_index    )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_get_index" ), 0 );
+    o->fp_set_index    = ( bcore_source_fp_set_index    )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_index" ), 0 );
     return o;
 }
 
@@ -207,7 +221,9 @@ void NPX(aware_parse_err_fv)( vd_t o, sc_t f, va_list a ) {        NPX(spect_par
 bl_t NPX(aware_parse_bl_fa )( vd_t o, sc_t f            ) { return NPX(spect_parse_bl_fa )( gtpd( *( aware_t* )o ), o, f     ); }
 void NPX(aware_set_supplier)( vd_t o, vd_t s            ) {        NPX(spect_set_supplier)( gtpd( *( aware_t* )o ), o, s     ); }
 bl_t NPX(aware_eos         )( vc_t o                    ) { return NPX(spect_eos         )( gtpd( *( aware_t* )o ), o        ); }
-sc_t NPX(aware_file        )( vc_t o                    ) { return NPX(spect_file        )( gtpd( *( aware_t* )o ), o        ); }
+sc_t NPX(aware_get_file    )( vc_t o                    ) { return NPX(spect_get_file    )( gtpd( *( aware_t* )o ), o        ); }
+s3_t NPX(aware_get_index   )( vc_t o                    ) { return NPX(spect_get_index   )( gtpd( *( aware_t* )o ), o        ); }
+void NPX(aware_set_index   )( vd_t o, s3_t i            ) {        NPX(spect_set_index   )( gtpd( *( aware_t* )o ), o, i     ); }
 
 void NPX(aware_parse_fa    )( vd_t o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(aware_parse_fv    )( o, f, a ); va_end( a ); }
 void NPX(aware_parse_errf  )( vd_t o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(aware_parse_errvf )( o, f, a ); va_end( a ); }
@@ -226,7 +242,9 @@ void NPX(parse_err_fv)( sr_s o, sc_t f, va_list a ) {          NPX(spect_parse_e
 bl_t NPX(parse_bl_fa )( sr_s o, sc_t f            ) { bl_t r = NPX(spect_parse_bl_fa )( w_spect( o ), o.o, f     ); sr_down( o ); return r; }
 void NPX(set_supplier)( sr_s o, vd_t s            ) {          NPX(spect_set_supplier)( w_spect( o ), o.o, s     ); sr_down( o ); }
 bl_t NPX(eos         )( sr_s o                    ) { bl_t r = NPX(spect_eos         )( r_spect( o ), o.o        ); sr_down( o ); return r; }
-sc_t NPX(file        )( sr_s o                    ) { sc_t r = NPX(spect_file        )( r_spect( o ), o.o        ); sr_down( o ); return r; }
+sc_t NPX(get_file    )( sr_s o                    ) { sc_t r = NPX(spect_get_file    )( r_spect( o ), o.o        ); sr_down( o ); return r; }
+s3_t NPX(get_index   )( sr_s o                    ) { sz_t r = NPX(spect_get_index   )( r_spect( o ), o.o        ); sr_down( o ); return r; }
+void NPX(set_index   )( sr_s o, s3_t i            ) {          NPX(spect_set_index   )( w_spect( o ), o.o, i     ); sr_down( o ); }
 
 void NPX(parse_fa    )( sr_s o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(parse_fv    )( o, f, a ); va_end( a ); }
 void NPX(parse_errf  )( sr_s o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(parse_errvf )( o, f, a ); va_end( a ); }
@@ -242,7 +260,9 @@ void NPX(q_parse_err_fv)( const sr_s* o, sc_t f, va_list a ) {        NPX(spect_
 bl_t NPX(q_parse_bl_fa )( const sr_s* o, sc_t f            ) { return NPX(spect_parse_bl_fa )( w_spect( *o ), o->o, f     ); }
 void NPX(q_set_supplier)( const sr_s* o, vd_t s            ) {        NPX(spect_set_supplier)( w_spect( *o ), o->o, s     ); }
 bl_t NPX(q_eos         )( const sr_s* o                    ) { return NPX(spect_eos         )( r_spect( *o ), o->o        ); }
-sc_t NPX(q_file        )( const sr_s* o                    ) { return NPX(spect_file        )( r_spect( *o ), o->o        ); }
+sc_t NPX(q_get_file    )( const sr_s* o                    ) { return NPX(spect_get_file    )( r_spect( *o ), o->o        ); }
+s3_t NPX(q_get_index   )( const sr_s* o                    ) { return NPX(spect_get_index   )( r_spect( *o ), o->o        ); }
+void NPX(q_set_index   )( const sr_s* o, s3_t i            ) {        NPX(spect_set_index   )( w_spect( *o ), o->o, i     ); }
 void NPX(q_parse_fa    )( const sr_s* o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(q_parse_fv    )( o, f, a ); va_end( a ); }
 void NPX(q_parse_errf  )( const sr_s* o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(q_parse_errvf )( o, f, a ); va_end( a ); }
 void NPX(q_parse_err_fa)( const sr_s* o, sc_t f, ...       ) { va_list a; va_start( a, f ); NPX(q_parse_err_fv)( o, f, a ); va_end( a ); }

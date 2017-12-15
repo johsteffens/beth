@@ -65,7 +65,14 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
 
     if( !obj_l.o ) // NULL
     {
-        bcore_sink_pushf( sink_l, "<></>\n" );
+        if( obj_l.p )
+        {
+            bcore_sink_pushf( sink_l, "<%s></>\n", name_of( sr_s_type( &obj_l ), buf ) );
+        }
+        else
+        {
+            bcore_sink_pushf( sink_l, "<></>\n" );
+        }
     }
     else
     {

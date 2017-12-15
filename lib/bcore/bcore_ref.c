@@ -129,6 +129,89 @@ static bcore_flect_self_s* sr_s_create_self( void )
     return self;
 }
 
+f3_t sr_f3_sr_s( const sr_s* o )
+{
+    f3_t v = 0;
+    switch( sr_s_type( o ) )
+    {
+        case TYPEOF_u0_t: v = *( u0_t* )o->o; break;
+        case TYPEOF_u1_t: v = *( u1_t* )o->o; break;
+        case TYPEOF_u2_t: v = *( u2_t* )o->o; break;
+        case TYPEOF_u3_t: v = *( u3_t* )o->o; break;
+        case TYPEOF_s0_t: v = *( s0_t* )o->o; break;
+        case TYPEOF_s1_t: v = *( s1_t* )o->o; break;
+        case TYPEOF_s2_t: v = *( s2_t* )o->o; break;
+        case TYPEOF_s3_t: v = *( s3_t* )o->o; break;
+        case TYPEOF_f2_t: v = *( f2_t* )o->o; break;
+        case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
+        case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
+        default: ERR_fa( "Cannot convert '#<sc_t>' to f3_t.", ifnameof( sr_s_type( o ) ) );
+    }
+    return v;
+}
+
+u3_t sr_u3_sr_s( const sr_s* o )
+{
+    u3_t v = 0;
+    switch( sr_s_type( o ) )
+    {
+        case TYPEOF_u0_t: v = *( u0_t* )o->o; break;
+        case TYPEOF_u1_t: v = *( u1_t* )o->o; break;
+        case TYPEOF_u2_t: v = *( u2_t* )o->o; break;
+        case TYPEOF_u3_t: v = *( u3_t* )o->o; break;
+        case TYPEOF_s0_t: v = *( s0_t* )o->o; break;
+        case TYPEOF_s1_t: v = *( s1_t* )o->o; break;
+        case TYPEOF_s2_t: v = *( s2_t* )o->o; break;
+        case TYPEOF_s3_t: v = *( s3_t* )o->o; break;
+        case TYPEOF_f2_t: v = *( f2_t* )o->o; break;
+        case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
+        case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
+        default: ERR_fa( "Cannot convert '#<sc_t>' to u3_t.", ifnameof( sr_s_type( o ) ) );
+    }
+    return v;
+}
+
+s3_t sr_s3_sr_s( const sr_s* o )
+{
+    s3_t v = 0;
+    switch( sr_s_type( o ) )
+    {
+        case TYPEOF_u0_t: v = *( u0_t* )o->o; break;
+        case TYPEOF_u1_t: v = *( u1_t* )o->o; break;
+        case TYPEOF_u2_t: v = *( u2_t* )o->o; break;
+        case TYPEOF_u3_t: v = *( u3_t* )o->o; break;
+        case TYPEOF_s0_t: v = *( s0_t* )o->o; break;
+        case TYPEOF_s1_t: v = *( s1_t* )o->o; break;
+        case TYPEOF_s2_t: v = *( s2_t* )o->o; break;
+        case TYPEOF_s3_t: v = *( s3_t* )o->o; break;
+        case TYPEOF_f2_t: v = *( f2_t* )o->o; break;
+        case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
+        case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
+        default: ERR_fa( "Cannot convert '#<sc_t>' to s3_t.", ifnameof( sr_s_type( o ) ) );
+    }
+    return v;
+}
+
+bl_t sr_bl_sr_s( const sr_s* o )
+{
+    bl_t v = 0;
+    switch( sr_s_type( o ) )
+    {
+        case TYPEOF_u0_t: v = *( u0_t* )o->o; break;
+        case TYPEOF_u1_t: v = *( u1_t* )o->o; break;
+        case TYPEOF_u2_t: v = *( u2_t* )o->o; break;
+        case TYPEOF_u3_t: v = *( u3_t* )o->o; break;
+        case TYPEOF_s0_t: v = *( s0_t* )o->o; break;
+        case TYPEOF_s1_t: v = *( s1_t* )o->o; break;
+        case TYPEOF_s2_t: v = *( s2_t* )o->o; break;
+        case TYPEOF_s3_t: v = *( s3_t* )o->o; break;
+        case TYPEOF_f2_t: v = *( f2_t* )o->o; break;
+        case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
+        case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
+        default: ERR_fa( "Cannot convert '#<sc_t>' to bl_t.", ifnameof( sr_s_type( o ) ) );
+    }
+    return v;
+}
 
 /**********************************************************************************************************************/
 

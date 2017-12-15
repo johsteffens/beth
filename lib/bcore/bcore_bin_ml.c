@@ -28,14 +28,21 @@ static inline void push_type( sr_s sink, tp_t type )
 static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, sz_t depth )
 {
     bcore_life_s* l = bcore_life_s_create();
-    sr_s sink_l         = sr_cl( sr_cp( sink, TYPEOF_bcore_sink_s ), l );
-    sr_s obj_l          = sr_cl( sr_cp( obj,  TYPEOF_bcore_via_s ),  l );
+    sr_s sink_l     = sr_cl( sr_cp( sink, TYPEOF_bcore_sink_s ), l );
+    sr_s obj_l      = sr_cl( sr_cp( obj,  TYPEOF_bcore_via_s ),  l );
 
     if( name ) push_type( sink_l, name );
 
     if( !obj_l.o ) // NULL
     {
-        push_type( sink_l, 0 );
+        if( obj_l.p )
+        {
+            push_type( sink_l, sr_s_type( &obj_l ) );
+        }
+        else
+        {
+            push_type( sink_l, 0 );
+        }
     }
     else
     {
