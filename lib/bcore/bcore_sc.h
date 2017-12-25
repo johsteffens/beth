@@ -56,12 +56,15 @@
  *
  *  Padding:
  *    "#p<num><c>{<expression>}"
+ *    "#p<num>'<c>'{<expression>}"
  *    "#pl<num><c>{<expression>}"
+ *    "#pl<num>'<c>'{<expression>}"
  *      Extends converted expression to <num> characters.
  *      Arguments: according to <expression>
  *      #pl...: left-padding, otherwise right-padding.
  *      Examples:
  *        "#pl10 {#<u3_t>}"       --> number converted to at least 10 chars left-bound number with leading spaces
+ *        "#pl10'0'{#<u3_t>}"     --> number converted to at least 10 chars left-bound number with leading zeros (padding zero character enclosed in '' to avoid interpreting it as size)
  *        "#pl10 {#t10{#<sc_t>}}" --> string converted to exact 10 chars with left space-padding or right truncation
  *
  *    "#pn<c>{<expression>}"

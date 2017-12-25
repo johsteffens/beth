@@ -151,7 +151,17 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                 {
                     ERR( "Could not obtain target size in padding expression '%s'.", f );
                 }
-                char pad_char = f[ i++ ];
+                char pad_char;
+                if( f[ i ] == '\'' )
+                {
+                    i++;
+                    pad_char = f[ i++ ];
+                    if( f[ i++ ] != '\'' ) ERR( "Closing mark (') for padding character missing in padding expression '%s'.", f );
+                }
+                else
+                {
+                    pad_char = f[ i++ ];
+                }
                 char start_char = f[ i ];
                 sz_t start_block = i + 1;
                 char stop_char = 0;
