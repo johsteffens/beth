@@ -20,13 +20,18 @@ Some of the objectives are...
    * Binding interfaces and objects via associations.
    * Achieving high runtime efficiency.
 
-## License Status
+## Usage
 
-This project is under development. Once the code structure has sufficiently settled, I’ll decide about a suitable free public license. 
+This project serves as foundation library shared across more specialized projects (e.g. [rayflux](https://github.com/johsteffens/rayflux)). 
 
-For the time being: If you wish to use/copy/fork/integrate/modify all or parts of it (outside the scope granted by Git Hub), please contact me first for a personal license. - Thank you.
+   * Download [beth](https://github.com/johsteffens/beth) together with a project builds on it and compile both together.
+   * Or: Develop your own application based on beth.
 
-Note that this software comes without any explicit or implied warranty for any purpose.
+## License
 
-*Copyright (C) 2017 Johannes Steffens johannes.b.steffens@gmail.com. All rights reserved.*
+The source code in this project is licensed under the Apache 2.0 License. 
+
+Since [beth](https://github.com/johsteffens/beth) is a library, you may want to use it in combination with another project depending on beth (e.g. [rayflux](https://github.com/johsteffens/rayflux)). Provisions and requirements of beth's license do not automatically extend to or mix with dependent projects. Instead each project should be used by the terms of its own license.
+
+*Copyright (C) 2017 Johannes B. Steffens johannes.b.steffens@gmail.com.*
 
