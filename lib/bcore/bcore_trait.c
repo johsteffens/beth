@@ -217,7 +217,7 @@ void bcore_trait_register_fp_support( tp_t trait, bcore_trait_fp_supports f )
     system_s_g_unlock();
 }
 
-static bl_t trait_is( tp_t trait, tp_t ancestor )
+static bl_t trait_is_of( tp_t trait, tp_t ancestor )
 {
     for(;;)
     {
@@ -231,7 +231,7 @@ static bl_t trait_is( tp_t trait, tp_t ancestor )
 void bcore_trait_set( tp_t trait, tp_t parent )
 {
     system_s_g_lock();
-    if( trait_is( parent, trait ) )
+    if( trait_is_of( parent, trait ) )
     {
         system_s_g_unlock();
         ERR( "Declaring trait '%s' with parent '%s' causes cyclic ancestry.", ifnameof( trait ), ifnameof( parent ) );
@@ -256,10 +256,10 @@ tp_t bcore_trait_parent( tp_t trait )
     return parent ? *parent : 0;
 }
 
-bl_t bcore_trait_is( tp_t trait, tp_t ancestor )
+bl_t bcore_trait_is_of( tp_t trait, tp_t ancestor )
 {
     system_s_g_lock();
-    bl_t flag = trait_is( trait, ancestor );
+    bl_t flag = trait_is_of( trait, ancestor );
     system_s_g_unlock();
     return flag;
 }
@@ -287,7 +287,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* lo
 
     if( trait_o->in_ancestry )
     {
-        if( !bcore_trait_is( self->trait, trait ) )
+        if( !bcore_trait_is_of( self->trait, trait ) )
         {
             if( log )
             {
@@ -345,7 +345,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* lo
 bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, st_s* log )
 {
     if( self->type == trait                       ) return true;
-    if( bcore_trait_is( self->trait, trait )      ) return true;
+    if( bcore_trait_is_of( self->trait, trait )   ) return true;
     if( bcore_trait_supported( trait, self, log ) ) return true;
     return false;
 }

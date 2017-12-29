@@ -52,7 +52,7 @@ bl_t bcore_trait_exists( tp_t trait );
 tp_t bcore_trait_parent( tp_t trait );
 
 /// checks if ancestor is in the chain of inheritance of trait; thread-safe
-bl_t bcore_trait_is( tp_t trait, tp_t ancestor );
+bl_t bcore_trait_is_of( tp_t trait, tp_t ancestor );
 
 /// checks if a reflection supports a trait including all ancestors (ignores trait specification in reflection)
 bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* log );
