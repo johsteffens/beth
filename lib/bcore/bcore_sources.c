@@ -796,6 +796,14 @@ void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t inde
     fseek( o->handle, cur_index, SEEK_SET );
 }
 
+bl_t bcore_source_file_s_exists( sc_t name )
+{
+    vd_t handle = fopen( name, "rb" );
+    if( !handle ) return false;
+    fclose( handle );
+    return true;
+}
+
 /**********************************************************************************************************************/
 
 static void file_p_errorvf( bcore_source_file_s* o, sc_t format, va_list args )

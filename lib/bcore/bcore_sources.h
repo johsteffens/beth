@@ -173,6 +173,9 @@ void                 bcore_source_file_s_set_index(       bcore_source_file_s* o
 /// obtains context information for index position (only for text files)
 void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t index, sz_t* p_line, sz_t* p_col, st_s* context );
 
+/// checks if file exists
+bl_t bcore_source_file_s_exists( sc_t name );
+
 /**********************************************************************************************************************/
 // syntactic sugar
 
