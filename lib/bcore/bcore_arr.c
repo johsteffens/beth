@@ -756,6 +756,11 @@ void bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, sz_t space )
     bcore_array_aware_set_space( o, space );
 }
 
+void bcore_arr_sr_s_set_size( bcore_arr_sr_s* o, sz_t size )
+{
+    bcore_array_aware_set_size( o, size );
+}
+
 void bcore_arr_sr_s_make_strong( bcore_arr_sr_s* o )
 {
     bcore_array_aware_make_strong( o );

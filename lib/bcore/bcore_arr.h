@@ -153,6 +153,7 @@ DECLARE_FUNCTIONS_OBJ( bcore_arr_sr_s )
 
 void  bcore_arr_sr_s_clear(     bcore_arr_sr_s* o ); // sets size to zero
 void  bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, sz_t space );
+void  bcore_arr_sr_s_set_size(  bcore_arr_sr_s* o, sz_t size  ); // conservative resize
 sr_s* bcore_arr_sr_s_push_sr(   bcore_arr_sr_s* o, sr_s v );
 sr_s* bcore_arr_sr_s_push_tp(   bcore_arr_sr_s* o, tp_t type );
 sr_s  bcore_arr_sr_s_pop(       bcore_arr_sr_s* o );

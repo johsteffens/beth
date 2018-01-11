@@ -57,7 +57,7 @@ DECLARE_FUNCTION_CLONE(   bclos_signature_s )
 
 void bclos_signature_s_push( bclos_signature_s* o, bclos_signature_arg_s arg );
 
-// Format: [type] <name>( [const] < type> <name>, [const] <type> <name>, ... );
+// Format: [type] <name>( [const] <type> <name>, [const] <type> <name>, ... );
 bclos_signature_s* bclos_signature_s_parse_from_source( sr_s source );
 bclos_signature_s* bclos_signature_s_parse_from_sc( sc_t sc );
 
