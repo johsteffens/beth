@@ -213,7 +213,7 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
 
         default:
         {
-            ERR( "Converting type '%s' into st_s is not yet implemented", ifnameof( type ) );
+            ERR( "Converting type '%s' into 'st_s' is not supported.", ifnameof( type ) );
         }
         break;
     }

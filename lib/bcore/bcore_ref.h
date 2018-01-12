@@ -71,7 +71,7 @@ static inline sr_s sr_pwd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .
 static inline sr_s sr_psd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = STRONG_f }; }
 
 static inline sr_s sr_cw( sr_s o ) { o.f &= ~STRONG_f; return o; } // turns a reference into a weak one;
-static inline sr_s sr_cc( sr_s o ) { o.f &= ~CONST_f; return o; } // turns a reference into a const one;
+static inline sr_s sr_cc( sr_s o ) { o.f |=  CONST_f; return o; } // turns a reference into a const one;
 static inline sr_s sr_cp( sr_s o, tp_t spect_type ) { o.p = ch_spect_p( o.p, spect_type ); return o; } // changes perspective
               sr_s sr_cl( sr_s o, bcore_life_s* l ); // assigns to lifetime manager
 
