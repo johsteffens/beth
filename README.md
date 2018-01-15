@@ -22,16 +22,16 @@ Some of the objectives are...
 
 ## Usage
 
-This project serves as foundation library shared across more specialized projects (e.g. [rayflux](https://github.com/johsteffens/rayflux)). 
+This project serves as foundation library shared across more specialized projects (e.g. [actinon](https://github.com/johsteffens/actinon)). 
 
    * Download [beth](https://github.com/johsteffens/beth) together with a project builds on it and compile both together.
    * Or: Develop your own application based on beth.
 
+Since [beth](https://github.com/johsteffens/beth) is a library, you may want to use it in combination with another project depending on beth (e.g. [actinon](https://github.com/johsteffens/actinon)).
+
 ## License
 
 The source code in this project is licensed under the Apache 2.0 License. 
-
-Since [beth](https://github.com/johsteffens/beth) is a library, you may want to use it in combination with another project depending on beth (e.g. [rayflux](https://github.com/johsteffens/rayflux)). Provisions and requirements of beth's license do not automatically extend to or mix with dependent projects. Instead each project should be used by the terms of its own license.
 
 *Copyright (C) 2017 Johannes B. Steffens johannes.b.steffens@gmail.com.*
 
