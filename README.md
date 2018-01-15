@@ -22,12 +22,10 @@ Some of the objectives are...
 
 ## Usage
 
-This project serves as foundation library shared across more specialized projects (e.g. [actinon](https://github.com/johsteffens/actinon)). 
+This project serves as foundation library shared across more specialized projects. If you are interested in applications, you may want to use beth in combination with a dependent project (e.g. [actinon](https://github.com/johsteffens/actinon)). 
 
    * Download [beth](https://github.com/johsteffens/beth) together with a project builds on it and compile both together.
    * Or: Develop your own application based on beth.
-
-Since [beth](https://github.com/johsteffens/beth) is a library, you may want to use it in combination with another project depending on beth (e.g. [actinon](https://github.com/johsteffens/actinon)).
 
 ## License
 
