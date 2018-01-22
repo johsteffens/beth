@@ -504,9 +504,25 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             {
                 bcore_static_link_s* dst = dst_obj;
                 bcore_static_link_s* src = src_obj;
-                const bcore_inst_s* inst_p = inst_item->inst_p;
-                inst_p->discard( inst_p, dst->link );
-                dst->link = inst_p->clone( inst_p, src->link );
+                if( dst->link )
+                {
+                    bcore_inst_spect_discard( inst_item->inst_p, dst->link );
+                }
+                if( src->link )
+                {
+                    if( flect_item->f_deep_copy )
+                    {
+                        dst->link = bcore_inst_spect_clone( inst_item->inst_p, src->link );
+                    }
+                    else
+                    {
+                        dst->link = bcore_fork( src->link );
+                    }
+                }
+                else
+                {
+                    dst->link = NULL;
+                }
             }
             break;
 
@@ -521,8 +537,19 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 if( src->link )
                 {
-                    const bcore_inst_s* inst_p = bcore_inst_s_get_typed( src->type );
-                    dst->link = inst_p->clone( inst_p, src->link );
+                    if( flect_item->f_deep_copy )
+                    {
+                        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( src->type );
+                        dst->link = inst_p->clone( inst_p, src->link );
+                    }
+                    else
+                    {
+                        dst->link = bcore_fork( src->link );
+                    }
+                }
+                else
+                {
+                    dst->link = NULL;
                 }
                 dst->type = src->type;
             }
@@ -539,8 +566,19 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 if( src->link )
                 {
-                    const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )src->link );
-                    dst->link = inst_p->clone( inst_p, src->link );
+                    if( flect_item->f_deep_copy )
+                    {
+                        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )src->link );
+                        dst->link = inst_p->clone( inst_p, src->link );
+                    }
+                    else
+                    {
+                        dst->link = bcore_fork( src->link );
+                    }
+                }
+                else
+                {
+                    dst->link = NULL;
                 }
             }
             break;
@@ -646,7 +684,15 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                     dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                 }
-                for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
+                if( flect_item->f_deep_copy )
+                {
+                    for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
+                }
+                else
+                {
+                    for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_fork( src->data[ i ] );
+                }
+
                 dst->size = src->size;
             }
             break;
@@ -668,7 +714,14 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                     }
-                    for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
+                    if( flect_item->f_deep_copy )
+                    {
+                        for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
+                    }
+                    else
+                    {
+                        for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_fork( src->data[ i ] );
+                    }
                 }
                 dst->size = src->size;
                 dst->type = src->type;
@@ -694,10 +747,17 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                     }
-                    for( sz_t i = 0; i < src->size; i++ )
+                    if( flect_item->f_deep_copy )
                     {
-                        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )src->data[ i ] );
-                        dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
+                        for( sz_t i = 0; i < src->size; i++ )
+                        {
+                            const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )src->data[ i ] );
+                            dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
+                        }
+                    }
+                    else
+                    {
+                        for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_fork( src->data[ i ] );
                     }
                 }
                 dst->size = src->size;
@@ -1562,6 +1622,41 @@ static st_s* spect_inst_selftest( void )
     bcore_inst_aware_discard( o1 );
     bcore_inst_aware_discard( o2 );
     bcore_inst_aware_discard( o3 );
+
+    {
+        // deep vs shallow links
+        typedef struct { aware_t _; st_s * str; } deep_object_s;
+        bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " deep_object_s = { aware_t _; st_s => str; }", sizeof( deep_object_s ) ) );
+        typedef struct { aware_t _; st_s * str; } shallow_object_s;
+        bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " shallow_object_s = { aware_t _; st_s -> str; }", sizeof( shallow_object_s ) ) );
+
+        deep_object_s*    do1 = bcore_inst_typed_create( typeof( "deep_object_s" ) );
+        shallow_object_s* so1 = bcore_inst_typed_create( typeof( "shallow_object_s" ) );
+
+        do1->str = st_s_create_sc( "the" );
+        so1->str = st_s_create_sc( "quick" );
+
+        ASSERT( st_s_equal_sc( do1->str, "the") );
+        ASSERT( st_s_equal_sc( so1->str, "quick") );
+
+        deep_object_s*    do2 = bcore_inst_aware_clone( do1 );
+        shallow_object_s* so2 = bcore_inst_aware_clone( so1 );
+
+        do2->str = st_s_replace_sc_sc( do2->str, "the", "brown" );
+        so2->str = st_s_replace_sc_sc( so2->str, "quick", "fox" );
+
+        ASSERT( st_s_equal_sc( do1->str, "the") );
+        ASSERT( st_s_equal_sc( do2->str, "brown") );
+
+        ASSERT( st_s_equal_sc( so2->str, "fox") );
+        ASSERT( st_s_equal_sc( so1->str, "fox") );
+
+        bcore_inst_aware_discard( do1 );
+        bcore_inst_aware_discard( do2 );
+        bcore_inst_aware_discard( so1 );
+        bcore_inst_aware_discard( so2 );
+    }
+
 
     return NULL;
 }

@@ -322,7 +322,7 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
         }
         else // data type declaration
         {
-            bl_t f_private = false, f_hidden = false, f_shell = false, f_link = false, f_arr = false, f_spect = false;
+            bl_t f_private = false, f_hidden = false, f_shell = false, f_link = false, f_arr = false, f_spect = false, f_deep_copy = true;
             bcore_source_q_parse_fa( &src, "#?w'private' #?w'hidden' #?w'shell' #?w'spect'",  &f_private, &f_hidden, &f_shell, &f_spect );
 
             // type can be specified by explicit type id number (anonymous types) or by name
@@ -342,12 +342,34 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
 
             bl_t assign_default = false;
 
-            bcore_source_q_parse_fa( &src, "#?'*' #?'[]' #name #?'=' ", &f_link, &f_arr, item_name, &assign_default );
+            if( bcore_source_q_parse_bl_fa( &src, "#?'*' " ) )
+            {
+                f_link = true;
+                f_deep_copy = f_spect ? false : true;
+            }
+            else if( bcore_source_q_parse_bl_fa( &src, "#?'=>' " ) )
+            {
+                f_link = true;
+                f_deep_copy = f_spect ? false : true;
+            }
+            else if( bcore_source_q_parse_bl_fa( &src, "#?'->' " ) )
+            {
+                f_link = true;
+                f_deep_copy = false;
+            }
 
-            item->f_private  = f_private || f_spect;
-            item->f_hidden   = f_hidden;
-            item->f_shell    = f_shell;
-            item->f_spect    = f_spect;
+            if( bcore_source_q_parse_bl_fa( &src, "#?'[]' " ) )
+            {
+                f_arr = true;
+            }
+
+            bcore_source_q_parse_fa( &src, "#name #?'=' ", item_name, &assign_default );
+
+            item->f_private   = f_private || f_spect;
+            item->f_hidden    = f_hidden;
+            item->f_shell     = f_shell;
+            item->f_spect     = f_spect;
+            item->f_deep_copy = f_deep_copy;
 
             if( f_spect && !f_link )
             {

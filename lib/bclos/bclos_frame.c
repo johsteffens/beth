@@ -64,6 +64,11 @@ sr_s bclos_frame_s_remove( bclos_frame_s* o, tp_t name )
     return bcore_hmap_tp_sr_s_remove( &o->map, name );
 }
 
+sr_s* bclos_frame_s_get_local( const bclos_frame_s* o, tp_t name )
+{
+    return bcore_hmap_tp_sr_s_get( &o->map, name );
+}
+
 bcore_flect_self_s* frame_s_create_self( void )
 {
     sc_t def =

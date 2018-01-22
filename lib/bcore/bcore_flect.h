@@ -100,20 +100,26 @@ typedef struct bcore_flect_item_s
         tp_t flags; // collection of attribute flags
         struct
         {
-            // invisible to all perspectives (inst spect may only initialize the field)
-            unsigned f_private  : 1;
+            // invisible to all perspectives (inst spect may only initialize and destroy the field)
+            unsigned f_private   : 1;
 
             // interpreted type (no physical representation)
             // invisible to inst spect
             // used by via spect
-            unsigned f_shell    : 1; // shell flag
+            unsigned f_shell     : 1; // shell flag
 
             // visible to inst spect
             // hidden from via spect
-            unsigned f_hidden   : 1; // hidden flag
+            unsigned f_hidden    : 1; // hidden flag
 
             // visible to inst spect (automatically coupled with f_private)
-            unsigned f_spect   : 1; // static link to perspective of this item
+            unsigned f_spect     : 1; // static link to perspective of this item
+
+            // In instance perspective copy:
+            //    * true: linked objects are deeply copied
+            //    * false: linked objects are forked
+            unsigned f_deep_copy : 1;
+
         };
     };
 
@@ -241,7 +247,8 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type 
  *    <type name> | <type number> | typed | aware
  *
  *  qualifiers:
- *    * : link
+ *    *, => : (deep) link    // object is referenced and inst perspective takes full control incl. deep copy
+ *       -> : (shallow) link // object is referenced and inst perspective controls lifetime but only forks links
  *    []: array
  *
  *  Special cases:
