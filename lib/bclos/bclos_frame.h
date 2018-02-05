@@ -40,6 +40,7 @@ void           bclos_frame_s_discard( bclos_frame_s* o );
 sr_s*          bclos_frame_s_get(    const bclos_frame_s* o, tp_t name ); // returns NULL when not existing, searches first local than external scope
 sr_s*          bclos_frame_s_set(          bclos_frame_s* o, tp_t name, sr_s val );
 sr_s           bclos_frame_s_remove(       bclos_frame_s* o, tp_t name ); // removes element, returns value; call sr_down( remove(...) ) to eliminate entry
+void           bclos_frame_s_clear( bclos_frame_s* o ); // clears map but not external
 
 sr_s*          bclos_frame_s_get_local( const bclos_frame_s* o, tp_t name ); // returns NULL when not existing, searches only local scope
 
