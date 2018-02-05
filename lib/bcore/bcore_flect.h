@@ -248,7 +248,7 @@ bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type 
  *
  *  qualifiers:
  *    *, => : (deep) link    // object is referenced and inst perspective takes full control incl. deep copy
- *       -> : (shallow) link // object is referenced and inst perspective controls lifetime but only forks links
+ *       -> : (shallow) link // object is referenced and inst perspective controls lifetime but only forks links (no cloning)
  *    []: array
  *
  *  Special cases:
@@ -299,6 +299,7 @@ tp_t bcore_flect_define_parse_fa( sc_t sc, ... );
  *  Reentrant define-function with advanced collision testing.
  *  Intended use in reentrant contexts (e.g type generators, local types, anonymous types)
  *  Thread safe with extended collision-awareness (--> Error in case of any form of collision).
+ *  See flect_selftest for examples.
  */
 tp_t bcore_flect_type_self_d(       bcore_flect_self_s* self ); // takes over control of self
 tp_t bcore_flect_type_self_c( const bcore_flect_self_s* self ); // stores a copy of self
