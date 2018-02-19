@@ -23,7 +23,7 @@ The framework is used for object instantiation, initialization, lifetime managem
 A key-component is the so-called *Perspective*, which is a special abstraction for a generic framework with the character of a polymorphic interface but without requiring inheritance. Binding between *Perspective* and *Object* is dynamic. Neither need be aware of the other's existence at compile time, yet a *Perspective* may act as generic source of functionality for an object as well as its abstract interface. The perspective-framework builds upon the reflection framework. Inside the beth codebase *perspective* is abbreviated `spect`.
 
 ### Associative Binding
-Dynamic associations between *types*, *reflections*, and *perspectives* are accomplished via hashmaps. For this purpose I experimented with Pagh's & Rodler's cuckoo-hashing and designed a fast & stable monolithic implementation of the algorithm.
+Dynamic associations between *types*, *reflections*, and *perspectives* are accomplished via hashmaps. For this purpose I experimented with Pagh's & Rodler's cuckoo-hashing and composed a fast & stable monolithic implementation of the algorithm.
 
 ### Memory Management & Garbage Collection
 Beth has its own memory manager with integrated reference manager. Both components work closely together providing efficient garbage collection based on reference-counting. A special design-feature is the overhead-free (near) O(1) root-address-determination from any pointer adressing an embedded element of the object. This allows object collection, even after all direct pointers to the object have been released while only pointers to its elements remain in use. Once the last such element-reference is released the root-object will be automatically determined and destroyed.
