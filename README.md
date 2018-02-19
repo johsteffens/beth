@@ -2,7 +2,7 @@
 
 *Beth* is a personal *"moonshot"* project.
 
-In it I am re-thinking polymorphism, reflection-aided generic programming and functional programming. One goal is developing a paradigm in which frequently used design patterns can be efficiently yet more generally realized than by the traditional object oriented approach. The ultimate goal is designing a new software framework which optimally leverages efficient application design with respect to scalability, maintainability and genericity.
+In it I am re-thinking polymorphism, reflection-aided generic programming and functional programming. One goal is developing a paradigm in which frequently used design patterns can be efficiently yet more generally realized than by the traditional object oriented approach. Ultimately, this software framework shall leverage efficient application design with respect to scalability, maintainability and genericity.
 
 Some of the objectives are...
    * Bridging the gap between procedural and object oriented programming.
@@ -22,7 +22,7 @@ The framework is used for object instantiation, initialization, lifetime managem
 ### Perspective
 A key-component is the so-called *Perspective*, which is a special abstraction for a generic framework with the character of a polymorphic interface but not following the tradition of object inheritance in OOP. Binding between *Perspective* and *Object* is dynamic. Neither need be aware of the other's existence at compile time, yet a *Perspective* may act as generic source of functionality for an object as well as its abstract interface. The perspective-framework builds upon the reflection framework. Inside the beth codebase *perspective* is abbreviated *spect*.
 
-### Dynamic Binding
+### Associative Binding
 Dynamic associations between *types*, *reflections*, and *perspectives* are accomplished via hashmaps. For this purpose I experimented with the well known (Pagh & Rodler) cuckoo-hashing and developed a fast & stable monolithic flavor of the algorithm.
 
 ### Memory Management & Garbage Collection
