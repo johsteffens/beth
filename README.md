@@ -2,7 +2,7 @@
 
 *Beth* is a personal *"moonshot"* project.
 
-In it I am re-thinking polymorphism, reflection-aided generic programming and functional programming. One goal is developing a paradigm in which frequently used design patterns can be efficiently yet more generally realized than by the traditional object oriented approach. Ultimately, this software framework shall leverage efficient application design with respect to scalability, maintainability and genericity.
+In it I am re-thinking polymorphism, reflection-aided generic programming and functional programming. One goal is leveraging efficient application design with respect to scalability, maintainability and genericity.
 
 Some of the objectives are...
    * Bridging the gap between procedural and object oriented programming.
@@ -15,25 +15,27 @@ Some of the objectives are...
 ## Concepts
 
 ### Reflection
-Beth employs *Reflection* as basis for genericity. The reflection-framework allows dynamic object-definition using a declarative (string-based) syntax. It does not require a C-syle structure definition of the type. However, for static types both methods can be mixed taking advantage of either as the coding context might inspire.
+Beth employs *Reflection* as basis for genericity. The reflection-framework allows dynamic object-definition using a declarative (string-based) syntax. It does not require a C-syle structure definition of the type. However, for static types both methods can be mixed, taking advantage of the strengths of either method as inspired by coding context.
 
 The framework is used for object instantiation, initialization, lifetime management, serialization and more. Inside the beth codebase *reflection* is abbreviated `flect`.
 
 ### Perspective
-A key-component is the so-called *Perspective*, which is a special abstraction for a generic framework with the character of a polymorphic interface but not following the tradition of object inheritance in OOP. Binding between *Perspective* and *Object* is dynamic. Neither need be aware of the other's existence at compile time, yet a *Perspective* may act as generic source of functionality for an object as well as its abstract interface. The perspective-framework builds upon the reflection framework. Inside the beth codebase *perspective* is abbreviated `spect`.
+A key-component is the so-called *Perspective*, which is a special abstraction for a generic framework with the character of a polymorphic interface but without requiring inheritance. Binding between *Perspective* and *Object* is dynamic. Neither need be aware of the other's existence at compile time, yet a *Perspective* may act as generic source of functionality for an object as well as its abstract interface. The perspective-framework builds upon the reflection framework. Inside the beth codebase *perspective* is abbreviated `spect`.
 
 ### Associative Binding
-Dynamic associations between *types*, *reflections*, and *perspectives* are accomplished via hashmaps. For this purpose I experimented with the well known (Pagh & Rodler) cuckoo-hashing and developed a fast & stable monolithic flavor of the algorithm.
+Dynamic associations between *types*, *reflections*, and *perspectives* are accomplished via hashmaps. For this purpose I experimented with Pagh's & Rodler's cuckoo-hashing and designed a fast & stable monolithic implementation of the algorithm.
 
 ### Memory Management & Garbage Collection
-Beth has its own memory manager with integrated reference manager. Both components work closely together providing efficient garbage collection, which is based on reference-counting. A special design-feature is O(1) root-address-determination from any offset-address into an object. It allows tracking of the reference state without additional overhead even when only references to sub-objects, which normally never own their memory, are known. Such might be references to any element of a dynamic array or structure.
+Beth has its own memory manager with integrated reference manager. Both components work closely together providing efficient garbage collection based on reference-counting. A special design-feature is the overhead-free (near) O(1) root-address-determination from any pointer adressing an embedded element of the object. This allows object collection, even after all direct pointers to the object have been released while only pointers to its elements remain in use. Once the last such element-reference is released the root-object will be automatically determined and destroyed.
 
-The memory-manager was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
+The memory-manager excluding reference manager was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
 
 ## Motivation
-The classic OOP-concept of classes and inheritance (as realized in C++) has been a cherished companion for decades but it has also flaws inhibiting flexibility in software design. Such are tightly knit associations between objects and interfaces and (certain) design patterns that promote boiler plate code. More recently developed languages introduce new and better concepts. But some come with the penalty of reduced runtime efficiency. Others leave the taste of an 'forced hybrid' across old-established and new ideas.
+Classic object oriented programming (such as realized in C++) has been widely cherished for decades. I definitely favor OOP and applaud the way in which C++ preserves efficiency. Yet there are flaws. One might be static associations between objects and their interfaces forcing an inhibiting rigidity into the code-architecture. Another is the limited means of genericity often promoting boiler plate code. More recent languages (e.g. Java, Python, Go) provide more advanced concepts. Yet, efficiency and/or control over how code and data gets mapped on to the hardware is often subject to criticism.
 
-Around May-July 2017, in an attempt to find a significantly different solution for polymorphism, I conceived the current *reflection-perspective* approach. Project [beth](https://github.com/johsteffens/beth) shall bring this (and other ideas) into tangible shape. So far the approach appears to be useful for object-instance management, dynamic arrays, object-ordering, serialization and other methods for which one might traditionally fall back to using 'design patterns'.
+During May-July 2017, in an attempt to find my own approach to generic polymorphism, I conceived the current *reflection-perspective* approach. Project [beth](https://github.com/johsteffens/beth) shall bring this (and other releated ideas) into tangible shape. Although I believe this solution is indeed different, I'm less sure, whether it appears truly better or just weirder to the independent party.
+
+In *beth* and dependent projects the approach turned out useful for object-instance management, dynamic arrays, object-ordering, serialization and other methods for which one might traditionally fall back to using 'design patterns'.
 
 ## Usage
 Beth serves as foundation library shared across more specialized projects. If you are interested in applications, you may want to use it in combination with a dependent repository (e.g. [actinon](https://github.com/johsteffens/actinon)). 
