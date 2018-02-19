@@ -36,9 +36,9 @@ The classic OOP-concept of classes and inheritance (as realized in C++) has been
 Around May-July 2017, in an attempt to find a significantly different solution for polymorphism, I conceived the current *reflection-perspective* approach. Project [beth](https://github.com/johsteffens/beth) shall bring this (and other ideas) into tangible shape. So far the approach appears to be useful for object-instance management, dynamic arrays, object-ordering, serialization and other methods for which one might traditionally fall back to using 'design patterns'.
 
 ## Usage
-Beth serves as foundation library shared across more specialized projects. If you are interested in applications, you may want to use it in combination with a dependent project (e.g. [actinon](https://github.com/johsteffens/actinon)). 
+Beth serves as foundation library shared across more specialized projects. If you are interested in applications, you may want to use it in combination with a dependent repository (e.g. [actinon](https://github.com/johsteffens/actinon)). 
 
-   * Download [beth](https://github.com/johsteffens/beth) together with a project builds on it and compile both together.
+   * Download [beth](https://github.com/johsteffens/beth) together with a project that builds on it and compile both together.
    * Or: Develop your own application based on beth.
 
 ## License
