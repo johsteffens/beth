@@ -35,7 +35,7 @@ Classic object oriented programming (such as realized in C++) has been widely ch
 
 During May-July 2017, in an attempt to find my own approach to generic polymorphism, I conceived the current *reflection-perspective* approach. Project [beth](https://github.com/johsteffens/beth) shall bring this (and other releated ideas) into tangible shape. Although I believe this solution is indeed different, I'm less sure, whether it appears truly better or just weirder to the independent party.
 
-In *beth* and dependent projects the approach turned out useful for object-instance management, dynamic arrays, object-ordering, serialization and other methods for which one might traditionally fall back to using 'design patterns'.
+In *beth* and dependent projects, the approach turned out useful for object-instance management, dynamic arrays, object-ordering, serialization and others.
 
 ## Usage
 Beth serves as foundation library shared across more specialized projects. If you are interested in applications, you may want to use it in combination with a dependent repository (e.g. [actinon](https://github.com/johsteffens/actinon)). 
