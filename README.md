@@ -4,7 +4,7 @@
 
 In it I am re-thinking polymorphism, reflection-aided generic programming and functional programming. One goal is leveraging efficient application design with respect to scalability, maintainability and genericity.
 
-Some of the objectives are...
+Some objectives are...
    * Bridging the gap between procedural and object oriented programming.
    * Reducing interdependencies and enhancing flexibility in maintaining and extending code.
    * Providing the framework for reflection-base generic software design.
