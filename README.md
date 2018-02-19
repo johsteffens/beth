@@ -31,7 +31,7 @@ Beth has its own memory manager with integrated reference manager. Both componen
 The memory-manager was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
 
 ## Motivation
-The classic OOP-concept of classes and inheritance (as realized in C++) has been a cherished companion for decades but it has also flaws inhibiting flexibility in software design. Such are tightly knit associations between objects and interfaces and (certain) design patterns that promote boiler plate code. More recently developed languages introduce new and better concepts. But some come with the penalty of reduced runtime efficiency. Others leave the taste of an 'forced hybrid' between older and newer ideas.
+The classic OOP-concept of classes and inheritance (as realized in C++) has been a cherished companion for decades but it has also flaws inhibiting flexibility in software design. Such are tightly knit associations between objects and interfaces and (certain) design patterns that promote boiler plate code. More recently developed languages introduce new and better concepts. But some come with the penalty of reduced runtime efficiency. Others leave the taste of an 'forced hybrid' across old-established and new ideas.
 
 Around May-July 2017, in an attempt to find a useful but significantly different solution for polymorphism, I conceived the current *reflection-perspective* approach. This project shall bring this (and other ideas) into tangible shape. So far the approach appears to be useful for object-instance management, dynamic arrays, object-ordering, serialization and other methods for which one might traditionally fall back to using 'design patterns'.
 
