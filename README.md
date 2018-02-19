@@ -43,7 +43,7 @@ Beth serves as foundation library shared across more specialized projects. If yo
 
 ## License
 
-The source code in this project is licensed under the Apache 2.0 License. 
+The source code in this repository is licensed under the Apache 2.0 License. 
 
 *Copyright (C) 2017, 2018 Johannes B. Steffens johannes.b.steffens@gmail.com.*
 
