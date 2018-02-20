@@ -15,7 +15,7 @@ Some objectives are...
 ## Concepts
 
 ### Reflection
-Beth employs *Reflection* as basis for genericity. The reflection-framework allows dynamic object-definition using a declarative (string-based) syntax. It does not require a C-syle structure definition of the type. However, for static types both methods can be mixed, taking advantage of the strengths of either method as inspired by coding context.
+Beth employs *Reflection* as basis for genericity. The reflection-framework allows dynamic object-definition using a declarative (string-based) syntax. A corresponding C-syle structure definition is not required. However, for static types both methods can be mixed, taking advantage of the strengths of either method as inspired by coding context.
 
 The framework is used for object instantiation, initialization, lifetime management, serialization and more. Inside the beth codebase *reflection* is abbreviated `flect`.
 
@@ -26,9 +26,9 @@ A key-component is the so-called *Perspective*, which is a special abstraction f
 Dynamic associations between *types*, *reflections*, and *perspectives* are accomplished via hashmaps. For this purpose I experimented with Pagh's & Rodler's cuckoo-hashing and composed a fast & stable monolithic implementation of the algorithm.
 
 ### Memory Management & Garbage Collection
-Beth has its own memory manager with integrated reference manager. Both components work closely together providing efficient garbage collection based on reference-counting. A special design-feature is the overhead-free (near) O(1) root-address-determination from any pointer adressing an embedded element of the object. This allows object collection, even after all direct pointers to the object have been released while only pointers to its elements remain in use. Once the last such element-reference is released the root-object will be automatically determined and destroyed.
+Beth has its own memory manager with integrated reference manager. Both components work closely together providing efficient garbage collection based on reference-counting. A special design-feature is the overhead-free (near) O(1) root-address-determination from any pointer adressing an embedded element of the object. This allows garbage collection, even after all direct pointers to the object have been released while only pointers to its elements remain in use. Once the last such element-reference is released, the root-object is automatically determined and destroyed.
 
-The memory-manager excluding reference manager was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
+The memory-manager, excluding reference manager, was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
 
 ## Motivation
 Classic object oriented programming (such as realized in C++) has been widely cherished for decades. I appreciate OOP and applaud to the efficient way C++ supports it. Yet there are isues: For example, the static association between objects and their interfaces forcing an inhibiting rigidity into the code-architecture. Another is the limited means of genericity often promoting boiler plate code. More recent languages (e.g. Java, Python, Go) provide advanced concepts. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware.
