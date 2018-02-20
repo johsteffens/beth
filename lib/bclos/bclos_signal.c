@@ -23,6 +23,7 @@
 #include "bclos_closures.h"
 #include "bclos_objects.h"
 #include "bclos_procedure.h"
+#include "bclos_machine.h"
 
 vd_t bclos_signal( tp_t target, tp_t signal, vd_t object )
 {
@@ -36,6 +37,7 @@ vd_t bclos_signal( tp_t target, tp_t signal, vd_t object )
         bclos_signature_signal,
         bclos_spect_closure_signal,
         bclos_statement_signal,
+        bclos_machine_signal,
     };
 
     sz_t size = sizeof( arr ) / sizeof( bcore_fp_signal );
