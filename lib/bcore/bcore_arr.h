@@ -56,6 +56,33 @@ bcore_arr_sz_s* bcore_arr_sz_s_create_random_permutation( u2_t ( *rg )( u2_t ), 
 
 /**********************************************************************************************************************/
 
+typedef struct bcore_arr_u3_s
+{
+    aware_t _;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            u3_t* data;
+            sz_t size, space;
+        };
+    };
+} bcore_arr_u3_s;
+
+DECLARE_FUNCTIONS_OBJ( bcore_arr_u3_s )
+
+void bcore_arr_u3_s_clear(     bcore_arr_u3_s* o ); // sets size to zero
+void bcore_arr_u3_s_set_space( bcore_arr_u3_s* o, sz_t space );
+void bcore_arr_u3_s_fill(      bcore_arr_u3_s* o, sz_t size, u3_t v ); // creates filled array of size <size>
+void bcore_arr_u3_s_step_fill( bcore_arr_u3_s* o, u3_t v_start, u3_t step, sz_t size ); // creates filled array according to stepping
+void bcore_arr_u3_s_push(      bcore_arr_u3_s* o, u3_t v );
+u3_t bcore_arr_u3_s_pop(       bcore_arr_u3_s* o );
+void bcore_arr_u3_s_sort(      bcore_arr_u3_s* o, s2_t order ); // stable
+void bcore_arr_u3_s_reorder(   bcore_arr_u3_s* o, const bcore_arr_sz_s* order );
+
+/**********************************************************************************************************************/
+
 typedef struct bcore_arr_tp_s
 {
     aware_t _;

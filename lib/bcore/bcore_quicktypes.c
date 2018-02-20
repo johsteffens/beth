@@ -98,6 +98,7 @@ static sr_s object_typelist()
     bcore_array_q_push_sc( &list, "bcore_bin_ml_translator_s"  );
     bcore_array_q_push_sc( &list, "bcore_bin_ml_interpreter_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_sz_s" );
+    bcore_array_q_push_sc( &list, "bcore_arr_u3_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_tp_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_st_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_vd_s" );
