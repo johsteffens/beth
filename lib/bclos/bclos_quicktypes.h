@@ -31,8 +31,8 @@ void bclos_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_bclos_address_s      2730951097
 #define TYPEOF_bclos_arg_sig_s      1403124995
 #define TYPEOF_bclos_arguments_s      94569669
+#define TYPEOF_bclos_closure        4110107366
 #define TYPEOF_bclos_closure_s      1095539800
-#define TYPEOF_bclos_closure        typeof( "bclos_closure" )
 #define TYPEOF_bclos_expression_s   3421005121
 #define TYPEOF_bclos_frame_s        2127241660
 #define TYPEOF_bclos_identity_s       73605353
