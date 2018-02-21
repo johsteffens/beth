@@ -16,7 +16,6 @@ Some objectives are...
 Beth is intended as foundation library for more specialized projects. 
 
 ### Requirements/Dependencies
-   * Project [beth](https://github.com/johsteffens/beth).
    * gcc (or compatible compiler) supporting C11 standard.
    * Library `pthread`. (Normally part of the developer package)
 
@@ -25,7 +24,7 @@ Beth is intended as foundation library for more specialized projects.
    * Example: [actinon](https://github.com/johsteffens/actinon).
     
 ### Build as stand-alone library
-   * Downlowd beth.
+   * Downlowd [beth](https://github.com/johsteffens/beth).
    * In a terminal ...
       * enter folder `beth-master/lib`.
       * run `make`. This creates the static library `beth.a`.
