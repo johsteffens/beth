@@ -15,16 +15,20 @@ Some objectives are...
 ## Usage
 Beth is intended as foundation library for more specialized projects. 
 
-### Build
-   * With a project depending on beth
-      * Depending repositories owned by me contain instructions to build everything.
-      * Example: [actinon](https://github.com/johsteffens/actinon).
+### Requirements/Dependencies
+   * Project [beth](https://github.com/johsteffens/beth).
+   * gcc (or compatible compiler) supporting C11 standard.
+   * Library `pthread`. (Normally part of the developer package)
+
+### Build with a project depending on beth
+   * Depending repositories owned by me contain instructions to build everything.
+   * Example: [actinon](https://github.com/johsteffens/actinon).
     
-   * As stand-alone library
-       * Downlowd beth.
-       * In a terminal ...
-          * enter folder `beth-master/lib`.
-          * run `make`.
+### Build as stand-alone library
+   * Downlowd beth.
+   * In a terminal ...
+      * enter folder `beth-master/lib`.
+      * run `make`. This creates the static library `beth.a`.
       
 ## License
 
