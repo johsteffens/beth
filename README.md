@@ -12,6 +12,26 @@ Some objectives are...
    * Binding interfaces and objects via associations.
    * Achieving high runtime efficiency.
 
+## Usage
+Beth is intended as foundation library for more specialized projects. 
+
+### Build
+   * With a project depending on beth
+      * Depending repositories owned by me contain instructions to build everything.
+      * Example: [actinon](https://github.com/johsteffens/actinon).
+    
+   * As stand-alone library
+       * Downlowd beth.
+       * In a terminal ...
+          * enter folder `beth-master/lib`.
+          * run `make`.
+      
+## License
+
+The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
+
+*Copyright (C) 2017, 2018 Johannes B. Steffens johannes.b.steffens@gmail.com.*
+
 ## Concepts
 
 ### Reflection
@@ -36,16 +56,4 @@ The classic framework for object oriented programming (such as realized in C++) 
 During May-July 2017, in an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach. Project [beth](https://github.com/johsteffens/beth) shall bring this (and other releated ideas) into tangible shape.
 
 In *beth* and dependent projects, the approach turned out useful for object-instance management, dynamic arrays, object-ordering, serialization and others.
-
-## Usage
-Beth serves as foundation library shared across more specialized projects. If you are interested in applications, you may want to use it in combination with a dependent repository (e.g. [actinon](https://github.com/johsteffens/actinon)). 
-
-   * Download [beth](https://github.com/johsteffens/beth) together with a project that builds on it and compile both together.
-   * Or: Develop your own application based on beth.
-
-## License
-
-The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
-
-*Copyright (C) 2017, 2018 Johannes B. Steffens johannes.b.steffens@gmail.com.*
 
