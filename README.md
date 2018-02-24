@@ -1,6 +1,6 @@
 # About Beth
 
-*Beth* is a personal *"moonshot"* project. It serves as incubator of new ideas and functional basis for depending projects.
+*Beth* is a personal *"moonshot"* project. It serves as incubator of new ideas and as functional basis for depending projects.
 
 In it I am re-thinking polymorphism, reflection-aided generic programming and functional programming. One goal is leveraging efficient application design with respect to scalability, maintainability and genericity.
 
