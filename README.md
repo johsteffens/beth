@@ -16,8 +16,8 @@ Some objectives are...
 Beth is intended as foundation library for more specialized projects. 
 
 ### Requirements/Dependencies
-   * gcc (or compatible compiler) supporting C11 standard.
-   * Library `pthread`. (Normally part of the developer package)
+   * gcc (or similar compiler suite) supporting the C11 standard.
+   * Library `pthread` of the POSIX.1c standard.
 
 ### Build with a project depending on beth
    * Depending repositories owned by me contain instructions to build everything.
