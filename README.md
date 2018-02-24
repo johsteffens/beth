@@ -21,7 +21,7 @@ Beth is intended as foundation library for more specialized projects.
 
 ### Build with a project depending on beth
    * Depending repositories owned by me contain instructions to build everything.
-   * Example: [actinon](https://github.com/johsteffens/actinon).
+   * Example: [actinon](https://github.com/johsteffens/actinon) - [How to use it](https://github.com/johsteffens/actinon#how-to-use-it).
     
 ### Build as stand-alone library
    * Downlowd [beth](https://github.com/johsteffens/beth).
