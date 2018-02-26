@@ -148,18 +148,15 @@ void bcore_source_string_s_set_index(       bcore_source_string_s* o, s3_t index
 /** File data source (copyable, serializable)
   * The 'open' state is not copied;
   */
-typedef struct bcore_source_file_s
-{
-    aware_t _;
-    st_s* name;
-    vd_t handle;
-} bcore_source_file_s;
+typedef struct bcore_source_file_s bcore_source_file_s;
 
 void                 bcore_source_file_s_init( bcore_source_file_s* o );
 void                 bcore_source_file_s_down( bcore_source_file_s* o );
 void                 bcore_source_file_s_copy( bcore_source_file_s* o, const bcore_source_file_s* src );
 bcore_source_file_s* bcore_source_file_s_create();
 bcore_source_file_s* bcore_source_file_s_create_name( sc_t name );        // file is opened lazily when needed
+sc_t                 bcore_source_file_s_get_name( const bcore_source_file_s* o );
+
 void                 bcore_source_file_s_discard(         bcore_source_file_s* o );
 bcore_source_file_s* bcore_source_file_s_clone(     const bcore_source_file_s* o );
 void                 bcore_source_file_s_open(            bcore_source_file_s* o ); // (re)opens file

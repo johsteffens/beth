@@ -102,6 +102,7 @@ void                bcore_sink_file_s_down(        bcore_sink_file_s* o );
 void                bcore_sink_file_s_copy(        bcore_sink_file_s* o, const bcore_sink_file_s* src );
 bcore_sink_file_s*  bcore_sink_file_s_create();
 bcore_sink_file_s*  bcore_sink_file_s_create_name( sc_t name );        // file is opened lazily when needed
+sc_t                bcore_sink_file_s_get_name( const bcore_sink_file_s* o );
 void                bcore_sink_file_s_discard(     bcore_sink_file_s* o );
 bcore_sink_file_s*  bcore_sink_file_s_clone( const bcore_sink_file_s* o );
 void                bcore_sink_file_s_open(        bcore_sink_file_s* o ); // (re)opens file

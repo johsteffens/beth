@@ -299,6 +299,11 @@ bcore_sink_file_s* bcore_sink_file_s_create_name( sc_t name )
     return o;
 }
 
+sc_t bcore_sink_file_s_get_name( const bcore_sink_file_s* o )
+{
+    return o->name->sc;
+}
+
 bcore_sink_file_s* bcore_sink_file_s_clone( const bcore_sink_file_s* o )
 {
     return bcore_inst_typed_clone( TYPEOF_bcore_sink_file_s, o );

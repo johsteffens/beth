@@ -166,7 +166,7 @@ static void chain_p_errorvf( bcore_source_chain_s* o, sc_t format, va_list args 
         if( o->data[ 0 ] && ( *( aware_t* )o->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
         {
             bcore_source_file_s* fo = o->data[ 0 ];
-            st_s_pushf( msg, " in file '%s'", fo->name->sc );
+            st_s_pushf( msg, " in file '%s'", bcore_source_file_s_get_name( fo ) );
             sz_t index = bcore_source_chain_s_get_index( o );
             sz_t line, col;
             st_s* context = st_s_create();
@@ -609,6 +609,13 @@ static bcore_flect_self_s* string_s_create_self( void )
 /// bcore_source_file_s
 /**********************************************************************************************************************/
 
+typedef struct bcore_source_file_s
+{
+    aware_t _;
+    st_s* name;
+    FILE* handle;
+} bcore_source_file_s;
+
 static void file_init_a( vd_t nc )
 {
     struct { ap_t a; vc_t p; bcore_source_file_s* o; } * nc_l = nc;
@@ -662,6 +669,11 @@ bcore_source_file_s* bcore_source_file_s_create_name( sc_t name )
     return o;
 }
 
+sc_t bcore_source_file_s_get_name( const bcore_source_file_s* o )
+{
+    return o->name->sc;
+}
+
 bcore_source_file_s* bcore_source_file_s_clone( const bcore_source_file_s* o )
 {
     return bcore_inst_typed_clone( TYPEOF_bcore_source_file_s, o );
@@ -670,7 +682,7 @@ bcore_source_file_s* bcore_source_file_s_clone( const bcore_source_file_s* o )
 void bcore_source_file_s_open( bcore_source_file_s* o )
 {
     if( !o->name ) ERR( "No file name specified." );
-    if( o->handle ) bcore_source_file_s_close( o->handle );
+    if( o->handle ) bcore_source_file_s_close( o );
     o->handle = fopen( o->name->sc, "rb" );
     if( !o->handle )
     {
