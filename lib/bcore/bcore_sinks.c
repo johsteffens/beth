@@ -236,6 +236,16 @@ void bcore_sink_buffer_s_set_consumer( bcore_sink_buffer_s* o, vd_t consumer )
 /// bcore_sink_file_s
 /**********************************************************************************************************************/
 
+/** File data sink (copyable, serializable)
+  * The 'open' state is not copied;
+  */
+typedef struct bcore_sink_file_s
+{
+    aware_t _;
+    st_s* name;
+    FILE* handle;
+} bcore_sink_file_s;
+
 static void file_init_a( vd_t nc )
 {
     struct { ap_t a; vc_t p; bcore_sink_file_s* o; } * nc_l = nc;
@@ -297,7 +307,7 @@ bcore_sink_file_s* bcore_sink_file_s_clone( const bcore_sink_file_s* o )
 void bcore_sink_file_s_open( bcore_sink_file_s* o )
 {
     if( !o->name ) ERR( "No file name specified." );
-    if( o->handle ) bcore_sink_file_s_close( o->handle );
+    if( o->handle ) bcore_sink_file_s_close( o );
     o->handle = fopen( o->name->sc, "wb" );
     if( !o->handle )
     {

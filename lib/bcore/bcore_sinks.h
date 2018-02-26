@@ -95,12 +95,7 @@ void bcore_sink_buffer_s_set_consumer( bcore_sink_buffer_s* o, vd_t consumer );
 /** File data sink (copyable, serializable)
   * The 'open' state is not copied;
   */
-typedef struct bcore_sink_file_s
-{
-    aware_t _;
-    st_s* name;
-    vd_t handle;
-} bcore_sink_file_s;
+typedef struct bcore_sink_file_s bcore_sink_file_s;
 
 void                bcore_sink_file_s_init(        bcore_sink_file_s* o );
 void                bcore_sink_file_s_down(        bcore_sink_file_s* o );

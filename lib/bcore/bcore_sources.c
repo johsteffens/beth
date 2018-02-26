@@ -804,6 +804,11 @@ bl_t bcore_source_file_s_exists( sc_t name )
     return true;
 }
 
+void bcore_source_file_s_delete( sc_t name )
+{
+    remove( name );
+}
+
 /**********************************************************************************************************************/
 
 static void file_p_errorvf( bcore_source_file_s* o, sc_t format, va_list args )
