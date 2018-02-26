@@ -115,9 +115,6 @@ static sc_t bclos_mcpu_s_def_g =
 
 DEFINE_CREATE_SELF( bclos_mcpu_s, bclos_mcpu_s_def_g )
 
-static const u2_t flag_equal = 1;
-static const u2_t flag_carry = 2;
-
 /**********************************************************************************************************************/
 
 /** Naming scheme CMD_oooo:
