@@ -102,6 +102,7 @@ static sr_s object_typelist()
     bcore_array_q_push_sc( &list, "bcore_arr_tp_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_st_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_vd_s" );
+    bcore_array_q_push_sc( &list, "bcore_arr_fp_s" );
     bcore_array_q_push_sc( &list, "bcore_arr_sr_s" );
     bcore_array_q_push_sc( &list, "bcore_name_s" );
     bcore_array_q_push_sc( &list, "bcore_name_map_s" );

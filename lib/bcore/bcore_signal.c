@@ -14,7 +14,6 @@
  */
 
 #include "bcore_signal.h"
-#include "bclos_signal.h"
 
 #include "bcore_btree.h"
 #include "bcore_control.h"
@@ -84,9 +83,6 @@ vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
         bcore_txt_ml_signal,
         bcore_bin_ml_signal,
         bcore_arr_signal,
-
-        /// sub libraries
-        bclos_signal
     };
 
     sz_t size = sizeof( arr ) / sizeof( bcore_fp_signal );

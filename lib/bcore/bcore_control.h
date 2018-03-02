@@ -31,6 +31,16 @@
 void bcore_msg   ( sc_t format, ... );
 void bcore_msg_fa( sc_t format, ... ); // beth format
 
+/// formatted message + newline to stderr
+void bcore_wrnv  ( sc_t format, va_list args );
+void bcore_wrn   ( sc_t format, ... );
+void bcore_wrn_fv( sc_t format, va_list args ); // beth format (avoid on low-level errors)
+void bcore_wrn_fa( sc_t format, ... );          // beth format (avoid on low-level errors)
+
+/// extended formatted message + newline to stderr
+void bcore_ext_wrn   ( sc_t f_name, sc_t file, int line, sc_t format, ... );
+void bcore_ext_wrn_fa( sc_t f_name, sc_t file, int line, sc_t format, ... ); // beth format (avoid on low-level errors)
+
 /// formatted message + newline to stderr and abort
 void bcore_errv  ( sc_t format, va_list args );
 void bcore_err   ( sc_t format, ... );
@@ -189,6 +199,10 @@ vd_t bcore_control_signal( tp_t target, tp_t signal, vd_t object );
 
 /**********************************************************************************************************************/
 /// Macros
+
+/// warning message
+#define WRN( ... ) bcore_ext_wrn( __func__, __FILE__, __LINE__, __VA_ARGS__ )
+#define WRN_fa( ... ) bcore_ext_wrn_fa( __func__, __FILE__, __LINE__, __VA_ARGS__ )
 
 /// error message
 #define ERR( ... ) bcore_ext_err( __func__, __FILE__, __LINE__, __VA_ARGS__ )

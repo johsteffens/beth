@@ -18,10 +18,13 @@
 
 #include "bcore_features.h"
 
-/// Global (once) initializer for library bcore
-void bcore_library_init( bcore_fp_signal signal );
+/// Initializes library bcore only (need not be called in case bcore_init_library is used)
+void bcore_init();
 
-/// Global closer for library bcore
-void bcore_library_down( bl_t verbose );
+/// Initializes library given by signal (reentrant);
+void bcore_init_library( bcore_fp_signal signal );
+
+/// Global closer for all libraries
+void bcore_down( bl_t verbose );
 
 #endif // BCORE_H

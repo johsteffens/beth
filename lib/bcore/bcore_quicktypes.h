@@ -57,6 +57,7 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_vd_t    1618651012
 
 // other types
+#define TYPEOF_bcore_arr_fp_s              534232891
 #define TYPEOF_bcore_arr_sr_s             3772348668
 #define TYPEOF_bcore_arr_st_s             1663834730
 #define TYPEOF_bcore_arr_sz_s             1469651844

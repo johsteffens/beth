@@ -43,14 +43,15 @@ typedef struct bcore_arr_sz_s
 
 DECLARE_FUNCTIONS_OBJ(    bcore_arr_sz_s )
 
-void bcore_arr_sz_s_clear(     bcore_arr_sz_s* o ); // sets size to zero
-void bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, sz_t space );
-void bcore_arr_sz_s_fill(      bcore_arr_sz_s* o, sz_t size, sz_t v ); // creates filled array of size <size>
-void bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, s3_t step, sz_t size ); // creates filled array according to stepping
-void bcore_arr_sz_s_push(      bcore_arr_sz_s* o, sz_t v );
-sz_t bcore_arr_sz_s_pop(       bcore_arr_sz_s* o );
-void bcore_arr_sz_s_sort(      bcore_arr_sz_s* o, s2_t order ); // stable
-void bcore_arr_sz_s_reorder(   bcore_arr_sz_s* o, const bcore_arr_sz_s* order );
+void bcore_arr_sz_s_clear(      bcore_arr_sz_s* o ); // sets size to zero
+void bcore_arr_sz_s_set_space(  bcore_arr_sz_s* o, sz_t space );
+void bcore_arr_sz_s_fill(       bcore_arr_sz_s* o, sz_t size, sz_t v ); // creates filled array of size <size>
+void bcore_arr_sz_s_step_fill(  bcore_arr_sz_s* o, sz_t v_start, s3_t step, sz_t size ); // creates filled array according to stepping
+void bcore_arr_sz_s_push(       bcore_arr_sz_s* o, sz_t v );
+sz_t bcore_arr_sz_s_pop(        bcore_arr_sz_s* o );
+void bcore_arr_sz_s_sort(       bcore_arr_sz_s* o, s2_t order ); // stable
+void bcore_arr_sz_s_reorder(    bcore_arr_sz_s* o, const bcore_arr_sz_s* order );
+sz_t bcore_arr_sz_s_find( const bcore_arr_sz_s* o, sz_t start, sz_t end, sz_t v ); // behaves like st_s_find_*
 
 bcore_arr_sz_s* bcore_arr_sz_s_create_random_permutation( u2_t ( *rg )( u2_t ), u2_t seed, sz_t size );
 
@@ -99,13 +100,14 @@ typedef struct bcore_arr_tp_s
 
 DECLARE_FUNCTIONS_OBJ(    bcore_arr_tp_s )
 
-void bcore_arr_tp_s_clear(     bcore_arr_tp_s* o ); // sets size to zero
-void bcore_arr_tp_s_set_space( bcore_arr_tp_s* o, sz_t space );
-void bcore_arr_tp_s_fill(      bcore_arr_tp_s* o, sz_t size, tp_t v ); // creates filled array of size <size>
-void bcore_arr_tp_s_push(      bcore_arr_tp_s* o, tp_t v );
-tp_t bcore_arr_tp_s_pop(       bcore_arr_tp_s* o );
-void bcore_arr_tp_s_sort(      bcore_arr_tp_s* o, s2_t order ); // stable
-void bcore_arr_tp_s_reorder(   bcore_arr_tp_s* o, const bcore_arr_sz_s* order );
+void bcore_arr_tp_s_clear(      bcore_arr_tp_s* o ); // sets size to zero
+void bcore_arr_tp_s_set_space(  bcore_arr_tp_s* o, sz_t space );
+void bcore_arr_tp_s_fill(       bcore_arr_tp_s* o, sz_t size, tp_t v ); // creates filled array of size <size>
+void bcore_arr_tp_s_push(       bcore_arr_tp_s* o, tp_t v );
+tp_t bcore_arr_tp_s_pop(        bcore_arr_tp_s* o );
+void bcore_arr_tp_s_sort(       bcore_arr_tp_s* o, s2_t order ); // stable
+void bcore_arr_tp_s_reorder(    bcore_arr_tp_s* o, const bcore_arr_sz_s* order );
+sz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, sz_t start, sz_t end, tp_t v ); // behaves like st_s_find_*
 
 /**********************************************************************************************************************/
 
@@ -153,12 +155,41 @@ typedef struct bcore_arr_vd_s
 
 DECLARE_FUNCTIONS_OBJ( bcore_arr_vd_s )
 
-void bcore_arr_vd_s_clear(     bcore_arr_vd_s* o ); // sets size to zero
-void bcore_arr_vd_s_set_space( bcore_arr_vd_s* o, sz_t space );
-void bcore_arr_vd_s_fill(      bcore_arr_vd_s* o, sz_t size, vd_t v ); // creates filled array of size <size>
-void bcore_arr_vd_s_push(      bcore_arr_vd_s* o, vd_t v );
-vd_t bcore_arr_vd_s_pop(       bcore_arr_vd_s* o );
-void bcore_arr_vd_s_reorder(   bcore_arr_vd_s* o, const bcore_arr_sz_s* order );
+void bcore_arr_vd_s_clear(      bcore_arr_vd_s* o ); // sets size to zero
+void bcore_arr_vd_s_set_space(  bcore_arr_vd_s* o, sz_t space );
+void bcore_arr_vd_s_fill(       bcore_arr_vd_s* o, sz_t size, vd_t v ); // creates filled array of size <size>
+void bcore_arr_vd_s_push(       bcore_arr_vd_s* o, vd_t v );
+vd_t bcore_arr_vd_s_pop(        bcore_arr_vd_s* o );
+void bcore_arr_vd_s_reorder(    bcore_arr_vd_s* o, const bcore_arr_sz_s* order );
+sz_t bcore_arr_vd_s_find( const bcore_arr_vd_s* o, sz_t start, sz_t end, vd_t v );  // behaves like st_s_find_*
+
+/**********************************************************************************************************************/
+
+// array does not own objects referenced by elements
+typedef struct bcore_arr_fp_s
+{
+    aware_t _;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            fp_t* data;
+            sz_t size, space;
+        };
+    };
+} bcore_arr_fp_s;
+
+DECLARE_FUNCTIONS_OBJ( bcore_arr_fp_s )
+
+void bcore_arr_fp_s_clear(      bcore_arr_fp_s* o ); // sets size to zero
+void bcore_arr_fp_s_set_space(  bcore_arr_fp_s* o, sz_t space );
+void bcore_arr_fp_s_fill(       bcore_arr_fp_s* o, sz_t size, fp_t v ); // creates filled array of size <size>
+void bcore_arr_fp_s_push(       bcore_arr_fp_s* o, fp_t v );
+fp_t bcore_arr_fp_s_pop(        bcore_arr_fp_s* o );
+void bcore_arr_fp_s_reorder(    bcore_arr_fp_s* o, const bcore_arr_sz_s* order );
+sz_t bcore_arr_fp_s_find( const bcore_arr_fp_s* o, sz_t start, sz_t end, fp_t v ); // behaves like st_s_find_*
+
 
 /**********************************************************************************************************************/
 

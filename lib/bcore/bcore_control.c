@@ -18,43 +18,6 @@
 #include "bcore_control.h"
 #include "bcore_tbman.h"
 
-void bcore_msg( sc_t format, ... )
-{
-    va_list args;
-    va_start( args, format );
-    vfprintf( stdout, format, args );
-    fflush( stdout );
-    va_end( args );
-}
-
-void bcore_errv( sc_t format, va_list args )
-{
-    vfprintf( stderr, format, args );
-    fprintf( stderr, "\n" );
-    abort();
-}
-
-void bcore_err( sc_t format, ... )
-{
-    va_list args;
-    va_start( args, format );
-    vfprintf( stderr, format, args );
-    va_end( args );
-    fprintf( stderr, "\n" );
-    abort();
-}
-
-void bcore_ext_err( sc_t func, sc_t file, int line, sc_t format, ... )
-{
-    fprintf( stderr, "Error in function %s (%s:%i):\n", func, file, line );
-    va_list args;
-    va_start( args, format );
-    vfprintf( stderr, format, args );
-    va_end( args );
-    fprintf( stderr, "\n" );
-    abort();
-}
-
 void bcore_write_fv( FILE* file, sc_t format, va_list args )
 {
     st_s* s = st_s_create_fv( format, args );
@@ -88,6 +51,15 @@ void bcore_writeln_fa( FILE* file, sc_t format, ... )
     va_end( args );
 }
 
+void bcore_msg( sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    vfprintf( stdout, format, args );
+    fflush( stdout );
+    va_end( args );
+}
+
 void bcore_msg_fa( sc_t format, ... )
 {
     va_list args;
@@ -95,6 +67,78 @@ void bcore_msg_fa( sc_t format, ... )
     bcore_write_fv( stdout, format, args );
     fflush( stdout );
     va_end( args );
+}
+
+void bcore_wrnv( sc_t format, va_list args )
+{
+    vfprintf( stderr, format, args );
+    fprintf( stderr, "\n" );
+}
+
+void bcore_wrn( sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    vfprintf( stderr, format, args );
+    va_end( args );
+    fprintf( stderr, "\n" );
+}
+
+void bcore_ext_wrn( sc_t func, sc_t file, int line, sc_t format, ... )
+{
+    fprintf( stderr, "Error in function %s (%s:%i):\n", func, file, line );
+    va_list args;
+    va_start( args, format );
+    vfprintf( stderr, format, args );
+    va_end( args );
+    fprintf( stderr, "\n" );
+}
+
+void bcore_wrn_fv( sc_t format, va_list args )
+{
+    bcore_writeln_fv( stderr, format, args );
+}
+
+void bcore_wrn_fa( sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    bcore_writeln_fv( stderr, format, args );
+    va_end( args );
+}
+
+void bcore_ext_wrn_fa( sc_t func, sc_t file, int line, sc_t format, ... )
+{
+    fprintf( stderr, "Error in function %s (%s:%i):\n", func, file, line );
+    va_list args;
+    va_start( args, format );
+    bcore_writeln_fv( stderr, format, args );
+    va_end( args );
+}
+
+void bcore_errv( sc_t format, va_list args )
+{
+    bcore_wrnv( format, args );
+    abort();
+}
+
+void bcore_err( sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    bcore_wrnv( format, args );
+    va_end( args );
+    abort();
+}
+
+void bcore_ext_err( sc_t func, sc_t file, int line, sc_t format, ... )
+{
+    fprintf( stderr, "Error in function %s (%s:%i):\n", func, file, line );
+    va_list args;
+    va_start( args, format );
+    bcore_wrnv( format, args );
+    va_end( args );
+    abort();
 }
 
 void bcore_err_fv( sc_t format, va_list args )

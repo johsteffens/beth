@@ -18,36 +18,68 @@
 #include "bcore_tbman.h"
 #include "bcore_name_manager.h"
 #include "bcore_signal.h"
+#include "bcore_arr.h"
 #include "bcore.h"
 
-/// external signal handler (e.g. by application)
-static bcore_fp_signal ext_signal = NULL;
+/**********************************************************************************************************************/
+
+bcore_arr_fp_s* signal_arr_g = NULL;
+bcore_mutex_t mutex;
 
 static void init_once()
 {
     bcore_signal( typeof( "all" ), typeof( "init0" ), NULL ); // init0 opens critical services
     bcore_signal( typeof( "all" ), typeof( "init1" ), NULL );
-    if( ext_signal )
-    {
-        ext_signal( typeof( "all" ), typeof( "init0" ), NULL ); // init0 opens critical services
-        ext_signal( typeof( "all" ), typeof( "init1" ), NULL );
-    }
+    bcore_mutex_init( &mutex );
+    signal_arr_g = bcore_arr_fp_s_create();
+    bcore_arr_fp_s_push( signal_arr_g, ( fp_t )bcore_signal );
 }
 
-void bcore_library_init( bcore_fp_signal signal )
+static void init()
 {
-    ext_signal = signal;
     static bcore_once_t flag = bcore_once_init;
     bcore_once( &flag, init_once );
 }
 
-void bcore_library_down( bl_t verbose )
+void bcore_init_library( bcore_fp_signal signal )
 {
-    if( ext_signal )
+    init();
+    bcore_mutex_lock( &mutex );
+
+    if( bcore_arr_fp_s_find( signal_arr_g, 0, signal_arr_g->size, ( fp_t )signal ) == signal_arr_g->size )
     {
-        ext_signal( typeof( "all" ), typeof( "down1" ), &verbose );
-        ext_signal( typeof( "all" ), typeof( "down0" ), &verbose );
+        signal( typeof( "all" ), typeof( "init0" ), NULL );
+        signal( typeof( "all" ), typeof( "init1" ), NULL );
+        bcore_arr_fp_s_push( signal_arr_g, ( fp_t )signal );
     }
+
+    bcore_mutex_unlock( &mutex );
+}
+
+void bcore_init()
+{
+    bcore_init_library( bcore_signal );
+}
+
+void bcore_down( bl_t verbose )
+{
+    if( !signal_arr_g ) return;
+
+    bcore_mutex_lock( &mutex );
+    if( !signal_arr_g ) ERR( "Shutdown race condition." );
+
+    // shut down all but first library in reverse order
+    for( sz_t i = signal_arr_g->size - 1; i > 0; i-- )
+    {
+        bcore_fp_signal signal = ( bcore_fp_signal )signal_arr_g->data[ i ];
+        signal( typeof( "all" ), typeof( "down1" ), NULL );
+        signal( typeof( "all" ), typeof( "down0" ), NULL );
+    }
+    bcore_arr_fp_s_discard( signal_arr_g );
+    signal_arr_g = NULL;
+
+    bcore_mutex_unlock( &mutex );
+    bcore_mutex_down( &mutex );
 
     bcore_signal( typeof( "all" ), typeof( "down1" ), &verbose );
 
