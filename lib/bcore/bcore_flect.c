@@ -122,13 +122,13 @@ sz_t bcore_flect_caps_e_align( u2_t caps )
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_FLAT( bcore_flect_item_s )
-DEFINE_FUNCTION_DOWN_FLAT( bcore_flect_item_s )
-DEFINE_FUNCTION_COPY_FLAT( bcore_flect_item_s )
-DEFINE_FUNCTION_MOVE (     bcore_flect_item_s )
-DEFINE_FUNCTION_CREATE(    bcore_flect_item_s )
-DEFINE_FUNCTION_DISCARD(   bcore_flect_item_s )
-DEFINE_FUNCTION_CLONE(     bcore_flect_item_s )
+BCORE_DEFINE_FUNCTION_INIT_FLAT( bcore_flect_item_s )
+BCORE_DEFINE_FUNCTION_DOWN_FLAT( bcore_flect_item_s )
+BCORE_DEFINE_FUNCTION_COPY_FLAT( bcore_flect_item_s )
+BCORE_DEFINE_FUNCTION_MOVE (     bcore_flect_item_s )
+BCORE_DEFINE_FUNCTION_CREATE(    bcore_flect_item_s )
+BCORE_DEFINE_FUNCTION_DISCARD(   bcore_flect_item_s )
+BCORE_DEFINE_FUNCTION_CLONE(     bcore_flect_item_s )
 
 st_s* bcore_flect_item_s_show( const bcore_flect_item_s* o )
 {
@@ -251,9 +251,9 @@ void bcore_flect_body_s_copy( bcore_flect_body_s* o, const bcore_flect_body_s* s
     o->complete = src->complete;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_flect_body_s )
-DEFINE_FUNCTION_DISCARD( bcore_flect_body_s )
-DEFINE_FUNCTION_CLONE(   bcore_flect_body_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_flect_body_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_flect_body_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_flect_body_s )
 
 bcore_flect_item_s* bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_flect_item_s* item )
 {
@@ -1150,14 +1150,14 @@ static void flect_define_basics()
 }
 
 /// encapsulation structures
-DEFINE_CREATE_SELF( bcore_static_link_s,       "bcore_static_link_s       = { vd_t    link; }" )
-DEFINE_CREATE_SELF( bcore_typed_link_s,        "bcore_typed_link_s        = { typed * link; }" )
-DEFINE_CREATE_SELF( bcore_aware_link_s,        "bcore_aware_link_s        = { aware * link; }" )
-DEFINE_CREATE_SELF( bcore_static_array_s,      "bcore_static_array_s      = { vd_t  data; sz_t size; sz_t space; }" )
-DEFINE_CREATE_SELF( bcore_typed_array_s,       "bcore_typed_array_s       = { typed  []; }" )
-DEFINE_CREATE_SELF( bcore_static_link_array_s, "bcore_static_link_array_s = { vd_t* data; sz_t size; sz_t space; }" )
-DEFINE_CREATE_SELF( bcore_typed_link_array_s,  "bcore_typed_link_array_s  = { typed* []; }" )
-DEFINE_CREATE_SELF( bcore_aware_link_array_s,  "bcore_aware_link_array_s  = { aware* []; }" )
+BCORE_DEFINE_CREATE_SELF( bcore_static_link_s,       "bcore_static_link_s       = { vd_t    link; }" )
+BCORE_DEFINE_CREATE_SELF( bcore_typed_link_s,        "bcore_typed_link_s        = { typed * link; }" )
+BCORE_DEFINE_CREATE_SELF( bcore_aware_link_s,        "bcore_aware_link_s        = { aware * link; }" )
+BCORE_DEFINE_CREATE_SELF( bcore_static_array_s,      "bcore_static_array_s      = { vd_t  data; sz_t size; sz_t space; }" )
+BCORE_DEFINE_CREATE_SELF( bcore_typed_array_s,       "bcore_typed_array_s       = { typed  []; }" )
+BCORE_DEFINE_CREATE_SELF( bcore_static_link_array_s, "bcore_static_link_array_s = { vd_t* data; sz_t size; sz_t space; }" )
+BCORE_DEFINE_CREATE_SELF( bcore_typed_link_array_s,  "bcore_typed_link_array_s  = { typed* []; }" )
+BCORE_DEFINE_CREATE_SELF( bcore_aware_link_array_s,  "bcore_aware_link_array_s  = { aware* []; }" )
 
 /**********************************************************************************************************************/
 

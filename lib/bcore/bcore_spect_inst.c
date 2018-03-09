@@ -23,13 +23,13 @@
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_FLAT( bcore_inst_item_s )
-DEFINE_FUNCTION_DOWN_FLAT( bcore_inst_item_s )
-DEFINE_FUNCTION_COPY_FLAT( bcore_inst_item_s )
-DEFINE_FUNCTION_MOVE(      bcore_inst_item_s )
-DEFINE_FUNCTION_CREATE(    bcore_inst_item_s )
-DEFINE_FUNCTION_DISCARD(   bcore_inst_item_s )
-DEFINE_FUNCTION_CLONE(     bcore_inst_item_s )
+BCORE_DEFINE_FUNCTION_INIT_FLAT( bcore_inst_item_s )
+BCORE_DEFINE_FUNCTION_DOWN_FLAT( bcore_inst_item_s )
+BCORE_DEFINE_FUNCTION_COPY_FLAT( bcore_inst_item_s )
+BCORE_DEFINE_FUNCTION_MOVE(      bcore_inst_item_s )
+BCORE_DEFINE_FUNCTION_CREATE(    bcore_inst_item_s )
+BCORE_DEFINE_FUNCTION_DISCARD(   bcore_inst_item_s )
+BCORE_DEFINE_FUNCTION_CLONE(     bcore_inst_item_s )
 
 void bcore_inst_item_s_set_size_align( bcore_inst_item_s* o )
 {
@@ -48,7 +48,7 @@ void bcore_inst_item_s_set_size_align( bcore_inst_item_s* o )
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_FLAT( bcore_inst_body_s )
+BCORE_DEFINE_FUNCTION_INIT_FLAT( bcore_inst_body_s )
 
 void bcore_inst_body_s_down( bcore_inst_body_s* o )
 {
@@ -67,9 +67,9 @@ void bcore_inst_body_s_copy( bcore_inst_body_s* o, const bcore_inst_body_s* src 
     o->size = src->size;
 }
 
-DEFINE_FUNCTION_CREATE(    bcore_inst_body_s )
-DEFINE_FUNCTION_DISCARD(   bcore_inst_body_s )
-DEFINE_FUNCTION_CLONE(     bcore_inst_body_s )
+BCORE_DEFINE_FUNCTION_CREATE(    bcore_inst_body_s )
+BCORE_DEFINE_FUNCTION_DISCARD(   bcore_inst_body_s )
+BCORE_DEFINE_FUNCTION_CLONE(     bcore_inst_body_s )
 
 bcore_inst_item_s* bcore_inst_body_s_push( bcore_inst_body_s* o )
 {

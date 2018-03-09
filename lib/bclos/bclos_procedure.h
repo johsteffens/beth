@@ -43,7 +43,7 @@ typedef struct bclos_procedure_s
 } bclos_procedure_s;
 
 
-DECLARE_FUNCTIONS_OBJ(    bclos_procedure_s )
+BCORE_DECLARE_FUNCTIONS_OBJ(    bclos_procedure_s )
 
 void bclos_procedure_s_push(    bclos_procedure_s* o, sr_s statement );
 void bclos_procedure_s_push_sc( bclos_procedure_s* o, sc_t statement );

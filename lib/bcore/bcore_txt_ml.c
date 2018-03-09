@@ -33,11 +33,11 @@ void bcore_txt_ml_translator_s_init( bcore_txt_ml_translator_s* o )
     o->indent = 4;
 }
 
-DEFINE_FUNCTION_DOWN_INST( bcore_txt_ml_translator_s )
-DEFINE_FUNCTION_COPY_INST( bcore_txt_ml_translator_s )
-DEFINE_FUNCTION_CREATE(     bcore_txt_ml_translator_s )
-DEFINE_FUNCTION_DISCARD(    bcore_txt_ml_translator_s )
-DEFINE_FUNCTION_CLONE(      bcore_txt_ml_translator_s )
+BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_txt_ml_translator_s )
+BCORE_DEFINE_FUNCTION_COPY_INST( bcore_txt_ml_translator_s )
+BCORE_DEFINE_FUNCTION_CREATE(     bcore_txt_ml_translator_s )
+BCORE_DEFINE_FUNCTION_DISCARD(    bcore_txt_ml_translator_s )
+BCORE_DEFINE_FUNCTION_CLONE(      bcore_txt_ml_translator_s )
 
 static sc_t name_of( tp_t type, st_s* buf )
 {
@@ -174,11 +174,11 @@ void bcore_txt_ml_interpreter_s_init( bcore_txt_ml_interpreter_s* o )
     o->_ = TYPEOF_bcore_txt_ml_interpreter_s;
 }
 
-DEFINE_FUNCTION_DOWN_INST( bcore_txt_ml_interpreter_s )
-DEFINE_FUNCTION_COPY_INST( bcore_txt_ml_interpreter_s )
-DEFINE_FUNCTION_CREATE(     bcore_txt_ml_interpreter_s )
-DEFINE_FUNCTION_DISCARD(    bcore_txt_ml_interpreter_s )
-DEFINE_FUNCTION_CLONE(      bcore_txt_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_txt_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_COPY_INST( bcore_txt_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_CREATE(     bcore_txt_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_DISCARD(    bcore_txt_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_CLONE(      bcore_txt_ml_interpreter_s )
 
 static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source )
 {

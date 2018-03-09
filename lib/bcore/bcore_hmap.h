@@ -73,12 +73,12 @@ typedef struct bcore_hmap_u2vd_s
     bcore_hash_u2u2 h1, h2, h3;
 } bcore_hmap_u2vd_s;
 
-DECLARE_FUNCTION_INIT(    bcore_hmap_u2vd_s )
-DECLARE_FUNCTION_DOWN(    bcore_hmap_u2vd_s )
-DECLARE_FUNCTION_COPY(    bcore_hmap_u2vd_s )
-DECLARE_FUNCTION_CREATE(  bcore_hmap_u2vd_s )
-DECLARE_FUNCTION_DISCARD( bcore_hmap_u2vd_s )
-DECLARE_FUNCTION_CLONE(   bcore_hmap_u2vd_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_u2vd_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hmap_u2vd_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hmap_u2vd_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_u2vd_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_u2vd_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_u2vd_s )
 
 void  bcore_hmap_u2vd_s_set_hash_function( bcore_hmap_u2vd_s* o, sz_t index, bcore_hash_u2u2 hf ); // optionally sets external hash function (up to three functions can be specified via index 0, 1, 2)
 vd_t* bcore_hmap_u2vd_s_get(       const bcore_hmap_u2vd_s* o, u2_t key ); // returns pinter to value or NULL when key does not exist
@@ -124,12 +124,12 @@ typedef struct bcore_hmap_tpsz_s
     sz_t size_limit;
 } bcore_hmap_tpsz_s;
 
-DECLARE_FUNCTION_INIT(    bcore_hmap_tpsz_s )
-DECLARE_FUNCTION_DOWN(    bcore_hmap_tpsz_s )
-DECLARE_FUNCTION_COPY(    bcore_hmap_tpsz_s )
-DECLARE_FUNCTION_CREATE(  bcore_hmap_tpsz_s )
-DECLARE_FUNCTION_DISCARD( bcore_hmap_tpsz_s )
-DECLARE_FUNCTION_CLONE(   bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tpsz_s )
 
 sz_t* bcore_hmap_tpsz_s_get(     const bcore_hmap_tpsz_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
 sz_t* bcore_hmap_tpsz_s_fget(          bcore_hmap_tpsz_s* o, tp_t key, sz_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
@@ -166,12 +166,12 @@ typedef struct bcore_hmap_tpfp_s
     sz_t size_limit;
 } bcore_hmap_tpfp_s;
 
-DECLARE_FUNCTION_INIT(    bcore_hmap_tpfp_s )
-DECLARE_FUNCTION_DOWN(    bcore_hmap_tpfp_s )
-DECLARE_FUNCTION_COPY(    bcore_hmap_tpfp_s )
-DECLARE_FUNCTION_CREATE(  bcore_hmap_tpfp_s )
-DECLARE_FUNCTION_DISCARD( bcore_hmap_tpfp_s )
-DECLARE_FUNCTION_CLONE(   bcore_hmap_tpfp_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpfp_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hmap_tpfp_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hmap_tpfp_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tpfp_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tpfp_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tpfp_s )
 
 fp_t* bcore_hmap_tpfp_s_get(     const bcore_hmap_tpfp_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
 fp_t* bcore_hmap_tpfp_s_fget(          bcore_hmap_tpfp_s* o, tp_t key, fp_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
@@ -208,12 +208,12 @@ typedef struct bcore_hmap_tptp_s
     sz_t size_limit;
 } bcore_hmap_tptp_s;
 
-DECLARE_FUNCTION_INIT(    bcore_hmap_tptp_s )
-DECLARE_FUNCTION_DOWN(    bcore_hmap_tptp_s )
-DECLARE_FUNCTION_COPY(    bcore_hmap_tptp_s )
-DECLARE_FUNCTION_CREATE(  bcore_hmap_tptp_s )
-DECLARE_FUNCTION_DISCARD( bcore_hmap_tptp_s )
-DECLARE_FUNCTION_CLONE(   bcore_hmap_tptp_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tptp_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hmap_tptp_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hmap_tptp_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tptp_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tptp_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tptp_s )
 
 tp_t* bcore_hmap_tptp_s_get(     const bcore_hmap_tptp_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
 tp_t* bcore_hmap_tptp_s_fget(          bcore_hmap_tptp_s* o, tp_t key, tp_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
@@ -252,12 +252,12 @@ typedef struct bcore_hmap_tpto_s
     sz_t size_limit;
 } bcore_hmap_tpto_s;
 
-DECLARE_FUNCTION_INIT(    bcore_hmap_tpto_s )
-DECLARE_FUNCTION_DOWN(    bcore_hmap_tpto_s )
-DECLARE_FUNCTION_COPY(    bcore_hmap_tpto_s )
-DECLARE_FUNCTION_CREATE(  bcore_hmap_tpto_s )
-DECLARE_FUNCTION_DISCARD( bcore_hmap_tpto_s )
-DECLARE_FUNCTION_CLONE(   bcore_hmap_tpto_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpto_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hmap_tpto_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hmap_tpto_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tpto_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tpto_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tpto_s )
 
 void  bcore_hmap_tpto_s_set_type(      bcore_hmap_tpto_s* o, tp_t type ); // sets type; resets array in case of type difference
 vd_t* bcore_hmap_tpto_s_get(     const bcore_hmap_tpto_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
@@ -290,12 +290,12 @@ typedef struct bcore_hmap_tp_s
     sz_t size_limit;
 } bcore_hmap_tp_s;
 
-DECLARE_FUNCTION_INIT(    bcore_hmap_tp_s )
-DECLARE_FUNCTION_DOWN(    bcore_hmap_tp_s )
-DECLARE_FUNCTION_COPY(    bcore_hmap_tp_s )
-DECLARE_FUNCTION_CREATE(  bcore_hmap_tp_s )
-DECLARE_FUNCTION_DISCARD( bcore_hmap_tp_s )
-DECLARE_FUNCTION_CLONE(   bcore_hmap_tp_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tp_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hmap_tp_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hmap_tp_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tp_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tp_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tp_s )
 
 sz_t  bcore_hmap_tp_s_get(     const bcore_hmap_tp_s* o, tp_t key ); // returns index of key; if not existing, index is o->size
 sz_t  bcore_hmap_tp_s_set(           bcore_hmap_tp_s* o, tp_t key ); // sets new key if not already existing; returns index

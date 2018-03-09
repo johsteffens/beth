@@ -25,7 +25,7 @@
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTIONS_OBJ_INST( bclos_procedure_s )
+BCORE_DEFINE_FUNCTIONS_OBJ_INST( bclos_procedure_s )
 
 void bclos_procedure_s_push( bclos_procedure_s* o, sr_s statement )
 {

@@ -26,12 +26,12 @@ typedef struct bclos_signature_arg_s
     bl_t is_const;
 } bclos_signature_arg_s;
 
-DECLARE_FUNCTION_INIT(    bclos_signature_arg_s )
-DECLARE_FUNCTION_DOWN(    bclos_signature_arg_s )
-DECLARE_FUNCTION_COPY(    bclos_signature_arg_s )
-DECLARE_FUNCTION_CREATE(  bclos_signature_arg_s )
-DECLARE_FUNCTION_DISCARD( bclos_signature_arg_s )
-DECLARE_FUNCTION_CLONE(   bclos_signature_arg_s )
+BCORE_DECLARE_FUNCTION_INIT(    bclos_signature_arg_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bclos_signature_arg_s )
+BCORE_DECLARE_FUNCTION_COPY(    bclos_signature_arg_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bclos_signature_arg_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bclos_signature_arg_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bclos_signature_arg_s )
 
 typedef struct bclos_signature_s
 {
@@ -48,12 +48,12 @@ typedef struct bclos_signature_s
     tp_t ret;  // return type: 0: no return;
 } bclos_signature_s;
 
-DECLARE_FUNCTION_INIT(    bclos_signature_s )
-DECLARE_FUNCTION_DOWN(    bclos_signature_s )
-DECLARE_FUNCTION_COPY(    bclos_signature_s )
-DECLARE_FUNCTION_CREATE(  bclos_signature_s )
-DECLARE_FUNCTION_DISCARD( bclos_signature_s )
-DECLARE_FUNCTION_CLONE(   bclos_signature_s )
+BCORE_DECLARE_FUNCTION_INIT(    bclos_signature_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bclos_signature_s )
+BCORE_DECLARE_FUNCTION_COPY(    bclos_signature_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bclos_signature_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bclos_signature_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bclos_signature_s )
 
 void bclos_signature_s_push( bclos_signature_s* o, bclos_signature_arg_s arg );
 

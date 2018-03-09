@@ -13,6 +13,7 @@
  *  limitations under the License.
  */
 
+#include "bcore_signal.h"
 #include "bclos_signal.h"
 
 #include "bclos_frame.h"
@@ -40,18 +41,5 @@ vd_t bclos_signal( tp_t target, tp_t signal, vd_t object )
         bclos_machine_signal,
     };
 
-    sz_t size = sizeof( arr ) / sizeof( bcore_fp_signal );
-    vd_t ret = NULL;
-
-    if( signal == typeof( "down0" ) || signal == typeof( "down1" ) )
-    {
-        for( sz_t i = size; i > 0; i-- ) if( ( ret = arr[ i - 1 ]( target, signal, object ) ) ) return ret;
-    }
-    else
-    {
-        for( sz_t i = 0; i < size; i++ ) if( ( ret = arr[ i     ]( target, signal, object ) ) ) return ret;
-    }
-
-    return ret;
-
+    return bcore_signal_broadcast( arr, sizeof( arr ) / sizeof( bcore_fp_signal ), target, signal, object );
 }

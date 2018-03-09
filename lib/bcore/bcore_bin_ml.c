@@ -26,12 +26,12 @@
 #include "bcore_spect_compare.h"
 #include "bcore_spect.h"
 
-DEFINE_FUNCTION_INIT_INST( bcore_bin_ml_translator_s )
-DEFINE_FUNCTION_DOWN_INST( bcore_bin_ml_translator_s )
-DEFINE_FUNCTION_COPY_INST( bcore_bin_ml_translator_s )
-DEFINE_FUNCTION_CREATE(     bcore_bin_ml_translator_s )
-DEFINE_FUNCTION_DISCARD(    bcore_bin_ml_translator_s )
-DEFINE_FUNCTION_CLONE(      bcore_bin_ml_translator_s )
+BCORE_DEFINE_FUNCTION_INIT_INST( bcore_bin_ml_translator_s )
+BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_bin_ml_translator_s )
+BCORE_DEFINE_FUNCTION_COPY_INST( bcore_bin_ml_translator_s )
+BCORE_DEFINE_FUNCTION_CREATE(     bcore_bin_ml_translator_s )
+BCORE_DEFINE_FUNCTION_DISCARD(    bcore_bin_ml_translator_s )
+BCORE_DEFINE_FUNCTION_CLONE(      bcore_bin_ml_translator_s )
 
 static inline void push_type( sr_s sink, tp_t type )
 {
@@ -149,12 +149,12 @@ void bcore_bin_ml_to_file( sr_s obj, sc_t file )
 /// bcore_bin_ml_interpreter
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_INST( bcore_bin_ml_interpreter_s )
-DEFINE_FUNCTION_DOWN_INST( bcore_bin_ml_interpreter_s )
-DEFINE_FUNCTION_COPY_INST( bcore_bin_ml_interpreter_s )
-DEFINE_FUNCTION_CREATE(     bcore_bin_ml_interpreter_s )
-DEFINE_FUNCTION_DISCARD(    bcore_bin_ml_interpreter_s )
-DEFINE_FUNCTION_CLONE(      bcore_bin_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_INIT_INST( bcore_bin_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_bin_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_COPY_INST( bcore_bin_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_CREATE(     bcore_bin_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_DISCARD(    bcore_bin_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_CLONE(      bcore_bin_ml_interpreter_s )
 
 static inline tp_t get_type( sr_s source )
 {

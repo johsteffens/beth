@@ -212,43 +212,46 @@ vd_t bcore_control_signal( tp_t target, tp_t signal, vd_t object );
 #define ASSERT( condition ) if( !(condition) ) bcore_err( "assertion '%s' failed in function %s (%s line %i)\n", #condition, __func__, __FILE__, __LINE__ )
 
 /// object related functions
-#define DECLARE_FUNCTION_INIT( name )    void name##_init( name* o );
-#define DECLARE_FUNCTION_DOWN( name )    void name##_down( name* o );
-#define DECLARE_FUNCTION_COPY( name )    void name##_copy( name* o, const name* src );
-#define DECLARE_FUNCTION_CREATE( name ) name* name##_create();
-#define DECLARE_FUNCTION_DISCARD( name ) void name##_discard( name* o );
-#define DECLARE_FUNCTION_CLONE( name )  name* name##_clone( const name* o );
+#define BCORE_DECLARE_FUNCTION_INIT( name )    void name##_init( name* o );
+#define BCORE_DECLARE_FUNCTION_DOWN( name )    void name##_down( name* o );
+#define BCORE_DECLARE_FUNCTION_COPY( name )    void name##_copy( name* o, const name* src );
+#define BCORE_DECLARE_FUNCTION_CREATE( name ) name* name##_create();
+#define BCORE_DECLARE_FUNCTION_DISCARD( name ) void name##_discard( name* o );
+#define BCORE_DECLARE_FUNCTION_CLONE( name )  name* name##_clone( const name* o );
 
-#define DECLARE_FUNCTIONS_OBJ( name )\
-    DECLARE_FUNCTION_INIT( name ) \
-    DECLARE_FUNCTION_DOWN( name ) \
-    DECLARE_FUNCTION_COPY( name ) \
-    DECLARE_FUNCTION_CREATE( name ) \
-    DECLARE_FUNCTION_DISCARD( name ) \
-    DECLARE_FUNCTION_CLONE( name )
+#define BCORE_DECLARE_FUNCTIONS_OBJ( name )\
+    BCORE_DECLARE_FUNCTION_INIT( name ) \
+    BCORE_DECLARE_FUNCTION_DOWN( name ) \
+    BCORE_DECLARE_FUNCTION_COPY( name ) \
+    BCORE_DECLARE_FUNCTION_CREATE( name ) \
+    BCORE_DECLARE_FUNCTION_DISCARD( name ) \
+    BCORE_DECLARE_FUNCTION_CLONE( name )
 
-#define DEFINE_FUNCTION_INIT_FLAT( name ) \
+#define BCORE_DECLARE_OBJECT( name )\
+    BCORE_DECLARE_FUNCTIONS_OBJ( name )
+
+#define BCORE_DEFINE_FUNCTION_INIT_FLAT( name ) \
 void name##_init( name* o ) \
 { \
     bcore_memzero( o, sizeof( name ) ); \
 }
 
-#define DEFINE_FUNCTION_DOWN_FLAT( name ) \
+#define BCORE_DEFINE_FUNCTION_DOWN_FLAT( name ) \
 void name##_down( name* o ) {}
 
-#define DEFINE_FUNCTION_COPY_FLAT( name ) \
+#define BCORE_DEFINE_FUNCTION_COPY_FLAT( name ) \
 void name##_copy( name* o, const name* src ) \
 { \
     if( o == src ) return; \
     bcore_memcpy( o, src, sizeof( name ) ); \
 }
 
-#define DEFINE_FUNCTIONS_IDC_FLAT( name )\
-    DEFINE_FUNCTION_INIT_FLAT( name )\
-    DEFINE_FUNCTION_DOWN_FLAT( name )\
-    DEFINE_FUNCTION_COPY_FLAT( name )\
+#define BCORE_DEFINE_FUNCTIONS_IDC_FLAT( name )\
+    BCORE_DEFINE_FUNCTION_INIT_FLAT( name )\
+    BCORE_DEFINE_FUNCTION_DOWN_FLAT( name )\
+    BCORE_DEFINE_FUNCTION_COPY_FLAT( name )\
 
-#define DEFINE_FUNCTION_MOVE( name ) \
+#define BCORE_DEFINE_FUNCTION_MOVE( name ) \
 void name##_move( name* o, name* src ) \
 { \
     if( o == src ) return; \
@@ -257,7 +260,7 @@ void name##_move( name* o, name* src ) \
     name##_down( src ); \
 }
 
-#define DEFINE_FUNCTION_CREATE( name ) \
+#define BCORE_DEFINE_FUNCTION_CREATE( name ) \
 name* name##_create() \
 { \
     name* o = bcore_alloc( NULL, sizeof( name ) ); \
@@ -265,14 +268,14 @@ name* name##_create() \
     return o; \
 }
 
-#define DEFINE_FUNCTION_DISCARD( name ) \
+#define BCORE_DEFINE_FUNCTION_DISCARD( name ) \
 void name##_discard( name* o ) \
 { \
     if( !o ) return; \
     bcore_release_obj( (fp_t)name##_down, o );\
 }
 
-#define DEFINE_FUNCTION_CLONE( name ) \
+#define BCORE_DEFINE_FUNCTION_CLONE( name ) \
 name* name##_clone( const name* o ) \
 { \
     if( !o ) return NULL; \
@@ -281,13 +284,13 @@ name* name##_clone( const name* o ) \
     return o_l; \
 }
 
-#define DEFINE_FUNCTIONS_CDC( name )\
-    DEFINE_FUNCTION_CREATE( name )\
-    DEFINE_FUNCTION_DISCARD( name )\
-    DEFINE_FUNCTION_CLONE( name )\
+#define BCORE_DEFINE_FUNCTIONS_CDC( name )\
+    BCORE_DEFINE_FUNCTION_CREATE( name )\
+    BCORE_DEFINE_FUNCTION_DISCARD( name )\
+    BCORE_DEFINE_FUNCTION_CLONE( name )\
 
-#define DEFINE_FUNCTIONS_OBJ_FLAT( name )\
-    DEFINE_FUNCTIONS_IDC_FLAT( name )\
-    DEFINE_FUNCTIONS_CDC( name )
+#define BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( name )\
+    BCORE_DEFINE_FUNCTIONS_IDC_FLAT( name )\
+    BCORE_DEFINE_FUNCTIONS_CDC( name )
 
 #endif // BCORE_CONTROL_H

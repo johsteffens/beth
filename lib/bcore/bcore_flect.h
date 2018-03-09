@@ -321,11 +321,18 @@ const bcore_flect_self_s* bcore_flect_get_self( tp_t type ); // error when type 
 vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object );
 
 // Macros
-#define DEFINE_CREATE_SELF( name, def )\
-  static bcore_flect_self_s* name##_create_self( void ) \
-  {\
-      return bcore_flect_self_s_build_parse_sc( def, sizeof( name ) ); \
-  }\
+#define BCORE_DEFINE_CREATE_SELF( name, def )\
+    static bcore_flect_self_s* name##_create_self( void ) \
+    {\
+        return bcore_flect_self_s_build_parse_sc( def, sizeof( name ) ); \
+    }
+
+#define BCORE_REGISTER_FLECT( name )\
+    bcore_flect_define_creator( typeof( #name ), name##_create_self )
+
+#define BCORE_DEFINE_OBJECT_FLAT( name, def ) \
+    BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( name ) \
+    BCORE_DEFINE_CREATE_SELF( name, def )
 
 /**********************************************************************************************************************/
 

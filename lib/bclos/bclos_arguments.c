@@ -24,8 +24,8 @@
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTIONS_OBJ_INST( bclos_arguments_s )
-DEFINE_CREATE_SELF( bclos_arguments_s, "bclos_arguments_s = bcore_inst { sr_s [] arr; }" )
+BCORE_DEFINE_FUNCTIONS_OBJ_INST( bclos_arguments_s )
+BCORE_DEFINE_CREATE_SELF( bclos_arguments_s, "bclos_arguments_s = bcore_inst { sr_s [] arr; }" )
 
 void bclos_arguments_s_clear( bclos_arguments_s* o )
 {
@@ -105,8 +105,8 @@ void bclos_arguments_s_parse_from_source( bclos_arguments_s* o, sr_s source )
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTIONS_OBJ_INST( bclos_expression_s )
-DEFINE_CREATE_SELF( bclos_expression_s, "bclos_expression_s = { sr_s closure; bclos_arguments_s args; }" )
+BCORE_DEFINE_FUNCTIONS_OBJ_INST( bclos_expression_s )
+BCORE_DEFINE_CREATE_SELF( bclos_expression_s, "bclos_expression_s = { sr_s closure; bclos_arguments_s args; }" )
 
 void bclos_expression_s_clear( bclos_expression_s* o )
 {

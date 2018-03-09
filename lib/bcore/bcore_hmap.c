@@ -188,9 +188,9 @@ static void u2vd_set_size( bcore_hmap_u2vd_s* o, sz_t size )
     while( size >> o->depth_limit ) o->depth_limit++;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_hmap_u2vd_s )
-DEFINE_FUNCTION_DISCARD( bcore_hmap_u2vd_s )
-DEFINE_FUNCTION_CLONE(   bcore_hmap_u2vd_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_u2vd_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_u2vd_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_u2vd_s )
 
 /**********************************************************************************************************************/
 
@@ -755,9 +755,9 @@ void bcore_hmap_tpsz_s_copy( bcore_hmap_tpsz_s* o, const bcore_hmap_tpsz_s* src 
     o->size_limit  = src->size_limit;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_hmap_tpsz_s )
-DEFINE_FUNCTION_DISCARD( bcore_hmap_tpsz_s )
-DEFINE_FUNCTION_CLONE(   bcore_hmap_tpsz_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tpsz_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tpsz_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpsz_s )
 
 /**********************************************************************************************************************/
 
@@ -1165,9 +1165,9 @@ void bcore_hmap_tpfp_s_copy( bcore_hmap_tpfp_s* o, const bcore_hmap_tpfp_s* src 
     o->size_limit  = src->size_limit;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_hmap_tpfp_s )
-DEFINE_FUNCTION_DISCARD( bcore_hmap_tpfp_s )
-DEFINE_FUNCTION_CLONE(   bcore_hmap_tpfp_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tpfp_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tpfp_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpfp_s )
 
 /**********************************************************************************************************************/
 
@@ -1568,9 +1568,9 @@ void bcore_hmap_tptp_s_copy( bcore_hmap_tptp_s* o, const bcore_hmap_tptp_s* src 
     o->size_limit  = src->size_limit;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_hmap_tptp_s )
-DEFINE_FUNCTION_DISCARD( bcore_hmap_tptp_s )
-DEFINE_FUNCTION_CLONE(   bcore_hmap_tptp_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tptp_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tptp_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tptp_s )
 
 /**********************************************************************************************************************/
 
@@ -1997,9 +1997,9 @@ void bcore_hmap_tpto_s_copy( bcore_hmap_tpto_s* o, const bcore_hmap_tpto_s* src 
     o->size_limit  = src->size_limit;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_hmap_tpto_s )
-DEFINE_FUNCTION_DISCARD( bcore_hmap_tpto_s )
-DEFINE_FUNCTION_CLONE(   bcore_hmap_tpto_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tpto_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tpto_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpto_s )
 
 /**********************************************************************************************************************/
 
@@ -2447,9 +2447,9 @@ void bcore_hmap_tp_s_copy( bcore_hmap_tp_s* o, const bcore_hmap_tp_s* src )
     o->size_limit  = src->size_limit;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_hmap_tp_s )
-DEFINE_FUNCTION_DISCARD( bcore_hmap_tp_s )
-DEFINE_FUNCTION_CLONE(   bcore_hmap_tp_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tp_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tp_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tp_s )
 
 /**********************************************************************************************************************/
 

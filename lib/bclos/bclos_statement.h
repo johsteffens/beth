@@ -37,12 +37,12 @@ typedef struct bclos_statement_s
     bclos_address_s target;
 } bclos_statement_s;
 
-DECLARE_FUNCTION_INIT(    bclos_statement_s )
-DECLARE_FUNCTION_DOWN(    bclos_statement_s )
-DECLARE_FUNCTION_COPY(    bclos_statement_s )
-DECLARE_FUNCTION_CREATE(  bclos_statement_s )
-DECLARE_FUNCTION_DISCARD( bclos_statement_s )
-DECLARE_FUNCTION_CLONE(   bclos_statement_s )
+BCORE_DECLARE_FUNCTION_INIT(    bclos_statement_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bclos_statement_s )
+BCORE_DECLARE_FUNCTION_COPY(    bclos_statement_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bclos_statement_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bclos_statement_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bclos_statement_s )
 
 sr_s               bclos_statement_s_run(         const bclos_statement_s* o, bclos_frame_s* frm );
 

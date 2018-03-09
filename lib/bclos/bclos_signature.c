@@ -23,12 +23,12 @@
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_FLAT( bclos_signature_arg_s )
-DEFINE_FUNCTION_DOWN_FLAT( bclos_signature_arg_s )
-DEFINE_FUNCTION_COPY_FLAT( bclos_signature_arg_s )
-DEFINE_FUNCTION_CREATE(    bclos_signature_arg_s )
-DEFINE_FUNCTION_DISCARD(   bclos_signature_arg_s )
-DEFINE_FUNCTION_CLONE(     bclos_signature_arg_s )
+BCORE_DEFINE_FUNCTION_INIT_FLAT( bclos_signature_arg_s )
+BCORE_DEFINE_FUNCTION_DOWN_FLAT( bclos_signature_arg_s )
+BCORE_DEFINE_FUNCTION_COPY_FLAT( bclos_signature_arg_s )
+BCORE_DEFINE_FUNCTION_CREATE(    bclos_signature_arg_s )
+BCORE_DEFINE_FUNCTION_DISCARD(   bclos_signature_arg_s )
+BCORE_DEFINE_FUNCTION_CLONE(     bclos_signature_arg_s )
 
 static bcore_flect_self_s* arg_signature_s_create_self( void )
 {
@@ -39,12 +39,12 @@ static bcore_flect_self_s* arg_signature_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_INST( bclos_signature_s )
-DEFINE_FUNCTION_DOWN_INST( bclos_signature_s )
-DEFINE_FUNCTION_COPY_INST( bclos_signature_s )
-DEFINE_FUNCTION_CREATE(     bclos_signature_s )
-DEFINE_FUNCTION_DISCARD(    bclos_signature_s )
-DEFINE_FUNCTION_CLONE(      bclos_signature_s )
+BCORE_DEFINE_FUNCTION_INIT_INST( bclos_signature_s )
+BCORE_DEFINE_FUNCTION_DOWN_INST( bclos_signature_s )
+BCORE_DEFINE_FUNCTION_COPY_INST( bclos_signature_s )
+BCORE_DEFINE_FUNCTION_CREATE(     bclos_signature_s )
+BCORE_DEFINE_FUNCTION_DISCARD(    bclos_signature_s )
+BCORE_DEFINE_FUNCTION_CLONE(      bclos_signature_s )
 
 void bclos_signature_s_push( bclos_signature_s* o, bclos_signature_arg_s arg )
 {

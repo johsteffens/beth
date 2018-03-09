@@ -29,12 +29,12 @@ typedef struct bclos_library_s
     bclos_library_arr_s* deps; // dependencies
 } bclos_library_s;
 
-DECLARE_FUNCTION_INIT(    bclos_library_s )
-DECLARE_FUNCTION_DOWN(    bclos_library_s )
-DECLARE_FUNCTION_COPY(    bclos_library_s )
-DECLARE_FUNCTION_CREATE(  bclos_library_s )
-DECLARE_FUNCTION_DISCARD( bclos_library_s )
-DECLARE_FUNCTION_CLONE(   bclos_library_s )
+BCORE_DECLARE_FUNCTION_INIT(    bclos_library_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bclos_library_s )
+BCORE_DECLARE_FUNCTION_COPY(    bclos_library_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bclos_library_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bclos_library_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bclos_library_s )
 
 typedef struct bclos_library_arr_s
 {
@@ -50,12 +50,12 @@ typedef struct bclos_library_arr_s
     };
 } bclos_library_arr_s;
 
-DECLARE_FUNCTION_INIT(    bclos_library_arr_s )
-DECLARE_FUNCTION_DOWN(    bclos_library_arr_s )
-DECLARE_FUNCTION_COPY(    bclos_library_arr_s )
-DECLARE_FUNCTION_CREATE(  bclos_library_arr_s )
-DECLARE_FUNCTION_DISCARD( bclos_library_arr_s )
-DECLARE_FUNCTION_CLONE(   bclos_library_arr_s )
+BCORE_DECLARE_FUNCTION_INIT(    bclos_library_arr_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bclos_library_arr_s )
+BCORE_DECLARE_FUNCTION_COPY(    bclos_library_arr_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bclos_library_arr_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bclos_library_arr_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bclos_library_arr_s )
 
 #endif // BCLOS_LIBRARY_H
 

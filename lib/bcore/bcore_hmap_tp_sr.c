@@ -116,9 +116,9 @@ void bcore_hmap_tp_sr_s_copy( bcore_hmap_tp_sr_s* o, const bcore_hmap_tp_sr_s* s
     o->size_limit  = src->size_limit;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_hmap_tp_sr_s )
-DEFINE_FUNCTION_DISCARD( bcore_hmap_tp_sr_s )
-DEFINE_FUNCTION_CLONE(   bcore_hmap_tp_sr_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tp_sr_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tp_sr_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tp_sr_s )
 
 /**********************************************************************************************************************/
 

@@ -30,12 +30,12 @@ typedef struct bcore_bin_ml_translator_s
     aware_t _;
 } bcore_bin_ml_translator_s;
 
-DECLARE_FUNCTION_INIT(    bcore_bin_ml_translator_s )
-DECLARE_FUNCTION_DOWN(    bcore_bin_ml_translator_s )
-DECLARE_FUNCTION_COPY(    bcore_bin_ml_translator_s )
-DECLARE_FUNCTION_CREATE(  bcore_bin_ml_translator_s )
-DECLARE_FUNCTION_DISCARD( bcore_bin_ml_translator_s )
-DECLARE_FUNCTION_CLONE(   bcore_bin_ml_translator_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_bin_ml_translator_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_bin_ml_translator_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_bin_ml_translator_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_bin_ml_translator_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_bin_ml_translator_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_bin_ml_translator_s )
 
 void bcore_bin_ml_translator_s_translate( const bcore_bin_ml_translator_s* o, sr_s obj, sr_s snk );
 

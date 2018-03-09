@@ -19,12 +19,12 @@
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_INST( bclos_library_s )
-DEFINE_FUNCTION_DOWN_INST( bclos_library_s )
-DEFINE_FUNCTION_COPY_INST( bclos_library_s )
-DEFINE_FUNCTION_CREATE(     bclos_library_s )
-DEFINE_FUNCTION_DISCARD(    bclos_library_s )
-DEFINE_FUNCTION_CLONE(      bclos_library_s )
+BCORE_DEFINE_FUNCTION_INIT_INST( bclos_library_s )
+BCORE_DEFINE_FUNCTION_DOWN_INST( bclos_library_s )
+BCORE_DEFINE_FUNCTION_COPY_INST( bclos_library_s )
+BCORE_DEFINE_FUNCTION_CREATE(     bclos_library_s )
+BCORE_DEFINE_FUNCTION_DISCARD(    bclos_library_s )
+BCORE_DEFINE_FUNCTION_CLONE(      bclos_library_s )
 
 static bcore_flect_self_s* library_s_create_self( void )
 {
@@ -35,12 +35,12 @@ static bcore_flect_self_s* library_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_INST( bclos_library_arr_s )
-DEFINE_FUNCTION_DOWN_INST( bclos_library_arr_s )
-DEFINE_FUNCTION_COPY_INST( bclos_library_arr_s )
-DEFINE_FUNCTION_CREATE(     bclos_library_arr_s )
-DEFINE_FUNCTION_DISCARD(    bclos_library_arr_s )
-DEFINE_FUNCTION_CLONE(      bclos_library_arr_s )
+BCORE_DEFINE_FUNCTION_INIT_INST( bclos_library_arr_s )
+BCORE_DEFINE_FUNCTION_DOWN_INST( bclos_library_arr_s )
+BCORE_DEFINE_FUNCTION_COPY_INST( bclos_library_arr_s )
+BCORE_DEFINE_FUNCTION_CREATE(     bclos_library_arr_s )
+BCORE_DEFINE_FUNCTION_DISCARD(    bclos_library_arr_s )
+BCORE_DEFINE_FUNCTION_CLONE(      bclos_library_arr_s )
 
 static bcore_flect_self_s* library_arr_s_create_self( void )
 {

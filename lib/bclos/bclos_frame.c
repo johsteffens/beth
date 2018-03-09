@@ -90,8 +90,8 @@ bcore_flect_self_s* frame_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTIONS_IDC_FLAT( bclos_address_s )
-DEFINE_FUNCTIONS_CDC(      bclos_address_s )
+BCORE_DEFINE_FUNCTIONS_IDC_FLAT( bclos_address_s )
+BCORE_DEFINE_FUNCTIONS_CDC(      bclos_address_s )
 bclos_address_s* bclos_address_s_create_tp( tp_t name )
 {
     bclos_address_s* o = bclos_address_s_create();
@@ -99,7 +99,7 @@ bclos_address_s* bclos_address_s_create_tp( tp_t name )
     return o;
 }
 
-DEFINE_CREATE_SELF( bclos_address_s, "bclos_address_s = { tp_t name; }" )
+BCORE_DEFINE_CREATE_SELF( bclos_address_s, "bclos_address_s = { tp_t name; }" )
 
 /**********************************************************************************************************************/
 

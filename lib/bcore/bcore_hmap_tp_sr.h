@@ -34,12 +34,12 @@ typedef struct bcore_hnode_tp_sr_s
     sr_s val;
 } bcore_hnode_tp_sr_s;
 
-DECLARE_FUNCTION_INIT(    bcore_hnode_tp_sr_s )
-DECLARE_FUNCTION_DOWN(    bcore_hnode_tp_sr_s )
-DECLARE_FUNCTION_COPY(    bcore_hnode_tp_sr_s )
-DECLARE_FUNCTION_CREATE(  bcore_hnode_tp_sr_s )
-DECLARE_FUNCTION_DISCARD( bcore_hnode_tp_sr_s )
-DECLARE_FUNCTION_CLONE(   bcore_hnode_tp_sr_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hnode_tp_sr_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hnode_tp_sr_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hnode_tp_sr_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hnode_tp_sr_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hnode_tp_sr_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hnode_tp_sr_s )
 
 typedef struct bcore_hmap_tp_sr_s
 {
@@ -51,12 +51,12 @@ typedef struct bcore_hmap_tp_sr_s
     sz_t size_limit;
 } bcore_hmap_tp_sr_s;
 
-DECLARE_FUNCTION_INIT(    bcore_hmap_tp_sr_s )
-DECLARE_FUNCTION_DOWN(    bcore_hmap_tp_sr_s )
-DECLARE_FUNCTION_COPY(    bcore_hmap_tp_sr_s )
-DECLARE_FUNCTION_CREATE(  bcore_hmap_tp_sr_s )
-DECLARE_FUNCTION_DISCARD( bcore_hmap_tp_sr_s )
-DECLARE_FUNCTION_CLONE(   bcore_hmap_tp_sr_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tp_sr_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hmap_tp_sr_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hmap_tp_sr_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tp_sr_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tp_sr_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tp_sr_s )
 
 sr_s* bcore_hmap_tp_sr_s_get(    const bcore_hmap_tp_sr_s* o, tp_t key ); // returns pinter to value or sr_null when key does not exist
 sr_s* bcore_hmap_tp_sr_s_set(          bcore_hmap_tp_sr_s* o, tp_t key, sr_s val );

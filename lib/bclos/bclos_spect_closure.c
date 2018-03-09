@@ -33,8 +33,8 @@ void bclos_closure_s_down( bclos_closure_s* o )
     bclos_signature_s_discard( o->static_sig );
 }
 
-DEFINE_FUNCTION_CREATE(  bclos_closure_s )
-DEFINE_FUNCTION_DISCARD( bclos_closure_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bclos_closure_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bclos_closure_s )
 
 /**********************************************************************************************************************/
 

@@ -60,9 +60,9 @@ void bcore_name_s_copy( bcore_name_s* o, const bcore_name_s* src )
     o->name = bcore_strcpy( NULL, src->name );
 }
 
-DEFINE_FUNCTION_CREATE( bcore_name_s )
-DEFINE_FUNCTION_CLONE( bcore_name_s )
-DEFINE_FUNCTION_DISCARD( bcore_name_s )
+BCORE_DEFINE_FUNCTION_CREATE( bcore_name_s )
+BCORE_DEFINE_FUNCTION_CLONE( bcore_name_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_name_s )
 
 static sr_s name_s_get_name_st( bcore_name_s* o )
 {
@@ -180,9 +180,9 @@ void bcore_name_map_s_copy( bcore_name_map_s* o, const bcore_name_map_s* src )
     o->size_limit  = src->size_limit;
 }
 
-DEFINE_FUNCTION_CREATE( bcore_name_map_s )
-DEFINE_FUNCTION_CLONE( bcore_name_map_s )
-DEFINE_FUNCTION_DISCARD( bcore_name_map_s )
+BCORE_DEFINE_FUNCTION_CREATE( bcore_name_map_s )
+BCORE_DEFINE_FUNCTION_CLONE( bcore_name_map_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_name_map_s )
 
 static sz_t find( const bcore_name_map_s* o, tp_t key ) // returns valid index or o->size
 {

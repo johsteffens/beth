@@ -45,9 +45,9 @@ void bcore_arr_sz_s_copy( bcore_arr_sz_s* o, const bcore_arr_sz_s* src )
     o->size = src->size;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_arr_sz_s )
-DEFINE_FUNCTION_DISCARD( bcore_arr_sz_s )
-DEFINE_FUNCTION_CLONE(   bcore_arr_sz_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_sz_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_sz_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_sz_s )
 
 static bcore_flect_self_s* arr_sz_s_create_self( void )
 {
@@ -230,9 +230,9 @@ void bcore_arr_u3_s_copy( bcore_arr_u3_s* o, const bcore_arr_u3_s* src )
     o->size = src->size;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_arr_u3_s )
-DEFINE_FUNCTION_DISCARD( bcore_arr_u3_s )
-DEFINE_FUNCTION_CLONE(   bcore_arr_u3_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_u3_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_u3_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_u3_s )
 
 static bcore_flect_self_s* arr_u3_s_create_self( void )
 {
@@ -380,9 +380,9 @@ void bcore_arr_tp_s_copy( bcore_arr_tp_s* o, const bcore_arr_tp_s* src )
     o->size = src->size;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_arr_tp_s )
-DEFINE_FUNCTION_DISCARD( bcore_arr_tp_s )
-DEFINE_FUNCTION_CLONE(   bcore_arr_tp_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_tp_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_tp_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_tp_s )
 
 static bcore_flect_self_s* arr_tp_s_create_self( void )
 {
@@ -511,12 +511,12 @@ sz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, sz_t start, sz_t end, tp_t v 
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_INST( bcore_arr_st_s )
-DEFINE_FUNCTION_DOWN_INST( bcore_arr_st_s )
-DEFINE_FUNCTION_COPY_INST( bcore_arr_st_s )
-DEFINE_FUNCTION_CREATE(    bcore_arr_st_s )
-DEFINE_FUNCTION_DISCARD(   bcore_arr_st_s )
-DEFINE_FUNCTION_CLONE(     bcore_arr_st_s )
+BCORE_DEFINE_FUNCTION_INIT_INST( bcore_arr_st_s )
+BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_arr_st_s )
+BCORE_DEFINE_FUNCTION_COPY_INST( bcore_arr_st_s )
+BCORE_DEFINE_FUNCTION_CREATE(    bcore_arr_st_s )
+BCORE_DEFINE_FUNCTION_DISCARD(   bcore_arr_st_s )
+BCORE_DEFINE_FUNCTION_CLONE(     bcore_arr_st_s )
 
 static bcore_flect_self_s* arr_st_s_create_self( void )
 {
@@ -658,9 +658,9 @@ void bcore_arr_vd_s_copy( bcore_arr_vd_s* o, const bcore_arr_vd_s* src )
     o->size = src->size;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_arr_vd_s )
-DEFINE_FUNCTION_DISCARD( bcore_arr_vd_s )
-DEFINE_FUNCTION_CLONE(   bcore_arr_vd_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_vd_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_vd_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_vd_s )
 
 static bcore_flect_self_s* arr_vd_s_create_self( void )
 {
@@ -782,9 +782,9 @@ void bcore_arr_fp_s_copy( bcore_arr_fp_s* o, const bcore_arr_fp_s* src )
     o->size = src->size;
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_arr_fp_s )
-DEFINE_FUNCTION_DISCARD( bcore_arr_fp_s )
-DEFINE_FUNCTION_CLONE(   bcore_arr_fp_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_fp_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_fp_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_fp_s )
 
 static bcore_flect_self_s* arr_fp_s_create_self( void )
 {
@@ -883,12 +883,12 @@ sz_t bcore_arr_fp_s_find( const bcore_arr_fp_s* o, sz_t start, sz_t end, fp_t v 
 /**********************************************************************************************************************/
 // bcore_arr_sr_s
 
-DEFINE_FUNCTION_INIT_INST( bcore_arr_sr_s )
-DEFINE_FUNCTION_DOWN_INST( bcore_arr_sr_s )
-DEFINE_FUNCTION_COPY_INST( bcore_arr_sr_s )
-DEFINE_FUNCTION_CREATE(    bcore_arr_sr_s )
-DEFINE_FUNCTION_DISCARD(   bcore_arr_sr_s )
-DEFINE_FUNCTION_CLONE(     bcore_arr_sr_s )
+BCORE_DEFINE_FUNCTION_INIT_INST( bcore_arr_sr_s )
+BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_arr_sr_s )
+BCORE_DEFINE_FUNCTION_COPY_INST( bcore_arr_sr_s )
+BCORE_DEFINE_FUNCTION_CREATE(    bcore_arr_sr_s )
+BCORE_DEFINE_FUNCTION_DISCARD(   bcore_arr_sr_s )
+BCORE_DEFINE_FUNCTION_CLONE(     bcore_arr_sr_s )
 
 static bcore_flect_self_s* arr_sr_s_create_self( void )
 {

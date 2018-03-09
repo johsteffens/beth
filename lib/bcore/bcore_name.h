@@ -55,12 +55,12 @@ typedef struct bcore_name_s
     sd_t name;
 } bcore_name_s;
 
-DECLARE_FUNCTION_INIT(    bcore_name_s )
-DECLARE_FUNCTION_DOWN(    bcore_name_s )
-DECLARE_FUNCTION_COPY(    bcore_name_s )
-DECLARE_FUNCTION_CREATE(  bcore_name_s )
-DECLARE_FUNCTION_DISCARD( bcore_name_s )
-DECLARE_FUNCTION_CLONE(   bcore_name_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_name_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_name_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_name_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_name_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_name_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_name_s )
 
 bcore_name_s bcore_name_sc(                       sc_t name );
 bcore_name_s bcore_name_ns_sc(   tp_t name_space, sc_t name );
@@ -79,12 +79,12 @@ typedef struct bcore_name_map_s
     sz_t size_limit;
 } bcore_name_map_s;
 
-DECLARE_FUNCTION_INIT(    bcore_name_map_s )
-DECLARE_FUNCTION_DOWN(    bcore_name_map_s )
-DECLARE_FUNCTION_COPY(    bcore_name_map_s )
-DECLARE_FUNCTION_CREATE(  bcore_name_map_s )
-DECLARE_FUNCTION_DISCARD( bcore_name_map_s )
-DECLARE_FUNCTION_CLONE(   bcore_name_map_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_name_map_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_name_map_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_name_map_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_name_map_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_name_map_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_name_map_s )
 
 bcore_name_s* bcore_name_map_s_get(      const bcore_name_map_s* o, tp_t key ); // returns NULL in case key does not exist
 void          bcore_name_map_s_set(            bcore_name_map_s* o, bcore_name_s name ); // takes ownership of name

@@ -41,7 +41,7 @@ typedef struct bcore_arr_sz_s
     };
 } bcore_arr_sz_s;
 
-DECLARE_FUNCTIONS_OBJ(    bcore_arr_sz_s )
+BCORE_DECLARE_FUNCTIONS_OBJ(    bcore_arr_sz_s )
 
 void bcore_arr_sz_s_clear(      bcore_arr_sz_s* o ); // sets size to zero
 void bcore_arr_sz_s_set_space(  bcore_arr_sz_s* o, sz_t space );
@@ -71,7 +71,7 @@ typedef struct bcore_arr_u3_s
     };
 } bcore_arr_u3_s;
 
-DECLARE_FUNCTIONS_OBJ( bcore_arr_u3_s )
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_u3_s )
 
 void bcore_arr_u3_s_clear(     bcore_arr_u3_s* o ); // sets size to zero
 void bcore_arr_u3_s_set_space( bcore_arr_u3_s* o, sz_t space );
@@ -98,7 +98,7 @@ typedef struct bcore_arr_tp_s
     };
 } bcore_arr_tp_s;
 
-DECLARE_FUNCTIONS_OBJ(    bcore_arr_tp_s )
+BCORE_DECLARE_FUNCTIONS_OBJ(    bcore_arr_tp_s )
 
 void bcore_arr_tp_s_clear(      bcore_arr_tp_s* o ); // sets size to zero
 void bcore_arr_tp_s_set_space(  bcore_arr_tp_s* o, sz_t space );
@@ -125,7 +125,7 @@ typedef struct bcore_arr_st_s
     };
 } bcore_arr_st_s;
 
-DECLARE_FUNCTIONS_OBJ( bcore_arr_st_s )
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_st_s )
 
 void  bcore_arr_st_s_clear(     bcore_arr_st_s* o ); // sets size to zero
 void  bcore_arr_st_s_set_space( bcore_arr_st_s* o, sz_t space );
@@ -153,7 +153,7 @@ typedef struct bcore_arr_vd_s
     };
 } bcore_arr_vd_s;
 
-DECLARE_FUNCTIONS_OBJ( bcore_arr_vd_s )
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_vd_s )
 
 void bcore_arr_vd_s_clear(      bcore_arr_vd_s* o ); // sets size to zero
 void bcore_arr_vd_s_set_space(  bcore_arr_vd_s* o, sz_t space );
@@ -180,7 +180,7 @@ typedef struct bcore_arr_fp_s
     };
 } bcore_arr_fp_s;
 
-DECLARE_FUNCTIONS_OBJ( bcore_arr_fp_s )
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_fp_s )
 
 void bcore_arr_fp_s_clear(      bcore_arr_fp_s* o ); // sets size to zero
 void bcore_arr_fp_s_set_space(  bcore_arr_fp_s* o, sz_t space );
@@ -207,7 +207,7 @@ typedef struct bcore_arr_sr_s
     };
 } bcore_arr_sr_s;
 
-DECLARE_FUNCTIONS_OBJ( bcore_arr_sr_s )
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_sr_s )
 
 void  bcore_arr_sr_s_clear(     bcore_arr_sr_s* o ); // sets size to zero
 void  bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, sz_t space );

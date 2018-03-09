@@ -43,9 +43,9 @@ typedef struct bclos_minst_s
     };
 } bclos_minst_s;
 
-DEFINE_FUNCTIONS_OBJ_INST( bclos_minst_s )
+BCORE_DEFINE_FUNCTIONS_OBJ_INST( bclos_minst_s )
 static sc_t bclos_minst_s_def_g = "bclos_minst_s = bcore_inst { u2_t inst; u0_t op0; u0_t op1; u0_t op2; u0_t op3; }";
-DEFINE_CREATE_SELF( bclos_minst_s, bclos_minst_s_def_g )
+BCORE_DEFINE_CREATE_SELF( bclos_minst_s, bclos_minst_s_def_g )
 
 bclos_minst_s bclos_minst_s_create0( u2_t oc )                            { return (bclos_minst_s){ .oc=oc, .o0 =  0, .o1 =  0, .o2 =  0, .o3 =  0 }; }
 bclos_minst_s bclos_minst_s_create1( u2_t oc, u0_t o0 )                   { return (bclos_minst_s){ .oc=oc, .o0 = o0, .o1 =  0, .o2 =  0, .o3 =  0 }; }
@@ -64,9 +64,9 @@ typedef struct bclos_mcode_s
     bcore_arr_u3_s arr;
 } bclos_mcode_s;
 
-DEFINE_FUNCTIONS_OBJ_INST( bclos_mcode_s )
+BCORE_DEFINE_FUNCTIONS_OBJ_INST( bclos_mcode_s )
 static sc_t bclos_mcode_s_def_g = "bclos_mcode_s = bcore_inst { aware_t _; bcore_arr_u3_s arr; }";
-DEFINE_CREATE_SELF( bclos_mcode_s, bclos_mcode_s_def_g )
+BCORE_DEFINE_CREATE_SELF( bclos_mcode_s, bclos_mcode_s_def_g )
 
 void bclos_mcode_s_push_minst( bclos_mcode_s* o, bclos_minst_s v ) { bcore_arr_u3_s_push( &o->arr, v.u3 ); }
 void bclos_mcode_s_push_u3( bclos_mcode_s* o, u3_t v ) { bclos_mcode_s_push_minst( o, bclos_minst_s_u3( v ) ); }
@@ -95,7 +95,7 @@ typedef struct bclos_mcpu_s
 
 } bclos_mcpu_s;
 
-DEFINE_FUNCTIONS_OBJ_INST( bclos_mcpu_s )
+BCORE_DEFINE_FUNCTIONS_OBJ_INST( bclos_mcpu_s )
 static sc_t bclos_mcpu_s_def_g =
 
 "bclos_mcpu_s = bcore_inst { "
@@ -113,7 +113,7 @@ static sc_t bclos_mcpu_s_def_g =
     "u3_t sp;" // stack pointer
 "}";
 
-DEFINE_CREATE_SELF( bclos_mcpu_s, bclos_mcpu_s_def_g )
+BCORE_DEFINE_CREATE_SELF( bclos_mcpu_s, bclos_mcpu_s_def_g )
 
 /**********************************************************************************************************************/
 

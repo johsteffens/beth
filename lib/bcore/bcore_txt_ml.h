@@ -31,12 +31,12 @@ typedef struct bcore_txt_ml_translator_s
     sz_t indent; // indentation
 } bcore_txt_ml_translator_s;
 
-DECLARE_FUNCTION_INIT(    bcore_txt_ml_translator_s )
-DECLARE_FUNCTION_DOWN(    bcore_txt_ml_translator_s )
-DECLARE_FUNCTION_COPY(    bcore_txt_ml_translator_s )
-DECLARE_FUNCTION_CREATE(  bcore_txt_ml_translator_s )
-DECLARE_FUNCTION_DISCARD( bcore_txt_ml_translator_s )
-DECLARE_FUNCTION_CLONE(   bcore_txt_ml_translator_s )
+BCORE_DECLARE_FUNCTION_INIT(    bcore_txt_ml_translator_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_txt_ml_translator_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_txt_ml_translator_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_txt_ml_translator_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_txt_ml_translator_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_txt_ml_translator_s )
 
 void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr_s obj, sr_s snk );
 

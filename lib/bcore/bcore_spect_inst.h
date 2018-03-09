@@ -142,36 +142,40 @@ sr_s bcore_inst_q_clone_sr( const sr_s* o ); // returns perspective of o
 void bcore_inst_spect_check_sizeof( const bcore_inst_s* o, sz_t size );
 void bcore_inst_typed_check_sizeof(             tp_t type, sz_t size );
 
-#define DEFINE_FUNCTION_INIT_INST( name ) void name##_init( name* o ) { bcore_inst_typed_init( TYPEOF_##name, o ); }
-#define DEFINE_FUNCTION_DOWN_INST( name ) void name##_down( name* o ) { bcore_inst_typed_down( TYPEOF_##name, o ); }
-#define DEFINE_FUNCTION_COPY_INST( name ) void name##_copy( name* o, const name* src ) \
+#define BCORE_DEFINE_FUNCTION_INIT_INST( name ) void name##_init( name* o ) { bcore_inst_typed_init( TYPEOF_##name, o ); }
+#define BCORE_DEFINE_FUNCTION_DOWN_INST( name ) void name##_down( name* o ) { bcore_inst_typed_down( TYPEOF_##name, o ); }
+#define BCORE_DEFINE_FUNCTION_COPY_INST( name ) void name##_copy( name* o, const name* src ) \
 { \
     if( o == src ) return; \
     bcore_inst_typed_copy( TYPEOF_##name, o, src ); \
 }
 
-#define DEFINE_FUNCTIONS_IDC_INST( name ) \
-    DEFINE_FUNCTION_INIT_INST( name )\
-    DEFINE_FUNCTION_DOWN_INST( name )\
-    DEFINE_FUNCTION_COPY_INST( name )\
+#define BCORE_DEFINE_FUNCTIONS_IDC_INST( name ) \
+    BCORE_DEFINE_FUNCTION_INIT_INST( name )\
+    BCORE_DEFINE_FUNCTION_DOWN_INST( name )\
+    BCORE_DEFINE_FUNCTION_COPY_INST( name )\
 
-#define DEFINE_FUNCTION_CREATE_INST( name ) name* name##_create() { return bcore_inst_typed_create( TYPEOF_##name ); }
-#define DEFINE_FUNCTION_DISCARD_INST( name ) void name##_discard( name* o ) { bcore_inst_typed_discard( TYPEOF_##name, o ); }
-#define DEFINE_FUNCTION_CLONE_INST( name ) \
+#define BCORE_DEFINE_FUNCTION_CREATE_INST( name ) name* name##_create() { return bcore_inst_typed_create( TYPEOF_##name ); }
+#define BCORE_DEFINE_FUNCTION_DISCARD_INST( name ) void name##_discard( name* o ) { bcore_inst_typed_discard( TYPEOF_##name, o ); }
+#define BCORE_DEFINE_FUNCTION_CLONE_INST( name ) \
 name* name##_clone( const name* o ) \
 { \
     if( !o ) return NULL; \
     return bcore_inst_typed_clone( TYPEOF_##name, o ); \
 }
 
-#define DEFINE_FUNCTIONS_CDC_INST( name ) \
-    DEFINE_FUNCTION_CREATE_INST( name )\
-    DEFINE_FUNCTION_DISCARD_INST( name )\
-    DEFINE_FUNCTION_CLONE_INST( name )
+#define BCORE_DEFINE_FUNCTIONS_CDC_INST( name ) \
+    BCORE_DEFINE_FUNCTION_CREATE_INST( name )\
+    BCORE_DEFINE_FUNCTION_DISCARD_INST( name )\
+    BCORE_DEFINE_FUNCTION_CLONE_INST( name )
 
-#define DEFINE_FUNCTIONS_OBJ_INST( name ) \
-    DEFINE_FUNCTIONS_IDC_INST( name )\
-    DEFINE_FUNCTIONS_CDC_INST( name )
+#define BCORE_DEFINE_FUNCTIONS_OBJ_INST( name ) \
+    BCORE_DEFINE_FUNCTIONS_IDC_INST( name )\
+    BCORE_DEFINE_FUNCTIONS_CDC_INST( name )
+
+#define BCORE_DEFINE_OBJECT_INST( name, def ) \
+    BCORE_DEFINE_FUNCTIONS_OBJ_INST( name ) \
+    BCORE_DEFINE_CREATE_SELF( name, def )
 
 /**********************************************************************************************************************/
 

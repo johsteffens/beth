@@ -73,8 +73,8 @@ void bcore_trait_s_down( bcore_trait_s* o )
     if( o->fp_space ) o->fp_data = bcore_un_alloc( sizeof( fp_t             ), o->fp_data, o->fp_space, 0, &o->fp_space );
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_trait_s )
-DEFINE_FUNCTION_DISCARD( bcore_trait_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_trait_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_trait_s )
 
 static void trait_s_push_function( bcore_trait_s* o, tp_t function, tp_t name )
 {

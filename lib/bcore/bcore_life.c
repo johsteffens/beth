@@ -20,7 +20,7 @@
 
 /**********************************************************************************************************************/
 
-DEFINE_FUNCTION_INIT_FLAT( bcore_life_item_s )
+BCORE_DEFINE_FUNCTION_INIT_FLAT( bcore_life_item_s )
 
 void bcore_life_item_s_down( bcore_life_item_s* o )
 {
@@ -37,10 +37,10 @@ void bcore_life_item_s_down( bcore_life_item_s* o )
     }
 }
 
-DEFINE_FUNCTION_COPY_FLAT( bcore_life_item_s )
-DEFINE_FUNCTION_CREATE(    bcore_life_item_s )
-DEFINE_FUNCTION_DISCARD(   bcore_life_item_s )
-DEFINE_FUNCTION_CLONE(     bcore_life_item_s )
+BCORE_DEFINE_FUNCTION_COPY_FLAT( bcore_life_item_s )
+BCORE_DEFINE_FUNCTION_CREATE(    bcore_life_item_s )
+BCORE_DEFINE_FUNCTION_DISCARD(   bcore_life_item_s )
+BCORE_DEFINE_FUNCTION_CLONE(     bcore_life_item_s )
 
 /**********************************************************************************************************************/
 
@@ -54,8 +54,8 @@ void bcore_life_s_down( struct bcore_life_s* o )
     bcore_release_obj_arr( ( fp_t )bcore_life_item_s_down, o->data, o->size, sizeof( bcore_life_item_s ) );
 }
 
-DEFINE_FUNCTION_CREATE(  bcore_life_s )
-DEFINE_FUNCTION_DISCARD( bcore_life_s )
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_life_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_life_s )
 
 bcore_life_item_s* bcore_life_s_push_item( bcore_life_s* o )
 {

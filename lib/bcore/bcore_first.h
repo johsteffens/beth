@@ -33,4 +33,6 @@
 #include <stddef.h>
 #include <assert.h>
 
+#include <math.h>
+
 #endif // BCORE_FIRST_H
