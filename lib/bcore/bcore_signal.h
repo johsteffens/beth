@@ -21,6 +21,9 @@
 
 #include "bcore_features.h"
 
+/// broadcasts a signal to specified signal handlers
+vd_t bcore_signal_broadcast( bcore_fp_signal* arr, sz_t size, tp_t target, tp_t signal, vd_t object );
+
 /// broadcasts a signal to this library and all dependents
 vd_t bcore_signal( tp_t target, tp_t signal, vd_t object );
 
