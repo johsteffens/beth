@@ -355,7 +355,7 @@ bool bcore_strany( char c, sc_t str )
 
 vd_t bcore_control_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_control" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_control" ) ) )
     {
         case TYPEOF_init1:
         {

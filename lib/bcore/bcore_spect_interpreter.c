@@ -142,7 +142,7 @@ sr_s bcore_interpret_q( const sr_s* o, sr_s source )
 
 vd_t bcore_spect_interpreter_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_interpreter" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_interpreter" ) ) )
     {
         case TYPEOF_init1:
         {

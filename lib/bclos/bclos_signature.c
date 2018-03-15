@@ -116,7 +116,7 @@ static bcore_flect_self_s* sig_s_create_self( void )
 
 vd_t bclos_signature_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bclos_signature" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bclos_signature" ) ) )
     {
         case TYPEOF_init1:
         {

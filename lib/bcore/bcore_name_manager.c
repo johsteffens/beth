@@ -235,7 +235,7 @@ st_s* bcore_name_manager_selftest()
 
 vd_t bcore_name_manager_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_name_manager" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_name_manager" ) ) )
     {
         case TYPEOF_init0:
         {

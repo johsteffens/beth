@@ -1195,7 +1195,7 @@ static st_s* flect_selftest( void )
 
 vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_flect" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_flect" ) ) )
     {
         case TYPEOF_init0:
         {

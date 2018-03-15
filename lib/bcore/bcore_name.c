@@ -371,7 +371,7 @@ static bcore_flect_self_s* name_map_s_create_self( void )
 
 vd_t bcore_name_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_name" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_name" ) ) )
     {
         case TYPEOF_init1:
         {

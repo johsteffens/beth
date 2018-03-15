@@ -466,7 +466,7 @@ static st_s* spect_compare_selftest( void )
 
 vd_t bcore_spect_compare_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_compare" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_compare" ) ) )
     {
         case TYPEOF_init1:
         {

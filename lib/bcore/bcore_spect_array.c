@@ -1706,7 +1706,7 @@ static st_s* spect_array_selftest( void )
 
 vd_t bcore_spect_array_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_array" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_array" ) ) )
     {
         case TYPEOF_init1:
         {

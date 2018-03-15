@@ -206,7 +206,7 @@ sr_s bclos_expression_s_run( const bclos_expression_s* o, bclos_frame_s* frm )
 
 vd_t bclos_arguments_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bclos_arguments" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bclos_arguments" ) ) )
     {
         case TYPEOF_init1:
         {

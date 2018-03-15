@@ -239,7 +239,7 @@ static st_s* procedure_selftest( void )
 
 vd_t bclos_procedure_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bclos_procedure" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bclos_procedure" ) ) )
     {
         case TYPEOF_init1:
         {

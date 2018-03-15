@@ -137,7 +137,7 @@ static bcore_flect_self_s* life_s_create_self( void )
 
 vd_t bcore_life_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_life" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_life" ) ) )
     {
         case TYPEOF_init1:
         {

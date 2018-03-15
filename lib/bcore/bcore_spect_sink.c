@@ -218,7 +218,7 @@ void bcore_sink_q_set_consumer ( const sr_s* o, vd_t c )            {          b
 
 vd_t bcore_spect_sink_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_sink" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_sink" ) ) )
     {
         case TYPEOF_init1:
         {

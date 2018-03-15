@@ -39,7 +39,7 @@ bcore_signal_s* bcore_signal_s_clone( const bcore_signal_s* o );
 bcore_signal_s bcore_signal_init( tp_t target, tp_t type, vd_t object );
 
 /// returns type for switching statement in case target matches; returns TYPEOF_none otherwise;
-tp_t bcore_signal_s_switch_type( const bcore_signal_s* o, tp_t target );
+tp_t bcore_signal_s_handle_type( const bcore_signal_s* o, tp_t target );
 
 /**********************************************************************************************************************/
 

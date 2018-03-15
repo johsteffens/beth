@@ -524,7 +524,7 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
 
 vd_t bcore_sc_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_sc" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_sc" ) ) )
     {
         case TYPEOF_init1:
         {

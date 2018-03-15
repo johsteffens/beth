@@ -105,7 +105,7 @@ BCORE_DEFINE_CREATE_SELF( bclos_address_s, "bclos_address_s = { tp_t name; }" )
 
 vd_t bclos_frame_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bclos_frame" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bclos_frame" ) ) )
     {
         case TYPEOF_init1:
         {

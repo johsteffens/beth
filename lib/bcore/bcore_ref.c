@@ -230,7 +230,7 @@ bl_t sr_bl_sr_s( const sr_s* o )
 
 vd_t bcore_ref_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_ref" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_ref" ) ) )
     {
         case TYPEOF_init1:
         {

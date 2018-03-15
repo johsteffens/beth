@@ -128,7 +128,7 @@ void bcore_function_remove( tp_t t )
 
 vd_t bcore_function_manager_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_function_manager" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_function_manager" ) ) )
     {
         case TYPEOF_init0:
         {

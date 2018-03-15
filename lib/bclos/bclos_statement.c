@@ -127,7 +127,7 @@ static bcore_flect_self_s* statement_s_create_self( void )
 
 vd_t bclos_statement_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bclos_statement" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bclos_statement" ) ) )
     {
         case TYPEOF_init1:
         {

@@ -418,7 +418,7 @@ st_s* bcore_trait_show()
 
 vd_t bcore_trait_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_trait" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_trait" ) ) )
     {
         case TYPEOF_init0:
         {

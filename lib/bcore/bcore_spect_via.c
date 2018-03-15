@@ -747,7 +747,7 @@ static st_s* spect_via_selftest( void )
 
 vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_via" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_via" ) ) )
     {
         case TYPEOF_init1:
         {

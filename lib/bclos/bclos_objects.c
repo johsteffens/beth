@@ -22,7 +22,7 @@
 
 vd_t bclos_objects_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bclos_objects" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bclos_objects" ) ) )
     {
         case TYPEOF_init1:
         {

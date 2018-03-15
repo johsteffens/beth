@@ -285,7 +285,7 @@ vc_t ch_spect_o( vc_t p, tp_t obj_type )
 
 vd_t bcore_spect_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect" ) ) )
     {
         case TYPEOF_init0:
         {

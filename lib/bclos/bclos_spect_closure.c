@@ -152,7 +152,7 @@ sr_s bclos_closure_q_call_na( const sr_s* o, bclos_frame_s* frm, sz_t n, ... )
 
 vd_t bclos_spect_closure_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bclos_spect_closure" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bclos_spect_closure" ) ) )
     {
         case TYPEOF_init1:
         {

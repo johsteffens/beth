@@ -1740,7 +1740,7 @@ static void st_s_quicktest( void )
 
 vd_t bcore_st_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_st" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_st" ) ) )
     {
         case TYPEOF_init1:
         {

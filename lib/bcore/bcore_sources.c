@@ -938,7 +938,7 @@ static st_s* sources_selftest( void )
 
 vd_t bcore_sources_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_sources" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_sources" ) ) )
     {
         case TYPEOF_init1:
         {

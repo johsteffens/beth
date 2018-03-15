@@ -54,7 +54,7 @@ static bcore_flect_self_s* library_arr_s_create_self( void )
 
 vd_t bclos_library_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bclos_library" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bclos_library" ) ) )
     {
         case TYPEOF_init1:
         {

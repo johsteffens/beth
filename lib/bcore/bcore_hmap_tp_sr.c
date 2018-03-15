@@ -509,7 +509,7 @@ static st_s* hmap_tp_sr_selftest( void )
 
 vd_t bcore_hmap_tp_sr_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_hmap_tp_sr" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_hmap_tp_sr" ) ) )
     {
         case TYPEOF_init1:
         {

@@ -1132,7 +1132,7 @@ st_s* bcore_arr_st_selftest( void )
 
 vd_t bcore_arr_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_arr" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_arr" ) ) )
     {
         case TYPEOF_init1:
         {

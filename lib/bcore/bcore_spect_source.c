@@ -284,7 +284,7 @@ void NPX(q_parse_err_fa)( const sr_s* o, sc_t f, ...       ) { va_list a; va_sta
 
 vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_source" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_source" ) ) )
     {
         case TYPEOF_init1:
         {

@@ -540,7 +540,7 @@ static st_s* machine_selftest( void )
 
 vd_t bclos_machine_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bclos_machine" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bclos_machine" ) ) )
     {
         case TYPEOF_init1:
         {

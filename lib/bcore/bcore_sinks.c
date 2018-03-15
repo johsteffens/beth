@@ -412,7 +412,7 @@ bcore_sink_chain_s* bcore_sink_create_file( sc_t file_name )
 
 vd_t bcore_sinks_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_sinks" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_sinks" ) ) )
     {
         case TYPEOF_init1:
         {

@@ -104,7 +104,7 @@ void bcore_translate_q( const sr_s* o, sr_s obj, sr_s sink )
 
 vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_translator" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_translator" ) ) )
     {
         case TYPEOF_init1:
         {

@@ -21,7 +21,7 @@
 
 vd_t bcore_tp_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_tp" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_tp" ) ) )
     {
         case TYPEOF_init1:
         {

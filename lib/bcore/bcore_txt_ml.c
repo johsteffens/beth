@@ -348,7 +348,7 @@ static st_s* txt_ml_selftest( void )
 
 vd_t bcore_txt_ml_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_txt_ml" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_txt_ml" ) ) )
     {
         case TYPEOF_init1:
         {

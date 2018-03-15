@@ -217,7 +217,7 @@ static bcore_flect_self_s* loop_create_self( void )
 
 vd_t bclos_closures_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bclos_closures" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bclos_closures" ) ) )
     {
         case TYPEOF_init1:
         {

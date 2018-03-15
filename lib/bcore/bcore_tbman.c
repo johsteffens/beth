@@ -2527,7 +2527,7 @@ static st_s* tbman_s_thread_test( void )
 
 vd_t bcore_tbman_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_switch_type( o, typeof( "bcore_tbman" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_tbman" ) ) )
     {
         case TYPEOF_init0:
         {
