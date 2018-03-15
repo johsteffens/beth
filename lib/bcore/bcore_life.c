@@ -17,6 +17,7 @@
 #include "bcore_control.h"
 #include "bcore_spect_inst.h"
 #include "bcore_flect.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 
@@ -134,13 +135,22 @@ static bcore_flect_self_s* life_s_create_self( void )
     return self;
 }
 
-vd_t bcore_life_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_life_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_life" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_life" ) ) )
     {
-        bcore_flect_define_creator( typeof( "bcore_life_s"  ), life_s_create_self  );
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "bcore_life_s"  ), life_s_create_self  );
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

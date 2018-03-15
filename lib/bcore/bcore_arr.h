@@ -219,7 +219,7 @@ void  bcore_arr_sr_s_reorder(   bcore_arr_sr_s* o, const bcore_arr_sz_s* order )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_arr_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_arr_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 

@@ -17,6 +17,7 @@
 #include "bcore_tbman.h"
 #include "bcore_st.h"
 #include "bcore_threads.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 // hash map
@@ -232,32 +233,46 @@ st_s* bcore_name_manager_selftest()
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_name_manager_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_name_manager_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_name_manager" ) ) return NULL;
-    if( signal == typeof( "init0" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_name_manager" ) ) )
     {
-        name_manager_open();
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        return bcore_name_manager_selftest();
-    }
-    else if( signal == typeof( "down0" ) )
-    {
-        // bcore_tbman_instance_disgnostics();
+        case TYPEOF_init0:
+        {
+            name_manager_open();
+        }
+        break;
 
-        if( object && ( *( bl_t* )object ) )
+        case TYPEOF_init1:
         {
-            sz_t space = bcore_tbman_granted_space();
-            name_manager_close();
-            bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_tbman_granted_space() );
         }
-        else
+        break;
+
+        case TYPEOF_down0:
         {
-            name_manager_close();
+            // bcore_tbman_instance_disgnostics();
+
+            if( o->object && ( *( bl_t* )o->object ) )
+            {
+                sz_t space = bcore_tbman_granted_space();
+                name_manager_close();
+                bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_tbman_granted_space() );
+            }
+            else
+            {
+                name_manager_close();
+            }
         }
+        break;
+
+        case TYPEOF_selftest:
+        {
+            return bcore_name_manager_selftest();
+        }
+        break;
+
+        default: break;
     }
+
     return NULL;
 }
-

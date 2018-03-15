@@ -45,7 +45,7 @@ sr_s bcore_interpret_q( const sr_s* o, sr_s source );
 sr_s bcore_interpret_auto( sr_s source );
 sr_s bcore_interpret_auto_file( sc_t file );
 
-vd_t bcore_spect_interpreter_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_spect_interpreter_signal_handler( const bcore_signal_s* o );
 
 #endif  // BCORE_SPECT_INTERPRETER_H
 

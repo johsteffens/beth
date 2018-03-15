@@ -92,6 +92,6 @@ st_s* bcore_name_show(); // store all names in a string, separated by newline
 
 bcore_name_map_s* bcore_name_create_name_map();
 
-vd_t bcore_name_manager_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_name_manager_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_NAME_MANAGER_H

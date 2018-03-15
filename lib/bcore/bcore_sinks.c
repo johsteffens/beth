@@ -15,7 +15,7 @@
 
 #include "bcore_sinks.h"
 #include "bcore_spect_inst.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
@@ -410,15 +410,24 @@ bcore_sink_chain_s* bcore_sink_create_file( sc_t file_name )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_sinks_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_sinks_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_sinks" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_sinks" ) ) )
     {
-        bcore_flect_define_creator( typeof( "bcore_sink_buffer_s" ), buffer_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_sink_file_s"   ), file_s_create_self   );
-        bcore_flect_define_creator( typeof( "bcore_sink_chain_s"  ), chain_s_create_self  );
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "bcore_sink_buffer_s" ), buffer_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_sink_file_s"   ), file_s_create_self   );
+            bcore_flect_define_creator( typeof( "bcore_sink_chain_s"  ), chain_s_create_self  );
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

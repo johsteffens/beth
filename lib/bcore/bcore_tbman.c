@@ -24,7 +24,7 @@
 #include "bcore_st.h"
 #include "bcore_threads.h"
 #include "bcore_name_manager.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include <time.h>
 #include <math.h>
 #include <pthread.h>
@@ -2124,7 +2124,6 @@ void bcore_tbman_instance_disgnostics()
 /**********************************************************************************************************************/
 // Testing and evaluation
 
-#include "bcore_quicktypes.h"
 #include "bcore_spect_inst.h"
 
 typedef vd_t (*fp_alloc)( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
@@ -2526,46 +2525,56 @@ static st_s* tbman_s_thread_test( void )
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_tbman_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_tbman" ) ) return NULL;
-    if( signal == typeof( "init0" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_tbman" ) ) )
     {
-        tbman_open();
-    }
-    else if( signal == typeof( "init1" ) )
-    {
-        tbman_s_quicktest(); // system critical test
-    }
-    else if( signal == typeof( "down0" ) )
-    {
-        sz_t space = bcore_tbman_granted_space();
-        if( space > 0 )
+        case TYPEOF_init0:
         {
-            sz_t instances = bcore_tbman_total_instances();
-            sz_t references = bcore_tbman_total_references();
-            st_s_print_d( bcore_tbman_s_status( tbman_s_g, 1 ) );
-            ERR
-            (
-                "Leaking memory .... %zu bytes\n"
-                "     instances .... %zu\n"
-                "     references ... %zu\n",
-                space,
-                instances,
-                references
-            );
+            tbman_open();
         }
-        tbman_close();
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        st_s* log = st_s_create();
-        st_s_push_st_d( log, tbman_s_thread_test() );
-        st_s_push_st_d( log, tbman_s_rctest() );
-        st_s_push_st_d( log, tbman_s_memtest() );
-        return log;
-    }
+        break;
 
+        case TYPEOF_init1:
+        {
+            tbman_s_quicktest(); // system critical test
+        }
+        break;
+
+        case TYPEOF_down0:
+        {
+            sz_t space = bcore_tbman_granted_space();
+            if( space > 0 )
+            {
+                sz_t instances = bcore_tbman_total_instances();
+                sz_t references = bcore_tbman_total_references();
+                st_s_print_d( bcore_tbman_s_status( tbman_s_g, 1 ) );
+                ERR
+                (
+                    "Leaking memory .... %zu bytes\n"
+                    "     instances .... %zu\n"
+                    "     references ... %zu\n",
+                    space,
+                    instances,
+                    references
+                );
+            }
+            tbman_close();
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+            st_s* log = st_s_create();
+            st_s_push_st_d( log, tbman_s_thread_test() );
+            st_s_push_st_d( log, tbman_s_rctest() );
+            st_s_push_st_d( log, tbman_s_memtest() );
+            return log;
+        }
+        break;
+
+        default: break;
+    }
     return NULL;
 }
 

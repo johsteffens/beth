@@ -26,20 +26,21 @@
 #include "bclos_procedure.h"
 #include "bclos_machine.h"
 
-vd_t bclos_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bclos_signal_handler( const bcore_signal_s* o )
 {
-    bcore_fp_signal arr[] =
+    bcore_fp_signal_handler arr[] =
     {
-        bclos_arguments_signal,
-        bclos_frame_signal,
-        bclos_objects_signal,
-        bclos_closures_signal,
-        bclos_procedure_signal,
-        bclos_signature_signal,
-        bclos_spect_closure_signal,
-        bclos_statement_signal,
-        bclos_machine_signal,
+        bclos_arguments_signal_handler,
+        bclos_frame_signal_handler,
+        bclos_objects_signal_handler,
+        bclos_closures_signal_handler,
+        bclos_procedure_signal_handler,
+        bclos_signature_signal_handler,
+        bclos_spect_closure_signal_handler,
+        bclos_statement_signal_handler,
+        bclos_machine_signal_handler,
     };
 
-    return bcore_signal_broadcast( arr, sizeof( arr ) / sizeof( bcore_fp_signal ), target, signal, object );
+    return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );
 }
+

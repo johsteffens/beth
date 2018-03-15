@@ -93,7 +93,7 @@ static inline sr_s bclos_arguments_s_get( const bclos_arguments_s* o, sz_t idx, 
 
 /**********************************************************************************************************************/
 
-vd_t bclos_arguments_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bclos_arguments_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 

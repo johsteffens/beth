@@ -20,6 +20,7 @@
 
 #include <stdarg.h>
 #include "bcore_types.h"
+#include "bcore_features.h"
 
 /** Formatted strings:
  *  Variadic functions with postfix _fv, _fa, _fnv
@@ -118,6 +119,6 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t format, sz_t fsize, va_list* p_args );
  */
 s2_t sc_t_scan_type( sc_t format, tp_t* p_type, bl_t* p_is_ptr );
 
-vd_t bcore_sc_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_sc_signal_handler( const bcore_signal_s* o );
 
 #endif //BCORE_SC_H

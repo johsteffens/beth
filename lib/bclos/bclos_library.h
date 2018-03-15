@@ -57,5 +57,7 @@ BCORE_DECLARE_FUNCTION_CREATE(  bclos_library_arr_s )
 BCORE_DECLARE_FUNCTION_DISCARD( bclos_library_arr_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bclos_library_arr_s )
 
+vd_t bclos_library_signal_handler( const bcore_signal_s* o );
+
 #endif // BCLOS_LIBRARY_H
 

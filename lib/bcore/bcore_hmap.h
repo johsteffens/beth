@@ -308,7 +308,7 @@ tp_t  bcore_hmap_tp_s_idx_key( const bcore_hmap_tp_s* o, sz_t idx ); // returns 
 
 /**********************************************************************************************************************/
 
-vd_t bcore_hmap_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_hmap_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_HMAP_H
 

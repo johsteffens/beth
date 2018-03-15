@@ -18,7 +18,7 @@
 #include "bcore_flect.h"
 #include "bcore_spect.h"
 #include "bcore_trait.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_life.h"
 #include "bcore_txt_ml.h"
 #include "bcore_spect_source.h"
@@ -140,16 +140,24 @@ sr_s bcore_interpret_q( const sr_s* o, sr_s source )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_spect_interpreter_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_spect_interpreter_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_spect_interpreter" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_interpreter" ) ) )
     {
-        interpreter_s_define_trait();
-        bcore_flect_define_creator( typeof( "bcore_interpreter_s"  ), interpreter_s_create_self  );
-    }
+        case TYPEOF_init1:
+        {
+            interpreter_s_define_trait();
+            bcore_flect_define_creator( typeof( "bcore_interpreter_s"  ), interpreter_s_create_self  );
+        }
+        break;
 
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
+    }
     return NULL;
 }
 

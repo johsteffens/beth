@@ -182,7 +182,7 @@ bcore_source_chain_s* bcore_source_open_file( sc_t file_name );
 
 /**********************************************************************************************************************/
 
-vd_t bcore_sources_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_sources_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 

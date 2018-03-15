@@ -120,6 +120,6 @@ sc_t bcore_source_q_get_file    ( const sr_s* o );
 s3_t bcore_source_q_get_index   ( const sr_s* o );
 void bcore_source_q_set_index   ( const sr_s* o, s3_t index );
 
-vd_t bcore_spect_source_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_SPECT_SOURCE_H

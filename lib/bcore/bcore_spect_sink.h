@@ -86,6 +86,6 @@ void bcore_sink_q_push_string  ( const sr_s* o, const st_s* string );
 void bcore_sink_q_push_string_d( const sr_s* o,       st_s* string );
 void bcore_sink_q_set_consumer ( const sr_s* o, vd_t consumer ); // error when not supported
 
-vd_t bcore_spect_sink_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_spect_sink_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_SPECT_SINK_H

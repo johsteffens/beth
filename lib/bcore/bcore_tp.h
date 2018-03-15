@@ -34,6 +34,6 @@ static inline tp_t bcore_tp_fold_vc( tp_t o, vc_t a, sz_t n ) { for( const u0_t*
 static inline tp_t bcore_tp_hash_sc( sc_t v ) { return bcore_tp_fold_sc( bcore_tp_init(), v ); }
 static inline tp_t bcore_tp_hash_vc( vc_t a, sz_t n ) { return bcore_tp_fold_vc( bcore_tp_init(), a, n ); }
 
-vd_t bcore_tp_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_tp_signal_handler( const bcore_signal_s* o );
 
 #endif //BCORE_TP_H

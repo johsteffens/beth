@@ -15,7 +15,7 @@
 
 #include "bclos_machine.h"
 #include "bclos_quicktypes.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_spect_inst.h"
 #include "bcore_spect_array.h"
 #include "bcore_life.h"
@@ -538,19 +538,25 @@ static st_s* machine_selftest( void )
 
 /**********************************************************************************************************************/
 
-vd_t bclos_machine_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bclos_machine_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bclos_machine" ) ) return NULL;
+    switch( bcore_signal_s_switch_type( o, typeof( "bclos_machine" ) ) )
+    {
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "bclos_minst_s" ), bclos_minst_s_create_self );
+            bcore_flect_define_creator( typeof( "bclos_mcode_s" ), bclos_mcode_s_create_self );
+            bcore_flect_define_creator( typeof( "bclos_mcpu_s"  ), bclos_mcpu_s_create_self  );
+        }
+        break;
 
-    if( signal == typeof( "init1" ) )
-    {
-        bcore_flect_define_creator( typeof( "bclos_minst_s" ), bclos_minst_s_create_self );
-        bcore_flect_define_creator( typeof( "bclos_mcode_s" ), bclos_mcode_s_create_self );
-        bcore_flect_define_creator( typeof( "bclos_mcpu_s"  ), bclos_mcpu_s_create_self  );
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        return machine_selftest();
+        case TYPEOF_selftest:
+        {
+            return machine_selftest();
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

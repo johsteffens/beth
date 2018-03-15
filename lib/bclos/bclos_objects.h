@@ -17,9 +17,10 @@
 #define BCLOS_OBJECTS_H
 
 #include "bcore_types.h"
+#include "bcore_features.h"
 
 /**********************************************************************************************************************/
 
-vd_t bclos_objects_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bclos_objects_signal_handler( const bcore_signal_s* o );
 
 #endif // BCLOS_OBJECTS_H

@@ -32,7 +32,7 @@ const bcore_translator_s* bcore_translator_s_get_typed( tp_t type );
 void bcore_translate(   sr_s o, sr_s obj, sr_s sink );
 void bcore_translate_q( const sr_s* o, sr_s obj, sr_s sink );
 
-vd_t bcore_spect_translator_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o );
 
 #endif  // BCORE_SPECT_TRANSLATOR_H
 

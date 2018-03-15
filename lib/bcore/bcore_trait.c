@@ -20,9 +20,9 @@
 #include "bcore_threads.h"
 #include "bcore_tbman.h"
 #include "bcore_trait.h"
-#include "bcore_quicktypes.h"
 #include "bcore_flect.h"
 #include "bcore_spect_inst.h"
+#include "bcore_signal.h"
 
 const char* trait_ft_s_def_g = "bcore_trait_ft_s = bcore_inst { tp_t type; tp_t name; }";
 typedef struct bcore_trait_ft_s { tp_t type; tp_t name; } bcore_trait_ft_s;
@@ -416,31 +416,40 @@ st_s* bcore_trait_show()
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_trait_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_trait_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_trait" ) ) return NULL;
-    if( signal == typeof( "init0" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_trait" ) ) )
     {
-        trait_manager_open();
-    }
-    else if( signal == typeof( "init1" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_trait_ft_s" ), trait_ft_s_create_self  );
-        bcore_flect_define_creator( typeof( "bcore_trait_s"    ), trait_s_create_self  );
-    }
-    else if( signal == typeof( "down0" ) )
-    {
-        if( object && ( *( bl_t* )object ) )
+        case TYPEOF_init0:
         {
-            sz_t space1 = bcore_tbman_granted_space();
-            trait_manager_close();
-            sz_t space2 = bcore_tbman_granted_space();
-            bcore_msg( "  trait manager ....... % 6zu\n", space1 > space2 ? space1 - space2 : ( sz_t )0 );
+            trait_manager_open();
         }
-        else
+        break;
+
+        case TYPEOF_init1:
         {
-            trait_manager_close();
+            bcore_flect_define_creator( typeof( "bcore_trait_ft_s" ), trait_ft_s_create_self  );
+            bcore_flect_define_creator( typeof( "bcore_trait_s"    ), trait_s_create_self  );
         }
+        break;
+
+        case TYPEOF_down0:
+        {
+            if( o->object && ( *( bl_t* )o->object ) )
+            {
+                sz_t space1 = bcore_tbman_granted_space();
+                trait_manager_close();
+                sz_t space2 = bcore_tbman_granted_space();
+                bcore_msg( "  trait manager ....... % 6zu\n", space1 > space2 ? space1 - space2 : ( sz_t )0 );
+            }
+            else
+            {
+                trait_manager_close();
+            }
+        }
+        break;
+
+        default: break;
     }
     return NULL;
 }

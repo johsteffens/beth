@@ -25,6 +25,6 @@
 
 /**********************************************************************************************************************/
 
-vd_t bclos_machine_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bclos_machine_signal_handler( const bcore_signal_s* o );
 
 #endif // BCLOS_MACHINE_H

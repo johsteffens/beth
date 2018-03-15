@@ -15,7 +15,7 @@
 
 #include "bcore_name.h"
 #include "bcore_name_manager.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_flect.h"
 #include "bcore_spect_array.h"
 
@@ -369,20 +369,24 @@ static bcore_flect_self_s* name_map_s_create_self( void )
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_name_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_name_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_name" ) ) return NULL;
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_name" ) ) )
     {
-        bcore_flect_define_creator( TYPEOF_bcore_name_s,     name_s_create_self );
-        bcore_flect_define_creator( TYPEOF_bcore_name_map_s, name_map_s_create_self );
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( TYPEOF_bcore_name_s,     name_s_create_self );
+            bcore_flect_define_creator( TYPEOF_bcore_name_map_s, name_map_s_create_self );
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
-    else if( signal == typeof( "selftest" ) )
-    {
-    }
-    else if( signal == typeof( "down0" ) )
-    {
-    }
+
     return NULL;
 }
-

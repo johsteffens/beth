@@ -33,6 +33,6 @@ fp_t bcore_function_get( tp_t t );
 /// removes t if existing
 void bcore_function_remove( tp_t t );
 
-vd_t bcore_function_manager_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_function_manager_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_FUNCTION_MANAGER_H

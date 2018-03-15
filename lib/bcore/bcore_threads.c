@@ -46,8 +46,9 @@ void bcore_once( bcore_once_t* flag, void (*func)() )
     if( ern ) ERR( "function returned error %i", ern );
 }
 
-vd_t bcore_threads_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_threads_signal_handler( const bcore_signal_s* o )
 {
     return NULL;
 }
+
 

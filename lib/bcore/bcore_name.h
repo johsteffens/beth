@@ -97,6 +97,6 @@ bcore_name_s* bcore_name_map_s_idx_name( const bcore_name_map_s* o, sz_t idx ); 
 
 /**********************************************************************************************************************/
 
-vd_t bcore_name_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_name_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_NAME_H

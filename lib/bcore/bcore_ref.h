@@ -158,6 +158,7 @@ static inline sr_s sr_s_fork( sr_s* o ) { return ( sr_s ) { .o = bcore_fork( o->
 
 /**********************************************************************************************************************/
 
-vd_t bcore_ref_signal( tp_t target, tp_t signal, vd_t object );
+typedef struct bcore_signal_s bcore_signal_s;
+vd_t bcore_ref_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_REF_H

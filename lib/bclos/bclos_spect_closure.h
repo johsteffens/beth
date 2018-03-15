@@ -59,7 +59,7 @@ sr_s bclos_closure_q_sig(     const sr_s* o );
 sr_s bclos_closure_q_call_nv( const sr_s* o, bclos_frame_s* frm, sz_t n, va_list args ); // call with n arguments
 sr_s bclos_closure_q_call_na( const sr_s* o, bclos_frame_s* frm, sz_t n, ...          ); // call with n arguments
 
-vd_t bclos_spect_closure_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bclos_spect_closure_signal_handler( const bcore_signal_s* o );
 
 #define BCLOS_DEFINE_STD_CLOSURE( name, signature, function )\
 static vd_t name##_static_signature() { return bclos_signature_s_parse_from_sc( signature ); }\

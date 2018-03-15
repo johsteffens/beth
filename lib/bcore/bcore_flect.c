@@ -18,11 +18,11 @@
 #include "bcore_control.h"
 #include "bcore_threads.h"
 #include "bcore_life.h"
-#include "bcore_quicktypes.h"
 #include "bcore_hmap.h"
 #include "bcore_tbman.h"
 #include "bcore_trait.h"
 #include "bcore_spect_source.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 
@@ -1193,51 +1193,59 @@ static st_s* flect_selftest( void )
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_flect_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_flect" ) ) return NULL;
-
-    if( signal == typeof( "init0" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_flect" ) ) )
     {
-        flect_open();
-    }
-    else if( signal == typeof( "init1" ) )
-    {
-        // some basic traits
-        bcore_trait_set( entypeof( "root" ), 0 ); // root trait (all traits should end in root)
-        bcore_trait_set( entypeof( "bcore_inst" ), typeof( "root" ) ); // all (instantiable) reflections should inherit bcore_inst
-        bcore_trait_set( entypeof( "leaf" ), typeof( "bcore_inst" ) ); // leaf trait
-        bcore_trait_set( entypeof( "num"  ), typeof( "leaf" ) );       // a number is a leaf type
-        bcore_trait_set( entypeof( "type" ), typeof( "num"  ) );       // type is encoded as number
-
-        flect_define_basics();
-        bcore_flect_define_creator( typeof( "bcore_static_link_s"       ), bcore_static_link_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_typed_link_s"        ), bcore_typed_link_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_aware_link_s"        ), bcore_aware_link_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_static_array_s"      ), bcore_static_array_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_typed_array_s"       ), bcore_typed_array_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_static_link_array_s" ), bcore_static_link_array_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_typed_link_array_s"  ), bcore_typed_link_array_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_aware_link_array_s"  ), bcore_aware_link_array_s_create_self );
-    }
-    else if( signal == typeof( "down0" ) )
-    {
-        if( object && ( *( bl_t* )object ) )
+        case TYPEOF_init0:
         {
-            sz_t space = bcore_tbman_granted_space();
-            flect_close();
-            bcore_msg( "  reflection mananger . % 6zu\n", space - bcore_tbman_granted_space() );
+            flect_open();
         }
-        else
-        {
-            flect_close();
-        }
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        return flect_selftest();
-    }
+        break;
 
+        case TYPEOF_init1:
+        {
+            // some basic traits
+            bcore_trait_set( entypeof( "root" ), 0 ); // root trait (all traits should end in root)
+            bcore_trait_set( entypeof( "bcore_inst" ), typeof( "root" ) ); // all (instantiable) reflections should inherit bcore_inst
+            bcore_trait_set( entypeof( "leaf" ), typeof( "bcore_inst" ) ); // leaf trait
+            bcore_trait_set( entypeof( "num"  ), typeof( "leaf" ) );       // a number is a leaf type
+            bcore_trait_set( entypeof( "type" ), typeof( "num"  ) );       // type is encoded as number
+
+            flect_define_basics();
+            bcore_flect_define_creator( typeof( "bcore_static_link_s"       ), bcore_static_link_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_typed_link_s"        ), bcore_typed_link_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_aware_link_s"        ), bcore_aware_link_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_static_array_s"      ), bcore_static_array_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_typed_array_s"       ), bcore_typed_array_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_static_link_array_s" ), bcore_static_link_array_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_typed_link_array_s"  ), bcore_typed_link_array_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_aware_link_array_s"  ), bcore_aware_link_array_s_create_self );
+        }
+        break;
+
+        case TYPEOF_down0:
+        {
+            if( o->object && ( *( bl_t* )o->object ) )
+            {
+                sz_t space = bcore_tbman_granted_space();
+                flect_close();
+                bcore_msg( "  reflection mananger . % 6zu\n", space - bcore_tbman_granted_space() );
+            }
+            else
+            {
+                flect_close();
+            }
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+            return flect_selftest();
+        }
+        break;
+
+        default: break;
+    }
     return NULL;
 }
-

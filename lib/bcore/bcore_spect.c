@@ -20,7 +20,7 @@
 #include "bcore_life.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect_via.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_trait.h"
 #include "bcore_tbman.h"
 
@@ -283,29 +283,44 @@ vc_t ch_spect_o( vc_t p, tp_t obj_type )
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_spect_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_spect_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_spect" ) ) return NULL;
-    if( signal == typeof( "init0" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect" ) ) )
     {
-        spect_manager_open();
-    }
-    else if( signal == typeof( "init1" ) )
-    {
-        spect_define_trait();
-    }
-    else if( signal == typeof( "down0" ) )
-    {
-        if( object && ( *( bl_t* )object ) )
+        case TYPEOF_init0:
         {
-            sz_t space = bcore_tbman_granted_space();
-            spect_manager_close();
-            bcore_msg( "  spect mananger ...... % 6zu\n", space - bcore_tbman_granted_space() );
+            spect_manager_open();
         }
-        else
+        break;
+
+        case TYPEOF_init1:
         {
-            spect_manager_close();
+            spect_define_trait();
         }
+        break;
+
+        case TYPEOF_down0:
+        {
+            if( o->object && ( *( bl_t* )o->object ) )
+            {
+                sz_t space = bcore_tbman_granted_space();
+                spect_manager_close();
+                bcore_msg( "  spect mananger ...... % 6zu\n", space - bcore_tbman_granted_space() );
+            }
+            else
+            {
+                spect_manager_close();
+            }
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
+
     return NULL;
 }

@@ -16,7 +16,7 @@
 #include "stdio.h"
 #include "bcore_sc.h"
 #include "bcore_st.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 
 /** Scans type; returns number of characters consumed; returns -1 in case of syntax error
  *  Syntax:
@@ -522,19 +522,22 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_sc_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_sc_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_sc" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_sc" ) ) )
     {
-        return NULL;
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        return NULL;
-    }
+        case TYPEOF_init1:
+        {
+        }
+        break;
 
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
+    }
     return NULL;
 }
 

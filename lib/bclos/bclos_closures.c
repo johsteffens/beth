@@ -18,6 +18,7 @@
 #include "bclos_quicktypes.h"
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 // assign_s
@@ -214,17 +215,26 @@ static bcore_flect_self_s* loop_create_self( void )
 
 /**********************************************************************************************************************/
 
-vd_t bclos_closures_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bclos_closures_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bclos_closures" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bclos_closures" ) ) )
     {
-        bcore_flect_define_creator( typeof( "bclos_assign_s"  ),  assign_s_create_self );
-        bcore_flect_define_creator( typeof( "bclos_writeln_s"  ), writeln_s_create_self );
-        bcore_flect_define_creator( typeof( "bclos_identity_s" ), identity_s_create_self );
-        bcore_flect_define_creator( typeof( "bclos_branch_s"   ), branch_create_self );
-        bcore_flect_define_creator( typeof( "bclos_loop_s"     ), loop_create_self );
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "bclos_assign_s"  ),  assign_s_create_self );
+            bcore_flect_define_creator( typeof( "bclos_writeln_s"  ), writeln_s_create_self );
+            bcore_flect_define_creator( typeof( "bclos_identity_s" ), identity_s_create_self );
+            bcore_flect_define_creator( typeof( "bclos_branch_s"   ), branch_create_self );
+            bcore_flect_define_creator( typeof( "bclos_loop_s"     ), loop_create_self );
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

@@ -21,18 +21,29 @@
 #include "bcore_arr.h"
 #include "bcore.h"
 
+#include <locale.h>
+
 /**********************************************************************************************************************/
 
-bcore_arr_fp_s* signal_arr_g = NULL;
+bcore_arr_fp_s* signal_handler_arr_g = NULL;
 bcore_mutex_t mutex;
 
 static void init_once()
 {
-    bcore_signal( typeof( "all" ), typeof( "init0" ), NULL ); // init0 opens critical services
-    bcore_signal( typeof( "all" ), typeof( "init1" ), NULL );
+    /// system wide settings
+//    setlocale( LC_ALL, "C" );
+
+    /// bcore-library initialization
+
+    bcore_signal_s signal;
+    signal = bcore_signal_init( typeof( "all" ), typeof( "init0" ), NULL );
+    bcore_signal_handler( &signal );
+    signal = bcore_signal_init( typeof( "all" ), typeof( "init1" ), NULL );
+    bcore_signal_handler( &signal );
+
     bcore_mutex_init( &mutex );
-    signal_arr_g = bcore_arr_fp_s_create();
-    bcore_arr_fp_s_push( signal_arr_g, ( fp_t )bcore_signal );
+    signal_handler_arr_g = bcore_arr_fp_s_create();
+    bcore_arr_fp_s_push( signal_handler_arr_g, ( fp_t )bcore_signal_handler );
 }
 
 static void init()
@@ -41,47 +52,75 @@ static void init()
     bcore_once( &flag, init_once );
 }
 
-void bcore_init_library( bcore_fp_signal signal )
+void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler )
 {
     init();
-    bcore_mutex_lock( &mutex );
-
-    if( bcore_arr_fp_s_find( signal_arr_g, 0, signal_arr_g->size, ( fp_t )signal ) == signal_arr_g->size )
+    if( signal_handler )
     {
-        signal( typeof( "all" ), typeof( "init0" ), NULL );
-        signal( typeof( "all" ), typeof( "init1" ), NULL );
-        bcore_arr_fp_s_push( signal_arr_g, ( fp_t )signal );
-    }
+        bcore_mutex_lock( &mutex );
+        bl_t not_registered =
+            bcore_arr_fp_s_find( signal_handler_arr_g, 0, -1, ( fp_t )signal_handler )
+                == signal_handler_arr_g->size;
 
-    bcore_mutex_unlock( &mutex );
+        if( not_registered )
+        {
+            bcore_signal_s signal;
+            signal = bcore_signal_init( typeof( "all" ), typeof( "init0" ), NULL );
+            signal_handler( &signal );
+            signal = bcore_signal_init( typeof( "all" ), typeof( "init1" ), NULL );
+            signal_handler( &signal );
+            bcore_arr_fp_s_push( signal_handler_arr_g, ( fp_t )signal_handler );
+        }
+
+        bcore_mutex_unlock( &mutex );
+    }
 }
 
 void bcore_init()
 {
-    bcore_init_library( bcore_signal );
+    bcore_register_signal_handler( NULL );
+}
+
+vd_t bcore_global_signal_handler( const bcore_signal_s* signal )
+{
+    return bcore_signal_s_broadcast
+    (
+        signal,
+        ( bcore_fp_signal_handler* )signal_handler_arr_g->data,
+        signal_handler_arr_g->size
+    );
+}
+
+vd_t bcore_run_signal_selftest( tp_t target, vd_t object )
+{
+    bcore_signal_s signal = bcore_signal_init( target, TYPEOF_selftest, object );
+    return bcore_global_signal_handler( &signal );
 }
 
 void bcore_down( bl_t verbose )
 {
-    if( !signal_arr_g ) return;
+    if( !signal_handler_arr_g ) return;
 
     bcore_mutex_lock( &mutex );
-    if( !signal_arr_g ) ERR( "Shutdown race condition." );
+    if( !signal_handler_arr_g ) ERR( "Shutdown race condition." );
+
+    bcore_signal_s signal_down1 = bcore_signal_init( TYPEOF_all, TYPEOF_down1, NULL );
+    bcore_signal_s signal_down0 = bcore_signal_init( TYPEOF_all, TYPEOF_down0, NULL );
 
     // shut down all but first library in reverse order
-    for( sz_t i = signal_arr_g->size - 1; i > 0; i-- )
+    for( sz_t i = signal_handler_arr_g->size - 1; i > 0; i-- )
     {
-        bcore_fp_signal signal = ( bcore_fp_signal )signal_arr_g->data[ i ];
-        signal( typeof( "all" ), typeof( "down1" ), NULL );
-        signal( typeof( "all" ), typeof( "down0" ), NULL );
+        ( ( bcore_fp_signal_handler )signal_handler_arr_g->data[ i ] )( &signal_down1 );
+        ( ( bcore_fp_signal_handler )signal_handler_arr_g->data[ i ] )( &signal_down0 );
     }
-    bcore_arr_fp_s_discard( signal_arr_g );
-    signal_arr_g = NULL;
+
+    bcore_arr_fp_s_discard( signal_handler_arr_g );
+    signal_handler_arr_g = NULL;
 
     bcore_mutex_unlock( &mutex );
     bcore_mutex_down( &mutex );
 
-    bcore_signal( typeof( "all" ), typeof( "down1" ), &verbose );
+    bcore_signal_handler( &signal_down1 );
 
     if( verbose )
     {
@@ -90,6 +129,6 @@ void bcore_down( bl_t verbose )
         bcore_msg( "Total ................. % 6zu\n", space );
     }
 
-    bcore_signal( typeof( "all" ), typeof( "down0" ), &verbose ); // down 0 shuts down critical services
+    bcore_signal_handler( &signal_down0 );
 }
 

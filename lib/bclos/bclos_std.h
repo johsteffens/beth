@@ -1,4 +1,6 @@
-/** Copyright 2017 Johannes Bernhard Steffens
+/** List of most frequently used headers by dependent code */
+
+/** Copyright 2018 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,14 +15,16 @@
  *  limitations under the License.
  */
 
-#ifndef BCLOS_CLOSURES_H
-#define BCLOS_CLOSURES_H
+#ifndef BCLOS_STD_H
+#define BCLOS_STD_H
 
-#include "bcore_types.h"
-#include "bcore_features.h"
+#include "bcore_std.h"
+#include "bclos_arguments.h"
+#include "bclos_closures.h"
+#include "bclos_frame.h"
+#include "bclos_quicktypes.h"
+#include "bclos_signal.h"
+#include "bclos_signature.h"
+#include "bclos_spect_closure.h"
 
-/**********************************************************************************************************************/
-
-vd_t bclos_closures_signal_handler( const bcore_signal_s* o );
-
-#endif // BCLOS_CLOSURES_H
+#endif // BCLOS_STD_H

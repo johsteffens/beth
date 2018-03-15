@@ -52,7 +52,7 @@ BCORE_DECLARE_FUNCTIONS_OBJ( bclos_address_s )
 
 bclos_address_s* bclos_address_s_create_tp( tp_t name );
 
-vd_t bclos_frame_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bclos_frame_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 

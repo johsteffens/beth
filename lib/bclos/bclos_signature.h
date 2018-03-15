@@ -63,7 +63,7 @@ bclos_signature_s* bclos_signature_s_parse_from_sc( sc_t sc );
 
 /**********************************************************************************************************************/
 
-vd_t bclos_signature_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bclos_signature_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 

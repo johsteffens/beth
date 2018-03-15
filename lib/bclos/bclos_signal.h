@@ -22,6 +22,6 @@
 #include "bcore_features.h"
 
 /// broadcasts a signal within the library
-vd_t bclos_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bclos_signal_handler( const bcore_signal_s* o );
 
 #endif  // BCLOS_SIGNAL_H

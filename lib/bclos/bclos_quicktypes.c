@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_st.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect_inst.h"

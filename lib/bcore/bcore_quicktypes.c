@@ -106,6 +106,16 @@ static sr_s object_typelist()
     bcore_array_q_push_sc( &list, "bcore_arr_sr_s" );
     bcore_array_q_push_sc( &list, "bcore_name_s" );
     bcore_array_q_push_sc( &list, "bcore_name_map_s" );
+
+    // signals
+    bcore_array_q_push_sc( &list, "all" );
+    bcore_array_q_push_sc( &list, "none" );
+    bcore_array_q_push_sc( &list, "init0" );
+    bcore_array_q_push_sc( &list, "init1" );
+    bcore_array_q_push_sc( &list, "down0" );
+    bcore_array_q_push_sc( &list, "down1" );
+    bcore_array_q_push_sc( &list, "selftest" );
+
     bcore_array_q_sort( &list, 0, -1, 1 );
     return list;
 }

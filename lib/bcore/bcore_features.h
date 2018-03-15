@@ -80,7 +80,8 @@ typedef sr_s ( *bcore_fp_interpret )( vc_t o,           sr_s src ); // construct
 /**********************************************************************************************************************/
 
 /// rudimentary signaling (the actual meaning of arguments and return type is defined by the usage context)
-typedef vd_t ( *bcore_fp_signal )( tp_t target, tp_t signal, vd_t object );
+typedef struct bcore_signal_s bcore_signal_s;
+typedef vd_t ( *bcore_fp_signal_handler )( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 

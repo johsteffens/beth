@@ -14,7 +14,7 @@
  */
 
 /** Array Perspective
- *  The array perspective addresses the first array element of an object and provideS array
+ *  The array perspective addresses the first array element of an object and provides array
  *  related functionality.
  *  'size'  specifies the number of valid elements in the array
  *  'space' represents internally preallocated memory area.
@@ -327,6 +327,6 @@ void bcore_array_q_reorder              ( const sr_s* o, const bcore_arr_sz_s* o
 bcore_arr_sz_s* bcore_array_q_create_sorted_order(   const sr_s* o, sz_t start, sz_t end, s2_t direction );
 bcore_arr_sz_s* bcore_array_q_create_sorted_order_f( const sr_s* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 
-vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_spect_array_signal_handler( const bcore_signal_s* o );
 
 #endif

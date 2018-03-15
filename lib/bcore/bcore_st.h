@@ -261,6 +261,6 @@ sz_t st_s_parse_efa( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
 /// constructs a double-line with a visible position indicator (useful for context messages/warnings/errors with highlighted position)
 st_s* st_s_show_line_context( const st_s* o, sz_t pos );
 
-vd_t bcore_st_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_st_signal_handler( const bcore_signal_s* o );
 
 #endif //BCORE_ST_H

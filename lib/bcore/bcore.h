@@ -18,11 +18,17 @@
 
 #include "bcore_features.h"
 
-/// Initializes library bcore only (need not be called in case bcore_init_library is used)
+/// Initializes library bcore only (need not be called in case bcore_register_signal_handler is used)
 void bcore_init();
 
-/// Initializes library given by signal (reentrant);
-void bcore_init_library( bcore_fp_signal signal );
+/// Registers signal handler and initializes targets
+void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler );
+
+/// signal handler for all registered libraries (do not send init or down signals by this function)
+vd_t bcore_global_signal_handler( const bcore_signal_s* signal );
+
+/// runs selftest on target
+vd_t bcore_run_signal_selftest( tp_t target, vd_t object );
 
 /// Global closer for all libraries
 void bcore_down( bl_t verbose );

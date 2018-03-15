@@ -27,11 +27,16 @@
 #include "bcore_spect_array.h"
 #include "bcore_spect_source.h"
 #include "bcore_spect_sink.h"
+#include "bcore_spect_interpreter.h"
+#include "bcore_spect_translator.h"
 #include "bcore_txt_ml.h"
 #include "bcore_bin_ml.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_life.h"
 #include "bcore_sinks.h"
 #include "bcore_sources.h"
+#include "bcore_arr.h"
+#include "bcore_hmap.h"
+#include "bcore_hmap_tp_sr.h"
 
 #endif // BCORE_STD_H

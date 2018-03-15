@@ -16,15 +16,25 @@
 #include "bclos_objects.h"
 #include "bclos_quicktypes.h"
 #include "bcore_trait.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 
-vd_t bclos_objects_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bclos_objects_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bclos_objects" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bclos_objects" ) ) )
     {
+        case TYPEOF_init1:
+        {
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

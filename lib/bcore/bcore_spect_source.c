@@ -18,7 +18,7 @@
 #include "bcore_flect.h"
 #include "bcore_spect.h"
 #include "bcore_trait.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 
 #define NPX( name ) bcore_source_##name
 
@@ -282,14 +282,23 @@ void NPX(q_parse_err_fa)( const sr_s* o, sc_t f, ...       ) { va_list a; va_sta
 
 /**********************************************************************************************************************/
 
-vd_t bcore_spect_source_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_spect_source" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_source" ) ) )
     {
-        source_s_define_trait();
-        bcore_flect_define_creator( typeof( "bcore_source_s"  ), source_s_create_self  );
+        case TYPEOF_init1:
+        {
+            source_s_define_trait();
+            bcore_flect_define_creator( typeof( "bcore_source_s"  ), source_s_create_self  );
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

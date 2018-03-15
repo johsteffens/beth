@@ -219,7 +219,7 @@ bl_t                 bcore_via_q_iis_array     ( const sr_s* o, sz_t index );
 bl_t                 bcore_via_q_iis_static    ( const sr_s* o, sz_t index );
 bl_t                 bcore_via_q_iis_link      ( const sr_s* o, sz_t index );
 
-vd_t bcore_spect_via_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 // testing, debugging

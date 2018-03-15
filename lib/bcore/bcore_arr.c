@@ -14,11 +14,12 @@
  */
 
 #include "bcore_arr.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_spect_inst.h"
 #include "bcore_spect_array.h"
 #include "bcore_ref.h"
 #include "bcore_spect_compare.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 // bcore_arr_sz_s
@@ -1129,28 +1130,33 @@ st_s* bcore_arr_st_selftest( void )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_arr_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_arr_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_arr" ) ) return NULL;
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_arr" ) ) )
+    {
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "bcore_arr_sz_s" ), arr_sz_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_arr_u3_s" ), arr_u3_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_arr_tp_s" ), arr_tp_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_arr_st_s" ), arr_st_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_arr_vd_s" ), arr_vd_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_arr_fp_s" ), arr_fp_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_arr_sr_s" ), arr_sr_s_create_self );
+        }
+        break;
 
-    if( signal == typeof( "init1" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_arr_sz_s" ), arr_sz_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_arr_u3_s" ), arr_u3_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_arr_tp_s" ), arr_tp_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_arr_st_s" ), arr_st_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_arr_vd_s" ), arr_vd_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_arr_fp_s" ), arr_fp_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_arr_sr_s" ), arr_sr_s_create_self );
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        st_s* log = st_s_create();
-        st_s_push_st_d( log, bcore_arr_sz_selftest() );
-        st_s_push_st_d( log, bcore_arr_st_selftest() );
-        return log;
+        case TYPEOF_selftest:
+        {
+            st_s* log = st_s_create();
+            st_s_push_st_d( log, bcore_arr_sz_selftest() );
+            st_s_push_st_d( log, bcore_arr_st_selftest() );
+            return log;
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;
 }
-

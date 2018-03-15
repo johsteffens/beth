@@ -74,7 +74,7 @@ void bcore_bin_ml_transfer_test( sr_s obj );
 
 /**********************************************************************************************************************/
 
-vd_t bcore_bin_ml_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_bin_ml_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_BIN_ML_H
 

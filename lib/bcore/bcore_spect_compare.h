@@ -65,6 +65,6 @@ st_s* bcore_diff_aware( vc_t obj1, vc_t obj2 );
 st_s* bcore_diff_sr( sr_s obj1, sr_s obj2 );
 st_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 );
 
-vd_t bcore_spect_compare_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_spect_compare_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_SPECT_COMPARE_H

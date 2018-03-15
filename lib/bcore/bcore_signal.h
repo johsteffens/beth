@@ -20,11 +20,34 @@
  */
 
 #include "bcore_features.h"
+#include "bcore_quicktypes.h"
+
+typedef struct bcore_signal_s
+{
+    tp_t target;
+    tp_t type;
+    vd_t object;
+} bcore_signal_s;
+
+void bcore_signal_s_init( bcore_signal_s* o );
+void bcore_signal_s_down( bcore_signal_s* o );
+void bcore_signal_s_copy( bcore_signal_s* o, const bcore_signal_s* src );
+bcore_signal_s* bcore_signal_s_create();
+void            bcore_signal_s_discard( bcore_signal_s* o);
+bcore_signal_s* bcore_signal_s_clone( const bcore_signal_s* o );
+
+bcore_signal_s bcore_signal_init( tp_t target, tp_t type, vd_t object );
+
+/// returns type for switching statement in case target matches; returns TYPEOF_none otherwise;
+tp_t bcore_signal_s_switch_type( const bcore_signal_s* o, tp_t target );
+
+/**********************************************************************************************************************/
 
 /// broadcasts a signal to specified signal handlers
-vd_t bcore_signal_broadcast( bcore_fp_signal* arr, sz_t size, tp_t target, tp_t signal, vd_t object );
+vd_t bcore_signal_s_broadcast( const bcore_signal_s* o, bcore_fp_signal_handler* arr, sz_t size );
 
-/// broadcasts a signal to this library and all dependents
-vd_t bcore_signal( tp_t target, tp_t signal, vd_t object );
+/// signal handler hub for this library
+vd_t bcore_signal_handler( const bcore_signal_s* o );
+
 
 #endif  // BCORE_SIGNAL_H

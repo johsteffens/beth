@@ -18,6 +18,7 @@
 #include "bcore_st.h"
 #include "bcore_threads.h"
 #include "bcore_hmap.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 // hash map
@@ -125,26 +126,43 @@ void bcore_function_remove( tp_t t )
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_function_manager_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_function_manager_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_function_manager" ) ) return NULL;
-    if( signal == typeof( "init0" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_function_manager" ) ) )
     {
-        function_manager_open();
-    }
-    else if( signal == typeof( "down0" ) )
-    {
-        if( object && ( *( bl_t* )object ) )
+        case TYPEOF_init0:
         {
-            sz_t space = bcore_tbman_granted_space();
-            function_manager_close();
-            bcore_msg( "  function manager .... % 6zu\n", space - bcore_tbman_granted_space() );
+            function_manager_open();
         }
-        else
+        break;
+
+        case TYPEOF_init1:
         {
-            function_manager_close();
         }
+        break;
+
+        case TYPEOF_down0:
+        {
+            if( o->object && ( *( bl_t* )o->object ) )
+            {
+                sz_t space = bcore_tbman_granted_space();
+                function_manager_close();
+                bcore_msg( "  function manager .... % 6zu\n", space - bcore_tbman_granted_space() );
+            }
+            else
+            {
+                function_manager_close();
+            }
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
+
     return NULL;
 }
-

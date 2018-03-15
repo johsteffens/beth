@@ -58,6 +58,6 @@ vd_t bcore_life_s_push_aware(   bcore_life_s* o,               vd_t object ); //
 vd_t bcore_life_s_push_free(    bcore_life_s* o,               vd_t object ); // uses bcore_free as discard function
 vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type                 ); // creates new object and manages its lifetime
 
-vd_t bcore_life_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_LIFE_H

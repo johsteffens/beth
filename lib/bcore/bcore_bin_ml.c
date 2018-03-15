@@ -22,7 +22,7 @@
 #include "bcore_spect_sink.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_spect_compare.h"
 #include "bcore_spect.h"
 
@@ -331,20 +331,24 @@ static st_s* bin_ml_selftest( void )
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_bin_ml_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_bin_ml_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_bin_ml" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_bin_ml" ) ) )
     {
-        bcore_flect_define_creator( typeof( "bcore_bin_ml_translator_s"  ), translator_s_create_self  );
-        bcore_flect_define_creator( typeof( "bcore_bin_ml_interpreter_s" ), interpreter_s_create_self );
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        return bin_ml_selftest();
-    }
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "bcore_bin_ml_translator_s"  ), translator_s_create_self  );
+            bcore_flect_define_creator( typeof( "bcore_bin_ml_interpreter_s" ), interpreter_s_create_self );
+        }
+        break;
 
+        case TYPEOF_selftest:
+        {
+            return bin_ml_selftest();
+        }
+        break;
+
+        default: break;
+    }
     return NULL;
 }
-

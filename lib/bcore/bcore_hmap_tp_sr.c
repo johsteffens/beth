@@ -18,7 +18,7 @@
 #include "bcore_spect_inst.h"
 #include "bcore_spect_compare.h"
 #include "bcore_spect_array.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include <time.h>
 
 /**********************************************************************************************************************/
@@ -361,7 +361,6 @@ static bcore_flect_self_s* hmap_tp_sr_s_create_self( void )
 // selftest
 
 #include <time.h>
-#include "bcore_quicktypes.h"
 
 static st_s* hmap_tp_sr_s_status( bcore_hmap_tp_sr_s* o )
 {
@@ -508,18 +507,24 @@ static st_s* hmap_tp_sr_selftest( void )
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_hmap_tp_sr_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_hmap_tp_sr_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_hmap_tp_sr" ) ) return NULL;
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_hmap_tp_sr" ) ) )
+    {
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "bcore_hnode_tp_sr_s" ), hnode_tp_sr_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_hmap_tp_sr_s"  ), hmap_tp_sr_s_create_self  );
+        }
+        break;
 
-    if( signal == typeof( "init1" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_hnode_tp_sr_s" ), hnode_tp_sr_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_hmap_tp_sr_s"  ), hmap_tp_sr_s_create_self  );
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        return hmap_tp_sr_selftest();
+        case TYPEOF_selftest:
+        {
+            return hmap_tp_sr_selftest();
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

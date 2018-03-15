@@ -15,7 +15,7 @@
 
 #include "bcore_sources.h"
 #include "bcore_spect_inst.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
@@ -936,22 +936,27 @@ static st_s* sources_selftest( void )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_sources_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_sources_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_sources" ) ) return NULL;
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_sources" ) ) )
+    {
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "bcore_source_string_s"   ), string_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_source_buffer_s"   ), buffer_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_source_file_s"     ), file_s_create_self   );
+            bcore_flect_define_creator( typeof( "bcore_source_chain_s"    ), chain_s_create_self  );
+        }
+        break;
 
-    if( signal == typeof( "init1" ) )
-    {
-        bcore_flect_define_creator( typeof( "bcore_source_string_s"   ), string_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_source_buffer_s"   ), buffer_s_create_self );
-        bcore_flect_define_creator( typeof( "bcore_source_file_s"     ), file_s_create_self   );
-        bcore_flect_define_creator( typeof( "bcore_source_chain_s"    ), chain_s_create_self  );
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        return sources_selftest();
+        case TYPEOF_selftest:
+        {
+            return sources_selftest();
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;
 }
-

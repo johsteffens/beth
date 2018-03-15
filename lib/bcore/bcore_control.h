@@ -19,6 +19,7 @@
 #include <stdarg.h>
 #include "bcore_first.h"
 #include "bcore_types.h"
+#include "bcore_features.h"
 
 /**
  * Collection of low-level functions and macros.
@@ -195,7 +196,7 @@ static inline u2_t bcore_fnv_hash_data_u2( vc_t data, sz_t size ) { return bcore
 
 /**********************************************************************************************************************/
 
-vd_t bcore_control_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 /// Macros

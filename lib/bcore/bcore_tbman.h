@@ -170,6 +170,6 @@ void bcore_tbman_s_instance_disgnostics();
 /**********************************************************************************************************************/
 /// Signal
 
-vd_t bcore_tbman_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_tbman_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_TBMAN_H

@@ -46,61 +46,75 @@
 #include "bcore_bin_ml.h"
 #include "bcore_arr.h"
 
-vd_t bcore_signal_broadcast( bcore_fp_signal* arr, sz_t size, tp_t target, tp_t signal, vd_t object )
+BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
+
+tp_t bcore_signal_s_switch_type( const bcore_signal_s* o, tp_t target )
+{
+    if( ( o->target == TYPEOF_all ) || ( o->target == target ) ) return o->type;
+    return TYPEOF_none;
+}
+
+/**********************************************************************************************************************/
+
+vd_t bcore_signal_s_broadcast( const bcore_signal_s* o, bcore_fp_signal_handler* arr, sz_t size )
 {
     vd_t ret = NULL;
 
-    if( signal == typeof( "down0" ) || signal == typeof( "down1" ) )
+    if( o->type == TYPEOF_down0 || o->type == TYPEOF_down1 )
     {
-        for( sz_t i = size; i > 0; i-- ) if( ( ret = arr[ i - 1 ]( target, signal, object ) ) ) return ret;
+        for( sz_t i = size; i > 0; i-- ) if( ( ret = arr[ i - 1 ]( o ) ) ) return ret;
     }
     else
     {
-        for( sz_t i = 0; i < size; i++ ) if( ( ret = arr[ i     ]( target, signal, object ) ) ) return ret;
+        for( sz_t i = 0; i < size; i++ ) if( ( ret = arr[ i     ]( o ) ) ) return ret;
     }
 
     return ret;
 }
 
-vd_t bcore_signal( tp_t target, tp_t signal, vd_t object )
+bcore_signal_s bcore_signal_init( tp_t target, tp_t type, vd_t object )
 {
-    bcore_fp_signal arr[] =
-    {
-        /// system critical items (keep order)
-        bcore_tbman_signal,
-        bcore_tp_signal,
-        bcore_name_manager_signal,
-        bcore_function_manager_signal,
-        bcore_flect_signal,
-        bcore_trait_signal,
-        bcore_spect_signal,
-        bcore_sc_signal,
-        bcore_st_signal,
-
-        /// other items
-        bcore_name_signal,
-        bcore_btree_signal,
-        bcore_control_signal,
-        bcore_hmap_signal,
-        bcore_hmap_tp_sr_signal,
-        bcore_life_signal,
-        bcore_ref_signal,
-        bcore_sinks_signal,
-        bcore_sources_signal,
-        bcore_spect_array_signal,
-        bcore_spect_compare_signal,
-        bcore_spect_inst_signal,
-        bcore_spect_interpreter_signal,
-        bcore_spect_sink_signal,
-        bcore_spect_source_signal,
-        bcore_spect_translator_signal,
-        bcore_spect_via_signal,
-        bcore_threads_signal,
-        bcore_txt_ml_signal,
-        bcore_bin_ml_signal,
-        bcore_arr_signal,
-    };
-
-    return bcore_signal_broadcast( arr, sizeof( arr ) / sizeof( bcore_fp_signal ), target, signal, object );
+    return ( bcore_signal_s ){ .target = target, .type = type, .object = object };
 }
 
+vd_t bcore_signal_handler( const bcore_signal_s* o )
+{
+    bcore_fp_signal_handler arr[] =
+    {
+        /// system critical items (keep order)
+        bcore_tbman_signal_handler,
+        bcore_tp_signal_handler,
+        bcore_name_manager_signal_handler,
+        bcore_function_manager_signal_handler,
+        bcore_flect_signal_handler,
+        bcore_trait_signal_handler,
+        bcore_spect_signal_handler,
+        bcore_sc_signal_handler,
+        bcore_st_signal_handler,
+
+        /// other items
+        bcore_name_signal_handler,
+        bcore_btree_signal_handler,
+        bcore_control_signal_handler,
+        bcore_hmap_signal_handler,
+        bcore_hmap_tp_sr_signal_handler,
+        bcore_life_signal_handler,
+        bcore_ref_signal_handler,
+        bcore_sinks_signal_handler,
+        bcore_sources_signal_handler,
+        bcore_spect_array_signal_handler,
+        bcore_spect_compare_signal_handler,
+        bcore_spect_inst_signal_handler,
+        bcore_spect_interpreter_signal_handler,
+        bcore_spect_sink_signal_handler,
+        bcore_spect_source_signal_handler,
+        bcore_spect_translator_signal_handler,
+        bcore_spect_via_signal_handler,
+        bcore_threads_signal_handler,
+        bcore_txt_ml_signal_handler,
+        bcore_bin_ml_signal_handler,
+        bcore_arr_signal_handler,
+    };
+
+    return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );
+}

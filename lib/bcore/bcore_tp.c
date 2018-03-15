@@ -15,22 +15,22 @@
 
 #include "bcore_tp.h"
 #include "bcore_name_manager.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 
-vd_t bcore_tp_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_tp_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_tp" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_tp" ) ) )
     {
-        return NULL;
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        return NULL;
-    }
+        case TYPEOF_init1:
+        {
+            return NULL;
+        }
+        break;
 
+        default: break;
+    }
     return NULL;
 }
 

@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#include "bcore_quicktypes.h"
 #include "bclos_quicktypes.h"
+#include "bcore_signal.h"
 #include "bclos_frame.h"
 
 void bclos_frame_s_init( bclos_frame_s* o )
@@ -103,14 +103,23 @@ BCORE_DEFINE_CREATE_SELF( bclos_address_s, "bclos_address_s = { tp_t name; }" )
 
 /**********************************************************************************************************************/
 
-vd_t bclos_frame_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bclos_frame_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bclos_frame" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bclos_frame" ) ) )
     {
-        bcore_flect_define_creator( typeof( "bclos_address_s" ), bclos_address_s_create_self );
-        bcore_flect_define_creator( typeof( "bclos_frame_s" ), frame_s_create_self );
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "bclos_address_s" ), bclos_address_s_create_self );
+            bcore_flect_define_creator( typeof( "bclos_frame_s" ), frame_s_create_self );
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

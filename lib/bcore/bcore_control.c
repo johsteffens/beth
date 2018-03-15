@@ -17,6 +17,7 @@
 
 #include "bcore_control.h"
 #include "bcore_tbman.h"
+#include "bcore_signal.h"
 
 void bcore_write_fv( FILE* file, sc_t format, va_list args )
 {
@@ -352,7 +353,21 @@ bool bcore_strany( char c, sc_t str )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_control_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_control_signal_handler( const bcore_signal_s* o )
 {
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_control" ) ) )
+    {
+        case TYPEOF_init1:
+        {
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
+    }
     return NULL;
 }

@@ -17,7 +17,7 @@
 #include "bcore_spect_compare.h"
 #include "bcore_spect.h"
 #include "bcore_trait.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 
 #define NPX( name ) bcore_array_##name
 
@@ -1704,18 +1704,24 @@ static st_s* spect_array_selftest( void )
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_spect_array_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_spect_array_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_spect_array" ) ) return NULL;
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_array" ) ) )
+    {
+        case TYPEOF_init1:
+        {
+            array_s_define_trait();
+            bcore_flect_define_creator( typeof( "bcore_array_s"  ), array_s_create_self  );
+        }
+        break;
 
-    if( signal == typeof( "init1" ) )
-    {
-        array_s_define_trait();
-        bcore_flect_define_creator( typeof( "bcore_array_s"  ), array_s_create_self  );
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        return spect_array_selftest();
+        case TYPEOF_selftest:
+        {
+            return spect_array_selftest();
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

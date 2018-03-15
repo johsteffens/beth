@@ -52,6 +52,6 @@ void bclos_procedure_s_def(  bclos_procedure_s* o, bclos_frame_s* frm );
 sr_s bclos_procedure_s_call( bclos_procedure_s* o, bclos_frame_s* frm, const bclos_arguments_s* args );
 sr_s bclos_procedure_s_sig(  const bclos_procedure_s* o );
 
-vd_t bclos_procedure_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bclos_procedure_signal_handler( const bcore_signal_s* o );
 
 #endif // BCLOS_PROCEDURE_H

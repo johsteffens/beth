@@ -21,7 +21,6 @@
 #define BCORE_TXT_ML_H
 
 #include "bcore_flect.h"
-#include "bcore_features.h"
 
 /**********************************************************************************************************************/
 
@@ -69,7 +68,6 @@ sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, 
 sr_s bcore_txt_ml_from_file( sc_t file );
 sr_s bcore_txt_ml_from_string( const st_s* string );
 
-
 /**********************************************************************************************************************/
 // testing, debugging
 
@@ -78,7 +76,7 @@ void bcore_txt_ml_transfer_test( sr_s obj );
 
 /**********************************************************************************************************************/
 
-vd_t bcore_txt_ml_signal( tp_t target, tp_t signal, vd_t object );
+vd_t bcore_txt_ml_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_TXT_ML_H
 

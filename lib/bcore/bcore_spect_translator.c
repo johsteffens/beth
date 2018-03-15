@@ -18,7 +18,7 @@
 #include "bcore_flect.h"
 #include "bcore_spect.h"
 #include "bcore_trait.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 // bcore_translator_s
@@ -102,14 +102,23 @@ void bcore_translate_q( const sr_s* o, sr_s obj, sr_s sink )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_spect_translator_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_spect_translator" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_translator" ) ) )
     {
-        translator_s_define_trait();
-        bcore_flect_define_creator( typeof( "bcore_translator_s"  ), translator_s_create_self  );
+        case TYPEOF_init1:
+        {
+            translator_s_define_trait();
+            bcore_flect_define_creator( typeof( "bcore_translator_s"  ), translator_s_create_self  );
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

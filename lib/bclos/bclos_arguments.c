@@ -21,6 +21,7 @@
 #include "bcore_spect_source.h"
 #include "bcore_life.h"
 #include "bcore_trait.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 
@@ -203,14 +204,23 @@ sr_s bclos_expression_s_run( const bclos_expression_s* o, bclos_frame_s* frm )
 
 /**********************************************************************************************************************/
 
-vd_t bclos_arguments_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bclos_arguments_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bclos_arguments" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bclos_arguments" ) ) )
     {
-        bcore_flect_define_creator( typeof( "bclos_arguments_s"  ), bclos_arguments_s_create_self );
-        bcore_flect_define_creator( typeof( "bclos_expression_s" ), bclos_expression_s_create_self );
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "bclos_arguments_s"  ), bclos_arguments_s_create_self );
+            bcore_flect_define_creator( typeof( "bclos_expression_s" ), bclos_expression_s_create_self );
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

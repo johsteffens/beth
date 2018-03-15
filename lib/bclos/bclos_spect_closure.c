@@ -18,6 +18,7 @@
 #include "bcore_spect_inst.h"
 #include "bcore_spect.h"
 #include "bcore_trait.h"
+#include "bcore_signal.h"
 
 /**********************************************************************************************************************/
 // bclos_closure_s
@@ -149,18 +150,26 @@ sr_s bclos_closure_q_call_na( const sr_s* o, bclos_frame_s* frm, sz_t n, ... )
 
 /**********************************************************************************************************************/
 
-vd_t bclos_spect_closure_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bclos_spect_closure_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bclos_spect_closure" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bclos_spect_closure" ) ) )
     {
-        closure_s_define_trait();
-        bcore_flect_define_creator( typeof( "bclos_closure_s" ), closure_s_create_self );
+        case TYPEOF_init1:
+        {
+            closure_s_define_trait();
+            bcore_flect_define_creator( typeof( "bclos_closure_s" ), closure_s_create_self );
 
-        /// language specific closures
-        bcore_trait_set( typeof( "bclos_language_closure" ), typeof( "bclos_closure" ) );
+            /// language specific closures
+            bcore_trait_set( typeof( "bclos_language_closure" ), typeof( "bclos_closure" ) );
+        }
+        break;
 
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;

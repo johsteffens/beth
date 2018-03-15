@@ -20,8 +20,9 @@
 #include "bcore_tbman.h"
 #include "bcore_name_manager.h"
 #include "bcore_flect.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_life.h"
+#include "bcore_signal.h"
 
 void st_s_init( st_s* o )
 {
@@ -1737,21 +1738,25 @@ static void st_s_quicktest( void )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_st_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_st_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_st" ) ) return NULL;
-
-    if( signal == typeof( "init1" ) )
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_st" ) ) )
     {
-        bcore_flect_define_creator( typeof( "st_s"  ), st_s_create_self  );
-        st_s_quicktest();
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        st_s_quicktest();
-        return NULL;
-    }
+        case TYPEOF_init1:
+        {
+            bcore_flect_define_creator( typeof( "st_s"  ), st_s_create_self  );
+            st_s_quicktest();
+        }
+        break;
 
+        case TYPEOF_selftest:
+        {
+            st_s_quicktest();
+        }
+        break;
+
+        default: break;
+    }
     return NULL;
 }
 

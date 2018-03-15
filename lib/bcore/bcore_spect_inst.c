@@ -14,7 +14,7 @@
  */
 
 #include "bcore_spect_inst.h"
-#include "bcore_quicktypes.h"
+#include "bcore_signal.h"
 #include "bcore_spect.h"
 #include "bcore_trait.h"
 #include "bcore_spect_compare.h"
@@ -1664,21 +1664,26 @@ static st_s* spect_inst_selftest( void )
 /**********************************************************************************************************************/
 // signal
 
-vd_t bcore_spect_inst_signal( tp_t target, tp_t signal, vd_t object )
+vd_t bcore_spect_inst_signal_handler( const bcore_signal_s* o )
 {
-    if( target != typeof( "all" ) && target != typeof( "bcore_spect_inst" ) ) return NULL;
+    switch( bcore_signal_s_switch_type( o, typeof( "bcore_spect_inst" ) ) )
+    {
+        case TYPEOF_init1:
+        {
+            inst_s_define_trait();
+            bcore_flect_define_creator( typeof( "bcore_inst_s"  ), inst_s_create_self  );
+        }
+        break;
 
-    if( signal == typeof( "init1" ) )
-    {
-        inst_s_define_trait();
-        bcore_flect_define_creator( typeof( "bcore_inst_s"  ), inst_s_create_self  );
-    }
-    else if( signal == typeof( "selftest" ) )
-    {
-        return spect_inst_selftest();
+        case TYPEOF_selftest:
+        {
+            return spect_inst_selftest();
+        }
+        break;
+
+        default: break;
     }
 
     return NULL;
 }
-
 
