@@ -34,12 +34,11 @@ static void init_once()
 //    setlocale( LC_ALL, "C" );
 
     /// bcore-library initialization
+    bcore_signal_s signal_init0 = bcore_signal_init( TYPEOF_all, TYPEOF_init0, NULL );
+    bcore_signal_s signal_init1 = bcore_signal_init( TYPEOF_all, TYPEOF_init1, NULL );
 
-    bcore_signal_s signal;
-    signal = bcore_signal_init( typeof( "all" ), typeof( "init0" ), NULL );
-    bcore_signal_handler( &signal );
-    signal = bcore_signal_init( typeof( "all" ), typeof( "init1" ), NULL );
-    bcore_signal_handler( &signal );
+    bcore_signal_handler( &signal_init0 );
+    bcore_signal_handler( &signal_init1 );
 
     bcore_mutex_init( &mutex );
     signal_handler_arr_g = bcore_arr_fp_s_create();
@@ -57,6 +56,8 @@ void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler )
     init();
     if( signal_handler )
     {
+        bcore_signal_s signal_init0 = bcore_signal_init( TYPEOF_all, TYPEOF_init0, NULL );
+        bcore_signal_s signal_init1 = bcore_signal_init( TYPEOF_all, TYPEOF_init1, NULL );
         bcore_mutex_lock( &mutex );
         bl_t not_registered =
             bcore_arr_fp_s_find( signal_handler_arr_g, 0, -1, ( fp_t )signal_handler )
@@ -64,11 +65,8 @@ void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler )
 
         if( not_registered )
         {
-            bcore_signal_s signal;
-            signal = bcore_signal_init( typeof( "all" ), typeof( "init0" ), NULL );
-            signal_handler( &signal );
-            signal = bcore_signal_init( typeof( "all" ), typeof( "init1" ), NULL );
-            signal_handler( &signal );
+            signal_handler( &signal_init0 );
+            signal_handler( &signal_init1 );
             bcore_arr_fp_s_push( signal_handler_arr_g, ( fp_t )signal_handler );
         }
 
@@ -104,8 +102,8 @@ void bcore_down( bl_t verbose )
     bcore_mutex_lock( &mutex );
     if( !signal_handler_arr_g ) ERR( "Shutdown race condition." );
 
-    bcore_signal_s signal_down1 = bcore_signal_init( TYPEOF_all, TYPEOF_down1, NULL );
-    bcore_signal_s signal_down0 = bcore_signal_init( TYPEOF_all, TYPEOF_down0, NULL );
+    bcore_signal_s signal_down1 = bcore_signal_init( TYPEOF_all, TYPEOF_down1, &verbose );
+    bcore_signal_s signal_down0 = bcore_signal_init( TYPEOF_all, TYPEOF_down0, &verbose );
 
     // shut down all but first library in reverse order
     for( sz_t i = signal_handler_arr_g->size - 1; i > 0; i-- )
