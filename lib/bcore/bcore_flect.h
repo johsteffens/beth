@@ -334,6 +334,30 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
     BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( name ) \
     BCORE_DEFINE_CREATE_SELF( name, def )
 
+#define BCORE_STATIC_ARRAY_S( type, name ) \
+    union \
+    { \
+        bcore_static_array_s name##_arr; \
+        struct \
+        { \
+            type* name##_data; \
+            sz_t name##_size; \
+            sz_t name##_space; \
+        }; \
+    }
+
+#define BCORE_STATIC_LINK_ARRAY_S( type, name ) \
+    union \
+    { \
+        bcore_static_link_array_s name##_arr; \
+        struct \
+        { \
+            type** name##_data; \
+            sz_t name##_size; \
+            sz_t name##_space; \
+        }; \
+    }
+
 /**********************************************************************************************************************/
 
 #endif // BCORE_FLECT_H
