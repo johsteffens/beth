@@ -32,7 +32,7 @@ typedef struct hmap_s
 static void hmap_s_init( hmap_s* o )
 {
     o->map = NULL;
-    bcore_mutex_init( &o->mutex );
+    bcore_mutex_s_init( &o->mutex );
 }
 
 static void hmap_s_down( hmap_s* o )
@@ -41,7 +41,7 @@ static void hmap_s_down( hmap_s* o )
     bcore_hmap_tpfp_s_discard( o->map );
     o->map = NULL;
     bcore_mutex_s_unlock( &o->mutex );
-    bcore_mutex_down( &o->mutex );
+    bcore_mutex_s_down( &o->mutex );
 }
 
 /**********************************************************************************************************************/

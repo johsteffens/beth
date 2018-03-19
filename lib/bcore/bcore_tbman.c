@@ -27,7 +27,6 @@
 #include "bcore_signal.h"
 #include <time.h>
 #include <math.h>
-#include <pthread.h>
 
 /**********************************************************************************************************************/
 // default parameters
@@ -1326,7 +1325,7 @@ static void tbman_s_lost_alignment( struct bcore_tbman_s* o )
 void bcore_tbman_s_init( bcore_tbman_s* o, sz_t pool_size, sz_t min_block_size, sz_t max_block_size, sz_t stepping_method, bl_t full_align )
 {
     bcore_memzero( o, sizeof( *o ) );
-    bcore_mutex_init( &o->mutex );
+    bcore_mutex_s_init( &o->mutex );
 
     o->internal_btree = bcore_btree_vd_s_create( bcore_tbman_external_alloc );
 
@@ -1410,7 +1409,7 @@ void bcore_tbman_s_down( bcore_tbman_s* o )
     bcore_btree_vd_s_discard( o->internal_btree );
 
     tbman_s_unlock( o );
-    bcore_mutex_down( &o->mutex );
+    bcore_mutex_s_down( &o->mutex );
 }
 
 bcore_tbman_s* bcore_tbman_s_create( sz_t pool_size, sz_t min_block_size, sz_t max_block_size, sz_t stepping_method, bl_t full_align )
@@ -2459,7 +2458,7 @@ static st_s* tbman_s_memtest( void )
     return log;
 }
 
-vd_t tbman_s_thread_func( vd_t o )
+vd_t tbman_s_thread_func( vd_t arg )
 {
     st_s* log = st_s_create();
     sz_t table_size = 10000;
@@ -2475,45 +2474,40 @@ static st_s* tbman_s_thread_test( void )
 {
     st_s* log = st_s_create();
 
-    pthread_t th1, th2, th3, th4;
-    pthread_create( &th1, NULL, tbman_s_thread_func, &th1 );
+    bcore_thread_s th = bcore_thread_call( tbman_s_thread_func, NULL );
 
     {
-        st_s* log_l = NULL;
-        pthread_join( th1, ( vd_t* )&log_l );
+        st_s* log_l = bcore_thread_join( th );
         st_s_push_fa( log, "single thread:\n#<st_s*>\n", log_l );
         st_s_discard( log_l );
     }
 
-    pthread_create( &th1, NULL, tbman_s_thread_func, &th1 );
-    pthread_create( &th2, NULL, tbman_s_thread_func, &th2 );
-    pthread_create( &th3, NULL, tbman_s_thread_func, &th3 );
-    pthread_create( &th4, NULL, tbman_s_thread_func, &th4 );
+    bcore_thread_s th1 = bcore_thread_call( tbman_s_thread_func, NULL );
+    bcore_thread_s th2 = bcore_thread_call( tbman_s_thread_func, NULL );
+    bcore_thread_s th3 = bcore_thread_call( tbman_s_thread_func, NULL );
+    bcore_thread_s th4 = bcore_thread_call( tbman_s_thread_func, NULL );
+
 
     {
-        st_s* log_l = NULL;
-        pthread_join( th1, ( vd_t* )&log_l );
+        st_s* log_l = bcore_thread_join( th1 );
         st_s_push_fa( log, "thread1:\n#<st_s*>\n", log_l );
         st_s_discard( log_l );
     }
 
     {
-        st_s* log_l = NULL;
-        pthread_join( th2, ( vd_t* )&log_l );
+        st_s* log_l = bcore_thread_join( th2 );
         st_s_push_fa( log, "thread2:\n#<st_s*>\n", log_l );
         st_s_discard( log_l );
     }
 
     {
-        st_s* log_l = NULL;
-        pthread_join( th3, ( vd_t* )&log_l );
+        st_s* log_l = bcore_thread_join( th3 );
         st_s_push_fa( log, "thread3:\n#<st_s*>\n", log_l );
         st_s_discard( log_l );
     }
 
     {
-        st_s* log_l = NULL;
-        pthread_join( th4, ( vd_t* )&log_l );
+        st_s* log_l = bcore_thread_join( th4 );
         st_s_push_fa( log, "thread4:\n#<st_s*>\n", log_l );
         st_s_discard( log_l );
     }

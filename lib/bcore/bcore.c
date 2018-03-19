@@ -40,7 +40,7 @@ static void init_once()
     bcore_signal_handler( &signal_init0 );
     bcore_signal_handler( &signal_init1 );
 
-    bcore_mutex_init( &mutex );
+    bcore_mutex_s_init( &mutex );
     signal_handler_arr_g = bcore_arr_fp_s_create();
     bcore_arr_fp_s_push( signal_handler_arr_g, ( fp_t )bcore_signal_handler );
 }
@@ -116,7 +116,7 @@ void bcore_down( bl_t verbose )
     signal_handler_arr_g = NULL;
 
     bcore_mutex_s_unlock( &mutex );
-    bcore_mutex_down( &mutex );
+    bcore_mutex_s_down( &mutex );
 
     bcore_signal_handler( &signal_down1 );
 

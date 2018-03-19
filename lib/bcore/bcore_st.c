@@ -1598,7 +1598,7 @@ static bcore_flect_self_s* st_s_create_self( void )
 {
 //  bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "st_s = { aware_t _; private sd_t data; private sz_t size; private sz_t space; }", sizeof( st_s ) );
 
-//  We need to create this reflection manually because self_s_build_parse uses it.
+//  We need to create this reflection manually because bcore_flect_self_s_build_parse_sc uses it.
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "st_s" ), typeof( "bcore_inst" ), sizeof( st_s ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_aware_t, entypeof( "_"  ) ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_sd_t, entypeof( "data"  ) ) )->f_private = true;

@@ -116,7 +116,7 @@ static void system_s_init( system_s* o )
     bcore_hmap_tptp_s_init( &o->type_map );
     bcore_hmap_tpto_s_init( &o->trait_map );
     bcore_hmap_tpto_s_set_type( &o->trait_map, typeof( "bcore_trait_s" ) );
-    bcore_mutex_init( &o->mutex );
+    bcore_mutex_s_init( &o->mutex );
 }
 
 static system_s* system_s_create()
@@ -145,7 +145,7 @@ static void system_s_down( system_s* o )
     bcore_hmap_tpto_s_down( &o->trait_map );
     bcore_hmap_tptp_s_down( &o->type_map );
     bcore_mutex_s_unlock( &o->mutex );
-    bcore_mutex_down( &o->mutex );
+    bcore_mutex_s_down( &o->mutex );
 }
 
 static void system_s_discard( system_s* o )

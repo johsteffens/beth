@@ -47,7 +47,7 @@ static void hmap_s_init( hmap_s* o )
 {
     bcore_arr_vd_s_init(    &o->arr );
     bcore_hmap_u2vd_s_init( &o->map );
-    bcore_mutex_init( &o->mutex );
+    bcore_mutex_s_init( &o->mutex );
 }
 
 static void hmap_s_down( hmap_s* o )
@@ -85,7 +85,7 @@ static void hmap_s_down( hmap_s* o )
     bcore_hmap_u2vd_s_down( &o->map );
     bcore_arr_vd_s_down(    &o->arr );
     bcore_mutex_s_unlock( &o->mutex );
-    bcore_mutex_down( &o->mutex );
+    bcore_mutex_s_down( &o->mutex );
 }
 
 /**********************************************************************************************************************/

@@ -796,7 +796,7 @@ typedef struct creator_map_s
 static void creator_map_s_init( creator_map_s* o )
 {
     o->hmap = bcore_hmap_u2vd_s_create();
-    bcore_mutex_init( &o->mutex );
+    bcore_mutex_s_init( &o->mutex );
 }
 
 static void creator_map_s_down( creator_map_s* o )
@@ -804,7 +804,7 @@ static void creator_map_s_down( creator_map_s* o )
     bcore_mutex_s_lock( &o->mutex );
     bcore_hmap_u2vd_s_discard( o->hmap );
     bcore_mutex_s_unlock( &o->mutex );
-    bcore_mutex_down( &o->mutex );
+    bcore_mutex_s_down( &o->mutex );
 }
 
 static creator_map_s* creator_map_s_create()
@@ -832,7 +832,7 @@ typedef struct self_map_s
 static void self_map_s_init( self_map_s* o )
 {
     o->hmap = bcore_hmap_u2vd_s_create();
-    bcore_mutex_init( &o->mutex );
+    bcore_mutex_s_init( &o->mutex );
 }
 
 static void self_map_s_down( self_map_s* o )
@@ -854,7 +854,7 @@ static void self_map_s_down( self_map_s* o )
         bcore_hmap_u2vd_s_discard( o->hmap );
     }
     bcore_mutex_s_unlock( &o->mutex );
-    bcore_mutex_down( &o->mutex );
+    bcore_mutex_s_down( &o->mutex );
 }
 
 static self_map_s* self_map_s_create()
