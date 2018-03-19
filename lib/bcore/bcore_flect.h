@@ -25,6 +25,7 @@
 
 #include "bcore_first.h"
 #include "bcore_types.h"
+#include "bcore_amoeba.h"
 #include "bcore_control.h"
 #include "bcore_name_manager.h"
 #include "bcore_function_manager.h"
@@ -222,6 +223,8 @@ bcore_flect_item_s* bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flec
 bcore_flect_item_s* bcore_flect_self_s_push_func( bcore_flect_self_s* o, sc_t fname, fp_t func, sc_t type, sc_t name );
 // namespace: function address constructed from object name and function name
 bcore_flect_item_s* bcore_flect_self_s_push_ns_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
+bcore_flect_item_s* bcore_flect_self_s_push_ns_amoeba( bcore_flect_self_s* o, bcore_amoebic_t func, sc_t name );
+
 bcore_flect_item_s* bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name );
 bcore_flect_item_s* bcore_flect_self_s_push_fp_get( bcore_flect_self_s* o, bcore_fp_get func, sc_t name );
 st_s*               bcore_flect_self_s_show( const bcore_flect_self_s* o );

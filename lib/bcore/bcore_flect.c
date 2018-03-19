@@ -570,6 +570,11 @@ bcore_flect_item_s* bcore_flect_self_s_push_ns_func( bcore_flect_self_s* o, fp_t
     return ret;
 }
 
+bcore_flect_item_s* bcore_flect_self_s_push_ns_amoeba( bcore_flect_self_s* o, bcore_amoebic_t func, sc_t name )
+{
+    return bcore_flect_self_s_push_ns_func( o, ( fp_t )func, "ap_t", name );
+}
+
 bcore_flect_item_s* bcore_flect_self_s_push_fp_set( bcore_flect_self_s* o, bcore_fp_set func, sc_t name )
 {
     return bcore_flect_self_s_push_ns_func( o, (fp_t )func, "bcore_fp_set", name );

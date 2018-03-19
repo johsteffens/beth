@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-/** threads.h, threads.c principally pthreads-functionality according to
+/** threads.h, threads.c represents pthreads-objects according to
  *  beth coding convention.
  *  Some pthread functionality may also be altered or hidden in view of future
  *  adaptation to platforms without pthread support.
@@ -62,14 +62,19 @@ void               bcore_condition_s_down( bcore_condition_s* o );
 bcore_condition_s* bcore_condition_s_create();
 void               bcore_condition_s_discard( bcore_condition_s* o );
 
-/// waits for trigger from another thread (via signal_one or signal_all); (a mutex-lock must have been obtained before)
-void bcore_condition_s_wait( bcore_condition_s* o, bcore_mutex_s* mutex );
+/** Sleeps until woken from another thread.
+ *  A mutex-lock must have been obtained before. The mutex is unlocked
+ *  by during sleep and re-locked when woken up.
+ *  Beware of spurious wakeups: A wakeup may happen spuriously without
+ *  actual cause from wake-trigger send to this condition.
+ */
+void bcore_condition_s_sleep( bcore_condition_s* o, bcore_mutex_s* mutex );
 
-/// triggers at least one waiting thread
-void bcore_condition_s_trigger_one( bcore_condition_s* o );
+/// wakes at least one thread if sleeping on this condition
+void bcore_condition_s_wake_one( bcore_condition_s* o );
 
-/// triggers all waiting threads
-void bcore_condition_s_trigger_all( bcore_condition_s* o );
+/// wakes all threads sleeping on this condition
+void bcore_condition_s_wake_all( bcore_condition_s* o );
 
 /**********************************************************************************************************************/
 // thread

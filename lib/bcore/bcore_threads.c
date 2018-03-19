@@ -92,19 +92,19 @@ void bcore_condition_s_copy( bcore_condition_s* o, const bcore_condition_s* src 
 
 BCORE_DEFINE_FUNCTIONS_CDC( bcore_condition_s )
 
-void bcore_condition_s_wait( bcore_condition_s* o, bcore_mutex_s* mutex )
+void bcore_condition_s_sleep( bcore_condition_s* o, bcore_mutex_s* mutex )
 {
     int ern = pthread_cond_wait( &o->_cond, &mutex->_mutex );
     if( ern ) ERR( "function returned error %i", ern );
 }
 
-void bcore_condition_s_trigger_one( bcore_condition_s* o )
+void bcore_condition_s_wake_one( bcore_condition_s* o )
 {
     int ern = pthread_cond_signal( &o->_cond );
     if( ern ) ERR( "function returned error %i", ern );
 }
 
-void bcore_condition_s_trigger_all( bcore_condition_s* o )
+void bcore_condition_s_wake_all( bcore_condition_s* o )
 {
     int ern = pthread_cond_broadcast( &o->_cond );
     if( ern ) ERR( "function returned error %i", ern );

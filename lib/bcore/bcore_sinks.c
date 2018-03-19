@@ -27,11 +27,11 @@
 /// bcore_sink_chain_s
 /**********************************************************************************************************************/
 
-static void chain_init_a( vd_t nc )
+static void chain_init_a( bcore_nucleus_s* nc )
 {
-    struct { ap_t a; vc_t p; bcore_sink_chain_s* o; } * nc_l = nc;
-    nc_l->a( nc ); // default
-    nc_l->o->_ = TYPEOF_bcore_sink_chain_s;
+    nc->default_handler( nc );
+    bcore_sink_chain_s* o = nc->client;
+    o->_ = TYPEOF_bcore_sink_chain_s;
 }
 
 void bcore_sink_chain_s_init( bcore_sink_chain_s* o )
@@ -39,11 +39,11 @@ void bcore_sink_chain_s_init( bcore_sink_chain_s* o )
     bcore_inst_typed_init( TYPEOF_bcore_sink_chain_s, o );
 }
 
-static void chain_down_a( vd_t nc )
+static void chain_down_a( bcore_nucleus_s* nc )
 {
-    struct { ap_t a; vc_t p; bcore_sink_chain_s* o; } * nc_l = nc;
-    bcore_sink_chain_s_flush( nc_l->o );
-    nc_l->a( nc ); // default
+    bcore_sink_chain_s* o = nc->client;
+    bcore_sink_chain_s_flush( o );
+    nc->default_handler( nc );
 }
 
 void bcore_sink_chain_s_down( bcore_sink_chain_s* o )
@@ -51,11 +51,10 @@ void bcore_sink_chain_s_down( bcore_sink_chain_s* o )
     bcore_inst_typed_down( TYPEOF_bcore_sink_chain_s, o );
 }
 
-static void chain_copy_a( vd_t nc )
+static void chain_copy_a( bcore_nucleus_s* nc )
 {
-    struct { ap_t a; vc_t p; bcore_sink_chain_s* dst; } * nc_l = nc;
-    nc_l->a( nc ); // default
-    bcore_sink_chain_s* o = nc_l->dst;
+    nc->default_handler( nc );
+    bcore_sink_chain_s* o = nc->client;
     for( sz_t i = 1; i < o->size; i++ ) bcore_sink_aware_set_consumer( o->data[ i ], o->data[ i - 1 ] );
 }
 
@@ -126,9 +125,9 @@ static bcore_flect_self_s* chain_s_create_self( void )
     "}";
 
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_sink_chain_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_init_a, "ap_t", "init" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_down_a, "ap_t", "down" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_copy_a, "ap_t", "copy" );
+    bcore_flect_self_s_push_ns_amoeba( self, chain_init_a, "init" );
+    bcore_flect_self_s_push_ns_amoeba( self, chain_down_a, "down" );
+    bcore_flect_self_s_push_ns_amoeba( self, chain_copy_a, "copy" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_interpret_body_a,   "ap_t", "interpret_body" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_flow_snk,           "bcore_fp_flow_snk",   "flow_snk" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_sink_chain_s_set_consumer, "bcore_sink_fp_set_consumer", "set_consumer" );
@@ -246,11 +245,11 @@ typedef struct bcore_sink_file_s
     FILE* handle;
 } bcore_sink_file_s;
 
-static void file_init_a( vd_t nc )
+static void file_init_a( bcore_nucleus_s* nc )
 {
-    struct { ap_t a; vc_t p; bcore_sink_file_s* o; } * nc_l = nc;
-    nc_l->a( nc ); // default
-    nc_l->o->_ = TYPEOF_bcore_sink_file_s;
+    bcore_sink_file_s* o = nc->client;
+    nc->default_handler( nc );
+    o->_ = TYPEOF_bcore_sink_file_s;
 }
 
 void bcore_sink_file_s_init( bcore_sink_file_s* o )
@@ -258,11 +257,11 @@ void bcore_sink_file_s_init( bcore_sink_file_s* o )
     bcore_inst_typed_init( TYPEOF_bcore_sink_file_s, o );
 }
 
-static void file_down_a( vd_t nc )
+static void file_down_a( bcore_nucleus_s* nc )
 {
-    struct { ap_t a; vc_t p; bcore_sink_file_s* o; } * nc_l = nc;
-    bcore_sink_file_s_close( nc_l->o );
-    nc_l->a( nc ); // default
+    bcore_sink_file_s* o = nc->client;
+    bcore_sink_file_s_close( o );
+    nc->default_handler( nc );
 }
 
 void bcore_sink_file_s_down( bcore_sink_file_s* o )
@@ -270,11 +269,11 @@ void bcore_sink_file_s_down( bcore_sink_file_s* o )
     bcore_inst_typed_down( TYPEOF_bcore_sink_file_s, o );
 }
 
-static void file_copy_a( vd_t nc )
+static void file_copy_a( bcore_nucleus_s* nc )
 {
-    struct { ap_t a; vc_t p; bcore_sink_file_s* dst; } * nc_l = nc;
-    bcore_sink_file_s_close( nc_l->dst );
-    nc_l->a( nc ); // default
+    bcore_sink_file_s* o = nc->client;
+    bcore_sink_file_s_close( o );
+    nc->default_handler( nc );
 }
 
 void bcore_sink_file_s_copy( bcore_sink_file_s* o, const bcore_sink_file_s* src )
@@ -389,9 +388,9 @@ static bcore_flect_self_s* file_s_create_self( void )
     "}";
 
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_sink_file_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_init_a, "ap_t", "init" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_down_a, "ap_t", "down" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_copy_a, "ap_t", "copy" );
+    bcore_flect_self_s_push_ns_amoeba( self, file_init_a, "init" );
+    bcore_flect_self_s_push_ns_amoeba( self, file_down_a, "down" );
+    bcore_flect_self_s_push_ns_amoeba( self, file_copy_a, "copy" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )file_interpret_body_a,   "ap_t", "interpret_body"        );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )file_flow_snk,           "bcore_fp_flow_snk", "flow_snk" );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_sink_file_s_flush, "bcore_sink_fp_flush", "flush"  );
