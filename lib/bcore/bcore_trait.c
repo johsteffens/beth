@@ -108,7 +108,7 @@ typedef struct system_s
 {
     bcore_hmap_tptp_s type_map;
     bcore_hmap_tpto_s trait_map;
-    bcore_mutex_t mutex;
+    bcore_mutex_s mutex;
 } system_s;
 
 static void system_s_init( system_s* o )
@@ -128,7 +128,7 @@ static system_s* system_s_create()
 
 static void system_s_down( system_s* o )
 {
-    bcore_mutex_lock( &o->mutex );
+    bcore_mutex_s_lock( &o->mutex );
 
     /// we explicitly discard here to avoid implicitly creating an instance perspective
     for( sz_t i = 0; i < o->trait_map.size; i++ )
@@ -144,7 +144,7 @@ static void system_s_down( system_s* o )
 
     bcore_hmap_tpto_s_down( &o->trait_map );
     bcore_hmap_tptp_s_down( &o->type_map );
-    bcore_mutex_unlock( &o->mutex );
+    bcore_mutex_s_unlock( &o->mutex );
     bcore_mutex_down( &o->mutex );
 }
 
@@ -160,13 +160,13 @@ static void system_s_discard( system_s* o )
 static system_s* system_s_g = NULL;
 static void system_s_g_init()   { system_s_g = system_s_create(); }
 static void system_s_g_down()   { system_s_discard( system_s_g ); system_s_g = NULL; }
-static void system_s_g_lock()   { assert( system_s_g != NULL ); bcore_mutex_lock( &system_s_g->mutex   ); }
-static void system_s_g_unlock() { bcore_mutex_unlock( &system_s_g->mutex ); }
+static void system_s_g_lock()   { assert( system_s_g != NULL ); bcore_mutex_s_lock( &system_s_g->mutex   ); }
+static void system_s_g_unlock() { bcore_mutex_s_unlock( &system_s_g->mutex ); }
 
 static void trait_manager_open()
 {
-    static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, system_s_g_init );
+    static bcore_once_s flag = bcore_once_init;
+    bcore_once_s_run( &flag, system_s_g_init );
 }
 
 static void trait_manager_close()

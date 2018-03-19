@@ -26,7 +26,7 @@
 /**********************************************************************************************************************/
 
 bcore_arr_fp_s* signal_handler_arr_g = NULL;
-bcore_mutex_t mutex;
+bcore_mutex_s mutex;
 
 static void init_once()
 {
@@ -47,8 +47,8 @@ static void init_once()
 
 static void init()
 {
-    static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, init_once );
+    static bcore_once_s flag = bcore_once_init;
+    bcore_once_s_run( &flag, init_once );
 }
 
 void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler )
@@ -58,7 +58,7 @@ void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler )
     {
         bcore_signal_s signal_init0 = bcore_signal_init( TYPEOF_all, TYPEOF_init0, NULL );
         bcore_signal_s signal_init1 = bcore_signal_init( TYPEOF_all, TYPEOF_init1, NULL );
-        bcore_mutex_lock( &mutex );
+        bcore_mutex_s_lock( &mutex );
         bl_t not_registered =
             bcore_arr_fp_s_find( signal_handler_arr_g, 0, -1, ( fp_t )signal_handler )
                 == signal_handler_arr_g->size;
@@ -70,7 +70,7 @@ void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler )
             bcore_arr_fp_s_push( signal_handler_arr_g, ( fp_t )signal_handler );
         }
 
-        bcore_mutex_unlock( &mutex );
+        bcore_mutex_s_unlock( &mutex );
     }
 }
 
@@ -99,7 +99,7 @@ void bcore_down( bl_t verbose )
 {
     if( !signal_handler_arr_g ) return;
 
-    bcore_mutex_lock( &mutex );
+    bcore_mutex_s_lock( &mutex );
     if( !signal_handler_arr_g ) ERR( "Shutdown race condition." );
 
     bcore_signal_s signal_down1 = bcore_signal_init( TYPEOF_all, TYPEOF_down1, &verbose );
@@ -115,7 +115,7 @@ void bcore_down( bl_t verbose )
     bcore_arr_fp_s_discard( signal_handler_arr_g );
     signal_handler_arr_g = NULL;
 
-    bcore_mutex_unlock( &mutex );
+    bcore_mutex_s_unlock( &mutex );
     bcore_mutex_down( &mutex );
 
     bcore_signal_handler( &signal_down1 );

@@ -16,31 +16,44 @@
 #include "bcore_threads.h"
 #include "bcore_control.h"
 
-void bcore_mutex_init( bcore_mutex_t* o )
+void bcore_mutex_init( bcore_mutex_s* o )
 {
     int ern = pthread_mutex_init( o, NULL );
     if( ern ) ERR( "function returned error %i", ern );
 }
 
-void bcore_mutex_down( bcore_mutex_t* o )
+void bcore_mutex_down( bcore_mutex_s* o )
 {
     int ern = pthread_mutex_destroy( o );
     if( ern ) ERR( "function returned error %i", ern );
 }
 
-void bcore_mutex_lock( bcore_mutex_t* o )
+bcore_mutex_s* bcore_mutex_create()
+{
+    bcore_mutex_s* o = bcore_malloc( sizeof( bcore_mutex_s ) );
+    bcore_mutex_init( o );
+    return o;
+}
+
+void bcore_mutex_discard( bcore_mutex_s* o )
+{
+    bcore_mutex_down( o );
+    bcore_free( o );
+}
+
+void bcore_mutex_s_lock( bcore_mutex_s* o )
 {
     int ern = pthread_mutex_lock( o );
     if( ern ) ERR( "function returned error %i", ern );
 }
 
-void bcore_mutex_unlock( bcore_mutex_t* o )
+void bcore_mutex_s_unlock( bcore_mutex_s* o )
 {
     int ern = pthread_mutex_unlock( o );
     if( ern ) ERR( "function returned error %i", ern );
 }
 
-void bcore_once( bcore_once_t* flag, void (*func)() )
+void bcore_once_s_run( bcore_once_s* flag, void (*func)() )
 {
     int ern = pthread_once( flag, func );
     if( ern ) ERR( "function returned error %i", ern );

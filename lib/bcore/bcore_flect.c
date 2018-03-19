@@ -790,7 +790,7 @@ static bcore_flect_self_s* flect_self_s_create_self( void )
 typedef struct creator_map_s
 {
     bcore_hmap_u2vd_s* hmap;
-    bcore_mutex_t mutex;
+    bcore_mutex_s mutex;
 } creator_map_s;
 
 static void creator_map_s_init( creator_map_s* o )
@@ -801,9 +801,9 @@ static void creator_map_s_init( creator_map_s* o )
 
 static void creator_map_s_down( creator_map_s* o )
 {
-    bcore_mutex_lock( &o->mutex );
+    bcore_mutex_s_lock( &o->mutex );
     bcore_hmap_u2vd_s_discard( o->hmap );
-    bcore_mutex_unlock( &o->mutex );
+    bcore_mutex_s_unlock( &o->mutex );
     bcore_mutex_down( &o->mutex );
 }
 
@@ -826,7 +826,7 @@ static void creator_map_s_discard( creator_map_s* o )
 typedef struct self_map_s
 {
     bcore_hmap_u2vd_s* hmap;
-    bcore_mutex_t mutex;
+    bcore_mutex_s mutex;
 } self_map_s;
 
 static void self_map_s_init( self_map_s* o )
@@ -837,7 +837,7 @@ static void self_map_s_init( self_map_s* o )
 
 static void self_map_s_down( self_map_s* o )
 {
-    bcore_mutex_lock( &o->mutex );
+    bcore_mutex_s_lock( &o->mutex );
     if( o->hmap )
     {
         // We manually detach objects here to keep hmap from invoking
@@ -853,7 +853,7 @@ static void self_map_s_down( self_map_s* o )
         }
         bcore_hmap_u2vd_s_discard( o->hmap );
     }
-    bcore_mutex_unlock( &o->mutex );
+    bcore_mutex_s_unlock( &o->mutex );
     bcore_mutex_down( &o->mutex );
 }
 
@@ -898,8 +898,8 @@ void bcore_discard_flect_maps()
 
 static void flect_open()
 {
-    static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, bcore_create_flect_maps );
+    static bcore_once_s flag = bcore_once_init;
+    bcore_once_s_run( &flag, bcore_create_flect_maps );
 }
 
 static void flect_close()
@@ -912,15 +912,15 @@ bl_t bcore_flect_exists( tp_t type )
     assert( self_map_s_g != NULL );
     bl_t exists = false;
 
-    bcore_mutex_lock( &self_map_s_g->mutex );
+    bcore_mutex_s_lock( &self_map_s_g->mutex );
     exists = bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type );
-    bcore_mutex_unlock( &self_map_s_g->mutex );
+    bcore_mutex_s_unlock( &self_map_s_g->mutex );
     if( exists ) return true;
 
     assert( creator_map_s_g != NULL );
-    bcore_mutex_lock( &creator_map_s_g->mutex );
+    bcore_mutex_s_lock( &creator_map_s_g->mutex );
     exists = bcore_hmap_u2vd_s_exists( creator_map_s_g->hmap, type );
-    bcore_mutex_unlock( &creator_map_s_g->mutex );
+    bcore_mutex_s_unlock( &creator_map_s_g->mutex );
     return exists;
 }
 
@@ -928,18 +928,18 @@ const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
 {
     // try reflection registry
     assert( self_map_s_g != NULL );
-    bcore_mutex_lock( &self_map_s_g->mutex );
+    bcore_mutex_s_lock( &self_map_s_g->mutex );
     vd_t* p_val = bcore_hmap_u2vd_s_get( self_map_s_g->hmap, type );
-    bcore_mutex_unlock( &self_map_s_g->mutex );
+    bcore_mutex_s_unlock( &self_map_s_g->mutex );
     if( p_val ) return *p_val;
 
     // try constructing self by reflection creator
     bcore_flect_self_s* self = NULL;
     assert( creator_map_s_g != NULL );
 
-    bcore_mutex_lock( &creator_map_s_g->mutex );
+    bcore_mutex_s_lock( &creator_map_s_g->mutex );
     fp_t* p_func = bcore_hmap_u2vd_s_getf( creator_map_s_g->hmap, type );
-    bcore_mutex_unlock( &creator_map_s_g->mutex );
+    bcore_mutex_s_unlock( &creator_map_s_g->mutex );
 
 
     if( p_func )
@@ -956,7 +956,7 @@ const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
 
         bcore_flect_self_s_check_integrity( self );
 
-        bcore_mutex_lock( &self_map_s_g->mutex );
+        bcore_mutex_s_lock( &self_map_s_g->mutex );
         bcore_trait_set( self->type, self->trait );
 
         if( bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) )
@@ -971,7 +971,7 @@ const bcore_flect_self_s* bcore_flect_try_self( tp_t type )
             // else: register current self
             bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
         }
-        bcore_mutex_unlock( &self_map_s_g->mutex );
+        bcore_mutex_s_unlock( &self_map_s_g->mutex );
 
         if( discard_self ) bcore_flect_self_s_discard( discard_self );
     }
@@ -1002,11 +1002,11 @@ tp_t bcore_flect_define_self_d( bcore_flect_self_s* self )
     assert( self_map_s_g != NULL );
     bcore_flect_self_s_check_integrity( self );
     tp_t type = self->type;
-    bcore_mutex_lock( &self_map_s_g->mutex );
+    bcore_mutex_s_lock( &self_map_s_g->mutex );
     if( bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) ) ERR( "'%s' (%"PRItp_t") is already defined", ifnameof( type ), type );
     bcore_trait_set( self->type, self->trait );
     bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
-    bcore_mutex_unlock( &self_map_s_g->mutex );
+    bcore_mutex_s_unlock( &self_map_s_g->mutex );
     return self->type;
 }
 
@@ -1015,10 +1015,10 @@ static tp_t flect_define_self_rentrant_d( bcore_flect_self_s* self )
     assert( self_map_s_g != NULL );
     bcore_flect_self_s_check_integrity( self );
     tp_t type = self->type;
-    bcore_mutex_lock( &self_map_s_g->mutex );
+    bcore_mutex_s_lock( &self_map_s_g->mutex );
     bcore_trait_set( self->type, self->trait );
     if( !bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) ) bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
-    bcore_mutex_unlock( &self_map_s_g->mutex );
+    bcore_mutex_s_unlock( &self_map_s_g->mutex );
     return self->type;
 }
 
@@ -1099,10 +1099,10 @@ tp_t bcore_flect_type_parse_fa( sc_t format, ... )
 void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
 {
     assert( creator_map_s_g != NULL );
-    bcore_mutex_lock( &creator_map_s_g->mutex );
+    bcore_mutex_s_lock( &creator_map_s_g->mutex );
     if( bcore_hmap_u2vd_s_exists( creator_map_s_g->hmap, type ) ) ERR( "'%s' (%"PRItp_t") is already defined", ifnameof( type ), type );
     bcore_hmap_u2vd_s_setf( creator_map_s_g->hmap, type, ( fp_t )creator );
-    bcore_mutex_unlock( &creator_map_s_g->mutex );
+    bcore_mutex_s_unlock( &creator_map_s_g->mutex );
 }
 
 /**********************************************************************************************************************/

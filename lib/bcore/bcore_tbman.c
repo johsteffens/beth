@@ -197,7 +197,7 @@ typedef struct token_manager_s
      */
     bl_t aligned;
 
-    bcore_mutex_t* mutex;  // governing mutex
+    bcore_mutex_s* mutex;  // governing mutex
     block_manager_s* parent;
     sz_t parent_index;
 
@@ -226,7 +226,7 @@ static token_manager_s* token_manager_s_create
         sz_t block_size,
         bl_t align,
         down_manager_s* down_manager,
-        bcore_mutex_t* mutex
+        bcore_mutex_s* mutex
     )
 {
     if( ( pool_size & ( pool_size - 1 ) ) != 0 ) ERR( "pool_size %zu is not a power of two", pool_size );
@@ -311,9 +311,9 @@ static void token_manager_s_free_token( token_manager_s* o, u1_t token )
             vd_t down = o->rc_down_arr[ token ];
             if( down )
             {
-                bcore_mutex_unlock( o->mutex );
+                bcore_mutex_s_unlock( o->mutex );
                 ( ( down_s* )down )->_( down, ( u0_t* )o + token * o->block_size );
-                bcore_mutex_lock( o->mutex );
+                bcore_mutex_s_lock( o->mutex );
                 assert( o->down_manager );
                 down_s_discard( o->down_manager, down );
                 o->rc_down_arr[ token ] = NULL;
@@ -381,9 +381,9 @@ static void token_manager_s_release_obj( token_manager_s* o, fp_down_obj down, v
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
     if( !o->rc_count_arr )
     {
-        bcore_mutex_unlock( o->mutex );
+        bcore_mutex_s_unlock( o->mutex );
         down( ptr );
-        bcore_mutex_lock( o->mutex );
+        bcore_mutex_s_lock( o->mutex );
         token_manager_s_free_token( o, token );
         return;
     }
@@ -398,9 +398,9 @@ static void token_manager_s_release_obj( token_manager_s* o, fp_down_obj down, v
 
     if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
     {
-        bcore_mutex_unlock( o->mutex );
+        bcore_mutex_s_unlock( o->mutex );
         down( ptr );
-        bcore_mutex_lock( o->mutex );
+        bcore_mutex_s_lock( o->mutex );
     }
     token_manager_s_free_token( o, token );
 }
@@ -410,9 +410,9 @@ static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, v
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
     if( !o->rc_count_arr )
     {
-        bcore_mutex_unlock( o->mutex );
+        bcore_mutex_s_unlock( o->mutex );
         down( arg, ptr );
-        bcore_mutex_lock( o->mutex );
+        bcore_mutex_s_lock( o->mutex );
         token_manager_s_free_token( o, token );
         return;
     }
@@ -427,9 +427,9 @@ static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, v
 
     if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
     {
-        bcore_mutex_unlock( o->mutex );
+        bcore_mutex_s_unlock( o->mutex );
         down( arg, ptr );
-        bcore_mutex_lock( o->mutex );
+        bcore_mutex_s_lock( o->mutex );
     }
 
     token_manager_s_free_token( o, token );
@@ -440,9 +440,9 @@ static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj dow
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
     if( !o->rc_count_arr )
     {
-        bcore_mutex_unlock( o->mutex );
+        bcore_mutex_s_unlock( o->mutex );
         for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
-        bcore_mutex_lock( o->mutex );
+        bcore_mutex_s_lock( o->mutex );
         token_manager_s_free_token( o, token );
         return;
     }
@@ -457,9 +457,9 @@ static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj dow
 
     if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
     {
-        bcore_mutex_unlock( o->mutex );
+        bcore_mutex_s_unlock( o->mutex );
         for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
-        bcore_mutex_lock( o->mutex );
+        bcore_mutex_s_lock( o->mutex );
     }
     token_manager_s_free_token( o, token );
 }
@@ -469,9 +469,9 @@ static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg dow
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
     if( !o->rc_count_arr )
     {
-        bcore_mutex_unlock( o->mutex );
+        bcore_mutex_s_unlock( o->mutex );
         for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
-        bcore_mutex_lock( o->mutex );
+        bcore_mutex_s_lock( o->mutex );
         token_manager_s_free_token( o, token );
         return;
     }
@@ -486,9 +486,9 @@ static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg dow
 
     if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
     {
-        bcore_mutex_unlock( o->mutex );
+        bcore_mutex_s_unlock( o->mutex );
         for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
-        bcore_mutex_lock( o->mutex );
+        bcore_mutex_s_lock( o->mutex );
     }
 
     token_manager_s_free_token( o, token );
@@ -585,7 +585,7 @@ typedef struct block_manager_s
     fp_lost_alignment lost_alignment_fp; // callback for lost alignment
     bcore_btree_vd_s* internal_btree;
     down_manager_s* down_manager;
-    bcore_mutex_t* mutex;  // governing mutex
+    bcore_mutex_s* mutex;  // governing mutex
 } block_manager_s;
 
 static void block_manager_s_init
@@ -598,7 +598,7 @@ static void block_manager_s_init
         fp_lost_alignment lost_alignment_fp,
         bcore_btree_vd_s* internal_btree,
         down_manager_s* down_manager,
-        bcore_mutex_t* mutex
+        bcore_mutex_s* mutex
     )
 {
     bcore_memzero( o, sizeof( *o ) );
@@ -634,7 +634,7 @@ static block_manager_s* block_manager_s_create
         fp_lost_alignment lost_alignment_fp,
         bcore_btree_vd_s* internal_btree,
         down_manager_s* down_manager,
-        bcore_mutex_t* mutex
+        bcore_mutex_s* mutex
     )
 {
     block_manager_s* o = malloc( sizeof( block_manager_s ) );
@@ -845,7 +845,7 @@ typedef struct external_manager_s
     sz_t              pool_size;
     bl_t              aligned;
     down_manager_s*   down_manager;  // manager of down objects
-    bcore_mutex_t*    mutex;    // governing mutex
+    bcore_mutex_s*    mutex;    // governing mutex
 } external_manager_s;
 
 
@@ -860,7 +860,7 @@ static void external_manager_s_init
         sz_t pool_size,
         bl_t full_align,
         down_manager_s* down_manager,
-        bcore_mutex_t* mutex
+        bcore_mutex_s* mutex
     )
 {
     bcore_memzero( o, sizeof( *o ) );
@@ -935,9 +935,9 @@ static void external_manager_s_free_ext( external_manager_s* o, vd_t ptr, ext_s*
     if( ext->rc_down )
     {
         down_s* down = ext->rc_down;
-        bcore_mutex_unlock( o->mutex );
+        bcore_mutex_s_unlock( o->mutex );
         down->_( down, ptr );
-        bcore_mutex_lock( o->mutex );
+        bcore_mutex_s_lock( o->mutex );
         assert( o->down_manager );
         down_s_discard( o->down_manager, down );
         ext->rc_down = NULL;
@@ -1053,9 +1053,9 @@ static void external_manager_s_release_obj( external_manager_s* o, fp_down_obj d
     {
         if( !ext->rc_down )
         {
-            bcore_mutex_unlock( o->mutex );
+            bcore_mutex_s_unlock( o->mutex );
             down( ptr );
-            bcore_mutex_lock( o->mutex );
+            bcore_mutex_s_lock( o->mutex );
         }
         external_manager_s_free_ext( o, ptr, ext );
     }
@@ -1076,9 +1076,9 @@ static void external_manager_s_release_arg( external_manager_s* o, fp_down_arg d
     {
         if( !ext->rc_down )
         {
-            bcore_mutex_unlock( o->mutex );
+            bcore_mutex_s_unlock( o->mutex );
             down( arg, ptr );
-            bcore_mutex_lock( o->mutex );
+            bcore_mutex_s_lock( o->mutex );
         }
         external_manager_s_free_ext( o, ptr, ext );
     }
@@ -1099,9 +1099,9 @@ static void external_manager_s_release_obj_arr( external_manager_s* o, fp_down_o
     {
         if( !ext->rc_down )
         {
-            bcore_mutex_unlock( o->mutex );
+            bcore_mutex_s_unlock( o->mutex );
             for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
-            bcore_mutex_lock( o->mutex );
+            bcore_mutex_s_lock( o->mutex );
         }
         external_manager_s_free_ext( o, ptr, ext );
     }
@@ -1122,9 +1122,9 @@ static void external_manager_s_release_arg_arr( external_manager_s* o, fp_down_a
     {
         if( !ext->rc_down )
         {
-            bcore_mutex_unlock( o->mutex );
+            bcore_mutex_s_unlock( o->mutex );
             for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
-            bcore_mutex_lock( o->mutex );
+            bcore_mutex_s_lock( o->mutex );
         }
         external_manager_s_free_ext( o, ptr, ext );
     }
@@ -1143,7 +1143,7 @@ typedef struct down_manager_s
     bcore_btree_vd_s* tm_btree; // btree of token managers
     sz_t              pool_size;
     bl_t              aligned;
-    bcore_mutex_t*    mutex;    // governing mutex
+    bcore_mutex_s*    mutex;    // governing mutex
 } down_manager_s;
 
 static void down_manager_s_lost_alignment( external_manager_s* o )
@@ -1151,7 +1151,7 @@ static void down_manager_s_lost_alignment( external_manager_s* o )
     o->aligned = false;
 }
 
-static void down_manager_s_init( down_manager_s* o, sz_t pool_size, bl_t full_align, bcore_mutex_t* mutex )
+static void down_manager_s_init( down_manager_s* o, sz_t pool_size, bl_t full_align, bcore_mutex_s* mutex )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->pool_size = pool_size;
@@ -1305,17 +1305,17 @@ typedef struct bcore_tbman_s
     bcore_btree_vd_s* internal_btree;
     external_manager_s  external_manager;
     down_manager_s down_manager;
-    bcore_mutex_t mutex;
+    bcore_mutex_s mutex;
 } bcore_tbman_s;
 
 static inline void tbman_s_lock( bcore_tbman_s* o )
 {
-    bcore_mutex_lock( &o->mutex );
+    bcore_mutex_s_lock( &o->mutex );
 }
 
 static inline void tbman_s_unlock( bcore_tbman_s* o )
 {
-    bcore_mutex_unlock( &o->mutex );
+    bcore_mutex_s_unlock( &o->mutex );
 }
 
 static void tbman_s_lost_alignment( struct bcore_tbman_s* o )
@@ -1894,8 +1894,8 @@ static void discard_tbman()
 
 static void tbman_open()
 {
-    static bcore_once_t flag = bcore_once_init;
-    bcore_once( &flag, create_tbman );
+    static bcore_once_s flag = bcore_once_init;
+    bcore_once_s_run( &flag, create_tbman );
 }
 
 static void tbman_close()

@@ -20,15 +20,37 @@
 #include "bcore_types.h"
 #include "bcore_features.h"
 
-typedef pthread_mutex_t bcore_mutex_t;
-void bcore_mutex_init(   bcore_mutex_t* o );
-void bcore_mutex_down(   bcore_mutex_t* o );
-void bcore_mutex_lock(   bcore_mutex_t* o );
-void bcore_mutex_unlock( bcore_mutex_t* o );
+/**********************************************************************************************************************/
+// mutex
 
-typedef pthread_once_t bcore_once_t;
+typedef pthread_mutex_t bcore_mutex_s;
+
+void           bcore_mutex_init( bcore_mutex_s* o );
+void           bcore_mutex_down( bcore_mutex_s* o );
+bcore_mutex_s* bcore_mutex_create();
+void           bcore_mutex_discard( bcore_mutex_s* o );
+
+void bcore_mutex_s_lock(   bcore_mutex_s* o );
+void bcore_mutex_s_unlock( bcore_mutex_s* o );
+
+/**********************************************************************************************************************/
+// once
+
+typedef pthread_once_t bcore_once_s;
 #define bcore_once_init PTHREAD_ONCE_INIT
-void bcore_once( bcore_once_t* flag, void (*func)() );
+void bcore_once_s_run( bcore_once_s* flag, void (*func)() );
+
+/**********************************************************************************************************************/
+// condition
+
+typedef pthread_cond_t bcore_condition_s;
+
+void               bcore_condition_init( bcore_condition_s* o );
+void               bcore_condition_down( bcore_condition_s* o );
+bcore_condition_s* bcore_condition_create();
+void               bcore_condition_discard( bcore_condition_s* o );
+
+/**********************************************************************************************************************/
 
 vd_t bcore_threads_signal_handler( const bcore_signal_s* o );
 
