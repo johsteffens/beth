@@ -13,11 +13,7 @@
  *  limitations under the License.
  */
 
-/** threads.h, threads.c represents pthreads-objects according to
- *  beth coding convention.
- *  Some pthread functionality may also be altered or hidden in view of future
- *  adaptation to platforms without pthread support.
- */
+/// Threads handling (based on pthreads)
 
 #ifndef BCORE_THREADS_H
 #define BCORE_THREADS_H
@@ -79,32 +75,63 @@ void bcore_condition_s_wake_all( bcore_condition_s* o );
 /**********************************************************************************************************************/
 // thread
 
+typedef vd_t ( *bcore_fp_thread )( vd_t );
+
+#define TYPEOF_bcore_thread_s typeof( "bcore_thread_s" )
 typedef struct bcore_thread_s
 {
     pthread_t _thread; // do not access directly
+    bl_t      _join;   // true in case thread needs joining
 } bcore_thread_s;
 
 typedef struct bcore_thread_s bcore_pthread_s;
 
 void            bcore_thread_s_init( bcore_thread_s* o );
-void            bcore_thread_s_down( bcore_thread_s* o );
+void            bcore_thread_s_down( bcore_thread_s* o ); // joins automatically if required
 void            bcore_thread_s_copy( bcore_thread_s* o, const bcore_thread_s* src );
 
 bcore_thread_s* bcore_thread_s_create();
 void            bcore_thread_s_discard(     bcore_thread_s* o );
 bcore_thread_s* bcore_thread_s_clone( const bcore_thread_s* o );
 
-/// calls func( arg ) in a new thread
-void bcore_thread_s_call( bcore_thread_s* o, vd_t ( *func )( vd_t ), vd_t arg );
+/** Calls func( arg ) in a new joinable thread
+ *  If o is unjoined, it is joined first.
+ */
+void bcore_thread_s_call( bcore_thread_s* o, bcore_fp_thread func, vd_t arg );
 
-/// waits for func( arg ) to finish and returns its return value
+/** Waits for func( arg ) to finish and returns its return value (reentrant)
+ *  In case the thread has already been joined (or is not joinable), the function
+ *  returns NULL immediately.
+ */
 vd_t bcore_thread_s_join( bcore_thread_s* o );
 
-/// calls func( arg ) in a new thread, which is returned (return value can be discarded or reused without shutting down or re-init)
-bcore_thread_s bcore_thread_call( vd_t ( *func )( vd_t ), vd_t arg );
+/// calls func( arg ) in a new thread, which is returned
+bcore_thread_s bcore_thread_call( bcore_fp_thread func, vd_t arg );
 
-/// waits for func( arg ) to finish and returns its return value; (o can be discarded or reused without shutting down or re-init)
+/// waits for func( arg ) to finish and returns its return value
 vd_t bcore_thread_join( bcore_thread_s o );
+
+/**********************************************************************************************************************/
+// thread array
+
+#define TYPEOF_bcore_thread_arr_s typeof( "bcore_thread_arr_s" )
+typedef struct bcore_thread_arr_s bcore_thread_arr_s;
+
+void bcore_thread_arr_s_init( bcore_thread_arr_s* o );
+void bcore_thread_arr_s_down( bcore_thread_arr_s* o );
+void bcore_thread_arr_s_copy( bcore_thread_arr_s* o, const bcore_thread_arr_s* src );
+bcore_thread_arr_s* bcore_thread_arr_s_create();
+void                bcore_thread_arr_s_discard(     bcore_thread_arr_s* o );
+bcore_thread_arr_s* bcore_thread_arr_s_clone( const bcore_thread_arr_s* o );
+
+sz_t            bcore_thread_arr_s_get_size( const bcore_thread_arr_s* o );
+bcore_thread_s* bcore_thread_arr_s_get_thread( bcore_thread_arr_s* o, sz_t index );
+
+/// pushes a new thread; returns index of pushed thread
+sz_t bcore_thread_arr_s_push_call( bcore_thread_arr_s* o, bcore_fp_thread func, vd_t arg );
+
+/// joins last thread and removes it. returns join-result
+vd_t bcore_thread_arr_s_join_pop( bcore_thread_arr_s* o );
 
 /**********************************************************************************************************************/
 

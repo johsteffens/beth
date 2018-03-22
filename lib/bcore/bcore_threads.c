@@ -17,6 +17,10 @@
 #include "bcore_control.h"
 #include "bcore_flect.h"
 #include "bcore_signal.h"
+#include "bcore_spect_inst.h"
+#include "bcore_spect_array.h"
+
+#include <errno.h>
 
 /**********************************************************************************************************************/
 // mutex
@@ -129,12 +133,13 @@ void bcore_thread_s_init( bcore_thread_s* o )
 
 void bcore_thread_s_down( bcore_thread_s* o )
 {
-    // nothing to do
+    bcore_thread_s_join( o );
 }
 
 void bcore_thread_s_copy( bcore_thread_s* o, const bcore_thread_s* src )
 {
     bcore_memcpy( o, src, sizeof( *o ) );
+    o->_join = false;
 }
 
 BCORE_DEFINE_FUNCTIONS_CDC( bcore_thread_s )
@@ -148,13 +153,15 @@ static bcore_flect_self_s* bcore_thread_s_create_self( void )
     return self;
 }
 
-void bcore_thread_s_call( bcore_thread_s* o, vd_t ( *func)( vd_t ), vd_t arg )
+void bcore_thread_s_call( bcore_thread_s* o, bcore_fp_thread func, vd_t arg )
 {
+    bcore_thread_s_join( o );
     int ern = pthread_create( &o->_thread, NULL, func, arg );
     if( ern ) ERR( "function returned error %i", ern );
+    o->_join = true;
 }
 
-bcore_thread_s bcore_thread_call( vd_t ( *func )( vd_t ), vd_t arg )
+bcore_thread_s bcore_thread_call( bcore_fp_thread func, vd_t arg )
 {
     bcore_thread_s thread;
     bcore_thread_s_init( &thread );
@@ -165,16 +172,67 @@ bcore_thread_s bcore_thread_call( vd_t ( *func )( vd_t ), vd_t arg )
 vd_t bcore_thread_s_join( bcore_thread_s* o )
 {
     vd_t ret = NULL;
-    int ern = pthread_join( o->_thread, &ret );
-    if( ern ) ERR( "function returned error %i", ern );
+    if( o->_join )
+    {
+        int ern = pthread_join( o->_thread, &ret );
+        if( ern == EINVAL )  ERR( "No joinable thread" );
+        if( ern == ESRCH )   ERR( "Invalid thread id" );
+        if( ern == EDEADLK ) ERR( "Deadlock detected." );
+        if( ern ) ERR( "function returned error %i", ern );
+        o->_join = false;
+    }
     return ret;
 }
 
 vd_t bcore_thread_join( bcore_thread_s o )
 {
-    vd_t ret = NULL;
-    int ern = pthread_join( o._thread, &ret );
-    if( ern ) ERR( "function returned error %i", ern );
+    return bcore_thread_s_join( &o );
+}
+
+/**********************************************************************************************************************/
+/// bcore_thread_arr_s
+
+typedef struct bcore_thread_arr_s
+{
+    aware_t _;
+    union
+    {
+        bcore_static_array_s arr;
+        struct
+        {
+            bcore_thread_s* data;
+            sz_t size, space;
+        };
+    };
+} bcore_thread_arr_s;
+
+BCORE_DEFINE_OBJECT_INST( bcore_thread_arr_s, "bcore_thread_arr_s = bcore_inst { aware_t _; bcore_thread_s [] arr; }" )
+
+sz_t bcore_thread_arr_s_get_size( const bcore_thread_arr_s* o )
+{
+    return o->size;
+}
+
+bcore_thread_s* bcore_thread_arr_s_get_thread( bcore_thread_arr_s* o, sz_t index )
+{
+    assert( index < o->size );
+    return &o->data[ index ];
+}
+
+sz_t bcore_thread_arr_s_push_call( bcore_thread_arr_s* o, bcore_fp_thread func, vd_t arg )
+{
+    bcore_thread_s* thread = bcore_thread_s_create();
+    bcore_thread_s_call( thread, func, arg );
+    bcore_array_aware_push( o, sr_tsd( TYPEOF_bcore_thread_s, thread ) );
+    return o->size - 1;
+}
+
+vd_t bcore_thread_arr_s_join_pop( bcore_thread_arr_s* o )
+{
+    if( o->size == 0 ) return NULL;
+    bcore_thread_s* thread = bcore_thread_arr_s_get_thread( o, o->size - 1 );
+    vd_t ret = bcore_thread_s_join( thread );
+    bcore_array_aware_pop( o );
     return ret;
 }
 
@@ -189,6 +247,7 @@ vd_t bcore_threads_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FLECT( bcore_mutex_s );
             BCORE_REGISTER_FLECT( bcore_condition_s );
             BCORE_REGISTER_FLECT( bcore_thread_s );
+            BCORE_REGISTER_FLECT( bcore_thread_arr_s );
         }
         break;
 
