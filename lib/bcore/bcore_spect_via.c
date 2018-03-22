@@ -516,7 +516,7 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     sz_t vitem_arr_size  = 0;
     sz_t vitem_arr_space = 0;
 
-    if( self->body && inst_p->body )
+    if( self->body )
     {
         for( sz_t i = 0; i < self->body->size; i++ )
         {
@@ -525,7 +525,12 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
             if( flect_item->f_hidden                         ) continue; // hidden items are not accessible in via
             if( i == 0 && flect_item->type == TYPEOF_aware_t ) continue; // self-aware type is not accessible in via
 
-            const bcore_inst_item_s* inst_item = bcore_inst_body_s_inst_item_of_flect_item( inst_p->body, flect_item );
+            const bcore_inst_item_s* inst_item = NULL;
+
+            if( inst_p->body )
+            {
+                inst_item = bcore_inst_body_s_inst_item_of_flect_item( inst_p->body, flect_item );
+            }
 
             if( inst_item && inst_item->no_trace             ) continue; // instance no-trace items (private, external, ...) are not accessible in via
 
