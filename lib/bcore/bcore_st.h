@@ -55,6 +55,7 @@ void  st_s_initf(        st_s* o, sc_t format, ... );           // formatted ini
 void  st_s_init_fv(      st_s* o, sc_t format, va_list args );  // formatted initialization
 void  st_s_init_fa(      st_s* o, sc_t format, ... );           // formatted initialization
 void  st_s_init_sc_n(    st_s* o, sc_t sc, sz_t n );            // creates string from first n characters of sc
+void  st_s_init_sd_d(    st_s* o, sd_t sd );                    // creates string by assuming ownership of sd
 void  st_s_init_sc(      st_s* o, sc_t sc );                    // creates string from sc
 void  st_s_init_weak_sc( st_s* o, sc_t sc );                    // creates a weak string referencing sc
 void  st_s_down(         st_s* o );
@@ -75,6 +76,7 @@ st_s* st_s_createf(      sc_t format, ... );
 st_s* st_s_create_fv(    sc_t format, va_list args );
 st_s* st_s_create_fa(    sc_t format, ... );
 st_s* st_s_create_sc_n(  sc_t sc, sz_t n );
+st_s* st_s_create_sd_d(  sd_t sd );
 st_s* st_s_create_sc(    sc_t sc );
 st_s* st_s_create_weak_sc( sc_t sc );
 st_s* st_s_create_typed( tp_t type, vc_t src );

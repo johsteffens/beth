@@ -98,6 +98,17 @@ void st_s_init_sc_n( st_s* o, sc_t sc, sz_t sc_size )
     o->data[ o->size ] = 0;
 }
 
+void st_s_init_sd_d( st_s* o, sd_t sd )
+{
+    st_s_init( o );
+    if( sd != NULL )
+    {
+        o->data  = sd;
+        o->size  = strlen( sd );
+        o->space = o->size + 1;
+    }
+}
+
 void st_s_init_sc( st_s* o, sc_t sc )
 {
     st_s_init_sc_n( o, sc, bcore_strlen( sc ) );
@@ -275,6 +286,13 @@ st_s* st_s_create_sc_n( sc_t sc, sz_t sc_size )
 {
     st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
     st_s_init_sc_n( o, sc, sc_size );
+    return o;
+}
+
+st_s* st_s_create_sd_d( sd_t sd )
+{
+    st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
+    st_s_init_sd_d( o, sd );
     return o;
 }
 
