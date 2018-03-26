@@ -35,9 +35,9 @@ void bcore_txt_ml_translator_s_init( bcore_txt_ml_translator_s* o )
 
 BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_txt_ml_translator_s )
 BCORE_DEFINE_FUNCTION_COPY_INST( bcore_txt_ml_translator_s )
-BCORE_DEFINE_FUNCTION_CREATE(     bcore_txt_ml_translator_s )
-BCORE_DEFINE_FUNCTION_DISCARD(    bcore_txt_ml_translator_s )
-BCORE_DEFINE_FUNCTION_CLONE(      bcore_txt_ml_translator_s )
+BCORE_DEFINE_FUNCTION_CREATE(    bcore_txt_ml_translator_s )
+BCORE_DEFINE_FUNCTION_DISCARD(   bcore_txt_ml_translator_s )
+BCORE_DEFINE_FUNCTION_CLONE(     bcore_txt_ml_translator_s )
 
 static sc_t name_of( tp_t type, st_s* buf )
 {
@@ -78,6 +78,11 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
 
     if( !obj_l.o ) // NULL
     {
+//        Open issue:
+//        txt_ml and bin_ml cannot differentiate between 'type given but body not created'
+//        and 'type without physical body (as in certain closures)'.
+//        To support the latter, we must store the type here.
+
         if( obj_l.p )
         {
             bcore_sink_pushf( sink_l, "<%s></>\n", name_of( sr_s_type( &obj_l ), buf ) );

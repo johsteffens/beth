@@ -671,7 +671,8 @@ const bcore_via_s* bcore_via_s_get_aware( vc_t obj )
 sr_s bcore_spect_via_create_zoo( sz_t size )
 {
     bcore_life_s* l = bcore_life_s_create();
-    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { st_s* type; f3_t weight; st_s * [] features; }" );
+                      bcore_flect_type_parse_sc( "vectors = { st_s [ 2 ] data1; u3_t [ 3 ] data2; }" );
+    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { st_s* type; f3_t weight; st_s * [] features; vectors vdata; }" );
     tp_t t_compound = bcore_flect_type_parse_sc( "compound = { u3_t id; sz_t area; animal * [] animals; }" );
     tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { st_s* name; typed * [] compounds; }" );
 

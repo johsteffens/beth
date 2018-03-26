@@ -26,12 +26,7 @@
 #include "bcore_spect_compare.h"
 #include "bcore_spect.h"
 
-BCORE_DEFINE_FUNCTION_INIT_INST( bcore_bin_ml_translator_s )
-BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_bin_ml_translator_s )
-BCORE_DEFINE_FUNCTION_COPY_INST( bcore_bin_ml_translator_s )
-BCORE_DEFINE_FUNCTION_CREATE(     bcore_bin_ml_translator_s )
-BCORE_DEFINE_FUNCTION_DISCARD(    bcore_bin_ml_translator_s )
-BCORE_DEFINE_FUNCTION_CLONE(      bcore_bin_ml_translator_s )
+BCORE_DEFINE_FUNCTIONS_OBJ_INST( bcore_bin_ml_translator_s )
 
 static inline void push_type( sr_s sink, tp_t type )
 {
@@ -48,6 +43,12 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
 
     if( !obj_l.o ) // NULL
     {
+//        Open issue:
+//        txt_ml and bin_ml cannot differentiate between 'type given but body not created'
+//        and 'type without physical body (as in certain closures)'.
+//        To support the latter, we must store the type here.
+
+
         if( obj_l.p )
         {
             push_type( sink_l, sr_s_type( &obj_l ) );
@@ -122,7 +123,7 @@ void bcore_bin_ml_translator_s_translate( const bcore_bin_ml_translator_s* o, sr
 static bcore_flect_self_s* translator_s_create_self( void )
 {
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_bin_ml_translator_s = bcore_translator { aware_t _; }", sizeof( bcore_bin_ml_translator_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_bin_ml_translator_s_translate, "bcore_fp_translate", "translate"        );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_bin_ml_translator_s_translate, "bcore_fp_translate", "translate" );
     return self;
 }
 
@@ -149,12 +150,7 @@ void bcore_bin_ml_to_file( sr_s obj, sc_t file )
 /// bcore_bin_ml_interpreter
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_FUNCTION_INIT_INST( bcore_bin_ml_interpreter_s )
-BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_bin_ml_interpreter_s )
-BCORE_DEFINE_FUNCTION_COPY_INST( bcore_bin_ml_interpreter_s )
-BCORE_DEFINE_FUNCTION_CREATE(     bcore_bin_ml_interpreter_s )
-BCORE_DEFINE_FUNCTION_DISCARD(    bcore_bin_ml_interpreter_s )
-BCORE_DEFINE_FUNCTION_CLONE(      bcore_bin_ml_interpreter_s )
+BCORE_DEFINE_FUNCTIONS_OBJ_INST( bcore_bin_ml_interpreter_s )
 
 static inline tp_t get_type( sr_s source )
 {
