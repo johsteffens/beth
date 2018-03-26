@@ -30,7 +30,7 @@ typedef struct bclos_procedure_s
     aware_t _;
     union
     {
-        bcore_static_link_array_s arr;
+        bcore_array_dyn_link_static_s arr;
         struct
         {
             bclos_statement_s** data;

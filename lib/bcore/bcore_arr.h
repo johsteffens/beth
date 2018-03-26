@@ -32,7 +32,7 @@ typedef struct bcore_arr_sz_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             sz_t* data;
@@ -62,7 +62,7 @@ typedef struct bcore_arr_u3_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             u3_t* data;
@@ -89,7 +89,7 @@ typedef struct bcore_arr_tp_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             tp_t* data;
@@ -116,7 +116,7 @@ typedef struct bcore_arr_st_s
     aware_t _;
     union
     {
-        bcore_static_link_array_s arr;
+        bcore_array_dyn_link_static_s arr;
         struct
         {
             st_s** data;
@@ -144,7 +144,7 @@ typedef struct bcore_arr_vd_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             vd_t* data;
@@ -171,7 +171,7 @@ typedef struct bcore_arr_fp_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             fp_t* data;
@@ -198,7 +198,7 @@ typedef struct bcore_arr_sr_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             sr_s* data;

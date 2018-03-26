@@ -36,7 +36,7 @@ typedef struct bcore_life_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             bcore_life_item_s* data;

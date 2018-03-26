@@ -37,7 +37,7 @@ typedef struct bclos_signature_s
 {
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             bclos_signature_arg_s* data;

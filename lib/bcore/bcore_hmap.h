@@ -60,7 +60,7 @@ typedef struct bcore_hmap_u2vd_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             bcore_hnode_u2vd_s* data;

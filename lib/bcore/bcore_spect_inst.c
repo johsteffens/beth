@@ -31,9 +31,10 @@ BCORE_DEFINE_FUNCTION_CREATE(    bcore_inst_item_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bcore_inst_item_s )
 BCORE_DEFINE_FUNCTION_CLONE(     bcore_inst_item_s )
 
+/*
 void bcore_inst_item_s_set_size_align( bcore_inst_item_s* o )
 {
-    if( o->flect_item->caps == BCORE_CAPS_STATIC )
+    if( o->flect_item->caps == BCORE_CAPS_SOLID_STATIC )
     {
         const bcore_inst_s* inst = bcore_inst_s_get_typed( o->flect_item->type );
         o->size  = inst->size;
@@ -45,6 +46,7 @@ void bcore_inst_item_s_set_size_align( bcore_inst_item_s* o )
         o->align = bcore_flect_caps_e_align( o->flect_item->caps );
     }
 }
+*/
 
 /**********************************************************************************************************************/
 
@@ -190,7 +192,7 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
 
         switch( flect_item->caps )
         {
-            case BCORE_CAPS_STATIC:
+            case BCORE_CAPS_SOLID_STATIC:
             {
                 const bcore_inst_s* inst_p = inst_item->inst_p;
                 if( !inst_p->init_flat ) inst_p->init( inst_p, dst_obj );
@@ -218,24 +220,42 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
             break;
 
             // only perspectives are initialized
-            case BCORE_CAPS_STATIC_LINK:
+            case BCORE_CAPS_LINK_STATIC:
             {
                 if( flect_item->f_spect ) *( vc_t* )dst_obj = bcore_spect_get_typed( flect_item->type, p->o_type );
             }
             break;
 
-            case BCORE_CAPS_TYPED_LINK:
-            case BCORE_CAPS_AWARE_LINK:
-            case BCORE_CAPS_STATIC_ARRAY:
-            case BCORE_CAPS_TYPED_ARRAY:
-            case BCORE_CAPS_STATIC_LINK_ARRAY:
-            case BCORE_CAPS_TYPED_LINK_ARRAY:
-            case BCORE_CAPS_AWARE_LINK_ARRAY:
+            case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+            {
+                const bcore_inst_s* inst_p = inst_item->inst_p;
+                if( !inst_p->init_flat )
+                {
+                    sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                    sz_t element_size = inst_p->size;
+                    for( sz_t i = 0; i < arr_size; i++ )
+                    {
+                        inst_p->init( inst_p, ( u0_t* )dst_obj + element_size * i );
+                    }
+                }
+            }
+            break;
+
+            case BCORE_CAPS_LINK_TYPED:
+            case BCORE_CAPS_LINK_AWARE:
+            case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+            case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+            case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+            case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+            case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+
+            case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+            case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
             break;
 
             default:
             {
-                ERR( "Unhandled capsulation %u", flect_item->caps );
+                ERR_fa( "Unhandled nesting '#<sc_t>'", bcore_flect_caps_e_sc( flect_item->caps ) );
             }
         }
     }
@@ -289,20 +309,20 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
         if( inst_item->no_trace ) continue;
 
         const bcore_flect_item_s* flect_item = inst_item->flect_item;
-        void* item_obj = ( u0_t* )o + inst_item->offset;
+        vd_t item_obj = ( u0_t* )o + inst_item->offset;
 
         switch( flect_item->caps )
         {
-            case BCORE_CAPS_STATIC:
+            case BCORE_CAPS_SOLID_STATIC:
             {
                 const bcore_inst_s* inst_p = inst_item->inst_p;
                 if( !inst_p->down_flat ) inst_p->down( inst_p, item_obj );
             }
             break;
 
-            case BCORE_CAPS_STATIC_LINK:
+            case BCORE_CAPS_LINK_STATIC:
             {
-                bcore_static_link_s* s = item_obj;
+                bcore_link_static_s* s = item_obj;
                 if( s->link )
                 {
                     const bcore_inst_s* inst_p = inst_item->inst_p;
@@ -311,9 +331,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
-            case BCORE_CAPS_TYPED_LINK:
+            case BCORE_CAPS_LINK_TYPED:
             {
-                bcore_typed_link_s* s = item_obj;
+                bcore_link_typed_s* s = item_obj;
                 if( s->link )
                 {
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( s->type );
@@ -322,9 +342,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
-            case BCORE_CAPS_AWARE_LINK:
+            case BCORE_CAPS_LINK_AWARE:
             {
-                bcore_aware_link_s* s = item_obj;
+                bcore_link_aware_s* s = item_obj;
                 if( s->link )
                 {
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )s->link );
@@ -333,9 +353,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
-            case BCORE_CAPS_STATIC_ARRAY:
+            case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
             {
-                bcore_static_array_s* s = item_obj;
+                bcore_array_dyn_solid_static_s* s = item_obj;
                 if( s->space ) // space == 0 means array does not own data
                 {
                     const bcore_inst_s* inst_p = inst_item->inst_p;
@@ -353,9 +373,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
-            case BCORE_CAPS_TYPED_ARRAY:
+            case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
             {
-                bcore_typed_array_s* s = item_obj;
+                bcore_array_dyn_solid_typed_s* s = item_obj;
                 if( s->space ) // space == 0 means array does not own data
                 {
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( s->type );
@@ -373,9 +393,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
-            case BCORE_CAPS_STATIC_LINK_ARRAY:
+            case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
             {
-                bcore_static_link_array_s* s = item_obj;
+                bcore_array_dyn_link_static_s* s = item_obj;
                 if( s->space ) // space == 0 means array does not own data
                 {
                     const bcore_inst_s* inst_p = inst_item->inst_p;
@@ -387,9 +407,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
-            case BCORE_CAPS_TYPED_LINK_ARRAY:
+            case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
             {
-                bcore_typed_link_array_s* s = item_obj;
+                bcore_array_dyn_link_typed_s* s = item_obj;
                 if( s->space ) // space == 0 means array does not own data
                 {
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( s->type );
@@ -401,9 +421,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
-            case BCORE_CAPS_AWARE_LINK_ARRAY:
+            case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
             {
-                bcore_aware_link_array_s* s = item_obj;
+                bcore_array_dyn_link_aware_s* s = item_obj;
                 if( s->space ) // space == 0 means array does not own data
                 {
                     for( sz_t i = 0; i < s->size; i++ ) bcore_inst_aware_discard( s->data[ i ] );
@@ -414,9 +434,50 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
+            case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+            {
+                const bcore_inst_s* inst_p = inst_item->inst_p;
+                if( !inst_p->down_flat )
+                {
+                    sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                    sz_t element_size = inst_p->size;
+                    for( sz_t i = 0; i < arr_size; i++ )
+                    {
+                        vd_t obj = ( u0_t* )item_obj + element_size * i;
+                        inst_p->down( inst_p, obj );
+                    }
+                }
+            }
+            break;
+
+            case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+            {
+                const bcore_inst_s* inst_p = inst_item->inst_p;
+                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                vd_t* arr = item_obj;
+                for( sz_t i = 0; i < arr_size; i++ )
+                {
+                    bcore_inst_spect_discard( inst_p, arr[ i ] );
+                    arr[ i ] = NULL;
+                }
+            }
+            break;
+
+            case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+            {
+                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                vd_t* arr = item_obj;
+                for( sz_t i = 0; i < arr_size; i++ )
+                {
+                    bcore_inst_aware_discard( arr[ i ] );
+                    arr[ i ] = NULL;
+                }
+            }
+            break;
+
             default:
             {
-                ERR( "Unhandled capsulation %u", flect_item->caps );
+                ERR_fa( "Unhandled nesting '#<sc_t>'", bcore_flect_caps_e_sc( flect_item->caps ) );
             }
         }
     }
@@ -493,17 +554,17 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
 
         switch( flect_item->caps )
         {
-            case BCORE_CAPS_STATIC:
+            case BCORE_CAPS_SOLID_STATIC:
             {
                 const bcore_inst_s* inst_p = inst_item->inst_p;
                 inst_p->copy( inst_p, dst_obj, src_obj );
             }
             break;
 
-            case BCORE_CAPS_STATIC_LINK:
+            case BCORE_CAPS_LINK_STATIC:
             {
-                bcore_static_link_s* dst = dst_obj;
-                bcore_static_link_s* src = src_obj;
+                bcore_link_static_s* dst = dst_obj;
+                bcore_link_static_s* src = src_obj;
                 if( dst->link )
                 {
                     bcore_inst_spect_discard( inst_item->inst_p, dst->link );
@@ -526,10 +587,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             }
             break;
 
-            case BCORE_CAPS_TYPED_LINK:
+            case BCORE_CAPS_LINK_TYPED:
             {
-                bcore_typed_link_s* dst = dst_obj;
-                bcore_typed_link_s* src = src_obj;
+                bcore_link_typed_s* dst = dst_obj;
+                bcore_link_typed_s* src = src_obj;
                 if( dst->link )
                 {
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( dst->type );
@@ -555,10 +616,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             }
             break;
 
-            case BCORE_CAPS_AWARE_LINK:
+            case BCORE_CAPS_LINK_AWARE:
             {
-                bcore_aware_link_s* dst = dst_obj;
-                bcore_aware_link_s* src = src_obj;
+                bcore_link_aware_s* dst = dst_obj;
+                bcore_link_aware_s* src = src_obj;
                 if( dst->link )
                 {
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )dst->link );
@@ -583,10 +644,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             }
             break;
 
-            case BCORE_CAPS_STATIC_ARRAY:
+            case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
             {
-                bcore_static_array_s* dst = dst_obj;
-                bcore_static_array_s* src = src_obj;
+                bcore_array_dyn_solid_static_s* dst = dst_obj;
+                bcore_array_dyn_solid_static_s* src = src_obj;
                 const bcore_inst_s* inst_p = inst_item->inst_p;
                 if( inst_p->copy_flat )
                 {
@@ -627,10 +688,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             }
             break;
 
-            case BCORE_CAPS_TYPED_ARRAY:
+            case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
             {
-                bcore_typed_array_s* dst = dst_obj;
-                bcore_typed_array_s* src = src_obj;
+                bcore_array_dyn_solid_typed_s* dst = dst_obj;
+                bcore_array_dyn_solid_typed_s* src = src_obj;
 
                 if( dst->space > 0 ) // deplete dst
                 {
@@ -670,10 +731,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             }
             break;
 
-            case BCORE_CAPS_STATIC_LINK_ARRAY:
+            case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
             {
-                bcore_static_link_array_s* dst = dst_obj;
-                bcore_static_link_array_s* src = src_obj;
+                bcore_array_dyn_link_static_s* dst = dst_obj;
+                bcore_array_dyn_link_static_s* src = src_obj;
                 const bcore_inst_s* inst_p = inst_item->inst_p;
                 if( dst->space > 0 ) // dst->space == 0 means array references external data
                 {
@@ -697,10 +758,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             }
             break;
 
-            case BCORE_CAPS_TYPED_LINK_ARRAY:
+            case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
             {
-                bcore_typed_link_array_s* dst = dst_obj;
-                bcore_typed_link_array_s* src = src_obj;
+                bcore_array_dyn_link_typed_s* dst = dst_obj;
+                bcore_array_dyn_link_typed_s* src = src_obj;
                 if( dst->space > 0 ) // dst->space == 0 means array references external data
                 {
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( dst->type );
@@ -728,10 +789,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             }
             break;
 
-            case BCORE_CAPS_AWARE_LINK_ARRAY:
+            case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
             {
-                bcore_aware_link_array_s* dst = dst_obj;
-                bcore_aware_link_array_s* src = src_obj;
+                bcore_array_dyn_link_aware_s* dst = dst_obj;
+                bcore_array_dyn_link_aware_s* src = src_obj;
                 if( dst->space > 0 )  // dst->space == 0 means array references external data
                 {
                     for( sz_t i = 0; i < dst->size; i++ )
@@ -764,9 +825,76 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             }
             break;
 
+            case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+            {
+                const bcore_inst_s* inst_p = inst_item->inst_p;
+                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                sz_t element_size = inst_p->size;
+
+                if( inst_p->copy_flat )
+                {
+                    bcore_memcpy( dst_obj, src_obj, element_size * arr_size );
+                }
+                else
+                {
+                    for( sz_t i = 0; i < arr_size; i++ )
+                    {
+                        vd_t dst = ( u0_t* )dst_obj + element_size * i;
+                        vc_t src = ( u0_t* )src_obj + element_size * i;
+                        bcore_inst_spect_copy( inst_p, dst, src );
+                    }
+                }
+            }
+            break;
+
+            case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+            {
+                const bcore_inst_s* inst_p = inst_item->inst_p;
+                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                vd_t* dst_arr = dst_obj;
+                vd_t* src_arr = src_obj;
+                for( sz_t i = 0; i < arr_size; i++ )
+                {
+                    vd_t dst = dst_arr[ i ];
+                    vd_t src = src_arr[ i ];
+                    bcore_inst_spect_discard( inst_p, dst );
+                    if( flect_item->f_deep_copy )
+                    {
+                        dst = bcore_inst_spect_clone( inst_p, src );
+                    }
+                    else
+                    {
+                        dst = bcore_fork( src );
+                    }
+                }
+            }
+            break;
+
+            case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+            {
+                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                vd_t* dst_arr = dst_obj;
+                vd_t* src_arr = src_obj;
+                for( sz_t i = 0; i < arr_size; i++ )
+                {
+                    vd_t dst = dst_arr[ i ];
+                    vd_t src = src_arr[ i ];
+                    bcore_inst_aware_discard( dst );
+                    if( flect_item->f_deep_copy )
+                    {
+                        dst = bcore_inst_aware_clone( src );
+                    }
+                    else
+                    {
+                        dst = bcore_fork( src );
+                    }
+                }
+            }
+            break;
+
             default:
             {
-                ERR( "Unhandled capsulation %u", flect_item->caps );
+                ERR_fa( "Unhandled nesting '#<sc_t>'", bcore_flect_caps_e_sc( flect_item->caps ) );
             }
         }
     }
@@ -1165,7 +1293,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
 
             if( flect_item->f_shell ) continue; // shells are invisible to instance (but handled in via-inst_p)
 
-            if( flect_item->caps == BCORE_CAPS_EXTERNAL_FUNC || flect_item->caps == BCORE_CAPS_EXTERNAL_DATA )
+            if( flect_item->caps == BCORE_CAPS_EXTERNAL_FUNC )
             {
                 /* nothing yet or handled above */
             }
@@ -1183,10 +1311,10 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
                     }
                     else if( flect_item->type == self->type )
                     {
-                        if( flect_item->caps == BCORE_CAPS_STATIC )
+                        if( flect_item->caps == BCORE_CAPS_SOLID_STATIC )
                         {
-                            ERR( "Constructing bcore_inst_s of %s:\n"
-                                 "Type '%s' (%"PRIu32") is static member of itself, which is inconstructible.\n"
+                            ERR_fa( "Constructing bcore_inst_s of #<sc_t>:\n"
+                                 "Type '#<sc_t>' (#<tp_t>) is static member of itself, which is inconstructible.\n"
                                  "A static link might be a viable alternative.\n" , ifnameof( self->type ), ifnameof( flect_item->type ), flect_item->type );
                         }
                         else
@@ -1205,7 +1333,11 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
                         o->aware = true;
                     }
 
-                    if( flect_item->default_u3 != 0 ) o->init_flat = false;
+                    /// default value specified
+                    {
+                        if( bcore_flect_item_s_has_default_value( flect_item ) ) o->init_flat = false;
+                    }
+
 
                     o->init_flat = o->init_flat & inst_item->inst_p->init_flat;
                     o->copy_flat = o->copy_flat & inst_item->inst_p->copy_flat;
@@ -1214,32 +1346,39 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
 
                 switch( flect_item->caps )
                 {
-                    case BCORE_CAPS_STATIC: break;
-                    case BCORE_CAPS_STATIC_LINK:
-                    case BCORE_CAPS_TYPED_LINK:
-                    case BCORE_CAPS_AWARE_LINK:
-                    case BCORE_CAPS_STATIC_ARRAY:
-                    case BCORE_CAPS_TYPED_ARRAY:
-                    case BCORE_CAPS_STATIC_LINK_ARRAY:
-                    case BCORE_CAPS_TYPED_LINK_ARRAY:
-                    case BCORE_CAPS_AWARE_LINK_ARRAY:
+                    case BCORE_CAPS_LINK_STATIC:
+                    case BCORE_CAPS_LINK_TYPED:
+                    case BCORE_CAPS_LINK_AWARE:
+                    case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+                    case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+                    case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+                    case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+                    case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+                    case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+                    case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
                     {
                         o->copy_flat = false;
                         o->down_flat = false;
                     }
                     break;
+
                     default: break;
                 }
 
-                if( flect_item->caps == BCORE_CAPS_STATIC )
+                if( flect_item->caps == BCORE_CAPS_SOLID_STATIC )
                 {
                     inst_item->size  = inst_item->inst_p->size;
                     inst_item->align = inst_item->inst_p->align;
                 }
+                else if( flect_item->caps == BCORE_CAPS_ARRAY_FIX_SOLID_STATIC )
+                {
+                    inst_item->size  = inst_item->inst_p->size * flect_item->array_fix_size;
+                    inst_item->align = inst_item->inst_p->align;
+                }
                 else
                 {
-                    inst_item->size  = bcore_flect_caps_e_size(  flect_item->caps );
-                    inst_item->align = bcore_flect_caps_e_align( flect_item->caps );
+                    inst_item->size  = bcore_flect_item_s_inst_size( flect_item );
+                    inst_item->align = bcore_flect_item_s_inst_align( flect_item );
                 }
 
                 if( flect_item->f_private )
@@ -1317,8 +1456,8 @@ static bcore_flect_self_s* inst_s_create_self( void )
 
 //  We need to create this reflection manually because self_s_build_parse uses it.
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "bcore_inst_s" ), typeof( "spect" ), sizeof( bcore_inst_s ) );
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
+    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
+    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
     self->body->complete = false;
 
     bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                   "init"         );
@@ -1580,7 +1719,7 @@ sr_s bcore_inst_q_clone_sr( const sr_s* o )
 
 static st_s* spect_inst_selftest( void )
 {
-    typedef struct { aware_t _; bcore_typed_link_array_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
+    typedef struct { aware_t _; bcore_array_dyn_link_typed_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
 
     bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " test_object1_s = { aware_t _; typed * [] string_arr; u2_t val1; u3_t val2; s1_t val3; }", 0 ) );
 
@@ -1623,8 +1762,8 @@ static st_s* spect_inst_selftest( void )
     bcore_inst_aware_discard( o2 );
     bcore_inst_aware_discard( o3 );
 
+    // deep vs shallow links
     {
-        // deep vs shallow links
         typedef struct { aware_t _; st_s * str; } deep_object_s;
         bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " deep_object_s = { aware_t _; st_s => str; }", sizeof( deep_object_s ) ) );
         typedef struct { aware_t _; st_s * str; } shallow_object_s;
@@ -1657,6 +1796,37 @@ static st_s* spect_inst_selftest( void )
         bcore_inst_aware_discard( so2 );
     }
 
+    // just links
+    {
+        typedef struct { st_s* str1; st_s* str2; } links_object_s;
+        bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "links_object_s = { st_s => str1; st_s => str2; }", sizeof( links_object_s ) ) );
+        links_object_s* o = bcore_inst_typed_create( typeof( "links_object_s" ) );
+        o->str1 = st_s_create_sc( "hello " );
+        o->str2 = st_s_create_sc( "world!" );
+        bcore_inst_typed_discard( typeof( "links_object_s" ), o );
+    }
+
+    // fixed size array
+    {
+        typedef struct { st_s str_arr[ 10 ]; } arr_object_s;
+        bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "arr_object_s = { st_s [ 10 ] str_arr; }", sizeof( arr_object_s ) ) );
+        arr_object_s* o1 = bcore_inst_typed_create( typeof( "arr_object_s" ) );
+        arr_object_s* o2 = bcore_inst_typed_create( typeof( "arr_object_s" ) );
+
+        for( sz_t i = 0; i < 10; i++ ) st_s_copy_fa( &o1->str_arr[ i ], "#<sz_t>", i );
+
+        bcore_inst_typed_copy( typeof( "arr_object_s" ), o2, o1 );
+
+        for( sz_t i = 0; i < 10; i++ )
+        {
+            st_s* ref = st_s_create_fa( "#<sz_t>", i );
+            ASSERT( st_s_equal_st( &o2->str_arr[ i ], ref ) );
+            st_s_discard( ref );
+        }
+
+        bcore_inst_typed_discard( typeof( "arr_object_s" ), o1 );
+        bcore_inst_typed_discard( typeof( "arr_object_s" ), o2 );
+    }
 
     return NULL;
 }

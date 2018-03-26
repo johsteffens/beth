@@ -34,7 +34,7 @@ typedef struct bcore_sink_chain_s
     aware_t _;
     union
     {
-        bcore_aware_link_array_s arr;
+        bcore_array_dyn_link_aware_s arr;
         struct
         {
             vd_t* data;
@@ -65,7 +65,7 @@ typedef struct bcore_sink_buffer_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             u0_t* data;

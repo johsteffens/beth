@@ -32,7 +32,7 @@ typedef struct bclos_arguments_s
 {
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             sr_s* data;

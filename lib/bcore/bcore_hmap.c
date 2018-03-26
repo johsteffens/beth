@@ -552,7 +552,7 @@ static bcore_flect_self_s* hmap_u2vd_s_create_self( void )
         bcore_hmap_u2vd_s = bcore_inst \
             { \
                 aware_t _; \
-                private bcore_static_array_s arr; \
+                private bcore_array_dyn_solid_static_s arr; \
                 sz_t depth_limit; \
                 sz_t size_limit; \
                 private fp_t h1; \

@@ -76,34 +76,37 @@ sr_s bcore_via_spect_iget( const bcore_via_s* p, vc_t o, sz_t index         )
     }
     switch( vitem->caps )
     {
-        case BCORE_CAPS_STATIC:
+        case BCORE_CAPS_SOLID_STATIC:
         {
             return sr_twd( vitem->type, ( vd_t )( ( u0_t* )o + vitem->offs ) );
         }
 
-        case BCORE_CAPS_STATIC_LINK:
+        case BCORE_CAPS_LINK_STATIC:
         {
-            const bcore_static_link_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
+            const bcore_link_static_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
             return sr_twd( vitem->type, dst->link );
         }
 
-        case BCORE_CAPS_TYPED_LINK:
+        case BCORE_CAPS_LINK_TYPED:
         {
-            const bcore_typed_link_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
+            const bcore_link_typed_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
             return dst->link ? sr_twd( dst->type, dst->link ) : sr_null();
         }
 
-        case BCORE_CAPS_AWARE_LINK:
+        case BCORE_CAPS_LINK_AWARE:
         {
-            const bcore_aware_link_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
+            const bcore_link_aware_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
             return sr_twd( dst->link ? *(aware_t*)dst->link : 0, dst->link );
         }
 
-        case BCORE_CAPS_STATIC_ARRAY:
-        case BCORE_CAPS_TYPED_ARRAY:
-        case BCORE_CAPS_STATIC_LINK_ARRAY:
-        case BCORE_CAPS_TYPED_LINK_ARRAY:
-        case BCORE_CAPS_AWARE_LINK_ARRAY:
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
         {
             return sr_twd( vitem->type, ( vd_t )( ( u0_t* )o + vitem->offs ) );
         }
@@ -120,8 +123,8 @@ tp_t bcore_via_spect_iget_type( const bcore_via_s* p, vc_t o, sz_t index )
     const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
     switch( vitem->caps )
     {
-        case BCORE_CAPS_TYPED_LINK:
-        case BCORE_CAPS_AWARE_LINK:
+        case BCORE_CAPS_LINK_TYPED:
+        case BCORE_CAPS_LINK_AWARE:
         {
             sr_s sr = bcore_via_spect_iget( p, o, index );
             tp_t t = sr_s_type( &sr );
@@ -145,7 +148,7 @@ void bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, sr_s src )
     }
     switch( vitem->caps )
     {
-        case BCORE_CAPS_STATIC:
+        case BCORE_CAPS_SOLID_STATIC:
         {
             vd_t dst = ( u0_t* )o + vitem->offs;
             const bcore_inst_s* inst_p = vitem->via_p->inst_p;
@@ -160,9 +163,9 @@ void bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, sr_s src )
         }
         break;
 
-        case BCORE_CAPS_STATIC_LINK:
+        case BCORE_CAPS_LINK_STATIC:
         {
-            bcore_static_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
+            bcore_link_static_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             const bcore_inst_s* inst_p = vitem->via_p->inst_p;
             if( dst->link ) bcore_inst_spect_discard( inst_p, dst->link );
             if( sr_s_type( &src ) == vitem->type )
@@ -177,9 +180,9 @@ void bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, sr_s src )
         }
         break;
 
-        case BCORE_CAPS_TYPED_LINK:
+        case BCORE_CAPS_LINK_TYPED:
         {
-            bcore_typed_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
+            bcore_link_typed_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->type && dst->link )
             {
                 bcore_inst_typed_discard( dst->type, dst->link );
@@ -194,9 +197,9 @@ void bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, sr_s src )
         }
         break;
 
-        case BCORE_CAPS_AWARE_LINK:
+        case BCORE_CAPS_LINK_AWARE:
         {
-            bcore_aware_link_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
+            bcore_link_aware_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
 
             if( dst->link )
             {
@@ -228,11 +231,14 @@ void bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, sr_s src )
         }
         break;
 
-        case BCORE_CAPS_STATIC_ARRAY:
-        case BCORE_CAPS_TYPED_ARRAY:
-        case BCORE_CAPS_STATIC_LINK_ARRAY:
-        case BCORE_CAPS_TYPED_LINK_ARRAY:
-        case BCORE_CAPS_AWARE_LINK_ARRAY:
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
         {
             vd_t dst = ( ( u0_t* )o + vitem->offs );
             const bcore_inst_s* inst_p = vitem->via_p->inst_p;
@@ -246,11 +252,6 @@ void bcore_via_spect_iset( const bcore_via_s* p, vd_t o, sz_t index, sr_s src )
             }
         }
         break;
-
-        case BCORE_CAPS_EXTERNAL_DATA:
-        case BCORE_CAPS_EXTERNAL_FUNC:
-            ERR( "External object '%s' cannot be changed through perspective %s", bcore_flect_caps_e_sc( vitem->caps ), ifnameof( p->p_type ) );
-            break;
 
         default:
             ERR( "Unsupported caps '%s'", bcore_flect_caps_e_sc( vitem->caps ) );
@@ -460,15 +461,18 @@ bl_t bcore_via_spect_iis_static( const bcore_via_s* p, sz_t index )
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     switch( p->vitem_arr[ index ].caps )
     {
-        case BCORE_CAPS_STATIC:            return true;
-        case BCORE_CAPS_STATIC_LINK:       return true;
-        case BCORE_CAPS_TYPED_LINK:        return false;
-        case BCORE_CAPS_AWARE_LINK:        return false;
-        case BCORE_CAPS_STATIC_ARRAY:      return true;
-        case BCORE_CAPS_TYPED_ARRAY:       return true;
-        case BCORE_CAPS_STATIC_LINK_ARRAY: return true;
-        case BCORE_CAPS_TYPED_LINK_ARRAY:  return true;
-        case BCORE_CAPS_AWARE_LINK_ARRAY:  return true;
+        case BCORE_CAPS_SOLID_STATIC:           return true;
+        case BCORE_CAPS_LINK_STATIC:            return true;
+        case BCORE_CAPS_LINK_TYPED:             return false;
+        case BCORE_CAPS_LINK_AWARE:             return false;
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return true;
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return true;
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return true;
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return true;
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return true;
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return true;
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return true;
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return true;
         default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->vitem_arr[ index ].caps ) );
     }
     return false;
@@ -479,15 +483,18 @@ bl_t bcore_via_spect_iis_link( const bcore_via_s* p, sz_t index )
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     switch( p->vitem_arr[ index ].caps )
     {
-        case BCORE_CAPS_STATIC:            return false;
-        case BCORE_CAPS_STATIC_LINK:       return true;
-        case BCORE_CAPS_TYPED_LINK:        return true;
-        case BCORE_CAPS_AWARE_LINK:        return true;
-        case BCORE_CAPS_STATIC_ARRAY:      return false;
-        case BCORE_CAPS_TYPED_ARRAY:       return false;
-        case BCORE_CAPS_STATIC_LINK_ARRAY: return false;
-        case BCORE_CAPS_TYPED_LINK_ARRAY:  return false;
-        case BCORE_CAPS_AWARE_LINK_ARRAY:  return false;
+        case BCORE_CAPS_SOLID_STATIC:           return false;
+        case BCORE_CAPS_LINK_STATIC:            return true;
+        case BCORE_CAPS_LINK_TYPED:             return true;
+        case BCORE_CAPS_LINK_AWARE:             return true;
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return false;
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return false;
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return false;
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return false;
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return false;
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return false;
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return false;
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return false;
         default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->vitem_arr[ index ].caps ) );
     }
     return false;
@@ -543,39 +550,50 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
 
             switch( vitem.caps )
             {
-                case BCORE_CAPS_STATIC:
-                case BCORE_CAPS_STATIC_LINK:
+                case BCORE_CAPS_SOLID_STATIC:
+                case BCORE_CAPS_LINK_STATIC:
                 {
                     vitem.type = flect_item->type;
                 }
                 break;
 
-                case BCORE_CAPS_TYPED_LINK:
-                case BCORE_CAPS_AWARE_LINK:
+                case BCORE_CAPS_LINK_TYPED:
+                case BCORE_CAPS_LINK_AWARE:
                     vitem.type = 0;
                     break;
 
-                case BCORE_CAPS_STATIC_ARRAY:
-                    vitem.type = bcore_static_array_type_of( flect_item->type );
+                case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+                    vitem.type = bcore_array_dyn_solid_static_type_of( flect_item->type );
                     break;
 
-                case BCORE_CAPS_TYPED_ARRAY:
-                    vitem.type = typeof( "bcore_typed_array_s" );
+                case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+                    vitem.type = typeof( "bcore_array_dyn_solid_typed_s" );
                     break;
 
-                case BCORE_CAPS_STATIC_LINK_ARRAY:
-                    vitem.type = bcore_static_link_array_type_of( flect_item->type );
+                case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+                    vitem.type = bcore_array_dyn_link_static_type_of( flect_item->type );
                     break;
 
-                case BCORE_CAPS_TYPED_LINK_ARRAY:
-                    vitem.type = typeof( "bcore_typed_link_array_s" );
+                case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+                    vitem.type = typeof( "bcore_array_dyn_link_typed_s" );
                     break;
 
-                case BCORE_CAPS_AWARE_LINK_ARRAY:
-                    vitem.type = typeof( "bcore_aware_link_array_s" );
+                case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+                    vitem.type = typeof( "bcore_array_dyn_link_aware_s" );
                     break;
 
-                case BCORE_CAPS_EXTERNAL_DATA:
+                case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+                    vitem.type = bcore_array_fix_solid_static_type_of( flect_item->type, flect_item->array_fix_size );
+                    break;
+
+                case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+                    vitem.type = bcore_array_fix_link_static_type_of( flect_item->type, flect_item->array_fix_size );
+                    break;
+
+                case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+                    vitem.type = bcore_array_fix_link_aware_type_of( flect_item->array_fix_size );
+                    break;
+
                 case BCORE_CAPS_EXTERNAL_FUNC:
                     continue; // external items are (currently) not accessible in via
                     break;

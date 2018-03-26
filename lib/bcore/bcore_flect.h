@@ -34,36 +34,43 @@
 
 /// data encapsulation methods
 enum
-{
-    BCORE_CAPS_STATIC = 0,
-    BCORE_CAPS_STATIC_LINK,
-    BCORE_CAPS_TYPED_LINK,
-    BCORE_CAPS_AWARE_LINK,
-    BCORE_CAPS_STATIC_ARRAY,
-    BCORE_CAPS_TYPED_ARRAY,
-    BCORE_CAPS_STATIC_LINK_ARRAY,
-    BCORE_CAPS_TYPED_LINK_ARRAY,
-    BCORE_CAPS_AWARE_LINK_ARRAY,
-    BCORE_CAPS_EXTERNAL_DATA,
-    BCORE_CAPS_EXTERNAL_FUNC
+{                                 // tentative new names
+    BCORE_CAPS_START = 0,
+
+    BCORE_CAPS_SOLID_STATIC,
+    BCORE_CAPS_LINK_STATIC,
+    BCORE_CAPS_LINK_TYPED,
+    BCORE_CAPS_LINK_AWARE,
+    BCORE_CAPS_ARRAY_DYN_SOLID_STATIC,
+    BCORE_CAPS_ARRAY_DYN_SOLID_TYPED,
+    BCORE_CAPS_ARRAY_DYN_LINK_STATIC,
+    BCORE_CAPS_ARRAY_DYN_LINK_TYPED,
+    BCORE_CAPS_ARRAY_DYN_LINK_AWARE,
+    BCORE_CAPS_ARRAY_FIX_SOLID_STATIC,
+    BCORE_CAPS_ARRAY_FIX_LINK_STATIC,
+    BCORE_CAPS_ARRAY_FIX_LINK_AWARE,
+    BCORE_CAPS_UNUSED1,            // formerly   BCORE_CAPS_EXTERNAL_DATA,
+    BCORE_CAPS_EXTERNAL_FUNC,      // specifies a static external function for perspective only (no data occupation in object)
+
+    BCORE_CAPS_END,
 };
 
 /// encapsulation structures
-typedef struct { vd_t  link;                                   } bcore_static_link_s;
-typedef struct { vd_t  link; tp_t type;                        } bcore_typed_link_s;
-typedef struct { vd_t  link;                                   } bcore_aware_link_s;
+typedef struct { vd_t  link;                                   } bcore_link_static_s;
+typedef struct { vd_t  link; tp_t type;                        } bcore_link_typed_s;
+typedef struct { vd_t  link;                                   } bcore_link_aware_s;
 
 
-/** bcore_array_head_s matches the beginning of every array structure below
+/** bcore_array_dyn_head_s matches the beginning of every dynamic array structure
  *  ptr has different meanings (either vd_t or vd_t*)
  */
-typedef struct { vd_t   ptr; sz_t size; sz_t space;            } bcore_array_head_s;
+typedef struct { vd_t   ptr; sz_t size; sz_t space;            } bcore_array_dyn_head_s;
 
-typedef struct { vd_t  data; sz_t size; sz_t space;            } bcore_static_array_s;
-typedef struct { vd_t  data; sz_t size; sz_t space; tp_t type; } bcore_typed_array_s;
-typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_static_link_array_s;
-typedef struct { vd_t* data; sz_t size; sz_t space; tp_t type; } bcore_typed_link_array_s;
-typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_aware_link_array_s;
+typedef struct { vd_t  data; sz_t size; sz_t space;            } bcore_array_dyn_solid_static_s;
+typedef struct { vd_t  data; sz_t size; sz_t space; tp_t type; } bcore_array_dyn_solid_typed_s;
+typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_array_dyn_link_static_s;
+typedef struct { vd_t* data; sz_t size; sz_t space; tp_t type; } bcore_array_dyn_link_typed_s;
+typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_array_dyn_link_aware_s;
 
 /*
 PLANNING:
@@ -83,12 +90,10 @@ PLANNING:
 sc_t bcore_flect_caps_e_sc( u2_t caps );
 u2_t bcore_flect_caps_e_u2( sc_t sc );
 
-/// alignment and size retrieval
-sz_t bcore_flect_caps_e_size( u2_t caps );
-sz_t bcore_flect_caps_e_align( u2_t caps );
-
 /// checks if encapsulation is an array
 bl_t bcore_flect_caps_is_array( u2_t caps );
+bl_t bcore_flect_caps_is_array_dyn( u2_t caps );
+bl_t bcore_flect_caps_is_array_fix( u2_t caps );
 
 typedef struct bcore_flect_item_s
 {
@@ -130,6 +135,7 @@ typedef struct bcore_flect_item_s
         u3_t default_u3; // serves u0_t ... u3_t, bl_t
         f3_t default_f3; // serves f2_t ... f3_t
         tp_t default_tp; // serves tp_t and external functions
+        u3_t array_fix_size; // size for fixed arrays  (do not use sz_t here because of system dependent sizeof( sz_t ))
     };
 
 } bcore_flect_item_s;
@@ -146,7 +152,16 @@ bcore_flect_item_s* bcore_flect_item_s_clone( const bcore_flect_item_s* o );
 st_s*               bcore_flect_item_s_show( const bcore_flect_item_s* o );
 tp_t                bcore_flect_item_s_fold_tp( const bcore_flect_item_s* o, tp_t tp );
 s2_t                bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_item_s* o2 );        // compares two items
-void                bcore_flect_item_s_check_integrity( const bcore_flect_item_s* o );
+
+bl_t bcore_flect_item_s_has_default_value( const bcore_flect_item_s* o );
+
+/// returns instantiation size or 0 if size is not computable at this point
+sz_t bcore_flect_item_s_inst_size( const bcore_flect_item_s* o );
+
+/// returns instantiation alignments or 0 if value is not computable at this point
+sz_t bcore_flect_item_s_inst_align( const bcore_flect_item_s* o );
+
+void bcore_flect_item_s_check_integrity( const bcore_flect_item_s* o );
 
 /**********************************************************************************************************************/
 
@@ -154,7 +169,7 @@ typedef struct bcore_flect_body_s
 {
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             bcore_flect_item_s* data;
@@ -232,8 +247,14 @@ void                bcore_flect_self_s_check_integrity( const bcore_flect_self_s
 
 /// special reflections
 bcore_flect_self_s* bcore_flect_self_s_create_plain( tp_t type, tp_t trait, sz_t size ); // plain (primitive) self contained type
-bcore_flect_self_s* bcore_flect_self_s_create_static_array( tp_t item_type ); // creates an (anonymous) static array of item_type
-bcore_flect_self_s* bcore_flect_self_s_create_static_link_array( tp_t item_type ); // creates an (anonymous) static link array of item_type
+
+
+// creates anonymous array type ...
+bcore_flect_self_s* bcore_flect_self_s_create_array_dyn_solid_static( tp_t item_type );
+bcore_flect_self_s* bcore_flect_self_s_create_array_dyn_link_static(  tp_t item_type );
+bcore_flect_self_s* bcore_flect_self_s_create_array_fix_solid_static( tp_t item_type, sz_t size );
+bcore_flect_self_s* bcore_flect_self_s_create_array_fix_link_static(  tp_t item_type, sz_t size );
+bcore_flect_self_s* bcore_flect_self_s_create_array_fix_link_aware(   sz_t size );
 
 
 /** Creating a reflection by parsing a stream:
@@ -340,7 +361,7 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
 #define BCORE_STATIC_ARRAY_S( type, name ) \
     union \
     { \
-        bcore_static_array_s name##_arr; \
+        bcore_array_dyn_solid_static_s name##_arr; \
         struct \
         { \
             type* name##_data; \
@@ -352,7 +373,7 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
 #define BCORE_STATIC_LINK_ARRAY_S( type, name ) \
     union \
     { \
-        bcore_static_link_array_s name##_arr; \
+        bcore_array_dyn_link_static_s name##_arr; \
         struct \
         { \
             type** name##_data; \

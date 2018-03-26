@@ -42,7 +42,7 @@ typedef struct bcore_trait_s
 
     union
     {
-        bcore_static_array_s ft_arr;
+        bcore_array_dyn_solid_static_s ft_arr;
         struct
         {
             bcore_trait_ft_s * ft_data;
@@ -52,7 +52,7 @@ typedef struct bcore_trait_s
 
     union
     {
-        bcore_static_array_s fp_arr;
+        bcore_array_dyn_solid_static_s fp_arr;
         struct
         {
             bcore_trait_fp_supports * fp_data;

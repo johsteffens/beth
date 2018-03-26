@@ -197,7 +197,7 @@ typedef struct bcore_thread_arr_s
     aware_t _;
     union
     {
-        bcore_static_array_s arr;
+        bcore_array_dyn_solid_static_s arr;
         struct
         {
             bcore_thread_s* data;

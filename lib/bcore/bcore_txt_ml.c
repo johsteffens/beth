@@ -176,9 +176,9 @@ void bcore_txt_ml_interpreter_s_init( bcore_txt_ml_interpreter_s* o )
 
 BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_txt_ml_interpreter_s )
 BCORE_DEFINE_FUNCTION_COPY_INST( bcore_txt_ml_interpreter_s )
-BCORE_DEFINE_FUNCTION_CREATE(     bcore_txt_ml_interpreter_s )
-BCORE_DEFINE_FUNCTION_DISCARD(    bcore_txt_ml_interpreter_s )
-BCORE_DEFINE_FUNCTION_CLONE(      bcore_txt_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_CREATE(    bcore_txt_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_DISCARD(   bcore_txt_ml_interpreter_s )
+BCORE_DEFINE_FUNCTION_CLONE(     bcore_txt_ml_interpreter_s )
 
 static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source )
 {
@@ -223,8 +223,17 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
             if( bcore_via_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
-                bcore_array_set_size( arr_l, 0 );
-                while( !bcore_source_parse_bl_fa( src_l, " #?'</>'" ) ) bcore_array_push( arr_l, interpret( o, sr_null(), src_l ) );
+                if( bcore_array_is_fixed( arr_l ) )
+                {
+                    sz_t arr_size = bcore_array_get_size( arr_l );
+                    for( sz_t i = 0; i < arr_size; i++ ) bcore_array_set( arr_l, i, interpret( o, sr_null(), src_l ) );
+                    bcore_source_parse_fa( src_l, " </>" );
+                }
+                else
+                {
+                    bcore_array_set_size( arr_l, 0 );
+                    while( !bcore_source_parse_bl_fa( src_l, " #?'</>'" ) ) bcore_array_push( arr_l, interpret( o, sr_null(), src_l ) );
+                }
             }
             else
             {

@@ -38,6 +38,13 @@ typedef struct bcore_inst_item_s
     bl_t no_trace;    // do not recursively follow this item (could be private, cyclic or external)
 } bcore_inst_item_s;
 
+
+static inline
+sz_t bcore_inst_item_s_array_fix_size( const bcore_inst_item_s* o )
+{
+    return o->flect_item->array_fix_size;
+}
+
 typedef struct bcore_inst_body_s
 {
     bcore_inst_item_s* data;
@@ -64,7 +71,7 @@ typedef struct bcore_inst_s
 
     sz_t size;   // sizeof(type);
     sz_t align;  // alignof(type)
-    bl_t aware;  // object is self-aware meaning it defines its type (aware_t) as first element
+    bl_t aware;  // object is self-aware, meaning it defines its type (aware_t) as first element
 
     bl_t init_flat; // flat initialization possible
     bl_t down_flat; // flat shut down possible

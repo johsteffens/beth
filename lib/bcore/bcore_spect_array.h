@@ -38,8 +38,11 @@ typedef struct bcore_array_s
 {
     aware_t p_type; // type of perspective
     tp_t    o_type; // type of object
-
     tp_t caps_type;
+
+    bl_t fixed;      // fixed-size-array
+    sz_t fixed_size; // array size in case fixed == true; 0 otherwise
+
     sz_t caps_offset;
     const bcore_inst_s* item_p;  // item-perspective; NULL for typed or aware arrays
 
@@ -58,17 +61,35 @@ static inline const bcore_array_s* bcore_array_s_get_aware( vc_t obj )
 /**********************************************************************************************************************/
 // array type construction
 
-/** Constructs and returns an array of type if not already existing.
- *  The array type constructed is
- *  <typename>__static_array = { <typename> []; }
+/** Returns the type of a static solid dynamic array of 'type'.
+ *  If not already existing, the array type is generated as
+ *  { <typename> []; }
  */
-tp_t bcore_static_array_type_of( tp_t type );
+tp_t bcore_array_dyn_solid_static_type_of( tp_t type );
 
-/** Constructs and returns an array of type if not already existing.
- *  The array type constructed is
- *  <typename>__static_link_array = { <typename> * []; }
+/** Returns the type of a static link dynamic array of 'type'.
+ *  If not already existing, the array type is generated as
+ *  { <typename> * []; }
  */
-tp_t bcore_static_link_array_type_of( tp_t type );
+tp_t bcore_array_dyn_link_static_type_of( tp_t type );
+
+/** Returns the type of a static solid fixed array of 'type' and 'size'.
+ *  If not already existing, the array type is generated as
+ *  { <typename> [size]; }
+ */
+tp_t bcore_array_fix_solid_static_type_of( tp_t type, sz_t size );
+
+/** Returns the type of a static link fixed array of 'type' and 'size'.
+ *  If not already existing, the array type is generated as
+ *  { <typename> * [size]; }
+ */
+tp_t bcore_array_fix_link_static_type_of( tp_t type, sz_t size );
+
+/** Returns the type of a static link fixed array of 'type' and 'size'.
+ *  If not already existing, the array type is generated as
+ *  { aware * [size]; }
+ */
+tp_t bcore_array_fix_link_aware_type_of( sz_t size );
 
 /**********************************************************************************************************************/
 
@@ -97,6 +118,7 @@ void bcore_array_spect_push_bl      ( const bcore_array_s* p, vd_t o, bl_t val )
 void bcore_array_spect_pop          ( const bcore_array_s* p, vd_t o );             // removes last element from array
 void bcore_array_spect_set_gtype    ( const bcore_array_s* p, vd_t o, tp_t type  ); // changes global item-type on empty arrays;
 
+bl_t bcore_array_spect_is_fixed             ( const bcore_array_s* p ); // checks if array has fixed size
 bl_t bcore_array_spect_is_static            ( const bcore_array_s* p ); // checks if elements are static (type of elements need not be recorded)
 bl_t bcore_array_spect_is_mono_typed        ( const bcore_array_s* p ); // checks if elements have all the same type
 bl_t bcore_array_spect_is_mutable_mono_typed( const bcore_array_s* p ); // checks if mono_typed and type can be changed (non-static)
@@ -164,6 +186,7 @@ void bcore_array_typed_push_sc              ( tp_t tp, vd_t o, sc_t val );
 void bcore_array_typed_push_bl              ( tp_t tp, vd_t o, bl_t val );
 void bcore_array_typed_pop                  ( tp_t tp, vd_t o );
 void bcore_array_typed_set_gtype            ( tp_t tp, vd_t o, tp_t type  );
+bl_t bcore_array_typed_is_fixed             ( tp_t tp );
 bl_t bcore_array_typed_is_static            ( tp_t tp );
 bl_t bcore_array_typed_is_mono_typed        ( tp_t tp );
 bl_t bcore_array_typed_is_mutable_mono_typed( tp_t tp );
@@ -211,6 +234,7 @@ void bcore_array_aware_push_sc              ( vd_t o, sc_t val );
 void bcore_array_aware_push_bl              ( vd_t o, bl_t val );
 void bcore_array_aware_pop                  ( vd_t o );
 void bcore_array_aware_set_gtype            ( vd_t o, tp_t type  );
+bl_t bcore_array_aware_is_fixed             ( vc_t o );
 bl_t bcore_array_aware_is_static            ( vc_t o );
 bl_t bcore_array_aware_is_mono_typed        ( vc_t o );
 bl_t bcore_array_aware_is_mutable_mono_typed( vc_t o );
@@ -258,6 +282,7 @@ void bcore_array_push_sc              ( sr_s o, sc_t val );
 void bcore_array_push_bl              ( sr_s o, bl_t val );
 void bcore_array_pop                  ( sr_s o );
 void bcore_array_set_gtype            ( sr_s o, tp_t type  );
+bl_t bcore_array_is_fixed             ( sr_s o );
 bl_t bcore_array_is_static            ( sr_s o );
 bl_t bcore_array_is_mono_typed        ( sr_s o );
 bl_t bcore_array_is_mutable_mono_typed( sr_s o );
@@ -305,6 +330,7 @@ void bcore_array_q_push_sc              ( const sr_s* o, sc_t val );
 void bcore_array_q_push_bl              ( const sr_s* o, bl_t val );
 void bcore_array_q_pop                  ( const sr_s* o );
 void bcore_array_q_set_gtype            ( const sr_s* o, tp_t type  );
+bl_t bcore_array_q_is_fixed             ( const sr_s* o );
 bl_t bcore_array_q_is_static            ( const sr_s* o );
 bl_t bcore_array_q_is_mono_typed        ( const sr_s* o );
 bl_t bcore_array_q_is_mutable_mono_typed( const sr_s* o );
