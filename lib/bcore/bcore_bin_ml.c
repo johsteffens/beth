@@ -33,6 +33,12 @@ static inline void push_type( sr_s sink, tp_t type )
     bcore_sink_push_data( sink, &type, sizeof( type ) );
 }
 
+static inline void push_flag( const sr_s* sink, bl_t flag )
+{
+    u0_t v = flag ? 1 : 0;
+    bcore_sink_q_push_data( sink, &v, 1 );
+}
+
 static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, sz_t depth )
 {
     bcore_life_s* l = bcore_life_s_create();
@@ -43,15 +49,13 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
 
     if( !obj_l.o ) // NULL
     {
-//        Open issue:
-//        txt_ml and bin_ml cannot differentiate between 'type given but body not created'
-//        and 'type without physical body (as in certain closures)'.
-//        To support the latter, we must store the type here.
-
-
         if( obj_l.p )
         {
             push_type( sink_l, sr_s_type( &obj_l ) );
+            push_flag( &sink_l, false );
+            // 'false' specifies that the object is not instantiated.
+            // This is to differentiate from the case where the object was instantiated
+            // without additional parameters.
         }
         else
         {
@@ -61,6 +65,8 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
     else
     {
         push_type( sink_l, sr_s_type( &obj_l ) );
+        push_flag( &sink_l, true ); // true signals that the object is to be instantiated
+
         if( sr_s_type( &obj_l ) == TYPEOF_st_s ) // strings
         {
             const st_s* string = obj_l.o;
@@ -152,11 +158,21 @@ void bcore_bin_ml_to_file( sr_s obj, sc_t file )
 
 BCORE_DEFINE_FUNCTIONS_OBJ_INST( bcore_bin_ml_interpreter_s )
 
-static inline tp_t get_type( sr_s source )
+static inline tp_t get_type( const sr_s* source )
 {
     tp_t type = 0;
-    bcore_source_get_data( source, &type, sizeof( type ) );
+    bcore_source_q_get_data( source, &type, sizeof( type ) );
     return type;
+}
+
+static inline bl_t get_flag( const sr_s* source )
+{
+    u0_t v = 0;
+    bcore_source_q_get_data( source, &v, 1 );
+    if( v == 0 ) return false;
+    if( v == 1 ) return true;
+    bcore_source_q_parse_err_fa( source, "Invalid flag value '#<u0_t>'.", v );
+    return true;
 }
 
 static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s source )
@@ -166,10 +182,18 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
 
     if( !obj.o )
     {
-        tp_t type = get_type( src_l );
+        tp_t type = get_type( &src_l );
         if( type )
         {
-            obj = interpret( o, bcore_inst_typed_create_sr( type ), src_l );
+            bl_t create_instance = get_flag( &src_l );
+            if( create_instance )
+            {
+                obj = interpret( o, bcore_inst_typed_create_sr( type ), src_l );
+            }
+            else
+            {
+                obj.p = bcore_inst_s_get_typed( type );
+            }
         }
     }
     else
@@ -223,7 +247,7 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
 
                 for( sz_t i = 0; i < size; i++ )
                 {
-                    tp_t name = get_type( src_l );
+                    tp_t name = get_type( &src_l );
                     sz_t idx = bcore_via_nget_index( obj_l, name );
                     if( bcore_via_iis_link( obj_l, idx ) )
                     {
@@ -232,7 +256,11 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
                     else
                     {
                         sr_s item = bcore_via_iget( obj_l, idx );
-                        if( item.o ) ASSERT( sr_s_type( &item ) == get_type( src_l ) );
+                        if( item.o )
+                        {
+                            ASSERT( get_type( &src_l ) == sr_s_type( &item ) );
+                            ASSERT( get_flag( &src_l ) == true );
+                        }
                         if( sr_s_is_strong( &item ) )  // if item is detached --> refeed it
                         {
                             bcore_via_iset( obj_l, idx, interpret( o, item, src_l ) );

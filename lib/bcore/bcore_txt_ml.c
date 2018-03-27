@@ -78,14 +78,12 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
 
     if( !obj_l.o ) // NULL
     {
-//        Open issue:
-//        txt_ml and bin_ml cannot differentiate between 'type given but body not created'
-//        and 'type without physical body (as in certain closures)'.
-//        To support the latter, we must store the type here.
-
         if( obj_l.p )
         {
-            bcore_sink_pushf( sink_l, "<%s></>\n", name_of( sr_s_type( &obj_l ), buf ) );
+            // Explicit NULL specifies that the object is not instantiated.
+            // This is to differentiate from the case where the object was instantiated
+            // without additional parameters.
+            bcore_sink_pushf( sink_l, "<%s>NULL</>\n", name_of( sr_s_type( &obj_l ), buf ) );
         }
         else
         {
@@ -201,11 +199,20 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
             {
                 bcore_source_q_parse_errf( &src_l, "Type '%s' has no reflection.", type_string->sc );
             }
-            obj = interpret( o, bcore_inst_typed_create_sr( type ), src_l );
+
+            if( bcore_source_q_parse_bl_fa( &src_l, " #?'NULL'" ) ) // no instance
+            {
+                obj.p = bcore_inst_s_get_typed( type );
+                bcore_source_q_parse_fa( &src_l, " </>" );
+            }
+            else
+            {
+                obj = interpret( o, bcore_inst_typed_create_sr( type ), src_l );
+            }
         }
         else
         {
-            bcore_source_parse_fa( src_l, " </>" );
+            bcore_source_q_parse_fa( &src_l, " </>" );
         }
     }
     else
