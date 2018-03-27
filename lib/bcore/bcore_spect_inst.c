@@ -1292,6 +1292,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
             const bcore_flect_item_s* flect_item = &flect_body->data[ i ];
 
             if( flect_item->f_shell ) continue; // shells are invisible to instance (but handled in via-inst_p)
+            if( flect_item->f_const ) continue; // constants are invisible to instance
 
             if( flect_item->caps == BCORE_CAPS_EXTERNAL_FUNC )
             {

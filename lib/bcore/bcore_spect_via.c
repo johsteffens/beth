@@ -539,7 +539,8 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
                 inst_item = bcore_inst_body_s_inst_item_of_flect_item( inst_p->body, flect_item );
             }
 
-            if( inst_item && inst_item->no_trace             ) continue; // instance no-trace items (private, external, ...) are not accessible in via
+            if( inst_item && inst_item->no_trace ) continue; // instance no-trace items (private, external, ...) are not accessible in via
+            if( flect_item->f_const ) continue; // constants are not accessible in via
 
             bcore_vitem_s vitem;
             bcore_memzero( &vitem, sizeof( bcore_vitem_s ) );

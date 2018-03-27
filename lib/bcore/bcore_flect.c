@@ -373,10 +373,45 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
             bl_t f_arr_dyn   = false;
             bl_t f_arr_fix   = false;
             bl_t f_spect     = false;
+            bl_t f_const     = false;
             bl_t f_deep_copy = true;
+            bl_t f_assign_default = false;
             sz_t array_fix_size = 0;
 
-            bcore_source_q_parse_fa( &src, "#?w'private' #?w'hidden' #?w'shell' #?w'spect'",  &f_private, &f_hidden, &f_shell, &f_spect );
+            bl_t f_any_prefix = true;
+            while( f_any_prefix )
+            {
+                f_any_prefix = false;
+                if( bcore_source_q_parse_bl_fa( &src, " #?w'private'" ) )
+                {
+                    if( f_private ) bcore_source_q_parse_err_fa( &src, "Prefix 'private' occurs twice." );
+                    f_any_prefix = f_private = true;
+                }
+
+                if( bcore_source_q_parse_bl_fa( &src, " #?w'hidden'"  ) )
+                {
+                    if( f_hidden ) bcore_source_q_parse_err_fa( &src, "Prefix 'hidden' occurs twice." );
+                    f_any_prefix = f_hidden = true;
+                }
+
+                if( bcore_source_q_parse_bl_fa( &src, " #?w'shell'"   ) )
+                {
+                    if( f_shell ) bcore_source_q_parse_err_fa( &src, "Prefix 'shell' occurs twice." );
+                    f_any_prefix = f_shell = true;
+                }
+
+                if( bcore_source_q_parse_bl_fa( &src, " #?w'spect'"   ) )
+                {
+                    if( f_spect ) bcore_source_q_parse_err_fa( &src, "Prefix 'spect' occurs twice." );
+                    f_any_prefix = f_spect = true;
+                }
+
+                if( bcore_source_q_parse_bl_fa( &src, " #?w'const'"   ) )
+                {
+                    if( f_const ) bcore_source_q_parse_err_fa( &src, "Prefix 'const' occurs twice." );
+                    f_any_prefix = f_const = true;
+                }
+            }
 
             // type can be specified by explicit type id number (anonymous types) or by name
             tp_t type_val = 0;
@@ -393,17 +428,16 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
                 bcore_source_q_parse_fa( &src, "#name ", type_name );
             }
 
-            bl_t assign_default = false;
 
             if( bcore_source_q_parse_bl_fa( &src, "#?'*' " ) )
             {
                 f_link = true;
-                f_deep_copy = f_spect ? false : true;
+                f_deep_copy = true;
             }
             else if( bcore_source_q_parse_bl_fa( &src, "#?'=>' " ) )
             {
                 f_link = true;
-                f_deep_copy = f_spect ? false : true;
+                f_deep_copy = true;
             }
             else if( bcore_source_q_parse_bl_fa( &src, "#?'->' " ) )
             {
@@ -432,19 +466,25 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
                 }
             }
 
-            bcore_source_q_parse_fa( &src, "#name #?'=' ", item_name, &assign_default );
+            bcore_source_q_parse_fa( &src, "#name #?'=' ", item_name, &f_assign_default );
 
             item->f_private   = f_private || f_spect;
             item->f_hidden    = f_hidden;
             item->f_shell     = f_shell;
             item->f_spect     = f_spect;
             item->f_deep_copy = f_deep_copy;
+            item->f_const     = f_const;
 
             if( f_arr_fix ) item->array_fix_size = array_fix_size;
 
-            if( f_spect && !f_link )
+            if( f_spect && ( !f_link || f_deep_copy ) )
             {
-                bcore_source_q_parse_err_fa( &src, "Perspectives are links. Use 'spect <sc_t> *' to clarify method of referencing.", type_name->sc );
+                bcore_source_q_parse_err_fa( &src, "Perspectives are shallow links. Use 'spect #<sc_t> ->' to clarify method of referencing.", type_name->sc );
+            }
+
+            if( f_const && !f_assign_default )
+            {
+                bcore_source_q_parse_err_fa( &src, "Constants need a value. Use 'const #<sc_t> = <value>'.", type_name->sc );
             }
 
             if( st_s_equal_sc( type_name, "typed" ) )
@@ -456,7 +496,7 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
 
                 if( !f_link && !f_arr_dyn )
                 {
-                    bcore_source_q_parse_err_fa( &src, "Typed objects cannot be nested. Use 'typed *' to clarify method of referencing." );
+                    bcore_source_q_parse_err_fa( &src, "Typed objects cannot be nested. Use 'typed *|=>|->' to clarify method of referencing." );
                 }
 
                 item->type = 0;
@@ -467,7 +507,7 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
             {
                 if( !f_link )
                 {
-                    bcore_source_q_parse_err_fa( &src, "Self-aware objects must be referenced by a link. Use 'aware *' to clarify method of referencing." );
+                    bcore_source_q_parse_err_fa( &src, "Self-aware objects must be referenced by a link. Use 'aware *|=>|->' to clarify method of referencing." );
                 }
                 item->type = 0;
                 item->name = entypeof( item_name->sc );
@@ -500,7 +540,7 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
             }
 
 
-            if( assign_default )
+            if( f_assign_default )
             {
                 if( item->caps == BCORE_CAPS_SOLID_STATIC )
                 {
@@ -538,7 +578,7 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
                 }
                 else
                 {
-                    bcore_source_q_parse_err_fa( &src, "Assignment of default value only for single solid static nesting." );
+                    bcore_source_q_parse_err_fa( &src, "Assignment of default value only possible for single solid static nesting (no links, no arrays)." );
                 }
             }
         }

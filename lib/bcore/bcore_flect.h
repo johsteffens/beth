@@ -121,6 +121,9 @@ typedef struct bcore_flect_item_s
             // visible to inst spect (automatically coupled with f_private)
             unsigned f_spect     : 1; // static link to perspective of this item
 
+            // constant; requires initializer; no physical representation in object
+            unsigned f_const     : 1;
+
             // In instance perspective copy:
             //    * true: linked objects are deeply copied
             //    * false: linked objects are forked
@@ -261,7 +264,7 @@ bcore_flect_self_s* bcore_flect_self_s_create_array_fix_link_aware(   sz_t size 
  *  Typical Format:
  *  <type-name> = [<trait-name>]
  *  {
- *      [private|shell|hidden|spect] <type> [<qualifiers>] <name> [ = default ];
+ *      [<prefixes>] <type> [<qualifier>] <name> [=<default value>];
  *
  *      func <type> <name> = <ftype>;
  *      ....
@@ -270,10 +273,18 @@ bcore_flect_self_s* bcore_flect_self_s_create_array_fix_link_aware(   sz_t size 
  *  <type>:
  *    <type name> | <type number> | typed | aware
  *
- *  qualifiers:
- *    *, => : (deep) link    // object is referenced and inst perspective takes full control incl. deep copy
- *       -> : (shallow) link // object is referenced and inst perspective controls lifetime but only forks links (no cloning)
- *    []: array
+ *  qualifier:
+ *    *, =>   : (deep) link    // object is referenced and inst perspective takes full control incl. deep copy
+ *       ->   : (shallow) link // object is referenced and inst perspective controls lifetime but only forks links (no cloning)
+ *        []  : dynamic array
+ *     [size] : fixed-size-array
+ *
+ *  prefixes: (multiple prefixes can be mixed)
+ *     private : Invisible to perspectives. (exception: spect_inst may initialize and destroy the field, no copying)
+ *     shell   : No physical representation in object. values are provided by get, set functions (used by spect_via; invisible to spect_inst)
+ *     hidden  : Invisible to spect_via (can be seen as complement of 'shell')
+ *     spect   : Perspective of parent object (private shallow link). Initialized by spect_inst. Private to other perspectives.
+ *     const   : Constant. Requires default value. No physical representation in object. Typically used as perspective-parameter.
  *
  *  Special cases:
  *    <type-name> = <assigned-name> : creates a copy of an existing reflection with new name
