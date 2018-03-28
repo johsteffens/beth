@@ -24,4 +24,5 @@
 /// broadcasts a signal within the library
 vd_t bmath_signal_handler( const bcore_signal_s* o );
 
+
 #endif  // BMATH_SIGNAL_H

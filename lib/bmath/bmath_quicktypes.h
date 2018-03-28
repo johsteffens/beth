@@ -28,5 +28,4 @@ void bmath_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
  *  Created via bclos_quicktypes_to_stdout( NULL );
  */
 
-
 #endif // BMATH_QUICKTYPES_H

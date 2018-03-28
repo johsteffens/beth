@@ -73,3 +73,4 @@ void bmath_abelian_group_q_zro( const sr_s* o );
 vd_t bmath_algebraic_specs_signal_handler( const bcore_signal_s* o );
 
 #endif  // BMATH_ALGEBRAIC_SPECS_H
+
