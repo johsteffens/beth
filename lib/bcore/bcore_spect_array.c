@@ -936,12 +936,10 @@ sz_t bcore_array_spect_get_unit_size( const bcore_array_s* p, vc_t o )
 
 static bl_t array_s_supports( const bcore_flect_self_s* self, st_s* log )
 {
-    if( self->body )
+    sz_t items_size = bcore_flect_self_s_items_size( self );
+    for( sz_t i = 0; i < items_size; i++ )
     {
-        for( sz_t i = 0; i < self->body->size; i++ )
-        {
-            if( bcore_flect_caps_is_array( self->body->data[ i ].caps ) ) return true;
-        }
+        if( bcore_flect_caps_is_array( bcore_flect_self_s_get_item( self, i )->caps ) ) return true;
     }
     if( log ) st_s_pushf( log, "Object is no array." );
     return false;

@@ -25,6 +25,11 @@
 #include "bcore_tbman.h"
 
 /**********************************************************************************************************************/
+// bcore_spect_header_s
+
+BCORE_DEFINE_OBJECT_FLAT( bcore_spect_header_s, "bcore_spect_header_s = { tp_t p_type; tp_t o_type; }")
+
+/**********************************************************************************************************************/
 // hash map
 
 typedef struct hmap_s
@@ -58,17 +63,24 @@ static void hmap_s_down( hmap_s* o )
     while( o->arr.size > 0 )
     {
         vd_t spect = bcore_arr_vd_s_pop( &o->arr );
-        tp_t p_type = ( ( tp_t* )spect )[ 0 ];
-        tp_t o_type = ( ( tp_t* )spect )[ 1 ];
+        tp_t p_type = ( ( bcore_spect_header_s* )spect )->p_type;
+        tp_t o_type = ( ( bcore_spect_header_s* )spect )->o_type;
         tp_t sig    = bcore_tp_fold_tp( p_type, o_type );
         bcore_hmap_u2vd_s_remove_h( &o->map, sig );
 
         /** During discard we lift the lock because the spect's destructor
-         *  may still need to retrieve (even re-instantiate) other perspectives.
+         *  may retrieve (even recreate) perspective instances.
          *
-         *  This may actually add perspectives again that have already been destroyed.
-         *  This is allowed and can be handled safely at this point.
-         *  Newly added perspectives will be part of o->arr and eventually taken down again.
+         *  This could re-add perspectives that have already been destroyed, giving those a different address.
+         *  Nevertheless, this is safe at this point for the following reasons:
+         *    1. Non-perspective objects, possibly referencing perspectives, have already been taken down.
+         *    2. Perspective B can only reference perspective A when A was added before B to the registry.
+         *       Shutting down in reverse order ensures that A is never destroyed before B.
+         *    3. (follows from 2) Cyclic references are not possible.
+         *
+         *  Temporarily re-added perspectives reside at the tail-end of o->arr
+         *  and are taken down again in this loop without cyclic re-instantiation.
+         *  (Halting is guaranteed.)
          */
         bcore_mutex_s_unlock( &o->mutex );
         if( p_type == TYPEOF_bcore_inst_s )
@@ -124,10 +136,14 @@ static void spect_manager_close()
 /// tests if the object's self reflection satisfies the requirements of a perspective
 static bl_t supports( const bcore_flect_self_s* self, st_s* log )
 {
-    if( !self->body                                  ) return false;
-    if( self->body->size < 2                         ) return false;
-    if( self->body->data[ 0 ].type != TYPEOF_aware_t ) return false;
-    if( self->body->data[ 1 ].type != TYPEOF_tp_t    ) return false;
+    if( !self->body                                ) return false;
+    if( bcore_flect_self_s_items_size( self ) < 2  ) return false;
+    if( bcore_flect_self_s_get_item( self, 0 )->type != TYPEOF_bcore_spect_header_s )
+    {
+        if( bcore_flect_self_s_get_item( self, 0 )->type != TYPEOF_aware_t ) return false;
+        if( bcore_flect_self_s_get_item( self, 1 )->type != TYPEOF_tp_t    ) return false;
+    }
+
     return true;
 }
 
@@ -136,10 +152,10 @@ static void spect_define_trait()
     tp_t trait = entypeof( "spect" );
     bcore_trait_require_awareness( trait );
     bcore_trait_require_in_ancestry( trait );
-//    bcore_trait_require_function(  trait, entypeof( "bcore_fp_init"                   ), 0 );
-//    bcore_trait_require_function(  trait, entypeof( "bcore_fp_down"                   ), 0 );
-//    bcore_trait_require_function(  trait, entypeof( "bcore_fp_discard"                ), 0 );
-    bcore_trait_require_function(  trait, entypeof( "bcore_spect_fp_create_from_self" ), 0 );
+
+//    bcore_trait_require_function(  trait, entypeof( "bcore_spect_fp_create_from_self" ), 0 );
+//    now optional; missing 'bcore_spect_fp_create_from_self' falls back to genric function bcore_spect_create_from_self
+
     bcore_trait_register_fp_support( trait, supports );
     bcore_trait_set( trait, typeof( "bcore_inst" ) );
 }
@@ -173,9 +189,18 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 
     const bcore_flect_self_s* p_self = bcore_flect_get_self( p_type );
     const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
-    fp_t create_from_self = bcore_flect_self_s_get_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
-    vd_t spect = ( ( bcore_spect_fp_create_from_self )create_from_self )( o_self );
+    vd_t spect = NULL;
     vd_t discard_spect = NULL; // in case multiple threads try to register, redundant creations must be discarded
+
+    fp_t create_from_self = bcore_flect_self_s_try_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
+    if( create_from_self )
+    {
+        spect = ( ( bcore_spect_fp_create_from_self )create_from_self )( o_self );
+    }
+    else // use generic creation
+    {
+        spect = bcore_spect_create_from_self( p_self, o_self );
+    }
 
     // Lock for registering the perspective (if still not registered)
     bcore_mutex_s_lock( &hmap_s_g->mutex );
@@ -199,6 +224,114 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     if( discard_spect ) bcore_inst_aware_discard( discard_spect );
     return spect;
 }
+
+/**********************************************************************************************************************/
+
+void bcore_spect_define_trait( const bcore_flect_self_s* p_self )
+{
+    assert( p_self != NULL );
+
+    tp_t trait = 0;
+    {
+        st_s* p_name = st_s_create_sc( ifnameof( p_self->type ) );
+        if( p_name->size < 3 || p_name->sc[ p_name->size - 2 ] != '_' || p_name->sc[ p_name->size - 1 ] != 's' )
+        {
+            ERR_fa( "Name of perspective '#<sc_t>' shound end in '_s'", p_name->sc );
+        }
+        p_name->data[ p_name->size - 2 ] = 0;
+        trait = entypeof( p_name->sc );
+        st_s_discard( p_name );
+    }
+
+    /// check requirements
+    bcore_spect_header_s* o = bcore_inst_typed_create( p_self->type );
+    const bcore_via_s* p_via = bcore_via_s_get_typed( p_self->type );
+    sz_t size = bcore_via_spect_get_size( p_via );
+    for( sz_t i = 0; i < size; i++ )
+    {
+        const bcore_vitem_s* vitem = bcore_via_spect_iget_vitem( p_via, i );
+        if( vitem->flags.f_feature && vitem->flags.f_strict )
+        {
+            if( vitem->flags.f_fp )
+            {
+                sr_s dst = bcore_via_spect_nget( p_via, o, vitem->name );
+                fp_t* dst_fp = ( fp_t* )dst.o;
+                if( vitem->flags.f_strict && !dst_fp )
+                {
+                    bcore_trait_require_function( trait, vitem->type, vitem->name );
+                }
+                sr_down( dst );
+            }
+            else
+            {
+                WRN_fa
+                (
+                    "Defining trait of perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' is not supported.",
+                    ifnameof( p_self->type ),
+                    vitem->type,
+                    vitem->name
+                );
+            }
+        }
+    }
+
+    bcore_trait_set( trait, entypeof( "bcore_inst" ) );
+}
+
+vd_t bcore_spect_create_from_self( const bcore_flect_self_s* p_self, const bcore_flect_self_s* o_self )
+{
+    assert( p_self != NULL );
+    assert( o_self != NULL );
+
+    const bcore_via_s* p_via = bcore_via_s_get_typed( p_self->type );
+    bcore_spect_header_s* o = bcore_inst_typed_create( p_self->type );
+    o->o_type = o_self->type;
+
+    sz_t size = bcore_via_spect_get_size( p_via );
+    for( sz_t i = 0; i < size; i++ )
+    {
+        const bcore_vitem_s* vitem = bcore_via_spect_iget_vitem( p_via, i );
+        if( vitem->flags.f_feature )
+        {
+            if( vitem->flags.f_fp )
+            {
+                sr_s dst = bcore_via_spect_nget( p_via, o, vitem->name );
+                fp_t src_fp = bcore_flect_self_s_try_external_fp( o_self, vitem->type, vitem->name );
+                fp_t* dst_fp = ( fp_t* )dst.o;
+
+                if( vitem->flags.f_strict && !dst_fp && !src_fp )
+                {
+                    WRN_fa
+                    (
+                        "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' not found in '#<sc_t>'.",
+                        ifnameof( p_self->type ),
+                        vitem->type,
+                        vitem->name,
+                        ifnameof( o_self->type )
+                    );
+                }
+
+                if( src_fp ) *dst_fp = src_fp;
+
+                sr_down( dst );
+            }
+            else
+            {
+                WRN_fa
+                (
+                    "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' is not supported.",
+                    ifnameof( p_self->type ),
+                    vitem->type,
+                    vitem->name
+                );
+            }
+        }
+    }
+
+    return o;
+}
+
+/**********************************************************************************************************************/
 
 st_s* bcore_spect_status()
 {
@@ -296,6 +429,7 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             spect_define_trait();
+            BCORE_REGISTER_FLECT( bcore_spect_header_s );
         }
         break;
 

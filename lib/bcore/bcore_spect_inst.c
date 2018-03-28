@@ -31,23 +31,6 @@ BCORE_DEFINE_FUNCTION_CREATE(    bcore_inst_item_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bcore_inst_item_s )
 BCORE_DEFINE_FUNCTION_CLONE(     bcore_inst_item_s )
 
-/*
-void bcore_inst_item_s_set_size_align( bcore_inst_item_s* o )
-{
-    if( o->flect_item->caps == BCORE_CAPS_SOLID_STATIC )
-    {
-        const bcore_inst_s* inst = bcore_inst_s_get_typed( o->flect_item->type );
-        o->size  = inst->size;
-        o->align = inst->align;
-    }
-    else
-    {
-        o->size  = bcore_flect_caps_e_size( o->flect_item->caps );
-        o->align = bcore_flect_caps_e_align( o->flect_item->caps );
-    }
-}
-*/
-
 /**********************************************************************************************************************/
 
 BCORE_DEFINE_FUNCTION_INIT_FLAT( bcore_inst_body_s )
@@ -222,7 +205,7 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
             // only perspectives are initialized
             case BCORE_CAPS_LINK_STATIC:
             {
-                if( flect_item->f_spect ) *( vc_t* )dst_obj = bcore_spect_get_typed( flect_item->type, p->o_type );
+                if( flect_item->flags.f_spect ) *( vc_t* )dst_obj = bcore_spect_get_typed( flect_item->type, p->o_type );
             }
             break;
 
@@ -571,7 +554,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 if( src->link )
                 {
-                    if( flect_item->f_deep_copy )
+                    if( flect_item->flags.f_deep_copy )
                     {
                         dst->link = bcore_inst_spect_clone( inst_item->inst_p, src->link );
                     }
@@ -598,7 +581,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 if( src->link )
                 {
-                    if( flect_item->f_deep_copy )
+                    if( flect_item->flags.f_deep_copy )
                     {
                         const bcore_inst_s* inst_p = bcore_inst_s_get_typed( src->type );
                         dst->link = inst_p->clone( inst_p, src->link );
@@ -627,7 +610,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 if( src->link )
                 {
-                    if( flect_item->f_deep_copy )
+                    if( flect_item->flags.f_deep_copy )
                     {
                         const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )src->link );
                         dst->link = inst_p->clone( inst_p, src->link );
@@ -745,7 +728,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                     dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                 }
-                if( flect_item->f_deep_copy )
+                if( flect_item->flags.f_deep_copy )
                 {
                     for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
                 }
@@ -775,7 +758,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                     }
-                    if( flect_item->f_deep_copy )
+                    if( flect_item->flags.f_deep_copy )
                     {
                         for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
                     }
@@ -808,7 +791,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                     }
-                    if( flect_item->f_deep_copy )
+                    if( flect_item->flags.f_deep_copy )
                     {
                         for( sz_t i = 0; i < src->size; i++ )
                         {
@@ -858,7 +841,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     vd_t dst = dst_arr[ i ];
                     vd_t src = src_arr[ i ];
                     bcore_inst_spect_discard( inst_p, dst );
-                    if( flect_item->f_deep_copy )
+                    if( flect_item->flags.f_deep_copy )
                     {
                         dst = bcore_inst_spect_clone( inst_p, src );
                     }
@@ -880,7 +863,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     vd_t dst = dst_arr[ i ];
                     vd_t src = src_arr[ i ];
                     bcore_inst_aware_discard( dst );
-                    if( flect_item->f_deep_copy )
+                    if( flect_item->flags.f_deep_copy )
                     {
                         dst = bcore_inst_aware_clone( src );
                     }
@@ -1281,18 +1264,20 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
 
     bl_t body_undefined_or_complete = true;
 
-    if( self->body && self->body->size > 0 )
+    if( bcore_flect_self_s_items_size( self ) > 0 )
     {
-        const bcore_flect_body_s* flect_body = self->body;
-        body_undefined_or_complete = flect_body->complete;
+        sz_t items_size = bcore_flect_self_s_items_size( self );
+//        const bcore_flect_body_s* flect_body = self->body;
+        bl_t body_complete = bcore_flect_body_s_get_complete( self->body );
+        body_undefined_or_complete = body_complete;
         bcore_inst_item_s* last_inst_item = NULL;
 
-        for( sz_t i = 0; i < flect_body->size; i++ )
+        for( sz_t i = 0; i < items_size; i++ )
         {
-            const bcore_flect_item_s* flect_item = &flect_body->data[ i ];
+            const bcore_flect_item_s* flect_item = bcore_flect_self_s_get_item( self, i );
 
-            if( flect_item->f_shell ) continue; // shells are invisible to instance (but handled in via-inst_p)
-            if( flect_item->f_const ) continue; // constants are invisible to instance
+            if( flect_item->flags.f_shell ) continue; // shells are invisible to instance (but handled in via-inst_p)
+            if( flect_item->flags.f_const ) continue; // constants are invisible to instance
 
             if( flect_item->caps == BCORE_CAPS_EXTERNAL_FUNC )
             {
@@ -1328,7 +1313,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
                         inst_item->inst_p = bcore_inst_s_get_typed( flect_item->type );
                     }
 
-                    if( flect_item->type == typeof( "aware_t" ) )
+                    if( flect_item->type == TYPEOF_aware_t || flect_item->type == TYPEOF_bcore_spect_header_s )
                     {
                         o->init_flat = false;
                         o->aware = true;
@@ -1382,13 +1367,13 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
                     inst_item->align = bcore_flect_item_s_inst_align( flect_item );
                 }
 
-                if( flect_item->f_private )
+                if( flect_item->flags.f_private )
                 {
                     inst_item->no_trace = true;
-                    if( !flect_item->f_spect ) o->copy_flat = false;
+                    if( !flect_item->flags.f_spect ) o->copy_flat = false;
                 }
 
-                if( flect_item->f_spect )
+                if( flect_item->flags.f_spect )
                 {
                     inst_item->no_trace = true;
                     o->init_flat = false;
@@ -1410,7 +1395,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
             }
         }
 
-        if( flect_body->complete && last_inst_item )
+        if( body_complete && last_inst_item )
         {
             o->size = aligned_offset( o->align, last_inst_item->offset + last_inst_item->size );
         }
@@ -1459,7 +1444,7 @@ static bcore_flect_self_s* inst_s_create_self( void )
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "bcore_inst_s" ), typeof( "spect" ), sizeof( bcore_inst_s ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
-    self->body->complete = false;
+    bcore_flect_body_s_set_complete( self->body, false );
 
     bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                   "init"         );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_down,             "bcore_fp_down",                   "down"         );

@@ -95,15 +95,12 @@ bl_t bcore_flect_caps_is_array( u2_t caps );
 bl_t bcore_flect_caps_is_array_dyn( u2_t caps );
 bl_t bcore_flect_caps_is_array_fix( u2_t caps );
 
-typedef struct bcore_flect_item_s
+// attribute flags
+typedef struct bcore_flect_flags_s
 {
-    tp_t type; // hash of type
-    tp_t name; // hash of name
-    u2_t caps; // data encapsulation
-
     union
     {
-        tp_t flags; // collection of attribute flags
+        tp_t data; // collection of flags
         struct
         {
             // invisible to all perspectives (inst spect may only initialize and destroy the field)
@@ -124,14 +121,29 @@ typedef struct bcore_flect_item_s
             // constant; requires initializer; no physical representation in object
             unsigned f_const     : 1;
 
+            // item represents a feature (features are used in perspectives)
+            unsigned f_feature   : 1;
+
+            // used in conjunction with 'feature' to determine if the feature is always existing (either by default or by object-sided implementation)
+            unsigned f_strict    : 1;
+
+            // type represents a function pointer
+            unsigned f_fp        : 1;
+
             // In instance perspective copy:
             //    * true: linked objects are deeply copied
             //    * false: linked objects are forked
             unsigned f_deep_copy : 1;
-
         };
     };
+} bcore_flect_flags_s;
 
+typedef struct bcore_flect_item_s
+{
+    tp_t type; // hash of type
+    tp_t name; // hash of name
+    u2_t caps; // data encapsulation
+    bcore_flect_flags_s flags;
     union
     {
         s3_t default_s3; // serves s0_t ... s3_t
@@ -168,23 +180,7 @@ void bcore_flect_item_s_check_integrity( const bcore_flect_item_s* o );
 
 /**********************************************************************************************************************/
 
-typedef struct bcore_flect_body_s
-{
-    union
-    {
-        bcore_array_dyn_solid_static_s arr;
-        struct
-        {
-            bcore_flect_item_s* data;
-            sz_t size, space;
-        };
-    };
-
-    // A complete body enables inst perspective to calculate the
-    // full object's size and alignment from the bodies structure.
-    // An incomplete body has unspecified trailing elements. (intermediate unspecified elements are not allowed)
-    bl_t complete;
-} bcore_flect_body_s;
+typedef struct bcore_flect_body_s bcore_flect_body_s;
 
 void                bcore_flect_body_s_init( bcore_flect_body_s* o );
 void                bcore_flect_body_s_down( bcore_flect_body_s* o );
@@ -195,6 +191,8 @@ bcore_flect_item_s* bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flec
 st_s*               bcore_flect_body_s_show( const bcore_flect_body_s* o );
 tp_t                bcore_flect_body_s_fold_tp( const bcore_flect_body_s* o, tp_t tp );
 s2_t                bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_body_s* o2 );
+void                bcore_flect_body_s_set_complete( bcore_flect_body_s* o, bl_t complete );
+bl_t                bcore_flect_body_s_get_complete( const bcore_flect_body_s* o );
 void                bcore_flect_body_s_check_integrity( const bcore_flect_body_s* o );
 
 /**********************************************************************************************************************/
@@ -236,9 +234,14 @@ void                bcore_flect_self_s_copy( bcore_flect_self_s* o, const bcore_
 bcore_flect_self_s* bcore_flect_self_s_create();
 bcore_flect_self_s* bcore_flect_self_s_clone( const bcore_flect_self_s* o );
 void                bcore_flect_self_s_discard( bcore_flect_self_s* o );
+
+sz_t                      bcore_flect_self_s_items_size( const bcore_flect_self_s* o );
+const bcore_flect_item_s* bcore_flect_self_s_get_item( const bcore_flect_self_s* o, sz_t index );
+
 bcore_flect_item_s* bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item );
 bcore_flect_item_s* bcore_flect_self_s_push_d( bcore_flect_self_s* o, bcore_flect_item_s* item );
 bcore_flect_item_s* bcore_flect_self_s_push_func( bcore_flect_self_s* o, sc_t fname, fp_t func, sc_t type, sc_t name );
+
 // namespace: function address constructed from object name and function name
 bcore_flect_item_s* bcore_flect_self_s_push_ns_func( bcore_flect_self_s* o, fp_t func, sc_t type, sc_t name );
 bcore_flect_item_s* bcore_flect_self_s_push_ns_amoeba( bcore_flect_self_s* o, bcore_amoebic_t func, sc_t name );
@@ -308,6 +311,13 @@ bool bcore_flect_self_s_is_aware(        const bcore_flect_self_s* o            
  */
 vd_t bcore_flect_self_s_get_static( const bcore_flect_self_s* o, tp_t type, tp_t name ); // error when not found
 vd_t bcore_flect_self_s_try_static( const bcore_flect_self_s* o, tp_t type, tp_t name ); // returns NULL when not found
+
+/** Returns a const object to be stored in the perspective.
+ *  'type' specifies a function compatible to bcore_fp_create creating the static object.
+ *  The static object is created in this function by calling bcore_fp_create.
+ */
+vc_t bcore_flect_self_s_get_const( const bcore_flect_self_s* o, tp_t type, tp_t name ); // error when not found
+vc_t bcore_flect_self_s_try_const( const bcore_flect_self_s* o, tp_t type, tp_t name ); // returns NULL when not found
 
 /** Checks proper definition of dependencies (existence);
  *  This check should be executed at a central place not before the reflection is ready to be used for generating instances.

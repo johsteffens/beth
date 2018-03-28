@@ -35,7 +35,18 @@
 #include "bcore_control.h"
 #include "bcore_flect.h"
 
-/// Features...
+/**********************************************************************************************************************/
+
+/// common header of all perspectives
+typedef struct bcore_spect_header_s
+{
+    aware_t p_type; // type of perspective
+    tp_t    o_type; // type of object
+} bcore_spect_header_s;
+
+BCORE_DECLARE_OBJECT( bcore_spect_header_s )
+
+/**********************************************************************************************************************/
 
 /// perspective-instance creation from object reflections
 typedef bcore_flect_self_s* (*bcore_spect_fp_create_from_self )( const bcore_flect_self_s* self );
@@ -55,14 +66,25 @@ bl_t bcore_spect_trait_supported( tp_t spect_trait, tp_t o_type );
  */
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
 
+/**********************************************************************************************************************/
+
+/** Generic perspective functions assuming all information is stored in reflections.
+ *  These functions make use of certain perspectives in bcore. Hence, they should not be
+ *  used for perspectives of bcore.
+ */
+void bcore_spect_define_trait(     const bcore_flect_self_s* p_self );
+vd_t bcore_spect_create_from_self( const bcore_flect_self_s* p_self, const bcore_flect_self_s* o_self );
+
+/**********************************************************************************************************************/
+
 /// returns status information (thread safe)
 st_s* bcore_spect_status();
 
 /**********************************************************************************************************************/
 
 // syntactic sugar
-vc_t ch_spect_p( vc_t p, tp_t ptype ); // if needed changes perspective to spect_type; returns NULL if p is NULL
-vc_t ch_spect_o( vc_t p, tp_t otype ); // if needed changes perspective to object_type; returns NULL if p is NULL
+vc_t ch_spect_p( vc_t p, tp_t p_type ); // if needed changes perspective to spect_type; returns NULL if p is NULL
+vc_t ch_spect_o( vc_t p, tp_t o_type ); // if needed changes perspective to object_type; returns NULL if p is NULL
 
 static inline tp_t spect_tp_p( vc_t p ) { return ( ( tp_t* )p )[ 0 ]; } // type of perspective
 static inline tp_t spect_tp_o( vc_t p ) { return ( ( tp_t* )p )[ 1 ]; } // type of object

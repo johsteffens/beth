@@ -200,7 +200,7 @@ static bcore_flect_self_s* source_s_create_self( void )
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "bcore_source_s" ), typeof( "spect" ), sizeof( bcore_source_s ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
-    self->body->complete = false;
+    bcore_flect_body_s_set_complete( self->body, false );
 
     bcore_flect_self_s_push_ns_func( self, ( fp_t )source_s_init,             "bcore_fp_init",                    "init"         );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )source_s_down,             "bcore_fp_down",                    "down"         );

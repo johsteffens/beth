@@ -38,6 +38,7 @@ typedef struct bcore_array_s
 {
     aware_t p_type; // type of perspective
     tp_t    o_type; // type of object
+
     tp_t caps_type;
 
     bl_t fixed;      // fixed-size-array

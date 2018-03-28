@@ -15,29 +15,10 @@
  *  limitations under the License.
  */
 
-#ifndef BCORE_STD_H
-#define BCORE_STD_H
+#ifndef BMATH_STD_H
+#define BMATH_STD_H
 
-#include "bcore.h"
-#include "bcore_signal.h"
-#include "bcore_features.h"
-#include "bcore_flect.h"
-#include "bcore_trait.h"
-#include "bcore_spect.h"
-#include "bcore_spect_inst.h"
-#include "bcore_spect_array.h"
-#include "bcore_spect_source.h"
-#include "bcore_spect_sink.h"
-#include "bcore_spect_interpreter.h"
-#include "bcore_spect_translator.h"
-#include "bcore_txt_ml.h"
-#include "bcore_bin_ml.h"
-#include "bcore_signal.h"
-#include "bcore_life.h"
-#include "bcore_sinks.h"
-#include "bcore_sources.h"
-#include "bcore_arr.h"
-#include "bcore_hmap.h"
-#include "bcore_hmap_tp_sr.h"
+#include "bcore_std.h"
+#include "bmath_signal.h"
 
-#endif // BCORE_STD_H
+#endif // BMATH_STD_H

@@ -43,16 +43,10 @@ typedef struct bcore_vitem_s
      *  Static arrays types are constructed when bcore_via_s is constructed.
      */
     tp_t type;
+
     tp_t name;
     u2_t caps;
-    union
-    {
-        tp_t flags; // collection of attribute flags
-        struct
-        {
-            unsigned f_shell : 1; // shell flag
-        };
-    };
+    bcore_flect_flags_s flags; // reflection flags
     sz_t offs;                 // offset to member element
     const bcore_via_s* via_p;  // via perspective of this item
     bcore_fp_get fp_get;       // optional explicit getter

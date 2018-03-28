@@ -62,7 +62,7 @@ static bcore_flect_self_s* closure_s_create_self( void )
 {
     sc_t def = "bclos_closure_s = spect { aware_t p_type; tp_t o_type; bclos_signature_s* static_sig; ... }";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_closure_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_init,    "bcore_fp_init",                   "init"              );
+    bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_init,    "bcore_fp_init",                    "init"             );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_down,    "bcore_fp_down",                    "down"             );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_discard, "bcore_fp_discard",                 "discard"          );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self",  "create_from_self" );

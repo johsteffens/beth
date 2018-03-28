@@ -1619,9 +1619,9 @@ static bcore_flect_self_s* st_s_create_self( void )
 //  We need to create this reflection manually because bcore_flect_self_s_build_parse_sc uses it.
     bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "st_s" ), typeof( "bcore_inst" ), sizeof( st_s ) );
     bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "_"  ) ) );
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sd_t, entypeof( "data"  ) ) )->f_private = true;
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sz_t, entypeof( "size"  ) ) )->f_private = true;
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sz_t, entypeof( "space" ) ) )->f_private = true;
+    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sd_t, entypeof( "data"  ) ) )->flags.f_private = true;
+    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sz_t, entypeof( "size"  ) ) )->flags.f_private = true;
+    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sz_t, entypeof( "space" ) ) )->flags.f_private = true;
 
     bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_init,         "bcore_fp_init",            "init"         );
     bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_down,         "bcore_fp_down",            "down"         );

@@ -523,119 +523,117 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     sz_t vitem_arr_size  = 0;
     sz_t vitem_arr_space = 0;
 
-    if( self->body )
+    sz_t items_size = bcore_flect_self_s_items_size( self );
+    for( sz_t i = 0; i < items_size; i++ )
     {
-        for( sz_t i = 0; i < self->body->size; i++ )
+        const bcore_flect_item_s* flect_item = bcore_flect_self_s_get_item( self, i );
+
+        if( flect_item->flags.f_hidden                   ) continue; // hidden items are not accessible in via
+        if( i == 0 && flect_item->type == TYPEOF_aware_t ) continue; // self-aware type is not accessible in via
+
+        const bcore_inst_item_s* inst_item = NULL;
+
+        if( inst_p->body )
         {
-            const bcore_flect_item_s* flect_item = &self->body->data[ i ];
+            inst_item = bcore_inst_body_s_inst_item_of_flect_item( inst_p->body, flect_item );
+        }
 
-            if( flect_item->f_hidden                         ) continue; // hidden items are not accessible in via
-            if( i == 0 && flect_item->type == TYPEOF_aware_t ) continue; // self-aware type is not accessible in via
+        if( inst_item && inst_item->no_trace ) continue; // instance no-trace items (private, external, ...) are not accessible in via
+        if( flect_item->flags.f_const ) continue; // constants are not accessible in via
 
-            const bcore_inst_item_s* inst_item = NULL;
+        bcore_vitem_s vitem;
+        bcore_memzero( &vitem, sizeof( bcore_vitem_s ) );
+        vitem.name = flect_item->name;
+        vitem.caps = flect_item->caps;
+        vitem.offs = inst_item ? inst_item->offset : 0;
+        vitem.flags = flect_item->flags;
 
-            if( inst_p->body )
+        switch( vitem.caps )
+        {
+            case BCORE_CAPS_SOLID_STATIC:
+            case BCORE_CAPS_LINK_STATIC:
             {
-                inst_item = bcore_inst_body_s_inst_item_of_flect_item( inst_p->body, flect_item );
+                vitem.type = flect_item->type;
             }
+            break;
 
-            if( inst_item && inst_item->no_trace ) continue; // instance no-trace items (private, external, ...) are not accessible in via
-            if( flect_item->f_const ) continue; // constants are not accessible in via
-
-            bcore_vitem_s vitem;
-            bcore_memzero( &vitem, sizeof( bcore_vitem_s ) );
-            vitem.name = flect_item->name;
-            vitem.caps = flect_item->caps;
-            vitem.offs = inst_item ? inst_item->offset : 0;
-            vitem.f_shell = flect_item->f_shell;
-
-            switch( vitem.caps )
-            {
-                case BCORE_CAPS_SOLID_STATIC:
-                case BCORE_CAPS_LINK_STATIC:
-                {
-                    vitem.type = flect_item->type;
-                }
+            case BCORE_CAPS_LINK_TYPED:
+            case BCORE_CAPS_LINK_AWARE:
+                vitem.type = 0;
                 break;
 
-                case BCORE_CAPS_LINK_TYPED:
-                case BCORE_CAPS_LINK_AWARE:
-                    vitem.type = 0;
-                    break;
+            case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+                vitem.type = bcore_array_dyn_solid_static_type_of( flect_item->type );
+                break;
 
-                case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
-                    vitem.type = bcore_array_dyn_solid_static_type_of( flect_item->type );
-                    break;
+            case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+                vitem.type = typeof( "bcore_array_dyn_solid_typed_s" );
+                break;
 
-                case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
-                    vitem.type = typeof( "bcore_array_dyn_solid_typed_s" );
-                    break;
+            case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+                vitem.type = bcore_array_dyn_link_static_type_of( flect_item->type );
+                break;
 
-                case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
-                    vitem.type = bcore_array_dyn_link_static_type_of( flect_item->type );
-                    break;
+            case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+                vitem.type = typeof( "bcore_array_dyn_link_typed_s" );
+                break;
 
-                case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
-                    vitem.type = typeof( "bcore_array_dyn_link_typed_s" );
-                    break;
+            case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+                vitem.type = typeof( "bcore_array_dyn_link_aware_s" );
+                break;
 
-                case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
-                    vitem.type = typeof( "bcore_array_dyn_link_aware_s" );
-                    break;
+            case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+                vitem.type = bcore_array_fix_solid_static_type_of( flect_item->type, flect_item->array_fix_size );
+                break;
 
-                case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
-                    vitem.type = bcore_array_fix_solid_static_type_of( flect_item->type, flect_item->array_fix_size );
-                    break;
+            case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+                vitem.type = bcore_array_fix_link_static_type_of( flect_item->type, flect_item->array_fix_size );
+                break;
 
-                case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
-                    vitem.type = bcore_array_fix_link_static_type_of( flect_item->type, flect_item->array_fix_size );
-                    break;
+            case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+                vitem.type = bcore_array_fix_link_aware_type_of( flect_item->array_fix_size );
+                break;
 
-                case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
-                    vitem.type = bcore_array_fix_link_aware_type_of( flect_item->array_fix_size );
-                    break;
+            case BCORE_CAPS_EXTERNAL_FUNC:
+                continue; // external items are (currently) not accessible in via
+                break;
 
-                case BCORE_CAPS_EXTERNAL_FUNC:
-                    continue; // external items are (currently) not accessible in via
-                    break;
-
-                default:
-                    ERR( "Unexpected caps '%s'", bcore_flect_caps_e_sc( vitem.caps ) );
-                    break;
-            }
-
-            if( vitem.type )
-            {
-                if( vitem.type == o->o_type )
-                {
-                    vitem.via_p = o;
-                }
-                else
-                {
-                    vitem.via_p = bcore_via_s_get_typed( vitem.type );
-                }
-            }
-
-            // explicit setter, getter
-            {
-
-                bcore_life_s* l = bcore_life_s_create();
-                vitem.fp_get = ( bcore_fp_get )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_get" ), typeof( st_s_createf_l( l, "get_%s", ifnameof( vitem.name ) )->sc ) );
-                vitem.fp_set = ( bcore_fp_set )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_set" ), typeof( st_s_createf_l( l, "set_%s", ifnameof( vitem.name ) )->sc ) );
-                if( vitem.f_shell )
-                {
-                    if( !vitem.fp_get ) ERR( "Object '%s' has shell '%s' but no function 'get_%s'.", ifnameof( o->o_type ), ifnameof( vitem.name ), ifnameof( vitem.name ) );
-                    if( !vitem.fp_set ) ERR( "Object '%s' has shell '%s' but no function 'set_%s'.", ifnameof( o->o_type ), ifnameof( vitem.name ), ifnameof( vitem.name ) );
-                }
-                bcore_life_s_discard( l );
-            }
-
-            if( vitem_arr_size == vitem_arr_space )
-            {
-                o->vitem_arr = bcore_un_alloc( sizeof( bcore_vitem_s ), o->vitem_arr, vitem_arr_space, vitem_arr_space > 0 ? vitem_arr_space * 2 : 1, &vitem_arr_space );
-            }
-            o->vitem_arr[ vitem_arr_size++ ] = vitem;
+            default:
+                ERR( "Unexpected caps '%s'", bcore_flect_caps_e_sc( vitem.caps ) );
+                break;
         }
+
+        if( vitem.type )
+        {
+            if( vitem.type == o->o_type )
+            {
+                vitem.via_p = o;
+            }
+            else
+            {
+                vitem.via_p = bcore_via_s_get_typed( vitem.type );
+            }
+        }
+
+        // explicit setter, getter
+        {
+
+            bcore_life_s* l = bcore_life_s_create();
+            vitem.fp_get = ( bcore_fp_get )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_get" ), typeof( st_s_createf_l( l, "get_%s", ifnameof( vitem.name ) )->sc ) );
+            vitem.fp_set = ( bcore_fp_set )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_set" ), typeof( st_s_createf_l( l, "set_%s", ifnameof( vitem.name ) )->sc ) );
+            if( vitem.flags.f_shell )
+            {
+                if( !vitem.fp_get ) ERR( "Object '%s' has shell '%s' but no function 'get_%s'.", ifnameof( o->o_type ), ifnameof( vitem.name ), ifnameof( vitem.name ) );
+                if( !vitem.fp_set ) ERR( "Object '%s' has shell '%s' but no function 'set_%s'.", ifnameof( o->o_type ), ifnameof( vitem.name ), ifnameof( vitem.name ) );
+            }
+            bcore_life_s_discard( l );
+        }
+
+        if( vitem_arr_size == vitem_arr_space )
+        {
+            o->vitem_arr = bcore_un_alloc( sizeof( bcore_vitem_s ), o->vitem_arr, vitem_arr_space, vitem_arr_space > 0 ? vitem_arr_space * 2 : 1, &vitem_arr_space );
+        }
+        o->vitem_arr[ vitem_arr_size++ ] = vitem;
     }
 
     o->size = vitem_arr_size;

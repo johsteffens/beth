@@ -167,6 +167,7 @@ tp_t bcore_flect_item_s_fold_tp( const bcore_flect_item_s* o, tp_t tp )
     tp = bcore_tp_fold_tp( tp, o->type );
     tp = bcore_tp_fold_tp( tp, o->name );
     tp = bcore_tp_fold_u2( tp, o->caps );
+    tp = bcore_tp_fold_tp( tp, o->flags.data );
     tp = bcore_tp_fold_u3( tp, o->default_u3 );
     return tp;
 }
@@ -176,7 +177,7 @@ s2_t bcore_flect_item_s_cmp( const bcore_flect_item_s* o1, const bcore_flect_ite
     if( o1->type       != o2->type       ) return ( o1->type < o2->type ) ? 1 : -1;
     if( o1->name       != o2->name       ) return ( o1->name < o2->name ) ? 1 : -1;
     if( o1->caps       != o2->caps       ) return ( o1->caps < o2->caps ) ? 1 : -1;
-    if( o1->flags      != o2->flags      ) return ( o1->flags < o2->flags ) ? 1 : -1;
+    if( o1->flags.data != o2->flags.data ) return ( o1->flags.data < o2->flags.data ) ? 1 : -1;
     if( o1->default_u3 != o2->default_u3 ) return ( o1->default_u3 < o2->default_u3 ) ? 1 : -1;
     return 0;
 }
@@ -264,6 +265,24 @@ static bcore_flect_self_s* flect_item_s_create_self( void )
 
 /**********************************************************************************************************************/
 
+typedef struct bcore_flect_body_s
+{
+    union
+    {
+        bcore_array_dyn_solid_static_s arr;
+        struct
+        {
+            bcore_flect_item_s** data;
+            sz_t size, space;
+        };
+    };
+
+    // A complete body enables inst perspective to calculate the
+    // full object's size and alignment from the bodies structure.
+    // An incomplete body has unspecified trailing elements. (intermediate unspecified elements are not allowed)
+    bl_t complete;
+} bcore_flect_body_s;
+
 void bcore_flect_body_s_init( bcore_flect_body_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
@@ -272,7 +291,8 @@ void bcore_flect_body_s_init( bcore_flect_body_s* o )
 
 void bcore_flect_body_s_down( bcore_flect_body_s* o )
 {
-    bcore_release_obj_arr( ( fp_t )bcore_flect_item_s_down, o->data, o->size, sizeof( bcore_flect_item_s ) );
+    for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_discard( o->data[ i ] );
+    bcore_release( o->data );
     o->data  = NULL;
     o->size  = 0;
     o->space = 0;
@@ -280,17 +300,15 @@ void bcore_flect_body_s_down( bcore_flect_body_s* o )
 
 void bcore_flect_body_s_copy( bcore_flect_body_s* o, const bcore_flect_body_s* src )
 {
-    bcore_release_obj_arr( ( fp_t )bcore_flect_item_s_down, o->data, o->size, sizeof( bcore_flect_item_s ) );
+    for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_discard( o->data[ i ] );
+    bcore_release( o->data );
     o->data = NULL;
     o->size = 0;
     o->space = 0;
 
-    o->data = bcore_un_alloc( sizeof( bcore_flect_item_s ), o->data, o->space, src->size, &o->space );
-    for( sz_t i = 0; i < src->size; i++ )
-    {
-        bcore_flect_item_s_init( &o->data[ i ] );
-        bcore_flect_item_s_copy( &o->data[ i ], &src->data[ i ] );
-    }
+    o->data = bcore_un_alloc( sizeof( bcore_flect_item_s* ), o->data, o->space, src->size, &o->space );
+    for( sz_t i = 0; i < src->size; i++ ) o->data[ i ] = bcore_flect_item_s_clone( src->data[ i ] );
+
     o->size = src->size;
     o->complete = src->complete;
 }
@@ -303,15 +321,14 @@ bcore_flect_item_s* bcore_flect_body_s_push( bcore_flect_body_s* o, const bcore_
 {
     if( o->size == o->space )
     {
-        bcore_flect_item_s* old_data = o->data;
-        o->data = bcore_u_alloc( sizeof( bcore_flect_item_s ), NULL, o->space > 0 ? o->space * 2 : 1, &o->space );
-        for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_move( &o->data[ i ], &old_data[ i ] );
+        bcore_flect_item_s** old_data = o->data;
+        o->data = bcore_u_alloc( sizeof( bcore_flect_item_s* ), NULL, o->space > 0 ? o->space * 2 : 1, &o->space );
+        for( sz_t i = 0; i < o->size; i++ ) o->data[ i ] = old_data[ i ];
         bcore_release( old_data );
     }
-    bcore_flect_item_s_init( &o->data[ o->size ] );
-    bcore_flect_item_s_copy( &o->data[ o->size ], item );
+    o->data[ o->size ] = bcore_flect_item_s_clone( item );
     o->size++;
-    return &o->data[ o->size -1 ];
+    return o->data[ o->size -1 ];
 }
 
 bcore_flect_item_s* bcore_flect_body_s_push_d( bcore_flect_body_s* o, bcore_flect_item_s* item )
@@ -329,7 +346,7 @@ st_s* bcore_flect_body_s_show( const bcore_flect_body_s* o )
     for( sz_t i = 0; i < o->size; i++ )
     {
         st_s_pushf( s, "\n    data[%lu]:", i );
-        st_s_push_st_d( s, st_s_replace_char_sc( bcore_flect_item_s_show( &o->data[ i ] ), '\n', "\n    " ) );
+        st_s_push_st_d( s, st_s_replace_char_sc( bcore_flect_item_s_show( o->data[ i ] ), '\n', "\n    " ) );
     }
     st_s_pushf( s, "\n}" );
     return s;
@@ -376,6 +393,9 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
             bl_t f_const     = false;
             bl_t f_deep_copy = true;
             bl_t f_assign_default = false;
+            bl_t f_feature   = false;
+            bl_t f_strict    = false;
+
             sz_t array_fix_size = 0;
 
             bl_t f_any_prefix = true;
@@ -410,6 +430,18 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
                 {
                     if( f_const ) bcore_source_q_parse_err_fa( &src, "Prefix 'const' occurs twice." );
                     f_any_prefix = f_const = true;
+                }
+
+                if( bcore_source_q_parse_bl_fa( &src, " #?w'feature'"   ) )
+                {
+                    if( f_feature ) bcore_source_q_parse_err_fa( &src, "Prefix 'feature' occurs twice." );
+                    f_any_prefix = f_feature = true;
+                }
+
+                if( bcore_source_q_parse_bl_fa( &src, " #?w'strict'"   ) )
+                {
+                    if( f_strict ) bcore_source_q_parse_err_fa( &src, "Prefix 'strict' occurs twice." );
+                    f_any_prefix = f_strict = true;
                 }
             }
 
@@ -468,12 +500,14 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
 
             bcore_source_q_parse_fa( &src, "#name #?'=' ", item_name, &f_assign_default );
 
-            item->f_private   = f_private || f_spect;
-            item->f_hidden    = f_hidden;
-            item->f_shell     = f_shell;
-            item->f_spect     = f_spect;
-            item->f_deep_copy = f_deep_copy;
-            item->f_const     = f_const;
+            item->flags.f_private   = f_private || f_spect;
+            item->flags.f_hidden    = f_hidden;
+            item->flags.f_shell     = f_shell;
+            item->flags.f_spect     = f_spect;
+            item->flags.f_deep_copy = f_deep_copy;
+            item->flags.f_const     = f_const;
+            item->flags.f_feature   = f_feature;
+            item->flags.f_strict    = f_strict;
 
             if( f_arr_fix ) item->array_fix_size = array_fix_size;
 
@@ -540,6 +574,8 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
             }
 
 
+            item->flags.f_fp = bcore_trait_is_of( item->type, TYPEOF_function_pointer );
+
             if( f_assign_default )
             {
                 if( item->caps == BCORE_CAPS_SOLID_STATIC )
@@ -595,7 +631,7 @@ static bcore_flect_body_s* body_s_build_parse_src( sr_s src )
 
 tp_t bcore_flect_body_s_fold_tp( const bcore_flect_body_s* o, tp_t tp )
 {
-    for( sz_t i = 0; i < o->size; i++ ) tp = bcore_flect_item_s_fold_tp( &o->data[ i ], tp );
+    for( sz_t i = 0; i < o->size; i++ ) tp = bcore_flect_item_s_fold_tp( o->data[ i ], tp );
     return tp;
 }
 
@@ -604,15 +640,25 @@ s2_t bcore_flect_body_s_cmp( const bcore_flect_body_s* o1, const bcore_flect_bod
     if( o1->size != o2->size ) return ( o1->size < o2->size ) ? 1 : -1;
     for( sz_t i = 0; i < o1->size; i++ )
     {
-        s2_t c = bcore_flect_item_s_cmp( &o1->data[ i ], &o2->data[ i ] );
+        s2_t c = bcore_flect_item_s_cmp( o1->data[ i ], o2->data[ i ] );
         if( c != 0 ) return c;
     }
     return 0;
 }
 
+void bcore_flect_body_s_set_complete( bcore_flect_body_s* o, bl_t complete )
+{
+    o->complete = complete;
+}
+
+bl_t bcore_flect_body_s_get_complete( const bcore_flect_body_s* o )
+{
+    return o->complete;
+}
+
 void bcore_flect_body_s_check_integrity( const bcore_flect_body_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_check_integrity( &o->data[ i ] );
+    for( sz_t i = 0; i < o->size; i++ ) bcore_flect_item_s_check_integrity( o->data[ i ] );
 }
 
 static bcore_flect_self_s* flect_body_s_create_self( void )
@@ -620,7 +666,7 @@ static bcore_flect_self_s* flect_body_s_create_self( void )
     sc_t def =
     "bcore_flect_body_s = bcore_inst"
     "{"
-        "bcore_flect_item_s [] arr;"
+        "bcore_flect_item_s* [] arr;"
         "bl_t complete;"
     "}";
     bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_flect_body_s ) );
@@ -672,6 +718,18 @@ void bcore_flect_self_s_discard( bcore_flect_self_s* o )
 {
     if( !o ) return;
     bcore_release_obj( ( fp_t )bcore_flect_self_s_down, o );
+}
+
+sz_t bcore_flect_self_s_items_size( const bcore_flect_self_s* o )
+{
+    return o->body ? o->body->size : 0;
+}
+
+const bcore_flect_item_s* bcore_flect_self_s_get_item( const bcore_flect_self_s* o, sz_t index )
+{
+    ASSERT( o->body );
+    ASSERT( o->body->size > index );
+    return o->body->data[ index ];
 }
 
 bcore_flect_item_s* bcore_flect_self_s_push( bcore_flect_self_s* o, const bcore_flect_item_s* item )
@@ -877,7 +935,7 @@ fp_t bcore_flect_self_s_try_external_fp( const bcore_flect_self_s* o, tp_t type,
     const bcore_flect_body_s* body = o->body;
     for( sz_t i = 0; i < body->size; i++ )
     {
-        const bcore_flect_item_s* item = &body->data[ i ];
+        const bcore_flect_item_s* item = body->data[ i ];
         if( ( item->caps == BCORE_CAPS_EXTERNAL_FUNC ) &&
             ( type == 0 || item->type == type        ) &&
             ( name == 0 || item->name == name        ) )
@@ -909,7 +967,7 @@ bool bcore_flect_self_s_is_aware( const bcore_flect_self_s* o )
     if( !o->body ) return false;
     const bcore_flect_body_s* body = o->body;
     if( body->size == 0 ) return false;
-    return body->data[ 0 ].type == TYPEOF_aware_t;
+    return body->data[ 0 ]->type == TYPEOF_aware_t;
 }
 
 vd_t bcore_flect_self_s_get_static( const bcore_flect_self_s* o, tp_t type, tp_t name )
@@ -923,6 +981,30 @@ vd_t bcore_flect_self_s_try_static( const bcore_flect_self_s* o, tp_t type, tp_t
 {
     bcore_fp_create fp = ( bcore_fp_create )bcore_flect_self_s_try_external_fp( o, type, name );
     return fp ? fp() : NULL;
+}
+
+vc_t bcore_flect_self_s_try_const( const bcore_flect_self_s* o, tp_t type, tp_t name ) // returns NULL when not found
+{
+    if( !o->body ) return NULL;
+    const bcore_flect_body_s* body = o->body;
+    for( sz_t i = 0; i < body->size; i++ )
+    {
+        const bcore_flect_item_s* item = body->data[ i ];
+        if( ( item->caps == BCORE_CAPS_SOLID_STATIC ) &&
+            ( type == 0 || item->type == type       ) &&
+            ( name == 0 || item->name == name       ) )
+        {
+            return &item->default_u3; // u3 maximally aligned and representative for all default types
+        }
+    }
+    return NULL;
+}
+
+vc_t bcore_flect_self_s_get_const( const bcore_flect_self_s* o, tp_t type, tp_t name )
+{
+    vc_t vc = bcore_flect_self_s_try_const( o, type, name );
+    if( !vc ) ERR( "'const %s %s' not found in reflection '%s'.", ifnameof( type ), ifnameof( name ), ifnameof(o->type) );
+    return vc;
 }
 
 void bcore_flect_self_s_check_integrity( const bcore_flect_self_s* o )
@@ -1300,22 +1382,23 @@ static void flect_define_basics()
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "vc_t" ), typeof( "leaf" ), sizeof( vc_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "fp_t" ), typeof( "leaf" ), sizeof( fp_t ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bl_t" ), typeof( "num"  ), sizeof( bl_t ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "void" ), typeof( "leaf" ), 0               ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "void" ), typeof( "leaf" ), 0              ) );
 
     // special purpose types
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "tp_t"    ), typeof( "type" ), sizeof( tp_t    ) ) );
     bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "aware_t" ), typeof( "type" ), sizeof( aware_t ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_flect_flags_s" ), typeof( "root" ), sizeof( bcore_flect_flags_s ) ) );
 
     // special purpose functions
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_init"    ), typeof( "leaf" ), sizeof( bcore_fp_init ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_down"    ), typeof( "leaf" ), sizeof( bcore_fp_down ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_copy"    ), typeof( "leaf" ), sizeof( bcore_fp_copy ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_move"    ), typeof( "leaf" ), sizeof( bcore_fp_move ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_create"  ), typeof( "leaf" ), sizeof( bcore_fp_create ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_discard" ), typeof( "leaf" ), sizeof( bcore_fp_discard ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_clone"   ), typeof( "leaf" ), sizeof( bcore_fp_clone ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_copy_typed"   ), typeof( "leaf" ), sizeof( bcore_fp_copy_typed ) ) );
-    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_create_typed" ), typeof( "leaf" ), sizeof( bcore_fp_create_typed ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_init"         ), typeof( "function_pointer" ), sizeof( bcore_fp_init ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_down"         ), typeof( "function_pointer" ), sizeof( bcore_fp_down ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_copy"         ), typeof( "function_pointer" ), sizeof( bcore_fp_copy ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_move"         ), typeof( "function_pointer" ), sizeof( bcore_fp_move ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_create"       ), typeof( "function_pointer" ), sizeof( bcore_fp_create ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_discard"      ), typeof( "function_pointer" ), sizeof( bcore_fp_discard ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_clone"        ), typeof( "function_pointer" ), sizeof( bcore_fp_clone ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_copy_typed"   ), typeof( "function_pointer" ), sizeof( bcore_fp_copy_typed ) ) );
+    bcore_flect_define_self_d( bcore_flect_self_s_create_plain( entypeof( "bcore_fp_create_typed" ), typeof( "function_pointer" ), sizeof( bcore_fp_create_typed ) ) );
 
     // specific objects
     bcore_flect_define_creator( typeof( "bcore_flect_item_s" ), flect_item_s_create_self );
@@ -1373,6 +1456,7 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init0:
         {
+            ASSERT( sizeof( bcore_flect_flags_s ) == sizeof( tp_t ) );
             flect_open();
         }
         break;
@@ -1380,11 +1464,12 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // some basic traits
-            bcore_trait_set( entypeof( "root" ), 0 ); // root trait (all traits should end in root)
-            bcore_trait_set( entypeof( "bcore_inst" ), typeof( "root" ) ); // all (instantiable) reflections should inherit bcore_inst
-            bcore_trait_set( entypeof( "leaf" ), typeof( "bcore_inst" ) ); // leaf trait
-            bcore_trait_set( entypeof( "num"  ), typeof( "leaf" ) );       // a number is a leaf type
-            bcore_trait_set( entypeof( "type" ), typeof( "num"  ) );       // type is encoded as number
+            bcore_trait_set( entypeof( "root"             ), 0 ); // root trait (all traits should end in root)
+            bcore_trait_set( entypeof( "bcore_inst"       ), typeof( "root" ) ); // all (instantiable) reflections should inherit bcore_inst
+            bcore_trait_set( entypeof( "leaf"             ), typeof( "bcore_inst" ) ); // leaf trait
+            bcore_trait_set( entypeof( "function_pointer" ), typeof( "leaf" ) );       // type of trait function_pointer can be casted to fp_t
+            bcore_trait_set( entypeof( "num"              ), typeof( "leaf" ) );       // a number is a leaf type
+            bcore_trait_set( entypeof( "type"             ), typeof( "num"  ) );       // type is encoded as number
 
             flect_define_basics();
             bcore_flect_define_creator( typeof( "bcore_link_static_s"       ), bcore_link_static_s_create_self );
