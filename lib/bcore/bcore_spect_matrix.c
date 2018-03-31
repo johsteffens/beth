@@ -20,21 +20,37 @@
 
 #define NPX( name ) bcore_array_##name
 
-/*
 static sc_t bcore_matrix_s_def = "bcore_matrix_s = spect"
 "{"
     "bcore_spect_header_s header;"
     "private bcore_array_s* spect_array;"
+    "feature sz_t fixed_cols = 0"
+    "feature sz_t fixed_rows = 0"
+    "feature sz_t * cols"
+    "feature sz_t * rows"
 "}";
 
 static bcore_matrix_s* bcore_matrix_s_create_from_self( const bcore_self_s* self )
 {
-    assert( self != NULL );
-    bcore_matrix_s* o = matrix_s_create();
-    o->p_type = bcore_name_enroll( "bcore_matrix_s" );
-    o->o_type = self->type;
+    bcore_matrix_s* o = bcore_spect_create_from_self( bcore_flect_get_self( typeof( "bcore_matrix_s" ) ), self );
+    o->spect_array = bcore_spect_get_typed( TYPEOF_bcore_array_s, self->type );
+    if( o->fixed_cols > 0 )
+    {
+        o->cols = &o->fixed_cols;
+    }
+    else if( o->cols == NULL )
+    {
+        ERR_fa( "Feature 'cols' no specified in '#<sc_t>'.", ifnameof( self->type ) );
+    }
 
-
+    if( o->fixed_rows > 0 )
+    {
+        o->rows = &o->fixed_rows;
+    }
+    else if( o->rows == NULL )
+    {
+        ERR_fa( "Feature 'rows' no specified in '#<sc_t>'.", ifnameof( self->type ) );
+    }
     return o;
 }
 
@@ -45,4 +61,27 @@ static bcore_self_s* bcore_matrix_s_create_self( void )
     return self;
 }
 
-*/
+/**********************************************************************************************************************/
+// signal
+
+vd_t bcore_spect_matrix_signal_handler( const bcore_signal_s* o )
+{
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_matrix" ) ) )
+    {
+        case TYPEOF_init1:
+        {
+            BCORE_REGISTER_FLECT( bcore_matrix_s );
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+//            return spect_matrix_selftest();
+        }
+        break;
+
+        default: break;
+    }
+
+    return NULL;
+}

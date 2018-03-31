@@ -526,34 +526,34 @@ static bcore_via_s* create_from_self( const bcore_self_s* self )
     sz_t items_size = bcore_self_s_items_size( self );
     for( sz_t i = 0; i < items_size; i++ )
     {
-        const bcore_self_item_s* flect_item = bcore_self_s_get_item( self, i );
+        const bcore_self_item_s* self_item = bcore_self_s_get_item( self, i );
 
-        if( flect_item->flags.f_hidden                   ) continue; // hidden items are not accessible in via
-        if( i == 0 && flect_item->type == TYPEOF_aware_t ) continue; // self-aware type is not accessible in via
+        if( self_item->flags.f_hidden                   ) continue; // hidden items are not accessible in via
+        if( i == 0 && self_item->type == TYPEOF_aware_t ) continue; // self-aware type is not accessible in via
 
         const bcore_inst_item_s* inst_item = NULL;
 
         if( inst_p->body )
         {
-            inst_item = bcore_inst_body_s_inst_item_of_flect_item( inst_p->body, flect_item );
+            inst_item = bcore_inst_body_s_inst_item_of_self_item( inst_p->body, self_item );
         }
 
         if( inst_item && inst_item->no_trace ) continue; // instance no-trace items (private, external, ...) are not accessible in via
-        if( flect_item->flags.f_const ) continue; // constants are not accessible in via
+        if( self_item->flags.f_const ) continue; // constants are not accessible in via
 
         bcore_vitem_s vitem;
         bcore_memzero( &vitem, sizeof( bcore_vitem_s ) );
-        vitem.name = flect_item->name;
-        vitem.caps = flect_item->caps;
+        vitem.name = self_item->name;
+        vitem.caps = self_item->caps;
         vitem.offs = inst_item ? inst_item->offset : 0;
-        vitem.flags = flect_item->flags;
+        vitem.flags = self_item->flags;
 
         switch( vitem.caps )
         {
             case BCORE_CAPS_SOLID_STATIC:
             case BCORE_CAPS_LINK_STATIC:
             {
-                vitem.type = flect_item->type;
+                vitem.type = self_item->type;
             }
             break;
 
@@ -563,7 +563,7 @@ static bcore_via_s* create_from_self( const bcore_self_s* self )
                 break;
 
             case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
-                vitem.type = bcore_array_dyn_solid_static_type_of( flect_item->type );
+                vitem.type = bcore_array_dyn_solid_static_type_of( self_item->type );
                 break;
 
             case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
@@ -571,7 +571,7 @@ static bcore_via_s* create_from_self( const bcore_self_s* self )
                 break;
 
             case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
-                vitem.type = bcore_array_dyn_link_static_type_of( flect_item->type );
+                vitem.type = bcore_array_dyn_link_static_type_of( self_item->type );
                 break;
 
             case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
@@ -583,15 +583,15 @@ static bcore_via_s* create_from_self( const bcore_self_s* self )
                 break;
 
             case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
-                vitem.type = bcore_array_fix_solid_static_type_of( flect_item->type, flect_item->array_fix_size );
+                vitem.type = bcore_array_fix_solid_static_type_of( self_item->type, self_item->array_fix_size );
                 break;
 
             case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
-                vitem.type = bcore_array_fix_link_static_type_of( flect_item->type, flect_item->array_fix_size );
+                vitem.type = bcore_array_fix_link_static_type_of( self_item->type, self_item->array_fix_size );
                 break;
 
             case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
-                vitem.type = bcore_array_fix_link_aware_type_of( flect_item->array_fix_size );
+                vitem.type = bcore_array_fix_link_aware_type_of( self_item->array_fix_size );
                 break;
 
             case BCORE_CAPS_EXTERNAL_FUNC:

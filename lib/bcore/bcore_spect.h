@@ -69,12 +69,11 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
 /**********************************************************************************************************************/
 
 /** Generic perspective functions assuming all information is stored in reflections.
- *  These functions make use of certain perspectives in bcore. Hence, they should not be
- *  used for perspectives of bcore.
+ *  These functions make use of bcore_inst_s
  */
 void bcore_spect_define_trait(     const bcore_self_s* p_self );
 vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_s* o_self );
-vd_t bcore_spect_create_from_self_tp( tp_t p_type, tp_t o_type );
+vd_t bcore_spect_create_from_self_typed( tp_t p_type, tp_t o_type );
 
 /** Defining reflection of perspective via creation function
  *  This function create a temporary instance of self and calls

@@ -33,16 +33,20 @@ typedef struct bcore_inst_item_s
     sz_t offset;
     sz_t size;
     sz_t align;
-    const bcore_self_item_s*  flect_item;
+    const bcore_self_item_s*   self_item;
     const struct bcore_inst_s* inst_p;
-    bl_t no_trace;    // do not recursively follow this item (could be private, cyclic or external)
+    bl_t no_trace;    // no_trace means: do not recursively follow this item (could be private, cyclic or external)
 } bcore_inst_item_s;
 
+static inline vd_t bcore_inst_item_s_get_obj( const bcore_inst_item_s* o, vd_t parent_obj )
+{
+    return ( u0_t* )parent_obj + o->offset;
+}
 
 static inline
 sz_t bcore_inst_item_s_array_fix_size( const bcore_inst_item_s* o )
 {
-    return o->flect_item->array_fix_size;
+    return o->self_item->array_fix_size;
 }
 
 typedef struct bcore_inst_body_s
@@ -51,8 +55,8 @@ typedef struct bcore_inst_body_s
     sz_t size, space;
 } bcore_inst_body_s;
 
-/// returns corresponding instance item of flect_item_s or NULL if not existing
-bcore_inst_item_s* bcore_inst_body_s_inst_item_of_flect_item( const bcore_inst_body_s* o, const bcore_self_item_s* item );
+/// returns corresponding instance item of self_item_s or NULL if not existing
+bcore_inst_item_s* bcore_inst_body_s_inst_item_of_self_item( const bcore_inst_body_s* o, const bcore_self_item_s* item );
 
 typedef struct bcore_inst_s bcore_inst_s;
 
@@ -102,6 +106,9 @@ typedef struct bcore_inst_s
 } bcore_inst_s;
 
 void bcore_inst_s_discard( bcore_inst_s* o );
+
+sz_t bcore_inst_s_get_items_size( const bcore_inst_s* o );
+const bcore_inst_item_s* bcore_inst_s_get_item( const bcore_inst_s* o, sz_t index );
 
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t type );
 const bcore_inst_s* bcore_inst_s_get_aware( vc_t obj );

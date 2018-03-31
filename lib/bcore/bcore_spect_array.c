@@ -83,19 +83,19 @@ static sz_t get_dyn_space( const bcore_array_s* p, vc_t o )
 
 static sz_t get_size( const bcore_array_s* p, vc_t o )
 {
-    return p->fixed_size >= 0 ? p->fixed_size : get_dyn_size( p, o );
+    return p->fixed_size > 0 ? p->fixed_size : get_dyn_size( p, o );
 }
 
 static sz_t get_space( const bcore_array_s* p, vc_t o )
 {
-    return p->fixed_size >= 0 ? p->fixed_size : get_dyn_space( p, o );
+    return p->fixed_size > 0 ? p->fixed_size : get_dyn_space( p, o );
 }
 
 /**********************************************************************************************************************/
 
 void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
 {
-    if( p->fixed_size >= 0 ) return;
+    if( p->fixed_size > 0 ) return;
     vd_t obj = ( u0_t* )o + p->caps_offset;
     if( ( ( bcore_array_dyn_head_s* )obj )->size <= ( ( bcore_array_dyn_head_s* )obj )->space ) return;
     switch( p->caps_type )
@@ -188,7 +188,7 @@ void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
 
 void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
 {
-    if( p->fixed_size >= 0 )
+    if( p->fixed_size > 0 )
     {
         if( p->fixed_size == space ) return;
         ERR( "Cannot change space for fixed-size-array" );
@@ -332,7 +332,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
 
 void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
 {
-    if( p->fixed_size >= 0 )
+    if( p->fixed_size > 0 )
     {
         if( size == p->fixed_size ) return;
         ERR( "Cannot change size for fixed-size-array" );
@@ -573,19 +573,19 @@ static sr_s get_dyn_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
 
 static sr_s get_fix_solid_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
-    return ( index < ( sz_t )p->fixed_size ) ? sr_twd( p->item_p->o_type, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
+    return ( index < p->fixed_size ) ? sr_twd( p->item_p->o_type, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
 }
 
 static sr_s get_fix_link_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
-    return ( index < ( sz_t )p->fixed_size ) ? sr_twd( p->item_p->o_type, arr[ index ] ) : sr_null();
+    return ( index < p->fixed_size ) ? sr_twd( p->item_p->o_type, arr[ index ] ) : sr_null();
 }
 
 static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
-    if( index < ( sz_t )p->fixed_size )
+    if( index < p->fixed_size )
     {
         vd_t item = arr[ index ];
         return item ? sr_twd( *( aware_t* )item, item ) : sr_null();
@@ -717,7 +717,7 @@ static void set_dyn_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s
 
 static void set_fix_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
 {
-    if( index >= ( sz_t )p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<s3_t>'", index, p->fixed_size );
+    if( index >= p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->fixed_size );
     const bcore_inst_s* inst_p = p->item_p;
     vd_t dst = ( u0_t* )obj_vd( p, o ) + inst_p->size * index;
     if( src.o )
@@ -736,7 +736,7 @@ static void set_fix_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr
 
 static void set_fix_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
 {
-    if( index >= ( sz_t )p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<s3_t>'", index, p->fixed_size );
+    if( index >= p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->fixed_size );
     const bcore_inst_s* inst_p = p->item_p;
     vd_t* arr = obj_vd( p, o );
     vd_t* dst = &arr[ index ];
@@ -759,7 +759,7 @@ static void set_fix_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_
 
 static void set_fix_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
 {
-    if( index >= ( sz_t )p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<s3_t>'", index, p->fixed_size );
+    if( index >= p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->fixed_size );
     vd_t* arr = obj_vd( p, o );
     vd_t* dst = &arr[ index ];
     if( *dst ) bcore_inst_aware_discard( *dst );
@@ -966,13 +966,18 @@ static bcore_array_s* create_from_self( const bcore_self_s* self )
     bool found = false;
     for( sz_t i = 0; i < body->size; i++ )
     {
-        const bcore_self_item_s* flect_item = body->data[ i ].flect_item;
-        if( bcore_flect_caps_is_array( flect_item->caps ) )
+        const bcore_self_item_s* self_item = body->data[ i ].self_item;
+        if( bcore_flect_caps_is_array( self_item->caps ) )
         {
-            o->caps_type = flect_item->caps;
+            o->caps_type = self_item->caps;
             o->caps_offset = body->data[ i ].offset;
             o->item_p = body->data[ i ].inst_p;
-            o->fixed_size = bcore_flect_caps_is_array_fix( flect_item->caps ) ? flect_item->array_fix_size : -1;
+            o->fixed_size = 0;
+            if( bcore_flect_caps_is_array_fix( self_item->caps ) )
+            {
+                o->fixed_size = self_item->array_fix_size;
+                if( o->fixed_size == 0 ) ERR_fa( "'#<sc_t>' represents a fixed-size array of size zero.", ifnameof( self->type ) );
+            }
             found = true;
             break;
         }
@@ -1108,7 +1113,7 @@ void bcore_array_spect_set_bl     ( const bcore_array_s* p, vd_t o, sz_t index, 
 
 bl_t bcore_array_spect_is_fixed( const bcore_array_s* p )
 {
-    return p->fixed_size >= 0;
+    return p->fixed_size > 0;
 }
 
 bl_t bcore_array_spect_is_static( const bcore_array_s* p )

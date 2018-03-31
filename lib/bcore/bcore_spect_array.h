@@ -41,7 +41,7 @@ typedef struct bcore_array_s
 
     tp_t caps_type;
 
-    s3_t fixed_size; // for fixed-size arrays: array size; otherwise -1
+    sz_t fixed_size; // >0 indicating fixed size array
 
     sz_t caps_offset;
     const bcore_inst_s* item_p;  // item-perspective; NULL for typed or aware arrays

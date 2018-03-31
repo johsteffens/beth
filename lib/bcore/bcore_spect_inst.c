@@ -82,9 +82,9 @@ void bcore_inst_body_s_pop( bcore_inst_body_s* o )
     bcore_inst_item_s_down( &o->data[ o->size ] );
 }
 
-bcore_inst_item_s* bcore_inst_body_s_inst_item_of_flect_item( const bcore_inst_body_s* o, const bcore_self_item_s* item )
+bcore_inst_item_s* bcore_inst_body_s_inst_item_of_self_item( const bcore_inst_body_s* o, const bcore_self_item_s* item )
 {
-    for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ].flect_item == item ) return &o->data[ i ];
+    for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ].self_item == item ) return &o->data[ i ];
     return NULL;
 }
 
@@ -115,6 +115,16 @@ void bcore_inst_s_discard( bcore_inst_s* o )
 {
     if( !o ) return;
     bcore_release_obj( ( fp_t )inst_s_down, o );
+}
+
+sz_t bcore_inst_s_get_items_size( const bcore_inst_s* o )
+{
+    return o->body ? o->body->size : 0;
+}
+
+const bcore_inst_item_s* bcore_inst_s_get_item( const bcore_inst_s* o, sz_t index )
+{
+    return o->body ? index < o->body->size ? &o->body->data[ index ] : NULL : NULL;
 }
 
 static bcore_inst_item_s* inst_s_push( bcore_inst_s* o )
@@ -169,34 +179,34 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
     }
     for( sz_t i = first; i < p->body->size; i++ )
     {
-        const bcore_inst_item_s*  inst_item = &p->body->data[ i ];
-        const bcore_self_item_s* flect_item = inst_item->flect_item;
+        const bcore_inst_item_s* inst_item = &p->body->data[ i ];
+        const bcore_self_item_s* self_item = inst_item->self_item;
         vd_t dst_obj = ( u0_t* )o + inst_item->offset;
 
-        switch( flect_item->caps )
+        switch( self_item->caps )
         {
             case BCORE_CAPS_SOLID_STATIC:
             {
                 const bcore_inst_s* inst_p = inst_item->inst_p;
                 if( !inst_p->init_flat ) inst_p->init( inst_p, dst_obj );
-                if( flect_item->default_u3 )
+                if( self_item->default_u3 )
                 {
-                    switch( flect_item->type )
+                    switch( self_item->type )
                     {
-                        case TYPEOF_u0_t: *( u0_t* )dst_obj = flect_item->default_u3; break;
-                        case TYPEOF_u1_t: *( u1_t* )dst_obj = flect_item->default_u3; break;
-                        case TYPEOF_u2_t: *( u2_t* )dst_obj = flect_item->default_u3; break;
-                        case TYPEOF_u3_t: *( u3_t* )dst_obj = flect_item->default_u3; break;
-                        case TYPEOF_s0_t: *( s0_t* )dst_obj = flect_item->default_s3; break;
-                        case TYPEOF_s1_t: *( s1_t* )dst_obj = flect_item->default_s3; break;
-                        case TYPEOF_s2_t: *( s2_t* )dst_obj = flect_item->default_s3; break;
-                        case TYPEOF_s3_t: *( s3_t* )dst_obj = flect_item->default_s3; break;
-                        case TYPEOF_f2_t: *( f2_t* )dst_obj = flect_item->default_f3; break;
-                        case TYPEOF_f3_t: *( f3_t* )dst_obj = flect_item->default_f3; break;
-                        case TYPEOF_sz_t: *( sz_t* )dst_obj = flect_item->default_u3; break;
-                        case TYPEOF_tp_t: *( tp_t* )dst_obj = flect_item->default_u3; break;
-                        case TYPEOF_bl_t: *( bl_t* )dst_obj = flect_item->default_u3; break;
-                        default: ERR( "Default value not supported for type '%s'", ifnameof( flect_item->type ) );
+                        case TYPEOF_u0_t: *( u0_t* )dst_obj = self_item->default_u3; break;
+                        case TYPEOF_u1_t: *( u1_t* )dst_obj = self_item->default_u3; break;
+                        case TYPEOF_u2_t: *( u2_t* )dst_obj = self_item->default_u3; break;
+                        case TYPEOF_u3_t: *( u3_t* )dst_obj = self_item->default_u3; break;
+                        case TYPEOF_s0_t: *( s0_t* )dst_obj = self_item->default_s3; break;
+                        case TYPEOF_s1_t: *( s1_t* )dst_obj = self_item->default_s3; break;
+                        case TYPEOF_s2_t: *( s2_t* )dst_obj = self_item->default_s3; break;
+                        case TYPEOF_s3_t: *( s3_t* )dst_obj = self_item->default_s3; break;
+                        case TYPEOF_f2_t: *( f2_t* )dst_obj = self_item->default_f3; break;
+                        case TYPEOF_f3_t: *( f3_t* )dst_obj = self_item->default_f3; break;
+                        case TYPEOF_sz_t: *( sz_t* )dst_obj = self_item->default_u3; break;
+                        case TYPEOF_tp_t: *( tp_t* )dst_obj = self_item->default_u3; break;
+                        case TYPEOF_bl_t: *( bl_t* )dst_obj = self_item->default_u3; break;
+                        default: ERR( "Default value not supported for type '%s'", ifnameof( self_item->type ) );
                     }
                 }
             }
@@ -205,7 +215,7 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
             // only perspectives are initialized
             case BCORE_CAPS_LINK_STATIC:
             {
-                if( flect_item->flags.f_spect ) *( vc_t* )dst_obj = bcore_spect_get_typed( flect_item->type, p->o_type );
+                if( self_item->flags.f_spect ) *( vc_t* )dst_obj = bcore_spect_get_typed( self_item->type, p->o_type );
             }
             break;
 
@@ -238,7 +248,7 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
 
             default:
             {
-                ERR_fa( "Unhandled nesting '#<sc_t>'", bcore_flect_caps_e_sc( flect_item->caps ) );
+                ERR_fa( "Unhandled nesting '#<sc_t>'", bcore_flect_caps_e_sc( self_item->caps ) );
             }
         }
     }
@@ -291,10 +301,10 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
         const bcore_inst_item_s* inst_item = &p->body->data[ i ];
         if( inst_item->no_trace ) continue;
 
-        const bcore_self_item_s* flect_item = inst_item->flect_item;
+        const bcore_self_item_s* self_item = inst_item->self_item;
         vd_t item_obj = ( u0_t* )o + inst_item->offset;
 
-        switch( flect_item->caps )
+        switch( self_item->caps )
         {
             case BCORE_CAPS_SOLID_STATIC:
             {
@@ -460,7 +470,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
 
             default:
             {
-                ERR_fa( "Unhandled nesting '#<sc_t>'", bcore_flect_caps_e_sc( flect_item->caps ) );
+                ERR_fa( "Unhandled nesting '#<sc_t>'", bcore_flect_caps_e_sc( self_item->caps ) );
             }
         }
     }
@@ -531,11 +541,11 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
         const bcore_inst_item_s* inst_item = &p->body->data[ i ];
         if( inst_item->no_trace ) continue;
 
-        const bcore_self_item_s* flect_item = inst_item->flect_item;
+        const bcore_self_item_s* self_item = inst_item->self_item;
         void* dst_obj = ( u0_t* )dst + inst_item->offset;
         void* src_obj = ( u0_t* )src + inst_item->offset;
 
-        switch( flect_item->caps )
+        switch( self_item->caps )
         {
             case BCORE_CAPS_SOLID_STATIC:
             {
@@ -554,7 +564,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 if( src->link )
                 {
-                    if( flect_item->flags.f_deep_copy )
+                    if( self_item->flags.f_deep_copy )
                     {
                         dst->link = bcore_inst_spect_clone( inst_item->inst_p, src->link );
                     }
@@ -581,7 +591,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 if( src->link )
                 {
-                    if( flect_item->flags.f_deep_copy )
+                    if( self_item->flags.f_deep_copy )
                     {
                         const bcore_inst_s* inst_p = bcore_inst_s_get_typed( src->type );
                         dst->link = inst_p->clone( inst_p, src->link );
@@ -610,7 +620,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 if( src->link )
                 {
-                    if( flect_item->flags.f_deep_copy )
+                    if( self_item->flags.f_deep_copy )
                     {
                         const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )src->link );
                         dst->link = inst_p->clone( inst_p, src->link );
@@ -728,7 +738,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                     dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                 }
-                if( flect_item->flags.f_deep_copy )
+                if( self_item->flags.f_deep_copy )
                 {
                     for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
                 }
@@ -758,7 +768,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                     }
-                    if( flect_item->flags.f_deep_copy )
+                    if( self_item->flags.f_deep_copy )
                     {
                         for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
                     }
@@ -791,7 +801,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
                         dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
                     }
-                    if( flect_item->flags.f_deep_copy )
+                    if( self_item->flags.f_deep_copy )
                     {
                         for( sz_t i = 0; i < src->size; i++ )
                         {
@@ -841,7 +851,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     vd_t dst = dst_arr[ i ];
                     vd_t src = src_arr[ i ];
                     bcore_inst_spect_discard( inst_p, dst );
-                    if( flect_item->flags.f_deep_copy )
+                    if( self_item->flags.f_deep_copy )
                     {
                         dst = bcore_inst_spect_clone( inst_p, src );
                     }
@@ -863,7 +873,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     vd_t dst = dst_arr[ i ];
                     vd_t src = src_arr[ i ];
                     bcore_inst_aware_discard( dst );
-                    if( flect_item->flags.f_deep_copy )
+                    if( self_item->flags.f_deep_copy )
                     {
                         dst = bcore_inst_aware_clone( src );
                     }
@@ -877,7 +887,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
 
             default:
             {
-                ERR_fa( "Unhandled nesting '#<sc_t>'", bcore_flect_caps_e_sc( flect_item->caps ) );
+                ERR_fa( "Unhandled nesting '#<sc_t>'", bcore_flect_caps_e_sc( self_item->caps ) );
             }
         }
     }
@@ -1267,132 +1277,130 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
     if( bcore_self_s_items_size( self ) > 0 )
     {
         sz_t items_size = bcore_self_s_items_size( self );
-//        const bcore_self_body_s* flect_body = self->body;
         bl_t body_complete = bcore_self_body_s_get_complete( self->body );
         body_undefined_or_complete = body_complete;
         bcore_inst_item_s* last_inst_item = NULL;
 
         for( sz_t i = 0; i < items_size; i++ )
         {
-            const bcore_self_item_s* flect_item = bcore_self_s_get_item( self, i );
+            const bcore_self_item_s* self_item = bcore_self_s_get_item( self, i );
 
-            if( flect_item->flags.f_shell ) continue; // shells are invisible to instance (but handled in via-inst_p)
-            if( flect_item->flags.f_const ) continue; // constants are invisible to instance
+            if( self_item->flags.f_shell                    ) continue; // shells are invisible to instance (but handled in via-inst_p)
+            if( self_item->flags.f_const                    ) continue; // constants are invisible to instance
+            if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC ) continue; // nothing yet or handled above
 
-            if( flect_item->caps == BCORE_CAPS_EXTERNAL_FUNC )
+            bcore_inst_item_s* inst_item = inst_s_push( o );
+
+            inst_item->self_item = self_item;
+            if( self_item->type )
             {
-                /* nothing yet or handled above */
-            }
-            else
-            {
-                bcore_inst_item_s* inst_item = inst_s_push( o );
-
-                inst_item->flect_item = flect_item;
-                if( flect_item->type )
+                if( !bcore_flect_exists( self_item->type ) )
                 {
-                    if( !bcore_flect_exists( flect_item->type ) )
+                    ERR( "Constructing bcore_inst_s of %s:\n"
+                         "Type '%s' (%"PRIu32") does not exist.", ifnameof( self->type ), ifnameof( self_item->type ), self_item->type );
+                }
+                else if( self_item->type == self->type )
+                {
+                    if( self_item->caps == BCORE_CAPS_SOLID_STATIC )
                     {
-                        ERR( "Constructing bcore_inst_s of %s:\n"
-                             "Type '%s' (%"PRIu32") does not exist.", ifnameof( self->type ), ifnameof( flect_item->type ), flect_item->type );
-                    }
-                    else if( flect_item->type == self->type )
-                    {
-                        if( flect_item->caps == BCORE_CAPS_SOLID_STATIC )
-                        {
-                            ERR_fa( "Constructing bcore_inst_s of #<sc_t>:\n"
-                                 "Type '#<sc_t>' (#<tp_t>) is static member of itself, which is inconstructible.\n"
-                                 "A static link might be a viable alternative.\n" , ifnameof( self->type ), ifnameof( flect_item->type ), flect_item->type );
-                        }
-                        else
-                        {
-                            inst_item->inst_p = o;
-                        }
+                        ERR_fa( "Constructing bcore_inst_s of #<sc_t>:\n"
+                             "Type '#<sc_t>' (#<tp_t>) is static member of itself, which is inconstructible.\n"
+                             "A static link might be a viable alternative.\n" , ifnameof( self->type ), ifnameof( self_item->type ), self_item->type );
                     }
                     else
                     {
-                        inst_item->inst_p = bcore_inst_s_get_typed( flect_item->type );
+                        inst_item->inst_p = o;
                     }
-
-                    if( flect_item->type == TYPEOF_aware_t || flect_item->type == TYPEOF_bcore_spect_header_s )
-                    {
-                        o->init_flat = false;
-                        o->aware = true;
-                    }
-
-                    /// default value specified
-                    {
-                        if( bcore_self_item_s_has_default_value( flect_item ) ) o->init_flat = false;
-                    }
-
-
-                    o->init_flat = o->init_flat & inst_item->inst_p->init_flat;
-                    o->copy_flat = o->copy_flat & inst_item->inst_p->copy_flat;
-                    o->down_flat = o->down_flat & inst_item->inst_p->down_flat;
-                }
-
-                switch( flect_item->caps )
-                {
-                    case BCORE_CAPS_LINK_STATIC:
-                    case BCORE_CAPS_LINK_TYPED:
-                    case BCORE_CAPS_LINK_AWARE:
-                    case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
-                    case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
-                    case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
-                    case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
-                    case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
-                    case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
-                    case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
-                    {
-                        o->copy_flat = false;
-                        o->down_flat = false;
-                    }
-                    break;
-
-                    default: break;
-                }
-
-                if( flect_item->caps == BCORE_CAPS_SOLID_STATIC )
-                {
-                    inst_item->size  = inst_item->inst_p->size;
-                    inst_item->align = inst_item->inst_p->align;
-                }
-                else if( flect_item->caps == BCORE_CAPS_ARRAY_FIX_SOLID_STATIC )
-                {
-                    inst_item->size  = inst_item->inst_p->size * flect_item->array_fix_size;
-                    inst_item->align = inst_item->inst_p->align;
                 }
                 else
                 {
-                    inst_item->size  = bcore_self_item_s_inst_size( flect_item );
-                    inst_item->align = bcore_self_item_s_inst_align( flect_item );
+                    inst_item->inst_p = bcore_inst_s_get_typed( self_item->type );
                 }
 
-                if( flect_item->flags.f_private )
+                if( self_item->type == TYPEOF_aware_t || self_item->type == TYPEOF_bcore_spect_header_s )
                 {
-                    inst_item->no_trace = true;
-                    if( !flect_item->flags.f_spect ) o->copy_flat = false;
-                }
-
-                if( flect_item->flags.f_spect )
-                {
-                    inst_item->no_trace = true;
                     o->init_flat = false;
+                    o->aware = true;
                 }
 
-                if( last_inst_item )
+                /// default value specified
                 {
-                    inst_item->offset = aligned_offset( inst_item->align, last_inst_item->offset + last_inst_item->size );
-                }
-                else
-                {
-                    inst_item->offset = 0;
+                    if( bcore_self_item_s_has_default_value( self_item ) ) o->init_flat = false;
                 }
 
-                o->align = ( inst_item->align > o->align ) ? inst_item->align : o->align;
 
-                bcore_inst_item_s_discard( last_inst_item );
-                last_inst_item = bcore_inst_item_s_clone( inst_item );
+                o->init_flat = o->init_flat & inst_item->inst_p->init_flat;
+                o->copy_flat = o->copy_flat & inst_item->inst_p->copy_flat;
+                o->down_flat = o->down_flat & inst_item->inst_p->down_flat;
             }
+
+            switch( self_item->caps )
+            {
+                case BCORE_CAPS_LINK_STATIC:
+                case BCORE_CAPS_LINK_TYPED:
+                case BCORE_CAPS_LINK_AWARE:
+                case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+                case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+                case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+                case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+                case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+                case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+                case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+                {
+                    o->copy_flat = false;
+                    o->down_flat = false;
+                }
+                break;
+
+                default: break;
+            }
+
+            if( self_item->caps == BCORE_CAPS_SOLID_STATIC )
+            {
+                inst_item->size  = inst_item->inst_p->size;
+                inst_item->align = inst_item->inst_p->align;
+            }
+            else if( self_item->caps == BCORE_CAPS_ARRAY_FIX_SOLID_STATIC )
+            {
+                inst_item->size  = inst_item->inst_p->size * self_item->array_fix_size;
+                inst_item->align = inst_item->inst_p->align;
+            }
+            else
+            {
+                inst_item->size  = bcore_self_item_s_inst_size( self_item );
+                inst_item->align = bcore_self_item_s_inst_align( self_item );
+            }
+
+            if( self_item->flags.f_private )
+            {
+                inst_item->no_trace = true;
+                if( !self_item->flags.f_spect ) o->copy_flat = false;
+            }
+
+            if( self_item->flags.f_spect )
+            {
+                inst_item->no_trace = true;
+                o->init_flat = false;
+            }
+
+            if( self_item->flags.f_feature )
+            {
+                inst_item->no_trace = true;
+            }
+
+            if( last_inst_item )
+            {
+                inst_item->offset = aligned_offset( inst_item->align, last_inst_item->offset + last_inst_item->size );
+            }
+            else
+            {
+                inst_item->offset = 0;
+            }
+
+            o->align = ( inst_item->align > o->align ) ? inst_item->align : o->align;
+
+            bcore_inst_item_s_discard( last_inst_item );
+            last_inst_item = bcore_inst_item_s_clone( inst_item );
         }
 
         if( body_complete && last_inst_item )

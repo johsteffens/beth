@@ -32,6 +32,10 @@ typedef struct bcore_matrix_s
 {
     bcore_spect_header_s header;
     const bcore_array_s* spect_array;
+    sz_t fixed_cols; // feature
+    sz_t fixed_rows; // feature
+    sz_t * cols;     // feature
+    sz_t * rows;     // feature
 } bcore_matrix_s;
 
 const bcore_matrix_s* bcore_matrix_s_get_typed( tp_t type );

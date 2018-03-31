@@ -285,65 +285,82 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
     assert( p_self != NULL );
     assert( o_self != NULL );
 
-    const bcore_via_s* p_via = bcore_via_s_get_typed( p_self->type );
+    const bcore_inst_s* p_inst = bcore_inst_s_get_typed( p_self->type );
+
     bcore_spect_header_s* o = bcore_inst_typed_create( p_self->type );
     o->o_type = o_self->type;
 
-    sz_t size = bcore_via_spect_get_size( p_via );
-    for( sz_t i = 0; i < size; i++ )
+    sz_t p_items_size = bcore_inst_s_get_items_size( p_inst );
+    sz_t o_items_size = bcore_self_s_items_size( o_self );
+
+    for( sz_t i = 0; i < p_items_size; i++ )
     {
-        const bcore_vitem_s* vitem = bcore_via_spect_iget_vitem( p_via, i );
-        if( vitem->flags.f_feature )
+        const bcore_inst_item_s* p_inst_item = bcore_inst_s_get_item( p_inst, i );
+        const bcore_self_item_s* p_self_item = p_inst_item->self_item;
+        if( !p_self_item ) continue;
+        if( !p_self_item->flags.f_feature ) continue;
+
+        vd_t dst = bcore_inst_item_s_get_obj( p_inst_item, o );
+        bl_t found = false;
+
+        for( sz_t i = 0; i < o_items_size; i++ )
         {
-            if( vitem->flags.f_fp )
-            {
-                sr_s dst = bcore_via_spect_nget( p_via, o, vitem->name );
-                if( dst.o )
-                {
-                    fp_t src_fp = bcore_self_s_try_external_fp( o_self, vitem->type, vitem->name );
-                    fp_t* dst_fp = ( fp_t* )dst.o;
+            const bcore_self_item_s* o_self_item = bcore_self_s_get_item( o_self, i );
+            if( o_self_item->flags.f_private ) continue;
 
-                    if( vitem->flags.f_strict && !*dst_fp && !src_fp )
+            if( p_self_item->type == o_self_item->type && p_self_item->name == o_self_item->name )
+            {
+                found = true;
+                if( p_self_item->flags.f_fp && o_self_item->caps == BCORE_CAPS_EXTERNAL_FUNC )
+                {
+                    fp_t  src_fp = bcore_function_get( o_self_item->default_tp );
+                    ( *(fp_t*)dst )= src_fp;
+                }
+                else if( o_self_item->flags.f_const && o_self_item->caps == BCORE_CAPS_SOLID_STATIC )
+                {
+                    switch( p_self_item->type )
                     {
-                        WRN_fa
-                        (
-                            "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' not found in '#<sc_t>'.",
-                            ifnameof( p_self->type ),
-                            ifnameof( vitem->type ),
-                            ifnameof( vitem->name ),
-                            ifnameof( o_self->type )
-                        );
+                        case TYPEOF_s0_t: *( s0_t* )dst = o_self_item->default_s3; break;
+                        case TYPEOF_s1_t: *( s1_t* )dst = o_self_item->default_s3; break;
+                        case TYPEOF_s2_t: *( s2_t* )dst = o_self_item->default_s3; break;
+                        case TYPEOF_s3_t: *( s3_t* )dst = o_self_item->default_s3; break;
+                        case TYPEOF_u0_t: *( u0_t* )dst = o_self_item->default_u3; break;
+                        case TYPEOF_u1_t: *( u1_t* )dst = o_self_item->default_u3; break;
+                        case TYPEOF_u2_t: *( u2_t* )dst = o_self_item->default_u3; break;
+                        case TYPEOF_u3_t: *( u3_t* )dst = o_self_item->default_u3; break;
+                        case TYPEOF_f2_t: *( f2_t* )dst = o_self_item->default_f3; break;
+                        case TYPEOF_f3_t: *( f3_t* )dst = o_self_item->default_f3; break;
+                        case TYPEOF_sz_t: *( sz_t* )dst = o_self_item->default_u3; break;
+                        case TYPEOF_bl_t: *( bl_t* )dst = o_self_item->default_u3; break;
+                        case TYPEOF_tp_t: *( tp_t* )dst = o_self_item->default_tp; break;
+                        default: found = false;
                     }
-
-                    if( src_fp ) *dst_fp = src_fp;
                 }
-                else
-                {
-                    WRN_fa
-                    (
-                        "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' not found in perspective.",
-                        ifnameof( p_self->type ),
-                        ifnameof( vitem->type ),
-                        ifnameof( vitem->name )
-                    );
-                }
+                if( found ) break;
+            }
+        }
 
-                sr_down( dst );
-            }
-            else
-            {
-                WRN_fa
-                (
-                    "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' is not supported.",
-                    ifnameof( p_self->type ),
-                    vitem->type,
-                    vitem->name
-                );
-            }
+        if( !found && p_self_item->flags.f_strict )
+        {
+            WRN_fa
+            (
+                "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' not found in '#<sc_t>'.",
+                ifnameof( p_self->type ),
+                ifnameof( p_self_item->type ),
+                ifnameof( p_self_item->name ),
+                ifnameof( o_self->type )
+            );
         }
     }
 
     return o;
+}
+
+vd_t bcore_spect_create_from_self_typed( tp_t p_type, tp_t o_type )
+{
+    const bcore_self_s* p_self = bcore_flect_get_self( p_type );
+    const bcore_self_s* o_self = bcore_flect_get_self( o_type );
+    return bcore_spect_create_from_self( p_self, o_self );
 }
 
 void bcore_spect_define_creator( tp_t type, bcore_flect_create_self_fp creator )

@@ -42,7 +42,6 @@ const sc_t bcore_flect_caps_e_sc_arr[] =
     "ARRAY_FIX_SOLID_STATIC",
     "ARRAY_FIX_LINK_STATIC",
     "ARRAY_FIX_LINK_AWARE",
-    "EXTERNAL_DATA",
     "EXTERNAL_FUNC",
 
     "END",
@@ -240,7 +239,7 @@ void bcore_self_item_s_check_integrity( const bcore_self_item_s* o )
     if( o->caps >= BCORE_CAPS_END   ) ERR( "Invalid capsulation" );
 }
 
-static bcore_self_s* flect_item_s_create_self( void )
+static bcore_self_s* self_item_s_create_self( void )
 {
     sc_t def =
     "bcore_self_item_s = bcore_inst"
@@ -378,7 +377,7 @@ static bcore_self_body_s* body_s_build_parse_src( sr_s src )
             item->type = entypeof( type_name->sc );
             item->name = entypeof( item_name->sc );
             item->caps = BCORE_CAPS_EXTERNAL_FUNC;
-            item->default_tp = entypeof( item_name->sc );
+            item->default_tp = entypeof( assign_name->sc );
         }
         else // data type declaration
         {
@@ -394,6 +393,7 @@ static bcore_self_body_s* body_s_build_parse_src( sr_s src )
             bl_t f_assign_default = false;
             bl_t f_feature   = false;
             bl_t f_strict    = false;
+            bl_t f_offset    = false;
 
             sz_t array_fix_size = 0;
 
@@ -441,6 +441,12 @@ static bcore_self_body_s* body_s_build_parse_src( sr_s src )
                 {
                     if( f_strict ) bcore_source_q_parse_err_fa( &src, "Prefix 'strict' occurs twice." );
                     f_any_prefix = f_strict = true;
+                }
+
+                if( bcore_source_q_parse_bl_fa( &src, " #?w'offset'"   ) )
+                {
+                    if( f_offset ) bcore_source_q_parse_err_fa( &src, "Prefix 'offset' occurs twice." );
+                    f_any_prefix = f_offset = true;
                 }
             }
 
@@ -1459,7 +1465,7 @@ static void flect_define_basics()
     BCORE_REGISTER_PLAIN( bcore_fp_create_typed, function_pointer );
 
     // specific objects
-    bcore_flect_define_creator( typeof( "bcore_self_item_s" ), flect_item_s_create_self );
+    bcore_flect_define_creator( typeof( "bcore_self_item_s" ), self_item_s_create_self );
     bcore_flect_define_creator( typeof( "bcore_self_body_s" ), flect_body_s_create_self );
     bcore_flect_define_creator( typeof( "bcore_self_s" ), flect_self_s_create_self );
 }

@@ -49,7 +49,6 @@ enum
     BCORE_CAPS_ARRAY_FIX_SOLID_STATIC,
     BCORE_CAPS_ARRAY_FIX_LINK_STATIC,
     BCORE_CAPS_ARRAY_FIX_LINK_AWARE,
-    BCORE_CAPS_UNUSED1,            // formerly   BCORE_CAPS_EXTERNAL_DATA,
     BCORE_CAPS_EXTERNAL_FUNC,      // specifies a static external function for perspective only (no data occupation in object)
 
     BCORE_CAPS_END,
@@ -59,7 +58,6 @@ enum
 typedef struct { vd_t  link;                                   } bcore_link_static_s;
 typedef struct { vd_t  link; tp_t type;                        } bcore_link_typed_s;
 typedef struct { vd_t  link;                                   } bcore_link_aware_s;
-
 
 /** bcore_array_dyn_head_s matches the beginning of every dynamic array structure
  *  ptr has different meanings (either vd_t or vd_t*)
@@ -121,7 +119,7 @@ typedef struct bcore_flect_flags_s
             // constant; requires initializer; no physical representation in object
             unsigned f_const     : 1;
 
-            // item represents a feature (features are used in perspectives)
+            // item represents a feature (features are used in perspectives; features are not traced in inst perspective)
             unsigned f_feature   : 1;
 
             // used in conjunction with 'feature' to determine if the feature is always existing (either by default or by object-sided implementation)
@@ -147,7 +145,7 @@ typedef struct bcore_self_item_s
     union
     {
         s3_t default_s3; // serves s0_t ... s3_t
-        u3_t default_u3; // serves u0_t ... u3_t, bl_t
+        u3_t default_u3; // serves u0_t ... u3_t, bl_t, sz_t
         f3_t default_f3; // serves f2_t ... f3_t
         tp_t default_tp; // serves tp_t and external functions
         u3_t array_fix_size; // size for fixed arrays  (do not use sz_t here because of system dependent sizeof( sz_t ))
