@@ -129,16 +129,16 @@ static void sr_s_set_obj( sr_s* o, sr_s obj )
     sr_s_set( o, obj );
 }
 
-static bcore_flect_self_s* sr_s_create_self( void )
+static bcore_self_s* sr_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( " sr_s = bcore_inst { private vd_t o; private vc_t p; private tp_t f; shell typed * obj; }", sizeof( sr_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )sr_s_init,    "bcore_fp_init", "init"    );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )sr_s_down,    "bcore_fp_down", "down"    );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )sr_s_copy,    "bcore_fp_copy", "copy"    );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )sr_s_get_obj, "bcore_fp_get",  "get_obj" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )sr_s_set_obj, "bcore_fp_set",  "set_obj" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( " sr_s = bcore_inst { private vd_t o; private vc_t p; private tp_t f; shell typed * obj; }", sizeof( sr_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )sr_s_init,    "bcore_fp_init", "init"    );
+    bcore_self_s_push_ns_func( self, ( fp_t )sr_s_down,    "bcore_fp_down", "down"    );
+    bcore_self_s_push_ns_func( self, ( fp_t )sr_s_copy,    "bcore_fp_copy", "copy"    );
+    bcore_self_s_push_ns_func( self, ( fp_t )sr_s_get_obj, "bcore_fp_get",  "get_obj" );
+    bcore_self_s_push_ns_func( self, ( fp_t )sr_s_set_obj, "bcore_fp_set",  "set_obj" );
 
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )sr_s_copy_typed, "bcore_fp_copy_typed", "copy_typed"  );
+    bcore_self_s_push_ns_func( self, ( fp_t )sr_s_copy_typed, "bcore_fp_copy_typed", "copy_typed"  );
     return self;
 }
 

@@ -94,14 +94,14 @@ static void trait_s_push_fp_support( bcore_trait_s* o, bcore_trait_fp_supports f
     o->fp_data[ o->fp_size++ ] = f;
 }
 
-static bcore_flect_self_s* trait_ft_s_create_self( void )
+static bcore_self_s* trait_ft_s_create_self( void )
 {
-    return bcore_flect_self_s_build_parse_sc( trait_ft_s_def_g, sizeof( bcore_trait_ft_s ) );
+    return bcore_self_s_build_parse_sc( trait_ft_s_def_g, sizeof( bcore_trait_ft_s ) );
 }
 
-static bcore_flect_self_s* trait_s_create_self( void )
+static bcore_self_s* trait_s_create_self( void )
 {
-    return bcore_flect_self_s_build_parse_sc( trait_s_def_g, sizeof( bcore_trait_s ) );
+    return bcore_self_s_build_parse_sc( trait_s_def_g, sizeof( bcore_trait_s ) );
 }
 
 typedef struct system_s
@@ -264,7 +264,7 @@ bl_t bcore_trait_is_of( tp_t trait, tp_t ancestor )
     return flag;
 }
 
-bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* log )
+bl_t bcore_trait_supported( tp_t trait, const bcore_self_s* self, st_s* log )
 {
     if( !trait ) return true;
     if( !bcore_trait_exists( trait ) )
@@ -299,7 +299,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* lo
 
     if( trait_o->awareness )
     {
-        if( !bcore_flect_self_s_is_aware( self ) )
+        if( !bcore_self_s_is_aware( self ) )
         {
             if( log )
             {
@@ -312,7 +312,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* lo
     for( sz_t i = 0; i < trait_o->ft_size; i++ )
     {
         bcore_trait_ft_s ft_o = trait_o->ft_data[ i ];
-        if( !bcore_flect_self_s_try_external_fp( self, ft_o.type, ft_o.name ) )
+        if( !bcore_self_s_try_external_fp( self, ft_o.type, ft_o.name ) )
         {
             if( log )
             {
@@ -342,7 +342,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* lo
     return true;
 }
 
-bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, st_s* log )
+bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_self_s* self, st_s* log )
 {
     if( self->type == trait                       ) return true;
     if( bcore_trait_is_of( self->trait, trait )   ) return true;
@@ -353,7 +353,7 @@ bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, st_
 bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log )
 {
     if( object_type == trait                      ) return true;
-    const bcore_flect_self_s* self = bcore_flect_try_self( object_type );
+    const bcore_self_s* self = bcore_flect_try_self( object_type );
     if( !self )
     {
         if( log )

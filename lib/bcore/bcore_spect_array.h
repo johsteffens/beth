@@ -14,7 +14,7 @@
  */
 
 /** Array Perspective
- *  The array perspective addresses the first array element of an object and provides array
+ *  The array perspective addresses the first array-element of an object's reflection and provides array
  *  related functionality.
  *  'size'  specifies the number of valid elements in the array
  *  'space' represents internally preallocated memory area.
@@ -23,7 +23,6 @@
  *  In linked arrays NULL is a valid element.
  */
 
-
 #ifndef BCORE_SPECT_ARRAY_H
 #define BCORE_SPECT_ARRAY_H
 
@@ -31,6 +30,7 @@
 #include "bcore_flect.h"
 #include "bcore_features.h"
 #include "bcore_arr.h"
+#include "bcore_spect.h"
 
 typedef struct bcore_array_s bcore_array_s;
 
@@ -41,8 +41,7 @@ typedef struct bcore_array_s
 
     tp_t caps_type;
 
-    bl_t fixed;      // fixed-size-array
-    sz_t fixed_size; // array size in case fixed == true; 0 otherwise
+    s3_t fixed_size; // for fixed-size arrays: array size; otherwise -1
 
     sz_t caps_offset;
     const bcore_inst_s* item_p;  // item-perspective; NULL for typed or aware arrays
@@ -353,6 +352,8 @@ void bcore_array_q_sort_f               ( const sr_s* o, sz_t start, sz_t end, b
 void bcore_array_q_reorder              ( const sr_s* o, const bcore_arr_sz_s* order );
 bcore_arr_sz_s* bcore_array_q_create_sorted_order(   const sr_s* o, sz_t start, sz_t end, s2_t direction );
 bcore_arr_sz_s* bcore_array_q_create_sorted_order_f( const sr_s* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
+
+/**********************************************************************************************************************/
 
 vd_t bcore_spect_array_signal_handler( const bcore_signal_s* o );
 

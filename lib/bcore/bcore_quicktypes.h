@@ -56,6 +56,7 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_vc_t     283133669
 #define TYPEOF_vd_t    1618651012
 #define TYPEOF_function_pointer typeof( "function_pointer" )
+#define TYPEOF_root typeof( "root" )
 
 // other types
 #define TYPEOF_all                         321211332
@@ -70,7 +71,7 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_bcore_bin_ml_interpreter_s 3834633675
 #define TYPEOF_bcore_bin_ml_translator_s  1158670837
 #define TYPEOF_bcore_compare_s             310299276
-#define TYPEOF_bcore_flect_self_s          556415048
+#define TYPEOF_bcore_self_s          556415048
 #define TYPEOF_bcore_hmap_tp_s            3944836652
 #define TYPEOF_bcore_hmap_tp_sr_s         2644016932
 #define TYPEOF_bcore_hmap_tpfp_s          2363371350

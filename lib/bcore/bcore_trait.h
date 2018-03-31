@@ -30,7 +30,7 @@
  */
 
 /// Support feature: Tests if object supports certain requirements. In case of non-support a log != NULL may be filled with descriptive reasons
-typedef bl_t ( *bcore_trait_fp_supports )( const bcore_flect_self_s* self, st_s* log );
+typedef bl_t ( *bcore_trait_fp_supports )( const bcore_self_s* self, st_s* log );
 
 /// associates requirements with a trait
 /// this must be finished before the trait is defined below
@@ -51,16 +51,24 @@ bl_t bcore_trait_exists( tp_t trait );
 /// returns direct parent of a trait; 0 if trait does not exist; thread-safe
 tp_t bcore_trait_parent( tp_t trait );
 
-/// checks if ancestor is in the chain of inheritance of trait; thread-safe
+/// Checks if ancestor is in the chain of inheritance of trait. (thread-safe)
 bl_t bcore_trait_is_of( tp_t trait, tp_t ancestor );
 
-/// checks if a reflection supports a trait including all ancestors (ignores trait specification in reflection)
-bl_t bcore_trait_supported( tp_t trait, const bcore_flect_self_s* self, st_s* log );
+/** Checks if a reflection supports a trait including all ancestors
+ *  by matching the trait requirements with the reflection.
+ */
+bl_t bcore_trait_supported( tp_t trait, const bcore_self_s* self, st_s* log );
 
-/// checks if trait is satisfied by object (this is true when trait is ancestor of self->trait or when bcore_trait_supports returns true)
-bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_flect_self_s* self, st_s* log );
+/** Checks if trait is satisfied by object.
+  * This is true when trait is ancestor of self->trait or when bcore_trait_supports returns true.
+  */
+bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_self_s* self, st_s* log );
 
-/// checks if trait is satisfied by object (this is true when trait is ancestor of self->trait or when bcore_trait_supports returns true)
+/** Checks if trait is satisfied by object
+ *  This is true when trait is ancestor of self->trait or when bcore_trait_supports returns true.
+ *  This function should be used to determine if a perspective (given by trait) of the object
+ *  can be created.
+ */
 bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log );
 
 sz_t  bcore_trait_size(); // number of registered names

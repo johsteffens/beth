@@ -205,7 +205,7 @@ static void chain_parse_fv( bcore_source_chain_s* o, sc_t format, va_list args )
     }
 }
 
-static bcore_flect_self_s* chain_s_create_self( void )
+static bcore_self_s* chain_s_create_self( void )
 {
     sc_t def =
 
@@ -215,19 +215,19 @@ static bcore_flect_self_s* chain_s_create_self( void )
       "aware * [] data; "
     "}";
 
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_chain_s ) );
-    bcore_flect_self_s_push_ns_amoeba( self, chain_init_a, "init" );
-    bcore_flect_self_s_push_ns_amoeba( self, chain_down_a, "down" );
-    bcore_flect_self_s_push_ns_amoeba( self, chain_copy_a, "copy" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_interpret_body_a, "ap_t", "interpret_body" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_flow_src,  "bcore_fp_flow_src", "flow_src"  );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )chain_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_eos,          "bcore_source_fp_eos",       "eos" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_get_file,     "bcore_source_fp_get_file",  "get_file" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_get_index,    "bcore_source_fp_get_index", "get_index" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_set_index,    "bcore_source_fp_set_index", "set_index" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_source_chain_s ) );
+    bcore_self_s_push_ns_amoeba( self, chain_init_a, "init" );
+    bcore_self_s_push_ns_amoeba( self, chain_down_a, "down" );
+    bcore_self_s_push_ns_amoeba( self, chain_copy_a, "copy" );
+    bcore_self_s_push_ns_func( self, ( fp_t )chain_interpret_body_a, "ap_t", "interpret_body" );
+    bcore_self_s_push_ns_func( self, ( fp_t )chain_flow_src,  "bcore_fp_flow_src", "flow_src"  );
+    bcore_self_s_push_ns_func( self, ( fp_t )chain_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
+    bcore_self_s_push_ns_func( self, ( fp_t )chain_parse_fv,   "bcore_source_fp_parse_fv", "parse_fv" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_eos,          "bcore_source_fp_eos",       "eos" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_get_file,     "bcore_source_fp_get_file",  "get_file" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_get_index,    "bcore_source_fp_get_index", "get_index" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_set_index,    "bcore_source_fp_set_index", "set_index" );
     return self;
 }
 
@@ -371,7 +371,7 @@ void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier
     o->size = 0;
 }
 
-static bcore_flect_self_s* buffer_s_create_self( void )
+static bcore_self_s* buffer_s_create_self( void )
 {
     sc_t def =
     "bcore_source_buffer_s = bcore_source"
@@ -382,15 +382,15 @@ static bcore_flect_self_s* buffer_s_create_self( void )
       "private vd_t supplier; "
       "sz_t prefetch_size; "
     "}";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_buffer_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_init,  "bcore_fp_init",     "init"  );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )buffer_flow_src,             "bcore_fp_flow_src", "flow_src"  );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )buffer_p_errorvf,            "bcore_fp_logvf",    "p_errorvf" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_eos,          "bcore_source_fp_eos",  "eos" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_get_file,     "bcore_source_fp_get_file",  "get_file" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_get_index,    "bcore_source_fp_get_index", "get_index" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_set_index,    "bcore_source_fp_set_index", "set_index" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_source_buffer_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_init,  "bcore_fp_init",     "init"  );
+    bcore_self_s_push_ns_func( self, ( fp_t )buffer_flow_src,             "bcore_fp_flow_src", "flow_src"  );
+    bcore_self_s_push_ns_func( self, ( fp_t )buffer_p_errorvf,            "bcore_fp_logvf",    "p_errorvf" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_eos,          "bcore_source_fp_eos",  "eos" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_get_file,     "bcore_source_fp_get_file",  "get_file" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_get_index,    "bcore_source_fp_get_index", "get_index" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_set_index,    "bcore_source_fp_set_index", "set_index" );
     return self;
 }
 
@@ -578,7 +578,7 @@ void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier
     if( o->string ) o->string->size = 0;
 }
 
-static bcore_flect_self_s* string_s_create_self( void )
+static bcore_self_s* string_s_create_self( void )
 {
     sc_t def =
     "bcore_source_string_s = bcore_source "
@@ -590,16 +590,16 @@ static bcore_flect_self_s* string_s_create_self( void )
       "sz_t refill_limit;    "
       "sz_t prefetch_size;   "
     "}";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_string_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_init,         "bcore_fp_init", "init" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_flow_src,                    "bcore_fp_flow_src",       "flow_src"  );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_s_errorvf,                   "bcore_fp_logvf",          "p_errorvf" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )string_parse_fv,                    "bcore_source_fp_parse_fv", "parse_fv"   );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier"   );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_eos,          "bcore_source_fp_eos",       "eos" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_get_file,     "bcore_source_fp_get_file",  "get_file" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_get_index,    "bcore_source_fp_get_index", "get_index" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_index,    "bcore_source_fp_set_index", "set_index" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_source_string_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_init,         "bcore_fp_init", "init" );
+    bcore_self_s_push_ns_func( self, ( fp_t )string_flow_src,                    "bcore_fp_flow_src",       "flow_src"  );
+    bcore_self_s_push_ns_func( self, ( fp_t )string_s_errorvf,                   "bcore_fp_logvf",          "p_errorvf" );
+    bcore_self_s_push_ns_func( self, ( fp_t )string_parse_fv,                    "bcore_source_fp_parse_fv", "parse_fv"   );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_supplier, "bcore_source_fp_set_supplier", "set_supplier"   );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_eos,          "bcore_source_fp_eos",       "eos" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_get_file,     "bcore_source_fp_get_file",  "get_file" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_get_index,    "bcore_source_fp_get_index", "get_index" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_index,    "bcore_source_fp_set_index", "set_index" );
     return self;
 }
 
@@ -826,7 +826,7 @@ static void file_p_errorvf( bcore_source_file_s* o, sc_t format, va_list args )
     ERR( "File name: %s\n%s\n", o->name->sc, st_s_createvf( format, args )->sc );
 }
 
-static bcore_flect_self_s* file_s_create_self( void )
+static bcore_self_s* file_s_create_self( void )
 {
     sc_t def =
     "bcore_source_file_s = bcore_source "
@@ -836,17 +836,17 @@ static bcore_flect_self_s* file_s_create_self( void )
       "private vd_t handle; "
     "}";
 
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_file_s ) );
-    bcore_flect_self_s_push_ns_amoeba( self, file_init_a, "init" );
-    bcore_flect_self_s_push_ns_amoeba( self, file_down_a, "down" );
-    bcore_flect_self_s_push_ns_amoeba( self, file_copy_a, "copy" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_interpret_body_a, "ap_t", "interpret_body" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_flow_src,  "bcore_fp_flow_src", "flow_src"  );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )file_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_eos,       "bcore_source_fp_eos",       "eos" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_get_file,  "bcore_source_fp_get_file",  "get_file" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_get_index, "bcore_source_fp_get_index", "get_index" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_set_index, "bcore_source_fp_set_index", "set_index" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_source_file_s ) );
+    bcore_self_s_push_ns_amoeba( self, file_init_a, "init" );
+    bcore_self_s_push_ns_amoeba( self, file_down_a, "down" );
+    bcore_self_s_push_ns_amoeba( self, file_copy_a, "copy" );
+    bcore_self_s_push_ns_func( self, ( fp_t )file_interpret_body_a, "ap_t", "interpret_body" );
+    bcore_self_s_push_ns_func( self, ( fp_t )file_flow_src,  "bcore_fp_flow_src", "flow_src"  );
+    bcore_self_s_push_ns_func( self, ( fp_t )file_p_errorvf, "bcore_fp_logvf",    "p_errorvf" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_eos,       "bcore_source_fp_eos",       "eos" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_get_file,  "bcore_source_fp_get_file",  "get_file" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_get_index, "bcore_source_fp_get_index", "get_index" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_set_index, "bcore_source_fp_set_index", "set_index" );
     return self;
 }
 

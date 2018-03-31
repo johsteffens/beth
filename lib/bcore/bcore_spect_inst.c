@@ -82,7 +82,7 @@ void bcore_inst_body_s_pop( bcore_inst_body_s* o )
     bcore_inst_item_s_down( &o->data[ o->size ] );
 }
 
-bcore_inst_item_s* bcore_inst_body_s_inst_item_of_flect_item( const bcore_inst_body_s* o, const bcore_flect_item_s* item )
+bcore_inst_item_s* bcore_inst_body_s_inst_item_of_flect_item( const bcore_inst_body_s* o, const bcore_self_item_s* item )
 {
     for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ].flect_item == item ) return &o->data[ i ];
     return NULL;
@@ -170,7 +170,7 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
     for( sz_t i = first; i < p->body->size; i++ )
     {
         const bcore_inst_item_s*  inst_item = &p->body->data[ i ];
-        const bcore_flect_item_s* flect_item = inst_item->flect_item;
+        const bcore_self_item_s* flect_item = inst_item->flect_item;
         vd_t dst_obj = ( u0_t* )o + inst_item->offset;
 
         switch( flect_item->caps )
@@ -291,7 +291,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
         const bcore_inst_item_s* inst_item = &p->body->data[ i ];
         if( inst_item->no_trace ) continue;
 
-        const bcore_flect_item_s* flect_item = inst_item->flect_item;
+        const bcore_self_item_s* flect_item = inst_item->flect_item;
         vd_t item_obj = ( u0_t* )o + inst_item->offset;
 
         switch( flect_item->caps )
@@ -531,7 +531,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
         const bcore_inst_item_s* inst_item = &p->body->data[ i ];
         if( inst_item->no_trace ) continue;
 
-        const bcore_flect_item_s* flect_item = inst_item->flect_item;
+        const bcore_self_item_s* flect_item = inst_item->flect_item;
         void* dst_obj = ( u0_t* )dst + inst_item->offset;
         void* src_obj = ( u0_t* )src + inst_item->offset;
 
@@ -1233,7 +1233,7 @@ static void inst_s_define_trait()
     bcore_trait_set( entypeof( "bcore_inst" ), entypeof( "root" ) );
 }
 
-bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
+bcore_inst_s* create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
 
@@ -1243,17 +1243,17 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
     o->align     = 0;
 
     /// amoebas
-    fp_t fp_init_a    = bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "init" ) );
-    fp_t fp_down_a    = bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "down" ) );
-    fp_t fp_copy_a    = bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "copy" ) );
-    o->init_o         = bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_init"         ), 0 );
-    o->down_o         = bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_down"         ), 0 );
-    o->copy_o         = bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_copy"         ), 0 );
-    o->copy_typed_o   = ( bcore_fp_copy_typed   )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_copy_typed"   ), 0 );
-    o->create_o       = ( bcore_fp_create       )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_create"       ), 0 );
-    o->create_typed_o = ( bcore_fp_create_typed )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_create_typed" ), 0 );
-    o->discard_o      = ( bcore_fp_discard      )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_discard"      ), 0 );
-    o->clone_o        = ( bcore_fp_clone        )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_clone"        ), 0 );
+    fp_t fp_init_a    = bcore_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "init" ) );
+    fp_t fp_down_a    = bcore_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "down" ) );
+    fp_t fp_copy_a    = bcore_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "copy" ) );
+    o->init_o         = bcore_self_s_try_external_fp( self, typeof( "bcore_fp_init"         ), 0 );
+    o->down_o         = bcore_self_s_try_external_fp( self, typeof( "bcore_fp_down"         ), 0 );
+    o->copy_o         = bcore_self_s_try_external_fp( self, typeof( "bcore_fp_copy"         ), 0 );
+    o->copy_typed_o   = ( bcore_fp_copy_typed   )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_copy_typed"   ), 0 );
+    o->create_o       = ( bcore_fp_create       )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_create"       ), 0 );
+    o->create_typed_o = ( bcore_fp_create_typed )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_create_typed" ), 0 );
+    o->discard_o      = ( bcore_fp_discard      )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_discard"      ), 0 );
+    o->clone_o        = ( bcore_fp_clone        )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_clone"        ), 0 );
 
     o->init_o = fp_init_a ? fp_init_a : o->init_o;
     o->down_o = fp_down_a ? fp_down_a : o->down_o;
@@ -1264,17 +1264,17 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
 
     bl_t body_undefined_or_complete = true;
 
-    if( bcore_flect_self_s_items_size( self ) > 0 )
+    if( bcore_self_s_items_size( self ) > 0 )
     {
-        sz_t items_size = bcore_flect_self_s_items_size( self );
-//        const bcore_flect_body_s* flect_body = self->body;
-        bl_t body_complete = bcore_flect_body_s_get_complete( self->body );
+        sz_t items_size = bcore_self_s_items_size( self );
+//        const bcore_self_body_s* flect_body = self->body;
+        bl_t body_complete = bcore_self_body_s_get_complete( self->body );
         body_undefined_or_complete = body_complete;
         bcore_inst_item_s* last_inst_item = NULL;
 
         for( sz_t i = 0; i < items_size; i++ )
         {
-            const bcore_flect_item_s* flect_item = bcore_flect_self_s_get_item( self, i );
+            const bcore_self_item_s* flect_item = bcore_self_s_get_item( self, i );
 
             if( flect_item->flags.f_shell ) continue; // shells are invisible to instance (but handled in via-inst_p)
             if( flect_item->flags.f_const ) continue; // constants are invisible to instance
@@ -1321,7 +1321,7 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
 
                     /// default value specified
                     {
-                        if( bcore_flect_item_s_has_default_value( flect_item ) ) o->init_flat = false;
+                        if( bcore_self_item_s_has_default_value( flect_item ) ) o->init_flat = false;
                     }
 
 
@@ -1363,8 +1363,8 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
                 }
                 else
                 {
-                    inst_item->size  = bcore_flect_item_s_inst_size( flect_item );
-                    inst_item->align = bcore_flect_item_s_inst_align( flect_item );
+                    inst_item->size  = bcore_self_item_s_inst_size( flect_item );
+                    inst_item->align = bcore_self_item_s_inst_align( flect_item );
                 }
 
                 if( flect_item->flags.f_private )
@@ -1435,22 +1435,22 @@ bcore_inst_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
-static bcore_flect_self_s* inst_s_create_self( void )
+static bcore_self_s* inst_s_create_self( void )
 {
 //    sc_t def = "bcore_inst_s = spect { aware_t p_type; tp_t o_type; ... }";
-//    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_inst_s ) );
+//    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_inst_s ) );
 
 //  We need to create this reflection manually because self_s_build_parse uses it.
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "bcore_inst_s" ), typeof( "spect" ), sizeof( bcore_inst_s ) );
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
-    bcore_flect_body_s_set_complete( self->body, false );
+    bcore_self_s* self = bcore_self_s_create_plain( entypeof( "bcore_inst_s" ), typeof( "spect" ), sizeof( bcore_inst_s ) );
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
+    bcore_self_body_s_set_complete( self->body, false );
 
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                   "init"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_down,             "bcore_fp_down",                   "down"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )inst_s_create,           "bcore_fp_create",                 "create"       );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_inst_s_discard,    "bcore_fp_discard",                "discard"      );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self", "create_from_self" );
+    bcore_self_s_push_ns_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                   "init"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )inst_s_down,             "bcore_fp_down",                   "down"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )inst_s_create,           "bcore_fp_create",                 "create"       );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_inst_s_discard,    "bcore_fp_discard",                "discard"      );
+    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }
 
@@ -1707,10 +1707,10 @@ static st_s* spect_inst_selftest( void )
 {
     typedef struct { aware_t _; bcore_array_dyn_link_typed_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
 
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " test_object1_s = { aware_t _; typed * [] string_arr; u2_t val1; u3_t val2; s1_t val3; }", 0 ) );
+    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " test_object1_s = { aware_t _; typed * [] string_arr; u2_t val1; u3_t val2; s1_t val3; }", 0 ) );
 
     typedef struct { aware_t _; u2_t val1; test_object1_s* o1; } test_object2_s;
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " test_object2_s = { aware_t _; u2_t val1; test_object1_s* o1; }", 0 ) );
+    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " test_object2_s = { aware_t _; u2_t val1; test_object1_s* o1; }", 0 ) );
 
     test_object1_s* o1 = bcore_inst_typed_create( typeof( "test_object1_s" ) );
 
@@ -1751,9 +1751,9 @@ static st_s* spect_inst_selftest( void )
     // deep vs shallow links
     {
         typedef struct { aware_t _; st_s * str; } deep_object_s;
-        bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " deep_object_s = { aware_t _; st_s => str; }", sizeof( deep_object_s ) ) );
+        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " deep_object_s = { aware_t _; st_s => str; }", sizeof( deep_object_s ) ) );
         typedef struct { aware_t _; st_s * str; } shallow_object_s;
-        bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( " shallow_object_s = { aware_t _; st_s -> str; }", sizeof( shallow_object_s ) ) );
+        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " shallow_object_s = { aware_t _; st_s -> str; }", sizeof( shallow_object_s ) ) );
 
         deep_object_s*    do1 = bcore_inst_typed_create( typeof( "deep_object_s" ) );
         shallow_object_s* so1 = bcore_inst_typed_create( typeof( "shallow_object_s" ) );
@@ -1785,7 +1785,7 @@ static st_s* spect_inst_selftest( void )
     // just links
     {
         typedef struct { st_s* str1; st_s* str2; } links_object_s;
-        bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "links_object_s = { st_s => str1; st_s => str2; }", sizeof( links_object_s ) ) );
+        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "links_object_s = { st_s => str1; st_s => str2; }", sizeof( links_object_s ) ) );
         links_object_s* o = bcore_inst_typed_create( typeof( "links_object_s" ) );
         o->str1 = st_s_create_sc( "hello " );
         o->str2 = st_s_create_sc( "world!" );
@@ -1795,7 +1795,7 @@ static st_s* spect_inst_selftest( void )
     // fixed size array
     {
         typedef struct { st_s str_arr[ 10 ]; } arr_object_s;
-        bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "arr_object_s = { st_s [ 10 ] str_arr; }", sizeof( arr_object_s ) ) );
+        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "arr_object_s = { st_s [ 10 ] str_arr; }", sizeof( arr_object_s ) ) );
         arr_object_s* o1 = bcore_inst_typed_create( typeof( "arr_object_s" ) );
         arr_object_s* o2 = bcore_inst_typed_create( typeof( "arr_object_s" ) );
 

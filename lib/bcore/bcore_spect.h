@@ -49,8 +49,8 @@ BCORE_DECLARE_OBJECT( bcore_spect_header_s )
 /**********************************************************************************************************************/
 
 /// perspective-instance creation from object reflections
-typedef bcore_flect_self_s* (*bcore_spect_fp_create_from_self )( const bcore_flect_self_s* self );
-typedef bl_t                (*bcore_spect_fp_supports         )( const bcore_flect_self_s* self );
+typedef bcore_self_s* (*bcore_spect_fp_create_from_self )( const bcore_self_s* self );
+typedef bl_t                (*bcore_spect_fp_supports         )( const bcore_self_s* self );
 
 /** Tests if perspective indicated by spect_trait is supported by object o_type. (thread safe)
  *  This function is fast and does not actually construct the perspective.
@@ -72,8 +72,15 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
  *  These functions make use of certain perspectives in bcore. Hence, they should not be
  *  used for perspectives of bcore.
  */
-void bcore_spect_define_trait(     const bcore_flect_self_s* p_self );
-vd_t bcore_spect_create_from_self( const bcore_flect_self_s* p_self, const bcore_flect_self_s* o_self );
+void bcore_spect_define_trait(     const bcore_self_s* p_self );
+vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_s* o_self );
+vd_t bcore_spect_create_from_self_tp( tp_t p_type, tp_t o_type );
+
+/** Defining reflection of perspective via creation function
+ *  This function create a temporary instance of self and calls
+ *  bcore_spect_define_trait
+ */
+void bcore_spect_define_creator( tp_t type, bcore_flect_create_self_fp creator );
 
 /**********************************************************************************************************************/
 
@@ -90,6 +97,13 @@ static inline tp_t spect_tp_p( vc_t p ) { return ( ( tp_t* )p )[ 0 ]; } // type 
 static inline tp_t spect_tp_o( vc_t p ) { return ( ( tp_t* )p )[ 1 ]; } // type of object
 
 vd_t bcore_spect_signal_handler( const bcore_signal_s* o );
+
+/**********************************************************************************************************************/
+// macros
+
+#define BCORE_REGISTER_SPECT( name )\
+    bcore_spect_define_creator( typeof( #name ), name##_create_self )
+
 
 #endif // BCORE_SPECT_H
 

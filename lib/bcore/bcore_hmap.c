@@ -546,7 +546,7 @@ void bcore_hmap_u2vd_s_run_d( bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t o
 
 /**********************************************************************************************************************/
 
-static bcore_flect_self_s* hmap_u2vd_s_create_self( void )
+static bcore_self_s* hmap_u2vd_s_create_self( void )
 {
     sc_t def = "\
         bcore_hmap_u2vd_s = bcore_inst \
@@ -559,13 +559,13 @@ static bcore_flect_self_s* hmap_u2vd_s_create_self( void )
                 private fp_t h2; \
                 private fp_t h3; \
             }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_u2vd_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_init,    "bcore_fp_init",    "init"    );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_down,    "bcore_fp_down",    "down"    );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_copy,    "bcore_fp_copy",    "copy"    );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_create,  "bcore_fp_create",  "create"  );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_clone,   "bcore_fp_clone",   "clone"   );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_discard, "bcore_fp_discard", "discard" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_u2vd_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_init,    "bcore_fp_init",    "init"    );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_down,    "bcore_fp_down",    "down"    );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_copy,    "bcore_fp_copy",    "copy"    );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_create,  "bcore_fp_create",  "create"  );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_clone,   "bcore_fp_clone",   "clone"   );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_u2vd_s_discard, "bcore_fp_discard", "discard" );
     return self;
 }
 
@@ -717,7 +717,7 @@ static st_s* hmap_u2vd_selftest( void )
 /**********************************************************************************************************************/
 // bcore_hmap_tpsz_s
 
-static bcore_flect_self_s* hnode_tpsz_s_create_self( void )
+static bcore_self_s* hnode_tpsz_s_create_self( void )
 {
     sc_t def =
     "bcore_hnode_tpsz_s = bcore_inst"
@@ -725,7 +725,7 @@ static bcore_flect_self_s* hnode_tpsz_s_create_self( void )
         "tp_t key;"
         "sz_t val;"
     "}";
-    return bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hnode_tpsz_s ) );
+    return bcore_self_s_build_parse_sc( def, sizeof( bcore_hnode_tpsz_s ) );
 }
 
 void bcore_hmap_tpsz_s_init( bcore_hmap_tpsz_s* o )
@@ -954,7 +954,7 @@ static void tpsz_s_set_data( bcore_hmap_tpsz_s* o, sr_s data )
 
 /**********************************************************************************************************************/
 
-static bcore_flect_self_s* hmap_tpsz_s_create_self( void )
+static bcore_self_s* hmap_tpsz_s_create_self( void )
 {
     sc_t def = "\
         bcore_hmap_tpsz_s = bcore_inst \
@@ -967,12 +967,12 @@ static bcore_flect_self_s* hmap_tpsz_s_create_self( void )
                 private sz_t size_limit; \
                 shell { bcore_hnode_tpsz_s []; } data; } \
             }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpsz_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpsz_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpsz_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpsz_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpsz_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpsz_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpsz_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpsz_s_init,    "bcore_fp_init",  "init"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpsz_s_down,    "bcore_fp_down",  "down"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpsz_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )tpsz_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_self_s_push_ns_func( self, ( fp_t )tpsz_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 
@@ -1127,7 +1127,7 @@ static st_s* hmap_tpsz_selftest( void )
 /**********************************************************************************************************************/
 // bcore_hmap_tpfp_s
 
-static bcore_flect_self_s* hnode_tpfp_s_create_self( void )
+static bcore_self_s* hnode_tpfp_s_create_self( void )
 {
     sc_t def =
     "bcore_hnode_tpfp_s = bcore_inst"
@@ -1135,7 +1135,7 @@ static bcore_flect_self_s* hnode_tpfp_s_create_self( void )
         "tp_t key;"
         "fp_t val;"
     "}";
-    return bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hnode_tpfp_s ) );
+    return bcore_self_s_build_parse_sc( def, sizeof( bcore_hnode_tpfp_s ) );
 }
 
 void bcore_hmap_tpfp_s_init( bcore_hmap_tpfp_s* o )
@@ -1364,7 +1364,7 @@ static void tpfp_s_set_data( bcore_hmap_tpfp_s* o, sr_s data )
 
 /**********************************************************************************************************************/
 
-static bcore_flect_self_s* hmap_tpfp_s_create_self( void )
+static bcore_self_s* hmap_tpfp_s_create_self( void )
 {
     sc_t def = "\
         bcore_hmap_tpfp_s = bcore_inst \
@@ -1377,12 +1377,12 @@ static bcore_flect_self_s* hmap_tpfp_s_create_self( void )
                 private sz_t size_limit; \
                 shell { bcore_hnode_tpfp_s []; } data; } \
             }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpfp_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpfp_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpfp_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpfp_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpfp_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpfp_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpfp_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpfp_s_init,    "bcore_fp_init",  "init"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpfp_s_down,    "bcore_fp_down",  "down"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpfp_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )tpfp_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_self_s_push_ns_func( self, ( fp_t )tpfp_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 
@@ -1532,7 +1532,7 @@ static st_s* hmap_tpfp_selftest( void )
 /**********************************************************************************************************************/
 // bcore_hmap_tptp_s
 
-static bcore_flect_self_s* hnode_tptp_s_create_self( void )
+static bcore_self_s* hnode_tptp_s_create_self( void )
 {
     sc_t def =
     "bcore_hnode_tptp_s = bcore_inst"
@@ -1540,7 +1540,7 @@ static bcore_flect_self_s* hnode_tptp_s_create_self( void )
         "tp_t key;"
         "tp_t val;"
     "}";
-    return bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hnode_tptp_s ) );
+    return bcore_self_s_build_parse_sc( def, sizeof( bcore_hnode_tptp_s ) );
 }
 
 void bcore_hmap_tptp_s_init( bcore_hmap_tptp_s* o )
@@ -1767,7 +1767,7 @@ static void tptp_s_set_data( bcore_hmap_tptp_s* o, sr_s data )
 
 /**********************************************************************************************************************/
 
-static bcore_flect_self_s* hmap_tptp_s_create_self( void )
+static bcore_self_s* hmap_tptp_s_create_self( void )
 {
     sc_t def = "\
         bcore_hmap_tptp_s = bcore_inst \
@@ -1780,12 +1780,12 @@ static bcore_flect_self_s* hmap_tptp_s_create_self( void )
                 private sz_t size_limit; \
                 shell { bcore_hnode_tptp_s []; } data; } \
             }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tptp_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tptp_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tptp_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tptp_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )tptp_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )tptp_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tptp_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tptp_s_init,    "bcore_fp_init",  "init"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tptp_s_down,    "bcore_fp_down",  "down"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tptp_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )tptp_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_self_s_push_ns_func( self, ( fp_t )tptp_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 
@@ -2245,7 +2245,7 @@ static void tpto_s_set_data( bcore_hmap_tpto_s* o, sr_s data )
 
 /**********************************************************************************************************************/
 
-static bcore_flect_self_s* hmap_tpto_s_create_self( void )
+static bcore_self_s* hmap_tpto_s_create_self( void )
 {
     sc_t def = "\
         bcore_hmap_tpto_s = bcore_inst \
@@ -2259,12 +2259,12 @@ static bcore_flect_self_s* hmap_tpto_s_create_self( void )
                 private sz_t size_limit; \
                 shell { tp_t type; { tp_t key; sr_s obj; } []; } data; } \
             }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpto_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpto_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpto_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpto_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpto_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )tpto_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpto_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpto_s_init,    "bcore_fp_init",  "init"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpto_s_down,    "bcore_fp_down",  "down"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpto_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )tpto_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_self_s_push_ns_func( self, ( fp_t )tpto_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 
@@ -2632,7 +2632,7 @@ static void tp_s_set_data( bcore_hmap_tp_s* o, sr_s data )
 
 /**********************************************************************************************************************/
 
-static bcore_flect_self_s* hmap_tp_s_create_self( void )
+static bcore_self_s* hmap_tp_s_create_self( void )
 {
     sc_t def = "\
         bcore_hmap_tp_s = bcore_inst \
@@ -2645,12 +2645,12 @@ static bcore_flect_self_s* hmap_tp_s_create_self( void )
                 private sz_t size_limit; \
                 shell { tp_t []; } data; } \
             }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_hmap_tp_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )tp_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )tp_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tp_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_s_init,    "bcore_fp_init",  "init"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_s_down,    "bcore_fp_down",  "down"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )tp_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_self_s_push_ns_func( self, ( fp_t )tp_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 

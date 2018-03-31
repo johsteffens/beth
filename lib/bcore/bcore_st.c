@@ -1612,35 +1612,35 @@ static void check_sanity( vc_t o )
     }
 }
 
-static bcore_flect_self_s* st_s_create_self( void )
+static bcore_self_s* st_s_create_self( void )
 {
-//  bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "st_s = { aware_t _; private sd_t data; private sz_t size; private sz_t space; }", sizeof( st_s ) );
+//  bcore_self_s* self = bcore_self_s_build_parse_sc( "st_s = { aware_t _; private sd_t data; private sz_t size; private sz_t space; }", sizeof( st_s ) );
 
-//  We need to create this reflection manually because bcore_flect_self_s_build_parse_sc uses it.
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "st_s" ), typeof( "bcore_inst" ), sizeof( st_s ) );
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "_"  ) ) );
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sd_t, entypeof( "data"  ) ) )->flags.f_private = true;
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sz_t, entypeof( "size"  ) ) )->flags.f_private = true;
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sz_t, entypeof( "space" ) ) )->flags.f_private = true;
+//  We need to create this reflection manually because bcore_self_s_build_parse_sc uses it.
+    bcore_self_s* self = bcore_self_s_create_plain( entypeof( "st_s" ), typeof( "bcore_inst" ), sizeof( st_s ) );
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "_"  ) ) );
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sd_t, entypeof( "data"  ) ) )->flags.f_private = true;
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sz_t, entypeof( "size"  ) ) )->flags.f_private = true;
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sz_t, entypeof( "space" ) ) )->flags.f_private = true;
 
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_init,         "bcore_fp_init",            "init"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_down,         "bcore_fp_down",            "down"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_copy,         "bcore_fp_copy",            "copy"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_move,         "bcore_fp_move",            "move"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_create,       "bcore_fp_create",          "create"       );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_clone,        "bcore_fp_clone",           "clone"        );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_discard,      "bcore_fp_discard",         "discard"      );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_copy_typed,   "bcore_fp_copy_typed",      "copy_typed"   );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_create_typed, "bcore_fp_create_typed",    "create_typed" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )flow_snk,          "bcore_fp_flow_snk",        "flow_snk"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )flow_src,          "bcore_fp_flow_src",        "flow_src"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )p_errorvf,         "bcore_fp_logvf",           "p_errorvf"    );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )parse_fv,          "bcore_source_fp_parse_fv", "parse_fv"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )eos,               "bcore_source_fp_eos",      "eos"          );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )get_index,         "bcore_source_fp_get_index","get_index"    );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )set_index,         "bcore_source_fp_set_index","set_index"    );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )check_sanity,      "bcore_fp_check_sanity",    "check_sanity" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",         "cmp_st"       );
+    bcore_self_s_push_ns_func( self, ( fp_t )st_s_init,         "bcore_fp_init",            "init"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )st_s_down,         "bcore_fp_down",            "down"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )st_s_copy,         "bcore_fp_copy",            "copy"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )st_s_move,         "bcore_fp_move",            "move"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )st_s_create,       "bcore_fp_create",          "create"       );
+    bcore_self_s_push_ns_func( self, ( fp_t )st_s_clone,        "bcore_fp_clone",           "clone"        );
+    bcore_self_s_push_ns_func( self, ( fp_t )st_s_discard,      "bcore_fp_discard",         "discard"      );
+    bcore_self_s_push_ns_func( self, ( fp_t )st_s_copy_typed,   "bcore_fp_copy_typed",      "copy_typed"   );
+    bcore_self_s_push_ns_func( self, ( fp_t )st_s_create_typed, "bcore_fp_create_typed",    "create_typed" );
+    bcore_self_s_push_ns_func( self, ( fp_t )flow_snk,          "bcore_fp_flow_snk",        "flow_snk"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )flow_src,          "bcore_fp_flow_src",        "flow_src"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )p_errorvf,         "bcore_fp_logvf",           "p_errorvf"    );
+    bcore_self_s_push_ns_func( self, ( fp_t )parse_fv,          "bcore_source_fp_parse_fv", "parse_fv"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )eos,               "bcore_source_fp_eos",      "eos"          );
+    bcore_self_s_push_ns_func( self, ( fp_t )get_index,         "bcore_source_fp_get_index","get_index"    );
+    bcore_self_s_push_ns_func( self, ( fp_t )set_index,         "bcore_source_fp_set_index","set_index"    );
+    bcore_self_s_push_ns_func( self, ( fp_t )check_sanity,      "bcore_fp_check_sanity",    "check_sanity" );
+    bcore_self_s_push_ns_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",         "cmp_st"       );
     return self;
 }
 

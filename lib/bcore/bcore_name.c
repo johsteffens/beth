@@ -77,7 +77,7 @@ static void name_s_set_name_st( bcore_name_s* o, sr_s sr )
     sr_down( sr );
 }
 
-static bcore_flect_self_s* name_s_create_self( void )
+static bcore_self_s* name_s_create_self( void )
 {
     sc_t def = "\
         bcore_name_s = bcore_inst \
@@ -87,12 +87,12 @@ static bcore_flect_self_s* name_s_create_self( void )
             private sd_t name;\
             shell st_s name_st;\
         }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_name_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )name_s_get_name_st,   "bcore_fp_get",   "get_name_st" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )name_s_set_name_st,   "bcore_fp_set",   "set_name_st" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_name_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_name_s_init,    "bcore_fp_init",  "init"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_name_s_down,    "bcore_fp_down",  "down"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_name_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )name_s_get_name_st,   "bcore_fp_get",   "get_name_st" );
+    bcore_self_s_push_ns_func( self, ( fp_t )name_s_set_name_st,   "bcore_fp_set",   "set_name_st" );
     return self;
 }
 
@@ -344,7 +344,7 @@ static void name_map_s_set_data( bcore_name_map_s* o, sr_s data )
     sr_down( data );
 }
 
-static bcore_flect_self_s* name_map_s_create_self( void )
+static bcore_self_s* name_map_s_create_self( void )
 {
     sc_t def = "\
         bcore_name_map_s = bcore_inst \
@@ -357,12 +357,12 @@ static bcore_flect_self_s* name_map_s_create_self( void )
                 private sz_t size_limit; \
                 shell { bcore_name_s []; } data; } \
             }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_name_map_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_map_s_init,    "bcore_fp_init",  "init"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_map_s_down,    "bcore_fp_down",  "down"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_name_map_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )name_map_s_get_data,      "bcore_fp_get",   "get_data" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )name_map_s_set_data,      "bcore_fp_set",   "set_data" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_name_map_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_name_map_s_init,    "bcore_fp_init",  "init"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_name_map_s_down,    "bcore_fp_down",  "down"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_name_map_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )name_map_s_get_data,      "bcore_fp_get",   "get_data" );
+    bcore_self_s_push_ns_func( self, ( fp_t )name_map_s_set_data,      "bcore_fp_set",   "set_data" );
     return self;
 }
 

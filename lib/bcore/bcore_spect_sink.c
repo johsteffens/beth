@@ -136,28 +136,28 @@ static void sink_s_define_trait()
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
-static bcore_sink_s* create_from_self( const bcore_flect_self_s* self )
+static bcore_sink_s* create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
-    assert( bcore_flect_self_s_is_aware( self ) );
+    assert( bcore_self_s_is_aware( self ) );
 
     bcore_sink_s* o = sink_s_create();
     o->o_type = self->type;
-    o->flow_snk        = ( bcore_fp_flow_snk          )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_flow_snk" ), 0 );
-    o->fp_set_consumer = ( bcore_sink_fp_set_consumer )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_sink_fp_set_consumer" ), 0 );
-    o->fp_flush        = ( bcore_sink_fp_flush        )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_sink_fp_flush" ), 0 );
+    o->flow_snk        = ( bcore_fp_flow_snk          )bcore_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_flow_snk" ), 0 );
+    o->fp_set_consumer = ( bcore_sink_fp_set_consumer )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_sink_fp_set_consumer" ), 0 );
+    o->fp_flush        = ( bcore_sink_fp_flush        )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_sink_fp_flush" ), 0 );
     return o;
 }
 
-static bcore_flect_self_s* sink_s_create_self( void )
+static bcore_self_s* sink_s_create_self( void )
 {
     sc_t def = "bcore_sink_s = spect { aware_t p_type; tp_t o_type; ... }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_sink_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )sink_s_init,             "bcore_fp_init",                   "init"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )sink_s_down,             "bcore_fp_down",                   "down"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )sink_s_create,           "bcore_fp_create",                 "create"       );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )sink_s_discard,          "bcore_fp_discard",                "discard"      );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self", "create_from_self" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_sink_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )sink_s_init,             "bcore_fp_init",                   "init"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )sink_s_down,             "bcore_fp_down",                   "down"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )sink_s_create,           "bcore_fp_create",                 "create"       );
+    bcore_self_s_push_ns_func( self, ( fp_t )sink_s_discard,          "bcore_fp_discard",                "discard"      );
+    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }
 

@@ -56,12 +56,12 @@ void bcore_mutex_s_unlock( bcore_mutex_s* o )
     if( ern ) ERR( "function returned error %i", ern );
 }
 
-static bcore_flect_self_s* bcore_mutex_s_create_self( void )
+static bcore_self_s* bcore_mutex_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_mutex_s = { ... }", sizeof( bcore_mutex_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_init, "bcore_fp_init", "init" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_down, "bcore_fp_down", "down" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_copy, "bcore_fp_copy", "copy" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_mutex_s = { ... }", sizeof( bcore_mutex_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_init, "bcore_fp_init", "init" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_down, "bcore_fp_down", "down" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_copy, "bcore_fp_copy", "copy" );
     return self;
 }
 
@@ -114,12 +114,12 @@ void bcore_condition_s_wake_all( bcore_condition_s* o )
     if( ern ) ERR( "function returned error %i", ern );
 }
 
-static bcore_flect_self_s* bcore_condition_s_create_self( void )
+static bcore_self_s* bcore_condition_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_condition_s = { ... }", sizeof( bcore_condition_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_condition_s_init, "bcore_fp_init", "init" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_condition_s_down, "bcore_fp_down", "down" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_condition_s_copy, "bcore_fp_copy", "copy" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_condition_s = { ... }", sizeof( bcore_condition_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_condition_s_init, "bcore_fp_init", "init" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_condition_s_down, "bcore_fp_down", "down" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_condition_s_copy, "bcore_fp_copy", "copy" );
     return self;
 }
 
@@ -144,12 +144,12 @@ void bcore_thread_s_copy( bcore_thread_s* o, const bcore_thread_s* src )
 
 BCORE_DEFINE_FUNCTIONS_CDC( bcore_thread_s )
 
-static bcore_flect_self_s* bcore_thread_s_create_self( void )
+static bcore_self_s* bcore_thread_s_create_self( void )
 {
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( "bcore_thread_s = { ... }", sizeof( bcore_thread_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_thread_s_init, "bcore_fp_init", "init" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_thread_s_down, "bcore_fp_down", "down" );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bcore_thread_s_copy, "bcore_fp_copy", "copy" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_thread_s = { ... }", sizeof( bcore_thread_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_thread_s_init, "bcore_fp_init", "init" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_thread_s_down, "bcore_fp_down", "down" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_thread_s_copy, "bcore_fp_copy", "copy" );
     return self;
 }
 

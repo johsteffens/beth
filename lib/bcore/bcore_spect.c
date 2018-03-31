@@ -134,14 +134,14 @@ static void spect_manager_close()
 }
 
 /// tests if the object's self reflection satisfies the requirements of a perspective
-static bl_t supports( const bcore_flect_self_s* self, st_s* log )
+static bl_t supports( const bcore_self_s* self, st_s* log )
 {
     if( !self->body                                ) return false;
-    if( bcore_flect_self_s_items_size( self ) < 2  ) return false;
-    if( bcore_flect_self_s_get_item( self, 0 )->type != TYPEOF_bcore_spect_header_s )
+    if( bcore_self_s_items_size( self ) < 2  ) return false;
+    if( bcore_self_s_get_item( self, 0 )->type != TYPEOF_bcore_spect_header_s )
     {
-        if( bcore_flect_self_s_get_item( self, 0 )->type != TYPEOF_aware_t ) return false;
-        if( bcore_flect_self_s_get_item( self, 1 )->type != TYPEOF_tp_t    ) return false;
+        if( bcore_self_s_get_item( self, 0 )->type != TYPEOF_aware_t ) return false;
+        if( bcore_self_s_get_item( self, 1 )->type != TYPEOF_tp_t    ) return false;
     }
 
     return true;
@@ -187,12 +187,12 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     // Unlock because create_from_self may make use of registry
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
 
-    const bcore_flect_self_s* p_self = bcore_flect_get_self( p_type );
-    const bcore_flect_self_s* o_self = bcore_flect_get_self( o_type );
+    const bcore_self_s* p_self = bcore_flect_get_self( p_type );
+    const bcore_self_s* o_self = bcore_flect_get_self( o_type );
     vd_t spect = NULL;
     vd_t discard_spect = NULL; // in case multiple threads try to register, redundant creations must be discarded
 
-    fp_t create_from_self = bcore_flect_self_s_try_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
+    fp_t create_from_self = bcore_self_s_try_external_fp( p_self, bcore_name_enroll( "bcore_spect_fp_create_from_self" ), 0 );
     if( create_from_self )
     {
         spect = ( ( bcore_spect_fp_create_from_self )create_from_self )( o_self );
@@ -227,7 +227,7 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 
 /**********************************************************************************************************************/
 
-void bcore_spect_define_trait( const bcore_flect_self_s* p_self )
+void bcore_spect_define_trait( const bcore_self_s* p_self )
 {
     assert( p_self != NULL );
 
@@ -236,7 +236,7 @@ void bcore_spect_define_trait( const bcore_flect_self_s* p_self )
         st_s* p_name = st_s_create_sc( ifnameof( p_self->type ) );
         if( p_name->size < 3 || p_name->sc[ p_name->size - 2 ] != '_' || p_name->sc[ p_name->size - 1 ] != 's' )
         {
-            ERR_fa( "Name of perspective '#<sc_t>' shound end in '_s'", p_name->sc );
+            ERR_fa( "Name of perspective '#<sc_t>' should end in '_s'", p_name->sc );
         }
         p_name->data[ p_name->size - 2 ] = 0;
         trait = entypeof( p_name->sc );
@@ -244,7 +244,7 @@ void bcore_spect_define_trait( const bcore_flect_self_s* p_self )
     }
 
     /// check requirements
-    bcore_spect_header_s* o = bcore_inst_typed_create( p_self->type );
+    bcore_spect_header_s* spect = bcore_inst_typed_create( p_self->type );
     const bcore_via_s* p_via = bcore_via_s_get_typed( p_self->type );
     sz_t size = bcore_via_spect_get_size( p_via );
     for( sz_t i = 0; i < size; i++ )
@@ -254,9 +254,9 @@ void bcore_spect_define_trait( const bcore_flect_self_s* p_self )
         {
             if( vitem->flags.f_fp )
             {
-                sr_s dst = bcore_via_spect_nget( p_via, o, vitem->name );
+                sr_s dst = bcore_via_spect_nget( p_via, spect, vitem->name );
                 fp_t* dst_fp = ( fp_t* )dst.o;
-                if( vitem->flags.f_strict && !dst_fp )
+                if( vitem->flags.f_strict && !*dst_fp )
                 {
                     bcore_trait_require_function( trait, vitem->type, vitem->name );
                 }
@@ -275,10 +275,12 @@ void bcore_spect_define_trait( const bcore_flect_self_s* p_self )
         }
     }
 
+    bcore_inst_aware_discard( spect );
+
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
-vd_t bcore_spect_create_from_self( const bcore_flect_self_s* p_self, const bcore_flect_self_s* o_self )
+vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_s* o_self )
 {
     assert( p_self != NULL );
     assert( o_self != NULL );
@@ -296,22 +298,35 @@ vd_t bcore_spect_create_from_self( const bcore_flect_self_s* p_self, const bcore
             if( vitem->flags.f_fp )
             {
                 sr_s dst = bcore_via_spect_nget( p_via, o, vitem->name );
-                fp_t src_fp = bcore_flect_self_s_try_external_fp( o_self, vitem->type, vitem->name );
-                fp_t* dst_fp = ( fp_t* )dst.o;
+                if( dst.o )
+                {
+                    fp_t src_fp = bcore_self_s_try_external_fp( o_self, vitem->type, vitem->name );
+                    fp_t* dst_fp = ( fp_t* )dst.o;
 
-                if( vitem->flags.f_strict && !dst_fp && !src_fp )
+                    if( vitem->flags.f_strict && !*dst_fp && !src_fp )
+                    {
+                        WRN_fa
+                        (
+                            "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' not found in '#<sc_t>'.",
+                            ifnameof( p_self->type ),
+                            ifnameof( vitem->type ),
+                            ifnameof( vitem->name ),
+                            ifnameof( o_self->type )
+                        );
+                    }
+
+                    if( src_fp ) *dst_fp = src_fp;
+                }
+                else
                 {
                     WRN_fa
                     (
-                        "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' not found in '#<sc_t>'.",
+                        "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' not found in perspective.",
                         ifnameof( p_self->type ),
-                        vitem->type,
-                        vitem->name,
-                        ifnameof( o_self->type )
+                        ifnameof( vitem->type ),
+                        ifnameof( vitem->name )
                     );
                 }
-
-                if( src_fp ) *dst_fp = src_fp;
 
                 sr_down( dst );
             }
@@ -329,6 +344,14 @@ vd_t bcore_spect_create_from_self( const bcore_flect_self_s* p_self, const bcore
     }
 
     return o;
+}
+
+void bcore_spect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
+{
+    bcore_flect_define_creator( type, creator );
+    bcore_self_s* self = creator();
+    bcore_spect_define_trait( self );
+    bcore_self_s_discard( self );
 }
 
 /**********************************************************************************************************************/

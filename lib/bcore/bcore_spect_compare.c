@@ -240,15 +240,15 @@ static void compare_s_define_trait()
 }
 
 
-static bcore_compare_s* create_from_self( const bcore_flect_self_s* self )
+static bcore_compare_s* create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
 
     bcore_compare_s* o = compare_s_create();
     o->o_type  = self->type;
     o->via     = bcore_via_s_get_typed( o->o_type );
-    fp_t cmp_a =                     bcore_flect_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "compare" ) );
-    fp_t cmp_o = ( cmp_a ) ? cmp_a : bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_compare" ), 0 );
+    fp_t cmp_a =                     bcore_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "compare" ) );
+    fp_t cmp_o = ( cmp_a ) ? cmp_a : bcore_self_s_try_external_fp( self, typeof( "bcore_fp_compare" ), 0 );
 
     o->fp_compare = cmp_o;
 
@@ -280,15 +280,15 @@ static bcore_compare_s* create_from_self( const bcore_flect_self_s* self )
 
 /**********************************************************************************************************************/
 
-static bcore_flect_self_s* compare_s_create_self( void )
+static bcore_self_s* compare_s_create_self( void )
 {
     sc_t def = "bcore_compare_s = spect { aware_t p_type; tp_t o_type; ... }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_compare_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )compare_s_init,             "bcore_fp_init",                    "init"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )compare_s_down,             "bcore_fp_down",                    "down"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )compare_s_create,           "bcore_fp_create",                  "create"       );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )compare_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )create_from_self,           "bcore_spect_fp_create_from_self",  "create_from_self" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_compare_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )compare_s_init,             "bcore_fp_init",                    "init"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )compare_s_down,             "bcore_fp_down",                    "down"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )compare_s_create,           "bcore_fp_create",                  "create"       );
+    bcore_self_s_push_ns_func( self, ( fp_t )compare_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,           "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
 

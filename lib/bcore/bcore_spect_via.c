@@ -507,7 +507,7 @@ static void via_s_define_trait()
     bcore_trait_set( entypeof( "bcore_via" ), entypeof( "bcore_inst" ) );
 }
 
-static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
+static bcore_via_s* create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
 
@@ -523,10 +523,10 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     sz_t vitem_arr_size  = 0;
     sz_t vitem_arr_space = 0;
 
-    sz_t items_size = bcore_flect_self_s_items_size( self );
+    sz_t items_size = bcore_self_s_items_size( self );
     for( sz_t i = 0; i < items_size; i++ )
     {
-        const bcore_flect_item_s* flect_item = bcore_flect_self_s_get_item( self, i );
+        const bcore_self_item_s* flect_item = bcore_self_s_get_item( self, i );
 
         if( flect_item->flags.f_hidden                   ) continue; // hidden items are not accessible in via
         if( i == 0 && flect_item->type == TYPEOF_aware_t ) continue; // self-aware type is not accessible in via
@@ -619,8 +619,8 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
         {
 
             bcore_life_s* l = bcore_life_s_create();
-            vitem.fp_get = ( bcore_fp_get )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_get" ), typeof( st_s_createf_l( l, "get_%s", ifnameof( vitem.name ) )->sc ) );
-            vitem.fp_set = ( bcore_fp_set )bcore_flect_self_s_try_external_fp( self, typeof( "bcore_fp_set" ), typeof( st_s_createf_l( l, "set_%s", ifnameof( vitem.name ) )->sc ) );
+            vitem.fp_get = ( bcore_fp_get )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_get" ), typeof( st_s_createf_l( l, "get_%s", ifnameof( vitem.name ) )->sc ) );
+            vitem.fp_set = ( bcore_fp_set )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_set" ), typeof( st_s_createf_l( l, "set_%s", ifnameof( vitem.name ) )->sc ) );
             if( vitem.flags.f_shell )
             {
                 if( !vitem.fp_get ) ERR( "Object '%s' has shell '%s' but no function 'get_%s'.", ifnameof( o->o_type ), ifnameof( vitem.name ), ifnameof( vitem.name ) );
@@ -641,15 +641,15 @@ static bcore_via_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
-static bcore_flect_self_s* via_s_create_self( void )
+static bcore_self_s* via_s_create_self( void )
 {
     sc_t def = "bcore_via_s = spect { aware_t p_type; tp_t o_type; ... }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_via_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )via_s_init,       "bcore_fp_init",                   "init"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )via_s_down,       "bcore_fp_down",                   "down"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )via_s_create,     "bcore_fp_create",                 "create"       );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )via_s_discard,    "bcore_fp_discard",                "discard"      );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )create_from_self, "bcore_spect_fp_create_from_self", "create_from_self" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_via_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )via_s_init,       "bcore_fp_init",                   "init"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )via_s_down,       "bcore_fp_down",                   "down"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )via_s_create,     "bcore_fp_create",                 "create"       );
+    bcore_self_s_push_ns_func( self, ( fp_t )via_s_discard,    "bcore_fp_discard",                "discard"      );
+    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self, "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }
 

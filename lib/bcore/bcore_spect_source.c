@@ -173,40 +173,40 @@ static void source_s_define_trait()
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
-static bcore_source_s* create_from_self( const bcore_flect_self_s* self )
+static bcore_source_s* create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
-    assert( bcore_flect_self_s_is_aware( self ) );
+    assert( bcore_self_s_is_aware( self ) );
 
     bcore_source_s* o = source_s_create();
     o->o_type = self->type;
-    o->fp_flow_src     = ( bcore_fp_flow_src            )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_flow_src" ), 0 );
-    o->fp_parse_fv     = ( bcore_source_fp_parse_fv     )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_parse_fv" ), 0 );
-    o->fp_parse_errvf  = ( bcore_fp_logvf               )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_fp_logvf" ), bcore_name_enroll( "p_errorvf" ) );
-    o->fp_set_supplier = ( bcore_source_fp_set_supplier )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_supplier" ), 0 );
-    o->fp_eos          = ( bcore_source_fp_eos          )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bcore_source_fp_eos" ), 0 );
-    o->fp_get_file     = ( bcore_source_fp_get_file     )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_get_file" ), 0 );
-    o->fp_get_index    = ( bcore_source_fp_get_index    )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_get_index" ), 0 );
-    o->fp_set_index    = ( bcore_source_fp_set_index    )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_index" ), 0 );
+    o->fp_flow_src     = ( bcore_fp_flow_src            )bcore_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_flow_src" ), 0 );
+    o->fp_parse_fv     = ( bcore_source_fp_parse_fv     )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_parse_fv" ), 0 );
+    o->fp_parse_errvf  = ( bcore_fp_logvf               )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_fp_logvf" ), bcore_name_enroll( "p_errorvf" ) );
+    o->fp_set_supplier = ( bcore_source_fp_set_supplier )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_supplier" ), 0 );
+    o->fp_eos          = ( bcore_source_fp_eos          )bcore_self_s_get_external_fp( self, bcore_name_enroll( "bcore_source_fp_eos" ), 0 );
+    o->fp_get_file     = ( bcore_source_fp_get_file     )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_get_file" ), 0 );
+    o->fp_get_index    = ( bcore_source_fp_get_index    )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_get_index" ), 0 );
+    o->fp_set_index    = ( bcore_source_fp_set_index    )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_index" ), 0 );
     return o;
 }
 
-static bcore_flect_self_s* source_s_create_self( void )
+static bcore_self_s* source_s_create_self( void )
 {
 //    sc_t def = "bcore_source_s = spect { aware_t p_type; tp_t o_type; ... }";
-//    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_source_s ) );
+//    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_source_s ) );
 
 //  We need to create this reflection manually because self_s_build_parse uses it.
-    bcore_flect_self_s* self = bcore_flect_self_s_create_plain( entypeof( "bcore_source_s" ), typeof( "spect" ), sizeof( bcore_source_s ) );
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
-    bcore_flect_self_s_push_d( self, bcore_flect_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
-    bcore_flect_body_s_set_complete( self->body, false );
+    bcore_self_s* self = bcore_self_s_create_plain( entypeof( "bcore_source_s" ), typeof( "spect" ), sizeof( bcore_source_s ) );
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
+    bcore_self_body_s_set_complete( self->body, false );
 
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )source_s_init,             "bcore_fp_init",                    "init"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )source_s_down,             "bcore_fp_down",                    "down"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )source_s_create,           "bcore_fp_create",                  "create"       );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )source_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )create_from_self,          "bcore_spect_fp_create_from_self",  "create_from_self" );
+    bcore_self_s_push_ns_func( self, ( fp_t )source_s_init,             "bcore_fp_init",                    "init"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )source_s_down,             "bcore_fp_down",                    "down"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )source_s_create,           "bcore_fp_create",                  "create"       );
+    bcore_self_s_push_ns_func( self, ( fp_t )source_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,          "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
 

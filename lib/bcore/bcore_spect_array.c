@@ -83,19 +83,19 @@ static sz_t get_dyn_space( const bcore_array_s* p, vc_t o )
 
 static sz_t get_size( const bcore_array_s* p, vc_t o )
 {
-    return p->fixed ? p->fixed_size : get_dyn_size( p, o );
+    return p->fixed_size >= 0 ? p->fixed_size : get_dyn_size( p, o );
 }
 
 static sz_t get_space( const bcore_array_s* p, vc_t o )
 {
-    return p->fixed ? p->fixed_size : get_dyn_space( p, o );
+    return p->fixed_size >= 0 ? p->fixed_size : get_dyn_space( p, o );
 }
 
 /**********************************************************************************************************************/
 
 void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
 {
-    if( p->fixed ) return;
+    if( p->fixed_size >= 0 ) return;
     vd_t obj = ( u0_t* )o + p->caps_offset;
     if( ( ( bcore_array_dyn_head_s* )obj )->size <= ( ( bcore_array_dyn_head_s* )obj )->space ) return;
     switch( p->caps_type )
@@ -188,7 +188,7 @@ void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
 
 void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
 {
-    if( p->fixed )
+    if( p->fixed_size >= 0 )
     {
         if( p->fixed_size == space ) return;
         ERR( "Cannot change space for fixed-size-array" );
@@ -332,7 +332,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
 
 void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
 {
-    if( p->fixed )
+    if( p->fixed_size >= 0 )
     {
         if( size == p->fixed_size ) return;
         ERR( "Cannot change size for fixed-size-array" );
@@ -573,19 +573,19 @@ static sr_s get_dyn_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
 
 static sr_s get_fix_solid_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
-    return ( index < p->fixed_size ) ? sr_twd( p->item_p->o_type, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
+    return ( index < ( sz_t )p->fixed_size ) ? sr_twd( p->item_p->o_type, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
 }
 
 static sr_s get_fix_link_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
-    return ( index < p->fixed_size ) ? sr_twd( p->item_p->o_type, arr[ index ] ) : sr_null();
+    return ( index < ( sz_t )p->fixed_size ) ? sr_twd( p->item_p->o_type, arr[ index ] ) : sr_null();
 }
 
 static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
-    if( index < p->fixed_size )
+    if( index < ( sz_t )p->fixed_size )
     {
         vd_t item = arr[ index ];
         return item ? sr_twd( *( aware_t* )item, item ) : sr_null();
@@ -717,7 +717,7 @@ static void set_dyn_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s
 
 static void set_fix_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
 {
-    if( index >= p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->fixed_size );
+    if( index >= ( sz_t )p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<s3_t>'", index, p->fixed_size );
     const bcore_inst_s* inst_p = p->item_p;
     vd_t dst = ( u0_t* )obj_vd( p, o ) + inst_p->size * index;
     if( src.o )
@@ -736,7 +736,7 @@ static void set_fix_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr
 
 static void set_fix_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
 {
-    if( index >= p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->fixed_size );
+    if( index >= ( sz_t )p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<s3_t>'", index, p->fixed_size );
     const bcore_inst_s* inst_p = p->item_p;
     vd_t* arr = obj_vd( p, o );
     vd_t* dst = &arr[ index ];
@@ -759,7 +759,7 @@ static void set_fix_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_
 
 static void set_fix_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
 {
-    if( index >= p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->fixed_size );
+    if( index >= ( sz_t )p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<s3_t>'", index, p->fixed_size );
     vd_t* arr = obj_vd( p, o );
     vd_t* dst = &arr[ index ];
     if( *dst ) bcore_inst_aware_discard( *dst );
@@ -934,12 +934,12 @@ sz_t bcore_array_spect_get_unit_size( const bcore_array_s* p, vc_t o )
 
 /**********************************************************************************************************************/
 
-static bl_t array_s_supports( const bcore_flect_self_s* self, st_s* log )
+static bl_t array_s_supports( const bcore_self_s* self, st_s* log )
 {
-    sz_t items_size = bcore_flect_self_s_items_size( self );
+    sz_t items_size = bcore_self_s_items_size( self );
     for( sz_t i = 0; i < items_size; i++ )
     {
-        if( bcore_flect_caps_is_array( bcore_flect_self_s_get_item( self, i )->caps ) ) return true;
+        if( bcore_flect_caps_is_array( bcore_self_s_get_item( self, i )->caps ) ) return true;
     }
     if( log ) st_s_pushf( log, "Object is no array." );
     return false;
@@ -952,7 +952,7 @@ static void array_s_define_trait()
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
-static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
+static bcore_array_s* create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
     bcore_array_s* o = array_s_create();
@@ -966,15 +966,13 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
     bool found = false;
     for( sz_t i = 0; i < body->size; i++ )
     {
-        const bcore_flect_item_s* flect_item = body->data[ i ].flect_item;
+        const bcore_self_item_s* flect_item = body->data[ i ].flect_item;
         if( bcore_flect_caps_is_array( flect_item->caps ) )
         {
             o->caps_type = flect_item->caps;
             o->caps_offset = body->data[ i ].offset;
             o->item_p = body->data[ i ].inst_p;
-            o->fixed_size = 0;
-            o->fixed = bcore_flect_caps_is_array_fix( flect_item->caps );
-            if( o->fixed ) o->fixed_size = flect_item->array_fix_size;
+            o->fixed_size = bcore_flect_caps_is_array_fix( flect_item->caps ) ? flect_item->array_fix_size : -1;
             found = true;
             break;
         }
@@ -1049,15 +1047,15 @@ static bcore_array_s* create_from_self( const bcore_flect_self_s* self )
     return o;
 }
 
-static bcore_flect_self_s* array_s_create_self( void )
+static bcore_self_s* array_s_create_self( void )
 {
     sc_t def = "bcore_array_s = spect { aware_t p_type; tp_t o_type; ... }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bcore_array_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )array_s_init,             "bcore_fp_init",                    "init"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )array_s_down,             "bcore_fp_down",                    "down"         );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )array_s_create,           "bcore_fp_create",                  "create"       );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )array_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )create_from_self,         "bcore_spect_fp_create_from_self",  "create_from_self" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_array_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )array_s_init,             "bcore_fp_init",                    "init"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )array_s_down,             "bcore_fp_down",                    "down"         );
+    bcore_self_s_push_ns_func( self, ( fp_t )array_s_create,           "bcore_fp_create",                  "create"       );
+    bcore_self_s_push_ns_func( self, ( fp_t )array_s_discard,          "bcore_fp_discard",                 "discard"      );
+    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,         "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
 
@@ -1072,27 +1070,27 @@ const bcore_array_s* bcore_array_s_get_typed( tp_t o_type )
 
 tp_t bcore_array_dyn_solid_static_type_of( tp_t type )
 {
-    return bcore_flect_type_self_d( bcore_flect_self_s_create_array_dyn_solid_static( type ) );
+    return bcore_flect_type_self_d( bcore_self_s_create_array_dyn_solid_static( type ) );
 }
 
 tp_t bcore_array_dyn_link_static_type_of( tp_t type )
 {
-    return bcore_flect_type_self_d( bcore_flect_self_s_create_array_dyn_link_static( type ) );
+    return bcore_flect_type_self_d( bcore_self_s_create_array_dyn_link_static( type ) );
 }
 
 tp_t bcore_array_fix_solid_static_type_of( tp_t type, sz_t size )
 {
-    return bcore_flect_type_self_d( bcore_flect_self_s_create_array_fix_solid_static( type, size ) );
+    return bcore_flect_type_self_d( bcore_self_s_create_array_fix_solid_static( type, size ) );
 }
 
 tp_t bcore_array_fix_link_static_type_of( tp_t type, sz_t size )
 {
-    return bcore_flect_type_self_d( bcore_flect_self_s_create_array_fix_link_static( type, size ) );
+    return bcore_flect_type_self_d( bcore_self_s_create_array_fix_link_static( type, size ) );
 }
 
 tp_t bcore_array_fix_link_aware_type_of( sz_t size )
 {
-    return bcore_flect_type_self_d( bcore_flect_self_s_create_array_fix_link_aware( size ) );
+    return bcore_flect_type_self_d( bcore_self_s_create_array_fix_link_aware( size ) );
 }
 
 /**********************************************************************************************************************/
@@ -1110,7 +1108,7 @@ void bcore_array_spect_set_bl     ( const bcore_array_s* p, vd_t o, sz_t index, 
 
 bl_t bcore_array_spect_is_fixed( const bcore_array_s* p )
 {
-    return p->fixed;
+    return p->fixed_size >= 0;
 }
 
 bl_t bcore_array_spect_is_static( const bcore_array_s* p )
@@ -1915,7 +1913,7 @@ static void test_string_array( sc_t type_sc )
 
 static st_s* spect_array_selftest( void )
 {
-    bcore_flect_define_self_d( bcore_flect_self_s_build_parse_sc( "string_array = { aware_t _; st_s [] string_arr; }", 0 ) );
+    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "string_array = { aware_t _; st_s [] string_arr; }", 0 ) );
     vd_t arr = bcore_inst_typed_create( typeof( "string_array" ) );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
 
@@ -1932,12 +1930,12 @@ static st_s* spect_array_selftest( void )
     {
 
         const st_s* code = arr_p->get( arr_p, arr, i ).o;
-        bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( code->sc, 0 );
+        bcore_self_s* self = bcore_self_s_build_parse_sc( code->sc, 0 );
         ASSERT( !bcore_spect_trait_supported( typeof( "bcore_array" ), self->type ) );
         tp_t type = bcore_flect_type_self_c( self );
         ASSERT( bcore_spect_trait_supported( typeof( "bcore_array" ), type ) );
         test_string_array( nameof( type ) );
-        bcore_flect_self_s_discard( self );
+        bcore_self_s_discard( self );
     }
 
     bcore_inst_aware_discard( arr );
