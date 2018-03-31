@@ -115,11 +115,11 @@ bclos_statement_s* bclos_statement_s_create_sc( sc_t sc )
     return s;
 }
 
-static bcore_flect_self_s* statement_s_create_self( void )
+static bcore_self_s* statement_s_create_self( void )
 {
     sc_t def = "bclos_statement_s = bcore_inst {  bclos_expression_s expression; tp_t def_type; bclos_address_s target; }";
 
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_statement_s ) );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bclos_statement_s ) );
     return self;
 }
 

@@ -135,7 +135,7 @@ void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source )
         tp_t identifier_tp = entypeof( identifier->sc );
         sr_s closure = sr_null();
 
-        const bcore_flect_self_s* closure_self = bcore_flect_try_self( identifier_tp );
+        const bcore_self_s* closure_self = bcore_flect_try_self( identifier_tp );
 
         if( closure_self && closure_self->trait == typeof( "bclos_language_closure" ) )
         {

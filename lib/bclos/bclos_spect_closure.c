@@ -46,26 +46,26 @@ static void closure_s_define_trait()
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
-static bclos_closure_s* create_from_self( const bcore_flect_self_s* self )
+static bclos_closure_s* create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
     bclos_closure_s* o = bclos_closure_s_create();
     o->o_type     = self->type;
-    o->fp_def     = ( bclos_closure_fp_def  )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bclos_closure_fp_def"  ), 0 );
-    o->fp_call    = ( bclos_closure_fp_call )bcore_flect_self_s_get_external_fp( self, bcore_name_enroll( "bclos_closure_fp_call" ), 0 );
-    o->fp_sig     = ( bclos_closure_fp_sig  )bcore_flect_self_s_try_external_fp( self, bcore_name_enroll( "bclos_closure_fp_sig"  ), 0 );
-    o->static_sig = bcore_flect_self_s_try_static( self, bcore_name_enroll( "bclos_closure_fp_create_static_sig"  ), 0 );
+    o->fp_def     = ( bclos_closure_fp_def  )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bclos_closure_fp_def"  ), 0 );
+    o->fp_call    = ( bclos_closure_fp_call )bcore_self_s_get_external_fp( self, bcore_name_enroll( "bclos_closure_fp_call" ), 0 );
+    o->fp_sig     = ( bclos_closure_fp_sig  )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bclos_closure_fp_sig"  ), 0 );
+    o->static_sig = bcore_self_s_try_static( self, bcore_name_enroll( "bclos_closure_fp_create_static_sig"  ), 0 );
     return o;
 }
 
-static bcore_flect_self_s* closure_s_create_self( void )
+static bcore_self_s* closure_s_create_self( void )
 {
     sc_t def = "bclos_closure_s = spect { aware_t p_type; tp_t o_type; bclos_signature_s* static_sig; ... }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_closure_s ) );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_init,    "bcore_fp_init",                    "init"             );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_down,    "bcore_fp_down",                    "down"             );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_discard, "bcore_fp_discard",                 "discard"          );
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self",  "create_from_self" );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bclos_closure_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_init,    "bcore_fp_init",                    "init"             );
+    bcore_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_down,    "bcore_fp_down",                    "down"             );
+    bcore_self_s_push_ns_func( self, ( fp_t )bclos_closure_s_discard, "bcore_fp_discard",                 "discard"          );
+    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
 

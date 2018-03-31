@@ -63,11 +63,11 @@ vd_t bclos_spect_closure_signal_handler( const bcore_signal_s* o );
 
 #define BCLOS_DEFINE_STD_CLOSURE( name, signature, function )\
 static vd_t name##_static_signature() { return bclos_signature_s_parse_from_sc( signature ); }\
-static bcore_flect_self_s* name##_create_self( void )\
+static bcore_self_s* name##_create_self( void )\
 {\
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( #name " = bclos_closure {}", 0 );\
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )function, "bclos_closure_fp_call", "call" );\
-    bcore_flect_self_s_push_ns_func( self, ( fp_t )name##_static_signature,  "bclos_closure_fp_create_static_sig", "static_sig" );\
+    bcore_self_s* self = bcore_self_s_build_parse_sc( #name " = bclos_closure {}", 0 );\
+    bcore_self_s_push_ns_func( self, ( fp_t )function, "bclos_closure_fp_call", "call" );\
+    bcore_self_s_push_ns_func( self, ( fp_t )name##_static_signature,  "bclos_closure_fp_create_static_sig", "static_sig" );\
     return self;\
 }
 

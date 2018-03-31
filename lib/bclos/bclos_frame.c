@@ -74,7 +74,7 @@ sr_s* bclos_frame_s_get_local( const bclos_frame_s* o, tp_t name )
     return bcore_hmap_tp_sr_s_get( &o->map, name );
 }
 
-bcore_flect_self_s* frame_s_create_self( void )
+bcore_self_s* frame_s_create_self( void )
 {
     sc_t def =
     "bclos_frame_s = bcore_inst"
@@ -84,7 +84,7 @@ bcore_flect_self_s* frame_s_create_self( void )
         "bcore_hmap_tp_sr_s map;"
     "}";
 
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_frame_s ) );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bclos_frame_s ) );
     return self;
 }
 

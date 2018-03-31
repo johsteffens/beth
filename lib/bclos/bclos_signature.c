@@ -31,10 +31,10 @@ BCORE_DEFINE_FUNCTION_CREATE(    bclos_signature_arg_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bclos_signature_arg_s )
 BCORE_DEFINE_FUNCTION_CLONE(     bclos_signature_arg_s )
 
-static bcore_flect_self_s* arg_signature_s_create_self( void )
+static bcore_self_s* arg_signature_s_create_self( void )
 {
     sc_t def = "bclos_signature_arg_s = bcore_inst { tp_t name; tp_t type; bl_t is_const; }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_signature_arg_s ) );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bclos_signature_arg_s ) );
     return self;
 }
 
@@ -105,10 +105,10 @@ bclos_signature_s* bclos_signature_s_parse_from_sc( sc_t sc )
     return bclos_signature_s_parse_from_source( sr_asd( st_s_create_weak_sc( sc ) ) );
 }
 
-static bcore_flect_self_s* sig_s_create_self( void )
+static bcore_self_s* sig_s_create_self( void )
 {
     sc_t def = "bclos_signature_s = bcore_inst { bclos_signature_arg_s [] arr; tp_t name; tp_t ret; }";
-    bcore_flect_self_s* self = bcore_flect_self_s_build_parse_sc( def, sizeof( bclos_signature_s ) );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bclos_signature_s ) );
     return self;
 }
 
