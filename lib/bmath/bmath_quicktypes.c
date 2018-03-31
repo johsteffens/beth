@@ -37,22 +37,10 @@ static st_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
 static sr_s typelist()
 {
     sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parse_fa( "{ st_s * [] arr; }" ) );
-    bcore_array_q_push_sc( &list, "bclos_frame_s"  );
-    bcore_array_q_push_sc( &list, "bclos_proc_binding_s" );
-    bcore_array_q_push_sc( &list, "bclos_arguments_s" );
-    bcore_array_q_push_sc( &list, "bclos_closure_s" );
-    bcore_array_q_push_sc( &list, "bclos_closure" );
-    bcore_array_q_push_sc( &list, "bclos_arg_sig_s" );
-    bcore_array_q_push_sc( &list, "bclos_signature_s" );
-    bcore_array_q_push_sc( &list, "bclos_statement_s" );
-    bcore_array_q_push_sc( &list, "bclos_procedure_s" );
-    bcore_array_q_push_sc( &list, "bclos_syntax_s" );
-    bcore_array_q_push_sc( &list, "bclos_library_s" );
-    bcore_array_q_push_sc( &list, "bclos_library_arr_s" );
-    bcore_array_q_push_sc( &list, "bclos_address_s" );
-    bcore_array_q_push_sc( &list, "bclos_expression_s" );
-    bcore_array_q_push_sc( &list, "bclos_identity_s" );
-    bcore_array_q_push_sc( &list, "bclos_return" );
+    bcore_array_q_push_sc( &list, "bmath_abelian_group"  );
+    bcore_array_q_push_sc( &list, "bmath_abelian_group_s"  );
+    bcore_array_q_push_sc( &list, "bmath_ring"  );
+    bcore_array_q_push_sc( &list, "bmath_ring_s"  );
 
     bcore_array_q_sort( &list, 0, -1, 1 );
     return list;

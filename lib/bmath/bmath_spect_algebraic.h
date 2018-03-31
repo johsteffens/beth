@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_ALGEBRAIC_SPECS_H
-#define BMATH_ALGEBRAIC_SPECS_H
+#ifndef BMATH_SPECT_ALGEBRAIC_H
+#define BMATH_SPECT_ALGEBRAIC_H
 
 /// Collection of algebraic perspectives.
 
@@ -33,11 +33,10 @@ typedef void (*bmath_fp_inv )( vd_t o, vc_t op );            // o = 1 / op
 typedef void (*bmath_fp_one )( vd_t o );                     // o = 1 (one_element)
 
 /**********************************************************************************************************************/
-
+// bmath_abelian_group_s
 typedef struct bmath_abelian_group_s
 {
     bcore_spect_header_s header;
-
     bmath_fp_add fp_add; // mandatory
     bmath_fp_zro fp_zro; // mandatory
     bmath_fp_neg fp_neg; // mandatory
@@ -49,28 +48,44 @@ const bmath_abelian_group_s* bmath_abelian_group_s_get_typed( tp_t type );
 const bmath_abelian_group_s* bmath_abelian_group_s_get_aware( vc_t o );
 
 void bmath_abelian_group_spect_add( const bmath_abelian_group_s* p, vd_t o, vc_t op1, vc_t op2 );
-void bmath_abelian_group_spect_sub( const bmath_abelian_group_s* p, vd_t o, vc_t op1, vc_t op2 );
-void bmath_abelian_group_spect_neg( const bmath_abelian_group_s* p, vd_t o, vc_t op );
 void bmath_abelian_group_spect_zro( const bmath_abelian_group_s* p, vd_t o );
-
-void bmath_abelian_group_typed_add( tp_t tp, vd_t o, vc_t op1, vc_t op2 );
-void bmath_abelian_group_typed_sub( tp_t tp, vd_t o, vc_t op1, vc_t op2 );
-void bmath_abelian_group_typed_neg( tp_t tp, vd_t o, vc_t op );
-void bmath_abelian_group_typed_zro( tp_t tp, vd_t o );
-
-void bmath_abelian_group_aware_add( vd_t o, vc_t op1, vc_t op2 );
-void bmath_abelian_group_aware_sub( vd_t o, vc_t op1, vc_t op2 );
-void bmath_abelian_group_aware_neg( vd_t o, vc_t op );
-void bmath_abelian_group_aware_zro( vd_t o );
-
-void bmath_abelian_group_q_add( const sr_s* o, vc_t op1, vc_t op2 );
-void bmath_abelian_group_q_sub( const sr_s* o, vc_t op1, vc_t op2 );
-void bmath_abelian_group_q_neg( const sr_s* o, vc_t op );
-void bmath_abelian_group_q_zro( const sr_s* o );
+void bmath_abelian_group_spect_neg( const bmath_abelian_group_s* p, vd_t o, vc_t op );
+void bmath_abelian_group_spect_sub( const bmath_abelian_group_s* p, vd_t o, vc_t op1, vc_t op2 );
 
 /**********************************************************************************************************************/
 
-vd_t bmath_algebraic_specs_signal_handler( const bcore_signal_s* o );
+// bmath_ring_s
+typedef struct bmath_ring_s
+{
+    bcore_spect_header_s header;
+    bmath_fp_add fp_add; // mandatory
+    bmath_fp_zro fp_zro; // mandatory
+    bmath_fp_neg fp_neg; // mandatory
+    bmath_fp_sub fp_sub; // optional
 
-#endif  // BMATH_ALGEBRAIC_SPECS_H
+    bmath_fp_mul fp_mul; // mandatory
+    bmath_fp_one fp_one; // optional
+    bmath_fp_inv fp_inv; // optional
+    bmath_fp_div fp_div; // optional
+
+} bmath_ring_s;
+
+const bmath_ring_s* bmath_ring_s_get_typed( tp_t type );
+const bmath_ring_s* bmath_ring_s_get_aware( vc_t o );
+
+void bmath_ring_spect_add( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
+void bmath_ring_spect_zro( const bmath_ring_s* p, vd_t o );
+void bmath_ring_spect_neg( const bmath_ring_s* p, vd_t o, vc_t op );
+void bmath_ring_spect_sub( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
+
+void bmath_ring_spect_mul( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
+void bmath_ring_spect_one( const bmath_ring_s* p, vd_t o );
+void bmath_ring_spect_inv( const bmath_ring_s* p, vd_t o, vc_t op );
+void bmath_ring_spect_div( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
+
+/**********************************************************************************************************************/
+
+vd_t bmath_spect_algebraic_signal_handler( const bcore_signal_s* o );
+
+#endif  // BMATH_SPECT_ALGEBRAIC_H
 

@@ -14,13 +14,13 @@
  */
 
 #include "bmath_signal.h"
-#include "bmath_algebraic_specs.h"
+#include "bmath_spect_algebraic.h"
 
-vd_t bclos_signal_handler( const bcore_signal_s* o )
+vd_t bmath_signal_handler( const bcore_signal_s* o )
 {
     bcore_fp_signal_handler arr[] =
     {
-        bmath_algebraic_specs_signal_handler,
+        bmath_spect_algebraic_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );
