@@ -113,8 +113,19 @@ u2_t bcore_flect_caps_e_u2( sc_t sc )
 /**********************************************************************************************************************/
 
 BCORE_DEFINE_FUNCTION_INIT_FLAT( bcore_self_item_s )
-BCORE_DEFINE_FUNCTION_DOWN_FLAT( bcore_self_item_s )
-BCORE_DEFINE_FUNCTION_COPY_FLAT( bcore_self_item_s )
+
+void bcore_self_item_s_down( bcore_self_item_s* o )
+{
+    if( o->child_item ) bcore_self_item_s_discard( o->child_item );
+}
+
+void bcore_self_item_s_copy( bcore_self_item_s* o, const bcore_self_item_s* src )
+{
+    if( o->child_item ) bcore_self_item_s_discard( o->child_item );
+    bcore_memcpy( o, src, sizeof( bcore_self_item_s ) );
+    if( src->child_item ) o->child_item = bcore_self_item_s_clone( src->child_item );
+}
+
 BCORE_DEFINE_FUNCTION_MOVE (     bcore_self_item_s )
 BCORE_DEFINE_FUNCTION_CREATE(    bcore_self_item_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bcore_self_item_s )
@@ -167,7 +178,13 @@ tp_t bcore_self_item_s_fold_tp( const bcore_self_item_s* o, tp_t tp )
     tp = bcore_tp_fold_tp( tp, o->name );
     tp = bcore_tp_fold_u2( tp, o->caps );
     tp = bcore_tp_fold_tp( tp, o->flags.data );
-    tp = bcore_tp_fold_u3( tp, o->default_u3 );
+
+    umax_t v = o->default_umax;
+    for( sz_t i = 0; i < sizeof( umax_t ); i++ )
+    {
+        tp = bcore_tp_fold_u0( tp, v );
+        v >>= 8;
+    }
     return tp;
 }
 
@@ -237,6 +254,292 @@ void bcore_self_item_s_check_integrity( const bcore_self_item_s* o )
     if( !o ) return;
     if( o->caps <= BCORE_CAPS_START ) ERR( "Invalid capsulation" );
     if( o->caps >= BCORE_CAPS_END   ) ERR( "Invalid capsulation" );
+}
+
+void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
+
+    st_s* type_name = st_s_create_l( l );
+    st_s* item_name = st_s_create_l( l );
+
+    if( bcore_source_q_parse_bl_fa( &src, " #?w'func' " ) ) // function declaration
+    {
+        bcore_source_q_parse_fa( &src, "#name #name", type_name, item_name );
+        o->type = entypeof( type_name->sc );
+        o->name = entypeof( item_name->sc );
+        o->caps = BCORE_CAPS_EXTERNAL_FUNC;
+        if( bcore_source_q_parse_bl_fa( &src, " #?'=' " ) )
+        {
+            st_s* assign_name = st_s_create_l( l );
+            bcore_source_q_parse_fa( &src, "#name", assign_name );
+            o->default_tp = entypeof( assign_name->sc );
+        }
+    }
+    else // data type declaration
+    {
+        bl_t f_private   = false;
+        bl_t f_hidden    = false;
+        bl_t f_shell     = false;
+        bl_t f_link      = false;
+        bl_t f_arr_dyn   = false;
+        bl_t f_arr_fix   = false;
+        bl_t f_spect     = false;
+        bl_t f_const     = false;
+        bl_t f_deep_copy = true;
+        bl_t f_assign_default = false;
+        bl_t f_feature   = false;
+        bl_t f_strict    = false;
+
+        sz_t array_fix_size = 0;
+
+        bl_t f_any_prefix = true;
+        while( f_any_prefix )
+        {
+            f_any_prefix = false;
+            if( bcore_source_q_parse_bl_fa( &src, " #?w'private'" ) )
+            {
+                if( f_private ) bcore_source_q_parse_err_fa( &src, "Prefix 'private' occurs twice." );
+                f_any_prefix = f_private = true;
+            }
+
+            if( bcore_source_q_parse_bl_fa( &src, " #?w'hidden'"  ) )
+            {
+                if( f_hidden ) bcore_source_q_parse_err_fa( &src, "Prefix 'hidden' occurs twice." );
+                f_any_prefix = f_hidden = true;
+            }
+
+            if( bcore_source_q_parse_bl_fa( &src, " #?w'shell'"   ) )
+            {
+                if( f_shell ) bcore_source_q_parse_err_fa( &src, "Prefix 'shell' occurs twice." );
+                f_any_prefix = f_shell = true;
+            }
+
+            if( bcore_source_q_parse_bl_fa( &src, " #?w'spect'"   ) )
+            {
+                if( f_spect ) bcore_source_q_parse_err_fa( &src, "Prefix 'spect' occurs twice." );
+                f_any_prefix = f_spect = true;
+            }
+
+            if( bcore_source_q_parse_bl_fa( &src, " #?w'const'"   ) )
+            {
+                if( f_const ) bcore_source_q_parse_err_fa( &src, "Prefix 'const' occurs twice." );
+                f_any_prefix = f_const = true;
+            }
+
+            if( bcore_source_q_parse_bl_fa( &src, " #?w'feature'"   ) )
+            {
+                if( f_feature ) bcore_source_q_parse_err_fa( &src, "Prefix 'feature' occurs twice." );
+                f_any_prefix = f_feature = true;
+            }
+
+            if( bcore_source_q_parse_bl_fa( &src, " #?w'strict'"   ) )
+            {
+                if( f_strict ) bcore_source_q_parse_err_fa( &src, "Prefix 'strict' occurs twice." );
+                f_any_prefix = f_strict = true;
+            }
+
+        }
+
+        // type can be specified by explicit type id number (anonymous types) or by name
+        tp_t type_val = 0;
+        if( bcore_source_q_parse_bl_fa( &src, " #?([0]=='{')" ) ) // nested anonymous type
+        {
+            type_val = bcore_flect_type_parse_src( src );
+        }
+        else if( bcore_source_q_parse_bl_fa( &src, " #?([0]>='0'&&[0]<='9')" ) ) // type is specified by number
+        {
+            bcore_source_q_parse_fa( &src, "#<tp_t*> ", &type_val );
+        }
+        else // type is specified by name
+        {
+            bcore_source_q_parse_fa( &src, "#name ", type_name );
+        }
+
+
+        if( bcore_source_q_parse_bl_fa( &src, "#?'*' " ) )
+        {
+            f_link = true;
+            f_deep_copy = true;
+        }
+        else if( bcore_source_q_parse_bl_fa( &src, "#?'=>' " ) )
+        {
+            f_link = true;
+            f_deep_copy = true;
+        }
+        else if( bcore_source_q_parse_bl_fa( &src, "#?'->' " ) )
+        {
+            f_link = true;
+            f_deep_copy = false;
+        }
+
+        if( bcore_source_q_parse_bl_fa( &src, "#?'[' " ) )
+        {
+            if( bcore_source_q_parse_bl_fa( &src, "#?']' " ) )
+            {
+                f_arr_dyn = true;
+            }
+            else if( bcore_source_q_parse_bl_fa( &src, "#?([0]>='0'&&[0]<='9')" ) )
+            {
+                f_arr_fix = true;
+                bcore_source_q_parse_fa( &src, "#<sz_t*> ", &array_fix_size );
+                if( !bcore_source_q_parse_bl_fa( &src, "#?']' " ) )
+                {
+                    bcore_source_q_parse_err_fa( &src, "']' expected." );
+                }
+            }
+            else
+            {
+                bcore_source_q_parse_err_fa( &src, "']' or array fixed-size expected." );
+            }
+        }
+
+        bcore_source_q_parse_fa( &src, "#name #?'=' ", item_name, &f_assign_default );
+
+        o->flags.f_private   = f_private || f_spect;
+        o->flags.f_hidden    = f_hidden;
+        o->flags.f_shell     = f_shell;
+        o->flags.f_spect     = f_spect;
+        o->flags.f_deep_copy = f_deep_copy;
+        o->flags.f_const     = f_const;
+        o->flags.f_feature   = f_feature;
+        o->flags.f_strict    = f_strict;
+
+        if( f_arr_fix ) o->array_fix_size = array_fix_size;
+
+        if( f_spect && ( !f_link || f_deep_copy ) )
+        {
+            bcore_source_q_parse_err_fa( &src, "Perspectives are shallow links. Use 'spect #<sc_t> ->' to clarify method of referencing.", type_name->sc );
+        }
+
+        if( f_const && !f_assign_default )
+        {
+            bcore_source_q_parse_err_fa( &src, "Constants need a value. Use 'const #<sc_t> = <value>'.", type_name->sc );
+        }
+
+        if( st_s_equal_sc( type_name, "typed" ) )
+        {
+            if( f_arr_fix )
+            {
+                bcore_source_q_parse_err_fa( &src, "Typed objects not supported for fixed size arrays. Suggest dynamic arrays." );
+            }
+
+            if( !f_link && !f_arr_dyn )
+            {
+                bcore_source_q_parse_err_fa( &src, "Typed objects cannot be nested. Use 'typed *|=>|->' to clarify method of referencing." );
+            }
+
+            o->type = 0;
+            o->name = entypeof( item_name->sc );
+            o->caps = f_arr_dyn ? ( f_link ? BCORE_CAPS_ARRAY_DYN_LINK_TYPED : BCORE_CAPS_ARRAY_DYN_SOLID_TYPED ) : BCORE_CAPS_LINK_TYPED;
+        }
+        else if( st_s_equal_sc( type_name, "aware" ) )
+        {
+            if( !f_link )
+            {
+                bcore_source_q_parse_err_fa( &src, "Self-aware objects must be referenced by a link. Use 'aware *|=>|->' to clarify method of referencing." );
+            }
+            o->type = 0;
+            o->name = entypeof( item_name->sc );
+            o->caps = f_arr_dyn ? BCORE_CAPS_ARRAY_DYN_LINK_AWARE : f_arr_fix ? BCORE_CAPS_ARRAY_FIX_LINK_AWARE : BCORE_CAPS_LINK_AWARE;
+        }
+        else
+        {
+            o->type = ( type_val > 0 ) ? type_val : entypeof( type_name->sc );
+            o->name = entypeof( item_name->sc );
+            o->caps =
+                f_arr_dyn ?
+                    ( f_link ? BCORE_CAPS_ARRAY_DYN_LINK_STATIC : BCORE_CAPS_ARRAY_DYN_SOLID_STATIC )
+                :
+                    f_arr_fix ?
+                        ( f_link ? BCORE_CAPS_ARRAY_FIX_LINK_STATIC : BCORE_CAPS_ARRAY_FIX_SOLID_STATIC )
+                    :
+                        ( f_link ? BCORE_CAPS_LINK_STATIC : BCORE_CAPS_SOLID_STATIC );
+        }
+
+        if( o->type == typeof( "aware_t" ) )
+        {
+            if( o->caps != BCORE_CAPS_SOLID_STATIC )
+            {
+                bcore_source_q_parse_err_fa( &src, "'aware_t' can only be used in single solid static nesting." );
+            }
+        }
+
+
+        o->flags.f_fp = bcore_trait_is_of( o->type, TYPEOF_function_pointer );
+
+        if( f_assign_default )
+        {
+            if( o->caps == BCORE_CAPS_SOLID_STATIC )
+            {
+                switch( o->type )
+                {
+                    case TYPEOF_s0_t:
+                    case TYPEOF_s1_t:
+                    case TYPEOF_s2_t:
+                    case TYPEOF_s3_t:
+                        bcore_source_q_parse_fa( &src, " #<s3_t*>", &o->default_s3 );
+                        break;
+                    case TYPEOF_u0_t:
+                    case TYPEOF_u1_t:
+                    case TYPEOF_u2_t:
+                    case TYPEOF_u3_t:
+                        bcore_source_q_parse_fa( &src, " #<u3_t*>", &o->default_u3 );
+                        break;
+
+                    case TYPEOF_sz_t:
+                    case TYPEOF_offset_t:
+                    case TYPEOF_tp_t:
+                    case TYPEOF_aware_t:
+                    {
+                        // for these types scanning of negative numbers is allowed, which will be wrapped around u3.
+                        if( bcore_source_q_parse_bl_fa( &src, " #=?'-'" ) )
+                        {
+                            bcore_source_q_parse_fa( &src, " #<smax_t*>", &o->default_smax );
+                        }
+                        else
+                        {
+                            bcore_source_q_parse_fa( &src, " #<umax_t*>", &o->default_umax );
+                        }
+                    }
+                    break;
+
+                    case TYPEOF_f2_t:
+                    case TYPEOF_f3_t:
+                        bcore_source_q_parse_fa( &src, " #<f3_t*>", &o->default_f3 );
+                        break;
+
+                    case TYPEOF_bl_t:
+                    {
+                        bl_t flag = false;
+                        bcore_source_q_parse_fa( &src, " #<bl_t*>", &flag );
+                        o->default_u3 = flag;
+                    }
+                    break;
+
+                    default: bcore_source_q_parse_err_fa( &src, "Cannot assign default value to type '#<sc_t>'", ifnameof( o->type ) );
+                }
+            }
+            else
+            {
+                bcore_source_q_parse_err_fa( &src, "Assignment of default value only possible for single solid static nesting (no links, no arrays)." );
+            }
+        }
+    }
+
+    if( bcore_source_q_parse_bl_fa( &src, " #?'~>'"   ) ) // relating to
+    {
+        o->flags.f_feature = true;
+        o->child_item = bcore_self_item_s_create();
+        bcore_self_item_s_parse_src( o->child_item, src );
+    }
+    else
+    {
+        bcore_source_q_parse_fa( &src, " ; " );
+    }
+
+    bcore_life_s_discard( l );
 }
 
 static bcore_self_s* self_item_s_create_self( void )
@@ -316,6 +619,16 @@ BCORE_DEFINE_FUNCTION_CREATE(  bcore_self_body_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_self_body_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_self_body_s )
 
+void bcore_self_body_s_clear( bcore_self_body_s* o )
+{
+    for( sz_t i = 0; i < o->size; i++ ) bcore_self_item_s_discard( o->data[ i ] );
+    bcore_release( o->data );
+    o->data  = NULL;
+    o->size  = 0;
+    o->space = 0;
+    o->complete = true;
+}
+
 bcore_self_item_s* bcore_self_body_s_push_d( bcore_self_body_s* o, bcore_self_item_s* item )
 {
     if( o->size == o->space )
@@ -350,11 +663,11 @@ st_s* bcore_self_body_s_show( const bcore_self_body_s* o )
     return s;
 }
 
-static bcore_self_body_s* body_s_build_parse_src( sr_s src )
+void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
-    bcore_self_body_s* o = bcore_self_body_s_create();
+    bcore_self_body_s_clear( o );
     bcore_source_q_parse_fa( &src, " { " );
 
     while( !bcore_source_q_parse_bl_fa( &src, " #?'}' " ) )
@@ -364,274 +677,21 @@ static bcore_self_body_s* body_s_build_parse_src( sr_s src )
             o->complete = false;
             break;
         }
-
-        bcore_life_s* l = bcore_life_s_create();
-        st_s* type_name = st_s_create_l( l );
-        st_s* item_name = st_s_create_l( l );
         bcore_self_item_s* item = bcore_self_item_s_create();
+        bcore_self_item_s_parse_src( item, src );
 
-        if( bcore_source_q_parse_bl_fa( &src, " #?w'func' " ) ) // function declaration
+        if( item->type == typeof( "aware_t" ) )
         {
-            st_s* assign_name = st_s_create_l( l );
-            bcore_source_q_parse_fa( &src, "#name #name = #name", type_name, item_name, assign_name );
-            item->type = entypeof( type_name->sc );
-            item->name = entypeof( item_name->sc );
-            item->caps = BCORE_CAPS_EXTERNAL_FUNC;
-            item->default_tp = entypeof( assign_name->sc );
-        }
-        else // data type declaration
-        {
-            bl_t f_private   = false;
-            bl_t f_hidden    = false;
-            bl_t f_shell     = false;
-            bl_t f_link      = false;
-            bl_t f_arr_dyn   = false;
-            bl_t f_arr_fix   = false;
-            bl_t f_spect     = false;
-            bl_t f_const     = false;
-            bl_t f_deep_copy = true;
-            bl_t f_assign_default = false;
-            bl_t f_feature   = false;
-            bl_t f_strict    = false;
-            bl_t f_offset    = false;
-
-            sz_t array_fix_size = 0;
-
-            bl_t f_any_prefix = true;
-            while( f_any_prefix )
+            if( o->size > 0 )
             {
-                f_any_prefix = false;
-                if( bcore_source_q_parse_bl_fa( &src, " #?w'private'" ) )
-                {
-                    if( f_private ) bcore_source_q_parse_err_fa( &src, "Prefix 'private' occurs twice." );
-                    f_any_prefix = f_private = true;
-                }
-
-                if( bcore_source_q_parse_bl_fa( &src, " #?w'hidden'"  ) )
-                {
-                    if( f_hidden ) bcore_source_q_parse_err_fa( &src, "Prefix 'hidden' occurs twice." );
-                    f_any_prefix = f_hidden = true;
-                }
-
-                if( bcore_source_q_parse_bl_fa( &src, " #?w'shell'"   ) )
-                {
-                    if( f_shell ) bcore_source_q_parse_err_fa( &src, "Prefix 'shell' occurs twice." );
-                    f_any_prefix = f_shell = true;
-                }
-
-                if( bcore_source_q_parse_bl_fa( &src, " #?w'spect'"   ) )
-                {
-                    if( f_spect ) bcore_source_q_parse_err_fa( &src, "Prefix 'spect' occurs twice." );
-                    f_any_prefix = f_spect = true;
-                }
-
-                if( bcore_source_q_parse_bl_fa( &src, " #?w'const'"   ) )
-                {
-                    if( f_const ) bcore_source_q_parse_err_fa( &src, "Prefix 'const' occurs twice." );
-                    f_any_prefix = f_const = true;
-                }
-
-                if( bcore_source_q_parse_bl_fa( &src, " #?w'feature'"   ) )
-                {
-                    if( f_feature ) bcore_source_q_parse_err_fa( &src, "Prefix 'feature' occurs twice." );
-                    f_any_prefix = f_feature = true;
-                }
-
-                if( bcore_source_q_parse_bl_fa( &src, " #?w'strict'"   ) )
-                {
-                    if( f_strict ) bcore_source_q_parse_err_fa( &src, "Prefix 'strict' occurs twice." );
-                    f_any_prefix = f_strict = true;
-                }
-
-                if( bcore_source_q_parse_bl_fa( &src, " #?w'offset'"   ) )
-                {
-                    if( f_offset ) bcore_source_q_parse_err_fa( &src, "Prefix 'offset' occurs twice." );
-                    f_any_prefix = f_offset = true;
-                }
-            }
-
-            // type can be specified by explicit type id number (anonymous types) or by name
-            tp_t type_val = 0;
-            if( bcore_source_q_parse_bl_fa( &src, " #?([0]=='{')" ) ) // nested anonymous type
-            {
-                type_val = bcore_flect_type_parse_src( src );
-            }
-            else if( bcore_source_q_parse_bl_fa( &src, " #?([0]>='0'&&[0]<='9')" ) ) // type is specified by number
-            {
-                bcore_source_q_parse_fa( &src, "#<tp_t*> ", &type_val );
-            }
-            else // type is specified by name
-            {
-                bcore_source_q_parse_fa( &src, "#name ", type_name );
-            }
-
-
-            if( bcore_source_q_parse_bl_fa( &src, "#?'*' " ) )
-            {
-                f_link = true;
-                f_deep_copy = true;
-            }
-            else if( bcore_source_q_parse_bl_fa( &src, "#?'=>' " ) )
-            {
-                f_link = true;
-                f_deep_copy = true;
-            }
-            else if( bcore_source_q_parse_bl_fa( &src, "#?'->' " ) )
-            {
-                f_link = true;
-                f_deep_copy = false;
-            }
-
-            if( bcore_source_q_parse_bl_fa( &src, "#?'[' " ) )
-            {
-                if( bcore_source_q_parse_bl_fa( &src, "#?']' " ) )
-                {
-                    f_arr_dyn = true;
-                }
-                else if( bcore_source_q_parse_bl_fa( &src, "#?([0]>='0'&&[0]<='9')" ) )
-                {
-                    f_arr_fix = true;
-                    bcore_source_q_parse_fa( &src, "#<sz_t*> ", &array_fix_size );
-                    if( !bcore_source_q_parse_bl_fa( &src, "#?']' " ) )
-                    {
-                        bcore_source_q_parse_err_fa( &src, "']' expected." );
-                    }
-                }
-                else
-                {
-                    bcore_source_q_parse_err_fa( &src, "']' or array fixed-size expected." );
-                }
-            }
-
-            bcore_source_q_parse_fa( &src, "#name #?'=' ", item_name, &f_assign_default );
-
-            item->flags.f_private   = f_private || f_spect;
-            item->flags.f_hidden    = f_hidden;
-            item->flags.f_shell     = f_shell;
-            item->flags.f_spect     = f_spect;
-            item->flags.f_deep_copy = f_deep_copy;
-            item->flags.f_const     = f_const;
-            item->flags.f_feature   = f_feature;
-            item->flags.f_strict    = f_strict;
-
-            if( f_arr_fix ) item->array_fix_size = array_fix_size;
-
-            if( f_spect && ( !f_link || f_deep_copy ) )
-            {
-                bcore_source_q_parse_err_fa( &src, "Perspectives are shallow links. Use 'spect #<sc_t> ->' to clarify method of referencing.", type_name->sc );
-            }
-
-            if( f_const && !f_assign_default )
-            {
-                bcore_source_q_parse_err_fa( &src, "Constants need a value. Use 'const #<sc_t> = <value>'.", type_name->sc );
-            }
-
-            if( st_s_equal_sc( type_name, "typed" ) )
-            {
-                if( f_arr_fix )
-                {
-                    bcore_source_q_parse_err_fa( &src, "Typed objects not supported for fixed size arrays. Suggest dynamic arrays." );
-                }
-
-                if( !f_link && !f_arr_dyn )
-                {
-                    bcore_source_q_parse_err_fa( &src, "Typed objects cannot be nested. Use 'typed *|=>|->' to clarify method of referencing." );
-                }
-
-                item->type = 0;
-                item->name = entypeof( item_name->sc );
-                item->caps = f_arr_dyn ? ( f_link ? BCORE_CAPS_ARRAY_DYN_LINK_TYPED : BCORE_CAPS_ARRAY_DYN_SOLID_TYPED ) : BCORE_CAPS_LINK_TYPED;
-            }
-            else if( st_s_equal_sc( type_name, "aware" ) )
-            {
-                if( !f_link )
-                {
-                    bcore_source_q_parse_err_fa( &src, "Self-aware objects must be referenced by a link. Use 'aware *|=>|->' to clarify method of referencing." );
-                }
-                item->type = 0;
-                item->name = entypeof( item_name->sc );
-                item->caps = f_arr_dyn ? BCORE_CAPS_ARRAY_DYN_LINK_AWARE : f_arr_fix ? BCORE_CAPS_ARRAY_FIX_LINK_AWARE : BCORE_CAPS_LINK_AWARE;
-            }
-            else
-            {
-                item->type = ( type_val > 0 ) ? type_val : entypeof( type_name->sc );
-                item->name = entypeof( item_name->sc );
-                item->caps =
-                    f_arr_dyn ?
-                        ( f_link ? BCORE_CAPS_ARRAY_DYN_LINK_STATIC : BCORE_CAPS_ARRAY_DYN_SOLID_STATIC )
-                    :
-                        f_arr_fix ?
-                            ( f_link ? BCORE_CAPS_ARRAY_FIX_LINK_STATIC : BCORE_CAPS_ARRAY_FIX_SOLID_STATIC )
-                        :
-                            ( f_link ? BCORE_CAPS_LINK_STATIC : BCORE_CAPS_SOLID_STATIC );
-            }
-
-            if( item->type == typeof( "aware_t" ) )
-            {
-                if( o->size > 0 )
-                {
-                    bcore_source_q_parse_err_fa( &src, "'aware_t' must be first element in body and not used elsewhere." );
-                }
-                if( item->caps != BCORE_CAPS_SOLID_STATIC )
-                {
-                    bcore_source_q_parse_err_fa( &src, "'aware_t' can only be used in single solid static nesting." );
-                }
-            }
-
-
-            item->flags.f_fp = bcore_trait_is_of( item->type, TYPEOF_function_pointer );
-
-            if( f_assign_default )
-            {
-                if( item->caps == BCORE_CAPS_SOLID_STATIC )
-                {
-                    switch( item->type )
-                    {
-                        case TYPEOF_s0_t:
-                        case TYPEOF_s1_t:
-                        case TYPEOF_s2_t:
-                        case TYPEOF_s3_t:
-                            bcore_source_q_parse_fa( &src, " #<s3_t*>", &item->default_s3 );
-                            break;
-                        case TYPEOF_u0_t:
-                        case TYPEOF_u1_t:
-                        case TYPEOF_u2_t:
-                        case TYPEOF_u3_t:
-                        case TYPEOF_sz_t:
-                        case TYPEOF_tp_t:
-                            bcore_source_q_parse_fa( &src, " #<u3_t*>", &item->default_u3 );
-                            break;
-                        case TYPEOF_f2_t:
-                        case TYPEOF_f3_t:
-                            bcore_source_q_parse_fa( &src, " #<f3_t*>", &item->default_f3 );
-                            break;
-
-                        case TYPEOF_bl_t:
-                        {
-                            bl_t flag = false;
-                            bcore_source_q_parse_fa( &src, " #<bl_t*>", &flag );
-                            item->default_u3 = flag;
-                        }
-                        break;
-
-                        default: bcore_source_q_parse_err_fa( &src, "Cannot assign default value to type '#<sc_t>'", ifnameof( item->type ) );
-                    }
-                }
-                else
-                {
-                    bcore_source_q_parse_err_fa( &src, "Assignment of default value only possible for single solid static nesting (no links, no arrays)." );
-                }
+                bcore_source_q_parse_err_fa( &src, "'aware_t' must be first element in body and not used elsewhere." );
             }
         }
-
-        bcore_source_q_parse_fa( &src, " ; " );
 
         bcore_self_body_s_push_d( o, item );
-        bcore_life_s_discard( l );
     }
 
     bcore_life_s_discard( l );
-    return o;
 }
 
 tp_t bcore_self_body_s_fold_tp( const bcore_self_body_s* o, tp_t tp )
@@ -886,7 +946,9 @@ bcore_self_s* bcore_self_s_build_parse_src( sr_s src, sz_t size_of )
     if( bcore_source_q_parse_bl_fa( &src, " #=?'{'" ) )
     {
         o->trait = type2 ? type2 : typeof( "bcore_inst" );
-        o->body = body_s_build_parse_src( src );
+        o->body = bcore_self_body_s_create();
+        bcore_self_body_s_parse_src( o->body, src );
+
         if( !o->type )
         {
             o->type = bcore_self_body_s_fold_tp( o->body, bcore_tp_init() );
@@ -1430,16 +1492,18 @@ static void flect_define_basics()
 {
     bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( "void" ), typeof( "leaf" ), 0              ) );
 
-    BCORE_REGISTER_PLAIN( s3_t, num  );
-    BCORE_REGISTER_PLAIN( s2_t, num  );
-    BCORE_REGISTER_PLAIN( s1_t, num  );
     BCORE_REGISTER_PLAIN( s0_t, num  );
-    BCORE_REGISTER_PLAIN( u3_t, num  );
-    BCORE_REGISTER_PLAIN( u2_t, num  );
-    BCORE_REGISTER_PLAIN( u1_t, num  );
+    BCORE_REGISTER_PLAIN( s1_t, num  );
+    BCORE_REGISTER_PLAIN( s2_t, num  );
+    BCORE_REGISTER_PLAIN( s3_t, num  );
+    BCORE_REGISTER_PLAIN( smax_t, num  );
     BCORE_REGISTER_PLAIN( u0_t, num  );
-    BCORE_REGISTER_PLAIN( f3_t, num  );
+    BCORE_REGISTER_PLAIN( u1_t, num  );
+    BCORE_REGISTER_PLAIN( u2_t, num  );
+    BCORE_REGISTER_PLAIN( u3_t, num  );
+    BCORE_REGISTER_PLAIN( umax_t, num  );
     BCORE_REGISTER_PLAIN( f2_t, num  );
+    BCORE_REGISTER_PLAIN( f3_t, num  );
     BCORE_REGISTER_PLAIN( sz_t, num  );
     BCORE_REGISTER_PLAIN( sd_t, leaf );
     BCORE_REGISTER_PLAIN( sc_t, leaf );
@@ -1447,6 +1511,8 @@ static void flect_define_basics()
     BCORE_REGISTER_PLAIN( vc_t, leaf );
     BCORE_REGISTER_PLAIN( fp_t, leaf );
     BCORE_REGISTER_PLAIN( bl_t, num );
+
+    BCORE_REGISTER_PLAIN( offset_t, num );
 
     // special purpose types
     BCORE_REGISTER_PLAIN( tp_t,                type );
@@ -1491,24 +1557,15 @@ static st_s* flect_selftest( void )
         bcore_flect_define_parse_sc(" another = delivery" );
     }
 
-    st_s* s = st_s_create();
-    st_s_push_st_d( s, bcore_self_s_show( bcore_flect_get_self( typeof( "st_s" ) ) ) );
-
     {
         tp_t t_teabag    = bcore_flect_type_parse_sc( "{ u3_t leaves; s1_t flavor; s0_t color; }" );
         tp_t t_container = bcore_flect_type_parse_fa( "{ u3_t elements = 343; %"PRItp_t" bag; u1_t flags; }", t_teabag );
-
-        st_s_push_st_d( s, bcore_self_s_show( bcore_flect_get_self( t_container ) ) );
-        st_s_pushf( s, "\n" );
-        st_s_pushf( s, "anonymous teabag type %u\n", t_teabag );
-    }
-
-    {
+        bcore_flect_get_self( t_container );
         tp_t anonymous = bcore_flect_type_parse_sc( "{ u3_t leaves; s1_t flavor; s0_t color; }" );
-        st_s_pushf( s, "anonymous teabag type %u (reentered)\n", anonymous );
+        ASSERT( t_teabag == anonymous );
     }
 
-    return s;
+    return NULL;
 }
 
 /**********************************************************************************************************************/

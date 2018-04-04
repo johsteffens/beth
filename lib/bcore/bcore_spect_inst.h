@@ -30,9 +30,9 @@
 
 typedef struct bcore_inst_item_s
 {
-    sz_t offset;
-    sz_t size;
-    sz_t align;
+    offset_t offset;
+    sz_t     size;
+    sz_t     align;
     const bcore_self_item_s*   self_item;
     const struct bcore_inst_s* inst_p;
     bl_t no_trace;    // no_trace means: do not recursively follow this item (could be private, cyclic or external)
@@ -56,7 +56,7 @@ typedef struct bcore_inst_body_s
 } bcore_inst_body_s;
 
 /// returns corresponding instance item of self_item_s or NULL if not existing
-bcore_inst_item_s* bcore_inst_body_s_inst_item_of_self_item( const bcore_inst_body_s* o, const bcore_self_item_s* item );
+const bcore_inst_item_s* bcore_inst_body_s_get_item_from_self_item( const bcore_inst_body_s* o, const bcore_self_item_s* item );
 
 typedef struct bcore_inst_s bcore_inst_s;
 
@@ -109,6 +109,7 @@ void bcore_inst_s_discard( bcore_inst_s* o );
 
 sz_t bcore_inst_s_get_items_size( const bcore_inst_s* o );
 const bcore_inst_item_s* bcore_inst_s_get_item( const bcore_inst_s* o, sz_t index );
+const bcore_inst_item_s* bcore_inst_s_get_item_from_self_item( const bcore_inst_s* o, const bcore_self_item_s* item ); // returns NULL if not found
 
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t type );
 const bcore_inst_s* bcore_inst_s_get_aware( vc_t obj );

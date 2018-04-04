@@ -83,22 +83,22 @@ static sz_t get_dyn_space( const bcore_array_s* p, vc_t o )
 
 static sz_t get_size( const bcore_array_s* p, vc_t o )
 {
-    return p->fixed_size > 0 ? p->fixed_size : get_dyn_size( p, o );
+    return p->size_fix > 0 ? p->size_fix : get_dyn_size( p, o );
 }
 
 static sz_t get_space( const bcore_array_s* p, vc_t o )
 {
-    return p->fixed_size > 0 ? p->fixed_size : get_dyn_space( p, o );
+    return p->size_fix > 0 ? p->size_fix : get_dyn_space( p, o );
 }
 
 /**********************************************************************************************************************/
 
 void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
 {
-    if( p->fixed_size > 0 ) return;
+    if( p->size_fix > 0 ) return;
     vd_t obj = ( u0_t* )o + p->caps_offset;
     if( ( ( bcore_array_dyn_head_s* )obj )->size <= ( ( bcore_array_dyn_head_s* )obj )->space ) return;
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
         {
@@ -182,20 +182,20 @@ void bcore_array_spect_make_strong( const bcore_array_s* p, vd_t o )
         }
         break;
 
-        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
+        default: ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
     }
 }
 
 void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
 {
-    if( p->fixed_size > 0 )
+    if( p->size_fix > 0 )
     {
-        if( p->fixed_size == space ) return;
+        if( p->size_fix == space ) return;
         ERR( "Cannot change space for fixed-size-array" );
     }
     vd_t obj = ( u0_t* )o + p->caps_offset;
     if( ( ( bcore_array_dyn_head_s* )obj )->size > ( ( bcore_array_dyn_head_s* )obj )->space ) bcore_array_spect_make_strong( p, o );
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
         {
@@ -324,7 +324,7 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
         }
         break;
 
-        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
+        default: ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
     }
 }
 
@@ -332,9 +332,9 @@ void bcore_array_spect_set_space( const bcore_array_s* p, vd_t o, sz_t space )
 
 void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
 {
-    if( p->fixed_size > 0 )
+    if( p->size_fix > 0 )
     {
-        if( size == p->fixed_size ) return;
+        if( size == p->size_fix ) return;
         ERR( "Cannot change size for fixed-size-array" );
     }
 
@@ -346,7 +346,7 @@ void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
     // If size == 0, array will release external references below
 
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
         {
@@ -516,7 +516,7 @@ void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
         }
         break;
 
-        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
+        default: ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
     }
 }
 
@@ -573,19 +573,19 @@ static sr_s get_dyn_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
 
 static sr_s get_fix_solid_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
-    return ( index < p->fixed_size ) ? sr_twd( p->item_p->o_type, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
+    return ( index < p->size_fix ) ? sr_twd( p->item_p->o_type, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
 }
 
 static sr_s get_fix_link_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
-    return ( index < p->fixed_size ) ? sr_twd( p->item_p->o_type, arr[ index ] ) : sr_null();
+    return ( index < p->size_fix ) ? sr_twd( p->item_p->o_type, arr[ index ] ) : sr_null();
 }
 
 static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
-    if( index < p->fixed_size )
+    if( index < p->size_fix )
     {
         vd_t item = arr[ index ];
         return item ? sr_twd( *( aware_t* )item, item ) : sr_null();
@@ -717,7 +717,7 @@ static void set_dyn_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s
 
 static void set_fix_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
 {
-    if( index >= p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->fixed_size );
+    if( index >= p->size_fix ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->size_fix );
     const bcore_inst_s* inst_p = p->item_p;
     vd_t dst = ( u0_t* )obj_vd( p, o ) + inst_p->size * index;
     if( src.o )
@@ -736,7 +736,7 @@ static void set_fix_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr
 
 static void set_fix_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
 {
-    if( index >= p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->fixed_size );
+    if( index >= p->size_fix ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->size_fix );
     const bcore_inst_s* inst_p = p->item_p;
     vd_t* arr = obj_vd( p, o );
     vd_t* dst = &arr[ index ];
@@ -759,7 +759,7 @@ static void set_fix_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_
 
 static void set_fix_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
 {
-    if( index >= p->fixed_size ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->fixed_size );
+    if( index >= p->size_fix ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->size_fix );
     vd_t* arr = obj_vd( p, o );
     vd_t* dst = &arr[ index ];
     if( *dst ) bcore_inst_aware_discard( *dst );
@@ -813,7 +813,7 @@ void bcore_array_spect_pop( const bcore_array_s* p, vd_t o )
 void bcore_array_spect_set_gtype( const bcore_array_s* p, vd_t o, tp_t type )
 {
     vd_t obj = obj_vd( p, o );
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
         {
@@ -864,7 +864,7 @@ void bcore_array_spect_set_gtype( const bcore_array_s* p, vd_t o, tp_t type )
 
         default:
         {
-            ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
+            ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
         }
         break;
     }
@@ -875,7 +875,7 @@ void bcore_array_spect_set_gtype( const bcore_array_s* p, vd_t o, tp_t type )
 vc_t bcore_array_spect_get_c_data( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = obj_vc( p, o );
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return ( ( const bcore_array_dyn_solid_static_s* )obj )->data;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return ( ( const bcore_array_dyn_solid_typed_s*  )obj )->data;
@@ -885,7 +885,7 @@ vc_t bcore_array_spect_get_c_data( const bcore_array_s* p, vc_t o )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return obj;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return obj;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return obj;
-        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
+        default: ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
     }
     return NULL;
 }
@@ -893,7 +893,7 @@ vc_t bcore_array_spect_get_c_data( const bcore_array_s* p, vc_t o )
 vd_t bcore_array_spect_get_d_data( const bcore_array_s* p, vd_t o )
 {
     vd_t obj = obj_vd( p, o );
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return ( ( bcore_array_dyn_solid_static_s* )obj )->data;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return ( ( bcore_array_dyn_solid_typed_s*  )obj )->data;
@@ -903,14 +903,14 @@ vd_t bcore_array_spect_get_d_data( const bcore_array_s* p, vd_t o )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return obj;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return obj;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return obj;
-        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
+        default: ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
     }
     return NULL;
 }
 
 sz_t bcore_array_spect_get_unit_size( const bcore_array_s* p, vc_t o )
 {
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:      return p->item_p->size;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
@@ -927,7 +927,7 @@ sz_t bcore_array_spect_get_unit_size( const bcore_array_s* p, vc_t o )
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return sizeof( vd_t );
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return sizeof( vd_t );
 
-        default: ERR( "invalid caps_type (%"PRIu32")", ( u2_t )p->caps_type );
+        default: ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
     }
     return 0;
 }
@@ -969,14 +969,14 @@ static bcore_array_s* create_from_self( const bcore_self_s* self )
         const bcore_self_item_s* self_item = body->data[ i ].self_item;
         if( bcore_flect_caps_is_array( self_item->caps ) )
         {
-            o->caps_type = self_item->caps;
+            o->type_caps = self_item->caps;
             o->caps_offset = body->data[ i ].offset;
             o->item_p = body->data[ i ].inst_p;
-            o->fixed_size = 0;
+            o->size_fix = 0;
             if( bcore_flect_caps_is_array_fix( self_item->caps ) )
             {
-                o->fixed_size = self_item->array_fix_size;
-                if( o->fixed_size == 0 ) ERR_fa( "'#<sc_t>' represents a fixed-size array of size zero.", ifnameof( self->type ) );
+                o->size_fix = self_item->array_fix_size;
+                if( o->size_fix == 0 ) ERR_fa( "'#<sc_t>' represents a fixed-size array of size zero.", ifnameof( self->type ) );
             }
             found = true;
             break;
@@ -984,7 +984,7 @@ static bcore_array_s* create_from_self( const bcore_self_s* self )
     }
     if( !found ) ERR( "'%s' has no array", ifnameof( self->type ) );
 
-    switch( o->caps_type )
+    switch( o->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
         {
@@ -1046,7 +1046,7 @@ static bcore_array_s* create_from_self( const bcore_self_s* self )
         }
         break;
 
-        default: ERR( "invalid caps_type %"PRIu32, ( u2_t )o->caps_type );
+        default: ERR( "invalid type_caps %"PRIu32, ( u2_t )o->type_caps );
     }
 
     return o;
@@ -1113,12 +1113,12 @@ void bcore_array_spect_set_bl     ( const bcore_array_s* p, vd_t o, sz_t index, 
 
 bl_t bcore_array_spect_is_fixed( const bcore_array_s* p )
 {
-    return p->fixed_size > 0;
+    return p->size_fix > 0;
 }
 
 bl_t bcore_array_spect_is_static( const bcore_array_s* p )
 {
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return true;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return false;
@@ -1128,14 +1128,14 @@ bl_t bcore_array_spect_is_static( const bcore_array_s* p )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return false;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
     }
     return false;
 }
 
 bl_t bcore_array_spect_is_mono_typed(  const bcore_array_s* p )
 {
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE: return false;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE: return false;
@@ -1146,7 +1146,7 @@ bl_t bcore_array_spect_is_mono_typed(  const bcore_array_s* p )
 
 bl_t bcore_array_spect_is_mutable_mono_typed(  const bcore_array_s* p )
 {
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return false;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return true;
@@ -1156,14 +1156,14 @@ bl_t bcore_array_spect_is_mutable_mono_typed(  const bcore_array_s* p )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return false;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return false;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return false;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
     }
     return false;
 }
 
 bl_t bcore_array_spect_is_multi_typed( const bcore_array_s* p )
 {
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE: return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE: return true;
@@ -1174,7 +1174,7 @@ bl_t bcore_array_spect_is_multi_typed( const bcore_array_s* p )
 
 bl_t bcore_array_spect_is_of_aware( const bcore_array_s* p )
 {
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE: return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE: return true;
@@ -1185,7 +1185,7 @@ bl_t bcore_array_spect_is_of_aware( const bcore_array_s* p )
 
 bl_t bcore_array_spect_is_of_links( const bcore_array_s* p )
 {
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return false;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return false;
@@ -1195,7 +1195,7 @@ bl_t bcore_array_spect_is_of_links( const bcore_array_s* p )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return false;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return true;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
     }
     return false;
 }
@@ -1203,7 +1203,7 @@ bl_t bcore_array_spect_is_of_links( const bcore_array_s* p )
 bl_t bcore_array_spect_is_weak( const bcore_array_s* p, vc_t o )
 {
     vc_t obj = obj_vc( p, o );
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: { const bcore_array_dyn_solid_static_s* arr = obj; return arr->size > arr->space; }
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  { const bcore_array_dyn_solid_typed_s*  arr = obj; return arr->size > arr->space; }
@@ -1213,14 +1213,14 @@ bl_t bcore_array_spect_is_weak( const bcore_array_s* p, vc_t o )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return false;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return false;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return false;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
     }
     return false;
 }
 
 tp_t bcore_array_spect_get_static_type( const bcore_array_s* p )
 {
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return 0;
@@ -1230,14 +1230,14 @@ tp_t bcore_array_spect_get_static_type( const bcore_array_s* p )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return 0;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
     }
     return 0;
 }
 
 tp_t bcore_array_spect_get_mono_type( const bcore_array_s* p, vc_t o )
 {
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return ( ( const bcore_array_dyn_solid_typed_s* )obj_vc( p, o ) )->type;
@@ -1247,14 +1247,14 @@ tp_t bcore_array_spect_get_mono_type( const bcore_array_s* p, vc_t o )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return 0;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
     }
     return 0;
 }
 
 tp_t bcore_array_spect_get_type( const bcore_array_s* p, vc_t o, sz_t index )
 {
-    switch( p->caps_type )
+    switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return ( ( const bcore_array_dyn_solid_typed_s* )obj_vc( p, o ) )->type;
@@ -1264,7 +1264,7 @@ tp_t bcore_array_spect_get_type( const bcore_array_s* p, vc_t o, sz_t index )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   { sr_s sr = p->get( p, o, index ); tp_t t = sr_s_type( &sr ); sr_down( sr ); return t; }
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->caps_type ) );
+        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
     }
     return 0;
 }

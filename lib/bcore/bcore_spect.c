@@ -303,40 +303,117 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
         vd_t dst = bcore_inst_item_s_get_obj( p_inst_item, o );
         bl_t found = false;
 
-        for( sz_t i = 0; i < o_items_size; i++ )
+        if( p_self_item->child_item )
         {
-            const bcore_self_item_s* o_self_item = bcore_self_s_get_item( o_self, i );
-            if( o_self_item->flags.f_private ) continue;
+            const bcore_self_item_s* p_child_item = p_self_item->child_item;
 
-            if( p_self_item->type == o_self_item->type && p_self_item->name == o_self_item->name )
+            for( sz_t i = 0; i < o_items_size; i++ )
             {
-                found = true;
-                if( p_self_item->flags.f_fp && o_self_item->caps == BCORE_CAPS_EXTERNAL_FUNC )
+                const bcore_self_item_s* o_self_item = bcore_self_s_get_item( o_self, i );
+                if( o_self_item->flags.f_private ) continue;
+
+                if
+                (
+                    p_child_item->type == o_self_item->type &&
+                    p_child_item->name == o_self_item->name &&
+                    p_child_item->caps == o_self_item->caps
+                )
                 {
-                    fp_t  src_fp = bcore_function_get( o_self_item->default_tp );
-                    ( *(fp_t*)dst )= src_fp;
-                }
-                else if( o_self_item->flags.f_const && o_self_item->caps == BCORE_CAPS_SOLID_STATIC )
-                {
-                    switch( p_self_item->type )
+                    found = true;
+                    if
+                    (
+                        p_self_item->flags.f_fp &&
+                        o_self_item->caps == BCORE_CAPS_EXTERNAL_FUNC
+                    )
+                    // then
                     {
-                        case TYPEOF_s0_t: *( s0_t* )dst = o_self_item->default_s3; break;
-                        case TYPEOF_s1_t: *( s1_t* )dst = o_self_item->default_s3; break;
-                        case TYPEOF_s2_t: *( s2_t* )dst = o_self_item->default_s3; break;
-                        case TYPEOF_s3_t: *( s3_t* )dst = o_self_item->default_s3; break;
-                        case TYPEOF_u0_t: *( u0_t* )dst = o_self_item->default_u3; break;
-                        case TYPEOF_u1_t: *( u1_t* )dst = o_self_item->default_u3; break;
-                        case TYPEOF_u2_t: *( u2_t* )dst = o_self_item->default_u3; break;
-                        case TYPEOF_u3_t: *( u3_t* )dst = o_self_item->default_u3; break;
-                        case TYPEOF_f2_t: *( f2_t* )dst = o_self_item->default_f3; break;
-                        case TYPEOF_f3_t: *( f3_t* )dst = o_self_item->default_f3; break;
-                        case TYPEOF_sz_t: *( sz_t* )dst = o_self_item->default_u3; break;
-                        case TYPEOF_bl_t: *( bl_t* )dst = o_self_item->default_u3; break;
-                        case TYPEOF_tp_t: *( tp_t* )dst = o_self_item->default_tp; break;
-                        default: found = false;
+                        fp_t src_fp = bcore_function_get( o_self_item->default_tp );
+                        ( *(fp_t*)dst ) = src_fp;
                     }
+                    else if
+                    (
+                        o_self_item->flags.f_const &&
+                        o_self_item->caps == BCORE_CAPS_SOLID_STATIC &&
+                        p_self_item->caps == BCORE_CAPS_SOLID_STATIC &&
+                        p_self_item->type == o_self_item->type
+                    )
+                    // then
+                    {
+                        switch( p_self_item->type )
+                        {
+                            case TYPEOF_s0_t: *( s0_t* )dst = o_self_item->default_s3; break;
+                            case TYPEOF_s1_t: *( s1_t* )dst = o_self_item->default_s3; break;
+                            case TYPEOF_s2_t: *( s2_t* )dst = o_self_item->default_s3; break;
+                            case TYPEOF_s3_t: *( s3_t* )dst = o_self_item->default_s3; break;
+                            case TYPEOF_u0_t: *( u0_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_u1_t: *( u1_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_u2_t: *( u2_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_u3_t: *( u3_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_f2_t: *( f2_t* )dst = o_self_item->default_f3; break;
+                            case TYPEOF_f3_t: *( f3_t* )dst = o_self_item->default_f3; break;
+                            case TYPEOF_sz_t: *( sz_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_bl_t: *( bl_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_tp_t: *( tp_t* )dst = o_self_item->default_tp; break;
+                            default: found = false;
+                        }
+                    }
+                    else if
+                    (
+                        p_self_item->caps == BCORE_CAPS_SOLID_STATIC &&
+                        p_self_item->type == TYPEOF_offset_t
+                    )
+                    // then
+                    {
+                        const bcore_inst_s* o_inst = bcore_inst_s_get_typed( o_self->type );
+                        const bcore_inst_item_s* o_inst_item = bcore_inst_s_get_item_from_self_item( o_inst, o_self_item );
+                        *( offset_t* )dst = o_inst_item->offset;
+                    }
+                    else
+                    {
+                        found = false;
+                    }
+
+                    if( found ) break;
                 }
-                if( found ) break;
+            }
+        }
+        else
+        {
+            for( sz_t i = 0; i < o_items_size; i++ )
+            {
+                const bcore_self_item_s* o_self_item = bcore_self_s_get_item( o_self, i );
+                if( o_self_item->flags.f_private ) continue;
+
+                if( p_self_item->type == o_self_item->type && p_self_item->name == o_self_item->name )
+                {
+                    found = true;
+                    if( p_self_item->flags.f_fp && o_self_item->caps == BCORE_CAPS_EXTERNAL_FUNC )
+                    {
+                        fp_t  src_fp = bcore_function_get( o_self_item->default_tp );
+                        ( *(fp_t*)dst )= src_fp;
+                    }
+                    else if( o_self_item->flags.f_const && o_self_item->caps == BCORE_CAPS_SOLID_STATIC )
+                    {
+                        switch( p_self_item->type )
+                        {
+                            case TYPEOF_s0_t: *( s0_t* )dst = o_self_item->default_s3; break;
+                            case TYPEOF_s1_t: *( s1_t* )dst = o_self_item->default_s3; break;
+                            case TYPEOF_s2_t: *( s2_t* )dst = o_self_item->default_s3; break;
+                            case TYPEOF_s3_t: *( s3_t* )dst = o_self_item->default_s3; break;
+                            case TYPEOF_u0_t: *( u0_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_u1_t: *( u1_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_u2_t: *( u2_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_u3_t: *( u3_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_f2_t: *( f2_t* )dst = o_self_item->default_f3; break;
+                            case TYPEOF_f3_t: *( f3_t* )dst = o_self_item->default_f3; break;
+                            case TYPEOF_sz_t: *( sz_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_bl_t: *( bl_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_tp_t: *( tp_t* )dst = o_self_item->default_tp; break;
+                            default: found = false;
+                        }
+                    }
+                    if( found ) break;
+                }
             }
         }
 

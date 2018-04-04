@@ -531,12 +531,7 @@ static bcore_via_s* create_from_self( const bcore_self_s* self )
         if( self_item->flags.f_hidden                   ) continue; // hidden items are not accessible in via
         if( i == 0 && self_item->type == TYPEOF_aware_t ) continue; // self-aware type is not accessible in via
 
-        const bcore_inst_item_s* inst_item = NULL;
-
-        if( inst_p->body )
-        {
-            inst_item = bcore_inst_body_s_inst_item_of_self_item( inst_p->body, self_item );
-        }
+        const bcore_inst_item_s* inst_item = bcore_inst_s_get_item_from_self_item( inst_p, self_item );
 
         if( inst_item && inst_item->no_trace ) continue; // instance no-trace items (private, external, ...) are not accessible in via
         if( self_item->flags.f_const ) continue; // constants are not accessible in via

@@ -347,6 +347,13 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                         }
                         break;
 
+                        case TYPEOF_umax_t:
+                        {
+                            umax_t* v = va_arg( *p_args, umax_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIumax_t"", *v );
+                        }
+                        break;
+
                         case TYPEOF_s0_t:
                         {
                             s0_t* v = va_arg( *p_args, s0_t* );
@@ -375,10 +382,24 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                         }
                         break;
 
+                        case TYPEOF_smax_t:
+                        {
+                            smax_t* v = va_arg( *p_args, smax_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIsmax_t"", *v );
+                        }
+                        break;
+
                         case TYPEOF_sz_t:
                         {
                             sz_t* v = va_arg( *p_args, sz_t* );
                             if( v ) sres = snprintf( dst, space, "%"PRIsz_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_offset_t:
+                        {
+                            offset_t* v = va_arg( *p_args, offset_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIoffset_t"", *v );
                         }
                         break;
 

@@ -39,9 +39,9 @@ typedef struct bcore_array_s
     aware_t p_type; // type of perspective
     tp_t    o_type; // type of object
 
-    tp_t caps_type;
+    tp_t type_caps;
 
-    sz_t fixed_size; // >0 indicating fixed size array
+    sz_t size_fix; // >0 indicating fixed size array
 
     sz_t caps_offset;
     const bcore_inst_s* item_p;  // item-perspective; NULL for typed or aware arrays

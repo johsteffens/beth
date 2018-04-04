@@ -136,6 +136,7 @@ typedef struct bcore_flect_flags_s
     };
 } bcore_flect_flags_s;
 
+typedef struct bcore_self_item_s bcore_self_item_s;
 typedef struct bcore_self_item_s
 {
     tp_t type; // hash of type
@@ -145,12 +146,16 @@ typedef struct bcore_self_item_s
     union
     {
         s3_t default_s3; // serves s0_t ... s3_t
-        u3_t default_u3; // serves u0_t ... u3_t, bl_t, sz_t
+        u3_t default_u3; // serves u0_t ... u3_t
         f3_t default_f3; // serves f2_t ... f3_t
         tp_t default_tp; // serves tp_t and external functions
-        u3_t array_fix_size; // size for fixed arrays  (do not use sz_t here because of system dependent sizeof( sz_t ))
+        sz_t default_sz; // serves sz_t, offset_t
+        sz_t default_bl; // serves bl_t
+        sz_t array_fix_size; // size for fixed arrays
+        umax_t default_umax;
+        smax_t default_smax;
     };
-
+    bcore_self_item_s* child_item;
 } bcore_self_item_s;
 
 void               bcore_self_item_s_init( bcore_self_item_s* o );
@@ -431,6 +436,9 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
             sz_t name##_space; \
         }; \
     }
+
+#define BCORE_OFFSET( object, offset ) ( ( vd_t* )( ( u0_t* )object + offset ) )
+
 
 /**********************************************************************************************************************/
 

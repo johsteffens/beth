@@ -213,6 +213,11 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
         case TYPEOF_f2_t: st_s_copyf( o, "%g",      *(const f2_t*)src ); break;
         case TYPEOF_f3_t: st_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
         case TYPEOF_sz_t: st_s_copyf( o, "%zu",     *(const sz_t*)src ); break;
+
+        case TYPEOF_smax_t:   st_s_copyf( o, "%"PRIiMAX, *(const smax_t*)src ); break;
+        case TYPEOF_umax_t:   st_s_copyf( o, "%"PRIuMAX, *(const umax_t*)src ); break;
+        case TYPEOF_offset_t: st_s_copyf( o, "%zu",      *(const offset_t*)src ); break;
+
         case TYPEOF_bl_t: st_s_copy_sc( o, *(const bl_t*)src ? "true" : "false" ); break;
         case TYPEOF_tp_t:
         case TYPEOF_aware_t:
@@ -1189,6 +1194,14 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
                         break;
                     }
 
+                    case TYPEOF_umax_t:
+                    {
+                        umax_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, umax_t* ) = v;
+                        break;
+                    }
+
                     case TYPEOF_s0_t:
                     {
                         s0_t v;
@@ -1221,11 +1234,27 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
                         break;
                     }
 
+                    case TYPEOF_smax_t:
+                    {
+                        smax_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNiMAX"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, smax_t* ) = v;
+                        break;
+                    }
+
                     case TYPEOF_sz_t:
                     {
-                        uintmax_t v;
+                        umax_t v;
                         sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &v, &size );
                         if( set_arg ) *va_arg( args, sz_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_offset_t:
+                    {
+                        umax_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, offset_t* ) = v;
                         break;
                     }
 

@@ -39,16 +39,18 @@ static sr_s leaf_typelist()
 {
     sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parse_fa( "{ st_s * [] arr; }" ) );
     bcore_array_q_push_sc( &list, "char" );
-    bcore_array_q_push_sc( &list, "s3_t" );
-    bcore_array_q_push_sc( &list, "s2_t" );
-    bcore_array_q_push_sc( &list, "s1_t" );
     bcore_array_q_push_sc( &list, "s0_t" );
-    bcore_array_q_push_sc( &list, "u3_t" );
-    bcore_array_q_push_sc( &list, "u2_t" );
-    bcore_array_q_push_sc( &list, "u1_t" );
+    bcore_array_q_push_sc( &list, "s1_t" );
+    bcore_array_q_push_sc( &list, "s2_t" );
+    bcore_array_q_push_sc( &list, "s3_t" );
+    bcore_array_q_push_sc( &list, "smax_t" );
     bcore_array_q_push_sc( &list, "u0_t" );
-    bcore_array_q_push_sc( &list, "f3_t" );
+    bcore_array_q_push_sc( &list, "u1_t" );
+    bcore_array_q_push_sc( &list, "u2_t" );
+    bcore_array_q_push_sc( &list, "u3_t" );
+    bcore_array_q_push_sc( &list, "umax_t" );
     bcore_array_q_push_sc( &list, "f2_t" );
+    bcore_array_q_push_sc( &list, "f3_t" );
     bcore_array_q_push_sc( &list, "sz_t" );
     bcore_array_q_push_sc( &list, "sd_t" );
     bcore_array_q_push_sc( &list, "sc_t" );
@@ -59,6 +61,7 @@ static sr_s leaf_typelist()
     bcore_array_q_push_sc( &list, "bl_t" );
     bcore_array_q_push_sc( &list, "st_s" );
     bcore_array_q_push_sc( &list, "aware_t" );
+    bcore_array_q_push_sc( &list, "offset_t" );
     bcore_array_q_push_sc( &list, "leaf" );
     bcore_array_q_push_sc( &list, "num" );
     bcore_array_q_push_sc( &list, "type" );
@@ -109,6 +112,7 @@ static sr_s object_typelist()
     bcore_array_q_push_sc( &list, "bcore_arr_sr_s" );
     bcore_array_q_push_sc( &list, "bcore_name_s" );
     bcore_array_q_push_sc( &list, "bcore_name_map_s" );
+    bcore_array_q_push_sc( &list, "bcore_matrix_s" );
 
     // signals
     bcore_array_q_push_sc( &list, "all" );

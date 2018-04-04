@@ -82,7 +82,7 @@ void bcore_inst_body_s_pop( bcore_inst_body_s* o )
     bcore_inst_item_s_down( &o->data[ o->size ] );
 }
 
-bcore_inst_item_s* bcore_inst_body_s_inst_item_of_self_item( const bcore_inst_body_s* o, const bcore_self_item_s* item )
+const bcore_inst_item_s* bcore_inst_body_s_get_item_from_self_item( const bcore_inst_body_s* o, const bcore_self_item_s* item )
 {
     for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ].self_item == item ) return &o->data[ i ];
     return NULL;
@@ -125,6 +125,12 @@ sz_t bcore_inst_s_get_items_size( const bcore_inst_s* o )
 const bcore_inst_item_s* bcore_inst_s_get_item( const bcore_inst_s* o, sz_t index )
 {
     return o->body ? index < o->body->size ? &o->body->data[ index ] : NULL : NULL;
+}
+
+const bcore_inst_item_s* bcore_inst_s_get_item_from_self_item( const bcore_inst_s* o, const bcore_self_item_s* item )
+{
+    if( !o->body ) return NULL;
+    return bcore_inst_body_s_get_item_from_self_item( o->body, item );
 }
 
 static bcore_inst_item_s* inst_s_push( bcore_inst_s* o )
