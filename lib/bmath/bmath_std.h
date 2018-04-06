@@ -20,6 +20,6 @@
 
 #include "bcore_std.h"
 #include "bmath_signal.h"
-
+#include "bmath_spect_vector.h"
 
 #endif // BMATH_STD_H

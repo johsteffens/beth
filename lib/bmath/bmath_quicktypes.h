@@ -28,10 +28,11 @@ void bmath_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
  *  Created via bclos_quicktypes_to_stdout( NULL );
  */
 
-#define TYPEOF_bmath_abelian_group   typeof( "bmath_abelian_group" )
+#define TYPEOF_bmath_abelian_group   2096901950
 #define TYPEOF_bmath_abelian_group_s 1137032512
-
-#define TYPEOF_bmath_ring   typeof( "bmath_ring" )
-#define TYPEOF_bmath_ring_s typeof( "bmath_ring_s" )
+#define TYPEOF_bmath_ring            2462086090
+#define TYPEOF_bmath_ring_s          1513035188
+#define TYPEOF_bmath_vector          4070600319
+#define TYPEOF_bmath_vector_s        1200091625
 
 #endif // BMATH_QUICKTYPES_H

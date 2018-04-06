@@ -19,6 +19,7 @@
 /// Collection of algebraic perspectives.
 
 #include "bcore_std.h"
+#include "bmath_quicktypes.h"
 
 /**********************************************************************************************************************/
 
@@ -37,6 +38,7 @@ typedef void (*bmath_fp_one )( vd_t o );                     // o = 1 (one_eleme
 typedef struct bmath_abelian_group_s
 {
     bcore_spect_header_s header;
+    const bcore_inst_s* spect_inst;
     bmath_fp_add fp_add; // mandatory
     bmath_fp_zro fp_zro; // mandatory
     bmath_fp_neg fp_neg; // mandatory
@@ -44,13 +46,38 @@ typedef struct bmath_abelian_group_s
 
 } bmath_abelian_group_s;
 
-const bmath_abelian_group_s* bmath_abelian_group_s_get_typed( tp_t type );
-const bmath_abelian_group_s* bmath_abelian_group_s_get_aware( vc_t o );
+BCORE_DEFINE_SPECT_GET_TYPED( bmath_abelian_group_s )
+BCORE_DEFINE_SPECT_GET_AWARE( bmath_abelian_group_s )
 
 void bmath_abelian_group_spect_add( const bmath_abelian_group_s* p, vd_t o, vc_t op1, vc_t op2 );
 void bmath_abelian_group_spect_zro( const bmath_abelian_group_s* p, vd_t o );
 void bmath_abelian_group_spect_neg( const bmath_abelian_group_s* p, vd_t o, vc_t op );
 void bmath_abelian_group_spect_sub( const bmath_abelian_group_s* p, vd_t o, vc_t op1, vc_t op2 );
+void bmath_abelian_group_spect_cpy( const bmath_abelian_group_s* p, vd_t o, vc_t op ); // copy
+
+void bmath_abelian_group_typed_add( tp_t t, vd_t o, vc_t op1, vc_t op2 );
+void bmath_abelian_group_typed_zro( tp_t t, vd_t o );
+void bmath_abelian_group_typed_neg( tp_t t, vd_t o, vc_t op );
+void bmath_abelian_group_typed_sub( tp_t t, vd_t o, vc_t op1, vc_t op2 );
+void bmath_abelian_group_typed_cpy( tp_t t, vd_t o, vc_t op );
+
+void bmath_abelian_group_aware_add( vd_t o, vc_t op1, vc_t op2 );
+void bmath_abelian_group_aware_zro( vd_t o );
+void bmath_abelian_group_aware_neg( vd_t o, vc_t op );
+void bmath_abelian_group_aware_sub( vd_t o, vc_t op1, vc_t op2 );
+void bmath_abelian_group_aware_cpy( vd_t o, vc_t op );
+
+void bmath_abelian_group_add( sr_s o, vc_t op1, vc_t op2 );
+void bmath_abelian_group_zro( sr_s o );
+void bmath_abelian_group_neg( sr_s o, vc_t op );
+void bmath_abelian_group_sub( sr_s o, vc_t op1, vc_t op2 );
+void bmath_abelian_group_cpy( sr_s o, vc_t op );
+
+void bmath_abelian_group_q_add( const sr_s* o, vc_t op1, vc_t op2 );
+void bmath_abelian_group_q_zro( const sr_s* o );
+void bmath_abelian_group_q_neg( const sr_s* o, vc_t op );
+void bmath_abelian_group_q_sub( const sr_s* o, vc_t op1, vc_t op2 );
+void bmath_abelian_group_q_cpy( const sr_s* o, vc_t op );
 
 /**********************************************************************************************************************/
 
@@ -58,6 +85,8 @@ void bmath_abelian_group_spect_sub( const bmath_abelian_group_s* p, vd_t o, vc_t
 typedef struct bmath_ring_s
 {
     bcore_spect_header_s header;
+    const bcore_inst_s* spect_inst;
+
     bmath_fp_add fp_add; // mandatory
     bmath_fp_zro fp_zro; // mandatory
     bmath_fp_neg fp_neg; // mandatory
@@ -70,18 +99,58 @@ typedef struct bmath_ring_s
 
 } bmath_ring_s;
 
-const bmath_ring_s* bmath_ring_s_get_typed( tp_t type );
-const bmath_ring_s* bmath_ring_s_get_aware( vc_t o );
+BCORE_DEFINE_SPECT_GET_TYPED( bmath_ring_s )
+BCORE_DEFINE_SPECT_GET_AWARE( bmath_ring_s )
 
 void bmath_ring_spect_add( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
 void bmath_ring_spect_zro( const bmath_ring_s* p, vd_t o );
 void bmath_ring_spect_neg( const bmath_ring_s* p, vd_t o, vc_t op );
 void bmath_ring_spect_sub( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
-
+void bmath_ring_spect_cpy( const bmath_ring_s* p, vd_t o, vc_t op ); // copy
 void bmath_ring_spect_mul( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
 void bmath_ring_spect_one( const bmath_ring_s* p, vd_t o );
 void bmath_ring_spect_inv( const bmath_ring_s* p, vd_t o, vc_t op );
 void bmath_ring_spect_div( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
+
+void bmath_ring_typed_add( tp_t t, vd_t o, vc_t op1, vc_t op2 );
+void bmath_ring_typed_zro( tp_t t, vd_t o );
+void bmath_ring_typed_neg( tp_t t, vd_t o, vc_t op );
+void bmath_ring_typed_sub( tp_t t, vd_t o, vc_t op1, vc_t op2 );
+void bmath_ring_typed_cpy( tp_t t, vd_t o, vc_t op );
+void bmath_ring_typed_mul( tp_t t, vd_t o, vc_t op1, vc_t op2 );
+void bmath_ring_typed_one( tp_t t, vd_t o );
+void bmath_ring_typed_inv( tp_t t, vd_t o, vc_t op );
+void bmath_ring_typed_div( tp_t t, vd_t o, vc_t op1, vc_t op2 );
+
+void bmath_ring_aware_add( vd_t o, vc_t op1, vc_t op2 );
+void bmath_ring_aware_zro( vd_t o );
+void bmath_ring_aware_neg( vd_t o, vc_t op );
+void bmath_ring_aware_sub( vd_t o, vc_t op1, vc_t op2 );
+void bmath_ring_aware_cpy( vd_t o, vc_t op );
+void bmath_ring_aware_mul( vd_t o, vc_t op1, vc_t op2 );
+void bmath_ring_aware_one( vd_t o );
+void bmath_ring_aware_inv( vd_t o, vc_t op );
+void bmath_ring_aware_div( vd_t o, vc_t op1, vc_t op2 );
+
+void bmath_ring_add( sr_s o, vc_t op1, vc_t op2 );
+void bmath_ring_zro( sr_s o );
+void bmath_ring_neg( sr_s o, vc_t op );
+void bmath_ring_sub( sr_s o, vc_t op1, vc_t op2 );
+void bmath_ring_cpy( sr_s o, vc_t op );
+void bmath_ring_mul( sr_s o, vc_t op1, vc_t op2 );
+void bmath_ring_one( sr_s o );
+void bmath_ring_inv( sr_s o, vc_t op );
+void bmath_ring_div( sr_s o, vc_t op1, vc_t op2 );
+
+void bmath_ring_q_add( const sr_s* o, vc_t op1, vc_t op2 );
+void bmath_ring_q_zro( const sr_s* o );
+void bmath_ring_q_neg( const sr_s* o, vc_t op );
+void bmath_ring_q_sub( const sr_s* o, vc_t op1, vc_t op2 );
+void bmath_ring_q_cpy( const sr_s* o, vc_t op );
+void bmath_ring_q_mul( const sr_s* o, vc_t op1, vc_t op2 );
+void bmath_ring_q_one( const sr_s* o );
+void bmath_ring_q_inv( const sr_s* o, vc_t op );
+void bmath_ring_q_div( const sr_s* o, vc_t op1, vc_t op2 );
 
 /**********************************************************************************************************************/
 

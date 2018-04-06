@@ -15,12 +15,14 @@
 
 #include "bmath_signal.h"
 #include "bmath_spect_algebraic.h"
+#include "bmath_spect_vector.h"
 
 vd_t bmath_signal_handler( const bcore_signal_s* o )
 {
     bcore_fp_signal_handler arr[] =
     {
         bmath_spect_algebraic_signal_handler,
+        bmath_spect_vector_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );

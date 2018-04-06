@@ -50,27 +50,19 @@ static void bmath_s3_one( s3_t* o )                                   { *o = 1; 
 /**********************************************************************************************************************/
 // bmath_abelian_group_s
 
+#define NPXAG( name ) bmath_abelian_group_##name
+
 static sc_t bmath_abelian_group_s_def = "bmath_abelian_group_s = spect"
 "{"
     "bcore_spect_header_s header;"
-    "strict feature bmath_fp_add add ~> func bmath_fp_add;"
-//    "strict feature bmath_fp_add add;"
-    "strict feature bmath_fp_zro zro;"
-    "strict feature bmath_fp_neg neg;"
-    "       feature bmath_fp_sub sub;"
+    "strict feature bcore_inst_s* spect_inst;"
+    "strict feature bmath_fp_add add ~> func bmath_fp_add add;"
+    "strict feature bmath_fp_zro zro ~> func bmath_fp_zro zro;"
+    "strict feature bmath_fp_neg neg ~> func bmath_fp_neg neg;"
+    "       feature bmath_fp_sub sub ~> func bmath_fp_sub sub;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( bmath_abelian_group_s, bmath_abelian_group_s_def )
-
-const bmath_abelian_group_s* bmath_abelian_group_s_get_typed( tp_t o_type )
-{
-    return bcore_spect_get_typed( TYPEOF_bmath_abelian_group_s, o_type );
-}
-
-const bmath_abelian_group_s* bmath_abelian_group_s_get_aware( vc_t obj )
-{
-    return bmath_abelian_group_s_get_typed( *( const aware_t* )obj );
-}
 
 void bmath_abelian_group_spect_add( const bmath_abelian_group_s* p, vd_t o, vc_t op1, vc_t op2 )
 {
@@ -100,36 +92,62 @@ void bmath_abelian_group_spect_sub( const bmath_abelian_group_s* p, vd_t o, vc_t
     }
 }
 
+void bmath_abelian_group_spect_cpy( const bmath_abelian_group_s* p, vd_t o, vc_t op )
+{
+    bcore_inst_spect_copy( p->spect_inst, o, op );
+}
+
+/**********************************************************************************************************************/
+
+static inline const bmath_abelian_group_s* atpdag( tp_t tp ) { return bmath_abelian_group_s_get_typed( tp ); }
+static inline vc_t w_spectag( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bmath_abelian_group_s ); }
+
+void NPXAG(typed_add)( tp_t t, vd_t o, vc_t op1, vc_t op2 ) { NPXAG(spect_add)( atpdag( t ), o, op1, op2 ); }
+void NPXAG(typed_zro)( tp_t t, vd_t o                     ) { NPXAG(spect_zro)( atpdag( t ), o           ); }
+void NPXAG(typed_neg)( tp_t t, vd_t o, vc_t op1           ) { NPXAG(spect_neg)( atpdag( t ), o, op1      ); }
+void NPXAG(typed_sub)( tp_t t, vd_t o, vc_t op1, vc_t op2 ) { NPXAG(spect_sub)( atpdag( t ), o, op1, op2 ); }
+void NPXAG(typed_cpy)( tp_t t, vd_t o, vc_t op1           ) { NPXAG(spect_cpy)( atpdag( t ), o, op1      ); }
+
+void NPXAG(aware_add)(         vd_t o, vc_t op1, vc_t op2 ) { NPXAG(typed_add)( *(aware_t*)o, o, op1, op2 ); }
+void NPXAG(aware_zro)(         vd_t o                     ) { NPXAG(typed_zro)( *(aware_t*)o, o           ); }
+void NPXAG(aware_neg)(         vd_t o, vc_t op1           ) { NPXAG(typed_neg)( *(aware_t*)o, o, op1      ); }
+void NPXAG(aware_sub)(         vd_t o, vc_t op1, vc_t op2 ) { NPXAG(typed_sub)( *(aware_t*)o, o, op1, op2 ); }
+void NPXAG(aware_cpy)(         vd_t o, vc_t op1           ) { NPXAG(typed_cpy)( *(aware_t*)o, o, op1      ); }
+
+void NPXAG(add      )(         sr_s o, vc_t op1, vc_t op2 ) { NPXAG(spect_add)( w_spectag( o ), o.o, op1, op2 ); sr_down( o ); }
+void NPXAG(zro      )(         sr_s o                     ) { NPXAG(spect_zro)( w_spectag( o ), o.o           ); sr_down( o ); }
+void NPXAG(neg      )(         sr_s o, vc_t op1           ) { NPXAG(spect_neg)( w_spectag( o ), o.o, op1      ); sr_down( o ); }
+void NPXAG(sub      )(         sr_s o, vc_t op1, vc_t op2 ) { NPXAG(spect_sub)( w_spectag( o ), o.o, op1, op2 ); sr_down( o ); }
+void NPXAG(cpy      )(         sr_s o, vc_t op1           ) { NPXAG(spect_cpy)( w_spectag( o ), o.o, op1      ); sr_down( o ); }
+
+void NPXAG(q_add    )(  const sr_s* o, vc_t op1, vc_t op2 ) { NPXAG(spect_add)( w_spectag( *o ), o->o, op1, op2 ); }
+void NPXAG(q_zro    )(  const sr_s* o                     ) { NPXAG(spect_zro)( w_spectag( *o ), o->o           ); }
+void NPXAG(q_neg    )(  const sr_s* o, vc_t op1           ) { NPXAG(spect_neg)( w_spectag( *o ), o->o, op1      ); }
+void NPXAG(q_sub    )(  const sr_s* o, vc_t op1, vc_t op2 ) { NPXAG(spect_sub)( w_spectag( *o ), o->o, op1, op2 ); }
+void NPXAG(q_cpy    )(  const sr_s* o, vc_t op1           ) { NPXAG(spect_cpy)( w_spectag( *o ), o->o, op1      ); }
+
 /**********************************************************************************************************************/
 // bmath_ring_s
+
+#define NPXRG( name ) bmath_ring_##name
 
 static sc_t bmath_ring_s_def = "bmath_ring_s = spect"
 "{"
     "bcore_spect_header_s header;"
+    "strict feature bcore_inst_s* spect_inst;"
+
     "strict feature bmath_fp_add add ~> func bmath_fp_add add;"
+    "strict feature bmath_fp_zro zro ~> func bmath_fp_zro zro;"
+    "strict feature bmath_fp_neg neg ~> func bmath_fp_neg neg;"
+    "       feature bmath_fp_sub sub ~> func bmath_fp_sub sub;"
 
-//    "strict feature bmath_fp_add add;"
-    "strict feature bmath_fp_zro zro;"
-    "strict feature bmath_fp_neg neg;"
-    "       feature bmath_fp_sub sub;"
-
-    "strict feature bmath_fp_mul mul;"
-    "       feature bmath_fp_one one;"
-    "       feature bmath_fp_inv inv;"
-    "       feature bmath_fp_div div;"
+    "strict feature bmath_fp_mul mul ~> func bmath_fp_mul mul;"
+    "       feature bmath_fp_one one ~> func bmath_fp_one one;"
+    "       feature bmath_fp_inv inv ~> func bmath_fp_inv inv;"
+    "       feature bmath_fp_div div ~> func bmath_fp_div div;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( bmath_ring_s, bmath_ring_s_def )
-
-const bmath_ring_s* bmath_ring_s_get_typed( tp_t o_type )
-{
-    return bcore_spect_get_typed( TYPEOF_bmath_ring_s, o_type );
-}
-
-const bmath_ring_s* bmath_ring_s_get_aware( vc_t obj )
-{
-    return bmath_ring_s_get_typed( *( const aware_t* )obj );
-}
 
 void bmath_ring_spect_add( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 )
 {
@@ -157,6 +175,11 @@ void bmath_ring_spect_sub( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 )
         p->fp_neg( o, op2 );
         p->fp_add( o, op1, o );
     }
+}
+
+void bmath_ring_spect_cpy( const bmath_ring_s* p, vd_t o, vc_t op )
+{
+    bcore_inst_spect_copy( p->spect_inst, o, op );
 }
 
 void bmath_ring_spect_mul( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 )
@@ -197,6 +220,51 @@ void bmath_ring_spect_div( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 )
         WRN_fa( "Division is not available for object '#<sc_t>'.", ifnameof( p->header.o_type ) );
     }
 }
+
+/**********************************************************************************************************************/
+
+static inline const bmath_ring_s* atpdrg( tp_t tp ) { return bmath_ring_s_get_typed( tp ); }
+static inline vc_t w_spectrg( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bmath_ring_s ); }
+
+void NPXRG(typed_add)( tp_t t, vd_t o, vc_t op1, vc_t op2 ) { NPXRG(spect_add)( atpdrg( t ), o, op1, op2 ); }
+void NPXRG(typed_zro)( tp_t t, vd_t o                     ) { NPXRG(spect_zro)( atpdrg( t ), o           ); }
+void NPXRG(typed_neg)( tp_t t, vd_t o, vc_t op1           ) { NPXRG(spect_neg)( atpdrg( t ), o, op1      ); }
+void NPXRG(typed_sub)( tp_t t, vd_t o, vc_t op1, vc_t op2 ) { NPXRG(spect_sub)( atpdrg( t ), o, op1, op2 ); }
+void NPXRG(typed_cpy)( tp_t t, vd_t o, vc_t op1           ) { NPXRG(spect_cpy)( atpdrg( t ), o, op1      ); }
+void NPXRG(typed_mul)( tp_t t, vd_t o, vc_t op1, vc_t op2 ) { NPXRG(spect_mul)( atpdrg( t ), o, op1, op2 ); }
+void NPXRG(typed_one)( tp_t t, vd_t o                     ) { NPXRG(spect_one)( atpdrg( t ), o           ); }
+void NPXRG(typed_inv)( tp_t t, vd_t o, vc_t op1           ) { NPXRG(spect_inv)( atpdrg( t ), o, op1      ); }
+void NPXRG(typed_div)( tp_t t, vd_t o, vc_t op1, vc_t op2 ) { NPXRG(spect_div)( atpdrg( t ), o, op1, op2 ); }
+
+void NPXRG(aware_add)(         vd_t o, vc_t op1, vc_t op2 ) { NPXRG(typed_add)( *(aware_t*)o, o, op1, op2 ); }
+void NPXRG(aware_zro)(         vd_t o                     ) { NPXRG(typed_zro)( *(aware_t*)o, o           ); }
+void NPXRG(aware_neg)(         vd_t o, vc_t op1           ) { NPXRG(typed_neg)( *(aware_t*)o, o, op1      ); }
+void NPXRG(aware_sub)(         vd_t o, vc_t op1, vc_t op2 ) { NPXRG(typed_sub)( *(aware_t*)o, o, op1, op2 ); }
+void NPXRG(aware_cpy)(         vd_t o, vc_t op1           ) { NPXRG(typed_cpy)( *(aware_t*)o, o, op1      ); }
+void NPXRG(aware_mul)(         vd_t o, vc_t op1, vc_t op2 ) { NPXRG(typed_mul)( *(aware_t*)o, o, op1, op2 ); }
+void NPXRG(aware_one)(         vd_t o                     ) { NPXRG(typed_one)( *(aware_t*)o, o           ); }
+void NPXRG(aware_inv)(         vd_t o, vc_t op1           ) { NPXRG(typed_inv)( *(aware_t*)o, o, op1      ); }
+void NPXRG(aware_div)(         vd_t o, vc_t op1, vc_t op2 ) { NPXRG(typed_div)( *(aware_t*)o, o, op1, op2 ); }
+
+void NPXRG(add      )(         sr_s o, vc_t op1, vc_t op2 ) { NPXRG(spect_add)( w_spectrg( o ), o.o, op1, op2 ); sr_down( o ); }
+void NPXRG(zro      )(         sr_s o                     ) { NPXRG(spect_zro)( w_spectrg( o ), o.o           ); sr_down( o ); }
+void NPXRG(neg      )(         sr_s o, vc_t op1           ) { NPXRG(spect_neg)( w_spectrg( o ), o.o, op1      ); sr_down( o ); }
+void NPXRG(sub      )(         sr_s o, vc_t op1, vc_t op2 ) { NPXRG(spect_sub)( w_spectrg( o ), o.o, op1, op2 ); sr_down( o ); }
+void NPXRG(cpy      )(         sr_s o, vc_t op1           ) { NPXRG(spect_cpy)( w_spectrg( o ), o.o, op1      ); sr_down( o ); }
+void NPXRG(mul      )(         sr_s o, vc_t op1, vc_t op2 ) { NPXRG(spect_mul)( w_spectrg( o ), o.o, op1, op2 ); sr_down( o ); }
+void NPXRG(one      )(         sr_s o                     ) { NPXRG(spect_one)( w_spectrg( o ), o.o           ); sr_down( o ); }
+void NPXRG(inv      )(         sr_s o, vc_t op1           ) { NPXRG(spect_inv)( w_spectrg( o ), o.o, op1      ); sr_down( o ); }
+void NPXRG(div      )(         sr_s o, vc_t op1, vc_t op2 ) { NPXRG(spect_div)( w_spectrg( o ), o.o, op1, op2 ); sr_down( o ); }
+
+void NPXRG(q_add    )(  const sr_s* o, vc_t op1, vc_t op2 ) { NPXRG(spect_add)( w_spectrg( *o ), o->o, op1, op2 ); }
+void NPXRG(q_zro    )(  const sr_s* o                     ) { NPXRG(spect_zro)( w_spectrg( *o ), o->o           ); }
+void NPXRG(q_neg    )(  const sr_s* o, vc_t op1           ) { NPXRG(spect_neg)( w_spectrg( *o ), o->o, op1      ); }
+void NPXRG(q_sub    )(  const sr_s* o, vc_t op1, vc_t op2 ) { NPXRG(spect_sub)( w_spectrg( *o ), o->o, op1, op2 ); }
+void NPXRG(q_cpy    )(  const sr_s* o, vc_t op1           ) { NPXRG(spect_cpy)( w_spectrg( *o ), o->o, op1      ); }
+void NPXRG(q_mul    )(  const sr_s* o, vc_t op1, vc_t op2 ) { NPXRG(spect_mul)( w_spectrg( *o ), o->o, op1, op2 ); }
+void NPXRG(q_one    )(  const sr_s* o                     ) { NPXRG(spect_one)( w_spectrg( *o ), o->o           ); }
+void NPXRG(q_inv    )(  const sr_s* o, vc_t op1           ) { NPXRG(spect_inv)( w_spectrg( *o ), o->o, op1      ); }
+void NPXRG(q_div    )(  const sr_s* o, vc_t op1, vc_t op2 ) { NPXRG(spect_div)( w_spectrg( *o ), o->o, op1, op2 ); }
 
 /**********************************************************************************************************************/
 

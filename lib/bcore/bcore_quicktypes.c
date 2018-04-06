@@ -66,6 +66,7 @@ static sr_s leaf_typelist()
     bcore_array_q_push_sc( &list, "num" );
     bcore_array_q_push_sc( &list, "type" );
     bcore_array_q_push_sc( &list, "root" );
+    bcore_array_q_push_sc( &list, "spect" );
     bcore_array_q_push_sc( &list, "function_pointer" );
     bcore_array_q_sort( &list, 0, -1, 1 );
     return list;

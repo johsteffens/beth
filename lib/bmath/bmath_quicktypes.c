@@ -41,6 +41,8 @@ static sr_s typelist()
     bcore_array_q_push_sc( &list, "bmath_abelian_group_s"  );
     bcore_array_q_push_sc( &list, "bmath_ring"  );
     bcore_array_q_push_sc( &list, "bmath_ring_s"  );
+    bcore_array_q_push_sc( &list, "bmath_vector"  );
+    bcore_array_q_push_sc( &list, "bmath_vector_s"  );
 
     bcore_array_q_sort( &list, 0, -1, 1 );
     return list;

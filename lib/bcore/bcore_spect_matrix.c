@@ -74,6 +74,9 @@ void bcore_matrix_spect_set_size( const bcore_matrix_s* p, vd_t o, sz_t rows, sz
 /**********************************************************************************************************************/
 
 static inline const bcore_matrix_s* atpd( tp_t tp ) { return bcore_matrix_s_get_typed( tp ); }
+static inline vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_matrix_s ); }
+static inline vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_matrix_s ); }
+static inline vc_t x_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_matrix_s ); }
 
 sz_t NPX(typed_get_rows     )( tp_t t, vc_t o                         ) { return NPX(spect_get_rows      )( atpd( t ), o          ); }
 sz_t NPX(typed_get_cols     )( tp_t t, vc_t o                         ) { return NPX(spect_get_cols      )( atpd( t ), o          ); }
@@ -92,10 +95,6 @@ sz_t NPX(aware_get_row_index)( vc_t o, sz_t i                 ) { return NPX(typ
 sz_t NPX(aware_get_index    )( vc_t o, sz_t i, sz_t j         ) { return NPX(typed_get_index     )( *(aware_t*)o, o, i, j    ); }
 sr_s NPX(aware_get_cell     )( vc_t o, sz_t i, sz_t j         ) { return NPX(typed_get_cell      )( *(aware_t*)o, o, i, j    ); }
 void NPX(aware_set_cell     )( vd_t o, sz_t i, sz_t j, sr_s s ) {        NPX(typed_set_cell      )( *(aware_t*)o, o, i, j, s ); }
-
-inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_matrix_s ); }
-inline static vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_matrix_s ); }
-inline static vc_t x_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_matrix_s ); }
 
 sz_t NPX(get_rows     )( sr_s o                         ) { sz_t r = NPX(spect_get_rows      )( r_spect( o ), o.o          ); sr_down( o ); return r; }
 sz_t NPX(get_cols     )( sr_s o                         ) { sz_t r = NPX(spect_get_cols      )( r_spect( o ), o.o          ); sr_down( o ); return r; }
