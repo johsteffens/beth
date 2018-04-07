@@ -321,7 +321,7 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
                 )
                 {
                     found = true;
-                    if
+                    if // external functions
                     (
                         p_self_item->flags.f_fp &&
                         o_self_item->caps == BCORE_CAPS_EXTERNAL_FUNC
@@ -331,7 +331,7 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
                         fp_t src_fp = bcore_function_get( o_self_item->default_tp );
                         ( *(fp_t*)dst ) = src_fp;
                     }
-                    else if
+                    else if // constant
                     (
                         o_self_item->flags.f_const &&
                         o_self_item->caps == BCORE_CAPS_SOLID_STATIC &&
@@ -358,8 +358,9 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
                             default: found = false;
                         }
                     }
-                    else if
+                    else if // offset
                     (
+                        !o_self_item->flags.f_const &&
                         p_self_item->caps == BCORE_CAPS_SOLID_STATIC &&
                         p_self_item->type == TYPEOF_offset_t
                     )
@@ -368,6 +369,19 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
                         const bcore_inst_s* o_inst = bcore_inst_s_get_typed( o_self->type );
                         const bcore_inst_item_s* o_inst_item = bcore_inst_s_get_item_from_self_item( o_inst, o_self_item );
                         *( offset_t* )dst = o_inst_item->offset;
+                    }
+                    else if // spect ~> const type
+                    (
+                        bcore_trait_is_of( p_self_item->type, TYPEOF_spect ) &&
+                        p_self_item ->caps == BCORE_CAPS_LINK_STATIC &&
+                        p_child_item->type == TYPEOF_tp_t &&
+                        p_child_item->flags.f_const &&
+                        o_self_item ->flags.f_const
+                    )
+                    // then
+                    {
+                        found = true;
+                        *( vc_t* )dst = bcore_spect_get_typed( p_self_item->type, o_self_item->default_tp );
                     }
                     else
                     {

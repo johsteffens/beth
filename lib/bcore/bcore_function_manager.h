@@ -35,4 +35,9 @@ void bcore_function_remove( tp_t t );
 
 vd_t bcore_function_manager_signal_handler( const bcore_signal_s* o );
 
+/**********************************************************************************************************************/
+
+// Macros
+#define BCORE_REGISTER_FUNC( name ) bcore_function_set( entypeof( #name ), ( fp_t )name );
+
 #endif // BCORE_FUNCTION_MANAGER_H

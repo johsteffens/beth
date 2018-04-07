@@ -33,6 +33,15 @@ sr_s sr_clone( sr_s o )
     return sr;
 }
 
+sr_s sr_p_create( vc_t p )
+{
+    return sr_psd
+    (
+        p,
+        ( ( (tp_t*)p )[ 0 ] == TYPEOF_bcore_inst_s ) ? bcore_inst_spect_create( p ) : bcore_inst_typed_create( ( (tp_t*)p )[ 1 ] )
+    );
+}
+
 sr_s sr_spect( sr_s o, tp_t spect_type )
 {
     o.p = ch_spect_p( o.p, spect_type );

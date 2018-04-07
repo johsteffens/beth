@@ -34,5 +34,7 @@ void bmath_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
 #define TYPEOF_bmath_ring_s          1513035188
 #define TYPEOF_bmath_vector          4070600319
 #define TYPEOF_bmath_vector_s        1200091625
+#define TYPEOF_bmath_matrix          typeof( "bmath_matrix" )
+#define TYPEOF_bmath_matrix_s        typeof( "bmath_matrix_s" )
 
 #endif // BMATH_QUICKTYPES_H

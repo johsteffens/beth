@@ -30,7 +30,6 @@ typedef void (*bmath_fp_vector_dot_prd )( vd_t scl, vc_t vec1, vc_t scl2 ); // s
 
 /**********************************************************************************************************************/
 
-// bmath_ring_s
 typedef struct bmath_vector_s
 {
     bcore_spect_header_s header;
@@ -51,7 +50,6 @@ BCORE_DEFINE_SPECT_GET_TYPED( bmath_vector_s )
 BCORE_DEFINE_SPECT_GET_AWARE( bmath_vector_s )
 
 sz_t bmath_vector_spect_get_dim( const bmath_vector_s* p, vc_t o );
-void bmath_vector_spect_set_dim( const bmath_vector_s* p, vd_t o, sz_t dim ); // initialized zero
 
 /** Vector operations:
  *  - Arguments are organized: result, operand1, operand2
@@ -71,7 +69,6 @@ void bmath_vector_spect_dot_prd( const bmath_vector_s* p, vd_t scl, vc_t o,  vc_
 void bmath_vector_spect_sqr(     const bmath_vector_s* p, vd_t scl, vc_t o );
 
 sz_t bmath_vector_typed_get_dim( tp_t t, vc_t o );
-void bmath_vector_typed_set_dim( tp_t t, vd_t o, sz_t dim );
 void bmath_vector_typed_zro(     tp_t t, vd_t o );
 void bmath_vector_typed_neg(     tp_t t, vd_t o, vc_t vec1 );
 void bmath_vector_typed_cpy(     tp_t t, vd_t o, vc_t vec1 );
@@ -82,7 +79,6 @@ void bmath_vector_typed_dot_prd( tp_t t, vd_t scl, vc_t o,  vc_t vec2 );
 void bmath_vector_typed_sqr(     tp_t t, vd_t scl, vc_t o );
 
 sz_t bmath_vector_aware_get_dim( vc_t o );
-void bmath_vector_aware_set_dim( vd_t o, sz_t dim );
 void bmath_vector_aware_zro(     vd_t o );
 void bmath_vector_aware_neg(     vd_t o, vc_t vec1 );
 void bmath_vector_aware_cpy(     vd_t o, vc_t vec1 );
@@ -93,7 +89,6 @@ void bmath_vector_aware_dot_prd( vd_t s, vc_t o,    vc_t vec2 );
 void bmath_vector_aware_sqr(     vd_t s, vc_t o );
 
 sz_t bmath_vector_get_dim( sr_s o );
-void bmath_vector_set_dim( sr_s o, sz_t dim );
 void bmath_vector_zro(     sr_s o );
 void bmath_vector_neg(     sr_s o, vc_t vec1 );
 void bmath_vector_cpy(     sr_s o, vc_t vec1 );
@@ -104,7 +99,6 @@ void bmath_vector_dot_prd( vd_t s, sr_s o,    vc_t vec2 );
 void bmath_vector_sqr(     vd_t s, sr_s o );
 
 sz_t bmath_vector_q_get_dim( const sr_s* o );
-void bmath_vector_q_set_dim( const sr_s* o, sz_t dim );
 void bmath_vector_q_zro(     const sr_s* o );
 void bmath_vector_q_neg(     const sr_s* o, vc_t vec1 );
 void bmath_vector_q_cpy(     const sr_s* o, vc_t vec1 );
