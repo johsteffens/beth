@@ -46,8 +46,8 @@ typedef struct bmath_abelian_group_s
 
 } bmath_abelian_group_s;
 
-BCORE_DEFINE_SPECT_GET_TYPED( bmath_abelian_group_s )
-BCORE_DEFINE_SPECT_GET_AWARE( bmath_abelian_group_s )
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED( bmath_abelian_group_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bmath_abelian_group_s )
 
 void bmath_abelian_group_spect_add( const bmath_abelian_group_s* p, vd_t o, vc_t op1, vc_t op2 );
 void bmath_abelian_group_spect_zro( const bmath_abelian_group_s* p, vd_t o );
@@ -99,8 +99,8 @@ typedef struct bmath_ring_s
 
 } bmath_ring_s;
 
-BCORE_DEFINE_SPECT_GET_TYPED( bmath_ring_s )
-BCORE_DEFINE_SPECT_GET_AWARE( bmath_ring_s )
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED( bmath_ring_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bmath_ring_s )
 
 void bmath_ring_spect_add( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
 void bmath_ring_spect_zro( const bmath_ring_s* p, vd_t o );

@@ -46,8 +46,8 @@ typedef struct bmath_vector_s
 
 } bmath_vector_s;
 
-BCORE_DEFINE_SPECT_GET_TYPED( bmath_vector_s )
-BCORE_DEFINE_SPECT_GET_AWARE( bmath_vector_s )
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED( bmath_vector_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bmath_vector_s )
 
 sz_t bmath_vector_spect_get_dim( const bmath_vector_s* p, vc_t o );
 

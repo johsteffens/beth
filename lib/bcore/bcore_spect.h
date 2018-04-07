@@ -103,13 +103,13 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o );
 #define BCORE_REGISTER_SPECT( name )\
     bcore_spect_define_creator( typeof( #name ), name##_create_self )
 
-#define BCORE_DEFINE_SPECT_GET_TYPED( name ) \
+#define BCORE_DEFINE_INLINE_SPECT_GET_TYPED( name ) \
     static inline const name * name##_get_typed( tp_t o_type ) \
     { \
         return bcore_spect_get_typed( TYPEOF_##name, o_type ); \
     }
 
-#define BCORE_DEFINE_SPECT_GET_AWARE( name ) \
+#define BCORE_DEFINE_INLINE_SPECT_GET_AWARE( name ) \
     static inline const name* name##_get_aware( vc_t obj ) \
     { \
         return name##_get_typed( *( const aware_t* )obj ); \

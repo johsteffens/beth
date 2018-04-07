@@ -23,6 +23,7 @@
 #define BCORE_SPECT_MATRIX_H
 
 #include "bcore_spect_array.h"
+#include "bcore_quicktypes.h"
 
 /**********************************************************************************************************************/
 
@@ -39,12 +40,8 @@ typedef struct bcore_matrix_s
     sz_t stride_off; // feature for dynamic row-stride
 } bcore_matrix_s;
 
-const bcore_matrix_s* bcore_matrix_s_get_typed( tp_t type );
-
-static inline const bcore_matrix_s* bcore_matrix_s_get_aware( vc_t obj )
-{
-    return bcore_matrix_s_get_typed( *( const aware_t* )obj );
-}
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED( bcore_matrix_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_matrix_s )
 
 static inline
 sz_t bcore_matrix_spect_get_rows( const bcore_matrix_s* p, vc_t o )

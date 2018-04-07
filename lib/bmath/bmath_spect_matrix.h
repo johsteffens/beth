@@ -58,8 +58,8 @@ typedef struct bmath_matrix_s
 
 } bmath_matrix_s;
 
-BCORE_DEFINE_SPECT_GET_TYPED( bmath_matrix_s )
-BCORE_DEFINE_SPECT_GET_AWARE( bmath_matrix_s )
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED( bmath_matrix_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bmath_matrix_s )
 
 sz_t bmath_matrix_spect_get_rows( const bmath_matrix_s* p, vc_t o );
 sz_t bmath_matrix_spect_get_cols( const bmath_matrix_s* p, vc_t o );
