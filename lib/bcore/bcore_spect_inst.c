@@ -209,9 +209,9 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
                         case TYPEOF_s3_t: *( s3_t* )dst_obj = self_item->default_s3; break;
                         case TYPEOF_f2_t: *( f2_t* )dst_obj = self_item->default_f3; break;
                         case TYPEOF_f3_t: *( f3_t* )dst_obj = self_item->default_f3; break;
-                        case TYPEOF_sz_t: *( sz_t* )dst_obj = self_item->default_u3; break;
-                        case TYPEOF_tp_t: *( tp_t* )dst_obj = self_item->default_u3; break;
-                        case TYPEOF_bl_t: *( bl_t* )dst_obj = self_item->default_u3; break;
+                        case TYPEOF_sz_t: *( sz_t* )dst_obj = self_item->default_sz; break;
+                        case TYPEOF_tp_t: *( tp_t* )dst_obj = self_item->default_tp; break;
+                        case TYPEOF_bl_t: *( bl_t* )dst_obj = self_item->default_bl; break;
                         default: ERR( "Default value not supported for type '%s'", ifnameof( self_item->type ) );
                     }
                 }

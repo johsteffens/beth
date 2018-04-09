@@ -34,7 +34,7 @@
 
 /// data encapsulation methods
 enum
-{                                 // tentative new names
+{
     BCORE_CAPS_START = 0,
 
     BCORE_CAPS_SOLID_STATIC,
