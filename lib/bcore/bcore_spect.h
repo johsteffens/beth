@@ -115,5 +115,19 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o );
         return name##_get_typed( *( const aware_t* )obj ); \
     }
 
+#define BCORE_DEFINE_INLINE_SPECT_GET_QUALE( name ) \
+    static inline const name* name##_get_quale( vc_t obj ) \
+    { \
+        const bcore_spect_header_s* hdr = *( const bcore_spect_header_s** )obj; \
+        if( hdr->p_type == TYPEOF_##name ) \
+        { \
+            return ( const name * )hdr; \
+        } \
+        else \
+        { \
+            return name##_get_typed( hdr->o_type ); \
+        } \
+    }
+
 #endif // BCORE_SPECT_H
 

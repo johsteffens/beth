@@ -242,14 +242,17 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
 
             case BCORE_CAPS_LINK_TYPED:
             case BCORE_CAPS_LINK_AWARE:
+            case BCORE_CAPS_LINK_QUALE:
             case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
             case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
             case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
             case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
             case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+            case BCORE_CAPS_ARRAY_DYN_LINK_QUALE:
 
             case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
             case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+            case BCORE_CAPS_ARRAY_FIX_LINK_QUALE:
             break;
 
             default:
@@ -333,22 +336,21 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             case BCORE_CAPS_LINK_TYPED:
             {
                 bcore_link_typed_s* s = item_obj;
-                if( s->link )
-                {
-                    const bcore_inst_s* inst_p = bcore_inst_s_get_typed( s->type );
-                    inst_p->discard( inst_p, s->link );
-                }
+                if( s->link ) bcore_inst_typed_discard( s->type, s->link );
             }
             break;
 
             case BCORE_CAPS_LINK_AWARE:
             {
                 bcore_link_aware_s* s = item_obj;
-                if( s->link )
-                {
-                    const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )s->link );
-                    inst_p->discard( inst_p, s->link );
-                }
+                if( s->link ) bcore_inst_aware_discard( s->link );
+            }
+            break;
+
+            case BCORE_CAPS_LINK_QUALE:
+            {
+                bcore_link_quale_s* s = item_obj;
+                if( s->link ) bcore_inst_quale_discard( s->link );
             }
             break;
 
@@ -433,6 +435,19 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
+            case BCORE_CAPS_ARRAY_DYN_LINK_QUALE:
+            {
+                bcore_array_dyn_link_quale_s* s = item_obj;
+                if( s->space ) // space == 0 means array does not own data
+                {
+                    for( sz_t i = 0; i < s->size; i++ ) bcore_inst_quale_discard( s->data[ i ] );
+                    bcore_free( s->data );
+                    s->data = NULL;
+                    s->space = 0;
+                }
+            }
+            break;
+
             case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
             {
                 const bcore_inst_s* inst_p = inst_item->inst_p;
@@ -469,6 +484,18 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                 for( sz_t i = 0; i < arr_size; i++ )
                 {
                     bcore_inst_aware_discard( arr[ i ] );
+                    arr[ i ] = NULL;
+                }
+            }
+            break;
+
+            case BCORE_CAPS_ARRAY_FIX_LINK_QUALE:
+            {
+                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                vd_t* arr = item_obj;
+                for( sz_t i = 0; i < arr_size; i++ )
+                {
+                    bcore_inst_quale_discard( arr[ i ] );
                     arr[ i ] = NULL;
                 }
             }
@@ -590,17 +617,12 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             {
                 bcore_link_typed_s* dst = dst_obj;
                 bcore_link_typed_s* src = src_obj;
-                if( dst->link )
-                {
-                    const bcore_inst_s* inst_p = bcore_inst_s_get_typed( dst->type );
-                    inst_p->discard( inst_p, dst->link );
-                }
+                if( dst->link ) bcore_inst_typed_discard( dst->type, dst->link );
                 if( src->link )
                 {
                     if( self_item->flags.f_deep_copy )
                     {
-                        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( src->type );
-                        dst->link = inst_p->clone( inst_p, src->link );
+                        dst->link = bcore_inst_typed_clone( src->type, src->link );
                     }
                     else
                     {
@@ -619,17 +641,35 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             {
                 bcore_link_aware_s* dst = dst_obj;
                 bcore_link_aware_s* src = src_obj;
-                if( dst->link )
-                {
-                    const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )dst->link );
-                    inst_p->discard( inst_p, dst->link );
-                }
+                if( dst->link ) bcore_inst_aware_discard( dst->link );
                 if( src->link )
                 {
                     if( self_item->flags.f_deep_copy )
                     {
-                        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )src->link );
-                        dst->link = inst_p->clone( inst_p, src->link );
+                        dst->link = bcore_inst_aware_clone( src->link );
+                    }
+                    else
+                    {
+                        dst->link = bcore_fork( src->link );
+                    }
+                }
+                else
+                {
+                    dst->link = NULL;
+                }
+            }
+            break;
+
+            case BCORE_CAPS_LINK_QUALE:
+            {
+                bcore_link_quale_s* dst = dst_obj;
+                bcore_link_quale_s* src = src_obj;
+                if( dst->link ) bcore_inst_quale_discard( dst->link );
+                if( src->link )
+                {
+                    if( self_item->flags.f_deep_copy )
+                    {
+                        dst->link = bcore_inst_quale_clone( src->link );
                     }
                     else
                     {
@@ -764,7 +804,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 if( dst->space > 0 ) // dst->space == 0 means array references external data
                 {
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( dst->type );
-                    for( sz_t i = 0; i < dst->size; i++ ) inst_p->discard( inst_p, dst->data[ i ] );
+                    for( sz_t i = 0; i < dst->size; i++ ) bcore_inst_spect_discard( inst_p, dst->data[ i ] );
                 }
                 if( src->size > 0 )
                 {
@@ -776,7 +816,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     }
                     if( self_item->flags.f_deep_copy )
                     {
-                        for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
+                        for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_inst_spect_clone( inst_p, src->data[ i ] );
                     }
                     else
                     {
@@ -794,11 +834,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 bcore_array_dyn_link_aware_s* src = src_obj;
                 if( dst->space > 0 )  // dst->space == 0 means array references external data
                 {
-                    for( sz_t i = 0; i < dst->size; i++ )
-                    {
-                        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )dst->data[ i ] );
-                        inst_p->discard( inst_p, dst->data[ i ] );
-                    }
+                    for( sz_t i = 0; i < dst->size; i++ ) bcore_inst_aware_discard( dst->data[ i ] );
                 }
                 if( src->size > 0 )
                 {
@@ -811,13 +847,49 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     {
                         for( sz_t i = 0; i < src->size; i++ )
                         {
-                            const bcore_inst_s* inst_p = bcore_inst_s_get_typed( *( aware_t* )src->data[ i ] );
-                            dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
+                            dst->data[ i ] = bcore_inst_aware_clone( src->data[ i ] );
                         }
                     }
                     else
                     {
-                        for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_fork( src->data[ i ] );
+                        for( sz_t i = 0; i < src->size; i++ )
+                        {
+                            dst->data[ i ] = bcore_fork( src->data[ i ] );
+                        }
+                    }
+                }
+                dst->size = src->size;
+            }
+            break;
+
+            case BCORE_CAPS_ARRAY_DYN_LINK_QUALE:
+            {
+                bcore_array_dyn_link_quale_s* dst = dst_obj;
+                bcore_array_dyn_link_quale_s* src = src_obj;
+                if( dst->space > 0 )  // dst->space == 0 means array references external data
+                {
+                    for( sz_t i = 0; i < dst->size; i++ ) bcore_inst_quale_discard( dst->data[ i ] );
+                }
+                if( src->size > 0 )
+                {
+                    if( src->size > dst->space )
+                    {
+                        dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, 0,         &dst->space );
+                        dst->data = bcore_un_alloc( sizeof( vd_t ), dst->data, dst->space, src->size, &dst->space );
+                    }
+                    if( self_item->flags.f_deep_copy )
+                    {
+                        for( sz_t i = 0; i < src->size; i++ )
+                        {
+                            dst->data[ i ] = bcore_inst_quale_clone( src->data[ i ] );
+                        }
+                    }
+                    else
+                    {
+                        for( sz_t i = 0; i < src->size; i++ )
+                        {
+                            dst->data[ i ] = bcore_fork( src->data[ i ] );
+                        }
                     }
                 }
                 dst->size = src->size;
@@ -882,6 +954,28 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     if( self_item->flags.f_deep_copy )
                     {
                         dst = bcore_inst_aware_clone( src );
+                    }
+                    else
+                    {
+                        dst = bcore_fork( src );
+                    }
+                }
+            }
+            break;
+
+            case BCORE_CAPS_ARRAY_FIX_LINK_QUALE:
+            {
+                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                vd_t* dst_arr = dst_obj;
+                vd_t* src_arr = src_obj;
+                for( sz_t i = 0; i < arr_size; i++ )
+                {
+                    vd_t dst = dst_arr[ i ];
+                    vd_t src = src_arr[ i ];
+                    bcore_inst_quale_discard( dst );
+                    if( self_item->flags.f_deep_copy )
+                    {
+                        dst = bcore_inst_quale_clone( src );
                     }
                     else
                     {
@@ -1289,11 +1383,36 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
 
         for( sz_t i = 0; i < items_size; i++ )
         {
+            bl_t first_item = ( i == 0 );
             const bcore_self_item_s* self_item = bcore_self_s_get_item( self, i );
 
             if( self_item->flags.f_shell                    ) continue; // shells are invisible to instance (but handled in via-inst_p)
             if( self_item->flags.f_const                    ) continue; // constants are invisible to instance
             if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC ) continue; // nothing yet or handled above
+
+            switch( self_item->caps )
+            {
+                case BCORE_CAPS_LINK_STATIC:
+                case BCORE_CAPS_LINK_TYPED:
+                case BCORE_CAPS_LINK_AWARE:
+                case BCORE_CAPS_LINK_QUALE:
+                case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+                case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+                case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+                case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+                case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+                case BCORE_CAPS_ARRAY_DYN_LINK_QUALE:
+                case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+                case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+                case BCORE_CAPS_ARRAY_FIX_LINK_QUALE:
+                {
+                    o->copy_flat = false;
+                    o->down_flat = false;
+                }
+                break;
+
+                default: break;
+            }
 
             bcore_inst_item_s* inst_item = inst_s_push( o );
 
@@ -1302,8 +1421,8 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
             {
                 if( !bcore_flect_exists( self_item->type ) )
                 {
-                    ERR( "Constructing bcore_inst_s of %s:\n"
-                         "Type '%s' (%"PRIu32") does not exist.", ifnameof( self->type ), ifnameof( self_item->type ), self_item->type );
+                    ERR_fa( "Constructing bcore_inst_s of #<sc_t>:\n"
+                         "Type '#<sc_t>' (#<tp_t>) does not exist.", ifnameof( self->type ), ifnameof( self_item->type ), self_item->type );
                 }
                 else if( self_item->type == self->type )
                 {
@@ -1325,8 +1444,11 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
 
                 if( self_item->type == TYPEOF_aware_t || self_item->type == TYPEOF_bcore_spect_header_s )
                 {
-                    o->init_flat = false;
-                    o->aware = true;
+                    if( first_item )
+                    {
+                        o->init_flat = false;
+                        o->aware = true;
+                    }
                 }
 
                 /// default value specified
@@ -1334,31 +1456,9 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
                     if( bcore_self_item_s_has_default_value( self_item ) ) o->init_flat = false;
                 }
 
-
                 o->init_flat = o->init_flat & inst_item->inst_p->init_flat;
                 o->copy_flat = o->copy_flat & inst_item->inst_p->copy_flat;
                 o->down_flat = o->down_flat & inst_item->inst_p->down_flat;
-            }
-
-            switch( self_item->caps )
-            {
-                case BCORE_CAPS_LINK_STATIC:
-                case BCORE_CAPS_LINK_TYPED:
-                case BCORE_CAPS_LINK_AWARE:
-                case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
-                case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
-                case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
-                case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
-                case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
-                case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
-                case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
-                {
-                    o->copy_flat = false;
-                    o->down_flat = false;
-                }
-                break;
-
-                default: break;
             }
 
             if( self_item->caps == BCORE_CAPS_SOLID_STATIC )
@@ -1387,6 +1487,7 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
             {
                 inst_item->no_trace = true;
                 o->init_flat = false;
+                if( first_item ) o->quale = true;
             }
 
             if( self_item->flags.f_feature )
@@ -1472,15 +1573,10 @@ static bcore_self_s* inst_s_create_self( void )
 
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t o_type )
 {
-    return bcore_spect_get_typed( typeof( "bcore_inst_s" ), o_type );
+    return bcore_spect_get_typed( TYPEOF_bcore_inst_s, o_type );
 }
 
 /**********************************************************************************************************************/
-
-const bcore_inst_s* bcore_inst_s_get_aware( vc_t obj )
-{
-    return bcore_inst_s_get_typed( *( const aware_t* )obj );
-}
 
 void bcore_inst_spect_init( const bcore_inst_s* o, vd_t obj )
 {
@@ -1510,6 +1606,12 @@ void bcore_inst_aware_down( vd_t obj )
     o->down( o, obj );
 }
 
+void bcore_inst_quale_down( vd_t obj )
+{
+    const bcore_inst_s* o = bcore_inst_s_get_quale( obj  );
+    o->down( o, obj );
+}
+
 void bcore_inst_spect_copy( const bcore_inst_s* o, vd_t dst, vc_t src )
 {
     if( dst == src ) return;
@@ -1527,6 +1629,13 @@ void bcore_inst_aware_copy( vd_t dst, vc_t src )
 {
     if( dst == src ) return;
     const bcore_inst_s* o = bcore_inst_s_get_aware( dst );
+    o->copy( o, dst, src );
+}
+
+void bcore_inst_quale_copy( vd_t dst, vc_t src )
+{
+    if( dst == src ) return;
+    const bcore_inst_s* o = bcore_inst_s_get_quale( dst );
     o->copy( o, dst, src );
 }
 
@@ -1571,6 +1680,20 @@ void bcore_inst_aware_copy_typed( vd_t dst, tp_t src_type, vc_t src )
     }
 }
 
+void bcore_inst_quale_copy_typed( vd_t dst, tp_t src_type, vc_t src )
+{
+    if( dst == src ) return;
+    const bcore_inst_s* o = bcore_inst_s_get_quale( dst );
+    if( o->o_type == src_type )
+    {
+        o->copy( o, dst, src );
+    }
+    else
+    {
+        o->copy_typed( o, dst, src_type, src );
+    }
+}
+
 void bcore_inst_spect_move( const bcore_inst_s* o, vd_t dst, vd_t src )
 {
     if( dst == src ) return;
@@ -1588,6 +1711,13 @@ void bcore_inst_aware_move( vd_t dst, vd_t src )
 {
     if( dst == src ) return;
     const bcore_inst_s* o = bcore_inst_s_get_aware( src );
+    o->move( o, dst, src );
+}
+
+void bcore_inst_quale_move( vd_t dst, vd_t src )
+{
+    if( dst == src ) return;
+    const bcore_inst_s* o = bcore_inst_s_get_quale( src );
     o->move( o, dst, src );
 }
 
@@ -1638,6 +1768,13 @@ void bcore_inst_aware_discard( vd_t obj )
     o->discard( o, obj );
 }
 
+void bcore_inst_quale_discard( vd_t obj )
+{
+    if( !obj ) return;
+    const bcore_inst_s* o = bcore_inst_s_get_quale( obj  );
+    o->discard( o, obj );
+}
+
 vd_t bcore_inst_spect_clone( const bcore_inst_s* o, vc_t obj )
 {
     if( !obj ) return NULL;
@@ -1661,6 +1798,13 @@ vd_t bcore_inst_aware_clone( vc_t obj )
 {
     if( !obj ) return NULL;
     const bcore_inst_s* o = bcore_inst_s_get_aware( obj  );
+    return o->clone( o, obj );
+}
+
+vd_t bcore_inst_quale_clone( vc_t obj )
+{
+    if( !obj ) return NULL;
+    const bcore_inst_s* o = bcore_inst_s_get_quale( obj  );
     return o->clone( o, obj );
 }
 
@@ -1804,6 +1948,34 @@ static st_s* spect_inst_selftest( void )
         o->str1 = st_s_create_sc( "hello " );
         o->str2 = st_s_create_sc( "world!" );
         bcore_inst_typed_discard( typeof( "links_object_s" ), o );
+    }
+
+    // quale
+    {
+        typedef struct { const bcore_inst_s * _; st_s* string; } quale_object_s;
+        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "quale_object_s = { spect bcore_inst_s -> _; st_s => string; }", sizeof( quale_object_s ) ) );
+
+        {
+            quale_object_s* o1 = bcore_inst_typed_create( typeof( "quale_object_s" ) );
+            o1->string = st_s_create_sc( "Hello world!" );
+            quale_object_s* o2 = bcore_inst_quale_clone( o1 );
+            ASSERT( st_s_equal_st( o1->string, o2->string ) );
+            bcore_inst_quale_discard( o1 );
+            bcore_inst_quale_discard( o2 );
+        }
+
+        typedef struct { const bcore_inst_s * _; vd_t quale_object; } quale_container_s;
+        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "quale_container_s = { spect bcore_inst_s -> _; quale => quale_object; }", sizeof( quale_container_s ) ) );
+
+        {
+            quale_container_s* o1 = bcore_inst_typed_create( typeof( "quale_container_s" ) );
+            o1->quale_object = bcore_inst_typed_create( typeof( "quale_object_s" ) );
+            ( ( quale_object_s* )o1->quale_object )->string = st_s_create_sc( "Hello world!" );
+            quale_container_s* o2 = bcore_inst_quale_clone( o1 );
+            bcore_inst_quale_discard( o1 );
+            ASSERT( st_s_equal_sc( ( ( quale_object_s* )o2->quale_object )->string, "Hello world!" ) );
+            bcore_inst_quale_discard( o2 );
+        }
     }
 
     // fixed size array
