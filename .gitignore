@@ -1,4 +1,7 @@
-private
-cb
+beth.*
+beth_dev.*
+bin
+obj
 app
-
+private
+test
