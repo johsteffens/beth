@@ -5,7 +5,7 @@ AFLAGS  = -r -s
 
 INCLUDES = -I bcore -I bclos
 
-SRCS = $(wildcard bcore/*.c) $(wildcard bclos/*.c)
+SRCS = $(wildcard bcore/*.c) $(wildcard bclos/*.c)  $(wildcard bmath/*.c)
 OBJS = $(SRCS:.c=.o)
 TARGET = beth.a
 
