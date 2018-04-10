@@ -13,6 +13,8 @@
  *  limitations under the License.
  */
 
+#include <stdatomic.h>
+
 #include "bcore_spect.h"
 #include "bcore_hmap.h"
 #include "bcore_threads.h"
@@ -32,6 +34,11 @@ BCORE_DEFINE_OBJECT_FLAT( bcore_spect_header_s, "bcore_spect_header_s = { tp_t p
 /**********************************************************************************************************************/
 // hash map
 
+// power of two > 4
+#define BCORE_SPECT_CACHE_SIZE 4096
+// four subsequent cache spaces
+#define BCORE_SPECT_CACHE_MASK ( ( BCORE_SPECT_CACHE_SIZE - 1 ) ^ 3 )
+
 typedef struct hmap_s
 {
     /** We use the the array to keep instances in the order created.
@@ -46,6 +53,10 @@ typedef struct hmap_s
     bcore_hmap_u2vd_s map;
 
     bcore_mutex_s mutex;
+
+    /// lock free cache
+    _Atomic tp_t key_cache[ BCORE_SPECT_CACHE_SIZE ];
+    _Atomic vc_t val_cache[ BCORE_SPECT_CACHE_SIZE ];
 } hmap_s;
 
 static void hmap_s_init( hmap_s* o )
@@ -53,6 +64,71 @@ static void hmap_s_init( hmap_s* o )
     bcore_arr_vd_s_init(    &o->arr );
     bcore_hmap_u2vd_s_init( &o->map );
     bcore_mutex_s_init( &o->mutex );
+    bcore_memzero( o->key_cache, sizeof( o->key_cache ) );
+    bcore_memzero( o->val_cache, sizeof( o->val_cache ) );
+}
+
+vc_t hmap_s_cache_get( hmap_s* o, tp_t key )
+{
+    sz_t idx = key & BCORE_SPECT_CACHE_MASK;
+    if( o->key_cache[ idx ] == key ) return o->val_cache[ idx ];
+    if( o->key_cache[ idx ] == 0 )   return NULL;
+    idx++;
+    if( o->key_cache[ idx ] == key ) return o->val_cache[ idx ];
+    if( o->key_cache[ idx ] == 0 )   return NULL;
+    idx++;
+    if( o->key_cache[ idx ] == key ) return o->val_cache[ idx ];
+    if( o->key_cache[ idx ] == 0 )   return NULL;
+    idx++;
+    if( o->key_cache[ idx ] == key ) return o->val_cache[ idx ];
+    return NULL;
+}
+
+void hmap_s_cache_set( hmap_s* o, tp_t key, vc_t val )
+{
+    sz_t idx = key & BCORE_SPECT_CACHE_MASK;
+    if( o->key_cache[ idx ] == key ) return;
+    if( o->key_cache[ idx ] == 0 )   { o->val_cache[ idx ] = val; o->key_cache[ idx ] = key; return; }
+    idx++;
+    if( o->key_cache[ idx ] == key ) return;
+    if( o->key_cache[ idx ] == 0 )   { o->val_cache[ idx ] = val; o->key_cache[ idx ] = key; return; }
+    idx++;
+    if( o->key_cache[ idx ] == key ) return;
+    if( o->key_cache[ idx ] == 0 )   { o->val_cache[ idx ] = val; o->key_cache[ idx ] = key; return; }
+    idx++;
+    if( o->key_cache[ idx ] == key ) return;
+    if( o->key_cache[ idx ] == 0 )   { o->val_cache[ idx ] = val; o->key_cache[ idx ] = key; return; }
+}
+
+f3_t hmap_s_cache_fill_rate( hmap_s* o )
+{
+    sz_t count = 0;
+    for( sz_t i = 0; i < BCORE_SPECT_CACHE_SIZE; i++ ) count += ( o->key_cache[ i ] != 0 );
+    return ( ( f3_t )count ) / BCORE_SPECT_CACHE_SIZE;
+}
+
+f3_t hmap_s_cache_cap_rate( hmap_s* o )
+{
+    sz_t count = 0;
+    for( sz_t i = 0; i < BCORE_SPECT_CACHE_SIZE; i += 4 )
+    {
+        if( !o->key_cache[ i     ] ) continue;
+        if( !o->key_cache[ i + 1 ] ) continue;
+        if( !o->key_cache[ i + 2 ] ) continue;
+        if( !o->key_cache[ i + 3 ] ) continue;
+        count++;
+    }
+    return ( ( f3_t )count ) / ( BCORE_SPECT_CACHE_SIZE >> 2 );
+}
+
+f3_t hmap_s_cache_free_rate( hmap_s* o )
+{
+    sz_t count = 0;
+    for( sz_t i = 0; i < BCORE_SPECT_CACHE_SIZE; i += 4 )
+    {
+        if( !o->key_cache[ i ] ) count++;
+    }
+    return ( ( f3_t )count ) / ( BCORE_SPECT_CACHE_SIZE >> 2 );
 }
 
 static void hmap_s_down( hmap_s* o )
@@ -175,11 +251,16 @@ bl_t bcore_spect_trait_supported( tp_t spect_trait, tp_t o_type )
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 {
     assert( hmap_s_g != NULL );
-    bcore_mutex_s_lock( &hmap_s_g->mutex );
+
     tp_t sig = bcore_tp_fold_tp( p_type, o_type );
+    vc_t val = hmap_s_cache_get( hmap_s_g, sig );
+    if( val ) return val;
+
+    bcore_mutex_s_lock( &hmap_s_g->mutex );
     vd_t* vdp = bcore_hmap_u2vd_s_get( &hmap_s_g->map, sig );
     if( vdp )
     {
+        hmap_s_cache_set( hmap_s_g, sig, *vdp );
         bcore_mutex_s_unlock( &hmap_s_g->mutex );
         return *vdp;
     }
@@ -496,6 +577,11 @@ st_s* bcore_spect_status()
         st_s_push_st_d( log, s );
     }
 
+    st_s_push_fa( log, "spect mananger cache rates:\n" );
+    st_s_push_fa( log, "   fill: #<f3_t>\n", hmap_s_cache_fill_rate( hmap_s_g ) );
+    st_s_push_fa( log, "    cap: #<f3_t>\n", hmap_s_cache_cap_rate( hmap_s_g ) );
+    st_s_push_fa( log, "   free: #<f3_t>\n", hmap_s_cache_free_rate( hmap_s_g ) );
+
     bcore_life_s_discard( l );
     return log;
 }
@@ -543,6 +629,7 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_down0:
         {
+
             if( o->object && ( *( bl_t* )o->object ) )
             {
                 sz_t space = bcore_tbman_granted_space();

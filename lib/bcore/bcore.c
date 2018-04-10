@@ -25,8 +25,8 @@
 
 /**********************************************************************************************************************/
 
-bcore_arr_fp_s* signal_handler_arr_g = NULL;
-bcore_mutex_s mutex;
+static bcore_arr_fp_s* signal_handler_arr_g = NULL;
+static bcore_mutex_s mutex;
 
 static void init_once()
 {
