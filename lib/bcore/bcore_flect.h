@@ -41,17 +41,14 @@ enum
     BCORE_CAPS_LINK_STATIC,
     BCORE_CAPS_LINK_TYPED,
     BCORE_CAPS_LINK_AWARE,
-    BCORE_CAPS_LINK_QUALE,
     BCORE_CAPS_ARRAY_DYN_SOLID_STATIC,
     BCORE_CAPS_ARRAY_DYN_SOLID_TYPED,
     BCORE_CAPS_ARRAY_DYN_LINK_STATIC,
     BCORE_CAPS_ARRAY_DYN_LINK_TYPED,
     BCORE_CAPS_ARRAY_DYN_LINK_AWARE,
-    BCORE_CAPS_ARRAY_DYN_LINK_QUALE,
     BCORE_CAPS_ARRAY_FIX_SOLID_STATIC,
     BCORE_CAPS_ARRAY_FIX_LINK_STATIC,
     BCORE_CAPS_ARRAY_FIX_LINK_AWARE,
-    BCORE_CAPS_ARRAY_FIX_LINK_QUALE,
     BCORE_CAPS_EXTERNAL_FUNC,      // specifies a static external function for perspective only (no data occupation in object)
 
     BCORE_CAPS_END,
@@ -61,7 +58,6 @@ enum
 typedef struct { vd_t  link;                                   } bcore_link_static_s;
 typedef struct { vd_t  link; tp_t type;                        } bcore_link_typed_s;
 typedef struct { vd_t  link;                                   } bcore_link_aware_s;
-typedef struct { vd_t  link;                                   } bcore_link_quale_s;
 
 /** bcore_array_dyn_head_s matches the beginning of every dynamic array structure
  *  ptr has different meanings (either vd_t or vd_t*)
@@ -73,7 +69,6 @@ typedef struct { vd_t  data; sz_t size; sz_t space; tp_t type; } bcore_array_dyn
 typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_array_dyn_link_static_s;
 typedef struct { vd_t* data; sz_t size; sz_t space; tp_t type; } bcore_array_dyn_link_typed_s;
 typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_array_dyn_link_aware_s;
-typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_array_dyn_link_quale_s;
 
 /*
 PLANNING:
@@ -281,7 +276,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   sz_t size );
  *  }
  *
  *  <type>:
- *    <type name> | <type number> | typed | aware | quale
+ *    <type name> | <type number> | typed | aware
  *
  *  qualifier:
  *    *, =>   : (deep) link    // object is referenced and inst perspective takes full control incl. deep copy

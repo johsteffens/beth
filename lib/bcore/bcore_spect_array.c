@@ -620,16 +620,18 @@ static void set_dyn_solid_typed( const bcore_array_s* p, vd_t o, sz_t index, sr_
     bcore_array_dyn_solid_typed_s* arr = obj_vd( p, o );
     if( arr->type == 0 ) arr->type = sr_s_type( &src );
     if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
-    const bcore_inst_s* inst_p = bcore_inst_s_get_typed( arr->type );
-    vd_t dst = ( u0_t* )arr->data + inst_p->size * index;
     if( src.o )
     {
-        if( sr_s_type( &src ) == inst_p->o_type )
+        if( sr_s_type( &src ) == arr->type )
         {
+            const bcore_inst_s* inst_p = sr_s_get_spect( TYPEOF_bcore_inst_s, &src );
+            vd_t dst = ( u0_t* )arr->data + inst_p->size * index;
             bcore_inst_spect_copy( inst_p, dst, src.o );
         }
         else
         {
+            const bcore_inst_s* inst_p = bcore_inst_s_get_typed( arr->type );
+            vd_t dst = ( u0_t* )arr->data + inst_p->size * index;
             bcore_inst_spect_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
         }
     }
@@ -664,20 +666,21 @@ static void set_dyn_link_typed( const bcore_array_s* p, vd_t o, sz_t index, sr_s
     bcore_array_dyn_link_typed_s* arr = obj_vd( p, o );
     if( arr->type == 0 ) arr->type = sr_s_type( &src );
     if( index >= arr->size ) bcore_array_spect_set_size( p, o, index + 1 );
-    const bcore_inst_s* inst_p = bcore_inst_s_get_typed( arr->type );
     vd_t* dst = &arr->data[ index ];
-    if( *dst ) bcore_inst_spect_discard( inst_p, *dst );
-    *dst = NULL;
 
     if( src.o )
     {
-        if( sr_s_type( &src ) == inst_p->o_type )
+        if( sr_s_type( &src ) == arr->type )
         {
+           const bcore_inst_s* inst_p = sr_s_get_spect( TYPEOF_bcore_inst_s, &src );
+           if( *dst ) bcore_inst_spect_discard( inst_p, *dst );
            *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_spect_clone( inst_p, src.o );
            src = sr_cw( src );
         }
         else
         {
+            const bcore_inst_s* inst_p = bcore_inst_s_get_typed( arr->type );
+            if( *dst ) bcore_inst_spect_discard( inst_p, *dst );
             *dst = bcore_inst_spect_create_typed( inst_p, sr_s_type( &src ), src.o );
         }
     }
@@ -693,23 +696,15 @@ static void set_dyn_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s
     if( *dst ) bcore_inst_aware_discard( *dst );
     *dst = NULL;
 
-    if( sr_s_type( &src ) )
+    const bcore_inst_s* inst_p = sr_s_get_spect( TYPEOF_bcore_inst_s, &src );
+    if( inst_p->aware )
     {
-        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( sr_s_type( &src ) );
-        if( inst_p->aware )
-        {
-            *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_spect_clone( inst_p, src.o );
-           src = sr_cw( src );
-        }
-        else
-        {
-            ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_s_type( &src ) ) );
-        }
+        *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_spect_clone( inst_p, src.o );
+       src = sr_cw( src );
     }
     else
     {
-        *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_aware_clone( src.o );
-        src = sr_cw( src );
+        ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_s_type( &src ) ) );
     }
 
     sr_down( src );
@@ -764,23 +759,16 @@ static void set_fix_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s
     vd_t* dst = &arr[ index ];
     if( *dst ) bcore_inst_aware_discard( *dst );
     *dst = NULL;
-    if( sr_s_type( &src ) )
+
+    const bcore_inst_s* inst_p = sr_s_get_spect( TYPEOF_bcore_inst_s, &src );
+    if( inst_p->aware )
     {
-        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( sr_s_type( &src ) );
-        if( inst_p->aware )
-        {
-            *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_spect_clone( inst_p, src.o );
-           src = sr_cw( src );
-        }
-        else
-        {
-            ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_s_type( &src ) ) );
-        }
+        *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_spect_clone( inst_p, src.o );
+       src = sr_cw( src );
     }
     else
     {
-        *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_aware_clone( src.o );
-        src = sr_cw( src );
+        ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_s_type( &src ) ) );
     }
 
     sr_down( src );
@@ -1066,13 +1054,6 @@ static bcore_self_s* array_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-const bcore_array_s* bcore_array_s_get_typed( tp_t o_type )
-{
-    return bcore_spect_get_typed( TYPEOF_bcore_array_s, o_type );
-}
-
-/**********************************************************************************************************************/
-
 tp_t bcore_array_dyn_solid_static_type_of( tp_t type )
 {
     return bcore_flect_type_self_d( bcore_self_s_create_array_dyn_solid_static( type ) );
@@ -1121,14 +1102,10 @@ bl_t bcore_array_spect_is_static( const bcore_array_s* p )
     switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return true;
-        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return false;
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return true;
-        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return false;
-        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return false;
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return true;
-        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return false;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
+        default: break;
     }
     return false;
 }
@@ -1148,15 +1125,9 @@ bl_t bcore_array_spect_is_mutable_mono_typed(  const bcore_array_s* p )
 {
     switch( p->type_caps )
     {
-        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return false;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return true;
-        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return false;
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return true;
-        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return false;
-        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return false;
-        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return false;
-        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return false;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
+        default: break;
     }
     return false;
 }
@@ -1187,15 +1158,12 @@ bl_t bcore_array_spect_is_of_links( const bcore_array_s* p )
 {
     switch( p->type_caps )
     {
-        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return false;
-        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return false;
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return true;
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return true;
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return true;
-        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return false;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return true;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
+        default: break;
     }
     return false;
 }
@@ -1210,10 +1178,7 @@ bl_t bcore_array_spect_is_weak( const bcore_array_s* p, vc_t o )
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  { const bcore_array_dyn_link_static_s*  arr = obj; return arr->size > arr->space; }
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   { const bcore_array_dyn_link_typed_s*   arr = obj; return arr->size > arr->space; }
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   { const bcore_array_dyn_link_aware_s*   arr = obj; return arr->size > arr->space; }
-        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return false;
-        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return false;
-        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return false;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
+        default: break;
     }
     return false;
 }
@@ -1223,14 +1188,10 @@ tp_t bcore_array_spect_get_static_type( const bcore_array_s* p )
     switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return p->item_p->o_type;
-        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return 0;
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return p->item_p->o_type;
-        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return 0;
-        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return 0;
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->o_type;
-        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return 0;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
+        default: break;
     }
     return 0;
 }
@@ -1243,11 +1204,9 @@ tp_t bcore_array_spect_get_mono_type( const bcore_array_s* p, vc_t o )
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return ( ( const bcore_array_dyn_solid_typed_s* )obj_vc( p, o ) )->type;
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return ( ( const bcore_array_dyn_link_typed_s*  )obj_vc( p, o ) )->type;
-        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return 0;
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->o_type;
-        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return 0;
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
+        default: break;
     }
     return 0;
 }
@@ -1264,7 +1223,7 @@ tp_t bcore_array_spect_get_type( const bcore_array_s* p, vc_t o, sz_t index )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   { sr_s sr = p->get( p, o, index ); tp_t t = sr_s_type( &sr ); sr_down( sr ); return t; }
-        default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->type_caps ) );
+        default: break;
     }
     return 0;
 }

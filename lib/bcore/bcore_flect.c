@@ -34,17 +34,14 @@ const sc_t bcore_flect_caps_e_sc_arr[] =
     "LINK_STATIC",
     "LINK_TYPED",
     "LINK_AWARE",
-    "LINK_QUALE",
     "ARRAY_DYN_SOLID_STATIC",
     "ARRAY_DYN_SOLID_TYPED",
     "ARRAY_DYN_LINK_STATIC",
     "ARRAY_DYN_LINK_TYPED",
     "ARRAY_DYN_LINK_AWARE",
-    "ARRAY_DYN_LINK_QUALE",
     "ARRAY_FIX_SOLID_STATIC",
     "ARRAY_FIX_LINK_STATIC",
     "ARRAY_FIX_LINK_AWARE",
-    "ARRAY_FIX_LINK_QUALE",
     "EXTERNAL_FUNC",
 
     "END",
@@ -59,11 +56,9 @@ bl_t bcore_flect_caps_is_array( u2_t caps )
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return true;
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return true;
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return true;
-        case BCORE_CAPS_ARRAY_DYN_LINK_QUALE:   return true;
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return true;
-        case BCORE_CAPS_ARRAY_FIX_LINK_QUALE:   return true;
         default: break;
     }
     return false;
@@ -78,7 +73,6 @@ bl_t bcore_flect_caps_is_array_dyn( u2_t caps )
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return true;
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return true;
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return true;
-        case BCORE_CAPS_ARRAY_DYN_LINK_QUALE:   return true;
         default: break;
     }
     return false;
@@ -91,7 +85,6 @@ bl_t bcore_flect_caps_is_array_fix( u2_t caps )
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return true;
-        case BCORE_CAPS_ARRAY_FIX_LINK_QUALE:   return true;
         default: break;
     }
     return false;
@@ -215,17 +208,14 @@ sz_t bcore_self_item_s_inst_size( const bcore_self_item_s* o )
         case BCORE_CAPS_LINK_STATIC:            return sizeof( bcore_link_static_s );
         case BCORE_CAPS_LINK_TYPED:             return sizeof( bcore_link_typed_s );
         case BCORE_CAPS_LINK_AWARE:             return sizeof( bcore_link_aware_s );
-        case BCORE_CAPS_LINK_QUALE:             return sizeof( bcore_link_quale_s );
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return sizeof( bcore_array_dyn_solid_static_s );
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return sizeof( bcore_array_dyn_solid_typed_s );
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return sizeof( bcore_array_dyn_link_static_s );
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return sizeof( bcore_array_dyn_link_typed_s );
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return sizeof( bcore_array_dyn_link_aware_s );
-        case BCORE_CAPS_ARRAY_DYN_LINK_QUALE:   return sizeof( bcore_array_dyn_link_quale_s );
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return 0;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return sizeof( bcore_link_static_s ) * o->array_fix_size;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return sizeof( bcore_link_aware_s  ) * o->array_fix_size;
-        case BCORE_CAPS_ARRAY_FIX_LINK_QUALE:   return sizeof( bcore_link_quale_s  ) * o->array_fix_size;
         case BCORE_CAPS_EXTERNAL_FUNC:          return 0;
         default: break;
     }
@@ -240,17 +230,14 @@ sz_t bcore_self_item_s_inst_align( const bcore_self_item_s* o )
         case BCORE_CAPS_LINK_STATIC:            return _Alignof( bcore_link_static_s );
         case BCORE_CAPS_LINK_TYPED:             return _Alignof( bcore_link_typed_s );
         case BCORE_CAPS_LINK_AWARE:             return _Alignof( bcore_link_aware_s );
-        case BCORE_CAPS_LINK_QUALE:             return _Alignof( bcore_link_quale_s );
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return _Alignof( bcore_array_dyn_solid_static_s );
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return _Alignof( bcore_array_dyn_solid_typed_s );
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return _Alignof( bcore_array_dyn_link_static_s );
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return _Alignof( bcore_array_dyn_link_typed_s );
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return _Alignof( bcore_array_dyn_link_aware_s );
-        case BCORE_CAPS_ARRAY_DYN_LINK_QUALE:   return _Alignof( bcore_array_dyn_link_quale_s );
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return 0;
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return _Alignof( bcore_link_static_s );
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return _Alignof( bcore_link_aware_s  );
-        case BCORE_CAPS_ARRAY_FIX_LINK_QUALE:   return _Alignof( bcore_link_quale_s  );
         case BCORE_CAPS_EXTERNAL_FUNC:          return 0;
         default: break;
     }
@@ -451,16 +438,6 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src )
             o->type = 0;
             o->name = entypeof( item_name->sc );
             o->caps = f_arr_dyn ? BCORE_CAPS_ARRAY_DYN_LINK_AWARE : f_arr_fix ? BCORE_CAPS_ARRAY_FIX_LINK_AWARE : BCORE_CAPS_LINK_AWARE;
-        }
-        else if( st_s_equal_sc( type_name, "quale" ) )
-        {
-            if( !f_link )
-            {
-                bcore_source_q_parse_err_fa( &src, "Quale object must be referenced by a link. Use 'quale *|=>|->' to clarify method of referencing." );
-            }
-            o->type = 0;
-            o->name = entypeof( item_name->sc );
-            o->caps = f_arr_dyn ? BCORE_CAPS_ARRAY_DYN_LINK_QUALE : f_arr_fix ? BCORE_CAPS_ARRAY_FIX_LINK_QUALE : BCORE_CAPS_LINK_QUALE;
         }
         else
         {
@@ -1558,13 +1535,11 @@ static void flect_define_basics()
 BCORE_DEFINE_CREATE_SELF( bcore_link_static_s,            "bcore_link_static_s       = { vd_t     link; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_link_typed_s,             "bcore_link_typed_s        = { typed => link; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_link_aware_s,             "bcore_link_aware_s        = { aware => link; }" )
-BCORE_DEFINE_CREATE_SELF( bcore_link_quale_s,             "bcore_link_quale_s        = { quale => link; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_solid_static_s, "bcore_array_dyn_solid_static_s = { vd_t  data; sz_t size; sz_t space; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_solid_typed_s,  "bcore_array_dyn_solid_typed_s  = { typed  []; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_link_static_s,  "bcore_array_dyn_link_static_s  = { vd_t* data; sz_t size; sz_t space; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_link_typed_s,   "bcore_array_dyn_link_typed_s   = { typed* []; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_link_aware_s,   "bcore_array_dyn_link_aware_s   = { aware* []; }" )
-BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_link_quale_s,   "bcore_array_dyn_link_quale_s   = { quale* []; }" )
 
 /**********************************************************************************************************************/
 
@@ -1616,13 +1591,11 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FLECT( bcore_link_static_s );
             BCORE_REGISTER_FLECT( bcore_link_typed_s );
             BCORE_REGISTER_FLECT( bcore_link_aware_s );
-            BCORE_REGISTER_FLECT( bcore_link_quale_s );
             BCORE_REGISTER_FLECT( bcore_array_dyn_solid_static_s );
             BCORE_REGISTER_FLECT( bcore_array_dyn_solid_typed_s );
             BCORE_REGISTER_FLECT( bcore_array_dyn_link_static_s );
             BCORE_REGISTER_FLECT( bcore_array_dyn_link_typed_s );
             BCORE_REGISTER_FLECT( bcore_array_dyn_link_aware_s );
-            BCORE_REGISTER_FLECT( bcore_array_dyn_link_quale_s );
         }
         break;
 

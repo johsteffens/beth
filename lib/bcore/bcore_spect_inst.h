@@ -78,7 +78,6 @@ typedef struct bcore_inst_s
     sz_t size;   // sizeof(type);
     sz_t align;  // alignof(type)
     bl_t aware;  // object is self-aware, meaning it defines its type (aware_t) as first element
-    bl_t quale;  // object is self-quale, meaning it defines a perspective to itself as first element
 
     bl_t init_flat; // flat initialization possible
     bl_t down_flat; // flat shut down possible
@@ -122,20 +121,6 @@ const bcore_inst_s* bcore_inst_s_get_aware( vc_t obj )
     return bcore_inst_s_get_typed( *( const aware_t* )obj );
 }
 
-static inline
-const bcore_inst_s* bcore_inst_s_get_quale( vc_t obj )
-{
-    const bcore_spect_header_s* hdr = *( const bcore_spect_header_s** )obj;
-    if( hdr->p_type == TYPEOF_bcore_inst_s )
-    {
-        return ( const bcore_inst_s* )hdr;
-    }
-    else
-    {
-        return bcore_inst_s_get_typed( hdr->o_type );
-    }
-}
-
 void bcore_inst_spect_init(         const bcore_inst_s* o, vd_t obj );
 void bcore_inst_spect_down(         const bcore_inst_s* o, vd_t obj );
 void bcore_inst_spect_copy(         const bcore_inst_s* o, vd_t dst, vc_t src );
@@ -164,13 +149,6 @@ void bcore_inst_aware_copy_typed(   vd_t dst, tp_t src_type, vc_t src );
 void bcore_inst_aware_move(         vd_t dst, vd_t src );
 void bcore_inst_aware_discard(      vd_t obj );
 vd_t bcore_inst_aware_clone(        vc_t obj );
-
-void bcore_inst_quale_down(         vd_t obj );
-void bcore_inst_quale_copy(         vd_t dst, vc_t src );
-void bcore_inst_quale_copy_typed(   vd_t dst, tp_t src_type, vc_t src );
-void bcore_inst_quale_move(         vd_t dst, vd_t src );
-void bcore_inst_quale_discard(      vd_t obj );
-vd_t bcore_inst_quale_clone(        vc_t obj );
 
 void bcore_inst_discard(  sr_s o ); // only discards when o is a strong reference; does nothing otherwise
 vd_t bcore_inst_clone(    sr_s o );

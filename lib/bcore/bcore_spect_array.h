@@ -51,12 +51,8 @@ typedef struct bcore_array_s
 
 } bcore_array_s;
 
-const bcore_array_s* bcore_array_s_get_typed( tp_t type );
-
-static inline const bcore_array_s* bcore_array_s_get_aware( vc_t obj )
-{
-    return bcore_array_s_get_typed( *( const aware_t* )obj );
-}
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED( bcore_array_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_array_s )
 
 /**********************************************************************************************************************/
 // array type construction

@@ -46,6 +46,7 @@ typedef struct
 typedef struct bcore_inst_s bcore_inst_s;
 typedef struct bcore_life_s bcore_life_s;
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t type );
+vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
 vd_t bcore_inst_typed_create( tp_t type );
 vd_t bcore_inst_spect_create( const bcore_inst_s* p );
 
@@ -68,6 +69,9 @@ static inline sr_s sr_tsd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .
 static inline sr_s sr_awc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = CONST_f  }; }
 static inline sr_s sr_awd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = 0        }; }
 static inline sr_s sr_asd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = STRONG_f }; }
+static inline sr_s sr_qwc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o                                     , .f = CONST_f  }; }
+static inline sr_s sr_qwd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o                                     , .f = 0        }; }
+static inline sr_s sr_qsd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o                                     , .f = STRONG_f }; }
 static inline sr_s sr_pwc( vc_t p, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = CONST_f  }; }
 static inline sr_s sr_pwd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = 0        }; }
 static inline sr_s sr_psd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = STRONG_f }; }
@@ -146,6 +150,14 @@ static inline void sr_s_set_const(  sr_s* o, bl_t flag ) { o->f = flag ? ( o->f 
 static inline void sr_s_clear( sr_s* o ) { if( o ) { sr_down( *o ); o->o = NULL; o->p = NULL; o->f = 0; } }
 static inline void sr_s_set(   sr_s* o, sr_s src ) { sr_s_clear( o ); *o = sr_fork( src ); }
 static inline sr_s sr_s_get(   sr_s* o )           { return sr_cw( *o ); }
+
+/// returns perspective: (p_type, sr_s_type( o ))
+static inline vc_t sr_s_get_spect( tp_t p_type, const sr_s* o )
+{
+    if( !o->p ) return NULL;
+    if( ((tp_t*)o->p)[0] == p_type ) return o->p;
+    return bcore_spect_get_typed( p_type, ((tp_t*)o->p)[1] );
+}
 
 /* reference control */
 

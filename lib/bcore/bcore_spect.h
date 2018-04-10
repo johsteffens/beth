@@ -66,6 +66,12 @@ bl_t bcore_spect_trait_supported( tp_t spect_trait, tp_t o_type );
  */
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
 
+static inline
+vc_t bcore_spect_get_aware( tp_t p_type, vc_t o )
+{
+    return bcore_spect_get_typed( p_type, *( aware_t* )o );
+}
+
 /**********************************************************************************************************************/
 
 /** Generic perspective functions assuming all information is stored in reflections.
@@ -113,20 +119,6 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o );
     static inline const name* name##_get_aware( vc_t obj ) \
     { \
         return name##_get_typed( *( const aware_t* )obj ); \
-    }
-
-#define BCORE_DEFINE_INLINE_SPECT_GET_QUALE( name ) \
-    static inline const name* name##_get_quale( vc_t obj ) \
-    { \
-        const bcore_spect_header_s* hdr = *( const bcore_spect_header_s** )obj; \
-        if( hdr->p_type == TYPEOF_##name ) \
-        { \
-            return ( const name * )hdr; \
-        } \
-        else \
-        { \
-            return name##_get_typed( hdr->o_type ); \
-        } \
     }
 
 #endif // BCORE_SPECT_H
