@@ -21,6 +21,7 @@
 #include <inttypes.h>
 #include <float.h>
 #include <stdbool.h>
+#include <stdatomic.h>
 
 typedef float  flt32_t;
 typedef double flt64_t;
@@ -60,6 +61,10 @@ typedef void (*fp_t)( void );
 typedef u2_t tp_t;    // object type identifier
 typedef tp_t aware_t;  // self-awareness type (first element in self-aware object)
 typedef sz_t offset_t; // used as address offsets into an object
+
+// types used for atomic operations
+typedef _Atomic tp_t atomic_tp_t;
+typedef _Atomic vc_t atomic_vc_t;
 
 // extended scan and print format specifiers
 #define PRIs0_t PRIi8

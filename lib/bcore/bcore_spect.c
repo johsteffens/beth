@@ -55,8 +55,8 @@ typedef struct hmap_s
     bcore_mutex_s mutex;
 
     /// lock free cache
-    _Atomic tp_t key_cache[ BCORE_SPECT_CACHE_SIZE ];
-    _Atomic vc_t val_cache[ BCORE_SPECT_CACHE_SIZE ];
+    atomic_tp_t key_cache[ BCORE_SPECT_CACHE_SIZE ];
+    atomic_vc_t val_cache[ BCORE_SPECT_CACHE_SIZE ];
 } hmap_s;
 
 static void hmap_s_init( hmap_s* o )

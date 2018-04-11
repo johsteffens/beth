@@ -15,6 +15,8 @@
 
 #include "bcore_signal.h"
 
+#include "bcore_arr.h"
+#include "bcore_bin_ml.h"
 #include "bcore_btree.h"
 #include "bcore_control.h"
 #include "bcore_flect.h"
@@ -40,11 +42,10 @@
 #include "bcore_sc.h"
 #include "bcore_st.h"
 #include "bcore_tp.h"
+#include "bcore_tp_fastmap.h"
 #include "bcore_threads.h"
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
-#include "bcore_bin_ml.h"
-#include "bcore_arr.h"
 
 BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
 
@@ -94,6 +95,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
 
         /// other items
         bcore_name_signal_handler,
+        bcore_tp_fastmap_signal_handler,
         bcore_btree_signal_handler,
         bcore_control_signal_handler,
         bcore_hmap_signal_handler,

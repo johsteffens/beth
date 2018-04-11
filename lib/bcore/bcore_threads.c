@@ -27,13 +27,19 @@
 
 void bcore_mutex_s_init( bcore_mutex_s* o )
 {
+    bcore_memzero( o, sizeof( *o  ) );
     int ern = pthread_mutex_init( &o->_mutex, NULL );
+    if( ern == EAGAIN ) ERR( "Resources exceeded." );
+    if( ern == ENOMEM ) ERR( "Memory exhaused." );
+    if( ern == EPERM  ) ERR( "Unpriviledged call." );
     if( ern ) ERR( "function returned error %i", ern );
 }
 
 void bcore_mutex_s_down( bcore_mutex_s* o )
 {
     int ern = pthread_mutex_destroy( &o->_mutex );
+    if( ern == EBUSY  ) ERR( "Mutex is locked." );
+    if( ern == EINVAL ) ERR( "Invalid mutex." );
     if( ern ) ERR( "function returned error %i", ern );
 }
 

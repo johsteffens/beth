@@ -50,7 +50,7 @@ BCORE_DECLARE_OBJECT( bcore_spect_header_s )
 
 /// perspective-instance creation from object reflections
 typedef bcore_self_s* (*bcore_spect_fp_create_from_self )( const bcore_self_s* self );
-typedef bl_t                (*bcore_spect_fp_supports         )( const bcore_self_s* self );
+typedef bl_t          (*bcore_spect_fp_supports         )( const bcore_self_s* self );
 
 /** Tests if perspective indicated by spect_trait is supported by object o_type. (thread safe)
  *  This function is fast and does not actually construct the perspective.
