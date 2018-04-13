@@ -24,7 +24,7 @@
  *       <0 when object1 is ordered after  object2
  */
 
-#include "bcore_flect.h"
+#include "bcore_spect.h"
 #include "bcore_features.h"
 #include "bcore_spect_via.h"
 
@@ -41,7 +41,8 @@ typedef struct bcore_compare_s
     s2_t ( *compare )( const bcore_compare_s* p, vc_t obj1, vc_t obj2 ); // internal compare function
 } bcore_compare_s;
 
-const bcore_compare_s* bcore_compare_s_get_typed( tp_t type );
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_compare_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_compare_s )
 
 s2_t bcore_compare_spect(   const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
 s2_t bcore_compare_typed(   tp_t type,                vc_t obj1, vc_t obj2 );

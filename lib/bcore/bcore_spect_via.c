@@ -650,18 +650,6 @@ static bcore_self_s* via_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-const bcore_via_s* bcore_via_s_get_typed( u2_t o_type )
-{
-    return bcore_spect_get_typed( typeof( "bcore_via_s" ), o_type );
-}
-
-const bcore_via_s* bcore_via_s_get_aware( vc_t obj )
-{
-    return bcore_via_s_get_typed( *( const aware_t* )obj );
-}
-
-/**********************************************************************************************************************/
-
 sr_s bcore_spect_via_create_zoo( sz_t size )
 {
     bcore_life_s* l = bcore_life_s_create();
@@ -763,6 +751,8 @@ static st_s* spect_via_selftest( void )
 /**********************************************************************************************************************/
 // signal
 
+BCORE_DEFINE_SPECT_CACHE( bcore_via_s );
+
 vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_via" ) ) )
@@ -771,6 +761,7 @@ vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o )
         {
             via_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_via_s" ), via_s_create_self );
+            BCORE_REGISTER_SPECT_CACHE( bcore_via_s );
         }
         break;
 

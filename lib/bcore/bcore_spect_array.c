@@ -1929,6 +1929,7 @@ static st_s* spect_array_selftest( void )
 /**********************************************************************************************************************/
 // signal
 
+BCORE_DEFINE_SPECT_CACHE( bcore_array_s );
 vd_t bcore_spect_array_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_array" ) ) )
@@ -1937,6 +1938,7 @@ vd_t bcore_spect_array_signal_handler( const bcore_signal_s* o )
         {
             array_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_array_s"  ), array_s_create_self  );
+            BCORE_REGISTER_SPECT_CACHE( bcore_array_s );
         }
         break;
 

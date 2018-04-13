@@ -19,7 +19,7 @@
 #include "bcore_first.h"
 #include "bcore_types.h"
 #include "bcore_features.h"
-#include "bcore_flect.h"
+#include "bcore_spect.h"
 
 /// optional sink features:
 typedef void (*bcore_sink_fp_set_consumer)( vd_t o, vd_t consumer );  // to create a chain of sink units
@@ -35,8 +35,8 @@ typedef struct bcore_sink_s
     bcore_sink_fp_flush        fp_flush;
 } bcore_sink_s;
 
-const bcore_sink_s* bcore_sink_s_get_typed( tp_t type );
-const bcore_sink_s* bcore_sink_s_get_aware( vc_t obj );
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_sink_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_sink_s )
 
 sz_t bcore_sink_spect_push_data    ( const bcore_sink_s* p, vd_t o, vc_t data, sz_t size );
 void bcore_sink_spect_flush        ( const bcore_sink_s* p, vd_t o );

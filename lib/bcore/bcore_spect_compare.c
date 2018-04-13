@@ -294,11 +294,6 @@ static bcore_self_s* compare_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-const bcore_compare_s* bcore_compare_s_get_typed( tp_t type )
-{
-    return bcore_spect_get_typed( typeof( "bcore_compare_s" ), type );
-}
-
 s2_t bcore_compare_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
     return p->compare( p, obj1, obj2 );
@@ -464,6 +459,8 @@ static st_s* spect_compare_selftest( void )
 /**********************************************************************************************************************/
 // signal
 
+BCORE_DEFINE_SPECT_CACHE( bcore_compare_s );
+
 vd_t bcore_spect_compare_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_compare" ) ) )
@@ -472,6 +469,7 @@ vd_t bcore_spect_compare_signal_handler( const bcore_signal_s* o )
         {
             compare_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_compare_s"  ), compare_s_create_self  );
+            BCORE_REGISTER_SPECT_CACHE( bcore_compare_s );
         }
         break;
 

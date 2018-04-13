@@ -34,6 +34,7 @@
 #include "bcore_features.h"
 #include "bcore_control.h"
 #include "bcore_flect.h"
+#include "bcore_tp_fastmap.h"
 
 /**********************************************************************************************************************/
 
@@ -71,6 +72,9 @@ vc_t bcore_spect_get_aware( tp_t p_type, vc_t o )
 {
     return bcore_spect_get_typed( p_type, *( aware_t* )o );
 }
+
+/// inits cache and registers it for automatic shut down (used by perspectives)
+void bcore_spect_setup_cache( bcore_tp_fastmap_s* cache );
 
 /**********************************************************************************************************************/
 
@@ -113,6 +117,20 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o );
     static inline const name * name##_get_typed( tp_t o_type ) \
     { \
         return bcore_spect_get_typed( TYPEOF_##name, o_type ); \
+    }
+
+#define BCORE_DEFINE_SPECT_CACHE( name ) bcore_tp_fastmap_s name##_cache_g
+#define BCORE_REGISTER_SPECT_CACHE( name ) bcore_spect_setup_cache( &name##_cache_g )
+#define BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( name ) \
+    extern bcore_tp_fastmap_s name##_cache_g; \
+    static inline \
+    const name* name##_get_typed( tp_t o_type ) \
+    { \
+        vc_t ret = bcore_tp_fastmap_s_get( &name##_cache_g, o_type ); \
+        if( ret ) return ret; \
+        ret = bcore_spect_get_typed( TYPEOF_##name, o_type ); \
+        bcore_tp_fastmap_s_set( &name##_cache_g, o_type, ret ); \
+        return ret; \
     }
 
 #define BCORE_DEFINE_INLINE_SPECT_GET_AWARE( name ) \

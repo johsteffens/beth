@@ -117,6 +117,8 @@ void NPX(q_set_cell     )( const sr_s* o, sz_t i, sz_t j, sr_s s ) {          NP
 /**********************************************************************************************************************/
 // signal
 
+BCORE_DEFINE_SPECT_CACHE( bcore_matrix_s );
+
 vd_t bcore_spect_matrix_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_matrix" ) ) )
@@ -124,6 +126,7 @@ vd_t bcore_spect_matrix_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             BCORE_REGISTER_FLECT( bcore_matrix_s );
+            BCORE_REGISTER_SPECT_CACHE( bcore_matrix_s );
         }
         break;
 

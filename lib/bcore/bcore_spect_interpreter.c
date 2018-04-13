@@ -117,13 +117,6 @@ static bcore_self_s* interpreter_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-const bcore_interpreter_s* bcore_interpreter_s_get_typed( tp_t type )
-{
-    return bcore_spect_get_typed( typeof( "bcore_interpreter_s" ), type );
-}
-
-/**********************************************************************************************************************/
-
 sr_s bcore_interpret( sr_s o, sr_s source )
 {
     const bcore_interpreter_s* p = ch_spect_p( o.p, TYPEOF_bcore_interpreter_s );
@@ -140,6 +133,8 @@ sr_s bcore_interpret_q( const sr_s* o, sr_s source )
 
 /**********************************************************************************************************************/
 
+BCORE_DEFINE_SPECT_CACHE( bcore_interpreter_s );
+
 vd_t bcore_spect_interpreter_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_interpreter" ) ) )
@@ -148,6 +143,7 @@ vd_t bcore_spect_interpreter_signal_handler( const bcore_signal_s* o )
         {
             interpreter_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_interpreter_s"  ), interpreter_s_create_self  );
+            BCORE_REGISTER_SPECT_CACHE( bcore_interpreter_s );
         }
         break;
 

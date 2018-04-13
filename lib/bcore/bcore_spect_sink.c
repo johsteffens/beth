@@ -163,18 +163,6 @@ static bcore_self_s* sink_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-const bcore_sink_s* bcore_sink_s_get_typed( tp_t o_type )
-{
-    return bcore_spect_get_typed( typeof( "bcore_sink_s" ), o_type );
-}
-
-const bcore_sink_s* bcore_sink_s_get_aware( vc_t obj )
-{
-    return bcore_sink_s_get_typed( *( const aware_t* )obj );
-}
-
-/**********************************************************************************************************************/
-
 sz_t bcore_sink_aware_push_data    ( vd_t o, vc_t d, sz_t sz              ) { return bcore_sink_spect_push_data( bcore_sink_s_get_typed( *( aware_t* )o ), o, d, sz ); }
 void bcore_sink_aware_flush        ( vd_t o                               ) { bcore_sink_spect_flush(         bcore_sink_s_get_typed( *( aware_t* )o ), o ); }
 void bcore_sink_aware_pushvf       ( vd_t o, sc_t f, va_list a            ) { bcore_sink_spect_pushvf(        bcore_sink_s_get_typed( *( aware_t* )o ), o, f, a ); }
@@ -216,6 +204,8 @@ void bcore_sink_q_set_consumer ( const sr_s* o, vd_t c )            {          b
 
 /**********************************************************************************************************************/
 
+BCORE_DEFINE_SPECT_CACHE( bcore_sink_s );
+
 vd_t bcore_spect_sink_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_sink" ) ) )
@@ -224,6 +214,7 @@ vd_t bcore_spect_sink_signal_handler( const bcore_signal_s* o )
         {
             sink_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_sink_s"  ), sink_s_create_self  );
+            BCORE_REGISTER_SPECT_CACHE( bcore_sink_s );
         }
         break;
 

@@ -40,7 +40,7 @@ typedef struct bcore_matrix_s
     sz_t stride_off; // feature for dynamic row-stride
 } bcore_matrix_s;
 
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED( bcore_matrix_s )
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_matrix_s )
 BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_matrix_s )
 
 static inline

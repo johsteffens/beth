@@ -18,8 +18,8 @@
 #ifndef BCORE_SPECT_INTERPRETER_H
 #define BCORE_SPECT_INTERPRETER_H
 
-#include "bcore_flect.h"
 #include "bcore_features.h"
+#include "bcore_spect.h"
 
 typedef struct bcore_interpreter_s
 {
@@ -28,7 +28,8 @@ typedef struct bcore_interpreter_s
     bcore_fp_interpret fp_interpret;
 } bcore_interpreter_s;
 
-const bcore_interpreter_s* bcore_interpreter_s_get_typed( tp_t type );
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_interpreter_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_interpreter_s )
 
 sr_s bcore_interpret( sr_s o, sr_s source );
 sr_s bcore_interpret_q( const sr_s* o, sr_s source );

@@ -347,7 +347,7 @@ sz_t bcore_strlen( sc_t str )
 bool bcore_strany( char c, sc_t str )
 {
     if( str == NULL ) return false;
-    while( *str != 0 ) if( *str == c ) return true;
+    while( *str != 0 ) if( *str++ == c ) return true;
     return false;
 }
 

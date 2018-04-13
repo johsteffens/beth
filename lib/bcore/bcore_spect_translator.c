@@ -80,13 +80,6 @@ static bcore_self_s* translator_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-const bcore_translator_s* bcore_translator_s_get_typed( tp_t type )
-{
-    return bcore_spect_get_typed( typeof( "bcore_translator_s" ), type );
-}
-
-/**********************************************************************************************************************/
-
 void bcore_translate( sr_s o, sr_s obj, sr_s sink )
 {
     const bcore_translator_s* p = ch_spect_p( o.p, TYPEOF_bcore_translator_s );
@@ -102,6 +95,8 @@ void bcore_translate_q( const sr_s* o, sr_s obj, sr_s sink )
 
 /**********************************************************************************************************************/
 
+BCORE_DEFINE_SPECT_CACHE( bcore_translator_s );
+
 vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_translator" ) ) )
@@ -110,6 +105,7 @@ vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o )
         {
             translator_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_translator_s"  ), translator_s_create_self  );
+            BCORE_REGISTER_SPECT_CACHE( bcore_translator_s );
         }
         break;
 

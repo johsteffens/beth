@@ -51,7 +51,7 @@ typedef struct bcore_array_s
 
 } bcore_array_s;
 
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED( bcore_array_s )
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_array_s )
 BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_array_s )
 
 /**********************************************************************************************************************/

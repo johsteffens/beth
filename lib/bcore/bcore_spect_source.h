@@ -19,7 +19,7 @@
 #include "bcore_first.h"
 #include "bcore_types.h"
 #include "bcore_features.h"
-#include "bcore_flect.h"
+#include "bcore_spect.h"
 
 /// optional source features:
 typedef void (*bcore_source_fp_parse_fv )(    vd_t o, sc_t format, va_list args ); // parse function
@@ -49,8 +49,8 @@ typedef struct bcore_source_s
 
 } bcore_source_s;
 
-const bcore_source_s* bcore_source_s_get_typed( tp_t type );
-const bcore_source_s* bcore_source_s_get_aware( vc_t obj );
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_source_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_source_s )
 
 sz_t bcore_source_spect_get_data    ( const bcore_source_s* p, vd_t o, vd_t data, sz_t size ); // returns number of bytes read
 u0_t bcore_source_spect_get_u0      ( const bcore_source_s* p, vd_t o ); // reads single byte and returns it (returns 0 in case eos is reached

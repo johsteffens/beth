@@ -20,6 +20,7 @@
 #include "bcore_spect_compare.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
+#include "bcore_tp_fastmap.h"
 
 /**********************************************************************************************************************/
 
@@ -1453,9 +1454,14 @@ static bcore_self_s* inst_s_create_self( void )
 
 /**********************************************************************************************************************/
 
+bcore_tp_fastmap_s bcore_inst_s_cache_g;
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t o_type )
 {
-    return bcore_spect_get_typed( TYPEOF_bcore_inst_s, o_type );
+    vc_t ret = bcore_tp_fastmap_s_get( &bcore_inst_s_cache_g, o_type );
+    if( ret ) return ret;
+    ret = bcore_spect_get_typed( TYPEOF_bcore_inst_s, o_type );
+    bcore_tp_fastmap_s_set( &bcore_inst_s_cache_g, o_type, ret );
+    return ret;
 }
 
 /**********************************************************************************************************************/
@@ -1820,6 +1826,7 @@ vd_t bcore_spect_inst_signal_handler( const bcore_signal_s* o )
         {
             inst_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_inst_s"  ), inst_s_create_self  );
+            bcore_spect_setup_cache( &bcore_inst_s_cache_g );
         }
         break;
 

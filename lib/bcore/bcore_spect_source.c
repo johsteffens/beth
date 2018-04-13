@@ -212,18 +212,6 @@ static bcore_self_s* source_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-const bcore_source_s* bcore_source_s_get_typed( tp_t o_type )
-{
-    return bcore_spect_get_typed( typeof( "bcore_source_s" ), o_type );
-}
-
-const bcore_source_s* bcore_source_s_get_aware( vc_t obj )
-{
-    return bcore_source_s_get_typed( *( const aware_t* )obj );
-}
-
-/**********************************************************************************************************************/
-
 static inline const bcore_source_s* gtpd( tp_t tp ) { return bcore_source_s_get_typed( tp ); }
 
 sz_t NPX(aware_get_data    )( vd_t o, vd_t d, sz_t sz   ) { return NPX(spect_get_data    )( gtpd( *( aware_t* )o ), o, d, sz ); }
@@ -282,6 +270,8 @@ void NPX(q_parse_err_fa)( const sr_s* o, sc_t f, ...       ) { va_list a; va_sta
 
 /**********************************************************************************************************************/
 
+BCORE_DEFINE_SPECT_CACHE( bcore_source_s );
+
 vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_source" ) ) )
@@ -290,6 +280,7 @@ vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o )
         {
             source_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_source_s"  ), source_s_create_self  );
+            BCORE_REGISTER_SPECT_CACHE( bcore_source_s );
         }
         break;
 

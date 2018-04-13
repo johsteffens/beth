@@ -25,6 +25,7 @@
 #include "bcore_signal.h"
 #include "bcore_trait.h"
 #include "bcore_tbman.h"
+#include "bcore_tp_fastmap.h"
 
 /**********************************************************************************************************************/
 // bcore_spect_header_s
@@ -54,86 +55,45 @@ typedef struct hmap_s
 
     bcore_mutex_s mutex;
 
-    /// lock free cache
-    atomic_tp_t key_cache[ BCORE_SPECT_CACHE_SIZE ];
-    atomic_vc_t val_cache[ BCORE_SPECT_CACHE_SIZE ];
+    /// cache for spect manager
+    bcore_tp_fastmap_s cache;
+
+    /// array of bcore_tp_fastmap_s caches (managed by spect manager)
+    bcore_arr_vd_s cache_arr;
+
 } hmap_s;
 
 static void hmap_s_init( hmap_s* o )
 {
-    bcore_arr_vd_s_init(    &o->arr );
+    bcore_arr_vd_s_init( &o->arr );
+    bcore_arr_vd_s_init( &o->cache_arr );
     bcore_hmap_u2vd_s_init( &o->map );
     bcore_mutex_s_init( &o->mutex );
-    bcore_memzero( o->key_cache, sizeof( o->key_cache ) );
-    bcore_memzero( o->val_cache, sizeof( o->val_cache ) );
+    bcore_tp_fastmap_s_init( &o->cache );
+    bcore_arr_vd_s_push( &o->cache_arr, &o->cache ); // o->cache will be managed via hmap_s_g->cache_arr
 }
 
 vc_t hmap_s_cache_get( hmap_s* o, tp_t key )
 {
-    sz_t idx = key & BCORE_SPECT_CACHE_MASK;
-    if( o->key_cache[ idx ] == key ) return o->val_cache[ idx ];
-    if( o->key_cache[ idx ] == 0 )   return NULL;
-    idx++;
-    if( o->key_cache[ idx ] == key ) return o->val_cache[ idx ];
-    if( o->key_cache[ idx ] == 0 )   return NULL;
-    idx++;
-    if( o->key_cache[ idx ] == key ) return o->val_cache[ idx ];
-    if( o->key_cache[ idx ] == 0 )   return NULL;
-    idx++;
-    if( o->key_cache[ idx ] == key ) return o->val_cache[ idx ];
-    return NULL;
+    return bcore_tp_fastmap_s_get( &o->cache, key );
 }
 
 void hmap_s_cache_set( hmap_s* o, tp_t key, vc_t val )
 {
-    sz_t idx = key & BCORE_SPECT_CACHE_MASK;
-    if( o->key_cache[ idx ] == key ) return;
-    if( o->key_cache[ idx ] == 0 )   { o->val_cache[ idx ] = val; o->key_cache[ idx ] = key; return; }
-    idx++;
-    if( o->key_cache[ idx ] == key ) return;
-    if( o->key_cache[ idx ] == 0 )   { o->val_cache[ idx ] = val; o->key_cache[ idx ] = key; return; }
-    idx++;
-    if( o->key_cache[ idx ] == key ) return;
-    if( o->key_cache[ idx ] == 0 )   { o->val_cache[ idx ] = val; o->key_cache[ idx ] = key; return; }
-    idx++;
-    if( o->key_cache[ idx ] == key ) return;
-    if( o->key_cache[ idx ] == 0 )   { o->val_cache[ idx ] = val; o->key_cache[ idx ] = key; return; }
-}
-
-f3_t hmap_s_cache_fill_rate( hmap_s* o )
-{
-    sz_t count = 0;
-    for( sz_t i = 0; i < BCORE_SPECT_CACHE_SIZE; i++ ) count += ( o->key_cache[ i ] != 0 );
-    return ( ( f3_t )count ) / BCORE_SPECT_CACHE_SIZE;
-}
-
-f3_t hmap_s_cache_cap_rate( hmap_s* o )
-{
-    sz_t count = 0;
-    for( sz_t i = 0; i < BCORE_SPECT_CACHE_SIZE; i += 4 )
-    {
-        if( !o->key_cache[ i     ] ) continue;
-        if( !o->key_cache[ i + 1 ] ) continue;
-        if( !o->key_cache[ i + 2 ] ) continue;
-        if( !o->key_cache[ i + 3 ] ) continue;
-        count++;
-    }
-    return ( ( f3_t )count ) / ( BCORE_SPECT_CACHE_SIZE >> 2 );
-}
-
-f3_t hmap_s_cache_free_rate( hmap_s* o )
-{
-    sz_t count = 0;
-    for( sz_t i = 0; i < BCORE_SPECT_CACHE_SIZE; i += 4 )
-    {
-        if( !o->key_cache[ i ] ) count++;
-    }
-    return ( ( f3_t )count ) / ( BCORE_SPECT_CACHE_SIZE >> 2 );
+    bcore_tp_fastmap_s_set( &o->cache, key, val );
 }
 
 static void hmap_s_down( hmap_s* o )
 {
     bcore_mutex_s_lock( &o->mutex );
+
+    /// clear and lock all caches because shut down procedure can change perspective addresses (this includes o->cache)
+    for( sz_t i = 0; i < o->cache_arr.size; i++ )
+    {
+        bcore_tp_fastmap_s* cache = o->cache_arr.data[ i ];
+        bcore_tp_fastmap_s_clear( cache );
+        bcore_tp_fastmap_s_set_locked( cache, true );
+    }
 
     // shut down in reverse order of creation
     while( o->arr.size > 0 )
@@ -153,6 +113,7 @@ static void hmap_s_down( hmap_s* o )
          *    2. Perspective B can only reference perspective A when A was added before B to the registry.
          *       Shutting down in reverse order ensures that A is never destroyed before B.
          *    3. (follows from 2) Cyclic references are not possible.
+         *    4. Caches are cleared and locked.
          *
          *  Temporarily re-added perspectives reside at the tail-end of o->arr
          *  and are taken down again in this loop without cyclic re-instantiation.
@@ -169,6 +130,14 @@ static void hmap_s_down( hmap_s* o )
         }
         bcore_mutex_s_lock( &o->mutex );
     }
+
+    /// shut down all caches (this includes o->cache)
+    for( sz_t i = 0; i < o->cache_arr.size; i++ )
+    {
+        bcore_tp_fastmap_s* cache = o->cache_arr.data[ i ];
+        bcore_tp_fastmap_s_down( cache );
+    }
+    bcore_arr_vd_s_down( &o->cache_arr );
 
     bcore_hmap_u2vd_s_down( &o->map );
     bcore_arr_vd_s_down(    &o->arr );
@@ -246,6 +215,14 @@ bl_t bcore_spect_trait_supported( tp_t spect_trait, tp_t o_type )
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
     if( exists ) return true;
     return bcore_trait_satisfied_type( spect_trait, o_type, NULL );
+}
+
+void bcore_spect_setup_cache( bcore_tp_fastmap_s* cache )
+{
+    bcore_tp_fastmap_s_init( cache );
+    bcore_mutex_s_lock( &hmap_s_g->mutex );
+    bcore_arr_vd_s_push( &hmap_s_g->cache_arr, cache );
+    bcore_mutex_s_unlock( &hmap_s_g->mutex );
 }
 
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
@@ -577,10 +554,9 @@ st_s* bcore_spect_status()
         st_s_push_st_d( log, s );
     }
 
-    st_s_push_fa( log, "spect mananger cache rates:\n" );
-    st_s_push_fa( log, "   fill: #<f3_t>\n", hmap_s_cache_fill_rate( hmap_s_g ) );
-    st_s_push_fa( log, "    cap: #<f3_t>\n", hmap_s_cache_cap_rate( hmap_s_g ) );
-    st_s_push_fa( log, "   free: #<f3_t>\n", hmap_s_cache_free_rate( hmap_s_g ) );
+    st_s_push_fa( log, "spect mananger cache:\n" );
+    st_s_push_fa( log, "   keys: #<sz_t>\n", bcore_tp_fastmap_s_keys( &hmap_s_g->cache ) );
+    st_s_push_fa( log, "   size: #<sz_t>\n", bcore_tp_fastmap_s_size( &hmap_s_g->cache ) );
 
     bcore_life_s_discard( l );
     return log;

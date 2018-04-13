@@ -63,8 +63,11 @@ typedef struct bcore_via_s
     bcore_vitem_s* vitem_arr;   // array of vitem
 } bcore_via_s;
 
-const bcore_via_s* bcore_via_s_get_typed( u2_t type );
-const bcore_via_s* bcore_via_s_get_aware( vc_t obj  );
+//const bcore_via_s* bcore_via_s_get_typed( u2_t type );
+//const bcore_via_s* bcore_via_s_get_aware( vc_t obj  );
+
+BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_via_s )
+BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_via_s )
 
 /// Access by index. Error when index is out of range.
 sz_t                 bcore_via_spect_get_size      ( const bcore_via_s* p                     ); // Number of items
