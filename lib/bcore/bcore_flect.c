@@ -269,7 +269,20 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src )
         {
             st_s* assign_name = st_s_create_l( l );
             bcore_source_q_parse_fa( &src, "#name", assign_name );
-            o->default_tp = entypeof( assign_name->sc );
+            tp_t func_tp = entypeof( assign_name->sc );
+            if( !bcore_function_exists( func_tp ) )
+            {
+                bcore_source_q_parse_err_fa( &src, "Function '#<sc_t>' does not exist.", ifnameof( func_tp ) );
+            }
+
+            o->default_tp = func_tp;
+            if( bcore_trait_exists( func_tp ) )
+            {
+                if( !bcore_trait_is_of( func_tp, o->type ) )
+                {
+                    bcore_source_q_parse_err_fa( &src, "Function '#<sc_t>' is not of feature '#<sc_t>'.", ifnameof( func_tp ), ifnameof( o->type ) );
+                }
+            }
         }
     }
     else // data type declaration
