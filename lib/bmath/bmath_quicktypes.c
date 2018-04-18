@@ -37,14 +37,17 @@ static st_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
 static sr_s typelist()
 {
     sr_s list = bcore_inst_typed_create_sr( bcore_flect_type_parse_fa( "{ st_s * [] arr; }" ) );
-    bcore_array_q_push_sc( &list, "bmath_abelian_group"  );
-    bcore_array_q_push_sc( &list, "bmath_abelian_group_s"  );
+    bcore_array_q_push_sc( &list, "bmath_group"  );
+    bcore_array_q_push_sc( &list, "bmath_group_s"  );
     bcore_array_q_push_sc( &list, "bmath_ring"  );
     bcore_array_q_push_sc( &list, "bmath_ring_s"  );
     bcore_array_q_push_sc( &list, "bmath_vector"  );
     bcore_array_q_push_sc( &list, "bmath_vector_s"  );
+    bcore_array_q_push_sc( &list, "bmath_vf3_s"  );
+    bcore_array_q_push_sc( &list, "bmath_vcf3_s" );
     bcore_array_q_push_sc( &list, "bmath_matrix"  );
     bcore_array_q_push_sc( &list, "bmath_matrix_s"  );
+    bcore_array_q_push_sc( &list, "bmath_cf3_s"  );
 
     bcore_array_q_sort( &list, 0, -1, 1 );
     return list;

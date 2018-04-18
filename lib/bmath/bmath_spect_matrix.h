@@ -34,13 +34,13 @@ typedef void (*bmath_fp_matrix_mul_scl )( vd_t mat, vc_t mat1, vc_t scl2 ); // m
 typedef struct bmath_matrix_s
 {
     bcore_spect_header_s header;
-    const bcore_array_s*  spect_array_matrix;    // array of matrix
-    const bmath_vector_s* spect_vector_matrix;   // vector of matrix
-    const bcore_matrix_s* spect_matrix_matrix;   // (bcore-)matrix of matrix
-    const bcore_inst_s*   spect_inst_matrix;     // inst of matrix
-    const bmath_vector_s* spect_vector_default;  // default vector perspective
 
-    const bmath_ring_s*   spect_ring_scalar;     // ring of scalar type (matrix element)
+    const bcore_array_s  * spect_array_matrix;    // array of matrix
+    const bmath_vector_s * spect_vector_matrix;   // vector of matrix
+    const bcore_matrix_s * spect_matrix_matrix;   // (bcore-)matrix of matrix
+    const bcore_inst_s   * spect_inst_matrix;     // inst of matrix
+    const bmath_vector_s * spect_vector_default;  // default vector perspective
+    const bmath_ring_s   * spect_ring_scalar;     // ring of scalar type (matrix element)
 
     // ring features
     bmath_fp_add fp_add;

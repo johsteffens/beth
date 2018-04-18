@@ -24,13 +24,13 @@ static sc_t bmath_matrix_s_def = "bmath_matrix_s = spect"
 "{"
     "bcore_spect_header_s header;"
 
-    "strict feature bcore_array_s*  spect_array_matrix;  "
-    "strict feature bmath_vector_s* spect_vector_matrix; "
-    "strict feature bcore_matrix_s* spect_matrix_matrix; "
-    "strict feature bcore_inst_s*   spect_inst_matrix;   "
-    "strict feature bmath_vector_s* spect_vector_default ~> const tp_t type_vector_default;"
+    "strict feature bcore_array_s  -> spect_array_matrix;  "
+    "strict feature bmath_vector_s -> spect_vector_matrix; "
+    "strict feature bcore_matrix_s -> spect_matrix_matrix; "
+    "strict feature bcore_inst_s   -> spect_inst_matrix;   "
+    "strict feature bmath_vector_s -> spect_vector_default ~> const tp_t type_vector_default;"
 
-    "private        bmath_ring_s*   spect_ring_scalar;   " // ring of matrix element
+    "private        bmath_ring_s   -> spect_ring_scalar;   " // ring of matrix element
 
     // ring features
     "feature bmath_fp_add fp_add ~> func bmath_fp_add add;"

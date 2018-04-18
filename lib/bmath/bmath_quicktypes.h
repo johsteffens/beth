@@ -23,18 +23,22 @@
 
 /// This function computes and formats defines below to stdout
 void bmath_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) );
+void bmath_quicktypes_create_header( sc_t folder );
 
 /** List of predefined types for quick access.
  *  Created via bclos_quicktypes_to_stdout( NULL );
  */
 
-#define TYPEOF_bmath_abelian_group   2096901950
-#define TYPEOF_bmath_abelian_group_s 1137032512
-#define TYPEOF_bmath_ring            2462086090
-#define TYPEOF_bmath_ring_s          1513035188
-#define TYPEOF_bmath_vector          4070600319
-#define TYPEOF_bmath_vector_s        1200091625
-#define TYPEOF_bmath_matrix          typeof( "bmath_matrix" )
-#define TYPEOF_bmath_matrix_s        typeof( "bmath_matrix_s" )
+#define TYPEOF_bmath_cf3_s    2506167476
+#define TYPEOF_bmath_group    1421936371
+#define TYPEOF_bmath_group_s  1219600405
+#define TYPEOF_bmath_matrix   3796445417
+#define TYPEOF_bmath_matrix_s 1909792099
+#define TYPEOF_bmath_ring     2462086090
+#define TYPEOF_bmath_ring_s   1513035188
+#define TYPEOF_bmath_vcf3_s   3723112310
+#define TYPEOF_bmath_vector   4070600319
+#define TYPEOF_bmath_vector_s 1200091625
+#define TYPEOF_bmath_vf3_s    3565809519
 
 #endif // BMATH_QUICKTYPES_H

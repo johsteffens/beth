@@ -24,6 +24,17 @@
 
 /**********************************************************************************************************************/
 
+/** Nomenclature
+ *  add, zro, neg, sub - according to spect_group
+ *  cpy    : vector = vector;  projecting/injecting copy if dim1 != dim2
+ *  mul    : vector = vector * scalar
+ *  dot_prd: scalar = vector * vector  (dot-product)
+ *  sqr    : scalar = vector^2
+ *  sqr_sub: scalar = (vector - vector)^2
+ */
+
+/**********************************************************************************************************************/
+
 /// operation - features
 typedef void (*bmath_fp_vector_mul     )( vd_t vec, vc_t vec1, vc_t scl2 ); // vec = vec1 * scl2
 typedef void (*bmath_fp_vector_dot_prd )( vd_t scl, vc_t vec1, vc_t scl2 ); // scl = vec1 * vec2
@@ -41,6 +52,7 @@ typedef struct bmath_vector_s
     bmath_fp_zro            fp_zro; // feature
     bmath_fp_neg            fp_neg; // feature
     bmath_fp_sub            fp_sub; // feature
+    bmath_fp_cpy            fp_cpy; // feature
     bmath_fp_vector_mul     fp_mul; // feature
     bmath_fp_vector_dot_prd fp_dot_prd; // feature
 
@@ -67,6 +79,7 @@ void bmath_vector_spect_sub(     const bmath_vector_s* p, vd_t o, vc_t vec1, vc_
 void bmath_vector_spect_mul(     const bmath_vector_s* p, vd_t o, vc_t vec1, vc_t scl2 );
 void bmath_vector_spect_dot_prd( const bmath_vector_s* p, vd_t scl, vc_t o,  vc_t vec2 );
 void bmath_vector_spect_sqr(     const bmath_vector_s* p, vd_t scl, vc_t o );
+void bmath_vector_spect_sqr_sub( const bmath_vector_s* p, vd_t scl, vc_t o,  vc_t vec2 );
 
 sz_t bmath_vector_typed_get_dim( tp_t t, vc_t o );
 void bmath_vector_typed_zro(     tp_t t, vd_t o );
@@ -77,6 +90,7 @@ void bmath_vector_typed_sub(     tp_t t, vd_t o, vc_t vec1, vc_t vec2 );
 void bmath_vector_typed_mul(     tp_t t, vd_t o, vc_t vec1, vc_t scl2 );
 void bmath_vector_typed_dot_prd( tp_t t, vd_t scl, vc_t o,  vc_t vec2 );
 void bmath_vector_typed_sqr(     tp_t t, vd_t scl, vc_t o );
+void bmath_vector_typed_sqr_sub( tp_t t, vd_t scl, vc_t o,  vc_t vec2 );
 
 sz_t bmath_vector_aware_get_dim( vc_t o );
 void bmath_vector_aware_zro(     vd_t o );
@@ -87,6 +101,7 @@ void bmath_vector_aware_sub(     vd_t o, vc_t vec1, vc_t vec2 );
 void bmath_vector_aware_mul(     vd_t o, vc_t vec1, vc_t scl2 );
 void bmath_vector_aware_dot_prd( vd_t s, vc_t o,    vc_t vec2 );
 void bmath_vector_aware_sqr(     vd_t s, vc_t o );
+void bmath_vector_aware_sqr_sub( vd_t s, vc_t o,    vc_t vec2 );
 
 sz_t bmath_vector_get_dim( sr_s o );
 void bmath_vector_zro(     sr_s o );
@@ -97,6 +112,7 @@ void bmath_vector_sub(     sr_s o, vc_t vec1, vc_t vec2 );
 void bmath_vector_mul(     sr_s o, vc_t vec1, vc_t scl2 );
 void bmath_vector_dot_prd( vd_t s, sr_s o,    vc_t vec2 );
 void bmath_vector_sqr(     vd_t s, sr_s o );
+void bmath_vector_sqr_sub( vd_t s, sr_s o,    vc_t vec2 );
 
 sz_t bmath_vector_q_get_dim( const sr_s* o );
 void bmath_vector_q_zro(     const sr_s* o );
@@ -107,6 +123,7 @@ void bmath_vector_q_sub(     const sr_s* o, vc_t vec1, vc_t vec2 );
 void bmath_vector_q_mul(     const sr_s* o, vc_t vec1, vc_t scl2 );
 void bmath_vector_q_dot_prd( vd_t s, const sr_s* o,    vc_t vec2 );
 void bmath_vector_q_sqr(     vd_t s, const sr_s* o );
+void bmath_vector_q_sqr_sub( vd_t s, const sr_s* o,    vc_t vec2 );
 
 /**********************************************************************************************************************/
 

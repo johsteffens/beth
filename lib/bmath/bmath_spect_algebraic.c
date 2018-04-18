@@ -16,70 +16,41 @@
 #include "bmath_spect_algebraic.h"
 #include "bmath_quicktypes.h"
 
-/**********************************************************************************************************************/
-// bmath features for certain leaf types
-
-static void bmath_f3_add( f3_t* o, const f3_t* op1, const f3_t* op2 ) { *o = *op1 + *op2; }
-static void bmath_f3_zro( f3_t* o )                                   { *o = 0.0; }
-static void bmath_f3_neg( f3_t* o, const f3_t* op )                   { *o = -*op; }
-static void bmath_f3_sub( f3_t* o, const f3_t* op1, const f3_t* op2 ) { *o = *op1 - *op2; }
-
-static void bmath_f3_mul( f3_t* o, const f3_t* op1, const f3_t* op2 ) { *o = *op1 * *op2; }
-static void bmath_f3_one( f3_t* o )                                   { *o = 1.0; }
-static void bmath_f3_inv( f3_t* o, const f3_t* op )                   { *o = 1.0  / *op; }
-static void bmath_f3_div( f3_t* o, const f3_t* op1, const f3_t* op2 ) { *o = *op1 / *op2; }
-
-static void bmath_f2_add( f2_t* o, const f2_t* op1, const f2_t* op2 ) { *o = *op1 + *op2; }
-static void bmath_f2_zro( f2_t* o )                                   { *o = 0.0; }
-static void bmath_f2_neg( f2_t* o, const f2_t* op )                   { *o = -*op; }
-static void bmath_f2_sub( f2_t* o, const f2_t* op1, const f2_t* op2 ) { *o = *op1 - *op2; }
-
-static void bmath_f2_mul( f2_t* o, const f2_t* op1, const f2_t* op2 ) { *o = *op1 * *op2; }
-static void bmath_f2_one( f2_t* o )                                   { *o = 1.0; }
-static void bmath_f2_inv( f2_t* o, const f2_t* op )                   { *o = 1.0  / *op; }
-static void bmath_f2_div( f2_t* o, const f2_t* op1, const f2_t* op2 ) { *o = *op1 / *op2; }
-
-static void bmath_s3_add( s3_t* o, const s3_t* op1, const s3_t* op2 ) { *o = *op1 + *op2; }
-static void bmath_s3_zro( s3_t* o )                                   { *o = 0; }
-static void bmath_s3_neg( s3_t* o, const s3_t* op )                   { *o = -*op; }
-static void bmath_s3_sub( s3_t* o, const s3_t* op1, const s3_t* op2 ) { *o = *op1 - *op2; }
-
-static void bmath_s3_mul( s3_t* o, const s3_t* op1, const s3_t* op2 ) { *o = *op1 * *op2; }
-static void bmath_s3_one( s3_t* o )                                   { *o = 1; }
 
 /**********************************************************************************************************************/
-// bmath_abelian_group_s
+// bmath_group_s
 
-#define NPXAG( name ) bmath_abelian_group_##name
+#define NPXAG( name ) bmath_group_##name
 
-static sc_t bmath_abelian_group_s_def = "bmath_abelian_group_s = spect"
+static const sc_t bmath_group_s_def = "bmath_group_s = spect"
 "{"
     "bcore_spect_header_s header;"
-    "strict feature bcore_inst_s* spect_inst;"
+    "strict feature bcore_inst_s -> spect_inst;"
     "strict feature bmath_fp_add add ~> func bmath_fp_add add;"
     "strict feature bmath_fp_zro zro ~> func bmath_fp_zro zro;"
     "strict feature bmath_fp_neg neg ~> func bmath_fp_neg neg;"
     "       feature bmath_fp_sub sub ~> func bmath_fp_sub sub;"
+    "       feature bmath_fp_cpy cpy ~> func bmath_fp_cpy cpy;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST( bmath_abelian_group_s, bmath_abelian_group_s_def )
+BCORE_DEFINE_OBJECT_INST( bmath_group_s, bmath_group_s_def )
 
-void bmath_abelian_group_spect_add( const bmath_abelian_group_s* p, vd_t o, vc_t op1, vc_t op2 )
+void bmath_group_spect_add( const bmath_group_s* p, vd_t o, vc_t op1, vc_t op2 )
 {
     p->fp_add( o, op1, op2 );
 }
 
-void bmath_abelian_group_spect_zro( const bmath_abelian_group_s* p, vd_t o )
+void bmath_group_spect_zro( const bmath_group_s* p, vd_t o )
 {
     p->fp_zro( o );
 }
 
-void bmath_abelian_group_spect_neg( const bmath_abelian_group_s* p, vd_t o, vc_t op )
+void bmath_group_spect_neg( const bmath_group_s* p, vd_t o, vc_t op )
 {
     p->fp_neg( o, op );
 }
 
-void bmath_abelian_group_spect_sub( const bmath_abelian_group_s* p, vd_t o, vc_t op1, vc_t op2 )
+void bmath_group_spect_sub( const bmath_group_s* p, vd_t o, vc_t op1, vc_t op2 )
 {
     if( p->fp_sub )
     {
@@ -92,15 +63,22 @@ void bmath_abelian_group_spect_sub( const bmath_abelian_group_s* p, vd_t o, vc_t
     }
 }
 
-void bmath_abelian_group_spect_cpy( const bmath_abelian_group_s* p, vd_t o, vc_t op )
+void bmath_group_spect_cpy( const bmath_group_s* p, vd_t o, vc_t op )
 {
-    bcore_inst_spect_copy( p->spect_inst, o, op );
+    if( p->fp_cpy )
+    {
+        p->fp_cpy( o, op );
+    }
+    else
+    {
+        bcore_inst_spect_copy( p->spect_inst, o, op );
+    }
 }
 
 /**********************************************************************************************************************/
 
-static inline const bmath_abelian_group_s* atpdag( tp_t tp ) { return bmath_abelian_group_s_get_typed( tp ); }
-static inline vc_t w_spectag( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bmath_abelian_group_s ); }
+static inline const bmath_group_s* atpdag( tp_t tp ) { return bmath_group_s_get_typed( tp ); }
+static inline vc_t w_spectag( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bmath_group_s ); }
 
 void NPXAG(typed_add)( tp_t t, vd_t o, vc_t op1, vc_t op2 ) { NPXAG(spect_add)( atpdag( t ), o, op1, op2 ); }
 void NPXAG(typed_zro)( tp_t t, vd_t o                     ) { NPXAG(spect_zro)( atpdag( t ), o           ); }
@@ -134,12 +112,13 @@ void NPXAG(q_cpy    )(  const sr_s* o, vc_t op1           ) { NPXAG(spect_cpy)( 
 static sc_t bmath_ring_s_def = "bmath_ring_s = spect"
 "{"
     "bcore_spect_header_s header;"
-    "strict feature bcore_inst_s* spect_inst;"
+    "strict feature bcore_inst_s -> spect_inst;"
 
     "strict feature bmath_fp_add add ~> func bmath_fp_add add;"
     "strict feature bmath_fp_zro zro ~> func bmath_fp_zro zro;"
     "strict feature bmath_fp_neg neg ~> func bmath_fp_neg neg;"
     "       feature bmath_fp_sub sub ~> func bmath_fp_sub sub;"
+    "       feature bmath_fp_cpy cpy ~> func bmath_fp_cpy cpy;"
 
     "strict feature bmath_fp_mul mul ~> func bmath_fp_mul mul;"
     "       feature bmath_fp_one one ~> func bmath_fp_one one;"
@@ -179,7 +158,14 @@ void bmath_ring_spect_sub( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 )
 
 void bmath_ring_spect_cpy( const bmath_ring_s* p, vd_t o, vc_t op )
 {
-    bcore_inst_spect_copy( p->spect_inst, o, op );
+    if( p->fp_cpy )
+    {
+        p->fp_cpy( o, op );
+    }
+    else
+    {
+        bcore_inst_spect_copy( p->spect_inst, o, op );
+    }
 }
 
 void bmath_ring_spect_mul( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 )
@@ -270,15 +256,15 @@ void NPXRG(q_div    )(  const sr_s* o, vc_t op1, vc_t op2 ) { NPXRG(spect_div)( 
 
 static vd_t selftest( void )
 {
-    ASSERT( bcore_trait_satisfied_type( typeof( "bmath_abelian_group" ), TYPEOF_f3_t, NULL ) );
+    ASSERT( bcore_trait_satisfied_type( typeof( "bmath_group" ), TYPEOF_f3_t, NULL ) );
 
-    const bmath_abelian_group_s* p_group = bmath_abelian_group_s_get_typed( TYPEOF_f3_t );
+    const bmath_group_s* p_group = bmath_group_s_get_typed( TYPEOF_f3_t );
 
     f3_t v1 = 3;
     f3_t v2 = 2;
     f3_t v3 = 0;
 
-    bmath_abelian_group_spect_sub( p_group, &v3, &v1, &v2 );
+    bmath_group_spect_sub( p_group, &v3, &v1, &v2 );
 
     ASSERT( v3 == 1 );
 
@@ -302,35 +288,10 @@ vd_t bmath_spect_algebraic_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_PLAIN( bmath_fp_div, function_pointer );
             BCORE_REGISTER_PLAIN( bmath_fp_inv, function_pointer );
             BCORE_REGISTER_PLAIN( bmath_fp_one, function_pointer );
-
-            // functions
-            bcore_flect_push_ns_func( TYPEOF_f3_t, ( fp_t )bmath_f3_add, "bmath_fp_add", "add" );
-            bcore_flect_push_ns_func( TYPEOF_f3_t, ( fp_t )bmath_f3_zro, "bmath_fp_zro", "zro" );
-            bcore_flect_push_ns_func( TYPEOF_f3_t, ( fp_t )bmath_f3_neg, "bmath_fp_neg", "neg" );
-            bcore_flect_push_ns_func( TYPEOF_f3_t, ( fp_t )bmath_f3_sub, "bmath_fp_sub", "sub" );
-            bcore_flect_push_ns_func( TYPEOF_f3_t, ( fp_t )bmath_f3_mul, "bmath_fp_mul", "mul" );
-            bcore_flect_push_ns_func( TYPEOF_f3_t, ( fp_t )bmath_f3_one, "bmath_fp_one", "one" );
-            bcore_flect_push_ns_func( TYPEOF_f3_t, ( fp_t )bmath_f3_inv, "bmath_fp_inv", "inv" );
-            bcore_flect_push_ns_func( TYPEOF_f3_t, ( fp_t )bmath_f3_div, "bmath_fp_div", "div" );
-
-            bcore_flect_push_ns_func( TYPEOF_f2_t, ( fp_t )bmath_f2_add, "bmath_fp_add", "add" );
-            bcore_flect_push_ns_func( TYPEOF_f2_t, ( fp_t )bmath_f2_zro, "bmath_fp_zro", "zro" );
-            bcore_flect_push_ns_func( TYPEOF_f2_t, ( fp_t )bmath_f2_neg, "bmath_fp_neg", "neg" );
-            bcore_flect_push_ns_func( TYPEOF_f2_t, ( fp_t )bmath_f2_sub, "bmath_fp_sub", "sub" );
-            bcore_flect_push_ns_func( TYPEOF_f2_t, ( fp_t )bmath_f2_mul, "bmath_fp_mul", "mul" );
-            bcore_flect_push_ns_func( TYPEOF_f2_t, ( fp_t )bmath_f2_one, "bmath_fp_one", "one" );
-            bcore_flect_push_ns_func( TYPEOF_f2_t, ( fp_t )bmath_f2_inv, "bmath_fp_inv", "inv" );
-            bcore_flect_push_ns_func( TYPEOF_f2_t, ( fp_t )bmath_f2_div, "bmath_fp_div", "div" );
-
-            bcore_flect_push_ns_func( TYPEOF_s3_t, ( fp_t )bmath_s3_add, "bmath_fp_add", "add" );
-            bcore_flect_push_ns_func( TYPEOF_s3_t, ( fp_t )bmath_s3_zro, "bmath_fp_zro", "zro" );
-            bcore_flect_push_ns_func( TYPEOF_s3_t, ( fp_t )bmath_s3_neg, "bmath_fp_neg", "neg" );
-            bcore_flect_push_ns_func( TYPEOF_s3_t, ( fp_t )bmath_s3_sub, "bmath_fp_sub", "sub" );
-            bcore_flect_push_ns_func( TYPEOF_s3_t, ( fp_t )bmath_s3_mul, "bmath_fp_mul", "mul" );
-            bcore_flect_push_ns_func( TYPEOF_s3_t, ( fp_t )bmath_s3_one, "bmath_fp_one", "one" );
+            BCORE_REGISTER_PLAIN( bmath_fp_cpy, function_pointer );
 
             // reflections
-            BCORE_REGISTER_SPECT( bmath_abelian_group_s );
+            BCORE_REGISTER_SPECT( bmath_group_s );
             BCORE_REGISTER_SPECT( bmath_ring_s );
         }
         break;
