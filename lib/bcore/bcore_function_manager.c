@@ -87,6 +87,11 @@ fp_t bcore_function_get( tp_t t )
     return fp;
 }
 
+bl_t bcore_function_exists( tp_t t )
+{
+    return bcore_function_get( t ) != 0;
+}
+
 void bcore_function_set( tp_t t, fp_t f )
 {
     assert( hmap_s_g != NULL );

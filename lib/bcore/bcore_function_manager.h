@@ -27,8 +27,10 @@
 void bcore_function_set( tp_t t, fp_t f );
 tp_t bcore_function_set_sc( sc_t name, fp_t f );
 
-/// returns function associated with t or NULL if not enrolled (thread safe)
+/// returns function associated with t or 0 if not enrolled (thread safe)
 fp_t bcore_function_get( tp_t t );
+
+bl_t bcore_function_exists( tp_t t );
 
 /// removes t if existing
 void bcore_function_remove( tp_t t );
@@ -38,6 +40,6 @@ vd_t bcore_function_manager_signal_handler( const bcore_signal_s* o );
 /**********************************************************************************************************************/
 
 // Macros
-#define BCORE_REGISTER_FUNC( name ) bcore_function_set( entypeof( #name ), ( fp_t )name );
+#define BCORE_REGISTER_FUNC( name ) bcore_function_set( entypeof( #name ), ( fp_t )name )
 
 #endif // BCORE_FUNCTION_MANAGER_H
