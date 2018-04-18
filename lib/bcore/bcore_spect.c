@@ -468,14 +468,28 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
 
         if( !found && p_self_item->flags.f_strict )
         {
-            WRN_fa
-            (
-                "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' not found in '#<sc_t>'.",
-                ifnameof( p_self->type ),
-                ifnameof( p_self_item->type ),
-                ifnameof( p_self_item->name ),
-                ifnameof( o_self->type )
-            );
+            if( p_self_item->child_item )
+            {
+                ERR_fa
+                (
+                    "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' not found in '#<sc_t>'.",
+                    ifnameof( p_self->type ),
+                    ifnameof( p_self_item->child_item->type ),
+                    ifnameof( p_self_item->child_item->name ),
+                    ifnameof( o_self->type )
+                );
+            }
+            else
+            {
+                ERR_fa
+                (
+                    "Creating perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' not found in '#<sc_t>'.",
+                    ifnameof( p_self->type ),
+                    ifnameof( p_self_item->type ),
+                    ifnameof( p_self_item->name ),
+                    ifnameof( o_self->type )
+                );
+            }
         }
     }
 
