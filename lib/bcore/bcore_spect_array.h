@@ -147,6 +147,10 @@ vc_t bcore_array_spect_max(         const bcore_array_s* p, vc_t o, sz_t start, 
 sz_t bcore_array_spect_max_index(   const bcore_array_s* p, vc_t o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_spect_sort(        const bcore_array_s* p, vd_t o, sz_t start, sz_t end, s2_t direction );
 
+// running a function on all elements; the function is deemed to be of signature void (*)( vd_t );
+void bcore_array_spect_do(          const bcore_array_s* p, vd_t o, sz_t start, sz_t end, fp_t func );
+
+
 /** Computes a sorted order from the array (array itself remains unchanged).
  *  The returned order has size end - start and refers to the array section
  *  specified by start and end.
@@ -198,6 +202,7 @@ sz_t bcore_array_typed_get_unit_size        ( tp_t tp, vc_t o );
 vc_t bcore_array_typed_max                  ( tp_t tp, vc_t o, sz_t start, sz_t end, s2_t direction );
 sz_t bcore_array_typed_max_index            ( tp_t tp, vc_t o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_typed_sort                 ( tp_t tp, vd_t o, sz_t start, sz_t end, s2_t direction );
+void bcore_array_typed_do                   ( tp_t tp, vd_t o, sz_t start, sz_t end, fp_t func );
 vc_t bcore_array_typed_max_f                ( tp_t tp, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 sz_t bcore_array_typed_max_index_f          ( tp_t tp, vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 void bcore_array_typed_sort_f               ( tp_t tp, vd_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
@@ -246,6 +251,7 @@ sz_t bcore_array_aware_get_unit_size        ( vc_t o );
 vc_t bcore_array_aware_max                  ( vc_t o, sz_t start, sz_t end, s2_t direction );
 sz_t bcore_array_aware_max_index            ( vc_t o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_aware_sort                 ( vd_t o, sz_t start, sz_t end, s2_t direction );
+void bcore_array_aware_do                   ( vd_t o, sz_t start, sz_t end, fp_t func );
 vc_t bcore_array_aware_max_f                ( vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 sz_t bcore_array_aware_max_index_f          ( vc_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 void bcore_array_aware_sort_f               ( vd_t o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
@@ -294,6 +300,7 @@ sz_t bcore_array_get_unit_size        ( sr_s o );
 vc_t bcore_array_max                  ( sr_s o, sz_t start, sz_t end, s2_t direction );
 sz_t bcore_array_max_index            ( sr_s o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_sort                 ( sr_s o, sz_t start, sz_t end, s2_t direction );
+void bcore_array_do                   ( sr_s o, sz_t start, sz_t end, fp_t func );
 vc_t bcore_array_max_f                ( sr_s o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 sz_t bcore_array_max_index_f          ( sr_s o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 void bcore_array_sort_f               ( sr_s o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
@@ -342,6 +349,7 @@ sz_t bcore_array_q_get_unit_size        ( const sr_s* o );
 vc_t bcore_array_q_max                  ( const sr_s* o, sz_t start, sz_t end, s2_t direction );
 sz_t bcore_array_q_max_index            ( const sr_s* o, sz_t start, sz_t end, s2_t direction );
 void bcore_array_q_sort                 ( const sr_s* o, sz_t start, sz_t end, s2_t direction );
+void bcore_array_q_do                   ( const sr_s* o, sz_t start, sz_t end, fp_t func );
 vc_t bcore_array_q_max_f                ( const sr_s* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 sz_t bcore_array_q_max_index_f          ( const sr_s* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );
 void bcore_array_q_sort_f               ( const sr_s* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction );

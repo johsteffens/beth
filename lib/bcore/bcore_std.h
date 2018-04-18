@@ -30,6 +30,7 @@
 #include "bcore_spect_sink.h"
 #include "bcore_spect_interpreter.h"
 #include "bcore_spect_translator.h"
+#include "bcore_spect_compare.h"
 #include "bcore_txt_ml.h"
 #include "bcore_bin_ml.h"
 #include "bcore_signal.h"
