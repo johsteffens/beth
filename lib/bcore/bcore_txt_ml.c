@@ -168,6 +168,21 @@ void bcore_txt_ml_to_string( sr_s obj, st_s* string )
     bcore_translate( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( string ) );
 }
 
+void bcore_txt_ml_aware_to_stdout( vc_t o )
+{
+    bcore_txt_ml_to_stdout( sr_awc( o ) );
+}
+
+void bcore_txt_ml_aware_to_file(   vc_t o, sc_t file )
+{
+    bcore_txt_ml_to_file( sr_awc( o ), file );
+}
+
+void bcore_txt_ml_aware_to_string( vc_t o, st_s* string )
+{
+    bcore_txt_ml_to_string( sr_awc( o ), string );
+}
+
 /**********************************************************************************************************************/
 /// bcore_txt_ml_interpreter
 /**********************************************************************************************************************/

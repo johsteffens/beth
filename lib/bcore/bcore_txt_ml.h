@@ -46,6 +46,10 @@ void bcore_txt_ml_to_stdout( sr_s obj );
 void bcore_txt_ml_to_file(   sr_s obj, sc_t file );
 void bcore_txt_ml_to_string( sr_s obj, st_s* string );
 
+void bcore_txt_ml_aware_to_stdout( vc_t o );
+void bcore_txt_ml_aware_to_file(   vc_t o, sc_t file );
+void bcore_txt_ml_aware_to_string( vc_t o, st_s* string );
+
 /**********************************************************************************************************************/
 
 typedef struct bcore_txt_ml_interpreter_s

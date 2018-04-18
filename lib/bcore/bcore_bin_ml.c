@@ -152,6 +152,16 @@ void bcore_bin_ml_to_file( sr_s obj, sc_t file )
     bcore_life_s_discard( l );
 }
 
+sr_s bcore_bin_ml_aware_to_sink_buffer( vc_t obj )
+{
+    return bcore_bin_ml_to_sink_buffer( sr_awc( obj ) );
+}
+
+void bcore_bin_ml_aware_to_file( vc_t obj, sc_t file )
+{
+    bcore_bin_ml_to_file( sr_awc( obj ), file );
+}
+
 /**********************************************************************************************************************/
 /// bcore_bin_ml_interpreter
 /**********************************************************************************************************************/
