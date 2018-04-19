@@ -1601,14 +1601,14 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
             bcore_trait_set( entypeof( "type"             ), typeof( "num"  ) );       // type is encoded as number
 
             flect_define_basics();
-            BCORE_REGISTER_FLECT( bcore_link_static_s );
-            BCORE_REGISTER_FLECT( bcore_link_typed_s );
-            BCORE_REGISTER_FLECT( bcore_link_aware_s );
-            BCORE_REGISTER_FLECT( bcore_array_dyn_solid_static_s );
-            BCORE_REGISTER_FLECT( bcore_array_dyn_solid_typed_s );
-            BCORE_REGISTER_FLECT( bcore_array_dyn_link_static_s );
-            BCORE_REGISTER_FLECT( bcore_array_dyn_link_typed_s );
-            BCORE_REGISTER_FLECT( bcore_array_dyn_link_aware_s );
+            BCORE_REGISTER_OBJECT( bcore_link_static_s );
+            BCORE_REGISTER_OBJECT( bcore_link_typed_s );
+            BCORE_REGISTER_OBJECT( bcore_link_aware_s );
+            BCORE_REGISTER_OBJECT( bcore_array_dyn_solid_static_s );
+            BCORE_REGISTER_OBJECT( bcore_array_dyn_solid_typed_s );
+            BCORE_REGISTER_OBJECT( bcore_array_dyn_link_static_s );
+            BCORE_REGISTER_OBJECT( bcore_array_dyn_link_typed_s );
+            BCORE_REGISTER_OBJECT( bcore_array_dyn_link_aware_s );
         }
         break;
 

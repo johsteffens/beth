@@ -125,8 +125,8 @@ vd_t bcore_spect_matrix_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_FLECT( bcore_matrix_s );
-            BCORE_REGISTER_SPECT_CACHE( bcore_matrix_s );
+            BCORE_REGISTER_OBJECT( bcore_matrix_s );
+            bcore_spect_setup_cache( &bcore_matrix_s_cache_g );
         }
         break;
 

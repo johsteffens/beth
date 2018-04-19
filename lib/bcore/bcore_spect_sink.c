@@ -214,7 +214,7 @@ vd_t bcore_spect_sink_signal_handler( const bcore_signal_s* o )
         {
             sink_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_sink_s"  ), sink_s_create_self  );
-            BCORE_REGISTER_SPECT_CACHE( bcore_sink_s );
+            bcore_spect_setup_cache( &bcore_sink_s_cache_g );
         }
         break;
 

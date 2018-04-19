@@ -613,7 +613,7 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             spect_define_trait();
-            BCORE_REGISTER_FLECT( bcore_spect_header_s );
+            BCORE_REGISTER_OBJECT( bcore_spect_header_s );
         }
         break;
 

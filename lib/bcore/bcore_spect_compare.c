@@ -469,7 +469,7 @@ vd_t bcore_spect_compare_signal_handler( const bcore_signal_s* o )
         {
             compare_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_compare_s"  ), compare_s_create_self  );
-            BCORE_REGISTER_SPECT_CACHE( bcore_compare_s );
+            bcore_spect_setup_cache( &bcore_compare_s_cache_g );
         }
         break;
 

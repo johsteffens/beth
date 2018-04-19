@@ -377,6 +377,7 @@ static vd_t selftest( void )
 
 /**********************************************************************************************************************/
 
+BCORE_DEFINE_SPECT_CACHE( bmath_vector_s );
 vd_t bmath_spect_vector_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bmath_spect_vector" ) ) )

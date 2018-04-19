@@ -143,7 +143,7 @@ vd_t bcore_spect_interpreter_signal_handler( const bcore_signal_s* o )
         {
             interpreter_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_interpreter_s"  ), interpreter_s_create_self  );
-            BCORE_REGISTER_SPECT_CACHE( bcore_interpreter_s );
+            bcore_spect_setup_cache( &bcore_interpreter_s_cache_g );
         }
         break;
 

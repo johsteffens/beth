@@ -273,6 +273,9 @@ static vd_t selftest( void )
 
 /**********************************************************************************************************************/
 
+BCORE_DEFINE_SPECT_CACHE( bmath_group_s );
+BCORE_DEFINE_SPECT_CACHE( bmath_ring_s );
+
 vd_t bmath_spect_algebraic_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bmath_spect_algebraic" ) ) )

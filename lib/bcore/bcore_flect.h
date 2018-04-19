@@ -403,7 +403,7 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         return bcore_self_s_build_parse_sc( def, sizeof( name ) ); \
     }
 
-#define BCORE_REGISTER_FLECT( name )\
+#define BCORE_REGISTER_OBJECT( name )\
     bcore_flect_define_creator( typeof( #name ), name##_create_self )
 
 #define BCORE_REGISTER_PLAIN( name, trait )\

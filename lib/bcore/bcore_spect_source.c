@@ -280,7 +280,7 @@ vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o )
         {
             source_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_source_s"  ), source_s_create_self  );
-            BCORE_REGISTER_SPECT_CACHE( bcore_source_s );
+            bcore_spect_setup_cache( &bcore_source_s_cache_g );
         }
         break;
 

@@ -60,7 +60,7 @@ vd_t bmath_complex_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_FLECT( bmath_cf3_s );
+            BCORE_REGISTER_OBJECT( bmath_cf3_s );
             BCORE_REGISTER_FFUNC( bmath_fp_add, bmath_cf3_s_add );
             BCORE_REGISTER_FFUNC( bmath_fp_zro, bmath_cf3_s_zro );
             BCORE_REGISTER_FFUNC( bmath_fp_neg, bmath_cf3_s_neg );

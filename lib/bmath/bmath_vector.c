@@ -659,7 +659,7 @@ vd_t bmath_vector_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_fp_cpy,            bmath_vf3_s_cpy );
             BCORE_REGISTER_FFUNC( bmath_fp_vector_dot_prd, bmath_vf3_s_dot_prd );
             BCORE_REGISTER_FFUNC( bmath_fp_vector_mul,     bmath_vf3_s_mul );
-            BCORE_REGISTER_FLECT( bmath_vf3_s );
+            BCORE_REGISTER_OBJECT( bmath_vf3_s );
 
             BCORE_REGISTER_FFUNC( bmath_fp_add,            bmath_vcf3_s_add );
             BCORE_REGISTER_FFUNC( bmath_fp_zro,            bmath_vcf3_s_zro );
@@ -668,7 +668,7 @@ vd_t bmath_vector_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_fp_cpy,            bmath_vcf3_s_cpy );
             BCORE_REGISTER_FFUNC( bmath_fp_vector_dot_prd, bmath_vcf3_s_dot_prd );
             BCORE_REGISTER_FFUNC( bmath_fp_vector_mul,     bmath_vcf3_s_mul );
-            BCORE_REGISTER_FLECT( bmath_vcf3_s );
+            BCORE_REGISTER_OBJECT( bmath_vcf3_s );
         }
         break;
 

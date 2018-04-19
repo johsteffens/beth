@@ -761,7 +761,7 @@ vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o )
         {
             via_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_via_s" ), via_s_create_self );
-            BCORE_REGISTER_SPECT_CACHE( bcore_via_s );
+            bcore_spect_setup_cache( &bcore_via_s_cache_g );
         }
         break;
 

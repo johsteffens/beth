@@ -250,10 +250,10 @@ vd_t bcore_threads_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_FLECT( bcore_mutex_s );
-            BCORE_REGISTER_FLECT( bcore_condition_s );
-            BCORE_REGISTER_FLECT( bcore_thread_s );
-            BCORE_REGISTER_FLECT( bcore_thread_arr_s );
+            BCORE_REGISTER_OBJECT( bcore_mutex_s );
+            BCORE_REGISTER_OBJECT( bcore_condition_s );
+            BCORE_REGISTER_OBJECT( bcore_thread_s );
+            BCORE_REGISTER_OBJECT( bcore_thread_arr_s );
         }
         break;
 

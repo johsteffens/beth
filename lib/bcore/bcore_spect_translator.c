@@ -105,7 +105,7 @@ vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o )
         {
             translator_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_translator_s"  ), translator_s_create_self  );
-            BCORE_REGISTER_SPECT_CACHE( bcore_translator_s );
+            bcore_spect_setup_cache( &bcore_translator_s_cache_g );
         }
         break;
 

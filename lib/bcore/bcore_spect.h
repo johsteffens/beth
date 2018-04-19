@@ -110,8 +110,6 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o );
 /**********************************************************************************************************************/
 // macros
 
-#define BCORE_REGISTER_SPECT( name )\
-    bcore_spect_define_creator( typeof( #name ), name##_create_self )
 
 #define BCORE_DEFINE_INLINE_SPECT_GET_TYPED( name ) \
     static inline const name * name##_get_typed( tp_t o_type ) \
@@ -119,8 +117,9 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o );
         return bcore_spect_get_typed( TYPEOF_##name, o_type ); \
     }
 
-#define BCORE_DEFINE_SPECT_CACHE( name ) bcore_tp_fastmap_s name##_cache_g
-#define BCORE_REGISTER_SPECT_CACHE( name ) bcore_spect_setup_cache( &name##_cache_g )
+#define BCORE_DEFINE_SPECT_CACHE( name ) \
+    bcore_tp_fastmap_s name##_cache_g
+
 #define BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( name ) \
     extern bcore_tp_fastmap_s name##_cache_g; \
     static inline \
@@ -138,6 +137,19 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o );
     { \
         return name##_get_typed( *( const aware_t* )obj ); \
     }
+
+#define BCORE_DECLARE_SPECT( name ) \
+    BCORE_DECLARE_OBJECT( name ) \
+    BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHE( name ) \
+    BCORE_DEFINE_INLINE_SPECT_GET_AWARE( name )
+
+#define BCORE_DEFINE_SPECT( name ) \
+    BCORE_DEFINE_SPECT_CACHE( name );
+
+#define BCORE_REGISTER_SPECT( name )\
+    bcore_spect_setup_cache( &name##_cache_g ); \
+    bcore_spect_define_creator( typeof( #name ), name##_create_self );
+
 
 #endif // BCORE_SPECT_H
 

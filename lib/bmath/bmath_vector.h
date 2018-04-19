@@ -120,7 +120,6 @@ void bmath_vcf3_s_sqr_sub( bmath_cf3_s* s, const bmath_vcf3_s* o, const bmath_vc
 void bmath_vcf3_s_sum(     bmath_cf3_s* s, const bmath_vcf3_s* o );
 void bmath_vcf3_s_avg(     bmath_cf3_s* s, const bmath_vcf3_s* o );
 
-
 /**********************************************************************************************************************/
 
 vd_t bmath_vector_signal_handler( const bcore_signal_s* o );
