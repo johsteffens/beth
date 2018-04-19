@@ -59,16 +59,17 @@ static inline vc_t obj_vc( const bcore_array_s* p, vc_t o )
     return ( const u0_t* )o + p->caps_offset;
 }
 
-static inline const bcore_array_dyn_head_s* dyn_head_vc( const bcore_array_s* p, vc_t o )
+static const bcore_array_dyn_head_s* dyn_head_vc( const bcore_array_s* p, vc_t o )
 {
     return obj_vc( p, o );
 }
 
-static inline bcore_array_dyn_head_s* dyn_head_vd( const bcore_array_s* p, vd_t o )
+/*
+static bcore_array_dyn_head_s* dyn_head_vd( const bcore_array_s* p, vd_t o )
 {
     return obj_vd( p, o );
 }
-
+*/
 /**********************************************************************************************************************/
 
 static sz_t get_dyn_size( const bcore_array_s* p, vc_t o )

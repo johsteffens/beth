@@ -41,7 +41,7 @@ typedef void (*bmath_fp_vector_dot_prd )( vd_t scl, vc_t vec1, vc_t scl2 ); // s
 
 /**********************************************************************************************************************/
 
-typedef struct bmath_vector_s
+BCORE_DECLARE_SPECT( bmath_vector_s )
 {
     bcore_spect_header_s header;
     const bmath_ring_s*  spect_ring_scalar;  // ring of scalar type (vector element)
@@ -55,11 +55,7 @@ typedef struct bmath_vector_s
     bmath_fp_cpy            fp_cpy; // feature
     bmath_fp_vector_mul     fp_mul; // feature
     bmath_fp_vector_dot_prd fp_dot_prd; // feature
-
-} bmath_vector_s;
-
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bmath_vector_s )
-BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bmath_vector_s )
+};
 
 sz_t bmath_vector_spect_get_dim( const bmath_vector_s* p, vc_t o );
 

@@ -22,7 +22,7 @@
 
 #define NPXAG( name ) bmath_group_##name
 
-static const sc_t bmath_group_s_def = "bmath_group_s = spect"
+BCORE_DEFINE_SPECT( bmath_group_s )
 "{"
     "bcore_spect_header_s header;"
     "strict feature bcore_inst_s -> spect_inst;"
@@ -32,8 +32,6 @@ static const sc_t bmath_group_s_def = "bmath_group_s = spect"
     "       feature bmath_fp_sub sub ~> func bmath_fp_sub sub;"
     "       feature bmath_fp_cpy cpy ~> func bmath_fp_cpy cpy;"
 "}";
-
-BCORE_DEFINE_OBJECT_INST( bmath_group_s, bmath_group_s_def )
 
 void bmath_group_spect_add( const bmath_group_s* p, vd_t o, vc_t op1, vc_t op2 )
 {
@@ -109,7 +107,7 @@ void NPXAG(q_cpy    )(  const sr_s* o, vc_t op1           ) { NPXAG(spect_cpy)( 
 
 #define NPXRG( name ) bmath_ring_##name
 
-static sc_t bmath_ring_s_def = "bmath_ring_s = spect"
+BCORE_DEFINE_SPECT( bmath_ring_s )
 "{"
     "bcore_spect_header_s header;"
     "strict feature bcore_inst_s -> spect_inst;"
@@ -125,8 +123,6 @@ static sc_t bmath_ring_s_def = "bmath_ring_s = spect"
     "       feature bmath_fp_inv inv ~> func bmath_fp_inv inv;"
     "       feature bmath_fp_div div ~> func bmath_fp_div div;"
 "}";
-
-BCORE_DEFINE_OBJECT_INST( bmath_ring_s, bmath_ring_s_def )
 
 void bmath_ring_spect_add( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 )
 {
@@ -272,9 +268,6 @@ static vd_t selftest( void )
 }
 
 /**********************************************************************************************************************/
-
-BCORE_DEFINE_SPECT_CACHE( bmath_group_s );
-BCORE_DEFINE_SPECT_CACHE( bmath_ring_s );
 
 vd_t bmath_spect_algebraic_signal_handler( const bcore_signal_s* o )
 {

@@ -20,7 +20,8 @@
 
 /**********************************************************************************************************************/
 
-static sc_t bmath_vector_s_def = "bmath_vector_s = spect"
+
+BCORE_DEFINE_SPECT( bmath_vector_s )
 "{"
     "bcore_spect_header_s header;"
     "private        bmath_ring_s  -> spect_ring_scalar;"
@@ -33,6 +34,9 @@ static sc_t bmath_vector_s_def = "bmath_vector_s = spect"
     "       feature bmath_fp_cpy            fp_cpy     ~> func bmath_fp_cpy        cpy;"
     "       feature bmath_fp_vector_mul     fp_mul     ~> func bmath_fp_vector_mul vector_mul;"
     "       feature bmath_fp_vector_dot_prd fp_dot_prd ~> func bmath_fp_vector_dot_prd dot_prd;"
+
+
+    "func bcore_spect_fp_create_from_self create_from_self = bmath_vector_s_create_from_self;"
 "}";
 
 static bmath_vector_s* bmath_vector_s_create_from_self( const bcore_self_s* self )
@@ -41,13 +45,6 @@ static bmath_vector_s* bmath_vector_s_create_from_self( const bcore_self_s* self
     if( !o->spect_array_vector->item_p ) ERR_fa( "Cannot determine item type in object '#<sc_t>'", ifnameof( self->type ) );
     o->spect_ring_scalar = bmath_ring_s_get_typed( o->spect_array_vector->item_p->o_type );
     return o;
-}
-
-static bcore_self_s* bmath_vector_s_create_self( void )
-{
-    bcore_self_s* self = bcore_self_s_build_parse_sc( bmath_vector_s_def, sizeof( bmath_vector_s ) );
-    bcore_self_s_push_ns_func( self, ( fp_t )bmath_vector_s_create_from_self, "bcore_spect_fp_create_from_self", "create_from_self" );
-    return self;
 }
 
 /**********************************************************************************************************************/
@@ -377,15 +374,16 @@ static vd_t selftest( void )
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_SPECT_CACHE( bmath_vector_s );
 vd_t bmath_spect_vector_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bmath_spect_vector" ) ) )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_PLAIN( bmath_fp_vector_mul, function_pointer );
+            // features
+            BCORE_REGISTER_PLAIN( bmath_fp_vector_mul,     function_pointer );
             BCORE_REGISTER_PLAIN( bmath_fp_vector_dot_prd, function_pointer );
+            BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bmath_vector_s_create_from_self );
             BCORE_REGISTER_SPECT( bmath_vector_s );
         }
         break;

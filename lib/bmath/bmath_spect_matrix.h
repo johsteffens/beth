@@ -31,7 +31,7 @@ typedef void (*bmath_fp_matrix_mul_scl )( vd_t mat, vc_t mat1, vc_t scl2 ); // m
 
 /**********************************************************************************************************************/
 
-typedef struct bmath_matrix_s
+BCORE_DECLARE_SPECT( bmath_matrix_s )
 {
     bcore_spect_header_s header;
 
@@ -55,11 +55,7 @@ typedef struct bmath_matrix_s
     // matrix features
     bmath_fp_matrix_mul_vec fp_matrix_mul_vec;
     bmath_fp_matrix_mul_scl fp_matrix_mul_scl;
-
-} bmath_matrix_s;
-
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bmath_matrix_s )
-BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bmath_matrix_s )
+};
 
 sz_t bmath_matrix_spect_get_rows( const bmath_matrix_s* p, vc_t o );
 sz_t bmath_matrix_spect_get_cols( const bmath_matrix_s* p, vc_t o );

@@ -34,18 +34,16 @@ typedef sr_s (*bclos_closure_fp_sig )( vc_t o );
 // (optional) creates a static signature of closure: number of arguments, type of arguments (types could be perspectives)
 typedef bclos_signature_s* (*bclos_closure_fp_create_static_sig )( void );
 
-typedef struct bclos_closure_s
+/**********************************************************************************************************************/
+
+BCORE_DECLARE_SPECT( bclos_closure_s )
 {
-    aware_t p_type; // type of perspective
-    tp_t    o_type; // type of object
+    bcore_spect_header_s  header;
     bclos_signature_s*    static_sig; // static signature
     bclos_closure_fp_def  fp_def;
     bclos_closure_fp_call fp_call;
     bclos_closure_fp_sig  fp_sig; // dynamic signature
-} bclos_closure_s;
-
-const bclos_closure_s* bclos_closure_s_get_typed( tp_t type );
-const bclos_closure_s* bclos_closure_s_get_aware( vc_t o );
+};
 
 void bclos_closure_spect_def(     const bclos_closure_s* p, vd_t o, bclos_frame_s* frm );
 sr_s bclos_closure_spect_call(    const bclos_closure_s* p, vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args );
@@ -59,7 +57,12 @@ sr_s bclos_closure_q_sig(     const sr_s* o );
 sr_s bclos_closure_q_call_nv( const sr_s* o, bclos_frame_s* frm, sz_t n, va_list args ); // call with n arguments
 sr_s bclos_closure_q_call_na( const sr_s* o, bclos_frame_s* frm, sz_t n, ...          ); // call with n arguments
 
+/**********************************************************************************************************************/
+
 vd_t bclos_spect_closure_signal_handler( const bcore_signal_s* o );
+
+/**********************************************************************************************************************/
+// macros
 
 #define BCLOS_DEFINE_STD_CLOSURE( name, signature, function )\
 static vd_t name##_static_signature() { return bclos_signature_s_parse_from_sc( signature ); }\

@@ -176,7 +176,7 @@ void bcore_sink_aware_pushf        ( vd_t o, sc_t f, ...                  ) { va
 void bcore_sink_aware_push_fa      ( vd_t o, sc_t f, ...                  ) { va_list a; va_start( a, f ); bcore_sink_aware_push_fv( o, f, a ); va_end( a ); }
 
 inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_sink_s ); }
-inline static vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_sink_s ); }
+//inline static vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_sink_s ); }
 
 sz_t bcore_sink_push_data    ( sr_s o, vc_t d, sz_t sz )   { sz_t r = bcore_sink_spect_push_data(     w_spect( o ), o.o, d, sz ); sr_down( o ); return r; }
 void bcore_sink_flush        ( sr_s o                  )   {          bcore_sink_spect_flush(         w_spect( o ), o.o        ); sr_down( o ); }
@@ -195,7 +195,7 @@ void bcore_sink_q_flush        ( const sr_s* o                  )   {          b
 void bcore_sink_q_pushvf       ( const sr_s* o, sc_t f, va_list a ) {          bcore_sink_spect_pushvf(        w_spect( *o ), o->o, f, a  ); }
 void bcore_sink_q_push_fv      ( const sr_s* o, sc_t f, va_list a ) {          bcore_sink_spect_push_fv(       w_spect( *o ), o->o, f, a  ); }
 void bcore_sink_q_pushf        ( const sr_s* o, sc_t f, ... )       { va_list a; va_start( a, f ); bcore_sink_q_pushvf ( o, f, a ); va_end( a ); }
-void bcore_sink_q_push_fa      ( const sr_s* o, sc_t f, ... )       { va_list a; va_start( a, f ); bcore_sink_q_push_fa( o, f, a ); va_end( a ); }
+void bcore_sink_q_push_fa      ( const sr_s* o, sc_t f, ... )       { va_list a; va_start( a, f ); bcore_sink_q_push_fv( o, f, a ); va_end( a ); }
 void bcore_sink_q_push_char    ( const sr_s* o, char c )            {          bcore_sink_spect_push_char(     w_spect( *o ), o->o, c ); }
 void bcore_sink_q_push_sc      ( const sr_s* o, sc_t s )            {          bcore_sink_spect_push_sc(       w_spect( *o ), o->o, s ); }
 void bcore_sink_q_push_string  ( const sr_s* o, const st_s* s ) {    bcore_sink_spect_push_string(   w_spect( *o ), o->o, s ); }

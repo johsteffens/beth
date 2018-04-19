@@ -25,9 +25,6 @@
  *    * object-awareness (value after aware_t must be tp_t of the object's type)
  *    * Providing a reflection
  *    * Registering following features in its reflection:
- *      * bcore_fp_init
- *      * bcore_fp_down
- *      * bcore_fp_discard
  *      * bcore_spect_fp_create_from_self
  */
 
@@ -35,6 +32,12 @@
 #include "bcore_control.h"
 #include "bcore_flect.h"
 #include "bcore_tp_fastmap.h"
+
+/**********************************************************************************************************************/
+
+/// perspective-instance creation from object reflections
+typedef bcore_self_s* (*bcore_spect_fp_create_from_self )( const bcore_self_s* self );
+typedef bl_t          (*bcore_spect_fp_supports         )( const bcore_self_s* self );
 
 /**********************************************************************************************************************/
 
@@ -49,9 +52,6 @@ BCORE_DECLARE_OBJECT( bcore_spect_header_s )
 
 /**********************************************************************************************************************/
 
-/// perspective-instance creation from object reflections
-typedef bcore_self_s* (*bcore_spect_fp_create_from_self )( const bcore_self_s* self );
-typedef bl_t          (*bcore_spect_fp_supports         )( const bcore_self_s* self );
 
 /** Tests if perspective indicated by spect_trait is supported by object o_type. (thread safe)
  *  This function is fast and does not actually construct the perspective.
@@ -139,12 +139,16 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o );
     }
 
 #define BCORE_DECLARE_SPECT( name ) \
-    BCORE_DECLARE_OBJECT( name ) \
-    BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHE( name ) \
-    BCORE_DEFINE_INLINE_SPECT_GET_AWARE( name )
+    typedef struct name name; \
+    BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( name ) \
+    BCORE_DEFINE_INLINE_SPECT_GET_AWARE( name ) \
+    struct name
 
 #define BCORE_DEFINE_SPECT( name ) \
-    BCORE_DEFINE_SPECT_CACHE( name );
+    static sc_t name##_def_g; \
+    BCORE_DEFINE_SPECT_CACHE( name ); \
+    BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \
+    static sc_t name##_def_g = #name " = spect"
 
 #define BCORE_REGISTER_SPECT( name )\
     bcore_spect_setup_cache( &name##_cache_g ); \

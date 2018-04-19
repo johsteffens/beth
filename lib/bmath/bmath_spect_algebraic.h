@@ -36,7 +36,8 @@ typedef void (*bmath_fp_cpy )( vd_t o, vc_t op );            // o = op; note tha
 
 /**********************************************************************************************************************/
 // bmath_group_s (usually abelian)
-typedef struct bmath_group_s
+
+BCORE_DECLARE_SPECT( bmath_group_s )
 {
     bcore_spect_header_s header;
     const bcore_inst_s* spect_inst;
@@ -46,10 +47,7 @@ typedef struct bmath_group_s
     bmath_fp_sub fp_sub; // optional
     bmath_fp_cpy fp_cpy; // optional
 
-} bmath_group_s;
-
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bmath_group_s )
-BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bmath_group_s )
+};
 
 void bmath_group_spect_add( const bmath_group_s* p, vd_t o, vc_t op1, vc_t op2 );
 void bmath_group_spect_zro( const bmath_group_s* p, vd_t o );
@@ -82,9 +80,9 @@ void bmath_group_q_sub( const sr_s* o, vc_t op1, vc_t op2 );
 void bmath_group_q_cpy( const sr_s* o, vc_t op );
 
 /**********************************************************************************************************************/
-
 // bmath_ring_s
-typedef struct bmath_ring_s
+
+BCORE_DECLARE_SPECT( bmath_ring_s )
 {
     bcore_spect_header_s header;
     const bcore_inst_s* spect_inst;
@@ -99,11 +97,7 @@ typedef struct bmath_ring_s
     bmath_fp_one fp_one; // optional
     bmath_fp_inv fp_inv; // optional
     bmath_fp_div fp_div; // optional
-
-} bmath_ring_s;
-
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bmath_ring_s )
-BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bmath_ring_s )
+};
 
 void bmath_ring_spect_add( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
 void bmath_ring_spect_zro( const bmath_ring_s* p, vd_t o );

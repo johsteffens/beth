@@ -59,13 +59,13 @@ bmath_cf3_s bmath_cf3_init_urt( s3_t k, s3_t n )
 }
 
 static inline
-bmath_cf3_s bmath_cf3_zro()
+bmath_cf3_s bmath_cf3_zro( void )
 {
     return ( bmath_cf3_s ) { .v[0] = 0, .v[1] = 0 };
 }
 
 static inline
-bmath_cf3_s bmath_cf3_one()
+bmath_cf3_s bmath_cf3_one( void )
 {
     return ( bmath_cf3_s ) { .v[0] = 1, .v[1] = 0 };
 }

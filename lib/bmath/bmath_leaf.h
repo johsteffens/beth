@@ -31,9 +31,9 @@ static inline f3_t f3_max( f3_t a, f3_t b ) { return a > b ? a : b; }
 static inline f3_t f3_abs( f3_t v ) { return v  < 0 ? -v : v; }
 static inline f3_t f3_inv( f3_t v ) { return v != 0 ? 1.0 / v : 0; }
 
-static inline f3_t f3_pi()   { return 3.1415926535897932384626434; }
-static inline f3_t f3_pi_2() { return 1.5707963267948966192313217; }
-static inline f3_t f3_tau()  { return 6.2831853071795864769252868; }
+static inline f3_t f3_pi( void )   { return 3.1415926535897932384626434; }
+static inline f3_t f3_pi_2( void ) { return 1.5707963267948966192313217; }
+static inline f3_t f3_tau( void )  { return 6.2831853071795864769252868; }
 
 /// random generator (range -1, 1)
 static inline f3_t f3_xsg1_sym( u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv ) ) * ( 2.0 / 0xFFFFFFFFu ) - 1.0; }
