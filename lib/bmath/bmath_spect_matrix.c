@@ -20,6 +20,32 @@
 
 /**********************************************************************************************************************/
 
+BCORE_DECLARE_SPECT_BODY( bmath_matrix_s )
+{
+    bcore_spect_header_s header;
+
+    const bcore_array_s  * spect_array_matrix;    // array of matrix
+    const bmath_vector_s * spect_vector_matrix;   // vector of matrix
+    const bcore_matrix_s * spect_matrix_matrix;   // (bcore-)matrix of matrix
+    const bcore_inst_s   * spect_inst_matrix;     // inst of matrix
+    const bmath_vector_s * spect_vector_default;  // default vector perspective
+    const bmath_ring_s   * spect_ring_scalar;     // ring of scalar type (matrix element)
+
+    // ring features
+    bmath_fp_add fp_add;
+    bmath_fp_zro fp_zro;
+    bmath_fp_neg fp_neg;
+    bmath_fp_sub fp_sub;
+    bmath_fp_mul fp_mul;
+    bmath_fp_one fp_one;
+    bmath_fp_inv fp_inv;
+    bmath_fp_div fp_div;
+
+    // matrix features
+    bmath_fp_matrix_mul_vec fp_matrix_mul_vec;
+    bmath_fp_matrix_mul_scl fp_matrix_mul_scl;
+};
+
 BCORE_DEFINE_SPECT( bmath_matrix_s )
 "{"
     "bcore_spect_header_s header;"
@@ -47,7 +73,7 @@ BCORE_DEFINE_SPECT( bmath_matrix_s )
     "feature bmath_fp_matrix_mul_scl fp_matrix_mul_scl ~> func bmath_fp_matrix_mul_scl matrix_mul_scl;"
 
     // spect functions
-    "func bcore_spect_fp_create_from_self create_from_self = bmath_matrix_s_create_from_self;"
+    "func bcore_spect_fp:create_from_self;"
 "}";
 
 static bmath_matrix_s* bmath_matrix_s_create_from_self( const bcore_self_s* self )
@@ -221,8 +247,8 @@ vd_t bmath_spect_matrix_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_PLAIN( bmath_fp_matrix_mul_vec, function_pointer );
-            BCORE_REGISTER_PLAIN( bmath_fp_matrix_mul_scl, function_pointer );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_matrix_mul_vec );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_matrix_mul_scl );
             BCORE_REGISTER_SPECT( bmath_matrix_s );
             BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bmath_matrix_s_create_from_self );
         }

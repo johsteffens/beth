@@ -276,15 +276,15 @@ vd_t bmath_spect_algebraic_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // features
-            BCORE_REGISTER_PLAIN( bmath_fp_add, function_pointer );
-            BCORE_REGISTER_PLAIN( bmath_fp_sub, function_pointer );
-            BCORE_REGISTER_PLAIN( bmath_fp_neg, function_pointer );
-            BCORE_REGISTER_PLAIN( bmath_fp_zro, function_pointer );
-            BCORE_REGISTER_PLAIN( bmath_fp_mul, function_pointer );
-            BCORE_REGISTER_PLAIN( bmath_fp_div, function_pointer );
-            BCORE_REGISTER_PLAIN( bmath_fp_inv, function_pointer );
-            BCORE_REGISTER_PLAIN( bmath_fp_one, function_pointer );
-            BCORE_REGISTER_PLAIN( bmath_fp_cpy, function_pointer );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_add );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_sub );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_neg );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_zro );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mul );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_div );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_inv );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_one );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_cpy );
 
             // reflections
             BCORE_REGISTER_SPECT( bmath_group_s );

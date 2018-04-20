@@ -40,7 +40,7 @@
 /**********************************************************************************************************************/
 // dynamic size vector of f3_t
 
-typedef struct bmath_vf3_s
+BCORE_DECLARE_OBJECT_( bmath_vf3_s )
 {
     aware_t _;
     union
@@ -53,8 +53,7 @@ typedef struct bmath_vf3_s
             sz_t  space;
         };
     };
-} bmath_vf3_s;
-BCORE_DECLARE_OBJECT( bmath_vf3_s )
+};
 
 bmath_vf3_s* bmath_vf3_s_create_size( sz_t size );
 bmath_vf3_s* bmath_vf3_s_create_fill( f3_t val, sz_t size );
@@ -84,7 +83,7 @@ void bmath_vf3_s_dev(     f3_t* s, const bmath_vf3_s* o );
 /**********************************************************************************************************************/
 // dynamic size vector of bmath_cf3_s
 
-typedef struct bmath_vcf3_s
+BCORE_DECLARE_OBJECT_( bmath_vcf3_s )
 {
     aware_t _;
     union
@@ -97,8 +96,7 @@ typedef struct bmath_vcf3_s
             sz_t  space;
         };
     };
-} bmath_vcf3_s;
-BCORE_DECLARE_OBJECT( bmath_vcf3_s )
+};
 
 bmath_vcf3_s* bmath_vcf3_s_create_size( sz_t size );
 bmath_vcf3_s* bmath_vcf3_s_create_fill( bmath_cf3_s val, sz_t size );

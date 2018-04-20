@@ -20,20 +20,18 @@
 /**********************************************************************************************************************/
 // bmath_vf3_s
 
-static const sc_t bmath_vf3_s_def = "bmath_vf3_s = bmath_vector"
+BCORE_DEFINE_OBJECT_INST_( bmath_vector, bmath_vf3_s )
 "{"
     "aware_t _;"
     "f3_t [] arr;"
-    "func bmath_fp_add add                = bmath_vf3_s_add;"
-    "func bmath_fp_zro zro                = bmath_vf3_s_zro;"
-    "func bmath_fp_neg neg                = bmath_vf3_s_neg;"
-    "func bmath_fp_sub sub                = bmath_vf3_s_sub;"
-    "func bmath_fp_cpy cpy                = bmath_vf3_s_cpy;"
-    "func bmath_fp_vector_mul  vector_mul = bmath_vf3_s_mul;"
-    "func bmath_fp_vector_dot_prd dot_prd = bmath_vf3_s_dot_prd;"
+    "func bmath_fp:add;"
+    "func bmath_fp:zro;"
+    "func bmath_fp:neg;"
+    "func bmath_fp:sub;"
+    "func bmath_fp:cpy;"
+    "func bmath_fp:vector_mul = bmath_vf3_s_mul;"
+    "func bmath_fp_vector:dot_prd;"
 "}";
-
-BCORE_DEFINE_OBJECT_INST( bmath_vf3_s, bmath_vf3_s_def )
 
 bmath_vf3_s* bmath_vf3_s_create_size( sz_t size )
 {
@@ -236,20 +234,18 @@ void bmath_vf3_s_dev( f3_t* s, const bmath_vf3_s* o )
 /**********************************************************************************************************************/
 // bmath_vcf3_s
 
-static const sc_t bmath_vcf3_s_def = "bmath_vcf3_s = bmath_vector"
+BCORE_DEFINE_OBJECT_INST_( bmath_vector, bmath_vcf3_s )
 "{"
     "aware_t _;"
     "bmath_cf3_s [] arr;"
-    "func bmath_fp_add add                = bmath_vcf3_s_add;"
-    "func bmath_fp_zro zro                = bmath_vcf3_s_zro;"
-    "func bmath_fp_neg neg                = bmath_vcf3_s_neg;"
-    "func bmath_fp_sub sub                = bmath_vcf3_s_sub;"
-    "func bmath_fp_cpy cpy                = bmath_vcf3_s_cpy;"
-    "func bmath_fp_vector_mul  vector_mul = bmath_vcf3_s_mul;"
-    "func bmath_fp_vector_dot_prd dot_prd = bmath_vcf3_s_dot_prd;"
+    "func bmath_fp:add;"
+    "func bmath_fp:zro;"
+    "func bmath_fp:neg;"
+    "func bmath_fp:sub;"
+    "func bmath_fp:cpy;"
+    "func bmath_fp:vector_mul = bmath_vcf3_s_mul;"
+    "func bmath_fp_vector:dot_prd;"
 "}";
-
-BCORE_DEFINE_OBJECT_INST( bmath_vcf3_s, bmath_vcf3_s_def )
 
 bmath_vcf3_s* bmath_vcf3_s_create_size( sz_t size )
 {

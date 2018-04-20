@@ -138,10 +138,16 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o );
         return name##_get_typed( *( const aware_t* )obj ); \
     }
 
+// Optionally conclude with semicolon and continue
+// struct-body via BCORE_DECLARE_SPECT_BODY
 #define BCORE_DECLARE_SPECT( name ) \
     typedef struct name name; \
     BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( name ) \
     BCORE_DEFINE_INLINE_SPECT_GET_AWARE( name ) \
+    struct name
+
+// Body definition only
+#define BCORE_DECLARE_SPECT_BODY( name ) \
     struct name
 
 #define BCORE_DEFINE_SPECT( name ) \

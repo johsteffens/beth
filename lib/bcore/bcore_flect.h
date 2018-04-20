@@ -238,7 +238,7 @@ bcore_self_s* bcore_self_s_create();
 bcore_self_s* bcore_self_s_clone( const bcore_self_s* o );
 void                bcore_self_s_discard( bcore_self_s* o );
 
-sz_t                      bcore_self_s_items_size( const bcore_self_s* o );
+sz_t                     bcore_self_s_items_size( const bcore_self_s* o );
 const bcore_self_item_s* bcore_self_s_get_item( const bcore_self_s* o, sz_t index );
 
 bcore_self_item_s* bcore_self_s_push( bcore_self_s* o, const bcore_self_item_s* item );
@@ -269,9 +269,11 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   sz_t size );
  *  Typical Format:
  *  <type-name> = [<trait-name>]
  *  {
- *      [<prefixes>] <type> [<qualifier>] <name> [=<default value>];
+ *      [<prefixes>] <type> [<qualifier>] <name> [=<default>];
  *
  *      func <type> <name> = <ftype>;
+ *
+ *      [strict] feature <type> <name> [ ~> <related_expression> ]
  *      ....
  *  }
  *
@@ -290,6 +292,27 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   sz_t size );
  *     hidden  : Invisible to spect_via (can be seen as complement of 'shell')
  *     spect   : Perspective of parent object (private shallow link). Initialized by spect_inst. Private to other perspectives.
  *     const   : Constant. Requires default value. No physical representation in object. Typically used as perspective-parameter.
+ *
+ *  Function:
+ *    func <type> [:] <name> = <ftype>;  // ftype is tha name for the function registered with BCORE_REGISTER_(F)FUNC
+ *    func <type> [:] <name>;            // ftype is the generic name: <object type>_<function name>
+ *    If ':' is used, <type> is considered incomplete. The final type is composed via <type>_<name>  (to reduce redundancy)
+ *    Examples:
+ *      func bmath_fp:add;
+ *      func bmath_fp_add add;                                 // same as above
+ *      func bmath_fp_add add = myobject_s_add;                // same as above in case object is 'myobject_s'
+ *      func bmath_fp:vector_mul = bmath_vf3_s_mul;
+ *      func bmath_fp_vector_mul vector_mul = bmath_vf3_s_mul; // same as above
+ *
+ *  Feature:
+ *    [strict] feature  [<prefixes>] <type> [<qualifier>] <name> [=<default>] [~> <related expression> ];
+ *    A feature governs dynamic binding beween perspective and object.
+ *    It declares a perspective-item to be dynamically tied to the object-item.
+ *    'strict' indicates that the relation must exist or perspective construction produces an error.
+ *    Without 'strict', the feature reverts to default in case binding could not be established.
+ *    '~> <related expression>' specifies the exact binding desired. If left blank, canonic binding is used.
+ *    Examples:
+ *      feature bmath_fp_add fp_add ~> func bmath_fp_add add;
  *
  *  Special cases:
  *    <type-name> = <assigned-name> : creates a copy of an existing reflection with new name
@@ -403,15 +426,12 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         return bcore_self_s_build_parse_sc( def, sizeof( name ) ); \
     }
 
-#define BCORE_REGISTER_OBJECT( name )\
-    bcore_flect_define_creator( typeof( #name ), name##_create_self )
-
+/// deprecated: use BCORE_REGISTER_TYPE
 #define BCORE_REGISTER_PLAIN( name, trait )\
     bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( #name ), TYPEOF_##trait, sizeof( name ) ) )
 
-#define BCORE_DEFINE_OBJECT_FLAT( name, def ) \
-    BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( name ) \
-    BCORE_DEFINE_CREATE_SELF( name, def )
+#define BCORE_REGISTER_TYPE( trait, name )\
+    bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( #name ), TYPEOF_##trait, sizeof( name ) ) )
 
 #define BCORE_STATIC_ARRAY_S( type, name ) \
     union \
@@ -439,6 +459,25 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
 
 #define BCORE_OFFSET( object, offset ) ( ( vd_t* )( ( u0_t* )object + offset ) )
 
+#define BCORE_DEFINE_OBJECT_FLAT( name, def ) \
+    BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( name ) \
+    BCORE_DEFINE_CREATE_SELF( name, def )
+
+#define BCORE_DEFINE_SPECT( name ) \
+    static sc_t name##_def_g; \
+    BCORE_DEFINE_SPECT_CACHE( name ); \
+    BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \
+    static sc_t name##_def_g = #name " = spect"
+
+/// TODO: rename replacing BCORE_DEFINE_OBJECT_FLAT
+#define BCORE_DEFINE_OBJECT_FLAT_( trait, name ) \
+    static sc_t name##_def_g; \
+    BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( name ) \
+    BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \
+    static sc_t name##_def_g = #name " =" #trait
+
+#define BCORE_REGISTER_OBJECT( name )\
+    bcore_flect_define_creator( typeof( #name ), name##_create_self )
 
 /**********************************************************************************************************************/
 

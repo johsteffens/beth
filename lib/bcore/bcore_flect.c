@@ -251,7 +251,7 @@ void bcore_self_item_s_check_integrity( const bcore_self_item_s* o )
     if( o->caps >= BCORE_CAPS_END   ) ERR( "Invalid capsulation" );
 }
 
-void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src )
+void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
@@ -261,14 +261,33 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src )
 
     if( bcore_source_q_parse_bl_fa( &src, " #?w'func' " ) ) // function declaration
     {
-        bcore_source_q_parse_fa( &src, "#name #name", type_name, item_name );
+        bl_t join_type = false;
+        bcore_source_q_parse_fa( &src, "#name #?':' #name", type_name, &join_type, item_name );
+
+        if( join_type )
+        {
+
+            st_s* type_prefix = st_s_clone( type_name );
+            st_s_copy_fa( type_name, "#<sc_t>_#<sc_t>", type_prefix->sc, item_name->sc );
+            st_s_discard( type_prefix );
+        }
+
         o->type = entypeof( type_name->sc );
         o->name = entypeof( item_name->sc );
         o->caps = BCORE_CAPS_EXTERNAL_FUNC;
+        st_s* assign_name = st_s_create_l( l );
+
         if( bcore_source_q_parse_bl_fa( &src, " #?'=' " ) )
         {
-            st_s* assign_name = st_s_create_l( l );
             bcore_source_q_parse_fa( &src, "#name", assign_name );
+        }
+        else if( parent )
+        {
+            st_s_push_fa( assign_name, "#<sc_t>_#<sc_t>", ifnameof( parent ), item_name->sc );
+        }
+
+        if( !st_s_equal_sc( assign_name, "" ) )
+        {
             tp_t func_tp = entypeof( assign_name->sc );
             if( !bcore_function_exists( func_tp ) )
             {
@@ -540,7 +559,7 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src )
     {
         o->flags.f_feature = true;
         o->child_item = bcore_self_item_s_create();
-        bcore_self_item_s_parse_src( o->child_item, src );
+        bcore_self_item_s_parse_src( o->child_item, src, 0 );
     }
     else
     {
@@ -671,7 +690,7 @@ st_s* bcore_self_body_s_show( const bcore_self_body_s* o )
     return s;
 }
 
-void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src )
+void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, tp_t parent )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
@@ -686,7 +705,7 @@ void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src )
             break;
         }
         bcore_self_item_s* item = bcore_self_item_s_create();
-        bcore_self_item_s_parse_src( item, src );
+        bcore_self_item_s_parse_src( item, src, parent );
 
         if( item->type == typeof( "aware_t" ) )
         {
@@ -955,7 +974,7 @@ bcore_self_s* bcore_self_s_build_parse_src( sr_s src, sz_t size_of )
     {
         o->trait = type2 ? type2 : typeof( "bcore_inst" );
         o->body = bcore_self_body_s_create();
-        bcore_self_body_s_parse_src( o->body, src );
+        bcore_self_body_s_parse_src( o->body, src, o->type );
 
         if( !o->type )
         {

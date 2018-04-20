@@ -39,29 +39,22 @@ BCORE_DEFINE_FUNCTION_DISCARD( bclos_closure_s )
 
 /**********************************************************************************************************************/
 
-static void closure_s_define_trait()
-{
-    tp_t trait = entypeof( "bclos_closure" );
-    bcore_trait_require_function( trait, entypeof( "bclos_closure_fp_call" ), 0 );
-    bcore_trait_set( trait, entypeof( "bcore_inst" ) );
-}
+BCORE_DEFINE_SPECT( bclos_closure_s )
+"{\
+    bcore_spect_header_s  header;\
+    bclos_signature_s => static_sig;\
+           feature bclos_closure_fp_def  fp_def  ~> func bclos_closure_fp_def  def;\
+    strict feature bclos_closure_fp_call fp_call ~> func bclos_closure_fp_call call;\
+           feature bclos_closure_fp_sig  fp_sig  ~> func bclos_closure_fp_sig  sig;\
+\
+    func bcore_spect_fp:create_from_self;\
+}";
 
-static bclos_closure_s* create_from_self( const bcore_self_s* self )
+static bclos_closure_s* bclos_closure_s_create_from_self( const bcore_self_s* self )
 {
     bclos_closure_s* o = bcore_spect_create_from_self( bcore_flect_get_self( TYPEOF_bclos_closure_s ), self );
-    o->fp_def     = ( bclos_closure_fp_def  )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bclos_closure_fp_def"  ), 0 );
-    o->fp_call    = ( bclos_closure_fp_call )bcore_self_s_get_external_fp( self, bcore_name_enroll( "bclos_closure_fp_call" ), 0 );
-    o->fp_sig     = ( bclos_closure_fp_sig  )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bclos_closure_fp_sig"  ), 0 );
     o->static_sig = bcore_self_s_try_static( self, bcore_name_enroll( "bclos_closure_fp_create_static_sig"  ), 0 );
     return o;
-}
-
-static bcore_self_s* closure_s_create_self( void )
-{
-    sc_t def = "bclos_closure_s = spect { aware_t p_type; tp_t o_type; bclos_signature_s* static_sig; ... }";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bclos_closure_s ) );
-    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self",  "create_from_self" );
-    return self;
 }
 
 /**********************************************************************************************************************/
@@ -139,8 +132,13 @@ vd_t bclos_spect_closure_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            closure_s_define_trait();
-            bcore_flect_define_creator( typeof( "bclos_closure_s" ), closure_s_create_self );
+            BCORE_REGISTER_TYPE( function_pointer, bclos_closure_fp_def );
+            BCORE_REGISTER_TYPE( function_pointer, bclos_closure_fp_call );
+            BCORE_REGISTER_TYPE( function_pointer, bclos_closure_fp_sig );
+            BCORE_REGISTER_TYPE( function_pointer, bclos_closure_fp_create_static_sig );
+
+            BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bclos_closure_s_create_from_self );
+            BCORE_REGISTER_SPECT( bclos_closure_s );
 
             /// language specific closures
             bcore_trait_set( typeof( "bclos_language_closure" ), typeof( "bclos_closure" ) );

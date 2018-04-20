@@ -36,7 +36,7 @@ BCORE_DEFINE_SPECT( bmath_vector_s )
     "       feature bmath_fp_vector_dot_prd fp_dot_prd ~> func bmath_fp_vector_dot_prd dot_prd;"
 
 
-    "func bcore_spect_fp_create_from_self create_from_self = bmath_vector_s_create_from_self;"
+    "func bcore_spect_fp:create_from_self;"
 "}";
 
 static bmath_vector_s* bmath_vector_s_create_from_self( const bcore_self_s* self )
@@ -381,8 +381,8 @@ vd_t bmath_spect_vector_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // features
-            BCORE_REGISTER_PLAIN( bmath_fp_vector_mul,     function_pointer );
-            BCORE_REGISTER_PLAIN( bmath_fp_vector_dot_prd, function_pointer );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_vector_mul );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_vector_dot_prd );
             BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bmath_vector_s_create_from_self );
             BCORE_REGISTER_SPECT( bmath_vector_s );
         }

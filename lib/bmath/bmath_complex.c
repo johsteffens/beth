@@ -17,22 +17,18 @@
 
 /**********************************************************************************************************************/
 
-static const sc_t bmath_cf3_s_def = "bmath_cf3_s = bmath_ring"
+BCORE_DEFINE_OBJECT_FLAT_( bmath_ring, bmath_cf3_s )
 "{"
     "f3_t [2] v;"
-
-    "func bmath_fp_add add = bmath_cf3_s_add;"
-    "func bmath_fp_zro zro = bmath_cf3_s_zro;"
-    "func bmath_fp_neg neg = bmath_cf3_s_neg;"
-    "func bmath_fp_sub sub = bmath_cf3_s_sub;"
-    "func bmath_fp_mul mul = bmath_cf3_s_mul;"
-    "func bmath_fp_one one = bmath_cf3_s_one;"
-    "func bmath_fp_inv inv = bmath_cf3_s_inv;"
-    "func bmath_fp_div div = bmath_cf3_s_div;"
-
+    "func bmath_fp:add;"
+    "func bmath_fp:zro;"
+    "func bmath_fp:neg;"
+    "func bmath_fp:sub;"
+    "func bmath_fp:mul;"
+    "func bmath_fp:one;"
+    "func bmath_fp:inv;"
+    "func bmath_fp:div;"
 "}";
-
-BCORE_DEFINE_OBJECT_FLAT( bmath_cf3_s, bmath_cf3_s_def )
 
 /**********************************************************************************************************************/
 

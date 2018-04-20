@@ -46,8 +46,15 @@ BCORE_DECLARE_SPECT( bmath_group_s )
     bmath_fp_neg fp_neg; // mandatory
     bmath_fp_sub fp_sub; // optional
     bmath_fp_cpy fp_cpy; // optional
-
 };
+
+/*
+BCORE_SPECT_DECLARE_FUNC_DTARXP2( bmath_group, add, vc_t, op1, vc_t, op2 )
+BCORE_SPECT_DECLARE_FUNC_DTARXP0( bmath_group, zro )
+BCORE_SPECT_DECLARE_FUNC_DTARXP1( bmath_group, neg, vc_t, op1 )
+BCORE_SPECT_DECLARE_FUNC_DTARXP2( bmath_group, sub, vc_t, op1, vc_t, op2 )
+BCORE_SPECT_DECLARE_FUNC_DTARXP1( bmath_group, cpy, vc_t, op )
+*/
 
 void bmath_group_spect_add( const bmath_group_s* p, vd_t o, vc_t op1, vc_t op2 );
 void bmath_group_spect_zro( const bmath_group_s* p, vd_t o );
