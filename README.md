@@ -43,7 +43,7 @@ Beth employs *Reflection* as basis for genericity. The reflection-framework allo
 The framework is used for object instantiation, initialization, lifetime management, serialization and more. Inside the beth codebase *reflection* is abbreviated `flect`.
 
 ### Perspective
-A key-component is the so-called *Perspective*, which is a special abstraction for a generic framework with the character of a polymorphic interface but without requiring inheritance. Binding between *Perspective* and *Object* is dynamic. Neither need be aware of the other's existence at compile time, yet a *Perspective* may act as generic source of functionality for an object as well as its abstract interface. The perspective-framework builds upon the reflection framework. Inside the beth codebase *perspective* is abbreviated `spect`.
+A key-component is the so-called *Perspective*, which is a special abstraction for a generic framework with the character of a polymorphic interface with dynamic binding. *Perspective* and *Object* need not be aware of each other at compile time, yet a *Perspective* may act as generic source of functionality for an object as well as its abstraction. The perspective-framework builds upon the reflection framework. Inside the beth codebase *perspective* is abbreviated `spect`.
 
 ### Associative Binding
 Dynamic associations between *types*, *reflections*, and *perspectives* are accomplished via hashmaps. For this purpose I experimented with Pagh's & Rodler's cuckoo-hashing and composed a fast & stable monolithic implementation of the algorithm.
