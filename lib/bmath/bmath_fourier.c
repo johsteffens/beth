@@ -49,9 +49,11 @@ void bmath_fourier_dft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t size )
 
 /**********************************************************************************************************************/
 
-// for n0 > 4: buf must be preallocated to size n0;
-// buf == src is allowed
-void bmath_fourier_fft_f3_buf( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t n0, bmath_cf3_s* buf )
+/** Efficient flavor of the recursive Cooley Turkey fft algorithm.
+ *    for n0 > 4: buf must be preallocated to size n0.
+ *    buf == src is allowed.
+ */
+void bmath_fourier_rct_fft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t n0, bmath_cf3_s* buf )
 {
     if( n0 == 4 )
     {
@@ -71,14 +73,16 @@ void bmath_fourier_fft_f3_buf( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t n0
 
     bmath_cf3_s ws0 = bmath_cf3_init_urt( -1, n0 );
     bmath_cf3_s w0  = bmath_cf3_one();
+
     for( sz_t i = 0; i < n1; i++ )
     {
         bmath_cf3_s_add( &dst[ i ], &src[ i ], &src[ i + n1 ] );
         bmath_cf3_s_mul_sub( &buf[ i ], &w0, &src[ i ], &src[ i + n1 ] );
         bmath_cf3_s_mul( &w0, &w0, &ws0 );
     }
-    bmath_fourier_fft_f3_buf( dst + n1, buf, n1, buf + n1 );
-    bmath_fourier_fft_f3_buf( buf,      dst, n1, buf + n1 );
+
+    bmath_fourier_rct_fft_f3( dst + n1, buf, n1, buf + n1 );
+    bmath_fourier_rct_fft_f3( buf,      dst, n1, buf + n1 );
 
     for( sz_t i = 0; i < n1; i++ )
     {
@@ -87,37 +91,43 @@ void bmath_fourier_fft_f3_buf( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t n0
     }
 }
 
-void bmath_fourier_fft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t n0 )
+vd_t bmath_fourier_fft_f3_buf( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t size, vd_t buf )
 {
-    if( n0 <= 2 )
+    if( size <= 2 )
     {
-        if( n0 == 0 ) return;
+        if( size == 0 ) return NULL;
 
-        if( n0 == 1 )
+        if( size == 1 )
         {
             dst[ 0 ] = src[ 0 ];
-            return;
+            return NULL;
         }
 
         dst[ 0 ].v[ 0 ] = src[ 0 ].v[ 0 ] + src[ 1 ].v[ 0 ];
         dst[ 0 ].v[ 1 ] = src[ 0 ].v[ 1 ] + src[ 1 ].v[ 1 ];
         dst[ 1 ].v[ 0 ] = src[ 0 ].v[ 0 ] - src[ 1 ].v[ 0 ];
         dst[ 1 ].v[ 1 ] = src[ 0 ].v[ 1 ] - src[ 1 ].v[ 1 ];
-        return;
+        return NULL;
     }
 
-    ASSERT( ( n0 & ( n0 - 1 ) ) == 0 ); // size must be power of two
-    bmath_cf3_s* buf = bcore_malloc( sizeof( bmath_cf3_s ) * n0 );
+    ASSERT( ( size & ( size - 1 ) ) == 0 ); // size must be power of two
+    bmath_cf3_s* buf_l = ( buf ) ? buf : bcore_malloc( sizeof( bmath_cf3_s ) * size );
+
     if( src == dst )
     {
-        bcore_memcpy( buf, src, sizeof( bmath_cf3_s ) * n0 );
-        bmath_fourier_fft_f3_buf( dst, buf, n0, buf );
+        bcore_memcpy( buf_l, src, sizeof( bmath_cf3_s ) * size );
+        bmath_fourier_rct_fft_f3( dst, buf_l, size, buf_l );
     }
     else
     {
-        bmath_fourier_fft_f3_buf( dst, src, n0, buf );
+        bmath_fourier_rct_fft_f3( dst, src, size, buf_l );
     }
-    bcore_free( buf );
+    return buf_l;
+}
+
+void bmath_fourier_fft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t size )
+{
+    bcore_free( bmath_fourier_fft_f3_buf( dst, src, size, NULL ) );
 }
 
 /**********************************************************************************************************************/

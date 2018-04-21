@@ -261,10 +261,10 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
 
     if( bcore_source_q_parse_bl_fa( &src, " #?w'func' " ) ) // function declaration
     {
-        bl_t join_type = false;
-        bcore_source_q_parse_fa( &src, "#name #?':' #name", type_name, &join_type, item_name );
+        bl_t extend_type_name = false;
+        bcore_source_q_parse_fa( &src, "#name #?':' #name", type_name, &extend_type_name, item_name );
 
-        if( join_type )
+        if( extend_type_name )
         {
 
             st_s* type_prefix = st_s_clone( type_name );
@@ -371,6 +371,7 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
 
         // type can be specified by explicit type id number (anonymous types) or by name
         tp_t type_val = 0;
+        bl_t extend_type_name = false;
         if( bcore_source_q_parse_bl_fa( &src, " #?([0]=='{')" ) ) // nested anonymous type
         {
             type_val = bcore_flect_type_parse_src( src );
@@ -381,7 +382,7 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
         }
         else // type is specified by name
         {
-            bcore_source_q_parse_fa( &src, "#name ", type_name );
+            bcore_source_q_parse_fa( &src, "#name #?':' ", type_name, &extend_type_name );
         }
 
 
@@ -423,6 +424,14 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
         }
 
         bcore_source_q_parse_fa( &src, "#name #?'=' ", item_name, &f_assign_default );
+
+        if( extend_type_name )
+        {
+
+            st_s* type_prefix = st_s_clone( type_name );
+            st_s_copy_fa( type_name, "#<sc_t>_#<sc_t>", type_prefix->sc, item_name->sc );
+            st_s_discard( type_prefix );
+        }
 
         o->flags.f_private   = f_private || f_spect;
         o->flags.f_hidden    = f_hidden;

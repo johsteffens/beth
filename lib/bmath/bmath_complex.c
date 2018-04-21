@@ -42,7 +42,7 @@ static vd_t selftest( void )
 
 //    bcore_txt_ml_to_stdout( sr_twc( TYPEOF_bmath_cf3_s, &c3 ) );
     bmath_cf3_s_div( &c3, &c1, &c2 );
-    bmath_ring_typed_div( TYPEOF_bmath_cf3_s, &c4, &c1, &c2 );
+    bmath_ring_t_div( TYPEOF_bmath_cf3_s, &c4, &c1, &c2 );
     ASSERT( bcore_compare_typed( TYPEOF_bmath_cf3_s, &c3, &c4 ) == 0 );
 
     return NULL;

@@ -361,7 +361,7 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
         vd_t dst = bcore_inst_item_s_get_obj( p_inst_item, o );
         bl_t found = false;
 
-        if( p_self_item->child_item )
+        if( p_self_item->child_item ) // explicit bindings
         {
             const bcore_self_item_s* p_child_item = p_self_item->child_item;
 
@@ -450,18 +450,28 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
                 }
             }
         }
-        else
+        else // implicit (canonoic) bindings
         {
-            for( sz_t i = 0; i < o_items_size; i++ )
+            if( bcore_trait_is_of( p_self_item->type, TYPEOF_spect ) && p_self_item->caps == BCORE_CAPS_LINK_STATIC )
             {
-                const bcore_self_item_s* o_self_item = bcore_self_s_get_item( o_self, i );
-                if( o_self_item->flags.f_private ) continue;
-                if( o_self_item->flags.f_shell   ) continue;
-
-                if( bcore_trait_is_of( p_self_item->type, TYPEOF_spect ) && p_self_item->caps == BCORE_CAPS_LINK_STATIC )
+                found = true;
+                *( vc_t* )dst = bcore_spect_get_typed( p_self_item->type, o_self->type );
+            }
+            else if( bcore_trait_is_of( p_self_item->type, TYPEOF_function_pointer ) && p_self_item->caps == BCORE_CAPS_SOLID_STATIC )
+            {
+                for( sz_t i = 0; i < o_items_size; i++ )
                 {
-                    found = true;
-                    *( vc_t* )dst = bcore_spect_get_typed( p_self_item->type, o_self->type );
+                    const bcore_self_item_s* o_self_item = bcore_self_s_get_item( o_self, i );
+                    if( o_self_item->flags.f_private ) continue;
+                    if( o_self_item->flags.f_shell   ) continue;
+
+                    if( o_self_item->type == p_self_item->type && o_self_item->name == p_self_item->name && o_self_item->caps == BCORE_CAPS_EXTERNAL_FUNC )
+                    {
+                        found = true;
+                        fp_t src_fp = bcore_function_get( o_self_item->default_tp );
+                        ( *(fp_t*)dst ) = src_fp;
+                        break;
+                    }
                 }
             }
         }
@@ -595,6 +605,11 @@ vc_t ch_spect_o( vc_t p, tp_t obj_type )
         return bcore_spect_get_typed( *(aware_t*)p, obj_type );
     }
     return p;
+}
+
+void bcore_spect_missing_err( vc_t p, sc_t name )
+{
+    ERR_fa( "Unmapped function #<sc_t>(#<sc_t>).#<sc_t>.", ifnameof( spect_tp_p( p ) ), ifnameof( spect_tp_o( p ) ), name );
 }
 
 /**********************************************************************************************************************/

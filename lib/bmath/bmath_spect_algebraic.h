@@ -41,50 +41,18 @@ BCORE_DECLARE_SPECT( bmath_group_s )
 {
     bcore_spect_header_s header;
     const bcore_inst_s* spect_inst;
-    bmath_fp_add fp_add; // mandatory
-    bmath_fp_zro fp_zro; // mandatory
-    bmath_fp_neg fp_neg; // mandatory
-    bmath_fp_sub fp_sub; // optional
-    bmath_fp_cpy fp_cpy; // optional
+    bmath_fp_add add; // mandatory
+    bmath_fp_zro zro; // mandatory
+    bmath_fp_neg neg; // mandatory
+    bmath_fp_sub sub; // optional
+    bmath_fp_cpy cpy; // optional
 };
 
-/*
-BCORE_SPECT_DECLARE_FUNC_DTARXP2( bmath_group, add, vc_t, op1, vc_t, op2 )
-BCORE_SPECT_DECLARE_FUNC_DTARXP0( bmath_group, zro )
-BCORE_SPECT_DECLARE_FUNC_DTARXP1( bmath_group, neg, vc_t, op1 )
-BCORE_SPECT_DECLARE_FUNC_DTARXP2( bmath_group, sub, vc_t, op1, vc_t, op2 )
-BCORE_SPECT_DECLARE_FUNC_DTARXP1( bmath_group, cpy, vc_t, op )
-*/
-
-void bmath_group_spect_add( const bmath_group_s* p, vd_t o, vc_t op1, vc_t op2 );
-void bmath_group_spect_zro( const bmath_group_s* p, vd_t o );
-void bmath_group_spect_neg( const bmath_group_s* p, vd_t o, vc_t op );
-void bmath_group_spect_sub( const bmath_group_s* p, vd_t o, vc_t op1, vc_t op2 );
-void bmath_group_spect_cpy( const bmath_group_s* p, vd_t o, vc_t op );
-
-void bmath_group_typed_add( tp_t t, vd_t o, vc_t op1, vc_t op2 );
-void bmath_group_typed_zro( tp_t t, vd_t o );
-void bmath_group_typed_neg( tp_t t, vd_t o, vc_t op );
-void bmath_group_typed_sub( tp_t t, vd_t o, vc_t op1, vc_t op2 );
-void bmath_group_typed_cpy( tp_t t, vd_t o, vc_t op );
-
-void bmath_group_aware_add( vd_t o, vc_t op1, vc_t op2 );
-void bmath_group_aware_zro( vd_t o );
-void bmath_group_aware_neg( vd_t o, vc_t op );
-void bmath_group_aware_sub( vd_t o, vc_t op1, vc_t op2 );
-void bmath_group_aware_cpy( vd_t o, vc_t op );
-
-void bmath_group_add( sr_s o, vc_t op1, vc_t op2 );
-void bmath_group_zro( sr_s o );
-void bmath_group_neg( sr_s o, vc_t op );
-void bmath_group_sub( sr_s o, vc_t op1, vc_t op2 );
-void bmath_group_cpy( sr_s o, vc_t op );
-
-void bmath_group_q_add( const sr_s* o, vc_t op1, vc_t op2 );
-void bmath_group_q_zro( const sr_s* o );
-void bmath_group_q_neg( const sr_s* o, vc_t op );
-void bmath_group_q_sub( const sr_s* o, vc_t op1, vc_t op2 );
-void bmath_group_q_cpy( const sr_s* o, vc_t op );
+BCORE_DECLARE_SPECT_MAPF_V2( bmath_group, add, vd_t, vc_t, op1, vc_t, op2 )
+BCORE_DECLARE_SPECT_MAPF_V0( bmath_group, zro, vd_t )
+BCORE_DECLARE_SPECT_MAPF_V1( bmath_group, neg, vd_t, vc_t, op1 )
+BCORE_DECLARE_SPECT_MAPD_V2( bmath_group, sub, vd_t, vc_t, op1, vc_t, op2 )
+BCORE_DECLARE_SPECT_MAPD_V1( bmath_group, cpy, vd_t, vc_t, op1 )
 
 /**********************************************************************************************************************/
 // bmath_ring_s
@@ -94,67 +62,28 @@ BCORE_DECLARE_SPECT( bmath_ring_s )
     bcore_spect_header_s header;
     const bcore_inst_s* spect_inst;
 
-    bmath_fp_add fp_add; // mandatory
-    bmath_fp_zro fp_zro; // mandatory
-    bmath_fp_neg fp_neg; // mandatory
-    bmath_fp_sub fp_sub; // optional
-    bmath_fp_cpy fp_cpy; // optional
+    bmath_fp_add add; // mandatory
+    bmath_fp_zro zro; // mandatory
+    bmath_fp_neg neg; // mandatory
+    bmath_fp_sub sub; // optional
+    bmath_fp_cpy cpy; // optional
 
-    bmath_fp_mul fp_mul; // mandatory
-    bmath_fp_one fp_one; // optional
-    bmath_fp_inv fp_inv; // optional
-    bmath_fp_div fp_div; // optional
+    bmath_fp_mul mul; // mandatory
+    bmath_fp_one one; // optional
+    bmath_fp_inv inv; // optional
+    bmath_fp_div div; // optional
 };
 
-void bmath_ring_spect_add( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
-void bmath_ring_spect_zro( const bmath_ring_s* p, vd_t o );
-void bmath_ring_spect_neg( const bmath_ring_s* p, vd_t o, vc_t op );
-void bmath_ring_spect_sub( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
-void bmath_ring_spect_cpy( const bmath_ring_s* p, vd_t o, vc_t op ); // copy
-void bmath_ring_spect_mul( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
-void bmath_ring_spect_one( const bmath_ring_s* p, vd_t o );
-void bmath_ring_spect_inv( const bmath_ring_s* p, vd_t o, vc_t op );
-void bmath_ring_spect_div( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 );
+BCORE_DECLARE_SPECT_MAPF_V2( bmath_ring, add, vd_t, vc_t, op1, vc_t, op2 )
+BCORE_DECLARE_SPECT_MAPF_V0( bmath_ring, zro, vd_t )
+BCORE_DECLARE_SPECT_MAPF_V1( bmath_ring, neg, vd_t, vc_t, op1 )
+BCORE_DECLARE_SPECT_MAPD_V2( bmath_ring, sub, vd_t, vc_t, op1, vc_t, op2 )
+BCORE_DECLARE_SPECT_MAPD_V1( bmath_ring, cpy, vd_t, vc_t, op1 )
 
-void bmath_ring_typed_add( tp_t t, vd_t o, vc_t op1, vc_t op2 );
-void bmath_ring_typed_zro( tp_t t, vd_t o );
-void bmath_ring_typed_neg( tp_t t, vd_t o, vc_t op );
-void bmath_ring_typed_sub( tp_t t, vd_t o, vc_t op1, vc_t op2 );
-void bmath_ring_typed_cpy( tp_t t, vd_t o, vc_t op );
-void bmath_ring_typed_mul( tp_t t, vd_t o, vc_t op1, vc_t op2 );
-void bmath_ring_typed_one( tp_t t, vd_t o );
-void bmath_ring_typed_inv( tp_t t, vd_t o, vc_t op );
-void bmath_ring_typed_div( tp_t t, vd_t o, vc_t op1, vc_t op2 );
-
-void bmath_ring_aware_add( vd_t o, vc_t op1, vc_t op2 );
-void bmath_ring_aware_zro( vd_t o );
-void bmath_ring_aware_neg( vd_t o, vc_t op );
-void bmath_ring_aware_sub( vd_t o, vc_t op1, vc_t op2 );
-void bmath_ring_aware_cpy( vd_t o, vc_t op );
-void bmath_ring_aware_mul( vd_t o, vc_t op1, vc_t op2 );
-void bmath_ring_aware_one( vd_t o );
-void bmath_ring_aware_inv( vd_t o, vc_t op );
-void bmath_ring_aware_div( vd_t o, vc_t op1, vc_t op2 );
-
-void bmath_ring_add( sr_s o, vc_t op1, vc_t op2 );
-void bmath_ring_zro( sr_s o );
-void bmath_ring_neg( sr_s o, vc_t op );
-void bmath_ring_sub( sr_s o, vc_t op1, vc_t op2 );
-void bmath_ring_cpy( sr_s o, vc_t op );
-void bmath_ring_mul( sr_s o, vc_t op1, vc_t op2 );
-void bmath_ring_one( sr_s o );
-void bmath_ring_inv( sr_s o, vc_t op );
-void bmath_ring_div( sr_s o, vc_t op1, vc_t op2 );
-
-void bmath_ring_q_add( const sr_s* o, vc_t op1, vc_t op2 );
-void bmath_ring_q_zro( const sr_s* o );
-void bmath_ring_q_neg( const sr_s* o, vc_t op );
-void bmath_ring_q_sub( const sr_s* o, vc_t op1, vc_t op2 );
-void bmath_ring_q_cpy( const sr_s* o, vc_t op );
-void bmath_ring_q_mul( const sr_s* o, vc_t op1, vc_t op2 );
-void bmath_ring_q_one( const sr_s* o );
-void bmath_ring_q_inv( const sr_s* o, vc_t op );
-void bmath_ring_q_div( const sr_s* o, vc_t op1, vc_t op2 );
+BCORE_DECLARE_SPECT_MAPF_V2( bmath_ring, mul, vd_t, vc_t, op1, vc_t, op2 )
+BCORE_DECLARE_SPECT_MAPF_V0( bmath_ring, one, vd_t )
+BCORE_DECLARE_SPECT_MAPF_V1( bmath_ring, inv, vd_t, vc_t, op1 )
+BCORE_DECLARE_SPECT_MAPD_V2( bmath_ring, div, vd_t, vc_t, op1, vc_t, op2 )
 
 /**********************************************************************************************************************/
 

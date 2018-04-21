@@ -269,16 +269,20 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   sz_t size );
  *  Typical Format:
  *  <type-name> = [<trait-name>]
  *  {
- *      [<prefixes>] <type> [<qualifier>] <name> [=<default>];
+ *      [<prefixes>] <type> [:] [<qualifier>] <name> [=<default>];
  *
- *      func <type> <name> = <ftype>;
+ *      func <type> [:] <name> [= <ftype>];
  *
- *      [strict] feature <type> <name> [ ~> <related_expression> ]
+ *      [strict] feature <type> [:] <name> [ ~> <related_expression> ];
  *      ....
  *  }
  *
  *  <type>:
  *    <type name> | <type number> | typed | aware
+ *
+ *  colon:
+ *    If ':' follows <type>, '_<name>' is appended to the type name. (In some constructions this reduces redundancy)
+ *    Example: 'func bmath_fp:add' resolves to 'func bmath_fp_add add'
  *
  *  qualifier:
  *    *, =>   : (deep) link    // object is referenced and inst perspective takes full control incl. deep copy
@@ -294,9 +298,8 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   sz_t size );
  *     const   : Constant. Requires default value. No physical representation in object. Typically used as perspective-parameter.
  *
  *  Function:
- *    func <type> [:] <name> = <ftype>;  // ftype is tha name for the function registered with BCORE_REGISTER_(F)FUNC
- *    func <type> [:] <name>;            // ftype is the generic name: <object type>_<function name>
- *    If ':' is used, <type> is considered incomplete. The final type is composed via <type>_<name>  (to reduce redundancy)
+ *    func <type> <name> = <ftype>;  // ftype is the name for the function registered with BCORE_REGISTER_(F)FUNC
+ *    func <type> <name>;            // ftype is the generic name: <object type>_<function name>
  *    Examples:
  *      func bmath_fp:add;
  *      func bmath_fp_add add;                                 // same as above
@@ -308,15 +311,19 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   sz_t size );
  *    [strict] feature  [<prefixes>] <type> [<qualifier>] <name> [=<default>] [~> <related expression> ];
  *    A feature governs dynamic binding beween perspective and object.
  *    It declares a perspective-item to be dynamically tied to the object-item.
- *    'strict' indicates that the relation must exist or perspective construction produces an error.
- *    Without 'strict', the feature reverts to default in case binding could not be established.
+ *    'strict' indicates that the relation must exist or the perspective construction produces an error.
+ *    Otherwise the feature reverts to default in case binding could not be established.
  *    '~> <related expression>' specifies the exact binding desired. If left blank, canonic binding is used.
  *    Examples:
  *      feature bmath_fp_add fp_add ~> func bmath_fp_add add;
  *
+ *    Canonic bindings:
+ *      [strict] feature <spect-type> -> <name>;         // creates perspective of object
+ *      [strict] feature <function-pointer-type> <name>; // binds to 'func <function-pointer-type> <name>'
+ *
  *  Special cases:
- *    <type-name> = <assigned-name> : creates a copy of an existing reflection with new name
- *    <type-name> = [<trait-name>] { <expr>; <expr>; ... } : Specifying '...' marks the body as incomplete
+ *    <type-name> = <assigned-name>                        // creates a copy of an existing reflection with new name
+ *    <type-name> = [<trait-name>] { <expr>; <expr>; ... } // Specifying '...' marks the body as incomplete
  *
  */
 bcore_self_s* bcore_self_s_build_parse_src( sr_s src, sz_t size_of );
