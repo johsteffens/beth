@@ -36,14 +36,14 @@ void bclos_statement_s_parse_from_source( bclos_statement_s* o, sr_s source )
     source = bcore_life_s_push_sr( l, source );
 
     bclos_expression_s_parse_from_source( &o->expression, source );
-    if( bcore_source_q_parse_bl_fa( &source, " #?';'" ) )
+    if( bcore_source_r_parse_bl_fa( &source, " #?';'" ) )
     {
         o->def_type = 0;
         o->target.name = 0;
     }
-    else if( bcore_source_q_parse_bl_fa( &source, " #?'->'" ) )
+    else if( bcore_source_r_parse_bl_fa( &source, " #?'->'" ) )
     {
-        if( bcore_source_q_parse_bl_fa( &source, " #?';'" ) )
+        if( bcore_source_r_parse_bl_fa( &source, " #?';'" ) )
         {
             o->def_type = 0;
             o->target.name = TYPEOF_bclos_return;
@@ -51,8 +51,8 @@ void bclos_statement_s_parse_from_source( bclos_statement_s* o, sr_s source )
         else
         {
             st_s* identifier = st_s_create_l( l );
-            bcore_source_q_parse_fa( &source, " #name", identifier );
-            if( bcore_source_q_parse_bl_fa( &source, " #?';'" ) )
+            bcore_source_r_parse_fa( &source, " #name", identifier );
+            if( bcore_source_r_parse_bl_fa( &source, " #?';'" ) )
             {
                 o->def_type = 0;
                 o->target.name = entypeof( identifier->sc );
@@ -60,14 +60,14 @@ void bclos_statement_s_parse_from_source( bclos_statement_s* o, sr_s source )
             else
             {
                 o->def_type = entypeof( identifier->sc );
-                bcore_source_q_parse_fa( &source, " #name ;", identifier );
+                bcore_source_r_parse_fa( &source, " #name ;", identifier );
                 o->target.name = entypeof( identifier->sc );
             }
         }
     }
     else
     {
-        bcore_source_q_parse_errf( &source, "Statement syntax error." );
+        bcore_source_r_parse_errf( &source, "Statement syntax error." );
     }
 
     bcore_life_s_discard( l );

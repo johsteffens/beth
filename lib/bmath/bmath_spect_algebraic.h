@@ -26,11 +26,11 @@ typedef struct bmath_group bmath_group;
 /**********************************************************************************************************************/
 
 /// operation - features
-typedef void (*bmath_fp_add )( const bmath_group* o, const bmath_group* op, bmath_group* res ); // res = o + op
-typedef void (*bmath_fp_sub )( const bmath_group* o, const bmath_group* op, bmath_group* res ); // res = o - op
-typedef void (*bmath_fp_neg )( const bmath_group* o, bmath_group* res );     // res = -o
-typedef void (*bmath_fp_zro )(       bmath_group* o );                       // o = 0 (null_element)
-typedef void (*bmath_fp_cpy )( const bmath_group* o, bmath_group* res );     // o = op; note that this is not always a full copy (for vectors it may be a projection)
+typedef void (*bmath_fp_add )( const bmath_group* o, vc_t op, vd_t res ); // res = o + op
+typedef void (*bmath_fp_sub )( const bmath_group* o, vc_t op, vd_t res ); // res = o - op
+typedef void (*bmath_fp_neg )( const bmath_group* o, vd_t res );          // res = -o
+typedef void (*bmath_fp_zro )(       bmath_group* o );                    // o = 0 (null_element)
+typedef void (*bmath_fp_cpy )( const bmath_group* o, vd_t res );          // o = op; note that this is not always a full copy (for vectors it may be a projection)
 
 /**********************************************************************************************************************/
 // bmath_group_s (usually abelian)
@@ -57,10 +57,10 @@ BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAPX( bmath_group, cpy, bmath_group*, res )
 
 typedef struct bmath_ring bmath_ring;
 
-typedef void (*bmath_fp_mul )( const bmath_ring* o, const bmath_ring* op, bmath_ring* res ); // res = o * op
-typedef void (*bmath_fp_div )( const bmath_ring* o, const bmath_ring* op, bmath_ring* res ); // res = o / op
-typedef void (*bmath_fp_inv )( const bmath_ring* o, bmath_ring* res );            // res = 1 / o
-typedef void (*bmath_fp_one )( bmath_ring* o );                                   // o = 1 (one_element)
+typedef void (*bmath_fp_mul )( const bmath_ring* o, vc_t op, vd_t res ); // res = o * op
+typedef void (*bmath_fp_div )( const bmath_ring* o, vc_t op, vd_t res ); // res = o / op
+typedef void (*bmath_fp_inv )( const bmath_ring* o, vd_t res );          // res = 1 / o
+typedef void (*bmath_fp_one )( bmath_ring* o );                          // o = 1 (one_element)
 
 BCORE_DECLARE_SPECT( bmath_ring_s )
 {

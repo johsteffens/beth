@@ -28,8 +28,8 @@ typedef struct bmath_matrix bmath_matrix;
 /**********************************************************************************************************************/
 
 /// operation - features
-typedef void (*bmath_fp_matrix_mul_vec )( const bmath_matrix* o1, bmath_vector* vr, const bmath_vector* v2 ); // vr = o1 * v2
-typedef void (*bmath_fp_matrix_mul_scl )( bmath_matrix* or, const bmath_matrix* m1, const bmath_ring* s2 ); // or = m1 * s2
+typedef void (*bmath_fp_matrix_mul_vec )( const bmath_matrix* o1, vc_t v2, vd_t vr ); // vr = o1 * v2
+typedef void (*bmath_fp_matrix_mul_scl )( bmath_matrix* or,       vc_t m1, vc_t s2 ); // or = m1 * s2
 
 /**********************************************************************************************************************/
 

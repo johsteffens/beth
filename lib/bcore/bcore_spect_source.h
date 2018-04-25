@@ -32,38 +32,43 @@ typedef void (*bcore_source_fp_set_index)(    vd_t o, sz_t index );             
 /// required source features:
 /// awareness
 
+typedef struct bcore_source bcore_source;
 typedef struct bcore_source_s bcore_source_s;
 typedef struct bcore_source_s
 {
-    aware_t p_type; // type of perspective
-    tp_t    o_type; // type of object
+    bcore_spect_header_s header;
 
-    bcore_fp_flow_src            fp_flow_src;
-    bcore_fp_logvf               fp_parse_errvf;
-    bcore_source_fp_parse_fv     fp_parse_fv;
-    bcore_source_fp_set_supplier fp_set_supplier;
-    bcore_source_fp_eos          fp_eos;
-    bcore_source_fp_get_file     fp_get_file;
-    bcore_source_fp_get_index    fp_get_index;
-    bcore_source_fp_set_index    fp_set_index;
+    bcore_fp_flow_src            get_data;
+    bcore_fp_logvf               parse_errvf;
+    bcore_source_fp_parse_fv     parse_fv;
+    bcore_source_fp_set_supplier set_supplier;
+    bcore_source_fp_eos          eos;
+    bcore_source_fp_get_file     get_file;
+    bcore_source_fp_get_index    get_index;
+    bcore_source_fp_set_index    set_index;
 
 } bcore_source_s;
 
 BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_source_s )
 BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_source_s )
 
-sz_t bcore_source_spect_get_data    ( const bcore_source_s* p, vd_t o, vd_t data, sz_t size ); // returns number of bytes read
-u0_t bcore_source_spect_get_u0      ( const bcore_source_s* p, vd_t o ); // reads single byte and returns it (returns 0 in case eos is reached
-void bcore_source_spect_parse_fv    ( const bcore_source_s* p, vd_t o, sc_t format, va_list args );
-void bcore_source_spect_parse_fa    ( const bcore_source_s* p, vd_t o, sc_t format, ... );
-void bcore_source_spect_parse_errvf ( const bcore_source_s* p, vd_t o, sc_t format, va_list args );
-void bcore_source_spect_parse_errf  ( const bcore_source_s* p, vd_t o, sc_t format, ... );
-void bcore_source_spect_parse_err_fv( const bcore_source_s* p, vd_t o, sc_t format, va_list args );
-void bcore_source_spect_parse_err_fa( const bcore_source_s* p, vd_t o, sc_t format, ... );
-bl_t bcore_source_spect_parse_bl_fa ( const bcore_source_s* p, vd_t o, sc_t format      ); // format must yield just one bool, which is returned
-void bcore_source_spect_set_supplier( const bcore_source_s* p, vd_t o, vd_t supplier    ); // error when not supported
-bl_t bcore_source_spect_eos         ( const bcore_source_s* p, vc_t o );
-sc_t bcore_source_spect_get_file    ( const bcore_source_s* p, vc_t o );
+static inline
+u0_t bcore_source_default_get_u0( const bcore_source_s* p, bcore_source* o )
+{
+    u0_t v = 0;
+    p->get_data( o, &v, 1 );
+    return v;
+}
+
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( bcore_source, get_data,     sz_t, vd_t, data, sz_t, size ) // returns number of bytes read
+BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, get_u0,       u0_t )  // reads single byte and returns it (returns 0 in case eos is reached
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP1( bcore_source, parse_fv,           sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_errvf,        sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_err_fv,       sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bcore_source, parse_bl_fa,  bl_t, sc_t, format ) // format must yield just one bool, which is returned
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP1( bcore_source, set_supplier,       vd_t, supplier ) // error when not supported
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP1( bcore_source, eos,          bl_t )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_source, get_file,     sc_t )
 
 /** Random access:
  *  Functions set_index, get_index provide random access within a specific stream configuration.
@@ -72,53 +77,21 @@ sc_t bcore_source_spect_get_file    ( const bcore_source_s* p, vc_t o );
  *  Index values and value range is stream dependent and may also be negative.
  *  When supported: set_index can reset the stream(-chain) to any read-position previously obtained via get_index.
  */
-s3_t bcore_source_spect_get_index   ( const bcore_source_s* p, vc_t o );
-void bcore_source_spect_set_index   ( const bcore_source_s* p, vd_t o, s3_t index );
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_source, get_index, s3_t )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_source, set_index, s3_t, index )
 
-sz_t bcore_source_aware_get_data    ( vd_t o, vd_t data, sz_t size );
-u0_t bcore_source_aware_get_u0      ( vd_t o );
-void bcore_source_aware_parse_fv    ( vd_t o, sc_t format, va_list args );
-void bcore_source_aware_parse_fa    ( vd_t o, sc_t format, ... );
-void bcore_source_aware_parse_errvf ( vd_t o, sc_t format, va_list args );
-void bcore_source_aware_parse_errf  ( vd_t o, sc_t format, ... );
-void bcore_source_aware_parse_err_fv( vd_t o, sc_t format, va_list args );
-void bcore_source_aware_parse_err_fa( vd_t o, sc_t format, ... );
-bl_t bcore_source_aware_parse_bl_fa ( vd_t o, sc_t format      ); // format must yield just one bool, which is returned
-void bcore_source_aware_set_supplier( vd_t o, vd_t supplier    ); // error when not supported
-bl_t bcore_source_aware_eos         ( vc_t o );
-sc_t bcore_source_aware_get_file    ( vc_t o );
-s3_t bcore_source_aware_get_index   ( vc_t o );
-void bcore_source_aware_set_index   ( vd_t o, s3_t index );
-
-sz_t bcore_source_get_data    ( sr_s o, vd_t data, sz_t size );
-u0_t bcore_source_get_u0      ( sr_s o );
-void bcore_source_parse_fv    ( sr_s o, sc_t format, va_list args );
-void bcore_source_parse_fa    ( sr_s o, sc_t format, ... );
-void bcore_source_parse_errvf ( sr_s o, sc_t format, va_list args );
-void bcore_source_parse_errf  ( sr_s o, sc_t format, ... );
-void bcore_source_parse_err_fv( sr_s o, sc_t format, va_list args );
-void bcore_source_parse_err_fa( sr_s o, sc_t format, ... );
-bl_t bcore_source_parse_bl_fa ( sr_s o, sc_t format      ); // format must yield just one bool, which is returned
-void bcore_source_set_supplier( sr_s o, vd_t supplier    ); // error when not supported
-bl_t bcore_source_eos         ( sr_s o );
-sc_t bcore_source_get_file    ( sr_s o );
-s3_t bcore_source_get_index   ( sr_s o );
-void bcore_source_set_index   ( sr_s o, s3_t index );
-
-sz_t bcore_source_q_get_data    ( const sr_s* o, vd_t data, sz_t size );
-u0_t bcore_source_q_get_u0      ( const sr_s* o );
-void bcore_source_q_parse_fv    ( const sr_s* o, sc_t format, va_list args );
-void bcore_source_q_parse_fa    ( const sr_s* o, sc_t format, ... );
-void bcore_source_q_parse_errvf ( const sr_s* o, sc_t format, va_list args );
-void bcore_source_q_parse_errf  ( const sr_s* o, sc_t format, ... );
-void bcore_source_q_parse_err_fv( const sr_s* o, sc_t format, va_list args );
-void bcore_source_q_parse_err_fa( const sr_s* o, sc_t format, ... );
-bl_t bcore_source_q_parse_bl_fa ( const sr_s* o, sc_t format      ); // format must yield just one bool, which is returned
-void bcore_source_q_set_supplier( const sr_s* o, vd_t supplier    ); // error when not supported
-bl_t bcore_source_q_eos         ( const sr_s* o );
-sc_t bcore_source_q_get_file    ( const sr_s* o );
-s3_t bcore_source_q_get_index   ( const sr_s* o );
-void bcore_source_q_set_index   ( const sr_s* o, s3_t index );
+void bcore_source_p_parse_err_fa( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
+void bcore_source_p_parse_errf  ( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
+void bcore_source_p_parse_fa    ( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
+void bcore_source_a_parse_err_fa( bcore_source* o, sc_t format, ... );
+void bcore_source_a_parse_errf  ( bcore_source* o, sc_t format, ... );
+void bcore_source_a_parse_fa    ( bcore_source* o, sc_t format, ... );
+void bcore_source_x_parse_fa    ( sr_s o, sc_t format, ... );
+void bcore_source_x_parse_errf  ( sr_s o, sc_t format, ... );
+void bcore_source_x_parse_err_fa( sr_s o, sc_t format, ... );
+void bcore_source_r_parse_fa    ( const sr_s* o, sc_t format, ... );
+void bcore_source_r_parse_errf  ( const sr_s* o, sc_t format, ... );
+void bcore_source_r_parse_err_fa( const sr_s* o, sc_t format, ... );
 
 vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o );
 

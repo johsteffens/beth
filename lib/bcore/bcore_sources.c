@@ -54,7 +54,7 @@ static void chain_copy_a( bcore_nucleus_s* nc )
 {
     bcore_source_chain_s* o = nc->client;
     nc->default_handler( nc );
-    for( sz_t i = 1; i < o->size; i++ ) bcore_source_aware_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    for( sz_t i = 1; i < o->size; i++ ) bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
 }
 
 void bcore_source_chain_s_copy( bcore_source_chain_s* o, const bcore_source_chain_s* src )
@@ -82,14 +82,14 @@ static void chain_interpret_body_a( vd_t nc )
     struct { ap_t a; vc_t p; vc_t inter; vd_t source; tp_t type; vd_t obj; } * nc_l = nc;
     nc_l->a( nc ); // default
     bcore_source_chain_s* o = nc_l->obj;
-    for( sz_t i = 1; i < o->size; i++ ) bcore_source_aware_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    for( sz_t i = 1; i < o->size; i++ ) bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
 }
 
 void bcore_source_chain_s_push_d( bcore_source_chain_s* o, vd_t source )
 {
     const bcore_array_s* arr_p = bcore_array_s_get_typed( TYPEOF_bcore_source_chain_s );
     bcore_array_spect_push( arr_p, o, sr_asd( source ) );
-    if( o->size > 1 ) bcore_source_aware_set_supplier( o->data[ o->size - 1 ], o->data[ o->size - 2 ] );
+    if( o->size > 1 ) bcore_source_a_set_supplier( o->data[ o->size - 1 ], o->data[ o->size - 2 ] );
 }
 
 void bcore_source_chain_s_push_type( bcore_source_chain_s* o, tp_t type )
@@ -99,7 +99,7 @@ void bcore_source_chain_s_push_type( bcore_source_chain_s* o, tp_t type )
 
 static sz_t chain_flow_src( bcore_source_chain_s* o, vd_t data, sz_t size )
 {
-    return ( o->size > 0 ) ? bcore_source_aware_get_data( o->data[ o->size - 1 ], data, size ) : 0;
+    return ( o->size > 0 ) ? bcore_source_a_get_data( o->data[ o->size - 1 ], data, size ) : 0;
 }
 
 sz_t bcore_source_chain_s_get_data(  bcore_source_chain_s* o, vd_t data, sz_t size )
@@ -110,24 +110,24 @@ sz_t bcore_source_chain_s_get_data(  bcore_source_chain_s* o, vd_t data, sz_t si
 void bcore_source_chain_s_set_supplier( bcore_source_chain_s* o, vd_t supplier )
 {
     if( o->size == 0 ) ERR( "chain is empty" );
-    bcore_source_aware_set_supplier( o->data[ 0 ], supplier );
+    bcore_source_a_set_supplier( o->data[ 0 ], supplier );
     for( sz_t i = 1; i < o->size; i++ )
     {
         // resetting the supplier also resets of the internal state of each element
-        bcore_source_aware_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+        bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
     }
 }
 
 bl_t bcore_source_chain_s_eos( const bcore_source_chain_s* o )
 {
     if( o->size == 0 ) return true;
-    return bcore_source_aware_eos( o->data[ o->size - 1 ] );
+    return bcore_source_a_eos( o->data[ o->size - 1 ] );
 }
 
 sc_t bcore_source_chain_s_get_file( const bcore_source_chain_s* o )
 {
     if( o->size == 0 ) return "";
-    return bcore_source_aware_get_file( o->data[ 0 ] );
+    return bcore_source_a_get_file( o->data[ 0 ] );
 }
 
 s3_t bcore_source_chain_s_get_index( const bcore_source_chain_s* o )
@@ -135,7 +135,7 @@ s3_t bcore_source_chain_s_get_index( const bcore_source_chain_s* o )
     s3_t index = 0;
     for( sz_t i = 0; i < o->size; i++ )
     {
-        index += bcore_source_aware_get_index( o->data[ i ] );
+        index += bcore_source_a_get_index( o->data[ i ] );
     }
     return index;
 }
@@ -145,11 +145,11 @@ void bcore_source_chain_s_set_index( bcore_source_chain_s* o, s3_t index )
     if( o->size == 0 ) ERR( "Chain is empty." );
     s3_t cur_index = bcore_source_chain_s_get_index( o );
     if( index == cur_index ) return;
-    bcore_source_aware_set_index( o->data[ 0 ], index );
+    bcore_source_a_set_index( o->data[ 0 ], index );
     for( sz_t i = 1; i < o->size; i++ )
     {
         // resetting the supplier also resets of the internal state of each element
-        bcore_source_aware_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+        bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
     }
 }
 
@@ -189,9 +189,9 @@ static void chain_parse_fv( bcore_source_chain_s* o, sc_t format, va_list args )
     if( o->size > 0 )
     {
         const bcore_source_s* source_p = bcore_source_s_get_aware( o->data[ o->size - 1 ] );
-        if( source_p->fp_parse_fv )
+        if( source_p->parse_fv )
         {
-            bcore_source_spect_parse_fv( source_p, o->data[ o->size - 1 ], format, args );
+            bcore_source_p_parse_fv( source_p, o->data[ o->size - 1 ], format, args );
         }
         else
         {
@@ -286,14 +286,14 @@ static sz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, sz_t size )
 
     // the code below handles the case with supplier
 
-    if( size > o->prefetch_size ) return bcore_source_aware_get_data( o->ext_supplier, data, size ) + size1;
+    if( size > o->prefetch_size ) return bcore_source_a_get_data( o->ext_supplier, data, size ) + size1;
 
     if( o->space < o->prefetch_size )
     {
         o->data = bcore_bn_alloc( o->data, o->space,                0, &o->space );
         o->data = bcore_bn_alloc( o->data, o->space, o->prefetch_size, &o->space );
     }
-    o->size = bcore_source_aware_get_data( o->ext_supplier, o->data, o->prefetch_size );
+    o->size = bcore_source_a_get_data( o->ext_supplier, o->data, o->prefetch_size );
 
     if( o->size < o->prefetch_size ) o->ext_supplier = NULL;
 
@@ -328,13 +328,13 @@ sz_t bcore_source_buffer_s_get_data(  bcore_source_buffer_s* o, vd_t data, sz_t 
 bl_t bcore_source_buffer_s_eos( const bcore_source_buffer_s* o )
 {
     if( o->index < o->size ) return false;
-    if( o->ext_supplier    ) return bcore_source_aware_eos( o->ext_supplier );
+    if( o->ext_supplier    ) return bcore_source_a_eos( o->ext_supplier );
     return true;
 }
 
 sc_t bcore_source_buffer_s_get_file( const bcore_source_buffer_s* o )
 {
-    if( o->ext_supplier ) return bcore_source_aware_get_file( o->ext_supplier );
+    if( o->ext_supplier ) return bcore_source_a_get_file( o->ext_supplier );
     return "";
 }
 
@@ -356,7 +356,7 @@ static void buffer_p_errorvf( bcore_source_buffer_s* o, sc_t format, va_list arg
 {
     if( o->ext_supplier )
     {
-        bcore_source_aware_parse_errvf( o->ext_supplier, format, args );
+        bcore_source_a_parse_errvf( o->ext_supplier, format, args );
     }
     else
     {
@@ -466,7 +466,7 @@ static void string_refill( bcore_source_string_s* o, sz_t min_remaining_size )
         }
         sz_t refill_size = min_remaining_size - o->string->size > o->prefetch_size ? min_remaining_size - o->string->size : o->prefetch_size;
         st_s_set_min_space( o->string, o->string->size + refill_size + 1 );
-        sz_t bytes_received = bcore_source_aware_get_data( o->ext_supplier, o->string->data + o->string->size, refill_size );
+        sz_t bytes_received = bcore_source_a_get_data( o->ext_supplier, o->string->data + o->string->size, refill_size );
         if( bytes_received < refill_size ) o->ext_supplier = NULL; // detach supplier when empty
         o->string->size += bytes_received;
         o->string->data[ o->string->size ] = 0;
@@ -512,19 +512,19 @@ bl_t bcore_source_string_s_eos( const bcore_source_string_s* o )
 {
     if( !o->string )
     {
-        if( o->ext_supplier ) return bcore_source_aware_eos( o->ext_supplier );
+        if( o->ext_supplier ) return bcore_source_a_eos( o->ext_supplier );
         return true;
     }
 
     if( o->index < o->string->size ) return false;
-    if( o->ext_supplier ) return bcore_source_aware_eos( o->ext_supplier );
+    if( o->ext_supplier ) return bcore_source_a_eos( o->ext_supplier );
 
     return true;
 }
 
 sc_t bcore_source_string_s_get_file( const bcore_source_string_s* o )
 {
-    if( o->ext_supplier ) return bcore_source_aware_get_file( o->ext_supplier );
+    if( o->ext_supplier ) return bcore_source_a_get_file( o->ext_supplier );
     return "";
 }
 
@@ -905,9 +905,9 @@ static st_s* sources_selftest( void )
             bcore_arr_sz_s* arr = bcore_arr_sz_s_create();
             for( sz_t i = 0; i < 10000; i++ )
             {
-                bcore_arr_sz_s_push( arr, bcore_source_aware_get_index( chain ) );
+                bcore_arr_sz_s_push( arr, bcore_source_a_get_index( (bcore_source*)chain ) );
                 sz_t v = 0;
-                bcore_source_aware_parse_fa( chain, "line of text #<sz_t*>\n", &v );
+                bcore_source_a_parse_fa( (bcore_source*)chain, "line of text #<sz_t*>\n", &v );
                 ASSERT( i == v );
             }
 
@@ -917,9 +917,9 @@ static st_s* sources_selftest( void )
             {
                 rv = bcore_xsg1_u2( rv );
                 sz_t idx = rv % arr->size;
-                bcore_source_aware_set_index( chain, arr->data[ idx ] );
+                bcore_source_a_set_index( (bcore_source*)chain, arr->data[ idx ] );
                 sz_t v = 0;
-                bcore_source_aware_parse_fa( chain, "line of text #<sz_t*>\n", &v );
+                bcore_source_a_parse_fa( (bcore_source*)chain, "line of text #<sz_t*>\n", &v );
                 ASSERT( idx == v );
             }
 

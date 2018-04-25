@@ -39,8 +39,8 @@ typedef struct bmath_vector bmath_vector;
 /**********************************************************************************************************************/
 
 /// operation - features
-typedef void (*bmath_fp_vector_mul     )( const bmath_vector* o, const bmath_ring*   op, bmath_vector* res ); // res = o * op
-typedef void (*bmath_fp_vector_dot_prd )( const bmath_vector* o, const bmath_vector* op, bmath_ring*   res ); // res = o * op
+typedef void (*bmath_fp_vector_mul     )( const bmath_vector* o, vc_t scl_op, vd_t vec_res ); // res = o * op
+typedef void (*bmath_fp_vector_dot_prd )( const bmath_vector* o, vc_t vec_op, vd_t scl_res ); // res = o * op
 
 /**********************************************************************************************************************/
 

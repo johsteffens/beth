@@ -171,17 +171,17 @@ BCORE_DEFINE_FUNCTIONS_OBJ_INST( bcore_bin_ml_interpreter_s )
 static inline tp_t get_type( const sr_s* source )
 {
     tp_t type = 0;
-    bcore_source_q_get_data( source, &type, sizeof( type ) );
+    bcore_source_r_get_data( source, &type, sizeof( type ) );
     return type;
 }
 
 static inline bl_t get_flag( const sr_s* source )
 {
     u0_t v = 0;
-    bcore_source_q_get_data( source, &v, 1 );
+    bcore_source_r_get_data( source, &v, 1 );
     if( v == 0 ) return false;
     if( v == 1 ) return true;
-    bcore_source_q_parse_err_fa( source, "Invalid flag value '#<u0_t>'.", v );
+    bcore_source_r_parse_err_fa( source, "Invalid flag value '#<u0_t>'.", v );
     return true;
 }
 
@@ -214,38 +214,38 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
         {
             st_s* string = obj_l.o;
             u0_t c = 0;
-            bcore_source_get_data( src_l, &c, sizeof( c ) );
+            bcore_source_x_get_data( src_l, &c, sizeof( c ) );
             while( c != 0 )
             {
                 st_s_push_char( string, c );
-                bcore_source_get_data( src_l, &c, sizeof( c ) );
+                bcore_source_x_get_data( src_l, &c, sizeof( c ) );
             }
         }
         else if( bcore_via_x_is_leaf( obj_l ) )
         {
             switch( sr_s_type( &obj_l ) )
             {
-                case TYPEOF_aware_t : bcore_source_get_data( src_l, obj_l.o, sizeof( aware_t ) ); break;
-                case TYPEOF_bl_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( bl_t ) ); break;
-                case TYPEOF_f2_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( f2_t ) ); break;
-                case TYPEOF_f3_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( f3_t ) ); break;
-                case TYPEOF_s0_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( s0_t ) ); break;
-                case TYPEOF_s1_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( s1_t ) ); break;
-                case TYPEOF_s2_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( s2_t ) ); break;
-                case TYPEOF_s3_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( s3_t ) ); break;
-                case TYPEOF_sz_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( sz_t ) ); break;
-                case TYPEOF_tp_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( tp_t ) ); break;
-                case TYPEOF_u0_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( u0_t ) ); break;
-                case TYPEOF_u1_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( u1_t ) ); break;
-                case TYPEOF_u2_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( u2_t ) ); break;
-                case TYPEOF_u3_t    : bcore_source_get_data( src_l, obj_l.o, sizeof( u3_t ) ); break;
+                case TYPEOF_aware_t : bcore_source_x_get_data( src_l, obj_l.o, sizeof( aware_t ) ); break;
+                case TYPEOF_bl_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( bl_t ) ); break;
+                case TYPEOF_f2_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( f2_t ) ); break;
+                case TYPEOF_f3_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( f3_t ) ); break;
+                case TYPEOF_s0_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( s0_t ) ); break;
+                case TYPEOF_s1_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( s1_t ) ); break;
+                case TYPEOF_s2_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( s2_t ) ); break;
+                case TYPEOF_s3_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( s3_t ) ); break;
+                case TYPEOF_sz_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( sz_t ) ); break;
+                case TYPEOF_tp_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( tp_t ) ); break;
+                case TYPEOF_u0_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( u0_t ) ); break;
+                case TYPEOF_u1_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( u1_t ) ); break;
+                case TYPEOF_u2_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( u2_t ) ); break;
+                case TYPEOF_u3_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( u3_t ) ); break;
                 default: ERR( "Cannot read type '%s' from a binary stream", ifnameof( sr_s_type( &obj_l ) ) );
             }
         }
         else
         {
             sz_t size = 0;
-            bcore_source_get_data( src_l, &size, sizeof( sz_t ) );
+            bcore_source_x_get_data( src_l, &size, sizeof( sz_t ) );
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );

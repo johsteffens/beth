@@ -78,12 +78,12 @@ sr_s bcore_interpret_auto( sr_s source )
     bcore_txt_ml_interpreter_s* txt_ml = bcore_life_s_push_aware( l, bcore_txt_ml_interpreter_s_create() );
     sr_s interpreter = bcore_txt_ml_interpreter_s_interpret( txt_ml, src );
 
-    if( !interpreter.o ) bcore_source_parse_err_fa( src, "No interpreter specified." );
+    if( !interpreter.o ) bcore_source_x_parse_err_fa( src, "No interpreter specified." );
 
     st_s* log = bcore_life_s_push_aware( l, st_s_create() );
     if( !bcore_trait_satisfied_type( typeof( "bcore_interpreter" ), sr_s_type( &interpreter ), log ) )
     {
-        bcore_source_parse_err_fa( src, "Object '#<sc_t>' is no interpreter.\nReason: #<sc_t>", ifnameof( sr_s_type( &interpreter ) ), log->sc );
+        bcore_source_x_parse_err_fa( src, "Object '#<sc_t>' is no interpreter.\nReason: #<sc_t>", ifnameof( sr_s_type( &interpreter ) ), log->sc );
     }
 
     sr_s obj = bcore_interpret( interpreter, src );
