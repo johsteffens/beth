@@ -879,7 +879,7 @@ static st_s* sources_selftest( void )
     // write object to file
     {
         bcore_sink_chain_s* chain = bcore_sink_create_file( "test/test01.txt" );
-        bcore_translate( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), arr, sr_awd( chain ) );
+        bcore_translate_x( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), arr, sr_awd( chain ) );
         bcore_sink_chain_s_discard( chain );
     }
 

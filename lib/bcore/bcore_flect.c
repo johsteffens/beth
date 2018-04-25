@@ -1565,6 +1565,8 @@ static void flect_define_basics()
     BCORE_REGISTER_PLAIN( bcore_fp_clone,        function_pointer );
     BCORE_REGISTER_PLAIN( bcore_fp_copy_typed,   function_pointer );
     BCORE_REGISTER_PLAIN( bcore_fp_create_typed, function_pointer );
+    BCORE_REGISTER_PLAIN( bcore_fp_translate,    function_pointer );
+    BCORE_REGISTER_PLAIN( bcore_fp_interpret,    function_pointer );
 
     // specific objects
     bcore_flect_define_creator( typeof( "bcore_self_item_s" ), self_item_s_create_self );

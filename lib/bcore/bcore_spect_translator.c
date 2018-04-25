@@ -23,31 +23,6 @@
 /**********************************************************************************************************************/
 // bcore_translator_s
 
-static void translator_s_down( bcore_translator_s* o );
-
-static void translator_s_init( bcore_translator_s* o )
-{
-    bcore_memzero( o, sizeof( bcore_translator_s ) );
-    o->p_type = TYPEOF_bcore_translator_s;
-}
-
-static void translator_s_down( bcore_translator_s* o )
-{
-}
-
-static bcore_translator_s* translator_s_create()
-{
-    bcore_translator_s* o = bcore_alloc( NULL, sizeof( bcore_translator_s ) );
-    translator_s_init( o );
-    return o;
-}
-
-static void translator_s_discard( bcore_translator_s* o )
-{
-    if( !o ) return;
-    bcore_release_obj( ( fp_t )translator_s_down, o );
-}
-
 /**********************************************************************************************************************/
 
 static void translator_s_define_trait()
@@ -57,45 +32,28 @@ static void translator_s_define_trait()
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
-static bcore_translator_s* create_from_self( const bcore_self_s* self )
-{
-    assert( self != NULL );
-    bcore_translator_s* o = translator_s_create();
-    o->o_type = self->type;
-    o->fp_translate = ( bcore_fp_translate )bcore_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_translate" ), 0 );
-    return o;
-}
-
-static bcore_self_s* translator_s_create_self( void )
-{
-    sc_t def = "bcore_translator_s = spect { aware_t p_type; tp_t o_type; ... }";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_translator_s ) );
-    bcore_self_s_push_ns_func( self, ( fp_t )translator_s_init,             "bcore_fp_init",                   "init"         );
-    bcore_self_s_push_ns_func( self, ( fp_t )translator_s_down,             "bcore_fp_down",                   "down"         );
-    bcore_self_s_push_ns_func( self, ( fp_t )translator_s_create,           "bcore_fp_create",                 "create"       );
-    bcore_self_s_push_ns_func( self, ( fp_t )translator_s_discard,          "bcore_fp_discard",                "discard"      );
-    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,              "bcore_spect_fp_create_from_self", "create_from_self" );
-    return self;
-}
+BCORE_DEFINE_SPECT( bcore_translator_s )
+"{"
+    "bcore_spect_header_s header;"
+    "strict feature bcore_fp:translate;"
+"}";
 
 /**********************************************************************************************************************/
 
-void bcore_translate( sr_s o, sr_s obj, sr_s sink )
+void bcore_translate_x( sr_s o, sr_s obj, sr_s sink )
 {
     const bcore_translator_s* p = ch_spect_p( o.p, TYPEOF_bcore_translator_s );
-    p->fp_translate( o.o, obj, sink );
+    p->translate( o.o, obj, sink );
     sr_down( o );
 }
 
-void bcore_translate_q( const sr_s* o, sr_s obj, sr_s sink )
+void bcore_translate_r( const sr_s* o, sr_s obj, sr_s sink )
 {
     const bcore_translator_s* p = ch_spect_p( o->p, TYPEOF_bcore_translator_s );
-    p->fp_translate( o->o, obj, sink );
+    p->translate( o->o, obj, sink );
 }
 
 /**********************************************************************************************************************/
-
-BCORE_DEFINE_SPECT_CACHE( bcore_translator_s );
 
 vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o )
 {
@@ -104,8 +62,7 @@ vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             translator_s_define_trait();
-            bcore_flect_define_creator( typeof( "bcore_translator_s"  ), translator_s_create_self  );
-            bcore_spect_setup_cache( &bcore_translator_s_cache_g );
+            BCORE_REGISTER_SPECT( bcore_translator_s );
         }
         break;
 

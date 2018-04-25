@@ -22,18 +22,14 @@
 #include "bcore_features.h"
 #include "bcore_spect.h"
 
-typedef struct bcore_translator_s
+BCORE_DECLARE_SPECT( bcore_translator_s )
 {
-    aware_t p_type;
-    tp_t    o_type;
-    bcore_fp_translate fp_translate;
-} bcore_translator_s;
+    bcore_spect_header_s header;
+    bcore_fp_translate translate;
+};
 
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_translator_s )
-BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_translator_s )
-
-void bcore_translate(   sr_s o, sr_s obj, sr_s sink );
-void bcore_translate_q( const sr_s* o, sr_s obj, sr_s sink );
+void bcore_translate_x(        sr_s o, sr_s obj, sr_s sink );
+void bcore_translate_r( const sr_s* o, sr_s obj, sr_s sink );
 
 vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o );
 

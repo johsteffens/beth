@@ -138,7 +138,7 @@ static bcore_self_s* translator_s_create_self( void )
 sr_s bcore_bin_ml_to_sink_buffer( sr_s obj )
 {
     bcore_sink_buffer_s* buffer = bcore_sink_buffer_s_create();
-    bcore_translate( sr_asd( bcore_bin_ml_translator_s_create() ), obj, sr_awd( buffer ) );
+    bcore_translate_x( sr_asd( bcore_bin_ml_translator_s_create() ), obj, sr_awd( buffer ) );
     return sr_asd( buffer );
 }
 
@@ -148,7 +148,7 @@ void bcore_bin_ml_to_file( sr_s obj, sc_t file )
     bcore_sink_chain_s* chain = bcore_life_s_push_aware( l, bcore_sink_chain_s_create() );
     bcore_sink_chain_s_push_d( chain, bcore_sink_file_s_create_name( file ) );
     bcore_sink_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_sink_buffer_s" ) ) );
-    bcore_translate( sr_asd( bcore_bin_ml_translator_s_create() ), obj, sr_awd( chain ) );
+    bcore_translate_x( sr_asd( bcore_bin_ml_translator_s_create() ), obj, sr_awd( chain ) );
     bcore_life_s_discard( l );
 }
 
