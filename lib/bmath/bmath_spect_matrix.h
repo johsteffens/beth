@@ -23,11 +23,13 @@
 #include "bcore_spect_matrix.h"
 #include "bmath_quicktypes.h"
 
+typedef struct bmath_matrix bmath_matrix;
+
 /**********************************************************************************************************************/
 
 /// operation - features
-typedef void (*bmath_fp_matrix_mul_vec )( vc_t o, vd_t vec1, vc_t vec2 ); // vec1 = o    * vec2
-typedef void (*bmath_fp_matrix_mul_scl )( vd_t o, vc_t mat1, vc_t scl2 ); // o    = mat1 * scl2
+typedef void (*bmath_fp_matrix_mul_vec )( const bmath_matrix* o1, bmath_vector* vr, const bmath_vector* v2 ); // vr = o1 * v2
+typedef void (*bmath_fp_matrix_mul_scl )( bmath_matrix* or, const bmath_matrix* m1, const bmath_ring* s2 ); // or = m1 * s2
 
 /**********************************************************************************************************************/
 
@@ -53,23 +55,24 @@ BCORE_DECLARE_SPECT( bmath_matrix_s )
     bmath_fp_div div;
 
     // matrix features
-    bmath_fp_matrix_mul_vec matrix_mul_vec;
-    bmath_fp_matrix_mul_scl matrix_mul_scl;
+    bmath_fp_matrix_mul_vec mul_vec;
+    bmath_fp_matrix_mul_scl mul_scl;
 };
 
-BCORE_DECLARE_SPECT_FUNC_R0( bmath_matrix, get_rows, sz_t, vc_t )
-BCORE_DECLARE_SPECT_FUNC_R0( bmath_matrix, get_cols, sz_t, vc_t )
-BCORE_DECLARE_SPECT_MAPD_V0( bmath_matrix, zro, vd_t )
-BCORE_DECLARE_SPECT_MAPD_V1( bmath_matrix, neg, vd_t, vc_t, mat1 )
-BCORE_DECLARE_SPECT_FUNC_V1( bmath_matrix, cpy, vd_t, vc_t, mat1 )
-BCORE_DECLARE_SPECT_FUNC_V2( bmath_matrix, add, vd_t, vc_t, mat1, vc_t, mat2 )
-BCORE_DECLARE_SPECT_FUNC_V2( bmath_matrix, sub, vd_t, vc_t, mat1, vc_t, mat2 )
-BCORE_DECLARE_SPECT_FUNC_V2( bmath_matrix, mul, vd_t, vc_t, mat1, vc_t, mat2 )
-BCORE_DECLARE_SPECT_FUNC_V0( bmath_matrix, one, vd_t )
-BCORE_DECLARE_SPECT_FUNC_V1( bmath_matrix, inv, vd_t, vc_t, mat1 )
-BCORE_DECLARE_SPECT_FUNC_V2( bmath_matrix, div, vd_t, vc_t, mat1, vc_t, mat2 )
-BCORE_DECLARE_SPECT_FUNC_V2( bmath_matrix, mul_scl, vd_t, vc_t, mat1, vc_t, scl2 )
-BCORE_DECLARE_SPECT_FUNC_V2( bmath_matrix, mul_vec, vc_t, vd_t, vec1, vc_t, vec2 ) // vec1 = o * vec2
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bmath_matrix, get_rows, sz_t )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bmath_matrix, get_cols, sz_t )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAPX( bmath_matrix, zro )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAP0( bmath_matrix, cpy, bmath_matrix*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAPX( bmath_matrix, neg, bmath_matrix*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_matrix, add, const bmath_matrix*, op, bmath_matrix*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_matrix, sub, const bmath_matrix*, op, bmath_matrix*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_matrix, mul, const bmath_matrix*, op, bmath_matrix*, res )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAPX( bmath_matrix, one )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAPX( bmath_matrix, inv, bmath_matrix*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_matrix, div,     const bmath_matrix*, op, bmath_matrix*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_matrix, mul_scl, const bmath_ring*,   op, bmath_matrix*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_matrix, mul_vec, const bmath_vector*, op, bmath_vector*, res )
+
 
 /**********************************************************************************************************************/
 

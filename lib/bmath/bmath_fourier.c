@@ -18,14 +18,14 @@
 
 /**********************************************************************************************************************/
 
-void bmath_fourier_dft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t size )
+void bmath_fourier_dft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, sz_t size )
 {
     if( size == 0 ) return;
     if( dst == src )
     {
         bmath_cf3_s* src_l = bcore_malloc( sizeof( bmath_cf3_s ) * size );
         bcore_memcpy( src_l, src, sizeof( bmath_cf3_s ) * size );
-        bmath_fourier_dft_f3( dst, src_l, size );
+        bmath_fourier_dft_f3( src_l, dst, size );
         bcore_free( src_l );
         return;
     }
@@ -39,11 +39,11 @@ void bmath_fourier_dft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t size )
         bmath_cf3_s sum = bmath_cf3_zro();
         for( sz_t i = 0; i < size; i++ )
         {
-            bmath_cf3_s_add_mul( &sum, &sum, &src[ i ], &w );
-            bmath_cf3_s_mul( &w, &w, &ws1 );
+            bmath_cf3_s_add_mul( &sum, &src[ i ], &w, &sum );
+            bmath_cf3_s_mul( &w, &ws1, &w );
         }
         dst[ j ] = sum;
-        bmath_cf3_s_mul( &ws1, &ws1, &ws0 );
+        bmath_cf3_s_mul( &ws1, &ws0, &ws1 );
     }
 }
 
@@ -53,7 +53,7 @@ void bmath_fourier_dft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t size )
  *    for n0 > 4: buf must be preallocated to size n0.
  *    buf == src is allowed.
  */
-void bmath_fourier_rct_fft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t n0, bmath_cf3_s* buf )
+void bmath_fourier_rct_fft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, sz_t n0, bmath_cf3_s* buf )
 {
     if( n0 == 4 )
     {
@@ -76,13 +76,13 @@ void bmath_fourier_rct_fft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t n0
 
     for( sz_t i = 0; i < n1; i++ )
     {
-        bmath_cf3_s_add( &dst[ i ], &src[ i ], &src[ i + n1 ] );
-        bmath_cf3_s_mul_sub( &buf[ i ], &w0, &src[ i ], &src[ i + n1 ] );
-        bmath_cf3_s_mul( &w0, &w0, &ws0 );
+        bmath_cf3_s_add( &src[ i ], &src[ i + n1 ], &dst[ i ] );
+        bmath_cf3_s_mul_sub( &w0, &src[ i ], &src[ i + n1 ], &buf[ i ] );
+        bmath_cf3_s_mul( &w0, &ws0, &w0 );
     }
 
-    bmath_fourier_rct_fft_f3( dst + n1, buf, n1, buf + n1 );
-    bmath_fourier_rct_fft_f3( buf,      dst, n1, buf + n1 );
+    bmath_fourier_rct_fft_f3( buf, dst + n1, n1, buf + n1 );
+    bmath_fourier_rct_fft_f3( dst, buf,      n1, buf + n1 );
 
     for( sz_t i = 0; i < n1; i++ )
     {
@@ -91,7 +91,7 @@ void bmath_fourier_rct_fft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t n0
     }
 }
 
-vd_t bmath_fourier_fft_f3_buf( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t size, vd_t buf )
+vd_t bmath_fourier_fft_f3_buf( const bmath_cf3_s* src, bmath_cf3_s* dst, sz_t size, vd_t buf )
 {
     if( size <= 2 )
     {
@@ -116,18 +116,18 @@ vd_t bmath_fourier_fft_f3_buf( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t si
     if( src == dst )
     {
         bcore_memcpy( buf_l, src, sizeof( bmath_cf3_s ) * size );
-        bmath_fourier_rct_fft_f3( dst, buf_l, size, buf_l );
+        bmath_fourier_rct_fft_f3( buf_l, dst, size, buf_l );
     }
     else
     {
-        bmath_fourier_rct_fft_f3( dst, src, size, buf_l );
+        bmath_fourier_rct_fft_f3( src, dst, size, buf_l );
     }
     return buf_l;
 }
 
-void bmath_fourier_fft_f3( bmath_cf3_s* dst, const bmath_cf3_s* src, sz_t size )
+void bmath_fourier_fft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, sz_t size )
 {
-    bcore_free( bmath_fourier_fft_f3_buf( dst, src, size, NULL ) );
+    bcore_free( bmath_fourier_fft_f3_buf( src, dst, size, NULL ) );
 }
 
 /**********************************************************************************************************************/
@@ -167,13 +167,13 @@ static vd_t selftest( void )
     //    bcore_txt_ml_to_stdout( sr_awc( vec1 ) );
 
         /// vec2 = DFT( vec1 )
-        bmath_fourier_dft_f3( vec2->data, vec1->data, size );
+        bmath_fourier_dft_f3( vec1->data, vec2->data, size );
         /// vec3 = FFT( vec1 )
-        bmath_fourier_fft_f3( vec3->data, vec1->data, size );
+        bmath_fourier_fft_f3( vec1->data, vec3->data, size );
 
     //    bcore_txt_ml_to_stdout( sr_awc( vec2 ) );
     //    bcore_txt_ml_to_stdout( sr_awc( vec3 ) );
-        bmath_vector_aware_sqr_sub( &z, vec2, vec3 );
+        bmath_vector_a_sub_sqr( ( const bmath_vector* )vec2, ( const bmath_vector* )vec3, ( bmath_ring* )&z );
         ASSERT( bmath_cf3_mag( z ) < 1e-14 );
 
         /// vec2 = inverse FFT( vec1 )
@@ -181,10 +181,10 @@ static vd_t selftest( void )
         bmath_fourier_fft_f3( vec2->data, vec2->data, size );
         bcore_array_aware_do( vec2, 0, -1, ( fp_t )bmath_cf3_s_self_cnj );
         bmath_cf3_s f = bmath_cf3_init( 1.0 / size, 0 );
-        bmath_vector_aware_mul( vec2, vec2, &f );
+        bmath_vector_a_mul( ( const bmath_vector* )vec2, ( const bmath_ring* )&f, ( bmath_vector* )vec2 );
 
         /// compare vec1, vec 2
-        bmath_vector_aware_sqr_sub( &z, vec1, vec2 );
+        bmath_vector_a_sub_sqr( ( const bmath_vector* )vec1, ( const bmath_vector* )vec2, ( bmath_ring* )&z );
     //    printf( "%g\n", bmath_cf3_mag( z ) );
         ASSERT( bmath_cf3_mag( z ) < 1e-14 );
     }
@@ -210,7 +210,7 @@ static vd_t selftest( void )
         clock_t time;
 
         time = clock();
-        bmath_fourier_fft_f3( vec2->data, vec1->data, size );
+        bmath_fourier_fft_f3( vec1->data, vec2->data, size );
         time = clock() - time;
         st_s_push_fa( log, "fft ... #<sz_t>ms\n", ( sz_t ) ( ( 1E3 * ( double )( time )/CLOCKS_PER_SEC ) ) );
 

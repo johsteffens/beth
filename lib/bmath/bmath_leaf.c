@@ -19,33 +19,30 @@
 /**********************************************************************************************************************/
 // bmath features for certain leaf types
 
-static void bmath_f3_t_add( f3_t* o, const f3_t* op1, const f3_t* op2 ) { *o = *op1 + *op2; }
-static void bmath_f3_t_zro( f3_t* o )                                   { *o = 0.0; }
-static void bmath_f3_t_neg( f3_t* o, const f3_t* op )                   { *o = -*op; }
-static void bmath_f3_t_sub( f3_t* o, const f3_t* op1, const f3_t* op2 ) { *o = *op1 - *op2; }
+static void bmath_f3_t_add( const f3_t* o, const f3_t* op, f3_t* res ) { *res = *o + *op; }
+static void bmath_f3_t_zro(       f3_t* o                            ) { *o   = 0.0;      }
+static void bmath_f3_t_neg( const f3_t* o,                 f3_t* res ) { *res = -*o;      }
+static void bmath_f3_t_sub( const f3_t* o, const f3_t* op, f3_t* res ) { *res = *o - *op; }
+static void bmath_f3_t_mul( const f3_t* o, const f3_t* op, f3_t* res ) { *res = *o * *op; }
+static void bmath_f3_t_one(       f3_t* o                            ) { *o   = 1.0;      }
+static void bmath_f3_t_inv( const f3_t* o,                 f3_t* res ) { *res = 1.0 / *o; }
+static void bmath_f3_t_div( const f3_t* o, const f3_t* op, f3_t* res ) { *res = *o / *op; }
 
-static void bmath_f3_t_mul( f3_t* o, const f3_t* op1, const f3_t* op2 ) { *o = *op1 * *op2; }
-static void bmath_f3_t_one( f3_t* o )                                   { *o = 1.0; }
-static void bmath_f3_t_inv( f3_t* o, const f3_t* op )                   { *o = 1.0  / *op; }
-static void bmath_f3_t_div( f3_t* o, const f3_t* op1, const f3_t* op2 ) { *o = *op1 / *op2; }
+static void bmath_f2_t_add( const f2_t* o, const f2_t* op, f2_t* res ) { *res = *o + *op; }
+static void bmath_f2_t_zro(       f2_t* o                            ) { *o   = 0.0;      }
+static void bmath_f2_t_neg( const f2_t* o,                 f2_t* res ) { *res = -*o;      }
+static void bmath_f2_t_sub( const f2_t* o, const f2_t* op, f2_t* res ) { *res = *o - *op; }
+static void bmath_f2_t_mul( const f2_t* o, const f2_t* op, f2_t* res ) { *res = *o * *op; }
+static void bmath_f2_t_one(       f2_t* o                            ) { *o   = 1.0;      }
+static void bmath_f2_t_inv( const f2_t* o,                 f2_t* res ) { *res = 1.0 / *o; }
+static void bmath_f2_t_div( const f2_t* o, const f2_t* op, f2_t* res ) { *res = *o / *op; }
 
-static void bmath_f2_t_add( f2_t* o, const f2_t* op1, const f2_t* op2 ) { *o = *op1 + *op2; }
-static void bmath_f2_t_zro( f2_t* o )                                   { *o = 0.0; }
-static void bmath_f2_t_neg( f2_t* o, const f2_t* op )                   { *o = -*op; }
-static void bmath_f2_t_sub( f2_t* o, const f2_t* op1, const f2_t* op2 ) { *o = *op1 - *op2; }
-
-static void bmath_f2_t_mul( f2_t* o, const f2_t* op1, const f2_t* op2 ) { *o = *op1 * *op2; }
-static void bmath_f2_t_one( f2_t* o )                                   { *o = 1.0; }
-static void bmath_f2_t_inv( f2_t* o, const f2_t* op )                   { *o = 1.0  / *op; }
-static void bmath_f2_t_div( f2_t* o, const f2_t* op1, const f2_t* op2 ) { *o = *op1 / *op2; }
-
-static void bmath_s3_t_add( s3_t* o, const s3_t* op1, const s3_t* op2 ) { *o = *op1 + *op2; }
-static void bmath_s3_t_zro( s3_t* o )                                   { *o = 0; }
-static void bmath_s3_t_neg( s3_t* o, const s3_t* op )                   { *o = -*op; }
-static void bmath_s3_t_sub( s3_t* o, const s3_t* op1, const s3_t* op2 ) { *o = *op1 - *op2; }
-
-static void bmath_s3_t_mul( s3_t* o, const s3_t* op1, const s3_t* op2 ) { *o = *op1 * *op2; }
-static void bmath_s3_t_one( s3_t* o )                                   { *o = 1; }
+static void bmath_s3_t_add( const s3_t* o, const s3_t* op, s3_t* res ) { *res = *o + *op; }
+static void bmath_s3_t_zro(       s3_t* o                            ) { *o   = 0;        }
+static void bmath_s3_t_neg( const s3_t* o,                 s3_t* res ) { *res = -*o;      }
+static void bmath_s3_t_sub( const s3_t* o, const s3_t* op, s3_t* res ) { *res = *o - *op; }
+static void bmath_s3_t_mul( const s3_t* o, const s3_t* op, s3_t* res ) { *res = *o * *op; }
+static void bmath_s3_t_one(       s3_t* o                            ) { *o   = 1;        }
 
 /**********************************************************************************************************************/
 

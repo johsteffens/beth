@@ -16,8 +16,6 @@
 #include "bmath_spect_matrix.h"
 #include "bmath_quicktypes.h"
 
-#define NPX( name ) bmath_matrix_##name
-
 /**********************************************************************************************************************/
 
 BCORE_DEFINE_SPECT( bmath_matrix_s )
@@ -43,8 +41,8 @@ BCORE_DEFINE_SPECT( bmath_matrix_s )
     "feature bmath_fp: div;"
 
     // matrix features
-    "feature bmath_fp: matrix_mul_vec;"
-    "feature bmath_fp: matrix_mul_scl;"
+    "feature bmath_fp: mul_vec;"
+    "feature bmath_fp: mul_scl;"
 
     // spect functions
     "func bcore_spect_fp: create_from_self;"
@@ -60,47 +58,47 @@ static bmath_matrix_s* bmath_matrix_s_create_from_self( const bcore_self_s* self
 
 /**********************************************************************************************************************/
 
-sz_t bmath_matrix_default_get_rows( const bmath_matrix_s* p, vc_t o )
+sz_t bmath_matrix_default_get_rows( const bmath_matrix_s* p, const bmath_matrix* o )
 {
     return bcore_matrix_spect_get_rows( p->spect_matrix_matrix, o );
 }
 
-sz_t bmath_matrix_default_get_cols( const bmath_matrix_s* p, vc_t o )
+sz_t bmath_matrix_default_get_cols( const bmath_matrix_s* p, const bmath_matrix* o )
 {
     return bcore_matrix_spect_get_cols( p->spect_matrix_matrix, o );
 }
 
-void bmath_matrix_default_zro( const bmath_matrix_s* p, vd_t o )
+void bmath_matrix_default_zro( const bmath_matrix_s* p, bmath_matrix* o )
 {
-    bmath_vector_spect_zro( p->spect_vector_matrix, o );
+    bmath_vector_p_zro( p->spect_vector_matrix, ( bmath_vector* )o );
 }
 
-void bmath_matrix_default_neg( const bmath_matrix_s* p, vd_t o, vc_t mat1 )
+void bmath_matrix_default_neg( const bmath_matrix_s* p, const bmath_matrix* o, bmath_matrix* res )
 {
-    bmath_vector_spect_neg( p->spect_vector_matrix, o, mat1 );
+    bmath_vector_p_neg( p->spect_vector_matrix, ( const bmath_vector* )o, ( bmath_vector* )res );
 }
 
-void bmath_matrix_default_cpy( const bmath_matrix_s* p, vd_t o, vc_t mat1 )
+void bmath_matrix_default_cpy( const bmath_matrix_s* p, const bmath_matrix* o, bmath_matrix* res )
 {
-    bcore_inst_spect_copy( p->spect_inst_matrix, o, mat1 );
+    bmath_vector_p_cpy( p->spect_vector_matrix, ( const bmath_vector* )o, ( bmath_vector* )res );
 }
 
-void bmath_matrix_default_add( const bmath_matrix_s* p, vd_t o, vc_t mat1, vc_t mat2 )
+void bmath_matrix_default_add( const bmath_matrix_s* p, const bmath_matrix* o, const bmath_matrix* op, bmath_matrix* res )
 {
-    bmath_vector_spect_add( p->spect_vector_matrix, o, mat1, mat2 );
+    bmath_vector_p_add( p->spect_vector_matrix, (const bmath_vector*)o, (bmath_vector*)op, (bmath_vector*)res );
 }
 
-void bmath_matrix_default_sub( const bmath_matrix_s* p, vd_t o, vc_t mat1, vc_t mat2 )
+void bmath_matrix_default_sub( const bmath_matrix_s* p, const bmath_matrix* o, const bmath_matrix* op, bmath_matrix* res )
 {
-    bmath_vector_spect_sub( p->spect_vector_matrix, o, mat1, mat2 );
+    bmath_vector_p_sub( p->spect_vector_matrix, (const bmath_vector*)o, (bmath_vector*)op, (bmath_vector*)res );
 }
 
-void bmath_matrix_default_mul( const bmath_matrix_s* p, vd_t o, vc_t mat1, vc_t mat2 )
+void bmath_matrix_default_mul( const bmath_matrix_s* p, const bmath_matrix* o, const bmath_matrix* op, bmath_matrix* res )
 {
-    sz_t rows1 = bmath_matrix_p_get_rows( p, mat1 );
-    sz_t rows2 = bmath_matrix_p_get_rows( p, mat2 );
-    sz_t cols1 = bmath_matrix_p_get_cols( p, mat1 );
-    sz_t cols2 = bmath_matrix_p_get_cols( p, mat2 );
+    sz_t rows1 = bmath_matrix_p_get_rows( p, o );
+    sz_t rows2 = bmath_matrix_p_get_rows( p, op );
+    sz_t cols1 = bmath_matrix_p_get_cols( p, o );
+    sz_t cols2 = bmath_matrix_p_get_cols( p, op );
     sz_t steps = cols1 < rows2 ? cols1 : rows2;
 
     sr_s sr_mul = sr_p_create( p->spect_ring_scalar->spect_inst );
@@ -113,20 +111,20 @@ void bmath_matrix_default_mul( const bmath_matrix_s* p, vd_t o, vc_t mat1, vc_t 
             bmath_ring_r_zro( &sr_sum );
             for( sz_t k = 0; k < steps; k++ )
             {
-                sr_s sr1 = bcore_matrix_spect_get_cell( p->spect_matrix_matrix, mat1, i, k );
-                sr_s sr2 = bcore_matrix_spect_get_cell( p->spect_matrix_matrix, mat2, k, j );
-                if ( sr1.o && sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr_mul.o, sr1.o, sr2.o );
+                sr_s sr1 = bcore_matrix_spect_get_cell( p->spect_matrix_matrix, o,  i, k );
+                sr_s sr2 = bcore_matrix_spect_get_cell( p->spect_matrix_matrix, op, k, j );
+                if ( sr1.o && sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr1.o, sr2.o, sr_mul.o );
                 else                  bmath_ring_p_zro( p->spect_ring_scalar, sr_mul.o );
-                bmath_ring_p_add( p->spect_ring_scalar, sr_sum.o, sr_sum.o, sr_mul.o );
+                bmath_ring_p_add( p->spect_ring_scalar, sr_mul.o, sr_sum.o, sr_sum.o );
             }
-            bcore_matrix_spect_set_cell( p->spect_matrix_matrix, o, i, j, sr_sum );
+            bcore_matrix_spect_set_cell( p->spect_matrix_matrix, res, i, j, sr_sum );
         }
     }
 
     sr_down( sr_mul );
 }
 
-void bmath_matrix_default_one( const bmath_matrix_s* p, vd_t o )
+void bmath_matrix_default_one( const bmath_matrix_s* p, bmath_matrix* o )
 {
     bmath_matrix_p_zro( p, o );
     sz_t rows = bmath_matrix_p_get_rows( p, o );
@@ -143,27 +141,27 @@ void bmath_matrix_default_one( const bmath_matrix_s* p, vd_t o )
     sr_down( sr_one );
 }
 
-void bmath_matrix_default_div( const bmath_matrix_s* p, vd_t o, vc_t mat1, vc_t mat2 )
+void bmath_matrix_default_div( const bmath_matrix_s* p, const bmath_matrix* o, const bmath_matrix* op, bmath_matrix* res )
 {
     sr_s sr_inv = sr_p_create( p );
-    bmath_matrix_p_inv( p, sr_inv.o, mat2 );
-    bmath_matrix_p_mul( p, o, mat1, sr_inv.o );
+    bmath_matrix_p_inv( p, op, sr_inv.o );
+    bmath_matrix_p_mul( p, o, sr_inv.o, res );
     sr_down( sr_inv );
 }
 
-void bmath_matrix_default_mul_scl( const bmath_matrix_s* p, vd_t o, vc_t mat1, vc_t scl2 )
+void bmath_matrix_default_mul_scl( const bmath_matrix_s* p, const bmath_matrix* o, const bmath_ring* op, bmath_matrix* res )
 {
-    bmath_vector_spect_mul( p->spect_vector_matrix, o, mat1, scl2 );
+    bmath_vector_p_mul( p->spect_vector_matrix, (const bmath_vector*)o, op, (bmath_vector*)res );
 }
 
-void bmath_matrix_default_mul_vec( const bmath_matrix_s* p, vc_t o, vd_t vec1, vc_t vec2 )
+void bmath_matrix_default_mul_vec( const bmath_matrix_s* p, const bmath_matrix* o, const bmath_vector* op, bmath_vector* res )
 {
     const bcore_array_s* spect_array_vector = p->spect_vector_default->spect_array_vector;
 
     sz_t rows1 = bmath_matrix_p_get_rows( p, o );
     sz_t cols1 = bmath_matrix_p_get_cols( p, o );
-    sz_t  dim1 = bmath_vector_spect_get_dim( p->spect_vector_default, vec1 );
-    sz_t  dim2 = bmath_vector_spect_get_dim( p->spect_vector_default, vec2 );
+    sz_t  dim1 = bmath_vector_p_get_dim( p->spect_vector_default, res );
+    sz_t  dim2 = bmath_vector_p_get_dim( p->spect_vector_default, op );
 
     sz_t steps = cols1 < dim2 ? cols1 : dim2;
 
@@ -178,13 +176,13 @@ void bmath_matrix_default_mul_vec( const bmath_matrix_s* p, vc_t o, vd_t vec1, v
             for( sz_t k = 0; k < steps; k++ )
             {
                 sr_s sr1 = bcore_matrix_spect_get_cell( p->spect_matrix_matrix, o, i, k );
-                sr_s sr2 = bcore_array_spect_get( spect_array_vector, vec2, k );
-                if ( sr1.o && sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr_mul.o, sr1.o, sr2.o );
+                sr_s sr2 = bcore_array_spect_get( spect_array_vector, op, k );
+                if ( sr1.o && sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr1.o, sr2.o, sr_mul.o );
                 else                  bmath_ring_p_zro( p->spect_ring_scalar, sr_mul.o );
-                bmath_ring_p_add( p->spect_ring_scalar, sr_sum.o, sr_sum.o, sr_mul.o );
+                bmath_ring_p_add( p->spect_ring_scalar, sr_mul.o, sr_sum.o, sr_sum.o );
             }
         }
-        bcore_array_spect_set( spect_array_vector, vec1, i, sr_sum );
+        bcore_array_spect_set( spect_array_vector, res, i, sr_sum );
     }
 
     sr_down( sr_mul );

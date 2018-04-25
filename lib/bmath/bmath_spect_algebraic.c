@@ -20,8 +20,6 @@
 /**********************************************************************************************************************/
 // bmath_group_s
 
-#define NPXAG( name ) bmath_group_##name
-
 BCORE_DEFINE_SPECT( bmath_group_s )
 "{"
     "bcore_spect_header_s header;"
@@ -34,22 +32,20 @@ BCORE_DEFINE_SPECT( bmath_group_s )
 "}";
 
 
-void bmath_group_default_sub( const bmath_group_s* p, vd_t o, vc_t op1, vc_t op2 )
+void bmath_group_default_sub( const bmath_group_s* p, const bmath_group* o, const bmath_group* op, bmath_group* res )
 {
-    bmath_group_p_neg( p, o, op2 );
-    bmath_group_p_add( p, o, op1, o );
+    bmath_group_p_neg( p, op, res );
+    bmath_group_p_add( p, o,  res, res );
 }
 
-void bmath_group_default_cpy( const bmath_group_s* p, vd_t o, vc_t op )
+void bmath_group_default_cpy( const bmath_group_s* p, const bmath_group* o, bmath_group* res )
 {
-    bcore_inst_spect_copy( p->spect_inst, o, op );
+    bcore_inst_spect_copy( p->spect_inst, res, o );
 }
 
 /**********************************************************************************************************************/
 
 // bmath_ring_s
-
-#define NPXRG( name ) bmath_ring_##name
 
 BCORE_DEFINE_SPECT( bmath_ring_s )
 "{"
@@ -68,21 +64,21 @@ BCORE_DEFINE_SPECT( bmath_ring_s )
     "       feature bmath_fp: div;"
 "}";
 
-void bmath_ring_default_sub( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 )
+void bmath_ring_default_sub( const bmath_ring_s* p, const bmath_ring* o, const bmath_ring* op, bmath_ring* res )
 {
-    bmath_ring_p_neg( p, o, op2 );
-    bmath_ring_p_add( p, o, op1, o );
+    bmath_ring_p_neg( p, op, res );
+    bmath_ring_p_add( p, o,  res, res );
 }
 
-void bmath_ring_default_cpy( const bmath_ring_s* p, vd_t o, vc_t op )
+void bmath_ring_default_cpy( const bmath_ring_s* p, const bmath_ring* o, bmath_ring* res )
 {
-    bcore_inst_spect_copy( p->spect_inst, o, op );
+    bcore_inst_spect_copy( p->spect_inst, res, o );
 }
 
-void bmath_ring_default_div( const bmath_ring_s* p, vd_t o, vc_t op1, vc_t op2 )
+void bmath_ring_default_div( const bmath_ring_s* p, const bmath_ring* o, const bmath_ring* op, bmath_ring* res )
 {
-    bmath_ring_p_inv( p, o, op2 );
-    bmath_ring_p_mul( p, o, op1, o );
+    bmath_ring_p_inv( p, op, res );
+    bmath_ring_p_mul( p, o,  res, res );
 }
 
 /**********************************************************************************************************************/
@@ -97,7 +93,7 @@ static vd_t selftest( void )
     f3_t v2 = 2;
     f3_t v3 = 0;
 
-    bmath_group_p_sub( p_group, &v3, &v1, &v2 );
+    bmath_group_p_sub( p_group, ( bmath_group* )&v1, ( bmath_group* )&v2, ( bmath_group* )&v3 );
 
     ASSERT( v3 == 1 );
 

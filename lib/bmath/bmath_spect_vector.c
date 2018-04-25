@@ -16,8 +16,6 @@
 #include "bmath_spect_vector.h"
 #include "bmath_quicktypes.h"
 
-#define NPX( name ) bmath_vector_##name
-
 /**********************************************************************************************************************/
 
 
@@ -49,16 +47,16 @@ static bmath_vector_s* bmath_vector_s_create_from_self( const bcore_self_s* self
 
 /**********************************************************************************************************************/
 
-sz_t bmath_vector_spect_get_dim( const bmath_vector_s* p, vc_t o )
+sz_t bmath_vector_default_get_dim( const bmath_vector_s* p, const bmath_vector* o )
 {
-    return bcore_array_spect_get_size( p->spect_array_vector, o );
+    return bcore_array_spect_get_size( p->spect_array_vector, ( vc_t )o );
 }
 
-void bmath_vector_spect_zro( const bmath_vector_s* p, vd_t vec )
+void bmath_vector_default_zro( const bmath_vector_s* p, bmath_vector* vec )
 {
-    if( p->fp_zro ) { p->fp_zro( vec ); return; }
+    if( p->zro ) { p->zro( ( bmath_group* )vec ); return; }
 
-    sz_t dim = bmath_vector_spect_get_dim( p, vec );
+    sz_t dim = bmath_vector_default_get_dim( p, vec );
     sr_s sr_zero = sr_p_create( p->spect_ring_scalar->spect_inst );
 
     bmath_ring_p_zro( p->spect_ring_scalar, sr_zero.o );
@@ -67,27 +65,27 @@ void bmath_vector_spect_zro( const bmath_vector_s* p, vd_t vec )
     sr_down( sr_zero );
 }
 
-void bmath_vector_spect_neg( const bmath_vector_s* p, vd_t vec, vc_t vec1 )
+void bmath_vector_default_neg( const bmath_vector_s* p, const bmath_vector* vec, bmath_vector* res )
 {
-    if( p->fp_neg ) { p->fp_neg( vec, vec1 ); return; }
+    if( p->neg ) { p->neg( ( const bmath_group* )vec, ( bmath_group* )res ); return; }
 
-    sz_t dim = bmath_vector_spect_get_dim( p, vec  );
-    sr_s sr_neg = sr_p_create( p->spect_ring_scalar->spect_inst );
+    sz_t res_dim = bmath_vector_default_get_dim( p, res );
+    sr_s sr_neg  = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    for( sz_t i = 0; i < dim; i++ )
+    for( sz_t i = 0; i < res_dim; i++ )
     {
-        sr_s sr1 = bcore_array_spect_get( p->spect_array_vector, vec1, i );
+        sr_s sr1 = bcore_array_spect_get( p->spect_array_vector, vec, i );
 
         if( sr1.o )
         {
-            bmath_ring_p_neg( p->spect_ring_scalar, sr_neg.o, sr1.o );
+            bmath_ring_p_neg( p->spect_ring_scalar, sr1.o, sr_neg.o );
         }
         else
         {
             bmath_ring_p_zro( p->spect_ring_scalar, sr_neg.o );
         }
 
-        bcore_array_spect_set( p->spect_array_vector, vec, i, sr_cw( sr_neg ) );
+        bcore_array_spect_set( p->spect_array_vector, res, i, sr_cw( sr_neg ) );
 
         sr_down( sr1 );
     }
@@ -95,27 +93,27 @@ void bmath_vector_spect_neg( const bmath_vector_s* p, vd_t vec, vc_t vec1 )
     sr_down( sr_neg );
 }
 
-void bmath_vector_spect_cpy( const bmath_vector_s* p, vd_t vec, vc_t vec1 )
+void bmath_vector_default_cpy( const bmath_vector_s* p, const bmath_vector* vec, bmath_vector* res )
 {
-    if( p->fp_cpy ) { p->fp_cpy( vec, vec1 ); return; }
+    if( p->cpy ) { p->cpy( ( const bmath_group* )vec, ( bmath_group* )res ); return; }
 
-    sz_t dim = bmath_vector_spect_get_dim( p, vec  );
+    sz_t res_dim = bmath_vector_default_get_dim( p, res );
     sr_s sr_cpy = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    for( sz_t i = 0; i < dim; i++ )
+    for( sz_t i = 0; i < res_dim; i++ )
     {
-        sr_s sr1 = bcore_array_spect_get( p->spect_array_vector, vec1, i );
+        sr_s sr1 = bcore_array_spect_get( p->spect_array_vector, vec, i );
 
         if( sr1.o )
         {
-            bmath_ring_p_cpy( p->spect_ring_scalar, sr_cpy.o, sr1.o );
+            bmath_ring_p_cpy( p->spect_ring_scalar, sr1.o, sr_cpy.o );
         }
         else
         {
             bmath_ring_p_zro( p->spect_ring_scalar, sr_cpy.o );
         }
 
-        bcore_array_spect_set( p->spect_array_vector, vec, i, sr_cw( sr_cpy ) );
+        bcore_array_spect_set( p->spect_array_vector, res, i, sr_cw( sr_cpy ) );
 
         sr_down( sr1 );
     }
@@ -123,24 +121,24 @@ void bmath_vector_spect_cpy( const bmath_vector_s* p, vd_t vec, vc_t vec1 )
     sr_down( sr_cpy );
 }
 
-void bmath_vector_spect_add( const bmath_vector_s* p, vd_t vec, vc_t vec1, vc_t vec2 )
+void bmath_vector_default_add( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_vector* vec2, bmath_vector* res )
 {
-    if( p->fp_add ) { p->fp_add( vec, vec1, vec2 ); return; }
+    if( p->add ) { p->add( ( const bmath_group* )vec1, ( const bmath_group* )vec2, ( bmath_group* )res ); return; }
 
-    sz_t dim = bmath_vector_spect_get_dim( p, vec  );
+    sz_t res_dim = bmath_vector_default_get_dim( p, res );
     sr_s sr_add = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    for( sz_t i = 0; i < dim; i++ )
+    for( sz_t i = 0; i < res_dim; i++ )
     {
         sr_s sr1 = bcore_array_spect_get( p->spect_array_vector, vec1, i );
         sr_s sr2 = bcore_array_spect_get( p->spect_array_vector, vec2, i );
 
-        if     ( sr1.o && sr2.o ) bmath_ring_p_add( p->spect_ring_scalar, sr_add.o, sr1.o, sr2.o );
-        else if( sr1.o          ) bmath_ring_p_cpy( p->spect_ring_scalar, sr_add.o, sr1.o );
-        else if( sr2.o          ) bmath_ring_p_cpy( p->spect_ring_scalar, sr_add.o, sr2.o );
+        if     ( sr1.o && sr2.o ) bmath_ring_p_add( p->spect_ring_scalar, sr1.o, sr2.o, sr_add.o );
+        else if( sr1.o          ) bmath_ring_p_cpy( p->spect_ring_scalar, sr1.o, sr_add.o );
+        else if( sr2.o          ) bmath_ring_p_cpy( p->spect_ring_scalar, sr2.o, sr_add.o );
         else                      bmath_ring_p_zro( p->spect_ring_scalar, sr_add.o );
 
-        bcore_array_spect_set( p->spect_array_vector, vec, i, sr_cw( sr_add ) );
+        bcore_array_spect_set( p->spect_array_vector, res, i, sr_cw( sr_add ) );
 
         sr_down( sr1 );
         sr_down( sr2 );
@@ -149,24 +147,24 @@ void bmath_vector_spect_add( const bmath_vector_s* p, vd_t vec, vc_t vec1, vc_t 
     sr_down( sr_add );
 }
 
-void bmath_vector_spect_sub( const bmath_vector_s* p, vd_t vec, vc_t vec1, vc_t vec2 )
+void bmath_vector_default_sub( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_vector* vec2, bmath_vector* res )
 {
-    if( p->fp_sub ) { p->fp_sub( vec, vec1, vec2 ); return; }
+    if( p->sub ) { p->sub( ( const bmath_group* )vec1, ( const bmath_group* )vec2, ( bmath_group* )res ); return; }
 
-    sz_t dim = bmath_vector_spect_get_dim( p, vec  );
+    sz_t res_dim = bmath_vector_default_get_dim( p, res );
     sr_s sr_sub = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    for( sz_t i = 0; i < dim; i++ )
+    for( sz_t i = 0; i < res_dim; i++ )
     {
         sr_s sr1 = bcore_array_spect_get( p->spect_array_vector, vec1, i );
         sr_s sr2 = bcore_array_spect_get( p->spect_array_vector, vec2, i );
 
-        if     ( sr1.o && sr2.o ) bmath_ring_p_sub( p->spect_ring_scalar, sr_sub.o, sr1.o, sr2.o );
-        else if( sr1.o          ) bmath_ring_p_cpy( p->spect_ring_scalar, sr_sub.o, sr1.o );
-        else if( sr2.o          ) bmath_ring_p_neg( p->spect_ring_scalar, sr_sub.o, sr2.o );
+        if     ( sr1.o && sr2.o ) bmath_ring_p_sub( p->spect_ring_scalar, sr1.o, sr2.o, sr_sub.o );
+        else if( sr1.o          ) bmath_ring_p_cpy( p->spect_ring_scalar, sr1.o, sr_sub.o );
+        else if( sr2.o          ) bmath_ring_p_neg( p->spect_ring_scalar, sr2.o, sr_sub.o );
         else                      bmath_ring_p_zro( p->spect_ring_scalar, sr_sub.o );
 
-        bcore_array_spect_set( p->spect_array_vector, vec, i, sr_cw( sr_sub ) );
+        bcore_array_spect_set( p->spect_array_vector, res, i, sr_cw( sr_sub ) );
 
         sr_down( sr1 );
         sr_down( sr2 );
@@ -175,37 +173,37 @@ void bmath_vector_spect_sub( const bmath_vector_s* p, vd_t vec, vc_t vec1, vc_t 
     sr_down( sr_sub );
 }
 
-void bmath_vector_spect_mul( const bmath_vector_s* p, vd_t vec, vc_t vec1, vc_t scl2 )
+void bmath_vector_default_mul( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_ring* scl2, bmath_vector* res  )
 {
-    if( p->fp_mul ) { p->fp_mul( vec, vec1, scl2 ); return; }
-    if( !scl2 )     { bmath_vector_spect_zro( p, vec ); return; }
+    if( p->mul ) { p->mul( vec1, scl2, res ); return; }
+    if( !scl2 )  { bmath_vector_default_zro( p, res ); return; }
 
     sr_s sr_mul = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    sz_t dim = bmath_vector_spect_get_dim( p, vec  );
-    for( sz_t i = 0; i < dim; i++ )
+    sz_t res_dim = bmath_vector_default_get_dim( p, res );
+    for( sz_t i = 0; i < res_dim; i++ )
     {
         sr_s sr1 = bcore_array_spect_get( p->spect_array_vector, vec1, i );
-        if   ( sr1.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr_mul.o, sr1.o, scl2 );
+        if   ( sr1.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr1.o, scl2, sr_mul.o );
         else           bmath_ring_p_zro( p->spect_ring_scalar, sr_mul.o );
-        bcore_array_spect_set( p->spect_array_vector, vec, i, sr_cw( sr_mul ) );
+        bcore_array_spect_set( p->spect_array_vector, res, i, sr_cw( sr_mul ) );
         sr_down( sr1 );
     }
 
     sr_down( sr_mul );
 }
 
-void bmath_vector_spect_dot_prd( const bmath_vector_s* p, vd_t scl, vc_t vec1, vc_t vec2 )
+void bmath_vector_default_dot_prd( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_vector* vec2, bmath_ring* res )
 {
-    if( p->fp_dot_prd ) { p->fp_dot_prd( scl, vec1, vec2 ); return; }
+    if( p->dot_prd ) { p->dot_prd( vec1, vec2, res ); return; }
 
     const bcore_inst_s* spect_ring_inst = p->spect_ring_scalar->spect_inst;
 
-    sz_t dim1 = bmath_vector_spect_get_dim( p, vec1 );
-    sz_t dim2 = bmath_vector_spect_get_dim( p, vec2 );
+    sz_t dim1 = bmath_vector_default_get_dim( p, vec1 );
+    sz_t dim2 = bmath_vector_default_get_dim( p, vec2 );
     sz_t dim = dim1 < dim2 ? dim1 : dim2;
     sr_s sr_mul = sr_p_create( spect_ring_inst );
-    sr_s sr_sum = sr_pwd( spect_ring_inst, scl );
+    sr_s sr_sum = sr_pwd( spect_ring_inst, res );
 
     bmath_ring_p_zro( p->spect_ring_scalar, sr_sum.o );
 
@@ -214,9 +212,9 @@ void bmath_vector_spect_dot_prd( const bmath_vector_s* p, vd_t scl, vc_t vec1, v
         sr_s sr1 = bcore_array_spect_get( p->spect_array_vector, vec1, i );
         sr_s sr2 = bcore_array_spect_get( p->spect_array_vector, vec2, i );
 
-        if ( sr1.o && sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr_mul.o, sr1.o, sr2.o );
+        if ( sr1.o && sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr1.o, sr2.o, sr_mul.o );
         else                  bmath_ring_p_zro( p->spect_ring_scalar, sr_mul.o );
-        bmath_ring_p_add( p->spect_ring_scalar, sr_sum.o, sr_sum.o, sr_mul.o );
+        bmath_ring_p_add( p->spect_ring_scalar, sr_sum.o, sr_mul.o, sr_sum.o );
 
         sr_down( sr1 );
         sr_down( sr2 );
@@ -226,17 +224,17 @@ void bmath_vector_spect_dot_prd( const bmath_vector_s* p, vd_t scl, vc_t vec1, v
     sr_down( sr_mul );
 }
 
-void bmath_vector_spect_sqr_sub( const bmath_vector_s* p, vd_t scl, vc_t vec1, vc_t vec2 )
+void bmath_vector_default_sub_sqr( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_vector* vec2, bmath_ring* res )
 {
-    if( p->fp_dot_prd ) { p->fp_dot_prd( scl, vec1, vec2 ); return; }
+    if( p->dot_prd ) { p->dot_prd( vec1, vec2, res ); return; }
 
     const bcore_inst_s* spect_ring_inst = p->spect_ring_scalar->spect_inst;
 
-    sz_t dim1 = bmath_vector_spect_get_dim( p, vec1 );
-    sz_t dim2 = bmath_vector_spect_get_dim( p, vec2 );
+    sz_t dim1 = bmath_vector_default_get_dim( p, vec1 );
+    sz_t dim2 = bmath_vector_default_get_dim( p, vec2 );
     sz_t dim = dim1 < dim2 ? dim1 : dim2;
     sr_s sr_mul = sr_p_create( spect_ring_inst );
-    sr_s sr_sum = sr_pwd( spect_ring_inst, scl );
+    sr_s sr_sum = sr_pwd( spect_ring_inst, res );
 
     bmath_ring_p_zro( p->spect_ring_scalar, sr_sum.o );
 
@@ -247,16 +245,16 @@ void bmath_vector_spect_sqr_sub( const bmath_vector_s* p, vd_t scl, vc_t vec1, v
 
         if( sr1.o && sr2.o )
         {
-            bmath_ring_p_sub( p->spect_ring_scalar, sr_mul.o, sr1.o, sr2.o );
+            bmath_ring_p_sub( p->spect_ring_scalar, sr1.o, sr2.o, sr_mul.o );
             bmath_ring_p_mul( p->spect_ring_scalar, sr_mul.o, sr_mul.o, sr_mul.o );
         }
         else
         {
-            if     ( sr1.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr_mul.o, sr1.o, sr1.o );
-            else if( sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr_mul.o, sr2.o, sr2.o );
+            if     ( sr1.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr1.o, sr1.o, sr_mul.o );
+            else if( sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr2.o, sr2.o, sr_mul.o );
             else             bmath_ring_p_zro( p->spect_ring_scalar, sr_mul.o );
         }
-        bmath_ring_p_add( p->spect_ring_scalar, sr_sum.o, sr_sum.o, sr_mul.o );
+        bmath_ring_p_add( p->spect_ring_scalar, sr_sum.o, sr_mul.o, sr_sum.o );
 
         sr_down( sr1 );
         sr_down( sr2 );
@@ -266,60 +264,10 @@ void bmath_vector_spect_sqr_sub( const bmath_vector_s* p, vd_t scl, vc_t vec1, v
     sr_down( sr_mul );
 }
 
-void bmath_vector_spect_sqr( const bmath_vector_s* p, vd_t scl, vc_t vec1 )
+void bmath_vector_default_sqr( const bmath_vector_s* p, const bmath_vector* vec1, bmath_ring* res )
 {
-    bmath_vector_spect_dot_prd( p, scl, vec1, vec1 );
+    bmath_vector_default_dot_prd( p, vec1, vec1, res );
 }
-
-/**********************************************************************************************************************/
-
-static inline const bmath_vector_s* atpd( tp_t tp ) { return bmath_vector_s_get_typed( tp ); }
-static inline vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bmath_vector_s ); }
-static inline vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bmath_vector_s ); }
-
-sz_t NPX(typed_get_dim)( tp_t t, vc_t o                   ) { return NPX(spect_get_dim)( atpd( t ), o  ); }
-void NPX(typed_zro    )( tp_t t, vd_t o                   ) { NPX(spect_zro    )( atpd( t ), o         ); }
-void NPX(typed_neg    )( tp_t t, vd_t o, vc_t v1          ) { NPX(spect_neg    )( atpd( t ), o, v1     ); }
-void NPX(typed_cpy    )( tp_t t, vd_t o, vc_t v1          ) { NPX(spect_cpy    )( atpd( t ), o, v1     ); }
-void NPX(typed_add    )( tp_t t, vd_t o, vc_t v1, vc_t v2 ) { NPX(spect_add    )( atpd( t ), o, v1, v2 ); }
-void NPX(typed_sub    )( tp_t t, vd_t o, vc_t v1, vc_t v2 ) { NPX(spect_sub    )( atpd( t ), o, v1, v2 ); }
-void NPX(typed_mul    )( tp_t t, vd_t o, vc_t v1, vc_t s2 ) { NPX(spect_mul    )( atpd( t ), o, v1, s2 ); }
-void NPX(typed_dot_prd)( tp_t t, vd_t s, vc_t o,  vc_t v2 ) { NPX(spect_dot_prd)( atpd( t ), s,  o, v2 ); }
-void NPX(typed_sqr    )( tp_t t, vd_t s, vc_t o           ) { NPX(spect_sqr    )( atpd( t ), s,  o     ); }
-void NPX(typed_sqr_sub)( tp_t t, vd_t s, vc_t o,  vc_t v2 ) { NPX(spect_sqr_sub)( atpd( t ), s,  o, v2 ); }
-
-sz_t NPX(aware_get_dim)( vc_t o                   ) { return NPX(typed_get_dim)( *(aware_t*)o, o  ); }
-void NPX(aware_zro    )( vd_t o                   ) { NPX(typed_zro    )( *(aware_t*)o, o         ); }
-void NPX(aware_neg    )( vd_t o, vc_t v1          ) { NPX(typed_neg    )( *(aware_t*)o, o, v1     ); }
-void NPX(aware_cpy    )( vd_t o, vc_t v1          ) { NPX(typed_cpy    )( *(aware_t*)o, o, v1     ); }
-void NPX(aware_add    )( vd_t o, vc_t v1, vc_t v2 ) { NPX(typed_add    )( *(aware_t*)o, o, v1, v2 ); }
-void NPX(aware_sub    )( vd_t o, vc_t v1, vc_t v2 ) { NPX(typed_sub    )( *(aware_t*)o, o, v1, v2 ); }
-void NPX(aware_mul    )( vd_t o, vc_t v1, vc_t s2 ) { NPX(typed_mul    )( *(aware_t*)o, o, v1, s2 ); }
-void NPX(aware_dot_prd)( vd_t s, vc_t o,  vc_t v2 ) { NPX(typed_dot_prd)( *(aware_t*)o, s,  o, v2 ); }
-void NPX(aware_sqr    )( vd_t s, vc_t o           ) { NPX(typed_sqr    )( *(aware_t*)o, s,  o     ); }
-void NPX(aware_sqr_sub)( vd_t s, vc_t o,  vc_t v2 ) { NPX(typed_sqr_sub)( *(aware_t*)o, s,  o, v2 ); }
-
-sz_t NPX(get_dim)( sr_s o                   ) { sz_t r = NPX(spect_get_dim )( r_spect( o ), o.o ); sr_down( o ); return r; }
-void NPX(zro    )( sr_s o                   ) { NPX(spect_zro    )( w_spect( o ), o.o         ); sr_down( o ); }
-void NPX(neg    )( sr_s o, vc_t v1          ) { NPX(spect_neg    )( w_spect( o ), o.o, v1     ); sr_down( o ); }
-void NPX(cpy    )( sr_s o, vc_t v1          ) { NPX(spect_cpy    )( w_spect( o ), o.o, v1     ); sr_down( o ); }
-void NPX(add    )( sr_s o, vc_t v1, vc_t v2 ) { NPX(spect_add    )( w_spect( o ), o.o, v1, v2 ); sr_down( o ); }
-void NPX(sub    )( sr_s o, vc_t v1, vc_t v2 ) { NPX(spect_sub    )( w_spect( o ), o.o, v1, v2 ); sr_down( o ); }
-void NPX(mul    )( sr_s o, vc_t v1, vc_t s2 ) { NPX(spect_mul    )( w_spect( o ), o.o, v1, s2 ); sr_down( o ); }
-void NPX(dot_prd)( vd_t s, sr_s o,  vc_t v2 ) { NPX(spect_dot_prd)( r_spect( o ), s, o.o, v2  ); sr_down( o ); }
-void NPX(sqr    )( vd_t s, sr_s o           ) { NPX(spect_sqr    )( r_spect( o ), s, o.o      ); sr_down( o ); }
-void NPX(sqr_sub)( vd_t s, sr_s o,  vc_t v2 ) { NPX(spect_sqr_sub)( r_spect( o ), s, o.o, v2  ); sr_down( o ); }
-
-sz_t NPX(q_get_dim)( const sr_s* o                   ) { sz_t r = NPX(spect_get_dim )( r_spect( *o ), o->o ); return r; }
-void NPX(q_zro    )( const sr_s* o                   ) { NPX(spect_zro    )( w_spect( *o ), o->o         ); }
-void NPX(q_neg    )( const sr_s* o, vc_t v1          ) { NPX(spect_neg    )( w_spect( *o ), o->o, v1     ); }
-void NPX(q_cpy    )( const sr_s* o, vc_t v1          ) { NPX(spect_cpy    )( w_spect( *o ), o->o, v1     ); }
-void NPX(q_add    )( const sr_s* o, vc_t v1, vc_t v2 ) { NPX(spect_add    )( w_spect( *o ), o->o, v1, v2 ); }
-void NPX(q_sub    )( const sr_s* o, vc_t v1, vc_t v2 ) { NPX(spect_sub    )( w_spect( *o ), o->o, v1, v2 ); }
-void NPX(q_mul    )( const sr_s* o, vc_t v1, vc_t s2 ) { NPX(spect_mul    )( w_spect( *o ), o->o, v1, s2 ); }
-void NPX(q_dot_prd)( vd_t s, const sr_s* o,  vc_t v2 ) { NPX(spect_dot_prd)( r_spect( *o ), s, o->o, v2  ); }
-void NPX(q_sqr    )( vd_t s, const sr_s* o           ) { NPX(spect_sqr    )( r_spect( *o ), s, o->o      ); }
-void NPX(q_sqr_sub)( vd_t s, const sr_s* o,  vc_t v2 ) { NPX(spect_sqr_sub)( r_spect( *o ), s, o->o, v2  ); }
 
 /**********************************************************************************************************************/
 
@@ -344,26 +292,26 @@ static vd_t selftest( void )
     v2->data[ 1 ] = 2;
     v2->data[ 2 ] = 1;
 
-    bmath_vector_add( sv3, sv1.o, sv2.o );
+    bmath_vector_x_add( sv1, sv2.o, sv3.o );
 
     ASSERT( v3->data[ 0 ] == 4 );
     ASSERT( v3->data[ 1 ] == 4 );
     ASSERT( v3->data[ 2 ] == 4 );
 
-    bmath_vector_sub( sv3, sv1.o, sv2.o );
+    bmath_vector_x_sub( sv1, sv2.o, sv3.o );
 
     ASSERT( v3->data[ 0 ] == -2 );
     ASSERT( v3->data[ 1 ] ==  0 );
     ASSERT( v3->data[ 2 ] ==  2 );
 
     f3_t f = 2.0;
-    bmath_vector_mul( sv3, sv1.o, &f );
+    bmath_vector_x_mul( sv1, ( const bmath_ring* )&f, sv3.o );
 
     ASSERT( v3->data[ 0 ] == 2 );
     ASSERT( v3->data[ 1 ] == 4 );
     ASSERT( v3->data[ 2 ] == 6 );
 
-    bmath_vector_sqr( &f, sv1 );
+    bmath_vector_x_sqr( sv1, ( bmath_ring* )&f );
 
     ASSERT( f == 14 );
 

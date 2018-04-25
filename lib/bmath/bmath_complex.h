@@ -70,17 +70,10 @@ bmath_cf3_s bmath_cf3_one( void )
 }
 
 static inline
-void bmath_cf3_s_add( bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2 )
+void bmath_cf3_s_add( const bmath_cf3_s* o, const bmath_cf3_s* op, bmath_cf3_s* res )
 {
-    o->v[ 0 ] = op1->v[ 0 ] + op2->v[ 0 ];
-    o->v[ 1 ] = op1->v[ 1 ] + op2->v[ 1 ];
-}
-
-static inline
-void bmath_cf3_s_add_sqr( bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2 )
-{
-    o->v[ 0 ] = op1->v[ 0 ] + f3_sqr( op2->v[ 0 ] ) - f3_sqr( op2->v[ 1 ] );
-    o->v[ 1 ] = op1->v[ 1 ] + ( op2->v[ 0 ] * op2->v[ 1 ] * 2.0 );
+    res->v[ 0 ] = o->v[ 0 ] + op->v[ 0 ];
+    res->v[ 1 ] = o->v[ 1 ] + op->v[ 1 ];
 }
 
 static inline
@@ -91,31 +84,31 @@ void bmath_cf3_s_zro( bmath_cf3_s* o )
 }
 
 static inline
-void bmath_cf3_s_neg( bmath_cf3_s* o, const bmath_cf3_s* op1 )
+void bmath_cf3_s_neg( const bmath_cf3_s* o, bmath_cf3_s* res )
 {
-    o->v[ 0 ] = -op1->v[ 0 ];
-    o->v[ 1 ] = -op1->v[ 1 ];
+    res->v[ 0 ] = -o->v[ 0 ];
+    res->v[ 1 ] = -o->v[ 1 ];
 }
 
 static inline
-bmath_cf3_s bmath_cf3_neg( bmath_cf3_s op1 )
+bmath_cf3_s bmath_cf3_neg( bmath_cf3_s o )
 {
-    return ( bmath_cf3_s ) { .v[0] = -op1.v[ 0 ], .v[1] = -op1.v[ 1 ] };
+    return ( bmath_cf3_s ) { .v[0] = -o.v[ 0 ], .v[1] = -o.v[ 1 ] };
 }
 
 static inline
-void bmath_cf3_s_sub( bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2 )
+void bmath_cf3_s_sub( const bmath_cf3_s* o, const bmath_cf3_s* op, bmath_cf3_s* res )
 {
-    o->v[ 0 ] = op1->v[ 0 ] - op2->v[ 0 ];
-    o->v[ 1 ] = op1->v[ 1 ] - op2->v[ 1 ];
+    res->v[ 0 ] = o->v[ 0 ] - op->v[ 0 ];
+    res->v[ 1 ] = o->v[ 1 ] - op->v[ 1 ];
 }
 
 static inline
-void bmath_cf3_s_mul( bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2 )
+void bmath_cf3_s_mul( const bmath_cf3_s* o, const bmath_cf3_s* op, bmath_cf3_s* res )
 {
-    f3_t re   = op1->v[ 0 ] * op2->v[ 0 ] - op1->v[ 1 ] * op2->v[ 1 ];
-    o->v[ 1 ] = op1->v[ 0 ] * op2->v[ 1 ] + op1->v[ 1 ] * op2->v[ 0 ];
-    o->v[ 0 ] = re;
+    f3_t re     = o->v[ 0 ] * op->v[ 0 ] - o->v[ 1 ] * op->v[ 1 ];
+    res->v[ 1 ] = o->v[ 0 ] * op->v[ 1 ] + o->v[ 1 ] * op->v[ 0 ];
+    res->v[ 0 ] = re;
 }
 
 static inline
@@ -133,57 +126,68 @@ bmath_cf3_s bmath_cf3_mul_f3( bmath_cf3_s op1, f3_t op2 )
 }
 
 static inline
-void bmath_cf3_s_sqr( bmath_cf3_s* o, const bmath_cf3_s* op1 )
+void bmath_cf3_s_sqr( const bmath_cf3_s* o, bmath_cf3_s* res )
 {
-    f3_t re   = op1->v[ 0 ] * op1->v[ 0 ] - op1->v[ 1 ] * op1->v[ 1 ];
-    o->v[ 1 ] = op1->v[ 0 ] * op1->v[ 1 ] * 2.0;
-    o->v[ 0 ] = re;
+    f3_t re     = o->v[ 0 ] * o->v[ 0 ] - o->v[ 1 ] * o->v[ 1 ];
+    res->v[ 1 ] = o->v[ 0 ] * o->v[ 1 ] * 2.0;
+    res->v[ 0 ] = re;
+}
+
+// res = ( o - op )^2
+static inline
+void bmath_cf3_s_sub_sqr( const bmath_cf3_s* o, const bmath_cf3_s* op, bmath_cf3_s* res )
+{
+    f3_t dre  = o->v[ 0 ] - op->v[ 0 ];
+    f3_t dim  = o->v[ 1 ] - op->v[ 1 ];
+    res->v[ 0 ] = dre * dre - dim * dim;
+    res->v[ 1 ] = dre * dim * 2.0;
+}
+
+// res = o^2 + op
+static inline
+void bmath_cf3_s_sqr_add( const bmath_cf3_s* o, const bmath_cf3_s* op, bmath_cf3_s* res )
+{
+    f3_t re = op->v[0] + o->v[ 0 ] * o->v[ 0 ] - o->v[ 1 ] * o->v[ 1 ];
+    f3_t im = op->v[1] + o->v[ 0 ] * o->v[ 1 ] * 2.0;
+    res->v[ 0 ] = re;
+    res->v[ 1 ] = im;
 }
 
 static inline
-void bmath_cf3_s_sqr_sub( bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2 )
+void bmath_cf3_s_mul_f3( const bmath_cf3_s* o, f3_t op, bmath_cf3_s* res )
 {
-    f3_t dre  = op1->v[ 0 ] - op2->v[ 0 ];
-    f3_t dim  = op1->v[ 1 ] - op2->v[ 1 ];
-    o->v[ 0 ] = dre * dre - dim * dim;
-    o->v[ 1 ] = dre * dim * 2.0;
+    res->v[ 0 ] = o->v[ 0 ] * op;
+    res->v[ 1 ] = o->v[ 1 ] * op;
 }
 
+// res = o + ( op1 * op2 )
 static inline
-void bmath_cf3_s_mul_f3( bmath_cf3_s* o, const bmath_cf3_s* op1, f3_t op2 )
+void bmath_cf3_s_add_mul( const bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2, bmath_cf3_s* res )
 {
-    o->v[ 0 ] = op1->v[ 0 ] * op2;
-    o->v[ 1 ] = op1->v[ 1 ] * op2;
+    f3_t re     = o->v[ 0 ] + ( op1->v[ 0 ] * op2->v[ 0 ] - op1->v[ 1 ] * op2->v[ 1 ] );
+    res->v[ 1 ] = o->v[ 1 ] + ( op1->v[ 0 ] * op2->v[ 1 ] + op1->v[ 1 ] * op2->v[ 0 ] );
+    res->v[ 0 ] = re;
 }
 
-// o = op1 + ( op2 * op3 )
+// res = o - ( op1 * op2 )
 static inline
-void bmath_cf3_s_add_mul( bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2, const bmath_cf3_s* op3 )
+void bmath_cf3_s_sub_mul( const bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2, bmath_cf3_s* res )
 {
-    f3_t re   = op1->v[ 0 ] + ( op2->v[ 0 ] * op3->v[ 0 ] - op2->v[ 1 ] * op3->v[ 1 ] );
-    o->v[ 1 ] = op1->v[ 1 ] + ( op2->v[ 0 ] * op3->v[ 1 ] + op2->v[ 1 ] * op3->v[ 0 ] );
-    o->v[ 0 ] = re;
+    f3_t re     = o->v[ 0 ] - ( op1->v[ 0 ] * op2->v[ 0 ] - op1->v[ 1 ] * op2->v[ 1 ] );
+    res->v[ 1 ] = o->v[ 1 ] - ( op1->v[ 0 ] * op2->v[ 1 ] + op1->v[ 1 ] * op2->v[ 0 ] );
+    res->v[ 0 ] = re;
 }
 
-// o = op1 - ( op2 * op3 )
+// res = o * ( op1 - op2 )
 static inline
-void bmath_cf3_s_sub_mul( bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2, const bmath_cf3_s* op3 )
+void bmath_cf3_s_mul_sub( const bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2, bmath_cf3_s* res )
 {
-    f3_t re   = op1->v[ 0 ] - ( op2->v[ 0 ] * op3->v[ 0 ] - op2->v[ 1 ] * op3->v[ 1 ] );
-    o->v[ 1 ] = op1->v[ 1 ] - ( op2->v[ 0 ] * op3->v[ 1 ] + op2->v[ 1 ] * op3->v[ 0 ] );
-    o->v[ 0 ] = re;
-}
+    f3_t dre = op1->v[ 0 ] - op2->v[ 0 ];
+    f3_t dim = op1->v[ 1 ] - op2->v[ 1 ];
 
-// o = op1 * ( op2 - op3 )
-static inline
-void bmath_cf3_s_mul_sub( bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2, const bmath_cf3_s* op3 )
-{
-    f3_t dre = op2->v[ 0 ] - op3->v[ 0 ];
-    f3_t dim = op2->v[ 1 ] - op3->v[ 1 ];
-
-    f3_t re   = op1->v[ 0 ] * dre - op1->v[ 1 ] * dim;
-    o->v[ 1 ] = op1->v[ 0 ] * dim + op1->v[ 1 ] * dre;
-    o->v[ 0 ] = re;
+    f3_t re     = o->v[ 0 ] * dre - o->v[ 1 ] * dim;
+    res->v[ 1 ] = o->v[ 0 ] * dim + o->v[ 1 ] * dre;
+    res->v[ 0 ] = re;
 }
 
 static inline
@@ -200,27 +204,27 @@ f3_t bmath_cf3_det( bmath_cf3_s o )
 }
 
 static inline
-void bmath_cf3_s_inv( bmath_cf3_s* o, const bmath_cf3_s* op1 )
+void bmath_cf3_s_inv( const bmath_cf3_s* o, bmath_cf3_s* res )
 {
-    f3_t inv = f3_inv( bmath_cf3_det( *op1 ) );
-    o->v[ 0 ] =   op1->v[ 0 ] * inv;
-    o->v[ 1 ] = - op1->v[ 1 ] * inv;
+    f3_t inv = f3_inv( bmath_cf3_det( *o ) );
+    res->v[ 0 ] =   o->v[ 0 ] * inv;
+    res->v[ 1 ] = - o->v[ 1 ] * inv;
 }
 
 static inline
-void bmath_cf3_s_div( bmath_cf3_s* o, const bmath_cf3_s* op1, const bmath_cf3_s* op2 )
+void bmath_cf3_s_div( const bmath_cf3_s* o, const bmath_cf3_s* op, bmath_cf3_s* res )
 {
-    f3_t inv = f3_inv( bmath_cf3_det( *op2 ) );
-    f3_t re   = ( op1->v[ 0 ] * op2->v[ 0 ] + op1->v[ 1 ] * op2->v[ 1 ] ) * inv;
-    o->v[ 1 ] = ( op1->v[ 1 ] * op2->v[ 0 ] - op1->v[ 0 ] * op2->v[ 1 ] ) * inv;
-    o->v[ 0 ] = re;
+    f3_t inv = f3_inv( bmath_cf3_det( *op ) );
+    f3_t re     = ( o->v[ 0 ] * op->v[ 0 ] + o->v[ 1 ] * op->v[ 1 ] ) * inv;
+    res->v[ 1 ] = ( o->v[ 1 ] * op->v[ 0 ] - o->v[ 0 ] * op->v[ 1 ] ) * inv;
+    res->v[ 0 ] = re;
 }
 
 static inline
-void bmath_cf3_s_cnj( bmath_cf3_s* o, const bmath_cf3_s* op1 )
+void bmath_cf3_s_cnj( const bmath_cf3_s* o, bmath_cf3_s* res )
 {
-    o->v[ 0 ] =  op1->v[ 0 ];
-    o->v[ 1 ] = -op1->v[ 1 ];
+    res->v[ 0 ] =  o->v[ 0 ];
+    res->v[ 1 ] = -o->v[ 1 ];
 }
 
 static inline

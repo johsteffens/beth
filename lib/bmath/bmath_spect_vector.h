@@ -21,6 +21,7 @@
 #include "bmath_spect_algebraic.h"
 #include "bcore_spect_array.h"
 #include "bmath_quicktypes.h"
+#include "bmath_types.h"
 
 /**********************************************************************************************************************/
 
@@ -33,11 +34,13 @@
  *  sqr_sub: scalar = (vector - vector)^2
  */
 
+typedef struct bmath_vector bmath_vector;
+
 /**********************************************************************************************************************/
 
 /// operation - features
-typedef void (*bmath_fp_vector_mul     )( vd_t vec, vc_t vec1, vc_t scl2 ); // vec = vec1 * scl2
-typedef void (*bmath_fp_vector_dot_prd )( vd_t scl, vc_t vec1, vc_t scl2 ); // scl = vec1 * vec2
+typedef void (*bmath_fp_vector_mul     )( const bmath_vector* o, const bmath_ring*   op, bmath_vector* res ); // res = o * op
+typedef void (*bmath_fp_vector_dot_prd )( const bmath_vector* o, const bmath_vector* op, bmath_ring*   res ); // res = o * op
 
 /**********************************************************************************************************************/
 
@@ -48,78 +51,25 @@ BCORE_DECLARE_SPECT( bmath_vector_s )
     const bcore_array_s* spect_array_vector; // array of vector
     const bcore_inst_s*  spect_inst_vector;  // inst of vector
 
-    bmath_fp_add            fp_add; // feature
-    bmath_fp_zro            fp_zro; // feature
-    bmath_fp_neg            fp_neg; // feature
-    bmath_fp_sub            fp_sub; // feature
-    bmath_fp_cpy            fp_cpy; // feature
-    bmath_fp_vector_mul     fp_mul; // feature
-    bmath_fp_vector_dot_prd fp_dot_prd; // feature
+    bmath_fp_add            add; // feature
+    bmath_fp_zro            zro; // feature
+    bmath_fp_neg            neg; // feature
+    bmath_fp_sub            sub; // feature
+    bmath_fp_cpy            cpy; // feature
+    bmath_fp_vector_mul     mul; // feature
+    bmath_fp_vector_dot_prd dot_prd; // feature
 };
 
-sz_t bmath_vector_spect_get_dim( const bmath_vector_s* p, vc_t o );
-
-/** Vector operations:
- *  - Arguments are organized: result, operand1, operand2
- *  - Same object may be used in different argument places.
- *  - Scalar types relate to spect_ring_scalar
- *  - Vectors of different dim are allowed.
- *    Zeros are implicitly appended to match dim where appropriate.
- *  - Result vectors must already have desired target dim. (No vector resizing)
- */
-void bmath_vector_spect_zro(     const bmath_vector_s* p, vd_t o );
-void bmath_vector_spect_neg(     const bmath_vector_s* p, vd_t o, vc_t vec1 );
-void bmath_vector_spect_cpy(     const bmath_vector_s* p, vd_t o, vc_t vec1 );
-void bmath_vector_spect_add(     const bmath_vector_s* p, vd_t o, vc_t vec1, vc_t vec2 );
-void bmath_vector_spect_sub(     const bmath_vector_s* p, vd_t o, vc_t vec1, vc_t vec2 );
-void bmath_vector_spect_mul(     const bmath_vector_s* p, vd_t o, vc_t vec1, vc_t scl2 );
-void bmath_vector_spect_dot_prd( const bmath_vector_s* p, vd_t scl, vc_t o,  vc_t vec2 );
-void bmath_vector_spect_sqr(     const bmath_vector_s* p, vd_t scl, vc_t o );
-void bmath_vector_spect_sqr_sub( const bmath_vector_s* p, vd_t scl, vc_t o,  vc_t vec2 );
-
-sz_t bmath_vector_typed_get_dim( tp_t t, vc_t o );
-void bmath_vector_typed_zro(     tp_t t, vd_t o );
-void bmath_vector_typed_neg(     tp_t t, vd_t o, vc_t vec1 );
-void bmath_vector_typed_cpy(     tp_t t, vd_t o, vc_t vec1 );
-void bmath_vector_typed_add(     tp_t t, vd_t o, vc_t vec1, vc_t vec2 );
-void bmath_vector_typed_sub(     tp_t t, vd_t o, vc_t vec1, vc_t vec2 );
-void bmath_vector_typed_mul(     tp_t t, vd_t o, vc_t vec1, vc_t scl2 );
-void bmath_vector_typed_dot_prd( tp_t t, vd_t scl, vc_t o,  vc_t vec2 );
-void bmath_vector_typed_sqr(     tp_t t, vd_t scl, vc_t o );
-void bmath_vector_typed_sqr_sub( tp_t t, vd_t scl, vc_t o,  vc_t vec2 );
-
-sz_t bmath_vector_aware_get_dim( vc_t o );
-void bmath_vector_aware_zro(     vd_t o );
-void bmath_vector_aware_neg(     vd_t o, vc_t vec1 );
-void bmath_vector_aware_cpy(     vd_t o, vc_t vec1 );
-void bmath_vector_aware_add(     vd_t o, vc_t vec1, vc_t vec2 );
-void bmath_vector_aware_sub(     vd_t o, vc_t vec1, vc_t vec2 );
-void bmath_vector_aware_mul(     vd_t o, vc_t vec1, vc_t scl2 );
-void bmath_vector_aware_dot_prd( vd_t s, vc_t o,    vc_t vec2 );
-void bmath_vector_aware_sqr(     vd_t s, vc_t o );
-void bmath_vector_aware_sqr_sub( vd_t s, vc_t o,    vc_t vec2 );
-
-sz_t bmath_vector_get_dim( sr_s o );
-void bmath_vector_zro(     sr_s o );
-void bmath_vector_neg(     sr_s o, vc_t vec1 );
-void bmath_vector_cpy(     sr_s o, vc_t vec1 );
-void bmath_vector_add(     sr_s o, vc_t vec1, vc_t vec2 );
-void bmath_vector_sub(     sr_s o, vc_t vec1, vc_t vec2 );
-void bmath_vector_mul(     sr_s o, vc_t vec1, vc_t scl2 );
-void bmath_vector_dot_prd( vd_t s, sr_s o,    vc_t vec2 );
-void bmath_vector_sqr(     vd_t s, sr_s o );
-void bmath_vector_sqr_sub( vd_t s, sr_s o,    vc_t vec2 );
-
-sz_t bmath_vector_q_get_dim( const sr_s* o );
-void bmath_vector_q_zro(     const sr_s* o );
-void bmath_vector_q_neg(     const sr_s* o, vc_t vec1 );
-void bmath_vector_q_cpy(     const sr_s* o, vc_t vec1 );
-void bmath_vector_q_add(     const sr_s* o, vc_t vec1, vc_t vec2 );
-void bmath_vector_q_sub(     const sr_s* o, vc_t vec1, vc_t vec2 );
-void bmath_vector_q_mul(     const sr_s* o, vc_t vec1, vc_t scl2 );
-void bmath_vector_q_dot_prd( vd_t s, const sr_s* o,    vc_t vec2 );
-void bmath_vector_q_sqr(     vd_t s, const sr_s* o );
-void bmath_vector_q_sqr_sub( vd_t s, const sr_s* o,    vc_t vec2 );
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bmath_vector, get_dim, sz_t )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAPX( bmath_vector, zro )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAPX( bmath_vector, neg,     bmath_vector*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAPX( bmath_vector, cpy,     bmath_vector*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_vector, add,     const bmath_vector*, op, bmath_vector*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_vector, sub,     const bmath_vector*, op, bmath_vector*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_vector, mul,     const bmath_ring*,   op, bmath_vector*, res  )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_vector, dot_prd, const bmath_vector*, op, bmath_ring*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAP0( bmath_vector, sqr,                              bmath_ring*, res )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAP0( bmath_vector, sub_sqr, const bmath_vector*, op, bmath_ring*, res )
 
 /**********************************************************************************************************************/
 

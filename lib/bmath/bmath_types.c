@@ -13,29 +13,28 @@
  *  limitations under the License.
  */
 
-#include "bmath_signal.h"
-#include "bmath_types.h"
-#include "bmath_spect_algebraic.h"
-#include "bmath_spect_vector.h"
-#include "bmath_leaf.h"
-#include "bmath_complex.h"
-#include "bmath_fourier.h"
-#include "bmath_vector.h"
+ #include "bcore_std.h"
+ #include "bmath_types.h"
+ #include "bmath_quicktypes.h"
 
-vd_t bmath_signal_handler( const bcore_signal_s* o )
+/**********************************************************************************************************************/
+
+/**********************************************************************************************************************/
+
+vd_t bmath_types_signal_handler( const bcore_signal_s* o )
 {
-    bcore_fp_signal_handler arr[] =
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_types" ) ) )
     {
-        bmath_types_signal_handler,
-        bmath_spect_algebraic_signal_handler,
-        bmath_spect_vector_signal_handler,
-        bmath_leaf_signal_handler,
-        bmath_complex_signal_handler,
-        bmath_fourier_signal_handler,
-        bmath_vector_signal_handler,
-    };
+        case TYPEOF_init1:
+        {
+        }
+        break;
 
-    return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );
+        default: break;
+    }
+
+    return NULL;
 }
 
 /**********************************************************************************************************************/
+
