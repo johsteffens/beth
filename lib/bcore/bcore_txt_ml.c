@@ -73,8 +73,8 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
     st_s* ind = st_s_push_char_n( st_s_create_l( l ), ' ', depth * o->indent );
     st_s* buf = st_s_create_l( l );
 
-    bcore_sink_pushf( sink_l, "%s", ind->sc );
-    if( name ) bcore_sink_pushf( sink_l, "%s:", name_of( name, buf ) );
+    bcore_sink_x_pushf( sink_l, "%s", ind->sc );
+    if( name ) bcore_sink_x_pushf( sink_l, "%s:", name_of( name, buf ) );
 
     if( !obj_l.o ) // NULL
     {
@@ -83,30 +83,30 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
             // Explicit NULL specifies that the object is not instantiated.
             // This is to differentiate from the case where the object was instantiated
             // without additional parameters.
-            bcore_sink_pushf( sink_l, "<%s>NULL</>\n", name_of( sr_s_type( &obj_l ), buf ) );
+            bcore_sink_x_pushf( sink_l, "<%s>NULL</>\n", name_of( sr_s_type( &obj_l ), buf ) );
         }
         else
         {
-            bcore_sink_pushf( sink_l, "<></>\n" );
+            bcore_sink_x_pushf( sink_l, "<></>\n" );
         }
     }
     else
     {
-        bcore_sink_pushf( sink_l, "<%s>", name_of( sr_s_type( &obj_l ), buf ) );
+        bcore_sink_x_pushf( sink_l, "<%s>", name_of( sr_s_type( &obj_l ), buf ) );
         if( sr_s_type( &obj_l ) == TYPEOF_st_s ) // strings
         {
             st_s* string = st_s_clone( ( const st_s* )obj_l.o );
             st_s_replace_char_sc( string, '\"', "\\\"" );
-            bcore_sink_pushf( sink_l, "\"%s\"", string->sc );
+            bcore_sink_x_pushf( sink_l, "\"%s\"", string->sc );
             st_s_discard( string );
         }
         else if( bcore_via_x_is_leaf( obj_l ) )
         {
-            bcore_sink_push_string_d( sink_l, st_s_create_typed( sr_s_type( &obj_l ), obj_l.o ) );
+            bcore_sink_x_push_string_d( sink_l, st_s_create_typed( sr_s_type( &obj_l ), obj_l.o ) );
         }
         else
         {
-            bcore_sink_push_char( sink_l, '\n' );
+            bcore_sink_x_push_char( sink_l, '\n' );
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
@@ -124,9 +124,9 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
                     translate( o, bcore_via_x_iget_name( obj_l, i ), bcore_via_x_iget( obj_l, i ), sink_l, depth + 1 );
                 }
             }
-            bcore_sink_pushf( sink_l, "%s", ind->sc );
+            bcore_sink_x_pushf( sink_l, "%s", ind->sc );
         }
-        bcore_sink_push_sc( sink_l, "</>\n" );
+        bcore_sink_x_push_sc( sink_l, "</>\n" );
     }
     bcore_life_s_discard( l );
 }

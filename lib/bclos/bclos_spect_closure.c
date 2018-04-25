@@ -86,7 +86,6 @@ sr_s bclos_closure_p_call_na( const bclos_closure_s* p, const bclos_closure* o, 
     return ret;
 }
 
-inline static const bclos_closure_s* w_qp( const sr_s* o ) { assert( !sr_s_is_const( o ) ); return ch_spect_p( o->p, TYPEOF_bclos_closure_s ); }
 inline static const bclos_closure_s* r_qp( const sr_s* o ) {                                return ch_spect_p( o->p, TYPEOF_bclos_closure_s ); }
 
 sr_s bclos_closure_r_call_nv( const sr_s* o, bclos_frame_s* frm, sz_t n, va_list args )

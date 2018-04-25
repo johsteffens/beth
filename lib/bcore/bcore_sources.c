@@ -896,7 +896,7 @@ static st_s* sources_selftest( void )
     {
         {
             bcore_sink_chain_s* chain = bcore_sink_create_file( "test/test02.txt" );
-            for( sz_t i = 0; i < 10000; i++ ) bcore_sink_aware_push_string_d( chain, st_s_create_fa( "line of text #<sz_t>\n", i ) );
+            for( sz_t i = 0; i < 10000; i++ ) bcore_sink_a_push_string_d( (bcore_sink*)chain, st_s_create_fa( "line of text #<sz_t>\n", i ) );
             bcore_sink_chain_s_discard( chain );
         }
 

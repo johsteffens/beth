@@ -30,13 +30,13 @@ BCORE_DEFINE_FUNCTIONS_OBJ_INST( bcore_bin_ml_translator_s )
 
 static inline void push_type( sr_s sink, tp_t type )
 {
-    bcore_sink_push_data( sink, &type, sizeof( type ) );
+    bcore_sink_x_push_data( sink, &type, sizeof( type ) );
 }
 
 static inline void push_flag( const sr_s* sink, bl_t flag )
 {
     u0_t v = flag ? 1 : 0;
-    bcore_sink_q_push_data( sink, &v, 1 );
+    bcore_sink_r_push_data( sink, &v, 1 );
 }
 
 static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, sz_t depth )
@@ -70,28 +70,28 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
         if( sr_s_type( &obj_l ) == TYPEOF_st_s ) // strings
         {
             const st_s* string = obj_l.o;
-            bcore_sink_push_data( sink_l, string->data, string->size + 1 ); // push string including terminating 0
+            bcore_sink_x_push_data( sink_l, string->data, string->size + 1 ); // push string including terminating 0
         }
         else if( bcore_via_x_is_leaf( obj_l ) )
         {
             switch( sr_s_type( &obj_l ) )
             {
-                case TYPEOF_aware_t : bcore_sink_push_data( sink_l, obj_l.o, sizeof( aware_t ) ); break;
-                case TYPEOF_bl_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( bl_t ) ); break;
-                case TYPEOF_f2_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( f2_t ) ); break;
-                case TYPEOF_f3_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( f3_t ) ); break;
-                case TYPEOF_s0_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( s0_t ) ); break;
-                case TYPEOF_s1_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( s1_t ) ); break;
-                case TYPEOF_s2_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( s2_t ) ); break;
-                case TYPEOF_s3_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( s3_t ) ); break;
-                case TYPEOF_sc_t    : bcore_sink_push_data( sink_l, obj_l.o, bcore_strlen( obj_l.o ) ); break;
-                case TYPEOF_sd_t    : bcore_sink_push_data( sink_l, obj_l.o, bcore_strlen( obj_l.o ) ); break;
-                case TYPEOF_sz_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( sz_t ) ); break;
-                case TYPEOF_tp_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( tp_t ) ); break;
-                case TYPEOF_u0_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( u0_t ) ); break;
-                case TYPEOF_u1_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( u1_t ) ); break;
-                case TYPEOF_u2_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( u2_t ) ); break;
-                case TYPEOF_u3_t    : bcore_sink_push_data( sink_l, obj_l.o, sizeof( u3_t ) ); break;
+                case TYPEOF_aware_t : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( aware_t ) ); break;
+                case TYPEOF_bl_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( bl_t ) ); break;
+                case TYPEOF_f2_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( f2_t ) ); break;
+                case TYPEOF_f3_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( f3_t ) ); break;
+                case TYPEOF_s0_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( s0_t ) ); break;
+                case TYPEOF_s1_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( s1_t ) ); break;
+                case TYPEOF_s2_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( s2_t ) ); break;
+                case TYPEOF_s3_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( s3_t ) ); break;
+                case TYPEOF_sc_t    : bcore_sink_x_push_data( sink_l, obj_l.o, bcore_strlen( obj_l.o ) ); break;
+                case TYPEOF_sd_t    : bcore_sink_x_push_data( sink_l, obj_l.o, bcore_strlen( obj_l.o ) ); break;
+                case TYPEOF_sz_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( sz_t ) ); break;
+                case TYPEOF_tp_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( tp_t ) ); break;
+                case TYPEOF_u0_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( u0_t ) ); break;
+                case TYPEOF_u1_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( u1_t ) ); break;
+                case TYPEOF_u2_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( u2_t ) ); break;
+                case TYPEOF_u3_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( u3_t ) ); break;
                 default: ERR( "Cannot convert type '%s' into a binary stream", ifnameof( sr_s_type( &obj_l ) ) );
             }
         }
@@ -101,7 +101,7 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
                 sz_t size = bcore_array_get_size( arr_l );
-                bcore_sink_push_data( sink_l, &size, sizeof( sz_t ) );
+                bcore_sink_x_push_data( sink_l, &size, sizeof( sz_t ) );
                 for( sz_t i = 0; i < size; i++ )
                 {
                     translate( o, 0, bcore_array_get( arr_l, i ), sink_l, depth + 1 );
@@ -110,7 +110,7 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
             else
             {
                 sz_t size = bcore_via_p_get_size( obj_l.p, NULL );
-                bcore_sink_push_data( sink_l, &size, sizeof( sz_t ) );
+                bcore_sink_x_push_data( sink_l, &size, sizeof( sz_t ) );
                 for( sz_t i = 0; i < size; i++ )
                 {
                     translate( o, bcore_via_x_iget_name( obj_l, i ), bcore_via_x_iget( obj_l, i ), sink_l, depth + 1 );

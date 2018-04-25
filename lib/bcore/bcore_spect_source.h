@@ -33,11 +33,9 @@ typedef void (*bcore_source_fp_set_index)(    vd_t o, sz_t index );             
 /// awareness
 
 typedef struct bcore_source bcore_source;
-typedef struct bcore_source_s bcore_source_s;
-typedef struct bcore_source_s
+BCORE_DECLARE_SPECT( bcore_source_s )
 {
     bcore_spect_header_s header;
-
     bcore_fp_flow_src            get_data;
     bcore_fp_logvf               parse_errvf;
     bcore_source_fp_parse_fv     parse_fv;
@@ -47,10 +45,7 @@ typedef struct bcore_source_s
     bcore_source_fp_get_index    get_index;
     bcore_source_fp_set_index    set_index;
 
-} bcore_source_s;
-
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_source_s )
-BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_source_s )
+};
 
 static inline
 u0_t bcore_source_default_get_u0( const bcore_source_s* p, bcore_source* o )
