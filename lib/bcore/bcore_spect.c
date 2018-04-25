@@ -304,15 +304,15 @@ void bcore_spect_define_trait( const bcore_self_s* p_self )
     /// check requirements
     bcore_spect_header_s* spect = bcore_inst_typed_create( p_self->type );
     const bcore_via_s* p_via = bcore_via_s_get_typed( p_self->type );
-    sz_t size = bcore_via_spect_get_size( p_via );
+    sz_t size = bcore_via_p_get_size( p_via, NULL );
     for( sz_t i = 0; i < size; i++ )
     {
-        const bcore_vitem_s* vitem = bcore_via_spect_iget_vitem( p_via, i );
+        const bcore_vitem_s* vitem = bcore_via_p_iget_vitem( p_via, NULL, i );
         if( vitem->flags.f_feature && vitem->flags.f_strict )
         {
             if( vitem->flags.f_fp )
             {
-                sr_s dst = bcore_via_spect_nget( p_via, spect, vitem->name );
+                sr_s dst = bcore_via_p_nget( p_via, (bcore_via*)spect, vitem->name );
                 fp_t* dst_fp = ( fp_t* )dst.o;
                 if( vitem->flags.f_strict && !*dst_fp )
                 {
@@ -559,8 +559,8 @@ st_s* bcore_spect_status()
         {
             bcore_array_push( nc_arr, sr_null() );
             sr_s pair = sr_cl( bcore_array_get_last( nc_arr ), l );
-            bcore_via_nset_tp( pair, typeof( "type" ),  key   );
-            bcore_via_nset_sz( pair, typeof( "count" ), count );
+            bcore_via_x_nset_tp( pair, typeof( "type" ),  key   );
+            bcore_via_x_nset_sz( pair, typeof( "count" ), count );
         }
     }
 
@@ -569,8 +569,8 @@ st_s* bcore_spect_status()
     for( sz_t i = 0; i < bcore_array_get_size( nc_arr ); i++ )
     {
         sr_s pair = sr_cl( bcore_array_get( nc_arr, i ), l );
-        const tp_t* p_type  = sr_cl( bcore_via_nget( pair, typeof( "type"  ) ), l ).o;
-        const sz_t* p_count = sr_cl( bcore_via_nget( pair, typeof( "count" ) ), l ).o;
+        const tp_t* p_type  = sr_cl( bcore_via_x_nget( pair, typeof( "type"  ) ), l ).o;
+        const sz_t* p_count = sr_cl( bcore_via_x_nget( pair, typeof( "count" ) ), l ).o;
         st_s* s = st_s_create();
         st_s_pushf( s, "  %s ", ifnameof( *p_type ) );
         st_s_push_char_n( s, '.', 28 - s->size );

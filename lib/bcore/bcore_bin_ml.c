@@ -72,7 +72,7 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
             const st_s* string = obj_l.o;
             bcore_sink_push_data( sink_l, string->data, string->size + 1 ); // push string including terminating 0
         }
-        else if( bcore_via_is_leaf( obj_l ) )
+        else if( bcore_via_x_is_leaf( obj_l ) )
         {
             switch( sr_s_type( &obj_l ) )
             {
@@ -97,7 +97,7 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
         }
         else
         {
-            if( bcore_via_is_pure_array( obj_l ) )
+            if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
                 sz_t size = bcore_array_get_size( arr_l );
@@ -109,11 +109,11 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
             }
             else
             {
-                sz_t size = bcore_via_spect_get_size( obj_l.p );
+                sz_t size = bcore_via_p_get_size( obj_l.p, NULL );
                 bcore_sink_push_data( sink_l, &size, sizeof( sz_t ) );
                 for( sz_t i = 0; i < size; i++ )
                 {
-                    translate( o, bcore_via_iget_name( obj_l, i ), bcore_via_iget( obj_l, i ), sink_l, depth + 1 );
+                    translate( o, bcore_via_x_iget_name( obj_l, i ), bcore_via_x_iget( obj_l, i ), sink_l, depth + 1 );
                 }
             }
         }
@@ -221,7 +221,7 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 bcore_source_get_data( src_l, &c, sizeof( c ) );
             }
         }
-        else if( bcore_via_is_leaf( obj_l ) )
+        else if( bcore_via_x_is_leaf( obj_l ) )
         {
             switch( sr_s_type( &obj_l ) )
             {
@@ -246,7 +246,7 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
         {
             sz_t size = 0;
             bcore_source_get_data( src_l, &size, sizeof( sz_t ) );
-            if( bcore_via_is_pure_array( obj_l ) )
+            if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
                 bcore_array_set_size( arr_l, size );
@@ -258,14 +258,14 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 for( sz_t i = 0; i < size; i++ )
                 {
                     tp_t name = get_type( &src_l );
-                    sz_t idx = bcore_via_nget_index( obj_l, name );
-                    if( bcore_via_iis_link( obj_l, idx ) )
+                    sz_t idx = bcore_via_x_nget_index( obj_l, name );
+                    if( bcore_via_x_iis_link( obj_l, idx ) )
                     {
-                        bcore_via_iset( obj_l, idx, interpret( o, sr_null(), src_l ) );
+                        bcore_via_x_iset( obj_l, idx, interpret( o, sr_null(), src_l ) );
                     }
                     else
                     {
-                        sr_s item = bcore_via_iget( obj_l, idx );
+                        sr_s item = bcore_via_x_iget( obj_l, idx );
                         if( item.o )
                         {
                             ASSERT( get_type( &src_l ) == sr_s_type( &item ) );
@@ -273,7 +273,7 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
                         }
                         if( sr_s_is_strong( &item ) )  // if item is detached --> refeed it
                         {
-                            bcore_via_iset( obj_l, idx, interpret( o, item, src_l ) );
+                            bcore_via_x_iset( obj_l, idx, interpret( o, item, src_l ) );
                         }
                         else
                         {

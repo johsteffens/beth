@@ -470,12 +470,6 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
     BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( name ) \
     BCORE_DEFINE_CREATE_SELF( name, def )
 
-#define BCORE_DEFINE_SPECT( name ) \
-    static sc_t name##_def_g; \
-    BCORE_DEFINE_SPECT_CACHE( name ); \
-    BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \
-    static sc_t name##_def_g = #name " = spect"
-
 /// TODO: rename replacing BCORE_DEFINE_OBJECT_FLAT
 #define BCORE_DEFINE_OBJECT_FLAT_( trait, name ) \
     static sc_t name##_def_g; \

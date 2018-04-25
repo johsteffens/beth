@@ -451,7 +451,7 @@ static st_s* hmap_tp_sr_selftest( void )
 
     time = clock();
     bcore_hmap_tp_sr_s* map3 = bcore_life_s_push_aware( l, bcore_hmap_tp_sr_s_create() );
-    bcore_via_aware_nset( map3, typeof( "data" ), bcore_via_aware_nget( map, typeof( "data" ) ) );
+    bcore_via_a_nset( (bcore_via*)map3, typeof( "data" ), bcore_via_a_nget( (bcore_via*)map, typeof( "data" ) ) );
     time = clock() - time;
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
     time = clock();

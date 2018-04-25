@@ -166,171 +166,220 @@ void bcore_spect_missing_err( vc_t p, sc_t name );
 /**********************************************************************************************************************/
 // perspective functions
 
-#define BCORE_DECLARE_SPECT_TARX_R0( spect, name, tret, to ) \
-    static inline tret spect##_t_##name( tp_t t, to o )  { return spect##_p_##name( spect##_s_get_typed( t ), o ); } \
-    static inline tret spect##_a_##name( to o )          { return spect##_p_##name( spect##_s_get_typed( *(aware_t*)o ), o ); } \
-    static inline tret spect##_r_##name( const sr_s* o ) { return spect##_p_##name( spect_tp_o( o->p ) == TYPEOF_##spect##_s ? o->p : spect##_s_get_typed( spect_tp_o( o->p ) ), o->o ); } \
-    static inline tret spect##_x_##name( sr_s o )        { tret ret = spect##_p_##name( spect_tp_o( o.p ) == TYPEOF_##spect##_s ? o.p : spect##_s_get_typed( spect_tp_o( o.p ) ), o.o ); sr_down( o ); return ret; } \
+#define BCORE_FUNC_SPECT_TARX_R0( spect, name, tret, to, no ) \
+    static inline tret spect##_t_##name( tp_t t, to no )  { return spect##_p_##name( spect##_s_get_typed( t ), no ); } \
+    static inline tret spect##_a_##name( to no )          { return spect##_p_##name( spect##_s_get_typed( *(aware_t*)no ), no ); } \
+    static inline tret spect##_r_##name( const sr_s* no ) { return spect##_p_##name( spect_tp_o( no->p ) == TYPEOF_##spect##_s ? no->p : spect##_s_get_typed( spect_tp_o( no->p ) ), no->o ); } \
+    static inline tret spect##_x_##name( sr_s no )        { tret ret = spect##_p_##name( spect_tp_o( no.p ) == TYPEOF_##spect##_s ? no.p : spect##_s_get_typed( spect_tp_o( no.p ) ), no.o ); sr_down( no ); return ret; } \
 
-#define BCORE_DECLARE_SPECT_TARX_V0( spect, name, to ) \
-    static inline void spect##_t_##name( tp_t t, to o )  { spect##_p_##name( spect##_s_get_typed( t ), o ); } \
-    static inline void spect##_a_##name( to o )          { spect##_p_##name( spect##_s_get_typed( *(aware_t*)o ), o ); } \
-    static inline void spect##_r_##name( const sr_s* o ) { spect##_p_##name( spect_tp_o( o->p ) == TYPEOF_##spect##_s ? o->p : spect##_s_get_typed( spect_tp_o( o->p ) ), o->o ); } \
-    static inline void spect##_x_##name( sr_s o )        { spect##_p_##name( spect_tp_o( o.p ) == TYPEOF_##spect##_s ? o.p : spect##_s_get_typed( spect_tp_o( o.p ) ), o.o ); sr_down( o ); } \
+#define BCORE_FUNC_SPECT_TARX_V0( spect, name, to, no ) \
+    static inline void spect##_t_##name( tp_t t, to no )  { spect##_p_##name( spect##_s_get_typed( t ), no ); } \
+    static inline void spect##_a_##name( to no )          { spect##_p_##name( spect##_s_get_typed( *(aware_t*)no ), no ); } \
+    static inline void spect##_r_##name( const sr_s* no ) { spect##_p_##name( spect_tp_o( no->p ) == TYPEOF_##spect##_s ? no->p : spect##_s_get_typed( spect_tp_o( no->p ) ), no->o ); } \
+    static inline void spect##_x_##name( sr_s no )        { spect##_p_##name( spect_tp_o( no.p ) == TYPEOF_##spect##_s ? no.p : spect##_s_get_typed( spect_tp_o( no.p ) ), no.o ); sr_down( no ); } \
 
-#define BCORE_DECLARE_SPECT_TARX_R1( spect, name, tret, to, t1, n1 ) \
-    static inline tret spect##_t_##name( tp_t t, to o,  t1 n1 ) { return spect##_p_##name( spect##_s_get_typed( t ), o,            n1 ); } \
-    static inline tret spect##_a_##name( to o,          t1 n1 ) { return spect##_p_##name( spect##_s_get_typed( *(aware_t*)o ), o, n1 ); } \
-    static inline tret spect##_r_##name( const sr_s* o, t1 n1 ) { return spect##_p_##name( spect_tp_o( o->p ) == TYPEOF_##spect##_s ? o->p : spect##_s_get_typed( spect_tp_o( o->p ) ), o->o, n1 ); } \
-    static inline tret spect##_x_##name( sr_s o,        t1 n1 ) { tret ret = spect##_p_##name( spect_tp_o( o.p ) == TYPEOF_##spect##_s ? o.p : spect##_s_get_typed( spect_tp_o( o.p ) ), o.o, n1 ); sr_down( o ); return ret; } \
+#define BCORE_FUNC_SPECT_TARX_R1( spect, name, tret, to, no, t1, n1 ) \
+    static inline tret spect##_t_##name( tp_t t, to no,  t1 n1 ) { return spect##_p_##name( spect##_s_get_typed( t ), no,            n1 ); } \
+    static inline tret spect##_a_##name( to no,          t1 n1 ) { return spect##_p_##name( spect##_s_get_typed( *(aware_t*)no ), no, n1 ); } \
+    static inline tret spect##_r_##name( const sr_s* no, t1 n1 ) { return spect##_p_##name( spect_tp_o( no->p ) == TYPEOF_##spect##_s ? no->p : spect##_s_get_typed( spect_tp_o( no->p ) ), no->o, n1 ); } \
+    static inline tret spect##_x_##name( sr_s no,        t1 n1 ) { tret ret = spect##_p_##name( spect_tp_o( no.p ) == TYPEOF_##spect##_s ? no.p : spect##_s_get_typed( spect_tp_o( no.p ) ), no.o, n1 ); sr_down( no ); return ret; } \
 
-#define BCORE_DECLARE_SPECT_TARX_V1( spect, name,       to, t1, n1 ) \
-    static inline void spect##_t_##name( tp_t t, to o,  t1 n1 ) { spect##_p_##name( spect##_s_get_typed( t ), o,            n1 ); } \
-    static inline void spect##_a_##name( to o,          t1 n1 ) { spect##_p_##name( spect##_s_get_typed( *(aware_t*)o ), o, n1 ); } \
-    static inline void spect##_r_##name( const sr_s* o, t1 n1 ) { spect##_p_##name( spect_tp_o( o->p ) == TYPEOF_##spect##_s ? o->p : spect##_s_get_typed( spect_tp_o( o->p ) ), o->o, n1 ); } \
-    static inline void spect##_x_##name( sr_s o,        t1 n1 ) { spect##_p_##name( spect_tp_o( o.p ) == TYPEOF_##spect##_s ? o.p : spect##_s_get_typed( spect_tp_o( o.p ) ), o.o, n1 ); sr_down( o ); } \
+#define BCORE_FUNC_SPECT_TARX_V1( spect, name,       to, no, t1, n1 ) \
+    static inline void spect##_t_##name( tp_t t, to no,  t1 n1 ) { spect##_p_##name( spect##_s_get_typed( t ), no,            n1 ); } \
+    static inline void spect##_a_##name( to no,          t1 n1 ) { spect##_p_##name( spect##_s_get_typed( *(aware_t*)no ), no, n1 ); } \
+    static inline void spect##_r_##name( const sr_s* no, t1 n1 ) { spect##_p_##name( spect_tp_o( no->p ) == TYPEOF_##spect##_s ? no->p : spect##_s_get_typed( spect_tp_o( no->p ) ), no->o, n1 ); } \
+    static inline void spect##_x_##name( sr_s no,        t1 n1 ) { spect##_p_##name( spect_tp_o( no.p ) == TYPEOF_##spect##_s ? no.p : spect##_s_get_typed( spect_tp_o( no.p ) ), no.o, n1 ); sr_down( no ); } \
 
-#define BCORE_DECLARE_SPECT_TARX_R2( spect, name, tret, to, t1, n1, t2, n2 ) \
-    static inline tret spect##_t_##name( tp_t t, to o,  t1 n1, t2 n2 ) { return spect##_p_##name( spect##_s_get_typed( t ), o,            n1, n2 ); } \
-    static inline tret spect##_a_##name( to o,          t1 n1, t2 n2 ) { return spect##_p_##name( spect##_s_get_typed( *(aware_t*)o ), o, n1, n2 ); } \
-    static inline tret spect##_r_##name( const sr_s* o, t1 n1, t2 n2 ) { return spect##_p_##name( spect_tp_o( o->p ) == TYPEOF_##spect##_s ? o->p : spect##_s_get_typed( spect_tp_o( o->p ) ), o->o, n1, n2 ); } \
-    static inline tret spect##_x_##name( sr_s o,        t1 n1, t2 n2 ) { tret ret = spect##_p_##name( spect_tp_o( o.p ) == TYPEOF_##spect##_s ? o.p : spect##_s_get_typed( spect_tp_o( o.p ) ), o.o, n1, n2 ); sr_down( o ); return ret; } \
+#define BCORE_FUNC_SPECT_TARX_R2( spect, name, tret, to, no, t1, n1, t2, n2 ) \
+    static inline tret spect##_t_##name( tp_t t, to no,  t1 n1, t2 n2 ) { return spect##_p_##name( spect##_s_get_typed( t ), no,            n1, n2 ); } \
+    static inline tret spect##_a_##name( to no,          t1 n1, t2 n2 ) { return spect##_p_##name( spect##_s_get_typed( *(aware_t*)no ), no, n1, n2 ); } \
+    static inline tret spect##_r_##name( const sr_s* no, t1 n1, t2 n2 ) { return spect##_p_##name( spect_tp_o( no->p ) == TYPEOF_##spect##_s ? no->p : spect##_s_get_typed( spect_tp_o( no->p ) ), no->o, n1, n2 ); } \
+    static inline tret spect##_x_##name( sr_s no,        t1 n1, t2 n2 ) { tret ret = spect##_p_##name( spect_tp_o( no.p ) == TYPEOF_##spect##_s ? no.p : spect##_s_get_typed( spect_tp_o( no.p ) ), no.o, n1, n2 ); sr_down( no ); return ret; } \
 
-#define BCORE_DECLARE_SPECT_TARX_V2( spect, name,       to, t1, n1, t2, n2 ) \
-    static inline void spect##_t_##name( tp_t t, to o,  t1 n1, t2 n2 ) { spect##_p_##name( spect##_s_get_typed( t ), o,            n1, n2 ); } \
-    static inline void spect##_a_##name( to o,          t1 n1, t2 n2 ) { spect##_p_##name( spect##_s_get_typed( *(aware_t*)o ), o, n1, n2 ); } \
-    static inline void spect##_r_##name( const sr_s* o, t1 n1, t2 n2 ) { spect##_p_##name( spect_tp_o( o->p ) == TYPEOF_##spect##_s ? o->p : spect##_s_get_typed( spect_tp_o( o->p ) ), o->o, n1, n2 ); } \
-    static inline void spect##_x_##name( sr_s o,        t1 n1, t2 n2 ) { spect##_p_##name( spect_tp_o( o.p ) == TYPEOF_##spect##_s ? o.p : spect##_s_get_typed( spect_tp_o( o.p ) ), o.o, n1, n2 ); sr_down( o ); } \
+#define BCORE_FUNC_SPECT_TARX_V2( spect, name,       to, no, t1, n1, t2, n2 ) \
+    static inline void spect##_t_##name( tp_t t, to no,  t1 n1, t2 n2 ) { spect##_p_##name( spect##_s_get_typed( t ), no,            n1, n2 ); } \
+    static inline void spect##_a_##name( to no,          t1 n1, t2 n2 ) { spect##_p_##name( spect##_s_get_typed( *(aware_t*)no ), no, n1, n2 ); } \
+    static inline void spect##_r_##name( const sr_s* no, t1 n1, t2 n2 ) { spect##_p_##name( spect_tp_o( no->p ) == TYPEOF_##spect##_s ? no->p : spect##_s_get_typed( spect_tp_o( no->p ) ), no->o, n1, n2 ); } \
+    static inline void spect##_x_##name( sr_s no,        t1 n1, t2 n2 ) { spect##_p_##name( spect_tp_o( no.p ) == TYPEOF_##spect##_s ? no.p : spect##_s_get_typed( spect_tp_o( no.p ) ), no.o, n1, n2 ); sr_down( no ); } \
 
-#define BCORE_DECLARE_SPECT_TARX_R3( spect, name, tret, to, t1, n1, t2, n2, t3, n3 ) \
-    static inline tret spect##_t_##name( tp_t t, to o,  t1 n1, t2 n2, t3 n3 ) { return spect##_p_##name( spect##_s_get_typed( t ), o,            n1, n2, n3 ); } \
-    static inline tret spect##_a_##name( to o,          t1 n1, t2 n2, t3 n3 ) { return spect##_p_##name( spect##_s_get_typed( *(aware_t*)o ), o, n1, n2, n3 ); } \
-    static inline tret spect##_r_##name( const sr_s* o, t1 n1, t2 n2, t3 n3 ) { return spect##_p_##name( spect_tp_o( o->p ) == TYPEOF_##spect##_s ? o->p : spect##_s_get_typed( spect_tp_o( o->p ) ), o->o, n1, n2, n3 ); } \
-    static inline tret spect##_x_##name( sr_s o,        t1 n1, t2 n2, t3 n3 ) { tret ret = spect##_p_##name( spect_tp_o( o.p ) == TYPEOF_##spect##_s ? o.p : spect##_s_get_typed( spect_tp_o( o.p ) ), o.o, n1, n2, n3 ); sr_down( o ); return ret; } \
+#define BCORE_FUNC_SPECT_TARX_R3( spect, name, tret, to, no, t1, n1, t2, n2, t3, n3 ) \
+    static inline tret spect##_t_##name( tp_t t, to no,  t1 n1, t2 n2, t3 n3 ) { return spect##_p_##name( spect##_s_get_typed( t ), no,            n1, n2, n3 ); } \
+    static inline tret spect##_a_##name( to no,          t1 n1, t2 n2, t3 n3 ) { return spect##_p_##name( spect##_s_get_typed( *(aware_t*)no ), no, n1, n2, n3 ); } \
+    static inline tret spect##_r_##name( const sr_s* no, t1 n1, t2 n2, t3 n3 ) { return spect##_p_##name( spect_tp_o( no->p ) == TYPEOF_##spect##_s ? no->p : spect##_s_get_typed( spect_tp_o( no->p ) ), no->o, n1, n2, n3 ); } \
+    static inline tret spect##_x_##name( sr_s no,        t1 n1, t2 n2, t3 n3 ) { tret ret = spect##_p_##name( spect_tp_o( no.p ) == TYPEOF_##spect##_s ? no.p : spect##_s_get_typed( spect_tp_o( no.p ) ), no.o, n1, n2, n3 ); sr_down( no ); return ret; } \
 
-#define BCORE_DECLARE_SPECT_TARX_V3( spect, name,       to, t1, n1, t2, n2, t3, n3 ) \
-    static inline void spect##_t_##name( tp_t t, to o,  t1 n1, t2 n2, t3 n3 ) { spect##_p_##name( spect##_s_get_typed( t ), o,            n1, n2, n3 ); } \
-    static inline void spect##_a_##name( to o,          t1 n1, t2 n2, t3 n3 ) { spect##_p_##name( spect##_s_get_typed( *(aware_t*)o ), o, n1, n2, n3 ); } \
-    static inline void spect##_r_##name( const sr_s* o, t1 n1, t2 n2, t3 n3 ) { spect##_p_##name( spect_tp_o( o->p ) == TYPEOF_##spect##_s ? o->p : spect##_s_get_typed( spect_tp_o( o->p ) ), o->o, n1, n2, n3 ); } \
-    static inline void spect##_x_##name( sr_s o,        t1 n1, t2 n2, t3 n3 ) { spect##_p_##name( spect_tp_o( o.p ) == TYPEOF_##spect##_s ? o.p : spect##_s_get_typed( spect_tp_o( o.p ) ), o.o, n1, n2, n3 ); sr_down( o ); } \
+#define BCORE_FUNC_SPECT_TARX_V3( spect, name,       to, no, t1, n1, t2, n2, t3, n3 ) \
+    static inline void spect##_t_##name( tp_t t, to no,  t1 n1, t2 n2, t3 n3 ) { spect##_p_##name( spect##_s_get_typed( t ), no,            n1, n2, n3 ); } \
+    static inline void spect##_a_##name( to no,          t1 n1, t2 n2, t3 n3 ) { spect##_p_##name( spect##_s_get_typed( *(aware_t*)no ), no, n1, n2, n3 ); } \
+    static inline void spect##_r_##name( const sr_s* no, t1 n1, t2 n2, t3 n3 ) { spect##_p_##name( spect_tp_o( no->p ) == TYPEOF_##spect##_s ? no->p : spect##_s_get_typed( spect_tp_o( no->p ) ), no->o, n1, n2, n3 ); } \
+    static inline void spect##_x_##name( sr_s no,        t1 n1, t2 n2, t3 n3 ) { spect##_p_##name( spect_tp_o( no.p ) == TYPEOF_##spect##_s ? no.p : spect##_s_get_typed( spect_tp_o( no.p ) ), no.o, n1, n2, n3 ); sr_down( no ); } \
 
+#define BCORE_FUNC_SPECT_MAP0_R0( spect, name, tret, to, no ) \
+    tret spect##_default_##name( const spect##_s* p, to no ); \
+    static inline tret spect##_p_##name( const spect##_s* p, to no ) { return spect##_default_##name( p, no ); } \
+    BCORE_FUNC_SPECT_TARX_R0( spect, name, tret, to, no )
 
+#define BCORE_FUNC_SPECT_MAP0_V0( spect, name, to, no ) \
+    void spect##_default_##name( const spect##_s* p, to no ); \
+    static inline void spect##_p_##name( const spect##_s* p, to no ) { spect##_default_##name( p, no ); } \
+    BCORE_FUNC_SPECT_TARX_V0( spect, name, to, no )
 
-#define BCORE_DECLARE_SPECT_FUNC_R0( spect, name, tret, to ) \
-    tret spect##_default_##name( const spect##_s* p, to o ); \
-    static inline tret spect##_p_##name( const spect##_s* p, to o ) { return spect##_default_##name( p, o ); } \
-    BCORE_DECLARE_SPECT_TARX_R0( spect, name, tret, to )
+#define BCORE_FUNC_SPECT_MAP0_R1( spect, name, tret, to, no, t1, n1 ) \
+    tret spect##_default_##name( const spect##_s* p, to no,         t1 n1 ); \
+    static inline tret spect##_p_##name( const spect##_s* p, to no, t1 n1 ) { return spect##_default_##name( p, no, n1 ); } \
+    BCORE_FUNC_SPECT_TARX_R1( spect, name, tret, to, no, t1, n1 )
 
-#define BCORE_DECLARE_SPECT_FUNC_V0( spect, name, to ) \
-    void spect##_default_##name( const spect##_s* p, to o ); \
-    static inline void spect##_p_##name( const spect##_s* p, to o ) { spect##_default_##name( p, o ); } \
-    BCORE_DECLARE_SPECT_TARX_V0( spect, name, to )
+#define BCORE_FUNC_SPECT_MAP0_V1( spect, name, to, no, t1, n1 ) \
+    void spect##_default_##name( const spect##_s* p, to no,         t1 n1 ); \
+    static inline void spect##_p_##name( const spect##_s* p, to no, t1 n1 ) { spect##_default_##name( p, no, n1 ); } \
+    BCORE_FUNC_SPECT_TARX_V1( spect, name, to, no, t1, n1 )
 
-#define BCORE_DECLARE_SPECT_FUNC_R1( spect, name, tret, to, t1, n1 ) \
-    tret spect##_default_##name( const spect##_s* p, to o,         t1 n1 ); \
-    static inline tret spect##_p_##name( const spect##_s* p, to o, t1 n1 ) { return spect##_default_##name( p, o, n1 ); } \
-    BCORE_DECLARE_SPECT_TARX_R1( spect, name, tret, to, t1, n1 )
+#define BCORE_FUNC_SPECT_MAP0_R2( spect, name, tret, to, no, t1, n1, t2, n2 ) \
+    tret spect##_default_##name( const spect##_s* p, to no,         t1 n1, t2 n2 ); \
+    static inline tret spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2 ) { return spect##_default_##name( p, no, n1, n2 ); } \
+    BCORE_FUNC_SPECT_TARX_R2( spect, name, tret, to, no, t1, n1, t2, n2 )
 
-#define BCORE_DECLARE_SPECT_FUNC_V1( spect, name, to, t1, n1 ) \
-    void spect##_default_##name( const spect##_s* p, to o,         t1 n1 ); \
-    static inline void spect##_p_##name( const spect##_s* p, to o, t1 n1 ) { spect##_default_##name( p, o, n1 ); } \
-    BCORE_DECLARE_SPECT_TARX_V1( spect, name, to, t1, n1 )
+#define BCORE_FUNC_SPECT_MAP0_V2( spect, name, to, no, t1, n1, t2, n2 ) \
+    void spect##_default_##name( const spect##_s* p, to no,         t1 n1, t2 n2 ); \
+    static inline void spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2 ) { spect##_default_##name( p, no, n1, n2 ); } \
+    BCORE_FUNC_SPECT_TARX_V2( spect, name, to, no, t1, n1, t2, n2 )
 
-#define BCORE_DECLARE_SPECT_FUNC_R2( spect, name, tret, to, t1, n1, t2, n2 ) \
-    tret spect##_default_##name( const spect##_s* p, to o,         t1 n1, t2 n2 ); \
-    static inline tret spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2 ) { return spect##_default_##name( p, o, n1, n2 ); } \
-    BCORE_DECLARE_SPECT_TARX_R2( spect, name, tret, to, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_MAP0_R3( spect, name, tret, to, no, t1, n1, t2, n2, t3, n3 ) \
+    tret spect##_default_##name( const spect##_s* p, to no,         t1 n1, t2 n2, t3 n3 ); \
+    static inline tret spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2, t3 n3 ) { return spect##_default_##name( p, no, n1, n2, n3 ); } \
+    BCORE_FUNC_SPECT_TARX_R3( spect, name, tret, to, no, t1, n1, t2, n2, t3, n3 )
 
-#define BCORE_DECLARE_SPECT_FUNC_V2( spect, name, to, t1, n1, t2, n2 ) \
-    void spect##_default_##name( const spect##_s* p, to o,         t1 n1, t2 n2 ); \
-    static inline void spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2 ) { spect##_default_##name( p, o, n1, n2 ); } \
-    BCORE_DECLARE_SPECT_TARX_V2( spect, name, to, t1, n1, t2, n2 )
-
-#define BCORE_DECLARE_SPECT_FUNC_R3( spect, name, tret, to, t1, n1, t2, n2, t3, n3 ) \
-    tret spect##_default_##name( const spect##_s* p, to o,         t1 n1, t2 n2, t3 n3 ); \
-    static inline tret spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2, t3 n3 ) { return spect##_default_##name( p, o, n1, n2, n3 ); } \
-    BCORE_DECLARE_SPECT_TARX_R3( spect, name, tret, to, t1, n1, t2, n2, t3, n3 )
-
-#define BCORE_DECLARE_SPECT_FUNC_V3( spect, name, to, t1, n1, t2, n2, t3, n3 ) \
-    void spect##_default_##name( const spect##_s* p, to o,         t1 n1, t2 n2, t3 n3 ); \
-    static inline void spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2, t3 n3 ) { spect##_default_##name( p, o, n1, n2, n3 ); } \
-    BCORE_DECLARE_SPECT_TARX_V3( spect, name, to, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_MAP0_V3( spect, name, to, no, t1, n1, t2, n2, t3, n3 ) \
+    void spect##_default_##name( const spect##_s* p, to no,         t1 n1, t2 n2, t3 n3 ); \
+    static inline void spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2, t3 n3 ) { spect##_default_##name( p, no, n1, n2, n3 ); } \
+    BCORE_FUNC_SPECT_TARX_V3( spect, name, to, no, t1, n1, t2, n2, t3, n3 )
 
 
+#define BCORE_FUNC_SPECT_MAPX_R0( spect, name, tret, to, no ) \
+    tret spect##_default_##name( const spect##_s* p, to no ); \
+    static inline tret spect##_p_##name( const spect##_s* p, to no ) { return p->name ? p->name( no ) : spect##_default_##name( p, no ); } \
+    BCORE_FUNC_SPECT_TARX_R0( spect, name, tret, to, no )
 
-#define BCORE_DECLARE_SPECT_MAPD_R0( spect, name, tret, to ) \
-    tret spect##_default_##name( const spect##_s* p, to o ); \
-    static inline tret spect##_p_##name( const spect##_s* p, to o )                      { return p->name ? p->name( o )             : spect##_default_##name( p, o ); } \
-    BCORE_DECLARE_SPECT_TARX_R0( spect, name, tret, to )
+#define BCORE_FUNC_SPECT_MAPX_V0( spect, name, to, no ) \
+    void spect##_default_##name( const spect##_s* p, to no ); \
+    static inline void spect##_p_##name( const spect##_s* p, to no ) { if( p->name ) p->name( (vd_t)no ); else spect##_default_##name( p, no ); } \
+    BCORE_FUNC_SPECT_TARX_V0( spect, name, to, no )
 
-#define BCORE_DECLARE_SPECT_MAPD_V0( spect, name, to ) \
-    void spect##_default_##name( const spect##_s* p, to o ); \
-    static inline void spect##_p_##name( const spect##_s* p, to o )                      {        p->name ? p->name( o )             : spect##_default_##name( p, o ); } \
-    BCORE_DECLARE_SPECT_TARX_V0( spect, name, to )
+#define BCORE_FUNC_SPECT_MAPX_R1( spect, name, tret, to, no, t1, n1 ) \
+    tret spect##_default_##name( const spect##_s* p, to no,         t1 n1 ); \
+    static inline tret spect##_p_##name( const spect##_s* p, to no, t1 n1 ) { return p->name ? p->name( (vd_t)no, (vd_t)n1 ) : spect##_default_##name( p, no, n1 ); } \
+    BCORE_FUNC_SPECT_TARX_R1( spect, name, tret, to, no, t1, n1 )
 
-#define BCORE_DECLARE_SPECT_MAPD_R1( spect, name, tret, to, t1, n1 ) \
-    tret spect##_default_##name( const spect##_s* p, to o,         t1 n1 ); \
-    static inline tret spect##_p_##name( const spect##_s* p, to o, t1 n1 )               { return p->name ? p->name( o, n1 )         : spect##_default_##name( p, o, n1 ); } \
-    BCORE_DECLARE_SPECT_TARX_R1( spect, name, tret, to, t1, n1 )
+#define BCORE_FUNC_SPECT_MAPX_V1( spect, name, to, no, t1, n1 ) \
+    void spect##_default_##name( const spect##_s* p, to no,         t1 n1 ); \
+    static inline void spect##_p_##name( const spect##_s* p, to no, t1 n1 ) { if( p->name ) p->name( (vd_t)no, (vd_t)n1 ); else spect##_default_##name( p, no, n1 ); } \
+    BCORE_FUNC_SPECT_TARX_V1( spect, name, to, no, t1, n1 )
 
-#define BCORE_DECLARE_SPECT_MAPD_V1( spect, name, to, t1, n1 ) \
-    void spect##_default_##name( const spect##_s* p, to o,         t1 n1 ); \
-    static inline void spect##_p_##name( const spect##_s* p, to o, t1 n1 )               {        p->name ? p->name( o, n1 )         : spect##_default_##name( p, o, n1 ); } \
-    BCORE_DECLARE_SPECT_TARX_V1( spect, name, to, t1, n1 )
+#define BCORE_FUNC_SPECT_MAPX_R2( spect, name, tret, to, no, t1, n1, t2, n2 ) \
+    tret spect##_default_##name( const spect##_s* p, to no,         t1 n1, t2 n2 ); \
+    static inline tret spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2 ) { return p->name ? p->name( (vd_t)no, (vd_t)n1, (vd_t)n2 ) : spect##_default_##name( p, no, n1, n2 ); } \
+    BCORE_FUNC_SPECT_TARX_R2( spect, name, tret, to, no, t1, n1, t2, n2 )
 
-#define BCORE_DECLARE_SPECT_MAPD_R2( spect, name, tret, to, t1, n1, t2, n2 ) \
-    tret spect##_default_##name( const spect##_s* p, to o,         t1 n1, t2 n2 ); \
-    static inline tret spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2 )        { return p->name ? p->name( o, n1, n2 )     : spect##_default_##name( p, o, n1, n2 ); } \
-    BCORE_DECLARE_SPECT_TARX_R2( spect, name, tret, to, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_MAPX_V2( spect, name, to, no, t1, n1, t2, n2 ) \
+    void spect##_default_##name( const spect##_s* p, to no,         t1 n1, t2 n2 ); \
+    static inline void spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2 ) { if( p->name ) p->name( (vd_t)no, (vd_t)n1, (vd_t)n2 ); else spect##_default_##name( p, no, n1, n2 ); } \
+    BCORE_FUNC_SPECT_TARX_V2( spect, name, to, no, t1, n1, t2, n2 )
 
-#define BCORE_DECLARE_SPECT_MAPD_V2( spect, name, to, t1, n1, t2, n2 ) \
-    void spect##_default_##name( const spect##_s* p, to o,         t1 n1, t2 n2 ); \
-    static inline void spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2 )        {        p->name ? p->name( o, n1, n2 )     : spect##_default_##name( p, o, n1, n2 ); } \
-    BCORE_DECLARE_SPECT_TARX_V2( spect, name, to, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_MAPX_R3( spect, name, tret, to, no, t1, n1, t2, n2, t3, n3 ) \
+    tret spect##_default_##name( const spect##_s* p, to no,         t1 n1, t2 n2, t3 n3 ); \
+    static inline tret spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2, t3 n3 ) { return p->name ? p->name( (vd_t)no, (vd_t)n1, (vd_t)n2, (vd_t)n3 ) : spect##_default_##name( p, no, n1, n2, n3 ); } \
+    BCORE_FUNC_SPECT_TARX_R3( spect, name, tret, to, no, t1, n1, t2, n2, t3, n3 )
 
-#define BCORE_DECLARE_SPECT_MAPD_R3( spect, name, tret, to, t1, n1, t2, n2, t3, n3 ) \
-    tret spect##_default_##name( const spect##_s* p, to o,         t1 n1, t2 n2, t3 n3 ); \
-    static inline tret spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2, t3 n3 ) { return p->name ? p->name( o, n1, n2, n3 ) : spect##_default_##name( p, o, n1, n2, n3 ); } \
-    BCORE_DECLARE_SPECT_TARX_R3( spect, name, tret, to, t1, n1, t2, n2, t3, n3 )
-
-#define BCORE_DECLARE_SPECT_MAPD_V3( spect, name, to, t1, n1, t2, n2, t3, n3 ) \
-    void spect##_default_##name( const spect##_s* p, to o,         t1 n1, t2 n2, t3 n3 ); \
-    static inline void spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2, t3 n3 ) {        p->name ? p->name( o, n1, n2, n3 ) : spect##_default_##name( p, o, n1, n2, n3 ); } \
-    BCORE_DECLARE_SPECT_TARX_V3( spect, name, to, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_MAPX_V3( spect, name, to, no, t1, n1, t2, n2, t3, n3 ) \
+    void spect##_default_##name( const spect##_s* p, to no,         t1 n1, t2 n2, t3 n3 ); \
+    static inline void spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2, t3 n3 ) { if( p->name ) p->name( (vd_t)no, (vd_t)n1, (vd_t)n2, (vd_t)n3 ); else spect##_default_##name( p, no, n1, n2, n3 ); } \
+    BCORE_FUNC_SPECT_TARX_V3( spect, name, to, no, t1, n1, t2, n2, t3, n3 )
 
 
 
-#define BCORE_DECLARE_SPECT_MAPF_R0( spect, name, tret, to ) \
-    static inline tret spect##_p_##name( const spect##_s* p, to o )                      { return p->name ? p->name( o )                 : bcore_spect_missing_err( p, #name ); } \
-    BCORE_DECLARE_SPECT_TARX_R0( spect, name, tret, to )
+#define BCORE_FUNC_SPECT_MAP1_R0( spect, name, tret, to, no ) \
+    static inline tret spect##_p_##name( const spect##_s* p, to no ) { if( !p->name ) bcore_spect_missing_err( p, #name ); return p->name( (vd_t)no ); } \
+    BCORE_FUNC_SPECT_TARX_R0( spect, name, tret, to, no )
 
-#define BCORE_DECLARE_SPECT_MAPF_V0( spect, name, to ) \
-    static inline void spect##_p_##name( const spect##_s* p, to o )                      { if( p->name )    p->name( o ); else             bcore_spect_missing_err( p, #name ); } \
-    BCORE_DECLARE_SPECT_TARX_V0( spect, name, to )
+#define BCORE_FUNC_SPECT_MAP1_V0( spect, name, to, no ) \
+    static inline void spect##_p_##name( const spect##_s* p, to no ) { if( !p->name ) bcore_spect_missing_err( p, #name );  p->name( (vd_t)no ); } \
+    BCORE_FUNC_SPECT_TARX_V0( spect, name, to, no )
 
-#define BCORE_DECLARE_SPECT_MAPF_R1( spect, name, tret, to, t1, n1 ) \
-    static inline tret spect##_p_##name( const spect##_s* p, to o, t1 n1 )               { return p->name ? p->name( o, n1 )             : bcore_spect_missing_err( p, #name ); } \
-    BCORE_DECLARE_SPECT_TARX_R1( spect, name, tret, to, t1, n1 )
+#define BCORE_FUNC_SPECT_MAP1_R1( spect, name, tret, to, no, t1, n1 ) \
+    static inline tret spect##_p_##name( const spect##_s* p, to no, t1 n1 ) { if( !p->name ) bcore_spect_missing_err( p, #name ); return p->name( (vd_t)no, (vd_t)n1 ); } \
+    BCORE_FUNC_SPECT_TARX_R1( spect, name, tret, to, no, t1, n1 )
 
-#define BCORE_DECLARE_SPECT_MAPF_V1( spect, name, to, t1, n1 ) \
-    static inline void spect##_p_##name( const spect##_s* p, to o, t1 n1 )               {  if( p->name )   p->name( o, n1 ); else         bcore_spect_missing_err( p, #name ); } \
-    BCORE_DECLARE_SPECT_TARX_V1( spect, name, to, t1, n1 )
+#define BCORE_FUNC_SPECT_MAP1_V1( spect, name, to, no, t1, n1 ) \
+    static inline void spect##_p_##name( const spect##_s* p, to no, t1 n1 ) {  if( !p->name ) bcore_spect_missing_err( p, #name ); p->name( (vd_t)no, (vd_t)n1 ); } \
+    BCORE_FUNC_SPECT_TARX_V1( spect, name, to, no, t1, n1 )
 
-#define BCORE_DECLARE_SPECT_MAPF_R2( spect, name, tret, to, t1, n1, t2, n2 ) \
-    static inline tret spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2 )        { return p->name ? p->name( o, n1, n2 )         : bcore_spect_missing_err( p, #name ); } \
-    BCORE_DECLARE_SPECT_TARX_R2( spect, name, tret, to, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_MAP1_R2( spect, name, tret, to, no, t1, n1, t2, n2 ) \
+    static inline tret spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2 ) { if( !p->name ) bcore_spect_missing_err( p, #name ); return p->name( (vd_t)no, (vd_t)n1, (vd_t)n2 ); } \
+    BCORE_FUNC_SPECT_TARX_R2( spect, name, tret, to, no, t1, n1, t2, n2 )
 
-#define BCORE_DECLARE_SPECT_MAPF_V2( spect, name, to, t1, n1, t2, n2 ) \
-    static inline void spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2 )        {  if( p->name )   p->name( o, n1, n2 ); else     bcore_spect_missing_err( p, #name ); } \
-    BCORE_DECLARE_SPECT_TARX_V2( spect, name, to, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_MAP1_V2( spect, name, to, no, t1, n1, t2, n2 ) \
+    static inline void spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2 ) { if( !p->name ) bcore_spect_missing_err( p, #name );  p->name( (vd_t)no, (vd_t)n1, (vd_t)n2 ); } \
+    BCORE_FUNC_SPECT_TARX_V2( spect, name, to, no, t1, n1, t2, n2 )
 
-#define BCORE_DECLARE_SPECT_MAPF_R3( spect, name, tret, to, t1, n1, t2, n2, t3, n3 ) \
-    static inline tret spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2, t3 n3 ) { return p->name ? p->name( o, n1, n2, n3 )     : bcore_spect_missing_err( p, #name ); } \
-    BCORE_DECLARE_SPECT_TARX_R3( spect, name, tret, to, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_MAP1_R3( spect, name, tret, to, no, t1, n1, t2, n2, t3, n3 ) \
+    static inline tret spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2, t3 n3 ) { if( !p->name ) bcore_spect_missing_err( p, #name ); return p->name( (vd_t)no, (vd_t)n1, (vd_t)n2, (vd_t)n3 ); } \
+    BCORE_FUNC_SPECT_TARX_R3( spect, name, tret, to, no, t1, n1, t2, n2, t3, n3 )
 
-#define BCORE_DECLARE_SPECT_MAPF_V3( spect, name, to, t1, n1, t2, n2, t3, n3 ) \
-    static inline void spect##_p_##name( const spect##_s* p, to o, t1 n1, t2 n2, t3 n3 ) { if( p->name )    p->name( o, n1, n2, n3 ); else bcore_spect_missing_err( p, #name ); } \
-    BCORE_DECLARE_SPECT_TARX_V3( spect, name, to, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_MAP1_V3( spect, name, to, no, t1, n1, t2, n2, t3, n3 ) \
+    static inline void spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2, t3 n3 ) { if( !p->name ) bcore_spect_missing_err( p, #name ); p->name( (vd_t)no, (vd_t)n1, (vd_t)n2, (vd_t)n3 ); } \
+    BCORE_FUNC_SPECT_TARX_V3( spect, name, to, no, t1, n1, t2, n2, t3, n3 )
+
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAPX( spect, name, tret ) BCORE_FUNC_SPECT_MAPX_R0( spect, name, tret, const spect *, o )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAPX( spect, name, tret ) BCORE_FUNC_SPECT_MAPX_R0( spect, name, tret,       spect *, o )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG0_MAPX( spect, name       ) BCORE_FUNC_SPECT_MAPX_V0( spect, name,       const spect *, o )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAPX( spect, name       ) BCORE_FUNC_SPECT_MAPX_V0( spect, name,             spect *, o )
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP1( spect, name, tret ) BCORE_FUNC_SPECT_MAP1_R0( spect, name, tret, const spect *, o )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP1( spect, name, tret ) BCORE_FUNC_SPECT_MAP1_R0( spect, name, tret,       spect *, o )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG0_MAP1( spect, name       ) BCORE_FUNC_SPECT_MAP1_V0( spect, name,       const spect *, o )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP1( spect, name       ) BCORE_FUNC_SPECT_MAP1_V0( spect, name,             spect *, o )
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( spect, name, tret ) BCORE_FUNC_SPECT_MAP0_R0( spect, name, tret, const spect *, o )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( spect, name, tret ) BCORE_FUNC_SPECT_MAP0_R0( spect, name, tret,       spect *, o )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG0_MAP0( spect, name       ) BCORE_FUNC_SPECT_MAP0_V0( spect, name,       const spect *, o )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( spect, name       ) BCORE_FUNC_SPECT_MAP0_V0( spect, name,             spect *, o )
+
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAPX( spect, name, tret, t1, n1 ) BCORE_FUNC_SPECT_MAPX_R1( spect, name, tret, const spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAPX( spect, name, tret, t1, n1 ) BCORE_FUNC_SPECT_MAPX_R1( spect, name, tret,       spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAPX( spect, name      , t1, n1 ) BCORE_FUNC_SPECT_MAPX_V1( spect, name,       const spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAPX( spect, name      , t1, n1 ) BCORE_FUNC_SPECT_MAPX_V1( spect, name,             spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP1( spect, name, tret, t1, n1 ) BCORE_FUNC_SPECT_MAP1_R1( spect, name, tret, const spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP1( spect, name, tret, t1, n1 ) BCORE_FUNC_SPECT_MAP1_R1( spect, name, tret,       spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAP1( spect, name      , t1, n1 ) BCORE_FUNC_SPECT_MAP1_V1( spect, name,       const spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP1( spect, name      , t1, n1 ) BCORE_FUNC_SPECT_MAP1_V1( spect, name,             spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( spect, name, tret, t1, n1 ) BCORE_FUNC_SPECT_MAP0_R1( spect, name, tret, const spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( spect, name, tret, t1, n1 ) BCORE_FUNC_SPECT_MAP0_R1( spect, name, tret,       spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAP0( spect, name      , t1, n1 ) BCORE_FUNC_SPECT_MAP0_V1( spect, name,       const spect *, o, t1, n1 )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( spect, name      , t1, n1 ) BCORE_FUNC_SPECT_MAP0_V1( spect, name,             spect *, o, t1, n1 )
+
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAPX( spect, name, tret, t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAPX_R2( spect, name, tret, const spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAPX( spect, name, tret, t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAPX_R2( spect, name, tret,       spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( spect, name      , t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAPX_V2( spect, name,       const spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAPX( spect, name      , t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAPX_V2( spect, name,             spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP1( spect, name, tret, t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAP1_R2( spect, name, tret, const spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( spect, name, tret, t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAP1_R2( spect, name, tret,       spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAP1( spect, name      , t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAP1_V2( spect, name,       const spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP1( spect, name      , t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAP1_V2( spect, name,             spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( spect, name, tret, t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAP0_R2( spect, name, tret, const spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( spect, name, tret, t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAP0_R2( spect, name, tret,       spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAP0( spect, name      , t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAP0_V2( spect, name,       const spect *, o, t1, n1, t2, n2 )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( spect, name      , t1, n1, t2, n2 ) BCORE_FUNC_SPECT_MAP0_V2( spect, name,             spect *, o, t1, n1, t2, n2 )
+
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG3_MAPX( spect, name, tret, t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAPX_R3( spect, name, tret, const spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG3_MAPX( spect, name, tret, t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAPX_R3( spect, name, tret,       spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG3_MAPX( spect, name      , t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAPX_V3( spect, name,       const spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAPX( spect, name      , t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAPX_V3( spect, name,             spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG3_MAP1( spect, name, tret, t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAP1_R3( spect, name, tret, const spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG3_MAP1( spect, name, tret, t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAP1_R3( spect, name, tret,       spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG3_MAP1( spect, name      , t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAP1_V3( spect, name,       const spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP1( spect, name      , t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAP1_V3( spect, name,             spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST1_RET1_ARG3_MAP0( spect, name, tret, t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAP0_R3( spect, name, tret, const spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST0_RET1_ARG3_MAP0( spect, name, tret, t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAP0_R3( spect, name, tret,       spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST1_RET0_ARG3_MAP0( spect, name      , t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAP0_V3( spect, name,       const spect *, o, t1, n1, t2, n2, t3, n3 )
+#define BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( spect, name      , t1, n1, t2, n2, t3, n3 ) BCORE_FUNC_SPECT_MAP0_V3( spect, name,             spect *, o, t1, n1, t2, n2, t3, n3 )
 
 #endif // BCORE_SPECT_H
 

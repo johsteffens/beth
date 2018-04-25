@@ -200,7 +200,7 @@ static sr_s loop_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args
     assert( bcore_trait_satisfied_type( TYPEOF_bclos_closure_s, sr_s_type( &closure ), NULL ) );
     bclos_arguments_s trail_args = bclos_arguments_s_weak_crop( args, 1, -1 );
     sr_s ret = sr_null();
-    while( !( ret = bclos_closure_q_call( &closure, frm, &trail_args ) ).p ) {}
+    while( !( ret = bclos_closure_r_call( &closure, frm, &trail_args ) ).p ) {}
     sr_down( closure );
     return ret;
 }

@@ -20,16 +20,17 @@
 #include "bclos_frame.h"
 #include "bclos_signature.h"
 
+typedef struct bclos_closure bclos_closure;
 /// Features
 
 // (optional) defines a closure: (re)binds instance; frm deemed lexical frame
-typedef void (*bclos_closure_fp_def )( vd_t o, bclos_frame_s* frm );
+typedef void (*bclos_closure_fp_def )( bclos_closure* o, bclos_frame_s* frm );
 
 // calls closure function; frm deemed dynamic frame (optional);
-typedef sr_s (*bclos_closure_fp_call )( vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args );
+typedef sr_s (*bclos_closure_fp_call )( const bclos_closure* o, bclos_frame_s* frm, const bclos_arguments_s* args );
 
 // (optional) returns (dymanic) signature of closure: number of arguments, type of arguments (types could be perspectives)
-typedef sr_s (*bclos_closure_fp_sig )( vc_t o );
+typedef sr_s (*bclos_closure_fp_sig )( const bclos_closure* o );
 
 // (optional) creates a static signature of closure: number of arguments, type of arguments (types could be perspectives)
 typedef bclos_signature_s* (*bclos_closure_fp_create_static_sig )( void );
@@ -40,22 +41,19 @@ BCORE_DECLARE_SPECT( bclos_closure_s )
 {
     bcore_spect_header_s  header;
     bclos_signature_s*    static_sig; // static signature
-    bclos_closure_fp_def  fp_def;
-    bclos_closure_fp_call fp_call;
-    bclos_closure_fp_sig  fp_sig; // dynamic signature
+    bclos_closure_fp_def  def;
+    bclos_closure_fp_call call;
+    bclos_closure_fp_sig  sig; // dynamic signature
 };
 
-void bclos_closure_spect_def(     const bclos_closure_s* p, vd_t o, bclos_frame_s* frm );
-sr_s bclos_closure_spect_call(    const bclos_closure_s* p, vc_t o, bclos_frame_s* frm, const bclos_arguments_s* args );
-sr_s bclos_closure_spect_sig(     const bclos_closure_s* p, vc_t o );
-sr_s bclos_closure_spect_call_nv( const bclos_closure_s* p, vc_t o, bclos_frame_s* frm, sz_t n, va_list args ); // call with n arguments
-sr_s bclos_closure_spect_call_na( const bclos_closure_s* p, vc_t o, bclos_frame_s* frm, sz_t n, ...          ); // call with n arguments
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAPX( bclos_closure, def, bclos_frame_s*, frm )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP1( bclos_closure, call, sr_s, bclos_frame_s*, frm, const bclos_arguments_s*, args )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAPX( bclos_closure, sig,  sr_s )
 
-void bclos_closure_q_def(     const sr_s* o, bclos_frame_s* frm );
-sr_s bclos_closure_q_call(    const sr_s* o, bclos_frame_s* frm, const bclos_arguments_s* args );
-sr_s bclos_closure_q_sig(     const sr_s* o );
-sr_s bclos_closure_q_call_nv( const sr_s* o, bclos_frame_s* frm, sz_t n, va_list args ); // call with n arguments
-sr_s bclos_closure_q_call_na( const sr_s* o, bclos_frame_s* frm, sz_t n, ...          ); // call with n arguments
+sr_s bclos_closure_p_call_nv( const bclos_closure_s* p, const bclos_closure* o, bclos_frame_s* frm, sz_t n, va_list args ); // call with n arguments
+sr_s bclos_closure_p_call_na( const bclos_closure_s* p, const bclos_closure* o, bclos_frame_s* frm, sz_t n, ...          ); // call with n arguments
+sr_s bclos_closure_r_call_nv( const sr_s* o, bclos_frame_s* frm, sz_t n, va_list args ); // call with n arguments
+sr_s bclos_closure_r_call_na( const sr_s* o, bclos_frame_s* frm, sz_t n, ...          ); // call with n arguments
 
 /**********************************************************************************************************************/
 
@@ -73,7 +71,5 @@ static bcore_self_s* name##_create_self( void )\
     bcore_self_s_push_ns_func( self, ( fp_t )name##_static_signature,  "bclos_closure_fp_create_static_sig", "static_sig" );\
     return self;\
 }
-
-
 
 #endif // BCLOS_SPECT_CLOSURE_H

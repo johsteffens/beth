@@ -172,7 +172,7 @@ void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source )
 
 sr_s bclos_expression_s_run( const bclos_expression_s* o, bclos_frame_s* frm )
 {
-    sr_s bclos_closure_q_call( const sr_s* o, bclos_frame_s* frm, const bclos_arguments_s* args );
+    sr_s bclos_closure_r_call( const sr_s* o, bclos_frame_s* frm, const bclos_arguments_s* args );
 
     const sr_s* closure = &o->closure;
     sr_s ret;
@@ -181,21 +181,21 @@ sr_s bclos_expression_s_run( const bclos_expression_s* o, bclos_frame_s* frm )
     {
         case TYPEOF_bclos_address_s:
         {
-            ret = bclos_closure_q_call( bclos_frame_s_get( frm, ( ( const bclos_address_s* )closure->o )->name ), frm, &o->args );
+            ret = bclos_closure_r_call( bclos_frame_s_get( frm, ( ( const bclos_address_s* )closure->o )->name ), frm, &o->args );
         }
         break;
 
         case TYPEOF_bclos_expression_s:
         {
             sr_s s = bclos_expression_s_run( closure->o, frm );
-            ret = bclos_closure_q_call( &s, frm, &o->args );
+            ret = bclos_closure_r_call( &s, frm, &o->args );
             sr_down( s );
         }
         break;
 
         default:
         {
-            ret = bclos_closure_q_call( closure, frm, &o->args );
+            ret = bclos_closure_r_call( closure, frm, &o->args );
         }
         break;
     }

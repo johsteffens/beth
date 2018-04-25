@@ -193,7 +193,7 @@ static st_s* procedure_selftest( void )
 
     {
         sr_s op_r = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "test_mul" ) ) );
-        sr_s res = bclos_closure_q_call_na( &op_r, NULL, 2, sr_s3( 25 ), sr_s3( -36 ) );
+        sr_s res = bclos_closure_r_call_na( &op_r, NULL, 2, sr_s3( 25 ), sr_s3( -36 ) );
         ASSERT( *( s3_t* )res.o == -900 );
         sr_down( res );
     }
@@ -224,8 +224,8 @@ static st_s* procedure_selftest( void )
 //        bclos_procedure_s_push_sc( proc, "print( val2 );" );
         bclos_procedure_s_push_sc( proc, "ret ->;" );
 
-        bclos_closure_q_def( &proc_sr, frm );
-        sr_s res = bclos_closure_q_call_na( &proc_sr, NULL, 3, sr_s3( 2 ), sr_s3( 3 ), sr_s3( 4 ) );
+        bclos_closure_r_def( &proc_sr, frm );
+        sr_s res = bclos_closure_r_call_na( &proc_sr, NULL, 3, sr_s3( 2 ), sr_s3( 3 ), sr_s3( 4 ) );
         ASSERT( *( s3_t* )res.o == 40 );
 
         sr_down( res );

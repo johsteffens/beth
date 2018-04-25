@@ -1066,7 +1066,7 @@ static st_s* hmap_tpsz_selftest( void )
 
     time = clock();
     bcore_hmap_tpsz_s* map3 = bcore_life_s_push_aware( l, bcore_hmap_tpsz_s_create() );
-    bcore_via_aware_nset( map3, typeof( "data" ), bcore_via_aware_nget( map, typeof( "data" ) ) );
+    bcore_via_a_nset( (bcore_via*)map3, typeof( "data" ), bcore_via_a_nget( (bcore_via*)map, typeof( "data" ) ) );
     time = clock() - time;
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
     time = clock();
@@ -1471,7 +1471,7 @@ static st_s* hmap_tpfp_selftest( void )
 
     time = clock();
     bcore_hmap_tpfp_s* map3 = bcore_life_s_push_aware( l, bcore_hmap_tpfp_s_create() );
-    bcore_via_aware_nset( map3, typeof( "data" ), bcore_via_aware_nget( map, typeof( "data" ) ) );
+    bcore_via_a_nset( (bcore_via*)map3, typeof( "data" ), bcore_via_a_nget( (bcore_via*)map, typeof( "data" ) ) );
     time = clock() - time;
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
     time = clock();
@@ -1879,7 +1879,7 @@ static st_s* hmap_tptp_selftest( void )
 
     time = clock();
     bcore_hmap_tptp_s* map3 = bcore_life_s_push_aware( l, bcore_hmap_tptp_s_create() );
-    bcore_via_aware_nset( map3, typeof( "data" ), bcore_via_aware_nget( map, typeof( "data" ) ) );
+    bcore_via_a_nset( (bcore_via*)map3, typeof( "data" ), bcore_via_a_nget( (bcore_via*)map, typeof( "data" ) ) );
     time = clock() - time;
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
     time = clock();
@@ -2193,7 +2193,7 @@ static sr_s tpto_s_get_data( const bcore_hmap_tpto_s* o )
 {
     tp_t t_data = bcore_flect_type_parse_sc( "{ tp_t type; { tp_t key; sr_s obj; } [] arr; }" );
     sr_s data = sr_create( t_data );
-    bcore_via_q_nset( &data, typeof( "type" ), sr_twc( TYPEOF_tp_t, &o->type ) );
+    bcore_via_r_nset( &data, typeof( "type" ), sr_twc( TYPEOF_tp_t, &o->type ) );
     struct { tp_t key; sr_s obj; } node;
     const bcore_inst_s* inst_p = o->type ? bcore_inst_s_get_typed( o->type ) : NULL;
     tp_t t_node = bcore_array_q_get_static_type( &data );
@@ -2217,7 +2217,7 @@ static void tpto_s_set_data( bcore_hmap_tpto_s* o, sr_s data )
     assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ tp_t type; { tp_t key; sr_s obj; } [] arr; }" ) );
 
     {
-        sr_s type_sr = bcore_via_q_nget( &data, typeof( "type" ) );
+        sr_s type_sr = bcore_via_r_nget( &data, typeof( "type" ) );
         bcore_hmap_tpto_s_set_type( o, *( tp_t* )type_sr.o );
         sr_down( type_sr );
     }
@@ -2361,7 +2361,7 @@ static st_s* hmap_tpto_selftest( void )
 
     time = clock();
     bcore_hmap_tpto_s* map3 = bcore_life_s_push_aware( l, bcore_hmap_tpto_s_create() );
-    bcore_via_aware_nset( map3, typeof( "data" ), bcore_via_aware_nget( map, typeof( "data" ) ) );
+    bcore_via_a_nset( (bcore_via*)map3, typeof( "data" ), bcore_via_a_nget( (bcore_via*)map, typeof( "data" ) ) );
     time = clock() - time;
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
     time = clock();
@@ -2742,7 +2742,7 @@ static st_s* hmap_tp_selftest( void )
 
     time = clock();
     bcore_hmap_tp_s* map3 = bcore_life_s_push_aware( l, bcore_hmap_tp_s_create() );
-    bcore_via_aware_nset( map3, typeof( "data" ), bcore_via_aware_nget( map, typeof( "data" ) ) );
+    bcore_via_a_nset( (bcore_via*)map3, typeof( "data" ), bcore_via_a_nget( (bcore_via*)map, typeof( "data" ) ) );
     time = clock() - time;
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
