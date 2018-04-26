@@ -26,7 +26,7 @@ sr_s sr_clone( sr_s o )
 {
     if( !o.o ) return sr_null();
     sr_s sr;
-    sr.o = bcore_inst_typed_clone( sr_s_type( &o ), o.o );
+    sr.o = bcore_inst_t_clone( sr_s_type( &o ), o.o );
     sr.p = o.p;
     sr.f = STRONG_f;
     sr_down( o );
@@ -38,7 +38,7 @@ sr_s sr_p_create( vc_t p )
     return sr_psd
     (
         p,
-        ( ( (tp_t*)p )[ 0 ] == TYPEOF_bcore_inst_s ) ? bcore_inst_spect_create( p ) : bcore_inst_typed_create( ( (tp_t*)p )[ 1 ] )
+        ( ( (tp_t*)p )[ 0 ] == TYPEOF_bcore_inst_s ) ? bcore_inst_p_create( p ) : bcore_inst_t_create( ( (tp_t*)p )[ 1 ] )
     );
 }
 
@@ -55,7 +55,7 @@ sr_s sr_cl( sr_s o, bcore_life_s* l )
 
 sr_s sr_create_strong_typed( tp_t type, vc_t obj )
 {
-    return bcore_inst_typed_clone_sr( type, obj );
+    return bcore_inst_t_clone_sr( type, obj );
 }
 
 sr_s sr_s0( s0_t v ) { sr_s r = sr_create( TYPEOF_s0_t ); *( s0_t * )r.o = v; return r; }
@@ -97,7 +97,7 @@ void sr_s_copy( sr_s* o, const sr_s* src )
     sr_s_clear( o );
     if( src->o )
     {
-        *o = sr_psd( src->p, bcore_inst_typed_clone( spect_tp_o( src->p ), src->o ) );
+        *o = sr_psd( src->p, bcore_inst_t_clone( spect_tp_o( src->p ), src->o ) );
     }
 }
 

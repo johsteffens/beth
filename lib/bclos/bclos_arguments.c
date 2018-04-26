@@ -139,7 +139,7 @@ void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source )
 
         if( closure_self && closure_self->trait == typeof( "bclos_language_closure" ) )
         {
-            closure = bcore_inst_typed_create_sr( identifier_tp );
+            closure = bcore_inst_t_create_sr( identifier_tp );
         }
         else
         {
@@ -153,7 +153,7 @@ void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source )
         }
         else
         {
-            o->closure = sr_cp( bcore_inst_typed_create_sr( TYPEOF_bclos_identity_s ), TYPEOF_bclos_closure_s );
+            o->closure = sr_cp( bcore_inst_t_create_sr( TYPEOF_bclos_identity_s ), TYPEOF_bclos_closure_s );
             bclos_arguments_s_push( &o->args, closure );
         }
     }

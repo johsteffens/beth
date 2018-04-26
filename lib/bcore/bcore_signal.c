@@ -92,6 +92,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_spect_signal_handler,
         bcore_sc_signal_handler,
         bcore_st_signal_handler,
+        bcore_spect_source_signal_handler,
 
         /// other items
         bcore_name_signal_handler,
@@ -108,9 +109,8 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_sources_signal_handler,
         bcore_spect_compare_signal_handler,
         bcore_spect_inst_signal_handler,
-        bcore_spect_interpreter_signal_handler,
         bcore_spect_sink_signal_handler,
-        bcore_spect_source_signal_handler,
+        bcore_spect_interpreter_signal_handler,
         bcore_spect_translator_signal_handler,
         bcore_threads_signal_handler,
         bcore_txt_ml_signal_handler,

@@ -66,7 +66,7 @@ void bclos_closure_default_def(  const bclos_closure_s* p, bclos_closure* o, bcl
 
 sr_s bclos_closure_default_sig(  const bclos_closure_s* p, const bclos_closure* o )
 {
-    return sr_null();
+    return ( p->static_sig ? sr_twc( TYPEOF_bclos_signature_s, p->static_sig ) : sr_null() );
 }
 
 sr_s bclos_closure_p_call_nv( const bclos_closure_s* p, const bclos_closure* o, bclos_frame_s* frm, sz_t n, va_list v_args )

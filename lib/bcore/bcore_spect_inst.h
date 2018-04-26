@@ -121,55 +121,55 @@ const bcore_inst_s* bcore_inst_s_get_aware( vc_t obj )
     return bcore_inst_s_get_typed( *( const aware_t* )obj );
 }
 
-void bcore_inst_spect_init(         const bcore_inst_s* o, vd_t obj );
-void bcore_inst_spect_down(         const bcore_inst_s* o, vd_t obj );
-void bcore_inst_spect_copy(         const bcore_inst_s* o, vd_t dst, vc_t src );
-void bcore_inst_spect_copy_typed(   const bcore_inst_s* o, vd_t dst, tp_t src_type, vc_t src );
-void bcore_inst_spect_move(         const bcore_inst_s* o, vd_t dst, vd_t src );
-vd_t bcore_inst_spect_create(       const bcore_inst_s* o );
-vd_t bcore_inst_spect_create_typed( const bcore_inst_s* o, tp_t otp, vc_t obj );
-void bcore_inst_spect_discard(      const bcore_inst_s* o, vd_t obj );
-vd_t bcore_inst_spect_clone(        const bcore_inst_s* o, vc_t obj );
+void bcore_inst_p_init(         const bcore_inst_s* o, vd_t obj );
+void bcore_inst_p_down(         const bcore_inst_s* o, vd_t obj );
+void bcore_inst_p_copy(         const bcore_inst_s* o, vd_t dst, vc_t src );
+void bcore_inst_p_copy_typed(   const bcore_inst_s* o, vd_t dst, tp_t src_type, vc_t src );
+void bcore_inst_p_move(         const bcore_inst_s* o, vd_t dst, vd_t src );
+vd_t bcore_inst_p_create(       const bcore_inst_s* o );
+vd_t bcore_inst_p_create_typed( const bcore_inst_s* o, tp_t otp, vc_t obj );
+void bcore_inst_p_discard(      const bcore_inst_s* o, vd_t obj );
+vd_t bcore_inst_p_clone(        const bcore_inst_s* o, vc_t obj );
 
-void bcore_inst_typed_init(         tp_t type, vd_t obj );
-void bcore_inst_typed_down(         tp_t type, vd_t obj );
-void bcore_inst_typed_copy(         tp_t type, vd_t dst, vc_t src );
-void bcore_inst_typed_copy_typed(   tp_t type, vd_t dst, tp_t src_type, vc_t src );
-vd_t bcore_inst_typed_create(       tp_t type );
-vd_t bcore_inst_typed_create_typed( tp_t type, tp_t otp, vc_t obj );
-sr_s bcore_inst_typed_create_sr(    tp_t type );
-void bcore_inst_typed_move(         tp_t type, vd_t dst, vd_t src );
-void bcore_inst_typed_discard(      tp_t type, vd_t obj );
-vd_t bcore_inst_typed_clone(        tp_t type, vc_t obj );
-sr_s bcore_inst_typed_clone_sr(     tp_t type, vc_t obj );
+void bcore_inst_t_init(         tp_t type, vd_t obj );
+void bcore_inst_t_down(         tp_t type, vd_t obj );
+void bcore_inst_t_copy(         tp_t type, vd_t dst, vc_t src );
+void bcore_inst_t_copy_typed(   tp_t type, vd_t dst, tp_t src_type, vc_t src );
+vd_t bcore_inst_t_create(       tp_t type );
+vd_t bcore_inst_t_create_typed( tp_t type, tp_t otp, vc_t obj );
+sr_s bcore_inst_t_create_sr(    tp_t type );
+void bcore_inst_t_move(         tp_t type, vd_t dst, vd_t src );
+void bcore_inst_t_discard(      tp_t type, vd_t obj );
+vd_t bcore_inst_t_clone(        tp_t type, vc_t obj );
+sr_s bcore_inst_t_clone_sr(     tp_t type, vc_t obj );
 
-void bcore_inst_aware_down(         vd_t obj );
-void bcore_inst_aware_copy(         vd_t dst, vc_t src );
-void bcore_inst_aware_copy_typed(   vd_t dst, tp_t src_type, vc_t src );
-void bcore_inst_aware_move(         vd_t dst, vd_t src );
-void bcore_inst_aware_discard(      vd_t obj );
-vd_t bcore_inst_aware_clone(        vc_t obj );
+void bcore_inst_a_down(         vd_t obj );
+void bcore_inst_a_copy(         vd_t dst, vc_t src );
+void bcore_inst_a_copy_typed(   vd_t dst, tp_t src_type, vc_t src );
+void bcore_inst_a_move(         vd_t dst, vd_t src );
+void bcore_inst_a_discard(      vd_t obj );
+vd_t bcore_inst_a_clone(        vc_t obj );
 
-void bcore_inst_discard(  sr_s o ); // only discards when o is a strong reference; does nothing otherwise
-vd_t bcore_inst_clone(    sr_s o );
-sr_s bcore_inst_clone_sr( sr_s o ); // returns perspective of o
+void bcore_inst_x_discard(  sr_s o ); // only discards when o is a strong reference; does nothing otherwise
+vd_t bcore_inst_x_clone(    sr_s o );
+sr_s bcore_inst_x_clone_sr( sr_s o ); // returns perspective of o
 
-vd_t bcore_inst_q_clone(    const sr_s* o );
-sr_s bcore_inst_q_clone_sr( const sr_s* o ); // returns perspective of o
+vd_t bcore_inst_r_clone(    const sr_s* o );
+sr_s bcore_inst_r_clone_sr( const sr_s* o ); // returns perspective of o
 
 /** This function checks the instance's size with c-style sizeof( object ).
  *  It can be used as low-level safeguard against changing the c-structure
  *  but forgetting to update the self reflection.
  */
-void bcore_inst_spect_check_sizeof( const bcore_inst_s* o, sz_t size );
-void bcore_inst_typed_check_sizeof(             tp_t type, sz_t size );
+void bcore_inst_p_check_sizeof( const bcore_inst_s* o, sz_t size );
+void bcore_inst_t_check_sizeof(             tp_t type, sz_t size );
 
-#define BCORE_DEFINE_FUNCTION_INIT_INST( name ) void name##_init( name* o ) { bcore_inst_typed_init( TYPEOF_##name, o ); }
-#define BCORE_DEFINE_FUNCTION_DOWN_INST( name ) void name##_down( name* o ) { bcore_inst_typed_down( TYPEOF_##name, o ); }
+#define BCORE_DEFINE_FUNCTION_INIT_INST( name ) void name##_init( name* o ) { bcore_inst_t_init( TYPEOF_##name, o ); }
+#define BCORE_DEFINE_FUNCTION_DOWN_INST( name ) void name##_down( name* o ) { bcore_inst_t_down( TYPEOF_##name, o ); }
 #define BCORE_DEFINE_FUNCTION_COPY_INST( name ) void name##_copy( name* o, const name* src ) \
 { \
     if( o == src ) return; \
-    bcore_inst_typed_copy( TYPEOF_##name, o, src ); \
+    bcore_inst_t_copy( TYPEOF_##name, o, src ); \
 }
 
 #define BCORE_DEFINE_FUNCTIONS_IDC_INST( name ) \
@@ -177,13 +177,13 @@ void bcore_inst_typed_check_sizeof(             tp_t type, sz_t size );
     BCORE_DEFINE_FUNCTION_DOWN_INST( name )\
     BCORE_DEFINE_FUNCTION_COPY_INST( name )\
 
-#define BCORE_DEFINE_FUNCTION_CREATE_INST( name ) name* name##_create() { return bcore_inst_typed_create( TYPEOF_##name ); }
-#define BCORE_DEFINE_FUNCTION_DISCARD_INST( name ) void name##_discard( name* o ) { bcore_inst_typed_discard( TYPEOF_##name, o ); }
+#define BCORE_DEFINE_FUNCTION_CREATE_INST( name ) name* name##_create() { return bcore_inst_t_create( TYPEOF_##name ); }
+#define BCORE_DEFINE_FUNCTION_DISCARD_INST( name ) void name##_discard( name* o ) { bcore_inst_t_discard( TYPEOF_##name, o ); }
 #define BCORE_DEFINE_FUNCTION_CLONE_INST( name ) \
 name* name##_clone( const name* o ) \
 { \
     if( !o ) return NULL; \
-    return bcore_inst_typed_clone( TYPEOF_##name, o ); \
+    return bcore_inst_t_clone( TYPEOF_##name, o ); \
 }
 
 #define BCORE_DEFINE_FUNCTIONS_CDC_INST( name ) \

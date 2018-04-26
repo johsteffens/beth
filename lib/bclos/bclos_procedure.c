@@ -192,7 +192,7 @@ static st_s* procedure_selftest( void )
     }
 
     {
-        sr_s op_r = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "test_mul" ) ) );
+        sr_s op_r = bcore_life_s_push_sr( l, bcore_inst_t_create_sr( typeof( "test_mul" ) ) );
         sr_s res = bclos_closure_r_call_na( &op_r, NULL, 2, sr_s3( 25 ), sr_s3( -36 ) );
         ASSERT( *( s3_t* )res.o == -900 );
         sr_down( res );
@@ -206,7 +206,7 @@ static st_s* procedure_selftest( void )
         bclos_frame_s_set( frm, typeof( "mul" ), sr_create( typeof( "test_mul" ) ) );
         bclos_frame_s_set( frm, typeof( "print" ), sr_create( typeof( "bclos_writeln_s" ) ) );
 
-        sr_s proc_sr = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( TYPEOF_bclos_procedure_s ) );
+        sr_s proc_sr = bcore_life_s_push_sr( l, bcore_inst_t_create_sr( TYPEOF_bclos_procedure_s ) );
         bclos_procedure_s* proc = proc_sr.o;
         proc->sig = bclos_signature_s_parse_from_sc( "s3_t test_operation( const s3_t v1, const s3_t v2, const s3_t v3 )" );
         bclos_procedure_s_push_sc( proc, "add( v1, v2 )     -> s3_t val1;" );

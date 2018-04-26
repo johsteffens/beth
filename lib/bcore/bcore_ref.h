@@ -47,10 +47,10 @@ typedef struct bcore_inst_s bcore_inst_s;
 typedef struct bcore_life_s bcore_life_s;
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t type );
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
-vd_t bcore_inst_typed_create( tp_t type );
-vd_t bcore_inst_spect_create( const bcore_inst_s* p );
+vd_t bcore_inst_t_create( tp_t type );
+vd_t bcore_inst_p_create( const bcore_inst_s* p );
 
-void bcore_inst_discard( sr_s o );
+void bcore_inst_x_discard( sr_s o );
 vc_t ch_spect_p( vc_t p, tp_t spect_type );
 vd_t bcore_fork( vd_t ptr );
 
@@ -87,13 +87,13 @@ static inline sr_s sr_fork( sr_s o ) { return ( sr_s ) { .o = ( o.f & STRONG_f )
 // deep clone
 sr_s sr_clone( sr_s o );
 
-static inline void sr_down( sr_s o ) { if( o.f & STRONG_f ) bcore_inst_discard( o ); }  // explicit termination
+static inline void sr_down( sr_s o ) { if( o.f & STRONG_f ) bcore_inst_x_discard( o ); }  // explicit termination
 
 /// creates a new instance
-static inline sr_s sr_create( tp_t t ) { return sr_tsd( t, bcore_inst_typed_create( t ) ); } // sames as sr_t_create
+static inline sr_s sr_create( tp_t t ) { return sr_tsd( t, bcore_inst_t_create( t ) ); } // sames as sr_t_create
 
 static inline
-sr_s sr_t_create( tp_t t ) { return sr_tsd( t, bcore_inst_typed_create( t ) ); }
+sr_s sr_t_create( tp_t t ) { return sr_tsd( t, bcore_inst_t_create( t ) ); }
 sr_s sr_p_create( vc_t p );
 
 /// creates a strong reference of a typed object (by cloning the object)

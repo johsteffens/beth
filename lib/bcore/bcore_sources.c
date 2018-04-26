@@ -37,7 +37,7 @@ static void chain_init_a( bcore_nucleus_s* nc )
 
 void bcore_source_chain_s_init( bcore_source_chain_s* o )
 {
-    bcore_inst_typed_init( TYPEOF_bcore_source_chain_s, o );
+    bcore_inst_t_init( TYPEOF_bcore_source_chain_s, o );
 }
 
 static void chain_down_a( bcore_nucleus_s* nc )
@@ -47,7 +47,7 @@ static void chain_down_a( bcore_nucleus_s* nc )
 
 void bcore_source_chain_s_down( bcore_source_chain_s* o )
 {
-    bcore_inst_typed_down( TYPEOF_bcore_source_chain_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_source_chain_s, o );
 }
 
 static void chain_copy_a( bcore_nucleus_s* nc )
@@ -59,22 +59,22 @@ static void chain_copy_a( bcore_nucleus_s* nc )
 
 void bcore_source_chain_s_copy( bcore_source_chain_s* o, const bcore_source_chain_s* src )
 {
-    bcore_inst_typed_copy( TYPEOF_bcore_source_chain_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_source_chain_s, o, src );
 }
 
 void bcore_source_chain_s_discard( bcore_source_chain_s* o )
 {
-    bcore_inst_typed_discard( TYPEOF_bcore_source_chain_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_source_chain_s, o );
 }
 
 bcore_source_chain_s* bcore_source_chain_s_create()
 {
-    return bcore_inst_typed_create( TYPEOF_bcore_source_chain_s );
+    return bcore_inst_t_create( TYPEOF_bcore_source_chain_s );
 }
 
 bcore_source_chain_s* bcore_source_chain_s_clone( const bcore_source_chain_s* o )
 {
-    return bcore_inst_typed_clone( TYPEOF_bcore_source_chain_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_source_chain_s, o );
 }
 
 static void chain_interpret_body_a( vd_t nc )
@@ -94,7 +94,7 @@ void bcore_source_chain_s_push_d( bcore_source_chain_s* o, vd_t source )
 
 void bcore_source_chain_s_push_type( bcore_source_chain_s* o, tp_t type )
 {
-    bcore_source_chain_s_push_d( o, bcore_inst_typed_create( type ) );
+    bcore_source_chain_s_push_d( o, bcore_inst_t_create( type ) );
 }
 
 static sz_t chain_flow_src( bcore_source_chain_s* o, vd_t data, sz_t size )
@@ -244,27 +244,27 @@ void bcore_source_buffer_s_init( bcore_source_buffer_s* o )
 
 void bcore_source_buffer_s_down( bcore_source_buffer_s* o )
 {
-    bcore_inst_typed_down( TYPEOF_bcore_source_buffer_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_source_buffer_s, o );
 }
 
 void bcore_source_buffer_s_discard( bcore_source_buffer_s* o )
 {
-    bcore_inst_typed_discard( TYPEOF_bcore_source_buffer_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_source_buffer_s, o );
 }
 
 void bcore_source_buffer_s_copy( bcore_source_buffer_s* o, const bcore_source_buffer_s* src )
 {
-    bcore_inst_typed_copy( TYPEOF_bcore_source_buffer_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_source_buffer_s, o, src );
 }
 
 bcore_source_buffer_s* bcore_source_buffer_s_create()
 {
-    return bcore_inst_typed_create( TYPEOF_bcore_source_buffer_s );
+    return bcore_inst_t_create( TYPEOF_bcore_source_buffer_s );
 }
 
 bcore_source_buffer_s* bcore_source_buffer_s_clone( const bcore_source_buffer_s* o )
 {
-    return bcore_inst_typed_clone( TYPEOF_bcore_source_buffer_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_source_buffer_s, o );
 }
 
 static sz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, sz_t size )
@@ -408,27 +408,27 @@ void bcore_source_string_s_init( bcore_source_string_s* o )
 
 void bcore_source_string_s_down( bcore_source_string_s* o )
 {
-    bcore_inst_typed_down( TYPEOF_bcore_source_string_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_source_string_s, o );
 }
 
 void bcore_source_string_s_discard( bcore_source_string_s* o )
 {
-    bcore_inst_typed_discard( TYPEOF_bcore_source_string_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_source_string_s, o );
 }
 
 void bcore_source_string_s_copy( bcore_source_string_s* o, const bcore_source_string_s* src )
 {
-    bcore_inst_typed_copy( TYPEOF_bcore_source_string_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_source_string_s, o, src );
 }
 
 bcore_source_string_s* bcore_source_string_s_create()
 {
-    return bcore_inst_typed_create( TYPEOF_bcore_source_string_s );
+    return bcore_inst_t_create( TYPEOF_bcore_source_string_s );
 }
 
 bcore_source_string_s* bcore_source_string_s_clone( const bcore_source_string_s* o )
 {
-    return bcore_inst_typed_clone( TYPEOF_bcore_source_string_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_source_string_s, o );
 }
 
 bcore_source_string_s* bcore_source_string_s_create_from_string( const st_s* string )
@@ -623,7 +623,7 @@ static void file_init_a( bcore_nucleus_s* nc )
 
 void bcore_source_file_s_init( bcore_source_file_s* o )
 {
-    bcore_inst_typed_init( TYPEOF_bcore_source_file_s, o );
+    bcore_inst_t_init( TYPEOF_bcore_source_file_s, o );
 }
 
 static void file_down_a( bcore_nucleus_s* nc )
@@ -635,7 +635,7 @@ static void file_down_a( bcore_nucleus_s* nc )
 
 void bcore_source_file_s_down( bcore_source_file_s* o )
 {
-    bcore_inst_typed_down( TYPEOF_bcore_source_file_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_source_file_s, o );
 }
 
 static void file_copy_a( bcore_nucleus_s* nc )
@@ -647,17 +647,17 @@ static void file_copy_a( bcore_nucleus_s* nc )
 
 void bcore_source_file_s_copy( bcore_source_file_s* o, const bcore_source_file_s* src )
 {
-    bcore_inst_typed_copy( TYPEOF_bcore_source_file_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_source_file_s, o, src );
 }
 
 void bcore_source_file_s_discard( bcore_source_file_s* o )
 {
-    bcore_inst_typed_discard( TYPEOF_bcore_source_file_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_source_file_s, o );
 }
 
 bcore_source_file_s* bcore_source_file_s_create()
 {
-    return bcore_inst_typed_create( TYPEOF_bcore_source_file_s );
+    return bcore_inst_t_create( TYPEOF_bcore_source_file_s );
 }
 
 bcore_source_file_s* bcore_source_file_s_create_name( sc_t name )
@@ -674,7 +674,7 @@ sc_t bcore_source_file_s_get_name( const bcore_source_file_s* o )
 
 bcore_source_file_s* bcore_source_file_s_clone( const bcore_source_file_s* o )
 {
-    return bcore_inst_typed_clone( TYPEOF_bcore_source_file_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_source_file_s, o );
 }
 
 void bcore_source_file_s_open( bcore_source_file_s* o )
@@ -856,7 +856,7 @@ bcore_source_chain_s* bcore_source_open_file( sc_t file_name )
 {
     bcore_source_chain_s* chain = bcore_source_chain_s_create();
     bcore_source_chain_s_push_d( chain, bcore_source_file_s_create_name( file_name ) );
-    bcore_source_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_source_string_s" ) ) );
+    bcore_source_chain_s_push_d( chain, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );
     return chain;
 }
 
@@ -872,22 +872,22 @@ static st_s* sources_selftest( void )
     bcore_life_s* l = bcore_life_s_create();
 
     bcore_flect_define_parse_sc( "chain_test_aware_arr = { aware_t _; st_s [] arr; }" );
-    sr_s arr = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "chain_test_aware_arr" ) ) );
+    sr_s arr = bcore_life_s_push_sr( l, bcore_inst_t_create_sr( typeof( "chain_test_aware_arr" ) ) );
     arr = sr_cp( arr, TYPEOF_bcore_array_s );
     for( sz_t i = 0; i < 20000; i++ ) bcore_array_push( arr, sr_asd( st_s_createf( "line of text %zu", i ) ) );
 
     // write object to file
     {
         bcore_sink_chain_s* chain = bcore_sink_create_file( "test/test01.txt" );
-        bcore_translate_x( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), arr, sr_awd( chain ) );
+        bcore_translate_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), arr, sr_awd( chain ) );
         bcore_sink_chain_s_discard( chain );
     }
 
     // create object from file
     {
         bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_open_file( "test/test01.txt" ) );
-        sr_s chain_clone = sr_awd( bcore_life_s_push_aware( l, bcore_inst_aware_clone( chain ) ) );
-        sr_s sr = bcore_interpret( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain_clone );
+        sr_s chain_clone = sr_awd( bcore_life_s_push_aware( l, bcore_inst_a_clone( chain ) ) );
+        sr_s sr = bcore_interpret_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain_clone );
         sr = bcore_life_s_push_sr( l, sr );
         if( bcore_compare_sr( sr, arr ) != 0 ) ERR( "%s", bcore_diff_sr( sr, arr )->sc );
     }

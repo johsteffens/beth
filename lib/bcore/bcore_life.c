@@ -33,7 +33,7 @@ void bcore_life_item_s_down( bcore_life_item_s* o )
         }
         else if( o->type )
         {
-            bcore_inst_typed_discard( o->type, o->object );
+            bcore_inst_t_discard( o->type, o->object );
         }
     }
 }
@@ -107,7 +107,7 @@ sr_s bcore_life_s_push_sr( bcore_life_s* o, sr_s object )
 vd_t bcore_life_s_push_aware( bcore_life_s* o, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );
-    item->discard = bcore_inst_aware_discard;
+    item->discard = bcore_inst_a_discard;
     item->object  = object;
     return object;
 }
@@ -122,7 +122,7 @@ vd_t bcore_life_s_push_free( bcore_life_s* o, vd_t object )
 
 vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type )
 {
-    return bcore_life_s_push_typed( o, type, bcore_inst_typed_create( type ) );
+    return bcore_life_s_push_typed( o, type, bcore_inst_t_create( type ) );
 }
 
 /**********************************************************************************************************************/

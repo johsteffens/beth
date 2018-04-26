@@ -21,18 +21,15 @@
 #include "bcore_features.h"
 #include "bcore_spect.h"
 
-typedef struct bcore_interpreter_s
+typedef struct bcore_interpreter bcore_interpreter;
+BCORE_DECLARE_SPECT( bcore_interpreter_s )
 {
-    aware_t p_type; // perspective
-    tp_t    o_type; // interpreter
-    bcore_fp_interpret fp_interpret;
-} bcore_interpreter_s;
+    bcore_spect_header_s header;
+    bcore_fp_interpret interpret;
+};
 
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_interpreter_s )
-BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_interpreter_s )
-
-sr_s bcore_interpret( sr_s o, sr_s source );
-sr_s bcore_interpret_q( const sr_s* o, sr_s source );
+sr_s bcore_interpret_x( sr_s o, sr_s source );
+sr_s bcore_interpret_r( const sr_s* o, sr_s source );
 
 /** Automatically picks the right interpreter according to source content.
  *  In text or binary files:

@@ -82,12 +82,12 @@ static void bcore_hnode_u2vd_s_init( bcore_hnode_u2vd_s* o )
 
 static void bcore_hnode_u2vd_s_down( bcore_hnode_u2vd_s* o )
 {
-    if( o->flag_holds && o->dp ) bcore_inst_aware_discard( o->dp );
+    if( o->flag_holds && o->dp ) bcore_inst_a_discard( o->dp );
 }
 
 static void bcore_hnode_u2vd_s_clear( bcore_hnode_u2vd_s* o )
 {
-    if( o->flag_holds && o->dp ) bcore_inst_aware_discard( o->dp );
+    if( o->flag_holds && o->dp ) bcore_inst_a_discard( o->dp );
     o->dp = 0;
     o->flag_holds = 0;
     o->key = 0;
@@ -97,7 +97,7 @@ static void bcore_hnode_u2vd_s_copy( bcore_hnode_u2vd_s* o, const bcore_hnode_u2
 {
     if( o->flag_holds && o->dp )
     {
-        bcore_inst_aware_discard( o->dp );
+        bcore_inst_a_discard( o->dp );
         o->dp = 0;
     }
 
@@ -105,7 +105,7 @@ static void bcore_hnode_u2vd_s_copy( bcore_hnode_u2vd_s* o, const bcore_hnode_u2
 
     if( src->flag_holds && src->dp )
     {
-        o->dp = bcore_inst_aware_clone( src->dp );
+        o->dp = bcore_inst_a_clone( src->dp );
     }
 }
 
@@ -113,7 +113,7 @@ static void bcore_hnode_u2vd_s_set_val( bcore_hnode_u2vd_s* o, vd_t val, bool ho
 {
     if( o->flag_holds )
     {
-        if( o->dp ) bcore_inst_aware_discard( o->dp );
+        if( o->dp ) bcore_inst_a_discard( o->dp );
         o->flag_holds = 0;
     }
     o->dp = val;
@@ -124,7 +124,7 @@ static void bcore_hnode_u2vd_s_set_func( bcore_hnode_u2vd_s* o, fp_t func )
 {
     if( o->flag_holds )
     {
-        if( o->dp ) bcore_inst_aware_discard( o->dp );
+        if( o->dp ) bcore_inst_a_discard( o->dp );
         o->flag_holds = 0;
     }
     o->fp = func;
@@ -463,7 +463,7 @@ void bcore_hmap_u2vd_s_remove_d( bcore_hmap_u2vd_s* o, u2_t key )
     if( idx < o->size )
     {
         bcore_hnode_u2vd_s* node = &o->data[ idx ];
-        if( node->flag_holds && node->dp ) bcore_inst_aware_discard( node->dp );
+        if( node->flag_holds && node->dp ) bcore_inst_a_discard( node->dp );
         node->key = 0;
         node->dp = 0;
         node->flag_holds = 0;
@@ -1957,7 +1957,7 @@ void bcore_hmap_tpto_s_down( bcore_hmap_tpto_s* o )
             if( o->nodes[ i ].val )
             {
                 if( !inst_p ) inst_p = bcore_inst_s_get_typed( o->type );
-                bcore_inst_spect_discard( inst_p, o->nodes[ i ].val );
+                bcore_inst_p_discard( inst_p, o->nodes[ i ].val );
             }
         }
     }
@@ -1971,7 +1971,7 @@ void bcore_hmap_tpto_s_copy( bcore_hmap_tpto_s* o, const bcore_hmap_tpto_s* src 
     const bcore_inst_s* inst_p = o->type ? bcore_inst_s_get_typed( o->type ) : NULL;
     for( sz_t i = 0; i < o->size; i++ )
     {
-        if( o->nodes[ i ].val ) bcore_inst_spect_discard( inst_p, o->nodes[ i ].val );
+        if( o->nodes[ i ].val ) bcore_inst_p_discard( inst_p, o->nodes[ i ].val );
     }
     o->nodes = bcore_alloc( o->nodes, 0 );
     o->flags = bcore_alloc( o->flags, 0 );
@@ -1987,7 +1987,7 @@ void bcore_hmap_tpto_s_copy( bcore_hmap_tpto_s* o, const bcore_hmap_tpto_s* src 
         dst_node->key = src_node->key;
         if( src_node->val )
         {
-            dst_node->val = bcore_inst_spect_clone( inst_p, src_node->val );
+            dst_node->val = bcore_inst_p_clone( inst_p, src_node->val );
         }
     }
 
@@ -2086,7 +2086,7 @@ vd_t* bcore_hmap_tpto_s_fget_d( bcore_hmap_tpto_s* o, tp_t key, vd_t init_val )
     sz_t idx = tpto_find( o, key );
     if( idx < o->size )
     {
-        if( init_val ) bcore_inst_typed_discard( o->type, init_val );
+        if( init_val ) bcore_inst_t_discard( o->type, init_val );
         return &o->nodes[ idx ].val;
     }
     else
@@ -2098,7 +2098,7 @@ vd_t* bcore_hmap_tpto_s_fget_d( bcore_hmap_tpto_s* o, tp_t key, vd_t init_val )
 vd_t bcore_hmap_tpto_s_fget( bcore_hmap_tpto_s* o, tp_t key )
 {
     vd_t* dst = bcore_hmap_tpto_s_fget_d( o, key, NULL );
-    if( !*dst ) *dst = bcore_inst_typed_create( o->type );
+    if( !*dst ) *dst = bcore_inst_t_create( o->type );
     return *dst;
 }
 
@@ -2110,7 +2110,7 @@ vd_t* bcore_hmap_tpto_s_set_d( bcore_hmap_tpto_s* o, tp_t key, vd_t val )
     sz_t idx = tpto_find( o, key );
     if( idx < o->size )
     {
-        if( o->nodes[ idx ].val ) bcore_inst_typed_discard( o->type, o->nodes[ idx ].val );
+        if( o->nodes[ idx ].val ) bcore_inst_t_discard( o->type, o->nodes[ idx ].val );
         o->nodes[ idx ].val = val;
         return &o->nodes[ idx ].val;
     }
@@ -2143,7 +2143,7 @@ void bcore_hmap_tpto_s_remove( bcore_hmap_tpto_s* o, tp_t key )
     sz_t idx = tpto_find( o, key );
     if( idx < o->size )
     {
-        if( o->nodes[ idx ].val ) bcore_inst_typed_discard( o->type, o->nodes[ idx ].val );
+        if( o->nodes[ idx ].val ) bcore_inst_t_discard( o->type, o->nodes[ idx ].val );
         o->nodes[ idx ].key = 0;
         o->nodes[ idx ].val = 0;
     }
@@ -2159,7 +2159,7 @@ bl_t bcore_hmap_tpto_s_exists( const bcore_hmap_tpto_s* o, tp_t key )
 void bcore_hmap_tpto_s_clear( bcore_hmap_tpto_s* o )
 {
     const bcore_inst_s* inst_p = o->type ? bcore_inst_s_get_typed( o->type ) : NULL;
-    for( sz_t i = 0; i < o->size; i++ ) if( o->nodes[ i ].val ) bcore_inst_spect_discard( inst_p, o->nodes[ i ].val );
+    for( sz_t i = 0; i < o->size; i++ ) if( o->nodes[ i ].val ) bcore_inst_p_discard( inst_p, o->nodes[ i ].val );
     o->nodes = bcore_alloc( o->nodes, 0 );
     o->flags = bcore_alloc( o->flags, 0 );
     o->size  = 0;
@@ -2237,7 +2237,7 @@ static void tpto_s_set_data( bcore_hmap_tpto_s* o, sr_s data )
         const struct { tp_t key; sr_s obj; }* src = bcore_array_q_get_c_data( &data );
         for( sz_t i = 0; i < size; i++ )
         {
-            bcore_hmap_tpto_s_set_d( o, src[ i ].key, bcore_inst_q_clone( &src[ i ].obj ) );
+            bcore_hmap_tpto_s_set_d( o, src[ i ].key, bcore_inst_r_clone( &src[ i ].obj ) );
         }
     }
     sr_down( data );
@@ -2320,7 +2320,7 @@ static st_s* hmap_tpto_selftest( void )
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set
-            bcore_hmap_tpto_s_set_d( map, kv.key, bcore_inst_spect_clone( val_p, &kv.val ) );
+            bcore_hmap_tpto_s_set_d( map, kv.key, bcore_inst_p_clone( val_p, &kv.val ) );
 
             // retrieve
             rval1 = bcore_xsg_u2( rval1 );

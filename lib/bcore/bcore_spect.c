@@ -126,7 +126,7 @@ static void hmap_s_down( hmap_s* o )
         }
         else
         {
-            bcore_inst_aware_discard( spect );
+            bcore_inst_a_discard( spect );
         }
         bcore_mutex_s_lock( &o->mutex );
     }
@@ -279,7 +279,7 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
 
-    if( discard_spect ) bcore_inst_aware_discard( discard_spect );
+    if( discard_spect ) bcore_inst_a_discard( discard_spect );
     return spect;
 }
 
@@ -302,7 +302,7 @@ void bcore_spect_define_trait( const bcore_self_s* p_self )
     }
 
     /// check requirements
-    bcore_spect_header_s* spect = bcore_inst_typed_create( p_self->type );
+    bcore_spect_header_s* spect = bcore_inst_t_create( p_self->type );
     const bcore_via_s* p_via = bcore_via_s_get_typed( p_self->type );
     sz_t size = bcore_via_p_get_size( p_via, NULL );
     for( sz_t i = 0; i < size; i++ )
@@ -333,7 +333,7 @@ void bcore_spect_define_trait( const bcore_self_s* p_self )
         }
     }
 
-    bcore_inst_aware_discard( spect );
+    bcore_inst_a_discard( spect );
 
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
@@ -345,7 +345,7 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
 
     const bcore_inst_s* p_inst = bcore_inst_s_get_typed( p_self->type );
 
-    bcore_spect_header_s* o = bcore_inst_typed_create( p_self->type );
+    bcore_spect_header_s* o = bcore_inst_t_create( p_self->type );
     o->o_type = o_self->type;
 
     sz_t p_items_size = bcore_inst_s_get_items_size( p_inst );
@@ -549,7 +549,7 @@ st_s* bcore_spect_status()
         if( val ) ( *bcore_hmap_tpsz_s_fget( hist, *( aware_t* )val, 0 ) )++;
     }
 
-    sr_s nc_arr = sr_cl( bcore_inst_typed_create_sr( bcore_flect_type_parse_fa( "{ { sz_t count; tp_t type; } [] arr; }" ) ), l );
+    sr_s nc_arr = sr_cl( bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ { sz_t count; tp_t type; } [] arr; }" ) ), l );
 
     for( sz_t i = 0; i < hist->size; i++ )
     {

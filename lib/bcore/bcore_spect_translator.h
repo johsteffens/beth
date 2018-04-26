@@ -22,6 +22,7 @@
 #include "bcore_features.h"
 #include "bcore_spect.h"
 
+typedef struct bcore_translator bcore_translator;
 BCORE_DECLARE_SPECT( bcore_translator_s )
 {
     bcore_spect_header_s header;

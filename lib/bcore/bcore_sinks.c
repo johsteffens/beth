@@ -36,7 +36,7 @@ static void chain_init_a( bcore_nucleus_s* nc )
 
 void bcore_sink_chain_s_init( bcore_sink_chain_s* o )
 {
-    bcore_inst_typed_init( TYPEOF_bcore_sink_chain_s, o );
+    bcore_inst_t_init( TYPEOF_bcore_sink_chain_s, o );
 }
 
 static void chain_down_a( bcore_nucleus_s* nc )
@@ -48,7 +48,7 @@ static void chain_down_a( bcore_nucleus_s* nc )
 
 void bcore_sink_chain_s_down( bcore_sink_chain_s* o )
 {
-    bcore_inst_typed_down( TYPEOF_bcore_sink_chain_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_sink_chain_s, o );
 }
 
 static void chain_copy_a( bcore_nucleus_s* nc )
@@ -60,22 +60,22 @@ static void chain_copy_a( bcore_nucleus_s* nc )
 
 void bcore_sink_chain_s_copy( bcore_sink_chain_s* o, const bcore_sink_chain_s* src )
 {
-    bcore_inst_typed_copy( TYPEOF_bcore_sink_chain_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_sink_chain_s, o, src );
 }
 
 void bcore_sink_chain_s_discard( bcore_sink_chain_s* o )
 {
-    bcore_inst_typed_discard( TYPEOF_bcore_sink_chain_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_sink_chain_s, o );
 }
 
 bcore_sink_chain_s* bcore_sink_chain_s_create()
 {
-    return bcore_inst_typed_create( TYPEOF_bcore_sink_chain_s );
+    return bcore_inst_t_create( TYPEOF_bcore_sink_chain_s );
 }
 
 bcore_sink_chain_s* bcore_sink_chain_s_clone( const bcore_sink_chain_s* o )
 {
-    return bcore_inst_typed_clone( TYPEOF_bcore_sink_chain_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_sink_chain_s, o );
 }
 
 static void chain_interpret_body_a( vd_t nc )
@@ -95,7 +95,7 @@ void bcore_sink_chain_s_push_d( bcore_sink_chain_s* o, vd_t sink )
 
 void bcore_sink_chain_s_push_type( bcore_sink_chain_s* o, tp_t type )
 {
-    bcore_sink_chain_s_push_d( o, bcore_inst_typed_create( type ) );
+    bcore_sink_chain_s_push_d( o, bcore_inst_t_create( type ) );
 }
 
 void bcore_sink_chain_s_flush( bcore_sink_chain_s* o )
@@ -148,27 +148,27 @@ void bcore_sink_buffer_s_init( bcore_sink_buffer_s* o )
 
 void bcore_sink_buffer_s_down( bcore_sink_buffer_s* o )
 {
-    bcore_inst_typed_down( TYPEOF_bcore_sink_buffer_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_sink_buffer_s, o );
 }
 
 void bcore_sink_buffer_s_discard( bcore_sink_buffer_s* o )
 {
-    bcore_inst_typed_discard( TYPEOF_bcore_sink_buffer_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_sink_buffer_s, o );
 }
 
 void bcore_sink_buffer_s_copy( bcore_sink_buffer_s* o, const bcore_sink_buffer_s* src )
 {
-    bcore_inst_typed_copy( TYPEOF_bcore_sink_buffer_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_sink_buffer_s, o, src );
 }
 
 bcore_sink_buffer_s* bcore_sink_buffer_s_create()
 {
-    return bcore_inst_typed_create( TYPEOF_bcore_sink_buffer_s );
+    return bcore_inst_t_create( TYPEOF_bcore_sink_buffer_s );
 }
 
 bcore_sink_buffer_s* bcore_sink_buffer_s_clone( const bcore_sink_buffer_s* o )
 {
-    return bcore_inst_typed_clone( TYPEOF_bcore_sink_buffer_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_sink_buffer_s, o );
 }
 
 void bcore_sink_buffer_s_flush( bcore_sink_buffer_s* o )
@@ -254,7 +254,7 @@ static void file_init_a( bcore_nucleus_s* nc )
 
 void bcore_sink_file_s_init( bcore_sink_file_s* o )
 {
-    bcore_inst_typed_init( TYPEOF_bcore_sink_file_s, o );
+    bcore_inst_t_init( TYPEOF_bcore_sink_file_s, o );
 }
 
 static void file_down_a( bcore_nucleus_s* nc )
@@ -266,7 +266,7 @@ static void file_down_a( bcore_nucleus_s* nc )
 
 void bcore_sink_file_s_down( bcore_sink_file_s* o )
 {
-    bcore_inst_typed_down( TYPEOF_bcore_sink_file_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_sink_file_s, o );
 }
 
 static void file_copy_a( bcore_nucleus_s* nc )
@@ -278,17 +278,17 @@ static void file_copy_a( bcore_nucleus_s* nc )
 
 void bcore_sink_file_s_copy( bcore_sink_file_s* o, const bcore_sink_file_s* src )
 {
-    bcore_inst_typed_copy( TYPEOF_bcore_sink_file_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_sink_file_s, o, src );
 }
 
 void bcore_sink_file_s_discard( bcore_sink_file_s* o )
 {
-    bcore_inst_typed_discard( TYPEOF_bcore_sink_file_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_sink_file_s, o );
 }
 
 bcore_sink_file_s* bcore_sink_file_s_create()
 {
-    return bcore_inst_typed_create( TYPEOF_bcore_sink_file_s );
+    return bcore_inst_t_create( TYPEOF_bcore_sink_file_s );
 }
 
 bcore_sink_file_s* bcore_sink_file_s_create_name( sc_t name )
@@ -305,7 +305,7 @@ sc_t bcore_sink_file_s_get_name( const bcore_sink_file_s* o )
 
 bcore_sink_file_s* bcore_sink_file_s_clone( const bcore_sink_file_s* o )
 {
-    return bcore_inst_typed_clone( TYPEOF_bcore_sink_file_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_sink_file_s, o );
 }
 
 void bcore_sink_file_s_open( bcore_sink_file_s* o )
@@ -403,7 +403,7 @@ bcore_sink_chain_s* bcore_sink_create_file( sc_t file_name )
 {
     bcore_sink_chain_s* chain = bcore_sink_chain_s_create();
     bcore_sink_chain_s_push_d( chain, bcore_sink_file_s_create_name( file_name ) );
-    bcore_sink_chain_s_push_d( chain, bcore_inst_typed_create( typeof( "bcore_sink_buffer_s" ) ) );
+    bcore_sink_chain_s_push_d( chain, bcore_inst_t_create( typeof( "bcore_sink_buffer_s" ) ) );
     return chain;
 }
 

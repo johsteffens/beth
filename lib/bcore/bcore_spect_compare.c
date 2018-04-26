@@ -367,9 +367,9 @@ st_s* bcore_diff_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
         {
             st_s* s = st_s_createf( "!%s: objects overloading comparison differ:", ifnameof( p->o_type ) );
             st_s_pushf( s, "\n\tobj1: " );
-            bcore_translate_x( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), sr_twc( p->o_type, obj1 ), sr_awd( s ) );
+            bcore_translate_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), sr_twc( p->o_type, obj1 ), sr_awd( s ) );
             st_s_pushf( s, "\tobj2: " );
-            bcore_translate_x( bcore_inst_typed_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), sr_twc( p->o_type, obj2 ), sr_awd( s ) );
+            bcore_translate_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), sr_twc( p->o_type, obj2 ), sr_awd( s ) );
             return s;
         }
     }
@@ -420,7 +420,7 @@ static st_s* spect_compare_selftest( void )
     bcore_life_s* l = bcore_life_s_create();
 
     bcore_flect_define_parse_sc( "cmp_specs = { aware_t _; sz_t size; u2_t param1; s2_t; }" );
-    vd_t specs = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "cmp_specs" ) ) );
+    vd_t specs = bcore_life_s_push_aware( l, bcore_inst_t_create( typeof( "cmp_specs" ) ) );
 
     {
         const bcore_via_s* v = bcore_via_s_get_aware( specs );
@@ -430,7 +430,7 @@ static st_s* spect_compare_selftest( void )
     }
 
     bcore_flect_define_parse_sc( "cmp_specs_arr = { aware_t _; u3_t flags; cmp_specs [] arr; }" );
-    vd_t arr1 = bcore_life_s_push_aware( l, bcore_inst_typed_create( typeof( "cmp_specs_arr" ) ) );
+    vd_t arr1 = bcore_life_s_push_aware( l, bcore_inst_t_create( typeof( "cmp_specs_arr" ) ) );
 
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr1 );
 
@@ -444,7 +444,7 @@ static st_s* spect_compare_selftest( void )
     }
 
     const bcore_via_s* v = bcore_via_s_get_aware( specs );
-    vd_t arr2 = bcore_life_s_push_aware( l, bcore_inst_aware_clone( arr1 ) );
+    vd_t arr2 = bcore_life_s_push_aware( l, bcore_inst_a_clone( arr1 ) );
 
     ASSERT( bcore_compare_aware( arr1, arr2 ) == 0 );
     bcore_via_p_nset_sz( v, arr_p->get( arr_p, arr2, 5 ).o, typeof( "size" ), 20 );

@@ -27,33 +27,6 @@
 /**********************************************************************************************************************/
 // bcore_interpreter_s
 
-static void interpreter_s_down( bcore_interpreter_s* o );
-
-static void interpreter_s_init( bcore_interpreter_s* o )
-{
-    bcore_memzero( o, sizeof( bcore_interpreter_s ) );
-    o->p_type = typeof( "bcore_interpreter_s" );
-}
-
-static void interpreter_s_down( bcore_interpreter_s* o )
-{
-}
-
-static bcore_interpreter_s* interpreter_s_create()
-{
-    bcore_interpreter_s* o = bcore_alloc( NULL, sizeof( bcore_interpreter_s ) );
-    interpreter_s_init( o );
-    return o;
-}
-
-static void interpreter_s_discard( bcore_interpreter_s* o )
-{
-    if( !o ) return;
-    bcore_release_obj( ( fp_t )interpreter_s_down, o );
-}
-
-/**********************************************************************************************************************/
-
 static void interpreter_s_define_trait()
 {
     tp_t trait = entypeof( "bcore_interpreter" );
@@ -62,14 +35,11 @@ static void interpreter_s_define_trait()
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
-static bcore_interpreter_s* create_from_self( const bcore_self_s* self )
-{
-    assert( self != NULL );
-    bcore_interpreter_s* o = interpreter_s_create();
-    o->o_type = self->type;
-    o->fp_interpret = ( bcore_fp_interpret )bcore_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_interpret" ), 0 );
-    return o;
-}
+BCORE_DEFINE_SPECT( bcore_interpreter_s )
+"{"
+    "bcore_spect_header_s header;"
+    "strict feature bcore_fp:interpret;"
+"}";
 
 sr_s bcore_interpret_auto( sr_s source )
 {
@@ -86,7 +56,7 @@ sr_s bcore_interpret_auto( sr_s source )
         bcore_source_x_parse_err_fa( src, "Object '#<sc_t>' is no interpreter.\nReason: #<sc_t>", ifnameof( sr_s_type( &interpreter ) ), log->sc );
     }
 
-    sr_s obj = bcore_interpret( interpreter, src );
+    sr_s obj = bcore_interpret_x( interpreter, src );
 
     bcore_life_s_discard( l );
 
@@ -98,37 +68,25 @@ sr_s bcore_interpret_auto_file( sc_t file )
     sr_s chain = sr_asd( bcore_source_chain_s_create() );
     bcore_source_chain_s_push_d( chain.o, bcore_source_file_s_create_name( file ) );
     // TODO: test if bcore_source_string_s works correctly on binary files
-    bcore_source_chain_s_push_d( chain.o, bcore_inst_typed_create( typeof( "bcore_source_string_s" ) ) );
+    bcore_source_chain_s_push_d( chain.o, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );
     sr_s ret = bcore_interpret_auto( chain );
     return ret;
 }
 
-static bcore_self_s* interpreter_s_create_self( void )
-{
-    sc_t def = "bcore_interpreter_s = spect { aware_t p_type; tp_t o_type; ... }";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_interpreter_s ) );
-    bcore_self_s_push_ns_func( self, ( fp_t )interpreter_s_init,             "bcore_fp_init",                   "init"         );
-    bcore_self_s_push_ns_func( self, ( fp_t )interpreter_s_down,             "bcore_fp_down",                   "down"         );
-    bcore_self_s_push_ns_func( self, ( fp_t )interpreter_s_create,           "bcore_fp_create",                 "create"       );
-    bcore_self_s_push_ns_func( self, ( fp_t )interpreter_s_discard,          "bcore_fp_discard",                "discard"      );
-    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,               "bcore_spect_fp_create_from_self", "create_from_self" );
-    return self;
-}
-
 /**********************************************************************************************************************/
 
-sr_s bcore_interpret( sr_s o, sr_s source )
+sr_s bcore_interpret_x( sr_s o, sr_s source )
 {
     const bcore_interpreter_s* p = ch_spect_p( o.p, TYPEOF_bcore_interpreter_s );
-    sr_s ret = p->fp_interpret( o.o, source );
+    sr_s ret = p->interpret( o.o, source );
     sr_down( o );
     return ret;
 }
 
-sr_s bcore_interpret_q( const sr_s* o, sr_s source )
+sr_s bcore_interpret_r( const sr_s* o, sr_s source )
 {
     const bcore_interpreter_s* p = ch_spect_p( o->p, TYPEOF_bcore_interpreter_s );
-    return p->fp_interpret( o->o, source );
+    return p->interpret( o->o, source );
 }
 
 /**********************************************************************************************************************/
@@ -142,8 +100,7 @@ vd_t bcore_spect_interpreter_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             interpreter_s_define_trait();
-            bcore_flect_define_creator( typeof( "bcore_interpreter_s"  ), interpreter_s_create_self  );
-            bcore_spect_setup_cache( &bcore_interpreter_s_cache_g );
+            BCORE_REGISTER_SPECT( bcore_interpreter_s );
         }
         break;
 

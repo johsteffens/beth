@@ -2342,22 +2342,22 @@ static st_s* tbman_s_rctest( void )
     } myclass;
 
     tp_t t_myclass = bcore_flect_type_parse_sc( "{ st_s name1; st_s* name2; u3_t v1; u3_t* v2; }" );
-    bcore_inst_typed_discard( t_myclass, bcore_inst_typed_create( t_myclass ) ); // cycle once to get all perspectives alive
+    bcore_inst_t_discard( t_myclass, bcore_inst_t_create( t_myclass ) ); // cycle once to get all perspectives alive
 
-    myclass* obj1 = bcore_inst_typed_create( t_myclass );
-    myclass* obj2 = bcore_inst_typed_create( t_myclass );
+    myclass* obj1 = bcore_inst_t_create( t_myclass );
+    myclass* obj2 = bcore_inst_t_create( t_myclass );
 
     sz_t arr_size = 100000;
     myclass* obj_arr = bcore_tbman_malloc( sizeof( myclass ) * arr_size );
     for( sz_t i = 0; i < arr_size; i++ )
     {
-        bcore_inst_typed_init( t_myclass, &obj_arr[ i ] );
+        bcore_inst_t_init( t_myclass, &obj_arr[ i ] );
         st_s_pushf( &obj_arr[ i ].name1, "Hi!" );
         obj_arr[ i ].name2 = st_s_createf( "Ho!" );
     }
 
     obj_arr = bcore_tbman_fork( obj_arr );
-    bcore_tbman_release_arg_arr( ( fp_down_arg )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj_arr, arr_size, sizeof( myclass ) );
+    bcore_tbman_release_arg_arr( ( fp_down_arg )bcore_inst_p_down, bcore_inst_s_get_typed( t_myclass ), obj_arr, arr_size, sizeof( myclass ) );
 
     vd_t* ref_arr1 = bcore_tbman_u_alloc( sizeof( vd_t ), NULL, arr_size, NULL );
     vd_t* ref_arr2 = bcore_tbman_u_alloc( sizeof( vd_t ), NULL, arr_size, NULL );
@@ -2386,8 +2386,8 @@ static st_s* tbman_s_rctest( void )
 
     st_s_pushf( obj2_name1, "Hi!" );
 
-    bcore_tbman_release_arg( ( fp_down_arg )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj1 );
-    bcore_tbman_release_arg( ( fp_down_arg )bcore_inst_spect_down, bcore_inst_s_get_typed( t_myclass ), obj2 );
+    bcore_tbman_release_arg( ( fp_down_arg )bcore_inst_p_down, bcore_inst_s_get_typed( t_myclass ), obj1 );
+    bcore_tbman_release_arg( ( fp_down_arg )bcore_inst_p_down, bcore_inst_s_get_typed( t_myclass ), obj2 );
 
     bcore_tbman_release( obj2_name1 );
 

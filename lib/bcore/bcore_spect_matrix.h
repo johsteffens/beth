@@ -27,7 +27,8 @@
 
 /**********************************************************************************************************************/
 
-typedef struct bcore_matrix_s
+typedef struct bcore_matrix bcore_matrix;
+BCORE_DECLARE_SPECT( bcore_matrix_s )
 {
     bcore_spect_header_s header;
     const bcore_array_s* spect_array;
@@ -38,92 +39,62 @@ typedef struct bcore_matrix_s
     sz_t rows_off;   // feature for dynamic row offset
     sz_t cols_off;   // feature for dynamic col offset
     sz_t stride_off; // feature for dynamic row-stride
-} bcore_matrix_s;
-
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_matrix_s )
-BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_matrix_s )
+};
 
 static inline
-sz_t bcore_matrix_spect_get_rows( const bcore_matrix_s* p, vc_t o )
+sz_t bcore_matrix_default_get_rows( const bcore_matrix_s* p, const bcore_matrix* o )
 {
     return p->rows_fix > 0 ? p->rows_fix : *( sz_t* )BCORE_OFFSET( o, p->rows_off );
 }
 
 static inline
-sz_t bcore_matrix_spect_get_cols( const bcore_matrix_s* p, vc_t o )
+sz_t bcore_matrix_default_get_cols( const bcore_matrix_s* p, const bcore_matrix* o )
 {
     return p->cols_fix > 0 ? p->cols_fix : *( sz_t* )BCORE_OFFSET( o, p->cols_off );
 }
 
 static inline
-sz_t bcore_matrix_spect_get_stride( const bcore_matrix_s* p, vc_t o )
+sz_t bcore_matrix_default_get_stride( const bcore_matrix_s* p, const bcore_matrix* o )
 {
     return p->stride_fix > 0 ? p->stride_fix : *( sz_t* )BCORE_OFFSET( o, p->stride_off );
 }
 
-void bcore_matrix_spect_set_size( const bcore_matrix_s* p, vd_t o, sz_t rows, sz_t cols );
+void bcore_matrix_default_set_size( const bcore_matrix_s* p, bcore_matrix* o, sz_t rows, sz_t cols );
 
 static inline
-sz_t bcore_matrix_spect_get_row_index( const bcore_matrix_s* p, vc_t o, sz_t i )
+sz_t bcore_matrix_default_get_row_index( const bcore_matrix_s* p, const bcore_matrix* o, sz_t i )
 {
-    assert( i < bcore_matrix_spect_get_rows( p, o ) );
-    return i * bcore_matrix_spect_get_stride( p, o );
+    assert( i < bcore_matrix_default_get_rows( p, o ) );
+    return i * bcore_matrix_default_get_stride( p, o );
 }
 
 static inline
-sz_t bcore_matrix_spect_get_index( const bcore_matrix_s* p, vc_t o, sz_t i, sz_t j )
+sz_t bcore_matrix_default_get_index( const bcore_matrix_s* p, const bcore_matrix* o, sz_t i, sz_t j )
 {
-    assert( j < bcore_matrix_spect_get_cols( p, o ) );
-    return bcore_matrix_spect_get_row_index( p, o, i ) + j;
+    assert( j < bcore_matrix_default_get_cols( p, o ) );
+    return bcore_matrix_default_get_row_index( p, o, i ) + j;
 }
 
 static inline
-sr_s bcore_matrix_spect_get_cell( const bcore_matrix_s* p, vc_t o, sz_t i, sz_t j )
+sr_s bcore_matrix_default_get_cell( const bcore_matrix_s* p, const bcore_matrix* o, sz_t i, sz_t j )
 {
-    return bcore_array_spect_get( p->spect_array, o, bcore_matrix_spect_get_index( p, o, i, j ) );
+    return bcore_array_spect_get( p->spect_array, o, bcore_matrix_default_get_index( p, o, i, j ) );
 }
 
 static inline
-void bcore_matrix_spect_set_cell( const bcore_matrix_s* p, vd_t o, sz_t i, sz_t j, sr_s src )
+void bcore_matrix_default_set_cell( const bcore_matrix_s* p, bcore_matrix* o, sz_t i, sz_t j, sr_s src )
 {
-    bcore_array_spect_set( p->spect_array, o, bcore_matrix_spect_get_index( p, o, i, j ), src );
+    bcore_array_spect_set( p->spect_array, o, bcore_matrix_default_get_index( p, o, i, j ), src );
 }
 
-sz_t bcore_matrix_typed_get_rows(      tp_t t, vc_t o );
-sz_t bcore_matrix_typed_get_cols(      tp_t t, vc_t o );
-sz_t bcore_matrix_typed_get_stride(    tp_t t, vc_t o );
-void bcore_matrix_typed_set_size(      tp_t t, vd_t o, sz_t rows, sz_t cols );
-sz_t bcore_matrix_typed_get_row_index( tp_t t, vc_t o, sz_t i );
-sz_t bcore_matrix_typed_get_index(     tp_t t, vc_t o, sz_t i, sz_t j );
-sr_s bcore_matrix_typed_get_cell(      tp_t t, vc_t o, sz_t i, sz_t j );
-void bcore_matrix_typed_set_cell(      tp_t t, vd_t o, sz_t i, sz_t j, sr_s src );
-
-sz_t bcore_matrix_aware_get_rows(      vc_t o );
-sz_t bcore_matrix_aware_get_cols(      vc_t o );
-sz_t bcore_matrix_aware_get_stride(    vc_t o );
-void bcore_matrix_aware_set_size(      vd_t o, sz_t rows, sz_t cols );
-sz_t bcore_matrix_aware_get_row_index( vc_t o, sz_t i );
-sz_t bcore_matrix_aware_get_index(     vc_t o, sz_t i, sz_t j );
-sr_s bcore_matrix_aware_get_cell(      vc_t o, sz_t i, sz_t j );
-void bcore_matrix_aware_set_cell(      vd_t o, sz_t i, sz_t j, sr_s src );
-
-sz_t bcore_matrix_get_rows(      sr_s o );
-sz_t bcore_matrix_get_cols(      sr_s o );
-sz_t bcore_matrix_get_stride(    sr_s o );
-void bcore_matrix_set_size(      sr_s o, sz_t rows, sz_t cols );
-sz_t bcore_matrix_get_row_index( sr_s o, sz_t i );
-sz_t bcore_matrix_get_index(     sr_s o, sz_t i, sz_t j );
-sr_s bcore_matrix_get_cell(      sr_s o, sz_t i, sz_t j );
-void bcore_matrix_set_cell(      sr_s o, sz_t i, sz_t j, sr_s src );
-
-sz_t bcore_matrix_q_get_rows(      const sr_s* o );
-sz_t bcore_matrix_q_get_cols(      const sr_s* o );
-sz_t bcore_matrix_q_get_stride(    const sr_s* o );
-void bcore_matrix_q_set_size(      const sr_s* o, sz_t rows, sz_t cols );
-sz_t bcore_matrix_q_get_row_index( const sr_s* o, sz_t i );
-sz_t bcore_matrix_q_get_index(     const sr_s* o, sz_t i, sz_t j );
-sr_s bcore_matrix_q_get_cell(      const sr_s* o, sz_t i, sz_t j );
-void bcore_matrix_q_set_cell(      const sr_s* o, sz_t i, sz_t j, sr_s src );
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_rows,      sz_t )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_cols,      sz_t )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_stride,    sz_t )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_matrix, set_size,            sz_t, rows, sz_t, cols )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_matrix, get_row_index, sz_t, sz_t, i )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_matrix, get_index,     sz_t, sz_t, i, sz_t, j )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_matrix, get_cell,      sr_s, sz_t, i, sz_t, j )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_matrix, set_cell,            sz_t, i, sz_t, j, sr_s, src )
 
 /**********************************************************************************************************************/
 

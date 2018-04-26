@@ -60,12 +60,12 @@ static bmath_matrix_s* bmath_matrix_s_create_from_self( const bcore_self_s* self
 
 sz_t bmath_matrix_default_get_rows( const bmath_matrix_s* p, const bmath_matrix* o )
 {
-    return bcore_matrix_spect_get_rows( p->spect_matrix_matrix, o );
+    return bcore_matrix_p_get_rows( p->spect_matrix_matrix, ( const bcore_matrix* )o );
 }
 
 sz_t bmath_matrix_default_get_cols( const bmath_matrix_s* p, const bmath_matrix* o )
 {
-    return bcore_matrix_spect_get_cols( p->spect_matrix_matrix, o );
+    return bcore_matrix_p_get_cols( p->spect_matrix_matrix, ( const bcore_matrix* )o );
 }
 
 void bmath_matrix_default_zro( const bmath_matrix_s* p, bmath_matrix* o )
@@ -111,13 +111,13 @@ void bmath_matrix_default_mul( const bmath_matrix_s* p, const bmath_matrix* o, c
             bmath_ring_r_zro( &sr_sum );
             for( sz_t k = 0; k < steps; k++ )
             {
-                sr_s sr1 = bcore_matrix_spect_get_cell( p->spect_matrix_matrix, o,  i, k );
-                sr_s sr2 = bcore_matrix_spect_get_cell( p->spect_matrix_matrix, op, k, j );
+                sr_s sr1 = bcore_matrix_p_get_cell( p->spect_matrix_matrix, ( const bcore_matrix* )o,  i, k );
+                sr_s sr2 = bcore_matrix_p_get_cell( p->spect_matrix_matrix, ( const bcore_matrix* )op, k, j );
                 if ( sr1.o && sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr1.o, sr2.o, sr_mul.o );
                 else                  bmath_ring_p_zro( p->spect_ring_scalar, sr_mul.o );
                 bmath_ring_p_add( p->spect_ring_scalar, sr_mul.o, sr_sum.o, sr_sum.o );
             }
-            bcore_matrix_spect_set_cell( p->spect_matrix_matrix, res, i, j, sr_sum );
+            bcore_matrix_p_set_cell( p->spect_matrix_matrix, ( bcore_matrix* )res, i, j, sr_sum );
         }
     }
 
@@ -135,7 +135,7 @@ void bmath_matrix_default_one( const bmath_matrix_s* p, bmath_matrix* o )
 
     for( sz_t i = 0; i < steps; i++ )
     {
-        bcore_matrix_spect_set_cell( p->spect_matrix_matrix, o, i, i, sr_cw( sr_one ) );
+        bcore_matrix_p_set_cell( p->spect_matrix_matrix, ( bcore_matrix* )o, i, i, sr_cw( sr_one ) );
     }
 
     sr_down( sr_one );
@@ -175,7 +175,7 @@ void bmath_matrix_default_mul_vec( const bmath_matrix_s* p, const bmath_matrix* 
         {
             for( sz_t k = 0; k < steps; k++ )
             {
-                sr_s sr1 = bcore_matrix_spect_get_cell( p->spect_matrix_matrix, o, i, k );
+                sr_s sr1 = bcore_matrix_p_get_cell( p->spect_matrix_matrix, ( const bcore_matrix* )o, i, k );
                 sr_s sr2 = bcore_array_spect_get( spect_array_vector, op, k );
                 if ( sr1.o && sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr1.o, sr2.o, sr_mul.o );
                 else                  bmath_ring_p_zro( p->spect_ring_scalar, sr_mul.o );

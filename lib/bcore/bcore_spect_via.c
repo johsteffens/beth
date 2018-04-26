@@ -122,11 +122,11 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, sz_t index, sr_
             const bcore_inst_s* inst_p = vitem->via_p->inst_p;
             if( sr_s_type( &src ) == vitem->type )
             {
-                bcore_inst_spect_copy( inst_p, dst, src.o );
+                bcore_inst_p_copy( inst_p, dst, src.o );
             }
             else
             {
-                bcore_inst_spect_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
+                bcore_inst_p_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
             }
         }
         break;
@@ -135,15 +135,15 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, sz_t index, sr_
         {
             bcore_link_static_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             const bcore_inst_s* inst_p = vitem->via_p->inst_p;
-            if( dst->link ) bcore_inst_spect_discard( inst_p, dst->link );
+            if( dst->link ) bcore_inst_p_discard( inst_p, dst->link );
             if( sr_s_type( &src ) == vitem->type )
             {
-                dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_spect_clone( inst_p, src.o );
+                dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_p_clone( inst_p, src.o );
                 src = sr_cw( src );
             }
             else
             {
-                dst->link = bcore_inst_spect_create_typed( inst_p, sr_s_type( &src ), src.o );
+                dst->link = bcore_inst_p_create_typed( inst_p, sr_s_type( &src ), src.o );
             }
         }
         break;
@@ -153,13 +153,13 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, sz_t index, sr_
             bcore_link_typed_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             if( dst->type && dst->link )
             {
-                bcore_inst_typed_discard( dst->type, dst->link );
+                bcore_inst_t_discard( dst->type, dst->link );
                 dst->link = NULL;
             }
             if( sr_s_type( &src ) )
             {
                 dst->type = sr_s_type( &src );
-                dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_typed_clone( sr_s_type( &src ), src.o );
+                dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_t_clone( sr_s_type( &src ), src.o );
                 src = sr_cw( src );
             }
         }
@@ -171,7 +171,7 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, sz_t index, sr_
 
             if( dst->link )
             {
-                bcore_inst_aware_discard( dst->link );
+                bcore_inst_a_discard( dst->link );
                 dst->link = NULL;
             }
 
@@ -182,7 +182,7 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, sz_t index, sr_
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( sr_s_type( &src ) );
                     if( inst_p->aware )
                     {
-                        dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_spect_clone( inst_p, src.o );
+                        dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_p_clone( inst_p, src.o );
                         src = sr_cw( src );
                     }
                     else
@@ -192,7 +192,7 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, sz_t index, sr_
                 }
                 else
                 {
-                    dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_aware_clone( src.o );
+                    dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_a_clone( src.o );
                     src = sr_cw( src );
                 }
             }
@@ -212,11 +212,11 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, sz_t index, sr_
             const bcore_inst_s* inst_p = vitem->via_p->inst_p;
             if( sr_s_type( &src ) == vitem->type )
             {
-                bcore_inst_spect_copy( inst_p, dst, src.o );
+                bcore_inst_p_copy( inst_p, dst, src.o );
             }
             else
             {
-                bcore_inst_spect_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
+                bcore_inst_p_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
             }
         }
         break;
@@ -355,7 +355,7 @@ static bcore_via_s* bcore_via_s_create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
 
-    bcore_via_s* o = bcore_inst_typed_create( entypeof( "bcore_via_s" ) );
+    bcore_via_s* o = bcore_inst_t_create( entypeof( "bcore_via_s" ) );
     o->header.p_type  = typeof( "bcore_via_s" );
     o->header.o_type  = self->type;
     o->is_leaf = bcore_type_is_leaf( self->type );
@@ -502,18 +502,18 @@ sr_s bcore_spect_via_create_zoo( sz_t size )
     tp_t t_compound = bcore_flect_type_parse_sc( "compound = { u3_t id; sz_t area; animal * [] animals; }" );
     tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { st_s* name; typed * [] compounds; }" );
 
-    sr_s ret = bcore_inst_typed_create_sr( t_zoo );
+    sr_s ret = bcore_inst_t_create_sr( t_zoo );
     sr_s zoo = sr_cw( ret );
 
     bcore_via_x_nset_sc( zoo, typeof( "name" ), "Mesamurial" );
     sr_s compounds = bcore_life_s_push_sr( l, bcore_via_x_nget( zoo, typeof( "compounds" ) ) );
     {
-        sr_s compound = sr_cl( bcore_inst_typed_create_sr( t_compound ), l );
+        sr_s compound = sr_cl( bcore_inst_t_create_sr( t_compound ), l );
         bcore_via_x_nset_u3( compound, typeof( "id" ), 254 );
         bcore_via_x_nset_sz( compound, typeof( "area" ), 1000 );
         sr_s animals = bcore_life_s_push_sr( l, bcore_via_x_nget( compound, typeof( "animals" ) ) );
         {
-            sr_s bird = sr_cl( bcore_inst_typed_create_sr( t_animal ), l );
+            sr_s bird = sr_cl( bcore_inst_t_create_sr( t_animal ), l );
             bcore_via_x_nset_sc( bird, typeof( "type" ), "Owl" );
             bcore_via_x_nset_f3( bird, typeof( "weight" ), 2.5 );
             sr_s features = sr_cl( bcore_via_x_nget( bird, typeof( "features" ) ), l );
@@ -524,7 +524,7 @@ sr_s bcore_spect_via_create_zoo( sz_t size )
             bcore_array_push( animals, bird );
         }
         {
-            sr_s bird = sr_cl( bcore_inst_typed_create_sr( t_animal ), l );
+            sr_s bird = sr_cl( bcore_inst_t_create_sr( t_animal ), l );
             bcore_via_x_nset_sc( bird, typeof( "type" ), "Pidgin" );
             bcore_via_x_nset_f3( bird, typeof( "weight" ), 0.5 );
             sr_s features = sr_cl( bcore_via_x_nget( bird, typeof( "features" ) ), l );
@@ -550,7 +550,7 @@ static st_s* spect_via_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_flect_define_parse_sc( "via_specs = { sz_t size = 3; u2_t param1 = 1234; s2_t = -5; }" );
-    sr_s via_specs = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "via_specs" ) ) );
+    sr_s via_specs = bcore_life_s_push_sr( l, bcore_inst_t_create_sr( typeof( "via_specs" ) ) );
 
     ASSERT( *( sz_t* )bcore_via_x_nget( via_specs, typeof( "size"   ) ).o ==    3 );
     ASSERT( *( u2_t* )bcore_via_x_nget( via_specs, typeof( "param1" ) ).o == 1234 );
@@ -567,14 +567,14 @@ static st_s* spect_via_selftest( void )
     ASSERT( *( s2_t* )bcore_via_x_nget( via_specs, typeof( "" ) ).o       == -50 );
 
     bcore_flect_define_parse_sc( "via_specs_arr = { aware_t _; u3_t flags; via_specs [] arr; }" );
-    sr_s via_specs_arr = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "via_specs_arr" ) ) );
+    sr_s via_specs_arr = bcore_life_s_push_sr( l, bcore_inst_t_create_sr( typeof( "via_specs_arr" ) ) );
     sr_s arr = sr_cp( bcore_life_s_push_sr( l, bcore_via_x_nget( via_specs_arr, typeof( "arr" ) ) ), TYPEOF_bcore_array_s );
     sz_t arr_size = 100000;
 
     for( sz_t i = 0; i < arr_size; i++ ) bcore_array_push( arr, via_specs );
     for( sz_t i = 0; i < arr_size; i++ ) bcore_via_x_nset_sz( bcore_array_get( arr, i ), typeof( "size" ), i );
 
-    sr_s via_specs_arr2 = bcore_life_s_push_sr( l, bcore_inst_typed_create_sr( typeof( "via_specs_arr" ) ) );
+    sr_s via_specs_arr2 = bcore_life_s_push_sr( l, bcore_inst_t_create_sr( typeof( "via_specs_arr" ) ) );
 
     bcore_via_x_nset( via_specs_arr2, typeof( "arr" ), bcore_via_x_nget( via_specs_arr, typeof( "arr" ) ) );
 

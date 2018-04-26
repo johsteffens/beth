@@ -148,9 +148,9 @@ static vd_t selftest( void )
 
         bmath_cf3_s z;
 
-        complex_vec_s* vec1 = bcore_life_s_push_aware( l, bcore_inst_typed_create( TYPEOF_complex_vec_s ) );
-        complex_vec_s* vec2 = bcore_life_s_push_aware( l, bcore_inst_typed_create( TYPEOF_complex_vec_s ) );
-        complex_vec_s* vec3 = bcore_life_s_push_aware( l, bcore_inst_typed_create( TYPEOF_complex_vec_s ) );
+        complex_vec_s* vec1 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
+        complex_vec_s* vec2 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
+        complex_vec_s* vec3 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
         bcore_array_aware_set_size( vec1, size );
         bcore_array_aware_set_size( vec2, size );
         bcore_array_aware_set_size( vec3, size );
@@ -193,8 +193,8 @@ static vd_t selftest( void )
     {
         sz_t size = 1 << 20;
 
-        complex_vec_s* vec1 = bcore_life_s_push_aware( l, bcore_inst_typed_create( TYPEOF_complex_vec_s ) );
-        complex_vec_s* vec2 = bcore_life_s_push_aware( l, bcore_inst_typed_create( TYPEOF_complex_vec_s ) );
+        complex_vec_s* vec1 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
+        complex_vec_s* vec2 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
         bcore_array_aware_set_size( vec1, size );
         bcore_array_aware_set_size( vec2, size );
 
