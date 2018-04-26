@@ -97,7 +97,7 @@ static void inst_s_down( bcore_inst_s* o );
 void inst_s_init( bcore_inst_s* o )
 {
     bcore_memzero( o, sizeof( bcore_inst_s ) );
-    o->p_type = typeof( "bcore_inst_s" );
+    o->header.p_type = typeof( "bcore_inst_s" );
 }
 
 void inst_s_down( bcore_inst_s* o )
@@ -181,7 +181,7 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
     sz_t first = 0;
     if( p->aware )
     {
-        *( aware_t* )o = p->o_type;
+        *( aware_t* )o = p->header.o_type;
         first = 1;
     }
     for( sz_t i = first; i < p->body->size; i++ )
@@ -222,7 +222,7 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
             // only perspectives are initialized
             case BCORE_CAPS_LINK_STATIC:
             {
-                if( self_item->flags.f_spect ) *( vc_t* )dst_obj = bcore_spect_get_typed( self_item->type, p->o_type );
+                if( self_item->flags.f_spect ) *( vc_t* )dst_obj = bcore_spect_get_typed( self_item->type, p->header.o_type );
             }
             break;
 
@@ -913,7 +913,7 @@ static void copy_typed_o( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
 
 static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
 {
-    tp_t dst_type = p->o_type;
+    tp_t dst_type = p->header.o_type;
     switch( dst_type )
     {
         case TYPEOF_s3_t:
@@ -1235,7 +1235,7 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
     assert( self != NULL );
 
     bcore_inst_s* o = inst_s_create();
-    o->o_type  = self->type;
+    o->header.o_type  = self->type;
     o->move_flat = true;
     o->align     = 0;
 
@@ -1433,15 +1433,14 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
     return o;
 }
 
-static bcore_self_s* inst_s_create_self( void )
+static bcore_self_s* bcore_inst_s_create_self( void )
 {
 //    sc_t def = "bcore_inst_s = spect { aware_t p_type; tp_t o_type; ... }";
 //    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_inst_s ) );
 
 //  We need to create this reflection manually because self_s_build_parse uses it.
     bcore_self_s* self = bcore_self_s_create_plain( entypeof( "bcore_inst_s" ), typeof( "spect" ), sizeof( bcore_inst_s ) );
-    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "p_type"  ) ) );
-    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_tp_t,    entypeof( "o_type"  ) ) );
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_bcore_spect_header_s, entypeof( "header"  ) ) );
     bcore_self_body_s_set_complete( self->body, false );
 
     bcore_self_s_push_ns_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                   "init"         );
@@ -1454,6 +1453,7 @@ static bcore_self_s* inst_s_create_self( void )
 
 /**********************************************************************************************************************/
 
+/*
 bcore_tp_fastmap_s bcore_inst_s_cache_g;
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t o_type )
 {
@@ -1463,149 +1463,13 @@ const bcore_inst_s* bcore_inst_s_get_typed( tp_t o_type )
     bcore_tp_fastmap_s_set( &bcore_inst_s_cache_g, o_type, ret );
     return ret;
 }
+*/
 
 /**********************************************************************************************************************/
-
-void bcore_inst_p_init( const bcore_inst_s* o, vd_t obj )
-{
-    o->init( o, obj );
-}
-
-void bcore_inst_t_init( tp_t type, vd_t obj )
-{
-    const bcore_inst_s* o = bcore_inst_s_get_typed( type );
-    o->init( o, obj );
-}
-
-void bcore_inst_p_down( const bcore_inst_s* o, vd_t obj )
-{
-    o->down( o, obj );
-}
-
-void bcore_inst_t_down( tp_t type, vd_t obj )
-{
-    const bcore_inst_s* o = bcore_inst_s_get_typed( type );
-    o->down( o, obj );
-}
-
-void bcore_inst_a_down( vd_t obj )
-{
-    const bcore_inst_s* o = bcore_inst_s_get_aware( obj  );
-    o->down( o, obj );
-}
-
-void bcore_inst_p_copy( const bcore_inst_s* o, vd_t dst, vc_t src )
-{
-    if( dst == src ) return;
-    o->copy( o, dst, src );
-}
-
-void bcore_inst_t_copy( tp_t type, vd_t dst, vc_t src )
-{
-    if( dst == src ) return;
-    const bcore_inst_s* o = bcore_inst_s_get_typed( type );
-    o->copy( o, dst, src );
-}
-
-void bcore_inst_a_copy( vd_t dst, vc_t src )
-{
-    if( dst == src ) return;
-    const bcore_inst_s* o = bcore_inst_s_get_aware( dst );
-    o->copy( o, dst, src );
-}
-
-void bcore_inst_p_copy_typed( const bcore_inst_s* o, vd_t dst, tp_t src_type, vc_t src )
-{
-    if( dst == src ) return;
-    if( o->o_type == src_type )
-    {
-        o->copy( o, dst, src );
-    }
-    else
-    {
-        o->copy_typed( o, dst, src_type, src );
-    }
-}
-
-void bcore_inst_t_copy_typed( tp_t type, vd_t dst, tp_t src_type, vc_t src )
-{
-    if( dst == src ) return;
-    const bcore_inst_s* o = bcore_inst_s_get_typed( type );
-    if( o->o_type == src_type )
-    {
-        o->copy( o, dst, src );
-    }
-    else
-    {
-        o->copy_typed( o, dst, src_type, src );
-    }
-}
-
-void bcore_inst_a_copy_typed( vd_t dst, tp_t src_type, vc_t src )
-{
-    if( dst == src ) return;
-    const bcore_inst_s* o = bcore_inst_s_get_aware( dst );
-    if( o->o_type == src_type )
-    {
-        o->copy( o, dst, src );
-    }
-    else
-    {
-        o->copy_typed( o, dst, src_type, src );
-    }
-}
-
-void bcore_inst_p_move( const bcore_inst_s* o, vd_t dst, vd_t src )
-{
-    if( dst == src ) return;
-    o->move( o, dst, src );
-}
-
-void bcore_inst_t_move( tp_t type, vd_t dst, vd_t src )
-{
-    if( dst == src ) return;
-    const bcore_inst_s* o = bcore_inst_s_get_typed( type );
-    o->move( o, dst, src );
-}
-
-void bcore_inst_a_move( vd_t dst, vd_t src )
-{
-    if( dst == src ) return;
-    const bcore_inst_s* o = bcore_inst_s_get_aware( src );
-    o->move( o, dst, src );
-}
-
-vd_t bcore_inst_p_create( const bcore_inst_s* o )
-{
-    return o->create( o );
-}
-
-vd_t bcore_inst_t_create( tp_t type )
-{
-    const bcore_inst_s* o = bcore_inst_s_get_typed( type );
-    return o->create( o );
-}
-
-vd_t bcore_inst_p_create_typed( const bcore_inst_s* o, tp_t otp, vc_t obj )
-{
-    return o->create_typed( o, otp, obj );
-}
-
-sr_s bcore_inst_t_create_sr( tp_t type )
-{
-    const bcore_inst_s* p = bcore_inst_s_get_typed( type );
-    return sr_psd( p, bcore_inst_p_create( p ) );
-}
 
 vd_t bcore_inst_t_create_typed( tp_t type, tp_t otp, vc_t obj )
 {
     return bcore_inst_p_create_typed( bcore_inst_s_get_typed( type ), otp, obj );
-}
-
-void bcore_inst_p_discard( const bcore_inst_s* o, vd_t obj )
-{
-    if( !obj ) return;
-    o->discard( o, obj );
 }
 
 void bcore_inst_t_discard( tp_t type, vd_t obj )
@@ -1622,30 +1486,10 @@ void bcore_inst_a_discard( vd_t obj )
     o->discard( o, obj );
 }
 
-vd_t bcore_inst_p_clone( const bcore_inst_s* o, vc_t obj )
-{
-    if( !obj ) return NULL;
-    return o->clone( o, obj );
-}
-
-vd_t bcore_inst_t_clone( tp_t type, vc_t obj )
-{
-    if( !obj ) return NULL;
-    const bcore_inst_s* o = bcore_inst_s_get_typed( type );
-    return o->clone( o, obj );
-}
-
 sr_s bcore_inst_t_clone_sr( tp_t type, vc_t obj )
 {
     const bcore_inst_s* p = bcore_inst_s_get_typed( type );
     return sr_psd( p, bcore_inst_p_clone( p, obj ) );
-}
-
-vd_t bcore_inst_a_clone( vc_t obj )
-{
-    if( !obj ) return NULL;
-    const bcore_inst_s* o = bcore_inst_s_get_aware( obj  );
-    return o->clone( o, obj );
 }
 
 void bcore_inst_p_check_sizeof( const bcore_inst_s* o, sz_t size )
@@ -1653,7 +1497,7 @@ void bcore_inst_p_check_sizeof( const bcore_inst_s* o, sz_t size )
     if( o->size != size )
     {
         ERR( "Size mismatch for object '%s': Instance has measured %zu but sizeof( object ) is %zu bytes.\n"
-             "This error might be caused due to a difference between object's c-definitions and its self reflection.\n" , nameof( o->o_type ), o->size, size );
+             "This error might be caused due to a difference between object's c-definitions and its self reflection.\n" , nameof( o->header.o_type ), o->size, size );
     }
 }
 
@@ -1669,27 +1513,12 @@ void bcore_inst_x_discard( sr_s o )
     if( o.o && sr_s_is_strong( &o ) ) bcore_inst_p_discard( ch_spect_p( o.p, TYPEOF_bcore_inst_s ), o.o );
 }
 
-vd_t bcore_inst_x_clone( sr_s o )
-{
-    if( !o.o ) return NULL;
-    o.p = ch_spect_p( o.p, TYPEOF_bcore_inst_s );
-    vd_t ret = bcore_inst_p_clone( o.p, o.o );
-    sr_down( o );
-    return ret;
-}
-
 sr_s bcore_inst_x_clone_sr( sr_s o )
 {
     if( !o.o ) return sr_null();
     sr_s ret = sr_psd( o.p, bcore_inst_p_clone( ch_spect_p( o.p, TYPEOF_bcore_inst_s ), o.o ) );
     sr_down( o );
     return ret;
-}
-
-vd_t bcore_inst_r_clone( const sr_s* o )
-{
-    if( !o->o ) return NULL;
-    return bcore_inst_p_clone( ch_spect_p( o->p, TYPEOF_bcore_inst_s ), o->o );
 }
 
 sr_s bcore_inst_r_clone_sr( const sr_s* o )
@@ -1727,9 +1556,9 @@ static st_s* spect_inst_selftest( void )
     o1->string_arr.size = 10;
     for( sz_t i = 0; i < o1->string_arr.size; i++ ) o1->string_arr.data[ i ] = st_s_createf( "String number %04i", i );
     test_object2_s* o2 = bcore_inst_t_create( typeof( "test_object2_s" ) );
-    o2->o1 = bcore_inst_a_clone( o1 );
+    o2->o1 = bcore_inst_a_clone( (bcore_inst*)o1 );
 
-    test_object2_s* o3 = bcore_inst_a_clone( o2 );
+    test_object2_s* o3 = bcore_inst_a_clone( (bcore_inst*)o2 );
 
     ASSERT( bcore_strcmp( nameof( o3->_ ), "test_object2_s" ) == 0 );
     ASSERT( o3->o1->val1 == 1234 );
@@ -1762,8 +1591,8 @@ static st_s* spect_inst_selftest( void )
         ASSERT( st_s_equal_sc( do1->str, "the") );
         ASSERT( st_s_equal_sc( so1->str, "quick") );
 
-        deep_object_s*    do2 = bcore_inst_a_clone( do1 );
-        shallow_object_s* so2 = bcore_inst_a_clone( so1 );
+        deep_object_s*    do2 = bcore_inst_a_clone( (bcore_inst*)do1 );
+        shallow_object_s* so2 = bcore_inst_a_clone( (bcore_inst*)so1 );
 
         do2->str = st_s_replace_sc_sc( do2->str, "the", "brown" );
         so2->str = st_s_replace_sc_sc( so2->str, "quick", "fox" );
@@ -1799,7 +1628,7 @@ static st_s* spect_inst_selftest( void )
 
         for( sz_t i = 0; i < 10; i++ ) st_s_copy_fa( &o1->str_arr[ i ], "#<sz_t>", i );
 
-        bcore_inst_t_copy( typeof( "arr_object_s" ), o2, o1 );
+        bcore_inst_t_copy( typeof( "arr_object_s" ), (bcore_inst*)o2, o1 );
 
         for( sz_t i = 0; i < 10; i++ )
         {
@@ -1818,6 +1647,7 @@ static st_s* spect_inst_selftest( void )
 /**********************************************************************************************************************/
 // signal
 
+BCORE_DEFINE_SPECT_CACHE( bcore_inst_s );
 vd_t bcore_spect_inst_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_spect_inst" ) ) )
@@ -1825,7 +1655,7 @@ vd_t bcore_spect_inst_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             inst_s_define_trait();
-            bcore_flect_define_creator( typeof( "bcore_inst_s"  ), inst_s_create_self  );
+            bcore_flect_define_creator( typeof( "bcore_inst_s" ), bcore_inst_s_create_self );
             bcore_spect_setup_cache( &bcore_inst_s_cache_g );
         }
         break;

@@ -45,13 +45,14 @@ typedef struct
 
 typedef struct bcore_inst_s bcore_inst_s;
 typedef struct bcore_life_s bcore_life_s;
-const bcore_inst_s* bcore_inst_s_get_typed( tp_t type );
+
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
 
-vd_t bcore_inst_t_create( tp_t type );
-vd_t bcore_inst_p_create( const bcore_inst_s* p );
+const bcore_inst_s* bcore_inst_s_get_typed_wrap( tp_t type );
+vd_t bcore_inst_t_create_wrap( tp_t type );
+vd_t bcore_inst_p_create_wrap( const bcore_inst_s* p );
 
-void bcore_inst_x_discard( sr_s o );
+void bcore_inst_x_discard_wrap( sr_s o );
 vc_t ch_spect_p( vc_t p, tp_t spect_type );
 vd_t bcore_fork( vd_t ptr );
 
@@ -64,12 +65,12 @@ vd_t bcore_fork( vd_t ptr );
 static inline sr_s sr_null(                                             ) { return ( sr_s ){ .o = NULL, .p = NULL, .f = 0                                }; }
 static inline sr_s sr_pocs( vc_t p, vd_t o, bl_t const_f, bl_t strong_f ) { return ( sr_s ){ .o = o, .p = p, .f = ( const_f * CONST_f ) | ( strong_f * STRONG_f ) }; }
 
-static inline sr_s sr_twc( tp_t t, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = CONST_f  }; }
-static inline sr_s sr_twd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = 0        }; }
-static inline sr_s sr_tsd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed( t )         : NULL, .f = STRONG_f }; }
-static inline sr_s sr_awc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = CONST_f  }; }
-static inline sr_s sr_awd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = 0        }; }
-static inline sr_s sr_asd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed( *(tp_t*)o ) : NULL, .f = STRONG_f }; }
+static inline sr_s sr_twc( tp_t t, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = CONST_f  }; }
+static inline sr_s sr_twd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = 0        }; }
+static inline sr_s sr_tsd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = STRONG_f }; }
+static inline sr_s sr_awc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = CONST_f  }; }
+static inline sr_s sr_awd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = 0        }; }
+static inline sr_s sr_asd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = STRONG_f }; }
 static inline sr_s sr_qwc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o                                     , .f = CONST_f  }; }
 static inline sr_s sr_qwd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o                                     , .f = 0        }; }
 static inline sr_s sr_qsd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o                                     , .f = STRONG_f }; }
@@ -88,13 +89,13 @@ static inline sr_s sr_fork( sr_s o ) { return ( sr_s ) { .o = ( o.f & STRONG_f )
 // deep clone
 sr_s sr_clone( sr_s o );
 
-static inline void sr_down( sr_s o ) { if( o.f & STRONG_f ) bcore_inst_x_discard( o ); }  // explicit termination
+static inline void sr_down( sr_s o ) { if( o.f & STRONG_f ) bcore_inst_x_discard_wrap( o ); }  // explicit termination
 
 /// creates a new instance
-static inline sr_s sr_create( tp_t t ) { return sr_tsd( t, bcore_inst_t_create( t ) ); } // sames as sr_t_create
+static inline sr_s sr_create( tp_t t ) { return sr_tsd( t, bcore_inst_t_create_wrap( t ) ); } // sames as sr_t_create
 
 static inline
-sr_s sr_t_create( tp_t t ) { return sr_tsd( t, bcore_inst_t_create( t ) ); }
+sr_s sr_t_create( tp_t t ) { return sr_tsd( t, bcore_inst_t_create_wrap( t ) ); }
 sr_s sr_p_create( vc_t p );
 
 /// creates a strong reference of a typed object (by cloning the object)
@@ -176,13 +177,6 @@ static inline sz_t sr_s_references( const sr_s* o ) { return o->o ? bcore_refere
  *  The original object is always referenced (never copied).
  */
 static inline sr_s sr_s_fork( sr_s* o ) { return ( sr_s ) { .o = bcore_fork( o->o ), .p = o->p, .f = o->f | STRONG_f }; }
-
-/**********************************************************************************************************************/
-// features
-
-/// element access
-typedef sr_s (*bcore_fp_get )( vc_t o );
-typedef void (*bcore_fp_set )( vd_t o, sr_s val );
 
 /**********************************************************************************************************************/
 

@@ -24,12 +24,12 @@ void bclos_frame_s_init( bclos_frame_s* o )
 
 void bclos_frame_s_down( bclos_frame_s* o )
 {
-    bcore_inst_t_down( TYPEOF_bclos_frame_s, o );
+    bcore_inst_t_down( TYPEOF_bclos_frame_s, ( bcore_inst* )o );
 }
 
 void bclos_frame_s_copy( bclos_frame_s* o, const bclos_frame_s* src )
 {
-    bcore_inst_t_copy( TYPEOF_bclos_frame_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bclos_frame_s, (bcore_inst*)o, src );
 }
 
 bclos_frame_s* bclos_frame_s_create()
@@ -39,12 +39,12 @@ bclos_frame_s* bclos_frame_s_create()
 
 bclos_frame_s* bclos_frame_s_clone( const bclos_frame_s* o )
 {
-    return bcore_inst_t_clone( TYPEOF_bclos_frame_s, o );
+    return bcore_inst_t_clone( TYPEOF_bclos_frame_s, (bcore_inst*)o );
 }
 
 void bclos_frame_s_discard( bclos_frame_s* o )
 {
-    bcore_inst_t_discard( TYPEOF_bclos_frame_s, o );
+    bcore_inst_t_discard( TYPEOF_bclos_frame_s, (bcore_inst*)o );
 }
 
 sr_s* bclos_frame_s_get( const bclos_frame_s* o, tp_t name )

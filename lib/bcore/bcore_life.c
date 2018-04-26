@@ -107,7 +107,7 @@ sr_s bcore_life_s_push_sr( bcore_life_s* o, sr_s object )
 vd_t bcore_life_s_push_aware( bcore_life_s* o, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );
-    item->discard = bcore_inst_a_discard;
+    item->discard = ( bcore_fp_discard )bcore_inst_a_discard;
     item->object  = object;
     return object;
 }

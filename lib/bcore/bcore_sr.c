@@ -22,6 +22,26 @@
 /**********************************************************************************************************************/
 // embedded usage
 
+vd_t bcore_inst_p_create_wrap( const bcore_inst_s* p )
+{
+    return bcore_inst_p_create( p );
+}
+
+vd_t bcore_inst_t_create_wrap( tp_t type )
+{
+    return bcore_inst_t_create( type );
+}
+
+const bcore_inst_s* bcore_inst_s_get_typed_wrap( tp_t type )
+{
+    return bcore_inst_s_get_typed( type );
+}
+
+void bcore_inst_x_discard_wrap( sr_s o )
+{
+    bcore_inst_x_discard( o );
+}
+
 sr_s sr_clone( sr_s o )
 {
     if( !o.o ) return sr_null();

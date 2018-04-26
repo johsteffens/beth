@@ -2320,7 +2320,7 @@ static st_s* hmap_tpto_selftest( void )
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set
-            bcore_hmap_tpto_s_set_d( map, kv.key, bcore_inst_p_clone( val_p, &kv.val ) );
+            bcore_hmap_tpto_s_set_d( map, kv.key, bcore_inst_p_clone( val_p, (bcore_inst*)&kv.val ) );
 
             // retrieve
             rval1 = bcore_xsg_u2( rval1 );

@@ -40,7 +40,7 @@ void bmath_group_default_sub( const bmath_group_s* p, const bmath_group* o, cons
 
 void bmath_group_default_cpy( const bmath_group_s* p, const bmath_group* o, bmath_group* res )
 {
-    bcore_inst_p_copy( p->spect_inst, res, o );
+    bcore_inst_p_copy( p->spect_inst, (bcore_inst*)res, o );
 }
 
 /**********************************************************************************************************************/
@@ -72,7 +72,7 @@ void bmath_ring_default_sub( const bmath_ring_s* p, const bmath_ring* o, const b
 
 void bmath_ring_default_cpy( const bmath_ring_s* p, const bmath_ring* o, bmath_ring* res )
 {
-    bcore_inst_p_copy( p->spect_inst, res, o );
+    bcore_inst_p_copy( p->spect_inst, (bcore_inst*)res, o );
 }
 
 void bmath_ring_default_div( const bmath_ring_s* p, const bmath_ring* o, const bmath_ring* op, bmath_ring* res )

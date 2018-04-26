@@ -2351,7 +2351,7 @@ static st_s* tbman_s_rctest( void )
     myclass* obj_arr = bcore_tbman_malloc( sizeof( myclass ) * arr_size );
     for( sz_t i = 0; i < arr_size; i++ )
     {
-        bcore_inst_t_init( t_myclass, &obj_arr[ i ] );
+        bcore_inst_t_init( t_myclass, (bcore_inst*)&obj_arr[ i ] );
         st_s_pushf( &obj_arr[ i ].name1, "Hi!" );
         obj_arr[ i ].name2 = st_s_createf( "Ho!" );
     }

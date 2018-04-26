@@ -508,7 +508,7 @@ void bcore_array_spect_set_size( const bcore_array_s* p, vd_t o, sz_t size )
 static sr_s get_dyn_solid_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
     const bcore_array_dyn_solid_static_s* arr = obj_vc( p, o );
-    return ( index < arr->size ) ? sr_twd( p->item_p->o_type, ( u0_t* )arr->data + p->item_p->size * index ) : sr_null();
+    return ( index < arr->size ) ? sr_twd( p->item_p->header.o_type, ( u0_t* )arr->data + p->item_p->size * index ) : sr_null();
 }
 
 static sr_s get_dyn_solid_typed( const bcore_array_s* p, vc_t o, sz_t index )
@@ -527,7 +527,7 @@ static sr_s get_dyn_solid_typed( const bcore_array_s* p, vc_t o, sz_t index )
 static sr_s get_dyn_link_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
     const bcore_array_dyn_link_static_s* arr = obj_vc( p, o );
-    return ( index < arr->size ) ? sr_twd( p->item_p->o_type, arr->data[ index ] ) : sr_null();
+    return ( index < arr->size ) ? sr_twd( p->item_p->header.o_type, arr->data[ index ] ) : sr_null();
 }
 
 static sr_s get_dyn_link_typed( const bcore_array_s* p, vc_t o, sz_t index )
@@ -556,13 +556,13 @@ static sr_s get_dyn_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
 
 static sr_s get_fix_solid_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
-    return ( index < p->size_fix ) ? sr_twd( p->item_p->o_type, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
+    return ( index < p->size_fix ) ? sr_twd( p->item_p->header.o_type, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
 }
 
 static sr_s get_fix_link_static( const bcore_array_s* p, vc_t o, sz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
-    return ( index < p->size_fix ) ? sr_twd( p->item_p->o_type, arr[ index ] ) : sr_null();
+    return ( index < p->size_fix ) ? sr_twd( p->item_p->header.o_type, arr[ index ] ) : sr_null();
 }
 
 static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
@@ -586,7 +586,7 @@ static void set_dyn_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr
     vd_t dst = ( u0_t* )arr->data + inst_p->size * index;
     if( src.o )
     {
-        if( sr_s_type( &src ) == inst_p->o_type )
+        if( sr_s_type( &src ) == inst_p->header.o_type )
         {
             bcore_inst_p_copy( inst_p, dst, src.o );
         }
@@ -631,7 +631,7 @@ static void set_dyn_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_
     *dst = NULL;
     if( src.o )
     {
-        if( sr_s_type( &src ) == inst_p->o_type )
+        if( sr_s_type( &src ) == inst_p->header.o_type )
         {
            *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_p_clone( inst_p, src.o );
            src = sr_cw( src );
@@ -700,7 +700,7 @@ static void set_fix_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr
     vd_t dst = ( u0_t* )obj_vd( p, o ) + inst_p->size * index;
     if( src.o )
     {
-        if( sr_s_type( &src ) == inst_p->o_type )
+        if( sr_s_type( &src ) == inst_p->header.o_type )
         {
             bcore_inst_p_copy( inst_p, dst, src.o );
         }
@@ -722,7 +722,7 @@ static void set_fix_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_
     *dst = NULL;
     if( src.o )
     {
-        if( sr_s_type( &src ) == inst_p->o_type )
+        if( sr_s_type( &src ) == inst_p->header.o_type )
         {
            *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_p_clone( inst_p, src.o );
            src = sr_cw( src );
@@ -788,7 +788,7 @@ void bcore_array_spect_set_gtype( const bcore_array_s* p, vd_t o, tp_t type )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
         {
-            if( p->item_p->o_type == type ) break;
+            if( p->item_p->header.o_type == type ) break;
             ERR( "cannot change type on static-array" );
         }
         break;
@@ -804,7 +804,7 @@ void bcore_array_spect_set_gtype( const bcore_array_s* p, vd_t o, tp_t type )
 
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
         {
-            if( p->item_p->o_type == type ) break;
+            if( p->item_p->header.o_type == type ) break;
             ERR( "cannot change type on static-link-array" );
         }
         break;
@@ -1166,10 +1166,10 @@ tp_t bcore_array_spect_get_static_type( const bcore_array_s* p )
 {
     switch( p->type_caps )
     {
-        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return p->item_p->o_type;
-        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return p->item_p->o_type;
-        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->o_type;
-        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->o_type;
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return p->item_p->header.o_type;
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return p->item_p->header.o_type;
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->header.o_type;
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->header.o_type;
         default: break;
     }
     return 0;
@@ -1179,12 +1179,12 @@ tp_t bcore_array_spect_get_mono_type( const bcore_array_s* p, vc_t o )
 {
     switch( p->type_caps )
     {
-        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return p->item_p->o_type;
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return p->item_p->header.o_type;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return ( ( const bcore_array_dyn_solid_typed_s* )obj_vc( p, o ) )->type;
-        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return p->item_p->o_type;
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return p->item_p->header.o_type;
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return ( ( const bcore_array_dyn_link_typed_s*  )obj_vc( p, o ) )->type;
-        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->o_type;
-        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->o_type;
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->header.o_type;
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->header.o_type;
         default: break;
     }
     return 0;
@@ -1194,13 +1194,13 @@ tp_t bcore_array_spect_get_type( const bcore_array_s* p, vc_t o, sz_t index )
 {
     switch( p->type_caps )
     {
-        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return p->item_p->o_type;
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return p->item_p->header.o_type;
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return ( ( const bcore_array_dyn_solid_typed_s* )obj_vc( p, o ) )->type;
-        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return p->item_p->o_type;
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return p->item_p->header.o_type;
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return ( ( const bcore_array_dyn_link_typed_s*  )obj_vc( p, o ) )->type;
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   { sr_s sr = p->get( p, o, index ); tp_t t = sr_s_type( &sr ); sr_down( sr ); return t; }
-        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->o_type;
-        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->o_type;
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return p->item_p->header.o_type;
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return p->item_p->header.o_type;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   { sr_s sr = p->get( p, o, index ); tp_t t = sr_s_type( &sr ); sr_down( sr ); return t; }
         default: break;
     }

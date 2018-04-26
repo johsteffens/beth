@@ -52,7 +52,7 @@ static bmath_matrix_s* bmath_matrix_s_create_from_self( const bcore_self_s* self
 {
     bmath_matrix_s* o = bcore_spect_create_from_self( bcore_flect_get_self( typeof( "bmath_matrix_s" ) ), self );
     if( !o->spect_array_matrix->item_p ) ERR_fa( "Cannot determine item type in object '#<sc_t>'", ifnameof( self->type ) );
-    o->spect_ring_scalar = bmath_ring_s_get_typed( o->spect_array_matrix->item_p->o_type );
+    o->spect_ring_scalar = bmath_ring_s_get_typed( o->spect_array_matrix->item_p->header.o_type );
     return o;
 }
 

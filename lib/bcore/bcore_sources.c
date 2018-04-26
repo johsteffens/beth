@@ -37,7 +37,7 @@ static void chain_init_a( bcore_nucleus_s* nc )
 
 void bcore_source_chain_s_init( bcore_source_chain_s* o )
 {
-    bcore_inst_t_init( TYPEOF_bcore_source_chain_s, o );
+    bcore_inst_t_init( TYPEOF_bcore_source_chain_s, (bcore_inst*)o );
 }
 
 static void chain_down_a( bcore_nucleus_s* nc )
@@ -47,7 +47,7 @@ static void chain_down_a( bcore_nucleus_s* nc )
 
 void bcore_source_chain_s_down( bcore_source_chain_s* o )
 {
-    bcore_inst_t_down( TYPEOF_bcore_source_chain_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_source_chain_s, ( bcore_inst* )o );
 }
 
 static void chain_copy_a( bcore_nucleus_s* nc )
@@ -59,12 +59,12 @@ static void chain_copy_a( bcore_nucleus_s* nc )
 
 void bcore_source_chain_s_copy( bcore_source_chain_s* o, const bcore_source_chain_s* src )
 {
-    bcore_inst_t_copy( TYPEOF_bcore_source_chain_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_source_chain_s, (bcore_inst*)o, src );
 }
 
 void bcore_source_chain_s_discard( bcore_source_chain_s* o )
 {
-    bcore_inst_t_discard( TYPEOF_bcore_source_chain_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_source_chain_s, (bcore_inst*)o );
 }
 
 bcore_source_chain_s* bcore_source_chain_s_create()
@@ -74,7 +74,7 @@ bcore_source_chain_s* bcore_source_chain_s_create()
 
 bcore_source_chain_s* bcore_source_chain_s_clone( const bcore_source_chain_s* o )
 {
-    return bcore_inst_t_clone( TYPEOF_bcore_source_chain_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_source_chain_s, (bcore_inst*)o );
 }
 
 static void chain_interpret_body_a( vd_t nc )
@@ -244,17 +244,17 @@ void bcore_source_buffer_s_init( bcore_source_buffer_s* o )
 
 void bcore_source_buffer_s_down( bcore_source_buffer_s* o )
 {
-    bcore_inst_t_down( TYPEOF_bcore_source_buffer_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_source_buffer_s, ( bcore_inst* )o );
 }
 
 void bcore_source_buffer_s_discard( bcore_source_buffer_s* o )
 {
-    bcore_inst_t_discard( TYPEOF_bcore_source_buffer_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_source_buffer_s, (bcore_inst*)o );
 }
 
 void bcore_source_buffer_s_copy( bcore_source_buffer_s* o, const bcore_source_buffer_s* src )
 {
-    bcore_inst_t_copy( TYPEOF_bcore_source_buffer_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_source_buffer_s, (bcore_inst*)o, src );
 }
 
 bcore_source_buffer_s* bcore_source_buffer_s_create()
@@ -264,7 +264,7 @@ bcore_source_buffer_s* bcore_source_buffer_s_create()
 
 bcore_source_buffer_s* bcore_source_buffer_s_clone( const bcore_source_buffer_s* o )
 {
-    return bcore_inst_t_clone( TYPEOF_bcore_source_buffer_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_source_buffer_s, (bcore_inst*)o );
 }
 
 static sz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, sz_t size )
@@ -408,17 +408,17 @@ void bcore_source_string_s_init( bcore_source_string_s* o )
 
 void bcore_source_string_s_down( bcore_source_string_s* o )
 {
-    bcore_inst_t_down( TYPEOF_bcore_source_string_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_source_string_s, ( bcore_inst* )o );
 }
 
 void bcore_source_string_s_discard( bcore_source_string_s* o )
 {
-    bcore_inst_t_discard( TYPEOF_bcore_source_string_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_source_string_s, (bcore_inst*)o );
 }
 
 void bcore_source_string_s_copy( bcore_source_string_s* o, const bcore_source_string_s* src )
 {
-    bcore_inst_t_copy( TYPEOF_bcore_source_string_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_source_string_s, (bcore_inst*)o, src );
 }
 
 bcore_source_string_s* bcore_source_string_s_create()
@@ -428,7 +428,7 @@ bcore_source_string_s* bcore_source_string_s_create()
 
 bcore_source_string_s* bcore_source_string_s_clone( const bcore_source_string_s* o )
 {
-    return bcore_inst_t_clone( TYPEOF_bcore_source_string_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_source_string_s, (bcore_inst*)o );
 }
 
 bcore_source_string_s* bcore_source_string_s_create_from_string( const st_s* string )
@@ -623,7 +623,7 @@ static void file_init_a( bcore_nucleus_s* nc )
 
 void bcore_source_file_s_init( bcore_source_file_s* o )
 {
-    bcore_inst_t_init( TYPEOF_bcore_source_file_s, o );
+    bcore_inst_t_init( TYPEOF_bcore_source_file_s, (bcore_inst*)o );
 }
 
 static void file_down_a( bcore_nucleus_s* nc )
@@ -635,7 +635,7 @@ static void file_down_a( bcore_nucleus_s* nc )
 
 void bcore_source_file_s_down( bcore_source_file_s* o )
 {
-    bcore_inst_t_down( TYPEOF_bcore_source_file_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_source_file_s, ( bcore_inst* )o );
 }
 
 static void file_copy_a( bcore_nucleus_s* nc )
@@ -647,12 +647,12 @@ static void file_copy_a( bcore_nucleus_s* nc )
 
 void bcore_source_file_s_copy( bcore_source_file_s* o, const bcore_source_file_s* src )
 {
-    bcore_inst_t_copy( TYPEOF_bcore_source_file_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_source_file_s, (bcore_inst*)o, src );
 }
 
 void bcore_source_file_s_discard( bcore_source_file_s* o )
 {
-    bcore_inst_t_discard( TYPEOF_bcore_source_file_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_source_file_s, (bcore_inst*)o );
 }
 
 bcore_source_file_s* bcore_source_file_s_create()
@@ -674,7 +674,7 @@ sc_t bcore_source_file_s_get_name( const bcore_source_file_s* o )
 
 bcore_source_file_s* bcore_source_file_s_clone( const bcore_source_file_s* o )
 {
-    return bcore_inst_t_clone( TYPEOF_bcore_source_file_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_source_file_s, (bcore_inst*)o );
 }
 
 void bcore_source_file_s_open( bcore_source_file_s* o )
@@ -886,7 +886,7 @@ static st_s* sources_selftest( void )
     // create object from file
     {
         bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_open_file( "test/test01.txt" ) );
-        sr_s chain_clone = sr_awd( bcore_life_s_push_aware( l, bcore_inst_a_clone( chain ) ) );
+        sr_s chain_clone = sr_awd( bcore_life_s_push_aware( l, bcore_inst_a_clone( (bcore_inst*)chain ) ) );
         sr_s sr = bcore_interpret_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain_clone );
         sr = bcore_life_s_push_sr( l, sr );
         if( bcore_compare_sr( sr, arr ) != 0 ) ERR( "%s", bcore_diff_sr( sr, arr )->sc );

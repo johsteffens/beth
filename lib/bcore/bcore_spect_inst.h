@@ -68,10 +68,10 @@ typedef struct bcore_inst_o
     vd_t o;
 } bcore_inst_o;
 
-typedef struct bcore_inst_s
+typedef struct bcore_inst bcore_inst;
+BCORE_DECLARE_SPECT( bcore_inst_s )
 {
-    aware_t p_type; // type of inst_p
-    tp_t    o_type; // type of object
+    bcore_spect_header_s header;
 
     bcore_inst_body_s* body;
 
@@ -105,7 +105,7 @@ typedef struct bcore_inst_s
     vd_t ( *create_typed )( const bcore_inst_s* p, tp_t t, vc_t src );
     void ( *discard      )( const bcore_inst_s* p, vd_t o );
     vd_t ( *clone        )( const bcore_inst_s* p, vc_t o );
-} bcore_inst_s;
+};
 
 void bcore_inst_s_discard( bcore_inst_s* o );
 
@@ -113,48 +113,50 @@ sz_t bcore_inst_s_get_items_size( const bcore_inst_s* o );
 const bcore_inst_item_s* bcore_inst_s_get_item( const bcore_inst_s* o, sz_t index );
 const bcore_inst_item_s* bcore_inst_s_get_item_from_self_item( const bcore_inst_s* o, const bcore_self_item_s* item ); // returns NULL if not found
 
-const bcore_inst_s* bcore_inst_s_get_typed( tp_t o_type );
+static inline void bcore_inst_default_init(  const bcore_inst_s* p, bcore_inst* obj ) { p->init( p, obj ); }
+static inline void bcore_inst_default_down(  const bcore_inst_s* p, bcore_inst* obj ) { p->down( p, obj ); }
+static inline void bcore_inst_default_copy(  const bcore_inst_s* p, bcore_inst* dst, vc_t src ) { if( dst != src ) p->copy( p, dst, src ); }
+static inline void bcore_inst_default_move(  const bcore_inst_s* p, bcore_inst* dst, vd_t src ) { if( dst != src ) p->move( p, dst, src ); }
+static inline vd_t bcore_inst_default_clone( const bcore_inst_s* p, const bcore_inst* obj ) { return obj ? p->clone( p, obj ) : NULL; }
 
-static inline
-const bcore_inst_s* bcore_inst_s_get_aware( vc_t obj )
+static inline void bcore_inst_default_copy_typed( const bcore_inst_s* p, bcore_inst* dst, tp_t src_type, vc_t src )
 {
-    return bcore_inst_s_get_typed( *( const aware_t* )obj );
+    if( dst != src )
+    {
+        if( p->header.o_type == src_type )
+        {
+            p->copy( p, dst, src );
+        }
+        else
+        {
+            p->copy_typed( p, dst, src_type, src );
+        }
+    }
 }
 
-void bcore_inst_p_init(         const bcore_inst_s* o, vd_t obj );
-void bcore_inst_p_down(         const bcore_inst_s* o, vd_t obj );
-void bcore_inst_p_copy(         const bcore_inst_s* o, vd_t dst, vc_t src );
-void bcore_inst_p_copy_typed(   const bcore_inst_s* o, vd_t dst, tp_t src_type, vc_t src );
-void bcore_inst_p_move(         const bcore_inst_s* o, vd_t dst, vd_t src );
-vd_t bcore_inst_p_create(       const bcore_inst_s* o );
-vd_t bcore_inst_p_create_typed( const bcore_inst_s* o, tp_t otp, vc_t obj );
-void bcore_inst_p_discard(      const bcore_inst_s* o, vd_t obj );
-vd_t bcore_inst_p_clone(        const bcore_inst_s* o, vc_t obj );
+// functions below are exempted from generic framework for inst-specific reasons
+static inline void bcore_inst_p_discard(      const bcore_inst_s* p, vd_t obj )           { if( obj ) p->discard( p, obj ); }
+static inline vd_t bcore_inst_p_create_typed( const bcore_inst_s* p, tp_t otp, vc_t obj ) { return p->create_typed( p, otp, obj ); }
+static inline vd_t bcore_inst_p_create( const bcore_inst_s* p )    { return p->create( p ); }
+static inline vd_t bcore_inst_t_create( tp_t type )                { return bcore_inst_p_create( bcore_inst_s_get_typed( type ) ); }
+static inline sr_s bcore_inst_p_create_sr( const bcore_inst_s* p ) { return sr_psd( p, p->create( p ) ); }
+static inline sr_s bcore_inst_t_create_sr( tp_t type )             { return bcore_inst_p_create_sr( bcore_inst_s_get_typed( type ) ); }
 
-void bcore_inst_t_init(         tp_t type, vd_t obj );
-void bcore_inst_t_down(         tp_t type, vd_t obj );
-void bcore_inst_t_copy(         tp_t type, vd_t dst, vc_t src );
-void bcore_inst_t_copy_typed(   tp_t type, vd_t dst, tp_t src_type, vc_t src );
-vd_t bcore_inst_t_create(       tp_t type );
+BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_inst, init )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_inst, down )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_inst, copy, vc_t, src )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_inst, move, vd_t, src )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_inst, copy_typed, tp_t, src_type, vc_t, src )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_inst, clone, vd_t )
+
 vd_t bcore_inst_t_create_typed( tp_t type, tp_t otp, vc_t obj );
 sr_s bcore_inst_t_create_sr(    tp_t type );
-void bcore_inst_t_move(         tp_t type, vd_t dst, vd_t src );
 void bcore_inst_t_discard(      tp_t type, vd_t obj );
-vd_t bcore_inst_t_clone(        tp_t type, vc_t obj );
 sr_s bcore_inst_t_clone_sr(     tp_t type, vc_t obj );
-
-void bcore_inst_a_down(         vd_t obj );
-void bcore_inst_a_copy(         vd_t dst, vc_t src );
-void bcore_inst_a_copy_typed(   vd_t dst, tp_t src_type, vc_t src );
-void bcore_inst_a_move(         vd_t dst, vd_t src );
 void bcore_inst_a_discard(      vd_t obj );
-vd_t bcore_inst_a_clone(        vc_t obj );
+void bcore_inst_x_discard(      sr_s o ); // only discards when o is a strong reference; does nothing otherwise
+sr_s bcore_inst_x_clone_sr(     sr_s o ); // returns perspective of o
 
-void bcore_inst_x_discard(  sr_s o ); // only discards when o is a strong reference; does nothing otherwise
-vd_t bcore_inst_x_clone(    sr_s o );
-sr_s bcore_inst_x_clone_sr( sr_s o ); // returns perspective of o
-
-vd_t bcore_inst_r_clone(    const sr_s* o );
 sr_s bcore_inst_r_clone_sr( const sr_s* o ); // returns perspective of o
 
 /** This function checks the instance's size with c-style sizeof( object ).
@@ -164,12 +166,12 @@ sr_s bcore_inst_r_clone_sr( const sr_s* o ); // returns perspective of o
 void bcore_inst_p_check_sizeof( const bcore_inst_s* o, sz_t size );
 void bcore_inst_t_check_sizeof(             tp_t type, sz_t size );
 
-#define BCORE_DEFINE_FUNCTION_INIT_INST( name ) void name##_init( name* o ) { bcore_inst_t_init( TYPEOF_##name, o ); }
-#define BCORE_DEFINE_FUNCTION_DOWN_INST( name ) void name##_down( name* o ) { bcore_inst_t_down( TYPEOF_##name, o ); }
+#define BCORE_DEFINE_FUNCTION_INIT_INST( name ) void name##_init( name* o ) { bcore_inst_t_init( TYPEOF_##name, (bcore_inst*)o ); }
+#define BCORE_DEFINE_FUNCTION_DOWN_INST( name ) void name##_down( name* o ) { bcore_inst_t_down( TYPEOF_##name, (bcore_inst*)o ); }
 #define BCORE_DEFINE_FUNCTION_COPY_INST( name ) void name##_copy( name* o, const name* src ) \
 { \
     if( o == src ) return; \
-    bcore_inst_t_copy( TYPEOF_##name, o, src ); \
+    bcore_inst_t_copy( TYPEOF_##name, (bcore_inst*)o, src ); \
 }
 
 #define BCORE_DEFINE_FUNCTIONS_IDC_INST( name ) \
@@ -183,7 +185,7 @@ void bcore_inst_t_check_sizeof(             tp_t type, sz_t size );
 name* name##_clone( const name* o ) \
 { \
     if( !o ) return NULL; \
-    return bcore_inst_t_clone( TYPEOF_##name, o ); \
+    return bcore_inst_t_clone( TYPEOF_##name, (bcore_inst*)o ); \
 }
 
 #define BCORE_DEFINE_FUNCTIONS_CDC_INST( name ) \

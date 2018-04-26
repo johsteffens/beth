@@ -36,7 +36,7 @@ static void chain_init_a( bcore_nucleus_s* nc )
 
 void bcore_sink_chain_s_init( bcore_sink_chain_s* o )
 {
-    bcore_inst_t_init( TYPEOF_bcore_sink_chain_s, o );
+    bcore_inst_t_init( TYPEOF_bcore_sink_chain_s, (bcore_inst*)o );
 }
 
 static void chain_down_a( bcore_nucleus_s* nc )
@@ -48,7 +48,7 @@ static void chain_down_a( bcore_nucleus_s* nc )
 
 void bcore_sink_chain_s_down( bcore_sink_chain_s* o )
 {
-    bcore_inst_t_down( TYPEOF_bcore_sink_chain_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_sink_chain_s, ( bcore_inst* )o );
 }
 
 static void chain_copy_a( bcore_nucleus_s* nc )
@@ -60,12 +60,12 @@ static void chain_copy_a( bcore_nucleus_s* nc )
 
 void bcore_sink_chain_s_copy( bcore_sink_chain_s* o, const bcore_sink_chain_s* src )
 {
-    bcore_inst_t_copy( TYPEOF_bcore_sink_chain_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_sink_chain_s, (bcore_inst*)o, src );
 }
 
 void bcore_sink_chain_s_discard( bcore_sink_chain_s* o )
 {
-    bcore_inst_t_discard( TYPEOF_bcore_sink_chain_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_sink_chain_s, (bcore_inst*)o );
 }
 
 bcore_sink_chain_s* bcore_sink_chain_s_create()
@@ -75,7 +75,7 @@ bcore_sink_chain_s* bcore_sink_chain_s_create()
 
 bcore_sink_chain_s* bcore_sink_chain_s_clone( const bcore_sink_chain_s* o )
 {
-    return bcore_inst_t_clone( TYPEOF_bcore_sink_chain_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_sink_chain_s, (bcore_inst*)o );
 }
 
 static void chain_interpret_body_a( vd_t nc )
@@ -148,17 +148,17 @@ void bcore_sink_buffer_s_init( bcore_sink_buffer_s* o )
 
 void bcore_sink_buffer_s_down( bcore_sink_buffer_s* o )
 {
-    bcore_inst_t_down( TYPEOF_bcore_sink_buffer_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_sink_buffer_s, ( bcore_inst* )o );
 }
 
 void bcore_sink_buffer_s_discard( bcore_sink_buffer_s* o )
 {
-    bcore_inst_t_discard( TYPEOF_bcore_sink_buffer_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_sink_buffer_s, (bcore_inst*)o );
 }
 
 void bcore_sink_buffer_s_copy( bcore_sink_buffer_s* o, const bcore_sink_buffer_s* src )
 {
-    bcore_inst_t_copy( TYPEOF_bcore_sink_buffer_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_sink_buffer_s, (bcore_inst*)o, src );
 }
 
 bcore_sink_buffer_s* bcore_sink_buffer_s_create()
@@ -168,7 +168,7 @@ bcore_sink_buffer_s* bcore_sink_buffer_s_create()
 
 bcore_sink_buffer_s* bcore_sink_buffer_s_clone( const bcore_sink_buffer_s* o )
 {
-    return bcore_inst_t_clone( TYPEOF_bcore_sink_buffer_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_sink_buffer_s, (bcore_inst*)o );
 }
 
 void bcore_sink_buffer_s_flush( bcore_sink_buffer_s* o )
@@ -254,7 +254,7 @@ static void file_init_a( bcore_nucleus_s* nc )
 
 void bcore_sink_file_s_init( bcore_sink_file_s* o )
 {
-    bcore_inst_t_init( TYPEOF_bcore_sink_file_s, o );
+    bcore_inst_t_init( TYPEOF_bcore_sink_file_s, (bcore_inst*)o );
 }
 
 static void file_down_a( bcore_nucleus_s* nc )
@@ -266,7 +266,7 @@ static void file_down_a( bcore_nucleus_s* nc )
 
 void bcore_sink_file_s_down( bcore_sink_file_s* o )
 {
-    bcore_inst_t_down( TYPEOF_bcore_sink_file_s, o );
+    bcore_inst_t_down( TYPEOF_bcore_sink_file_s, ( bcore_inst* )o );
 }
 
 static void file_copy_a( bcore_nucleus_s* nc )
@@ -278,12 +278,12 @@ static void file_copy_a( bcore_nucleus_s* nc )
 
 void bcore_sink_file_s_copy( bcore_sink_file_s* o, const bcore_sink_file_s* src )
 {
-    bcore_inst_t_copy( TYPEOF_bcore_sink_file_s, o, src );
+    bcore_inst_t_copy( TYPEOF_bcore_sink_file_s, (bcore_inst*)o, src );
 }
 
 void bcore_sink_file_s_discard( bcore_sink_file_s* o )
 {
-    bcore_inst_t_discard( TYPEOF_bcore_sink_file_s, o );
+    bcore_inst_t_discard( TYPEOF_bcore_sink_file_s, (bcore_inst*)o );
 }
 
 bcore_sink_file_s* bcore_sink_file_s_create()
@@ -305,7 +305,7 @@ sc_t bcore_sink_file_s_get_name( const bcore_sink_file_s* o )
 
 bcore_sink_file_s* bcore_sink_file_s_clone( const bcore_sink_file_s* o )
 {
-    return bcore_inst_t_clone( TYPEOF_bcore_sink_file_s, o );
+    return bcore_inst_t_clone( TYPEOF_bcore_sink_file_s, (bcore_inst*)o );
 }
 
 void bcore_sink_file_s_open( bcore_sink_file_s* o )

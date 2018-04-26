@@ -333,7 +333,7 @@ void bcore_spect_define_trait( const bcore_self_s* p_self )
         }
     }
 
-    bcore_inst_a_discard( spect );
+    bcore_inst_a_discard( (bcore_inst*)spect );
 
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
