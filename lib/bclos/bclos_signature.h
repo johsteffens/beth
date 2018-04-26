@@ -17,7 +17,7 @@
 #define BCLOS_SIGNATURE_H
 
 #include "bcore_flect.h"
-#include "bcore_ref.h"
+#include "bcore_sr.h"
 
 typedef struct bclos_signature_arg_s
 {

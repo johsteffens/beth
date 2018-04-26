@@ -32,12 +32,11 @@
 #include "bcore_arr.h"
 #include "bcore_spect.h"
 
-typedef struct bcore_array_s bcore_array_s;
+typedef struct bcore_array bcore_array;
 
-typedef struct bcore_array_s
+BCORE_DECLARE_SPECT( bcore_array_s )
 {
-    aware_t p_type; // type of perspective
-    tp_t    o_type; // type of object
+    bcore_spect_header_s header;
 
     tp_t type_caps;
 
@@ -49,10 +48,7 @@ typedef struct bcore_array_s
     sr_s ( *get )( const bcore_array_s* p, vc_t o, sz_t index ); // returns indexed item; NULL reference if index is out of range or the linked item is NULL
     void ( *set )( const bcore_array_s* p, vd_t o, sz_t index, sr_s src ); // sets item at indexed position; if index is out of size, size is increased
 
-} bcore_array_s;
-
-BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_array_s )
-BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_array_s )
+};
 
 /**********************************************************************************************************************/
 // array type construction

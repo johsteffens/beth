@@ -24,16 +24,10 @@
 /**********************************************************************************************************************/
 // bcore_array_s
 
-static void array_s_down( bcore_array_s* o );
-
 static void array_s_init( bcore_array_s* o )
 {
     bcore_memzero( o, sizeof( bcore_array_s ) );
-    o->p_type = TYPEOF_bcore_array_s;
-}
-
-static void array_s_down( bcore_array_s* o )
-{
+    o->header.p_type = TYPEOF_bcore_array_s;
 }
 
 static bcore_array_s* array_s_create()
@@ -41,12 +35,6 @@ static bcore_array_s* array_s_create()
     bcore_array_s* o = bcore_alloc( NULL, sizeof( bcore_array_s ) );
     array_s_init( o );
     return o;
-}
-
-static void array_s_discard( bcore_array_s* o )
-{
-    if( !o ) return;
-    bcore_release_obj( ( fp_t )array_s_down, o );
 }
 
 static inline vd_t obj_vd( const bcore_array_s* p, vd_t o )
@@ -64,12 +52,6 @@ static const bcore_array_dyn_head_s* dyn_head_vc( const bcore_array_s* p, vc_t o
     return obj_vc( p, o );
 }
 
-/*
-static bcore_array_dyn_head_s* dyn_head_vd( const bcore_array_s* p, vd_t o )
-{
-    return obj_vd( p, o );
-}
-*/
 /**********************************************************************************************************************/
 
 static sz_t get_dyn_size( const bcore_array_s* p, vc_t o )
@@ -941,12 +923,12 @@ static void array_s_define_trait()
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
-static bcore_array_s* create_from_self( const bcore_self_s* self )
+static bcore_array_s* bcore_array_s_create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
     bcore_array_s* o = array_s_create();
-    o->p_type = bcore_name_enroll( "bcore_array_s" );
-    o->o_type = self->type;
+    o->header.p_type = bcore_name_enroll( "bcore_array_s" );
+    o->header.o_type = self->type;
 
     const bcore_inst_s* instance = bcore_inst_s_get_typed( self->type );
     if( !instance->body ) ERR( "'%s' has no body", ifnameof( self->type ) );
@@ -1045,11 +1027,7 @@ static bcore_self_s* array_s_create_self( void )
 {
     sc_t def = "bcore_array_s = spect { aware_t p_type; tp_t o_type; ... }";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_array_s ) );
-    bcore_self_s_push_ns_func( self, ( fp_t )array_s_init,             "bcore_fp_init",                    "init"         );
-    bcore_self_s_push_ns_func( self, ( fp_t )array_s_down,             "bcore_fp_down",                    "down"         );
-    bcore_self_s_push_ns_func( self, ( fp_t )array_s_create,           "bcore_fp_create",                  "create"       );
-    bcore_self_s_push_ns_func( self, ( fp_t )array_s_discard,          "bcore_fp_discard",                 "discard"      );
-    bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,         "bcore_spect_fp_create_from_self",  "create_from_self" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_array_s_create_from_self, "bcore_spect_fp_create_from_self",  "create_from_self" );
     return self;
 }
 

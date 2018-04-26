@@ -47,6 +47,7 @@ typedef struct bcore_inst_s bcore_inst_s;
 typedef struct bcore_life_s bcore_life_s;
 const bcore_inst_s* bcore_inst_s_get_typed( tp_t type );
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type );
+
 vd_t bcore_inst_t_create( tp_t type );
 vd_t bcore_inst_p_create( const bcore_inst_s* p );
 
@@ -175,6 +176,13 @@ static inline sz_t sr_s_references( const sr_s* o ) { return o->o ? bcore_refere
  *  The original object is always referenced (never copied).
  */
 static inline sr_s sr_s_fork( sr_s* o ) { return ( sr_s ) { .o = bcore_fork( o->o ), .p = o->p, .f = o->f | STRONG_f }; }
+
+/**********************************************************************************************************************/
+// features
+
+/// element access
+typedef sr_s (*bcore_fp_get )( vc_t o );
+typedef void (*bcore_fp_set )( vd_t o, sr_s val );
 
 /**********************************************************************************************************************/
 

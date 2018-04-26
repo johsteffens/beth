@@ -27,7 +27,7 @@
 #include "bcore_name.h"
 #include "bcore_name_manager.h"
 #include "bcore_function_manager.h"
-#include "bcore_ref.h"
+#include "bcore_sr.h"
 #include "bcore_sinks.h"
 #include "bcore_sources.h"
 #include "bcore_spect.h"

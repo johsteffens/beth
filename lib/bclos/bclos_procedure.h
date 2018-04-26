@@ -17,7 +17,7 @@
 #define BCLOS_PROCEDURE_H
 
 #include "bcore_flect.h"
-#include "bcore_ref.h"
+#include "bcore_sr.h"
 #include "bclos_frame.h"
 #include "bclos_arguments.h"
 #include "bclos_statement.h"

@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-#include "bcore_ref.h"
+#include "bcore_sr.h"
 #include "bcore_life.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"

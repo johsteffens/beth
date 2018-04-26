@@ -17,7 +17,7 @@
 #define BCLOS_MACHINE_H
 
 #include "bcore_flect.h"
-#include "bcore_ref.h"
+#include "bcore_sr.h"
 
 /// Virtual machine.
 

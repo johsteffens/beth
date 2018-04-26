@@ -17,7 +17,7 @@
 #include "bcore_signal.h"
 #include "bcore_spect_inst.h"
 #include "bcore_spect_array.h"
-#include "bcore_ref.h"
+#include "bcore_sr.h"
 #include "bcore_spect_compare.h"
 #include "bcore_signal.h"
 

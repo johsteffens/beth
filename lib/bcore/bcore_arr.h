@@ -19,7 +19,7 @@
 #include "bcore_flect.h"
 #include "bcore_features.h"
 #include "bcore_st.h"
-#include "bcore_ref.h"
+#include "bcore_sr.h"
 
 /** Collection of frequently used specific arrays compatible with bcore_array_s
  *  Standard functions are directly implemented.
