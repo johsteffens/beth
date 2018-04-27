@@ -151,9 +151,9 @@ static vd_t selftest( void )
         complex_vec_s* vec1 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
         complex_vec_s* vec2 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
         complex_vec_s* vec3 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
-        bcore_array_aware_set_size( vec1, size );
-        bcore_array_aware_set_size( vec2, size );
-        bcore_array_aware_set_size( vec3, size );
+        bcore_array_a_set_size( (bcore_array*)vec1, size );
+        bcore_array_a_set_size( (bcore_array*)vec2, size );
+        bcore_array_a_set_size( (bcore_array*)vec3, size );
 
         u2_t rval = 1234;
 
@@ -177,9 +177,9 @@ static vd_t selftest( void )
         ASSERT( bmath_cf3_mag( z ) < 1e-14 );
 
         /// vec2 = inverse FFT( vec1 )
-        bcore_array_aware_do( vec2, 0, -1, ( fp_t )bmath_cf3_s_self_cnj );
+        bcore_array_a_do( (bcore_array*)vec2, 0, -1, ( fp_t )bmath_cf3_s_self_cnj );
         bmath_fourier_fft_f3( vec2->data, vec2->data, size );
-        bcore_array_aware_do( vec2, 0, -1, ( fp_t )bmath_cf3_s_self_cnj );
+        bcore_array_a_do( (bcore_array*)vec2, 0, -1, ( fp_t )bmath_cf3_s_self_cnj );
         bmath_cf3_s f = bmath_cf3_init( 1.0 / size, 0 );
         bmath_vector_a_mul( ( const bmath_vector* )vec2, ( const bmath_ring* )&f, ( bmath_vector* )vec2 );
 
@@ -195,8 +195,8 @@ static vd_t selftest( void )
 
         complex_vec_s* vec1 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
         complex_vec_s* vec2 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
-        bcore_array_aware_set_size( vec1, size );
-        bcore_array_aware_set_size( vec2, size );
+        bcore_array_a_set_size( (bcore_array*)vec1, size );
+        bcore_array_a_set_size( (bcore_array*)vec2, size );
 
         u2_t rval = 1234;
 

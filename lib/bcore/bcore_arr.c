@@ -538,7 +538,7 @@ void bcore_arr_st_s_clear( bcore_arr_st_s* o )
 
 void bcore_arr_st_s_set_space( bcore_arr_st_s* o, sz_t space )
 {
-    bcore_array_aware_set_space( o, space );
+    bcore_array_a_set_space( (bcore_array*)o, space );
 }
 
 void bcore_arr_st_s_make_strong( bcore_arr_st_s* o )
@@ -911,17 +911,17 @@ void bcore_arr_sr_s_clear( bcore_arr_sr_s* o )
 
 void bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, sz_t space )
 {
-    bcore_array_aware_set_space( o, space );
+    bcore_array_a_set_space( (bcore_array*)o, space );
 }
 
 void bcore_arr_sr_s_set_size( bcore_arr_sr_s* o, sz_t size )
 {
-    bcore_array_aware_set_size( o, size );
+    bcore_array_a_set_size( (bcore_array*)o, size );
 }
 
 void bcore_arr_sr_s_make_strong( bcore_arr_sr_s* o )
 {
-    bcore_array_aware_make_strong( o );
+    bcore_array_a_make_strong( (bcore_array*)o );
 }
 
 sr_s* bcore_arr_sr_s_push_sr( bcore_arr_sr_s* o, sr_s v )
@@ -956,12 +956,12 @@ sr_s bcore_arr_sr_s_pop( bcore_arr_sr_s* o )
 
 void bcore_arr_sr_s_sort( bcore_arr_sr_s* o, s2_t order )
 {
-    bcore_array_aware_sort( o, 0, o->size, order );
+    bcore_array_a_sort( (bcore_array*)o, 0, o->size, order );
 }
 
 void bcore_arr_sr_s_reorder( bcore_arr_sr_s* o, const bcore_arr_sz_s* order )
 {
-    bcore_array_aware_reorder( o, order);
+    bcore_array_a_reorder( (bcore_array*)o, order);
 }
 
 /**********************************************************************************************************************/
@@ -999,10 +999,10 @@ st_s* bcore_arr_sz_selftest( void )
         for( sz_t i = 0; i < size; i++ )
         {
             rval = bcore_xsg_u2( rval );
-            bcore_array_spect_push( array_p, sz_arr2, sr_pwc( u2_t_p, &rval ) );
+            bcore_array_p_push( array_p, (bcore_array*)sz_arr2, sr_pwc( u2_t_p, &rval ) );
         }
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_spect_push ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_p_push ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     ASSERT( bcore_compare_aware( sz_arr1, sz_arr2 ) == 0 );
@@ -1016,9 +1016,9 @@ st_s* bcore_arr_sz_selftest( void )
 
     {
         clock_t time = clock();
-        bcore_array_aware_sort( sz_arr2, 0, -1, 1 );
+        bcore_array_a_sort( (bcore_array*)sz_arr2, 0, -1, 1 );
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_aware_sort ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_a_sort ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     bcore_arr_sz_s* permutation = bcore_arr_sz_s_create_random_permutation( bcore_xsg2_u2, 1, size );
@@ -1032,9 +1032,9 @@ st_s* bcore_arr_sz_selftest( void )
 
     {
         clock_t time = clock();
-        bcore_array_aware_reorder( sz_arr2, permutation );
+        bcore_array_a_reorder( (bcore_array*)sz_arr2, permutation );
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_aware_reorder .. %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_a_reorder .. %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     ASSERT( bcore_compare_aware( sz_arr1, sz_arr2 ) == 0 );
@@ -1078,10 +1078,10 @@ st_s* bcore_arr_st_selftest( void )
         for( sz_t i = 0; i < size; i++ )
         {
             rval = bcore_xsg_u2( rval );
-            bcore_array_aware_push( st_arr2, sr_asd( st_s_createf( "%u", rval ) ) );
+            bcore_array_a_push( (bcore_array*)st_arr2, sr_asd( st_s_createf( "%u", rval ) ) );
         }
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_aware_push ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_a_push ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
@@ -1093,9 +1093,9 @@ st_s* bcore_arr_st_selftest( void )
 
     {
         clock_t time = clock();
-        bcore_array_aware_sort( st_arr2, 0, -1, 1 );
+        bcore_array_a_sort( (bcore_array*)st_arr2, 0, -1, 1 );
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_aware_sort ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_a_sort ..... %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     bcore_arr_sz_s* permutation = bcore_arr_sz_s_create_random_permutation( bcore_xsg2_u2, 1, size );
@@ -1109,9 +1109,9 @@ st_s* bcore_arr_st_selftest( void )
 
     {
         clock_t time = clock();
-        bcore_array_aware_reorder( st_arr2, permutation );
+        bcore_array_a_reorder( (bcore_array*)st_arr2, permutation );
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_aware_reorder .. %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_pushf( log, "bcore_array_a_reorder .. %zuns\n", ( sz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     ASSERT( bcore_compare_aware( st_arr1, st_arr2 ) == 0 );

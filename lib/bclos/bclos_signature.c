@@ -49,7 +49,7 @@ BCORE_DEFINE_FUNCTION_CLONE(      bclos_signature_s )
 
 void bclos_signature_s_push( bclos_signature_s* o, bclos_signature_arg_s arg )
 {
-    if( o->size > o->space ) bcore_array_typed_make_strong( TYPEOF_bclos_signature_s, o );
+    if( o->size > o->space ) bcore_array_t_make_strong( TYPEOF_bclos_signature_s, (bcore_array*)o );
     if( o->size == o->space )
     {
         o->data = bcore_un_alloc

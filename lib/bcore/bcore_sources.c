@@ -88,7 +88,7 @@ static void chain_interpret_body_a( vd_t nc )
 void bcore_source_chain_s_push_d( bcore_source_chain_s* o, vd_t source )
 {
     const bcore_array_s* arr_p = bcore_array_s_get_typed( TYPEOF_bcore_source_chain_s );
-    bcore_array_spect_push( arr_p, o, sr_asd( source ) );
+    bcore_array_p_push( arr_p, (bcore_array*)o, sr_asd( source ) );
     if( o->size > 1 ) bcore_source_a_set_supplier( o->data[ o->size - 1 ], o->data[ o->size - 2 ] );
 }
 
@@ -874,7 +874,7 @@ static st_s* sources_selftest( void )
     bcore_flect_define_parse_sc( "chain_test_aware_arr = { aware_t _; st_s [] arr; }" );
     sr_s arr = bcore_life_s_push_sr( l, bcore_inst_t_create_sr( typeof( "chain_test_aware_arr" ) ) );
     arr = sr_cp( arr, TYPEOF_bcore_array_s );
-    for( sz_t i = 0; i < 20000; i++ ) bcore_array_push( arr, sr_asd( st_s_createf( "line of text %zu", i ) ) );
+    for( sz_t i = 0; i < 20000; i++ ) bcore_array_x_push( arr, sr_asd( st_s_createf( "line of text %zu", i ) ) );
 
     // write object to file
     {

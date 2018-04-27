@@ -324,7 +324,7 @@ static sr_s name_map_s_get_data( const bcore_name_map_s* o )
     sr_s data = sr_cp( sr_create( t_data ), TYPEOF_bcore_array_s );
     for( sz_t i = 0; i < o->size; i++ )
     {
-        if( o->data[ i ].key ) bcore_array_q_push( &data, sr_twc( t_node, &o->data[ i ] ) );
+        if( o->data[ i ].key ) bcore_array_r_push( &data, sr_twc( t_node, &o->data[ i ] ) );
     }
     return data;
 }
@@ -334,8 +334,8 @@ static void name_map_s_set_data( bcore_name_map_s* o, sr_s data )
     bcore_name_map_s_clear( o );
     assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ bcore_name_s []; }" ) );
     data = sr_cp( data, TYPEOF_bcore_array_s );
-    sz_t size = bcore_array_q_get_size( &data );
-    bcore_name_s* src = bcore_array_q_get_d_data( &data );
+    sz_t size = bcore_array_r_get_size( &data );
+    bcore_name_s* src = bcore_array_r_get_d_data( &data );
     for( sz_t i = 0; i < size; i++ )
     {
         bcore_name_map_s_set( o, src[ i ] );

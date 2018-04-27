@@ -302,7 +302,7 @@ static sr_s tp_sr_s_get_data( const bcore_hmap_tp_sr_s* o )
     sr_s sr = sr_cp( sr_create( t_data ), TYPEOF_bcore_array_s );
     for( sz_t i = 0; i < o->size; i++ )
     {
-        if( o->nodes[ i ].key ) bcore_array_q_push( &sr, sr_twc( t_node, &o->nodes[ i ] ) );
+        if( o->nodes[ i ].key ) bcore_array_r_push( &sr, sr_twc( t_node, &o->nodes[ i ] ) );
     }
     return sr;
 }
@@ -312,10 +312,10 @@ static void tp_sr_s_set_data( bcore_hmap_tp_sr_s* o, sr_s data )
     bcore_hmap_tp_sr_s_clear( o );
     assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ bcore_hnode_tp_sr_s []; }" ) );
     data = sr_cp( data, TYPEOF_bcore_array_s );
-    sz_t size = bcore_array_q_get_size( &data );
+    sz_t size = bcore_array_r_get_size( &data );
     if( sr_s_is_strong( &data ) )
     {
-        bcore_hnode_tp_sr_s* src = bcore_array_q_get_d_data( &data );
+        bcore_hnode_tp_sr_s* src = bcore_array_r_get_d_data( &data );
         for( sz_t i = 0; i < size; i++ )
         {
             bcore_hmap_tp_sr_s_set( o, src[ i ].key, src[ i ].val );
@@ -324,7 +324,7 @@ static void tp_sr_s_set_data( bcore_hmap_tp_sr_s* o, sr_s data )
     }
     else
     {
-        const bcore_hnode_tp_sr_s* src = bcore_array_q_get_c_data( &data );
+        const bcore_hnode_tp_sr_s* src = bcore_array_r_get_c_data( &data );
         for( sz_t i = 0; i < size; i++ )
         {
             bcore_hmap_tp_sr_s_set( o, src[ i ].key, sr_cw( src[ i ].val ) );

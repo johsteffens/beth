@@ -30,7 +30,7 @@ BCORE_DEFINE_CREATE_SELF( bclos_arguments_s, "bclos_arguments_s = bcore_inst { s
 
 void bclos_arguments_s_clear( bclos_arguments_s* o )
 {
-    bcore_array_typed_set_size( TYPEOF_bclos_arguments_s, o, 0 );
+    bcore_array_t_set_size( TYPEOF_bclos_arguments_s, (bcore_array*)o, 0 );
 }
 
 bclos_arguments_s* bclos_arguments_s_create_nv( sz_t n, va_list v_args )
@@ -54,7 +54,7 @@ bclos_arguments_s* bclos_arguments_s_create_na( sz_t n, ... )
 
 void bclos_arguments_s_push( bclos_arguments_s* o, sr_s sr )
 {
-    if( o->size > o->space ) bcore_array_typed_make_strong( TYPEOF_bclos_arguments_s, o );
+    if( o->size > o->space ) bcore_array_t_make_strong( TYPEOF_bclos_arguments_s, (bcore_array*)o );
     if( o->size == o->space )
     {
         o->data = bcore_un_alloc
@@ -113,7 +113,7 @@ void bclos_expression_s_clear( bclos_expression_s* o )
 {
     sr_down( o->closure );
     o->closure = sr_null();
-    bcore_array_typed_set_size( TYPEOF_bclos_arguments_s, &o->args, 0 );
+    bcore_array_t_set_size( TYPEOF_bclos_arguments_s, (bcore_array*)&o->args, 0 );
 }
 
 void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source )

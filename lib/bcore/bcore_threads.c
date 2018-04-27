@@ -229,7 +229,7 @@ sz_t bcore_thread_arr_s_push_call( bcore_thread_arr_s* o, bcore_fp_thread func, 
 {
     bcore_thread_s* thread = bcore_thread_s_create();
     bcore_thread_s_call( thread, func, arg );
-    bcore_array_aware_push( o, sr_tsd( TYPEOF_bcore_thread_s, thread ) );
+    bcore_array_a_push( (bcore_array*)o, sr_tsd( TYPEOF_bcore_thread_s, thread ) );
     return o->size - 1;
 }
 
@@ -238,7 +238,7 @@ vd_t bcore_thread_arr_s_join_pop( bcore_thread_arr_s* o )
     if( o->size == 0 ) return NULL;
     bcore_thread_s* thread = bcore_thread_arr_s_get_thread( o, o->size - 1 );
     vd_t ret = bcore_thread_s_join( thread );
-    bcore_array_aware_pop( o );
+    bcore_array_a_pop( (bcore_array*)o );
     return ret;
 }
 

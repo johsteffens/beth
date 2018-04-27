@@ -557,18 +557,18 @@ st_s* bcore_spect_status()
         sz_t count = bcore_hmap_tpsz_s_idx_val( hist, i );
         if( key )
         {
-            bcore_array_push( nc_arr, sr_null() );
-            sr_s pair = sr_cl( bcore_array_get_last( nc_arr ), l );
+            bcore_array_x_push( nc_arr, sr_null() );
+            sr_s pair = sr_cl( bcore_array_x_get_last( nc_arr ), l );
             bcore_via_x_nset_tp( pair, typeof( "type" ),  key   );
             bcore_via_x_nset_sz( pair, typeof( "count" ), count );
         }
     }
 
-    bcore_array_sort( nc_arr, 0, -1, -1 );
+    bcore_array_x_sort( nc_arr, 0, -1, -1 );
 
-    for( sz_t i = 0; i < bcore_array_get_size( nc_arr ); i++ )
+    for( sz_t i = 0; i < bcore_array_x_get_size( nc_arr ); i++ )
     {
-        sr_s pair = sr_cl( bcore_array_get( nc_arr, i ), l );
+        sr_s pair = sr_cl( bcore_array_x_get( nc_arr, i ), l );
         const tp_t* p_type  = sr_cl( bcore_via_x_nget( pair, typeof( "type"  ) ), l ).o;
         const sz_t* p_count = sr_cl( bcore_via_x_nget( pair, typeof( "count" ) ), l ).o;
         st_s* s = st_s_create();

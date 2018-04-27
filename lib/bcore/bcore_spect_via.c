@@ -518,10 +518,10 @@ sr_s bcore_spect_via_create_zoo( sz_t size )
             bcore_via_x_nset_f3( bird, typeof( "weight" ), 2.5 );
             sr_s features = sr_cl( bcore_via_x_nget( bird, typeof( "features" ) ), l );
             {
-                bcore_array_push_sc( features, "Night active" );
-                bcore_array_push_sc( features, "Can fly" );
+                bcore_array_x_push_sc( features, "Night active" );
+                bcore_array_x_push_sc( features, "Can fly" );
             }
-            bcore_array_push( animals, bird );
+            bcore_array_x_push( animals, bird );
         }
         {
             sr_s bird = sr_cl( bcore_inst_t_create_sr( t_animal ), l );
@@ -529,17 +529,17 @@ sr_s bcore_spect_via_create_zoo( sz_t size )
             bcore_via_x_nset_f3( bird, typeof( "weight" ), 0.5 );
             sr_s features = sr_cl( bcore_via_x_nget( bird, typeof( "features" ) ), l );
             {
-                bcore_array_push_sc( features, "Day active" );
-                bcore_array_push_sc( features, "Can fly" );
+                bcore_array_x_push_sc( features, "Day active" );
+                bcore_array_x_push_sc( features, "Can fly" );
             }
-            bcore_array_push( animals, bird );
+            bcore_array_x_push( animals, bird );
         }
-        bcore_array_push( compounds, compound );
-        bcore_array_push( compounds, sr_null() );
-        bcore_array_push( compounds, compound );
-        bcore_array_push( compounds, sr_null() );
-        bcore_array_push( compounds, sr_null() );
-        for( sz_t i = 5; i < size; i++ ) bcore_array_push( compounds, compound );
+        bcore_array_x_push( compounds, compound );
+        bcore_array_x_push( compounds, sr_null() );
+        bcore_array_x_push( compounds, compound );
+        bcore_array_x_push( compounds, sr_null() );
+        bcore_array_x_push( compounds, sr_null() );
+        for( sz_t i = 5; i < size; i++ ) bcore_array_x_push( compounds, compound );
     }
     bcore_life_s_discard( l );
 
@@ -571,8 +571,8 @@ static st_s* spect_via_selftest( void )
     sr_s arr = sr_cp( bcore_life_s_push_sr( l, bcore_via_x_nget( via_specs_arr, typeof( "arr" ) ) ), TYPEOF_bcore_array_s );
     sz_t arr_size = 100000;
 
-    for( sz_t i = 0; i < arr_size; i++ ) bcore_array_push( arr, via_specs );
-    for( sz_t i = 0; i < arr_size; i++ ) bcore_via_x_nset_sz( bcore_array_get( arr, i ), typeof( "size" ), i );
+    for( sz_t i = 0; i < arr_size; i++ ) bcore_array_x_push( arr, via_specs );
+    for( sz_t i = 0; i < arr_size; i++ ) bcore_via_x_nset_sz( bcore_array_x_get( arr, i ), typeof( "size" ), i );
 
     sr_s via_specs_arr2 = bcore_life_s_push_sr( l, bcore_inst_t_create_sr( typeof( "via_specs_arr" ) ) );
 
@@ -582,11 +582,11 @@ static st_s* spect_via_selftest( void )
 
     for( sz_t i = 0; i < arr_size; i++ )
     {
-        sr_s via_specs_l = bcore_life_s_push_sr( l, bcore_array_get( arr2, i ) );
+        sr_s via_specs_l = bcore_life_s_push_sr( l, bcore_array_x_get( arr2, i ) );
         ASSERT( i == *( sz_t* )bcore_via_x_nget( via_specs_l, typeof( "size" ) ).o );
     }
 
-    ASSERT( bcore_array_get_size( arr ) == arr_size );
+    ASSERT( bcore_array_x_get_size( arr ) == arr_size );
 
     bcore_life_s_discard( l );
     return NULL;

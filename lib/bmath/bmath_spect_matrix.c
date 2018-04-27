@@ -176,13 +176,13 @@ void bmath_matrix_default_mul_vec( const bmath_matrix_s* p, const bmath_matrix* 
             for( sz_t k = 0; k < steps; k++ )
             {
                 sr_s sr1 = bcore_matrix_p_get_cell( p->spect_matrix_matrix, ( const bcore_matrix* )o, i, k );
-                sr_s sr2 = bcore_array_spect_get( spect_array_vector, op, k );
+                sr_s sr2 = bcore_array_p_get( spect_array_vector, (bcore_array*)op, k );
                 if ( sr1.o && sr2.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr1.o, sr2.o, sr_mul.o );
                 else                  bmath_ring_p_zro( p->spect_ring_scalar, sr_mul.o );
                 bmath_ring_p_add( p->spect_ring_scalar, sr_mul.o, sr_sum.o, sr_sum.o );
             }
         }
-        bcore_array_spect_set( spect_array_vector, res, i, sr_sum );
+        bcore_array_p_set( spect_array_vector, (bcore_array*)res, i, sr_sum );
     }
 
     sr_down( sr_mul );

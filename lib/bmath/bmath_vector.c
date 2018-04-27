@@ -36,14 +36,14 @@ BCORE_DEFINE_OBJECT_INST_( bmath_vector, bmath_vf3_s )
 bmath_vf3_s* bmath_vf3_s_create_size( sz_t size )
 {
     bmath_vf3_s* o = bmath_vf3_s_create();
-    bcore_array_aware_set_size( o, size );
+    bcore_array_a_set_size( (bcore_array*)o, size );
     return o;
 }
 
 bmath_vf3_s* bmath_vf3_s_create_fill( f3_t val, sz_t size )
 {
     bmath_vf3_s* o = bmath_vf3_s_create();
-    bcore_array_aware_set_space( o, size );
+    bcore_array_a_set_space( (bcore_array*)o, size );
     o->size = size;
     for( sz_t i = 0; i < size; i++ ) o->data[ i ] = val;
     return o;
@@ -250,14 +250,14 @@ BCORE_DEFINE_OBJECT_INST_( bmath_vector, bmath_vcf3_s )
 bmath_vcf3_s* bmath_vcf3_s_create_size( sz_t size )
 {
     bmath_vcf3_s* o = bmath_vcf3_s_create();
-    bcore_array_aware_set_size( o, size );
+    bcore_array_a_set_size( (bcore_array*)o, size );
     return o;
 }
 
 bmath_vcf3_s* bmath_vcf3_s_create_fill( bmath_cf3_s val, sz_t size )
 {
     bmath_vcf3_s* o = bmath_vcf3_s_create();
-    bcore_array_aware_set_space( o, size );
+    bcore_array_a_set_space( (bcore_array*)o, size );
     o->size = size;
     for( sz_t i = 0; i < size; i++ ) o->data[ i ] = val;
     return o;

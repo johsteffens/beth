@@ -89,7 +89,7 @@ static void chain_interpret_body_a( vd_t nc )
 void bcore_sink_chain_s_push_d( bcore_sink_chain_s* o, vd_t sink )
 {
     const bcore_array_s* arr_p = bcore_array_s_get_typed( TYPEOF_bcore_sink_chain_s );
-    bcore_array_spect_push( arr_p, o, sr_asd( sink ) );
+    bcore_array_p_push( arr_p, (bcore_array*)o, sr_asd( sink ) );
     if( o->size > 1 ) bcore_sink_a_set_consumer( o->data[ o->size - 1 ], o->data[ o->size - 2 ] );
 }
 

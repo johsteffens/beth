@@ -100,11 +100,11 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
-                sz_t size = bcore_array_get_size( arr_l );
+                sz_t size = bcore_array_x_get_size( arr_l );
                 bcore_sink_x_push_data( sink_l, &size, sizeof( sz_t ) );
                 for( sz_t i = 0; i < size; i++ )
                 {
-                    translate( o, 0, bcore_array_get( arr_l, i ), sink_l, depth + 1 );
+                    translate( o, 0, bcore_array_x_get( arr_l, i ), sink_l, depth + 1 );
                 }
             }
             else
@@ -249,8 +249,8 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
-                bcore_array_set_size( arr_l, size );
-                for( sz_t i = 0; i < size; i++ ) bcore_array_set( arr_l, i, interpret( o, sr_null(), src_l ) );
+                bcore_array_x_set_size( arr_l, size );
+                for( sz_t i = 0; i < size; i++ ) bcore_array_x_set( arr_l, i, interpret( o, sr_null(), src_l ) );
             }
             else
             {

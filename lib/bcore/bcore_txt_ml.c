@@ -110,10 +110,10 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
-                sz_t size = bcore_array_get_size( arr_l );
+                sz_t size = bcore_array_x_get_size( arr_l );
                 for( sz_t i = 0; i < size; i++ )
                 {
-                    translate( o, 0, bcore_array_get( arr_l, i ), sink_l, depth + 1 );
+                    translate( o, 0, bcore_array_x_get( arr_l, i ), sink_l, depth + 1 );
                 }
             }
             else
@@ -250,16 +250,16 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
-                if( bcore_array_is_fixed( arr_l ) )
+                if( bcore_array_x_is_fixed( arr_l ) )
                 {
-                    sz_t arr_size = bcore_array_get_size( arr_l );
-                    for( sz_t i = 0; i < arr_size; i++ ) bcore_array_set( arr_l, i, interpret( o, sr_null(), src_l ) );
+                    sz_t arr_size = bcore_array_x_get_size( arr_l );
+                    for( sz_t i = 0; i < arr_size; i++ ) bcore_array_x_set( arr_l, i, interpret( o, sr_null(), src_l ) );
                     bcore_source_x_parse_fa( src_l, " </>" );
                 }
                 else
                 {
-                    bcore_array_set_size( arr_l, 0 );
-                    while( !bcore_source_x_parse_bl_fa( src_l, " #?'</>'" ) ) bcore_array_push( arr_l, interpret( o, sr_null(), src_l ) );
+                    bcore_array_x_set_size( arr_l, 0 );
+                    while( !bcore_source_x_parse_bl_fa( src_l, " #?'</>'" ) ) bcore_array_x_push( arr_l, interpret( o, sr_null(), src_l ) );
                 }
             }
             else

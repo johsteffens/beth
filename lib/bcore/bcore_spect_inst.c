@@ -281,7 +281,7 @@ static void down_o( const bcore_inst_s* p, vd_t o )
 {
     #ifdef RTCHECKS
         assert( o != NULL );
-        if( p->aware ) verify_aware_type( p->o_type, o, __func__ );
+        if( p->aware ) verify_aware_type( p->header.o_type, o, __func__ );
     #endif // RTCHECKS
     ( ( bcore_fp_down )p->down_o )( o );
 }
@@ -292,7 +292,7 @@ static void down_flat( const bcore_inst_s* p, vd_t o )
 {
     #ifdef RTCHECKS
         assert( o != NULL );
-        if( p->aware ) verify_aware_type( p->o_type, o, __func__ );
+        if( p->aware ) verify_aware_type( p->header.o_type, o, __func__ );
     #endif // RTCHECKS
     /* nothing to do */
 }
@@ -301,7 +301,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
 {
 #ifdef RTCHECKS
     assert( o != NULL );
-    if( p->aware ) verify_aware_type( p->o_type, o, __func__ );
+    if( p->aware ) verify_aware_type( p->header.o_type, o, __func__ );
 #endif // RTCHECKS
     for( sz_t i = 0; i < p->body->size; i++ )
     {
@@ -501,8 +501,8 @@ static void copy_o( const bcore_inst_s* p, vd_t dst, vc_t src )
         if( !src ) ERR( "src == NULL" );
         if( p->aware )
         {
-            verify_aware_type( p->o_type, dst, __func__ );
-            verify_aware_type( p->o_type, src, __func__ );
+            verify_aware_type( p->header.o_type, dst, __func__ );
+            verify_aware_type( p->header.o_type, src, __func__ );
         }
     #endif // RTCHECKS
     ( ( bcore_fp_copy )p->copy_o )( dst, src );
@@ -516,8 +516,8 @@ static void copy_flat( const bcore_inst_s* p, vd_t dst, vc_t src )
         if( !src ) ERR( "src == NULL" );
         if( p->aware )
         {
-            verify_aware_type( p->o_type, dst, __func__ );
-            verify_aware_type( p->o_type, src, __func__ );
+            verify_aware_type( p->header.o_type, dst, __func__ );
+            verify_aware_type( p->header.o_type, src, __func__ );
         }
     #endif // RTCHECKS
     bcore_memcpy( dst, src, p->size );
@@ -531,8 +531,8 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
         if( !src ) ERR( "src == NULL" );
         if( p->aware )
         {
-            verify_aware_type( p->o_type, dst, __func__ );
-            verify_aware_type( p->o_type, src, __func__ );
+            verify_aware_type( p->header.o_type, dst, __func__ );
+            verify_aware_type( p->header.o_type, src, __func__ );
         }
     #endif // RTCHECKS
     for( sz_t i = 0; i < p->body->size; i++ )
@@ -906,7 +906,7 @@ static void copy_typed_o( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
     #ifdef RTCHECKS
         if( !dst ) ERR( "dst == NULL" );
         if( !src ) ERR( "src == NULL" );
-        if( p->aware ) verify_aware_type( p->o_type, dst, __func__ );
+        if( p->aware ) verify_aware_type( p->header.o_type, dst, __func__ );
     #endif // RTCHECKS
     p->copy_typed_o( dst, type, src );
 }

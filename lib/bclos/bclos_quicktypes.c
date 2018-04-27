@@ -37,33 +37,33 @@ static st_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
 static sr_s typelist()
 {
     sr_s list = bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ st_s * [] arr; }" ) );
-    bcore_array_q_push_sc( &list, "bclos_frame_s"  );
-    bcore_array_q_push_sc( &list, "bclos_proc_binding_s" );
-    bcore_array_q_push_sc( &list, "bclos_arguments_s" );
-    bcore_array_q_push_sc( &list, "bclos_closure_s" );
-    bcore_array_q_push_sc( &list, "bclos_closure" );
-    bcore_array_q_push_sc( &list, "bclos_arg_sig_s" );
-    bcore_array_q_push_sc( &list, "bclos_signature_s" );
-    bcore_array_q_push_sc( &list, "bclos_statement_s" );
-    bcore_array_q_push_sc( &list, "bclos_procedure_s" );
-    bcore_array_q_push_sc( &list, "bclos_syntax_s" );
-    bcore_array_q_push_sc( &list, "bclos_library_s" );
-    bcore_array_q_push_sc( &list, "bclos_library_arr_s" );
-    bcore_array_q_push_sc( &list, "bclos_address_s" );
-    bcore_array_q_push_sc( &list, "bclos_expression_s" );
-    bcore_array_q_push_sc( &list, "bclos_identity_s" );
-    bcore_array_q_push_sc( &list, "bclos_return" );
+    bcore_array_r_push_sc( &list, "bclos_frame_s"  );
+    bcore_array_r_push_sc( &list, "bclos_proc_binding_s" );
+    bcore_array_r_push_sc( &list, "bclos_arguments_s" );
+    bcore_array_r_push_sc( &list, "bclos_closure_s" );
+    bcore_array_r_push_sc( &list, "bclos_closure" );
+    bcore_array_r_push_sc( &list, "bclos_arg_sig_s" );
+    bcore_array_r_push_sc( &list, "bclos_signature_s" );
+    bcore_array_r_push_sc( &list, "bclos_statement_s" );
+    bcore_array_r_push_sc( &list, "bclos_procedure_s" );
+    bcore_array_r_push_sc( &list, "bclos_syntax_s" );
+    bcore_array_r_push_sc( &list, "bclos_library_s" );
+    bcore_array_r_push_sc( &list, "bclos_library_arr_s" );
+    bcore_array_r_push_sc( &list, "bclos_address_s" );
+    bcore_array_r_push_sc( &list, "bclos_expression_s" );
+    bcore_array_r_push_sc( &list, "bclos_identity_s" );
+    bcore_array_r_push_sc( &list, "bclos_return" );
 
-    bcore_array_q_sort( &list, 0, -1, 1 );
+    bcore_array_r_sort( &list, 0, -1, 1 );
     return list;
 }
 
 static sz_t max_len( const sr_s* list )
 {
     sz_t len = 0;
-    for( sz_t i = 0; i < bcore_array_q_get_size( list ); i++ )
+    for( sz_t i = 0; i < bcore_array_r_get_size( list ); i++ )
     {
-        sz_t size = ( ( st_s* )bcore_array_q_get( list, i ).o )->size;
+        sz_t size = ( ( st_s* )bcore_array_r_get( list, i ).o )->size;
         len = size > len ? size : len;
     }
     return len;
@@ -73,7 +73,7 @@ void bclos_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
 {
     hf hash_l = ( hash ) ? hash : typeof;
     sr_s list = typelist();
-    for( sz_t i = 0; i < bcore_array_q_get_size( &list ); i++ ) st_s_print_d( get_def_quicktype( hash_l, bcore_array_q_get( &list, i ), 16 + max_len( &list ) ) );
+    for( sz_t i = 0; i < bcore_array_r_get_size( &list ); i++ ) st_s_print_d( get_def_quicktype( hash_l, bcore_array_r_get( &list, i ), 16 + max_len( &list ) ) );
     sr_down( list );
 }
 

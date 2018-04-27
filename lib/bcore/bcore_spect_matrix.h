@@ -78,13 +78,13 @@ sz_t bcore_matrix_default_get_index( const bcore_matrix_s* p, const bcore_matrix
 static inline
 sr_s bcore_matrix_default_get_cell( const bcore_matrix_s* p, const bcore_matrix* o, sz_t i, sz_t j )
 {
-    return bcore_array_spect_get( p->spect_array, o, bcore_matrix_default_get_index( p, o, i, j ) );
+    return bcore_array_p_get( p->spect_array, (bcore_array*)o, bcore_matrix_default_get_index( p, o, i, j ) );
 }
 
 static inline
 void bcore_matrix_default_set_cell( const bcore_matrix_s* p, bcore_matrix* o, sz_t i, sz_t j, sr_s src )
 {
-    bcore_array_spect_set( p->spect_array, o, bcore_matrix_default_get_index( p, o, i, j ), src );
+    bcore_array_p_set( p->spect_array, (bcore_array*)o, bcore_matrix_default_get_index( p, o, i, j ), src );
 }
 
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_rows,      sz_t )
