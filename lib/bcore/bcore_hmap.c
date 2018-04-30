@@ -642,7 +642,7 @@ static st_s* hmap_u2vd_selftest( void )
             rval2 = bcore_xsg_u2( rval2 );
             kv_s kv;
             kv.key = ( u2_t )rval1;
-            kv.val = ( vd_t )rval2;
+            kv.val = ( vd_t )(intptr_t)rval2;
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set
@@ -1431,7 +1431,7 @@ static st_s* hmap_tpfp_selftest( void )
             rval2 = bcore_xsg_u2( rval2 );
             kv_s kv;
             kv.key = ( u2_t )rval1;
-            kv.val = ( fp_t )rval2;
+            kv.val = ( fp_t )(intptr_t)rval2;
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set

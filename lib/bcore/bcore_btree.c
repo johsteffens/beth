@@ -170,13 +170,13 @@ st_s* bcore_btree_node_ip_s_show( bcore_btree_node_ip_s* o, sz_t depth )
     {
         if( o->child0 && o->child0 != BNUL_IP ) st_s_push_st_d( string, bcore_btree_node_ip_s_show( o->child0, depth + 1 ) );
         for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
-        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv1.key, ( int64_t )o->kv1.val );
+        st_s_push_fa( string, "(#<u3_t>,#<u3_t>)\n", (u3_t)o->kv1.key, (u3_t)(intptr_t)o->kv1.val );
         if( o->child1 && o->child1 != BNUL_IP ) st_s_pushf( string, "    " );
     }
     if( o->child2 )
     {
         for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
-        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv2.key, ( int64_t )o->kv2.val );
+        st_s_push_fa( string, "(#<u3_t>,#<u3_t>)\n", (u3_t)o->kv2.key, (u3_t)(intptr_t)o->kv2.val );
         if( o->child2 && o->child2 != BNUL_IP ) st_s_push_st_d( string, bcore_btree_node_ip_s_show( o->child2, depth + 1 ) );
     }
     return string;
@@ -636,13 +636,13 @@ st_s* bcore_btree_ip_s_status( bcore_btree_ip_s* o )
 
     st_s* string = st_s_create();
     sz_t used_nodes = nodes - deleted_nodes;
-    st_s_pushf( string, "keys ........... %lu\n", bcore_btree_node_ip_s_keys( o->root ) );
-    st_s_pushf( string, "nodes .......... %lu\n", used_nodes );
-    st_s_pushf( string, "keys/nodes ..... %5.4f\n", used_nodes > 0 ? ( double )( bcore_btree_node_ip_s_keys( o->root ) ) / used_nodes : 0 );
-    st_s_pushf( string, "depth .......... %lu\n", bcore_btree_node_ip_s_depth( o->root ) );
-    st_s_pushf( string, "block size ..... %lu\n", o->block_size );
-    st_s_pushf( string, "blocks ......... %lu\n", blocks );
-    st_s_pushf( string, "deleted nodes .. %lu\n", deleted_nodes );
+    st_s_push_fa( string, "keys ........... #<sz_t>\n", bcore_btree_node_ip_s_keys( o->root ) );
+    st_s_push_fa( string, "nodes .......... #<sz_t>\n", used_nodes );
+    st_s_push_fa( string, "keys/nodes ..... #<f3_t>\n", used_nodes > 0 ? ( f3_t )( bcore_btree_node_ip_s_keys( o->root ) ) / used_nodes : 0 );
+    st_s_push_fa( string, "depth .......... #<sz_t>\n", bcore_btree_node_ip_s_depth( o->root ) );
+    st_s_push_fa( string, "block size ..... #<sz_t>\n", o->block_size );
+    st_s_push_fa( string, "blocks ......... #<sz_t>\n", blocks );
+    st_s_push_fa( string, "deleted nodes .. #<sz_t>\n", deleted_nodes );
     return string;
 }
 
@@ -669,7 +669,7 @@ static st_s* btree_ip_s_selftest( void )
             rval2 = bcore_xsg_u2( rval2 );
             bcore_btree_ip_kv_s kv;
             kv.key = ( bcore_btree_ip_key_t )rval1;
-            kv.val = ( bcore_btree_ip_val_t )rval2;
+            kv.val = ( bcore_btree_ip_val_t )(intptr_t)rval2;
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set
@@ -679,7 +679,7 @@ static st_s* btree_ip_s_selftest( void )
             rval1 = bcore_xsg_u2( rval1 );
             kv = kvbuf[ rval1 % kvbuf_size ];
             bcore_btree_ip_val_t* val_ptr = bcore_btree_ip_s_val( t, kv.key );
-            if( kv.val != *val_ptr ) ERR( "value mismatch (%lu vs %lu)", kv.val, *val_ptr );
+            if( kv.val != *val_ptr ) ERR( "value mismatch (%lu vs %lu)", kv.val, (u3_t)(intptr_t)*val_ptr );
 
             // delete
             rval1 = bcore_xsg_u2( rval1 );
@@ -937,13 +937,13 @@ st_s* bcore_btree_node_ps_s_show( bcore_btree_node_ps_s* o, sz_t depth )
     {
         if( o->child0 && o->child0 != BNUL_PS ) st_s_push_st_d( string, bcore_btree_node_ps_s_show( o->child0, depth + 1 ) );
         for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
-        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv1.key, ( int64_t )o->kv1.val );
+        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )(intptr_t)o->kv1.key, ( int64_t )(intptr_t)o->kv1.val );
         if( o->child1 && o->child1 != BNUL_PS ) st_s_pushf( string, "    " );
     }
     if( o->child2 )
     {
         for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
-        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv2.key, ( int64_t )o->kv2.val );
+        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )(intptr_t)o->kv2.key, ( int64_t )(intptr_t)o->kv2.val );
         if( o->child2 && o->child2 != BNUL_PS ) st_s_push_st_d( string, bcore_btree_node_ps_s_show( o->child2, depth + 1 ) );
     }
     return string;
@@ -1461,8 +1461,8 @@ static st_s* btree_ps_s_selftest( void )
             rval1 = bcore_xsg_u2( rval1 );
             rval2 = bcore_xsg_u2( rval2 );
             bcore_btree_ps_kv_s kv;
-            kv.key = ( bcore_btree_ps_key_t )rval1;
-            kv.val = ( bcore_btree_ps_val_t )rval2;
+            kv.key = ( bcore_btree_ps_key_t )(intptr_t)rval1;
+            kv.val = ( bcore_btree_ps_val_t )(intptr_t)rval2;
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set
@@ -1727,13 +1727,13 @@ st_s* bcore_btree_node_pp_s_show( bcore_btree_node_pp_s* o, sz_t depth )
     {
         if( o->child0 && o->child0 != BNUL_PP ) st_s_push_st_d( string, bcore_btree_node_pp_s_show( o->child0, depth + 1 ) );
         for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
-        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv1.key, ( int64_t )o->kv1.val );
+        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )(intptr_t)o->kv1.key, ( int64_t )(intptr_t)o->kv1.val );
         if( o->child1 && o->child1 != BNUL_PP ) st_s_pushf( string, "    " );
     }
     if( o->child2 )
     {
         for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
-        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )o->kv2.key, ( int64_t )o->kv2.val );
+        st_s_pushf( string, "(%lu,%lu)\n", ( int64_t )(intptr_t)o->kv2.key, ( int64_t )(intptr_t)o->kv2.val );
         if( o->child2 && o->child2 != BNUL_PP ) st_s_push_st_d( string, bcore_btree_node_pp_s_show( o->child2, depth + 1 ) );
     }
     return string;
@@ -2229,13 +2229,13 @@ st_s* bcore_btree_pp_s_status( bcore_btree_pp_s* o )
 
     st_s* string = st_s_create();
     sz_t used_nodes = nodes - deleted_nodes;
-    st_s_pushf( string, "keys ........... %lu\n", bcore_btree_node_pp_s_keys( o->root ) );
-    st_s_pushf( string, "nodes .......... %lu\n", used_nodes );
-    st_s_pushf( string, "keys/nodes ..... %5.4f\n", used_nodes > 0 ? ( double )( bcore_btree_node_pp_s_keys( o->root ) ) / used_nodes : 0 );
-    st_s_pushf( string, "depth .......... %lu\n", bcore_btree_node_pp_s_depth( o->root ) );
-    st_s_pushf( string, "block size ..... %lu\n", o->block_size );
-    st_s_pushf( string, "blocks ......... %lu\n", blocks );
-    st_s_pushf( string, "deleted nodes .. %lu\n", deleted_nodes );
+    st_s_push_fa( string, "keys ........... #<sz_t>\n", bcore_btree_node_pp_s_keys( o->root ) );
+    st_s_push_fa( string, "nodes .......... #<sz_t>\n", used_nodes );
+    st_s_push_fa( string, "keys/nodes ..... #<f3_t>\n", used_nodes > 0 ? ( f3_t )( bcore_btree_node_pp_s_keys( o->root ) ) / used_nodes : 0 );
+    st_s_push_fa( string, "depth .......... #<sz_t>\n", bcore_btree_node_pp_s_depth( o->root ) );
+    st_s_push_fa( string, "block size ..... #<sz_t>\n", o->block_size );
+    st_s_push_fa( string, "blocks ......... #<sz_t>\n", blocks );
+    st_s_push_fa( string, "deleted nodes .. #<sz_t>\n", deleted_nodes );
     return string;
 }
 
@@ -2262,8 +2262,8 @@ static st_s* btree_pp_s_selftest( void )
 
             // use multiple of 256 to allow nearest_... tests
             // The left-shift can produce key repetitions on 32bit systems. The loop below ensures stored keys are not repeated.
-            while( bcore_btree_pp_s_exists( t, ( kv.key = ( bcore_btree_pp_key_t )( ( rval1 = bcore_xsg_u2( rval1 ) ) << 8 ) ) ) );
-            kv.val = ( bcore_btree_pp_val_t )( rval2 = bcore_xsg_u2( rval2 ) );
+            while( bcore_btree_pp_s_exists( t, ( kv.key = ( bcore_btree_pp_key_t )(intptr_t)( ( rval1 = bcore_xsg_u2( rval1 ) ) << 8 ) ) ) );
+            kv.val = ( bcore_btree_pp_val_t )(intptr_t)( rval2 = bcore_xsg_u2( rval2 ) );
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set
@@ -2548,13 +2548,13 @@ st_s* bcore_btree_node_vd_s_show( bcore_btree_node_vd_s* o, sz_t depth )
     {
         if( o->child0 && o->child0 != BNUL_VP ) st_s_push_st_d( string, bcore_btree_node_vd_s_show( o->child0, depth + 1 ) );
         for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
-        st_s_pushf( string, "(%lu)\n", ( int64_t )o->kv1.key );
+        st_s_pushf( string, "(%lu)\n", ( int64_t )(intptr_t)o->kv1.key );
         if( o->child1 && o->child1 != BNUL_VP ) st_s_pushf( string, "    " );
     }
     if( o->child2 )
     {
         for( sz_t i = 0; i < depth; i++ ) st_s_pushf( string, "    " );
-        st_s_pushf( string, "(%lu)\n", ( int64_t )o->kv2.key );
+        st_s_pushf( string, "(%lu)\n", ( int64_t )(intptr_t)o->kv2.key );
         if( o->child2 && o->child2 != BNUL_VP ) st_s_push_st_d( string, bcore_btree_node_vd_s_show( o->child2, depth + 1 ) );
     }
     return string;
@@ -3071,7 +3071,7 @@ static st_s* btree_vd_s_selftest( void )
 
             // use multiple of 256 to allow nearest_... tests
             // The left-shift can produce key repetitions on 32bit systems. The loop below ensures stored keys are not repeated.
-            while( bcore_btree_vd_s_exists( t, ( kv.key = ( bcore_btree_vd_key_t )( ( rval = bcore_xsg_u2( rval ) ) << 8 ) ) ) );
+            while( bcore_btree_vd_s_exists( t, ( kv.key = ( bcore_btree_vd_key_t )(intptr_t)( ( rval = bcore_xsg_u2( rval ) ) << 8 ) ) ) );
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set
