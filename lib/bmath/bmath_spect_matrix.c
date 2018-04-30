@@ -26,23 +26,24 @@ BCORE_DEFINE_SPECT( bmath_matrix_s )
     "strict feature bmath_vector_s -> spect_vector_matrix; "
     "strict feature bcore_matrix_s -> spect_matrix_matrix; "
     "strict feature bcore_inst_s   -> spect_inst_matrix;   "
-    "strict feature bmath_vector_s -> spect_vector_default ~> const tp_t type_vector_default;"
+    "strict feature bmath_vector_s -> spect_vector_assoc ~> const tp_t type_vector_assoc;"
 
-    "private        bmath_ring_s   -> spect_ring_scalar;   " // ring of matrix element explicitly implemented
+    "private        bmath_ring_s   -> spect_ring_scalar;   " // defined in bmath_matrix_s_create_from_self
 
     // ring features
     "feature bmath_fp: add;"
     "feature bmath_fp: zro;"
     "feature bmath_fp: neg;"
     "feature bmath_fp: sub;"
+    "feature bmath_fp: cpy;"
     "feature bmath_fp: mul;"
     "feature bmath_fp: one;"
     "feature bmath_fp: inv;"
     "feature bmath_fp: div;"
 
     // matrix features
-    "feature bmath_fp: mul_vec;"
-    "feature bmath_fp: mul_scl;"
+    "feature bmath_fp_matrix: mul_vec;"
+    "feature bmath_fp_matrix: mul_scl;"
 
     // spect functions
     "func bcore_spect_fp: create_from_self;"
@@ -151,17 +152,17 @@ void bmath_matrix_default_div( const bmath_matrix_s* p, const bmath_matrix* o, c
 
 void bmath_matrix_default_mul_scl( const bmath_matrix_s* p, const bmath_matrix* o, const bmath_ring* op, bmath_matrix* res )
 {
-    bmath_vector_p_mul( p->spect_vector_matrix, (const bmath_vector*)o, op, (bmath_vector*)res );
+    bmath_vector_p_mul_scl( p->spect_vector_matrix, (const bmath_vector*)o, op, (bmath_vector*)res );
 }
 
 void bmath_matrix_default_mul_vec( const bmath_matrix_s* p, const bmath_matrix* o, const bmath_vector* op, bmath_vector* res )
 {
-    const bcore_array_s* spect_array_vector = p->spect_vector_default->spect_array_vector;
+    const bcore_array_s* spect_array_vector = p->spect_vector_assoc->spect_array_vector;
 
     sz_t rows1 = bmath_matrix_p_get_rows( p, o );
     sz_t cols1 = bmath_matrix_p_get_cols( p, o );
-    sz_t  dim1 = bmath_vector_p_get_dim( p->spect_vector_default, res );
-    sz_t  dim2 = bmath_vector_p_get_dim( p->spect_vector_default, op );
+    sz_t  dim1 = bmath_vector_p_get_dim( p->spect_vector_assoc, res );
+    sz_t  dim2 = bmath_vector_p_get_dim( p->spect_vector_assoc, op );
 
     sz_t steps = cols1 < dim2 ? cols1 : dim2;
 

@@ -70,6 +70,24 @@ bmath_cf3_s bmath_cf3_one( void )
 }
 
 static inline
+bl_t bmath_cf3_s_is_equ( const bmath_cf3_s* o, const bmath_cf3_s* op )
+{
+    return ( o->v[ 0 ] == op->v[ 0 ] ) && ( o->v[ 1 ] == op->v[ 1 ] );
+}
+
+static inline
+bl_t bmath_cf3_s_is_zro( const bmath_cf3_s* o )
+{
+    return ( o->v[ 0 ] == 0 ) && ( o->v[ 1 ] == 0 );
+}
+
+static inline
+bl_t bmath_cf3_s_is_one( const bmath_cf3_s* o )
+{
+    return ( o->v[ 0 ] == 1.0 ) && ( o->v[ 1 ] == 0 );
+}
+
+static inline
 void bmath_cf3_s_add( const bmath_cf3_s* o, const bmath_cf3_s* op, bmath_cf3_s* res )
 {
     res->v[ 0 ] = o->v[ 0 ] + op->v[ 0 ];

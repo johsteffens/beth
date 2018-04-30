@@ -181,7 +181,7 @@ static vd_t selftest( void )
         bmath_fourier_fft_f3( vec2->data, vec2->data, size );
         bcore_array_a_do( (bcore_array*)vec2, 0, -1, ( fp_t )bmath_cf3_s_self_cnj );
         bmath_cf3_s f = bmath_cf3_init( 1.0 / size, 0 );
-        bmath_vector_a_mul( ( const bmath_vector* )vec2, ( const bmath_ring* )&f, ( bmath_vector* )vec2 );
+        bmath_vector_a_mul_scl( ( const bmath_vector* )vec2, ( const bmath_ring* )&f, ( bmath_vector* )vec2 );
 
         /// compare vec1, vec 2
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec1, ( const bmath_vector* )vec2, ( bmath_ring* )&z );

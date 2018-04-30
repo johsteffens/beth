@@ -20,6 +20,10 @@
 BCORE_DEFINE_OBJECT_FLAT_( bmath_ring, bmath_cf3_s )
 "{"
     "f3_t [2] v;"
+    "func bmath_fp:is_equ;"
+    "func bmath_fp:is_zro;"
+    "func bmath_fp:is_one;"
+
     "func bmath_fp:add;"
     "func bmath_fp:zro;"
     "func bmath_fp:neg;"
@@ -40,10 +44,16 @@ static vd_t selftest( void )
     bmath_cf3_s c4 = { .v[0] = 0, .v[1] = 0 };
 
 
-//    bcore_txt_ml_to_stdout( sr_twc( TYPEOF_bmath_cf3_s, &c3 ) );
     bmath_cf3_s_div( &c1, &c2, &c3 );
+    bcore_txt_ml_x_to_stdout( sr_twc( TYPEOF_bmath_cf3_s, &c3 ) );
+    bcore_txt_ml_x_to_stdout( sr_twc( TYPEOF_bmath_cf3_s, &c4 ) );
+
     bmath_ring_t_div( TYPEOF_bmath_cf3_s, (bmath_ring*)&c1, (bmath_ring*)&c2, (bmath_ring*)&c4 );
-    ASSERT( bcore_compare_typed( TYPEOF_bmath_cf3_s, &c3, &c4 ) == 0 );
+
+    bcore_txt_ml_x_to_stdout( sr_twc( TYPEOF_bmath_cf3_s, &c3 ) );
+    bcore_txt_ml_x_to_stdout( sr_twc( TYPEOF_bmath_cf3_s, &c4 ) );
+
+    ASSERT( bmath_cf3_s_is_equ( &c3, &c4 ) );
 
     return NULL;
 }
@@ -57,6 +67,10 @@ vd_t bmath_complex_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             BCORE_REGISTER_OBJECT( bmath_cf3_s );
+            BCORE_REGISTER_FFUNC( bmath_fp_is_equ, bmath_cf3_s_is_equ );
+            BCORE_REGISTER_FFUNC( bmath_fp_is_zro, bmath_cf3_s_is_zro );
+            BCORE_REGISTER_FFUNC( bmath_fp_is_one, bmath_cf3_s_is_one );
+
             BCORE_REGISTER_FFUNC( bmath_fp_add, bmath_cf3_s_add );
             BCORE_REGISTER_FFUNC( bmath_fp_zro, bmath_cf3_s_zro );
             BCORE_REGISTER_FFUNC( bmath_fp_neg, bmath_cf3_s_neg );

@@ -48,6 +48,7 @@ static sr_s typelist()
     bcore_array_r_push_sc( &list, "bmath_matrix"  );
     bcore_array_r_push_sc( &list, "bmath_matrix_s"  );
     bcore_array_r_push_sc( &list, "bmath_cf3_s"  );
+    bcore_array_r_push_sc( &list, "bmath_mf3_s"  );
 
     bcore_array_r_sort( &list, 0, -1, 1 );
     return list;

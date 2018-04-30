@@ -24,11 +24,16 @@ BCORE_DEFINE_SPECT( bmath_group_s )
 "{"
     "bcore_spect_header_s header;"
     "strict feature bcore_inst_s -> spect_inst;"
+
+    "strict feature bmath_fp: is_equ;"
+    "strict feature bmath_fp: is_zro;"
+
     "strict feature bmath_fp: add;"
     "strict feature bmath_fp: zro;"
     "strict feature bmath_fp: neg;"
     "       feature bmath_fp: sub;"
     "       feature bmath_fp: cpy;"
+    "       feature bmath_fp: mlt;"
 "}";
 
 
@@ -52,16 +57,22 @@ BCORE_DEFINE_SPECT( bmath_ring_s )
     "bcore_spect_header_s header;"
     "strict feature bcore_inst_s -> spect_inst;"
 
+    "strict feature bmath_fp: is_equ;"
+    "strict feature bmath_fp: is_zro;"
+    "strict feature bmath_fp: is_one;"
+
     "strict feature bmath_fp: add;"
     "strict feature bmath_fp: zro;"
     "strict feature bmath_fp: neg;"
     "       feature bmath_fp: sub;"
     "       feature bmath_fp: cpy;"
+    "       feature bmath_fp: mlt;"
 
     "strict feature bmath_fp: mul;"
     "       feature bmath_fp: one;"
     "       feature bmath_fp: inv;"
     "       feature bmath_fp: div;"
+
 "}";
 
 void bmath_ring_default_sub( const bmath_ring_s* p, const bmath_ring* o, const bmath_ring* op, bmath_ring* res )
@@ -79,6 +90,18 @@ void bmath_ring_default_div( const bmath_ring_s* p, const bmath_ring* o, const b
 {
     bmath_ring_p_inv( p, op, res );
     bmath_ring_p_mul( p, o,  res, res );
+}
+
+void bmath_ring_default_mlt( const bmath_ring_s* p, const bmath_ring* o, tp_t top, vc_t op, tp_t tres, vd_t res )
+{
+    if( p->header.o_type == top && p->header.o_type == tres )
+    {
+        bmath_ring_p_mul( p, o, op, res );
+    }
+    else
+    {
+        ERR_fa( "Function not available for type '#<sc_t>'", ifnameof( p->header.o_type ) );
+    }
 }
 
 /**********************************************************************************************************************/
@@ -109,6 +132,10 @@ vd_t bmath_spect_algebraic_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // features
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_is_equ );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_is_zro );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_is_one );
+
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_add );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_sub );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_neg );
@@ -118,6 +145,7 @@ vd_t bmath_spect_algebraic_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_inv );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_one );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_cpy );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mlt );
 
             // reflections
             BCORE_REGISTER_SPECT( bmath_group_s );

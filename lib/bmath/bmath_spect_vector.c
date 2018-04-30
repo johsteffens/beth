@@ -15,6 +15,7 @@
 
 #include "bmath_spect_vector.h"
 #include "bmath_quicktypes.h"
+#include "bmath_leaf.h"
 
 /**********************************************************************************************************************/
 
@@ -25,13 +26,15 @@ BCORE_DEFINE_SPECT( bmath_vector_s )
     "private        bmath_ring_s  -> spect_ring_scalar;"
     "strict feature bcore_array_s -> spect_array_vector;"
     "strict feature bcore_inst_s  -> spect_inst_vector;"
+    "       feature bmath_fp:        is_equ;"
+    "       feature bmath_fp:        is_zro;"
     "       feature bmath_fp:        add;"
     "       feature bmath_fp:        zro;"
     "       feature bmath_fp:        neg;"
     "       feature bmath_fp:        sub;"
     "       feature bmath_fp:        cpy;"
-    "       feature bmath_fp:        vector_mul;"
-    "       feature bmath_fp_vector: dot_prd;"
+    "       feature bmath_fp_vector: mul_scl;"
+    "       feature bmath_fp_vector: mul_vec;"
 
 
     "func bcore_spect_fp: create_from_self;"
@@ -54,8 +57,6 @@ sz_t bmath_vector_default_get_dim( const bmath_vector_s* p, const bmath_vector* 
 
 void bmath_vector_default_zro( const bmath_vector_s* p, bmath_vector* vec )
 {
-    if( p->zro ) { p->zro( ( bmath_group* )vec ); return; }
-
     sz_t dim = bmath_vector_default_get_dim( p, vec );
     sr_s sr_zero = sr_p_create( p->spect_ring_scalar->spect_inst );
 
@@ -67,8 +68,6 @@ void bmath_vector_default_zro( const bmath_vector_s* p, bmath_vector* vec )
 
 void bmath_vector_default_neg( const bmath_vector_s* p, const bmath_vector* vec, bmath_vector* res )
 {
-    if( p->neg ) { p->neg( ( const bmath_group* )vec, ( bmath_group* )res ); return; }
-
     sz_t res_dim = bmath_vector_default_get_dim( p, res );
     sr_s sr_neg  = sr_p_create( p->spect_ring_scalar->spect_inst );
 
@@ -95,8 +94,6 @@ void bmath_vector_default_neg( const bmath_vector_s* p, const bmath_vector* vec,
 
 void bmath_vector_default_cpy( const bmath_vector_s* p, const bmath_vector* vec, bmath_vector* res )
 {
-    if( p->cpy ) { p->cpy( ( const bmath_group* )vec, ( bmath_group* )res ); return; }
-
     sz_t res_dim = bmath_vector_default_get_dim( p, res );
     sr_s sr_cpy = sr_p_create( p->spect_ring_scalar->spect_inst );
 
@@ -119,6 +116,45 @@ void bmath_vector_default_cpy( const bmath_vector_s* p, const bmath_vector* vec,
     }
 
     sr_down( sr_cpy );
+}
+
+bl_t bmath_vector_default_is_equ( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_vector* vec2 )
+{
+    sz_t vec1_dim = bmath_vector_default_get_dim( p, vec1 );
+    sz_t vec2_dim = bmath_vector_default_get_dim( p, vec2 );
+    sz_t dim = sz_min( vec1_dim, vec2_dim );
+
+    for( sz_t i = 0; i < dim; i++ )
+    {
+        sr_s sr1 = bcore_array_p_get( p->spect_array_vector, (const bcore_array*)vec1, i );
+        sr_s sr2 = bcore_array_p_get( p->spect_array_vector, (const bcore_array*)vec2, i );
+        bl_t is_equ = bmath_ring_r_is_equ( &sr1, sr2.o );
+        sr_down( sr1 );
+        sr_down( sr2 );
+        if( !is_equ ) return false;
+    }
+
+    for( sz_t i = dim; i < vec1_dim; i++ )
+    {
+        if( !bmath_ring_x_is_zro( bcore_array_p_get( p->spect_array_vector, (const bcore_array*)vec1, i ) ) ) return false;
+    }
+
+    for( sz_t i = dim; i < vec2_dim; i++ )
+    {
+        if( !bmath_ring_x_is_zro( bcore_array_p_get( p->spect_array_vector, (const bcore_array*)vec2, i ) ) ) return false;
+    }
+
+    return true;
+}
+
+bl_t bmath_vector_default_is_zro( const bmath_vector_s* p, const bmath_vector* vec1 )
+{
+    sz_t dim = bmath_vector_default_get_dim( p, vec1 );
+    for( sz_t i = 0; i < dim; i++ )
+    {
+        if( !bmath_ring_x_is_zro( bcore_array_p_get( p->spect_array_vector, (const bcore_array*)vec1, i ) ) ) return false;
+    }
+    return true;
 }
 
 void bmath_vector_default_add( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_vector* vec2, bmath_vector* res )
@@ -173,9 +209,8 @@ void bmath_vector_default_sub( const bmath_vector_s* p, const bmath_vector* vec1
     sr_down( sr_sub );
 }
 
-void bmath_vector_default_mul( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_ring* scl2, bmath_vector* res  )
+void bmath_vector_default_mul_scl( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_ring* scl2, bmath_vector* res  )
 {
-    if( p->mul ) { p->mul( vec1, scl2, res ); return; }
     if( !scl2 )  { bmath_vector_default_zro( p, res ); return; }
 
     sr_s sr_mul = sr_p_create( p->spect_ring_scalar->spect_inst );
@@ -193,9 +228,9 @@ void bmath_vector_default_mul( const bmath_vector_s* p, const bmath_vector* vec1
     sr_down( sr_mul );
 }
 
-void bmath_vector_default_dot_prd( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_vector* vec2, bmath_ring* res )
+void bmath_vector_default_mul_vec( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_vector* vec2, bmath_ring* res )
 {
-    if( p->dot_prd ) { p->dot_prd( vec1, vec2, res ); return; }
+    if( p->mul_vec ) { p->mul_vec( vec1, vec2, res ); return; }
 
     const bcore_inst_s* spect_ring_inst = p->spect_ring_scalar->spect_inst;
 
@@ -226,7 +261,7 @@ void bmath_vector_default_dot_prd( const bmath_vector_s* p, const bmath_vector* 
 
 void bmath_vector_default_sub_sqr( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_vector* vec2, bmath_ring* res )
 {
-    if( p->dot_prd ) { p->dot_prd( vec1, vec2, res ); return; }
+    if( p->mul_vec ) { p->mul_vec( vec1, vec2, res ); return; }
 
     const bcore_inst_s* spect_ring_inst = p->spect_ring_scalar->spect_inst;
 
@@ -266,7 +301,7 @@ void bmath_vector_default_sub_sqr( const bmath_vector_s* p, const bmath_vector* 
 
 void bmath_vector_default_sqr( const bmath_vector_s* p, const bmath_vector* vec1, bmath_ring* res )
 {
-    bmath_vector_default_dot_prd( p, vec1, vec1, res );
+    bmath_vector_default_mul_vec( p, vec1, vec1, res );
 }
 
 /**********************************************************************************************************************/
@@ -305,7 +340,7 @@ static vd_t selftest( void )
     ASSERT( v3->data[ 2 ] ==  2 );
 
     f3_t f = 2.0;
-    bmath_vector_x_mul( sv1, ( const bmath_ring* )&f, sv3.o );
+    bmath_vector_x_mul_scl( sv1, ( const bmath_ring* )&f, sv3.o );
 
     ASSERT( v3->data[ 0 ] == 2 );
     ASSERT( v3->data[ 1 ] == 4 );
@@ -329,8 +364,8 @@ vd_t bmath_spect_vector_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // features
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_vector_mul );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_vector_dot_prd );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_vector_mul_scl );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_vector_mul_vec );
             BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bmath_vector_s_create_from_self );
             BCORE_REGISTER_SPECT( bmath_vector_s );
         }

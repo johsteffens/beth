@@ -109,7 +109,7 @@ static sr_s writeln_s_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s*
 
             default:
             {
-                bcore_txt_ml_to_stdout( sr_cw( sr ) );
+                bcore_txt_ml_x_to_stdout( sr_cw( sr ) );
                 st_s_print_d( st_s_create_fa( "\n" ) );
             }
             break;

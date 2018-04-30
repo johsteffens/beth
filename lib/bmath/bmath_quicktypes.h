@@ -34,6 +34,7 @@ void bmath_quicktypes_create_header( sc_t folder );
 #define TYPEOF_bmath_group_s  1219600405
 #define TYPEOF_bmath_matrix   3796445417
 #define TYPEOF_bmath_matrix_s 1909792099
+#define TYPEOF_bmath_mf3_s    2915726298
 #define TYPEOF_bmath_ring     2462086090
 #define TYPEOF_bmath_ring_s   1513035188
 #define TYPEOF_bmath_vcf3_s   3723112310

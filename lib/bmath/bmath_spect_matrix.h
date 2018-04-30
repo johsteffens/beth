@@ -41,14 +41,15 @@ BCORE_DECLARE_SPECT( bmath_matrix_s )
     const bmath_vector_s * spect_vector_matrix;   // vector of matrix
     const bcore_matrix_s * spect_matrix_matrix;   // (bcore-)matrix of matrix
     const bcore_inst_s   * spect_inst_matrix;     // inst of matrix
-    const bmath_vector_s * spect_vector_default;  // default vector perspective
-    const bmath_ring_s   * spect_ring_scalar;     // ring of scalar type (matrix element)
+    const bmath_vector_s * spect_vector_assoc;    // associated vector (vector that can represent a row, column or mul_vec operand)
+    const bmath_ring_s   * spect_ring_scalar;     // ring of scalar type (matrix element or mul_scl operand)
 
     // ring features
     bmath_fp_add add;
     bmath_fp_zro zro;
     bmath_fp_neg neg;
     bmath_fp_sub sub;
+    bmath_fp_cpy cpy;
     bmath_fp_mul mul;
     bmath_fp_one one;
     bmath_fp_inv inv;
