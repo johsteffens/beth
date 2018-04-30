@@ -279,7 +279,7 @@ void bcore_spect_missing_err( vc_t p, sc_t name );
 
 #define BCORE_FUNC_SPECT_MAPX_R0( spect, name, tret, to, no ) \
     tret spect##_default_##name( const spect##_s* p, to no ); \
-    static inline tret spect##_p_##name( const spect##_s* p, to no ) { return p->name ? p->name( no ) : spect##_default_##name( p, no ); } \
+    static inline tret spect##_p_##name( const spect##_s* p, to no ) { return p->name ? p->name( (vd_t)no ) : spect##_default_##name( p, no ); } \
     BCORE_FUNC_SPECT_TARX_R0( spect, name, tret, to, no )
 
 #define BCORE_FUNC_SPECT_MAPX_V0( spect, name, to, no ) \

@@ -42,13 +42,17 @@ void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr
 /**********************************************************************************************************************/
 
 /// syntactic sugar
-void bcore_txt_ml_to_stdout( sr_s obj );
-void bcore_txt_ml_to_file(   sr_s obj, sc_t file );
-void bcore_txt_ml_to_string( sr_s obj, st_s* string );
+void bcore_txt_ml_x_to_stdout( sr_s obj );
+void bcore_txt_ml_x_to_file(   sr_s obj, sc_t file );
+void bcore_txt_ml_x_to_string( sr_s obj, st_s* string );
 
-void bcore_txt_ml_aware_to_stdout( vc_t o );
-void bcore_txt_ml_aware_to_file(   vc_t o, sc_t file );
-void bcore_txt_ml_aware_to_string( vc_t o, st_s* string );
+void bcore_txt_ml_a_to_stdout( vc_t o );
+void bcore_txt_ml_a_to_file(   vc_t o, sc_t file );
+void bcore_txt_ml_a_to_string( vc_t o, st_s* string );
+
+void bcore_txt_ml_t_to_stdout( tp_t t, vc_t o );
+void bcore_txt_ml_t_to_file(   tp_t t, vc_t o, sc_t file );
+void bcore_txt_ml_t_to_string( tp_t t, vc_t o, st_s* string );
 
 /**********************************************************************************************************************/
 

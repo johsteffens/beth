@@ -146,14 +146,14 @@ static bcore_self_s* translator_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-void bcore_txt_ml_to_stdout( sr_s obj )
+void bcore_txt_ml_x_to_stdout( sr_s obj )
 {
     st_s* out = st_s_create();
     bcore_translate_x( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( out ) );
     st_s_print_d( out );
 }
 
-void bcore_txt_ml_to_file( sr_s obj, sc_t file )
+void bcore_txt_ml_x_to_file( sr_s obj, sc_t file )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_sink_chain_s* chain = bcore_life_s_push_aware( l, bcore_sink_chain_s_create() );
@@ -163,25 +163,19 @@ void bcore_txt_ml_to_file( sr_s obj, sc_t file )
     bcore_life_s_discard( l );
 }
 
-void bcore_txt_ml_to_string( sr_s obj, st_s* string )
+void bcore_txt_ml_x_to_string( sr_s obj, st_s* string )
 {
     bcore_translate_x( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( string ) );
 }
 
-void bcore_txt_ml_aware_to_stdout( vc_t o )
-{
-    bcore_txt_ml_to_stdout( sr_awc( o ) );
-}
+void bcore_txt_ml_a_to_stdout( vc_t o ) { bcore_txt_ml_x_to_stdout( sr_awc( o ) ); }
+void bcore_txt_ml_t_to_stdout( tp_t t, vc_t o ) { bcore_txt_ml_x_to_stdout( sr_twc( t, o ) ); }
 
-void bcore_txt_ml_aware_to_file(   vc_t o, sc_t file )
-{
-    bcore_txt_ml_to_file( sr_awc( o ), file );
-}
+void bcore_txt_ml_a_to_file( vc_t o, sc_t file ) { bcore_txt_ml_x_to_file( sr_awc( o ), file ); }
+void bcore_txt_ml_t_to_file( tp_t t, vc_t o, sc_t file ) { bcore_txt_ml_x_to_file( sr_twc( t, o ), file ); }
 
-void bcore_txt_ml_aware_to_string( vc_t o, st_s* string )
-{
-    bcore_txt_ml_to_string( sr_awc( o ), string );
-}
+void bcore_txt_ml_a_to_string( vc_t o, st_s* string ) { bcore_txt_ml_x_to_string( sr_awc( o ), string ); }
+void bcore_txt_ml_t_to_string( tp_t t, vc_t o, st_s* string ) { bcore_txt_ml_x_to_string( sr_twc( t, o ), string ); }
 
 /**********************************************************************************************************************/
 /// bcore_txt_ml_interpreter
@@ -334,6 +328,15 @@ sr_s bcore_txt_ml_from_string( const st_s* string )
     return ret;
 }
 
+sr_s bcore_txt_ml_from_sc( sc_t sc )
+{
+    st_s st;
+    st_s_init_weak_sc( &st, sc );
+    sr_s ret = bcore_txt_ml_from_string( &st );
+    st_s_down( &st );
+    return ret;
+}
+
 /**********************************************************************************************************************/
 
 void bcore_txt_ml_transfer_test( sr_s obj )
@@ -341,7 +344,7 @@ void bcore_txt_ml_transfer_test( sr_s obj )
     bcore_life_s* l = bcore_life_s_create();
     obj = bcore_life_s_push_sr( l, obj );
     st_s* string = bcore_life_s_push_aware( l, st_s_create() );
-    bcore_txt_ml_to_string( obj, string );
+    bcore_txt_ml_x_to_string( obj, string );
     sr_s sr = bcore_life_s_push_sr( l, bcore_txt_ml_from_string( string ) );
     s2_t c = bcore_compare_sr( obj, sr );
     if( c != 0 )
