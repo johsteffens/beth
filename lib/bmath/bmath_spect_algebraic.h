@@ -95,7 +95,7 @@ BCORE_DECLARE_SPECT( bmath_ring_s )
     bmath_fp_mlt mlt; // optional
 
     bmath_fp_mul mul; // mandatory
-    bmath_fp_one one; // optional
+    bmath_fp_one one; // mandatory
     bmath_fp_inv inv; // optional
     bmath_fp_div div; // optional
 };
@@ -111,7 +111,7 @@ BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_ring, sub, const bmath_ring*, op, 
 BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAPX( bmath_ring, cpy, bmath_ring*, res )
 
 BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAP1( bmath_ring, mul, const bmath_ring*, op, bmath_ring*, res )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAPX( bmath_ring, one )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP1( bmath_ring, one )
 BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAP1( bmath_ring, inv, bmath_ring*, res )
 BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAP1( bmath_ring, div, const bmath_ring*, op, bmath_ring*, res )
 

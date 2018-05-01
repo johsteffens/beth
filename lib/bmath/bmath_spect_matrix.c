@@ -142,6 +142,11 @@ void bmath_matrix_default_one( const bmath_matrix_s* p, bmath_matrix* o )
     sr_down( sr_one );
 }
 
+void bmath_matrix_default_inv( const bmath_matrix_s* p, const bmath_matrix* o, bmath_matrix* res )
+{
+    ERR_fa( "Function is not implemented." );
+}
+
 void bmath_matrix_default_div( const bmath_matrix_s* p, const bmath_matrix* o, const bmath_matrix* op, bmath_matrix* res )
 {
     sr_s sr_inv = sr_p_create( p );
@@ -206,8 +211,8 @@ vd_t bmath_spect_matrix_signal_handler( const bcore_signal_s* o )
         {
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_matrix_mul_vec );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_matrix_mul_scl );
-            BCORE_REGISTER_SPECT( bmath_matrix_s );
             BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bmath_matrix_s_create_from_self );
+            BCORE_REGISTER_SPECT( bmath_matrix_s );
         }
         break;
 

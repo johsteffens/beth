@@ -13,6 +13,8 @@
  *  limitations under the License.
  */
 
+#include <stdio.h>
+
 #include "bmath_vector.h"
 #include "bmath_spect_vector.h"
 #include "bmath_fourier.h"
@@ -234,6 +236,12 @@ void bmath_vf3_s_var( const bmath_vf3_s* o, f3_t* res )
 void bmath_vf3_s_dev( const bmath_vf3_s* o, f3_t* res )
 {
     *res = bmath_vf3_s_f3_dev( o );
+}
+
+void bmath_vf3_s_to_stdout( const bmath_vf3_s* o )
+{
+    const f3_t* v = o->data;
+    for( sz_t i = 0; i < o->size; i++ ) printf( "%9.3g\n", v[ i ] );
 }
 
 /**********************************************************************************************************************/
@@ -551,6 +559,13 @@ void bmath_vcf3_s_f3_avg( const bmath_vcf3_s* o, bmath_cf3_s* res )
         bmath_cf3_s_zro( res );
     }
 }
+
+void bmath_vcf3_s_to_stdout( const bmath_vcf3_s* o )
+{
+    const bmath_cf3_s* v = o->data;
+    for( sz_t i = 0; i < o->size; i++ ) bmath_cf3_s_to_stdout( &v[ i ] );
+}
+
 
 /**********************************************************************************************************************/
 

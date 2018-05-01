@@ -223,7 +223,7 @@ void st_s_print_fa( sc_t format, ... );
  *      Examples:
  *          "#?([0]=='H'&&[1]=='A'&&[2]=='L')" behaves as "#=?'HAL'"
  *          Test for a digit:  "#?([0]>='0'&&[0]<='9')"
- *          Test for a letter: "#?(([0]>='A'&&[0]<='Z')&&([0]>='a'&&[0]<='z'))"
+ *          Test for a letter: "#?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z'))"
  *
  *  "#?!..."
  *      Argument: bl_t*

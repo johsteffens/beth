@@ -81,6 +81,23 @@ void bmath_vf3_s_avg(     const bmath_vf3_s* o, f3_t* res  );
 void bmath_vf3_s_var(     const bmath_vf3_s* o, f3_t* res  );
 void bmath_vf3_s_dev(     const bmath_vf3_s* o, f3_t* res  );
 
+static inline
+void bmath_vf3_s_set_f3( bmath_vf3_s* o, sz_t index, f3_t v )
+{
+    assert( index < o->size );
+    o->data[ index ] = v;
+}
+
+static inline
+f3_t bmath_vf3_s_get_f3( const bmath_vf3_s* o, sz_t index )
+{
+    assert( index < o->size );
+    return o->data[ index ];
+}
+
+/// For easy inspection
+void bmath_vf3_s_to_stdout( const bmath_vf3_s* o );
+
 /**********************************************************************************************************************/
 // dynamic size vector of bmath_cf3_s
 
@@ -119,6 +136,23 @@ void bmath_vcf3_s_sqr(     const bmath_vcf3_s* o, bmath_cf3_s* res );
 void bmath_vcf3_s_sub_sqr( const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_cf3_s* res );
 void bmath_vcf3_s_sum(     const bmath_vcf3_s* o, bmath_cf3_s* res );
 void bmath_vcf3_s_avg(     const bmath_vcf3_s* o, bmath_cf3_s* res );
+
+static inline
+void bmath_vcf3_s_set_cf3( bmath_vcf3_s* o, sz_t index, bmath_cf3_s v )
+{
+    assert( index < o->size );
+    o->data[ index ] = v;
+}
+
+static inline
+bmath_cf3_s bmath_vcf3_s_get_cf3( const bmath_vcf3_s* o, sz_t index )
+{
+    assert( index < o->size );
+    return o->data[ index ];
+}
+
+/// For easy inspection
+void bmath_vcf3_s_to_stdout( const bmath_vcf3_s* o );
 
 /**********************************************************************************************************************/
 

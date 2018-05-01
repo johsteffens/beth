@@ -269,6 +269,9 @@ bl_t bmath_cf3_equ( bmath_cf3_s o, bmath_cf3_s op1 )
     return o.v[ 0 ] == op1.v[ 0 ] && o.v[ 1 ] == op1.v[ 1 ];
 }
 
+/// For easy inspection
+void bmath_cf3_s_to_stdout( const bmath_cf3_s* o );
+
 /**********************************************************************************************************************/
 
 vd_t bmath_complex_signal_handler( const bcore_signal_s* o );

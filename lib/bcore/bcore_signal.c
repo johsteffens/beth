@@ -39,6 +39,7 @@
 #include "bcore_spect_source.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_via.h"
+#include "bcore_spect_matrix.h"
 #include "bcore_sc.h"
 #include "bcore_st.h"
 #include "bcore_tp.h"
@@ -112,6 +113,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_spect_sink_signal_handler,
         bcore_spect_interpreter_signal_handler,
         bcore_spect_translator_signal_handler,
+        bcore_spect_matrix_signal_handler,
         bcore_threads_signal_handler,
         bcore_txt_ml_signal_handler,
         bcore_bin_ml_signal_handler,

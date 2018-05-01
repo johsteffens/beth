@@ -213,6 +213,7 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
                         case TYPEOF_sz_t: *( sz_t* )dst_obj = self_item->default_sz; break;
                         case TYPEOF_tp_t: *( tp_t* )dst_obj = self_item->default_tp; break;
                         case TYPEOF_bl_t: *( bl_t* )dst_obj = self_item->default_bl; break;
+                        case TYPEOF_offset_t: *( offset_t* )dst_obj = self_item->default_sz; break;
                         default: ERR( "Default value not supported for type '%s'", ifnameof( self_item->type ) );
                     }
                 }

@@ -98,7 +98,7 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_matrix, set_cell,            sz_t,
 
 /**********************************************************************************************************************/
 
-vd_t bcore_spect_array_signal_handler( const bcore_signal_s* o );
+vd_t bcore_spect_matrix_signal_handler( const bcore_signal_s* o );
 
 #endif
 

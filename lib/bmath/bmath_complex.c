@@ -13,6 +13,7 @@
  *  limitations under the License.
  */
 
+#include <stdio.h>
 #include "bmath_complex.h"
 
 /**********************************************************************************************************************/
@@ -36,6 +37,13 @@ BCORE_DEFINE_OBJECT_FLAT_( bmath_ring, bmath_cf3_s )
 
 /**********************************************************************************************************************/
 
+void bmath_cf3_s_to_stdout( const bmath_cf3_s* o )
+{
+    printf( "%9.3g %9.3g\n", o->v[ 0 ], o->v[ 1 ] );
+}
+
+/**********************************************************************************************************************/
+
 static vd_t selftest( void )
 {
     bmath_cf3_s c1 = { .v[0] = 1, .v[1] = 2 };
@@ -45,14 +53,7 @@ static vd_t selftest( void )
 
 
     bmath_cf3_s_div( &c1, &c2, &c3 );
-    bcore_txt_ml_x_to_stdout( sr_twc( TYPEOF_bmath_cf3_s, &c3 ) );
-    bcore_txt_ml_x_to_stdout( sr_twc( TYPEOF_bmath_cf3_s, &c4 ) );
-
     bmath_ring_t_div( TYPEOF_bmath_cf3_s, (bmath_ring*)&c1, (bmath_ring*)&c2, (bmath_ring*)&c4 );
-
-    bcore_txt_ml_x_to_stdout( sr_twc( TYPEOF_bmath_cf3_s, &c3 ) );
-    bcore_txt_ml_x_to_stdout( sr_twc( TYPEOF_bmath_cf3_s, &c4 ) );
-
     ASSERT( bmath_cf3_s_is_equ( &c3, &c4 ) );
 
     return NULL;
