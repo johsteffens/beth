@@ -24,6 +24,12 @@
  *  add, zro, neg, sub, mul, mul_vec, mul_scl - according to spect_matrix
  *  htp: (hermitean) transpose
  *  ltr: lower triangular matrix
+ *  cnv: convert to a specific form (e.g. a decomposition)
+ *  ltr: lower triangle matrix (evaluation ignores upper triangle)
+ *  lt1: lower triangle matrix with main diagonal elements deemed 1 and not evaluated (luc satisfies ltr with respect for evaluation)
+ *  utr: upper triangle matrix (evaluation ignores lower triangle)
+ *  luc: LU-composite matrix: L - diag(L) + U; diagonal elements of L are all 1 and neeed not be stored
+ *  hsm: hermitean (symmetric) matrix.
  */
 /**********************************************************************************************************************/
 
@@ -56,6 +62,11 @@ void bmath_mf3_s_set_size( bmath_mf3_s* o, sz_t rows, sz_t cols );
 static inline
 void bmath_mf3_s_set_size_to( const bmath_mf3_s* o, bmath_mf3_s* res ) { bmath_mf3_s_set_size( res, o->rows, o->cols ); }
 
+void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
+
+bmath_mf3_s* bmath_mf3_s_create_set_size( sz_t rows, sz_t cols );
+bmath_mf3_s* bmath_mf3_s_create_fill_random( sz_t rows, sz_t cols, f3_t min, f3_t max, u2_t* rval );
+
 bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op );
 bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o );
 bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o );
@@ -75,9 +86,12 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 /// multiplication of o with op(transposed); (faster than mul)
 void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
-void bmath_mf3_s_one(       bmath_mf3_s* o );
-void bmath_mf3_s_inv( const bmath_mf3_s* o, bmath_mf3_s* res );
-void bmath_mf3_s_div( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+void bmath_mf3_s_one(           bmath_mf3_s* o );
+void bmath_mf3_s_inv(     const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1
+void bmath_mf3_s_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = (o^-1)T
+void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1 in case o is hermitean-symmetric (3x faster than bmath_mf3_s_inv)
+
+void bmath_mf3_s_div(     const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
 void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t*        op, bmath_mf3_s* res );
 static inline void bmath_mf3_s_mul_scl_f3( const bmath_mf3_s* o, f3_t op, bmath_mf3_s* res ) { bmath_mf3_s_mul_scl( o, &op, res ); }
@@ -112,10 +126,19 @@ bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx ); // p
  *  Only the lower triangle of o is evaluated.
  *  res: represents the lower-triangular version
  *  It is o = res * resT.
- *  Algorithm always succeeds.
  *  When o is not positive definite, incomputable elements of res are set to zero.
  */
-void bmath_mf3_s_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res );
+void bmath_mf3_s_decompose_cholesky( const bmath_mf3_s* o, bmath_mf3_s* ltr_res );
+
+/** LU decomposition.
+ *  o must be square and invertible.
+ *  res: represents a LU-composite matrix (LUC):
+ *       U is upper triangle of LUC
+ *       L is lower triangle of LUC except diagonal
+ *       diagonal of L is all 1 and not stored.
+ *  When o is not invertible, incomputable elements of res are set to zero.
+ */
+void bmath_mf3_s_decompose_luc( const bmath_mf3_s* o, bmath_mf3_s* res );
 
 /** Inversion and h-transposition of lower triangular matrix.
  *  o is deemed lower triangular (only lower triangular elements are evaluated)
@@ -126,12 +149,48 @@ void bmath_mf3_s_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res );
  */
 void bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res );
 
-/** Multiplication of o with o(transposed).
- *  o is deemed triangular (only triangular elements are evaluated)
+/** Multiplication of o with o(transposed) of triangular matrix. (res = o * oT)
+ *  Only triangular elements of o are evaluated
  *  res is symmetric
  */
 void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // lower triangular
 void bmath_mf3_s_utr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // upper triangular
+
+/** Multiplication of special matrix with a vector res = o * op.
+ *  Only relevant triangular elements of o are evaluated.
+ *  In-Place for op==res.
+ */
+void bmath_mf3_s_ltr_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+void bmath_mf3_s_lt1_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+void bmath_mf3_s_utr_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+void bmath_mf3_s_luc_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+
+/** Multiplication of special matrix with a transposed matrix, transposed result: resT = o * opT.
+ *  Only relevant triangular elements of o are evaluated.
+ *  In-Place for op==res.
+ */
+void bmath_mf3_s_ltr_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+void bmath_mf3_s_lt1_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+void bmath_mf3_s_utr_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+void bmath_mf3_s_luc_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+
+/** Solves multiplication of special matrix with a vector: op = o * res.
+ *  Only relevant triangular elements of o are evaluated.
+ *  In-Place for op==res.
+ */
+void bmath_mf3_s_ltr_solve_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+void bmath_mf3_s_lt1_solve_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+void bmath_mf3_s_utr_solve_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+void bmath_mf3_s_luc_solve_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+
+/** Solves multiplication of special matrix with a transposed matrix, transposed result: opT = o * resT.
+ *  Only relevant triangular elements of o are evaluated.
+ *  In-Place for op==res.
+ */
+void bmath_mf3_s_ltr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+void bmath_mf3_s_lt1_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
 /// For easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );

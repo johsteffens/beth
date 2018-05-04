@@ -55,9 +55,19 @@ BCORE_DECLARE_OBJECT_( bmath_vf3_s )
     };
 };
 
-void bmath_vf3_s_set_size( bmath_vf3_s* o, sz_t size );
-bmath_vf3_s* bmath_vf3_s_create_size( sz_t size );
-bmath_vf3_s* bmath_vf3_s_create_fill( f3_t val, sz_t size );
+bmath_vf3_s* bmath_vf3_s_create_set_size( sz_t size );
+bmath_vf3_s* bmath_vf3_s_create_fill( sz_t size, f3_t val );
+bmath_vf3_s* bmath_vf3_s_create_fill_random( sz_t size, f3_t min, f3_t max, u2_t* rval );
+
+void bmath_vf3_s_set_size(    bmath_vf3_s* o, sz_t size );
+void bmath_vf3_s_set_size_to( const bmath_vf3_s* o, bmath_vf3_s* res );
+void bmath_vf3_s_fill(        bmath_vf3_s* o, f3_t val );
+void bmath_vf3_s_fill_random( bmath_vf3_s* o, f3_t min, f3_t max, u2_t* rval );
+
+bl_t bmath_vf3_s_is_equ( const bmath_vf3_s* o, const bmath_vf3_s* op );
+bl_t bmath_vf3_s_is_zro( const bmath_vf3_s* o );
+bl_t bmath_vf3_s_is_near_equ( const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t max_dev );
+bl_t bmath_vf3_s_is_near_zro( const bmath_vf3_s* o, f3_t max_dev );
 
 void bmath_vf3_s_zro(     bmath_vf3_s* o );
 void bmath_vf3_s_neg(     const bmath_vf3_s* o, bmath_vf3_s* res );

@@ -54,6 +54,41 @@ void bmath_mf3_s_set_size( bmath_mf3_s* o, sz_t rows, sz_t cols )
     bcore_matrix_a_set_size( ( bcore_matrix* )o, rows, cols );
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval )
+{
+    f3_t range = max - min;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        f3_t* v = o->data + i * o->stride;
+        for( sz_t j = 0; j < o->cols; j++ )
+        {
+            v[ j ] = ( range * f3_xsg1_pos( rval ) ) + min;
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bmath_mf3_s* bmath_mf3_s_create_set_size( sz_t rows, sz_t cols )
+{
+    bmath_mf3_s* o = bmath_mf3_s_create();
+    bmath_mf3_s_set_size( o, rows, cols );
+    return o;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bmath_mf3_s* bmath_mf3_s_create_fill_random( sz_t rows, sz_t cols, f3_t min, f3_t max, u2_t* rval )
+{
+    bmath_mf3_s* o = bmath_mf3_s_create_set_size( rows, cols );
+    bmath_mf3_s_fill_random( o, min, max, rval );
+    return o;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op )
 {
     if( o->rows != op->rows ) return false;
@@ -67,6 +102,8 @@ bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op )
     return true;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o )
 {
     for( sz_t i = 0; i < o->rows; i++ )
@@ -76,6 +113,8 @@ bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o )
     }
     return true;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o )
 {
@@ -87,6 +126,8 @@ bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o )
     }
     return true;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev )
 {
@@ -101,6 +142,8 @@ bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t 
     return true;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev )
 {
     for( sz_t i = 0; i < o->rows; i++ )
@@ -110,6 +153,8 @@ bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev )
     }
     return true;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev )
 {
@@ -124,6 +169,8 @@ bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev )
     }
     return true;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev )
 {
@@ -142,6 +189,8 @@ bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev )
     return true;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
     ASSERT( o->rows == op->rows );
@@ -156,6 +205,8 @@ void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
         for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ] + v2[ j ];
     }
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
@@ -172,6 +223,8 @@ void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_zro( bmath_mf3_s* o )
 {
     for( sz_t i = 0; i < o->rows; i++ )
@@ -181,6 +234,8 @@ void bmath_mf3_s_zro( bmath_mf3_s* o )
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_one( bmath_mf3_s* o )
 {
     for( sz_t i = 0; i < o->rows; i++ )
@@ -189,6 +244,8 @@ void bmath_mf3_s_one( bmath_mf3_s* o )
         for( sz_t j = 0; j < o->cols; j++ ) v1[ j ] = ( j == i ) ? 1 : 0;
     }
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
@@ -202,6 +259,8 @@ void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res )
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     if( res == o ) return;
@@ -214,6 +273,8 @@ void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res )
         for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ];
     }
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
@@ -249,6 +310,8 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
         }
     }
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
@@ -302,7 +365,9 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
     }
 }
 
-void bmath_mf3_s_inv( const bmath_mf3_s* o, bmath_mf3_s* res )
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_inv_htp_colesky( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     if( o == res )
     {
@@ -319,31 +384,59 @@ void bmath_mf3_s_inv( const bmath_mf3_s* o, bmath_mf3_s* res )
     ASSERT( o->cols == res->cols );
 
     // Inversion via cholesky decomposition:
-    // S = A*AT (symmetric)
-    // SI = (A*AT)I = AIT*AI
-    // => AI = AT*SI
+    bmath_mf3_s* buf = bmath_mf3_s_create();
+    bmath_mf3_s_set_size_to( o, buf );
+    bmath_mf3_s_htp( o, buf );            // buf = oT
+    bmath_mf3_s_mul_htp( buf, buf, res ); // res = S = oT * o
+    bmath_mf3_s_decompose_cholesky( res, res );     // res = L
+    bmath_mf3_s_ltr_inv_htp( res, res );  // res = LIT (upper triangular)
+    bmath_mf3_s_utr_mul_htp( res, buf );  // res = SI = LIT * LI
+    bmath_mf3_s_mul_htp( o, buf, res );   // buf = o * SIT = o * (oI*oIT) = oIT; (SI==SIT)
+    bmath_mf3_s_discard( buf );
 
-    // L: S = L*LT (L = lower triangular via cholesky)
-    // SI = (L*LT)I = LTI * LI
-
-    TIME_TO_STDOUT( bmath_mf3_s_mul_htp( o, o, res ) );    // res = S = o * oT
-    TIME_TO_STDOUT( bmath_mf3_s_cholesky( res, res ) );    // res = L
-    TIME_TO_STDOUT( bmath_mf3_s_ltr_inv_htp( res, res ) ); // res = LIT (upper triangular)
-    TIME_TO_STDOUT( bmath_mf3_s_utr_mul_htp( res, res ) ); // res = SI = LIT * LI
-    TIME_TO_STDOUT( bmath_mf3_s_mul( res, o, res ) );      // res = AIT = (AT*SI)T = SI * A;
-    TIME_TO_STDOUT( bmath_mf3_s_htp( res, res ) );         // res = AI
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_inv_htp_luc( const bmath_mf3_s* o, bmath_mf3_s* res )
+{
+    bmath_mf3_s* luc = bmath_mf3_s_create();
+    bmath_mf3_s_set_size_to( o, luc );
+    bmath_mf3_s_set_size_to( o, res );
+    bmath_mf3_s_decompose_luc( o, luc );
+    bmath_mf3_s_one( res );
+    bmath_mf3_s_luc_solve_htp_htp( luc, res, res );
+    bmath_mf3_s_discard( luc );
+}
+
+void bmath_mf3_s_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
+{
+    bmath_mf3_s_inv_htp_luc( o, res );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_inv( const bmath_mf3_s* o, bmath_mf3_s* res )
+{
+    bmath_mf3_s_inv_htp( o, res );
+    bmath_mf3_s_htp( res, res );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_div( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
-    ERR_fa( "Function is not implemented." );
+    bmath_mf3_s_inv( op, res );
+    bmath_mf3_s_mul( o, res, res );
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
 {
     if( res == op )
     {
-        bmath_vf3_s* buf = bmath_vf3_s_create_size( res->size );
+        bmath_vf3_s* buf = bmath_vf3_s_create_set_size( res->size );
         bmath_mf3_s_mul_vec( o, op, buf );
         bmath_vf3_s_cpy( buf, res );
         bmath_vf3_s_discard( buf );
@@ -362,6 +455,8 @@ void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3
         vr[ i ] = sum;
     }
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
@@ -385,6 +480,9 @@ void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
                 vrj[ i ] = tmp;
             }
         }
+
+        // copy diag
+        if( o != res ) for( sz_t i = 0; i < n; i++ ) res->data[ i * res->stride + i ] = o->data[ i * o->stride + i ];
         return;
     }
 
@@ -409,6 +507,8 @@ void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t* op, bmath_mf3_s* res )
 {
     ASSERT( o->rows == res->rows );
@@ -422,16 +522,22 @@ void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t* op, bmath_mf3_s* res
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_set_row_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data )
 {
     bcore_u_memcpy( sizeof( f3_t ), o->data + idx * o->stride, data, o->cols );
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_set_col_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data )
 {
     f3_t* v = o ->data + idx;
     for( sz_t i = 0; i < o->rows; i++ ) v[ i * o ->stride ] = data[ i ];
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_set_row_by_vec ( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* vec )
 {
@@ -440,12 +546,16 @@ void bmath_mf3_s_set_row_by_vec ( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* v
     bmath_mf3_s_set_row_by_data( o, idx, vec->data );
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_set_col_by_vec ( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* vec )
 {
     ASSERT( idx < o->cols );
     ASSERT( o->rows <= vec->size );
     bmath_mf3_s_set_col_by_data( o, idx, vec->data );
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_get_row_vec(  const bmath_mf3_s* o, sz_t idx, bmath_vf3_s* res )
 {
@@ -454,12 +564,16 @@ void bmath_mf3_s_get_row_vec(  const bmath_mf3_s* o, sz_t idx, bmath_vf3_s* res 
     bcore_u_memcpy( sizeof( f3_t ), res->data, o->data + idx * o->stride, o->cols );
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_get_col_vec(  const bmath_mf3_s* o, sz_t idx, bmath_vf3_s* res )
 {
     ASSERT( idx < o->cols );
     ASSERT( o->cols <= res->size );
     for( sz_t i = 0; i < o->rows; i++ ) res->data[ i ] = o->data[ i * o ->stride ];
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx )
 {
@@ -472,7 +586,9 @@ bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx )
     return vec;
 }
 
-void bmath_mf3_s_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res )
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_decompose_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     // Algorithm works in-place: No need to check for o == res;
     ASSERT( o->rows ==   o->cols );
@@ -500,6 +616,41 @@ void bmath_mf3_s_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res )
         }
     }
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_decompose_luc( const bmath_mf3_s* o, bmath_mf3_s* res )
+{
+    // Algorithm works in-place: No need to check for o == res;
+    ASSERT( o->rows ==   o->cols );
+    ASSERT( o->rows == res->rows );
+    ASSERT( o->cols == res->cols );
+    sz_t n = o->cols;
+    sz_t stride = res->stride;
+
+    bmath_mf3_s_cpy( o, res );
+    for( sz_t i = 0; i < n; i++ )
+    {
+        f3_t* vi = res->data + i * stride;
+        for( sz_t j = 0; j < i; j++ )
+        {
+            f3_t* vj = res->data + j;
+            f3_t sum = 0;
+            for( sz_t k = 0; k < j; k++ ) sum += vi[ k ] * vj[ k * stride ];
+            vi[ j ] = ( vj[ j * stride ] != 0 ) ? ( ( vi[ j ] - sum ) / vj[ j * stride ] ) : 0;
+        }
+
+        for( sz_t j = i; j < n; j++ )
+        {
+            f3_t* vj = res->data + j;
+            f3_t sum = 0;
+            for( sz_t k = 0; k < i; k++ ) sum += vi[ k ] * vj[ k * stride ];
+            vi[ j ] -= sum;
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
@@ -540,6 +691,15 @@ void bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
     }
 }
 
+void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res )
+{
+    bmath_mf3_s_decompose_cholesky( o, res ); // res = ltr
+    bmath_mf3_s_ltr_inv_htp( res, res );      // res = utr
+    bmath_mf3_s_utr_mul_htp( res, res );      // res = oI
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     // Algorithm works in-place: No need to check for o == res;
@@ -563,14 +723,14 @@ void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
     }
 
     // diagonal elements in reverse order
-    for( sz_t i = n; i > 0; i-- )
+    for( sz_t i = n - 1; i < n; i-- )
     {
-        const f3_t* voi =   o->data + ( i - 1 ) *   o->stride;
-              f3_t* vri = res->data + ( i - 1 ) * res->stride;
+        const f3_t* voi =   o->data + i *   o->stride;
+              f3_t* vri = res->data + i * res->stride;
 
         f3_t sum = 0;
-        for( sz_t k = 0; k < i; k++ ) sum += voi[ k ] * voi[ k ];
-        vri[ i - 1 ] = sum;
+        for( sz_t k = 0; k <= i; k++ ) sum += voi[ k ] * voi[ k ];
+        vri[ i ] = sum;
     }
 
     // copy lower off-diagonal from upper off-diagonal
@@ -580,6 +740,8 @@ void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
         for( sz_t j = 0; j < i; j++ ) vri[ j ] = res->data[ j * res->stride + i ];
     }
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_utr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
@@ -610,7 +772,7 @@ void bmath_mf3_s_utr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
               f3_t* vri = res->data + i * res->stride;
 
         f3_t sum = 0;
-        for( sz_t k = i; k < n; k++ ) sum += voi[ k ] * voi[ k ];
+        for( sz_t k = i; k < n; k++ ) sum += f3_sqr( voi[ k ] );
         vri[ i ] = sum;
     }
 
@@ -621,6 +783,293 @@ void bmath_mf3_s_utr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
         for( sz_t j = 0; j < i; j++ ) res->data[ j * res->stride + i ] = vri[ j ];
     }
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_ltr_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
+{
+    // Algorithm works in-place for op == res;
+    for( sz_t i = o->rows - 1; i < o->rows; i-- )
+    {
+        f3_t* v1 = o->data + i * o->stride;
+        f3_t sum = 0;
+        for( sz_t j = 0; j <= i; j++ ) sum += v1[ j ] * op[ j ];
+        res[ i ] = sum;
+    }
+}
+
+void bmath_mf3_s_ltr_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
+{
+    ASSERT( o->cols ==  op->size );
+    ASSERT( o->rows == res->size );
+    bmath_mf3_s_ltr_mul_vec_( o, op->data, res->data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_lt1_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
+{
+    // Algorithm works in-place for op == res;
+    for( sz_t i = o->rows - 1; i < o->rows; i-- )
+    {
+        f3_t* v1 = o->data + i * o->stride;
+        f3_t sum = 0;
+        for( sz_t j = 0; j < i; j++ ) sum += v1[ j ] * op[ j ];
+        res[ i ] = sum + op[ i ];
+    }
+}
+
+void bmath_mf3_s_lt1_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
+{
+    // Algorithm works in-place for op == res;
+    ASSERT( o->cols ==  op->size );
+    ASSERT( o->rows == res->size );
+    bmath_mf3_s_lt1_mul_vec_( o, op->data, res->data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_utr_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
+{
+    // Algorithm works in-place for op == res;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        f3_t* v1 = o->data + i * o->stride;
+        f3_t sum = 0;
+        for( sz_t j = i; j < o->cols; j++ ) sum += v1[ j ] * op[ j ];
+        res[ i ] = sum;
+    }
+}
+
+void bmath_mf3_s_utr_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
+{
+    ASSERT( o->cols ==  op->size );
+    ASSERT( o->rows == res->size );
+    bmath_mf3_s_utr_mul_vec_( o, op->data, res->data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_luc_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
+{
+    // Algorithm works in-place for op == res;
+    bmath_mf3_s_utr_mul_vec_( o,  op, res );
+    bmath_mf3_s_lt1_mul_vec_( o, res, res );
+}
+
+void bmath_mf3_s_luc_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
+{
+    ASSERT( o->cols ==  op->size );
+    ASSERT( o->rows == res->size );
+    bmath_mf3_s_luc_mul_vec_( o,  op->data, res->data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_ltr_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == op->cols );
+    ASSERT( o->rows == op->rows );
+    ASSERT( o->cols == res->cols );
+    ASSERT( o->rows == res->rows );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        bmath_mf3_s_ltr_mul_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_lt1_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == op->cols );
+    ASSERT( o->rows == op->rows );
+    ASSERT( o->cols == res->cols );
+    ASSERT( o->rows == res->rows );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        bmath_mf3_s_lt1_mul_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_utr_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == op->cols );
+    ASSERT( o->rows == op->rows );
+    ASSERT( o->cols == res->cols );
+    ASSERT( o->rows == res->rows );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        bmath_mf3_s_utr_mul_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_luc_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == op->cols );
+    ASSERT( o->rows == op->rows );
+    ASSERT( o->cols == res->cols );
+    ASSERT( o->rows == res->rows );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        bmath_mf3_s_luc_mul_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_ltr_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
+{
+    // Algorithm works in-place for op == res;
+    if( op != res ) bcore_u_memcpy( sizeof( f3_t ), res, op, o->rows );
+    sz_t n = o->rows;
+    for( sz_t i = 0; i < n; i++ )
+    {
+        const f3_t* voi = o->data + i * o->stride;
+        f3_t sum = 0;
+        for( sz_t j = 0; j < i; j++ ) sum += voi[ j ] * res[ j ];
+        res[ i ] = ( voi[ i ] != 0 ) ? ( res[ i ] - sum ) / voi[ i ] : 0;
+    }
+}
+
+void bmath_mf3_s_ltr_solve_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
+{
+    // Algorithm works in-place for op == res;
+    ASSERT( o->cols ==   o->rows );
+    ASSERT( o->rows ==  op->size );
+    ASSERT( o->rows == res->size );
+    bmath_mf3_s_ltr_solve_vec_( o, op->data, res->data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_utr_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
+{
+    // Algorithm works in-place for op == res;
+    if( op != res ) bcore_u_memcpy( sizeof( f3_t ), res, op, o->rows );
+    sz_t n = o->rows;
+    for( sz_t i = n - 1; i < n; i-- )
+    {
+        const f3_t* voi = o->data + i * o->stride;
+        f3_t sum = 0;
+        for( sz_t j = i + 1; j < n; j++ ) sum += voi[ j ] * res[ j ];
+        res[ i ] = ( voi[ i ] != 0 ) ? ( res[ i ] - sum ) / voi[ i ] : 0;
+    }
+}
+
+void bmath_mf3_s_utr_solve_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
+{
+    // Algorithm works in-place for op == res;
+    ASSERT( o->cols ==   o->rows );
+    ASSERT( o->rows ==  op->size );
+    ASSERT( o->rows == res->size );
+    bmath_mf3_s_utr_solve_vec_( o, op->data, res->data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_lt1_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
+{
+    // Algorithm works in-place for op == res;
+    if( op != res ) bcore_u_memcpy( sizeof( f3_t ), res, op, o->rows );
+    sz_t n = o->rows;
+    for( sz_t i = 0; i < n; i++ )
+    {
+        const f3_t* voi = o->data + i * o->stride;
+        f3_t sum = 0;
+        for( sz_t j = 0; j < i; j++ ) sum += voi[ j ] * res[ j ];
+        res[ i ] -= sum;
+    }
+}
+
+void bmath_mf3_s_lt1_solve_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
+{
+    // Algorithm works in-place for op == res;
+    ASSERT( o->cols ==   o->rows );
+    ASSERT( o->rows ==  op->size );
+    ASSERT( o->rows == res->size );
+    bmath_mf3_s_lt1_solve_vec_( o, op->data, res->data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_luc_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
+{
+    // Algorithm works in-place for op == res;
+    bmath_mf3_s_lt1_solve_vec_( o,  op, res );
+    bmath_mf3_s_utr_solve_vec_( o, res, res );
+}
+
+void bmath_mf3_s_luc_solve_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
+{
+    // Algorithm works in-place for op == res;
+    ASSERT( o->cols ==   o->rows );
+    ASSERT( o->rows ==  op->size );
+    ASSERT( o->rows == res->size );
+    bmath_mf3_s_luc_solve_vec_( o, op->data, res->data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_ltr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == op->cols );
+    ASSERT( o->rows == op->rows );
+    ASSERT( o->cols == res->cols );
+    ASSERT( o->rows == res->rows );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        bmath_mf3_s_ltr_solve_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_lt1_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == op->cols );
+    ASSERT( o->rows == op->rows );
+    ASSERT( o->cols == res->cols );
+    ASSERT( o->rows == res->rows );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        bmath_mf3_s_lt1_solve_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == op->cols );
+    ASSERT( o->rows == op->rows );
+    ASSERT( o->cols == res->cols );
+    ASSERT( o->rows == res->rows );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        bmath_mf3_s_utr_solve_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == op->cols );
+    ASSERT( o->rows == op->rows );
+    ASSERT( o->cols == res->cols );
+    ASSERT( o->rows == res->rows );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        bmath_mf3_s_luc_solve_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
 {
@@ -646,8 +1095,11 @@ static vd_t selftest( void )
     bmath_mf3_s* m2 = bcore_life_s_push_aware( l, bmath_mf3_s_create() );
     bmath_mf3_s* m3 = bcore_life_s_push_aware( l, bmath_mf3_s_create() );
     bmath_mf3_s* m4 = bcore_life_s_push_aware( l, bmath_mf3_s_create() );
+    bmath_mf3_s* m5 = bcore_life_s_push_aware( l, bmath_mf3_s_create() );
     bmath_vf3_s* v1 = bcore_life_s_push_aware( l, bmath_vf3_s_create() );
     bmath_vf3_s* v2 = bcore_life_s_push_aware( l, bmath_vf3_s_create() );
+    bmath_vf3_s* v3 = bcore_life_s_push_aware( l, bmath_vf3_s_create() );
+    bmath_vf3_s* v4 = bcore_life_s_push_aware( l, bmath_vf3_s_create() );
 
     // basic linear
     {
@@ -693,9 +1145,31 @@ static vd_t selftest( void )
         bmath_mf3_s_set_size_to( m1, m4 );
         bmath_mf3_s_mul_htp( m1, m1, m2 ); // m2 = m1 * m1T = (symmetric)
 
-        bmath_mf3_s_cholesky( m2, m3 );
+        bmath_mf3_s_decompose_cholesky( m2, m3 );
         bmath_mf3_s_mul_htp( m3, m3, m4 ); // test cholesky lower triangular
         ASSERT( bmath_mf3_s_is_near_equ( m2, m4, 1E-8 ) );
+
+        bmath_vf3_s_set_size( v1, 3 );
+        bmath_vf3_s_set_size_to( v1, v2 );
+        bmath_vf3_s_set_size_to( v1, v3 );
+        bmath_vf3_s_set_size_to( v1, v4 );
+
+        u2_t rval = 123;
+        bmath_vf3_s_fill_random( v1, -1, 1, &rval );
+        bmath_mf3_s_mul_vec( m2, v1, v2 );
+
+        bmath_mf3_s_htp( m3, m4 );
+        bmath_mf3_s_utr_mul_vec( m4, v1, v3 );
+        bmath_mf3_s_ltr_mul_vec( m3, v3, v3 );
+        ASSERT( bmath_vf3_s_is_near_equ( v2, v3, 1E-8 ) );
+
+        bmath_mf3_s_ltr_mul_vec(   m3, v1, v2 );
+        bmath_mf3_s_ltr_solve_vec( m3, v2, v3 );
+        ASSERT( bmath_vf3_s_is_near_equ( v1, v3, 1E-8 ) );
+
+        bmath_mf3_s_utr_mul_vec(   m4, v1, v2 );
+        bmath_mf3_s_utr_solve_vec( m4, v2, v3 );
+        ASSERT( bmath_vf3_s_is_near_equ( v1, v3, 1E-8 ) );
     }
 
     // lower triangular inversion
@@ -709,23 +1183,77 @@ static vd_t selftest( void )
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-10 ) );
     }
 
+    // lu-decomposition
+    {
+        u2_t rval = 1234;
+
+        sz_t n = 500;
+        bmath_mf3_s_set_size( m1, n, n );
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+
+        bmath_mf3_s_set_size_to( m1, m2 );
+        bmath_mf3_s_set_size_to( m1, m3 );
+        bmath_mf3_s_set_size_to( m1, m4 );
+        bmath_mf3_s_set_size_to( m1, m5 );
+
+        bmath_mf3_s_decompose_luc( m1, m2 );
+
+        bmath_vf3_s_set_size( v1, n );
+        bmath_vf3_s_set_size( v2, n );
+        bmath_vf3_s_set_size( v3, n );
+        bmath_vf3_s_set_size( v4, n );
+
+        bmath_vf3_s_fill_random( v1, -1, 1, &rval );
+
+        bmath_mf3_s_mul_vec( m1, v1, v2 );
+        bmath_mf3_s_utr_mul_vec( m2, v1, v3 );
+        bmath_mf3_s_lt1_mul_vec( m2, v3, v4 );
+        ASSERT( bmath_vf3_s_is_near_equ( v2, v4, 1E-8 ) );
+        bmath_mf3_s_luc_mul_vec( m2, v1, v3 );
+        ASSERT( bmath_vf3_s_is_near_equ( v2, v3, 1E-8 ) );
+
+        bmath_mf3_s_luc_solve_vec( m2, v3, v4 );
+        ASSERT( bmath_vf3_s_is_near_equ( v1, v4, 1E-8 ) );
+
+        bmath_mf3_s_fill_random( m3, -1, 1, &rval );
+        bmath_mf3_s_mul_htp( m1, m3, m4 );
+
+        bmath_mf3_s_luc_mul_htp_htp( m2, m3, m5 );
+        bmath_mf3_s_htp( m5, m5 );
+        ASSERT( bmath_mf3_s_is_near_equ( m4, m5, 1E-8 ) );
+
+        bmath_mf3_s_htp( m5, m5 );
+        bmath_mf3_s_luc_solve_htp_htp( m2, m5, m4 );
+
+        ASSERT( bmath_mf3_s_is_near_equ( m4, m3, 1E-8 ) );
+    }
+
     // general inversion
     {
-        sz_t n = 1000;
+        sz_t n = 500;
+        u2_t rval = 1234;
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_set_size_to( m1, m2 );
         bmath_mf3_s_set_size_to( m1, m3 );
+        bmath_mf3_s_set_size_to( m1, m4 );
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        TIME_TO_STDOUT( bmath_mf3_s_inv( m1, m2 ) );
+        bmath_mf3_s_mul( m1, m2, m3 );
+        ASSERT( bmath_mf3_s_is_near_one( m3, 1E-7 ) );
+    }
 
+    // symmetric inversion
+    {
+        sz_t n = 500;
         u2_t rval = 1234;
-        for( sz_t i = 0; i < n; i++ )
-        {
-            for( sz_t j = 0; j < n; j++ )
-            {
-                m1->data[ i * m1->stride + j ] = f3_xsg1_sym( &rval );
-            }
-        }
+        bmath_mf3_s_set_size( m1, n, n );
+        bmath_mf3_s_set_size_to( m1, m2 );
+        bmath_mf3_s_set_size_to( m1, m3 );
+        bmath_mf3_s_set_size_to( m1, m4 );
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_mf3_s_mul_htp( m1, m1, m1 ); // m1 = m1*m1T
 
-        bmath_mf3_s_inv( m1, m2 );
+        TIME_TO_STDOUT( bmath_mf3_s_hsm_inv( m1, m2 ) );
         bmath_mf3_s_mul( m1, m2, m3 );
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-7 ) );
     }
