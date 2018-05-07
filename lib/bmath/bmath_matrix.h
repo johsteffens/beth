@@ -30,6 +30,8 @@
  *  utr: upper triangle matrix (evaluation ignores lower triangle)
  *  luc: LU-composite matrix: L - diag(L) + U; diagonal elements of L are all 1 and neeed not be stored
  *  hsm: hermitean (symmetric) matrix.
+ *  trc: trace
+ *  det: determinant
  */
 /**********************************************************************************************************************/
 
@@ -62,10 +64,13 @@ void bmath_mf3_s_set_size( bmath_mf3_s* o, sz_t rows, sz_t cols );
 static inline
 void bmath_mf3_s_set_size_to( const bmath_mf3_s* o, bmath_mf3_s* res ) { bmath_mf3_s_set_size( res, o->rows, o->cols ); }
 
-void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
+void bmath_mf3_s_fill_random(     bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
 
 bmath_mf3_s* bmath_mf3_s_create_set_size( sz_t rows, sz_t cols );
 bmath_mf3_s* bmath_mf3_s_create_fill_random( sz_t rows, sz_t cols, f3_t min, f3_t max, u2_t* rval );
+
+static inline bl_t bmath_mf3_s_is_equ_size( const bmath_mf3_s* o, const bmath_mf3_s* op ) { return o->rows == op->rows && o->cols == op->cols; }
+static inline bl_t bmath_mf3_s_is_square( const bmath_mf3_s* o ) { return o->rows == o->cols; }
 
 bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op );
 bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o );
@@ -75,6 +80,8 @@ bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t 
 bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev ); // near isometry (== near orthonormal)
+
+f3_t bmath_mf3_s_trc( const bmath_mf3_s* o );
 
 void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_zro(       bmath_mf3_s* o );
@@ -191,6 +198,13 @@ void bmath_mf3_s_ltr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 void bmath_mf3_s_lt1_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+
+/** SVD for symmetric o. Jacobi Method.
+ *  Output: d (diagonal), r (rotation) with o = rT * d * r.
+ *  In-Place. (o==d allowed; Separate r required)
+ *  Entire space of d is used during execution.
+ */
+void bmath_mf3_s_hsm_svd_jacobi_htp( const bmath_mf3_s* o, bmath_mf3_s* d, bmath_mf3_s* r );
 
 /// For easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );

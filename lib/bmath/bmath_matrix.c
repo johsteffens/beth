@@ -182,7 +182,7 @@ bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev )
         {
             const f3_t* v2 = o ->data + j * o ->stride;
             f3_t dot_prd = 0;
-            for( sz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ i ] * v2[ i ];
+            for( sz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ k ] * v2[ k ];
             if( f3_abs( dot_prd - ( ( j == i ) ? 1.0 : 0.0 ) ) > max_dev ) return false;
         }
     }
@@ -191,12 +191,20 @@ bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+f3_t bmath_mf3_s_trc( const bmath_mf3_s* o )
+{
+    ASSERT( o->cols == o->rows );
+    f3_t sum = 0;
+    for( sz_t i = 0; i < o->rows; i++ ) sum += o->data[ i * ( o->stride + 1 ) ];
+    return sum;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
-    ASSERT( o->rows == op->rows );
-    ASSERT( o->cols == op->cols );
-    ASSERT( o->rows == res->rows );
-    ASSERT( o->cols == res->cols );
+    ASSERT( bmath_mf3_s_is_equ_size( o, op ) );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     for( sz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data  + i * o ->stride;
@@ -210,10 +218,8 @@ void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 
 void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
-    ASSERT( o->rows == op->rows );
-    ASSERT( o->cols == op->cols );
-    ASSERT( o->rows == res->rows );
-    ASSERT( o->cols == res->cols );
+    ASSERT( bmath_mf3_s_is_equ_size( o, op ) );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     for( sz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data  + i * o ->stride;
@@ -249,8 +255,7 @@ void bmath_mf3_s_one( bmath_mf3_s* o )
 
 void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
-    ASSERT( o->rows == res->rows );
-    ASSERT( o->cols == res->cols );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     for( sz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data  + i * o ->stride;
@@ -347,8 +352,7 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
         return;
     }
 
-    ASSERT( o->rows == op->rows );
-    ASSERT( o->cols == op->cols );
+    ASSERT( bmath_mf3_s_is_equ_size( o, op ) );
 
     for( sz_t i = 0; i < n; i++ )
     {
@@ -379,7 +383,7 @@ void bmath_mf3_s_inv_htp_colesky( const bmath_mf3_s* o, bmath_mf3_s* res )
         return;
     }
 
-    ASSERT( o->rows == o->cols );
+    ASSERT( bmath_mf3_s_is_square( o ) );
     ASSERT( o->rows == res->rows );
     ASSERT( o->cols == res->cols );
 
@@ -463,8 +467,7 @@ void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
     if( o->rows == o->cols )
     {
         // in-place algorithm
-        ASSERT( o->rows == res->cols );
-        ASSERT( o->cols == res->rows );
+        ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
         sz_t n = o->rows;
         for( sz_t i = 0; i < n; i++ )
         {
@@ -511,8 +514,7 @@ void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 
 void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t* op, bmath_mf3_s* res )
 {
-    ASSERT( o->rows == res->rows );
-    ASSERT( o->cols == res->cols );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     f3_t f = *op;
     for( sz_t i = 0; i < o->rows; i++ )
     {
@@ -591,9 +593,8 @@ bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx )
 void bmath_mf3_s_decompose_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     // Algorithm works in-place: No need to check for o == res;
-    ASSERT( o->rows ==   o->cols );
-    ASSERT( o->rows == res->rows );
-    ASSERT( o->cols == res->cols );
+    ASSERT( bmath_mf3_s_is_square( o ) );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
 
     for( sz_t i = 0; i < o->rows; i++ )
     {
@@ -622,9 +623,8 @@ void bmath_mf3_s_decompose_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res )
 void bmath_mf3_s_decompose_luc( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     // Algorithm works in-place: No need to check for o == res;
-    ASSERT( o->rows ==   o->cols );
-    ASSERT( o->rows == res->rows );
-    ASSERT( o->cols == res->cols );
+    ASSERT( bmath_mf3_s_is_square( o ) );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     sz_t n = o->cols;
     sz_t stride = res->stride;
 
@@ -655,9 +655,8 @@ void bmath_mf3_s_decompose_luc( const bmath_mf3_s* o, bmath_mf3_s* res )
 void bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     // Algorithm works in-place: No need to check for o == res;
-    ASSERT( o->rows == o->cols );
-    ASSERT( o->rows == res->rows );
-    ASSERT( o->cols == res->cols );
+    ASSERT( bmath_mf3_s_is_square( o ) );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
 
     sz_t n = o->rows;
 
@@ -703,9 +702,8 @@ void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res )
 void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     // Algorithm works in-place: No need to check for o == res;
-    ASSERT( o->rows == o->cols );
-    ASSERT( o->rows == res->rows );
-    ASSERT( o->cols == res->cols );
+    ASSERT( bmath_mf3_s_is_square( o ) );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     sz_t n = o->rows;
 
     // compute off diagonal elements; store in upper triangle of res
@@ -746,9 +744,8 @@ void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 void bmath_mf3_s_utr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     // Algorithm works in-place: No need to check for o == res;
-    ASSERT( o->rows == o->cols );
-    ASSERT( o->rows == res->rows );
-    ASSERT( o->cols == res->cols );
+    ASSERT( bmath_mf3_s_is_square( o ) );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     sz_t n = o->rows;
 
     // compute off diagonal elements; store in lower triangle of res
@@ -1071,6 +1068,80 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_hsm_svd_jacobi_htp( const bmath_mf3_s* o, bmath_mf3_s* d, bmath_mf3_s* r )
+{
+    ASSERT( o != r );
+    // o == diag is allowed
+    ASSERT( bmath_mf3_s_is_square( o ) );
+    ASSERT( bmath_mf3_s_is_equ_size( o, r ) );
+    bmath_mf3_s_cpy( o, d );
+    bmath_mf3_s_one( r );
+
+    sz_t n = o->rows;
+
+    f3_t max_off = 0;
+
+    do
+    {
+        max_off = 0;
+
+        for( sz_t k = 0; k < n; k++ )
+        {
+            f3_t* dk = d->data + k * d->stride;
+            f3_t* rk = r->data + k * r->stride;
+            for( sz_t l = 0; l < k; l++ )
+            {
+                f3_t* dl = d->data + l * d->stride;
+                f3_t* rl = r->data + l * r->stride;
+                f3_t theta = 0.5 * atan2( 2 * dk[l], dk[k] - dl[l] );
+                f3_t c = cos( theta );
+                f3_t s = sin( theta );
+
+                f3_t cc = c * c;
+                f3_t ss = s * s;
+
+                f3_t dkk = dk[k];
+                f3_t dll = dl[l];
+                f3_t dkl = dk[l];
+                f3_t dklcsx2 = 2 * dkl * c * s;
+
+                dk[k] = dkk * cc + dll * ss + dklcsx2;
+                dl[l] = dll * cc + dkk * ss - dklcsx2;
+                dk[l] = 0;
+                dl[k] = 0;
+
+                for( sz_t i = 0; i < n; i++ )
+                {
+                    if( i != k && i != l )
+                    {
+                        f3_t* di = d->data + i * d->stride;
+                        f3_t dki = dk[ i ] * c + dl[ i ] * s;
+                        f3_t dli = dl[ i ] * c - dk[ i ] * s;
+                        dk[ i ] = dki;
+                        dl[ i ] = dli;
+                        di[ k ] = dki;
+                        di[ l ] = dli;
+
+                        max_off = f3_max( max_off, f3_max( dki, dkl ) );
+                    }
+                }
+
+                for( sz_t i = 0; i < n; i++ )
+                {
+                    f3_t rki = rk[ i ];
+                    f3_t rli = rl[ i ];
+                    rk[ i ] = rki * c + rli * s;
+                    rl[ i ] = rli * c - rki * s;
+                }
+            }
+        }
+    }
+    while( max_off > 0 );
+
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
 {
     printf( "(%zu x %zu)\n", o->rows, o->cols );
@@ -1187,7 +1258,7 @@ static vd_t selftest( void )
     {
         u2_t rval = 1234;
 
-        sz_t n = 500;
+        sz_t n = 100;
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_fill_random( m1, -1, 1, &rval );
 
@@ -1230,7 +1301,7 @@ static vd_t selftest( void )
 
     // general inversion
     {
-        sz_t n = 500;
+        sz_t n = 100;
         u2_t rval = 1234;
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_set_size_to( m1, m2 );
@@ -1244,7 +1315,7 @@ static vd_t selftest( void )
 
     // symmetric inversion
     {
-        sz_t n = 500;
+        sz_t n = 100;
         u2_t rval = 1234;
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_set_size_to( m1, m2 );
@@ -1256,6 +1327,28 @@ static vd_t selftest( void )
         TIME_TO_STDOUT( bmath_mf3_s_hsm_inv( m1, m2 ) );
         bmath_mf3_s_mul( m1, m2, m3 );
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-7 ) );
+    }
+
+    // jacobi svd
+    {
+        sz_t n = 100;
+
+        bmath_mf3_s_set_size( m1, n, n );
+        u2_t rval = 1234;
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_mf3_s_mul_htp( m1, m1, m1 );
+
+        bmath_mf3_s_set_size_to( m1, m2 );
+        bmath_mf3_s_set_size_to( m1, m3 );
+        bmath_mf3_s_set_size_to( m1, m4 );
+        TIME_TO_STDOUT( bmath_mf3_s_hsm_svd_jacobi_htp( m1, m2, m3 ) );
+        ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
+
+        bmath_mf3_s_mul( m2, m3, m4 );
+        bmath_mf3_s_htp( m3, m3 );
+        bmath_mf3_s_mul( m3, m4, m4 );
+
+        ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
     }
 
     bcore_life_s_discard( l );
