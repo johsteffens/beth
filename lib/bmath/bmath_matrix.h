@@ -31,6 +31,7 @@
  *  luc: LU-composite matrix: L - diag(L) + U; diagonal elements of L are all 1 and neeed not be stored
  *  hsm: hermitean (symmetric) matrix.
  *  trc: trace
+ *  dag: diagonal
  *  det: determinant
  */
 /**********************************************************************************************************************/
@@ -75,11 +76,13 @@ static inline bl_t bmath_mf3_s_is_square( const bmath_mf3_s* o ) { return o->row
 bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op );
 bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o );
 bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o );
+bl_t bmath_mf3_s_is_dag( const bmath_mf3_s* o );
 
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev ); // near isometry (== near orthonormal)
+bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev ); // near isometry (== near orthonormal)
 
 f3_t bmath_mf3_s_trc( const bmath_mf3_s* o );
 
@@ -201,10 +204,13 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 /** SVD for symmetric o. Jacobi Method.
  *  Output: d (diagonal), r (rotation) with o = rT * d * r.
- *  In-Place. (o==d allowed; Separate r required)
+ *  In-Place. (o==d allowed; Dedicated memory for r required)
+ *  r == NULL allowed, in which case only eigenvalues dag(d) are computed (20% faster).
  *  Entire space of d is used during execution.
  */
 void bmath_mf3_s_hsm_svd_jacobi_htp( const bmath_mf3_s* o, bmath_mf3_s* d, bmath_mf3_s* r );
+
+void bmath_mf3_s_hsm_trd_householder( const bmath_mf3_s* o, bmath_mf3_s* t, bmath_mf3_s* q );
 
 /// For easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );

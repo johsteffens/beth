@@ -129,6 +129,19 @@ bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+bl_t bmath_mf3_s_is_dag( const bmath_mf3_s* o )
+{
+    if( o->rows != o->cols ) return false;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* v1 = o ->data + i * o ->stride;
+        for( sz_t j = 0; j < o->cols; j++ ) if( ( i != j ) && ( v1[ j ] != 0.0 ) ) return false;
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev )
 {
     if( o->rows != op->rows ) return false;
@@ -165,6 +178,22 @@ bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev )
         for( sz_t j = 0; j < o->cols; j++ )
         {
             if( f3_abs( v1[ j ] - ( ( j == i ) ? 1.0 : 0.0 ) ) > max_dev ) return false;
+        }
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev )
+{
+    if( o->rows != o->cols ) return false;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* v1 = o ->data + i * o ->stride;
+        for( sz_t j = 0; j < o->cols; j++ )
+        {
+            if( ( i != j ) && ( f3_abs( v1[ j ] ) > max_dev ) ) return false;
         }
     }
     return true;
@@ -1070,39 +1099,44 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 void bmath_mf3_s_hsm_svd_jacobi_htp( const bmath_mf3_s* o, bmath_mf3_s* d, bmath_mf3_s* r )
 {
-    ASSERT( o != r );
     // o == diag is allowed
     ASSERT( bmath_mf3_s_is_square( o ) );
-    ASSERT( bmath_mf3_s_is_equ_size( o, r ) );
     bmath_mf3_s_cpy( o, d );
-    bmath_mf3_s_one( r );
+
+    if( r )
+    {
+        ASSERT( o != r );
+        ASSERT( bmath_mf3_s_is_equ_size( o, r ) );
+        bmath_mf3_s_one( r );
+    }
 
     sz_t n = o->rows;
+    sz_t max_cycles = 100;
 
-    f3_t max_off = 0;
-
-    do
+    for( sz_t cycle = 0; cycle < max_cycles; cycle++ )
     {
-        max_off = 0;
-
+        f3_t max_dev = 0;
         for( sz_t k = 0; k < n; k++ )
         {
             f3_t* dk = d->data + k * d->stride;
-            f3_t* rk = r->data + k * r->stride;
-            for( sz_t l = 0; l < k; l++ )
+            for( sz_t l = k + 1; l < n; l++ )
             {
+                f3_t dkl = dk[l];
+                if( dkl == 0 ) continue;
+                max_dev = f3_max( max_dev, f3_abs( dkl ) );
+
                 f3_t* dl = d->data + l * d->stride;
-                f3_t* rl = r->data + l * r->stride;
+
+                // Using explicit trigonometric functions yields maximum stability
                 f3_t theta = 0.5 * atan2( 2 * dk[l], dk[k] - dl[l] );
-                f3_t c = cos( theta );
                 f3_t s = sin( theta );
+                f3_t c = cos( theta );
 
                 f3_t cc = c * c;
                 f3_t ss = s * s;
 
                 f3_t dkk = dk[k];
                 f3_t dll = dl[l];
-                f3_t dkl = dk[l];
                 f3_t dklcsx2 = 2 * dkl * c * s;
 
                 dk[k] = dkk * cc + dll * ss + dklcsx2;
@@ -1121,22 +1155,25 @@ void bmath_mf3_s_hsm_svd_jacobi_htp( const bmath_mf3_s* o, bmath_mf3_s* d, bmath
                         dl[ i ] = dli;
                         di[ k ] = dki;
                         di[ l ] = dli;
-
-                        max_off = f3_max( max_off, f3_max( dki, dkl ) );
                     }
                 }
 
-                for( sz_t i = 0; i < n; i++ )
+                if( r )
                 {
-                    f3_t rki = rk[ i ];
-                    f3_t rli = rl[ i ];
-                    rk[ i ] = rki * c + rli * s;
-                    rl[ i ] = rli * c - rki * s;
+                    f3_t* rl = r->data + l * r->stride;
+                    f3_t* rk = r->data + k * r->stride;
+                    for( sz_t i = 0; i < n; i++ )
+                    {
+                        f3_t rki = rk[ i ];
+                        f3_t rli = rl[ i ];
+                        rk[ i ] = rki * c + rli * s;
+                        rl[ i ] = rli * c - rki * s;
+                    }
                 }
             }
         }
+        if( max_dev == 0 ) break;
     }
-    while( max_off > 0 );
 
 }
 
@@ -1308,7 +1345,7 @@ static vd_t selftest( void )
         bmath_mf3_s_set_size_to( m1, m3 );
         bmath_mf3_s_set_size_to( m1, m4 );
         bmath_mf3_s_fill_random( m1, -1, 1, &rval );
-        TIME_TO_STDOUT( bmath_mf3_s_inv( m1, m2 ) );
+        bmath_mf3_s_inv( m1, m2 );
         bmath_mf3_s_mul( m1, m2, m3 );
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-7 ) );
     }
@@ -1324,24 +1361,29 @@ static vd_t selftest( void )
         bmath_mf3_s_fill_random( m1, -1, 1, &rval );
         bmath_mf3_s_mul_htp( m1, m1, m1 ); // m1 = m1*m1T
 
-        TIME_TO_STDOUT( bmath_mf3_s_hsm_inv( m1, m2 ) );
+        bmath_mf3_s_hsm_inv( m1, m2 );
         bmath_mf3_s_mul( m1, m2, m3 );
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-7 ) );
     }
 
     // jacobi svd
     {
-        sz_t n = 100;
+        sz_t n = 10;
 
         bmath_mf3_s_set_size( m1, n, n );
-        u2_t rval = 1234;
+        u2_t rval = 1236;
         bmath_mf3_s_fill_random( m1, -1, 1, &rval );
         bmath_mf3_s_mul_htp( m1, m1, m1 );
 
         bmath_mf3_s_set_size_to( m1, m2 );
         bmath_mf3_s_set_size_to( m1, m3 );
         bmath_mf3_s_set_size_to( m1, m4 );
+        TIME_TO_STDOUT( bmath_mf3_s_hsm_svd_jacobi_htp( m1, m2, NULL ) );
         TIME_TO_STDOUT( bmath_mf3_s_hsm_svd_jacobi_htp( m1, m2, m3 ) );
+
+        bmath_mf3_s_to_stdout( m2 );
+
+        ASSERT( bmath_mf3_s_is_dag( m2 ) );
         ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
 
         bmath_mf3_s_mul( m2, m3, m4 );
