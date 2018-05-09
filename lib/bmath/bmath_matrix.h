@@ -32,7 +32,10 @@
  *  hsm: hermitean (symmetric) matrix.
  *  trc: trace
  *  dag: diagonal
+ *  trd: tri-diagonal (symmetric)
  *  det: determinant
+ *  svd: singular value devomposition
+ *  iso: isometry (orthonormal)
  */
 /**********************************************************************************************************************/
 
@@ -77,12 +80,14 @@ bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op );
 bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o );
 bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o );
 bl_t bmath_mf3_s_is_dag( const bmath_mf3_s* o );
+bl_t bmath_mf3_s_is_trd( const bmath_mf3_s* o );
 
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev ); // near isometry (== near orthonormal)
-bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev ); // near isometry (== near orthonormal)
+bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev );
+bl_t bmath_mf3_s_is_near_trd( const bmath_mf3_s* o, f3_t max_dev );
 
 f3_t bmath_mf3_s_trc( const bmath_mf3_s* o );
 
@@ -202,15 +207,19 @@ void bmath_mf3_s_lt1_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
-/** SVD for symmetric o. Jacobi Method.
- *  Output: d (diagonal), r (rotation) with o = rT * d * r.
- *  In-Place. (o==d allowed; Dedicated memory for r required)
- *  r == NULL allowed, in which case only eigenvalues dag(d) are computed (20% faster).
- *  Entire space of d is used during execution.
+/** Stable in-place SVD for symmetric a. Jacobi Method.
+ *  Input:  a  (symmetric), r  (rotation or identity)
+ *  Output: a' (diagonal),  r' (rotation) with rT * a * r = r'T * a' * r'.
+ *  r == NULL allowed, in which case only a' is computed.
  */
-void bmath_mf3_s_hsm_svd_jacobi_htp( const bmath_mf3_s* o, bmath_mf3_s* d, bmath_mf3_s* r );
+void bmath_mf3_s_hsm_svd_jacobi_htp( bmath_mf3_s* a, bmath_mf3_s* r );
 
-void bmath_mf3_s_hsm_trd_householder( const bmath_mf3_s* o, bmath_mf3_s* t, bmath_mf3_s* q );
+/** Stable in-place TRD for symmetric a. Givens Method.
+ *  Input:  a  (symmetric),    r  (rotation or identity)
+ *  Output: a' (tri-diagonal), r' (rotation) with rT * a * r = r'T * a' * r'.
+ *  r == NULL allowed, in which case only a' is computed.
+ */
+void bmath_mf3_s_hsm_trd_givens_htp( bmath_mf3_s* a, bmath_mf3_s* r );
 
 /// For easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );

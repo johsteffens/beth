@@ -142,6 +142,25 @@ bl_t bmath_mf3_s_is_dag( const bmath_mf3_s* o )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+bl_t bmath_mf3_s_is_trd( const bmath_mf3_s* o )
+{
+    if( o->rows != o->cols ) return false;
+    sz_t n = o->rows;
+    for( sz_t i = 0; i < n; i++ )
+    {
+        const f3_t* vi = o ->data + i * o ->stride;
+        for( sz_t j = i + 2; j < n; j++ )
+        {
+            const f3_t* vj = o ->data + j * o ->stride;
+            if( vi[ j ] != 0.0 ) return false;
+            if( vj[ i ] != 0.0 ) return false;
+        }
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev )
 {
     if( o->rows != op->rows ) return false;
@@ -194,6 +213,25 @@ bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev )
         for( sz_t j = 0; j < o->cols; j++ )
         {
             if( ( i != j ) && ( f3_abs( v1[ j ] ) > max_dev ) ) return false;
+        }
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_mf3_s_is_near_trd( const bmath_mf3_s* o, f3_t max_dev )
+{
+    if( o->rows != o->cols ) return false;
+    sz_t n = o->rows;
+    for( sz_t i = 0; i < n; i++ )
+    {
+        const f3_t* vi = o ->data + i * o ->stride;
+        for( sz_t j = i + 2; j < n; j++ )
+        {
+            const f3_t* vj = o ->data + j * o ->stride;
+            if( f3_abs( vi[ j ] ) > max_dev ) return false;
+            if( f3_abs( vj[ i ] ) > max_dev ) return false;
         }
     }
     return true;
@@ -1097,20 +1135,17 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_svd_jacobi_htp( const bmath_mf3_s* o, bmath_mf3_s* d, bmath_mf3_s* r )
+void bmath_mf3_s_hsm_svd_jacobi_htp( bmath_mf3_s* a, bmath_mf3_s* r )
 {
-    // o == diag is allowed
-    ASSERT( bmath_mf3_s_is_square( o ) );
-    bmath_mf3_s_cpy( o, d );
+    ASSERT( bmath_mf3_s_is_square( a ) );
 
     if( r )
     {
-        ASSERT( o != r );
-        ASSERT( bmath_mf3_s_is_equ_size( o, r ) );
-        bmath_mf3_s_one( r );
+        ASSERT( a != r );
+        ASSERT( bmath_mf3_s_is_equ_size( a, r ) );
     }
 
-    sz_t n = o->rows;
+    sz_t n = a->rows;
     sz_t max_cycles = 100;
 
     for( sz_t cycle = 0; cycle < max_cycles; cycle++ )
@@ -1118,43 +1153,43 @@ void bmath_mf3_s_hsm_svd_jacobi_htp( const bmath_mf3_s* o, bmath_mf3_s* d, bmath
         f3_t max_dev = 0;
         for( sz_t k = 0; k < n; k++ )
         {
-            f3_t* dk = d->data + k * d->stride;
+            f3_t* ak = a->data + k * a->stride;
             for( sz_t l = k + 1; l < n; l++ )
             {
-                f3_t dkl = dk[l];
-                if( dkl == 0 ) continue;
-                max_dev = f3_max( max_dev, f3_abs( dkl ) );
+                f3_t akl = ak[l];
+                if( akl == 0 ) continue;
+                max_dev = f3_max( max_dev, f3_abs( akl ) );
 
-                f3_t* dl = d->data + l * d->stride;
+                f3_t* al = a->data + l * a->stride;
 
                 // Using explicit trigonometric functions yields maximum stability
-                f3_t theta = 0.5 * atan2( 2 * dk[l], dk[k] - dl[l] );
+                f3_t theta = 0.5 * atan2( 2 * ak[l], ak[k] - al[l] );
                 f3_t s = sin( theta );
                 f3_t c = cos( theta );
 
                 f3_t cc = c * c;
                 f3_t ss = s * s;
 
-                f3_t dkk = dk[k];
-                f3_t dll = dl[l];
-                f3_t dklcsx2 = 2 * dkl * c * s;
+                f3_t akk = ak[k];
+                f3_t all = al[l];
+                f3_t aklcsx2 = 2 * akl * c * s;
 
-                dk[k] = dkk * cc + dll * ss + dklcsx2;
-                dl[l] = dll * cc + dkk * ss - dklcsx2;
-                dk[l] = 0;
-                dl[k] = 0;
+                ak[k] = akk * cc + all * ss + aklcsx2;
+                al[l] = all * cc + akk * ss - aklcsx2;
+                ak[l] = 0;
+                al[k] = 0;
 
                 for( sz_t i = 0; i < n; i++ )
                 {
                     if( i != k && i != l )
                     {
-                        f3_t* di = d->data + i * d->stride;
-                        f3_t dki = dk[ i ] * c + dl[ i ] * s;
-                        f3_t dli = dl[ i ] * c - dk[ i ] * s;
-                        dk[ i ] = dki;
-                        dl[ i ] = dli;
-                        di[ k ] = dki;
-                        di[ l ] = dli;
+                        f3_t* ai = a->data + i * a->stride;
+                        f3_t aki = ak[ i ] * c + al[ i ] * s;
+                        f3_t ali = al[ i ] * c - ak[ i ] * s;
+                        ak[ i ] = aki;
+                        al[ i ] = ali;
+                        ai[ k ] = aki;
+                        ai[ l ] = ali;
                     }
                 }
 
@@ -1175,6 +1210,85 @@ void bmath_mf3_s_hsm_svd_jacobi_htp( const bmath_mf3_s* o, bmath_mf3_s* d, bmath
         if( max_dev == 0 ) break;
     }
 
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_hsm_trd_givens_htp( bmath_mf3_s* a, bmath_mf3_s* r )
+{
+    ASSERT( bmath_mf3_s_is_square( a ) );
+
+    if( r )
+    {
+        ASSERT( a != r );
+        ASSERT( bmath_mf3_s_is_equ_size( a, r ) );
+    }
+
+    sz_t n = a->rows;
+    for( sz_t k = 1; k < n; k++ )
+    {
+        f3_t* ak = a->data + k * a->stride;
+        for( sz_t l = k + 1; l < n; l++ )
+        {
+            f3_t akl = ak[l];
+
+            f3_t* al = a->data + l * a->stride;
+
+            f3_t theta = atan2( al[k-1], ak[k-1] );
+
+            f3_t s = sin( theta );
+            f3_t c = cos( theta );
+
+            f3_t cc = c * c;
+            f3_t ss = s * s;
+            f3_t cs = c * s;
+
+            f3_t akk = ak[k];
+
+            f3_t all = al[l];
+            f3_t aklcsx2 = 2 * akl * cs;
+
+            ak[k] = akk * cc + all * ss + aklcsx2;
+            al[l] = all * cc + akk * ss - aklcsx2;
+            ak[l] = akl * ( cc - ss ) + cs * ( all - akk );
+            al[k] = ak[l];
+
+            {
+                f3_t akkm1 = ak[ k-1 ] * c + al[ k-1 ] * s;
+                ak[ k - 1 ] = akkm1;
+                al[ k - 1 ] = 0;
+                ak[ k - n ] = akkm1;
+                ak[ l - n ] = 0;
+            }
+
+            for( sz_t i = k + 1; i < n; i++ )
+            {
+                if( i != l )
+                {
+                    f3_t* ai = a->data + i * a->stride;
+                    f3_t aki = ak[ i ] * c + al[ i ] * s;
+                    f3_t ali = al[ i ] * c - ak[ i ] * s;
+                    ak[ i ] = aki;
+                    al[ i ] = ali;
+                    ai[ k ] = aki;
+                    ai[ l ] = ali;
+                }
+            }
+
+            if( r )
+            {
+                f3_t* rl = r->data + l * r->stride;
+                f3_t* rk = r->data + k * r->stride;
+                for( sz_t i = 0; i < n; i++ )
+                {
+                    f3_t rki = rk[ i ];
+                    f3_t rli = rl[ i ];
+                    rk[ i ] = rki * c + rli * s;
+                    rl[ i ] = rli * c - rki * s;
+                }
+            }
+        }
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1368,7 +1482,7 @@ static vd_t selftest( void )
 
     // jacobi svd
     {
-        sz_t n = 10;
+        sz_t n = 200;
 
         bmath_mf3_s_set_size( m1, n, n );
         u2_t rval = 1236;
@@ -1378,12 +1492,42 @@ static vd_t selftest( void )
         bmath_mf3_s_set_size_to( m1, m2 );
         bmath_mf3_s_set_size_to( m1, m3 );
         bmath_mf3_s_set_size_to( m1, m4 );
-        TIME_TO_STDOUT( bmath_mf3_s_hsm_svd_jacobi_htp( m1, m2, NULL ) );
-        TIME_TO_STDOUT( bmath_mf3_s_hsm_svd_jacobi_htp( m1, m2, m3 ) );
-
-        bmath_mf3_s_to_stdout( m2 );
-
+        bmath_mf3_s_cpy( m1, m2 );
+        bmath_mf3_s_hsm_svd_jacobi_htp( m2, NULL );
         ASSERT( bmath_mf3_s_is_dag( m2 ) );
+        bmath_mf3_s_cpy( m1, m2 );
+        bmath_mf3_s_one( m3 );
+        bmath_mf3_s_hsm_svd_jacobi_htp( m2, m3 );
+        ASSERT( bmath_mf3_s_is_dag( m2 ) );
+        ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
+
+        bmath_mf3_s_mul( m2, m3, m4 );
+        bmath_mf3_s_htp( m3, m3 );
+        bmath_mf3_s_mul( m3, m4, m4 );
+
+        ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
+    }
+
+    // givens trd
+    {
+        sz_t n = 200;
+
+        bmath_mf3_s_set_size( m1, n, n );
+        u2_t rval = 1236;
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_mf3_s_mul_htp( m1, m1, m1 );
+
+        bmath_mf3_s_set_size_to( m1, m2 );
+        bmath_mf3_s_set_size_to( m1, m3 );
+        bmath_mf3_s_set_size_to( m1, m4 );
+        bmath_mf3_s_cpy( m1, m2 );
+        bmath_mf3_s_hsm_trd_givens_htp( m2, NULL );
+        ASSERT( bmath_mf3_s_is_trd( m2 ) );
+        bmath_mf3_s_cpy( m1, m2 );
+        bmath_mf3_s_one( m3 );
+        bmath_mf3_s_hsm_trd_givens_htp( m2, m3 );
+        ASSERT( bmath_mf3_s_is_trd( m2 ) );
+
         ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
 
         bmath_mf3_s_mul( m2, m3, m4 );
