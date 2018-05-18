@@ -1263,6 +1263,134 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* r )
+{
+    ASSERT( bmath_mf3_s_is_square( a ) );
+
+    if( r )
+    {
+        ASSERT( a != r );
+        ASSERT( bmath_mf3_s_is_equ_size( a, r ) );
+    }
+
+    sz_t n = a->rows;
+    for( sz_t k = 1; k < n; k++ )
+    {
+        f3_t* ak = a->data + k * a->stride;
+        for( sz_t l = k + 1; l < n; l++ )
+        {
+            f3_t akl = ak[l];
+
+            f3_t* al = a->data + l * a->stride;
+
+            f3_t s, c;
+            f3_arc_to_sin_cos( al[k-1], ak[k-1], &s, &c );
+
+            f3_t cc = c * c;
+            f3_t ss = s * s;
+            f3_t cs = c * s;
+
+            f3_t akk = ak[k];
+
+            f3_t all = al[l];
+            f3_t aklcsx2 = 2 * akl * cs;
+
+            ak[k] = akk * cc + all * ss + aklcsx2;
+            al[l] = all * cc + akk * ss - aklcsx2;
+            ak[l] = akl * ( cc - ss ) + cs * ( all - akk );
+            al[k] = ak[l];
+
+            {
+                f3_t akkm1 = ak[ k-1 ] * c + al[ k-1 ] * s;
+                ak[ k - 1 ] = akkm1;
+                al[ k - 1 ] = 0;
+                ak[ k - a->stride ] = akkm1;
+                ak[ l - a->stride ] = 0;
+            }
+
+            for( sz_t i = k + 1; i < n; i++ )
+            {
+                if( i != l )
+                {
+                    f3_t* ai = a->data + i * a->stride;
+                    f3_t aki = ak[ i ] * c + al[ i ] * s;
+                    f3_t ali = al[ i ] * c - ak[ i ] * s;
+                    ak[ i ] = aki;
+                    al[ i ] = ali;
+                    ai[ k ] = aki;
+                    ai[ l ] = ali;
+                }
+            }
+
+            if( r )
+            {
+                f3_t* rl = r->data + l * r->stride;
+                f3_t* rk = r->data + k * r->stride;
+                for( sz_t i = 0; i < n; i++ )
+                {
+                    f3_t rki = rk[ i ];
+                    f3_t rli = rl[ i ];
+                    rk[ i ] = rki * c + rli * s;
+                    rl[ i ] = rli * c - rki * s;
+                }
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_qr_rot_htp_utr_givens( bmath_mf3_s* q, bmath_mf3_s* r )
+{
+    ASSERT( bmath_mf3_s_is_square( r ) );
+
+    if( q )
+    {
+        ASSERT( r != q );
+        ASSERT( bmath_mf3_s_is_equ_size( r, q ) );
+    }
+
+    sz_t n = r->rows;
+
+    for( sz_t l = 0; l < n; l++ )
+    {
+        f3_t* rl = r->data + l * r->stride;
+        for( sz_t k = l + 1; k < n; k++ )
+        {
+            f3_t* rk = r->data + k * r->stride;
+
+            f3_t s, c;
+            f3_arc_to_sin_cos( rk[l], rl[l], &s, &c );
+
+            rl[ l ] = rl[ l ] * c + rk[ l ] * s;
+            rk[ l ] = 0;
+
+            for( sz_t i = l + 1; i < n; i++ )
+            {
+                f3_t rli = rl[ i ];
+                f3_t rki = rk[ i ];
+                rl[ i ] = rli * c + rki * s;
+                rk[ i ] = rki * c - rli * s;
+            }
+
+            if( q )
+            {
+                f3_t* ql = q->data + l * q->stride;
+                f3_t* qk = q->data + k * q->stride;
+                for( sz_t i = 0; i < n; i++ )
+                {
+                    f3_t qli = ql[ i ];
+                    f3_t qki = qk[ i ];
+                    ql[ i ] = qli * c + qki * s;
+                    qk[ i ] = qki * c - qli * s;
+                }
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_hsm_svd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* r )
 {
     ASSERT( bmath_mf3_s_is_square( a ) );
@@ -1338,78 +1466,110 @@ void bmath_mf3_s_hsm_svd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* r )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* r )
+void bmath_mf3_s_hsm_svd_htp_qr_shift( bmath_mf3_s* a, bmath_mf3_s* r )
 {
-    ASSERT( bmath_mf3_s_is_square( a ) );
+    sz_t n = a->rows;
+    if( n <= 1 ) return; // nothing to do
 
-    if( r )
+    // tridiagonalization (this part takes the bulk cpu time)
+    bmath_mf3_s_hsm_trd_htp_givens( a, r );
+
+    for( sz_t block_n = n; block_n > 1; block_n-- )
     {
-        ASSERT( a != r );
-        ASSERT( bmath_mf3_s_is_equ_size( a, r ) );
+        sz_t max_cycles = 100; // usually convergence is reached after 2...3 cycles
+        f3_t shift_sum = 0;
+        for( sz_t cycle = 0; cycle < max_cycles; cycle++ )
+        {
+            // aij of lower 2x2 sub-matrix
+            f3_t a11 = a->data[ ( block_n - 1 ) * ( a->stride + 1 )     ];
+            f3_t a00 = a->data[ ( block_n - 2 ) * ( a->stride + 1 )     ];
+            f3_t a01 = a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ];
+
+            if( ( f3_abs( a01 ) < 1E-308 ) || ( f3_abs( a01 ) < f3_abs( a11 ) * 1E-20 ) )
+            {
+                a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ] = 0;
+                a->data[ ( block_n - 1 ) * ( a->stride + 1 ) - 1 ] = 0;
+                break;
+            }
+            f3_t p = 0.5 * ( a00 + a11 );
+            f3_t q = sqrt( 0.25 * f3_sqr( a00 - a11 ) + a01 * a01 );
+
+            // set shift to eigenvalue of lower 2x2 sub-matrix which is closest to a11
+            f3_t shift = ( a11 >= p ) ? p + q : p - q;
+            shift_sum += shift;
+
+            for( sz_t i = 0; i < block_n; i++ ) a->data[ i * ( a->stride + 1 ) ] -= shift;
+
+            f3_t* a0 = a->data;
+
+            f3_t r00 = a0[ 0 ];
+            f3_t r01 = a0[ 1 ];
+            f3_t cp = 1;
+
+            f3_t c, s;
+            f3_arc_to_sin_cos( a0[ a->stride ], r00, &s, &c );
+
+            for( sz_t i = 0; i < block_n - 1; i++ )
+            {
+                if( r )
+                {
+                    f3_t* r0 = r->data + i * r->stride;
+                    f3_t* r1 = r0      +     r->stride;
+                    for( sz_t i = 0; i < n; i++ )
+                    {
+                        f3_t r0i = r0[ i ];
+                        f3_t r1i = r1[ i ];
+                        r0[ i ] = r0i * c + r1i * s;
+                        r1[ i ] = r1i * c - r0i * s;
+                    }
+                }
+
+                f3_t* a1 = a0 + a->stride;
+
+                f3_t r11 = a1[ 1 ] * c - r01 * s;
+                f3_t r12 = a1[ 2 ] * c;
+
+                     r00 = r00 * c + a1[ 0 ] * s;
+                     r01 = r01 * c + a1[ 1 ] * s;
+                f3_t r02 =           a1[ 2 ] * s;
+
+                a0[ 0 ] = r00 * cp * c + r01 * s;
+
+                f3_t cn, sn;
+                f3_arc_to_sin_cos( ( i == block_n - 2 ) ? 0 : a1[ a->stride + 1 ], r11, &sn, &cn );
+
+                // off-diagonal element
+                a1[ 0 ] = a0[ 1 ] = -r00 * s * cp * cn + r01 * c * cn + r02 * sn;
+
+                r00 = r11;
+                r01 = r12;
+
+                a0 = a1 + 1;
+
+                cp = c;
+
+                c = cn;
+                s = sn;
+            }
+            a0[ 0 ] = r00 * cp;
+
+        }
+        for( sz_t i = 0; i < block_n; i++ ) a->data[ i * ( a->stride + 1 ) ] += shift_sum;
     }
 
-    sz_t n = a->rows;
-    for( sz_t k = 1; k < n; k++ )
+    // sort by descending eigenvalues
+    for( sz_t i = 0; i < n - 1; i++ )
     {
-        f3_t* ak = a->data + k * a->stride;
-        for( sz_t l = k + 1; l < n; l++ )
+        f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
+        sz_t imax = i;
+        for( sz_t j = i + 1; j < n; j++ )
         {
-            f3_t akl = ak[l];
-
-            f3_t* al = a->data + l * a->stride;
-
-            f3_t s, c;
-            f3_arc_to_sin_cos( al[k-1], ak[k-1], &s, &c );
-
-            f3_t cc = c * c;
-            f3_t ss = s * s;
-            f3_t cs = c * s;
-
-            f3_t akk = ak[k];
-
-            f3_t all = al[l];
-            f3_t aklcsx2 = 2 * akl * cs;
-
-            ak[k] = akk * cc + all * ss + aklcsx2;
-            al[l] = all * cc + akk * ss - aklcsx2;
-            ak[l] = akl * ( cc - ss ) + cs * ( all - akk );
-            al[k] = ak[l];
-
-            {
-                f3_t akkm1 = ak[ k-1 ] * c + al[ k-1 ] * s;
-                ak[ k - 1 ] = akkm1;
-                al[ k - 1 ] = 0;
-                ak[ k - a->stride ] = akkm1;
-                ak[ l - a->stride ] = 0;
-            }
-
-            for( sz_t i = k + 1; i < n; i++ )
-            {
-                if( i != l )
-                {
-                    f3_t* ai = a->data + i * a->stride;
-                    f3_t aki = ak[ i ] * c + al[ i ] * s;
-                    f3_t ali = al[ i ] * c - ak[ i ] * s;
-                    ak[ i ] = aki;
-                    al[ i ] = ali;
-                    ai[ k ] = aki;
-                    ai[ l ] = ali;
-                }
-            }
-
-            if( r )
-            {
-                f3_t* rl = r->data + l * r->stride;
-                f3_t* rk = r->data + k * r->stride;
-                for( sz_t i = 0; i < n; i++ )
-                {
-                    f3_t rki = rk[ i ];
-                    f3_t rli = rl[ i ];
-                    rk[ i ] = rki * c + rli * s;
-                    rl[ i ] = rli * c - rki * s;
-                }
-            }
+            f3_t v = a->data[ j * ( a->stride + 1 ) ];
+            imax = ( v > vmax ) ? j : imax;
+            vmax = ( v > vmax ) ? v : vmax;
         }
+        f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+        if( r ) bmath_mf3_s_swap_row( r, i, imax );
     }
 }
 
@@ -1616,35 +1776,7 @@ static vd_t selftest( void )
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-7 ) );
     }
 
-    // jacobi svd
-    {
-        sz_t n = 100;
-
-        bmath_mf3_s_set_size( m1, n, n );
-        u2_t rval = 1236;
-        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
-        bmath_mf3_s_mul_htp( m1, m1, m1 );
-
-        bmath_mf3_s_set_size_to( m1, m2 );
-        bmath_mf3_s_set_size_to( m1, m3 );
-        bmath_mf3_s_set_size_to( m1, m4 );
-        bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_hsm_svd_htp_jacobi( m2, NULL );
-        ASSERT( bmath_mf3_s_is_dag( m2 ) );
-        bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_one( m3 );
-        bmath_mf3_s_hsm_svd_htp_jacobi( m2, m3 );
-        ASSERT( bmath_mf3_s_is_dag( m2 ) );
-        ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
-
-        bmath_mf3_s_mul( m2, m3, m4 );
-        bmath_mf3_s_htp( m3, m3 );
-        bmath_mf3_s_mul( m3, m4, m4 );
-
-        ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
-    }
-
-    // givens trd
+    // tridiagonalization
     {
         sz_t n = 100;
 
@@ -1671,6 +1803,60 @@ static vd_t selftest( void )
         bmath_mf3_s_mul( m3, m4, m4 );
 
         ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
+    }
+
+    // QR decomposition
+    {
+        sz_t n = 200;
+        u2_t rval = 1236;
+
+        bmath_mf3_s_set_size( m1, n, n );
+        bmath_mf3_s_set_size_to( m1, m2 );
+        bmath_mf3_s_set_size_to( m1, m3 );
+        bmath_mf3_s_set_size_to( m1, m4 );
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+
+        bmath_mf3_s_cpy( m1, m2 );
+        bmath_mf3_s_one( m3 );
+
+        bmath_mf3_s_qr_rot_htp_utr_givens( m3, m2 );
+        ASSERT( bmath_mf3_s_is_near_utr( m2, 1E-8 ) );
+        ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
+
+        bmath_mf3_s_htp( m3, m3 );
+        bmath_mf3_s_mul( m3, m2, m4 );
+
+        ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
+    }
+
+    // eigendecomposition
+    {
+        sz_t n = 100;
+
+        bmath_mf3_s_set_size( m1, n, n );
+        u2_t rval = 1236;
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_mf3_s_mul_htp( m1, m1, m1 );
+
+        bmath_mf3_s_set_size_to( m1, m2 );
+        bmath_mf3_s_set_size_to( m1, m3 );
+        bmath_mf3_s_set_size_to( m1, m4 );
+
+        // jacobi
+        {
+            bmath_mf3_s_cpy( m1, m2 );
+            bmath_mf3_s_hsm_svd_htp_jacobi( m2, NULL );
+            ASSERT( bmath_mf3_s_is_dag( m2 ) );
+            bmath_mf3_s_cpy( m1, m2 );
+            bmath_mf3_s_one( m3 );
+            bmath_mf3_s_hsm_svd_htp_jacobi( m2, m3 );
+            ASSERT( bmath_mf3_s_is_dag( m2 ) );
+            ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
+            bmath_mf3_s_mul( m2, m3, m4 );
+            bmath_mf3_s_htp( m3, m3 );
+            bmath_mf3_s_mul( m3, m4, m4 );
+            ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
+        }
     }
 
     BCORE_LIFE_DOWN();

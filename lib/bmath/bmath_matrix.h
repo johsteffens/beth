@@ -220,19 +220,37 @@ void bmath_mf3_s_lt1_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
-/** Stable in-place SVD for symmetric a. Jacobi Method.
- *  Input:  a  (symmetric), r  (rotation or identity)
- *  Output: a' (diagonal),  r' (rotation) with rT * a * r = r'T * a' * r'.
+/** Stable in-place TRD for a symmetric matrix. Based on Givens rotations.
+ *  Input:  a  (symmetric),    q  (rotation or identity)
+ *  Output: a' (tri-diagonal), q' (rotation) with qT * a * q = q'T * a' * q'.
  *  r == NULL allowed, in which case only a' is computed.
  */
-void bmath_mf3_s_hsm_svd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* r );
+void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* q );
 
-/** Stable in-place TRD for symmetric a. Givens Method.
- *  Input:  a  (symmetric),    r  (rotation or identity)
- *  Output: a' (tri-diagonal), r' (rotation) with rT * a * r = r'T * a' * r'.
+/** Stable in-place QR-decomposition. Based on Givens rotations.
+ *  Input:  q  (rotation or identity), r  (any square matrix),
+ *  Output: q' (rotation),             r' (upper_triangular) such that with qT * r = q'T * r'.
+ *  q == NULL allowed, in which case only r' is computed.
+ */
+void bmath_mf3_s_qr_rot_htp_utr_givens( bmath_mf3_s* q, bmath_mf3_s* r );
+
+/** Stable in-place SVD for a symmetric matrix. Jacobi Method.
+ *  Input:  a  (symmetric), q  (rotation or identity)
+ *  Output: a' (diagonal),  q' (rotation) with qT * a * q = q'T * a' * q'.
+ *  Diagonal elements are sorted in descending order.
  *  r == NULL allowed, in which case only a' is computed.
  */
-void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* r );
+void bmath_mf3_s_hsm_svd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* q );
+
+/** In-place SVD for a symmetric matrix. Approach: TRD, QR with shifting.
+ *  Very efficicient for large matrices at >20x faster than Jacobi method but slightly less accurate.
+ *  Usually very stable (all tests so far). In certain (near-)degenerate cases stability might not be guaranteed.
+ *  Input:  a  (symmetric), q  (rotation or identity)
+ *  Output: a' (diagonal),  q' (rotation) with qT * a * q = q'T * a' * q'.
+ *  Diagonal elements are sorted in descending order.
+ *  r == NULL allowed, in which case only a' is computed.
+ */
+void bmath_mf3_s_hsm_svd_htp_qr_shift( bmath_mf3_s* a, bmath_mf3_s* q );
 
 /// For easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );
