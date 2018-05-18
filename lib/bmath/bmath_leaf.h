@@ -43,6 +43,21 @@ static inline f3_t f3_xsg2_sym( u2_t* rv ) { return ( *rv = bcore_xsg2_u2( *rv )
 static inline f3_t f3_xsg1_pos( u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv ) ) * ( 1.0 / 0xFFFFFFFFu ); }
 static inline f3_t f3_xsg2_pos( u2_t* rv ) { return ( *rv = bcore_xsg2_u2( *rv ) ) * ( 1.0 / 0xFFFFFFFFu ); }
 
+static inline void f3_t_swap( f3_t* v1, f3_t* v2 ) { f3_t t = *v1; *v1 = *v2; *v2 = t;  }
+
+/// Solves: sin(arc) * b = cos(arc) * a; cos >= 0
+static inline
+void f3_arc_to_sin_cos( f3_t a, f3_t b, f3_t* sin_arc, f3_t* cos_arc )
+{
+    // ensure cos_arc is never negative
+    a = ( b > 0 ) ? a : -a;
+    b = ( b > 0 ) ? b : -b;
+    f3_t r = hypot( a, b );
+    *sin_arc = ( r > 1E-308 ) ? a / r : 0;
+    *cos_arc = ( r > 1E-308 ) ? b / r : 1;
+
+}
+
 /**********************************************************************************************************************/
 // sz_t
 

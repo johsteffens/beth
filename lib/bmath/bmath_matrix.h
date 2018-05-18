@@ -81,6 +81,9 @@ bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o );
 bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o );
 bl_t bmath_mf3_s_is_dag( const bmath_mf3_s* o );
 bl_t bmath_mf3_s_is_trd( const bmath_mf3_s* o );
+bl_t bmath_mf3_s_is_utr( const bmath_mf3_s* o );
+bl_t bmath_mf3_s_is_ltr( const bmath_mf3_s* o );
+bl_t bmath_mf3_s_is_hsm( const bmath_mf3_s* o );
 
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev );
@@ -88,8 +91,12 @@ bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev ); // near isometry (== near orthonormal)
 bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_trd( const bmath_mf3_s* o, f3_t max_dev );
+bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev );
+bl_t bmath_mf3_s_is_near_ltr( const bmath_mf3_s* o, f3_t max_dev );
+bl_t bmath_mf3_s_is_near_hsm( const bmath_mf3_s* o, f3_t max_dev );
 
-f3_t bmath_mf3_s_trc( const bmath_mf3_s* o );
+f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o );
+f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op );
 
 void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_zro(       bmath_mf3_s* o );
@@ -115,10 +122,16 @@ void bmath_mf3_s_htp(     const bmath_mf3_s* o, bmath_mf3_s* res ); // hermitean
 
 void bmath_mf3_s_set_row_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data );
 void bmath_mf3_s_set_col_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data );
+void bmath_mf3_s_set_dag_by_data( bmath_mf3_s* o,           const f3_t* data );
 void bmath_mf3_s_set_row_by_vec ( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* vec );
 void bmath_mf3_s_set_col_by_vec ( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* vec );
+void bmath_mf3_s_set_dag_by_vec ( bmath_mf3_s* o,           const bmath_vf3_s* vec );
 void bmath_mf3_s_get_row_vec( const bmath_mf3_s* o, sz_t idx, bmath_vf3_s* res );
 void bmath_mf3_s_get_col_vec( const bmath_mf3_s* o, sz_t idx, bmath_vf3_s* res );
+void bmath_mf3_s_get_dag_vec( const bmath_mf3_s* o,           bmath_vf3_s* res );
+
+void bmath_mf3_s_swap_row( bmath_mf3_s* o, sz_t i, sz_t j ); // swaps rows i, j
+void bmath_mf3_s_swap_col( bmath_mf3_s* o, sz_t i, sz_t j ); // swaps cols i, j
 
 static inline
 void bmath_mf3_s_set_f3( bmath_mf3_s* o, sz_t row, sz_t col, f3_t v )
@@ -212,14 +225,14 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
  *  Output: a' (diagonal),  r' (rotation) with rT * a * r = r'T * a' * r'.
  *  r == NULL allowed, in which case only a' is computed.
  */
-void bmath_mf3_s_hsm_svd_jacobi_htp( bmath_mf3_s* a, bmath_mf3_s* r );
+void bmath_mf3_s_hsm_svd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* r );
 
 /** Stable in-place TRD for symmetric a. Givens Method.
  *  Input:  a  (symmetric),    r  (rotation or identity)
  *  Output: a' (tri-diagonal), r' (rotation) with rT * a * r = r'T * a' * r'.
  *  r == NULL allowed, in which case only a' is computed.
  */
-void bmath_mf3_s_hsm_trd_givens_htp( bmath_mf3_s* a, bmath_mf3_s* r );
+void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* r );
 
 /// For easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );

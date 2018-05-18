@@ -159,6 +159,21 @@ bl_t bmath_mf3_s_is_trd( const bmath_mf3_s* o )
     return true;
 }
 
+bl_t bmath_mf3_s_is_utr( const bmath_mf3_s* o )
+{
+    return bmath_mf3_s_is_near_utr( o, 0 );
+}
+
+bl_t bmath_mf3_s_is_ltr( const bmath_mf3_s* o )
+{
+    return bmath_mf3_s_is_near_ltr( o, 0 );
+}
+
+bl_t bmath_mf3_s_is_hsm( const bmath_mf3_s* o )
+{
+    return bmath_mf3_s_is_near_hsm( o, 0 );
+}
+
 //---------------------------------------------------------------------------------------------------------------------
 
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev )
@@ -258,11 +273,75 @@ bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_mf3_s_trc( const bmath_mf3_s* o )
+bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev )
+{
+    if( o->rows != o->cols ) return false;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* v = o ->data + i * o ->stride;
+        for( sz_t j = 0; j < i; j++ )
+        {
+            if( f3_abs( v[ j ] ) > max_dev ) return false;
+        }
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_mf3_s_is_near_ltr( const bmath_mf3_s* o, f3_t max_dev )
+{
+    if( o->rows != o->cols ) return false;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* v = o ->data + i * o ->stride;
+        for( sz_t j = i + 1; j < o->rows; j++ )
+        {
+            if( f3_abs( v[ j ] ) > max_dev ) return false;
+        }
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_mf3_s_is_near_hsm( const bmath_mf3_s* o, f3_t max_dev )
+{
+    if( o->rows != o->cols ) return false;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* vi = o ->data + i * o ->stride;
+        for( sz_t j = 0; j < i; j++ )
+        {
+            const f3_t* vj = o ->data + j * o ->stride;
+            if( f3_abs( vi[ j ] - vj[ i ] ) > max_dev ) return false;
+        }
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o )
 {
     ASSERT( o->cols == o->rows );
     f3_t sum = 0;
     for( sz_t i = 0; i < o->rows; i++ ) sum += o->data[ i * ( o->stride + 1 ) ];
+    return sum;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op )
+{
+    ASSERT( bmath_mf3_s_is_equ_size( o, op ) );
+    f3_t sum = 0;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* v1 =  o->data + i *  o->stride;
+        const f3_t* v2 = op->data + i * op->stride;
+        for( sz_t i = 0; i < o->cols; i++ ) sum += f3_sqr( v1[ i ] - v2[ i ] );
+    }
     return sum;
 }
 
@@ -595,6 +674,7 @@ void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t* op, bmath_mf3_s* res
 
 void bmath_mf3_s_set_row_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data )
 {
+    ASSERT( idx < o->rows );
     bcore_u_memcpy( sizeof( f3_t ), o->data + idx * o->stride, data, o->cols );
 }
 
@@ -602,26 +682,41 @@ void bmath_mf3_s_set_row_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data )
 
 void bmath_mf3_s_set_col_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data )
 {
+    ASSERT( idx < o->cols );
     f3_t* v = o ->data + idx;
     for( sz_t i = 0; i < o->rows; i++ ) v[ i * o ->stride ] = data[ i ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_set_row_by_vec ( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* vec )
+void bmath_mf3_s_set_dag_by_data( bmath_mf3_s* o, const f3_t* data )
 {
-    ASSERT( idx < o->rows );
+    sz_t size = sz_min( o->rows, o->cols );
+    for( sz_t i = 0; i < size; i++ ) o->data[ i * ( o ->stride + 1 ) ] = data[ i ];
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_set_row_by_vec( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* vec )
+{
     ASSERT( o->cols <= vec->size );
     bmath_mf3_s_set_row_by_data( o, idx, vec->data );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_set_col_by_vec ( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* vec )
+void bmath_mf3_s_set_col_by_vec( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* vec )
 {
-    ASSERT( idx < o->cols );
     ASSERT( o->rows <= vec->size );
     bmath_mf3_s_set_col_by_data( o, idx, vec->data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_set_dag_by_vec( bmath_mf3_s* o, const bmath_vf3_s* vec )
+{
+    ASSERT( sz_min( o->rows, o->cols ) <= vec->size );
+    bmath_mf3_s_set_dag_by_data( o, vec->data );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -640,6 +735,39 @@ void bmath_mf3_s_get_col_vec(  const bmath_mf3_s* o, sz_t idx, bmath_vf3_s* res 
     ASSERT( idx < o->cols );
     ASSERT( o->cols <= res->size );
     for( sz_t i = 0; i < o->rows; i++ ) res->data[ i ] = o->data[ i * o ->stride ];
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_get_dag_vec( const bmath_mf3_s* o, bmath_vf3_s* res )
+{
+    sz_t size = sz_min( o->rows, o->cols );
+    ASSERT( size <= res->size );
+    for( sz_t i = 0; i < size; i++ ) res->data[ i ] = o->data[ i * ( o->stride + 1 ) ];
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_swap_row( bmath_mf3_s* o, sz_t i, sz_t j )
+{
+    if( i == j ) return;
+    ASSERT( i < o->rows );
+    ASSERT( j < o->rows );
+    f3_t* vi = o->data + i * o->stride;
+    f3_t* vj = o->data + j * o->stride;
+    for( sz_t k = 0; k < o->cols; k++ ) f3_t_swap( vi + k, vj + k );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_swap_col( bmath_mf3_s* o, sz_t i, sz_t j )
+{
+    if( i == j ) return;
+    ASSERT( i < o->cols );
+    ASSERT( j < o->cols );
+    f3_t* vi = o->data + i;
+    f3_t* vj = o->data + j;
+    for( sz_t k = 0; k < o->rows; k++ ) f3_t_swap( vi + k * o->stride, vj + k * o->stride );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1135,7 +1263,7 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_svd_jacobi_htp( bmath_mf3_s* a, bmath_mf3_s* r )
+void bmath_mf3_s_hsm_svd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* r )
 {
     ASSERT( bmath_mf3_s_is_square( a ) );
 
@@ -1153,14 +1281,16 @@ void bmath_mf3_s_hsm_svd_jacobi_htp( bmath_mf3_s* a, bmath_mf3_s* r )
         f3_t max_dev = 0;
         for( sz_t k = 0; k < n; k++ )
         {
-            f3_t* ak = a->data + k * a->stride;
+            f3_t* ak =     a->data + k * a->stride;
+            f3_t* rk = r ? r->data + k * r->stride : NULL;
             for( sz_t l = k + 1; l < n; l++ )
             {
                 f3_t akl = ak[l];
                 if( akl == 0 ) continue;
                 max_dev = f3_max( max_dev, f3_abs( akl ) );
 
-                f3_t* al = a->data + l * a->stride;
+                f3_t* al =     a->data + l * a->stride;
+                f3_t* rl = r ? r->data + l * r->stride : NULL;
 
                 // Using explicit trigonometric functions yields maximum stability
                 f3_t theta = 0.5 * atan2( 2 * ak[l], ak[k] - al[l] );
@@ -1191,13 +1321,8 @@ void bmath_mf3_s_hsm_svd_jacobi_htp( bmath_mf3_s* a, bmath_mf3_s* r )
                         ai[ k ] = aki;
                         ai[ l ] = ali;
                     }
-                }
 
-                if( r )
-                {
-                    f3_t* rl = r->data + l * r->stride;
-                    f3_t* rk = r->data + k * r->stride;
-                    for( sz_t i = 0; i < n; i++ )
+                    if( r )
                     {
                         f3_t rki = rk[ i ];
                         f3_t rli = rl[ i ];
@@ -1209,12 +1334,11 @@ void bmath_mf3_s_hsm_svd_jacobi_htp( bmath_mf3_s* a, bmath_mf3_s* r )
         }
         if( max_dev == 0 ) break;
     }
-
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_trd_givens_htp( bmath_mf3_s* a, bmath_mf3_s* r )
+void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* r )
 {
     ASSERT( bmath_mf3_s_is_square( a ) );
 
@@ -1234,10 +1358,8 @@ void bmath_mf3_s_hsm_trd_givens_htp( bmath_mf3_s* a, bmath_mf3_s* r )
 
             f3_t* al = a->data + l * a->stride;
 
-            f3_t theta = atan2( al[k-1], ak[k-1] );
-
-            f3_t s = sin( theta );
-            f3_t c = cos( theta );
+            f3_t s, c;
+            f3_arc_to_sin_cos( al[k-1], ak[k-1], &s, &c );
 
             f3_t cc = c * c;
             f3_t ss = s * s;
@@ -1257,8 +1379,8 @@ void bmath_mf3_s_hsm_trd_givens_htp( bmath_mf3_s* a, bmath_mf3_s* r )
                 f3_t akkm1 = ak[ k-1 ] * c + al[ k-1 ] * s;
                 ak[ k - 1 ] = akkm1;
                 al[ k - 1 ] = 0;
-                ak[ k - n ] = akkm1;
-                ak[ l - n ] = 0;
+                ak[ k - a->stride ] = akkm1;
+                ak[ l - a->stride ] = 0;
             }
 
             for( sz_t i = k + 1; i < n; i++ )
@@ -1312,16 +1434,17 @@ void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
 
 static vd_t selftest( void )
 {
-    bcore_life_s* l = bcore_life_s_create();
-    bmath_mf3_s* m1 = bcore_life_s_push_aware( l, bmath_mf3_s_create() );
-    bmath_mf3_s* m2 = bcore_life_s_push_aware( l, bmath_mf3_s_create() );
-    bmath_mf3_s* m3 = bcore_life_s_push_aware( l, bmath_mf3_s_create() );
-    bmath_mf3_s* m4 = bcore_life_s_push_aware( l, bmath_mf3_s_create() );
-    bmath_mf3_s* m5 = bcore_life_s_push_aware( l, bmath_mf3_s_create() );
-    bmath_vf3_s* v1 = bcore_life_s_push_aware( l, bmath_vf3_s_create() );
-    bmath_vf3_s* v2 = bcore_life_s_push_aware( l, bmath_vf3_s_create() );
-    bmath_vf3_s* v3 = bcore_life_s_push_aware( l, bmath_vf3_s_create() );
-    bmath_vf3_s* v4 = bcore_life_s_push_aware( l, bmath_vf3_s_create() );
+    BCORE_LIFE_INIT();
+
+    BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m3 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m4 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m5 );
+    BCORE_LIFE_CREATE( bmath_vf3_s, v1 );
+    BCORE_LIFE_CREATE( bmath_vf3_s, v2 );
+    BCORE_LIFE_CREATE( bmath_vf3_s, v3 );
+    BCORE_LIFE_CREATE( bmath_vf3_s, v4 );
 
     // basic linear
     {
@@ -1450,6 +1573,18 @@ static vd_t selftest( void )
         ASSERT( bmath_mf3_s_is_near_equ( m4, m3, 1E-8 ) );
     }
 
+    // A * AT
+    {
+        sz_t n = 100;
+        u2_t rval = 1234;
+        bmath_mf3_s_set_size( m1, n, n );
+        bmath_mf3_s_set_size_to( m1, m2 );
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_mf3_s_mul_htp( m1, m1, m2 );
+        ASSERT( bmath_mf3_s_is_near_hsm( m2, 1E-7 ) );
+    }
+
+
     // general inversion
     {
         sz_t n = 100;
@@ -1459,6 +1594,7 @@ static vd_t selftest( void )
         bmath_mf3_s_set_size_to( m1, m3 );
         bmath_mf3_s_set_size_to( m1, m4 );
         bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+
         bmath_mf3_s_inv( m1, m2 );
         bmath_mf3_s_mul( m1, m2, m3 );
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-7 ) );
@@ -1482,7 +1618,7 @@ static vd_t selftest( void )
 
     // jacobi svd
     {
-        sz_t n = 200;
+        sz_t n = 100;
 
         bmath_mf3_s_set_size( m1, n, n );
         u2_t rval = 1236;
@@ -1493,11 +1629,11 @@ static vd_t selftest( void )
         bmath_mf3_s_set_size_to( m1, m3 );
         bmath_mf3_s_set_size_to( m1, m4 );
         bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_hsm_svd_jacobi_htp( m2, NULL );
+        bmath_mf3_s_hsm_svd_htp_jacobi( m2, NULL );
         ASSERT( bmath_mf3_s_is_dag( m2 ) );
         bmath_mf3_s_cpy( m1, m2 );
         bmath_mf3_s_one( m3 );
-        bmath_mf3_s_hsm_svd_jacobi_htp( m2, m3 );
+        bmath_mf3_s_hsm_svd_htp_jacobi( m2, m3 );
         ASSERT( bmath_mf3_s_is_dag( m2 ) );
         ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
 
@@ -1510,7 +1646,7 @@ static vd_t selftest( void )
 
     // givens trd
     {
-        sz_t n = 200;
+        sz_t n = 100;
 
         bmath_mf3_s_set_size( m1, n, n );
         u2_t rval = 1236;
@@ -1521,11 +1657,11 @@ static vd_t selftest( void )
         bmath_mf3_s_set_size_to( m1, m3 );
         bmath_mf3_s_set_size_to( m1, m4 );
         bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_hsm_trd_givens_htp( m2, NULL );
+        bmath_mf3_s_hsm_trd_htp_givens( m2, NULL );
         ASSERT( bmath_mf3_s_is_trd( m2 ) );
         bmath_mf3_s_cpy( m1, m2 );
         bmath_mf3_s_one( m3 );
-        bmath_mf3_s_hsm_trd_givens_htp( m2, m3 );
+        bmath_mf3_s_hsm_trd_htp_givens( m2, m3 );
         ASSERT( bmath_mf3_s_is_trd( m2 ) );
 
         ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
@@ -1537,7 +1673,7 @@ static vd_t selftest( void )
         ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
     }
 
-    bcore_life_s_discard( l );
+    BCORE_LIFE_DOWN();
     return NULL;
 }
 
