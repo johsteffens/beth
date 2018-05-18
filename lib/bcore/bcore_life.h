@@ -60,4 +60,11 @@ vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type                 ); //
 
 vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 
+/**********************************************************************************************************************/
+// macros
+
+#define BCORE_LIFE_INIT() bcore_life_s* __life = bcore_life_s_create()
+#define BCORE_LIFE_DOWN() bcore_life_s_discard( __life )
+#define BCORE_LIFE_CREATE( type_name, var_name ) type_name* var_name = bcore_life_s_push_typed( __life, TYPEOF_##type_name, type_name##_create() )
+
 #endif // BCORE_LIFE_H
