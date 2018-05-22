@@ -219,7 +219,7 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
         clock_t time = clock(); \
         operation; \
         time = clock() - time; \
-        bcore_msg_fa( "#<sz_t>ms ... "#operation"\n", ( sz_t ) ( ( 1E3 * ( double )( time )/CLOCKS_PER_SEC ) ) ); \
+        bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#operation"\n", ( sz_t ) ( ( 1E3 * ( double )( time )/CLOCKS_PER_SEC ) ) ); \
 }
 
 /// object related functions
