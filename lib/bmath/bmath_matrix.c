@@ -1466,13 +1466,13 @@ void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* r )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_evd_htp_qr_shift( bmath_mf3_s* a, bmath_mf3_s* r )
+void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* q )
 {
     sz_t n = a->rows;
     if( n <= 1 ) return; // nothing to do
 
     // tridiagonalization (this part takes the bulk cpu time)
-    bmath_mf3_s_hsm_trd_htp_givens( a, r );
+    bmath_mf3_s_hsm_trd_htp_givens( a, q );
 
     for( sz_t block_n = n; block_n > 1; block_n-- )
     {
@@ -1492,10 +1492,10 @@ void bmath_mf3_s_evd_htp_qr_shift( bmath_mf3_s* a, bmath_mf3_s* r )
                 break;
             }
             f3_t p = 0.5 * ( a00 + a11 );
-            f3_t q = sqrt( 0.25 * f3_sqr( a00 - a11 ) + a01 * a01 );
+            f3_t d = sqrt( 0.25 * f3_sqr( a00 - a11 ) + a01 * a01 );
 
             // set shift to eigenvalue of lower 2x2 sub-matrix which is closest to a11
-            f3_t shift = ( a11 >= p ) ? p + q : p - q;
+            f3_t shift = ( a11 >= p ) ? p + d : p - d;
             shift_sum += shift;
 
             for( sz_t i = 0; i < block_n; i++ ) a->data[ i * ( a->stride + 1 ) ] -= shift;
@@ -1511,16 +1511,16 @@ void bmath_mf3_s_evd_htp_qr_shift( bmath_mf3_s* a, bmath_mf3_s* r )
 
             for( sz_t i = 0; i < block_n - 1; i++ )
             {
-                if( r )
+                if( q )
                 {
-                    f3_t* r0 = r->data + i * r->stride;
-                    f3_t* r1 = r0      +     r->stride;
+                    f3_t* q0 = q->data + i * q->stride;
+                    f3_t* q1 = q0      +     q->stride;
                     for( sz_t i = 0; i < n; i++ )
                     {
-                        f3_t r0i = r0[ i ];
-                        f3_t r1i = r1[ i ];
-                        r0[ i ] = r0i * c + r1i * s;
-                        r1[ i ] = r1i * c - r0i * s;
+                        f3_t q0i = q0[ i ];
+                        f3_t q1i = q1[ i ];
+                        q0[ i ] = q0i * c + q1i * s;
+                        q1[ i ] = q1i * c - q0i * s;
                     }
                 }
 
@@ -1569,7 +1569,121 @@ void bmath_mf3_s_evd_htp_qr_shift( bmath_mf3_s* a, bmath_mf3_s* r )
             vmax = ( v > vmax ) ? v : vmax;
         }
         f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-        if( r ) bmath_mf3_s_swap_row( r, i, imax );
+        if( q ) bmath_mf3_s_swap_row( q, i, imax );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* q )
+{
+    sz_t n = a->rows;
+    if( n <= 1 ) return; // nothing to do
+
+    /// tridiagonalization
+    bmath_mf3_s_hsm_trd_htp_givens( a, q );
+
+    // qr iteration until smallest non-diag element < offd_limit;
+
+    for( sz_t block_n = n; block_n > 1; block_n-- )
+    {
+        sz_t max_cycles = 100; // usually convergence is reached after 2...3 cycles
+        for( sz_t cycle = 0; cycle < max_cycles; cycle++ )
+        {
+            f3_t lambda;
+            {
+                // aij of lower 2x2 sub-matrix
+                f3_t a11 = a->data[ ( block_n - 1 ) * ( a->stride + 1 )     ];
+                f3_t a00 = a->data[ ( block_n - 2 ) * ( a->stride + 1 )     ];
+                f3_t a01 = a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ];
+
+                if( ( f3_abs( a01 ) < 1E-308 ) || ( f3_abs( a01 ) < f3_abs( a11 ) * 1E-20 ) )
+                {
+                    a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ] = 0;
+                    a->data[ ( block_n - 1 ) * ( a->stride + 1 ) - 1 ] = 0;
+                    break;
+                }
+                f3_t p = 0.5 * ( a00 + a11 );
+                f3_t d = sqrt( 0.25 * f3_sqr( a00 - a11 ) + a01 * a01 );
+
+                // set shift to eigenvalue of lower 2x2 sub-matrix which is closest to a11
+                lambda = ( a11 >= p ) ? p + d : p - d;
+            }
+
+            f3_t* pajj = a->data;
+
+            f3_t aij = 0;
+            f3_t ajj = pajj[ 0 ];
+            f3_t ajk = pajj[ 1 ];
+
+            f3_t ch = 1;
+            f3_t ci = 1, si = 0;
+            f3_t cj, sj;
+
+            f3_t b = ci * ajj - si * ch * aij;
+            f3_arc_to_sin_cos( ajk, b - ci * lambda, &sj, &cj );
+
+            for( sz_t j = 0; j < block_n - 1; j++ )
+            {
+                if( q )
+                {
+                    f3_t* q0 = q->data + j * q->stride;
+                    f3_t* q1 = q0      +     q->stride;
+                    for( sz_t i = 0; i < n; i++ )
+                    {
+                        f3_t q0i = q0[ i ];
+                        f3_t q1i = q1[ i ];
+                        q0[ i ] = q0i * cj + q1i * sj;
+                        q1[ i ] = q1i * cj - q0i * sj;
+                    }
+                }
+
+                f3_t akk = pajj[ a->stride + 1 ];
+                f3_t akl = ( j == block_n - 2 ) ? 0 : pajj[ a->stride + 2 ];
+
+                f3_t rjj = cj * b + sj * ajk;
+                f3_t rjk = cj * ci * ajk + sj * akk;
+                f3_t rjl = sj * akl;
+
+                f3_t f3_sqr_si_cj_lambda = f3_sqr( si ) * cj * lambda;
+
+                pajj[ 0 ] =  rjj * cj * ci + rjk * sj + cj * f3_sqr_si_cj_lambda;
+
+                b = cj * akk - sj * ci * ajk;
+                f3_t ck, sk;
+                f3_arc_to_sin_cos( akl, b - cj * lambda, &sk, &ck );
+
+                f3_t offd = -rjj * sj * ci * ck + rjk * ck * cj + rjl * sk - sj * ck * f3_sqr_si_cj_lambda;
+                pajj[ 1 ] = offd;
+                pajj[ a->stride ] = offd;
+
+                pajj += a->stride + 1;
+                ch = ci;
+                ci = cj; si = sj;
+                cj = ck; sj = sk;
+
+                aij = ajk;
+                ajj = akk;
+                ajk = akl;
+            }
+
+            pajj[ 0 ] = b * ci + f3_sqr( si ) * lambda;
+        }
+    }
+
+    // sort by descending eigenvalues
+    for( sz_t i = 0; i < n - 1; i++ )
+    {
+        f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
+        sz_t imax = i;
+        for( sz_t j = i + 1; j < n; j++ )
+        {
+            f3_t v = a->data[ j * ( a->stride + 1 ) ];
+            imax = ( v > vmax ) ? j : imax;
+            vmax = ( v > vmax ) ? v : vmax;
+        }
+        f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+        if( q ) bmath_mf3_s_swap_row( q, i, imax );
     }
 }
 
@@ -1858,14 +1972,30 @@ static vd_t selftest( void )
             ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
         }
 
-        // qr_shift
+        // qr_xshift
         {
             bmath_mf3_s_cpy( m1, m2 );
-            bmath_mf3_s_evd_htp_qr_shift( m2, NULL );
+            bmath_mf3_s_evd_htp_qr_xshift( m2, NULL );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             bmath_mf3_s_cpy( m1, m2 );
             bmath_mf3_s_one( m3 );
-            bmath_mf3_s_evd_htp_qr_shift( m2, m3 );
+            bmath_mf3_s_evd_htp_qr_xshift( m2, m3 );
+            ASSERT( bmath_mf3_s_is_dag( m2 ) );
+            ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
+            bmath_mf3_s_mul( m2, m3, m4 );
+            bmath_mf3_s_htp( m3, m3 );
+            bmath_mf3_s_mul( m3, m4, m4 );
+            ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
+        }
+
+        // qr_ishift
+        {
+            bmath_mf3_s_cpy( m1, m2 );
+            bmath_mf3_s_evd_htp_qr_ishift( m2, NULL );
+            ASSERT( bmath_mf3_s_is_dag( m2 ) );
+            bmath_mf3_s_cpy( m1, m2 );
+            bmath_mf3_s_one( m3 );
+            bmath_mf3_s_evd_htp_qr_ishift( m2, m3 );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
             bmath_mf3_s_mul( m2, m3, m4 );
