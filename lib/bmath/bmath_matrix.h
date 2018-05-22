@@ -34,7 +34,8 @@
  *  dag: diagonal
  *  trd: tri-diagonal (symmetric)
  *  det: determinant
- *  svd: singular value devomposition
+ *  svd: singular value decomposition
+ *  evd: eigen value decomposition  (svd for hsm matrix)
  *  iso: isometry (orthonormal)
  */
 /**********************************************************************************************************************/
@@ -240,7 +241,7 @@ void bmath_mf3_s_qr_rot_htp_utr_givens( bmath_mf3_s* q, bmath_mf3_s* r );
  *  Diagonal elements are sorted in descending order.
  *  r == NULL allowed, in which case only a' is computed.
  */
-void bmath_mf3_s_hsm_svd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* q );
+void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* q );
 
 /** In-place SVD for a symmetric matrix. Approach: TRD, QR with shifting.
  *  Very efficicient for large matrices at >20x faster than Jacobi method but slightly less accurate.
@@ -250,7 +251,7 @@ void bmath_mf3_s_hsm_svd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* q );
  *  Diagonal elements are sorted in descending order.
  *  r == NULL allowed, in which case only a' is computed.
  */
-void bmath_mf3_s_hsm_svd_htp_qr_shift( bmath_mf3_s* a, bmath_mf3_s* q );
+void bmath_mf3_s_evd_htp_qr_shift( bmath_mf3_s* a, bmath_mf3_s* q );
 
 /// For easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );

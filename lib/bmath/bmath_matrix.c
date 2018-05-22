@@ -1391,7 +1391,7 @@ void bmath_mf3_s_qr_rot_htp_utr_givens( bmath_mf3_s* q, bmath_mf3_s* r )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_svd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* r )
+void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* r )
 {
     ASSERT( bmath_mf3_s_is_square( a ) );
 
@@ -1466,7 +1466,7 @@ void bmath_mf3_s_hsm_svd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* r )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_svd_htp_qr_shift( bmath_mf3_s* a, bmath_mf3_s* r )
+void bmath_mf3_s_evd_htp_qr_shift( bmath_mf3_s* a, bmath_mf3_s* r )
 {
     sz_t n = a->rows;
     if( n <= 1 ) return; // nothing to do
@@ -1845,11 +1845,27 @@ static vd_t selftest( void )
         // jacobi
         {
             bmath_mf3_s_cpy( m1, m2 );
-            bmath_mf3_s_hsm_svd_htp_jacobi( m2, NULL );
+            bmath_mf3_s_evd_htp_jacobi( m2, NULL );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             bmath_mf3_s_cpy( m1, m2 );
             bmath_mf3_s_one( m3 );
-            bmath_mf3_s_hsm_svd_htp_jacobi( m2, m3 );
+            bmath_mf3_s_evd_htp_jacobi( m2, m3 );
+            ASSERT( bmath_mf3_s_is_dag( m2 ) );
+            ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
+            bmath_mf3_s_mul( m2, m3, m4 );
+            bmath_mf3_s_htp( m3, m3 );
+            bmath_mf3_s_mul( m3, m4, m4 );
+            ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
+        }
+
+        // qr_shift
+        {
+            bmath_mf3_s_cpy( m1, m2 );
+            bmath_mf3_s_evd_htp_qr_shift( m2, NULL );
+            ASSERT( bmath_mf3_s_is_dag( m2 ) );
+            bmath_mf3_s_cpy( m1, m2 );
+            bmath_mf3_s_one( m3 );
+            bmath_mf3_s_evd_htp_qr_shift( m2, m3 );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
             bmath_mf3_s_mul( m2, m3, m4 );
