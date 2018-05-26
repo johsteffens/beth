@@ -18,6 +18,7 @@
 #include "bcore_control.h"
 #include "bcore_tbman.h"
 #include "bcore_signal.h"
+#include "bcore_sc.h"
 
 void bcore_write_fv( FILE* file, sc_t format, va_list args )
 {
@@ -300,55 +301,27 @@ vd_t bcore_memmove( vd_t dst, vc_t src, sz_t size )
 
 sd_t bcore_strcpy( sd_t dst, sc_t src )
 {
-    if( !dst && !src ) return NULL;
-    sz_t len = src ? strlen( src ) : 0;
-    dst = bcore_alloc( dst, len + 1 );
-    bcore_memcpy( dst, src, len );
-    dst[ len ] = 0;
-    return dst;
+    return sc_t_cpy( dst, src );
 }
 
-int bcore_strcmp( sc_t str1, sc_t str2 )
+s2_t bcore_strcmp( sc_t str1, sc_t str2 )
 {
-    if( str1 == NULL ) return ( str2 == NULL ) ? 0 :  1;
-    if( str2 == NULL ) return -1;
-    while( ( *str1 != 0 ) && ( *str2 != 0 ) )
-    {
-        if( *str1 != *str2 ) return ( *str1 < *str2 ) ? 2 : -2;
-        str1++;
-        str2++;
-    }
-    return ( *str1 == 0 ) ? ( ( *str2 == 0 ) ? 0 : +1 ) : -1;
+    return sc_t_cmp( str1, str2 );
 }
 
-int bcore_strcmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 )
+s2_t bcore_strcmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 )
 {
-    if( str1 == NULL ) return ( str2 == NULL ) ? 0 :  1;
-    if( str2 == NULL ) return -1;
-    if( n1 == 0 ) return ( n2 == 0 ) ? 0 :  1;
-    if( n2 == 0 ) return -1;
-    sz_t i1 = 0;
-    sz_t i2 = 0;
-    while( ( i1 < n1 ) && ( i2 < n2 ) )
-    {
-        if( str1[ i1 ] != str2[ i2 ] ) return ( str1[ i1 ] < str2[ i2 ] ) ? 2 : -2;
-        i1++;
-        i2++;
-    }
-    return ( i1 == n1 ) ? ( ( i2 == n2 ) ? 0 : +1 ) : -1;
+    return sc_t_cmp_n( str1, n1, str2, n2 );
 }
 
 sz_t bcore_strlen( sc_t str )
 {
-    if( !str ) return 0;
-    return strlen( str );
+    return sc_t_len( str );
 }
 
-bool bcore_strany( char c, sc_t str )
+bl_t bcore_strany( char c, sc_t str )
 {
-    if( str == NULL ) return false;
-    while( *str != 0 ) if( *str++ == c ) return true;
-    return false;
+    return sc_t_any( c, str );
 }
 
 /**********************************************************************************************************************/

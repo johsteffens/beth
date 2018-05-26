@@ -541,6 +541,59 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
     return ret_size;
 }
 
+sd_t sc_t_cpy( sd_t dst, sc_t src )
+{
+    if( !dst && !src ) return NULL;
+    sz_t len = src ? strlen( src ) : 0;
+    dst = bcore_alloc( dst, len + 1 );
+    bcore_memcpy( dst, src, len );
+    dst[ len ] = 0;
+    return dst;
+}
+
+s2_t sc_t_cmp( sc_t str1, sc_t str2 )
+{
+    if( str1 == NULL ) return ( str2 == NULL ) ? 0 :  1;
+    if( str2 == NULL ) return -1;
+    while( ( *str1 != 0 ) && ( *str2 != 0 ) )
+    {
+        if( *str1 != *str2 ) return ( *str1 < *str2 ) ? 2 : -2;
+        str1++;
+        str2++;
+    }
+    return ( *str1 == 0 ) ? ( ( *str2 == 0 ) ? 0 : +1 ) : -1;
+}
+
+s2_t sc_t_cmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 )
+{
+    if( str1 == NULL ) return ( str2 == NULL ) ? 0 :  1;
+    if( str2 == NULL ) return -1;
+    if( n1 == 0 ) return ( n2 == 0 ) ? 0 :  1;
+    if( n2 == 0 ) return -1;
+    sz_t i1 = 0;
+    sz_t i2 = 0;
+    while( ( i1 < n1 ) && ( i2 < n2 ) )
+    {
+        if( str1[ i1 ] != str2[ i2 ] ) return ( str1[ i1 ] < str2[ i2 ] ) ? 2 : -2;
+        i1++;
+        i2++;
+    }
+    return ( i1 == n1 ) ? ( ( i2 == n2 ) ? 0 : +1 ) : -1;
+}
+
+sz_t sc_t_len( sc_t str )
+{
+    if( !str ) return 0;
+    return strlen( str );
+}
+
+bl_t sc_t_any( char c, sc_t str )
+{
+    if( str == NULL ) return false;
+    while( *str != 0 ) if( *str++ == c ) return true;
+    return false;
+}
+
 /**********************************************************************************************************************/
 
 vd_t bcore_sc_signal_handler( const bcore_signal_s* o )

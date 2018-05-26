@@ -119,6 +119,34 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t format, sz_t fsize, va_list* p_args );
  */
 s2_t sc_t_scan_type( sc_t format, tp_t* p_type, bl_t* p_is_ptr );
 
+/// like stdlib strcpy but when dst == NULL, function allocates destination first, copies and returns address
+sd_t sc_t_cpy( sd_t dst, sc_t src );
+
+/** Compatible to stdlib strcmp but also accepts NULL and provides more distinctive results
+ *  returns   0 when both strings are equal
+ *  returns  +1 when src2 is longer than str 1 but at the length of str1 all characters match
+ *  returns  -1 when src1 is longer than str 2 but at the length of str2 all characters match
+ *  returns >+1 when none of above conditions apply and str2 comes after str1 in lexicographic order
+ *  returns <-1 when none of above conditions apply and str1 comes after str2 in lexicographic order
+ *  NULL is ordered before the empty string.
+ *
+ * Examples:
+ *   if str1 is equal to str2 ...............: if( bcore_strcmp( str1, str2 ) == 0 )
+ *   if str1 is ordered before str2 .........: if( bcore_strcmp( str1, str2 ) >  0 )
+ *   if str2 is ordered before str1 .........: if( bcore_strcmp( str1, str2 ) <  0 )
+ *   if str1 matches the beginning of str2 ..: if( (  bcore_strcmp( str1, str2 ) >> 1 ) == 0 )
+ *   if str2 matches the beginning of str1 ..: if( ( -bcore_strcmp( str1, str2 ) >> 1 ) == 0 )
+ *
+ */
+s2_t sc_t_cmp( sc_t str1, sc_t str2 );
+s2_t sc_t_cmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 );
+
+/// like stdlib strlen but also accepts NULL
+sz_t sc_t_len( sc_t str );
+
+/// returns true iff c occurs in str
+bl_t sc_t_any( char c, sc_t str );
+
 vd_t bcore_sc_signal_handler( const bcore_signal_s* o );
 
 #endif //BCORE_SC_H
