@@ -87,7 +87,7 @@ tp_t bcore_array_fix_link_aware_type_of( sz_t size );
 
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_array, get_size,  sz_t ) // returns size
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_array, get_space, sz_t ) // returns space
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_array, get, sr_s, sz_t, index ) // returns indexed item; NULL if index is out of range or the linked item is NULL
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_array, get, sr_s, sz_t, index ) // returns indexed item; if index is out of range or the linked item is NULL
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set,    sz_t, index, sr_s, src ) // sets item at indexed position
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_s3, sz_t, index, s3_t, val ) // Sets item by converting s3_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_u3, sz_t, index, u3_t, val ) // Sets item by converting u3_t into target type
@@ -107,6 +107,7 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_f3, f3_t, val )    // 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_sz, sz_t, val )    // pushes (converted) value
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_sc, sc_t, val )    // pushes (converted) value
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_bl, bl_t, val )    // pushes (converted) value
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_array, sr_s, src ) // assumes src represents array (appends array)
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_array, pop )                   // removes last element from array
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, set_gtype, tp_t, type ) // changes global item-type on empty arrays;
 
@@ -156,7 +157,6 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_array, do,              sz_t, star
 BCORE_FUNC_SPECT_CONST1_RET1_ARG4_MAP0( bcore_array, create_sorted_order_f, bcore_arr_sz_s*, sz_t, start, sz_t, end, bcore_cmp_f, cmp, s2_t, direction )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG3_MAP0( bcore_array, create_sorted_order,   bcore_arr_sz_s*, sz_t, start, sz_t, end,                   s2_t, direction )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, reorder, const bcore_arr_sz_s*, order )
-
 
 bl_t bcore_array_t_is_fixed             ( tp_t tp );
 bl_t bcore_array_t_is_static            ( tp_t tp );

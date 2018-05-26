@@ -780,6 +780,26 @@ void NPX(default_push_bl   )( const NPX(s)* p, bcore_array* o, bl_t val ) {     
 
 /**********************************************************************************************************************/
 
+void bcore_array_default_push_array( const bcore_array_s* p, bcore_array* o, sr_s src )
+{
+    if( !src.o ) return;
+    src = sr_cp( src, TYPEOF_bcore_array_s );
+    sz_t src_size = bcore_array_r_get_size( &src );
+
+    if( sr_s_is_const( &src ) )
+    {
+        for( sz_t i = 0; i < src_size; i++ ) bcore_array_p_push( p, o, sr_cc( bcore_array_r_get( &src, i ) ) );
+    }
+    else
+    {
+        for( sz_t i = 0; i < src_size; i++ ) bcore_array_p_push( p, o, bcore_array_r_get( &src, i ) );
+    }
+
+    sr_down( src );
+}
+
+/**********************************************************************************************************************/
+
 void bcore_array_default_pop( const bcore_array_s* p, bcore_array* o )
 {
     sz_t size = bcore_array_p_get_size( p, o );
