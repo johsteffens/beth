@@ -829,6 +829,13 @@ st_s* st_s_replace_sc( st_s* o, sz_t start, sc_t sc )
     return o;
 }
 
+st_s* st_s_replace_char_char( st_s* o, char c, char replace )
+{
+    if( o->space == 0 ) st_s_make_strong( o );
+    for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ] == c ) o->data[ i ] = replace;
+    return o;
+}
+
 st_s* st_s_replace_char_sc( st_s* o, char c, sc_t sc )
 {
     sz_t start = 0;

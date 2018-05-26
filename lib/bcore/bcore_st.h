@@ -155,15 +155,16 @@ st_s* st_s_replace_st_d( st_s* o, sz_t start, st_s* st ); // discards string
 /// Removes from position start: <size> characters. If not enough characters left, the entire tail is removed. Returns o.
 st_s* st_s_remove( st_s* o, sz_t start, sz_t size );
 
-/// Replaces all occurrences of <c> with <st>
-st_s* st_s_replace_char_sc(   st_s* o, char c, sc_t sc );
-st_s* st_s_replace_char_st(   st_s* o, char c, const st_s* st );
-st_s* st_s_replace_char_st_d( st_s* o, char c, st_s* st );
+/// Replaces all occurrences of <c> with string <replace>
+st_s* st_s_replace_char_char( st_s* o, char c,       char replace );
+st_s* st_s_replace_char_sc(   st_s* o, char c,       sc_t replace );
+st_s* st_s_replace_char_st(   st_s* o, char c, const st_s* replace );
+st_s* st_s_replace_char_st_d( st_s* o, char c,       st_s* replace );
 
 /// Replaces all occurrences of <match> with <replace>
-st_s* st_s_replace_sc_sc(     st_s* o, sc_t match, sc_t replace );
+st_s* st_s_replace_sc_sc(     st_s* o,        sc_t match,       sc_t replace );
 st_s* st_s_replace_st_st(     st_s* o, const st_s* match, const st_s* replace );
-st_s* st_s_replace_st_d_st_d( st_s* o, st_s* match, st_s* replace ); // discards input strings
+st_s* st_s_replace_st_d_st_d( st_s* o,       st_s* match,       st_s* replace ); // discards input strings
 
 /// Text navigation
 sz_t st_s_lineof(    const st_s* o, sz_t pos );            // line number of character position in text (line counting starts with '1')
@@ -196,6 +197,7 @@ void st_s_print_fa( sc_t format, ... );
  *      Backslashes are to be escaped '\\'.
  *
  *  "#until'<char>'"  (Example: "#until'\n'")
+ *      Argument: st_s*
  *      Consumes a string until <char> is reached.
  *      The character is not consumed.
  *
@@ -250,8 +252,6 @@ void st_s_print_fa( sc_t format, ... );
  *     Index position after scan completes.
  *     This value would be be used as 'start' for continued scanning.
  */
-
-
 sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list args );
 sz_t st_s_parse_fa( const st_s* o, sz_t start, sz_t end, sc_t format, ... );
 
