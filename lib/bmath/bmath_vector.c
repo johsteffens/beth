@@ -46,6 +46,13 @@ void bmath_vf3_s_move( bmath_vf3_s* o, bmath_vf3_s* src )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_vf3_s_clear( bmath_vf3_s* o )
+{
+    bcore_array_a_set_space( (bcore_array*)o, 0 );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_vf3_s_set_size( bmath_vf3_s* o, sz_t size )
 {
     bcore_array_a_set_size( (bcore_array*)o, size );
@@ -71,6 +78,20 @@ void bmath_vf3_s_fill_random( bmath_vf3_s* o, f3_t min, f3_t max, u2_t* rval )
 {
     f3_t range = max - min;
     for( sz_t i = 0; i < o->size; i++ ) o->data[ i ] = ( range * f3_xsg1_pos( rval ) ) + min;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_push( bmath_vf3_s* o, f3_t val )
+{
+    if( o->size < o->space )
+    {
+        o->data[ o->size++ ] = val;
+    }
+    else
+    {
+        bcore_array_a_push_f3( (bcore_array*)o, val );
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -295,6 +316,24 @@ static f3_t f3_s_f3_sum( const f3_t* v1, sz_t size )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+static f3_t f3_s_f3_max( const f3_t* v1, sz_t size )
+{
+    f3_t max = ( size > 0 ) ? v1[ 0 ] : 0;
+    for( sz_t i = 0; i < size; i++ ) max = f3_max( max, v1[ i ] );
+    return max;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+static f3_t f3_s_f3_min( const f3_t* v1, sz_t size )
+{
+    f3_t min = ( size > 0 ) ? v1[ 0 ] : 0;
+    for( sz_t i = 0; i < size; i++ ) min = f3_min( min, v1[ i ] );
+    return min;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 f3_t bmath_vf3_s_f3_sum( const bmath_vf3_s* o )
 {
     return f3_s_f3_sum( o->data, o->size );
@@ -311,7 +350,9 @@ f3_t bmath_vf3_s_f3_avg( const bmath_vf3_s* o )
 
 f3_t bmath_vf3_s_f3_var( const bmath_vf3_s* o )
 {
-    return ( o->size > 1 ) ? bmath_vf3_s_f3_sqr( o ) / ( o->size - 1 ) : 0;
+    f3_t e_v  = bmath_vf3_s_f3_sum( o ) / ( ( o->size > 1 ) ? o->size : 1 );
+    f3_t e_vv = bmath_vf3_s_f3_sqr( o ) / ( ( o->size > 1 ) ? o->size : 1 );
+    return f3_max( 0.0, e_vv - f3_sqr( e_v ) );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -319,6 +360,20 @@ f3_t bmath_vf3_s_f3_var( const bmath_vf3_s* o )
 f3_t bmath_vf3_s_f3_dev( const bmath_vf3_s* o )
 {
     return f3_srt( bmath_vf3_s_f3_var( o ) );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_vf3_s_f3_max( const bmath_vf3_s* o )
+{
+    return f3_s_f3_max( o->data, o->size );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_vf3_s_f3_min( const bmath_vf3_s* o )
+{
+    return f3_s_f3_min( o->data, o->size );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -405,6 +460,16 @@ void bmath_vf3_s_to_stdout( const bmath_vf3_s* o )
     const f3_t* v = o->data;
     printf( "(%zu)\n", o->size );
     for( sz_t i = 0; i < o->size; i++ ) printf( "%9.3g\n", v[ i ] );
+}
+
+void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o )
+{
+    bcore_msg_fa( "(#<sz_t>)\n", o->size );
+    bcore_msg_fa( "  sum .. #<f3_t>\n", bmath_vf3_s_f3_sum( o ) );
+    bcore_msg_fa( "  avg .. #<f3_t>\n", bmath_vf3_s_f3_avg( o ) );
+    bcore_msg_fa( "  max .. #<f3_t>\n", bmath_vf3_s_f3_max( o ) );
+    bcore_msg_fa( "  min .. #<f3_t>\n", bmath_vf3_s_f3_min( o ) );
+    bcore_msg_fa( "  dev .. #<f3_t>\n", bmath_vf3_s_f3_dev( o ) );
 }
 
 /**********************************************************************************************************************/

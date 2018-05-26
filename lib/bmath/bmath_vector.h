@@ -56,6 +56,7 @@ BCORE_DECLARE_OBJECT_( bmath_vf3_s )
 };
 
 void bmath_vf3_s_move( bmath_vf3_s* o, bmath_vf3_s* src );
+void bmath_vf3_s_clear( bmath_vf3_s* o );
 
 bmath_vf3_s* bmath_vf3_s_create_set_size( sz_t size );
 bmath_vf3_s* bmath_vf3_s_create_fill( sz_t size, f3_t val );
@@ -65,6 +66,8 @@ void bmath_vf3_s_set_size(    bmath_vf3_s* o, sz_t size );
 void bmath_vf3_s_set_size_to( const bmath_vf3_s* o, bmath_vf3_s* res );
 void bmath_vf3_s_fill(        bmath_vf3_s* o, f3_t val );
 void bmath_vf3_s_fill_random( bmath_vf3_s* o, f3_t min, f3_t max, u2_t* rval );
+
+void bmath_vf3_s_push( bmath_vf3_s* o, f3_t val );
 
 bl_t bmath_vf3_s_is_equ( const bmath_vf3_s* o, const bmath_vf3_s* op );
 bl_t bmath_vf3_s_is_zro( const bmath_vf3_s* o );
@@ -113,6 +116,7 @@ f3_t bmath_vf3_s_get_f3( const bmath_vf3_s* o, sz_t index )
 
 /// For easy inspection
 void bmath_vf3_s_to_stdout( const bmath_vf3_s* o );
+void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o ); // vector statistics
 
 /**********************************************************************************************************************/
 // dynamic size vector of bmath_cf3_s
