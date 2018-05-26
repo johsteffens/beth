@@ -74,7 +74,6 @@ BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_matrix, div,     const bmath_matri
 BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_matrix, mul_scl, const bmath_ring*,   op, bmath_matrix*, res )
 BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bmath_matrix, mul_vec, const bmath_vector*, op, bmath_vector*, res )
 
-
 /**********************************************************************************************************************/
 
 vd_t bmath_spect_matrix_signal_handler( const bcore_signal_s* o );

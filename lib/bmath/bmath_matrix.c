@@ -464,6 +464,24 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res )
+{
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
+    ASSERT( o->rows == op1->size );
+    ASSERT( o->cols == op2->size );
+
+    const f3_t* v1 = op1->data;
+    const f3_t* v2 = op2->data;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* oi = o->data   + o->stride * i;
+              f3_t* ri = res->data + res->stride * i;
+        for( sz_t j = 0; j < o->cols; j++ ) ri[ j ] = oi[ j ] + ( v1[ i ] * v2[ j ] );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
     if( res == o || res == op )
@@ -1689,6 +1707,67 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* q )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end )
+{
+    end = end < arr_vec->size ? end : arr_vec->size;
+    start = start > end ? end : start;
+
+    bmath_mf3_s_zro( o );
+    if( start == end ) return;
+    sz_t n = arr_vec->data[ start ].size;
+    ASSERT( o->rows == n );
+    ASSERT( o->cols == n );
+
+    bmath_vf3_s* avg = bmath_vf3_s_create_set_size( n );
+    bmath_vf3_s* vec = bmath_vf3_s_create_set_size( n );
+
+    bmath_arr_vf3_s_on_section_get_avg( arr_vec, start, end, avg );
+
+    for( sz_t i = start; i < end; i++ )
+    {
+        bmath_vf3_s_sub( &arr_vec->data[ i ], avg, vec );
+        bmath_mf3_s_add_opd( o, vec, vec, o );
+    }
+
+    f3_t f = 1.0 / ( end - start );
+    bmath_mf3_s_mul_scl_f3( o, f, o );
+
+    bmath_vf3_s_discard( avg );
+    bmath_vf3_s_discard( vec );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end )
+{
+    end = end < arr_vec->size ? end : arr_vec->size;
+    start = start > end ? end : start;
+
+    bmath_mf3_s_zro( o );
+    if( start == end ) return;
+    sz_t n = arr_vec->data[ start ].size;
+    ASSERT( o->rows == n );
+    ASSERT( o->cols == n );
+
+    bmath_vf3_s* avg = bmath_vf3_s_create_set_size( n );
+    bmath_arr_vf3_s_on_section_get_avg_sprc( arr_vec, start, end, avg );
+
+    for( sz_t i = 0; i < n; i++ )
+    {
+        for( sz_t j = 0; j <= i; j++ )
+        {
+            f3_t v = bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( arr_vec, start, end, avg->data[ i ], avg->data[ j ], i, j );
+            v /= (end - start);
+            o->data[ i * o->stride + j ] = v;
+            o->data[ j * o->stride + i ] = v;
+        }
+    }
+
+    bmath_vf3_s_discard( avg );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
 {
     printf( "(%zu x %zu)\n", o->rows, o->cols );
@@ -1719,6 +1798,7 @@ static vd_t selftest( void )
     BCORE_LIFE_CREATE( bmath_vf3_s, v2 );
     BCORE_LIFE_CREATE( bmath_vf3_s, v3 );
     BCORE_LIFE_CREATE( bmath_vf3_s, v4 );
+    BCORE_LIFE_CREATE( bmath_arr_vf3_s, a1 );
 
     // basic linear
     {
@@ -2003,6 +2083,36 @@ static vd_t selftest( void )
             bmath_mf3_s_mul( m3, m4, m4 );
             ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
         }
+
+    }
+
+    // covariance
+    {
+        sz_t size = 1000;
+        sz_t n    = 10;
+        u2_t rval = 124;
+        bmath_arr_vf3_s_set_size( a1, size );
+        bmath_arr_vf3_s_on_section_set_size( a1, 0, -1, n );
+        bmath_arr_vf3_s_on_section_fill_random( a1, 0, -1, -1, 1, &rval );
+
+        bmath_mf3_s_set_size( m1, n, n );
+        bmath_mf3_s_set_size( m2, n, n );
+        bmath_vf3_s_set_size( v1, n );
+
+        bmath_mf3_s_set_covariance_on_section_fast( m1, a1, 0, -1 );
+        bmath_mf3_s_set_covariance_on_section_sprc( m2, a1, 0, -1 );
+        ASSERT( bmath_mf3_s_is_near_equ( m1, m2, 1E-8 ) );
+        ASSERT( f3_abs( bmath_mf3_s_f3_trc( m1 ) - n * 0.3333 ) < 1E-1 ); // trace should be near n/3
+
+        f3_t sqr_norm = 4.0;
+        bmath_arr_vf3_s_on_section_set_sqr( a1, 0, -1, sqr_norm ); // normalize all vectors to sqr_norm
+        bmath_mf3_s_set_covariance_on_section_fast( m1, a1, 0, -1 );
+        ASSERT( f3_abs( bmath_mf3_s_f3_trc( m1 ) - sqr_norm ) < 1E-2 ); // trace should be near sqr_norm (independent of n)
+
+        bmath_arr_vf3_s_on_section_set_sum( a1, 0, -1, 0 ); // set sum of vector components to 0 (introducing a linear dependence)
+        bmath_mf3_s_set_covariance_on_section_fast( m1, a1, 0, -1 );
+        bmath_mf3_s_evd_htp( m1, NULL );
+        ASSERT( f3_abs( bmath_mf3_s_get_f3( m1, n - 1, n - 1 ) ) < 1E-8 ); // last eigenvalue should be near zero
     }
 
     BCORE_LIFE_DOWN();

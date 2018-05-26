@@ -37,6 +37,15 @@ BCORE_DEFINE_OBJECT_INST_( bmath_vector, bmath_vf3_s )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_vf3_s_move( bmath_vf3_s* o, bmath_vf3_s* src )
+{
+    if( o == src ) return;
+    *o = *src;
+    src->space = 0;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_vf3_s_set_size( bmath_vf3_s* o, sz_t size )
 {
     bcore_array_a_set_size( (bcore_array*)o, size );
@@ -363,6 +372,34 @@ void bmath_vf3_s_dev( const bmath_vf3_s* o, f3_t* res )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_vf3_s_set_sqr( bmath_vf3_s* o, f3_t val )
+{
+    ASSERT( val >= 0 );
+    f3_t cur = bmath_vf3_s_f3_sqr( o );
+    f3_t fac = ( cur > 0 ) ? sqrt( val / cur ) : 0;
+    bmath_vf3_s_mul_f3( o, fac, o );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_set_sum( bmath_vf3_s* o, f3_t val )
+{
+    f3_t cur = bmath_vf3_s_f3_sum( o );
+    f3_t add = o->size > 0 ? ( val - cur ) / o->size : 0;
+    for( sz_t i = 0; i < o->size; i++ ) o->data[ i ] += add;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_set_avg( bmath_vf3_s* o, f3_t val )
+{
+    f3_t cur = bmath_vf3_s_f3_avg( o );
+    f3_t add = val - cur;
+    for( sz_t i = 0; i < o->size; i++ ) o->data[ i ] += add;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_vf3_s_to_stdout( const bmath_vf3_s* o )
 {
     const f3_t* v = o->data;
@@ -385,6 +422,15 @@ BCORE_DEFINE_OBJECT_INST_( bmath_vector, bmath_vcf3_s )
     "func bmath_fp_vector:mul_scl = bmath_vcf3_s_mul_scl;"
     "func bmath_fp_vector:mul_vec = bmath_vcf3_s_mul_vec;"
 "}";
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_vcf3_s_move( bmath_vcf3_s* o, bmath_vcf3_s* src )
+{
+    if( o == src ) return;
+    *o = *src;
+    o->space = 0;
+}
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -740,6 +786,300 @@ void bmath_vcf3_s_to_stdout( const bmath_vcf3_s* o )
     for( sz_t i = 0; i < o->size; i++ ) bmath_cf3_s_to_stdout( &v[ i ] );
 }
 
+/**********************************************************************************************************************/
+// array of vf3_s
+
+BCORE_DEFINE_OBJECT_INST_( bcore_array, bmath_arr_vf3_s )
+"{"
+    "aware_t _;"
+    "bmath_vf3_s [] arr;"
+"}";
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_clear( bmath_arr_vf3_s* o )
+{
+    bcore_array_a_set_space( ( bcore_array* )o, 0 );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_set_space(  bmath_arr_vf3_s* o, sz_t space )
+{
+    bcore_array_a_set_space( ( bcore_array* )o, space );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_set_size( bmath_arr_vf3_s* o, sz_t size )
+{
+    bcore_array_a_set_size( ( bcore_array* )o, size );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_push( bmath_arr_vf3_s* o, const bmath_vf3_s* vec )
+{
+    bcore_array_a_push( ( bcore_array* )o, sr_awc( vec ) );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_push_arr( bmath_arr_vf3_s* o, const bmath_arr_vf3_s* arr )
+{
+    bcore_array_a_push_array( ( bcore_array* )o, sr_awc( arr ) );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_pop( bmath_arr_vf3_s* o )
+{
+    bcore_array_a_pop( ( bcore_array* )o );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_reorder( bmath_arr_vf3_s* o, const bcore_arr_sz_s* order )
+{
+    bcore_array_a_reorder( ( bcore_array* )o, order );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_set_size( bmath_arr_vf3_s* o, sz_t start, sz_t end, sz_t size )
+{
+    end = end < o->size ? end : o->size;
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_set_size( &o->data[ i ], size );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_fill( bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t val )
+{
+    end = end < o->size ? end : o->size;
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_fill( &o->data[ i ], val );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_fill_random( bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t min, f3_t max, u2_t* rval )
+{
+    end = end < o->size ? end : o->size;
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_fill_random( &o->data[ i ], min, max, rval );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_zro( bmath_arr_vf3_s* o, sz_t start, sz_t end )
+{
+    end = end < o->size ? end : o->size;
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_zro( &o->data[ i ] );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_neg( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_arr_vf3_s* res )
+{
+    end = end < o->size ? end : o->size;
+    ASSERT( res->size >= end );
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_neg( &o->data[ i ], &res->data[ i ] );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_cpy( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_arr_vf3_s* res )
+{
+    end = end < o->size ? end : o->size;
+    ASSERT( res->size >= end );
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_cpy( &o->data[ i ], &res->data[ i ] );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_add( const bmath_arr_vf3_s* o, sz_t start, sz_t end, const bmath_vf3_s* op, bmath_arr_vf3_s* res )
+{
+    end = end < o->size ? end : o->size;
+    ASSERT( res->size >= end );
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_add( &o->data[ i ], op, &res->data[ i ] );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_sub( const bmath_arr_vf3_s* o, sz_t start, sz_t end, const bmath_vf3_s* op, bmath_arr_vf3_s* res )
+{
+    end = end < o->size ? end : o->size;
+    ASSERT( res->size >= end );
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_sub( &o->data[ i ], op, &res->data[ i ] );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_mul_f3(  const bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t op, bmath_arr_vf3_s* res )
+{
+    end = end < o->size ? end : o->size;
+    ASSERT( res->size >= end );
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_mul_f3( &o->data[ i ], op, &res->data[ i ] );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_set_sqr( bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t val )
+{
+    end = end < o->size ? end : o->size;
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_set_sqr( &o->data[ i ], val );
+}
+
+void bmath_arr_vf3_s_on_section_set_sum( bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t val )
+{
+    end = end < o->size ? end : o->size;
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_set_sum( &o->data[ i ], val );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_set_avg( bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t val )
+{
+    end = end < o->size ? end : o->size;
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_set_avg( &o->data[ i ], val );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_arr_vf3_s_on_section_f3_sum_sprec( const bmath_arr_vf3_s* o, sz_t start, sz_t end, sz_t index )
+{
+    end   = end < o->size ? end : o->size;
+    start = start > end ? end : start;
+    switch( end - start )
+    {
+        case 0: return 0;
+        case 1: return bmath_vf3_s_get_f3( &o->data[ start ], index );
+
+        case 2: return bmath_vf3_s_get_f3( &o->data[ start     ], index ) +
+                       bmath_vf3_s_get_f3( &o->data[ start + 1 ], index );
+
+        case 3: return bmath_vf3_s_get_f3( &o->data[ start     ], index ) +
+                       bmath_vf3_s_get_f3( &o->data[ start + 1 ], index ) +
+                       bmath_vf3_s_get_f3( &o->data[ start + 2 ], index );
+
+        case 4: return bmath_vf3_s_get_f3( &o->data[ start     ], index ) +
+                       bmath_vf3_s_get_f3( &o->data[ start + 1 ], index ) +
+                       bmath_vf3_s_get_f3( &o->data[ start + 2 ], index ) +
+                       bmath_vf3_s_get_f3( &o->data[ start + 3 ], index );
+
+        default: break;
+    }
+
+    sz_t mid = start + ( ( end - start ) >> 1 );
+
+    return bmath_arr_vf3_s_on_section_f3_sum_sprec( o, start, mid, index ) +
+           bmath_arr_vf3_s_on_section_f3_sum_sprec( o, mid,   end, index );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( const bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t ai, f3_t aj, sz_t i, sz_t j )
+{
+    end   = end < o->size ? end : o->size;
+    start = start > end ? end : start;
+    switch( end - start )
+    {
+        case 0: return 0;
+        case 1:
+        {
+            const bmath_vf3_s* v = &o->data[ start ];
+            ASSERT( i < v->size && j < v->size );
+            return ( v->data[ i ] - ai ) * ( v->data[ j ] - aj );
+        }
+        break;
+
+        case 2:
+        {
+            const bmath_vf3_s* v1 = &o->data[ start     ];
+            const bmath_vf3_s* v2 = &o->data[ start + 1 ];
+            ASSERT( i < v1->size && j < v1->size );
+            ASSERT( i < v2->size && j < v2->size );
+            return ( v1->data[ i ] - ai ) * ( v1->data[ j ] - aj ) +
+                   ( v2->data[ i ] - ai ) * ( v2->data[ j ] - aj );
+        }
+        break;
+
+        case 3:
+        {
+            const bmath_vf3_s* v1 = &o->data[ start     ];
+            const bmath_vf3_s* v2 = &o->data[ start + 1 ];
+            const bmath_vf3_s* v3 = &o->data[ start + 2 ];
+            ASSERT( i < v1->size && j < v1->size );
+            ASSERT( i < v2->size && j < v2->size );
+            ASSERT( i < v3->size && j < v3->size );
+            return ( v1->data[ i ] - ai ) * ( v1->data[ j ] - aj ) +
+                   ( v2->data[ i ] - ai ) * ( v2->data[ j ] - aj ) +
+                   ( v3->data[ i ] - ai ) * ( v3->data[ j ] - aj );
+        }
+        break;
+
+        case 4:
+        {
+            const bmath_vf3_s* v1 = &o->data[ start     ];
+            const bmath_vf3_s* v2 = &o->data[ start + 1 ];
+            const bmath_vf3_s* v3 = &o->data[ start + 2 ];
+            const bmath_vf3_s* v4 = &o->data[ start + 3 ];
+            ASSERT( i < v1->size && j < v1->size );
+            ASSERT( i < v2->size && j < v2->size );
+            ASSERT( i < v3->size && j < v3->size );
+            ASSERT( i < v4->size && j < v4->size );
+            return ( v1->data[ i ] - ai ) * ( v1->data[ j ] - aj ) +
+                   ( v2->data[ i ] - ai ) * ( v2->data[ j ] - aj ) +
+                   ( v3->data[ i ] - ai ) * ( v3->data[ j ] - aj ) +
+                   ( v4->data[ i ] - ai ) * ( v4->data[ j ] - aj );
+        }
+        break;
+
+        default: break;
+    }
+
+    sz_t mid = start + ( ( end - start ) >> 1 );
+
+    return bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( o, start, mid, ai, aj, i, j ) +
+           bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( o, mid,   end, ai, aj, i, j );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_get_sum_sprc( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_vf3_s* res )
+{
+    for( sz_t i = 0; i < res->size; i++ ) res->data[ i ] = bmath_arr_vf3_s_on_section_f3_sum_sprec( o, start, end, i );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_get_avg_sprc( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_vf3_s* res )
+{
+    end = end < o->size ? end : o->size;
+    start = start > end ? end : start;
+    bmath_arr_vf3_s_on_section_get_sum_sprc( o, start, end, res );
+    if( end > start ) bmath_vf3_s_mul_f3( res, 1.0 / (end - start), res );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_get_sum_fast( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_vf3_s* res )
+{
+    end = end < o->size ? end : o->size;
+    bmath_vf3_s_zro( res );
+    for( sz_t i = start; i < end; i++ ) bmath_vf3_s_add( &o->data[ i ], res, res );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_on_section_get_avg_fast( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_vf3_s* res )
+{
+    end = end < o->size ? end : o->size;
+    start = start > end ? end : start;
+    bmath_arr_vf3_s_on_section_get_sum_fast( o, start, end, res );
+    if( end > start ) bmath_vf3_s_mul_f3( res, 1.0 / (end - start), res );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
@@ -833,6 +1173,30 @@ static vd_t selftest( void )
         ASSERT( bmath_cf3_mag( sqr1 ) < 1E-14 );
     }
 
+    /// bmath_arr_vf3_s
+    {
+        sz_t size = 10;
+        sz_t n    = 5;
+        bmath_arr_vf3_s* a1 = bcore_life_s_push_aware( l, bmath_arr_vf3_s_create() );
+        bmath_vf3_s*     v1 = bcore_life_s_push_aware( l, bmath_vf3_s_create() );
+        bmath_vf3_s*     v2 = bcore_life_s_push_aware( l, bmath_vf3_s_create() );
+
+        bmath_arr_vf3_s_set_size( a1, size );
+        bmath_vf3_s_set_size( v1, n );
+        bmath_vf3_s_set_size( v2, n );
+
+        bmath_arr_vf3_s_on_section_set_size( a1, 0, -1, n );
+        u2_t rval = 123;
+        bmath_arr_vf3_s_on_section_fill_random( a1, 0, -1, -1, 1, &rval );
+        bmath_arr_vf3_s_on_section_set_sqr( a1, 0, -1, 4 );
+        for( sz_t i = 0; i < size; i++ ) ASSERT( f3_abs( bmath_vf3_s_f3_sqr( &a1->data[ i ] ) - 4.0 ) < 1E-10 );
+        bmath_arr_vf3_s_on_section_set_avg( a1, 0, -1, 2 );
+        bmath_arr_vf3_s_on_section_get_avg_fast( a1, 0, -1, v1 );
+        ASSERT( f3_abs( bmath_vf3_s_f3_avg( v1 ) - 2 ) < 1E-10 );
+        bmath_arr_vf3_s_on_section_get_avg_sprc( a1, 0, -1, v2 );
+        ASSERT( bmath_vf3_s_is_near_equ( v1, v2, 1E-10 ) );
+    }
+
     bcore_life_s_discard( l );
 
     return NULL;
@@ -854,6 +1218,8 @@ vd_t bmath_vector_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_fp_vector_mul_vec, bmath_vf3_s_mul_vec );
             BCORE_REGISTER_FFUNC( bmath_fp_vector_mul_scl, bmath_vf3_s_mul_scl );
             BCORE_REGISTER_OBJECT( bmath_vf3_s );
+
+            BCORE_REGISTER_OBJECT( bmath_arr_vf3_s );
 
             BCORE_REGISTER_FFUNC( bmath_fp_add,            bmath_vcf3_s_add );
             BCORE_REGISTER_FFUNC( bmath_fp_zro,            bmath_vcf3_s_zro );

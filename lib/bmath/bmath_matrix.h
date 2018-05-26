@@ -37,6 +37,7 @@
  *  svd: singular value decomposition
  *  evd: eigen value decomposition  (svd for hsm matrix)
  *  iso: isometry (orthonormal)
+ *  opd: outer product of two vectors
  */
 /**********************************************************************************************************************/
 
@@ -69,7 +70,7 @@ void bmath_mf3_s_set_size( bmath_mf3_s* o, sz_t rows, sz_t cols );
 static inline
 void bmath_mf3_s_set_size_to( const bmath_mf3_s* o, bmath_mf3_s* res ) { bmath_mf3_s_set_size( res, o->rows, o->cols ); }
 
-void bmath_mf3_s_fill_random(     bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
+void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
 
 bmath_mf3_s* bmath_mf3_s_create_set_size( sz_t rows, sz_t cols );
 bmath_mf3_s* bmath_mf3_s_create_fill_random( sz_t rows, sz_t cols, f3_t min, f3_t max, u2_t* rval );
@@ -105,6 +106,10 @@ void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res );
 void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res );
 void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res ); // o * op
+
+/// adds outer product of two vectors op1 (X) op2 to matrix
+void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res );
+
 
 /// multiplication of o with op(transposed); (faster than mul)
 void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
@@ -236,30 +241,35 @@ void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* q );
 void bmath_mf3_s_qr_rot_htp_utr_givens( bmath_mf3_s* q, bmath_mf3_s* r );
 
 /** Stable in-place SVD for a symmetric matrix. Jacobi Method.
- *  Input:  a  (symmetric), q  (rotation or identity)
- *  Output: a' (diagonal),  q' (rotation) with qT * a * q = q'T * a' * q'.
- *  Diagonal elements are sorted in descending order.
- *  r == NULL allowed, in which case only a' is computed.
+ *  bmath_mf3_s_evd_htp for more details.
  */
 void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* q );
 
 /** In-place SVD for a symmetric matrix. Approach: TRD, QR with explicit shifting.
  *  Very efficient for large matrices. >20x faster than Jacobi method but slightly less accurate.
- *  Input:  a  (symmetric), q  (rotation or identity)
- *  Output: a' (diagonal),  q' (rotation) with qT * a * q = q'T * a' * q'.
- *  Diagonal elements are sorted in descending order.
- *  r == NULL allowed, in which case only a' is computed.
+ *  bmath_mf3_s_evd_htp for more details.
  */
 void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* q );
 
 /** In-place SVD for a symmetric matrix. Approach: TRD, QR with implicit shifting.
- *  More stable and slightly more expensive than 'qr_xshift' (mathematically identical).
+ *  More stable and slightly more expensive than 'xshift' (Mathematically xshift and ishift are identical).
+ *  bmath_mf3_s_evd_htp for more details.
+ */
+void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* q );
+
+/** Default in-place SVD for a symmetric matrix.
  *  Input:  a  (symmetric), q  (rotation or identity)
  *  Output: a' (diagonal),  q' (rotation) with qT * a * q = q'T * a' * q'.
  *  Diagonal elements are sorted in descending order.
  *  r == NULL allowed, in which case only a' is computed.
  */
-void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* q );
+static inline void bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* q ) { bmath_mf3_s_evd_htp_qr_ishift( a, q ); }
+
+/** Sets o to the covariance matrix of a section of arr_vec:
+ *  oij = E( E( vi - E( vi ) )E( vj - E( vj ) ) )
+ */
+void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end ); // fast
+void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end ); // stochastically precise
 
 /// For easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );
