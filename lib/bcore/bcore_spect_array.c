@@ -1455,6 +1455,31 @@ void bcore_array_default_do( const bcore_array_s* p, bcore_array* o, sz_t start,
 
 /**********************************************************************************************************************/
 
+void bcore_array_default_do_arg( const bcore_array_s* p, bcore_array* o, sz_t start, sz_t end, fp_t func, vd_t arg )
+{
+    sz_t size = get_size( p, o );
+    sz_t end_l = end < size ? end : size;
+    if( start >= end_l ) return;
+
+    if( bcore_array_p_is_of_links( p ) )
+    {
+        vd_t* data = ( vd_t* )bcore_array_p_get_d_data( p, o );
+        for( sz_t i = start; i < end_l; i++ ) ( ( void (*)( vd_t, vd_t ) )func )( arg, data[ i ] );
+    }
+    else
+    {
+        sz_t unit_size = bcore_array_p_get_unit_size( p, o );
+        vd_t ptr = ( u0_t* )bcore_array_p_get_d_data( p, o ) + unit_size * start;
+        for( sz_t i = start; i < end_l; i++ )
+        {
+            ( ( void (*)( vd_t, vd_t ) )func )( arg, ptr );
+            ptr = ( u0_t* )ptr + unit_size;
+        }
+    }
+}
+
+/**********************************************************************************************************************/
+
 static void buf_order_sort( vc_t* data, sz_t* order, sz_t size, sz_t* buf, bcore_cmp_f cmp, s2_t direction )
 {
     if( size < 2 ) return;

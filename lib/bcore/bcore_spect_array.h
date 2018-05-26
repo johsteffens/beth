@@ -145,8 +145,15 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG3_MAP0( bcore_array, max,       vc_t, sz_t, star
 BCORE_FUNC_SPECT_CONST1_RET1_ARG3_MAP0( bcore_array, max_index, sz_t, sz_t, start, sz_t, end, s2_t, direction )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_array, sort,            sz_t, start, sz_t, end, s2_t, direction )
 
-// running a function on all elements; the function is deemed to be of signature void (*)( vd_t );
+/** Running a function on all elements; the function is deemed to be of signature void (*)( vd_t element_ptr );
+ *  'element_ptr' is a pointer to the actual array element (no smart reference)
+ */
 BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_array, do,              sz_t, start, sz_t, end, fp_t, func )
+
+/** Running a function on all elements; the function is deemed to be of signature void (*)( vd_t arg, vd_t element_ptr );
+ *  'element_ptr' is a pointer to the actual array element (no smart reference)
+ */
+BCORE_FUNC_SPECT_CONST0_RET0_ARG4_MAP0( bcore_array, do_arg,          sz_t, start, sz_t, end, fp_t, func, vd_t, arg )
 
 /** Computes a sorted order from the array (array itself remains unchanged).
  *  The returned order has size end - start and refers to the array section
