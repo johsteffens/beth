@@ -40,5 +40,7 @@
 #include "bcore_arr.h"
 #include "bcore_hmap.h"
 #include "bcore_hmap_tp_sr.h"
+#include "bcore_st.h"
+#include "bcore_sc.h"
 
 #endif // BCORE_STD_H
