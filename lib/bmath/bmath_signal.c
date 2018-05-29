@@ -23,6 +23,7 @@
 #include "bmath_fourier.h"
 #include "bmath_vector.h"
 #include "bmath_matrix.h"
+#include "bmath_plot.h"
 
 vd_t bmath_signal_handler( const bcore_signal_s* o )
 {
@@ -37,6 +38,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
         bmath_fourier_signal_handler,
         bmath_vector_signal_handler,
         bmath_matrix_signal_handler,
+        bmath_plot_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );
