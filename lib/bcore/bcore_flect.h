@@ -309,7 +309,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   sz_t size );
  *
  *  Feature:
  *    [strict] feature  [<prefixes>] <type> [<qualifier>] <name> [=<default>] [~> <related expression> ];
- *    A feature governs dynamic binding beween perspective and object.
+ *    A feature governs dynamic binding between perspective and object.
  *    It declares a perspective-item to be dynamically tied to the object-item.
  *    'strict' indicates that the relation must exist or the perspective construction produces an error.
  *    Otherwise the feature reverts to default in case binding could not be established.
@@ -440,7 +440,7 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
 #define BCORE_REGISTER_TYPE( trait, name )\
     bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( #name ), TYPEOF_##trait, sizeof( name ) ) )
 
-#define BCORE_STATIC_ARRAY_S( type, name ) \
+#define BCORE_ARRAY_DYN_SOLID_STATIC_S( type, name ) \
     union \
     { \
         bcore_array_dyn_solid_static_s name##_arr; \
@@ -452,7 +452,7 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         }; \
     }
 
-#define BCORE_STATIC_LINK_ARRAY_S( type, name ) \
+#define BCORE_ARRAY_DYN_LINK_STATIC_S( type, name ) \
     union \
     { \
         bcore_array_dyn_link_static_s name##_arr; \

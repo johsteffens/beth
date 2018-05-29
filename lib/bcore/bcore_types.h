@@ -65,6 +65,7 @@ typedef sz_t offset_t; // used as address offsets into an object
 // types used for atomic operations
 typedef _Atomic tp_t atomic_tp_t;
 typedef _Atomic vc_t atomic_vc_t;
+typedef _Atomic fp_t atomic_fp_t;
 
 // extended scan and print format specifiers
 #define PRIs0_t PRIi8

@@ -147,7 +147,28 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_inst, down )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_inst, copy, vc_t, src )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_inst, move, vd_t, src )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_inst, copy_typed, tp_t, src_type, vc_t, src )
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_inst, clone, vd_t )
+
+//BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_inst, clone, vd_t )
+
+
+static inline vd_t bcore_inst_p_clone( const bcore_inst_s* p, const bcore_inst* o ) { return bcore_inst_default_clone( p, o ); }
+static inline vd_t bcore_inst_t_clone( tp_t t,                const bcore_inst* o ) { return bcore_inst_p_clone( bcore_inst_s_get_typed( t ), o ); }
+static inline vd_t bcore_inst_a_clone(                        const bcore_inst* o ) { return o ? bcore_inst_t_clone( *(aware_t*)o, o ) : NULL; }
+static inline vd_t bcore_inst_x_clone( sr_s o                                     )
+{
+    if( !o.p ) return NULL;
+    vd_t ret = bcore_inst_p_clone( ch_spect_p( o.p, TYPEOF_bcore_inst_s ), o.o );
+    sr_down( o );
+    return ret;
+}
+
+static inline vd_t bcore_inst_r_clone( const sr_s* o )
+{
+    if( !o ) return NULL;
+    if( !o->p ) return NULL;
+    vd_t ret = bcore_inst_p_clone( ch_spect_p( o->p, TYPEOF_bcore_inst_s ), o->o );
+    return ret;
+}
 
 vd_t bcore_inst_t_create_typed( tp_t type, tp_t otp, vc_t obj );
 sr_s bcore_inst_t_create_sr(    tp_t type );
