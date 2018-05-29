@@ -1163,8 +1163,6 @@ static vd_t selftest( void )
         ASSERT( bmath_vf3_s_f3_avg( v1 ) == ( f3_t )( size * ( size + 1 ) ) / ( 2 * size ) );
         ASSERT( bmath_vf3_s_f3_sqr( v1 ) == sqr_sum );
         ASSERT( bmath_vf3_s_f3_sqr( v1 ) == bmath_vf3_s_f3_mul_vec( v1, v1 ) );
-        ASSERT( bmath_vf3_s_f3_var( v1 ) == sqr_sum / ( size - 1 ) );
-        ASSERT( bmath_vf3_s_f3_dev( v1 ) == f3_srt( sqr_sum / ( size - 1 ) ) );
 
         bmath_vf3_s* v2 = bcore_life_s_push_aware( l, bmath_vf3_s_create_set_size( size ) );
         bmath_vf3_s_cpy( v1, v2 );
