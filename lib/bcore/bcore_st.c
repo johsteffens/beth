@@ -891,6 +891,24 @@ st_s* st_s_replace_st_d_st_d( st_s* o, st_s* match, st_s* replace )
     return o;
 }
 
+void st_s_set_lowercase( st_s* o )
+{
+    if( o->space == 0 ) st_s_make_strong( o );
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        if( o->data[ i ] >= 'A' && o->data[ i ] <= 'Z' ) o->data[ i ] += 'a' - 'A';
+    }
+}
+
+void st_s_set_uppercase( st_s* o )
+{
+    if( o->space == 0 ) st_s_make_strong( o );
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        if( o->data[ i ] >= 'a' && o->data[ i ] <= 'z' ) o->data[ i ] += 'A' - 'a';
+    }
+}
+
 sz_t st_s_lineof( const st_s* o, sz_t pos )
 {
     return st_s_count_char( o, 0, pos, '\n' ) + 1;

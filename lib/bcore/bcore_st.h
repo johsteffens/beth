@@ -166,6 +166,10 @@ st_s* st_s_replace_sc_sc(     st_s* o,        sc_t match,       sc_t replace );
 st_s* st_s_replace_st_st(     st_s* o, const st_s* match, const st_s* replace );
 st_s* st_s_replace_st_d_st_d( st_s* o,       st_s* match,       st_s* replace ); // discards input strings
 
+/// Replaces all characters withing 'A' ... 'Z' or 'a' ... 'z' with corresponding lower/upper case characters
+void st_s_set_lowercase( st_s* o );
+void st_s_set_uppercase( st_s* o );
+
 /// Text navigation
 sz_t st_s_lineof(    const st_s* o, sz_t pos );            // line number of character position in text (line counting starts with '1')
 sz_t st_s_colof(     const st_s* o, sz_t pos );            // column of character position in text (column counting starts with '1')
