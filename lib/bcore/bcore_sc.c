@@ -235,6 +235,10 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                         dst   += ( txt_size < space ) ? txt_size : space;
                         space -= ( txt_size < space ) ? txt_size : space;
                     }
+                    else
+                    {
+                        txt_size = sc_t_fnv( NULL, 0, f + start_block, stop_block - start_block, p_args );
+                    }
                     ret_size += txt_size;
                 }
             }
@@ -442,6 +446,7 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                         case TYPEOF_st_s:
                         {
                             st_s* v = va_arg( *p_args, st_s* );
+                            ASSERT( *(aware_t*)v == TYPEOF_st_s );
                             if( v ) sres = snprintf( dst, space, "%s", v->sc );
                         }
                         break;
