@@ -561,14 +561,7 @@ st_s* bcore_arr_st_s_push_st( bcore_arr_st_s* o, const st_s* st )
     {
         o->data = bcore_un_alloc( sizeof( st_s* ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
     }
-    if( st )
-    {
-        st_s_copy( o->data[ o->size++ ], st );
-    }
-    else
-    {
-        o->data[ o->size++ ] = NULL;
-    }
+    o->data[ o->size++ ] = st_s_clone( st );
     return o->data[ o->size - 1 ];
 }
 
