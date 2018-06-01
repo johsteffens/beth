@@ -301,9 +301,6 @@ name* name##_clone( const name* o ) \
     BCORE_DEFINE_FUNCTIONS_IDC_FLAT( name )\
     BCORE_DEFINE_FUNCTIONS_CDC( name )
 
-/// TODO: rename replacing BCORE_DECLARE_OBJECT
-// Optionally conclude with semicolon and continue
-// struct-body via BCORE_DECLARE_OBJECTBODY
 #define BCORE_DECLARE_OBJECT( name )\
     typedef struct name name; \
     BCORE_DECLARE_FUNCTIONS_OBJ( name ) \
