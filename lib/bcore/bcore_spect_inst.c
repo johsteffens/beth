@@ -1403,6 +1403,10 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
             o->size = self->size;
         }
 
+        // If alignment is zero, the body does not contain physical data.
+        // In this case alignment must be treated as if the body was not defined.
+        if( o->align == 0 ) o->align = self->size;
+
         bcore_inst_item_s_discard( last_inst_item );
     }
     else

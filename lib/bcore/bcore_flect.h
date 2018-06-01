@@ -324,6 +324,10 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   sz_t size );
  *  Special cases:
  *    <type-name> = <assigned-name>                        // creates a copy of an existing reflection with new name
  *    <type-name> = [<trait-name>] { <expr>; <expr>; ... } // Specifying '...' marks the body as incomplete
+ *        Caution: Incomplete body may only be used when the alignment from existing body elements is identical with
+ *                 the alignment of the object.
+ *
+ *    No body: Allowed for certain leaf types, where alignment == object size.
  *
  */
 bcore_self_s* bcore_self_s_build_parse_src( sr_s src, sz_t size_of );
@@ -440,27 +444,27 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
 #define BCORE_REGISTER_TYPE( trait, name )\
     bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( #name ), TYPEOF_##trait, sizeof( name ) ) )
 
-#define BCORE_ARRAY_DYN_SOLID_STATIC_S( type, name ) \
+#define BCORE_ARRAY_DYN_SOLID_STATIC_S( type, prefix ) \
     union \
     { \
-        bcore_array_dyn_solid_static_s name##_arr; \
+        bcore_array_dyn_solid_static_s prefix##arr; \
         struct \
         { \
-            type* name##_data; \
-            sz_t name##_size; \
-            sz_t name##_space; \
+            type* prefix##data; \
+            sz_t prefix##size; \
+            sz_t prefix##space; \
         }; \
     }
 
-#define BCORE_ARRAY_DYN_LINK_STATIC_S( type, name ) \
+#define BCORE_ARRAY_DYN_LINK_STATIC_S( type, prefix ) \
     union \
     { \
-        bcore_array_dyn_link_static_s name##_arr; \
+        bcore_array_dyn_link_static_s prefix##arr; \
         struct \
         { \
-            type** name##_data; \
-            sz_t name##_size; \
-            sz_t name##_space; \
+            type** prefix##data; \
+            sz_t prefix##size; \
+            sz_t prefix##space; \
         }; \
     }
 

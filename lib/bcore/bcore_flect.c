@@ -591,7 +591,25 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
 
     bcore_life_s_discard( l );
 }
-
+/*
+    tp_t type; // hash of type
+    tp_t name; // hash of name
+    u2_t caps; // data encapsulation
+    bcore_flect_flags_s flags;
+    union
+    {
+        s3_t default_s3; // serves s0_t ... s3_t
+        u3_t default_u3; // serves u0_t ... u3_t
+        f3_t default_f3; // serves f2_t ... f3_t
+        tp_t default_tp; // serves tp_t and external functions
+        sz_t default_sz; // serves sz_t, offset_t
+        sz_t default_bl; // serves bl_t
+        sz_t array_fix_size; // size for fixed arrays
+        umax_t default_umax;
+        smax_t default_smax;
+    };
+    bcore_self_item_s* child_item;
+*/
 static bcore_self_s* self_item_s_create_self( void )
 {
     sc_t def =
@@ -600,8 +618,9 @@ static bcore_self_s* self_item_s_create_self( void )
         "tp_t type;"    // hash of type
         "tp_t name;"    // hash of name
         "u2_t caps;"    // data encapsulation
-        "tp_t flags;"   // collection of attribute flags
-        "u3_t default;" // container of default data
+        "bcore_flect_flags_s flags;"   // collection of attribute flags
+        "umax_t default;" // container of default data
+        "bcore_self_item_s* child_item;"
     "}";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_self_item_s ) );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_self_item_s_init,    "bcore_fp_init",    "init"    );
