@@ -46,6 +46,10 @@ void bcore_txt_ml_x_to_stdout( sr_s obj );
 void bcore_txt_ml_x_to_file(   sr_s obj, sc_t file );
 void bcore_txt_ml_x_to_string( sr_s obj, st_s* string );
 
+void bcore_txt_ml_r_to_stdout( const sr_s* obj );
+void bcore_txt_ml_r_to_file(   const sr_s* obj, sc_t file );
+void bcore_txt_ml_r_to_string( const sr_s* obj, st_s* string );
+
 void bcore_txt_ml_a_to_stdout( vc_t o );
 void bcore_txt_ml_a_to_file(   vc_t o, sc_t file );
 void bcore_txt_ml_a_to_string( vc_t o, st_s* string );
@@ -75,6 +79,7 @@ sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, 
 /// syntactic sugar
 sr_s bcore_txt_ml_from_file( sc_t file );
 sr_s bcore_txt_ml_from_string( const st_s* string );
+sr_s bcore_txt_ml_from_sc(           sc_t  sc );
 
 /**********************************************************************************************************************/
 // testing, debugging
