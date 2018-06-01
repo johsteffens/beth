@@ -218,12 +218,12 @@ name* name##_clone( const name* o ) \
     BCORE_DEFINE_FUNCTIONS_IDC_INST( name )\
     BCORE_DEFINE_FUNCTIONS_CDC_INST( name )
 
-#define BCORE_DEFINE_OBJECT_INST( name, def ) \
+/// deprecated: prefer BCORE_DEFINE_OBJECT_INST
+#define BCORE_DEFINE_FUNCTIONS_SELF_OBJECT_INST( name, def ) \
     BCORE_DEFINE_FUNCTIONS_OBJ_INST( name ) \
     BCORE_DEFINE_CREATE_SELF( name, def )
 
-/// TODO: rename replacing BCORE_DEFINE_OBJECT_INST
-#define BCORE_DEFINE_OBJECT_INST_( trait, name ) \
+#define BCORE_DEFINE_OBJECT_INST( trait, name ) \
     static sc_t name##_def_g; \
     BCORE_DEFINE_FUNCTIONS_OBJ_INST( name ) \
     BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \

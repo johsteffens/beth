@@ -83,7 +83,7 @@ typedef struct bcore_tp_fastmap_s
 }
 bcore_tp_fastmap_s;
 
-BCORE_DECLARE_OBJECT( bcore_tp_fastmap_s )
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_tp_fastmap_s )
 
 void bcore_tp_fastmap_s_clear( bcore_tp_fastmap_s* o );
 void bcore_tp_fastmap_s_set_locked( bcore_tp_fastmap_s* o, bl_t flag );

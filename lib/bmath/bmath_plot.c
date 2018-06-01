@@ -20,7 +20,7 @@
 /**********************************************************************************************************************/
 // bmath_plot_s
 
-BCORE_DEFINE_OBJECT_INST_( bcore_inst, bmath_plot_s )
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_plot_s )
 "{"
     "aware_t _;"
     "sr_s data;" // plot data  (vf3, arr_vf3)
@@ -83,6 +83,10 @@ s2_t bmath_plot_s_run_gnuplot( const bmath_plot_s* o, sc_t data_folder )
         st_s_push_fa( syscommand, "set ylabel '#<st_s*>';", st );
         st_s_discard( st );
     }
+
+    /// grid
+    st_s_push_fa( syscommand, "set grid xtics ytics;" );
+
 
     st_s_push_sc( syscommand, "plot " );
 

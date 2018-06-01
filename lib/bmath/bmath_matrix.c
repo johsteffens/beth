@@ -20,7 +20,7 @@
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_INST_( bmath_matrix, bmath_mf3_s )
+BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf3_s )
 "{"
     "aware_t _;"
     "sz_t rows;"

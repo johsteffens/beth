@@ -212,7 +212,7 @@ typedef struct bcore_thread_arr_s
     };
 } bcore_thread_arr_s;
 
-BCORE_DEFINE_OBJECT_INST( bcore_thread_arr_s, "bcore_thread_arr_s = bcore_inst { aware_t _; bcore_thread_s [] arr; }" )
+BCORE_DEFINE_FUNCTIONS_SELF_OBJECT_INST( bcore_thread_arr_s, "bcore_thread_arr_s = bcore_inst { aware_t _; bcore_thread_s [] arr; }" )
 
 sz_t bcore_thread_arr_s_get_size( const bcore_thread_arr_s* o )
 {

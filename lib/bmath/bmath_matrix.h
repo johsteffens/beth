@@ -48,7 +48,7 @@
 /**********************************************************************************************************************/
 // dynamic size matrix of f3_t
 
-BCORE_DECLARE_OBJECT_( bmath_mf3_s )
+BCORE_DECLARE_OBJECT( bmath_mf3_s )
 {
     aware_t _;
     sz_t rows;

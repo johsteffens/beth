@@ -22,7 +22,7 @@
 /**********************************************************************************************************************/
 // bmath_vf3_s
 
-BCORE_DEFINE_OBJECT_INST_( bmath_vector, bmath_vf3_s )
+BCORE_DEFINE_OBJECT_INST( bmath_vector, bmath_vf3_s )
 "{"
     "aware_t _;"
     "f3_t [] arr;"
@@ -475,7 +475,7 @@ void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o )
 /**********************************************************************************************************************/
 // bmath_vcf3_s
 
-BCORE_DEFINE_OBJECT_INST_( bmath_vector, bmath_vcf3_s )
+BCORE_DEFINE_OBJECT_INST( bmath_vector, bmath_vcf3_s )
 "{"
     "aware_t _;"
     "bmath_cf3_s [] arr;"
@@ -854,7 +854,7 @@ void bmath_vcf3_s_to_stdout( const bmath_vcf3_s* o )
 /**********************************************************************************************************************/
 // array of vf3_s
 
-BCORE_DEFINE_OBJECT_INST_( bcore_array, bmath_arr_vf3_s )
+BCORE_DEFINE_OBJECT_INST( bcore_array, bmath_arr_vf3_s )
 "{"
     "aware_t _;"
     "bmath_vf3_s [] arr;"

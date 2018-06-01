@@ -48,7 +48,7 @@ typedef struct bcore_spect_header_s
     tp_t    o_type; // type of object
 } bcore_spect_header_s;
 
-BCORE_DECLARE_OBJECT( bcore_spect_header_s )
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_spect_header_s )
 
 /**********************************************************************************************************************/
 

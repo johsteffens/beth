@@ -24,7 +24,7 @@
 /**********************************************************************************************************************/
 // bmath_plot_s
 
-BCORE_DECLARE_OBJECT_( bmath_plot_s )
+BCORE_DECLARE_OBJECT( bmath_plot_s )
 {
     aware_t _;
     sr_s data; // plot data  (vf3, arr_vf3)

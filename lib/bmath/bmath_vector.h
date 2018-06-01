@@ -40,7 +40,7 @@
 /**********************************************************************************************************************/
 // dynamic size vector of f3_t
 
-BCORE_DECLARE_OBJECT_( bmath_vf3_s )
+BCORE_DECLARE_OBJECT( bmath_vf3_s )
 {
     aware_t _;
     union
@@ -121,7 +121,7 @@ void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o ); // vector statistics
 /**********************************************************************************************************************/
 // dynamic size vector of bmath_cf3_s
 
-BCORE_DECLARE_OBJECT_( bmath_vcf3_s )
+BCORE_DECLARE_OBJECT( bmath_vcf3_s )
 {
     aware_t _;
     union
@@ -179,7 +179,7 @@ void bmath_vcf3_s_to_stdout( const bmath_vcf3_s* o );
 /**********************************************************************************************************************/
 // array of vf3_s
 
-BCORE_DECLARE_OBJECT_( bmath_arr_vf3_s )
+BCORE_DECLARE_OBJECT( bmath_arr_vf3_s )
 {
     aware_t _;
     union

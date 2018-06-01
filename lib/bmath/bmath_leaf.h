@@ -66,6 +66,12 @@ static inline sz_t sz_min( sz_t a, sz_t b ) { return a < b ? a : b; }
 static inline sz_t sz_max( sz_t a, sz_t b ) { return a > b ? a : b; }
 
 /**********************************************************************************************************************/
+// s3_t
+
+static inline s3_t s3_min( s3_t a, s3_t b ) { return a < b ? a : b; }
+static inline s3_t s3_max( s3_t a, s3_t b ) { return a > b ? a : b; }
+static inline s3_t s3_abs( s3_t v ) { return v  < 0 ? -v : v; }
+
 
 vd_t bmath_leaf_signal_handler( const bcore_signal_s* o );
 

@@ -34,7 +34,7 @@
 
 /**********************************************************************************************************************/
 
-BCORE_DECLARE_OBJECT_( bmath_cf3_s ) { f3_t v[ 2 ]; };
+BCORE_DECLARE_OBJECT( bmath_cf3_s ) { f3_t v[ 2 ]; };
 
 static inline
 bmath_cf3_s bmath_cf3_init( f3_t r, f3_t i )
