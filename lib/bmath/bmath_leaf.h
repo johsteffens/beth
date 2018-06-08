@@ -19,17 +19,11 @@
 /// functionality related to elementary types
 
 #include "bcore_signal.h"
+#include "bcore_leaf.h"
 #include "bmath_quicktypes.h"
 
 /**********************************************************************************************************************/
 // f3_t
-
-static inline f3_t f3_sqr( f3_t v ) { return v * v; }
-static inline f3_t f3_srt( f3_t v ) { return sqrt( v ); }
-static inline f3_t f3_min( f3_t a, f3_t b ) { return a < b ? a : b; }
-static inline f3_t f3_max( f3_t a, f3_t b ) { return a > b ? a : b; }
-static inline f3_t f3_abs( f3_t v ) { return v  < 0 ? -v : v; }
-static inline f3_t f3_inv( f3_t v ) { return v != 0 ? 1.0 / v : 0; }
 
 static inline f3_t f3_pi( void )   { return 3.1415926535897932384626434; }
 static inline f3_t f3_pi_2( void ) { return 1.5707963267948966192313217; }
@@ -43,7 +37,6 @@ static inline f3_t f3_xsg2_sym( u2_t* rv ) { return ( *rv = bcore_xsg2_u2( *rv )
 static inline f3_t f3_xsg1_pos( u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv ) ) * ( 1.0 / 0xFFFFFFFFu ); }
 static inline f3_t f3_xsg2_pos( u2_t* rv ) { return ( *rv = bcore_xsg2_u2( *rv ) ) * ( 1.0 / 0xFFFFFFFFu ); }
 
-static inline void f3_t_swap( f3_t* v1, f3_t* v2 ) { f3_t t = *v1; *v1 = *v2; *v2 = t;  }
 
 /// Solves: sin(arc) * b = cos(arc) * a; cos >= 0
 static inline
@@ -59,19 +52,6 @@ void f3_arc_to_sin_cos( f3_t a, f3_t b, f3_t* sin_arc, f3_t* cos_arc )
 }
 
 /**********************************************************************************************************************/
-// sz_t
-
-static inline sz_t sz_sqr( sz_t v ) { return v * v; }
-static inline sz_t sz_min( sz_t a, sz_t b ) { return a < b ? a : b; }
-static inline sz_t sz_max( sz_t a, sz_t b ) { return a > b ? a : b; }
-
-/**********************************************************************************************************************/
-// s3_t
-
-static inline s3_t s3_min( s3_t a, s3_t b ) { return a < b ? a : b; }
-static inline s3_t s3_max( s3_t a, s3_t b ) { return a > b ? a : b; }
-static inline s3_t s3_abs( s3_t v ) { return v  < 0 ? -v : v; }
-
 
 vd_t bmath_leaf_signal_handler( const bcore_signal_s* o );
 

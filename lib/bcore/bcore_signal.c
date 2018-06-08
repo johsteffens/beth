@@ -27,6 +27,7 @@
 #include "bcore_name.h"
 #include "bcore_name_manager.h"
 #include "bcore_function_manager.h"
+#include "bcore_const_manager.h"
 #include "bcore_sr.h"
 #include "bcore_sinks.h"
 #include "bcore_sources.h"
@@ -47,6 +48,7 @@
 #include "bcore_threads.h"
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
+#include "bcore_leaf.h"
 
 BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
 
@@ -94,6 +96,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_sc_signal_handler,
         bcore_st_signal_handler,
         bcore_spect_source_signal_handler,
+        bcore_const_manager_signal_handler,
 
         /// other items
         bcore_control_signal_handler,
@@ -118,6 +121,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_txt_ml_signal_handler,
         bcore_bin_ml_signal_handler,
         bcore_arr_signal_handler,
+        bcore_leaf_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );

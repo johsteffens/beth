@@ -13,38 +13,24 @@
  *  limitations under the License.
  */
 
-/** Framework for plotting charts */
-
-#ifndef BMATH_PLOT_H
-#define BMATH_PLOT_H
-
-#include "bcore_std.h"
-#include "bmath_vector.h"
+#include "bcore_leaf.h"
 
 /**********************************************************************************************************************/
-// bmath_plot_s
 
-BCORE_DECLARE_OBJECT( bmath_plot_s )
+vd_t bcore_leaf_signal_handler( const bcore_signal_s* o )
 {
-    aware_t _;
-    sr_s data; // plot data  (vf3, arr_vf3)
-    st_s title;
-    st_s x_label;
-    st_s y_label;
-    sz_t x_index; // index into arr_vf3-element to obtain x-value, if is out of range, xvalue is just a counter
-    bcore_arr_st_s y_data_label;
-};
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_leaf" ) ) )
+    {
+        case TYPEOF_init1:
+        {
+        }
+        break;
 
-/** Runs gnuplot via system command with data (gnuplot must be installed).
- *  Opens a window in persistent mode (requires manual closing).
- *  Creates/overwrites plot data in data_folder.
- *  Returns return value of system call.
- */
-s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder );
+        default: break;
+    }
+
+    return NULL;
+}
 
 /**********************************************************************************************************************/
-
-vd_t bmath_plot_signal_handler( const bcore_signal_s* o );
-
-#endif  // BMATH_PLOT_H
 

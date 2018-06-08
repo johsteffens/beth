@@ -470,12 +470,12 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
 
 #define BCORE_OFFSET( object, offset ) ( ( vd_t* )( ( u0_t* )object + offset ) )
 
-#define BCORE_DEFINE_OBJECT_FLAT( name, def ) \
+/// deprecated: prefer BCORE_DEFINE_OBJECT_FLAT
+#define BCORE_DEFINE_FUNCTIONS_SELF_OBJECT_FLAT( name, def ) \
     BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( name ) \
     BCORE_DEFINE_CREATE_SELF( name, def )
 
-/// TODO: rename replacing BCORE_DEFINE_OBJECT_FLAT
-#define BCORE_DEFINE_OBJECT_FLAT_( trait, name ) \
+#define BCORE_DEFINE_OBJECT_FLAT( trait, name ) \
     static sc_t name##_def_g; \
     BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( name ) \
     BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \

@@ -18,7 +18,7 @@
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_FLAT_( bmath_ring, bmath_cf3_s )
+BCORE_DEFINE_OBJECT_FLAT( bmath_ring, bmath_cf3_s )
 "{"
     "f3_t [2] v;"
     "func bmath_fp:is_equ;"

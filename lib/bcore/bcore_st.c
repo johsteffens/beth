@@ -957,6 +957,34 @@ sz_t st_s_posofline( const st_s* o, sz_t pos )
     return pos_l;
 }
 
+
+void st_s_to_stdout( const st_s* o )
+{
+    if( !o ) return;
+    bcore_msg( "%s", o->sc );
+}
+
+void st_s_to_stdout_d( st_s* o )
+{
+    if( !o ) return;
+    st_s_to_stdout( o );
+    st_s_discard( o );
+}
+
+void st_s_to_stdout_fv( sc_t format, va_list args )
+{
+    st_s_to_stdout_d( st_s_create_fv( format, args ) );
+}
+
+void st_s_to_stdout_fa( sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    st_s_to_stdout_fv( format, args );
+    va_end( args );
+}
+
+
 void st_s_print( const st_s* o )
 {
     if( !o ) return;

@@ -71,4 +71,6 @@ vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 #define BCORE_LIFE_T_PUSH( type, expr ) bcore_life_s_push_typed( __life, type, expr )
 #define BCORE_LIFE_X_PUSH(       expr ) bcore_life_s_push_sr(    __life,       expr )
 
+#define BCORE_LIFE_RETURN(       ret  ) { BCORE_LIFE_DOWN(); return ret; }
+
 #endif // BCORE_LIFE_H

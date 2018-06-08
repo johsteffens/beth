@@ -42,5 +42,6 @@
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_st.h"
 #include "bcore_sc.h"
+#include "bcore_leaf.h"
 
 #endif // BCORE_STD_H

@@ -30,7 +30,7 @@
 /**********************************************************************************************************************/
 // bcore_spect_header_s
 
-BCORE_DEFINE_OBJECT_FLAT( bcore_spect_header_s, "bcore_spect_header_s = { tp_t p_type; tp_t o_type; }")
+BCORE_DEFINE_FUNCTIONS_SELF_OBJECT_FLAT( bcore_spect_header_s, "bcore_spect_header_s = { tp_t p_type; tp_t o_type; }")
 
 /**********************************************************************************************************************/
 // hash map
@@ -450,7 +450,7 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
                 }
             }
         }
-        else // implicit (canonoic) bindings
+        else // implicit (canonic) bindings
         {
             if( bcore_trait_is_of( p_self_item->type, TYPEOF_spect ) && p_self_item->caps == BCORE_CAPS_LINK_STATIC )
             {

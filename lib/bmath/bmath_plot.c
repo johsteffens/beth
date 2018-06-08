@@ -28,17 +28,17 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_plot_s )
     "st_s title;"
     "st_s x_label;"
     "st_s y_label;"
+    "sz_t x_index;"
     "bcore_arr_st_s y_data_label;" // a row is a curve in the plot
-
-    "bl_t x_log;" // log vs. linear
-    "bl_t y_log;" // log vs. linear
 "}";
 
 //---------------------------------------------------------------------------------------------------------------------
 
-s2_t bmath_plot_s_run_gnuplot( const bmath_plot_s* o, sc_t data_folder )
+s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
 {
     BCORE_LIFE_INIT();
+
+    if( !data_folder ) data_folder = ".";
 
     ASSERT( o->data.o );
 
@@ -99,10 +99,22 @@ s2_t bmath_plot_s_run_gnuplot( const bmath_plot_s* o, sc_t data_folder )
         for( sz_t i = 0; i < arr->size; i++ )
         {
             const bmath_vf3_s* v = &arr->data[ i ];
+            if( o->x_index < v->size )
+            {
+                bcore_sink_a_push_fa( sink, "#<f3_t>", v->data[ o->x_index ] );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, "#<sz_t>", i );
+            }
+
             for( sz_t i = 0; i < v->size; i++ )
             {
-                if( i > 0 ) bcore_sink_a_push_fa( sink, "\t" );
-                bcore_sink_a_push_fa( sink, "#<f3_t>", v->data[ i ] );
+                if( i != o->x_index )
+                {
+                    bcore_sink_a_push_fa( sink, "\t" );
+                    bcore_sink_a_push_fa( sink, "#<f3_t>", v->data[ i ] );
+                }
             }
             bcore_sink_a_push_fa( sink, "\n" );
         }

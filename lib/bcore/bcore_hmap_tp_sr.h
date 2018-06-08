@@ -58,8 +58,8 @@ BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tp_sr_s )
 BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tp_sr_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tp_sr_s )
 
-sr_s* bcore_hmap_tp_sr_s_get(    const bcore_hmap_tp_sr_s* o, tp_t key ); // returns pinter to value or sr_null when key does not exist
-sr_s* bcore_hmap_tp_sr_s_set(          bcore_hmap_tp_sr_s* o, tp_t key, sr_s val );
+sr_s* bcore_hmap_tp_sr_s_get(    const bcore_hmap_tp_sr_s* o, tp_t key ); // returns pointer to value or sr_null when key does not exist
+sr_s* bcore_hmap_tp_sr_s_set(          bcore_hmap_tp_sr_s* o, tp_t key, sr_s val ); // assumes ownership (fork if necessary); no deep copy
 sr_s  bcore_hmap_tp_sr_s_remove(       bcore_hmap_tp_sr_s* o, tp_t key ); // removes key, returns value; call sr_down( remove(...) ) to eliminate entry
 bl_t  bcore_hmap_tp_sr_s_exists( const bcore_hmap_tp_sr_s* o, tp_t key ); // checks if key exists
 void  bcore_hmap_tp_sr_s_clear(        bcore_hmap_tp_sr_s* o           ); // removes all entries and frees memory

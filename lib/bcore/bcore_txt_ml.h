@@ -58,6 +58,11 @@ void bcore_txt_ml_t_to_stdout( tp_t t, vc_t o );
 void bcore_txt_ml_t_to_file(   tp_t t, vc_t o, sc_t file );
 void bcore_txt_ml_t_to_string( tp_t t, vc_t o, st_s* string );
 
+/// sends a default instance of type 't' to sink
+void bcore_txt_ml_default_to_stdout( tp_t t );
+void bcore_txt_ml_default_to_file(   tp_t t, sc_t file );
+void bcore_txt_ml_default_to_string( tp_t t, st_s* string );
+
 /**********************************************************************************************************************/
 
 typedef struct bcore_txt_ml_interpreter_s

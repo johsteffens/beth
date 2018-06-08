@@ -177,6 +177,12 @@ sz_t st_s_posof(     const st_s* o, sz_t line, sz_t col ); // transforms line an
 sz_t st_s_posofline( const st_s* o, sz_t pos );            // returns the position at which the line begins containing the character indicated by pos
 
 /// string to stdout
+void st_s_to_stdout( const st_s* o );
+void st_s_to_stdout_d(     st_s* o ); // discards o
+void st_s_to_stdout_fv( sc_t format, va_list args );
+void st_s_to_stdout_fa( sc_t format, ... );
+
+/// deprecated (use to_stdout)
 void st_s_print( const st_s* o );
 void st_s_print_d(     st_s* o ); // discards o
 void st_s_print_fv( sc_t format, va_list args );
