@@ -26,6 +26,7 @@
 #include "bcore_spect_compare.h"
 #include "bcore_spect.h"
 #include "bcore_signal.h"
+#include "bcore_trait.h"
 
 void bcore_txt_ml_translator_s_init( bcore_txt_ml_translator_s* o )
 {
@@ -198,15 +199,95 @@ BCORE_DEFINE_FUNCTION_CREATE(    bcore_txt_ml_interpreter_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bcore_txt_ml_interpreter_s )
 BCORE_DEFINE_FUNCTION_CLONE(     bcore_txt_ml_interpreter_s )
 
+static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source );
+
+/** Embedding of another file.
+ *  Syntax: <#file> <interpreter> <file path> </>
+ *  Example: <#file> <bcore_bin_ml> </> <st_s> "myfolders/myfile.myext" </> </>
+ *  Relative paths are considered relative to current file, if applicable,
+ *  or current runtime directory otherwise.
+ *  The file must contain the complete (sub-)object.
+ */
+static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source )
+{
+    BCORE_LIFE_INIT();
+    sr_s src_l = BCORE_LIFE_X_PUSH( source );
+
+    sr_s interpreter_obj = interpret( o, sr_null(), src_l );
+
+    if( !interpreter_obj.o )
+    {
+        bcore_source_r_parse_err_fa( &src_l, "No interpreter specified." );
+    }
+
+    {
+        BCORE_LIFE_CREATE( st_s, log );
+        if( !bcore_trait_satisfied_type( typeof( "bcore_interpreter" ), sr_s_type( &interpreter_obj ), log ) )
+        {
+            bcore_source_x_parse_err_fa( src_l, "Object '#<sc_t>' is no interpreter.\nReason: #<sc_t>", ifnameof( sr_s_type( &interpreter_obj ) ), log->sc );
+        }
+    }
+
+    sr_s file_obj = interpret( o, sr_null(), src_l );
+    if( sr_s_type( &file_obj ) != TYPEOF_st_s ) bcore_source_r_parse_errf( &src_l, "String with file path expected." );
+
+    bcore_source_r_parse_fa( &src_l, " </>" );
+
+    st_s* file = sr_fork( file_obj ).o;
+    if( file->size == 0 )  bcore_source_r_parse_errf( &src_l, "Invalid file path." );
+
+    if( file->sc[ 0 ] != '/' ) // make path relative to current file path
+    {
+        st_s* cur_file = st_s_create_sc( bcore_source_r_get_file( &src_l ) );
+        if( cur_file->size > 0 )
+        {
+            sz_t idx = st_s_find_char( cur_file, cur_file->size, 0, '/' );
+            if( idx < cur_file->size )
+            {
+                cur_file->data[ idx ] = 0;
+                st_s* new_file = st_s_create_fa( "#<sc_t>/#<sc_t>", cur_file->sc, file->sc );
+                st_s_discard( file );
+                file = new_file;
+            }
+        }
+        st_s_discard( cur_file );
+    }
+
+    sr_s sub_source = sr_asd( bcore_source_chain_s_create() );
+    bcore_source_chain_s_push_d( sub_source.o, bcore_source_file_s_create_name( file->sc ) );
+    bcore_source_chain_s_push_d( sub_source.o, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );
+
+    sr_s sub_obj = bcore_interpret_x( interpreter_obj, sub_source );
+
+    if( obj.o )
+    {
+        bcore_inst_r_copy_typed( &obj, sr_s_type( &sub_obj ), sub_obj.o );
+        sr_down( sub_obj );
+    }
+    else
+    {
+        obj = sub_obj;
+    }
+
+    st_s_discard( file );
+
+    BCORE_LIFE_RETURN( obj );
+}
+
 static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source )
 {
+    if( bcore_source_r_parse_bl_fa( &source, " #?'<#file>'" ) )
+    {
+        return interpret_embedded_file( o, obj, source );
+    }
+
     bcore_life_s* l = bcore_life_s_create();
     sr_s src_l = sr_cl( sr_cp( source, TYPEOF_bcore_source_s ), l );
 
     if( !obj.o )
     {
         st_s* type_string = st_s_create_l( l );
-        bcore_source_x_parse_fa( src_l, " <#until'>'>", type_string );
+        bcore_source_r_parse_fa( &src_l, " <#until'>'>", type_string );
         tp_t type = type_of( type_string );
         if( type )
         {
@@ -237,13 +318,13 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
         st_s* buf = st_s_create_l( l );
         if( sr_s_type( &obj_l ) == TYPEOF_st_s )
         {
-            bcore_source_x_parse_fa( src_l, " #string", obj_l.o );
-            bcore_source_x_parse_fa( src_l, " </>" );
+            bcore_source_r_parse_fa( &src_l, " #string", obj_l.o );
+            bcore_source_r_parse_fa( &src_l, " </>" );
         }
         else if( bcore_via_x_is_leaf( obj_l ) )
         {
-            bcore_source_x_parse_fa( src_l, st_s_createf_l( l, " #%s", name_of( sr_s_type( &obj_l ), buf ) )->sc, obj_l.o );
-            bcore_source_x_parse_fa( src_l, " </>" );
+            bcore_source_r_parse_fa( &src_l, st_s_createf_l( l, " #%s", name_of( sr_s_type( &obj_l ), buf ) )->sc, obj_l.o );
+            bcore_source_r_parse_fa( &src_l, " </>" );
         }
         else
         {
@@ -254,21 +335,21 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 {
                     sz_t arr_size = bcore_array_x_get_size( arr_l );
                     for( sz_t i = 0; i < arr_size; i++ ) bcore_array_x_set( arr_l, i, interpret( o, sr_null(), src_l ) );
-                    bcore_source_x_parse_fa( src_l, " </>" );
+                    bcore_source_r_parse_fa( &src_l, " </>" );
                 }
                 else
                 {
                     bcore_array_x_set_size( arr_l, 0 );
-                    while( !bcore_source_x_parse_bl_fa( src_l, " #?'</>'" ) ) bcore_array_x_push( arr_l, interpret( o, sr_null(), src_l ) );
+                    while( !bcore_source_r_parse_bl_fa( &src_l, " #?'</>'" ) ) bcore_array_x_push( arr_l, interpret( o, sr_null(), src_l ) );
                 }
             }
             else
             {
                 st_s* buf = st_s_create_l( l );
-                while( !bcore_source_x_parse_bl_fa( src_l, " #?'</>'" ) )
+                while( !bcore_source_r_parse_bl_fa( &src_l, " #?'</>'" ) )
                 {
                     st_s* name = st_s_create_l( l );
-                    bcore_source_x_parse_fa( src_l, " #name :", name );
+                    bcore_source_r_parse_fa( &src_l, " #name :", name );
 
                     tp_t ntype = typeof( name->sc );
                     if( !bcore_via_r_nexists( &obj_l, ntype ) )
@@ -284,7 +365,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                     else
                     {
                         sr_s item = bcore_via_x_iget( obj_l, idx );
-                        if( item.o ) bcore_source_x_parse_fa( src_l, st_s_createf_l( l, " <%s>", name_of( sr_s_type( &item ), buf ) )->sc );
+                        if( item.o ) bcore_source_r_parse_fa( &src_l, st_s_createf_l( l, " <%s>", name_of( sr_s_type( &item ), buf ) )->sc );
                         if( sr_s_is_strong( &item ) )  // if item is detached --> refeed it
                         {
                             bcore_via_x_iset( obj_l, idx, interpret( o, item, src_l ) );

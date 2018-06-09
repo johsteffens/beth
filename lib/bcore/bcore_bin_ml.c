@@ -135,14 +135,14 @@ static bcore_self_s* translator_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-sr_s bcore_bin_ml_to_sink_buffer( sr_s obj )
+sr_s bcore_bin_ml_x_to_sink_buffer( sr_s obj )
 {
     bcore_sink_buffer_s* buffer = bcore_sink_buffer_s_create();
     bcore_translate_x( sr_asd( bcore_bin_ml_translator_s_create() ), obj, sr_awd( buffer ) );
     return sr_asd( buffer );
 }
 
-void bcore_bin_ml_to_file( sr_s obj, sc_t file )
+void bcore_bin_ml_x_to_file( sr_s obj, sc_t file )
 {
     bcore_life_s* l = bcore_life_s_create();
     bcore_sink_chain_s* chain = bcore_life_s_push_aware( l, bcore_sink_chain_s_create() );
@@ -152,14 +152,24 @@ void bcore_bin_ml_to_file( sr_s obj, sc_t file )
     bcore_life_s_discard( l );
 }
 
-sr_s bcore_bin_ml_aware_to_sink_buffer( vc_t obj )
+sr_s bcore_bin_ml_a_to_sink_buffer( vc_t obj )
 {
-    return bcore_bin_ml_to_sink_buffer( sr_awc( obj ) );
+    return bcore_bin_ml_x_to_sink_buffer( sr_awc( obj ) );
 }
 
-void bcore_bin_ml_aware_to_file( vc_t obj, sc_t file )
+void bcore_bin_ml_a_to_file( vc_t obj, sc_t file )
 {
-    bcore_bin_ml_to_file( sr_awc( obj ), file );
+    bcore_bin_ml_x_to_file( sr_awc( obj ), file );
+}
+
+void bcore_bin_ml_r_to_file( const sr_s* obj, sc_t file )
+{
+    bcore_bin_ml_x_to_file( sr_cw( *obj ), file );
+}
+
+void bcore_bin_ml_t_to_file( tp_t t, vc_t o, sc_t file  )
+{
+    bcore_bin_ml_x_to_file( sr_twc( t, o ), file );
 }
 
 /**********************************************************************************************************************/
@@ -213,6 +223,7 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
         if( sr_s_type( &obj_l ) == TYPEOF_st_s )
         {
             st_s* string = obj_l.o;
+            st_s_clear( string );
             u0_t c = 0;
             bcore_source_x_get_data( src_l, &c, sizeof( c ) );
             while( c != 0 )
@@ -323,7 +334,7 @@ void bcore_bin_ml_transfer_test( sr_s obj )
     bcore_life_s* l = bcore_life_s_create();
     obj = bcore_life_s_push_sr( l, obj );
 
-    bcore_sink_buffer_s* sink_buffer = bcore_life_s_push_sr( l, bcore_bin_ml_to_sink_buffer( obj ) ).o;
+    bcore_sink_buffer_s* sink_buffer = bcore_life_s_push_sr( l, bcore_bin_ml_x_to_sink_buffer( obj ) ).o;
     bcore_source_buffer_s* source_buffer = bcore_source_buffer_s_create_from_data( sink_buffer->data, sink_buffer->size );
     sr_s sr = bcore_life_s_push_sr( l, bcore_bin_ml_from_source( sr_asd( source_buffer ) ) );
 

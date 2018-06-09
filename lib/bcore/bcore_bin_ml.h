@@ -42,10 +42,13 @@ void bcore_bin_ml_translator_s_translate( const bcore_bin_ml_translator_s* o, sr
 /**********************************************************************************************************************/
 
 /// syntactic sugar
-sr_s bcore_bin_ml_to_sink_buffer( sr_s obj ); // returns bcore_sink_buffer_s
-void bcore_bin_ml_to_file( sr_s obj, sc_t file );
-sr_s bcore_bin_ml_aware_to_sink_buffer( vc_t obj ); // returns bcore_sink_buffer_s
-void bcore_bin_ml_aware_to_file( vc_t obj, sc_t file );
+sr_s bcore_bin_ml_x_to_sink_buffer( sr_s obj ); // returns bcore_sink_buffer_s
+void bcore_bin_ml_x_to_file(        sr_s obj, sc_t file );
+sr_s bcore_bin_ml_a_to_sink_buffer( vc_t obj ); // returns bcore_sink_buffer_s
+void bcore_bin_ml_a_to_file(        vc_t obj, sc_t file );
+
+void bcore_bin_ml_r_to_file(   const sr_s* obj, sc_t file );
+void bcore_bin_ml_t_to_file(   tp_t t, vc_t o, sc_t file );
 
 /**********************************************************************************************************************/
 
