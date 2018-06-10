@@ -439,7 +439,6 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
         return;
     }
 
-    ASSERT(  o->rows ==  op->cols );
     ASSERT(  o->cols ==  op->rows );
     ASSERT(  o->rows == res->rows );
     ASSERT( op->cols == res->cols );
@@ -494,14 +493,16 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
         return;
     }
 
-    sz_t n = o->rows;
 
-    ASSERT( n == res->rows );
-    ASSERT( n == res->cols );
+//    ASSERT( n == res->rows );
+//    ASSERT( n == res->cols );
+
+    ASSERT( o->rows  == res->rows );
+    ASSERT( op->rows == res->cols );
 
     if( o == op ) // symmetric result
     {
-        for( sz_t i = 0; i < n; i++ )
+        for( sz_t i = 0; i < o->rows; i++ )
         {
             const f3_t* vi = o->data + i * o->stride;
             for( sz_t j = 0; j <= i ; j++ )
@@ -516,14 +517,13 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
         return;
     }
 
-    ASSERT( bmath_mf3_s_is_equ_size( o, op ) );
 
-    for( sz_t i = 0; i < n; i++ )
+    for( sz_t i = 0; i < o->rows; i++ )
     {
               f3_t* vri = res->data + i * res->stride;
         const f3_t* voi =   o->data + i *   o->stride;
 
-        for( sz_t j = 0; j < n; j++ )
+        for( sz_t j = 0; j < op->rows; j++ )
         {
             const f3_t* vpj = op->data + j * op->stride;
             f3_t sum = 0;

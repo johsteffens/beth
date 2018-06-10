@@ -33,6 +33,8 @@
  *  trc: trace
  *  dag: diagonal
  *  trd: tri-diagonal (symmetric)
+ *  ubd: upper-bidiagonal
+ *  lbd: lower-bidiagonal
  *  det: determinant
  *  svd: singular value decomposition
  *  evd: eigen value decomposition  (svd for hsm matrix)
@@ -226,7 +228,8 @@ void bmath_mf3_s_lt1_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
-/** Stable in-place TRD for a symmetric matrix. Based on Givens rotations.
+/** Stable in-place tri-diagonal decomposition for a symmetric matrix.
+ *  Based on Givens rotations.
  *  Input:  a  (symmetric),    q  (rotation or identity)
  *  Output: a' (tri-diagonal), q' (rotation) with qT * a * q = q'T * a' * q'.
  *  r == NULL allowed, in which case only a' is computed.
