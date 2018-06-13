@@ -199,87 +199,11 @@ BCORE_DEFINE_FUNCTION_CREATE(    bcore_txt_ml_interpreter_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bcore_txt_ml_interpreter_s )
 BCORE_DEFINE_FUNCTION_CLONE(     bcore_txt_ml_interpreter_s )
 
-static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source );
-
-/** Embedding of another file.
- *  Syntax: <#file> <interpreter> <file path> </>
- *  Example: <#file> <bcore_bin_ml> </> <st_s> "myfolders/myfile.myext" </> </>
- *  Relative paths are considered relative to current file, if applicable,
- *  or current runtime directory otherwise.
- *  The file must contain the complete (sub-)object.
- */
-static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source )
-{
-    BCORE_LIFE_INIT();
-    sr_s src_l = BCORE_LIFE_X_PUSH( source );
-
-    sr_s interpreter_obj = interpret( o, sr_null(), src_l );
-
-    if( !interpreter_obj.o )
-    {
-        bcore_source_r_parse_err_fa( &src_l, "No interpreter specified." );
-    }
-
-    {
-        BCORE_LIFE_CREATE( st_s, log );
-        if( !bcore_trait_satisfied_type( typeof( "bcore_interpreter" ), sr_s_type( &interpreter_obj ), log ) )
-        {
-            bcore_source_x_parse_err_fa( src_l, "Object '#<sc_t>' is no interpreter.\nReason: #<sc_t>", ifnameof( sr_s_type( &interpreter_obj ) ), log->sc );
-        }
-    }
-
-    sr_s file_obj = interpret( o, sr_null(), src_l );
-    if( sr_s_type( &file_obj ) != TYPEOF_st_s ) bcore_source_r_parse_errf( &src_l, "String with file path expected." );
-
-    bcore_source_r_parse_fa( &src_l, " </>" );
-
-    st_s* file = sr_fork( file_obj ).o;
-    if( file->size == 0 )  bcore_source_r_parse_errf( &src_l, "Invalid file path." );
-
-    if( file->sc[ 0 ] != '/' ) // make path relative to current file path
-    {
-        st_s* cur_file = st_s_create_sc( bcore_source_r_get_file( &src_l ) );
-        if( cur_file->size > 0 )
-        {
-            sz_t idx = st_s_find_char( cur_file, cur_file->size, 0, '/' );
-            if( idx < cur_file->size )
-            {
-                cur_file->data[ idx ] = 0;
-                st_s* new_file = st_s_create_fa( "#<sc_t>/#<sc_t>", cur_file->sc, file->sc );
-                st_s_discard( file );
-                file = new_file;
-            }
-        }
-        st_s_discard( cur_file );
-    }
-
-    sr_s sub_source = sr_asd( bcore_source_chain_s_create() );
-    bcore_source_chain_s_push_d( sub_source.o, bcore_source_file_s_create_name( file->sc ) );
-    bcore_source_chain_s_push_d( sub_source.o, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );
-
-    sr_s sub_obj = bcore_interpret_x( interpreter_obj, sub_source );
-
-    if( obj.o )
-    {
-        bcore_inst_r_copy_typed( &obj, sr_s_type( &sub_obj ), sub_obj.o );
-        sr_down( sub_obj );
-    }
-    else
-    {
-        obj = sub_obj;
-    }
-
-    st_s_discard( file );
-
-    BCORE_LIFE_RETURN( obj );
-}
+static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source );
 
 static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source )
 {
-    if( bcore_source_r_parse_bl_fa( &source, " #?'<#file>'" ) )
-    {
-        return interpret_embedded_file( o, obj, source );
-    }
+    if( bcore_source_r_parse_bl_fa( &source, " #?'<#file>'" ) ) return interpret_embedded_file( o, obj, source );
 
     bcore_life_s* l = bcore_life_s_create();
     sr_s src_l = sr_cl( sr_cp( source, TYPEOF_bcore_source_s ), l );
@@ -382,6 +306,90 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
     bcore_life_s_discard( l );
     return obj;
 }
+
+/** Embedding of another file.
+ *  Syntax: <#file> <interpreter> <file path> </>
+ *  Example:
+ *    <#file>
+ *       <bcore_bin_ml_interpreter_s> </>
+ *       <st_s> "myfolders/myfile.myext" </>
+ *    </>
+ *  Relative paths are considered relative to current file, if applicable,
+ *  or current runtime directory otherwise.
+ *  The file must contain the complete (sub-)object.
+ */
+static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source )
+{
+    BCORE_LIFE_INIT();
+    sr_s src_l = BCORE_LIFE_X_PUSH( source );
+
+    sr_s interpreter_obj = interpret( o, sr_null(), src_l );
+
+    if( !interpreter_obj.o )
+    {
+        bcore_source_r_parse_err_fa( &src_l, "No interpreter specified." );
+    }
+
+    {
+        BCORE_LIFE_CREATE( st_s, log );
+        if( !bcore_trait_satisfied_type( typeof( "bcore_interpreter" ), sr_s_type( &interpreter_obj ), log ) )
+        {
+            bcore_source_x_parse_err_fa
+            (
+                src_l,
+                "Object '#<sc_t>' is no interpreter.\nReason: #<sc_t>",
+                ifnameof( sr_s_type( &interpreter_obj ) ),
+                log->sc
+            );
+        }
+    }
+
+    sr_s file_obj = interpret( o, sr_null(), src_l );
+    if( sr_s_type( &file_obj ) != TYPEOF_st_s ) bcore_source_r_parse_errf( &src_l, "String with file path expected." );
+
+    bcore_source_r_parse_fa( &src_l, " </>" );
+
+    st_s* file = sr_fork( file_obj ).o;
+    if( file->size == 0 )  bcore_source_r_parse_errf( &src_l, "Invalid file path." );
+
+    if( file->sc[ 0 ] != '/' ) // make path relative to current file path
+    {
+        st_s* cur_file = st_s_create_sc( bcore_source_r_get_file( &src_l ) );
+        if( cur_file->size > 0 )
+        {
+            sz_t idx = st_s_find_char( cur_file, cur_file->size, 0, '/' );
+            if( idx < cur_file->size )
+            {
+                cur_file->data[ idx ] = 0;
+                st_s* new_file = st_s_create_fa( "#<sc_t>/#<sc_t>", cur_file->sc, file->sc );
+                st_s_discard( file );
+                file = new_file;
+            }
+        }
+        st_s_discard( cur_file );
+    }
+
+    sr_s sub_source = sr_asd( bcore_source_chain_s_create() );
+    bcore_source_chain_s_push_d( sub_source.o, bcore_source_file_s_create_name( file->sc ) );
+    bcore_source_chain_s_push_d( sub_source.o, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );
+
+    sr_s sub_obj = bcore_interpret_x( interpreter_obj, sub_source );
+
+    if( obj.o )
+    {
+        bcore_inst_r_copy_typed( &obj, sr_s_type( &sub_obj ), sub_obj.o );
+        sr_down( sub_obj );
+    }
+    else
+    {
+        obj = sub_obj;
+    }
+
+    st_s_discard( file );
+
+    BCORE_LIFE_RETURN( obj );
+}
+
 
 sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, sr_s src )
 {
