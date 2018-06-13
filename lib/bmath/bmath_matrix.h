@@ -18,13 +18,14 @@
 
 /**********************************************************************************************************************/
 
-/// Collection of matrices.
+/// Matrix types and operations.
 
 /** Nomenclature
  *  add, zro, neg, sub, mul, mul_vec, mul_scl - according to spect_matrix
+ *  inv: inverse
+ *  piv: pseudo-inverse
+ *  av1: affine vector (vector of size 'n' interpreted vector of size n+1 with last element being '1' ); used for affine transformations
  *  htp: (hermitean) transpose
- *  ltr: lower triangular matrix
- *  cnv: convert to a specific form (e.g. a decomposition)
  *  ltr: lower triangle matrix (evaluation ignores upper triangle)
  *  lt1: lower triangle matrix with main diagonal elements deemed 1 and not evaluated (luc satisfies ltr with respect for evaluation)
  *  utr: upper triangle matrix (evaluation ignores lower triangle)
@@ -38,8 +39,9 @@
  *  det: determinant
  *  svd: singular value decomposition
  *  evd: eigen value decomposition  (svd for hsm matrix)
- *  iso: isometry (orthonormal)
+ *  iso: isometry (orthonormal, unitary)
  *  opd: outer product of two vectors
+ *  udu: similarity transform a of a diagonal matrix: htp_udu: U^T * D * U; udu_htp: U * D * U^T
  */
 /**********************************************************************************************************************/
 
@@ -107,26 +109,62 @@ void bmath_mf3_s_zro(       bmath_mf3_s* o );
 void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res );
 void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res );
-void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res ); // o * op
 
 /// adds outer product of two vectors op1 (X) op2 to matrix
 void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res );
 
-
-/// multiplication of o with op(transposed); (faster than mul)
-void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
-
 void bmath_mf3_s_one(           bmath_mf3_s* o );
+
+//---------------------------------------------------------------------------------------------------------------------
+// inversion
+
 void bmath_mf3_s_inv(     const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1
 void bmath_mf3_s_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = (o^-1)T
-void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1 in case o is hermitean-symmetric (3x faster than bmath_mf3_s_inv)
+void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1 in case o is hermitean/symmetric (3x faster than bmath_mf3_s_inv)
 
-void bmath_mf3_s_div(     const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
-void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+/** Pseudo-inversion for symmetric matrix.
+ *  zero-threshold for eigenvalues: eps * max(eigenvalues).
+ */
+void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, bmath_mf3_s* res, f3_t eps );
+
+/** Affine inversion.
+ *  res = av1-inverse of o.
+ *  o and res deemed to be av1-transformations
+ */
+void bmath_mf3_s_inv_av1(     const bmath_mf3_s* o, bmath_mf3_s* res );
+void bmath_mf3_s_hsm_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res );           // o symmetric
+void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, bmath_mf3_s* res, f3_t eps ); // pseudo inversion; o symmetric
+
+void bmath_mf3_s_div(         const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+
+//---------------------------------------------------------------------------------------------------------------------
+// multiplication
+
+void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res ); // res = o * op
+void bmath_mf3_s_mul_dag( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res ); // res = o * dag  (columns get scaled)
+void bmath_mf3_s_dag_mul( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res ); // res = dag * o  (rows get scaled)
+
+/// multiplication of o with op(transposed); (faster than mul)
+void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res ); // o * op^T
+
+void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf3_s* res );
+void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf3_s* res ); // affine transformation (see nomenclature 'av1')
+
 void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t*        op, bmath_mf3_s* res );
-static inline void bmath_mf3_s_mul_scl_f3( const bmath_mf3_s* o, f3_t op, bmath_mf3_s* res ) { bmath_mf3_s_mul_scl( o, &op, res ); }
+static inline
+void bmath_mf3_s_mul_scl_f3( const bmath_mf3_s* o, f3_t op, bmath_mf3_s* res ) { bmath_mf3_s_mul_scl( o, &op, res ); }
 
-void bmath_mf3_s_htp(     const bmath_mf3_s* o, bmath_mf3_s* res ); // hermitean transpose
+/** In place similarity transformation of a diagonal matrix.
+ *  R = O * D * O^T
+ */
+void bmath_mf3_s_udu_htp( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res ); // res = o * dag * o^T
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // hermitean transpose
+
+//---------------------------------------------------------------------------------------------------------------------
+// element-, col-, row-access, sub-matrix
 
 void bmath_mf3_s_set_row_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data );
 void bmath_mf3_s_set_col_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data );
@@ -155,7 +193,18 @@ f3_t bmath_mf3_s_get_f3( const bmath_mf3_s* o, sz_t row, sz_t col )
     return o->data[ row * o->stride + col ];
 }
 
-bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx ); // produces a weak vector without heap usage (no bmath_vf3_s_down needed on result)
+/** Returns a weak (rows x cols) sub matrix at offset (row, col) from o.
+ *  Returned object need not be shut down.
+ */
+bmath_mf3_s bmath_mf3_s_get_weak_sub_mat( const bmath_mf3_s* o, sz_t row, sz_t col, sz_t rows, sz_t cols );
+
+/** Returns a weak row vector.
+ *  Returned object need not be shut down.
+ */
+bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx );
+
+//---------------------------------------------------------------------------------------------------------------------
+// Special triangular matrices
 
 /** Cholesky decomposition.
  *  o must be positive definite.
@@ -228,6 +277,9 @@ void bmath_mf3_s_lt1_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
+//---------------------------------------------------------------------------------------------------------------------
+// Eigenvalue decomposition and supportive operations
+
 /** Stable in-place tri-diagonal decomposition for a symmetric matrix.
  *  Based on Givens rotations.
  *  Input:  a  (symmetric),    q  (rotation or identity)
@@ -254,7 +306,7 @@ void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* q );
  */
 void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* q );
 
-/** In-place SVD for a symmetric matrix. Approach: TRD, QR with implicit shifting.
+/** In-place SVD for a symmetric matrix. Approach: TRD, QR with isolated shifting.
  *  More stable and slightly more expensive than 'xshift' (Mathematically xshift and ishift are identical).
  *  bmath_mf3_s_evd_htp for more details.
  */
@@ -268,11 +320,16 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* q );
  */
 static inline void bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* q ) { bmath_mf3_s_evd_htp_qr_ishift( a, q ); }
 
+//---------------------------------------------------------------------------------------------------------------------
+// Covariance matrix
+
 /** Sets o to the covariance matrix of a section of arr_vec:
  *  oij = E( E( vi - E( vi ) )E( vj - E( vj ) ) )
  */
 void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end ); // fast
 void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end ); // stochastically precise
+
+//---------------------------------------------------------------------------------------------------------------------
 
 /// For easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );

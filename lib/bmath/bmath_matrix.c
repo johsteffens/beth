@@ -463,6 +463,41 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_mul_dag( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == o->rows   );
+    ASSERT( o->rows == dag->size );
+    ASSERT( o->rows == res->rows );
+    ASSERT( o->cols == res->cols );
+    const f3_t* vd = dag->data;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* vo =   o->data + i *   o->stride;
+              f3_t* vr = res->data + i * res->stride;
+        for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ] * vd[ j ];
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_dag_mul( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == o->rows   );
+    ASSERT( o->rows == dag->size );
+    ASSERT( o->rows == res->rows );
+    ASSERT( o->cols == res->cols );
+    const f3_t* vd = dag->data;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* vo =   o->data + i *   o->stride;
+              f3_t* vr = res->data + i * res->stride;
+              f3_t d = vd[ i ];
+        for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ] * d;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res )
 {
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
@@ -492,10 +527,6 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
         bmath_mf3_s_discard( buf );
         return;
     }
-
-
-//    ASSERT( n == res->rows );
-//    ASSERT( n == res->cols );
 
     ASSERT( o->rows  == res->rows );
     ASSERT( op->rows == res->cols );
@@ -541,7 +572,7 @@ void bmath_mf3_s_inv_htp_colesky( const bmath_mf3_s* o, bmath_mf3_s* res )
     {
         bmath_mf3_s* buf = bmath_mf3_s_create();
         bmath_mf3_s_set_size_to( res, buf );
-        bmath_mf3_s_inv( o, buf );
+        bmath_mf3_s_inv_htp_colesky( o, buf );
         bmath_mf3_s_cpy( buf, res );
         bmath_mf3_s_discard( buf );
         return;
@@ -568,9 +599,10 @@ void bmath_mf3_s_inv_htp_colesky( const bmath_mf3_s* o, bmath_mf3_s* res )
 
 void bmath_mf3_s_inv_htp_luc( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     bmath_mf3_s* luc = bmath_mf3_s_create();
     bmath_mf3_s_set_size_to( o, luc );
-    bmath_mf3_s_set_size_to( o, res );
+
     bmath_mf3_s_decompose_luc( o, luc );
     bmath_mf3_s_one( res );
     bmath_mf3_s_luc_solve_htp_htp( luc, res, res );
@@ -592,6 +624,105 @@ void bmath_mf3_s_inv( const bmath_mf3_s* o, bmath_mf3_s* res )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res )
+{
+    if( o == res )
+    {
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size_to( res, buf );
+        bmath_mf3_s_inv_av1( o, buf );
+        bmath_mf3_s_cpy( buf, res );
+        bmath_mf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->cols == o->rows + 1 );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
+
+    bmath_mf3_s o_sub = bmath_mf3_s_get_weak_sub_mat(   o, 0, 0,   o->rows,   o->cols - 1 );
+    bmath_mf3_s r_sub = bmath_mf3_s_get_weak_sub_mat( res, 0, 0, res->rows, res->cols - 1 );
+
+    bmath_mf3_s_inv( &o_sub, &r_sub );
+
+    sz_t n = o_sub.rows;
+
+    for( sz_t i = 0; i < n; i++ )
+    {
+        f3_t sum = 0;
+        f3_t* row = r_sub.data + i * r_sub.stride;
+        for( sz_t j = 0; j < n; j++ ) sum += row[ j ] * o->data[ j * o->stride + n ];
+        res->data[ i * res->stride + n ] = -sum;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_hsm_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res )
+{
+    if( o == res )
+    {
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size_to( res, buf );
+        bmath_mf3_s_hsm_inv_av1( o, buf );
+        bmath_mf3_s_cpy( buf, res );
+        bmath_mf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->cols == o->rows + 1 );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
+
+    bmath_mf3_s o_sub = bmath_mf3_s_get_weak_sub_mat(   o, 0, 0,   o->rows,   o->cols - 1 );
+    bmath_mf3_s r_sub = bmath_mf3_s_get_weak_sub_mat( res, 0, 0, res->rows, res->cols - 1 );
+
+    bmath_mf3_s_hsm_inv( &o_sub, &r_sub );
+
+    sz_t n = o_sub.rows;
+
+    for( sz_t i = 0; i < n; i++ )
+    {
+        f3_t sum = 0;
+        f3_t* row = r_sub.data + i * r_sub.stride;
+        for( sz_t j = 0; j < n; j++ ) sum += row[ j ] * o->data[ j * o->stride + n ];
+        res->data[ i * res->stride + n ] = -sum;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, bmath_mf3_s* res, f3_t eps )
+{
+    if( o == res )
+    {
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size_to( res, buf );
+        bmath_mf3_s_hsm_piv_av1( o, buf, eps );
+        bmath_mf3_s_cpy( buf, res );
+        bmath_mf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->cols == o->rows + 1 );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
+
+    bmath_mf3_s o_sub = bmath_mf3_s_get_weak_sub_mat(   o, 0, 0,   o->rows,   o->cols - 1 );
+    bmath_mf3_s r_sub = bmath_mf3_s_get_weak_sub_mat( res, 0, 0, res->rows, res->cols - 1 );
+
+    bmath_mf3_s_hsm_piv( &o_sub, &r_sub, eps );
+
+    sz_t n = o_sub.rows;
+
+    for( sz_t i = 0; i < n; i++ )
+    {
+        f3_t sum = 0;
+        f3_t* row = r_sub.data + i * r_sub.stride;
+        for( sz_t j = 0; j < n; j++ ) sum += row[ j ] * o->data[ j * o->stride + n ];
+        res->data[ i * res->stride + n ] = -sum;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_div( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
     bmath_mf3_s_inv( op, res );
@@ -600,27 +731,77 @@ void bmath_mf3_s_div( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
+void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf3_s* res )
 {
-    if( res == op )
+    if( res == vec )
     {
         bmath_vf3_s* buf = bmath_vf3_s_create_set_size( res->size );
-        bmath_mf3_s_mul_vec( o, op, buf );
+        bmath_mf3_s_mul_vec( o, vec, buf );
         bmath_vf3_s_cpy( buf, res );
         bmath_vf3_s_discard( buf );
         return;
     }
 
-    ASSERT( o->cols ==  op->size );
+    ASSERT( o->cols == vec->size );
     ASSERT( o->rows == res->size );
     f3_t* vr = res->data;
-    f3_t* v2 = op->data;
+    f3_t* v2 = vec->data;
     for( sz_t i = 0; i < res->size; i++ )
     {
         f3_t* v1 = o->data + i * o->stride;
         f3_t sum = 0;
         for( sz_t j = 0; j < o->cols; j++ ) sum += v1[ j ] * v2[ j ];
         vr[ i ] = sum;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf3_s* res )
+{
+    if( res == av1 )
+    {
+        bmath_vf3_s* buf = bmath_vf3_s_create_set_size( res->size );
+        bmath_mf3_s_mul_av1( o, av1, buf );
+        bmath_vf3_s_cpy( buf, res );
+        bmath_vf3_s_discard( buf );
+        return;
+    }
+
+    sz_t n = av1->size;
+    ASSERT( o->cols == n + 1 );
+    ASSERT( o->rows == res->size );
+    f3_t* vr = res->data;
+    f3_t* v2 = av1->data;
+    for( sz_t i = 0; i < res->size; i++ )
+    {
+        f3_t* v1 = o->data + i * o->stride;
+        f3_t sum = 0;
+        for( sz_t j = 0; j < n; j++ ) sum += v1[ j ] * v2[ j ];
+        vr[ i ] = sum + v1[ n ];
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_udu_htp( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res )
+{
+    ASSERT( res != o );
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
+    ASSERT( o->rows == dag->size );
+
+    const f3_t* vd = dag->data;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* vi =   o->data + i *   o->stride;
+              f3_t* vr = res->data + i * res->stride;
+        for( sz_t j = 0; j < o->rows; j++ )
+        {
+            const f3_t* vj = o->data + j * o->stride;
+            f3_t sum = 0;
+            for( sz_t k = 0; k < o->rows; k++ ) sum += vi[ k ] * vj[ k ] * vd[ k ];
+            vr[ j ] = sum;
+        }
     }
 }
 
@@ -786,6 +967,23 @@ void bmath_mf3_s_swap_col( bmath_mf3_s* o, sz_t i, sz_t j )
     f3_t* vi = o->data + i;
     f3_t* vj = o->data + j;
     for( sz_t k = 0; k < o->rows; k++ ) f3_t_swap( vi + k * o->stride, vj + k * o->stride );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bmath_mf3_s bmath_mf3_s_get_weak_sub_mat( const bmath_mf3_s* o, sz_t row, sz_t col, sz_t rows, sz_t cols )
+{
+    ASSERT( row + rows <= o->rows );
+    ASSERT( col + cols <= o->cols );
+    bmath_mf3_s ret;
+    bmath_mf3_s_init( &ret );
+    ret.rows = rows;
+    ret.cols = cols;
+    ret.stride = o->stride;
+    ret.data = o->data + row * o->stride + col;
+    ret.size = o->size;
+    ret.space = 0; // indicates that ret is a weak object. (no shutdown needed)
+    return ret;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1707,6 +1905,50 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* q )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+// pseudo inversion
+void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, bmath_mf3_s* res, f3_t eps )
+{
+    if( o == res )
+    {
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size_to( res, buf );
+        bmath_mf3_s_hsm_piv( o, buf, eps );
+        bmath_mf3_s_cpy( buf, res );
+        bmath_mf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
+    ASSERT( o->rows == o->cols );
+
+    sz_t n = o->rows;
+    if( n == 0 ) return;
+
+    bmath_mf3_s* a = res; // a occupies space of res
+    bmath_mf3_s* q = bmath_mf3_s_create();
+    bmath_mf3_s_set_size( q, n, n );
+    bmath_mf3_s_one( q );
+
+    bmath_mf3_s_cpy( o, a );
+    bmath_mf3_s_evd_htp( a, q );
+
+    bmath_vf3_s* dag = bmath_vf3_s_create();
+    bmath_vf3_s_set_size( dag, n );
+    bmath_mf3_s_get_dag_vec( a, dag );
+
+    f3_t thr = dag->data[ 0 ] * eps; // dag is sorted in descending manner
+
+    for( sz_t i = 0; i < n; i++ ) dag->data[ i ] = ( dag->data[ i ] < thr ) ? 0 : ( 1.0 / dag->data[ i ] );
+
+    bmath_mf3_s_htp( q, q );
+    bmath_mf3_s_udu_htp( q, dag, res );
+
+    bmath_vf3_s_discard( dag );
+    bmath_mf3_s_discard( q );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end )
 {
     end = end < arr_vec->size ? end : arr_vec->size;
@@ -1970,6 +2212,23 @@ static vd_t selftest( void )
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-7 ) );
     }
 
+    // symmetric pseudo inversion
+    {
+        sz_t n = 50;
+        u2_t rval = 1234;
+        bmath_mf3_s_set_size( m1, n, n );
+        bmath_mf3_s_set_size_to( m1, m2 );
+        bmath_mf3_s_set_size_to( m1, m3 );
+        bmath_mf3_s_set_size_to( m1, m4 );
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_mf3_s_mul_htp( m1, m1, m1 ); // m1 = m1*m1T
+
+        bmath_mf3_s_hsm_piv( m1, m2, 1E-8 );
+
+        bmath_mf3_s_mul( m1, m2, m3 );
+        ASSERT( bmath_mf3_s_is_near_one( m3, 1E-8 ) );
+    }
+
     // tridiagonalization
     {
         sz_t n = 100;
@@ -2001,7 +2260,7 @@ static vd_t selftest( void )
 
     // QR decomposition
     {
-        sz_t n = 200;
+        sz_t n = 100;
         u2_t rval = 1236;
 
         bmath_mf3_s_set_size( m1, n, n );
@@ -2113,6 +2372,74 @@ static vd_t selftest( void )
         bmath_mf3_s_set_covariance_on_section_fast( m1, a1, 0, -1 );
         bmath_mf3_s_evd_htp( m1, NULL );
         ASSERT( f3_abs( bmath_mf3_s_get_f3( m1, n - 1, n - 1 ) ) < 1E-8 ); // last eigenvalue should be near zero
+    }
+
+    // affine-transformation
+    {
+        sz_t n = 20;
+        bmath_mf3_s_set_size( m1, n, n + 1 );
+        bmath_mf3_s_set_size( m2, n, n + 1 );
+        bmath_vf3_s_set_size( v1, n );
+        bmath_vf3_s_set_size( v2, n );
+        bmath_vf3_s_set_size( v3, n );
+
+        u2_t rval = 1236;
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_vf3_s_fill_random( v1, -1, 1, &rval );
+
+        bmath_mf3_s_mul_av1( m1, v1, v2 );
+        bmath_mf3_s_inv_av1( m1, m2 );
+        bmath_mf3_s_mul_av1( m2, v2, v3 );
+
+        ASSERT( bmath_vf3_s_is_near_equ( v1, v3, 1E-8 ) );
+    }
+
+    // hsm-affine-transformation
+    {
+        sz_t n = 20;
+        bmath_mf3_s_set_size( m1, n, n + 1 );
+        bmath_mf3_s_set_size( m2, n, n + 1 );
+        bmath_vf3_s_set_size( v1, n );
+        bmath_vf3_s_set_size( v2, n );
+        bmath_vf3_s_set_size( v3, n );
+
+        u2_t rval = 1236;
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+
+        bmath_mf3_s m1_sub = bmath_mf3_s_get_weak_sub_mat( m1, 0, 0, n, n );
+        bmath_mf3_s_mul_htp( &m1_sub, &m1_sub, &m1_sub ); // make nxn submatrix of m1 symmetric
+
+        bmath_vf3_s_fill_random( v1, -1, 1, &rval );
+
+        bmath_mf3_s_mul_av1( m1, v1, v2 );
+        bmath_mf3_s_hsm_inv_av1( m1, m2 );
+        bmath_mf3_s_mul_av1( m2, v2, v3 );
+
+        ASSERT( bmath_vf3_s_is_near_equ( v1, v3, 1E-8 ) );
+    }
+
+    // hsm-affine-transformation (test via piv)
+    {
+        sz_t n = 20;
+        bmath_mf3_s_set_size( m1, n, n + 1 );
+        bmath_mf3_s_set_size( m2, n, n + 1 );
+        bmath_vf3_s_set_size( v1, n );
+        bmath_vf3_s_set_size( v2, n );
+        bmath_vf3_s_set_size( v3, n );
+
+        u2_t rval = 1236;
+        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+
+        bmath_mf3_s m1_sub = bmath_mf3_s_get_weak_sub_mat( m1, 0, 0, n, n );
+        bmath_mf3_s_mul_htp( &m1_sub, &m1_sub, &m1_sub ); // make nxn submatrix of m1 symmetric
+
+        bmath_vf3_s_fill_random( v1, -1, 1, &rval );
+
+        bmath_mf3_s_mul_av1( m1, v1, v2 );
+        bmath_mf3_s_hsm_piv_av1( m1, m2, 1E-8 );
+        bmath_mf3_s_mul_av1( m2, v2, v3 );
+
+        ASSERT( bmath_vf3_s_is_near_equ( v1, v3, 1E-8 ) );
     }
 
     BCORE_LIFE_DOWN();
