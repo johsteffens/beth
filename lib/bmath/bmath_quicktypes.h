@@ -29,20 +29,21 @@ void bmath_quicktypes_create_header( sc_t folder );
  *  Created via bclos_quicktypes_to_stdout( NULL );
  */
 
-#define TYPEOF_bmath_arr_vf3_s 3268702147
-#define TYPEOF_bmath_cf3_s     2506167476
-#define TYPEOF_bmath_group     1421936371
-#define TYPEOF_bmath_group_s   1219600405
-#define TYPEOF_bmath_matrix    3796445417
-#define TYPEOF_bmath_matrix_s  1909792099
-#define TYPEOF_bmath_mf3_s     2915726298
-#define TYPEOF_bmath_plot      3053585471
-#define TYPEOF_bmath_plot_s     413785001
-#define TYPEOF_bmath_ring      2462086090
-#define TYPEOF_bmath_ring_s    1513035188
-#define TYPEOF_bmath_vcf3_s    3723112310
-#define TYPEOF_bmath_vector    4070600319
-#define TYPEOF_bmath_vector_s  1200091625
-#define TYPEOF_bmath_vf3_s     3565809519
+#define TYPEOF_bmath_arr_vf3_s   3268702147
+#define TYPEOF_bmath_cf3_s       2506167476
+#define TYPEOF_bmath_estimator_s 3775440224
+#define TYPEOF_bmath_group       1421936371
+#define TYPEOF_bmath_group_s     1219600405
+#define TYPEOF_bmath_matrix      3796445417
+#define TYPEOF_bmath_matrix_s    1909792099
+#define TYPEOF_bmath_mf3_s       2915726298
+#define TYPEOF_bmath_plot        3053585471
+#define TYPEOF_bmath_plot_s       413785001
+#define TYPEOF_bmath_ring        2462086090
+#define TYPEOF_bmath_ring_s      1513035188
+#define TYPEOF_bmath_vcf3_s      3723112310
+#define TYPEOF_bmath_vector      4070600319
+#define TYPEOF_bmath_vector_s    1200091625
+#define TYPEOF_bmath_vf3_s       3565809519
 
 #endif // BMATH_QUICKTYPES_H

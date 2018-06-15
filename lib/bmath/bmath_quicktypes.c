@@ -50,6 +50,7 @@ static sr_s typelist()
     bcore_array_r_push_sc( &list, "bmath_matrix_s"  );
     bcore_array_r_push_sc( &list, "bmath_cf3_s"     );
     bcore_array_r_push_sc( &list, "bmath_mf3_s"     );
+    bcore_array_r_push_sc( &list, "bmath_estimator_s" );
     bcore_array_r_push_sc( &list, "bmath_plot"      );
     bcore_array_r_push_sc( &list, "bmath_plot_s"    );
 
