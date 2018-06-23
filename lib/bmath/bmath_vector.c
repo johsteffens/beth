@@ -96,6 +96,13 @@ void bmath_vf3_s_push( bmath_vf3_s* o, f3_t val )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_vf3_s_push_vf3( bmath_vf3_s* o, const bmath_vf3_s* vec )
+{
+    for( sz_t i = 0; i < vec->size; i++ ) bmath_vf3_s_push( o, vec->data[ i ] );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 bl_t bmath_vf3_s_is_equ( const bmath_vf3_s* o, const bmath_vf3_s* op )
 {
     sz_t size = sz_min( o->size, op->size );
@@ -459,7 +466,7 @@ void bmath_vf3_s_to_stdout( const bmath_vf3_s* o )
 {
     const f3_t* v = o->data;
     printf( "(%zu)\n", o->size );
-    for( sz_t i = 0; i < o->size; i++ ) printf( "%9.3g\n", v[ i ] );
+    for( sz_t i = 0; i < o->size; i++ ) printf( "%g\n", v[ i ] );
 }
 
 void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o )

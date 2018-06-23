@@ -68,6 +68,7 @@ void bmath_vf3_s_fill(        bmath_vf3_s* o, f3_t val );
 void bmath_vf3_s_fill_random( bmath_vf3_s* o, f3_t min, f3_t max, u2_t* rval );
 
 void bmath_vf3_s_push( bmath_vf3_s* o, f3_t val );
+void bmath_vf3_s_push_vf3( bmath_vf3_s* o, const bmath_vf3_s* vec );
 
 bl_t bmath_vf3_s_is_equ( const bmath_vf3_s* o, const bmath_vf3_s* op );
 bl_t bmath_vf3_s_is_zro( const bmath_vf3_s* o );
