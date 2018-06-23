@@ -93,7 +93,7 @@ void bmath_estimator_s_get_matrix( const bmath_estimator_s* o, bmath_mf3_s* mat 
 {
     bmath_mf3_s* xx_piv = bmath_mf3_s_create();
     bmath_mf3_s_set_size_to( &o->xx, xx_piv );
-    bmath_mf3_s_hsm_piv( &o->xx, xx_piv, o->eps );
+    bmath_mf3_s_hsm_piv( &o->xx, o->eps, xx_piv );
     bmath_mf3_s_set_size( mat, o->yx.rows, o->yx.cols );
     bmath_mf3_s_mul_htp( &o->yx, xx_piv, mat );
     bmath_mf3_s_discard( xx_piv );
