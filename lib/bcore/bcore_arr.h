@@ -53,6 +53,11 @@ void bcore_arr_sz_s_sort(       bcore_arr_sz_s* o, s2_t order ); // stable
 void bcore_arr_sz_s_reorder(    bcore_arr_sz_s* o, const bcore_arr_sz_s* order );
 sz_t bcore_arr_sz_s_find( const bcore_arr_sz_s* o, sz_t start, sz_t end, sz_t v ); // behaves like st_s_find_*
 
+sz_t bcore_arr_sz_s_max(     const bcore_arr_sz_s* o );
+sz_t bcore_arr_sz_s_min(     const bcore_arr_sz_s* o );
+sz_t bcore_arr_sz_s_idx_max( const bcore_arr_sz_s* o );
+sz_t bcore_arr_sz_s_idx_min( const bcore_arr_sz_s* o );
+
 bcore_arr_sz_s* bcore_arr_sz_s_create_random_permutation( u2_t ( *rg )( u2_t ), u2_t seed, sz_t size );
 
 /**********************************************************************************************************************/

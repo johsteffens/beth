@@ -206,6 +206,54 @@ sz_t bcore_arr_sz_s_find( const bcore_arr_sz_s* o, sz_t start, sz_t end, sz_t v 
     }
 }
 
+sz_t bcore_arr_sz_s_max( const bcore_arr_sz_s* o )
+{
+    if( o->size == 0 ) return 0;
+    sz_t max = o->data[ 0 ];
+    for( sz_t i = 1; i < o->size; i++ ) max = o->data[ i ] > max ? o->data[ i ] : max;
+    return max;
+}
+
+sz_t bcore_arr_sz_s_min( const bcore_arr_sz_s* o )
+{
+    if( o->size == 0 ) return 0;
+    sz_t min = o->data[ 0 ];
+    for( sz_t i = 1; i < o->size; i++ ) min = o->data[ i ] < min ? o->data[ i ] : min;
+    return min;
+}
+
+sz_t bcore_arr_sz_s_idx_max( const bcore_arr_sz_s* o )
+{
+    if( o->size == 0 ) return 0;
+    sz_t max = o->data[ 0 ];
+    sz_t idx = 0;
+    for( sz_t i = 1; i < o->size; i++ )
+    {
+        if( o->data[ i ] > max )
+        {
+            max = o->data[ i ];
+            idx = i;
+        }
+    }
+    return idx;
+}
+
+sz_t bcore_arr_sz_s_idx_min( const bcore_arr_sz_s* o )
+{
+    if( o->size == 0 ) return 0;
+    sz_t min = o->data[ 0 ];
+    sz_t idx = 0;
+    for( sz_t i = 1; i < o->size; i++ )
+    {
+        if( o->data[ i ] < min )
+        {
+            min = o->data[ i ];
+            idx = i;
+        }
+    }
+    return idx;
+}
+
 /**********************************************************************************************************************/
 // bcore_arr_u3_s
 
