@@ -690,13 +690,13 @@ void bmath_mf3_s_hsm_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, bmath_mf3_s* res, f3_t eps )
+void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
 {
     if( o == res )
     {
         bmath_mf3_s* buf = bmath_mf3_s_create();
         bmath_mf3_s_set_size_to( res, buf );
-        bmath_mf3_s_hsm_piv_av1( o, buf, eps );
+        bmath_mf3_s_hsm_piv_av1( o, eps, buf );
         bmath_mf3_s_cpy( buf, res );
         bmath_mf3_s_discard( buf );
         return;
@@ -708,7 +708,7 @@ void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, bmath_mf3_s* res, f3_t eps )
     bmath_mf3_s o_sub = bmath_mf3_s_get_weak_sub_mat(   o, 0, 0,   o->rows,   o->cols - 1 );
     bmath_mf3_s r_sub = bmath_mf3_s_get_weak_sub_mat( res, 0, 0, res->rows, res->cols - 1 );
 
-    bmath_mf3_s_hsm_piv( &o_sub, &r_sub, eps );
+    bmath_mf3_s_hsm_piv( &o_sub, eps, &r_sub );
 
     sz_t n = o_sub.rows;
 
@@ -1556,6 +1556,134 @@ void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* r )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/** Stable in-place upper-bi-diagonal decomposition for a general matrix.
+ *  Based on givens rotations.
+ *  Input:  a  (nxm, any data), v  (mxm rotation or identity), u  (nxn rotation or identity)
+ *  Output: a' (bi-diagonal),   v' (mxm rotation),             u' (nxn rotation)
+ *  It is uT * a * v = u'T * a' * v
+ */
+void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    ASSERT( v->cols == a->cols );
+    ASSERT( v->rows == a->cols );
+    ASSERT( u->cols == a->rows );
+    ASSERT( u->rows == a->rows );
+
+    /// zero lower triangle
+    for( sz_t j = 0; j < a->cols; j++ )
+    {
+        for( sz_t l = a->rows - 1; l > j; l-- )
+        {
+            sz_t k = l - 1;
+            f3_t* ak = a->data + k * a->stride;
+            f3_t* al = a->data + l * a->stride;
+
+            f3_t c, s;
+            f3_arc_to_sin_cos( al[ j ], ak[ j ], &s, &c );
+
+            ak[ j ] = c * ak[ j ] + s * al[ j ];
+            al[ j ] = 0;
+
+            for( sz_t i = j + 1; i < a->cols; i++ )
+            {
+                f3_t aki = ak[ i ];
+                f3_t ali = al[ i ];
+                ak[ i ] = c * aki + s * ali;
+                al[ i ] = c * ali - s * aki;
+            }
+
+            if( u )
+            {
+                f3_t* uk = u->data + k * u->stride;
+                f3_t* ul = u->data + l * u->stride;
+                for( sz_t i = 0; i < u->rows; i++ )
+                {
+                    f3_t uki = uk[ i ];
+                    f3_t uli = ul[ i ];
+                    uk[ i ] = c * uki + s * uli;
+                    ul[ i ] = c * uli - s * uki;
+                }
+            }
+        }
+    }
+
+    for( sz_t j = 0; j < a->rows; j++ )
+    {
+        /// zero upper triangle except first off-diagonal
+        for( sz_t l = a->cols - 1; l > j + 1; l-- )
+        {
+            sz_t k = l - 1;
+            f3_t* ak = a->data + k;
+            f3_t* al = a->data + l;
+
+            sz_t jstride = j * a->stride;
+
+            f3_t c, s;
+            f3_arc_to_sin_cos( al[ jstride ], ak[ jstride ], &s, &c );
+
+            ak[ jstride ] = c * ak[ jstride ] + s * al[ jstride ];
+            al[ jstride ] = 0;
+
+            for( sz_t i = j + 1; i < a->rows; i++ )
+            {
+                f3_t aki = ak[ i * a->stride ];
+                f3_t ali = al[ i * a->stride ];
+                ak[ i * a->stride ] = c * aki + s * ali;
+                al[ i * a->stride ] = c * ali - s * aki;
+            }
+
+            if( v )
+            {
+                f3_t* vk = v->data + k * v->stride;
+                f3_t* vl = v->data + l * v->stride;
+                for( sz_t i = 0; i < v->rows; i++ )
+                {
+                    f3_t vki = vk[ i ];
+                    f3_t vli = vl[ i ];
+                    vk[ i ] = c * vki + s * vli;
+                    vl[ i ] = c * vli - s * vki;
+                }
+            }
+
+            // bring lower off-diag back to zero
+            if( l < a->rows )
+            {
+                f3_t* ak = a->data + k * a->stride;
+                f3_t* al = a->data + l * a->stride;
+
+                f3_t c, s;
+                f3_arc_to_sin_cos( al[ k ], ak[ k ], &s, &c );
+
+                ak[ k ] = c * ak[ k ] + s * al[ k ];
+                al[ k ] = 0;
+
+                for( sz_t i = k + 1; i < a->cols; i++ )
+                {
+                    f3_t aki = ak[ i ];
+                    f3_t ali = al[ i ];
+                    ak[ i ] = c * aki + s * ali;
+                    al[ i ] = c * ali - s * aki;
+                }
+
+                if( u )
+                {
+                    f3_t* uk = u->data + k * u->stride;
+                    f3_t* ul = u->data + l * u->stride;
+                    for( sz_t i = 0; i < u->rows; i++ )
+                    {
+                        f3_t uki = uk[ i ];
+                        f3_t uli = ul[ i ];
+                        uk[ i ] = c * uki + s * uli;
+                        ul[ i ] = c * uli - s * uki;
+                    }
+                }
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_qr_rot_htp_utr_givens( bmath_mf3_s* q, bmath_mf3_s* r )
 {
     ASSERT( bmath_mf3_s_is_square( r ) );
@@ -1906,13 +2034,13 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* q )
 //---------------------------------------------------------------------------------------------------------------------
 
 // pseudo inversion
-void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, bmath_mf3_s* res, f3_t eps )
+void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
 {
     if( o == res )
     {
         bmath_mf3_s* buf = bmath_mf3_s_create();
         bmath_mf3_s_set_size_to( res, buf );
-        bmath_mf3_s_hsm_piv( o, buf, eps );
+        bmath_mf3_s_hsm_piv( o, eps, buf );
         bmath_mf3_s_cpy( buf, res );
         bmath_mf3_s_discard( buf );
         return;
@@ -2223,7 +2351,7 @@ static vd_t selftest( void )
         bmath_mf3_s_fill_random( m1, -1, 1, &rval );
         bmath_mf3_s_mul_htp( m1, m1, m1 ); // m1 = m1*m1T
 
-        bmath_mf3_s_hsm_piv( m1, m2, 1E-8 );
+        bmath_mf3_s_hsm_piv( m1, 1E-8, m2 );
 
         bmath_mf3_s_mul( m1, m2, m3 );
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-8 ) );
@@ -2436,7 +2564,7 @@ static vd_t selftest( void )
         bmath_vf3_s_fill_random( v1, -1, 1, &rval );
 
         bmath_mf3_s_mul_av1( m1, v1, v2 );
-        bmath_mf3_s_hsm_piv_av1( m1, m2, 1E-8 );
+        bmath_mf3_s_hsm_piv_av1( m1, 1E-8, m2 );
         bmath_mf3_s_mul_av1( m2, v2, v3 );
 
         ASSERT( bmath_vf3_s_is_near_equ( v1, v3, 1E-8 ) );

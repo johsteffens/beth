@@ -125,7 +125,7 @@ void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-
 /** Pseudo-inversion for symmetric matrix.
  *  zero-threshold for eigenvalues: eps * max(eigenvalues).
  */
-void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, bmath_mf3_s* res, f3_t eps );
+void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res );
 
 /** Affine inversion.
  *  res = av1-inverse of o.
@@ -133,7 +133,7 @@ void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, bmath_mf3_s* res, f3_t eps );
  */
 void bmath_mf3_s_inv_av1(     const bmath_mf3_s* o, bmath_mf3_s* res );
 void bmath_mf3_s_hsm_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res );           // o symmetric
-void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, bmath_mf3_s* res, f3_t eps ); // pseudo inversion; o symmetric
+void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // pseudo inversion; o symmetric
 
 void bmath_mf3_s_div(         const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
@@ -287,6 +287,14 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
  *  r == NULL allowed, in which case only a' is computed.
  */
 void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* q );
+
+/** Stable in-place upper-bi-diagonal decomposition for a general matrix.
+ *  Based on givens rotations.
+ *  Input:  a  (nxm, any data), v  (mxm rotation or identity), u  (nxn rotation or identity)
+ *  Output: a' (bi-diagonal),   v' (mxm rotation),             u' (nxn rotation)
+ *  It is uT * a * v = u'T * a' * v
+ */
+void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** Stable in-place QR-decomposition. Based on Givens rotations.
  *  Input:  q  (rotation or identity), r  (any square matrix),
