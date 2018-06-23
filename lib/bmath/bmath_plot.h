@@ -27,11 +27,16 @@
 BCORE_DECLARE_OBJECT( bmath_plot_s )
 {
     aware_t _;
-    sr_s data; // plot data  (vf3, arr_vf3)
+    /** plot data
+     *  vf3_s  : single plot over index
+     *  arr_vf3: single/multi plot over first row; see x_data_index and
+     */
+    sr_s data;
     st_s title;
     st_s x_label;
     st_s y_label;
     sz_t x_index; // index into arr_vf3-element to obtain x-value, if is out of range, xvalue is just a counter
+    bl_t cols_over_x;  // true: plot column values over x; only for arr_vf3
     bcore_arr_st_s y_data_label;
 };
 

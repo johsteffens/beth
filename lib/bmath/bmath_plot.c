@@ -24,11 +24,11 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_plot_s )
 "{"
     "aware_t _;"
     "sr_s data;" // plot data  (vf3, arr_vf3)
-
     "st_s title;"
     "st_s x_label;"
     "st_s y_label;"
     "sz_t x_index;"
+    "bl_t cols_over_x = false;"  // true: plot column values over x; only for arr_vf3
     "bcore_arr_st_s y_data_label;" // a row is a curve in the plot
 "}";
 
@@ -96,39 +96,88 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
     if( sr_s_type( &o->data ) == TYPEOF_bmath_arr_vf3_s )
     {
         const bmath_arr_vf3_s* arr = o->data.o;
-        for( sz_t i = 0; i < arr->size; i++ )
+        if( arr->size > 0 )
         {
-            const bmath_vf3_s* v = &arr->data[ i ];
-            if( o->x_index < v->size )
+            if( o->cols_over_x )
             {
-                bcore_sink_a_push_fa( sink, "#<f3_t>", v->data[ o->x_index ] );
+                bl_t finished = false;
+                for( sz_t idx = 0; !finished; idx++ )
+                {
+                    finished = true;
+                    if( o->x_index < arr->size )
+                    {
+                        if( idx < arr->data[ o->x_index ].size )
+                        {
+                            bcore_sink_a_push_fa( sink, "#<f3_t>", arr->data[ o->x_index ].data[ idx ] );
+                            finished = false;
+                        }
+                    }
+                    else
+                    {
+                        bcore_sink_a_push_fa( sink, "#<sz_t>", idx );
+                    }
+
+
+                    for( sz_t i = 0; i < arr->size; i++ )
+                    {
+                        bcore_sink_a_push_fa( sink, "\t" );
+                        if( o->x_index != i )
+                        {
+                            if( idx < arr->data[ i ].size )
+                            {
+                                bcore_sink_a_push_fa( sink, "#<f3_t>", arr->data[ i ].data[ idx ] );
+                                finished = false;
+                            }
+                        }
+                    }
+                    bcore_sink_a_push_fa( sink, "\n" );
+                    idx++;
+                }
+                sz_t n = arr->size + ( o->x_index >= arr->size );
+                for( sz_t i = 1; i < n; i++ )
+                {
+                    st_s_push_fa( syscommand, "'#<sc_t>' using 1:#<sz_t> with line", data_file->sc, i + 1 );
+                    if( i <= o->y_data_label.size )
+                    {
+                        st_s_push_fa( syscommand, " title '#<sc_t>'", o->y_data_label.data[ i - 1 ]->sc );
+                    }
+                    st_s_push_fa( syscommand, "," );
+                }
             }
             else
             {
-                bcore_sink_a_push_fa( sink, "#<sz_t>", i );
-            }
+                for( sz_t i = 0; i < arr->size; i++ )
+                {
+                    const bmath_vf3_s* v = &arr->data[ i ];
+                    if( o->x_index < v->size )
+                    {
+                        bcore_sink_a_push_fa( sink, "#<f3_t>", v->data[ o->x_index ] );
+                    }
+                    else
+                    {
+                        bcore_sink_a_push_fa( sink, "#<sz_t>", i );
+                    }
 
-            for( sz_t i = 0; i < v->size; i++ )
-            {
-                if( i != o->x_index )
-                {
-                    bcore_sink_a_push_fa( sink, "\t" );
-                    bcore_sink_a_push_fa( sink, "#<f3_t>", v->data[ i ] );
+                    for( sz_t i = 0; i < v->size; i++ )
+                    {
+                        if( i != o->x_index )
+                        {
+                            bcore_sink_a_push_fa( sink, "\t" );
+                            bcore_sink_a_push_fa( sink, "#<f3_t>", v->data[ i ] );
+                        }
+                    }
+                    bcore_sink_a_push_fa( sink, "\n" );
                 }
-            }
-            bcore_sink_a_push_fa( sink, "\n" );
-        }
-        if( arr->size > 0 )
-        {
-            sz_t n = arr->data[ 0 ].size;
-            for( sz_t i = 1; i < n; i++ )
-            {
-                st_s_push_fa( syscommand, "'#<sc_t>' using 1:#<sz_t> with line", data_file->sc, i + 1 );
-                if( i <= o->y_data_label.size )
+                sz_t n = arr->data[ 0 ].size + ( o->x_index >= arr->data[ 0 ].size );
+                for( sz_t i = 1; i < n; i++ )
                 {
-                    st_s_push_fa( syscommand, " title '#<sc_t>'", o->y_data_label.data[ i - 1 ]->sc );
+                    st_s_push_fa( syscommand, "'#<sc_t>' using 1:#<sz_t> with line", data_file->sc, i + 1 );
+                    if( i <= o->y_data_label.size )
+                    {
+                        st_s_push_fa( syscommand, " title '#<sc_t>'", o->y_data_label.data[ i - 1 ]->sc );
+                    }
+                    st_s_push_fa( syscommand, "," );
                 }
-                st_s_push_fa( syscommand, "," );
             }
         }
     }
