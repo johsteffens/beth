@@ -310,27 +310,27 @@ void bmath_mf3_s_qr_rot_htp_utr_givens( bmath_mf3_s* q, bmath_mf3_s* r );
 /** Stable in-place SVD for a symmetric matrix. Jacobi Method.
  *  bmath_mf3_s_evd_htp for more details.
  */
-void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* q );
+void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** In-place SVD for a symmetric matrix. Approach: TRD, QR with explicit shifting.
  *  Very efficient for large matrices. >20x faster than Jacobi method but slightly less accurate.
  *  bmath_mf3_s_evd_htp for more details.
  */
-void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* q );
+void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** In-place SVD for a symmetric matrix. Approach: TRD, QR with isolated shifting.
  *  More stable and slightly more expensive than 'xshift' (Mathematically xshift and ishift are identical).
  *  bmath_mf3_s_evd_htp for more details.
  */
-void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* q );
+void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** Default in-place SVD for a symmetric matrix.
- *  Input:  a  (symmetric), q  (rotation or identity)
- *  Output: a' (diagonal),  q' (rotation) with qT * a * q = q'T * a' * q'.
+ *  Input:  a  (symmetric), v  (rotation or identity)
+ *  Output: a' (diagonal),  v' (rotation) with vT * a * v = v'T * a' * v'.
  *  Diagonal elements are sorted in descending order.
- *  r == NULL allowed, in which case only a' is computed.
+ *  v == NULL allowed, in which case only a' is computed.
  */
-static inline void bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* q ) { bmath_mf3_s_evd_htp_qr_ishift( a, q ); }
+static inline void bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v ) { bmath_mf3_s_evd_htp_qr_ishift( a, v ); }
 
 //---------------------------------------------------------------------------------------------------------------------
 // Covariance matrix
