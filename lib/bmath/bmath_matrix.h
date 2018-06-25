@@ -90,6 +90,8 @@ bl_t bmath_mf3_s_is_trd( const bmath_mf3_s* o );
 bl_t bmath_mf3_s_is_utr( const bmath_mf3_s* o );
 bl_t bmath_mf3_s_is_ltr( const bmath_mf3_s* o );
 bl_t bmath_mf3_s_is_hsm( const bmath_mf3_s* o );
+bl_t bmath_mf3_s_is_ubd( const bmath_mf3_s* o );
+bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o );
 
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev );
@@ -100,6 +102,8 @@ bl_t bmath_mf3_s_is_near_trd( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_ltr( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_hsm( const bmath_mf3_s* o, f3_t max_dev );
+bl_t bmath_mf3_s_is_near_ubd( const bmath_mf3_s* o, f3_t max_dev );
+bl_t bmath_mf3_s_is_near_lbd( const bmath_mf3_s* o, f3_t max_dev );
 
 f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o );
 f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op );

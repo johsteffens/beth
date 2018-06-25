@@ -20,6 +20,37 @@
 
 /**********************************************************************************************************************/
 
+/// givens rotation
+typedef struct gr_s { f3_t c; f3_t s; } gr_s;
+
+/// setup rotation to annihilate b
+static inline void gr_s_init_as_ani_b( gr_s* o, f3_t a, f3_t b )
+{
+    b = ( a > 0 ) ? b : -b;
+    a = ( a > 0 ) ? a : -a;
+    f3_t r = hypot( b, a );
+    o->c = ( r > 1E-308 ) ? a / r : 1;
+    o->s = ( r > 1E-308 ) ? b / r : 0;
+}
+
+/// setup rotation to annihilate b and apply rotation to vector (a,b)
+static inline void gr_s_init_do_ani_b( gr_s* o, f3_t* a, f3_t* b )
+{
+    gr_s_init_as_ani_b( o, *a, *b );
+    *a = o->c * *a + o->s * *b;
+    *b = 0;
+}
+
+/// apply rotation to vector (a,b)
+static inline void gr_s_rot( const gr_s* o, f3_t* a, f3_t* b )
+{
+    f3_t a0 = *a;
+    *a = o->c * a0 + o->s * *b;
+    *b = o->c * *b - o->s * a0;
+}
+
+/**********************************************************************************************************************/
+
 BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf3_s )
 "{"
     "aware_t _;"
@@ -159,20 +190,13 @@ bl_t bmath_mf3_s_is_trd( const bmath_mf3_s* o )
     return true;
 }
 
-bl_t bmath_mf3_s_is_utr( const bmath_mf3_s* o )
-{
-    return bmath_mf3_s_is_near_utr( o, 0 );
-}
+//---------------------------------------------------------------------------------------------------------------------
 
-bl_t bmath_mf3_s_is_ltr( const bmath_mf3_s* o )
-{
-    return bmath_mf3_s_is_near_ltr( o, 0 );
-}
-
-bl_t bmath_mf3_s_is_hsm( const bmath_mf3_s* o )
-{
-    return bmath_mf3_s_is_near_hsm( o, 0 );
-}
+bl_t bmath_mf3_s_is_utr( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_utr( o, 0 ); }
+bl_t bmath_mf3_s_is_ltr( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_ltr( o, 0 ); }
+bl_t bmath_mf3_s_is_hsm( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_hsm( o, 0 ); }
+bl_t bmath_mf3_s_is_ubd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_ubd( o, 0 ); }
+bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_lbd( o, 0 ); }
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -247,6 +271,36 @@ bl_t bmath_mf3_s_is_near_trd( const bmath_mf3_s* o, f3_t max_dev )
             const f3_t* vj = o ->data + j * o ->stride;
             if( f3_abs( vi[ j ] ) > max_dev ) return false;
             if( f3_abs( vj[ i ] ) > max_dev ) return false;
+        }
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_mf3_s_is_near_ubd( const bmath_mf3_s* o, f3_t max_dev )
+{
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* vi = o ->data + i * o ->stride;
+        for( sz_t j = 0; j < o->cols; j++ )
+        {
+            if( ( j < i || j > i + 1 ) && ( f3_abs( vi[ j ] ) > max_dev ) ) return false;
+        }
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_mf3_s_is_near_lbd( const bmath_mf3_s* o, f3_t max_dev )
+{
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* vi = o ->data + i * o ->stride;
+        for( sz_t j = 0; j < o->cols; j++ )
+        {
+            if( ( j < i - 1 || j > i ) && f3_abs( vi[ j ] ) > max_dev ) return false;
         }
     }
     return true;
@@ -1556,12 +1610,7 @@ void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* r )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-/** Stable in-place upper-bi-diagonal decomposition for a general matrix.
- *  Based on givens rotations.
- *  Input:  a  (nxm, any data), v  (mxm rotation or identity), u  (nxn rotation or identity)
- *  Output: a' (bi-diagonal),   v' (mxm rotation),             u' (nxn rotation)
- *  It is uT * a * v = u'T * a' * v
- */
+/// Using per row/column alternating left and right givens rotations.
 void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( v->cols == a->cols );
@@ -1569,114 +1618,45 @@ void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v 
     ASSERT( u->cols == a->rows );
     ASSERT( u->rows == a->rows );
 
-    /// zero lower triangle
-    for( sz_t j = 0; j < a->cols; j++ )
+    if( u ) ASSERT( u != a );
+    if( u ) ASSERT( u != v );
+    if( v ) ASSERT( v != a );
+
+    gr_s gr;
+    sz_t min_cols_rows = sz_min( a->cols, a->rows );
+
+    for( sz_t j = 0; j < min_cols_rows; j++ )
     {
+        /// zero lower column
         for( sz_t l = a->rows - 1; l > j; l-- )
         {
             sz_t k = l - 1;
             f3_t* ak = a->data + k * a->stride;
             f3_t* al = a->data + l * a->stride;
-
-            f3_t c, s;
-            f3_arc_to_sin_cos( al[ j ], ak[ j ], &s, &c );
-
-            ak[ j ] = c * ak[ j ] + s * al[ j ];
-            al[ j ] = 0;
-
-            for( sz_t i = j + 1; i < a->cols; i++ )
-            {
-                f3_t aki = ak[ i ];
-                f3_t ali = al[ i ];
-                ak[ i ] = c * aki + s * ali;
-                al[ i ] = c * ali - s * aki;
-            }
-
+            gr_s_init_do_ani_b( &gr, ak + j, al + j );
+            for( sz_t i = j + 1; i < a->cols; i++ ) gr_s_rot( &gr, ak + i, al + i );
             if( u )
             {
                 f3_t* uk = u->data + k * u->stride;
                 f3_t* ul = u->data + l * u->stride;
-                for( sz_t i = 0; i < u->rows; i++ )
-                {
-                    f3_t uki = uk[ i ];
-                    f3_t uli = ul[ i ];
-                    uk[ i ] = c * uki + s * uli;
-                    ul[ i ] = c * uli - s * uki;
-                }
+                for( sz_t i = 0; i < u->rows; i++ ) gr_s_rot( &gr, uk + i, ul + i );
             }
         }
-    }
 
-    for( sz_t j = 0; j < a->rows; j++ )
-    {
-        /// zero upper triangle except first off-diagonal
+        /// zero upper row
         for( sz_t l = a->cols - 1; l > j + 1; l-- )
         {
             sz_t k = l - 1;
             f3_t* ak = a->data + k;
             f3_t* al = a->data + l;
-
             sz_t jstride = j * a->stride;
-
-            f3_t c, s;
-            f3_arc_to_sin_cos( al[ jstride ], ak[ jstride ], &s, &c );
-
-            ak[ jstride ] = c * ak[ jstride ] + s * al[ jstride ];
-            al[ jstride ] = 0;
-
-            for( sz_t i = j + 1; i < a->rows; i++ )
-            {
-                f3_t aki = ak[ i * a->stride ];
-                f3_t ali = al[ i * a->stride ];
-                ak[ i * a->stride ] = c * aki + s * ali;
-                al[ i * a->stride ] = c * ali - s * aki;
-            }
-
+            gr_s_init_do_ani_b( &gr, ak + jstride, al + jstride );
+            for( sz_t i = j + 1; i < a->rows; i++ ) gr_s_rot( &gr, ak + i * a->stride, al + i * a->stride );
             if( v )
             {
                 f3_t* vk = v->data + k * v->stride;
                 f3_t* vl = v->data + l * v->stride;
-                for( sz_t i = 0; i < v->rows; i++ )
-                {
-                    f3_t vki = vk[ i ];
-                    f3_t vli = vl[ i ];
-                    vk[ i ] = c * vki + s * vli;
-                    vl[ i ] = c * vli - s * vki;
-                }
-            }
-
-            // bring lower off-diag back to zero
-            if( l < a->rows )
-            {
-                f3_t* ak = a->data + k * a->stride;
-                f3_t* al = a->data + l * a->stride;
-
-                f3_t c, s;
-                f3_arc_to_sin_cos( al[ k ], ak[ k ], &s, &c );
-
-                ak[ k ] = c * ak[ k ] + s * al[ k ];
-                al[ k ] = 0;
-
-                for( sz_t i = k + 1; i < a->cols; i++ )
-                {
-                    f3_t aki = ak[ i ];
-                    f3_t ali = al[ i ];
-                    ak[ i ] = c * aki + s * ali;
-                    al[ i ] = c * ali - s * aki;
-                }
-
-                if( u )
-                {
-                    f3_t* uk = u->data + k * u->stride;
-                    f3_t* ul = u->data + l * u->stride;
-                    for( sz_t i = 0; i < u->rows; i++ )
-                    {
-                        f3_t uki = uk[ i ];
-                        f3_t uli = ul[ i ];
-                        uk[ i ] = c * uki + s * uli;
-                        ul[ i ] = c * uli - s * uki;
-                    }
-                }
+                for( sz_t i = 0; i < v->rows; i++ ) gr_s_rot( &gr, vk + i, vl + i );
             }
         }
     }
