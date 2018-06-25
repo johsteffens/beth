@@ -18,6 +18,10 @@
 
 #include <stdarg.h>
 #include <time.h>
+
+/// if this include causes an ERROR, try disable it (dependencies, if any, should not be critical)
+#include <sys/time.h>
+
 #include "bcore_first.h"
 #include "bcore_types.h"
 #include "bcore_features.h"
@@ -214,12 +218,29 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 #define ASSERT( condition ) if( !(condition) ) bcore_err( "assertion '%s' failed in function %s (%s line %i)\n", #condition, __func__, __FILE__, __LINE__ )
 
 /// time test
+/*
 #define TIME_TO_STDOUT( operation ) \
 { \
         clock_t time = clock(); \
         operation; \
         time = clock() - time; \
         bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#operation"\n", ( sz_t ) ( ( 1E3 * ( double )( time )/CLOCKS_PER_SEC ) ) ); \
+}
+*/
+
+/** clock() appears to behave sometimes unreliable.
+ *  gettimeofday yield better results but is not standardized on all platforms
+ *  This compromise waits for a better timer in future.
+ */
+#define TIME_TO_STDOUT( operation ) \
+{ \
+    struct timeval t0, t1; \
+    gettimeofday( &t0, NULL ); \
+    operation; \
+    gettimeofday( &t1, NULL ); \
+    double diff = t1.tv_sec - t0.tv_sec; \
+    diff += ( t1.tv_usec - t0.tv_usec ) * 1E-6; \
+    bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#operation"\n", ( sz_t ) ( 1E3 * diff ) ); \
 }
 
 /// object related functions
