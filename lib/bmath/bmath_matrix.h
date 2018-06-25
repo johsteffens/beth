@@ -286,16 +286,16 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 /** Stable in-place tri-diagonal decomposition for a symmetric matrix.
  *  Based on Givens rotations.
- *  Input:  a  (symmetric),    q  (rotation or identity)
- *  Output: a' (tri-diagonal), q' (rotation) with qT * a * q = q'T * a' * q'.
- *  r == NULL allowed, in which case only a' is computed.
+ *  Input:  a  (symmetric),    v  (rotation, identity or NULL)
+ *  Output: a' (tri-diagonal), v' (rotation or NULL)
+ *  It is vT * a * v = v'T * a' * v'.
  */
-void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* q );
+void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** Stable in-place upper-bi-diagonal decomposition for a general matrix.
  *  Based on givens rotations.
- *  Input:  a  (nxm, any data), v  (mxm rotation or identity), u  (nxn rotation or identity)
- *  Output: a' (bi-diagonal),   v' (mxm rotation),             u' (nxn rotation)
+ *  Input:  a  (nxm, any data), v  (mxm rotation, identity or NULL), u  (nxn rotation, identity or NULL)
+ *  Output: a' (bi-diagonal),   v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
  *  It is uT * a * v = u'T * a' * v
  */
 void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );

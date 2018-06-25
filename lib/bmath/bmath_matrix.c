@@ -41,6 +41,13 @@ static inline void gr_s_init_do_ani_b( gr_s* o, f3_t* a, f3_t* b )
     *b = 0;
 }
 
+/// apply rotation to vector (a,b) assuming it annihilates b (sets b zero)
+static inline void gr_s_ani_b( gr_s* o, f3_t* a, f3_t* b )
+{
+    *a = o->c * *a + o->s * *b;
+    *b = 0;
+}
+
 /// apply rotation to vector (a,b)
 static inline void gr_s_rot( const gr_s* o, f3_t* a, f3_t* b )
 {
@@ -1533,76 +1540,42 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* r )
+void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    ASSERT( bmath_mf3_s_is_square( a ) );
-
-    if( r )
+    ASSERT( a->rows == a->cols );
+    if( v )
     {
-        ASSERT( a != r );
-        ASSERT( bmath_mf3_s_is_equ_size( a, r ) );
+        ASSERT( v != a );
+        ASSERT( v->cols == a->rows );
+        ASSERT( v->rows == a->rows );
     }
 
-    sz_t n = a->rows;
-    for( sz_t k = 1; k < n; k++ )
+    gr_s gr;
+
+    for( sz_t j = 0; j < a->rows; j++ )
     {
-        f3_t* ak = a->data + k * a->stride;
-        for( sz_t l = k + 1; l < n; l++ )
+        for( sz_t k = a->rows - 2; k > j; k-- )
         {
-            f3_t akl = ak[l];
+            sz_t l = k + 1;
+            f3_t* ak;
 
-            f3_t* al = a->data + l * a->stride;
+            // zero upper row
+            ak = a->data + k;
+            sz_t jstride = j * a->stride;
+            gr_s_init_do_ani_b( &gr, ak + jstride, ak + jstride + 1 );
+            for( sz_t i = j + 1; i < a->rows; i++ ) gr_s_rot( &gr, ak + i * a->stride, ak + i * a->stride + 1 );
 
-            f3_t s, c;
-            f3_arc_to_sin_cos( al[k-1], ak[k-1], &s, &c );
+            // transposed operation
+            ak = a->data + k * a->stride;
+            gr_s_ani_b( &gr, ak + j, ak + a->stride + j );
+            for( sz_t i = j + 1; i < a->cols; i++ ) gr_s_rot( &gr, ak + i, ak + a->stride + i );
 
-            f3_t cc = c * c;
-            f3_t ss = s * s;
-            f3_t cs = c * s;
-
-            f3_t akk = ak[k];
-
-            f3_t all = al[l];
-            f3_t aklcsx2 = 2 * akl * cs;
-
-            ak[k] = akk * cc + all * ss + aklcsx2;
-            al[l] = all * cc + akk * ss - aklcsx2;
-            ak[l] = akl * ( cc - ss ) + cs * ( all - akk );
-            al[k] = ak[l];
-
+            // rotation matrix
+            if( v )
             {
-                f3_t akkm1 = ak[ k-1 ] * c + al[ k-1 ] * s;
-                ak[ k - 1 ] = akkm1;
-                al[ k - 1 ] = 0;
-                ak[ k - a->stride ] = akkm1;
-                ak[ l - a->stride ] = 0;
-            }
-
-            for( sz_t i = k + 1; i < n; i++ )
-            {
-                if( i != l )
-                {
-                    f3_t* ai = a->data + i * a->stride;
-                    f3_t aki = ak[ i ] * c + al[ i ] * s;
-                    f3_t ali = al[ i ] * c - ak[ i ] * s;
-                    ak[ i ] = aki;
-                    al[ i ] = ali;
-                    ai[ k ] = aki;
-                    ai[ l ] = ali;
-                }
-            }
-
-            if( r )
-            {
-                f3_t* rl = r->data + l * r->stride;
-                f3_t* rk = r->data + k * r->stride;
-                for( sz_t i = 0; i < n; i++ )
-                {
-                    f3_t rki = rk[ i ];
-                    f3_t rli = rl[ i ];
-                    rk[ i ] = rki * c + rli * s;
-                    rl[ i ] = rli * c - rki * s;
-                }
+                f3_t* vk = v->data + k * v->stride;
+                f3_t* vl = v->data + l * v->stride;
+                for( sz_t i = 0; i < v->rows; i++ ) gr_s_rot( &gr, vk + i, vl + i );
             }
         }
     }
@@ -1610,7 +1583,6 @@ void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* r )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-/// Using per row/column alternating left and right givens rotations.
 void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( v->cols == a->cols );
@@ -1627,7 +1599,7 @@ void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v 
 
     for( sz_t j = 0; j < min_cols_rows; j++ )
     {
-        /// zero lower column
+        // zero lower column
         for( sz_t l = a->rows - 1; l > j; l-- )
         {
             sz_t k = l - 1;
@@ -1643,7 +1615,7 @@ void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v 
             }
         }
 
-        /// zero upper row
+        // zero upper row
         for( sz_t l = a->cols - 1; l > j + 1; l-- )
         {
             sz_t k = l - 1;
