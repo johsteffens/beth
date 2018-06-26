@@ -18,7 +18,9 @@
 
 /**********************************************************************************************************************/
 
-/// Matrix types and operations.
+/** Matrix types and operations.
+ *  All routines have been redesigned from scratch and optimized for modern architectures.
+ */
 
 /** Nomenclature
  *  add, zro, neg, sub, mul, mul_vec, mul_scl - according to spect_matrix
@@ -29,7 +31,7 @@
  *  ltr: lower triangle matrix (evaluation ignores upper triangle)
  *  lt1: lower triangle matrix with main diagonal elements deemed 1 and not evaluated (luc satisfies ltr with respect for evaluation)
  *  utr: upper triangle matrix (evaluation ignores lower triangle)
- *  luc: LU-composite matrix: L - diag(L) + U; diagonal elements of L are all 1 and neeed not be stored
+ *  luc: LU-composite matrix: L - diag(L) + U; diagonal elements of L have all value 'one' and are not explicitly stored.
  *  hsm: hermitean (symmetric) matrix.
  *  trc: trace
  *  dag: diagonal
@@ -337,7 +339,7 @@ static inline void bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v ) { bmath
  *  Based on givens rotations.
  *  Input:  a  (nxm, any data), v  (mxm rotation, identity or NULL), u  (nxn rotation, identity or NULL)
  *  Output: a' (bi-diagonal),   v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
- *  It is uT * a * v = u'T * a' * v
+ *  It is uT * a * v = u'T * a' * v'
  */
 void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
@@ -348,7 +350,7 @@ void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
  *
  *  Input:  a  (nxm, any data), v  (mxm rotation, identity or NULL), u  (nxn rotation, identity or NULL)
  *  Output: a' (diagonal),      v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
- *  It is uT * a * v = u'T * a' * v
+ *  It is uT * a * v = u'T * a' * v'
  */
 void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // limited to a->rows >= a->cols
 void bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // limited to a->cols >= a->rows

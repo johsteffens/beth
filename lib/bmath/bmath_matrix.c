@@ -51,6 +51,8 @@ BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf3_s )
 
 /**********************************************************************************************************************/
 
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_set_size( bmath_mf3_s* o, sz_t rows, sz_t cols )
 {
     bcore_matrix_a_set_size( ( bcore_matrix* )o, rows, cols );
@@ -2623,41 +2625,49 @@ static vd_t selftest( void )
     return NULL;
 }
 
-void bmath_mf3_s_ubd_htp_selftest()
+void bmath_mf3_s_svd_selftest()
 {
     BCORE_LIFE_INIT();
     BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
-    BCORE_LIFE_CREATE( bmath_mf3_s, q );
+    BCORE_LIFE_CREATE( bmath_mf3_s, u );
     BCORE_LIFE_CREATE( bmath_mf3_s, a );
     BCORE_LIFE_CREATE( bmath_mf3_s, v );
     BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
 
-    sz_t n = 10;
-    sz_t m = 20;
+    for( sz_t test_id = 0; test_id < 3; test_id++ )
+    {
+        sz_t n = ( test_id == 0 ) ? 20 : 10;
+        sz_t m = ( test_id == 2 ) ? 20 : 10;
 
-    bmath_mf3_s_set_size( m0, n, m );
-    bmath_mf3_s_set_size( a, n, m );
-    u2_t rval = 1236;
-    bmath_mf3_s_fill_random( m0, -1, 1, &rval );
-    bmath_mf3_s_cpy( m0, a );
+        bmath_mf3_s_set_size( m0, n, m );
+        bmath_mf3_s_set_size( a, n, m );
+        u2_t rval = 1236;
+        bmath_mf3_s_fill_random( m0, -1, 1, &rval );
 
-    bmath_mf3_s_set_size( q, n, n );
-    bmath_mf3_s_set_size( v, m, m );
-    bmath_mf3_s_one( q );
-    bmath_mf3_s_one( v );
+        bmath_mf3_s_set_size( u, n, n );
+        bmath_mf3_s_set_size( v, m, m );
+        bmath_mf3_s_one( u );
+        bmath_mf3_s_one( v );
 
-    // a = u'T * a' * v
-    bmath_mf3_s_ubd_htp( q, a, v );
-    ASSERT( bmath_mf3_s_is_ubd( a ) );
-    ASSERT( bmath_mf3_s_is_near_iso( q, 1E-8 ) );
-    ASSERT( bmath_mf3_s_is_near_iso( v, 1E-8 ) );
+        bmath_mf3_s_cpy( m0, a );
+        bmath_mf3_s_svd( NULL, a, NULL );
+        ASSERT( bmath_mf3_s_is_dag( a ) );
 
-    bmath_mf3_s_set_size( m1, n, m );
-    bmath_mf3_s_mul( a, v, m1 );
-    bmath_mf3_s_htp( q, q );
-    bmath_mf3_s_mul( q, m1, m1 );
+        // a = u'T * a' * v
+        bmath_mf3_s_cpy( m0, a );
+        bmath_mf3_s_svd( u, a, v );
+        ASSERT( bmath_mf3_s_is_dag( a ) );
 
-    ASSERT( bmath_mf3_s_is_near_equ( m0, m1, 1E-8 ) );
+        ASSERT( bmath_mf3_s_is_near_iso( u, 1E-8 ) );
+        ASSERT( bmath_mf3_s_is_near_iso( v, 1E-8 ) );
+
+        bmath_mf3_s_set_size( m1, n, m );
+        bmath_mf3_s_mul( a, v, m1 );
+        bmath_mf3_s_htp( u, u );
+        bmath_mf3_s_mul( u, m1, m1 );
+
+        ASSERT( bmath_mf3_s_is_near_equ( m0, m1, 1E-8 ) );
+    }
 
     BCORE_LIFE_DOWN();
 }
@@ -2693,7 +2703,7 @@ vd_t bmath_matrix_signal_handler( const bcore_signal_s* o )
         case TYPEOF_selftest:
         {
             selftest();
-            bmath_mf3_s_ubd_htp_selftest();
+            bmath_mf3_s_svd_selftest();
             return NULL;
         }
         break;
