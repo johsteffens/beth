@@ -343,7 +343,9 @@ void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** Stable in-place SVD for a general matrix.
- *  Method: bi-diagonalization + chasing with implicit shift.
+ *  Method: Bi-diagonalization and QR-chasing with implicit shift. (Golub/Reinsch/Francis - Approach)
+ *          Bi-diagonalization via Givens rotations.
+ *
  *  Input:  a  (nxm, any data), v  (mxm rotation, identity or NULL), u  (nxn rotation, identity or NULL)
  *  Output: a' (diagonal),      v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
  *  It is uT * a * v = u'T * a' * v
