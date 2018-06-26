@@ -240,7 +240,14 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
     gettimeofday( &t1, NULL ); \
     double diff = t1.tv_sec - t0.tv_sec; \
     diff += ( t1.tv_usec - t0.tv_usec ) * 1E-6; \
-    bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#operation"\n", ( sz_t ) ( 1E3 * diff ) ); \
+    if( diff >= 100 ) \
+    { \
+        bcore_msg_fa( "#pl5 {#<sz_t>}s : "#operation"\n", ( sz_t ) diff ); \
+    } \
+    else \
+    { \
+        bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#operation"\n", ( sz_t ) ( 1E3 * diff ) ); \
+    } \
 }
 
 /// object related functions
