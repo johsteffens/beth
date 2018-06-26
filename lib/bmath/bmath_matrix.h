@@ -42,6 +42,7 @@
  *  iso: isometry (orthonormal, unitary)
  *  opd: outer product of two vectors
  *  udu: similarity transform a of a diagonal matrix: htp_udu: U^T * D * U; udu_htp: U * D * U^T
+ *  grt: givens rotation
  */
 /**********************************************************************************************************************/
 
@@ -71,27 +72,17 @@ BCORE_DECLARE_OBJECT( bmath_mf3_s )
 };
 
 void bmath_mf3_s_set_size( bmath_mf3_s* o, sz_t rows, sz_t cols );
-static inline
-void bmath_mf3_s_set_size_to( const bmath_mf3_s* o, bmath_mf3_s* res ) { bmath_mf3_s_set_size( res, o->rows, o->cols ); }
-
 void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
 
 bmath_mf3_s* bmath_mf3_s_create_set_size( sz_t rows, sz_t cols );
 bmath_mf3_s* bmath_mf3_s_create_fill_random( sz_t rows, sz_t cols, f3_t min, f3_t max, u2_t* rval );
 
+static inline void bmath_mf3_s_set_size_to( const bmath_mf3_s* o, bmath_mf3_s* res ) { bmath_mf3_s_set_size( res, o->rows, o->cols ); }
 static inline bl_t bmath_mf3_s_is_equ_size( const bmath_mf3_s* o, const bmath_mf3_s* op ) { return o->rows == op->rows && o->cols == op->cols; }
 static inline bl_t bmath_mf3_s_is_square( const bmath_mf3_s* o ) { return o->rows == o->cols; }
 
-bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op );
-bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o );
-bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o );
-bl_t bmath_mf3_s_is_dag( const bmath_mf3_s* o );
-bl_t bmath_mf3_s_is_trd( const bmath_mf3_s* o );
-bl_t bmath_mf3_s_is_utr( const bmath_mf3_s* o );
-bl_t bmath_mf3_s_is_ltr( const bmath_mf3_s* o );
-bl_t bmath_mf3_s_is_hsm( const bmath_mf3_s* o );
-bl_t bmath_mf3_s_is_ubd( const bmath_mf3_s* o );
-bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o );
+//---------------------------------------------------------------------------------------------------------------------
+// checks
 
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev );
@@ -105,19 +96,32 @@ bl_t bmath_mf3_s_is_near_hsm( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_ubd( const bmath_mf3_s* o, f3_t max_dev );
 bl_t bmath_mf3_s_is_near_lbd( const bmath_mf3_s* o, f3_t max_dev );
 
+static inline bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op ) { return bmath_mf3_s_is_near_equ( o, op, 0 ); }
+static inline bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_zro( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_one( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_dag( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_dag( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_trd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_trd( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_utr( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_utr( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_ltr( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_ltr( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_hsm( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_hsm( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_ubd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_ubd( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_lbd( o, 0 ); }
+
+//---------------------------------------------------------------------------------------------------------------------
+// basic operations
+
 f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o );
 f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op );
 
 void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_zro(       bmath_mf3_s* o );
+void bmath_mf3_s_one(       bmath_mf3_s* o );
 void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res );
 void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res );
 
 /// adds outer product of two vectors op1 (X) op2 to matrix
 void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res );
-
-void bmath_mf3_s_one(           bmath_mf3_s* o );
 
 //---------------------------------------------------------------------------------------------------------------------
 // inversion
@@ -164,11 +168,12 @@ void bmath_mf3_s_mul_scl_f3( const bmath_mf3_s* o, f3_t op, bmath_mf3_s* res ) {
 void bmath_mf3_s_udu_htp( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res ); // res = o * dag * o^T
 
 //---------------------------------------------------------------------------------------------------------------------
+// transposition
 
-void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // hermitean transpose
+void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res );
 
 //---------------------------------------------------------------------------------------------------------------------
-// element-, col-, row-access, sub-matrix
+// element-access, col-access, row-access, sub-matrix
 
 void bmath_mf3_s_set_row_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data );
 void bmath_mf3_s_set_col_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data );
@@ -282,7 +287,7 @@ void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
 //---------------------------------------------------------------------------------------------------------------------
-// Eigenvalue decomposition and supportive operations
+// Eigenvalue decomposition (EVD) and supportive operations
 
 /** Stable in-place tri-diagonal decomposition for a symmetric matrix.
  *  Based on Givens rotations.
@@ -292,14 +297,6 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
  */
 void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* v );
 
-/** Stable in-place upper-bi-diagonal decomposition for a general matrix.
- *  Based on givens rotations.
- *  Input:  a  (nxm, any data), v  (mxm rotation, identity or NULL), u  (nxn rotation, identity or NULL)
- *  Output: a' (bi-diagonal),   v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
- *  It is uT * a * v = u'T * a' * v
- */
-void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
-
 /** Stable in-place QR-decomposition. Based on Givens rotations.
  *  Input:  q  (rotation or identity), r  (any square matrix),
  *  Output: q' (rotation),             r' (upper_triangular) such that with qT * r = q'T * r'.
@@ -307,24 +304,25 @@ void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v 
  */
 void bmath_mf3_s_qr_rot_htp_utr_givens( bmath_mf3_s* q, bmath_mf3_s* r );
 
-/** Stable in-place SVD for a symmetric matrix. Jacobi Method.
+/** Stable in-place EVD for a symmetric matrix. Jacobi Method.
  *  bmath_mf3_s_evd_htp for more details.
  */
 void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
 
-/** In-place SVD for a symmetric matrix. Approach: TRD, QR with explicit shifting.
+/** In-place EVD for a symmetric matrix. Approach: TRD, QR with explicit shifting.
  *  Very efficient for large matrices. >20x faster than Jacobi method but slightly less accurate.
  *  bmath_mf3_s_evd_htp for more details.
  */
 void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v );
 
-/** In-place SVD for a symmetric matrix. Approach: TRD, QR with isolated shifting.
- *  More stable and slightly more expensive than 'xshift' (Mathematically xshift and ishift are identical).
+/** In-place EVD for a symmetric matrix. Approach: TRD, QR with isolated shifting.
+ *  Plain shift is not explicitly added/subtracted. Only the shift effect is applied to the matrix.
+ *  This minimizes accuracy-loss similarly as implicit shift would do.
  *  bmath_mf3_s_evd_htp for more details.
  */
 void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v );
 
-/** Default in-place SVD for a symmetric matrix.
+/** Default in-place EVD for a symmetric matrix.
  *  Input:  a  (symmetric), v  (rotation or identity)
  *  Output: a' (diagonal),  v' (rotation) with vT * a * v = v'T * a' * v'.
  *  Diagonal elements are sorted in descending order.
@@ -333,7 +331,19 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v );
 static inline void bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v ) { bmath_mf3_s_evd_htp_qr_ishift( a, v ); }
 
 //---------------------------------------------------------------------------------------------------------------------
-// Covariance matrix
+// Singular value decomposition (SVD) and supportive operations
+
+/** Stable in-place bi-diagonal decomposition for a general matrix.
+ *  Based on givens rotations.
+ *  Input:  a  (nxm, any data), v  (mxm rotation, identity or NULL), u  (nxn rotation, identity or NULL)
+ *  Output: a' (bi-diagonal),   v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
+ *  It is uT * a * v = u'T * a' * v
+ */
+void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_lbd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
+
+//---------------------------------------------------------------------------------------------------------------------
+// covariance
 
 /** Sets o to the covariance matrix of a section of arr_vec:
  *  oij = E( E( vi - E( vi ) )E( vj - E( vj ) ) )
@@ -342,8 +352,8 @@ void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s
 void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end ); // stochastically precise
 
 //---------------------------------------------------------------------------------------------------------------------
+// easy inspection
 
-/// For easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );
 
 /**********************************************************************************************************************/

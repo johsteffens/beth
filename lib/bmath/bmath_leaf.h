@@ -22,9 +22,17 @@
 #include "bcore_leaf.h"
 #include "bmath_quicktypes.h"
 
+#include <float.h>
+
 /**********************************************************************************************************************/
 // f3_t
 
+/// limits
+static const f3_t f3_lim_min = DBL_MIN;     // minimum normalized representable positive number
+static const f3_t f3_lim_max = DBL_MAX;     // maximum normalized representable positive number
+static const f3_t f3_lim_eps = DBL_EPSILON; // minimum representable positive difference to 1.0
+
+/// math constants
 static inline f3_t f3_pi( void )   { return 3.1415926535897932384626434; }
 static inline f3_t f3_pi_2( void ) { return 1.5707963267948966192313217; }
 static inline f3_t f3_tau( void )  { return 6.2831853071795864769252868; }
@@ -37,8 +45,7 @@ static inline f3_t f3_xsg2_sym( u2_t* rv ) { return ( *rv = bcore_xsg2_u2( *rv )
 static inline f3_t f3_xsg1_pos( u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv ) ) * ( 1.0 / 0xFFFFFFFFu ); }
 static inline f3_t f3_xsg2_pos( u2_t* rv ) { return ( *rv = bcore_xsg2_u2( *rv ) ) * ( 1.0 / 0xFFFFFFFFu ); }
 
-
-/// Solves: sin(arc) * b = cos(arc) * a; cos >= 0
+/// Solves: sin(arc) * b = cos(arc) * a; cos >= 0  (deprecated -> use grt_s functions)
 static inline
 void f3_arc_to_sin_cos( f3_t a, f3_t b, f3_t* sin_arc, f3_t* cos_arc )
 {
@@ -46,8 +53,8 @@ void f3_arc_to_sin_cos( f3_t a, f3_t b, f3_t* sin_arc, f3_t* cos_arc )
     a = ( b > 0 ) ? a : -a;
     b = ( b > 0 ) ? b : -b;
     f3_t r = hypot( a, b );
-    *sin_arc = ( r > 1E-308 ) ? a / r : 0;
-    *cos_arc = ( r > 1E-308 ) ? b / r : 1;
+    *sin_arc = ( r > f3_lim_min ) ? a / r : 0;
+    *cos_arc = ( r > f3_lim_min ) ? b / r : 1;
 
 }
 

@@ -20,36 +20,50 @@
 
 /**********************************************************************************************************************/
 
-/// givens rotation
-typedef struct gr_s { f3_t c; f3_t s; } gr_s;
+/** Givens rotation (G)
+ *  The rotation is specified by sine (s) and cosine (c) components but
+ *  without defining rows, columns indices (j,k), which will be supplied
+ *  when needed at code level.
+ *
+ *  Applied to a vector v: v' = G * v with v = (a,b) is a butterfly-operation:
+ *    a' = c * a + s * b
+ *    b' = c * b - s * a
+ *
+ *  A complete rotation matrix Gkl (k < l) is deemed to have the following shape
+ *  gkk = gll = c, gkl = -s, glk = s; All other elements: gij = ((i==j)?1:0)
+ *
+ *  The  left-side rotation G * A modifies columns k and l of A.
+ *  The right-side rotation A * G modifies rows    k and l of A.
+ */
+typedef struct grt_s { f3_t c; f3_t s; } grt_s;
 
-/// setup rotation to annihilate b
-static inline void gr_s_init_as_ani_b( gr_s* o, f3_t a, f3_t b )
+/// Setup rotation in order to annihilate b in vector (a,b)
+static inline void grt_s_init_to_annihilate_b( grt_s* o, f3_t a, f3_t b )
 {
     b = ( a > 0 ) ? b : -b;
     a = ( a > 0 ) ? a : -a;
     f3_t r = hypot( b, a );
-    o->c = ( r > 1E-308 ) ? a / r : 1;
-    o->s = ( r > 1E-308 ) ? b / r : 0;
+    o->c = ( r > f3_lim_min ) ? a / r : 1;
+    o->s = ( r > f3_lim_min ) ? b / r : 0;
 }
 
-/// setup rotation to annihilate b and apply rotation to vector (a,b)
-static inline void gr_s_init_do_ani_b( gr_s* o, f3_t* a, f3_t* b )
+/// Setup rotation in order to annihilate b in vector (a,b) and execute the rotation.
+static inline void grt_s_init_and_annihilate_b( grt_s* o, f3_t* a, f3_t* b )
 {
-    gr_s_init_as_ani_b( o, *a, *b );
+    grt_s_init_to_annihilate_b( o, *a, *b );
     *a = o->c * *a + o->s * *b;
     *b = 0;
 }
 
-/// apply rotation to vector (a,b) assuming it annihilates b (sets b zero)
-static inline void gr_s_ani_b( gr_s* o, f3_t* a, f3_t* b )
+/// Apply specific rotation to vector (a,b) assuming it annihilates b
+static inline void grt_s_annihilate_b( grt_s* o, f3_t* a, f3_t* b )
 {
     *a = o->c * *a + o->s * *b;
     *b = 0;
 }
 
-/// apply rotation to vector (a,b)
-static inline void gr_s_rot( const gr_s* o, f3_t* a, f3_t* b )
+/// Apply general rotation to vector (a,b) (butterfly operation)
+static inline void grt_s_rotate( const grt_s* o, f3_t* a, f3_t* b )
 {
     f3_t a0 = *a;
     *a = o->c * a0 + o->s * *b;
@@ -124,56 +138,6 @@ bmath_mf3_s* bmath_mf3_s_create_fill_random( sz_t rows, sz_t cols, f3_t min, f3_
     bmath_mf3_s_fill_random( o, min, max, rval );
     return o;
 }
-
-//---------------------------------------------------------------------------------------------------------------------
-
-bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op )
-{
-    if( o->rows != op->rows ) return false;
-    if( o->cols != op->cols ) return false;
-    for( sz_t i = 0; i < o->rows; i++ )
-    {
-        const f3_t* v1 = o ->data + i * o ->stride;
-        const f3_t* v2 = op->data + i * op->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) if( v1[ j ] != v2[ j ] ) return false;
-    }
-    return true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o )
-{
-    for( sz_t i = 0; i < o->rows; i++ )
-    {
-        const f3_t* v1 = o ->data + i * o ->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) if( v1[ j ] != 0.0 ) return false;
-    }
-    return true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o )
-{
-    if( o->rows != o->cols ) return false;
-    for( sz_t i = 0; i < o->rows; i++ )
-    {
-        const f3_t* v1 = o ->data + i * o ->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) if( v1[ j ] != ( ( j == i ) ? 1.0 : 0.0 ) ) return false;
-    }
-    return true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-bl_t bmath_mf3_s_is_dag( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_dag( o, 0 ); }
-bl_t bmath_mf3_s_is_trd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_trd( o, 0 ); }
-bl_t bmath_mf3_s_is_utr( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_utr( o, 0 ); }
-bl_t bmath_mf3_s_is_ltr( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_ltr( o, 0 ); }
-bl_t bmath_mf3_s_is_hsm( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_hsm( o, 0 ); }
-bl_t bmath_mf3_s_is_ubd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_ubd( o, 0 ); }
-bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_lbd( o, 0 ); }
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -1519,7 +1483,7 @@ void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* v )
         ASSERT( v->rows == a->rows );
     }
 
-    gr_s gr;
+    grt_s gr;
 
     for( sz_t j = 0; j < a->rows; j++ )
     {
@@ -1531,20 +1495,20 @@ void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* v )
             // zero upper row
             ak = a->data + k;
             sz_t jstride = j * a->stride;
-            gr_s_init_do_ani_b( &gr, ak + jstride, ak + jstride + 1 );
-            for( sz_t i = j + 1; i < a->rows; i++ ) gr_s_rot( &gr, ak + i * a->stride, ak + i * a->stride + 1 );
+            grt_s_init_and_annihilate_b( &gr, ak + jstride, ak + jstride + 1 );
+            for( sz_t i = j + 1; i < a->rows; i++ ) grt_s_rotate( &gr, ak + i * a->stride, ak + i * a->stride + 1 );
 
             // transposed operation
             ak = a->data + k * a->stride;
-            gr_s_ani_b( &gr, ak + j, ak + a->stride + j );
-            for( sz_t i = j + 1; i < a->cols; i++ ) gr_s_rot( &gr, ak + i, ak + a->stride + i );
+            grt_s_annihilate_b( &gr, ak + j, ak + a->stride + j );
+            for( sz_t i = j + 1; i < a->cols; i++ ) grt_s_rotate( &gr, ak + i, ak + a->stride + i );
 
             // rotation matrix
             if( v )
             {
                 f3_t* vk = v->data + k * v->stride;
                 f3_t* vl = v->data + l * v->stride;
-                for( sz_t i = 0; i < v->cols; i++ ) gr_s_rot( &gr, vk + i, vl + i );
+                for( sz_t i = 0; i < v->cols; i++ ) grt_s_rotate( &gr, vk + i, vl + i );
             }
         }
     }
@@ -1569,7 +1533,7 @@ void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v 
         ASSERT( v != a );
     }
 
-    gr_s gr;
+    grt_s gr;
     sz_t min_cols_rows = sz_min( a->cols, a->rows );
 
     for( sz_t j = 0; j < min_cols_rows; j++ )
@@ -1580,13 +1544,13 @@ void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v 
             sz_t k = l - 1;
             f3_t* ak = a->data + k * a->stride;
             f3_t* al = a->data + l * a->stride;
-            gr_s_init_do_ani_b( &gr, ak + j, al + j );
-            for( sz_t i = j + 1; i < a->cols; i++ ) gr_s_rot( &gr, ak + i, al + i );
+            grt_s_init_and_annihilate_b( &gr, ak + j, al + j );
+            for( sz_t i = j + 1; i < a->cols; i++ ) grt_s_rotate( &gr, ak + i, al + i );
             if( u )
             {
                 f3_t* uk = u->data + k * u->stride;
                 f3_t* ul = u->data + l * u->stride;
-                for( sz_t i = 0; i < u->cols; i++ ) gr_s_rot( &gr, uk + i, ul + i );
+                for( sz_t i = 0; i < u->cols; i++ ) grt_s_rotate( &gr, uk + i, ul + i );
             }
         }
 
@@ -1597,13 +1561,13 @@ void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v 
             f3_t* ak = a->data + k;
             f3_t* al = a->data + l;
             sz_t jstride = j * a->stride;
-            gr_s_init_do_ani_b( &gr, ak + jstride, al + jstride );
-            for( sz_t i = j + 1; i < a->rows; i++ ) gr_s_rot( &gr, ak + i * a->stride, al + i * a->stride );
+            grt_s_init_and_annihilate_b( &gr, ak + jstride, al + jstride );
+            for( sz_t i = j + 1; i < a->rows; i++ ) grt_s_rotate( &gr, ak + i * a->stride, al + i * a->stride );
             if( v )
             {
                 f3_t* vk = v->data + k * v->stride;
                 f3_t* vl = v->data + l * v->stride;
-                for( sz_t i = 0; i < v->cols; i++ ) gr_s_rot( &gr, vk + i, vl + i );
+                for( sz_t i = 0; i < v->cols; i++ ) grt_s_rotate( &gr, vk + i, vl + i );
             }
         }
     }
@@ -1756,7 +1720,7 @@ void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
             f3_t a00 = a->data[ ( block_n - 2 ) * ( a->stride + 1 )     ];
             f3_t a01 = a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ];
 
-            if( ( f3_abs( a01 ) < 1E-308 ) || ( f3_abs( a01 ) < f3_abs( a11 ) * 1E-20 ) )
+            if( ( f3_abs( a01 ) < f3_lim_min ) || ( f3_abs( a01 ) < f3_abs( a11 ) * f3_lim_eps ) )
             {
                 a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ] = 0;
                 a->data[ ( block_n - 1 ) * ( a->stride + 1 ) - 1 ] = 0;
@@ -1868,7 +1832,7 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
                 f3_t a00 = a->data[ ( block_n - 2 ) * ( a->stride + 1 )     ];
                 f3_t a01 = a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ];
 
-                if( ( f3_abs( a01 ) < 1E-308 ) || ( f3_abs( a01 ) < f3_abs( a11 ) * 1E-20 ) )
+                if( ( f3_abs( a01 ) < f3_lim_min ) || ( f3_abs( a01 ) < f3_abs( a11 ) * f3_lim_eps ) )
                 {
                     a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ] = 0;
                     a->data[ ( block_n - 1 ) * ( a->stride + 1 ) - 1 ] = 0;
