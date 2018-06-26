@@ -172,7 +172,7 @@ bl_t bmath_mf3_s_is_near_ubd( const bmath_mf3_s* o, f3_t max_dev )
 {
     for( sz_t i = 0; i < o->rows; i++ )
     {
-        const f3_t* vi = o ->data + i * o ->stride;
+        const f3_t* vi = o->data + i * o->stride;
         for( sz_t j = 0; j < o->cols; j++ )
         {
             if( ( j < i || j > i + 1 ) && ( f3_abs( vi[ j ] ) > max_dev ) ) return false;
@@ -187,10 +187,10 @@ bl_t bmath_mf3_s_is_near_lbd( const bmath_mf3_s* o, f3_t max_dev )
 {
     for( sz_t i = 0; i < o->rows; i++ )
     {
-        const f3_t* vi = o ->data + i * o ->stride;
+        const f3_t* vi = o->data + i * o->stride;
         for( sz_t j = 0; j < o->cols; j++ )
         {
-            if( ( j < i - 1 || j > i ) && f3_abs( vi[ j ] ) > max_dev ) return false;
+            if( ( j + 1 < i || j > i ) && ( f3_abs( vi[ j ] ) > max_dev ) ) return false;
         }
     }
     return true;
@@ -1504,6 +1504,50 @@ void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    if( u )
+    {
+        ASSERT( u->cols == a->rows );
+        ASSERT( u->rows == a->rows );
+        ASSERT( u != a );
+        ASSERT( u != v );
+    }
+
+    if( v )
+    {
+        ASSERT( v->cols == a->cols );
+        ASSERT( v->rows == a->cols );
+        ASSERT( v != a );
+    }
+
+    grt_s gr;
+    sz_t min_cols_rows = sz_min( a->cols, a->rows );
+
+    for( sz_t j = 0; j < min_cols_rows; j++ )
+    {
+        // zero upper row
+        for( sz_t l = a->cols - 1; l > j; l-- )
+        {
+            f3_t* al = a->data + l;
+            grt_s_init_and_annihilate_b( &gr, al - 1 + j * a->stride, al + j * a->stride );
+            grt_s_rotate_col( &gr, al - 1, al, a->stride, j + 1, a->rows );
+            if( v ) grt_s_rotate_row( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
+        }
+
+        // zero lower column
+        for( sz_t l = a->rows - 1; l > j + 1; l-- )
+        {
+            f3_t* al = a->data + l * a->stride;
+            grt_s_init_and_annihilate_b( &gr, al - a->stride + j, al + j );
+            grt_s_rotate_row( &gr, al - a->stride, al, j + 1, a->cols );
+            if( u ) grt_s_rotate_row( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_qr_rot_htp_utr( bmath_mf3_s* q, bmath_mf3_s* r )
 {
     ASSERT( bmath_mf3_s_is_square( r ) );
@@ -1847,6 +1891,237 @@ void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
 
     bmath_vf3_s_discard( dag );
     bmath_mf3_s_discard( q );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/** SVD for a->rows >= a->cols
+ *  Method: upper bidiagonalization + chase algorithm with implicit shift
+ */
+void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    ASSERT( a->rows >= a->cols );
+
+    // creating upper-bidiagonal
+    bmath_mf3_s_ubd_htp( u, a, v );
+
+    sz_t n = a->cols;
+    if( n <= 1 ) return; // nothing else to do
+
+    // in practice convergence hardly ever needs more than 4 cycles
+    const sz_t max_cyles = 100;
+
+    for( sz_t block_n = n; block_n > 1; block_n-- )
+    {
+        for( sz_t cycle = 0; cycle < max_cyles; cycle++ )
+        {
+            f3_t lambda;
+
+            {
+                f3_t* a0 = a->data + ( a->stride + 1 ) * ( block_n - 2 );
+                f3_t* a1 = a0 + a->stride;
+
+                // exit cycle if bottom off diagonal is zero
+                if( ( f3_abs( a0[ 1 ] ) < f3_lim_min ) || ( f3_abs( a0[ 1 ] ) < f3_abs( a1[ 1 ] ) * f3_lim_eps ) )
+                {
+                    a0[ 1 ] = 0;
+                    break;
+                }
+
+                f3_t m11 = f3_sqr( a1[ 1 ] );
+                f3_t m00 = f3_sqr( a0[ 0 ] ) + f3_sqr( a0[ 1 ] );
+                f3_t m01 = a0[ 1 ] * a1[ 1 ];
+
+                f3_t p = 0.5 * ( m00 + m11 );
+                f3_t d = sqrt( 0.25 * f3_sqr( m00 - m11 ) + m01 * m01 );
+
+                // set shift to eigenvalue of lower 2x2 sub-matrix which is closest to m11
+                lambda = ( m11 >= p ) ? p + d : p - d;
+            }
+
+            f3_t* a0 = a->data;
+            f3_t* a1 = a->data + a->stride;
+
+            grt_s gr_l; // left rotation
+            grt_s gr_r; // right rotation
+
+            // left rotation strategically diagonalizes a * aT but creates a1[ 0 ]
+            grt_s_init_to_annihilate_b( &gr_l, f3_sqr( a0[ 0 ] ) + f3_sqr( a0[ 1 ] ) - lambda, a0[ 1 ] * a1[ 1 ] );
+
+            // right rotation annihilates a1[0]
+            grt_s_init_to_annihilate_b( &gr_r, gr_l.c * a1[ 1 ] - gr_l.s * a0[ 1 ], gr_l.s * a0[ 0 ] );
+
+            f3_t a00 = a0[ 0 ];
+            f3_t a01 = a0[ 1 ];
+            f3_t a11 = a1[ 1 ];
+
+            a0[ 0 ] = gr_r.c * a00 + gr_r.s * a01; a0[ 1 ] = gr_r.c * a01 - gr_r.s * a00;
+            a1[ 0 ] =                gr_r.s * a11; a1[ 1 ] = gr_r.c * a11;
+            grt_s_rotate_row( &gr_l, a0, a1, 0, 3 );
+            a1[ 0 ] = 0;
+
+            if( u ) grt_s_rotate_row( &gr_l, u->data, u->data + u->stride, 0, u->cols );
+            if( v ) grt_s_rotate_row( &gr_r, v->data, v->data + v->stride, 0, v->cols );
+
+            // casing, annihilating off-bidiagonals
+            for( sz_t k = 0; k < block_n - 2; k++ )
+            {
+                f3_t* ak = a->data + ( a->stride + 1 ) * k + 1;
+                f3_t* al = ak + a->stride;
+                f3_t* am = al + a->stride;
+                grt_s_init_and_annihilate_b( &gr_r, ak, ak + 1 );
+                grt_s_rotate( &gr_r, al, al + 1 );
+                grt_s_rotate( &gr_r, am, am + 1 );
+
+                grt_s_init_and_annihilate_b( &gr_l, al, am );
+                grt_s_rotate( &gr_l, al + 1, am + 1 );
+                if( k < block_n - 3 ) grt_s_rotate( &gr_l, al + 2, am + 2 );
+
+                if( u ) grt_s_rotate_row( &gr_l, u->data + u->stride * ( k + 1 ), u->data + u->stride * ( k + 2 ), 0, u->cols );
+                if( v ) grt_s_rotate_row( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
+            }
+        }
+    }
+
+    // sort by descending magnitudes
+    for( sz_t i = 0; i < n - 1; i++ )
+    {
+        f3_t vmax = f3_abs( a->data[ i * ( a->stride + 1 ) ] );
+        sz_t imax = i;
+        for( sz_t j = i + 1; j < n; j++ )
+        {
+            f3_t v = f3_abs( a->data[ j * ( a->stride + 1 ) ] );
+            imax = ( v > vmax ) ? j : imax;
+            vmax = ( v > vmax ) ? v : vmax;
+        }
+        f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+        if( u ) bmath_mf3_s_swap_row( u, i, imax );
+        if( v ) bmath_mf3_s_swap_row( v, i, imax );
+    }
+
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/** SVD for a->rows >= a->cols
+ *  Method: lower bidiagonalization + chase algorithm with implicit shift
+ */
+void bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    ASSERT( a->cols >= a->rows );
+
+    // creating upper-bidiagonal
+    bmath_mf3_s_lbd_htp( u, a, v );
+
+    sz_t n = a->rows;
+    if( n <= 1 ) return; // nothing else to do
+
+    // in practice convergence hardly ever needs more than 4 cycles
+    const sz_t max_cyles = 100;
+
+    for( sz_t block_n = n; block_n > 1; block_n-- )
+    {
+        for( sz_t cycle = 0; cycle < max_cyles; cycle++ )
+        {
+            f3_t lambda;
+
+            {
+                f3_t* a0 = a->data + ( a->stride + 1 ) * ( block_n - 2 );
+                f3_t* a1 = a0 + a->stride;
+
+                // exit cycle if bottom off diagonal is zero
+                if( ( f3_abs( a1[ 0 ] ) < f3_lim_min ) || ( f3_abs( a1[ 0 ] ) < f3_abs( a1[ 1 ] ) * f3_lim_eps ) )
+                {
+                    a1[ 0 ] = 0;
+                    break;
+                }
+
+                f3_t m11 = f3_sqr( a1[ 1 ] );
+                f3_t m00 = f3_sqr( a0[ 0 ] ) + f3_sqr( a1[ 0 ] );
+                f3_t m01 = a1[ 0 ] * a1[ 1 ];
+
+                f3_t p = 0.5 * ( m00 + m11 );
+                f3_t d = sqrt( 0.25 * f3_sqr( m00 - m11 ) + m01 * m01 );
+
+                // set shift to eigenvalue of lower 2x2 sub-matrix which is closest to m11
+                lambda = ( m11 >= p ) ? p + d : p - d;
+            }
+
+            f3_t* a0 = a->data;
+            f3_t* a1 = a->data + a->stride;
+
+            grt_s gr_l; // left rotation
+            grt_s gr_r; // right rotation
+
+            // left rotation strategically diagonalizes aT * a but creates a0[ 1 ]
+            grt_s_init_to_annihilate_b( &gr_r, f3_sqr( a0[ 0 ] ) + f3_sqr( a1[ 0 ] ) - lambda, a1[ 0 ] * a1[ 1 ] );
+
+            // right rotation annihilates a0[ 1 ]
+            grt_s_init_to_annihilate_b( &gr_l, gr_r.c * a1[ 1 ] - gr_r.s * a1[ 0 ], gr_r.s * a0[ 0 ] );
+
+            f3_t a00 = a0[ 0 ];
+            f3_t a10 = a1[ 0 ];
+            f3_t a11 = a1[ 1 ];
+
+            a0[ 0 ] = gr_l.c * a00 + gr_l.s * a10; a1[ 0 ] = gr_l.c * a10 - gr_l.s * a00;
+            a0[ 1 ] =                gr_l.s * a11; a1[ 1 ] = gr_l.c * a11;
+            grt_s_rotate_col( &gr_r, a0, a0 + 1, a->stride, 0, 3 );
+            a0[ 1 ] = 0;
+
+            if( u ) grt_s_rotate_row( &gr_l, u->data, u->data + u->stride, 0, u->cols );
+            if( v ) grt_s_rotate_row( &gr_r, v->data, v->data + v->stride, 0, v->cols );
+
+            // casing, annihilating off-bidiagonals
+            for( sz_t k = 0; k < block_n - 2; k++ )
+            {
+                f3_t* ak = a->data + ( a->stride + 1 ) * ( k + 1 ) - 1;
+                f3_t* al = ak + a->stride;
+                f3_t* am = al + a->stride;
+
+                grt_s_init_and_annihilate_b( &gr_l, ak, al );
+                grt_s_rotate( &gr_l, ak + 1, al + 1 );
+                grt_s_rotate( &gr_l, ak + 2, al + 2 );
+
+                grt_s_init_and_annihilate_b( &gr_r, ak + 1, ak + 2 );
+                grt_s_rotate( &gr_r, al + 1, al + 2 );
+                if( k < block_n - 3 ) grt_s_rotate( &gr_r, am + 1, am + 2 );
+
+                if( u ) grt_s_rotate_row( &gr_l, u->data + u->stride * ( k + 1 ), u->data + u->stride * ( k + 2 ), 0, u->cols );
+                if( v ) grt_s_rotate_row( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
+
+            }
+        }
+    }
+
+    // sort by descending magnitudes
+    for( sz_t i = 0; i < n - 1; i++ )
+    {
+        f3_t vmax = f3_abs( a->data[ i * ( a->stride + 1 ) ] );
+        sz_t imax = i;
+        for( sz_t j = i + 1; j < n; j++ )
+        {
+            f3_t v = f3_abs( a->data[ j * ( a->stride + 1 ) ] );
+            imax = ( v > vmax ) ? j : imax;
+            vmax = ( v > vmax ) ? v : vmax;
+        }
+        f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+        if( u ) bmath_mf3_s_swap_row( u, i, imax );
+        if( v ) bmath_mf3_s_swap_row( v, i, imax );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_svd(  bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    if( a->rows >= a->cols )
+    {
+        bmath_mf3_s_svd_ubd( u, a, v );
+    }
+    else
+    {
+        bmath_mf3_s_svd_lbd( u, a, v );
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------

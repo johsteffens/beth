@@ -342,6 +342,16 @@ static inline void bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v ) { bmath
 void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 
+/** Stable in-place SVD for a general matrix.
+ *  Method: bi-diagonalization + chasing with implicit shift.
+ *  Input:  a  (nxm, any data), v  (mxm rotation, identity or NULL), u  (nxn rotation, identity or NULL)
+ *  Output: a' (diagonal),      v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
+ *  It is uT * a * v = u'T * a' * v
+ */
+void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // limited to a->rows >= a->cols
+void bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // limited to a->cols >= a->rows
+void bmath_mf3_s_svd(     bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // for all matrices
+
 //---------------------------------------------------------------------------------------------------------------------
 // covariance
 
