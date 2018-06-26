@@ -1423,7 +1423,7 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_hsm_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( a->rows == a->cols );
     if( v )
@@ -1460,7 +1460,7 @@ void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     if( u )
     {
@@ -1504,7 +1504,7 @@ void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v 
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_qr_rot_htp_utr_givens( bmath_mf3_s* q, bmath_mf3_s* r )
+void bmath_mf3_s_qr_rot_htp_utr( bmath_mf3_s* q, bmath_mf3_s* r )
 {
     ASSERT( bmath_mf3_s_is_square( r ) );
 
@@ -1612,7 +1612,7 @@ void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
     if( n <= 1 ) return; // nothing to do
 
     // tridiagonalization
-    bmath_mf3_s_hsm_trd_htp_givens( a, v );
+    bmath_mf3_s_hsm_trd_htp( a, v );
 
     for( sz_t block_n = n; block_n > 1; block_n-- )
     {
@@ -1709,7 +1709,7 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
     if( n <= 1 ) return; // nothing to do
 
     /// tridiagonalization
-    bmath_mf3_s_hsm_trd_htp_givens( a, v );
+    bmath_mf3_s_hsm_trd_htp( a, v );
 
     // qr iteration until smallest non-diag element < offd_limit;
 
@@ -2144,11 +2144,11 @@ static vd_t selftest( void )
         bmath_mf3_s_set_size_to( m1, m3 );
         bmath_mf3_s_set_size_to( m1, m4 );
         bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_hsm_trd_htp_givens( m2, NULL );
+        bmath_mf3_s_hsm_trd_htp( m2, NULL );
         ASSERT( bmath_mf3_s_is_trd( m2 ) );
         bmath_mf3_s_cpy( m1, m2 );
         bmath_mf3_s_one( m3 );
-        bmath_mf3_s_hsm_trd_htp_givens( m2, m3 );
+        bmath_mf3_s_hsm_trd_htp( m2, m3 );
         ASSERT( bmath_mf3_s_is_trd( m2 ) );
 
         ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
@@ -2174,7 +2174,7 @@ static vd_t selftest( void )
         bmath_mf3_s_cpy( m1, m2 );
         bmath_mf3_s_one( m3 );
 
-        bmath_mf3_s_qr_rot_htp_utr_givens( m3, m2 );
+        bmath_mf3_s_qr_rot_htp_utr( m3, m2 );
         ASSERT( bmath_mf3_s_is_near_utr( m2, 1E-8 ) );
         ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
 
@@ -2348,7 +2348,7 @@ static vd_t selftest( void )
     return NULL;
 }
 
-void bmath_mf3_s_ubd_htp_givens_selftest()
+void bmath_mf3_s_ubd_htp_selftest()
 {
     BCORE_LIFE_INIT();
     BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
@@ -2372,7 +2372,7 @@ void bmath_mf3_s_ubd_htp_givens_selftest()
     bmath_mf3_s_one( v );
 
     // a = u'T * a' * v
-    bmath_mf3_s_ubd_htp_givens( q, a, v );
+    bmath_mf3_s_ubd_htp( q, a, v );
     ASSERT( bmath_mf3_s_is_ubd( a ) );
     ASSERT( bmath_mf3_s_is_near_iso( q, 1E-8 ) );
     ASSERT( bmath_mf3_s_is_near_iso( v, 1E-8 ) );
@@ -2418,7 +2418,7 @@ vd_t bmath_matrix_signal_handler( const bcore_signal_s* o )
         case TYPEOF_selftest:
         {
             selftest();
-            bmath_mf3_s_ubd_htp_givens_selftest();
+            bmath_mf3_s_ubd_htp_selftest();
             return NULL;
         }
         break;

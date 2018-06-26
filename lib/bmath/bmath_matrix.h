@@ -295,14 +295,14 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
  *  Output: a' (tri-diagonal), v' (rotation or NULL)
  *  It is vT * a * v = v'T * a' * v'.
  */
-void bmath_mf3_s_hsm_trd_htp_givens( bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_hsm_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** Stable in-place QR-decomposition. Based on Givens rotations.
  *  Input:  q  (rotation or identity), r  (any square matrix),
  *  Output: q' (rotation),             r' (upper_triangular) such that with qT * r = q'T * r'.
  *  q == NULL allowed, in which case only r' is computed.
  */
-void bmath_mf3_s_qr_rot_htp_utr_givens( bmath_mf3_s* q, bmath_mf3_s* r );
+void bmath_mf3_s_qr_rot_htp_utr( bmath_mf3_s* q, bmath_mf3_s* r );
 
 /** Stable in-place EVD for a symmetric matrix. Jacobi Method.
  *  bmath_mf3_s_evd_htp for more details.
@@ -339,8 +339,8 @@ static inline void bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v ) { bmath
  *  Output: a' (bi-diagonal),   v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
  *  It is uT * a * v = u'T * a' * v
  */
-void bmath_mf3_s_ubd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
-void bmath_mf3_s_lbd_htp_givens( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 
 //---------------------------------------------------------------------------------------------------------------------
 // covariance
