@@ -44,8 +44,8 @@
  *  A complete rotation matrix Gkl (k < l) is deemed to have the following shape
  *  gkk = gll = c, gkl = -s, glk = s; All other elements: gij = ((i==j)?1:0)
  *
- *  The  left-side rotation G * A modifies columns k and l of A.
- *  The right-side rotation A * G modifies rows    k and l of A.
+ *  The  left-side rotation G * A modifies rows    k and l of A.
+ *  The right-side rotation A * G modifies columns k and l of A.
  */
 typedef struct grt_s { f3_t c; f3_t s; } grt_s;
 

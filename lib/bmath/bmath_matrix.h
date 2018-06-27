@@ -19,7 +19,7 @@
 /**********************************************************************************************************************/
 
 /** Matrix types and operations.
- *  All routines have been redesigned from scratch and optimized for modern architectures.
+ *  All routines have been designed from scratch and optimized for modern architectures.
  */
 
 /** Nomenclature
@@ -86,17 +86,21 @@ static inline bl_t bmath_mf3_s_is_square( const bmath_mf3_s* o ) { return o->row
 //---------------------------------------------------------------------------------------------------------------------
 // checks
 
-bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev );
-bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev );
-bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev );
+/** Near-state means: For each matrix element the absolute difference
+ *  to the exact state is less or equal max_dev.
+ *  Hence, max_dev == 0 tests for the exact state (s. below).
+ */
+bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev ); // equality
+bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev ); // one (== identity)
+bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev ); // zero
 bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev ); // near isometry (== near orthonormal)
-bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev );
-bl_t bmath_mf3_s_is_near_trd( const bmath_mf3_s* o, f3_t max_dev );
-bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev );
-bl_t bmath_mf3_s_is_near_ltr( const bmath_mf3_s* o, f3_t max_dev );
-bl_t bmath_mf3_s_is_near_hsm( const bmath_mf3_s* o, f3_t max_dev );
-bl_t bmath_mf3_s_is_near_ubd( const bmath_mf3_s* o, f3_t max_dev );
-bl_t bmath_mf3_s_is_near_lbd( const bmath_mf3_s* o, f3_t max_dev );
+bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev ); // diagonal
+bl_t bmath_mf3_s_is_near_trd( const bmath_mf3_s* o, f3_t max_dev ); // symmetric tri-diagonal
+bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev ); // upper triangle
+bl_t bmath_mf3_s_is_near_ltr( const bmath_mf3_s* o, f3_t max_dev ); // lower triangle
+bl_t bmath_mf3_s_is_near_hsm( const bmath_mf3_s* o, f3_t max_dev ); // symmetric
+bl_t bmath_mf3_s_is_near_ubd( const bmath_mf3_s* o, f3_t max_dev ); // upper bi-diagonal
+bl_t bmath_mf3_s_is_near_lbd( const bmath_mf3_s* o, f3_t max_dev ); // lower bi-diagonal
 
 static inline bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op ) { return bmath_mf3_s_is_near_equ( o, op, 0 ); }
 static inline bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_zro( o, 0 ); }
@@ -110,42 +114,29 @@ static inline bl_t bmath_mf3_s_is_ubd( const bmath_mf3_s* o ) { return bmath_mf3
 static inline bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_lbd( o, 0 ); }
 
 //---------------------------------------------------------------------------------------------------------------------
-// basic operations
+// initialization, copying
 
 f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o );
 f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op );
 
-void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_zro(       bmath_mf3_s* o );
 void bmath_mf3_s_one(       bmath_mf3_s* o );
 void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res );
 void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res );
 
-/// adds outer product of two vectors op1 (X) op2 to matrix
-void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res );
+//---------------------------------------------------------------------------------------------------------------------
+// transposition
+
+void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res );
 
 //---------------------------------------------------------------------------------------------------------------------
-// inversion
+// addition
 
-void bmath_mf3_s_inv(     const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1
-void bmath_mf3_s_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = (o^-1)T
-void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1 in case o is hermitean/symmetric (3x faster than bmath_mf3_s_inv)
+void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
-/** Pseudo-inversion for symmetric matrix.
- *  zero-threshold for eigenvalues: eps * max(eigenvalues).
- */
-void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res );
-
-/** Affine inversion.
- *  res = av1-inverse of o.
- *  o and res deemed to be av1-transformations
- */
-void bmath_mf3_s_inv_av1(     const bmath_mf3_s* o, bmath_mf3_s* res );
-void bmath_mf3_s_hsm_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res );           // o symmetric
-void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // pseudo inversion; o symmetric
-
-void bmath_mf3_s_div(         const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+/// adds outer product of two vectors op1 (X) op2 to matrix
+void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res );
 
 //---------------------------------------------------------------------------------------------------------------------
 // multiplication
@@ -170,9 +161,28 @@ void bmath_mf3_s_mul_scl_f3( const bmath_mf3_s* o, f3_t op, bmath_mf3_s* res ) {
 void bmath_mf3_s_udu_htp( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res ); // res = o * dag * o^T
 
 //---------------------------------------------------------------------------------------------------------------------
-// transposition
+// inversion; pseudo-inversion
 
-void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res );
+void bmath_mf3_s_inv(     const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1
+void bmath_mf3_s_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = (o^-1)T
+void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1 in case o is hermitean/symmetric (3x faster than bmath_mf3_s_inv)
+
+/** Pseudo-Inversion:
+ *  Inversion via SVD by setting near-zero singular values to zero (cut-off).
+ *  A singular value s is cut off when abs( s ) < eps * max( { abs(s_0), ..., abs(s_n-1) } ).
+ */
+void bmath_mf3_s_piv(     const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // general matrix o
+void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // faster inversion in case o is symmetric
+
+/** Affine inversion.
+ *  res = av1-inverse of o.
+ *  o and res deemed to be av1-transformations
+ */
+void bmath_mf3_s_inv_av1(     const bmath_mf3_s* o, bmath_mf3_s* res );
+void bmath_mf3_s_hsm_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res );           // o symmetric
+void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // pseudo inversion; o symmetric
+
+void bmath_mf3_s_div(         const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
 //---------------------------------------------------------------------------------------------------------------------
 // element-access, col-access, row-access, sub-matrix
@@ -205,12 +215,12 @@ f3_t bmath_mf3_s_get_f3( const bmath_mf3_s* o, sz_t row, sz_t col )
 }
 
 /** Returns a weak (rows x cols) sub matrix at offset (row, col) from o.
- *  Returned object need not be shut down.
+ *  Returned object does not own its data and need not be shut down unless it is resized.
  */
 bmath_mf3_s bmath_mf3_s_get_weak_sub_mat( const bmath_mf3_s* o, sz_t row, sz_t col, sz_t rows, sz_t cols );
 
 /** Returns a weak row vector.
- *  Returned object need not be shut down.
+ *  Returned object does not own its data and need not be shut down unless it is resized.
  */
 bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx );
 
@@ -239,8 +249,8 @@ void bmath_mf3_s_decompose_luc( const bmath_mf3_s* o, bmath_mf3_s* res );
 /** Inversion and h-transposition of lower triangular matrix.
  *  o is deemed lower triangular (only lower triangular elements are evaluated)
  *  res is upper triangular
- *  1 = o * resT = resT * o
- *  Algorithm always succeeds.
+ *  It is: 1 = o * resT = resT * o
+ *  Algorithm always finishes.
  *  If o is not invertible, incomputable elements are set to zero.
  */
 void bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res );
@@ -312,12 +322,14 @@ void bmath_mf3_s_qr_rot_htp_utr( bmath_mf3_s* q, bmath_mf3_s* r );
 void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** In-place EVD for a symmetric matrix. Approach: TRD, QR with explicit shifting.
+ *  (Variant of Francis' QR-Algorithm with shift)
  *  Very efficient for large matrices. >20x faster than Jacobi method but slightly less accurate.
  *  bmath_mf3_s_evd_htp for more details.
  */
 void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** In-place EVD for a symmetric matrix. Approach: TRD, QR with isolated shifting.
+ *  (Variant of Francis' QR-Algorithm with shift)
  *  Plain shift is not explicitly added/subtracted. Only the shift effect is applied to the matrix.
  *  This minimizes accuracy-loss similarly as implicit shift would do.
  *  bmath_mf3_s_evd_htp for more details.
@@ -327,7 +339,7 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v );
 /** Default in-place EVD for a symmetric matrix.
  *  Input:  a  (symmetric), v  (rotation or identity)
  *  Output: a' (diagonal),  v' (rotation) with vT * a * v = v'T * a' * v'.
- *  Diagonal elements are sorted in descending order.
+ *  Diagonal elements are sorted in descending value order.
  *  v == NULL allowed, in which case only a' is computed.
  */
 static inline void bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v ) { bmath_mf3_s_evd_htp_qr_ishift( a, v ); }
@@ -345,12 +357,13 @@ void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** Stable in-place SVD for a general matrix.
- *  Method: Bi-diagonalization and QR-chasing with implicit shift. (Golub/Reinsch/Francis - Approach)
+ *  Method: Bi-diagonalization and QR-chasing with implicit shift.
+ *          (Variant of Golub-Reinsch-Algorithm)
  *          Bi-diagonalization via Givens rotations.
- *
  *  Input:  a  (nxm, any data), v  (mxm rotation, identity or NULL), u  (nxn rotation, identity or NULL)
  *  Output: a' (diagonal),      v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
  *  It is uT * a * v = u'T * a' * v'
+ *  Diagonal elements are sorted in descending value order.
  */
 void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // limited to a->rows >= a->cols
 void bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // limited to a->cols >= a->rows

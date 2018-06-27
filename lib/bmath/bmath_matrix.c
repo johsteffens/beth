@@ -13,6 +13,10 @@
  *  limitations under the License.
  */
 
+/** Matrix types and operations.
+ *  All routines have been designed from scratch and optimized for modern architectures.
+ */
+
 #include "bmath_matrix.h"
 #include "bmath_spect_matrix.h"
 #include "bmath_fourier.h"
@@ -570,6 +574,128 @@ void bmath_mf3_s_inv( const bmath_mf3_s* o, bmath_mf3_s* res )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+// pseudo inversion
+void bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
+{
+    ASSERT( o->rows == res->cols );
+    ASSERT( o->cols == res->rows );
+
+    sz_t n = sz_min( o->rows, o->cols );
+    if( n == 0 ) return;
+
+    bmath_mf3_s* a = bmath_mf3_s_create();
+    // we let 'a' use the space of res
+    if( o != res )
+    {
+        a->data   = res->data;
+        a->rows   = o->rows;
+        a->cols   = o->cols;
+        a->stride = a->cols;
+        a->size   = a->rows * a->cols;
+        a->space  = 0; // a does not own its space
+        bmath_mf3_s_cpy( o, a );
+    }
+    else
+    {
+        *a = *res;
+        a->space = 0; // a does not own its space
+    }
+
+    bmath_mf3_s* u = bmath_mf3_s_create();
+    bmath_mf3_s* v = bmath_mf3_s_create();
+    bmath_vf3_s* d = bmath_vf3_s_create();
+
+    bmath_mf3_s_set_size( a, o->rows, o->cols );
+    bmath_mf3_s_set_size( u, o->rows, o->rows );
+    bmath_mf3_s_set_size( v, o->cols, o->cols );
+    bmath_vf3_s_set_size( d, n );
+    bmath_mf3_s_one( u );
+    bmath_mf3_s_one( v );
+
+    // o = uT * a * v; o^-1 = vT * (a^-1)T * u
+    bmath_mf3_s_svd( u, a, v );
+    bmath_mf3_s_get_dag_vec( a, d );
+
+    // diagonal elements are sorted in descending manner
+    f3_t s_max = f3_max( f3_abs( d->data[ 0 ] ), f3_abs( d->data[ n - 1 ] ) );
+    f3_t thr = s_max * eps;
+    if( thr == 0 ) thr = 1.0;
+
+    // pseudo invert diagonal
+    for( sz_t i = 0; i < n; i++ ) d->data[ i ] = ( fabs( d->data[ i ] ) < thr ) ? 0 : 1.0 / d->data[ i ];
+
+    // transpose u, v
+    bmath_mf3_s_htp( u, u );
+    bmath_mf3_s_htp( v, v );
+
+    for( sz_t i = 0; i < res->rows; i++ )
+    {
+        f3_t* ri = res->data + res->stride * i;
+        f3_t* vi =   v->data +   v->stride * i;
+        for( sz_t j = 0; j < res->cols; j++ )
+        {
+            f3_t* uj = u->data + u->stride * j;
+            f3_t  r = 0;
+            for( sz_t k = 0; k < n; k++ ) r += vi[ k ] * uj[ k ] * d->data[ k ];
+            ri[ j ] = r;
+        }
+    }
+
+    bmath_vf3_s_discard( d );
+    bmath_mf3_s_discard( v );
+    bmath_mf3_s_discard( u );
+    bmath_mf3_s_discard( a );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+// pseudo inversion of a symmetric matrix
+void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
+{
+    if( o == res )
+    {
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size_to( res, buf );
+        bmath_mf3_s_hsm_piv( o, eps, buf );
+        bmath_mf3_s_cpy( buf, res );
+        bmath_mf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
+    ASSERT( o->rows == o->cols );
+
+    sz_t n = o->rows;
+    if( n == 0 ) return;
+
+    bmath_mf3_s* a = res; // a occupies space of res
+    bmath_mf3_s* q = bmath_mf3_s_create();
+    bmath_mf3_s_set_size( q, n, n );
+    bmath_mf3_s_one( q );
+
+    bmath_mf3_s_cpy( o, a );
+    bmath_mf3_s_evd_htp( a, q );
+
+    bmath_vf3_s* dag = bmath_vf3_s_create();
+    bmath_vf3_s_set_size( dag, n );
+    bmath_mf3_s_get_dag_vec( a, dag );
+
+    // dag is sorted in descending manner
+    f3_t s_max = f3_max( f3_abs( dag->data[ 0 ] ), f3_abs( dag->data[ n - 1 ] ) );
+    f3_t thr = s_max * eps;
+    if( thr == 0 ) thr = 1.0;
+
+    for( sz_t i = 0; i < n; i++ ) dag->data[ i ] = ( dag->data[ i ] < thr ) ? 0 : ( 1.0 / dag->data[ i ] );
+
+    bmath_mf3_s_htp( q, q );
+    bmath_mf3_s_udu_htp( q, dag, res );
+
+    bmath_vf3_s_discard( dag );
+    bmath_mf3_s_discard( q );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     if( o == res )
@@ -1049,6 +1175,7 @@ void bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 
 void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
+    ASSERT( bmath_mf3_s_is_hsm( o ) );
     bmath_mf3_s_decompose_cholesky( o, res ); // res = ltr
     bmath_mf3_s_ltr_inv_htp( res, res );      // res = utr
     bmath_mf3_s_utr_mul_htp( res, res );      // res = oI
@@ -1427,7 +1554,7 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 void bmath_mf3_s_hsm_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    ASSERT( a->rows == a->cols );
+    ASSERT( bmath_mf3_s_is_hsm( a ) );
     if( v )
     {
         ASSERT( v != a );
@@ -1579,7 +1706,7 @@ void bmath_mf3_s_qr_rot_htp_utr( bmath_mf3_s* q, bmath_mf3_s* r )
 
 void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    ASSERT( bmath_mf3_s_is_square( a ) );
+    ASSERT( bmath_mf3_s_is_hsm( a ) );
 
     if( v )
     {
@@ -1853,50 +1980,6 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-// pseudo inversion
-void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
-{
-    if( o == res )
-    {
-        bmath_mf3_s* buf = bmath_mf3_s_create();
-        bmath_mf3_s_set_size_to( res, buf );
-        bmath_mf3_s_hsm_piv( o, eps, buf );
-        bmath_mf3_s_cpy( buf, res );
-        bmath_mf3_s_discard( buf );
-        return;
-    }
-
-    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    ASSERT( o->rows == o->cols );
-
-    sz_t n = o->rows;
-    if( n == 0 ) return;
-
-    bmath_mf3_s* a = res; // a occupies space of res
-    bmath_mf3_s* q = bmath_mf3_s_create();
-    bmath_mf3_s_set_size( q, n, n );
-    bmath_mf3_s_one( q );
-
-    bmath_mf3_s_cpy( o, a );
-    bmath_mf3_s_evd_htp( a, q );
-
-    bmath_vf3_s* dag = bmath_vf3_s_create();
-    bmath_vf3_s_set_size( dag, n );
-    bmath_mf3_s_get_dag_vec( a, dag );
-
-    f3_t thr = dag->data[ 0 ] * eps; // dag is sorted in descending manner
-
-    for( sz_t i = 0; i < n; i++ ) dag->data[ i ] = ( dag->data[ i ] < thr ) ? 0 : ( 1.0 / dag->data[ i ] );
-
-    bmath_mf3_s_htp( q, q );
-    bmath_mf3_s_udu_htp( q, dag, res );
-
-    bmath_vf3_s_discard( dag );
-    bmath_mf3_s_discard( q );
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
 /** SVD for a->rows >= a->cols
  *  Method: upper bidiagonalization + chase algorithm with implicit shift
  */
@@ -1985,14 +2068,14 @@ void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         }
     }
 
-    // sort by descending magnitudes
+    // sort by descending diagonal values
     for( sz_t i = 0; i < n - 1; i++ )
     {
-        f3_t vmax = f3_abs( a->data[ i * ( a->stride + 1 ) ] );
+        f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
         sz_t imax = i;
         for( sz_t j = i + 1; j < n; j++ )
         {
-            f3_t v = f3_abs( a->data[ j * ( a->stride + 1 ) ] );
+            f3_t v = a->data[ j * ( a->stride + 1 ) ];
             imax = ( v > vmax ) ? j : imax;
             vmax = ( v > vmax ) ? v : vmax;
         }
@@ -2095,14 +2178,14 @@ void bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         }
     }
 
-    // sort by descending magnitudes
+    // sort by descending diagonal values
     for( sz_t i = 0; i < n - 1; i++ )
     {
-        f3_t vmax = f3_abs( a->data[ i * ( a->stride + 1 ) ] );
+        f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
         sz_t imax = i;
         for( sz_t j = i + 1; j < n; j++ )
         {
-            f3_t v = f3_abs( a->data[ j * ( a->stride + 1 ) ] );
+            f3_t v = a->data[ j * ( a->stride + 1 ) ];
             imax = ( v > vmax ) ? j : imax;
             vmax = ( v > vmax ) ? v : vmax;
         }
@@ -2372,10 +2455,35 @@ static vd_t selftest( void )
 
         bmath_mf3_s_inv( m1, m2 );
         bmath_mf3_s_mul( m1, m2, m3 );
-        ASSERT( bmath_mf3_s_is_near_one( m3, 1E-7 ) );
+        ASSERT( bmath_mf3_s_is_near_one( m3, 1E-8 ) );
     }
 
-    // symmetric inversion
+    // general pseudo inversion
+    {
+        for( sz_t test_id = 0; test_id < 3; test_id++ )
+        {
+            sz_t n = ( test_id == 0 ) ? 20 : 10;
+            sz_t m = ( test_id == 2 ) ? 20 : 10;
+            u2_t rval = 1234;
+            bmath_mf3_s_set_size( m1, n, m );
+            bmath_mf3_s_set_size( m2, m, n );
+            bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+            bmath_mf3_s_piv( m1, 1E-8, m2 );
+            if( m >= n )
+            {
+                bmath_mf3_s_set_size( m3, n, n );
+                bmath_mf3_s_mul( m1, m2, m3 );
+            }
+            else
+            {
+                bmath_mf3_s_set_size( m3, m, m );
+                bmath_mf3_s_mul( m2, m1, m3 );
+            }
+            ASSERT( bmath_mf3_s_is_near_one( m3, 1E-8 ) );
+        }
+    }
+
+    // symmetric inversion, pseudo inversion
     {
         sz_t n = 100;
         u2_t rval = 1234;
@@ -2388,22 +2496,9 @@ static vd_t selftest( void )
 
         bmath_mf3_s_hsm_inv( m1, m2 );
         bmath_mf3_s_mul( m1, m2, m3 );
-        ASSERT( bmath_mf3_s_is_near_one( m3, 1E-7 ) );
-    }
-
-    // symmetric pseudo inversion
-    {
-        sz_t n = 50;
-        u2_t rval = 1234;
-        bmath_mf3_s_set_size( m1, n, n );
-        bmath_mf3_s_set_size_to( m1, m2 );
-        bmath_mf3_s_set_size_to( m1, m3 );
-        bmath_mf3_s_set_size_to( m1, m4 );
-        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
-        bmath_mf3_s_mul_htp( m1, m1, m1 ); // m1 = m1*m1T
+        ASSERT( bmath_mf3_s_is_near_one( m3, 1E-8 ) );
 
         bmath_mf3_s_hsm_piv( m1, 1E-8, m2 );
-
         bmath_mf3_s_mul( m1, m2, m3 );
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-8 ) );
     }
