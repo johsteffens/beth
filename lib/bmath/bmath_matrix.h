@@ -351,7 +351,7 @@ bl_t bmath_mf3_s_evd( bmath_mf3_s* a, bmath_mf3_s* v );
  *  It is uT * a * v = u'T * a' * v'
  */
 void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper-bidiagonal
-void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower-bidiagonal
+void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower-bidiagonal
 
 /** Stable in-place SVD for a general matrix.
  *  Method: Bi-diagonalization by givens rotations and QR-chasing with implicit shift.

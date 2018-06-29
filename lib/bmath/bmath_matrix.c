@@ -1645,7 +1645,7 @@ void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     if( u )
     {
@@ -2135,7 +2135,7 @@ bl_t bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     ASSERT( a->cols >= a->rows );
 
     // creating lower-bidiagonal
-    bmath_mf3_s_lbd_htp( u, a, v );
+    bmath_mf3_s_decompose_lbd( u, a, v );
 
     sz_t n = a->rows;
     if( n <= 1 ) return true; // nothing else to do
