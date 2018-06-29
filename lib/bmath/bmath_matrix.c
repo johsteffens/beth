@@ -1564,7 +1564,7 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_decompose_trd( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( bmath_mf3_s_is_hsm( a ) );
     if( v )
@@ -1805,7 +1805,7 @@ bl_t bmath_mf3_s_evd_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
     if( n <= 1 ) return true; // nothing to do
 
     // tridiagonalization
-    bmath_mf3_s_hsm_trd_htp( a, v );
+    bmath_mf3_s_decompose_trd( a, v );
 
     bl_t success = true;
 
@@ -1916,7 +1916,7 @@ bl_t bmath_mf3_s_evd_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
     if( n <= 1 ) return true; // nothing to do
 
     /// tridiagonalization
-    bmath_mf3_s_hsm_trd_htp( a, v );
+    bmath_mf3_s_decompose_trd( a, v );
 
     // qr iteration until smallest non-diag element < offd_limit;
 
@@ -2578,11 +2578,11 @@ static vd_t selftest( void )
         bmath_mf3_s_set_size_to( m1, m3 );
         bmath_mf3_s_set_size_to( m1, m4 );
         bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_hsm_trd_htp( m2, NULL );
+        bmath_mf3_s_decompose_trd( m2, NULL );
         ASSERT( bmath_mf3_s_is_trd( m2 ) );
         bmath_mf3_s_cpy( m1, m2 );
         bmath_mf3_s_one( m3 );
-        bmath_mf3_s_hsm_trd_htp( m2, m3 );
+        bmath_mf3_s_decompose_trd( m2, m3 );
         ASSERT( bmath_mf3_s_is_trd( m2 ) );
 
         ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );

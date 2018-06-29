@@ -310,7 +310,7 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
  *  Output: a' (tri-diagonal), v' (rotation or NULL)
  *  It is vT * a * v = v'T * a' * v'.
  */
-void bmath_mf3_s_hsm_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_decompose_trd( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** Stable in-place QR-decomposition. Based on Givens rotations.
  *  Input:  q  (rotation or identity), r  (any square matrix),
