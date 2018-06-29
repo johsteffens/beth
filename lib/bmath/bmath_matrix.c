@@ -1689,7 +1689,7 @@ void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_qr_rot_htp_utr( bmath_mf3_s* q, bmath_mf3_s* r )
+void bmath_mf3_s_decompose_qr( bmath_mf3_s* q, bmath_mf3_s* r )
 {
     ASSERT( bmath_mf3_s_is_square( r ) );
 
@@ -2608,7 +2608,7 @@ static vd_t selftest( void )
         bmath_mf3_s_cpy( m1, m2 );
         bmath_mf3_s_one( m3 );
 
-        bmath_mf3_s_qr_rot_htp_utr( m3, m2 );
+        bmath_mf3_s_decompose_qr( m3, m2 );
         ASSERT( bmath_mf3_s_is_near_utr( m2, 1E-8 ) );
         ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
 

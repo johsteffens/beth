@@ -317,7 +317,7 @@ void bmath_mf3_s_hsm_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
  *  Output: q' (rotation),             r' (upper_triangular) such that with qT * r = q'T * r'.
  *  q == NULL allowed, in which case only r' is computed.
  */
-void bmath_mf3_s_qr_rot_htp_utr( bmath_mf3_s* q, bmath_mf3_s* r );
+void bmath_mf3_s_decompose_qr( bmath_mf3_s* q, bmath_mf3_s* r );
 
 /** Stable in-place EVD for a symmetric matrix. Jacobi Method.
  *  Input:  a  (symmetric), v  (rotation or identity)
