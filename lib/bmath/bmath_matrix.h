@@ -19,7 +19,7 @@
 /**********************************************************************************************************************/
 
 /** Matrix types and operations.
- *  All routines have been designed from scratch and optimized for modern architectures.
+ *  All routines have been entirely designed from scratch and optimized with modern architectures in mind.
  */
 
 /** Nomenclature
@@ -200,6 +200,9 @@ void bmath_mf3_s_get_dag_vec( const bmath_mf3_s* o,           bmath_vf3_s* res )
 void bmath_mf3_s_swap_row( bmath_mf3_s* o, sz_t i, sz_t j ); // swaps rows i, j
 void bmath_mf3_s_swap_col( bmath_mf3_s* o, sz_t i, sz_t j ); // swaps cols i, j
 
+void bmath_mf3_s_mul_f3_to_row( bmath_mf3_s* o, f3_t v, sz_t i ); // multiplies v to all values in row i
+void bmath_mf3_s_mul_f3_to_col( bmath_mf3_s* o, f3_t v, sz_t i ); // multiplies v to all values in col i
+
 static inline
 void bmath_mf3_s_set_f3( bmath_mf3_s* o, sz_t row, sz_t col, f3_t v )
 {
@@ -234,7 +237,7 @@ bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx );
  *  It is o = res * resT.
  *  When o is not positive definite, incomputable elements of res are set to zero.
  */
-void bmath_mf3_s_decompose_cholesky( const bmath_mf3_s* o, bmath_mf3_s* ltr_res );
+void bmath_mf3_s_decompose_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res );
 
 /** LU decomposition.
  *  o must be square and invertible.
@@ -317,57 +320,59 @@ void bmath_mf3_s_hsm_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
 void bmath_mf3_s_qr_rot_htp_utr( bmath_mf3_s* q, bmath_mf3_s* r );
 
 /** Stable in-place EVD for a symmetric matrix. Jacobi Method.
- *  bmath_mf3_s_evd_htp for more details.
- */
-void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
-
-/** In-place EVD for a symmetric matrix. Approach: TRD, QR with explicit shifting.
- *  (Variant of Francis' QR-Algorithm with shift)
- *  Very efficient for large matrices. >20x faster than Jacobi method but slightly less accurate.
- *  bmath_mf3_s_evd_htp for more details.
- */
-void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v );
-
-/** In-place EVD for a symmetric matrix. Approach: TRD, QR with isolated shifting.
- *  (Variant of Francis' QR-Algorithm with shift)
- *  Plain shift is not explicitly added/subtracted. Only the shift effect is applied to the matrix.
- *  This minimizes accuracy-loss similarly as implicit shift would do.
- *  bmath_mf3_s_evd_htp for more details.
- */
-void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v );
-
-/** Default in-place EVD for a symmetric matrix.
  *  Input:  a  (symmetric), v  (rotation or identity)
  *  Output: a' (diagonal),  v' (rotation) with vT * a * v = v'T * a' * v'.
+ *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.
+ *  (Convergence failure is very rare.)
  *  Diagonal elements are sorted in descending value order.
  *  v == NULL allowed, in which case only a' is computed.
  */
-static inline void bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v ) { bmath_mf3_s_evd_htp_qr_ishift( a, v ); }
+bl_t bmath_mf3_s_evd_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
+
+/** In-place EVD for a symmetric matrix.
+ *  Approach: TRD, QR with explicit shifting. (Variant of Francis' QR-Algorithm)
+ *  Input:  a  (symmetric), v  (rotation or identity)
+ *  Output: a' (diagonal),  v' (rotation) with vT * a * v = v'T * a' * v'.
+ *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.
+ *  (Convergence failure is very rare.)
+ *  Diagonal elements are sorted in descending value order.
+ *  v == NULL allowed, in which case only a' is computed.
+ */
+bl_t bmath_mf3_s_evd( bmath_mf3_s* a, bmath_mf3_s* v );
 
 //---------------------------------------------------------------------------------------------------------------------
 // Singular value decomposition (SVD) and supportive operations
 
 /** Stable in-place bi-diagonal decomposition for a general matrix.
  *  Based on givens rotations.
- *  Input:  a  (nxm, any data), v  (mxm rotation, identity or NULL), u  (nxn rotation, identity or NULL)
- *  Output: a' (bi-diagonal),   v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
+ *  Matrices u, a, v are being modified: mat -> mat'
+ *  Input:  u  (nxn unitary or NULL), a  (nxm, any data), v  (nxn unitary or NULL),
+ *  Output: u' (nxn unitary or NULL), a' (bi-diagonal),   v' (nxn unitary or NULL)
  *  It is uT * a * v = u'T * a' * v'
  */
-void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
-void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper-bidiagonal
+void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower-bidiagonal
 
 /** Stable in-place SVD for a general matrix.
- *  Method: Bi-diagonalization and QR-chasing with implicit shift.
+ *  Method: Bi-diagonalization by givens rotations and QR-chasing with implicit shift.
  *          (Variant of Golub-Reinsch-Algorithm)
- *          Bi-diagonalization via Givens rotations.
- *  Input:  a  (nxm, any data), v  (mxm rotation, identity or NULL), u  (nxn rotation, identity or NULL)
- *  Output: a' (diagonal),      v' (mxm rotation or NULL),           u' (nxn rotation or NULL)
+ *
+ *  Matrices u, a, v are being modified: mat -> mat'
+ *  Input:  u  (nxn unitary or NULL), a  (nxm, any data), v  (nxn unitary or NULL),
+ *  Output: u' (nxn unitary or NULL), a' (diagonal),      v' (nxn unitary or NULL)
  *  It is uT * a * v = u'T * a' * v'
- *  Diagonal elements are sorted in descending value order.
+ *
+ *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.
+ *  (Convergence failure is very rare.)
+ *
+ *  On success:
+ *    - a' is fully diagonal
+ *    - diagonal elements are non-negative
+ *    - diagonal elements are sorted in descending value order
+ *    - Det(u') == 1
+ *    - Det(v') == 1 or -1
  */
-void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // limited to a->rows >= a->cols
-void bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // limited to a->cols >= a->rows
-void bmath_mf3_s_svd(     bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // for all matrices
+bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // for all matrices
 
 //---------------------------------------------------------------------------------------------------------------------
 // covariance

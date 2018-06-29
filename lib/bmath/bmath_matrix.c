@@ -14,7 +14,7 @@
  */
 
 /** Matrix types and operations.
- *  All routines have been designed from scratch and optimized for modern architectures.
+ *  All routines have been entirely designed from scratch and optimized with modern architectures in mind.
  */
 
 #include "bmath_matrix.h"
@@ -393,20 +393,16 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
     ASSERT(  o->rows == res->rows );
     ASSERT( op->cols == res->cols );
 
-    for( sz_t i = 0; i < res->rows; i++ )
+    // cache friendly inner loop
+    bmath_mf3_s_zro( res );
+    for( sz_t j = 0; j < o->cols; j++ )
     {
-        f3_t* vr = res->data + i * res->stride;
-        const f3_t* v1 = o ->data + i * o ->stride;
-
-        for( sz_t j = 0; j < res->cols; j++ )
+        const f3_t* bj = op->data + j * op->stride;
+        for( sz_t i = 0; i < o->rows; i++ )
         {
-            const f3_t* v2 = op->data + j;
-            f3_t sum = 0;
-            for( sz_t k = 0; k < o->cols; k++ )
-            {
-                sum += v1[ k ] * v2[ k * op->stride ];
-            }
-            vr[ j ] = sum;
+            f3_t aij =   o->data[  i *   o->stride + j ];
+            f3_t* ri = res->data + i * res->stride;
+            for( sz_t k = 0; k < op->cols; k++ ) ri[ k ] += aij * bj[ k ];
         }
     }
 }
@@ -478,10 +474,11 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
         return;
     }
 
+    ASSERT( o->cols  == op->cols );
     ASSERT( o->rows  == res->rows );
     ASSERT( op->rows == res->cols );
 
-    if( o == op ) // symmetric result
+    if( o == op ) // result is symmetric -> we can safe half of the work
     {
         for( sz_t i = 0; i < o->rows; i++ )
         {
@@ -498,18 +495,15 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
         return;
     }
 
-
+    bmath_mf3_s_zro( res );
     for( sz_t i = 0; i < o->rows; i++ )
     {
               f3_t* vri = res->data + i * res->stride;
         const f3_t* voi =   o->data + i *   o->stride;
-
         for( sz_t j = 0; j < op->rows; j++ )
         {
             const f3_t* vpj = op->data + j * op->stride;
-            f3_t sum = 0;
-            for( sz_t k = 0; k < o->cols; k++ ) sum += voi[ k ] * vpj[ k ];
-            vri[ j ] = sum;
+            for( sz_t k = 0; k < o->cols; k++ ) vri[ j ] += voi[ k ] * vpj[ k ];
         }
     }
 }
@@ -674,7 +668,7 @@ void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     bmath_mf3_s_one( q );
 
     bmath_mf3_s_cpy( o, a );
-    bmath_mf3_s_evd_htp( a, q );
+    bmath_mf3_s_evd( a, q );
 
     bmath_vf3_s* dag = bmath_vf3_s_create();
     bmath_vf3_s_set_size( dag, n );
@@ -1039,6 +1033,24 @@ void bmath_mf3_s_swap_col( bmath_mf3_s* o, sz_t i, sz_t j )
     f3_t* vi = o->data + i;
     f3_t* vj = o->data + j;
     for( sz_t k = 0; k < o->rows; k++ ) f3_t_swap( vi + k * o->stride, vj + k * o->stride );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_f3_to_row( bmath_mf3_s* o, f3_t v, sz_t i )
+{
+    ASSERT( i < o->rows );
+    f3_t* vi = o->data + i * o->stride;
+    for( sz_t k = 0; k < o->cols; k++ ) vi[ k ] *= v;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_f3_to_col( bmath_mf3_s* o, f3_t v, sz_t i )
+{
+    ASSERT( i < o->cols );
+    f3_t* vi = o->data + i;
+    for( sz_t k = 0; k < o->rows; k++ ) vi[ k * o->stride ] *= v;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1704,7 +1716,7 @@ void bmath_mf3_s_qr_rot_htp_utr( bmath_mf3_s* q, bmath_mf3_s* r )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_evd_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( bmath_mf3_s_is_hsm( a ) );
 
@@ -1717,7 +1729,8 @@ void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
     sz_t n = a->rows;
     sz_t max_cycles = 100;
 
-    for( sz_t cycle = 0; cycle < max_cycles; cycle++ )
+    sz_t cycle;
+    for( cycle = 0; cycle < max_cycles; cycle++ )
     {
         f3_t max_dev = 0;
         for( sz_t k = 0; k < n; k++ )
@@ -1775,23 +1788,33 @@ void bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
         }
         if( max_dev == 0 ) break;
     }
+
+    return ( cycle < max_cycles );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
+/** In-place EVD for a symmetric matrix.
+ *  (Variant of Francis' QR-Algorithm with shift)
+ *  Very efficient for large matrices. >20x faster than Jacobi method but slightly less accurate.
+ *  bmath_mf3_s_evd_htp for more details.
+ */
+bl_t bmath_mf3_s_evd_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     sz_t n = a->rows;
-    if( n <= 1 ) return; // nothing to do
+    if( n <= 1 ) return true; // nothing to do
 
     // tridiagonalization
     bmath_mf3_s_hsm_trd_htp( a, v );
+
+    bl_t success = true;
 
     for( sz_t block_n = n; block_n > 1; block_n-- )
     {
         sz_t max_cycles = 100; // usually convergence is reached after 2...3 cycles
         f3_t shift_sum = 0;
-        for( sz_t cycle = 0; cycle < max_cycles; cycle++ )
+        sz_t cycle;
+        for( cycle = 0; cycle < max_cycles; cycle++ )
         {
             // aij of lower 2x2 sub-matrix
             f3_t a11 = a->data[ ( block_n - 1 ) * ( a->stride + 1 )     ];
@@ -1853,43 +1876,57 @@ void bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
                 gr0 = gr1;
             }
             a0[ 0 ] = r00 * cp;
-
         }
+        if( cycle == max_cycles ) success = false;
         for( sz_t i = 0; i < block_n; i++ ) a->data[ i * ( a->stride + 1 ) ] += shift_sum;
     }
 
-    // sort by descending eigenvalues
-    for( sz_t i = 0; i < n - 1; i++ )
+    if( success )
     {
-        f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
-        sz_t imax = i;
-        for( sz_t j = i + 1; j < n; j++ )
+        // sort by descending eigenvalues
+        for( sz_t i = 0; i < n - 1; i++ )
         {
-            f3_t v = a->data[ j * ( a->stride + 1 ) ];
-            imax = ( v > vmax ) ? j : imax;
-            vmax = ( v > vmax ) ? v : vmax;
+            f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
+            sz_t imax = i;
+            for( sz_t j = i + 1; j < n; j++ )
+            {
+                f3_t v = a->data[ j * ( a->stride + 1 ) ];
+                imax = ( v > vmax ) ? j : imax;
+                vmax = ( v > vmax ) ? v : vmax;
+            }
+            f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+            if( v ) bmath_mf3_s_swap_row( v, i, imax );
         }
-        f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-        if( v ) bmath_mf3_s_swap_row( v, i, imax );
     }
+
+    return success;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
+/** In-place EVD for a symmetric matrix. Approach: TRD, QR with isolated shifting.
+ *  (Variant of Francis' QR-Algorithm with shift)
+ *  Plain shift is not explicitly added/subtracted. Only the shift effect is applied to the matrix.
+ *  This minimizes accuracy-loss similarly as implicit shift would do.
+ *  bmath_mf3_s_evd_htp for more details.
+ */
+bl_t bmath_mf3_s_evd_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     sz_t n = a->rows;
-    if( n <= 1 ) return; // nothing to do
+    if( n <= 1 ) return true; // nothing to do
 
     /// tridiagonalization
     bmath_mf3_s_hsm_trd_htp( a, v );
 
     // qr iteration until smallest non-diag element < offd_limit;
 
+    bl_t success = true;
+
     for( sz_t block_n = n; block_n > 1; block_n-- )
     {
         sz_t max_cycles = 100; // usually convergence is reached after 2...3 cycles
-        for( sz_t cycle = 0; cycle < max_cycles; cycle++ )
+        sz_t cycle;
+        for( cycle = 0; cycle < max_cycles; cycle++ )
         {
             f3_t lambda;
             {
@@ -1960,22 +1997,35 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 
             pajj[ 0 ] = b * gr_i.c + f3_sqr( gr_i.s ) * lambda;
         }
+        if( cycle == max_cycles ) success = false;
     }
 
-    // sort by descending eigenvalues
-    for( sz_t i = 0; i < n - 1; i++ )
+    if( success )
     {
-        f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
-        sz_t imax = i;
-        for( sz_t j = i + 1; j < n; j++ )
+        // sort by descending eigenvalues
+        for( sz_t i = 0; i < n - 1; i++ )
         {
-            f3_t v = a->data[ j * ( a->stride + 1 ) ];
-            imax = ( v > vmax ) ? j : imax;
-            vmax = ( v > vmax ) ? v : vmax;
+            f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
+            sz_t imax = i;
+            for( sz_t j = i + 1; j < n; j++ )
+            {
+                f3_t v = a->data[ j * ( a->stride + 1 ) ];
+                imax = ( v > vmax ) ? j : imax;
+                vmax = ( v > vmax ) ? v : vmax;
+            }
+            f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+            if( v ) bmath_mf3_s_swap_row( v, i, imax );
         }
-        f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-        if( v ) bmath_mf3_s_swap_row( v, i, imax );
     }
+
+    return success;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_mf3_s_evd( bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    return bmath_mf3_s_evd_qr_ishift( a, v );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1983,7 +2033,7 @@ void bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 /** SVD for a->rows >= a->cols
  *  Method: upper bidiagonalization + chase algorithm with implicit shift
  */
-void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( a->rows >= a->cols );
 
@@ -1991,14 +2041,17 @@ void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     bmath_mf3_s_ubd_htp( u, a, v );
 
     sz_t n = a->cols;
-    if( n <= 1 ) return; // nothing else to do
+    if( n <= 1 ) return true; // nothing else to do
+
+    bl_t success = true;
 
     // in practice convergence hardly ever needs more than 4 cycles
     const sz_t max_cyles = 100;
 
     for( sz_t block_n = n; block_n > 1; block_n-- )
     {
-        for( sz_t cycle = 0; cycle < max_cyles; cycle++ )
+        sz_t cycle;
+        for( cycle = 0; cycle < max_cyles; cycle++ )
         {
             f3_t lambda;
 
@@ -2006,7 +2059,7 @@ void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
                 f3_t* a0 = a->data + ( a->stride + 1 ) * ( block_n - 2 );
                 f3_t* a1 = a0 + a->stride;
 
-                // exit cycle if bottom off diagonal is zero
+                // exit cycle if bottom off-diagonal is zero
                 if( ( f3_abs( a0[ 1 ] ) < f3_lim_min ) || ( f3_abs( a0[ 1 ] ) < f3_abs( a1[ 1 ] ) * f3_lim_eps ) )
                 {
                     a0[ 1 ] = 0;
@@ -2048,7 +2101,7 @@ void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
             if( u ) grt_s_rotate_row( &gr_l, u->data, u->data + u->stride, 0, u->cols );
             if( v ) grt_s_rotate_row( &gr_r, v->data, v->data + v->stride, 0, v->cols );
 
-            // casing, annihilating off-bidiagonals
+            // chasing, annihilating off-bidiagonals
             for( sz_t k = 0; k < block_n - 2; k++ )
             {
                 f3_t* ak = a->data + ( a->stride + 1 ) * k + 1;
@@ -2066,24 +2119,10 @@ void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
                 if( v ) grt_s_rotate_row( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
             }
         }
+        if( cycle == max_cyles ) success = false;
     }
 
-    // sort by descending diagonal values
-    for( sz_t i = 0; i < n - 1; i++ )
-    {
-        f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
-        sz_t imax = i;
-        for( sz_t j = i + 1; j < n; j++ )
-        {
-            f3_t v = a->data[ j * ( a->stride + 1 ) ];
-            imax = ( v > vmax ) ? j : imax;
-            vmax = ( v > vmax ) ? v : vmax;
-        }
-        f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-        if( u ) bmath_mf3_s_swap_row( u, i, imax );
-        if( v ) bmath_mf3_s_swap_row( v, i, imax );
-    }
-
+    return success;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -2091,22 +2130,25 @@ void bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 /** SVD for a->rows >= a->cols
  *  Method: lower bidiagonalization + chase algorithm with implicit shift
  */
-void bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( a->cols >= a->rows );
 
-    // creating upper-bidiagonal
+    // creating lower-bidiagonal
     bmath_mf3_s_lbd_htp( u, a, v );
 
     sz_t n = a->rows;
-    if( n <= 1 ) return; // nothing else to do
+    if( n <= 1 ) return true; // nothing else to do
+
+    bl_t success = true;
 
     // in practice convergence hardly ever needs more than 4 cycles
     const sz_t max_cyles = 100;
 
     for( sz_t block_n = n; block_n > 1; block_n-- )
     {
-        for( sz_t cycle = 0; cycle < max_cyles; cycle++ )
+        sz_t cycle;
+        for( cycle = 0; cycle < max_cyles; cycle++ )
         {
             f3_t lambda;
 
@@ -2114,7 +2156,7 @@ void bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
                 f3_t* a0 = a->data + ( a->stride + 1 ) * ( block_n - 2 );
                 f3_t* a1 = a0 + a->stride;
 
-                // exit cycle if bottom off diagonal is zero
+                // exit cycle if bottom off-diagonal is zero
                 if( ( f3_abs( a1[ 0 ] ) < f3_lim_min ) || ( f3_abs( a1[ 0 ] ) < f3_abs( a1[ 1 ] ) * f3_lim_eps ) )
                 {
                     a1[ 0 ] = 0;
@@ -2156,7 +2198,7 @@ void bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
             if( u ) grt_s_rotate_row( &gr_l, u->data, u->data + u->stride, 0, u->cols );
             if( v ) grt_s_rotate_row( &gr_r, v->data, v->data + v->stride, 0, v->cols );
 
-            // casing, annihilating off-bidiagonals
+            // chasing, annihilating off-bidiagonals
             for( sz_t k = 0; k < block_n - 2; k++ )
             {
                 f3_t* ak = a->data + ( a->stride + 1 ) * ( k + 1 ) - 1;
@@ -2176,37 +2218,56 @@ void bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
             }
         }
+        if( cycle == max_cyles ) success = false;
     }
 
-    // sort by descending diagonal values
-    for( sz_t i = 0; i < n - 1; i++ )
-    {
-        f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
-        sz_t imax = i;
-        for( sz_t j = i + 1; j < n; j++ )
-        {
-            f3_t v = a->data[ j * ( a->stride + 1 ) ];
-            imax = ( v > vmax ) ? j : imax;
-            vmax = ( v > vmax ) ? v : vmax;
-        }
-        f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-        if( u ) bmath_mf3_s_swap_row( u, i, imax );
-        if( v ) bmath_mf3_s_swap_row( v, i, imax );
-    }
+    return success;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_svd(  bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_svd(  bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
+    bl_t success = false;
+
     if( a->rows >= a->cols )
     {
-        bmath_mf3_s_svd_ubd( u, a, v );
+        success = bmath_mf3_s_svd_ubd( u, a, v );
     }
     else
     {
-        bmath_mf3_s_svd_lbd( u, a, v );
+        success = bmath_mf3_s_svd_lbd( u, a, v );
     }
+
+    if( !success ) return false;
+
+    // sorts by descending diagonal values; turns negative values
+    sz_t n = sz_min( a->rows, a->cols );
+    for( sz_t i = 0; i < n; i++ )
+    {
+        f3_t vmax = f3_abs( a->data[ i * ( a->stride + 1 ) ] );
+        sz_t imax = i;
+        for( sz_t j = i + 1; j < n; j++ )
+        {
+            f3_t v = f3_abs( a->data[ j * ( a->stride + 1 ) ] );
+            imax = ( v > vmax ) ? j : imax;
+            vmax = ( v > vmax ) ? v : vmax;
+        }
+        if( imax != i )
+        {
+            f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+            if( u ) bmath_mf3_s_swap_row( u, i, imax );
+            if( v ) bmath_mf3_s_swap_row( v, i, imax );
+        }
+
+        if( a->data[ i * ( a->stride + 1 ) ] < 0 )
+        {
+            a->data[ i * ( a->stride + 1 ) ] *= -1.0;
+            if( v ) bmath_mf3_s_mul_f3_to_row( v, -1.0, i );
+        }
+    }
+
+    return true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -2318,6 +2379,7 @@ static vd_t selftest( void )
         bmath_mf3_s_set_size( m3, 2, 2 );
         bmath_mf3_s_set_size( m4, 2, 2 );
         bmath_mf3_s_mul( m2, m1, m3 );
+
         ASSERT( bmath_mf3_s_get_f3( m3, 0, 0 ) == 35 );
         ASSERT( bmath_mf3_s_get_f3( m3, 0, 1 ) == 44 );
         ASSERT( bmath_mf3_s_get_f3( m3, 1, 0 ) == 44 );
@@ -2572,11 +2634,11 @@ static vd_t selftest( void )
         // jacobi
         {
             bmath_mf3_s_cpy( m1, m2 );
-            bmath_mf3_s_evd_htp_jacobi( m2, NULL );
+            bmath_mf3_s_evd_jacobi( m2, NULL );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             bmath_mf3_s_cpy( m1, m2 );
             bmath_mf3_s_one( m3 );
-            bmath_mf3_s_evd_htp_jacobi( m2, m3 );
+            bmath_mf3_s_evd_jacobi( m2, m3 );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
             bmath_mf3_s_mul( m2, m3, m4 );
@@ -2585,30 +2647,14 @@ static vd_t selftest( void )
             ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
         }
 
-        // qr_xshift
+        // default evd
         {
             bmath_mf3_s_cpy( m1, m2 );
-            bmath_mf3_s_evd_htp_qr_xshift( m2, NULL );
+            bmath_mf3_s_evd( m2, NULL );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             bmath_mf3_s_cpy( m1, m2 );
             bmath_mf3_s_one( m3 );
-            bmath_mf3_s_evd_htp_qr_xshift( m2, m3 );
-            ASSERT( bmath_mf3_s_is_dag( m2 ) );
-            ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
-            bmath_mf3_s_mul( m2, m3, m4 );
-            bmath_mf3_s_htp( m3, m3 );
-            bmath_mf3_s_mul( m3, m4, m4 );
-            ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
-        }
-
-        // qr_ishift
-        {
-            bmath_mf3_s_cpy( m1, m2 );
-            bmath_mf3_s_evd_htp_qr_ishift( m2, NULL );
-            ASSERT( bmath_mf3_s_is_dag( m2 ) );
-            bmath_mf3_s_cpy( m1, m2 );
-            bmath_mf3_s_one( m3 );
-            bmath_mf3_s_evd_htp_qr_ishift( m2, m3 );
+            bmath_mf3_s_evd( m2, m3 );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
             bmath_mf3_s_mul( m2, m3, m4 );
@@ -2644,7 +2690,7 @@ static vd_t selftest( void )
 
         bmath_arr_vf3_s_on_section_set_sum( a1, 0, -1, 0 ); // set sum of vector components to 0 (introducing a linear dependence)
         bmath_mf3_s_set_covariance_on_section_fast( m1, a1, 0, -1 );
-        bmath_mf3_s_evd_htp( m1, NULL );
+        bmath_mf3_s_evd( m1, NULL );
         ASSERT( f3_abs( bmath_mf3_s_get_f3( m1, n - 1, n - 1 ) ) < 1E-8 ); // last eigenvalue should be near zero
     }
 

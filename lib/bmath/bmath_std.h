@@ -21,5 +21,8 @@
 #include "bcore_std.h"
 #include "bmath_signal.h"
 #include "bmath_spect_vector.h"
+#include "bmath_spect_matrix.h"
+#include "bmath_vector.h"
+#include "bmath_matrix.h"
 
 #endif // BMATH_STD_H
