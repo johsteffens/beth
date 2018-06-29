@@ -1601,7 +1601,7 @@ void bmath_mf3_s_decompose_trd( bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     if( u )
     {
@@ -2038,7 +2038,7 @@ bl_t bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     ASSERT( a->rows >= a->cols );
 
     // creating upper-bidiagonal
-    bmath_mf3_s_ubd_htp( u, a, v );
+    bmath_mf3_s_decompose_ubd( u, a, v );
 
     sz_t n = a->cols;
     if( n <= 1 ) return true; // nothing else to do

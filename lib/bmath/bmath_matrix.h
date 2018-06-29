@@ -350,7 +350,7 @@ bl_t bmath_mf3_s_evd( bmath_mf3_s* a, bmath_mf3_s* v );
  *  Output: u' (nxn unitary or NULL), a' (bi-diagonal),   v' (nxn unitary or NULL)
  *  It is uT * a * v = u'T * a' * v'
  */
-void bmath_mf3_s_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper-bidiagonal
+void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper-bidiagonal
 void bmath_mf3_s_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower-bidiagonal
 
 /** Stable in-place SVD for a general matrix.
