@@ -36,10 +36,10 @@ The source code in this repository is licensed under the [Apache 2.0 License](ht
 *Copyright (C) 2017, 2018 Johannes B. Steffens johannes.b.steffens@gmail.com.*
 
 ## Sub Libraries
-Beth consists of a suite of sub-libraries each specializing on certain functional aspects.
+Beth consists of a suite of sub-libraries.
 
 ### bcore
-Library bcore represents the functional essence of Beth. It defines the [core concepts](https://github.com/johsteffens/beth#core-concepts). Contains the object abstraction framework, specific absractions and objects covering...
+Library bcore represents the functional essence of Beth. It defines [core concepts](https://github.com/johsteffens/beth#core-concepts) and contains objects and/or absractions around ...
    * Memory Management
    * Gabage Collection
    * Object Definition and Instance Management
