@@ -8,9 +8,13 @@
 
 # About Beth
 
-*Beth* is a personal *"moonshot"* project. It serves as incubator of new ideas and as functional basis for depending projects.
+*Beth* is a personal *"moonshot"* project. 
 
-In it I am re-thinking polymorphism, reflection-aided generic programming and functional programming. One goal is leveraging efficient application design with respect to scalability, maintainability and genericity.
+It serves as incubator of new ideas and as general-purpose functional basis for depending projects. 
+
+It integrates high-level programming paradigms in to standard C code making important features (such as OOP, Serialization) easily available, which are ortherwise accessible only in higher langages like C++, Java, Python, etc. 
+
+It also (in a way) reinvents polymorphism and reflection-aided generic programming. 
 
 Some objectives are...
    * Bridging the gap between procedural and object oriented programming.
