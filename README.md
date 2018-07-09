@@ -52,7 +52,7 @@ Library bcore represents the functional essence of Beth. It defines [core concep
 Library bclos contains an experimental closure framework. It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
 
 ### bmath
-Library bmath focuses on numerical mathematics. All algorithms have been (re)designed from scratch. Many are optimized for modern architectures in a cache- and platform-oblivious manner. 
+Library bmath focuses on general purpose numerical mathematics. All algorithms have been (re)designed from scratch. Many are optimized for modern architectures in a cache- and platform-oblivious manner. 
 
    * Vector and Matrix objects and associated basic algebra (Addition, Multiplication, Inversion, ...).
    * Complex numbers.
