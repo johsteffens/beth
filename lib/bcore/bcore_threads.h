@@ -134,6 +134,15 @@ sz_t bcore_thread_arr_s_push_call( bcore_thread_arr_s* o, bcore_fp_thread func, 
 vd_t bcore_thread_arr_s_join_pop( bcore_thread_arr_s* o );
 
 /**********************************************************************************************************************/
+// other thread related functions
+
+/// suspends current thread for period ns given in ...
+void bcore_sleep_ns( sz_t ns ); /// ... nanoseconds
+void bcore_sleep_us( sz_t us ); /// ... microseconds
+void bcore_sleep_ms( sz_t ms ); /// ... milliseconds
+
+/**********************************************************************************************************************/
+
 
 vd_t bcore_threads_signal_handler( const bcore_signal_s* o );
 

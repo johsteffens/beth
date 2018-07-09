@@ -21,6 +21,7 @@
 #include "bcore_spect_array.h"
 
 #include <errno.h>
+#include <time.h>
 
 /**********************************************************************************************************************/
 // mutex
@@ -240,6 +241,31 @@ vd_t bcore_thread_arr_s_join_pop( bcore_thread_arr_s* o )
     vd_t ret = bcore_thread_s_join( thread );
     bcore_array_a_pop( (bcore_array*)o );
     return ret;
+}
+
+/**********************************************************************************************************************/
+
+void bcore_sleep_ns( sz_t ns )
+{
+    struct timespec ts = { 0 };
+    ts.tv_sec  = ns / 1000000000;
+    ts.tv_nsec = ns % 1000000000;
+
+    // it seems the nanosleep prototype ins not necessarily defined in <time.h>
+    // so we do it here.
+    int nanosleep( const struct timespec* requested, struct timespec* remaining );
+
+    nanosleep( &ts, NULL );
+}
+
+void bcore_sleep_us( sz_t us )
+{
+    bcore_sleep_ns( us * 1000 );
+}
+
+void bcore_sleep_ms( sz_t ms )
+{
+    bcore_sleep_ns( ms * 1000000 );
 }
 
 /**********************************************************************************************************************/
