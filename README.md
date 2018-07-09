@@ -11,6 +11,10 @@ Some objectives are...
    * Dynamic type binding.
    * Binding interfaces and objects via associations.
    * Achieving high runtime efficiency.
+   * Providing baseline functionality covering ...
+      * Containers (Arrays, Trees, Maps)
+      * Serialization
+      * Numerical Mathematics
 
 ## Usage
 Beth is intended as foundation library for more specialized projects. 
