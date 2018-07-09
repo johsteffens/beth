@@ -35,7 +35,35 @@ The source code in this repository is licensed under the [Apache 2.0 License](ht
 
 *Copyright (C) 2017, 2018 Johannes B. Steffens johannes.b.steffens@gmail.com.*
 
-## Concepts
+## Sub Libraries
+Beth consists of a suite of sub-libraries each specializing on certain functional aspects.
+
+### bcore
+Library bcore represents the functional essence of Beth. It defines the [core concepts](https://github.com/johsteffens/beth#core-concepts). Contains the object abstraction framework, specific absractions and objects covering...
+   * Memory Management
+   * Gabage Collection
+   * Object Definition and Instance Management
+   * Object Scope Management
+   * Serialization
+   * Arrays, Strings, Hash Maps etc.
+   * ... and more
+
+### bclos
+Library bclos contains an experimental closure framework. It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
+
+### bmath
+Library bmath focuses on numerical mathematics. All algorithms have been (re)designed from scratch. Many are optimized for modern architectures in a cache- and platform-oblivious manner. 
+
+   * Vector and Matrix objects and associated basic algebra (Addition, Multiplication, Inversion, ...).
+   * Complex numbers.
+   * Fourier Transformation (DFT and FFT)
+   * Matrix Decomposition:
+      * LU, QR, Cholesky
+      * Bi-, Tri-Diagonalization
+      * Eigen Values & Vectors (EVD)
+      * Singular Values & Vectors (SVD)
+
+## Core Concepts
 
 ### Reflection
 Beth employs *Reflection* as basis for genericity. The reflection-framework allows dynamic object-definition using a declarative (string-based) syntax. A corresponding C-syle structure definition is not required. However, for static types both methods can be mixed, taking advantage of the strengths of either method as inspired by coding context.
