@@ -1,3 +1,7 @@
+# Table of Content
+   * [About Beth](#about-beth)
+
+
 # About Beth
 
 *Beth* is a personal *"moonshot"* project. It serves as incubator of new ideas and as functional basis for depending projects.
