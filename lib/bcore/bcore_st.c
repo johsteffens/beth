@@ -1480,6 +1480,13 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
                 if( set_arg ) *va_arg( args, bool* ) = val;
                 if( idx > end_l ) idx = end_l;
             }
+            else if( ( bcore_strcmp( "char", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "char" );
+                u0_t c = o->sc[ idx ];
+                if( idx < end_l ) idx++;
+                if( set_arg ) *va_arg( args, u0_t* ) = c;
+            }
             else if( ( bcore_strcmp( "name", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "name" );

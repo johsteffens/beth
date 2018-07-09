@@ -194,6 +194,10 @@ void st_s_print_fa( sc_t format, ... );
  *  A space ' ' in the format string consumes all whitespaces {' ', '\t', '\n', '\r', c-style comments}
  *
  *  Format rules
+ *  "#char"
+ *      Argument: u0_t*
+ *      Consumes a single character.
+ *
  *  "#name"
  *      Argument: st_s*
  *      Consumes a name-string consisting of valid name characters.
