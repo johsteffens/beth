@@ -1,6 +1,10 @@
 # Table of Content
    * [About Beth](#about-beth)
-
+   * [Usage](#usage)
+   * [Licence](#license)
+   * [Sub Libraries](#sub-libraries)
+   * [Core Concepts](#core-concepts)
+   * [Motivation](#motivation)
 
 # About Beth
 
