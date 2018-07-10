@@ -12,7 +12,7 @@
 
 It serves as incubator of new ideas and as general-purpose functional basis for depending projects. 
 
-It integrates high-level programming paradigms in to standard C code making important features (such as OOP, Serialization) easily available, which are ortherwise accessible only in higher langages like C++, Java, Python, etc. 
+It brings high-level programming paradigms (such as OOP, Serialization, Dynamic Binding) into efficient C code. 
 
 It also (in a way) reinvents polymorphism and reflection-aided generic programming. 
 
