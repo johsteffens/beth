@@ -33,9 +33,9 @@ static const f3_t f3_lim_max = DBL_MAX;     // maximum normalized representable 
 static const f3_t f3_lim_eps = DBL_EPSILON; // minimum representable positive difference to 1.0
 
 /// math constants
-static inline f3_t f3_pi( void )   { return 3.1415926535897932384626434; }
-static inline f3_t f3_pi_2( void ) { return 1.5707963267948966192313217; }
-static inline f3_t f3_tau( void )  { return 6.2831853071795864769252868; }
+static inline f3_t f3_pi( void )   { return 3.1415926535897932384626434; } // PI
+static inline f3_t f3_pi_2( void ) { return 1.5707963267948966192313217; } // PI / 2
+static inline f3_t f3_tau( void )  { return 6.2831853071795864769252868; } // 2 * PI
 
 /// random generator (range -1, 1)
 static inline f3_t f3_xsg1_sym( u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv ) ) * ( 2.0 / 0xFFFFFFFFu ) - 1.0; }

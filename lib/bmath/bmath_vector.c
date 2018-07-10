@@ -462,6 +462,52 @@ void bmath_vf3_s_set_avg( bmath_vf3_s* o, f3_t val )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+f3_t bmath_vf3_s_max( const bmath_vf3_s* o )
+{
+    f3_t v = o->size > 0 ? o->data[ 0 ] : 0;
+    for( sz_t i = 1; i < o->size; i++ ) v = f3_max( v, o->data[ i ] );
+    return v;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_vf3_s_min( const bmath_vf3_s* o )
+{
+    f3_t v = o->size > 0 ? o->data[ 0 ] : 0;
+    for( sz_t i = 1; i < o->size; i++ ) v = f3_min( v, o->data[ i ] );
+    return v;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+sz_t bmath_vf3_s_idx_max( const bmath_vf3_s* o )
+{
+    f3_t v = o->size > 0 ? o->data[ 0 ] : 0;
+    sz_t i = 0;
+    for( sz_t j = 1; j < o->size; j++ )
+    {
+        i = o->data[ j ] > v ? j : i;
+        v = o->data[ j ] > v ? o->data[ j ] : v;
+    }
+    return i;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+sz_t bmath_vf3_s_idx_min( const bmath_vf3_s* o )
+{
+    f3_t v = o->size > 0 ? o->data[ 0 ] : 0;
+    sz_t i = 0;
+    for( sz_t j = 1; j < o->size; j++ )
+    {
+        i = o->data[ j ] < v ? j : i;
+        v = o->data[ j ] < v ? o->data[ j ] : v;
+    }
+    return i;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_vf3_s_to_stdout( const bmath_vf3_s* o )
 {
     const f3_t* v = o->data;

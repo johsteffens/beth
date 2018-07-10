@@ -115,6 +115,11 @@ f3_t bmath_vf3_s_get_f3( const bmath_vf3_s* o, sz_t index )
     return o->data[ index ];
 }
 
+f3_t bmath_vf3_s_max(     const bmath_vf3_s* o );
+f3_t bmath_vf3_s_min(     const bmath_vf3_s* o );
+sz_t bmath_vf3_s_idx_max( const bmath_vf3_s* o );
+sz_t bmath_vf3_s_idx_min( const bmath_vf3_s* o );
+
 /// For easy inspection
 void bmath_vf3_s_to_stdout( const bmath_vf3_s* o );
 void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o ); // vector statistics
