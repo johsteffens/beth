@@ -999,7 +999,8 @@ void bmath_mf3_s_get_col_vec(  const bmath_mf3_s* o, sz_t idx, bmath_vf3_s* res 
 {
     ASSERT( idx < o->cols );
     ASSERT( o->cols <= res->size );
-    for( sz_t i = 0; i < o->rows; i++ ) res->data[ i ] = o->data[ i * o ->stride ];
+    const f3_t* src = o->data + idx;
+    for( sz_t i = 0; i < o->rows; i++ ) res->data[ i ] = src[ i * o ->stride ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
