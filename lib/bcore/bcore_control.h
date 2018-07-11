@@ -217,39 +217,59 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 /// same purpose as assert() but cannot be switched off via NDEBUG; typically used in selftests
 #define ASSERT( condition ) if( !(condition) ) bcore_err( "assertion '%s' failed in function %s (%s line %i)\n", #condition, __func__, __FILE__, __LINE__ )
 
-/// time test
-/*
-#define TIME_TO_STDOUT( operation ) \
-{ \
-        clock_t time = clock(); \
-        operation; \
-        time = clock() - time; \
-        bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#operation"\n", ( sz_t ) ( ( 1E3 * ( double )( time )/CLOCKS_PER_SEC ) ) ); \
-}
-*/
+/**********************************************************************************************************************/
 
-/** clock() appears to behave sometimes unreliable.
- *  gettimeofday yield better results but is not standardized on all platforms
- *  This compromise waits for a better timer in future.
- */
-#define TIME_TO_STDOUT( operation ) \
-{ \
-    struct timeval t0, t1; \
-    gettimeofday( &t0, NULL ); \
-    operation; \
-    gettimeofday( &t1, NULL ); \
-    double diff = t1.tv_sec - t0.tv_sec; \
-    diff += ( t1.tv_usec - t0.tv_usec ) * 1E-6; \
-    if( diff >= 100 ) \
+// cpu time assessment
+#define CPU_TIME_OF( expression, time_var ) \
+    f3_t __time_diff_sec = 0; \
     { \
-        bcore_msg_fa( "#pl5 {#<sz_t>}s : "#operation"\n", ( sz_t ) diff ); \
+        clock_t time = clock(); \
+        expression; \
+        __time_diff_sec = clock() - time; \
+        __time_diff_sec /= CLOCKS_PER_SEC; \
+    } \
+    time_var = __time_diff_sec;
+
+//  gettimeofday is not standardized on all platforms
+#define ABS_TIME_OF( expression, time_var ) \
+    f3_t __time_diff_sec = 0; \
+    { \
+        struct timeval t0, t1; \
+        gettimeofday( &t0, NULL ); \
+        expression; \
+        gettimeofday( &t1, NULL ); \
+        __time_diff_sec = t1.tv_sec - t0.tv_sec; \
+        __time_diff_sec += ( t1.tv_usec - t0.tv_usec ) * 1E-6; \
+    } \
+    time_var = __time_diff_sec;
+
+#define CPU_TIME_TO_STDOUT( expression ) \
+{ \
+    CPU_TIME_OF( expression, f3_t __time_sec ) \
+    if( __time_sec >= 100 ) \
+    { \
+        bcore_msg_fa( "#pl5 {#<sz_t>}s : "#expression"\n", ( sz_t ) __time_sec ); \
     } \
     else \
     { \
-        bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#operation"\n", ( sz_t ) ( 1E3 * diff ) ); \
+        bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#expression"\n", ( sz_t ) ( 1E3 * __time_sec ) ); \
     } \
 }
 
+#define ABS_TIME_TO_STDOUT( expression ) \
+{ \
+    ABS_TIME_OF( expression, f3_t __time_sec ) \
+    if( __time_sec >= 100 ) \
+    { \
+        bcore_msg_fa( "#pl5 {#<sz_t>}s : "#expression"\n", ( sz_t ) __time_sec ); \
+    } \
+    else \
+    { \
+        bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#expression"\n", ( sz_t ) ( 1E3 * __time_sec ) ); \
+    } \
+}
+
+/**********************************************************************************************************************/
 /// object related functions
 #define BCORE_DECLARE_FUNCTION_INIT( name )    void name##_init( name* o );
 #define BCORE_DECLARE_FUNCTION_DOWN( name )    void name##_down( name* o );
