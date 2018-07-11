@@ -115,7 +115,4 @@ The memory-manager, excluding reference manager, was spun-off into a stand-alone
 # Motivation
 The classic framework for object oriented programming (such as realized in C++) has been widely cherished for decades. I appreciate OOP and like the efficient way C++ supports it. Yet there are issues. For example: The static association between objects and their interfaces forces an inhibiting rigidity into the developer's code-architecture. The limited means of genericity often promotes boiler plate code. More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of these issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware.
 
-During May-July 2017, in an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach. Project [beth](https://github.com/johsteffens/beth) shall bring this (and other releated ideas) into tangible shape.
-
-In *beth* and dependent projects, the approach turned out useful for object-instance management, dynamic arrays, object-ordering, serialization and others.
-
+During May-July 2017, in an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach. Project [beth](https://github.com/johsteffens/beth) brings these (and other ideas) into tangible shape.
