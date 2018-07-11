@@ -3,18 +3,21 @@
    * [Usage](#usage)
    * [License](#license)
    * [Sub Libraries](#sub-libraries)
+      * [bcore - Core Concepts](#bcore)
+      * [bmath - Algebraic Subsystem](#bmath)
+      * [bclos - Closures (Functional Programming)](#bclos)
    * [Core Concepts](#core-concepts)
+      * [Reflection](#reflection)
+      * [Perspective](#perspective)
+      * [Associative Binding](#binding)
+      * [Memory Management](#memory-management)
    * [Motivation](#motivation)
 
 # About Beth
 
 *Beth* is a personal *"moonshot"* project. 
 
-It serves as incubator of new ideas and as general-purpose functional basis for depending projects. 
-
-It integrates high-level programming paradigms in to standard C code making important features (such as OOP, Serialization) easily available, which are ortherwise accessible only in higher langages like C++, Java, Python, etc. 
-
-It also (in a way) reinvents polymorphism and reflection-aided generic programming. 
+It brings high-level programming paradigms (such as OOP, Serialization, Dynamic Binding) into efficient C code. It also (in a way) reinvents polymorphism and reflection-aided generic programming. 
 
 Some objectives are...
    * Bridging the gap between procedural and object oriented programming.
@@ -28,25 +31,26 @@ Some objectives are...
       * Serialization
       * Numerical Mathematics
 
+All code inside beth is redesigned/redeveloped from scratch (no mere adaptation of preexisting code) with focus on platform independence and efficiency.
+
 # Usage
 Beth is intended as foundation library for more specialized projects. 
 
-## Requirements/Dependencies
+### Requirements/Dependencies
    * gcc (or similar compiler suite) supporting the C11 standard.
    * Library `pthread` of the POSIX.1c standard.
 
-## Build with a project depending on beth
+### Build with a project depending on beth
    * Depending repositories owned by me contain instructions to build everything.
    * Example: [actinon](https://github.com/johsteffens/actinon) - [How to use it](https://github.com/johsteffens/actinon#how-to-use-it).
     
-## Build as stand-alone library
+### Build as stand-alone library
    * Downlowd [beth](https://github.com/johsteffens/beth).
    * In a terminal ...
       * enter folder `beth-master/lib`.
       * run `make`. This creates the static library `beth.a`.
       
 # License
-
 The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
 
 *Copyright (C) 2017, 2018 Johannes B. Steffens johannes.b.steffens@gmail.com.*
@@ -54,24 +58,24 @@ The source code in this repository is licensed under the [Apache 2.0 License](ht
 # Sub Libraries
 Beth consists of a suite of sub-libraries.
 
-## bcore
-Library bcore represents the functional essence of Beth. It defines [core concepts](https://github.com/johsteffens/beth#core-concepts) and contains objects and/or absractions around ...
+<a name = "bcore"></a>
+### bcore - Core Concepts
+Library bcore represents the functional essence of Beth. It defines [core concepts](https://github.com/johsteffens/beth#core-concepts) and contains objects and/or abstractions around ...
    * Memory Management
-   * Gabage Collection
+   * Garbage Collection
    * Object Definition and Instance Management
    * Object Scope Management
    * Serialization
    * Arrays, Strings, Hash Maps etc.
    * ... and more
 
-## bclos
-Library bclos contains an experimental closure framework. It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
+<a name = "bmath"></a>
+### bmath - Algebraic Subsystem
+Library bmath defines a linear algebra subsystem for vectors and matrices and provides a suite of functionality around numerical analysis. The following is offered:
 
-## bmath
-Library bmath focuses on general purpose numerical mathematics. All algorithms have been (re)designed from scratch. Many are optimized for modern architectures in a cache- and platform-oblivious manner. 
-
-   * Vector and Matrix objects and associated basic algebra (Addition, Multiplication, Inversion, ...).
-   * Complex numbers.
+   * Vector and Matrix subsystem with associated basic algebra (Addition, Multiplication, Inversion, ...).
+   * Linear Solvers
+   * Complex Numbers
    * Fourier Transformation (DFT and FFT)
    * Matrix Decomposition:
       * LU, QR, Cholesky
@@ -79,20 +83,31 @@ Library bmath focuses on general purpose numerical mathematics. All algorithms h
       * Eigen Values & Vectors (EVD)
       * Singular Values & Vectors (SVD)
 
+All algorithms have been redesigned/redeveloped from scratch (no adaption of pre-existing code, no *fortranitis*). Many are optimized for modern architectures in a cache- and platform-oblivious manner. Some are based on new or unconventional ideas.
+
+<a name = "bclos"></a>
+### bclos - Closures (Functional Programming)
+Library bclos contains a closure framework useful for for functional programming and interpreter design.
+It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
+
 # Core Concepts
 
-## Reflection
-Beth employs *Reflection* as basis for genericity. The reflection-framework allows dynamic object-definition using a declarative (string-based) syntax. A corresponding C-syle structure definition is not required. However, for static types both methods can be mixed, taking advantage of the strengths of either method as inspired by coding context.
+<a name = "reflection"></a>
+### Reflection
+Beth employs *Reflection* as basis for genericity. The reflection-framework allows dynamic object-definition using a declarative (string-based) syntax. A corresponding C-syle structure definition is not required. However, for static types both methods can be mixed, taking advantage of the strengths of either method as inspired by the coding context.
 
 The framework is used for object instantiation, initialization, lifetime management, serialization and more. Inside the beth codebase *reflection* is abbreviated `flect`.
 
-## Perspective
+<a name = "perspective"></a>
+### Perspective
 A key-component is the so-called *Perspective*, which is a special abstraction for a generic framework with the character of a polymorphic interface with dynamic binding. *Perspective* and *Object* need not be aware of each other at compile time, yet a *Perspective* may act as generic source of functionality for an object as well as its abstraction. The perspective-framework builds upon the reflection framework. Inside the beth codebase *perspective* is abbreviated `spect`.
 
-## Associative Binding
+<a name = "binding"></a>
+### Associative Binding
 Concurrent dynamic associations between *types*, *reflections*, and *perspectives* are accomplished by two kinds of hashmaps: The frontend represents a cache using lock-free linear probing. The backend is realized via memory efficient cuckoo-hashing. 
 
-## Memory Management & Garbage Collection
+<a name = "memory-management"></a>
+### Memory Management & Garbage Collection
 Beth has its own memory manager with integrated reference manager. Both components work closely together providing efficient garbage collection based on reference-counting. A special design-feature is the overhead-free (near) O(1) root-address-determination from any pointer adressing an embedded element of the object. This allows garbage collection, even after all direct pointers to the object have been released while only pointers to its elements remain in use. Once the last such element-reference is released, the enveloping instance is automatically determined and destroyed.
 
 The memory-manager, excluding reference manager, was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
@@ -100,7 +115,4 @@ The memory-manager, excluding reference manager, was spun-off into a stand-alone
 # Motivation
 The classic framework for object oriented programming (such as realized in C++) has been widely cherished for decades. I appreciate OOP and like the efficient way C++ supports it. Yet there are issues. For example: The static association between objects and their interfaces forces an inhibiting rigidity into the developer's code-architecture. The limited means of genericity often promotes boiler plate code. More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of these issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware.
 
-During May-July 2017, in an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach. Project [beth](https://github.com/johsteffens/beth) shall bring this (and other releated ideas) into tangible shape.
-
-In *beth* and dependent projects, the approach turned out useful for object-instance management, dynamic arrays, object-ordering, serialization and others.
-
+During May-July 2017, in an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach. Project [beth](https://github.com/johsteffens/beth) brings these (and other ideas) into tangible shape.
