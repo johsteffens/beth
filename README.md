@@ -57,7 +57,7 @@ The source code in this repository is licensed under the [Apache 2.0 License](ht
 Beth consists of a suite of sub-libraries.
 
 <a name = "bcore"></a>
-## bcore - Core Concepts
+### bcore - Core Concepts
 Library bcore represents the functional essence of Beth. It defines [core concepts](https://github.com/johsteffens/beth#core-concepts) and contains objects and/or abstractions around ...
    * Memory Management
    * Garbage Collection
@@ -68,7 +68,7 @@ Library bcore represents the functional essence of Beth. It defines [core concep
    * ... and more
 
 <a name = "bmath"></a>
-## bmath - Algebraic Subsystem
+### bmath - Algebraic Subsystem
 Library bmath defines a linear algebra subsystem for vectors and matrices and provides a suite of functionality around numerical analysis. The following is offered:
 
    * Vector and Matrix subsystem with associated basic algebra (Addition, Multiplication, Inversion, ...).
@@ -84,28 +84,28 @@ Library bmath defines a linear algebra subsystem for vectors and matrices and pr
 All algorithms have been redesigned/redeveloped from scratch (no adaption of pre-existing code, no *fortranitis*). Many are optimized for modern architectures in a cache- and platform-oblivious manner. Some are based on new or unconventional ideas.
 
 <a name = "bclos"></a>
-## bclos - Closures (Functional Programming)
+### bclos - Closures (Functional Programming)
 Library bclos contains a closure framework useful for for functional programming and interpreter design.
 It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
 
 # Core Concepts
 
 <a name = "reflection"></a>
-## Reflection
+### Reflection
 Beth employs *Reflection* as basis for genericity. The reflection-framework allows dynamic object-definition using a declarative (string-based) syntax. A corresponding C-syle structure definition is not required. However, for static types both methods can be mixed, taking advantage of the strengths of either method as inspired by the coding context.
 
 The framework is used for object instantiation, initialization, lifetime management, serialization and more. Inside the beth codebase *reflection* is abbreviated `flect`.
 
 <a name = "perspective"></a>
-## Perspective
+### Perspective
 A key-component is the so-called *Perspective*, which is a special abstraction for a generic framework with the character of a polymorphic interface with dynamic binding. *Perspective* and *Object* need not be aware of each other at compile time, yet a *Perspective* may act as generic source of functionality for an object as well as its abstraction. The perspective-framework builds upon the reflection framework. Inside the beth codebase *perspective* is abbreviated `spect`.
 
 <a name = "binding"></a>
-## Associative Binding
+### Associative Binding
 Concurrent dynamic associations between *types*, *reflections*, and *perspectives* are accomplished by two kinds of hashmaps: The frontend represents a cache using lock-free linear probing. The backend is realized via memory efficient cuckoo-hashing. 
 
 <a name = "memory-management"></a>
-## Memory Management & Garbage Collection
+### Memory Management & Garbage Collection
 Beth has its own memory manager with integrated reference manager. Both components work closely together providing efficient garbage collection based on reference-counting. A special design-feature is the overhead-free (near) O(1) root-address-determination from any pointer adressing an embedded element of the object. This allows garbage collection, even after all direct pointers to the object have been released while only pointers to its elements remain in use. Once the last such element-reference is released, the enveloping instance is automatically determined and destroyed.
 
 The memory-manager, excluding reference manager, was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
