@@ -3,6 +3,9 @@
    * [Usage](#usage)
    * [License](#license)
    * [Sub Libraries](#sub-libraries)
+      * [bcore - Core Concepts](#bcore)
+      * [bmath - Algebraic Subsystem](#bmath)
+      * [bclos - Closures (Functional Programming)](#bclos)
    * [Core Concepts](#core-concepts)
    * [Motivation](#motivation)
 
@@ -54,7 +57,8 @@ The source code in this repository is licensed under the [Apache 2.0 License](ht
 # Sub Libraries
 Beth consists of a suite of sub-libraries.
 
-## bcore
+<a name = "bcore"></a>
+## bcore - Core Concepts
 Library bcore represents the functional essence of Beth. It defines [core concepts](https://github.com/johsteffens/beth#core-concepts) and contains objects and/or absractions around ...
    * Memory Management
    * Gabage Collection
@@ -64,20 +68,26 @@ Library bcore represents the functional essence of Beth. It defines [core concep
    * Arrays, Strings, Hash Maps etc.
    * ... and more
 
-## bclos
-Library bclos contains an experimental closure framework. It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
+<a name = "bmath"></a>
+## bmath - Algebraic Subsystem
+Library bmath defines a linear algebra subsystem for vectors and matrices and provides a suite of functionality around numerical analysis. The following functionality is offered:
 
-## bmath
-Library bmath focuses on general purpose numerical mathematics. All algorithms have been (re)designed from scratch. Many are optimized for modern architectures in a cache- and platform-oblivious manner. 
-
-   * Vector and Matrix objects and associated basic algebra (Addition, Multiplication, Inversion, ...).
-   * Complex numbers.
+   * Vector and Matrix subsystem with associated basic algebra (Addition, Multiplication, Inversion, ...).
+   * Linear Solvers
+   * Complex Numbers
    * Fourier Transformation (DFT and FFT)
    * Matrix Decomposition:
       * LU, QR, Cholesky
       * Bi-, Tri-Diagonalization
       * Eigen Values & Vectors (EVD)
       * Singular Values & Vectors (SVD)
+
+All algorithms have been redesigned/redeveloped from scratch (no adaption of pre-existing code, no *fortranitis*). Many are optimized for modern architectures in a cache- and platform-oblivious manner. Some are based on new or unconventional ideas.
+
+<a name = "bclos"></a>
+## bclos - Closures (Functional Programming)
+Library bclos contains a closure framework useful for for functional programming and interpreter design.
+It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
 
 # Core Concepts
 
