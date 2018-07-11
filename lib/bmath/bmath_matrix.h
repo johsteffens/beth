@@ -87,7 +87,7 @@ static inline bl_t bmath_mf3_s_is_square( const bmath_mf3_s* o ) { return o->row
 // checks
 
 /** Near-state means: For each matrix element the absolute difference
- *  to the exact state is less or equal max_dev.
+ *  to the specified state is less or equal max_dev.
  *  Hence, max_dev == 0 tests for the exact state (s. below).
  */
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev ); // equality
@@ -240,12 +240,12 @@ bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx );
 void bmath_mf3_s_decompose_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res );
 
 /** LU decomposition.
- *  o must be square and invertible.
+ *  o must be square and non-singular.
  *  res: represents a LU-composite matrix (LUC):
  *       U is upper triangle of LUC
  *       L is lower triangle of LUC except diagonal
  *       diagonal of L is all 1 and not stored.
- *  When o is not invertible, incomputable elements of res are set to zero.
+ *  When o is singular, incomputable elements of res are set to zero.
  */
 void bmath_mf3_s_decompose_luc( const bmath_mf3_s* o, bmath_mf3_s* res );
 
@@ -353,7 +353,7 @@ bl_t bmath_mf3_s_evd( bmath_mf3_s* a, bmath_mf3_s* v );
 void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper-bidiagonal
 void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower-bidiagonal
 
-/** Stable in-place SVD for a general matrix.
+/** Stable in-place full SVD for a general matrix.
  *  Method: Bi-diagonalization by givens rotations and QR-chasing with implicit shift.
  *          (Variant of Golub-Reinsch-Algorithm)
  *
