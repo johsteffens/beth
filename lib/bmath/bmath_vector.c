@@ -103,31 +103,10 @@ void bmath_vf3_s_push_vf3( bmath_vf3_s* o, const bmath_vf3_s* vec )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bl_t bmath_vf3_s_is_equ( const bmath_vf3_s* o, const bmath_vf3_s* op )
-{
-    sz_t size = sz_min( o->size, op->size );
-    for( sz_t i = 0   ; i < size   ;  i++ ) if(  o->data[ i ] != op->data[ i ] ) return false;
-    for( sz_t i = size; i < o->size;  i++ ) if(  o->data[ i ] != 0             ) return false;
-    for( sz_t i = size; i < op->size; i++ ) if( op->data[ i ] != 0             ) return false;
-    return true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-bl_t bmath_vf3_s_is_zro( const bmath_vf3_s* o )
-{
-    for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ] != 0 ) return false;
-    return true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
 bl_t bmath_vf3_s_is_near_equ( const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t max_dev )
 {
-    sz_t size = sz_min( o->size, op->size );
-    for( sz_t i = 0   ; i < size   ;  i++ ) if( f3_abs(  o->data[ i ]- op->data[ i ] ) > max_dev ) return false;
-    for( sz_t i = size; i < o->size;  i++ ) if( f3_abs(  o->data[ i ] ) > max_dev                ) return false;
-    for( sz_t i = size; i < op->size; i++ ) if( f3_abs( op->data[ i ] ) > max_dev                ) return false;
+    if( o->size != o->size ) return false;
+    for( sz_t i = 0   ; i < o->size;  i++ ) if( f3_abs( o->data[ i ] - op->data[ i ] ) > max_dev ) return false;
     return true;
 }
 
@@ -177,54 +156,50 @@ void bmath_vf3_s_zro( bmath_vf3_s* o )
 
 void bmath_vf3_s_neg( const bmath_vf3_s* o, bmath_vf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    for( sz_t i = 0   ; i < size     ; i++ ) res->data[ i ] = -o->data[ i ];
-    for( sz_t i = size; i < res->size; i++ ) res->data[ i ] = 0;
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0   ; i < o->size; i++ ) res->data[ i ] = -o->data[ i ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vf3_s_cpy( const bmath_vf3_s* o, bmath_vf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    for( sz_t i = 0   ; i < size     ; i++ ) res->data[ i ] = o->data[ i ];
-    for( sz_t i = size; i < res->size; i++ ) res->data[ i ] = 0;
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) res->data[ i ] = o->data[ i ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vf3_s_add( const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
 {
-    sz_t size = sz_min( o->size, sz_min( op->size, res->size ) );
-    for( sz_t i = 0   ; i < size     ; i++ ) res->data[ i ] = o->data[ i ] + op->data[ i ];
-    for( sz_t i = size; i < res->size; i++ ) res->data[ i ] = ( i < o->size ) ? o->data[ i ] : op->data[ i ];
+    ASSERT( o->size == op->size );
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) res->data[ i ] = o->data[ i ] + op->data[ i ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vf3_s_sub( const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
 {
-    sz_t size = sz_min( o->size, sz_min( op->size, res->size ) );
-    for( sz_t i = 0   ; i < size     ; i++ ) res->data[ i ] = o->data[ i ] - op->data[ i ];
-    for( sz_t i = size; i < res->size; i++ ) res->data[ i ] = ( i < o->size ) ? o->data[ i ] : -op->data[ i ];
+    ASSERT( o->size == op->size );
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) res->data[ i ] = o->data[ i ] - op->data[ i ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vf3_s_mul_scl( const bmath_vf3_s* o, const f3_t* op, bmath_vf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    for( sz_t i = 0   ; i < size     ; i++ ) res->data[ i ] = o->data[ i ] * *op;
-    for( sz_t i = size; i < res->size; i++ ) res->data[ i ] = 0;
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) res->data[ i ] = o->data[ i ] * *op;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vf3_s_mul_f3(  const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    for( sz_t i = 0   ; i < size     ; i++ ) res->data[ i ] = o->data[ i ] * op;
-    for( sz_t i = size; i < res->size; i++ ) res->data[ i ] = 0;
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) res->data[ i ] = o->data[ i ] * op;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -248,8 +223,8 @@ static f3_t f3_s_mul_vec( const f3_t* v1, const f3_t* v2, sz_t size )
 
 f3_t bmath_vf3_s_f3_mul_vec( const bmath_vf3_s* o, const bmath_vf3_s* vec2 )
 {
-    sz_t size = sz_min( o->size, vec2->size );
-    return f3_s_mul_vec( o->data, vec2->data, size );
+    ASSERT( o->size == vec2->size );
+    return f3_s_mul_vec( o->data, vec2->data, o->size );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -297,11 +272,8 @@ static f3_t f3_s_sqr_sub( const f3_t* v1, const f3_t* v2, sz_t size )
 
 f3_t bmath_vf3_s_f3_sub_sqr( const bmath_vf3_s* o, const bmath_vf3_s* vec2 )
 {
-    sz_t size = sz_min( o->size, vec2->size );
-    f3_t sum  = f3_s_sqr_sub( o->data, vec2->data, size );
-    if( o   ->size > size ) sum += f3_s_sqr( o   ->data + size, o   ->size - size );
-    if( vec2->size > size ) sum += f3_s_sqr( vec2->data + size, vec2->size - size );
-    return sum;
+    ASSERT( o->size == vec2->size );
+    return f3_s_sqr_sub( o->data, vec2->data, o->size );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -326,7 +298,7 @@ static f3_t f3_s_f3_sum( const f3_t* v1, sz_t size )
 static f3_t f3_s_f3_max( const f3_t* v1, sz_t size )
 {
     f3_t max = ( size > 0 ) ? v1[ 0 ] : 0;
-    for( sz_t i = 0; i < size; i++ ) max = f3_max( max, v1[ i ] );
+    for( sz_t i = 1; i < size; i++ ) max = f3_max( max, v1[ i ] );
     return max;
 }
 
@@ -335,7 +307,7 @@ static f3_t f3_s_f3_max( const f3_t* v1, sz_t size )
 static f3_t f3_s_f3_min( const f3_t* v1, sz_t size )
 {
     f3_t min = ( size > 0 ) ? v1[ 0 ] : 0;
-    for( sz_t i = 0; i < size; i++ ) min = f3_min( min, v1[ i ] );
+    for( sz_t i = 1; i < size; i++ ) min = f3_min( min, v1[ i ] );
     return min;
 }
 
@@ -588,88 +560,81 @@ void bmath_vcf3_s_zro( bmath_vcf3_s* o )
 
 void bmath_vcf3_s_neg( const bmath_vcf3_s* o, bmath_vcf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    for( sz_t i = 0   ; i < size     ; i++ ) bmath_cf3_s_neg( &o->data[ i ], &res->data[ i ] );
-    for( sz_t i = size; i < res->size; i++ ) bmath_cf3_s_zro( &res->data[ i ] );
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) bmath_cf3_s_neg( &o->data[ i ], &res->data[ i ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vcf3_s_cnj( const bmath_vcf3_s* o, bmath_vcf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    for( sz_t i = 0   ; i < size     ; i++ ) bmath_cf3_s_cnj( &o->data[ i ], &res->data[ i ] );
-    for( sz_t i = size; i < res->size; i++ ) bmath_cf3_s_zro( &res->data[ i ] );
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) bmath_cf3_s_cnj( &o->data[ i ], &res->data[ i ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vcf3_s_cpy( const bmath_vcf3_s* o, bmath_vcf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    for( sz_t i = 0   ; i < size     ; i++ ) res->data[ i ] = o->data[ i ];
-    for( sz_t i = size; i < res->size; i++ ) bmath_cf3_s_zro( &res->data[ i ] );
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) res->data[ i ] = o->data[ i ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vcf3_s_add( const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_vcf3_s* res )
 {
-    sz_t size = sz_min( o->size, sz_min( op->size, res->size ) );
-    for( sz_t i = 0   ; i < size     ; i++ ) bmath_cf3_s_add( &o->data[ i ], &op->data[ i ], &res->data[ i ] );
-    for( sz_t i = size; i < res->size; i++ ) res->data[ i ] = ( i < o->size ) ? o->data[ i ] : op->data[ i ];
+    ASSERT( o->size == op->size );
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) bmath_cf3_s_add( &o->data[ i ], &op->data[ i ], &res->data[ i ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vcf3_s_sub( const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_vcf3_s* res )
 {
-    sz_t size = sz_min( o->size, sz_min( op->size, res->size ) );
-    for( sz_t i = 0   ; i < size     ; i++ ) bmath_cf3_s_sub( &o->data[ i ], &op->data[ i ], &res->data[ i ] );
-    for( sz_t i = size; i < res->size; i++ ) res->data[ i ] = ( i < o->size ) ? o->data[ i ] : bmath_cf3_neg( op->data[ i ] );
+    ASSERT( o->size == op->size );
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) bmath_cf3_s_sub( &o->data[ i ], &op->data[ i ], &res->data[ i ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vcf3_s_mul_scl( const bmath_vcf3_s* o, const bmath_cf3_s* op, bmath_vcf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    for( sz_t i = 0   ; i < size     ; i++ ) bmath_cf3_s_mul( &o->data[ i ], op, &res->data[ i ] );
-    for( sz_t i = size; i < res->size; i++ ) bmath_cf3_s_zro( &res->data[ i ] );
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) bmath_cf3_s_mul( &o->data[ i ], op, &res->data[ i ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vcf3_s_mul_cf3( const bmath_vcf3_s* o, bmath_cf3_s op, bmath_vcf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    for( sz_t i = 0   ; i < size     ; i++ ) bmath_cf3_s_mul( &o->data[ i ], &op, &res->data[ i ] );
-    for( sz_t i = size; i < res->size; i++ ) bmath_cf3_s_zro( &res->data[ i ] );
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) bmath_cf3_s_mul( &o->data[ i ], &op, &res->data[ i ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vcf3_s_mul_f3( const bmath_vcf3_s* o, f3_t op, bmath_vcf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    for( sz_t i = 0   ; i < size     ; i++ ) bmath_cf3_s_mul_f3( &o->data[ i ], op, &res->data[ i ] );
-    for( sz_t i = size; i < res->size; i++ ) bmath_cf3_s_zro( &res->data[ i ] );
+    ASSERT( o->size == res->size );
+    for( sz_t i = 0; i < o->size; i++ ) bmath_cf3_s_mul_f3( &o->data[ i ], op, &res->data[ i ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vcf3_s_dft( const bmath_vcf3_s* o, bmath_vcf3_s* res )
 {
-    sz_t size = sz_min( o->size, res->size );
-    if( ( size & ( size - 1 ) ) == 0 )
+    ASSERT( o->size == res->size );
+    if( ( o->size & ( o->size - 1 ) ) == 0 )
     {
-        bmath_fourier_fft_f3( o->data, res->data, size );
+        bmath_fourier_fft_f3( o->data, res->data, o->size );
     }
     else
     {
-        bmath_fourier_dft_f3( o->data, res->data, size );
+        bmath_fourier_dft_f3( o->data, res->data, o->size );
     }
-    for( sz_t i = size; i < res->size; i++ ) bmath_cf3_s_zro( &res->data[ i ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -721,8 +686,8 @@ static void vcf3_s_mul_vec( const bmath_cf3_s* v1, const bmath_cf3_s* v2, sz_t s
 
 void bmath_vcf3_s_mul_vec( const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_cf3_s* res )
 {
-    sz_t size = sz_min( o->size, op->size );
-    vcf3_s_mul_vec( o->data, op->data, size, res );
+    ASSERT( o->size == op->size );
+    vcf3_s_mul_vec( o->data, op->data, o->size, res );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -808,21 +773,8 @@ static void vcf3_s_sub_sqr( const bmath_cf3_s* v1, const bmath_cf3_s* v2, sz_t s
 
 void bmath_vcf3_s_sub_sqr( const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_cf3_s* res )
 {
-    sz_t size = sz_min( o->size, op->size );
-    vcf3_s_sub_sqr( o->data, op->data, size, res );
-    if( o->size > size )
-    {
-        bmath_cf3_s val;
-        vcf3_s_sqr( o->data + size, o->size - size, &val );
-        bmath_cf3_s_add( res, &val, res );
-    }
-
-    if( op->size > size )
-    {
-        bmath_cf3_s val;
-        vcf3_s_sqr( op->data + size, op->size - size, &val );
-        bmath_cf3_s_sub( res, &val, res );
-    }
+    ASSERT( o->size == op->size );
+    vcf3_s_sub_sqr( o->data, op->data, o->size, res );
 }
 
 //---------------------------------------------------------------------------------------------------------------------

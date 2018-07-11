@@ -70,10 +70,11 @@ void bmath_vf3_s_fill_random( bmath_vf3_s* o, f3_t min, f3_t max, u2_t* rval );
 void bmath_vf3_s_push( bmath_vf3_s* o, f3_t val );
 void bmath_vf3_s_push_vf3( bmath_vf3_s* o, const bmath_vf3_s* vec );
 
-bl_t bmath_vf3_s_is_equ( const bmath_vf3_s* o, const bmath_vf3_s* op );
-bl_t bmath_vf3_s_is_zro( const bmath_vf3_s* o );
 bl_t bmath_vf3_s_is_near_equ( const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t max_dev );
 bl_t bmath_vf3_s_is_near_zro( const bmath_vf3_s* o, f3_t max_dev );
+
+static inline bl_t bmath_vf3_s_is_equ( const bmath_vf3_s* o, const bmath_vf3_s* op ) { return bmath_vf3_s_is_near_equ( o, op, 0 ); }
+static inline bl_t bmath_vf3_s_is_zro( const bmath_vf3_s* o ) { return bmath_vf3_s_is_near_zro( o, 0 ); }
 
 void bmath_vf3_s_zro(     bmath_vf3_s* o );
 void bmath_vf3_s_neg(     const bmath_vf3_s* o, bmath_vf3_s* res );
@@ -85,6 +86,8 @@ void bmath_vf3_s_mul_f3(  const bmath_vf3_s* o, f3_t scl2, bmath_vf3_s* res );
 f3_t bmath_vf3_s_f3_mul_vec( const bmath_vf3_s* o, const bmath_vf3_s* vec2 );
 f3_t bmath_vf3_s_f3_sqr(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_sub_sqr( const bmath_vf3_s* o, const bmath_vf3_s* vec2 );
+f3_t bmath_vf3_s_f3_max(     const bmath_vf3_s* o );
+f3_t bmath_vf3_s_f3_min(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_sum(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_avg(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_var(     const bmath_vf3_s* o );
