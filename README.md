@@ -69,7 +69,7 @@ Library bcore represents the functional essence of Beth. It defines [core concep
 
 <a name = "bmath"></a>
 ## bmath - Algebraic Subsystem
-Library bmath defines a linear algebra subsystem for vectors and matrices and provides a suite of functionality around numerical analysis. The following functionality is offered:
+Library bmath defines a linear algebra subsystem for vectors and matrices and provides a suite of functionality around numerical analysis. The following is offered:
 
    * Vector and Matrix subsystem with associated basic algebra (Addition, Multiplication, Inversion, ...).
    * Linear Solvers
