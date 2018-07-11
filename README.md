@@ -49,7 +49,6 @@ Beth is intended as foundation library for more specialized projects.
       * run `make`. This creates the static library `beth.a`.
       
 # License
-
 The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
 
 *Copyright (C) 2017, 2018 Johannes B. Steffens johannes.b.steffens@gmail.com.*
@@ -59,9 +58,9 @@ Beth consists of a suite of sub-libraries.
 
 <a name = "bcore"></a>
 ## bcore - Core Concepts
-Library bcore represents the functional essence of Beth. It defines [core concepts](https://github.com/johsteffens/beth#core-concepts) and contains objects and/or absractions around ...
+Library bcore represents the functional essence of Beth. It defines [core concepts](https://github.com/johsteffens/beth#core-concepts) and contains objects and/or abstractions around ...
    * Memory Management
-   * Gabage Collection
+   * Garbage Collection
    * Object Definition and Instance Management
    * Object Scope Management
    * Serialization
