@@ -17,7 +17,7 @@
 
 *Beth* is a personal *"moonshot"* project. 
 
-It serves as incubator of new ideas and as general-purpose functional basis for depending projects. It brings high-level programming paradigms (such as OOP, Serialization, Dynamic Binding) into efficient C code. It also (in a way) reinvents polymorphism and reflection-aided generic programming. 
+It brings high-level programming paradigms (such as OOP, Serialization, Dynamic Binding) into efficient C code. It also (in a way) reinvents polymorphism and reflection-aided generic programming. 
 
 Some objectives are...
    * Bridging the gap between procedural and object oriented programming.
@@ -30,6 +30,8 @@ Some objectives are...
       * Containers (Arrays, Trees, Maps)
       * Serialization
       * Numerical Mathematics
+
+All code inside beth is redesigned/redeveloped from scratch (no mere adaptation of preexisting code) with focus on platform independence and efficiency.
 
 # Usage
 Beth is intended as foundation library for more specialized projects. 
