@@ -20,7 +20,7 @@
 #include "bmath_matrix.h"
 #include "bmath_spect_matrix.h"
 #include "bmath_fourier.h"
-#include "bmath_grt_f3.h"
+#include "bmath_grt.h"
 
 #include <stdio.h>
 
@@ -1575,7 +1575,7 @@ void bmath_mf3_s_decompose_trd( bmath_mf3_s* a, bmath_mf3_s* v )
         ASSERT( v->rows == a->rows );
     }
 
-    grt_s gr;
+    bmath_grt_f3_s gr;
 
     for( sz_t j = 0; j < a->rows; j++ )
     {
@@ -1586,16 +1586,16 @@ void bmath_mf3_s_decompose_trd( bmath_mf3_s* a, bmath_mf3_s* v )
             // zero upper row
             ak = a->data + k;
             sz_t jstride = j * a->stride;
-            grt_s_init_and_annihilate_b( &gr, ak + jstride, ak + jstride + 1 );
-            grt_s_rotate_col( &gr, ak, ak + 1, a->stride, j + 1, a->rows );
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, ak + jstride, ak + jstride + 1 );
+            bmath_grt_f3_s_rotate_col( &gr, ak, ak + 1, a->stride, j + 1, a->rows );
 
             // transposed operation
             ak = a->data + k * a->stride;
-            grt_s_annihilate_b( &gr, ak + j, ak + a->stride + j );
-            grt_s_rotate_row( &gr, ak, ak + a->stride, j + 1, a->cols );
+            bmath_grt_f3_s_annihilate_b( &gr, ak + j, ak + a->stride + j );
+            bmath_grt_f3_s_rotate_row( &gr, ak, ak + a->stride, j + 1, a->cols );
 
             // rotation matrix
-            if( v ) grt_s_rotate_row( &gr, v->data + k * v->stride, v->data + ( k + 1 ) * v->stride, 0, v->cols );
+            if( v ) bmath_grt_f3_s_rotate_row( &gr, v->data + k * v->stride, v->data + ( k + 1 ) * v->stride, 0, v->cols );
         }
     }
 }
@@ -1619,7 +1619,7 @@ void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         ASSERT( v != a );
     }
 
-    grt_s gr;
+    bmath_grt_f3_s gr;
     sz_t min_cols_rows = sz_min( a->cols, a->rows );
 
     for( sz_t j = 0; j < min_cols_rows; j++ )
@@ -1628,18 +1628,18 @@ void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         for( sz_t l = a->rows - 1; l > j; l-- )
         {
             f3_t* al = a->data + l * a->stride;
-            grt_s_init_and_annihilate_b( &gr, al - a->stride + j, al + j );
-            grt_s_rotate_row( &gr, al - a->stride, al, j + 1, a->cols );
-            if( u ) grt_s_rotate_row( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, al - a->stride + j, al + j );
+            bmath_grt_f3_s_rotate_row( &gr, al - a->stride, al, j + 1, a->cols );
+            if( u ) bmath_grt_f3_s_rotate_row( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
         }
 
         // zero upper row
         for( sz_t l = a->cols - 1; l > j + 1; l-- )
         {
             f3_t* al = a->data + l;
-            grt_s_init_and_annihilate_b( &gr, al - 1 + j * a->stride, al + j * a->stride );
-            grt_s_rotate_col( &gr, al - 1, al, a->stride, j + 1, a->rows );
-            if( v ) grt_s_rotate_row( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, al - 1 + j * a->stride, al + j * a->stride );
+            bmath_grt_f3_s_rotate_col( &gr, al - 1, al, a->stride, j + 1, a->rows );
+            if( v ) bmath_grt_f3_s_rotate_row( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
         }
     }
 }
@@ -1663,7 +1663,7 @@ void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         ASSERT( v != a );
     }
 
-    grt_s gr;
+    bmath_grt_f3_s gr;
     sz_t min_cols_rows = sz_min( a->cols, a->rows );
 
     for( sz_t j = 0; j < min_cols_rows; j++ )
@@ -1672,18 +1672,18 @@ void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         for( sz_t l = a->cols - 1; l > j; l-- )
         {
             f3_t* al = a->data + l;
-            grt_s_init_and_annihilate_b( &gr, al - 1 + j * a->stride, al + j * a->stride );
-            grt_s_rotate_col( &gr, al - 1, al, a->stride, j + 1, a->rows );
-            if( v ) grt_s_rotate_row( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, al - 1 + j * a->stride, al + j * a->stride );
+            bmath_grt_f3_s_rotate_col( &gr, al - 1, al, a->stride, j + 1, a->rows );
+            if( v ) bmath_grt_f3_s_rotate_row( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
         }
 
         // zero lower column
         for( sz_t l = a->rows - 1; l > j + 1; l-- )
         {
             f3_t* al = a->data + l * a->stride;
-            grt_s_init_and_annihilate_b( &gr, al - a->stride + j, al + j );
-            grt_s_rotate_row( &gr, al - a->stride, al, j + 1, a->cols );
-            if( u ) grt_s_rotate_row( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, al - a->stride + j, al + j );
+            bmath_grt_f3_s_rotate_row( &gr, al - a->stride, al, j + 1, a->cols );
+            if( u ) bmath_grt_f3_s_rotate_row( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
         }
     }
 }
@@ -1707,10 +1707,10 @@ void bmath_mf3_s_decompose_qr( bmath_mf3_s* q, bmath_mf3_s* r )
         for( sz_t k = l + 1; k < n; k++ )
         {
             f3_t* rk = r->data + k * r->stride;
-            grt_s gr;
-            grt_s_init_and_annihilate_b( &gr, rl + l, rk + l );
-            grt_s_rotate_row( &gr, rl, rk, l + 1, n );
-            if( q ) grt_s_rotate_row( &gr, q->data + l * q->stride, q->data + k * q->stride, 0, n );
+            bmath_grt_f3_s gr;
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, rl + l, rk + l );
+            bmath_grt_f3_s_rotate_row( &gr, rl, rk, l + 1, n );
+            if( q ) bmath_grt_f3_s_rotate_row( &gr, q->data + l * q->stride, q->data + k * q->stride, 0, n );
         }
     }
 }
@@ -1843,12 +1843,12 @@ bl_t bmath_mf3_s_evd_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
             f3_t r01 = a0[ 1 ];
             f3_t cp = 1;
 
-            grt_s gr0;
-            grt_s_init_to_annihilate_b( &gr0, r00, a0[ a->stride ] );
+            bmath_grt_f3_s gr0;
+            bmath_grt_f3_s_init_to_annihilate_b( &gr0, r00, a0[ a->stride ] );
 
             for( sz_t i = 0; i < block_n - 1; i++ )
             {
-                if( v ) grt_s_rotate_row( &gr0, v->data + i * v->stride, v->data + ( i + 1 ) * v->stride, 0, n );
+                if( v ) bmath_grt_f3_s_rotate_row( &gr0, v->data + i * v->stride, v->data + ( i + 1 ) * v->stride, 0, n );
 
                 f3_t* a1 = a0 + a->stride;
 
@@ -1861,8 +1861,8 @@ bl_t bmath_mf3_s_evd_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
 
                 a0[ 0 ] = r00 * cp * gr0.c + r01 * gr0.s;
 
-                grt_s gr1;
-                grt_s_init_to_annihilate_b( &gr1, r11, ( i == block_n - 2 ) ? 0 : a1[ a->stride + 1 ] );
+                bmath_grt_f3_s gr1;
+                bmath_grt_f3_s_init_to_annihilate_b( &gr1, r11, ( i == block_n - 2 ) ? 0 : a1[ a->stride + 1 ] );
 
                 // off-diagonal element
                 a1[ 0 ] = a0[ 1 ] = -r00 * gr0.s * cp * gr1.c + r01 * gr0.c * gr1.c + r02 * gr1.s;
@@ -1957,14 +1957,14 @@ bl_t bmath_mf3_s_evd_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 
             f3_t ch = 1;
 
-            grt_s gr_i = { .c = 1, .s = 0 };
-            grt_s gr_j;
+            bmath_grt_f3_s gr_i = { .c = 1, .s = 0 };
+            bmath_grt_f3_s gr_j;
             f3_t b = gr_i.c * ajj - gr_i.s * ch * aij;
-            grt_s_init_to_annihilate_b( &gr_j, b - gr_i.c * lambda, ajk );
+            bmath_grt_f3_s_init_to_annihilate_b( &gr_j, b - gr_i.c * lambda, ajk );
 
             for( sz_t j = 0; j < block_n - 1; j++ )
             {
-                if( v ) grt_s_rotate_row( &gr_j, v->data + j * v->stride, v->data + ( j + 1 ) * v->stride, 0, n );
+                if( v ) bmath_grt_f3_s_rotate_row( &gr_j, v->data + j * v->stride, v->data + ( j + 1 ) * v->stride, 0, n );
 
                 f3_t akk = pajj[ a->stride + 1 ];
                 f3_t akl = ( j == block_n - 2 ) ? 0 : pajj[ a->stride + 2 ];
@@ -1979,8 +1979,8 @@ bl_t bmath_mf3_s_evd_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 
                 b = gr_j.c * akk - gr_j.s * gr_i.c * ajk;
 
-                grt_s gr_k;
-                grt_s_init_to_annihilate_b( &gr_k, b - gr_j.c * lambda, akl );
+                bmath_grt_f3_s gr_k;
+                bmath_grt_f3_s_init_to_annihilate_b( &gr_k, b - gr_j.c * lambda, akl );
 
                 f3_t offd = -rjj * gr_j.s * gr_i.c * gr_k.c + rjk * gr_k.c * gr_j.c + rjl * gr_k.s - gr_j.s * gr_k.c * f3_sqr_si_cj_lambda;
                 pajj[ 1 ] = offd;
@@ -2081,14 +2081,14 @@ bl_t bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
             f3_t* a0 = a->data;
             f3_t* a1 = a->data + a->stride;
 
-            grt_s gr_l; // left rotation
-            grt_s gr_r; // right rotation
+            bmath_grt_f3_s gr_l; // left rotation
+            bmath_grt_f3_s gr_r; // right rotation
 
             // left rotation strategically diagonalizes a * aT but creates a1[ 0 ]
-            grt_s_init_to_annihilate_b( &gr_l, f3_sqr( a0[ 0 ] ) + f3_sqr( a0[ 1 ] ) - lambda, a0[ 1 ] * a1[ 1 ] );
+            bmath_grt_f3_s_init_to_annihilate_b( &gr_l, f3_sqr( a0[ 0 ] ) + f3_sqr( a0[ 1 ] ) - lambda, a0[ 1 ] * a1[ 1 ] );
 
             // right rotation annihilates a1[0]
-            grt_s_init_to_annihilate_b( &gr_r, gr_l.c * a1[ 1 ] - gr_l.s * a0[ 1 ], gr_l.s * a0[ 0 ] );
+            bmath_grt_f3_s_init_to_annihilate_b( &gr_r, gr_l.c * a1[ 1 ] - gr_l.s * a0[ 1 ], gr_l.s * a0[ 0 ] );
 
             f3_t a00 = a0[ 0 ];
             f3_t a01 = a0[ 1 ];
@@ -2096,11 +2096,11 @@ bl_t bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
             a0[ 0 ] = gr_r.c * a00 + gr_r.s * a01; a0[ 1 ] = gr_r.c * a01 - gr_r.s * a00;
             a1[ 0 ] =                gr_r.s * a11; a1[ 1 ] = gr_r.c * a11;
-            grt_s_rotate_row( &gr_l, a0, a1, 0, 3 );
+            bmath_grt_f3_s_rotate_row( &gr_l, a0, a1, 0, 3 );
             a1[ 0 ] = 0;
 
-            if( u ) grt_s_rotate_row( &gr_l, u->data, u->data + u->stride, 0, u->cols );
-            if( v ) grt_s_rotate_row( &gr_r, v->data, v->data + v->stride, 0, v->cols );
+            if( u ) bmath_grt_f3_s_rotate_row( &gr_l, u->data, u->data + u->stride, 0, u->cols );
+            if( v ) bmath_grt_f3_s_rotate_row( &gr_r, v->data, v->data + v->stride, 0, v->cols );
 
             // chasing, annihilating off-bidiagonals
             for( sz_t k = 0; k < block_n - 2; k++ )
@@ -2108,16 +2108,16 @@ bl_t bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
                 f3_t* ak = a->data + ( a->stride + 1 ) * k + 1;
                 f3_t* al = ak + a->stride;
                 f3_t* am = al + a->stride;
-                grt_s_init_and_annihilate_b( &gr_r, ak, ak + 1 );
-                grt_s_rotate( &gr_r, al, al + 1 );
-                grt_s_rotate( &gr_r, am, am + 1 );
+                bmath_grt_f3_s_init_and_annihilate_b( &gr_r, ak, ak + 1 );
+                bmath_grt_f3_s_rotate( &gr_r, al, al + 1 );
+                bmath_grt_f3_s_rotate( &gr_r, am, am + 1 );
 
-                grt_s_init_and_annihilate_b( &gr_l, al, am );
-                grt_s_rotate( &gr_l, al + 1, am + 1 );
-                if( k < block_n - 3 ) grt_s_rotate( &gr_l, al + 2, am + 2 );
+                bmath_grt_f3_s_init_and_annihilate_b( &gr_l, al, am );
+                bmath_grt_f3_s_rotate( &gr_l, al + 1, am + 1 );
+                if( k < block_n - 3 ) bmath_grt_f3_s_rotate( &gr_l, al + 2, am + 2 );
 
-                if( u ) grt_s_rotate_row( &gr_l, u->data + u->stride * ( k + 1 ), u->data + u->stride * ( k + 2 ), 0, u->cols );
-                if( v ) grt_s_rotate_row( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
+                if( u ) bmath_grt_f3_s_rotate_row( &gr_l, u->data + u->stride * ( k + 1 ), u->data + u->stride * ( k + 2 ), 0, u->cols );
+                if( v ) bmath_grt_f3_s_rotate_row( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
             }
         }
         if( cycle == max_cyles ) success = false;
@@ -2178,14 +2178,14 @@ bl_t bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
             f3_t* a0 = a->data;
             f3_t* a1 = a->data + a->stride;
 
-            grt_s gr_l; // left rotation
-            grt_s gr_r; // right rotation
+            bmath_grt_f3_s gr_l; // left rotation
+            bmath_grt_f3_s gr_r; // right rotation
 
             // left rotation strategically diagonalizes aT * a but creates a0[ 1 ]
-            grt_s_init_to_annihilate_b( &gr_r, f3_sqr( a0[ 0 ] ) + f3_sqr( a1[ 0 ] ) - lambda, a1[ 0 ] * a1[ 1 ] );
+            bmath_grt_f3_s_init_to_annihilate_b( &gr_r, f3_sqr( a0[ 0 ] ) + f3_sqr( a1[ 0 ] ) - lambda, a1[ 0 ] * a1[ 1 ] );
 
             // right rotation annihilates a0[ 1 ]
-            grt_s_init_to_annihilate_b( &gr_l, gr_r.c * a1[ 1 ] - gr_r.s * a1[ 0 ], gr_r.s * a0[ 0 ] );
+            bmath_grt_f3_s_init_to_annihilate_b( &gr_l, gr_r.c * a1[ 1 ] - gr_r.s * a1[ 0 ], gr_r.s * a0[ 0 ] );
 
             f3_t a00 = a0[ 0 ];
             f3_t a10 = a1[ 0 ];
@@ -2193,11 +2193,11 @@ bl_t bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
             a0[ 0 ] = gr_l.c * a00 + gr_l.s * a10; a1[ 0 ] = gr_l.c * a10 - gr_l.s * a00;
             a0[ 1 ] =                gr_l.s * a11; a1[ 1 ] = gr_l.c * a11;
-            grt_s_rotate_col( &gr_r, a0, a0 + 1, a->stride, 0, 3 );
+            bmath_grt_f3_s_rotate_col( &gr_r, a0, a0 + 1, a->stride, 0, 3 );
             a0[ 1 ] = 0;
 
-            if( u ) grt_s_rotate_row( &gr_l, u->data, u->data + u->stride, 0, u->cols );
-            if( v ) grt_s_rotate_row( &gr_r, v->data, v->data + v->stride, 0, v->cols );
+            if( u ) bmath_grt_f3_s_rotate_row( &gr_l, u->data, u->data + u->stride, 0, u->cols );
+            if( v ) bmath_grt_f3_s_rotate_row( &gr_r, v->data, v->data + v->stride, 0, v->cols );
 
             // chasing, annihilating off-bidiagonals
             for( sz_t k = 0; k < block_n - 2; k++ )
@@ -2206,16 +2206,16 @@ bl_t bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
                 f3_t* al = ak + a->stride;
                 f3_t* am = al + a->stride;
 
-                grt_s_init_and_annihilate_b( &gr_l, ak, al );
-                grt_s_rotate( &gr_l, ak + 1, al + 1 );
-                grt_s_rotate( &gr_l, ak + 2, al + 2 );
+                bmath_grt_f3_s_init_and_annihilate_b( &gr_l, ak, al );
+                bmath_grt_f3_s_rotate( &gr_l, ak + 1, al + 1 );
+                bmath_grt_f3_s_rotate( &gr_l, ak + 2, al + 2 );
 
-                grt_s_init_and_annihilate_b( &gr_r, ak + 1, ak + 2 );
-                grt_s_rotate( &gr_r, al + 1, al + 2 );
-                if( k < block_n - 3 ) grt_s_rotate( &gr_r, am + 1, am + 2 );
+                bmath_grt_f3_s_init_and_annihilate_b( &gr_r, ak + 1, ak + 2 );
+                bmath_grt_f3_s_rotate( &gr_r, al + 1, al + 2 );
+                if( k < block_n - 3 ) bmath_grt_f3_s_rotate( &gr_r, am + 1, am + 2 );
 
-                if( u ) grt_s_rotate_row( &gr_l, u->data + u->stride * ( k + 1 ), u->data + u->stride * ( k + 2 ), 0, u->cols );
-                if( v ) grt_s_rotate_row( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
+                if( u ) bmath_grt_f3_s_rotate_row( &gr_l, u->data + u->stride * ( k + 1 ), u->data + u->stride * ( k + 2 ), 0, u->cols );
+                if( v ) bmath_grt_f3_s_rotate_row( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
 
             }
         }

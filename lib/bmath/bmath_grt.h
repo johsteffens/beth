@@ -41,6 +41,42 @@ BCORE_DECLARE_OBJECT( bmath_grt_f3_s ) { f3_t c; f3_t s; };
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/// returns stable single number representation of rotation (Steward 1976)
+static inline f3_t bmath_grt_f3_s_rho( const bmath_grt_f3_s* o )
+{
+    f3_t abs_c = f3_abs( o->c );
+    return f3_abs( o->s ) < abs_c ?
+                0.5 * f3_sig( o->c ) * o->s :
+                   abs_c > f3_lim_min ?
+                       2.0 * f3_sig( o->s ) / o->c :
+                           1.0;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/// creates rotation from bmath_grt_f3_s_rho
+static inline void bmath_grt_f3_s_init_from_rho( bmath_grt_f3_s* o, f3_t r )
+{
+    f3_t abs_r = f3_abs( r );
+    if( abs_r < 0.5 )
+    {
+        o->s = 2.0 * r;
+        o->c = f3_srt( 1.0 - f3_sqr( o->s ) );
+    }
+    else if( abs_r > 2.0 )
+    {
+        o->c = 2.0 / r;
+        o->s = f3_srt( 1.0 - f3_sqr( o->c ) );
+    }
+    else
+    {
+        o->s = 1;
+        o->c = 0;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 /// Sets up rotation in order to annihilate a in vector (a,b).
 static inline void bmath_grt_f3_s_init_to_annihilate_a( bmath_grt_f3_s* o, f3_t a, f3_t b )
 {
