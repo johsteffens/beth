@@ -17,38 +17,11 @@
 
 BCORE_DEFINE_OBJECT_FLAT( bcore_inst, bmath_grt_f3_s ) "{ f3_t c; f3_t s; }";
 
-/**********************************************************************************************************************/
-
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_grt_f3_s ) "{ aware_t _; bmath_grt_f3_s [] arr; }";
-
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_arr_grt_f3_s_set_space( bmath_arr_grt_f3_s* o, sz_t space )
+void bmath_grt_f3_s_to_stdout( const bmath_grt_f3_s* o )
 {
-    bcore_array_a_set_space( ( bcore_array* )o, space );
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-void bmath_arr_grt_f3_s_set_size(  bmath_arr_grt_f3_s* o, sz_t size )
-{
-    bcore_array_a_set_size( ( bcore_array* )o, size );
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-void bmath_arr_grt_f3_s_zro( bmath_arr_grt_f3_s* o )
-{
-    bcore_u_memzero( sizeof( bmath_grt_f3_s ), o->data, o->size );
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-void bmath_arr_grt_f3_s_push( bmath_arr_grt_f3_s* o, bmath_grt_f3_s grt )
-{
-    if( o->space <  o->size ) bcore_array_a_make_strong( ( bcore_array *)o );
-    if( o->space == o->size ) bmath_arr_grt_f3_s_set_space( o, sz_max( 1, o->size * 2 ) );
-    o->data[ o->size++ ] = grt;
+    bcore_msg_fa( "c=#<f3_t> s=#<f3_t>\n", o->c, o->s );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -62,7 +35,6 @@ vd_t bmath_grt_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             BCORE_REGISTER_OBJECT( bmath_grt_f3_s );
-            BCORE_REGISTER_OBJECT( bmath_arr_grt_f3_s );
         }
         break;
 
