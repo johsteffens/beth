@@ -79,6 +79,28 @@ void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_fill_random_sparse( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval )
+{
+    f3_t range = max - min;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        f3_t* v = o->data + i * o->stride;
+        for( sz_t j = 0; j < o->cols; j++ )
+        {
+            if( f3_xsg1_pos( rval ) < density )
+            {
+                v[ j ] = ( range * f3_xsg1_pos( rval ) ) + min;
+            }
+            else
+            {
+                v[ j ] = 0;
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 bmath_mf3_s* bmath_mf3_s_create_set_size( sz_t rows, sz_t cols )
 {
     bmath_mf3_s* o = bmath_mf3_s_create();
@@ -204,7 +226,42 @@ bl_t bmath_mf3_s_is_near_lbd( const bmath_mf3_s* o, f3_t max_dev )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev )
+bl_t bmath_mf3_s_is_near_otn( const bmath_mf3_s* o, f3_t max_dev )
+{
+    if( o->rows <= o->cols )
+    {
+        for( sz_t i = 0; i < o->rows; i++ )
+        {
+            const f3_t* v1 = o ->data + i * o ->stride;
+            for( sz_t j = i; j < o->rows; j++ )
+            {
+                const f3_t* v2 = o ->data + j * o ->stride;
+                f3_t dot_prd = 0;
+                for( sz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ k ] * v2[ k ];
+                if( f3_abs( dot_prd - ( ( j == i ) ? 1.0 : 0.0 ) ) > max_dev ) return false;
+            }
+        }
+    }
+    else
+    {
+        for( sz_t i = 0; i < o->cols; i++ )
+        {
+            const f3_t* v1 = o ->data + i;
+            for( sz_t j = i; j < o->cols; j++ )
+            {
+                const f3_t* v2 = o ->data + j;
+                f3_t dot_prd = 0;
+                for( sz_t k = 0; k < o->rows; k++ ) dot_prd += v1[ k * o->stride ] * v2[ k * o->stride ];
+                if( f3_abs( dot_prd - ( ( j == i ) ? 1.0 : 0.0 ) ) > max_dev ) return false;
+            }
+        }
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_mf3_s_is_near_uni( const bmath_mf3_s* o, f3_t max_dev )
 {
     if( o->rows != o->cols ) return false;
     for( sz_t i = 0; i < o->rows; i++ )
@@ -1587,15 +1644,15 @@ void bmath_mf3_s_decompose_trd( bmath_mf3_s* a, bmath_mf3_s* v )
             ak = a->data + k;
             sz_t jstride = j * a->stride;
             bmath_grt_f3_s_init_and_annihilate_b( &gr, ak + jstride, ak + jstride + 1 );
-            bmath_grt_f3_s_rotate_col( &gr, ak, ak + 1, a->stride, j + 1, a->rows );
+            bmath_grt_f3_s_col_rotate( &gr, ak, ak + 1, a->stride, j + 1, a->rows );
 
             // transposed operation
             ak = a->data + k * a->stride;
             bmath_grt_f3_s_annihilate_b( &gr, ak + j, ak + a->stride + j );
-            bmath_grt_f3_s_rotate_row( &gr, ak, ak + a->stride, j + 1, a->cols );
+            bmath_grt_f3_s_row_rotate( &gr, ak, ak + a->stride, j + 1, a->cols );
 
             // rotation matrix
-            if( v ) bmath_grt_f3_s_rotate_row( &gr, v->data + k * v->stride, v->data + ( k + 1 ) * v->stride, 0, v->cols );
+            if( v ) bmath_grt_f3_s_row_rotate( &gr, v->data + k * v->stride, v->data + ( k + 1 ) * v->stride, 0, v->cols );
         }
     }
 }
@@ -1629,8 +1686,8 @@ void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         {
             f3_t* al = a->data + l * a->stride;
             bmath_grt_f3_s_init_and_annihilate_b( &gr, al - a->stride + j, al + j );
-            bmath_grt_f3_s_rotate_row( &gr, al - a->stride, al, j + 1, a->cols );
-            if( u ) bmath_grt_f3_s_rotate_row( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
+            bmath_grt_f3_s_row_rotate( &gr, al - a->stride, al, j + 1, a->cols );
+            if( u ) bmath_grt_f3_s_row_rotate( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
         }
 
         // zero upper row
@@ -1638,8 +1695,8 @@ void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         {
             f3_t* al = a->data + l;
             bmath_grt_f3_s_init_and_annihilate_b( &gr, al - 1 + j * a->stride, al + j * a->stride );
-            bmath_grt_f3_s_rotate_col( &gr, al - 1, al, a->stride, j + 1, a->rows );
-            if( v ) bmath_grt_f3_s_rotate_row( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
+            bmath_grt_f3_s_col_rotate( &gr, al - 1, al, a->stride, j + 1, a->rows );
+            if( v ) bmath_grt_f3_s_row_rotate( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
         }
     }
 }
@@ -1673,8 +1730,8 @@ void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         {
             f3_t* al = a->data + l;
             bmath_grt_f3_s_init_and_annihilate_b( &gr, al - 1 + j * a->stride, al + j * a->stride );
-            bmath_grt_f3_s_rotate_col( &gr, al - 1, al, a->stride, j + 1, a->rows );
-            if( v ) bmath_grt_f3_s_rotate_row( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
+            bmath_grt_f3_s_col_rotate( &gr, al - 1, al, a->stride, j + 1, a->rows );
+            if( v ) bmath_grt_f3_s_row_rotate( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
         }
 
         // zero lower column
@@ -1682,8 +1739,8 @@ void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         {
             f3_t* al = a->data + l * a->stride;
             bmath_grt_f3_s_init_and_annihilate_b( &gr, al - a->stride + j, al + j );
-            bmath_grt_f3_s_rotate_row( &gr, al - a->stride, al, j + 1, a->cols );
-            if( u ) bmath_grt_f3_s_rotate_row( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
+            bmath_grt_f3_s_row_rotate( &gr, al - a->stride, al, j + 1, a->cols );
+            if( u ) bmath_grt_f3_s_row_rotate( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
         }
     }
 }
@@ -1709,8 +1766,8 @@ void bmath_mf3_s_decompose_qr( bmath_mf3_s* q, bmath_mf3_s* r )
             f3_t* rk = r->data + k * r->stride;
             bmath_grt_f3_s gr;
             bmath_grt_f3_s_init_and_annihilate_b( &gr, rl + l, rk + l );
-            bmath_grt_f3_s_rotate_row( &gr, rl, rk, l + 1, n );
-            if( q ) bmath_grt_f3_s_rotate_row( &gr, q->data + l * q->stride, q->data + k * q->stride, 0, n );
+            bmath_grt_f3_s_row_rotate( &gr, rl, rk, l + 1, n );
+            if( q ) bmath_grt_f3_s_row_rotate( &gr, q->data + l * q->stride, q->data + k * q->stride, 0, n );
         }
     }
 }
@@ -1848,7 +1905,7 @@ bl_t bmath_mf3_s_evd_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
 
             for( sz_t i = 0; i < block_n - 1; i++ )
             {
-                if( v ) bmath_grt_f3_s_rotate_row( &gr0, v->data + i * v->stride, v->data + ( i + 1 ) * v->stride, 0, n );
+                if( v ) bmath_grt_f3_s_row_rotate( &gr0, v->data + i * v->stride, v->data + ( i + 1 ) * v->stride, 0, n );
 
                 f3_t* a1 = a0 + a->stride;
 
@@ -1964,7 +2021,7 @@ bl_t bmath_mf3_s_evd_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 
             for( sz_t j = 0; j < block_n - 1; j++ )
             {
-                if( v ) bmath_grt_f3_s_rotate_row( &gr_j, v->data + j * v->stride, v->data + ( j + 1 ) * v->stride, 0, n );
+                if( v ) bmath_grt_f3_s_row_rotate( &gr_j, v->data + j * v->stride, v->data + ( j + 1 ) * v->stride, 0, n );
 
                 f3_t akk = pajj[ a->stride + 1 ];
                 f3_t akl = ( j == block_n - 2 ) ? 0 : pajj[ a->stride + 2 ];
@@ -2096,11 +2153,11 @@ bl_t bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
             a0[ 0 ] = gr_r.c * a00 + gr_r.s * a01; a0[ 1 ] = gr_r.c * a01 - gr_r.s * a00;
             a1[ 0 ] =                gr_r.s * a11; a1[ 1 ] = gr_r.c * a11;
-            bmath_grt_f3_s_rotate_row( &gr_l, a0, a1, 0, 3 );
+            bmath_grt_f3_s_row_rotate( &gr_l, a0, a1, 0, 3 );
             a1[ 0 ] = 0;
 
-            if( u ) bmath_grt_f3_s_rotate_row( &gr_l, u->data, u->data + u->stride, 0, u->cols );
-            if( v ) bmath_grt_f3_s_rotate_row( &gr_r, v->data, v->data + v->stride, 0, v->cols );
+            if( u ) bmath_grt_f3_s_row_rotate( &gr_l, u->data, u->data + u->stride, 0, u->cols );
+            if( v ) bmath_grt_f3_s_row_rotate( &gr_r, v->data, v->data + v->stride, 0, v->cols );
 
             // chasing, annihilating off-bidiagonals
             for( sz_t k = 0; k < block_n - 2; k++ )
@@ -2116,8 +2173,8 @@ bl_t bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
                 bmath_grt_f3_s_rotate( &gr_l, al + 1, am + 1 );
                 if( k < block_n - 3 ) bmath_grt_f3_s_rotate( &gr_l, al + 2, am + 2 );
 
-                if( u ) bmath_grt_f3_s_rotate_row( &gr_l, u->data + u->stride * ( k + 1 ), u->data + u->stride * ( k + 2 ), 0, u->cols );
-                if( v ) bmath_grt_f3_s_rotate_row( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
+                if( u ) bmath_grt_f3_s_row_rotate( &gr_l, u->data + u->stride * ( k + 1 ), u->data + u->stride * ( k + 2 ), 0, u->cols );
+                if( v ) bmath_grt_f3_s_row_rotate( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
             }
         }
         if( cycle == max_cyles ) success = false;
@@ -2193,11 +2250,11 @@ bl_t bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
             a0[ 0 ] = gr_l.c * a00 + gr_l.s * a10; a1[ 0 ] = gr_l.c * a10 - gr_l.s * a00;
             a0[ 1 ] =                gr_l.s * a11; a1[ 1 ] = gr_l.c * a11;
-            bmath_grt_f3_s_rotate_col( &gr_r, a0, a0 + 1, a->stride, 0, 3 );
+            bmath_grt_f3_s_col_rotate( &gr_r, a0, a0 + 1, a->stride, 0, 3 );
             a0[ 1 ] = 0;
 
-            if( u ) bmath_grt_f3_s_rotate_row( &gr_l, u->data, u->data + u->stride, 0, u->cols );
-            if( v ) bmath_grt_f3_s_rotate_row( &gr_r, v->data, v->data + v->stride, 0, v->cols );
+            if( u ) bmath_grt_f3_s_row_rotate( &gr_l, u->data, u->data + u->stride, 0, u->cols );
+            if( v ) bmath_grt_f3_s_row_rotate( &gr_r, v->data, v->data + v->stride, 0, v->cols );
 
             // chasing, annihilating off-bidiagonals
             for( sz_t k = 0; k < block_n - 2; k++ )
@@ -2214,8 +2271,8 @@ bl_t bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
                 bmath_grt_f3_s_rotate( &gr_r, al + 1, al + 2 );
                 if( k < block_n - 3 ) bmath_grt_f3_s_rotate( &gr_r, am + 1, am + 2 );
 
-                if( u ) bmath_grt_f3_s_rotate_row( &gr_l, u->data + u->stride * ( k + 1 ), u->data + u->stride * ( k + 2 ), 0, u->cols );
-                if( v ) bmath_grt_f3_s_rotate_row( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
+                if( u ) bmath_grt_f3_s_row_rotate( &gr_l, u->data + u->stride * ( k + 1 ), u->data + u->stride * ( k + 2 ), 0, u->cols );
+                if( v ) bmath_grt_f3_s_row_rotate( &gr_r, v->data + v->stride * ( k + 1 ), v->data + v->stride * ( k + 2 ), 0, v->cols );
 
             }
         }
@@ -2586,7 +2643,7 @@ static vd_t selftest( void )
         bmath_mf3_s_decompose_trd( m2, m3 );
         ASSERT( bmath_mf3_s_is_trd( m2 ) );
 
-        ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
+        ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
 
         bmath_mf3_s_mul( m2, m3, m4 );
         bmath_mf3_s_htp( m3, m3 );
@@ -2611,7 +2668,7 @@ static vd_t selftest( void )
 
         bmath_mf3_s_decompose_qr( m3, m2 );
         ASSERT( bmath_mf3_s_is_near_utr( m2, 1E-8 ) );
-        ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
+        ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
 
         bmath_mf3_s_htp( m3, m3 );
         bmath_mf3_s_mul( m3, m2, m4 );
@@ -2641,7 +2698,7 @@ static vd_t selftest( void )
             bmath_mf3_s_one( m3 );
             bmath_mf3_s_evd_jacobi( m2, m3 );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
-            ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
+            ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
             bmath_mf3_s_mul( m2, m3, m4 );
             bmath_mf3_s_htp( m3, m3 );
             bmath_mf3_s_mul( m3, m4, m4 );
@@ -2657,7 +2714,7 @@ static vd_t selftest( void )
             bmath_mf3_s_one( m3 );
             bmath_mf3_s_evd( m2, m3 );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
-            ASSERT( bmath_mf3_s_is_near_iso( m3, 1E-8 ) );
+            ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
             bmath_mf3_s_mul( m2, m3, m4 );
             bmath_mf3_s_htp( m3, m3 );
             bmath_mf3_s_mul( m3, m4, m4 );
@@ -2800,8 +2857,8 @@ void bmath_mf3_s_svd_selftest()
         bmath_mf3_s_svd( u, a, v );
         ASSERT( bmath_mf3_s_is_dag( a ) );
 
-        ASSERT( bmath_mf3_s_is_near_iso( u, 1E-8 ) );
-        ASSERT( bmath_mf3_s_is_near_iso( v, 1E-8 ) );
+        ASSERT( bmath_mf3_s_is_near_uni( u, 1E-8 ) );
+        ASSERT( bmath_mf3_s_is_near_uni( v, 1E-8 ) );
 
         bmath_mf3_s_set_size( m1, n, m );
         bmath_mf3_s_mul( a, v, m1 );

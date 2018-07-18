@@ -41,7 +41,8 @@
  *  det: determinant
  *  svd: singular value decomposition
  *  evd: eigen value decomposition  (svd for hsm matrix)
- *  iso: isometry (orthonormal, unitary)
+ *  otn: orthonormal mxn marix (for m>n orthonormality applies to columns, otherwise to rows)
+ *  uni: unitary ( == orthonormal square marix)
  *  opd: outer product of two vectors
  *  udu: similarity transform a of a diagonal matrix: htp_udu: U^T * D * U; udu_htp: U * D * U^T
  *  grt: givens rotation
@@ -74,7 +75,14 @@ BCORE_DECLARE_OBJECT( bmath_mf3_s )
 };
 
 void bmath_mf3_s_set_size( bmath_mf3_s* o, sz_t rows, sz_t cols );
+
+/// Fills o with random values withing range [ min, max [.
 void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
+
+/** Fills o with sparsely with random values withing range [ min, max [.
+ *  'density' specifies the likelihood that a field is nonzero.
+ */
+void bmath_mf3_s_fill_random_sparse( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval );
 
 bmath_mf3_s* bmath_mf3_s_create_set_size( sz_t rows, sz_t cols );
 bmath_mf3_s* bmath_mf3_s_create_fill_random( sz_t rows, sz_t cols, f3_t min, f3_t max, u2_t* rval );
@@ -93,7 +101,8 @@ static inline bl_t bmath_mf3_s_is_square( const bmath_mf3_s* o ) { return o->row
 bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t max_dev ); // equality
 bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev ); // one (== identity)
 bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev ); // zero
-bl_t bmath_mf3_s_is_near_iso( const bmath_mf3_s* o, f3_t max_dev ); // near isometry (== near orthonormal)
+bl_t bmath_mf3_s_is_near_otn( const bmath_mf3_s* o, f3_t max_dev ); // near orthonormal
+bl_t bmath_mf3_s_is_near_uni( const bmath_mf3_s* o, f3_t max_dev ); // near unitary
 bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev ); // diagonal
 bl_t bmath_mf3_s_is_near_trd( const bmath_mf3_s* o, f3_t max_dev ); // symmetric tri-diagonal
 bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev ); // upper triangle
@@ -103,8 +112,10 @@ bl_t bmath_mf3_s_is_near_ubd( const bmath_mf3_s* o, f3_t max_dev ); // upper bi-
 bl_t bmath_mf3_s_is_near_lbd( const bmath_mf3_s* o, f3_t max_dev ); // lower bi-diagonal
 
 static inline bl_t bmath_mf3_s_is_equ( const bmath_mf3_s* o, const bmath_mf3_s* op ) { return bmath_mf3_s_is_near_equ( o, op, 0 ); }
-static inline bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_zro( o, 0 ); }
 static inline bl_t bmath_mf3_s_is_one( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_one( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_zro( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_zro( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_otn( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_otn( o, 0 ); }
+static inline bl_t bmath_mf3_s_is_uni( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_uni( o, 0 ); }
 static inline bl_t bmath_mf3_s_is_dag( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_dag( o, 0 ); }
 static inline bl_t bmath_mf3_s_is_trd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_trd( o, 0 ); }
 static inline bl_t bmath_mf3_s_is_utr( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_utr( o, 0 ); }
