@@ -521,46 +521,78 @@ void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bm
 
 void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
-    if( res == o || res == op )
-    {
-        bmath_mf3_s* buf = bmath_mf3_s_create();
-        bmath_mf3_s_set_size( buf, res->rows, res->cols );
-        bmath_mf3_s_mul_htp( o, op, buf );
-        bmath_mf3_s_cpy( buf, res );
-        bmath_mf3_s_discard( buf );
-        return;
-    }
-
     ASSERT( o->cols  == op->cols );
     ASSERT( o->rows  == res->rows );
     ASSERT( op->rows == res->cols );
 
     if( o == op ) // result is symmetric -> we can safe half of the work
     {
-        for( sz_t i = 0; i < o->rows; i++ )
+        if( res == o )
         {
-            const f3_t* vi = o->data + i * o->stride;
-            for( sz_t j = 0; j <= i ; j++ )
+            bmath_mf3_s* buf = bmath_mf3_s_create();
+            bmath_mf3_s_set_size( buf, res->rows, res->cols );
+            bmath_mf3_s_mul_htp( o, op, buf );
+            bmath_mf3_s_cpy( buf, res );
+            bmath_mf3_s_discard( buf );
+        }
+        else
+        {
+            for( sz_t i = 0; i < o->rows; i++ )
             {
-                const f3_t* vj = o->data + j * o->stride;
-                f3_t sum = 0;
-                for( sz_t k = 0; k < o->cols; k++ ) sum += vi[ k ] * vj[ k ];
-                res->data[ i * res->stride + j ] = sum;
-                res->data[ j * res->stride + i ] = sum;
+                const f3_t* vi = o->data + i * o->stride;
+                for( sz_t j = 0; j <= i ; j++ )
+                {
+                    const f3_t* vj = o->data + j * o->stride;
+                    f3_t sum = 0;
+                    for( sz_t k = 0; k < o->cols; k++ ) sum += vi[ k ] * vj[ k ];
+                    res->data[ i * res->stride + j ] = sum;
+                    res->data[ j * res->stride + i ] = sum;
+                }
             }
         }
         return;
     }
 
-    bmath_mf3_s_zro( res );
-    for( sz_t i = 0; i < o->rows; i++ )
+    if( res == o )
     {
-              f3_t* vri = res->data + i * res->stride;
-        const f3_t* voi =   o->data + i *   o->stride;
-        for( sz_t j = 0; j < op->rows; j++ )
+        bmath_vf3_s row;
+        bmath_vf3_s_init( &row );
+        bmath_vf3_s_set_size( &row, o->cols );
+        for( sz_t i = 0; i < o->rows; i++ )
         {
-            const f3_t* vpj = op->data + j * op->stride;
-            for( sz_t k = 0; k < o->cols; k++ ) vri[ j ] += voi[ k ] * vpj[ k ];
+            const f3_t* voi =   o->data + i *   o->stride;
+            bmath_vf3_s_zro( &row );
+            for( sz_t j = 0; j < op->rows; j++ )
+            {
+                const f3_t* vpj = op->data + j * op->stride;
+                for( sz_t k = 0; k < o->cols; k++ ) row.data[ j ] += voi[ k ] * vpj[ k ];
+            }
+
+            f3_t* vri = res->data + i * res->stride;
+            for( sz_t k = 0; k < row.size; k++ ) vri[ k ] = row.data[ k ];
+        }
+        bmath_vf3_s_down( &row );
+    }
+    else if( res == op )
+    {
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size( buf, res->rows, res->cols );
+        bmath_mf3_s_mul_htp( o, op, buf );
+        bmath_mf3_s_cpy( buf, res );
+        bmath_mf3_s_discard( buf );
+    }
+    else
+    {
+        bmath_mf3_s_zro( res );
+        for( sz_t i = 0; i < o->rows; i++ )
+        {
+                  f3_t* vri = res->data + i * res->stride;
+            const f3_t* voi =   o->data + i *   o->stride;
+            for( sz_t j = 0; j < op->rows; j++ )
+            {
+                const f3_t* vpj = op->data + j * op->stride;
+                for( sz_t k = 0; k < o->cols; k++ ) vri[ j ] += voi[ k ] * vpj[ k ];
+            }
         }
     }
 }
@@ -2410,7 +2442,7 @@ void bmath_mf3_s_sweep_rev_row_rotate( bmath_mf3_s* o, sz_t row_start, sz_t row_
 void bmath_mf3_s_sweep_fwd_col_rotate( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end )
 {
     assert( grt->size >= col_end - 1 );
-    if( bmath_arr_grt_f3_s_density( grt, row_start, row_end ) < 0.0625 )
+    if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.0625 )
     {
         // sparse rotations: rotate columns individually
         for( sz_t i = col_start; i < col_end; i++ ) bmath_mf3_s_col_rotate( o, i, &grt->data[ i ], row_start, row_end );
@@ -2428,7 +2460,7 @@ void bmath_mf3_s_sweep_fwd_col_rotate( bmath_mf3_s* o, sz_t col_start, sz_t col_
 void bmath_mf3_s_sweep_rev_col_rotate( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end )
 {
     assert( grt->size >= col_end - 1 );
-    if( bmath_arr_grt_f3_s_density( grt, row_start, row_end ) < 0.0625 )
+    if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.0625 )
     {
         // sparse rotations: rotate columns individually
         for( sz_t i = col_end; i > col_start; i-- ) bmath_mf3_s_col_rotate( o, i - 1, &grt->data[ i - 1 ], row_start, row_end );
