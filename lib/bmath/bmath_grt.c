@@ -28,6 +28,33 @@ void bmath_grt_f3_s_to_stdout( const bmath_grt_f3_s* o )
 
 /**********************************************************************************************************************/
 
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_grt_f3_s ) "{ aware_t _; bmath_grt_f3_s [] arr; }";
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bmath_arr_grt_f3_s* bmath_arr_grt_f3_s_create_size( sz_t size )
+{
+    bmath_arr_grt_f3_s* o = bmath_arr_grt_f3_s_create();
+    bmath_arr_grt_f3_s_set_size( o, size );
+    bmath_arr_grt_f3_s_zro( o );
+    return o;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+bmath_arr_grt_f3_s bmath_arr_grt_f3_of_size( sz_t size )
+{
+    bmath_arr_grt_f3_s o;
+    bmath_arr_grt_f3_s_init( &o );
+    bmath_arr_grt_f3_s_set_size( &o, size );
+    bmath_arr_grt_f3_s_zro( &o );
+    return o;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
 vd_t bmath_grt_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bmath_grt" ) ) )
@@ -35,6 +62,7 @@ vd_t bmath_grt_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             BCORE_REGISTER_OBJECT( bmath_grt_f3_s );
+            BCORE_REGISTER_OBJECT( bmath_arr_grt_f3_s );
         }
         break;
 

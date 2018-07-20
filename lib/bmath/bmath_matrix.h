@@ -52,6 +52,7 @@
 #include "bcore_std.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_vector.h"
+#include "bmath_grt.h"
 
 /**********************************************************************************************************************/
 // dynamic size matrix of f3_t
@@ -395,6 +396,74 @@ void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s
 void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end ); // stochastically precise
 
 //---------------------------------------------------------------------------------------------------------------------
+// adjacent givens rotations
+
+/// rotate two adjacent rows
+static inline void bmath_mf3_s_row_rotate( bmath_mf3_s* o, sz_t idx, const bmath_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+{
+    if( grt->s != 0 )
+    {
+        f3_t* row_a = o->data + o->stride * idx;
+        f3_t* row_b = row_a + o->stride;
+        for( sz_t i = col_start; i < col_end; i++ ) bmath_grt_f3_s_rotate( grt, row_a + i, row_b + i );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/// rotate two adjacent cols
+static inline void bmath_mf3_s_col_rotate( bmath_mf3_s* o, sz_t idx, const bmath_grt_f3_s* grt, sz_t row_start, sz_t row_end )
+{
+    if( grt->s != 0 )
+    {
+        f3_t* col_a = o->data + idx;
+        f3_t* col_b = col_a + 1;
+        for( sz_t i = row_start; i < row_end; i++ ) bmath_grt_f3_s_rotate( grt, col_a + i * o->stride, col_b + i * o->stride );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/// apply a forward row-swipe (start --> end; end - start rotations)
+static inline void bmath_mf3_s_row_swipe_fwd( bmath_mf3_s* o, sz_t idx, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+{
+    assert( grt->size >= col_end - 1 );
+    f3_t* row = o->data + o->stride * idx;
+    for( sz_t i = col_start; i < col_end; i++ ) bmath_grt_f3_s_rotate( grt->data + i, row + i, row + i + 1 );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/// apply a reverse row-swipe (end --> start; end - start rotations)
+static inline void bmath_mf3_s_row_swipe_rev( bmath_mf3_s* o, sz_t idx, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+{
+    assert( grt->size >= col_end - 1 );
+    f3_t* row = o->data + o->stride * idx;
+    for( sz_t i = col_end; i > col_start; i-- ) bmath_grt_f3_s_rotate( grt->data + i - 1, row + i - 1, row + i );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/// forward sweep of adjacent row rotations (row_start --> row_end)
+void bmath_mf3_s_sweep_fwd_row_rotate( bmath_mf3_s* o, sz_t row_start, sz_t row_end, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end );
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/// reverse sweep of adjacent row rotations (row_end --> row_start)
+void bmath_mf3_s_sweep_rev_row_rotate( bmath_mf3_s* o, sz_t row_start, sz_t row_end, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end );
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/// forward sweep of adjacent col rotations (col_start --> col_end)
+void bmath_mf3_s_sweep_fwd_col_rotate( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end );
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/// reverse sweep of adjacent col rotations (col_end --> col_start)
+void bmath_mf3_s_sweep_rev_col_rotate( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end );
+
+//---------------------------------------------------------------------------------------------------------------------
+
 // easy inspection
 
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );

@@ -214,6 +214,33 @@ void bmath_grt_f3_s_to_stdout( const bmath_grt_f3_s* o );
 
 /**********************************************************************************************************************/
 
+BCORE_DECLARE_OBJECT( bmath_arr_grt_f3_s ) { aware_t _; BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_grt_f3_s, ); };
+
+static inline void bmath_arr_grt_f3_s_set_size( bmath_arr_grt_f3_s* o, sz_t size ) { bcore_array_a_set_size( ( bcore_array* )o, size ); }
+static inline void bmath_arr_grt_f3_s_zro( bmath_arr_grt_f3_s* o ) { bcore_u_memzero( sizeof( bmath_grt_f3_s ), o->data, o->size ); }
+
+/// creates array of given size; explicitly zeros all elements
+bmath_arr_grt_f3_s* bmath_arr_grt_f3_s_create_size( sz_t size );
+bmath_arr_grt_f3_s  bmath_arr_grt_f3_of_size( sz_t size );
+
+/// returns number of identity rotations (sine == 0)
+static inline sz_t bmath_arr_grt_f3_s_count_identity( const bmath_arr_grt_f3_s* o, sz_t start, sz_t end )
+{
+    sz_t count = 0;
+    for( sz_t i = start; i < end; i++ ) count += ( o->data[ i ].s == 0 );
+    return count;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+static inline f3_t bmath_arr_grt_f3_s_density( const bmath_arr_grt_f3_s* o, sz_t start, sz_t end )
+{
+    sz_t count = bmath_arr_grt_f3_s_count_identity( o, start, end );
+    return ( end > start ) ? ( f3_t )( end - start - count ) / ( end - start ) : 0;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 vd_t bmath_grt_signal_handler( const bcore_signal_s* o );
 
 #endif  // BMATH_GRT_H

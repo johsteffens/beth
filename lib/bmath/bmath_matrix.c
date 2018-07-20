@@ -2391,6 +2391,57 @@ void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_sweep_fwd_row_rotate( bmath_mf3_s* o, sz_t row_start, sz_t row_end, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+{
+    assert( grt->size >= row_end - 1 );
+    for( sz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_row_rotate( o, i, &grt->data[ i ], col_start, col_end );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_sweep_rev_row_rotate( bmath_mf3_s* o, sz_t row_start, sz_t row_end, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+{
+    assert( grt->size >= row_end - 1 );
+    for( sz_t i = row_end; i > row_start; i-- ) bmath_mf3_s_row_rotate( o, i - 1, &grt->data[ i - 1 ], col_start, col_end );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_sweep_fwd_col_rotate( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end )
+{
+    assert( grt->size >= col_end - 1 );
+    if( bmath_arr_grt_f3_s_density( grt, row_start, row_end ) < 0.0625 )
+    {
+        // sparse rotations: rotate columns individually
+        for( sz_t i = col_start; i < col_end; i++ ) bmath_mf3_s_col_rotate( o, i, &grt->data[ i ], row_start, row_end );
+    }
+    else
+    {
+        // dense rotations: use cache efficient row-sweeps
+        for( sz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_row_swipe_fwd( o, i, grt, col_start, col_end );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/// reverse sweep of adjacent col rotations (col_end --> col_start)
+void bmath_mf3_s_sweep_rev_col_rotate( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end )
+{
+    assert( grt->size >= col_end - 1 );
+    if( bmath_arr_grt_f3_s_density( grt, row_start, row_end ) < 0.0625 )
+    {
+        // sparse rotations: rotate columns individually
+        for( sz_t i = col_end; i > col_start; i-- ) bmath_mf3_s_col_rotate( o, i - 1, &grt->data[ i - 1 ], row_start, row_end );
+    }
+    else
+    {
+        // dense rotations: use cache efficient row-sweeps
+        for( sz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_row_swipe_rev( o, i, grt, col_start, col_end );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
 {
     printf( "(%zu x %zu)\n", o->rows, o->cols );
