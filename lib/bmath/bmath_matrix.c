@@ -696,7 +696,7 @@ void bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     bmath_mf3_s_one( v );
 
     // o = uT * a * v; o^-1 = vT * (a^-1)T * u
-    bmath_mf3_s_svd( u, a, v );
+    bmath_mf3_s_svd_htp( u, a, v );
     bmath_mf3_s_get_dag_vec( a, d );
 
     // diagonal elements are sorted in descending manner
@@ -757,7 +757,7 @@ void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     bmath_mf3_s_one( q );
 
     bmath_mf3_s_cpy( o, a );
-    bmath_mf3_s_evd( a, q );
+    bmath_mf3_s_evd_htp( a, q );
 
     bmath_vf3_s* dag = bmath_vf3_s_create();
     bmath_vf3_s_set_size( dag, n );
@@ -1654,7 +1654,7 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_decompose_trd( bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( bmath_mf3_s_is_hsm( a ) );
     if( v )
@@ -1691,7 +1691,7 @@ void bmath_mf3_s_decompose_trd( bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_decompose_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     if( u )
     {
@@ -1735,7 +1735,7 @@ void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_decompose_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     if( u )
     {
@@ -1779,7 +1779,7 @@ void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_decompose_qr( bmath_mf3_s* q, bmath_mf3_s* r )
+void bmath_mf3_s_decompose_qr_htp( bmath_mf3_s* q, bmath_mf3_s* r )
 {
     ASSERT( bmath_mf3_s_is_square( r ) );
 
@@ -1806,7 +1806,7 @@ void bmath_mf3_s_decompose_qr( bmath_mf3_s* q, bmath_mf3_s* r )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bl_t bmath_mf3_s_evd_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( bmath_mf3_s_is_hsm( a ) );
 
@@ -1889,13 +1889,13 @@ bl_t bmath_mf3_s_evd_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
  *  Very efficient for large matrices. >20x faster than Jacobi method but slightly less accurate.
  *  bmath_mf3_s_evd_htp for more details.
  */
-bl_t bmath_mf3_s_evd_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     sz_t n = a->rows;
     if( n <= 1 ) return true; // nothing to do
 
     // tridiagonalization
-    bmath_mf3_s_decompose_trd( a, v );
+    bmath_mf3_s_decompose_trd_htp( a, v );
 
     bl_t success = true;
 
@@ -1998,15 +1998,15 @@ bl_t bmath_mf3_s_evd_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
  *  (Variant of Francis' QR-Algorithm with shift)
  *  Plain shift is not explicitly added/subtracted. Only the shift effect is applied to the matrix.
  *  This minimizes accuracy-loss similarly as implicit shift would do.
- *  bmath_mf3_s_evd_htp for more details.
+ *  bmath_mf3_s_evd for more details.
  */
-bl_t bmath_mf3_s_evd_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     sz_t n = a->rows;
     if( n <= 1 ) return true; // nothing to do
 
     /// tridiagonalization
-    bmath_mf3_s_decompose_trd( a, v );
+    bmath_mf3_s_decompose_trd_htp( a, v );
 
     // qr iteration until smallest non-diag element < offd_limit;
 
@@ -2113,9 +2113,9 @@ bl_t bmath_mf3_s_evd_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bl_t bmath_mf3_s_evd( bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    return bmath_mf3_s_evd_qr_ishift( a, v );
+    return bmath_mf3_s_evd_htp_qr_ishift( a, v );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -2123,12 +2123,12 @@ bl_t bmath_mf3_s_evd( bmath_mf3_s* a, bmath_mf3_s* v )
 /** SVD for a->rows >= a->cols
  *  Method: upper bidiagonalization + chase algorithm with implicit shift
  */
-bl_t bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_svd_htp_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( a->rows >= a->cols );
 
     // creating upper-bidiagonal
-    bmath_mf3_s_decompose_ubd( u, a, v );
+    bmath_mf3_s_decompose_ubd_htp( u, a, v );
 
     sz_t n = a->cols;
     if( n <= 1 ) return true; // nothing else to do
@@ -2220,12 +2220,12 @@ bl_t bmath_mf3_s_svd_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 /** SVD for a->rows >= a->cols
  *  Method: lower bidiagonalization + chase algorithm with implicit shift
  */
-bl_t bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_svd_htp_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( a->cols >= a->rows );
 
     // creating lower-bidiagonal
-    bmath_mf3_s_decompose_lbd( u, a, v );
+    bmath_mf3_s_decompose_lbd_htp( u, a, v );
 
     sz_t n = a->rows;
     if( n <= 1 ) return true; // nothing else to do
@@ -2316,17 +2316,17 @@ bl_t bmath_mf3_s_svd_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bl_t bmath_mf3_s_svd(  bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+bl_t bmath_mf3_s_svd_htp(  bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     bl_t success = false;
 
     if( a->rows >= a->cols )
     {
-        success = bmath_mf3_s_svd_ubd( u, a, v );
+        success = bmath_mf3_s_svd_htp_ubd( u, a, v );
     }
     else
     {
-        success = bmath_mf3_s_svd_lbd( u, a, v );
+        success = bmath_mf3_s_svd_htp_lbd( u, a, v );
     }
 
     if( !success ) return false;
@@ -2719,11 +2719,11 @@ static vd_t selftest( void )
         bmath_mf3_s_set_size_to( m1, m3 );
         bmath_mf3_s_set_size_to( m1, m4 );
         bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_decompose_trd( m2, NULL );
+        bmath_mf3_s_decompose_trd_htp( m2, NULL );
         ASSERT( bmath_mf3_s_is_trd( m2 ) );
         bmath_mf3_s_cpy( m1, m2 );
         bmath_mf3_s_one( m3 );
-        bmath_mf3_s_decompose_trd( m2, m3 );
+        bmath_mf3_s_decompose_trd_htp( m2, m3 );
         ASSERT( bmath_mf3_s_is_trd( m2 ) );
 
         ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
@@ -2749,7 +2749,7 @@ static vd_t selftest( void )
         bmath_mf3_s_cpy( m1, m2 );
         bmath_mf3_s_one( m3 );
 
-        bmath_mf3_s_decompose_qr( m3, m2 );
+        bmath_mf3_s_decompose_qr_htp( m3, m2 );
         ASSERT( bmath_mf3_s_is_near_utr( m2, 1E-8 ) );
         ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
 
@@ -2775,11 +2775,11 @@ static vd_t selftest( void )
         // jacobi
         {
             bmath_mf3_s_cpy( m1, m2 );
-            bmath_mf3_s_evd_jacobi( m2, NULL );
+            bmath_mf3_s_evd_htp_jacobi( m2, NULL );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             bmath_mf3_s_cpy( m1, m2 );
             bmath_mf3_s_one( m3 );
-            bmath_mf3_s_evd_jacobi( m2, m3 );
+            bmath_mf3_s_evd_htp_jacobi( m2, m3 );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
             bmath_mf3_s_mul( m2, m3, m4 );
@@ -2791,11 +2791,11 @@ static vd_t selftest( void )
         // default evd
         {
             bmath_mf3_s_cpy( m1, m2 );
-            bmath_mf3_s_evd( m2, NULL );
+            bmath_mf3_s_evd_htp( m2, NULL );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             bmath_mf3_s_cpy( m1, m2 );
             bmath_mf3_s_one( m3 );
-            bmath_mf3_s_evd( m2, m3 );
+            bmath_mf3_s_evd_htp( m2, m3 );
             ASSERT( bmath_mf3_s_is_dag( m2 ) );
             ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
             bmath_mf3_s_mul( m2, m3, m4 );
@@ -2831,7 +2831,7 @@ static vd_t selftest( void )
 
         bmath_arr_vf3_s_on_section_set_sum( a1, 0, -1, 0 ); // set sum of vector components to 0 (introducing a linear dependence)
         bmath_mf3_s_set_covariance_on_section_fast( m1, a1, 0, -1 );
-        bmath_mf3_s_evd( m1, NULL );
+        bmath_mf3_s_evd_htp( m1, NULL );
         ASSERT( f3_abs( bmath_mf3_s_get_f3( m1, n - 1, n - 1 ) ) < 1E-8 ); // last eigenvalue should be near zero
     }
 
@@ -2932,12 +2932,12 @@ void bmath_mf3_s_svd_selftest()
         bmath_mf3_s_one( v );
 
         bmath_mf3_s_cpy( m0, a );
-        bmath_mf3_s_svd( NULL, a, NULL );
+        bmath_mf3_s_svd_htp( NULL, a, NULL );
         ASSERT( bmath_mf3_s_is_dag( a ) );
 
         // a = u'T * a' * v
         bmath_mf3_s_cpy( m0, a );
-        bmath_mf3_s_svd( u, a, v );
+        bmath_mf3_s_svd_htp( u, a, v );
         ASSERT( bmath_mf3_s_is_dag( a ) );
 
         ASSERT( bmath_mf3_s_is_near_uni( u, 1E-8 ) );

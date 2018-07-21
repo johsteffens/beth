@@ -25,8 +25,8 @@
  *  A complete rotation matrix Gkl (k < l) is deemed to have the following shape
  *  gkk = gll = c, gkl = -s, glk = s; All other elements: gij = ((i==j)?1:0)
  *
- *  The  left-side rotation G * A modifies rows    k and l of A.
- *  The right-side rotation A * G modifies columns k and l of A.
+ *  The  left-multiplication G * A modifies rows    k and l of A.
+ *  The right-multiplication A * G modifies columns k and l of A.
  *
  *  Where possible o->c >= 0. This particularly applies to
  *  annihilating-initialization and rho-initialization.

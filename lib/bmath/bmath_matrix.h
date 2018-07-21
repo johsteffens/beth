@@ -322,14 +322,14 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
  *  Output: a' (tri-diagonal), v' (rotation or NULL)
  *  It is vT * a * v = v'T * a' * v'.
  */
-void bmath_mf3_s_decompose_trd( bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** Stable in-place QR-decomposition. Based on Givens rotations.
  *  Input:  q  (rotation or identity), r  (any square matrix),
  *  Output: q' (rotation),             r' (upper_triangular) such that with qT * r = q'T * r'.
  *  q == NULL allowed, in which case only r' is computed.
  */
-void bmath_mf3_s_decompose_qr( bmath_mf3_s* q, bmath_mf3_s* r );
+void bmath_mf3_s_decompose_qr_htp( bmath_mf3_s* q, bmath_mf3_s* r );
 
 /** Stable in-place EVD for a symmetric matrix. Jacobi Method.
  *  Input:  a  (symmetric), v  (rotation or identity)
@@ -339,7 +339,7 @@ void bmath_mf3_s_decompose_qr( bmath_mf3_s* q, bmath_mf3_s* r );
  *  Diagonal elements are sorted in descending value order.
  *  v == NULL allowed, in which case only a' is computed.
  */
-bl_t bmath_mf3_s_evd_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
+bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** In-place EVD for a symmetric matrix.
  *  Approach: TRD, QR with explicit shifting. (Variant of Francis' QR-Algorithm)
@@ -350,7 +350,7 @@ bl_t bmath_mf3_s_evd_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
  *  Diagonal elements are sorted in descending value order.
  *  v == NULL allowed, in which case only a' is computed.
  */
-bl_t bmath_mf3_s_evd( bmath_mf3_s* a, bmath_mf3_s* v );
+bl_t bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
 
 //---------------------------------------------------------------------------------------------------------------------
 // Singular value decomposition (SVD) and supportive operations
@@ -362,8 +362,8 @@ bl_t bmath_mf3_s_evd( bmath_mf3_s* a, bmath_mf3_s* v );
  *  Output: u' (nxn unitary or NULL), a' (bi-diagonal),   v' (nxn unitary or NULL)
  *  It is uT * a * v = u'T * a' * v'
  */
-void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper-bidiagonal
-void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower-bidiagonal
+void bmath_mf3_s_decompose_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper-bidiagonal
+void bmath_mf3_s_decompose_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower-bidiagonal
 
 /** Stable in-place full SVD for a general matrix.
  *  Method: Bi-diagonalization by givens rotations and QR-chasing with implicit shift.
@@ -384,7 +384,7 @@ void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
  *    - Det(u') == 1
  *    - Det(v') == 1 or -1
  */
-bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // for all matrices
+bl_t bmath_mf3_s_svd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // for all matrices
 
 //---------------------------------------------------------------------------------------------------------------------
 // covariance
