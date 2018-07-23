@@ -333,15 +333,62 @@ void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
  */
 void bmath_mf3_s_decompose_qr_htp( bmath_mf3_s* q, bmath_mf3_s* r );
 
-/** Stable in-place bi-diagonal decomposition for a general matrix.
+/** (To be deprecated -> preferably use non-_htp versions below)
+ *  Full stable in-place bi-diagonal decomposition for a general matrix.
  *  Based on givens rotations.
  *  Matrices u, a, v are being modified: mat -> mat'
- *  Input:  u  (nxn unitary or NULL), a  (nxm, any data), v  (nxn unitary or NULL),
- *  Output: u' (nxn unitary or NULL), a' (bi-diagonal),   v' (nxn unitary or NULL)
+ *  Input:  u  (mxm unitary or NULL), a  (mxn, any data), v  (nxn unitary or NULL),
+ *  Output: u' (mxm unitary or NULL), a' (bi-diagonal),   v' (nxn unitary or NULL)
  *  It is uT * a * v = u'T * a' * v'
  */
-void bmath_mf3_s_decompose_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper-bidiagonal
-void bmath_mf3_s_decompose_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower-bidiagonal
+void bmath_mf3_s_decompose_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper bidiagonal
+void bmath_mf3_s_decompose_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower bidiagonal
+
+/** Stable bidiagonal decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
+ *  It is a = u * a' * vT, with u, v being unitary. Supports full and thin decomposition.
+ *  If matrices u, v are desired, their size has to be preset but they need not be preinitialized.
+ *  The routine does not change the actual allocation of either matrix, hence u, a, v may
+ *  safely reference external data.
+ *  Whether full or thin decomposition is computed depends on how matrices have been preallocated:
+ *
+ *     a:  mxn input matrix to be diagonalized
+ *
+ *     u:
+ *         NULL         -  u is not computed
+ *         mxm matrix   -  full decomposition
+ *         mxn matrix   -  thin decomposition for n < m
+ *
+ *     v:
+ *         NULL         -  v is not computed
+ *         nxn matrix   -  full decomposition
+ *         nxm matrix   -  thin decomposition for m < n
+ *
+ *  If thin decomposition is chosen, then a' is returned as (thin) square matrix.
+ *  Meaning either a->rows or a->cols is changed to min(m,n) by the routine.
+ *
+ */
+void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper bidiagonal
+void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower bidiagonal
+
+/** Turns an upper bidiagonal matrix into the lower bidiagonal form a -> a'
+ *  by postmultiplying a unitary matrix.
+ *  If v is provided, it is modified v -> v' such that a * vT = a' * v'T
+ *  (v may be full, thin or NULL)
+ */
+void bmath_mf3_s_ubd_to_lbd( bmath_mf3_s* a, bmath_mf3_s* v );
+
+/** Turns a lower bidiagonal matrix into the upper bidiagonal form a -> a'
+ *  by pre-multiplying a unitary matrix.
+ *  If u is provided, it is modified u -> u' such that u * a = u' * a'
+ *  (u may be full, thin or NULL)
+ */
+void bmath_mf3_s_lbd_to_ubd( bmath_mf3_s* u, bmath_mf3_s* a );
+
+/** ubd_to_lbd with v deemed transposed. */
+void bmath_mf3_s_ubd_to_lbd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
+
+/** lbd_to_vbd with u deemed transposed. */
+void bmath_mf3_s_lbd_to_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a );
 
 //---------------------------------------------------------------------------------------------------------------------
 // covariance

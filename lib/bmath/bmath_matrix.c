@@ -1285,6 +1285,11 @@ void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**********************************************************************************************************************/
+// Triangular decompositions, operations and solvers
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     // Algorithm works in-place: No need to check for o == res;
@@ -1654,6 +1659,11 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**********************************************************************************************************************/
+// Other decompositions
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     ASSERT( bmath_mf3_s_is_hsm( a ) );
@@ -1803,6 +1813,280 @@ void bmath_mf3_s_decompose_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s*
         }
     }
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_ubd_to_lbd( bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    sz_t n = sz_min( a->rows, a->cols );
+
+    if( n <= 1 ) return; // nothing to do
+
+    if( v ) ASSERT( v->cols >= n );
+
+    bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( n );
+
+    for( sz_t j = 0; j < n - 1; j++ )
+    {
+        f3_t* aj = a->data + j * ( a->stride + 1 );
+        bmath_grt_f3_s_init_and_annihilate_b( &grv.data[ j ], aj, aj + 1 );
+        bmath_grt_f3_s_rotate( &grv.data[ j ], aj + a->stride, aj + a->stride + 1 );
+    }
+
+    if( v ) bmath_mf3_s_sweep_fwd_col_rotate( v, 0, n - 1, &grv, 0, v->rows );
+
+    bmath_arr_grt_f3_s_down( &grv );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+// v transposed
+void bmath_mf3_s_ubd_to_lbd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    sz_t n = sz_min( a->rows, a->cols );
+
+    if( n <= 1 ) return; // nothing to do
+
+    if( v ) ASSERT( v->rows >= n );
+
+    bmath_grt_f3_s gr;
+
+    for( sz_t j = 0; j < n - 1; j++ )
+    {
+        f3_t* aj = a->data + j * ( a->stride + 1 );
+        bmath_grt_f3_s_init_and_annihilate_b( &gr, aj, aj + 1 );
+        bmath_grt_f3_s_rotate( &gr, aj + a->stride, aj + a->stride + 1 );
+        if( v ) bmath_mf3_s_row_rotate( v, j, &gr, 0, v->cols );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_lbd_to_ubd( bmath_mf3_s* u, bmath_mf3_s* a )
+{
+    sz_t n = sz_min( a->rows, a->cols );
+
+    if( n <= 1 ) return; // nothing to do
+
+    if( u ) ASSERT( u->cols >= n );
+
+    bmath_arr_grt_f3_s gru = bmath_arr_grt_f3_of_size( n );
+
+    for( sz_t j = 0; j < n - 1; j++ )
+    {
+        f3_t* aj = a->data + j * ( a->stride + 1 );
+        bmath_grt_f3_s_init_and_annihilate_b( &gru.data[ j ], aj, aj + a->stride );
+        bmath_grt_f3_s_rotate( &gru.data[ j ], aj + 1, aj + a->stride + 1 );
+    }
+
+    if( u ) bmath_mf3_s_sweep_fwd_col_rotate( u, 0, n - 1, &gru, 0, u->rows );
+
+    bmath_arr_grt_f3_s_down( &gru );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+// u transposed
+void bmath_mf3_s_lbd_to_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a )
+{
+    sz_t n = sz_min( a->rows, a->cols );
+
+    if( n <= 1 ) return; // nothing to do
+
+    if( u ) ASSERT( u->rows >= n );
+
+    bmath_grt_f3_s gr;
+
+    for( sz_t j = 0; j < n - 1; j++ )
+    {
+        f3_t* aj = a->data + j * ( a->stride + 1 );
+        bmath_grt_f3_s_init_and_annihilate_b( &gr, aj, aj + a->stride );
+        bmath_grt_f3_s_rotate( &gr, aj + 1, aj + a->stride + 1 );
+        if( u ) bmath_mf3_s_row_rotate( u, j, &gr, 0, u->cols );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    if( a->rows < a->cols )
+    {
+        bmath_mf3_s_decompose_lbd( u, a, v );
+        bmath_mf3_s_lbd_to_ubd( u, a );
+        return;
+    }
+
+    /// at this point: a->rows >= a->cols;
+
+    if( a->rows <= 1 ) return; // nothing to do
+
+    if( u )
+    {
+        ASSERT( u != a );
+        ASSERT( u->rows == a->rows );
+        ASSERT( u->cols == a->rows /*full*/ || u->cols == a->cols /*thin*/  ); // u may be full or thin (nothing in-between)
+    }
+
+    if( v )
+    {
+        ASSERT( v->cols == a->cols );
+        ASSERT( v->rows == a->cols );
+        ASSERT( v != a );
+        ASSERT( v != u );
+    }
+
+    bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( a->cols );
+    bmath_grt_f3_s gr;
+
+    for( sz_t j = 0; j < a->cols; j++ )
+    {
+        // zero lower column
+        for( sz_t l = a->rows - 1; l > j; l-- )
+        {
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ ( l - 1 ) * a->stride + j ], &a->data[ l * a->stride + j ] );
+            if( u ) a->data[ l * a->stride + j ] = bmath_grt_f3_s_rho( &gr );
+            bmath_mf3_s_row_rotate( a, l - 1, &gr, j + 1, a->cols );
+        }
+
+        // zero upper row
+        for( sz_t l = a->cols - 1; l > j + 1; l-- )
+        {
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ j * a->stride + l - 1 ], &a->data[ j * a->stride + l ] );
+            if( v ) a->data[ j * a->stride + l ] = bmath_grt_f3_s_rho( &gr );
+            grv.data[ l - 1 ] = gr;
+        }
+
+        bmath_mf3_s_sweep_rev_col_rotate( a, j + 1, a->cols - 1, &grv, j + 1, a->rows );
+    }
+
+    if( v ) // reverse construction of v
+    {
+        bmath_mf3_s_one( v );
+        for( sz_t j = a->cols - 1; j < a->cols; j-- )
+        {
+            for( sz_t k = j + 1; k < a->cols - 1; k++ )
+            {
+                f3_t rho = 0;
+                f3_t_swap( &a->data[ j * a->stride + k + 1 ], &rho );
+                bmath_grt_f3_s_init_from_rho( &gr, -rho );
+                bmath_mf3_s_row_rotate( v, k, &gr, j, v->cols );
+            }
+        }
+    }
+
+    if( u ) // reverse construction of u
+    {
+        bmath_mf3_s_one( u );
+        for( sz_t j = a->cols - 1; j < a->cols; j-- )
+        {
+            for( sz_t k = j; k < a->rows - 1; k++ )
+            {
+                f3_t rho = 0;
+                f3_t_swap( &a->data[ j + a->stride * ( k + 1 ) ], &rho );
+                bmath_grt_f3_s_init_from_rho( &gr, -rho );
+                bmath_mf3_s_row_rotate( u, k, &gr, j, u->cols );
+            }
+        }
+        a->rows = u->cols;
+    }
+
+    bmath_arr_grt_f3_s_down( &grv );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    if( a->cols < a->rows )
+    {
+
+        bmath_mf3_s_decompose_ubd( u, a, v );
+        bmath_mf3_s_ubd_to_lbd( a, v );
+        return;
+    }
+
+    /// at this point: a->cols >= a->rows;
+
+    if( a->cols <= 1 ) return; // nothing to do
+
+    if( u )
+    {
+        ASSERT( u->cols == a->rows );
+        ASSERT( u->rows == a->rows );
+        ASSERT( u != a );
+        ASSERT( u != v );
+    }
+
+    if( v )
+    {
+        ASSERT( v != a );
+        ASSERT( v->rows == a->cols );
+        ASSERT( v->cols == a->cols || v->cols == a->rows ); // v may be full or thin (nothing in-between)
+    }
+
+    bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( a->cols );
+    bmath_grt_f3_s gr;
+
+    for( sz_t j = 0; j < a->rows; j++ )
+    {
+        // zero upper row
+        for( sz_t l = a->cols - 1; l > j; l-- )
+        {
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ j * a->stride + l - 1 ], &a->data[ j * a->stride + l ] );
+            if( v ) a->data[ j * a->stride + l ] = bmath_grt_f3_s_rho( &gr );
+            grv.data[ l - 1 ] = gr;
+        }
+
+        bmath_mf3_s_sweep_rev_col_rotate( a, j, a->cols - 1, &grv, j + 1, a->rows );
+
+        // zero lower column
+        for( sz_t l = a->rows - 1; l > j + 1; l-- )
+        {
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ ( l - 1 ) * a->stride + j ], &a->data[ l * a->stride + j ] );
+            if( u ) a->data[ l * a->stride + j ] = bmath_grt_f3_s_rho( &gr );
+            bmath_mf3_s_row_rotate( a, l - 1, &gr, j + 1, a->cols );
+        }
+    }
+
+    if( v ) // reverse construction of v
+    {
+        bmath_mf3_s_one( v );
+        for( sz_t j = a->rows - 1; j < a->rows; j-- )
+        {
+            for( sz_t k = j; k < a->cols - 1; k++ )
+            {
+                f3_t rho = 0;
+                f3_t_swap( &a->data[ j * a->stride + k + 1 ], &rho );
+                bmath_grt_f3_s_init_from_rho( &gr, -rho );
+                bmath_mf3_s_row_rotate( v, k, &gr, j, v->cols );
+            }
+        }
+        a->cols = v->cols;
+    }
+
+    if( u ) // reverse construction of u
+    {
+        bmath_mf3_s_one( u );
+        for( sz_t j = a->rows - 2; j < a->rows; j-- )
+        {
+            for( sz_t k = j + 1; k < a->rows - 1; k++ )
+            {
+                f3_t rho = 0;
+                f3_t_swap( &a->data[ j + a->stride * ( k + 1 ) ], &rho );
+                bmath_grt_f3_s_init_from_rho( &gr, -rho );
+                bmath_mf3_s_row_rotate( u, k, &gr, j, u->cols );
+            }
+        }
+    }
+
+    bmath_arr_grt_f3_s_down( &grv );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+// covariance
 
 //---------------------------------------------------------------------------------------------------------------------
 
