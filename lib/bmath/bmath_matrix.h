@@ -53,6 +53,7 @@
 #include "bmath_spect_algebraic.h"
 #include "bmath_vector.h"
 #include "bmath_grt.h"
+#include "bmath_matrix_evd.h"
 
 /**********************************************************************************************************************/
 // dynamic size matrix of f3_t
@@ -77,10 +78,10 @@ BCORE_DECLARE_OBJECT( bmath_mf3_s )
 
 void bmath_mf3_s_set_size( bmath_mf3_s* o, sz_t rows, sz_t cols );
 
-/// Fills o with random values withing range [ min, max [.
+/// Fills o with random values within range [ min, max [.
 void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
 
-/** Fills o with sparsely with random values withing range [ min, max [.
+/** Fills o with sparsely with random values within range [ min, max [.
  *  'density' specifies the likelihood that a field is nonzero.
  */
 void bmath_mf3_s_fill_random_sparse( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval );
@@ -240,7 +241,7 @@ bmath_mf3_s bmath_mf3_s_get_weak_sub_mat( const bmath_mf3_s* o, sz_t row, sz_t c
 bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx );
 
 //---------------------------------------------------------------------------------------------------------------------
-// Special triangular matrices
+// Triangular decompositions, operations and solvers
 
 /** Cholesky decomposition.
  *  o must be positive definite.
@@ -314,7 +315,7 @@ void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
 //---------------------------------------------------------------------------------------------------------------------
-// Eigenvalue decomposition (EVD) and supportive operations
+// Other decompositions
 
 /** Stable in-place tri-diagonal decomposition for a symmetric matrix.
  *  Based on Givens rotations.
@@ -322,7 +323,7 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
  *  Output: a' (tri-diagonal), v' (rotation or NULL)
  *  It is vT * a * v = v'T * a' * v'.
  */
-void bmath_mf3_s_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** Stable in-place QR-decomposition. Based on Givens rotations.
  *  Input:  q  (rotation or identity), r  (any square matrix),
@@ -330,30 +331,6 @@ void bmath_mf3_s_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
  *  q == NULL allowed, in which case only r' is computed.
  */
 void bmath_mf3_s_decompose_qr_htp( bmath_mf3_s* q, bmath_mf3_s* r );
-
-/** Stable in-place EVD for a symmetric matrix. Jacobi Method.
- *  Input:  a  (symmetric), v  (rotation or identity)
- *  Output: a' (diagonal),  v' (rotation) with vT * a * v = v'T * a' * v'.
- *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.
- *  (Convergence failure is very rare.)
- *  Diagonal elements are sorted in descending value order.
- *  v == NULL allowed, in which case only a' is computed.
- */
-bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
-
-/** In-place EVD for a symmetric matrix.
- *  Approach: TRD, QR with explicit shifting. (Variant of Francis' QR-Algorithm)
- *  Input:  a  (symmetric), v  (rotation or identity)
- *  Output: a' (diagonal),  v' (rotation) with vT * a * v = v'T * a' * v'.
- *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.
- *  (Convergence failure is very rare.)
- *  Diagonal elements are sorted in descending value order.
- *  v == NULL allowed, in which case only a' is computed.
- */
-bl_t bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
-
-//---------------------------------------------------------------------------------------------------------------------
-// Singular value decomposition (SVD) and supportive operations
 
 /** Stable in-place bi-diagonal decomposition for a general matrix.
  *  Based on givens rotations.
@@ -364,6 +341,9 @@ bl_t bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
  */
 void bmath_mf3_s_decompose_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper-bidiagonal
 void bmath_mf3_s_decompose_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower-bidiagonal
+
+//---------------------------------------------------------------------------------------------------------------------
+// Singular value decomposition (SVD) and supportive operations
 
 /** Stable in-place full SVD for a general matrix.
  *  Method: Bi-diagonalization by givens rotations and QR-chasing with implicit shift.
