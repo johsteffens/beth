@@ -57,7 +57,7 @@
 #include "bmath_matrix_svd.h"
 
 /**********************************************************************************************************************/
-// dynamic size matrix of f3_t
+/// Matrix object of f3_t
 
 BCORE_DECLARE_OBJECT( bmath_mf3_s )
 {
@@ -94,8 +94,8 @@ static inline void bmath_mf3_s_set_size_to( const bmath_mf3_s* o, bmath_mf3_s* r
 static inline bl_t bmath_mf3_s_is_equ_size( const bmath_mf3_s* o, const bmath_mf3_s* op ) { return o->rows == op->rows && o->cols == op->cols; }
 static inline bl_t bmath_mf3_s_is_square( const bmath_mf3_s* o ) { return o->rows == o->cols; }
 
-//---------------------------------------------------------------------------------------------------------------------
-// checks
+/**********************************************************************************************************************/
+/// checks, deviations
 
 /** Near-state means: For each matrix element the absolute difference
  *  to the specified state is less or equal max_dev.
@@ -128,16 +128,28 @@ static inline bl_t bmath_mf3_s_is_ubd( const bmath_mf3_s* o ) { return bmath_mf3
 static inline bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_lbd( o, 0 ); }
 
 //---------------------------------------------------------------------------------------------------------------------
-// initialization, copying
+// Frobenius norm
 
-f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o );
-f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op );
+/** fdev = ||o - x||f
+ *  '|| ... ||f' = Frobenius norm
+ *  Matrix x is the specified state.
+ *  Note: By this definition fdev_zro is the Frobenius norm of o.
+ */
+f3_t bmath_mf3_s_is_fdev_equ( const bmath_mf3_s* o, const bmath_mf3_s* op );
+f3_t bmath_mf3_s_is_fdev_zro( const bmath_mf3_s* o );
+f3_t bmath_mf3_s_is_fdev_one( const bmath_mf3_s* o );
 
-void bmath_mf3_s_zro(       bmath_mf3_s* o );
-void bmath_mf3_s_one(       bmath_mf3_s* o );
-void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res );
+/**********************************************************************************************************************/
+/// initializations; copying; basic matrix operations
+
+f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o ); // trace
+f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op ); // ( o - op )^2
+
+void bmath_mf3_s_zro(       bmath_mf3_s* o ); // set zero
+void bmath_mf3_s_one(       bmath_mf3_s* o ); // set one
+void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res );  // negate
 void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
-void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res );
+void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res );  // copies content o -> res  (does not change allocation of res)
 
 //---------------------------------------------------------------------------------------------------------------------
 // transposition
@@ -198,8 +210,8 @@ void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
 
 void bmath_mf3_s_div(         const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
-//---------------------------------------------------------------------------------------------------------------------
-// element-access, col-access, row-access, sub-matrix
+/**********************************************************************************************************************/
+/// element-access; col-access; row-access; sub-matrix
 
 void bmath_mf3_s_set_row_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data );
 void bmath_mf3_s_set_col_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data );
@@ -241,8 +253,8 @@ bmath_mf3_s bmath_mf3_s_get_weak_sub_mat( const bmath_mf3_s* o, sz_t row, sz_t c
  */
 bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx );
 
-//---------------------------------------------------------------------------------------------------------------------
-// Triangular decompositions, operations and solvers
+/**********************************************************************************************************************/
+/// Triangular decompositions, operations and solvers
 
 /** Cholesky decomposition.
  *  o must be positive definite.
@@ -315,8 +327,8 @@ void bmath_mf3_s_lt1_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
-//---------------------------------------------------------------------------------------------------------------------
-// Other decompositions
+/**********************************************************************************************************************/
+/// Other decompositions
 
 /** Stable in-place tri-diagonal decomposition for a symmetric matrix.
  *  Based on Givens rotations.
@@ -394,8 +406,8 @@ void bmath_mf3_s_ubd_to_lbd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
 /** lbd_to_vbd with u deemed transposed. */
 void bmath_mf3_s_lbd_to_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a );
 
-//---------------------------------------------------------------------------------------------------------------------
-// covariance
+/**********************************************************************************************************************/
+/// Covariance
 
 /** Sets o to the covariance matrix of a section of arr_vec:
  *  oij = E( E( vi - E( vi ) )E( vj - E( vj ) ) )
@@ -403,8 +415,8 @@ void bmath_mf3_s_lbd_to_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a );
 void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end ); // fast
 void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end ); // stochastically precise
 
-//---------------------------------------------------------------------------------------------------------------------
-// adjacent givens rotations
+/**********************************************************************************************************************/
+/// Givens Rotations
 
 /// rotate two adjacent rows
 static inline void bmath_mf3_s_row_rotate( bmath_mf3_s* o, sz_t idx, const bmath_grt_f3_s* grt, sz_t col_start, sz_t col_end )
@@ -472,8 +484,10 @@ void bmath_mf3_s_sweep_rev_col_rotate( bmath_mf3_s* o, sz_t col_start, sz_t col_
 
 //---------------------------------------------------------------------------------------------------------------------
 
-// easy inspection
+/**********************************************************************************************************************/
+/// Development support
 
+// for easy inspection
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );
 
 /**********************************************************************************************************************/

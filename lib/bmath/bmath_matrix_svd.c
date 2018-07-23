@@ -555,7 +555,6 @@ void bmath_mf3_s_svd_htp_selftest()
         bmath_mf3_s_cpy( m0, a );
         bmath_mf3_s_svd_htp( u, a, v );
         ASSERT( bmath_mf3_s_is_dag( a ) );
-
         ASSERT( bmath_mf3_s_is_near_uni( u, 1E-8 ) );
         ASSERT( bmath_mf3_s_is_near_uni( v, 1E-8 ) );
 
@@ -597,6 +596,8 @@ static void bmath_mf3_s_svd_eval( sz_t m, sz_t n, f3_t density, bl_t full )
     bmath_mf3_s_cpy( m0, a );
     ASSERT( bmath_mf3_s_svd( u, a, v ) );
     ASSERT( bmath_mf3_s_is_dag( a ) );
+    ASSERT( bmath_mf3_s_is_near_otn( u, 1E-8 ) );
+    ASSERT( bmath_mf3_s_is_near_otn( v, 1E-8 ) );
 
     bmath_mf3_s_set_size( m1, a->rows, v->rows );
     bmath_mf3_s_mul_htp( a, v, m1 );
