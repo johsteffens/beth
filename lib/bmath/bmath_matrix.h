@@ -333,7 +333,7 @@ void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
  */
 void bmath_mf3_s_decompose_qr_htp( bmath_mf3_s* q, bmath_mf3_s* r );
 
-/** (To be deprecated -> preferably use non-_htp versions below)
+/** (To be deprecated -> preferably use the more efficient non-_htp versions below)
  *  Full stable in-place bi-diagonal decomposition for a general matrix.
  *  Based on givens rotations.
  *  Matrices u, a, v are being modified: mat -> mat'
@@ -345,11 +345,15 @@ void bmath_mf3_s_decompose_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s*
 void bmath_mf3_s_decompose_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower bidiagonal
 
 /** Stable bidiagonal decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
- *  It is a = u * a' * vT, with u, v being unitary. Supports full and thin decomposition.
+ *  It is a = u * a' * vT, with u, v being unitary.
+ *      * Supports any n,m configuration
+ *      * Supports full and thin decomposition.
+ *      * Highly efficient on dense and sparse matrices. (Automatically detects and exploits sparsity)
+ *
  *  If matrices u, v are desired, their size has to be preset but they need not be preinitialized.
  *  The routine does not change the actual allocation of either matrix, hence u, a, v may
  *  safely reference external data.
- *  Whether full or thin decomposition is computed depends on how matrices have been preallocated:
+ *  Whether full or thin decomposition is computed depends on how matrices have been preset:
  *
  *     a:  mxn input matrix to be diagonalized
  *

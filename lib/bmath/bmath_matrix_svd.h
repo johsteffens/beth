@@ -39,7 +39,8 @@ typedef struct bmath_mf3_s bmath_mf3_s;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-/** Stable in-place full SVD for a general matrix.
+/** (To be deprecated -> preferably use non-_htp versions below)
+ *  Stable in-place full SVD for a general matrix.
  *  Method: Bi-diagonalization by givens rotations and QR-chasing with implicit shift.
  *          (Variant of Golub-Reinsch-Algorithm)
  *
@@ -59,6 +60,39 @@ typedef struct bmath_mf3_s bmath_mf3_s;
  *    - Det(v') == 1 or -1
  */
 bl_t bmath_mf3_s_svd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // for all matrices
+
+
+/** Stable singular value decomposition for a general mxn-matrix a -> a'.
+ *  Method: Bi-diagonalization by givens rotations and QR-chasing with stabilized implicit shift.
+ *          (Variant of Golub-Reinsch-Algorithm)
+ *
+ *      * Supports any n,m configuration
+ *      * Supports full and thin decomposition.
+ *      * Automatically detects and exploits sparsity
+ *
+ *  It is a = u * a' * vT, with u, v being unitary. Supports full and thin decomposition.
+ *  If matrices u, v are desired, their size has to be preset but they need not be preinitialized.
+ *  The routine does not change the actual allocation of either matrix, hence u, a, v may
+ *  safely reference external data.
+ *  Whether full or thin decomposition is computed depends on how matrices have been preset:
+ *
+ *     a:  mxn input matrix to be diagonalized
+ *
+ *     u:
+ *         NULL         -  u is not computed
+ *         mxm matrix   -  full decomposition
+ *         mxn matrix   -  thin decomposition for n < m
+ *
+ *     v:
+ *         NULL         -  v is not computed
+ *         nxn matrix   -  full decomposition
+ *         nxm matrix   -  thin decomposition for m < n
+ *
+ *  If thin decomposition is chosen, then a' is returned as (thin) square matrix.
+ *  Meaning either a->rows or a->cols is changed to min(m,n) by the routine.
+ *
+ */
+bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 
 //---------------------------------------------------------------------------------------------------------------------
 

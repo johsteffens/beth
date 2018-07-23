@@ -269,9 +269,261 @@ bl_t bmath_mf3_s_svd_htp(  bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+static bl_t ud_is_zero( bmath_mf3_s* a, sz_t row_idx )
+{
+    f3_t* a00 = a->data + ( a->stride + 1 ) * row_idx;
+    f3_t  a01_abs = f3_abs( a00[ 1 ] );
+    if( a01_abs < f3_lim_min ||
+        (
+            a01_abs < f3_abs( a00[ 0             ] ) * f3_lim_eps &&
+            a01_abs < f3_abs( a00[ a->stride + 1 ] ) * f3_lim_eps )
+        )
+    {
+        a00[ 1 ] = 0;
+        return true;
+    }
+    return false;
+}
+
+static void ud_set_zero( bmath_mf3_s* a, sz_t row_idx )
+{
+    a->data[ ( a->stride + 1 ) * row_idx + 1 ] = 0;
+}
+
+bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    // creating upper-bidiagonal
+    bmath_mf3_s_decompose_ubd( u, a, v );
+
+    sz_t n = f3_min( a->cols, a->rows );
+    if( n <= 1 ) return true; // nothing else to do
+
+    // transposed ur, vr
+    bmath_mf3_s* ut = u;
+    bmath_mf3_s* vt = v;
+
+    if( u )
+    {
+        if( u->rows != u->cols )
+        {
+            // for the thin matrix we only need to track the (lesser) nxn square part
+            // and postmultiply it to the matrix
+            ut = bmath_mf3_s_create();
+            bmath_mf3_s_set_size( ut, n, n );
+            bmath_mf3_s_one( ut );
+        }
+        else
+        {
+            bmath_mf3_s_htp( u, ut );
+        }
+    }
+
+    if( v )
+    {
+        if( v->rows != v->cols )
+        {
+            vt = bmath_mf3_s_create();
+            bmath_mf3_s_set_size( vt, n, n );
+            bmath_mf3_s_one( vt );
+        }
+        else
+        {
+            bmath_mf3_s_htp( v, vt );
+        }
+    }
+
+    // remove defective diagonal elements
+    // zero defective superdiagonal elements
+    bl_t defective = false;
+    for( sz_t i = 0; i < a->rows - 1; i++ )
+    {
+        f3_t* ai = a->data + i * ( a->stride + 1 );
+        if( f3_abs( ai[ 1 ] ) < f3_abs( ai[ 0 ] ) * f3_lim_eps )
+        {
+            ai[ 1 ] = 0;
+        }
+        else if( f3_abs( ai[ 0 ] ) < f3_abs( ai[ 1 ] ) * f3_lim_eps )
+        {
+            ai[ 0 ] = 0;
+            defective = true;
+        }
+    }
+    if( defective )
+    {
+        bmath_mf3_s_ubd_to_lbd_htp( a, vt );
+        bmath_mf3_s_lbd_to_ubd_htp( ut, a );
+    }
+
+    bmath_arr_grt_f3_s gru = bmath_arr_grt_f3_of_size( n );
+    bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( n );
+
+    bl_t success = true;
+
+    // IRB: irreducible block
+    sz_t irb_start = 0;
+
+    for(;;)
+    {
+        /// new IRB start
+        while( irb_start < n - 1 && a->data[ ( a->stride + 1 ) * irb_start + 1 ] == 0 ) irb_start++;
+
+        if( irb_start >= n - 1 ) break;
+
+        sz_t irb_end = irb_start + 1;
+        while( irb_end < n && a->data[ ( a->stride + 1 ) * ( irb_end - 1 ) + 1 ] != 0 ) irb_end++;
+
+        /// diagonalize IRB
+        {
+            // in practice convergence hardly ever needs more than 4 cycles
+            const sz_t max_cycles = 50;
+
+            bl_t exit_cycle = false;
+            sz_t cycle;
+            for( cycle = 0; cycle < max_cycles && !exit_cycle; cycle++ )
+            {
+
+                f3_t lambda;
+
+                {
+                    f3_t* a0 = a->data + ( a->stride + 1 ) * ( irb_end - 2 );
+                    f3_t* a1 = a0 + a->stride;
+
+                    f3_t m11 = f3_sqr( a1[ 1 ] );
+                    f3_t m00 = f3_sqr( a0[ 0 ] ) + f3_sqr( a0[ 1 ] );
+                    f3_t m01 = a0[ 1 ] * a1[ 1 ];
+
+                    f3_t p = 0.5 * ( m00 + m11 );
+                    f3_t d = sqrt( 0.25 * f3_sqr( m00 - m11 ) + m01 * m01 );
+
+                    // set shift to eigenvalue of lower 2x2 sub-matrix which is closest to m11
+                    lambda = ( m11 >= p ) ? p + d : p - d;
+                }
+
+                f3_t* a0 = a->data + ( a->stride + 1 ) * irb_start;
+                f3_t* a1 = a0 + a->stride;
+
+                bmath_grt_f3_s gr_l; // left rotation
+                bmath_grt_f3_s gr_r; // right rotation
+
+                // left rotation strategically diagonalizes a * aT but creates a1[ 0 ]
+                bmath_grt_f3_s_init_to_annihilate_b( &gr_l, f3_sqr( a0[ 0 ] ) + f3_sqr( a0[ 1 ] ) - lambda, a0[ 1 ] * a1[ 1 ] );
+
+                // right rotation annihilates a1[0]
+                bmath_grt_f3_s_init_to_annihilate_b( &gr_r, gr_l.c * a1[ 1 ] - gr_l.s * a0[ 1 ], gr_l.s * a0[ 0 ] );
+
+                f3_t a00 = a0[ 0 ];
+                f3_t a01 = a0[ 1 ];
+                f3_t a11 = a1[ 1 ];
+
+                a0[ 0 ] = gr_r.c * a00 + gr_r.s * a01; a0[ 1 ] = gr_r.c * a01 - gr_r.s * a00;
+                a1[ 0 ] =                gr_r.s * a11; a1[ 1 ] = gr_r.c * a11;
+                bmath_grt_f3_s_row_rotate( &gr_l, a0, a1, 0, 3 );
+                a1[ 0 ] = 0;
+
+                gru.data[ irb_start ] = gr_l;
+                grv.data[ irb_start ] = gr_r;
+
+                // chasing, annihilating off-bidiagonals
+                for( sz_t k = irb_start; k < irb_end - 2; k++ )
+                {
+                    f3_t* ak = a->data + ( a->stride + 1 ) * k + 1;
+                    f3_t* al = ak + a->stride;
+                    f3_t* am = al + a->stride;
+                    bmath_grt_f3_s_init_and_annihilate_b( &gr_r, ak, ak + 1 );
+                    bmath_grt_f3_s_rotate( &gr_r, al, al + 1 );
+                    bmath_grt_f3_s_rotate( &gr_r, am, am + 1 );
+
+                    bmath_grt_f3_s_init_and_annihilate_b( &gr_l, al, am );
+                    bmath_grt_f3_s_rotate( &gr_l, al + 1, am + 1 );
+                    if( k < irb_end - 3 ) bmath_grt_f3_s_rotate( &gr_l, al + 2, am + 2 );
+
+                    gru.data[ k + 1 ] = gr_l;
+                    grv.data[ k + 1 ] = gr_r;
+
+                    exit_cycle = exit_cycle | ud_is_zero( a, k );
+                }
+
+                if( ut ) bmath_mf3_s_sweep_fwd_row_rotate( ut, irb_start, irb_end - 1, &gru, 0, ut->cols );
+                if( vt ) bmath_mf3_s_sweep_fwd_row_rotate( vt, irb_start, irb_end - 1, &grv, 0, vt->cols );
+
+                exit_cycle = exit_cycle | ud_is_zero( a, irb_end - 2 );
+            }
+
+            if( cycle == max_cycles )
+            {
+                // force last super-diagonal zero to allow progression
+                ud_set_zero( a, irb_end - 2 );
+                success = false;
+            }
+        }
+    }
+
+    bmath_arr_grt_f3_s_down( &grv );
+    bmath_arr_grt_f3_s_down( &gru );
+
+    if( success )
+    {
+        // sorts by descending diagonal values; turns negative values
+        for( sz_t i = 0; i < n; i++ )
+        {
+            f3_t vmax = f3_abs( a->data[ i * ( a->stride + 1 ) ] );
+            sz_t imax = i;
+            for( sz_t j = i + 1; j < n; j++ )
+            {
+                f3_t v = f3_abs( a->data[ j * ( a->stride + 1 ) ] );
+                imax = ( v > vmax ) ? j : imax;
+                vmax = ( v > vmax ) ? v : vmax;
+            }
+
+            if( imax != i )
+            {
+                f3_t_swap( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+                if( ut ) bmath_mf3_s_swap_row( ut, i, imax );
+                if( vt ) bmath_mf3_s_swap_row( vt, i, imax );
+            }
+
+            if( a->data[ i * ( a->stride + 1 ) ] < 0 )
+            {
+                a->data[ i * ( a->stride + 1 ) ] *= -1.0;
+                if( vt ) bmath_mf3_s_mul_f3_to_row( vt, -1.0, i );
+            }
+        }
+    }
+
+    if( u )
+    {
+        if( ut != u )
+        {
+            bmath_mf3_s_mul_htp( u, ut, u );
+            bmath_mf3_s_discard( ut );
+        }
+        else
+        {
+            bmath_mf3_s_htp( ut, u );
+        }
+    }
+
+    if( v )
+    {
+        if( vt != v )
+        {
+            bmath_mf3_s_mul_htp( v, vt, v );
+            bmath_mf3_s_discard( vt );
+        }
+        else
+        {
+            bmath_mf3_s_htp( vt, v );
+        }
+    }
+
+    return success;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
-void bmath_mf3_s_svd_selftest()
+void bmath_mf3_s_svd_htp_selftest()
 {
     BCORE_LIFE_INIT();
     BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
@@ -317,6 +569,71 @@ void bmath_mf3_s_svd_selftest()
 
     BCORE_LIFE_DOWN();
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+static void bmath_mf3_s_svd_eval( sz_t m, sz_t n, f3_t density, bl_t full )
+{
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, u );
+    BCORE_LIFE_CREATE( bmath_mf3_s, a );
+    BCORE_LIFE_CREATE( bmath_mf3_s, v );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
+
+    bmath_mf3_s_set_size( m0, m, n );
+    bmath_mf3_s_set_size( a,  m, n );
+    u2_t rval = 1236;
+    bmath_mf3_s_fill_random_sparse( m0, -1, 1, density, &rval );
+
+    bmath_mf3_s_set_size( u, m, full ? m : sz_min( m, n ) );
+    bmath_mf3_s_set_size( v, n, full ? n : sz_min( m, n ) );
+
+    bmath_mf3_s_cpy( m0, a );
+    ASSERT( bmath_mf3_s_svd( NULL, a, NULL ) );
+    ASSERT( bmath_mf3_s_is_dag( a ) );
+
+    bmath_mf3_s_cpy( m0, a );
+    ASSERT( bmath_mf3_s_svd( u, a, v ) );
+    ASSERT( bmath_mf3_s_is_dag( a ) );
+
+    bmath_mf3_s_set_size( m1, a->rows, v->rows );
+    bmath_mf3_s_mul_htp( a, v, m1 );
+
+    bmath_mf3_s_set_size( m2, u->rows, m1->cols );
+    bmath_mf3_s_mul( u, m1, m2 );
+    ASSERT( bmath_mf3_s_is_near_equ( m0, m2, 1E-8 ) );
+
+//    bcore_msg_fa( "dev = #<f3_t>\n", f3_srt( bmath_mf3_s_f3_sub_sqr( m0, m2 ) ) );
+
+    BCORE_LIFE_DOWN();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_svd_selftest()
+{
+    bmath_mf3_s_svd_htp_selftest();
+
+    bmath_mf3_s_svd_eval( 10, 1000, 1.0, true );
+    bmath_mf3_s_svd_eval( 100, 100, 1.0, true );
+    bmath_mf3_s_svd_eval( 1000, 10, 1.0, true );
+
+    bmath_mf3_s_svd_eval( 10, 1000, 1.0, false );
+    bmath_mf3_s_svd_eval( 100, 100, 1.0, false );
+    bmath_mf3_s_svd_eval( 1000, 10, 1.0, false );
+
+    bmath_mf3_s_svd_eval( 10, 1000, 0.01, true );
+    bmath_mf3_s_svd_eval( 100, 100, 0.01, true );
+    bmath_mf3_s_svd_eval( 1000, 10, 0.01, true );
+
+    bmath_mf3_s_svd_eval( 10, 1000, 0.01, false );
+    bmath_mf3_s_svd_eval( 100, 100, 0.01, false );
+    bmath_mf3_s_svd_eval( 1000, 10, 0.01, false );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
