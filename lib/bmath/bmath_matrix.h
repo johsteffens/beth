@@ -54,6 +54,7 @@
 #include "bmath_vector.h"
 #include "bmath_grt.h"
 #include "bmath_matrix_evd.h"
+#include "bmath_matrix_svd.h"
 
 /**********************************************************************************************************************/
 // dynamic size matrix of f3_t
@@ -341,30 +342,6 @@ void bmath_mf3_s_decompose_qr_htp( bmath_mf3_s* q, bmath_mf3_s* r );
  */
 void bmath_mf3_s_decompose_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper-bidiagonal
 void bmath_mf3_s_decompose_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower-bidiagonal
-
-//---------------------------------------------------------------------------------------------------------------------
-// Singular value decomposition (SVD) and supportive operations
-
-/** Stable in-place full SVD for a general matrix.
- *  Method: Bi-diagonalization by givens rotations and QR-chasing with implicit shift.
- *          (Variant of Golub-Reinsch-Algorithm)
- *
- *  Matrices u, a, v are being modified: mat -> mat'
- *  Input:  u  (nxn unitary or NULL), a  (nxm, any data), v  (nxn unitary or NULL),
- *  Output: u' (nxn unitary or NULL), a' (diagonal),      v' (nxn unitary or NULL)
- *  It is uT * a * v = u'T * a' * v'
- *
- *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.
- *  (Convergence failure is very rare.)
- *
- *  On success:
- *    - a' is fully diagonal
- *    - diagonal elements are non-negative
- *    - diagonal elements are sorted in descending value order
- *    - Det(u') == 1
- *    - Det(v') == 1 or -1
- */
-bl_t bmath_mf3_s_svd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // for all matrices
 
 //---------------------------------------------------------------------------------------------------------------------
 // covariance
