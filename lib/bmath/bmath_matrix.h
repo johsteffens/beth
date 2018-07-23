@@ -135,9 +135,9 @@ static inline bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o ) { return bmath_mf3
  *  Matrix x is the specified state.
  *  Note: By this definition fdev_zro is the Frobenius norm of o.
  */
-f3_t bmath_mf3_s_is_fdev_equ( const bmath_mf3_s* o, const bmath_mf3_s* op );
-f3_t bmath_mf3_s_is_fdev_zro( const bmath_mf3_s* o );
-f3_t bmath_mf3_s_is_fdev_one( const bmath_mf3_s* o );
+f3_t bmath_mf3_s_fdev_equ( const bmath_mf3_s* o, const bmath_mf3_s* op );
+f3_t bmath_mf3_s_fdev_zro( const bmath_mf3_s* o );
+f3_t bmath_mf3_s_fdev_one( const bmath_mf3_s* o );
 
 /**********************************************************************************************************************/
 /// initializations; copying; basic matrix operations

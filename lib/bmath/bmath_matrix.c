@@ -335,7 +335,7 @@ bl_t bmath_mf3_s_is_near_hsm( const bmath_mf3_s* o, f3_t max_dev )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_mf3_s_is_fdev_equ( const bmath_mf3_s* o, const bmath_mf3_s* op )
+f3_t bmath_mf3_s_fdev_equ( const bmath_mf3_s* o, const bmath_mf3_s* op )
 {
     ASSERT( o->rows == op->rows );
     ASSERT( o->cols == op->cols );
@@ -352,7 +352,7 @@ f3_t bmath_mf3_s_is_fdev_equ( const bmath_mf3_s* o, const bmath_mf3_s* op )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_mf3_s_is_fdev_zro( const bmath_mf3_s* o )
+f3_t bmath_mf3_s_fdev_zro( const bmath_mf3_s* o )
 {
     f3_t sum = 0;
     for( sz_t i = 0; i < o->rows; i++ )
@@ -365,7 +365,7 @@ f3_t bmath_mf3_s_is_fdev_zro( const bmath_mf3_s* o )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_mf3_s_is_fdev_one( const bmath_mf3_s* o )
+f3_t bmath_mf3_s_fdev_one( const bmath_mf3_s* o )
 {
     f3_t sum = 0;
     for( sz_t i = 0; i < o->rows; i++ )
