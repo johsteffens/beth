@@ -83,7 +83,7 @@ Library bmath defines a linear algebra subsystem for vectors and matrices and pr
       * Eigen Values & Vectors (EVD)
       * Singular Values & Vectors (SVD)
 
-All algorithms have been redesigned/redeveloped from scratch (no adaption of pre-existing code, no *fortranitis*). Many are optimized for modern architectures in a cache- and platform-oblivious manner. Some are based on new or unconventional ideas.
+All routines have been redesigned/redeveloped from scratch (no adaption of pre-existing code, no *fortranitis*, no dependence on a third-party linear algebra library). Many routines/algorithms are optimized for modern architectures in a cache- and platform-oblivious manner. Some carry new or unconventional ideas.
 
 <a name = "bclos"></a>
 ### bclos - Closures (Functional Programming)
@@ -115,4 +115,5 @@ The memory-manager, excluding reference manager, was spun-off into a stand-alone
 # Motivation
 The classic framework for object oriented programming (such as realized in C++) has been widely cherished for decades. I appreciate OOP and like the efficient way C++ supports it. Yet there are issues. For example: The static association between objects and their interfaces forces an inhibiting rigidity into the developer's code-architecture. The limited means of genericity often promotes boiler plate code. More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of these issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware.
 
-During May-July 2017, in an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach. Project [beth](https://github.com/johsteffens/beth) brings these (and other ideas) into tangible shape.
+### History
+In an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach during Summer 2017 and started project [beth](https://github.com/johsteffens/beth) bringing this (and other ideas) into tangible shape. Winter 2017/2018 the project [actinon](https://github.com/johsteffens/actinon) was developed utilizing the framework and demonstrating its usefulness. During Spring/Summmer 2018 a numerical mathematics suite was developed with special focus on efficient and stable eigenvalue and singular value decomposition in sub-library [bmath](#bmath).
