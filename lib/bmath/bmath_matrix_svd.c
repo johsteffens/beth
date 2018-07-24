@@ -443,8 +443,8 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
                     exit_cycle = exit_cycle | ud_is_zero( a, k );
                 }
 
-                if( ut ) bmath_mf3_s_sweep_fwd_row_rotate( ut, irb_start, irb_end - 1, &gru, 0, ut->cols );
-                if( vt ) bmath_mf3_s_sweep_fwd_row_rotate( vt, irb_start, irb_end - 1, &grv, 0, vt->cols );
+                if( ut ) bmath_mf3_s_sweep_arow_rotate_fwd( ut, irb_start, irb_end - 1, &gru, 0, ut->cols );
+                if( vt ) bmath_mf3_s_sweep_arow_rotate_fwd( vt, irb_start, irb_end - 1, &grv, 0, vt->cols );
 
                 exit_cycle = exit_cycle | ud_is_zero( a, irb_end - 2 );
             }
@@ -617,21 +617,21 @@ void bmath_mf3_s_svd_selftest()
 {
     bmath_mf3_s_svd_htp_selftest();
 
-    bmath_mf3_s_svd_eval( 10, 1000, 1.0, true );
-    bmath_mf3_s_svd_eval( 100, 100, 1.0, true );
-    bmath_mf3_s_svd_eval( 1000, 10, 1.0, true );
+    bmath_mf3_s_svd_eval( 10, 100, 1.0, true );
+    bmath_mf3_s_svd_eval( 30,  30, 1.0, true );
+    bmath_mf3_s_svd_eval( 100, 10, 1.0, true );
 
-    bmath_mf3_s_svd_eval( 10, 1000, 1.0, false );
-    bmath_mf3_s_svd_eval( 100, 100, 1.0, false );
-    bmath_mf3_s_svd_eval( 1000, 10, 1.0, false );
+    bmath_mf3_s_svd_eval( 10, 100, 1.0, false );
+    bmath_mf3_s_svd_eval( 30,  30, 1.0, false );
+    bmath_mf3_s_svd_eval( 100, 10, 1.0, false );
 
-    bmath_mf3_s_svd_eval( 10, 1000, 0.01, true );
-    bmath_mf3_s_svd_eval( 100, 100, 0.01, true );
-    bmath_mf3_s_svd_eval( 1000, 10, 0.01, true );
+    bmath_mf3_s_svd_eval( 10, 100, 0.03, true );
+    bmath_mf3_s_svd_eval( 30,  30, 0.03, true );
+    bmath_mf3_s_svd_eval( 100, 10, 0.03, true );
 
-    bmath_mf3_s_svd_eval( 10, 1000, 0.01, false );
-    bmath_mf3_s_svd_eval( 100, 100, 0.01, false );
-    bmath_mf3_s_svd_eval( 1000, 10, 0.01, false );
+    bmath_mf3_s_svd_eval( 10, 100, 0.03, false );
+    bmath_mf3_s_svd_eval( 30,  30, 0.03, false );
+    bmath_mf3_s_svd_eval( 100, 10, 0.03, false );
 }
 
 //---------------------------------------------------------------------------------------------------------------------

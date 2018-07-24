@@ -87,6 +87,11 @@ void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
  */
 void bmath_mf3_s_fill_random_sparse( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval );
 
+/** Fills o with with random values v = sign( r) * pow( abs( r ), exp )
+ *  r is a random variable evenly distributed between -1.0 and 1.0.
+ */
+void bmath_mf3_s_fill_random_pow( bmath_mf3_s* o, f3_t exp, u2_t* rval );
+
 bmath_mf3_s* bmath_mf3_s_create_set_size( sz_t rows, sz_t cols );
 bmath_mf3_s* bmath_mf3_s_create_fill_random( sz_t rows, sz_t cols, f3_t min, f3_t max, u2_t* rval );
 
@@ -130,14 +135,16 @@ static inline bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o ) { return bmath_mf3
 //---------------------------------------------------------------------------------------------------------------------
 // Frobenius norm
 
-/** fdev = ||o - x||f
- *  '|| ... ||f' = Frobenius norm
- *  Matrix x is the specified state.
+/** fdev = ||f(o) - x||
+ *  '|| ... ||' = Frobenius norm
+ *  f is ither idenity (o-->o) or a specifed function
+ *  Matrix x is a specified (or implied) state.
  *  Note: By this definition fdev_zro is the Frobenius norm of o.
  */
 f3_t bmath_mf3_s_fdev_equ( const bmath_mf3_s* o, const bmath_mf3_s* op );
 f3_t bmath_mf3_s_fdev_zro( const bmath_mf3_s* o );
 f3_t bmath_mf3_s_fdev_one( const bmath_mf3_s* o );
+f3_t bmath_mf3_s_fdev_otn( const bmath_mf3_s* o ); // f = o * oT or oT * o (whichever smaller); x = I
 
 /**********************************************************************************************************************/
 /// initializations; copying; basic matrix operations
@@ -419,7 +426,7 @@ void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s
 /// Givens Rotations
 
 /// rotate two adjacent rows
-static inline void bmath_mf3_s_row_rotate( bmath_mf3_s* o, sz_t idx, const bmath_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+static inline void bmath_mf3_s_arow_rotate( bmath_mf3_s* o, sz_t idx, const bmath_grt_f3_s* grt, sz_t col_start, sz_t col_end )
 {
     if( grt->s != 0 )
     {
@@ -431,8 +438,21 @@ static inline void bmath_mf3_s_row_rotate( bmath_mf3_s* o, sz_t idx, const bmath
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/// rotate two distant rows
+static inline void bmath_mf3_s_drow_rotate( bmath_mf3_s* o, sz_t a_idx, sz_t b_idx, const bmath_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+{
+    if( grt->s != 0 )
+    {
+        f3_t* row_a = o->data + o->stride * a_idx;
+        f3_t* row_b = o->data + o->stride * b_idx;
+        for( sz_t i = col_start; i < col_end; i++ ) bmath_grt_f3_s_rotate( grt, row_a + i, row_b + i );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 /// rotate two adjacent cols
-static inline void bmath_mf3_s_col_rotate( bmath_mf3_s* o, sz_t idx, const bmath_grt_f3_s* grt, sz_t row_start, sz_t row_end )
+static inline void bmath_mf3_s_acol_rotate( bmath_mf3_s* o, sz_t idx, const bmath_grt_f3_s* grt, sz_t row_start, sz_t row_end )
 {
     if( grt->s != 0 )
     {
@@ -444,8 +464,21 @@ static inline void bmath_mf3_s_col_rotate( bmath_mf3_s* o, sz_t idx, const bmath
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/// rotate two distant cols
+static inline void bmath_mf3_s_dcol_rotate( bmath_mf3_s* o, sz_t a_idx, sz_t b_idx, const bmath_grt_f3_s* grt, sz_t row_start, sz_t row_end )
+{
+    if( grt->s != 0 )
+    {
+        f3_t* col_a = o->data + a_idx;
+        f3_t* col_b = o->data + b_idx;
+        for( sz_t i = row_start; i < row_end; i++ ) bmath_grt_f3_s_rotate( grt, col_a + i * o->stride, col_b + i * o->stride );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 /// apply a forward row-swipe (start --> end; end - start rotations)
-static inline void bmath_mf3_s_row_swipe_fwd( bmath_mf3_s* o, sz_t idx, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+static inline void bmath_mf3_s_arow_swipe_fwd( bmath_mf3_s* o, sz_t idx, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
 {
     assert( grt->size >= col_end - 1 );
     f3_t* row = o->data + o->stride * idx;
@@ -454,8 +487,8 @@ static inline void bmath_mf3_s_row_swipe_fwd( bmath_mf3_s* o, sz_t idx, const bm
 
 //---------------------------------------------------------------------------------------------------------------------
 
-/// apply a reverse row-swipe (end --> start; end - start rotations)
-static inline void bmath_mf3_s_row_swipe_rev( bmath_mf3_s* o, sz_t idx, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+/// apply a reverse adjacent row-swipe (end --> start; end - start rotations)
+static inline void bmath_mf3_s_arow_swipe_rev( bmath_mf3_s* o, sz_t idx, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
 {
     assert( grt->size >= col_end - 1 );
     f3_t* row = o->data + o->stride * idx;
@@ -464,23 +497,32 @@ static inline void bmath_mf3_s_row_swipe_rev( bmath_mf3_s* o, sz_t idx, const bm
 
 //---------------------------------------------------------------------------------------------------------------------
 
-/// forward sweep of adjacent row rotations (row_start --> row_end)
-void bmath_mf3_s_sweep_fwd_row_rotate( bmath_mf3_s* o, sz_t row_start, sz_t row_end, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end );
+/// apply a reverse distant row-swipe (end --> start; end - start rotations)
+static inline void bmath_mf3_s_drow_swipe_rev( bmath_mf3_s* o, sz_t idx, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+{
+    assert( grt->size >= col_end - 1 );
+    f3_t* row = o->data + o->stride * idx;
+    f3_t v = row[ col_start ];
+    for( sz_t i = col_end; i > col_start; i-- ) bmath_grt_f3_s_rotate( grt->data + i - 1, &v, row + i );
+    row[ col_start ] = v;
+}
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/// forward sweep of adjacent row rotations (row_start --> row_end)
+void bmath_mf3_s_sweep_arow_rotate_fwd( bmath_mf3_s* o, sz_t row_start, sz_t row_end, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end );
 
 /// reverse sweep of adjacent row rotations (row_end --> row_start)
-void bmath_mf3_s_sweep_rev_row_rotate( bmath_mf3_s* o, sz_t row_start, sz_t row_end, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end );
-
-//---------------------------------------------------------------------------------------------------------------------
+void bmath_mf3_s_sweep_arow_rotate_rev( bmath_mf3_s* o, sz_t row_start, sz_t row_end, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end );
 
 /// forward sweep of adjacent col rotations (col_start --> col_end)
-void bmath_mf3_s_sweep_fwd_col_rotate( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end );
-
-//---------------------------------------------------------------------------------------------------------------------
+void bmath_mf3_s_sweep_acol_rotate_fwd( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end );
 
 /// reverse sweep of adjacent col rotations (col_end --> col_start)
-void bmath_mf3_s_sweep_rev_col_rotate( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end );
+void bmath_mf3_s_sweep_acol_rotate_rev( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end );
+
+/// reverse sweep of distant col rotations (col_end --> col_start)
+void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end );
 
 //---------------------------------------------------------------------------------------------------------------------
 
