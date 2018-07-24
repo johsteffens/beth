@@ -83,7 +83,7 @@ Library bmath defines a linear algebra subsystem for vectors and matrices and pr
       * Eigen Values & Vectors (EVD)
       * Singular Values & Vectors (SVD)
 
-All algorithms have been redesigned/redeveloped from scratch (no adaption of pre-existing code, no *fortranitis*). Many are optimized for modern architectures in a cache- and platform-oblivious manner. Some are based on new or unconventional ideas.
+All routines have been redesigned/redeveloped from scratch (no adaption of pre-existing code, no *fortranitis*, no dependence on a third-party linear algebra library). Many routines/algorithms are optimized for modern architectures in a cache- and platform-oblivious manner. Some carry new or unconventional ideas.
 
 <a name = "bclos"></a>
 ### bclos - Closures (Functional Programming)
