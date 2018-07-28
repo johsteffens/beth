@@ -1427,7 +1427,7 @@ void bcore_tbman_s_discard( bcore_tbman_s* o )
     free( o );
 }
 
-static vd_t tbman_s_malloc( bcore_tbman_s* o, sz_t requested_bytes, sz_t* granted_bytes )
+static vd_t tbman_s_mem_alloc( bcore_tbman_s* o, sz_t requested_bytes, sz_t* granted_bytes )
 {
     block_manager_s* block_manager = NULL;
     for( sz_t i = 0; i < o->size; i++ )
@@ -1453,7 +1453,7 @@ static vd_t tbman_s_malloc( bcore_tbman_s* o, sz_t requested_bytes, sz_t* grante
     return reserved_ptr;
 }
 
-static void tbman_s_free( bcore_tbman_s* o, vd_t current_ptr, const sz_t* current_bytes )
+static void tbman_s_mem_free( bcore_tbman_s* o, vd_t current_ptr, const sz_t* current_bytes )
 {
     if( current_bytes && *current_bytes <= o->max_block_size && o->aligned )
     {
@@ -1593,7 +1593,7 @@ static sz_t tbman_s_references( bcore_tbman_s* o, vc_t ptr )
     }
 }
 
-static vd_t tbman_s_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t* current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
+static vd_t tbman_s_mem_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t* current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
 {
     token_manager_s* token_manager = NULL;
     if( current_bytes && *current_bytes <= o->max_block_size && o->aligned )
@@ -1610,7 +1610,7 @@ static vd_t tbman_s_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t* cur
     {
         if( requested_bytes > token_manager->block_size )
         {
-            vd_t reserved_ptr = tbman_s_malloc( o, requested_bytes, granted_bytes );
+            vd_t reserved_ptr = tbman_s_mem_alloc( o, requested_bytes, granted_bytes );
             bcore_memcpy( reserved_ptr, current_ptr, token_manager->block_size );
             token_manager_s_free( token_manager, current_ptr );
             return reserved_ptr;
@@ -1647,7 +1647,7 @@ static vd_t tbman_s_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t* cur
     {
         if( requested_bytes <= o->max_block_size ) // new size fits into manager, old size was outside manager
         {
-            vd_t reserved_ptr = tbman_s_malloc( o, requested_bytes, granted_bytes );
+            vd_t reserved_ptr = tbman_s_mem_alloc( o, requested_bytes, granted_bytes );
             bcore_memcpy( reserved_ptr, current_ptr, requested_bytes );
             external_manager_s_free( &o->external_manager, current_ptr );
             return reserved_ptr;
@@ -1739,7 +1739,7 @@ vd_t bcore_tbman_s_b_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t requested_b
     {
         if( current_ptr )
         {
-            tbman_s_free( o, current_ptr, NULL );
+            tbman_s_mem_free( o, current_ptr, NULL );
         }
         if( granted_bytes ) *granted_bytes = 0;
     }
@@ -1747,11 +1747,11 @@ vd_t bcore_tbman_s_b_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t requested_b
     {
         if( current_ptr )
         {
-            ret = tbman_s_realloc( o, current_ptr, NULL, requested_bytes, granted_bytes );
+            ret = tbman_s_mem_realloc( o, current_ptr, NULL, requested_bytes, granted_bytes );
         }
         else
         {
-            ret = tbman_s_malloc( o, requested_bytes, granted_bytes );
+            ret = tbman_s_mem_alloc( o, requested_bytes, granted_bytes );
         }
     }
     tbman_s_unlock( o );
@@ -1766,7 +1766,7 @@ vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t current_by
     {
         if( current_bytes ) // 0 means current_ptr may not be used for free or realloc
         {
-            tbman_s_free( o, current_ptr, &current_bytes );
+            tbman_s_mem_free( o, current_ptr, &current_bytes );
         }
         if( granted_bytes ) *granted_bytes = 0;
     }
@@ -1774,11 +1774,11 @@ vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t current_by
     {
         if( current_bytes ) // 0 means current_ptr may not be used for free or realloc
         {
-            ret = tbman_s_realloc( o, current_ptr, &current_bytes, requested_bytes, granted_bytes );
+            ret = tbman_s_mem_realloc( o, current_ptr, &current_bytes, requested_bytes, granted_bytes );
         }
         else
         {
-            ret = tbman_s_malloc( o, requested_bytes, granted_bytes );
+            ret = tbman_s_mem_alloc( o, requested_bytes, granted_bytes );
         }
     }
     tbman_s_unlock( o );
