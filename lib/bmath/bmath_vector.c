@@ -105,7 +105,7 @@ void bmath_vf3_s_push_vf3( bmath_vf3_s* o, const bmath_vf3_s* vec )
 
 bl_t bmath_vf3_s_is_near_equ( const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t max_dev )
 {
-    if( o->size != o->size ) return false;
+    if( o->size != op->size ) return false;
     for( sz_t i = 0   ; i < o->size;  i++ ) if( f3_abs( o->data[ i ] - op->data[ i ] ) > max_dev ) return false;
     return true;
 }
