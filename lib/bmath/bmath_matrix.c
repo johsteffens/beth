@@ -761,13 +761,13 @@ void bmath_mf3_s_inv( const bmath_mf3_s* o, bmath_mf3_s* res )
 //---------------------------------------------------------------------------------------------------------------------
 
 // pseudo inversion
-void bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
+bl_t bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
 {
     ASSERT( o->rows == res->cols );
     ASSERT( o->cols == res->rows );
 
     sz_t n = sz_min( o->rows, o->cols );
-    if( n == 0 ) return;
+    if( n == 0 ) return true;
 
     bmath_mf3_s* a = bmath_mf3_s_create();
     // we let 'a' use the space of res
@@ -795,11 +795,9 @@ void bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     bmath_mf3_s_set_size( u, o->rows, o->rows );
     bmath_mf3_s_set_size( v, o->cols, o->cols );
     bmath_vf3_s_set_size( d, n );
-    bmath_mf3_s_one( u );
-    bmath_mf3_s_one( v );
 
     // o = uT * a * v; o^-1 = vT * (a^-1)T * u
-    bmath_mf3_s_svd_htp( u, a, v );
+    bl_t success = bmath_mf3_s_svd( u, a, v );
     bmath_mf3_s_get_dag_vec( a, d );
 
     // diagonal elements are sorted in descending manner
@@ -809,10 +807,6 @@ void bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
 
     // pseudo invert diagonal
     for( sz_t i = 0; i < n; i++ ) d->data[ i ] = ( fabs( d->data[ i ] ) < thr ) ? 0 : 1.0 / d->data[ i ];
-
-    // transpose u, v
-    bmath_mf3_s_htp( u, u );
-    bmath_mf3_s_htp( v, v );
 
     for( sz_t i = 0; i < res->rows; i++ )
     {
@@ -831,28 +825,30 @@ void bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     bmath_mf3_s_discard( v );
     bmath_mf3_s_discard( u );
     bmath_mf3_s_discard( a );
+
+    return success;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 // pseudo inversion of a symmetric matrix
-void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
+bl_t bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
 {
     if( o == res )
     {
         bmath_mf3_s* buf = bmath_mf3_s_create();
         bmath_mf3_s_set_size_to( res, buf );
-        bmath_mf3_s_hsm_piv( o, eps, buf );
+        bl_t success = bmath_mf3_s_hsm_piv( o, eps, buf );
         bmath_mf3_s_cpy( buf, res );
         bmath_mf3_s_discard( buf );
-        return;
+        return success;
     }
 
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     ASSERT( o->rows == o->cols );
 
     sz_t n = o->rows;
-    if( n == 0 ) return;
+    if( n == 0 ) return true;
 
     bmath_mf3_s* a = res; // a occupies space of res
     bmath_mf3_s* q = bmath_mf3_s_create();
@@ -860,7 +856,7 @@ void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     bmath_mf3_s_one( q );
 
     bmath_mf3_s_cpy( o, a );
-    bmath_mf3_s_evd_htp( a, q );
+    bl_t success = bmath_mf3_s_evd_htp( a, q );
 
     bmath_vf3_s* dag = bmath_vf3_s_create();
     bmath_vf3_s_set_size( dag, n );
@@ -878,6 +874,8 @@ void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
 
     bmath_vf3_s_discard( dag );
     bmath_mf3_s_discard( q );
+
+    return success;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1828,94 +1826,6 @@ void bmath_mf3_s_decompose_qr_htp( bmath_mf3_s* q, bmath_mf3_s* r )
             bmath_grt_f3_s_init_and_annihilate_b( &gr, rl + l, rk + l );
             bmath_grt_f3_s_row_rotate( &gr, rl, rk, l + 1, n );
             if( q ) bmath_grt_f3_s_row_rotate( &gr, q->data + l * q->stride, q->data + k * q->stride, 0, n );
-        }
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-void bmath_mf3_s_decompose_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
-{
-    if( u )
-    {
-        ASSERT( u->cols == a->rows );
-        ASSERT( u->rows == a->rows );
-        ASSERT( u != a );
-        ASSERT( u != v );
-    }
-
-    if( v )
-    {
-        ASSERT( v->cols == a->cols );
-        ASSERT( v->rows == a->cols );
-        ASSERT( v != a );
-    }
-
-    bmath_grt_f3_s gr;
-    sz_t min_cols_rows = sz_min( a->cols, a->rows );
-
-    for( sz_t j = 0; j < min_cols_rows; j++ )
-    {
-        // zero lower column
-        for( sz_t l = a->rows - 1; l > j; l-- )
-        {
-            f3_t* al = a->data + l * a->stride;
-            bmath_grt_f3_s_init_and_annihilate_b( &gr, al - a->stride + j, al + j );
-            bmath_grt_f3_s_row_rotate( &gr, al - a->stride, al, j + 1, a->cols );
-            if( u ) bmath_grt_f3_s_row_rotate( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
-        }
-
-        // zero upper row
-        for( sz_t l = a->cols - 1; l > j + 1; l-- )
-        {
-            f3_t* al = a->data + l;
-            bmath_grt_f3_s_init_and_annihilate_b( &gr, al - 1 + j * a->stride, al + j * a->stride );
-            bmath_grt_f3_s_col_rotate( &gr, al - 1, al, a->stride, j + 1, a->rows );
-            if( v ) bmath_grt_f3_s_row_rotate( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
-        }
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-void bmath_mf3_s_decompose_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
-{
-    if( u )
-    {
-        ASSERT( u->cols == a->rows );
-        ASSERT( u->rows == a->rows );
-        ASSERT( u != a );
-        ASSERT( u != v );
-    }
-
-    if( v )
-    {
-        ASSERT( v->cols == a->cols );
-        ASSERT( v->rows == a->cols );
-        ASSERT( v != a );
-    }
-
-    bmath_grt_f3_s gr;
-    sz_t min_cols_rows = sz_min( a->cols, a->rows );
-
-    for( sz_t j = 0; j < min_cols_rows; j++ )
-    {
-        // zero upper row
-        for( sz_t l = a->cols - 1; l > j; l-- )
-        {
-            f3_t* al = a->data + l;
-            bmath_grt_f3_s_init_and_annihilate_b( &gr, al - 1 + j * a->stride, al + j * a->stride );
-            bmath_grt_f3_s_col_rotate( &gr, al - 1, al, a->stride, j + 1, a->rows );
-            if( v ) bmath_grt_f3_s_row_rotate( &gr, v->data + ( l - 1 ) * v->stride, v->data + l * v->stride, 0, v->cols );
-        }
-
-        // zero lower column
-        for( sz_t l = a->rows - 1; l > j + 1; l-- )
-        {
-            f3_t* al = a->data + l * a->stride;
-            bmath_grt_f3_s_init_and_annihilate_b( &gr, al - a->stride + j, al + j );
-            bmath_grt_f3_s_row_rotate( &gr, al - a->stride, al, j + 1, a->cols );
-            if( u ) bmath_grt_f3_s_row_rotate( &gr, u->data + ( l - 1 ) * u->stride, u->data + l * u->stride, 0, u->cols );
         }
     }
 }

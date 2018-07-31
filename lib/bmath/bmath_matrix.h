@@ -23,29 +23,48 @@
  */
 
 /** Nomenclature
- *  add, zro, neg, sub, mul, mul_vec, mul_scl - according to spect_matrix
- *  inv: inverse
- *  piv: pseudo-inverse
- *  av1: affine vector (vector of size 'n' interpreted vector of size n+1 with last element being '1' ); used for affine transformations
- *  htp: (hermitean) transpose
- *  ltr: lower triangle matrix (evaluation ignores upper triangle)
- *  lt1: lower triangle matrix with main diagonal elements deemed 1 and not evaluated (luc satisfies ltr with respect for evaluation)
- *  utr: upper triangle matrix (evaluation ignores lower triangle)
- *  luc: LU-composite matrix: L - diag(L) + U; diagonal elements of L have all value 'one' and are not explicitly stored.
- *  hsm: hermitean (symmetric) matrix.
- *  trc: trace
- *  dag: diagonal
- *  trd: tri-diagonal (symmetric)
- *  ubd: upper-bidiagonal
- *  lbd: lower-bidiagonal
- *  det: determinant
- *  svd: singular value decomposition
- *  evd: eigen value decomposition  (svd for hsm matrix)
- *  otn: orthonormal mxn marix (for m>n orthonormality applies to columns, otherwise to rows)
- *  uni: unitary ( == orthonormal square marix)
- *  opd: outer product of two vectors
- *  udu: similarity transform a of a diagonal matrix: htp_udu: U^T * D * U; udu_htp: U * D * U^T
- *  grt: givens rotation
+ *  Basic Algebra: op( A, B, ... ) -> C
+ *    add: A + B -> C
+ *    zro:     0 -> C
+ *    neg:    -A -> C
+ *    sub: A - B -> C
+ *    mul: A * B -> C
+ *    mul_vec: A * x -> y
+ *    mul_scl: A * f (f: scalar) -> C
+ *    inv: inverse         A^-1 -> C
+ *    piv: pseudo-inverse  A^-1 -> C
+ *    av1: affine vector (vector of size 'n' interpreted vector of size n+1 with last element being '1' ); used for affine transformations
+ *    htp: (hermitean) transpose  A^T -> C
+ *
+ *  Matrix Status:
+ *    hsm: real-symmetric or hermitean matrix.
+ *    trc: trace
+ *    dag: diagonal
+ *    det: determinant
+ *    otn: orthonormal mxn marix (for m>n orthonormality applies to columns, otherwise to rows)
+ *    uni: unitary ( == orthonormal square marix)
+ *
+ *  Triangle Matrix, triangle composite matrix
+ *    ltr: lower triangle matrix (evaluation ignores upper triangle)
+ *    lt1: lower triangle matrix with main diagonal elements deemed 1 and not evaluated (luc satisfies ltr with respect for evaluation)
+ *    utr: upper triangle matrix (evaluation ignores lower triangle)
+ *    luc: LU-composite matrix: L - diag(L) + U; diagonal elements of L have all value 'one' and are not explicitly stored.
+ *
+ *  Factorizations:
+ *    cld: cholesky-decomposition
+ *    lqd: LQ-decomposition
+ *    qrd: QR-decomposition
+ *    trd: tri diagonal decomposition     or symmetric tri-diagonal matrix
+ *    ubd: upper bidiagonal decomposition or upper-bidiagonal matrix
+ *    lbd: lower bidiagonal decomposition or lower-bidiagonal matrix
+ *    evd: eigen value decomposition
+ *    svd: singular value decomposition
+ *
+ *  Other:
+ *    opd: outer product of two vectors
+ *    udu: similarity transform a of a diagonal matrix: htp_udu: U^T * D * U; udu_htp: U * D * U^T
+ *    grt: givens rotation
+ *
  */
 /**********************************************************************************************************************/
 
@@ -137,7 +156,7 @@ static inline bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o ) { return bmath_mf3
 
 /** fdev = ||f(o) - x||
  *  '|| ... ||' = Frobenius norm
- *  f is ither idenity (o-->o) or a specifed function
+ *  f is either idenity (o-->o) or a specifed function
  *  Matrix x is a specified (or implied) state.
  *  Note: By this definition fdev_zro is the Frobenius norm of o.
  */
@@ -153,7 +172,7 @@ f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o ); // trace
 f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op ); // ( o - op )^2
 
 void bmath_mf3_s_zro(       bmath_mf3_s* o ); // set zero
-void bmath_mf3_s_one(       bmath_mf3_s* o ); // set one
+void bmath_mf3_s_one(       bmath_mf3_s* o ); // set diagonal elements one, rest zero
 void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res );  // negate
 void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res );  // copies content o -> res  (does not change allocation of res)
@@ -191,7 +210,7 @@ void bmath_mf3_s_mul_scl_f3( const bmath_mf3_s* o, f3_t op, bmath_mf3_s* res ) {
 /** In place similarity transformation of a diagonal matrix.
  *  R = O * D * O^T
  */
-void bmath_mf3_s_udu_htp( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res ); // res = o * dag * o^T
+void bmath_mf3_s_udu_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res ); // res = u * d * u^T
 
 //---------------------------------------------------------------------------------------------------------------------
 // inversion; pseudo-inversion
@@ -201,11 +220,13 @@ void bmath_mf3_s_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = (o^
 void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1 in case o is hermitean/symmetric (3x faster than bmath_mf3_s_inv)
 
 /** Pseudo-Inversion:
- *  Inversion via SVD by setting near-zero singular values to zero (cut-off).
+ *  Inversion via SVD/EVD by setting near-zero singular values to zero (cut-off).
  *  A singular value s is cut off when abs( s ) < eps * max( { abs(s_0), ..., abs(s_n-1) } ).
+ *  Returns success of underlying SVD/EVD.
+ *  In case of non-success res contains a result but it might not be the true pseudo inverse.
  */
-void bmath_mf3_s_piv(     const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // general matrix o
-void bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // faster inversion in case o is symmetric
+bl_t bmath_mf3_s_piv(     const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // general matrix o
+bl_t bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // faster inversion in case o is symmetric
 
 /** Affine inversion.
  *  res = av1-inverse of o.
@@ -351,17 +372,6 @@ void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
  *  q == NULL allowed, in which case only r' is computed.
  */
 void bmath_mf3_s_decompose_qr_htp( bmath_mf3_s* q, bmath_mf3_s* r );
-
-/** (To be deprecated -> preferably use the more efficient non-_htp versions below)
- *  Full stable in-place bi-diagonal decomposition for a general matrix.
- *  Based on givens rotations.
- *  Matrices u, a, v are being modified: mat -> mat'
- *  Input:  u  (mxm unitary or NULL), a  (mxn, any data), v  (nxn unitary or NULL),
- *  Output: u' (mxm unitary or NULL), a' (bi-diagonal),   v' (nxn unitary or NULL)
- *  It is uT * a * v = u'T * a' * v'
- */
-void bmath_mf3_s_decompose_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper bidiagonal
-void bmath_mf3_s_decompose_lbd_htp( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower bidiagonal
 
 /** Stable bidiagonal decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
  *  It is a = u * a' * vT, with u, v being unitary.
