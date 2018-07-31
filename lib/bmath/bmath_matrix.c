@@ -303,10 +303,9 @@ bl_t bmath_mf3_s_is_near_uni( const bmath_mf3_s* o, f3_t max_dev )
 
 bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev )
 {
-    if( o->rows != o->cols ) return false;
     for( sz_t i = 0; i < o->rows; i++ )
     {
-        const f3_t* v = o ->data + i * o ->stride;
+        const f3_t* v = o ->data + i * o->stride;
         for( sz_t j = 0; j < i; j++ )
         {
             if( f3_abs( v[ j ] ) > max_dev ) return false;
@@ -319,11 +318,10 @@ bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev )
 
 bl_t bmath_mf3_s_is_near_ltr( const bmath_mf3_s* o, f3_t max_dev )
 {
-    if( o->rows != o->cols ) return false;
     for( sz_t i = 0; i < o->rows; i++ )
     {
-        const f3_t* v = o ->data + i * o ->stride;
-        for( sz_t j = i + 1; j < o->rows; j++ )
+        const f3_t* v = o ->data + i * o->stride;
+        for( sz_t j = i + 1; j < o->cols; j++ )
         {
             if( f3_abs( v[ j ] ) > max_dev ) return false;
         }
@@ -1805,29 +1803,93 @@ void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_decompose_qr_htp( bmath_mf3_s* q, bmath_mf3_s* r )
+void bmath_mf3_s_decompose_qrd( bmath_mf3_s* u, bmath_mf3_s* a )
 {
-    ASSERT( bmath_mf3_s_is_square( r ) );
+    if( a->rows <= 1 ) return; // nothing to do
 
-    if( q )
+    if( u )
     {
-        ASSERT( r != q );
-        ASSERT( bmath_mf3_s_is_equ_size( r, q ) );
+        ASSERT( u != a );
+        ASSERT( u->rows == a->rows );
+        ASSERT( u->cols == a->rows /*full*/ || u->cols == a->cols /*thin*/  ); // u may be full or thin (nothing in-between)
     }
 
-    sz_t n = r->rows;
-    for( sz_t l = 0; l < n; l++ )
+    bmath_grt_f3_s gr;
+
+    for( sz_t j = 0; j < a->cols; j++ )
     {
-        f3_t* rl = r->data + l * r->stride;
-        for( sz_t k = l + 1; k < n; k++ )
+        // zero lower column
+        for( sz_t l = a->rows - 1; l > j; l-- )
         {
-            f3_t* rk = r->data + k * r->stride;
-            bmath_grt_f3_s gr;
-            bmath_grt_f3_s_init_and_annihilate_b( &gr, rl + l, rk + l );
-            bmath_grt_f3_s_row_rotate( &gr, rl, rk, l + 1, n );
-            if( q ) bmath_grt_f3_s_row_rotate( &gr, q->data + l * q->stride, q->data + k * q->stride, 0, n );
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ j * a->stride + j ], &a->data[ l * a->stride + j ] );
+            if( u ) a->data[ l * a->stride + j ] = bmath_grt_f3_s_rho( &gr );
+            bmath_mf3_s_drow_rotate( a, j, l, &gr, j + 1, a->cols );
         }
     }
+
+    if( u ) // reverse construction of u
+    {
+        bmath_mf3_s_one( u );
+        for( sz_t j = a->cols - 1; j < a->cols; j-- )
+        {
+            for( sz_t k = j; k < a->rows - 1; k++ )
+            {
+                f3_t rho = 0;
+                f3_t_swap( &a->data[ j + a->stride * ( k + 1 ) ], &rho );
+                bmath_grt_f3_s_init_from_rho( &gr, -rho );
+                bmath_mf3_s_drow_rotate( u, j, k + 1, &gr, j, u->cols );
+            }
+        }
+        a->rows = u->cols;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_decompose_lqd( bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    if( a->cols <= 1 ) return; // nothing to do
+
+    if( v )
+    {
+        ASSERT( v != a );
+        ASSERT( v->rows == a->cols );
+        ASSERT( v->cols == a->cols || v->cols == a->rows ); // v may be full or thin (nothing in-between)
+    }
+
+    bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( a->cols );
+    bmath_grt_f3_s gr;
+
+    for( sz_t j = 0; j < a->rows; j++ )
+    {
+        // zero upper row
+        for( sz_t l = a->cols - 1; l > j; l-- )
+        {
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ j * a->stride + j ], &a->data[ j * a->stride + l ] );
+            if( v ) a->data[ j * a->stride + l ] = bmath_grt_f3_s_rho( &gr );
+            grv.data[ l - 1 ] = gr;
+        }
+
+        bmath_mf3_s_sweep_dcol_rotate_rev( a, j, a->cols - 1, &grv, j + 1, a->rows );
+    }
+
+    if( v ) // reverse construction of v
+    {
+        bmath_mf3_s_one( v );
+        for( sz_t j = a->rows - 1; j < a->rows; j-- )
+        {
+            for( sz_t k = j; k < a->cols - 1; k++ )
+            {
+                f3_t rho = 0;
+                f3_t_swap( &a->data[ j * a->stride + k + 1 ], &rho );
+                bmath_grt_f3_s_init_from_rho( &gr, -rho );
+                bmath_mf3_s_drow_rotate( v, j, k + 1, &gr, j, v->cols );
+            }
+        }
+        a->cols = v->cols;
+    }
+
+    bmath_arr_grt_f3_s_down( &grv );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -2497,30 +2559,6 @@ static vd_t selftest( void )
         bmath_mf3_s_mul( m2, m3, m4 );
         bmath_mf3_s_htp( m3, m3 );
         bmath_mf3_s_mul( m3, m4, m4 );
-
-        ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
-    }
-
-    // QR decomposition
-    {
-        sz_t n = 100;
-        u2_t rval = 1236;
-
-        bmath_mf3_s_set_size( m1, n, n );
-        bmath_mf3_s_set_size_to( m1, m2 );
-        bmath_mf3_s_set_size_to( m1, m3 );
-        bmath_mf3_s_set_size_to( m1, m4 );
-        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
-
-        bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_one( m3 );
-
-        bmath_mf3_s_decompose_qr_htp( m3, m2 );
-        ASSERT( bmath_mf3_s_is_near_utr( m2, 1E-8 ) );
-        ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
-
-        bmath_mf3_s_htp( m3, m3 );
-        bmath_mf3_s_mul( m3, m2, m4 );
 
         ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
     }
