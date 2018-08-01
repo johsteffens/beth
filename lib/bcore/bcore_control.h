@@ -269,6 +269,32 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
     } \
 }
 
+#define CPU_TIME_TO_STRING( expression, string ) \
+{ \
+    CPU_TIME_OF( expression, f3_t __time_sec ) \
+    if( __time_sec >= 100 ) \
+    { \
+        if( string ) st_s_push_fa( string, "#pl5 {#<sz_t>}s : "#expression"\n", ( sz_t ) __time_sec ); \
+    } \
+    else \
+    { \
+        if( string ) st_s_push_fa( string, "#pl5 {#<sz_t>}ms: "#expression"\n", ( sz_t ) ( 1E3 * __time_sec ) ); \
+    } \
+}
+
+#define ABS_TIME_TO_STRING( expression, string ) \
+{ \
+    ABS_TIME_OF( expression, f3_t __time_sec ) \
+    if( __time_sec >= 100 ) \
+    { \
+        if( string ) st_s_push_fa( string, "#pl5 {#<sz_t>}s : "#expression"\n", ( sz_t ) __time_sec ); \
+    } \
+    else \
+    { \
+        if( string ) st_s_push_fa( string, "#pl5 {#<sz_t>}ms: "#expression"\n", ( sz_t ) ( 1E3 * __time_sec ) ); \
+    } \
+}
+
 /**********************************************************************************************************************/
 /// object related functions
 #define BCORE_DECLARE_FUNCTION_INIT( name )    void name##_init( name* o );

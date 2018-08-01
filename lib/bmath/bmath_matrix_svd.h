@@ -73,6 +73,4 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_svd_selftest();
-
 #endif  // BMATH_MATRIX_SVD_H

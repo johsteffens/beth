@@ -21,6 +21,7 @@
 #include "bmath_spect_matrix.h"
 #include "bmath_fourier.h"
 #include "bmath_grt.h"
+#include "bmath_matrix_eval.h"
 
 #include <stdio.h>
 
@@ -306,7 +307,8 @@ bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev )
     for( sz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v = o ->data + i * o->stride;
-        for( sz_t j = 0; j < i; j++ )
+        sz_t j_end = sz_min( i, o->cols );
+        for( sz_t j = 0; j < j_end; j++ )
         {
             if( f3_abs( v[ j ] ) > max_dev ) return false;
         }
@@ -2664,6 +2666,31 @@ static vd_t selftest( void )
     return NULL;
 }
 
+static void eval_test( void )
+{
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_matrix_eval_s, eval );
+    BCORE_LIFE_CREATE( bmath_arr_matrix_eval_s, arr_eval );
+
+    eval->density = 1.0;
+    eval->full = false;
+    eval->rows = 10; eval->cols = 30; bmath_arr_matrix_eval_s_push( arr_eval, eval );
+    eval->rows = 20; eval->cols = 20; bmath_arr_matrix_eval_s_push( arr_eval, eval );
+    eval->rows = 30; eval->cols = 10; bmath_arr_matrix_eval_s_push( arr_eval, eval );
+    eval->full = true;
+    eval->rows = 10; eval->cols = 30; bmath_arr_matrix_eval_s_push( arr_eval, eval );
+    eval->rows = 20; eval->cols = 20; bmath_arr_matrix_eval_s_push( arr_eval, eval );
+    eval->rows = 30; eval->cols = 10; bmath_arr_matrix_eval_s_push( arr_eval, eval );
+
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_qrd" ), ( fp_t )bmath_mf3_s_decompose_qrd, NULL );
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_lqd" ), ( fp_t )bmath_mf3_s_decompose_lqd, NULL );
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_ubd" ), ( fp_t )bmath_mf3_s_decompose_ubd, NULL );
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_lbd" ), ( fp_t )bmath_mf3_s_decompose_lbd, NULL );
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_svd" ), ( fp_t )bmath_mf3_s_svd, NULL );
+
+    BCORE_LIFE_DOWN();
+}
+
 /**********************************************************************************************************************/
 
 vd_t bmath_matrix_signal_handler( const bcore_signal_s* o )
@@ -2695,8 +2722,8 @@ vd_t bmath_matrix_signal_handler( const bcore_signal_s* o )
         case TYPEOF_selftest:
         {
             selftest();
+            eval_test();
             bmath_mf3_s_evd_selftest();
-            bmath_mf3_s_svd_selftest();
             return NULL;
         }
         break;

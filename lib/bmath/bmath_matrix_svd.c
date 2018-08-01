@@ -325,27 +325,6 @@ static void bmath_mf3_s_svd_eval( sz_t m, sz_t n, f3_t density, bl_t full )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_svd_selftest()
-{
-    bmath_mf3_s_svd_eval( 10, 100, 1.0, true );
-    bmath_mf3_s_svd_eval( 30,  30, 1.0, true );
-    bmath_mf3_s_svd_eval( 100, 10, 1.0, true );
-
-    bmath_mf3_s_svd_eval( 10, 100, 1.0, false );
-    bmath_mf3_s_svd_eval( 30,  30, 1.0, false );
-    bmath_mf3_s_svd_eval( 100, 10, 1.0, false );
-
-    bmath_mf3_s_svd_eval( 10, 100, 0.03, true );
-    bmath_mf3_s_svd_eval( 30,  30, 0.03, true );
-    bmath_mf3_s_svd_eval( 100, 10, 0.03, true );
-
-    bmath_mf3_s_svd_eval( 10, 100, 0.03, false );
-    bmath_mf3_s_svd_eval( 30,  30, 0.03, false );
-    bmath_mf3_s_svd_eval( 100, 10, 0.03, false );
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
 /**********************************************************************************************************************/
 
 
