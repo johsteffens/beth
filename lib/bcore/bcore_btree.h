@@ -94,7 +94,7 @@ struct bcore_btree_ps_s;
 typedef struct bcore_btree_ps_s bcore_btree_ps_s;
 
 /// Creates a new btree_ip
-bcore_btree_ps_s* bcore_btree_ps_s_create( vd_t (*alloc)( vd_t, size_t size ) );
+bcore_btree_ps_s* bcore_btree_ps_s_create( vd_t (*alloc)( vd_t, sz_t size ) );
 
 /// Deletes a btree_ip
 void bcore_btree_ps_s_discard( bcore_btree_ps_s* o );
@@ -156,7 +156,7 @@ typedef struct
 typedef struct bcore_btree_pp_s bcore_btree_pp_s;
 
 /// Creates a new btree_ip
-bcore_btree_pp_s* bcore_btree_pp_s_create( vd_t (*alloc)( vd_t, size_t size ) );
+bcore_btree_pp_s* bcore_btree_pp_s_create( vd_t (*alloc)( vd_t, sz_t size ) );
 
 /// Deletes a btree_ip
 void bcore_btree_pp_s_discard( bcore_btree_pp_s* o );
@@ -217,7 +217,7 @@ struct bcore_btree_vd_s;
 typedef struct bcore_btree_vd_s bcore_btree_vd_s;
 
 /// Creates a new btree_vd (allows to specify alloc function because this tree type is used in memory management)
-bcore_btree_vd_s* bcore_btree_vd_s_create( vd_t (*alloc)( vd_t, size_t size ) );
+bcore_btree_vd_s* bcore_btree_vd_s_create( vd_t (*alloc)( vd_t, sz_t size ) );
 
 /// Deletes a btree_vd
 void bcore_btree_vd_s_discard( bcore_btree_vd_s* o );

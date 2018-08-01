@@ -38,6 +38,9 @@ typedef uint8_t     u0_t;
 typedef flt64_t     f3_t;
 typedef flt32_t     f2_t;
 typedef size_t      sz_t;
+
+// TODO: switch sz_t: size_t --> ptrdiff_t and introduce new type uz_t representing size_t
+// typedef ptrdiff_t   sz_t;
 typedef bool        bl_t;
 
 typedef uintmax_t   umax_t;

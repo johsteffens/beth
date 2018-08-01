@@ -31,11 +31,11 @@
 /**********************************************************************************************************************/
 // default parameters
 
-static const size_t default_pool_size       = 0x10000;
-static const size_t default_min_block_size  = 8;
-static const size_t default_max_block_size  = 1024 * 16;
+static const sz_t default_pool_size       = 0x10000;
+static const sz_t default_min_block_size  = 8;
+static const sz_t default_max_block_size  = 1024 * 16;
 
-static const size_t default_stepping_method = 1;
+static const sz_t default_stepping_method = 1;
 static const bool   default_full_align      = true;
 
 /// Minimum alignment of memory blocks
