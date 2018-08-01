@@ -53,7 +53,7 @@ static void ud_set_zero( bmath_mf3_s* a, sz_t row_idx )
 bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     // creating upper-bidiagonal
-    bmath_mf3_s_decompose_ubd( u, a, v );
+    bmath_mf3_s_ubd( u, a, v );
 
     sz_t n = f3_min( a->cols, a->rows );
     if( n <= 1 ) return true; // nothing else to do
@@ -282,46 +282,6 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 //---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-
-static void bmath_mf3_s_svd_eval( sz_t m, sz_t n, f3_t density, bl_t full )
-{
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
-    BCORE_LIFE_CREATE( bmath_mf3_s, u );
-    BCORE_LIFE_CREATE( bmath_mf3_s, a );
-    BCORE_LIFE_CREATE( bmath_mf3_s, v );
-    BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
-    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
-
-    bmath_mf3_s_set_size( m0, m, n );
-    bmath_mf3_s_set_size( a,  m, n );
-    u2_t rval = 1236;
-    bmath_mf3_s_fill_random_sparse( m0, -1, 1, density, &rval );
-
-    bmath_mf3_s_set_size( u, m, full ? m : sz_min( m, n ) );
-    bmath_mf3_s_set_size( v, n, full ? n : sz_min( m, n ) );
-
-    bmath_mf3_s_cpy( m0, a );
-    ASSERT( bmath_mf3_s_svd( NULL, a, NULL ) );
-    ASSERT( bmath_mf3_s_is_dag( a ) );
-
-    bmath_mf3_s_cpy( m0, a );
-    ASSERT( bmath_mf3_s_svd( u, a, v ) );
-    ASSERT( bmath_mf3_s_is_dag( a ) );
-    ASSERT( bmath_mf3_s_is_near_otn( u, 1E-8 ) );
-    ASSERT( bmath_mf3_s_is_near_otn( v, 1E-8 ) );
-
-    bmath_mf3_s_set_size( m1, a->rows, v->rows );
-    bmath_mf3_s_mul_htp( a, v, m1 );
-
-    bmath_mf3_s_set_size( m2, u->rows, m1->cols );
-    bmath_mf3_s_mul( u, m1, m2 );
-    ASSERT( bmath_mf3_s_is_near_equ( m0, m2, 1E-8 ) );
-
-//    bcore_msg_fa( "dev = #<f3_t>\n", f3_srt( bmath_mf3_s_f3_sub_sqr( m0, m2 ) ) );
-
-    BCORE_LIFE_DOWN();
-}
 
 //---------------------------------------------------------------------------------------------------------------------
 

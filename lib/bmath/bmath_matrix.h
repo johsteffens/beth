@@ -387,7 +387,7 @@ void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
  *  If thin decomposition is chosen, then a' is returned as (thin) nxn square matrix.
  *
  */
-void bmath_mf3_s_decompose_qrd( bmath_mf3_s* u, bmath_mf3_s* a );
+void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a );
 
 /** Stable LQ decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
  *  It is a = a' * v^T, with v being unitary.
@@ -410,7 +410,7 @@ void bmath_mf3_s_decompose_qrd( bmath_mf3_s* u, bmath_mf3_s* a );
  *  If thin decomposition is chosen, then a' is returned as (thin) mxm square matrix.
  *
  */
-void bmath_mf3_s_decompose_lqd( bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v );
 
 
 /** Stable bidiagonal decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
@@ -440,8 +440,8 @@ void bmath_mf3_s_decompose_lqd( bmath_mf3_s* a, bmath_mf3_s* v );
  *  Meaning either a->rows or a->cols is changed to min(m,n) by the routine.
  *
  */
-void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper bidiagonal
-void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower bidiagonal
+void bmath_mf3_s_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // upper bidiagonal
+void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // lower bidiagonal
 
 /** Turns an upper bidiagonal matrix into the lower bidiagonal form a -> a'
  *  by postmultiplying a unitary matrix.

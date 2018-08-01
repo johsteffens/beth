@@ -1805,7 +1805,7 @@ void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_decompose_qrd( bmath_mf3_s* u, bmath_mf3_s* a )
+void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a )
 {
     if( a->rows <= 1 ) return; // nothing to do
 
@@ -1848,7 +1848,7 @@ void bmath_mf3_s_decompose_qrd( bmath_mf3_s* u, bmath_mf3_s* a )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_decompose_lqd( bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v )
 {
     if( a->cols <= 1 ) return; // nothing to do
 
@@ -1988,11 +1988,11 @@ void bmath_mf3_s_lbd_to_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     if( a->rows < a->cols )
     {
-        bmath_mf3_s_decompose_lbd( u, a, v );
+        bmath_mf3_s_lbd( u, a, v );
         bmath_mf3_s_lbd_to_ubd( u, a );
         return;
     }
@@ -2078,11 +2078,11 @@ void bmath_mf3_s_decompose_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_decompose_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
     if( a->cols < a->rows )
     {
-        bmath_mf3_s_decompose_ubd( u, a, v );
+        bmath_mf3_s_ubd( u, a, v );
         bmath_mf3_s_ubd_to_lbd( a, v );
         return;
     }
@@ -2682,10 +2682,10 @@ static void eval_test( void )
     eval->rows = 20; eval->cols = 20; bmath_arr_matrix_eval_s_push( arr_eval, eval );
     eval->rows = 30; eval->cols = 10; bmath_arr_matrix_eval_s_push( arr_eval, eval );
 
-    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_qrd" ), ( fp_t )bmath_mf3_s_decompose_qrd, NULL );
-    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_lqd" ), ( fp_t )bmath_mf3_s_decompose_lqd, NULL );
-    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_ubd" ), ( fp_t )bmath_mf3_s_decompose_ubd, NULL );
-    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_lbd" ), ( fp_t )bmath_mf3_s_decompose_lbd, NULL );
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_qrd" ), ( fp_t )bmath_mf3_s_qrd, NULL );
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_lqd" ), ( fp_t )bmath_mf3_s_lqd, NULL );
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_ubd" ), ( fp_t )bmath_mf3_s_ubd, NULL );
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_lbd" ), ( fp_t )bmath_mf3_s_lbd, NULL );
     bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_svd" ), ( fp_t )bmath_mf3_s_svd, NULL );
 
     BCORE_LIFE_DOWN();
