@@ -66,7 +66,7 @@ static tp_t type_of( const st_s* name )
     return tp;
 }
 
-static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, sz_t depth )
+static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, uz_t depth )
 {
     bcore_life_s* l = bcore_life_s_create();
     sr_s sink_l         = sr_cl( sr_cp( sink, TYPEOF_bcore_sink_s ), l );
@@ -111,16 +111,16 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
-                sz_t size = bcore_array_x_get_size( arr_l );
-                for( sz_t i = 0; i < size; i++ )
+                uz_t size = bcore_array_x_get_size( arr_l );
+                for( uz_t i = 0; i < size; i++ )
                 {
                     translate( o, 0, bcore_array_x_get( arr_l, i ), sink_l, depth + 1 );
                 }
             }
             else
             {
-                sz_t size = bcore_via_p_get_size( obj_l.p, NULL );
-                for( sz_t i = 0; i < size; i++ )
+                uz_t size = bcore_via_p_get_size( obj_l.p, NULL );
+                for( uz_t i = 0; i < size; i++ )
                 {
                     translate( o, bcore_via_x_iget_name( obj_l, i ), bcore_via_x_iget( obj_l, i ), sink_l, depth + 1 );
                 }
@@ -139,7 +139,7 @@ void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr
 
 static bcore_self_s* translator_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_txt_ml_translator_s = bcore_translator { aware_t _; sz_t indent; }", sizeof( bcore_txt_ml_translator_s ) );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_txt_ml_translator_s = bcore_translator { aware_t _; uz_t indent; }", sizeof( bcore_txt_ml_translator_s ) );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_txt_ml_translator_s_init,             "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_txt_ml_translator_s_translate,        "bcore_fp_translate",        "translate"        );
     return self;
@@ -257,8 +257,8 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
                 if( bcore_array_x_is_fixed( arr_l ) )
                 {
-                    sz_t arr_size = bcore_array_x_get_size( arr_l );
-                    for( sz_t i = 0; i < arr_size; i++ ) bcore_array_x_set( arr_l, i, interpret( o, sr_null(), src_l ) );
+                    uz_t arr_size = bcore_array_x_get_size( arr_l );
+                    for( uz_t i = 0; i < arr_size; i++ ) bcore_array_x_set( arr_l, i, interpret( o, sr_null(), src_l ) );
                     bcore_source_r_parse_fa( &src_l, " </>" );
                 }
                 else
@@ -281,7 +281,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                         bcore_source_r_parse_errf( &src_l, "Object '%s' has no element of name '%s'.", ifnameof( sr_s_type( &obj_l ) ), name->sc );
                     }
 
-                    sz_t idx = bcore_via_x_nget_index( obj_l, ntype );
+                    uz_t idx = bcore_via_x_nget_index( obj_l, ntype );
                     if( bcore_via_x_iis_link( obj_l, idx ) )
                     {
                         bcore_via_x_iset( obj_l, idx, interpret( o, sr_null(), src_l ) );
@@ -357,7 +357,7 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s o
         st_s* cur_file = st_s_create_sc( bcore_source_r_get_file( &src_l ) );
         if( cur_file->size > 0 )
         {
-            sz_t idx = st_s_find_char( cur_file, cur_file->size, 0, '/' );
+            uz_t idx = st_s_find_char( cur_file, cur_file->size, 0, '/' );
             if( idx < cur_file->size )
             {
                 cur_file->data[ idx ] = 0;

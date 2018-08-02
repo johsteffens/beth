@@ -27,7 +27,7 @@
 typedef struct bcore_txt_ml_translator_s
 {
     aware_t _;
-    sz_t indent; // indentation
+    uz_t indent; // indentation
 } bcore_txt_ml_translator_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_txt_ml_translator_s )

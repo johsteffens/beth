@@ -61,22 +61,22 @@ static const bcore_array_dyn_head_s* dyn_head_vc( const bcore_array_s* p, vc_t o
 
 /**********************************************************************************************************************/
 
-static sz_t get_dyn_size( const bcore_array_s* p, vc_t o )
+static uz_t get_dyn_size( const bcore_array_s* p, vc_t o )
 {
     return dyn_head_vc( p, o )->size;
 }
 
-static sz_t get_dyn_space( const bcore_array_s* p, vc_t o )
+static uz_t get_dyn_space( const bcore_array_s* p, vc_t o )
 {
     return dyn_head_vc( p, o )->space;
 }
 
-static sz_t get_size( const bcore_array_s* p, vc_t o )
+static uz_t get_size( const bcore_array_s* p, vc_t o )
 {
     return p->size_fix > 0 ? p->size_fix : get_dyn_size( p, o );
 }
 
-static sz_t get_space( const bcore_array_s* p, vc_t o )
+static uz_t get_space( const bcore_array_s* p, vc_t o )
 {
     return p->size_fix > 0 ? p->size_fix : get_dyn_space( p, o );
 }
@@ -94,7 +94,7 @@ void bcore_array_default_make_strong( const bcore_array_s* p, bcore_array* o )
         {
             bcore_array_dyn_solid_static_s* arr = obj;
             const bcore_inst_s* instance_p = p->item_p;
-            sz_t unit_size = instance_p->size;
+            uz_t unit_size = instance_p->size;
             vc_t src_data = arr->data;
             arr->data = bcore_u_alloc( unit_size, NULL, arr->size, &arr->space );
             if( instance_p->move_flat )
@@ -104,7 +104,7 @@ void bcore_array_default_make_strong( const bcore_array_s* p, bcore_array* o )
             else
             {
                 vd_t dst_data = arr->data;
-                for( sz_t i = 0; i < arr->size; i++ )
+                for( uz_t i = 0; i < arr->size; i++ )
                 {
                     instance_p->copy( instance_p, dst_data, src_data );
                     dst_data = ( u0_t* )dst_data + unit_size;
@@ -119,7 +119,7 @@ void bcore_array_default_make_strong( const bcore_array_s* p, bcore_array* o )
             bcore_array_dyn_solid_typed_s* arr = obj;
             if( !arr->type ) ERR( "attempt to take ownership of type-zero array" );
             const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
-            sz_t unit_size = instance_p->size;
+            uz_t unit_size = instance_p->size;
             vc_t src_data = arr->data;
             arr->data = bcore_u_alloc( unit_size, NULL, arr->size, &arr->space );
             if( instance_p->move_flat )
@@ -129,7 +129,7 @@ void bcore_array_default_make_strong( const bcore_array_s* p, bcore_array* o )
             else
             {
                 vd_t dst_data = arr->data;
-                for( sz_t i = 0; i < arr->size; i++ )
+                for( uz_t i = 0; i < arr->size; i++ )
                 {
                     instance_p->copy( instance_p, dst_data, src_data );
                     dst_data = ( u0_t* )dst_data + unit_size;
@@ -146,7 +146,7 @@ void bcore_array_default_make_strong( const bcore_array_s* p, bcore_array* o )
             vd_t* src_data = arr->data;
             arr->data = bcore_u_alloc( sizeof( vd_t ), NULL, arr->size, &arr->space );
             vd_t* dst_data = arr->data;
-            for( sz_t i = 0; i < arr->size; i++ ) *dst_data++ = instance_p->clone( instance_p, *src_data++ );
+            for( uz_t i = 0; i < arr->size; i++ ) *dst_data++ = instance_p->clone( instance_p, *src_data++ );
         }
         break;
 
@@ -158,7 +158,7 @@ void bcore_array_default_make_strong( const bcore_array_s* p, bcore_array* o )
             vd_t* src_data = arr->data;
             arr->data = bcore_u_alloc( sizeof( vd_t ), NULL, arr->size, &arr->space );
             vd_t* dst_data = arr->data;
-            for( sz_t i = 0; i < arr->size; i++ ) *dst_data++ = instance_p->clone( instance_p, *src_data++ );
+            for( uz_t i = 0; i < arr->size; i++ ) *dst_data++ = instance_p->clone( instance_p, *src_data++ );
         }
         break;
 
@@ -168,7 +168,7 @@ void bcore_array_default_make_strong( const bcore_array_s* p, bcore_array* o )
             vd_t* src_data = arr->data;
             arr->data = bcore_u_alloc( sizeof( vd_t ), NULL, arr->size, &arr->space );
             vd_t* dst_data = arr->data;
-            for( sz_t i = 0; i < arr->size; i++ ) *dst_data++ = bcore_inst_a_clone( *src_data++ );
+            for( uz_t i = 0; i < arr->size; i++ ) *dst_data++ = bcore_inst_a_clone( *src_data++ );
         }
         break;
 
@@ -176,7 +176,7 @@ void bcore_array_default_make_strong( const bcore_array_s* p, bcore_array* o )
     }
 }
 
-void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, sz_t space )
+void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, uz_t space )
 {
     if( p->size_fix > 0 )
     {
@@ -191,7 +191,7 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, sz_t
         {
             bcore_array_dyn_solid_static_s* arr = obj;
             const bcore_inst_s* instance_p = p->item_p;
-            sz_t unit_size = instance_p->size;
+            uz_t unit_size = instance_p->size;
             if( instance_p->move_flat )
             {
                 arr->data = bcore_un_alloc( unit_size, arr->data, arr->space, space, &arr->space );
@@ -216,7 +216,7 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, sz_t
                 }
                 vd_t old_data = arr->data;
                 arr->data = bcore_un_alloc( unit_size, NULL, 0, space, &arr->space );
-                for( sz_t i = 0; i < arr->size; i++ )
+                for( uz_t i = 0; i < arr->size; i++ )
                 {
                     vd_t dst = ( u0_t* )arr->data + unit_size * i;
                     vc_t src = ( u0_t* )old_data  + unit_size * i;
@@ -234,7 +234,7 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, sz_t
             if( space == arr->space ) break;
             if( !arr->type ) ERR( "attempt to change space on type-zero array" );
             const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
-            sz_t unit_size = instance_p->size;
+            uz_t unit_size = instance_p->size;
             if( instance_p->move_flat )
             {
                 arr->data = bcore_un_alloc( unit_size, arr->data, arr->space, space, &arr->space );
@@ -260,7 +260,7 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, sz_t
 
                 vd_t old_data = arr->data;
                 arr->data = bcore_un_alloc( unit_size, NULL, 0, space, &arr->space );
-                for( sz_t i = 0; i < arr->size; i++ )
+                for( uz_t i = 0; i < arr->size; i++ )
                 {
                     vd_t dst = ( u0_t* )arr->data + unit_size * i;
                     vc_t src = ( u0_t* )old_data  + unit_size * i;
@@ -320,7 +320,7 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, sz_t
 
 /**********************************************************************************************************************/
 
-void bcore_array_default_set_size( const bcore_array_s* p, bcore_array* o, sz_t size )
+void bcore_array_default_set_size( const bcore_array_s* p, bcore_array* o, uz_t size )
 {
     if( p->size_fix > 0 )
     {
@@ -328,7 +328,7 @@ void bcore_array_default_set_size( const bcore_array_s* p, bcore_array* o, sz_t 
         ERR( "Cannot change size for fixed-size-array" );
     }
 
-    sz_t space = bcore_array_p_get_space( p, o );
+    uz_t space = bcore_array_p_get_space( p, o );
 
     if( size > space ) bcore_array_p_set_space( p, o, ( size <= space * 2 ) ? space * 2 : size );
 
@@ -347,7 +347,7 @@ void bcore_array_default_set_size( const bcore_array_s* p, bcore_array* o, sz_t 
                 arr->data = NULL;
             }
             const bcore_inst_s* instance_p = p->item_p;
-            sz_t unit_size = instance_p->size;
+            uz_t unit_size = instance_p->size;
             if( size < arr->size )
             {
                 if( instance_p->down_flat )
@@ -393,7 +393,7 @@ void bcore_array_default_set_size( const bcore_array_s* p, bcore_array* o, sz_t 
             if( size == arr->size ) break;
             if( !arr->type ) ERR( "attempt to change size on type-zero array" );
             const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
-            sz_t unit_size = instance_p->size;
+            uz_t unit_size = instance_p->size;
             if( size < arr->size )
             {
                 if( instance_p->down_flat )
@@ -512,13 +512,13 @@ void bcore_array_default_set_size( const bcore_array_s* p, bcore_array* o, sz_t 
 
 /**********************************************************************************************************************/
 
-static sr_s get_dyn_solid_static( const bcore_array_s* p, vc_t o, sz_t index )
+static sr_s get_dyn_solid_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const bcore_array_dyn_solid_static_s* arr = obj_vc( p, o );
     return ( index < arr->size ) ? sr_twd( p->item_p->header.o_type, ( u0_t* )arr->data + p->item_p->size * index ) : sr_null();
 }
 
-static sr_s get_dyn_solid_typed( const bcore_array_s* p, vc_t o, sz_t index )
+static sr_s get_dyn_solid_typed( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const bcore_array_dyn_solid_typed_s* arr = obj_vc( p, o );
     if( index < arr->size )
@@ -531,13 +531,13 @@ static sr_s get_dyn_solid_typed( const bcore_array_s* p, vc_t o, sz_t index )
     }
 }
 
-static sr_s get_dyn_link_static( const bcore_array_s* p, vc_t o, sz_t index )
+static sr_s get_dyn_link_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const bcore_array_dyn_link_static_s* arr = obj_vc( p, o );
     return ( index < arr->size ) ? sr_twd( p->item_p->header.o_type, arr->data[ index ] ) : sr_null();
 }
 
-static sr_s get_dyn_link_typed( const bcore_array_s* p, vc_t o, sz_t index )
+static sr_s get_dyn_link_typed( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const bcore_array_dyn_link_typed_s* arr = obj_vc( p, o );
     if( index < arr->size && arr->data[ index ] )
@@ -550,7 +550,7 @@ static sr_s get_dyn_link_typed( const bcore_array_s* p, vc_t o, sz_t index )
     }
 }
 
-static sr_s get_dyn_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
+static sr_s get_dyn_link_aware( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const bcore_array_dyn_link_aware_s* arr = obj_vc( p, o );
     if( index < arr->size )
@@ -561,18 +561,18 @@ static sr_s get_dyn_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
     return sr_null();
 }
 
-static sr_s get_fix_solid_static( const bcore_array_s* p, vc_t o, sz_t index )
+static sr_s get_fix_solid_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
     return ( index < p->size_fix ) ? sr_twd( p->item_p->header.o_type, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
 }
 
-static sr_s get_fix_link_static( const bcore_array_s* p, vc_t o, sz_t index )
+static sr_s get_fix_link_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
     return ( index < p->size_fix ) ? sr_twd( p->item_p->header.o_type, arr[ index ] ) : sr_null();
 }
 
-static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
+static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
     if( index < p->size_fix )
@@ -585,7 +585,7 @@ static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, sz_t index )
 
 /**********************************************************************************************************************/
 
-static void set_dyn_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
+static void set_dyn_solid_static( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
     bcore_array_dyn_solid_static_s* arr = obj_vd( p, o );
     if( index >= arr->size ) bcore_array_p_set_size( p, o, index + 1 );
@@ -605,7 +605,7 @@ static void set_dyn_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr
     sr_down( src );
 }
 
-static void set_dyn_solid_typed( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
+static void set_dyn_solid_typed( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
     bcore_array_dyn_solid_typed_s* arr = obj_vd( p, o );
     if( arr->type == 0 ) arr->type = sr_s_type( &src );
@@ -628,7 +628,7 @@ static void set_dyn_solid_typed( const bcore_array_s* p, vd_t o, sz_t index, sr_
     sr_down( src );
 }
 
-static void set_dyn_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
+static void set_dyn_link_static( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
     bcore_array_dyn_link_static_s* arr = obj_vd( p, o );
     if( index >= arr->size ) bcore_array_p_set_size( p, o, index + 1 );
@@ -651,7 +651,7 @@ static void set_dyn_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_
     sr_down( src );
 }
 
-static void set_dyn_link_typed( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
+static void set_dyn_link_typed( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
     bcore_array_dyn_link_typed_s* arr = obj_vd( p, o );
     if( arr->type == 0 ) arr->type = sr_s_type( &src );
@@ -678,7 +678,7 @@ static void set_dyn_link_typed( const bcore_array_s* p, vd_t o, sz_t index, sr_s
     sr_down( src );
 }
 
-static void set_dyn_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
+static void set_dyn_link_aware( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
     bcore_array_dyn_link_aware_s* arr = obj_vd( p, o );
     if( index >= arr->size ) bcore_array_p_set_size( p, o, index + 1 );
@@ -700,9 +700,9 @@ static void set_dyn_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s
     sr_down( src );
 }
 
-static void set_fix_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
+static void set_fix_solid_static( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
-    if( index >= p->size_fix ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->size_fix );
+    if( index >= p->size_fix ) ERR_fa( "Index '#<uz_t>' exceeds range of fixed-size-array of size '#<uz_t>'", index, p->size_fix );
     const bcore_inst_s* inst_p = p->item_p;
     vd_t dst = ( u0_t* )obj_vd( p, o ) + inst_p->size * index;
     if( src.o )
@@ -719,9 +719,9 @@ static void set_fix_solid_static( const bcore_array_s* p, vd_t o, sz_t index, sr
     sr_down( src );
 }
 
-static void set_fix_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
+static void set_fix_link_static( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
-    if( index >= p->size_fix ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->size_fix );
+    if( index >= p->size_fix ) ERR_fa( "Index '#<uz_t>' exceeds range of fixed-size-array of size '#<uz_t>'", index, p->size_fix );
     const bcore_inst_s* inst_p = p->item_p;
     vd_t* arr = obj_vd( p, o );
     vd_t* dst = &arr[ index ];
@@ -742,9 +742,9 @@ static void set_fix_link_static( const bcore_array_s* p, vd_t o, sz_t index, sr_
     sr_down( src );
 }
 
-static void set_fix_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s src )
+static void set_fix_link_aware( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
-    if( index >= p->size_fix ) ERR_fa( "Index '#<sz_t>' exceeds range of fixed-size-array of size '#<sz_t>'", index, p->size_fix );
+    if( index >= p->size_fix ) ERR_fa( "Index '#<uz_t>' exceeds range of fixed-size-array of size '#<uz_t>'", index, p->size_fix );
     vd_t* arr = obj_vd( p, o );
     vd_t* dst = &arr[ index ];
     if( *dst ) bcore_inst_a_discard( *dst );
@@ -766,17 +766,18 @@ static void set_fix_link_aware( const bcore_array_s* p, vd_t o, sz_t index, sr_s
 
 /**********************************************************************************************************************/
 
-static inline sz_t asz( const bcore_array_s* p, vc_t o ) { return bcore_array_p_get_size( p, o ); }
+static inline uz_t auz( const bcore_array_s* p, vc_t o ) { return bcore_array_p_get_size( p, o ); }
 
 sr_s NPX(default_get_first )( const NPX(s)* p, const bcore_array* o           ) { return NPX(p_get    )( p, o, 0 ); }
-sr_s NPX(default_get_last  )( const NPX(s)* p, const bcore_array* o           ) { return NPX(p_get    )( p, o, asz( p, o ) - 1 ); }
-void NPX(default_push      )( const NPX(s)* p, bcore_array* o, sr_s src ) {        NPX(p_set    )( p, o, asz( p, o ), src ); }
-void NPX(default_push_s3   )( const NPX(s)* p, bcore_array* o, s3_t val ) {        NPX(p_set_s3 )( p, o, asz( p, o ), val ); }
-void NPX(default_push_u3   )( const NPX(s)* p, bcore_array* o, u3_t val ) {        NPX(p_set_u3 )( p, o, asz( p, o ), val ); }
-void NPX(default_push_f3   )( const NPX(s)* p, bcore_array* o, f3_t val ) {        NPX(p_set_f3 )( p, o, asz( p, o ), val ); }
-void NPX(default_push_sz   )( const NPX(s)* p, bcore_array* o, sz_t val ) {        NPX(p_set_sz )( p, o, asz( p, o ), val ); }
-void NPX(default_push_sc   )( const NPX(s)* p, bcore_array* o, sc_t val ) {        NPX(p_set_sc )( p, o, asz( p, o ), val ); }
-void NPX(default_push_bl   )( const NPX(s)* p, bcore_array* o, bl_t val ) {        NPX(p_set_bl )( p, o, asz( p, o ), val ); }
+sr_s NPX(default_get_last  )( const NPX(s)* p, const bcore_array* o           ) { return NPX(p_get    )( p, o, auz( p, o ) - 1 ); }
+void NPX(default_push      )( const NPX(s)* p, bcore_array* o, sr_s src ) {        NPX(p_set    )( p, o, auz( p, o ), src ); }
+void NPX(default_push_s3   )( const NPX(s)* p, bcore_array* o, s3_t val ) {        NPX(p_set_s3 )( p, o, auz( p, o ), val ); }
+void NPX(default_push_u3   )( const NPX(s)* p, bcore_array* o, u3_t val ) {        NPX(p_set_u3 )( p, o, auz( p, o ), val ); }
+void NPX(default_push_f3   )( const NPX(s)* p, bcore_array* o, f3_t val ) {        NPX(p_set_f3 )( p, o, auz( p, o ), val ); }
+void NPX(default_push_szxxx   )( const NPX(s)* p, bcore_array* o, szxxx_t val ) {        NPX(p_set_szxxx )( p, o, auz( p, o ), val ); }
+void NPX(default_push_uz   )( const NPX(s)* p, bcore_array* o, uz_t val ) {        NPX(p_set_uz )( p, o, auz( p, o ), val ); }
+void NPX(default_push_sc   )( const NPX(s)* p, bcore_array* o, sc_t val ) {        NPX(p_set_sc )( p, o, auz( p, o ), val ); }
+void NPX(default_push_bl   )( const NPX(s)* p, bcore_array* o, bl_t val ) {        NPX(p_set_bl )( p, o, auz( p, o ), val ); }
 
 /**********************************************************************************************************************/
 
@@ -784,15 +785,15 @@ void bcore_array_default_push_array( const bcore_array_s* p, bcore_array* o, sr_
 {
     if( !src.o ) return;
     src = sr_cp( src, TYPEOF_bcore_array_s );
-    sz_t src_size = bcore_array_r_get_size( &src );
+    uz_t src_size = bcore_array_r_get_size( &src );
 
     if( sr_s_is_const( &src ) )
     {
-        for( sz_t i = 0; i < src_size; i++ ) bcore_array_p_push( p, o, sr_cc( bcore_array_r_get( &src, i ) ) );
+        for( uz_t i = 0; i < src_size; i++ ) bcore_array_p_push( p, o, sr_cc( bcore_array_r_get( &src, i ) ) );
     }
     else
     {
-        for( sz_t i = 0; i < src_size; i++ ) bcore_array_p_push( p, o, bcore_array_r_get( &src, i ) );
+        for( uz_t i = 0; i < src_size; i++ ) bcore_array_p_push( p, o, bcore_array_r_get( &src, i ) );
     }
 
     sr_down( src );
@@ -802,7 +803,7 @@ void bcore_array_default_push_array( const bcore_array_s* p, bcore_array* o, sr_
 
 void bcore_array_default_pop( const bcore_array_s* p, bcore_array* o )
 {
-    sz_t size = bcore_array_p_get_size( p, o );
+    uz_t size = bcore_array_p_get_size( p, o );
     if( size > 0 ) bcore_array_p_set_size( p, o, size - 1 );
 }
 
@@ -906,7 +907,7 @@ vd_t bcore_array_p_get_d_data( const bcore_array_s* p, vd_t o )
     return NULL;
 }
 
-sz_t bcore_array_p_get_unit_size( const bcore_array_s* p, vc_t o )
+uz_t bcore_array_p_get_unit_size( const bcore_array_s* p, vc_t o )
 {
     switch( p->type_caps )
     {
@@ -934,8 +935,8 @@ sz_t bcore_array_p_get_unit_size( const bcore_array_s* p, vc_t o )
 
 static bl_t array_s_supports( const bcore_self_s* self, st_s* log )
 {
-    sz_t items_size = bcore_self_s_items_size( self );
-    for( sz_t i = 0; i < items_size; i++ )
+    uz_t items_size = bcore_self_s_items_size( self );
+    for( uz_t i = 0; i < items_size; i++ )
     {
         if( bcore_flect_caps_is_array( bcore_self_s_get_item( self, i )->caps ) ) return true;
     }
@@ -962,7 +963,7 @@ static bcore_array_s* bcore_array_s_create_from_self( const bcore_self_s* self )
 
     bcore_inst_body_s* body = instance->body;
     bool found = false;
-    for( sz_t i = 0; i < body->size; i++ )
+    for( uz_t i = 0; i < body->size; i++ )
     {
         const bcore_self_item_s* self_item = body->data[ i ].self_item;
         if( bcore_flect_caps_is_array( self_item->caps ) )
@@ -1062,33 +1063,34 @@ tp_t bcore_array_dyn_link_static_type_of( tp_t type )
     return bcore_flect_type_self_d( bcore_self_s_create_array_dyn_link_static( type ) );
 }
 
-tp_t bcore_array_fix_solid_static_type_of( tp_t type, sz_t size )
+tp_t bcore_array_fix_solid_static_type_of( tp_t type, uz_t size )
 {
     return bcore_flect_type_self_d( bcore_self_s_create_array_fix_solid_static( type, size ) );
 }
 
-tp_t bcore_array_fix_link_static_type_of( tp_t type, sz_t size )
+tp_t bcore_array_fix_link_static_type_of( tp_t type, uz_t size )
 {
     return bcore_flect_type_self_d( bcore_self_s_create_array_fix_link_static( type, size ) );
 }
 
-tp_t bcore_array_fix_link_aware_type_of( sz_t size )
+tp_t bcore_array_fix_link_aware_type_of( uz_t size )
 {
     return bcore_flect_type_self_d( bcore_self_s_create_array_fix_link_aware( size ) );
 }
 
 /**********************************************************************************************************************/
 
-sz_t bcore_array_default_get_size   ( const bcore_array_s* p, const bcore_array* o )                 { return get_size( p, o ); }
-sz_t bcore_array_default_get_space  ( const bcore_array_s* p, const bcore_array* o )                 { return get_space( p, o ); }
-sr_s bcore_array_default_get        ( const bcore_array_s* p, const bcore_array* o, sz_t index )     { return p->get( p, o, index ); }
-void bcore_array_default_set        ( const bcore_array_s* p, bcore_array* o, sz_t index, sr_s src ) { p->set( p, o, index, src ); }
-void bcore_array_default_set_s3     ( const bcore_array_s* p, bcore_array* o, sz_t index, s3_t val ) { p->set( p, o, index, sr_twc( TYPEOF_s3_t, &val ) ); }
-void bcore_array_default_set_u3     ( const bcore_array_s* p, bcore_array* o, sz_t index, u3_t val ) { p->set( p, o, index, sr_twc( TYPEOF_u3_t, &val ) ); }
-void bcore_array_default_set_f3     ( const bcore_array_s* p, bcore_array* o, sz_t index, f3_t val ) { p->set( p, o, index, sr_twc( TYPEOF_f3_t, &val ) ); }
-void bcore_array_default_set_sz     ( const bcore_array_s* p, bcore_array* o, sz_t index, sz_t val ) { p->set( p, o, index, sr_twc( TYPEOF_sz_t, &val ) ); }
-void bcore_array_default_set_sc     ( const bcore_array_s* p, bcore_array* o, sz_t index, sc_t val ) { p->set( p, o, index, sr_twc( TYPEOF_sc_t, &val ) ); }
-void bcore_array_default_set_bl     ( const bcore_array_s* p, bcore_array* o, sz_t index, bl_t val ) { p->set( p, o, index, sr_twc( TYPEOF_bl_t, &val ) ); }
+uz_t bcore_array_default_get_size   ( const bcore_array_s* p, const bcore_array* o )                 { return get_size( p, o ); }
+uz_t bcore_array_default_get_space  ( const bcore_array_s* p, const bcore_array* o )                 { return get_space( p, o ); }
+sr_s bcore_array_default_get        ( const bcore_array_s* p, const bcore_array* o, uz_t index )     { return p->get( p, o, index ); }
+void bcore_array_default_set        ( const bcore_array_s* p, bcore_array* o, uz_t index, sr_s src ) { p->set( p, o, index, src ); }
+void bcore_array_default_set_s3     ( const bcore_array_s* p, bcore_array* o, uz_t index, s3_t val ) { p->set( p, o, index, sr_twc( TYPEOF_s3_t, &val ) ); }
+void bcore_array_default_set_u3     ( const bcore_array_s* p, bcore_array* o, uz_t index, u3_t val ) { p->set( p, o, index, sr_twc( TYPEOF_u3_t, &val ) ); }
+void bcore_array_default_set_f3     ( const bcore_array_s* p, bcore_array* o, uz_t index, f3_t val ) { p->set( p, o, index, sr_twc( TYPEOF_f3_t, &val ) ); }
+void bcore_array_default_set_szxxx     ( const bcore_array_s* p, bcore_array* o, uz_t index, szxxx_t val ) { p->set( p, o, index, sr_twc( TYPEOF_szxxx_t, &val ) ); }
+void bcore_array_default_set_uz     ( const bcore_array_s* p, bcore_array* o, uz_t index, uz_t val ) { p->set( p, o, index, sr_twc( TYPEOF_uz_t, &val ) ); }
+void bcore_array_default_set_sc     ( const bcore_array_s* p, bcore_array* o, uz_t index, sc_t val ) { p->set( p, o, index, sr_twc( TYPEOF_sc_t, &val ) ); }
+void bcore_array_default_set_bl     ( const bcore_array_s* p, bcore_array* o, uz_t index, bl_t val ) { p->set( p, o, index, sr_twc( TYPEOF_bl_t, &val ) ); }
 
 bl_t bcore_array_p_is_fixed( const bcore_array_s* p )
 {
@@ -1209,7 +1211,7 @@ tp_t bcore_array_p_get_mono_type( const bcore_array_s* p, vc_t o )
     return 0;
 }
 
-tp_t bcore_array_p_get_type( const bcore_array_s* p, vc_t o, sz_t index )
+tp_t bcore_array_p_get_type( const bcore_array_s* p, vc_t o, uz_t index )
 {
     switch( p->type_caps )
     {
@@ -1231,26 +1233,26 @@ static s2_t cmp_aware( vc_t o, vc_t obj1, vc_t obj2 )
     return bcore_compare_aware( obj1, obj2 );
 }
 
-vc_t bcore_array_default_max_f( const bcore_array_s* p, const bcore_array* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction )
+vc_t bcore_array_default_max_f( const bcore_array_s* p, const bcore_array* o, uz_t start, uz_t end, bcore_cmp_f cmp, s2_t direction )
 {
-    sz_t size = get_size( p, o );
-    sz_t end_l = end < size ? end : size;
+    uz_t size = get_size( p, o );
+    uz_t end_l = end < size ? end : size;
     if( start >= end_l ) return NULL;
     vc_t ret;
 
     if( bcore_array_p_is_of_links( p ) )
     {
         vc_t* data = ( vc_t* )bcore_array_p_get_c_data( p, o );
-        sz_t  idx = start;
-        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( cmp.f( cmp.o, data[ idx ], data[ i ] ) * direction > 0 ) ? i : idx;
+        uz_t  idx = start;
+        for( uz_t i = start + 1; i < end_l; i++ ) idx = ( cmp.f( cmp.o, data[ idx ], data[ i ] ) * direction > 0 ) ? i : idx;
         ret = idx < end_l ? data[ idx ] : NULL;
     }
     else
     {
-        sz_t unit_size = bcore_array_p_get_unit_size( p, o );
+        uz_t unit_size = bcore_array_p_get_unit_size( p, o );
         vc_t src = ( u0_t* )bcore_array_p_get_c_data( p, o ) + unit_size * start;
         vc_t cur = src;
-        for( sz_t i = start + 1; i < end_l; i++ )
+        for( uz_t i = start + 1; i < end_l; i++ )
         {
             src = ( u0_t* )src + unit_size;
             cur = ( cmp.f( cmp.o, cur, src ) * direction > 0 ) ? src : cur;
@@ -1260,7 +1262,7 @@ vc_t bcore_array_default_max_f( const bcore_array_s* p, const bcore_array* o, sz
     return ret;
 }
 
-vc_t bcore_array_default_max( const bcore_array_s* p, const bcore_array* o, sz_t start, sz_t end, s2_t direction )
+vc_t bcore_array_default_max( const bcore_array_s* p, const bcore_array* o, uz_t start, uz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_p_is_of_aware( p );
     bcore_cmp_f cmp =
@@ -1273,28 +1275,28 @@ vc_t bcore_array_default_max( const bcore_array_s* p, const bcore_array* o, sz_t
 
 /**********************************************************************************************************************/
 
-sz_t bcore_array_default_max_index_f( const bcore_array_s* p, const bcore_array* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction )
+uz_t bcore_array_default_max_index_f( const bcore_array_s* p, const bcore_array* o, uz_t start, uz_t end, bcore_cmp_f cmp, s2_t direction )
 {
-    sz_t size = get_size( p, o );
-    sz_t end_l = end < size ? end : size;
+    uz_t size = get_size( p, o );
+    uz_t end_l = end < size ? end : size;
     if( start >= end_l ) return end_l;
 
-    sz_t ret;
+    uz_t ret;
 
     if( bcore_array_p_is_of_links( p ) )
     {
         vc_t* data = ( vc_t* )bcore_array_p_get_c_data( p, o );
-        sz_t  idx = start;
-        for( sz_t i = start + 1; i < end_l; i++ ) idx = ( cmp.f( cmp.o, data[ idx ], data[ i ] ) * direction > 0 ) ? i : idx;
+        uz_t  idx = start;
+        for( uz_t i = start + 1; i < end_l; i++ ) idx = ( cmp.f( cmp.o, data[ idx ], data[ i ] ) * direction > 0 ) ? i : idx;
         ret = idx;
     }
     else
     {
-        sz_t unit_size = bcore_array_p_get_unit_size( p, o );
+        uz_t unit_size = bcore_array_p_get_unit_size( p, o );
         vc_t src = ( u0_t* )bcore_array_p_get_c_data( p, o ) + unit_size * start;
         vc_t cur = src;
-        sz_t idx = start;
-        for( sz_t i = start + 1; i < end_l; i++ )
+        uz_t idx = start;
+        for( uz_t i = start + 1; i < end_l; i++ )
         {
             src = ( u0_t* )src + unit_size;
             if( cmp.f( cmp.o, cur, src ) * direction > 0 )
@@ -1308,7 +1310,7 @@ sz_t bcore_array_default_max_index_f( const bcore_array_s* p, const bcore_array*
     return ret;
 }
 
-sz_t bcore_array_default_max_index( const bcore_array_s* p, const bcore_array* o, sz_t start, sz_t end, s2_t direction )
+uz_t bcore_array_default_max_index( const bcore_array_s* p, const bcore_array* o, uz_t start, uz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_p_is_of_aware( p );
     bcore_cmp_f cmp =
@@ -1321,25 +1323,25 @@ sz_t bcore_array_default_max_index( const bcore_array_s* p, const bcore_array* o
 
 /**********************************************************************************************************************/
 
-static void buf_sort_link( vc_t* data, sz_t size, vc_t* buf, bcore_cmp_f cmp, s2_t direction )
+static void buf_sort_link( vc_t* data, uz_t size, vc_t* buf, bcore_cmp_f cmp, s2_t direction )
 {
     if( size < 2 ) return;
-    sz_t size1 = size >> 1;
+    uz_t size1 = size >> 1;
     buf_sort_link( data,         size1       , buf, cmp, direction );
     buf_sort_link( data + size1, size - size1, buf, cmp, direction );
     bcore_memcpy( buf, data, size1 * sizeof( vc_t ) );
-    for( sz_t i = 0, w = 0, r = size1; i < size1; )
+    for( uz_t i = 0, w = 0, r = size1; i < size1; )
     {
         data[ w++ ] = ( r == size || cmp.f( cmp.o, buf[ i ], data[ r ] ) * direction >= 0 ) ? buf[ i++ ] : data[ r++ ];
     }
 }
 
-static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd_t buf, bcore_cmp_f cmp, s2_t direction )
+static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, uz_t size, vd_t buf, bcore_cmp_f cmp, s2_t direction )
 {
     if( size < 2 ) return;
 
-    sz_t unit_size = p->size;
-    sz_t size1 = size >> 1;
+    uz_t unit_size = p->size;
+    uz_t size1 = size >> 1;
     buf_sort_spect_empl( p, data,                              size1       , buf, cmp, direction );
     buf_sort_spect_empl( p, ( u0_t* )data + size1 * unit_size, size - size1, buf, cmp, direction );
 
@@ -1349,10 +1351,10 @@ static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd
     }
     else
     {
-        for( sz_t i = 0; i < size1; i++ ) p->copy( p, ( u0_t* )buf + i * unit_size, ( u0_t* )data + i * unit_size );
+        for( uz_t i = 0; i < size1; i++ ) p->copy( p, ( u0_t* )buf + i * unit_size, ( u0_t* )data + i * unit_size );
     }
 
-    for( sz_t i = 0, w = 0, r = size1; i < size1; )
+    for( uz_t i = 0, w = 0, r = size1; i < size1; )
     {
         vc_t src1 = ( u0_t* )buf  + i * unit_size;
         vc_t src2 = ( u0_t* )data + r * unit_size;
@@ -1387,13 +1389,13 @@ static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, sz_t size, vd
     }
 }
 
-void bcore_array_default_sort_f( const bcore_array_s* p, bcore_array* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction )
+void bcore_array_default_sort_f( const bcore_array_s* p, bcore_array* o, uz_t start, uz_t end, bcore_cmp_f cmp, s2_t direction )
 {
-    sz_t size = get_size( p, o );
+    uz_t size = get_size( p, o );
     if( size > get_space( p, o ) ) bcore_array_p_make_strong( p, o );
-    sz_t end_l = end < size ? end : size;
+    uz_t end_l = end < size ? end : size;
     if( start >= end_l ) return;
-    sz_t range = end_l - start;
+    uz_t range = end_l - start;
 
     if( bcore_array_p_is_of_links( p ) )
     {
@@ -1405,21 +1407,21 @@ void bcore_array_default_sort_f( const bcore_array_s* p, bcore_array* o, sz_t st
     else
     {
         const bcore_inst_s* item_p = bcore_array_p_is_mutable_mono_typed( p ) ? bcore_inst_s_get_typed( bcore_array_p_get_mono_type( p, o ) ) : p->item_p;
-        sz_t unit_size = item_p->size;
+        uz_t unit_size = item_p->size;
         vd_t data = ( u0_t* )bcore_array_p_get_d_data( p, o ) + start * unit_size;
 
-        sz_t range1 = range >> 1;
+        uz_t range1 = range >> 1;
         vd_t buf = bcore_un_alloc( unit_size, NULL, 0, range1, NULL );
-        for( sz_t i = 0; i < range1; i++ ) item_p->init( item_p, ( u0_t* )buf + i * unit_size );
+        for( uz_t i = 0; i < range1; i++ ) item_p->init( item_p, ( u0_t* )buf + i * unit_size );
 
         buf_sort_spect_empl( item_p, data, range, buf, cmp, direction );
 
-        for( sz_t i = 0; i < range1; i++ ) item_p->down( item_p, ( u0_t* )buf + i * unit_size );
+        for( uz_t i = 0; i < range1; i++ ) item_p->down( item_p, ( u0_t* )buf + i * unit_size );
         bcore_un_alloc( unit_size, buf, range1, 0, NULL );
     }
 }
 
-void bcore_array_default_sort( const bcore_array_s* p, bcore_array* o, sz_t start, sz_t end, s2_t direction )
+void bcore_array_default_sort( const bcore_array_s* p, bcore_array* o, uz_t start, uz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_p_is_of_aware( p );
     bcore_cmp_f cmp =
@@ -1430,22 +1432,22 @@ void bcore_array_default_sort( const bcore_array_s* p, bcore_array* o, sz_t star
     bcore_array_p_sort_f( p, o, start, end, cmp, direction );
 }
 
-void bcore_array_default_do( const bcore_array_s* p, bcore_array* o, sz_t start, sz_t end, fp_t func )
+void bcore_array_default_do( const bcore_array_s* p, bcore_array* o, uz_t start, uz_t end, fp_t func )
 {
-    sz_t size = get_size( p, o );
-    sz_t end_l = end < size ? end : size;
+    uz_t size = get_size( p, o );
+    uz_t end_l = end < size ? end : size;
     if( start >= end_l ) return;
 
     if( bcore_array_p_is_of_links( p ) )
     {
         vd_t* data = ( vd_t* )bcore_array_p_get_d_data( p, o );
-        for( sz_t i = start; i < end_l; i++ ) ( ( void (*)( vd_t ) )func )( data[ i ] );
+        for( uz_t i = start; i < end_l; i++ ) ( ( void (*)( vd_t ) )func )( data[ i ] );
     }
     else
     {
-        sz_t unit_size = bcore_array_p_get_unit_size( p, o );
+        uz_t unit_size = bcore_array_p_get_unit_size( p, o );
         vd_t ptr = ( u0_t* )bcore_array_p_get_d_data( p, o ) + unit_size * start;
-        for( sz_t i = start; i < end_l; i++ )
+        for( uz_t i = start; i < end_l; i++ )
         {
             ( ( void (*)( vd_t ) )func )( ptr );
             ptr = ( u0_t* )ptr + unit_size;
@@ -1455,22 +1457,22 @@ void bcore_array_default_do( const bcore_array_s* p, bcore_array* o, sz_t start,
 
 /**********************************************************************************************************************/
 
-void bcore_array_default_do_arg( const bcore_array_s* p, bcore_array* o, sz_t start, sz_t end, fp_t func, vd_t arg )
+void bcore_array_default_do_arg( const bcore_array_s* p, bcore_array* o, uz_t start, uz_t end, fp_t func, vd_t arg )
 {
-    sz_t size = get_size( p, o );
-    sz_t end_l = end < size ? end : size;
+    uz_t size = get_size( p, o );
+    uz_t end_l = end < size ? end : size;
     if( start >= end_l ) return;
 
     if( bcore_array_p_is_of_links( p ) )
     {
         vd_t* data = ( vd_t* )bcore_array_p_get_d_data( p, o );
-        for( sz_t i = start; i < end_l; i++ ) ( ( void (*)( vd_t, vd_t ) )func )( arg, data[ i ] );
+        for( uz_t i = start; i < end_l; i++ ) ( ( void (*)( vd_t, vd_t ) )func )( arg, data[ i ] );
     }
     else
     {
-        sz_t unit_size = bcore_array_p_get_unit_size( p, o );
+        uz_t unit_size = bcore_array_p_get_unit_size( p, o );
         vd_t ptr = ( u0_t* )bcore_array_p_get_d_data( p, o ) + unit_size * start;
-        for( sz_t i = start; i < end_l; i++ )
+        for( uz_t i = start; i < end_l; i++ )
         {
             ( ( void (*)( vd_t, vd_t ) )func )( arg, ptr );
             ptr = ( u0_t* )ptr + unit_size;
@@ -1480,56 +1482,56 @@ void bcore_array_default_do_arg( const bcore_array_s* p, bcore_array* o, sz_t st
 
 /**********************************************************************************************************************/
 
-static void buf_order_sort( vc_t* data, sz_t* order, sz_t size, sz_t* buf, bcore_cmp_f cmp, s2_t direction )
+static void buf_order_sort( vc_t* data, uz_t* order, uz_t size, uz_t* buf, bcore_cmp_f cmp, s2_t direction )
 {
     if( size < 2 ) return;
-    sz_t size1 = size >> 1;
+    uz_t size1 = size >> 1;
     buf_order_sort( data, order,         size1       , buf, cmp, direction );
     buf_order_sort( data, order + size1, size - size1, buf, cmp, direction );
-    bcore_memcpy( buf, order, size1 * sizeof( sz_t ) );
-    for( sz_t i = 0, w = 0, r = size1; i < size1; )
+    bcore_memcpy( buf, order, size1 * sizeof( uz_t ) );
+    for( uz_t i = 0, w = 0, r = size1; i < size1; )
     {
         order[ w++ ] = ( r == size || cmp.f( cmp.o, data[ buf[ i ] ], data[ order[ r ] ] ) * direction >= 0 ) ? buf[ i++ ] : order[ r++ ];
     }
 }
 
-bcore_arr_sz_s* bcore_array_default_create_sorted_order_f( const bcore_array_s* p, const bcore_array* o, sz_t start, sz_t end, bcore_cmp_f cmp, s2_t direction )
+bcore_arr_uz_s* bcore_array_default_create_sorted_order_f( const bcore_array_s* p, const bcore_array* o, uz_t start, uz_t end, bcore_cmp_f cmp, s2_t direction )
 {
-    bcore_arr_sz_s* order = bcore_arr_sz_s_create();
-    sz_t size = get_size( p, o );
-    sz_t end_l = end < size ? end : size;
+    bcore_arr_uz_s* order = bcore_arr_uz_s_create();
+    uz_t size = get_size( p, o );
+    uz_t end_l = end < size ? end : size;
     if( start >= end_l ) return order;
-    sz_t range = end_l - start;
+    uz_t range = end_l - start;
 
-    bcore_arr_sz_s_step_fill( order, 0, 1, range );
+    bcore_arr_uz_s_step_fill( order, 0, 1, range );
 
     if( bcore_array_p_is_of_links( p ) )
     {
         vc_t* data = ( vc_t* )bcore_array_p_get_c_data( p, o ) + start;
-        sz_t* buf = bcore_un_alloc( sizeof( sz_t ), NULL, 0, range >> 1, NULL );
+        uz_t* buf = bcore_un_alloc( sizeof( uz_t ), NULL, 0, range >> 1, NULL );
         buf_order_sort( data, order->data, range, buf, cmp, direction );
-        bcore_un_alloc( sizeof( sz_t ), buf, range >> 1, 0, NULL );
+        bcore_un_alloc( sizeof( uz_t ), buf, range >> 1, 0, NULL );
     }
     else
     {
         const bcore_inst_s* item_p = bcore_array_p_is_mutable_mono_typed( p ) ? bcore_inst_s_get_typed( bcore_array_p_get_mono_type( p, o ) ) : p->item_p;
-        sz_t unit_size = item_p->size;
+        uz_t unit_size = item_p->size;
         vc_t src = ( u0_t* )bcore_array_p_get_c_data( p, o ) + start * unit_size;
         vc_t* data = bcore_un_alloc( sizeof( vc_t ), NULL, 0, range, NULL );
-        for( sz_t i = 0; i < range; i++ ) data[ i ] = ( u0_t* )src + i * unit_size;
+        for( uz_t i = 0; i < range; i++ ) data[ i ] = ( u0_t* )src + i * unit_size;
 
-        sz_t* buf = bcore_un_alloc( sizeof( sz_t ), NULL, 0, range >> 1, NULL );
+        uz_t* buf = bcore_un_alloc( sizeof( uz_t ), NULL, 0, range >> 1, NULL );
         buf_order_sort( data, order->data, range, buf, cmp, direction );
-        bcore_un_alloc( sizeof( sz_t ), buf,  range >> 1, 0, NULL );
+        bcore_un_alloc( sizeof( uz_t ), buf,  range >> 1, 0, NULL );
         bcore_un_alloc( sizeof( vc_t ), data, range,      0, NULL );
     }
 
-    for( sz_t i = 0; i < order->size; i++ ) order->data[ i ] += start;
+    for( uz_t i = 0; i < order->size; i++ ) order->data[ i ] += start;
 
     return order;
 }
 
-bcore_arr_sz_s* bcore_array_default_create_sorted_order( const bcore_array_s* p, const bcore_array* o, sz_t start, sz_t end, s2_t direction )
+bcore_arr_uz_s* bcore_array_default_create_sorted_order( const bcore_array_s* p, const bcore_array* o, uz_t start, uz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_p_is_of_aware( p );
     bcore_cmp_f cmp =
@@ -1542,9 +1544,9 @@ bcore_arr_sz_s* bcore_array_default_create_sorted_order( const bcore_array_s* p,
 
 /**********************************************************************************************************************/
 
-void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const bcore_arr_sz_s* order )
+void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const bcore_arr_uz_s* order )
 {
-    sz_t arr_size = bcore_array_p_get_size( p, o );
+    uz_t arr_size = bcore_array_p_get_size( p, o );
     bl_t is_fixed = bcore_array_p_is_fixed( p );
 
     if( is_fixed )
@@ -1557,10 +1559,10 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
     if( bcore_array_p_is_of_links( p ) )
     {
         vd_t* data = bcore_array_p_get_d_data( p, o );
-        sz_t buf_space = 0;
+        uz_t buf_space = 0;
         vd_t* buf = bcore_un_alloc( sizeof( vd_t ), NULL, 0, order->size, &buf_space );
 
-        for( sz_t i = 0; i < order->size; i++ )
+        for( uz_t i = 0; i < order->size; i++ )
         {
             assert( order->data[ i ] < arr_size );
             buf[ i ] = bcore_fork( data[ order->data[ i ] ] );
@@ -1570,7 +1572,7 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
         {
             tp_t mono_type = bcore_array_p_get_mono_type( p, o );
             const bcore_inst_s* inst = bcore_inst_s_get_typed( mono_type );
-            for( sz_t i = 0; i < arr_size; i++ )
+            for( uz_t i = 0; i < arr_size; i++ )
             {
                 bcore_release_arg( ( fp_t )bcore_inst_p_down, inst, data[ i ] );
                 data[ i ] = NULL;
@@ -1578,7 +1580,7 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
         }
         else if( bcore_array_p_is_of_aware( p ) )
         {
-            for( sz_t i = 0; i < arr_size; i++ )
+            for( uz_t i = 0; i < arr_size; i++ )
             {
                 bcore_release_obj( ( fp_t )bcore_inst_a_down, data[ i ] );
                 data[ i ] = NULL;
@@ -1592,7 +1594,7 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
 
         bcore_array_p_set_size( p, o, order->size );
         data = bcore_array_p_get_d_data( p, o );
-        for( sz_t i = 0; i < order->size; i++ ) data[ i ] = buf[ i ];
+        for( uz_t i = 0; i < order->size; i++ ) data[ i ] = buf[ i ];
 
         bcore_un_alloc( sizeof( vd_t ), buf, buf_space, 0, NULL );
     }
@@ -1603,11 +1605,11 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
         const bcore_inst_s* inst = bcore_inst_s_get_typed( mono_type );
         if( inst->init_flat && inst->copy_flat && inst->down_flat ) // all flat
         {
-            sz_t buf_space = 0;
+            uz_t buf_space = 0;
             vd_t buf = bcore_u_alloc( inst->size, NULL, order->size, &buf_space );
             vd_t data = bcore_array_p_get_d_data( p, o );
             vd_t dst = buf;
-            for( sz_t i = 0; i < order->size; i++ )
+            for( uz_t i = 0; i < order->size; i++ )
             {
                 assert( order->data[ i ] < arr_size );
                 bcore_memcpy( dst, ( u0_t* )data + order->data[ i ] * inst->size, inst->size );
@@ -1619,10 +1621,10 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
         }
         else
         {
-            sz_t buf_space = 0;
+            uz_t buf_space = 0;
             vd_t buf = bcore_u_alloc( inst->size, NULL, order->size, &buf_space );
             vd_t data = bcore_array_p_get_d_data( p, o );
-            for( sz_t i = 0; i < order->size; i++ )
+            for( uz_t i = 0; i < order->size; i++ )
             {
                 assert( order->data[ i ] < arr_size );
                 vd_t dst = ( u0_t* )buf  + i * inst->size;
@@ -1632,7 +1634,7 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
             }
             if( is_fixed )
             {
-                for( sz_t i = 0; i < order->size; i++ )
+                for( uz_t i = 0; i < order->size; i++ )
                 {
                     vd_t src = ( u0_t* )buf + i * inst->size;
                     bcore_array_p_set( p, o, i, sr_pwc( inst, src ) );
@@ -1642,7 +1644,7 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
             else
             {
                 bcore_array_p_set_size( p, o, 0 );
-                for( sz_t i = 0; i < order->size; i++ )
+                for( uz_t i = 0; i < order->size; i++ )
                 {
                     vd_t src = ( u0_t* )buf + i * inst->size;
                     bcore_array_p_push( p, o, sr_pwc( inst, src ) );
@@ -1667,10 +1669,10 @@ bl_t NPX(t_is_of_aware          )( tp_t tp                                      
 bl_t NPX(t_is_of_links          )( tp_t tp                                         ) { return NPX(p_is_of_links          )( atpd( tp )                ); }
 tp_t NPX(t_get_static_type      )( tp_t tp                                         ) { return NPX(p_get_static_type      )( atpd( tp )                ); }
 tp_t NPX(t_get_mono_type        )( tp_t tp, vc_t o                                 ) { return NPX(p_get_mono_type        )( atpd( tp ), o             ); }
-tp_t NPX(t_get_type             )( tp_t tp, vc_t o, sz_t index                     ) { return NPX(p_get_type             )( atpd( tp ), o, index      ); }
+tp_t NPX(t_get_type             )( tp_t tp, vc_t o, uz_t index                     ) { return NPX(p_get_type             )( atpd( tp ), o, index      ); }
 vc_t NPX(t_get_c_data           )( tp_t tp, vc_t o                                 ) { return NPX(p_get_c_data           )( atpd( tp ), o             ); }
 vd_t NPX(t_get_d_data           )( tp_t tp, vd_t o                                 ) { return NPX(p_get_d_data           )( atpd( tp ), o             ); }
-sz_t NPX(t_get_unit_size        )( tp_t tp, vc_t o                                 ) { return NPX(p_get_unit_size        )( atpd( tp ), o             ); }
+uz_t NPX(t_get_unit_size        )( tp_t tp, vc_t o                                 ) { return NPX(p_get_unit_size        )( atpd( tp ), o             ); }
 
 bl_t NPX(a_is_fixed             )( vc_t o                                 ) { return NPX(t_is_fixed             )( *( aware_t* )o                ); }
 bl_t NPX(a_is_static            )( vc_t o                                 ) { return NPX(t_is_static            )( *( aware_t* )o                ); }
@@ -1681,10 +1683,10 @@ bl_t NPX(a_is_of_aware          )( vc_t o                                 ) { re
 bl_t NPX(a_is_of_links          )( vc_t o                                 ) { return NPX(t_is_of_links          )( *( aware_t* )o                ); }
 tp_t NPX(a_get_static_type      )( vc_t o                                 ) { return NPX(t_get_static_type      )( *( aware_t* )o                ); }
 tp_t NPX(a_get_mono_type        )( vc_t o                                 ) { return NPX(t_get_mono_type        )( *( aware_t* )o, o             ); }
-tp_t NPX(a_get_type             )( vc_t o, sz_t index                     ) { return NPX(t_get_type             )( *( aware_t* )o, o, index      ); }
+tp_t NPX(a_get_type             )( vc_t o, uz_t index                     ) { return NPX(t_get_type             )( *( aware_t* )o, o, index      ); }
 vc_t NPX(a_get_c_data           )( vc_t o                                 ) { return NPX(t_get_c_data           )( *( aware_t* )o, o             ); }
 vd_t NPX(a_get_d_data           )( vd_t o                                 ) { return NPX(t_get_d_data           )( *( aware_t* )o, o             ); }
-sz_t NPX(a_get_unit_size        )( vc_t o                                 ) { return NPX(t_get_unit_size        )( *( aware_t* )o, o             ); }
+uz_t NPX(a_get_unit_size        )( vc_t o                                 ) { return NPX(t_get_unit_size        )( *( aware_t* )o, o             ); }
 
 inline static vc_t w_spect( sr_s o ) { if( sr_s_is_const( &o ) ) ERR( "Attempt to modify a constant object" ); return ch_spect_p( o.p, TYPEOF_bcore_array_s ); }
 inline static vc_t r_spect( sr_s o ) { return ch_spect_p( o.p, TYPEOF_bcore_array_s ); }
@@ -1699,10 +1701,10 @@ bl_t NPX(x_is_of_aware          )( sr_s o                           ) { bl_t r =
 bl_t NPX(x_is_of_links          )( sr_s o                           ) { bl_t r = NPX(p_is_of_links          )( r_spect( o )                  ); sr_down( o ); return r; }
 tp_t NPX(x_get_static_type      )( sr_s o                           ) { tp_t r = NPX(p_get_static_type      )( r_spect( o )                  ); sr_down( o ); return r; }
 tp_t NPX(x_get_mono_type        )( sr_s o                           ) { tp_t r = NPX(p_get_mono_type        )( r_spect( o ), o.o             ); sr_down( o ); return r; }
-tp_t NPX(x_get_type             )( sr_s o, sz_t index               ) { tp_t r = NPX(p_get_type             )( r_spect( o ), o.o, index      ); sr_down( o ); return r; }
+tp_t NPX(x_get_type             )( sr_s o, uz_t index               ) { tp_t r = NPX(p_get_type             )( r_spect( o ), o.o, index      ); sr_down( o ); return r; }
 vc_t NPX(x_get_c_data           )( sr_s o                           ) { vc_t r = NPX(p_get_c_data           )( r_spect( o ), o.o             ); sr_down( o ); return r; }
 vd_t NPX(x_get_d_data           )( sr_s o                           ) { vd_t r = NPX(p_get_d_data           )( w_spect( o ), o.o             ); sr_down( o ); return r; }
-sz_t NPX(x_get_unit_size        )( sr_s o                           ) { sz_t r = NPX(p_get_unit_size        )( r_spect( o ), o.o             ); sr_down( o ); return r; }
+uz_t NPX(x_get_unit_size        )( sr_s o                           ) { uz_t r = NPX(p_get_unit_size        )( r_spect( o ), o.o             ); sr_down( o ); return r; }
 
 bl_t NPX(r_is_fixed             )( const sr_s* o                           ) { return   NPX(p_is_fixed             )( r_spect( *o )                   ); }
 bl_t NPX(r_is_static            )( const sr_s* o                           ) { return   NPX(p_is_static            )( r_spect( *o )                   ); }
@@ -1713,10 +1715,10 @@ bl_t NPX(r_is_of_aware          )( const sr_s* o                           ) { r
 bl_t NPX(r_is_of_links          )( const sr_s* o                           ) { return   NPX(p_is_of_links          )( r_spect( *o )                   ); }
 tp_t NPX(r_get_static_type      )( const sr_s* o                           ) { return   NPX(p_get_static_type      )( r_spect( *o )                   ); }
 tp_t NPX(r_get_mono_type        )( const sr_s* o                           ) { return   NPX(p_get_mono_type        )( r_spect( *o ), o->o             ); }
-tp_t NPX(r_get_type             )( const sr_s* o, sz_t index               ) { return   NPX(p_get_type             )( r_spect( *o ), o->o, index      ); }
+tp_t NPX(r_get_type             )( const sr_s* o, uz_t index               ) { return   NPX(p_get_type             )( r_spect( *o ), o->o, index      ); }
 vc_t NPX(r_get_c_data           )( const sr_s* o                           ) { return   NPX(p_get_c_data           )( r_spect( *o ), o->o             ); }
 vd_t NPX(r_get_d_data           )( const sr_s* o                           ) { return   NPX(p_get_d_data           )( w_spect( *o ), o->o             ); }
-sz_t NPX(r_get_unit_size        )( const sr_s* o                           ) { return   NPX(p_get_unit_size        )( r_spect( *o ), o->o             ); }
+uz_t NPX(r_get_unit_size        )( const sr_s* o                           ) { return   NPX(p_get_unit_size        )( r_spect( *o ), o->o             ); }
 
 /**********************************************************************************************************************/
 // testing, debugging
@@ -1749,9 +1751,9 @@ static void test_string_array( sc_t type_sc )
 
     bcore_array_p_sort( arr_p, arr, 0, -1, 1 );
     {
-        bcore_arr_sz_s* order = bcore_array_p_create_sorted_order( arr_p, arr, 0, -1, -1 );
+        bcore_arr_uz_s* order = bcore_array_p_create_sorted_order( arr_p, arr, 0, -1, -1 );
         bcore_array_p_reorder( arr_p, arr, order );
-        bcore_arr_sz_s_discard( order );
+        bcore_arr_uz_s_discard( order );
     }
 
     ASSERT( bcore_array_p_max_index( arr_p, arr, 0, -1, 1 ) == 0 );
@@ -1764,13 +1766,13 @@ static void test_string_array( sc_t type_sc )
 
     if( is_dynamic ) ASSERT( get_size( arr_p, arr ) == 9 );
 
-    bcore_arr_sz_s* order = bcore_arr_sz_s_create();
-    bcore_arr_sz_s_push( order, 2 );
-    bcore_arr_sz_s_push( order, 2 );
-    bcore_arr_sz_s_push( order, 1 );
-    bcore_arr_sz_s_push( order, 0 );
-    bcore_arr_sz_s_push( order, 3 );
-    bcore_arr_sz_s_push( order, 4 );
+    bcore_arr_uz_s* order = bcore_arr_uz_s_create();
+    bcore_arr_uz_s_push( order, 2 );
+    bcore_arr_uz_s_push( order, 2 );
+    bcore_arr_uz_s_push( order, 1 );
+    bcore_arr_uz_s_push( order, 0 );
+    bcore_arr_uz_s_push( order, 3 );
+    bcore_arr_uz_s_push( order, 4 );
 
     if( is_dynamic )
     {
@@ -1785,7 +1787,7 @@ static void test_string_array( sc_t type_sc )
         ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 5 ).o, "some nonsense: dspaud" ) == 0 );
     }
 
-    bcore_arr_sz_s_discard( order );
+    bcore_arr_uz_s_discard( order );
     bcore_inst_a_discard( arr );
 }
 
@@ -1804,7 +1806,7 @@ static st_s* spect_array_selftest( void )
     bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_link_fix_array = { aware_t _; st_s *  [10] arr; }" ) ) );
     bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_aware_link_fix_array  = { aware_t _; aware * [10] arr; }" ) ) );
 
-    for( sz_t i = 0; i < get_size( arr_p, arr ); i++ )
+    for( uz_t i = 0; i < get_size( arr_p, arr ); i++ )
     {
 
         const st_s* code = arr_p->get( arr_p, arr, i ).o;
@@ -1825,16 +1827,16 @@ static st_s* spect_array_selftest( void )
 
     // sorting a permutation
     {
-        bcore_arr_sz_s* arr = bcore_arr_sz_s_create_random_permutation( bcore_xsg_u2, 2, 1000 );
+        bcore_arr_uz_s* arr = bcore_arr_uz_s_create_random_permutation( bcore_xsg_u2, 2, 1000 );
         bcore_array_a_sort( (bcore_array*)arr, 0, -1, 1 );
-        for( sz_t i = 0; i < arr->size; i++ ) ASSERT( arr->data[ i ] == i );
-        bcore_arr_sz_s_discard( arr );
+        for( uz_t i = 0; i < arr->size; i++ ) ASSERT( arr->data[ i ] == i );
+        bcore_arr_uz_s_discard( arr );
     }
     {
-        bcore_arr_sz_s* arr = bcore_arr_sz_s_create_random_permutation( bcore_xsg_u2, 2, 1000 );
-        bcore_arr_sz_s_sort( arr, 1 );
-        for( sz_t i = 0; i < arr->size; i++ ) ASSERT( arr->data[ i ] == i );
-        bcore_arr_sz_s_discard( arr );
+        bcore_arr_uz_s* arr = bcore_arr_uz_s_create_random_permutation( bcore_xsg_u2, 2, 1000 );
+        bcore_arr_uz_s_sort( arr, 1 );
+        for( uz_t i = 0; i < arr->size; i++ ) ASSERT( arr->data[ i ] == i );
+        bcore_arr_uz_s_discard( arr );
     }
 
     return NULL;

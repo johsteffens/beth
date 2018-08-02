@@ -49,8 +49,8 @@ BCORE_DECLARE_OBJECT( bmath_vf3_s )
         struct
         {
             f3_t* data;
-            sz_t  size;
-            sz_t  space;
+            uz_t  size;
+            uz_t  space;
         };
     };
 };
@@ -58,11 +58,11 @@ BCORE_DECLARE_OBJECT( bmath_vf3_s )
 void bmath_vf3_s_move( bmath_vf3_s* o, bmath_vf3_s* src );
 void bmath_vf3_s_clear( bmath_vf3_s* o );
 
-bmath_vf3_s* bmath_vf3_s_create_set_size( sz_t size );
-bmath_vf3_s* bmath_vf3_s_create_fill( sz_t size, f3_t val );
-bmath_vf3_s* bmath_vf3_s_create_fill_random( sz_t size, f3_t min, f3_t max, u2_t* rval );
+bmath_vf3_s* bmath_vf3_s_create_set_size( uz_t size );
+bmath_vf3_s* bmath_vf3_s_create_fill( uz_t size, f3_t val );
+bmath_vf3_s* bmath_vf3_s_create_fill_random( uz_t size, f3_t min, f3_t max, u2_t* rval );
 
-void bmath_vf3_s_set_size(    bmath_vf3_s* o, sz_t size );
+void bmath_vf3_s_set_size(    bmath_vf3_s* o, uz_t size );
 void bmath_vf3_s_set_size_to( const bmath_vf3_s* o, bmath_vf3_s* res );
 void bmath_vf3_s_fill(        bmath_vf3_s* o, f3_t val );
 void bmath_vf3_s_fill_random( bmath_vf3_s* o, f3_t min, f3_t max, u2_t* rval );
@@ -105,14 +105,14 @@ void bmath_vf3_s_set_sum( bmath_vf3_s* o, f3_t val ); // adds a value to all com
 void bmath_vf3_s_set_avg( bmath_vf3_s* o, f3_t val ); // adds a value to all components such that bmath_vf3_s_f3_avg returns val
 
 static inline
-void bmath_vf3_s_set_f3( bmath_vf3_s* o, sz_t index, f3_t v )
+void bmath_vf3_s_set_f3( bmath_vf3_s* o, uz_t index, f3_t v )
 {
     assert( index < o->size );
     o->data[ index ] = v;
 }
 
 static inline
-f3_t bmath_vf3_s_get_f3( const bmath_vf3_s* o, sz_t index )
+f3_t bmath_vf3_s_get_f3( const bmath_vf3_s* o, uz_t index )
 {
     assert( index < o->size );
     return o->data[ index ];
@@ -120,8 +120,8 @@ f3_t bmath_vf3_s_get_f3( const bmath_vf3_s* o, sz_t index )
 
 f3_t bmath_vf3_s_max(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_min(     const bmath_vf3_s* o );
-sz_t bmath_vf3_s_idx_max( const bmath_vf3_s* o );
-sz_t bmath_vf3_s_idx_min( const bmath_vf3_s* o );
+uz_t bmath_vf3_s_idx_max( const bmath_vf3_s* o );
+uz_t bmath_vf3_s_idx_min( const bmath_vf3_s* o );
 
 /// For easy inspection
 void bmath_vf3_s_to_stdout( const bmath_vf3_s* o );
@@ -139,17 +139,17 @@ BCORE_DECLARE_OBJECT( bmath_vcf3_s )
         struct
         {
             bmath_cf3_s* data;
-            sz_t  size;
-            sz_t  space;
+            uz_t  size;
+            uz_t  space;
         };
     };
 };
 
 void bmath_vcf3_s_move( bmath_vcf3_s* o, bmath_vcf3_s* src );
 
-void bmath_vcf3_s_set_size( bmath_vcf3_s* o, sz_t size );
-bmath_vcf3_s* bmath_vcf3_s_create_size( sz_t size );
-bmath_vcf3_s* bmath_vcf3_s_create_fill( bmath_cf3_s val, sz_t size );
+void bmath_vcf3_s_set_size( bmath_vcf3_s* o, uz_t size );
+bmath_vcf3_s* bmath_vcf3_s_create_size( uz_t size );
+bmath_vcf3_s* bmath_vcf3_s_create_fill( bmath_cf3_s val, uz_t size );
 
 void bmath_vcf3_s_zro(           bmath_vcf3_s* o );
 void bmath_vcf3_s_neg(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
@@ -169,14 +169,14 @@ void bmath_vcf3_s_sum(     const bmath_vcf3_s* o, bmath_cf3_s* res );
 void bmath_vcf3_s_avg(     const bmath_vcf3_s* o, bmath_cf3_s* res );
 
 static inline
-void bmath_vcf3_s_set_cf3( bmath_vcf3_s* o, sz_t index, bmath_cf3_s v )
+void bmath_vcf3_s_set_cf3( bmath_vcf3_s* o, uz_t index, bmath_cf3_s v )
 {
     assert( index < o->size );
     o->data[ index ] = v;
 }
 
 static inline
-bmath_cf3_s bmath_vcf3_s_get_cf3( const bmath_vcf3_s* o, sz_t index )
+bmath_cf3_s bmath_vcf3_s_get_cf3( const bmath_vcf3_s* o, uz_t index )
 {
     assert( index < o->size );
     return o->data[ index ];
@@ -197,19 +197,19 @@ BCORE_DECLARE_OBJECT( bmath_arr_vf3_s )
         struct
         {
             bmath_vf3_s* data;
-            sz_t  size;
-            sz_t  space;
+            uz_t  size;
+            uz_t  space;
         };
     };
 };
 
 void bmath_arr_vf3_s_clear(      bmath_arr_vf3_s* o ); // sets size to zero
-void bmath_arr_vf3_s_set_space(  bmath_arr_vf3_s* o, sz_t space );
-void bmath_arr_vf3_s_set_size(   bmath_arr_vf3_s* o, sz_t size );
+void bmath_arr_vf3_s_set_space(  bmath_arr_vf3_s* o, uz_t space );
+void bmath_arr_vf3_s_set_size(   bmath_arr_vf3_s* o, uz_t size );
 void bmath_arr_vf3_s_push(       bmath_arr_vf3_s* o, const bmath_vf3_s* vec );
 void bmath_arr_vf3_s_push_arr(   bmath_arr_vf3_s* o, const bmath_arr_vf3_s* arr );
 void bmath_arr_vf3_s_pop(        bmath_arr_vf3_s* o );
-void bmath_arr_vf3_s_reorder(    bmath_arr_vf3_s* o, const bcore_arr_sz_s* order );
+void bmath_arr_vf3_s_reorder(    bmath_arr_vf3_s* o, const bcore_arr_uz_s* order );
 
 /** Following functions apply a bmath_vf3_s operation on consecutive elements indexed start, ..., end-1.
  *  start, end are automatically limited to o->size;
@@ -219,30 +219,30 @@ void bmath_arr_vf3_s_reorder(    bmath_arr_vf3_s* o, const bcore_arr_sz_s* order
  *  end == -1 assumes end == o->size
  */
 
-void bmath_arr_vf3_s_on_section_set_size(      bmath_arr_vf3_s* o, sz_t start, sz_t end, sz_t size );
-void bmath_arr_vf3_s_on_section_fill(          bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t val );
-void bmath_arr_vf3_s_on_section_fill_random(   bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t min, f3_t max, u2_t* rval );
-void bmath_arr_vf3_s_on_section_zro(           bmath_arr_vf3_s* o, sz_t start, sz_t end );
-void bmath_arr_vf3_s_on_section_neg(     const bmath_arr_vf3_s* o, sz_t start, sz_t end,                        bmath_arr_vf3_s* res );
-void bmath_arr_vf3_s_on_section_cpy(     const bmath_arr_vf3_s* o, sz_t start, sz_t end,                        bmath_arr_vf3_s* res );
-void bmath_arr_vf3_s_on_section_add(     const bmath_arr_vf3_s* o, sz_t start, sz_t end, const bmath_vf3_s* op, bmath_arr_vf3_s* res );
-void bmath_arr_vf3_s_on_section_sub(     const bmath_arr_vf3_s* o, sz_t start, sz_t end, const bmath_vf3_s* op, bmath_arr_vf3_s* res );
-void bmath_arr_vf3_s_on_section_mul_f3(  const bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t op,               bmath_arr_vf3_s* res );
-void bmath_arr_vf3_s_on_section_set_sqr(       bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t val );
-void bmath_arr_vf3_s_on_section_set_sum(       bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t val );
-void bmath_arr_vf3_s_on_section_set_avg(       bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t val );
-f3_t bmath_arr_vf3_s_on_section_f3_sum_sprec( const bmath_arr_vf3_s* o, sz_t start, sz_t end, sz_t index ); // stochastically precise summing of indexed element
+void bmath_arr_vf3_s_on_section_set_size(      bmath_arr_vf3_s* o, uz_t start, uz_t end, uz_t size );
+void bmath_arr_vf3_s_on_section_fill(          bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t val );
+void bmath_arr_vf3_s_on_section_fill_random(   bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t min, f3_t max, u2_t* rval );
+void bmath_arr_vf3_s_on_section_zro(           bmath_arr_vf3_s* o, uz_t start, uz_t end );
+void bmath_arr_vf3_s_on_section_neg(     const bmath_arr_vf3_s* o, uz_t start, uz_t end,                        bmath_arr_vf3_s* res );
+void bmath_arr_vf3_s_on_section_cpy(     const bmath_arr_vf3_s* o, uz_t start, uz_t end,                        bmath_arr_vf3_s* res );
+void bmath_arr_vf3_s_on_section_add(     const bmath_arr_vf3_s* o, uz_t start, uz_t end, const bmath_vf3_s* op, bmath_arr_vf3_s* res );
+void bmath_arr_vf3_s_on_section_sub(     const bmath_arr_vf3_s* o, uz_t start, uz_t end, const bmath_vf3_s* op, bmath_arr_vf3_s* res );
+void bmath_arr_vf3_s_on_section_mul_f3(  const bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t op,               bmath_arr_vf3_s* res );
+void bmath_arr_vf3_s_on_section_set_sqr(       bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t val );
+void bmath_arr_vf3_s_on_section_set_sum(       bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t val );
+void bmath_arr_vf3_s_on_section_set_avg(       bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t val );
+f3_t bmath_arr_vf3_s_on_section_f3_sum_sprec( const bmath_arr_vf3_s* o, uz_t start, uz_t end, uz_t index ); // stochastically precise summing of indexed element
 
 // stochastically precise summing of co-product (vi - ai) * (vj - aj)
-f3_t bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( const bmath_arr_vf3_s* o, sz_t start, sz_t end, f3_t ai, f3_t aj, sz_t i, sz_t j );
+f3_t bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( const bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t ai, f3_t aj, uz_t i, uz_t j );
 
-void bmath_arr_vf3_s_on_section_get_sum_sprc( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_vf3_s* res ); // stochastically precise summing
-void bmath_arr_vf3_s_on_section_get_avg_sprc( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_vf3_s* res ); // stochastically precise averaging
-void bmath_arr_vf3_s_on_section_get_sum_fast( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_vf3_s* res ); // fast summing   (loss of accuracy possible)
-void bmath_arr_vf3_s_on_section_get_avg_fast( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_vf3_s* res ); // fast averaging (loss of accuracy possible)
+void bmath_arr_vf3_s_on_section_get_sum_sprc( const bmath_arr_vf3_s* o, uz_t start, uz_t end, bmath_vf3_s* res ); // stochastically precise summing
+void bmath_arr_vf3_s_on_section_get_avg_sprc( const bmath_arr_vf3_s* o, uz_t start, uz_t end, bmath_vf3_s* res ); // stochastically precise averaging
+void bmath_arr_vf3_s_on_section_get_sum_fast( const bmath_arr_vf3_s* o, uz_t start, uz_t end, bmath_vf3_s* res ); // fast summing   (loss of accuracy possible)
+void bmath_arr_vf3_s_on_section_get_avg_fast( const bmath_arr_vf3_s* o, uz_t start, uz_t end, bmath_vf3_s* res ); // fast averaging (loss of accuracy possible)
 
-static inline void bmath_arr_vf3_s_on_section_get_sum( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_vf3_s* res ) { bmath_arr_vf3_s_on_section_get_sum_sprc( o, start, end, res ); }
-static inline void bmath_arr_vf3_s_on_section_get_avg( const bmath_arr_vf3_s* o, sz_t start, sz_t end, bmath_vf3_s* res ) { bmath_arr_vf3_s_on_section_get_avg_sprc( o, start, end, res ); }
+static inline void bmath_arr_vf3_s_on_section_get_sum( const bmath_arr_vf3_s* o, uz_t start, uz_t end, bmath_vf3_s* res ) { bmath_arr_vf3_s_on_section_get_sum_sprc( o, start, end, res ); }
+static inline void bmath_arr_vf3_s_on_section_get_avg( const bmath_arr_vf3_s* o, uz_t start, uz_t end, bmath_vf3_s* res ) { bmath_arr_vf3_s_on_section_get_avg_sprc( o, start, end, res ); }
 
 /**********************************************************************************************************************/
 

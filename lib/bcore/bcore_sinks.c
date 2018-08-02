@@ -55,7 +55,7 @@ static void chain_copy_a( bcore_nucleus_s* nc )
 {
     nc->default_handler( nc );
     bcore_sink_chain_s* o = nc->client;
-    for( sz_t i = 1; i < o->size; i++ ) bcore_sink_a_set_consumer( o->data[ i ], o->data[ i - 1 ] );
+    for( uz_t i = 1; i < o->size; i++ ) bcore_sink_a_set_consumer( o->data[ i ], o->data[ i - 1 ] );
 }
 
 void bcore_sink_chain_s_copy( bcore_sink_chain_s* o, const bcore_sink_chain_s* src )
@@ -83,7 +83,7 @@ static void chain_interpret_body_a( vd_t nc )
     struct { ap_t a; vc_t p; vc_t inter; vd_t sink; tp_t type; vd_t obj; } * nc_l = nc;
     nc_l->a( nc ); // default
     bcore_sink_chain_s* o = nc_l->obj;
-    for( sz_t i = 1; i < o->size; i++ ) bcore_sink_a_set_consumer( o->data[ i ], o->data[ i - 1 ] );
+    for( uz_t i = 1; i < o->size; i++ ) bcore_sink_a_set_consumer( o->data[ i ], o->data[ i - 1 ] );
 }
 
 void bcore_sink_chain_s_push_d( bcore_sink_chain_s* o, vd_t sink )
@@ -100,15 +100,15 @@ void bcore_sink_chain_s_push_type( bcore_sink_chain_s* o, tp_t type )
 
 void bcore_sink_chain_s_flush( bcore_sink_chain_s* o )
 {
-    for( sz_t i = o->size; i > 0; i-- ) bcore_sink_a_flush( o->data[ i - 1 ] );
+    for( uz_t i = o->size; i > 0; i-- ) bcore_sink_a_flush( o->data[ i - 1 ] );
 }
 
-static sz_t chain_flow_snk( bcore_sink_chain_s* o, vc_t data, sz_t size )
+static uz_t chain_flow_snk( bcore_sink_chain_s* o, vc_t data, uz_t size )
 {
     return ( o->size > 0 ) ? bcore_sink_a_push_data( o->data[ o->size - 1 ], data, size ) : 0;
 }
 
-sz_t bcore_sink_chain_s_push_data( bcore_sink_chain_s* o, vc_t data, sz_t size )
+uz_t bcore_sink_chain_s_push_data( bcore_sink_chain_s* o, vc_t data, uz_t size )
 {
     return chain_flow_snk( o, data, size );
 }
@@ -175,18 +175,18 @@ void bcore_sink_buffer_s_flush( bcore_sink_buffer_s* o )
 {
     if( o->consumer && o->size > 0 )
     {
-        sz_t pushed_size = bcore_sink_a_push_data( o->consumer, o->data, o->size );
+        uz_t pushed_size = bcore_sink_a_push_data( o->consumer, o->data, o->size );
         if( pushed_size != o->size ) ERR( "Consumer accepted %zu of %zu bytes.", pushed_size, o->size );
         o->size = 0;
     }
 }
 
-static sz_t buffer_flow_snk( bcore_sink_buffer_s* o, vc_t data, sz_t size )
+static uz_t buffer_flow_snk( bcore_sink_buffer_s* o, vc_t data, uz_t size )
 {
-    sz_t new_size = o->size + size;
+    uz_t new_size = o->size + size;
     if( new_size > o->space )
     {
-        sz_t new_space = ( o->space * 2 > new_size ) ? o->space * 2 : new_size;
+        uz_t new_space = ( o->space * 2 > new_size ) ? o->space * 2 : new_size;
         o->data = bcore_bn_alloc( o->data, o->space, new_space, &o->space );
     }
     bcore_memcpy( o->data + o->size, data, size );
@@ -195,7 +195,7 @@ static sz_t buffer_flow_snk( bcore_sink_buffer_s* o, vc_t data, sz_t size )
     return size;
 }
 
-sz_t bcore_sink_buffer_s_push_data( bcore_sink_buffer_s* o, vc_t data, sz_t size )
+uz_t bcore_sink_buffer_s_push_data( bcore_sink_buffer_s* o, vc_t data, uz_t size )
 {
     return buffer_flow_snk( o, data, size );
 }
@@ -216,7 +216,7 @@ static bcore_self_s* buffer_s_create_self( void )
       "aware_t _; "
       "u0_t [] data; "
       "private vd_t consumer; "
-      "sz_t entrepot_size; "
+      "uz_t entrepot_size; "
     "}";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_sink_buffer_s ) );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_sink_buffer_s_init,         "bcore_fp_init",              "init"  );
@@ -354,10 +354,10 @@ static void file_interpret_body_a( vd_t nc )
     nc_l->a( nc ); // default
 }
 
-static sz_t file_flow_snk( bcore_sink_file_s* o, vc_t data, sz_t size )
+static uz_t file_flow_snk( bcore_sink_file_s* o, vc_t data, uz_t size )
 {
     if( !o->handle ) bcore_sink_file_s_open( o );
-    sz_t wsize = fwrite( data, 1, size, o->handle );
+    uz_t wsize = fwrite( data, 1, size, o->handle );
     if( wsize != size )
     {
         if( ferror( o->handle ) )
@@ -370,7 +370,7 @@ static sz_t file_flow_snk( bcore_sink_file_s* o, vc_t data, sz_t size )
     return wsize;
 }
 
-sz_t bcore_sink_file_s_push_data( bcore_sink_file_s* o, vc_t data, sz_t size )
+uz_t bcore_sink_file_s_push_data( bcore_sink_file_s* o, vc_t data, uz_t size )
 {
     return file_flow_snk( o, data, size );
 }

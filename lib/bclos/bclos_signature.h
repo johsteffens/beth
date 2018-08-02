@@ -41,7 +41,7 @@ typedef struct bclos_signature_s
         struct
         {
             bclos_signature_arg_s* data;
-            sz_t size, space;
+            uz_t size, space;
         };
     };
     tp_t name; // name of closure

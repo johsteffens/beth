@@ -32,7 +32,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_grt_f3_s ) "{ aware_t _; bmath_g
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bmath_arr_grt_f3_s* bmath_arr_grt_f3_s_create_size( sz_t size )
+bmath_arr_grt_f3_s* bmath_arr_grt_f3_s_create_size( uz_t size )
 {
     bmath_arr_grt_f3_s* o = bmath_arr_grt_f3_s_create();
     bmath_arr_grt_f3_s_set_size( o, size );
@@ -42,7 +42,7 @@ bmath_arr_grt_f3_s* bmath_arr_grt_f3_s_create_size( sz_t size )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bmath_arr_grt_f3_s bmath_arr_grt_f3_of_size( sz_t size )
+bmath_arr_grt_f3_s bmath_arr_grt_f3_of_size( uz_t size )
 {
     bmath_arr_grt_f3_s o;
     bmath_arr_grt_f3_s_init( &o );

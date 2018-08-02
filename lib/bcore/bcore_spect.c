@@ -88,7 +88,7 @@ static void hmap_s_down( hmap_s* o )
     bcore_mutex_s_lock( &o->mutex );
 
     /// clear and lock all caches because shut down procedure can change perspective addresses (this includes o->cache)
-    for( sz_t i = 0; i < o->cache_arr.size; i++ )
+    for( uz_t i = 0; i < o->cache_arr.size; i++ )
     {
         bcore_tp_fastmap_s* cache = o->cache_arr.data[ i ];
         bcore_tp_fastmap_s_clear( cache );
@@ -132,7 +132,7 @@ static void hmap_s_down( hmap_s* o )
     }
 
     /// shut down all caches (this includes o->cache)
-    for( sz_t i = 0; i < o->cache_arr.size; i++ )
+    for( uz_t i = 0; i < o->cache_arr.size; i++ )
     {
         bcore_tp_fastmap_s* cache = o->cache_arr.data[ i ];
         bcore_tp_fastmap_s_down( cache );
@@ -304,8 +304,8 @@ void bcore_spect_define_trait( const bcore_self_s* p_self )
     /// check requirements
     bcore_spect_header_s* spect = bcore_inst_t_create( p_self->type );
     const bcore_via_s* p_via = bcore_via_s_get_typed( p_self->type );
-    sz_t size = bcore_via_p_get_size( p_via, NULL );
-    for( sz_t i = 0; i < size; i++ )
+    uz_t size = bcore_via_p_get_size( p_via, NULL );
+    for( uz_t i = 0; i < size; i++ )
     {
         const bcore_vitem_s* vitem = bcore_via_p_iget_vitem( p_via, NULL, i );
         if( vitem->flags.f_feature && vitem->flags.f_strict )
@@ -348,10 +348,10 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
     bcore_spect_header_s* o = bcore_inst_t_create( p_self->type );
     o->o_type = o_self->type;
 
-    sz_t p_items_size = bcore_inst_s_get_items_size( p_inst );
-    sz_t o_items_size = bcore_self_s_items_size( o_self );
+    uz_t p_items_size = bcore_inst_s_get_items_size( p_inst );
+    uz_t o_items_size = bcore_self_s_items_size( o_self );
 
-    for( sz_t i = 0; i < p_items_size; i++ )
+    for( uz_t i = 0; i < p_items_size; i++ )
     {
         const bcore_inst_item_s* p_inst_item = bcore_inst_s_get_item( p_inst, i );
         const bcore_self_item_s* p_self_item = p_inst_item->self_item;
@@ -365,7 +365,7 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
         {
             const bcore_self_item_s* p_child_item = p_self_item->child_item;
 
-            for( sz_t i = 0; i < o_items_size; i++ )
+            for( uz_t i = 0; i < o_items_size; i++ )
             {
                 const bcore_self_item_s* o_self_item = bcore_self_s_get_item( o_self, i );
                 if( o_self_item->flags.f_private ) continue;
@@ -410,7 +410,8 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
                             case TYPEOF_u3_t: *( u3_t* )dst = o_self_item->default_u3; break;
                             case TYPEOF_f2_t: *( f2_t* )dst = o_self_item->default_f3; break;
                             case TYPEOF_f3_t: *( f3_t* )dst = o_self_item->default_f3; break;
-                            case TYPEOF_sz_t: *( sz_t* )dst = o_self_item->default_u3; break;
+                            case TYPEOF_szxxx_t: *( szxxx_t* )dst = o_self_item->default_smax; break;
+                            case TYPEOF_uz_t: *( uz_t* )dst = o_self_item->default_umax; break;
                             case TYPEOF_bl_t: *( bl_t* )dst = o_self_item->default_u3; break;
                             case TYPEOF_tp_t: *( tp_t* )dst = o_self_item->default_tp; break;
                             default: found = false;
@@ -459,7 +460,7 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
             }
             else if( bcore_trait_is_of( p_self_item->type, TYPEOF_function_pointer ) && p_self_item->caps == BCORE_CAPS_SOLID_STATIC )
             {
-                for( sz_t i = 0; i < o_items_size; i++ )
+                for( uz_t i = 0; i < o_items_size; i++ )
                 {
                     const bcore_self_item_s* o_self_item = bcore_self_s_get_item( o_self, i );
                     if( o_self_item->flags.f_private ) continue;
@@ -541,7 +542,7 @@ st_s* bcore_spect_status()
         st_s_push_st_d( log, s );
     }
 
-    for( sz_t i = 0; i < map->size; i++ )
+    for( uz_t i = 0; i < map->size; i++ )
     {
         bcore_mutex_s_lock( &hmap_s_g->mutex );
         vd_t val = bcore_hmap_u2vd_s_idx_val( map, i );
@@ -549,28 +550,28 @@ st_s* bcore_spect_status()
         if( val ) ( *bcore_hmap_tpsz_s_fget( hist, *( aware_t* )val, 0 ) )++;
     }
 
-    sr_s nc_arr = sr_cl( bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ { sz_t count; tp_t type; } [] arr; }" ) ), l );
+    sr_s nc_arr = sr_cl( bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ { uz_t count; tp_t type; } [] arr; }" ) ), l );
 
-    for( sz_t i = 0; i < hist->size; i++ )
+    for( uz_t i = 0; i < hist->size; i++ )
     {
         tp_t key   = bcore_hmap_tpsz_s_idx_key( hist, i );
-        sz_t count = bcore_hmap_tpsz_s_idx_val( hist, i );
+        uz_t count = bcore_hmap_tpsz_s_idx_val( hist, i );
         if( key )
         {
             bcore_array_x_push( nc_arr, sr_null() );
             sr_s pair = sr_cl( bcore_array_x_get_last( nc_arr ), l );
             bcore_via_x_nset_tp( pair, typeof( "type" ),  key   );
-            bcore_via_x_nset_sz( pair, typeof( "count" ), count );
+            bcore_via_x_nset_uz( pair, typeof( "count" ), count );
         }
     }
 
     bcore_array_x_sort( nc_arr, 0, -1, -1 );
 
-    for( sz_t i = 0; i < bcore_array_x_get_size( nc_arr ); i++ )
+    for( uz_t i = 0; i < bcore_array_x_get_size( nc_arr ); i++ )
     {
         sr_s pair = sr_cl( bcore_array_x_get( nc_arr, i ), l );
         const tp_t* p_type  = sr_cl( bcore_via_x_nget( pair, typeof( "type"  ) ), l ).o;
-        const sz_t* p_count = sr_cl( bcore_via_x_nget( pair, typeof( "count" ) ), l ).o;
+        const uz_t* p_count = sr_cl( bcore_via_x_nget( pair, typeof( "count" ) ), l ).o;
         st_s* s = st_s_create();
         st_s_pushf( s, "  %s ", ifnameof( *p_type ) );
         st_s_push_char_n( s, '.', 28 - s->size );
@@ -579,8 +580,8 @@ st_s* bcore_spect_status()
     }
 
     st_s_push_fa( log, "spect mananger cache:\n" );
-    st_s_push_fa( log, "   keys: #<sz_t>\n", bcore_tp_fastmap_s_keys( &hmap_s_g->cache ) );
-    st_s_push_fa( log, "   size: #<sz_t>\n", bcore_tp_fastmap_s_size( &hmap_s_g->cache ) );
+    st_s_push_fa( log, "   keys: #<uz_t>\n", bcore_tp_fastmap_s_keys( &hmap_s_g->cache ) );
+    st_s_push_fa( log, "   size: #<uz_t>\n", bcore_tp_fastmap_s_size( &hmap_s_g->cache ) );
 
     bcore_life_s_discard( l );
     return log;
@@ -640,7 +641,7 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o )
 
             if( o->object && ( *( bl_t* )o->object ) )
             {
-                sz_t space = bcore_tbman_granted_space();
+                uz_t space = bcore_tbman_granted_space();
                 spect_manager_close();
                 bcore_msg( "  spect mananger ...... % 6zu\n", space - bcore_tbman_granted_space() );
             }

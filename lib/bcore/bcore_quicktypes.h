@@ -51,7 +51,7 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_smax_t            177359151
 #define TYPEOF_spect            2675737342
 #define TYPEOF_st_s             3358332604
-#define TYPEOF_sz_t             2631659827
+#define TYPEOF_szxxx_t          1118231067
 #define TYPEOF_tp_t              908158082
 #define TYPEOF_type             1361572173
 #define TYPEOF_u0_t             3960371995
@@ -59,6 +59,7 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_u2_t             3405486141
 #define TYPEOF_u3_t              629390130
 #define TYPEOF_umax_t           3191476325
+#define TYPEOF_uz_t             1512693029
 #define TYPEOF_vc_t              283133669
 #define TYPEOF_vd_t             1618651012
 
@@ -67,9 +68,9 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_bcore_arr_fp_s              534232891
 #define TYPEOF_bcore_arr_sr_s             3772348668
 #define TYPEOF_bcore_arr_st_s             1663834730
-#define TYPEOF_bcore_arr_sz_s             1469651844
 #define TYPEOF_bcore_arr_tp_s             3894726581
 #define TYPEOF_bcore_arr_u3_s             3372156401
+#define TYPEOF_bcore_arr_uz_s              784692686
 #define TYPEOF_bcore_arr_vd_s              814426351
 #define TYPEOF_bcore_array_s              3532252466
 #define TYPEOF_bcore_bin_ml_interpreter_s 3834633675

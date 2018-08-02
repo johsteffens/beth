@@ -64,12 +64,12 @@ typedef struct bcore_hmap_u2vd_s
         struct
         {
             bcore_hnode_u2vd_s* data;
-            sz_t size;
-            sz_t space;
+            uz_t size;
+            uz_t space;
         };
     };
-    sz_t depth_limit;
-    sz_t size_limit;
+    uz_t depth_limit;
+    uz_t size_limit;
     bcore_hash_u2u2 h1, h2, h3;
 } bcore_hmap_u2vd_s;
 
@@ -80,7 +80,7 @@ BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_u2vd_s )
 BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_u2vd_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_u2vd_s )
 
-void  bcore_hmap_u2vd_s_set_hash_function( bcore_hmap_u2vd_s* o, sz_t index, bcore_hash_u2u2 hf ); // optionally sets external hash function (up to three functions can be specified via index 0, 1, 2)
+void  bcore_hmap_u2vd_s_set_hash_function( bcore_hmap_u2vd_s* o, uz_t index, bcore_hash_u2u2 hf ); // optionally sets external hash function (up to three functions can be specified via index 0, 1, 2)
 vd_t* bcore_hmap_u2vd_s_get(       const bcore_hmap_u2vd_s* o, u2_t key ); // returns pinter to value or NULL when key does not exist
 void  bcore_hmap_u2vd_s_set(             bcore_hmap_u2vd_s* o, u2_t key, vd_t val, bool hold ); // hold==true only for aware objects
 fp_t* bcore_hmap_u2vd_s_getf(      const bcore_hmap_u2vd_s* o, u2_t key ); // returns pointer to function pointer; returns NULL when key does not exist
@@ -92,11 +92,11 @@ vd_t  bcore_hmap_u2vd_s_detach_h(        bcore_hmap_u2vd_s* o, u2_t key ); // se
 bool  bcore_hmap_u2vd_s_exists(    const bcore_hmap_u2vd_s* o, u2_t key ); // checks if key exists
 bool  bcore_hmap_u2vd_s_holds(     const bcore_hmap_u2vd_s* o, u2_t key ); // checks if object is held; Returns false if key does not exist.
 void  bcore_hmap_u2vd_s_clear(           bcore_hmap_u2vd_s* o           ); // removes all entries and frees memory
-sz_t  bcore_hmap_u2vd_s_keys(      const bcore_hmap_u2vd_s* o           ); // returns number of registered keys
-sz_t  bcore_hmap_u2vd_s_size(      const bcore_hmap_u2vd_s* o           ); // returns current size of the hash map (note that this includes empty places)
-u2_t  bcore_hmap_u2vd_s_idx_key(   const bcore_hmap_u2vd_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
-bool  bcore_hmap_u2vd_s_idx_holds( const bcore_hmap_u2vd_s* o, sz_t idx ); // returns indexed hold-flag (idx indexes the entire table including empty places)
-vd_t  bcore_hmap_u2vd_s_idx_val(   const bcore_hmap_u2vd_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+uz_t  bcore_hmap_u2vd_s_keys(      const bcore_hmap_u2vd_s* o           ); // returns number of registered keys
+uz_t  bcore_hmap_u2vd_s_size(      const bcore_hmap_u2vd_s* o           ); // returns current size of the hash map (note that this includes empty places)
+u2_t  bcore_hmap_u2vd_s_idx_key(   const bcore_hmap_u2vd_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+bool  bcore_hmap_u2vd_s_idx_holds( const bcore_hmap_u2vd_s* o, uz_t idx ); // returns indexed hold-flag (idx indexes the entire table including empty places)
+vd_t  bcore_hmap_u2vd_s_idx_val(   const bcore_hmap_u2vd_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 void  bcore_hmap_u2vd_s_run_c(     const bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t  val ) ); // runs a function on all registered key-value pairs
 void  bcore_hmap_u2vd_s_run_d(           bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t* val ) ); // runs a function on all registered key-value pairs; value can be changed
 
@@ -104,14 +104,14 @@ void  bcore_hmap_u2vd_s_run_d(           bcore_hmap_u2vd_s* o, vd_t obj, void (*
 
 /** bcore_hmap_tpsz_s:
  *    key-type: tp_t
- *    val-type: sz_t.
+ *    val-type: uz_t.
  *    Maximum number of keys: 2^32
  *    content shell { bcore_hnode_tpsz_s []; } data; }
  */
 typedef struct bcore_hnode_tpsz_s
 {
     tp_t key;
-    sz_t val;
+    uz_t val;
 } bcore_hnode_tpsz_s;
 
 typedef struct bcore_hmap_tpsz_s
@@ -119,9 +119,9 @@ typedef struct bcore_hmap_tpsz_s
     aware_t _;
     bcore_hnode_tpsz_s* nodes;
     bl_t* flags;
-    sz_t size;
-    sz_t depth_limit;
-    sz_t size_limit;
+    uz_t size;
+    uz_t depth_limit;
+    uz_t size_limit;
 } bcore_hmap_tpsz_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpsz_s )
@@ -131,16 +131,16 @@ BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tpsz_s )
 BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tpsz_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tpsz_s )
 
-sz_t* bcore_hmap_tpsz_s_get(     const bcore_hmap_tpsz_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
-sz_t* bcore_hmap_tpsz_s_fget(          bcore_hmap_tpsz_s* o, tp_t key, sz_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
-sz_t* bcore_hmap_tpsz_s_set(           bcore_hmap_tpsz_s* o, tp_t key, sz_t val ); // sets new key; sets/overwrites value and returns pointer to value location
-sz_t  bcore_hmap_tpsz_s_remove(        bcore_hmap_tpsz_s* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
+uz_t* bcore_hmap_tpsz_s_get(     const bcore_hmap_tpsz_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
+uz_t* bcore_hmap_tpsz_s_fget(          bcore_hmap_tpsz_s* o, tp_t key, uz_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
+uz_t* bcore_hmap_tpsz_s_set(           bcore_hmap_tpsz_s* o, tp_t key, uz_t val ); // sets new key; sets/overwrites value and returns pointer to value location
+uz_t  bcore_hmap_tpsz_s_remove(        bcore_hmap_tpsz_s* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
 bl_t  bcore_hmap_tpsz_s_exists(  const bcore_hmap_tpsz_s* o, tp_t key ); // checks if key exists
 void  bcore_hmap_tpsz_s_clear(         bcore_hmap_tpsz_s* o           ); // removes all entries and frees memory
-sz_t  bcore_hmap_tpsz_s_keys(    const bcore_hmap_tpsz_s* o           ); // returns number of registered keys
-sz_t  bcore_hmap_tpsz_s_size(    const bcore_hmap_tpsz_s* o           ); // returns current size of the hash map (note that this includes empty places)
-tp_t  bcore_hmap_tpsz_s_idx_key( const bcore_hmap_tpsz_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
-sz_t  bcore_hmap_tpsz_s_idx_val( const bcore_hmap_tpsz_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+uz_t  bcore_hmap_tpsz_s_keys(    const bcore_hmap_tpsz_s* o           ); // returns number of registered keys
+uz_t  bcore_hmap_tpsz_s_size(    const bcore_hmap_tpsz_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tpsz_s_idx_key( const bcore_hmap_tpsz_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+uz_t  bcore_hmap_tpsz_s_idx_val( const bcore_hmap_tpsz_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
 /**********************************************************************************************************************/
 
@@ -161,9 +161,9 @@ typedef struct bcore_hmap_tpfp_s
     aware_t _;
     bcore_hnode_tpfp_s* nodes;
     bl_t* flags;
-    sz_t size;
-    sz_t depth_limit;
-    sz_t size_limit;
+    uz_t size;
+    uz_t depth_limit;
+    uz_t size_limit;
 } bcore_hmap_tpfp_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpfp_s )
@@ -179,10 +179,10 @@ fp_t* bcore_hmap_tpfp_s_set(           bcore_hmap_tpfp_s* o, tp_t key, fp_t val 
 fp_t  bcore_hmap_tpfp_s_remove(        bcore_hmap_tpfp_s* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
 bl_t  bcore_hmap_tpfp_s_exists(  const bcore_hmap_tpfp_s* o, tp_t key ); // checks if key exists
 void  bcore_hmap_tpfp_s_clear(         bcore_hmap_tpfp_s* o           ); // removes all entries and frees memory
-sz_t  bcore_hmap_tpfp_s_keys(    const bcore_hmap_tpfp_s* o           ); // returns number of registered keys
-sz_t  bcore_hmap_tpfp_s_size(    const bcore_hmap_tpfp_s* o           ); // returns current size of the hash map (note that this includes empty places)
-tp_t  bcore_hmap_tpfp_s_idx_key( const bcore_hmap_tpfp_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
-fp_t  bcore_hmap_tpfp_s_idx_val( const bcore_hmap_tpfp_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+uz_t  bcore_hmap_tpfp_s_keys(    const bcore_hmap_tpfp_s* o           ); // returns number of registered keys
+uz_t  bcore_hmap_tpfp_s_size(    const bcore_hmap_tpfp_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tpfp_s_idx_key( const bcore_hmap_tpfp_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+fp_t  bcore_hmap_tpfp_s_idx_val( const bcore_hmap_tpfp_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
 /**********************************************************************************************************************/
 
@@ -203,9 +203,9 @@ typedef struct bcore_hmap_tptp_s
     aware_t _;
     bcore_hnode_tptp_s* nodes;
     bl_t* flags;
-    sz_t size;
-    sz_t depth_limit;
-    sz_t size_limit;
+    uz_t size;
+    uz_t depth_limit;
+    uz_t size_limit;
 } bcore_hmap_tptp_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tptp_s )
@@ -221,10 +221,10 @@ tp_t* bcore_hmap_tptp_s_set(           bcore_hmap_tptp_s* o, tp_t key, tp_t val 
 tp_t  bcore_hmap_tptp_s_remove(        bcore_hmap_tptp_s* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
 bl_t  bcore_hmap_tptp_s_exists(  const bcore_hmap_tptp_s* o, tp_t key ); // checks if key exists
 void  bcore_hmap_tptp_s_clear(         bcore_hmap_tptp_s* o           ); // removes all entries and frees memory
-sz_t  bcore_hmap_tptp_s_keys(    const bcore_hmap_tptp_s* o           ); // returns number of registered keys
-sz_t  bcore_hmap_tptp_s_size(    const bcore_hmap_tptp_s* o           ); // returns current size of the hash map (note that this includes empty places)
-tp_t  bcore_hmap_tptp_s_idx_key( const bcore_hmap_tptp_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
-tp_t  bcore_hmap_tptp_s_idx_val( const bcore_hmap_tptp_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+uz_t  bcore_hmap_tptp_s_keys(    const bcore_hmap_tptp_s* o           ); // returns number of registered keys
+uz_t  bcore_hmap_tptp_s_size(    const bcore_hmap_tptp_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tptp_s_idx_key( const bcore_hmap_tptp_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+tp_t  bcore_hmap_tptp_s_idx_val( const bcore_hmap_tptp_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
 /**********************************************************************************************************************/
 
@@ -247,9 +247,9 @@ typedef struct bcore_hmap_tpto_s
     tp_t type;
     bcore_hnode_tpto_s* nodes;
     bl_t* flags;
-    sz_t size;
-    sz_t depth_limit;
-    sz_t size_limit;
+    uz_t size;
+    uz_t depth_limit;
+    uz_t size_limit;
 } bcore_hmap_tpto_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpto_s )
@@ -267,10 +267,10 @@ vd_t* bcore_hmap_tpto_s_set_d(         bcore_hmap_tpto_s* o, tp_t key, vd_t val 
 void  bcore_hmap_tpto_s_remove(        bcore_hmap_tpto_s* o, tp_t key ); // removes key, destroys associated object (if present)
 bl_t  bcore_hmap_tpto_s_exists(  const bcore_hmap_tpto_s* o, tp_t key ); // checks if key exists
 void  bcore_hmap_tpto_s_clear(         bcore_hmap_tpto_s* o           ); // removes all entries and frees memory
-sz_t  bcore_hmap_tpto_s_keys(    const bcore_hmap_tpto_s* o           ); // returns number of registered keys
-sz_t  bcore_hmap_tpto_s_size(    const bcore_hmap_tpto_s* o           ); // returns current size of the hash map (note that this includes empty places)
-tp_t  bcore_hmap_tpto_s_idx_key( const bcore_hmap_tpto_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
-vd_t  bcore_hmap_tpto_s_idx_val( const bcore_hmap_tpto_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+uz_t  bcore_hmap_tpto_s_keys(    const bcore_hmap_tpto_s* o           ); // returns number of registered keys
+uz_t  bcore_hmap_tpto_s_size(    const bcore_hmap_tpto_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tpto_s_idx_key( const bcore_hmap_tpto_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+vd_t  bcore_hmap_tpto_s_idx_val( const bcore_hmap_tpto_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
 /**********************************************************************************************************************/
 
@@ -285,9 +285,9 @@ typedef struct bcore_hmap_tp_s
     aware_t _;
     tp_t* keys;
     bl_t* flags; // flags for tracing
-    sz_t size;
-    sz_t depth_limit;
-    sz_t size_limit;
+    uz_t size;
+    uz_t depth_limit;
+    uz_t size_limit;
 } bcore_hmap_tp_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tp_s )
@@ -297,14 +297,14 @@ BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tp_s )
 BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tp_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tp_s )
 
-sz_t  bcore_hmap_tp_s_get(     const bcore_hmap_tp_s* o, tp_t key ); // returns index of key; if not existing, index is o->size
-sz_t  bcore_hmap_tp_s_set(           bcore_hmap_tp_s* o, tp_t key ); // sets new key if not already existing; returns index
-sz_t  bcore_hmap_tp_s_remove(        bcore_hmap_tp_s* o, tp_t key ); // removes key, returns old index
+uz_t  bcore_hmap_tp_s_get(     const bcore_hmap_tp_s* o, tp_t key ); // returns index of key; if not existing, index is o->size
+uz_t  bcore_hmap_tp_s_set(           bcore_hmap_tp_s* o, tp_t key ); // sets new key if not already existing; returns index
+uz_t  bcore_hmap_tp_s_remove(        bcore_hmap_tp_s* o, tp_t key ); // removes key, returns old index
 bl_t  bcore_hmap_tp_s_exists(  const bcore_hmap_tp_s* o, tp_t key ); // checks if key exists
 void  bcore_hmap_tp_s_clear(         bcore_hmap_tp_s* o           ); // removes all entries and frees memory
-sz_t  bcore_hmap_tp_s_keys(    const bcore_hmap_tp_s* o           ); // returns number of registered keys
-sz_t  bcore_hmap_tp_s_size(    const bcore_hmap_tp_s* o           ); // returns current size of the hash map (note that this includes empty places)
-tp_t  bcore_hmap_tp_s_idx_key( const bcore_hmap_tp_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+uz_t  bcore_hmap_tp_s_keys(    const bcore_hmap_tp_s* o           ); // returns number of registered keys
+uz_t  bcore_hmap_tp_s_size(    const bcore_hmap_tp_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tp_s_idx_key( const bcore_hmap_tp_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
 
 /**********************************************************************************************************************/
 

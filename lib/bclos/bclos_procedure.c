@@ -61,7 +61,7 @@ sr_s bclos_procedure_s_call( bclos_procedure_s* o, bclos_frame_s* frm, const bcl
         {
             ERR( "Closure %s: %u arguments required; %u supplied", ifnameof( o->sig->name ), o->sig->size, args->size );
         }
-        for( sz_t i = 0; i < o->sig->size; i++ )
+        for( uz_t i = 0; i < o->sig->size; i++ )
         {
             bclos_signature_arg_s sig_arg = o->sig->data[ i ];
             sr_s arg_obj = bclos_arguments_s_get( args, i, frm );
@@ -88,7 +88,7 @@ sr_s bclos_procedure_s_call( bclos_procedure_s* o, bclos_frame_s* frm, const bcl
 
     sr_s ret = sr_null();
 
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         const bclos_statement_s* statement = o->data[ i ];
         ret = bclos_statement_s_run( statement, local );

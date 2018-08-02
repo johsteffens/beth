@@ -39,8 +39,8 @@ typedef void (*bmath_fp_lqd )(                 bmath_mf3_s* a, bmath_mf3_s* v );
 BCORE_DECLARE_OBJECT( bmath_matrix_eval_s )
 {
     aware_t _;
-    sz_t rows;
-    sz_t cols;
+    uz_t rows;
+    uz_t cols;
 
     u2_t seed;       // random seed
     f3_t density;    // random matrix density
@@ -65,7 +65,7 @@ BCORE_DECLARE_OBJECT( bmath_arr_matrix_eval_s )
     BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_matrix_eval_s, );
 };
 
-static inline void bmath_arr_matrix_eval_s_set_size( bmath_arr_matrix_eval_s* o, sz_t size )
+static inline void bmath_arr_matrix_eval_s_set_size( bmath_arr_matrix_eval_s* o, uz_t size )
 {
     bcore_array_a_set_size( ( bcore_array* )o, size );
 }

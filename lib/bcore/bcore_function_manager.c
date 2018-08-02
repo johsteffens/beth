@@ -150,7 +150,7 @@ vd_t bcore_function_manager_signal_handler( const bcore_signal_s* o )
         {
             if( o->object && ( *( bl_t* )o->object ) )
             {
-                sz_t space = bcore_tbman_granted_space();
+                uz_t space = bcore_tbman_granted_space();
                 function_manager_close();
                 bcore_msg( "  function manager .... % 6zu\n", space - bcore_tbman_granted_space() );
             }

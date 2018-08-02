@@ -62,7 +62,7 @@ BCORE_DECLARE_SPECT( bmath_vector_s )
     bmath_fp_vector_mul_vec mul_vec; // feature
 };
 
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bmath_vector, get_dim, sz_t )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bmath_vector, get_dim, uz_t )
 
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAPX( bmath_vector, is_equ, bl_t, const bmath_vector*, op )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAPX( bmath_vector, is_zro, bl_t )

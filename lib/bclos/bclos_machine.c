@@ -287,7 +287,7 @@ enum bclos_machine_inst_set
     POP_I,
 };
 
-void bclos_machine_run( const u3_t* code, sz_t code_size, u3_t* data, sz_t data_size )
+void bclos_machine_run( const u3_t* code, uz_t code_size, u3_t* data, uz_t data_size )
 {
     if( !code ) return;
 

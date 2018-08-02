@@ -49,7 +49,7 @@ void st_s_initvf( st_s* o, sc_t format, va_list args )
 void st_s_init_fv( st_s* o, sc_t format, va_list args )
 {
     st_s_init( o );
-    sz_t format_size = bcore_strlen( format );
+    uz_t format_size = bcore_strlen( format );
     s3_t n = 0;
     {
         va_list argsl;
@@ -88,7 +88,7 @@ void st_s_init_fa( st_s* o, sc_t format, ... )
     va_end( args );
 }
 
-void st_s_init_sc_n( st_s* o, sc_t sc, sz_t sc_size )
+void st_s_init_sc_n( st_s* o, sc_t sc, uz_t sc_size )
 {
     st_s_init( o );
     o->space = sc_size < 8 ? 8 : sc_size + 1;
@@ -141,7 +141,7 @@ void st_s_copy( st_s* o, const st_s* src )
     o->data[ o->size ] = 0;
 }
 
-void st_s_copy_sc_n( st_s* o, sc_t sc, sz_t sc_size )
+void st_s_copy_sc_n( st_s* o, sc_t sc, uz_t sc_size )
 {
     if( o->space <= sc_size )
     {
@@ -161,7 +161,7 @@ void st_s_copy_sc( st_s* o, sc_t sc )
 
 void st_s_assign_sc( st_s* o, sc_t sc )
 {
-    sz_t src_size = bcore_strlen( sc );
+    uz_t src_size = bcore_strlen( sc );
     if( o->space > 0 ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
     o->sc   = sc;
     o->size = src_size;
@@ -212,7 +212,8 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
         case TYPEOF_u3_t: st_s_copyf( o, "%"PRIu64, *(const u3_t*)src ); break;
         case TYPEOF_f2_t: st_s_copyf( o, "%g",      *(const f2_t*)src ); break;
         case TYPEOF_f3_t: st_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
-        case TYPEOF_sz_t: st_s_copyf( o, "%zu",     *(const sz_t*)src ); break;
+        case TYPEOF_szxxx_t: st_s_copyf( o, "%tu",     *(const szxxx_t*)src ); break;
+        case TYPEOF_uz_t: st_s_copyf( o, "%zu",     *(const uz_t*)src ); break;
 
         case TYPEOF_smax_t:   st_s_copyf( o, "%"PRIiMAX, *(const smax_t*)src ); break;
         case TYPEOF_umax_t:   st_s_copyf( o, "%"PRIuMAX, *(const umax_t*)src ); break;
@@ -287,7 +288,7 @@ st_s* st_s_create_fa( sc_t format, ... )
     return o;
 }
 
-st_s* st_s_create_sc_n( sc_t sc, sz_t sc_size )
+st_s* st_s_create_sc_n( sc_t sc, uz_t sc_size )
 {
     st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
     st_s_init_sc_n( o, sc, sc_size );
@@ -328,7 +329,7 @@ st_s* st_s_createf_l( bcore_life_s* life, sc_t format, ... )
     return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, o );
 }
 
-st_s* st_s_create_l_sc_n( bcore_life_s* life, sc_t sc, sz_t sc_size )
+st_s* st_s_create_l_sc_n( bcore_life_s* life, sc_t sc, uz_t sc_size )
 {
     return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create_sc_n( sc, sc_size ) );
 }
@@ -364,19 +365,19 @@ void st_s_make_strong( st_s* o )
     st_s_copy_sc( o, src );
 }
 
-void st_s_set_min_space( st_s* o, sz_t min_space )
+void st_s_set_min_space( st_s* o, uz_t min_space )
 {
     if( min_space == 0 ) return;
     st_s_make_strong( o );
     if( o->space == 0 )
     {
-        sz_t new_space = min_space > 8 ? min_space : 8;
+        uz_t new_space = min_space > 8 ? min_space : 8;
         o->data = bcore_bn_alloc( NULL, 0, new_space, &o->space );
         o->data[ o->size ] = 0;
     }
     else if( o->space < min_space )
     {
-        sz_t new_space = ( min_space > o->space * 2 ) ? min_space : o->space * 2;
+        uz_t new_space = ( min_space > o->space * 2 ) ? min_space : o->space * 2;
         o->data = bcore_bn_alloc( o->data, o->space, new_space, &o->space );
     }
 }
@@ -394,11 +395,11 @@ st_s* st_s_clone( const st_s* o )
     return o_l;
 }
 
-st_s* st_s_crop( const st_s* o, sz_t start, sz_t end )
+st_s* st_s_crop( const st_s* o, uz_t start, uz_t end )
 {
     st_s* s = st_s_create();
     if( start >= o->size ) return s;
-    sz_t end_l = end < o->size ? end : o->size;
+    uz_t end_l = end < o->size ? end : o->size;
     if( end_l <= start ) return s;
     s->space = end_l - start + 1;
     if( s->space < 8 ) s->space = 8;
@@ -409,7 +410,7 @@ st_s* st_s_crop( const st_s* o, sz_t start, sz_t end )
     return s;
 }
 
-st_s* st_s_crop_d( st_s* o, sz_t start, sz_t end )
+st_s* st_s_crop_d( st_s* o, uz_t start, uz_t end )
 {
     st_s* s = st_s_crop( o, start, end );
     st_s_discard( o );
@@ -451,7 +452,7 @@ st_s* st_s_push_char( st_s* o, char c )
     return o;
 }
 
-st_s* st_s_push_char_n( st_s* o, char c, sz_t n )
+st_s* st_s_push_char_n( st_s* o, char c, uz_t n )
 {
     st_s_set_min_space( o, o->size + n + 1 );
     bcore_memset( o->data + o->size, c, n );
@@ -470,7 +471,7 @@ char st_s_pop_char( st_s* o )
     return c;
 }
 
-void st_s_pop_n( st_s* o, sz_t n )
+void st_s_pop_n( st_s* o, uz_t n )
 {
     if( o->size  == 0 ) return;
     if( o->space == 0 ) st_s_make_strong( o );
@@ -504,7 +505,7 @@ st_s* st_s_push_st_d( st_s* o, st_s* src )
     return o;
 }
 
-st_s* st_s_push_sc_n( st_s* o, sc_t sc, sz_t sc_size )
+st_s* st_s_push_sc_n( st_s* o, sc_t sc, uz_t sc_size )
 {
     if( o->size == 0 )
     {
@@ -570,30 +571,30 @@ st_s* st_s_push_fa( st_s* o, sc_t format, ... )
     return o;
 }
 
-sz_t st_s_find_char( const st_s* o, sz_t start, sz_t end, char c )
+uz_t st_s_find_char( const st_s* o, uz_t start, uz_t end, char c )
 {
     if( end >= start )
     {
-        sz_t end_l = end < o->size ? end : o->size;
-        for( sz_t j = start; j < end_l; j++ ) if( o->data[ j ] == c ) return j;
+        uz_t end_l = end < o->size ? end : o->size;
+        for( uz_t j = start; j < end_l; j++ ) if( o->data[ j ] == c ) return j;
         return end_l;
     }
     else
     {
-        sz_t start_l = start < o->size ? start : o->size;
-        for( sz_t j = start_l - 1;  j < start_l && j >= end; j-- ) if( o->data[ j ] == c ) return j;
+        uz_t start_l = start < o->size ? start : o->size;
+        for( uz_t j = start_l - 1;  j < start_l && j >= end; j-- ) if( o->data[ j ] == c ) return j;
         return start_l;
     }
 }
 
-sz_t st_s_find_sc( const st_s* o, sz_t start, sz_t end, sc_t find_sc )
+uz_t st_s_find_sc( const st_s* o, uz_t start, uz_t end, sc_t find_sc )
 {
     if( !find_sc || find_sc[ 0 ] == 0 ) return start;
 
     if( end >= start )
     {
-        sz_t end_l = end < o->size ? end : o->size;
-        for( sz_t j = start; j < end_l; j++ )
+        uz_t end_l = end < o->size ? end : o->size;
+        for( uz_t j = start; j < end_l; j++ )
         {
             if( o->data[ j ] == find_sc[ 0 ] )
             {
@@ -605,8 +606,8 @@ sz_t st_s_find_sc( const st_s* o, sz_t start, sz_t end, sc_t find_sc )
     }
     else
     {
-        sz_t start_l = start < o->size ? start : o->size;
-        for( sz_t j = start_l - 1;  j < start_l && j >= end; j-- )
+        uz_t start_l = start < o->size ? start : o->size;
+        for( uz_t j = start_l - 1;  j < start_l && j >= end; j-- )
         {
             if( o->data[ j ] == find_sc[ 0 ] )
             {
@@ -618,78 +619,78 @@ sz_t st_s_find_sc( const st_s* o, sz_t start, sz_t end, sc_t find_sc )
     }
 }
 
-sz_t st_s_find_st( const st_s* o, sz_t start, sz_t end, const st_s* st )
+uz_t st_s_find_st( const st_s* o, uz_t start, uz_t end, const st_s* st )
 {
     return st_s_find_sc( o, start, end, st->sc );
 }
 
-sz_t st_s_find_st_d( const st_s* o, sz_t start, sz_t end, st_s* st )
+uz_t st_s_find_st_d( const st_s* o, uz_t start, uz_t end, st_s* st )
 {
-    sz_t r = st_s_find_st( o, start, end, st );
+    uz_t r = st_s_find_st( o, start, end, st );
     st_s_discard( st );
     return r;
 }
 
-sz_t st_s_find_any_sc( const st_s* o, sz_t start, sz_t end, sc_t sc )
+uz_t st_s_find_any_sc( const st_s* o, uz_t start, uz_t end, sc_t sc )
 {
     if( !sc || sc[ 0 ] == 0 ) return start;
     if( end >= start )
     {
-        sz_t end_l = end < o->size ? end : o->size;
-        for( sz_t j = start; j < end_l; j++ ) if( bcore_strany( o->data[ j ], sc ) ) return j;
+        uz_t end_l = end < o->size ? end : o->size;
+        for( uz_t j = start; j < end_l; j++ ) if( bcore_strany( o->data[ j ], sc ) ) return j;
         return end_l;
     }
     else
     {
-        sz_t start_l = start < o->size ? start : o->size;
-        for( sz_t j = start_l - 1; j < start_l && j >= end; j-- ) if( bcore_strany( o->data[ j ], sc ) ) return j;
+        uz_t start_l = start < o->size ? start : o->size;
+        for( uz_t j = start_l - 1; j < start_l && j >= end; j-- ) if( bcore_strany( o->data[ j ], sc ) ) return j;
         return start_l;
     }
 }
 
-sz_t st_s_find_none_sc( const st_s* o, sz_t start, sz_t end, sc_t sc )
+uz_t st_s_find_none_sc( const st_s* o, uz_t start, uz_t end, sc_t sc )
 {
     if( !sc || sc[ 0 ] == 0 ) return start;
     if( end >= start )
     {
-        sz_t end_l = end < o->size ? end : o->size;
-        for( sz_t j = start; j < end_l; j++ ) if( !bcore_strany( o->data[ j ], sc ) ) return j;
+        uz_t end_l = end < o->size ? end : o->size;
+        for( uz_t j = start; j < end_l; j++ ) if( !bcore_strany( o->data[ j ], sc ) ) return j;
         return end_l;
     }
     else
     {
-        sz_t start_l = start < o->size ? start : o->size;
-        for( sz_t j = start_l - 1; j < start_l && j >= end; j-- ) if( !bcore_strany( o->data[ j ], sc ) ) return j;
+        uz_t start_l = start < o->size ? start : o->size;
+        for( uz_t j = start_l - 1; j < start_l && j >= end; j-- ) if( !bcore_strany( o->data[ j ], sc ) ) return j;
         return start_l;
     }
 }
 
-st_s* st_s_remove( st_s* o, sz_t start, sz_t size )
+st_s* st_s_remove( st_s* o, uz_t start, uz_t size )
 {
     if( start >= o->size ) return o;
     if( o->space == 0 ) st_s_make_strong( o );
-    sz_t size_l = start + size > o->size ? o->size - start : size;
+    uz_t size_l = start + size > o->size ? o->size - start : size;
     bcore_memmove( o->data + start, o->data + start + size_l, o->size - start - size_l );
     o->size -= size_l;
     o->data[ o->size ] = 0;
     return o;
 }
 
-sz_t st_s_count_char( const st_s* o, sz_t start, sz_t end, char c )
+uz_t st_s_count_char( const st_s* o, uz_t start, uz_t end, char c )
 {
-    sz_t count = 0;
-    sz_t end_l = end < o->size ? end : o->size;
-    for( sz_t j = start; j < end_l; j++ ) if( o->data[ j ] == c ) count++;
+    uz_t count = 0;
+    uz_t end_l = end < o->size ? end : o->size;
+    for( uz_t j = start; j < end_l; j++ ) if( o->data[ j ] == c ) count++;
     return count;
 }
 
-sz_t st_s_count_sc( const st_s* o, sz_t start, sz_t end, sc_t sc )
+uz_t st_s_count_sc( const st_s* o, uz_t start, uz_t end, sc_t sc )
 {
-    sz_t count = 0;
+    uz_t count = 0;
     if( !sc || sc[ 0 ] == 0 ) return 0;
 
-    sz_t end_l = end < o->size ? end : o->size;
-    for( sz_t j = start; j < end_l; j++ )
+    uz_t end_l = end < o->size ? end : o->size;
+    for( uz_t j = start; j < end_l; j++ )
     {
         if( o->data[ j ] == sc[ 0 ] )
         {
@@ -700,12 +701,12 @@ sz_t st_s_count_sc( const st_s* o, sz_t start, sz_t end, sc_t sc )
     return count;
 }
 
-sz_t st_s_count_st( const st_s* o, sz_t start, sz_t end, const st_s* st )
+uz_t st_s_count_st( const st_s* o, uz_t start, uz_t end, const st_s* st )
 {
     return st_s_count_sc( o, start, end, st->sc );
 }
 
-st_s* st_s_insert_char( st_s* o, sz_t start, char c )
+st_s* st_s_insert_char( st_s* o, uz_t start, char c )
 {
     if( start > o->size ) return o;
     if( o->space == 0 ) st_s_make_strong( o );
@@ -725,7 +726,7 @@ st_s* st_s_insert_char( st_s* o, sz_t start, char c )
     return o;
 }
 
-st_s* st_s_insert_st( st_s* o, sz_t start, const st_s* string )
+st_s* st_s_insert_st( st_s* o, uz_t start, const st_s* string )
 {
     if( o == string )
     {
@@ -752,14 +753,14 @@ st_s* st_s_insert_st( st_s* o, sz_t start, const st_s* string )
     return o;
 }
 
-st_s* st_s_insert_st_d( st_s* o, sz_t start, st_s* string )
+st_s* st_s_insert_st_d( st_s* o, uz_t start, st_s* string )
 {
     st_s_insert_st( o, start, string );
     st_s_discard( string );
     return o;
 }
 
-st_s* st_s_insert_sc( st_s* o, sz_t start, sc_t sc )
+st_s* st_s_insert_sc( st_s* o, uz_t start, sc_t sc )
 {
     if( start > o->size ) return o;
     if( o->space == 0 ) st_s_make_strong( o );
@@ -769,7 +770,7 @@ st_s* st_s_insert_sc( st_s* o, sz_t start, sc_t sc )
         return o;
     }
 
-    sz_t src_size = bcore_strlen( sc );
+    uz_t src_size = bcore_strlen( sc );
     if( o->space < o->size + src_size + 1 )
     {
         o->data = bcore_bn_alloc( o->data, o->space, o->size + src_size + 1, &o->space );
@@ -781,7 +782,7 @@ st_s* st_s_insert_sc( st_s* o, sz_t start, sc_t sc )
     return o;
 }
 
-st_s* st_s_replace_char( st_s* o, sz_t start, char c )
+st_s* st_s_replace_char( st_s* o, uz_t start, char c )
 {
     if( start >= o->size ) return o;
     if( o->space == 0 ) st_s_make_strong( o );
@@ -789,7 +790,7 @@ st_s* st_s_replace_char( st_s* o, sz_t start, char c )
     return o;
 }
 
-st_s* st_s_replace_st( st_s* o, sz_t start, const st_s* string )
+st_s* st_s_replace_st( st_s* o, uz_t start, const st_s* string )
 {
     if( o == string )
     {
@@ -800,29 +801,29 @@ st_s* st_s_replace_st( st_s* o, sz_t start, const st_s* string )
     }
     if( start >= o->size ) return o;
     if( o->space == 0 ) st_s_make_strong( o );
-    for( sz_t i = 0; i < string->size; i++ )
+    for( uz_t i = 0; i < string->size; i++ )
     {
-        sz_t idx = i + start;
+        uz_t idx = i + start;
         if( idx == o->size ) break;
         o->data[ idx ] = string->data[ i ];
     }
     return o;
 }
 
-st_s* st_s_replace_st_d( st_s* o, sz_t start, st_s* string )
+st_s* st_s_replace_st_d( st_s* o, uz_t start, st_s* string )
 {
     st_s_replace_st( o, start, string );
     st_s_discard( string );
     return o;
 }
 
-st_s* st_s_replace_sc( st_s* o, sz_t start, sc_t sc )
+st_s* st_s_replace_sc( st_s* o, uz_t start, sc_t sc )
 {
     if( start >= o->size ) return o;
     if( o->space == 0 ) st_s_make_strong( o );
-    for( sz_t i = 0; *sc != 0; i++ )
+    for( uz_t i = 0; *sc != 0; i++ )
     {
-        sz_t idx = i + start;
+        uz_t idx = i + start;
         if( idx == o->size ) break;
         o->data[ idx ] = *sc++;
     }
@@ -832,14 +833,14 @@ st_s* st_s_replace_sc( st_s* o, sz_t start, sc_t sc )
 st_s* st_s_replace_char_char( st_s* o, char c, char replace )
 {
     if( o->space == 0 ) st_s_make_strong( o );
-    for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ] == c ) o->data[ i ] = replace;
+    for( uz_t i = 0; i < o->size; i++ ) if( o->data[ i ] == c ) o->data[ i ] = replace;
     return o;
 }
 
 st_s* st_s_replace_char_sc( st_s* o, char c, sc_t sc )
 {
-    sz_t start = 0;
-    sz_t sz_sc = bcore_strlen( sc );
+    uz_t start = 0;
+    uz_t sz_sc = bcore_strlen( sc );
     if( o->space == 0 ) st_s_make_strong( o );
 
     while( ( start = st_s_find_char( o, start, o->size, c ) ) < o->size )
@@ -865,9 +866,9 @@ st_s* st_s_replace_char_st_d( st_s* o, char c, st_s* string )
 
 st_s* st_s_replace_sc_sc( st_s* o, sc_t match, sc_t replace )
 {
-    sz_t start = 0;
-    sz_t sz_match = bcore_strlen( match );
-    sz_t sz_replace = bcore_strlen( replace );
+    uz_t start = 0;
+    uz_t sz_match = bcore_strlen( match );
+    uz_t sz_replace = bcore_strlen( replace );
     if( o->space == 0 ) st_s_make_strong( o );
     while( ( start = st_s_find_sc( o, start, o->size, match ) ) < o->size )
     {
@@ -894,7 +895,7 @@ st_s* st_s_replace_st_d_st_d( st_s* o, st_s* match, st_s* replace )
 void st_s_set_lowercase( st_s* o )
 {
     if( o->space == 0 ) st_s_make_strong( o );
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->data[ i ] >= 'A' && o->data[ i ] <= 'Z' ) o->data[ i ] += 'a' - 'A';
     }
@@ -903,21 +904,21 @@ void st_s_set_lowercase( st_s* o )
 void st_s_set_uppercase( st_s* o )
 {
     if( o->space == 0 ) st_s_make_strong( o );
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->data[ i ] >= 'a' && o->data[ i ] <= 'z' ) o->data[ i ] += 'A' - 'a';
     }
 }
 
-sz_t st_s_lineof( const st_s* o, sz_t pos )
+uz_t st_s_lineof( const st_s* o, uz_t pos )
 {
     return st_s_count_char( o, 0, pos, '\n' ) + 1;
 }
 
-sz_t st_s_colof( const st_s* o, sz_t pos )
+uz_t st_s_colof( const st_s* o, uz_t pos )
 {
-    sz_t pos_l = pos < o->size ? pos : o->size;
-    sz_t count = 0;
+    uz_t pos_l = pos < o->size ? pos : o->size;
+    uz_t count = 0;
     while( pos_l > 0 )
     {
         if( o->data[ pos_l - 1 ] == '\n' ) break;
@@ -927,11 +928,11 @@ sz_t st_s_colof( const st_s* o, sz_t pos )
     return count + 1;
 }
 
-sz_t st_s_posof( const st_s* o, sz_t line, sz_t col )
+uz_t st_s_posof( const st_s* o, uz_t line, uz_t col )
 {
     if( line == 0 ) return 0;
-    sz_t pos = 0;
-    sz_t count = 1;
+    uz_t pos = 0;
+    uz_t count = 1;
     if( line > 1 )
     {
         for( pos = 0; pos < o->size; pos++ )
@@ -946,9 +947,9 @@ sz_t st_s_posof( const st_s* o, sz_t line, sz_t col )
     return pos + col;
 }
 
-sz_t st_s_posofline( const st_s* o, sz_t pos )
+uz_t st_s_posofline( const st_s* o, uz_t pos )
 {
-    sz_t pos_l = ( pos > o->size ) ? o->size : pos;
+    uz_t pos_l = ( pos > o->size ) ? o->size : pos;
     while( pos_l > 0 )
     {
         if( o->data[ pos_l - 1 ] == '\n' ) break;
@@ -1011,10 +1012,10 @@ void st_s_print_fa( sc_t format, ... )
     va_end( args );
 }
 
-st_s* st_s_show_line_context( const st_s* o, sz_t pos )
+st_s* st_s_show_line_context( const st_s* o, uz_t pos )
 {
-    sz_t start = st_s_posofline( o, pos );
-    sz_t end = st_s_find_char( o, pos, o->size, '\n' );
+    uz_t start = st_s_posofline( o, pos );
+    uz_t end = st_s_find_char( o, pos, o->size, '\n' );
     st_s* s = st_s_create();
     st_s_push_st_d( s, st_s_crop( o, start, end ) );
     st_s_push_char( s, '\n' );
@@ -1028,9 +1029,9 @@ st_s* st_s_show_line_context( const st_s* o, sz_t pos )
  *  Either '<char>' for const character or [<index>] for indexed character.
  *  Returns ETX (value 3) (end of text) when index is out of range.
  */
-static char c_char( sc_t o, sz_t on, sc_t f, sz_t* fi )
+static char c_char( sc_t o, uz_t on, sc_t f, uz_t* fi )
 {
-    sz_t i = *fi;
+    uz_t i = *fi;
     char c = 3;  // ETX (end of text) when index is out of range
     if( f[ i ] == '\'' )
     {
@@ -1040,7 +1041,7 @@ static char c_char( sc_t o, sz_t on, sc_t f, sz_t* fi )
     }
     else if( f[ i ] == '[' )
     {
-        sz_t i0 = i;
+        uz_t i0 = i;
         i++;
         int idx = atoi( f + i );
         if( idx >= 0 && idx < on ) c = o[ idx ];
@@ -1059,13 +1060,13 @@ static char c_char( sc_t o, sz_t on, sc_t f, sz_t* fi )
 /** evaluates logical match condition for characters
  * format "([0]=='a'&&[1]=='a'...)" (no whitespaces).
  */
-static bl_t c_match( sc_t o, sz_t on, sc_t f, sz_t* fi )
+static bl_t c_match( sc_t o, uz_t on, sc_t f, uz_t* fi )
 {
     if( f[ *fi ] == '\'' || f[ *fi ] == '[' )
     {
-        sz_t i = *fi;
+        uz_t i = *fi;
         char c1 = c_char( o, on, f, &i );
-        sz_t i0 = i;
+        uz_t i0 = i;
         char rc1 = f[ i ];
         char rc2 = f[ i + 1 ];
         if( rc1 ) i += ( rc2 == '=' ) ? 2 : 1;
@@ -1082,7 +1083,7 @@ static bl_t c_match( sc_t o, sz_t on, sc_t f, sz_t* fi )
     }
     else if( f[ *fi ] == '(' )
     {
-        sz_t i = *fi + 1;
+        uz_t i = *fi + 1;
         bl_t flag = c_match( o, on, f, &i );
         while( f[ i ] && f[ i ] != ')' )
         {
@@ -1120,16 +1121,16 @@ static bl_t c_match( sc_t o, sz_t on, sc_t f, sz_t* fi )
     return false;
 }
 
-sz_t st_s_parse_err( vd_t arg, const st_s* o, sz_t idx, st_s* msg )
+uz_t st_s_parse_err( vd_t arg, const st_s* o, uz_t idx, st_s* msg )
 {
     ERR( "Parse error at (%zu:%zu):\n%s\n%s\n", st_s_lineof( o, idx ), st_s_colof( o, idx ), st_s_show_line_context( o, idx )->sc, msg->sc );
     return idx;
 }
 
-sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, va_list args )
+uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, va_list args )
 {
-    sz_t end_l = end < o->size ? end : o->size;
-    sz_t idx = start;
+    uz_t end_l = end < o->size ? end : o->size;
+    uz_t idx = start;
 
     sc_t fp = format;
     while( *fp )
@@ -1185,7 +1186,7 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
             bl_t set_arg = true;
             bl_t consume = true;
 
-            sz_t enter_idx = idx;
+            uz_t enter_idx = idx;
             if( *fp == '=' )
             {
                 fp++;
@@ -1295,11 +1296,19 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
                         break;
                     }
 
-                    case TYPEOF_sz_t:
+                    case TYPEOF_szxxx_t:
+                    {
+                        smax_t v;
+                        sres = sscanf( o->sc + idx, "%"SCNiMAX"%n", &v, &size );
+                        if( set_arg ) *va_arg( args, szxxx_t* ) = v;
+                        break;
+                    }
+
+                    case TYPEOF_uz_t:
                     {
                         umax_t v;
                         sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, sz_t* ) = v;
+                        if( set_arg ) *va_arg( args, uz_t* ) = v;
                         break;
                     }
 
@@ -1385,7 +1394,7 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
                 }
                 if( *fp == '(' )
                 {
-                    sz_t i = 0;
+                    uz_t i = 0;
                     flag = c_match( &o->sc[ idx ], end_l - idx, fp, &i );
                     fp += i;
                 }
@@ -1398,7 +1407,7 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
                         word = true;
                     }
 
-                    sz_t idx0 = idx;
+                    uz_t idx0 = idx;
                     if( *fp )
                     {
                         char term = *fp++;
@@ -1587,30 +1596,30 @@ sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errf
     return idx;
 }
 
-sz_t st_s_parse_efa( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, ... )
+uz_t st_s_parse_efa( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    sz_t idx = st_s_parse_efv( o, start, end, errfp, arg, format, args );
+    uz_t idx = st_s_parse_efv( o, start, end, errfp, arg, format, args );
     va_end( args );
     return idx;
 }
 
-sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list args )
+uz_t st_s_parse_fv( const st_s* o, uz_t start, uz_t end, sc_t format, va_list args )
 {
     return st_s_parse_efv( o, start, end, st_s_parse_err, NULL, format, args );
 }
 
-sz_t st_s_parse_fa( const st_s* o, sz_t start, sz_t end, sc_t format, ... )
+uz_t st_s_parse_fa( const st_s* o, uz_t start, uz_t end, sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    sz_t idx = st_s_parse_fv( o, start, end, format, args );
+    uz_t idx = st_s_parse_fv( o, start, end, format, args );
     va_end( args );
     return idx;
 }
 
-static sz_t flow_snk( vd_t o, vc_t data, sz_t size )
+static uz_t flow_snk( vd_t o, vc_t data, uz_t size )
 {
     if( *( aware_t*)o != TYPEOF_st_s ) ERR( "object 'o' of type %u ('%s') must be st_s", *( aware_t*)o, ifnameof( *( aware_t*)o ) );
     st_s* s = o;
@@ -1630,7 +1639,7 @@ static sz_t flow_snk( vd_t o, vc_t data, sz_t size )
     return size;
 }
 
-static sz_t flow_src( vd_t o, vd_t data, sz_t size )
+static uz_t flow_src( vd_t o, vd_t data, uz_t size )
 {
     if( *( aware_t*)o != TYPEOF_st_s ) ERR( "object 'o' of type %u ('%s') must be st_s", *( aware_t*)o, ifnameof( *( aware_t*)o ) );
     st_s* s = o;
@@ -1654,7 +1663,7 @@ static void p_errorvf( const st_s* o, sc_t format, va_list args )
 static void parse_fv( st_s* o, sc_t format, va_list args )
 {
     if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
-    sz_t size = st_s_parse_fv( o, 0, o->size, format, args );
+    uz_t size = st_s_parse_fv( o, 0, o->size, format, args );
     o->data += size;
     o->size -= size;
 }
@@ -1683,7 +1692,7 @@ static void set_index( st_s* o, s3_t index )
 }
 
 /// sanity feature
-void bcore_inst_t_check_sizeof( u2_t type, sz_t size );
+void bcore_inst_t_check_sizeof( u2_t type, uz_t size );
 static void check_sanity( vc_t o )
 {
     bcore_inst_t_check_sizeof( TYPEOF_st_s, sizeof( st_s ) );
@@ -1694,7 +1703,7 @@ static void check_sanity( vc_t o )
     if( ( s->space > 0 ) && ( s->space < s->size ) ) ERR( "space (%zu) < size (%zu)", s->space, s->size );
     if( s->data[ s->size ] != 0 )  ERR( "data section does not terminate in zero" );
 
-    for( sz_t i = 0; i < s->size; i++ )
+    for( uz_t i = 0; i < s->size; i++ )
     {
         u0_t c = s->data[ i ];
         if( c < 10 || c >= 128 ) ERR( "invalid character '%c' in string", c );
@@ -1703,14 +1712,14 @@ static void check_sanity( vc_t o )
 
 static bcore_self_s* st_s_create_self( void )
 {
-//  bcore_self_s* self = bcore_self_s_build_parse_sc( "st_s = { aware_t _; private sd_t data; private sz_t size; private sz_t space; }", sizeof( st_s ) );
+//  bcore_self_s* self = bcore_self_s_build_parse_sc( "st_s = { aware_t _; private sd_t data; private uz_t size; private uz_t space; }", sizeof( st_s ) );
 
 //  We need to create this reflection manually because bcore_self_s_build_parse_sc uses it.
     bcore_self_s* self = bcore_self_s_create_plain( entypeof( "st_s" ), typeof( "bcore_inst" ), sizeof( st_s ) );
     bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_aware_t, entypeof( "_"  ) ) );
     bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sd_t, entypeof( "data"  ) ) )->flags.f_private = true;
-    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sz_t, entypeof( "size"  ) ) )->flags.f_private = true;
-    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_sz_t, entypeof( "space" ) ) )->flags.f_private = true;
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_uz_t, entypeof( "size"  ) ) )->flags.f_private = true;
+    bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_uz_t, entypeof( "space" ) ) )->flags.f_private = true;
 
     bcore_self_s_push_ns_func( self, ( fp_t )st_s_init,         "bcore_fp_init",            "init"         );
     bcore_self_s_push_ns_func( self, ( fp_t )st_s_down,         "bcore_fp_down",            "down"         );
@@ -1735,7 +1744,7 @@ static bcore_self_s* st_s_create_self( void )
 
 static void st_s_quicktest( void )
 {
-    sz_t granted_space = bcore_tbman_granted_space();
+    uz_t granted_space = bcore_tbman_granted_space();
 
     bcore_life_s* life = bcore_life_s_create();
     st_s* s = bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create() );
@@ -1750,7 +1759,7 @@ static void st_s_quicktest( void )
     bool is_green = false;
     bool is_blue  = false;
     st_s* name = bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create() );
-    sz_t idx = st_s_parse_fa( s, 0, s->size, "My #name #?w'blue' #?w'green' eleph", name, &is_blue, &is_green );
+    uz_t idx = st_s_parse_fa( s, 0, s->size, "My #name #?w'blue' #?w'green' eleph", name, &is_blue, &is_green );
     ASSERT( st_s_equal_sc( name, "little" ) );
     ASSERT( is_green );
     ASSERT( !is_blue );
@@ -1802,7 +1811,7 @@ static void st_s_quicktest( void )
         st_s_push_fa( s, "#p3.{#<s2_t*>}\n", &v );
         ASSERT( st_s_cmp_sc( s, "-100\n" ) == 0 );
         st_s_clear( s );
-        st_s_push_fa( s, "#pl10.{#pn*{#<s2_t*>}}\n", ( sz_t )6, &v );
+        st_s_push_fa( s, "#pl10.{#pn*{#<s2_t*>}}\n", ( uz_t )6, &v );
         ASSERT( st_s_cmp_sc( s, "....-100**\n" ) == 0 );
         st_s_clear( s );
         st_s_push_fa( s, "#r3{#<s2_t*>}\n", &v );
@@ -1823,7 +1832,7 @@ static void st_s_quicktest( void )
         st_s_clear( s );
         st_s_push_fa( s, "This is my string." );
         bl_t flag = false;
-        sz_t idx;
+        uz_t idx;
         idx = st_s_parse_fa( s, 0, s->size, "This is #?([0]=='m'&&[3]=='s')my string.", &flag );
         ASSERT( idx == s->size );
         ASSERT( flag );

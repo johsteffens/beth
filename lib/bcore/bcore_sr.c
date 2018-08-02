@@ -88,7 +88,8 @@ sr_s sr_u2( u2_t v ) { sr_s r = sr_create( TYPEOF_u2_t ); *( u2_t * )r.o = v; re
 sr_s sr_u3( u3_t v ) { sr_s r = sr_create( TYPEOF_u3_t ); *( u3_t * )r.o = v; return r; }
 sr_s sr_f2( f2_t v ) { sr_s r = sr_create( TYPEOF_f2_t ); *( f2_t * )r.o = v; return r; }
 sr_s sr_f3( f3_t v ) { sr_s r = sr_create( TYPEOF_f3_t ); *( f3_t * )r.o = v; return r; }
-sr_s sr_sz( sz_t v ) { sr_s r = sr_create( TYPEOF_sz_t ); *( sz_t * )r.o = v; return r; }
+sr_s sr_szxxx( szxxx_t v ) { sr_s r = sr_create( TYPEOF_szxxx_t ); *( szxxx_t * )r.o = v; return r; }
+sr_s sr_uz( uz_t v ) { sr_s r = sr_create( TYPEOF_uz_t ); *( uz_t * )r.o = v; return r; }
 sr_s sr_tp( tp_t v ) { sr_s r = sr_create( TYPEOF_tp_t ); *( tp_t * )r.o = v; return r; }
 sr_s sr_bl( bl_t v ) { sr_s r = sr_create( TYPEOF_bl_t ); *( bl_t * )r.o = v; return r; }
 

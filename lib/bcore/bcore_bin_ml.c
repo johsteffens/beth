@@ -39,7 +39,7 @@ static inline void push_flag( const sr_s* sink, bl_t flag )
     bcore_sink_r_push_data( sink, &v, 1 );
 }
 
-static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, sz_t depth )
+static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, uz_t depth )
 {
     bcore_life_s* l = bcore_life_s_create();
     sr_s sink_l     = sr_cl( sr_cp( sink, TYPEOF_bcore_sink_s ), l );
@@ -86,7 +86,8 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
                 case TYPEOF_s3_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( s3_t ) ); break;
                 case TYPEOF_sc_t    : bcore_sink_x_push_data( sink_l, obj_l.o, bcore_strlen( obj_l.o ) ); break;
                 case TYPEOF_sd_t    : bcore_sink_x_push_data( sink_l, obj_l.o, bcore_strlen( obj_l.o ) ); break;
-                case TYPEOF_sz_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( sz_t ) ); break;
+                case TYPEOF_szxxx_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( szxxx_t ) ); break;
+                case TYPEOF_uz_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( uz_t ) ); break;
                 case TYPEOF_tp_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( tp_t ) ); break;
                 case TYPEOF_u0_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( u0_t ) ); break;
                 case TYPEOF_u1_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( u1_t ) ); break;
@@ -100,18 +101,18 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
-                sz_t size = bcore_array_x_get_size( arr_l );
-                bcore_sink_x_push_data( sink_l, &size, sizeof( sz_t ) );
-                for( sz_t i = 0; i < size; i++ )
+                uz_t size = bcore_array_x_get_size( arr_l );
+                bcore_sink_x_push_data( sink_l, &size, sizeof( uz_t ) );
+                for( uz_t i = 0; i < size; i++ )
                 {
                     translate( o, 0, bcore_array_x_get( arr_l, i ), sink_l, depth + 1 );
                 }
             }
             else
             {
-                sz_t size = bcore_via_p_get_size( obj_l.p, NULL );
-                bcore_sink_x_push_data( sink_l, &size, sizeof( sz_t ) );
-                for( sz_t i = 0; i < size; i++ )
+                uz_t size = bcore_via_p_get_size( obj_l.p, NULL );
+                bcore_sink_x_push_data( sink_l, &size, sizeof( uz_t ) );
+                for( uz_t i = 0; i < size; i++ )
                 {
                     translate( o, bcore_via_x_iget_name( obj_l, i ), bcore_via_x_iget( obj_l, i ), sink_l, depth + 1 );
                 }
@@ -244,7 +245,8 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 case TYPEOF_s1_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( s1_t ) ); break;
                 case TYPEOF_s2_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( s2_t ) ); break;
                 case TYPEOF_s3_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( s3_t ) ); break;
-                case TYPEOF_sz_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( sz_t ) ); break;
+                case TYPEOF_szxxx_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( szxxx_t ) ); break;
+                case TYPEOF_uz_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( uz_t ) ); break;
                 case TYPEOF_tp_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( tp_t ) ); break;
                 case TYPEOF_u0_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( u0_t ) ); break;
                 case TYPEOF_u1_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( u1_t ) ); break;
@@ -255,21 +257,21 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
         }
         else
         {
-            sz_t size = 0;
-            bcore_source_x_get_data( src_l, &size, sizeof( sz_t ) );
+            uz_t size = 0;
+            bcore_source_x_get_data( src_l, &size, sizeof( uz_t ) );
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
                 bcore_array_x_set_size( arr_l, size );
-                for( sz_t i = 0; i < size; i++ ) bcore_array_x_set( arr_l, i, interpret( o, sr_null(), src_l ) );
+                for( uz_t i = 0; i < size; i++ ) bcore_array_x_set( arr_l, i, interpret( o, sr_null(), src_l ) );
             }
             else
             {
 
-                for( sz_t i = 0; i < size; i++ )
+                for( uz_t i = 0; i < size; i++ )
                 {
                     tp_t name = get_type( &src_l );
-                    sz_t idx = bcore_via_x_nget_index( obj_l, name );
+                    uz_t idx = bcore_via_x_nget_index( obj_l, name );
                     if( bcore_via_x_iis_link( obj_l, idx ) )
                     {
                         bcore_via_x_iset( obj_l, idx, interpret( o, sr_null(), src_l ) );

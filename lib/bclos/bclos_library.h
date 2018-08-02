@@ -45,7 +45,7 @@ typedef struct bclos_library_arr_s
         struct
         {
             bclos_library_s** data;
-            sz_t size, space;
+            uz_t size, space;
         };
     };
 } bclos_library_arr_s;

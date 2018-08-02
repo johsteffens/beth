@@ -27,7 +27,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_plot_s )
     "st_s title;"
     "st_s x_label;"
     "st_s y_label;"
-    "sz_t x_index;"
+    "uz_t x_index;"
     "bl_t cols_over_x = false;"  // true: plot column values over x; only for arr_vf3
     "bcore_arr_st_s y_data_label;" // a row is a curve in the plot
 "}";
@@ -101,7 +101,7 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
             if( o->cols_over_x )
             {
                 bl_t finished = false;
-                for( sz_t idx = 0; !finished; idx++ )
+                for( uz_t idx = 0; !finished; idx++ )
                 {
                     finished = true;
                     if( o->x_index < arr->size )
@@ -114,11 +114,11 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
                     }
                     else
                     {
-                        bcore_sink_a_push_fa( sink, "#<sz_t>", idx );
+                        bcore_sink_a_push_fa( sink, "#<uz_t>", idx );
                     }
 
 
-                    for( sz_t i = 0; i < arr->size; i++ )
+                    for( uz_t i = 0; i < arr->size; i++ )
                     {
                         bcore_sink_a_push_fa( sink, "\t" );
                         if( o->x_index != i )
@@ -133,10 +133,10 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
                     bcore_sink_a_push_fa( sink, "\n" );
                     idx++;
                 }
-                sz_t n = arr->size + ( o->x_index >= arr->size );
-                for( sz_t i = 1; i < n; i++ )
+                uz_t n = arr->size + ( o->x_index >= arr->size );
+                for( uz_t i = 1; i < n; i++ )
                 {
-                    st_s_push_fa( syscommand, "'#<sc_t>' using 1:#<sz_t> with line", data_file->sc, i + 1 );
+                    st_s_push_fa( syscommand, "'#<sc_t>' using 1:#<uz_t> with line", data_file->sc, i + 1 );
                     if( i <= o->y_data_label.size )
                     {
                         st_s_push_fa( syscommand, " title '#<sc_t>'", o->y_data_label.data[ i - 1 ]->sc );
@@ -146,7 +146,7 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
             }
             else
             {
-                for( sz_t i = 0; i < arr->size; i++ )
+                for( uz_t i = 0; i < arr->size; i++ )
                 {
                     const bmath_vf3_s* v = &arr->data[ i ];
                     if( o->x_index < v->size )
@@ -155,10 +155,10 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
                     }
                     else
                     {
-                        bcore_sink_a_push_fa( sink, "#<sz_t>", i );
+                        bcore_sink_a_push_fa( sink, "#<uz_t>", i );
                     }
 
-                    for( sz_t i = 0; i < v->size; i++ )
+                    for( uz_t i = 0; i < v->size; i++ )
                     {
                         if( i != o->x_index )
                         {
@@ -168,10 +168,10 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
                     }
                     bcore_sink_a_push_fa( sink, "\n" );
                 }
-                sz_t n = arr->data[ 0 ].size + ( o->x_index >= arr->data[ 0 ].size );
-                for( sz_t i = 1; i < n; i++ )
+                uz_t n = arr->data[ 0 ].size + ( o->x_index >= arr->data[ 0 ].size );
+                for( uz_t i = 1; i < n; i++ )
                 {
-                    st_s_push_fa( syscommand, "'#<sc_t>' using 1:#<sz_t> with line", data_file->sc, i + 1 );
+                    st_s_push_fa( syscommand, "'#<sc_t>' using 1:#<uz_t> with line", data_file->sc, i + 1 );
                     if( i <= o->y_data_label.size )
                     {
                         st_s_push_fa( syscommand, " title '#<sc_t>'", o->y_data_label.data[ i - 1 ]->sc );
@@ -184,9 +184,9 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
     else if( sr_s_type( &o->data ) == TYPEOF_bmath_vf3_s )
     {
         const bmath_vf3_s* vec = o->data.o;
-        for( sz_t i = 0; i < vec->size; i++ )
+        for( uz_t i = 0; i < vec->size; i++ )
         {
-            bcore_sink_a_push_fa( sink, "#<sz_t>\t#<f3_t>\n", i, vec->data[ i ] );
+            bcore_sink_a_push_fa( sink, "#<uz_t>\t#<f3_t>\n", i, vec->data[ i ] );
         }
         st_s_push_fa( syscommand, "'#<sc_t>' using 1:2 with line", data_file->sc );
         if( o->y_data_label.size > 0 )

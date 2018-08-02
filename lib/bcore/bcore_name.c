@@ -117,7 +117,7 @@ bcore_name_s bcore_name_ns_sc( tp_t name_space, sc_t name )
     return o;
 }
 
-bcore_name_s bcore_name_sc_n( sc_t name, sz_t n )
+bcore_name_s bcore_name_sc_n( sc_t name, uz_t n )
 {
     bcore_name_s o;
     bcore_name_s_init( &o );
@@ -129,7 +129,7 @@ bcore_name_s bcore_name_sc_n( sc_t name, sz_t n )
     return o;
 }
 
-bcore_name_s bcore_name_ns_sc_n( tp_t name_space, sc_t name, sz_t n )
+bcore_name_s bcore_name_ns_sc_n( tp_t name_space, sc_t name, uz_t n )
 {
     bcore_name_s o;
     bcore_name_s_init( &o );
@@ -152,7 +152,7 @@ void bcore_name_map_s_init( bcore_name_map_s* o )
 
 void bcore_name_map_s_clear( bcore_name_map_s* o )
 {
-    if( o->data ) for( sz_t i = 0; i < o->size; i++ ) bcore_name_s_down( &o->data[ i ] );
+    if( o->data ) for( uz_t i = 0; i < o->size; i++ ) bcore_name_s_down( &o->data[ i ] );
     bcore_release( o->data );
     bcore_release( o->flags );
     o->data = 0;
@@ -170,7 +170,7 @@ void bcore_name_map_s_copy( bcore_name_map_s* o, const bcore_name_map_s* src )
 {
     bcore_name_map_s_clear( o );
     o->data = bcore_alloc( NULL, sizeof( bcore_name_s ) * src->size );
-    for( sz_t i = 0; i < src->size; i++ )
+    for( uz_t i = 0; i < src->size; i++ )
     {
         bcore_name_s_init( &o->data[ i ] );
         bcore_name_s_copy( &o->data[ i ], &src->data[ i ] );
@@ -184,33 +184,33 @@ BCORE_DEFINE_FUNCTION_CREATE( bcore_name_map_s )
 BCORE_DEFINE_FUNCTION_CLONE( bcore_name_map_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_name_map_s )
 
-static sz_t find( const bcore_name_map_s* o, tp_t key ) // returns valid index or o->size
+static uz_t find( const bcore_name_map_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
     u2_t mask = o->size - 1;
-    sz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t idx = hash_tpu2_1( key ) & mask;
     if( o->data[ idx ].key == key ) return idx;
     idx = hash_tpu2_2( key ) & mask;
     if( o->data[ idx ].key == key ) return idx;
     return o->size;
 }
 
-static sz_t set( bcore_name_map_s* o, bcore_name_s name, sz_t depth ) // sets new node, returns valid index on success; o->size otherwise
+static uz_t set( bcore_name_map_s* o, bcore_name_s name, uz_t depth ) // sets new node, returns valid index on success; o->size otherwise
 {
-    sz_t size = o->size;
+    uz_t size = o->size;
     if( size == 0 ) return size;
     u2_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    sz_t idx1 = hash_tpu2_1( name.key ) & mask;
+    uz_t idx1 = hash_tpu2_1( name.key ) & mask;
     if( !o->data[ idx1 ].key )
     {
         o->data[ idx1 ] = name;
         return idx1;
     }
 
-    sz_t idx2 = hash_tpu2_2( name.key ) & mask;
+    uz_t idx2 = hash_tpu2_2( name.key ) & mask;
     if( !o->data[ idx2 ].key )
     {
         o->data[ idx2 ] = name;
@@ -246,13 +246,13 @@ static sz_t set( bcore_name_map_s* o, bcore_name_s name, sz_t depth ) // sets ne
     return size;
 }
 
-sz_t set_rehash( bcore_name_map_s* o, bcore_name_s name )
+uz_t set_rehash( bcore_name_map_s* o, bcore_name_s name )
 {
     if( !name.key ) ERR( "key is zero" );
 
     // set
     {
-        sz_t idx = find( o, name.key );
+        uz_t idx = find( o, name.key );
         if( idx < o->size )
         {
             bcore_name_s_down( &name );
@@ -265,13 +265,13 @@ sz_t set_rehash( bcore_name_map_s* o, bcore_name_s name )
     // rehash
     {
         bcore_name_s* buf_data  = o->data;
-        sz_t          buf_size  = o->size;
+        uz_t          buf_size  = o->size;
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->data = bcore_u_memzero( sizeof( bcore_name_s ), NULL, o->size );
-        for( sz_t i = 0; i < buf_size; i++ ) if( buf_data[ i ].key ) set_rehash( o, buf_data[ i ] );
+        for( uz_t i = 0; i < buf_size; i++ ) if( buf_data[ i ].key ) set_rehash( o, buf_data[ i ] );
         bcore_u_alloc( sizeof( tp_t ), buf_data, 0, NULL );
     }
 
@@ -280,7 +280,7 @@ sz_t set_rehash( bcore_name_map_s* o, bcore_name_s name )
 
 bcore_name_s* bcore_name_map_s_get( const bcore_name_map_s* o, tp_t key )
 {
-    sz_t idx = find( o, key );
+    uz_t idx = find( o, key );
     return ( idx < o->size ) ? &o->data[ idx ] : NULL;
 }
 
@@ -291,7 +291,7 @@ void bcore_name_map_s_set( bcore_name_map_s* o, bcore_name_s name )
 
 void bcore_name_map_s_remove( bcore_name_map_s* o, tp_t key )
 {
-    sz_t idx = find( o, key );
+    uz_t idx = find( o, key );
     if( idx < o->size ) bcore_name_s_clear( &o->data[ idx ] );
 }
 
@@ -300,19 +300,19 @@ bl_t bcore_name_map_s_exists( const bcore_name_map_s* o, tp_t key )
     return find( o, key ) < o->size;
 }
 
-sz_t bcore_name_map_s_keys( const bcore_name_map_s* o )
+uz_t bcore_name_map_s_keys( const bcore_name_map_s* o )
 {
-    sz_t n = 0;
-    for( sz_t i = 0; i < o->size; i++ ) n += ( o->data[ i ].key != 0 );
+    uz_t n = 0;
+    for( uz_t i = 0; i < o->size; i++ ) n += ( o->data[ i ].key != 0 );
     return n;
 }
 
-sz_t bcore_name_map_s_size( const bcore_name_map_s* o )
+uz_t bcore_name_map_s_size( const bcore_name_map_s* o )
 {
     return o->size;
 }
 
-bcore_name_s* bcore_name_map_s_idx_name( const bcore_name_map_s* o, sz_t idx )
+bcore_name_s* bcore_name_map_s_idx_name( const bcore_name_map_s* o, uz_t idx )
 {
     return idx < o->size ? &o->data[ idx ] : NULL;
 }
@@ -322,7 +322,7 @@ static sr_s name_map_s_get_data( const bcore_name_map_s* o )
     tp_t t_data = bcore_flect_type_parse_sc( "{ bcore_name_s []; }" );
     tp_t t_node = typeof( "bcore_name_s" );
     sr_s data = sr_cp( sr_create( t_data ), TYPEOF_bcore_array_s );
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->data[ i ].key ) bcore_array_r_push( &data, sr_twc( t_node, &o->data[ i ] ) );
     }
@@ -334,9 +334,9 @@ static void name_map_s_set_data( bcore_name_map_s* o, sr_s data )
     bcore_name_map_s_clear( o );
     assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ bcore_name_s []; }" ) );
     data = sr_cp( data, TYPEOF_bcore_array_s );
-    sz_t size = bcore_array_r_get_size( &data );
+    uz_t size = bcore_array_r_get_size( &data );
     bcore_name_s* src = bcore_array_r_get_d_data( &data );
-    for( sz_t i = 0; i < size; i++ )
+    for( uz_t i = 0; i < size; i++ )
     {
         bcore_name_map_s_set( o, src[ i ] );
         src[ i ].name = NULL;
@@ -352,9 +352,9 @@ static bcore_self_s* name_map_s_create_self( void )
                 aware_t _; \
                 private bcore_name_s* data; \
                 private bl_t* flags; \
-                private sz_t size; \
-                private sz_t depth_limit; \
-                private sz_t size_limit; \
+                private uz_t size; \
+                private uz_t depth_limit; \
+                private uz_t size_limit; \
                 shell { bcore_name_s []; } data; } \
             }";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_name_map_s ) );

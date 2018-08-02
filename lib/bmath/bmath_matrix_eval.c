@@ -20,8 +20,8 @@
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_matrix_eval_s )
 "{"
     "aware_t _;"
-    "sz_t rows       = 1000;"
-    "sz_t cols       = 1000;"
+    "uz_t rows       = 1000;"
+    "uz_t cols       = 1000;"
 
     "u2_t seed       = 1234567;"
     "f3_t density    = 1.0;"
@@ -47,16 +47,16 @@ void bmath_matrix_eval_s_run_uav_fp( const bmath_matrix_eval_s* o, tp_t fp_type,
     BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
     BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
 
-    sz_t m = o->rows;
-    sz_t n = o->cols;
+    uz_t m = o->rows;
+    uz_t n = o->cols;
 
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  m, n );
     u2_t rval = o->seed;
     bmath_mf3_s_fill_random_sparse( m0, -1, 1, o->density, &rval );
 
-    bmath_mf3_s_set_size( u, m, o->full ? m : sz_min( m, n ) );
-    bmath_mf3_s_set_size( v, n, o->full ? n : sz_min( m, n ) );
+    bmath_mf3_s_set_size( u, m, o->full ? m : uz_min( m, n ) );
+    bmath_mf3_s_set_size( v, n, o->full ? n : uz_min( m, n ) );
 
     bmath_mf3_s_zro( u );
     bmath_mf3_s_zro( v );
@@ -113,15 +113,15 @@ void bmath_matrix_eval_s_run_ua_fp( const bmath_matrix_eval_s* o, tp_t fp_type, 
     BCORE_LIFE_CREATE( bmath_mf3_s, a );
     BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
 
-    sz_t m = o->rows;
-    sz_t n = o->cols;
+    uz_t m = o->rows;
+    uz_t n = o->cols;
 
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  m, n );
     u2_t rval = o->seed;
     bmath_mf3_s_fill_random_sparse( m0, -1, 1, o->density, &rval );
 
-    bmath_mf3_s_set_size( u, m, o->full ? m : sz_min( m, n ) );
+    bmath_mf3_s_set_size( u, m, o->full ? m : uz_min( m, n ) );
     bmath_mf3_s_zro( u );
 
     bmath_mf3_s_cpy( m0, a );
@@ -161,15 +161,15 @@ void bmath_matrix_eval_s_run_av_fp( const bmath_matrix_eval_s* o, tp_t fp_type, 
     BCORE_LIFE_CREATE( bmath_mf3_s, v );
     BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
 
-    sz_t m = o->rows;
-    sz_t n = o->cols;
+    uz_t m = o->rows;
+    uz_t n = o->cols;
 
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  m, n );
     u2_t rval = o->seed;
     bmath_mf3_s_fill_random_sparse( m0, -1, 1, o->density, &rval );
 
-    bmath_mf3_s_set_size( v, n, o->full ? n : sz_min( m, n ) );
+    bmath_mf3_s_set_size( v, n, o->full ? n : uz_min( m, n ) );
 
     bmath_mf3_s_zro( v );
 
@@ -278,22 +278,22 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_matrix_eval_s ) "{ aware_t _; bm
 
 void bmath_arr_matrix_eval_s_run( const bmath_arr_matrix_eval_s* o, st_s* log )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run( &o->data[ i ], log );
+    for( uz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run( &o->data[ i ], log );
 }
 
 void bmath_arr_matrix_eval_s_run_fp( const bmath_arr_matrix_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run_fp( &o->data[ i ], fp_type, fp, log );
+    for( uz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run_fp( &o->data[ i ], fp_type, fp, log );
 }
 
 void bmath_arr_matrix_eval_s_run_to_stdout( const bmath_arr_matrix_eval_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run_to_stdout( &o->data[ i ] );
+    for( uz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run_to_stdout( &o->data[ i ] );
 }
 
 void bmath_arr_matrix_eval_s_run_fp_to_stdout( const bmath_arr_matrix_eval_s* o, tp_t fp_type, fp_t fp )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run_fp_to_stdout( &o->data[ i ], fp_type, fp );
+    for( uz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run_fp_to_stdout( &o->data[ i ], fp_type, fp );
 }
 
 /**********************************************************************************************************************/

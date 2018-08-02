@@ -31,11 +31,11 @@
 /**********************************************************************************************************************/
 // default parameters
 
-static const sz_t default_pool_size       = 0x10000;
-static const sz_t default_min_block_size  = 8;
-static const sz_t default_max_block_size  = 1024 * 16;
+static const uz_t default_pool_size       = 0x10000;
+static const uz_t default_min_block_size  = 8;
+static const uz_t default_max_block_size  = 1024 * 16;
 
-static const sz_t default_stepping_method = 1;
+static const uz_t default_stepping_method = 1;
 static const bool   default_full_align      = true;
 
 /// Minimum alignment of memory blocks
@@ -82,44 +82,44 @@ typedef struct down_obj_arr_s
 {
     down_s _; // internal down function
     fp_down_obj fp;   // external down function
-    sz_t size; // number of active array elements
-    sz_t step; // stepping between array elements in bytes
+    uz_t size; // number of active array elements
+    uz_t step; // stepping between array elements in bytes
 } down_obj_arr_s;
 
 static void _down_obj_arr( const down_obj_arr_s* o, vd_t obj )
 {
-    for( sz_t i = o->size; i > 0; i-- )
+    for( uz_t i = o->size; i > 0; i-- )
     {
         o->fp( obj );
         obj = ( u0_t* )obj + o->step;
     }
 }
 
-static down_obj_arr_s* down_obj_arr_s_create( down_manager_s* o, fp_down_obj fp, sz_t size, sz_t step );
+static down_obj_arr_s* down_obj_arr_s_create( down_manager_s* o, fp_down_obj fp, uz_t size, uz_t step );
 
 typedef struct down_arg_arr_s
 {
     down_s _; // internal down function
     fp_down_arg fp; // external down function
     vc_t arg;  // argument for external function
-    sz_t size; // number of active array elements
-    sz_t step; // stepping between array elements in bytes
+    uz_t size; // number of active array elements
+    uz_t step; // stepping between array elements in bytes
 } down_arg_arr_s;
 
 static void _down_arg_arr( const down_arg_arr_s* o, vd_t obj )
 {
-    for( sz_t i = o->size; i > 0; i-- )
+    for( uz_t i = o->size; i > 0; i-- )
     {
         o->fp( o->arg, obj );
         obj = ( u0_t* )obj + o->step;
     }
 }
 
-static down_arg_arr_s* down_arg_arr_s_create( down_manager_s* o, fp_down_arg fp, vc_t arg, sz_t size, sz_t step );
+static down_arg_arr_s* down_arg_arr_s_create( down_manager_s* o, fp_down_arg fp, vc_t arg, uz_t size, uz_t step );
 
 /**********************************************************************************************************************/
 
-vd_t bcore_tbman_external_b_alloc( vd_t current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
+vd_t bcore_tbman_external_b_alloc( vd_t current_ptr, uz_t requested_bytes, uz_t* granted_bytes )
 {
     if( requested_bytes == 0 )
     {
@@ -143,24 +143,24 @@ vd_t bcore_tbman_external_b_alloc( vd_t current_ptr, sz_t requested_bytes, sz_t*
     return current_ptr;
 }
 
-vd_t bcore_tbman_external_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
+vd_t bcore_tbman_external_bn_alloc( vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes )
 {
     return bcore_tbman_external_b_alloc( current_ptr, requested_bytes, granted_bytes );
 }
 
-vd_t bcore_tbman_external_alloc( vd_t ptr, sz_t size )
+vd_t bcore_tbman_external_alloc( vd_t ptr, uz_t size )
 {
     return bcore_tbman_external_b_alloc( ptr, size, NULL );
 }
 
-vd_t bcore_tbman_external_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t requested_units, sz_t* reserved_units )
+vd_t bcore_tbman_external_un_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t current_units, uz_t requested_units, uz_t* reserved_units )
 {
     vd_t reserved_ptr = bcore_tbman_external_bn_alloc( current_ptr, unit_bytes * current_units, unit_bytes * requested_units, reserved_units );
     if( reserved_units ) *reserved_units /= ( unit_bytes > 0 ? unit_bytes : 1 );
     return reserved_ptr;
 }
 
-vd_t bcore_tbman_external_u_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t requested_units, sz_t* reserved_units )
+vd_t bcore_tbman_external_u_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t requested_units, uz_t* reserved_units )
 {
     vd_t reserved_ptr = bcore_tbman_external_b_alloc( current_ptr, unit_bytes * requested_units, reserved_units );
     if( reserved_units ) *reserved_units /= ( unit_bytes > 0 ? unit_bytes : 1 );
@@ -184,8 +184,8 @@ vd_t bcore_tbman_external_u_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t reque
  */
 typedef struct token_manager_s
 {
-    sz_t pool_size;   // size of pool in bytes
-    sz_t block_size;  // size of block in bytes
+    uz_t pool_size;   // size of pool in bytes
+    uz_t block_size;  // size of block in bytes
     u1_t stack_size;  // size of token-stack ( == pool_size / block_size )
     u1_t stack_index; // index into token-stack
 
@@ -198,9 +198,9 @@ typedef struct token_manager_s
 
     bcore_mutex_s* mutex;  // governing mutex
     block_manager_s* parent;
-    sz_t parent_index;
+    uz_t parent_index;
 
-    sz_t* rc_count_arr; // array of reference counters
+    uz_t* rc_count_arr; // array of reference counters
     vd_t* rc_down_arr;  // array of shut down methods
     down_manager_s* down_manager;  // manager of down objects
 
@@ -221,18 +221,18 @@ static void token_manager_s_down( token_manager_s* o )
 
 static token_manager_s* token_manager_s_create
     (
-        sz_t pool_size,
-        sz_t block_size,
+        uz_t pool_size,
+        uz_t block_size,
         bl_t align,
         down_manager_s* down_manager,
         bcore_mutex_s* mutex
     )
 {
     if( ( pool_size & ( pool_size - 1 ) ) != 0 ) ERR( "pool_size %zu is not a power of two", pool_size );
-    sz_t stack_size = pool_size / block_size;
+    uz_t stack_size = pool_size / block_size;
     if( stack_size > 0x10000 ) ERR( "stack_size %zu exceeds 0x10000", stack_size );
-    sz_t reserved_size   = sizeof( token_manager_s ) + sizeof( u1_t ) * stack_size;
-    sz_t reserved_blocks = reserved_size / block_size + ( ( reserved_size % block_size ) > 0 );
+    uz_t reserved_size   = sizeof( token_manager_s ) + sizeof( u1_t ) * stack_size;
+    uz_t reserved_blocks = reserved_size / block_size + ( ( reserved_size % block_size ) > 0 );
     if( stack_size < ( reserved_blocks + 1 ) ) ERR( "pool_size %zu is too small", pool_size );
 
     token_manager_s* o;
@@ -253,7 +253,7 @@ static token_manager_s* token_manager_s_create
     o->block_size = block_size;
     o->stack_size = stack_size;
     o->stack_index = 0;
-    for( sz_t i = 0; i < o->stack_size; i++ ) o->token_stack[ i ] = ( i + reserved_blocks ) < stack_size ? ( i + reserved_blocks ) : 0;
+    for( uz_t i = 0; i < o->stack_size; i++ ) o->token_stack[ i ] = ( i + reserved_blocks ) < stack_size ? ( i + reserved_blocks ) : 0;
     o->down_manager = down_manager;
     o->mutex = mutex;
     return o;
@@ -293,7 +293,7 @@ static void token_manager_s_free_token( token_manager_s* o, u1_t token )
 {
     #ifdef RTCHECKS
         if( token * o->block_size < sizeof( token_manager_s ) ) ERR( "Attempt to free reserved memory." );
-        for( sz_t i = o->stack_index; i < o->stack_size; i++ ) if( o->token_stack[ i ] == token ) ERR( "Attempt to free memory that is declared free." );
+        for( uz_t i = o->stack_index; i < o->stack_size; i++ ) if( o->token_stack[ i ] == token ) ERR( "Attempt to free memory that is declared free." );
     #endif // RTCHECKS
 
     // reference control
@@ -330,26 +330,26 @@ static void token_manager_s_free( token_manager_s* o, vd_t ptr )
 {
     #ifdef RTCHECKS
         if( o->stack_index == 0 ) ERR( "Block manager is empty." );
-        if( ( sz_t )( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) > o->pool_size ) ERR( "Attempt to free memory outside pool." );
+        if( ( uz_t )( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) > o->pool_size ) ERR( "Attempt to free memory outside pool." );
     #endif
     token_manager_s_free_token( o, ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size );
 }
 
 static void token_manager_s_create_rc_count_arr( token_manager_s* o )
 {
-    sz_t alloc_size = sizeof( sz_t ) * o->stack_size;
+    uz_t alloc_size = sizeof( uz_t ) * o->stack_size;
     o->rc_count_arr = malloc( alloc_size );
     memset( o->rc_count_arr, 0, alloc_size );
 }
 
 static void token_manager_s_create_rc_down_arr( token_manager_s* o )
 {
-    sz_t alloc_size = sizeof( vd_t ) * o->stack_size;
+    uz_t alloc_size = sizeof( vd_t ) * o->stack_size;
     o->rc_down_arr = malloc( alloc_size );
     memset( o->rc_down_arr, 0, alloc_size );
 }
 
-static sz_t token_manager_s_references( token_manager_s* o, vc_t ptr )
+static uz_t token_manager_s_references( token_manager_s* o, vc_t ptr )
 {
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
     if( !o->rc_count_arr ) return 1;
@@ -362,7 +362,7 @@ static void token_manager_s_fork( token_manager_s* o, vd_t ptr )
 
     #ifdef RTCHECKS
         if( token * o->block_size < sizeof( token_manager_s ) ) ERR( "Attempt to fork reserved memory." );
-        for( sz_t i = o->stack_index; i < o->stack_size; i++ ) if( o->token_stack[ i ] == token ) ERR( "Attempt to fork memory that is declared free." );
+        for( uz_t i = o->stack_index; i < o->stack_size; i++ ) if( o->token_stack[ i ] == token ) ERR( "Attempt to fork memory that is declared free." );
     #endif // RTCHECKS
 
     if( !o->rc_count_arr ) token_manager_s_create_rc_count_arr( o );
@@ -434,13 +434,13 @@ static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, v
     token_manager_s_free_token( o, token );
 }
 
-static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj down, vd_t ptr, sz_t size, sz_t step )
+static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
     if( !o->rc_count_arr )
     {
         bcore_mutex_s_unlock( o->mutex );
-        for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
+        for( uz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
         bcore_mutex_s_lock( o->mutex );
         token_manager_s_free_token( o, token );
         return;
@@ -457,19 +457,19 @@ static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj dow
     if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
     {
         bcore_mutex_s_unlock( o->mutex );
-        for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
+        for( uz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
         bcore_mutex_s_lock( o->mutex );
     }
     token_manager_s_free_token( o, token );
 }
 
-static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step )
+static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
     if( !o->rc_count_arr )
     {
         bcore_mutex_s_unlock( o->mutex );
-        for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
+        for( uz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
         bcore_mutex_s_lock( o->mutex );
         token_manager_s_free_token( o, token );
         return;
@@ -486,45 +486,45 @@ static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg dow
     if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
     {
         bcore_mutex_s_unlock( o->mutex );
-        for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
+        for( uz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
         bcore_mutex_s_lock( o->mutex );
     }
 
     token_manager_s_free_token( o, token );
 }
 
-static sz_t token_manager_s_total_alloc( const token_manager_s* o )
+static uz_t token_manager_s_total_alloc( const token_manager_s* o )
 {
     return o->block_size * o->stack_index;
 }
 
-static sz_t token_manager_s_total_instances( const token_manager_s* o )
+static uz_t token_manager_s_total_instances( const token_manager_s* o )
 {
     return o->stack_index;
 }
 
-static sz_t token_manager_s_total_references( const token_manager_s* o )
+static uz_t token_manager_s_total_references( const token_manager_s* o )
 {
-    sz_t count = 0;
-    for( sz_t i = 0; i < o->stack_index; i++ )
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->stack_index; i++ )
     {
-        sz_t token = o->token_stack[ i ];
+        uz_t token = o->token_stack[ i ];
         count++;
         if( o->rc_count_arr ) count += o->rc_count_arr[ token ];
     }
     return count;
 }
 
-static sz_t token_manager_s_total_space( const token_manager_s* o )
+static uz_t token_manager_s_total_space( const token_manager_s* o )
 {
     return o->pool_size + o->stack_size * sizeof( u1_t );
 }
 
-static void token_manager_s_for_all_instances( token_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+static void token_manager_s_for_all_instances( token_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
-    for( sz_t i = 0; i < o->stack_index; i++ )
+    for( uz_t i = 0; i < o->stack_index; i++ )
     {
-        sz_t token = o->token_stack[ i ];
+        uz_t token = o->token_stack[ i ];
         if( fp ) fp( arg, ( u0_t* )o + token * o->block_size, o->block_size );
     }
 }
@@ -537,7 +537,7 @@ static st_s* token_manager_s_status( const token_manager_s* o, int detail_level 
     st_s_pushf( str, "    block_size:  %zu\n",  o->block_size );
     st_s_pushf( str, "    stack_size:  %zu\n",  o->stack_size );
     st_s_pushf( str, "    aligned:     %s\n",   o->aligned ? "true" : "false" );
-    st_s_pushf( str, "    stack_index: %zu\n",  ( sz_t )o->stack_index );
+    st_s_pushf( str, "    stack_index: %zu\n",  ( uz_t )o->stack_index );
     st_s_pushf( str, "    total alloc: %zu\n", token_manager_s_total_alloc( o ) );
     st_s_pushf( str, "    total space: %zu\n", token_manager_s_total_space( o ) );
     return str;
@@ -572,12 +572,12 @@ static st_s* token_manager_s_status( const token_manager_s* o, int detail_level 
  */
 typedef struct block_manager_s
 {
-    sz_t pool_size;  // pool size of all token-managers
-    sz_t block_size; // block size of all token-managers
+    uz_t pool_size;  // pool size of all token-managers
+    uz_t block_size; // block size of all token-managers
     bl_t align;      // attempt to align token_managers to pool_size
     token_manager_s** data;
-    sz_t size, space;
-    sz_t free_index;       // entries equal or above free_index have space for allocation
+    uz_t size, space;
+    uz_t free_index;       // entries equal or above free_index have space for allocation
     f3_t sweep_hysteresis; // if ( empty token-managers ) / ( used token-managers ) < sweep_hysteresis, empty token-managers are discarded
     bl_t aligned;          // all token managers are aligned to pool_size
     vd_t parent;           // parent
@@ -591,8 +591,8 @@ static void block_manager_s_init
     (
         block_manager_s* o,
         vd_t parent,
-        sz_t pool_size,
-        sz_t block_size,
+        uz_t pool_size,
+        uz_t block_size,
         bl_t align,
         fp_lost_alignment lost_alignment_fp,
         bcore_btree_vd_s* internal_btree,
@@ -617,7 +617,7 @@ static void block_manager_s_down( block_manager_s* o )
 {
     if( o->data )
     {
-        for( sz_t i = 0; i < o->size; i++ ) token_manager_s_discard( o->data[ i ] );
+        for( uz_t i = 0; i < o->size; i++ ) token_manager_s_discard( o->data[ i ] );
         free( o->data );
         o->data = NULL;
         o->size = o->space = 0;
@@ -627,8 +627,8 @@ static void block_manager_s_down( block_manager_s* o )
 static block_manager_s* block_manager_s_create
     (
         vd_t parent,
-        sz_t pool_size,
-        sz_t block_size,
+        uz_t pool_size,
+        uz_t block_size,
         bl_t align,
         fp_lost_alignment lost_alignment_fp,
         bcore_btree_vd_s* internal_btree,
@@ -695,8 +695,8 @@ static void block_manager_s_full_to_free( block_manager_s* o, token_manager_s* c
     o->free_index--;
 
     // swap child with current free position
-    sz_t child_index = child->parent_index;
-    sz_t swapc_index = o->free_index;
+    uz_t child_index = child->parent_index;
+    uz_t swapc_index = o->free_index;
 
     token_manager_s* swapc = o->data[ swapc_index ];
     o->data[ swapc_index ] = child;
@@ -705,10 +705,10 @@ static void block_manager_s_full_to_free( block_manager_s* o, token_manager_s* c
     swapc->parent_index = child_index;
 }
 
-static sz_t block_manager_s_empty_tail( const block_manager_s* o )
+static uz_t block_manager_s_empty_tail( const block_manager_s* o )
 {
     if( o->size == 0 ) return 0;
-    sz_t empty_index = o->size;
+    uz_t empty_index = o->size;
     while( empty_index > 0 && token_manager_s_is_empty( o->data[ empty_index - 1 ] ) ) empty_index--;
     return o->size - empty_index;
 }
@@ -717,11 +717,11 @@ static sz_t block_manager_s_empty_tail( const block_manager_s* o )
 static void block_manager_s_free_to_empty( block_manager_s* o, token_manager_s* child )
 {
     // move empty manager to tail (if not already there)
-    sz_t child_index = child->parent_index;
-    sz_t empty_tail  = block_manager_s_empty_tail( o );
+    uz_t child_index = child->parent_index;
+    uz_t empty_tail  = block_manager_s_empty_tail( o );
     if( empty_tail < o->size )
     {
-        sz_t swapc_index = o->size - empty_tail - 1;
+        uz_t swapc_index = o->size - empty_tail - 1;
         if( child_index < swapc_index )
         {
             token_manager_s* swapc = o->data[ swapc_index ];
@@ -751,49 +751,49 @@ static void block_manager_s_free_to_empty( block_manager_s* o, token_manager_s* 
     }
 }
 
-static sz_t block_manager_s_total_alloc( const block_manager_s* o )
+static uz_t block_manager_s_total_alloc( const block_manager_s* o )
 {
-    sz_t sum = 0;
-    for( sz_t i = 0; i < o->size; i++ )
+    uz_t sum = 0;
+    for( uz_t i = 0; i < o->size; i++ )
     {
         sum += token_manager_s_total_alloc( o->data[ i ] );
     }
     return sum;
 }
 
-static sz_t block_manager_s_total_instances( const block_manager_s* o )
+static uz_t block_manager_s_total_instances( const block_manager_s* o )
 {
-    sz_t sum = 0;
-    for( sz_t i = 0; i < o->size; i++ )
+    uz_t sum = 0;
+    for( uz_t i = 0; i < o->size; i++ )
     {
         sum += token_manager_s_total_instances( o->data[ i ] );
     }
     return sum;
 }
 
-static sz_t block_manager_s_total_references( const block_manager_s* o )
+static uz_t block_manager_s_total_references( const block_manager_s* o )
 {
-    sz_t sum = 0;
-    for( sz_t i = 0; i < o->size; i++ )
+    uz_t sum = 0;
+    for( uz_t i = 0; i < o->size; i++ )
     {
         sum += token_manager_s_total_references( o->data[ i ] );
     }
     return sum;
 }
 
-static sz_t block_manager_s_total_space( const block_manager_s* o )
+static uz_t block_manager_s_total_space( const block_manager_s* o )
 {
-    sz_t sum = 0;
-    for( sz_t i = 0; i < o->size; i++ )
+    uz_t sum = 0;
+    for( uz_t i = 0; i < o->size; i++ )
     {
         sum += token_manager_s_total_space( o->data[ i ] );
     }
     return sum;
 }
 
-static void block_manager_s_for_all_instances( block_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+static void block_manager_s_for_all_instances( block_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
-    for( sz_t i = 0; i < o->size; i++ ) token_manager_s_for_all_instances( o->data[ i ], fp, arg );
+    for( uz_t i = 0; i < o->size; i++ ) token_manager_s_for_all_instances( o->data[ i ], fp, arg );
 }
 
 static st_s* block_manager_s_status( const block_manager_s* o, int detail_level )
@@ -811,7 +811,7 @@ static st_s* block_manager_s_status( const block_manager_s* o, int detail_level 
     st_s_pushf( str, "  total space:      %zu\n", block_manager_s_total_space( o ) );
     if( detail_level > 1 )
     {
-        for( sz_t i = 0; i < o->size; i++ )
+        for( uz_t i = 0; i < o->size; i++ )
         {
             st_s_pushf( str, "\nblock manager %zu:\n", i );
             st_s_push_st_d( str, token_manager_s_status( o->data[ i ], detail_level - 1 ) );
@@ -828,8 +828,8 @@ static st_s* block_manager_s_status( const block_manager_s* o, int detail_level 
 
 typedef struct ext_s // external item
 {
-    sz_t size;     // allocated size
-    sz_t rc_count; // reference counters
+    uz_t size;     // allocated size
+    uz_t rc_count; // reference counters
     vd_t rc_down;  // shut down method
 } ext_s;
 
@@ -841,7 +841,7 @@ typedef struct external_manager_s
     block_manager_s   bm_ext;
     bcore_btree_vd_s* tm_btree; // btree of token managers
     bcore_btree_pp_s* ex_btree; // btree of external references
-    sz_t              pool_size;
+    uz_t              pool_size;
     bl_t              aligned;
     down_manager_s*   down_manager;  // manager of down objects
     bcore_mutex_s*    mutex;    // governing mutex
@@ -856,7 +856,7 @@ static void external_manager_s_lost_alignment( external_manager_s* o )
 static void external_manager_s_init
     (
         external_manager_s* o,
-        sz_t pool_size,
+        uz_t pool_size,
         bl_t full_align,
         down_manager_s* down_manager,
         bcore_mutex_s* mutex
@@ -911,7 +911,7 @@ static void ext_s_discard( external_manager_s* o, ext_s* ext )
     }
 }
 
-static vd_t external_manager_s_malloc( external_manager_s* o, sz_t requested_bytes, sz_t* granted_bytes )
+static vd_t external_manager_s_malloc( external_manager_s* o, uz_t requested_bytes, uz_t* granted_bytes )
 {
     vd_t ptr = aligned_alloc( TBMAN_ALIGN, requested_bytes );
     if( !ptr ) ERR( "Failed allocating %zu bytes.", requested_bytes );
@@ -954,46 +954,46 @@ static void external_manager_s_free( external_manager_s* o, vd_t ptr )
     external_manager_s_free_ext( o, ptr, *ext_p );
 }
 
-static sz_t external_manager_s_granted_bytes( external_manager_s* o, vd_t ptr )
+static uz_t external_manager_s_granted_bytes( external_manager_s* o, vd_t ptr )
 {
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Could not retrieve current external memory" );
     return ( ( ext_s* )*ext_p )->size;
 }
 
-static void ext_sum( vd_t val, bcore_btree_pp_kv_s kv ) { *(sz_t*)val += ( ( ext_s* )kv.val )->size; }
+static void ext_sum( vd_t val, bcore_btree_pp_kv_s kv ) { *(uz_t*)val += ( ( ext_s* )kv.val )->size; }
 
-static sz_t external_manager_s_total_alloc( const external_manager_s* o )
+static uz_t external_manager_s_total_alloc( const external_manager_s* o )
 {
-    sz_t size = 0;
+    uz_t size = 0;
     bcore_btree_pp_s_run( o->ex_btree, ext_sum, &size );
     return size;
 }
 
-static void ext_count( vd_t val, bcore_btree_pp_kv_s kv ) { *(sz_t*)val += 1; }
+static void ext_count( vd_t val, bcore_btree_pp_kv_s kv ) { *(uz_t*)val += 1; }
 
-static sz_t external_manager_s_total_instances( const external_manager_s* o )
+static uz_t external_manager_s_total_instances( const external_manager_s* o )
 {
-    sz_t size = 0;
+    uz_t size = 0;
     bcore_btree_pp_s_run( o->ex_btree, ext_count, &size );
     return size;
 }
 
 static void ext_rc_ref_count( vd_t val, bcore_btree_pp_kv_s kv )
 {
-    *(sz_t*)val += 1 + ( ( ext_s* )kv.val )->rc_count;
+    *(uz_t*)val += 1 + ( ( ext_s* )kv.val )->rc_count;
 }
 
-static sz_t external_manager_s_total_references( const external_manager_s* o )
+static uz_t external_manager_s_total_references( const external_manager_s* o )
 {
-    sz_t size = 0;
+    uz_t size = 0;
     bcore_btree_pp_s_run( o->ex_btree, ext_rc_ref_count, &size );
     return size;
 }
 
 typedef struct ext_for_instance_arg
 {
-    void (*fp)( vd_t arg, vd_t ptr, sz_t space );
+    void (*fp)( vd_t arg, vd_t ptr, uz_t space );
     vd_t arg;
 } ext_for_instance_arg;
 
@@ -1003,14 +1003,14 @@ static void ext_for_instance( vd_t val, bcore_btree_pp_kv_s kv )
     iarg->fp( iarg->arg, kv.key, ( ( ext_s* )kv.val )->size );
 }
 
-static void external_manager_s_for_all_instances( external_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+static void external_manager_s_for_all_instances( external_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
     ext_for_instance_arg iarg = { .fp = fp, .arg = arg };
     bcore_btree_pp_s_run( o->ex_btree, ext_for_instance, &iarg );
 }
 
 
-static sz_t external_manager_s_references( external_manager_s* o, vc_t ptr )
+static uz_t external_manager_s_references( external_manager_s* o, vc_t ptr )
 {
     bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ( vd_t )ptr );
     if( !kv ) return 0;
@@ -1083,7 +1083,7 @@ static void external_manager_s_release_arg( external_manager_s* o, fp_down_arg d
     }
 }
 
-static void external_manager_s_release_obj_arr( external_manager_s* o, fp_down_obj down, vd_t ptr, sz_t size, sz_t step )
+static void external_manager_s_release_obj_arr( external_manager_s* o, fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Object is not root." );
@@ -1099,14 +1099,14 @@ static void external_manager_s_release_obj_arr( external_manager_s* o, fp_down_o
         if( !ext->rc_down )
         {
             bcore_mutex_s_unlock( o->mutex );
-            for( sz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
+            for( uz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
             bcore_mutex_s_lock( o->mutex );
         }
         external_manager_s_free_ext( o, ptr, ext );
     }
 }
 
-static void external_manager_s_release_arg_arr( external_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step )
+static void external_manager_s_release_arg_arr( external_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Object is not root." );
@@ -1122,7 +1122,7 @@ static void external_manager_s_release_arg_arr( external_manager_s* o, fp_down_a
         if( !ext->rc_down )
         {
             bcore_mutex_s_unlock( o->mutex );
-            for( sz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
+            for( uz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
             bcore_mutex_s_lock( o->mutex );
         }
         external_manager_s_free_ext( o, ptr, ext );
@@ -1140,7 +1140,7 @@ typedef struct down_manager_s
     block_manager_s   bm_down_obj_arr;
     block_manager_s   bm_down_arg_arr;
     bcore_btree_vd_s* tm_btree; // btree of token managers
-    sz_t              pool_size;
+    uz_t              pool_size;
     bl_t              aligned;
     bcore_mutex_s*    mutex;    // governing mutex
 } down_manager_s;
@@ -1150,7 +1150,7 @@ static void down_manager_s_lost_alignment( external_manager_s* o )
     o->aligned = false;
 }
 
-static void down_manager_s_init( down_manager_s* o, sz_t pool_size, bl_t full_align, bcore_mutex_s* mutex )
+static void down_manager_s_init( down_manager_s* o, uz_t pool_size, bl_t full_align, bcore_mutex_s* mutex )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->pool_size = pool_size;
@@ -1250,7 +1250,7 @@ static down_arg_s* down_arg_s_create( down_manager_s* o, fp_down_arg fp, vc_t ar
     return down;
 }
 
-static down_obj_arr_s* down_obj_arr_s_create( down_manager_s* o, fp_down_obj fp, sz_t size, sz_t step )
+static down_obj_arr_s* down_obj_arr_s_create( down_manager_s* o, fp_down_obj fp, uz_t size, uz_t step )
 {
     down_obj_arr_s* down = block_manager_s_alloc( &o->bm_down_obj_arr );
     down->_._ = ( fp_down )_down_obj_arr;
@@ -1260,7 +1260,7 @@ static down_obj_arr_s* down_obj_arr_s_create( down_manager_s* o, fp_down_obj fp,
     return down;
 }
 
-static down_arg_arr_s* down_arg_arr_s_create( down_manager_s* o, fp_down_arg fp, vc_t arg, sz_t size, sz_t step )
+static down_arg_arr_s* down_arg_arr_s_create( down_manager_s* o, fp_down_arg fp, vc_t arg, uz_t size, uz_t step )
 {
     down_arg_arr_s* down = block_manager_s_alloc( &o->bm_down_arg_arr );
     down->_._ = ( fp_down )_down_arg_arr;
@@ -1295,12 +1295,12 @@ static down_arg_arr_s* down_arg_arr_s_create( down_manager_s* o, fp_down_arg fp,
 typedef struct bcore_tbman_s
 {
     block_manager_s** data; // block managers are sorted by increasing block size
-    sz_t size;
-    sz_t pool_size;               // pool size for all token managers
-    sz_t min_block_size;
-    sz_t max_block_size;
+    uz_t size;
+    uz_t pool_size;               // pool size for all token managers
+    uz_t min_block_size;
+    uz_t max_block_size;
     bl_t aligned;                 // all token managers are aligned
-    sz_t* block_size_array;       // copy of block size values (for fast access)
+    uz_t* block_size_array;       // copy of block size values (for fast access)
     bcore_btree_vd_s* internal_btree;
     external_manager_s  external_manager;
     down_manager_s down_manager;
@@ -1322,7 +1322,7 @@ static void tbman_s_lost_alignment( struct bcore_tbman_s* o )
     o->aligned = false;
 }
 
-void bcore_tbman_s_init( bcore_tbman_s* o, sz_t pool_size, sz_t min_block_size, sz_t max_block_size, sz_t stepping_method, bl_t full_align )
+void bcore_tbman_s_init( bcore_tbman_s* o, uz_t pool_size, uz_t min_block_size, uz_t max_block_size, uz_t stepping_method, bl_t full_align )
 {
     bcore_memzero( o, sizeof( *o ) );
     bcore_mutex_s_init( &o->mutex );
@@ -1334,14 +1334,14 @@ void bcore_tbman_s_init( bcore_tbman_s* o, sz_t pool_size, sz_t min_block_size, 
     o->min_block_size = min_block_size;
     o->max_block_size = max_block_size;
 
-    sz_t mask_bxp  = stepping_method;
-    sz_t size_mask = ( 1 << mask_bxp ) - 1;
-    sz_t size_inc  = o->min_block_size;
+    uz_t mask_bxp  = stepping_method;
+    uz_t size_mask = ( 1 << mask_bxp ) - 1;
+    uz_t size_inc  = o->min_block_size;
     while( ( size_mask < o->min_block_size ) || ( ( size_mask << 1 ) & o->min_block_size ) != 0 ) size_mask <<= 1;
 
-    sz_t space = 0;
+    uz_t space = 0;
 
-    for( sz_t block_size = o->min_block_size; block_size <= o->max_block_size; block_size += size_inc )
+    for( uz_t block_size = o->min_block_size; block_size <= o->max_block_size; block_size += size_inc )
     {
         if( o->size == space )
         {
@@ -1380,11 +1380,11 @@ void bcore_tbman_s_init( bcore_tbman_s* o, sz_t pool_size, sz_t min_block_size, 
         }
     }
 
-    o->block_size_array = malloc( o->size * sizeof( sz_t ) );
-    if( !o->block_size_array ) ERR( "Failed allocating %zu bytes", o->size * sizeof( sz_t ) );
+    o->block_size_array = malloc( o->size * sizeof( uz_t ) );
+    if( !o->block_size_array ) ERR( "Failed allocating %zu bytes", o->size * sizeof( uz_t ) );
 
     o->aligned = true;
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         o->aligned = o->aligned && o->data[ i ]->aligned;
         o->block_size_array[ i ] = o->data[ i ]->block_size;
@@ -1402,7 +1402,7 @@ void bcore_tbman_s_down( bcore_tbman_s* o )
 
     if( o->data )
     {
-        for( sz_t i = 0; i < o->size; i++ ) block_manager_s_discard( o->data[ i ] );
+        for( uz_t i = 0; i < o->size; i++ ) block_manager_s_discard( o->data[ i ] );
         free( o->data );
     }
 
@@ -1412,7 +1412,7 @@ void bcore_tbman_s_down( bcore_tbman_s* o )
     bcore_mutex_s_down( &o->mutex );
 }
 
-bcore_tbman_s* bcore_tbman_s_create( sz_t pool_size, sz_t min_block_size, sz_t max_block_size, sz_t stepping_method, bl_t full_align )
+bcore_tbman_s* bcore_tbman_s_create( uz_t pool_size, uz_t min_block_size, uz_t max_block_size, uz_t stepping_method, bl_t full_align )
 {
     bcore_tbman_s* o = malloc( sizeof( bcore_tbman_s ) );
     if( !o ) ERR( "Failed allocating %zu bytes", sizeof( bcore_tbman_s ) );
@@ -1427,10 +1427,10 @@ void bcore_tbman_s_discard( bcore_tbman_s* o )
     free( o );
 }
 
-static vd_t tbman_s_mem_alloc( bcore_tbman_s* o, sz_t requested_bytes, sz_t* granted_bytes )
+static vd_t tbman_s_mem_alloc( bcore_tbman_s* o, uz_t requested_bytes, uz_t* granted_bytes )
 {
     block_manager_s* block_manager = NULL;
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( requested_bytes <= o->block_size_array[ i ] )
         {
@@ -1453,7 +1453,7 @@ static vd_t tbman_s_mem_alloc( bcore_tbman_s* o, sz_t requested_bytes, sz_t* gra
     return reserved_ptr;
 }
 
-static void tbman_s_mem_free( bcore_tbman_s* o, vd_t current_ptr, const sz_t* current_bytes )
+static void tbman_s_mem_free( bcore_tbman_s* o, vd_t current_ptr, const uz_t* current_bytes )
 {
     if( current_bytes && *current_bytes <= o->max_block_size && o->aligned )
     {
@@ -1540,7 +1540,7 @@ static void tbman_s_release_arg( bcore_tbman_s* o, fp_down_arg down, vc_t arg, v
     }
 }
 
-static void tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t ptr, sz_t size, sz_t step )
+static void tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
     if( down )
     {
@@ -1560,7 +1560,7 @@ static void tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t pt
     }
 }
 
-static void tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step )
+static void tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
     if( down )
     {
@@ -1580,7 +1580,7 @@ static void tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t ar
     }
 }
 
-static sz_t tbman_s_references( bcore_tbman_s* o, vc_t ptr )
+static uz_t tbman_s_references( bcore_tbman_s* o, vc_t ptr )
 {
     vd_t block_ptr = bcore_btree_vd_s_largest_below_equal( o->internal_btree, ( vd_t )ptr );
     if( block_ptr && ( ( ptrdiff_t )( (u0_t*)ptr - (u0_t*)block_ptr ) < o->pool_size ) )
@@ -1593,7 +1593,7 @@ static sz_t tbman_s_references( bcore_tbman_s* o, vc_t ptr )
     }
 }
 
-static vd_t tbman_s_mem_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t* current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
+static vd_t tbman_s_mem_realloc( bcore_tbman_s* o, vd_t current_ptr, const uz_t* current_bytes, uz_t requested_bytes, uz_t* granted_bytes )
 {
     token_manager_s* token_manager = NULL;
     if( current_bytes && *current_bytes <= o->max_block_size && o->aligned )
@@ -1618,7 +1618,7 @@ static vd_t tbman_s_mem_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t*
         else // size reduction
         {
             block_manager_s* block_manager = NULL;
-            for( sz_t i = 0; i < o->size; i++ )
+            for( uz_t i = 0; i < o->size; i++ )
             {
                 if( requested_bytes <= o->block_size_array[ i ] )
                 {
@@ -1655,7 +1655,7 @@ static vd_t tbman_s_mem_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t*
         else // neither old nor new size handled by this manager
         {
 
-            sz_t current_ext_bytes = external_manager_s_granted_bytes( &o->external_manager, current_ptr );
+            uz_t current_ext_bytes = external_manager_s_granted_bytes( &o->external_manager, current_ptr );
 
             // if requested bytes is less but not significantly less than current bytes, keep current memory
             if( ( requested_bytes < current_ext_bytes ) && ( requested_bytes >= ( current_ext_bytes >> 1 ) ) )
@@ -1665,7 +1665,7 @@ static vd_t tbman_s_mem_realloc( bcore_tbman_s* o, vd_t current_ptr, const sz_t*
             }
 
             vd_t reserved_ptr = external_manager_s_malloc( &o->external_manager, requested_bytes, granted_bytes );
-            sz_t copy_bytes = ( requested_bytes < current_ext_bytes ) ? requested_bytes : current_ext_bytes;
+            uz_t copy_bytes = ( requested_bytes < current_ext_bytes ) ? requested_bytes : current_ext_bytes;
             bcore_memcpy( reserved_ptr, current_ptr, copy_bytes );
             external_manager_s_free( &o->external_manager, current_ptr );
             return reserved_ptr;
@@ -1706,7 +1706,7 @@ void bcore_tbman_s_release_arg( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd
     tbman_s_unlock( o );
 }
 
-void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t ptr, sz_t size, sz_t step )
+void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
     if( !ptr ) return;
     tbman_s_lock( o );
@@ -1714,7 +1714,7 @@ void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t ptr
     tbman_s_unlock( o );
 }
 
-void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step )
+void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
     if( !ptr ) return;
     tbman_s_lock( o );
@@ -1722,16 +1722,16 @@ void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg
     tbman_s_unlock( o );
 }
 
-sz_t bcore_tbman_s_references( bcore_tbman_s* o, vc_t ptr )
+uz_t bcore_tbman_s_references( bcore_tbman_s* o, vc_t ptr )
 {
     if( !ptr ) return 0;
     tbman_s_lock( o );
-    sz_t n = tbman_s_references( o, ptr );
+    uz_t n = tbman_s_references( o, ptr );
     tbman_s_unlock( o );
     return n;
 }
 
-vd_t bcore_tbman_s_b_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
+vd_t bcore_tbman_s_b_alloc( bcore_tbman_s* o, vd_t current_ptr, uz_t requested_bytes, uz_t* granted_bytes )
 {
     tbman_s_lock( o );
     vd_t ret = NULL;
@@ -1758,7 +1758,7 @@ vd_t bcore_tbman_s_b_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t requested_b
     return ret;
 }
 
-vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
+vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes )
 {
     tbman_s_lock( o );
     vd_t ret = NULL;
@@ -1785,69 +1785,69 @@ vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t current_by
     return ret;
 }
 
-vd_t bcore_tbman_s_u_alloc( bcore_tbman_s* o, sz_t unit_bytes, vd_t current_ptr, sz_t requested_units, sz_t* reserved_units )
+vd_t bcore_tbman_s_u_alloc( bcore_tbman_s* o, uz_t unit_bytes, vd_t current_ptr, uz_t requested_units, uz_t* reserved_units )
 {
     vd_t reserved_ptr = bcore_tbman_s_b_alloc( o, current_ptr, unit_bytes * requested_units, reserved_units );
     if( reserved_units ) *reserved_units /= ( unit_bytes > 0 ? unit_bytes : 1 );
     return reserved_ptr;
 }
 
-vd_t bcore_tbman_s_un_alloc( bcore_tbman_s* o, sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t requested_units, sz_t* reserved_units )
+vd_t bcore_tbman_s_un_alloc( bcore_tbman_s* o, uz_t unit_bytes, vd_t current_ptr, uz_t current_units, uz_t requested_units, uz_t* reserved_units )
 {
     vd_t reserved_ptr = bcore_tbman_s_bn_alloc( o, current_ptr, unit_bytes * current_units, unit_bytes * requested_units, reserved_units );
     if( reserved_units ) *reserved_units /= ( unit_bytes > 0 ? unit_bytes : 1 );
     return reserved_ptr;
 }
 
-static sz_t tbman_s_internal_total_alloc( const bcore_tbman_s* o )
+static uz_t tbman_s_internal_total_alloc( const bcore_tbman_s* o )
 {
-    sz_t sum = 0;
-    for( sz_t i = 0; i < o->size; i++ )
+    uz_t sum = 0;
+    for( uz_t i = 0; i < o->size; i++ )
     {
         sum += block_manager_s_total_alloc( o->data[ i ] );
     }
     return sum;
 }
 
-static sz_t tbman_s_internal_total_instances( const bcore_tbman_s* o )
+static uz_t tbman_s_internal_total_instances( const bcore_tbman_s* o )
 {
-    sz_t sum = 0;
-    for( sz_t i = 0; i < o->size; i++ )
+    uz_t sum = 0;
+    for( uz_t i = 0; i < o->size; i++ )
     {
         sum += block_manager_s_total_instances( o->data[ i ] );
     }
     return sum;
 }
 
-static sz_t tbman_s_internal_total_references( const bcore_tbman_s* o )
+static uz_t tbman_s_internal_total_references( const bcore_tbman_s* o )
 {
-    sz_t sum = 0;
-    for( sz_t i = 0; i < o->size; i++ )
+    uz_t sum = 0;
+    for( uz_t i = 0; i < o->size; i++ )
     {
         sum += block_manager_s_total_references( o->data[ i ] );
     }
     return sum;
 }
 
-static sz_t tbman_s_total_alloc( const bcore_tbman_s* o )
+static uz_t tbman_s_total_alloc( const bcore_tbman_s* o )
 {
     return external_manager_s_total_alloc( &o->external_manager ) + tbman_s_internal_total_alloc( o );
 }
 
-static sz_t tbman_s_total_instances( const bcore_tbman_s* o )
+static uz_t tbman_s_total_instances( const bcore_tbman_s* o )
 {
     return external_manager_s_total_instances( &o->external_manager ) + tbman_s_internal_total_instances( o );
 }
 
-static sz_t tbman_s_total_references( const bcore_tbman_s* o )
+static uz_t tbman_s_total_references( const bcore_tbman_s* o )
 {
     return external_manager_s_total_references( &o->external_manager ) + tbman_s_internal_total_references( o );
 }
 
-static sz_t tbman_s_total_space( const bcore_tbman_s* o )
+static uz_t tbman_s_total_space( const bcore_tbman_s* o )
 {
-    sz_t sum = 0;
-    for( sz_t i = 0; i < o->size; i++ )
+    uz_t sum = 0;
+    for( uz_t i = 0; i < o->size; i++ )
     {
         sum += block_manager_s_total_space( o->data[ i ] );
     }
@@ -1855,9 +1855,9 @@ static sz_t tbman_s_total_space( const bcore_tbman_s* o )
     return sum;
 }
 
-static void tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+static void tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         block_manager_s_for_all_instances( o->data[ i ], fp, arg );
     }
@@ -1926,100 +1926,100 @@ void bcore_tbman_release_arg( fp_down_arg down, vc_t arg, vd_t ptr )
     bcore_tbman_s_release_arg( tbman_s_g, down, arg, ptr );
 }
 
-void bcore_tbman_release_obj_arr( fp_down_obj down, vd_t ptr, sz_t size, sz_t step )
+void bcore_tbman_release_obj_arr( fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
     assert( tbman_s_g != NULL );
     bcore_tbman_s_release_obj_arr( tbman_s_g, down, ptr, size, step );
 }
 
-void bcore_tbman_release_arg_arr( fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step )
+void bcore_tbman_release_arg_arr( fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
     assert( tbman_s_g != NULL );
     bcore_tbman_s_release_arg_arr( tbman_s_g, down, arg, ptr, size, step );
 }
 
-sz_t bcore_tbman_references( vc_t ptr )
+uz_t bcore_tbman_references( vc_t ptr )
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_references( tbman_s_g, ptr );
 }
 
-vd_t bcore_tbman_b_alloc( vd_t current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
+vd_t bcore_tbman_b_alloc( vd_t current_ptr, uz_t requested_bytes, uz_t* granted_bytes )
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_b_alloc( tbman_s_g, current_ptr, requested_bytes, granted_bytes );
 }
 
-vd_t bcore_tbman_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
+vd_t bcore_tbman_bn_alloc( vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes )
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_bn_alloc( tbman_s_g, current_ptr, current_bytes, requested_bytes, granted_bytes );
 }
 
-vd_t bcore_tbman_u_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t requested_units, sz_t* reserved_units )
+vd_t bcore_tbman_u_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t requested_units, uz_t* reserved_units )
 {
     vd_t reserved_ptr = bcore_tbman_b_alloc( current_ptr, unit_bytes * requested_units, reserved_units );
     if( reserved_units ) *reserved_units /= ( unit_bytes > 0 ? unit_bytes : 1 );
     return reserved_ptr;
 }
 
-vd_t bcore_tbman_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t requested_units, sz_t* reserved_units )
+vd_t bcore_tbman_un_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t current_units, uz_t requested_units, uz_t* reserved_units )
 {
     vd_t reserved_ptr = bcore_tbman_bn_alloc( current_ptr, unit_bytes * current_units, unit_bytes * requested_units, reserved_units );
     if( reserved_units ) *reserved_units /= ( unit_bytes > 0 ? unit_bytes : 1 );
     return reserved_ptr;
 }
 
-sz_t bcore_tbman_s_granted_space( bcore_tbman_s* o )
+uz_t bcore_tbman_s_granted_space( bcore_tbman_s* o )
 {
     tbman_s_lock( o );
-    sz_t space = tbman_s_total_alloc( o );
+    uz_t space = tbman_s_total_alloc( o );
     tbman_s_unlock( o );
     return space;
 }
 
-sz_t bcore_tbman_s_total_instances( bcore_tbman_s* o )
+uz_t bcore_tbman_s_total_instances( bcore_tbman_s* o )
 {
     tbman_s_lock( o );
-    sz_t space = tbman_s_total_instances( o );
+    uz_t space = tbman_s_total_instances( o );
     tbman_s_unlock( o );
     return space;
 }
 
-sz_t bcore_tbman_s_total_references( bcore_tbman_s* o )
+uz_t bcore_tbman_s_total_references( bcore_tbman_s* o )
 {
     tbman_s_lock( o );
-    sz_t space = tbman_s_total_references( o );
+    uz_t space = tbman_s_total_references( o );
     tbman_s_unlock( o );
     return space;
 }
 
-void bcore_tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+void bcore_tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
     tbman_s_lock( o );
     tbman_s_for_all_instances( o, fp, arg );
     tbman_s_unlock( o );
 }
 
-sz_t bcore_tbman_granted_space()
+uz_t bcore_tbman_granted_space()
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_granted_space( tbman_s_g );
 }
 
-sz_t bcore_tbman_total_instances()
+uz_t bcore_tbman_total_instances()
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_total_instances( tbman_s_g );
 }
 
-sz_t bcore_tbman_total_references()
+uz_t bcore_tbman_total_references()
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_total_references( tbman_s_g );
 }
 
-void bcore_tbman_for_all_instances( void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg )
+void bcore_tbman_for_all_instances( void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
     assert( tbman_s_g != NULL );
     bcore_tbman_s_for_all_instances( tbman_s_g, fp, arg );
@@ -2085,7 +2085,7 @@ st_s* bcore_tbman_s_status( bcore_tbman_s* o, int detail_level )
     st_s_pushf( str, "    internal .......... %zu\n", tbman_s_internal_total_references( o ) );
     if( detail_level > 1 )
     {
-        for( sz_t i = 0; i < o->size; i++ )
+        for( uz_t i = 0; i < o->size; i++ )
         {
             st_s_pushf( str, "\nblock manager %zu:\n", i );
             st_s_push_st_d( str, block_manager_s_status( o->data[ i ], detail_level - 1 ) );
@@ -2096,7 +2096,7 @@ st_s* bcore_tbman_s_status( bcore_tbman_s* o, int detail_level )
 }
 
 #include <stdio.h>
-static void instance_diagnostics( vd_t arg, vd_t ptr, sz_t space )
+static void instance_diagnostics( vd_t arg, vd_t ptr, uz_t space )
 {
     printf( "ptr = %p, space = %5zu", ptr, space );
     if( bcore_name_try_name( ( ( tp_t* )ptr )[ 0 ] ) )
@@ -2125,14 +2125,14 @@ void bcore_tbman_instance_disgnostics()
 
 #include "bcore_spect_inst.h"
 
-typedef vd_t (*fp_alloc)( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
+typedef vd_t (*fp_alloc)( vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes );
 
 static st_s* tbman_alloc_challenge
 (
     fp_alloc alloc,
-    sz_t table_size,
-    sz_t cycles,
-    sz_t max_alloc,
+    uz_t table_size,
+    uz_t cycles,
+    uz_t max_alloc,
     u2_t seed,
     bl_t cleanup,
     bl_t verbose
@@ -2141,32 +2141,32 @@ static st_s* tbman_alloc_challenge
     st_s* str = st_s_create();
 
     vd_t* data_table = malloc( table_size * sizeof( vd_t ) );
-    sz_t* size_table = malloc( table_size * sizeof( sz_t ) );
-    for( sz_t i = 0; i < table_size; i++ ) data_table[ i ] = NULL;
-    for( sz_t i = 0; i < table_size; i++ ) size_table[ i ] = 0;
+    uz_t* size_table = malloc( table_size * sizeof( uz_t ) );
+    for( uz_t i = 0; i < table_size; i++ ) data_table[ i ] = NULL;
+    for( uz_t i = 0; i < table_size; i++ ) size_table[ i ] = 0;
 
     u2_t rval = seed;
-    sz_t alloc_attempts = 0;
-    sz_t realloc_attempts = 0;
-    sz_t free_attempts = 0;
-    sz_t alloc_failures = 0;
-    sz_t realloc_failures = 0;
-    sz_t free_failures = 0;
+    uz_t alloc_attempts = 0;
+    uz_t realloc_attempts = 0;
+    uz_t free_attempts = 0;
+    uz_t alloc_failures = 0;
+    uz_t realloc_failures = 0;
+    uz_t free_failures = 0;
 
-    for( sz_t j = 0; j < cycles; j++ )
+    for( uz_t j = 0; j < cycles; j++ )
     {
-        for( sz_t i = 0; i < table_size; i++ )
+        for( uz_t i = 0; i < table_size; i++ )
         {
             rval = bcore_xsg_u2( rval );
-            sz_t idx = rval % table_size;
+            uz_t idx = rval % table_size;
 
             // verify table content
             if( size_table[ idx ] > 0 )
             {
                 u2_t rv = bcore_xsg_u2( idx + 1 );
                 uint8_t* data = data_table[ idx ];
-                sz_t sz = size_table[ idx ];
-                for( sz_t i = 0; i < sz; i++ )
+                uz_t sz = size_table[ idx ];
+                for( uz_t i = 0; i < sz; i++ )
                 {
                     rv = bcore_xsg_u2( rv );
                     if( data[ i ] != ( rv & 255 ) )
@@ -2179,7 +2179,7 @@ static st_s* tbman_alloc_challenge
             if( data_table[ idx ] == NULL )
             {
                 rval = bcore_xsg_u2( rval );
-                sz_t size = pow( ( double )max_alloc, ( rval * pow( 2.0, -32 ) ) );
+                uz_t size = pow( ( double )max_alloc, ( rval * pow( 2.0, -32 ) ) );
                 data_table[ idx ] = alloc( data_table[ idx ], 0, size, &size_table[ idx ] );
                 alloc_attempts++;
                 alloc_failures += ( size > 0 ) && ( data_table[ idx ] == NULL );
@@ -2189,8 +2189,8 @@ static st_s* tbman_alloc_challenge
                 {
                     u2_t rv = bcore_xsg_u2( idx + 1 );
                     uint8_t* data = data_table[ idx ];
-                    sz_t sz = size_table[ idx ];
-                    for( sz_t i = 0; i < sz; i++ ) data[ i ] = ( ( rv = bcore_xsg_u2( rv ) ) & 255 );
+                    uz_t sz = size_table[ idx ];
+                    for( uz_t i = 0; i < sz; i++ ) data[ i ] = ( ( rv = bcore_xsg_u2( rv ) ) & 255 );
                 }
             }
             else
@@ -2205,9 +2205,9 @@ static st_s* tbman_alloc_challenge
                 else
                 {
                     rval = bcore_xsg_u2( rval );
-                    sz_t size = pow( ( double )max_alloc, rval * pow( 2.0, -32 ) );
+                    uz_t size = pow( ( double )max_alloc, rval * pow( 2.0, -32 ) );
 
-                    sz_t new_size = 0;
+                    uz_t new_size = 0;
 
                     data_table[ idx ] = alloc( data_table[ idx ], size_table[ idx ], size, &new_size ); // realloc
 
@@ -2218,8 +2218,8 @@ static st_s* tbman_alloc_challenge
                         {
                             u2_t rv = bcore_xsg_u2( idx + 1 );
                             uint8_t* data = data_table[ idx ];
-                            sz_t sz = size_table[ idx ];
-                            for( sz_t i = 0; i < sz; i++ )
+                            uz_t sz = size_table[ idx ];
+                            for( uz_t i = 0; i < sz; i++ )
                             {
                                 rv = bcore_xsg_u2( rv );
                                 if( data[ i ] != ( rv & 255 ) )
@@ -2239,16 +2239,16 @@ static st_s* tbman_alloc_challenge
                     {
                         u2_t rv = bcore_xsg_u2( idx + 1 );
                         uint8_t* data = data_table[ idx ];
-                        sz_t sz = size_table[ idx ];
-                        for( sz_t i = 0; i < sz; i++ ) data[ i ] = ( ( rv = bcore_xsg_u2( rv ) ) & 255 );
+                        uz_t sz = size_table[ idx ];
+                        for( uz_t i = 0; i < sz; i++ ) data[ i ] = ( ( rv = bcore_xsg_u2( rv ) ) & 255 );
                     }
                 }
             }
         }
     }
 
-    sz_t allocated_table_size = 0;
-    for( sz_t i = 0; i < table_size; i++ ) allocated_table_size += ( data_table[ i ] != NULL );
+    uz_t allocated_table_size = 0;
+    for( uz_t i = 0; i < table_size; i++ ) allocated_table_size += ( data_table[ i ] != NULL );
 
     if( verbose )
     {
@@ -2271,15 +2271,15 @@ static st_s* tbman_alloc_challenge
     // speed test
     {
         clock_t time = clock();
-        for( sz_t j = 0; j < cycles; j++ )
+        for( uz_t j = 0; j < cycles; j++ )
         {
-            for( sz_t i = 0; i < table_size; i++ )
+            for( uz_t i = 0; i < table_size; i++ )
             {
                 rval = bcore_xsg_u2( rval );
-                sz_t idx = rval % table_size;
+                uz_t idx = rval % table_size;
                 if( data_table[ idx ] == NULL )
                 {
-                    sz_t size = pow( ( double )max_alloc, rval * pow( 2.0, -32 ) );
+                    uz_t size = pow( ( double )max_alloc, rval * pow( 2.0, -32 ) );
                     data_table[ idx ] = alloc( data_table[ idx ], 0, size, &size_table[ idx ] );
                 }
                 else
@@ -2294,14 +2294,14 @@ static st_s* tbman_alloc_challenge
     // speed test
     {
         clock_t time = clock();
-        for( sz_t j = 0; j < cycles; j++ )
+        for( uz_t j = 0; j < cycles; j++ )
         {
-            for( sz_t i = 0; i < table_size; i++ )
+            for( uz_t i = 0; i < table_size; i++ )
             {
                 rval = bcore_xsg_u2( rval );
-                sz_t idx = rval % table_size;
+                uz_t idx = rval % table_size;
                 rval = bcore_xsg_u2( rval );
-                sz_t size = pow( ( double )max_alloc, rval * pow( 2.0, -32 ) );
+                uz_t size = pow( ( double )max_alloc, rval * pow( 2.0, -32 ) );
                 data_table[ idx ] = alloc( data_table[ idx ], size_table[ idx ], size, &size_table[ idx ] ); // realloc
             }
         }
@@ -2310,7 +2310,7 @@ static st_s* tbman_alloc_challenge
     }
 
     // cleanup
-    if( cleanup ) for( sz_t i = 0; i < table_size; i++ ) data_table[ i ] = alloc( data_table[ i ], size_table[ i ], 0, NULL );
+    if( cleanup ) for( uz_t i = 0; i < table_size; i++ ) data_table[ i ] = alloc( data_table[ i ], size_table[ i ], 0, NULL );
 
     free( size_table );
     free( data_table );
@@ -2319,10 +2319,10 @@ static st_s* tbman_alloc_challenge
 
 static void tbman_s_quicktest( void )
 {
-    sz_t table_size = 200;
-    sz_t cycles     = 1;
-    sz_t max_alloc  = 4096;
-    sz_t seed       = 5479;
+    uz_t table_size = 200;
+    uz_t cycles     = 1;
+    uz_t max_alloc  = 4096;
+    uz_t seed       = 5479;
     st_s_discard( tbman_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
 }
 
@@ -2347,9 +2347,9 @@ static st_s* tbman_s_rctest( void )
     myclass* obj1 = bcore_inst_t_create( t_myclass );
     myclass* obj2 = bcore_inst_t_create( t_myclass );
 
-    sz_t arr_size = 100000;
+    uz_t arr_size = 100000;
     myclass* obj_arr = bcore_tbman_malloc( sizeof( myclass ) * arr_size );
-    for( sz_t i = 0; i < arr_size; i++ )
+    for( uz_t i = 0; i < arr_size; i++ )
     {
         bcore_inst_t_init( t_myclass, (bcore_inst*)&obj_arr[ i ] );
         st_s_pushf( &obj_arr[ i ].name1, "Hi!" );
@@ -2364,22 +2364,22 @@ static st_s* tbman_s_rctest( void )
 
     {
         clock_t time = clock();
-        for( sz_t i = 0; i < arr_size; i++ )
+        for( uz_t i = 0; i < arr_size; i++ )
         {
             ref_arr1[ i ] = bcore_tbman_fork( &obj_arr[ i ].name1 );
         }
         time = clock() - time;
-        st_s_pushf( log, "fork 1 ..... %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
+        st_s_pushf( log, "fork 1 ..... %zuns\n", ( uz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
     }
 
     {
         clock_t time = clock();
-        for( sz_t i = 0; i < arr_size; i++ )
+        for( uz_t i = 0; i < arr_size; i++ )
         {
             ref_arr2[ i ] = bcore_tbman_fork( &obj_arr[ i ].name1 );
         }
         time = clock() - time;
-        st_s_pushf( log, "fork 2 ..... %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
+        st_s_pushf( log, "fork 2 ..... %zuns\n", ( uz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
     }
 
     st_s* obj2_name1 = bcore_tbman_fork( &obj2->name1 );
@@ -2395,22 +2395,22 @@ static st_s* tbman_s_rctest( void )
 
     {
         clock_t time = clock();
-        for( sz_t i = 0; i < arr_size; i++ )
+        for( uz_t i = 0; i < arr_size; i++ )
         {
             bcore_tbman_release( ref_arr1[ i ] );
         }
         time = clock() - time;
-        st_s_pushf( log, "release 1 .. %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
+        st_s_pushf( log, "release 1 .. %zuns\n", ( uz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
     }
 
     {
         clock_t time = clock();
-        for( sz_t i = 0; i < arr_size; i++ )
+        for( uz_t i = 0; i < arr_size; i++ )
         {
             bcore_tbman_release( ref_arr2[ i ] );
         }
         time = clock() - time;
-        st_s_pushf( log, "release 2 .. %zuns\n", ( sz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
+        st_s_pushf( log, "release 2 .. %zuns\n", ( uz_t )( ( ( double )time * 1E9 ) / ( CLOCKS_PER_SEC  * arr_size ) ) );
     }
 
     st_s_pushf( log, "obj_arr references %zu\n", bcore_tbman_references( obj_arr ) );
@@ -2435,10 +2435,10 @@ static st_s* tbman_s_memtest( void )
     st_s_push_char_n( log, '=', 120 - log->size );
     st_s_push_char( log, '\n' );
 
-    sz_t table_size = 100000;
-    sz_t cycles     = 5;
-    sz_t max_alloc  = 65536;
-    sz_t seed       = 1237;
+    uz_t table_size = 100000;
+    uz_t cycles     = 5;
+    uz_t max_alloc  = 65536;
+    uz_t seed       = 1237;
 
     {
         st_s_pushf( log, "\nbcore_internal_alloc:\n");
@@ -2461,10 +2461,10 @@ static st_s* tbman_s_memtest( void )
 vd_t tbman_s_thread_func( vd_t arg )
 {
     st_s* log = st_s_create();
-    sz_t table_size = 10000;
-    sz_t cycles     = 5;
-    sz_t max_alloc  = 65536;
-    sz_t seed       = 1237;
+    uz_t table_size = 10000;
+    uz_t cycles     = 5;
+    uz_t max_alloc  = 65536;
+    uz_t seed       = 1237;
     st_s_push_st_d( log, tbman_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
 //    st_s_push_st_d( log, tbman_alloc_challenge( bcore_tbman_external_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
     return log;
@@ -2537,11 +2537,11 @@ vd_t bcore_tbman_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_down0:
         {
-            sz_t space = bcore_tbman_granted_space();
+            uz_t space = bcore_tbman_granted_space();
             if( space > 0 )
             {
-                sz_t instances = bcore_tbman_total_instances();
-                sz_t references = bcore_tbman_total_references();
+                uz_t instances = bcore_tbman_total_instances();
+                uz_t references = bcore_tbman_total_references();
                 st_s_print_d( bcore_tbman_s_status( tbman_s_g, 1 ) );
                 ERR
                 (

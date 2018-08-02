@@ -20,7 +20,7 @@
 
 /** Scans type; returns number of characters consumed; returns -1 in case of syntax error
  *  Syntax:
- *    - Elementary types may be expressed as is, e.g. sz_t.
+ *    - Elementary types may be expressed as is, e.g. uz_t.
  *    - Any type may be enclosed in <>
  *    - A pointer is specified via <...*> e.g. <u3_t*>
  *    - no whitespaces permitted
@@ -61,12 +61,12 @@ s2_t sc_t_scan_type( sc_t format, tp_t* p_type, bl_t* p_is_ptr )
     return fp - format;
 }
 
-sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
+uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
 {
     if( !o ) space = 0;
     sd_t dst = o;
-    sz_t i = 0;
-    sz_t ret_size = 0;
+    uz_t i = 0;
+    uz_t ret_size = 0;
     while( i < fsize )
     {
         if( f[ i ] == '#' )
@@ -79,23 +79,23 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
             if( f[ i ] == 'r' ) // repeating (repetition of a string resulting from 1-pass format-block evaluation)
             {
                 i++;
-                sz_t n = 0;
+                uz_t n = 0;
                 if( f[ i ] >= '0' && f[ i ] <= '9' )
                 {
                     n = atoi( f + i );
                     while( f[ i ] >= '0' && f[ i ] <= '9' ) i++;
                 }
-                else if( f[ i ] == 'n' )  // get number of repetitions from sz_t argument
+                else if( f[ i ] == 'n' )  // get number of repetitions from uz_t argument
                 {
                     i++;
-                    n = va_arg( *p_args, sz_t );
+                    n = va_arg( *p_args, uz_t );
                 }
                 else
                 {
                     ERR( "Could not obtain number of repetitions repeat-expression '%s'.", f );
                 }
                 char start_char = f[ i ];
-                sz_t start_block = i + 1;
+                uz_t start_block = i + 1;
                 char stop_char = 0;
                 switch( start_char )
                 {
@@ -106,7 +106,7 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     default: ERR( "Invalid bracket character '%c' in format string '%s'.", start_char, f ); break;
                 }
 
-                sz_t count = 1;
+                uz_t count = 1;
                 while( i < fsize && count > 0 )
                 {
                     i++;
@@ -114,20 +114,20 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     else if( f[ i ] == start_char ) count++;
                 }
                 if( count > 0 ) ERR( "Missing block termination in format string '%s'.", start_char, f );
-                sz_t stop_block = i;
+                uz_t stop_block = i;
                 i++;
 
                 if( n > 0 )
                 {
-                    sz_t txt_size = 0;
+                    uz_t txt_size = 0;
                     txt_size = sc_t_fnv( dst, space, f + start_block, stop_block - start_block, p_args );
                     sc_t src = dst;
                     dst   += ( txt_size < space ) ? txt_size : space;
                     space -= ( txt_size < space ) ? txt_size : space;
                     ret_size += txt_size;
-                    for( sz_t i = 1; i < n; i++ )
+                    for( uz_t i = 1; i < n; i++ )
                     {
-                        for( sz_t i = 0; i < txt_size; i++ )
+                        for( uz_t i = 0; i < txt_size; i++ )
                         {
                             if( space > 0 )
                             {
@@ -149,16 +149,16 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     i++;
                     left = true;
                 }
-                sz_t n = 0;
+                uz_t n = 0;
                 if( f[ i ] >= '0' && f[ i ] <= '9' )
                 {
                     n = atoi( f + i );
                     while( f[ i ] >= '0' && f[ i ] <= '9' ) i++;
                 }
-                else if( f[ i ] == 'n' )  // get target size from sz_t argument
+                else if( f[ i ] == 'n' )  // get target size from uz_t argument
                 {
                     i++;
-                    n = va_arg( *p_args, sz_t );
+                    n = va_arg( *p_args, uz_t );
                 }
                 else
                 {
@@ -176,7 +176,7 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     pad_char = f[ i++ ];
                 }
                 char start_char = f[ i ];
-                sz_t start_block = i + 1;
+                uz_t start_block = i + 1;
                 char stop_char = 0;
                 switch( start_char )
                 {
@@ -187,7 +187,7 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     default: ERR( "Invalid bracket character '%c' in format string '%s'.", start_char, f ); break;
                 }
 
-                sz_t count = 1;
+                uz_t count = 1;
                 while( i < fsize && count > 0 )
                 {
                     i++;
@@ -195,9 +195,9 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     else if( f[ i ] == start_char ) count++;
                 }
                 if( count > 0 ) ERR( "Missing block termination in format string '%s'.", start_char, f );
-                sz_t stop_block = i;
+                uz_t stop_block = i;
                 i++;
-                sz_t txt_size = 0;
+                uz_t txt_size = 0;
                 if( left ) // compute space
                 {
                     va_list argsl;
@@ -216,7 +216,7 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                 // padding
                 if( txt_size < n )
                 {
-                    for( sz_t i = n - txt_size; i > 0; i-- )
+                    for( uz_t i = n - txt_size; i > 0; i-- )
                     {
                         if( space > 1 )
                         {
@@ -251,23 +251,23 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     i++;
                     left = true;
                 }
-                sz_t n = 0;
+                uz_t n = 0;
                 if( f[ i ] >= '0' && f[ i ] <= '9' )
                 {
                     n = atoi( f + i );
                     while( f[ i ] >= '0' && f[ i ] <= '9' ) i++;
                 }
-                else if( f[ i ] == 'n' )  // get target size from sz_t argument
+                else if( f[ i ] == 'n' )  // get target size from uz_t argument
                 {
                     i++;
-                    n = va_arg( *p_args, sz_t );
+                    n = va_arg( *p_args, uz_t );
                 }
                 else
                 {
                     ERR( "Could not obtain target size in padding expression '%s'.", f );
                 }
                 char start_char = f[ i ];
-                sz_t start_block = i + 1;
+                uz_t start_block = i + 1;
                 char stop_char = 0;
                 switch( start_char )
                 {
@@ -278,7 +278,7 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     default: ERR( "Invalid bracket character '%c' in format string '%s'.", start_char, f ); break;
                 }
 
-                sz_t count = 1;
+                uz_t count = 1;
                 while( i < fsize && count > 0 )
                 {
                     i++;
@@ -286,9 +286,9 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     else if( f[ i ] == start_char ) count++;
                 }
                 if( count > 0 ) ERR( "Missing block termination in format string '%s'.", start_char, f );
-                sz_t stop_block = i;
+                uz_t stop_block = i;
                 i++;
-                sz_t txt_size = 0;
+                uz_t txt_size = 0;
                 // compute space
                 {
                     va_list argsl;
@@ -301,7 +301,7 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                     sd_t buf = bcore_malloc( txt_size + 1 );
                     sc_t_fnv( buf, txt_size + 1, f + start_block, stop_block - start_block, p_args );
                     sc_t src = left ? buf + txt_size - n : buf;
-                    sz_t ncpy = ( n < space ) ? n : space;
+                    uz_t ncpy = ( n < space ) ? n : space;
                     bcore_memcpy( dst, src, ncpy );
                     dst   += ncpy;
                     space -= ncpy;
@@ -393,10 +393,17 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                         }
                         break;
 
-                        case TYPEOF_sz_t:
+                        case TYPEOF_szxxx_t:
                         {
-                            sz_t* v = va_arg( *p_args, sz_t* );
-                            if( v ) sres = snprintf( dst, space, "%"PRIsz_t"", *v );
+                            szxxx_t* v = va_arg( *p_args, szxxx_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIszxxx_t"", *v );
+                        }
+                        break;
+
+                        case TYPEOF_uz_t:
+                        {
+                            uz_t* v = va_arg( *p_args, uz_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIuz_t"", *v );
                         }
                         break;
 
@@ -466,7 +473,8 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
                         case TYPEOF_s1_t: sres = snprintf( dst, space, "%i",         va_arg( *p_args, int  ) ); break;
                         case TYPEOF_s2_t: sres = snprintf( dst, space, "%"PRIs2_t"", va_arg( *p_args, s2_t ) ); break;
                         case TYPEOF_s3_t: sres = snprintf( dst, space, "%"PRIs3_t"", va_arg( *p_args, s3_t ) ); break;
-                        case TYPEOF_sz_t: sres = snprintf( dst, space, "%"PRIsz_t"", va_arg( *p_args, sz_t ) ); break;
+                        case TYPEOF_szxxx_t: sres = snprintf( dst, space, "%"PRIszxxx_t"", va_arg( *p_args, szxxx_t ) ); break;
+                        case TYPEOF_uz_t: sres = snprintf( dst, space, "%"PRIuz_t"", va_arg( *p_args, uz_t ) ); break;
                         // f2_t is promoted to double
                         case TYPEOF_f2_t: sres = snprintf( dst, space, "%g",       va_arg( *p_args, double ) ); break;
                         case TYPEOF_f3_t: sres = snprintf( dst, space, "%"PRIf3_t"", va_arg( *p_args, f3_t ) ); break;
@@ -549,7 +557,7 @@ sz_t sc_t_fnv( sd_t o, sz_t space, sc_t f, sz_t fsize, va_list* p_args )
 sd_t sc_t_cpy( sd_t dst, sc_t src )
 {
     if( !dst && !src ) return NULL;
-    sz_t len = src ? strlen( src ) : 0;
+    uz_t len = src ? strlen( src ) : 0;
     dst = bcore_alloc( dst, len + 1 );
     bcore_memcpy( dst, src, len );
     dst[ len ] = 0;
@@ -569,14 +577,14 @@ s2_t sc_t_cmp( sc_t str1, sc_t str2 )
     return ( *str1 == 0 ) ? ( ( *str2 == 0 ) ? 0 : +1 ) : -1;
 }
 
-s2_t sc_t_cmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 )
+s2_t sc_t_cmp_n( sc_t str1, uz_t n1, sc_t str2, uz_t n2 )
 {
     if( str1 == NULL ) return ( str2 == NULL ) ? 0 :  1;
     if( str2 == NULL ) return -1;
     if( n1 == 0 ) return ( n2 == 0 ) ? 0 :  1;
     if( n2 == 0 ) return -1;
-    sz_t i1 = 0;
-    sz_t i2 = 0;
+    uz_t i1 = 0;
+    uz_t i2 = 0;
     while( ( i1 < n1 ) && ( i2 < n2 ) )
     {
         if( str1[ i1 ] != str2[ i2 ] ) return ( str1[ i1 ] < str2[ i2 ] ) ? 2 : -2;
@@ -586,7 +594,7 @@ s2_t sc_t_cmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 )
     return ( i1 == n1 ) ? ( ( i2 == n2 ) ? 0 : +1 ) : -1;
 }
 
-sz_t sc_t_len( sc_t str )
+uz_t sc_t_len( sc_t str )
 {
     if( !str ) return 0;
     return strlen( str );

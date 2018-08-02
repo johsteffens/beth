@@ -46,7 +46,7 @@ typedef struct bcore_trait_s
         struct
         {
             bcore_trait_ft_s * ft_data;
-            sz_t ft_size, ft_space;
+            uz_t ft_size, ft_space;
         };
     };
 
@@ -56,7 +56,7 @@ typedef struct bcore_trait_s
         struct
         {
             bcore_trait_fp_supports * fp_data;
-            sz_t fp_size, fp_space;
+            uz_t fp_size, fp_space;
         };
     };
 
@@ -131,7 +131,7 @@ static void system_s_down( system_s* o )
     bcore_mutex_s_lock( &o->mutex );
 
     /// we explicitly discard here to avoid implicitly creating an instance perspective
-    for( sz_t i = 0; i < o->trait_map.size; i++ )
+    for( uz_t i = 0; i < o->trait_map.size; i++ )
     {
         tp_t key  = bcore_hmap_tpto_s_idx_key( &o->trait_map, i );
         vd_t* dst = bcore_hmap_tpto_s_get( &o->trait_map, key );
@@ -309,7 +309,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_self_s* self, st_s* log )
         }
     }
 
-    for( sz_t i = 0; i < trait_o->ft_size; i++ )
+    for( uz_t i = 0; i < trait_o->ft_size; i++ )
     {
         bcore_trait_ft_s ft_o = trait_o->ft_data[ i ];
         if( !bcore_self_s_try_external_fp( self, ft_o.type, ft_o.name ) )
@@ -333,7 +333,7 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_self_s* self, st_s* log )
         }
     }
 
-    for( sz_t i = 0; i < trait_o->fp_size; i++ )
+    for( uz_t i = 0; i < trait_o->fp_size; i++ )
     {
         bcore_trait_fp_supports fp_o = trait_o->fp_data[ i ];
         if( fp_o && !fp_o( self, log ) ) return false;
@@ -366,10 +366,10 @@ bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log )
     return false;
 }
 
-sz_t  bcore_trait_size()
+uz_t  bcore_trait_size()
 {
     system_s_g_lock();
-    sz_t size = bcore_hmap_tptp_s_keys( &system_s_g->type_map );
+    uz_t size = bcore_hmap_tptp_s_keys( &system_s_g->type_map );
     system_s_g_unlock();
     return size;
 }
@@ -378,8 +378,8 @@ st_s* bcore_trait_show()
 {
     system_s_g_lock();
     st_s* log = st_s_create();
-    sz_t size = bcore_hmap_tptp_s_size( &system_s_g->type_map );
-    for( sz_t i = 0; i < size; i++ )
+    uz_t size = bcore_hmap_tptp_s_size( &system_s_g->type_map );
+    for( uz_t i = 0; i < size; i++ )
     {
         tp_t key = bcore_hmap_tptp_s_idx_key( &system_s_g->type_map, i );
         if( key )
@@ -437,10 +437,10 @@ vd_t bcore_trait_signal_handler( const bcore_signal_s* o )
         {
             if( o->object && ( *( bl_t* )o->object ) )
             {
-                sz_t space1 = bcore_tbman_granted_space();
+                uz_t space1 = bcore_tbman_granted_space();
                 trait_manager_close();
-                sz_t space2 = bcore_tbman_granted_space();
-                bcore_msg( "  trait manager ....... % 6zu\n", space1 > space2 ? space1 - space2 : ( sz_t )0 );
+                uz_t space2 = bcore_tbman_granted_space();
+                bcore_msg( "  trait manager ....... % 6zu\n", space1 > space2 ? space1 - space2 : ( uz_t )0 );
             }
             else
             {

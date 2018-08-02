@@ -112,7 +112,8 @@ sr_s sr_u2( u2_t v );
 sr_s sr_u3( u3_t v );
 sr_s sr_f2( f2_t v );
 sr_s sr_f3( f3_t v );
-sr_s sr_sz( sz_t v );
+sr_s sr_szxxx( szxxx_t v );
+sr_s sr_uz( uz_t v );
 sr_s sr_tp( tp_t v );
 sr_s sr_bl( bl_t v );
 
@@ -169,8 +170,8 @@ static inline vc_t sr_s_get_spect( tp_t p_type, const sr_s* o )
  *    1: Only one strong reference. If this reference is strong, it is the only existing.
  *   >1: Multible strong references exist.
  */
-sz_t bcore_references( vc_t ptr );
-static inline sz_t sr_s_references( const sr_s* o ) { return o->o ? bcore_references( o->o ) : 0; }
+uz_t bcore_references( vc_t ptr );
+static inline uz_t sr_s_references( const sr_s* o ) { return o->o ? bcore_references( o->o ) : 0; }
 
 /** Fork seizes ownership via reference control. Even from a weak reference.
  *  This guarantees the lifetime of the object at least for the lifetime of the forked reference.

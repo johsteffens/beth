@@ -54,7 +54,7 @@ static void chain_copy_a( bcore_nucleus_s* nc )
 {
     bcore_source_chain_s* o = nc->client;
     nc->default_handler( nc );
-    for( sz_t i = 1; i < o->size; i++ ) bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    for( uz_t i = 1; i < o->size; i++ ) bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
 }
 
 void bcore_source_chain_s_copy( bcore_source_chain_s* o, const bcore_source_chain_s* src )
@@ -82,7 +82,7 @@ static void chain_interpret_body_a( vd_t nc )
     struct { ap_t a; vc_t p; vc_t inter; vd_t source; tp_t type; vd_t obj; } * nc_l = nc;
     nc_l->a( nc ); // default
     bcore_source_chain_s* o = nc_l->obj;
-    for( sz_t i = 1; i < o->size; i++ ) bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    for( uz_t i = 1; i < o->size; i++ ) bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
 }
 
 void bcore_source_chain_s_push_d( bcore_source_chain_s* o, vd_t source )
@@ -97,12 +97,12 @@ void bcore_source_chain_s_push_type( bcore_source_chain_s* o, tp_t type )
     bcore_source_chain_s_push_d( o, bcore_inst_t_create( type ) );
 }
 
-static sz_t chain_flow_src( bcore_source_chain_s* o, vd_t data, sz_t size )
+static uz_t chain_flow_src( bcore_source_chain_s* o, vd_t data, uz_t size )
 {
     return ( o->size > 0 ) ? bcore_source_a_get_data( o->data[ o->size - 1 ], data, size ) : 0;
 }
 
-sz_t bcore_source_chain_s_get_data(  bcore_source_chain_s* o, vd_t data, sz_t size )
+uz_t bcore_source_chain_s_get_data(  bcore_source_chain_s* o, vd_t data, uz_t size )
 {
     return chain_flow_src( o, data, size );
 }
@@ -111,7 +111,7 @@ void bcore_source_chain_s_set_supplier( bcore_source_chain_s* o, vd_t supplier )
 {
     if( o->size == 0 ) ERR( "chain is empty" );
     bcore_source_a_set_supplier( o->data[ 0 ], supplier );
-    for( sz_t i = 1; i < o->size; i++ )
+    for( uz_t i = 1; i < o->size; i++ )
     {
         // resetting the supplier also resets of the internal state of each element
         bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
@@ -133,7 +133,7 @@ sc_t bcore_source_chain_s_get_file( const bcore_source_chain_s* o )
 s3_t bcore_source_chain_s_get_index( const bcore_source_chain_s* o )
 {
     s3_t index = 0;
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         index += bcore_source_a_get_index( o->data[ i ] );
     }
@@ -146,7 +146,7 @@ void bcore_source_chain_s_set_index( bcore_source_chain_s* o, s3_t index )
     s3_t cur_index = bcore_source_chain_s_get_index( o );
     if( index == cur_index ) return;
     bcore_source_a_set_index( o->data[ 0 ], index );
-    for( sz_t i = 1; i < o->size; i++ )
+    for( uz_t i = 1; i < o->size; i++ )
     {
         // resetting the supplier also resets of the internal state of each element
         bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
@@ -165,8 +165,8 @@ static void chain_p_errorvf( bcore_source_chain_s* o, sc_t format, va_list args 
         {
             bcore_source_file_s* fo = o->data[ 0 ];
             st_s_pushf( msg, " in file '%s'", bcore_source_file_s_get_name( fo ) );
-            sz_t index = bcore_source_chain_s_get_index( o );
-            sz_t line, col;
+            uz_t index = bcore_source_chain_s_get_index( o );
+            uz_t line, col;
             st_s* context = st_s_create();
             bcore_source_file_s_get_line_col_context( fo, index, &line, &col, context );
             st_s_pushf( msg, " at line %zu, col %zu", line, col );
@@ -267,7 +267,7 @@ bcore_source_buffer_s* bcore_source_buffer_s_clone( const bcore_source_buffer_s*
     return bcore_inst_t_clone( TYPEOF_bcore_source_buffer_s, (bcore_inst*)o );
 }
 
-static sz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, sz_t size )
+static uz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, uz_t size )
 {
     if( size < o->size - o->index )
     {
@@ -276,7 +276,7 @@ static sz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, sz_t size )
         return size;
     }
 
-    sz_t size1 = o->size - o->index;
+    uz_t size1 = o->size - o->index;
     bcore_memcpy( data, o->data + o->index, size1 );
     o->index += size1;
     data = ( u0_t* )data + size1;
@@ -311,7 +311,7 @@ static sz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, sz_t size )
     }
 }
 
-bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, sz_t size )
+bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, uz_t size )
 {
     bcore_source_buffer_s* buffer = bcore_source_buffer_s_create();
     buffer->data = bcore_b_alloc( buffer->data, size, &buffer->space );
@@ -320,7 +320,7 @@ bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, sz_t s
     return buffer;
 }
 
-sz_t bcore_source_buffer_s_get_data(  bcore_source_buffer_s* o, vd_t data, sz_t size )
+uz_t bcore_source_buffer_s_get_data(  bcore_source_buffer_s* o, vd_t data, uz_t size )
 {
     return buffer_flow_src( o, data, size );
 }
@@ -378,9 +378,9 @@ static bcore_self_s* buffer_s_create_self( void )
     "{ "
       "aware_t _; "
       "u0_t [] data; "
-      "sz_t index; "
+      "uz_t index; "
       "private vd_t supplier; "
-      "sz_t prefetch_size; "
+      "uz_t prefetch_size; "
     "}";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_source_buffer_s ) );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_init,  "bcore_fp_init",     "init"  );
@@ -452,7 +452,7 @@ bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc )
     return o;
 }
 
-static void string_refill( bcore_source_string_s* o, sz_t min_remaining_size )
+static void string_refill( bcore_source_string_s* o, uz_t min_remaining_size )
 {
     if( !o->string ) o->string = st_s_create();
     if( o->string->size - o->index <= min_remaining_size )
@@ -464,22 +464,22 @@ static void string_refill( bcore_source_string_s* o, sz_t min_remaining_size )
             o->string->data[ o->string->size ] = 0;
             o->index = 0;
         }
-        sz_t refill_size = min_remaining_size - o->string->size > o->prefetch_size ? min_remaining_size - o->string->size : o->prefetch_size;
+        uz_t refill_size = min_remaining_size - o->string->size > o->prefetch_size ? min_remaining_size - o->string->size : o->prefetch_size;
         st_s_set_min_space( o->string, o->string->size + refill_size + 1 );
-        sz_t bytes_received = bcore_source_a_get_data( o->ext_supplier, o->string->data + o->string->size, refill_size );
+        uz_t bytes_received = bcore_source_a_get_data( o->ext_supplier, o->string->data + o->string->size, refill_size );
         if( bytes_received < refill_size ) o->ext_supplier = NULL; // detach supplier when empty
         o->string->size += bytes_received;
         o->string->data[ o->string->size ] = 0;
     }
 }
 
-static sz_t string_flow_src( bcore_source_string_s* o, vd_t data, sz_t size )
+static uz_t string_flow_src( bcore_source_string_s* o, vd_t data, uz_t size )
 {
     if( !o->string ) o->string = st_s_create();
     if( size > o->string->size - o->index )
     {
         // first send rest of buffer
-        sz_t size1 = o->string->size - o->index;
+        uz_t size1 = o->string->size - o->index;
         bcore_memcpy( data, o->string->data + o->index, size1 );
         o->index += size1;
         data = (u0_t*)data + size1;
@@ -489,7 +489,7 @@ static sz_t string_flow_src( bcore_source_string_s* o, vd_t data, sz_t size )
         if( o->ext_supplier ) string_refill( o, size );
 
         // send rest of data (if any)
-        sz_t size2 = size < o->string->size - o->index ? size : o->string->size - o->index;
+        uz_t size2 = size < o->string->size - o->index ? size : o->string->size - o->index;
         bcore_memcpy( data, o->string->data + o->index, size2 );
         o->index += size2;
 
@@ -503,7 +503,7 @@ static sz_t string_flow_src( bcore_source_string_s* o, vd_t data, sz_t size )
     }
 }
 
-sz_t bcore_source_string_s_get_data(  bcore_source_string_s* o, vd_t data, sz_t size )
+uz_t bcore_source_string_s_get_data(  bcore_source_string_s* o, vd_t data, uz_t size )
 {
     return string_flow_src( o, data, size );
 }
@@ -543,13 +543,13 @@ void bcore_source_string_s_set_index( bcore_source_string_s* o, s3_t index )
 
 /**********************************************************************************************************************/
 
-static sz_t string_s_parse_err( vd_t arg, const st_s* string, sz_t idx, st_s* ext_msg )
+static uz_t string_s_parse_err( vd_t arg, const st_s* string, uz_t idx, st_s* ext_msg )
 {
     st_s* context   = st_s_show_line_context( string, idx );
     st_s* msg       = st_s_create();
     st_s_pushf( msg, "Parse error" );
-    sz_t line = st_s_lineof( string, idx );
-    sz_t col  = st_s_colof( string, idx );
+    uz_t line = st_s_lineof( string, idx );
+    uz_t col  = st_s_colof( string, idx );
     st_s_pushf( msg, " at line %zu, col %zu:", line, col );
     st_s_pushf( msg, "\n%s\n", context->sc );
     st_s_push_st_d( msg, ext_msg );
@@ -585,10 +585,10 @@ static bcore_self_s* string_s_create_self( void )
     "{ "
       "aware_t _; "
       "st_s* string; "
-      "sz_t index; "
+      "uz_t index; "
       "private vd_t supplier; "
-      "sz_t refill_limit;    "
-      "sz_t prefetch_size;   "
+      "uz_t refill_limit;    "
+      "uz_t prefetch_size;   "
     "}";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_source_string_s ) );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_init,         "bcore_fp_init", "init" );
@@ -711,10 +711,10 @@ static void file_interpret_body_a( vd_t nc )
     nc_l->a( nc ); // default
 }
 
-static sz_t file_flow_src( bcore_source_file_s* o, vd_t data, sz_t size )
+static uz_t file_flow_src( bcore_source_file_s* o, vd_t data, uz_t size )
 {
     if( !o->handle ) bcore_source_file_s_open( o );
-    sz_t rsize = fread( data, 1, size, o->handle );
+    uz_t rsize = fread( data, 1, size, o->handle );
     if( rsize != size )
     {
         if( ferror( o->handle ) )
@@ -727,7 +727,7 @@ static sz_t file_flow_src( bcore_source_file_s* o, vd_t data, sz_t size )
     return rsize;
 }
 
-sz_t bcore_source_file_s_get_data(  bcore_source_file_s* o, vd_t data, sz_t size )
+uz_t bcore_source_file_s_get_data(  bcore_source_file_s* o, vd_t data, uz_t size )
 {
     return file_flow_src( o, data, size );
 }
@@ -760,15 +760,15 @@ void bcore_source_file_s_set_index( bcore_source_file_s* o, s3_t index )
     fseek( o->handle, index, SEEK_SET );
 }
 
-void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t index, sz_t* p_line, sz_t* p_col, st_s* context )
+void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t index, uz_t* p_line, uz_t* p_col, st_s* context )
 {
     if( !o->handle ) bcore_source_file_s_open( o );
     s3_t cur_index = ftell( o->handle );
     fseek( o->handle, 0, SEEK_SET );
 
-    sz_t line = 1;
-    sz_t col = 1;
-    sz_t line_start = 0;
+    uz_t line = 1;
+    uz_t col = 1;
+    uz_t line_start = 0;
 
     for( s3_t i = 0; i < index; i++ )
     {
@@ -791,14 +791,14 @@ void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t inde
     if( context )
     {
         fseek( o->handle, line_start, SEEK_SET );
-        for( sz_t i = 0; i < 128; i++ )
+        for( uz_t i = 0; i < 128; i++ )
         {
             char c = fgetc( o->handle );
             if( c == '\n' || c == 0 ) break;
             st_s_push_char( context, c );
         }
         st_s_push_char( context, '\n' );
-        for( sz_t i = 1; i < col; i++ ) st_s_push_char( context, ' ' );
+        for( uz_t i = 1; i < col; i++ ) st_s_push_char( context, ' ' );
         st_s_push_char( context, '^' );
         st_s_push_char( context, '\n' );
     }
@@ -874,7 +874,7 @@ static st_s* sources_selftest( void )
     bcore_flect_define_parse_sc( "chain_test_aware_arr = { aware_t _; st_s [] arr; }" );
     sr_s arr = bcore_life_s_push_sr( l, bcore_inst_t_create_sr( typeof( "chain_test_aware_arr" ) ) );
     arr = sr_cp( arr, TYPEOF_bcore_array_s );
-    for( sz_t i = 0; i < 20000; i++ ) bcore_array_x_push( arr, sr_asd( st_s_createf( "line of text %zu", i ) ) );
+    for( uz_t i = 0; i < 20000; i++ ) bcore_array_x_push( arr, sr_asd( st_s_createf( "line of text %zu", i ) ) );
 
     // write object to file
     {
@@ -896,34 +896,34 @@ static st_s* sources_selftest( void )
     {
         {
             bcore_sink_chain_s* chain = bcore_sink_create_file( "test/test02.txt" );
-            for( sz_t i = 0; i < 10000; i++ ) bcore_sink_a_push_string_d( (bcore_sink*)chain, st_s_create_fa( "line of text #<sz_t>\n", i ) );
+            for( uz_t i = 0; i < 10000; i++ ) bcore_sink_a_push_string_d( (bcore_sink*)chain, st_s_create_fa( "line of text #<uz_t>\n", i ) );
             bcore_sink_chain_s_discard( chain );
         }
 
         {
             bcore_source_chain_s* chain = bcore_source_open_file( "test/test02.txt" );
-            bcore_arr_sz_s* arr = bcore_arr_sz_s_create();
-            for( sz_t i = 0; i < 10000; i++ )
+            bcore_arr_uz_s* arr = bcore_arr_uz_s_create();
+            for( uz_t i = 0; i < 10000; i++ )
             {
-                bcore_arr_sz_s_push( arr, bcore_source_a_get_index( (bcore_source*)chain ) );
-                sz_t v = 0;
-                bcore_source_a_parse_fa( (bcore_source*)chain, "line of text #<sz_t*>\n", &v );
+                bcore_arr_uz_s_push( arr, bcore_source_a_get_index( (bcore_source*)chain ) );
+                uz_t v = 0;
+                bcore_source_a_parse_fa( (bcore_source*)chain, "line of text #<uz_t*>\n", &v );
                 ASSERT( i == v );
             }
 
             u2_t rv = 1234;
 
-            for( sz_t i = 0; i < 10000; i++ )
+            for( uz_t i = 0; i < 10000; i++ )
             {
                 rv = bcore_xsg1_u2( rv );
-                sz_t idx = rv % arr->size;
+                uz_t idx = rv % arr->size;
                 bcore_source_a_set_index( (bcore_source*)chain, arr->data[ idx ] );
-                sz_t v = 0;
-                bcore_source_a_parse_fa( (bcore_source*)chain, "line of text #<sz_t*>\n", &v );
+                uz_t v = 0;
+                bcore_source_a_parse_fa( (bcore_source*)chain, "line of text #<uz_t*>\n", &v );
                 ASSERT( idx == v );
             }
 
-            bcore_arr_sz_s_discard( arr );
+            bcore_arr_uz_s_discard( arr );
             bcore_source_chain_s_discard( chain );
         }
     }

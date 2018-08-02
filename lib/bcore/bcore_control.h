@@ -64,16 +64,16 @@ void bcore_ext_err_fa( sc_t f_name, sc_t file, int line, sc_t format, ... ); // 
  */
 
 /// buf == NULL: malloc; buf != NULL && size == 0: free; buf != NULL && size != 0: realloc; returns a valid address or NULL; alloc failure produces error
-vd_t bcore_alloc  ( vd_t ptr, sz_t size );
-vd_t bcore_malloc (           sz_t size );
-vd_t bcore_realloc( vd_t ptr, sz_t size );
+vd_t bcore_alloc  ( vd_t ptr, uz_t size );
+vd_t bcore_malloc (           uz_t size );
+vd_t bcore_realloc( vd_t ptr, uz_t size );
 vd_t bcore_free   ( vd_t ptr            );
 
-vd_t bcore_b_alloc(  vd_t current_ptr,                     sz_t requested_bytes, sz_t* granted_bytes );
-vd_t bcore_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
+vd_t bcore_b_alloc(  vd_t current_ptr,                     uz_t requested_bytes, uz_t* granted_bytes );
+vd_t bcore_bn_alloc( vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes );
 
-vd_t bcore_u_alloc(  sz_t unit_bytes, vd_t current_ptr,                     sz_t requested_units, sz_t* granted_units );
-vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t requested_units, sz_t* granted_units );
+vd_t bcore_u_alloc(  uz_t unit_bytes, vd_t current_ptr,                     uz_t requested_units, uz_t* granted_units );
+vd_t bcore_un_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t current_units, uz_t requested_units, uz_t* granted_units );
 
 /**********************************************************************************************************************/
 /** Reference Management
@@ -81,30 +81,30 @@ vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t
  *  See bcore_tbman.h for implementation and usage details
  */
 
-sz_t bcore_references     (                      vc_t ptr );
+uz_t bcore_references     (                      vc_t ptr );
 vd_t bcore_fork           (                      vd_t ptr );
 void bcore_release        (                      vd_t ptr );
 void bcore_release_obj    ( fp_t down,           vd_t ptr );
 void bcore_release_arg    ( fp_t down, vc_t arg, vd_t ptr );
-void bcore_release_obj_arr( fp_t down,           vd_t ptr, sz_t size, sz_t step );
-void bcore_release_arg_arr( fp_t down, vc_t arg, vd_t ptr, sz_t size, sz_t step );
+void bcore_release_obj_arr( fp_t down,           vd_t ptr, uz_t size, uz_t step );
+void bcore_release_arg_arr( fp_t down, vc_t arg, vd_t ptr, uz_t size, uz_t step );
 
 /**********************************************************************************************************************/
 /// memory set, copy, move
 
 /// sets memory to zero. When dst == NULL function allocates destination first, copies and returns address.
-vd_t bcore_memzero(                    vd_t dst, sz_t size );
-vd_t bcore_u_memzero( sz_t unit_bytes, vd_t dst, sz_t size );
+vd_t bcore_memzero(                    vd_t dst, uz_t size );
+vd_t bcore_u_memzero( uz_t unit_bytes, vd_t dst, uz_t size );
 
 /// sets memory to val. When dst == NULL function allocates destination first, copies and returns address.
-vd_t bcore_memset(  vd_t dst, u0_t val, sz_t size );
+vd_t bcore_memset(  vd_t dst, u0_t val, uz_t size );
 
 /// like stdlib memcpy but when dst == NULL function allocates destination first, copies and returns address; size == 0 allowed
-vd_t bcore_memcpy(                    vd_t dst, vc_t src, sz_t size );
-vd_t bcore_u_memcpy( sz_t unit_bytes, vd_t dst, vc_t src, sz_t size ); // copies multiple of a given unit size
+vd_t bcore_memcpy(                    vd_t dst, vc_t src, uz_t size );
+vd_t bcore_u_memcpy( uz_t unit_bytes, vd_t dst, vc_t src, uz_t size ); // copies multiple of a given unit size
 
 /// like stdlib memmove but when dst == NULL function allocates destination first, copies and returns address; size == 0 allowed
-vd_t bcore_memmove( vd_t dst, vc_t src, sz_t size );
+vd_t bcore_memmove( vd_t dst, vc_t src, uz_t size );
 
 /**********************************************************************************************************************/
 /// 0-terminated string
@@ -129,10 +129,10 @@ sd_t bcore_strcpy( sd_t dst, sc_t src );
  *
  */
 s2_t bcore_strcmp( sc_t str1, sc_t str2 );
-s2_t bcore_strcmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 );
+s2_t bcore_strcmp_n( sc_t str1, uz_t n1, sc_t str2, uz_t n2 );
 
 /// like strlen but also accepts NULL
-sz_t bcore_strlen( sc_t str );
+uz_t bcore_strlen( sc_t str );
 
 /// returns true iff c occurs in str
 bl_t bcore_strany( char c, sc_t str );
@@ -188,16 +188,16 @@ static inline u2_t bcore_fnv_fold_u2_u2( u2_t hash, u2_t val )
     hash = ( hash ^ ( ( val >> 24 ) & 0x0FF ) ) * FNV_U2_FOLD;
     return hash;
 }
-static inline u2_t bcore_fnv_fold_data_u2( u2_t hash, vc_t data, sz_t size )
+static inline u2_t bcore_fnv_fold_data_u2( u2_t hash, vc_t data, uz_t size )
 {
     const u0_t* src = data;
-    for( sz_t i = 0; i < size; i++ ) hash = ( hash ^ src[ i ] ) * FNV_U2_FOLD;
+    for( uz_t i = 0; i < size; i++ ) hash = ( hash ^ src[ i ] ) * FNV_U2_FOLD;
     return hash;
 }
 
 static inline u2_t bcore_fnv_hash_text_u2( sc_t text            ) { return bcore_fnv_fold_text_u2( FNV_U2_INIT, text );       }
 static inline u2_t bcore_fnv_hash_u2_u2(   u2_t val             ) { return bcore_fnv_fold_u2_u2(   FNV_U2_INIT, val );        }
-static inline u2_t bcore_fnv_hash_data_u2( vc_t data, sz_t size ) { return bcore_fnv_fold_data_u2( FNV_U2_INIT, data, size ); }
+static inline u2_t bcore_fnv_hash_data_u2( vc_t data, uz_t size ) { return bcore_fnv_fold_data_u2( FNV_U2_INIT, data, size ); }
 
 /**********************************************************************************************************************/
 
@@ -248,11 +248,11 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
     CPU_TIME_OF( expression, f3_t __time_sec ) \
     if( __time_sec >= 100 ) \
     { \
-        bcore_msg_fa( "#pl5 {#<sz_t>}s : "#expression"\n", ( sz_t ) __time_sec ); \
+        bcore_msg_fa( "#pl5 {#<uz_t>}s : "#expression"\n", ( uz_t ) __time_sec ); \
     } \
     else \
     { \
-        bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#expression"\n", ( sz_t ) ( 1E3 * __time_sec ) ); \
+        bcore_msg_fa( "#pl5 {#<uz_t>}ms: "#expression"\n", ( uz_t ) ( 1E3 * __time_sec ) ); \
     } \
 }
 
@@ -261,11 +261,11 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
     ABS_TIME_OF( expression, f3_t __time_sec ) \
     if( __time_sec >= 100 ) \
     { \
-        bcore_msg_fa( "#pl5 {#<sz_t>}s : "#expression"\n", ( sz_t ) __time_sec ); \
+        bcore_msg_fa( "#pl5 {#<uz_t>}s : "#expression"\n", ( uz_t ) __time_sec ); \
     } \
     else \
     { \
-        bcore_msg_fa( "#pl5 {#<sz_t>}ms: "#expression"\n", ( sz_t ) ( 1E3 * __time_sec ) ); \
+        bcore_msg_fa( "#pl5 {#<uz_t>}ms: "#expression"\n", ( uz_t ) ( 1E3 * __time_sec ) ); \
     } \
 }
 
@@ -274,11 +274,11 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
     CPU_TIME_OF( expression, f3_t __time_sec ) \
     if( __time_sec >= 100 ) \
     { \
-        if( string ) st_s_push_fa( string, "#pl5 {#<sz_t>}s : "#expression"\n", ( sz_t ) __time_sec ); \
+        if( string ) st_s_push_fa( string, "#pl5 {#<uz_t>}s : "#expression"\n", ( uz_t ) __time_sec ); \
     } \
     else \
     { \
-        if( string ) st_s_push_fa( string, "#pl5 {#<sz_t>}ms: "#expression"\n", ( sz_t ) ( 1E3 * __time_sec ) ); \
+        if( string ) st_s_push_fa( string, "#pl5 {#<uz_t>}ms: "#expression"\n", ( uz_t ) ( 1E3 * __time_sec ) ); \
     } \
 }
 
@@ -287,11 +287,11 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
     ABS_TIME_OF( expression, f3_t __time_sec ) \
     if( __time_sec >= 100 ) \
     { \
-        if( string ) st_s_push_fa( string, "#pl5 {#<sz_t>}s : "#expression"\n", ( sz_t ) __time_sec ); \
+        if( string ) st_s_push_fa( string, "#pl5 {#<uz_t>}s : "#expression"\n", ( uz_t ) __time_sec ); \
     } \
     else \
     { \
-        if( string ) st_s_push_fa( string, "#pl5 {#<sz_t>}ms: "#expression"\n", ( sz_t ) ( 1E3 * __time_sec ) ); \
+        if( string ) st_s_push_fa( string, "#pl5 {#<uz_t>}ms: "#expression"\n", ( uz_t ) ( 1E3 * __time_sec ) ); \
     } \
 }
 

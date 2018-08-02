@@ -73,7 +73,7 @@ bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_self_s* self, st_s* log
  */
 bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log );
 
-sz_t  bcore_trait_size(); // number of registered names
+uz_t  bcore_trait_size(); // number of registered names
 st_s* bcore_trait_show(); // store all registered traits with ancestry in a string, separated by newline
 
 vd_t bcore_trait_signal_handler( const bcore_signal_s* o );

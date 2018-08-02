@@ -23,11 +23,11 @@
 typedef tp_t (*hf)( sc_t );
 
 
-static st_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
+static st_s* get_def_quicktype( hf hash, sr_s string, uz_t align )
 {
     sc_t name = ( ( st_s* )string.o )->sc;
     st_s* s = st_s_createf( "#define TYPEOF_%s", name );
-    sz_t pad = s->size < align ? align - s->size : 1;
+    uz_t pad = s->size < align ? align - s->size : 1;
     st_s_push_char_n( s, ' ', pad );
     st_s_pushf( s, "% 10"PRIu32, hash( name ) );
     st_s_push_char( s, '\n' );
@@ -51,7 +51,8 @@ static sr_s leaf_typelist()
     bcore_array_r_push_sc( &list, "umax_t" );
     bcore_array_r_push_sc( &list, "f2_t" );
     bcore_array_r_push_sc( &list, "f3_t" );
-    bcore_array_r_push_sc( &list, "sz_t" );
+    bcore_array_r_push_sc( &list, "szxxx_t" );
+    bcore_array_r_push_sc( &list, "uz_t" );
     bcore_array_r_push_sc( &list, "sd_t" );
     bcore_array_r_push_sc( &list, "sc_t" );
     bcore_array_r_push_sc( &list, "vd_t" );
@@ -104,7 +105,7 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_txt_ml_interpreter_s" );
     bcore_array_r_push_sc( &list, "bcore_bin_ml_translator_s"  );
     bcore_array_r_push_sc( &list, "bcore_bin_ml_interpreter_s" );
-    bcore_array_r_push_sc( &list, "bcore_arr_sz_s" );
+    bcore_array_r_push_sc( &list, "bcore_arr_uz_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_u3_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_tp_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_st_s" );
@@ -128,12 +129,12 @@ static sr_s object_typelist()
     return list;
 }
 
-static sz_t max_len( const sr_s* list )
+static uz_t max_len( const sr_s* list )
 {
-    sz_t len = 0;
-    for( sz_t i = 0; i < bcore_array_r_get_size( list ); i++ )
+    uz_t len = 0;
+    for( uz_t i = 0; i < bcore_array_r_get_size( list ); i++ )
     {
-        sz_t size = ( ( st_s* )bcore_array_r_get( list, i ).o )->size;
+        uz_t size = ( ( st_s* )bcore_array_r_get( list, i ).o )->size;
         len = size > len ? size : len;
     }
     return len;
@@ -144,11 +145,11 @@ void bcore_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
     hf hash_l = ( hash ) ? hash : typeof;
     sr_s list = leaf_typelist();
     bcore_msg( "// leaf types\n" );
-    for( sz_t i = 0; i < bcore_array_r_get_size( &list ); i++ ) st_s_print_d( get_def_quicktype( hash_l, bcore_array_r_get( &list, i ), 16 + max_len( &list ) ) );
+    for( uz_t i = 0; i < bcore_array_r_get_size( &list ); i++ ) st_s_print_d( get_def_quicktype( hash_l, bcore_array_r_get( &list, i ), 16 + max_len( &list ) ) );
     sr_down( list );
     list = object_typelist();
     bcore_msg( "\n// other types\n" );
-    for( sz_t i = 0; i < bcore_array_r_get_size( &list ); i++ ) st_s_print_d( get_def_quicktype( hash_l, bcore_array_r_get( &list, i ), 16 + max_len( &list ) ) );
+    for( uz_t i = 0; i < bcore_array_r_get_size( &list ); i++ ) st_s_print_d( get_def_quicktype( hash_l, bcore_array_r_get( &list, i ), 16 + max_len( &list ) ) );
     sr_down( list );
 }
 
@@ -166,7 +167,8 @@ bl_t bcore_type_is_leaf( tp_t type )
         case TYPEOF_u0_t:
         case TYPEOF_f3_t:
         case TYPEOF_f2_t:
-        case TYPEOF_sz_t:
+        case TYPEOF_szxxx_t:
+        case TYPEOF_uz_t:
         case TYPEOF_sd_t:
         case TYPEOF_sc_t:
         case TYPEOF_vd_t:

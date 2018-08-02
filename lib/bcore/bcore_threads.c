@@ -208,25 +208,25 @@ typedef struct bcore_thread_arr_s
         struct
         {
             bcore_thread_s* data;
-            sz_t size, space;
+            uz_t size, space;
         };
     };
 } bcore_thread_arr_s;
 
 BCORE_DEFINE_FUNCTIONS_SELF_OBJECT_INST( bcore_thread_arr_s, "bcore_thread_arr_s = bcore_inst { aware_t _; bcore_thread_s [] arr; }" )
 
-sz_t bcore_thread_arr_s_get_size( const bcore_thread_arr_s* o )
+uz_t bcore_thread_arr_s_get_size( const bcore_thread_arr_s* o )
 {
     return o->size;
 }
 
-bcore_thread_s* bcore_thread_arr_s_get_thread( bcore_thread_arr_s* o, sz_t index )
+bcore_thread_s* bcore_thread_arr_s_get_thread( bcore_thread_arr_s* o, uz_t index )
 {
     assert( index < o->size );
     return &o->data[ index ];
 }
 
-sz_t bcore_thread_arr_s_push_call( bcore_thread_arr_s* o, bcore_fp_thread func, vd_t arg )
+uz_t bcore_thread_arr_s_push_call( bcore_thread_arr_s* o, bcore_fp_thread func, vd_t arg )
 {
     bcore_thread_s* thread = bcore_thread_s_create();
     bcore_thread_s_call( thread, func, arg );
@@ -245,7 +245,7 @@ vd_t bcore_thread_arr_s_join_pop( bcore_thread_arr_s* o )
 
 /**********************************************************************************************************************/
 
-void bcore_sleep_ns( sz_t ns )
+void bcore_sleep_ns( uz_t ns )
 {
     struct timespec ts = { 0 };
     ts.tv_sec  = ns / 1000000000;
@@ -258,12 +258,12 @@ void bcore_sleep_ns( sz_t ns )
     nanosleep( &ts, NULL );
 }
 
-void bcore_sleep_us( sz_t us )
+void bcore_sleep_us( uz_t us )
 {
     bcore_sleep_ns( us * 1000 );
 }
 
-void bcore_sleep_ms( sz_t ms )
+void bcore_sleep_ms( uz_t ms )
 {
     bcore_sleep_ns( ms * 1000000 );
 }

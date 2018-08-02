@@ -31,9 +31,9 @@
 BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf3_s )
 "{"
     "aware_t _;"
-    "sz_t rows;"
-    "sz_t cols;"
-    "sz_t stride;"
+    "uz_t rows;"
+    "uz_t cols;"
+    "uz_t stride;"
     "f3_t [] arr;"
 
     "const tp_t type_vector_assoc = bmath_vf3_s;"
@@ -59,7 +59,7 @@ BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf3_s )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_set_size( bmath_mf3_s* o, sz_t rows, sz_t cols )
+void bmath_mf3_s_set_size( bmath_mf3_s* o, uz_t rows, uz_t cols )
 {
     bcore_matrix_a_set_size( ( bcore_matrix* )o, rows, cols );
 }
@@ -69,10 +69,10 @@ void bmath_mf3_s_set_size( bmath_mf3_s* o, sz_t rows, sz_t cols )
 void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval )
 {
     f3_t range = max - min;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         f3_t* v = o->data + i * o->stride;
-        for( sz_t j = 0; j < o->cols; j++ )
+        for( uz_t j = 0; j < o->cols; j++ )
         {
             v[ j ] = ( range * f3_xsg1_pos( rval ) ) + min;
         }
@@ -84,10 +84,10 @@ void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval )
 void bmath_mf3_s_fill_random_sparse( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval )
 {
     f3_t range = max - min;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         f3_t* v = o->data + i * o->stride;
-        for( sz_t j = 0; j < o->cols; j++ )
+        for( uz_t j = 0; j < o->cols; j++ )
         {
             if( f3_xsg1_pos( rval ) < density )
             {
@@ -105,10 +105,10 @@ void bmath_mf3_s_fill_random_sparse( bmath_mf3_s* o, f3_t min, f3_t max, f3_t de
 
 void bmath_mf3_s_fill_random_pow( bmath_mf3_s* o, f3_t exp, u2_t* rval )
 {
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         f3_t* v = o->data + i * o->stride;
-        for( sz_t j = 0; j < o->cols; j++ )
+        for( uz_t j = 0; j < o->cols; j++ )
         {
             f3_t r = f3_xsg1_sym( rval );
             v[ j ] = f3_sig( r ) * pow( f3_abs( r ), exp );
@@ -118,7 +118,7 @@ void bmath_mf3_s_fill_random_pow( bmath_mf3_s* o, f3_t exp, u2_t* rval )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bmath_mf3_s* bmath_mf3_s_create_set_size( sz_t rows, sz_t cols )
+bmath_mf3_s* bmath_mf3_s_create_set_size( uz_t rows, uz_t cols )
 {
     bmath_mf3_s* o = bmath_mf3_s_create();
     bmath_mf3_s_set_size( o, rows, cols );
@@ -127,7 +127,7 @@ bmath_mf3_s* bmath_mf3_s_create_set_size( sz_t rows, sz_t cols )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bmath_mf3_s* bmath_mf3_s_create_fill_random( sz_t rows, sz_t cols, f3_t min, f3_t max, u2_t* rval )
+bmath_mf3_s* bmath_mf3_s_create_fill_random( uz_t rows, uz_t cols, f3_t min, f3_t max, u2_t* rval )
 {
     bmath_mf3_s* o = bmath_mf3_s_create_set_size( rows, cols );
     bmath_mf3_s_fill_random( o, min, max, rval );
@@ -145,11 +145,11 @@ bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t 
 {
     if( o->rows != op->rows ) return false;
     if( o->cols != op->cols ) return false;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data + i * o ->stride;
         const f3_t* v2 = op->data + i * op->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) if( f3_abs( v1[ j ] - v2[ j ] ) > max_dev ) return false;
+        for( uz_t j = 0; j < o->cols; j++ ) if( f3_abs( v1[ j ] - v2[ j ] ) > max_dev ) return false;
     }
     return true;
 }
@@ -158,10 +158,10 @@ bl_t bmath_mf3_s_is_near_equ( const bmath_mf3_s* o, const bmath_mf3_s* op, f3_t 
 
 bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev )
 {
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data + i * o ->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) if( f3_abs( v1[ j ] ) > max_dev ) return false;
+        for( uz_t j = 0; j < o->cols; j++ ) if( f3_abs( v1[ j ] ) > max_dev ) return false;
     }
     return true;
 }
@@ -171,10 +171,10 @@ bl_t bmath_mf3_s_is_near_zro( const bmath_mf3_s* o, f3_t max_dev )
 bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev )
 {
     if( o->rows != o->cols ) return false;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data + i * o ->stride;
-        for( sz_t j = 0; j < o->cols; j++ )
+        for( uz_t j = 0; j < o->cols; j++ )
         {
             if( f3_abs( v1[ j ] - ( ( j == i ) ? 1.0 : 0.0 ) ) > max_dev ) return false;
         }
@@ -186,10 +186,10 @@ bl_t bmath_mf3_s_is_near_one( const bmath_mf3_s* o, f3_t max_dev )
 
 bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev )
 {
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data + i * o ->stride;
-        for( sz_t j = 0; j < o->cols; j++ )
+        for( uz_t j = 0; j < o->cols; j++ )
         {
             if( ( i != j ) && ( f3_abs( v1[ j ] ) > max_dev ) ) return false;
         }
@@ -202,11 +202,11 @@ bl_t bmath_mf3_s_is_near_dag( const bmath_mf3_s* o, f3_t max_dev )
 bl_t bmath_mf3_s_is_near_trd( const bmath_mf3_s* o, f3_t max_dev )
 {
     if( o->rows != o->cols ) return false;
-    sz_t n = o->rows;
-    for( sz_t i = 0; i < n; i++ )
+    uz_t n = o->rows;
+    for( uz_t i = 0; i < n; i++ )
     {
         const f3_t* vi = o ->data + i * o ->stride;
-        for( sz_t j = i + 2; j < n; j++ )
+        for( uz_t j = i + 2; j < n; j++ )
         {
             const f3_t* vj = o ->data + j * o ->stride;
             if( f3_abs( vi[ j ] ) > max_dev ) return false;
@@ -220,10 +220,10 @@ bl_t bmath_mf3_s_is_near_trd( const bmath_mf3_s* o, f3_t max_dev )
 
 bl_t bmath_mf3_s_is_near_ubd( const bmath_mf3_s* o, f3_t max_dev )
 {
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* vi = o->data + i * o->stride;
-        for( sz_t j = 0; j < o->cols; j++ )
+        for( uz_t j = 0; j < o->cols; j++ )
         {
             if( ( j < i || j > i + 1 ) && ( f3_abs( vi[ j ] ) > max_dev ) ) return false;
         }
@@ -235,10 +235,10 @@ bl_t bmath_mf3_s_is_near_ubd( const bmath_mf3_s* o, f3_t max_dev )
 
 bl_t bmath_mf3_s_is_near_lbd( const bmath_mf3_s* o, f3_t max_dev )
 {
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* vi = o->data + i * o->stride;
-        for( sz_t j = 0; j < o->cols; j++ )
+        for( uz_t j = 0; j < o->cols; j++ )
         {
             if( ( j + 1 < i || j > i ) && ( f3_abs( vi[ j ] ) > max_dev ) ) return false;
         }
@@ -252,28 +252,28 @@ bl_t bmath_mf3_s_is_near_otn( const bmath_mf3_s* o, f3_t max_dev )
 {
     if( o->rows <= o->cols )
     {
-        for( sz_t i = 0; i < o->rows; i++ )
+        for( uz_t i = 0; i < o->rows; i++ )
         {
             const f3_t* v1 = o ->data + i * o ->stride;
-            for( sz_t j = i; j < o->rows; j++ )
+            for( uz_t j = i; j < o->rows; j++ )
             {
                 const f3_t* v2 = o ->data + j * o ->stride;
                 f3_t dot_prd = 0;
-                for( sz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ k ] * v2[ k ];
+                for( uz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ k ] * v2[ k ];
                 if( f3_abs( dot_prd - ( ( j == i ) ? 1.0 : 0.0 ) ) > max_dev ) return false;
             }
         }
     }
     else
     {
-        for( sz_t i = 0; i < o->cols; i++ )
+        for( uz_t i = 0; i < o->cols; i++ )
         {
             const f3_t* v1 = o ->data + i;
-            for( sz_t j = i; j < o->cols; j++ )
+            for( uz_t j = i; j < o->cols; j++ )
             {
                 const f3_t* v2 = o ->data + j;
                 f3_t dot_prd = 0;
-                for( sz_t k = 0; k < o->rows; k++ ) dot_prd += v1[ k * o->stride ] * v2[ k * o->stride ];
+                for( uz_t k = 0; k < o->rows; k++ ) dot_prd += v1[ k * o->stride ] * v2[ k * o->stride ];
                 if( f3_abs( dot_prd - ( ( j == i ) ? 1.0 : 0.0 ) ) > max_dev ) return false;
             }
         }
@@ -286,14 +286,14 @@ bl_t bmath_mf3_s_is_near_otn( const bmath_mf3_s* o, f3_t max_dev )
 bl_t bmath_mf3_s_is_near_uni( const bmath_mf3_s* o, f3_t max_dev )
 {
     if( o->rows != o->cols ) return false;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data + i * o ->stride;
-        for( sz_t j = i; j < o->rows; j++ )
+        for( uz_t j = i; j < o->rows; j++ )
         {
             const f3_t* v2 = o ->data + j * o ->stride;
             f3_t dot_prd = 0;
-            for( sz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ k ] * v2[ k ];
+            for( uz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ k ] * v2[ k ];
             if( f3_abs( dot_prd - ( ( j == i ) ? 1.0 : 0.0 ) ) > max_dev ) return false;
         }
     }
@@ -304,11 +304,11 @@ bl_t bmath_mf3_s_is_near_uni( const bmath_mf3_s* o, f3_t max_dev )
 
 bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev )
 {
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v = o ->data + i * o->stride;
-        sz_t j_end = sz_min( i, o->cols );
-        for( sz_t j = 0; j < j_end; j++ )
+        uz_t j_end = uz_min( i, o->cols );
+        for( uz_t j = 0; j < j_end; j++ )
         {
             if( f3_abs( v[ j ] ) > max_dev ) return false;
         }
@@ -320,10 +320,10 @@ bl_t bmath_mf3_s_is_near_utr( const bmath_mf3_s* o, f3_t max_dev )
 
 bl_t bmath_mf3_s_is_near_ltr( const bmath_mf3_s* o, f3_t max_dev )
 {
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v = o ->data + i * o->stride;
-        for( sz_t j = i + 1; j < o->cols; j++ )
+        for( uz_t j = i + 1; j < o->cols; j++ )
         {
             if( f3_abs( v[ j ] ) > max_dev ) return false;
         }
@@ -336,10 +336,10 @@ bl_t bmath_mf3_s_is_near_ltr( const bmath_mf3_s* o, f3_t max_dev )
 bl_t bmath_mf3_s_is_near_hsm( const bmath_mf3_s* o, f3_t max_dev )
 {
     if( o->rows != o->cols ) return false;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* vi = o ->data + i * o ->stride;
-        for( sz_t j = 0; j < i; j++ )
+        for( uz_t j = 0; j < i; j++ )
         {
             const f3_t* vj = o ->data + j * o ->stride;
             if( f3_abs( vi[ j ] - vj[ i ] ) > max_dev ) return false;
@@ -356,11 +356,11 @@ f3_t bmath_mf3_s_fdev_equ( const bmath_mf3_s* o, const bmath_mf3_s* op )
     ASSERT( o->cols == op->cols );
 
     f3_t sum = 0;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* ai = o->data + i * o->stride;
         const f3_t* bi = op->data + i * op->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) sum += f3_sqr( ai[ j ] - bi[ j ] );
+        for( uz_t j = 0; j < o->cols; j++ ) sum += f3_sqr( ai[ j ] - bi[ j ] );
     }
     return ( sum > 0 ) ? f3_srt( sum ) : 0;
 }
@@ -370,10 +370,10 @@ f3_t bmath_mf3_s_fdev_equ( const bmath_mf3_s* o, const bmath_mf3_s* op )
 f3_t bmath_mf3_s_fdev_zro( const bmath_mf3_s* o )
 {
     f3_t sum = 0;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* oi = o->data + i * o->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) sum += f3_sqr( oi[ j ] );
+        for( uz_t j = 0; j < o->cols; j++ ) sum += f3_sqr( oi[ j ] );
     }
     return ( sum > 0 ) ? f3_srt( sum ) : 0;
 }
@@ -383,10 +383,10 @@ f3_t bmath_mf3_s_fdev_zro( const bmath_mf3_s* o )
 f3_t bmath_mf3_s_fdev_one( const bmath_mf3_s* o )
 {
     f3_t sum = 0;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* oi = o->data + i * o->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) sum += f3_sqr( oi[ j ] - ( i == j ? 1 : 0 ) );
+        for( uz_t j = 0; j < o->cols; j++ ) sum += f3_sqr( oi[ j ] - ( i == j ? 1 : 0 ) );
     }
     return ( sum > 0 ) ? f3_srt( sum ) : 0;
 }
@@ -398,28 +398,28 @@ f3_t bmath_mf3_s_fdev_otn( const bmath_mf3_s* o )
     f3_t sum = 0;
     if( o->rows <= o->cols )
     {
-        for( sz_t i = 0; i < o->rows; i++ )
+        for( uz_t i = 0; i < o->rows; i++ )
         {
             const f3_t* v1 = o ->data + i * o ->stride;
-            for( sz_t j = i; j < o->rows; j++ )
+            for( uz_t j = i; j < o->rows; j++ )
             {
                 const f3_t* v2 = o ->data + j * o ->stride;
                 f3_t dot_prd = 0;
-                for( sz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ k ] * v2[ k ];
+                for( uz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ k ] * v2[ k ];
                 sum += f3_sqr( dot_prd - ( ( j == i ) ? 1.0 : 0.0 ) );
             }
         }
     }
     else
     {
-        for( sz_t i = 0; i < o->cols; i++ )
+        for( uz_t i = 0; i < o->cols; i++ )
         {
             const f3_t* v1 = o ->data + i;
-            for( sz_t j = i; j < o->cols; j++ )
+            for( uz_t j = i; j < o->cols; j++ )
             {
                 const f3_t* v2 = o ->data + j;
                 f3_t dot_prd = 0;
-                for( sz_t k = 0; k < o->rows; k++ ) dot_prd += v1[ k * o->stride ] * v2[ k * o->stride ];
+                for( uz_t k = 0; k < o->rows; k++ ) dot_prd += v1[ k * o->stride ] * v2[ k * o->stride ];
                 sum += f3_sqr( dot_prd - ( ( j == i ) ? 1.0 : 0.0 ) );
             }
         }
@@ -436,7 +436,7 @@ f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o )
 {
     ASSERT( o->cols == o->rows );
     f3_t sum = 0;
-    for( sz_t i = 0; i < o->rows; i++ ) sum += o->data[ i * ( o->stride + 1 ) ];
+    for( uz_t i = 0; i < o->rows; i++ ) sum += o->data[ i * ( o->stride + 1 ) ];
     return sum;
 }
 
@@ -446,11 +446,11 @@ f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op )
 {
     ASSERT( bmath_mf3_s_is_equ_size( o, op ) );
     f3_t sum = 0;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 =  o->data + i *  o->stride;
         const f3_t* v2 = op->data + i * op->stride;
-        for( sz_t i = 0; i < o->cols; i++ ) sum += f3_sqr( v1[ i ] - v2[ i ] );
+        for( uz_t i = 0; i < o->cols; i++ ) sum += f3_sqr( v1[ i ] - v2[ i ] );
     }
     return sum;
 }
@@ -461,12 +461,12 @@ void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 {
     ASSERT( bmath_mf3_s_is_equ_size( o, op ) );
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data  + i * o ->stride;
         const f3_t* v2 = op->data  + i * op->stride;
               f3_t* vr = res->data + i * res->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ] + v2[ j ];
+        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ] + v2[ j ];
     }
 }
 
@@ -476,12 +476,12 @@ void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 {
     ASSERT( bmath_mf3_s_is_equ_size( o, op ) );
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data  + i * o ->stride;
         const f3_t* v2 = op->data  + i * op->stride;
               f3_t* vr = res->data + i * res->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ] - v2[ j ];
+        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ] - v2[ j ];
     }
 }
 
@@ -489,10 +489,10 @@ void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 
 void bmath_mf3_s_zro( bmath_mf3_s* o )
 {
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         f3_t* v1 = o ->data  + i * o ->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) v1[ j ] = 0;
+        for( uz_t j = 0; j < o->cols; j++ ) v1[ j ] = 0;
     }
 }
 
@@ -500,10 +500,10 @@ void bmath_mf3_s_zro( bmath_mf3_s* o )
 
 void bmath_mf3_s_one( bmath_mf3_s* o )
 {
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         f3_t* v1 = o ->data  + i * o ->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) v1[ j ] = ( j == i ) ? 1 : 0;
+        for( uz_t j = 0; j < o->cols; j++ ) v1[ j ] = ( j == i ) ? 1 : 0;
     }
 }
 
@@ -512,11 +512,11 @@ void bmath_mf3_s_one( bmath_mf3_s* o )
 void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data  + i * o ->stride;
               f3_t* vr = res->data + i * res->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = -v1[ j ];
+        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = -v1[ j ];
     }
 }
 
@@ -527,11 +527,11 @@ void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res )
     if( res == o ) return;
     ASSERT( o->rows == res->rows );
     ASSERT( o->cols == res->cols );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data  + i * o ->stride;
               f3_t* vr = res->data + i * res->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ];
+        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ];
     }
 }
 
@@ -555,14 +555,14 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 
     // cache friendly inner loop
     bmath_mf3_s_zro( res );
-    for( sz_t j = 0; j < o->cols; j++ )
+    for( uz_t j = 0; j < o->cols; j++ )
     {
         const f3_t* bj = op->data + j * op->stride;
-        for( sz_t i = 0; i < o->rows; i++ )
+        for( uz_t i = 0; i < o->rows; i++ )
         {
             f3_t aij =   o->data[  i *   o->stride + j ];
             f3_t* ri = res->data + i * res->stride;
-            for( sz_t k = 0; k < op->cols; k++ ) ri[ k ] += aij * bj[ k ];
+            for( uz_t k = 0; k < op->cols; k++ ) ri[ k ] += aij * bj[ k ];
         }
     }
 }
@@ -576,11 +576,11 @@ void bmath_mf3_s_mul_dag( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf
     ASSERT( o->rows == res->rows );
     ASSERT( o->cols == res->cols );
     const f3_t* vd = dag->data;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* vo =   o->data + i *   o->stride;
               f3_t* vr = res->data + i * res->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ] * vd[ j ];
+        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ] * vd[ j ];
     }
 }
 
@@ -593,12 +593,12 @@ void bmath_mf3_s_dag_mul( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf
     ASSERT( o->rows == res->rows );
     ASSERT( o->cols == res->cols );
     const f3_t* vd = dag->data;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* vo =   o->data + i *   o->stride;
               f3_t* vr = res->data + i * res->stride;
               f3_t d = vd[ i ];
-        for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ] * d;
+        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ] * d;
     }
 }
 
@@ -612,11 +612,11 @@ void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bm
 
     const f3_t* v1 = op1->data;
     const f3_t* v2 = op2->data;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* oi = o->data   + o->stride * i;
               f3_t* ri = res->data + res->stride * i;
-        for( sz_t j = 0; j < o->cols; j++ ) ri[ j ] = oi[ j ] + ( v1[ i ] * v2[ j ] );
+        for( uz_t j = 0; j < o->cols; j++ ) ri[ j ] = oi[ j ] + ( v1[ i ] * v2[ j ] );
     }
 }
 
@@ -640,14 +640,14 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
         }
         else
         {
-            for( sz_t i = 0; i < o->rows; i++ )
+            for( uz_t i = 0; i < o->rows; i++ )
             {
                 const f3_t* vi = o->data + i * o->stride;
-                for( sz_t j = 0; j <= i ; j++ )
+                for( uz_t j = 0; j <= i ; j++ )
                 {
                     const f3_t* vj = o->data + j * o->stride;
                     f3_t sum = 0;
-                    for( sz_t k = 0; k < o->cols; k++ ) sum += vi[ k ] * vj[ k ];
+                    for( uz_t k = 0; k < o->cols; k++ ) sum += vi[ k ] * vj[ k ];
                     res->data[ i * res->stride + j ] = sum;
                     res->data[ j * res->stride + i ] = sum;
                 }
@@ -661,18 +661,18 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
         bmath_vf3_s row;
         bmath_vf3_s_init( &row );
         bmath_vf3_s_set_size( &row, o->cols );
-        for( sz_t i = 0; i < o->rows; i++ )
+        for( uz_t i = 0; i < o->rows; i++ )
         {
             const f3_t* voi =   o->data + i *   o->stride;
             bmath_vf3_s_zro( &row );
-            for( sz_t j = 0; j < op->rows; j++ )
+            for( uz_t j = 0; j < op->rows; j++ )
             {
                 const f3_t* vpj = op->data + j * op->stride;
-                for( sz_t k = 0; k < o->cols; k++ ) row.data[ j ] += voi[ k ] * vpj[ k ];
+                for( uz_t k = 0; k < o->cols; k++ ) row.data[ j ] += voi[ k ] * vpj[ k ];
             }
 
             f3_t* vri = res->data + i * res->stride;
-            for( sz_t k = 0; k < row.size; k++ ) vri[ k ] = row.data[ k ];
+            for( uz_t k = 0; k < row.size; k++ ) vri[ k ] = row.data[ k ];
         }
         bmath_vf3_s_down( &row );
     }
@@ -687,14 +687,14 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
     else
     {
         bmath_mf3_s_zro( res );
-        for( sz_t i = 0; i < o->rows; i++ )
+        for( uz_t i = 0; i < o->rows; i++ )
         {
                   f3_t* vri = res->data + i * res->stride;
             const f3_t* voi =   o->data + i *   o->stride;
-            for( sz_t j = 0; j < op->rows; j++ )
+            for( uz_t j = 0; j < op->rows; j++ )
             {
                 const f3_t* vpj = op->data + j * op->stride;
-                for( sz_t k = 0; k < o->cols; k++ ) vri[ j ] += voi[ k ] * vpj[ k ];
+                for( uz_t k = 0; k < o->cols; k++ ) vri[ j ] += voi[ k ] * vpj[ k ];
             }
         }
     }
@@ -766,7 +766,7 @@ bl_t bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     ASSERT( o->rows == res->cols );
     ASSERT( o->cols == res->rows );
 
-    sz_t n = sz_min( o->rows, o->cols );
+    uz_t n = uz_min( o->rows, o->cols );
     if( n == 0 ) return true;
 
     bmath_mf3_s* a = bmath_mf3_s_create();
@@ -806,17 +806,17 @@ bl_t bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     if( thr == 0 ) thr = 1.0;
 
     // pseudo invert diagonal
-    for( sz_t i = 0; i < n; i++ ) d->data[ i ] = ( fabs( d->data[ i ] ) < thr ) ? 0 : 1.0 / d->data[ i ];
+    for( uz_t i = 0; i < n; i++ ) d->data[ i ] = ( fabs( d->data[ i ] ) < thr ) ? 0 : 1.0 / d->data[ i ];
 
-    for( sz_t i = 0; i < res->rows; i++ )
+    for( uz_t i = 0; i < res->rows; i++ )
     {
         f3_t* ri = res->data + res->stride * i;
         f3_t* vi =   v->data +   v->stride * i;
-        for( sz_t j = 0; j < res->cols; j++ )
+        for( uz_t j = 0; j < res->cols; j++ )
         {
             f3_t* uj = u->data + u->stride * j;
             f3_t  r = 0;
-            for( sz_t k = 0; k < n; k++ ) r += vi[ k ] * uj[ k ] * d->data[ k ];
+            for( uz_t k = 0; k < n; k++ ) r += vi[ k ] * uj[ k ] * d->data[ k ];
             ri[ j ] = r;
         }
     }
@@ -847,7 +847,7 @@ bl_t bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     ASSERT( o->rows == o->cols );
 
-    sz_t n = o->rows;
+    uz_t n = o->rows;
     if( n == 0 ) return true;
 
     bmath_mf3_s* a = res; // a occupies space of res
@@ -867,7 +867,7 @@ bl_t bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     f3_t thr = s_max * eps;
     if( thr == 0 ) thr = 1.0;
 
-    for( sz_t i = 0; i < n; i++ ) dag->data[ i ] = ( dag->data[ i ] < thr ) ? 0 : ( 1.0 / dag->data[ i ] );
+    for( uz_t i = 0; i < n; i++ ) dag->data[ i ] = ( dag->data[ i ] < thr ) ? 0 : ( 1.0 / dag->data[ i ] );
 
     bmath_mf3_s_htp( q, q );
     bmath_mf3_s_udu_htp( q, dag, res );
@@ -900,13 +900,13 @@ void bmath_mf3_s_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res )
 
     bmath_mf3_s_inv( &o_sub, &r_sub );
 
-    sz_t n = o_sub.rows;
+    uz_t n = o_sub.rows;
 
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         f3_t sum = 0;
         f3_t* row = r_sub.data + i * r_sub.stride;
-        for( sz_t j = 0; j < n; j++ ) sum += row[ j ] * o->data[ j * o->stride + n ];
+        for( uz_t j = 0; j < n; j++ ) sum += row[ j ] * o->data[ j * o->stride + n ];
         res->data[ i * res->stride + n ] = -sum;
     }
 }
@@ -933,13 +933,13 @@ void bmath_mf3_s_hsm_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res )
 
     bmath_mf3_s_hsm_inv( &o_sub, &r_sub );
 
-    sz_t n = o_sub.rows;
+    uz_t n = o_sub.rows;
 
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         f3_t sum = 0;
         f3_t* row = r_sub.data + i * r_sub.stride;
-        for( sz_t j = 0; j < n; j++ ) sum += row[ j ] * o->data[ j * o->stride + n ];
+        for( uz_t j = 0; j < n; j++ ) sum += row[ j ] * o->data[ j * o->stride + n ];
         res->data[ i * res->stride + n ] = -sum;
     }
 }
@@ -966,13 +966,13 @@ void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
 
     bmath_mf3_s_hsm_piv( &o_sub, eps, &r_sub );
 
-    sz_t n = o_sub.rows;
+    uz_t n = o_sub.rows;
 
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         f3_t sum = 0;
         f3_t* row = r_sub.data + i * r_sub.stride;
-        for( sz_t j = 0; j < n; j++ ) sum += row[ j ] * o->data[ j * o->stride + n ];
+        for( uz_t j = 0; j < n; j++ ) sum += row[ j ] * o->data[ j * o->stride + n ];
         res->data[ i * res->stride + n ] = -sum;
     }
 }
@@ -1002,11 +1002,11 @@ void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf
     ASSERT( o->rows == res->size );
     f3_t* vr = res->data;
     f3_t* v2 = vec->data;
-    for( sz_t i = 0; i < res->size; i++ )
+    for( uz_t i = 0; i < res->size; i++ )
     {
         f3_t* v1 = o->data + i * o->stride;
         f3_t sum = 0;
-        for( sz_t j = 0; j < o->cols; j++ ) sum += v1[ j ] * v2[ j ];
+        for( uz_t j = 0; j < o->cols; j++ ) sum += v1[ j ] * v2[ j ];
         vr[ i ] = sum;
     }
 }
@@ -1024,16 +1024,16 @@ void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf
         return;
     }
 
-    sz_t n = av1->size;
+    uz_t n = av1->size;
     ASSERT( o->cols == n + 1 );
     ASSERT( o->rows == res->size );
     f3_t* vr = res->data;
     f3_t* v2 = av1->data;
-    for( sz_t i = 0; i < res->size; i++ )
+    for( uz_t i = 0; i < res->size; i++ )
     {
         f3_t* v1 = o->data + i * o->stride;
         f3_t sum = 0;
-        for( sz_t j = 0; j < n; j++ ) sum += v1[ j ] * v2[ j ];
+        for( uz_t j = 0; j < n; j++ ) sum += v1[ j ] * v2[ j ];
         vr[ i ] = sum + v1[ n ];
     }
 }
@@ -1047,15 +1047,15 @@ void bmath_mf3_s_udu_htp( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf
     ASSERT( o->rows == dag->size );
 
     const f3_t* vd = dag->data;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* vi =   o->data + i *   o->stride;
               f3_t* vr = res->data + i * res->stride;
-        for( sz_t j = 0; j < o->rows; j++ )
+        for( uz_t j = 0; j < o->rows; j++ )
         {
             const f3_t* vj = o->data + j * o->stride;
             f3_t sum = 0;
-            for( sz_t k = 0; k < o->rows; k++ ) sum += vi[ k ] * vj[ k ] * vd[ k ];
+            for( uz_t k = 0; k < o->rows; k++ ) sum += vi[ k ] * vj[ k ] * vd[ k ];
             vr[ j ] = sum;
         }
     }
@@ -1069,12 +1069,12 @@ void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
     {
         // in-place algorithm
         ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-        sz_t n = o->rows;
-        for( sz_t i = 0; i < n; i++ )
+        uz_t n = o->rows;
+        for( uz_t i = 0; i < n; i++ )
         {
             const f3_t* voi =   o->data + i *   o->stride;
                   f3_t* vri = res->data + i * res->stride;
-            for( sz_t j = 0; j < i; j++ )
+            for( uz_t j = 0; j < i; j++ )
             {
                 const f3_t* voj =   o->data + j *   o->stride;
                       f3_t* vrj = res->data + j * res->stride;
@@ -1086,7 +1086,7 @@ void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
         }
 
         // copy diag
-        if( o != res ) for( sz_t i = 0; i < n; i++ ) res->data[ i * res->stride + i ] = o->data[ i * o->stride + i ];
+        if( o != res ) for( uz_t i = 0; i < n; i++ ) res->data[ i * res->stride + i ] = o->data[ i * o->stride + i ];
         return;
     }
 
@@ -1103,11 +1103,11 @@ void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
     ASSERT( o->rows == res->cols );
     ASSERT( o->cols == res->rows );
 
-    for( sz_t i = 0; i < res->rows; i++ )
+    for( uz_t i = 0; i < res->rows; i++ )
     {
               f3_t* vr = res->data + i * res->stride;
         const f3_t* v1 = o ->data  + i;
-        for( sz_t j = 0; j < res->cols; j++ ) vr[ j ] = v1[ j * o->stride ];
+        for( uz_t j = 0; j < res->cols; j++ ) vr[ j ] = v1[ j * o->stride ];
     }
 }
 
@@ -1117,11 +1117,11 @@ void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t* op, bmath_mf3_s* res
 {
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
     f3_t f = *op;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v1 = o ->data  + i * o ->stride;
               f3_t* vr = res->data + i * res->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ] * f;
+        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ] * f;
     }
 }
 
@@ -1130,7 +1130,7 @@ void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t* op, bmath_mf3_s* res
 /**********************************************************************************************************************/
 /// element-access; col-access; row-access; sub-matrix
 
-void bmath_mf3_s_set_row_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data )
+void bmath_mf3_s_set_row_by_data( bmath_mf3_s* o, uz_t idx, const f3_t* data )
 {
     ASSERT( idx < o->rows );
     bcore_u_memcpy( sizeof( f3_t ), o->data + idx * o->stride, data, o->cols );
@@ -1138,24 +1138,24 @@ void bmath_mf3_s_set_row_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_set_col_by_data( bmath_mf3_s* o, sz_t idx, const f3_t* data )
+void bmath_mf3_s_set_col_by_data( bmath_mf3_s* o, uz_t idx, const f3_t* data )
 {
     ASSERT( idx < o->cols );
     f3_t* v = o ->data + idx;
-    for( sz_t i = 0; i < o->rows; i++ ) v[ i * o ->stride ] = data[ i ];
+    for( uz_t i = 0; i < o->rows; i++ ) v[ i * o ->stride ] = data[ i ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_set_dag_by_data( bmath_mf3_s* o, const f3_t* data )
 {
-    sz_t size = sz_min( o->rows, o->cols );
-    for( sz_t i = 0; i < size; i++ ) o->data[ i * ( o ->stride + 1 ) ] = data[ i ];
+    uz_t size = uz_min( o->rows, o->cols );
+    for( uz_t i = 0; i < size; i++ ) o->data[ i * ( o ->stride + 1 ) ] = data[ i ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_set_row_by_vec( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* vec )
+void bmath_mf3_s_set_row_by_vec( bmath_mf3_s* o, uz_t idx, const bmath_vf3_s* vec )
 {
     ASSERT( o->cols <= vec->size );
     bmath_mf3_s_set_row_by_data( o, idx, vec->data );
@@ -1163,7 +1163,7 @@ void bmath_mf3_s_set_row_by_vec( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* ve
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_set_col_by_vec( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* vec )
+void bmath_mf3_s_set_col_by_vec( bmath_mf3_s* o, uz_t idx, const bmath_vf3_s* vec )
 {
     ASSERT( o->rows <= vec->size );
     bmath_mf3_s_set_col_by_data( o, idx, vec->data );
@@ -1173,13 +1173,13 @@ void bmath_mf3_s_set_col_by_vec( bmath_mf3_s* o, sz_t idx, const bmath_vf3_s* ve
 
 void bmath_mf3_s_set_dag_by_vec( bmath_mf3_s* o, const bmath_vf3_s* vec )
 {
-    ASSERT( sz_min( o->rows, o->cols ) <= vec->size );
+    ASSERT( uz_min( o->rows, o->cols ) <= vec->size );
     bmath_mf3_s_set_dag_by_data( o, vec->data );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_get_row_vec(  const bmath_mf3_s* o, sz_t idx, bmath_vf3_s* res )
+void bmath_mf3_s_get_row_vec(  const bmath_mf3_s* o, uz_t idx, bmath_vf3_s* res )
 {
     ASSERT( idx < o->rows );
     ASSERT( o->cols <= res->size );
@@ -1188,68 +1188,68 @@ void bmath_mf3_s_get_row_vec(  const bmath_mf3_s* o, sz_t idx, bmath_vf3_s* res 
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_get_col_vec(  const bmath_mf3_s* o, sz_t idx, bmath_vf3_s* res )
+void bmath_mf3_s_get_col_vec(  const bmath_mf3_s* o, uz_t idx, bmath_vf3_s* res )
 {
     ASSERT( idx < o->cols );
     ASSERT( o->rows <= res->size );
     const f3_t* src = o->data + idx;
-    for( sz_t i = 0; i < o->rows; i++ ) res->data[ i ] = src[ i * o ->stride ];
+    for( uz_t i = 0; i < o->rows; i++ ) res->data[ i ] = src[ i * o ->stride ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_s_get_dag_vec( const bmath_mf3_s* o, bmath_vf3_s* res )
 {
-    sz_t size = sz_min( o->rows, o->cols );
+    uz_t size = uz_min( o->rows, o->cols );
     ASSERT( size <= res->size );
-    for( sz_t i = 0; i < size; i++ ) res->data[ i ] = o->data[ i * ( o->stride + 1 ) ];
+    for( uz_t i = 0; i < size; i++ ) res->data[ i ] = o->data[ i * ( o->stride + 1 ) ];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_swap_row( bmath_mf3_s* o, sz_t i, sz_t j )
+void bmath_mf3_s_swap_row( bmath_mf3_s* o, uz_t i, uz_t j )
 {
     if( i == j ) return;
     ASSERT( i < o->rows );
     ASSERT( j < o->rows );
     f3_t* vi = o->data + i * o->stride;
     f3_t* vj = o->data + j * o->stride;
-    for( sz_t k = 0; k < o->cols; k++ ) f3_t_swap( vi + k, vj + k );
+    for( uz_t k = 0; k < o->cols; k++ ) f3_t_swap( vi + k, vj + k );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_swap_col( bmath_mf3_s* o, sz_t i, sz_t j )
+void bmath_mf3_s_swap_col( bmath_mf3_s* o, uz_t i, uz_t j )
 {
     if( i == j ) return;
     ASSERT( i < o->cols );
     ASSERT( j < o->cols );
     f3_t* vi = o->data + i;
     f3_t* vj = o->data + j;
-    for( sz_t k = 0; k < o->rows; k++ ) f3_t_swap( vi + k * o->stride, vj + k * o->stride );
+    for( uz_t k = 0; k < o->rows; k++ ) f3_t_swap( vi + k * o->stride, vj + k * o->stride );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_mul_f3_to_row( bmath_mf3_s* o, f3_t v, sz_t i )
+void bmath_mf3_s_mul_f3_to_row( bmath_mf3_s* o, f3_t v, uz_t i )
 {
     ASSERT( i < o->rows );
     f3_t* vi = o->data + i * o->stride;
-    for( sz_t k = 0; k < o->cols; k++ ) vi[ k ] *= v;
+    for( uz_t k = 0; k < o->cols; k++ ) vi[ k ] *= v;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_mul_f3_to_col( bmath_mf3_s* o, f3_t v, sz_t i )
+void bmath_mf3_s_mul_f3_to_col( bmath_mf3_s* o, f3_t v, uz_t i )
 {
     ASSERT( i < o->cols );
     f3_t* vi = o->data + i;
-    for( sz_t k = 0; k < o->rows; k++ ) vi[ k * o->stride ] *= v;
+    for( uz_t k = 0; k < o->rows; k++ ) vi[ k * o->stride ] *= v;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bmath_mf3_s bmath_mf3_s_get_weak_sub_mat( const bmath_mf3_s* o, sz_t row, sz_t col, sz_t rows, sz_t cols )
+bmath_mf3_s bmath_mf3_s_get_weak_sub_mat( const bmath_mf3_s* o, uz_t row, uz_t col, uz_t rows, uz_t cols )
 {
     ASSERT( row + rows <= o->rows );
     ASSERT( col + cols <= o->cols );
@@ -1266,7 +1266,7 @@ bmath_mf3_s bmath_mf3_s_get_weak_sub_mat( const bmath_mf3_s* o, sz_t row, sz_t c
 
 //---------------------------------------------------------------------------------------------------------------------
 
-bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, sz_t idx )
+bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, uz_t idx )
 {
     ASSERT( idx < o->rows );
     bmath_vf3_s vec;
@@ -1285,15 +1285,15 @@ void bmath_mf3_s_decompose_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res )
     ASSERT( bmath_mf3_s_is_square( o ) );
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
 
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
               f3_t* vli = res->data + i * res->stride;
         const f3_t* voi =   o->data + i * o->stride;
-        for( sz_t j = 0; j <= i; j++ )
+        for( uz_t j = 0; j <= i; j++ )
         {
             f3_t* vlj = res->data + j * res->stride;
             f3_t acc = voi[ j ];
-            for( sz_t k = 0; k < j; k++ ) acc -= vli[ k ] * vlj[ k ];
+            for( uz_t k = 0; k < j; k++ ) acc -= vli[ k ] * vlj[ k ];
             if( i == j )
             {
                 vli[ j ] = ( acc > 0 ) ? sqrt( acc ) : 0;
@@ -1314,26 +1314,26 @@ void bmath_mf3_s_decompose_luc( const bmath_mf3_s* o, bmath_mf3_s* res )
     // Algorithm works in-place: No need to check for o == res;
     ASSERT( bmath_mf3_s_is_square( o ) );
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    sz_t n = o->cols;
-    sz_t stride = res->stride;
+    uz_t n = o->cols;
+    uz_t stride = res->stride;
 
     bmath_mf3_s_cpy( o, res );
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         f3_t* vi = res->data + i * stride;
-        for( sz_t j = 0; j < i; j++ )
+        for( uz_t j = 0; j < i; j++ )
         {
             f3_t* vj = res->data + j;
             f3_t sum = 0;
-            for( sz_t k = 0; k < j; k++ ) sum += vi[ k ] * vj[ k * stride ];
+            for( uz_t k = 0; k < j; k++ ) sum += vi[ k ] * vj[ k * stride ];
             vi[ j ] = ( vj[ j * stride ] != 0 ) ? ( ( vi[ j ] - sum ) / vj[ j * stride ] ) : 0;
         }
 
-        for( sz_t j = i; j < n; j++ )
+        for( uz_t j = i; j < n; j++ )
         {
             f3_t* vj = res->data + j;
             f3_t sum = 0;
-            for( sz_t k = 0; k < i; k++ ) sum += vi[ k ] * vj[ k * stride ];
+            for( uz_t k = 0; k < i; k++ ) sum += vi[ k ] * vj[ k * stride ];
             vi[ j ] -= sum;
         }
     }
@@ -1347,35 +1347,35 @@ void bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
     ASSERT( bmath_mf3_s_is_square( o ) );
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
 
-    sz_t n = o->rows;
+    uz_t n = o->rows;
 
     // diagonal elements
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         f3_t v = o->data[ i * o->stride + i ];
         res->data[ i * res->stride + i ] = ( v != 0 ) ? 1.0 / v : 0;
     }
 
     // upper off-diagonal elements
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         f3_t* vri = res->data + i * res->stride;
-        for( sz_t j = i + 1; j < n; j++ )
+        for( uz_t j = i + 1; j < n; j++ )
         {
             const f3_t* voj =   o->data + j *   o->stride;
                   f3_t* vrj = res->data + j * res->stride;
             f3_t sum = 0;
-            for( sz_t k = i; k < j; k++ ) sum += voj[ k ] * vri[ k ];
+            for( uz_t k = i; k < j; k++ ) sum += voj[ k ] * vri[ k ];
             vri[ j ] = -vrj[ j ] * sum;
             vrj[ i ] = 0;
         }
     }
 
     // zero lower off-diagonal elements; (this part must be kept to last for the in-place algorithm)
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         f3_t* vri = res->data + i * res->stride;
-        for( sz_t j = 0; j < i; j++ ) vri[ j ] = 0;
+        for( uz_t j = 0; j < i; j++ ) vri[ j ] = 0;
     }
 }
 
@@ -1399,38 +1399,38 @@ void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
     // Algorithm works in-place: No need to check for o == res;
     ASSERT( bmath_mf3_s_is_square( o ) );
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    sz_t n = o->rows;
+    uz_t n = o->rows;
 
     // compute off diagonal elements; store in upper triangle of res
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         const f3_t* voi = o->data + i * o->stride;
-        for( sz_t j = 0; j < i; j++ )
+        for( uz_t j = 0; j < i; j++ )
         {
             const f3_t* voj =   o->data + j *   o->stride;
                   f3_t* vrj = res->data + j * res->stride;
             f3_t sum = 0;
-            for( sz_t k = 0; k <= j; k++ ) sum += voi[ k ] * voj[ k ];
+            for( uz_t k = 0; k <= j; k++ ) sum += voi[ k ] * voj[ k ];
             vrj[ i ] = sum;
         }
     }
 
     // diagonal elements in reverse order
-    for( sz_t i = n - 1; i < n; i-- )
+    for( uz_t i = n - 1; i < n; i-- )
     {
         const f3_t* voi =   o->data + i *   o->stride;
               f3_t* vri = res->data + i * res->stride;
 
         f3_t sum = 0;
-        for( sz_t k = 0; k <= i; k++ ) sum += voi[ k ] * voi[ k ];
+        for( uz_t k = 0; k <= i; k++ ) sum += voi[ k ] * voi[ k ];
         vri[ i ] = sum;
     }
 
     // copy lower off-diagonal from upper off-diagonal
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         f3_t* vri = res->data + i * res->stride;
-        for( sz_t j = 0; j < i; j++ ) vri[ j ] = res->data[ j * res->stride + i ];
+        for( uz_t j = 0; j < i; j++ ) vri[ j ] = res->data[ j * res->stride + i ];
     }
 }
 
@@ -1441,38 +1441,38 @@ void bmath_mf3_s_utr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
     // Algorithm works in-place: No need to check for o == res;
     ASSERT( bmath_mf3_s_is_square( o ) );
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    sz_t n = o->rows;
+    uz_t n = o->rows;
 
     // compute off diagonal elements; store in lower triangle of res
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         const f3_t* voi = o->data + i * o->stride;
-        for( sz_t j = i + 1; j < n; j++ )
+        for( uz_t j = i + 1; j < n; j++ )
         {
             const f3_t* voj =   o->data + j *   o->stride;
                   f3_t* vrj = res->data + j * res->stride;
             f3_t sum = 0;
-            for( sz_t k = j; k < n; k++ ) sum += voi[ k ] * voj[ k ];
+            for( uz_t k = j; k < n; k++ ) sum += voi[ k ] * voj[ k ];
             vrj[ i ] = sum;
         }
     }
 
     // diagonal elements in ascending order
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         const f3_t* voi =   o->data + i *   o->stride;
               f3_t* vri = res->data + i * res->stride;
 
         f3_t sum = 0;
-        for( sz_t k = i; k < n; k++ ) sum += f3_sqr( voi[ k ] );
+        for( uz_t k = i; k < n; k++ ) sum += f3_sqr( voi[ k ] );
         vri[ i ] = sum;
     }
 
     // copy lower off-diagonal to upper off-diagonal
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         f3_t* vri = res->data + i * res->stride;
-        for( sz_t j = 0; j < i; j++ ) res->data[ j * res->stride + i ] = vri[ j ];
+        for( uz_t j = 0; j < i; j++ ) res->data[ j * res->stride + i ] = vri[ j ];
     }
 }
 
@@ -1481,11 +1481,11 @@ void bmath_mf3_s_utr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 void bmath_mf3_s_ltr_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
 {
     // Algorithm works in-place for op == res;
-    for( sz_t i = o->rows - 1; i < o->rows; i-- )
+    for( uz_t i = o->rows - 1; i < o->rows; i-- )
     {
         f3_t* v1 = o->data + i * o->stride;
         f3_t sum = 0;
-        for( sz_t j = 0; j <= i; j++ ) sum += v1[ j ] * op[ j ];
+        for( uz_t j = 0; j <= i; j++ ) sum += v1[ j ] * op[ j ];
         res[ i ] = sum;
     }
 }
@@ -1502,11 +1502,11 @@ void bmath_mf3_s_ltr_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath
 void bmath_mf3_s_lt1_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
 {
     // Algorithm works in-place for op == res;
-    for( sz_t i = o->rows - 1; i < o->rows; i-- )
+    for( uz_t i = o->rows - 1; i < o->rows; i-- )
     {
         f3_t* v1 = o->data + i * o->stride;
         f3_t sum = 0;
-        for( sz_t j = 0; j < i; j++ ) sum += v1[ j ] * op[ j ];
+        for( uz_t j = 0; j < i; j++ ) sum += v1[ j ] * op[ j ];
         res[ i ] = sum + op[ i ];
     }
 }
@@ -1524,11 +1524,11 @@ void bmath_mf3_s_lt1_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* op, bmath
 void bmath_mf3_s_utr_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
 {
     // Algorithm works in-place for op == res;
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         f3_t* v1 = o->data + i * o->stride;
         f3_t sum = 0;
-        for( sz_t j = i; j < o->cols; j++ ) sum += v1[ j ] * op[ j ];
+        for( uz_t j = i; j < o->cols; j++ ) sum += v1[ j ] * op[ j ];
         res[ i ] = sum;
     }
 }
@@ -1564,7 +1564,7 @@ void bmath_mf3_s_ltr_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, b
     ASSERT( o->rows == op->rows );
     ASSERT( o->cols == res->cols );
     ASSERT( o->rows == res->rows );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         bmath_mf3_s_ltr_mul_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
     }
@@ -1578,7 +1578,7 @@ void bmath_mf3_s_lt1_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, b
     ASSERT( o->rows == op->rows );
     ASSERT( o->cols == res->cols );
     ASSERT( o->rows == res->rows );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         bmath_mf3_s_lt1_mul_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
     }
@@ -1592,7 +1592,7 @@ void bmath_mf3_s_utr_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, b
     ASSERT( o->rows == op->rows );
     ASSERT( o->cols == res->cols );
     ASSERT( o->rows == res->rows );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         bmath_mf3_s_utr_mul_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
     }
@@ -1606,7 +1606,7 @@ void bmath_mf3_s_luc_mul_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, b
     ASSERT( o->rows == op->rows );
     ASSERT( o->cols == res->cols );
     ASSERT( o->rows == res->rows );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         bmath_mf3_s_luc_mul_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
     }
@@ -1618,12 +1618,12 @@ void bmath_mf3_s_ltr_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res
 {
     // Algorithm works in-place for op == res;
     if( op != res ) bcore_u_memcpy( sizeof( f3_t ), res, op, o->rows );
-    sz_t n = o->rows;
-    for( sz_t i = 0; i < n; i++ )
+    uz_t n = o->rows;
+    for( uz_t i = 0; i < n; i++ )
     {
         const f3_t* voi = o->data + i * o->stride;
         f3_t sum = 0;
-        for( sz_t j = 0; j < i; j++ ) sum += voi[ j ] * res[ j ];
+        for( uz_t j = 0; j < i; j++ ) sum += voi[ j ] * res[ j ];
         res[ i ] = ( voi[ i ] != 0 ) ? ( res[ i ] - sum ) / voi[ i ] : 0;
     }
 }
@@ -1643,12 +1643,12 @@ void bmath_mf3_s_utr_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res
 {
     // Algorithm works in-place for op == res;
     if( op != res ) bcore_u_memcpy( sizeof( f3_t ), res, op, o->rows );
-    sz_t n = o->rows;
-    for( sz_t i = n - 1; i < n; i-- )
+    uz_t n = o->rows;
+    for( uz_t i = n - 1; i < n; i-- )
     {
         const f3_t* voi = o->data + i * o->stride;
         f3_t sum = 0;
-        for( sz_t j = i + 1; j < n; j++ ) sum += voi[ j ] * res[ j ];
+        for( uz_t j = i + 1; j < n; j++ ) sum += voi[ j ] * res[ j ];
         res[ i ] = ( voi[ i ] != 0 ) ? ( res[ i ] - sum ) / voi[ i ] : 0;
     }
 }
@@ -1668,12 +1668,12 @@ void bmath_mf3_s_lt1_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res
 {
     // Algorithm works in-place for op == res;
     if( op != res ) bcore_u_memcpy( sizeof( f3_t ), res, op, o->rows );
-    sz_t n = o->rows;
-    for( sz_t i = 0; i < n; i++ )
+    uz_t n = o->rows;
+    for( uz_t i = 0; i < n; i++ )
     {
         const f3_t* voi = o->data + i * o->stride;
         f3_t sum = 0;
-        for( sz_t j = 0; j < i; j++ ) sum += voi[ j ] * res[ j ];
+        for( uz_t j = 0; j < i; j++ ) sum += voi[ j ] * res[ j ];
         res[ i ] -= sum;
     }
 }
@@ -1713,7 +1713,7 @@ void bmath_mf3_s_ltr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
     ASSERT( o->rows == op->rows );
     ASSERT( o->cols == res->cols );
     ASSERT( o->rows == res->rows );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         bmath_mf3_s_ltr_solve_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
     }
@@ -1727,7 +1727,7 @@ void bmath_mf3_s_lt1_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
     ASSERT( o->rows == op->rows );
     ASSERT( o->cols == res->cols );
     ASSERT( o->rows == res->rows );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         bmath_mf3_s_lt1_solve_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
     }
@@ -1741,7 +1741,7 @@ void bmath_mf3_s_utr_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
     ASSERT( o->rows == op->rows );
     ASSERT( o->cols == res->cols );
     ASSERT( o->rows == res->rows );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         bmath_mf3_s_utr_solve_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
     }
@@ -1755,7 +1755,7 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
     ASSERT( o->rows == op->rows );
     ASSERT( o->cols == res->cols );
     ASSERT( o->rows == res->rows );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         bmath_mf3_s_luc_solve_vec_( o, op->data + i * op->stride, res->data + i * res->stride );
     }
@@ -1780,15 +1780,15 @@ void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 
     bmath_grt_f3_s gr;
 
-    for( sz_t j = 0; j < a->rows; j++ )
+    for( uz_t j = 0; j < a->rows; j++ )
     {
-        for( sz_t k = a->rows - 2; k > j; k-- )
+        for( uz_t k = a->rows - 2; k > j; k-- )
         {
             f3_t* ak;
 
             // zero upper row
             ak = a->data + k;
-            sz_t jstride = j * a->stride;
+            uz_t jstride = j * a->stride;
             bmath_grt_f3_s_init_and_annihilate_b( &gr, ak + jstride, ak + jstride + 1 );
             bmath_grt_f3_s_col_rotate( &gr, ak, ak + 1, a->stride, j + 1, a->rows );
 
@@ -1818,10 +1818,10 @@ void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a )
 
     bmath_grt_f3_s gr;
 
-    for( sz_t j = 0; j < a->cols; j++ )
+    for( uz_t j = 0; j < a->cols; j++ )
     {
         // zero lower column
-        for( sz_t l = a->rows - 1; l > j; l-- )
+        for( uz_t l = a->rows - 1; l > j; l-- )
         {
             bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ j * a->stride + j ], &a->data[ l * a->stride + j ] );
             if( u ) a->data[ l * a->stride + j ] = bmath_grt_f3_s_rho( &gr );
@@ -1832,9 +1832,9 @@ void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a )
     if( u ) // reverse construction of u
     {
         bmath_mf3_s_one( u );
-        for( sz_t j = a->cols - 1; j < a->cols; j-- )
+        for( uz_t j = a->cols - 1; j < a->cols; j-- )
         {
-            for( sz_t k = j; k < a->rows - 1; k++ )
+            for( uz_t k = j; k < a->rows - 1; k++ )
             {
                 f3_t rho = 0;
                 f3_t_swap( &a->data[ j + a->stride * ( k + 1 ) ], &rho );
@@ -1862,10 +1862,10 @@ void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v )
     bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( a->cols );
     bmath_grt_f3_s gr;
 
-    for( sz_t j = 0; j < a->rows; j++ )
+    for( uz_t j = 0; j < a->rows; j++ )
     {
         // zero upper row
-        for( sz_t l = a->cols - 1; l > j; l-- )
+        for( uz_t l = a->cols - 1; l > j; l-- )
         {
             bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ j * a->stride + j ], &a->data[ j * a->stride + l ] );
             if( v ) a->data[ j * a->stride + l ] = bmath_grt_f3_s_rho( &gr );
@@ -1878,9 +1878,9 @@ void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v )
     if( v ) // reverse construction of v
     {
         bmath_mf3_s_one( v );
-        for( sz_t j = a->rows - 1; j < a->rows; j-- )
+        for( uz_t j = a->rows - 1; j < a->rows; j-- )
         {
-            for( sz_t k = j; k < a->cols - 1; k++ )
+            for( uz_t k = j; k < a->cols - 1; k++ )
             {
                 f3_t rho = 0;
                 f3_t_swap( &a->data[ j * a->stride + k + 1 ], &rho );
@@ -1898,7 +1898,7 @@ void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v )
 
 void bmath_mf3_s_ubd_to_lbd( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    sz_t n = sz_min( a->rows, a->cols );
+    uz_t n = uz_min( a->rows, a->cols );
 
     if( n <= 1 ) return; // nothing to do
 
@@ -1906,7 +1906,7 @@ void bmath_mf3_s_ubd_to_lbd( bmath_mf3_s* a, bmath_mf3_s* v )
 
     bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( n );
 
-    for( sz_t j = 0; j < n - 1; j++ )
+    for( uz_t j = 0; j < n - 1; j++ )
     {
         f3_t* aj = a->data + j * ( a->stride + 1 );
         bmath_grt_f3_s_init_and_annihilate_b( &grv.data[ j ], aj, aj + 1 );
@@ -1923,7 +1923,7 @@ void bmath_mf3_s_ubd_to_lbd( bmath_mf3_s* a, bmath_mf3_s* v )
 // v transposed
 void bmath_mf3_s_ubd_to_lbd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    sz_t n = sz_min( a->rows, a->cols );
+    uz_t n = uz_min( a->rows, a->cols );
 
     if( n <= 1 ) return; // nothing to do
 
@@ -1931,7 +1931,7 @@ void bmath_mf3_s_ubd_to_lbd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 
     bmath_grt_f3_s gr;
 
-    for( sz_t j = 0; j < n - 1; j++ )
+    for( uz_t j = 0; j < n - 1; j++ )
     {
         f3_t* aj = a->data + j * ( a->stride + 1 );
         bmath_grt_f3_s_init_and_annihilate_b( &gr, aj, aj + 1 );
@@ -1944,7 +1944,7 @@ void bmath_mf3_s_ubd_to_lbd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 
 void bmath_mf3_s_lbd_to_ubd( bmath_mf3_s* u, bmath_mf3_s* a )
 {
-    sz_t n = sz_min( a->rows, a->cols );
+    uz_t n = uz_min( a->rows, a->cols );
 
     if( n <= 1 ) return; // nothing to do
 
@@ -1952,7 +1952,7 @@ void bmath_mf3_s_lbd_to_ubd( bmath_mf3_s* u, bmath_mf3_s* a )
 
     bmath_arr_grt_f3_s gru = bmath_arr_grt_f3_of_size( n );
 
-    for( sz_t j = 0; j < n - 1; j++ )
+    for( uz_t j = 0; j < n - 1; j++ )
     {
         f3_t* aj = a->data + j * ( a->stride + 1 );
         bmath_grt_f3_s_init_and_annihilate_b( &gru.data[ j ], aj, aj + a->stride );
@@ -1969,7 +1969,7 @@ void bmath_mf3_s_lbd_to_ubd( bmath_mf3_s* u, bmath_mf3_s* a )
 // u transposed
 void bmath_mf3_s_lbd_to_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a )
 {
-    sz_t n = sz_min( a->rows, a->cols );
+    uz_t n = uz_min( a->rows, a->cols );
 
     if( n <= 1 ) return; // nothing to do
 
@@ -1977,7 +1977,7 @@ void bmath_mf3_s_lbd_to_ubd_htp( bmath_mf3_s* u, bmath_mf3_s* a )
 
     bmath_grt_f3_s gr;
 
-    for( sz_t j = 0; j < n - 1; j++ )
+    for( uz_t j = 0; j < n - 1; j++ )
     {
         f3_t* aj = a->data + j * ( a->stride + 1 );
         bmath_grt_f3_s_init_and_annihilate_b( &gr, aj, aj + a->stride );
@@ -2021,10 +2021,10 @@ void bmath_mf3_s_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( a->cols );
     bmath_grt_f3_s gr;
 
-    for( sz_t j = 0; j < a->cols; j++ )
+    for( uz_t j = 0; j < a->cols; j++ )
     {
         // zero lower column
-        for( sz_t l = a->rows - 1; l > j; l-- )
+        for( uz_t l = a->rows - 1; l > j; l-- )
         {
             bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ j * a->stride + j ], &a->data[ l * a->stride + j ] );
             if( u ) a->data[ l * a->stride + j ] = bmath_grt_f3_s_rho( &gr );
@@ -2032,7 +2032,7 @@ void bmath_mf3_s_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         }
 
         // zero upper row
-        for( sz_t l = a->cols - 1; l > j + 1; l-- )
+        for( uz_t l = a->cols - 1; l > j + 1; l-- )
         {
             bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ j * a->stride + j + 1 ], &a->data[ j * a->stride + l ] );
             if( v ) a->data[ j * a->stride + l ] = bmath_grt_f3_s_rho( &gr );
@@ -2045,9 +2045,9 @@ void bmath_mf3_s_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     if( v ) // reverse construction of v
     {
         bmath_mf3_s_one( v );
-        for( sz_t j = a->cols - 1; j < a->cols; j-- )
+        for( uz_t j = a->cols - 1; j < a->cols; j-- )
         {
-            for( sz_t k = j + 1; k < a->cols - 1; k++ )
+            for( uz_t k = j + 1; k < a->cols - 1; k++ )
             {
                 f3_t rho = 0;
                 f3_t_swap( &a->data[ j * a->stride + k + 1 ], &rho );
@@ -2060,9 +2060,9 @@ void bmath_mf3_s_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     if( u ) // reverse construction of u
     {
         bmath_mf3_s_one( u );
-        for( sz_t j = a->cols - 1; j < a->cols; j-- )
+        for( uz_t j = a->cols - 1; j < a->cols; j-- )
         {
-            for( sz_t k = j; k < a->rows - 1; k++ )
+            for( uz_t k = j; k < a->rows - 1; k++ )
             {
                 f3_t rho = 0;
                 f3_t_swap( &a->data[ j + a->stride * ( k + 1 ) ], &rho );
@@ -2109,10 +2109,10 @@ void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( a->cols );
     bmath_grt_f3_s gr;
 
-    for( sz_t j = 0; j < a->rows; j++ )
+    for( uz_t j = 0; j < a->rows; j++ )
     {
         // zero upper row
-        for( sz_t l = a->cols - 1; l > j; l-- )
+        for( uz_t l = a->cols - 1; l > j; l-- )
         {
             bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ j * a->stride + j ], &a->data[ j * a->stride + l ] );
             if( v ) a->data[ j * a->stride + l ] = bmath_grt_f3_s_rho( &gr );
@@ -2122,7 +2122,7 @@ void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
         bmath_mf3_s_sweep_dcol_rotate_rev( a, j, a->cols - 1, &grv, j + 1, a->rows );
 
         // zero lower column
-        for( sz_t l = a->rows - 1; l > j + 1; l-- )
+        for( uz_t l = a->rows - 1; l > j + 1; l-- )
         {
             bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ ( j + 1 ) * a->stride + j ], &a->data[ l * a->stride + j ] );
             if( u ) a->data[ l * a->stride + j ] = bmath_grt_f3_s_rho( &gr );
@@ -2133,9 +2133,9 @@ void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     if( v ) // reverse construction of v
     {
         bmath_mf3_s_one( v );
-        for( sz_t j = a->rows - 1; j < a->rows; j-- )
+        for( uz_t j = a->rows - 1; j < a->rows; j-- )
         {
-            for( sz_t k = j; k < a->cols - 1; k++ )
+            for( uz_t k = j; k < a->cols - 1; k++ )
             {
                 f3_t rho = 0;
                 f3_t_swap( &a->data[ j * a->stride + k + 1 ], &rho );
@@ -2149,9 +2149,9 @@ void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     if( u ) // reverse construction of u
     {
         bmath_mf3_s_one( u );
-        for( sz_t j = a->rows - 2; j < a->rows; j-- )
+        for( uz_t j = a->rows - 2; j < a->rows; j-- )
         {
-            for( sz_t k = j + 1; k < a->rows - 1; k++ )
+            for( uz_t k = j + 1; k < a->rows - 1; k++ )
             {
                 f3_t rho = 0;
                 f3_t_swap( &a->data[ j + a->stride * ( k + 1 ) ], &rho );
@@ -2171,14 +2171,14 @@ void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end )
+void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, uz_t start, uz_t end )
 {
     end = end < arr_vec->size ? end : arr_vec->size;
     start = start > end ? end : start;
 
     bmath_mf3_s_zro( o );
     if( start == end ) return;
-    sz_t n = arr_vec->data[ start ].size;
+    uz_t n = arr_vec->data[ start ].size;
     ASSERT( o->rows == n );
     ASSERT( o->cols == n );
 
@@ -2187,7 +2187,7 @@ void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s
 
     bmath_arr_vf3_s_on_section_get_avg( arr_vec, start, end, avg );
 
-    for( sz_t i = start; i < end; i++ )
+    for( uz_t i = start; i < end; i++ )
     {
         bmath_vf3_s_sub( &arr_vec->data[ i ], avg, vec );
         bmath_mf3_s_add_opd( o, vec, vec, o );
@@ -2202,23 +2202,23 @@ void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, sz_t start, sz_t end )
+void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s* arr_vec, uz_t start, uz_t end )
 {
     end = end < arr_vec->size ? end : arr_vec->size;
     start = start > end ? end : start;
 
     bmath_mf3_s_zro( o );
     if( start == end ) return;
-    sz_t n = arr_vec->data[ start ].size;
+    uz_t n = arr_vec->data[ start ].size;
     ASSERT( o->rows == n );
     ASSERT( o->cols == n );
 
     bmath_vf3_s* avg = bmath_vf3_s_create_set_size( n );
     bmath_arr_vf3_s_on_section_get_avg_sprc( arr_vec, start, end, avg );
 
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
-        for( sz_t j = 0; j <= i; j++ )
+        for( uz_t j = 0; j <= i; j++ )
         {
             f3_t v = bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( arr_vec, start, end, avg->data[ i ], avg->data[ j ], i, j );
             v /= (end - start);
@@ -2237,68 +2237,68 @@ void bmath_mf3_s_set_covariance_on_section_sprc( bmath_mf3_s* o, bmath_arr_vf3_s
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_sweep_arow_rotate_fwd( bmath_mf3_s* o, sz_t row_start, sz_t row_end, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+void bmath_mf3_s_sweep_arow_rotate_fwd( bmath_mf3_s* o, uz_t row_start, uz_t row_end, const bmath_arr_grt_f3_s* grt, uz_t col_start, uz_t col_end )
 {
     assert( grt->size >= row_end - 1 );
-    for( sz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_arow_rotate( o, i, &grt->data[ i ], col_start, col_end );
+    for( uz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_arow_rotate( o, i, &grt->data[ i ], col_start, col_end );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_sweep_arow_rotate_rev( bmath_mf3_s* o, sz_t row_start, sz_t row_end, const bmath_arr_grt_f3_s* grt, sz_t col_start, sz_t col_end )
+void bmath_mf3_s_sweep_arow_rotate_rev( bmath_mf3_s* o, uz_t row_start, uz_t row_end, const bmath_arr_grt_f3_s* grt, uz_t col_start, uz_t col_end )
 {
     assert( grt->size >= row_end - 1 );
-    for( sz_t i = row_end; i > row_start; i-- ) bmath_mf3_s_arow_rotate( o, i - 1, &grt->data[ i - 1 ], col_start, col_end );
+    for( uz_t i = row_end; i > row_start; i-- ) bmath_mf3_s_arow_rotate( o, i - 1, &grt->data[ i - 1 ], col_start, col_end );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_sweep_acol_rotate_fwd( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end )
+void bmath_mf3_s_sweep_acol_rotate_fwd( bmath_mf3_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_f3_s* grt, uz_t row_start, uz_t row_end )
 {
     assert( grt->size >= col_end - 1 );
     if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.0625 )
     {
         // sparse rotations: rotate columns individually
-        for( sz_t i = col_start; i < col_end; i++ ) bmath_mf3_s_acol_rotate( o, i, &grt->data[ i ], row_start, row_end );
+        for( uz_t i = col_start; i < col_end; i++ ) bmath_mf3_s_acol_rotate( o, i, &grt->data[ i ], row_start, row_end );
     }
     else
     {
         // dense rotations: use cache efficient row-sweeps
-        for( sz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_arow_swipe_fwd( o, i, grt, col_start, col_end );
+        for( uz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_arow_swipe_fwd( o, i, grt, col_start, col_end );
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_sweep_acol_rotate_rev( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end )
+void bmath_mf3_s_sweep_acol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_f3_s* grt, uz_t row_start, uz_t row_end )
 {
     assert( grt->size >= col_end - 1 );
     if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.0625 )
     {
         // sparse rotations: rotate columns individually
-        for( sz_t i = col_end; i > col_start; i-- ) bmath_mf3_s_acol_rotate( o, i - 1, &grt->data[ i - 1 ], row_start, row_end );
+        for( uz_t i = col_end; i > col_start; i-- ) bmath_mf3_s_acol_rotate( o, i - 1, &grt->data[ i - 1 ], row_start, row_end );
     }
     else
     {
         // dense rotations: use cache efficient row-sweeps
-        for( sz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_arow_swipe_rev( o, i, grt, col_start, col_end );
+        for( uz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_arow_swipe_rev( o, i, grt, col_start, col_end );
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, sz_t col_start, sz_t col_end, const bmath_arr_grt_f3_s* grt, sz_t row_start, sz_t row_end )
+void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_f3_s* grt, uz_t row_start, uz_t row_end )
 {
     assert( grt->size >= col_end - 1 );
     if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.0625 )
     {
         // sparse rotations: rotate columns individually
-        for( sz_t i = col_end; i > col_start; i-- ) bmath_mf3_s_dcol_rotate( o, col_start, i, &grt->data[ i - 1 ], row_start, row_end );
+        for( uz_t i = col_end; i > col_start; i-- ) bmath_mf3_s_dcol_rotate( o, col_start, i, &grt->data[ i - 1 ], row_start, row_end );
     }
     else
     {
         // dense rotations: use cache efficient row-sweeps
-        for( sz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_drow_swipe_rev( o, i, grt, col_start, col_end );
+        for( uz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_drow_swipe_rev( o, i, grt, col_start, col_end );
     }
 }
 
@@ -2307,10 +2307,10 @@ void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, sz_t col_start, sz_t col
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
 {
     printf( "(%zu x %zu)\n", o->rows, o->cols );
-    for( sz_t i = 0; i < o->rows; i++ )
+    for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v = o->data + i * o->stride;
-        for( sz_t j = 0; j < o->cols; j++ )
+        for( uz_t j = 0; j < o->cols; j++ )
         {
             if( j > 0 ) printf( " " );
             printf( "%9.3g", v[ j ] );
@@ -2423,7 +2423,7 @@ static vd_t selftest( void )
     {
         u2_t rval = 1234;
 
-        sz_t n = 100;
+        uz_t n = 100;
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_fill_random( m1, -1, 1, &rval );
 
@@ -2466,7 +2466,7 @@ static vd_t selftest( void )
 
     // A * AT
     {
-        sz_t n = 100;
+        uz_t n = 100;
         u2_t rval = 1234;
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_set_size_to( m1, m2 );
@@ -2478,7 +2478,7 @@ static vd_t selftest( void )
 
     // general inversion
     {
-        sz_t n = 100;
+        uz_t n = 100;
         u2_t rval = 1234;
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_set_size_to( m1, m2 );
@@ -2493,10 +2493,10 @@ static vd_t selftest( void )
 
     // general pseudo inversion
     {
-        for( sz_t test_id = 0; test_id < 3; test_id++ )
+        for( uz_t test_id = 0; test_id < 3; test_id++ )
         {
-            sz_t n = ( test_id == 0 ) ? 20 : 10;
-            sz_t m = ( test_id == 2 ) ? 20 : 10;
+            uz_t n = ( test_id == 0 ) ? 20 : 10;
+            uz_t m = ( test_id == 2 ) ? 20 : 10;
             u2_t rval = 1234;
             bmath_mf3_s_set_size( m1, n, m );
             bmath_mf3_s_set_size( m2, m, n );
@@ -2518,7 +2518,7 @@ static vd_t selftest( void )
 
     // symmetric inversion, pseudo inversion
     {
-        sz_t n = 100;
+        uz_t n = 100;
         u2_t rval = 1234;
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_set_size_to( m1, m2 );
@@ -2538,7 +2538,7 @@ static vd_t selftest( void )
 
     // tridiagonalization
     {
-        sz_t n = 100;
+        uz_t n = 100;
 
         bmath_mf3_s_set_size( m1, n, n );
         u2_t rval = 1236;
@@ -2567,8 +2567,8 @@ static vd_t selftest( void )
 
     // covariance
     {
-        sz_t size = 1000;
-        sz_t n    = 10;
+        uz_t size = 1000;
+        uz_t n    = 10;
         u2_t rval = 124;
         bmath_arr_vf3_s_set_size( a1, size );
         bmath_arr_vf3_s_on_section_set_size( a1, 0, -1, n );
@@ -2596,7 +2596,7 @@ static vd_t selftest( void )
 
     // affine-transformation
     {
-        sz_t n = 20;
+        uz_t n = 20;
         bmath_mf3_s_set_size( m1, n, n + 1 );
         bmath_mf3_s_set_size( m2, n, n + 1 );
         bmath_vf3_s_set_size( v1, n );
@@ -2616,7 +2616,7 @@ static vd_t selftest( void )
 
     // hsm-affine-transformation
     {
-        sz_t n = 20;
+        uz_t n = 20;
         bmath_mf3_s_set_size( m1, n, n + 1 );
         bmath_mf3_s_set_size( m2, n, n + 1 );
         bmath_vf3_s_set_size( v1, n );
@@ -2640,7 +2640,7 @@ static vd_t selftest( void )
 
     // hsm-affine-transformation (test via piv)
     {
-        sz_t n = 20;
+        uz_t n = 20;
         bmath_mf3_s_set_size( m1, n, n + 1 );
         bmath_mf3_s_set_size( m2, n, n + 1 );
         bmath_vf3_s_set_size( v1, n );

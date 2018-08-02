@@ -33,8 +33,8 @@
 typedef struct bcore_inst_item_s
 {
     offset_t offset;
-    sz_t     size;
-    sz_t     align;
+    uz_t     size;
+    uz_t     align;
     const bcore_self_item_s*   self_item;
     const struct bcore_inst_s* inst_p;
     bl_t no_trace;    // no_trace means: do not recursively follow this item (could be private, cyclic or external)
@@ -46,7 +46,7 @@ static inline vd_t bcore_inst_item_s_get_obj( const bcore_inst_item_s* o, vd_t p
 }
 
 static inline
-sz_t bcore_inst_item_s_array_fix_size( const bcore_inst_item_s* o )
+uz_t bcore_inst_item_s_array_fix_size( const bcore_inst_item_s* o )
 {
     return o->self_item->array_fix_size;
 }
@@ -54,7 +54,7 @@ sz_t bcore_inst_item_s_array_fix_size( const bcore_inst_item_s* o )
 typedef struct bcore_inst_body_s
 {
     bcore_inst_item_s* data;
-    sz_t size, space;
+    uz_t size, space;
 } bcore_inst_body_s;
 
 /// returns corresponding instance item of self_item_s or NULL if not existing
@@ -75,8 +75,8 @@ BCORE_DECLARE_SPECT( bcore_inst_s )
 
     bcore_inst_body_s* body;
 
-    sz_t size;   // sizeof(type);
-    sz_t align;  // alignof(type)
+    uz_t size;   // sizeof(type);
+    uz_t align;  // alignof(type)
     bl_t aware;  // object is self-aware, meaning it defines its type (aware_t) as first element
 
     bl_t init_flat; // flat initialization possible
@@ -109,8 +109,8 @@ BCORE_DECLARE_SPECT( bcore_inst_s )
 
 void bcore_inst_s_discard( bcore_inst_s* o );
 
-sz_t bcore_inst_s_get_items_size( const bcore_inst_s* o );
-const bcore_inst_item_s* bcore_inst_s_get_item( const bcore_inst_s* o, sz_t index );
+uz_t bcore_inst_s_get_items_size( const bcore_inst_s* o );
+const bcore_inst_item_s* bcore_inst_s_get_item( const bcore_inst_s* o, uz_t index );
 const bcore_inst_item_s* bcore_inst_s_get_item_from_self_item( const bcore_inst_s* o, const bcore_self_item_s* item ); // returns NULL if not found
 
 static inline void bcore_inst_default_init(  const bcore_inst_s* p, bcore_inst* obj ) { p->init( p, obj ); }
@@ -184,8 +184,8 @@ sr_s bcore_inst_r_clone_sr( const sr_s* o ); // returns perspective of o
  *  It can be used as low-level safeguard against changing the c-structure
  *  but forgetting to update the self reflection.
  */
-void bcore_inst_p_check_sizeof( const bcore_inst_s* o, sz_t size );
-void bcore_inst_t_check_sizeof(             tp_t type, sz_t size );
+void bcore_inst_p_check_sizeof( const bcore_inst_s* o, uz_t size );
+void bcore_inst_t_check_sizeof(             tp_t type, uz_t size );
 
 #define BCORE_DEFINE_FUNCTION_INIT_INST( name ) void name##_init( name* o ) { bcore_inst_t_init( TYPEOF_##name, (bcore_inst*)o ); }
 #define BCORE_DEFINE_FUNCTION_DOWN_INST( name ) void name##_down( name* o ) { bcore_inst_t_down( TYPEOF_##name, (bcore_inst*)o ); }

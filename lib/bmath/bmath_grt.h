@@ -175,35 +175,35 @@ static inline void bmath_grt_f3_s_rotate( const bmath_grt_f3_s* o, f3_t* a, f3_t
 //---------------------------------------------------------------------------------------------------------------------
 
 /// Rotates two matrix rows (section)
-static inline void bmath_grt_f3_s_row_rotate( const bmath_grt_f3_s* o, f3_t* a, f3_t* b, sz_t start, sz_t end )
+static inline void bmath_grt_f3_s_row_rotate( const bmath_grt_f3_s* o, f3_t* a, f3_t* b, uz_t start, uz_t end )
 {
     if( o->s == 0 ) return;
-    for( sz_t i = start; i < end; i++ ) bmath_grt_f3_s_rotate( o, a + i, b + i );
+    for( uz_t i = start; i < end; i++ ) bmath_grt_f3_s_rotate( o, a + i, b + i );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 /// Rotates two matrix columns (section).
-static inline void bmath_grt_f3_s_col_rotate( const bmath_grt_f3_s* o, f3_t* a, f3_t* b, sz_t stride, sz_t start, sz_t end )
+static inline void bmath_grt_f3_s_col_rotate( const bmath_grt_f3_s* o, f3_t* a, f3_t* b, uz_t stride, uz_t start, uz_t end )
 {
     if( o->s == 0 ) return;
-    for( sz_t i = start; i < end; i++ ) bmath_grt_f3_s_rotate( o, a + stride * i, b + stride * i );
+    for( uz_t i = start; i < end; i++ ) bmath_grt_f3_s_rotate( o, a + stride * i, b + stride * i );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 /// Swipes matrix row
-static inline void bmath_grt_f3_s_row_swipe( const bmath_grt_f3_s* arr, f3_t* row, sz_t start, sz_t end )
+static inline void bmath_grt_f3_s_row_swipe( const bmath_grt_f3_s* arr, f3_t* row, uz_t start, uz_t end )
 {
-    for( sz_t i = start; i < end; i++ ) bmath_grt_f3_s_rotate( arr + i, row + i, row + i + 1 );
+    for( uz_t i = start; i < end; i++ ) bmath_grt_f3_s_rotate( arr + i, row + i, row + i + 1 );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 /// Swipes matrix row in reverse
-static inline void bmath_grt_f3_s_row_swipe_reverse( const bmath_grt_f3_s* arr, f3_t* row, sz_t start, sz_t end )
+static inline void bmath_grt_f3_s_row_swipe_reverse( const bmath_grt_f3_s* arr, f3_t* row, uz_t start, uz_t end )
 {
-    for( sz_t i = end; i > start; i-- ) bmath_grt_f3_s_rotate( arr + i, row + i - 1, row + i );
+    for( uz_t i = end; i > start; i-- ) bmath_grt_f3_s_rotate( arr + i, row + i - 1, row + i );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -216,26 +216,26 @@ void bmath_grt_f3_s_to_stdout( const bmath_grt_f3_s* o );
 
 BCORE_DECLARE_OBJECT( bmath_arr_grt_f3_s ) { aware_t _; BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_grt_f3_s, ); };
 
-static inline void bmath_arr_grt_f3_s_set_size( bmath_arr_grt_f3_s* o, sz_t size ) { bcore_array_a_set_size( ( bcore_array* )o, size ); }
+static inline void bmath_arr_grt_f3_s_set_size( bmath_arr_grt_f3_s* o, uz_t size ) { bcore_array_a_set_size( ( bcore_array* )o, size ); }
 static inline void bmath_arr_grt_f3_s_zro( bmath_arr_grt_f3_s* o ) { bcore_u_memzero( sizeof( bmath_grt_f3_s ), o->data, o->size ); }
 
 /// creates array of given size; explicitly zeros all elements
-bmath_arr_grt_f3_s* bmath_arr_grt_f3_s_create_size( sz_t size );
-bmath_arr_grt_f3_s  bmath_arr_grt_f3_of_size( sz_t size );
+bmath_arr_grt_f3_s* bmath_arr_grt_f3_s_create_size( uz_t size );
+bmath_arr_grt_f3_s  bmath_arr_grt_f3_of_size( uz_t size );
 
 /// returns number of identity rotations (sine == 0)
-static inline sz_t bmath_arr_grt_f3_s_count_identity( const bmath_arr_grt_f3_s* o, sz_t start, sz_t end )
+static inline uz_t bmath_arr_grt_f3_s_count_identity( const bmath_arr_grt_f3_s* o, uz_t start, uz_t end )
 {
-    sz_t count = 0;
-    for( sz_t i = start; i < end; i++ ) count += ( o->data[ i ].s == 0 );
+    uz_t count = 0;
+    for( uz_t i = start; i < end; i++ ) count += ( o->data[ i ].s == 0 );
     return count;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static inline f3_t bmath_arr_grt_f3_s_density( const bmath_arr_grt_f3_s* o, sz_t start, sz_t end )
+static inline f3_t bmath_arr_grt_f3_s_density( const bmath_arr_grt_f3_s* o, uz_t start, uz_t end )
 {
-    sz_t count = bmath_arr_grt_f3_s_count_identity( o, start, end );
+    uz_t count = bmath_arr_grt_f3_s_count_identity( o, start, end );
     return ( end > start ) ? ( f3_t )( end - start - count ) / ( end - start ) : 0;
 }
 

@@ -85,16 +85,16 @@ st_s* bcore_btree_ip_s_show( struct bcore_btree_ip_s* o );
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
-// tree of vd_t as key and sz_t as value
+// tree of vd_t as key and uz_t as value
 
 typedef vd_t bcore_btree_ps_key_t;
-typedef sz_t bcore_btree_ps_val_t;
+typedef uz_t bcore_btree_ps_val_t;
 
 struct bcore_btree_ps_s;
 typedef struct bcore_btree_ps_s bcore_btree_ps_s;
 
 /// Creates a new btree_ip
-bcore_btree_ps_s* bcore_btree_ps_s_create( vd_t (*alloc)( vd_t, sz_t size ) );
+bcore_btree_ps_s* bcore_btree_ps_s_create( vd_t (*alloc)( vd_t, uz_t size ) );
 
 /// Deletes a btree_ip
 void bcore_btree_ps_s_discard( bcore_btree_ps_s* o );
@@ -126,13 +126,13 @@ int bcore_btree_ps_s_remove( bcore_btree_ps_s* o, bcore_btree_ps_key_t key );
 void bcore_btree_ps_s_run(   const bcore_btree_ps_s* o, void(*func)( vd_t arg, bcore_btree_ps_key_t key, bcore_btree_ps_val_t val ), vd_t arg );
 
 /// counts entries for which func returns true; counts all entries in case func is NULL
-sz_t bcore_btree_ps_s_count( const bcore_btree_ps_s* o, bl_t(*func)( vd_t arg, bcore_btree_ps_key_t key, bcore_btree_ps_val_t val ), vd_t arg );
+uz_t bcore_btree_ps_s_count( const bcore_btree_ps_s* o, bl_t(*func)( vd_t arg, bcore_btree_ps_key_t key, bcore_btree_ps_val_t val ), vd_t arg );
 
 /// sums entries for which func returns true; sums all entries in case func is NULL
-sz_t bcore_btree_ps_s_sum( const bcore_btree_ps_s* o, bl_t(*func)( vd_t arg, bcore_btree_ps_key_t key, bcore_btree_ps_val_t val ), vd_t arg );
+uz_t bcore_btree_ps_s_sum( const bcore_btree_ps_s* o, bl_t(*func)( vd_t arg, bcore_btree_ps_key_t key, bcore_btree_ps_val_t val ), vd_t arg );
 
 /// return depth of tree
-sz_t bcore_btree_ps_s_depth( const bcore_btree_ps_s* o );
+uz_t bcore_btree_ps_s_depth( const bcore_btree_ps_s* o );
 
 // Testing and debugging
 
@@ -156,7 +156,7 @@ typedef struct
 typedef struct bcore_btree_pp_s bcore_btree_pp_s;
 
 /// Creates a new btree_ip
-bcore_btree_pp_s* bcore_btree_pp_s_create( vd_t (*alloc)( vd_t, sz_t size ) );
+bcore_btree_pp_s* bcore_btree_pp_s_create( vd_t (*alloc)( vd_t, uz_t size ) );
 
 /// Deletes a btree_ip
 void bcore_btree_pp_s_discard( bcore_btree_pp_s* o );
@@ -194,10 +194,10 @@ int bcore_btree_pp_s_remove( bcore_btree_pp_s* o, bcore_btree_pp_key_t key );
 void bcore_btree_pp_s_run(   const bcore_btree_pp_s* o, void(*func)( vd_t arg, bcore_btree_pp_kv_s kv ), vd_t arg );
 
 /// counts entries for which func returns true; counts all entries in case func is NULL
-sz_t bcore_btree_pp_s_count( const bcore_btree_pp_s* o, bl_t(*func)( vd_t arg, bcore_btree_pp_kv_s kv ), vd_t arg );
+uz_t bcore_btree_pp_s_count( const bcore_btree_pp_s* o, bl_t(*func)( vd_t arg, bcore_btree_pp_kv_s kv ), vd_t arg );
 
 /// return depth of tree
-sz_t bcore_btree_pp_s_depth( const bcore_btree_pp_s* o );
+uz_t bcore_btree_pp_s_depth( const bcore_btree_pp_s* o );
 
 // Testing and debugging
 
@@ -217,7 +217,7 @@ struct bcore_btree_vd_s;
 typedef struct bcore_btree_vd_s bcore_btree_vd_s;
 
 /// Creates a new btree_vd (allows to specify alloc function because this tree type is used in memory management)
-bcore_btree_vd_s* bcore_btree_vd_s_create( vd_t (*alloc)( vd_t, sz_t size ) );
+bcore_btree_vd_s* bcore_btree_vd_s_create( vd_t (*alloc)( vd_t, uz_t size ) );
 
 /// Deletes a btree_vd
 void bcore_btree_vd_s_discard( bcore_btree_vd_s* o );
@@ -248,10 +248,10 @@ int bcore_btree_vd_s_remove( bcore_btree_vd_s* o, bcore_btree_vd_key_t key );
 void bcore_btree_vd_s_run( const bcore_btree_vd_s* o, void(*func)( vd_t arg, bcore_btree_vd_key_t key ), vd_t arg );
 
 /// counts entries for which func returns true; counts all entries in case func is NULL
-sz_t bcore_btree_vd_s_count( const bcore_btree_vd_s* o, bl_t(*func)( vd_t arg, bcore_btree_vd_key_t key ), vd_t arg );
+uz_t bcore_btree_vd_s_count( const bcore_btree_vd_s* o, bl_t(*func)( vd_t arg, bcore_btree_vd_key_t key ), vd_t arg );
 
 /// return depth of tree
-sz_t bcore_btree_vd_s_depth( const bcore_btree_vd_s* o );
+uz_t bcore_btree_vd_s_depth( const bcore_btree_vd_s* o );
 
 // Testing and debugging
 

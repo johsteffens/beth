@@ -32,10 +32,10 @@ typedef struct bcore_tbman_s bcore_tbman_s;
 
 bcore_tbman_s* bcore_tbman_s_create
 (
-    sz_t pool_size,
-    sz_t min_block_size,
-    sz_t max_block_size,
-    sz_t stepping_method,
+    uz_t pool_size,
+    uz_t min_block_size,
+    uz_t max_block_size,
+    uz_t stepping_method,
     bl_t full_align
 );
 
@@ -74,21 +74,21 @@ void bcore_tbman_s_discard( bcore_tbman_s* o );
  *    When requesting memory of size n*m when n is a positive integer and m is a power of 2, then
  *    the returned memory is aligned to the lesser of m and BCORE_TBMAN_ALIGN.
  */
-vd_t bcore_tbman_b_alloc(                      vd_t current_ptr,                     sz_t requested_bytes, sz_t* granted_bytes );
-vd_t bcore_tbman_bn_alloc(                     vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
-vd_t bcore_tbman_s_b_alloc(  bcore_tbman_s* o, vd_t current_ptr,                     sz_t requested_bytes, sz_t* granted_bytes );
-vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes );
+vd_t bcore_tbman_b_alloc(                      vd_t current_ptr,                     uz_t requested_bytes, uz_t* granted_bytes );
+vd_t bcore_tbman_bn_alloc(                     vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes );
+vd_t bcore_tbman_s_b_alloc(  bcore_tbman_s* o, vd_t current_ptr,                     uz_t requested_bytes, uz_t* granted_bytes );
+vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes );
 
 /// Like b(n)_alloc except that sizes are given as multiple of the unit-size. (thread-safe)
-vd_t bcore_tbman_u_alloc(                      sz_t unit_bytes, vd_t current_ptr,                     sz_t requested_units, sz_t* granted_units );
-vd_t bcore_tbman_un_alloc(                     sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t requested_units, sz_t* granted_units );
-vd_t bcore_tbman_s_u_alloc(  bcore_tbman_s* o, sz_t unit_bytes, vd_t current_ptr,                     sz_t requested_units, sz_t* granted_units );
-vd_t bcore_tbman_s_un_alloc( bcore_tbman_s* o, sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t requested_units, sz_t* granted_units );
+vd_t bcore_tbman_u_alloc(                      uz_t unit_bytes, vd_t current_ptr,                     uz_t requested_units, uz_t* granted_units );
+vd_t bcore_tbman_un_alloc(                     uz_t unit_bytes, vd_t current_ptr, uz_t current_units, uz_t requested_units, uz_t* granted_units );
+vd_t bcore_tbman_s_u_alloc(  bcore_tbman_s* o, uz_t unit_bytes, vd_t current_ptr,                     uz_t requested_units, uz_t* granted_units );
+vd_t bcore_tbman_s_un_alloc( bcore_tbman_s* o, uz_t unit_bytes, vd_t current_ptr, uz_t current_units, uz_t requested_units, uz_t* granted_units );
 
 /// Simplified alloc, traditional malloc, free and realloc (thread-safe).
-static inline vd_t bcore_tbman_alloc(   vd_t ptr, sz_t size ) { return bcore_tbman_b_alloc( ptr,  size, NULL ); }
-static inline vd_t bcore_tbman_malloc(            sz_t size ) { return bcore_tbman_b_alloc( NULL, size, NULL ); }
-static inline vd_t bcore_tbman_realloc( vd_t ptr, sz_t size ) { return bcore_tbman_b_alloc( ptr,  size, NULL ); }
+static inline vd_t bcore_tbman_alloc(   vd_t ptr, uz_t size ) { return bcore_tbman_b_alloc( ptr,  size, NULL ); }
+static inline vd_t bcore_tbman_malloc(            uz_t size ) { return bcore_tbman_b_alloc( NULL, size, NULL ); }
+static inline vd_t bcore_tbman_realloc( vd_t ptr, uz_t size ) { return bcore_tbman_b_alloc( ptr,  size, NULL ); }
 static inline void bcore_tbman_free(    vd_t ptr            ) {        bcore_tbman_b_alloc( ptr,  0,    NULL ); }
 
 
@@ -133,36 +133,36 @@ vd_t bcore_tbman_s_fork           ( bcore_tbman_s* o,                           
 void bcore_tbman_s_release        ( bcore_tbman_s* o,                             vd_t ptr );
 void bcore_tbman_s_release_obj    ( bcore_tbman_s* o, fp_down_obj down,           vd_t ptr );
 void bcore_tbman_s_release_arg    ( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr );
-void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down,           vd_t ptr, sz_t size, sz_t step );
-void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step );
-sz_t bcore_tbman_s_references     ( bcore_tbman_s* o,                             vc_t ptr );
+void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down,           vd_t ptr, uz_t size, uz_t step );
+void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step );
+uz_t bcore_tbman_s_references     ( bcore_tbman_s* o,                             vc_t ptr );
 
 vd_t bcore_tbman_fork           (                             vd_t ptr );
 void bcore_tbman_release        (                             vd_t ptr );
 void bcore_tbman_release_obj    ( fp_down_obj down,           vd_t ptr );
 void bcore_tbman_release_arg    ( fp_down_arg down, vc_t arg, vd_t ptr );
-void bcore_tbman_release_obj_arr( fp_down_obj down,           vd_t ptr, sz_t size, sz_t step );
-void bcore_tbman_release_arg_arr( fp_down_arg down, vc_t arg, vd_t ptr, sz_t size, sz_t step );
-sz_t bcore_tbman_references     (                             vc_t ptr );
+void bcore_tbman_release_obj_arr( fp_down_obj down,           vd_t ptr, uz_t size, uz_t step );
+void bcore_tbman_release_arg_arr( fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step );
+uz_t bcore_tbman_references     (                             vc_t ptr );
 
 /**********************************************************************************************************************/
 /// Diagnostics
 
 /// Current allocations (thread-safe)
-sz_t bcore_tbman_s_granted_space(    bcore_tbman_s* o );
-sz_t bcore_tbman_s_total_instances(  bcore_tbman_s* o );
-sz_t bcore_tbman_s_total_references( bcore_tbman_s* o );
+uz_t bcore_tbman_s_granted_space(    bcore_tbman_s* o );
+uz_t bcore_tbman_s_total_instances(  bcore_tbman_s* o );
+uz_t bcore_tbman_s_total_references( bcore_tbman_s* o );
 
 /// applies a function to all instances
-void bcore_tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg );
+void bcore_tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg );
 
 /// runs instance diagnostics (e.g. to determine the cause of memory leaks)
 void bcore_tbman_s_instance_disgnostics( bcore_tbman_s* o );
 
-sz_t bcore_tbman_granted_space( void );
-sz_t bcore_tbman_total_instances( void );
-sz_t bcore_tbman_total_references( void );
-void bcore_tbman_for_all_instances( void (*fp)( vd_t arg, vd_t ptr, sz_t space ), vd_t arg );
+uz_t bcore_tbman_granted_space( void );
+uz_t bcore_tbman_total_instances( void );
+uz_t bcore_tbman_total_references( void );
+void bcore_tbman_for_all_instances( void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg );
 void bcore_tbman_s_instance_disgnostics();
 
 

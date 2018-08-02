@@ -32,69 +32,69 @@ BCORE_DECLARE_SPECT( bcore_matrix_s )
 {
     bcore_spect_header_s header;
     const bcore_array_s* spect_array;
-    sz_t rows_fix;   // feature for fixed rows (0 otherwise)
-    sz_t cols_fix;   // feature for fixed cols (0 otherwise)
-    sz_t stride_fix; // feature for fixed row-stride
+    uz_t rows_fix;   // feature for fixed rows (0 otherwise)
+    uz_t cols_fix;   // feature for fixed cols (0 otherwise)
+    uz_t stride_fix; // feature for fixed row-stride
 
-    sz_t rows_off;   // feature for dynamic row offset
-    sz_t cols_off;   // feature for dynamic col offset
-    sz_t stride_off; // feature for dynamic row-stride
+    uz_t rows_off;   // feature for dynamic row offset
+    uz_t cols_off;   // feature for dynamic col offset
+    uz_t stride_off; // feature for dynamic row-stride
 };
 
 static inline
-sz_t bcore_matrix_default_get_rows( const bcore_matrix_s* p, const bcore_matrix* o )
+uz_t bcore_matrix_default_get_rows( const bcore_matrix_s* p, const bcore_matrix* o )
 {
-    return p->rows_fix > 0 ? p->rows_fix : *( sz_t* )BCORE_OFFSET( o, p->rows_off );
+    return p->rows_fix > 0 ? p->rows_fix : *( uz_t* )BCORE_OFFSET( o, p->rows_off );
 }
 
 static inline
-sz_t bcore_matrix_default_get_cols( const bcore_matrix_s* p, const bcore_matrix* o )
+uz_t bcore_matrix_default_get_cols( const bcore_matrix_s* p, const bcore_matrix* o )
 {
-    return p->cols_fix > 0 ? p->cols_fix : *( sz_t* )BCORE_OFFSET( o, p->cols_off );
+    return p->cols_fix > 0 ? p->cols_fix : *( uz_t* )BCORE_OFFSET( o, p->cols_off );
 }
 
 static inline
-sz_t bcore_matrix_default_get_stride( const bcore_matrix_s* p, const bcore_matrix* o )
+uz_t bcore_matrix_default_get_stride( const bcore_matrix_s* p, const bcore_matrix* o )
 {
-    return p->stride_fix > 0 ? p->stride_fix : *( sz_t* )BCORE_OFFSET( o, p->stride_off );
+    return p->stride_fix > 0 ? p->stride_fix : *( uz_t* )BCORE_OFFSET( o, p->stride_off );
 }
 
-void bcore_matrix_default_set_size( const bcore_matrix_s* p, bcore_matrix* o, sz_t rows, sz_t cols );
+void bcore_matrix_default_set_size( const bcore_matrix_s* p, bcore_matrix* o, uz_t rows, uz_t cols );
 
 static inline
-sz_t bcore_matrix_default_get_row_index( const bcore_matrix_s* p, const bcore_matrix* o, sz_t i )
+uz_t bcore_matrix_default_get_row_index( const bcore_matrix_s* p, const bcore_matrix* o, uz_t i )
 {
     assert( i < bcore_matrix_default_get_rows( p, o ) );
     return i * bcore_matrix_default_get_stride( p, o );
 }
 
 static inline
-sz_t bcore_matrix_default_get_index( const bcore_matrix_s* p, const bcore_matrix* o, sz_t i, sz_t j )
+uz_t bcore_matrix_default_get_index( const bcore_matrix_s* p, const bcore_matrix* o, uz_t i, uz_t j )
 {
     assert( j < bcore_matrix_default_get_cols( p, o ) );
     return bcore_matrix_default_get_row_index( p, o, i ) + j;
 }
 
 static inline
-sr_s bcore_matrix_default_get_cell( const bcore_matrix_s* p, const bcore_matrix* o, sz_t i, sz_t j )
+sr_s bcore_matrix_default_get_cell( const bcore_matrix_s* p, const bcore_matrix* o, uz_t i, uz_t j )
 {
     return bcore_array_p_get( p->spect_array, (bcore_array*)o, bcore_matrix_default_get_index( p, o, i, j ) );
 }
 
 static inline
-void bcore_matrix_default_set_cell( const bcore_matrix_s* p, bcore_matrix* o, sz_t i, sz_t j, sr_s src )
+void bcore_matrix_default_set_cell( const bcore_matrix_s* p, bcore_matrix* o, uz_t i, uz_t j, sr_s src )
 {
     bcore_array_p_set( p->spect_array, (bcore_array*)o, bcore_matrix_default_get_index( p, o, i, j ), src );
 }
 
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_rows,      sz_t )
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_cols,      sz_t )
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_stride,    sz_t )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_matrix, set_size,            sz_t, rows, sz_t, cols )
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_matrix, get_row_index, sz_t, sz_t, i )
-BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_matrix, get_index,     sz_t, sz_t, i, sz_t, j )
-BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_matrix, get_cell,      sr_s, sz_t, i, sz_t, j )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_matrix, set_cell,            sz_t, i, sz_t, j, sr_s, src )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_rows,      uz_t )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_cols,      uz_t )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_stride,    uz_t )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_matrix, set_size,            uz_t, rows, uz_t, cols )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_matrix, get_row_index, uz_t, uz_t, i )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_matrix, get_index,     uz_t, uz_t, i, uz_t, j )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_matrix, get_cell,      sr_s, uz_t, i, uz_t, j )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_matrix, set_cell,            uz_t, i, uz_t, j, sr_s, src )
 
 /**********************************************************************************************************************/
 

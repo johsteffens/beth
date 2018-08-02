@@ -124,11 +124,11 @@ bcore_thread_arr_s* bcore_thread_arr_s_create();
 void                bcore_thread_arr_s_discard(     bcore_thread_arr_s* o );
 bcore_thread_arr_s* bcore_thread_arr_s_clone( const bcore_thread_arr_s* o );
 
-sz_t            bcore_thread_arr_s_get_size( const bcore_thread_arr_s* o );
-bcore_thread_s* bcore_thread_arr_s_get_thread( bcore_thread_arr_s* o, sz_t index );
+uz_t            bcore_thread_arr_s_get_size( const bcore_thread_arr_s* o );
+bcore_thread_s* bcore_thread_arr_s_get_thread( bcore_thread_arr_s* o, uz_t index );
 
 /// pushes a new thread; returns index of pushed thread
-sz_t bcore_thread_arr_s_push_call( bcore_thread_arr_s* o, bcore_fp_thread func, vd_t arg );
+uz_t bcore_thread_arr_s_push_call( bcore_thread_arr_s* o, bcore_fp_thread func, vd_t arg );
 
 /// joins last thread and removes it. returns join-result
 vd_t bcore_thread_arr_s_join_pop( bcore_thread_arr_s* o );
@@ -137,9 +137,9 @@ vd_t bcore_thread_arr_s_join_pop( bcore_thread_arr_s* o );
 // other thread related functions
 
 /// suspends current thread for period ns given in ...
-void bcore_sleep_ns( sz_t ns ); /// ... nanoseconds
-void bcore_sleep_us( sz_t us ); /// ... microseconds
-void bcore_sleep_ms( sz_t ms ); /// ... milliseconds
+void bcore_sleep_ns( uz_t ns ); /// ... nanoseconds
+void bcore_sleep_us( uz_t us ); /// ... microseconds
+void bcore_sleep_ms( uz_t ms ); /// ... milliseconds
 
 /**********************************************************************************************************************/
 

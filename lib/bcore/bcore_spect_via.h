@@ -47,7 +47,7 @@ typedef struct bcore_vitem_s
     tp_t name;
     u2_t caps;
     bcore_flect_flags_s flags; // reflection flags
-    sz_t offs;                 // offset to member element
+    uz_t offs;                 // offset to member element
     const bcore_via_s* via_p;  // via perspective of this item
     bcore_fp_get fp_get;       // optional explicit getter
     bcore_fp_set fp_set;       // optional explicit setter
@@ -58,65 +58,67 @@ BCORE_DECLARE_SPECT( bcore_via_s )
 {
     bcore_spect_header_s  header;
     const bcore_inst_s* inst_p; // inst perspective of this item
-    sz_t  size;                 // number of elements
+    uz_t  size;                 // number of elements
     bl_t  is_leaf;
     bcore_vitem_s* vitem_arr;   // array of vitem
 };
 
 static inline
-sz_t bcore_via_default_get_size( const bcore_via_s* p, const bcore_via* o )
+uz_t bcore_via_default_get_size( const bcore_via_s* p, const bcore_via* o )
 {
     return p->size;
 }
 
 static inline
-tp_t bcore_via_default_iget_name( const bcore_via_s* p, const bcore_via* o, sz_t index )
+tp_t bcore_via_default_iget_name( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     return p->vitem_arr[ index ].name;
 }
 
 static inline
-const bcore_vitem_s* bcore_via_default_iget_vitem( const bcore_via_s* p, const bcore_via* o, sz_t index )
+const bcore_vitem_s* bcore_via_default_iget_vitem( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     return &p->vitem_arr[ index ];
 }
 
 static inline
-const bcore_via_s* bcore_via_default_iget_via( const bcore_via_s* p, const bcore_via* o, sz_t index )
+const bcore_via_s* bcore_via_default_iget_via( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     return p->vitem_arr[ index ].via_p;
 }
 
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, get_size,  sz_t )                          // Number of items
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_name, tp_t, sz_t, index )            // Returns name for given index
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget,      sr_s, sz_t, index )            // Returns indexed reference
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset,            sz_t, index, sr_s, src ) // Sets indexed const item.
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_type, tp_t, sz_t, index )            // Returns type of object
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, get_size,  uz_t )                          // Number of items
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_name, tp_t, uz_t, index )            // Returns name for given index
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget,      sr_s, uz_t, index )            // Returns indexed reference
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset,            uz_t, index, sr_s, src ) // Sets indexed const item.
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_type, tp_t, uz_t, index )            // Returns type of object
 
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_s3,         sz_t, index, s3_t, val ) // Sets (internal) item by converting s3_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_u3,         sz_t, index, u3_t, val ) // Sets (internal) item by converting u3_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_f3,         sz_t, index, f3_t, val ) // Sets (internal) item by converting f3_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_sz,         sz_t, index, sz_t, val ) // Sets (internal) item by converting sz_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_sc,         sz_t, index, sc_t, val ) // Sets (internal) item by converting sc_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_bl,         sz_t, index, bl_t, val ) // Sets (internal) item by converting bl_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_tp,         sz_t, index, tp_t, val ) // Sets (internal) item by converting tp_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_s3,         uz_t, index, s3_t, val ) // Sets (internal) item by converting s3_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_u3,         uz_t, index, u3_t, val ) // Sets (internal) item by converting u3_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_f3,         uz_t, index, f3_t, val ) // Sets (internal) item by converting f3_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_szxxx,         uz_t, index, szxxx_t, val ) // Sets (internal) item by converting szxxx_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_uz,         uz_t, index, uz_t, val ) // Sets (internal) item by converting uz_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_sc,         uz_t, index, sc_t, val ) // Sets (internal) item by converting sc_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_bl,         uz_t, index, bl_t, val ) // Sets (internal) item by converting bl_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_tp,         uz_t, index, tp_t, val ) // Sets (internal) item by converting tp_t into target type
 
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_vitem, const bcore_vitem_s*, sz_t, index ) // Returns bcore_vitem_s structure;
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_via,   const bcore_via_s*,   sz_t, index ) // Returns via perspective for item
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_array, const bcore_array_s*, sz_t, index ) // Returns array perspective for item; return NULL when item is no array
-BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_via, iget_spect,                 vc_t, sz_t, index, tp_t, spect_type )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_vitem, const bcore_vitem_s*, uz_t, index ) // Returns bcore_vitem_s structure;
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_via,   const bcore_via_s*,   uz_t, index ) // Returns via perspective for item
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_array, const bcore_array_s*, uz_t, index ) // Returns array perspective for item; return NULL when item is no array
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_via, iget_spect,                 vc_t, uz_t, index, tp_t, spect_type )
 
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nexists,    bl_t, tp_t, name ) // Checks if given name exists
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_index, sz_t, tp_t, name ) // Returns index for given name
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_index, uz_t, tp_t, name ) // Returns index for given name
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget      , sr_s, tp_t, name )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset      ,       tp_t, name, sr_s, src )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_s3   ,       tp_t, name, s3_t, val )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_u3   ,       tp_t, name, u3_t, val )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_f3   ,       tp_t, name, f3_t, val )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_sz   ,       tp_t, name, sz_t, val )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_szxxx   ,       tp_t, name, szxxx_t, val )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_uz   ,       tp_t, name, uz_t, val )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_sc   ,       tp_t, name, sc_t, val )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_bl   ,       tp_t, name, bl_t, val )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_tp   ,       tp_t, name, tp_t, val )
@@ -127,9 +129,9 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_via, nget_spect,                 v
 
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_leaf,       bl_t )              // Leaf type according to function bcore_type_is_leaf
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_pure_array, bl_t )              // Checks if object is an array without additional elements (pure arrays are not leafs)
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_array,     bl_t, sz_t, index ) // Checks if element is an array
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_static,    bl_t, sz_t, index ) // Checks if element is static (type need not be recorded)
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_link,      bl_t, sz_t, index ) // Checks if element is a link (means that it can be NULL); an array is a distinct static object -> not a link)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_array,     bl_t, uz_t, index ) // Checks if element is an array
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_static,    bl_t, uz_t, index ) // Checks if element is static (type need not be recorded)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_link,      bl_t, uz_t, index ) // Checks if element is a link (means that it can be NULL); an array is a distinct static object -> not a link)
 
 vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o );
 
@@ -137,6 +139,6 @@ vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o );
 // testing, debugging
 
 /// creates a structured object for testing purposes
-sr_s bcore_spect_via_create_zoo( sz_t size );
+sr_s bcore_spect_via_create_zoo( uz_t size );
 
 #endif

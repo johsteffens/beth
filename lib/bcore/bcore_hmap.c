@@ -145,20 +145,20 @@ void bcore_hmap_u2vd_s_init( bcore_hmap_u2vd_s* o )
 
 void bcore_hmap_u2vd_s_down( bcore_hmap_u2vd_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_hnode_u2vd_s_down( &o->data[ i ] );
+    for( uz_t i = 0; i < o->size; i++ ) bcore_hnode_u2vd_s_down( &o->data[ i ] );
     bcore_un_alloc( sizeof( bcore_hnode_u2vd_s ), o->data, o->space, 0, NULL );
 }
 
 void bcore_hmap_u2vd_s_copy( bcore_hmap_u2vd_s* o, const bcore_hmap_u2vd_s* src )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_hnode_u2vd_s_down( &o->data[ i ] );
+    for( uz_t i = 0; i < o->size; i++ ) bcore_hnode_u2vd_s_down( &o->data[ i ] );
     if( src->size > o->space )
     {
         o->data = bcore_un_alloc( sizeof( bcore_hnode_u2vd_s ), o->data, o->space,  0, &o->space );
         o->data = bcore_un_alloc( sizeof( bcore_hnode_u2vd_s ), o->data, 0, src->size, &o->space );
     }
     o->size = src->size;
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         bcore_hnode_u2vd_s_init( &o->data[ i ] );
         bcore_hnode_u2vd_s_copy( &o->data[ i ], &src->data[ i ] );
@@ -170,9 +170,9 @@ void bcore_hmap_u2vd_s_copy( bcore_hmap_u2vd_s* o, const bcore_hmap_u2vd_s* src 
     o->h3          = src->h3;
 }
 
-static void u2vd_set_size( bcore_hmap_u2vd_s* o, sz_t size )
+static void u2vd_set_size( bcore_hmap_u2vd_s* o, uz_t size )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_hnode_u2vd_s_clear( &o->data[ i ] );
+    for( uz_t i = 0; i < o->size; i++ ) bcore_hnode_u2vd_s_clear( &o->data[ i ] );
 
     if( ( size & ( size - 1 ) ) != 0 ) ERR( "size %zu must be a power of two", size );
     if( size > o->space )
@@ -194,32 +194,32 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_u2vd_s )
 
 /**********************************************************************************************************************/
 
-static sz_t u2vd_find( const bcore_hmap_u2vd_s* o, u2_t key ) // returns valid index or o->size
+static uz_t u2vd_find( const bcore_hmap_u2vd_s* o, u2_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
     u2_t mask = o->size - 1;
     if( o->h1 )
     {
-        sz_t idx = o->h1( key ) & mask;
+        uz_t idx = o->h1( key ) & mask;
         if( o->data[ idx ].key == key ) return idx;
     }
 
     if( o->h2 )
     {
-        sz_t idx = o->h2( key ) & mask;
+        uz_t idx = o->h2( key ) & mask;
         if( o->data[ idx ].key == key ) return idx;
     }
 
     if( o->h3 )
     {
-        sz_t idx = o->h3( key ) & mask;
+        uz_t idx = o->h3( key ) & mask;
         if( o->data[ idx ].key == key ) return idx;
     }
 
     return o->size;
 }
 
-static bcore_hnode_u2vd_s* u2vd_set( const bcore_hmap_u2vd_s* o, bcore_hnode_u2vd_s node, sz_t depth ) // sets new node
+static bcore_hnode_u2vd_s* u2vd_set( const bcore_hmap_u2vd_s* o, bcore_hnode_u2vd_s node, uz_t depth ) // sets new node
 {
     if( o->size == 0 ) return NULL;
     u2_t mask = o->size - 1;
@@ -304,7 +304,7 @@ static bcore_hnode_u2vd_s* u2vd_set( const bcore_hmap_u2vd_s* o, bcore_hnode_u2v
     return NULL;
 }
 
-void bcore_hmap_u2vd_s_set_hash_function( bcore_hmap_u2vd_s* o, sz_t index, bcore_hash_u2u2 hf )
+void bcore_hmap_u2vd_s_set_hash_function( bcore_hmap_u2vd_s* o, uz_t index, bcore_hash_u2u2 hf )
 {
     if( index > 2 ) ERR( "index (%zu) out of range", index );
     switch( index )
@@ -319,14 +319,14 @@ void bcore_hmap_u2vd_s_set_hash_function( bcore_hmap_u2vd_s* o, sz_t index, bcor
 vd_t* bcore_hmap_u2vd_s_get( const bcore_hmap_u2vd_s* o, u2_t key )
 {
     if( !key ) return NULL;
-    sz_t idx = u2vd_find( o, key );
+    uz_t idx = u2vd_find( o, key );
     return ( idx < o->size ) ? &o->data[ idx ].dp : NULL;
 }
 
 fp_t* bcore_hmap_u2vd_s_getf( const bcore_hmap_u2vd_s* o, u2_t key )
 {
     if( !key ) return NULL;
-    sz_t idx = u2vd_find( o, key );
+    uz_t idx = u2vd_find( o, key );
     return ( idx < o->size ) ? &o->data[ idx ].fp : NULL;
 }
 
@@ -335,7 +335,7 @@ void bcore_hmap_u2vd_s_set( bcore_hmap_u2vd_s* o, u2_t key, vd_t val, bool hold 
     if( !key ) ERR( "key is zero" );
 
     {
-        sz_t idx = u2vd_find( o, key );
+        uz_t idx = u2vd_find( o, key );
         if( idx < o->size )
         {
             bcore_hnode_u2vd_s_set_val( &o->data[ idx ], val, hold );
@@ -358,14 +358,14 @@ void bcore_hmap_u2vd_s_set( bcore_hmap_u2vd_s* o, u2_t key, vd_t val, bool hold 
     // rehash
     {
         bcore_hnode_u2vd_s* buf_data  = o->data;
-        sz_t         buf_size  = o->size;
-        sz_t         buf_space = o->space;
+        uz_t         buf_size  = o->size;
+        uz_t         buf_space = o->space;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->data = bcore_u_alloc( sizeof( bcore_hnode_u2vd_s ), NULL, o->size, &o->space );
         bcore_memzero( o->data, sizeof( bcore_hnode_u2vd_s ) * o->size );
-        for( sz_t i = 0; i < buf_size; i++ )
+        for( uz_t i = 0; i < buf_size; i++ )
         {
             bcore_hnode_u2vd_s* p_node = &buf_data[ i ];
             if( p_node->key ) bcore_hmap_u2vd_s_set( o, p_node->key, p_node->dp, p_node->flag_holds );
@@ -381,7 +381,7 @@ void bcore_hmap_u2vd_s_setf( bcore_hmap_u2vd_s* o, u2_t key, fp_t func )
     if( !key ) ERR( "key is zero" );
 
     {
-        sz_t idx = u2vd_find( o, key );
+        uz_t idx = u2vd_find( o, key );
         if( idx < o->size )
         {
             bcore_hnode_u2vd_s_set_func( &o->data[ idx ], func );
@@ -404,14 +404,14 @@ void bcore_hmap_u2vd_s_setf( bcore_hmap_u2vd_s* o, u2_t key, fp_t func )
     // rehash
     {
         bcore_hnode_u2vd_s* buf_data  = o->data;
-        sz_t buf_size  = o->size;
-        sz_t buf_space = o->space;
+        uz_t buf_size  = o->size;
+        uz_t buf_space = o->space;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->data = bcore_u_alloc( sizeof( bcore_hnode_u2vd_s ), NULL, o->size, &o->space );
         bcore_memzero( o->data, sizeof( bcore_hnode_u2vd_s ) * o->size );
-        for( sz_t i = 0; i < buf_size; i++ )
+        for( uz_t i = 0; i < buf_size; i++ )
         {
             bcore_hnode_u2vd_s* p_node = &buf_data[ i ];
             if( p_node->key ) bcore_hmap_u2vd_s_set( o, p_node->key, p_node->dp, p_node->flag_holds );
@@ -426,7 +426,7 @@ vd_t bcore_hmap_u2vd_s_remove_h( bcore_hmap_u2vd_s* o, u2_t key )
 {
     if( !key ) return NULL;
 
-    sz_t idx = u2vd_find( o, key );
+    uz_t idx = u2vd_find( o, key );
     if( idx < o->size )
     {
         bcore_hnode_u2vd_s* node = &o->data[ idx ];
@@ -443,7 +443,7 @@ fp_t bcore_hmap_u2vd_s_removef_h( bcore_hmap_u2vd_s* o, u2_t key )
 {
     if( !key ) return NULL;
 
-    sz_t idx = u2vd_find( o, key );
+    uz_t idx = u2vd_find( o, key );
     if( idx < o->size )
     {
         bcore_hnode_u2vd_s* node = &o->data[ idx ];
@@ -459,7 +459,7 @@ fp_t bcore_hmap_u2vd_s_removef_h( bcore_hmap_u2vd_s* o, u2_t key )
 void bcore_hmap_u2vd_s_remove_d( bcore_hmap_u2vd_s* o, u2_t key )
 {
     if( !key ) return;
-    sz_t idx = u2vd_find( o, key );
+    uz_t idx = u2vd_find( o, key );
     if( idx < o->size )
     {
         bcore_hnode_u2vd_s* node = &o->data[ idx ];
@@ -475,7 +475,7 @@ vd_t bcore_hmap_u2vd_s_detach_h( bcore_hmap_u2vd_s* o, u2_t key )
 {
     if( !key ) return NULL;
 
-    sz_t idx = u2vd_find( o, key );
+    uz_t idx = u2vd_find( o, key );
     if( idx < o->size )
     {
         bcore_hnode_u2vd_s* node = &o->data[ idx ];
@@ -489,7 +489,7 @@ vd_t bcore_hmap_u2vd_s_detach_h( bcore_hmap_u2vd_s* o, u2_t key )
 bool bcore_hmap_u2vd_s_exists( const bcore_hmap_u2vd_s* o, u2_t key )
 {
     if( !key ) return false;
-    sz_t idx = u2vd_find( o, key );
+    uz_t idx = u2vd_find( o, key );
     return ( idx < o->size );
 }
 
@@ -498,31 +498,31 @@ void bcore_hmap_u2vd_s_clear( bcore_hmap_u2vd_s* o )
     u2vd_set_size( o, 0 );
 }
 
-sz_t bcore_hmap_u2vd_s_keys( const bcore_hmap_u2vd_s* o )
+uz_t bcore_hmap_u2vd_s_keys( const bcore_hmap_u2vd_s* o )
 {
-    sz_t count = 0;
-    for( sz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ].key > 0 );
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ].key > 0 );
     return count;
 }
 
-sz_t bcore_hmap_u2vd_s_size( const bcore_hmap_u2vd_s* o )
+uz_t bcore_hmap_u2vd_s_size( const bcore_hmap_u2vd_s* o )
 {
     return o->size;
 }
 
-u2_t bcore_hmap_u2vd_s_idx_key( const bcore_hmap_u2vd_s* o, sz_t idx )
+u2_t bcore_hmap_u2vd_s_idx_key( const bcore_hmap_u2vd_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->data[ idx ].key;
 }
 
-bool bcore_hmap_u2vd_s_idx_holds( const bcore_hmap_u2vd_s* o, sz_t idx )
+bool bcore_hmap_u2vd_s_idx_holds( const bcore_hmap_u2vd_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->data[ idx ].flag_holds;
 }
 
-vd_t bcore_hmap_u2vd_s_idx_val( const bcore_hmap_u2vd_s* o, sz_t idx )
+vd_t bcore_hmap_u2vd_s_idx_val( const bcore_hmap_u2vd_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->data[ idx ].dp;
@@ -530,7 +530,7 @@ vd_t bcore_hmap_u2vd_s_idx_val( const bcore_hmap_u2vd_s* o, sz_t idx )
 
 void bcore_hmap_u2vd_s_run_c( const bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t val ) )
 {
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->data[ i ].key > 0 ) fp( obj, o->data[ i ].key, o->data[ i ].dp );
     }
@@ -538,7 +538,7 @@ void bcore_hmap_u2vd_s_run_c( const bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( 
 
 void bcore_hmap_u2vd_s_run_d( bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t obj, u2_t key, vd_t* val ) )
 {
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->data[ i ].key > 0 ) fp( obj, o->data[ i ].key, &o->data[ i ].dp );
     }
@@ -553,8 +553,8 @@ static bcore_self_s* hmap_u2vd_s_create_self( void )
             { \
                 aware_t _; \
                 private bcore_array_dyn_solid_static_s arr; \
-                sz_t depth_limit; \
-                sz_t size_limit; \
+                uz_t depth_limit; \
+                uz_t size_limit; \
                 private fp_t h1; \
                 private fp_t h2; \
                 private fp_t h3; \
@@ -574,7 +574,7 @@ static bcore_self_s* hmap_u2vd_s_create_self( void )
 static st_s* hmap_u2vd_s_status( bcore_hmap_u2vd_s* o )
 {
     st_s* string = st_s_create();
-    sz_t keys = bcore_hmap_u2vd_s_keys( o );
+    uz_t keys = bcore_hmap_u2vd_s_keys( o );
     st_s_pushf( string, "keys ........... %zu\n", keys );
     st_s_pushf( string, "nodes .......... %lu\n", o->size );
     st_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
@@ -586,19 +586,19 @@ void bcore_hmap_u2vd_filltest()
     bcore_life_s* life = bcore_life_s_create();
     bcore_hmap_u2vd_s* map = bcore_life_s_push( life, ( bcore_fp_discard )bcore_hmap_u2vd_s_discard, bcore_hmap_u2vd_s_create() );
 
-    sz_t cycles = 2;
-    sz_t size = 65536 * 64;
+    uz_t cycles = 2;
+    uz_t size = 65536 * 64;
 
-    for( sz_t i = 0; i < cycles; i++ )
+    for( uz_t i = 0; i < cycles; i++ )
     {
         bcore_hmap_u2vd_s_clear( map );
         u2_t key = bcore_xsg3_u2( i + 1 );
-        for( sz_t j = 0; j < size; j++ )
+        for( uz_t j = 0; j < size; j++ )
         {
             key = bcore_xsg_u2( key );
-            sz_t size1 = map->size;
+            uz_t size1 = map->size;
             bcore_hmap_u2vd_s_set( map, key, 0, false );
-            sz_t size2 = map->size;
+            uz_t size2 = map->size;
             if( size2 > size1 )
             {
                 st_s_print_d( st_s_createf( "%zu/%zu (%f)\n", j, size1, size1 > 0 ? ( f3_t ) j / size1 : 0.0 ) );
@@ -619,7 +619,7 @@ static st_s* hmap_u2vd_selftest( void )
     st_s_push_char( log, '\n' );
 
     bcore_hmap_u2vd_s* map = bcore_hmap_u2vd_s_create();
-    const sz_t cycles = 200000;
+    const uz_t cycles = 200000;
 
     typedef struct
     {
@@ -628,7 +628,7 @@ static st_s* hmap_u2vd_selftest( void )
     } kv_s;
 
     kv_s* kvbuf = bcore_alloc( NULL, cycles * sizeof( kv_s ) );
-    sz_t kvbuf_size = 0;
+    uz_t kvbuf_size = 0;
 
     clock_t time = clock();
     st_s_pushf( log, "Mixed access: " );
@@ -636,7 +636,7 @@ static st_s* hmap_u2vd_selftest( void )
     {
         u3_t rval1 = 1;
         u3_t rval2 = 12345;
-        for( sz_t i = 0; i < cycles; i++ )
+        for( uz_t i = 0; i < cycles; i++ )
         {
             rval1 = bcore_xsg_u2( rval1 );
             rval2 = bcore_xsg_u2( rval2 );
@@ -659,7 +659,7 @@ static st_s* hmap_u2vd_selftest( void )
             if( ( ( rval1 >> 10 ) & 1 ) == 1 )
             {
                 rval1 = bcore_xsg_u2( rval1 );
-                sz_t idx = rval1 % kvbuf_size;
+                uz_t idx = rval1 % kvbuf_size;
                 kv_s kv = kvbuf[ idx ];
                 if( !bcore_hmap_u2vd_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
                 bcore_hmap_u2vd_s_remove_d( map, kv.key );
@@ -677,10 +677,10 @@ static st_s* hmap_u2vd_selftest( void )
 
     time = clock();
     st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
-    sz_t read_cycles = 20;
-    for( sz_t j = 0; j < read_cycles; j++ )
+    uz_t read_cycles = 20;
+    for( uz_t j = 0; j < read_cycles; j++ )
     {
-        for( sz_t i = 0; i < kvbuf_size; i++ )
+        for( uz_t i = 0; i < kvbuf_size; i++ )
         {
             if( *bcore_hmap_u2vd_s_get( map, kvbuf[ i ].key ) != kvbuf[ i ].val ) ERR( "value mismatch (%lu vs %lu)", kvbuf[ i ].key, kvbuf[ i ].val );
         }
@@ -723,7 +723,7 @@ static bcore_self_s* hnode_tpsz_s_create_self( void )
     "bcore_hnode_tpsz_s = bcore_inst"
     "{"
         "tp_t key;"
-        "sz_t val;"
+        "uz_t val;"
     "}";
     return bcore_self_s_build_parse_sc( def, sizeof( bcore_hnode_tpsz_s ) );
 }
@@ -761,33 +761,33 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpsz_s )
 
 /**********************************************************************************************************************/
 
-static sz_t tpsz_find( const bcore_hmap_tpsz_s* o, tp_t key ) // returns valid index or o->size
+static uz_t tpsz_find( const bcore_hmap_tpsz_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
     u2_t mask = o->size - 1;
-    sz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t idx = hash_tpu2_1( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     idx = hash_tpu2_2( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
 
-sz_t tpsz_set( bcore_hmap_tpsz_s* o, bcore_hnode_tpsz_s node, sz_t depth ) // sets new node, returns valid index on success; o->size otherwise
+uz_t tpsz_set( bcore_hmap_tpsz_s* o, bcore_hnode_tpsz_s node, uz_t depth ) // sets new node, returns valid index on success; o->size otherwise
 {
-    sz_t size = o->size;
+    uz_t size = o->size;
     if( size == 0 ) return size;
     u2_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    sz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
     if( !o->nodes[ idx1 ].key )
     {
         o->nodes[ idx1 ] = node;
         return idx1;
     }
 
-    sz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
     if( !o->nodes[ idx2 ].key )
     {
         o->nodes[ idx2 ] = node;
@@ -823,17 +823,17 @@ sz_t tpsz_set( bcore_hmap_tpsz_s* o, bcore_hnode_tpsz_s node, sz_t depth ) // se
     return size;
 }
 
-sz_t* bcore_hmap_tpsz_s_get( const bcore_hmap_tpsz_s* o, tp_t key )
+uz_t* bcore_hmap_tpsz_s_get( const bcore_hmap_tpsz_s* o, tp_t key )
 {
     if( !key ) return NULL;
-    sz_t idx = tpsz_find( o, key );
+    uz_t idx = tpsz_find( o, key );
     return ( idx < o->size ) ? &o->nodes[ idx ].val : NULL;
 }
 
-sz_t* bcore_hmap_tpsz_s_fget( bcore_hmap_tpsz_s* o, tp_t key, sz_t init_val )
+uz_t* bcore_hmap_tpsz_s_fget( bcore_hmap_tpsz_s* o, tp_t key, uz_t init_val )
 {
     if( !key ) ERR( "key is 0" );
-    sz_t idx = tpsz_find( o, key );
+    uz_t idx = tpsz_find( o, key );
     if( idx < o->size )
     {
         return &o->nodes[ idx ].val;
@@ -844,11 +844,11 @@ sz_t* bcore_hmap_tpsz_s_fget( bcore_hmap_tpsz_s* o, tp_t key, sz_t init_val )
     }
 }
 
-sz_t* bcore_hmap_tpsz_s_set( bcore_hmap_tpsz_s* o, tp_t key, sz_t val )
+uz_t* bcore_hmap_tpsz_s_set( bcore_hmap_tpsz_s* o, tp_t key, uz_t val )
 {
     if( !key ) ERR( "key is zero" );
 
-    sz_t idx = tpsz_find( o, key );
+    uz_t idx = tpsz_find( o, key );
     if( idx < o->size )
     {
         o->nodes[ idx ].val = val;
@@ -862,12 +862,12 @@ sz_t* bcore_hmap_tpsz_s_set( bcore_hmap_tpsz_s* o, tp_t key, sz_t val )
     {
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         bcore_hnode_tpsz_s* buf_nodes = o->nodes;
-        sz_t  buf_size = o->size;
+        uz_t  buf_size = o->size;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpsz_s ), NULL, o->size );
-        for( sz_t i = 0; i < buf_size; i++ )
+        for( uz_t i = 0; i < buf_size; i++ )
         {
             if( buf_nodes[ i ].key ) bcore_hmap_tpsz_s_set( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
         }
@@ -877,13 +877,13 @@ sz_t* bcore_hmap_tpsz_s_set( bcore_hmap_tpsz_s* o, tp_t key, sz_t val )
     return bcore_hmap_tpsz_s_set( o, key, val );
 }
 
-sz_t bcore_hmap_tpsz_s_remove( bcore_hmap_tpsz_s* o, tp_t key )
+uz_t bcore_hmap_tpsz_s_remove( bcore_hmap_tpsz_s* o, tp_t key )
 {
     if( !key ) return 0;
-    sz_t idx = tpsz_find( o, key );
+    uz_t idx = tpsz_find( o, key );
     if( idx < o->size )
     {
-        sz_t val = o->nodes[ idx ].val;
+        uz_t val = o->nodes[ idx ].val;
         o->nodes[ idx ].key = 0;
         o->nodes[ idx ].val = 0;
         return val;
@@ -894,7 +894,7 @@ sz_t bcore_hmap_tpsz_s_remove( bcore_hmap_tpsz_s* o, tp_t key )
 bl_t bcore_hmap_tpsz_s_exists( const bcore_hmap_tpsz_s* o, tp_t key )
 {
     if( !key ) return false;
-    sz_t idx = tpsz_find( o, key );
+    uz_t idx = tpsz_find( o, key );
     return ( idx < o->size );
 }
 
@@ -905,25 +905,25 @@ void bcore_hmap_tpsz_s_clear( bcore_hmap_tpsz_s* o )
     o->size  = 0;
 }
 
-sz_t bcore_hmap_tpsz_s_keys( const bcore_hmap_tpsz_s* o )
+uz_t bcore_hmap_tpsz_s_keys( const bcore_hmap_tpsz_s* o )
 {
-    sz_t count = 0;
-    for( sz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
     return count;
 }
 
-sz_t bcore_hmap_tpsz_s_size( const bcore_hmap_tpsz_s* o )
+uz_t bcore_hmap_tpsz_s_size( const bcore_hmap_tpsz_s* o )
 {
     return o->size;
 }
 
-tp_t bcore_hmap_tpsz_s_idx_key( const bcore_hmap_tpsz_s* o, sz_t idx )
+tp_t bcore_hmap_tpsz_s_idx_key( const bcore_hmap_tpsz_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->nodes[ idx ].key;
 }
 
-sz_t bcore_hmap_tpsz_s_idx_val( const bcore_hmap_tpsz_s* o, sz_t idx )
+uz_t bcore_hmap_tpsz_s_idx_val( const bcore_hmap_tpsz_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->nodes[ idx ].val;
@@ -934,7 +934,7 @@ static sr_s tpsz_s_get_data( const bcore_hmap_tpsz_s* o )
     tp_t t_data = bcore_flect_type_parse_sc( "{ bcore_hnode_tpsz_s []; }" );
     tp_t t_node = typeof( "bcore_hnode_tpsz_s" );
     sr_s data = sr_cp( sr_create( t_data ), TYPEOF_bcore_array_s );
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->nodes[ i ].key ) bcore_array_r_push( &data, sr_twc( t_node, &o->nodes[ i ] ) );
     }
@@ -946,9 +946,9 @@ static void tpsz_s_set_data( bcore_hmap_tpsz_s* o, sr_s data )
     bcore_hmap_tpsz_s_clear( o );
     assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ bcore_hnode_tpsz_s []; }" ) );
     data = sr_cp( data, TYPEOF_bcore_array_s );
-    sz_t size = bcore_array_r_get_size( &data );
+    uz_t size = bcore_array_r_get_size( &data );
     const bcore_hnode_tpsz_s* src = bcore_array_r_get_c_data( &data );
-    for( sz_t i = 0; i < size; i++ ) bcore_hmap_tpsz_s_set( o, src[ i ].key, src[ i ].val );
+    for( uz_t i = 0; i < size; i++ ) bcore_hmap_tpsz_s_set( o, src[ i ].key, src[ i ].val );
     sr_down( data );
 }
 
@@ -962,9 +962,9 @@ static bcore_self_s* hmap_tpsz_s_create_self( void )
                 aware_t _; \
                 private bcore_hnode_tpsz_s* nodes; \
                 private bl_t* flags; \
-                private sz_t size; \
-                private sz_t depth_limit; \
-                private sz_t size_limit; \
+                private uz_t size; \
+                private uz_t depth_limit; \
+                private uz_t size_limit; \
                 shell { bcore_hnode_tpsz_s []; } data; } \
             }";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpsz_s ) );
@@ -981,7 +981,7 @@ static bcore_self_s* hmap_tpsz_s_create_self( void )
 static st_s* hmap_tpsz_s_status( bcore_hmap_tpsz_s* o )
 {
     st_s* string = st_s_create();
-    sz_t keys = bcore_hmap_tpsz_s_keys( o );
+    uz_t keys = bcore_hmap_tpsz_s_keys( o );
     st_s_pushf( string, "keys ........... %zu\n", keys );
     st_s_pushf( string, "nodes .......... %lu\n", o->size );
     st_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
@@ -998,16 +998,16 @@ static st_s* hmap_tpsz_selftest( void )
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tpsz_s* map = bcore_hmap_tpsz_s_create();
-    const sz_t cycles = 200000;
+    const uz_t cycles = 200000;
 
     typedef struct
     {
         tp_t key;
-        sz_t val;
+        uz_t val;
     } kv_s;
 
     kv_s* kvbuf = bcore_alloc( NULL, cycles * sizeof( kv_s ) );
-    sz_t kvbuf_size = 0;
+    uz_t kvbuf_size = 0;
 
     clock_t time = clock();
     st_s_pushf( log, "Mixed access: " );
@@ -1015,13 +1015,13 @@ static st_s* hmap_tpsz_selftest( void )
     {
         u3_t rval1 = 1;
         u3_t rval2 = 12345;
-        for( sz_t i = 0; i < cycles; i++ )
+        for( uz_t i = 0; i < cycles; i++ )
         {
             rval1 = bcore_xsg_u2( rval1 );
             rval2 = bcore_xsg_u2( rval2 );
             kv_s kv;
             kv.key = ( u2_t )rval1;
-            kv.val = ( sz_t )rval2;
+            kv.val = ( uz_t )rval2;
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set
@@ -1030,7 +1030,7 @@ static st_s* hmap_tpsz_selftest( void )
             // retrieve
             rval1 = bcore_xsg_u2( rval1 );
             kv = kvbuf[ rval1 % kvbuf_size ];
-            sz_t* val_ptr = bcore_hmap_tpsz_s_get( map, kv.key );
+            uz_t* val_ptr = bcore_hmap_tpsz_s_get( map, kv.key );
             if( kv.val != *val_ptr ) ERR( "value mismatch (%lu vs %lu)", kv.val, *val_ptr );
 
             // delete
@@ -1038,7 +1038,7 @@ static st_s* hmap_tpsz_selftest( void )
             if( ( ( rval1 >> 10 ) & 1 ) == 1 )
             {
                 rval1 = bcore_xsg_u2( rval1 );
-                sz_t idx = rval1 % kvbuf_size;
+                uz_t idx = rval1 % kvbuf_size;
                 kv_s kv = kvbuf[ idx ];
                 if( !bcore_hmap_tpsz_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
                 bcore_hmap_tpsz_s_remove( map, kv.key );
@@ -1070,12 +1070,12 @@ static st_s* hmap_tpsz_selftest( void )
     time = clock() - time;
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
     time = clock();
-    for( sz_t i = 0; i < map->size; i++ )
+    for( uz_t i = 0; i < map->size; i++ )
     {
         tp_t key = bcore_hmap_tpsz_s_idx_key( map, i );
         if( key != 0 )
         {
-            sz_t val = bcore_hmap_tpsz_s_idx_val( map, i );
+            uz_t val = bcore_hmap_tpsz_s_idx_val( map, i );
             ASSERT( bcore_hmap_tpsz_s_exists( map3, key ) );
             ASSERT( val == *bcore_hmap_tpsz_s_get( map3, key ) );
         }
@@ -1085,10 +1085,10 @@ static st_s* hmap_tpsz_selftest( void )
 
     time = clock();
     st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
-    sz_t read_cycles = 20;
-    for( sz_t j = 0; j < read_cycles; j++ )
+    uz_t read_cycles = 20;
+    for( uz_t j = 0; j < read_cycles; j++ )
     {
-        for( sz_t i = 0; i < kvbuf_size; i++ )
+        for( uz_t i = 0; i < kvbuf_size; i++ )
         {
             if( *bcore_hmap_tpsz_s_get( map, kvbuf[ i ].key ) != kvbuf[ i ].val ) ERR( "value mismatch (%lu vs %lu)", kvbuf[ i ].key, kvbuf[ i ].val );
         }
@@ -1171,33 +1171,33 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpfp_s )
 
 /**********************************************************************************************************************/
 
-static sz_t tpfp_find( const bcore_hmap_tpfp_s* o, tp_t key ) // returns valid index or o->size
+static uz_t tpfp_find( const bcore_hmap_tpfp_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
     u2_t mask = o->size - 1;
-    sz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t idx = hash_tpu2_1( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     idx = hash_tpu2_2( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
 
-sz_t tpfp_set( bcore_hmap_tpfp_s* o, bcore_hnode_tpfp_s node, sz_t depth ) // sets new node, returns valid index on success; o->size otherwise
+uz_t tpfp_set( bcore_hmap_tpfp_s* o, bcore_hnode_tpfp_s node, uz_t depth ) // sets new node, returns valid index on success; o->size otherwise
 {
-    sz_t size = o->size;
+    uz_t size = o->size;
     if( size == 0 ) return size;
     u2_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    sz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
     if( !o->nodes[ idx1 ].key )
     {
         o->nodes[ idx1 ] = node;
         return idx1;
     }
 
-    sz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
     if( !o->nodes[ idx2 ].key )
     {
         o->nodes[ idx2 ] = node;
@@ -1236,14 +1236,14 @@ sz_t tpfp_set( bcore_hmap_tpfp_s* o, bcore_hnode_tpfp_s node, sz_t depth ) // se
 fp_t* bcore_hmap_tpfp_s_get( const bcore_hmap_tpfp_s* o, tp_t key )
 {
     if( !key ) return NULL;
-    sz_t idx = tpfp_find( o, key );
+    uz_t idx = tpfp_find( o, key );
     return ( idx < o->size ) ? &o->nodes[ idx ].val : NULL;
 }
 
 fp_t* bcore_hmap_tpfp_s_fget( bcore_hmap_tpfp_s* o, tp_t key, fp_t init_val )
 {
     if( !key ) ERR( "key is 0" );
-    sz_t idx = tpfp_find( o, key );
+    uz_t idx = tpfp_find( o, key );
     if( idx < o->size )
     {
         return &o->nodes[ idx ].val;
@@ -1258,7 +1258,7 @@ fp_t* bcore_hmap_tpfp_s_set( bcore_hmap_tpfp_s* o, tp_t key, fp_t val )
 {
     if( !key ) ERR( "key is zero" );
 
-    sz_t idx = tpfp_find( o, key );
+    uz_t idx = tpfp_find( o, key );
     if( idx < o->size )
     {
         o->nodes[ idx ].val = val;
@@ -1272,12 +1272,12 @@ fp_t* bcore_hmap_tpfp_s_set( bcore_hmap_tpfp_s* o, tp_t key, fp_t val )
     {
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         bcore_hnode_tpfp_s* buf_nodes = o->nodes;
-        sz_t  buf_size = o->size;
+        uz_t  buf_size = o->size;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpfp_s ), NULL, o->size );
-        for( sz_t i = 0; i < buf_size; i++ )
+        for( uz_t i = 0; i < buf_size; i++ )
         {
             if( buf_nodes[ i ].key ) bcore_hmap_tpfp_s_set( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
         }
@@ -1290,7 +1290,7 @@ fp_t* bcore_hmap_tpfp_s_set( bcore_hmap_tpfp_s* o, tp_t key, fp_t val )
 fp_t bcore_hmap_tpfp_s_remove( bcore_hmap_tpfp_s* o, tp_t key )
 {
     if( !key ) return 0;
-    sz_t idx = tpfp_find( o, key );
+    uz_t idx = tpfp_find( o, key );
     if( idx < o->size )
     {
         fp_t val = o->nodes[ idx ].val;
@@ -1304,7 +1304,7 @@ fp_t bcore_hmap_tpfp_s_remove( bcore_hmap_tpfp_s* o, tp_t key )
 bl_t bcore_hmap_tpfp_s_exists( const bcore_hmap_tpfp_s* o, tp_t key )
 {
     if( !key ) return false;
-    sz_t idx = tpfp_find( o, key );
+    uz_t idx = tpfp_find( o, key );
     return ( idx < o->size );
 }
 
@@ -1315,25 +1315,25 @@ void bcore_hmap_tpfp_s_clear( bcore_hmap_tpfp_s* o )
     o->size  = 0;
 }
 
-sz_t bcore_hmap_tpfp_s_keys( const bcore_hmap_tpfp_s* o )
+uz_t bcore_hmap_tpfp_s_keys( const bcore_hmap_tpfp_s* o )
 {
-    sz_t count = 0;
-    for( sz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
     return count;
 }
 
-sz_t bcore_hmap_tpfp_s_size( const bcore_hmap_tpfp_s* o )
+uz_t bcore_hmap_tpfp_s_size( const bcore_hmap_tpfp_s* o )
 {
     return o->size;
 }
 
-tp_t bcore_hmap_tpfp_s_idx_key( const bcore_hmap_tpfp_s* o, sz_t idx )
+tp_t bcore_hmap_tpfp_s_idx_key( const bcore_hmap_tpfp_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->nodes[ idx ].key;
 }
 
-fp_t bcore_hmap_tpfp_s_idx_val( const bcore_hmap_tpfp_s* o, sz_t idx )
+fp_t bcore_hmap_tpfp_s_idx_val( const bcore_hmap_tpfp_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->nodes[ idx ].val;
@@ -1344,7 +1344,7 @@ static sr_s tpfp_s_get_data( const bcore_hmap_tpfp_s* o )
     tp_t t_data = bcore_flect_type_parse_sc( "{ bcore_hnode_tpfp_s []; }" );
     tp_t t_node = typeof( "bcore_hnode_tpfp_s" );
     sr_s data = sr_cp( sr_create( t_data ), TYPEOF_bcore_array_s );
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->nodes[ i ].key ) bcore_array_r_push( &data, sr_twc( t_node, &o->nodes[ i ] ) );
     }
@@ -1356,9 +1356,9 @@ static void tpfp_s_set_data( bcore_hmap_tpfp_s* o, sr_s data )
     bcore_hmap_tpfp_s_clear( o );
     assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ bcore_hnode_tpfp_s []; }" ) );
     data = sr_cp( data, TYPEOF_bcore_array_s );
-    sz_t size = bcore_array_r_get_size( &data );
+    uz_t size = bcore_array_r_get_size( &data );
     const bcore_hnode_tpfp_s* src = bcore_array_r_get_c_data( &data );
-    for( sz_t i = 0; i < size; i++ ) bcore_hmap_tpfp_s_set( o, src[ i ].key, src[ i ].val );
+    for( uz_t i = 0; i < size; i++ ) bcore_hmap_tpfp_s_set( o, src[ i ].key, src[ i ].val );
     sr_down( data );
 }
 
@@ -1372,9 +1372,9 @@ static bcore_self_s* hmap_tpfp_s_create_self( void )
                 aware_t _; \
                 private bcore_hnode_tpfp_s* nodes; \
                 private bl_t* flags; \
-                private sz_t size; \
-                private sz_t depth_limit; \
-                private sz_t size_limit; \
+                private uz_t size; \
+                private uz_t depth_limit; \
+                private uz_t size_limit; \
                 shell { bcore_hnode_tpfp_s []; } data; } \
             }";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpfp_s ) );
@@ -1391,7 +1391,7 @@ static bcore_self_s* hmap_tpfp_s_create_self( void )
 static st_s* hmap_tpfp_s_status( bcore_hmap_tpfp_s* o )
 {
     st_s* string = st_s_create();
-    sz_t keys = bcore_hmap_tpfp_s_keys( o );
+    uz_t keys = bcore_hmap_tpfp_s_keys( o );
     st_s_pushf( string, "keys ........... %zu\n", keys );
     st_s_pushf( string, "nodes .......... %lu\n", o->size );
     st_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
@@ -1408,7 +1408,7 @@ static st_s* hmap_tpfp_selftest( void )
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tpfp_s* map = bcore_hmap_tpfp_s_create();
-    const sz_t cycles = 200000;
+    const uz_t cycles = 200000;
 
     typedef struct
     {
@@ -1417,7 +1417,7 @@ static st_s* hmap_tpfp_selftest( void )
     } kv_s;
 
     kv_s* kvbuf = bcore_alloc( NULL, cycles * sizeof( kv_s ) );
-    sz_t kvbuf_size = 0;
+    uz_t kvbuf_size = 0;
 
     clock_t time = clock();
     st_s_pushf( log, "Mixed access: " );
@@ -1425,7 +1425,7 @@ static st_s* hmap_tpfp_selftest( void )
     {
         u3_t rval1 = 1;
         u3_t rval2 = 12345;
-        for( sz_t i = 0; i < cycles; i++ )
+        for( uz_t i = 0; i < cycles; i++ )
         {
             rval1 = bcore_xsg_u2( rval1 );
             rval2 = bcore_xsg_u2( rval2 );
@@ -1448,7 +1448,7 @@ static st_s* hmap_tpfp_selftest( void )
             if( ( ( rval1 >> 10 ) & 1 ) == 1 )
             {
                 rval1 = bcore_xsg_u2( rval1 );
-                sz_t idx = rval1 % kvbuf_size;
+                uz_t idx = rval1 % kvbuf_size;
                 kv_s kv = kvbuf[ idx ];
                 if( !bcore_hmap_tpfp_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
                 bcore_hmap_tpfp_s_remove( map, kv.key );
@@ -1475,7 +1475,7 @@ static st_s* hmap_tpfp_selftest( void )
     time = clock() - time;
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
     time = clock();
-    for( sz_t i = 0; i < map->size; i++ )
+    for( uz_t i = 0; i < map->size; i++ )
     {
         tp_t key = bcore_hmap_tpfp_s_idx_key( map, i );
         if( key != 0 )
@@ -1490,10 +1490,10 @@ static st_s* hmap_tpfp_selftest( void )
 
     time = clock();
     st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
-    sz_t read_cycles = 20;
-    for( sz_t j = 0; j < read_cycles; j++ )
+    uz_t read_cycles = 20;
+    for( uz_t j = 0; j < read_cycles; j++ )
     {
-        for( sz_t i = 0; i < kvbuf_size; i++ )
+        for( uz_t i = 0; i < kvbuf_size; i++ )
         {
             if( *bcore_hmap_tpfp_s_get( map, kvbuf[ i ].key ) != kvbuf[ i ].val ) ERR( "value mismatch (%lu vs %lu)", kvbuf[ i ].key, kvbuf[ i ].val );
         }
@@ -1574,33 +1574,33 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tptp_s )
 
 /**********************************************************************************************************************/
 
-static sz_t tptp_find( const bcore_hmap_tptp_s* o, tp_t key ) // returns valid index or o->size
+static uz_t tptp_find( const bcore_hmap_tptp_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
     u2_t mask = o->size - 1;
-    sz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t idx = hash_tpu2_1( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     idx = hash_tpu2_2( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
 
-sz_t tptp_set( bcore_hmap_tptp_s* o, bcore_hnode_tptp_s node, sz_t depth ) // sets new node, returns valid index on success; o->size otherwise
+uz_t tptp_set( bcore_hmap_tptp_s* o, bcore_hnode_tptp_s node, uz_t depth ) // sets new node, returns valid index on success; o->size otherwise
 {
-    sz_t size = o->size;
+    uz_t size = o->size;
     if( size == 0 ) return size;
     u2_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    sz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
     if( !o->nodes[ idx1 ].key )
     {
         o->nodes[ idx1 ] = node;
         return idx1;
     }
 
-    sz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
     if( !o->nodes[ idx2 ].key )
     {
         o->nodes[ idx2 ] = node;
@@ -1639,14 +1639,14 @@ sz_t tptp_set( bcore_hmap_tptp_s* o, bcore_hnode_tptp_s node, sz_t depth ) // se
 tp_t* bcore_hmap_tptp_s_get( const bcore_hmap_tptp_s* o, tp_t key )
 {
     if( !key ) return NULL;
-    sz_t idx = tptp_find( o, key );
+    uz_t idx = tptp_find( o, key );
     return ( idx < o->size ) ? &o->nodes[ idx ].val : NULL;
 }
 
 tp_t* bcore_hmap_tptp_s_fget( bcore_hmap_tptp_s* o, tp_t key, tp_t init_val )
 {
     if( !key ) ERR( "key is 0" );
-    sz_t idx = tptp_find( o, key );
+    uz_t idx = tptp_find( o, key );
     if( idx < o->size )
     {
         return &o->nodes[ idx ].val;
@@ -1661,7 +1661,7 @@ tp_t* bcore_hmap_tptp_s_set( bcore_hmap_tptp_s* o, tp_t key, tp_t val )
 {
     if( !key ) ERR( "key is zero" );
 
-    sz_t idx = tptp_find( o, key );
+    uz_t idx = tptp_find( o, key );
     if( idx < o->size )
     {
         o->nodes[ idx ].val = val;
@@ -1675,12 +1675,12 @@ tp_t* bcore_hmap_tptp_s_set( bcore_hmap_tptp_s* o, tp_t key, tp_t val )
     {
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         bcore_hnode_tptp_s* buf_nodes = o->nodes;
-        sz_t  buf_size = o->size;
+        uz_t  buf_size = o->size;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tptp_s ), NULL, o->size );
-        for( sz_t i = 0; i < buf_size; i++ )
+        for( uz_t i = 0; i < buf_size; i++ )
         {
             if( buf_nodes[ i ].key ) bcore_hmap_tptp_s_set( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
         }
@@ -1693,7 +1693,7 @@ tp_t* bcore_hmap_tptp_s_set( bcore_hmap_tptp_s* o, tp_t key, tp_t val )
 tp_t bcore_hmap_tptp_s_remove( bcore_hmap_tptp_s* o, tp_t key )
 {
     if( !key ) return 0;
-    sz_t idx = tptp_find( o, key );
+    uz_t idx = tptp_find( o, key );
     if( idx < o->size )
     {
         tp_t val = o->nodes[ idx ].val;
@@ -1707,7 +1707,7 @@ tp_t bcore_hmap_tptp_s_remove( bcore_hmap_tptp_s* o, tp_t key )
 bl_t bcore_hmap_tptp_s_exists( const bcore_hmap_tptp_s* o, tp_t key )
 {
     if( !key ) return false;
-    sz_t idx = tptp_find( o, key );
+    uz_t idx = tptp_find( o, key );
     return ( idx < o->size );
 }
 
@@ -1718,25 +1718,25 @@ void bcore_hmap_tptp_s_clear( bcore_hmap_tptp_s* o )
     o->size  = 0;
 }
 
-sz_t bcore_hmap_tptp_s_keys( const bcore_hmap_tptp_s* o )
+uz_t bcore_hmap_tptp_s_keys( const bcore_hmap_tptp_s* o )
 {
-    sz_t count = 0;
-    for( sz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
     return count;
 }
 
-sz_t bcore_hmap_tptp_s_size( const bcore_hmap_tptp_s* o )
+uz_t bcore_hmap_tptp_s_size( const bcore_hmap_tptp_s* o )
 {
     return o->size;
 }
 
-tp_t bcore_hmap_tptp_s_idx_key( const bcore_hmap_tptp_s* o, sz_t idx )
+tp_t bcore_hmap_tptp_s_idx_key( const bcore_hmap_tptp_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->nodes[ idx ].key;
 }
 
-tp_t bcore_hmap_tptp_s_idx_val( const bcore_hmap_tptp_s* o, sz_t idx )
+tp_t bcore_hmap_tptp_s_idx_val( const bcore_hmap_tptp_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->nodes[ idx ].val;
@@ -1747,7 +1747,7 @@ static sr_s tptp_s_get_data( const bcore_hmap_tptp_s* o )
     tp_t t_data = bcore_flect_type_parse_sc( "{ bcore_hnode_tptp_s []; }" );
     tp_t t_node = typeof( "bcore_hnode_tptp_s" );
     sr_s data = sr_cp( sr_create( t_data ), TYPEOF_bcore_array_s );
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->nodes[ i ].key ) bcore_array_r_push( &data, sr_twc( t_node, &o->nodes[ i ] ) );
     }
@@ -1759,9 +1759,9 @@ static void tptp_s_set_data( bcore_hmap_tptp_s* o, sr_s data )
     bcore_hmap_tptp_s_clear( o );
     assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ bcore_hnode_tptp_s []; }" ) );
     data = sr_cp( data, TYPEOF_bcore_array_s );
-    sz_t size = bcore_array_r_get_size( &data );
+    uz_t size = bcore_array_r_get_size( &data );
     const bcore_hnode_tptp_s* src = bcore_array_r_get_c_data( &data );
-    for( sz_t i = 0; i < size; i++ ) bcore_hmap_tptp_s_set( o, src[ i ].key, src[ i ].val );
+    for( uz_t i = 0; i < size; i++ ) bcore_hmap_tptp_s_set( o, src[ i ].key, src[ i ].val );
     sr_down( data );
 }
 
@@ -1775,9 +1775,9 @@ static bcore_self_s* hmap_tptp_s_create_self( void )
                 aware_t _; \
                 private bcore_hnode_tptp_s* nodes; \
                 private bl_t* flags; \
-                private sz_t size; \
-                private sz_t depth_limit; \
-                private sz_t size_limit; \
+                private uz_t size; \
+                private uz_t depth_limit; \
+                private uz_t size_limit; \
                 shell { bcore_hnode_tptp_s []; } data; } \
             }";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tptp_s ) );
@@ -1794,7 +1794,7 @@ static bcore_self_s* hmap_tptp_s_create_self( void )
 static st_s* hmap_tptp_s_status( bcore_hmap_tptp_s* o )
 {
     st_s* string = st_s_create();
-    sz_t keys = bcore_hmap_tptp_s_keys( o );
+    uz_t keys = bcore_hmap_tptp_s_keys( o );
     st_s_pushf( string, "keys ........... %zu\n", keys );
     st_s_pushf( string, "nodes .......... %lu\n", o->size );
     st_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
@@ -1811,7 +1811,7 @@ static st_s* hmap_tptp_selftest( void )
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tptp_s* map = bcore_hmap_tptp_s_create();
-    const sz_t cycles = 200000;
+    const uz_t cycles = 200000;
 
     typedef struct
     {
@@ -1820,7 +1820,7 @@ static st_s* hmap_tptp_selftest( void )
     } kv_s;
 
     kv_s* kvbuf = bcore_alloc( NULL, cycles * sizeof( kv_s ) );
-    sz_t kvbuf_size = 0;
+    uz_t kvbuf_size = 0;
 
     clock_t time = clock();
     st_s_pushf( log, "Mixed access: " );
@@ -1828,7 +1828,7 @@ static st_s* hmap_tptp_selftest( void )
     {
         u3_t rval1 = 1;
         u3_t rval2 = 12345;
-        for( sz_t i = 0; i < cycles; i++ )
+        for( uz_t i = 0; i < cycles; i++ )
         {
             rval1 = bcore_xsg_u2( rval1 );
             rval2 = bcore_xsg_u2( rval2 );
@@ -1851,7 +1851,7 @@ static st_s* hmap_tptp_selftest( void )
             if( ( ( rval1 >> 10 ) & 1 ) == 1 )
             {
                 rval1 = bcore_xsg_u2( rval1 );
-                sz_t idx = rval1 % kvbuf_size;
+                uz_t idx = rval1 % kvbuf_size;
                 kv_s kv = kvbuf[ idx ];
                 if( !bcore_hmap_tptp_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
                 bcore_hmap_tptp_s_remove( map, kv.key );
@@ -1883,7 +1883,7 @@ static st_s* hmap_tptp_selftest( void )
     time = clock() - time;
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
     time = clock();
-    for( sz_t i = 0; i < map->size; i++ )
+    for( uz_t i = 0; i < map->size; i++ )
     {
         tp_t key = bcore_hmap_tptp_s_idx_key( map, i );
         if( key != 0 )
@@ -1898,10 +1898,10 @@ static st_s* hmap_tptp_selftest( void )
 
     time = clock();
     st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
-    sz_t read_cycles = 20;
-    for( sz_t j = 0; j < read_cycles; j++ )
+    uz_t read_cycles = 20;
+    for( uz_t j = 0; j < read_cycles; j++ )
     {
-        for( sz_t i = 0; i < kvbuf_size; i++ )
+        for( uz_t i = 0; i < kvbuf_size; i++ )
         {
             if( *bcore_hmap_tptp_s_get( map, kvbuf[ i ].key ) != kvbuf[ i ].val ) ERR( "value mismatch (%lu vs %lu)", kvbuf[ i ].key, kvbuf[ i ].val );
         }
@@ -1952,7 +1952,7 @@ void bcore_hmap_tpto_s_down( bcore_hmap_tpto_s* o )
     if( o->size > 0 )
     {
         const bcore_inst_s* inst_p = NULL;
-        for( sz_t i = 0; i < o->size; i++ )
+        for( uz_t i = 0; i < o->size; i++ )
         {
             if( o->nodes[ i ].val )
             {
@@ -1969,7 +1969,7 @@ void bcore_hmap_tpto_s_down( bcore_hmap_tpto_s* o )
 void bcore_hmap_tpto_s_copy( bcore_hmap_tpto_s* o, const bcore_hmap_tpto_s* src )
 {
     const bcore_inst_s* inst_p = o->type ? bcore_inst_s_get_typed( o->type ) : NULL;
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->nodes[ i ].val ) bcore_inst_p_discard( inst_p, o->nodes[ i ].val );
     }
@@ -1979,7 +1979,7 @@ void bcore_hmap_tpto_s_copy( bcore_hmap_tpto_s* o, const bcore_hmap_tpto_s* src 
 
     o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpto_s ), o->nodes, src->size );
     inst_p = src->type ? bcore_inst_s_get_typed( src->type ) : NULL;
-    for( sz_t i = 0; i < src->size; i++ )
+    for( uz_t i = 0; i < src->size; i++ )
     {
         const bcore_hnode_tpto_s* src_node = &src->nodes[ i ];
               bcore_hnode_tpto_s* dst_node =   &o->nodes[ i ];
@@ -2003,33 +2003,33 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpto_s )
 
 /**********************************************************************************************************************/
 
-static sz_t tpto_find( const bcore_hmap_tpto_s* o, tp_t key ) // returns valid index or o->size
+static uz_t tpto_find( const bcore_hmap_tpto_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
     u2_t mask = o->size - 1;
-    sz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t idx = hash_tpu2_1( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     idx = hash_tpu2_2( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
 
-sz_t tpto_set( bcore_hmap_tpto_s* o, bcore_hnode_tpto_s node, sz_t depth ) // sets new node, returns valid index on success; o->size otherwise
+uz_t tpto_set( bcore_hmap_tpto_s* o, bcore_hnode_tpto_s node, uz_t depth ) // sets new node, returns valid index on success; o->size otherwise
 {
-    sz_t size = o->size;
+    uz_t size = o->size;
     if( size == 0 ) return size;
     u2_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    sz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
     if( !o->nodes[ idx1 ].key )
     {
         o->nodes[ idx1 ] = node;
         return idx1;
     }
 
-    sz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
     if( !o->nodes[ idx2 ].key )
     {
         o->nodes[ idx2 ] = node;
@@ -2075,7 +2075,7 @@ void bcore_hmap_tpto_s_set_type( bcore_hmap_tpto_s* o, tp_t type )
 vd_t* bcore_hmap_tpto_s_get( const bcore_hmap_tpto_s* o, tp_t key )
 {
     if( !key ) return NULL;
-    sz_t idx = tpto_find( o, key );
+    uz_t idx = tpto_find( o, key );
     return ( idx < o->size ) ? &o->nodes[ idx ].val : NULL;
 }
 
@@ -2083,7 +2083,7 @@ vd_t* bcore_hmap_tpto_s_fget_d( bcore_hmap_tpto_s* o, tp_t key, vd_t init_val )
 {
     if( !key ) ERR( "key is 0" );
     if( !o->type ) ERR( "type is 0" );
-    sz_t idx = tpto_find( o, key );
+    uz_t idx = tpto_find( o, key );
     if( idx < o->size )
     {
         if( init_val ) bcore_inst_t_discard( o->type, init_val );
@@ -2107,7 +2107,7 @@ vd_t* bcore_hmap_tpto_s_set_d( bcore_hmap_tpto_s* o, tp_t key, vd_t val )
     if( !key ) ERR( "key is zero" );
     if( !o->type ) ERR( "type is not defined" );
 
-    sz_t idx = tpto_find( o, key );
+    uz_t idx = tpto_find( o, key );
     if( idx < o->size )
     {
         if( o->nodes[ idx ].val ) bcore_inst_t_discard( o->type, o->nodes[ idx ].val );
@@ -2122,12 +2122,12 @@ vd_t* bcore_hmap_tpto_s_set_d( bcore_hmap_tpto_s* o, tp_t key, vd_t val )
     {
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         bcore_hnode_tpto_s* buf_nodes = o->nodes;
-        sz_t  buf_size = o->size;
+        uz_t  buf_size = o->size;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpto_s ), NULL, o->size );
-        for( sz_t i = 0; i < buf_size; i++ )
+        for( uz_t i = 0; i < buf_size; i++ )
         {
             if( buf_nodes[ i ].key ) bcore_hmap_tpto_s_set_d( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
         }
@@ -2140,7 +2140,7 @@ vd_t* bcore_hmap_tpto_s_set_d( bcore_hmap_tpto_s* o, tp_t key, vd_t val )
 void bcore_hmap_tpto_s_remove( bcore_hmap_tpto_s* o, tp_t key )
 {
     if( !key ) return;
-    sz_t idx = tpto_find( o, key );
+    uz_t idx = tpto_find( o, key );
     if( idx < o->size )
     {
         if( o->nodes[ idx ].val ) bcore_inst_t_discard( o->type, o->nodes[ idx ].val );
@@ -2152,38 +2152,38 @@ void bcore_hmap_tpto_s_remove( bcore_hmap_tpto_s* o, tp_t key )
 bl_t bcore_hmap_tpto_s_exists( const bcore_hmap_tpto_s* o, tp_t key )
 {
     if( !key ) return false;
-    sz_t idx = tpto_find( o, key );
+    uz_t idx = tpto_find( o, key );
     return ( idx < o->size );
 }
 
 void bcore_hmap_tpto_s_clear( bcore_hmap_tpto_s* o )
 {
     const bcore_inst_s* inst_p = o->type ? bcore_inst_s_get_typed( o->type ) : NULL;
-    for( sz_t i = 0; i < o->size; i++ ) if( o->nodes[ i ].val ) bcore_inst_p_discard( inst_p, o->nodes[ i ].val );
+    for( uz_t i = 0; i < o->size; i++ ) if( o->nodes[ i ].val ) bcore_inst_p_discard( inst_p, o->nodes[ i ].val );
     o->nodes = bcore_alloc( o->nodes, 0 );
     o->flags = bcore_alloc( o->flags, 0 );
     o->size  = 0;
 }
 
-sz_t bcore_hmap_tpto_s_keys( const bcore_hmap_tpto_s* o )
+uz_t bcore_hmap_tpto_s_keys( const bcore_hmap_tpto_s* o )
 {
-    sz_t count = 0;
-    for( sz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
     return count;
 }
 
-sz_t bcore_hmap_tpto_s_size( const bcore_hmap_tpto_s* o )
+uz_t bcore_hmap_tpto_s_size( const bcore_hmap_tpto_s* o )
 {
     return o->size;
 }
 
-tp_t bcore_hmap_tpto_s_idx_key( const bcore_hmap_tpto_s* o, sz_t idx )
+tp_t bcore_hmap_tpto_s_idx_key( const bcore_hmap_tpto_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->nodes[ idx ].key;
 }
 
-vd_t bcore_hmap_tpto_s_idx_val( const bcore_hmap_tpto_s* o, sz_t idx )
+vd_t bcore_hmap_tpto_s_idx_val( const bcore_hmap_tpto_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->nodes[ idx ].val;
@@ -2198,7 +2198,7 @@ static sr_s tpto_s_get_data( const bcore_hmap_tpto_s* o )
     const bcore_inst_s* inst_p = o->type ? bcore_inst_s_get_typed( o->type ) : NULL;
     tp_t t_node = bcore_array_r_get_static_type( &data );
 
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->nodes[ i ].key )
         {
@@ -2222,11 +2222,11 @@ static void tpto_s_set_data( bcore_hmap_tpto_s* o, sr_s data )
         sr_down( type_sr );
     }
 
-    sz_t size = bcore_array_r_get_size( &data );
+    uz_t size = bcore_array_r_get_size( &data );
     if( sr_s_is_strong( &data ) )
     {
         struct { tp_t key; sr_s obj; }* src = bcore_array_r_get_d_data( &data );
-        for( sz_t i = 0; i < size; i++ )
+        for( uz_t i = 0; i < size; i++ )
         {
             bcore_hmap_tpto_s_set_d( o, src[ i ].key, src[ i ].obj.o );
             src[ i ].obj = sr_null();
@@ -2235,7 +2235,7 @@ static void tpto_s_set_data( bcore_hmap_tpto_s* o, sr_s data )
     else
     {
         const struct { tp_t key; sr_s obj; }* src = bcore_array_r_get_c_data( &data );
-        for( sz_t i = 0; i < size; i++ )
+        for( uz_t i = 0; i < size; i++ )
         {
             bcore_hmap_tpto_s_set_d( o, src[ i ].key, bcore_inst_r_clone( &src[ i ].obj ) );
         }
@@ -2254,9 +2254,9 @@ static bcore_self_s* hmap_tpto_s_create_self( void )
                 private tp_t type; \
                 private vd_t* nodes; \
                 private bl_t* flags; \
-                private sz_t size; \
-                private sz_t depth_limit; \
-                private sz_t size_limit; \
+                private uz_t size; \
+                private uz_t depth_limit; \
+                private uz_t size_limit; \
                 shell { tp_t type; { tp_t key; sr_s obj; } []; } data; } \
             }";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpto_s ) );
@@ -2273,7 +2273,7 @@ static bcore_self_s* hmap_tpto_s_create_self( void )
 static st_s* hmap_tpto_s_status( bcore_hmap_tpto_s* o )
 {
     st_s* string = st_s_create();
-    sz_t keys = bcore_hmap_tpto_s_keys( o );
+    uz_t keys = bcore_hmap_tpto_s_keys( o );
     st_s_pushf( string, "keys ........... %zu\n", keys );
     st_s_pushf( string, "nodes .......... %lu\n", o->size );
     st_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
@@ -2290,19 +2290,19 @@ static st_s* hmap_tpto_selftest( void )
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tpto_s* map = bcore_hmap_tpto_s_create();
-    bcore_hmap_tpto_s_set_type( map, TYPEOF_sz_t );
-    const bcore_inst_s* val_p = bcore_inst_s_get_typed( TYPEOF_sz_t );
+    bcore_hmap_tpto_s_set_type( map, TYPEOF_uz_t );
+    const bcore_inst_s* val_p = bcore_inst_s_get_typed( TYPEOF_uz_t );
 
-    const sz_t cycles = 200000;
+    const uz_t cycles = 200000;
 
     typedef struct
     {
         tp_t key;
-        sz_t val;
+        uz_t val;
     } kv_s;
 
     kv_s* kvbuf = bcore_alloc( NULL, cycles * sizeof( kv_s ) );
-    sz_t kvbuf_size = 0;
+    uz_t kvbuf_size = 0;
 
     clock_t time = clock();
     st_s_pushf( log, "Mixed access: " );
@@ -2310,13 +2310,13 @@ static st_s* hmap_tpto_selftest( void )
     {
         u3_t rval1 = 1;
         u3_t rval2 = 12345;
-        for( sz_t i = 0; i < cycles; i++ )
+        for( uz_t i = 0; i < cycles; i++ )
         {
             rval1 = bcore_xsg_u2( rval1 );
             rval2 = bcore_xsg_u2( rval2 );
             kv_s kv;
             kv.key = ( tp_t )rval1;
-            kv.val = ( sz_t )rval2;
+            kv.val = ( uz_t )rval2;
             kvbuf[ kvbuf_size++ ] = kv;
 
             // set
@@ -2325,7 +2325,7 @@ static st_s* hmap_tpto_selftest( void )
             // retrieve
             rval1 = bcore_xsg_u2( rval1 );
             kv = kvbuf[ rval1 % kvbuf_size ];
-            sz_t* val_ptr = *bcore_hmap_tpto_s_get( map, kv.key );
+            uz_t* val_ptr = *bcore_hmap_tpto_s_get( map, kv.key );
             if( kv.val != *val_ptr ) ERR( "value mismatch (%lu vs %lu)", kv.val, *val_ptr );
 
             // delete
@@ -2333,7 +2333,7 @@ static st_s* hmap_tpto_selftest( void )
             if( ( ( rval1 >> 10 ) & 1 ) == 1 )
             {
                 rval1 = bcore_xsg_u2( rval1 );
-                sz_t idx = rval1 % kvbuf_size;
+                uz_t idx = rval1 % kvbuf_size;
                 kv_s kv = kvbuf[ idx ];
                 if( !bcore_hmap_tpto_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
                 bcore_hmap_tpto_s_remove( map, kv.key );
@@ -2365,14 +2365,14 @@ static st_s* hmap_tpto_selftest( void )
     time = clock() - time;
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
     time = clock();
-    for( sz_t i = 0; i < map->size; i++ )
+    for( uz_t i = 0; i < map->size; i++ )
     {
         tp_t key = bcore_hmap_tpto_s_idx_key( map, i );
         if( key != 0 )
         {
-            sz_t val = *( sz_t* )bcore_hmap_tpto_s_idx_val( map, i );
+            uz_t val = *( uz_t* )bcore_hmap_tpto_s_idx_val( map, i );
             ASSERT( bcore_hmap_tpto_s_exists( map3, key ) );
-            ASSERT( val == *( sz_t * )*bcore_hmap_tpto_s_get( map3, key ) );
+            ASSERT( val == *( uz_t * )*bcore_hmap_tpto_s_get( map3, key ) );
         }
     }
     time = clock() - time;
@@ -2380,12 +2380,12 @@ static st_s* hmap_tpto_selftest( void )
 
     time = clock();
     st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
-    sz_t read_cycles = 20;
-    for( sz_t j = 0; j < read_cycles; j++ )
+    uz_t read_cycles = 20;
+    for( uz_t j = 0; j < read_cycles; j++ )
     {
-        for( sz_t i = 0; i < kvbuf_size; i++ )
+        for( uz_t i = 0; i < kvbuf_size; i++ )
         {
-            if( *( sz_t*)*bcore_hmap_tpto_s_get( map, kvbuf[ i ].key ) != kvbuf[ i ].val ) ERR( "value mismatch" );
+            if( *( uz_t*)*bcore_hmap_tpto_s_get( map, kvbuf[ i ].key ) != kvbuf[ i ].val ) ERR( "value mismatch" );
         }
     }
     time = clock() - time;
@@ -2453,33 +2453,33 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tp_s )
 
 /**********************************************************************************************************************/
 
-static sz_t tp_find( const bcore_hmap_tp_s* o, tp_t key ) // returns valid index or o->size
+static uz_t tp_find( const bcore_hmap_tp_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
     u2_t mask = o->size - 1;
-    sz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t idx = hash_tpu2_1( key ) & mask;
     if( o->keys[ idx ] == key ) return idx;
     idx = hash_tpu2_2( key ) & mask;
     if( o->keys[ idx ] == key ) return idx;
     return o->size;
 }
 
-static sz_t tp_set( bcore_hmap_tp_s* o, tp_t key, sz_t depth ) // sets new node, returns valid index on success; o->size otherwise
+static uz_t tp_set( bcore_hmap_tp_s* o, tp_t key, uz_t depth ) // sets new node, returns valid index on success; o->size otherwise
 {
-    sz_t size = o->size;
+    uz_t size = o->size;
     if( size == 0 ) return size;
     u2_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    sz_t idx1 = hash_tpu2_1( key ) & mask;
+    uz_t idx1 = hash_tpu2_1( key ) & mask;
     if( !o->keys[ idx1 ] )
     {
         o->keys[ idx1 ] = key;
         return idx1;
     }
 
-    sz_t idx2 = hash_tpu2_2( key ) & mask;
+    uz_t idx2 = hash_tpu2_2( key ) & mask;
     if( !o->keys[ idx2 ] )
     {
         o->keys[ idx2 ] = key;
@@ -2515,16 +2515,16 @@ static sz_t tp_set( bcore_hmap_tp_s* o, tp_t key, sz_t depth ) // sets new node,
     return size;
 }
 
-sz_t bcore_hmap_tp_s_get( const bcore_hmap_tp_s* o, tp_t key )
+uz_t bcore_hmap_tp_s_get( const bcore_hmap_tp_s* o, tp_t key )
 {
     if( !key ) return o->size;
     return tp_find( o, key );
 }
 
-sz_t bcore_hmap_tp_s_fget( bcore_hmap_tp_s* o, tp_t key )
+uz_t bcore_hmap_tp_s_fget( bcore_hmap_tp_s* o, tp_t key )
 {
     if( !key ) ERR( "key is 0" );
-    sz_t idx = tp_find( o, key );
+    uz_t idx = tp_find( o, key );
     if( idx < o->size )
     {
         return idx;
@@ -2535,12 +2535,12 @@ sz_t bcore_hmap_tp_s_fget( bcore_hmap_tp_s* o, tp_t key )
     }
 }
 
-sz_t bcore_hmap_tp_s_set( bcore_hmap_tp_s* o, tp_t key )
+uz_t bcore_hmap_tp_s_set( bcore_hmap_tp_s* o, tp_t key )
 {
     if( !key ) ERR( "key is zero" );
 
     {
-        sz_t idx = tp_find( o, key );
+        uz_t idx = tp_find( o, key );
         if( idx < o->size ) return idx;
         idx = tp_set( o, key, 1 );
         if( idx < o->size ) return idx;
@@ -2549,13 +2549,13 @@ sz_t bcore_hmap_tp_s_set( bcore_hmap_tp_s* o, tp_t key )
     // rehash
     {
         tp_t* buf_keys  = o->keys;
-        sz_t  buf_size  = o->size;
+        uz_t  buf_size  = o->size;
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
         if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->keys = bcore_u_memzero( sizeof( tp_t ), NULL, o->size );
-        for( sz_t i = 0; i < buf_size; i++ )
+        for( uz_t i = 0; i < buf_size; i++ )
         {
             if( buf_keys[ i ] ) bcore_hmap_tp_s_set( o, buf_keys[ i ] );
         }
@@ -2565,11 +2565,11 @@ sz_t bcore_hmap_tp_s_set( bcore_hmap_tp_s* o, tp_t key )
     return bcore_hmap_tp_s_set( o, key );
 }
 
-sz_t bcore_hmap_tp_s_remove( bcore_hmap_tp_s* o, tp_t key )
+uz_t bcore_hmap_tp_s_remove( bcore_hmap_tp_s* o, tp_t key )
 {
     if( !key ) return o->size;
 
-    sz_t idx = tp_find( o, key );
+    uz_t idx = tp_find( o, key );
     if( idx < o->size )
     {
         o->keys[ idx ] = 0;
@@ -2590,19 +2590,19 @@ void bcore_hmap_tp_s_clear( bcore_hmap_tp_s* o )
     o->size = 0;
 }
 
-sz_t bcore_hmap_tp_s_keys( const bcore_hmap_tp_s* o )
+uz_t bcore_hmap_tp_s_keys( const bcore_hmap_tp_s* o )
 {
-    sz_t count = 0;
-    for( sz_t i = 0; i < o->size; i++ ) count += ( o->keys[ i ] > 0 );
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->keys[ i ] > 0 );
     return count;
 }
 
-sz_t bcore_hmap_tp_s_size( const bcore_hmap_tp_s* o )
+uz_t bcore_hmap_tp_s_size( const bcore_hmap_tp_s* o )
 {
     return o->size;
 }
 
-tp_t bcore_hmap_tp_s_idx_key( const bcore_hmap_tp_s* o, sz_t idx )
+tp_t bcore_hmap_tp_s_idx_key( const bcore_hmap_tp_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->keys[ idx ];
@@ -2612,7 +2612,7 @@ static sr_s tp_s_get_data( const bcore_hmap_tp_s* o )
 {
     tp_t t_data = bcore_flect_type_parse_sc( "{ tp_t []; }" );
     sr_s sr = sr_cp( sr_create( t_data ), TYPEOF_bcore_array_s );
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->keys[ i ] != 0 ) bcore_array_r_push( &sr, sr_twc( TYPEOF_tp_t, &o->keys[ i ] ) );
     }
@@ -2624,9 +2624,9 @@ static void tp_s_set_data( bcore_hmap_tp_s* o, sr_s data )
     bcore_hmap_tp_s_clear( o );
     assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ tp_t []; }" ) );
     data = sr_cp( data, TYPEOF_bcore_array_s );
-    sz_t size = bcore_array_r_get_size( &data );
+    uz_t size = bcore_array_r_get_size( &data );
     const tp_t* src = bcore_array_r_get_c_data( &data );
-    for( sz_t i = 0; i < size; i++ ) bcore_hmap_tp_s_set( o, src[ i ] );
+    for( uz_t i = 0; i < size; i++ ) bcore_hmap_tp_s_set( o, src[ i ] );
     sr_down( data );
 }
 
@@ -2640,9 +2640,9 @@ static bcore_self_s* hmap_tp_s_create_self( void )
                 aware_t _; \
                 private tp_t * keys; \
                 private bl_t * flags; \
-                private sz_t size; \
-                private sz_t depth_limit; \
-                private sz_t size_limit; \
+                private uz_t size; \
+                private uz_t depth_limit; \
+                private uz_t size_limit; \
                 shell { tp_t []; } data; } \
             }";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tp_s ) );
@@ -2659,7 +2659,7 @@ static bcore_self_s* hmap_tp_s_create_self( void )
 static st_s* hmap_tp_s_status( bcore_hmap_tp_s* o )
 {
     st_s* string = st_s_create();
-    sz_t keys = bcore_hmap_tp_s_keys( o );
+    uz_t keys = bcore_hmap_tp_s_keys( o );
     st_s_pushf( string, "keys ........... %zu\n", keys );
     st_s_pushf( string, "nodes .......... %lu\n", o->size );
     st_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
@@ -2676,16 +2676,16 @@ static st_s* hmap_tp_selftest( void )
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tp_s* map = bcore_hmap_tp_s_create();
-    const sz_t cycles = 200000;
+    const uz_t cycles = 200000;
 
     typedef struct
     {
         tp_t key;
-        sz_t val;
+        uz_t val;
     } kv_s;
 
     kv_s* kvbuf = bcore_alloc( NULL, cycles * sizeof( kv_s ) );
-    sz_t kvbuf_size = 0;
+    uz_t kvbuf_size = 0;
 
     clock_t time = clock();
     st_s_pushf( log, "Mixed access: " );
@@ -2693,7 +2693,7 @@ static st_s* hmap_tp_selftest( void )
     {
         u3_t rval1 = 1;
         u3_t rval2 = 12345;
-        for( sz_t i = 0; i < cycles; i++ )
+        for( uz_t i = 0; i < cycles; i++ )
         {
             rval1 = bcore_xsg_u2( rval1 );
             rval2 = bcore_xsg_u2( rval2 );
@@ -2705,7 +2705,7 @@ static st_s* hmap_tp_selftest( void )
             // retrieve
             rval1 = bcore_xsg_u2( rval1 );
             kv = kvbuf[ rval1 % kvbuf_size ];
-            sz_t val = bcore_hmap_tp_s_get( map, kv.key );
+            uz_t val = bcore_hmap_tp_s_get( map, kv.key );
             if( val == map->size ) ERR( "index error (%lu)", val );
 
             // delete
@@ -2713,7 +2713,7 @@ static st_s* hmap_tp_selftest( void )
             if( ( ( rval1 >> 10 ) & 1 ) == 1 )
             {
                 rval1 = bcore_xsg_u2( rval1 );
-                sz_t idx = rval1 % kvbuf_size;
+                uz_t idx = rval1 % kvbuf_size;
                 kv_s kv = kvbuf[ idx ];
                 if( bcore_hmap_tp_s_get( map, kv.key ) == map->size )  ERR( "key (%lu) not found", kv.key );
                 bcore_hmap_tp_s_remove( map, kv.key );
@@ -2747,7 +2747,7 @@ static st_s* hmap_tp_selftest( void )
     st_s_pushf( log, "Via-assign ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
 
     time = clock();
-    for( sz_t i = 0; i < map->size; i++ )
+    for( uz_t i = 0; i < map->size; i++ )
     {
         tp_t key = bcore_hmap_tp_s_idx_key( map, i );
         ASSERT( ( key == 0 ) || bcore_hmap_tp_s_exists( map3, key ) );
@@ -2757,10 +2757,10 @@ static st_s* hmap_tp_selftest( void )
 
     time = clock();
     st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
-    sz_t read_cycles = 20;
-    for( sz_t j = 0; j < read_cycles; j++ )
+    uz_t read_cycles = 20;
+    for( uz_t j = 0; j < read_cycles; j++ )
     {
-        for( sz_t i = 0; i < kvbuf_size; i++ )
+        for( uz_t i = 0; i < kvbuf_size; i++ )
         {
             if( bcore_hmap_tp_s_get( map, kvbuf[ i ].key ) == map->size ) ERR( "index error (%lu)", kvbuf[ i ].val );
         }

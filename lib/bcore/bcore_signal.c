@@ -60,17 +60,17 @@ tp_t bcore_signal_s_handle_type( const bcore_signal_s* o, tp_t target )
 
 /**********************************************************************************************************************/
 
-vd_t bcore_signal_s_broadcast( const bcore_signal_s* o, bcore_fp_signal_handler* arr, sz_t size )
+vd_t bcore_signal_s_broadcast( const bcore_signal_s* o, bcore_fp_signal_handler* arr, uz_t size )
 {
     vd_t ret = NULL;
 
     if( o->type == TYPEOF_down0 || o->type == TYPEOF_down1 )
     {
-        for( sz_t i = size; i > 0; i-- ) if( ( ret = arr[ i - 1 ]( o ) ) ) return ret;
+        for( uz_t i = size; i > 0; i-- ) if( ( ret = arr[ i - 1 ]( o ) ) ) return ret;
     }
     else
     {
-        for( sz_t i = 0; i < size; i++ ) if( ( ret = arr[ i     ]( o ) ) ) return ret;
+        for( uz_t i = 0; i < size; i++ ) if( ( ret = arr[ i     ]( o ) ) ) return ret;
     }
 
     return ret;

@@ -50,28 +50,28 @@ static bmath_vector_s* bmath_vector_s_create_from_self( const bcore_self_s* self
 
 /**********************************************************************************************************************/
 
-sz_t bmath_vector_default_get_dim( const bmath_vector_s* p, const bmath_vector* o )
+uz_t bmath_vector_default_get_dim( const bmath_vector_s* p, const bmath_vector* o )
 {
     return bcore_array_p_get_size( p->spect_array_vector, ( vc_t )o );
 }
 
 void bmath_vector_default_zro( const bmath_vector_s* p, bmath_vector* vec )
 {
-    sz_t dim = bmath_vector_default_get_dim( p, vec );
+    uz_t dim = bmath_vector_default_get_dim( p, vec );
     sr_s sr_zero = sr_p_create( p->spect_ring_scalar->spect_inst );
 
     bmath_ring_p_zro( p->spect_ring_scalar, sr_zero.o );
-    for( sz_t i = 0; i < dim; i++ ) bcore_array_p_set( p->spect_array_vector, (bcore_array*)vec, i, sr_cw( sr_zero ) );
+    for( uz_t i = 0; i < dim; i++ ) bcore_array_p_set( p->spect_array_vector, (bcore_array*)vec, i, sr_cw( sr_zero ) );
 
     sr_down( sr_zero );
 }
 
 void bmath_vector_default_neg( const bmath_vector_s* p, const bmath_vector* vec, bmath_vector* res )
 {
-    sz_t res_dim = bmath_vector_default_get_dim( p, res );
+    uz_t res_dim = bmath_vector_default_get_dim( p, res );
     sr_s sr_neg  = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    for( sz_t i = 0; i < res_dim; i++ )
+    for( uz_t i = 0; i < res_dim; i++ )
     {
         sr_s sr1 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec, i );
 
@@ -94,10 +94,10 @@ void bmath_vector_default_neg( const bmath_vector_s* p, const bmath_vector* vec,
 
 void bmath_vector_default_cpy( const bmath_vector_s* p, const bmath_vector* vec, bmath_vector* res )
 {
-    sz_t res_dim = bmath_vector_default_get_dim( p, res );
+    uz_t res_dim = bmath_vector_default_get_dim( p, res );
     sr_s sr_cpy = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    for( sz_t i = 0; i < res_dim; i++ )
+    for( uz_t i = 0; i < res_dim; i++ )
     {
         sr_s sr1 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec, i );
 
@@ -120,11 +120,11 @@ void bmath_vector_default_cpy( const bmath_vector_s* p, const bmath_vector* vec,
 
 bl_t bmath_vector_default_is_equ( const bmath_vector_s* p, const bmath_vector* vec1, const bmath_vector* vec2 )
 {
-    sz_t vec1_dim = bmath_vector_default_get_dim( p, vec1 );
-    sz_t vec2_dim = bmath_vector_default_get_dim( p, vec2 );
-    sz_t dim = sz_min( vec1_dim, vec2_dim );
+    uz_t vec1_dim = bmath_vector_default_get_dim( p, vec1 );
+    uz_t vec2_dim = bmath_vector_default_get_dim( p, vec2 );
+    uz_t dim = uz_min( vec1_dim, vec2_dim );
 
-    for( sz_t i = 0; i < dim; i++ )
+    for( uz_t i = 0; i < dim; i++ )
     {
         sr_s sr1 = bcore_array_p_get( p->spect_array_vector, (const bcore_array*)vec1, i );
         sr_s sr2 = bcore_array_p_get( p->spect_array_vector, (const bcore_array*)vec2, i );
@@ -134,12 +134,12 @@ bl_t bmath_vector_default_is_equ( const bmath_vector_s* p, const bmath_vector* v
         if( !is_equ ) return false;
     }
 
-    for( sz_t i = dim; i < vec1_dim; i++ )
+    for( uz_t i = dim; i < vec1_dim; i++ )
     {
         if( !bmath_ring_x_is_zro( bcore_array_p_get( p->spect_array_vector, (const bcore_array*)vec1, i ) ) ) return false;
     }
 
-    for( sz_t i = dim; i < vec2_dim; i++ )
+    for( uz_t i = dim; i < vec2_dim; i++ )
     {
         if( !bmath_ring_x_is_zro( bcore_array_p_get( p->spect_array_vector, (const bcore_array*)vec2, i ) ) ) return false;
     }
@@ -149,8 +149,8 @@ bl_t bmath_vector_default_is_equ( const bmath_vector_s* p, const bmath_vector* v
 
 bl_t bmath_vector_default_is_zro( const bmath_vector_s* p, const bmath_vector* vec1 )
 {
-    sz_t dim = bmath_vector_default_get_dim( p, vec1 );
-    for( sz_t i = 0; i < dim; i++ )
+    uz_t dim = bmath_vector_default_get_dim( p, vec1 );
+    for( uz_t i = 0; i < dim; i++ )
     {
         if( !bmath_ring_x_is_zro( bcore_array_p_get( p->spect_array_vector, (const bcore_array*)vec1, i ) ) ) return false;
     }
@@ -161,10 +161,10 @@ void bmath_vector_default_add( const bmath_vector_s* p, const bmath_vector* vec1
 {
     if( p->add ) { p->add( ( const bmath_group* )vec1, ( const bmath_group* )vec2, ( bmath_group* )res ); return; }
 
-    sz_t res_dim = bmath_vector_default_get_dim( p, res );
+    uz_t res_dim = bmath_vector_default_get_dim( p, res );
     sr_s sr_add = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    for( sz_t i = 0; i < res_dim; i++ )
+    for( uz_t i = 0; i < res_dim; i++ )
     {
         sr_s sr1 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec1, i );
         sr_s sr2 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec2, i );
@@ -187,10 +187,10 @@ void bmath_vector_default_sub( const bmath_vector_s* p, const bmath_vector* vec1
 {
     if( p->sub ) { p->sub( ( const bmath_group* )vec1, ( const bmath_group* )vec2, ( bmath_group* )res ); return; }
 
-    sz_t res_dim = bmath_vector_default_get_dim( p, res );
+    uz_t res_dim = bmath_vector_default_get_dim( p, res );
     sr_s sr_sub = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    for( sz_t i = 0; i < res_dim; i++ )
+    for( uz_t i = 0; i < res_dim; i++ )
     {
         sr_s sr1 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec1, i );
         sr_s sr2 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec2, i );
@@ -215,8 +215,8 @@ void bmath_vector_default_mul_scl( const bmath_vector_s* p, const bmath_vector* 
 
     sr_s sr_mul = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    sz_t res_dim = bmath_vector_default_get_dim( p, res );
-    for( sz_t i = 0; i < res_dim; i++ )
+    uz_t res_dim = bmath_vector_default_get_dim( p, res );
+    for( uz_t i = 0; i < res_dim; i++ )
     {
         sr_s sr1 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec1, i );
         if   ( sr1.o ) bmath_ring_p_mul( p->spect_ring_scalar, sr1.o, scl2, sr_mul.o );
@@ -234,15 +234,15 @@ void bmath_vector_default_mul_vec( const bmath_vector_s* p, const bmath_vector* 
 
     const bcore_inst_s* spect_ring_inst = p->spect_ring_scalar->spect_inst;
 
-    sz_t dim1 = bmath_vector_default_get_dim( p, vec1 );
-    sz_t dim2 = bmath_vector_default_get_dim( p, vec2 );
-    sz_t dim = dim1 < dim2 ? dim1 : dim2;
+    uz_t dim1 = bmath_vector_default_get_dim( p, vec1 );
+    uz_t dim2 = bmath_vector_default_get_dim( p, vec2 );
+    uz_t dim = dim1 < dim2 ? dim1 : dim2;
     sr_s sr_mul = sr_p_create( spect_ring_inst );
     sr_s sr_sum = sr_pwd( spect_ring_inst, res );
 
     bmath_ring_p_zro( p->spect_ring_scalar, sr_sum.o );
 
-    for( sz_t i = 0; i < dim; i++ )
+    for( uz_t i = 0; i < dim; i++ )
     {
         sr_s sr1 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec1, i );
         sr_s sr2 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec2, i );
@@ -265,15 +265,15 @@ void bmath_vector_default_sub_sqr( const bmath_vector_s* p, const bmath_vector* 
 
     const bcore_inst_s* spect_ring_inst = p->spect_ring_scalar->spect_inst;
 
-    sz_t dim1 = bmath_vector_default_get_dim( p, vec1 );
-    sz_t dim2 = bmath_vector_default_get_dim( p, vec2 );
-    sz_t dim = dim1 < dim2 ? dim1 : dim2;
+    uz_t dim1 = bmath_vector_default_get_dim( p, vec1 );
+    uz_t dim2 = bmath_vector_default_get_dim( p, vec2 );
+    uz_t dim = dim1 < dim2 ? dim1 : dim2;
     sr_s sr_mul = sr_p_create( spect_ring_inst );
     sr_s sr_sum = sr_pwd( spect_ring_inst, res );
 
     bmath_ring_p_zro( p->spect_ring_scalar, sr_sum.o );
 
-    for( sz_t i = 0; i < dim; i++ )
+    for( uz_t i = 0; i < dim; i++ )
     {
         sr_s sr1 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec1, i );
         sr_s sr2 = bcore_array_p_get( p->spect_array_vector, (bcore_array*)vec2, i );

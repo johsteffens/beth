@@ -33,17 +33,17 @@ void bclos_arguments_s_clear( bclos_arguments_s* o )
     bcore_array_t_set_size( TYPEOF_bclos_arguments_s, (bcore_array*)o, 0 );
 }
 
-bclos_arguments_s* bclos_arguments_s_create_nv( sz_t n, va_list v_args )
+bclos_arguments_s* bclos_arguments_s_create_nv( uz_t n, va_list v_args )
 {
     bclos_arguments_s* args = bclos_arguments_s_create();
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         bclos_arguments_s_push( args, va_arg( v_args, sr_s ) );
     }
     return args;
 }
 
-bclos_arguments_s* bclos_arguments_s_create_na( sz_t n, ... )
+bclos_arguments_s* bclos_arguments_s_create_na( uz_t n, ... )
 {
     va_list args;
     va_start( args, n );
@@ -69,7 +69,7 @@ void bclos_arguments_s_push( bclos_arguments_s* o, sr_s sr )
     o->data[ o->size++ ] = sr;
 }
 
-bclos_arguments_s bclos_arguments_s_weak_crop( const bclos_arguments_s* src, sz_t start, sz_t end )
+bclos_arguments_s bclos_arguments_s_weak_crop( const bclos_arguments_s* src, uz_t start, uz_t end )
 {
     bclos_arguments_s args;
     bclos_arguments_s_init( &args );

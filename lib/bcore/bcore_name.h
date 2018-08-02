@@ -20,7 +20,7 @@
 
 /// name --> key
 static inline tp_t bcore_name_key(   sc_t name         ) { return bcore_tp_hash_sc( name    ); }
-static inline tp_t bcore_name_key_n( sc_t name, sz_t n ) { return bcore_tp_hash_vc( name, n ); }
+static inline tp_t bcore_name_key_n( sc_t name, uz_t n ) { return bcore_tp_hash_vc( name, n ); }
 
 static inline tp_t bcore_name_key_ns( tp_t name_space, sc_t name )
 {
@@ -34,7 +34,7 @@ static inline tp_t bcore_name_key_ns( tp_t name_space, sc_t name )
     }
 }
 
-static inline tp_t bcore_name_key_ns_n( tp_t name_space, sc_t name, sz_t n )
+static inline tp_t bcore_name_key_ns_n( tp_t name_space, sc_t name, uz_t n )
 {
     if( name_space )
     {
@@ -64,8 +64,8 @@ BCORE_DECLARE_FUNCTION_CLONE(   bcore_name_s )
 
 bcore_name_s bcore_name_sc(                       sc_t name );
 bcore_name_s bcore_name_ns_sc(   tp_t name_space, sc_t name );
-bcore_name_s bcore_name_sc_n(                     sc_t name, sz_t n );
-bcore_name_s bcore_name_ns_sc_n( tp_t name_space, sc_t name, sz_t n );
+bcore_name_s bcore_name_sc_n(                     sc_t name, uz_t n );
+bcore_name_s bcore_name_ns_sc_n( tp_t name_space, sc_t name, uz_t n );
 
 /**********************************************************************************************************************/
 
@@ -74,9 +74,9 @@ typedef struct bcore_name_map_s
     aware_t _;
     bcore_name_s* data;
     bl_t* flags; // flags for tracing
-    sz_t size;
-    sz_t depth_limit;
-    sz_t size_limit;
+    uz_t size;
+    uz_t depth_limit;
+    uz_t size_limit;
 } bcore_name_map_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_name_map_s )
@@ -91,9 +91,9 @@ void          bcore_name_map_s_set(            bcore_name_map_s* o, bcore_name_s
 void          bcore_name_map_s_remove(         bcore_name_map_s* o, tp_t key ); // removes key if existing
 bl_t          bcore_name_map_s_exists(   const bcore_name_map_s* o, tp_t key ); // checks if key exists
 void          bcore_name_map_s_clear(          bcore_name_map_s* o           ); // removes all entries and frees memory
-sz_t          bcore_name_map_s_keys(     const bcore_name_map_s* o           ); // returns number of registered names
-sz_t          bcore_name_map_s_size(     const bcore_name_map_s* o           ); // returns current size of the hash map (note that this includes empty places)
-bcore_name_s* bcore_name_map_s_idx_name( const bcore_name_map_s* o, sz_t idx ); // returns indexed name (idx indexes the entire table including empty places)
+uz_t          bcore_name_map_s_keys(     const bcore_name_map_s* o           ); // returns number of registered names
+uz_t          bcore_name_map_s_size(     const bcore_name_map_s* o           ); // returns current size of the hash map (note that this includes empty places)
+bcore_name_s* bcore_name_map_s_idx_name( const bcore_name_map_s* o, uz_t idx ); // returns indexed name (idx indexes the entire table including empty places)
 
 /**********************************************************************************************************************/
 

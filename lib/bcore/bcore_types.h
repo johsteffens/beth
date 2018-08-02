@@ -37,10 +37,12 @@ typedef uint16_t    u1_t;
 typedef uint8_t     u0_t;
 typedef flt64_t     f3_t;
 typedef flt32_t     f2_t;
-typedef size_t      sz_t;
 
-// TODO: switch sz_t: size_t --> ptrdiff_t and introduce new type uz_t representing size_t
-// typedef ptrdiff_t   sz_t;
+// TODO: switch szxxx_t: size_t --> ptrdiff_t and introduce new type uz_t representing size_t
+// typedef ptrdiff_t   szxxx_t;
+typedef ptrdiff_t   szxxx_t;
+typedef size_t      uz_t;
+
 typedef bool        bl_t;
 
 typedef uintmax_t   umax_t;
@@ -63,7 +65,7 @@ typedef void (*fp_t)( void );
 // types for special purposes
 typedef u2_t tp_t;    // object type identifier
 typedef tp_t aware_t;  // self-awareness type (first element in self-aware object)
-typedef sz_t offset_t; // used as address offsets into an object
+typedef uz_t offset_t; // used as address offsets into an object
 
 // types used for atomic operations
 typedef _Atomic tp_t atomic_tp_t;
@@ -85,7 +87,8 @@ typedef _Atomic fp_t atomic_fp_t;
 
 #define PRIf3_t "lg"
 #define PRIf2_t "g"
-#define PRIsz_t "zu"
+#define PRIszxxx_t "tu" // change to "tu", t: ptrdiff_t
+#define PRIuz_t "zu"
 #define PRIoffset_t "zu"
 #define PRItp_t PRIu32
 

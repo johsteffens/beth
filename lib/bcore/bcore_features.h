@@ -62,14 +62,14 @@ typedef struct bcore_cmp_f { bcore_fp_cmp_o f; vc_t o; } bcore_cmp_f; // compari
 /**********************************************************************************************************************/
 
 /// generator
-typedef bl_t (*bcore_fp_gen_o )( vc_t o, sz_t idx, vd_t dst ); // generator (on valid index: sets *dst (if dst != NULL) and returns true)
+typedef bl_t (*bcore_fp_gen_o )( vc_t o, uz_t idx, vd_t dst ); // generator (on valid index: sets *dst (if dst != NULL) and returns true)
 typedef struct bcore_gen_f { bcore_fp_gen_o f; vc_t o; } bcore_gen_f; // generator functor
 
 /**********************************************************************************************************************/
 
 /// data flow
-typedef sz_t (*bcore_fp_flow_snk )( vd_t o, vc_t data, sz_t size ); // flow-sink;   size in bytes; returns number of bytes transferred
-typedef sz_t (*bcore_fp_flow_src )( vd_t o, vd_t data, sz_t size ); // flow_source; size in bytes; returns number of bytes transferred
+typedef uz_t (*bcore_fp_flow_snk )( vd_t o, vc_t data, uz_t size ); // flow-sink;   size in bytes; returns number of bytes transferred
+typedef uz_t (*bcore_fp_flow_src )( vd_t o, vd_t data, uz_t size ); // flow_source; size in bytes; returns number of bytes transferred
 
 /**********************************************************************************************************************/
 

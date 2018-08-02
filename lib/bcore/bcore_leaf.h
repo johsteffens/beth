@@ -54,12 +54,22 @@ static inline f2_t f2_inv( f2_t v ) { return v != 0 ? 1.0 / v : 0; }
 static inline void f2_t_swap( f2_t* v1, f2_t* v2 ) { f2_t t = *v1; *v1 = *v2; *v2 = t;  }
 
 /**********************************************************************************************************************/
-// sz_t
+// szxxx_t
 
-static inline sz_t sz_sqr( sz_t v ) { return v * v; }
-static inline sz_t sz_min( sz_t a, sz_t b ) { return a < b ? a : b; }
-static inline sz_t sz_max( sz_t a, sz_t b ) { return a > b ? a : b; }
-static inline void sz_t_swap( sz_t* v1, sz_t* v2 ) { sz_t t = *v1; *v1 = *v2; *v2 = t; }
+static inline szxxx_t szxxx_sqr( szxxx_t v ) { return v * v; }
+static inline szxxx_t szxxx_min( szxxx_t a, szxxx_t b ) { return a < b ? a : b; }
+static inline szxxx_t szxxx_max( szxxx_t a, szxxx_t b ) { return a > b ? a : b; }
+static inline szxxx_t szxxx_sig( szxxx_t v ) { return v < 0 ? -1 : 1; }
+static inline szxxx_t szxxx_abs( szxxx_t v ) { return v < 0 ? -v : v; }
+static inline void szxxx_t_swap( szxxx_t* v1, szxxx_t* v2 ) { szxxx_t t = *v1; *v1 = *v2; *v2 = t; }
+
+/**********************************************************************************************************************/
+// uz_t
+
+static inline uz_t uz_sqr( uz_t v ) { return v * v; }
+static inline uz_t uz_min( uz_t a, uz_t b ) { return a < b ? a : b; }
+static inline uz_t uz_max( uz_t a, uz_t b ) { return a > b ? a : b; }
+static inline void uz_t_swap( uz_t* v1, uz_t* v2 ) { uz_t t = *v1; *v1 = *v2; *v2 = t; }
 
 /**********************************************************************************************************************/
 // tp_t

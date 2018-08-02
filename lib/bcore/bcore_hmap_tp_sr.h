@@ -46,9 +46,9 @@ typedef struct bcore_hmap_tp_sr_s
     aware_t _;
     bcore_hnode_tp_sr_s* nodes;
     bl_t* flags;
-    sz_t size;
-    sz_t depth_limit;
-    sz_t size_limit;
+    uz_t size;
+    uz_t depth_limit;
+    uz_t size_limit;
 } bcore_hmap_tp_sr_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tp_sr_s )
@@ -63,11 +63,11 @@ sr_s* bcore_hmap_tp_sr_s_set(          bcore_hmap_tp_sr_s* o, tp_t key, sr_s val
 sr_s  bcore_hmap_tp_sr_s_remove(       bcore_hmap_tp_sr_s* o, tp_t key ); // removes key, returns value; call sr_down( remove(...) ) to eliminate entry
 bl_t  bcore_hmap_tp_sr_s_exists( const bcore_hmap_tp_sr_s* o, tp_t key ); // checks if key exists
 void  bcore_hmap_tp_sr_s_clear(        bcore_hmap_tp_sr_s* o           ); // removes all entries and frees memory
-sz_t  bcore_hmap_tp_sr_s_keys(   const bcore_hmap_tp_sr_s* o           ); // returns number of registered keys
-sz_t  bcore_hmap_tp_sr_s_size(   const bcore_hmap_tp_sr_s* o           ); // returns current size of the hash map (note that this includes empty places)
+uz_t  bcore_hmap_tp_sr_s_keys(   const bcore_hmap_tp_sr_s* o           ); // returns number of registered keys
+uz_t  bcore_hmap_tp_sr_s_size(   const bcore_hmap_tp_sr_s* o           ); // returns current size of the hash map (note that this includes empty places)
 
-tp_t        bcore_hmap_tp_sr_s_idx_key( const bcore_hmap_tp_sr_s* o, sz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
-const sr_s* bcore_hmap_tp_sr_s_idx_val( const bcore_hmap_tp_sr_s* o, sz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+tp_t        bcore_hmap_tp_sr_s_idx_key( const bcore_hmap_tp_sr_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+const sr_s* bcore_hmap_tp_sr_s_idx_val( const bcore_hmap_tp_sr_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
 /**********************************************************************************************************************/
 

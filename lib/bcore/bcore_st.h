@@ -46,7 +46,7 @@ typedef struct st_s
         sc_t sc;
         sd_t data;
     };
-    sz_t size, space;
+    uz_t size, space;
 } st_s;
 
 void  st_s_init(         st_s* o );
@@ -54,7 +54,7 @@ void  st_s_initvf(       st_s* o, sc_t format, va_list args );  // formatted ini
 void  st_s_initf(        st_s* o, sc_t format, ... );           // formatted initialization (like sprintf)
 void  st_s_init_fv(      st_s* o, sc_t format, va_list args );  // formatted initialization
 void  st_s_init_fa(      st_s* o, sc_t format, ... );           // formatted initialization
-void  st_s_init_sc_n(    st_s* o, sc_t sc, sz_t n );            // creates string from first n characters of sc
+void  st_s_init_sc_n(    st_s* o, sc_t sc, uz_t n );            // creates string from first n characters of sc
 void  st_s_init_sd_d(    st_s* o, sd_t sd );                    // creates string by assuming ownership of sd
 void  st_s_init_sc(      st_s* o, sc_t sc );                    // creates string from sc
 void  st_s_init_weak_sc( st_s* o, sc_t sc );                    // creates a weak string referencing sc
@@ -64,7 +64,7 @@ void  st_s_copyvf(       st_s* o, sc_t format, va_list args  );
 void  st_s_copyf(        st_s* o, sc_t format, ...  );
 void  st_s_copy_fv(      st_s* o, sc_t format, va_list args  );
 void  st_s_copy_fa(      st_s* o, sc_t format, ...  );
-void  st_s_copy_sc_n(    st_s* o, sc_t sc, sz_t n );
+void  st_s_copy_sc_n(    st_s* o, sc_t sc, uz_t n );
 void  st_s_copy_sc(      st_s* o, sc_t sc );
 void  st_s_assign_sc(    st_s* o, sc_t sc ); // assignment producing a weak string
 void  st_s_copy_typed(   st_s* o, tp_t type, vc_t src ); // copy with type conversion
@@ -75,7 +75,7 @@ st_s* st_s_createvf(     sc_t format, va_list args );
 st_s* st_s_createf(      sc_t format, ... );
 st_s* st_s_create_fv(    sc_t format, va_list args );
 st_s* st_s_create_fa(    sc_t format, ... );
-st_s* st_s_create_sc_n(  sc_t sc, sz_t n );
+st_s* st_s_create_sc_n(  sc_t sc, uz_t n );
 st_s* st_s_create_sd_d(  sd_t sd );
 st_s* st_s_create_sc(    sc_t sc );
 st_s* st_s_create_weak_sc( sc_t sc );
@@ -83,29 +83,29 @@ st_s* st_s_create_typed( tp_t type, vc_t src );
 st_s* st_s_create_aware(            vc_t src );
 bl_t  st_s_is_weak(       const st_s* o ); // A string is weak when size > 0 && space == 0
 void  st_s_make_strong(         st_s* o );
-void  st_s_set_min_space(       st_s* o, sz_t min_space ); // ensures o->space >= min_space; reallocates if necessary
+void  st_s_set_min_space(       st_s* o, uz_t min_space ); // ensures o->space >= min_space; reallocates if necessary
 
 /// create with lifetime manager
 typedef struct bcore_life_s bcore_life_s;
 st_s* st_s_create_l(      bcore_life_s* life );
 st_s* st_s_createf_l(     bcore_life_s* life, sc_t format, ... );
-st_s* st_s_create_l_sc_n( bcore_life_s* life, sc_t sc, sz_t n );
+st_s* st_s_create_l_sc_n( bcore_life_s* life, sc_t sc, uz_t n );
 st_s* st_s_create_l_sc(   bcore_life_s* life, sc_t sc );
 
 void  st_s_discard(       st_s* o );
 st_s* st_s_clone(   const st_s* o );
-st_s* st_s_crop(    const st_s* o, sz_t start, sz_t end ); // creates a new string with subsection of o;
-st_s* st_s_crop_d(        st_s* o, sz_t start, sz_t end ); // discards o;
+st_s* st_s_crop(    const st_s* o, uz_t start, uz_t end ); // creates a new string with subsection of o;
+st_s* st_s_crop_d(        st_s* o, uz_t start, uz_t end ); // discards o;
 
 st_s* st_s_clear( st_s* o ); // empties string
 
 st_s* st_s_push_char(   st_s* o, char c );
-st_s* st_s_push_char_n( st_s* o, char c, sz_t n ); // pushes c n times
+st_s* st_s_push_char_n( st_s* o, char c, uz_t n ); // pushes c n times
 char  st_s_pop_char(    st_s* o );                 // removes last character and returns it
-void  st_s_pop_n(       st_s* o,         sz_t n ); // removes n last characters
+void  st_s_pop_n(       st_s* o,         uz_t n ); // removes n last characters
 st_s* st_s_push_st(     st_s* o, const st_s* src );
 st_s* st_s_push_st_d(   st_s* o, st_s* src ); // discards src
-st_s* st_s_push_sc_n(   st_s* o, sc_t sc, sz_t n );
+st_s* st_s_push_sc_n(   st_s* o, sc_t sc, uz_t n );
 st_s* st_s_push_sc(     st_s* o, sc_t sc );
 st_s* st_s_push_typed(  st_s* o, tp_t type, vc_t src ); // push with type conversion
 st_s* st_s_pushvf(      st_s* o, sc_t format, va_list args );
@@ -115,10 +115,10 @@ st_s* st_s_push_fa(     st_s* o, sc_t format, ... );
 
 /// comparison and equality (for return of comparison 'cmp' see bcore_strcmp)
 static inline s2_t st_s_cmp_sc(     const st_s* o, sc_t sc         ) { return bcore_strcmp( o ? o->sc : NULL, sc ); }
-static inline s2_t st_s_cmp_sc_n(   const st_s* o, sc_t sc, sz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ); }
+static inline s2_t st_s_cmp_sc_n(   const st_s* o, sc_t sc, uz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ); }
 static inline s2_t st_s_cmp_st(     const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ); }
 static inline bool st_s_equal_sc(   const st_s* o, sc_t sc         ) { return bcore_strcmp( o ? o->sc : NULL, sc ) == 0; }
-static inline bool st_s_equal_sc_n( const st_s* o, sc_t sc, sz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ) == 0; }
+static inline bool st_s_equal_sc_n( const st_s* o, sc_t sc, uz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ) == 0; }
 static inline bool st_s_equal_st(   const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ) == 0; }
 
 /** Search:
@@ -128,32 +128,32 @@ static inline bool st_s_equal_st(   const st_s* o, const st_s* st  ) { return bc
  *  The search range is [start, end-1] when start < end and [end, start-1] otherwise.
  *  if not found, the function returns the larger of (start, end) but maximally o->size.
  */
-sz_t st_s_find_char(    const st_s* o, sz_t start, sz_t end, char c );
-sz_t st_s_find_sc(      const st_s* o, sz_t start, sz_t end, sc_t sc );
-sz_t st_s_find_st(      const st_s* o, sz_t start, sz_t end, const st_s* st );
-sz_t st_s_find_st_d(    const st_s* o, sz_t start, sz_t end,       st_s* st ); // discards string
-sz_t st_s_find_any_sc(  const st_s* o, sz_t start, sz_t end, sc_t sc ); // any character in sc
-sz_t st_s_find_none_sc( const st_s* o, sz_t start, sz_t end, sc_t sc ); // any character not in sc
+uz_t st_s_find_char(    const st_s* o, uz_t start, uz_t end, char c );
+uz_t st_s_find_sc(      const st_s* o, uz_t start, uz_t end, sc_t sc );
+uz_t st_s_find_st(      const st_s* o, uz_t start, uz_t end, const st_s* st );
+uz_t st_s_find_st_d(    const st_s* o, uz_t start, uz_t end,       st_s* st ); // discards string
+uz_t st_s_find_any_sc(  const st_s* o, uz_t start, uz_t end, sc_t sc ); // any character in sc
+uz_t st_s_find_none_sc( const st_s* o, uz_t start, uz_t end, sc_t sc ); // any character not in sc
 
 /// Counting (expects start >= end)
-sz_t st_s_count_char( const st_s* o, sz_t start, sz_t end, char c );
-sz_t st_s_count_sc(   const st_s* o, sz_t start, sz_t end, sc_t sc );
-sz_t st_s_count_st(   const st_s* o, sz_t start, sz_t end, const st_s* st );
+uz_t st_s_count_char( const st_s* o, uz_t start, uz_t end, char c );
+uz_t st_s_count_sc(   const st_s* o, uz_t start, uz_t end, sc_t sc );
+uz_t st_s_count_st(   const st_s* o, uz_t start, uz_t end, const st_s* st );
 
 /// Inserts at position <start>
-st_s* st_s_insert_char( st_s* o, sz_t start, char c );
-st_s* st_s_insert_sc(   st_s* o, sz_t start, sc_t sc );
-st_s* st_s_insert_st(   st_s* o, sz_t start, const st_s* st );
-st_s* st_s_insert_st_d( st_s* o, sz_t start, st_s* st ); // discards string
+st_s* st_s_insert_char( st_s* o, uz_t start, char c );
+st_s* st_s_insert_sc(   st_s* o, uz_t start, sc_t sc );
+st_s* st_s_insert_st(   st_s* o, uz_t start, const st_s* st );
+st_s* st_s_insert_st_d( st_s* o, uz_t start, st_s* st ); // discards string
 
 /// Replaces existing characters at position <start> (string length does not change)
-st_s* st_s_replace_char( st_s* o, sz_t start, char c );
-st_s* st_s_replace_sc(   st_s* o, sz_t start, sc_t sc );
-st_s* st_s_replace_st(   st_s* o, sz_t start, const st_s* st );
-st_s* st_s_replace_st_d( st_s* o, sz_t start, st_s* st ); // discards string
+st_s* st_s_replace_char( st_s* o, uz_t start, char c );
+st_s* st_s_replace_sc(   st_s* o, uz_t start, sc_t sc );
+st_s* st_s_replace_st(   st_s* o, uz_t start, const st_s* st );
+st_s* st_s_replace_st_d( st_s* o, uz_t start, st_s* st ); // discards string
 
 /// Removes from position start: <size> characters. If not enough characters left, the entire tail is removed. Returns o.
-st_s* st_s_remove( st_s* o, sz_t start, sz_t size );
+st_s* st_s_remove( st_s* o, uz_t start, uz_t size );
 
 /// Replaces all occurrences of <c> with string <replace>
 st_s* st_s_replace_char_char( st_s* o, char c,       char replace );
@@ -171,10 +171,10 @@ void st_s_set_lowercase( st_s* o );
 void st_s_set_uppercase( st_s* o );
 
 /// Text navigation
-sz_t st_s_lineof(    const st_s* o, sz_t pos );            // line number of character position in text (line counting starts with '1')
-sz_t st_s_colof(     const st_s* o, sz_t pos );            // column of character position in text (column counting starts with '1')
-sz_t st_s_posof(     const st_s* o, sz_t line, sz_t col ); // transforms line and column into a position
-sz_t st_s_posofline( const st_s* o, sz_t pos );            // returns the position at which the line begins containing the character indicated by pos
+uz_t st_s_lineof(    const st_s* o, uz_t pos );            // line number of character position in text (line counting starts with '1')
+uz_t st_s_colof(     const st_s* o, uz_t pos );            // column of character position in text (column counting starts with '1')
+uz_t st_s_posof(     const st_s* o, uz_t line, uz_t col ); // transforms line and column into a position
+uz_t st_s_posofline( const st_s* o, uz_t pos );            // returns the position at which the line begins containing the character indicated by pos
 
 /// string to stdout
 void st_s_to_stdout( const st_s* o );
@@ -249,7 +249,7 @@ void st_s_print_fa( sc_t format, ... );
  *      Argument: <type>*
  *      Matches content to <type>.
  *      Example: #u3_t matches to u3_t and requires u3_t* as argument.
- *      Supported types: u*_t, s*_t, f*_t, sz_t, bl_t.
+ *      Supported types: u*_t, s*_t, f*_t, *z_t, bl_t.
  *
  *  "#-..."  (Example: "#-<u3_t>" )
  *      Argument: none
@@ -266,16 +266,16 @@ void st_s_print_fa( sc_t format, ... );
  *     Index position after scan completes.
  *     This value would be be used as 'start' for continued scanning.
  */
-sz_t st_s_parse_fv( const st_s* o, sz_t start, sz_t end, sc_t format, va_list args );
-sz_t st_s_parse_fa( const st_s* o, sz_t start, sz_t end, sc_t format, ... );
+uz_t st_s_parse_fv( const st_s* o, uz_t start, uz_t end, sc_t format, va_list args );
+uz_t st_s_parse_fa( const st_s* o, uz_t start, uz_t end, sc_t format, ... );
 
 /// parse functions with parse error continuation
-typedef sz_t (*fp_st_s_parse_err)( vd_t arg, const st_s* o, sz_t idx, st_s* msg );
-sz_t st_s_parse_efv( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, va_list args );
-sz_t st_s_parse_efa( const st_s* o, sz_t start, sz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, ... );
+typedef uz_t (*fp_st_s_parse_err)( vd_t arg, const st_s* o, uz_t idx, st_s* msg );
+uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, va_list args );
+uz_t st_s_parse_efa( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, ... );
 
 /// constructs a double-line with a visible position indicator (useful for context messages/warnings/errors with highlighted position)
-st_s* st_s_show_line_context( const st_s* o, sz_t pos );
+st_s* st_s_show_line_context( const st_s* o, uz_t pos );
 
 vd_t bcore_st_signal_handler( const bcore_signal_s* o );
 

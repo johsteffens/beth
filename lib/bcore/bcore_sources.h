@@ -42,7 +42,7 @@ typedef struct bcore_source_chain_s
         struct
         {
             vd_t* data;
-            sz_t size, space;
+            uz_t size, space;
         };
     };
 } bcore_source_chain_s;
@@ -55,7 +55,7 @@ void                  bcore_source_chain_s_discard(     bcore_source_chain_s* o 
 bcore_source_chain_s* bcore_source_chain_s_clone( const bcore_source_chain_s* o );
 void                  bcore_source_chain_s_push_d(       bcore_source_chain_s* o, vd_t source );
 void                  bcore_source_chain_s_push_type(    bcore_source_chain_s* o, tp_t type );
-sz_t                  bcore_source_chain_s_get_data(     bcore_source_chain_s* o, vd_t data, sz_t size );
+uz_t                  bcore_source_chain_s_get_data(     bcore_source_chain_s* o, vd_t data, uz_t size );
 void                  bcore_source_chain_s_set_supplier( bcore_source_chain_s* o, vd_t supplier );
 bl_t                  bcore_source_chain_s_eos(       const bcore_source_chain_s* o );
 sc_t                  bcore_source_chain_s_get_file(  const bcore_source_chain_s* o );
@@ -76,14 +76,14 @@ typedef struct bcore_source_buffer_s
         struct
         {
             u0_t* data;
-            sz_t size, space;
+            uz_t size, space;
         };
     };
 
-    sz_t index;
+    uz_t index;
 
     vd_t ext_supplier;  // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_buffer_s)
-    sz_t prefetch_size; // data amount prefetched from supplier (if present) (default: 4096)
+    uz_t prefetch_size; // data amount prefetched from supplier (if present) (default: 4096)
 
 } bcore_source_buffer_s;
 
@@ -93,9 +93,9 @@ void                   bcore_source_buffer_s_copy(          bcore_source_buffer_
 bcore_source_buffer_s* bcore_source_buffer_s_create();
 void                   bcore_source_buffer_s_discard(       bcore_source_buffer_s* o );
 bcore_source_buffer_s* bcore_source_buffer_s_clone(   const bcore_source_buffer_s* o );
-sz_t                   bcore_source_buffer_s_get_data(      bcore_source_buffer_s* o, vd_t data, sz_t size );
+uz_t                   bcore_source_buffer_s_get_data(      bcore_source_buffer_s* o, vd_t data, uz_t size );
 
-bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, sz_t size );
+bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, uz_t size );
 
 /// Specifies an external supplier (source); supplier is not owned by this object
 void bcore_source_buffer_s_set_supplier( bcore_source_buffer_s* o, vd_t supplier );
@@ -115,10 +115,10 @@ typedef struct bcore_source_string_s
 {
     aware_t _;
     st_s* string;
-    sz_t index;
+    uz_t index;
     vd_t ext_supplier;       // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_string_s)
-    sz_t refill_limit;       // size size limit to request refill from supplier (if present)
-    sz_t prefetch_size;      // data amount prefetched from supplier (if present)
+    uz_t refill_limit;       // size size limit to request refill from supplier (if present)
+    uz_t prefetch_size;      // data amount prefetched from supplier (if present)
 } bcore_source_string_s;
 
 void                   bcore_source_string_s_init(          bcore_source_string_s* o );
@@ -131,7 +131,7 @@ bcore_source_string_s* bcore_source_string_s_clone(   const bcore_source_string_
 bcore_source_string_s* bcore_source_string_s_create_from_string( const st_s* string );
 bcore_source_string_s* bcore_source_string_s_create_from_string_d(     st_s* string );
 bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc );
-sz_t                   bcore_source_string_s_get_data(      bcore_source_string_s* o, vd_t data, sz_t size );
+uz_t                   bcore_source_string_s_get_data(      bcore_source_string_s* o, vd_t data, uz_t size );
 
 /** Specifies an external supplier (source); supplier is not owned by this object.
  *  The supplier is automatically detached when empty.
@@ -161,14 +161,14 @@ void                 bcore_source_file_s_discard(         bcore_source_file_s* o
 bcore_source_file_s* bcore_source_file_s_clone(     const bcore_source_file_s* o );
 void                 bcore_source_file_s_open(            bcore_source_file_s* o ); // (re)opens file
 void                 bcore_source_file_s_close(           bcore_source_file_s* o ); // closes file if open
-sz_t                 bcore_source_file_s_get_data(        bcore_source_file_s* o, vd_t data, sz_t size );
+uz_t                 bcore_source_file_s_get_data(        bcore_source_file_s* o, vd_t data, uz_t size );
 bl_t                 bcore_source_file_s_eos(       const bcore_source_file_s* o );
 sc_t                 bcore_source_file_s_get_file(  const bcore_source_file_s* o );
 s3_t                 bcore_source_file_s_get_index( const bcore_source_file_s* o );
 void                 bcore_source_file_s_set_index(       bcore_source_file_s* o, s3_t index );
 
 /// obtains context information for index position (only for text files)
-void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t index, sz_t* p_line, sz_t* p_col, st_s* context );
+void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t index, uz_t* p_line, uz_t* p_col, st_s* context );
 
 bl_t bcore_source_file_s_exists( sc_t name ); // checks if file exists
 void bcore_source_file_s_delete( sc_t name ); // deletes file if existing

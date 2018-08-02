@@ -99,7 +99,12 @@ static s2_t compare_f2_t( const bcore_compare_s* p, const f2_t* o1, const f2_t* 
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
 
-static s2_t compare_sz_t( const bcore_compare_s* p, const sz_t* o1, const sz_t* o2 )
+static s2_t compare_szxxx_t( const bcore_compare_s* p, const szxxx_t* o1, const szxxx_t* o2 )
+{
+    return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
+}
+
+static s2_t compare_uz_t( const bcore_compare_s* p, const uz_t* o1, const uz_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
@@ -128,7 +133,8 @@ static s2_t compare_leaf( tp_t type, vc_t obj1, vc_t obj2 )
         case TYPEOF_u0_t: return ( *( u0_t* )obj1 == *( u0_t* )obj2 ) ? 0 : ( *( u0_t* )obj1 < *( u0_t* )obj2 ) ? 1 : -1;
         case TYPEOF_f3_t: return ( *( f3_t* )obj1 == *( f3_t* )obj2 ) ? 0 : ( *( f3_t* )obj1 < *( f3_t* )obj2 ) ? 1 : -1;
         case TYPEOF_f2_t: return ( *( f2_t* )obj1 == *( f2_t* )obj2 ) ? 0 : ( *( f2_t* )obj1 < *( f2_t* )obj2 ) ? 1 : -1;
-        case TYPEOF_sz_t: return ( *( sz_t* )obj1 == *( sz_t* )obj2 ) ? 0 : ( *( sz_t* )obj1 < *( sz_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_szxxx_t: return ( *( szxxx_t* )obj1 == *( szxxx_t* )obj2 ) ? 0 : ( *( szxxx_t* )obj1 < *( szxxx_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_uz_t: return ( *( uz_t* )obj1 == *( uz_t* )obj2 ) ? 0 : ( *( uz_t* )obj1 < *( uz_t* )obj2 ) ? 1 : -1;
         case TYPEOF_sd_t: return bcore_strcmp( *( sd_t* )obj1, *( sd_t* )obj2 );
         case TYPEOF_sc_t: return bcore_strcmp( *( sc_t* )obj1, *( sc_t* )obj2 );
         case TYPEOF_tp_t: return ( *( tp_t* )obj1 == *( tp_t* )obj2 ) ? 0 : ( *( tp_t* )obj1 < *( tp_t* )obj2 ) ? 1 : -1;
@@ -152,10 +158,10 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     if( bcore_via_p_is_pure_array( p->via, NULL ) )
     {
         const bcore_array_s* arr_p = bcore_array_s_get_typed( p->via->header.o_type );
-        sz_t size1 = bcore_array_p_get_size( arr_p, obj1 );
-        sz_t size2 = bcore_array_p_get_size( arr_p, obj2 );
+        uz_t size1 = bcore_array_p_get_size( arr_p, obj1 );
+        uz_t size2 = bcore_array_p_get_size( arr_p, obj2 );
         if( size1 != size2 ) return size1 < size2 ? 1 : -1;
-        for( sz_t j = 0; j < size1; j++ )
+        for( uz_t j = 0; j < size1; j++ )
         {
             s2_t c = bcore_compare_sr( arr_p->get( arr_p, obj1, j ), arr_p->get( arr_p, obj2, j ) );
             if( c != 0 ) return c;
@@ -164,7 +170,7 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     }
 
     const bcore_via_s* via = p->via;
-    for( sz_t i = 0; i < via->size; i++ )
+    for( uz_t i = 0; i < via->size; i++ )
     {
         s2_t c = bcore_compare_sr( bcore_via_p_iget( via, obj1, i ), bcore_via_p_iget( via, obj2, i ) );
         if( c != 0 ) return c;
@@ -205,10 +211,10 @@ static st_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     if( bcore_via_p_is_pure_array( p->via, NULL ) )
     {
         const bcore_array_s* arr_p = bcore_array_s_get_typed( p->via->header.o_type );
-        sz_t size1 = bcore_array_p_get_size( arr_p, obj1 );
-        sz_t size2 = bcore_array_p_get_size( arr_p, obj2 );
+        uz_t size1 = bcore_array_p_get_size( arr_p, obj1 );
+        uz_t size2 = bcore_array_p_get_size( arr_p, obj2 );
         if( size1 != size2 ) return st_s_createf( "!%s: size1:%zu, size2:%zu", ifnameof( p->o_type ), size1, size2 );
-        for( sz_t j = 0; j < size1; j++ )
+        for( uz_t j = 0; j < size1; j++ )
         {
             st_s* s = bcore_diff_sr( arr_p->get( arr_p, obj1, j ), arr_p->get( arr_p, obj2, j ) );
             if( s != NULL )
@@ -221,7 +227,7 @@ static st_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     }
 
     const bcore_via_s* via = p->via;
-    for( sz_t i = 0; i < via->size; i++ )
+    for( uz_t i = 0; i < via->size; i++ )
     {
         st_s* s = bcore_diff_sr( bcore_via_p_iget( via, obj1, i ), bcore_via_p_iget( via, obj2, i ) );
         if( s != NULL )
@@ -266,7 +272,8 @@ static bcore_compare_s* create_from_self( const bcore_self_s* self )
         case TYPEOF_u0_t: o->compare = ( fp_icmp )compare_u0_t; break;
         case TYPEOF_f3_t: o->compare = ( fp_icmp )compare_f3_t; break;
         case TYPEOF_f2_t: o->compare = ( fp_icmp )compare_f2_t; break;
-        case TYPEOF_sz_t: o->compare = ( fp_icmp )compare_sz_t; break;
+        case TYPEOF_szxxx_t: o->compare = ( fp_icmp )compare_szxxx_t; break;
+        case TYPEOF_uz_t: o->compare = ( fp_icmp )compare_uz_t; break;
         case TYPEOF_tp_t: o->compare = ( fp_icmp )compare_tp_t; break;
         default:
         {
@@ -419,12 +426,12 @@ static st_s* spect_compare_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
 
-    bcore_flect_define_parse_sc( "cmp_specs = { aware_t _; sz_t size; u2_t param1; s2_t; }" );
+    bcore_flect_define_parse_sc( "cmp_specs = { aware_t _; uz_t size; u2_t param1; s2_t; }" );
     vd_t specs = bcore_life_s_push_aware( l, bcore_inst_t_create( typeof( "cmp_specs" ) ) );
 
     {
         const bcore_via_s* v = bcore_via_s_get_aware( specs );
-        bcore_via_p_nset_sz( v, specs, typeof( "size"   ), 10  );
+        bcore_via_p_nset_uz( v, specs, typeof( "size"   ), 10  );
         bcore_via_p_nset_u3( v, specs, typeof( "param1" ), 200 );
         bcore_via_p_nset_s3( v, specs, typeof( ""       ), -50 );
     }
@@ -434,22 +441,22 @@ static st_s* spect_compare_selftest( void )
 
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr1 );
 
-    for( sz_t i = 0; i < 100; i++ ) bcore_array_p_push( arr_p, arr1, sr_awc( specs ) );
+    for( uz_t i = 0; i < 100; i++ ) bcore_array_p_push( arr_p, arr1, sr_awc( specs ) );
 
-    for( sz_t i = 0; i < bcore_array_p_get_size( arr_p, arr1 ); i++ )
+    for( uz_t i = 0; i < bcore_array_p_get_size( arr_p, arr1 ); i++ )
     {
         vd_t specs = arr_p->get( arr_p, arr1, i ).o;
         const bcore_via_s* v = bcore_via_s_get_aware( specs );
-        bcore_via_p_nset_sz( v, specs, typeof( "size" ), i );
+        bcore_via_p_nset_uz( v, specs, typeof( "size" ), i );
     }
 
     const bcore_via_s* v = bcore_via_s_get_aware( specs );
     vd_t arr2 = bcore_life_s_push_aware( l, bcore_inst_a_clone( arr1 ) );
 
     ASSERT( bcore_compare_aware( arr1, arr2 ) == 0 );
-    bcore_via_p_nset_sz( v, arr_p->get( arr_p, arr2, 5 ).o, typeof( "size" ), 20 );
+    bcore_via_p_nset_uz( v, arr_p->get( arr_p, arr2, 5 ).o, typeof( "size" ), 20 );
     ASSERT( bcore_compare_aware( arr1, arr2 ) >  0 );
-    bcore_via_p_nset_sz( v, arr_p->get( arr_p, arr2, 5 ).o, typeof( "size" ), 0 );
+    bcore_via_p_nset_uz( v, arr_p->get( arr_p, arr2, 5 ).o, typeof( "size" ), 0 );
     ASSERT( bcore_compare_aware( arr1, arr2 ) <  0 );
 
     bcore_life_s_discard( l );

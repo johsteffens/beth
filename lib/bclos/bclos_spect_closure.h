@@ -50,10 +50,10 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAPX( bclos_closure, def, bclos_frame_s*, frm 
 BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP1( bclos_closure, call, sr_s, bclos_frame_s*, frm, const bclos_arguments_s*, args )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAPX( bclos_closure, sig,  sr_s )
 
-sr_s bclos_closure_p_call_nv( const bclos_closure_s* p, const bclos_closure* o, bclos_frame_s* frm, sz_t n, va_list args ); // call with n arguments
-sr_s bclos_closure_p_call_na( const bclos_closure_s* p, const bclos_closure* o, bclos_frame_s* frm, sz_t n, ...          ); // call with n arguments
-sr_s bclos_closure_r_call_nv( const sr_s* o, bclos_frame_s* frm, sz_t n, va_list args ); // call with n arguments
-sr_s bclos_closure_r_call_na( const sr_s* o, bclos_frame_s* frm, sz_t n, ...          ); // call with n arguments
+sr_s bclos_closure_p_call_nv( const bclos_closure_s* p, const bclos_closure* o, bclos_frame_s* frm, uz_t n, va_list args ); // call with n arguments
+sr_s bclos_closure_p_call_na( const bclos_closure_s* p, const bclos_closure* o, bclos_frame_s* frm, uz_t n, ...          ); // call with n arguments
+sr_s bclos_closure_r_call_nv( const sr_s* o, bclos_frame_s* frm, uz_t n, va_list args ); // call with n arguments
+sr_s bclos_closure_r_call_na( const sr_s* o, bclos_frame_s* frm, uz_t n, ...          ); // call with n arguments
 
 /**********************************************************************************************************************/
 

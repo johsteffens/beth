@@ -177,43 +177,43 @@ vd_t bcore_free( vd_t ptr )
 }
 
 /// ptr == NULL: malloc; ptr != NULL && size == 0: free; ptr != NULL && size != 0: realloc; returns a valid address or NULL; alloc failure produces error
-vd_t bcore_alloc( vd_t ptr, sz_t size )
+vd_t bcore_alloc( vd_t ptr, uz_t size )
 {
     return bcore_tbman_alloc( ptr, size );
 }
 
-vd_t bcore_malloc( sz_t size )
+vd_t bcore_malloc( uz_t size )
 {
     return bcore_alloc( NULL, size );
 }
 
-vd_t bcore_realloc( vd_t ptr, sz_t size )
+vd_t bcore_realloc( vd_t ptr, uz_t size )
 {
     return bcore_alloc( ptr, size );
 }
 
 /// advanced alloc (see description of bcore_tbman_b(n)_alloc)
-vd_t bcore_b_alloc( vd_t current_ptr, sz_t requested_bytes, sz_t* granted_bytes )
+vd_t bcore_b_alloc( vd_t current_ptr, uz_t requested_bytes, uz_t* granted_bytes )
 {
     return bcore_tbman_b_alloc( current_ptr, requested_bytes, granted_bytes );
 }
 
-vd_t bcore_bn_alloc( vd_t current_ptr, sz_t current_bytes, sz_t requested_bytes, sz_t* granted_bytes )
+vd_t bcore_bn_alloc( vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes )
 {
     return bcore_tbman_bn_alloc( current_ptr, current_bytes, requested_bytes, granted_bytes );
 }
 
-vd_t bcore_u_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t requested_units, sz_t* granted_units )
+vd_t bcore_u_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t requested_units, uz_t* granted_units )
 {
     return bcore_tbman_u_alloc( unit_bytes, current_ptr, requested_units, granted_units );
 }
 
-vd_t bcore_un_alloc( sz_t unit_bytes, vd_t current_ptr, sz_t current_units, sz_t requested_units, sz_t* granted_units )
+vd_t bcore_un_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t current_units, uz_t requested_units, uz_t* granted_units )
 {
     return bcore_tbman_un_alloc( unit_bytes, current_ptr, current_units, requested_units, granted_units );
 }
 
-sz_t bcore_references( vc_t ptr )
+uz_t bcore_references( vc_t ptr )
 {
     return bcore_tbman_references( ptr );
 }
@@ -238,52 +238,52 @@ void bcore_release_arg( fp_t down, vc_t arg, vd_t ptr )
     bcore_tbman_release_arg( ( fp_down_arg )down, arg, ptr );
 }
 
-void bcore_release_obj_arr( fp_t down, vd_t ptr, sz_t size, sz_t step )
+void bcore_release_obj_arr( fp_t down, vd_t ptr, uz_t size, uz_t step )
 {
     bcore_tbman_release_obj_arr( ( fp_down_obj )down, ptr, size, step );
 }
 
-void bcore_release_arg_arr( fp_t down, vc_t arg, vd_t ptr, sz_t size, sz_t step )
+void bcore_release_arg_arr( fp_t down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
     bcore_tbman_release_arg_arr( ( fp_down_arg )down, arg, ptr, size, step );
 }
 
 /**********************************************************************************************************************/
 
-vd_t bcore_memzero( vd_t dst, sz_t size )
+vd_t bcore_memzero( vd_t dst, uz_t size )
 {
     if( !dst ) dst = bcore_alloc( NULL, size );
     memset( dst, 0, size );
     return dst;
 }
 
-vd_t bcore_u_memzero( sz_t unit_bytes, vd_t dst, sz_t size )
+vd_t bcore_u_memzero( uz_t unit_bytes, vd_t dst, uz_t size )
 {
     if( !dst ) dst = bcore_alloc( NULL, unit_bytes * size );
     memset( dst, 0, unit_bytes * size );
     return dst;
 }
 
-vd_t bcore_memset(  vd_t dst, u0_t val, sz_t size )
+vd_t bcore_memset(  vd_t dst, u0_t val, uz_t size )
 {
     if( !dst ) dst = bcore_alloc( NULL, size );
     memset( dst, val, size );
     return dst;
 }
 
-vd_t bcore_memcpy( vd_t dst, vc_t src, sz_t size )
+vd_t bcore_memcpy( vd_t dst, vc_t src, uz_t size )
 {
     if( !dst ) dst = bcore_alloc( NULL, size );
     if( size > 0 ) memcpy( dst, src, size );
     return dst;
 }
 
-vd_t bcore_u_memcpy( sz_t unit_bytes, vd_t dst, vc_t src, sz_t size )
+vd_t bcore_u_memcpy( uz_t unit_bytes, vd_t dst, vc_t src, uz_t size )
 {
     return bcore_memcpy( dst, src, unit_bytes * size );
 }
 
-vd_t bcore_memmove( vd_t dst, vc_t src, sz_t size )
+vd_t bcore_memmove( vd_t dst, vc_t src, uz_t size )
 {
     if( !dst )
     {
@@ -309,12 +309,12 @@ s2_t bcore_strcmp( sc_t str1, sc_t str2 )
     return sc_t_cmp( str1, str2 );
 }
 
-s2_t bcore_strcmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 )
+s2_t bcore_strcmp_n( sc_t str1, uz_t n1, sc_t str2, uz_t n2 )
 {
     return sc_t_cmp_n( str1, n1, str2, n2 );
 }
 
-sz_t bcore_strlen( sc_t str )
+uz_t bcore_strlen( sc_t str )
 {
     return sc_t_len( str );
 }

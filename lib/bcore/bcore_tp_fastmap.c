@@ -35,10 +35,10 @@ void bcore_tp_fastmap_table_s_down( bcore_tp_fastmap_table_s* o )
     bcore_tp_fastmap_table_s_clear( o );
 }
 
-sz_t bcore_tp_fastmap_table_s_keys( bcore_tp_fastmap_table_s* o )
+uz_t bcore_tp_fastmap_table_s_keys( bcore_tp_fastmap_table_s* o )
 {
-    sz_t count = 0;
-    for( sz_t i = 0; i < o->size; i++ )
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ )
     {
         if( o->arr[ i ].key ) count++;
     }
@@ -47,7 +47,7 @@ sz_t bcore_tp_fastmap_table_s_keys( bcore_tp_fastmap_table_s* o )
 
 bl_t bcore_tp_fastmap_table_s_set( bcore_tp_fastmap_table_s* o, tp_t key, vc_t val )
 {
-    sz_t idx = key & o->mask;
+    uz_t idx = key & o->mask;
     if( o->arr[ idx ].key == key ) return true;
     if( o->arr[ idx ].key == 0   ) { o->arr[ idx ].key = key; o->arr[ idx ].val = val; return true; }
     idx++;
@@ -68,12 +68,12 @@ void bcore_tp_fastmap_table_s_init_new( bcore_tp_fastmap_table_s* o, const bcore
     o->size = src ? src->size << 1 : BCORE_TP_FASTMAP_START_SIZE;
     o->mask = ( o->size - 1 ) ^ ( BCORE_TP_FASTMAP_SCAN_LENGTH - 1 );
 
-    sz_t alloc_size = sizeof( bcore_tp_fastmap_kv_s ) * o->size;
+    uz_t alloc_size = sizeof( bcore_tp_fastmap_kv_s ) * o->size;
     o->arr = bcore_malloc( alloc_size );
     bcore_memzero( o->arr, alloc_size );
     if( src )
     {
-        for( sz_t i = 0; i < src->size; i++ )
+        for( uz_t i = 0; i < src->size; i++ )
         {
             if( src->arr[ i ].key ) bcore_tp_fastmap_table_s_set( o, src->arr[ i ].key, src->arr[ i ].val );
         }
@@ -88,7 +88,7 @@ void bcore_tp_fastmap_s_init( bcore_tp_fastmap_s* o )
     bcore_mutex_s_init( &o->mutex );
 
     bcore_mutex_s_lock( &o->mutex );
-    for( sz_t i = 0; i < BCORE_TP_FASTMAP_MAX_TABLES; i++ ) bcore_tp_fastmap_table_s_init( &o->table_arr[ i ] );
+    for( uz_t i = 0; i < BCORE_TP_FASTMAP_MAX_TABLES; i++ ) bcore_tp_fastmap_table_s_init( &o->table_arr[ i ] );
     bcore_tp_fastmap_table_s_init_new( &o->table_arr[ 0 ], NULL );
     bcore_mutex_s_unlock( &o->mutex );
 
@@ -98,7 +98,7 @@ void bcore_tp_fastmap_s_init( bcore_tp_fastmap_s* o )
 void bcore_tp_fastmap_s_clear( bcore_tp_fastmap_s* o )
 {
     bcore_mutex_s_lock( &o->mutex );
-    for( sz_t i = 0; i < BCORE_TP_FASTMAP_MAX_TABLES; i++ ) bcore_tp_fastmap_table_s_clear( &o->table_arr[ i ] );
+    for( uz_t i = 0; i < BCORE_TP_FASTMAP_MAX_TABLES; i++ ) bcore_tp_fastmap_table_s_clear( &o->table_arr[ i ] );
     o->table_index_get = 0;
     o->table_index_set = 0;
     bcore_tp_fastmap_table_s_init_new( &o->table_arr[ 0 ], NULL );
@@ -108,7 +108,7 @@ void bcore_tp_fastmap_s_clear( bcore_tp_fastmap_s* o )
 void bcore_tp_fastmap_s_down( bcore_tp_fastmap_s* o )
 {
     bcore_mutex_s_lock( &o->mutex );
-    for( sz_t i = 0; i < BCORE_TP_FASTMAP_MAX_TABLES; i++ ) bcore_tp_fastmap_table_s_down( &o->table_arr[ i ] );
+    for( uz_t i = 0; i < BCORE_TP_FASTMAP_MAX_TABLES; i++ ) bcore_tp_fastmap_table_s_down( &o->table_arr[ i ] );
     bcore_mutex_s_unlock( &o->mutex );
 
     bcore_mutex_s_down( &o->mutex );
@@ -163,18 +163,18 @@ bl_t bcore_tp_fastmap_s_set( bcore_tp_fastmap_s* o, tp_t key, vc_t val )
     return bcore_tp_fastmap_s_set( o, key, val );
 }
 
-sz_t bcore_tp_fastmap_s_size( bcore_tp_fastmap_s* o )
+uz_t bcore_tp_fastmap_s_size( bcore_tp_fastmap_s* o )
 {
     bcore_mutex_s_lock( &o->mutex );
-    sz_t size = o->table_arr[ o->table_index_set ].size;
+    uz_t size = o->table_arr[ o->table_index_set ].size;
     bcore_mutex_s_unlock( &o->mutex );
     return size;
 }
 
-sz_t bcore_tp_fastmap_s_keys( bcore_tp_fastmap_s* o )
+uz_t bcore_tp_fastmap_s_keys( bcore_tp_fastmap_s* o )
 {
     bcore_mutex_s_lock( &o->mutex );
-    sz_t keys = bcore_tp_fastmap_table_s_keys( &o->table_arr[ o->table_index_set ] );
+    uz_t keys = bcore_tp_fastmap_table_s_keys( &o->table_arr[ o->table_index_set ] );
     bcore_mutex_s_unlock( &o->mutex );
     return keys;
 }
@@ -187,8 +187,8 @@ static vd_t selftest( void )
     st_s_push_char_n( log, '=', 120 - log->size );
     st_s_push_char( log, '\n' );
 
-    const sz_t cycles = 10000;
-    const sz_t kvbuf_size = 2000;
+    const uz_t cycles = 10000;
+    const uz_t kvbuf_size = 2000;
 
     typedef struct
     {
@@ -200,7 +200,7 @@ static vd_t selftest( void )
     u2_t rval = rinit;
 
     kv_s* kvbuf = bcore_alloc( NULL, kvbuf_size * sizeof( kv_s ) );
-    for( sz_t i = 0; i < kvbuf_size; i++ )
+    for( uz_t i = 0; i < kvbuf_size; i++ )
     {
         rval = bcore_xsg_u2( rval );
         tp_t key = rval;
@@ -211,9 +211,9 @@ static vd_t selftest( void )
 
     bcore_tp_fastmap_s* map = bcore_tp_fastmap_s_create();
 
-    for( sz_t i = 0; i < cycles; i++ )
+    for( uz_t i = 0; i < cycles; i++ )
     {
-        for( sz_t j = 0; j < kvbuf_size; j++ )
+        for( uz_t j = 0; j < kvbuf_size; j++ )
         {
             kv_s kv = kvbuf[ j ];
             vc_t v = bcore_tp_fastmap_s_get( map, kv.key );
@@ -233,9 +233,9 @@ static vd_t selftest( void )
     rval = rinit;
 
     // test retrieve only
-    for( sz_t i = 0; i < cycles; i++ )
+    for( uz_t i = 0; i < cycles; i++ )
     {
-        for( sz_t j = 0; j < kvbuf_size; j++ )
+        for( uz_t j = 0; j < kvbuf_size; j++ )
         {
             kv_s kv = kvbuf[ j ];
             vc_t v = bcore_tp_fastmap_s_get( map, kv.key );
@@ -247,13 +247,13 @@ static vd_t selftest( void )
     clock_t time, overhead;
     {
         overhead = clock();
-        sz_t sum = 0;
-        for( sz_t i = 0; i < cycles; i++ )
+        uz_t sum = 0;
+        for( uz_t i = 0; i < cycles; i++ )
         {
-            for( sz_t j = 0; j < kvbuf_size; j++ )
+            for( uz_t j = 0; j < kvbuf_size; j++ )
             {
                 kv_s kv = kvbuf[ j ];
-                sum += ( sz_t )kv.val;
+                sum += ( uz_t )kv.val;
             }
         }
         st_s_push_fa( log, "", sum ); // let compiler think sum is used
@@ -263,25 +263,25 @@ static vd_t selftest( void )
     // time test retrieve only
     {
         time = clock();
-        sz_t sum = 0;
-        for( sz_t i = 0; i < cycles; i++ )
+        uz_t sum = 0;
+        for( uz_t i = 0; i < cycles; i++ )
         {
-            for( sz_t j = 0; j < kvbuf_size; j++ )
+            for( uz_t j = 0; j < kvbuf_size; j++ )
             {
                 kv_s kv = kvbuf[ j ];
                 vc_t v = bcore_tp_fastmap_s_get( map, kv.key );
-                sum += ( sz_t )v;
+                sum += ( uz_t )v;
             }
         }
         time = clock() - time;
         st_s_push_fa( log, "", sum ); // let compiler think sum is used
     }
 
-    st_s_push_fa( log, "get ... #<sz_t>ps\n", ( sz_t ) ( ( 1E12 * ( double )( time - overhead )/CLOCKS_PER_SEC ) / ( cycles * kvbuf_size ) ) );
-    st_s_push_fa( log, "size .. #<sz_t>\n", bcore_tp_fastmap_s_size( map ) );
-    st_s_push_fa( log, "keys .. #<sz_t>\n", bcore_tp_fastmap_s_keys( map ) );
+    st_s_push_fa( log, "get ... #<uz_t>ps\n", ( uz_t ) ( ( 1E12 * ( double )( time - overhead )/CLOCKS_PER_SEC ) / ( cycles * kvbuf_size ) ) );
+    st_s_push_fa( log, "size .. #<uz_t>\n", bcore_tp_fastmap_s_size( map ) );
+    st_s_push_fa( log, "keys .. #<uz_t>\n", bcore_tp_fastmap_s_keys( map ) );
 
-    sz_t bcore_tp_fastmap_s_keys( bcore_tp_fastmap_s* o );
+    uz_t bcore_tp_fastmap_s_keys( bcore_tp_fastmap_s* o );
 
 
     bcore_tp_fastmap_s_discard( map );

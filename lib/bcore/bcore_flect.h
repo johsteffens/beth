@@ -62,13 +62,13 @@ typedef struct { vd_t  link;                                   } bcore_link_awar
 /** bcore_array_dyn_head_s matches the beginning of every dynamic array structure
  *  ptr has different meanings (either vd_t or vd_t*)
  */
-typedef struct { vd_t   ptr; sz_t size; sz_t space;            } bcore_array_dyn_head_s;
+typedef struct { vd_t   ptr; uz_t size; uz_t space;            } bcore_array_dyn_head_s;
 
-typedef struct { vd_t  data; sz_t size; sz_t space;            } bcore_array_dyn_solid_static_s;
-typedef struct { vd_t  data; sz_t size; sz_t space; tp_t type; } bcore_array_dyn_solid_typed_s;
-typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_array_dyn_link_static_s;
-typedef struct { vd_t* data; sz_t size; sz_t space; tp_t type; } bcore_array_dyn_link_typed_s;
-typedef struct { vd_t* data; sz_t size; sz_t space;            } bcore_array_dyn_link_aware_s;
+typedef struct { vd_t  data; uz_t size; uz_t space;            } bcore_array_dyn_solid_static_s;
+typedef struct { vd_t  data; uz_t size; uz_t space; tp_t type; } bcore_array_dyn_solid_typed_s;
+typedef struct { vd_t* data; uz_t size; uz_t space;            } bcore_array_dyn_link_static_s;
+typedef struct { vd_t* data; uz_t size; uz_t space; tp_t type; } bcore_array_dyn_link_typed_s;
+typedef struct { vd_t* data; uz_t size; uz_t space;            } bcore_array_dyn_link_aware_s;
 
 /*
 PLANNING:
@@ -149,9 +149,10 @@ typedef struct bcore_self_item_s
         u3_t default_u3; // serves u0_t ... u3_t
         f3_t default_f3; // serves f2_t ... f3_t
         tp_t default_tp; // serves tp_t and external functions
-        sz_t default_sz; // serves sz_t, offset_t
-        sz_t default_bl; // serves bl_t
-        sz_t array_fix_size; // size for fixed arrays
+        szxxx_t default_szxxx; // serves szxxx_t
+        uz_t default_uz; // serves uz_t, offset_t
+        uz_t default_bl; // serves bl_t
+        uz_t array_fix_size; // size for fixed arrays
         umax_t default_umax;
         smax_t default_smax;
     };
@@ -174,10 +175,10 @@ s2_t               bcore_self_item_s_cmp( const bcore_self_item_s* o1, const bco
 bl_t bcore_self_item_s_has_default_value( const bcore_self_item_s* o );
 
 /// returns instantiation size or 0 if size is not computable at this point
-sz_t bcore_self_item_s_inst_size( const bcore_self_item_s* o );
+uz_t bcore_self_item_s_inst_size( const bcore_self_item_s* o );
 
 /// returns instantiation alignments or 0 if value is not computable at this point
-sz_t bcore_self_item_s_inst_align( const bcore_self_item_s* o );
+uz_t bcore_self_item_s_inst_align( const bcore_self_item_s* o );
 
 void bcore_self_item_s_check_integrity( const bcore_self_item_s* o );
 
@@ -220,7 +221,7 @@ typedef struct bcore_self_s
      *        This feature is useful to detect the error that object's compile-time definition is out of
      *        sync with its reflection.
      */
-    sz_t size;
+    uz_t size;
 
     /** Body of type. Exposing the body is optional.
      *  If the body is exposed, declarations must be complete up to the last declared element.
@@ -231,15 +232,15 @@ typedef struct bcore_self_s
 } bcore_self_s;
 
 void                bcore_self_s_init( bcore_self_s* o );
-void                bcore_self_s_init_plain( bcore_self_s* o, tp_t type, tp_t trait, sz_t size );
+void                bcore_self_s_init_plain( bcore_self_s* o, tp_t type, tp_t trait, uz_t size );
 void                bcore_self_s_down( bcore_self_s* o );
 void                bcore_self_s_copy( bcore_self_s* o, const bcore_self_s* src );
 bcore_self_s* bcore_self_s_create();
 bcore_self_s* bcore_self_s_clone( const bcore_self_s* o );
 void                bcore_self_s_discard( bcore_self_s* o );
 
-sz_t                     bcore_self_s_items_size( const bcore_self_s* o );
-const bcore_self_item_s* bcore_self_s_get_item( const bcore_self_s* o, sz_t index );
+uz_t                     bcore_self_s_items_size( const bcore_self_s* o );
+const bcore_self_item_s* bcore_self_s_get_item( const bcore_self_s* o, uz_t index );
 
 bcore_self_item_s* bcore_self_s_push( bcore_self_s* o, const bcore_self_item_s* item );
 bcore_self_item_s* bcore_self_s_push_d( bcore_self_s* o, bcore_self_item_s* item );
@@ -255,14 +256,14 @@ st_s*              bcore_self_s_show( const bcore_self_s* o );
 void               bcore_self_s_check_integrity( const bcore_self_s* o );
 
 /// special reflections
-bcore_self_s* bcore_self_s_create_plain( tp_t type, tp_t trait, sz_t size ); // plain (primitive) self contained type
+bcore_self_s* bcore_self_s_create_plain( tp_t type, tp_t trait, uz_t size ); // plain (primitive) self contained type
 
 // creates anonymous array type ...
 bcore_self_s* bcore_self_s_create_array_dyn_solid_static( tp_t item_type );
 bcore_self_s* bcore_self_s_create_array_dyn_link_static(  tp_t item_type );
-bcore_self_s* bcore_self_s_create_array_fix_solid_static( tp_t item_type, sz_t size );
-bcore_self_s* bcore_self_s_create_array_fix_link_static(  tp_t item_type, sz_t size );
-bcore_self_s* bcore_self_s_create_array_fix_link_aware(   sz_t size );
+bcore_self_s* bcore_self_s_create_array_fix_solid_static( tp_t item_type, uz_t size );
+bcore_self_s* bcore_self_s_create_array_fix_link_static(  tp_t item_type, uz_t size );
+bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
 
 
 /** Creating a reflection by parsing a stream:
@@ -330,8 +331,8 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   sz_t size );
  *    No body: Allowed for certain leaf types, where alignment == object size.
  *
  */
-bcore_self_s* bcore_self_s_build_parse_src( sr_s src, sz_t size_of );
-bcore_self_s* bcore_self_s_build_parse_sc( sc_t text, sz_t size_of );
+bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of );
+bcore_self_s* bcore_self_s_build_parse_sc( sc_t text, uz_t size_of );
 
 tp_t          bcore_self_s_fold_tp( const bcore_self_s* o, tp_t tp );
 s2_t          bcore_self_s_cmp( const bcore_self_s* o1, const bcore_self_s* o2 );
@@ -451,8 +452,8 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         struct \
         { \
             type* prefix##data; \
-            sz_t prefix##size; \
-            sz_t prefix##space; \
+            uz_t prefix##size; \
+            uz_t prefix##space; \
         }; \
     }
 
@@ -463,8 +464,8 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         struct \
         { \
             type** prefix##data; \
-            sz_t prefix##size; \
-            sz_t prefix##space; \
+            uz_t prefix##size; \
+            uz_t prefix##space; \
         }; \
     }
 

@@ -60,8 +60,8 @@ BCORE_DECLARE_SPECT( bmath_matrix_s )
     bmath_fp_matrix_mul_scl mul_scl;
 };
 
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bmath_matrix, get_rows, sz_t )
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bmath_matrix, get_cols, sz_t )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bmath_matrix, get_rows, uz_t )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bmath_matrix, get_cols, uz_t )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAPX( bmath_matrix, zro )
 BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAP0( bmath_matrix, cpy, bmath_matrix*, res )
 BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAPX( bmath_matrix, neg, bmath_matrix*, res )

@@ -26,8 +26,8 @@ typedef void (*bcore_source_fp_parse_fv )(    vd_t o, sc_t format, va_list args 
 typedef void (*bcore_source_fp_set_supplier)( vd_t o, vd_t supplier );             // to create a chain of source units
 typedef bl_t (*bcore_source_fp_eos)(          vc_t o );                            // (required) end of source has been reached
 typedef sc_t (*bcore_source_fp_get_file)(     vc_t o );                            // returns file name if source is of a file system or "" otherwise
-typedef sz_t (*bcore_source_fp_get_index)(    vc_t o );                            // returns the current read index (0 if not supported)
-typedef void (*bcore_source_fp_set_index)(    vd_t o, sz_t index );                // sets read index to requested position (error if not supported)
+typedef uz_t (*bcore_source_fp_get_index)(    vc_t o );                            // returns the current read index (0 if not supported)
+typedef void (*bcore_source_fp_set_index)(    vd_t o, uz_t index );                // sets read index to requested position (error if not supported)
 
 /// required source features:
 /// awareness
@@ -55,7 +55,7 @@ u0_t bcore_source_default_get_u0( const bcore_source_s* p, bcore_source* o )
     return v;
 }
 
-BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( bcore_source, get_data,     sz_t, vd_t, data, sz_t, size ) // returns number of bytes read
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( bcore_source, get_data,     uz_t, vd_t, data, uz_t, size ) // returns number of bytes read
 BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, get_u0,       u0_t )  // reads single byte and returns it (returns 0 in case eos is reached
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP1( bcore_source, parse_fv,           sc_t, format, va_list, args )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_errvf,        sc_t, format, va_list, args )

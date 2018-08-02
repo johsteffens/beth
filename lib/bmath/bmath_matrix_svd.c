@@ -29,7 +29,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static bl_t ud_is_zero( bmath_mf3_s* a, sz_t row_idx )
+static bl_t ud_is_zero( bmath_mf3_s* a, uz_t row_idx )
 {
     f3_t* a00 = a->data + ( a->stride + 1 ) * row_idx;
     f3_t  a01_abs = f3_abs( a00[ 1 ] );
@@ -45,7 +45,7 @@ static bl_t ud_is_zero( bmath_mf3_s* a, sz_t row_idx )
     return false;
 }
 
-static void ud_set_zero( bmath_mf3_s* a, sz_t row_idx )
+static void ud_set_zero( bmath_mf3_s* a, uz_t row_idx )
 {
     a->data[ ( a->stride + 1 ) * row_idx + 1 ] = 0;
 }
@@ -55,7 +55,7 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     // creating upper-bidiagonal
     bmath_mf3_s_ubd( u, a, v );
 
-    sz_t n = f3_min( a->cols, a->rows );
+    uz_t n = f3_min( a->cols, a->rows );
     if( n <= 1 ) return true; // nothing else to do
 
     // transposed ur, vr
@@ -95,7 +95,7 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     // remove defective diagonal elements
     // zero defective superdiagonal elements
     bl_t defective = false;
-    for( sz_t i = 0; i < a->rows - 1; i++ )
+    for( uz_t i = 0; i < a->rows - 1; i++ )
     {
         f3_t* ai = a->data + i * ( a->stride + 1 );
         if( f3_abs( ai[ 1 ] ) < f3_abs( ai[ 0 ] ) * f3_lim_eps )
@@ -120,7 +120,7 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     bl_t success = true;
 
     // IRB: irreducible block
-    sz_t irb_start = 0;
+    uz_t irb_start = 0;
 
     for(;;)
     {
@@ -129,16 +129,16 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
         if( irb_start >= n - 1 ) break;
 
-        sz_t irb_end = irb_start + 1;
+        uz_t irb_end = irb_start + 1;
         while( irb_end < n && a->data[ ( a->stride + 1 ) * ( irb_end - 1 ) + 1 ] != 0 ) irb_end++;
 
         /// diagonalize IRB
         {
             // in practice convergence hardly ever needs more than 4 cycles
-            const sz_t max_cycles = 50;
+            const uz_t max_cycles = 50;
 
             bl_t exit_cycle = false;
-            sz_t cycle;
+            uz_t cycle;
             for( cycle = 0; cycle < max_cycles && !exit_cycle; cycle++ )
             {
 
@@ -184,7 +184,7 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
                 grv.data[ irb_start ] = gr_r;
 
                 // chasing, annihilating off-bidiagonals
-                for( sz_t k = irb_start; k < irb_end - 2; k++ )
+                for( uz_t k = irb_start; k < irb_end - 2; k++ )
                 {
                     f3_t* ak = a->data + ( a->stride + 1 ) * k + 1;
                     f3_t* al = ak + a->stride;
@@ -224,11 +224,11 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     if( success )
     {
         // sorts by descending diagonal values; turns negative values
-        for( sz_t i = 0; i < n; i++ )
+        for( uz_t i = 0; i < n; i++ )
         {
             f3_t vmax = f3_abs( a->data[ i * ( a->stride + 1 ) ] );
-            sz_t imax = i;
-            for( sz_t j = i + 1; j < n; j++ )
+            uz_t imax = i;
+            for( uz_t j = i + 1; j < n; j++ )
             {
                 f3_t v = f3_abs( a->data[ j * ( a->stride + 1 ) ] );
                 imax = ( v > vmax ) ? j : imax;

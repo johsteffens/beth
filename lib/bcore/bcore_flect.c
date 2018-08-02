@@ -159,10 +159,10 @@ bcore_self_item_s* bcore_self_item_s_create_func( sc_t fname, fp_t func, sc_t ty
     return o;
 }
 
-sz_t bcore_flect_aligned_offset( sz_t align, sz_t raw_offset )
+uz_t bcore_flect_aligned_offset( uz_t align, uz_t raw_offset )
 {
     if( align < 2 ) return raw_offset;
-    sz_t offset = raw_offset;
+    uz_t offset = raw_offset;
     if( ( offset & ( align - 1 ) ) != 0 ) offset = ( offset + align ) & ~( align - 1 );
     return offset;
 }
@@ -175,7 +175,7 @@ tp_t bcore_self_item_s_fold_tp( const bcore_self_item_s* o, tp_t tp )
     tp = bcore_tp_fold_tp( tp, o->flags.data );
 
     umax_t v = o->default_umax;
-    for( sz_t i = 0; i < sizeof( umax_t ); i++ )
+    for( uz_t i = 0; i < sizeof( umax_t ); i++ )
     {
         tp = bcore_tp_fold_u0( tp, v );
         v >>= 8;
@@ -200,7 +200,7 @@ bl_t bcore_self_item_s_has_default_value( const bcore_self_item_s* o )
     return true;
 }
 
-sz_t bcore_self_item_s_inst_size( const bcore_self_item_s* o )
+uz_t bcore_self_item_s_inst_size( const bcore_self_item_s* o )
 {
     switch( o->caps )
     {
@@ -222,7 +222,7 @@ sz_t bcore_self_item_s_inst_size( const bcore_self_item_s* o )
     return 0;
 }
 
-sz_t bcore_self_item_s_inst_align( const bcore_self_item_s* o )
+uz_t bcore_self_item_s_inst_align( const bcore_self_item_s* o )
 {
     switch( o->caps )
     {
@@ -319,7 +319,7 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
         bl_t f_feature   = false;
         bl_t f_strict    = false;
 
-        sz_t array_fix_size = 0;
+        uz_t array_fix_size = 0;
 
         bl_t f_any_prefix = true;
         while( f_any_prefix )
@@ -411,7 +411,7 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
             else if( bcore_source_r_parse_bl_fa( &src, "#?([0]>='0'&&[0]<='9')" ) )
             {
                 f_arr_fix = true;
-                bcore_source_r_parse_fa( &src, "#<sz_t*> ", &array_fix_size );
+                bcore_source_r_parse_fa( &src, "#<uz_t*> ", &array_fix_size );
                 if( !bcore_source_r_parse_bl_fa( &src, "#?']' " ) )
                 {
                     bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n']' expected.", ifnameof( parent ) );
@@ -519,7 +519,8 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
                         bcore_source_r_parse_fa( &src, " #<u3_t*>", &o->default_u3 );
                         break;
 
-                    case TYPEOF_sz_t:
+                    case TYPEOF_szxxx_t:
+                    case TYPEOF_uz_t:
                     case TYPEOF_offset_t:
                     {
                         // for these types scanning of negative numbers is allowed, which will be wrapped around u3.
@@ -602,9 +603,9 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
         u3_t default_u3; // serves u0_t ... u3_t
         f3_t default_f3; // serves f2_t ... f3_t
         tp_t default_tp; // serves tp_t and external functions
-        sz_t default_sz; // serves sz_t, offset_t
-        sz_t default_bl; // serves bl_t
-        sz_t array_fix_size; // size for fixed arrays
+        uz_t default_sz; // serves uz_t, offset_t
+        uz_t default_bl; // serves bl_t
+        uz_t array_fix_size; // size for fixed arrays
         umax_t default_umax;
         smax_t default_smax;
     };
@@ -644,7 +645,7 @@ typedef struct bcore_self_body_s
         struct
         {
             bcore_self_item_s** data;
-            sz_t size, space;
+            uz_t size, space;
         };
     };
 
@@ -662,7 +663,7 @@ void bcore_self_body_s_init( bcore_self_body_s* o )
 
 void bcore_self_body_s_down( bcore_self_body_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_self_item_s_discard( o->data[ i ] );
+    for( uz_t i = 0; i < o->size; i++ ) bcore_self_item_s_discard( o->data[ i ] );
     bcore_release( o->data );
     o->data  = NULL;
     o->size  = 0;
@@ -671,14 +672,14 @@ void bcore_self_body_s_down( bcore_self_body_s* o )
 
 void bcore_self_body_s_copy( bcore_self_body_s* o, const bcore_self_body_s* src )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_self_item_s_discard( o->data[ i ] );
+    for( uz_t i = 0; i < o->size; i++ ) bcore_self_item_s_discard( o->data[ i ] );
     bcore_release( o->data );
     o->data = NULL;
     o->size = 0;
     o->space = 0;
 
     o->data = bcore_un_alloc( sizeof( bcore_self_item_s* ), o->data, o->space, src->size, &o->space );
-    for( sz_t i = 0; i < src->size; i++ ) o->data[ i ] = bcore_self_item_s_clone( src->data[ i ] );
+    for( uz_t i = 0; i < src->size; i++ ) o->data[ i ] = bcore_self_item_s_clone( src->data[ i ] );
 
     o->size = src->size;
     o->complete = src->complete;
@@ -690,7 +691,7 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_self_body_s )
 
 void bcore_self_body_s_clear( bcore_self_body_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_self_item_s_discard( o->data[ i ] );
+    for( uz_t i = 0; i < o->size; i++ ) bcore_self_item_s_discard( o->data[ i ] );
     bcore_release( o->data );
     o->data  = NULL;
     o->size  = 0;
@@ -704,7 +705,7 @@ bcore_self_item_s* bcore_self_body_s_push_d( bcore_self_body_s* o, bcore_self_it
     {
         bcore_self_item_s** old_data = o->data;
         o->data = bcore_u_alloc( sizeof( bcore_self_item_s* ), NULL, o->space > 0 ? o->space * 2 : 1, &o->space );
-        for( sz_t i = 0; i < o->size; i++ ) o->data[ i ] = old_data[ i ];
+        for( uz_t i = 0; i < o->size; i++ ) o->data[ i ] = old_data[ i ];
         bcore_release( old_data );
     }
     o->data[ o->size ] = item;
@@ -723,7 +724,7 @@ st_s* bcore_self_body_s_show( const bcore_self_body_s* o )
     st_s* s = st_s_create();
     st_s_pushf( s, "bcore_self_body_s" );
     st_s_pushf( s, "\n{" );
-    for( sz_t i = 0; i < o->size; i++ )
+    for( uz_t i = 0; i < o->size; i++ )
     {
         st_s_pushf( s, "\n    data[%lu]:", i );
         st_s_push_st_d( s, st_s_replace_char_sc( bcore_self_item_s_show( o->data[ i ] ), '\n', "\n    " ) );
@@ -765,14 +766,14 @@ void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, tp_t parent )
 
 tp_t bcore_self_body_s_fold_tp( const bcore_self_body_s* o, tp_t tp )
 {
-    for( sz_t i = 0; i < o->size; i++ ) tp = bcore_self_item_s_fold_tp( o->data[ i ], tp );
+    for( uz_t i = 0; i < o->size; i++ ) tp = bcore_self_item_s_fold_tp( o->data[ i ], tp );
     return tp;
 }
 
 s2_t bcore_self_body_s_cmp( const bcore_self_body_s* o1, const bcore_self_body_s* o2 )
 {
     if( o1->size != o2->size ) return ( o1->size < o2->size ) ? 1 : -1;
-    for( sz_t i = 0; i < o1->size; i++ )
+    for( uz_t i = 0; i < o1->size; i++ )
     {
         s2_t c = bcore_self_item_s_cmp( o1->data[ i ], o2->data[ i ] );
         if( c != 0 ) return c;
@@ -792,7 +793,7 @@ bl_t bcore_self_body_s_get_complete( const bcore_self_body_s* o )
 
 void bcore_self_body_s_check_integrity( const bcore_self_body_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_self_item_s_check_integrity( o->data[ i ] );
+    for( uz_t i = 0; i < o->size; i++ ) bcore_self_item_s_check_integrity( o->data[ i ] );
 }
 
 static bcore_self_s* flect_body_s_create_self( void )
@@ -854,12 +855,12 @@ void bcore_self_s_discard( bcore_self_s* o )
     bcore_release_obj( ( fp_t )bcore_self_s_down, o );
 }
 
-sz_t bcore_self_s_items_size( const bcore_self_s* o )
+uz_t bcore_self_s_items_size( const bcore_self_s* o )
 {
     return o->body ? o->body->size : 0;
 }
 
-const bcore_self_item_s* bcore_self_s_get_item( const bcore_self_s* o, sz_t index )
+const bcore_self_item_s* bcore_self_s_get_item( const bcore_self_s* o, uz_t index )
 {
     ASSERT( o->body );
     ASSERT( o->body->size > index );
@@ -905,7 +906,7 @@ bcore_self_item_s* bcore_self_s_push_fp_get( bcore_self_s* o, bcore_fp_get func,
     return bcore_self_s_push_ns_func( o, (fp_t )func, "bcore_fp_get", name );
 }
 
-void bcore_self_s_init_plain( bcore_self_s* o, tp_t type, tp_t trait, sz_t size )
+void bcore_self_s_init_plain( bcore_self_s* o, tp_t type, tp_t trait, uz_t size )
 {
     bcore_self_s_init( o );
     o->type  = type;
@@ -928,7 +929,7 @@ st_s* bcore_self_s_show( const bcore_self_s* o )
     return s;
 }
 
-bcore_self_s* bcore_self_s_create_plain( tp_t type, tp_t trait, sz_t size )
+bcore_self_s* bcore_self_s_create_plain( tp_t type, tp_t trait, uz_t size )
 {
     bcore_self_s* o = bcore_self_s_create();
     bcore_self_s_init_plain( o, type, trait, size );
@@ -959,7 +960,7 @@ bcore_self_s* bcore_self_s_create_array_dyn_link_static( tp_t item_type )
     return o;
 }
 
-bcore_self_s* bcore_self_s_create_array_fix_solid_static( tp_t item_type, sz_t size )
+bcore_self_s* bcore_self_s_create_array_fix_solid_static( tp_t item_type, uz_t size )
 {
     bcore_self_s* o = bcore_self_s_create();
     bcore_self_item_s* item = bcore_self_item_s_create();
@@ -972,7 +973,7 @@ bcore_self_s* bcore_self_s_create_array_fix_solid_static( tp_t item_type, sz_t s
     return o;
 }
 
-bcore_self_s* bcore_self_s_create_array_fix_link_static( tp_t item_type, sz_t size )
+bcore_self_s* bcore_self_s_create_array_fix_link_static( tp_t item_type, uz_t size )
 {
     bcore_self_s* o = bcore_self_s_create();
     bcore_self_item_s* item = bcore_self_item_s_create();
@@ -985,7 +986,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_static( tp_t item_type, sz_t si
     return o;
 }
 
-bcore_self_s* bcore_self_s_create_array_fix_link_aware( sz_t size )
+bcore_self_s* bcore_self_s_create_array_fix_link_aware( uz_t size )
 {
     bcore_self_s* o = bcore_self_s_create();
     bcore_self_item_s* item = bcore_self_item_s_create();
@@ -998,7 +999,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware( sz_t size )
     return o;
 }
 
-bcore_self_s* bcore_self_s_build_parse_src( sr_s src, sz_t size_of )
+bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
@@ -1038,7 +1039,7 @@ bcore_self_s* bcore_self_s_build_parse_src( sr_s src, sz_t size_of )
     return o;
 }
 
-bcore_self_s* bcore_self_s_build_parse_sc( sc_t text, sz_t size_of )
+bcore_self_s* bcore_self_s_build_parse_sc( sc_t text, uz_t size_of )
 {
     return bcore_self_s_build_parse_src( sr_asd( st_s_create_weak_sc( text ) ), size_of );
 }
@@ -1067,7 +1068,7 @@ fp_t bcore_self_s_try_external_fp( const bcore_self_s* o, tp_t type, tp_t name )
 {
     if( !o->body ) return NULL;
     const bcore_self_body_s* body = o->body;
-    for( sz_t i = 0; i < body->size; i++ )
+    for( uz_t i = 0; i < body->size; i++ )
     {
         const bcore_self_item_s* item = body->data[ i ];
         if( ( item->caps == BCORE_CAPS_EXTERNAL_FUNC ) &&
@@ -1121,7 +1122,7 @@ vc_t bcore_self_s_try_const( const bcore_self_s* o, tp_t type, tp_t name ) // re
 {
     if( !o->body ) return NULL;
     const bcore_self_body_s* body = o->body;
-    for( sz_t i = 0; i < body->size; i++ )
+    for( uz_t i = 0; i < body->size; i++ )
     {
         const bcore_self_item_s* item = body->data[ i ];
         if( ( item->caps == BCORE_CAPS_SOLID_STATIC ) &&
@@ -1161,7 +1162,7 @@ static bcore_self_s* flect_self_s_create_self( void )
         "aware_t _;"
         "tp_t type;"
         "tp_t trait;"
-        "sz_t size;"
+        "uz_t size;"
         "bcore_self_body_s* body;"
     "}";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_self_s ) );
@@ -1232,8 +1233,8 @@ static void self_map_s_down( self_map_s* o )
     {
         // We manually detach objects here to keep hmap from invoking
         // perspective management, which may (already) be down at this point.
-        sz_t hmap_size = bcore_hmap_u2vd_s_size( o->hmap );
-        for( sz_t i = 0; i < hmap_size; i++ )
+        uz_t hmap_size = bcore_hmap_u2vd_s_size( o->hmap );
+        for( uz_t i = 0; i < hmap_size; i++ )
         {
             if( bcore_hmap_u2vd_s_idx_holds( o->hmap, i ) )
             {
@@ -1573,7 +1574,8 @@ static void flect_define_basics()
     BCORE_REGISTER_PLAIN( umax_t, num  );
     BCORE_REGISTER_PLAIN( f2_t, num  );
     BCORE_REGISTER_PLAIN( f3_t, num  );
-    BCORE_REGISTER_PLAIN( sz_t, num  );
+    BCORE_REGISTER_PLAIN( szxxx_t, num  );
+    BCORE_REGISTER_PLAIN( uz_t, num  );
     BCORE_REGISTER_PLAIN( sd_t, leaf );
     BCORE_REGISTER_PLAIN( sc_t, leaf );
     BCORE_REGISTER_PLAIN( vd_t, leaf );
@@ -1611,9 +1613,9 @@ static void flect_define_basics()
 BCORE_DEFINE_CREATE_SELF( bcore_link_static_s,            "bcore_link_static_s       = { vd_t     link; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_link_typed_s,             "bcore_link_typed_s        = { typed => link; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_link_aware_s,             "bcore_link_aware_s        = { aware => link; }" )
-BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_solid_static_s, "bcore_array_dyn_solid_static_s = { vd_t  data; sz_t size; sz_t space; }" )
+BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_solid_static_s, "bcore_array_dyn_solid_static_s = { vd_t  data; uz_t size; uz_t space; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_solid_typed_s,  "bcore_array_dyn_solid_typed_s  = { typed  []; }" )
-BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_link_static_s,  "bcore_array_dyn_link_static_s  = { vd_t* data; sz_t size; sz_t space; }" )
+BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_link_static_s,  "bcore_array_dyn_link_static_s  = { vd_t* data; uz_t size; uz_t space; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_link_typed_s,   "bcore_array_dyn_link_typed_s   = { typed* []; }" )
 BCORE_DEFINE_CREATE_SELF( bcore_array_dyn_link_aware_s,   "bcore_array_dyn_link_aware_s   = { aware* []; }" )
 
@@ -1679,7 +1681,7 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
         {
             if( o->object && ( *( bl_t* )o->object ) )
             {
-                sz_t space = bcore_tbman_granted_space();
+                uz_t space = bcore_tbman_granted_space();
                 flect_close();
                 bcore_msg( "  reflection mananger . % 6zu\n", space - bcore_tbman_granted_space() );
             }

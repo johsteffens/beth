@@ -37,18 +37,18 @@ bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
         ASSERT( bmath_mf3_s_is_equ_size( a, v ) );
     }
 
-    sz_t n = a->rows;
-    sz_t max_cycles = 100;
+    uz_t n = a->rows;
+    uz_t max_cycles = 100;
 
-    sz_t cycle;
+    uz_t cycle;
     for( cycle = 0; cycle < max_cycles; cycle++ )
     {
         f3_t max_dev = 0;
-        for( sz_t k = 0; k < n; k++ )
+        for( uz_t k = 0; k < n; k++ )
         {
             f3_t* ak =     a->data + k * a->stride;
             f3_t* vk = v ? v->data + k * v->stride : NULL;
-            for( sz_t l = k + 1; l < n; l++ )
+            for( uz_t l = k + 1; l < n; l++ )
             {
                 f3_t akl = ak[l];
                 if( akl == 0 ) continue;
@@ -74,7 +74,7 @@ bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
                 ak[l] = 0;
                 al[k] = 0;
 
-                for( sz_t i = 0; i < n; i++ )
+                for( uz_t i = 0; i < n; i++ )
                 {
                     if( i != k && i != l )
                     {
@@ -112,7 +112,7 @@ bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
  */
 bl_t bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    sz_t n = a->rows;
+    uz_t n = a->rows;
     if( n <= 1 ) return true; // nothing to do
 
     // tridiagonalization
@@ -120,11 +120,11 @@ bl_t bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
 
     bl_t success = true;
 
-    for( sz_t block_n = n; block_n > 1; block_n-- )
+    for( uz_t block_n = n; block_n > 1; block_n-- )
     {
-        sz_t max_cycles = 100; // usually convergence is reached after 2...3 cycles
+        uz_t max_cycles = 100; // usually convergence is reached after 2...3 cycles
         f3_t shift_sum = 0;
-        sz_t cycle;
+        uz_t cycle;
         for( cycle = 0; cycle < max_cycles; cycle++ )
         {
             // aij of lower 2x2 sub-matrix
@@ -145,7 +145,7 @@ bl_t bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
             f3_t shift = ( a11 >= p ) ? p + d : p - d;
             shift_sum += shift;
 
-            for( sz_t i = 0; i < block_n; i++ ) a->data[ i * ( a->stride + 1 ) ] -= shift;
+            for( uz_t i = 0; i < block_n; i++ ) a->data[ i * ( a->stride + 1 ) ] -= shift;
 
             f3_t* a0 = a->data;
 
@@ -156,7 +156,7 @@ bl_t bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
             bmath_grt_f3_s gr0;
             bmath_grt_f3_s_init_to_annihilate_b( &gr0, r00, a0[ a->stride ] );
 
-            for( sz_t i = 0; i < block_n - 1; i++ )
+            for( uz_t i = 0; i < block_n - 1; i++ )
             {
                 if( v ) bmath_grt_f3_s_row_rotate( &gr0, v->data + i * v->stride, v->data + ( i + 1 ) * v->stride, 0, n );
 
@@ -189,17 +189,17 @@ bl_t bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
             a0[ 0 ] = r00 * cp;
         }
         if( cycle == max_cycles ) success = false;
-        for( sz_t i = 0; i < block_n; i++ ) a->data[ i * ( a->stride + 1 ) ] += shift_sum;
+        for( uz_t i = 0; i < block_n; i++ ) a->data[ i * ( a->stride + 1 ) ] += shift_sum;
     }
 
     if( success )
     {
         // sort by descending eigenvalues
-        for( sz_t i = 0; i < n - 1; i++ )
+        for( uz_t i = 0; i < n - 1; i++ )
         {
             f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
-            sz_t imax = i;
-            for( sz_t j = i + 1; j < n; j++ )
+            uz_t imax = i;
+            for( uz_t j = i + 1; j < n; j++ )
             {
                 f3_t v = a->data[ j * ( a->stride + 1 ) ];
                 imax = ( v > vmax ) ? j : imax;
@@ -223,7 +223,7 @@ bl_t bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
  */
 bl_t bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    sz_t n = a->rows;
+    uz_t n = a->rows;
     if( n <= 1 ) return true; // nothing to do
 
     /// tridiagonalization
@@ -233,10 +233,10 @@ bl_t bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
 
     bl_t success = true;
 
-    for( sz_t block_n = n; block_n > 1; block_n-- )
+    for( uz_t block_n = n; block_n > 1; block_n-- )
     {
-        sz_t max_cycles = 100; // usually convergence is reached after 2...3 cycles
-        sz_t cycle;
+        uz_t max_cycles = 100; // usually convergence is reached after 2...3 cycles
+        uz_t cycle;
         for( cycle = 0; cycle < max_cycles; cycle++ )
         {
             f3_t lambda;
@@ -272,7 +272,7 @@ bl_t bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
             f3_t b = gr_i.c * ajj - gr_i.s * ch * aij;
             bmath_grt_f3_s_init_to_annihilate_b( &gr_j, b - gr_i.c * lambda, ajk );
 
-            for( sz_t j = 0; j < block_n - 1; j++ )
+            for( uz_t j = 0; j < block_n - 1; j++ )
             {
                 if( v ) bmath_grt_f3_s_row_rotate( &gr_j, v->data + j * v->stride, v->data + ( j + 1 ) * v->stride, 0, n );
 
@@ -314,11 +314,11 @@ bl_t bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
     if( success )
     {
         // sort by descending eigenvalues
-        for( sz_t i = 0; i < n - 1; i++ )
+        for( uz_t i = 0; i < n - 1; i++ )
         {
             f3_t vmax = a->data[ i * ( a->stride + 1 ) ];
-            sz_t imax = i;
-            for( sz_t j = i + 1; j < n; j++ )
+            uz_t imax = i;
+            for( uz_t j = i + 1; j < n; j++ )
             {
                 f3_t v = a->data[ j * ( a->stride + 1 ) ];
                 imax = ( v > vmax ) ? j : imax;
@@ -351,7 +351,7 @@ void bmath_mf3_s_evd_selftest()
     BCORE_LIFE_CREATE( bmath_mf3_s, m3 );
     BCORE_LIFE_CREATE( bmath_mf3_s, m4 );
 
-    sz_t n = 100;
+    uz_t n = 100;
 
     bmath_mf3_s_set_size( m1, n, n );
     u2_t rval = 1236;

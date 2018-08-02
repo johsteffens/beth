@@ -49,7 +49,7 @@ void bcore_inst_body_s_copy( bcore_inst_body_s* o, const bcore_inst_body_s* src 
     o->data = NULL;
     o->size = o->space = 0;
     o->data = bcore_un_alloc( sizeof( bcore_inst_item_s ), o->data, o->space, src->size, &o->space );
-    for( sz_t i = 0; i < src->size; i++ ) bcore_inst_item_s_copy( &o->data[ i ], &src->data[ i ] );
+    for( uz_t i = 0; i < src->size; i++ ) bcore_inst_item_s_copy( &o->data[ i ], &src->data[ i ] );
     o->size = src->size;
 }
 
@@ -63,7 +63,7 @@ bcore_inst_item_s* bcore_inst_body_s_push( bcore_inst_body_s* o )
     {
         bcore_inst_item_s* old_data = o->data;
         o->data = bcore_u_alloc( sizeof( bcore_inst_item_s ), NULL, o->space > 0 ? o->space * 2 : 1, &o->space );
-        for( sz_t i = 0; i < o->size; i++  )
+        for( uz_t i = 0; i < o->size; i++  )
         {
             bcore_inst_item_s_init( &o->data[ i ] );
             bcore_inst_item_s_copy( &o->data[ i ], &old_data[ i ] );
@@ -85,7 +85,7 @@ void bcore_inst_body_s_pop( bcore_inst_body_s* o )
 
 const bcore_inst_item_s* bcore_inst_body_s_get_item_from_self_item( const bcore_inst_body_s* o, const bcore_self_item_s* item )
 {
-    for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ].self_item == item ) return &o->data[ i ];
+    for( uz_t i = 0; i < o->size; i++ ) if( o->data[ i ].self_item == item ) return &o->data[ i ];
     return NULL;
 }
 
@@ -118,12 +118,12 @@ void bcore_inst_s_discard( bcore_inst_s* o )
     bcore_release_obj( ( fp_t )inst_s_down, o );
 }
 
-sz_t bcore_inst_s_get_items_size( const bcore_inst_s* o )
+uz_t bcore_inst_s_get_items_size( const bcore_inst_s* o )
 {
     return o->body ? o->body->size : 0;
 }
 
-const bcore_inst_item_s* bcore_inst_s_get_item( const bcore_inst_s* o, sz_t index )
+const bcore_inst_item_s* bcore_inst_s_get_item( const bcore_inst_s* o, uz_t index )
 {
     return o->body ? index < o->body->size ? &o->body->data[ index ] : NULL : NULL;
 }
@@ -178,13 +178,13 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
 {
     assert( o != NULL );
     bcore_memzero( o, p->size );
-    sz_t first = 0;
+    uz_t first = 0;
     if( p->aware )
     {
         *( aware_t* )o = p->header.o_type;
         first = 1;
     }
-    for( sz_t i = first; i < p->body->size; i++ )
+    for( uz_t i = first; i < p->body->size; i++ )
     {
         const bcore_inst_item_s* inst_item = &p->body->data[ i ];
         const bcore_self_item_s* self_item = inst_item->self_item;
@@ -210,10 +210,11 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
                         case TYPEOF_s3_t: *( s3_t* )dst_obj = self_item->default_s3; break;
                         case TYPEOF_f2_t: *( f2_t* )dst_obj = self_item->default_f3; break;
                         case TYPEOF_f3_t: *( f3_t* )dst_obj = self_item->default_f3; break;
-                        case TYPEOF_sz_t: *( sz_t* )dst_obj = self_item->default_sz; break;
+                        case TYPEOF_szxxx_t: *( szxxx_t* )dst_obj = self_item->default_szxxx; break;
+                        case TYPEOF_uz_t: *( uz_t* )dst_obj = self_item->default_uz; break;
                         case TYPEOF_tp_t: *( tp_t* )dst_obj = self_item->default_tp; break;
                         case TYPEOF_bl_t: *( bl_t* )dst_obj = self_item->default_bl; break;
-                        case TYPEOF_offset_t: *( offset_t* )dst_obj = self_item->default_sz; break;
+                        case TYPEOF_offset_t: *( offset_t* )dst_obj = self_item->default_uz; break;
                         default: ERR( "Default value not supported for type '%s'", ifnameof( self_item->type ) );
                     }
                 }
@@ -232,9 +233,9 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
                 const bcore_inst_s* inst_p = inst_item->inst_p;
                 if( !inst_p->init_flat )
                 {
-                    sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
-                    sz_t element_size = inst_p->size;
-                    for( sz_t i = 0; i < arr_size; i++ )
+                    uz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                    uz_t element_size = inst_p->size;
+                    for( uz_t i = 0; i < arr_size; i++ )
                     {
                         inst_p->init( inst_p, ( u0_t* )dst_obj + element_size * i );
                     }
@@ -304,7 +305,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
     assert( o != NULL );
     if( p->aware ) verify_aware_type( p->header.o_type, o, __func__ );
 #endif // RTCHECKS
-    for( sz_t i = 0; i < p->body->size; i++ )
+    for( uz_t i = 0; i < p->body->size; i++ )
     {
         const bcore_inst_item_s* inst_item = &p->body->data[ i ];
         if( inst_item->no_trace ) continue;
@@ -392,7 +393,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                 if( s->space ) // space == 0 means array does not own data
                 {
                     const bcore_inst_s* inst_p = inst_item->inst_p;
-                    for( sz_t i = 0; i < s->size; i++ ) inst_p->discard( inst_p, s->data[ i ] );
+                    for( uz_t i = 0; i < s->size; i++ ) inst_p->discard( inst_p, s->data[ i ] );
                     bcore_free( s->data );
                     s->data = NULL;
                     s->space = 0;
@@ -406,7 +407,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                 if( s->space ) // space == 0 means array does not own data
                 {
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( s->type );
-                    for( sz_t i = 0; i < s->size; i++ ) inst_p->discard( inst_p, s->data[ i ] );
+                    for( uz_t i = 0; i < s->size; i++ ) inst_p->discard( inst_p, s->data[ i ] );
                     bcore_free( s->data );
                     s->data = NULL;
                     s->space = 0;
@@ -419,7 +420,7 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                 bcore_array_dyn_link_aware_s* s = item_obj;
                 if( s->space ) // space == 0 means array does not own data
                 {
-                    for( sz_t i = 0; i < s->size; i++ ) bcore_inst_a_discard( s->data[ i ] );
+                    for( uz_t i = 0; i < s->size; i++ ) bcore_inst_a_discard( s->data[ i ] );
                     bcore_free( s->data );
                     s->data = NULL;
                     s->space = 0;
@@ -432,9 +433,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
                 const bcore_inst_s* inst_p = inst_item->inst_p;
                 if( !inst_p->down_flat )
                 {
-                    sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
-                    sz_t element_size = inst_p->size;
-                    for( sz_t i = 0; i < arr_size; i++ )
+                    uz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                    uz_t element_size = inst_p->size;
+                    for( uz_t i = 0; i < arr_size; i++ )
                     {
                         vd_t obj = ( u0_t* )item_obj + element_size * i;
                         inst_p->down( inst_p, obj );
@@ -446,9 +447,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
             {
                 const bcore_inst_s* inst_p = inst_item->inst_p;
-                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                uz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
                 vd_t* arr = item_obj;
-                for( sz_t i = 0; i < arr_size; i++ )
+                for( uz_t i = 0; i < arr_size; i++ )
                 {
                     bcore_inst_p_discard( inst_p, arr[ i ] );
                     arr[ i ] = NULL;
@@ -458,9 +459,9 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
 
             case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
             {
-                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                uz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
                 vd_t* arr = item_obj;
-                for( sz_t i = 0; i < arr_size; i++ )
+                for( uz_t i = 0; i < arr_size; i++ )
                 {
                     bcore_inst_a_discard( arr[ i ] );
                     arr[ i ] = NULL;
@@ -536,7 +537,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             verify_aware_type( p->header.o_type, src, __func__ );
         }
     #endif // RTCHECKS
-    for( sz_t i = 0; i < p->body->size; i++ )
+    for( uz_t i = 0; i < p->body->size; i++ )
     {
         const bcore_inst_item_s* inst_item = &p->body->data[ i ];
         if( inst_item->no_trace ) continue;
@@ -659,7 +660,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                         dst->space = 0;
                     }
                     dst->data = bcore_un_alloc( inst_p->size, dst->data, dst->space, src->size, &dst->space );
-                    for( sz_t i = 0; i < src->size; i++ )
+                    for( uz_t i = 0; i < src->size; i++ )
                     {
                         vd_t dst_obj = ( u0_t* )dst->data + i * inst_p->size;
                         vd_t src_obj = ( u0_t* )src->data + i * inst_p->size;
@@ -701,7 +702,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     }
                     else
                     {
-                        for( sz_t i = 0; i < src->size; i++ )
+                        for( uz_t i = 0; i < src->size; i++ )
                         {
                             vd_t dst_obj = ( u0_t* )dst->data + i * inst_p->size;
                             vc_t src_obj = ( u0_t* )src->data + i * inst_p->size;
@@ -721,7 +722,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 const bcore_inst_s* inst_p = inst_item->inst_p;
                 if( dst->space > 0 ) // dst->space == 0 means array references external data
                 {
-                    for( sz_t i = 0; i < dst->size; i++ ) inst_p->discard( inst_p, dst->data[ i ] );
+                    for( uz_t i = 0; i < dst->size; i++ ) inst_p->discard( inst_p, dst->data[ i ] );
                 }
                 if( src->size > dst->space )
                 {
@@ -730,11 +731,11 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 if( self_item->flags.f_deep_copy )
                 {
-                    for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
+                    for( uz_t i = 0; i < src->size; i++ ) dst->data[ i ] = inst_p->clone( inst_p, src->data[ i ] );
                 }
                 else
                 {
-                    for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_fork( src->data[ i ] );
+                    for( uz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_fork( src->data[ i ] );
                 }
 
                 dst->size = src->size;
@@ -748,7 +749,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 if( dst->space > 0 ) // dst->space == 0 means array references external data
                 {
                     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( dst->type );
-                    for( sz_t i = 0; i < dst->size; i++ ) bcore_inst_p_discard( inst_p, dst->data[ i ] );
+                    for( uz_t i = 0; i < dst->size; i++ ) bcore_inst_p_discard( inst_p, dst->data[ i ] );
                 }
                 if( src->size > 0 )
                 {
@@ -760,11 +761,11 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     }
                     if( self_item->flags.f_deep_copy )
                     {
-                        for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_inst_p_clone( inst_p, src->data[ i ] );
+                        for( uz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_inst_p_clone( inst_p, src->data[ i ] );
                     }
                     else
                     {
-                        for( sz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_fork( src->data[ i ] );
+                        for( uz_t i = 0; i < src->size; i++ ) dst->data[ i ] = bcore_fork( src->data[ i ] );
                     }
                 }
                 dst->size = src->size;
@@ -778,7 +779,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 bcore_array_dyn_link_aware_s* src = src_obj;
                 if( dst->space > 0 )  // dst->space == 0 means array references external data
                 {
-                    for( sz_t i = 0; i < dst->size; i++ ) bcore_inst_a_discard( dst->data[ i ] );
+                    for( uz_t i = 0; i < dst->size; i++ ) bcore_inst_a_discard( dst->data[ i ] );
                 }
                 if( src->size > 0 )
                 {
@@ -789,14 +790,14 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                     }
                     if( self_item->flags.f_deep_copy )
                     {
-                        for( sz_t i = 0; i < src->size; i++ )
+                        for( uz_t i = 0; i < src->size; i++ )
                         {
                             dst->data[ i ] = bcore_inst_a_clone( src->data[ i ] );
                         }
                     }
                     else
                     {
-                        for( sz_t i = 0; i < src->size; i++ )
+                        for( uz_t i = 0; i < src->size; i++ )
                         {
                             dst->data[ i ] = bcore_fork( src->data[ i ] );
                         }
@@ -809,8 +810,8 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
             {
                 const bcore_inst_s* inst_p = inst_item->inst_p;
-                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
-                sz_t element_size = inst_p->size;
+                uz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                uz_t element_size = inst_p->size;
 
                 if( inst_p->copy_flat )
                 {
@@ -818,7 +819,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 else
                 {
-                    for( sz_t i = 0; i < arr_size; i++ )
+                    for( uz_t i = 0; i < arr_size; i++ )
                     {
                         vd_t dst = ( u0_t* )dst_obj + element_size * i;
                         vc_t src = ( u0_t* )src_obj + element_size * i;
@@ -831,10 +832,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
             case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
             {
                 const bcore_inst_s* inst_p = inst_item->inst_p;
-                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                uz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
                 vd_t* dst_arr = dst_obj;
                 vd_t* src_arr = src_obj;
-                for( sz_t i = 0; i < arr_size; i++ )
+                for( uz_t i = 0; i < arr_size; i++ )
                 {
                     vd_t dst = dst_arr[ i ];
                     vd_t src = src_arr[ i ];
@@ -853,10 +854,10 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
 
             case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
             {
-                sz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
+                uz_t arr_size = bcore_inst_item_s_array_fix_size( inst_item );
                 vd_t* dst_arr = dst_obj;
                 vd_t* src_arr = src_obj;
-                for( sz_t i = 0; i < arr_size; i++ )
+                for( uz_t i = 0; i < arr_size; i++ )
                 {
                     vd_t dst = dst_arr[ i ];
                     vd_t src = src_arr[ i ];
@@ -932,7 +933,8 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
@@ -951,7 +953,8 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
@@ -970,7 +973,8 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
@@ -989,7 +993,8 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
@@ -1008,7 +1013,8 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
@@ -1027,7 +1033,8 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
@@ -1046,7 +1053,8 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
@@ -1065,7 +1073,8 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
@@ -1084,7 +1093,8 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
@@ -1103,13 +1113,14 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
-        case TYPEOF_sz_t:
+        case TYPEOF_szxxx_t:
         {
-            sz_t* dst_l = dst;
+            szxxx_t* dst_l = dst;
             switch( type )
             {
                 case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
@@ -1122,7 +1133,28 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
+                default: break;
+            }
+        }
+        case TYPEOF_uz_t:
+        {
+            uz_t* dst_l = dst;
+            switch( type )
+            {
+                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
+                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
+                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
+                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
+                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
+                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
+                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
+                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
+                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
+                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
+                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
@@ -1218,10 +1250,10 @@ static vd_t clone( const bcore_inst_s* p, vc_t src )
 
 /**********************************************************************************************************************/
 
-static sz_t aligned_offset( sz_t align, sz_t raw_offset )
+static uz_t aligned_offset( uz_t align, uz_t raw_offset )
 {
     if( align < 2 ) return raw_offset;
-    sz_t offset = raw_offset;
+    uz_t offset = raw_offset;
     if( ( offset & ( align - 1 ) ) != 0 ) offset = ( offset + align ) & ~( align - 1 );
     return offset;
 }
@@ -1264,12 +1296,12 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
 
     if( bcore_self_s_items_size( self ) > 0 )
     {
-        sz_t items_size = bcore_self_s_items_size( self );
+        uz_t items_size = bcore_self_s_items_size( self );
         bl_t body_complete = bcore_self_body_s_get_complete( self->body );
         body_undefined_or_complete = body_complete;
         bcore_inst_item_s* last_inst_item = NULL;
 
-        for( sz_t i = 0; i < items_size; i++ )
+        for( uz_t i = 0; i < items_size; i++ )
         {
             bl_t first_item = ( i == 0 );
             const bcore_self_item_s* self_item = bcore_self_s_get_item( self, i );
@@ -1497,7 +1529,7 @@ sr_s bcore_inst_t_clone_sr( tp_t type, vc_t obj )
     return sr_psd( p, bcore_inst_p_clone( p, obj ) );
 }
 
-void bcore_inst_p_check_sizeof( const bcore_inst_s* o, sz_t size )
+void bcore_inst_p_check_sizeof( const bcore_inst_s* o, uz_t size )
 {
     if( o->size != size )
     {
@@ -1506,7 +1538,7 @@ void bcore_inst_p_check_sizeof( const bcore_inst_s* o, sz_t size )
     }
 }
 
-void bcore_inst_t_check_sizeof( tp_t type, sz_t size )
+void bcore_inst_t_check_sizeof( tp_t type, uz_t size )
 {
     const bcore_inst_s* o = bcore_inst_s_get_typed( type );
     bcore_inst_p_check_sizeof( o, size );
@@ -1559,7 +1591,7 @@ static st_s* spect_inst_selftest( void )
     o1->string_arr.space = 20;
     o1->string_arr.data = bcore_u_alloc( sizeof( vd_t ), NULL, o1->string_arr.space, &o1->string_arr.space );
     o1->string_arr.size = 10;
-    for( sz_t i = 0; i < o1->string_arr.size; i++ ) o1->string_arr.data[ i ] = st_s_createf( "String number %04i", i );
+    for( uz_t i = 0; i < o1->string_arr.size; i++ ) o1->string_arr.data[ i ] = st_s_createf( "String number %04i", i );
     test_object2_s* o2 = bcore_inst_t_create( typeof( "test_object2_s" ) );
     o2->o1 = bcore_inst_a_clone( (bcore_inst*)o1 );
 
@@ -1569,7 +1601,7 @@ static st_s* spect_inst_selftest( void )
     ASSERT( o3->o1->val1 == 1234 );
     ASSERT( o3->o1->val2 == 1000000000001 );
     ASSERT( o3->o1->val3 == -5 );
-    for( sz_t i = 0; i < o3->o1->string_arr.size; i++ )
+    for( uz_t i = 0; i < o3->o1->string_arr.size; i++ )
     {
         st_s* s = st_s_createf( "String number %04i", i );
         ASSERT( bcore_strcmp( ( ( st_s* )o3->o1->string_arr.data[ i ] )->sc, s->sc ) == 0 );
@@ -1631,13 +1663,13 @@ static st_s* spect_inst_selftest( void )
         arr_object_s* o1 = bcore_inst_t_create( typeof( "arr_object_s" ) );
         arr_object_s* o2 = bcore_inst_t_create( typeof( "arr_object_s" ) );
 
-        for( sz_t i = 0; i < 10; i++ ) st_s_copy_fa( &o1->str_arr[ i ], "#<sz_t>", i );
+        for( uz_t i = 0; i < 10; i++ ) st_s_copy_fa( &o1->str_arr[ i ], "#<uz_t>", i );
 
         bcore_inst_t_copy( typeof( "arr_object_s" ), (bcore_inst*)o2, o1 );
 
-        for( sz_t i = 0; i < 10; i++ )
+        for( uz_t i = 0; i < 10; i++ )
         {
-            st_s* ref = st_s_create_fa( "#<sz_t>", i );
+            st_s* ref = st_s_create_fa( "#<uz_t>", i );
             ASSERT( st_s_equal_st( &o2->str_arr[ i ], ref ) );
             st_s_discard( ref );
         }

@@ -59,12 +59,12 @@ static bmath_matrix_s* bmath_matrix_s_create_from_self( const bcore_self_s* self
 
 /**********************************************************************************************************************/
 
-sz_t bmath_matrix_default_get_rows( const bmath_matrix_s* p, const bmath_matrix* o )
+uz_t bmath_matrix_default_get_rows( const bmath_matrix_s* p, const bmath_matrix* o )
 {
     return bcore_matrix_p_get_rows( p->spect_matrix_matrix, ( const bcore_matrix* )o );
 }
 
-sz_t bmath_matrix_default_get_cols( const bmath_matrix_s* p, const bmath_matrix* o )
+uz_t bmath_matrix_default_get_cols( const bmath_matrix_s* p, const bmath_matrix* o )
 {
     return bcore_matrix_p_get_cols( p->spect_matrix_matrix, ( const bcore_matrix* )o );
 }
@@ -96,21 +96,21 @@ void bmath_matrix_default_sub( const bmath_matrix_s* p, const bmath_matrix* o, c
 
 void bmath_matrix_default_mul( const bmath_matrix_s* p, const bmath_matrix* o, const bmath_matrix* op, bmath_matrix* res )
 {
-    sz_t rows1 = bmath_matrix_p_get_rows( p, o );
-    sz_t rows2 = bmath_matrix_p_get_rows( p, op );
-    sz_t cols1 = bmath_matrix_p_get_cols( p, o );
-    sz_t cols2 = bmath_matrix_p_get_cols( p, op );
-    sz_t steps = cols1 < rows2 ? cols1 : rows2;
+    uz_t rows1 = bmath_matrix_p_get_rows( p, o );
+    uz_t rows2 = bmath_matrix_p_get_rows( p, op );
+    uz_t cols1 = bmath_matrix_p_get_cols( p, o );
+    uz_t cols2 = bmath_matrix_p_get_cols( p, op );
+    uz_t steps = cols1 < rows2 ? cols1 : rows2;
 
     sr_s sr_mul = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    for( sz_t i = 0; i < rows1; i++ )
+    for( uz_t i = 0; i < rows1; i++ )
     {
-        for( sz_t j = 0; j < cols2; j++ )
+        for( uz_t j = 0; j < cols2; j++ )
         {
             sr_s sr_sum = sr_p_create( p->spect_ring_scalar->spect_inst );
             bmath_ring_r_zro( &sr_sum );
-            for( sz_t k = 0; k < steps; k++ )
+            for( uz_t k = 0; k < steps; k++ )
             {
                 sr_s sr1 = bcore_matrix_p_get_cell( p->spect_matrix_matrix, ( const bcore_matrix* )o,  i, k );
                 sr_s sr2 = bcore_matrix_p_get_cell( p->spect_matrix_matrix, ( const bcore_matrix* )op, k, j );
@@ -128,13 +128,13 @@ void bmath_matrix_default_mul( const bmath_matrix_s* p, const bmath_matrix* o, c
 void bmath_matrix_default_one( const bmath_matrix_s* p, bmath_matrix* o )
 {
     bmath_matrix_p_zro( p, o );
-    sz_t rows = bmath_matrix_p_get_rows( p, o );
-    sz_t cols = bmath_matrix_p_get_cols( p, o );
-    sz_t steps = rows < cols ? rows : cols;
+    uz_t rows = bmath_matrix_p_get_rows( p, o );
+    uz_t cols = bmath_matrix_p_get_cols( p, o );
+    uz_t steps = rows < cols ? rows : cols;
     sr_s sr_one = sr_p_create( p->spect_ring_scalar->spect_inst );
     bmath_ring_p_one( p->spect_ring_scalar, sr_one.o );
 
-    for( sz_t i = 0; i < steps; i++ )
+    for( uz_t i = 0; i < steps; i++ )
     {
         bcore_matrix_p_set_cell( p->spect_matrix_matrix, ( bcore_matrix* )o, i, i, sr_cw( sr_one ) );
     }
@@ -164,22 +164,22 @@ void bmath_matrix_default_mul_vec( const bmath_matrix_s* p, const bmath_matrix* 
 {
     const bcore_array_s* spect_array_vector = p->spect_vector_assoc->spect_array_vector;
 
-    sz_t rows1 = bmath_matrix_p_get_rows( p, o );
-    sz_t cols1 = bmath_matrix_p_get_cols( p, o );
-    sz_t  dim1 = bmath_vector_p_get_dim( p->spect_vector_assoc, res );
-    sz_t  dim2 = bmath_vector_p_get_dim( p->spect_vector_assoc, op );
+    uz_t rows1 = bmath_matrix_p_get_rows( p, o );
+    uz_t cols1 = bmath_matrix_p_get_cols( p, o );
+    uz_t  dim1 = bmath_vector_p_get_dim( p->spect_vector_assoc, res );
+    uz_t  dim2 = bmath_vector_p_get_dim( p->spect_vector_assoc, op );
 
-    sz_t steps = cols1 < dim2 ? cols1 : dim2;
+    uz_t steps = cols1 < dim2 ? cols1 : dim2;
 
     sr_s sr_mul = sr_p_create( p->spect_ring_scalar->spect_inst );
 
-    for( sz_t i = 0; i < dim1; i++ )
+    for( uz_t i = 0; i < dim1; i++ )
     {
         sr_s sr_sum = sr_p_create( p->spect_ring_scalar->spect_inst );
         bmath_ring_r_zro( &sr_sum );
         if( i < rows1 )
         {
-            for( sz_t k = 0; k < steps; k++ )
+            for( uz_t k = 0; k < steps; k++ )
             {
                 sr_s sr1 = bcore_matrix_p_get_cell( p->spect_matrix_matrix, ( const bcore_matrix* )o, i, k );
                 sr_s sr2 = bcore_array_p_get( spect_array_vector, (bcore_array*)op, k );

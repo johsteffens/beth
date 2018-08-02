@@ -40,7 +40,7 @@ typedef struct bcore_life_s
         struct
         {
             bcore_life_item_s* data;
-            sz_t size; sz_t space;
+            uz_t size; uz_t space;
         };
     };
 

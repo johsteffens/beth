@@ -36,7 +36,7 @@ typedef struct bclos_arguments_s
         struct
         {
             sr_s* data;
-            sz_t size, space;
+            uz_t size, space;
         };
     };
 } bclos_arguments_s;
@@ -44,12 +44,12 @@ typedef struct bclos_arguments_s
 BCORE_DECLARE_FUNCTIONS_OBJ( bclos_arguments_s )
 
 void bclos_arguments_s_clear( bclos_arguments_s* o );
-bclos_arguments_s* bclos_arguments_s_create_nv( sz_t n, va_list args );
-bclos_arguments_s* bclos_arguments_s_create_na( sz_t n, ... );
+bclos_arguments_s* bclos_arguments_s_create_nv( uz_t n, va_list args );
+bclos_arguments_s* bclos_arguments_s_create_na( uz_t n, ... );
 
 void bclos_arguments_s_push( bclos_arguments_s* o, sr_s sr );
 
-bclos_arguments_s bclos_arguments_s_weak_crop( const bclos_arguments_s* src, sz_t start, sz_t end );
+bclos_arguments_s bclos_arguments_s_weak_crop( const bclos_arguments_s* src, uz_t start, uz_t end );
 
 // Format: ( <expression>, <expression>, ... )
 void bclos_arguments_s_parse_from_source( bclos_arguments_s* o, sr_s source );
@@ -77,7 +77,7 @@ void bclos_expression_s_parse_from_source( bclos_expression_s* o, sr_s source );
 
 sr_s bclos_expression_s_run( const bclos_expression_s* o, bclos_frame_s* frm );
 
-static inline sr_s bclos_arguments_s_get( const bclos_arguments_s* o, sz_t idx, bclos_frame_s* frm )
+static inline sr_s bclos_arguments_s_get( const bclos_arguments_s* o, uz_t idx, bclos_frame_s* frm )
 {
     assert( idx < o->size );
     sr_s* sr = &o->data[ idx ];

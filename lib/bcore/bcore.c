@@ -106,7 +106,7 @@ void bcore_down( bl_t verbose )
     bcore_signal_s signal_down0 = bcore_signal_init( TYPEOF_all, TYPEOF_down0, &verbose );
 
     // shut down all but first library in reverse order
-    for( sz_t i = signal_handler_arr_g->size - 1; i > 0; i-- )
+    for( uz_t i = signal_handler_arr_g->size - 1; i > 0; i-- )
     {
         ( ( bcore_fp_signal_handler )signal_handler_arr_g->data[ i ] )( &signal_down1 );
         ( ( bcore_fp_signal_handler )signal_handler_arr_g->data[ i ] )( &signal_down0 );
@@ -123,7 +123,7 @@ void bcore_down( bl_t verbose )
     if( verbose )
     {
         bcore_msg( "\nBeth global system's memory usage (bytes):\n");
-        sz_t space = bcore_tbman_granted_space();
+        uz_t space = bcore_tbman_granted_space();
         bcore_msg( "Total ................. % 6zu\n", space );
     }
 

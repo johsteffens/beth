@@ -75,7 +75,7 @@ static void name_manager_close()
     discard_hmap_s();
 }
 
-st_s* cat_name_ns_n( tp_t name_space, sc_t name, sz_t n )
+st_s* cat_name_ns_n( tp_t name_space, sc_t name, uz_t n )
 {
     st_s* cat_name = st_s_create();
     if( name_space )
@@ -130,7 +130,7 @@ st_s* bcore_name_get_name_s( tp_t type )
     return s;
 }
 
-tp_t bcore_name_enroll_sn( tp_t name_space, sc_t name, sz_t n )
+tp_t bcore_name_enroll_sn( tp_t name_space, sc_t name, uz_t n )
 {
     assert( hmap_s_g != NULL );
     tp_t key = bcore_name_key_ns_n( name_space, name, n );
@@ -160,7 +160,7 @@ tp_t bcore_name_enroll_s( tp_t name_space, sc_t name )
     return bcore_name_enroll_sn( name_space, name, bcore_strlen( name ) );
 }
 
-tp_t bcore_name_enroll_n( sc_t name, sz_t n )
+tp_t bcore_name_enroll_n( sc_t name, uz_t n )
 {
     return bcore_name_enroll_sn( 0, name, n );
 }
@@ -178,11 +178,11 @@ void bcore_name_remove( tp_t type )
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
 }
 
-sz_t  bcore_name_size()
+uz_t  bcore_name_size()
 {
     assert( hmap_s_g != NULL );
     bcore_mutex_s_lock( &hmap_s_g->mutex );
-    sz_t size = bcore_name_map_s_keys( &hmap_s_g->map );
+    uz_t size = bcore_name_map_s_keys( &hmap_s_g->map );
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
     return size;
 }
@@ -192,8 +192,8 @@ st_s* bcore_name_show()
     assert( hmap_s_g != NULL );
     bcore_mutex_s_lock( &hmap_s_g->mutex );
     st_s* log = st_s_create();
-    sz_t size = bcore_name_map_s_size( &hmap_s_g->map );
-    for( sz_t i = 0; i < size; i++ )
+    uz_t size = bcore_name_map_s_size( &hmap_s_g->map );
+    for( uz_t i = 0; i < size; i++ )
     {
         bcore_name_s* node = bcore_name_map_s_idx_name( &hmap_s_g->map, i );
         if( node->key )
@@ -254,7 +254,7 @@ vd_t bcore_name_manager_signal_handler( const bcore_signal_s* o )
 
             if( o->object && ( *( bl_t* )o->object ) )
             {
-                sz_t space = bcore_tbman_granted_space();
+                uz_t space = bcore_tbman_granted_space();
                 name_manager_close();
                 bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_tbman_granted_space() );
             }

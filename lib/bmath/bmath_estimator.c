@@ -35,8 +35,8 @@ void bmath_estimator_s_clear( bmath_estimator_s* o )
 
 void bmath_estimator_s_digest( bmath_estimator_s* o, f3_t weight, const bmath_vf3_s* x, const bmath_vf3_s* y )
 {
-    sz_t n = x->size;
-    sz_t m = y->size;
+    uz_t n = x->size;
+    uz_t m = y->size;
 
     if( o->xx.rows == 0 && o->xx.cols == 0 )
     {
@@ -46,11 +46,11 @@ void bmath_estimator_s_digest( bmath_estimator_s* o, f3_t weight, const bmath_vf
         bmath_mf3_s_zro( &o->yx );
     }
 
-    for( sz_t i = 0; i < n; i++ )
+    for( uz_t i = 0; i < n; i++ )
     {
         f3_t  xi = x->data[ i ];
         f3_t* vi = o->xx.data + i * o->xx.stride;
-        for( sz_t j = 0; j < n; j++ )
+        for( uz_t j = 0; j < n; j++ )
         {
             f3_t xj = x->data[ j ];
             vi[ j ] += xi * xj * weight;
@@ -59,18 +59,18 @@ void bmath_estimator_s_digest( bmath_estimator_s* o, f3_t weight, const bmath_vf
     }
 
     f3_t* vn = o->xx.data + n * o->xx.stride;
-    for( sz_t j = 0; j < n; j++ )
+    for( uz_t j = 0; j < n; j++ )
     {
         f3_t xj = x->data[ j ];
         vn[ j ] += xj * weight;
     }
     vn[ n ] += weight;
 
-    for( sz_t i = 0; i < m; i++ )
+    for( uz_t i = 0; i < m; i++ )
     {
         f3_t  yi = y->data[ i ];
         f3_t* vi = o->yx.data + i * o->yx.stride;
-        for( sz_t j = 0; j < n; j++ )
+        for( uz_t j = 0; j < n; j++ )
         {
             f3_t xj = x->data[ j ];
             vi[ j ] += yi * xj * weight;
@@ -117,9 +117,9 @@ static vd_t selftest( void )
 
     {
         u2_t rval = 1236;
-        sz_t n = 40;
-        sz_t m = 30;
-        sz_t samples = 2000;
+        uz_t n = 40;
+        uz_t m = 30;
+        uz_t samples = 2000;
 
         bmath_mf3_s_set_size( m1, m, n + 1 );
         bmath_mf3_s_fill_random( m1, -1, 1, &rval );
@@ -129,7 +129,7 @@ static vd_t selftest( void )
         bmath_vf3_s_set_size( v4, m );
         bmath_estimator_s_clear( est );
 
-        for( sz_t i = 0; i < samples; i++ )
+        for( uz_t i = 0; i < samples; i++ )
         {
             bmath_vf3_s_fill_random( v1, -1, 1, &rval );
             bmath_mf3_s_mul_av1( m1, v1, v2 );

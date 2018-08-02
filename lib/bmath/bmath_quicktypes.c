@@ -22,11 +22,11 @@
 
 typedef tp_t (*hf)( sc_t );
 
-static st_s* get_def_quicktype( hf hash, sr_s string, sz_t align )
+static st_s* get_def_quicktype( hf hash, sr_s string, uz_t align )
 {
     sc_t name = ( ( st_s* )string.o )->sc;
     st_s* s = st_s_createf( "#define TYPEOF_%s", name );
-    sz_t pad = s->size < align ? align - s->size : 1;
+    uz_t pad = s->size < align ? align - s->size : 1;
     st_s_push_char_n( s, ' ', pad );
     st_s_pushf( s, "% 10"PRIu32, hash( name ) );
     st_s_push_char( s, '\n' );
@@ -62,12 +62,12 @@ static sr_s typelist()
     return list;
 }
 
-static sz_t max_len( const sr_s* list )
+static uz_t max_len( const sr_s* list )
 {
-    sz_t len = 0;
-    for( sz_t i = 0; i < bcore_array_r_get_size( list ); i++ )
+    uz_t len = 0;
+    for( uz_t i = 0; i < bcore_array_r_get_size( list ); i++ )
     {
-        sz_t size = ( ( st_s* )bcore_array_r_get( list, i ).o )->size;
+        uz_t size = ( ( st_s* )bcore_array_r_get( list, i ).o )->size;
         len = size > len ? size : len;
     }
     return len;
@@ -77,7 +77,7 @@ void bmath_quicktypes_to_stdout( tp_t (*hash)( sc_t name ) )
 {
     hf hash_l = ( hash ) ? hash : typeof;
     sr_s list = typelist();
-    for( sz_t i = 0; i < bcore_array_r_get_size( &list ); i++ ) st_s_print_d( get_def_quicktype( hash_l, bcore_array_r_get( &list, i ), 16 + max_len( &list ) ) );
+    for( uz_t i = 0; i < bcore_array_r_get_size( &list ); i++ ) st_s_print_d( get_def_quicktype( hash_l, bcore_array_r_get( &list, i ), 16 + max_len( &list ) ) );
     sr_down( list );
 }
 

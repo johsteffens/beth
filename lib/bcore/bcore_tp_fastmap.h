@@ -53,7 +53,7 @@ typedef struct bcore_tp_fastmap_kv_s
 
 typedef struct bcore_tp_fastmap_table_s
 {
-    sz_t size;
+    uz_t size;
     tp_t mask;
     bcore_tp_fastmap_kv_s * arr;
 } bcore_tp_fastmap_table_s;
@@ -97,8 +97,8 @@ vc_t bcore_tp_fastmap_s_get( const bcore_tp_fastmap_s* o, tp_t key )
 bl_t bcore_tp_fastmap_s_set( bcore_tp_fastmap_s* o, tp_t key, vc_t val );
 
 /// statistics (thread safe)
-sz_t bcore_tp_fastmap_s_size( bcore_tp_fastmap_s* o );
-sz_t bcore_tp_fastmap_s_keys( bcore_tp_fastmap_s* o );
+uz_t bcore_tp_fastmap_s_size( bcore_tp_fastmap_s* o );
+uz_t bcore_tp_fastmap_s_keys( bcore_tp_fastmap_s* o );
 
 /**********************************************************************************************************************/
 

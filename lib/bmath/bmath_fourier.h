@@ -31,15 +31,15 @@
 /**********************************************************************************************************************/
 
 /// DFT/FFT (dst==src allowed); fft: size = power of 2
-void bmath_fourier_dft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, sz_t size );
-void bmath_fourier_fft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, sz_t size );
+void bmath_fourier_dft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size );
+void bmath_fourier_fft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size );
 
 /** FFT with reusable buffer. Return value is buffer to be discarded or reused by caller.
  *  Start with buf = NULL or buf = bcore_malloc( sizeof( bmath_cf3_s ) * size )
  *  Continue with buf = return from previous call (size <= size of first call)
  *  Finish by keeping ownership of returned_buf (e.g. bcore_free( returned_buf ))
  */
-vd_t bmath_fourier_fft_f3_buf( const bmath_cf3_s* src, bmath_cf3_s* dst, sz_t size, vd_t buf );
+vd_t bmath_fourier_fft_f3_buf( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size, vd_t buf );
 
 /**********************************************************************************************************************/
 

@@ -48,7 +48,7 @@
  *  "#<type>" or "#<type*>"
  *      Converts argument.
  *      Argument: <type> or pointer to <type>
- *      Supported types: u*_t, s*_t, f*_t, sz_t, bl_t.
+ *      Supported types: u*_t, s*_t, f*_t, uz_t, bl_t.
  *      Example: "#<u3_t>"
  *
  *  "#<char>" or "#<char*>"
@@ -65,7 +65,7 @@
  *    "#tn{<expression>}"
  *    "#tln{<expression>}"
  *      Like above #t rule except that limit is given by argument.
- *      Argument: sz_t
+ *      Argument: uz_t
  *      Example: "#tn{#<sc_t>}"
  *
  *  Padding:
@@ -84,7 +84,7 @@
  *    "#pn<c>{<expression>}"
  *    "#pln<c>{<expression>}"
  *      Like above #p rule except that size is given by argument.
- *      Argument: sz_t
+ *      Argument: uz_t
  *      Example: "#pln10 {#<u3_t>}"
  *
  *  Repetition:
@@ -95,7 +95,7 @@
  *
  *    "#rn{<expression>}"
  *      Like above #r rule except that size is given by argument.
- *      Argument: sz_t
+ *      Argument: uz_t
  *      Example: "#rn{_}"
  */
 
@@ -108,11 +108,11 @@
  *  Characters in format that do not belong to a format rule are simply
  *  copied to the destination string.
  */
-sz_t sc_t_fnv( sd_t o, sz_t space, sc_t format, sz_t fsize, va_list* p_args );
+uz_t sc_t_fnv( sd_t o, uz_t space, sc_t format, uz_t fsize, va_list* p_args );
 
 /** Scans type; returns number of characters consumed; returns -1 in case of syntax error
  *  Syntax:
- *    - Elementary types may be expressed as is, e.g. sz_t.
+ *    - Elementary types may be expressed as is, e.g. uz_t.
  *    - Any type may be enclosed in <>
  *    - A pointer is specified via <...*> e.g. <u3_t*>
  *    - no whitespaces permitted
@@ -139,10 +139,10 @@ sd_t sc_t_cpy( sd_t dst, sc_t src );
  *
  */
 s2_t sc_t_cmp( sc_t str1, sc_t str2 );
-s2_t sc_t_cmp_n( sc_t str1, sz_t n1, sc_t str2, sz_t n2 );
+s2_t sc_t_cmp_n( sc_t str1, uz_t n1, sc_t str2, uz_t n2 );
 
 /// like stdlib strlen but also accepts NULL
-sz_t sc_t_len( sc_t str );
+uz_t sc_t_len( sc_t str );
 
 /// returns true iff c occurs in str
 bl_t sc_t_any( char c, sc_t str );

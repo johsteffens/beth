@@ -133,7 +133,7 @@ vd_t bcore_const_manager_signal_handler( const bcore_signal_s* o )
         {
             if( o->object && ( *( bl_t* )o->object ) )
             {
-                sz_t space = bcore_tbman_granted_space();
+                uz_t space = bcore_tbman_granted_space();
                 bcore_hmap_tp_sr_s_discard( hmap_g );
                 bcore_msg( "  const manager ....... % 6zu\n", space - bcore_tbman_granted_space() );
             }

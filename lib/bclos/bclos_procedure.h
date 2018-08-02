@@ -34,7 +34,7 @@ typedef struct bclos_procedure_s
         struct
         {
             bclos_statement_s** data;
-            sz_t size, space;
+            uz_t size, space;
         };
     };
 
