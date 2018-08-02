@@ -774,7 +774,7 @@ void NPX(default_push      )( const NPX(s)* p, bcore_array* o, sr_s src ) {     
 void NPX(default_push_s3   )( const NPX(s)* p, bcore_array* o, s3_t val ) {        NPX(p_set_s3 )( p, o, auz( p, o ), val ); }
 void NPX(default_push_u3   )( const NPX(s)* p, bcore_array* o, u3_t val ) {        NPX(p_set_u3 )( p, o, auz( p, o ), val ); }
 void NPX(default_push_f3   )( const NPX(s)* p, bcore_array* o, f3_t val ) {        NPX(p_set_f3 )( p, o, auz( p, o ), val ); }
-void NPX(default_push_szxxx   )( const NPX(s)* p, bcore_array* o, szxxx_t val ) {        NPX(p_set_szxxx )( p, o, auz( p, o ), val ); }
+void NPX(default_push_sz   )( const NPX(s)* p, bcore_array* o, sz_t val ) {        NPX(p_set_sz )( p, o, auz( p, o ), val ); }
 void NPX(default_push_uz   )( const NPX(s)* p, bcore_array* o, uz_t val ) {        NPX(p_set_uz )( p, o, auz( p, o ), val ); }
 void NPX(default_push_sc   )( const NPX(s)* p, bcore_array* o, sc_t val ) {        NPX(p_set_sc )( p, o, auz( p, o ), val ); }
 void NPX(default_push_bl   )( const NPX(s)* p, bcore_array* o, bl_t val ) {        NPX(p_set_bl )( p, o, auz( p, o ), val ); }
@@ -1087,7 +1087,7 @@ void bcore_array_default_set        ( const bcore_array_s* p, bcore_array* o, uz
 void bcore_array_default_set_s3     ( const bcore_array_s* p, bcore_array* o, uz_t index, s3_t val ) { p->set( p, o, index, sr_twc( TYPEOF_s3_t, &val ) ); }
 void bcore_array_default_set_u3     ( const bcore_array_s* p, bcore_array* o, uz_t index, u3_t val ) { p->set( p, o, index, sr_twc( TYPEOF_u3_t, &val ) ); }
 void bcore_array_default_set_f3     ( const bcore_array_s* p, bcore_array* o, uz_t index, f3_t val ) { p->set( p, o, index, sr_twc( TYPEOF_f3_t, &val ) ); }
-void bcore_array_default_set_szxxx     ( const bcore_array_s* p, bcore_array* o, uz_t index, szxxx_t val ) { p->set( p, o, index, sr_twc( TYPEOF_szxxx_t, &val ) ); }
+void bcore_array_default_set_sz     ( const bcore_array_s* p, bcore_array* o, uz_t index, sz_t val ) { p->set( p, o, index, sr_twc( TYPEOF_sz_t, &val ) ); }
 void bcore_array_default_set_uz     ( const bcore_array_s* p, bcore_array* o, uz_t index, uz_t val ) { p->set( p, o, index, sr_twc( TYPEOF_uz_t, &val ) ); }
 void bcore_array_default_set_sc     ( const bcore_array_s* p, bcore_array* o, uz_t index, sc_t val ) { p->set( p, o, index, sr_twc( TYPEOF_sc_t, &val ) ); }
 void bcore_array_default_set_bl     ( const bcore_array_s* p, bcore_array* o, uz_t index, bl_t val ) { p->set( p, o, index, sr_twc( TYPEOF_bl_t, &val ) ); }

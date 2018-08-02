@@ -92,7 +92,7 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set,    uz_t, index, sr_s, 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_s3, uz_t, index, s3_t, val ) // Sets item by converting s3_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_u3, uz_t, index, u3_t, val ) // Sets item by converting u3_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_f3, uz_t, index, f3_t, val ) // Sets item by converting f3_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_szxxx, uz_t, index, szxxx_t, val ) // Sets item by converting szxxx_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_sz, uz_t, index, sz_t, val ) // Sets item by converting sz_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_uz, uz_t, index, uz_t, val ) // Sets item by converting uz_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_sc, uz_t, index, sc_t, val ) // Sets item by converting sc_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_bl, uz_t, index, bl_t, val ) // Sets item by converting bl_t into target type
@@ -105,7 +105,7 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push,    sr_s, src )    // 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_s3, s3_t, val )    // pushes (converted) value
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_u3, u3_t, val )    // pushes (converted) value
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_f3, f3_t, val )    // pushes (converted) value
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_szxxx, szxxx_t, val )    // pushes (converted) value
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_sz, sz_t, val )    // pushes (converted) value
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_uz, uz_t, val )    // pushes (converted) value
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_sc, sc_t, val )    // pushes (converted) value
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_bl, bl_t, val )    // pushes (converted) value

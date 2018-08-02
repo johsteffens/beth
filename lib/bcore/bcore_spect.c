@@ -410,7 +410,7 @@ vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_
                             case TYPEOF_u3_t: *( u3_t* )dst = o_self_item->default_u3; break;
                             case TYPEOF_f2_t: *( f2_t* )dst = o_self_item->default_f3; break;
                             case TYPEOF_f3_t: *( f3_t* )dst = o_self_item->default_f3; break;
-                            case TYPEOF_szxxx_t: *( szxxx_t* )dst = o_self_item->default_smax; break;
+                            case TYPEOF_sz_t: *( sz_t* )dst = o_self_item->default_smax; break;
                             case TYPEOF_uz_t: *( uz_t* )dst = o_self_item->default_umax; break;
                             case TYPEOF_bl_t: *( bl_t* )dst = o_self_item->default_u3; break;
                             case TYPEOF_tp_t: *( tp_t* )dst = o_self_item->default_tp; break;

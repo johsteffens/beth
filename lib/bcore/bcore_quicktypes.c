@@ -51,7 +51,7 @@ static sr_s leaf_typelist()
     bcore_array_r_push_sc( &list, "umax_t" );
     bcore_array_r_push_sc( &list, "f2_t" );
     bcore_array_r_push_sc( &list, "f3_t" );
-    bcore_array_r_push_sc( &list, "szxxx_t" );
+    bcore_array_r_push_sc( &list, "sz_t" );
     bcore_array_r_push_sc( &list, "uz_t" );
     bcore_array_r_push_sc( &list, "sd_t" );
     bcore_array_r_push_sc( &list, "sc_t" );
@@ -167,7 +167,7 @@ bl_t bcore_type_is_leaf( tp_t type )
         case TYPEOF_u0_t:
         case TYPEOF_f3_t:
         case TYPEOF_f2_t:
-        case TYPEOF_szxxx_t:
+        case TYPEOF_sz_t:
         case TYPEOF_uz_t:
         case TYPEOF_sd_t:
         case TYPEOF_sc_t:

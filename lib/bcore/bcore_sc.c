@@ -393,10 +393,10 @@ uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
                         }
                         break;
 
-                        case TYPEOF_szxxx_t:
+                        case TYPEOF_sz_t:
                         {
-                            szxxx_t* v = va_arg( *p_args, szxxx_t* );
-                            if( v ) sres = snprintf( dst, space, "%"PRIszxxx_t"", *v );
+                            sz_t* v = va_arg( *p_args, sz_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIsz_t"", *v );
                         }
                         break;
 
@@ -473,7 +473,7 @@ uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
                         case TYPEOF_s1_t: sres = snprintf( dst, space, "%i",         va_arg( *p_args, int  ) ); break;
                         case TYPEOF_s2_t: sres = snprintf( dst, space, "%"PRIs2_t"", va_arg( *p_args, s2_t ) ); break;
                         case TYPEOF_s3_t: sres = snprintf( dst, space, "%"PRIs3_t"", va_arg( *p_args, s3_t ) ); break;
-                        case TYPEOF_szxxx_t: sres = snprintf( dst, space, "%"PRIszxxx_t"", va_arg( *p_args, szxxx_t ) ); break;
+                        case TYPEOF_sz_t: sres = snprintf( dst, space, "%"PRIsz_t"", va_arg( *p_args, sz_t ) ); break;
                         case TYPEOF_uz_t: sres = snprintf( dst, space, "%"PRIuz_t"", va_arg( *p_args, uz_t ) ); break;
                         // f2_t is promoted to double
                         case TYPEOF_f2_t: sres = snprintf( dst, space, "%g",       va_arg( *p_args, double ) ); break;

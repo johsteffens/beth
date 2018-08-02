@@ -149,7 +149,7 @@ typedef struct bcore_self_item_s
         u3_t default_u3; // serves u0_t ... u3_t
         f3_t default_f3; // serves f2_t ... f3_t
         tp_t default_tp; // serves tp_t and external functions
-        szxxx_t default_szxxx; // serves szxxx_t
+        sz_t default_sz; // serves sz_t
         uz_t default_uz; // serves uz_t, offset_t
         uz_t default_bl; // serves bl_t
         uz_t array_fix_size; // size for fixed arrays

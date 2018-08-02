@@ -99,7 +99,7 @@ static s2_t compare_f2_t( const bcore_compare_s* p, const f2_t* o1, const f2_t* 
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
 
-static s2_t compare_szxxx_t( const bcore_compare_s* p, const szxxx_t* o1, const szxxx_t* o2 )
+static s2_t compare_sz_t( const bcore_compare_s* p, const sz_t* o1, const sz_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
@@ -133,7 +133,7 @@ static s2_t compare_leaf( tp_t type, vc_t obj1, vc_t obj2 )
         case TYPEOF_u0_t: return ( *( u0_t* )obj1 == *( u0_t* )obj2 ) ? 0 : ( *( u0_t* )obj1 < *( u0_t* )obj2 ) ? 1 : -1;
         case TYPEOF_f3_t: return ( *( f3_t* )obj1 == *( f3_t* )obj2 ) ? 0 : ( *( f3_t* )obj1 < *( f3_t* )obj2 ) ? 1 : -1;
         case TYPEOF_f2_t: return ( *( f2_t* )obj1 == *( f2_t* )obj2 ) ? 0 : ( *( f2_t* )obj1 < *( f2_t* )obj2 ) ? 1 : -1;
-        case TYPEOF_szxxx_t: return ( *( szxxx_t* )obj1 == *( szxxx_t* )obj2 ) ? 0 : ( *( szxxx_t* )obj1 < *( szxxx_t* )obj2 ) ? 1 : -1;
+        case TYPEOF_sz_t: return ( *( sz_t* )obj1 == *( sz_t* )obj2 ) ? 0 : ( *( sz_t* )obj1 < *( sz_t* )obj2 ) ? 1 : -1;
         case TYPEOF_uz_t: return ( *( uz_t* )obj1 == *( uz_t* )obj2 ) ? 0 : ( *( uz_t* )obj1 < *( uz_t* )obj2 ) ? 1 : -1;
         case TYPEOF_sd_t: return bcore_strcmp( *( sd_t* )obj1, *( sd_t* )obj2 );
         case TYPEOF_sc_t: return bcore_strcmp( *( sc_t* )obj1, *( sc_t* )obj2 );
@@ -272,7 +272,7 @@ static bcore_compare_s* create_from_self( const bcore_self_s* self )
         case TYPEOF_u0_t: o->compare = ( fp_icmp )compare_u0_t; break;
         case TYPEOF_f3_t: o->compare = ( fp_icmp )compare_f3_t; break;
         case TYPEOF_f2_t: o->compare = ( fp_icmp )compare_f2_t; break;
-        case TYPEOF_szxxx_t: o->compare = ( fp_icmp )compare_szxxx_t; break;
+        case TYPEOF_sz_t: o->compare = ( fp_icmp )compare_sz_t; break;
         case TYPEOF_uz_t: o->compare = ( fp_icmp )compare_uz_t; break;
         case TYPEOF_tp_t: o->compare = ( fp_icmp )compare_tp_t; break;
         default:

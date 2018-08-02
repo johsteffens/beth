@@ -37,16 +37,13 @@ typedef uint16_t    u1_t;
 typedef uint8_t     u0_t;
 typedef flt64_t     f3_t;
 typedef flt32_t     f2_t;
-
-// TODO: switch szxxx_t: size_t --> ptrdiff_t and introduce new type uz_t representing size_t
-// typedef ptrdiff_t   szxxx_t;
-typedef ptrdiff_t   szxxx_t;
+typedef ptrdiff_t   sz_t;
 typedef size_t      uz_t;
 
 typedef bool        bl_t;
 
-typedef uintmax_t   umax_t;
 typedef intmax_t    smax_t;
+typedef uintmax_t   umax_t;
 
 typedef char*       sd_t; // dynamic zero terminated string
 typedef const char* sc_t; // const zero terminated string
@@ -87,7 +84,7 @@ typedef _Atomic fp_t atomic_fp_t;
 
 #define PRIf3_t "lg"
 #define PRIf2_t "g"
-#define PRIszxxx_t "tu" // change to "tu", t: ptrdiff_t
+#define PRIsz_t "tu" // t ~ ptrdiff_t
 #define PRIuz_t "zu"
 #define PRIoffset_t "zu"
 #define PRItp_t PRIu32

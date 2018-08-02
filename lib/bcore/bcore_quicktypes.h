@@ -51,7 +51,7 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_smax_t            177359151
 #define TYPEOF_spect            2675737342
 #define TYPEOF_st_s             3358332604
-#define TYPEOF_szxxx_t          1118231067
+#define TYPEOF_sz_t             2631659827
 #define TYPEOF_tp_t              908158082
 #define TYPEOF_type             1361572173
 #define TYPEOF_u0_t             3960371995

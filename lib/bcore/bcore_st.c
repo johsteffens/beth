@@ -212,7 +212,7 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
         case TYPEOF_u3_t: st_s_copyf( o, "%"PRIu64, *(const u3_t*)src ); break;
         case TYPEOF_f2_t: st_s_copyf( o, "%g",      *(const f2_t*)src ); break;
         case TYPEOF_f3_t: st_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
-        case TYPEOF_szxxx_t: st_s_copyf( o, "%tu",     *(const szxxx_t*)src ); break;
+        case TYPEOF_sz_t: st_s_copyf( o, "%tu",     *(const sz_t*)src ); break;
         case TYPEOF_uz_t: st_s_copyf( o, "%zu",     *(const uz_t*)src ); break;
 
         case TYPEOF_smax_t:   st_s_copyf( o, "%"PRIiMAX, *(const smax_t*)src ); break;
@@ -1296,11 +1296,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         break;
                     }
 
-                    case TYPEOF_szxxx_t:
+                    case TYPEOF_sz_t:
                     {
                         smax_t v;
                         sres = sscanf( o->sc + idx, "%"SCNiMAX"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, szxxx_t* ) = v;
+                        if( set_arg ) *va_arg( args, sz_t* ) = v;
                         break;
                     }
 

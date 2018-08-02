@@ -112,7 +112,7 @@ sr_s sr_u2( u2_t v );
 sr_s sr_u3( u3_t v );
 sr_s sr_f2( f2_t v );
 sr_s sr_f3( f3_t v );
-sr_s sr_szxxx( szxxx_t v );
+sr_s sr_sz( sz_t v );
 sr_s sr_uz( uz_t v );
 sr_s sr_tp( tp_t v );
 sr_s sr_bl( bl_t v );

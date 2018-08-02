@@ -99,7 +99,7 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_type, tp_t, uz_t, index 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_s3,         uz_t, index, s3_t, val ) // Sets (internal) item by converting s3_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_u3,         uz_t, index, u3_t, val ) // Sets (internal) item by converting u3_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_f3,         uz_t, index, f3_t, val ) // Sets (internal) item by converting f3_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_szxxx,         uz_t, index, szxxx_t, val ) // Sets (internal) item by converting szxxx_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_sz,         uz_t, index, sz_t, val ) // Sets (internal) item by converting sz_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_uz,         uz_t, index, uz_t, val ) // Sets (internal) item by converting uz_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_sc,         uz_t, index, sc_t, val ) // Sets (internal) item by converting sc_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_bl,         uz_t, index, bl_t, val ) // Sets (internal) item by converting bl_t into target type
@@ -117,7 +117,7 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset      ,       tp_t, name,
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_s3   ,       tp_t, name, s3_t, val )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_u3   ,       tp_t, name, u3_t, val )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_f3   ,       tp_t, name, f3_t, val )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_szxxx   ,       tp_t, name, szxxx_t, val )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_sz   ,       tp_t, name, sz_t, val )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_uz   ,       tp_t, name, uz_t, val )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_sc   ,       tp_t, name, sc_t, val )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_bl   ,       tp_t, name, bl_t, val )

@@ -210,7 +210,7 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
                         case TYPEOF_s3_t: *( s3_t* )dst_obj = self_item->default_s3; break;
                         case TYPEOF_f2_t: *( f2_t* )dst_obj = self_item->default_f3; break;
                         case TYPEOF_f3_t: *( f3_t* )dst_obj = self_item->default_f3; break;
-                        case TYPEOF_szxxx_t: *( szxxx_t* )dst_obj = self_item->default_szxxx; break;
+                        case TYPEOF_sz_t: *( sz_t* )dst_obj = self_item->default_sz; break;
                         case TYPEOF_uz_t: *( uz_t* )dst_obj = self_item->default_uz; break;
                         case TYPEOF_tp_t: *( tp_t* )dst_obj = self_item->default_tp; break;
                         case TYPEOF_bl_t: *( bl_t* )dst_obj = self_item->default_bl; break;
@@ -933,7 +933,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
@@ -953,7 +953,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
@@ -973,7 +973,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
@@ -993,7 +993,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
@@ -1013,7 +1013,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
@@ -1033,7 +1033,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
@@ -1053,7 +1053,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
@@ -1073,7 +1073,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
@@ -1093,7 +1093,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
@@ -1113,14 +1113,14 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
         }
-        case TYPEOF_szxxx_t:
+        case TYPEOF_sz_t:
         {
-            szxxx_t* dst_l = dst;
+            sz_t* dst_l = dst;
             switch( type )
             {
                 case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
@@ -1133,7 +1133,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }
@@ -1153,7 +1153,7 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
                 case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
                 case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_szxxx_t: *dst_l = *( szxxx_t* )src; return;
+                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 default: break;
             }

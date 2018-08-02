@@ -96,7 +96,7 @@ static sr_s writeln_s_func( vc_t o, bclos_frame_s* frm, const bclos_arguments_s*
             case TYPEOF_u3_t:
             case TYPEOF_f2_t:
             case TYPEOF_f3_t:
-            case TYPEOF_szxxx_t:
+            case TYPEOF_sz_t:
             case TYPEOF_uz_t:
             case TYPEOF_bl_t:
             case TYPEOF_tp_t:

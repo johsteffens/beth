@@ -519,7 +519,7 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
                         bcore_source_r_parse_fa( &src, " #<u3_t*>", &o->default_u3 );
                         break;
 
-                    case TYPEOF_szxxx_t:
+                    case TYPEOF_sz_t:
                     case TYPEOF_uz_t:
                     case TYPEOF_offset_t:
                     {
@@ -1566,16 +1566,18 @@ static void flect_define_basics()
     BCORE_REGISTER_PLAIN( s1_t, num  );
     BCORE_REGISTER_PLAIN( s2_t, num  );
     BCORE_REGISTER_PLAIN( s3_t, num  );
+    BCORE_REGISTER_PLAIN( sz_t, num  );
     BCORE_REGISTER_PLAIN( smax_t, num  );
+
     BCORE_REGISTER_PLAIN( u0_t, num  );
     BCORE_REGISTER_PLAIN( u1_t, num  );
     BCORE_REGISTER_PLAIN( u2_t, num  );
     BCORE_REGISTER_PLAIN( u3_t, num  );
+    BCORE_REGISTER_PLAIN( uz_t, num  );
     BCORE_REGISTER_PLAIN( umax_t, num  );
+
     BCORE_REGISTER_PLAIN( f2_t, num  );
     BCORE_REGISTER_PLAIN( f3_t, num  );
-    BCORE_REGISTER_PLAIN( szxxx_t, num  );
-    BCORE_REGISTER_PLAIN( uz_t, num  );
     BCORE_REGISTER_PLAIN( sd_t, leaf );
     BCORE_REGISTER_PLAIN( sc_t, leaf );
     BCORE_REGISTER_PLAIN( vd_t, leaf );

@@ -86,7 +86,7 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
                 case TYPEOF_s3_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( s3_t ) ); break;
                 case TYPEOF_sc_t    : bcore_sink_x_push_data( sink_l, obj_l.o, bcore_strlen( obj_l.o ) ); break;
                 case TYPEOF_sd_t    : bcore_sink_x_push_data( sink_l, obj_l.o, bcore_strlen( obj_l.o ) ); break;
-                case TYPEOF_szxxx_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( szxxx_t ) ); break;
+                case TYPEOF_sz_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( sz_t ) ); break;
                 case TYPEOF_uz_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( uz_t ) ); break;
                 case TYPEOF_tp_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( tp_t ) ); break;
                 case TYPEOF_u0_t    : bcore_sink_x_push_data( sink_l, obj_l.o, sizeof( u0_t ) ); break;
@@ -245,7 +245,7 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 case TYPEOF_s1_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( s1_t ) ); break;
                 case TYPEOF_s2_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( s2_t ) ); break;
                 case TYPEOF_s3_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( s3_t ) ); break;
-                case TYPEOF_szxxx_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( szxxx_t ) ); break;
+                case TYPEOF_sz_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( sz_t ) ); break;
                 case TYPEOF_uz_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( uz_t ) ); break;
                 case TYPEOF_tp_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( tp_t ) ); break;
                 case TYPEOF_u0_t    : bcore_source_x_get_data( src_l, obj_l.o, sizeof( u0_t ) ); break;
