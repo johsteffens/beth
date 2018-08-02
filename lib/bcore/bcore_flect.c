@@ -592,25 +592,7 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
 
     bcore_life_s_discard( l );
 }
-/*
-    tp_t type; // hash of type
-    tp_t name; // hash of name
-    u2_t caps; // data encapsulation
-    bcore_flect_flags_s flags;
-    union
-    {
-        s3_t default_s3; // serves s0_t ... s3_t
-        u3_t default_u3; // serves u0_t ... u3_t
-        f3_t default_f3; // serves f2_t ... f3_t
-        tp_t default_tp; // serves tp_t and external functions
-        uz_t default_sz; // serves uz_t, offset_t
-        uz_t default_bl; // serves bl_t
-        uz_t array_fix_size; // size for fixed arrays
-        umax_t default_umax;
-        smax_t default_smax;
-    };
-    bcore_self_item_s* child_item;
-*/
+
 static bcore_self_s* self_item_s_create_self( void )
 {
     sc_t def =
@@ -1560,21 +1542,21 @@ void bcore_flect_push_ns_func( tp_t type, fp_t func, sc_t func_type, sc_t func_n
 
 static void flect_define_basics()
 {
-    bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( "void" ), typeof( "leaf" ), 0              ) );
+    bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( "void" ), typeof( "leaf" ), 0 ) );
 
-    BCORE_REGISTER_PLAIN( s0_t, num  );
-    BCORE_REGISTER_PLAIN( s1_t, num  );
-    BCORE_REGISTER_PLAIN( s2_t, num  );
-    BCORE_REGISTER_PLAIN( s3_t, num  );
-    BCORE_REGISTER_PLAIN( sz_t, num  );
-    BCORE_REGISTER_PLAIN( smax_t, num  );
+    BCORE_REGISTER_PLAIN( s0_t, num );
+    BCORE_REGISTER_PLAIN( s1_t, num );
+    BCORE_REGISTER_PLAIN( s2_t, num );
+    BCORE_REGISTER_PLAIN( s3_t, num );
+    BCORE_REGISTER_PLAIN( sz_t, num );
+    BCORE_REGISTER_PLAIN( smax_t, num );
 
-    BCORE_REGISTER_PLAIN( u0_t, num  );
-    BCORE_REGISTER_PLAIN( u1_t, num  );
-    BCORE_REGISTER_PLAIN( u2_t, num  );
-    BCORE_REGISTER_PLAIN( u3_t, num  );
-    BCORE_REGISTER_PLAIN( uz_t, num  );
-    BCORE_REGISTER_PLAIN( umax_t, num  );
+    BCORE_REGISTER_PLAIN( u0_t, num );
+    BCORE_REGISTER_PLAIN( u1_t, num );
+    BCORE_REGISTER_PLAIN( u2_t, num );
+    BCORE_REGISTER_PLAIN( u3_t, num );
+    BCORE_REGISTER_PLAIN( uz_t, num );
+    BCORE_REGISTER_PLAIN( umax_t, num );
 
     BCORE_REGISTER_PLAIN( f2_t, num  );
     BCORE_REGISTER_PLAIN( f3_t, num  );
@@ -1583,7 +1565,7 @@ static void flect_define_basics()
     BCORE_REGISTER_PLAIN( vd_t, leaf );
     BCORE_REGISTER_PLAIN( vc_t, leaf );
     BCORE_REGISTER_PLAIN( fp_t, leaf );
-    BCORE_REGISTER_PLAIN( bl_t, num );
+    BCORE_REGISTER_PLAIN( bl_t, num  );
 
     BCORE_REGISTER_PLAIN( offset_t, num );
 
