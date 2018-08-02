@@ -30,15 +30,7 @@
 typedef struct bcore_arr_uz_s
 {
     aware_t _;
-    union
-    {
-        bcore_array_dyn_solid_static_s arr;
-        struct
-        {
-            uz_t* data;
-            uz_t size, space;
-        };
-    };
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( uz_t, );
 } bcore_arr_uz_s;
 
 BCORE_DECLARE_FUNCTIONS_OBJ(    bcore_arr_uz_s )
@@ -62,18 +54,29 @@ bcore_arr_uz_s* bcore_arr_uz_s_create_random_permutation( u2_t ( *rg )( u2_t ), 
 
 /**********************************************************************************************************************/
 
+typedef struct bcore_arr_sz_s
+{
+    aware_t _;
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, );
+} bcore_arr_sz_s;
+
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_sz_s )
+
+void bcore_arr_sz_s_clear(     bcore_arr_sz_s* o ); // sets size to zero
+void bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, uz_t space );
+void bcore_arr_sz_s_fill(      bcore_arr_sz_s* o, uz_t size, sz_t v ); // creates filled array of size <size>
+void bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t step, uz_t size ); // creates filled array according to stepping
+void bcore_arr_sz_s_push(      bcore_arr_sz_s* o, sz_t v );
+sz_t bcore_arr_sz_s_pop(       bcore_arr_sz_s* o );
+void bcore_arr_sz_s_sort(      bcore_arr_sz_s* o, s2_t order ); // stable
+void bcore_arr_sz_s_reorder(   bcore_arr_sz_s* o, const bcore_arr_uz_s* order );
+
+/**********************************************************************************************************************/
+
 typedef struct bcore_arr_u3_s
 {
     aware_t _;
-    union
-    {
-        bcore_array_dyn_solid_static_s arr;
-        struct
-        {
-            u3_t* data;
-            uz_t size, space;
-        };
-    };
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( u3_t, );
 } bcore_arr_u3_s;
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_u3_s )
@@ -92,15 +95,7 @@ void bcore_arr_u3_s_reorder(   bcore_arr_u3_s* o, const bcore_arr_uz_s* order );
 typedef struct bcore_arr_tp_s
 {
     aware_t _;
-    union
-    {
-        bcore_array_dyn_solid_static_s arr;
-        struct
-        {
-            tp_t* data;
-            uz_t size, space;
-        };
-    };
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( tp_t, );
 } bcore_arr_tp_s;
 
 BCORE_DECLARE_FUNCTIONS_OBJ(    bcore_arr_tp_s )
@@ -119,15 +114,7 @@ uz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v 
 typedef struct bcore_arr_st_s
 {
     aware_t _;
-    union
-    {
-        bcore_array_dyn_link_static_s arr;
-        struct
-        {
-            st_s** data;
-            uz_t size, space;
-        };
-    };
+    BCORE_ARRAY_DYN_LINK_STATIC_S( st_s, );
 } bcore_arr_st_s;
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_st_s )
@@ -147,15 +134,7 @@ void  bcore_arr_st_s_reorder(   bcore_arr_st_s* o, const bcore_arr_uz_s* order )
 typedef struct bcore_arr_vd_s
 {
     aware_t _;
-    union
-    {
-        bcore_array_dyn_solid_static_s arr;
-        struct
-        {
-            vd_t* data;
-            uz_t size, space;
-        };
-    };
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( vd_t, );
 } bcore_arr_vd_s;
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_vd_s )
@@ -174,15 +153,7 @@ uz_t bcore_arr_vd_s_find( const bcore_arr_vd_s* o, uz_t start, uz_t end, vd_t v 
 typedef struct bcore_arr_fp_s
 {
     aware_t _;
-    union
-    {
-        bcore_array_dyn_solid_static_s arr;
-        struct
-        {
-            fp_t* data;
-            uz_t size, space;
-        };
-    };
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( fp_t, );
 } bcore_arr_fp_s;
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_fp_s )
@@ -201,15 +172,7 @@ uz_t bcore_arr_fp_s_find( const bcore_arr_fp_s* o, uz_t start, uz_t end, fp_t v 
 typedef struct bcore_arr_sr_s
 {
     aware_t _;
-    union
-    {
-        bcore_array_dyn_solid_static_s arr;
-        struct
-        {
-            sr_s* data;
-            uz_t size, space;
-        };
-    };
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( sr_s, );
 } bcore_arr_sr_s;
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_sr_s )
