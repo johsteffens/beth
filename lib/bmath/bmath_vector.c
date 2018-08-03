@@ -480,22 +480,48 @@ uz_t bmath_vf3_s_idx_min( const bmath_vf3_s* o )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_vf3_s_to_stdout( const bmath_vf3_s* o )
+/**********************************************************************************************************************/
+
+void bmath_vf3_s_to_string( const bmath_vf3_s* o, st_s* string )
 {
     const f3_t* v = o->data;
-    printf( "(%zu)\n", o->size );
-    for( uz_t i = 0; i < o->size; i++ ) printf( "%g\n", v[ i ] );
+    st_s_pushf( string, "(%zu)\n", o->size );
+    for( uz_t i = 0; i < o->size; i++ ) st_s_pushf( string, "%g\n", v[ i ] );
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_to_stdout( const bmath_vf3_s* o )
+{
+    st_s* s = st_s_create();
+    bmath_vf3_s_to_string( o, s );
+    bcore_msg_fa( "#<sc_t>", s->sc );
+    st_s_discard( s );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_stat_to_string( const bmath_vf3_s* o, st_s* string )
+{
+    st_s_push_fa( string, "(#<uz_t>)\n", o->size );
+    st_s_push_fa( string, "  sum .. #<f3_t>\n", bmath_vf3_s_f3_sum( o ) );
+    st_s_push_fa( string, "  avg .. #<f3_t>\n", bmath_vf3_s_f3_avg( o ) );
+    st_s_push_fa( string, "  max .. #<f3_t>\n", bmath_vf3_s_f3_max( o ) );
+    st_s_push_fa( string, "  min .. #<f3_t>\n", bmath_vf3_s_f3_min( o ) );
+    st_s_push_fa( string, "  dev .. #<f3_t>\n", bmath_vf3_s_f3_dev( o ) );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o )
 {
-    bcore_msg_fa( "(#<uz_t>)\n", o->size );
-    bcore_msg_fa( "  sum .. #<f3_t>\n", bmath_vf3_s_f3_sum( o ) );
-    bcore_msg_fa( "  avg .. #<f3_t>\n", bmath_vf3_s_f3_avg( o ) );
-    bcore_msg_fa( "  max .. #<f3_t>\n", bmath_vf3_s_f3_max( o ) );
-    bcore_msg_fa( "  min .. #<f3_t>\n", bmath_vf3_s_f3_min( o ) );
-    bcore_msg_fa( "  dev .. #<f3_t>\n", bmath_vf3_s_f3_dev( o ) );
+    st_s* s = st_s_create();
+    bmath_vf3_s_stat_to_string( o, s );
+    bcore_msg_fa( "#<sc_t>", s->sc );
+    st_s_discard( s );
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // bmath_vcf3_s
