@@ -40,7 +40,7 @@ typedef struct bmath_mf3_s bmath_mf3_s;
 //---------------------------------------------------------------------------------------------------------------------
 
 /** Stable in-place EVD for a symmetric matrix. Jacobi Method.
- *  Input:  a  (symmetric), v  (rotation or identity)
+ *  Input:  a  (symmetric), v  (preallocated or NULL)
  *  Output: a' (diagonal),  v' (rotation) with vT * a * v = v'T * a' * v'.
  *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.
  *  (Convergence failure is very rare.)
@@ -51,7 +51,7 @@ bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** In-place EVD for a symmetric matrix.
  *  Approach: TRD, QR with explicit shifting. (Variant of Francis' QR-Algorithm)
- *  Input:  a  (symmetric), v  (rotation or identity)
+ *  Input:  a  (symmetric), v  (preallocated or NULL)
  *  Output: a' (diagonal),  v' (rotation) with vT * a * v = v'T * a' * v'.
  *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.
  *  (Convergence failure is very rare.)
@@ -59,7 +59,5 @@ bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
  *  v == NULL allowed, in which case only a' is computed.
  */
 bl_t bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
-
-void bmath_mf3_s_evd_selftest();
 
 #endif  // BMATH_MATRIX_EVD_H

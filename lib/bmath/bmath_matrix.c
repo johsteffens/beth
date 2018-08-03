@@ -81,6 +81,24 @@ void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval )
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_fill_random_hsm( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval )
+{
+    ASSERT( o->rows == o->cols );
+    f3_t range = max - min;
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        f3_t* vi = o->data + i * o->stride;
+        for( uz_t j = 0; j <= i; j++ )
+        {
+            f3_t* vj = o->data + j * o->stride;
+            vi[ j ] = ( range * f3_xsg1_pos( rval ) ) + min;
+            vj[ i ] = vi[ j ];
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_fill_random_sparse( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval )
 {
     f3_t range = max - min;
@@ -96,6 +114,32 @@ void bmath_mf3_s_fill_random_sparse( bmath_mf3_s* o, f3_t min, f3_t max, f3_t de
             else
             {
                 v[ j ] = 0;
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_fill_random_sparse_hsm( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval )
+{
+    ASSERT( o->rows == o->cols );
+    f3_t range = max - min;
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        f3_t* vi = o->data + i * o->stride;
+        for( uz_t j = 0; j <= i; j++ )
+        {
+            f3_t* vj = o->data + j * o->stride;
+            if( f3_xsg1_pos( rval ) < density )
+            {
+                vi[ j ] = ( range * f3_xsg1_pos( rval ) ) + min;
+                vj[ i ] = vi[ j ];
+            }
+            else
+            {
+                vi[ j ] = 0;
+                vj[ i ] = 0;
             }
         }
     }
@@ -1768,39 +1812,99 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
+void bmath_mf3_s_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    ASSERT( bmath_mf3_s_is_hsm( a ) );
+    ASSERT( a->rows == a->cols );
+
+    uz_t n = a->rows;
+
+    if( n <= 2 ) return; // nothing to do
+
     if( v )
     {
+        ASSERT( v->cols == n );
+        ASSERT( v->rows == n );
         ASSERT( v != a );
-        ASSERT( v->cols == a->rows );
-        ASSERT( v->rows == a->rows );
     }
 
+    bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( n );
     bmath_grt_f3_s gr;
 
-    for( uz_t j = 0; j < a->rows; j++ )
+    for( uz_t j = 0; j < n; j++ )
     {
-        for( uz_t k = a->rows - 2; k > j; k-- )
+        // zero lower column
+        for( uz_t k = n - 2; k > j; k-- )
         {
-            f3_t* ak;
+            uz_t l = k + 1;
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ k * a->stride + j ], &a->data[ l * a->stride + j ] );
+            a->data[ l * a->stride + j ] = bmath_grt_f3_s_rho( &gr );
+            bmath_mf3_s_arow_rotate( a, k, &gr, j + 1, l + 1 );
+            f3_t* a00 = a->data + k * ( a->stride + 1 );
+            a00[ -a->stride ] = a00[ -1 ];
+            bmath_grt_f3_s_rotate( &gr, a00, a00 + 1 );
+            grv.data[ l - 1 ] = gr;
+        }
 
-            // zero upper row
-            ak = a->data + k;
-            uz_t jstride = j * a->stride;
-            bmath_grt_f3_s_init_and_annihilate_b( &gr, ak + jstride, ak + jstride + 1 );
-            bmath_grt_f3_s_col_rotate( &gr, ak, ak + 1, a->stride, j + 1, a->rows );
-
-            // transposed operation
-            ak = a->data + k * a->stride;
-            bmath_grt_f3_s_annihilate_b( &gr, ak + j, ak + a->stride + j );
-            bmath_grt_f3_s_row_rotate( &gr, ak, ak + a->stride, j + 1, a->cols );
-
-            // rotation matrix
-            if( v ) bmath_grt_f3_s_row_rotate( &gr, v->data + k * v->stride, v->data + ( k + 1 ) * v->stride, 0, v->cols );
+        if( bmath_arr_grt_f3_s_density( &grv, j + 1, n - 1 ) < 0.25 )
+        {
+            // sparse column operations
+            for( uz_t k = n - 2; k > j; k-- )
+            {
+                gr = grv.data[ k ];
+                bmath_mf3_s_acol_rotate( a, k, &gr, k + 1, n );
+                if( k < n - 2 ) a->data[ ( k + 1 ) * ( a->stride + 1 ) + 1 ] = a->data[ ( k + 2 ) * ( a->stride + 1 ) - 1 ];
+            }
+        }
+        else
+        {
+            // row swipes
+            for( uz_t k = n - 1; k > j; k-- )
+            {
+                bmath_mf3_s_arow_swipe_rev( a, k, &grv, j + 1, k );
+                if( k < n - 1 ) a->data[ k * ( a->stride + 1 ) + 1 ] = a->data[ ( k + 1 ) * ( a->stride + 1 ) - 1 ];
+            }
         }
     }
+
+    if( v )
+    {
+        bmath_mf3_s_one( v );
+        for( uz_t j = 0; j < n; j++ )
+        {
+            for( uz_t l = n - 1; l > j + 1; l-- )
+            {
+                f3_t rho = a->data[ l * a->stride + j ];
+                bmath_grt_f3_s_init_from_rho( &gr, rho );
+                bmath_mf3_s_arow_rotate( v, l - 1, &gr, l - j - 1, n );
+            }
+        }
+    }
+
+    // set off-tri diag elements zero
+    for( uz_t i = 0; i < n; i++ )
+    {
+        f3_t* ai = a->data + i * a->stride;
+        if( i > 1 ) for( uz_t j = 0; j < i - 1; j++ ) ai[ j ] = 0;
+        for( uz_t j = i + 2; j < n; j++ ) ai[ j ] = 0;
+    }
+
+    // symmetrize off-diag
+    for( uz_t i = 0; i < n - 1; i++ )
+    {
+        f3_t* ai = a->data + i * ( a->stride + 1 );
+        f3_t b = ( ai[ 1 ] + ai[ a->stride ] ) * 0.5;
+        ai[ 1 ] = ai[ a->stride ] = b;
+    }
+
+    bmath_arr_grt_f3_s_down( &grv );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_trd( bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    bmath_mf3_s_trd_htp( a, v );
+    if( v ) bmath_mf3_s_htp( v, v );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -2256,7 +2360,7 @@ void bmath_mf3_s_sweep_arow_rotate_rev( bmath_mf3_s* o, uz_t row_start, uz_t row
 void bmath_mf3_s_sweep_acol_rotate_fwd( bmath_mf3_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_f3_s* grt, uz_t row_start, uz_t row_end )
 {
     assert( grt->size >= col_end - 1 );
-    if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.0625 )
+    if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.25 )
     {
         // sparse rotations: rotate columns individually
         for( uz_t i = col_start; i < col_end; i++ ) bmath_mf3_s_acol_rotate( o, i, &grt->data[ i ], row_start, row_end );
@@ -2273,7 +2377,7 @@ void bmath_mf3_s_sweep_acol_rotate_fwd( bmath_mf3_s* o, uz_t col_start, uz_t col
 void bmath_mf3_s_sweep_acol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_f3_s* grt, uz_t row_start, uz_t row_end )
 {
     assert( grt->size >= col_end - 1 );
-    if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.0625 )
+    if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.25 )
     {
         // sparse rotations: rotate columns individually
         for( uz_t i = col_end; i > col_start; i-- ) bmath_mf3_s_acol_rotate( o, i - 1, &grt->data[ i - 1 ], row_start, row_end );
@@ -2290,7 +2394,7 @@ void bmath_mf3_s_sweep_acol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col
 void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_f3_s* grt, uz_t row_start, uz_t row_end )
 {
     assert( grt->size >= col_end - 1 );
-    if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.0625 )
+    if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.25 )
     {
         // sparse rotations: rotate columns individually
         for( uz_t i = col_end; i > col_start; i-- ) bmath_mf3_s_dcol_rotate( o, col_start, i, &grt->data[ i - 1 ], row_start, row_end );
@@ -2304,19 +2408,29 @@ void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
+void bmath_mf3_s_to_string( const bmath_mf3_s* o, st_s* string )
 {
-    printf( "(%zu x %zu)\n", o->rows, o->cols );
+    st_s_pushf( string, "(%zu x %zu)\n", o->rows, o->cols );
     for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v = o->data + i * o->stride;
         for( uz_t j = 0; j < o->cols; j++ )
         {
-            if( j > 0 ) printf( " " );
-            printf( "%9.3g", v[ j ] );
+            if( j > 0 ) st_s_pushf( string, " " );
+            st_s_pushf( string, "%9.3g", v[ j ] );
         }
-        printf( "\n" );
+        st_s_pushf( string, "\n" );
     }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
+{
+    st_s* s = st_s_create();
+    bmath_mf3_s_to_string( o, s );
+    bcore_msg_fa( "#<sc_t>", s->sc );
+    st_s_discard( s );
 }
 
 /**********************************************************************************************************************/
@@ -2536,35 +2650,6 @@ static vd_t selftest( void )
         ASSERT( bmath_mf3_s_is_near_one( m3, 1E-8 ) );
     }
 
-    // tridiagonalization
-    {
-        uz_t n = 100;
-
-        bmath_mf3_s_set_size( m1, n, n );
-        u2_t rval = 1236;
-        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
-        bmath_mf3_s_mul_htp( m1, m1, m1 );
-
-        bmath_mf3_s_set_size_to( m1, m2 );
-        bmath_mf3_s_set_size_to( m1, m3 );
-        bmath_mf3_s_set_size_to( m1, m4 );
-        bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_hsm_decompose_trd_htp( m2, NULL );
-        ASSERT( bmath_mf3_s_is_trd( m2 ) );
-        bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_one( m3 );
-        bmath_mf3_s_hsm_decompose_trd_htp( m2, m3 );
-        ASSERT( bmath_mf3_s_is_trd( m2 ) );
-
-        ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
-
-        bmath_mf3_s_mul( m2, m3, m4 );
-        bmath_mf3_s_htp( m3, m3 );
-        bmath_mf3_s_mul( m3, m4, m4 );
-
-        ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
-    }
-
     // covariance
     {
         uz_t size = 1000;
@@ -2673,13 +2758,15 @@ static void eval_test( void )
     BCORE_LIFE_CREATE( bmath_arr_matrix_eval_s, arr_eval );
 
     eval->density = 1.0;
+    eval->rows = 20; eval->cols = 20; bmath_arr_matrix_eval_s_push( arr_eval, eval );
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_trd"     ), ( fp_t )bmath_mf3_s_trd,     NULL );
+    bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_evd_htp" ), ( fp_t )bmath_mf3_s_evd_htp, NULL );
+
     eval->full = false;
     eval->rows = 10; eval->cols = 30; bmath_arr_matrix_eval_s_push( arr_eval, eval );
-    eval->rows = 20; eval->cols = 20; bmath_arr_matrix_eval_s_push( arr_eval, eval );
     eval->rows = 30; eval->cols = 10; bmath_arr_matrix_eval_s_push( arr_eval, eval );
     eval->full = true;
     eval->rows = 10; eval->cols = 30; bmath_arr_matrix_eval_s_push( arr_eval, eval );
-    eval->rows = 20; eval->cols = 20; bmath_arr_matrix_eval_s_push( arr_eval, eval );
     eval->rows = 30; eval->cols = 10; bmath_arr_matrix_eval_s_push( arr_eval, eval );
 
     bmath_arr_matrix_eval_s_run_fp( arr_eval, typeof( "bmath_fp_qrd" ), ( fp_t )bmath_mf3_s_qrd, NULL );
@@ -2723,7 +2810,6 @@ vd_t bmath_matrix_signal_handler( const bcore_signal_s* o )
         {
             selftest();
             eval_test();
-            bmath_mf3_s_evd_selftest();
             return NULL;
         }
         break;

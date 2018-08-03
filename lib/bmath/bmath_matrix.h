@@ -99,12 +99,14 @@ BCORE_DECLARE_OBJECT( bmath_mf3_s )
 void bmath_mf3_s_set_size( bmath_mf3_s* o, uz_t rows, uz_t cols );
 
 /// Fills o with random values within range [ min, max [.
-void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
+void bmath_mf3_s_fill_random(     bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
+void bmath_mf3_s_fill_random_hsm( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval ); // creates symmetric matrix
 
 /** Fills o with sparsely with random values within range [ min, max [.
  *  'density' specifies the likelihood that a field is nonzero.
  */
-void bmath_mf3_s_fill_random_sparse( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval );
+void bmath_mf3_s_fill_random_sparse(     bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval );
+void bmath_mf3_s_fill_random_sparse_hsm( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval ); // creates symmetric matrix
 
 /** Fills o with with random values v = sign( r) * pow( abs( r ), exp )
  *  r is a random variable evenly distributed between -1.0 and 1.0.
@@ -360,11 +362,12 @@ void bmath_mf3_s_luc_solve_htp_htp( const bmath_mf3_s* o, const bmath_mf3_s* op,
 
 /** Stable in-place tri-diagonal decomposition for a symmetric matrix.
  *  Based on Givens rotations.
- *  Input:  a  (symmetric),    v  (rotation, identity or NULL)
+ *  Input:  a  (symmetric),    v  (preallocated or NULL)
  *  Output: a' (tri-diagonal), v' (rotation or NULL)
  *  It is vT * a * v = v'T * a' * v'.
  */
-void bmath_mf3_s_hsm_decompose_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_trd(     bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mf3_s_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
 
 /** Stable QR decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
  *  It is a = u * a', with u being unitary.
@@ -580,6 +583,7 @@ void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col
 /// Development support
 
 // for easy inspection
+void bmath_mf3_s_to_string( const bmath_mf3_s* o, st_s* string );
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );
 
 /**********************************************************************************************************************/

@@ -29,7 +29,7 @@
 
 bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    ASSERT( bmath_mf3_s_is_hsm( a ) );
+    ASSERT( a->rows == a->cols );
 
     if( v )
     {
@@ -116,7 +116,7 @@ bl_t bmath_mf3_s_evd_htp_qr_xshift( bmath_mf3_s* a, bmath_mf3_s* v )
     if( n <= 1 ) return true; // nothing to do
 
     // tridiagonalization
-    bmath_mf3_s_hsm_decompose_trd_htp( a, v );
+    bmath_mf3_s_trd_htp( a, v );
 
     bl_t success = true;
 
@@ -227,7 +227,7 @@ bl_t bmath_mf3_s_evd_htp_qr_ishift( bmath_mf3_s* a, bmath_mf3_s* v )
     if( n <= 1 ) return true; // nothing to do
 
     /// tridiagonalization
-    bmath_mf3_s_hsm_decompose_trd_htp( a, v );
+    bmath_mf3_s_trd_htp( a, v );
 
     // qr iteration until smallest non-diag element < offd_limit;
 
@@ -342,61 +342,4 @@ bl_t bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 //---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-
-void bmath_mf3_s_evd_selftest()
-{
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
-    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
-    BCORE_LIFE_CREATE( bmath_mf3_s, m3 );
-    BCORE_LIFE_CREATE( bmath_mf3_s, m4 );
-
-    uz_t n = 100;
-
-    bmath_mf3_s_set_size( m1, n, n );
-    u2_t rval = 1236;
-    bmath_mf3_s_fill_random( m1, -1, 1, &rval );
-    bmath_mf3_s_mul_htp( m1, m1, m1 );
-
-    bmath_mf3_s_set_size_to( m1, m2 );
-    bmath_mf3_s_set_size_to( m1, m3 );
-    bmath_mf3_s_set_size_to( m1, m4 );
-
-    // jacobi
-    {
-        bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_evd_htp_jacobi( m2, NULL );
-        ASSERT( bmath_mf3_s_is_dag( m2 ) );
-        bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_one( m3 );
-        bmath_mf3_s_evd_htp_jacobi( m2, m3 );
-        ASSERT( bmath_mf3_s_is_dag( m2 ) );
-        ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
-        bmath_mf3_s_mul( m2, m3, m4 );
-        bmath_mf3_s_htp( m3, m3 );
-        bmath_mf3_s_mul( m3, m4, m4 );
-        ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
-    }
-
-    // default evd
-    {
-        bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_evd_htp( m2, NULL );
-        ASSERT( bmath_mf3_s_is_dag( m2 ) );
-        bmath_mf3_s_cpy( m1, m2 );
-        bmath_mf3_s_one( m3 );
-        bmath_mf3_s_evd_htp( m2, m3 );
-        ASSERT( bmath_mf3_s_is_dag( m2 ) );
-        ASSERT( bmath_mf3_s_is_near_uni( m3, 1E-8 ) );
-        bmath_mf3_s_mul( m2, m3, m4 );
-        bmath_mf3_s_htp( m3, m3 );
-        bmath_mf3_s_mul( m3, m4, m4 );
-        ASSERT( bmath_mf3_s_is_near_equ( m1, m4, 1E-8 ) );
-    }
-
-    BCORE_LIFE_DOWN();
-}
-
-/**********************************************************************************************************************/
-
 
