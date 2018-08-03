@@ -38,6 +38,7 @@ void bmath_quicktypes_create_header( sc_t folder );
 #define TYPEOF_bmath_grt_f3_s          3367654153
 #define TYPEOF_bmath_matrix            3796445417
 #define TYPEOF_bmath_matrix_eval_s     2614232446
+#define TYPEOF_bmath_matrix_eval_result_s     typeof( "bmath_matrix_eval_result_s" )
 #define TYPEOF_bmath_matrix_s          1909792099
 #define TYPEOF_bmath_mf3_s             2915726298
 #define TYPEOF_bmath_plot              3053585471
