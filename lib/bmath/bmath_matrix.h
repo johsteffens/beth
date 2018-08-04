@@ -38,6 +38,7 @@
  *
  *  Matrix Status:
  *    hsm: real-symmetric or hermitean matrix.
+ *    pdf: positive definite
  *    trc: trace
  *    dag: diagonal
  *    det: determinant
@@ -74,6 +75,47 @@
 #include "bmath_grt.h"
 #include "bmath_matrix_evd.h"
 #include "bmath_matrix_svd.h"
+
+typedef struct bmath_mf3_s bmath_mf3_s;
+
+// mf3 features
+typedef void (*bmath_fp_mf3_s_trd_htp )(                 bmath_mf3_s* a, bmath_mf3_s* v );
+typedef void (*bmath_fp_mf3_s_trd     )(                 bmath_mf3_s* a, bmath_mf3_s* v );
+typedef bl_t (*bmath_fp_mf3_s_evd_htp )(                 bmath_mf3_s* a, bmath_mf3_s* v );
+typedef bl_t (*bmath_fp_mf3_s_svd     )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
+typedef void (*bmath_fp_mf3_s_ubd     )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
+typedef void (*bmath_fp_mf3_s_lbd     )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
+typedef void (*bmath_fp_mf3_s_qrd     )( bmath_mf3_s* u, bmath_mf3_s* a                 );
+typedef void (*bmath_fp_mf3_s_lqd     )(                 bmath_mf3_s* a, bmath_mf3_s* v );
+
+typedef bl_t (*bmath_fp_mf3_s_cld     )( const bmath_mf3_s* o, bmath_mf3_s* res );
+typedef bl_t (*bmath_fp_mf3_s_lud     )( const bmath_mf3_s* o, bmath_mf3_s* res );
+typedef bl_t (*bmath_fp_mf3_s_inv     )( const bmath_mf3_s* o, bmath_mf3_s* res );
+typedef bl_t (*bmath_fp_mf3_s_pdf_inv )( const bmath_mf3_s* o, bmath_mf3_s* res );
+typedef bl_t (*bmath_fp_mf3_s_piv     )( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res );
+typedef bl_t (*bmath_fp_mf3_s_hsm_piv )( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res );
+
+/// quicktypes for matrix
+static inline void bmath_matrix_push_quicktypes( sr_s* list )
+{
+    bcore_array_r_push_sc( list, "bmath_mf3_s" );
+
+    // features
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_trd_htp" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_trd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_evd_htp" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_svd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_ubd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lbd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lqd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_cld"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lud"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_inv"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_pdf_inv" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_piv"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_hsm_piv" );
+}
 
 /**********************************************************************************************************************/
 /// Matrix object of f3_t
@@ -215,11 +257,16 @@ void bmath_mf3_s_mul_scl_f3( const bmath_mf3_s* o, f3_t op, bmath_mf3_s* res ) {
 void bmath_mf3_s_udu_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res ); // res = u * d * u^T
 
 //---------------------------------------------------------------------------------------------------------------------
-// inversion; pseudo-inversion
+// inversion; pseudo-inversion;
 
-void bmath_mf3_s_inv(     const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1
-void bmath_mf3_s_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = (o^-1)T
-void bmath_mf3_s_hsm_inv( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1 in case o is hermitean/symmetric (3x faster than bmath_mf3_s_inv)
+/** Function require a certain form or well-behaveness of the input matrix to succeed.
+    In case of failure, false is returned and the resulting matrix, though numerically valid,
+    not necessarily a valid result of the intended operation.
+ */
+
+bl_t bmath_mf3_s_inv(     const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1
+bl_t bmath_mf3_s_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = (o^-1)T
+bl_t bmath_mf3_s_pdf_inv( const bmath_mf3_s* o, bmath_mf3_s* res ); // res = o^-1 in case o is positive definite (3x faster than bmath_mf3_s_inv)
 
 /** Pseudo-Inversion:
  *  Inversion via SVD/EVD by setting near-zero singular values to zero (cut-off).
@@ -234,11 +281,10 @@ bl_t bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); //
  *  res = av1-inverse of o.
  *  o and res deemed to be av1-transformations
  */
-void bmath_mf3_s_inv_av1(     const bmath_mf3_s* o, bmath_mf3_s* res );
-void bmath_mf3_s_hsm_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res );           // o symmetric
-void bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // pseudo inversion; o symmetric
-
-void bmath_mf3_s_div(         const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+bl_t bmath_mf3_s_inv_av1(     const bmath_mf3_s* o, bmath_mf3_s* res );
+bl_t bmath_mf3_s_pdf_inv_av1( const bmath_mf3_s* o, bmath_mf3_s* res );           // o positive definite
+bl_t bmath_mf3_s_hsm_piv_av1( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res ); // pseudo inversion; o symmetric
+bl_t bmath_mf3_s_div(         const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
 /**********************************************************************************************************************/
 /// element-access; col-access; row-access; sub-matrix
@@ -286,33 +332,35 @@ bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, uz_t idx );
 /**********************************************************************************************************************/
 /// Triangular decompositions, operations and solvers
 
-/** Cholesky decomposition.
- *  o must be positive definite.
+/** Cholesky decomposition. Returns succcess.
+ *  Succeeds when o is positive definite.
+ *  If false is returned res is lower triangular but not a valid cholesky decomposition of o.
  *  Only the lower triangle of o is evaluated.
  *  res: represents the lower-triangular version
  *  It is o = res * resT.
- *  When o is not positive definite, incomputable elements of res are set to zero.
  */
-void bmath_mf3_s_decompose_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res );
+bl_t bmath_mf3_s_decompose_cholesky( const bmath_mf3_s* o, bmath_mf3_s* res );
 
-/** LU decomposition.
- *  o must be square and non-singular.
+/** LU decomposition. Returns succcess.
+ *  TODO: The current implementation is unstable and not guaranteed to succeed
+ *  even when o is non-singular --> use partial pivoting to fix this.
+ *
+ *  If false is returned res is a LU-composite but not a LU decomposition of o.
  *  res: represents a LU-composite matrix (LUC):
  *       U is upper triangle of LUC
  *       L is lower triangle of LUC except diagonal
  *       diagonal of L is all 1 and not stored.
- *  When o is singular, incomputable elements of res are set to zero.
  */
-void bmath_mf3_s_decompose_luc( const bmath_mf3_s* o, bmath_mf3_s* res );
+bl_t bmath_mf3_s_decompose_luc( const bmath_mf3_s* o, bmath_mf3_s* res );
 
 /** Inversion and h-transposition of lower triangular matrix.
  *  o is deemed lower triangular (only lower triangular elements are evaluated)
  *  res is upper triangular
  *  It is: 1 = o * resT = resT * o
  *  Algorithm always finishes.
- *  If o is not invertible, incomputable elements are set to zero.
+ *  If o singular, incomputable elements are set to zero.
  */
-void bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res );
+bl_t bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res );
 
 /** Multiplication of o with o(transposed) of triangular matrix. (res = o * oT)
  *  Only triangular elements of o are evaluated

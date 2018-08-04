@@ -29,17 +29,31 @@ void bmath_quicktypes_create_header( sc_t folder );
  *  Created via bclos_quicktypes_to_stdout( NULL );
  */
 #define TYPEOF_bmath_arr_grt_f3_s        68378437
-#define TYPEOF_bmath_arr_matrix_eval_s 1803607170
+#define TYPEOF_bmath_arr_mf3_eval_s    2241821565
 #define TYPEOF_bmath_arr_vf3_s         3268702147
 #define TYPEOF_bmath_cf3_s             2506167476
 #define TYPEOF_bmath_estimator_s       3775440224
+#define TYPEOF_bmath_fp_mf3_s_cld      3327146305
+#define TYPEOF_bmath_fp_mf3_s_evd_htp  2695903694
+#define TYPEOF_bmath_fp_mf3_s_hsm_piv  3530555096
+#define TYPEOF_bmath_fp_mf3_s_inv      1112654779
+#define TYPEOF_bmath_fp_mf3_s_lbd      1742526386
+#define TYPEOF_bmath_fp_mf3_s_lqd      2578597217
+#define TYPEOF_bmath_fp_mf3_s_lud      2309566933
+#define TYPEOF_bmath_fp_mf3_s_pdf_inv  2449600418
+#define TYPEOF_bmath_fp_mf3_s_piv      2662509159
+#define TYPEOF_bmath_fp_mf3_s_qrd       223789909
+#define TYPEOF_bmath_fp_mf3_s_svd      4111686299
+#define TYPEOF_bmath_fp_mf3_s_trd      1671436858
+#define TYPEOF_bmath_fp_mf3_s_trd_htp   669071001
+#define TYPEOF_bmath_fp_mf3_s_ubd      2723492025
 #define TYPEOF_bmath_group             1421936371
 #define TYPEOF_bmath_group_s           1219600405
 #define TYPEOF_bmath_grt_f3_s          3367654153
 #define TYPEOF_bmath_matrix            3796445417
-#define TYPEOF_bmath_matrix_eval_s     2614232446
-#define TYPEOF_bmath_matrix_eval_result_s     typeof( "bmath_matrix_eval_result_s" )
 #define TYPEOF_bmath_matrix_s          1909792099
+#define TYPEOF_bmath_mf3_eval_result_s 3945240507
+#define TYPEOF_bmath_mf3_eval_s        1818334529
 #define TYPEOF_bmath_mf3_s             2915726298
 #define TYPEOF_bmath_plot              3053585471
 #define TYPEOF_bmath_plot_s             413785001

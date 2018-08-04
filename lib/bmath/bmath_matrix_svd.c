@@ -95,7 +95,7 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
     // remove defective diagonal elements
     // zero defective superdiagonal elements
     bl_t defective = false;
-    for( uz_t i = 0; i < a->rows - 1; i++ )
+    for( uz_t i = 0; i < n - 1; i++ )
     {
         f3_t* ai = a->data + i * ( a->stride + 1 );
         if( f3_abs( ai[ 1 ] ) < f3_abs( ai[ 0 ] ) * f3_lim_eps )

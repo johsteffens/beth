@@ -41,7 +41,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
         bmath_fourier_signal_handler,
         bmath_vector_signal_handler,
         bmath_matrix_signal_handler,
-        bmath_matrix_eval_signal_handler,
+        bmath_mf3_eval_signal_handler,
         bmath_grt_signal_handler,
         bmath_estimator_signal_handler,
         bmath_plot_signal_handler,

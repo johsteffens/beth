@@ -17,7 +17,7 @@
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_matrix_eval_s )
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_eval_s )
 "{"
     "aware_t _;"
     "uz_t rows       = 1000;"
@@ -27,6 +27,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_matrix_eval_s )
     "f3_t density    = 1.0;"
     "bl_t full       = false;"
     "f3_t near_limit = 1E-8;"
+    "f3_t eps        = 1E-8;"  // for function requiring an epsilon
 
     "bl_t log_a      = false;" // log matrix a after conversion
     "bl_t log_u      = false;" // log matrix u after conversion
@@ -35,14 +36,11 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_matrix_eval_s )
 
     "bl_t test0 = true;"  // runs minimal parameter test
     "bl_t test1 = true;"  // runs default parameter test
-
-    "tp_t fp_type;"
-    "private fp_t fp;"
 "}";
 
 //---------------------------------------------------------------------------------------------------------------------
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_matrix_eval_result_s )
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_eval_result_s )
 "{"
     "aware_t _;"
     "tp_t fp_type;"
@@ -69,9 +67,8 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_matrix_eval_result_s )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static void bmath_matrix_eval_result_s_set_defaults_from_eval( bmath_matrix_eval_result_s* o, const bmath_matrix_eval_s* v )
+static void bmath_mf3_eval_result_s_set_defaults_from_eval( bmath_mf3_eval_result_s* o, const bmath_mf3_eval_s* v )
 {
-    o->fp_type = v->fp_type;
     o->rows    = v->rows;
     o->cols    = v->cols;
     o->density = v->density;
@@ -79,7 +76,7 @@ static void bmath_matrix_eval_result_s_set_defaults_from_eval( bmath_matrix_eval
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_matrix_eval_result_s_to_string( const bmath_matrix_eval_result_s* o, st_s* string )
+void bmath_mf3_eval_result_s_to_string( const bmath_mf3_eval_result_s* o, st_s* string )
 {
     if( !string ) return;
 
@@ -105,17 +102,36 @@ void bmath_matrix_eval_result_s_to_string( const bmath_matrix_eval_result_s* o, 
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_matrix_eval_result_s_to_stdout( const bmath_matrix_eval_result_s* o )
+void bmath_mf3_eval_result_s_to_stdout( const bmath_mf3_eval_result_s* o )
 {
     st_s* s = st_s_create();
-    bmath_matrix_eval_result_s_to_string( o, s );
+    bmath_mf3_eval_result_s_to_string( o, s );
     bcore_msg_fa( "#<sc_t>\n", s->sc );
     st_s_discard( s );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_matrix_eval_s_run_uav_fp( const bmath_matrix_eval_s* o, tp_t fp_type, fp_t fp, bmath_matrix_eval_result_s* res )
+static void bmath_mf3_eval_s_fill_random( bmath_mf3_s* m, f3_t density, sc_t shape, u2_t* rval )
+{
+    if( sc_t_equ( shape, "hsm" ) )
+    {
+        bmath_mf3_s_fill_random_sparse_hsm( m, -1, 1, density, rval );
+    }
+    else if( sc_t_equ( shape, "pdf" ) )
+    {
+        bmath_mf3_s_fill_random_sparse( m, -1, 1, density, rval );
+        bmath_mf3_s_mul_htp( m, m, m );
+    }
+    else
+    {
+        bmath_mf3_s_fill_random_sparse( m, -1, 1, density, rval );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
     ASSERT( fp != NULL );
     ASSERT( fp_type != 0 );
@@ -127,8 +143,8 @@ void bmath_matrix_eval_s_run_uav_fp( const bmath_matrix_eval_s* o, tp_t fp_type,
     BCORE_LIFE_CREATE( bmath_mf3_s, v );
     BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
     BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
-    BCORE_LIFE_CREATE( bmath_matrix_eval_result_s, r );
-    bmath_matrix_eval_result_s_set_defaults_from_eval( r, o );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+    bmath_mf3_eval_result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     uz_t m = o->rows;
@@ -137,8 +153,7 @@ void bmath_matrix_eval_s_run_uav_fp( const bmath_matrix_eval_s* o, tp_t fp_type,
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  m, n );
     u2_t rval = o->seed;
-    bmath_mf3_s_fill_random_sparse( m0, -1, 1, o->density, &rval );
-
+    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
     bmath_mf3_s_set_size( u, m, o->full ? m : uz_min( m, n ) );
     bmath_mf3_s_set_size( v, n, o->full ? n : uz_min( m, n ) );
 
@@ -146,51 +161,51 @@ void bmath_matrix_eval_s_run_uav_fp( const bmath_matrix_eval_s* o, tp_t fp_type,
     bmath_mf3_s_zro( u );
     bmath_mf3_s_zro( v );
 
-    if( fp_type == typeof( "bmath_fp_svd" ) )
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_svd )
     {
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( r->success1 = ( ( bmath_fp_svd )fp )( NULL, a, NULL ), r->time0 );
+            ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_svd )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_dag( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( r->success1 = ( ( bmath_fp_svd )fp )( u, a, v ), r->time1 );
+            ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_svd )fp )( u, a, v ), r->time1 );
             r->assert_a = bmath_mf3_s_is_dag( a );
         }
     }
-    else if( fp_type == typeof( "bmath_fp_ubd" ) )
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_ubd )
     {
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_ubd )fp )( NULL, a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_ubd )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_ubd( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_ubd )fp )( u, a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_ubd )fp )( u, a, v ), r->time1 );
             r->assert_a = bmath_mf3_s_is_ubd( a );
         }
     }
-    else if( fp_type == typeof( "bmath_fp_lbd" ) )
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_lbd )
     {
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_lbd )fp )( NULL, a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_lbd )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_lbd( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_lbd )fp )( u, a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_lbd )fp )( u, a, v ), r->time1 );
             r->assert_a = bmath_mf3_s_is_lbd( a );
         }
     }
@@ -214,14 +229,14 @@ void bmath_matrix_eval_s_run_uav_fp( const bmath_matrix_eval_s* o, tp_t fp_type,
 
     r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, o->near_limit );
     r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
-    if( res ) bmath_matrix_eval_result_s_copy( res, r );
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
 
     BCORE_LIFE_DOWN();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_matrix_eval_s_run_ua_fp( const bmath_matrix_eval_s* o, tp_t fp_type, fp_t fp, bmath_matrix_eval_result_s* res )
+void bmath_mf3_eval_s_run_ua( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
     ASSERT( fp != NULL );
     ASSERT( fp_type != 0 );
@@ -231,8 +246,8 @@ void bmath_matrix_eval_s_run_ua_fp( const bmath_matrix_eval_s* o, tp_t fp_type, 
     BCORE_LIFE_CREATE( bmath_mf3_s, u );
     BCORE_LIFE_CREATE( bmath_mf3_s, a );
     BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
-    BCORE_LIFE_CREATE( bmath_matrix_eval_result_s, r );
-    bmath_matrix_eval_result_s_set_defaults_from_eval( r, o );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+    bmath_mf3_eval_result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     uz_t m = o->rows;
@@ -241,25 +256,25 @@ void bmath_matrix_eval_s_run_ua_fp( const bmath_matrix_eval_s* o, tp_t fp_type, 
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  m, n );
     u2_t rval = o->seed;
-    bmath_mf3_s_fill_random_sparse( m0, -1, 1, o->density, &rval );
+    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
 
     bmath_mf3_s_set_size( u, m, o->full ? m : uz_min( m, n ) );
     bmath_mf3_s_zro( a );
     bmath_mf3_s_zro( u );
 
-    if( fp_type == typeof( "bmath_fp_qrd" ) )
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_qrd )
     {
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_qrd )fp )( NULL, a ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_qrd )fp )( NULL, a ), r->time0 );
             r->assert_a = bmath_mf3_s_is_utr( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_qrd )fp )( u, a ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_qrd )fp )( u, a ), r->time1 );
             r->assert_a = bmath_mf3_s_is_utr( a );
         }
     }
@@ -278,14 +293,14 @@ void bmath_matrix_eval_s_run_ua_fp( const bmath_matrix_eval_s* o, tp_t fp_type, 
 
     r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, o->near_limit );
     r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
-    if( res ) bmath_matrix_eval_result_s_copy( res, r );
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
 
     BCORE_LIFE_DOWN();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_matrix_eval_s_run_av_fp( const bmath_matrix_eval_s* o, tp_t fp_type, fp_t fp, bmath_matrix_eval_result_s* res )
+void bmath_mf3_eval_s_run_av( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
     ASSERT( fp != NULL );
     ASSERT( fp_type != 0 );
@@ -295,8 +310,8 @@ void bmath_matrix_eval_s_run_av_fp( const bmath_matrix_eval_s* o, tp_t fp_type, 
     BCORE_LIFE_CREATE( bmath_mf3_s, a );
     BCORE_LIFE_CREATE( bmath_mf3_s, v );
     BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
-    BCORE_LIFE_CREATE( bmath_matrix_eval_result_s, r );
-    bmath_matrix_eval_result_s_set_defaults_from_eval( r, o );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+    bmath_mf3_eval_result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     uz_t m = o->rows;
@@ -305,26 +320,26 @@ void bmath_matrix_eval_s_run_av_fp( const bmath_matrix_eval_s* o, tp_t fp_type, 
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  m, n );
     u2_t rval = o->seed;
-    bmath_mf3_s_fill_random_sparse( m0, -1, 1, o->density, &rval );
+    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
 
     bmath_mf3_s_set_size( v, n, o->full ? n : uz_min( m, n ) );
 
     bmath_mf3_s_zro( a );
     bmath_mf3_s_zro( v );
 
-    if( fp_type == typeof( "bmath_fp_lqd" ) )
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_lqd )
     {
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_lqd )fp )( a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_lqd )fp )( a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_ltr( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_lqd )fp )( a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_lqd )fp )( a, v ), r->time1 );
             r->assert_a = bmath_mf3_s_is_ltr( a );
         }
     }
@@ -343,14 +358,14 @@ void bmath_matrix_eval_s_run_av_fp( const bmath_matrix_eval_s* o, tp_t fp_type, 
 
     r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, o->near_limit );
     r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
-    if( res ) bmath_matrix_eval_result_s_copy( res, r );
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
 
     BCORE_LIFE_DOWN();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_matrix_eval_s_run_sym_vav_htp_fp( const bmath_matrix_eval_s* o, tp_t fp_type, fp_t fp, bmath_matrix_eval_result_s* res )
+void bmath_mf3_eval_s_run_sym_vav_htp( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
     ASSERT( fp != NULL );
     ASSERT( fp_type != 0 );
@@ -362,8 +377,8 @@ void bmath_matrix_eval_s_run_sym_vav_htp_fp( const bmath_matrix_eval_s* o, tp_t 
     BCORE_LIFE_CREATE( bmath_mf3_s, v );
     BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
     BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
-    BCORE_LIFE_CREATE( bmath_matrix_eval_result_s, r );
-    bmath_matrix_eval_result_s_set_defaults_from_eval( r, o );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+    bmath_mf3_eval_result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     uz_t n = o->rows;
@@ -371,60 +386,58 @@ void bmath_matrix_eval_s_run_sym_vav_htp_fp( const bmath_matrix_eval_s* o, tp_t 
     bmath_mf3_s_set_size( m0, n, n );
     bmath_mf3_s_set_size( a,  n, n );
     u2_t rval = o->seed;
-//    bmath_mf3_s_fill_random_sparse( m0, -1, 1, o->density, &rval );
-    bmath_mf3_s_fill_random_sparse_hsm( m0, -1, 1, o->density, &rval );
-//    bmath_mf3_s_mul_htp( m0, m0, m0 ); // makes m0 positive definite
+    bmath_mf3_eval_s_fill_random( m0, o->density, "hsm", &rval );
 
     bmath_mf3_s_set_size( v, n, n );
     bmath_mf3_s_zro( a );
     bmath_mf3_s_zro( v );
 
-    if( fp_type == typeof( "bmath_fp_trd_htp" ) )
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_trd_htp )
     {
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_trd_htp )fp )( a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_trd_htp )fp )( a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_trd( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_trd_htp )fp )( a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_trd_htp )fp )( a, v ), r->time1 );
             r->assert_a = bmath_mf3_s_is_trd( a );
             bmath_mf3_s_htp( v, v );
         }
     }
-    else if( fp_type == typeof( "bmath_fp_trd" ) )
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_trd )
     {
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_trd )fp )( a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_trd )fp )( a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_trd( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_trd )fp )( a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_trd )fp )( a, v ), r->time1 );
             r->assert_a = bmath_mf3_s_is_trd( a );
         }
     }
-    else if( fp_type == typeof( "bmath_fp_evd_htp" ) )
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_evd_htp )
     {
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_evd_htp )fp )( a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_evd_htp )fp )( a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_dag( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            ABS_TIME_OF( ( ( bmath_fp_evd_htp )fp )( a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_evd_htp )fp )( a, v ), r->time1 );
             r->assert_a = bmath_mf3_s_is_dag( a );
             bmath_mf3_s_htp( v, v );
         }
@@ -446,139 +459,406 @@ void bmath_matrix_eval_s_run_sym_vav_htp_fp( const bmath_matrix_eval_s* o, tp_t 
 
     r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, o->near_limit );
     r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
-    if( res ) bmath_matrix_eval_result_s_copy( res, r );
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
 
     BCORE_LIFE_DOWN();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_matrix_eval_s_run_fp( const bmath_matrix_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
+// evaluates cholesky decomposition
+void bmath_mf3_eval_s_run_cld( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
+{
+    ASSERT( fp != NULL );
+    ASSERT( fp_type != 0 );
+    ASSERT( o->rows == o->cols );
+
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, a );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+    bmath_mf3_eval_result_s_set_defaults_from_eval( r, o );
+    r->fp_type = fp_type;
+
+    uz_t n = o->rows;
+
+    bmath_mf3_s_set_size( m0, n, n );
+    bmath_mf3_s_set_size( a,  n, n );
+    u2_t rval = o->seed;
+    bmath_mf3_eval_s_fill_random( m0, o->density, "pdf", &rval );
+
+    bmath_mf3_s_zro( a );
+
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_cld )
+    {
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_cld )fp )( m0, a ), r->time1 );
+        r->assert_a = bmath_mf3_s_is_ltr( a );
+    }
+    else
+    {
+        ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
+    }
+
+    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+
+    bmath_mf3_s_set_size( m2, n, n );
+    bmath_mf3_s_mul_htp( a, a, m2 );
+
+    r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, o->near_limit );
+    r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
+
+    BCORE_LIFE_DOWN();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+// evaluates LU decomposition
+void bmath_mf3_eval_s_run_lud( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
+{
+    ASSERT( fp != NULL );
+    ASSERT( fp_type != 0 );
+    ASSERT( o->rows == o->cols );
+
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, a );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m3 );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+    bmath_mf3_eval_result_s_set_defaults_from_eval( r, o );
+    r->fp_type = fp_type;
+
+    uz_t n = o->rows;
+
+    bmath_mf3_s_set_size( m0, n, n );
+    bmath_mf3_s_set_size( a,  n, n );
+    u2_t rval = o->seed;
+    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
+
+    bmath_mf3_s_zro( a );
+
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_lud )
+    {
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_lud )fp )( m0, a ), r->time1 );
+    }
+    else
+    {
+        ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
+    }
+
+    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+
+    bmath_mf3_s_set_size( m1, n, n );
+    bmath_mf3_s_fill_random_sparse( m1, -1, 1, o->density, &rval );
+
+    bmath_mf3_s_set_size( m2, n, n );
+    bmath_mf3_s_set_size( m3, n, n );
+
+    bmath_mf3_s_mul_htp(        m0, m1, m2 );
+    bmath_mf3_s_luc_mul_htp_htp( a, m1, m3 );
+    bmath_mf3_s_htp( m3, m3 );
+
+    r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
+    r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
+
+    BCORE_LIFE_DOWN();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+// evaluates inversion
+void bmath_mf3_eval_s_run_inv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
+{
+    ASSERT( fp != NULL );
+    ASSERT( fp_type != 0 );
+    ASSERT( o->rows == o->cols );
+
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, a );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+    bmath_mf3_eval_result_s_set_defaults_from_eval( r, o );
+    r->fp_type = fp_type;
+
+    uz_t n = o->rows;
+
+    bmath_mf3_s_set_size( m0, n, n );
+    bmath_mf3_s_set_size( a,  n, n );
+    u2_t rval = o->seed;
+    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
+
+    bmath_mf3_s_zro( a );
+
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_inv )
+    {
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_inv )fp )( m0, a ), r->time1 );
+    }
+    else
+    {
+        ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
+    }
+
+    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+
+    bmath_mf3_s_set_size( m2, n, n );
+    bmath_mf3_s_mul( m0, a, m2 );
+
+    r->assert_m = bmath_mf3_s_is_near_one( m2, o->near_limit );
+    r->fdev_m   = bmath_mf3_s_fdev_one( m2 );
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
+
+    BCORE_LIFE_DOWN();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+// evaluates positive definite inversion
+void bmath_mf3_eval_s_run_pdf_inv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
+{
+    ASSERT( fp != NULL );
+    ASSERT( fp_type != 0 );
+    ASSERT( o->rows == o->cols );
+
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, a );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+    bmath_mf3_eval_result_s_set_defaults_from_eval( r, o );
+    r->fp_type = fp_type;
+
+    uz_t n = o->rows;
+
+    bmath_mf3_s_set_size( m0, n, n );
+    bmath_mf3_s_set_size( a,  n, n );
+    u2_t rval = o->seed;
+    bmath_mf3_eval_s_fill_random( m0, o->density, "pdf", &rval );
+
+    bmath_mf3_s_zro( a );
+
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_pdf_inv )
+    {
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_pdf_inv )fp )( m0, a ), r->time1 );
+    }
+    else
+    {
+        ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
+    }
+
+    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+
+    bmath_mf3_s_set_size( m2, n, n );
+    bmath_mf3_s_mul( m0, a, m2 );
+
+    r->assert_m = bmath_mf3_s_is_near_one( m2, o->near_limit );
+    r->fdev_m   = bmath_mf3_s_fdev_one( m2 );
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
+
+    BCORE_LIFE_DOWN();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_eval_s_run_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
     ASSERT( fp != NULL );
     ASSERT( fp_type != 0 );
 
     BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( bmath_matrix_eval_result_s, r );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, a );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+    bmath_mf3_eval_result_s_set_defaults_from_eval( r, o );
+    r->fp_type = fp_type;
 
-    if(      fp_type == typeof( "bmath_fp_svd"     ) ) bmath_matrix_eval_s_run_uav_fp( o, fp_type, fp, r );
-    else if( fp_type == typeof( "bmath_fp_ubd"     ) ) bmath_matrix_eval_s_run_uav_fp( o, fp_type, fp, r );
-    else if( fp_type == typeof( "bmath_fp_lbd"     ) ) bmath_matrix_eval_s_run_uav_fp( o, fp_type, fp, r );
-    else if( fp_type == typeof( "bmath_fp_qrd"     ) ) bmath_matrix_eval_s_run_ua_fp(  o, fp_type, fp, r );
-    else if( fp_type == typeof( "bmath_fp_lqd"     ) ) bmath_matrix_eval_s_run_av_fp(  o, fp_type, fp, r );
-    else if( fp_type == typeof( "bmath_fp_trd_htp" ) ) bmath_matrix_eval_s_run_sym_vav_htp_fp( o, fp_type, fp, r );
-    else if( fp_type == typeof( "bmath_fp_trd"     ) ) bmath_matrix_eval_s_run_sym_vav_htp_fp( o, fp_type, fp, r );
-    else if( fp_type == typeof( "bmath_fp_evd_htp" ) ) bmath_matrix_eval_s_run_sym_vav_htp_fp( o, fp_type, fp, r );
-    else ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
+    uz_t m = o->rows;
+    uz_t n = o->cols;
 
-    if( o->assert_all && ( !r->success0 || !r->success1 || !r->assert_a || !r->assert_u || !r->assert_v || !r->assert_m ) )
+    bmath_mf3_s_set_size( m0, m, n );
+    bmath_mf3_s_set_size( a,  n, m );
+    u2_t rval = o->seed;
+    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
+
+    bmath_mf3_s_zro( a );
+
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_piv )
     {
-        st_s* s = st_s_create();
-        bmath_matrix_eval_result_s_to_string( r, s );
-        ERR_fa( "\n#<sc_t>\nAssertion failed!\n", s->sc );
-        st_s_discard( s );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_piv )fp )( m0, o->eps, a ), r->time1 );
+    }
+    else
+    {
+        ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    if( log ) bmath_matrix_eval_result_s_to_string( r, log );
+    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+
+    bmath_mf3_s_set_size( m2, uz_min( m, n ), uz_min( m, n ) );
+
+    if( n >= m )
+    {
+        bmath_mf3_s_mul( m0, a, m2 );
+    }
+    else
+    {
+        bmath_mf3_s_mul( a, m0, m2 );
+    }
+
+    r->assert_m = bmath_mf3_s_is_near_one( m2, o->near_limit );
+    r->fdev_m   = bmath_mf3_s_fdev_one( m2 );
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
 
     BCORE_LIFE_DOWN();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_matrix_eval_s_run( const bmath_matrix_eval_s* o, st_s* log )
+// evaluates symmetric pseudo inversion
+void bmath_mf3_eval_s_run_hsm_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
-    bmath_matrix_eval_s_run_fp( o, o->fp_type, o->fp, log );
+    ASSERT( fp != NULL );
+    ASSERT( fp_type != 0 );
+    ASSERT( o->rows == o->cols );
+
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_mf3_s, m0 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, a );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+    bmath_mf3_eval_result_s_set_defaults_from_eval( r, o );
+    r->fp_type = fp_type;
+
+    uz_t n = o->rows;
+
+    bmath_mf3_s_set_size( m0, n, n );
+    bmath_mf3_s_set_size( a,  n, n );
+    u2_t rval = o->seed;
+    bmath_mf3_eval_s_fill_random( m0, o->density, "hsm", &rval );
+
+    bmath_mf3_s_zro( a );
+
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_hsm_piv )
+    {
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_hsm_piv )fp )( m0, o->eps, a ), r->time1 );
+    }
+    else
+    {
+        ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
+    }
+
+    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+
+    bmath_mf3_s_set_size( m2, n, n );
+    bmath_mf3_s_mul( m0, a, m2 );
+
+    r->assert_m = bmath_mf3_s_is_near_one( m2, o->near_limit );
+    r->fdev_m   = bmath_mf3_s_fdev_one( m2 );
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
+
+    BCORE_LIFE_DOWN();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_matrix_eval_s_run_fp_to_stdout( const bmath_matrix_eval_s* o, tp_t fp_type, fp_t fp )
+void bmath_mf3_eval_s_run( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
+{
+    ASSERT( fp != NULL );
+    ASSERT( fp_type != 0 );
+
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+
+    if(      fp_type == TYPEOF_bmath_fp_mf3_s_svd     ) bmath_mf3_eval_s_run_uav(         o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_ubd     ) bmath_mf3_eval_s_run_uav(         o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_lbd     ) bmath_mf3_eval_s_run_uav(         o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_qrd     ) bmath_mf3_eval_s_run_ua(          o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_lqd     ) bmath_mf3_eval_s_run_av(          o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_trd_htp ) bmath_mf3_eval_s_run_sym_vav_htp( o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_trd     ) bmath_mf3_eval_s_run_sym_vav_htp( o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_evd_htp ) bmath_mf3_eval_s_run_sym_vav_htp( o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_cld     ) bmath_mf3_eval_s_run_cld(         o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_lud     ) bmath_mf3_eval_s_run_lud(         o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_inv     ) bmath_mf3_eval_s_run_inv(         o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_pdf_inv ) bmath_mf3_eval_s_run_pdf_inv(     o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_hsm_piv ) bmath_mf3_eval_s_run_hsm_piv(     o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_piv     ) bmath_mf3_eval_s_run_piv(         o, fp_type, fp, r );
+    else ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
+
+    if( o->assert_all && ( !r->success0 || !r->success1 || !r->assert_a || !r->assert_u || !r->assert_v || !r->assert_m ) )
+    {
+        st_s* s = st_s_create();
+        bmath_mf3_eval_result_s_to_string( r, s );
+        ERR_fa( "\n#<sc_t>\nAssertion failed!\n", s->sc );
+        st_s_discard( s );
+    }
+
+    if( log ) bmath_mf3_eval_result_s_to_string( r, log );
+
+    BCORE_LIFE_DOWN();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_eval_s_run_to_stdout( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp )
 {
     st_s* s = st_s_create();
-    bmath_matrix_eval_s_run_fp( o, fp_type, fp, s );
+    bmath_mf3_eval_s_run( o, fp_type, fp, s );
     bcore_msg_fa( "#<sc_t>\n", s->sc );
     st_s_discard( s );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_matrix_eval_s_run_to_stdout( const bmath_matrix_eval_s* o )
-{
-    bmath_matrix_eval_s_run_fp_to_stdout( o, o->fp_type, o->fp );
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-static void bmath_matrix_eval_s_selftest( void )
+static void bmath_mf3_eval_s_selftest( void )
 {
     BCORE_LIFE_INIT();
 
-    BCORE_LIFE_CREATE( bmath_matrix_eval_s, eval );
+    BCORE_LIFE_CREATE( bmath_mf3_eval_s, eval );
     eval->rows = 10;
     eval->cols = 10;
-    eval->fp_type = typeof( "bmath_fp_svd" );
-    eval->fp      = ( fp_t )bmath_mf3_s_svd;
-    bmath_matrix_eval_s_run( eval, NULL );
+    bmath_mf3_eval_s_run( eval, typeof( "bmath_fp_mf3_s_svd" ), ( fp_t )bmath_mf3_s_svd, NULL );
 
     BCORE_LIFE_DOWN();
 }
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_matrix_eval_s ) "{ aware_t _; bmath_matrix_eval_s [] arr; }";
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_mf3_eval_s ) "{ aware_t _; bmath_mf3_eval_s [] arr; }";
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_arr_matrix_eval_s_run( const bmath_arr_matrix_eval_s* o, st_s* log )
+void bmath_arr_mf3_eval_s_run( const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
 {
-    for( uz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run( &o->data[ i ], log );
+    for( uz_t i = 0; i < o->size; i++ ) bmath_mf3_eval_s_run( &o->data[ i ], fp_type, fp, log );
 }
 
-void bmath_arr_matrix_eval_s_run_fp( const bmath_arr_matrix_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
+void bmath_arr_mf3_eval_s_run_to_stdout( const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp )
 {
-    for( uz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run_fp( &o->data[ i ], fp_type, fp, log );
-}
-
-void bmath_arr_matrix_eval_s_run_to_stdout( const bmath_arr_matrix_eval_s* o )
-{
-    for( uz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run_to_stdout( &o->data[ i ] );
-}
-
-void bmath_arr_matrix_eval_s_run_fp_to_stdout( const bmath_arr_matrix_eval_s* o, tp_t fp_type, fp_t fp )
-{
-    for( uz_t i = 0; i < o->size; i++ ) bmath_matrix_eval_s_run_fp_to_stdout( &o->data[ i ], fp_type, fp );
+    for( uz_t i = 0; i < o->size; i++ ) bmath_mf3_eval_s_run_to_stdout( &o->data[ i ], fp_type, fp );
 }
 
 /**********************************************************************************************************************/
 
-vd_t bmath_matrix_eval_signal_handler( const bcore_signal_s* o )
+vd_t bmath_mf3_eval_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_matrix_eval" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_mf3_eval" ) ) )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_OBJECT( bmath_matrix_eval_s );
-            BCORE_REGISTER_OBJECT( bmath_matrix_eval_result_s );
-            BCORE_REGISTER_OBJECT( bmath_arr_matrix_eval_s );
-
-
-            // features
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_trd_htp );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_trd );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_evd_htp );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_svd );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_ubd );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_lbd );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_qrd );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_lqd );
-
+            BCORE_REGISTER_OBJECT( bmath_mf3_eval_s );
+            BCORE_REGISTER_OBJECT( bmath_mf3_eval_result_s );
+            BCORE_REGISTER_OBJECT( bmath_arr_mf3_eval_s );
         }
         break;
 
         case TYPEOF_selftest:
         {
-            bmath_matrix_eval_s_selftest();
+            bmath_mf3_eval_s_selftest();
         }
         break;
 
