@@ -141,6 +141,9 @@ sd_t sc_t_cpy( sd_t dst, sc_t src );
 s2_t sc_t_cmp( sc_t str1, sc_t str2 );
 s2_t sc_t_cmp_n( sc_t str1, uz_t n1, sc_t str2, uz_t n2 );
 
+static inline bl_t sc_t_equ( sc_t str1, sc_t str2 ) { return sc_t_cmp( str1, str2 ) == 0; }
+static inline bl_t sc_t_equ_n( sc_t str1, uz_t n1, sc_t str2, uz_t n2 ) { return sc_t_cmp_n( str1, n1, str2, n2 ) == 0; }
+
 /// like stdlib strlen but also accepts NULL
 uz_t sc_t_len( sc_t str );
 
