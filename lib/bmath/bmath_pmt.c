@@ -266,7 +266,6 @@ static void selftest()
     bmath_mf3_s_htp( m1, m1 );
     ASSERT( bmath_mf3_s_is_equ( m3, m4 ) );
 
-
     bmath_vf3_s_set_size( v1, n );
     bmath_vf3_s_set_size( v2, n );
     bmath_vf3_s_set_size( v3, n );

@@ -277,6 +277,45 @@ void bmath_mf3_eval_s_run_ua( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
             ABS_TIME_OF( ( ( bmath_fp_mf3_s_qrd )fp )( u, a ), r->time1 );
             r->assert_a = bmath_mf3_s_is_utr( a );
         }
+
+        if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+    }
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_qrd_pmt )
+    {
+        BCORE_LIFE_CREATE( bmath_pmt_s, p );
+        bmath_pmt_s_set_size( p, a->cols );
+        bmath_pmt_s_one( p );
+
+        if( o->test0 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_qrd_pmt )fp )( NULL, a, NULL ), r->time0 );
+            r->assert_a = bmath_mf3_s_is_utr( a );
+        }
+
+        if( o->test1 )
+        {
+
+            bmath_mf3_s_cpy( m0, a );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_qrd_pmt )fp )( u, a, p ), r->time1 );
+            r->assert_a = bmath_mf3_s_is_utr( a );
+        }
+
+        // assert monotonic descending non-negative diagonal elements
+        uz_t n = uz_min( a->rows, a->cols );
+        for( uz_t i = 1; i < n; i++ )
+        {
+            if( a->data[ i * ( a->stride + 1 ) ] > a->data[ ( i - 1 ) * ( a->stride + 1 ) ] ) r->assert_a = false;
+            if( a->data[ i * ( a->stride + 1 ) ] < 0 ) r->assert_a = false;
+        }
+
+
+        if( o->log_a )
+        {
+            bmath_mf3_s_to_string( a, &r->log_a );
+            bmath_pmt_s_to_string( p, &r->log_a );
+        }
+        bmath_mf3_s_mul_pmt_htp( a, p, a );
     }
     else
     {
@@ -284,7 +323,6 @@ void bmath_mf3_eval_s_run_ua( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
     }
 
     r->fdev_u = bmath_mf3_s_fdev_otn( u );
-    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
     if( o->log_u ) bmath_mf3_s_to_string( u, &r->log_u );
     r->assert_u = bmath_mf3_s_is_near_otn( u, o->near_limit );
 
@@ -777,6 +815,7 @@ void bmath_mf3_eval_s_run( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_ubd     ) bmath_mf3_eval_s_run_uav(         o, fp_type, fp, r );
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_lbd     ) bmath_mf3_eval_s_run_uav(         o, fp_type, fp, r );
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_qrd     ) bmath_mf3_eval_s_run_ua(          o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_qrd_pmt ) bmath_mf3_eval_s_run_ua(          o, fp_type, fp, r );
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_lqd     ) bmath_mf3_eval_s_run_av(          o, fp_type, fp, r );
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_trd_htp ) bmath_mf3_eval_s_run_sym_vav_htp( o, fp_type, fp, r );
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_trd     ) bmath_mf3_eval_s_run_sym_vav_htp( o, fp_type, fp, r );

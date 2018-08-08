@@ -205,7 +205,7 @@ void bmath_vf3_s_pmt_mul( const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_
 
     for( uz_t i = 0; i < p->size; i++ )
     {
-        assert( op->data[ i ] < o->size );
+        assert( p->data[ i ] < o->size );
         res->data[ p->data[ i ] ] = o->data[ i ];
     }
 }
@@ -229,7 +229,7 @@ void bmath_vf3_s_pmt_htp_mul( const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_
 
     for( uz_t i = 0; i < p->size; i++ )
     {
-        assert( op->data[ i ] < o->size );
+        assert( p->data[ i ] < o->size );
         res->data[ i ] = o->data[ p->data[ i ] ];
     }
 }

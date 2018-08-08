@@ -87,6 +87,7 @@ typedef bl_t (*bmath_fp_mf3_s_svd     )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_m
 typedef void (*bmath_fp_mf3_s_ubd     )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 typedef void (*bmath_fp_mf3_s_lbd     )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 typedef void (*bmath_fp_mf3_s_qrd     )( bmath_mf3_s* u, bmath_mf3_s* a                 );
+typedef void (*bmath_fp_mf3_s_qrd_pmt )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p ); // rank revealing; A = U * A' * P^T
 typedef void (*bmath_fp_mf3_s_lqd     )(                 bmath_mf3_s* a, bmath_mf3_s* v );
 
 typedef bl_t (*bmath_fp_mf3_s_cld     )( const bmath_mf3_s* o, bmath_mf3_s* res );
@@ -109,6 +110,7 @@ static inline void bmath_matrix_push_quicktypes( sr_s* list )
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_ubd"     );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lbd"     );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd_pmt" );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lqd"     );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_cld"     );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lud"     );
@@ -444,6 +446,34 @@ void bmath_mf3_s_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
  *
  */
 void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a );
+
+/** Stable rank revealing QRP decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
+ *  It is a = u * a' * p^T, with u being unitary.
+ *  Diagonal elements of a' are non-negative and sorted in descending manner.
+ *      * Supports any n,m configuration
+ *      * Supports full and thin decomposition.
+ *      * Highly efficient on dense and sparse matrices. (Automatically detects and exploits sparsity)
+ *
+ *  If matrix u is desired, its size has to be preset but it need not be preinitialized.
+ *  The routine does not change the actual allocation of either matrix, hence u, a may
+ *  safely reference external data.
+ *  Whether full or thin decomposition is computed depends on how matrices have been preset:
+ *
+ *     a:  mxn input matrix to be diagonalized
+ *
+ *     u:
+ *         NULL         -  u is not computed
+ *         mxm matrix   -  full decomposition
+ *         mxn matrix   -  thin decomposition for n < m
+ *
+ *     p:
+ *         NULL         -  p is not computed
+ *         n-permutation
+ *
+ *  If thin decomposition is chosen, then a' is returned as (thin) nxn square matrix.
+ *
+ */
+void bmath_mf3_s_qrd_pmt( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p );
 
 /** Stable LQ decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
  *  It is a = a' * v^T, with v being unitary.

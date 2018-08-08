@@ -32,7 +32,6 @@ void bmath_quicktypes_create_header( sc_t folder );
 #define TYPEOF_bmath_arr_mf3_eval_s    2241821565
 #define TYPEOF_bmath_arr_vf3_s         3268702147
 #define TYPEOF_bmath_cf3_s             2506167476
-#define TYPEOF_bmath_pmt_s             typeof( "bmath_pmt_s" )
 #define TYPEOF_bmath_estimator_s       3775440224
 #define TYPEOF_bmath_fp_mf3_s_cld      3327146305
 #define TYPEOF_bmath_fp_mf3_s_evd_htp  2695903694
@@ -44,6 +43,7 @@ void bmath_quicktypes_create_header( sc_t folder );
 #define TYPEOF_bmath_fp_mf3_s_pdf_inv  2449600418
 #define TYPEOF_bmath_fp_mf3_s_piv      2662509159
 #define TYPEOF_bmath_fp_mf3_s_qrd       223789909
+#define TYPEOF_bmath_fp_mf3_s_qrd_pmt  1250844099
 #define TYPEOF_bmath_fp_mf3_s_svd      4111686299
 #define TYPEOF_bmath_fp_mf3_s_trd      1671436858
 #define TYPEOF_bmath_fp_mf3_s_trd_htp   669071001
@@ -58,12 +58,12 @@ void bmath_quicktypes_create_header( sc_t folder );
 #define TYPEOF_bmath_mf3_s             2915726298
 #define TYPEOF_bmath_plot              3053585471
 #define TYPEOF_bmath_plot_s             413785001
+#define TYPEOF_bmath_pmt_s             4158722099
 #define TYPEOF_bmath_ring              2462086090
 #define TYPEOF_bmath_ring_s            1513035188
 #define TYPEOF_bmath_vcf3_s            3723112310
 #define TYPEOF_bmath_vector            4070600319
 #define TYPEOF_bmath_vector_s          1200091625
 #define TYPEOF_bmath_vf3_s             3565809519
-
 
 #endif // BMATH_QUICKTYPES_H
