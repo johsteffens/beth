@@ -24,17 +24,18 @@
 
 /** Nomenclature
  *  Basic Algebra: op( A, B, ... ) -> C
- *    add: A + B -> C
- *    zro:     0 -> C
- *    neg:    -A -> C
- *    sub: A - B -> C
- *    mul: A * B -> C
- *    mul_vec: A * x -> y
- *    mul_scl: A * f (f: scalar) -> C
+ *    add: C = A + B
+ *    zro: C =  0
+ *    neg: C = -A
+ *    sub: C = A - B
+ *    mul: C = A * B
+ *    mul_vec: y = A * x
+ *    mul_scl: C = A * f (f: scalar)
  *    inv: inverse         A^-1 -> C
  *    piv: pseudo-inverse  A^-1 -> C
  *    av1: affine vector (vector of size 'n' interpreted vector of size n+1 with last element being '1' ); used for affine transformations
- *    htp: (hermitean) transpose  A^T -> C
+ *    htp: (hermitean) transpose  C = A^T
+ *    pmt: permutation P: C = P * A  (see bmath_pmt.h for more details)
  *
  *  Matrix Status:
  *    hsm: real-symmetric or hermitean matrix.
@@ -222,9 +223,13 @@ void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res );  // copies content o -> res  (does not change allocation of res)
 
 //---------------------------------------------------------------------------------------------------------------------
-// transposition
+// transposition / permutation
 
-void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res );
+void bmath_mf3_s_htp(         const bmath_mf3_s* o, bmath_mf3_s* res );
+void bmath_mf3_s_pmt_mul(     const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res ); // B = P * A   ; row_p[k]( B ) = row_k( A )
+void bmath_mf3_s_pmt_htp_mul( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res ); // B = P^T * A ; row_k( B ) = row_p[k]( A )
+void bmath_mf3_s_mul_pmt(     const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
+void bmath_mf3_s_mul_pmt_htp( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res ); // B = A * P^T ; col_p[k]( B ) = col_k( A )
 
 //---------------------------------------------------------------------------------------------------------------------
 // addition

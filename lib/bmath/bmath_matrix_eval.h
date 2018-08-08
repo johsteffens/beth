@@ -112,7 +112,7 @@ void bmath_arr_mf3_eval_s_run_to_stdout( const bmath_arr_mf3_eval_s* o, tp_t fp_
 
 /**********************************************************************************************************************/
 
-vd_t bmath_mf3_eval_signal_handler( const bcore_signal_s* o );
+vd_t bmath_matrix_eval_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 

@@ -30,12 +30,14 @@
  *  dev: (std-)deviation
  *  dft: discrete fourier transform  (fft used when size is power of 2)
  *  ift: inverse dft
+ *  pmt: permutation
  */
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_complex.h"
+#include "bmath_pmt.h"
 
 /**********************************************************************************************************************/
 // dynamic size vector of f3_t
@@ -76,13 +78,17 @@ bl_t bmath_vf3_s_is_near_zro( const bmath_vf3_s* o, f3_t max_dev );
 static inline bl_t bmath_vf3_s_is_equ( const bmath_vf3_s* o, const bmath_vf3_s* op ) { return bmath_vf3_s_is_near_equ( o, op, 0 ); }
 static inline bl_t bmath_vf3_s_is_zro( const bmath_vf3_s* o ) { return bmath_vf3_s_is_near_zro( o, 0 ); }
 
-void bmath_vf3_s_zro(     bmath_vf3_s* o );
-void bmath_vf3_s_neg(     const bmath_vf3_s* o, bmath_vf3_s* res );
-void bmath_vf3_s_cpy(     const bmath_vf3_s* o, bmath_vf3_s* res );
-void bmath_vf3_s_add(     const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
-void bmath_vf3_s_sub(     const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
-void bmath_vf3_s_mul_scl( const bmath_vf3_s* o, const f3_t* op,        bmath_vf3_s* res  );
-void bmath_vf3_s_mul_f3(  const bmath_vf3_s* o, f3_t scl2, bmath_vf3_s* res );
+void bmath_vf3_s_zro( bmath_vf3_s* o );
+void bmath_vf3_s_neg( const bmath_vf3_s* o, bmath_vf3_s* res );
+void bmath_vf3_s_cpy( const bmath_vf3_s* o, bmath_vf3_s* res );
+void bmath_vf3_s_add( const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+void bmath_vf3_s_sub( const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
+
+void bmath_vf3_s_pmt_mul(     const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_s* res ); // y = P   * x ; y_p[k] = x_k
+void bmath_vf3_s_pmt_htp_mul( const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_s* res ); // y = P^T * x ; y_k = x_p[k]
+
+void bmath_vf3_s_mul_scl(    const bmath_vf3_s* o, const f3_t* op,        bmath_vf3_s* res  );
+void bmath_vf3_s_mul_f3(     const bmath_vf3_s* o, f3_t scl2, bmath_vf3_s* res );
 f3_t bmath_vf3_s_f3_mul_vec( const bmath_vf3_s* o, const bmath_vf3_s* vec2 );
 f3_t bmath_vf3_s_f3_sqr(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_sub_sqr( const bmath_vf3_s* o, const bmath_vf3_s* vec2 );
@@ -92,13 +98,13 @@ f3_t bmath_vf3_s_f3_sum(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_avg(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_var(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_dev(     const bmath_vf3_s* o );
-void bmath_vf3_s_mul_vec( const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t* res );
-void bmath_vf3_s_sqr(     const bmath_vf3_s* o, f3_t* res  );
-void bmath_vf3_s_sub_sqr( const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t* res );
-void bmath_vf3_s_sum(     const bmath_vf3_s* o, f3_t* res  );
-void bmath_vf3_s_avg(     const bmath_vf3_s* o, f3_t* res  );
-void bmath_vf3_s_var(     const bmath_vf3_s* o, f3_t* res  );
-void bmath_vf3_s_dev(     const bmath_vf3_s* o, f3_t* res  );
+void bmath_vf3_s_mul_vec(    const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t* res );
+void bmath_vf3_s_sqr(        const bmath_vf3_s* o, f3_t* res  );
+void bmath_vf3_s_sub_sqr(    const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t* res );
+void bmath_vf3_s_sum(        const bmath_vf3_s* o, f3_t* res  );
+void bmath_vf3_s_avg(        const bmath_vf3_s* o, f3_t* res  );
+void bmath_vf3_s_var(        const bmath_vf3_s* o, f3_t* res  );
+void bmath_vf3_s_dev(        const bmath_vf3_s* o, f3_t* res  );
 
 void bmath_vf3_s_set_sqr( bmath_vf3_s* o, f3_t val ); // multiplies a factor to all components such that bmath_vf3_s_f3_sqr returns val
 void bmath_vf3_s_set_sum( bmath_vf3_s* o, f3_t val ); // adds a value to all components such that bmath_vf3_s_f3_sum returns val

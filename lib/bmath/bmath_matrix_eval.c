@@ -844,9 +844,9 @@ void bmath_arr_mf3_eval_s_run_to_stdout( const bmath_arr_mf3_eval_s* o, tp_t fp_
 
 /**********************************************************************************************************************/
 
-vd_t bmath_mf3_eval_signal_handler( const bcore_signal_s* o )
+vd_t bmath_matrix_eval_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_mf3_eval" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_matrix_eval" ) ) )
     {
         case TYPEOF_init1:
         {

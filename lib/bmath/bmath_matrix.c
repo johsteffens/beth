@@ -807,8 +807,8 @@ bl_t bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     bmath_vf3_s* d = bmath_vf3_s_create();
 
     bmath_mf3_s_set_size( a, o->rows, o->cols );
-    bmath_mf3_s_set_size( u, o->rows, o->rows );
-    bmath_mf3_s_set_size( v, o->cols, o->cols );
+    bmath_mf3_s_set_size( u, o->rows, n );
+    bmath_mf3_s_set_size( v, o->cols, n );
     bmath_vf3_s_set_size( d, n );
 
     // o = uT * a * v; o^-1 = vT * (a^-1)T * u
@@ -1128,6 +1128,124 @@ void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
               f3_t* vr = res->data + i * res->stride;
         const f3_t* v1 = o ->data  + i;
         for( uz_t j = 0; j < res->cols; j++ ) vr[ j ] = v1[ j * o->stride ];
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_pmt_mul( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res )
+{
+    if( o == res )
+    {
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size( buf, res->cols, res->rows );
+        bmath_mf3_s_pmt_mul( o, p, buf );
+        bmath_mf3_s_cpy( buf, res );
+        bmath_mf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->rows == p->size );
+    ASSERT( o->rows == res->rows );
+    ASSERT( o->cols == res->cols );
+
+    for( uz_t i = 0; i < p->size; i++ )
+    {
+        uz_t idx = p->data[ i ];
+        ASSERT( idx < o->rows );
+        bcore_u_memcpy( sizeof( f3_t ), res->data + idx * res->stride, o->data + i * o->stride, o->cols );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_pmt_htp_mul( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res )
+{
+    if( o == res )
+    {
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size( buf, res->cols, res->rows );
+        bmath_mf3_s_pmt_htp_mul( o, p, buf );
+        bmath_mf3_s_cpy( buf, res );
+        bmath_mf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->rows == p->size );
+    ASSERT( o->rows == res->rows );
+    ASSERT( o->cols == res->cols );
+
+    for( uz_t i = 0; i < p->size; i++ )
+    {
+        uz_t idx = p->data[ i ];
+        ASSERT( idx < o->rows );
+        bcore_u_memcpy( sizeof( f3_t ), res->data + i * res->stride, o->data + idx * o->stride, o->cols );
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_pmt( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == p->size );
+    ASSERT( o->rows == res->rows );
+    ASSERT( o->cols == res->cols );
+
+    for( uz_t i = 0; i < p->size; i++ ) ASSERT( p->data[ i ] < o->cols );
+
+    if( o == res )
+    {
+        bmath_vf3_s* vec = bmath_vf3_s_create_set_size( o->cols );
+        f3_t* v = vec->data;
+        for( uz_t i = 0; i < o->rows; i++ )
+        {
+            f3_t* ri = res->data + i * res->stride;
+            for( uz_t j = 0; j < res->cols; j++ ) v[ j ] = ri[ p->data[ j ] ];
+            bcore_u_memcpy( sizeof( f3_t ), ri, v, res->cols );
+        }
+        bmath_vf3_s_discard( vec );
+    }
+    else
+    {
+        for( uz_t i = 0; i < o->rows; i++ )
+        {
+            f3_t* oi =   o->data + i *   o->stride;
+            f3_t* ri = res->data + i * res->stride;
+            for( uz_t j = 0; j < o->cols; j++ ) ri[ j ] = oi[ p->data[ j ] ];
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_pmt_htp( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res )
+{
+    ASSERT( o->cols == p->size );
+    ASSERT( o->rows == res->rows );
+    ASSERT( o->cols == res->cols );
+
+    for( uz_t i = 0; i < p->size; i++ ) ASSERT( p->data[ i ] < o->cols );
+
+    if( o == res )
+    {
+        bmath_vf3_s* vec = bmath_vf3_s_create_set_size( o->cols );
+        f3_t* v = vec->data;
+        for( uz_t i = 0; i < o->rows; i++ )
+        {
+            f3_t* ri = res->data + i * res->stride;
+            for( uz_t j = 0; j < res->cols; j++ ) v[ p->data[ j ] ] = ri[ j ];
+            bcore_u_memcpy( sizeof( f3_t ), ri, v, res->cols );
+        }
+        bmath_vf3_s_discard( vec );
+    }
+    else
+    {
+        for( uz_t i = 0; i < o->rows; i++ )
+        {
+            f3_t* oi =   o->data + i *   o->stride;
+            f3_t* ri = res->data + i * res->stride;
+            for( uz_t j = 0; j < o->cols; j++ ) ri[ p->data[ j ] ] = oi[ j ];
+        }
     }
 }
 

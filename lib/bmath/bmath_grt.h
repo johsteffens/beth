@@ -97,8 +97,8 @@ static inline void bmath_grt_f3_s_init_from_rho( bmath_grt_f3_s* o, f3_t r )
 /// Sets up rotation in order to annihilate a in vector (a,b).
 static inline void bmath_grt_f3_s_init_to_annihilate_a( bmath_grt_f3_s* o, f3_t a, f3_t b )
 {
-    a = ( b > 0 ) ? a : -a;
-    b = ( b > 0 ) ? b : -b;
+    a = ( b < 0 ) ? -a : a;
+    b = ( b < 0 ) ? -b : b;
     f3_t r = hypot( a, b );
     o->c = ( r > f3_lim_min ) ?  b / r : 1;
     o->s = ( r > f3_lim_min ) ? -a / r : 0;
@@ -109,8 +109,8 @@ static inline void bmath_grt_f3_s_init_to_annihilate_a( bmath_grt_f3_s* o, f3_t 
 /// Sets up rotation in order to annihilate b in vector (a,b). (cos >= 0)
 static inline void bmath_grt_f3_s_init_to_annihilate_b( bmath_grt_f3_s* o, f3_t a, f3_t b )
 {
-    b = ( a > 0 ) ? b : -b;
-    a = ( a > 0 ) ? a : -a;
+    b = ( a < 0 ) ? -b : b;
+    a = ( a < 0 ) ? -a : a;
     f3_t r = hypot( b, a );
     o->c = ( r > f3_lim_min ) ? a / r : 1;
     o->s = ( r > f3_lim_min ) ? b / r : 0;

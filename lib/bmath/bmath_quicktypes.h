@@ -32,6 +32,7 @@ void bmath_quicktypes_create_header( sc_t folder );
 #define TYPEOF_bmath_arr_mf3_eval_s    2241821565
 #define TYPEOF_bmath_arr_vf3_s         3268702147
 #define TYPEOF_bmath_cf3_s             2506167476
+#define TYPEOF_bmath_pmt_s             typeof( "bmath_pmt_s" )
 #define TYPEOF_bmath_estimator_s       3775440224
 #define TYPEOF_bmath_fp_mf3_s_cld      3327146305
 #define TYPEOF_bmath_fp_mf3_s_evd_htp  2695903694

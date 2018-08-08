@@ -188,6 +188,54 @@ void bmath_vf3_s_sub( const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* 
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void bmath_vf3_s_pmt_mul( const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_s* res )
+{
+    if( o == res )
+    {
+        bmath_vf3_s* buf = bmath_vf3_s_create();
+        bmath_vf3_s_set_size( buf, o->size );
+        bmath_vf3_s_pmt_mul( o, p, buf );
+        bmath_vf3_s_cpy( buf, res );
+        bmath_vf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->size == p->size );
+    ASSERT( o->size == res->size );
+
+    for( uz_t i = 0; i < p->size; i++ )
+    {
+        assert( op->data[ i ] < o->size );
+        res->data[ p->data[ i ] ] = o->data[ i ];
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_pmt_htp_mul( const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_s* res )
+{
+    if( o == res )
+    {
+        bmath_vf3_s* buf = bmath_vf3_s_create();
+        bmath_vf3_s_set_size( buf, o->size );
+        bmath_vf3_s_pmt_htp_mul( o, p, buf );
+        bmath_vf3_s_cpy( buf, res );
+        bmath_vf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->size == p->size );
+    ASSERT( o->size == res->size );
+
+    for( uz_t i = 0; i < p->size; i++ )
+    {
+        assert( op->data[ i ] < o->size );
+        res->data[ i ] = o->data[ p->data[ i ] ];
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_vf3_s_mul_scl( const bmath_vf3_s* o, const f3_t* op, bmath_vf3_s* res )
 {
     ASSERT( o->size == res->size );
