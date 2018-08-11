@@ -17,7 +17,7 @@
  *  All routines have been entirely designed from scratch and optimized with modern architectures in mind.
  */
 
-#include "bmath_matrix.h"
+#include "bmath_mf3.h"
 #include "bmath_spect_matrix.h"
 #include "bmath_fourier.h"
 #include "bmath_grt.h"
@@ -2851,9 +2851,9 @@ static void eval_test( void )
 
 /**********************************************************************************************************************/
 
-vd_t bmath_matrix_signal_handler( const bcore_signal_s* o )
+vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_matrix" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_mf3" ) ) )
     {
         case TYPEOF_init1:
         {

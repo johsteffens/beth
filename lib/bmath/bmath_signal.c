@@ -22,7 +22,7 @@
 #include "bmath_complex.h"
 #include "bmath_fourier.h"
 #include "bmath_vector.h"
-#include "bmath_matrix.h"
+#include "bmath_mf3.h"
 #include "bmath_matrix_eval.h"
 #include "bmath_pmt.h"
 #include "bmath_grt.h"
@@ -41,7 +41,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
         bmath_complex_signal_handler,
         bmath_fourier_signal_handler,
         bmath_vector_signal_handler,
-        bmath_matrix_signal_handler,
+        bmath_mf3_signal_handler,
         bmath_matrix_eval_signal_handler,
         bmath_pmt_signal_handler,
         bmath_grt_signal_handler,

@@ -671,6 +671,6 @@ void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );
 
 /**********************************************************************************************************************/
 
-vd_t bmath_matrix_signal_handler( const bcore_signal_s* o );
+vd_t bmath_mf3_signal_handler( const bcore_signal_s* o );
 
 #endif  // BMATH_MATRIX_H

@@ -23,6 +23,6 @@
 #include "bmath_spect_vector.h"
 #include "bmath_spect_matrix.h"
 #include "bmath_vector.h"
-#include "bmath_matrix.h"
+#include "bmath_mf3.h"
 
 #endif // BMATH_STD_H

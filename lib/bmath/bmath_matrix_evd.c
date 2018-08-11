@@ -20,7 +20,7 @@
  *  See bmath_matrix.h for nomenclature.
  */
 
-#include "bmath_matrix.h"
+#include "bmath_mf3.h"
 #include "bmath_matrix_evd.h"
 
 #include <stdio.h>

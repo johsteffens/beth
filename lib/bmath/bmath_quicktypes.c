@@ -17,7 +17,7 @@
 #include "bcore_st.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect_inst.h"
-#include "bmath_matrix.h"
+#include "bmath_mf3.h"
 
 /**********************************************************************************************************************/
 
