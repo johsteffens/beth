@@ -2021,14 +2021,15 @@ void bmath_mf3_s_trd( bmath_mf3_s* a, bmath_mf3_s* v )
 
 void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a )
 {
-    if( a->rows <= 1 ) return; // nothing to do
-
     if( u )
     {
         ASSERT( u != a );
         ASSERT( u->rows == a->rows );
         ASSERT( u->cols == a->rows /*full*/ || u->cols == a->cols /*thin*/  ); // u may be full or thin (nothing in-between)
+        bmath_mf3_s_one( u );
     }
+
+    if( a->rows <= 1 ) return; // nothing to do
 
     bmath_grt_f3_s gr;
 
@@ -2045,7 +2046,6 @@ void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a )
 
     if( u ) // reverse construction of u
     {
-        bmath_mf3_s_one( u );
         for( uz_t j = a->cols - 1; j < a->cols; j-- )
         {
             for( uz_t k = j; k < a->rows - 1; k++ )
@@ -2075,6 +2075,7 @@ void bmath_mf3_s_qrd_pmt( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p )
         ASSERT( u != a );
         ASSERT( u->rows == a->rows );
         ASSERT( u->cols == a->rows /*full*/ || u->cols == a->cols /*thin*/  ); // u may be full or thin (nothing in-between)
+        bmath_mf3_s_one( u );
     }
 
     if( a->rows <= 1 ) return; // nothing to do
@@ -2125,8 +2126,6 @@ void bmath_mf3_s_qrd_pmt( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p )
 
         for( uz_t i = j; i < a->cols; i++ ) v->data[ i ] -= f3_sqr( aj[ i ] );
     }
-
-    if( u ) bmath_mf3_s_one( u );
 
     // make diagonal elements of a non-negative
     uz_t n = uz_min( a->cols, a->rows );
