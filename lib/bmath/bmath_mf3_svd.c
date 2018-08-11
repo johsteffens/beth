@@ -16,12 +16,12 @@
 /** Collection of algorithms related to singular value decomposition (SVD).
  *  All routines have been entirely designed from scratch and optimized with modern architectures in mind.
  *
- *  This header is included in bmath_matrix.h and should not be used in isolation
- *  See bmath_matrix.h for nomenclature.
+ *  This header is included in bmath_mf3.h and should not be used in isolation
+ *  See bmath_mf3.h for nomenclature.
  */
 
 #include "bmath_mf3.h"
-#include "bmath_matrix_evd.h"
+#include "bmath_mf3_evd.h"
 
 #include <stdio.h>
 

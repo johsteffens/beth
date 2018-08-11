@@ -21,8 +21,8 @@
 /** Collection of algorithms related to eigenvalue decomposition (EVD).
  *  All routines have been entirely designed from scratch and optimized with modern architectures in mind.
  *
- *  This header is included in bmath_matrix.h and should not be used in isolation
- *  See bmath_matrix.h for nomenclature.
+ *  This header is included in bmath_mf3.h and should not be used in isolation
+ *  See bmath_mf3.h for nomenclature.
  */
 
 /**********************************************************************************************************************/

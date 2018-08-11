@@ -74,8 +74,8 @@
 #include "bmath_spect_algebraic.h"
 #include "bmath_vector.h"
 #include "bmath_grt.h"
-#include "bmath_matrix_evd.h"
-#include "bmath_matrix_svd.h"
+#include "bmath_mf3_evd.h"
+#include "bmath_mf3_svd.h"
 
 typedef struct bmath_mf3_s bmath_mf3_s;
 
