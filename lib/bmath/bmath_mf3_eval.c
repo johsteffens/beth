@@ -112,25 +112,6 @@ void bmath_mf3_eval_result_s_to_stdout( const bmath_mf3_eval_result_s* o )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static void bmath_mf3_eval_s_fill_random( bmath_mf3_s* m, f3_t density, sc_t shape, u2_t* rval )
-{
-    if( sc_t_equ( shape, "hsm" ) )
-    {
-        bmath_mf3_s_set_random( m, true, false, 0, density, -1, 1, rval );
-
-    }
-    else if( sc_t_equ( shape, "pdf" ) )
-    {
-        bmath_mf3_s_set_random( m, true, true, 0, density, -1, 1, rval );
-    }
-    else
-    {
-        bmath_mf3_s_set_random( m, false, false, 0, density, -1, 1, rval );
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
 void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
     ASSERT( fp != NULL );
@@ -153,7 +134,7 @@ void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  m, n );
     u2_t rval = o->seed;
-    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
+    bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
     bmath_mf3_s_set_size( u, m, o->full ? m : uz_min( m, n ) );
     bmath_mf3_s_set_size( v, n, o->full ? n : uz_min( m, n ) );
 
@@ -256,7 +237,7 @@ void bmath_mf3_eval_s_run_ua( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  m, n );
     u2_t rval = o->seed;
-    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
+    bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
 
     bmath_mf3_s_set_size( u, m, o->full ? m : uz_min( m, n ) );
     bmath_mf3_s_zro( a );
@@ -358,7 +339,7 @@ void bmath_mf3_eval_s_run_av( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  m, n );
     u2_t rval = o->seed;
-    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
+    bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
 
     bmath_mf3_s_set_size( v, n, o->full ? n : uz_min( m, n ) );
 
@@ -424,7 +405,7 @@ void bmath_mf3_eval_s_run_sym_vav_htp( const bmath_mf3_eval_s* o, tp_t fp_type, 
     bmath_mf3_s_set_size( m0, n, n );
     bmath_mf3_s_set_size( a,  n, n );
     u2_t rval = o->seed;
-    bmath_mf3_eval_s_fill_random( m0, o->density, "hsm", &rval );
+    bmath_mf3_s_set_random( m0, true, false, 0, o->density, -1.0, 1.0, &rval );
 
     bmath_mf3_s_set_size( v, n, n );
     bmath_mf3_s_zro( a );
@@ -524,7 +505,7 @@ void bmath_mf3_eval_s_run_cld( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     bmath_mf3_s_set_size( m0, n, n );
     bmath_mf3_s_set_size( a,  n, n );
     u2_t rval = o->seed;
-    bmath_mf3_eval_s_fill_random( m0, o->density, "pdf", &rval );
+    bmath_mf3_s_set_random( m0, true, true, 0, o->density, -1.0, 1.0, &rval );
 
     bmath_mf3_s_zro( a );
 
@@ -574,7 +555,7 @@ void bmath_mf3_eval_s_run_lud( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     bmath_mf3_s_set_size( m0, n, n );
     bmath_mf3_s_set_size( a,  n, n );
     u2_t rval = o->seed;
-    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
+    bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
 
     bmath_mf3_s_zro( a );
 
@@ -590,7 +571,7 @@ void bmath_mf3_eval_s_run_lud( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
 
     bmath_mf3_s_set_size( m1, n, n );
-    bmath_mf3_eval_s_fill_random( m1, o->density, "", &rval );
+    bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, &rval );
 
     bmath_mf3_s_set_size( m2, n, n );
     bmath_mf3_s_set_size( m3, n, n );
@@ -628,7 +609,7 @@ void bmath_mf3_eval_s_run_inv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     bmath_mf3_s_set_size( m0, n, n );
     bmath_mf3_s_set_size( a,  n, n );
     u2_t rval = o->seed;
-    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
+    bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
 
     bmath_mf3_s_zro( a );
 
@@ -675,7 +656,7 @@ void bmath_mf3_eval_s_run_pdf_inv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
     bmath_mf3_s_set_size( m0, n, n );
     bmath_mf3_s_set_size( a,  n, n );
     u2_t rval = o->seed;
-    bmath_mf3_eval_s_fill_random( m0, o->density, "pdf", &rval );
+    bmath_mf3_s_set_random( m0, true, true, 0, o->density, -1.0, 1.0, &rval );
 
     bmath_mf3_s_zro( a );
 
@@ -721,7 +702,7 @@ void bmath_mf3_eval_s_run_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  n, m );
     u2_t rval = o->seed;
-    bmath_mf3_eval_s_fill_random( m0, o->density, "", &rval );
+    bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
 
     bmath_mf3_s_zro( a );
 
@@ -776,7 +757,7 @@ void bmath_mf3_eval_s_run_hsm_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
     bmath_mf3_s_set_size( m0, n, n );
     bmath_mf3_s_set_size( a,  n, n );
     u2_t rval = o->seed;
-    bmath_mf3_eval_s_fill_random( m0, o->density, "hsm", &rval );
+    bmath_mf3_s_set_random( m0, true, false, 0, o->density, -1.0, 1.0, &rval );
 
     bmath_mf3_s_zro( a );
 
