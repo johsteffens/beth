@@ -122,7 +122,8 @@ static vd_t selftest( void )
         uz_t samples = 2000;
 
         bmath_mf3_s_set_size( m1, m, n + 1 );
-        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_mf3_s_set_random( m1, false, false, 0, 1.0, -1, 1, &rval );
+
         bmath_vf3_s_set_size( v1, n );
         bmath_vf3_s_set_size( v2, m );
         bmath_vf3_s_set_size( v3, m );
@@ -131,11 +132,11 @@ static vd_t selftest( void )
 
         for( uz_t i = 0; i < samples; i++ )
         {
-            bmath_vf3_s_fill_random( v1, -1, 1, &rval );
+            bmath_vf3_s_set_random( v1, 1.0, -1, 1, &rval );
             bmath_mf3_s_mul_av1( m1, v1, v2 );
 
             // noisify the result a bit
-            bmath_vf3_s_fill_random( v3, -0.1, 0.1, &rval );
+            bmath_vf3_s_set_random( v3, 1.0, -0.1, 0.1, &rval );
             bmath_vf3_s_add( v2, v3, v4 );
 
             bmath_estimator_s_digest( est, 1.0, v1, v4 );

@@ -246,7 +246,7 @@ static void selftest()
     bmath_mf3_s_set_size( m3, n, n );
     bmath_mf3_s_set_size( m4, n, n );
     bmath_pmt_s_to_mf3( p1, m1 );
-    bmath_mf3_s_fill_random( m2, -1, 1, &rval );
+    bmath_mf3_s_set_random( m2, false, false, 0, 1.0, -1, 1, &rval );
 
     bmath_mf3_s_mul_pmt( m2, p1, m3 );
     bmath_mf3_s_mul(     m2, m1, m4 );
@@ -269,7 +269,7 @@ static void selftest()
     bmath_vf3_s_set_size( v1, n );
     bmath_vf3_s_set_size( v2, n );
     bmath_vf3_s_set_size( v3, n );
-    bmath_vf3_s_fill_random( v1, -1, 1, &rval );
+    bmath_vf3_s_set_random( v1, 1.0, -1, 1, &rval );
     bmath_vf3_s_pmt_mul( v1, p1, v2 );
     bmath_mf3_s_mul_vec( m1, v1, v3 );
     ASSERT( bmath_vf3_s_is_equ( v2, v3 ) );

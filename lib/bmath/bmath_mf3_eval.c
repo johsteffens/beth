@@ -116,16 +116,16 @@ static void bmath_mf3_eval_s_fill_random( bmath_mf3_s* m, f3_t density, sc_t sha
 {
     if( sc_t_equ( shape, "hsm" ) )
     {
-        bmath_mf3_s_fill_random_sparse_hsm( m, -1, 1, density, rval );
+        bmath_mf3_s_set_random( m, true, false, 0, density, -1, 1, rval );
+
     }
     else if( sc_t_equ( shape, "pdf" ) )
     {
-        bmath_mf3_s_fill_random_sparse( m, -1, 1, density, rval );
-        bmath_mf3_s_mul_htp( m, m, m );
+        bmath_mf3_s_set_random( m, true, true, 0, density, -1, 1, rval );
     }
     else
     {
-        bmath_mf3_s_fill_random_sparse( m, -1, 1, density, rval );
+        bmath_mf3_s_set_random( m, false, false, 0, density, -1, 1, rval );
     }
 }
 
@@ -590,7 +590,7 @@ void bmath_mf3_eval_s_run_lud( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
 
     bmath_mf3_s_set_size( m1, n, n );
-    bmath_mf3_s_fill_random_sparse( m1, -1, 1, o->density, &rval );
+    bmath_mf3_eval_s_fill_random( m1, o->density, "", &rval );
 
     bmath_mf3_s_set_size( m2, n, n );
     bmath_mf3_s_set_size( m3, n, n );

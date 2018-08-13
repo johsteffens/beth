@@ -66,98 +66,100 @@ void bmath_mf3_s_set_size( bmath_mf3_s* o, uz_t rows, uz_t cols )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_fill_random( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval )
+void bmath_mf3_s_set_random( bmath_mf3_s* o, bl_t hsm, bl_t pdf, uz_t rd, f3_t density, f3_t min, f3_t max, u2_t* p_rval )
 {
+    u2_t rval = p_rval ? *p_rval : 12345;
     f3_t range = max - min;
-    for( uz_t i = 0; i < o->rows; i++ )
+    if( pdf ) ASSERT( hsm );
+    if( hsm ) ASSERT( o->rows == o->cols );
+
+    if( rd == 0 ) // full rank
     {
-        f3_t* v = o->data + i * o->stride;
-        for( uz_t j = 0; j < o->cols; j++ )
+        if( pdf )
         {
-            v[ j ] = ( range * f3_xsg1_pos( rval ) ) + min;
+            bmath_mf3_s_set_random( o, false, false, 0, density, min, max, &rval );
+            bmath_mf3_s_mul_htp( o, o, o );
         }
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-void bmath_mf3_s_fill_random_hsm( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval )
-{
-    ASSERT( o->rows == o->cols );
-    f3_t range = max - min;
-    for( uz_t i = 0; i < o->rows; i++ )
-    {
-        f3_t* vi = o->data + i * o->stride;
-        for( uz_t j = 0; j <= i; j++ )
+        else if( hsm )
         {
-            f3_t* vj = o->data + j * o->stride;
-            vi[ j ] = ( range * f3_xsg1_pos( rval ) ) + min;
-            vj[ i ] = vi[ j ];
-        }
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-void bmath_mf3_s_fill_random_sparse( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval )
-{
-    f3_t range = max - min;
-    for( uz_t i = 0; i < o->rows; i++ )
-    {
-        f3_t* v = o->data + i * o->stride;
-        for( uz_t j = 0; j < o->cols; j++ )
-        {
-            if( f3_xsg1_pos( rval ) < density )
+            for( uz_t i = 0; i < o->rows; i++ )
             {
-                v[ j ] = ( range * f3_xsg1_pos( rval ) ) + min;
+                f3_t* vi = o->data + i * o->stride;
+                for( uz_t j = 0; j <= i; j++ )
+                {
+                    f3_t* vj = o->data + j * o->stride;
+                    if( f3_xsg1_pos( &rval ) < density )
+                    {
+                        vi[ j ] = ( range * f3_xsg1_pos( &rval ) ) + min;
+                        vj[ i ] = vi[ j ];
+                    }
+                    else
+                    {
+                        vi[ j ] = 0;
+                        vj[ i ] = 0;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for( uz_t i = 0; i < o->rows; i++ )
+            {
+                f3_t* v = o->data + i * o->stride;
+                for( uz_t j = 0; j < o->cols; j++ )
+                {
+                    if( f3_xsg1_pos( &rval ) < density )
+                    {
+                        v[ j ] = ( range * f3_xsg1_pos( &rval ) ) + min;
+                    }
+                    else
+                    {
+                        v[ j ] = 0;
+                    }
+                }
+            }
+        }
+    }
+    else if( rd < uz_min( o->cols, o->rows ) ) // rank is uz_min( o->cols, o->rows ) - rd
+    {
+        uz_t n = uz_min( o->cols, o->rows );
+        uz_t rank = n - rd;
+        if( hsm )
+        {
+            bmath_mf3_s* m1 = bmath_mf3_s_create();
+            bmath_vf3_s* v1 = bmath_vf3_s_create();
+            bmath_mf3_s_set_size( m1, o->rows, rank );
+            bmath_mf3_s_set_random( m1, false, false, 0, density, min, max, &rval );
+
+            bmath_vf3_s_set_size( v1, rank );
+            if( pdf )
+            {
+                bmath_vf3_s_set_random( v1, density, 0.0, 1.0, &rval );
             }
             else
             {
-                v[ j ] = 0;
+                bmath_vf3_s_set_random( v1, density, min, max, &rval );
             }
+
+            bmath_mf3_s_udu_htp( m1, v1, o );
+            bmath_mf3_s_discard( m1 );
+            bmath_vf3_s_discard( v1 );
         }
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-void bmath_mf3_s_fill_random_sparse_hsm( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval )
-{
-    ASSERT( o->rows == o->cols );
-    f3_t range = max - min;
-    for( uz_t i = 0; i < o->rows; i++ )
-    {
-        f3_t* vi = o->data + i * o->stride;
-        for( uz_t j = 0; j <= i; j++ )
+        else
         {
-            f3_t* vj = o->data + j * o->stride;
-            if( f3_xsg1_pos( rval ) < density )
-            {
-                vi[ j ] = ( range * f3_xsg1_pos( rval ) ) + min;
-                vj[ i ] = vi[ j ];
-            }
-            else
-            {
-                vi[ j ] = 0;
-                vj[ i ] = 0;
-            }
+            bmath_mf3_s* m1 = bmath_mf3_s_create();
+            bmath_mf3_s* m2 = bmath_mf3_s_create();
+            bmath_mf3_s_set_size( m1, o->rows, rank );
+            bmath_mf3_s_set_size( m2, o->cols, rank );
+            bmath_mf3_s_set_random( m1, false, false, 0, density, min, max, &rval );
+            bmath_mf3_s_set_random( m2, false, false, 0, density, min, max, &rval );
+            bmath_mf3_s_mul_htp( m1, m2, o );
+            bmath_mf3_s_discard( m1 );
+            bmath_mf3_s_discard( m2 );
         }
     }
-}
 
-//---------------------------------------------------------------------------------------------------------------------
-
-void bmath_mf3_s_fill_random_pow( bmath_mf3_s* o, f3_t exp, u2_t* rval )
-{
-    for( uz_t i = 0; i < o->rows; i++ )
-    {
-        f3_t* v = o->data + i * o->stride;
-        for( uz_t j = 0; j < o->cols; j++ )
-        {
-            f3_t r = f3_xsg1_sym( rval );
-            v[ j ] = f3_sig( r ) * pow( f3_abs( r ), exp );
-        }
-    }
+    if( p_rval ) *p_rval = rval;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -170,14 +172,14 @@ bmath_mf3_s* bmath_mf3_s_create_set_size( uz_t rows, uz_t cols )
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-
+/*
 bmath_mf3_s* bmath_mf3_s_create_fill_random( uz_t rows, uz_t cols, f3_t min, f3_t max, u2_t* rval )
 {
     bmath_mf3_s* o = bmath_mf3_s_create_set_size( rows, cols );
     bmath_mf3_s_fill_random( o, min, max, rval );
     return o;
 }
-
+*/
 //---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
@@ -2519,7 +2521,7 @@ static vd_t selftest( void )
         u2_t rval = 1234;
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_set_size_to( m1, m2 );
-        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_mf3_s_set_random( m1, false, false, 0, 1.0, -1, 1, &rval );
         bmath_mf3_s_mul_htp( m1, m1, m2 );
         ASSERT( bmath_mf3_s_is_near_hsm( m2, 1E-8 ) );
     }
@@ -2532,7 +2534,7 @@ static vd_t selftest( void )
         u2_t rval = 124;
         bmath_arr_vf3_s_set_size( a1, size );
         bmath_arr_vf3_s_on_section_set_size( a1, 0, -1, n );
-        bmath_arr_vf3_s_on_section_fill_random( a1, 0, -1, -1, 1, &rval );
+        bmath_arr_vf3_s_on_section_set_random( a1, 0, -1, 1.0, -1, 1, &rval );
 
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_set_size( m2, n, n );
@@ -2564,8 +2566,8 @@ static vd_t selftest( void )
         bmath_vf3_s_set_size( v3, n );
 
         u2_t rval = 1236;
-        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
-        bmath_vf3_s_fill_random( v1, -1, 1, &rval );
+        bmath_mf3_s_set_random( m1, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_vf3_s_set_random( v1, 1.0, -1, 1, &rval );
 
         bmath_mf3_s_mul_av1( m1, v1, v2 );
         bmath_mf3_s_inv_av1( m1, m2 );
@@ -2584,12 +2586,12 @@ static vd_t selftest( void )
         bmath_vf3_s_set_size( v3, n );
 
         u2_t rval = 1236;
-        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_mf3_s_set_random( m1, false, false, 0, 1.0, -1, 1, &rval );
 
         bmath_mf3_s m1_sub = bmath_mf3_s_get_weak_sub_mat( m1, 0, 0, n, n );
         bmath_mf3_s_mul_htp( &m1_sub, &m1_sub, &m1_sub ); // make nxn submatrix of m1 symmetric
 
-        bmath_vf3_s_fill_random( v1, -1, 1, &rval );
+        bmath_vf3_s_set_random( v1, 1.0, -1, 1, &rval );
 
         bmath_mf3_s_mul_av1( m1, v1, v2 );
         bmath_mf3_s_pdf_inv_av1( m1, m2 );
@@ -2608,12 +2610,12 @@ static vd_t selftest( void )
         bmath_vf3_s_set_size( v3, n );
 
         u2_t rval = 1236;
-        bmath_mf3_s_fill_random( m1, -1, 1, &rval );
+        bmath_mf3_s_set_random( m1, false, false, 0, 1.0, -1, 1, &rval );
 
         bmath_mf3_s m1_sub = bmath_mf3_s_get_weak_sub_mat( m1, 0, 0, n, n );
         bmath_mf3_s_mul_htp( &m1_sub, &m1_sub, &m1_sub ); // make nxn submatrix of m1 symmetric
 
-        bmath_vf3_s_fill_random( v1, -1, 1, &rval );
+        bmath_vf3_s_set_random( v1, 1.0, -1, 1, &rval );
 
         bmath_mf3_s_mul_av1( m1, v1, v2 );
         bmath_mf3_s_hsm_piv_av1( m1, 1E-8, m2 );

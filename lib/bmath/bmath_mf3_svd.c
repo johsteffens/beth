@@ -177,7 +177,8 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
                 a0[ 0 ] = gr_r.c * a00 + gr_r.s * a01; a0[ 1 ] = gr_r.c * a01 - gr_r.s * a00;
                 a1[ 0 ] =                gr_r.s * a11; a1[ 1 ] = gr_r.c * a11;
-                bmath_grt_f3_s_row_rotate( &gr_l, a0, a1, 0, 3 );
+
+                bmath_grt_f3_s_row_rotate( &gr_l, a0, a1, 0, a->cols > irb_start + 2 ? 3 : 2 );
                 a1[ 0 ] = 0;
 
                 gru.data[ irb_start ] = gr_l;
@@ -217,6 +218,8 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
             }
         }
     }
+
+
 
     bmath_arr_grt_f3_s_down( &grv );
     bmath_arr_grt_f3_s_down( &gru );

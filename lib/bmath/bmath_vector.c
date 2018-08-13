@@ -74,10 +74,22 @@ void bmath_vf3_s_fill( bmath_vf3_s* o, f3_t val )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_vf3_s_fill_random( bmath_vf3_s* o, f3_t min, f3_t max, u2_t* rval )
+void bmath_vf3_s_set_random( bmath_vf3_s* o, f3_t density, f3_t min, f3_t max, u2_t* p_rval )
 {
+    u2_t rval = p_rval ? *p_rval : 12345;
     f3_t range = max - min;
-    for( uz_t i = 0; i < o->size; i++ ) o->data[ i ] = ( range * f3_xsg1_pos( rval ) ) + min;
+    for( uz_t i = 0; i < o->size; i++ )
+    {
+        if( f3_xsg1_pos( &rval ) < density )
+        {
+            o->data[ i ] = ( range * f3_xsg1_pos( &rval ) ) + min;
+        }
+        else
+        {
+            o->data[ i ] = 0;
+        }
+    }
+    if( p_rval ) *p_rval = rval;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -133,15 +145,6 @@ bmath_vf3_s* bmath_vf3_s_create_fill( uz_t size, f3_t val )
 {
     bmath_vf3_s* o = bmath_vf3_s_create_set_size( size );
     bmath_vf3_s_fill( o, val );
-    return o;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-bmath_vf3_s* bmath_vf3_s_create_fill_random( uz_t size, f3_t min, f3_t max, u2_t* rval )
-{
-    bmath_vf3_s* o = bmath_vf3_s_create_set_size( size );
-    bmath_vf3_s_fill_random( o, min, max, rval );
     return o;
 }
 
@@ -1006,10 +1009,10 @@ void bmath_arr_vf3_s_on_section_fill( bmath_arr_vf3_s* o, uz_t start, uz_t end, 
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_arr_vf3_s_on_section_fill_random( bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t min, f3_t max, u2_t* rval )
+void bmath_arr_vf3_s_on_section_set_random( bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t density, f3_t min, f3_t max, u2_t* rval )
 {
     end = end < o->size ? end : o->size;
-    for( uz_t i = start; i < end; i++ ) bmath_vf3_s_fill_random( &o->data[ i ], min, max, rval );
+    for( uz_t i = start; i < end; i++ ) bmath_vf3_s_set_random( &o->data[ i ], density, min, max, rval );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1329,7 +1332,7 @@ static vd_t selftest( void )
 
         bmath_arr_vf3_s_on_section_set_size( a1, 0, -1, n );
         u2_t rval = 123;
-        bmath_arr_vf3_s_on_section_fill_random( a1, 0, -1, -1, 1, &rval );
+        bmath_arr_vf3_s_on_section_set_random( a1, 0, -1, 1.0, -1, 1, &rval );
         bmath_arr_vf3_s_on_section_set_sqr( a1, 0, -1, 4 );
         for( uz_t i = 0; i < size; i++ ) ASSERT( f3_abs( bmath_vf3_s_f3_sqr( &a1->data[ i ] ) - 4.0 ) < 1E-10 );
         bmath_arr_vf3_s_on_section_set_avg( a1, 0, -1, 2 );

@@ -62,12 +62,22 @@ void bmath_vf3_s_clear( bmath_vf3_s* o );
 
 bmath_vf3_s* bmath_vf3_s_create_set_size( uz_t size );
 bmath_vf3_s* bmath_vf3_s_create_fill( uz_t size, f3_t val );
-bmath_vf3_s* bmath_vf3_s_create_fill_random( uz_t size, f3_t min, f3_t max, u2_t* rval );
+
 
 void bmath_vf3_s_set_size(    bmath_vf3_s* o, uz_t size );
 void bmath_vf3_s_set_size_to( const bmath_vf3_s* o, bmath_vf3_s* res );
 void bmath_vf3_s_fill(        bmath_vf3_s* o, f3_t val );
-void bmath_vf3_s_fill_random( bmath_vf3_s* o, f3_t min, f3_t max, u2_t* rval );
+
+/** Sets all vector elements to random values.
+ *  Random generator:
+ *    Parameters density, min, max, p_rval apply to the random generator.
+ *      rval: Pointer to running variable of random generator.
+ *            If NULL, an internal fixed random seed is used.
+ *
+ *     density (range [0.0, 1.0]) specifies the rate at which the random generator
+ *     creates a non-zero value.
+ */
+void bmath_vf3_s_set_random( bmath_vf3_s* o, f3_t density, f3_t min, f3_t max, u2_t* p_rval );
 
 void bmath_vf3_s_push( bmath_vf3_s* o, f3_t val );
 void bmath_vf3_s_push_vf3( bmath_vf3_s* o, const bmath_vf3_s* vec );
@@ -229,7 +239,7 @@ void bmath_arr_vf3_s_reorder(    bmath_arr_vf3_s* o, const bcore_arr_uz_s* order
 
 void bmath_arr_vf3_s_on_section_set_size(      bmath_arr_vf3_s* o, uz_t start, uz_t end, uz_t size );
 void bmath_arr_vf3_s_on_section_fill(          bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t val );
-void bmath_arr_vf3_s_on_section_fill_random(   bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t min, f3_t max, u2_t* rval );
+void bmath_arr_vf3_s_on_section_set_random(    bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t density, f3_t min, f3_t max, u2_t* rval );
 void bmath_arr_vf3_s_on_section_zro(           bmath_arr_vf3_s* o, uz_t start, uz_t end );
 void bmath_arr_vf3_s_on_section_neg(     const bmath_arr_vf3_s* o, uz_t start, uz_t end,                        bmath_arr_vf3_s* res );
 void bmath_arr_vf3_s_on_section_cpy(     const bmath_arr_vf3_s* o, uz_t start, uz_t end,                        bmath_arr_vf3_s* res );

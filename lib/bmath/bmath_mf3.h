@@ -144,20 +144,26 @@ BCORE_DECLARE_OBJECT( bmath_mf3_s )
 
 void bmath_mf3_s_set_size( bmath_mf3_s* o, uz_t rows, uz_t cols );
 
-/// Fills o with random values within range [ min, max [.
-void bmath_mf3_s_fill_random(     bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval );
-void bmath_mf3_s_fill_random_hsm( bmath_mf3_s* o, f3_t min, f3_t max, u2_t* rval ); // creates symmetric matrix
-
-/** Fills o with sparsely with random values within range [ min, max [.
- *  'density' specifies the likelihood that a field is nonzero.
+/** Sets all matrix elements to random values.
+ *  hsm: true: Creates a symmetric matrix
+ *  pdf: true: Creates a positive definite matrix
+ *  rd: Rank deficit
+ *     If rd < min( cols, rows ) at density == 1.0, the matrix-rank can be expected to be equal to min( cols, rows ) - rd.
+ *     If rd >= min( cols, rows ), a zero-matrix is created.
+ *     If density is < 1.0, it is matrix-rank <= min( cols, rows ) - rd.
+ *
+ *  Random generator:
+ *    Parameters density, min, max, p_rval apply to the random generator.
+ *      rval: Pointer to running variable of random generator.
+ *            If NULL, an internal fixed random seed is used.
+ *
+ *     density (range [0.0, 1.0]) specifies the rate at which the random generator
+ *     creates a non-zero value.
+ *
+ *  If rd == 0 && !pdf, the matrix elements are set directly to random values.
+ *  Otherwise o is a product of two random matrices.
  */
-void bmath_mf3_s_fill_random_sparse(     bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval );
-void bmath_mf3_s_fill_random_sparse_hsm( bmath_mf3_s* o, f3_t min, f3_t max, f3_t density, u2_t* rval ); // creates symmetric matrix
-
-/** Fills o with with random values v = sign( r) * pow( abs( r ), exp )
- *  r is a random variable evenly distributed between -1.0 and 1.0.
- */
-void bmath_mf3_s_fill_random_pow( bmath_mf3_s* o, f3_t exp, u2_t* rval );
+void bmath_mf3_s_set_random( bmath_mf3_s* o, bl_t hsm, bl_t pdf, uz_t rd, f3_t density, f3_t min, f3_t max, u2_t* p_rval );
 
 bmath_mf3_s* bmath_mf3_s_create_set_size( uz_t rows, uz_t cols );
 bmath_mf3_s* bmath_mf3_s_create_fill_random( uz_t rows, uz_t cols, f3_t min, f3_t max, u2_t* rval );
