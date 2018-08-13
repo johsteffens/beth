@@ -90,6 +90,7 @@ typedef void (*bmath_fp_mf3_s_lbd     )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_m
 typedef void (*bmath_fp_mf3_s_qrd     )( bmath_mf3_s* u, bmath_mf3_s* a                 );
 typedef void (*bmath_fp_mf3_s_qrd_pmt )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p ); // rank revealing; A = U * A' * P^T
 typedef void (*bmath_fp_mf3_s_lqd     )(                 bmath_mf3_s* a, bmath_mf3_s* v );
+typedef void (*bmath_fp_mf3_s_pmt_lqd )( bmath_pmt_s* p, bmath_mf3_s* a, bmath_mf3_s* v ); // rank revealing; A = P^T * A' * V
 
 typedef bl_t (*bmath_fp_mf3_s_cld     )( const bmath_mf3_s* o, bmath_mf3_s* res );
 typedef bl_t (*bmath_fp_mf3_s_lud     )( const bmath_mf3_s* o, bmath_mf3_s* res );
@@ -113,6 +114,7 @@ static inline void bmath_matrix_push_quicktypes( sr_s* list )
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd"     );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd_pmt" );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lqd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_pmt_lqd" );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_cld"     );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lud"     );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_inv"     );

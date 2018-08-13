@@ -119,4 +119,34 @@ void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v );
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/** Stable rank revealing PLQ decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
+ *  It is a = p * a' * v^T, with v being unitary.
+ *  Diagonal elements of a' are non-negative and sorted in descending manner.
+ *      * Supports any n,m configuration
+ *      * Supports full and thin decomposition.
+ *      * Efficient on dense and sparse matrices. (Automatically detects and exploits sparsity)
+ *
+ *  If matrix v is desired, its size has to be preset but it need not be preinitialized.
+ *  The routine does not change the actual allocation of either matrix, hence a, v may
+ *  safely reference external data.
+ *  Whether full or thin decomposition is computed depends on how matrices have been preset:
+ *
+ *     a:  mxn input matrix to be diagonalized
+ *
+ *     v:
+ *         NULL         -  v is not computed
+ *         nxn matrix   -  full decomposition
+ *         nxm matrix   -  thin decomposition for m < n
+ *
+ *     p:
+ *         NULL         -  p is not computed
+ *         m-permutation
+ *
+ *  If thin decomposition is chosen, then a' is returned as (thin) mxm square matrix.
+ *
+ */
+void bmath_mf3_s_pmt_lqd( bmath_pmt_s* p, bmath_mf3_s* a, bmath_mf3_s* v );
+
+//---------------------------------------------------------------------------------------------------------------------
+
 #endif  // BMATH_MATRIX_QRD_H

@@ -1140,7 +1140,7 @@ void bmath_mf3_s_pmt_mul( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_
     if( o == res )
     {
         bmath_mf3_s* buf = bmath_mf3_s_create();
-        bmath_mf3_s_set_size( buf, res->cols, res->rows );
+        bmath_mf3_s_set_size( buf, res->rows, res->cols );
         bmath_mf3_s_pmt_mul( o, p, buf );
         bmath_mf3_s_cpy( buf, res );
         bmath_mf3_s_discard( buf );
@@ -1166,7 +1166,7 @@ void bmath_mf3_s_pmt_htp_mul( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_
     if( o == res )
     {
         bmath_mf3_s* buf = bmath_mf3_s_create();
-        bmath_mf3_s_set_size( buf, res->cols, res->rows );
+        bmath_mf3_s_set_size( buf, res->rows, res->cols );
         bmath_mf3_s_pmt_htp_mul( o, p, buf );
         bmath_mf3_s_cpy( buf, res );
         bmath_mf3_s_discard( buf );
@@ -2653,12 +2653,14 @@ static void eval_test( void )
     eval->rows = 10; eval->cols = 30; bmath_arr_mf3_eval_s_push( arr_eval, eval );
     eval->rows = 30; eval->cols = 10; bmath_arr_mf3_eval_s_push( arr_eval, eval );
 
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd, ( fp_t )bmath_mf3_s_qrd, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lqd, ( fp_t )bmath_mf3_s_lqd, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_ubd, ( fp_t )bmath_mf3_s_ubd, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lbd, ( fp_t )bmath_mf3_s_lbd, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_svd, ( fp_t )bmath_mf3_s_svd, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_piv, ( fp_t )bmath_mf3_s_piv, NULL );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd,     ( fp_t )bmath_mf3_s_qrd,     NULL );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd_pmt, ( fp_t )bmath_mf3_s_qrd_pmt, NULL );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lqd,     ( fp_t )bmath_mf3_s_lqd,     NULL );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_pmt_lqd, ( fp_t )bmath_mf3_s_pmt_lqd, NULL );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_ubd,     ( fp_t )bmath_mf3_s_ubd,     NULL );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lbd,     ( fp_t )bmath_mf3_s_lbd,     NULL );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_svd,     ( fp_t )bmath_mf3_s_svd,     NULL );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_piv,     ( fp_t )bmath_mf3_s_piv,     NULL );
 
     BCORE_LIFE_DOWN();
 }
@@ -2681,6 +2683,7 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_qrd );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_qrd_pmt );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_lqd );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_pmt_lqd );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_cld );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_lud );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_inv );

@@ -45,10 +45,14 @@ static bl_t ud_is_zero( bmath_mf3_s* a, uz_t row_idx )
     return false;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 static void ud_set_zero( bmath_mf3_s* a, uz_t row_idx )
 {
     a->data[ ( a->stride + 1 ) * row_idx + 1 ] = 0;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 {
@@ -218,8 +222,6 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
             }
         }
     }
-
-
 
     bmath_arr_grt_f3_s_down( &grv );
     bmath_arr_grt_f3_s_down( &gru );

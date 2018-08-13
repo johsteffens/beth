@@ -39,7 +39,11 @@ void bmath_mf3_s_qrd_plain( bmath_mf3_s* u, bmath_mf3_s* a )
         bmath_mf3_s_one( u );
     }
 
-    if( a->rows <= 1 ) return; // nothing to do
+    if( a->rows <= 1 )
+    {
+        if( u ) a->rows = u->cols;
+        return; // nothing else to do
+    }
 
     bmath_grt_f3_s gr;
 
@@ -88,7 +92,11 @@ void bmath_mf3_s_qrd_pmt_plain( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p )
         bmath_mf3_s_one( u );
     }
 
-    if( a->rows <= 1 ) return; // nothing to do
+    if( a->rows <= 1 )
+    {
+        if( u ) a->rows = u->cols;
+        return; // nothing else to do
+    }
 
     bmath_vf3_s* v = bmath_vf3_s_create();
     bmath_vf3_s_set_size( v, a->cols );
@@ -171,13 +179,18 @@ void bmath_mf3_s_qrd_pmt_plain( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p )
 
 void bmath_mf3_s_lqd_plain( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    if( a->cols <= 1 ) return; // nothing to do
-
     if( v )
     {
         ASSERT( v != a );
         ASSERT( v->rows == a->cols );
         ASSERT( v->cols == a->cols || v->cols == a->rows ); // v may be full or thin (nothing in-between)
+        bmath_mf3_s_one( v );
+    }
+
+    if( a->cols <= 1 )
+    {
+        if( v ) a->cols = v->cols;
+        return; // nothing else to do
     }
 
     bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( a->cols );
@@ -198,7 +211,6 @@ void bmath_mf3_s_lqd_plain( bmath_mf3_s* a, bmath_mf3_s* v )
 
     if( v ) // reverse construction of v
     {
-        bmath_mf3_s_one( v );
         for( uz_t j = a->rows - 1; j < a->rows; j-- )
         {
             for( uz_t k = j; k < a->cols - 1; k++ )
@@ -289,7 +301,11 @@ void bmath_mf3_s_qrd_accurate( bmath_mf3_s* u, bmath_mf3_s* a )
         bmath_mf3_s_one( u );
     }
 
-    if( a->rows <= 1 ) return; // nothing to do
+    if( a->rows <= 1 )
+    {
+        if( u ) a->rows = u->cols;
+        return; // nothing else to do
+    }
 
     uz_t n = uz_min( a->cols, a->rows );
 
@@ -338,7 +354,11 @@ void bmath_mf3_s_qrd_pmt_accurate( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* 
         bmath_mf3_s_one( u );
     }
 
-    if( a->rows <= 1 ) return; // nothing to do
+    if( a->rows <= 1 )
+    {
+        if( u ) a->rows = u->cols;
+        return; // nothing else to do
+    }
 
     uz_t n = uz_min( a->cols, a->rows );
 
@@ -406,6 +426,204 @@ void bmath_mf3_s_qrd_pmt_accurate( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* 
 
 //---------------------------------------------------------------------------------------------------------------------
 
+static void lqd_accurate_recursive_annihilate( bmath_mf3_s* a, uz_t offset, uz_t start, uz_t end )
+{
+    const sz_t block_size = 64;
+
+    bmath_grt_f3_s gr;
+    if( start + block_size < end )
+    {
+        uz_t mid = start + ( ( end - start ) >> 1 ) + 1;
+        if( start < mid - 1 ) lqd_accurate_recursive_annihilate( a, offset, start, mid - 1 );
+        if( mid   < end     ) lqd_accurate_recursive_annihilate( a, offset, mid, end );
+
+        bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ offset * a->stride + start ], &a->data[ offset * a->stride + mid ] );
+        a->data[ offset * a->stride + mid ] = bmath_grt_f3_s_rho( &gr );
+
+
+        /** Trying to express the recursive approach in column swipes is inefficient.
+         *  Column rotations are acceptable at this place because the recursive approach favors cache
+         */
+        bmath_mf3_s_dcol_rotate( a, start, mid, &gr, offset + 1, a->rows );
+    }
+    else
+    {
+        for( sz_t l = end; l > start; l-- )
+        {
+            bmath_grt_f3_s_init_and_annihilate_b( &gr, &a->data[ offset * a->stride + start ], &a->data[ offset * a->stride + l ] );
+            a->data[ offset * a->stride + l ] = bmath_grt_f3_s_rho( &gr );
+            bmath_mf3_s_dcol_rotate( a, start, l, &gr, offset + 1, a->rows );
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+static void lqd_accurate_recursive_construct( const bmath_mf3_s* a, bmath_mf3_s* v, uz_t offset, uz_t start, uz_t end )
+{
+    const sz_t block_size = 64;
+
+    bmath_grt_f3_s gr;
+
+    if( start + block_size < end )
+    {
+        uz_t mid = start + ( ( end - start ) >> 1 ) + 1;
+
+        f3_t rho = a->data[ a->stride * offset + mid ];
+        bmath_grt_f3_s_init_from_rho( &gr, -rho );
+        bmath_mf3_s_drow_rotate( v, start, mid, &gr, offset, v->cols );
+
+        if( start < mid - 1 ) lqd_accurate_recursive_construct( a, v, offset, start, mid - 1 );
+        if( mid   < end     ) lqd_accurate_recursive_construct( a, v, offset, mid, end );
+    }
+    else
+    {
+        for( sz_t k = start + 1; k <= end; k++ )
+        {
+            f3_t rho = a->data[ offset * a->stride + k ];
+            bmath_grt_f3_s_init_from_rho( &gr, -rho );
+            bmath_mf3_s_drow_rotate( v, start, k, &gr, offset, v->cols );
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/** Accurate LQD
+ *  Enhanced accuracy via divide & conquer particularly on thin decompositions.
+ *  Slightly slower than plain LQD
+ */
+void bmath_mf3_s_lqd_accurate( bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    if( v )
+    {
+        ASSERT( v != a );
+        ASSERT( v->rows == a->cols );
+        ASSERT( v->cols == a->cols || v->cols == a->rows ); // v may be full or thin (nothing in-between)
+        bmath_mf3_s_one( v );
+    }
+
+    if( a->cols <= 1 )
+    {
+        if( v ) a->cols = v->cols;
+        return; // nothing else to do
+    }
+
+    uz_t n = uz_min( a->cols, a->rows );
+
+    for( uz_t j = 0; j < n; j++ )
+    {
+        lqd_accurate_recursive_annihilate( a, j, j, a->cols - 1 );
+    }
+
+    if( v ) // reverse construction of v
+    {
+        for( uz_t j = n - 1; j < n; j-- )
+        {
+            lqd_accurate_recursive_construct( a, v, j, j, a->cols - 1 );
+        }
+        a->cols = v->cols;
+    }
+
+    // zero upper tridiagonal
+    for( uz_t i = 0; i < a->rows; i++ )
+    {
+        f3_t* ai = a->data + i * a->stride;
+        for( uz_t j = i + 1; j < a->cols; j++ ) ai[ j ] = 0;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/** Accurate rank revealing LQD.
+ *  Enhanced accuracy via divide & conquer particularly on thin decompositions.
+ *  Slightly slower than plain LQD
+ */
+void bmath_mf3_s_pmt_lqd_accurate( bmath_pmt_s* p, bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    if( p )
+    {
+        ASSERT( p->size == a->rows );
+        bmath_pmt_s_one( p );
+    }
+
+    if( v )
+    {
+        ASSERT( v != a );
+        ASSERT( v->rows == a->cols );
+        ASSERT( v->cols == a->cols || v->cols == a->rows ); // v may be full or thin (nothing in-between)
+        bmath_mf3_s_one( v );
+    }
+
+    if( a->cols <= 1 )
+    {
+        if( v ) a->cols = v->cols;
+        return; // nothing else to do
+    }
+
+    uz_t n = uz_min( a->cols, a->rows );
+
+    bmath_vf3_s* vec = bmath_vf3_s_create();
+    bmath_vf3_s_set_size( vec, a->rows );
+    bmath_vf3_s_zro( vec );
+
+    for( uz_t j = 0; j < a->rows; j++ )
+    {
+        f3_t* aj = a->data + j * a->stride;
+        for( uz_t i = 0; i < a->cols; i++ ) vec->data[ j ] += f3_sqr( aj[ i ] );
+    }
+
+    for( uz_t j = 0; j < n; j++ )
+    {
+        uz_t vec_idx =  0;
+        f3_t vec_max = -1;
+        for( uz_t i = j; i < a->rows; i++ )
+        {
+            vec_idx = ( vec->data[ i ] > vec_max ) ? i : vec_idx;
+            vec_max = ( vec->data[ i ] > vec_max ) ? vec->data[ i ] : vec_max;
+        }
+
+        f3_t_swap( vec->data + j, vec->data + vec_idx );
+        if( p ) uz_t_swap( p->data + j, p->data + vec_idx );
+
+        bmath_mf3_s_swap_row( a, j, vec_idx );
+
+        lqd_accurate_recursive_annihilate( a, j, j, a->cols - 1 );
+
+        for( uz_t i = j; i < a->rows; i++ ) vec->data[ i ] -= f3_sqr( a->data[ i * a->stride + j ] );
+    }
+
+    // make diagonal elements of a non-negative
+    for( uz_t j = 0; j < n; j++ )
+    {
+        if( a->data[ j * ( a->stride + 1 ) ] < 0 )
+        {
+            if( v ) v->data[ j * ( v->stride + 1 ) ] = -1;
+            for( uz_t i = j; i < a->rows; i++ ) a->data[ i * a->stride + j ] = -a->data[ i * a->stride + j ];
+        }
+    }
+
+    if( v ) // reverse construction of v
+    {
+        for( uz_t j = n - 1; j < n; j-- )
+        {
+            lqd_accurate_recursive_construct( a, v, j, j, a->cols - 1 );
+        }
+        a->cols = v->cols;
+    }
+
+    // zero upper tridiagonal
+    for( uz_t i = 0; i < a->rows; i++ )
+    {
+        f3_t* ai = a->data + i * a->stride;
+        for( uz_t j = i + 1; j < a->cols; j++ ) ai[ j ] = 0;
+    }
+
+    bmath_vf3_s_discard( vec );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a )
 {
 //    bmath_mf3_s_qrd_plain( u, a );
@@ -424,7 +642,16 @@ void bmath_mf3_s_qrd_pmt( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p )
 
 void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v )
 {
-    bmath_mf3_s_lqd_plain( a, v );
+    //bmath_mf3_s_lqd_plain( a, v );
+    bmath_mf3_s_lqd_accurate( a, v );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_pmt_lqd( bmath_pmt_s* p, bmath_mf3_s* a, bmath_mf3_s* v )
+{
+    //bmath_mf3_s_lqd_plain( a, v );
+    bmath_mf3_s_pmt_lqd_accurate( p, a, v );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
