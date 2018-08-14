@@ -814,9 +814,14 @@ bl_t bcore_source_file_s_exists( sc_t name )
     return true;
 }
 
-void bcore_source_file_s_delete( sc_t name )
+bl_t bcore_source_file_s_delete( sc_t name )
 {
-    remove( name );
+    return remove( name ) == 0;
+}
+
+bl_t bcore_source_file_s_rename( sc_t src_name, sc_t dst_name )
+{
+    return rename( src_name, dst_name ) == 0;
 }
 
 /**********************************************************************************************************************/

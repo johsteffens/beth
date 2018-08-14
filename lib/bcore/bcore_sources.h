@@ -171,7 +171,8 @@ void                 bcore_source_file_s_set_index(       bcore_source_file_s* o
 void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t index, uz_t* p_line, uz_t* p_col, st_s* context );
 
 bl_t bcore_source_file_s_exists( sc_t name ); // checks if file exists
-void bcore_source_file_s_delete( sc_t name ); // deletes file if existing
+bl_t bcore_source_file_s_delete( sc_t name ); // deletes file if existing; returns success
+bl_t bcore_source_file_s_rename( sc_t src_name, sc_t dst_name ); // renames file if existing; returns success
 
 /**********************************************************************************************************************/
 // syntactic sugar
