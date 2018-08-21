@@ -49,6 +49,7 @@
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
 #include "bcore_leaf.h"
+#include "bcore_file.h"
 
 BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
 
@@ -122,6 +123,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_bin_ml_signal_handler,
         bcore_arr_signal_handler,
         bcore_leaf_signal_handler,
+        bcore_file_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );
