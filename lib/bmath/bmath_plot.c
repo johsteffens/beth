@@ -15,6 +15,7 @@
 
 #include <stdlib.h>
 
+#include "bcore_file.h"
 #include "bmath_plot.h"
 
 /**********************************************************************************************************************/
@@ -90,7 +91,7 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
 
     st_s_push_sc( syscommand, "plot " );
 
-    if( bcore_source_file_s_exists( data_file->sc ) ) ERR_fa( "File '#<sc_t>' exists. Remove it manually.", data_file->sc );
+    if( bcore_file_exists( data_file->sc ) ) ERR_fa( "File '#<sc_t>' exists. Remove it manually.", data_file->sc );
     bcore_sink* sink = ( bcore_sink* )bcore_sink_create_file( data_file->sc );
 
     if( sr_s_type( &o->data ) == TYPEOF_bmath_arr_vf3_s )
@@ -208,7 +209,7 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
 
     s2_t ret = system( syscommand->sc );
 
-    bcore_source_file_s_delete( data_file->sc );
+    bcore_file_delete( data_file->sc );
 
     BCORE_LIFE_DOWN();
 

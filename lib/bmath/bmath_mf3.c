@@ -2126,10 +2126,9 @@ void bmath_mf3_s_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
     /// at this point: a->rows >= a->cols;
 
-    if( a->rows <= 1 ) return; // nothing to do
-
     if( u )
     {
+        bmath_mf3_s_one( u );
         ASSERT( u != a );
         ASSERT( u->rows == a->rows );
         ASSERT( u->cols == a->rows /*full*/ || u->cols == a->cols /*thin*/  ); // u may be full or thin (nothing in-between)
@@ -2137,10 +2136,50 @@ void bmath_mf3_s_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
     if( v )
     {
+        bmath_mf3_s_one( v );
         ASSERT( v->cols == a->cols );
         ASSERT( v->rows == a->cols );
         ASSERT( v != a );
         ASSERT( v != u );
+    }
+
+    if( a->rows <= 1 )
+    {
+        if( u ) a->rows = u->cols;
+        return; // nothing else to do
+    }
+
+    if( a->rows > a->cols * 4 )
+    {
+        if( u )
+        {
+            bmath_mf3_s_qrd( u, a );
+
+            uz_t u_cols = u->cols;
+
+            a->rows = a->cols;
+            bmath_mf3_s* u2 = bmath_mf3_s_create();
+            bmath_mf3_s_set_size( u2, a->rows, a->rows );
+            bmath_mf3_s_ubd( u2, a, v );
+            u->cols = u2->rows;
+
+            bmath_mf3_s_htp( u2, u2 );
+
+            bmath_mf3_s_mul_htp( u, u2, u );
+            bmath_mf3_s_discard( u2 );
+
+            u->cols = u_cols;
+            a->rows = u_cols;
+        }
+        else
+        {
+            bmath_mf3_s_qrd( NULL, a );
+            uz_t a_rows = a->rows;
+            a->rows = a->cols;
+            bmath_mf3_s_ubd( NULL, a, v );
+            a->rows = a_rows;
+        }
+        return;
     }
 
     bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( a->cols );
@@ -2169,7 +2208,6 @@ void bmath_mf3_s_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
     if( v ) // reverse construction of v
     {
-        bmath_mf3_s_one( v );
         for( uz_t j = a->cols - 1; j < a->cols; j-- )
         {
             for( uz_t k = j + 1; k < a->cols - 1; k++ )
@@ -2184,7 +2222,6 @@ void bmath_mf3_s_ubd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
     if( u ) // reverse construction of u
     {
-        bmath_mf3_s_one( u );
         for( uz_t j = a->cols - 1; j < a->cols; j-- )
         {
             for( uz_t k = j; k < a->rows - 1; k++ )
@@ -2214,10 +2251,9 @@ void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
     /// at this point: a->cols >= a->rows;
 
-    if( a->cols <= 1 ) return; // nothing to do
-
     if( u )
     {
+        bmath_mf3_s_one( u );
         ASSERT( u->cols == a->rows );
         ASSERT( u->rows == a->rows );
         ASSERT( u != a );
@@ -2226,9 +2262,49 @@ void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
     if( v )
     {
+        bmath_mf3_s_one( v );
         ASSERT( v != a );
         ASSERT( v->rows == a->cols );
         ASSERT( v->cols == a->cols || v->cols == a->rows ); // v may be full or thin (nothing in-between)
+    }
+
+    if( a->cols <= 1 )
+    {
+        if( v ) a->cols = v->cols;
+        return; // nothing else to do
+    }
+
+    if( a->cols > a->rows * 4 )
+    {
+        if( v )
+        {
+            bmath_mf3_s_lqd( a, v );
+
+            uz_t v_cols = v->cols;
+
+            a->cols = a->rows;
+            bmath_mf3_s* v2 = bmath_mf3_s_create();
+            bmath_mf3_s_set_size( v2, a->cols, a->cols );
+            bmath_mf3_s_lbd( u, a, v2 );
+            v->cols = v2->rows;
+
+            bmath_mf3_s_htp( v2, v2 );
+
+            bmath_mf3_s_mul_htp( v, v2, v );
+            bmath_mf3_s_discard( v2 );
+
+            v->cols = v_cols;
+            a->cols = v_cols;
+        }
+        else
+        {
+            bmath_mf3_s_lqd( a, NULL );
+            uz_t a_cols = a->cols;
+            a->cols = a->rows;
+            bmath_mf3_s_lbd( u, a, NULL );
+            a->cols = a_cols;
+        }
+        return;
     }
 
     bmath_arr_grt_f3_s grv = bmath_arr_grt_f3_of_size( a->cols );
@@ -2257,7 +2333,6 @@ void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
     if( v ) // reverse construction of v
     {
-        bmath_mf3_s_one( v );
         for( uz_t j = a->rows - 1; j < a->rows; j-- )
         {
             for( uz_t k = j; k < a->cols - 1; k++ )
@@ -2273,7 +2348,6 @@ void bmath_mf3_s_lbd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
 
     if( u ) // reverse construction of u
     {
-        bmath_mf3_s_one( u );
         for( uz_t j = a->rows - 2; j < a->rows; j-- )
         {
             for( uz_t k = j + 1; k < a->rows - 1; k++ )
