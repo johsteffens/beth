@@ -22,6 +22,7 @@
 #include "bmath_fourier.h"
 #include "bmath_grt.h"
 #include "bmath_mf3_eval.h"
+#include "bmath_simd.h"
 
 #include <stdio.h>
 
@@ -171,15 +172,6 @@ bmath_mf3_s* bmath_mf3_s_create_set_size( uz_t rows, uz_t cols )
     return o;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
-/*
-bmath_mf3_s* bmath_mf3_s_create_fill_random( uz_t rows, uz_t cols, f3_t min, f3_t max, u2_t* rval )
-{
-    bmath_mf3_s* o = bmath_mf3_s_create_set_size( rows, cols );
-    bmath_mf3_s_fill_random( o, min, max, rval );
-    return o;
-}
-*/
 //---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
@@ -585,7 +577,7 @@ void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res )
 
 void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
 {
-    if( res == o || res == op )
+    if( res == o )
     {
         bmath_mf3_s* buf = bmath_mf3_s_create();
         bmath_mf3_s_set_size( buf, res->rows, res->cols );
@@ -595,22 +587,25 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
         return;
     }
 
+    // res == op allowed at this point
+
     ASSERT(  o->cols ==  op->rows );
     ASSERT(  o->rows == res->rows );
     ASSERT( op->cols == res->cols );
 
-    // cache friendly inner loop
-    bmath_mf3_s_zro( res );
-    for( uz_t j = 0; j < o->cols; j++ )
+    bmath_vf3_s v;
+    bmath_vf3_s_init( &v );
+    bmath_vf3_s_set_size( &v, op->rows );
+    for( uz_t j = 0; j < op->cols; j++ )
     {
-        const f3_t* bj = op->data + j * op->stride;
-        for( uz_t i = 0; i < o->rows; i++ )
+        for( uz_t i = 0; i < op->rows; i++ ) v.data[ i ] = op->data[ i * op->stride + j ];
+        for( uz_t i = 0; i <  o->rows; i++ )
         {
-            f3_t aij =   o->data[  i *   o->stride + j ];
-            f3_t* ri = res->data + i * res->stride;
-            for( uz_t k = 0; k < op->cols; k++ ) ri[ k ] += aij * bj[ k ];
+            res->data[ i * res->stride + j ] = bmath_simd_f3_mul_vec( o->data + i * o->stride, v.data, v.size );
         }
     }
+
+    bmath_vf3_s_down( &v );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -691,9 +686,7 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
                 const f3_t* vi = o->data + i * o->stride;
                 for( uz_t j = 0; j <= i ; j++ )
                 {
-                    const f3_t* vj = o->data + j * o->stride;
-                    f3_t sum = 0;
-                    for( uz_t k = 0; k < o->cols; k++ ) sum += vi[ k ] * vj[ k ];
+                    f3_t sum = bmath_simd_f3_mul_vec( vi, o->data + j * o->stride, o->cols );
                     res->data[ i * res->stride + j ] = sum;
                     res->data[ j * res->stride + i ] = sum;
                 }
@@ -709,12 +702,11 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
         bmath_vf3_s_set_size( &row, o->cols );
         for( uz_t i = 0; i < o->rows; i++ )
         {
-            const f3_t* voi =   o->data + i *   o->stride;
+            const f3_t* voi = o->data + i *   o->stride;
             bmath_vf3_s_zro( &row );
             for( uz_t j = 0; j < op->rows; j++ )
             {
-                const f3_t* vpj = op->data + j * op->stride;
-                for( uz_t k = 0; k < o->cols; k++ ) row.data[ j ] += voi[ k ] * vpj[ k ];
+                row.data[ j ] = bmath_simd_f3_mul_vec( voi, op->data + j * op->stride, o->cols );
             }
 
             f3_t* vri = res->data + i * res->stride;
@@ -739,8 +731,7 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
             const f3_t* voi =   o->data + i *   o->stride;
             for( uz_t j = 0; j < op->rows; j++ )
             {
-                const f3_t* vpj = op->data + j * op->stride;
-                for( uz_t k = 0; k < o->cols; k++ ) vri[ j ] += voi[ k ] * vpj[ k ];
+                vri[ j ] = bmath_simd_f3_mul_vec( voi, op->data + j * op->stride, o->cols );
             }
         }
     }
@@ -832,9 +823,7 @@ bl_t bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
         for( uz_t j = 0; j < res->cols; j++ )
         {
             f3_t* uj = u->data + u->stride * j;
-            f3_t  r = 0;
-            for( uz_t k = 0; k < n; k++ ) r += vi[ k ] * uj[ k ] * d->data[ k ];
-            ri[ j ] = r;
+            ri[ j ] = bmath_simd_f3_mul_vec3( vi, uj, d->data, n );
         }
     }
 
@@ -1026,10 +1015,7 @@ void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf
     f3_t* v2 = vec->data;
     for( uz_t i = 0; i < res->size; i++ )
     {
-        f3_t* v1 = o->data + i * o->stride;
-        f3_t sum = 0;
-        for( uz_t j = 0; j < o->cols; j++ ) sum += v1[ j ] * v2[ j ];
-        vr[ i ] = sum;
+        vr[ i ] = bmath_simd_f3_mul_vec( o->data + i * o->stride, v2, o->cols );
     }
 }
 
@@ -1054,9 +1040,7 @@ void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf
     for( uz_t i = 0; i < res->size; i++ )
     {
         f3_t* v1 = o->data + i * o->stride;
-        f3_t sum = 0;
-        for( uz_t j = 0; j < n; j++ ) sum += v1[ j ] * v2[ j ];
-        vr[ i ] = sum + v1[ n ];
+        vr[ i ] = bmath_simd_f3_mul_vec( v1, v2, n ) + v1[ n ];
     }
 }
 
@@ -1075,10 +1059,7 @@ void bmath_mf3_s_udu_htp( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf
               f3_t* vr = res->data + i * res->stride;
         for( uz_t j = 0; j < o->rows; j++ )
         {
-            const f3_t* vj = o->data + j * o->stride;
-            f3_t sum = 0;
-            for( uz_t k = 0; k < o->rows; k++ ) sum += vi[ k ] * vj[ k ] * vd[ k ];
-            vr[ j ] = sum;
+            vr[ j ] = bmath_simd_f3_mul_vec3( vi, o->data + j * o->stride, vd, o->rows );
         }
     }
 }
@@ -1517,9 +1498,8 @@ bl_t bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
         {
             const f3_t* voj =   o->data + j *   o->stride;
                   f3_t* vrj = res->data + j * res->stride;
-            f3_t sum = 0;
-            for( uz_t k = i; k < j; k++ ) sum += voj[ k ] * vri[ k ];
-            vri[ j ] = -vrj[ j ] * sum;
+
+            vri[ j ] = -vrj[ j ] * bmath_simd_f3_mul_vec( voj + i, vri + i, j - i );
             vrj[ i ] = 0;
         }
     }
@@ -1565,9 +1545,7 @@ void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
         {
             const f3_t* voj =   o->data + j *   o->stride;
                   f3_t* vrj = res->data + j * res->stride;
-            f3_t sum = 0;
-            for( uz_t k = 0; k <= j; k++ ) sum += voi[ k ] * voj[ k ];
-            vrj[ i ] = sum;
+            vrj[ i ] = bmath_simd_f3_mul_vec( voi, voj, j + 1 );
         }
     }
 
@@ -1577,9 +1555,7 @@ void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
         const f3_t* voi =   o->data + i *   o->stride;
               f3_t* vri = res->data + i * res->stride;
 
-        f3_t sum = 0;
-        for( uz_t k = 0; k <= i; k++ ) sum += voi[ k ] * voi[ k ];
-        vri[ i ] = sum;
+        vri[ i ] = bmath_simd_f3_mul_vec( voi, voi, i + 1 );
     }
 
     // copy lower off-diagonal from upper off-diagonal
@@ -1607,9 +1583,8 @@ void bmath_mf3_s_utr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
         {
             const f3_t* voj =   o->data + j *   o->stride;
                   f3_t* vrj = res->data + j * res->stride;
-            f3_t sum = 0;
-            for( uz_t k = j; k < n; k++ ) sum += voi[ k ] * voj[ k ];
-            vrj[ i ] = sum;
+
+            vrj[ i ] = bmath_simd_f3_mul_vec( voi + j, voj + j, n - j );
         }
     }
 
@@ -1640,9 +1615,7 @@ void bmath_mf3_s_ltr_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
     for( uz_t i = o->rows - 1; i < o->rows; i-- )
     {
         f3_t* v1 = o->data + i * o->stride;
-        f3_t sum = 0;
-        for( uz_t j = 0; j <= i; j++ ) sum += v1[ j ] * op[ j ];
-        res[ i ] = sum;
+        res[ i ] = bmath_simd_f3_mul_vec( v1, op, i + 1 );
     }
 }
 
@@ -1661,9 +1634,7 @@ void bmath_mf3_s_lt1_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
     for( uz_t i = o->rows - 1; i < o->rows; i-- )
     {
         f3_t* v1 = o->data + i * o->stride;
-        f3_t sum = 0;
-        for( uz_t j = 0; j < i; j++ ) sum += v1[ j ] * op[ j ];
-        res[ i ] = sum + op[ i ];
+        res[ i ] = bmath_simd_f3_mul_vec( v1, op, i ) + op[ i ];
     }
 }
 
@@ -1683,9 +1654,7 @@ void bmath_mf3_s_utr_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
     for( uz_t i = 0; i < o->rows; i++ )
     {
         f3_t* v1 = o->data + i * o->stride;
-        f3_t sum = 0;
-        for( uz_t j = i; j < o->cols; j++ ) sum += v1[ j ] * op[ j ];
-        res[ i ] = sum;
+        res[ i ] = bmath_simd_f3_mul_vec( v1 + i, op + i, o->cols - i );
     }
 }
 
@@ -1778,8 +1747,7 @@ void bmath_mf3_s_ltr_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res
     for( uz_t i = 0; i < n; i++ )
     {
         const f3_t* voi = o->data + i * o->stride;
-        f3_t sum = 0;
-        for( uz_t j = 0; j < i; j++ ) sum += voi[ j ] * res[ j ];
+        f3_t sum = bmath_simd_f3_mul_vec( voi, res, i );
         res[ i ] = ( voi[ i ] != 0 ) ? ( res[ i ] - sum ) / voi[ i ] : 0;
     }
 }
@@ -1803,8 +1771,7 @@ void bmath_mf3_s_utr_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res
     for( uz_t i = n - 1; i < n; i-- )
     {
         const f3_t* voi = o->data + i * o->stride;
-        f3_t sum = 0;
-        for( uz_t j = i + 1; j < n; j++ ) sum += voi[ j ] * res[ j ];
+        f3_t sum = bmath_simd_f3_mul_vec( voi + i + 1, res + i + 1, n - i - 1 );
         res[ i ] = ( voi[ i ] != 0 ) ? ( res[ i ] - sum ) / voi[ i ] : 0;
     }
 }
@@ -1828,9 +1795,7 @@ void bmath_mf3_s_lt1_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res
     for( uz_t i = 0; i < n; i++ )
     {
         const f3_t* voi = o->data + i * o->stride;
-        f3_t sum = 0;
-        for( uz_t j = 0; j < i; j++ ) sum += voi[ j ] * res[ j ];
-        res[ i ] -= sum;
+        res[ i ] -= bmath_simd_f3_mul_vec( voi, res, i );
     }
 }
 
