@@ -40,6 +40,8 @@ void bmath_quicktypes_create_header( sc_t folder );
 #define TYPEOF_bmath_fp_mf3_s_lbd      1742526386
 #define TYPEOF_bmath_fp_mf3_s_lqd      2578597217
 #define TYPEOF_bmath_fp_mf3_s_lud      2309566933
+#define TYPEOF_bmath_fp_mf3_s_mul      4273266158
+#define TYPEOF_bmath_fp_mf3_s_mul_htp  3017328029
 #define TYPEOF_bmath_fp_mf3_s_pdf_inv  2449600418
 #define TYPEOF_bmath_fp_mf3_s_piv      2662509159
 #define TYPEOF_bmath_fp_mf3_s_pmt_lqd  3875961423

@@ -82,6 +82,9 @@
 typedef struct bmath_mf3_s bmath_mf3_s;
 
 // mf3 features
+typedef void (*bmath_fp_mf3_s_mul     )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+typedef void (*bmath_fp_mf3_s_mul_htp )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+
 typedef void (*bmath_fp_mf3_s_trd_htp )(                 bmath_mf3_s* a, bmath_mf3_s* v );
 typedef void (*bmath_fp_mf3_s_trd     )(                 bmath_mf3_s* a, bmath_mf3_s* v );
 typedef bl_t (*bmath_fp_mf3_s_evd_htp )(                 bmath_mf3_s* a, bmath_mf3_s* v );
@@ -106,6 +109,9 @@ static inline void bmath_matrix_push_quicktypes( sr_s* list )
     bcore_array_r_push_sc( list, "bmath_mf3_s" );
 
     // features
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul_htp" );
+
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_trd_htp" );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_trd"     );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_evd_htp" );
