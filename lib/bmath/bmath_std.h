@@ -24,5 +24,6 @@
 #include "bmath_spect_matrix.h"
 #include "bmath_vector.h"
 #include "bmath_mf3.h"
+#include "bmath_mf3_eval.h"
 
 #endif // BMATH_STD_H

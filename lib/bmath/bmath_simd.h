@@ -25,10 +25,27 @@
 
 #include <x86intrin.h>
 
+typedef struct bmath_grt_f3_s bmath_grt_f3_s;
+
 //---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_simd_f3_mul_vec(  const f3_t* v1, const f3_t* v2, sz_t size ); // classic dot product      sum+=v1[i]*v2[i];
-f3_t bmath_simd_f3_mul_vec3( const f3_t* v1, const f3_t* v2, const f3_t* v3, sz_t size );          // sum+=v1[i]*v2[i]*v3[i];
+/// classic dot product      sum+=v1[i]*v2[i];
+f3_t bmath_simd_f3_mul_vec( const f3_t* v1, const f3_t* v2, sz_t size );
+
+/// sum+=v1[i]*v2[i]*v3[i];
+f3_t bmath_simd_f3_mul_vec3( const f3_t* v1, const f3_t* v2, const f3_t* v3, sz_t size );
+
+/// givens row rotation
+void bmath_simd_f3_row_rotate( f3_t* v1, f3_t* v2, sz_t size, const bmath_grt_f3_s* grt );
+
+/// givens column rotation
+void bmath_simd_f3_col_rotate( f3_t* v1, f3_t* v2, sz_t stride, sz_t size, const bmath_grt_f3_s* grt );
+
+/// see bmath_mf3_s_drow_swipe_rev
+void bmath_simd_f3_drow_swipe_rev( f3_t* row, const bmath_grt_f3_s* grt, sz_t size );
+
+/// bmath_simd_f3_drow_swipe_rev for 4 successive rows
+void bmath_simd_f3_4drow_swipe_rev( f3_t* row, sz_t stride, const bmath_grt_f3_s* grt, sz_t size );
 
 //---------------------------------------------------------------------------------------------------------------------
 

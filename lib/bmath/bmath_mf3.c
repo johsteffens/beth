@@ -22,7 +22,6 @@
 #include "bmath_fourier.h"
 #include "bmath_grt.h"
 #include "bmath_mf3_eval.h"
-#include "bmath_simd.h"
 
 #include <stdio.h>
 
@@ -2434,23 +2433,6 @@ void bmath_mf3_s_sweep_acol_rotate_fwd( bmath_mf3_s* o, uz_t col_start, uz_t col
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_sweep_acol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_f3_s* grt, uz_t row_start, uz_t row_end )
-{
-    assert( grt->size >= col_end - 1 );
-    if( bmath_arr_grt_f3_s_density( grt, col_start, col_end ) < 0.25 )
-    {
-        // sparse rotations: rotate columns individually
-        for( uz_t i = col_end; i > col_start; i-- ) bmath_mf3_s_acol_rotate( o, i - 1, &grt->data[ i - 1 ], row_start, row_end );
-    }
-    else
-    {
-        // dense rotations: use cache efficient row-sweeps
-        for( uz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_arow_swipe_rev( o, i, grt, col_start, col_end );
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
 void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_f3_s* grt, uz_t row_start, uz_t row_end )
 {
     assert( grt->size >= col_end - 1 );
@@ -2462,7 +2444,13 @@ void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col
     else
     {
         // dense rotations: use cache efficient row-sweeps
-        for( uz_t i = row_start; i < row_end; i++ ) bmath_mf3_s_drow_swipe_rev( o, i, grt, col_start, col_end );
+        uz_t i    = row_start;
+        sz_t size = col_end - col_start;
+        bmath_grt_f3_s* g = grt->data + col_start;
+        f3_t* r0  = o->data + col_start;
+
+        for( ; i < row_end - 4; i += 4 ) bmath_simd_f3_4drow_swipe_rev( r0 + o->stride * i, o->stride, g, size );
+        for( ; i < row_end    ; i++    ) bmath_simd_f3_drow_swipe_rev(  r0 + o->stride * i,            g, size );
     }
 }
 

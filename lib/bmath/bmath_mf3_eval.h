@@ -45,7 +45,7 @@ BCORE_DECLARE_OBJECT( bmath_mf3_eval_s )
     bl_t log_v;      // log matrix v after conversion
     bl_t assert_all; // asserts correct matrix and computation result
 
-    bl_t test0;      // runs minimal parameter test (if applicable)
+    bl_t test0;      // runs minimal parameter test (ifapplicable)
     bl_t test1;      // runs default parameter test
 };
 
