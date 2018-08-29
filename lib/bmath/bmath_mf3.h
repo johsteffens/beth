@@ -66,11 +66,13 @@
  *    opd: outer product of two vectors
  *    udu: similarity transform a of a diagonal matrix: htp_udu: U^T * D * U; udu_htp: U * D * U^T
  *    grt: givens rotation
+ *    esp: enhanced stochastic precision (function with this suffix are (statistically) more precise but likely slower)
  *
  */
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
+#include "bmath_flags.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_vector.h"
 #include "bmath_simd.h"

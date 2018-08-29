@@ -21,19 +21,12 @@
 #define BMATH_SIMD_H
 
 #include "bcore_std.h"
+#include "bmath_flags.h"
 #include "bmath_leaf.h"
-
-#include <x86intrin.h>
 
 typedef struct bmath_grt_f3_s bmath_grt_f3_s;
 
 //---------------------------------------------------------------------------------------------------------------------
-
-/// classic dot product      sum+=v1[i]*v2[i];
-f3_t bmath_simd_f3_mul_vec( const f3_t* v1, const f3_t* v2, sz_t size );
-
-/// sum+=v1[i]*v2[i]*v3[i];
-f3_t bmath_simd_f3_mul_vec3( const f3_t* v1, const f3_t* v2, const f3_t* v3, sz_t size );
 
 /// givens row rotation
 void bmath_simd_f3_row_rotate( f3_t* v1, f3_t* v2, sz_t size, const bmath_grt_f3_s* grt );

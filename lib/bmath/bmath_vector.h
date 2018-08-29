@@ -35,9 +35,20 @@
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
+#include "bmath_flags.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_complex.h"
 #include "bmath_pmt.h"
+
+/**********************************************************************************************************************/
+// low level vector functions
+
+f3_t bmath_f3_t_vec_sum(          const f3_t* v1, sz_t size ); // sum_i v1[i]
+f3_t bmath_f3_t_vec_sum_esp(      const f3_t* v1, sz_t size ); // sum_i v1[i]
+f3_t bmath_f3_t_vec_mul_vec(      const f3_t* v1, const f3_t* v2, sz_t size ); // sum_i v1[i]*v2[i]
+f3_t bmath_f3_t_vec_mul_vec_esp(  const f3_t* v1, const f3_t* v2, sz_t size ); // sum_i v1[i]*v2[i]
+f3_t bmath_f3_t_vec_mul3_vec(     const f3_t* v1, const f3_t* v2, const f3_t* v3, sz_t size ); // sum_i v1[i]*v2[i]*v3[i]
+f3_t bmath_f3_t_vec_mul3_vec_esp( const f3_t* v1, const f3_t* v2, const f3_t* v3, sz_t size ); // sum_i v1[i]*v2[i]*v3[i]
 
 /**********************************************************************************************************************/
 // dynamic size vector of f3_t

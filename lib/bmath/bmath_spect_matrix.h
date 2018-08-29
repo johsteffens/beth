@@ -18,6 +18,7 @@
 
 /// A matrix is defined by a ring-type and an object supporting bcore_spect_matrix
 
+#include "bmath_flags.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_spect_vector.h"
 #include "bcore_spect_matrix.h"

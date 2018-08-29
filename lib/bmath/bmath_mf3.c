@@ -18,6 +18,7 @@
  */
 
 #include "bmath_mf3.h"
+#include "bmath_vector.h"
 #include "bmath_spect_matrix.h"
 #include "bmath_fourier.h"
 #include "bmath_grt.h"
@@ -600,7 +601,7 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
         for( uz_t i = 0; i < op->rows; i++ ) v.data[ i ] = op->data[ i * op->stride + j ];
         for( uz_t i = 0; i <  o->rows; i++ )
         {
-            res->data[ i * res->stride + j ] = bmath_simd_f3_mul_vec( o->data + i * o->stride, v.data, v.size );
+            res->data[ i * res->stride + j ] = bmath_f3_t_vec_mul_vec( o->data + i * o->stride, v.data, v.size );
         }
     }
 
@@ -668,7 +669,7 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
     ASSERT( o->rows  == res->rows );
     ASSERT( op->rows == res->cols );
 
-    if( o == op ) // result is symmetric -> we can safe half of the work
+    if( o == op ) // result is symmetric -> we can save half of the work
     {
         if( res == o )
         {
@@ -685,7 +686,7 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
                 const f3_t* vi = o->data + i * o->stride;
                 for( uz_t j = 0; j <= i ; j++ )
                 {
-                    f3_t sum = bmath_simd_f3_mul_vec( vi, o->data + j * o->stride, o->cols );
+                    f3_t sum = bmath_f3_t_vec_mul_vec( vi, o->data + j * o->stride, o->cols );
                     res->data[ i * res->stride + j ] = sum;
                     res->data[ j * res->stride + i ] = sum;
                 }
@@ -705,7 +706,7 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
             bmath_vf3_s_zro( &row );
             for( uz_t j = 0; j < op->rows; j++ )
             {
-                row.data[ j ] = bmath_simd_f3_mul_vec( voi, op->data + j * op->stride, o->cols );
+                row.data[ j ] = bmath_f3_t_vec_mul_vec( voi, op->data + j * op->stride, o->cols );
             }
 
             f3_t* vri = res->data + i * res->stride;
@@ -730,7 +731,7 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
             const f3_t* voi =   o->data + i *   o->stride;
             for( uz_t j = 0; j < op->rows; j++ )
             {
-                vri[ j ] = bmath_simd_f3_mul_vec( voi, op->data + j * op->stride, o->cols );
+                vri[ j ] = bmath_f3_t_vec_mul_vec( voi, op->data + j * op->stride, o->cols );
             }
         }
     }
@@ -822,7 +823,7 @@ bl_t bmath_mf3_s_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
         for( uz_t j = 0; j < res->cols; j++ )
         {
             f3_t* uj = u->data + u->stride * j;
-            ri[ j ] = bmath_simd_f3_mul_vec3( vi, uj, d->data, n );
+            ri[ j ] = bmath_f3_t_vec_mul3_vec( vi, uj, d->data, n );
         }
     }
 
@@ -1014,7 +1015,7 @@ void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf
     f3_t* v2 = vec->data;
     for( uz_t i = 0; i < res->size; i++ )
     {
-        vr[ i ] = bmath_simd_f3_mul_vec( o->data + i * o->stride, v2, o->cols );
+        vr[ i ] = bmath_f3_t_vec_mul_vec( o->data + i * o->stride, v2, o->cols );
     }
 }
 
@@ -1039,7 +1040,7 @@ void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf
     for( uz_t i = 0; i < res->size; i++ )
     {
         f3_t* v1 = o->data + i * o->stride;
-        vr[ i ] = bmath_simd_f3_mul_vec( v1, v2, n ) + v1[ n ];
+        vr[ i ] = bmath_f3_t_vec_mul_vec( v1, v2, n ) + v1[ n ];
     }
 }
 
@@ -1058,7 +1059,7 @@ void bmath_mf3_s_udu_htp( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf
               f3_t* vr = res->data + i * res->stride;
         for( uz_t j = 0; j < o->rows; j++ )
         {
-            vr[ j ] = bmath_simd_f3_mul_vec3( vi, o->data + j * o->stride, vd, o->rows );
+            vr[ j ] = bmath_f3_t_vec_mul3_vec( vi, o->data + j * o->stride, vd, o->rows );
         }
     }
 }
@@ -1498,7 +1499,7 @@ bl_t bmath_mf3_s_ltr_inv_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
             const f3_t* voj =   o->data + j *   o->stride;
                   f3_t* vrj = res->data + j * res->stride;
 
-            vri[ j ] = -vrj[ j ] * bmath_simd_f3_mul_vec( voj + i, vri + i, j - i );
+            vri[ j ] = -vrj[ j ] * bmath_f3_t_vec_mul_vec( voj + i, vri + i, j - i );
             vrj[ i ] = 0;
         }
     }
@@ -1544,7 +1545,7 @@ void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
         {
             const f3_t* voj =   o->data + j *   o->stride;
                   f3_t* vrj = res->data + j * res->stride;
-            vrj[ i ] = bmath_simd_f3_mul_vec( voi, voj, j + 1 );
+            vrj[ i ] = bmath_f3_t_vec_mul_vec( voi, voj, j + 1 );
         }
     }
 
@@ -1554,7 +1555,7 @@ void bmath_mf3_s_ltr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
         const f3_t* voi =   o->data + i *   o->stride;
               f3_t* vri = res->data + i * res->stride;
 
-        vri[ i ] = bmath_simd_f3_mul_vec( voi, voi, i + 1 );
+        vri[ i ] = bmath_f3_t_vec_mul_vec( voi, voi, i + 1 );
     }
 
     // copy lower off-diagonal from upper off-diagonal
@@ -1583,7 +1584,7 @@ void bmath_mf3_s_utr_mul_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
             const f3_t* voj =   o->data + j *   o->stride;
                   f3_t* vrj = res->data + j * res->stride;
 
-            vrj[ i ] = bmath_simd_f3_mul_vec( voi + j, voj + j, n - j );
+            vrj[ i ] = bmath_f3_t_vec_mul_vec( voi + j, voj + j, n - j );
         }
     }
 
@@ -1614,7 +1615,7 @@ void bmath_mf3_s_ltr_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
     for( uz_t i = o->rows - 1; i < o->rows; i-- )
     {
         f3_t* v1 = o->data + i * o->stride;
-        res[ i ] = bmath_simd_f3_mul_vec( v1, op, i + 1 );
+        res[ i ] = bmath_f3_t_vec_mul_vec( v1, op, i + 1 );
     }
 }
 
@@ -1633,7 +1634,7 @@ void bmath_mf3_s_lt1_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
     for( uz_t i = o->rows - 1; i < o->rows; i-- )
     {
         f3_t* v1 = o->data + i * o->stride;
-        res[ i ] = bmath_simd_f3_mul_vec( v1, op, i ) + op[ i ];
+        res[ i ] = bmath_f3_t_vec_mul_vec( v1, op, i ) + op[ i ];
     }
 }
 
@@ -1653,7 +1654,7 @@ void bmath_mf3_s_utr_mul_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res )
     for( uz_t i = 0; i < o->rows; i++ )
     {
         f3_t* v1 = o->data + i * o->stride;
-        res[ i ] = bmath_simd_f3_mul_vec( v1 + i, op + i, o->cols - i );
+        res[ i ] = bmath_f3_t_vec_mul_vec( v1 + i, op + i, o->cols - i );
     }
 }
 
@@ -1746,7 +1747,7 @@ void bmath_mf3_s_ltr_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res
     for( uz_t i = 0; i < n; i++ )
     {
         const f3_t* voi = o->data + i * o->stride;
-        f3_t sum = bmath_simd_f3_mul_vec( voi, res, i );
+        f3_t sum = bmath_f3_t_vec_mul_vec( voi, res, i );
         res[ i ] = ( voi[ i ] != 0 ) ? ( res[ i ] - sum ) / voi[ i ] : 0;
     }
 }
@@ -1770,7 +1771,7 @@ void bmath_mf3_s_utr_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res
     for( uz_t i = n - 1; i < n; i-- )
     {
         const f3_t* voi = o->data + i * o->stride;
-        f3_t sum = bmath_simd_f3_mul_vec( voi + i + 1, res + i + 1, n - i - 1 );
+        f3_t sum = bmath_f3_t_vec_mul_vec( voi + i + 1, res + i + 1, n - i - 1 );
         res[ i ] = ( voi[ i ] != 0 ) ? ( res[ i ] - sum ) / voi[ i ] : 0;
     }
 }
@@ -1794,7 +1795,7 @@ void bmath_mf3_s_lt1_solve_vec_( const bmath_mf3_s* o, const f3_t* op, f3_t* res
     for( uz_t i = 0; i < n; i++ )
     {
         const f3_t* voi = o->data + i * o->stride;
-        res[ i ] -= bmath_simd_f3_mul_vec( voi, res, i );
+        res[ i ] -= bmath_f3_t_vec_mul_vec( voi, res, i );
     }
 }
 
@@ -2701,6 +2702,8 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // features
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_mul );
+            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_mul_htp );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_trd_htp );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_trd );
             BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mf3_s_evd_htp );

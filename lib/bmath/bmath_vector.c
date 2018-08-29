@@ -20,6 +20,152 @@
 #include "bmath_fourier.h"
 
 /**********************************************************************************************************************/
+// low level vector functions
+
+f3_t bmath_f3_t_vec_sum( const f3_t* v1, sz_t size )
+{
+#ifdef BMATH_AVX
+    __m256d sum_p4 = { 0, 0, 0, 0 };
+    sz_t i = 0;
+    for( ; i <= size - 4; i += 4 )
+    {
+        sum_p4 = _mm256_add_pd( _mm256_loadu_pd( v1 + i ), sum_p4 );
+    }
+    for( ; i < size; i++ ) sum_p4[ 0 ] += v1[ i ];
+    return sum_p4[ 0 ] + sum_p4[ 1 ] + sum_p4[ 2 ] + sum_p4[ 3 ];
+#else
+    f3_t sum_p4[ 4 ] = { 0, 0, 0, 0 };
+    sz_t i;
+    for( i = 0; i <= size - 4; i += 4 )
+    {
+        sum_p4[ 0 ] += v1[ i + 0 ];
+        sum_p4[ 1 ] += v1[ i + 1 ];
+        sum_p4[ 2 ] += v1[ i + 2 ];
+        sum_p4[ 3 ] += v1[ i + 3 ];
+    }
+    for( ; i < size; i++ ) sum_p4[ 0 ] += v1[ i ];
+    return sum_p4[ 0 ] + sum_p4[ 1 ] + sum_p4[ 2 ] + sum_p4[ 3 ];
+#endif // BMATH_AVX
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_f3_t_vec_sum_esp( const f3_t* v1, sz_t size )
+{
+    switch( size )
+    {
+        case 0: return 0;
+        case 1: return v1[0];
+        case 2: return v1[0]+v1[1];
+        case 3: return v1[0]+v1[1]+v1[2];
+        case 4: return v1[0]+v1[1]+v1[2]+v1[3];
+        default: break;
+    }
+    sz_t mid = size >> 1;
+    return bmath_f3_t_vec_sum_esp( v1, mid ) + bmath_f3_t_vec_sum_esp( v1 + mid, size - mid );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_f3_t_vec_mul_vec( const f3_t* v1, const f3_t* v2, sz_t size )
+{
+#ifdef BMATH_AVX
+    __m256d sum_p4 = { 0, 0, 0, 0 };
+    sz_t i = 0;
+    for( ; i <= size - 4; i += 4 )
+    {
+        #ifdef BMATH_AVX2_FMA
+            sum_p4 = _mm256_fmadd_pd( _mm256_loadu_pd( v1 + i ), _mm256_loadu_pd( v2 + i ), sum_p4 );
+        #else
+            sum_p4 = _mm256_add_pd( _mm256_mul_pd( _mm256_loadu_pd( v1 + i ), _mm256_loadu_pd( v2 + i ) ), sum_p4 );
+        #endif // BMATH_AVX2_FMA
+    }
+    for( ; i < size; i++ ) sum_p4[ 0 ] += v1[ i ] * v2[ i ];
+    return sum_p4[ 0 ] + sum_p4[ 1 ] + sum_p4[ 2 ] + sum_p4[ 3 ];
+#else
+    f3_t sum_p4[ 4 ] = { 0, 0, 0, 0 };
+    sz_t i;
+    for( i = 0; i <= size - 4; i += 4 )
+    {
+        sum_p4[ 0 ] += v1[ i + 0 ] * v2[ i + 0 ];
+        sum_p4[ 1 ] += v1[ i + 1 ] * v2[ i + 1 ];
+        sum_p4[ 2 ] += v1[ i + 2 ] * v2[ i + 2 ];
+        sum_p4[ 3 ] += v1[ i + 3 ] * v2[ i + 3 ];
+    }
+    for( ; i < size; i++ ) sum_p4[ 0 ] += v1[ i ] * v2[ i ];
+    return sum_p4[ 0 ] + sum_p4[ 1 ] + sum_p4[ 2 ] + sum_p4[ 3 ];
+#endif // BMATH_AVX
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_f3_t_vec_mul_vec_esp( const f3_t* v1, const f3_t* v2, sz_t size )
+{
+    switch( size )
+    {
+        case 0: return 0;
+        case 1: return v1[0]*v2[0];
+        case 2: return v1[0]*v2[0]+v1[1]*v2[1];
+        case 3: return v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2];
+        case 4: return v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2]+v1[3]*v2[3];
+        default: break;
+    }
+    sz_t mid = size >> 1;
+    return bmath_f3_t_vec_mul_vec_esp( v1, v2, mid ) + bmath_f3_t_vec_mul_vec_esp( v1 + mid, v2 + mid, size - mid );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_f3_t_vec_mul3_vec( const f3_t* v1, const f3_t* v2, const f3_t* v3, sz_t size )
+{
+#ifdef BMATH_AVX
+    __m256d sum_p4 = { 0, 0, 0, 0 };
+    sz_t i = 0;
+    for( ; i <= size - 4; i += 4 )
+    {
+        #ifdef BMATH_AVX2_FMA
+            sum_p4 = _mm256_fmadd_pd( _mm256_mul_pd( _mm256_loadu_pd( v1 + i ), _mm256_loadu_pd( v2 + i ) ), _mm256_loadu_pd( v3 + i ), sum_p4 );
+        #else
+            sum_p4 = _mm256_add_pd( _mm256_mul_pd( _mm256_mul_pd( _mm256_loadu_pd( v1 + i ), _mm256_loadu_pd( v2 + i ) ), _mm256_loadu_pd( v3 + i ), sum_p4 );
+        #endif // BMATH_AVX2_FMA
+    }
+    for( ; i < size; i++ ) sum_p4[ 0 ] += v1[ i ] * v2[ i ] * v3[ i ];
+    return sum_p4[ 0 ] + sum_p4[ 1 ] + sum_p4[ 2 ] + sum_p4[ 3 ];
+#else
+    f3_t sum_p4[ 4 ] = { 0, 0, 0, 0 };
+    sz_t i;
+    for( i = 0; i <= size - 4; i += 4 )
+    {
+        sum_p4[ 0 ] += v1[ i + 0 ] * v2[ i + 0 ] * v3[ i + 0 ];
+        sum_p4[ 1 ] += v1[ i + 1 ] * v2[ i + 1 ] * v3[ i + 1 ];
+        sum_p4[ 2 ] += v1[ i + 2 ] * v2[ i + 2 ] * v3[ i + 2 ];
+        sum_p4[ 3 ] += v1[ i + 3 ] * v2[ i + 3 ] * v3[ i + 3 ];
+    }
+    for( ; i < size; i++ ) sum_p4[ 0 ] += v1[ i ] * v2[ i ] * v3[ i ];
+    return sum_p4[ 0 ] + sum_p4[ 1 ] + sum_p4[ 2 ] + sum_p4[ 3 ];
+#endif // BMATH_AVX
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_f3_t_vec_mul3_vec_esp( const f3_t* v1, const f3_t* v2, const f3_t* v3, sz_t size )
+{
+    switch( size )
+    {
+        case 0: return 0;
+        case 1: return v1[0]*v2[0]*v3[0];
+        case 2: return v1[0]*v2[0]*v3[0]+v1[1]*v2[1]*v3[1];
+        case 3: return v1[0]*v2[0]*v3[0]+v1[1]*v2[1]*v3[1]+v1[2]*v2[2]*v3[2];
+        case 4: return v1[0]*v2[0]*v3[0]+v1[1]*v2[1]*v3[1]+v1[2]*v2[2]*v3[2]+v1[3]*v2[3]*v3[3];
+        default: break;
+    }
+    sz_t mid = size >> 1;
+    return bmath_f3_t_vec_mul3_vec_esp( v1, v2, v3, mid ) + bmath_f3_t_vec_mul3_vec_esp( v1 + mid, v2 + mid, v3 + mid, size - mid );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 // bmath_vf3_s
 
 BCORE_DEFINE_OBJECT_INST( bmath_vector, bmath_vf3_s )
@@ -255,27 +401,10 @@ void bmath_vf3_s_mul_f3(  const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static f3_t f3_s_mul_vec( const f3_t* v1, const f3_t* v2, uz_t size )
-{
-    switch( size )
-    {
-        case 0: return 0;
-        case 1: return v1[0]*v2[0];
-        case 2: return v1[0]*v2[0]+v1[1]*v2[1];
-        case 3: return v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2];
-        case 4: return v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2]+v1[3]*v2[3];
-        default: break;
-    }
-    uz_t sz1 = size >> 1;
-    return f3_s_mul_vec( v1, v2, sz1 ) + f3_s_mul_vec( v1 + sz1, v2 + sz1, size - sz1 );
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
 f3_t bmath_vf3_s_f3_mul_vec( const bmath_vf3_s* o, const bmath_vf3_s* vec2 )
 {
     ASSERT( o->size == vec2->size );
-    return f3_s_mul_vec( o->data, vec2->data, o->size );
+    return bmath_f3_t_vec_mul_vec( o->data, vec2->data, o->size );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -329,23 +458,6 @@ f3_t bmath_vf3_s_f3_sub_sqr( const bmath_vf3_s* o, const bmath_vf3_s* vec2 )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static f3_t f3_s_f3_sum( const f3_t* v1, uz_t size )
-{
-    switch( size )
-    {
-        case 0: return 0;
-        case 1: return v1[0];
-        case 2: return v1[0]+v1[1];
-        case 3: return v1[0]+v1[1]+v1[2];
-        case 4: return v1[0]+v1[1]+v1[2]+v1[3];
-        default: break;
-    }
-    uz_t sz1 = size >> 1;
-    return f3_s_f3_sum( v1, sz1 ) + f3_s_f3_sum( v1 + sz1, size - sz1 );
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
 static f3_t f3_s_f3_max( const f3_t* v1, uz_t size )
 {
     f3_t max = ( size > 0 ) ? v1[ 0 ] : 0;
@@ -366,7 +478,7 @@ static f3_t f3_s_f3_min( const f3_t* v1, uz_t size )
 
 f3_t bmath_vf3_s_f3_sum( const bmath_vf3_s* o )
 {
-    return f3_s_f3_sum( o->data, o->size );
+    return bmath_f3_t_vec_sum( o->data, o->size );
 }
 
 //---------------------------------------------------------------------------------------------------------------------

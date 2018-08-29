@@ -33,6 +33,7 @@
  */
 
 #include "bcore_std.h"
+#include "bmath_flags.h"
 #include "bmath_leaf.h"
 
 typedef struct bmath_mf3_s bmath_mf3_s;
