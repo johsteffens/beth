@@ -22,6 +22,10 @@
 void bmath_hwflags_to_string( st_s* string )
 {
 
+#ifdef BMATH_SSE
+    st_s_push_fa( string, "SSE " );
+#endif // BMATH_SSE
+
 #ifdef BMATH_SSE2
     st_s_push_fa( string, "SSE2 " );
 #endif // BMATH_SSE2
@@ -37,6 +41,7 @@ void bmath_hwflags_to_string( st_s* string )
 #ifdef BMATH_AVX2_FMA
     st_s_push_fa( string, "AVX2_FMA " );
 #endif // BMATH_AVX2_FMA
+
     st_s_push_fa( string, "\n" );
 }
 
@@ -46,7 +51,7 @@ void bmath_hwflags_to_stdout( void )
 {
     st_s* s = st_s_create();
     bmath_hwflags_to_string( s );
-    bcore_msg_fa( "#<sc_t>", s );
+    bcore_msg_fa( "#<sc_t>", s->sc );
     st_s_discard( s );
 }
 

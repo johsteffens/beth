@@ -77,6 +77,7 @@
 #include "bmath_vector.h"
 #include "bmath_simd.h"
 #include "bmath_grt.h"
+#include "bmath_mf3_mul.h"
 #include "bmath_mf3_qrd.h"
 #include "bmath_mf3_evd.h"
 #include "bmath_mf3_svd.h"
@@ -260,14 +261,7 @@ void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res );
 
 //---------------------------------------------------------------------------------------------------------------------
-// multiplication
-
-void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res ); // res = o * op
-void bmath_mf3_s_mul_dag( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res ); // res = o * dag  (columns get scaled)
-void bmath_mf3_s_dag_mul( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res ); // res = dag * o  (rows get scaled)
-
-/// multiplication of o with op(transposed); (faster than mul)
-void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res ); // o * op^T
+// matrix * vector --> vector
 
 void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf3_s* res );
 void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf3_s* res ); // affine transformation (see nomenclature 'av1')
@@ -275,11 +269,6 @@ void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf
 void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t*        op, bmath_mf3_s* res );
 static inline
 void bmath_mf3_s_mul_scl_f3( const bmath_mf3_s* o, f3_t op, bmath_mf3_s* res ) { bmath_mf3_s_mul_scl( o, &op, res ); }
-
-/** In place similarity transformation of a diagonal matrix.
- *  R = O * D * O^T
- */
-void bmath_mf3_s_udu_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res ); // res = u * d * u^T
 
 //---------------------------------------------------------------------------------------------------------------------
 // inversion; pseudo-inversion;

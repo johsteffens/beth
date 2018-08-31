@@ -52,15 +52,7 @@ f3_t bmath_f3_t_vec_sum( const f3_t* v1, sz_t size )
 
 f3_t bmath_f3_t_vec_sum_esp( const f3_t* v1, sz_t size )
 {
-    switch( size )
-    {
-        case 0: return 0;
-        case 1: return v1[0];
-        case 2: return v1[0]+v1[1];
-        case 3: return v1[0]+v1[1]+v1[2];
-        case 4: return v1[0]+v1[1]+v1[2]+v1[3];
-        default: break;
-    }
+    if( size <= 32 ) return bmath_f3_t_vec_sum( v1, size );
     sz_t mid = size >> 1;
     return bmath_f3_t_vec_sum_esp( v1, mid ) + bmath_f3_t_vec_sum_esp( v1 + mid, size - mid );
 }
@@ -101,15 +93,7 @@ f3_t bmath_f3_t_vec_mul_vec( const f3_t* v1, const f3_t* v2, sz_t size )
 
 f3_t bmath_f3_t_vec_mul_vec_esp( const f3_t* v1, const f3_t* v2, sz_t size )
 {
-    switch( size )
-    {
-        case 0: return 0;
-        case 1: return v1[0]*v2[0];
-        case 2: return v1[0]*v2[0]+v1[1]*v2[1];
-        case 3: return v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2];
-        case 4: return v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2]+v1[3]*v2[3];
-        default: break;
-    }
+    if( size <= 32 ) return bmath_f3_t_vec_mul_vec( v1, v2, size );
     sz_t mid = size >> 1;
     return bmath_f3_t_vec_mul_vec_esp( v1, v2, mid ) + bmath_f3_t_vec_mul_vec_esp( v1 + mid, v2 + mid, size - mid );
 }
@@ -150,15 +134,7 @@ f3_t bmath_f3_t_vec_mul3_vec( const f3_t* v1, const f3_t* v2, const f3_t* v3, sz
 
 f3_t bmath_f3_t_vec_mul3_vec_esp( const f3_t* v1, const f3_t* v2, const f3_t* v3, sz_t size )
 {
-    switch( size )
-    {
-        case 0: return 0;
-        case 1: return v1[0]*v2[0]*v3[0];
-        case 2: return v1[0]*v2[0]*v3[0]+v1[1]*v2[1]*v3[1];
-        case 3: return v1[0]*v2[0]*v3[0]+v1[1]*v2[1]*v3[1]+v1[2]*v2[2]*v3[2];
-        case 4: return v1[0]*v2[0]*v3[0]+v1[1]*v2[1]*v3[1]+v1[2]*v2[2]*v3[2]+v1[3]*v2[3]*v3[3];
-        default: break;
-    }
+    if( size <= 32 ) return bmath_f3_t_vec_mul3_vec( v1, v2, v3, size );
     sz_t mid = size >> 1;
     return bmath_f3_t_vec_mul3_vec_esp( v1, v2, v3, mid ) + bmath_f3_t_vec_mul3_vec_esp( v1 + mid, v2 + mid, v3 + mid, size - mid );
 }
