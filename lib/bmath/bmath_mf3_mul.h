@@ -40,17 +40,26 @@ typedef struct bmath_mf3_s bmath_mf3_s;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res ); // res = o * op
-void bmath_mf3_s_mul_dag( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res ); // res = o * dag  (columns get scaled)
-void bmath_mf3_s_dag_mul( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res ); // res = dag * o  (rows get scaled)
+/// o * op --> res
+void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
-/// multiplication of o with op(transposed); (faster than mul)
-void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res ); // o * op^T
+/// o * op --> res (esp version)
+void bmath_mf3_s_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
-/** In place similarity transformation of a diagonal matrix.
- *  R = O * D * O^T
- */
-void bmath_mf3_s_udu_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res ); // res = u * d * u^T
+/// o * op^T --> res
+void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+
+/// o * op^T --> res (esp version)
+void bmath_mf3_s_mul_htp_esp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+
+/// o * d --> res (d: diagonal matrix; columns get scaled)
+void bmath_mf3_s_mul_dag( const bmath_mf3_s* o, const bmath_vf3_s* d, bmath_mf3_s* res );
+
+/// d * o --> res (d: diagonal matrix; rows get scaled)
+void bmath_mf3_s_dag_mul( const bmath_vf3_s* d, const bmath_mf3_s* o, bmath_mf3_s* res );
+
+///  u * d * u^T --> res (in place)
+void bmath_mf3_s_udu_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res );
 
 //---------------------------------------------------------------------------------------------------------------------
 
