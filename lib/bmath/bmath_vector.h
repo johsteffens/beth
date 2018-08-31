@@ -35,7 +35,7 @@
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
-#include "bmath_flags.h"
+#include "bmath_hwflags.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_complex.h"
 #include "bmath_pmt.h"

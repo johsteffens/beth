@@ -19,7 +19,7 @@
 /// Algebraic perspectives: Group and Ring.
 
 #include "bcore_std.h"
-#include "bmath_flags.h"
+#include "bmath_hwflags.h"
 #include "bmath_quicktypes.h"
 
 typedef struct bmath_group bmath_group;

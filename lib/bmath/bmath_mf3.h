@@ -72,7 +72,7 @@
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
-#include "bmath_flags.h"
+#include "bmath_hwflags.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_vector.h"
 #include "bmath_simd.h"

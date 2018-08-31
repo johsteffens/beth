@@ -19,7 +19,7 @@
 #define BMATH_STD_H
 
 #include "bcore_std.h"
-#include "bmath_flags.h"
+#include "bmath_hwflags.h"
 #include "bmath_signal.h"
 #include "bmath_spect_vector.h"
 #include "bmath_spect_matrix.h"

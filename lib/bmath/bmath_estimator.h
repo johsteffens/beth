@@ -26,7 +26,7 @@
  */
 
 #include "bcore_std.h"
-#include "bmath_flags.h"
+#include "bmath_hwflags.h"
 #include "bmath_mf3.h"
 
 /**********************************************************************************************************************/

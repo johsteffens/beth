@@ -18,7 +18,7 @@
 
 #include "bmath_spect_algebraic.h"
 #include "bcore_std.h"
-#include "bmath_flags.h"
+#include "bmath_hwflags.h"
 #include "bmath_leaf.h"
 #include "bmath_quicktypes.h"
 

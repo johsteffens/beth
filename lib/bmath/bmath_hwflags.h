@@ -13,10 +13,12 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_FLAGS_H
-#define BMATH_FLAGS_H
+#ifndef BMATH_HWFLAGS_H
+#define BMATH_HWFLAGS_H
 
-/** Compile-time flags controlling optimization strategies,
+#include "bcore_std.h"
+
+/** Compile-time hardware flags controlling optimization strategies,
  *  hardware specific settings (e.g. SIMD), etc.
  *
  */
@@ -68,5 +70,8 @@
 
 /**********************************************************************************************************************/
 
-#endif // BMATH_FLAGS_H
+void bmath_hwflags_to_string( st_s* string );
+void bmath_hwflags_to_stdout( void );
+
+#endif // BMATH_HWFLAGS_H
 

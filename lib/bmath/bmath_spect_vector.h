@@ -18,7 +18,7 @@
 
 /// A vector is defined by a ring-type and an array.
 
-#include "bmath_flags.h"
+#include "bmath_hwflags.h"
 #include "bmath_spect_algebraic.h"
 #include "bcore_spect_array.h"
 #include "bmath_quicktypes.h"

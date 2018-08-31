@@ -19,7 +19,7 @@
 #define BMATH_PLOT_H
 
 #include "bcore_std.h"
-#include "bmath_flags.h"
+#include "bmath_hwflags.h"
 #include "bmath_vector.h"
 
 /**********************************************************************************************************************/

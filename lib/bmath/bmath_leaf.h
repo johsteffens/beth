@@ -20,7 +20,7 @@
 
 #include "bcore_signal.h"
 #include "bcore_leaf.h"
-#include "bmath_flags.h"
+#include "bmath_hwflags.h"
 #include "bmath_quicktypes.h"
 
 #include <float.h>

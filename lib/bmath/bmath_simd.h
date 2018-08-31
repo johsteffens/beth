@@ -21,7 +21,7 @@
 #define BMATH_SIMD_H
 
 #include "bcore_std.h"
-#include "bmath_flags.h"
+#include "bmath_hwflags.h"
 #include "bmath_leaf.h"
 
 typedef struct bmath_grt_f3_s bmath_grt_f3_s;

@@ -141,17 +141,27 @@ void bmath_mf3_eval_s_run_mul( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
 
     if( fp_type == TYPEOF_bmath_fp_mf3_s_mul )
     {
-        ABS_TIME_OF( ( ( bmath_fp_mf3_s_mul )fp )( m0, m1, m2 ), r->time1 );
+        if( o->test0 )
+        {
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_mul )fp )( m0, m0, m2 ), r->time0 );
+            bmath_mf3_s_mul( m0, m0, m3 );
+            r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+
+        if( o->test1 )
+        {
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_mul )fp )( m0, m1, m2 ), r->time1 );
+            bmath_mf3_s_mul( m0, m1, m3 );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
     }
     else
     {
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    bmath_mf3_s_mul( m0, m1, m3 );
-
-    r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
-    r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
 
     if( res ) bmath_mf3_eval_result_s_copy( res, r );
 
@@ -189,17 +199,27 @@ void bmath_mf3_eval_s_run_mul_htp( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
 
     if( fp_type == TYPEOF_bmath_fp_mf3_s_mul_htp )
     {
-        ABS_TIME_OF( ( ( bmath_fp_mf3_s_mul_htp )fp )( m0, m1, m2 ), r->time1 );
+        if( o->test0 )
+        {
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_mul_htp )fp )( m0, m0, m2 ), r->time0 );
+            bmath_mf3_s_mul_htp( m0, m0, m3 );
+            r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+
+        if( o->test1 )
+        {
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_mul_htp )fp )( m0, m1, m2 ), r->time1 );
+            bmath_mf3_s_mul_htp( m0, m1, m3 );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
     }
     else
     {
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    bmath_mf3_s_mul_htp( m0, m1, m3 );
-
-    r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
-    r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
 
     if( res ) bmath_mf3_eval_result_s_copy( res, r );
 
