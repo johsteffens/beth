@@ -40,35 +40,25 @@ typedef struct bmath_mf3_s bmath_mf3_s;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-/// o * op --> res
-void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+/// o * m --> res
+void bmath_mf3_s_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
+void bmath_mf3_s_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
-/// o * op --> res (esp version)
-void bmath_mf3_s_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+/// o * m^T --> res
+void bmath_mf3_s_mul_htp(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
+void bmath_mf3_s_mul_htp_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
-/// o * op^T --> res
-void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+///  u * d * u^T --> r (in place)
+void bmath_mf3_s_mul_udu_htp(     const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* r );
+void bmath_mf3_s_mul_udu_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* r );
 
-/// o * op^T --> res (esp version)
-void bmath_mf3_s_mul_htp_esp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+///  u * d * v^T --> r (in place)
+void bmath_mf3_s_mul_udv_htp(     const bmath_mf3_s* u, const bmath_vf3_s* d, const bmath_mf3_s* v, bmath_mf3_s* r );
+void bmath_mf3_s_mul_udv_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, const bmath_mf3_s* v, bmath_mf3_s* r );
 
-/// o * d --> res (d: diagonal matrix; columns get scaled)
-void bmath_mf3_s_mul_od( const bmath_mf3_s* o, const bmath_vf3_s* d, bmath_mf3_s* res );
-
-/// d * o --> res (d: diagonal matrix; rows get scaled)
-void bmath_mf3_s_mul_do( const bmath_vf3_s* d, const bmath_mf3_s* o, bmath_mf3_s* res );
-
-///  u * d * u^T --> res (in place)
-void bmath_mf3_s_mul_udu_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res );
-
-///  u * d * u^T --> res (in place) (esp version)
-void bmath_mf3_s_mul_udu_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res );
-
-///  u * d * v^T --> res (in place)
-void bmath_mf3_s_mul_udv_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, const bmath_mf3_s* v, bmath_mf3_s* res );
-
-///  u * d * v^T --> res (in place) (esp version)
-void bmath_mf3_s_mul_udv_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, const bmath_mf3_s* v, bmath_mf3_s* res );
+///  u * t * v^T --> r with t being tridiagonal  (in place)
+void bmath_mf3_s_mul_utv_htp(     const bmath_mf3_s* u, const bmath_mf3_s* t, const bmath_mf3_s* v, bmath_mf3_s* r );
+void bmath_mf3_s_mul_utv_htp_esp( const bmath_mf3_s* u, const bmath_mf3_s* t, const bmath_mf3_s* v, bmath_mf3_s* r );
 
 //---------------------------------------------------------------------------------------------------------------------
 

@@ -2326,6 +2326,8 @@ static vd_t selftest( void )
     BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
     BCORE_LIFE_CREATE( bmath_mf3_s, m3 );
     BCORE_LIFE_CREATE( bmath_mf3_s, m4 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m5 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, m6 );
     BCORE_LIFE_CREATE( bmath_vf3_s, v1 );
     BCORE_LIFE_CREATE( bmath_vf3_s, v2 );
     BCORE_LIFE_CREATE( bmath_vf3_s, v3 );
@@ -2484,6 +2486,101 @@ static vd_t selftest( void )
         bmath_mf3_s_mul_av1( m2, v2, v3 );
 
         ASSERT( bmath_vf3_s_is_near_equ( v1, v3, 1E-8 ) );
+    }
+
+    // mul_udu_htp
+    {
+        sz_t ma[ 7 ] = { 10, 20, 10, 10, 10,  1,  0 };
+        sz_t na[ 7 ] = { 20, 10, 10,  1,  0, 10, 10 };
+        for( sz_t i = 0; i < 7; i++ )
+        {
+            sz_t m = ma[ i ];
+            sz_t n = na[ i ];
+            bmath_mf3_s_set_size( m1, m, n );
+            bmath_mf3_s_set_size( m2, n, n );
+            bmath_mf3_s_set_size( m3, m, n );
+            bmath_mf3_s_set_size( m4, m, m );
+            bmath_mf3_s_set_size( m5, m, m );
+            bmath_vf3_s_set_size( v1, n );
+
+            u2_t rval = 1236;
+            bmath_mf3_s_set_random( m1, false, false, 0, 1.0, -1, 1, &rval );
+            bmath_vf3_s_set_random( v1,                  1.0, -1, 1, &rval );
+
+            bmath_mf3_s_mul_udu_htp( m1, v1, m5 );
+
+            bmath_mf3_s_zro( m2 );
+            bmath_mf3_s_set_dag_by_vec( m2, v1 );
+            bmath_mf3_s_mul( m1, m2, m3 );
+            bmath_mf3_s_mul_htp( m3, m1, m4 );
+            ASSERT( bmath_mf3_s_is_near_equ( m4, m5, 1E-8 ) );
+        }
+    }
+
+    // mul_udv_htp
+    {
+        sz_t ma[ 7 ] = { 10, 20, 10, 10, 10,  1,  0 };
+        sz_t na[ 7 ] = { 20, 10, 10,  1,  0, 10, 10 };
+        for( sz_t i = 0; i < 7; i++ )
+        {
+            sz_t m = ma[ i ];
+            sz_t n = na[ i ];
+            bmath_mf3_s_set_size( m1, m, n );
+            bmath_mf3_s_set_size( m2, n, n );
+            bmath_mf3_s_set_size( m3, m, n );
+            bmath_mf3_s_set_size( m4, m, n );
+            bmath_mf3_s_set_size( m5, m, m );
+            bmath_mf3_s_set_size( m6, m, m );
+            bmath_vf3_s_set_size( v2, n );
+
+            u2_t rval = 1236;
+            bmath_mf3_s_set_random( m1, false, false, 0, 1.0, -1, 1, &rval );
+            bmath_vf3_s_set_random( v2,                  1.0, -1, 1, &rval );
+            bmath_mf3_s_set_random( m3, false, false, 0, 1.0, -1, 1, &rval );
+
+            bmath_mf3_s_mul_udv_htp( m1, v2, m3, m5 );
+
+            bmath_mf3_s_zro( m2 );
+            bmath_mf3_s_set_dag_by_vec( m2, v2 );
+            bmath_mf3_s_mul( m1, m2, m4 );
+            bmath_mf3_s_mul_htp( m4, m3, m6 );
+            ASSERT( bmath_mf3_s_is_near_equ( m5, m6, 1E-8 ) );
+        }
+    }
+
+    // mul_utv_htp
+    {
+        sz_t ma[ 7 ] = { 10, 20, 10, 10, 10,  1,  0 };
+        sz_t na[ 7 ] = { 20, 10, 10,  1,  0, 10, 10 };
+        for( sz_t i = 0; i < 7; i++ )
+        {
+            sz_t m = ma[ i ];
+            sz_t n = na[ i ];
+            bmath_mf3_s_set_size( m1, m, n );
+            bmath_mf3_s_set_size( m2, n, n );
+            bmath_mf3_s_set_size( m3, m, n );
+            bmath_mf3_s_set_size( m4, m, n );
+            bmath_mf3_s_set_size( m5, m, m );
+            bmath_mf3_s_set_size( m6, m, m );
+
+            u2_t rval = 1236;
+            bmath_mf3_s_set_random( m1, false, false, 0, 1.0, -1, 1, &rval );
+            bmath_mf3_s_set_random( m2, false, false, 0, 1.0, -1, 1, &rval );
+            bmath_mf3_s_set_random( m3, false, false, 0, 1.0, -1, 1, &rval );
+
+            for( sz_t i = 0; i < m2->rows; i++ )
+            {
+                for( sz_t j = 0; j < m2->cols; j++ )
+                {
+                    if( j > i + 1 || j < i - 1 ) m2->data[ i * m2->stride + j ] = 0;
+                }
+            }
+
+            bmath_mf3_s_mul_utv_htp( m1, m2, m3, m5 );
+            bmath_mf3_s_mul( m1, m2, m4 );
+            bmath_mf3_s_mul_htp( m4, m3, m6 );
+            ASSERT( bmath_mf3_s_is_near_equ( m5, m6, 1E-8 ) );
+        }
     }
 
     BCORE_LIFE_DOWN();
