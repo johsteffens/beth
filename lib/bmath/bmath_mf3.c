@@ -142,7 +142,7 @@ void bmath_mf3_s_set_random( bmath_mf3_s* o, bl_t hsm, bl_t pdf, uz_t rd, f3_t d
                 bmath_vf3_s_set_random( v1, density, min, max, &rval );
             }
 
-            bmath_mf3_s_udu_htp( m1, v1, o );
+            bmath_mf3_s_mul_udu_htp( m1, v1, o );
             bmath_mf3_s_discard( m1 );
             bmath_vf3_s_discard( v1 );
         }
@@ -730,7 +730,7 @@ bl_t bmath_mf3_s_hsm_piv( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res )
     for( uz_t i = 0; i < n; i++ ) dag->data[ i ] = ( f3_abs( dag->data[ i ] ) < thr ) ? 0 : ( 1.0 / dag->data[ i ] );
 
     bmath_mf3_s_htp( q, q );
-    bmath_mf3_s_udu_htp( q, dag, res );
+    bmath_mf3_s_mul_udu_htp( q, dag, res );
 
     bmath_vf3_s_discard( dag );
     bmath_mf3_s_discard( q );
@@ -895,26 +895,6 @@ void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf
     {
         f3_t* v1 = o->data + i * o->stride;
         vr[ i ] = bmath_f3_t_vec_mul_vec( v1, v2, n ) + v1[ n ];
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-void bmath_mf3_s_udu_htp( const bmath_mf3_s* o, const bmath_vf3_s* dag, bmath_mf3_s* res )
-{
-    ASSERT( res != o );
-    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    ASSERT( o->rows == dag->size );
-
-    const f3_t* vd = dag->data;
-    for( uz_t i = 0; i < o->rows; i++ )
-    {
-        const f3_t* vi =   o->data + i *   o->stride;
-              f3_t* vr = res->data + i * res->stride;
-        for( uz_t j = 0; j < o->rows; j++ )
-        {
-            vr[ j ] = bmath_f3_t_vec_mul3_vec( vi, o->data + j * o->stride, vd, o->rows );
-        }
     }
 }
 

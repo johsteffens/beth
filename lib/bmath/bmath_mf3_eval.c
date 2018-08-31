@@ -272,6 +272,11 @@ void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
             bmath_mf3_s_cpy( m0, a );
             ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_svd )fp )( u, a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_dag( a );
+
+            bmath_mf3_s_set_size( m1, a->rows, v->rows );
+            bmath_mf3_s_mul_htp( a, v, m1 );
+            bmath_mf3_s_set_size( m2, u->rows, m1->cols );
+            bmath_mf3_s_mul( u, m1, m2 );
         }
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_ubd )
@@ -288,6 +293,11 @@ void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
             bmath_mf3_s_cpy( m0, a );
             ABS_TIME_OF( ( ( bmath_fp_mf3_s_ubd )fp )( u, a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_ubd( a );
+
+            bmath_mf3_s_set_size( m1, a->rows, v->rows );
+            bmath_mf3_s_mul_htp( a, v, m1 );
+            bmath_mf3_s_set_size( m2, u->rows, m1->cols );
+            bmath_mf3_s_mul( u, m1, m2 );
         }
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_lbd )
@@ -304,6 +314,11 @@ void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
             bmath_mf3_s_cpy( m0, a );
             ABS_TIME_OF( ( ( bmath_fp_mf3_s_lbd )fp )( u, a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_lbd( a );
+
+            bmath_mf3_s_set_size( m1, a->rows, v->rows );
+            bmath_mf3_s_mul_htp( a, v, m1 );
+            bmath_mf3_s_set_size( m2, u->rows, m1->cols );
+            bmath_mf3_s_mul( u, m1, m2 );
         }
     }
     else
@@ -321,12 +336,6 @@ void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
         if( o->log_v ) bmath_mf3_s_to_string( v, &r->log_v );
         r->assert_u = bmath_mf3_s_is_near_otn( u, o->near_limit );
         r->assert_v = bmath_mf3_s_is_near_otn( v, o->near_limit );
-
-        bmath_mf3_s_set_size( m1, a->rows, v->rows );
-        bmath_mf3_s_mul_htp( a, v, m1 );
-        bmath_mf3_s_set_size( m2, u->rows, m1->cols );
-        bmath_mf3_s_mul( u, m1, m2 );
-
         r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, o->near_limit );
         r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
     }

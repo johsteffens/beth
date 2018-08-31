@@ -249,7 +249,7 @@ void bmath_mf3_s_mul_htp_esp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_mul_dag( const bmath_mf3_s* o, const bmath_vf3_s* d, bmath_mf3_s* res )
+void bmath_mf3_s_mul_od( const bmath_mf3_s* o, const bmath_vf3_s* d, bmath_mf3_s* res )
 {
     ASSERT( o->cols == o->rows   );
     ASSERT( o->rows == d->size );
@@ -266,7 +266,7 @@ void bmath_mf3_s_mul_dag( const bmath_mf3_s* o, const bmath_vf3_s* d, bmath_mf3_
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_dag_mul( const bmath_vf3_s* d, const bmath_mf3_s* o, bmath_mf3_s* res )
+void bmath_mf3_s_mul_do( const bmath_vf3_s* d, const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     ASSERT( o->cols == o->rows   );
     ASSERT( o->rows == d->size );
@@ -279,6 +279,90 @@ void bmath_mf3_s_dag_mul( const bmath_vf3_s* d, const bmath_mf3_s* o, bmath_mf3_
               f3_t* vr = res->data + i * res->stride;
               f3_t d = vd[ i ];
         for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ] * d;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_udu_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res )
+{
+    ASSERT( res != u );
+    ASSERT( bmath_mf3_s_is_equ_size( u, res ) );
+    ASSERT( u->cols == d->size );
+
+    const f3_t* vd = d->data;
+    for( uz_t i = 0; i < u->rows; i++ )
+    {
+        const f3_t* vi =   u->data + i *   u->stride;
+              f3_t* vr = res->data + i * res->stride;
+        for( uz_t j = 0; j < u->rows; j++ )
+        {
+            vr[ j ] = bmath_f3_t_vec_mul3_vec( vi, u->data + j * u->stride, vd, d->size );
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_udu_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res )
+{
+    ASSERT( res != u );
+    ASSERT( bmath_mf3_s_is_equ_size( u, res ) );
+    ASSERT( u->cols == d->size );
+
+    const f3_t* vd = d->data;
+    for( uz_t i = 0; i < u->rows; i++ )
+    {
+        const f3_t* vi =   u->data + i *   u->stride;
+              f3_t* vr = res->data + i * res->stride;
+        for( uz_t j = 0; j < u->rows; j++ )
+        {
+            vr[ j ] = bmath_f3_t_vec_mul3_vec_esp( vi, u->data + j * u->stride, vd, d->size );
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_udv_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, const bmath_mf3_s* v, bmath_mf3_s* res )
+{
+    ASSERT( res != u );
+    ASSERT( res->rows == u->rows );
+    ASSERT( res->cols == v->rows );
+    ASSERT( u->cols == d->size );
+    ASSERT( v->cols == d->size );
+
+    const f3_t* vd = d->data;
+    for( uz_t i = 0; i < u->rows; i++ )
+    {
+        const f3_t* vi =   u->data + i *   u->stride;
+              f3_t* vr = res->data + i * res->stride;
+        for( uz_t j = 0; j < v->rows; j++ )
+        {
+            vr[ j ] = bmath_f3_t_vec_mul3_vec( vi, v->data + j * v->stride, vd, d->size );
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_udv_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, const bmath_mf3_s* v, bmath_mf3_s* res )
+{
+    ASSERT( res != u );
+    ASSERT( res->rows == u->rows );
+    ASSERT( res->cols == v->rows );
+    ASSERT( u->cols == d->size );
+    ASSERT( v->cols == d->size );
+
+    const f3_t* vd = d->data;
+    for( uz_t i = 0; i < u->rows; i++ )
+    {
+        const f3_t* vi =   u->data + i *   u->stride;
+              f3_t* vr = res->data + i * res->stride;
+        for( uz_t j = 0; j < v->rows; j++ )
+        {
+            vr[ j ] = bmath_f3_t_vec_mul3_vec_esp( vi, v->data + j * v->stride, vd, d->size );
+        }
     }
 }
 

@@ -53,13 +53,22 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3
 void bmath_mf3_s_mul_htp_esp( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
 /// o * d --> res (d: diagonal matrix; columns get scaled)
-void bmath_mf3_s_mul_dag( const bmath_mf3_s* o, const bmath_vf3_s* d, bmath_mf3_s* res );
+void bmath_mf3_s_mul_od( const bmath_mf3_s* o, const bmath_vf3_s* d, bmath_mf3_s* res );
 
 /// d * o --> res (d: diagonal matrix; rows get scaled)
-void bmath_mf3_s_dag_mul( const bmath_vf3_s* d, const bmath_mf3_s* o, bmath_mf3_s* res );
+void bmath_mf3_s_mul_do( const bmath_vf3_s* d, const bmath_mf3_s* o, bmath_mf3_s* res );
 
 ///  u * d * u^T --> res (in place)
-void bmath_mf3_s_udu_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res );
+void bmath_mf3_s_mul_udu_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res );
+
+///  u * d * u^T --> res (in place) (esp version)
+void bmath_mf3_s_mul_udu_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* res );
+
+///  u * d * v^T --> res (in place)
+void bmath_mf3_s_mul_udv_htp( const bmath_mf3_s* u, const bmath_vf3_s* d, const bmath_mf3_s* v, bmath_mf3_s* res );
+
+///  u * d * v^T --> res (in place) (esp version)
+void bmath_mf3_s_mul_udv_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, const bmath_mf3_s* v, bmath_mf3_s* res );
 
 //---------------------------------------------------------------------------------------------------------------------
 
