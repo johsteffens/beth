@@ -110,7 +110,7 @@ f3_t bmath_f3_t_vec_mul3_vec( const f3_t* v1, const f3_t* v2, const f3_t* v3, sz
         #ifdef BMATH_AVX2_FMA
             sum_p4 = _mm256_fmadd_pd( _mm256_mul_pd( _mm256_loadu_pd( v1 + i ), _mm256_loadu_pd( v2 + i ) ), _mm256_loadu_pd( v3 + i ), sum_p4 );
         #else
-            sum_p4 = _mm256_add_pd( _mm256_mul_pd( _mm256_mul_pd( _mm256_loadu_pd( v1 + i ), _mm256_loadu_pd( v2 + i ) ), _mm256_loadu_pd( v3 + i ), sum_p4 );
+            sum_p4 = _mm256_add_pd( _mm256_mul_pd( _mm256_mul_pd( _mm256_loadu_pd( v1 + i ), _mm256_loadu_pd( v2 + i ) ), _mm256_loadu_pd( v3 + i ) ), sum_p4 );
         #endif // BMATH_AVX2_FMA
     }
     for( ; i < size; i++ ) sum_p4[ 0 ] += v1[ i ] * v2[ i ] * v3[ i ];
