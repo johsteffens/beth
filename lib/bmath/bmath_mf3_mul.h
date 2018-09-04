@@ -40,23 +40,23 @@ typedef struct bmath_mf3_s bmath_mf3_s;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-/// o * m --> res
+/// o * m -> r
 void bmath_mf3_s_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 void bmath_mf3_s_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
-/// o * m^T --> res
+/// o * m^T -> r
 void bmath_mf3_s_mul_htp(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 void bmath_mf3_s_mul_htp_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
-///  u * d * u^T --> r (in place)
+///  u * d * u^T -> r
 void bmath_mf3_s_mul_udu_htp(     const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* r );
 void bmath_mf3_s_mul_udu_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* r );
 
-///  u * d * v^T --> r (in place)
+///  u * d * v^T -> r
 void bmath_mf3_s_mul_udv_htp(     const bmath_mf3_s* u, const bmath_vf3_s* d, const bmath_mf3_s* v, bmath_mf3_s* r );
 void bmath_mf3_s_mul_udv_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, const bmath_mf3_s* v, bmath_mf3_s* r );
 
-///  u * t * v^T --> r with t being tridiagonal  (in place)
+///  u * t * v^T -> r with t being tridiagonal
 void bmath_mf3_s_mul_utv_htp(     const bmath_mf3_s* u, const bmath_mf3_s* t, const bmath_mf3_s* v, bmath_mf3_s* r );
 void bmath_mf3_s_mul_utv_htp_esp( const bmath_mf3_s* u, const bmath_mf3_s* t, const bmath_mf3_s* v, bmath_mf3_s* r );
 

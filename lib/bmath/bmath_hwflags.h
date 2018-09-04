@@ -35,7 +35,7 @@
 // #define BMATH_DISABLE_FMA      // disables use of FMA simd routines
 // #define BMATH_STRICT_FALLBACK  // enforces hw-optimized and fallback routines produce binary identical results on identical input
 
-#ifndef BMATH_DISABLE_SIMD
+#ifndef BMATH_DISABLE_SIMD // keep
 //    #define BMATH_SSE   // forces use of SSE  intrinsics even when __SSE__ was not defined
 //    #define BMATH_SSE2  // forces use of SSE2 intrinsics even when __SSE2__ was not defined
 //    #define BMATH_AVX   // forces use of AVX intrinsics even when __AVX__ was not defined
