@@ -16,6 +16,7 @@
 #include "bcore_signal.h"
 
 #include "bcore_arr.h"
+#include "bcore_img.h"
 #include "bcore_bin_ml.h"
 #include "bcore_btree.h"
 #include "bcore_control.h"
@@ -122,6 +123,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_txt_ml_signal_handler,
         bcore_bin_ml_signal_handler,
         bcore_arr_signal_handler,
+        bcore_img_signal_handler,
         bcore_leaf_signal_handler,
         bcore_file_signal_handler,
     };

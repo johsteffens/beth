@@ -84,6 +84,8 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_bcore_hmap_tpto_s          3958767233
 #define TYPEOF_bcore_hmap_tptp_s          1873137304
 #define TYPEOF_bcore_hmap_u2vd_s          1475406309
+#define TYPEOF_bcore_img_u2_argb          1669473939
+#define TYPEOF_bcore_img_u2_s             3223476982
 #define TYPEOF_bcore_inst_s               1413406849
 #define TYPEOF_bcore_interpreter_s         695223265
 #define TYPEOF_bcore_matrix_s              686911304

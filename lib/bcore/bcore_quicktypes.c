@@ -113,6 +113,8 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_arr_vd_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_fp_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_sr_s" );
+    bcore_array_r_push_sc( &list, "bcore_img_u2_s" );
+    bcore_array_r_push_sc( &list, "bcore_img_u2_argb" ); // pixel encoding format
     bcore_array_r_push_sc( &list, "bcore_name_s" );
     bcore_array_r_push_sc( &list, "bcore_name_map_s" );
     bcore_array_r_push_sc( &list, "bcore_matrix_s" );
