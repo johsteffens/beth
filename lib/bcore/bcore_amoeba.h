@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-/// Types ans structure for amoebic function handling.
+/// Types and structures for amoebic function handling.
 
 #ifndef BCORE_AMOEBA_H
 #define BCORE_AMOEBA_H
