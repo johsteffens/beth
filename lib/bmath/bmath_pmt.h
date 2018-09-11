@@ -60,7 +60,7 @@ bl_t bmath_pmt_s_is_one( const bmath_pmt_s* o );
 void bmath_pmt_s_to_string( const bmath_pmt_s* o, st_s* string );
 void bmath_pmt_s_to_stdout( const bmath_pmt_s* o );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 vd_t bmath_pmt_signal_handler( const bcore_signal_s* o );
 

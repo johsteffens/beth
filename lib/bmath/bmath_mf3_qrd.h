@@ -38,7 +38,7 @@
 
 typedef struct bmath_mf3_s bmath_mf3_s;
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /** Stable QR decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
  *  It is a = u * a', with u being unitary.
@@ -63,7 +63,7 @@ typedef struct bmath_mf3_s bmath_mf3_s;
  */
 void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /** Stable rank revealing QRP decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
  *  It is a = u * a' * p^T, with u being unitary.
@@ -93,7 +93,7 @@ void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a );
  */
 void bmath_mf3_s_qrd_pmt( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /** Stable LQ decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
  *  It is a = a' * v^T, with v being unitary.
@@ -118,7 +118,7 @@ void bmath_mf3_s_qrd_pmt( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p );
  */
 void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /** Stable rank revealing PLQ decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
  *  It is a = p * a' * v^T, with v being unitary.
@@ -148,6 +148,6 @@ void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v );
  */
 void bmath_mf3_s_pmt_lqd( bmath_pmt_s* p, bmath_mf3_s* a, bmath_mf3_s* v );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 #endif  // BMATH_MATRIX_QRD_H

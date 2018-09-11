@@ -217,7 +217,7 @@ static inline bl_t bmath_mf3_s_is_hsm( const bmath_mf3_s* o ) { return bmath_mf3
 static inline bl_t bmath_mf3_s_is_ubd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_ubd( o, 0 ); }
 static inline bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_lbd( o, 0 ); }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 // Frobenius norm
 
 /** fdev = ||f(o) - x||
@@ -243,7 +243,7 @@ void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res );  // negate
 void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res );  // copies content o -> res  (does not change allocation of res)
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 // transposition / permutation
 
 void bmath_mf3_s_htp(         const bmath_mf3_s* o, bmath_mf3_s* res );
@@ -252,7 +252,7 @@ void bmath_mf3_s_pmt_htp_mul( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_
 void bmath_mf3_s_mul_pmt(     const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
 void bmath_mf3_s_mul_pmt_htp( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res ); // B = A * P^T ; col_p[k]( B ) = col_k( A )
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 // addition
 
 void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
@@ -260,7 +260,7 @@ void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 /// adds outer product of two vectors op1 (X) op2 to matrix
 void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 // matrix * vector --> vector
 
 void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf3_s* res );
@@ -270,7 +270,7 @@ void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t*        op, bmath_mf3
 static inline
 void bmath_mf3_s_mul_scl_f3( const bmath_mf3_s* o, f3_t op, bmath_mf3_s* res ) { bmath_mf3_s_mul_scl( o, &op, res ); }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 // inversion; pseudo-inversion;
 
 /** Function require a certain form or well-behaveness of the input matrix to succeed.
@@ -505,7 +505,7 @@ static inline void bmath_mf3_s_arow_rotate( bmath_mf3_s* o, uz_t idx, const bmat
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// rotate two distant rows
 static inline void bmath_mf3_s_drow_rotate( bmath_mf3_s* o, uz_t a_idx, uz_t b_idx, const bmath_grt_f3_s* grt, uz_t col_start, uz_t col_end )
@@ -519,7 +519,7 @@ static inline void bmath_mf3_s_drow_rotate( bmath_mf3_s* o, uz_t a_idx, uz_t b_i
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// rotate two adjacent cols
 static inline void bmath_mf3_s_acol_rotate( bmath_mf3_s* o, uz_t idx, const bmath_grt_f3_s* grt, uz_t row_start, uz_t row_end )
@@ -535,7 +535,7 @@ static inline void bmath_mf3_s_acol_rotate( bmath_mf3_s* o, uz_t idx, const bmat
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// rotate two distant cols
 static inline void bmath_mf3_s_dcol_rotate( bmath_mf3_s* o, uz_t a_idx, uz_t b_idx, const bmath_grt_f3_s* grt, uz_t row_start, uz_t row_end )
@@ -551,7 +551,7 @@ static inline void bmath_mf3_s_dcol_rotate( bmath_mf3_s* o, uz_t a_idx, uz_t b_i
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// apply a forward row-swipe (start --> end; end - start rotations)
 static inline void bmath_mf3_s_arow_swipe_fwd( bmath_mf3_s* o, uz_t idx, const bmath_arr_grt_f3_s* grt, uz_t col_start, uz_t col_end )
@@ -561,7 +561,7 @@ static inline void bmath_mf3_s_arow_swipe_fwd( bmath_mf3_s* o, uz_t idx, const b
     for( uz_t i = col_start; i < col_end; i++ ) bmath_grt_f3_s_rotate( grt->data + i, row + i, row + i + 1 );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// apply a reverse adjacent row-swipe (end --> start; end - start rotations)
 static inline void bmath_mf3_s_arow_swipe_rev( bmath_mf3_s* o, uz_t idx, const bmath_arr_grt_f3_s* grt, uz_t col_start, uz_t col_end )
@@ -571,7 +571,7 @@ static inline void bmath_mf3_s_arow_swipe_rev( bmath_mf3_s* o, uz_t idx, const b
     for( uz_t i = col_end; i > col_start; i-- ) bmath_grt_f3_s_rotate( grt->data + i - 1, row + i - 1, row + i );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// forward sweep of adjacent row rotations (row_start --> row_end)
 void bmath_mf3_s_sweep_arow_rotate_fwd( bmath_mf3_s* o, uz_t row_start, uz_t row_end, const bmath_arr_grt_f3_s* grt, uz_t col_start, uz_t col_end );
@@ -585,7 +585,7 @@ void bmath_mf3_s_sweep_acol_rotate_fwd( bmath_mf3_s* o, uz_t col_start, uz_t col
 /// reverse sweep of distant col rotations (col_end --> col_start)
 void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_f3_s* grt, uz_t row_start, uz_t row_end );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 /// Development support

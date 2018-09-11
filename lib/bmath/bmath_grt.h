@@ -44,7 +44,7 @@
 
 BCORE_DECLARE_OBJECT( bmath_grt_f3_s ) { f3_t c; f3_t s; };
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /** Returns 'rho' - a stable single float representation of a givens rotation.
  *  (Variant of Steward 1976: The Economical Storage of Plane Rotations)
@@ -70,7 +70,7 @@ static inline f3_t bmath_grt_f3_s_rho( const bmath_grt_f3_s* o )
                            f3_sig( o->s );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Reconstructs rotation from rho obtained by bmath_grt_f3_s_rho
 static inline void bmath_grt_f3_s_init_from_rho( bmath_grt_f3_s* o, f3_t r )
@@ -93,7 +93,7 @@ static inline void bmath_grt_f3_s_init_from_rho( bmath_grt_f3_s* o, f3_t r )
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Sets up rotation in order to annihilate a in vector (a,b).
 static inline void bmath_grt_f3_s_init_to_annihilate_a( bmath_grt_f3_s* o, f3_t a, f3_t b )
@@ -105,7 +105,7 @@ static inline void bmath_grt_f3_s_init_to_annihilate_a( bmath_grt_f3_s* o, f3_t 
     o->s = ( r > f3_lim_min ) ? -a / r : 0;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Sets up rotation in order to annihilate b in vector (a,b). (cos >= 0)
 static inline void bmath_grt_f3_s_init_to_annihilate_b( bmath_grt_f3_s* o, f3_t a, f3_t b )
@@ -117,7 +117,7 @@ static inline void bmath_grt_f3_s_init_to_annihilate_b( bmath_grt_f3_s* o, f3_t 
     o->s = ( r > f3_lim_min ) ? b / r : 0;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Applies specific rotation to vector (a,b) assuming it annihilates a.
 static inline void bmath_grt_f3_s_annihilate_a( bmath_grt_f3_s* o, f3_t* a, f3_t* b )
@@ -126,7 +126,7 @@ static inline void bmath_grt_f3_s_annihilate_a( bmath_grt_f3_s* o, f3_t* a, f3_t
     *a = 0;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Applies specific rotation to vector (a,b) assuming it annihilates b.
 static inline void bmath_grt_f3_s_annihilate_b( bmath_grt_f3_s* o, f3_t* a, f3_t* b )
@@ -135,7 +135,7 @@ static inline void bmath_grt_f3_s_annihilate_b( bmath_grt_f3_s* o, f3_t* a, f3_t
     *b = 0;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Sets up rotation in order to annihilate a in vector (a,b) and execute the rotation. (cos >= 0)
 static inline void bmath_grt_f3_s_init_and_annihilate_a( bmath_grt_f3_s* o, f3_t* a, f3_t* b )
@@ -144,7 +144,7 @@ static inline void bmath_grt_f3_s_init_and_annihilate_a( bmath_grt_f3_s* o, f3_t
     bmath_grt_f3_s_annihilate_a( o, a, b );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Sets up rotation in order to annihilate b in vector (a,b) and execute the rotation. (cos >= 0)
 static inline void bmath_grt_f3_s_init_and_annihilate_b( bmath_grt_f3_s* o, f3_t* a, f3_t* b )
@@ -153,7 +153,7 @@ static inline void bmath_grt_f3_s_init_and_annihilate_b( bmath_grt_f3_s* o, f3_t
     bmath_grt_f3_s_annihilate_b( o, a, b );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Sets up rotation in order to annihilate b in vector (a,b), executes the rotation and stores rho on *b
 static inline void bmath_grt_f3_s_init_and_annihilate_b_set_rho( bmath_grt_f3_s* o, f3_t* a, f3_t* b )
@@ -163,7 +163,7 @@ static inline void bmath_grt_f3_s_init_and_annihilate_b_set_rho( bmath_grt_f3_s*
     *b = bmath_grt_f3_s_rho( o );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Applies general rotation to vector (a,b) (butterfly operation).
 static inline void bmath_grt_f3_s_rotate( const bmath_grt_f3_s* o, f3_t* a, f3_t* b )
@@ -173,7 +173,7 @@ static inline void bmath_grt_f3_s_rotate( const bmath_grt_f3_s* o, f3_t* a, f3_t
     *b = o->c * *b - o->s * a0;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Rotates two matrix rows (section)
 static inline void bmath_grt_f3_s_row_rotate( const bmath_grt_f3_s* o, f3_t* a, f3_t* b, uz_t start, uz_t end )
@@ -182,7 +182,7 @@ static inline void bmath_grt_f3_s_row_rotate( const bmath_grt_f3_s* o, f3_t* a, 
     for( uz_t i = start; i < end; i++ ) bmath_grt_f3_s_rotate( o, a + i, b + i );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Rotates two matrix columns (section).
 static inline void bmath_grt_f3_s_col_rotate( const bmath_grt_f3_s* o, f3_t* a, f3_t* b, uz_t stride, uz_t start, uz_t end )
@@ -191,7 +191,7 @@ static inline void bmath_grt_f3_s_col_rotate( const bmath_grt_f3_s* o, f3_t* a, 
     for( uz_t i = start; i < end; i++ ) bmath_grt_f3_s_rotate( o, a + stride * i, b + stride * i );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Swipes matrix row
 static inline void bmath_grt_f3_s_row_swipe( const bmath_grt_f3_s* arr, f3_t* row, uz_t start, uz_t end )
@@ -199,7 +199,7 @@ static inline void bmath_grt_f3_s_row_swipe( const bmath_grt_f3_s* arr, f3_t* ro
     for( uz_t i = start; i < end; i++ ) bmath_grt_f3_s_rotate( arr + i, row + i, row + i + 1 );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Swipes matrix row in reverse
 static inline void bmath_grt_f3_s_row_swipe_reverse( const bmath_grt_f3_s* arr, f3_t* row, uz_t start, uz_t end )
@@ -207,11 +207,11 @@ static inline void bmath_grt_f3_s_row_swipe_reverse( const bmath_grt_f3_s* arr, 
     for( uz_t i = end; i > start; i-- ) bmath_grt_f3_s_rotate( arr + i, row + i - 1, row + i );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_grt_f3_s_to_stdout( const bmath_grt_f3_s* o );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
@@ -232,7 +232,7 @@ static inline uz_t bmath_arr_grt_f3_s_count_identity( const bmath_arr_grt_f3_s* 
     return count;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static inline f3_t bmath_arr_grt_f3_s_density( const bmath_arr_grt_f3_s* o, uz_t start, uz_t end )
 {
@@ -240,7 +240,7 @@ static inline f3_t bmath_arr_grt_f3_s_density( const bmath_arr_grt_f3_s* o, uz_t
     return ( end > start ) ? ( f3_t )( end - start - count ) / ( end - start ) : 0;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 vd_t bmath_grt_signal_handler( const bcore_signal_s* o );
 

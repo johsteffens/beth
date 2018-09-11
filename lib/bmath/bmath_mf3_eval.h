@@ -49,7 +49,7 @@ BCORE_DECLARE_OBJECT( bmath_mf3_eval_s )
     bl_t test1;      // runs default parameter test
 };
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 BCORE_DECLARE_OBJECT( bmath_mf3_eval_result_s )
 {
@@ -83,7 +83,7 @@ BCORE_DECLARE_OBJECT( bmath_mf3_eval_result_s )
 void bmath_mf3_eval_result_s_to_string( const bmath_mf3_eval_result_s* o, st_s* string );
 void bmath_mf3_eval_result_s_to_stdout( const bmath_mf3_eval_result_s* o );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// runs evaluation and logs results if desired (log can be NULL)
 void bmath_mf3_eval_s_run(           const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log ); // using fp instead of o->fp

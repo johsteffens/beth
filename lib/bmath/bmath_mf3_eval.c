@@ -38,7 +38,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_eval_s )
     "bl_t test1 = true;"  // runs default parameter test
 "}";
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_eval_result_s )
 "{"
@@ -65,7 +65,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_eval_result_s )
     "f3_t time1  = 0;"      // operation time with all arguments
 "}";
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static void bmath_mf3_eval_result_s_set_defaults_from_eval( bmath_mf3_eval_result_s* o, const bmath_mf3_eval_s* v )
 {
@@ -74,7 +74,7 @@ static void bmath_mf3_eval_result_s_set_defaults_from_eval( bmath_mf3_eval_resul
     o->density = v->density;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_result_s_to_string( const bmath_mf3_eval_result_s* o, st_s* string )
 {
@@ -100,7 +100,7 @@ void bmath_mf3_eval_result_s_to_string( const bmath_mf3_eval_result_s* o, st_s* 
     if( o->log_v.size > 0 ) st_s_push_fa( string, "Matrix v #<sc_t>", o->log_v.sc );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_result_s_to_stdout( const bmath_mf3_eval_result_s* o )
 {
@@ -110,7 +110,7 @@ void bmath_mf3_eval_result_s_to_stdout( const bmath_mf3_eval_result_s* o )
     st_s_discard( s );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_s_run_mul( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
@@ -162,7 +162,7 @@ void bmath_mf3_eval_s_run_mul( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_s_run_mul_htp( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
@@ -224,7 +224,7 @@ void bmath_mf3_eval_s_run_mul_htp( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
@@ -331,7 +331,7 @@ void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_s_run_ua( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
@@ -436,7 +436,7 @@ void bmath_mf3_eval_s_run_ua( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_s_run_av( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
@@ -540,7 +540,7 @@ void bmath_mf3_eval_s_run_av( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_s_run_sym_uau_htp( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
@@ -642,7 +642,7 @@ void bmath_mf3_eval_s_run_sym_uau_htp( const bmath_mf3_eval_s* o, tp_t fp_type, 
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // evaluates cholesky decomposition
 void bmath_mf3_eval_s_run_cld( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
@@ -690,7 +690,7 @@ void bmath_mf3_eval_s_run_cld( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // evaluates LU decomposition
 void bmath_mf3_eval_s_run_lud( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
@@ -746,7 +746,7 @@ void bmath_mf3_eval_s_run_lud( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // evaluates inversion
 void bmath_mf3_eval_s_run_inv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
@@ -793,7 +793,7 @@ void bmath_mf3_eval_s_run_inv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // evaluates positive definite inversion
 void bmath_mf3_eval_s_run_pdf_inv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
@@ -840,7 +840,7 @@ void bmath_mf3_eval_s_run_pdf_inv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_s_run_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
@@ -941,7 +941,7 @@ void bmath_mf3_eval_s_run_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // evaluates symmetric pseudo inversion
 void bmath_mf3_eval_s_run_hsm_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
@@ -988,7 +988,7 @@ void bmath_mf3_eval_s_run_hsm_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_s_run( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
 {
@@ -1031,7 +1031,7 @@ void bmath_mf3_eval_s_run( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_
     BCORE_LIFE_DOWN();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_mf3_eval_s_run_to_stdout( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp )
 {
@@ -1041,7 +1041,7 @@ void bmath_mf3_eval_s_run_to_stdout( const bmath_mf3_eval_s* o, tp_t fp_type, fp
     st_s_discard( s );
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static void bmath_mf3_eval_s_selftest( void )
 {
@@ -1059,7 +1059,7 @@ static void bmath_mf3_eval_s_selftest( void )
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_mf3_eval_s ) "{ aware_t _; bmath_mf3_eval_s [] arr; }";
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void bmath_arr_mf3_eval_s_run( const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
 {

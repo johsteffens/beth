@@ -38,7 +38,7 @@
 
 typedef struct bmath_mf3_s bmath_mf3_s;
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /** Stable singular value decomposition for a general mxn-matrix a -> a'.
  *  Method: Bi-diagonalization by givens rotations and QR-chasing with stabilized implicit shift.
@@ -72,6 +72,6 @@ typedef struct bmath_mf3_s bmath_mf3_s;
  */
 bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 #endif  // BMATH_MATRIX_SVD_H

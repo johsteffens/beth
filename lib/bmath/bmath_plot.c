@@ -33,7 +33,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_plot_s )
     "bcore_arr_st_s y_data_label;" // a row is a curve in the plot
 "}";
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
 {

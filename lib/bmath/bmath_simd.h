@@ -26,7 +26,7 @@
 
 typedef struct bmath_grt_f3_s bmath_grt_f3_s;
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// givens row rotation
 void bmath_simd_f3_row_rotate( f3_t* v1, f3_t* v2, sz_t size, const bmath_grt_f3_s* grt );
@@ -40,7 +40,7 @@ void bmath_simd_f3_drow_swipe_rev( f3_t* row, const bmath_grt_f3_s* grt, sz_t si
 /// bmath_simd_f3_drow_swipe_rev for 4 successive rows
 void bmath_simd_f3_4drow_swipe_rev( f3_t* row, sz_t stride, const bmath_grt_f3_s* grt, sz_t size );
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 vd_t bmath_simd_signal_handler( const bcore_signal_s* o );
 
