@@ -154,25 +154,27 @@ static void bmath_mf3_s_f3_t_mul( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
             bmath_mf3_s_mul_avx_fix_kernel( o, o_s, m, m_s, r, r_s );
         #else
 
-            f3_t r_buf[ BMATH_MUL_BLOCK_SIZE ];
+            f3_t r_p[ BMATH_MUL_BLOCK_SIZE ];
+            f3_t m_p[ BMATH_MUL_BLOCK_SIZE ][ BMATH_MUL_BLOCK_SIZE ];
+            for( sz_t j = 0; j < BMATH_MUL_BLOCK_SIZE; j++ )
+            {
+                for( sz_t k = 0; k < BMATH_MUL_BLOCK_SIZE; k++ ) m_p[ j ][ k ] = m[ j * m_s + k ];
+            }
+
             for( sz_t i = 0; i < BMATH_MUL_BLOCK_SIZE; i++ )
             {
                 const f3_t* oi = o + i * o_s;
 
-                for( sz_t k = 0; k < BMATH_MUL_BLOCK_SIZE; k++ ) r_buf[ k ] = 0;
+                for( sz_t k = 0; k < BMATH_MUL_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
 
                 for( sz_t j = 0; j < BMATH_MUL_BLOCK_SIZE; j++ )
                 {
-                    const f3_t* mj = m + j * m_s;
                     f3_t f = oi[ j ];
-                    for( sz_t k = 0; k < BMATH_MUL_BLOCK_SIZE; k++ )
-                    {
-                        r_buf[ k ] += mj[ k ] * f;
-                    }
+                    for( sz_t k = 0; k < BMATH_MUL_BLOCK_SIZE; k++ ) r_p[ k ] += m_p[ j ][ k ] * f;
                 }
 
                 f3_t* ri = r + i * r_s;
-                for( sz_t k = 0; k < BMATH_MUL_BLOCK_SIZE; k++ ) ri[ k ] += r_buf[ k ];
+                for( sz_t k = 0; k < BMATH_MUL_BLOCK_SIZE; k++ ) ri[ k ] += r_p[ k ];
             }
         #endif // BMATH_AVX2_FMA
 
@@ -210,25 +212,26 @@ static void bmath_mf3_s_f3_t_mul( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
     #ifdef BMATH_AVX
         bmath_mf3_s_mul_avx_flex_kernel( o, o_s, o_r, o_c, m, m_s, m_c, r, r_s );
     #else
-        f3_t r_buf[ BMATH_MUL_BLOCK_SIZE ];
+        f3_t r_p[ BMATH_MUL_BLOCK_SIZE ];
+        f3_t m_p[ BMATH_MUL_BLOCK_SIZE ][ BMATH_MUL_BLOCK_SIZE ];
+        for( sz_t j = 0; j < o_c; j++ )
+        {
+            for( sz_t k = 0; k < m_c; k++ ) m_p[ j ][ k ] = m[ j * m_s + k ];
+        }
         for( sz_t i = 0; i < o_r; i++ )
         {
             const f3_t* oi = o + i * o_s;
 
-            for( sz_t k = 0; k < m_c; k++ ) r_buf[ k ] = 0;
+            for( sz_t k = 0; k < m_c; k++ ) r_p[ k ] = 0;
 
             for( sz_t j = 0; j < o_c; j++ )
             {
                 f3_t f = oi[ j ];
-                const f3_t* mj = m + j * m_s;
-                for( sz_t k = 0; k < m_c; k++ )
-                {
-                    r_buf[ k ] += mj[ k ] * f;
-                }
+                for( sz_t k = 0; k < m_c; k++ ) r_p[ k ] += m_p[ j ][ k ] * f;
             }
 
             f3_t* ri = r + i * r_s;
-            for( sz_t k = 0; k < m_c; k++ ) ri[ k ] += r_buf[ k ];
+            for( sz_t k = 0; k < m_c; k++ ) ri[ k ] += r_p[ k ];
         }
     #endif // BMATH_AVX2_FMA
 }
@@ -399,25 +402,27 @@ static void bmath_mf3_s_f3_t_mul_htp( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_
             bmath_mf3_s_mul_htp_avx_fix_kernel( o, o_s, m, m_s, r, r_s );
         #else
 
-            f3_t r_buf[ BMATH_MUL_HTP_BLOCK_SIZE ];
+            f3_t r_p[ BMATH_MUL_HTP_BLOCK_SIZE ];
+            f3_t m_p[ BMATH_MUL_HTP_BLOCK_SIZE ][ BMATH_MUL_HTP_BLOCK_SIZE ];
+            for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE; k++ )
+            {
+                for( sz_t j = 0; j < BMATH_MUL_HTP_BLOCK_SIZE; j++ ) m_p[ j ][ k ] = m[ k * m_s + j ];
+            }
+
             for( sz_t i = 0; i < BMATH_MUL_HTP_BLOCK_SIZE; i++ )
             {
                 const f3_t* oi = o + i * o_s;
 
-                for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE; k++ ) r_buf[ k ] = 0;
+                for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
 
                 for( sz_t j = 0; j < BMATH_MUL_HTP_BLOCK_SIZE; j++ )
                 {
-                    const f3_t* mj = m + j;
                     f3_t f = oi[ j ];
-                    for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE; k++ )
-                    {
-                        r_buf[ k ] += mj[ k * m_s ] * f;
-                    }
+                    for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE; k++ ) r_p[ k ] += m_p[ j ][ k ] * f;
                 }
 
                 f3_t* ri = r + i * r_s;
-                for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE; k++ ) ri[ k ] += r_buf[ k ];
+                for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE; k++ ) ri[ k ] += r_p[ k ];
             }
         #endif // BMATH_AVX2_FMA
 
@@ -459,25 +464,27 @@ static void bmath_mf3_s_f3_t_mul_htp( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_
     #ifdef BMATH_AVX
         bmath_mf3_s_mul_htp_avx_flex_kernel( o, o_s, o_r, o_c, m, m_s, m_r, r, r_s );
     #else
-        f3_t r_buf[ BMATH_MUL_HTP_BLOCK_SIZE ];
+        f3_t r_p[ BMATH_MUL_HTP_BLOCK_SIZE ];
+        f3_t m_p[ BMATH_MUL_HTP_BLOCK_SIZE ][ BMATH_MUL_HTP_BLOCK_SIZE ];
+        for( sz_t k = 0; k < m_r; k++ )
+        {
+            for( sz_t j = 0; j < o_c; j++ ) m_p[ j ][ k ] = m[ k * m_s + j ];
+        }
+
         for( sz_t i = 0; i < o_r; i++ )
         {
             const f3_t* oi = o + i * o_s;
 
-            for( sz_t k = 0; k < m_r; k++ ) r_buf[ k ] = 0;
+            for( sz_t k = 0; k < m_r; k++ ) r_p[ k ] = 0;
 
             for( sz_t j = 0; j < o_c; j++ )
             {
                 f3_t f = oi[ j ];
-                const f3_t* mj = m + j;
-                for( sz_t k = 0; k < m_r; k++ )
-                {
-                    r_buf[ k ] += mj[ k * m_s ] * f;
-                }
+                for( sz_t k = 0; k < m_r; k++ ) r_p[ k ] += m_p[ j ][ k ] * f;
             }
 
             f3_t* ri = r + i * r_s;
-            for( sz_t k = 0; k < m_r; k++ ) ri[ k ] += r_buf[ k ];
+            for( sz_t k = 0; k < m_r; k++ ) ri[ k ] += r_p[ k ];
         }
     #endif // BMATH_AVX2_FMA
 }
