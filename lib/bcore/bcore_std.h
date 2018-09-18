@@ -20,7 +20,7 @@
 
 #include "bcore.h"
 #include "bcore_signal.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_flect.h"
 #include "bcore_trait.h"
 #include "bcore_spect.h"

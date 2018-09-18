@@ -26,7 +26,7 @@
 #define BCORE_SPECT_VIA_H
 
 #include "bcore_spect_inst.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include <stdarg.h>
 
 // Fetaures

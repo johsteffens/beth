@@ -16,7 +16,7 @@
 #ifndef BCORE_HMAP_TP_SR_H
 #define BCORE_HMAP_TP_SR_H
 
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_st.h"
 #include "bcore_flect.h"
 #include "bcore_spect_inst.h"

@@ -20,7 +20,7 @@
 
 #include <stdarg.h>
 #include "bcore_types.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 
 /** Formatted strings:
  *  Variadic functions with postfix _fv, _fa, _fnv

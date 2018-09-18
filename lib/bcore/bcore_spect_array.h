@@ -28,7 +28,7 @@
 
 #include "bcore_spect_inst.h"
 #include "bcore_flect.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_arr.h"
 #include "bcore_spect.h"
 

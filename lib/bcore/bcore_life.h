@@ -16,7 +16,7 @@
 #ifndef BCORE_LIFE_H
 #define BCORE_LIFE_H
 
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_flect.h"
 
 /** Simple lifetime manager for objects.

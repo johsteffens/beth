@@ -30,7 +30,7 @@
 #include "bcore_name_manager.h"
 #include "bcore_function_manager.h"
 #include "bcore_st.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 
 /// data encapsulation methods
 enum

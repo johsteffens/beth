@@ -16,7 +16,7 @@
 #ifndef BCORE_H
 #define BCORE_H
 
-#include "bcore_features.h"
+#include "bcore_feature.h"
 
 /// Initializes library bcore only (need not be called in case bcore_register_signal_handler is used)
 void bcore_init();

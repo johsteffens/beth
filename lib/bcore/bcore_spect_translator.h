@@ -19,7 +19,7 @@
 #define BCORE_SPECT_TRANSLATOR_H
 
 #include "bcore_flect.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_spect.h"
 
 typedef struct bcore_translator bcore_translator;

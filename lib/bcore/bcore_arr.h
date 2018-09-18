@@ -17,7 +17,7 @@
 #define BCORE_ARR_H
 
 #include "bcore_flect.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_st.h"
 #include "bcore_sr.h"
 

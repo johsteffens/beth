@@ -24,7 +24,7 @@
 
 #include "bcore_first.h"
 #include "bcore_types.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 
 /**
  * Collection of low-level functions and macros.

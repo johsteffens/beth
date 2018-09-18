@@ -19,7 +19,7 @@
 /** Statically bound rudimentary runtime control of library items via signaling.
  */
 
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_quicktypes.h"
 
 typedef struct bcore_signal_s

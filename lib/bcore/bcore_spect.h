@@ -28,7 +28,7 @@
  *      * bcore_spect_fp_create_from_self
  */
 
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_control.h"
 #include "bcore_flect.h"
 #include "bcore_tp_fastmap.h"

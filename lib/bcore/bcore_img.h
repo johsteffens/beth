@@ -17,7 +17,7 @@
 #define BCORE_IMG_H
 
 #include "bcore_flect.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_sr.h"
 #include "bcore_spect_sink.h"
 #include "bcore_spect_source.h"

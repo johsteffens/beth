@@ -25,7 +25,7 @@
  */
 
 #include "bcore_spect.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_spect_via.h"
 
 /// optional features:

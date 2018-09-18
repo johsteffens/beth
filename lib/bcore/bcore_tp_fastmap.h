@@ -35,7 +35,7 @@
 #ifndef BCORE_TP_FASTMAP_H
 #define BCORE_TP_FASTMAP_H
 
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_st.h"
 #include "bcore_flect.h"
 #include "bcore_signal.h"

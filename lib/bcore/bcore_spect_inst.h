@@ -16,7 +16,7 @@
 #ifndef BCORE_SPECT_INST_H
 #define BCORE_SPECT_INST_H
 
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_flect.h"
 #include "bcore_spect.h"
 #include "bcore_quicktypes.h"

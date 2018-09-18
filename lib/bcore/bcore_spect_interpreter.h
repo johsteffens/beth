@@ -18,7 +18,7 @@
 #ifndef BCORE_SPECT_INTERPRETER_H
 #define BCORE_SPECT_INTERPRETER_H
 
-#include "bcore_features.h"
+#include "bcore_feature.h"
 #include "bcore_spect.h"
 
 typedef struct bcore_interpreter bcore_interpreter;
