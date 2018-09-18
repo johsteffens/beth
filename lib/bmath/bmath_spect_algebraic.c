@@ -132,20 +132,20 @@ vd_t bmath_spect_algebraic_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // features
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_is_equ );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_is_zro );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_is_one );
+            BCORE_REGISTER_FEATURE( bmath_fp_is_equ );
+            BCORE_REGISTER_FEATURE( bmath_fp_is_zro );
+            BCORE_REGISTER_FEATURE( bmath_fp_is_one );
 
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_add );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_sub );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_neg );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_zro );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mul );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_div );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_inv );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_one );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_cpy );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_mlt );
+            BCORE_REGISTER_FEATURE( bmath_fp_add );
+            BCORE_REGISTER_FEATURE( bmath_fp_sub );
+            BCORE_REGISTER_FEATURE( bmath_fp_neg );
+            BCORE_REGISTER_FEATURE( bmath_fp_zro );
+            BCORE_REGISTER_FEATURE( bmath_fp_mul );
+            BCORE_REGISTER_FEATURE( bmath_fp_div );
+            BCORE_REGISTER_FEATURE( bmath_fp_inv );
+            BCORE_REGISTER_FEATURE( bmath_fp_one );
+            BCORE_REGISTER_FEATURE( bmath_fp_cpy );
+            BCORE_REGISTER_FEATURE( bmath_fp_mlt );
 
             // reflections
             BCORE_REGISTER_SPECT( bmath_group_s );

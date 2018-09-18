@@ -1544,48 +1544,48 @@ static void flect_define_basics()
 {
     bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( "void" ), typeof( "leaf" ), 0 ) );
 
-    BCORE_REGISTER_PLAIN( s0_t, num );
-    BCORE_REGISTER_PLAIN( s1_t, num );
-    BCORE_REGISTER_PLAIN( s2_t, num );
-    BCORE_REGISTER_PLAIN( s3_t, num );
-    BCORE_REGISTER_PLAIN( sz_t, num );
-    BCORE_REGISTER_PLAIN( smax_t, num );
+    BCORE_REGISTER_TYPE( num, s0_t );
+    BCORE_REGISTER_TYPE( num, s1_t );
+    BCORE_REGISTER_TYPE( num, s2_t );
+    BCORE_REGISTER_TYPE( num, s3_t );
+    BCORE_REGISTER_TYPE( num, sz_t );
+    BCORE_REGISTER_TYPE( num, smax_t );
 
-    BCORE_REGISTER_PLAIN( u0_t, num );
-    BCORE_REGISTER_PLAIN( u1_t, num );
-    BCORE_REGISTER_PLAIN( u2_t, num );
-    BCORE_REGISTER_PLAIN( u3_t, num );
-    BCORE_REGISTER_PLAIN( uz_t, num );
-    BCORE_REGISTER_PLAIN( umax_t, num );
+    BCORE_REGISTER_TYPE( num, u0_t );
+    BCORE_REGISTER_TYPE( num, u1_t );
+    BCORE_REGISTER_TYPE( num, u2_t );
+    BCORE_REGISTER_TYPE( num, u3_t );
+    BCORE_REGISTER_TYPE( num, uz_t );
+    BCORE_REGISTER_TYPE( num, umax_t );
 
-    BCORE_REGISTER_PLAIN( f2_t, num  );
-    BCORE_REGISTER_PLAIN( f3_t, num  );
-    BCORE_REGISTER_PLAIN( sd_t, leaf );
-    BCORE_REGISTER_PLAIN( sc_t, leaf );
-    BCORE_REGISTER_PLAIN( vd_t, leaf );
-    BCORE_REGISTER_PLAIN( vc_t, leaf );
-    BCORE_REGISTER_PLAIN( fp_t, leaf );
-    BCORE_REGISTER_PLAIN( bl_t, num  );
+    BCORE_REGISTER_TYPE( num, f2_t );
+    BCORE_REGISTER_TYPE( num, f3_t );
+    BCORE_REGISTER_TYPE( num, bl_t );
+    BCORE_REGISTER_TYPE( leaf, sd_t );
+    BCORE_REGISTER_TYPE( leaf, sc_t );
+    BCORE_REGISTER_TYPE( leaf, vd_t );
+    BCORE_REGISTER_TYPE( leaf, vc_t );
+    BCORE_REGISTER_TYPE( leaf, fp_t );
 
-    BCORE_REGISTER_PLAIN( offset_t, num );
+    BCORE_REGISTER_TYPE( num, offset_t );
 
     // special purpose types
-    BCORE_REGISTER_PLAIN( tp_t,                type );
-    BCORE_REGISTER_PLAIN( aware_t,             type );
-    BCORE_REGISTER_PLAIN( bcore_flect_flags_s, root );
+    BCORE_REGISTER_TYPE( type, tp_t                );
+    BCORE_REGISTER_TYPE( type, aware_t             );
+    BCORE_REGISTER_TYPE( root, bcore_flect_flags_s );
 
     // special purpose functions
-    BCORE_REGISTER_PLAIN( bcore_fp_init,         function_pointer );
-    BCORE_REGISTER_PLAIN( bcore_fp_down,         function_pointer );
-    BCORE_REGISTER_PLAIN( bcore_fp_copy,         function_pointer );
-    BCORE_REGISTER_PLAIN( bcore_fp_move,         function_pointer );
-    BCORE_REGISTER_PLAIN( bcore_fp_create,       function_pointer );
-    BCORE_REGISTER_PLAIN( bcore_fp_discard,      function_pointer );
-    BCORE_REGISTER_PLAIN( bcore_fp_clone,        function_pointer );
-    BCORE_REGISTER_PLAIN( bcore_fp_copy_typed,   function_pointer );
-    BCORE_REGISTER_PLAIN( bcore_fp_create_typed, function_pointer );
-    BCORE_REGISTER_PLAIN( bcore_fp_translate,    function_pointer );
-    BCORE_REGISTER_PLAIN( bcore_fp_interpret,    function_pointer );
+    BCORE_REGISTER_FEATURE( bcore_fp_init );
+    BCORE_REGISTER_FEATURE( bcore_fp_down );
+    BCORE_REGISTER_FEATURE( bcore_fp_copy );
+    BCORE_REGISTER_FEATURE( bcore_fp_move );
+    BCORE_REGISTER_FEATURE( bcore_fp_create );
+    BCORE_REGISTER_FEATURE( bcore_fp_discard );
+    BCORE_REGISTER_FEATURE( bcore_fp_clone );
+    BCORE_REGISTER_FEATURE( bcore_fp_copy_typed );
+    BCORE_REGISTER_FEATURE( bcore_fp_create_typed );
+    BCORE_REGISTER_FEATURE( bcore_fp_translate );
+    BCORE_REGISTER_FEATURE( bcore_fp_interpret );
 
     // specific objects
     bcore_flect_define_creator( typeof( "bcore_self_item_s" ), self_item_s_create_self );

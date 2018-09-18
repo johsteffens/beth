@@ -632,7 +632,7 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_spect_header_s );
 
             // features
-            BCORE_REGISTER_PLAIN( bcore_spect_fp_create_from_self, function_pointer );
+            BCORE_REGISTER_FEATURE( bcore_spect_fp_create_from_self );
         }
         break;
 

@@ -364,8 +364,8 @@ vd_t bmath_spect_vector_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // features
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_vector_mul_scl );
-            BCORE_REGISTER_TYPE( function_pointer, bmath_fp_vector_mul_vec );
+            BCORE_REGISTER_FEATURE( bmath_fp_vector_mul_scl );
+            BCORE_REGISTER_FEATURE( bmath_fp_vector_mul_vec );
             BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bmath_vector_s_create_from_self );
             BCORE_REGISTER_SPECT( bmath_vector_s );
         }

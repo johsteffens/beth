@@ -110,10 +110,10 @@ vd_t bclos_spect_closure_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_TYPE( function_pointer, bclos_closure_fp_def );
-            BCORE_REGISTER_TYPE( function_pointer, bclos_closure_fp_call );
-            BCORE_REGISTER_TYPE( function_pointer, bclos_closure_fp_sig );
-            BCORE_REGISTER_TYPE( function_pointer, bclos_closure_fp_create_static_sig );
+            BCORE_REGISTER_FEATURE( bclos_closure_fp_def );
+            BCORE_REGISTER_FEATURE( bclos_closure_fp_call );
+            BCORE_REGISTER_FEATURE( bclos_closure_fp_sig );
+            BCORE_REGISTER_FEATURE( bclos_closure_fp_create_static_sig );
 
             BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bclos_closure_s_create_from_self );
             BCORE_REGISTER_SPECT( bclos_closure_s );
