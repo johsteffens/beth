@@ -1574,19 +1574,6 @@ static void flect_define_basics()
     BCORE_REGISTER_TYPE( type, aware_t             );
     BCORE_REGISTER_TYPE( root, bcore_flect_flags_s );
 
-    // special purpose functions
-    BCORE_REGISTER_FEATURE( bcore_fp_init );
-    BCORE_REGISTER_FEATURE( bcore_fp_down );
-    BCORE_REGISTER_FEATURE( bcore_fp_copy );
-    BCORE_REGISTER_FEATURE( bcore_fp_move );
-    BCORE_REGISTER_FEATURE( bcore_fp_create );
-    BCORE_REGISTER_FEATURE( bcore_fp_discard );
-    BCORE_REGISTER_FEATURE( bcore_fp_clone );
-    BCORE_REGISTER_FEATURE( bcore_fp_copy_typed );
-    BCORE_REGISTER_FEATURE( bcore_fp_create_typed );
-    BCORE_REGISTER_FEATURE( bcore_fp_translate );
-    BCORE_REGISTER_FEATURE( bcore_fp_interpret );
-
     // specific objects
     bcore_flect_define_creator( typeof( "bcore_self_item_s" ), self_item_s_create_self );
     bcore_flect_define_creator( typeof( "bcore_self_body_s" ), flect_body_s_create_self );

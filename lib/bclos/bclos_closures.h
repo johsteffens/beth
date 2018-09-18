@@ -17,7 +17,7 @@
 #define BCLOS_CLOSURES_H
 
 #include "bcore_types.h"
-#include "bcore_features.h"
+#include "bcore_feature.h"
 
 /**********************************************************************************************************************/
 

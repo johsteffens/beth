@@ -19,7 +19,7 @@
 /** Statically bound rudimentary runtime control of library items via signaling.
  */
 
-#include "bcore_features.h"
+#include "bcore_feature.h"
 
 /// broadcasts a signal within the library
 vd_t bmath_signal_handler( const bcore_signal_s* o );

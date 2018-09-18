@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BCORE_FEATURES_H
-#define BCORE_FEATURES_H
+#ifndef BCORE_FEATURE_H
+#define BCORE_FEATURE_H
 
 #include <stdarg.h>
 
@@ -85,5 +85,7 @@ typedef vd_t ( *bcore_fp_signal_handler )( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif // BCORE_FEATURES_H
+vd_t bcore_feature_signal_handler( const bcore_signal_s* o );
+
+#endif // BCORE_FEATURE_H
 

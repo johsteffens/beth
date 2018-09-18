@@ -93,6 +93,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_name_manager_signal_handler,
         bcore_function_manager_signal_handler,
         bcore_flect_signal_handler,
+        bcore_feature_signal_handler,
         bcore_trait_signal_handler,
         bcore_spect_signal_handler,
         bcore_sc_signal_handler,
