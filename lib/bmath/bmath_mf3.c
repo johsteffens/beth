@@ -2597,13 +2597,13 @@ static void eval_test( void )
 
     eval->density = 1.0;
     eval->rows = 20; eval->cols = 20; bmath_arr_mf3_eval_s_push( arr_eval, eval );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_trd    , ( fp_t )bmath_mf3_s_trd,     NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_evd_htp, ( fp_t )bmath_mf3_s_evd_htp, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_cld    , ( fp_t )bmath_mf3_s_decompose_cholesky, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lud    , ( fp_t )bmath_mf3_s_decompose_luc, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_inv    , ( fp_t )bmath_mf3_s_inv, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_pdf_inv, ( fp_t )bmath_mf3_s_pdf_inv, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_hsm_piv, ( fp_t )bmath_mf3_s_hsm_piv, NULL );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_trd    , ( fp_t )bmath_mf3_s_trd );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_evd_htp, ( fp_t )bmath_mf3_s_evd_htp );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_cld    , ( fp_t )bmath_mf3_s_decompose_cholesky );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lud    , ( fp_t )bmath_mf3_s_decompose_luc );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_inv    , ( fp_t )bmath_mf3_s_inv );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_pdf_inv, ( fp_t )bmath_mf3_s_pdf_inv );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_hsm_piv, ( fp_t )bmath_mf3_s_hsm_piv );
 
     eval->full = false;
     eval->rows = 10; eval->cols = 30; bmath_arr_mf3_eval_s_push( arr_eval, eval );
@@ -2612,14 +2612,14 @@ static void eval_test( void )
     eval->rows = 10; eval->cols = 30; bmath_arr_mf3_eval_s_push( arr_eval, eval );
     eval->rows = 30; eval->cols = 10; bmath_arr_mf3_eval_s_push( arr_eval, eval );
 
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd,     ( fp_t )bmath_mf3_s_qrd,     NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd_pmt, ( fp_t )bmath_mf3_s_qrd_pmt, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lqd,     ( fp_t )bmath_mf3_s_lqd,     NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_pmt_lqd, ( fp_t )bmath_mf3_s_pmt_lqd, NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_ubd,     ( fp_t )bmath_mf3_s_ubd,     NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lbd,     ( fp_t )bmath_mf3_s_lbd,     NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_svd,     ( fp_t )bmath_mf3_s_svd,     NULL );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_piv,     ( fp_t )bmath_mf3_s_piv,     NULL );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd,     ( fp_t )bmath_mf3_s_qrd );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd_pmt, ( fp_t )bmath_mf3_s_qrd_pmt );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lqd,     ( fp_t )bmath_mf3_s_lqd );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_pmt_lqd, ( fp_t )bmath_mf3_s_pmt_lqd );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_ubd,     ( fp_t )bmath_mf3_s_ubd );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lbd,     ( fp_t )bmath_mf3_s_lbd );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_svd,     ( fp_t )bmath_mf3_s_svd );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_piv,     ( fp_t )bmath_mf3_s_piv );
 
     BCORE_LIFE_DOWN();
 }

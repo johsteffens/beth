@@ -86,7 +86,8 @@ void bmath_mf3_eval_result_s_to_stdout( const bmath_mf3_eval_result_s* o );
 //----------------------------------------------------------------------------------------------------------------------
 
 /// runs evaluation and logs results if desired (log can be NULL)
-void bmath_mf3_eval_s_run(           const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log ); // using fp instead of o->fp
+void bmath_mf3_eval_s_run(           const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res ); // res can be NULL
+void bmath_mf3_eval_s_run_to_log(    const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log );
 void bmath_mf3_eval_s_run_to_stdout( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp  );
 
 /**********************************************************************************************************************/
@@ -107,8 +108,9 @@ static inline void bmath_arr_mf3_eval_s_push( bmath_arr_mf3_eval_s* o, const bma
     bcore_array_a_push( ( bcore_array* )o, sr_twc( TYPEOF_bmath_mf3_eval_s, v ) );
 }
 
-void bmath_arr_mf3_eval_s_run(           const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log ); // using fp instead of o->fp
-void bmath_arr_mf3_eval_s_run_to_stdout( const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp  );
+void bmath_arr_mf3_eval_s_run(           const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp ); // no logging
+void bmath_arr_mf3_eval_s_run_to_log(    const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log ); // using fp instead of o->fp
+void bmath_arr_mf3_eval_s_run_to_stdout( const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp );
 
 /**********************************************************************************************************************/
 

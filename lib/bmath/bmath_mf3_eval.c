@@ -990,7 +990,7 @@ void bmath_mf3_eval_s_run_hsm_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_eval_s_run( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
+void bmath_mf3_eval_s_run( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res )
 {
     ASSERT( fp != NULL );
     ASSERT( fp_type != 0 );
@@ -1026,6 +1026,23 @@ void bmath_mf3_eval_s_run( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_
         st_s_discard( s );
     }
 
+    if( res ) bmath_mf3_eval_result_s_copy( res, r );
+
+    BCORE_LIFE_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_eval_s_run_to_log( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
+{
+    ASSERT( fp != NULL );
+    ASSERT( fp_type != 0 );
+
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_mf3_eval_result_s, r );
+
+    bmath_mf3_eval_s_run( o, fp_type, fp, r );
+
     if( log ) bmath_mf3_eval_result_s_to_string( r, log );
 
     BCORE_LIFE_DOWN();
@@ -1036,7 +1053,7 @@ void bmath_mf3_eval_s_run( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_
 void bmath_mf3_eval_s_run_to_stdout( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp )
 {
     st_s* s = st_s_create();
-    bmath_mf3_eval_s_run( o, fp_type, fp, s );
+    bmath_mf3_eval_s_run_to_log( o, fp_type, fp, s );
     bcore_msg_fa( "#<sc_t>\n", s->sc );
     st_s_discard( s );
 }
@@ -1050,7 +1067,7 @@ static void bmath_mf3_eval_s_selftest( void )
     BCORE_LIFE_CREATE( bmath_mf3_eval_s, eval );
     eval->rows = 10;
     eval->cols = 10;
-    bmath_mf3_eval_s_run( eval, typeof( "bmath_fp_mf3_s_svd" ), ( fp_t )bmath_mf3_s_svd, NULL );
+    bmath_mf3_eval_s_run_to_log( eval, typeof( "bmath_fp_mf3_s_svd" ), ( fp_t )bmath_mf3_s_svd, NULL );
 
     BCORE_LIFE_DOWN();
 }
@@ -1061,9 +1078,14 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_mf3_eval_s ) "{ aware_t _; bmath
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_arr_mf3_eval_s_run( const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
+void bmath_arr_mf3_eval_s_run( const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp )
 {
-    for( uz_t i = 0; i < o->size; i++ ) bmath_mf3_eval_s_run( &o->data[ i ], fp_type, fp, log );
+    for( uz_t i = 0; i < o->size; i++ ) bmath_mf3_eval_s_run( &o->data[ i ], fp_type, fp, NULL );
+}
+
+void bmath_arr_mf3_eval_s_run_to_log( const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
+{
+    for( uz_t i = 0; i < o->size; i++ ) bmath_mf3_eval_s_run_to_log( &o->data[ i ], fp_type, fp, log );
 }
 
 void bmath_arr_mf3_eval_s_run_to_stdout( const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp )

@@ -15,6 +15,7 @@
 
 #include "bmath_signal.h"
 #include "bmath_types.h"
+#include "bmath_feature.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_spect_vector.h"
 #include "bmath_spect_matrix.h"
@@ -35,6 +36,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
     bcore_fp_signal_handler arr[] =
     {
         bmath_types_signal_handler,
+        bmath_feature_signal_handler,
         bmath_spect_algebraic_signal_handler,
         bmath_spect_vector_signal_handler,
         bmath_spect_matrix_signal_handler,
