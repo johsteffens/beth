@@ -2308,6 +2308,20 @@ void bmath_mf3_s_to_string( const bmath_mf3_s* o, st_s* string )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_to_image(  const bmath_mf3_s* o, bmath_fp_u2_argb_from_f3 fp, vd_t arg, bcore_img_u2_s* image )
+{
+    bcore_img_u2_s_set_size( image, o->rows, o->cols );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        for( sz_t j = 0; j < o->cols; j++ )
+        {
+            bcore_img_u2_s_set_pixel( image, i, j, fp( arg, o->data[ i * o->stride + j ] ) );
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
 {
     st_s* s = st_s_create();

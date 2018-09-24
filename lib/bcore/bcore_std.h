@@ -38,6 +38,7 @@
 #include "bcore_sinks.h"
 #include "bcore_sources.h"
 #include "bcore_arr.h"
+#include "bcore_img.h"
 #include "bcore_hmap.h"
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_st.h"

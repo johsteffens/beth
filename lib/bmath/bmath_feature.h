@@ -18,6 +18,8 @@
 
 #include "bcore_feature.h"
 
+typedef u2_t (*bmath_fp_u2_argb_from_f3 )( vd_t o, f3_t v ); // converts f3 value to argb pixel value
+
 /**********************************************************************************************************************/
 
 vd_t bmath_feature_signal_handler( const bcore_signal_s* o );

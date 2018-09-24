@@ -15,6 +15,7 @@
 
 #include "bmath_leaf.h"
 #include "bcore_flect.h"
+#include "bcore_img.h"
 
 /**********************************************************************************************************************/
 // bmath features for certain leaf types
@@ -55,6 +56,19 @@ static void bmath_s3_t_neg( const s3_t* o,                 s3_t* res ) { *res = 
 static void bmath_s3_t_sub( const s3_t* o, const s3_t* op, s3_t* res ) { *res = *o - *op; }
 static void bmath_s3_t_mul( const s3_t* o, const s3_t* op, s3_t* res ) { *res = *o * *op; }
 static void bmath_s3_t_one(       s3_t* o                            ) { *o   = 1;        }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+u2_t bmath_u2_argb_from_f3( vd_t o, f3_t v )
+{
+    if( v == 0 ) return 0;
+    u0_t r = ( v < 0 ) ? ( ( v >= -1.0 ) ? -v * ( 255 - 64 ) + 64 : 255 ) : 0;
+    u0_t g = ( v > 0 ) ? ( ( v <=  1.0 ) ?  v * ( 255 - 64 ) + 64 : 255 ) : 0;
+    u0_t b = ( f3_abs( v ) > 1.0 ) ? ( ( f3_abs( v ) - 1.0 ) / ( f3_abs( v ) ) ) * ( 255 - 64 ) + 64 : 64;
+    return bcore_img_u2_pixel_from_rgb( TYPEOF_bcore_img_u2_argb, r, g, b );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
@@ -101,6 +115,8 @@ vd_t bmath_leaf_signal_handler( const bcore_signal_s* o )
             bcore_flect_push_ns_func( TYPEOF_s3_t, ( fp_t )bmath_s3_t_sub, "bmath_fp_sub", "sub" );
             bcore_flect_push_ns_func( TYPEOF_s3_t, ( fp_t )bmath_s3_t_mul, "bmath_fp_mul", "mul" );
             bcore_flect_push_ns_func( TYPEOF_s3_t, ( fp_t )bmath_s3_t_one, "bmath_fp_one", "one" );
+
+            BCORE_REGISTER_FFUNC( bmath_fp_u2_argb_from_f3, bmath_u2_argb_from_f3 );
         }
         break;
 

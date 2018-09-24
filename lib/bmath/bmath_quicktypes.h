@@ -64,6 +64,7 @@ void bmath_quicktypes_create_header( sc_t folder );
 #define TYPEOF_bmath_pmt_s             4158722099
 #define TYPEOF_bmath_ring              2462086090
 #define TYPEOF_bmath_ring_s            1513035188
+#define TYPEOF_bmath_u2_argb_from_f3   4291127815
 #define TYPEOF_bmath_vcf3_s            3723112310
 #define TYPEOF_bmath_vector            4070600319
 #define TYPEOF_bmath_vector_s          1200091625

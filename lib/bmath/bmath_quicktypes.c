@@ -60,6 +60,9 @@ static sr_s typelist()
     bcore_array_r_push_sc( &list, "bmath_plot"          );
     bcore_array_r_push_sc( &list, "bmath_plot_s"        );
 
+    // features
+    bcore_array_r_push_sc( &list, "bmath_u2_argb_from_f3" );
+
     bmath_matrix_push_quicktypes( &list );
 
     bcore_array_r_sort( &list, 0, -1, 1 );

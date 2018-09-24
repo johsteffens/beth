@@ -38,11 +38,16 @@ BCORE_DECLARE_OBJECT( bmath_mf3_eval_s )
     f3_t density;    // random matrix density
     bl_t full;       // full vs thin decomposition (where applicable)
     f3_t near_limit; // limit for near-assertions
-    f3_t eps;        // for function requiring an epsilon
+    f3_t eps;        // for functions requiring an epsilon
 
-    bl_t log_a;      // log matrix a after conversion
-    bl_t log_u;      // log matrix u after conversion
-    bl_t log_v;      // log matrix v after conversion
+    bl_t create_a_log; // log matrix a after conversion
+    bl_t create_u_log; // log matrix u after conversion
+    bl_t create_v_log; // log matrix v after conversion
+
+    st_s a_img_file; // create image file of matrix a after conversion
+    st_s u_img_file; // create image file of matrix u after conversion
+    st_s v_img_file; // create image file of matrix v after conversion
+
     bl_t assert_all; // asserts correct matrix and computation result
 
     bl_t test0;      // runs minimal parameter test (ifapplicable)
@@ -59,9 +64,9 @@ BCORE_DECLARE_OBJECT( bmath_mf3_eval_result_s )
     uz_t cols;
     f3_t density;  // random matrix density
 
-    st_s log_a;    // log of matrix a
-    st_s log_u;    // log of matrix u
-    st_s log_v;    // log of matrix v
+    st_s a_log;    // log of matrix a
+    st_s u_log;    // log of matrix u
+    st_s v_log;    // log of matrix v
 
     bl_t assert_a; // assertion of shape a where applicable
     bl_t assert_u; // assertion of shape u where applicable

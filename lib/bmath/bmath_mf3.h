@@ -73,6 +73,7 @@
 
 #include "bcore_std.h"
 #include "bmath_hwflags.h"
+#include "bmath_feature.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_vector.h"
 #include "bmath_simd.h"
@@ -592,6 +593,7 @@ void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col
 
 // for easy inspection
 void bmath_mf3_s_to_string( const bmath_mf3_s* o, st_s* string );
+void bmath_mf3_s_to_image(  const bmath_mf3_s* o, bmath_fp_u2_argb_from_f3 fp, vd_t arg, bcore_img_u2_s* image );
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );
 
 /**********************************************************************************************************************/

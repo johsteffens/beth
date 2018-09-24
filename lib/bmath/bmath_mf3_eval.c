@@ -29,10 +29,15 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_eval_s )
     "f3_t near_limit = 1E-8;"
     "f3_t eps        = 1E-8;"  // for function requiring an epsilon
 
-    "bl_t log_a      = false;" // log matrix a after conversion
-    "bl_t log_u      = false;" // log matrix u after conversion
-    "bl_t log_v      = false;" // log matrix v after conversion
-    "bl_t assert_all = true; " // asserts correct matrix and computation result
+    "bl_t create_a_log = false;" // log matrix a after conversion
+    "bl_t create_u_log = false;" // log matrix u after conversion
+    "bl_t create_v_log = false;" // log matrix v after conversion
+
+    "st_s a_img_file;" // create image file of matrix a after conversion
+    "st_s u_img_file;" // create image file of matrix u after conversion
+    "st_s v_img_file;" // create image file of matrix v after conversion
+
+    "bl_t assert_all   = true; " // asserts correct matrix and computation result
 
     "bl_t test0 = true;"  // runs minimal parameter test
     "bl_t test1 = true;"  // runs default parameter test
@@ -48,9 +53,10 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_eval_result_s )
     "uz_t cols;"
     "f3_t density;"
 
-    "st_s log_a;"           // log of matrix a
-    "st_s log_u;"           // log of matrix u
-    "st_s log_v;"           // log of matrix v
+    "st_s a_log;"           // log of matrix a
+    "st_s u_log;"           // log of matrix u
+    "st_s v_log;"           // log of matrix v
+
     "bl_t assert_a = true;" // assertion of shape a where applicable
     "bl_t assert_u = true;" // assertion of shape u where applicable
     "bl_t assert_v = true;" // assertion of shape v where applicable
@@ -76,6 +82,21 @@ static void bmath_mf3_eval_result_s_set_defaults_from_eval( bmath_mf3_eval_resul
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static void bmath_mf3_eval_s_create_image_file( const bmath_mf3_eval_s* v, const bmath_mf3_s* mat, const st_s* file )
+{
+    if( file->size > 0 )
+    {
+        bcore_msg_fa( "creating '#<sc_t>'\n", file->sc );
+        BCORE_LIFE_INIT();
+        BCORE_LIFE_CREATE( bcore_img_u2_s, img );
+        bmath_mf3_s_to_image( mat, bmath_u2_argb_from_f3, NULL, img );
+        bcore_img_u2_s_pnm_to_file( img, file->sc );
+        BCORE_LIFE_DOWN();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_eval_result_s_to_string( const bmath_mf3_eval_result_s* o, st_s* string )
 {
     if( !string ) return;
@@ -95,9 +116,9 @@ void bmath_mf3_eval_result_s_to_string( const bmath_mf3_eval_result_s* o, st_s* 
     if( !o->assert_v ) st_s_push_fa( string, "assert_v ... false\n" );
     if( !o->assert_m ) st_s_push_fa( string, "assert_m ... false\n" );
 
-    if( o->log_a.size > 0 ) st_s_push_fa( string, "Matrix a #<sc_t>", o->log_a.sc );
-    if( o->log_u.size > 0 ) st_s_push_fa( string, "Matrix u #<sc_t>", o->log_u.sc );
-    if( o->log_v.size > 0 ) st_s_push_fa( string, "Matrix v #<sc_t>", o->log_v.sc );
+    if( o->a_log.size > 0 ) st_s_push_fa( string, "Matrix a #<sc_t>", o->a_log.sc );
+    if( o->u_log.size > 0 ) st_s_push_fa( string, "Matrix u #<sc_t>", o->u_log.sc );
+    if( o->v_log.size > 0 ) st_s_push_fa( string, "Matrix v #<sc_t>", o->v_log.sc );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -145,8 +166,9 @@ void bmath_mf3_eval_s_run_mul( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
         {
             CPU_TIME_OF( ( ( bmath_fp_mf3_s_mul )fp )( m0, m1, m2 ), r->time1 );
             bmath_mf3_s_mul_esp( m0, m1, m3 );
-            if( o->log_a ) bmath_mf3_s_to_string( m2, &r->log_a );
-            if( o->log_a ) bmath_mf3_s_to_string( m3, &r->log_a );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            bmath_mf3_eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -197,8 +219,9 @@ void bmath_mf3_eval_s_run_mul_htp( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
         {
             CPU_TIME_OF( ( ( bmath_fp_mf3_s_mul_htp )fp )( m0, m0, m2 ), r->time0 );
             bmath_mf3_s_mul_htp_esp( m0, m0, m3 );
-            if( o->log_a ) bmath_mf3_s_to_string( m2, &r->log_a );
-            if( o->log_a ) bmath_mf3_s_to_string( m3, &r->log_a );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            bmath_mf3_eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -207,8 +230,9 @@ void bmath_mf3_eval_s_run_mul_htp( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
         {
             CPU_TIME_OF( ( ( bmath_fp_mf3_s_mul_htp )fp )( m0, m1, m2 ), r->time1 );
             bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
-            if( o->log_a ) bmath_mf3_s_to_string( m2, &r->log_a );
-            if( o->log_a ) bmath_mf3_s_to_string( m3, &r->log_a );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            bmath_mf3_eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -308,14 +332,17 @@ void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+    if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+    bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
 
     if( o->test1 )
     {
         r->fdev_u = bmath_mf3_s_fdev_otn( u );
         r->fdev_v = bmath_mf3_s_fdev_otn( v );
-        if( o->log_u ) bmath_mf3_s_to_string( u, &r->log_u );
-        if( o->log_v ) bmath_mf3_s_to_string( v, &r->log_v );
+        if( o->create_u_log ) bmath_mf3_s_to_string( u, &r->u_log );
+        if( o->create_v_log ) bmath_mf3_s_to_string( v, &r->v_log );
+        bmath_mf3_eval_s_create_image_file( o, u, &o->u_img_file );
+        bmath_mf3_eval_s_create_image_file( o, v, &o->v_img_file );
         r->assert_u = bmath_mf3_s_is_near_otn( u, o->near_limit );
         r->assert_v = bmath_mf3_s_is_near_otn( v, o->near_limit );
 
@@ -375,7 +402,7 @@ void bmath_mf3_eval_s_run_ua( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
             r->assert_a = r->assert_a && bmath_mf3_s_is_utr( a );
         }
 
-        if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+        if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_qrd_pmt )
     {
@@ -406,10 +433,10 @@ void bmath_mf3_eval_s_run_ua( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
             if( a->data[ i * ( a->stride + 1 ) ] < 0 ) r->assert_a = false;
         }
 
-        if( o->log_a )
+        if( o->create_a_log )
         {
-            bmath_mf3_s_to_string( a, &r->log_a );
-            bmath_pmt_s_to_string( p, &r->log_a );
+            bmath_mf3_s_to_string( a, &r->a_log );
+            bmath_pmt_s_to_string( p, &r->a_log );
         }
         bmath_mf3_s_mul_pmt_htp( a, p, a );
     }
@@ -421,7 +448,9 @@ void bmath_mf3_eval_s_run_ua( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
     if( o->test1 )
     {
         r->fdev_u = bmath_mf3_s_fdev_otn( u );
-        if( o->log_u ) bmath_mf3_s_to_string( u, &r->log_u );
+        if( o->create_u_log ) bmath_mf3_s_to_string( u, &r->u_log );
+        bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
+        bmath_mf3_eval_s_create_image_file( o, u, &o->u_img_file );
         r->assert_u = bmath_mf3_s_is_near_otn( u, o->near_limit );
 
         bmath_mf3_s_set_size( m2, u->rows, a->cols );
@@ -481,7 +510,7 @@ void bmath_mf3_eval_s_run_av( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
             r->assert_a = r->assert_a && bmath_mf3_s_is_ltr( a );
         }
 
-        if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+        if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_pmt_lqd )
     {
@@ -511,10 +540,10 @@ void bmath_mf3_eval_s_run_av( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
             if( a->data[ i * ( a->stride + 1 ) ] < 0 ) r->assert_a = false;
         }
 
-        if( o->log_a )
+        if( o->create_a_log )
         {
-            bmath_pmt_s_to_string( p, &r->log_a );
-            bmath_mf3_s_to_string( a, &r->log_a );
+            bmath_pmt_s_to_string( p, &r->a_log );
+            bmath_mf3_s_to_string( a, &r->a_log );
         }
         bmath_mf3_s_pmt_mul( a, p, a );
     }
@@ -526,7 +555,9 @@ void bmath_mf3_eval_s_run_av( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
     if( o->test1 )
     {
         r->fdev_v = bmath_mf3_s_fdev_otn( v );
-        if( o->log_v ) bmath_mf3_s_to_string( v, &r->log_v );
+        if( o->create_v_log ) bmath_mf3_s_to_string( v, &r->v_log );
+        bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
+        bmath_mf3_eval_s_create_image_file( o, v, &o->v_img_file );
         r->assert_v = bmath_mf3_s_is_near_otn( v, o->near_limit );
 
         bmath_mf3_s_set_size( m2, a->rows, v->rows );
@@ -626,8 +657,10 @@ void bmath_mf3_eval_s_run_sym_uau_htp( const bmath_mf3_eval_s* o, tp_t fp_type, 
     if( o->test1 )
     {
         r->fdev_v = bmath_mf3_s_fdev_otn( v );
-        if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
-        if( o->log_v ) bmath_mf3_s_to_string( v, &r->log_v );
+        if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+        if( o->create_v_log ) bmath_mf3_s_to_string( v, &r->v_log );
+        bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
+        bmath_mf3_eval_s_create_image_file( o, v, &o->v_img_file );
         r->assert_v = bmath_mf3_s_is_near_otn( v, o->near_limit );
 
         bmath_mf3_s_set_size( m2, n, n );
@@ -678,7 +711,8 @@ void bmath_mf3_eval_s_run_cld( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+    if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+    bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
 
     bmath_mf3_s_set_size( m2, n, n );
     bmath_mf3_s_mul_htp_esp( a, a, m2 );
@@ -727,7 +761,8 @@ void bmath_mf3_eval_s_run_lud( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+    if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+    bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
 
     bmath_mf3_s_set_size( m1, n, n );
     bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, &rval );
@@ -781,7 +816,8 @@ void bmath_mf3_eval_s_run_inv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+    if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+    bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
 
     bmath_mf3_s_set_size( m2, n, n );
     bmath_mf3_s_mul_esp( m0, a, m2 );
@@ -828,7 +864,8 @@ void bmath_mf3_eval_s_run_pdf_inv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+    if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+    bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
 
     bmath_mf3_s_set_size( m2, n, n );
     bmath_mf3_s_mul_esp( m0, a, m2 );
@@ -878,7 +915,8 @@ void bmath_mf3_eval_s_run_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
             ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
         }
 
-        if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+        if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+        bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
 
         bmath_mf3_s_set_size( m2, uz_min( m, n ), uz_min( m, n ) );
 
@@ -912,7 +950,8 @@ void bmath_mf3_eval_s_run_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
             ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
         }
 
-        if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+        if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+        bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
 
         bmath_mf3_s_set_size( m1, m, m );
         bmath_mf3_s_set_size( m2, m, n );
@@ -976,7 +1015,8 @@ void bmath_mf3_eval_s_run_hsm_piv( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    if( o->log_a ) bmath_mf3_s_to_string( a, &r->log_a );
+    if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+    bmath_mf3_eval_s_create_image_file( o, a, &o->a_img_file );
 
     bmath_mf3_s_set_size( m2, n, n );
     bmath_mf3_s_mul_esp( m0, a, m2 );
