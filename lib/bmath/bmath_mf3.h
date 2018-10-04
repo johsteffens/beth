@@ -89,6 +89,12 @@ typedef struct bmath_mf3_s bmath_mf3_s;
 typedef void (*bmath_fp_mf3_s_mul     )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 typedef void (*bmath_fp_mf3_s_mul_htp )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
+typedef void (*bmath_fp_mf3_s_uav     )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // uav decomposition
+typedef void (*bmath_fp_mf3_s_ua      )( bmath_mf3_s* u, bmath_mf3_s* a                 ); //  ua decomposition
+typedef void (*bmath_fp_mf3_s_av      )(                 bmath_mf3_s* a, bmath_mf3_s* v ); //  av decomposition
+typedef void (*bmath_fp_mf3_s_uau     )( bmath_mf3_s* u, bmath_mf3_s* a                 ); // uau decomposition
+typedef void (*bmath_fp_mf3_s_vav     )(                 bmath_mf3_s* a, bmath_mf3_s* v ); // vav decomposition
+
 typedef void (*bmath_fp_mf3_s_trd_htp )(                 bmath_mf3_s* a, bmath_mf3_s* v );
 typedef void (*bmath_fp_mf3_s_trd     )(                 bmath_mf3_s* a, bmath_mf3_s* v );
 typedef bl_t (*bmath_fp_mf3_s_evd_htp )(                 bmath_mf3_s* a, bmath_mf3_s* v );
@@ -108,31 +114,7 @@ typedef bl_t (*bmath_fp_mf3_s_piv     )( const bmath_mf3_s* o, f3_t eps, bmath_m
 typedef bl_t (*bmath_fp_mf3_s_hsm_piv )( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res );
 
 /// quicktypes for matrix
-static inline void bmath_matrix_push_quicktypes( sr_s* list )
-{
-    bcore_array_r_push_sc( list, "bmath_mf3_s" );
-
-    // features
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul_htp" );
-
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_trd_htp" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_trd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_evd_htp" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_svd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_ubd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lbd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd_pmt" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lqd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_pmt_lqd" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_cld"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lud"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_inv"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_pdf_inv" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_piv"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_hsm_piv" );
-}
+void bmath_matrix_push_quicktypes( sr_s* list );
 
 /**********************************************************************************************************************/
 /// Matrix object of f3_t

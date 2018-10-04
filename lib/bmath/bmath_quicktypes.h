@@ -33,6 +33,7 @@ void bmath_quicktypes_create_header( sc_t folder );
 #define TYPEOF_bmath_arr_vf3_s         3268702147
 #define TYPEOF_bmath_cf3_s             2506167476
 #define TYPEOF_bmath_estimator_s       3775440224
+#define TYPEOF_bmath_fp_mf3_s_av       3294593231
 #define TYPEOF_bmath_fp_mf3_s_cld      3327146305
 #define TYPEOF_bmath_fp_mf3_s_evd_htp  2695903694
 #define TYPEOF_bmath_fp_mf3_s_hsm_piv  3530555096
@@ -50,7 +51,11 @@ void bmath_quicktypes_create_header( sc_t folder );
 #define TYPEOF_bmath_fp_mf3_s_svd      4111686299
 #define TYPEOF_bmath_fp_mf3_s_trd      1671436858
 #define TYPEOF_bmath_fp_mf3_s_trd_htp   669071001
+#define TYPEOF_bmath_fp_mf3_s_ua       3913393658
+#define TYPEOF_bmath_fp_mf3_s_uau      3243745309
+#define TYPEOF_bmath_fp_mf3_s_uav      3193412452
 #define TYPEOF_bmath_fp_mf3_s_ubd      2723492025
+#define TYPEOF_bmath_fp_mf3_s_vav       749029037
 #define TYPEOF_bmath_group             1421936371
 #define TYPEOF_bmath_group_s           1219600405
 #define TYPEOF_bmath_grt_f3_s          3367654153

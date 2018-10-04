@@ -27,6 +27,40 @@
 #include <stdio.h>
 
 /**********************************************************************************************************************/
+
+void bmath_matrix_push_quicktypes( sr_s* list )
+{
+    bcore_array_r_push_sc( list, "bmath_mf3_s" );
+
+    // features
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul_htp" );
+
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_uav" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_ua"  );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_av"  );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_uau" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_vav" );
+
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_trd_htp" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_trd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_evd_htp" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_svd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_ubd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lbd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd_pmt" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lqd"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_pmt_lqd" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_cld"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lud"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_inv"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_pdf_inv" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_piv"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_hsm_piv" );
+}
+
+/**********************************************************************************************************************/
 /// Matrix object of f3_t
 
 BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf3_s )
@@ -2649,6 +2683,13 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
             // features
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_mul );
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_mul_htp );
+
+            BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_uav );
+            BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_ua  );
+            BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_av  );
+            BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_uau );
+            BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_vav );
+
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_trd_htp );
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_trd );
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_evd_htp );

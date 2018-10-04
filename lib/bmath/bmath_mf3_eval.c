@@ -279,12 +279,26 @@ void bmath_mf3_eval_s_run_uav( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp,
     bmath_mf3_s_zro( u );
     bmath_mf3_s_zro( v );
 
-    if( fp_type == TYPEOF_bmath_fp_mf3_s_svd )
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_uav )
     {
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_svd )fp )( NULL, a, NULL ), r->time0 );
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_uav )fp )( NULL, a, NULL ), r->time0 );
+        }
+
+        if( o->test1 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_uav )fp )( u, a, v ), r->time1 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_svd )
+    {
+        if( o->test0 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            CPU_TIME_OF( r->success0 = ( ( bmath_fp_mf3_s_svd )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_dag( a );
         }
 
@@ -386,7 +400,23 @@ void bmath_mf3_eval_s_run_ua( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
     bmath_mf3_s_zro( a );
     bmath_mf3_s_zro( u );
 
-    if( fp_type == TYPEOF_bmath_fp_mf3_s_qrd )
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_ua )
+    {
+        if( o->test0 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_ua )fp )( NULL, a ), r->time0 );
+        }
+
+        if( o->test1 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_ua )fp )( u, a ), r->time1 );
+        }
+
+        if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+    }
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_qrd )
     {
         if( o->test0 )
         {
@@ -494,7 +524,23 @@ void bmath_mf3_eval_s_run_av( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, 
     bmath_mf3_s_zro( a );
     bmath_mf3_s_zro( v );
 
-    if( fp_type == TYPEOF_bmath_fp_mf3_s_lqd )
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_av )
+    {
+        if( o->test0 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_av )fp )( a, NULL ), r->time0 );
+        }
+
+        if( o->test1 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_av )fp )( a, v ), r->time1 );
+        }
+
+        if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
+    }
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_lqd )
     {
         if( o->test0 )
         {
@@ -599,7 +645,36 @@ void bmath_mf3_eval_s_run_sym_uau_htp( const bmath_mf3_eval_s* o, tp_t fp_type, 
     bmath_mf3_s_zro( a );
     bmath_mf3_s_zro( v );
 
-    if( fp_type == TYPEOF_bmath_fp_mf3_s_trd_htp )
+    if( fp_type == TYPEOF_bmath_fp_mf3_s_uau )
+    {
+        if( o->test0 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_uau )fp )( NULL, a ), r->time0 );
+        }
+
+        if( o->test1 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_uau )fp )( v, a ), r->time1 );
+            bmath_mf3_s_htp( v, v );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_vav )
+    {
+        if( o->test0 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_vav )fp )( a, NULL ), r->time0 );
+        }
+
+        if( o->test1 )
+        {
+            bmath_mf3_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_vav )fp )( a, v ), r->time1 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_trd_htp )
     {
         if( o->test0 )
         {
@@ -1040,6 +1115,11 @@ void bmath_mf3_eval_s_run( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bma
 
     if(      fp_type == TYPEOF_bmath_fp_mf3_s_mul     ) bmath_mf3_eval_s_run_mul(         o, fp_type, fp, r );
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_mul_htp ) bmath_mf3_eval_s_run_mul_htp(     o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_uav     ) bmath_mf3_eval_s_run_uav(         o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_ua      ) bmath_mf3_eval_s_run_ua(          o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_av      ) bmath_mf3_eval_s_run_av(          o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_uau     ) bmath_mf3_eval_s_run_sym_uau_htp( o, fp_type, fp, r );
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_vav     ) bmath_mf3_eval_s_run_sym_uau_htp( o, fp_type, fp, r );
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_svd     ) bmath_mf3_eval_s_run_uav(         o, fp_type, fp, r );
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_ubd     ) bmath_mf3_eval_s_run_uav(         o, fp_type, fp, r );
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_lbd     ) bmath_mf3_eval_s_run_uav(         o, fp_type, fp, r );
