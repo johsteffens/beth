@@ -298,7 +298,9 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *     spect   : Perspective of parent object (private shallow link). Initialized by spect_inst. Private to other perspectives.
  *     const   : Constant. Requires default value. No physical representation in object. Typically used as perspective-parameter.
  *
- *  Function:
+ *  Static Function:
+ *    A static function resembles a C++ class member function.
+ *    It does not occupy physical space in the object.
  *    func <type> <name> = <ftype>;  // ftype is the name for the function registered with BCORE_REGISTER_(F)FUNC
  *    func <type> <name>;            // ftype is the generic name: <object type>_<function name>
  *    Examples:
@@ -307,6 +309,15 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *      func bmath_fp_add add = myobject_s_add;                // same as above in case object is 'myobject_s'
  *      func bmath_fp:vector_mul = bmath_vf3_s_mul;
  *      func bmath_fp_vector_mul vector_mul = bmath_vf3_s_mul; // same as above
+ *
+ *  Dynamic Function:
+ *    A dynamic function is given by a function_pointer (fp_t or registered feature)
+ *    It can optionally be initialized with a registered function.
+ *    <type> <name> [= <ftype>];  // ftype is the name for the function registered with BCORE_REGISTER_(F)FUNC
+ *    If <type> is a registered feature, then <ftype> must be of that feature. This is tested during parsing.
+ *
+ *    Examples:
+ *      my_feature_fp my_func = my_registered_default_func;
  *
  *  Feature:
  *    [strict] feature  [<prefixes>] <type> [<qualifier>] <name> [=<default>] [~> <related expression> ];

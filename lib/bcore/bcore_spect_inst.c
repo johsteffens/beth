@@ -215,7 +215,36 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
                         case TYPEOF_tp_t: *( tp_t* )dst_obj = self_item->default_tp; break;
                         case TYPEOF_bl_t: *( bl_t* )dst_obj = self_item->default_bl; break;
                         case TYPEOF_offset_t: *( offset_t* )dst_obj = self_item->default_uz; break;
-                        default: ERR( "Default value not supported for type '%s'", ifnameof( self_item->type ) );
+
+                        case TYPEOF_fp_t: // expect a function registered in function_manager
+                        {
+                            fp_t fp = bcore_function_get( self_item->default_tp );
+                            if( !fp )
+                            {
+                                ERR_fa( "Initializing '#<sc_t>': Default function '#<sc_t>' not found.", ifnameof( p->header.o_type ), ifnameof( self_item->default_tp ) );
+                            }
+                            *( fp_t* )dst_obj = fp;
+                        }
+                        break;
+
+                        default:
+                        {
+                            if( self_item->flags.f_fp ) // expect a function registered in function_manager
+                            {
+                                fp_t fp = bcore_function_get( self_item->default_tp );
+                                if( !fp )
+                                {
+                                    ERR_fa( "Initializing '#<sc_t>': Default function '#<sc_t>' not found.", ifnameof( p->header.o_type ), ifnameof( self_item->default_tp ) );
+                                }
+                                *( fp_t* )dst_obj = fp;
+                            }
+                            else
+                            {
+                                ERR( "Default value not supported for type '%s'", ifnameof( self_item->type ) );
+                            }
+                        }
+                        break;
+
                     }
                 }
             }

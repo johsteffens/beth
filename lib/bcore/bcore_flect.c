@@ -569,7 +569,50 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
                     }
                     break;
 
-                    default: bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent ), ifnameof( o->type ) );
+                    case TYPEOF_fp_t:
+                    {
+                        st_s* name = st_s_create();
+                        bcore_source_r_parse_fa( &src, " #name", name );
+                        tp_t func_tp = typeof( name->sc );
+                        if( !bcore_function_exists( func_tp ) )
+                        {
+                            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not a registered function.", ifnameof( parent ), name->sc );
+                        }
+                        st_s_discard( name );
+                        o->default_tp = func_tp;
+                    }
+                    break;
+
+                    default:
+                    {
+                        if( o->flags.f_fp ) // assume registered feature
+                        {
+                            st_s* name = st_s_create();
+                            bcore_source_r_parse_fa( &src, " #name", name );
+                            tp_t func_tp = typeof( name->sc );
+
+                            if( !bcore_function_exists( func_tp ) )
+                            {
+                                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not a registered function.", ifnameof( parent ), name->sc );
+                            }
+
+                            if( bcore_trait_exists( o->type ) )
+                            {
+                                if( !bcore_trait_is_of( func_tp, o->type ) )
+                                {
+                                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' is not of feature '#<sc_t>'.", ifnameof( parent ), name->sc, ifnameof( o->type ) );
+                                }
+                            }
+
+                            st_s_discard( name );
+
+                            o->default_tp = func_tp;
+                        }
+                        else
+                        {
+                            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent ), ifnameof( o->type ) );
+                        }
+                    }
                 }
             }
             else
