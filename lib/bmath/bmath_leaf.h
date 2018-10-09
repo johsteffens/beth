@@ -32,6 +32,7 @@
 static const f3_t f3_lim_min = DBL_MIN;     // minimum normalized representable positive number
 static const f3_t f3_lim_max = DBL_MAX;     // maximum normalized representable positive number
 static const f3_t f3_lim_eps = DBL_EPSILON; // minimum representable positive difference to 1.0
+static const f3_t f3_lim_inf = INFINITY;    // floating point representation of infinity
 
 /// math constants
 static inline f3_t f3_pi( void )   { return 3.1415926535897932384626434; } // PI
