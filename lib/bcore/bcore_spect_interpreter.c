@@ -35,7 +35,7 @@ static void interpreter_s_define_trait()
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
-BCORE_DEFINE_SPECT( bcore_interpreter_s )
+BCORE_DEFINE_SPECT( bcore_inst, bcore_interpreter )
 "{"
     "bcore_spect_header_s header;"
     "strict feature bcore_fp:interpret;"
@@ -100,7 +100,7 @@ vd_t bcore_spect_interpreter_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             interpreter_s_define_trait();
-            BCORE_REGISTER_SPECT( bcore_interpreter_s );
+            BCORE_REGISTER_SPECT( bcore_interpreter );
         }
         break;
 

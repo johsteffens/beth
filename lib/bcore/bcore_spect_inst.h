@@ -68,8 +68,7 @@ typedef struct bcore_inst_o
     vd_t o;
 } bcore_inst_o;
 
-typedef struct bcore_inst bcore_inst;
-BCORE_DECLARE_SPECT( bcore_inst_s )
+BCORE_DECLARE_SPECT( bcore_inst )
 {
     bcore_spect_header_s header;
 
@@ -186,6 +185,9 @@ sr_s bcore_inst_r_clone_sr( const sr_s* o ); // returns perspective of o
  */
 void bcore_inst_p_check_sizeof( const bcore_inst_s* o, uz_t size );
 void bcore_inst_t_check_sizeof(             tp_t type, uz_t size );
+
+/**********************************************************************************************************************/
+// macros
 
 #define BCORE_DEFINE_FUNCTION_INIT_INST( name ) void name##_init( name* o ) { bcore_inst_t_init( TYPEOF_##name, (bcore_inst*)o ); }
 #define BCORE_DEFINE_FUNCTION_DOWN_INST( name ) void name##_down( name* o ) { bcore_inst_t_down( TYPEOF_##name, (bcore_inst*)o ); }

@@ -21,8 +21,15 @@
 #include "bcore_st.h"
 #include "bcore_sr.h"
 
+/**********************************************************************************************************************/
+
 /** Collection of frequently used specific arrays compatible with bcore_array_s
  *  Standard functions are directly implemented.
+ *
+ *  Note:
+ *  Many arrays are implemented low-level without extensive use of perspectives and macros.
+ *  One reason is to allow their usage in the core infrastructure (e.g. initialization and shut down)
+ *  For less sensitive array declaration/definition consider using macros in bcore_spect_array.h.
  */
 
 /**********************************************************************************************************************/

@@ -20,7 +20,7 @@
 /**********************************************************************************************************************/
 // bmath_group_s
 
-BCORE_DEFINE_SPECT( bmath_group_s )
+BCORE_DEFINE_SPECT( bcore_inst, bmath_group )
 "{"
     "bcore_spect_header_s header;"
     "strict feature bcore_inst_s -> spect_inst;"
@@ -52,7 +52,7 @@ void bmath_group_default_cpy( const bmath_group_s* p, const bmath_group* o, bmat
 
 // bmath_ring_s
 
-BCORE_DEFINE_SPECT( bmath_ring_s )
+BCORE_DEFINE_SPECT( bcore_inst, bmath_ring )
 "{"
     "bcore_spect_header_s header;"
     "strict feature bcore_inst_s -> spect_inst;"
@@ -148,8 +148,8 @@ vd_t bmath_spect_algebraic_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bmath_fp_mlt );
 
             // reflections
-            BCORE_REGISTER_SPECT( bmath_group_s );
-            BCORE_REGISTER_SPECT( bmath_ring_s );
+            BCORE_REGISTER_SPECT( bmath_group );
+            BCORE_REGISTER_SPECT( bmath_ring );
         }
         break;
 

@@ -348,11 +348,6 @@ bl_t bcore_via_default_iis_link( const bcore_via_s* p, const bcore_via* o, uz_t 
 
 /**********************************************************************************************************************/
 
-static void via_s_define_trait()
-{
-    bcore_trait_set( entypeof( "bcore_via" ), entypeof( "bcore_inst" ) );
-}
-
 static bcore_via_s* bcore_via_s_create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
@@ -482,7 +477,7 @@ static bcore_via_s* bcore_via_s_create_from_self( const bcore_self_s* self )
     return o;
 }
 
-BCORE_DEFINE_SPECT( bcore_via_s )
+BCORE_DEFINE_SPECT( bcore_inst, bcore_via )
 "{"
     "bcore_spect_header_s header;"
     "private bcore_inst_s* inst_p;"
@@ -605,7 +600,7 @@ vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            via_s_define_trait();
+            bcore_trait_set( entypeof( "bcore_via" ), bcore_via_s_parent_type_g );
             bcore_flect_define_creator( typeof( "bcore_via_s" ), bcore_via_s_create_self );
             bcore_spect_setup_cache( &bcore_via_s_cache_g );
 

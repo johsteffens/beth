@@ -39,7 +39,7 @@ BCORE_DEFINE_FUNCTION_DISCARD( bclos_closure_s )
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_SPECT( bclos_closure_s )
+BCORE_DEFINE_SPECT( bcore_inst, bclos_closure )
 "{\
     bcore_spect_header_s  header;\
     bclos_signature_s => static_sig;\
@@ -116,7 +116,7 @@ vd_t bclos_spect_closure_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bclos_closure_fp_create_static_sig );
 
             BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bclos_closure_s_create_from_self );
-            BCORE_REGISTER_SPECT( bclos_closure_s );
+            BCORE_REGISTER_SPECT( bclos_closure );
 
             /// language specific closures
             bcore_trait_set( typeof( "bclos_language_closure" ), typeof( "bclos_closure" ) );

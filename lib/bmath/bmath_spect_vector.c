@@ -20,7 +20,7 @@
 /**********************************************************************************************************************/
 
 
-BCORE_DEFINE_SPECT( bmath_vector_s )
+BCORE_DEFINE_SPECT( bcore_inst, bmath_vector )
 "{"
     "bcore_spect_header_s header;"
     "private        bmath_ring_s  -> spect_ring_scalar;"
@@ -367,7 +367,7 @@ vd_t bmath_spect_vector_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bmath_fp_vector_mul_scl );
             BCORE_REGISTER_FEATURE( bmath_fp_vector_mul_vec );
             BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bmath_vector_s_create_from_self );
-            BCORE_REGISTER_SPECT( bmath_vector_s );
+            BCORE_REGISTER_SPECT( bmath_vector );
         }
         break;
 

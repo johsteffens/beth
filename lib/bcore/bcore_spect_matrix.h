@@ -27,8 +27,7 @@
 
 /**********************************************************************************************************************/
 
-typedef struct bcore_matrix bcore_matrix;
-BCORE_DECLARE_SPECT( bcore_matrix_s )
+BCORE_DECLARE_SPECT( bcore_matrix )
 {
     bcore_spect_header_s header;
     const bcore_array_s* spect_array;

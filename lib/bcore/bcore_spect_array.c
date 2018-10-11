@@ -24,7 +24,7 @@
 /**********************************************************************************************************************/
 // bcore_array_s
 
-BCORE_DEFINE_SPECT( bcore_array_s )
+BCORE_DEFINE_SPECT( bcore_inst, bcore_array )
 "{"
     "bcore_spect_header_s header;"
     "func bcore_spect_fp:create_from_self;"
@@ -1853,7 +1853,7 @@ vd_t bcore_spect_array_signal_handler( const bcore_signal_s* o )
         {
             array_s_define_trait();
             BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bcore_array_s_create_from_self );
-            BCORE_REGISTER_SPECT( bcore_array_s );
+            BCORE_REGISTER_SPECT( bcore_array );
         }
         break;
 

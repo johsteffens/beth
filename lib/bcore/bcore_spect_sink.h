@@ -25,8 +25,7 @@
 typedef void (*bcore_sink_fp_set_consumer)( vd_t o, vd_t consumer );  // to create a chain of sink units
 typedef void (*bcore_sink_fp_flush       )( vd_t o                );  // flushes buffers
 
-typedef struct bcore_sink bcore_sink;
-BCORE_DECLARE_SPECT( bcore_sink_s )
+BCORE_DECLARE_SPECT( bcore_sink )
 {
     bcore_spect_header_s header;
     bcore_fp_flow_snk          push_data;

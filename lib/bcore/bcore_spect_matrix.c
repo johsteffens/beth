@@ -21,7 +21,7 @@
 
 #define NPX( name ) bcore_matrix_##name
 
-BCORE_DEFINE_SPECT( bcore_matrix_s )
+BCORE_DEFINE_SPECT( bcore_inst, bcore_matrix )
 "{"
     "bcore_spect_header_s header;"
     "private bcore_array_s* spect_array;"
@@ -75,7 +75,7 @@ vd_t bcore_spect_matrix_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             BCORE_REGISTER_FFUNC( bcore_spect_fp_create_from_self, bcore_matrix_s_create_from_self );
-            BCORE_REGISTER_SPECT( bcore_matrix_s );
+            BCORE_REGISTER_SPECT( bcore_matrix );
         }
         break;
 

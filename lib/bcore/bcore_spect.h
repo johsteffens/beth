@@ -81,7 +81,18 @@ void bcore_spect_setup_cache( bcore_tp_fastmap_s* cache );
 /** Generic perspective functions assuming all information is stored in reflections.
  *  These functions make use of bcore_inst_s
  */
-void bcore_spect_define_trait(     const bcore_self_s* p_self );
+
+/** Creates a trade of nameof( p_self->type ) without trailing '_s'
+ *  which is child to parent_trade.
+ * 'parent_trade' is usually the trade of a perspective that could be considered a base-class
+ *  in a traditional class hierarchy.
+ *  Example: 'bcore_array_s' defines trade 'bcore_array' parent of 'bcore_inst'
+ *
+ *  This function also checks if p_self fulfills the requirements of a perspective
+ *  It is to be called during the system-init-cycle.
+ */
+
+void bcore_spect_define_trait(     const bcore_self_s* p_self, tp_t parent_trade );
 vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_s* o_self );
 vd_t bcore_spect_create_from_self_typed( tp_t p_type, tp_t o_type );
 
@@ -89,7 +100,7 @@ vd_t bcore_spect_create_from_self_typed( tp_t p_type, tp_t o_type );
  *  This function create a temporary instance of self and calls
  *  bcore_spect_define_trait
  */
-void bcore_spect_define_creator( tp_t type, bcore_flect_create_self_fp creator );
+void bcore_spect_define_creator( tp_t type, tp_t parent_trait, bcore_flect_create_self_fp creator );
 
 /**********************************************************************************************************************/
 
@@ -140,27 +151,37 @@ void bcore_spect_missing_err( vc_t p, sc_t name );
         return name##_get_typed( *( const aware_t* )obj ); \
     }
 
+/** Spect declaration, definition and registration:
+  * The 'name' must be specified without '_s', which will be appended automatically.
+  * The procedure will define the following types and traits during system init:
+  *   typedef struct name name;
+  *   typedef struct name_s name_s;
+  *   bcore_trait_set( entypeof( "name" ), entypeof( "bcore_inst" ) );
+  */
+
 // Optionally conclude with semicolon and continue
 // struct-body via BCORE_DECLARE_SPECT_BODY
 #define BCORE_DECLARE_SPECT( name ) \
     typedef struct name name; \
-    BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( name ) \
-    BCORE_DEFINE_INLINE_SPECT_GET_AWARE( name ) \
-    struct name
+    typedef struct name##_s name##_s; \
+    BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( name##_s ) \
+    BCORE_DEFINE_INLINE_SPECT_GET_AWARE( name##_s ) \
+    struct name##_s
 
 // Body definition only
 #define BCORE_DECLARE_SPECT_BODY( name ) \
-    struct name
+    struct name##_s
 
-#define BCORE_DEFINE_SPECT( name ) \
-    static sc_t name##_def_g; \
-    BCORE_DEFINE_SPECT_CACHE( name ); \
-    BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \
-    static sc_t name##_def_g = #name " = spect"
+#define BCORE_DEFINE_SPECT( parent_type, name ) \
+    static sc_t name##_s_def_g; \
+    static const tp_t name##_s_parent_type_g = TYPEOF_##parent_type; \
+    BCORE_DEFINE_SPECT_CACHE( name##_s ); \
+    BCORE_DEFINE_CREATE_SELF( name##_s, name##_s_def_g ) \
+    static sc_t name##_s_def_g = #name "_s = spect"
 
 #define BCORE_REGISTER_SPECT( name )\
-    bcore_spect_setup_cache( &name##_cache_g ); \
-    bcore_spect_define_creator( typeof( #name ), name##_create_self );
+    bcore_spect_setup_cache( &name##_s_cache_g ); \
+    bcore_spect_define_creator( typeof( #name "_s" ), name##_s_parent_type_g, name##_s_create_self );
 
 
 /**********************************************************************************************************************/

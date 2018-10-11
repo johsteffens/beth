@@ -32,7 +32,7 @@ static void translator_s_define_trait()
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
 
-BCORE_DEFINE_SPECT( bcore_translator_s )
+BCORE_DEFINE_SPECT( bcore_inst, bcore_translator )
 "{"
     "bcore_spect_header_s header;"
     "strict feature bcore_fp:translate;"
@@ -62,7 +62,7 @@ vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             translator_s_define_trait();
-            BCORE_REGISTER_SPECT( bcore_translator_s );
+            BCORE_REGISTER_SPECT( bcore_translator );
         }
         break;
 

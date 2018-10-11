@@ -34,7 +34,7 @@ typedef void (*bmath_fp_matrix_mul_scl )( bmath_matrix* or,       vc_t m1, vc_t 
 
 /**********************************************************************************************************************/
 
-BCORE_DECLARE_SPECT( bmath_matrix_s )
+BCORE_DECLARE_SPECT( bmath_matrix )
 {
     bcore_spect_header_s header;
 

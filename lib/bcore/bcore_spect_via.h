@@ -53,8 +53,7 @@ typedef struct bcore_vitem_s
     bcore_fp_set fp_set;       // optional explicit setter
 } bcore_vitem_s;
 
-typedef struct bcore_via bcore_via;
-BCORE_DECLARE_SPECT( bcore_via_s )
+BCORE_DECLARE_SPECT( bcore_via )
 {
     bcore_spect_header_s  header;
     const bcore_inst_s* inst_p; // inst perspective of this item

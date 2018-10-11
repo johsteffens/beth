@@ -45,7 +45,7 @@ typedef void (*bmath_fp_vector_mul_vec )( const bmath_vector* o, vc_t vec_op, vd
 
 /**********************************************************************************************************************/
 
-BCORE_DECLARE_SPECT( bmath_vector_s )
+BCORE_DECLARE_SPECT( bmath_vector )
 {
     bcore_spect_header_s header;
     const bmath_ring_s*  spect_ring_scalar;  // ring of scalar type (vector element)

@@ -32,8 +32,7 @@ typedef void (*bcore_source_fp_set_index)(    vd_t o, uz_t index );             
 /// required source features:
 /// awareness
 
-typedef struct bcore_source bcore_source;
-BCORE_DECLARE_SPECT( bcore_source_s )
+BCORE_DECLARE_SPECT( bcore_source )
 {
     bcore_spect_header_s header;
     bcore_fp_flow_src            get_data;

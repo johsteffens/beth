@@ -37,7 +37,7 @@ typedef bclos_signature_s* (*bclos_closure_fp_create_static_sig )( void );
 
 /**********************************************************************************************************************/
 
-BCORE_DECLARE_SPECT( bclos_closure_s )
+BCORE_DECLARE_SPECT( bclos_closure )
 {
     bcore_spect_header_s  header;
     bclos_signature_s*    static_sig; // static signature

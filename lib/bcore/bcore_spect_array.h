@@ -32,9 +32,7 @@
 #include "bcore_arr.h"
 #include "bcore_spect.h"
 
-typedef struct bcore_array bcore_array;
-
-BCORE_DECLARE_SPECT( bcore_array_s )
+BCORE_DECLARE_SPECT( bcore_array )
 {
     bcore_spect_header_s header;
 
@@ -223,6 +221,28 @@ tp_t bcore_array_r_get_type             ( const sr_s* o, uz_t index );
 vc_t bcore_array_r_get_c_data           ( const sr_s* o );
 vd_t bcore_array_r_get_d_data           ( const sr_s* o );
 uz_t bcore_array_r_get_unit_size        ( const sr_s* o );
+
+/**********************************************************************************************************************/
+/// macros for frequent array types
+
+#define BCORE_DECLARE_ARRAY_DYN_SOLID_STATIC( element_type, arr_name ) \
+    BCORE_DECLARE_OBJECT( arr_name ) \
+    { \
+        aware_t _; \
+        BCORE_ARRAY_DYN_SOLID_STATIC_S( element_type, ); \
+    }; \
+    static inline void arr_name##_clear( arr_name* o ) \
+    { \
+        o->size = 0; \
+        if( o->space == 0 ) o->data = NULL; /* in case array is referencing external data */ \
+    } \
+    void arr_name##_set_space( arr_name* o, uz_t space ); \
+    void arr_name##_set_size(  arr_name* o, uz_t size  )
+
+#define BCORE_DEFINE_ARRAY_DYN_SOLID_STATIC( element_type, arr_name ) \
+    void arr_name##_set_space( arr_name* o, uz_t space ) { bcore_array_a_set_space( ( bcore_array* )o, space ); } \
+    void arr_name##_set_size(  arr_name* o, uz_t size  ) { bcore_array_a_set_size(  ( bcore_array* )o, size  ); } \
+    BCORE_DEFINE_OBJECT_INST( bcore_array, arr_name ) "{ aware_t _; element_type [] arr; }"
 
 /**********************************************************************************************************************/
 

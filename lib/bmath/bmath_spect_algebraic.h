@@ -42,7 +42,7 @@ typedef void (*bmath_fp_cpy )( const bmath_group* o, vd_t res );          // o =
 /**********************************************************************************************************************/
 // bmath_group_s (usually abelian)
 
-BCORE_DECLARE_SPECT( bmath_group_s )
+BCORE_DECLARE_SPECT( bmath_group )
 {
     bcore_spect_header_s header;
     const bcore_inst_s* spect_inst;
@@ -79,7 +79,7 @@ typedef void (*bmath_fp_div )( const bmath_ring* o, vc_t op, vd_t res ); // res 
 typedef void (*bmath_fp_inv )( const bmath_ring* o, vd_t res );          // res = 1 / o
 typedef void (*bmath_fp_one )(       bmath_ring* o );                    // o = 1 (one_element)
 
-BCORE_DECLARE_SPECT( bmath_ring_s )
+BCORE_DECLARE_SPECT( bmath_ring )
 {
     bcore_spect_header_s header;
     const bcore_inst_s* spect_inst;

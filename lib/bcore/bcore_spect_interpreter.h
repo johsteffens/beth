@@ -21,8 +21,7 @@
 #include "bcore_feature.h"
 #include "bcore_spect.h"
 
-typedef struct bcore_interpreter bcore_interpreter;
-BCORE_DECLARE_SPECT( bcore_interpreter_s )
+BCORE_DECLARE_SPECT( bcore_interpreter )
 {
     bcore_spect_header_s header;
     bcore_fp_interpret interpret;
