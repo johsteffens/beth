@@ -73,6 +73,14 @@ static void hmap_s_init( hmap_s* o )
     bcore_arr_vd_s_push( &o->cache_arr, &o->cache ); // o->cache will be managed via hmap_s_g->cache_arr
 }
 
+static sz_t hmap_s_size( hmap_s* o )
+{
+    bcore_mutex_s_lock( &o->mutex );
+    sz_t size = bcore_hmap_u2vd_s_keys( &o->map );
+    bcore_mutex_s_unlock( &o->mutex );
+    return size;
+}
+
 vc_t hmap_s_cache_get( hmap_s* o, tp_t key )
 {
     return bcore_tp_fastmap_s_get( &o->cache, key );
@@ -181,7 +189,7 @@ static void spect_manager_close()
 /// tests if the object's self reflection satisfies the requirements of a perspective
 static bl_t supports( const bcore_self_s* self, st_s* log )
 {
-    if( !self->body                                ) return false;
+    if( !self->body                          ) return false;
     if( bcore_self_s_items_size( self ) < 2  ) return false;
     if( bcore_self_s_get_item( self, 0 )->type != TYPEOF_bcore_spect_header_s )
     {
@@ -524,10 +532,16 @@ void bcore_spect_define_creator( tp_t type, tp_t parent_trait, bcore_flect_creat
 
 /**********************************************************************************************************************/
 
+sz_t bcore_spect_size()
+{
+    assert( hmap_s_g != NULL );
+    return hmap_s_size( hmap_s_g );
+}
+
 st_s* bcore_spect_status()
 {
     bcore_life_s* l = bcore_life_s_create();
-    assert( hmap_s_g      != NULL );
+    assert( hmap_s_g != NULL );
     const bcore_hmap_u2vd_s* map  = &hmap_s_g->map;
     bcore_hmap_tpsz_s* hist = bcore_life_s_push_aware( l, bcore_hmap_tpsz_s_create() );
     st_s* log = st_s_create();
@@ -641,9 +655,11 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o )
 
             if( o->object && ( *( bl_t* )o->object ) )
             {
+                uz_t count = bcore_spect_size();
                 uz_t space = bcore_tbman_granted_space();
                 spect_manager_close();
-                bcore_msg( "  spect mananger ...... % 6zu\n", space - bcore_tbman_granted_space() );
+                space -= bcore_tbman_granted_space();
+                bcore_msg( "  spect mananger ...... % 6zu (by % 4zu perspectives )\n", space, count );
             }
             else
             {

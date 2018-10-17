@@ -29,7 +29,7 @@
 /**********************************************************************************************************************/
 
 /** Set function (Use only during init or down cycles)
-  * Setting an already existing key causes error and abort.
+  * Defining an existing key causes error and abort.
   * (Check via bcore_const_exists).
   */
 void bcore_const_t_set_d( tp_t key, tp_t t, vd_t v ); // assumes ownership of v
@@ -49,6 +49,9 @@ const sr_s* bcore_const_get_r( tp_t key );
 
 /// Checks existence
 bl_t bcore_const_exists( tp_t key );
+
+/// Number of registered constants
+sz_t bcore_const_size();
 
 /**********************************************************************************************************************/
 

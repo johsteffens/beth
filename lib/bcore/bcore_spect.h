@@ -105,6 +105,7 @@ void bcore_spect_define_creator( tp_t type, tp_t parent_trait, bcore_flect_creat
 /**********************************************************************************************************************/
 
 /// returns status information (thread safe)
+sz_t  bcore_spect_size();
 st_s* bcore_spect_status();
 
 /**********************************************************************************************************************/

@@ -128,6 +128,15 @@ void bcore_function_remove( tp_t t )
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
 }
 
+sz_t bcore_function_size()
+{
+    sz_t count = 0;
+    bcore_mutex_s_lock( &hmap_s_g->mutex );
+    count = bcore_hmap_tpfp_s_keys( hmap_s_g->map );
+    bcore_mutex_s_unlock( &hmap_s_g->mutex );
+    return count;
+}
+
 /**********************************************************************************************************************/
 // signal
 
@@ -150,9 +159,11 @@ vd_t bcore_function_manager_signal_handler( const bcore_signal_s* o )
         {
             if( o->object && ( *( bl_t* )o->object ) )
             {
+                uz_t count = bcore_function_size();
                 uz_t space = bcore_tbman_granted_space();
                 function_manager_close();
-                bcore_msg( "  function manager .... % 6zu\n", space - bcore_tbman_granted_space() );
+                space -= bcore_tbman_granted_space();
+                bcore_msg( "  function manager .... % 6zu (by % 4zu functions    )\n", space, count );
             }
             else
             {

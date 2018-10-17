@@ -32,6 +32,8 @@
 #include "bcore_st.h"
 #include "bcore_feature.h"
 
+typedef struct bcore_arr_tp_s bcore_arr_tp_s;
+
 /// data encapsulation methods
 enum
 {
@@ -377,9 +379,11 @@ void bcore_self_s_check_integrity( const bcore_self_s* o );
 /**********************************************************************************************************************/
 /// Global reflection manager (thread safe)
 
-bl_t  bcore_flect_exists(                       tp_t type ); // checks existence of type  (thread safe)
-const bcore_self_s* bcore_flect_try_self( tp_t type ); // returns NULL when type does not exist  (thread safe)
-const bcore_self_s* bcore_flect_get_self( tp_t type ); // error when type does not exist  (thread safe)
+bl_t  bcore_flect_exists(                 tp_t type );   // checks existence of type  (thread safe)
+const bcore_self_s* bcore_flect_try_self( tp_t type );   // returns NULL when type does not exist  (thread safe)
+const bcore_self_s* bcore_flect_get_self( tp_t type );   // error when type does not exist  (thread safe)
+sz_t  bcore_flect_size();                                // number of registered reflections
+void  bcore_flect_push_all_types( bcore_arr_tp_s* arr ); // pushes all registered types to array (thread safe)
 
 /** Define functions:
  *  Registers a self reflection once.
@@ -436,6 +440,17 @@ void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
 void bcore_flect_push_item_d(  tp_t type, bcore_self_item_s* item );
 void bcore_flect_push_ns_func( tp_t type, fp_t func, sc_t func_type, sc_t func_name );
 
+//----------------------------------------------------------------------------------------------------------------------
+// debugging
+
+/** Enforces parsing and instantiating of all reflections registered at his point.
+ *  Usage: Detecting syntax errors in reflection definition.
+ *  Reasoning:
+ *    The reflection-instantiation is usually deferred to the point where the type is first needed,
+ *    which might delay syntax error detection.
+ */
+void bcore_flect_parse_all_flects();
+
 /**********************************************************************************************************************/
 
 vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
@@ -475,6 +490,18 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
     union \
     { \
         bcore_array_dyn_link_static_s prefix##arr; \
+        struct \
+        { \
+            type** prefix##data; \
+            uz_t prefix##size; \
+            uz_t prefix##space; \
+        }; \
+    }
+
+#define BCORE_ARRAY_DYN_LINK_AWARE_S( type, prefix ) \
+    union \
+    { \
+        bcore_array_dyn_link_aware_s prefix##arr; \
         struct \
         { \
             type** prefix##data; \

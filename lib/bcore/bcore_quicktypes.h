@@ -92,6 +92,7 @@ bl_t bcore_type_is_leaf( tp_t type );
 #define TYPEOF_bcore_inst_s               1413406849
 #define TYPEOF_bcore_interpreter           354491079
 #define TYPEOF_bcore_interpreter_s         695223265
+#define TYPEOF_bcore_life_s               1348822347
 #define TYPEOF_bcore_matrix_s              686911304
 #define TYPEOF_bcore_name_map_s           2156406683
 #define TYPEOF_bcore_name_s               2158870146

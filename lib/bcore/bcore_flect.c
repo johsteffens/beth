@@ -23,6 +23,7 @@
 #include "bcore_trait.h"
 #include "bcore_spect_source.h"
 #include "bcore_signal.h"
+#include "bcore_arr.h"
 
 /**********************************************************************************************************************/
 
@@ -291,7 +292,7 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
             tp_t func_tp = entypeof( assign_name->sc );
             if( !bcore_function_exists( func_tp ) )
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' does not exist.", ifnameof( parent ), ifnameof( func_tp ) );
+                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' was not registered.", ifnameof( parent ), ifnameof( func_tp ) );
             }
 
             o->default_tp = func_tp;
@@ -1340,6 +1341,67 @@ bl_t bcore_flect_exists( tp_t type )
     return exists;
 }
 
+sz_t bcore_flect_size()
+{
+    sz_t count = 0;
+    bcore_mutex_s_lock( &creator_map_s_g->mutex );
+    {
+        sz_t size = bcore_hmap_u2vd_s_size( creator_map_s_g->hmap );
+        for( sz_t i = 0; i < size; i++ )
+        {
+            tp_t type = bcore_hmap_u2vd_s_idx_key( creator_map_s_g->hmap, i );
+            if( type ) count++;
+        }
+    }
+
+    bcore_mutex_s_lock( &self_map_s_g->mutex );
+    {
+        sz_t size = bcore_hmap_u2vd_s_size( self_map_s_g->hmap );
+        for( sz_t i = 0; i < size; i++ )
+        {
+            tp_t type = bcore_hmap_u2vd_s_idx_key( self_map_s_g->hmap, i );
+            if( type && !bcore_hmap_u2vd_s_exists( creator_map_s_g->hmap, type ) )
+            {
+                 count++;
+            }
+        }
+    }
+
+    bcore_mutex_s_unlock( &creator_map_s_g->mutex );
+    bcore_mutex_s_unlock( &self_map_s_g->mutex );
+
+    return count;
+}
+
+void bcore_flect_push_all_types( bcore_arr_tp_s* arr )
+{
+    bcore_mutex_s_lock( &creator_map_s_g->mutex );
+    {
+        sz_t size = bcore_hmap_u2vd_s_size( creator_map_s_g->hmap );
+        for( sz_t i = 0; i < size; i++ )
+        {
+            tp_t type = bcore_hmap_u2vd_s_idx_key( creator_map_s_g->hmap, i );
+            if( type ) bcore_arr_tp_s_push( arr, type );
+        }
+    }
+
+    bcore_mutex_s_lock( &self_map_s_g->mutex );
+    {
+        sz_t size = bcore_hmap_u2vd_s_size( self_map_s_g->hmap );
+        for( sz_t i = 0; i < size; i++ )
+        {
+            tp_t type = bcore_hmap_u2vd_s_idx_key( self_map_s_g->hmap, i );
+            if( type && !bcore_hmap_u2vd_s_exists( creator_map_s_g->hmap, type ) )
+            {
+                bcore_arr_tp_s_push( arr, type );
+            }
+        }
+    }
+
+    bcore_mutex_s_unlock( &creator_map_s_g->mutex );
+    bcore_mutex_s_unlock( &self_map_s_g->mutex );
+}
+
 bcore_self_s* bcore_flect_try_d_self( tp_t type )
 {
     // try reflection registry
@@ -1581,6 +1643,17 @@ void bcore_flect_push_ns_func( tp_t type, fp_t func, sc_t func_type, sc_t func_n
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+// debugging
+
+void bcore_flect_parse_all_flects()
+{
+    bcore_arr_tp_s* type_arr = bcore_arr_tp_s_create();
+    bcore_flect_push_all_types( type_arr );
+    for( sz_t i = 0; i < type_arr->size; i++ ) bcore_flect_get_self( type_arr->data[ i ] );
+    bcore_arr_tp_s_discard( type_arr );
+}
+
 /**********************************************************************************************************************/
 
 static void flect_define_basics()
@@ -1695,9 +1768,12 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
         {
             if( o->object && ( *( bl_t* )o->object ) )
             {
+                uz_t count = bcore_flect_size();
                 uz_t space = bcore_tbman_granted_space();
                 flect_close();
-                bcore_msg( "  reflection mananger . % 6zu\n", space - bcore_tbman_granted_space() );
+                space -= bcore_tbman_granted_space();
+
+                bcore_msg( "  reflection mananger . % 6zu (by % 4zu reflections  )\n", space, count );
             }
             else
             {

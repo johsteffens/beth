@@ -126,6 +126,7 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_name_s" );
     bcore_array_r_push_sc( &list, "bcore_name_map_s" );
     bcore_array_r_push_sc( &list, "bcore_matrix_s" );
+    bcore_array_r_push_sc( &list, "bcore_life_s" );
 
     // signals
     bcore_array_r_push_sc( &list, "all" );

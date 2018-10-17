@@ -242,7 +242,7 @@ uz_t bcore_array_r_get_unit_size        ( const sr_s* o );
 #define BCORE_DEFINE_ARRAY_DYN_SOLID_STATIC( element_type, arr_name ) \
     void arr_name##_set_space( arr_name* o, uz_t space ) { bcore_array_a_set_space( ( bcore_array* )o, space ); } \
     void arr_name##_set_size(  arr_name* o, uz_t size  ) { bcore_array_a_set_size(  ( bcore_array* )o, size  ); } \
-    BCORE_DEFINE_OBJECT_INST( bcore_array, arr_name ) "{ aware_t _; element_type [] arr; }"
+    BCORE_DEFINE_OBJECT_INST( bcore_array, arr_name ) "{ aware_t _; " #element_type " [] arr; }"
 
 /**********************************************************************************************************************/
 

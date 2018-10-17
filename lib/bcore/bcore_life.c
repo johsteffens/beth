@@ -48,6 +48,7 @@ BCORE_DEFINE_FUNCTION_CLONE(     bcore_life_item_s )
 void bcore_life_s_init( struct bcore_life_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
+    o->_ = TYPEOF_bcore_life_s;
 }
 
 void bcore_life_s_down( struct bcore_life_s* o )

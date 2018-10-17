@@ -87,7 +87,7 @@ static inline st_s* ifnameof_s( u2_t type ) { st_s* n = bcore_name_try_name_s( t
 
 /// statistics
 typedef struct st_s st_s;
-uz_t  bcore_name_size(); // number of registered names
+sz_t  bcore_name_size(); // number of registered names
 st_s* bcore_name_show(); // store all names in a string, separated by newline
 
 bcore_name_map_s* bcore_name_create_name_map();

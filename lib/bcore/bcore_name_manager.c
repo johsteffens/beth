@@ -178,11 +178,11 @@ void bcore_name_remove( tp_t type )
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
 }
 
-uz_t  bcore_name_size()
+sz_t  bcore_name_size()
 {
     assert( hmap_s_g != NULL );
     bcore_mutex_s_lock( &hmap_s_g->mutex );
-    uz_t size = bcore_name_map_s_keys( &hmap_s_g->map );
+    sz_t size = bcore_name_map_s_keys( &hmap_s_g->map );
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
     return size;
 }
@@ -254,9 +254,11 @@ vd_t bcore_name_manager_signal_handler( const bcore_signal_s* o )
 
             if( o->object && ( *( bl_t* )o->object ) )
             {
+                uz_t count = bcore_name_size(); // number of registered names
                 uz_t space = bcore_tbman_granted_space();
                 name_manager_close();
-                bcore_msg( "  name mananger ....... % 6zu\n", space - bcore_tbman_granted_space() );
+                space -= bcore_tbman_granted_space();
+                bcore_msg( "  name mananger ....... % 6zu (by % 4zu names        )\n", space, count );
             }
             else
             {

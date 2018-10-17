@@ -366,10 +366,10 @@ bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log )
     return false;
 }
 
-uz_t  bcore_trait_size()
+sz_t bcore_trait_size()
 {
     system_s_g_lock();
-    uz_t size = bcore_hmap_tptp_s_keys( &system_s_g->type_map );
+    sz_t size = bcore_hmap_tptp_s_keys( &system_s_g->type_map );
     system_s_g_unlock();
     return size;
 }
@@ -437,10 +437,11 @@ vd_t bcore_trait_signal_handler( const bcore_signal_s* o )
         {
             if( o->object && ( *( bl_t* )o->object ) )
             {
-                uz_t space1 = bcore_tbman_granted_space();
+                uz_t count = bcore_trait_size();
+                uz_t space = bcore_tbman_granted_space();
                 trait_manager_close();
-                uz_t space2 = bcore_tbman_granted_space();
-                bcore_msg( "  trait manager ....... % 6zu\n", space1 > space2 ? space1 - space2 : ( uz_t )0 );
+                space -= bcore_tbman_granted_space();
+                bcore_msg( "  trait manager ....... % 6zu (by % 4zu traits       )\n", space, count );
             }
             else
             {

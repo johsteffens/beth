@@ -147,9 +147,6 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_inst, copy, vc_t, src )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_inst, move, vd_t, src )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_inst, copy_typed, tp_t, src_type, vc_t, src )
 
-//BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_inst, clone, vd_t )
-
-
 static inline vd_t bcore_inst_p_clone( const bcore_inst_s* p, const bcore_inst* o ) { return bcore_inst_default_clone( p, o ); }
 static inline vd_t bcore_inst_t_clone( tp_t t,                const bcore_inst* o ) { return bcore_inst_p_clone( bcore_inst_s_get_typed( t ), o ); }
 static inline vd_t bcore_inst_a_clone(                        const bcore_inst* o ) { return o ? bcore_inst_t_clone( *(aware_t*)o, o ) : NULL; }
@@ -185,6 +182,15 @@ sr_s bcore_inst_r_clone_sr( const sr_s* o ); // returns perspective of o
  */
 void bcore_inst_p_check_sizeof( const bcore_inst_s* o, uz_t size );
 void bcore_inst_t_check_sizeof(             tp_t type, uz_t size );
+
+/**********************************************************************************************************************/
+// debugging
+
+/** This function tests basic functionality all types supported by the bcore_inst perspective.
+  * explicit test: create, discard
+  * implicit test: init, down
+  */
+void bcore_inst_test_all_types();
 
 /**********************************************************************************************************************/
 // macros

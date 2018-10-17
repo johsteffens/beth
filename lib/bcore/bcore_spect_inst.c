@@ -21,6 +21,7 @@
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
 #include "bcore_tp_fastmap.h"
+#include "bcore_arr.h"
 
 /**********************************************************************************************************************/
 
@@ -1708,6 +1709,26 @@ static st_s* spect_inst_selftest( void )
     }
 
     return NULL;
+}
+
+/**********************************************************************************************************************/
+// debugging
+
+void bcore_inst_test_all_types()
+{
+    bcore_arr_tp_s* type_arr = bcore_arr_tp_s_create();
+    bcore_flect_push_all_types( type_arr );
+    for( sz_t i = 0; i < type_arr->size; i++ )
+    {
+        tp_t type = type_arr->data[ i ];
+        bl_t sp_inst = bcore_trait_satisfied_type( TYPEOF_bcore_inst, type, NULL );
+        if( sp_inst )
+        {
+            sr_s sr1 = bcore_inst_t_create_sr( type );
+            sr_down( sr1 );
+        }
+    }
+    bcore_arr_tp_s_discard( type_arr );
 }
 
 /**********************************************************************************************************************/
