@@ -81,7 +81,7 @@ BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_u2vd_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_u2vd_s )
 
 void  bcore_hmap_u2vd_s_set_hash_function( bcore_hmap_u2vd_s* o, uz_t index, bcore_hash_u2u2 hf ); // optionally sets external hash function (up to three functions can be specified via index 0, 1, 2)
-vd_t* bcore_hmap_u2vd_s_get(       const bcore_hmap_u2vd_s* o, u2_t key ); // returns pinter to value or NULL when key does not exist
+vd_t* bcore_hmap_u2vd_s_get(       const bcore_hmap_u2vd_s* o, u2_t key ); // returns pointer to value or NULL when key does not exist
 void  bcore_hmap_u2vd_s_set(             bcore_hmap_u2vd_s* o, u2_t key, vd_t val, bool hold ); // hold==true only for aware objects
 fp_t* bcore_hmap_u2vd_s_getf(      const bcore_hmap_u2vd_s* o, u2_t key ); // returns pointer to function pointer; returns NULL when key does not exist
 void  bcore_hmap_u2vd_s_setf(            bcore_hmap_u2vd_s* o, u2_t key, fp_t func );
@@ -131,7 +131,7 @@ BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tpsz_s )
 BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tpsz_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tpsz_s )
 
-uz_t* bcore_hmap_tpsz_s_get(     const bcore_hmap_tpsz_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
+uz_t* bcore_hmap_tpsz_s_get(     const bcore_hmap_tpsz_s* o, tp_t key ); // returns pointer to value or NULL when key does not exist
 uz_t* bcore_hmap_tpsz_s_fget(          bcore_hmap_tpsz_s* o, tp_t key, uz_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
 uz_t* bcore_hmap_tpsz_s_set(           bcore_hmap_tpsz_s* o, tp_t key, uz_t val ); // sets new key; sets/overwrites value and returns pointer to value location
 uz_t  bcore_hmap_tpsz_s_remove(        bcore_hmap_tpsz_s* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
@@ -173,7 +173,7 @@ BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tpfp_s )
 BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tpfp_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tpfp_s )
 
-fp_t* bcore_hmap_tpfp_s_get(     const bcore_hmap_tpfp_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
+fp_t* bcore_hmap_tpfp_s_get(     const bcore_hmap_tpfp_s* o, tp_t key ); // returns pointer to value or NULL when key does not exist
 fp_t* bcore_hmap_tpfp_s_fget(          bcore_hmap_tpfp_s* o, tp_t key, fp_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
 fp_t* bcore_hmap_tpfp_s_set(           bcore_hmap_tpfp_s* o, tp_t key, fp_t val ); // sets new key; sets/overwrites value and returns pointer to value location
 fp_t  bcore_hmap_tpfp_s_remove(        bcore_hmap_tpfp_s* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
@@ -215,7 +215,7 @@ BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tptp_s )
 BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tptp_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tptp_s )
 
-tp_t* bcore_hmap_tptp_s_get(     const bcore_hmap_tptp_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
+tp_t* bcore_hmap_tptp_s_get(     const bcore_hmap_tptp_s* o, tp_t key ); // returns pointer to value or NULL when key does not exist
 tp_t* bcore_hmap_tptp_s_fget(          bcore_hmap_tptp_s* o, tp_t key, tp_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
 tp_t* bcore_hmap_tptp_s_set(           bcore_hmap_tptp_s* o, tp_t key, tp_t val ); // sets new key; sets/overwrites value and returns pointer to value location
 tp_t  bcore_hmap_tptp_s_remove(        bcore_hmap_tptp_s* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
@@ -260,7 +260,7 @@ BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tpto_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tpto_s )
 
 void  bcore_hmap_tpto_s_set_type(      bcore_hmap_tpto_s* o, tp_t type ); // sets type; resets array in case of type difference
-vd_t* bcore_hmap_tpto_s_get(     const bcore_hmap_tpto_s* o, tp_t key ); // returns pinter to value or NULL when key does not exist
+vd_t* bcore_hmap_tpto_s_get(     const bcore_hmap_tpto_s* o, tp_t key ); // returns pointer to value or NULL when key does not exist
 vd_t* bcore_hmap_tpto_s_fget_d(        bcore_hmap_tpto_s* o, tp_t key, vd_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
 vd_t  bcore_hmap_tpto_s_fget(          bcore_hmap_tpto_s* o, tp_t key ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and the value crated according to type
 vd_t* bcore_hmap_tpto_s_set_d(         bcore_hmap_tpto_s* o, tp_t key, vd_t val ); // sets new key; sets/overwrites value and returns pointer to value location
