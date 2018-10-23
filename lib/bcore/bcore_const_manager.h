@@ -47,6 +47,11 @@ vc_t        bcore_const_get_o( tp_t key );
 sr_s        bcore_const_get_x( tp_t key );
 const sr_s* bcore_const_get_r( tp_t key );
 
+/// verified - get function (Do not modify referenced object); error if key is missing or of different type in case type != 0
+vc_t        bcore_const_vget_o( tp_t key, tp_t type );
+sr_s        bcore_const_vget_x( tp_t key, tp_t type );
+const sr_s* bcore_const_vget_r( tp_t key, tp_t type );
+
 /// Checks existence
 bl_t bcore_const_exists( tp_t key );
 

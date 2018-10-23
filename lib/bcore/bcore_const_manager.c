@@ -99,6 +99,38 @@ const sr_s* bcore_const_get_r( tp_t key )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+vc_t bcore_const_vget_o( tp_t key, tp_t type )
+{
+    return bcore_const_vget_r( key, type )->o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s bcore_const_vget_x( tp_t key, tp_t type )
+{
+    const sr_s* sr = bcore_const_vget_r( key, type );
+    return sr_pwc( sr->p, sr->o );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+const sr_s* bcore_const_vget_r( tp_t key, tp_t type )
+{
+    const sr_s* sr = bcore_const_get_r( key );
+    if( !sr ) ERR_fa( "Key '#<sc_t>' (#<tp_t>) not registered.", ifnameof( key ), key );
+    if( type != 0 )
+    {
+        if( sr_s_type( sr ) != type )
+        {
+            ERR_fa( "Key '#<sc_t>': Type mismatch: '#<sc_t>' requested but '#<sc_t>' registered.",
+                    ifnameof( key ), ifnameof( type ), ifnameof( sr_s_type( sr ) ) );
+        }
+    }
+    return sr;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_const_exists( tp_t key )
 {
     return bcore_hmap_tp_sr_s_exists( hmap_g, key );

@@ -22,6 +22,7 @@
 #include "bcore_signal.h"
 #include "bcore_feature.h"
 #include "bcore_flect.h"
+#include "bcore_file.h"
 #include "bcore_trait.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
@@ -44,5 +45,6 @@
 #include "bcore_st.h"
 #include "bcore_sc.h"
 #include "bcore_leaf.h"
+#include "bcore_const_manager.h"
 
 #endif // BCORE_STD_H
