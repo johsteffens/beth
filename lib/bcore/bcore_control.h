@@ -141,9 +141,12 @@ bl_t bcore_strany( char c, sc_t str );
 /// Pseudo random generators (non-cryptographic)
 
 /** Linear Congruential Generators.
- *  Generators below have a complete (2^n) period; (I did not fully evaluate the quality of randomness.)
+ *  Generators below have a complete (2^n) period.
+ *
  *  As for all LCG, the period length of lower order bits is maximally 2^bit-order. Hence higher order bits
  *  are more suitable for randomization than lower order bits.
+ *
+ *  LCG parameters have been empirically determined for project beth.
  */
 static inline u2_t bcore_lcg_u2(  u2_t val ) { return val *  67261 + 1385791711; } // period verified
 static inline u2_t bcore_lcg1_u2( u2_t val ) { return val * 122497 + 1283800139; } // period verified
@@ -151,11 +154,12 @@ static inline u2_t bcore_lcg2_u2( u2_t val ) { return val * 309313 + 1427550431;
 static inline u2_t bcore_lcg3_u2( u2_t val ) { return val *  76157 + 1175399809; } // period verified
 
 /** Xor Shift Generators.
- *  Generators below should have a period of 2^n - 1 with 0 being the fix-point; (-> 0 cannot be used as as seed)
+ *  Generators below have a period of 2^n - 1 with 0 being a fix-point; (-> 0 cannot be used as as seed)
  *  They belong to the family of xorshift generators discovered by George Marsaglia (http://www.jstatsoft.org/v08/i14/paper)
  *  These generators exhibit better randomness than LCG but require about 50% more CPU time.
  *
- *  Note: xsg, xsg2 produce structured distributions in 3d polar coordinates.
+ *  Note: xsg, xsg2 exhibit random-deficiency for 3d polar coordinate computation.
+ *        Discovered in project Actinon (https://github.com/johsteffens/actinon)
  */
 static inline u2_t bcore_xsg_u2(  u2_t rval ) { rval ^= ( rval >>  7 ); rval ^= ( rval << 25 ); return rval ^ ( rval >> 12 ); } // period verified
 static inline u2_t bcore_xsg1_u2( u2_t rval ) { rval ^= ( rval >> 11 ); rval ^= ( rval << 21 ); return rval ^ ( rval >> 13 ); } // period verified
