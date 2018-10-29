@@ -89,7 +89,7 @@ const bcore_via_s* bcore_via_default_iget_via( const bcore_via_s* p, const bcore
     return p->vitem_arr[ index ].via_p;
 }
 
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, get_size,  uz_t )                          // Number of items
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, get_size,  uz_t )                         // Number of items
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_name, tp_t, uz_t, index )            // Returns name for given index
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget,      sr_s, uz_t, index )            // Returns indexed reference
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset,            uz_t, index, sr_s, src ) // Sets indexed const item.
