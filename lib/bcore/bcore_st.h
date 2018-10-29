@@ -191,7 +191,7 @@ void st_s_print_fa( sc_t format, ... );
 /** Parsing strings:
  *  The format string contains characters and rules to parse an input string.
  *  Characters that do not belong to a conversion rule are simply consumed as is.
- *  A space ' ' in the format string consumes all whitespaces {' ', '\t', '\n', '\r', c-style comments}
+ *  A space ' ' in the format string consumes all whitespaces and comments. These are ' ', '\t', '\n', '\r', c-style comments.
  *
  *  Format rules
  *  "#char"
@@ -210,10 +210,14 @@ void st_s_print_fa( sc_t format, ... );
  *      Quotes inside the string are to be escaped '\"'.
  *      Backslashes are to be escaped '\\'.
  *
+ *  "#skip'<char>'"  (Example: "#skip' ')
+ *      Argument: none
+ *      Consumes all successive occurrence of <char>
+ *
  *  "#until'<char>'"  (Example: "#until'\n'")
  *      Argument: st_s*
  *      Consumes a string until <char> is reached.
- *      The character is not consumed.
+ *      The terminating character <char> is not consumed.
  *
  *  "#?'...'"  (Example: "#?'->'")
  *      Argument: bl_t*
@@ -245,7 +249,7 @@ void st_s_print_fa( sc_t format, ... );
  *      Argument: bl_t*
  *      Performs a boolean evaluation #?... and inverts the result.
  *
- *  "#<type>"  (Example: "#u3_t" or "#<u3_t*>")
+ *  "#<type>"  (Example: "#u3_t" or "#<u3_t*>"(preferable) )
  *      Argument: <type>*
  *      Matches content to <type>.
  *      Example: #u3_t matches to u3_t and requires u3_t* as argument.
