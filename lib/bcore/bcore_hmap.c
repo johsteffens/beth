@@ -131,7 +131,7 @@ static void bcore_hnode_u2vd_s_set_func( bcore_hnode_u2vd_s* o, fp_t func )
     o->flag_holds = false;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_hmap_u2vd_s_init( bcore_hmap_u2vd_s* o )
 {
@@ -192,7 +192,7 @@ BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_u2vd_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_u2vd_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_u2vd_s )
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t u2vd_find( const bcore_hmap_u2vd_s* o, u2_t key ) // returns valid index or o->size
 {
@@ -544,7 +544,7 @@ void bcore_hmap_u2vd_s_run_d( bcore_hmap_u2vd_s* o, vd_t obj, void (*fp)( vd_t o
     }
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* hmap_u2vd_s_create_self( void )
 {
@@ -569,7 +569,7 @@ static bcore_self_s* hmap_u2vd_s_create_self( void )
     return self;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_u2vd_s_status( bcore_hmap_u2vd_s* o )
 {
@@ -610,7 +610,7 @@ void bcore_hmap_u2vd_filltest()
     bcore_life_s_discard( life );
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_u2vd_selftest( void )
 {
@@ -712,7 +712,7 @@ static st_s* hmap_u2vd_selftest( void )
     return log;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // bcore_hmap_tpuz_s
@@ -759,7 +759,7 @@ BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tpuz_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tpuz_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpuz_s )
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t tpsz_find( const bcore_hmap_tpuz_s* o, tp_t key ) // returns valid index or o->size
 {
@@ -952,7 +952,7 @@ static void tpsz_s_set_data( bcore_hmap_tpuz_s* o, sr_s data )
     sr_down( data );
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* hmap_tpsz_s_create_self( void )
 {
@@ -976,7 +976,7 @@ static bcore_self_s* hmap_tpsz_s_create_self( void )
     return self;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_tpsz_s_status( bcore_hmap_tpuz_s* o )
 {
@@ -988,7 +988,7 @@ static st_s* hmap_tpsz_s_status( bcore_hmap_tpuz_s* o )
     return string;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_tpsz_selftest( void )
 {
@@ -1122,7 +1122,7 @@ static st_s* hmap_tpsz_selftest( void )
     return log;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // bcore_hmap_tpfp_s
@@ -1169,7 +1169,7 @@ BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tpfp_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tpfp_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpfp_s )
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t tpfp_find( const bcore_hmap_tpfp_s* o, tp_t key ) // returns valid index or o->size
 {
@@ -1362,7 +1362,7 @@ static void tpfp_s_set_data( bcore_hmap_tpfp_s* o, sr_s data )
     sr_down( data );
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* hmap_tpfp_s_create_self( void )
 {
@@ -1386,7 +1386,7 @@ static bcore_self_s* hmap_tpfp_s_create_self( void )
     return self;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_tpfp_s_status( bcore_hmap_tpfp_s* o )
 {
@@ -1398,7 +1398,7 @@ static st_s* hmap_tpfp_s_status( bcore_hmap_tpfp_s* o )
     return string;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_tpfp_selftest( void )
 {
@@ -1527,7 +1527,7 @@ static st_s* hmap_tpfp_selftest( void )
     return log;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // bcore_hmap_tptp_s
@@ -1572,7 +1572,7 @@ BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tptp_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tptp_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tptp_s )
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t tptp_find( const bcore_hmap_tptp_s* o, tp_t key ) // returns valid index or o->size
 {
@@ -1765,7 +1765,7 @@ static void tptp_s_set_data( bcore_hmap_tptp_s* o, sr_s data )
     sr_down( data );
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* hmap_tptp_s_create_self( void )
 {
@@ -1789,7 +1789,7 @@ static bcore_self_s* hmap_tptp_s_create_self( void )
     return self;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_tptp_s_status( bcore_hmap_tptp_s* o )
 {
@@ -1801,7 +1801,7 @@ static st_s* hmap_tptp_s_status( bcore_hmap_tptp_s* o )
     return string;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_tptp_selftest( void )
 {
@@ -1935,7 +1935,355 @@ static st_s* hmap_tptp_selftest( void )
     return log;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+// bcore_hmap_tpvd_s
+
+void bcore_hmap_tpvd_s_init( bcore_hmap_tpvd_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+    o->_ = TYPEOF_bcore_hmap_tpvd_s;
+    o->size_limit = 0xFFFFFFFFu;
+}
+
+void bcore_hmap_tpvd_s_down( bcore_hmap_tpvd_s* o )
+{
+    o->nodes = bcore_alloc( o->nodes, 0 );
+    o->flags = bcore_alloc( o->flags, 0 );
+    o->size  = 0;
+}
+
+void bcore_hmap_tpvd_s_copy( bcore_hmap_tpvd_s* o, const bcore_hmap_tpvd_s* src )
+{
+    o->nodes = bcore_alloc( o->nodes, 0 );
+    o->flags = bcore_alloc( o->flags, 0 );
+    o->size  = 0;
+    o->nodes = bcore_u_memcpy( sizeof( bcore_hnode_tpvd_s ), o->nodes, src->nodes, src->size );
+    o->size  = src->size;
+    o->depth_limit = src->depth_limit;
+    o->size_limit  = src->size_limit;
+}
+
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tpvd_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tpvd_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpvd_s )
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static uz_t tpvd_find( const bcore_hmap_tpvd_s* o, tp_t key ) // returns valid index or o->size
+{
+    if( o->size == 0 ) return o->size;
+    u2_t mask = o->size - 1;
+    uz_t idx = hash_tpu2_1( key ) & mask;
+    if( o->nodes[ idx ].key == key ) return idx;
+    idx = hash_tpu2_2( key ) & mask;
+    if( o->nodes[ idx ].key == key ) return idx;
+    return o->size;
+}
+
+uz_t tpvd_set( bcore_hmap_tpvd_s* o, bcore_hnode_tpvd_s node, uz_t depth ) // sets new node, returns valid index on success; o->size otherwise
+{
+    uz_t size = o->size;
+    if( size == 0 ) return size;
+    u2_t mask = o->size - 1;
+
+    if( depth == o->depth_limit ) return size;
+
+    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    if( !o->nodes[ idx1 ].key )
+    {
+        o->nodes[ idx1 ] = node;
+        return idx1;
+    }
+
+    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    if( !o->nodes[ idx2 ].key )
+    {
+        o->nodes[ idx2 ] = node;
+        return idx2;
+    }
+
+    if( !o->flags ) o->flags = bcore_u_memzero( sizeof( bl_t ), NULL, size );
+
+    if( !o->flags[ idx1 ] )
+    {
+        o->flags[ idx1 ] = true;
+        if( tpvd_set( o, o->nodes[ idx1 ], depth + 1 ) < size )
+        {
+            o->flags[ idx1 ] = false;
+            o->nodes[ idx1 ] = node;
+            return idx1;
+        }
+        o->flags[ idx1 ] = false;
+    }
+
+    if( !o->flags[ idx2 ] )
+    {
+        o->flags[ idx2 ] = true;
+        if( tpvd_set( o, o->nodes[ idx2 ], depth + 1 ) < size )
+        {
+            o->flags[ idx2 ] = false;
+            o->nodes[ idx2 ] = node;
+            return idx2;
+        }
+        o->flags[ idx2 ] = false;
+    }
+
+    return size;
+}
+
+vd_t* bcore_hmap_tpvd_s_set( bcore_hmap_tpvd_s* o, tp_t key, vd_t val )
+{
+    if( !key ) ERR( "key is zero" );
+
+    uz_t idx = tpvd_find( o, key );
+    if( idx < o->size )
+    {
+        o->nodes[ idx ].val = val;
+        return &o->nodes[ idx ].val;
+    }
+
+    idx = tpvd_set( o, ( bcore_hnode_tpvd_s ){ .key = key, .val = val }, 1 );
+    if( idx < o->size ) return &o->nodes[ idx ].val;
+
+    // rehash
+    {
+        o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
+        bcore_hnode_tpvd_s* buf_nodes = o->nodes;
+        uz_t  buf_size = o->size;
+        o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
+        o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
+        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
+        o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpvd_s ), NULL, o->size );
+        for( uz_t i = 0; i < buf_size; i++ )
+        {
+            if( buf_nodes[ i ].key ) bcore_hmap_tpvd_s_set( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
+        }
+        bcore_alloc( buf_nodes, 0 ); // rehashing does not destroy any object (only rearranges nodes)
+    }
+
+    return bcore_hmap_tpvd_s_set( o, key, val );
+}
+
+vd_t* bcore_hmap_tpvd_s_get( const bcore_hmap_tpvd_s* o, tp_t key )
+{
+    if( !key ) return NULL;
+    uz_t idx = tpvd_find( o, key );
+    return ( idx < o->size ) ? &o->nodes[ idx ].val : NULL;
+}
+
+void bcore_hmap_tpvd_s_remove( bcore_hmap_tpvd_s* o, tp_t key )
+{
+    if( !key ) return;
+    uz_t idx = tpvd_find( o, key );
+    if( idx < o->size )
+    {
+        o->nodes[ idx ].key = 0;
+        o->nodes[ idx ].val = 0;
+    }
+}
+
+bl_t bcore_hmap_tpvd_s_exists( const bcore_hmap_tpvd_s* o, tp_t key )
+{
+    if( !key ) return false;
+    uz_t idx = tpvd_find( o, key );
+    return ( idx < o->size );
+}
+
+void bcore_hmap_tpvd_s_clear( bcore_hmap_tpvd_s* o )
+{
+    o->nodes = bcore_alloc( o->nodes, 0 );
+    o->flags = bcore_alloc( o->flags, 0 );
+    o->size  = 0;
+}
+
+uz_t bcore_hmap_tpvd_s_keys( const bcore_hmap_tpvd_s* o )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
+    return count;
+}
+
+uz_t bcore_hmap_tpvd_s_size( const bcore_hmap_tpvd_s* o )
+{
+    return o->size;
+}
+
+tp_t bcore_hmap_tpvd_s_idx_key( const bcore_hmap_tpvd_s* o, uz_t idx )
+{
+    assert( idx < o->size );
+    return o->nodes[ idx ].key;
+}
+
+vd_t bcore_hmap_tpvd_s_idx_val( const bcore_hmap_tpvd_s* o, uz_t idx )
+{
+    assert( idx < o->size );
+    return o->nodes[ idx ].val;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static bcore_self_s* hmap_tpvd_s_create_self( void )
+{
+    sc_t def = "\
+        bcore_hmap_tpvd_s = bcore_inst \
+            { \
+                aware_t _; \
+                private vd_t* nodes; \
+                private bl_t* flags; \
+                private uz_t size; \
+                private uz_t depth_limit; \
+                private uz_t size_limit; \
+            }";
+    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tpvd_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpvd_s_init,    "bcore_fp_init",  "init"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpvd_s_down,    "bcore_fp_down",  "down"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpvd_s_copy,    "bcore_fp_copy",  "copy"     );
+    return self;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static st_s* hmap_tpvd_s_status( bcore_hmap_tpvd_s* o )
+{
+    st_s* string = st_s_create();
+    uz_t keys = bcore_hmap_tpvd_s_keys( o );
+    st_s_pushf( string, "keys ........... %zu\n", keys );
+    st_s_pushf( string, "nodes .......... %lu\n", o->size );
+    st_s_pushf( string, "keys/nodes ..... %5.4f\n", o->size > 0 ? ( f3_t )( keys ) / o->size : 0 );
+    return string;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static st_s* hmap_tpvd_selftest( void )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    st_s* log = st_s_createf( "== bcore_hmap_tpvd_selftest " );
+    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char( log, '\n' );
+
+    bcore_hmap_tpvd_s* map = bcore_hmap_tpvd_s_create();
+    const uz_t cycles = 200000;
+
+    typedef struct
+    {
+        tp_t key;
+        vd_t val;
+    } kv_s;
+
+    kv_s* kvbuf = bcore_alloc( NULL, cycles * sizeof( kv_s ) );
+    uz_t kvbuf_size = 0;
+
+    clock_t time = clock();
+    st_s_pushf( log, "Mixed access: " );
+
+    {
+        u3_t rval1 = 1;
+        u3_t rval2 = 12345;
+        for( uz_t i = 0; i < cycles; i++ )
+        {
+            rval1 = bcore_xsg_u2( rval1 );
+            rval2 = bcore_xsg_u2( rval2 );
+            kv_s kv;
+            kv.key = ( tp_t )rval1;
+            kv.val = ( vd_t )rval2;
+            kvbuf[ kvbuf_size++ ] = kv;
+
+            // set
+            bcore_hmap_tpvd_s_set( map, kv.key, kv.val );
+
+            // retrieve
+            rval1 = bcore_xsg_u2( rval1 );
+            kv = kvbuf[ rval1 % kvbuf_size ];
+            vd_t val = *bcore_hmap_tpvd_s_get( map, kv.key );
+            if( kv.val != val ) ERR( "value mismatch" );
+
+            // delete
+            rval1 = bcore_xsg_u2( rval1 );
+            if( ( ( rval1 >> 10 ) & 1 ) == 1 )
+            {
+                rval1 = bcore_xsg_u2( rval1 );
+                uz_t idx = rval1 % kvbuf_size;
+                kv_s kv = kvbuf[ idx ];
+                if( !bcore_hmap_tpvd_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
+                bcore_hmap_tpvd_s_remove( map, kv.key );
+                if( bcore_hmap_tpvd_s_get( map, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
+                kvbuf_size--;
+                kvbuf[ idx ] = kvbuf[ kvbuf_size ];
+            }
+        }
+    }
+
+    time = clock() - time;
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+
+    st_s_push_st_d( log, hmap_tpvd_s_status( map ) );
+
+    time = clock();
+    bcore_hmap_tpvd_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tpvd_s_clone( map ) );
+    time = clock() - time;
+    st_s_pushf( log, "Clone .......... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+
+    time = clock();
+    ASSERT( bcore_compare_aware( map, map2 ) == 0 );
+    time = clock() - time;
+    st_s_pushf( log, "Comparison ..... %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+
+    for( uz_t i = 0; i < map->size; i++ )
+    {
+        tp_t key = bcore_hmap_tpvd_s_idx_key( map, i );
+        if( key != 0 )
+        {
+            vd_t val = bcore_hmap_tpvd_s_idx_val( map, i );
+            ASSERT( bcore_hmap_tpvd_s_exists( map2, key ) );
+            ASSERT( val == *bcore_hmap_tpvd_s_get( map2, key ) );
+        }
+    }
+    time = clock() - time;
+    st_s_pushf( log, "verify assign .. %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+
+    time = clock();
+    st_s_pushf( log, "\nRead-access of %lu keys: ", kvbuf_size );
+    uz_t read_cycles = 20;
+    for( uz_t j = 0; j < read_cycles; j++ )
+    {
+        for( uz_t i = 0; i < kvbuf_size; i++ )
+        {
+            if( *bcore_hmap_tpvd_s_get( map, kvbuf[ i ].key ) != kvbuf[ i ].val ) ERR( "value mismatch" );
+        }
+    }
+    time = clock() - time;
+    st_s_pushf( log, "(%gs per access)\n", ( ( double )time/CLOCKS_PER_SEC ) / ( kvbuf_size * read_cycles ) );
+
+    st_s_pushf( log, "\n" );
+    st_s_pushf( log, "Removal: " );
+    time = clock();
+    while( kvbuf_size )
+    {
+        kvbuf_size--;
+        kv_s kv = kvbuf[ kvbuf_size ];
+        if( !bcore_hmap_tpvd_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
+        bcore_hmap_tpvd_s_remove( map, kv.key );
+        if( bcore_hmap_tpvd_s_get( map, kv.key ) )  ERR( "deleted key still exists (%lu)", kv.key );
+    }
+    time = clock() - time;
+    st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
+
+    st_s_push_st_d( log, hmap_tpvd_s_status( map ) );
+
+    bcore_hmap_tpvd_s_discard( map );
+    bcore_alloc( kvbuf, 0 );
+
+    bcore_life_s_discard( l );
+
+    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char( log, '\n' );
+    return log;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // bcore_hmap_tpto_s
@@ -2001,7 +2349,7 @@ BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tpto_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tpto_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpto_s )
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t tpto_find( const bcore_hmap_tpto_s* o, tp_t key ) // returns valid index or o->size
 {
@@ -2243,7 +2591,7 @@ static void tpto_s_set_data( bcore_hmap_tpto_s* o, sr_s data )
     sr_down( data );
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* hmap_tpto_s_create_self( void )
 {
@@ -2268,7 +2616,7 @@ static bcore_self_s* hmap_tpto_s_create_self( void )
     return self;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_tpto_s_status( bcore_hmap_tpto_s* o )
 {
@@ -2280,7 +2628,7 @@ static st_s* hmap_tpto_s_status( bcore_hmap_tpto_s* o )
     return string;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_tpto_selftest( void )
 {
@@ -2417,7 +2765,7 @@ static st_s* hmap_tpto_selftest( void )
     return log;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // bcore_hmap_tp_s
@@ -2451,7 +2799,7 @@ BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tp_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tp_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tp_s )
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t tp_find( const bcore_hmap_tp_s* o, tp_t key ) // returns valid index or o->size
 {
@@ -2630,7 +2978,7 @@ static void tp_s_set_data( bcore_hmap_tp_s* o, sr_s data )
     sr_down( data );
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* hmap_tp_s_create_self( void )
 {
@@ -2654,7 +3002,7 @@ static bcore_self_s* hmap_tp_s_create_self( void )
     return self;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_tp_s_status( bcore_hmap_tp_s* o )
 {
@@ -2666,7 +3014,7 @@ static st_s* hmap_tp_s_status( bcore_hmap_tp_s* o )
     return string;
 }
 
-/**********************************************************************************************************************/
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* hmap_tp_selftest( void )
 {
@@ -2809,6 +3157,7 @@ vd_t bcore_hmap_signal_handler( const bcore_signal_s* o )
             bcore_flect_define_creator( TYPEOF_bcore_hmap_tpfp_s      , hmap_tpfp_s_create_self  );
             bcore_flect_define_creator( typeof( "bcore_hnode_tptp_s" ), hnode_tptp_s_create_self  );
             bcore_flect_define_creator( TYPEOF_bcore_hmap_tptp_s      , hmap_tptp_s_create_self  );
+            bcore_flect_define_creator( TYPEOF_bcore_hmap_tpvd_s      , hmap_tpvd_s_create_self  );
             bcore_flect_define_creator( TYPEOF_bcore_hmap_tpto_s      , hmap_tpto_s_create_self  );
             bcore_flect_define_creator( TYPEOF_bcore_hmap_tp_s        , hmap_tp_s_create_self    );
         }
@@ -2821,6 +3170,7 @@ vd_t bcore_hmap_signal_handler( const bcore_signal_s* o )
             st_s_push_st_d( log, hmap_tpsz_selftest() );
             st_s_push_st_d( log, hmap_tpfp_selftest() );
             st_s_push_st_d( log, hmap_tptp_selftest() );
+            st_s_push_st_d( log, hmap_tpvd_selftest() );
             st_s_push_st_d( log, hmap_tpto_selftest() );
             st_s_push_st_d( log, hmap_tp_selftest()   );
             return log;

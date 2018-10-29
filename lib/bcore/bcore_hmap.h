@@ -146,6 +146,8 @@ uz_t  bcore_hmap_tpuz_s_size(    const bcore_hmap_tpuz_s* o           ); // retu
 tp_t  bcore_hmap_tpuz_s_idx_key( const bcore_hmap_tpuz_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
 uz_t  bcore_hmap_tpuz_s_idx_val( const bcore_hmap_tpuz_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
+sz_t bcore_hmap_tpuz_s_from_array( bcore_hmap_tpuz_s* o, bcore_array* array, tp_t member_name );
+
 /**********************************************************************************************************************/
 
 /** bcore_hmap_tpfp_s:
@@ -229,6 +231,40 @@ uz_t  bcore_hmap_tptp_s_keys(    const bcore_hmap_tptp_s* o           ); // retu
 uz_t  bcore_hmap_tptp_s_size(    const bcore_hmap_tptp_s* o           ); // returns current size of the hash map (note that this includes empty places)
 tp_t  bcore_hmap_tptp_s_idx_key( const bcore_hmap_tptp_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
 tp_t  bcore_hmap_tptp_s_idx_val( const bcore_hmap_tptp_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+
+/**********************************************************************************************************************/
+
+/** bcore_hmap_tpvd_s: maps keys to pointer
+ *    key-type: tp_t
+ *    val-type: vd_t (not owned, no assumption about type)
+ *    Maximum number of keys: 2^32
+ *    shell: no shell
+ */
+typedef struct bcore_hnode_tpvd_s
+{
+    tp_t key;
+    vd_t val;
+} bcore_hnode_tpvd_s;
+
+BCORE_DECLARE_OBJECT( bcore_hmap_tpvd_s )
+{
+    aware_t _;
+    bcore_hnode_tpvd_s* nodes;
+    bl_t* flags;
+    uz_t size;
+    uz_t depth_limit;
+    uz_t size_limit;
+};
+
+vd_t* bcore_hmap_tpvd_s_set(           bcore_hmap_tpvd_s* o, tp_t key, vd_t val ); // sets new key; sets/overwrites value and returns pointer to value location
+vd_t* bcore_hmap_tpvd_s_get(     const bcore_hmap_tpvd_s* o, tp_t key ); // returns pointer to value or NULL when key does not exist
+void  bcore_hmap_tpvd_s_remove(        bcore_hmap_tpvd_s* o, tp_t key ); // removes key, destroys associated object (if present)
+bl_t  bcore_hmap_tpvd_s_exists(  const bcore_hmap_tpvd_s* o, tp_t key ); // checks if key exists
+void  bcore_hmap_tpvd_s_clear(         bcore_hmap_tpvd_s* o           ); // removes all entries and frees memory
+uz_t  bcore_hmap_tpvd_s_keys(    const bcore_hmap_tpvd_s* o           ); // returns number of registered keys
+uz_t  bcore_hmap_tpvd_s_size(    const bcore_hmap_tpvd_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tpvd_s_idx_key( const bcore_hmap_tpvd_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+vd_t  bcore_hmap_tpvd_s_idx_val( const bcore_hmap_tpvd_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
 /**********************************************************************************************************************/
 
