@@ -103,7 +103,7 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_sink_file_s"     );
     bcore_array_r_push_sc( &list, "bcore_sink_chain_s"    );
     bcore_array_r_push_sc( &list, "bcore_hmap_u2vd_s"     );
-    bcore_array_r_push_sc( &list, "bcore_hmap_tpsz_s"     );
+    bcore_array_r_push_sc( &list, "bcore_hmap_tpuz_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tptp_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tpto_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tpfp_s"     );

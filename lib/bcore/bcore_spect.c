@@ -543,7 +543,7 @@ st_s* bcore_spect_status()
     bcore_life_s* l = bcore_life_s_create();
     assert( hmap_s_g != NULL );
     const bcore_hmap_u2vd_s* map  = &hmap_s_g->map;
-    bcore_hmap_tpsz_s* hist = bcore_life_s_push_aware( l, bcore_hmap_tpsz_s_create() );
+    bcore_hmap_tpuz_s* hist = bcore_life_s_push_aware( l, bcore_hmap_tpuz_s_create() );
     st_s* log = st_s_create();
 
     {
@@ -561,15 +561,15 @@ st_s* bcore_spect_status()
         bcore_mutex_s_lock( &hmap_s_g->mutex );
         vd_t val = bcore_hmap_u2vd_s_idx_val( map, i );
         bcore_mutex_s_unlock( &hmap_s_g->mutex );
-        if( val ) ( *bcore_hmap_tpsz_s_fget( hist, *( aware_t* )val, 0 ) )++;
+        if( val ) ( *bcore_hmap_tpuz_s_fget( hist, *( aware_t* )val, 0 ) )++;
     }
 
     sr_s nc_arr = sr_cl( bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ { uz_t count; tp_t type; } [] arr; }" ) ), l );
 
     for( uz_t i = 0; i < hist->size; i++ )
     {
-        tp_t key   = bcore_hmap_tpsz_s_idx_key( hist, i );
-        uz_t count = bcore_hmap_tpsz_s_idx_val( hist, i );
+        tp_t key   = bcore_hmap_tpuz_s_idx_key( hist, i );
+        uz_t count = bcore_hmap_tpuz_s_idx_val( hist, i );
         if( key )
         {
             bcore_array_x_push( nc_arr, sr_null() );
