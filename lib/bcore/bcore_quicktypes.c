@@ -90,6 +90,8 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_sink_s"          );
     bcore_array_r_push_sc( &list, "bcore_compare"         );
     bcore_array_r_push_sc( &list, "bcore_compare_s"       );
+    bcore_array_r_push_sc( &list, "bcore_hash"            );
+    bcore_array_r_push_sc( &list, "bcore_hash_s"          );
     bcore_array_r_push_sc( &list, "bcore_interpreter"     );
     bcore_array_r_push_sc( &list, "bcore_interpreter_s"   );
     bcore_array_r_push_sc( &list, "bcore_translator"      );
@@ -105,6 +107,7 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_hmap_u2vd_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tpuz_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tptp_s"     );
+    bcore_array_r_push_sc( &list, "bcore_hmap_tpvd_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tpto_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tpfp_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tp_s"       );

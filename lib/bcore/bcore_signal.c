@@ -35,6 +35,7 @@
 #include "bcore_spect.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect_compare.h"
+#include "bcore_spect_hash.h"
 #include "bcore_spect_inst.h"
 #include "bcore_spect_interpreter.h"
 #include "bcore_spect_sink.h"
@@ -127,6 +128,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_img_signal_handler,
         bcore_leaf_signal_handler,
         bcore_file_signal_handler,
+        bcore_spect_hash_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );
