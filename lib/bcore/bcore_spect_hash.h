@@ -34,9 +34,13 @@ BCORE_DECLARE_SPECT( bcore_hash )
     const bcore_via_s* spect_via;
 };
 
+/// Computes folded hash of type tp_t from object.
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_hash, fold_tp, tp_t, tp_t, hash )
 
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_hash, fold_tp, tp_t, tp_t, hash ) // computes folded hash of type tp_t from object
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_hash, get_tp,  tp_t )             // computes explicit hash of type tp_t from object
+/** Computes explicit hash of type tp_t from object.
+ *  For string types (st_s, sc_t, sd_t) the returned type is the same as typeof( <string> ).
+ */
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_hash, get_tp,  tp_t )
 
 /**********************************************************************************************************************/
 

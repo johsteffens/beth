@@ -28,7 +28,6 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_hash )
 
 tp_t bcore_hash_default_fold_tp( const bcore_hash_s* p, const bcore_hash* o, tp_t hash )
 {
-    hash = bcore_tp_fold_tp( hash, p->header.o_type );
     if( o )
     {
         switch( p->header.o_type )
@@ -74,6 +73,7 @@ tp_t bcore_hash_default_fold_tp( const bcore_hash_s* p, const bcore_hash* o, tp_
 
             default:
             {
+                hash = bcore_tp_fold_tp( hash, p->header.o_type );
                 if( bcore_via_p_is_pure_array( p->spect_via, ( bcore_via* )o ) )
                 {
                     const bcore_array_s* arr_p = bcore_array_s_get_typed( p->spect_via->header.o_type );
@@ -102,6 +102,10 @@ tp_t bcore_hash_default_fold_tp( const bcore_hash_s* p, const bcore_hash* o, tp_
             }
         }
     }
+    else
+    {
+        hash = bcore_tp_fold_tp( hash, p->header.o_type );
+    }
     return hash;
 }
 
@@ -122,7 +126,11 @@ void bcore_spect_hash_selftest()
     tp_t hash2 = bcore_hash_r_get_tp( &sr2 );
 
     ASSERT( hash1 == hash2 );
-    ASSERT( hash1 == 864411429 ); // if this fails either bcore_spect_via_create_zoo or the hash algorithm has changed
+
+    // This ASSERT might fail if bcore_spect_via_create_zoo or the hash algorithm has changed.
+    // In that case update the hash value using
+    // bcore_msg_fa( "#<tp_t>\n", hash1 );
+    ASSERT( hash1 == 3040853191 );
 
     sr_down( sr1 );
     sr_down( sr2 );
