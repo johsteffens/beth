@@ -109,8 +109,8 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_via,   const bcore_via_s
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_array, const bcore_array_s*, uz_t, index ) // Returns array perspective for item; return NULL when item is no array
 BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_via, iget_spect,                 vc_t, uz_t, index, tp_t, spect_type )
 
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nexists,    bl_t, tp_t, name ) // Checks if given name exists
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_index, uz_t, tp_t, name ) // Returns index for given name
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nexists,    bl_t, tp_t, name ) // Checks if given name exists (object can be NULL)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_index, uz_t, tp_t, name ) // Returns index for given name (object can be NULL)
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget      , sr_s, tp_t, name )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset      ,       tp_t, name, sr_s, src )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_s3   ,       tp_t, name, s3_t, val )

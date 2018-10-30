@@ -1769,9 +1769,9 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
             if( o->object && ( *( bl_t* )o->object ) )
             {
                 uz_t count = bcore_flect_size();
-                uz_t space = bcore_tbman_granted_space();
+                uz_t space = bcore_tbman_total_granted_space();
                 flect_close();
-                space -= bcore_tbman_granted_space();
+                space -= bcore_tbman_total_granted_space();
 
                 bcore_msg( "  reflection mananger . % 6zu (by % 4zu reflections  )\n", space, count );
             }

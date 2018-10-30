@@ -1754,7 +1754,7 @@ static bcore_self_s* st_s_create_self( void )
 
 static void st_s_quicktest( void )
 {
-    uz_t granted_space = bcore_tbman_granted_space();
+    uz_t granted_space = bcore_tbman_total_granted_space();
 
     bcore_life_s* life = bcore_life_s_create();
     st_s* s = bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create() );
@@ -1859,7 +1859,7 @@ static void st_s_quicktest( void )
 
     bcore_life_s_discard( life );
 
-    ASSERT( granted_space == bcore_tbman_granted_space() );
+    ASSERT( granted_space == bcore_tbman_total_granted_space() );
 }
 
 /**********************************************************************************************************************/

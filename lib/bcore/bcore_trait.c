@@ -438,9 +438,9 @@ vd_t bcore_trait_signal_handler( const bcore_signal_s* o )
             if( o->object && ( *( bl_t* )o->object ) )
             {
                 uz_t count = bcore_trait_size();
-                uz_t space = bcore_tbman_granted_space();
+                uz_t space = bcore_tbman_total_granted_space();
                 trait_manager_close();
-                space -= bcore_tbman_granted_space();
+                space -= bcore_tbman_total_granted_space();
                 bcore_msg( "  trait manager ....... % 6zu (by % 4zu traits       )\n", space, count );
             }
             else

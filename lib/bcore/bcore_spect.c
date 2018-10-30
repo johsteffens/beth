@@ -656,9 +656,9 @@ vd_t bcore_spect_signal_handler( const bcore_signal_s* o )
             if( o->object && ( *( bl_t* )o->object ) )
             {
                 uz_t count = bcore_spect_size();
-                uz_t space = bcore_tbman_granted_space();
+                uz_t space = bcore_tbman_total_granted_space();
                 spect_manager_close();
-                space -= bcore_tbman_granted_space();
+                space -= bcore_tbman_total_granted_space();
                 bcore_msg( "  spect mananger ...... % 6zu (by % 4zu perspectives )\n", space, count );
             }
             else

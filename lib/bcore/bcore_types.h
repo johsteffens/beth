@@ -84,7 +84,7 @@ typedef _Atomic fp_t atomic_fp_t;
 
 #define PRIf3_t "lg"
 #define PRIf2_t "g"
-#define PRIsz_t "tu" // t ~ ptrdiff_t
+#define PRIsz_t "ti" // t ~ ptrdiff_t
 #define PRIuz_t "zu"
 #define PRIoffset_t "zu"
 #define PRItp_t PRIu32
