@@ -146,6 +146,15 @@ uz_t  bcore_hmap_tpuz_s_size(    const bcore_hmap_tpuz_s* o           ); // retu
 tp_t  bcore_hmap_tpuz_s_idx_key( const bcore_hmap_tpuz_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
 uz_t  bcore_hmap_tpuz_s_idx_val( const bcore_hmap_tpuz_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
+/** Compute a map from (aware) array where -
+ *  - key is the hash from the specified member of each array-element.
+ *  - val is the index position of the array-element.
+ *  Uses via and hash perspectives.
+ *  Elements without 'member_name' are not indexed.
+ *  In case of duplicate-key, the first entry for the key is indexed.
+ *  Duplicate keys can arise from duplicate member values or hash collisions.
+ *  Returns the number of duplicate-keys detected.
+ */
 sz_t bcore_hmap_tpuz_s_from_array( bcore_hmap_tpuz_s* o, bcore_array* array, tp_t member_name );
 
 /**********************************************************************************************************************/
