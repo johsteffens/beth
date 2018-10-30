@@ -238,6 +238,10 @@ static token_manager_s* token_manager_s_create
     token_manager_s* o;
     if( align )
     {
+        /* We align to the entire pool_size (not just block_size).
+         * This is to enable quick O(1) location of the token manager from any memory instance
+         * by computing the next lower alignment point form a given address.
+         */
         o = aligned_alloc( pool_size, pool_size );
         if( !o ) ERR( "Failed aligned allocating %zu bytes", pool_size );
     }
@@ -248,6 +252,11 @@ static token_manager_s* token_manager_s_create
     }
 
     token_manager_s_init( o );
+
+    /* We explicitly check alignment allowing for unexpected behavior of aligned_alloc.
+     * If alignment (according to tbman's definition) fails, o->aligned is set to 'false' and
+     * tbman falls back to a slightly slower btree-search to locate the token manager.
+     */
     o->aligned = ( ( intptr_t )o & ( intptr_t )( pool_size - 1 ) ) == 0;
     o->pool_size = pool_size;
     o->block_size = block_size;
@@ -333,6 +342,13 @@ static void token_manager_s_free( token_manager_s* o, vd_t ptr )
         if( ( uz_t )( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) > o->pool_size ) ERR( "Attempt to free memory outside pool." );
     #endif
     token_manager_s_free_token( o, ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size );
+}
+
+/// Finds the root address of given memory instance; returns NULL in case ptr is outside token_manager's memory space
+static vd_t token_manager_s_root( token_manager_s* o, vc_t ptr )
+{
+    u3_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
+    return ( token < o->stack_size ) ? ( u0_t* )o + token * o->block_size : NULL;
 }
 
 static void token_manager_s_create_rc_count_arr( token_manager_s* o )
@@ -954,6 +970,17 @@ static void external_manager_s_free( external_manager_s* o, vd_t ptr )
     external_manager_s_free_ext( o, ptr, *ext_p );
 }
 
+static void external_manager_s_get_instance( external_manager_s* o, vc_t ptr, vd_t* root, uz_t* granted_space )
+{
+    bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ( vd_t )ptr );
+    if( !kv ) ERR( "Object has no root." );
+    ext_s* ext = kv->val;
+    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) ERR( "Object has no root." );
+
+    if( root ) *root = kv->key;
+    if( granted_space ) *granted_space = ext->size;
+}
+
 static uz_t external_manager_s_granted_bytes( external_manager_s* o, vd_t ptr )
 {
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
@@ -1009,13 +1036,12 @@ static void external_manager_s_for_all_instances( external_manager_s* o, void (*
     bcore_btree_pp_s_run( o->ex_btree, ext_for_instance, &iarg );
 }
 
-
 static uz_t external_manager_s_references( external_manager_s* o, vc_t ptr )
 {
     bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ( vd_t )ptr );
     if( !kv ) return 0;
     ext_s* ext = kv->val;
-    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) > ext->size ) return 0;
+    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) return 0;
     return 1 + ext->rc_count;
 }
 
@@ -1024,7 +1050,7 @@ static void external_manager_s_fork( external_manager_s* o, vd_t ptr )
     bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ptr );
     if( !kv ) ERR( "Object has no root." );
     ext_s* ext = kv->val;
-    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) > ext->size ) ERR( "Object has no root." );
+    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) ERR( "Object has no root." );
     ext->rc_count++;
     assert( ext->rc_count ); // overflow check
 }
@@ -1034,7 +1060,7 @@ static void external_manager_s_release( external_manager_s* o, vd_t ptr )
     bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ptr );
     if( !kv ) ERR( "Object has no root." );
     ext_s* ext = kv->val;
-    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) > ext->size ) ERR( "Object has no root." );
+    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) ERR( "Object has no root." );
     external_manager_s_free_ext( o, kv->key, ext );
 }
 
@@ -1799,6 +1825,23 @@ vd_t bcore_tbman_s_un_alloc( bcore_tbman_s* o, uz_t unit_bytes, vd_t current_ptr
     return reserved_ptr;
 }
 
+void bcore_tbman_s_get_instance( bcore_tbman_s* o, vc_t ptr, vd_t* root, uz_t* granted_space )
+{
+    tbman_s_lock( o );
+    vd_t block_ptr = bcore_btree_vd_s_largest_below_equal( o->internal_btree, ( vd_t )ptr );
+    if( block_ptr && ( ( ptrdiff_t )( (u0_t*)ptr - (u0_t*)block_ptr ) < o->pool_size ) )
+    {
+        token_manager_s* token_manager = block_ptr;
+        if( root ) *root = token_manager_s_root( token_manager, ptr );
+        if( granted_space ) *granted_space = token_manager->block_size;
+    }
+    else
+    {
+        external_manager_s_get_instance( &o->external_manager, ptr, root, granted_space );
+    }
+    tbman_s_unlock( o );
+}
+
 static uz_t tbman_s_internal_total_alloc( const bcore_tbman_s* o )
 {
     uz_t sum = 0;
@@ -1970,7 +2013,19 @@ vd_t bcore_tbman_un_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t current_units
     return reserved_ptr;
 }
 
-uz_t bcore_tbman_s_granted_space( bcore_tbman_s* o )
+void bcore_tbman_get_instance( vc_t ptr, vd_t* root, uz_t* granted_space )
+{
+    bcore_tbman_s_get_instance( tbman_s_g, ptr, root, granted_space );
+}
+
+uz_t bcore_tbman_s_granted_space( bcore_tbman_s* o, vc_t ptr )
+{
+    uz_t space = 0;
+    bcore_tbman_s_get_instance( o, ptr, NULL, &space );
+    return space;
+}
+
+uz_t bcore_tbman_s_total_granted_space( bcore_tbman_s* o )
 {
     tbman_s_lock( o );
     uz_t space = tbman_s_total_alloc( o );
@@ -2001,10 +2056,16 @@ void bcore_tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd
     tbman_s_unlock( o );
 }
 
-uz_t bcore_tbman_granted_space()
+uz_t bcore_tbman_granted_space( vc_t ptr )
 {
     assert( tbman_s_g != NULL );
-    return bcore_tbman_s_granted_space( tbman_s_g );
+    return bcore_tbman_s_granted_space( tbman_s_g, ptr );
+}
+
+uz_t bcore_tbman_total_granted_space()
+{
+    assert( tbman_s_g != NULL );
+    return bcore_tbman_s_total_granted_space( tbman_s_g );
 }
 
 uz_t bcore_tbman_total_instances()
@@ -2515,6 +2576,20 @@ static st_s* tbman_s_thread_test( void )
     return log;
 }
 
+static void tbman_s_instance_test( void )
+{
+    for( uz_t size = 1; size < 10000000; size *= 2 )
+    {
+        uz_t space = 0;
+        vd_t ptr = bcore_tbman_bn_alloc( NULL, 0, size, &space );
+        uz_t instance_space = 0;
+        vd_t instance_root = NULL;
+        bcore_tbman_get_instance( ( u0_t* )ptr + ( size >> 1 ), &instance_root, &instance_space );
+        ASSERT( instance_root == ptr );
+        ASSERT( instance_space == space );
+        bcore_tbman_free( ptr );
+    }
+}
 
 /**********************************************************************************************************************/
 // signal
@@ -2537,7 +2612,7 @@ vd_t bcore_tbman_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_down0:
         {
-            uz_t space = bcore_tbman_granted_space();
+            uz_t space = bcore_tbman_total_granted_space();
             if( space > 0 )
             {
                 uz_t instances = bcore_tbman_total_instances();
@@ -2560,6 +2635,7 @@ vd_t bcore_tbman_signal_handler( const bcore_signal_s* o )
         case TYPEOF_selftest:
         {
             st_s* log = st_s_create();
+            tbman_s_instance_test();
             st_s_push_st_d( log, tbman_s_thread_test() );
             st_s_push_st_d( log, tbman_s_rctest() );
             st_s_push_st_d( log, tbman_s_memtest() );

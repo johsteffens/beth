@@ -91,6 +91,14 @@ static inline vd_t bcore_tbman_malloc(            uz_t size ) { return bcore_tbm
 static inline vd_t bcore_tbman_realloc( vd_t ptr, uz_t size ) { return bcore_tbman_b_alloc( ptr,  size, NULL ); }
 static inline void bcore_tbman_free(    vd_t ptr            ) {        bcore_tbman_b_alloc( ptr,  0,    NULL ); }
 
+/** Obtains the memory instance of ptr. (Instance must exist)
+  * *root is set to the instance root address,
+  * *granted_space to the space the instance and 'true' is returned.
+  *
+  * root or granted_space may be NULL
+  */
+void bcore_tbman_s_get_instance( bcore_tbman_s* o, vc_t ptr, vd_t* root, uz_t* granted_space );
+void bcore_tbman_get_instance(                     vc_t ptr, vd_t* root, uz_t* granted_space );
 
 /**********************************************************************************************************************/
 /// Reference Control (thread-safe)
@@ -149,9 +157,10 @@ uz_t bcore_tbman_references     (                             vc_t ptr );
 /// Diagnostics
 
 /// Current allocations (thread-safe)
-uz_t bcore_tbman_s_granted_space(    bcore_tbman_s* o );
-uz_t bcore_tbman_s_total_instances(  bcore_tbman_s* o );
-uz_t bcore_tbman_s_total_references( bcore_tbman_s* o );
+uz_t bcore_tbman_s_granted_space(       bcore_tbman_s* o, vc_t ptr ); // space of memory instance indicated by ptr
+uz_t bcore_tbman_s_total_granted_space( bcore_tbman_s* o );
+uz_t bcore_tbman_s_total_instances(     bcore_tbman_s* o );
+uz_t bcore_tbman_s_total_references(    bcore_tbman_s* o );
 
 /// applies a function to all instances
 void bcore_tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg );
@@ -159,13 +168,12 @@ void bcore_tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd
 /// runs instance diagnostics (e.g. to determine the cause of memory leaks)
 void bcore_tbman_s_instance_disgnostics( bcore_tbman_s* o );
 
-uz_t bcore_tbman_granted_space( void );
+uz_t bcore_tbman_granted_space( vc_t ptr ); // space of memory instance indicated by ptr
+uz_t bcore_tbman_total_granted_space( void );
 uz_t bcore_tbman_total_instances( void );
 uz_t bcore_tbman_total_references( void );
 void bcore_tbman_for_all_instances( void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg );
 void bcore_tbman_s_instance_disgnostics();
-
-
 
 /**********************************************************************************************************************/
 /// Signal
