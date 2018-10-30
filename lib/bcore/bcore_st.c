@@ -1690,14 +1690,23 @@ static s3_t get_index( const st_s* o )
     return -( s3_t )o->size;
 }
 
-/** Set index with st_s has only limited error detection capability.
-  * Beware that an invalid index may set o->data to invalid memory
-  */
 static void set_index( st_s* o, s3_t index )
 {
     if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
     if( index > 0    ) ERR( "Index is out of range." );
-    o->data = o->data + o->size + index;
+
+    vd_t root = NULL;
+    uz_t granted_space = 0;
+    bcore_tbman_get_instance( o->data, &root, &granted_space );
+
+    vd_t new_data = o->data + o->size + index;
+
+    if( ( uz_t )( ptrdiff_t )( ( u0_t* )new_data - ( u0_t* )root ) >= granted_space )
+    {
+        ERR( "Index exceeds range of memory instance." );
+    }
+
+    o->data = new_data;
     o->size = -index;
 }
 
