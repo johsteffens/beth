@@ -84,6 +84,11 @@ void bcore_source_default_set_index( const bcore_source_s* p, bcore_source* o, s
     p->set_index( o, index );
 }
 
+void bcore_source_default_move_index( const bcore_source_s* p, bcore_source* o, s3_t delta )
+{
+    bcore_source_default_set_index( p, o, bcore_source_default_get_index( p, o ) + delta );
+}
+
 /**********************************************************************************************************************/
 
 static void source_s_define_trait()

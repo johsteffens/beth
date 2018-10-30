@@ -69,10 +69,11 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_source, get_file,     sc_t )
  *  Access features need not be supported.
  *  Unsupported set_index produces an error. Unsupported get_index returns always 0.
  *  Index values and value range is stream dependent and may also be negative.
- *  When supported: set_index can reset the stream(-chain) to any read-position previously obtained via get_index.
+ *  When supported: set_index is able to reset the stream to any read-position previously obtained via get_index.
  */
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_source, get_index, s3_t )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_source, set_index, s3_t, index )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_source, get_index,  s3_t )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_source, set_index,  s3_t, index )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_source, move_index, s3_t, delta ) // set_index( get_index() + delta );
 
 void bcore_source_p_parse_err_fa( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
 void bcore_source_p_parse_errf  ( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
