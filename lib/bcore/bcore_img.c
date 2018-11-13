@@ -69,7 +69,7 @@ void bcore_img_u2_s_pnm_to_sink( const bcore_img_u2_s* o, bcore_sink* snk )
 
 void bcore_img_u2_s_pnm_to_file( const bcore_img_u2_s* o, sc_t file )
 {
-    bcore_sink* snk = ( bcore_sink* )bcore_sink_create_file( file );
+    bcore_sink* snk = ( bcore_sink* )bcore_sink_open_file( file );
     bcore_img_u2_s_pnm_to_sink( o, snk );
     bcore_inst_a_discard( snk );
 }

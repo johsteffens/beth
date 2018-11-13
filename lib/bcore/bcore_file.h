@@ -21,12 +21,18 @@
 #include "bcore_control.h"
 #include "bcore_signal.h"
 
+BCORE_FORWARD_OBJECT( bcore_source );
+BCORE_FORWARD_OBJECT( bcore_sink );
+
 /**********************************************************************************************************************/
 
 bl_t bcore_file_exists( sc_t name ); // checks if file exists
 bl_t bcore_file_touch(  sc_t name ); // creates empty file if not existing; returns success (no effect if existing)
 bl_t bcore_file_delete( sc_t name ); // deletes file if existing; returns success
 bl_t bcore_file_rename( sc_t src_name, sc_t dst_name ); // renames file if existing; returns success
+
+bcore_source* bcore_file_open_source( sc_t name ); // opens file-source (close with bcore_source_a_discard)
+bcore_sink*   bcore_file_open_sink(   sc_t name ); // opens file-sink   (close with bcore_sink_a_discard)
 
 /**********************************************************************************************************************/
 

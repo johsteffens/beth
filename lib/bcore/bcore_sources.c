@@ -865,7 +865,7 @@ static st_s* sources_selftest( void )
 
     // write object to file
     {
-        bcore_sink_chain_s* chain = bcore_sink_create_file( "test/test01.txt" );
+        bcore_sink_chain_s* chain = bcore_sink_open_file( "test/test01.txt" );
         bcore_translate_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), arr, sr_awd( chain ) );
         bcore_sink_chain_s_discard( chain );
     }
@@ -882,7 +882,7 @@ static st_s* sources_selftest( void )
     // random access
     {
         {
-            bcore_sink_chain_s* chain = bcore_sink_create_file( "test/test02.txt" );
+            bcore_sink_chain_s* chain = bcore_sink_open_file( "test/test02.txt" );
             for( uz_t i = 0; i < 10000; i++ ) bcore_sink_a_push_string_d( (bcore_sink*)chain, st_s_create_fa( "line of text #<uz_t>\n", i ) );
             bcore_sink_chain_s_discard( chain );
         }

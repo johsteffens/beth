@@ -92,7 +92,7 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
     st_s_push_sc( syscommand, "plot " );
 
     if( bcore_file_exists( data_file->sc ) ) ERR_fa( "File '#<sc_t>' exists. Remove it manually.", data_file->sc );
-    bcore_sink* sink = ( bcore_sink* )bcore_sink_create_file( data_file->sc );
+    bcore_sink* sink = ( bcore_sink* )bcore_sink_open_file( data_file->sc );
 
     if( sr_s_type( &o->data ) == TYPEOF_bmath_arr_vf3_s )
     {

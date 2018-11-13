@@ -54,15 +54,36 @@ u0_t bcore_source_default_get_u0( const bcore_source_s* p, bcore_source* o )
     return v;
 }
 
-BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( bcore_source, get_data,     uz_t, vd_t, data, uz_t, size ) // returns number of bytes read
-BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, get_u0,       u0_t )  // reads single byte and returns it (returns 0 in case eos is reached
+/// Reads and consumes data. Returns number of bytes consumed.
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( bcore_source, get_data, uz_t, vd_t, data, uz_t, size )
+
+/// Reads and consumes a single byte. Returns 0 in case eos is reached.
+BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, get_u0, u0_t )
+
+/// Reads data at current position without consumption. Returns number of bytes copied.
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_source, inspect_data, uz_t, vd_t, data, uz_t, size )
+
+/// Reads a single byte current position without consumption. Returns 0 in case eos is reached.
+BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, inspect_u0, u0_t )
+
+/// Reads and consumes data using formatted parsing according to st_s_parse_fv fromat rules.
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP1( bcore_source, parse_fv,           sc_t, format, va_list, args )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_errvf,        sc_t, format, va_list, args )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_err_fv,       sc_t, format, va_list, args )
-BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bcore_source, parse_bl_fa,  bl_t, sc_t, format ) // format must yield just one bool, which is returned
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP1( bcore_source, set_supplier,       vd_t, supplier ) // error when not supported
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP1( bcore_source, eos,          bl_t )
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_source, get_file,     sc_t )
+
+/// Produces a parse error message
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_errvf,  sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_err_fv, sc_t, format, va_list, args )
+
+/// Returns the boolean of a fometted parse. 'format' must yield just one bool, which is returned.
+BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bcore_source, parse_bl_fa,  bl_t, sc_t, format )
+
+/// Indicates end-of-stream
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP1( bcore_source, eos, bl_t )
+
+/// Retrieves the file name associated with a stream if available
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_source, get_file, sc_t )
+
+/// Defines the supplier of a stream. Error when not supported.
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP1( bcore_source, set_supplier, vd_t, supplier )
 
 /** Random access:
  *  Functions set_index, get_index provide random access within a specific stream configuration.

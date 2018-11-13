@@ -399,7 +399,7 @@ static bcore_self_s* file_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-bcore_sink_chain_s* bcore_sink_create_file( sc_t file_name )
+bcore_sink_chain_s* bcore_sink_open_file( sc_t file_name )
 {
     bcore_sink_chain_s* chain = bcore_sink_chain_s_create();
     bcore_sink_chain_s_push_d( chain, bcore_sink_file_s_create_name( file_name ) );

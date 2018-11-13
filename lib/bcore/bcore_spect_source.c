@@ -31,6 +31,8 @@ static void source_s_init( bcore_source_s* o )
     o->header.p_type = typeof( "bcore_source_s" );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static bcore_source_s* source_s_create()
 {
     bcore_source_s* o = bcore_alloc( NULL, sizeof( bcore_source_s ) );
@@ -39,6 +41,26 @@ static bcore_source_s* source_s_create()
 }
 
 /**********************************************************************************************************************/
+
+uz_t bcore_source_default_inspect_data( const bcore_source_s* p, bcore_source* o, vd_t data, uz_t size )
+{
+    s3_t index = bcore_source_p_get_index( p, o );
+    uz_t copied = bcore_source_p_get_data( p, o, data, size );
+    bcore_source_p_set_index( p, o, index );
+    return copied;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+u0_t bcore_source_default_inspect_u0( const bcore_source_s* p, bcore_source* o )
+{
+    s3_t index = bcore_source_p_get_index( p, o );
+    u0_t v = bcore_source_p_get_u0( p, o );
+    bcore_source_p_set_index( p, o, index );
+    return v;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_source_default_parse_errvf( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
 {
@@ -52,12 +74,16 @@ void bcore_source_default_parse_errvf( const bcore_source_s* p, bcore_source* o,
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_source_default_parse_err_fv( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
 {
     st_s* s = st_s_create_fv( format, args );
     bcore_source_p_parse_errf( p, o, "%s", s->sc );
     st_s_discard( s );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_source_default_parse_bl_fa( const bcore_source_s* p, bcore_source* o, sc_t format )
 {
@@ -66,11 +92,15 @@ bl_t bcore_source_default_parse_bl_fa( const bcore_source_s* p, bcore_source* o,
     return flag;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 sc_t bcore_source_default_get_file( const bcore_source_s* p, const bcore_source* o )
 {
     if( p->get_file ) return p->get_file( o );
     return "";
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 s3_t bcore_source_default_get_index( const bcore_source_s* p, const bcore_source* o )
 {
@@ -78,11 +108,15 @@ s3_t bcore_source_default_get_index( const bcore_source_s* p, const bcore_source
     return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_source_default_set_index( const bcore_source_s* p, bcore_source* o, s3_t index )
 {
     if( !p->set_index ) ERR( "Object '%s' does not support feature 'bcore_source_fp_set_index'.", nameof( p->header.o_type ) );
     p->set_index( o, index );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_source_default_move_index( const bcore_source_s* p, bcore_source* o, s3_t delta )
 {
@@ -99,6 +133,8 @@ static void source_s_define_trait()
     bcore_trait_require_function( trait, entypeof( "bcore_source_fp_eos" ), 0 );
     bcore_trait_set( trait, entypeof( "bcore_inst" ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_source_s* create_from_self( const bcore_self_s* self )
 {
@@ -117,6 +153,8 @@ static bcore_source_s* create_from_self( const bcore_self_s* self )
     o->set_index    = ( bcore_source_fp_set_index    )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_index" ), 0 );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* source_s_create_self( void )
 {
