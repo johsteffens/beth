@@ -238,12 +238,16 @@ uz_t bcore_array_r_get_unit_size        ( const sr_s* o );
     } \
     void arr_name##_set_space( arr_name* o, uz_t space ); \
     void arr_name##_set_size(  arr_name* o, uz_t size  ); \
-    void arr_name##_push(      arr_name* o, const element_type* v )
+    void arr_name##_push(      arr_name* o, const element_type* v ); \
+    void arr_name##_popv(      arr_name* o,       element_type* v ); \
+    void arr_name##_popn(      arr_name* o )
 
 #define BCORE_DEFINE_ARRAY_DYN_SOLID_STATIC( element_type, arr_name ) \
     void arr_name##_set_space( arr_name* o, uz_t space ) { bcore_array_a_set_space( ( bcore_array* )o, space ); } \
     void arr_name##_set_size(  arr_name* o, uz_t size  ) { bcore_array_a_set_size(  ( bcore_array* )o, size  ); } \
     void arr_name##_push(      arr_name* o, const element_type* v ) { bcore_array_a_push(  ( bcore_array* )o, sr_twc( TYPEOF_##element_type, v ) ); } \
+    void arr_name##_popv(      arr_name* o,       element_type* v ) { if( o->size > 0 ) { o->size--; element_type##_copy( v, &o->data[ o->size ] ); element_type##_down( &o->data[ o->size ] ); } } \
+    void arr_name##_popn(      arr_name* o                        ) { if( o->size > 0 ) { o->size--;                                                element_type##_down( &o->data[ o->size ] ); } } \
     BCORE_DEFINE_OBJECT_INST( bcore_array, arr_name ) "{ aware_t _; " #element_type " [] arr; }"
 
 /**********************************************************************************************************************/
