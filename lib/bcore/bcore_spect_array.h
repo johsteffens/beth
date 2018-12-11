@@ -231,13 +231,12 @@ uz_t bcore_array_r_get_unit_size        ( const sr_s* o );
         aware_t _; \
         BCORE_ARRAY_DYN_SOLID_STATIC_S( element_type, ); \
     }; \
-    static inline void arr_name##_clear( arr_name* o ) \
-    { \
-        o->size = 0; \
-        if( o->space == 0 ) o->data = NULL; /* in case array is referencing external data */ \
-    } \
     void arr_name##_set_space( arr_name* o, uz_t space ); \
     void arr_name##_set_size(  arr_name* o, uz_t size  ); \
+    static inline void arr_name##_clear( arr_name* o ) \
+    { \
+        arr_name##_set_size( o, 0 ); \
+    } \
     void arr_name##_push(      arr_name* o, const element_type* v ); \
     void arr_name##_popv(      arr_name* o,       element_type* v ); \
     void arr_name##_popn(      arr_name* o )
