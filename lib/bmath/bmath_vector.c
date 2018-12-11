@@ -696,6 +696,25 @@ void bmath_vcf3_s_set_size( bmath_vcf3_s* o, uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_cvf3_s_push( bmath_vcf3_s* o, bmath_cf3_s val )
+{
+    if( o->size < o->space )
+    {
+        o->data[ o->size++ ] = val;
+    }
+    else
+    {
+        bcore_array_a_push( (bcore_array*)o, sr_twc( TYPEOF_bmath_cf3_s, &val ) );
+    }
+}
+
+void bmath_vcf3_s_push_ri( bmath_vcf3_s* o, f3_t r, f3_t i )
+{
+    bmath_cvf3_s_push( o, bmath_cf3_init( r, i ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bmath_vcf3_s* bmath_vcf3_s_create_size( uz_t size )
 {
     bmath_vcf3_s* o = bmath_vcf3_s_create();
