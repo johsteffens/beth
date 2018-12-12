@@ -132,13 +132,15 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_life_s" );
 
     // signals
-    bcore_array_r_push_sc( &list, "all" );
-    bcore_array_r_push_sc( &list, "none" );
-    bcore_array_r_push_sc( &list, "init0" );
-    bcore_array_r_push_sc( &list, "init1" );
-    bcore_array_r_push_sc( &list, "down0" );
-    bcore_array_r_push_sc( &list, "down1" );
-    bcore_array_r_push_sc( &list, "selftest" );
+    bcore_array_r_push_sc( &list, "all"   );          // (target) broadcast to all
+    bcore_array_r_push_sc( &list, "local" );          // (target) broadcast to local library (interpreted by library's signal handler)
+    bcore_array_r_push_sc( &list, "none"  );
+    bcore_array_r_push_sc( &list, "init0" );          // (type) init cycle 0
+    bcore_array_r_push_sc( &list, "init1" );          // (type) init cycle 1
+    bcore_array_r_push_sc( &list, "down0" );          // (type) down cycle 0
+    bcore_array_r_push_sc( &list, "down1" );          // (type) down cycle 1
+    bcore_array_r_push_sc( &list, "selftest" );       // (type) selftest (returns NULL or st_s*)
+    bcore_array_r_push_sc( &list, "get_quicktypes" ); // (type) object referencing an array accepting strings
 
     bcore_array_r_sort( &list, 0, -1, 1 );
     return list;

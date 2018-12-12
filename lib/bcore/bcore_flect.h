@@ -464,10 +464,6 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         return bcore_self_s_build_parse_sc( def, sizeof( name ) ); \
     }
 
-/// deprecated: use BCORE_REGISTER_TYPE or BCORE_REGISTER_FEATURE
-/*#define BCORE_REGISTER_PLAIN( name, trait )\
-    bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( #name ), TYPEOF_##trait, sizeof( name ) ) )
-*/
 #define BCORE_REGISTER_TYPE( trait, name )\
     bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( #name ), TYPEOF_##trait, sizeof( name ) ) )
 

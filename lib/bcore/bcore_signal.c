@@ -57,7 +57,7 @@ BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
 
 tp_t bcore_signal_s_handle_type( const bcore_signal_s* o, tp_t target )
 {
-    if( ( o->target == TYPEOF_all ) || ( o->target == target ) ) return o->type;
+    if( ( o->target == TYPEOF_all ) || ( o->target == TYPEOF_local ) || ( o->target == target ) ) return o->type;
     return TYPEOF_none;
 }
 
