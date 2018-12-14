@@ -195,12 +195,28 @@ void bcore_inst_test_all_types();
 /**********************************************************************************************************************/
 // macros
 
+/** Default vs. Autonomous macros:
+ *  Many default macros make use of predefined information (e.g. TYPEOF_ ). Since this may impair development flow and
+ *  locality, there is an autonomous macro with prefix '_AUT' not requiring such predefined but executing slower.
+ *  For rapid prototyping one might start with _AUT macros and turn them later into the default version.
+ */
+
 #define BCORE_DEFINE_FUNCTION_INIT_INST( name ) void name##_init( name* o ) { bcore_inst_t_init( TYPEOF_##name, (bcore_inst*)o ); }
+#define BCORE_DEFINE_FUNCTION_INIT_INST_AUT( name ) void name##_init( name* o ) { bcore_inst_t_init( typeof( #name ), (bcore_inst*)o ); }
+
 #define BCORE_DEFINE_FUNCTION_DOWN_INST( name ) void name##_down( name* o ) { bcore_inst_t_down( TYPEOF_##name, (bcore_inst*)o ); }
+#define BCORE_DEFINE_FUNCTION_DOWN_INST_AUT( name ) void name##_down( name* o ) { bcore_inst_t_down( typeof( #name ), (bcore_inst*)o ); }
+
 #define BCORE_DEFINE_FUNCTION_COPY_INST( name ) void name##_copy( name* o, const name* src ) \
 { \
     if( o == src ) return; \
     bcore_inst_t_copy( TYPEOF_##name, (bcore_inst*)o, src ); \
+}
+
+#define BCORE_DEFINE_FUNCTION_COPY_INST_AUT( name ) void name##_copy( name* o, const name* src ) \
+{ \
+    if( o == src ) return; \
+    bcore_inst_t_copy( typeof( #name ), (bcore_inst*)o, src ); \
 }
 
 #define BCORE_DEFINE_FUNCTIONS_IDC_INST( name ) \
@@ -208,8 +224,17 @@ void bcore_inst_test_all_types();
     BCORE_DEFINE_FUNCTION_DOWN_INST( name )\
     BCORE_DEFINE_FUNCTION_COPY_INST( name )\
 
+#define BCORE_DEFINE_FUNCTIONS_IDC_INST_AUT( name ) \
+    BCORE_DEFINE_FUNCTION_INIT_INST_AUT( name )\
+    BCORE_DEFINE_FUNCTION_DOWN_INST_AUT( name )\
+    BCORE_DEFINE_FUNCTION_COPY_INST_AUT( name )\
+
 #define BCORE_DEFINE_FUNCTION_CREATE_INST( name ) name* name##_create() { return bcore_inst_t_create( TYPEOF_##name ); }
+#define BCORE_DEFINE_FUNCTION_CREATE_INST_AUT( name ) name* name##_create() { return bcore_inst_t_create( typeof( #name ) ); }
+
 #define BCORE_DEFINE_FUNCTION_DISCARD_INST( name ) void name##_discard( name* o ) { bcore_inst_t_discard( TYPEOF_##name, o ); }
+#define BCORE_DEFINE_FUNCTION_DISCARD_INST_AUT( name ) void name##_discard( name* o ) { bcore_inst_t_discard( typeof( #name ), o ); }
+
 #define BCORE_DEFINE_FUNCTION_CLONE_INST( name ) \
 name* name##_clone( const name* o ) \
 { \
@@ -217,14 +242,30 @@ name* name##_clone( const name* o ) \
     return bcore_inst_t_clone( TYPEOF_##name, (bcore_inst*)o ); \
 }
 
+#define BCORE_DEFINE_FUNCTION_CLONE_INST_AUT( name ) \
+name* name##_clone( const name* o ) \
+{ \
+    if( !o ) return NULL; \
+    return bcore_inst_t_clone( typeof( #name ), (bcore_inst*)o ); \
+}
+
 #define BCORE_DEFINE_FUNCTIONS_CDC_INST( name ) \
     BCORE_DEFINE_FUNCTION_CREATE_INST( name )\
     BCORE_DEFINE_FUNCTION_DISCARD_INST( name )\
     BCORE_DEFINE_FUNCTION_CLONE_INST( name )
 
+#define BCORE_DEFINE_FUNCTIONS_CDC_INST_AUT( name ) \
+    BCORE_DEFINE_FUNCTION_CREATE_INST_AUT( name )\
+    BCORE_DEFINE_FUNCTION_DISCARD_INST_AUT( name )\
+    BCORE_DEFINE_FUNCTION_CLONE_INST_AUT( name )
+
 #define BCORE_DEFINE_FUNCTIONS_OBJ_INST( name ) \
     BCORE_DEFINE_FUNCTIONS_IDC_INST( name )\
     BCORE_DEFINE_FUNCTIONS_CDC_INST( name )
+
+#define BCORE_DEFINE_FUNCTIONS_OBJ_INST_AUT( name ) \
+    BCORE_DEFINE_FUNCTIONS_IDC_INST_AUT( name )\
+    BCORE_DEFINE_FUNCTIONS_CDC_INST_AUT( name )
 
 /// deprecated: prefer BCORE_DEFINE_OBJECT_INST
 #define BCORE_DEFINE_FUNCTIONS_SELF_OBJECT_INST( name, def ) \
@@ -234,6 +275,12 @@ name* name##_clone( const name* o ) \
 #define BCORE_DEFINE_OBJECT_INST( trait, name ) \
     static sc_t name##_def_g; \
     BCORE_DEFINE_FUNCTIONS_OBJ_INST( name ) \
+    BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \
+    static sc_t name##_def_g = #name " =" #trait
+
+#define BCORE_DEFINE_OBJECT_INST_AUT( trait, name ) \
+    static sc_t name##_def_g; \
+    BCORE_DEFINE_FUNCTIONS_OBJ_INST_AUT( name ) \
     BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \
     static sc_t name##_def_g = #name " =" #trait
 

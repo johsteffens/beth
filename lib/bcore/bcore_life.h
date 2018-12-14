@@ -66,6 +66,7 @@ vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 #define BCORE_LIFE_INIT() bcore_life_s* __life = bcore_life_s_create()
 #define BCORE_LIFE_DOWN() bcore_life_s_discard( __life )
 #define BCORE_LIFE_CREATE( type_name, var_name ) type_name* var_name = bcore_life_s_push_typed( __life, TYPEOF_##type_name, type_name##_create() )
+#define BCORE_LIFE_CREATE_AUT( type_name, var_name ) type_name* var_name = bcore_life_s_push_typed( __life, typeof( #type_name ), type_name##_create() )
 
 #define BCORE_LIFE_A_PUSH(       expr ) bcore_life_s_push_aware( __life,       expr )
 #define BCORE_LIFE_T_PUSH( type, expr ) bcore_life_s_push_typed( __life, type, expr )
