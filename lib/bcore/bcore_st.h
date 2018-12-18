@@ -71,10 +71,10 @@ void  st_s_copy_typed(   st_s* o, tp_t type, vc_t src ); // copy with type conve
 void  st_s_copy_aware(   st_s* o,            vc_t src ); // copy with type conversion
 void  st_s_move(         st_s* o, st_s* src );
 st_s* st_s_create();
-st_s* st_s_createvf(     sc_t format, va_list args );
-st_s* st_s_createf(      sc_t format, ... );
-st_s* st_s_create_fv(    sc_t format, va_list args );
-st_s* st_s_create_fa(    sc_t format, ... );
+st_s* st_s_createvf(     sc_t format, va_list args ); // c-style formatting
+st_s* st_s_createf(      sc_t format, ... );          // c-style formatting
+st_s* st_s_create_fv(    sc_t format, va_list args ); // beth-style formatting
+st_s* st_s_create_fa(    sc_t format, ... );          // beth-style formatting
 st_s* st_s_create_sc_n(  sc_t sc, uz_t n );
 st_s* st_s_create_sd_d(  sd_t sd );
 st_s* st_s_create_sc(    sc_t sc );
