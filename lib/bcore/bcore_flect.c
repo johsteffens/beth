@@ -1572,7 +1572,7 @@ tp_t bcore_flect_type_parse_fa( sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    st_s* string = st_s_createvf( format, args );
+    st_s* string = st_s_create_fv( format, args );
     va_end( args );
     tp_t type = bcore_flect_type_parse_sc( string->sc );
     st_s_discard( string );
