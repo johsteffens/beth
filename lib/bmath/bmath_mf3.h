@@ -142,7 +142,7 @@ void bmath_mf3_s_set_size( bmath_mf3_s* o, uz_t rows, uz_t cols );
 /** Sets all matrix elements to random values.
  *  hsm: true: Creates a symmetric matrix
  *  pdf: true: Creates a positive definite matrix
- *  rd: Rank deficit
+ *  rd > 0: Embeds a rank deficit
  *     If rd < min( cols, rows ) at density == 1.0, the matrix-rank can be expected to be equal to min( cols, rows ) - rd.
  *     If rd >= min( cols, rows ), a zero-matrix is created.
  *     If density is < 1.0, it is matrix-rank <= min( cols, rows ) - rd.
@@ -248,6 +248,9 @@ void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bm
 
 void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf3_s* res );
 void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf3_s* res ); // affine transformation (see nomenclature 'av1')
+
+//----------------------------------------------------------------------------------------------------------------------
+// matrix * scalar --> matrix
 
 void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t*        op, bmath_mf3_s* res );
 static inline
@@ -569,6 +572,17 @@ void bmath_mf3_s_sweep_acol_rotate_fwd( bmath_mf3_s* o, uz_t col_start, uz_t col
 void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_f3_s* grt, uz_t row_start, uz_t row_end );
 
 //----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// Convolution
+
+/** Turns the matrix into a convolution-operant on which a multi-kernel convolution can be performed via matrix multiplication.
+ *  Matrix is first interpreted as vector of size rows * cols (all rows catenated).
+ *  After execution cols = kernel_size, rows = number of convolution steps. Rows overlap with step_size as offset.
+ *  Note that the resulting matrix stores fewer actual values than its size (rows * cols) might indicate.
+ *  No matrix data is actually moved in memory by this function.
+ */
+void bmath_mf3_s_to_conv_operant( bmath_mf3_s* o, sz_t kernel_size, sz_t step_size );
 
 /**********************************************************************************************************************/
 /// Development support

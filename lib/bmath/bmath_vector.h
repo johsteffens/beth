@@ -145,6 +145,13 @@ f3_t bmath_vf3_s_get_f3( const bmath_vf3_s* o, uz_t index )
     return o->data[ index ];
 }
 
+static inline
+bmath_vf3_s bmath_vf3_s_get_weak_sub_vec( const bmath_vf3_s* o, uz_t index, uz_t size )
+{
+    assert( o->size >= index + size );
+    return ( bmath_vf3_s ) { .size = size, .space = 0, .data = o->data + index };
+}
+
 f3_t bmath_vf3_s_max(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_min(     const bmath_vf3_s* o );
 uz_t bmath_vf3_s_idx_max( const bmath_vf3_s* o );

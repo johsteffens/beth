@@ -40,11 +40,11 @@ typedef struct bmath_mf3_s bmath_mf3_s;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// o * m -> r
+/// o * m -> r (r can be convolutional operant)
 void bmath_mf3_s_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 void bmath_mf3_s_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
-/// o * m^T -> r
+/// o * m^T -> r (r can be convolutional operant)
 void bmath_mf3_s_mul_htp(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 void bmath_mf3_s_mul_htp_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 

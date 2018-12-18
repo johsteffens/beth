@@ -2365,6 +2365,28 @@ void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
 }
 
 /**********************************************************************************************************************/
+/// Convolution
+
+void bmath_mf3_s_to_conv_operant( bmath_mf3_s* o, sz_t kernel_size, sz_t step_size )
+{
+    // Make sure matrix is not already a convolution operant
+    if( o->stride < o->cols ) ERR_fa( "Matrix is already a convolution operant." );
+
+    sz_t operant_size = o->rows * o->cols;
+
+    if( kernel_size > operant_size ) ERR_fa( "Kernel is too large." );
+
+    sz_t conv_steps = ( ( operant_size - kernel_size ) / step_size ) + 1;
+
+    // We require a full coverage at this point;
+    if( ( conv_steps - 1 ) * step_size + kernel_size != operant_size ) ERR_fa( "step_size does not yield full coverage." );
+
+    o->stride = step_size;
+    o->cols   = kernel_size;
+    o->rows   = conv_steps;
+}
+
+/**********************************************************************************************************************/
 
 static vd_t selftest( void )
 {
@@ -2411,6 +2433,49 @@ static vd_t selftest( void )
         ASSERT( bmath_vf3_s_get_f3( v2, 0 ) ==  5 );
         ASSERT( bmath_vf3_s_get_f3( v2, 1 ) == 11 );
         ASSERT( bmath_vf3_s_get_f3( v2, 2 ) == 17 );
+
+    }
+
+    // multi-kernel convolution
+    {
+        sz_t operant_size = 10000;
+
+        sz_t kernel_size  = 1000;
+        sz_t step_size    = 2;
+        sz_t kernels      = 100;
+
+        // operant: initially single-row matrix of operant_size
+        bmath_mf3_s_set_size( m1, 1, operant_size );
+        for( sz_t i = 0; i < m1->cols; i++ ) m1->data[ i ] = i;
+        //bmath_mf3_s_to_stdout( m1 );
+
+        // turn to convolution-operant without moving data
+        bmath_mf3_s_to_conv_operant( m1, kernel_size, step_size );
+
+        // set up kernel
+        bmath_mf3_s_set_size( m2, kernel_size, kernels ); // note: kernel vectors are column-vectors
+        for( sz_t j = 0; j < kernels; j++ )
+        {
+            for( sz_t i = 0; i < m2->rows; i++ ) bmath_mf3_s_set_f3( m2, i, j, j + 1 );
+        }
+        //bmath_mf3_s_to_stdout( m2 );
+
+        // convolution output
+        bmath_mf3_s_set_size( m3, m1->rows, m2->cols );
+        bmath_mf3_s_mul( m1, m2, m3 );
+        //bmath_mf3_s_to_stdout( m3 );
+
+        // convolution result:
+        // row: convolution steps
+        // col: response of all kernels for a given convolution step
+        ASSERT( m3->cols == kernels );
+        for( sz_t j = 0; j < m3->rows; j++ )
+        {
+            for( sz_t i = 0; i < m3->cols; i++ )
+            {
+                ASSERT( bmath_mf3_s_get_f3( m3, j, i ) == ( ( ( kernel_size ) * ( kernel_size - 1 ) / 2 ) + kernel_size * j * step_size ) * ( i + 1 ) );
+            }
+        }
 
     }
 
