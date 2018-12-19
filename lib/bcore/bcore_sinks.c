@@ -20,6 +20,7 @@
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
 #include "bcore_life.h"
+#include "bcore_trait.h"
 
 #include <stdio.h>
 
@@ -409,6 +410,27 @@ bcore_sink_chain_s* bcore_sink_open_file( sc_t file_name )
 
 /**********************************************************************************************************************/
 
+/**********************************************************************************************************************/
+/// bcore_sink_stdout_s
+/**********************************************************************************************************************/
+
+BCORE_DEFINE_OBJECT_INST_AUT( bcore_sink, bcore_sink_stdout_s ) "{ aware_t _; func bcore_fp_flow_snk push_data = bcore_sink_stdout_s_push_data; }";
+
+bcore_sink_stdout_s* bcore_sink_stdout_g = NULL;
+
+void bcore_sink_stdout_s_flush( bcore_sink_stdout_s* o )
+{
+    // nothing
+}
+
+uz_t bcore_sink_stdout_s_push_data( bcore_sink_stdout_s* o, vc_t data, uz_t size )
+{
+    st_s_print_d( st_s_create_sc_n( data, size ) );
+    return size;
+}
+
+/**********************************************************************************************************************/
+
 vd_t bcore_sinks_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_sinks" ) ) )
@@ -418,8 +440,19 @@ vd_t bcore_sinks_signal_handler( const bcore_signal_s* o )
             bcore_flect_define_creator( typeof( "bcore_sink_buffer_s" ), buffer_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_sink_file_s"   ), file_s_create_self   );
             bcore_flect_define_creator( typeof( "bcore_sink_chain_s"  ), chain_s_create_self  );
+
+            BCORE_REGISTER_FFUNC( bcore_fp_flow_snk, bcore_sink_stdout_s_push_data );
+            BCORE_REGISTER_OBJECT( bcore_sink_stdout_s );
+
+            bcore_sink_stdout_g = bcore_sink_stdout_s_create();
         }
         break;
+
+        case TYPEOF_down1:
+        {
+             bcore_sink_stdout_s_discard( bcore_sink_stdout_g );
+             bcore_sink_stdout_g = NULL;
+        }
 
         case TYPEOF_selftest:
         {

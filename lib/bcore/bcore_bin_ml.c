@@ -329,6 +329,23 @@ sr_s bcore_bin_ml_from_file( sc_t file )
     return ret;
 }
 
+void bcore_bin_ml_a_from_file( vd_t o, sc_t file )
+{
+    bcore_bin_ml_t_from_file( *(aware_t*)o, o, file );
+}
+
+void bcore_bin_ml_r_from_file( sr_s* o, sc_t file )
+{
+    bcore_bin_ml_t_from_file( sr_s_type( o ), o->o, file );
+}
+
+void bcore_bin_ml_t_from_file( tp_t t, vd_t o, sc_t file )
+{
+    sr_s sr = bcore_bin_ml_from_file( file );
+    bcore_inst_t_copy_typed( t, o, sr_s_type( &sr ), sr.o );
+    sr_down( sr );
+}
+
 /**********************************************************************************************************************/
 
 void bcore_bin_ml_transfer_test( sr_s obj )

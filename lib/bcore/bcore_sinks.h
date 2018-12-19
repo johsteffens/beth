@@ -92,6 +92,13 @@ void bcore_sink_buffer_s_set_consumer( bcore_sink_buffer_s* o, vd_t consumer );
 
 /**********************************************************************************************************************/
 
+// syntactic sugar
+
+/// opens a buffered file for writing
+bcore_sink_chain_s* bcore_sink_open_file( sc_t file_name );
+
+/**********************************************************************************************************************/
+
 /** File data sink (copyable, serializable)
   * The 'open' state is not copied;
   */
@@ -111,10 +118,15 @@ void                bcore_sink_file_s_flush(       bcore_sink_file_s* o );
 uz_t                bcore_sink_file_s_push_data(   bcore_sink_file_s* o, vc_t data, uz_t size );
 
 /**********************************************************************************************************************/
-// syntactic sugar
 
-/// opens a buffered file for writing
-bcore_sink_chain_s* bcore_sink_open_file( sc_t file_name );
+// stdout sink
+BCORE_DECLARE_OBJECT( bcore_sink_stdout_s ) { aware_t _; };
+void bcore_sink_stdout_s_flush(      bcore_sink_stdout_s* o );
+uz_t bcore_sink_stdout_s_push_data(  bcore_sink_stdout_s* o, vc_t data, uz_t size );
+
+extern bcore_sink_stdout_s* bcore_sink_stdout_g;
+
+#define BCORE_STDOUT ( bcore_sink* )bcore_sink_stdout_g
 
 /**********************************************************************************************************************/
 
