@@ -30,7 +30,7 @@ BCORE_DECLARE_OBJECT( bmath_plot_s )
     aware_t _;
     /** plot data
      *  vf3_s  : single plot over index
-     *  arr_vf3: single/multi plot over first row; see x_data_index and
+     *  arr_vf3: single/multi plot over first row; see x_index
      */
     sr_s data;
     st_s title;
