@@ -68,12 +68,14 @@ BCORE_DECLARE_OBJECT( bmath_vf3_s )
     };
 };
 
+static inline void bmath_vf3_s_init_weak( bmath_vf3_s* o, f3_t* data, sz_t size ) { bmath_vf3_s_init( o ); o->data = data; o->size = size; }
+static inline bmath_vf3_s bmath_vf3_weak( f3_t* data, sz_t size ) { bmath_vf3_s v; bmath_vf3_s_init_weak( &v, data, size ); return v; }
+
 void bmath_vf3_s_move( bmath_vf3_s* o, bmath_vf3_s* src );
 void bmath_vf3_s_clear( bmath_vf3_s* o );
 
 bmath_vf3_s* bmath_vf3_s_create_set_size( uz_t size );
 bmath_vf3_s* bmath_vf3_s_create_fill( uz_t size, f3_t val );
-
 
 void bmath_vf3_s_set_size(    bmath_vf3_s* o, uz_t size );
 void bmath_vf3_s_set_size_to( const bmath_vf3_s* o, bmath_vf3_s* res );
@@ -109,7 +111,8 @@ void bmath_vf3_s_pmt_mul(     const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_
 void bmath_vf3_s_pmt_htp_mul( const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_s* res ); // y = P^T * x ; y_k = x_p[k]
 
 void bmath_vf3_s_mul_scl(    const bmath_vf3_s* o, const f3_t* op,        bmath_vf3_s* res  );
-void bmath_vf3_s_mul_f3(     const bmath_vf3_s* o, f3_t scl2, bmath_vf3_s* res );
+void bmath_vf3_s_mul_scl_f3( const bmath_vf3_s* o, f3_t scl2, bmath_vf3_s* res );
+void bmath_vf3_s_mul_f3(     const bmath_vf3_s* o, f3_t scl2, bmath_vf3_s* res ); // same as bmath_vf3_s_mul_scl_f3
 f3_t bmath_vf3_s_f3_mul_vec( const bmath_vf3_s* o, const bmath_vf3_s* vec2 );
 f3_t bmath_vf3_s_f3_sqr(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_sub_sqr( const bmath_vf3_s* o, const bmath_vf3_s* vec2 );

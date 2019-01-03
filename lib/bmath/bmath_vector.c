@@ -369,10 +369,17 @@ void bmath_vf3_s_mul_scl( const bmath_vf3_s* o, const f3_t* op, bmath_vf3_s* res
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_vf3_s_mul_f3(  const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res )
+void bmath_vf3_s_mul_scl_f3(  const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res )
 {
     ASSERT( o->size == res->size );
     for( uz_t i = 0; i < o->size; i++ ) res->data[ i ] = o->data[ i ] * op;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_mul_f3(  const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res )
+{
+    bmath_vf3_s_mul_scl_f3( o, op, res );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
