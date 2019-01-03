@@ -35,6 +35,7 @@ bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v )
     {
         ASSERT( a != v );
         ASSERT( bmath_mf3_s_is_equ_size( a, v ) );
+        bmath_mf3_s_one( v );
     }
 
     uz_t n = a->rows;

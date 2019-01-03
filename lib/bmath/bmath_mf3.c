@@ -1763,7 +1763,11 @@ void bmath_mf3_s_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 
     uz_t n = a->rows;
 
-    if( n <= 2 ) return; // nothing to do
+    if( n <= 2 )
+    {
+        bmath_mf3_s_one( v );
+        return; // nothing to do
+    }
 
     if( v )
     {
