@@ -53,7 +53,7 @@ Beth is intended as foundation library for more specialized projects.
 # License
 The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
 
-*Copyright (C) 2017, 2018 Johannes B. Steffens johannes.b.steffens@gmail.com.*
+*Copyright (C) 2017, 2018, 2019 Johannes B. Steffens johannes.b.steffens@gmail.com.*
 
 # Sub Libraries
 Beth consists of a suite of sub-libraries.
