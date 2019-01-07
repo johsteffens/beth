@@ -75,7 +75,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_cnn_s )
 
     "u2_t random_state = 1234;"        // random state variable (for random initialization)
 
-    "arr_mf3_s arr_w;" // weight matrix
+    "bmath_arr_mf3_s arr_w;" // weight matrix
 
     "hidden bmath_arr_mf3_s arr_a;" // input  matrix  (weak map to buf)
     "hidden bmath_arr_mf3_s arr_b;" // output matrix  (weak map to buf)
