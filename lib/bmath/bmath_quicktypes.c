@@ -17,7 +17,9 @@
 #include "bcore_st.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect_inst.h"
+
 #include "bmath_mf3.h"
+#include "bmath_signal.h"
 
 /**********************************************************************************************************************/
 
@@ -37,7 +39,7 @@ static st_s* get_def_quicktype( hf hash, sr_s string, uz_t align )
 
 static sr_s typelist()
 {
-    sr_s list = bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ st_s * [] arr; }" ) );
+    sr_s list = bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ aware_t _; st_s * [] arr; }" ) );
     bcore_array_r_push_sc( &list, "bmath_group"         );
     bcore_array_r_push_sc( &list, "bmath_group_s"       );
     bcore_array_r_push_sc( &list, "bmath_ring"          );
@@ -63,7 +65,11 @@ static sr_s typelist()
     // features
     bcore_array_r_push_sc( &list, "bmath_u2_argb_from_f3" );
 
-    bmath_matrix_push_quicktypes( &list );
+    ///
+    bmath_mf3_push_quicktypes( &list );
+
+    bcore_signal_s signal = bcore_signal_init( TYPEOF_local, TYPEOF_get_quicktypes, list.o );
+    bmath_signal_handler( &signal );
 
     bcore_array_r_sort( &list, 0, -1, 1 );
     return list;

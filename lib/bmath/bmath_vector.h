@@ -107,6 +107,12 @@ void bmath_vf3_s_cpy( const bmath_vf3_s* o, bmath_vf3_s* res );
 void bmath_vf3_s_add( const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
 void bmath_vf3_s_sub( const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
 
+/// adds the same scalar to all components
+void bmath_vf3_s_add_scl( const bmath_vf3_s* o, const f3_t* op, bmath_vf3_s* res );
+void bmath_vf3_s_sub_scl( const bmath_vf3_s* o, const f3_t* op, bmath_vf3_s* res );
+void bmath_vf3_s_add_scl_f3( const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res );
+void bmath_vf3_s_sub_scl_f3( const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res );
+
 void bmath_vf3_s_pmt_mul(     const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_s* res ); // y = P   * x ; y_p[k] = x_k
 void bmath_vf3_s_pmt_htp_mul( const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_s* res ); // y = P^T * x ; y_k = x_p[k]
 

@@ -114,7 +114,7 @@ typedef bl_t (*bmath_fp_mf3_s_piv     )( const bmath_mf3_s* o, f3_t eps, bmath_m
 typedef bl_t (*bmath_fp_mf3_s_hsm_piv )( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res );
 
 /// quicktypes for matrix
-void bmath_matrix_push_quicktypes( sr_s* list );
+void bmath_mf3_push_quicktypes( sr_s* list );
 
 /**********************************************************************************************************************/
 /// Matrix object of f3_t
@@ -593,6 +593,8 @@ void bmath_mf3_s_to_image(  const bmath_mf3_s* o, bmath_fp_u2_argb_from_f3 fp, v
 void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );
 
 /**********************************************************************************************************************/
+/// array of mf3_s
+BCORE_DECLARE_ARRAY_DYN_SOLID_STATIC( bmath_mf3_s, bmath_arr_mf3_s );
 
 vd_t bmath_mf3_signal_handler( const bcore_signal_s* o );
 

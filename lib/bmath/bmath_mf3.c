@@ -28,9 +28,10 @@
 
 /**********************************************************************************************************************/
 
-void bmath_matrix_push_quicktypes( sr_s* list )
+void bmath_mf3_push_quicktypes( sr_s* list )
 {
     bcore_array_r_push_sc( list, "bmath_mf3_s" );
+    bcore_array_r_push_sc( list, "bmath_arr_mf3_s" );
 
     // features
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul"     );
@@ -1765,8 +1766,8 @@ void bmath_mf3_s_trd_htp( bmath_mf3_s* a, bmath_mf3_s* v )
 
     if( n <= 2 )
     {
-        bmath_mf3_s_one( v );
-        return; // nothing to do
+        if( v ) bmath_mf3_s_one( v );
+        return; // nothing else to do
     }
 
     if( v )
@@ -2391,6 +2392,10 @@ void bmath_mf3_s_to_conv_operant( bmath_mf3_s* o, sz_t kernel_size, sz_t step_si
 }
 
 /**********************************************************************************************************************/
+/// array of mf3_s
+BCORE_DEFINE_ARRAY_DYN_SOLID_STATIC_AUT( bmath_mf3_s, bmath_arr_mf3_s );
+
+/**********************************************************************************************************************/
 
 static vd_t selftest( void )
 {
@@ -2793,6 +2798,7 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_fp_matrix_mul_scl, bmath_mf3_s_mul_scl );
 
             BCORE_REGISTER_OBJECT( bmath_mf3_s );
+            BCORE_REGISTER_OBJECT( bmath_arr_mf3_s );
         }
         break;
 

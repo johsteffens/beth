@@ -3,8 +3,20 @@
  */
 #define TYPEOF_bmath_arr_grt_f3_s        68378437
 #define TYPEOF_bmath_arr_mf3_eval_s    2241821565
+#define TYPEOF_bmath_arr_mf3_s         3576372478
 #define TYPEOF_bmath_arr_vf3_s         3268702147
 #define TYPEOF_bmath_cf3_s             2506167476
+#define TYPEOF_bmath_cnn_act_s         3843325624
+#define TYPEOF_bmath_cnn_fp_unary      2707855484
+#define TYPEOF_bmath_cnn_gleaky_relu    679179206
+#define TYPEOF_bmath_cnn_grelu          440915113
+#define TYPEOF_bmath_cnn_gsoftplus     1531500255
+#define TYPEOF_bmath_cnn_gtanh         2811030318
+#define TYPEOF_bmath_cnn_leaky_relu     393104887
+#define TYPEOF_bmath_cnn_relu          2997398556
+#define TYPEOF_bmath_cnn_s             1897680891
+#define TYPEOF_bmath_cnn_softplus      2304827826
+#define TYPEOF_bmath_cnn_tanh          3000813999
 #define TYPEOF_bmath_estimator_s       3775440224
 #define TYPEOF_bmath_fp_mf3_s_av       3294593231
 #define TYPEOF_bmath_fp_mf3_s_cld      3327146305
