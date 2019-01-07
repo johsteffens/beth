@@ -53,7 +53,7 @@ Beth is intended as foundation library for more specialized projects.
 # License
 The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
 
-*Copyright (C) 2017, 2018 Johannes B. Steffens johannes.b.steffens@gmail.com.*
+*Copyright (C) 2017, 2018, 2019 Johannes B. Steffens johannes.b.steffens@gmail.com.*
 
 # Sub Libraries
 Beth consists of a suite of sub-libraries.
@@ -113,7 +113,9 @@ Beth has its own memory manager with integrated reference manager. Both componen
 The memory-manager, excluding reference manager, was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
 
 # Motivation
-The classic framework for object oriented programming (such as realized in C++) has been widely cherished for decades. I appreciate OOP and like the efficient way C++ supports it. Yet there are issues. For example: The static association between objects and their interfaces forces an inhibiting rigidity into the developer's code-architecture. The limited means of genericity often promotes boiler plate code. More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of these issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware.
+The classic framework for object oriented programming (such as realized in C++) has been widely cherished for decades. I appreciate OOP and like the efficient way C++ supports it. Yet there are issues. For example: The static association between objects and their interfaces forces an inhibiting rigidity into the developer's code-architecture. The limited means of genericity often promotes boiler plate code. More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of these issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware. 
+
+Primary motivation for this project is overcoming these deficiencies. Secondly, using this new framework to provide functionality as might be expected from a general purpose library with a scientific touch. Thirdly, developing new algorithic ideas and/or experiment with unconventional approaches (this can also be realized in beth-dependent projects).
 
 ### History
 In an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach during Summer 2017 and started project [beth](https://github.com/johsteffens/beth) bringing this (and other ideas) into tangible shape. Winter 2017/2018 the project [actinon](https://github.com/johsteffens/actinon) was developed utilizing the framework and demonstrating its usefulness. Spring 2018 I started developing a numerical mathematics suite  in sub-library [bmath](#bmath) with special focus on accrate, stable and efficient matrix factorizations.
