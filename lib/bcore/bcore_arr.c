@@ -1006,6 +1006,11 @@ void bcore_arr_fp_s_set_space( bcore_arr_fp_s* o, uz_t space )
     if( o->size > space ) o->size = space;
 }
 
+void bcore_arr_fp_s_set_size( bcore_arr_fp_s* o, sz_t size )
+{
+    bcore_arr_fp_s_fill( o, size, NULL );
+}
+
 void bcore_arr_fp_s_fill( bcore_arr_fp_s* o, uz_t size, fp_t v )
 {
     bcore_arr_fp_s_set_space( o, size );

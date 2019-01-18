@@ -167,6 +167,7 @@ BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_fp_s )
 
 void bcore_arr_fp_s_clear(      bcore_arr_fp_s* o ); // sets size to zero
 void bcore_arr_fp_s_set_space(  bcore_arr_fp_s* o, uz_t space );
+void bcore_arr_fp_s_set_size(   bcore_arr_fp_s* o, sz_t size );
 void bcore_arr_fp_s_fill(       bcore_arr_fp_s* o, uz_t size, fp_t v ); // creates filled array of size <size>
 void bcore_arr_fp_s_push(       bcore_arr_fp_s* o, fp_t v );
 fp_t bcore_arr_fp_s_pop(        bcore_arr_fp_s* o );
