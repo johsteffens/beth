@@ -74,7 +74,7 @@ typedef struct bcore_tp_fastmap_s
 {
     atomic_int table_index_get; // valid table index for get function
     atomic_int table_index_set; // valid table index for set function
-    /** A locked cache cannot be filled with new data (set retuns false).
+    /** A locked cache cannot be filled with new data (set returns false).
      *  This is needed during perspective shutdown procedure.
      */
     bl_t locked;
