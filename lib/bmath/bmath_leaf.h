@@ -51,8 +51,9 @@ static inline f3_t f3_xsg1_pos( u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv )
 static inline f3_t f3_xsg2_pos( u2_t* rv ) { return ( *rv = bcore_xsg2_u2( *rv ) ) * ( 1.0 / 0xFFFFFFFFu ); } // do not use for polar coords
 static inline f3_t f3_rnd_pos(  u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv ) ) * ( 1.0 / 0xFFFFFFFFu ); }
 
-
 u2_t bmath_u2_argb_from_f3( vd_t, f3_t v ); // fist argument ignored (can be NULL)
+
+typedef f3_t (*bmath_fp_f3_unary )( f3_t v ); // unary function f3 -> f3
 
 /**********************************************************************************************************************/
 

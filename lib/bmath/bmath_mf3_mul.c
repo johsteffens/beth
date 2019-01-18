@@ -825,5 +825,55 @@ void bmath_mf3_s_mul_utv_htp_esp( const bmath_mf3_s* u, const bmath_mf3_s* t, co
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_mul_add( const bmath_mf3_s* o, const bmath_mf3_s* b, const bmath_mf3_s* c, bmath_mf3_s* r )
+{
+    if( r == o || r == b )
+    {
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size( buf, r->rows, r->cols );
+        bmath_mf3_s_mul_add( o, b, c, buf );
+        bmath_mf3_s_cpy( buf, r );
+        bmath_mf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->cols == b->rows );
+    ASSERT( o->rows == r->rows );
+    ASSERT( b->cols == r->cols );
+    ASSERT( c->rows == r->rows );
+    ASSERT( c->cols == r->cols );
+
+    if( c != r ) bmath_mf3_s_cpy( c, r );
+
+    bmath_mf3_s_f3_t_mul( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->cols, r->data, r->stride );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_htp_add( const bmath_mf3_s* o, const bmath_mf3_s* b, const bmath_mf3_s* c, bmath_mf3_s* r )
+{
+    if( r == o || r == b )
+    {
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size( buf, r->rows, r->cols );
+        bmath_mf3_s_mul_htp_add( o, b, c, buf );
+        bmath_mf3_s_cpy( buf, r );
+        bmath_mf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->cols == b->cols );
+    ASSERT( o->rows == r->rows );
+    ASSERT( b->rows == r->cols );
+    ASSERT( c->rows == r->rows );
+    ASSERT( c->cols == r->cols );
+
+    if( c != r ) bmath_mf3_s_cpy( c, r );
+
+    bmath_mf3_s_f3_t_mul_htp( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->rows, r->data, r->stride, false );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 

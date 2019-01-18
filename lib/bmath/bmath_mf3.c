@@ -935,6 +935,70 @@ void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t* b_, bmath_mf3_s* d_ )
+{
+    ASSERT( o->rows == d_->rows );
+    ASSERT( o->cols == d_->cols );
+    f3_t b = *b_;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        f3_t* a = o ->data + i * o ->stride;
+        f3_t* d = d_->data + i * d_->stride;
+        for( sz_t j = 0; j < o->cols; j++ ) d[ j ] = a[ j ] * b;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_scl_add( const bmath_mf3_s* o, const f3_t* b_, const bmath_mf3_s* c_, bmath_mf3_s* d_ )
+{
+    ASSERT( o ->rows == d_->rows );
+    ASSERT( o ->cols == d_->cols );
+    ASSERT( c_->rows == d_->rows );
+    ASSERT( c_->cols == d_->cols );
+    f3_t b = *b_;
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        f3_t* a = o ->data + i * o ->stride;
+        f3_t* c = c_->data + i * c_->stride;
+        f3_t* d = d_->data + i * d_->stride;
+        for( sz_t j = 0; j < o->cols; j++ ) d[ j ] = a[ j ] * b + c[ j ];
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_eop_map( const bmath_mf3_s* o, bmath_fp_f3_unary b, bmath_mf3_s* r )
+{
+    ASSERT( o ->rows == r->rows );
+    ASSERT( o ->cols == r->cols );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* a = o->data + i * o->stride;
+              f3_t* c = r->data + i * r->stride;
+        for( sz_t j = 0; j < o->cols; j++ ) c[ j ] = b( a[ j ] );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_eop_map_mul( const bmath_mf3_s* o, bmath_fp_f3_unary b, const bmath_mf3_s* c_, bmath_mf3_s* r )
+{
+    ASSERT( o ->rows == r->rows );
+    ASSERT( o ->cols == r->cols );
+    ASSERT( c_->rows == r->rows );
+    ASSERT( c_->cols == r->cols );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* a = o ->data + i * o ->stride;
+        const f3_t* c = c_->data + i * c_->stride;
+              f3_t* d = r ->data + i * r ->stride;
+        for( sz_t j = 0; j < o->cols; j++ ) d[ j ] = b( a[ j ] ) * c[ j ];
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_htp( const bmath_mf3_s* o, bmath_mf3_s* res )
 {
     if( o->rows == o->cols )
@@ -1098,20 +1162,6 @@ void bmath_mf3_s_mul_pmt_htp( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_
             f3_t* ri = res->data + i * res->stride;
             for( uz_t j = 0; j < o->cols; j++ ) ri[ p->data[ j ] ] = oi[ j ];
         }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t* op, bmath_mf3_s* res )
-{
-    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    f3_t f = *op;
-    for( uz_t i = 0; i < o->rows; i++ )
-    {
-        const f3_t* v1 = o ->data  + i * o ->stride;
-              f3_t* vr = res->data + i * res->stride;
-        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ] * f;
     }
 }
 

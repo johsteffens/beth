@@ -31,6 +31,8 @@
  *    mul: C = A * B
  *    mul_vec: y = A * x
  *    mul_scl: C = A * f (f: scalar)
+ *    mul_add:     D = A * B + C
+ *    mul_scl_add: D = A * b + C (b: scalar)
  *    inv: inverse         A^-1 -> C
  *    piv: pseudo-inverse  A^-1 -> C
  *    av1: affine vector (vector of size 'n' interpreted vector of size n+1 with last element being '1' ); used for affine transformations
@@ -67,6 +69,8 @@
  *    udu: similarity transform a of a diagonal matrix: htp_udu: U^T * D * U; udu_htp: U * D * U^T
  *    grt: givens rotation
  *    esp: enhanced stochastic precision (function with this suffix are (statistically) more precise but likely slower)
+ *    eop: elementary operation: subsequent operation applies to matrix elements rather than the matrix-object
+ *    set: 'when used as postfix' explicitly allocates result object (set_size) for given operation (example bmath_mf3_s_htp_set)
  *
  */
 /**********************************************************************************************************************/
@@ -235,6 +239,8 @@ void bmath_mf3_s_pmt_htp_mul( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_
 void bmath_mf3_s_mul_pmt(     const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
 void bmath_mf3_s_mul_pmt_htp( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_mf3_s* res ); // B = A * P^T ; col_p[k]( B ) = col_k( A )
 
+static inline void bmath_mf3_s_htp_set( const bmath_mf3_s* o, bmath_mf3_s* res ) { bmath_mf3_s_set_size( res, o->cols, o->rows ); bmath_mf3_s_htp( o, res ); }
+
 //----------------------------------------------------------------------------------------------------------------------
 // addition
 
@@ -250,11 +256,25 @@ void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf
 void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf3_s* res ); // affine transformation (see nomenclature 'av1')
 
 //----------------------------------------------------------------------------------------------------------------------
-// matrix * scalar --> matrix
+// matrix * scalar + matrix --> matrix
 
-void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t*        op, bmath_mf3_s* res );
-static inline
-void bmath_mf3_s_mul_scl_f3( const bmath_mf3_s* o, f3_t op, bmath_mf3_s* res ) { bmath_mf3_s_mul_scl( o, &op, res ); }
+void bmath_mf3_s_mul_scl(     const bmath_mf3_s* o, const f3_t* b,                       bmath_mf3_s* r ); // r = o * b
+void bmath_mf3_s_mul_scl_add( const bmath_mf3_s* o, const f3_t* b, const bmath_mf3_s* c, bmath_mf3_s* r ); // r = o * b + c
+
+static inline void bmath_mf3_s_mul_scl_f3(     const bmath_mf3_s* o, f3_t b,                       bmath_mf3_s* r ) { bmath_mf3_s_mul_scl(     o, &b,    r ); }
+static inline void bmath_mf3_s_mul_scl_f3_add( const bmath_mf3_s* o, f3_t b, const bmath_mf3_s* c, bmath_mf3_s* r ) { bmath_mf3_s_mul_scl_add( o, &b, c, r ); }
+
+//----------------------------------------------------------------------------------------------------------------------
+// matrix * unary_map --> matrix
+
+void bmath_mf3_s_eop_map(     const bmath_mf3_s* o, bmath_fp_f3_unary b, bmath_mf3_s* r ); // r_ij = b( o_ij )
+void bmath_mf3_s_eop_map_mul( const bmath_mf3_s* o, bmath_fp_f3_unary b, const bmath_mf3_s* c, bmath_mf3_s* r ); // r_ij = b( o_ij ) * c_ij
+
+//----------------------------------------------------------------------------------------------------------------------
+// matrix * matrix --> matrix (see also bmath_mf3_mul.h)
+
+static inline void bmath_mf3_s_mul_set(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ) { bmath_mf3_s_set_size( r, o->rows, m->cols ); bmath_mf3_s_mul( o, m, r ); }
+static inline void bmath_mf3_s_mul_htp_set( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ) { bmath_mf3_s_set_size( r, o->rows, m->rows ); bmath_mf3_s_mul_htp( o, m, r ); }
 
 //----------------------------------------------------------------------------------------------------------------------
 // inversion; pseudo-inversion;

@@ -22,15 +22,15 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_cnn_act_s )
 "{"
     "st_s st_activation;"
     "st_s st_derivative;"
-    "hidden bmath_cnn_fp_unary fp_activation;"
-    "hidden bmath_cnn_fp_unary fp_derivative;"
+    "hidden bmath_fp_f3_unary fp_activation;"
+    "hidden bmath_fp_f3_unary fp_derivative;"
 "}";
 
 /// sets function pointers
 void bmath_cnn_act_s_setup( bmath_cnn_act_s* o )
 {
-    o->fp_activation = ( bmath_cnn_fp_unary )bcore_function_get( typeof( o->st_activation.sc ) );
-    o->fp_derivative = ( bmath_cnn_fp_unary )bcore_function_get( typeof( o->st_derivative.sc ) );
+    o->fp_activation = ( bmath_fp_f3_unary )bcore_function_get( typeof( o->st_activation.sc ) );
+    o->fp_derivative = ( bmath_fp_f3_unary )bcore_function_get( typeof( o->st_derivative.sc ) );
 }
 
 /**********************************************************************************************************************/
@@ -84,8 +84,14 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_cnn_s )
     "hidden bmath_arr_mf3_s arr_gb;" // grad output matrix  (weak map to gbuf)
     "hidden bmath_vf3_s     buf_gab;"
 
+    "hidden bcore_arr_fp_s  arr_fp_activation;" // activation functions
+    "hidden bcore_arr_fp_s  arr_fp_derivative;" // derivative functions
+
     "hidden bmath_mf3_s     learn_at;"
     "hidden bmath_mf3_s     learn_gw;"
+    "hidden bmath_vf3_s     in;"
+    "hidden bmath_vf3_s     out;"
+    "hidden bmath_vf3_s    gout;"
 "}";
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -177,6 +183,9 @@ void bmath_cnn_s_setup( bmath_cnn_s* o )
     bmath_arr_mf3_s_set_size( &o->arr_ga, layers );
     bmath_arr_mf3_s_set_size( &o->arr_gb, layers );
 
+    bcore_arr_fp_s_set_size( &o->arr_fp_activation, layers );
+    bcore_arr_fp_s_set_size( &o->arr_fp_derivative, layers );
+
     // preexisting weights are reused
     if( o->arr_w.size == 0 )
     {
@@ -193,6 +202,10 @@ void bmath_cnn_s_setup( bmath_cnn_s* o )
     // set up matrices
     for( sz_t i = 0; i < layers; i++ )
     {
+        const bmath_cnn_act_s* act = ( i < layers - 1 ) ? &o->act_mid : &o->act_out;
+        o->arr_fp_activation.data[ i ] = ( fp_t )act->fp_activation;
+        o->arr_fp_derivative.data[ i ] = ( fp_t )act->fp_derivative;
+
         const bmath_cnn_arc_item_s* item = bcore_array_a_get( arr_bmath_cnn_arc_item_s, i ).o;
 
         bmath_mf3_s* a  = &o->arr_a.data[ i ];
@@ -232,6 +245,18 @@ void bmath_cnn_s_setup( bmath_cnn_s* o )
 
     bmath_vf3_s_set_size( &o->buf_ab,  buf_size );
     bmath_vf3_s_set_size( &o->buf_gab, buf_size );
+
+    bmath_vf3_s_clear( &o->in );
+    o->in.data = o->buf_ab.data;
+    o->in.size = o->input_size;
+
+    bmath_vf3_s_clear( &o->out );
+    o->out.data = o->buf_ab.data + buf_size - o->output_kernels;
+    o->out.size = o->output_kernels;
+
+    bmath_vf3_s_clear( &o->gout );
+    o->gout.data = o->buf_gab.data + buf_size - o->output_kernels;
+    o->gout.size = o->output_kernels;
 
     sz_t buf_index = 0;
 
@@ -275,6 +300,9 @@ void bmath_cnn_s_reset( bmath_cnn_s* o )
     bmath_arr_mf3_s_clear( &o->arr_gb );
     bmath_vf3_s_clear( &o->buf_ab );
     bmath_vf3_s_clear( &o->buf_gab );
+    bmath_vf3_s_clear( &o->in );
+    bmath_vf3_s_clear( &o->out );
+    bmath_vf3_s_clear( &o->gout );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -327,28 +355,15 @@ void bmath_cnn_s_arc_to_sink( const bmath_cnn_s* o, bcore_sink* sink )
 
 void bmath_cnn_s_query( bmath_cnn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out )
 {
-    ASSERT( in->size == o->input_size );
-    ASSERT( out->size == o->output_kernels );
     if( o->arr_a.size == 0 ) bmath_cnn_s_setup( o );
-    bcore_u_memcpy( sizeof( f3_t ), o->buf_ab.data, in->data, in->size );
+    bmath_vf3_s_cpy( in, &o->in );
     for( sz_t i = 0; i < o->arr_w.size; i++ )
     {
-        const bmath_mf3_s* a = &o->arr_a.data[ i ];
-        const bmath_mf3_s* w = &o->arr_w.data[ i ];
-              bmath_mf3_s* b = &o->arr_b.data[ i ];
-
-        bmath_mf3_s_mul( a, w, b );
-
-        if( i < o->arr_w.size - 1 )
-        {
-            for( sz_t i = 0; i < b->size; i++ ) b->data[ i ] = o->act_mid.fp_activation( b->data[ i ] );
-        }
+        bmath_mf3_s* b = &o->arr_b.data[ i ];
+        bmath_mf3_s_mul( &o->arr_a.data[ i ], &o->arr_w.data[ i ], b );
+        bmath_mf3_s_eop_map( b, ( bmath_fp_f3_unary )o->arr_fp_activation.data[ i ], b );
     }
-
-    for( sz_t i = 0; i < out->size; i++ )
-    {
-        out->data[ i ] = o->act_out.fp_activation( o->arr_b.data[ o->arr_b.size - 1 ].data[ i ] );
-    }
+    if( out ) bmath_vf3_s_cpy( &o->out, out );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -358,38 +373,27 @@ void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s
     ASSERT( target->size == o->output_kernels );
     bmath_cnn_s_query( o, in, out );
 
-    for( sz_t i = 0; i < out->size; i++ )
-    {
-        o->arr_gb.data[ o->arr_gb.size - 1 ].data[ i ] = ( target->data[ i ] - out->data[ i ] ) * o->act_out.fp_derivative( out->data[ i ] ); // gb
-    }
+    bmath_vf3_s_sub( target, &o->out, &o->gout );
 
     bmath_mf3_s* at = &o->learn_at;
     bmath_mf3_s* gw = &o->learn_gw;
 
     for( sz_t i = o->arr_w.size - 1; i >= 0; i-- )
     {
-        const bmath_mf3_s* a = &o->arr_a.data[ i ];
         const bmath_mf3_s* b = &o->arr_b.data[ i ];
-        bmath_mf3_s* ga = &o->arr_ga.data[ i ];
         bmath_mf3_s* gb = &o->arr_gb.data[ i ];
         bmath_mf3_s*  w = &o->arr_w.data[ i ];
 
-        if( i < o->arr_w.size - 1 )
-        {
-            for( sz_t i = 0; i < b->size; i++ ) gb->data[ i ] = o->act_mid.fp_derivative( b->data[ i ] ) * gb->data[ i ];
-        }
+        // apply activation derivative to GB
+        bmath_mf3_s_eop_map_mul( b, ( bmath_fp_f3_unary )o->arr_fp_derivative.data[ i ], gb, gb );
 
-        // GW = A^T * GB
-        bmath_mf3_s_set_size( at, a->cols, a->rows );
-        bmath_mf3_s_htp( a, at );
-        bmath_mf3_s_set_size( gw, w->rows, w->cols );
-        bmath_mf3_s_mul( at, gb, gw );
+        // GA = GB * W^T (mul_htp can handle conv-representation of ga)
+        bmath_mf3_s_mul_htp( gb, w, &o->arr_ga.data[ i ] );
 
-        // GA = GB * W^T (mul_htp can handle conv-representation of a)
-        bmath_mf3_s_mul_htp( gb, w, ga );
-
-        // update w
-        for( sz_t i = 0; i < w->size; i++ ) w->data[ i ] += gw->data[ i ] * step;
+        // W += ( A^T * GB ) * step
+        bmath_mf3_s_htp_set( &o->arr_a.data[ i ], at );
+        bmath_mf3_s_mul_set( at, gb, gw );
+        bmath_mf3_s_mul_scl_f3_add( gw, step, w, w );
     }
 }
 
@@ -435,7 +439,6 @@ vd_t bmath_cnn_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_FEATURE( bmath_cnn_fp_unary );
             BCORE_REGISTER_FFUNC( bmath_cnn_fp_unary, bmath_cnn_tanh );
             BCORE_REGISTER_FFUNC( bmath_cnn_fp_unary, bmath_cnn_gtanh );
             BCORE_REGISTER_FFUNC( bmath_cnn_fp_unary, bmath_cnn_relu );
@@ -452,7 +455,6 @@ vd_t bmath_cnn_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_get_quicktypes:
         {
-            BCORE_REGISTER_QUICKTYPE( bmath_cnn_fp_unary );
             BCORE_REGISTER_QUICKTYPE( bmath_cnn_tanh );
             BCORE_REGISTER_QUICKTYPE( bmath_cnn_gtanh );
             BCORE_REGISTER_QUICKTYPE( bmath_cnn_relu );

@@ -117,6 +117,14 @@ vd_t bmath_leaf_signal_handler( const bcore_signal_s* o )
             bcore_flect_push_ns_func( TYPEOF_s3_t, ( fp_t )bmath_s3_t_one, "bmath_fp_one", "one" );
 
             BCORE_REGISTER_FFUNC( bmath_fp_u2_argb_from_f3, bmath_u2_argb_from_f3 );
+
+            BCORE_REGISTER_FEATURE( bmath_fp_f3_unary );
+        }
+        break;
+
+        case TYPEOF_get_quicktypes:
+        {
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_f3_unary );
         }
         break;
 

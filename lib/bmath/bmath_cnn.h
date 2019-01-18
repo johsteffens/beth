@@ -19,19 +19,14 @@
 #include "bcore_std.h"
 
 /**********************************************************************************************************************/
-/// features
-
-typedef f3_t (*bmath_cnn_fp_unary )( f3_t v ); // unary function (e.g. activation function or derivative)
-
-/**********************************************************************************************************************/
 
 /// activation function
 BCORE_DECLARE_OBJECT( bmath_cnn_act_s )
 {
     st_s st_activation;
     st_s st_derivative;
-    bmath_cnn_fp_unary fp_activation;
-    bmath_cnn_fp_unary fp_derivative;
+    bmath_fp_f3_unary fp_activation;
+    bmath_fp_f3_unary fp_derivative;
 };
 
 /// sets function pointers
@@ -84,8 +79,16 @@ BCORE_DECLARE_OBJECT( bmath_cnn_s )
     bmath_arr_mf3_s   arr_gb;  // gradient output matrix  (weak map to gbuf)
     bmath_vf3_s       buf_gab; // data buffer for ga and gb matrix
 
+    bcore_arr_fp_s    arr_fp_activation; // activation functions
+    bcore_arr_fp_s    arr_fp_derivative; // derivative functions
+
     bmath_mf3_s       learn_at; // a-matrix transposed used in a lean step
     bmath_mf3_s       learn_gw; // grad w used in a lean step
+
+    bmath_vf3_s       in;   // input vector weak map to arr_a[ 0 ]
+    bmath_vf3_s       out;  // output vector weak map to arr_b[ layers-1 ]
+    bmath_vf3_s       gout; // output vector weak map to arr_gb[ layers-1 ]
+
     /// ==============================================================
 };
 
@@ -103,10 +106,10 @@ void bmath_cnn_s_reset( bmath_cnn_s* o );
 /// Outputs architecture to text-sink.
 void bmath_cnn_s_arc_to_sink( const bmath_cnn_s* o, bcore_sink* sink );
 
-/// Output kernels > 1: Query (inference); returns output activation.
+/// Output kernels > 1: Query (inference); returns output activation. (out can be NULL)
 void bmath_cnn_s_query( bmath_cnn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out );
 
-/// Output kernels > 1: Learn step; out (output vector of query part is required)
+/// Output kernels > 1: Learn step; if out is != NULL it is filled with the result of bmath_cnn_s_query
 void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, f3_t step, bmath_vf3_s* out );
 
 /// weight decay step

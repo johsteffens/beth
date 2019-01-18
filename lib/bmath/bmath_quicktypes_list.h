@@ -7,7 +7,6 @@
 #define TYPEOF_bmath_arr_vf3_s         3268702147
 #define TYPEOF_bmath_cf3_s             2506167476
 #define TYPEOF_bmath_cnn_act_s         3843325624
-#define TYPEOF_bmath_cnn_fp_unary      2707855484
 #define TYPEOF_bmath_cnn_gleaky_relu    679179206
 #define TYPEOF_bmath_cnn_grelu          440915113
 #define TYPEOF_bmath_cnn_gsoftplus     1531500255
@@ -18,6 +17,7 @@
 #define TYPEOF_bmath_cnn_softplus      2304827826
 #define TYPEOF_bmath_cnn_tanh          3000813999
 #define TYPEOF_bmath_estimator_s       3775440224
+#define TYPEOF_bmath_fp_f3_unary       1864940108
 #define TYPEOF_bmath_fp_mf3_s_av       3294593231
 #define TYPEOF_bmath_fp_mf3_s_cld      3327146305
 #define TYPEOF_bmath_fp_mf3_s_evd_htp  2695903694

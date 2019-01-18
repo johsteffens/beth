@@ -60,6 +60,12 @@ void bmath_mf3_s_mul_udv_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, co
 void bmath_mf3_s_mul_utv_htp(     const bmath_mf3_s* u, const bmath_mf3_s* t, const bmath_mf3_s* v, bmath_mf3_s* r );
 void bmath_mf3_s_mul_utv_htp_esp( const bmath_mf3_s* u, const bmath_mf3_s* t, const bmath_mf3_s* v, bmath_mf3_s* r );
 
+/// ( o * b ) + c -> r
+void bmath_mf3_s_mul_add( const bmath_mf3_s* o, const bmath_mf3_s* b, const bmath_mf3_s* c, bmath_mf3_s* r );
+
+/// ( o * b^T ) + c -> r
+void bmath_mf3_s_mul_htp_add( const bmath_mf3_s* o, const bmath_mf3_s* b, const bmath_mf3_s* c, bmath_mf3_s* r );
+
 //----------------------------------------------------------------------------------------------------------------------
 
 #endif  // BMATH_MATRIX_MUL_H
