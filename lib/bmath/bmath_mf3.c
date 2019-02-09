@@ -36,6 +36,7 @@ void bmath_mf3_push_quicktypes( sr_s* list )
     // features
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul"     );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul_htp" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_htp_mul" );
 
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_uav" );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_ua"  );
@@ -2807,6 +2808,7 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
             // features
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_mul );
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_mul_htp );
+            BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_htp_mul );
 
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_uav );
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_ua  );

@@ -91,11 +91,37 @@ f3_t bmath_f3_t_vec_mul_vec( const f3_t* v1, const f3_t* v2, sz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+f3_t bmath_f3_t_vec_mul_vec_stride( const f3_t* v1, sz_t stride1, const f3_t* v2, sz_t stride2, sz_t size )
+{
+    f3_t sum_p4[ 4 ] = { 0, 0, 0, 0 };
+    sz_t i;
+    for( i = 0; i <= size - 4; i += 4 )
+    {
+        sum_p4[ 0 ] += v1[ ( i + 0 ) * stride1 ] * v2[ ( i + 0 ) * stride2 ];
+        sum_p4[ 1 ] += v1[ ( i + 1 ) * stride1 ] * v2[ ( i + 1 ) * stride2 ];
+        sum_p4[ 2 ] += v1[ ( i + 2 ) * stride1 ] * v2[ ( i + 2 ) * stride2 ];
+        sum_p4[ 3 ] += v1[ ( i + 3 ) * stride1 ] * v2[ ( i + 3 ) * stride2 ];
+    }
+    for( ; i < size; i++ ) sum_p4[ 0 ] += v1[ i * stride1 ] * v2[ i * stride2 ];
+    return sum_p4[ 0 ] + sum_p4[ 1 ] + sum_p4[ 2 ] + sum_p4[ 3 ];
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 f3_t bmath_f3_t_vec_mul_vec_esp( const f3_t* v1, const f3_t* v2, sz_t size )
 {
     if( size <= 32 ) return bmath_f3_t_vec_mul_vec( v1, v2, size );
     sz_t mid = size >> 1;
     return bmath_f3_t_vec_mul_vec_esp( v1, v2, mid ) + bmath_f3_t_vec_mul_vec_esp( v1 + mid, v2 + mid, size - mid );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_f3_t_vec_mul_vec_esp_stride( const f3_t* v1, sz_t stride1, const f3_t* v2, sz_t stride2, sz_t size )
+{
+    if( size <= 32 ) return bmath_f3_t_vec_mul_vec_stride( v1, stride1, v2, stride2, size );
+    sz_t mid = size >> 1;
+    return bmath_f3_t_vec_mul_vec_esp_stride( v1, stride1, v2, stride2, mid ) + bmath_f3_t_vec_mul_vec_esp_stride( v1 + mid * stride1, stride1, v2 + mid * stride2, stride2, size - mid );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

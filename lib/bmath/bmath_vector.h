@@ -50,6 +50,10 @@ f3_t bmath_f3_t_vec_mul_vec_esp(  const f3_t* v1, const f3_t* v2, sz_t size ); /
 f3_t bmath_f3_t_vec_mul3_vec(     const f3_t* v1, const f3_t* v2, const f3_t* v3, sz_t size ); // sum_i v1[i]*v2[i]*v3[i]
 f3_t bmath_f3_t_vec_mul3_vec_esp( const f3_t* v1, const f3_t* v2, const f3_t* v3, sz_t size ); // sum_i v1[i]*v2[i]*v3[i]
 
+/// with stride for both vectors
+f3_t bmath_f3_t_vec_mul_vec_stride(     const f3_t* v1, sz_t stride1, const f3_t* v2, sz_t stride2, sz_t size ); // sum_i v1[i]*v2[i]
+f3_t bmath_f3_t_vec_mul_vec_esp_stride( const f3_t* v1, sz_t stride1, const f3_t* v2, sz_t stride2, sz_t size ); // sum_i v1[i]*v2[i]
+
 /**********************************************************************************************************************/
 // dynamic size vector of f3_t
 

@@ -22,6 +22,7 @@
 #define TYPEOF_bmath_fp_mf3_s_cld      3327146305
 #define TYPEOF_bmath_fp_mf3_s_evd_htp  2695903694
 #define TYPEOF_bmath_fp_mf3_s_hsm_piv  3530555096
+#define TYPEOF_bmath_fp_mf3_s_htp_mul  4221492629
 #define TYPEOF_bmath_fp_mf3_s_inv      1112654779
 #define TYPEOF_bmath_fp_mf3_s_lbd      1742526386
 #define TYPEOF_bmath_fp_mf3_s_lqd      2578597217

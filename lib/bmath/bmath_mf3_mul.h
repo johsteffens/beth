@@ -48,6 +48,10 @@ void bmath_mf3_s_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_
 void bmath_mf3_s_mul_htp(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 void bmath_mf3_s_mul_htp_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
+/// o^T * m -> r (r can be convolutional operant)
+void bmath_mf3_s_htp_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
+void bmath_mf3_s_htp_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
+
 ///  u * d * u^T -> r
 void bmath_mf3_s_mul_udu_htp(     const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* r );
 void bmath_mf3_s_mul_udu_htp_esp( const bmath_mf3_s* u, const bmath_vf3_s* d, bmath_mf3_s* r );

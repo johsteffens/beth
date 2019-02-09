@@ -92,6 +92,7 @@ typedef struct bmath_mf3_s bmath_mf3_s;
 // mf3 features
 typedef void (*bmath_fp_mf3_s_mul     )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 typedef void (*bmath_fp_mf3_s_mul_htp )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+typedef void (*bmath_fp_mf3_s_htp_mul )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
 typedef void (*bmath_fp_mf3_s_uav     )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // uav decomposition
 typedef void (*bmath_fp_mf3_s_ua      )( bmath_mf3_s* u, bmath_mf3_s* a                 ); //  ua decomposition
