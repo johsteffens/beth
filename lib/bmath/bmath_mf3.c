@@ -2785,6 +2785,9 @@ static void eval_test( void )
     eval->rows = 10; eval->cols = 30; bmath_arr_mf3_eval_s_push( arr_eval, eval );
     eval->rows = 30; eval->cols = 10; bmath_arr_mf3_eval_s_push( arr_eval, eval );
 
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_mul,     ( fp_t )bmath_mf3_s_mul );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_mul_htp, ( fp_t )bmath_mf3_s_mul_htp );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_htp_mul, ( fp_t )bmath_mf3_s_htp_mul );
     bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd,     ( fp_t )bmath_mf3_s_qrd );
     bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd_pmt, ( fp_t )bmath_mf3_s_qrd_pmt );
     bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lqd,     ( fp_t )bmath_mf3_s_lqd );
