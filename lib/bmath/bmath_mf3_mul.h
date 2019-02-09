@@ -40,16 +40,16 @@ typedef struct bmath_mf3_s bmath_mf3_s;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// o * m -> r (r can be convolutional operant)
-void bmath_mf3_s_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
+/// o * m -> r
+void bmath_mf3_s_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ); // r can be convolutional operant
 void bmath_mf3_s_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
-/// o * m^T -> r (r can be convolutional operant)
-void bmath_mf3_s_mul_htp(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
+/// o * m^T -> r
+void bmath_mf3_s_mul_htp(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ); // r can be convolutional operant
 void bmath_mf3_s_mul_htp_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
-/// o^T * m -> r (r can be convolutional operant)
-void bmath_mf3_s_htp_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
+/// o^T * m -> r
+void bmath_mf3_s_htp_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ); // r can be convolutional operant
 void bmath_mf3_s_htp_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
 ///  u * d * u^T -> r
@@ -69,6 +69,9 @@ void bmath_mf3_s_mul_add( const bmath_mf3_s* o, const bmath_mf3_s* b, const bmat
 
 /// ( o * b^T ) + c -> r
 void bmath_mf3_s_mul_htp_add( const bmath_mf3_s* o, const bmath_mf3_s* b, const bmath_mf3_s* c, bmath_mf3_s* r );
+
+/// ( o^T * b ) + c -> r
+void bmath_mf3_s_htp_mul_add( const bmath_mf3_s* o, const bmath_mf3_s* b, const bmath_mf3_s* c, bmath_mf3_s* r );
 
 //----------------------------------------------------------------------------------------------------------------------
 
