@@ -1231,5 +1231,191 @@ void bmath_mf3_s_htp_mul_add( const bmath_mf3_s* o, const bmath_mf3_s* b, const 
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_mul_add_cps( bl_t htpa, const bmath_mf3_s* a, bl_t htpb, const bmath_mf3_s* b, f3_t c, const bmath_mf3_s* d, f3_t e, bmath_mf3_s* r )
+{
+    if( r == a || r == b )
+    {
+        ASSERT( !bmath_mf3_s_is_folded( r ) );
+        bmath_mf3_s* buf = bmath_mf3_s_create();
+        bmath_mf3_s_set_size( buf, r->rows, r->cols );
+        bmath_mf3_s_mul_add_cps( htpa, a, htpb, b, c, d, e, buf );
+        bmath_mf3_s_cpy( buf, r );
+        bmath_mf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( ( htpa ? a->rows : a->cols ) == ( htpb ? b->cols : b->rows ) );
+    ASSERT( ( htpa ? a->cols : a->rows ) == r->rows );
+    ASSERT( ( htpb ? b->rows : b->cols ) == r->cols );
+
+    if( d )
+    {
+        ASSERT( d->rows == r->rows );
+        ASSERT( d->cols == r->cols );
+        if( d != r )
+        {
+            if( c != 0 )
+            {
+                if( c == e )
+                {
+                    bmath_mf3_s_cpy( d, r );
+                }
+                else
+                {
+                    bmath_mf3_s_mul_scl_f3( d, e / c, r );
+                }
+            }
+            else
+            {
+                if( e == 1.0 )
+                {
+                    bmath_mf3_s_cpy( d, r );
+                }
+                else
+                {
+                    bmath_mf3_s_mul_scl_f3( d, e, r );
+                }
+            }
+        }
+    }
+    else
+    {
+        bmath_mf3_s_zro( r );
+    }
+
+    if( c != 0 )
+    {
+        bl_t symmetry = ( !d || e == 0.0 ) && ( a == b ) && ( htpa + htpb == 1 );
+        switch( htpa * 2 + htpb )
+        {
+            case 0: bmath_mf3_s_f3_t_mul(     a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->cols, r->data, r->stride           ); break; // a * b
+            case 1: bmath_mf3_s_f3_t_mul_htp( a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->rows, r->data, r->stride, symmetry ); break; // a * b^T
+            case 2: bmath_mf3_s_f3_t_htp_mul( a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->cols, r->data, r->stride, symmetry ); break; // a^T * b
+            default: ERR_fa( "( a^T * b^T ) is not implemented." );                                                                              break; // a^T * b^T
+        }
+        if( symmetry )
+        {
+            ASSERT( !bmath_mf3_s_is_folded( r ) );
+            for( sz_t i = 0; i < r->rows; i++ )
+            {
+                for( sz_t j = 0; j < i; j++ ) r->data[ j * r->stride + i ] = r->data[ i * r->stride + j ];
+            }
+        }
+        if( c != 1.0 ) bmath_mf3_s_mul_scl_f3( r, c, r );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_add_cps_selftest()
+{
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_mf3_s, a  );
+    BCORE_LIFE_CREATE( bmath_mf3_s, b  );
+    BCORE_LIFE_CREATE( bmath_mf3_s, ab );
+    BCORE_LIFE_CREATE( bmath_mf3_s, d  );
+    BCORE_LIFE_CREATE( bmath_mf3_s, r1 );
+    BCORE_LIFE_CREATE( bmath_mf3_s, r2 );
+
+    sz_t n  = 30;
+    sz_t m1 = 20;
+    sz_t m2 = 40;
+
+    f3_t c = 0.0001;
+    f3_t e = 0.5;
+
+    // a * b
+    {
+        bmath_mf3_s_set_size(  a, m1, n  );
+        bmath_mf3_s_set_size(  b, n,  m2 );
+        bmath_mf3_s_set_size(  d, m1, m2 );
+        u2_t rval = 1236;
+        bmath_mf3_s_set_random( a, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_random( b, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_random( d, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_size( ab, m1, m2 );
+        bmath_mf3_s_set_size( r1, m1, m2 );
+        bmath_mf3_s_set_size( r2, m1, m2 );
+        bmath_mf3_s_mul_add_cps( false, a, false, b, c, d, e, r1 );
+        bmath_mf3_s_mul_esp( a, b, ab );
+        bmath_mf3_s_mul_scl_f3( ab, c, ab );
+        bmath_mf3_s_mul_scl_f3( d,  e, r2 );
+        bmath_mf3_s_add( ab, r2, r2 );
+        ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
+    }
+
+    // a^T * b
+    {
+        bmath_mf3_s_set_size(  a, n,  m1  );
+        bmath_mf3_s_set_size(  b, n,  m2 );
+        bmath_mf3_s_set_size(  d, m1, m2 );
+        u2_t rval = 1236;
+        bmath_mf3_s_set_random( a, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_random( b, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_random( d, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_size( ab, m1, m2 );
+        bmath_mf3_s_set_size( r1, m1, m2 );
+        bmath_mf3_s_set_size( r2, m1, m2 );
+        bmath_mf3_s_mul_add_cps( true, a, false, b, c, d, e, r1 );
+        bmath_mf3_s_htp_mul_esp( a, b, ab );
+        bmath_mf3_s_mul_scl_f3( ab, c, ab );
+        bmath_mf3_s_mul_scl_f3( d,  e, r2 );
+        bmath_mf3_s_add( ab, r2, r2 );
+        ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
+    }
+
+    // a * b^T
+    {
+        bmath_mf3_s_set_size(  a, m1, n  );
+        bmath_mf3_s_set_size(  b, m2, n  );
+        bmath_mf3_s_set_size(  d, m1, m2 );
+        u2_t rval = 1236;
+        bmath_mf3_s_set_random( a, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_random( b, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_random( d, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_size( ab, m1, m2 );
+        bmath_mf3_s_set_size( r1, m1, m2 );
+        bmath_mf3_s_set_size( r2, m1, m2 );
+        bmath_mf3_s_mul_add_cps( false, a, true, b, c, d, e, r1 );
+        bmath_mf3_s_mul_htp_esp( a, b, ab );
+        bmath_mf3_s_mul_scl_f3( ab, c, ab );
+        bmath_mf3_s_mul_scl_f3( d,  e, r2 );
+        bmath_mf3_s_add( ab, r2, r2 );
+        ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
+    }
+
+    // a^T * a
+    {
+        bmath_mf3_s_set_size(  a, m1, n );
+        u2_t rval = 1236;
+        bmath_mf3_s_set_random( a, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_size( ab, n, n );
+        bmath_mf3_s_set_size( r1, n, n );
+        bmath_mf3_s_set_size( r2, n, n );
+        bmath_mf3_s_mul_add_cps( true, a, false, a, c, NULL, e, r1 );
+        bmath_mf3_s_htp_mul_esp( a, a, r2 );
+        bmath_mf3_s_mul_scl_f3( r2, c, r2 );
+        ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
+    }
+
+    // a * a^T
+    {
+        bmath_mf3_s_set_size(  a, n, m1 );
+        u2_t rval = 1236;
+        bmath_mf3_s_set_random( a, false, false, 0, 1.0, -1, 1, &rval );
+        bmath_mf3_s_set_size( ab, n, n );
+        bmath_mf3_s_set_size( r1, n, n );
+        bmath_mf3_s_set_size( r2, n, n );
+        bmath_mf3_s_mul_add_cps( false, a, true, a, c, NULL, e, r1 );
+        bmath_mf3_s_mul_htp_esp( a, a, r2 );
+        bmath_mf3_s_mul_scl_f3( r2, c, r2 );
+        ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
+    }
+
+    BCORE_LIFE_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 

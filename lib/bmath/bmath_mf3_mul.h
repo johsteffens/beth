@@ -41,15 +41,15 @@ typedef struct bmath_mf3_s bmath_mf3_s;
 //----------------------------------------------------------------------------------------------------------------------
 
 /// o * m -> r
-void bmath_mf3_s_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ); // r can be convolutional operant
+void bmath_mf3_s_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ); // r can be folded
 void bmath_mf3_s_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
 /// o * m^T -> r
-void bmath_mf3_s_mul_htp(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ); // r can be convolutional operant
+void bmath_mf3_s_mul_htp(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ); // r can be folded
 void bmath_mf3_s_mul_htp_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
 /// o^T * m -> r
-void bmath_mf3_s_htp_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ); // r can be convolutional operant
+void bmath_mf3_s_htp_mul(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ); // r can be folded
 void bmath_mf3_s_htp_mul_esp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r );
 
 ///  u * d * u^T -> r
@@ -72,6 +72,15 @@ void bmath_mf3_s_mul_htp_add( const bmath_mf3_s* o, const bmath_mf3_s* b, const 
 
 /// ( o^T * b ) + c -> r
 void bmath_mf3_s_htp_mul_add( const bmath_mf3_s* o, const bmath_mf3_s* b, const bmath_mf3_s* c, bmath_mf3_s* r );
+
+/** composite multiply-add function. Satisfies functionality of BLAS:DGEMM. Supports folded r.
+ *  op(a) * op(b) * c + d * e -> r
+ *  op(x) = htpx ? x^T : x;
+ *  c, e are scalar.
+ *  d can be NULL
+ */
+void bmath_mf3_s_mul_add_cps( bl_t htpa, const bmath_mf3_s* a, bl_t htpb, const bmath_mf3_s* b, f3_t c, const bmath_mf3_s* d, f3_t e, bmath_mf3_s* r );
+void bmath_mf3_s_mul_add_cps_selftest();
 
 //----------------------------------------------------------------------------------------------------------------------
 
