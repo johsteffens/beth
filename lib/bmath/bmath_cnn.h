@@ -60,7 +60,7 @@ BCORE_DECLARE_OBJECT( bmath_cnn_s )
     sz_t input_convolution_size; // (default 2) first layer convolution
     sz_t input_kernels;          // (default 8) kernels on input layer
     sz_t output_kernels;         // (default 1) kernels on output layer
-    f3_t kernels_rate;           // (default 0) rate at which number kernels increase per layer (negative: decrease); last layer excluded
+    f3_t kernels_rate;           // (default 0) rate at which number of kernels increase per layer (negative: decrease); last layer excluded
     sz_t reduction_step;         // (default 2) desired dimensionality reduction stepping when possible for full coverage
     sz_t convolution_size;       // (default 2) dimensionality convolution size
     bmath_cnn_act_s act_mid;     // (default: softplus) middle activation function
