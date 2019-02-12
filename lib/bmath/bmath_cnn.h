@@ -109,16 +109,16 @@ void bmath_cnn_s_arc_to_sink( const bmath_cnn_s* o, bcore_sink* sink );
 void bmath_cnn_s_query( bmath_cnn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out );
 
 /// Output kernels > 1: Learn step; if out is != NULL it is filled with the result of bmath_cnn_s_query
-void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, f3_t step, bmath_vf3_s* out );
+void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, f3_t step, f3_t decay, bmath_vf3_s* out );
 
-/// weight decay step
-void bmath_cnn_s_decay( bmath_cnn_s* o, f3_t step );
+/// dedicated weight decay step
+void bmath_cnn_s_decay( bmath_cnn_s* o, f3_t decay );
 
 /// Output kernels == 1: Query (inference); returns output activation.
 f3_t bmath_cnn_s_query_1( bmath_cnn_s* o, const bmath_vf3_s* in );
 
 /// Output kernels == 1: Learn step; returns output activation of query.
-f3_t bmath_cnn_s_learn_1( bmath_cnn_s* o, const bmath_vf3_s* in, f3_t target, f3_t step );
+f3_t bmath_cnn_s_learn_1( bmath_cnn_s* o, const bmath_vf3_s* in, f3_t target, f3_t step, f3_t decay );
 
 /**********************************************************************************************************************/
 

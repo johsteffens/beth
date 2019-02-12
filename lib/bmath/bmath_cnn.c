@@ -371,7 +371,7 @@ void bmath_cnn_s_query( bmath_cnn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out 
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, f3_t step, bmath_vf3_s* out )
+void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, f3_t step, f3_t decay, bmath_vf3_s* out )
 {
     ASSERT( target->size == o->output_kernels );
     bmath_cnn_s_query( o, in, out );
@@ -384,19 +384,20 @@ void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s
         bmath_mf3_s* gb = &o->arr_gb.data[ i ];
         bmath_mf3_s*  w = &o->arr_w.data[ i ];
         bmath_fp_f3_unary bwd_map = ( bmath_fp_f3_unary )o->arr_fp_derivative.data[ i ];
+        f3_t wscale = f3_max( 0, ( 1.0 - decay ) );
 
         // apply activation derivative to GB
-        bmath_mf3_s_eop_map_mul( b, bwd_map, gb, gb );                  // GB <- bwd_map( GB )
-        bmath_mf3_s_mul_htp( gb, w, ga );                               // GA = GB * W^T (GA is folded)
-        bmath_mf3_s_mul_add_cps( true, a, false, gb, step, w, 1.0, w ); // W += ( A^T * GB ) * step
+        bmath_mf3_s_eop_map_mul( b, bwd_map, gb, gb );                     // GB <- bwd_map( GB )
+        bmath_mf3_s_mul_htp( gb, w, ga );                                  // GA <- GB * W^T (GA is folded)
+        bmath_mf3_s_mul_add_cps( true, a, false, gb, step, w, wscale, w ); // W  <- W * wscale + ( A^T * GB ) * step
     }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_cnn_s_decay( bmath_cnn_s* o, f3_t step )
+void bmath_cnn_s_decay( bmath_cnn_s* o, f3_t decay )
 {
-    f3_t f = ( 1.0 - step );
+    f3_t f = ( 1.0 - decay );
     f = f3_max( 0, f );
     for( sz_t i = 0; i < o->arr_w.size; i++ ) bmath_mf3_s_mul_scl_f3( &o->arr_w.data[ i ], f, &o->arr_w.data[ i ] );
 }
@@ -413,12 +414,12 @@ f3_t bmath_cnn_s_query_1( bmath_cnn_s* o, const bmath_vf3_s* in )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_cnn_s_learn_1( bmath_cnn_s* o, const bmath_vf3_s* in, f3_t target, f3_t step )
+f3_t bmath_cnn_s_learn_1( bmath_cnn_s* o, const bmath_vf3_s* in, f3_t target, f3_t step, f3_t decay )
 {
     f3_t scl_out = 0;
     bmath_vf3_s vec_out    = bmath_vf3_weak( &scl_out, 1 );
     bmath_vf3_s vec_target = bmath_vf3_weak( &target, 1 );
-    bmath_cnn_s_learn( o, in, &vec_target, step, &vec_out );
+    bmath_cnn_s_learn( o, in, &vec_target, step, decay, &vec_out );
     return scl_out;
 }
 
