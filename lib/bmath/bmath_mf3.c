@@ -531,31 +531,51 @@ f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
+void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* b, bmath_mf3_s* r )
 {
-    ASSERT( bmath_mf3_s_is_equ_size( o, op ) );
-    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    for( uz_t i = 0; i < o->rows; i++ )
+    ASSERT( bmath_mf3_s_is_equ_size( o, b ) );
+    ASSERT( bmath_mf3_s_is_equ_size( o, r ) );
+    if( bmath_mf3_s_is_folded( r ) )
     {
-        const f3_t* v1 = o ->data  + i * o ->stride;
-        const f3_t* v2 = op->data  + i * op->stride;
-              f3_t* vr = res->data + i * res->stride;
-        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ] + v2[ j ];
+        ASSERT( o->stride == r->stride );
+        ASSERT( b->stride == r->stride );
+        sz_t size = ( o->rows - 1 ) * o->stride + o->cols;
+        for( sz_t i = 0; i < size; i++ ) r->data[ i ] = o->data[ i ] + b->data[ i ];
+    }
+    else
+    {
+        for( sz_t i = 0; i < o->rows; i++ )
+        {
+            const f3_t* vo = o->data + i * o->stride;
+            const f3_t* vb = b->data + i * b->stride;
+                  f3_t* vr = r->data + i * r->stride;
+            for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ] + vb[ j ];
+        }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res )
+void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* b, bmath_mf3_s* r )
 {
-    ASSERT( bmath_mf3_s_is_equ_size( o, op ) );
-    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    for( uz_t i = 0; i < o->rows; i++ )
+    ASSERT( bmath_mf3_s_is_equ_size( o, b ) );
+    ASSERT( bmath_mf3_s_is_equ_size( o, r ) );
+    if( bmath_mf3_s_is_folded( r ) )
     {
-        const f3_t* v1 = o ->data  + i * o ->stride;
-        const f3_t* v2 = op->data  + i * op->stride;
-              f3_t* vr = res->data + i * res->stride;
-        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ] - v2[ j ];
+        ASSERT( o->stride == r->stride );
+        ASSERT( b->stride == r->stride );
+        sz_t size = ( o->rows - 1 ) * o->stride + o->cols;
+        for( sz_t i = 0; i < size; i++ ) r->data[ i ] = o->data[ i ] - b->data[ i ];
+    }
+    else
+    {
+        for( sz_t i = 0; i < o->rows; i++ )
+        {
+            const f3_t* vo = o->data + i * o->stride;
+            const f3_t* vb = b->data + i * b->stride;
+                  f3_t* vr = r->data + i * r->stride;
+            for( sz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ] - vb[ j ];
+        }
     }
 }
 
@@ -563,10 +583,19 @@ void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 
 void bmath_mf3_s_zro( bmath_mf3_s* o )
 {
-    for( uz_t i = 0; i < o->rows; i++ )
+    if( bmath_mf3_s_is_folded( o ) )
     {
-        f3_t* v1 = o ->data  + i * o ->stride;
-        for( uz_t j = 0; j < o->cols; j++ ) v1[ j ] = 0;
+        sz_t size = ( o->rows - 1 ) * o->stride + o->cols;
+        assert( size <= o->size );
+        for( sz_t i = 0; i < size; i++ ) o->data[ i ] = 0;
+    }
+    else
+    {
+        for( uz_t i = 0; i < o->rows; i++ )
+        {
+            f3_t* v1 = o ->data + i * o ->stride;
+            for( uz_t j = 0; j < o->cols; j++ ) v1[ j ] = 0;
+        }
     }
 }
 
@@ -574,38 +603,65 @@ void bmath_mf3_s_zro( bmath_mf3_s* o )
 
 void bmath_mf3_s_one( bmath_mf3_s* o )
 {
-    for( uz_t i = 0; i < o->rows; i++ )
+    if( bmath_mf3_s_is_folded( o ) )
     {
-        f3_t* v1 = o ->data  + i * o ->stride;
-        for( uz_t j = 0; j < o->cols; j++ ) v1[ j ] = ( j == i ) ? 1 : 0;
+        bmath_mf3_s_zro( o );
+        sz_t diag_size = uz_min( o->rows, o->cols );
+        for( sz_t i = 0; i < diag_size; i++ ) o->data[ i * ( o->stride + 1 ) ] = 1;
+    }
+    else
+    {
+        for( uz_t i = 0; i < o->rows; i++ )
+        {
+            f3_t* v1 = o ->data + i * o ->stride;
+            for( uz_t j = 0; j < o->cols; j++ ) v1[ j ] = ( j == i ) ? 1 : 0;
+        }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res )
+void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* r )
 {
-    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    for( uz_t i = 0; i < o->rows; i++ )
+    ASSERT( bmath_mf3_s_is_equ_size( o, r ) );
+
+    if( bmath_mf3_s_is_folded( r ) )
     {
-        const f3_t* v1 = o ->data  + i * o ->stride;
-              f3_t* vr = res->data + i * res->stride;
-        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = -v1[ j ];
+        ASSERT( o->stride == r->stride );
+        sz_t size = ( o->rows - 1 ) * o->stride + o->cols;
+        for( sz_t i = 0; i < size; i++ ) r->data[ i ] = -o->data[ i ];
+    }
+    else
+    {
+        for( uz_t i = 0; i < o->rows; i++ )
+        {
+            const f3_t* vo = o->data + i * o->stride;
+                  f3_t* vr = r->data + i * r->stride;
+            for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = -vo[ j ];
+        }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res )
+void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* r )
 {
-    if( res == o ) return;
-    ASSERT( o->rows == res->rows );
-    ASSERT( o->cols == res->cols );
-    for( uz_t i = 0; i < o->rows; i++ )
+    if( r == o ) return;
+    ASSERT( bmath_mf3_s_is_equ_size( o, r ) );
+    if( bmath_mf3_s_is_folded( r ) )
     {
-        const f3_t* v1 = o ->data  + i * o ->stride;
-              f3_t* vr = res->data + i * res->stride;
-        for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = v1[ j ];
+        ASSERT( o->stride == r->stride );
+        sz_t size = ( o->rows - 1 ) * o->stride + o->cols;
+        for( sz_t i = 0; i < size; i++ ) r->data[ i ] = o->data[ i ];
+    }
+    else
+    {
+        for( uz_t i = 0; i < o->rows; i++ )
+        {
+            const f3_t* vo = o->data + i * o->stride;
+                  f3_t* vr = r->data + i * r->stride;
+            for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ];
+        }
     }
 }
 
@@ -941,11 +997,23 @@ void bmath_mf3_s_mul_scl( const bmath_mf3_s* o, const f3_t* b_, bmath_mf3_s* d_ 
     ASSERT( o->rows == d_->rows );
     ASSERT( o->cols == d_->cols );
     f3_t b = *b_;
-    for( sz_t i = 0; i < o->rows; i++ )
+
+    if( bmath_mf3_s_is_folded( d_ ) )
     {
-        f3_t* a = o ->data + i * o ->stride;
-        f3_t* d = d_->data + i * d_->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) d[ j ] = a[ j ] * b;
+        ASSERT( o->stride == d_->stride );
+        sz_t size = ( o->rows - 1 ) * o->stride + o->cols;
+        const f3_t* a = o ->data;
+              f3_t* d = d_->data;
+        for( sz_t i = 0; i < size; i++ ) d[ i ] = a[ i ] * b;
+    }
+    else
+    {
+        for( sz_t i = 0; i < o->rows; i++ )
+        {
+            f3_t* a = o ->data + i * o ->stride;
+            f3_t* d = d_->data + i * d_->stride;
+            for( sz_t j = 0; j < o->cols; j++ ) d[ j ] = a[ j ] * b;
+        }
     }
 }
 
@@ -958,12 +1026,26 @@ void bmath_mf3_s_mul_scl_add( const bmath_mf3_s* o, const f3_t* b_, const bmath_
     ASSERT( c_->rows == d_->rows );
     ASSERT( c_->cols == d_->cols );
     f3_t b = *b_;
-    for( sz_t i = 0; i < o->rows; i++ )
+
+    if( bmath_mf3_s_is_folded( d_ ) )
     {
-        f3_t* a = o ->data + i * o ->stride;
-        f3_t* c = c_->data + i * c_->stride;
-        f3_t* d = d_->data + i * d_->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) d[ j ] = a[ j ] * b + c[ j ];
+        ASSERT( o ->stride == d_->stride );
+        ASSERT( c_->stride == d_->stride );
+        sz_t size = ( o->rows - 1 ) * o->stride + o->cols;
+        const f3_t* a = o ->data;
+        const f3_t* c = c_->data;
+              f3_t* d = d_->data;
+        for( sz_t i = 0; i < size; i++ ) d[ i ] = a[ i ] * b + c[ i ];
+    }
+    else
+    {
+        for( sz_t i = 0; i < o->rows; i++ )
+        {
+            f3_t* a = o ->data + i * o ->stride;
+            f3_t* c = c_->data + i * c_->stride;
+            f3_t* d = d_->data + i * d_->stride;
+            for( sz_t j = 0; j < o->cols; j++ ) d[ j ] = a[ j ] * b + c[ j ];
+        }
     }
 }
 
@@ -973,12 +1055,25 @@ void bmath_mf3_s_eop_map( const bmath_mf3_s* o, bmath_fp_f3_unary b, bmath_mf3_s
 {
     ASSERT( o ->rows == r->rows );
     ASSERT( o ->cols == r->cols );
-    for( sz_t i = 0; i < o->rows; i++ )
+
+    if( bmath_mf3_s_is_folded( r ) )
     {
-        const f3_t* a = o->data + i * o->stride;
-              f3_t* c = r->data + i * r->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) c[ j ] = b( a[ j ] );
+        ASSERT( o->stride == r->stride );
+        sz_t size = ( o->rows - 1 ) * o->stride + o->cols;
+        const f3_t* a = o->data;
+              f3_t* c = r->data;
+        for( sz_t i = 0; i < size; i++ ) c[ i ] = b( a[ i ] );
     }
+    else
+    {
+        for( sz_t i = 0; i < o->rows; i++ )
+        {
+            const f3_t* a = o->data + i * o->stride;
+                  f3_t* c = r->data + i * r->stride;
+            for( sz_t j = 0; j < o->cols; j++ ) c[ j ] = b( a[ j ] );
+        }
+    }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -989,12 +1084,26 @@ void bmath_mf3_s_eop_map_mul( const bmath_mf3_s* o, bmath_fp_f3_unary b, const b
     ASSERT( o ->cols == r->cols );
     ASSERT( c_->rows == r->rows );
     ASSERT( c_->cols == r->cols );
-    for( sz_t i = 0; i < o->rows; i++ )
+
+    if( bmath_mf3_s_is_folded( r ) )
     {
-        const f3_t* a = o ->data + i * o ->stride;
-        const f3_t* c = c_->data + i * c_->stride;
-              f3_t* d = r ->data + i * r ->stride;
-        for( sz_t j = 0; j < o->cols; j++ ) d[ j ] = b( a[ j ] ) * c[ j ];
+        ASSERT( o ->stride == r->stride );
+        ASSERT( c_->stride == r->stride );
+        sz_t size = ( o->rows - 1 ) * o->stride + o->cols;
+        const f3_t* a = o ->data;
+        const f3_t* c = c_->data;
+              f3_t* d = r ->data;
+        for( sz_t i = 0; i < size; i++ ) d[ i ] = b( a[ i ] ) * c[ i ];
+    }
+    else
+    {
+        for( sz_t i = 0; i < o->rows; i++ )
+        {
+            const f3_t* a = o ->data + i * o ->stride;
+            const f3_t* c = c_->data + i * c_->stride;
+                  f3_t* d = r ->data + i * r ->stride;
+            for( sz_t j = 0; j < o->cols; j++ ) d[ j ] = b( a[ j ] ) * c[ j ];
+        }
     }
 }
 
@@ -2755,6 +2864,9 @@ static vd_t selftest( void )
             ASSERT( bmath_mf3_s_is_near_equ( m5, m6, 1E-8 ) );
         }
     }
+
+    /// mul_add_cps
+    bmath_mf3_s_mul_add_cps_selftest();
 
     BCORE_LIFE_DOWN();
     return NULL;

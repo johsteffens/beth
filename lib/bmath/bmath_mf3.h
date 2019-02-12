@@ -73,6 +73,18 @@
  *    set: 'when used as postfix' explicitly allocates result object (set_size) for given operation (example bmath_mf3_s_htp_set)
  *
  */
+
+/** Memory Layout
+ *  Matrix data is stored in row-major order, where 'stride' indicates the memory offset between two adjacent rows.
+ *  Normally stride >= cols is expected. See below for exceptions.
+ *
+ *  Folded Matrix:
+ *  A degenerate case is 0 <= stride < cols. This layout is called 'folded', representing overlapping rows.
+ *  The folded format is useful in order to perform convolutions via matrix operations.
+ *  A folded matrix as const-argument is globally supported.
+ *  Modifying functions only support a folded target when explicitly stated.
+ *  Note: Not all functions test the folded state.
+ */
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
@@ -171,6 +183,8 @@ bmath_mf3_s* bmath_mf3_s_create_fill_random( uz_t rows, uz_t cols, f3_t min, f3_
 static inline void bmath_mf3_s_set_size_to( const bmath_mf3_s* o, bmath_mf3_s* res ) { bmath_mf3_s_set_size( res, o->rows, o->cols ); }
 static inline bl_t bmath_mf3_s_is_equ_size( const bmath_mf3_s* o, const bmath_mf3_s* op ) { return o->rows == op->rows && o->cols == op->cols; }
 static inline bl_t bmath_mf3_s_is_square( const bmath_mf3_s* o ) { return o->rows == o->cols; }
+static inline bl_t bmath_mf3_s_is_folded( const bmath_mf3_s* o ) { return o->stride < o->cols; }
+
 
 /**********************************************************************************************************************/
 /// checks, deviations
@@ -225,11 +239,11 @@ f3_t bmath_mf3_s_fdev_otn( const bmath_mf3_s* o ); // f = o * oT or oT * o (whic
 f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o ); // trace
 f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op ); // ( o - op )^2
 
-void bmath_mf3_s_zro(       bmath_mf3_s* o ); // set zero
-void bmath_mf3_s_one(       bmath_mf3_s* o ); // set diagonal elements one, rest zero
-void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* res );  // negate
-void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
-void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* res );  // copies content o -> res  (does not change allocation of res)
+// functions below support folded target
+void bmath_mf3_s_zro(       bmath_mf3_s* o ); // set zero;                             supports folded matrix
+void bmath_mf3_s_one(       bmath_mf3_s* o ); // set diagonal elements one, rest zero; supports folded matrix
+void bmath_mf3_s_neg( const bmath_mf3_s* o, bmath_mf3_s* r );  // negate
+void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* r );  // copies content o -> r  (does not change allocation of res)
 
 //----------------------------------------------------------------------------------------------------------------------
 // transposition / permutation
@@ -243,9 +257,10 @@ void bmath_mf3_s_mul_pmt_htp( const bmath_mf3_s* o, const bmath_pmt_s* p, bmath_
 static inline void bmath_mf3_s_htp_set( const bmath_mf3_s* o, bmath_mf3_s* res ) { bmath_mf3_s_set_size( res, o->cols, o->rows ); bmath_mf3_s_htp( o, res ); }
 
 //----------------------------------------------------------------------------------------------------------------------
-// addition
+// addition, subtraction
 
-void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* b, bmath_mf3_s* r ); // supports folded target
+void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* b, bmath_mf3_s* r ); // supports folded target
 
 /// adds outer product of two vectors op1 (X) op2 to matrix
 void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res );
@@ -257,7 +272,7 @@ void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf
 void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf3_s* res ); // affine transformation (see nomenclature 'av1')
 
 //----------------------------------------------------------------------------------------------------------------------
-// matrix * scalar + matrix --> matrix
+// matrix * scalar + matrix --> matrix; supports folded r
 
 void bmath_mf3_s_mul_scl(     const bmath_mf3_s* o, const f3_t* b,                       bmath_mf3_s* r ); // r = o * b
 void bmath_mf3_s_mul_scl_add( const bmath_mf3_s* o, const f3_t* b, const bmath_mf3_s* c, bmath_mf3_s* r ); // r = o * b + c
@@ -266,7 +281,7 @@ static inline void bmath_mf3_s_mul_scl_f3(     const bmath_mf3_s* o, f3_t b,    
 static inline void bmath_mf3_s_mul_scl_f3_add( const bmath_mf3_s* o, f3_t b, const bmath_mf3_s* c, bmath_mf3_s* r ) { bmath_mf3_s_mul_scl_add( o, &b, c, r ); }
 
 //----------------------------------------------------------------------------------------------------------------------
-// matrix * unary_map --> matrix
+// matrix * unary_map --> matrix; supports folded r
 
 void bmath_mf3_s_eop_map(     const bmath_mf3_s* o, bmath_fp_f3_unary b, bmath_mf3_s* r ); // r_ij = b( o_ij )
 void bmath_mf3_s_eop_map_mul( const bmath_mf3_s* o, bmath_fp_f3_unary b, const bmath_mf3_s* c, bmath_mf3_s* r ); // r_ij = b( o_ij ) * c_ij
