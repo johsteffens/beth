@@ -291,6 +291,7 @@ void bmath_mf3_s_eop_map_mul( const bmath_mf3_s* o, bmath_fp_f3_unary b, const b
 
 static inline void bmath_mf3_s_mul_set(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ) { bmath_mf3_s_set_size( r, o->rows, m->cols ); bmath_mf3_s_mul( o, m, r ); }
 static inline void bmath_mf3_s_mul_htp_set( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ) { bmath_mf3_s_set_size( r, o->rows, m->rows ); bmath_mf3_s_mul_htp( o, m, r ); }
+static inline void bmath_mf3_s_htp_mul_set( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ) { bmath_mf3_s_set_size( r, o->cols, m->cols ); bmath_mf3_s_htp_mul( o, m, r ); }
 
 //----------------------------------------------------------------------------------------------------------------------
 // inversion; pseudo-inversion;

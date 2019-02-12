@@ -87,7 +87,6 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_cnn_s )
     "hidden bcore_arr_fp_s  arr_fp_activation;" // activation functions
     "hidden bcore_arr_fp_s  arr_fp_derivative;" // derivative functions
 
-    "hidden bmath_mf3_s     learn_at;"
     "hidden bmath_mf3_s     learn_gw;"
     "hidden bmath_vf3_s     in;"
     "hidden bmath_vf3_s     out;"
@@ -359,9 +358,13 @@ void bmath_cnn_s_query( bmath_cnn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out 
     bmath_vf3_s_cpy( in, &o->in );
     for( sz_t i = 0; i < o->arr_w.size; i++ )
     {
-        bmath_mf3_s* b = &o->arr_b.data[ i ];
-        bmath_mf3_s_mul( &o->arr_a.data[ i ], &o->arr_w.data[ i ], b );
-        bmath_mf3_s_eop_map( b, ( bmath_fp_f3_unary )o->arr_fp_activation.data[ i ], b );
+        const bmath_mf3_s* a = &o->arr_a.data[ i ];
+              bmath_mf3_s* b = &o->arr_b.data[ i ];
+        const bmath_mf3_s* w = &o->arr_w.data[ i ];
+        bmath_fp_f3_unary fwd_map = ( bmath_fp_f3_unary )o->arr_fp_activation.data[ i ];
+
+        bmath_mf3_s_mul( a, w, b );           // b = a * w
+        bmath_mf3_s_eop_map( b, fwd_map, b ); // b <- fwd_map( b )
     }
     if( out ) bmath_vf3_s_cpy( &o->out, out );
 }
@@ -372,28 +375,20 @@ void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s
 {
     ASSERT( target->size == o->output_kernels );
     bmath_cnn_s_query( o, in, out );
-
     bmath_vf3_s_sub( target, &o->out, &o->gout );
-
-    bmath_mf3_s* at = &o->learn_at;
-    bmath_mf3_s* gw = &o->learn_gw;
-
     for( sz_t i = o->arr_w.size - 1; i >= 0; i-- )
     {
+        const bmath_mf3_s* a = &o->arr_a.data[ i ];
         const bmath_mf3_s* b = &o->arr_b.data[ i ];
+        bmath_mf3_s* ga = &o->arr_ga.data[ i ];
         bmath_mf3_s* gb = &o->arr_gb.data[ i ];
         bmath_mf3_s*  w = &o->arr_w.data[ i ];
+        bmath_fp_f3_unary bwd_map = ( bmath_fp_f3_unary )o->arr_fp_derivative.data[ i ];
 
         // apply activation derivative to GB
-        bmath_mf3_s_eop_map_mul( b, ( bmath_fp_f3_unary )o->arr_fp_derivative.data[ i ], gb, gb );
-
-        // GA = GB * W^T (mul_htp can handle conv-representation of ga)
-        bmath_mf3_s_mul_htp( gb, w, &o->arr_ga.data[ i ] );
-
-        // W += ( A^T * GB ) * step
-        bmath_mf3_s_htp_set( &o->arr_a.data[ i ], at );
-        bmath_mf3_s_mul_set( at, gb, gw );
-        bmath_mf3_s_mul_scl_f3_add( gw, step, w, w );
+        bmath_mf3_s_eop_map_mul( b, bwd_map, gb, gb );                  // GB <- bwd_map( GB )
+        bmath_mf3_s_mul_htp( gb, w, ga );                               // GA = GB * W^T (GA is folded)
+        bmath_mf3_s_mul_add_cps( true, a, false, gb, step, w, 1.0, w ); // W += ( A^T * GB ) * step
     }
 }
 

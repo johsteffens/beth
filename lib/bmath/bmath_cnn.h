@@ -82,7 +82,6 @@ BCORE_DECLARE_OBJECT( bmath_cnn_s )
     bcore_arr_fp_s    arr_fp_activation; // activation functions
     bcore_arr_fp_s    arr_fp_derivative; // derivative functions
 
-    bmath_mf3_s       learn_at; // a-matrix transposed used in a lean step
     bmath_mf3_s       learn_gw; // grad w used in a lean step
 
     bmath_vf3_s       in;   // input vector weak map to arr_a[ 0 ]

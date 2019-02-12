@@ -1252,29 +1252,26 @@ void bmath_mf3_s_mul_add_cps( bl_t htpa, const bmath_mf3_s* a, bl_t htpb, const 
     {
         ASSERT( d->rows == r->rows );
         ASSERT( d->cols == r->cols );
-        if( d != r )
+        if( c != 0 )
         {
-            if( c != 0 )
+            if( c == e )
             {
-                if( c == e )
-                {
-                    bmath_mf3_s_cpy( d, r );
-                }
-                else
-                {
-                    bmath_mf3_s_mul_scl_f3( d, e / c, r );
-                }
+                if( d != r ) bmath_mf3_s_cpy( d, r );
             }
             else
             {
-                if( e == 1.0 )
-                {
-                    bmath_mf3_s_cpy( d, r );
-                }
-                else
-                {
-                    bmath_mf3_s_mul_scl_f3( d, e, r );
-                }
+                bmath_mf3_s_mul_scl_f3( d, e / c, r );
+            }
+        }
+        else
+        {
+            if( e == 1.0 )
+            {
+                if( d != r ) bmath_mf3_s_cpy( d, r );
+            }
+            else
+            {
+                bmath_mf3_s_mul_scl_f3( d, e, r );
             }
         }
     }
