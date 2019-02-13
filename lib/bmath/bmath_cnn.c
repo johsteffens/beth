@@ -195,8 +195,9 @@ void bmath_cnn_s_setup( bmath_cnn_s* o )
         ASSERT( o->arr_w.size == layers );
     }
 
-
     sz_t buf_size = o->input_size;
+
+    sz_t max_g_size = 0;
 
     // set up matrices
     for( sz_t i = 0; i < layers; i++ )
@@ -240,22 +241,13 @@ void bmath_cnn_s_setup( bmath_cnn_s* o )
         *gb = *b;
 
         buf_size += b->size;
+
+        max_g_size = sz_max( max_g_size, a->size );
+        max_g_size = sz_max( max_g_size, b->size );
     }
 
     bmath_vf3_s_set_size( &o->buf_ab,  buf_size );
-    bmath_vf3_s_set_size( &o->buf_gab, buf_size );
-
-    bmath_vf3_s_clear( &o->in );
-    o->in.data = o->buf_ab.data;
-    o->in.size = o->input_size;
-
-    bmath_vf3_s_clear( &o->out );
-    o->out.data = o->buf_ab.data + buf_size - o->output_kernels;
-    o->out.size = o->output_kernels;
-
-    bmath_vf3_s_clear( &o->gout );
-    o->gout.data = o->buf_gab.data + buf_size - o->output_kernels;
-    o->gout.size = o->output_kernels;
+    bmath_vf3_s_set_size( &o->buf_gab, max_g_size * 2 );
 
     sz_t buf_index = 0;
 
@@ -267,21 +259,35 @@ void bmath_cnn_s_setup( bmath_cnn_s* o )
         bmath_mf3_s* ga = &o->arr_ga.data[ i ];
         bmath_mf3_s* gb = &o->arr_gb.data[ i ];
 
-        a->data  = o->buf_ab.data  + buf_index;
-        ga->data = o->buf_gab.data + buf_index;
+        a->data = o->buf_ab.data + buf_index;
+        b->data = o->buf_ab.data + buf_index + a->size;
+        ga->data = ( ( i & 1 ) == 0 ) ? o->buf_gab.data : o->buf_gab.data + max_g_size;
+        gb->data = ( ( i & 1 ) == 1 ) ? o->buf_gab.data : o->buf_gab.data + max_g_size;
         buf_index += a->size;
-        b->data  = o->buf_ab.data  + buf_index;
-        gb->data = o->buf_gab.data + buf_index;
 
-        ASSERT(  a->data - o->buf_ab.data + a->size    <= o->buf_ab.size );
-        ASSERT(  b->data - o->buf_ab.data + b->size    <= o->buf_ab.size );
-        ASSERT( ga->data - o->buf_gab.data + ga->size  <= o->buf_gab.size );
-        ASSERT( gb->data - o->buf_gab.data + gb->size  <= o->buf_gab.size );
+        ASSERT( a->data - o->buf_ab.data + a->size <= o->buf_ab.size );
+        ASSERT( b->data - o->buf_ab.data + b->size <= o->buf_ab.size );
 
+        // first layer
+        if( i == 0 )
+        {
+            bmath_vf3_s_clear( &o->in );
+            o->in.data = a->data;
+            o->in.size = o->input_size;
+        }
+
+        // last layer
         if( i == layers - 1 )
         {
-            ASSERT(  b->data - o->buf_ab.data  +  b->size  == o->buf_gab.size );
-            ASSERT( gb->data - o->buf_gab.data + gb->size  == o->buf_gab.size );
+            ASSERT( b->data - o->buf_ab.data + b->size == o->buf_ab.size );
+
+            bmath_vf3_s_clear( &o->out );
+            o->out.data = o->buf_ab.data + buf_size - o->output_kernels;
+            o->out.size = o->output_kernels;
+
+            bmath_vf3_s_clear( &o->gout );
+            o->gout.data = gb->data;
+            o->gout.size = o->output_kernels;
         }
     }
 
@@ -378,18 +384,19 @@ void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s
     bmath_vf3_s_sub( target, &o->out, &o->gout );
     for( sz_t i = o->arr_w.size - 1; i >= 0; i-- )
     {
-        const bmath_mf3_s* a = &o->arr_a.data[ i ];
-        const bmath_mf3_s* b = &o->arr_b.data[ i ];
-        bmath_mf3_s* ga = &o->arr_ga.data[ i ];
-        bmath_mf3_s* gb = &o->arr_gb.data[ i ];
-        bmath_mf3_s*  w = &o->arr_w.data[ i ];
+        const bmath_mf3_s*  a = &o->arr_a.data[ i ];
+        const bmath_mf3_s*  b = &o->arr_b.data[ i ];
+              bmath_mf3_s* ga = &o->arr_ga.data[ i ];
+              bmath_mf3_s* gb = &o->arr_gb.data[ i ];
+              bmath_mf3_s*  w = &o->arr_w.data[ i ];
+
         bmath_fp_f3_unary bwd_map = ( bmath_fp_f3_unary )o->arr_fp_derivative.data[ i ];
         f3_t wscale = f3_max( 0, ( 1.0 - decay ) );
 
         // apply activation derivative to GB
         bmath_mf3_s_eop_map_mul( b, bwd_map, gb, gb );                     // GB <- bwd_map( GB )
-        bmath_mf3_s_mul_htp( gb, w, ga );                                  // GA <- GB * W^T (GA is folded)
-        bmath_mf3_s_mul_add_cps( true, a, false, gb, step, w, wscale, w ); // W  <- W * wscale + ( A^T * GB ) * step
+        bmath_mf3_s_mul_add_cps( false, gb, true,  w,  1.0,  NULL, 0,     ga ); // GA <- GB * W^T (GA is folded)
+        bmath_mf3_s_mul_add_cps( true,  a,  false, gb, step, w,    wscale, w ); // W  <- W * wscale + ( A^T * GB ) * step
     }
 }
 
