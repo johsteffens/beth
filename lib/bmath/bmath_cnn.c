@@ -96,7 +96,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_cnn_s )
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// Preserves weights if already initialized, otherwise randomly initializes weights
-void bmath_cnn_s_setup( bmath_cnn_s* o )
+void bmath_cnn_s_setup( bmath_cnn_s* o, bl_t learning )
 {
     if( o->act_mid.st_activation.size == 0 ) o->act_mid = bmath_cnn_act_softplus();
     if( o->act_out.st_activation.size == 0 ) o->act_out = bmath_cnn_act_tanh();
@@ -177,26 +177,32 @@ void bmath_cnn_s_setup( bmath_cnn_s* o )
     }
 
     sz_t layers = bcore_array_a_get_size( arr_bmath_cnn_arc_item_s );
+
     bmath_arr_mf3_s_set_size( &o->arr_a,  layers );
     bmath_arr_mf3_s_set_size( &o->arr_b,  layers );
-    bmath_arr_mf3_s_set_size( &o->arr_ga, layers );
-    bmath_arr_mf3_s_set_size( &o->arr_gb, layers );
-
     bcore_arr_fp_s_set_size( &o->arr_fp_activation, layers );
-    bcore_arr_fp_s_set_size( &o->arr_fp_derivative, layers );
 
-    // preexisting weights are reused
-    if( o->arr_w.size == 0 )
+    if( learning )
     {
-        bmath_arr_mf3_s_set_size( &o->arr_w, layers );
+        bmath_arr_mf3_s_set_size( &o->arr_ga, layers );
+        bmath_arr_mf3_s_set_size( &o->arr_gb, layers );
+        bcore_arr_fp_s_set_size( &o->arr_fp_derivative, layers );
     }
     else
     {
-        ASSERT( o->arr_w.size == layers );
+        bmath_arr_mf3_s_clear( &o->arr_ga );
+        bmath_arr_mf3_s_clear( &o->arr_gb );
+        bcore_arr_fp_s_clear( &o->arr_fp_derivative );
     }
 
-    sz_t buf_size = o->input_size;
+    // preexisting weights are reused
+    if( o->arr_w.size != layers )
+    {
+        bmath_arr_mf3_s_clear( &o->arr_w );
+        bmath_arr_mf3_s_set_size( &o->arr_w, layers );
+    }
 
+    sz_t buf_full_size = o->input_size;
     sz_t max_g_size = 0;
 
     // set up matrices
@@ -204,15 +210,15 @@ void bmath_cnn_s_setup( bmath_cnn_s* o )
     {
         const bmath_cnn_act_s* act = ( i < layers - 1 ) ? &o->act_mid : &o->act_out;
         o->arr_fp_activation.data[ i ] = ( fp_t )act->fp_activation;
-        o->arr_fp_derivative.data[ i ] = ( fp_t )act->fp_derivative;
+        if( learning ) o->arr_fp_derivative.data[ i ] = ( fp_t )act->fp_derivative;
 
         const bmath_cnn_arc_item_s* item = bcore_array_a_get( arr_bmath_cnn_arc_item_s, i ).o;
 
         bmath_mf3_s* a  = &o->arr_a.data[ i ];
         bmath_mf3_s* b  = &o->arr_b.data[ i ];
         bmath_mf3_s* w  = &o->arr_w.data[ i ];
-        bmath_mf3_s* ga = &o->arr_ga.data[ i ];
-        bmath_mf3_s* gb = &o->arr_gb.data[ i ];
+        bmath_mf3_s* ga = ( learning ) ? &o->arr_ga.data[ i ] : NULL;
+        bmath_mf3_s* gb = ( learning ) ? &o->arr_gb.data[ i ] : NULL;
 
         a->rows   = item->steps;
         a->cols   = item->kernel_size;
@@ -237,32 +243,55 @@ void bmath_cnn_s_setup( bmath_cnn_s* o )
         b->size   = b->rows * b->cols;
         b->space  = 0; // not owning data
 
-        *ga = *a;
-        *gb = *b;
+        if( learning )
+        {
+            *ga = *a;
+            *gb = *b;
+        }
 
-        buf_size += b->size;
-
+        buf_full_size += b->size;
         max_g_size = sz_max( max_g_size, a->size );
         max_g_size = sz_max( max_g_size, b->size );
     }
 
-    bmath_vf3_s_set_size( &o->buf_ab,  buf_size );
-    bmath_vf3_s_set_size( &o->buf_gab, max_g_size * 2 );
+    sz_t buf_part_size = max_g_size * 2;
+
+    if( learning )
+    {
+        bmath_vf3_s_set_size( &o->buf_ab,  buf_full_size );
+        bmath_vf3_s_set_size( &o->buf_gab, buf_part_size );
+    }
+    else
+    {
+        bmath_vf3_s_clear( &o->buf_gab );
+        bmath_vf3_s_set_size( &o->buf_ab, buf_part_size );
+    }
 
     sz_t buf_index = 0;
 
     // distribute buffer space
     for( sz_t i = 0; i < layers; i++ )
     {
+        bl_t even_layer = ( ( i & 1 ) == 0 );
+
         bmath_mf3_s* a  = &o->arr_a.data[ i ];
         bmath_mf3_s* b  = &o->arr_b.data[ i ];
-        bmath_mf3_s* ga = &o->arr_ga.data[ i ];
-        bmath_mf3_s* gb = &o->arr_gb.data[ i ];
+        bmath_mf3_s* ga = ( learning ) ? &o->arr_ga.data[ i ] : NULL;
+        bmath_mf3_s* gb = ( learning ) ? &o->arr_gb.data[ i ] : NULL;
 
-        a->data = o->buf_ab.data + buf_index;
-        b->data = o->buf_ab.data + buf_index + a->size;
-        ga->data = ( ( i & 1 ) == 0 ) ? o->buf_gab.data : o->buf_gab.data + max_g_size;
-        gb->data = ( ( i & 1 ) == 1 ) ? o->buf_gab.data : o->buf_gab.data + max_g_size;
+        if( learning )
+        {
+            a->data = o->buf_ab.data + buf_index;
+            b->data = o->buf_ab.data + buf_index + a->size;
+            ga->data =  even_layer ? o->buf_gab.data : o->buf_gab.data + max_g_size;
+            gb->data = !even_layer ? o->buf_gab.data : o->buf_gab.data + max_g_size;
+        }
+        else
+        {
+            a->data =  even_layer ? o->buf_ab.data : o->buf_ab.data + max_g_size;
+            b->data = !even_layer ? o->buf_ab.data : o->buf_ab.data + max_g_size;
+        }
+
         buf_index += a->size;
 
         ASSERT( a->data - o->buf_ab.data + a->size <= o->buf_ab.size );
@@ -279,15 +308,17 @@ void bmath_cnn_s_setup( bmath_cnn_s* o )
         // last layer
         if( i == layers - 1 )
         {
-            ASSERT( b->data - o->buf_ab.data + b->size == o->buf_ab.size );
-
             bmath_vf3_s_clear( &o->out );
-            o->out.data = o->buf_ab.data + buf_size - o->output_kernels;
+            o->out.data = b->data;
             o->out.size = o->output_kernels;
 
             bmath_vf3_s_clear( &o->gout );
-            o->gout.data = gb->data;
-            o->gout.size = o->output_kernels;
+
+            if( learning )
+            {
+                o->gout.data = gb->data;
+                o->gout.size = o->output_kernels;
+            }
         }
     }
 
@@ -360,7 +391,7 @@ void bmath_cnn_s_arc_to_sink( const bmath_cnn_s* o, bcore_sink* sink )
 
 void bmath_cnn_s_query( bmath_cnn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out )
 {
-    if( o->arr_a.size == 0 ) bmath_cnn_s_setup( o );
+    if( o->arr_a.size == 0 ) bmath_cnn_s_setup( o, false );
     bmath_vf3_s_cpy( in, &o->in );
     for( sz_t i = 0; i < o->arr_w.size; i++ )
     {
@@ -379,6 +410,7 @@ void bmath_cnn_s_query( bmath_cnn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out 
 
 void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, f3_t step, f3_t decay, bmath_vf3_s* out )
 {
+    if( o->arr_ga.size == 0 ) bmath_cnn_s_setup( o, true );
     ASSERT( target->size == o->output_kernels );
     bmath_cnn_s_query( o, in, out );
     bmath_vf3_s_sub( target, &o->out, &o->gout );

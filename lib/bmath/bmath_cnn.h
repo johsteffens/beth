@@ -45,7 +45,7 @@ bmath_cnn_act_s bmath_cnn_act_leaky_relu();
 /** Simple scalable 'All-Convolutional' CNN: vector -> vector
  *  (Inspired by Paper "Striving for Simplicity: The All Convolutional Net" (https://arxiv.org/abs/1412.6806)
  *
- *  Uses fast fast matrix-matrix-multiplication for query and learning.
+ *  Uses fast matrix-matrix-multiplication for query and learning.
  *
  *  Set/change architecture parameters. Then run query/learn as needed.
  *  Call reset if parameters need change.
@@ -96,8 +96,10 @@ BCORE_DECLARE_OBJECT( bmath_cnn_s )
  *  This function is called by bmath_cnn_s_query if necessary.
  *  After calling setup architecture parameters should not be changed.
  *  Call bmath_cnn_s_reset if architecture parameters are to be changed.
+ *
+ *  learning: true if learning is intended; false otherwise
  */
-void bmath_cnn_s_setup( bmath_cnn_s* o );
+void bmath_cnn_s_setup( bmath_cnn_s* o, bl_t learning );
 
 /// Resets network to the untrained state
 void bmath_cnn_s_reset( bmath_cnn_s* o );
