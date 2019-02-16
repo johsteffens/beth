@@ -1540,8 +1540,8 @@ tp_t bcore_flect_type_self_d( bcore_self_s* self )
         {
             ERR( "Attempt to register a different reflection under type = '%s' (%"PRItp_t")\nRegistered:\n%s\nNew:\n%s\n",
                  ifnameof( self->type ), self->type,
-                 bcore_self_s_show( self_l ),
-                 bcore_self_s_show( self ) );
+                 bcore_self_s_show( self_l )->sc,
+                 bcore_self_s_show( self )->sc );
         }
         bcore_self_s_discard( self );
         return self_l->type;
