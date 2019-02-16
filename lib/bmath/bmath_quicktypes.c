@@ -65,9 +65,10 @@ static sr_s typelist()
     // features
     bcore_array_r_push_sc( &list, "bmath_u2_argb_from_f3" );
 
-    ///
+    // quicktypes from mf3
     bmath_mf3_push_quicktypes( &list );
 
+    // quicktypes from TYPEOF_get_quicktypes
     bcore_signal_s signal = bcore_signal_init( TYPEOF_local, TYPEOF_get_quicktypes, list.o );
     bmath_signal_handler( &signal );
 

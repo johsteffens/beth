@@ -55,6 +55,16 @@
 #define TYPEOF_bmath_pmt_s             4158722099
 #define TYPEOF_bmath_ring              2462086090
 #define TYPEOF_bmath_ring_s            1513035188
+#define TYPEOF_bmath_snn_act_s         2030741768
+#define TYPEOF_bmath_snn_gleaky_relu   2510832374
+#define TYPEOF_bmath_snn_grelu         1730630745
+#define TYPEOF_bmath_snn_gsoftplus     3497946159
+#define TYPEOF_bmath_snn_gtanh         3522285438
+#define TYPEOF_bmath_snn_leaky_relu    1012837639
+#define TYPEOF_bmath_snn_relu          3212375468
+#define TYPEOF_bmath_snn_s             1992509899
+#define TYPEOF_bmath_snn_softplus      1787976994
+#define TYPEOF_bmath_snn_tanh          1742462175
 #define TYPEOF_bmath_u2_argb_from_f3   4291127815
 #define TYPEOF_bmath_vcf3_s            3723112310
 #define TYPEOF_bmath_vector            4070600319

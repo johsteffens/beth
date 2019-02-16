@@ -30,6 +30,7 @@
 #include "bmath_simd.h"
 #include "bmath_estimator.h"
 #include "bmath_plot.h"
+#include "bmath_snn.h"
 #include "bmath_cnn.h"
 
 vd_t bmath_signal_handler( const bcore_signal_s* o )
@@ -64,6 +65,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_simd_signal_handler,
             bmath_estimator_signal_handler,
             bmath_plot_signal_handler,
+            bmath_snn_signal_handler,
             bmath_cnn_signal_handler,
         };
 
