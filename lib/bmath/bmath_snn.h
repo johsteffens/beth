@@ -13,15 +13,15 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_CNN_H
-#define BMATH_CNN_H
+#ifndef BMATH_SNN_H
+#define BMATH_SNN_H
 
 #include "bcore_std.h"
 
 /**********************************************************************************************************************/
 
 /// activation function
-BCORE_DECLARE_OBJECT( bmath_cnn_act_s )
+BCORE_DECLARE_OBJECT( bmath_snn_act_s )
 {
     st_s st_activation;
     st_s st_derivative;
@@ -30,53 +30,48 @@ BCORE_DECLARE_OBJECT( bmath_cnn_act_s )
 };
 
 /// sets function pointers
-void bmath_cnn_act_s_setup( bmath_cnn_act_s* o );
+void bmath_snn_act_s_setup( bmath_snn_act_s* o );
 
 /// frequently used activation functions
-bmath_cnn_act_s bmath_cnn_act_tanh();
-bmath_cnn_act_s bmath_cnn_act_relu();
-bmath_cnn_act_s bmath_cnn_act_softplus();
-bmath_cnn_act_s bmath_cnn_act_leaky_relu();
+bmath_snn_act_s bmath_snn_act_tanh();
+bmath_snn_act_s bmath_snn_act_relu();
+bmath_snn_act_s bmath_snn_act_softplus();
+bmath_snn_act_s bmath_snn_act_leaky_relu();
 
 /**********************************************************************************************************************/
 
 /**********************************************************************************************************************/
 
-/** Simple scalable 'All-Convolutional' CNN: vector -> vector
- *  (Inspired by Paper "Striving for Simplicity: The All Convolutional Net" (https://arxiv.org/abs/1412.6806)
- *
- *  Uses fast matrix-matrix-multiplication for query and learning.
+/** Simple scalable neural network vector -> vector
+ *  Uses fast vector-matrix-multiplication for query and learning.
  *
  *  Set/change architecture parameters. Then run query/learn as needed.
  *  Call reset if parameters need change.
  */
-BCORE_DECLARE_OBJECT( bmath_cnn_s )
+BCORE_DECLARE_OBJECT( bmath_snn_s )
 {
     aware_t _;
 
     /// === architecture parameters ================================
     sz_t input_size;             // input vector size
-    sz_t input_step;             // (default 1) input vector stepping
-    sz_t input_convolution_size; // (default 2) first layer convolution
     sz_t input_kernels;          // (default 8) kernels on input layer
     sz_t output_kernels;         // (default 1) kernels on output layer
+    sz_t layers;                 // (default 2) number of layers
     f3_t kernels_rate;           // (default 0) rate at which number of kernels increase per layer (negative: decrease); last layer excluded
-    sz_t reduction_step;         // (default 2) desired dimensionality reduction stepping when possible for full coverage
-    sz_t convolution_size;       // (default 2) dimensionality convolution size
-    bmath_cnn_act_s act_mid;     // (default: softplus) middle activation function
-    bmath_cnn_act_s act_out;     // (default: tanh) output activation function
+    bmath_snn_act_s act_mid;     // (default: softplus) middle activation function
+    bmath_snn_act_s act_out;     // (default: tanh) output activation function
     u2_t random_state;           // (default: 1234) random state variable (for random initialization)
     /// ==============================================================
 
     /// === internal data ============================================
     bmath_arr_mf3_s   arr_w;  // weight matrix
 
-    bmath_arr_mf3_s   arr_a;  // input  matrix  (weak map to buf)
-    bmath_arr_mf3_s   arr_b;  // output matrix  (weak map to buf)
-    bmath_vf3_s       buf_ab; // data buffer for a and b matrix
+    bmath_arr_vf3_s   arr_a;  // input  vector (weak map to buf)
+    bmath_arr_vf3_s   arr_b;  // output vector (weak map to buf)
+    bmath_vf3_s       buf_ab; // data buffer for a and b vector
 
-    bmath_arr_mf3_s   arr_ga;  // gradient input  matrix  (weak map to gbuf)
-    bmath_arr_mf3_s   arr_gb;  // gradient output matrix  (weak map to gbuf)
+    bmath_arr_vf3_s   arr_ga;  // gradient input  vector (weak map to gbuf)
+    bmath_arr_vf3_s   arr_gb;  // gradient output vector (weak map to gbuf)
     bmath_vf3_s       buf_gab; // data buffer for ga and gb matrix
 
     bcore_arr_fp_s    arr_fp_activation; // activation functions
@@ -91,39 +86,39 @@ BCORE_DECLARE_OBJECT( bmath_cnn_s )
 
 /** Sets up network from architecture parameters.
  *  If network is untrained, weights are randomly initialized.
- *  This function is called by bmath_cnn_s_query if necessary.
+ *  This function is called by bmath_snn_s_query if necessary.
  *  After calling setup architecture parameters should not be changed.
- *  Call bmath_cnn_s_reset if architecture parameters are to be changed.
+ *  Call bmath_snn_s_reset if architecture parameters are to be changed.
  *
  *  learning: true if learning is intended; false otherwise
  */
-void bmath_cnn_s_setup( bmath_cnn_s* o, bl_t learning );
+void bmath_snn_s_setup( bmath_snn_s* o, bl_t learning );
 
 /// Resets network to the untrained state
-void bmath_cnn_s_reset( bmath_cnn_s* o );
+void bmath_snn_s_reset( bmath_snn_s* o );
 
 /// Outputs architecture to text-sink.
-void bmath_cnn_s_arc_to_sink( const bmath_cnn_s* o, bcore_sink* sink );
+void bmath_snn_s_arc_to_sink( const bmath_snn_s* o, bcore_sink* sink );
 
 /// Output kernels > 1: Query (inference); returns output activation. (out can be NULL)
-void bmath_cnn_s_query( bmath_cnn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out );
+void bmath_snn_s_query( bmath_snn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out );
 
-/// Output kernels > 1: Learn step; if out is != NULL it is filled with the result of bmath_cnn_s_query
-void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, f3_t step, f3_t decay, bmath_vf3_s* out );
+/// Output kernels > 1: Learn step; if out is != NULL it is filled with the result of bmath_snn_s_query
+void bmath_snn_s_learn( bmath_snn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, f3_t step, f3_t decay, bmath_vf3_s* out );
 
 /// dedicated weight decay step
-void bmath_cnn_s_decay( bmath_cnn_s* o, f3_t decay );
+void bmath_snn_s_decay( bmath_snn_s* o, f3_t decay );
 
 /// Output kernels == 1: Query (inference); returns output activation.
-f3_t bmath_cnn_s_query_1( bmath_cnn_s* o, const bmath_vf3_s* in );
+f3_t bmath_snn_s_query_1( bmath_snn_s* o, const bmath_vf3_s* in );
 
 /// Output kernels == 1: Learn step; returns output activation of query.
-f3_t bmath_cnn_s_learn_1( bmath_cnn_s* o, const bmath_vf3_s* in, f3_t target, f3_t step, f3_t decay );
+f3_t bmath_snn_s_learn_1( bmath_snn_s* o, const bmath_vf3_s* in, f3_t target, f3_t step, f3_t decay );
 
 /**********************************************************************************************************************/
 
-vd_t bmath_cnn_signal_handler( const bcore_signal_s* o );
+vd_t bmath_snn_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif // BMATH_CNN_H
+#endif // BMATH_SNN_H

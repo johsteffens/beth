@@ -87,7 +87,6 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_cnn_s )
     "hidden bcore_arr_fp_s  arr_fp_activation;" // activation functions
     "hidden bcore_arr_fp_s  arr_fp_derivative;" // derivative functions
 
-    "hidden bmath_mf3_s     learn_gw;"
     "hidden bmath_vf3_s     in;"
     "hidden bmath_vf3_s     out;"
     "hidden bmath_vf3_s    gout;"
@@ -124,7 +123,7 @@ void bmath_cnn_s_setup( bmath_cnn_s* o, bl_t learning )
     "}";
 
     tp_t typeof_bmath_cnn_arc_item_s = bcore_flect_type_parse_fa( "bmath_cnn_arc_item_s = #<sc_t>;", bmath_cnn_arc_item_s_def );
-    tp_t typeof_arr_bmath_cnn_arc_item_s = bcore_flect_type_parse_fa( "arr_item = { aware_t _; bmath_cnn_arc_item_s [] arr; };" );
+    tp_t typeof_arr_bmath_cnn_arc_item_s = bcore_flect_type_parse_fa( "{ aware_t _; bmath_cnn_arc_item_s [] arr; };" );
     bcore_array* arr_bmath_cnn_arc_item_s = BCORE_LIFE_A_PUSH( bcore_inst_t_create( typeof_arr_bmath_cnn_arc_item_s ) );
 
     bmath_cnn_arc_item_s item = { 0 };
@@ -144,12 +143,12 @@ void bmath_cnn_s_setup( bmath_cnn_s* o, bl_t learning )
 
     for( ;; )
     {
+        kernels *= ( 1.0 + o->kernels_rate );
         sz_t prev_kernels = item.kernels;
         item.size         = prev_kernels * item.steps;
         item.kernel_size  = prev_kernels * o->convolution_size;
         item.kernels      = lrint( kernels );
         ASSERT( item.kernels > 0 );
-        kernels *= ( 1.0 + o->kernels_rate );
 
         for( sz_t reduction_step = o->reduction_step; reduction_step > 0; reduction_step-- )
         {
