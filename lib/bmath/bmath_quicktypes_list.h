@@ -1,6 +1,8 @@
 /** List of predefined types for quick access.
  *  Created via bmath_quicktypes_to_stdout( NULL );
  */
+#define TYPEOF_bmath_adaptive          2961196070
+#define TYPEOF_bmath_adaptive_s        2435779224
 #define TYPEOF_bmath_arr_grt_f3_s        68378437
 #define TYPEOF_bmath_arr_mf3_eval_s    2241821565
 #define TYPEOF_bmath_arr_mf3_s         3576372478
