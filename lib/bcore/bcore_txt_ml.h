@@ -22,6 +22,9 @@
 
 #include "bcore_flect.h"
 
+
+BCORE_FORWARD_OBJECT( bcore_sink );
+
 /**********************************************************************************************************************/
 
 typedef struct bcore_txt_ml_translator_s
@@ -42,23 +45,28 @@ void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr
 /**********************************************************************************************************************/
 
 /// syntactic sugar
+void bcore_txt_ml_x_to_sink(   sr_s obj, bcore_sink* sink );
 void bcore_txt_ml_x_to_stdout( sr_s obj );
 void bcore_txt_ml_x_to_file(   sr_s obj, sc_t file );
 void bcore_txt_ml_x_to_string( sr_s obj, st_s* string );
 
+void bcore_txt_ml_r_to_sink(   const sr_s* obj, bcore_sink* sink );
 void bcore_txt_ml_r_to_stdout( const sr_s* obj );
 void bcore_txt_ml_r_to_file(   const sr_s* obj, sc_t file );
 void bcore_txt_ml_r_to_string( const sr_s* obj, st_s* string );
 
+void bcore_txt_ml_a_to_sink(   vc_t o, bcore_sink* sink );
 void bcore_txt_ml_a_to_stdout( vc_t o );
 void bcore_txt_ml_a_to_file(   vc_t o, sc_t file );
 void bcore_txt_ml_a_to_string( vc_t o, st_s* string );
 
+void bcore_txt_ml_t_to_sink(   tp_t t, vc_t o, bcore_sink* sink );
 void bcore_txt_ml_t_to_stdout( tp_t t, vc_t o );
 void bcore_txt_ml_t_to_file(   tp_t t, vc_t o, sc_t file );
 void bcore_txt_ml_t_to_string( tp_t t, vc_t o, st_s* string );
 
 /// sends a default instance of type 't' to sink
+void bcore_txt_ml_default_to_sink(   tp_t t, bcore_sink* sink );
 void bcore_txt_ml_default_to_stdout( tp_t t );
 void bcore_txt_ml_default_to_file(   tp_t t, sc_t file );
 void bcore_txt_ml_default_to_string( tp_t t, st_s* string );
