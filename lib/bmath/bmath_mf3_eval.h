@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_MATRIX_EVAL_H
-#define BMATH_MATRIX_EVAL_H
+#ifndef BMATH_MF3_EVAL_H
+#define BMATH_MF3_EVAL_H
 
 /**********************************************************************************************************************/
 
@@ -123,4 +123,4 @@ vd_t bmath_matrix_eval_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif  // BMATH_MATRIX_EVAL_H
+#endif  // BMATH_MF3_EVAL_H

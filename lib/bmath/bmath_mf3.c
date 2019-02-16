@@ -944,24 +944,48 @@ bl_t bmath_mf3_s_div( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf3_s* res )
+void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* v, bmath_vf3_s* r )
 {
-    if( res == vec )
+    if( r == v )
     {
-        bmath_vf3_s* buf = bmath_vf3_s_create_set_size( res->size );
-        bmath_mf3_s_mul_vec( o, vec, buf );
-        bmath_vf3_s_cpy( buf, res );
+        bmath_vf3_s* buf = bmath_vf3_s_create_set_size( r->size );
+        bmath_mf3_s_mul_vec( o, v, buf );
+        bmath_vf3_s_cpy( buf, r );
         bmath_vf3_s_discard( buf );
         return;
     }
 
-    ASSERT( o->cols == vec->size );
-    ASSERT( o->rows == res->size );
-    f3_t* vr = res->data;
-    f3_t* v2 = vec->data;
-    for( uz_t i = 0; i < res->size; i++ )
+    ASSERT( o->cols == v->size );
+    ASSERT( o->rows == r->size );
+    f3_t* vr = r->data;
+    f3_t* v2 = v->data;
+    for( uz_t i = 0; i < r->size; i++ )
     {
         vr[ i ] = bmath_f3_t_vec_mul_vec( o->data + i * o->stride, v2, o->cols );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_htp_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* v, bmath_vf3_s* r )
+{
+    if( r == v )
+    {
+        bmath_vf3_s* buf = bmath_vf3_s_create_set_size( r->size );
+        bmath_mf3_s_htp_mul_vec( o, v, buf );
+        bmath_vf3_s_cpy( buf, r );
+        bmath_vf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->rows == v->size );
+    ASSERT( o->cols == r->size );
+    bmath_vf3_s_zro( r );
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        f3_t* or = o->data + i * o->stride;
+        f3_t  vi = v->data[ i ];
+        for( uz_t j = 0; j < o->cols; j++ ) r->data[ j ] += or[ j ] * vi;
     }
 }
 

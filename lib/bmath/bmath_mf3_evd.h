@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_MATRIX_EVD_H
-#define BMATH_MATRIX_EVD_H
+#ifndef BMATH_MF3_EVD_H
+#define BMATH_MF3_EVD_H
 
 /**********************************************************************************************************************/
 
@@ -59,4 +59,4 @@ bl_t bmath_mf3_s_evd_htp_jacobi( bmath_mf3_s* a, bmath_mf3_s* v );
  */
 bl_t bmath_mf3_s_evd_htp( bmath_mf3_s* a, bmath_mf3_s* v );
 
-#endif  // BMATH_MATRIX_EVD_H
+#endif  // BMATH_MF3_EVD_H

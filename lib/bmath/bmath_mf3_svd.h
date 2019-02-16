@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_MATRIX_SVD_H
-#define BMATH_MATRIX_SVD_H
+#ifndef BMATH_MF3_SVD_H
+#define BMATH_MF3_SVD_H
 
 /**********************************************************************************************************************/
 
@@ -74,4 +74,4 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#endif  // BMATH_MATRIX_SVD_H
+#endif  // BMATH_MF3_SVD_H

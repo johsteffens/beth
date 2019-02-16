@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_MATRIX_MUL_H
-#define BMATH_MATRIX_MUL_H
+#ifndef BMATH_MF3_MUL_H
+#define BMATH_MF3_MUL_H
 
 /**********************************************************************************************************************/
 
@@ -84,4 +84,4 @@ void bmath_mf3_s_mul_add_cps_selftest();
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#endif  // BMATH_MATRIX_MUL_H
+#endif  // BMATH_MF3_MUL_H

@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_MATRIX_H
-#define BMATH_MATRIX_H
+#ifndef BMATH_MF3_H
+#define BMATH_MF3_H
 
 /**********************************************************************************************************************/
 
@@ -268,8 +268,10 @@ void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bm
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * vector --> vector
 
-void bmath_mf3_s_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* vec, bmath_vf3_s* res );
-void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf3_s* res ); // affine transformation (see nomenclature 'av1')
+void bmath_mf3_s_mul_vec(     const bmath_mf3_s* o, const bmath_vf3_s* v,   bmath_vf3_s* r ); // r = o * v
+void bmath_mf3_s_mul_av1(     const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf3_s* r ); // affine transformation (see nomenclature 'av1')
+
+void bmath_mf3_s_htp_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* v, bmath_vf3_s* r ); // r = o^T * v
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * scalar + matrix --> matrix; supports folded r
@@ -635,4 +637,4 @@ BCORE_DECLARE_ARRAY_DYN_SOLID_STATIC( bmath_mf3_s, bmath_arr_mf3_s );
 
 vd_t bmath_mf3_signal_handler( const bcore_signal_s* o );
 
-#endif  // BMATH_MATRIX_H
+#endif  // BMATH_MF3_H

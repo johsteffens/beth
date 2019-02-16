@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_MATRIX_QRD_H
-#define BMATH_MATRIX_QRD_H
+#ifndef BMATH_MF3_QRD_H
+#define BMATH_MF3_QRD_H
 
 /**********************************************************************************************************************/
 
@@ -150,4 +150,4 @@ void bmath_mf3_s_pmt_lqd( bmath_pmt_s* p, bmath_mf3_s* a, bmath_mf3_s* v );
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#endif  // BMATH_MATRIX_QRD_H
+#endif  // BMATH_MF3_QRD_H
