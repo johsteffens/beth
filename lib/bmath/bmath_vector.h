@@ -170,7 +170,14 @@ f3_t bmath_vf3_s_min(     const bmath_vf3_s* o );
 uz_t bmath_vf3_s_idx_max( const bmath_vf3_s* o );
 uz_t bmath_vf3_s_idx_min( const bmath_vf3_s* o );
 
-/// For easy inspection
+//----------------------------------------------------------------------------------------------------------------------
+// vector * unary_map --> vector
+
+void bmath_vf3_s_eop_map(     const bmath_vf3_s* o, bmath_fp_f3_unary b, bmath_vf3_s* r ); // r_i = b( o_i )
+void bmath_vf3_s_eop_map_mul( const bmath_vf3_s* o, bmath_fp_f3_unary b, const bmath_vf3_s* c, bmath_vf3_s* r ); // r_i = b( o_i ) * c_i
+
+//----------------------------------------------------------------------------------------------------------------------
+// For easy inspection
 void bmath_vf3_s_to_string( const bmath_vf3_s* o, st_s* string );
 void bmath_vf3_s_to_stdout( const bmath_vf3_s* o );
 void bmath_vf3_s_stat_to_string( const bmath_vf3_s* o, st_s* string ); // vector statistics

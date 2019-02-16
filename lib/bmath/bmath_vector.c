@@ -683,6 +683,23 @@ uz_t bmath_vf3_s_idx_min( const bmath_vf3_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_vf3_s_eop_map( const bmath_vf3_s* o, bmath_fp_f3_unary b, bmath_vf3_s* r )
+{
+    ASSERT( o->size == r->size );
+    for( sz_t j = 0; j < o->size; j++ ) r->data[ j ] = b( o->data[ j ] );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_eop_map_mul( const bmath_vf3_s* o, bmath_fp_f3_unary b, const bmath_vf3_s* c, bmath_vf3_s* r )
+{
+    ASSERT( o->size == r->size );
+    ASSERT( o->size == c->size );
+    for( sz_t j = 0; j < o->size; j++ ) r->data[ j ] = b( o->data[ j ] ) * c->data[ j ];
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 void bmath_vf3_s_to_string( const bmath_vf3_s* o, st_s* string )
