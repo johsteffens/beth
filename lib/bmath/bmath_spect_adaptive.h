@@ -31,7 +31,7 @@ BCORE_FORWARD_OBJECT( bmath_adaptive );
 typedef sz_t (*bmath_fp_adaptive_get_in_size )( const bmath_adaptive* o );
 typedef void (*bmath_fp_adaptive_set_in_size )(       bmath_adaptive* o, sz_t size );
 
-/// returns output vector size
+/// output vector size
 typedef sz_t (*bmath_fp_adaptive_get_out_size )( const bmath_adaptive* o );
 typedef void (*bmath_fp_adaptive_set_out_size )(       bmath_adaptive* o, sz_t size );
 
@@ -43,14 +43,20 @@ typedef void (*bmath_fp_adaptive_set_step )(       bmath_adaptive* o, f3_t val )
 typedef f3_t (*bmath_fp_adaptive_get_decay )( const bmath_adaptive* o );
 typedef void (*bmath_fp_adaptive_set_decay )(       bmath_adaptive* o, f3_t val );
 
+/// setup of the internal architecture (usually, this function needs not be explicitly called)
+typedef void (*bmath_fp_adaptive_setup )( bmath_adaptive* o, bl_t training );
+
 /// resets adaptive to the untrained state
 typedef void (*bmath_fp_adaptive_set_untrained )( bmath_adaptive* o );
 
 /// outputs architecture to text sink (for easy inspection)
 typedef void (*bmath_fp_adaptive_arc_to_sink )( const bmath_adaptive* o, bcore_sink* sink );
 
-/// inference
-typedef void (*bmath_fp_adaptive_query )( const bmath_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out );
+/** query == inference
+ *  Note that querying can change the internal state of the adaptive.
+ *  It might not be reentrant (e.g. recurrent network) and is usually not concurrent.
+ */
+typedef void (*bmath_fp_adaptive_query )( bmath_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out );
 
 /// adaptation step (out can be NULL)
 typedef void (*bmath_fp_adaptive_adapt )( bmath_adaptive* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out );
@@ -70,6 +76,7 @@ BCORE_DECLARE_SPECT( bmath_adaptive )
     bmath_fp_adaptive_set_step      set_step;
     bmath_fp_adaptive_get_decay     get_decay;
     bmath_fp_adaptive_set_decay     set_decay;
+    bmath_fp_adaptive_setup         setup;
     bmath_fp_adaptive_set_untrained set_untrained;
     bmath_fp_adaptive_arc_to_sink   arc_to_sink;
     bmath_fp_adaptive_query         query;
@@ -85,13 +92,14 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAPX( bmath_adaptive, get_step,     f3_t )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAPX( bmath_adaptive, set_step,     f3_t, val )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAPX( bmath_adaptive, get_decay,    f3_t )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAPX( bmath_adaptive, set_decay,    f3_t, val )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAPX( bmath_adaptive, setup, bl_t, training )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP1( bmath_adaptive, set_untrained )
 BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAPX( bmath_adaptive, arc_to_sink, bcore_sink*, sink )
-BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAP1( bmath_adaptive, query, const bmath_vf3_s*, in, bmath_vf3_s*, out )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP1( bmath_adaptive, query, const bmath_vf3_s*, in,                             bmath_vf3_s*, out )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP1( bmath_adaptive, adapt, const bmath_vf3_s*, in, const bmath_vf3_s*, target, bmath_vf3_s*, out )
 
 /// simplified query for output size == 1; returns output activation.
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bmath_adaptive, query_1, f3_t, const bmath_vf3_s*, in )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bmath_adaptive, query_1, f3_t, const bmath_vf3_s*, in )
 
 /// simplified adapt for output size == 1; returns output activation.
 BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bmath_adaptive, adapt_1, f3_t, const bmath_vf3_s*, in, f3_t, target )

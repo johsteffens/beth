@@ -67,31 +67,108 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_snn_s )
     "sz_t output_kernels   = 1;"   // (default 1) kernels on output layer
     "sz_t layers           = 2;"   // (default 2) number of layers
     "f3_t kernels_rate     = 0;"   // (default 0) rate at which number of kernels increase per layer (negative: decrease); last layer excluded
+    "f3_t adapt_step       = 0.0001;" // learning rate
+    "f3_t decay_step       = 0;" // weight decay rate
     "bmath_snn_act_s act_mid;"     // (default: softplus) middle activation function
     "bmath_snn_act_s act_out;"     // (default: tanh) output activation function
     "u2_t random_state     =1234;" // (default: 1234) random state variable (for random initialization)
     /// ==============================================================
 
-    /// === internal data ============================================
+    /// === runtime data =============================================
     "bmath_arr_mf3_s   arr_w;"  // weight matrix
-
     "hidden bmath_arr_vf3_s   arr_a;"  // input  vector (weak map to buf)
     "hidden bmath_arr_vf3_s   arr_b;"  // output vector (weak map to buf)
     "hidden bmath_vf3_s       buf_ab;" // data buffer for a and b vector
-
     "hidden bmath_arr_vf3_s   arr_ga;"  // gradient input  vector (weak map to gbuf)
     "hidden bmath_arr_vf3_s   arr_gb;"  // gradient output vector (weak map to gbuf)
     "hidden bmath_vf3_s       buf_gab;" // data buffer for ga and gb matrix
-
     "hidden bcore_arr_fp_s    arr_fp_activation;" // activation functions
     "hidden bcore_arr_fp_s    arr_fp_derivative;" // derivative functions
-
     "hidden bmath_vf3_s       in;"   // input vector weak map to arr_a[ 0 ]
     "hidden bmath_vf3_s       out;"  // output vector weak map to arr_b[ layers-1 ]
     "hidden bmath_vf3_s       gout;" // output vector weak map to arr_gb[ layers-1 ]
+    /// ==============================================================
 
+    /// === functions ================================================
+    "func bmath_fp_adaptive: get_in_size;"
+    "func bmath_fp_adaptive: set_in_size;"
+    "func bmath_fp_adaptive: get_out_size;"
+    "func bmath_fp_adaptive: set_out_size;"
+    "func bmath_fp_adaptive: get_step;"
+    "func bmath_fp_adaptive: set_step;"
+    "func bmath_fp_adaptive: get_decay;"
+    "func bmath_fp_adaptive: set_decay;"
+    "func bmath_fp_adaptive: setup;"
+    "func bmath_fp_adaptive: set_untrained;"
+    "func bmath_fp_adaptive: arc_to_sink;"
+    "func bmath_fp_adaptive: query;"
+    "func bmath_fp_adaptive: adapt;"
     /// ==============================================================
 "}";
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+sz_t bmath_snn_s_get_in_size(  const bmath_snn_s* o )
+{
+    return o->input_size;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_snn_s_set_in_size( bmath_snn_s* o, sz_t size )
+{
+    if( o->input_size != size )
+    {
+        o->input_size = size;
+        bmath_snn_s_set_untrained( o );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+sz_t bmath_snn_s_get_out_size( const bmath_snn_s* o )
+{
+    return o->output_kernels;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_snn_s_set_out_size( bmath_snn_s* o, sz_t size )
+{
+    if( o->output_kernels != size )
+    {
+        o->output_kernels = size;
+        bmath_snn_s_set_untrained( o );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_snn_s_get_step( const bmath_snn_s* o )
+{
+    return o->adapt_step;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_snn_s_set_step( bmath_snn_s* o, f3_t val )
+{
+    o->adapt_step = val;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_snn_s_get_decay( const bmath_snn_s* o )
+{
+    return o->decay_step;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_snn_s_set_decay( bmath_snn_s* o, f3_t val )
+{
+    o->decay_step = val;
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -295,7 +372,7 @@ void bmath_snn_s_setup( bmath_snn_s* o, bl_t learning )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_snn_s_reset( bmath_snn_s* o )
+void bmath_snn_s_set_untrained( bmath_snn_s* o )
 {
     bmath_arr_mf3_s_clear( &o->arr_w );
     bmath_arr_vf3_s_clear( &o->arr_a );
@@ -372,7 +449,7 @@ void bmath_snn_s_query( bmath_snn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out 
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_snn_s_learn( bmath_snn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, f3_t step, f3_t decay, bmath_vf3_s* out )
+void bmath_snn_s_adapt( bmath_snn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out )
 {
     if( o->arr_ga.size == 0 ) bmath_snn_s_setup( o, true );
     ASSERT( target->size == o->output_kernels );
@@ -387,7 +464,7 @@ void bmath_snn_s_learn( bmath_snn_s* o, const bmath_vf3_s* in, const bmath_vf3_s
               bmath_mf3_s*  w = &o->arr_w.data[ i ];
 
         bmath_fp_f3_unary bwd_map = ( bmath_fp_f3_unary )o->arr_fp_derivative.data[ i ];
-        f3_t wscale = f3_max( 0, ( 1.0 - decay ) );
+        f3_t wscale = f3_max( 0, ( 1.0 - o->decay_step ) );
 
         // apply activation derivative to GB
 
@@ -397,7 +474,7 @@ void bmath_snn_s_learn( bmath_snn_s* o, const bmath_vf3_s* in, const bmath_vf3_s
         for( sz_t i = 0; i < w->rows; i++ )
         {
             f3_t* wr = w->data + i * w->stride;
-            f3_t gi = step * gb->data[ i ];
+            f3_t gi = o->adapt_step * gb->data[ i ];
             for( sz_t j = 0; j < w->cols; j++ )
             {
                 wr[ j ] = wr[ j ] * wscale + a->data[ j ] * gi;
@@ -427,12 +504,12 @@ f3_t bmath_snn_s_query_1( bmath_snn_s* o, const bmath_vf3_s* in )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_snn_s_learn_1( bmath_snn_s* o, const bmath_vf3_s* in, f3_t target, f3_t step, f3_t decay )
+f3_t bmath_snn_s_adapt_1( bmath_snn_s* o, const bmath_vf3_s* in, f3_t target )
 {
     f3_t scl_out = 0;
     bmath_vf3_s vec_out    = bmath_vf3_weak( &scl_out, 1 );
     bmath_vf3_s vec_target = bmath_vf3_weak( &target, 1 );
-    bmath_snn_s_learn( o, in, &vec_target, step, decay, &vec_out );
+    bmath_snn_s_adapt( o, in, &vec_target, &vec_out );
     return scl_out;
 }
 
@@ -456,6 +533,20 @@ vd_t bmath_snn_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_snn_fp_unary, bmath_snn_gleaky_relu );
             BCORE_REGISTER_FFUNC( bmath_snn_fp_unary, bmath_snn_softplus );
             BCORE_REGISTER_FFUNC( bmath_snn_fp_unary, bmath_snn_gsoftplus );
+
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_get_in_size,   bmath_snn_s_get_in_size );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_set_in_size,   bmath_snn_s_set_in_size );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_get_out_size,  bmath_snn_s_get_out_size );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_set_out_size,  bmath_snn_s_set_out_size );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_get_step,      bmath_snn_s_get_step );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_set_step,      bmath_snn_s_set_step );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_get_decay,     bmath_snn_s_get_decay );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_set_decay,     bmath_snn_s_set_decay );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_setup,         bmath_snn_s_setup );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_set_untrained, bmath_snn_s_set_untrained );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_arc_to_sink,   bmath_snn_s_arc_to_sink );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_query,         bmath_snn_s_query );
+            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_adapt,         bmath_snn_s_adapt );
 
             BCORE_REGISTER_OBJECT( bmath_snn_act_s );
             BCORE_REGISTER_OBJECT( bmath_snn_s );

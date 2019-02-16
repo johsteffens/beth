@@ -21,18 +21,19 @@
 BCORE_DEFINE_SPECT( bcore_inst, bmath_adaptive )
 "{"
     "bcore_spect_header_s header;"
-    "feature bmath_fp_adaptive: get_in_size;"
-    "feature bmath_fp_adaptive: set_in_size;"
-    "feature bmath_fp_adaptive: get_out_size;"
-    "feature bmath_fp_adaptive: set_out_size;"
-    "feature bmath_fp_adaptive: get_step;"
-    "feature bmath_fp_adaptive: set_step;"
-    "feature bmath_fp_adaptive: get_decay;"
-    "feature bmath_fp_adaptive: set_decay;"
-    "feature bmath_fp_adaptive: set_untrained;"
-    "feature bmath_fp_adaptive: arc_to_sink;"
-    "feature bmath_fp_adaptive: query;"
-    "feature bmath_fp_adaptive: adapt;"
+    "strict feature bmath_fp_adaptive: get_in_size;"
+    "strict feature bmath_fp_adaptive: set_in_size;"
+    "strict feature bmath_fp_adaptive: get_out_size;"
+    "strict feature bmath_fp_adaptive: set_out_size;"
+    "       feature bmath_fp_adaptive: get_step;"
+    "       feature bmath_fp_adaptive: set_step;"
+    "       feature bmath_fp_adaptive: get_decay;"
+    "       feature bmath_fp_adaptive: set_decay;"
+    "       feature bmath_fp_adaptive: setup;"
+    "strict feature bmath_fp_adaptive: set_untrained;"
+    "       feature bmath_fp_adaptive: arc_to_sink;"
+    "strict feature bmath_fp_adaptive: query;"
+    "strict feature bmath_fp_adaptive: adapt;"
 "}";
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -65,6 +66,13 @@ void bmath_adaptive_default_set_decay( const bmath_adaptive_s* p, bmath_adaptive
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_adaptive_default_setup( const bmath_adaptive_s* p, bmath_adaptive* o, bl_t training )
+{
+    /* nothing to do */
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_adaptive_default_arc_to_sink( const bmath_adaptive_s* p, const bmath_adaptive* o, bcore_sink* sink )
 {
     bcore_txt_ml_a_to_sink( o, sink );
@@ -72,7 +80,7 @@ void bmath_adaptive_default_arc_to_sink( const bmath_adaptive_s* p, const bmath_
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_adaptive_default_query_1( const bmath_adaptive_s* p, const bmath_adaptive* o, const bmath_vf3_s* in )
+f3_t bmath_adaptive_default_query_1( const bmath_adaptive_s* p, bmath_adaptive* o, const bmath_vf3_s* in )
 {
     f3_t out_scl = 0;
     bmath_vf3_s out = bmath_vf3_weak( &out_scl, 1 );
@@ -103,7 +111,8 @@ void bmath_adaptive_a_test( const bmath_adaptive* const_o )
     bmath_adaptive_a_set_in_size(  o, 32 );
     bmath_adaptive_a_set_out_size( o, 1 );
     bmath_adaptive_a_set_untrained( o );
-    bmath_adaptive_a_arc_to_sink(  o, BCORE_STDOUT );
+    bmath_adaptive_a_setup( o, true ); // only for display
+    bmath_adaptive_a_arc_to_sink( o, BCORE_STDOUT );
 
     /* Learn differentiating between a sine wave of arbitrary amplitude and frequency from
        a random walk curve.
@@ -151,7 +160,7 @@ void bmath_adaptive_a_test( const bmath_adaptive* const_o )
         }
     }
 
-    sz_t epochs = 100;
+    sz_t epochs = 30;
     f3_t learn_step = 0.0001;
     f3_t decay = 0.0001 * learn_step;
     f3_t pos_tgt = 0.9;
@@ -217,6 +226,7 @@ vd_t bmath_spect_adaptive_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bmath_fp_adaptive_set_step );
             BCORE_REGISTER_FEATURE( bmath_fp_adaptive_get_decay );
             BCORE_REGISTER_FEATURE( bmath_fp_adaptive_set_decay );
+            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_setup );
             BCORE_REGISTER_FEATURE( bmath_fp_adaptive_set_untrained );
             BCORE_REGISTER_FEATURE( bmath_fp_adaptive_arc_to_sink );
             BCORE_REGISTER_FEATURE( bmath_fp_adaptive_query );

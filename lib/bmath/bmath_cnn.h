@@ -63,31 +63,38 @@ BCORE_DECLARE_OBJECT( bmath_cnn_s )
     f3_t kernels_rate;           // (default 0) rate at which number of kernels increase per layer (negative: decrease); last layer excluded
     sz_t reduction_step;         // (default 2) desired dimensionality reduction stepping when possible for full coverage
     sz_t convolution_size;       // (default 2) dimensionality convolution size
+    f3_t adapt_step;             // (default: 0.0001) learning rate
+    f3_t decay_step;             // (default: 0)      weight decay rate
     bmath_cnn_act_s act_mid;     // (default: softplus) middle activation function
     bmath_cnn_act_s act_out;     // (default: tanh) output activation function
     u2_t random_state;           // (default: 1234) random state variable (for random initialization)
     /// ==============================================================
 
-    /// === internal data ============================================
+    /// === runtime data ============================================
     bmath_arr_mf3_s   arr_w;  // weight matrix
-
     bmath_arr_mf3_s   arr_a;  // input  matrix  (weak map to buf)
     bmath_arr_mf3_s   arr_b;  // output matrix  (weak map to buf)
     bmath_vf3_s       buf_ab; // data buffer for a and b matrix
-
     bmath_arr_mf3_s   arr_ga;  // gradient input  matrix  (weak map to gbuf)
     bmath_arr_mf3_s   arr_gb;  // gradient output matrix  (weak map to gbuf)
     bmath_vf3_s       buf_gab; // data buffer for ga and gb matrix
-
     bcore_arr_fp_s    arr_fp_activation; // activation functions
     bcore_arr_fp_s    arr_fp_derivative; // derivative functions
-
     bmath_vf3_s       in;   // input vector weak map to arr_a[ 0 ]
     bmath_vf3_s       out;  // output vector weak map to arr_b[ layers-1 ]
     bmath_vf3_s       gout; // output vector weak map to arr_gb[ layers-1 ]
-
     /// ==============================================================
 };
+
+/// access functions for adaptive perspective
+sz_t bmath_cnn_s_get_in_size(  const bmath_cnn_s* o );
+void bmath_cnn_s_set_in_size(        bmath_cnn_s* o, sz_t size );
+sz_t bmath_cnn_s_get_out_size( const bmath_cnn_s* o );
+void bmath_cnn_s_set_out_size(       bmath_cnn_s* o, sz_t size );
+f3_t bmath_cnn_s_get_step(     const bmath_cnn_s* o );
+void bmath_cnn_s_set_step(           bmath_cnn_s* o, f3_t val );
+f3_t bmath_cnn_s_get_decay(    const bmath_cnn_s* o );
+void bmath_cnn_s_set_decay(          bmath_cnn_s* o, f3_t val );
 
 /** Sets up network from architecture parameters.
  *  If network is untrained, weights are randomly initialized.
@@ -100,7 +107,7 @@ BCORE_DECLARE_OBJECT( bmath_cnn_s )
 void bmath_cnn_s_setup( bmath_cnn_s* o, bl_t learning );
 
 /// Resets network to the untrained state
-void bmath_cnn_s_reset( bmath_cnn_s* o );
+void bmath_cnn_s_set_untrained( bmath_cnn_s* o );
 
 /// Outputs architecture to text-sink.
 void bmath_cnn_s_arc_to_sink( const bmath_cnn_s* o, bcore_sink* sink );
@@ -109,7 +116,7 @@ void bmath_cnn_s_arc_to_sink( const bmath_cnn_s* o, bcore_sink* sink );
 void bmath_cnn_s_query( bmath_cnn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out );
 
 /// Output kernels > 1: Learn step; if out is != NULL it is filled with the result of bmath_cnn_s_query
-void bmath_cnn_s_learn( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, f3_t step, f3_t decay, bmath_vf3_s* out );
+void bmath_cnn_s_adapt( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out );
 
 /// dedicated weight decay step
 void bmath_cnn_s_decay( bmath_cnn_s* o, f3_t decay );
@@ -118,7 +125,7 @@ void bmath_cnn_s_decay( bmath_cnn_s* o, f3_t decay );
 f3_t bmath_cnn_s_query_1( bmath_cnn_s* o, const bmath_vf3_s* in );
 
 /// Output kernels == 1: Learn step; returns output activation of query.
-f3_t bmath_cnn_s_learn_1( bmath_cnn_s* o, const bmath_vf3_s* in, f3_t target, f3_t step, f3_t decay );
+f3_t bmath_cnn_s_adapt_1( bmath_cnn_s* o, const bmath_vf3_s* in, f3_t decay );
 
 /**********************************************************************************************************************/
 
