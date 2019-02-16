@@ -455,5 +455,15 @@ void bcore_spect_missing_err( vc_t p, sc_t name );
 #define BCORE_FUNC_SPECT_CONST1_RET0_ARG4_MAP0( spect, name      , t1, n1, t2, n2, t3, n3, t4, n4 ) BCORE_FUNC_SPECT_MAP0_V4( spect, name,       const spect *, o, t1, n1, t2, n2, t3, n3, t4, n4 )
 #define BCORE_FUNC_SPECT_CONST0_RET0_ARG4_MAP0( spect, name      , t1, n1, t2, n2, t3, n3, t4, n4 ) BCORE_FUNC_SPECT_MAP0_V4( spect, name,             spect *, o, t1, n1, t2, n2, t3, n3, t4, n4 )
 
+/** nomenclature
+ *  CONST{1,0}: object is (not) const
+ *  RET{1,0}: returns a type or void
+ *  ARG{x}: number of arguments
+ *  MAP{x}:
+ *  0: strictly maps to default;
+ *  1: strictly maps to object implementation (default not required);
+ *  X: maps to default when object has no implementation
+ */
+
 #endif // BCORE_SPECT_H
 
