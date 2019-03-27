@@ -627,9 +627,12 @@ void bmath_mf3_s_to_conv_operant( bmath_mf3_s* o, sz_t kernel_size, sz_t step_si
 /// Development support
 
 // for easy inspection
-void bmath_mf3_s_to_string( const bmath_mf3_s* o, st_s* string );
+
+void bmath_mf3_s_to_sink(   const bmath_mf3_s* o, bcore_sink* sink );
 void bmath_mf3_s_to_image(  const bmath_mf3_s* o, bmath_fp_u2_argb_from_f3 fp, vd_t arg, bcore_img_u2_s* image );
-void bmath_mf3_s_to_stdout( const bmath_mf3_s* o );
+
+static inline void bmath_mf3_s_to_string( const bmath_mf3_s* o, st_s* string ) { bmath_mf3_s_to_sink( o, ( bcore_sink* )string ); }
+static inline void bmath_mf3_s_to_stdout( const bmath_mf3_s* o ) { bmath_mf3_s_to_sink( o, BCORE_STDOUT ); }
 
 /**********************************************************************************************************************/
 /// array of mf3_s

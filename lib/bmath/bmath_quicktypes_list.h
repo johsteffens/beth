@@ -57,6 +57,7 @@
 #define TYPEOF_bmath_pmt_s             4158722099
 #define TYPEOF_bmath_ring              2462086090
 #define TYPEOF_bmath_ring_s            1513035188
+#define TYPEOF_bmath_smf3_s            1713371937
 #define TYPEOF_bmath_snn_act_s         2030741768
 #define TYPEOF_bmath_snn_gleaky_relu   2510832374
 #define TYPEOF_bmath_snn_grelu         1730630745

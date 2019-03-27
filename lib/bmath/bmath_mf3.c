@@ -2514,24 +2514,24 @@ void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_to_string( const bmath_mf3_s* o, st_s* string )
+void bmath_mf3_s_to_sink( const bmath_mf3_s* o, bcore_sink* sink )
 {
-    st_s_pushf( string, "(%zu x %zu)\n", o->rows, o->cols );
+    bcore_sink_a_push_fa( sink, "(#<uz_t> x #<uz_t>)\n", o->rows, o->cols );
     for( uz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* v = o->data + i * o->stride;
         for( uz_t j = 0; j < o->cols; j++ )
         {
-            if( j > 0 ) st_s_pushf( string, " " );
-            st_s_pushf( string, "%9.3g", v[ j ] );
+            if( j > 0 ) bcore_sink_a_push_fa( sink, " " );
+            bcore_sink_a_pushf( sink, "%9.3g", v[ j ] );
         }
-        st_s_pushf( string, "\n" );
+        bcore_sink_a_push_fa( sink, "\n" );
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_to_image(  const bmath_mf3_s* o, bmath_fp_u2_argb_from_f3 fp, vd_t arg, bcore_img_u2_s* image )
+void bmath_mf3_s_to_image( const bmath_mf3_s* o, bmath_fp_u2_argb_from_f3 fp, vd_t arg, bcore_img_u2_s* image )
 {
     bcore_img_u2_s_set_size( image, o->rows, o->cols );
     for( sz_t i = 0; i < o->rows; i++ )
@@ -2541,16 +2541,6 @@ void bmath_mf3_s_to_image(  const bmath_mf3_s* o, bmath_fp_u2_argb_from_f3 fp, v
             bcore_img_u2_s_set_pixel( image, i, j, fp( arg, o->data[ i * o->stride + j ] ) );
         }
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void bmath_mf3_s_to_stdout( const bmath_mf3_s* o )
-{
-    st_s* s = st_s_create();
-    bmath_mf3_s_to_string( o, s );
-    bcore_msg_fa( "#<sc_t>", s->sc );
-    st_s_discard( s );
 }
 
 /**********************************************************************************************************************/

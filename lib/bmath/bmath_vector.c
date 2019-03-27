@@ -702,43 +702,23 @@ void bmath_vf3_s_eop_map_mul( const bmath_vf3_s* o, bmath_fp_f3_unary b, const b
 
 /**********************************************************************************************************************/
 
-void bmath_vf3_s_to_string( const bmath_vf3_s* o, st_s* string )
+void bmath_vf3_s_to_sink( const bmath_vf3_s* o, bcore_sink* sink )
 {
     const f3_t* v = o->data;
-    st_s_pushf( string, "(%zu)\n", o->size );
-    for( uz_t i = 0; i < o->size; i++ ) st_s_pushf( string, "%g\n", v[ i ] );
+    bcore_sink_a_push_fa( sink, "(#<uz_t>)\n", o->size );
+    for( uz_t i = 0; i < o->size; i++ ) bcore_sink_a_push_fa( sink, "#<f3_t>\n", v[ i ] );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_vf3_s_to_stdout( const bmath_vf3_s* o )
+void bmath_vf3_s_stat_to_sink( const bmath_vf3_s* o, bcore_sink* sink )
 {
-    st_s* s = st_s_create();
-    bmath_vf3_s_to_string( o, s );
-    bcore_msg_fa( "#<sc_t>", s->sc );
-    st_s_discard( s );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void bmath_vf3_s_stat_to_string( const bmath_vf3_s* o, st_s* string )
-{
-    st_s_push_fa( string, "(#<uz_t>)\n", o->size );
-    st_s_push_fa( string, "  sum .. #<f3_t>\n", bmath_vf3_s_f3_sum( o ) );
-    st_s_push_fa( string, "  avg .. #<f3_t>\n", bmath_vf3_s_f3_avg( o ) );
-    st_s_push_fa( string, "  max .. #<f3_t>\n", bmath_vf3_s_f3_max( o ) );
-    st_s_push_fa( string, "  min .. #<f3_t>\n", bmath_vf3_s_f3_min( o ) );
-    st_s_push_fa( string, "  dev .. #<f3_t>\n", bmath_vf3_s_f3_dev( o ) );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o )
-{
-    st_s* s = st_s_create();
-    bmath_vf3_s_stat_to_string( o, s );
-    bcore_msg_fa( "#<sc_t>", s->sc );
-    st_s_discard( s );
+    bcore_sink_a_push_fa( sink, "(#<uz_t>)\n", o->size );
+    bcore_sink_a_push_fa( sink, "  sum .. #<f3_t>\n", bmath_vf3_s_f3_sum( o ) );
+    bcore_sink_a_push_fa( sink, "  avg .. #<f3_t>\n", bmath_vf3_s_f3_avg( o ) );
+    bcore_sink_a_push_fa( sink, "  max .. #<f3_t>\n", bmath_vf3_s_f3_max( o ) );
+    bcore_sink_a_push_fa( sink, "  min .. #<f3_t>\n", bmath_vf3_s_f3_min( o ) );
+    bcore_sink_a_push_fa( sink, "  dev .. #<f3_t>\n", bmath_vf3_s_f3_dev( o ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

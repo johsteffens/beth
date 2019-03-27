@@ -178,10 +178,13 @@ void bmath_vf3_s_eop_map_mul( const bmath_vf3_s* o, bmath_fp_f3_unary b, const b
 
 //----------------------------------------------------------------------------------------------------------------------
 // For easy inspection
-void bmath_vf3_s_to_string( const bmath_vf3_s* o, st_s* string );
-void bmath_vf3_s_to_stdout( const bmath_vf3_s* o );
-void bmath_vf3_s_stat_to_string( const bmath_vf3_s* o, st_s* string ); // vector statistics
-void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o ); // vector statistics
+void bmath_vf3_s_to_sink( const bmath_vf3_s* o, bcore_sink* sink );
+static inline void bmath_vf3_s_to_string( const bmath_vf3_s* o, st_s* string ) { bmath_vf3_s_to_sink( o, ( bcore_sink* )string ); }
+static inline void bmath_vf3_s_to_stdout( const bmath_vf3_s* o               ) { bmath_vf3_s_to_sink( o, BCORE_STDOUT ); }
+
+void bmath_vf3_s_stat_to_sink( const bmath_vf3_s* o, bcore_sink* sink ); // vector statistics
+static inline void bmath_vf3_s_stat_to_string( const bmath_vf3_s* o, st_s* string ) { bmath_vf3_s_stat_to_sink( o, ( bcore_sink* )string ); }
+static inline void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o               ) { bmath_vf3_s_stat_to_sink( o, BCORE_STDOUT ); }
 
 /**********************************************************************************************************************/
 // dynamic size vector of bmath_cf3_s
