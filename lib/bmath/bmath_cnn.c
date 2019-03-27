@@ -480,8 +480,8 @@ void bmath_cnn_s_query( bmath_cnn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out 
         const bmath_mf3_s* w = &o->arr_w.data[ i ];
         bmath_fp_f3_unary fwd_map = ( bmath_fp_f3_unary )o->arr_fp_activation.data[ i ];
 
-        bmath_mf3_s_mul( a, w, b );           // b = a * w
-        bmath_mf3_s_eop_map( b, fwd_map, b ); // b <- fwd_map( b )
+        bmath_mf3_s_mul( a, w, b );           // a * w -> b
+        bmath_mf3_s_eop_map( b, fwd_map, b ); // fwd_map( b ) -> b
     }
     if( out ) bmath_vf3_s_cpy( &o->out, out );
 }
@@ -506,9 +506,9 @@ void bmath_cnn_s_adapt( bmath_cnn_s* o, const bmath_vf3_s* in, const bmath_vf3_s
         f3_t wscale = f3_max( 0, ( 1.0 - o->decay_step ) );
 
         // apply activation derivative to GB
-        bmath_mf3_s_eop_map_mul( b, bwd_map, gb, gb );                     // GB <- bwd_map( GB )
-        bmath_mf3_s_mul_add_cps( false, gb, true,  w,  1.0,  NULL, 0,     ga ); // GA <- GB * W^T (GA is folded)
-        bmath_mf3_s_mul_add_cps( true,  a,  false, gb, o->adapt_step, w,    wscale, w ); // W  <- W * wscale + ( A^T * GB ) * step
+        bmath_mf3_s_eop_map_mul( b, bwd_map, gb, gb );                      // bwd_map( GB ) -> GB
+        bmath_mf3_s_mul_add_cps( false, gb, true,  w,  1.0,  NULL, 0, ga ); // GB * W^T (GA is folded) -> GA
+        bmath_mf3_s_mul_add_cps( true,  a,  false, gb, o->adapt_step, w, wscale, w ); // W * wscale + ( A^T * GB ) * step -> W
     }
 }
 
