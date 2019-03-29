@@ -99,9 +99,9 @@
 #include "bmath_mf3_evd.h"
 #include "bmath_mf3_svd.h"
 
-typedef struct bmath_mf3_s bmath_mf3_s;
-
 // mf3 features
+BCORE_FORWARD_OBJECT( bmath_mf3_s );
+
 typedef void (*bmath_fp_mf3_s_mul     )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 typedef void (*bmath_fp_mf3_s_mul_htp )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 typedef void (*bmath_fp_mf3_s_htp_mul )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
@@ -187,7 +187,7 @@ static inline bl_t bmath_mf3_s_is_folded( const bmath_mf3_s* o ) { return o->str
 
 
 /**********************************************************************************************************************/
-/// checks, deviations
+// checks, deviations
 
 /** Near-state means: For each matrix element the absolute difference
  *  to the specified state is less or equal max_dev.
