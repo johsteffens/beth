@@ -167,7 +167,7 @@ static void bmath_smf3_s_mul_rsblock_avx_flex_kernel
 //----------------------------------------------------------------------------------------------------------------------
 
 /// xons == 1
-void bmath_smf3_s_mul_rsblock
+static void bmath_smf3_s_mul_rsblock
 (
     const bmath_smf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_xon, sz_t o_slo, sz_t o_slos,
     const bmath_smf3_s* m,                          sz_t m_xon, sz_t m_slo, sz_t m_slos,
@@ -255,7 +255,7 @@ void bmath_smf3_s_mul_rsblock
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_smf3_s_mul_rxblock
+static void bmath_smf3_s_mul_rxblock
 (
     const bmath_smf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_xon, sz_t o_xons,
     const bmath_smf3_s* m,                          sz_t m_xon, sz_t m_xons,
