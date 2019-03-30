@@ -38,7 +38,8 @@
  *  'rows' number of rows of the matrix.
  *
  * Each xon is referenced via index. The index points into a common data pool indicating the first value of the xon.
- * The data structure of all indexes form a nxm-matrix, which is called 'splicing'.
+ * The data structure of all indexes form a (xons x rows)-matrix, which is called 'splicing'. The splicing index matrix
+ * is transposed to the spliced matrix.
  *
  * A special feature of the spliced matrix is that any two xons may have overlapping (even identical) data areas:
  *
