@@ -28,7 +28,7 @@
 
 // we use macros instead of const sz_t because we need them to be const expressions for best compiler optimizations
 #define BMATH_MUL_BLOCK_SIZE ( 4 * 8 )
-
+#define BMATH_MUL_BLKP4_SIZE ( BMATH_MUL_BLOCK_SIZE >> 2 ) // packed size
 
 #ifdef BMATH_AVX
 /// mul: Fixed size AVX-Microkernel
@@ -36,15 +36,13 @@ static void bmath_mf3_s_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f3_t*
 {
     ASSERT( ( BMATH_MUL_BLOCK_SIZE & 3 ) == 0 );
 
-    #define mul_kernel_m_c4 ( BMATH_MUL_BLOCK_SIZE >> 2 )
-
-    __m256d r_p4[ mul_kernel_m_c4   ];
-    __m256d m_p4[ BMATH_MUL_BLOCK_SIZE ][ mul_kernel_m_c4 ];
+    __m256d r_p4[ BMATH_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_MUL_BLOCK_SIZE ][ BMATH_MUL_BLKP4_SIZE ];
 
     for( sz_t j = 0; j < BMATH_MUL_BLOCK_SIZE; j++ )
     {
         const f3_t* mj = m + j * m_s;
-        for( sz_t k = 0; k < mul_kernel_m_c4; k++ )
+        for( sz_t k = 0; k < BMATH_MUL_BLKP4_SIZE; k++ )
         {
             m_p4[ j ][ k ] = _mm256_loadu_pd( mj + k * 4 );
         }
@@ -57,7 +55,7 @@ static void bmath_mf3_s_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f3_t*
 
         __m256d o_p4 = _mm256_set1_pd( oi[ 0 ] );
 
-        for( sz_t k = 0; k < mul_kernel_m_c4; k++ )
+        for( sz_t k = 0; k < BMATH_MUL_BLKP4_SIZE; k++ )
         {
             r_p4[ k ] = _mm256_mul_pd( m_p4[ 0 ][ k ], o_p4 );
         }
@@ -65,7 +63,7 @@ static void bmath_mf3_s_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f3_t*
         for( sz_t j = 1; j < BMATH_MUL_BLOCK_SIZE; j++ )
         {
             o_p4 = _mm256_set1_pd( oi[ j ] );
-            for( sz_t k = 0; k < mul_kernel_m_c4; k++ )
+            for( sz_t k = 0; k < BMATH_MUL_BLKP4_SIZE; k++ )
             {
                 #ifdef BMATH_AVX2_FMA
                     r_p4[ k ] = _mm256_fmadd_pd( m_p4[ j ][ k ], o_p4, r_p4[ k ] );
@@ -75,7 +73,7 @@ static void bmath_mf3_s_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f3_t*
             }
         }
 
-        for( sz_t k = 0; k < mul_kernel_m_c4; k++ )
+        for( sz_t k = 0; k < BMATH_MUL_BLKP4_SIZE; k++ )
         {
             _mm256_storeu_pd( ri + k * 4, _mm256_add_pd( _mm256_loadu_pd( ri + k * 4 ), r_p4[ k ] ) );
         }
@@ -86,21 +84,21 @@ static void bmath_mf3_s_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f3_t*
 
 /** mul: Flexible AVX-Microkernel
  *  Allows all combinations o_r, o_c, m_c (including 0)
- *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_c <= mul_kernel_m_c4 * 4
+ *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_c <= BMATH_MUL_BLOCK_SIZE
  */
 static void bmath_mf3_s_mul_avx_flex_kernel( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const f3_t* m, sz_t m_s, sz_t m_c, f3_t* r, sz_t r_s )
 {
-    #define mul_kernel_m_c4 ( BMATH_MUL_BLOCK_SIZE >> 2 )
+    #define BMATH_MUL_BLKP4_SIZE ( BMATH_MUL_BLOCK_SIZE >> 2 )
 
     ASSERT( o_c <= BMATH_MUL_BLOCK_SIZE );
-    ASSERT( m_c <= mul_kernel_m_c4 * 4 );
+    ASSERT( m_c <= BMATH_MUL_BLKP4_SIZE * 4 );
 
     const sz_t m_c4l = m_c >> 2;
     const sz_t m_cr  = m_c - m_c4l * 4;
     const sz_t m_c4p = m_cr > 0 ? m_c4l + 1 : m_c4l;
 
-    __m256d r_p4[ mul_kernel_m_c4 ];
-    __m256d m_p4[ BMATH_MUL_BLOCK_SIZE ][ mul_kernel_m_c4 ];
+    __m256d r_p4[ BMATH_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_MUL_BLOCK_SIZE ][ BMATH_MUL_BLKP4_SIZE ];
 
     for( sz_t j = 0; j < o_c; j++ )
     {
@@ -274,6 +272,7 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r
 //----------------------------------------------------------------------------------------------------------------------
 
 #define BMATH_MUL_HTP_BLOCK_SIZE ( 4 * 8 )
+#define BMATH_MUL_HTP_BLKP4_SIZE ( BMATH_MUL_HTP_BLOCK_SIZE >> 2 )
 
 #ifdef BMATH_AVX
 
@@ -282,15 +281,13 @@ static void bmath_mf3_s_mul_htp_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
 {
     ASSERT( ( BMATH_MUL_HTP_BLOCK_SIZE & 3 ) == 0 );
 
-    #define BMATH_MUL_HTP_BLOCK_SIZE4 ( BMATH_MUL_HTP_BLOCK_SIZE >> 2 )
-
-    __m256d r_p4[ BMATH_MUL_HTP_BLOCK_SIZE4 ];
-    __m256d m_p4[ BMATH_MUL_HTP_BLOCK_SIZE ][ BMATH_MUL_HTP_BLOCK_SIZE4 ];
+    __m256d r_p4[ BMATH_MUL_HTP_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_MUL_HTP_BLOCK_SIZE ][ BMATH_MUL_HTP_BLKP4_SIZE ];
 
     for( sz_t j = 0; j < BMATH_MUL_HTP_BLOCK_SIZE; j++ )
     {
         const f3_t* mj = m + j;
-        for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE4; k++ )
+        for( sz_t k = 0; k < BMATH_MUL_HTP_BLKP4_SIZE; k++ )
         {
             m_p4[ j ][ k ][ 0 ] = mj[ ( k * 4 + 0 ) * m_s ];
             m_p4[ j ][ k ][ 1 ] = mj[ ( k * 4 + 1 ) * m_s ];
@@ -306,7 +303,7 @@ static void bmath_mf3_s_mul_htp_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
 
         __m256d o_p4 = _mm256_set1_pd( oi[ 0 ] );
 
-        for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE4; k++ )
+        for( sz_t k = 0; k < BMATH_MUL_HTP_BLKP4_SIZE; k++ )
         {
             r_p4[ k ] = _mm256_mul_pd( m_p4[ 0 ][ k ], o_p4 );
         }
@@ -314,7 +311,7 @@ static void bmath_mf3_s_mul_htp_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
         for( sz_t j = 1; j < BMATH_MUL_HTP_BLOCK_SIZE; j++ )
         {
             o_p4 = _mm256_set1_pd( oi[ j ] );
-            for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE4; k++ )
+            for( sz_t k = 0; k < BMATH_MUL_HTP_BLKP4_SIZE; k++ )
             {
                 #ifdef BMATH_AVX2_FMA
                     r_p4[ k ] = _mm256_fmadd_pd( m_p4[ j ][ k ], o_p4, r_p4[ k ] );
@@ -324,7 +321,7 @@ static void bmath_mf3_s_mul_htp_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
             }
         }
 
-        for( sz_t k = 0; k < BMATH_MUL_HTP_BLOCK_SIZE4; k++ )
+        for( sz_t k = 0; k < BMATH_MUL_HTP_BLKP4_SIZE; k++ )
         {
             _mm256_storeu_pd( ri + k * 4, _mm256_add_pd( _mm256_loadu_pd( ri + k * 4 ), r_p4[ k ] ) );
         }
@@ -335,21 +332,19 @@ static void bmath_mf3_s_mul_htp_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
 
 /** mul: Flexible AVX-Microkernel
  *  Allows all combinations o_r, o_c, m_r (including 0)
- *  provided o_c <= BMATH_MUL_HTP_BLOCK_SIZE && m_r <= BMATH_MUL_HTP_BLOCK_SIZE4 * 4
+ *  provided o_c <= BMATH_MUL_HTP_BLOCK_SIZE && m_r <= BMATH_MUL_HTP_BLOCK_SIZE
  */
 static void bmath_mf3_s_mul_htp_avx_flex_kernel( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const f3_t* m, sz_t m_s, sz_t m_r, f3_t* r, sz_t r_s )
 {
-    #define BMATH_MUL_HTP_BLOCK_SIZE4 ( BMATH_MUL_HTP_BLOCK_SIZE >> 2 )
-
     ASSERT( o_c <= BMATH_MUL_HTP_BLOCK_SIZE );
-    ASSERT( m_r <= BMATH_MUL_HTP_BLOCK_SIZE4 * 4 );
+    ASSERT( m_r <= BMATH_MUL_HTP_BLOCK_SIZE );
 
     const sz_t m_r4l = m_r >> 2;
     const sz_t m_rr  = m_r - m_r4l * 4;
     const sz_t m_r4p = m_rr > 0 ? m_r4l + 1 : m_r4l;
 
-    __m256d r_p4[ BMATH_MUL_HTP_BLOCK_SIZE4 ];
-    __m256d m_p4[ BMATH_MUL_HTP_BLOCK_SIZE ][ BMATH_MUL_HTP_BLOCK_SIZE4 ];
+    __m256d r_p4[ BMATH_MUL_HTP_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_MUL_HTP_BLOCK_SIZE ][ BMATH_MUL_HTP_BLKP4_SIZE ];
 
     for( sz_t j = 0; j < o_c; j++ )
     {
@@ -539,6 +534,7 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_
 // htp_mul
 
 #define BMATH_HTP_MUL_BLOCK_SIZE ( 4 * 8 )
+#define BMATH_HTP_MUL_BLKP4_SIZE ( BMATH_HTP_MUL_BLOCK_SIZE >> 2 )
 
 #ifdef BMATH_AVX
 
@@ -547,15 +543,13 @@ static void bmath_mf3_s_htp_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
 {
     ASSERT( ( BMATH_HTP_MUL_BLOCK_SIZE & 3 ) == 0 );
 
-    #define BMATH_HTP_MUL_BLOCK_SIZE4 ( BMATH_HTP_MUL_BLOCK_SIZE >> 2 )
-
-    __m256d r_p4[ BMATH_HTP_MUL_BLOCK_SIZE4 ];
-    __m256d m_p4[ BMATH_HTP_MUL_BLOCK_SIZE ][ BMATH_HTP_MUL_BLOCK_SIZE4 ];
+    __m256d r_p4[ BMATH_HTP_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_HTP_MUL_BLOCK_SIZE ][ BMATH_HTP_MUL_BLKP4_SIZE ];
 
     for( sz_t j = 0; j < BMATH_HTP_MUL_BLOCK_SIZE; j++ )
     {
         const f3_t* mj = m + j * m_s;
-        for( sz_t k = 0; k < BMATH_HTP_MUL_BLOCK_SIZE4; k++ )
+        for( sz_t k = 0; k < BMATH_HTP_MUL_BLKP4_SIZE; k++ )
         {
             m_p4[ j ][ k ][ 0 ] = mj[ ( k * 4 + 0 ) ];
             m_p4[ j ][ k ][ 1 ] = mj[ ( k * 4 + 1 ) ];
@@ -571,7 +565,7 @@ static void bmath_mf3_s_htp_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
 
         __m256d o_p4 = _mm256_set1_pd( oi[ 0 ] );
 
-        for( sz_t k = 0; k < BMATH_HTP_MUL_BLOCK_SIZE4; k++ )
+        for( sz_t k = 0; k < BMATH_HTP_MUL_BLKP4_SIZE; k++ )
         {
             r_p4[ k ] = _mm256_mul_pd( m_p4[ 0 ][ k ], o_p4 );
         }
@@ -579,7 +573,7 @@ static void bmath_mf3_s_htp_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
         for( sz_t j = 1; j < BMATH_HTP_MUL_BLOCK_SIZE; j++ )
         {
             o_p4 = _mm256_set1_pd( oi[ j * o_s ] );
-            for( sz_t k = 0; k < BMATH_HTP_MUL_BLOCK_SIZE4; k++ )
+            for( sz_t k = 0; k < BMATH_HTP_MUL_BLKP4_SIZE; k++ )
             {
                 #ifdef BMATH_AVX2_FMA
                     r_p4[ k ] = _mm256_fmadd_pd( m_p4[ j ][ k ], o_p4, r_p4[ k ] );
@@ -589,7 +583,7 @@ static void bmath_mf3_s_htp_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
             }
         }
 
-        for( sz_t k = 0; k < BMATH_HTP_MUL_BLOCK_SIZE4; k++ )
+        for( sz_t k = 0; k < BMATH_HTP_MUL_BLKP4_SIZE; k++ )
         {
             _mm256_storeu_pd( ri + k * 4, _mm256_add_pd( _mm256_loadu_pd( ri + k * 4 ), r_p4[ k ] ) );
         }
@@ -600,21 +594,19 @@ static void bmath_mf3_s_htp_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
 
 /** mul: Flexible AVX-Microkernel
  *  Allows all combinations o_r, o_c, m_r (including 0)
- *  provided o_c <= BMATH_HTP_MUL_BLOCK_SIZE && m_c <= BMATH_HTP_MUL_BLOCK_SIZE4 * 4
+ *  provided o_c <= BMATH_HTP_MUL_BLOCK_SIZE && m_c <= BMATH_HTP_MUL_BLKP4_SIZE * 4
  */
 static void bmath_mf3_s_htp_mul_avx_flex_kernel( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const f3_t* m, sz_t m_s, sz_t m_c, f3_t* r, sz_t r_s )
 {
-    #define BMATH_HTP_MUL_BLOCK_SIZE4 ( BMATH_HTP_MUL_BLOCK_SIZE >> 2 )
-
     ASSERT( o_r <= BMATH_HTP_MUL_BLOCK_SIZE );
-    ASSERT( m_c <= BMATH_HTP_MUL_BLOCK_SIZE4 * 4 );
+    ASSERT( m_c <= BMATH_HTP_MUL_BLKP4_SIZE * 4 );
 
     const sz_t m_c4l = m_c >> 2;
     const sz_t m_cr  = m_c - m_c4l * 4;
     const sz_t m_c4p = m_cr > 0 ? m_c4l + 1 : m_c4l;
 
-    __m256d r_p4[ BMATH_HTP_MUL_BLOCK_SIZE4 ];
-    __m256d m_p4[ BMATH_HTP_MUL_BLOCK_SIZE ][ BMATH_HTP_MUL_BLOCK_SIZE4 ];
+    __m256d r_p4[ BMATH_HTP_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_HTP_MUL_BLOCK_SIZE ][ BMATH_HTP_MUL_BLKP4_SIZE ];
 
     for( sz_t j = 0; j < o_r; j++ )
     {

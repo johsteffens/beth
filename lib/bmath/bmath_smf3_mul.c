@@ -14,7 +14,10 @@
  */
 
 /** Collection of algorithms related to spliced-matrix multiplication.
- *  All routines have been designed from scratch and optimized with modern architectures in mind.
+ *  Blocking and microkernel strategy:
+ *    - Begin recursion reducing rows-xons block size to xons==1
+ *    - Continue recursion rows-slos similar to row-cols in mf3
+ *    - Microkernels are row-slo-adpated, otherwise similar to mf3.
  *
  *  This header is included in bmath_smf3.h and should not be used in isolation
  *  See bmath_smf3.h for nomenclature.
@@ -36,11 +39,13 @@ static sz_t smf3_midof( sz_t v, const sz_t bz )
 //----------------------------------------------------------------------------------------------------------------------
 
 #ifdef BMATH_AVX
-/// smul: Fixed size AVX-Microkernel
+/** smul: Fixed size AVX-Microkernel
+ *  Requirement: o_slos == BMATH_SMUL_BLOCK_SIZE && m_slos == BMATH_SMUL_BLOCK_SIZE
+ */
 static void bmath_smf3_s_mul_rsblock_avx_fix_kernel
 (
-    const bmath_smf3_s* o, sz_t o_row, sz_t o_xon, sz_t o_slo,
-    const bmath_smf3_s* m,             sz_t m_xon, sz_t m_slo,
+    const bmath_smf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_xon, sz_t o_slo,
+    const bmath_smf3_s* m,                          sz_t m_xon, sz_t m_slo,
     bmath_smf3_s* r
 )
 {
@@ -59,7 +64,7 @@ static void bmath_smf3_s_mul_rsblock_avx_fix_kernel
         }
     }
 
-    for( sz_t i = 0; i < BMATH_SMUL_BLOCK_SIZE; i++ )
+    for( sz_t i = 0; i < o_rows; i++ )
     {
         const f3_t* o_d = &o->v_data[ o->i_data[ o_xon * o->i_stride + ( o_row + i ) ] + o_slo ];
               f3_t* r_d = &r->v_data[ r->i_data[ m_xon * r->i_stride + ( o_row + i ) ] + m_slo ];
@@ -94,8 +99,7 @@ static void bmath_smf3_s_mul_rsblock_avx_fix_kernel
 //----------------------------------------------------------------------------------------------------------------------
 
 /** smul: Flexible AVX-Microkernel
- *  Allows all combinations o_rows, o_slos, m_slos (including 0)
- *  provided o_rows <= BMATH_SMUL_BLOCK_SIZE && m_slos <= BMATH_SMUL_BLOCK_SIZE
+ *  Requirement: o_slos <= BMATH_SMUL_BLOCK_SIZE && m_slos <= BMATH_SMUL_BLOCK_SIZE
  */
 static void bmath_smf3_s_mul_rsblock_avx_flex_kernel
 (
@@ -174,10 +178,10 @@ static void bmath_smf3_s_mul_rsblock
     bmath_smf3_s* r
 )
 {
-    if( o_rows == BMATH_SMUL_BLOCK_SIZE && o_slos == BMATH_SMUL_BLOCK_SIZE && m_slos == BMATH_SMUL_BLOCK_SIZE )
+    if( o_slos == BMATH_SMUL_BLOCK_SIZE && m_slos == BMATH_SMUL_BLOCK_SIZE )
     {
         #ifdef BMATH_AVX
-            bmath_smf3_s_mul_rsblock_avx_fix_kernel( o, o_row, o_xon, o_slo, m, m_xon, m_slo, r );
+            bmath_smf3_s_mul_rsblock_avx_fix_kernel( o, o_row, o_rows, o_xon, o_slo, m, m_xon, m_slo, r );
         #else
             f3_t r_p[ BMATH_SMUL_BLOCK_SIZE ];
             f3_t m_p[ BMATH_SMUL_BLOCK_SIZE ][ BMATH_SMUL_BLOCK_SIZE ];
@@ -186,7 +190,7 @@ static void bmath_smf3_s_mul_rsblock
                 for( sz_t k = 0; k < BMATH_SMUL_BLOCK_SIZE; k++ ) m_p[ j ][ k ] = m->v_data[ m->i_data[ m_xon * m->i_stride + ( o_xon * o->slos + o_slo + j ) ] + m_slo + k ];
             }
 
-            for( sz_t i = 0; i < BMATH_SMUL_BLOCK_SIZE; i++ )
+            for( sz_t i = 0; i < o_rows; i++ )
             {
                 const f3_t* o_d = &o->v_data[ o->i_data[ o_xon * o->i_stride + ( o_row + i ) ] + o_slo ];
                 for( sz_t k = 0; k < BMATH_SMUL_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
@@ -234,7 +238,10 @@ static void bmath_smf3_s_mul_rsblock
         f3_t m_p[ BMATH_SMUL_BLOCK_SIZE ][ BMATH_SMUL_BLOCK_SIZE ];
         for( sz_t j = 0; j < o_slos; j++ )
         {
-            for( sz_t k = 0; k < m_slos; k++ ) m_p[ j ][ k ] = m->v_data[ m->i_data[ m_xon * m->i_stride + ( o_xon * o->slos + o_slo + j ) ] + m_slo + k ];
+            for( sz_t k = 0; k < m_slos; k++ )
+            {
+                m_p[ j ][ k ] = m->v_data[ m->i_data[ m_xon * m->i_stride + ( o_xon * o->slos + o_slo + j ) ] + m_slo + k ];
+            }
         }
 
         for( sz_t i = 0; i < o_rows; i++ )
