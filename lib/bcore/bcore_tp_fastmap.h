@@ -21,11 +21,13 @@
  *  Get function is lock-free.
  *
  *  Inspired by Dr. Cliff Click's state analysis for lock-free hash tables: https://web.stanford.edu/class/ee380/Abstracts/070221_LockFreeHash.pdf.
- *  This solution is somewhat different (less sophisticated, function get prabably faster), though,
- *  because we keep the set-function fully locked and optimize on the line of beth-type properties:
+ *  Yet, this solution is somewhat different, because we keep the set-function fully locked and optimize on the line of beth-type properties:
  *  - The key is assumed to already represent a hash value.
  *  - The value for a given key never changes.
  *  - Keys are never removed.
+ *  Benefits:
+ *  - No hashing overhead
+ *  - Faster 'get'
  *
  *  Comparing to bcore_hmap:
  *  - Storage efficiency is lower (Can be factor 10 worse for 10000+ keys)

@@ -1719,7 +1719,7 @@ static st_s* flect_selftest( void )
 
     {
         tp_t t_teabag    = bcore_flect_type_parse_sc( "{ u3_t leaves; s1_t flavor; s0_t color; }" );
-        tp_t t_container = bcore_flect_type_parse_fa( "{ u3_t elements = 343; %"PRItp_t" bag; u1_t flags; }", t_teabag );
+        tp_t t_container = bcore_flect_type_parse_fa( "{ u3_t elements = 343; #<tp_t> bag; u1_t flags; }", t_teabag );
         bcore_flect_get_self( t_container );
         tp_t anonymous = bcore_flect_type_parse_sc( "{ u3_t leaves; s1_t flavor; s0_t color; }" );
         ASSERT( t_teabag == anonymous );

@@ -267,7 +267,6 @@ bcore_self_s* bcore_self_s_create_array_fix_solid_static( tp_t item_type, uz_t s
 bcore_self_s* bcore_self_s_create_array_fix_link_static(  tp_t item_type, uz_t size );
 bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
 
-
 /** Creating a reflection by parsing a stream:
  *  Typical Format:
  *  <type-name> = [<trait-name>]
