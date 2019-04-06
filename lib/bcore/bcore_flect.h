@@ -32,6 +32,12 @@
 #include "bcore_st.h"
 #include "bcore_feature.h"
 
+/**********************************************************************************************************************/
+
+BCORE_FORWARD_OBJECT( bcore_sink );
+
+/**********************************************************************************************************************/
+
 typedef struct bcore_arr_tp_s bcore_arr_tp_s;
 
 /// data encapsulation methods
@@ -95,6 +101,8 @@ bl_t bcore_flect_caps_is_array( u2_t caps );
 bl_t bcore_flect_caps_is_array_dyn( u2_t caps );
 bl_t bcore_flect_caps_is_array_fix( u2_t caps );
 
+//----------------------------------------------------------------------------------------------------------------------
+
 // attribute flags
 typedef struct bcore_flect_flags_s
 {
@@ -137,6 +145,8 @@ typedef struct bcore_flect_flags_s
         };
     };
 } bcore_flect_flags_s;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 typedef struct bcore_self_item_s bcore_self_item_s;
 typedef struct bcore_self_item_s
@@ -375,6 +385,10 @@ vc_t bcore_self_s_try_const( const bcore_self_s* o, tp_t type, tp_t name ); // r
  */
 void bcore_self_s_check_integrity( const bcore_self_s* o );
 
+/** Creates compatible C-Structure of reflection. (Auto code generation)
+ */
+void bcore_self_s_struct_to_sink( const bcore_self_s* o, bcore_sink* sink );
+
 /**********************************************************************************************************************/
 /// Global reflection manager (thread safe)
 
@@ -469,6 +483,17 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
 #define BCORE_REGISTER_FEATURE( name )\
     BCORE_REGISTER_TYPE( function_pointer, name )
 
+#define BCORE_LINK_TYPED_S( name ) \
+    union \
+    { \
+        bcore_link_typed_s name##_struc; \
+        struct \
+        { \
+            vd_t name; \
+            tp_t name##_type; \
+        }; \
+    }
+
 #define BCORE_ARRAY_DYN_SOLID_STATIC_S( type, prefix ) \
     union \
     { \
@@ -478,6 +503,19 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
             type* prefix##data; \
             uz_t prefix##size; \
             uz_t prefix##space; \
+        }; \
+    }
+
+#define BCORE_ARRAY_DYN_SOLID_TYPED_S( prefix ) \
+    union \
+    { \
+        bcore_array_dyn_solid_typed_s prefix##arr; \
+        struct \
+        { \
+            vd_t prefix##data; \
+            uz_t prefix##size; \
+            uz_t prefix##space; \
+            tp_t prefix##type; \
         }; \
     }
 
@@ -493,13 +531,26 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         }; \
     }
 
-#define BCORE_ARRAY_DYN_LINK_AWARE_S( type, prefix ) \
+#define BCORE_ARRAY_DYN_LINK_TYPED_S( prefix ) \
+    union \
+    { \
+        bcore_array_dyn_link_typed_s prefix##arr; \
+        struct \
+        { \
+            vd_t* prefix##data; \
+            uz_t prefix##size; \
+            uz_t prefix##space; \
+            tp_t prefix##type; \
+        }; \
+    }
+
+#define BCORE_ARRAY_DYN_LINK_AWARE_S( prefix ) \
     union \
     { \
         bcore_array_dyn_link_aware_s prefix##arr; \
         struct \
         { \
-            type** prefix##data; \
+            vd_t* prefix##data; \
             uz_t prefix##size; \
             uz_t prefix##space; \
         }; \
