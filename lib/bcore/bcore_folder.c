@@ -140,19 +140,6 @@ bl_t bcore_folder_s_parse( bcore_folder_s* o, sc_t path, bl_t recurse )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_folder_s_selftest()
-{
-    BCORE_LIFE_INIT();
-
-    BCORE_LIFE_CREATE( bcore_folder_s, folder );
-    bcore_folder_s_parse( folder, ".", true );
-    bcore_txt_ml_a_to_stdout( folder );
-
-    BCORE_LIFE_DOWN();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /**********************************************************************************************************************/
 
 vd_t bcore_folder_signal_handler( const bcore_signal_s* o )
@@ -173,7 +160,6 @@ vd_t bcore_folder_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_selftest:
         {
-            bcore_folder_s_selftest();
         }
         break;
 
