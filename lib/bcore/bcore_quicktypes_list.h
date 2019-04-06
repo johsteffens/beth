@@ -37,6 +37,7 @@
 
 // other types
 #define TYPEOF_all                         321211332
+#define TYPEOF_bcore_arr_folder_s         3712638301
 #define TYPEOF_bcore_arr_fp_s              534232891
 #define TYPEOF_bcore_arr_sr_s             3772348668
 #define TYPEOF_bcore_arr_st_s             1663834730
@@ -51,6 +52,7 @@
 #define TYPEOF_bcore_bin_ml_translator_s  1158670837
 #define TYPEOF_bcore_compare                37171346
 #define TYPEOF_bcore_compare_s             310299276
+#define TYPEOF_bcore_folder_s             1856651569
 #define TYPEOF_bcore_hash                  778402995
 #define TYPEOF_bcore_hash_s               3657525717
 #define TYPEOF_bcore_hmap_tp_s            3944836652

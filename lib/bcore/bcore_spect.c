@@ -233,6 +233,8 @@ void bcore_spect_setup_cache( bcore_tp_fastmap_s* cache )
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 {
     assert( hmap_s_g != NULL );
@@ -250,8 +252,30 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
         return *vdp;
     }
 
+    /** Recursion counter used to detect recursions in bcore_spect_get_typed.
+     *  This allows detecting certain types of cyclic reflections, which the
+     *  framework cannot handle.
+     */
+    static sz_t recursion_count = 0;
+    const sz_t recursion_count_limit = 256;
+    recursion_count++;
+
     // Unlock because create_from_self may make use of registry
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
+
+    if( recursion_count > recursion_count_limit )
+    {
+        ERR_fa
+        (
+            "Recursion limit '#<sz_t>' reached at object '#<sc_t>'\n"
+            "A possible cause of this error is that a reflection is cyclic.\n"
+            "Certain types of cycles cannot be resolved by the framework.\n"
+            "Note that the problem can be with the reflection of '#<sc_t>' or an object containing it.\n",
+            recursion_count_limit,
+            ifnameof( o_type ),
+            ifnameof( o_type )
+        );
+    }
 
     const bcore_self_s* p_self = bcore_flect_get_self( p_type );
     const bcore_self_s* o_self = bcore_flect_get_self( o_type );
@@ -270,6 +294,8 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 
     // Lock for registering the perspective (if still not registered)
     bcore_mutex_s_lock( &hmap_s_g->mutex );
+
+    recursion_count--;
 
     // Due to the unlocked period, the perspective might have
     // been registered by another thread meanwhile.

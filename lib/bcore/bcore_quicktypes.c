@@ -75,7 +75,7 @@ static sr_s leaf_typelist()
 
 static sr_s object_typelist()
 {
-    sr_s list = bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ st_s * [] arr; }" ) );
+    sr_s list = bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ aware_t _; st_s * [] arr; }" ) );
     bcore_array_r_push_sc( &list, "bcore_self_s"    );
     bcore_array_r_push_sc( &list, "bcore_spect_header_s"  );
     bcore_array_r_push_sc( &list, "bcore_inst"            );
@@ -141,6 +141,10 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "down1" );          // (type) down cycle 1
     bcore_array_r_push_sc( &list, "selftest" );       // (type) selftest (returns NULL or st_s*)
     bcore_array_r_push_sc( &list, "get_quicktypes" ); // (type) object referencing an array accepting strings
+
+    // quicktypes from TYPEOF_get_quicktypes
+    bcore_signal_s signal = bcore_signal_init( TYPEOF_local, TYPEOF_get_quicktypes, list.o );
+    bcore_signal_handler( &signal );
 
     bcore_array_r_sort( &list, 0, -1, 1 );
     return list;

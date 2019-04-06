@@ -16,19 +16,21 @@
 #include "bcore_signal.h"
 
 #include "bcore_arr.h"
-#include "bcore_img.h"
 #include "bcore_bin_ml.h"
 #include "bcore_btree.h"
+#include "bcore_const_manager.h"
 #include "bcore_control.h"
+#include "bcore_file.h"
 #include "bcore_flect.h"
+#include "bcore_folder.h"
+#include "bcore_function_manager.h"
 #include "bcore_hmap.h"
 #include "bcore_hmap_tp_sr.h"
+#include "bcore_img.h"
+#include "bcore_leaf.h"
 #include "bcore_life.h"
-#include "bcore_tbman.h"
 #include "bcore_name.h"
 #include "bcore_name_manager.h"
-#include "bcore_function_manager.h"
-#include "bcore_const_manager.h"
 #include "bcore_sr.h"
 #include "bcore_sinks.h"
 #include "bcore_sources.h"
@@ -45,13 +47,12 @@
 #include "bcore_spect_matrix.h"
 #include "bcore_sc.h"
 #include "bcore_st.h"
+#include "bcore_tbman.h"
 #include "bcore_tp.h"
 #include "bcore_tp_fastmap.h"
 #include "bcore_threads.h"
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
-#include "bcore_leaf.h"
-#include "bcore_file.h"
 
 BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
 
@@ -128,6 +129,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_img_signal_handler,
         bcore_leaf_signal_handler,
         bcore_file_signal_handler,
+        bcore_folder_signal_handler,
         bcore_spect_hash_signal_handler,
     };
 
