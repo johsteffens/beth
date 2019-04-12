@@ -141,6 +141,7 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "down1" );          // (type) down cycle 1
     bcore_array_r_push_sc( &list, "selftest" );       // (type) selftest (returns NULL or st_s*)
     bcore_array_r_push_sc( &list, "get_quicktypes" ); // (type) object referencing an array accepting strings
+    bcore_array_r_push_sc( &list, "precoder" );       // (type) precoder cycle
 
     // quicktypes from TYPEOF_get_quicktypes
     bcore_signal_s signal = bcore_signal_init( TYPEOF_local, TYPEOF_get_quicktypes, list.o );

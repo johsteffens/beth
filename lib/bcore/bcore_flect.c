@@ -1025,28 +1025,62 @@ void bcore_self_body_s_check_integrity( const bcore_self_body_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_self_s_struct_to_sink( const bcore_self_s* o, bcore_sink* sink )
+void bcore_self_s_forward_struct_to_sink( const bcore_self_s* o, sz_t indent, bcore_sink* sink )
 {
-    BCORE_LIFE_INIT();
-
     sc_t name = nameof( o->type );
     if( !name ) ERR_fa( "Type of reflection has no registered name." );
+    bcore_sink_a_push_fa( sink, "#rn{ }typedef struct #<sc_t> #<sc_t>;\n", indent, name, name );
+}
 
-    bcore_sink_a_push_fa( sink, "typedef struct #<sc_t>\n", name );
-    bcore_sink_a_push_fa( sink, "{\n" );
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_self_s_struct_body_to_sink( const bcore_self_s* o, sz_t indent, bcore_sink* sink )
+{
+    sc_t name = nameof( o->type );
+    if( !name ) ERR_fa( "Type of reflection has no registered name." );
+    bcore_sink_a_push_fa( sink, "#rn{ }{\n", indent );
     if( o->body )
     {
         for( sz_t i = 0; i < o->body->size; i++ )
         {
             const bcore_self_item_s* item = o->body->data[ i ];
-            bcore_sink_a_push_fa( sink, "    " );
+            bcore_sink_a_push_fa( sink, "#rn{ }    ", indent );
             bcore_self_item_s_struct_to_sink( item, sink );
             bcore_sink_a_push_fa( sink, "\n" );
         }
     }
-    bcore_sink_a_push_fa( sink, "} #<sc_t>;\n", name );
+    bcore_sink_a_push_fa( sink, "#rn{ }}", indent );
+}
 
-    BCORE_LIFE_DOWN();
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_self_s_struct_body_to_sink_single_line( const bcore_self_s* o, bcore_sink* sink )
+{
+    sc_t name = nameof( o->type );
+    if( !name ) ERR_fa( "Type of reflection has no registered name." );
+    bcore_sink_a_push_fa( sink, "{" );
+    if( o->body )
+    {
+        for( sz_t i = 0; i < o->body->size; i++ )
+        {
+            const bcore_self_item_s* item = o->body->data[ i ];
+            bcore_sink_a_push_fa( sink, " " );
+            bcore_self_item_s_struct_to_sink( item, sink );
+        }
+    }
+    bcore_sink_a_push_fa( sink, " }" );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_self_s_struct_to_sink( const bcore_self_s* o, sz_t indent, bcore_sink* sink )
+{
+    sc_t name = nameof( o->type );
+    if( !name ) ERR_fa( "Type of reflection has no registered name." );
+
+    bcore_sink_a_push_fa( sink, "#rn{ }typedef struct #<sc_t>\n", indent, name );
+    bcore_self_s_struct_body_to_sink( o, indent, sink );
+    bcore_sink_a_push_fa( sink, " #<sc_t>;\n", name );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1338,6 +1372,13 @@ bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of )
     o->size = size_of;
     bcore_life_s_discard( l );
     return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of )
+{
+    return bcore_self_s_build_parse_src( sr_awd( source ), size_of );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2118,7 +2159,7 @@ void flect_test_create_struct()
 
 //    bcore_txt_ml_a_to_stdout( self );
 
-    bcore_self_s_struct_to_sink( self, BCORE_STDOUT );
+    bcore_self_s_struct_to_sink( self, 0, BCORE_STDOUT );
 
 
 }

@@ -53,6 +53,9 @@
 #include "bcore_threads.h"
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
+#include "bcore_precoder.h"
+#include "bcore_precoded.h"
+#include "bcore_precoder_sample.h"
 
 BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
 
@@ -131,6 +134,9 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_file_signal_handler,
         bcore_folder_signal_handler,
         bcore_spect_hash_signal_handler,
+        bcore_precoder_signal_handler,
+        bcore_precoded_signal_handler,
+        bcore_precoder_sample_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );

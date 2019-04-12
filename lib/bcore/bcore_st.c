@@ -114,6 +114,13 @@ void st_s_init_sc( st_s* o, sc_t sc )
     st_s_init_sc_n( o, sc, bcore_strlen( sc ) );
 }
 
+void  st_s_init_weak_st( st_s* o, const st_s* st )
+{
+    st_s_init( o );
+    o->sc    = st->sc;
+    o->size  = st->size;
+}
+
 void st_s_init_weak_sc( st_s* o, sc_t sc )
 {
     st_s_init( o );
@@ -125,6 +132,19 @@ void st_s_down( st_s* o )
 {
     if( o->space ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
     o->size = 0;
+}
+
+void  st_s_set_size( st_s* o, u0_t fill_char, uz_t size )
+{
+    if( o->space <= size )
+    {
+        if( o->space > 0 ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
+        o->space = size < 8 ? 8 : size + 1;
+        o->data  = bcore_b_alloc( NULL, o->space, &o->space );
+    }
+    for( sz_t i = 0; i < size; i++ ) o->data[ i ] = fill_char;
+    o->size = size;
+    o->data[ o->size ] = 0;
 }
 
 void st_s_copy( st_s* o, const st_s* src )
@@ -507,11 +527,6 @@ st_s* st_s_push_st_d( st_s* o, st_s* src )
 
 st_s* st_s_push_sc_n( st_s* o, sc_t sc, uz_t sc_size )
 {
-    if( o->size == 0 )
-    {
-        st_s_copy_sc( o, sc );
-        return o;
-    }
     if( o->space < o->size + sc_size + 1 )
     {
         if( o->space == 0 ) st_s_make_strong( o );

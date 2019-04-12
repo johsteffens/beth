@@ -57,8 +57,10 @@ void  st_s_init_fa(      st_s* o, sc_t format, ... );           // formatted ini
 void  st_s_init_sc_n(    st_s* o, sc_t sc, uz_t n );            // creates string from first n characters of sc
 void  st_s_init_sd_d(    st_s* o, sd_t sd );                    // creates string by assuming ownership of sd
 void  st_s_init_sc(      st_s* o, sc_t sc );                    // creates string from sc
+void  st_s_init_weak_st( st_s* o, const st_s* st );             // creates a weak string referencing st
 void  st_s_init_weak_sc( st_s* o, sc_t sc );                    // creates a weak string referencing sc
 void  st_s_down(         st_s* o );
+void  st_s_set_size(     st_s* o, u0_t fill_char, uz_t size ); // allocates and fills with fill_char
 void  st_s_copy(         st_s* o, const st_s* src );
 void  st_s_copyvf(       st_s* o, sc_t format, va_list args  );
 void  st_s_copyf(        st_s* o, sc_t format, ...  );
@@ -84,6 +86,10 @@ st_s* st_s_create_aware(            vc_t src );
 bl_t  st_s_is_weak(       const st_s* o ); // A string is weak when size > 0 && space == 0
 void  st_s_make_strong(         st_s* o );
 void  st_s_set_min_space(       st_s* o, uz_t min_space ); // ensures o->space >= min_space; reallocates if necessary
+
+/// disposable instant weak strings
+static inline st_s st_weak_sc( sc_t src )        { st_s st; st_s_init_weak_sc( &st, src ); return st; }
+static inline st_s st_weak_st( const st_s* src ) { st_s st; st_s_init_weak_st( &st, src ); return st; }
 
 /// create with lifetime manager
 typedef struct bcore_life_s bcore_life_s;
@@ -230,7 +236,7 @@ void st_s_print_fa( sc_t format, ... );
  *  "#?w'...'"  word-match (Example: "#?w'hidden'")
  *      Argument: bl_t*
  *      Like "#?'...'" except that the matching criterion fails if the character following
- *      the matched string is a letter or digit. The letter following is not consumed.
+ *      the matched string is a letter or digit. The letter following is never consumed.
  *
  *  "#?(...)"
  *      Argument: bl_t*

@@ -27,6 +27,11 @@ void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler );
 /// signal handler for all registered libraries (do not send init or down signals by this function)
 vd_t bcore_global_signal_handler( const bcore_signal_s* signal );
 
+/** runs a signal globally
+ *  Example: bcore_run_signal_globally( TYEOF_all, TYPEOF_precoder, NULL );
+ */
+vd_t bcore_run_signal_globally( tp_t target, tp_t type, vd_t object );
+
 /// runs selftest on target
 vd_t bcore_run_signal_selftest( tp_t target, vd_t object );
 

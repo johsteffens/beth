@@ -89,10 +89,15 @@ vd_t bcore_global_signal_handler( const bcore_signal_s* signal )
     );
 }
 
+vd_t bcore_run_signal_globally( tp_t target, tp_t type, vd_t object )
+{
+    bcore_signal_s signal = bcore_signal_init( target, type, object );
+    return bcore_global_signal_handler( &signal );
+}
+
 vd_t bcore_run_signal_selftest( tp_t target, vd_t object )
 {
-    bcore_signal_s signal = bcore_signal_init( target, TYPEOF_selftest, object );
-    return bcore_global_signal_handler( &signal );
+    return bcore_run_signal_globally( target, TYPEOF_selftest, object );
 }
 
 void bcore_down( bl_t verbose )

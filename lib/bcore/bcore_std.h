@@ -46,5 +46,6 @@
 #include "bcore_sc.h"
 #include "bcore_leaf.h"
 #include "bcore_const_manager.h"
+#include "bcore_precoder.h"
 
 #endif // BCORE_STD_H

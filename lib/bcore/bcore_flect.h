@@ -35,6 +35,7 @@
 /**********************************************************************************************************************/
 
 BCORE_FORWARD_OBJECT( bcore_sink );
+BCORE_FORWARD_OBJECT( bcore_source );
 
 /**********************************************************************************************************************/
 
@@ -353,11 +354,14 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *    No body: Allowed for certain leaf types, where alignment == object size.
  *
  */
-bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of );
-bcore_self_s* bcore_self_s_build_parse_sc( sc_t text, uz_t size_of );
+bcore_self_s* bcore_self_s_build_parse_src(    sr_s src,             uz_t size_of );
+bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of );
+bcore_self_s* bcore_self_s_build_parse_sc(     sc_t text,            uz_t size_of );
 
-tp_t          bcore_self_s_fold_tp( const bcore_self_s* o, tp_t tp );
-s2_t          bcore_self_s_cmp( const bcore_self_s* o1, const bcore_self_s* o2 );
+//----------------------------------------------------------------------------------------------------------------------
+
+tp_t bcore_self_s_fold_tp( const bcore_self_s* o, tp_t tp );
+s2_t bcore_self_s_cmp( const bcore_self_s* o1, const bcore_self_s* o2 );
 
 /// Query for external function of given type or name; either type or name may be 0 in which case it is interpreted as wildcard
 fp_t bcore_self_s_try_external_fp( const bcore_self_s* o, tp_t type, tp_t name ); // returns NULL when not found
@@ -385,9 +389,21 @@ vc_t bcore_self_s_try_const( const bcore_self_s* o, tp_t type, tp_t name ); // r
  */
 void bcore_self_s_check_integrity( const bcore_self_s* o );
 
-/** Creates compatible C-Structure of reflection. (Auto code generation)
+/** Creates forward struct declaration. (Auto code generation)
+ *  Format:
+ *  typedef struct 'name' 'name';
  */
-void bcore_self_s_struct_to_sink( const bcore_self_s* o, bcore_sink* sink );
+void bcore_self_s_forward_struct_to_sink( const bcore_self_s* o, sz_t indent, bcore_sink* sink );
+
+/// Creates compatible C-Structure body of reflection. (Auto code generation)
+void bcore_self_s_struct_body_to_sink( const bcore_self_s* o, sz_t indent, bcore_sink* sink );
+void bcore_self_s_struct_body_to_sink_single_line( const bcore_self_s* o, bcore_sink* sink );
+
+/** Creates compatible C-Structure of reflection. (Auto code generation)
+ *  Format:
+ *  typedef struct 'name' { ... } 'name';
+ */
+void bcore_self_s_struct_to_sink( const bcore_self_s* o, sz_t indent, bcore_sink* sink );
 
 /**********************************************************************************************************************/
 /// Global reflection manager (thread safe)

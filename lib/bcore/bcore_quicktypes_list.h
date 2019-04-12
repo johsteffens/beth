@@ -37,7 +37,6 @@
 
 // other types
 #define TYPEOF_all                         321211332
-#define TYPEOF_bcore_arr_folder_s         3712638301
 #define TYPEOF_bcore_arr_fp_s              534232891
 #define TYPEOF_bcore_arr_sr_s             3772348668
 #define TYPEOF_bcore_arr_st_s             1663834730
@@ -73,6 +72,9 @@
 #define TYPEOF_bcore_matrix_s              686911304
 #define TYPEOF_bcore_name_map_s           2156406683
 #define TYPEOF_bcore_name_s               2158870146
+#define TYPEOF_bcore_precoder_item_s      2569699851
+#define TYPEOF_bcore_precoder_object_s    1181867915
+#define TYPEOF_bcore_precoder_target_s    4261411997
 #define TYPEOF_bcore_self_s                422978351
 #define TYPEOF_bcore_sink                 4108403612
 #define TYPEOF_bcore_sink_buffer_s        4153788729
@@ -99,5 +101,6 @@
 #define TYPEOF_init1                      4226781414
 #define TYPEOF_local                      2621662984
 #define TYPEOF_none                       2913447899
+#define TYPEOF_precoder                    285665067
 #define TYPEOF_selftest                   2526214595
 #define TYPEOF_st_s                       3358332604
