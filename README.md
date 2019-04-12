@@ -10,6 +10,7 @@
       * [Reflection](#reflection)
       * [Perspective](#perspective)
       * [Associative Binding](#binding)
+      * [RTTI](#RTTI)
       * [Memory Management](#memory-management)
    * [Motivation](#motivation)
 
@@ -105,6 +106,10 @@ A key-component is the so-called *Perspective*, which is a special abstraction f
 <a name = "binding"></a>
 ### Associative Binding
 Concurrent dynamic associations between *types*, *reflections*, and *perspectives* are accomplished by two kinds of hashmaps: The frontend represents a cache using lock-free linear probing. The backend is realized via memory efficient cuckoo-hashing. 
+
+<a name = "RTTI"></a>
+### RTTI (self awareness)
+Runtime type information is represented as hash value of the (text-based) identifier. A perspective stores this type-hash value about itself and another about the object it describes. Optionally, an object may also store its type-hash as first value (type `aware_t`). Such an object is considered *self-aware*. Advanced abstraction is available allowing type-oblivious coding and advanced runtime error checks. Most perspectives offer functions for self-aware objects (infix `_a_`), where the required perspective need not be known in advance but is retrieved automatically.
 
 <a name = "memory-management"></a>
 ### Memory Management & Garbage Collection
