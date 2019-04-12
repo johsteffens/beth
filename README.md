@@ -109,7 +109,7 @@ Concurrent dynamic associations between *types*, *reflections*, and *perspective
 
 <a name = "RTTI"></a>
 ### RTTI (self awareness)
-Runtime type information is represented as hash value of the (text-based) objects identifier. A perspective stores this type-hash value about itself and another about the object it describes. Optionally, an object may store its type-hash as first value (type `aware_t`). Such an object is considered *self-aware*. For self-aware objects perspective functions can retrieve the required perspective automatically.
+Runtime type information is represented as hash value of the (text-based) identifier. A perspective stores this type-hash value about itself and another about the object it describes. Optionally, an object may also store its type-hash as first value (type `aware_t`). Such an object is considered *self-aware*. For self-aware objects, perspective functions can retrieve the required perspective automatically.
 
 <a name = "memory-management"></a>
 ### Memory Management & Garbage Collection
