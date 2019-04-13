@@ -319,7 +319,7 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 
 /**********************************************************************************************************************/
 
-void bcore_spect_define_trait( const bcore_self_s* p_self, tp_t parent_trade )
+void bcore_spect_define_trait( const bcore_self_s* p_self )
 {
     assert( p_self != NULL );
 
@@ -369,7 +369,7 @@ void bcore_spect_define_trait( const bcore_self_s* p_self, tp_t parent_trade )
 
     bcore_inst_a_discard( (bcore_inst*)spect );
 
-    bcore_trait_set( trait, parent_trade  );
+    bcore_trait_set( trait, p_self->parent );
 }
 
 vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_s* o_self )
@@ -548,11 +548,11 @@ vd_t bcore_spect_create_from_self_typed( tp_t p_type, tp_t o_type )
     return bcore_spect_create_from_self( p_self, o_self );
 }
 
-void bcore_spect_define_creator( tp_t type, tp_t parent_trait, bcore_flect_create_self_fp creator )
+void bcore_spect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
 {
     bcore_flect_define_creator( type, creator );
     bcore_self_s* self = creator();
-    bcore_spect_define_trait( self, parent_trait );
+    bcore_spect_define_trait( self );
     bcore_self_s_discard( self );
 }
 

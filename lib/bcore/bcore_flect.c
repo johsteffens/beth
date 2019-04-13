@@ -1348,9 +1348,13 @@ bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of )
     bcore_source_r_parse_fa( &src, " #name", identifier );
     tp_t type2 = ( identifier->size > 0 ) ? entypeof( identifier->sc ) : 0;
 
+    bcore_source_r_parse_fa( &src, " #name", identifier );
+    tp_t type3 = ( identifier->size > 0 ) ? entypeof( identifier->sc ) : 0;
+
     if( bcore_source_r_parse_bl_fa( &src, " #=?'{'" ) )
     {
-        o->trait = type2 ? type2 : typeof( "bcore_inst" );
+        o->trait  = type2 ? type2 : typeof( "bcore_inst" );
+        o->parent = type3;
         o->body = bcore_self_body_s_create();
         bcore_self_body_s_parse_src( o->body, src, o->type );
 
@@ -1528,6 +1532,7 @@ static bcore_self_s* flect_self_s_create_self( void )
         "aware_t _;"
         "tp_t type;"
         "tp_t trait;"
+        "tp_t parent;"
         "uz_t size;"
         "bcore_self_body_s* body;"
     "}";

@@ -51,10 +51,40 @@ void bcore_precoder_sample_object_s_to_stdout( const bcore_precoder_sample_objec
 
 #endif // EMPLACE_OBJECT_bcore_precoder_sample_object_s
 
+#ifdef BETH_PRECODE_bcore_precoder_sample_object2_s
+/** BETH_PRECODE is a c-macro as well as a precode specifier
+ *  Precode follows in a commented section.
+ *  The BETH_PRECODE macro is resolved into the c-code of the precode.
+ *  The macro argument is a unique identifier for the given precode section.
+ */
+BETH_PRECODE( bcore_precoder_sample_identifier1 );
+/*
+feature bl_t bcore_precoder_sample_fp_feature1( vd_t o, sz_t size );
+
+self bcore_precoder_sample_object2_s = bcore_inst
+{
+    aware_t _;  // precode single line comment (no nesting conflict with c-style)
+    st_s name;
+    sz_t => [] arr;
+}
+
+self bcore_precoder_sample_object3_s = bcore_inst
+{
+    aware_t _;  // precode single line comment (no nesting conflict with c-style)
+    bcore_precoder_sample_object2_s object;
+    st_s name;
+}
+*/
+
+void bcore_precoder_sample_object2_s_setup(           bcore_precoder_sample_object2_s* o );
+void bcore_precoder_sample_object2_s_to_stdout( const bcore_precoder_sample_object2_s* o );
+
+#endif // BETH_PRECODE_bcore_precoder_sample_object2_s
+
 // identical redefinition is allowed and has no effect; a different body would produce an error
 /**#PRECODE self bcore_precoder_sample_object_s = bcore_inst { aware_t _; st_s name; sz_t => [] arr; }*/
 
-/**#PRECODE self bcore_precoder_another_sample_object_s = bcore_inst { aware_t _; u2_t val; }*/
+/**#PRECODE self bcore_precoder_another_sample_object_s = bcore_inst { aware_t _; u2_t val1; u2_t val2; }*/
 EMPLACE_OBJECT_bcore_precoder_another_sample_object_s;
 
 /**********************************************************************************************************************/

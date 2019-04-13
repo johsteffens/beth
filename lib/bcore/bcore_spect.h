@@ -92,7 +92,7 @@ void bcore_spect_setup_cache( bcore_tp_fastmap_s* cache );
  *  It is to be called during the system-init-cycle.
  */
 
-void bcore_spect_define_trait(     const bcore_self_s* p_self, tp_t parent_trade );
+void bcore_spect_define_trait(     const bcore_self_s* p_self );
 vd_t bcore_spect_create_from_self( const bcore_self_s* p_self, const bcore_self_s* o_self );
 vd_t bcore_spect_create_from_self_typed( tp_t p_type, tp_t o_type );
 
@@ -100,7 +100,7 @@ vd_t bcore_spect_create_from_self_typed( tp_t p_type, tp_t o_type );
  *  This function create a temporary instance of self and calls
  *  bcore_spect_define_trait
  */
-void bcore_spect_define_creator( tp_t type, tp_t parent_trait, bcore_flect_create_self_fp creator );
+void bcore_spect_define_creator( tp_t type, bcore_flect_create_self_fp creator );
 
 /**********************************************************************************************************************/
 
@@ -173,17 +173,22 @@ void bcore_spect_missing_err( vc_t p, sc_t name );
 #define BCORE_DECLARE_SPECT_BODY( name ) \
     struct name##_s
 
-#define BCORE_DEFINE_SPECT( parent_type, name ) \
+#define BCORE_DEFINE_SPECT_old( parent_type, name ) \
     static sc_t name##_s_def_g; \
     static const tp_t name##_s_parent_type_g = TYPEOF_##parent_type; \
     BCORE_DEFINE_SPECT_CACHE( name##_s ); \
     BCORE_DEFINE_CREATE_SELF( name##_s, name##_s_def_g ) \
     static sc_t name##_s_def_g = #name "_s = spect"
 
+#define BCORE_DEFINE_SPECT( parent_type, name ) \
+    static sc_t name##_s_def_g; \
+    BCORE_DEFINE_SPECT_CACHE( name##_s ); \
+    BCORE_DEFINE_CREATE_SELF( name##_s, name##_s_def_g ) \
+    static sc_t name##_s_def_g = #name "_s = spect " #parent_type
+
 #define BCORE_REGISTER_SPECT( name )\
     bcore_spect_setup_cache( &name##_s_cache_g ); \
-    bcore_spect_define_creator( typeof( #name "_s" ), name##_s_parent_type_g, name##_s_create_self );
-
+    bcore_spect_define_creator( typeof( #name "_s" ), name##_s_create_self );
 
 /**********************************************************************************************************************/
 // perspective functions

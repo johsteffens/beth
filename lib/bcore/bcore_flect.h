@@ -224,6 +224,9 @@ typedef struct bcore_self_s
     /// trait of object
     tp_t trait;
 
+    /// parent (-trait) of object  (used by perspectives)
+    tp_t parent;
+
     /** size
      *  Represents sizeof(object-type);
      *  Mandatory for leaf-types (which are basically types without body)
@@ -280,7 +283,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
 
 /** Creating a reflection by parsing a stream:
  *  Typical Format:
- *  <type-name> = [<trait-name>]
+ *  <type-name> = [<trait-name> [<parent-name>]]
  *  {
  *      [<prefixes>] <type> [:] [<qualifier>] <name> [=<default>];
  *

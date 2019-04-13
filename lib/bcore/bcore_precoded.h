@@ -16,7 +16,7 @@
 #define EMPLACE_OBJECT_bcore_precoder_sample_object_s BCORE_DECLARE_OBJECT( bcore_precoder_sample_object_s ) { aware_t _; st_s name; BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ ); }
 
 #define TYPEOF_bcore_precoder_another_sample_object_s 1621576576
-#define EMPLACE_OBJECT_bcore_precoder_another_sample_object_s BCORE_DECLARE_OBJECT( bcore_precoder_another_sample_object_s ) { aware_t _; u2_t val; }
+#define EMPLACE_OBJECT_bcore_precoder_another_sample_object_s BCORE_DECLARE_OBJECT( bcore_precoder_another_sample_object_s ) { aware_t _; u2_t val1; u2_t val2; }
 
 vd_t bcore_precoded_signal_handler( const bcore_signal_s* o );
 

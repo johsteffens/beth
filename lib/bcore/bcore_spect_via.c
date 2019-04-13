@@ -600,7 +600,7 @@ vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            bcore_trait_set( entypeof( "bcore_via" ), bcore_via_s_parent_type_g );
+            bcore_trait_set( entypeof( "bcore_via" ), entypeof( "bcore_inst" ) );
             bcore_flect_define_creator( typeof( "bcore_via_s" ), bcore_via_s_create_self );
             bcore_spect_setup_cache( &bcore_via_s_cache_g );
 

@@ -291,7 +291,7 @@ static void bcore_precoder_target_s_write_c( const bcore_precoder_target_s* o, s
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }vd_t #<sc_t>_signal_handler( const bcore_signal_s* o )\n", indent, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }{\n", indent );
-    bcore_sink_a_push_fa( sink, "#rn{ }    switch( bcore_signal_s_handle_type( o, typeof( \"#<sc_t>_precoder\" ) ) )\n", indent, o->name.sc );
+    bcore_sink_a_push_fa( sink, "#rn{ }    switch( bcore_signal_s_handle_type( o, typeof( \"#<sc_t>\" ) ) )\n", indent, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }    {\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }        case TYPEOF_init1:\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }        {\n", indent );
@@ -483,7 +483,7 @@ static void bcore_precoder_compile_source_target( bcore_source* source, bcore_pr
                     {
                         sz_t idx = *bcore_hmap_tpuz_s_get( &target->hmap, precoder_item->id );
                         sc_t file = target->data[ idx ]->source_file.sc;
-                        bcore_source_r_parse_err_fa( &source_sr, "Precoder reflection has already been defined with different body in file '#<sc_t>'.", file );
+                        bcore_source_r_parse_err_fa( &source_sr, "Object has already been defined in file '#<sc_t>'.", file );
                     }
 
                     BCORE_LIFE_DOWN();
