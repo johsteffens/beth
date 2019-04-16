@@ -40,10 +40,10 @@
 /**********************************************************************************************************************/
 
 /// compiles precode into target files: directory( file )/target{ .c | .h }
-void bcore_precoder_compile( const char* file, const char* target_name );
+void bcore_precoder_compile( sc_t target_name, sc_t source_path );
 
 /// updates precoded files if necessary; returns true in case a file was modified
-bl_t bcore_precoder_finalize();
+bl_t bcore_precoder_expand();
 
 /// global run of precoder (compiling, finalizing); returns true in case a 'decode-file' was modified
 bl_t bcore_precoder_run_globally();
@@ -54,5 +54,7 @@ vd_t bcore_precoder_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 /// Macros
+#define BETH_PRECODE( name ) \
+    BETH_EXPAND_GROUP_##name
 
 #endif  // BCORE_PRECODER_H

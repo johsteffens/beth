@@ -207,7 +207,7 @@ static void spect_define_trait()
     bcore_trait_require_in_ancestry( trait );
 
 //    bcore_trait_require_function(  trait, entypeof( "bcore_spect_fp_create_from_self" ), 0 );
-//    now optional; missing 'bcore_spect_fp_create_from_self' falls back to genric function bcore_spect_create_from_self
+//    now optional; missing 'bcore_spect_fp_create_from_self' falls back to generic function bcore_spect_create_from_self
 
     bcore_trait_register_fp_support( trait, supports );
     bcore_trait_set( trait, typeof( "bcore_inst" ) );

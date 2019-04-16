@@ -336,8 +336,8 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *
  *  Feature:
  *    [strict] feature  [<prefixes>] <type> [<qualifier>] <name> [=<default>] [~> <related expression> ];
- *    A feature governs dynamic binding between perspective and object.
- *    It declares a perspective-item to be dynamically tied to the object-item.
+ *    A feature governs dynamic binding between perspective and object. It is declared in the perspective
+ *    and binds a perspective-item dynamically to the object-item.
  *    'strict' indicates that the relation must exist or the perspective construction produces an error.
  *    Otherwise the feature reverts to default in case binding could not be established.
  *    '~> <related expression>' specifies the exact binding desired. If left blank, canonic binding is used.
@@ -348,7 +348,8 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *      [strict] feature <spect-type> -> <name>;         // creates perspective of object
  *      [strict] feature <function-pointer-type> <name>; // binds to 'func <function-pointer-type> <name>'
  *
- *  Special cases:
+ *
+ *  Special reflection cases:
  *    <type-name> = <assigned-name>                        // creates a copy of an existing reflection with new name
  *    <type-name> = [<trait-name>] { <expr>; <expr>; ... } // Specifying '...' marks the body as incomplete
  *        Caution: Incomplete body may only be used when the alignment from existing body elements is identical with

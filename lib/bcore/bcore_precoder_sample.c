@@ -15,6 +15,8 @@
 
 #include "bcore_precoder_sample.h"
 
+#ifdef TYPEOF_bcore_precoder_sample
+
 //----------------------------------------------------------------------------------------------------------------------
 
 void bcore_precoder_sample_object_s_setup( bcore_precoder_sample_object_s* o )
@@ -45,6 +47,8 @@ void bcore_precoder_sample_object_s_selftest( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+#endif // TYPEOF_bcore_precoder_sample_object_s
+
 /**********************************************************************************************************************/
 
 vd_t bcore_precoder_sample_signal_handler( const bcore_signal_s* o )
@@ -63,13 +67,13 @@ vd_t bcore_precoder_sample_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_selftest:
         {
-            bcore_precoder_sample_object_s_selftest();
+            //bcore_precoder_sample_object_s_selftest();
         }
         break;
 
         case TYPEOF_precoder:
         {
-            bcore_precoder_compile( __FILE__, "bcore_precoded" );
+            bcore_precoder_compile( "bcore_precoded", __FILE__ );
         }
         break;
 

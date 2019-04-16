@@ -1398,6 +1398,7 @@ tp_t bcore_self_s_fold_tp( const bcore_self_s* o, tp_t tp )
 {
     tp = bcore_tp_fold_tp( tp, o->type );
     tp = bcore_tp_fold_tp( tp, o->trait );
+    tp = bcore_tp_fold_tp( tp, o->parent );
     if( o->body ) tp = bcore_self_body_s_fold_tp( o->body, tp );
     return tp;
 }
@@ -1406,8 +1407,10 @@ tp_t bcore_self_s_fold_tp( const bcore_self_s* o, tp_t tp )
 
 s2_t bcore_self_s_cmp( const bcore_self_s* o1, const bcore_self_s* o2 )
 {
-    if( o1->type != o2->type ) return ( o1->type < o2->type ) ? 1 : -1;
-    if( o1->body != o2->body )
+    if( o1->type   != o2->type   ) return ( o1->type   < o2->type   ) ? 1 : -1;
+    if( o1->trait  != o2->trait  ) return ( o1->trait  < o2->trait  ) ? 1 : -1;
+    if( o1->parent != o2->parent ) return ( o1->parent < o2->parent ) ? 1 : -1;
+    if( o1->body   != o2->body   )
     {
         if( !o1->body ) return  1;
         if( !o2->body ) return -1;

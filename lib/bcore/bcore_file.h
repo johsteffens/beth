@@ -25,6 +25,35 @@ BCORE_FORWARD_OBJECT( bcore_source );
 BCORE_FORWARD_OBJECT( bcore_sink );
 
 /**********************************************************************************************************************/
+/// file path manipulations using posix path scheme
+
+/** Returns extension of path excluding '.'
+ *  If path has no extension, returns ""
+ */
+sc_t  bcore_file_extension( sc_t path );
+
+/** Returns file-name of path, including extension, excluding preceding folders.
+ *  If path has no preceding folder, returns path
+ */
+sc_t  bcore_file_name( sc_t path );
+
+/** Returns string 'path' with extension removed
+ *  If path has no extension, returns path as is.
+ *  path can also be just a file name
+ */
+st_s* bcore_file_strip_extension( sc_t path ); // path with extension (if any) removed
+
+/** Creates string with path up to last folder, excluding file-name.
+ *  If path has no preceding folder, returns ""
+ */
+st_s* bcore_file_folder_path( sc_t path ); // creates string with path of folder
+
+/** Creates string with last folder name, excluding file-name.
+ *  If path has no preceding folder, returns ""
+ */
+st_s* bcore_file_folder_name( sc_t path ); // creates string with name of folder
+
+/**********************************************************************************************************************/
 
 bl_t bcore_file_exists( sc_t name ); // checks if file exists
 bl_t bcore_file_touch(  sc_t name ); // creates empty file if not existing; returns success (no effect if existing)

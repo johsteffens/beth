@@ -21,6 +21,71 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
+sc_t bcore_file_extension( sc_t path )
+{
+    st_s* s = st_s_create_sc( path );
+    sz_t idx = st_s_find_char( s, -1, 0, '.' );
+    st_s_discard( s );
+    return path + idx;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sc_t bcore_file_name( sc_t path )
+{
+    st_s* s = st_s_create_sc( path );
+    sz_t idx = st_s_find_char( s, -1, 0, '/' );
+    st_s_discard( s );
+    if( path[ idx ] == '/' ) return path + idx + 1;
+    return path;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+st_s* bcore_file_strip_extension( sc_t path )
+{
+    st_s* s = st_s_create_sc( path );
+    sz_t idx = st_s_find_char( s, -1, 0, '.' );
+    if( s->data[ idx ] == '.' )
+    {
+        s->data[ idx ] = 0;
+        s->size = idx;
+    }
+    return s;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+st_s* bcore_file_folder_path( sc_t path )
+{
+    st_s* s = st_s_create_sc( path );
+    sz_t idx = st_s_find_char( s, -1, 0, '/' );
+    if( s->data[ idx ] == '/' )
+    {
+        s->data[ idx ] = 0;
+        s->size = idx;
+    }
+    else
+    {
+        s->data[ 0 ] = 0;
+        s->size = 0;
+    }
+    return s;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+st_s* bcore_file_folder_name( sc_t path )
+{
+    st_s* s1 = bcore_file_folder_path( path );
+    st_s* s2 = st_s_create_sc( bcore_file_name( s1->sc ) );
+    st_s_discard( s1 );
+    return s2;
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_file_exists( sc_t name )
 {
     vd_t handle = fopen( name, "rb" );
