@@ -307,15 +307,15 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *     [size] : fixed-size-array
  *
  *  prefixes: (multiple prefixes can be mixed)
- *     private : Invisible to perspectives. (exception: spect_inst may initialize and destroy the field, no copying)
+ *     private : Invisible to perspectives (no tracing, no copying, no ownership). Exception: spect_inst may initialize the field
  *     shell   : No physical representation in object. values are provided by get, set functions (used by spect_via; invisible to spect_inst)
  *     hidden  : Invisible to spect_via (can be seen as complement of 'shell')
  *     spect   : Perspective of parent object (private shallow link). Initialized by spect_inst. Private to other perspectives.
  *     const   : Constant. Requires default value. No physical representation in object. Typically used as perspective-parameter.
  *
  *  Static Function:
- *    A static function resembles a C++ class member function.
- *    It does not occupy physical space in the object.
+ *    The reflection func indicates a function operating on or with the object of the reflection by taking
+ *    a pointer to it as first argument. It does not occupy physical space in the object.
  *    func <type> <name> = <ftype>;  // ftype is the name for the function registered with BCORE_REGISTER_(F)FUNC
  *    func <type> <name>;            // ftype is the generic name: <object type>_<function name>
  *    Examples:
@@ -336,8 +336,8 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *
  *  Feature:
  *    [strict] feature  [<prefixes>] <type> [<qualifier>] <name> [=<default>] [~> <related expression> ];
- *    A feature governs dynamic binding between perspective and object. It is declared in the perspective
- *    and binds a perspective-item dynamically to the object-item.
+ *    A feature governs dynamic binding between perspective and object.
+ *    It is declared in the perspective and binds a perspective-item dynamically to the object-item.
  *    'strict' indicates that the relation must exist or the perspective construction produces an error.
  *    Otherwise the feature reverts to default in case binding could not be established.
  *    '~> <related expression>' specifies the exact binding desired. If left blank, canonic binding is used.
@@ -358,9 +358,12 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *    No body: Allowed for certain leaf types, where alignment == object size.
  *
  */
-bcore_self_s* bcore_self_s_build_parse_src(    sr_s src,             uz_t size_of );
-bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of );
-bcore_self_s* bcore_self_s_build_parse_sc(     sc_t text,            uz_t size_of );
+bcore_self_s* bcore_self_s_parse_src(          sr_s src,             uz_t size_of, bl_t advanced_checks );
+bcore_self_s* bcore_self_s_parse_source(       bcore_source* source, uz_t size_of, bl_t advanced_checks );
+
+bcore_self_s* bcore_self_s_build_parse_src(    sr_s src,             uz_t size_of ); // with advanced checks
+bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of ); // with advanced checks
+bcore_self_s* bcore_self_s_build_parse_sc(     sc_t text,            uz_t size_of ); // with advanced checks
 
 //----------------------------------------------------------------------------------------------------------------------
 

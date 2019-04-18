@@ -19,13 +19,21 @@
 #define BCORE_PRECODER_SAMPLE_H
 
 #include "bcore_std.h"
-
 #include "bcore_precoded.h"
 
 /**********************************************************************************************************************/
 
+#ifdef TYPEOF_bcore_precoder_sample_features
+BETH_PRECODE( bcore_precoder_sample_features )
+/*
+    feature void setup( mutable, sz_t n );
+    feature void to_stdout( const );
+    feature sz_t get_size( const );
+*/
+#endif
+
 #ifdef TYPEOF_bcore_precoder_sample
-/** BETH_PRECODE is a c-macro as well as a precode identifier
+/** BETH_PRECODE is a c-macro as well as a precode (group-) identifier
  *  The BETH_PRECODE macro is resolved into the c-code of the precode.
  *  The macro argument is a unique identifier for the given precode section.
  *  The associated precode is defined by the commented section immediately
@@ -33,25 +41,27 @@
  */
 BETH_PRECODE( bcore_precoder_sample )
 /*
-self bcore_precoder_sample_object_s = bcore_inst
-{
-    aware_t _;  // precode single line comment (no nesting conflict with c-style)
-    st_s name;
-    sz_t => [] arr;
-}
+    self bcore_precoder_sample_object_s = bcore_inst
+    {
+        aware_t _;
+        st_s name;
+        sz_t => [] arr;
+        func bcore_precoder_sample_features:setup;
+        func bcore_precoder_sample_features:to_stdout;
+        func bcore_precoder_sample_features:get_size;
+    }
 
-self bcore_precoder_sample_object2_s = bcore_inst
-{
-    aware_t _;  // precode single line comment (no nesting conflict with c-style)
-    bcore_precoder_sample_object_s object;
-    st_s name2;
-}
+    self bcore_precoder_sample_object2_s = bcore_inst
+    {
+        aware_t _;
+        bcore_precoder_sample_object_s object;
+        st_s name2;
+        func bcore_precoder_sample_features:setup;
+        func bcore_precoder_sample_features:to_stdout;
+    }
 */
 
-void bcore_precoder_sample_object_s_setup(           bcore_precoder_sample_object_s* o );
-void bcore_precoder_sample_object_s_to_stdout( const bcore_precoder_sample_object_s* o );
-
-#endif // TYPEOF_bcore_precoder_sample_identifier1
+#endif
 
 /**********************************************************************************************************************/
 

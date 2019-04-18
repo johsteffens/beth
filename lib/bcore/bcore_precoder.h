@@ -14,17 +14,19 @@
  */
 
 /** Precoder Framework (Automatic code generation)
- *  Automatic code is generated for a folder of code (e.g. representing a library)
- *  A folder is identified by a prefix (typically the folder name)
  *
- *  *_precoded.{c,h}
- *  A folder supporting precoder contains two files: 'prefix'_precoded.h and 'prefix'_precoded.c
- *  These file are solely created/maintained by the precoder framework and not intended for
- *  manual editing. *_precoded.c implements a signal handler which must be added to the signal dispatcher
- *  of the library.
+ *  Precoder translates beth-precode source code into c-source code, which is
+ *  written to dedicated precoded-files, which can be included and compiled with
+ *  other c-source code.
  *
- *  BCORE_PRECODER_SIGNAL_HANDLER
+ *  A beth-source participates in precoding when its signal-handler executes upon
+ *  TYPEOF_precoder the function bcore_precoder_compile( <precoded-file>, __FILE__ );
  *
+ *  <precoded-file> is the name of the output (precoded) file given without path or extension.
+ *  <precoded-file>.c and <precoded-file>.h are generated in the folder of the beth-source.
+ *
+ *  During development, bl_t bcore_precoder_run_globally() should be executed.
+ *  If it returns 'true' a rebuild is required.
  */
 
 #ifndef BCORE_PRECODER_H
@@ -36,7 +38,6 @@
 #include "bcore_spect_array.h"
 #include "bcore_hmap.h"
 
-
 /**********************************************************************************************************************/
 
 /// compiles precode into target files: directory( file )/target{ .c | .h }
@@ -45,7 +46,9 @@ void bcore_precoder_compile( sc_t target_name, sc_t source_path );
 /// updates precoded files if necessary; returns true in case a file was modified
 bl_t bcore_precoder_expand();
 
-/// global run of precoder (compiling, finalizing); returns true in case a 'decode-file' was modified
+/** Runs precoder globally (compiling, expansion);
+ *  Returns true in case a precoded-file was generated or modified.
+ */
 bl_t bcore_precoder_run_globally();
 
 /**********************************************************************************************************************/

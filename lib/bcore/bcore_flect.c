@@ -296,7 +296,7 @@ void bcore_self_item_s_check_integrity( const bcore_self_item_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
+static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent, bl_t advanced_checks )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
@@ -334,13 +334,13 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
         if( !st_s_equal_sc( assign_name, "" ) )
         {
             tp_t func_tp = entypeof( assign_name->sc );
-            if( !bcore_function_exists( func_tp ) )
+            if( advanced_checks && !bcore_function_exists( func_tp ) )
             {
                 bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' was not registered.", ifnameof( parent ), ifnameof( func_tp ) );
             }
 
             o->default_tp = func_tp;
-            if( bcore_trait_exists( func_tp ) )
+            if( advanced_checks && bcore_trait_exists( func_tp ) )
             {
                 if( !bcore_trait_is_of( func_tp, o->type ) )
                 {
@@ -472,7 +472,6 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
 
         if( extend_type_name )
         {
-
             st_s* type_prefix = st_s_clone( type_name );
             st_s_copy_fa( type_name, "#<sc_t>_#<sc_t>", type_prefix->sc, item_name->sc );
             st_s_discard( type_prefix );
@@ -541,7 +540,6 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
                 bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'aware_t' can only be used in single solid static nesting.", ifnameof( parent ) );
             }
         }
-
 
         o->flags.f_fp = bcore_trait_is_of( o->type, TYPEOF_function_pointer );
 
@@ -671,7 +669,7 @@ void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent )
     {
         o->flags.f_feature = true;
         o->child_item = bcore_self_item_s_create();
-        bcore_self_item_s_parse_src( o->child_item, src, 0 );
+        bcore_self_item_s_parse_src( o->child_item, src, 0, advanced_checks );
     }
     else
     {
@@ -950,7 +948,7 @@ st_s* bcore_self_body_s_show( const bcore_self_body_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, tp_t parent )
+static void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, tp_t parent, bl_t advanced_checks )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
@@ -965,7 +963,7 @@ void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, tp_t parent )
             break;
         }
         bcore_self_item_s* item = bcore_self_item_s_create();
-        bcore_self_item_s_parse_src( item, src, parent );
+        bcore_self_item_s_parse_src( item, src, parent, advanced_checks );
 
         if( item->type == typeof( "aware_t" ) )
         {
@@ -1064,11 +1062,11 @@ void bcore_self_s_struct_body_to_sink_single_line( const bcore_self_s* o, bcore_
         for( sz_t i = 0; i < o->body->size; i++ )
         {
             const bcore_self_item_s* item = o->body->data[ i ];
-            bcore_sink_a_push_fa( sink, " " );
+            //bcore_sink_a_push_fa( sink, " " );
             bcore_self_item_s_struct_to_sink( item, sink );
         }
     }
-    bcore_sink_a_push_fa( sink, " }" );
+    bcore_sink_a_push_fa( sink, "}" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1334,7 +1332,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware( uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of )
+bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, bl_t advanced_checks )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
@@ -1356,7 +1354,7 @@ bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of )
         o->trait  = type2 ? type2 : typeof( "bcore_inst" );
         o->parent = type3;
         o->body = bcore_self_body_s_create();
-        bcore_self_body_s_parse_src( o->body, src, o->type );
+        bcore_self_body_s_parse_src( o->body, src, o->type, advanced_checks );
 
         if( !o->type )
         {
@@ -1376,6 +1374,20 @@ bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of )
     o->size = size_of;
     bcore_life_s_discard( l );
     return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_self_s* bcore_self_s_parse_source( bcore_source* source, uz_t size_of, bl_t advanced_checks )
+{
+    return bcore_self_s_parse_src( sr_awd( source ), size_of, advanced_checks );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of )
+{
+    return bcore_self_s_parse_src( src, size_of, true );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

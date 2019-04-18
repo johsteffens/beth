@@ -19,12 +19,10 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_precoder_sample_object_s_setup( bcore_precoder_sample_object_s* o )
+void bcore_precoder_sample_object_s_setup( bcore_precoder_sample_object_s* o, sz_t n )
 {
     st_s_copy_sc( &o->name, "Franz" );
-    bcore_array_a_push_sz( ( bcore_array* )o, 10 );
-    bcore_array_a_push_sz( ( bcore_array* )o, 15 );
-    bcore_array_a_push_sz( ( bcore_array* )o, 20 );
+    for( sz_t i = 0; i < n; i++ ) bcore_array_a_push_sz( ( bcore_array* )o, i );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -40,7 +38,7 @@ void bcore_precoder_sample_object_s_selftest( void )
 {
     BCORE_LIFE_INIT();
     BCORE_LIFE_CREATE( bcore_precoder_sample_object_s, object );
-    bcore_precoder_sample_object_s_setup( object );
+    bcore_precoder_sample_object_s_setup( object, 3 );
     bcore_precoder_sample_object_s_to_stdout( object );
     BCORE_LIFE_DOWN();
 }

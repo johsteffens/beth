@@ -72,8 +72,12 @@
 #define TYPEOF_bcore_matrix_s              686911304
 #define TYPEOF_bcore_name_map_s           2156406683
 #define TYPEOF_bcore_name_s               2158870146
+#define TYPEOF_bcore_precoder_feature_s   2057969550
+#define TYPEOF_bcore_precoder_group_s     3308841487
 #define TYPEOF_bcore_precoder_item_s      2569699851
 #define TYPEOF_bcore_precoder_object_s    1181867915
+#define TYPEOF_bcore_precoder_s           2936171739
+#define TYPEOF_bcore_precoder_source_s     700523377
 #define TYPEOF_bcore_precoder_target_s    4261411997
 #define TYPEOF_bcore_self_s                422978351
 #define TYPEOF_bcore_sink                 4108403612
@@ -104,3 +108,4 @@
 #define TYPEOF_precoder                    285665067
 #define TYPEOF_selftest                   2526214595
 #define TYPEOF_st_s                       3358332604
+
