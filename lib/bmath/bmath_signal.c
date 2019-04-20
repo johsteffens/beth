@@ -34,6 +34,7 @@
 #include "bmath_spect_adaptive.h"
 #include "bmath_snn.h"
 #include "bmath_cnn.h"
+#include "bmath_precoded.h"
 
 vd_t bmath_signal_handler( const bcore_signal_s* o )
 {
@@ -71,6 +72,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_spect_adaptive_signal_handler,
             bmath_snn_signal_handler,
             bmath_cnn_signal_handler,
+            bmath_precoded_signal_handler,
         };
 
         ret = bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );

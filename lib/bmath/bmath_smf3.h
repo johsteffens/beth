@@ -74,30 +74,25 @@
 
 #include "bcore_std.h"
 #include "bmath_smf3_mul.h"
+#include "bmath_precoded.h"
 
 /**********************************************************************************************************************/
 
-// mf3 features
-BCORE_FORWARD_OBJECT( bmath_smf3_s );
+BETH_PRECODE( bmath_smf3 )
+/*
+    self bmath_smf3_s = bcore_inst
+    {
+        aware_t _;
 
-typedef void (*bmath_fp_smf3_s_mul     )( const bmath_smf3_s* o, const bmath_smf3_s* op, bmath_smf3_s* res );
-typedef void (*bmath_fp_smf3_s_mul_htp )( const bmath_smf3_s* o, const bmath_smf3_s* op, bmath_smf3_s* res );
-typedef void (*bmath_fp_smf3_s_htp_mul )( const bmath_smf3_s* o, const bmath_smf3_s* op, bmath_smf3_s* res );
+        sz_t slos;   // values per xon
+        sz_t xons;   // xons  per row
+        sz_t rows;   // number of rows
+        sz_t i_stride; // stride of splicing
 
-/**********************************************************************************************************************/
-
-BCORE_DECLARE_OBJECT( bmath_smf3_s )
-{
-    aware_t _;
-
-    sz_t slos;   // slots per xon
-    sz_t xons;   // xons  per row
-    sz_t rows;   // number of rows
-
-    sz_t i_stride; // stride of splicing
-    BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ ); // container of indexes (splicing)
-    BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ ); // container of values
-};
+        sz_t [] i; // index data
+        f3_t [] v; // value data
+    }
+*/
 
 /// sets size of splicing (zeros all indexes)
 void bmath_smf3_s_set_size_splicing( bmath_smf3_s* o, sz_t rows, sz_t xons );

@@ -17,21 +17,7 @@
 #include "bmath_std.h"
 #include "bmath_smf3.h"
 
-
 /**********************************************************************************************************************/
-
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_smf3_s )
-"{"
-    "aware_t _;"
-
-    "sz_t slos;"   // values per xon
-    "sz_t xons;"   // xons  per row
-    "sz_t rows;"   // number of rows
-    "sz_t stride;" // stride of splicing
-
-    "sz_t [] i_arr;" // index data
-    "f3_t [] d_arr;" // value data
-"}";
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -346,23 +332,11 @@ vd_t bmath_smf3_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            // features
-            BCORE_REGISTER_FEATURE( bmath_fp_smf3_s_mul );
-            BCORE_REGISTER_FEATURE( bmath_fp_smf3_s_mul_htp );
-            BCORE_REGISTER_FEATURE( bmath_fp_smf3_s_htp_mul );
-
-            BCORE_REGISTER_OBJECT( bmath_smf3_s );
         }
         break;
 
         case TYPEOF_get_quicktypes:
         {
-            // features
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_smf3_s_mul );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_smf3_s_mul_htp );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_smf3_s_htp_mul );
-
-            BCORE_REGISTER_QUICKTYPE( bmath_smf3_s );
         }
         break;
 
@@ -370,6 +344,12 @@ vd_t bmath_smf3_signal_handler( const bcore_signal_s* o )
         {
             selftest();
             return NULL;
+        }
+        break;
+
+        case TYPEOF_precoder:
+        {
+            bcore_precoder_compile( "bmath_precoded", __FILE__ );
         }
         break;
 
