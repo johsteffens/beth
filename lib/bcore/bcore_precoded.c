@@ -7,13 +7,107 @@
  */
 
 #include "bcore_precoded.h"
+#include "bcore_spect.h"
 #include "bcore_spect_inst.h"
+#include "bcore_sr.h"
 #include "bcore_const_manager.h"
 
-// source: bcore_precoder_sample
+
+/**********************************************************************************************************************/
+/// source: bcore_precoder_sample
 #include "bcore_precoder_sample.h"
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object_s ) "{ aware_t _; st_s name; sz_t => [] arr; func bcore_precoder_sample_features:setup; func bcore_precoder_sample_features:to_stdout; func bcore_precoder_sample_features:get_size; }";
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object2_s ) "{ aware_t _; bcore_precoder_sample_object_s object; st_s name2; func bcore_precoder_sample_features:setup; func bcore_precoder_sample_features:to_stdout; }";
+
+//----------------------------------------------------------------------------------------------------------------------
+/// group: bcore_precoder_sample_features
+
+#define TYPEOF_bcore_precoder_sample_features_s 2917243660
+BCORE_DECLARE_SPECT( bcore_precoder_sample_features )
+{
+    bcore_spect_header_s header;
+    bcore_precoder_sample_features_setup setup;
+    bcore_precoder_sample_features_to_stdout to_stdout;
+    bcore_precoder_sample_features_get_size get_size;
+};
+BCORE_DEFINE_SPECT( bcore_inst, bcore_precoder_sample_features )
+"{"
+    "bcore_spect_header_s header;"
+    "feature bcore_precoder_sample_features : setup = bcore_precoder_sample_features_setup_default;"
+    "feature bcore_precoder_sample_features : to_stdout = bcore_precoder_sample_features_to_stdout_default;"
+    "feature bcore_precoder_sample_features : get_size = bcore_precoder_sample_features_get_size_default;"
+"}";
+
+static void bcore_precoder_sample_features_setup_default( bcore_precoder_sample_features* o, sz_t n )
+{
+    ERR_fa( "Feature has no binding." );
+}
+
+void bcore_precoder_sample_features_t_setup( tp_t __t, bcore_precoder_sample_features* o, sz_t n )
+{
+    bcore_precoder_sample_features_s_get_typed( __t )->setup( o, n );
+}
+
+void bcore_precoder_sample_features_a_setup( bcore_precoder_sample_features* o, sz_t n )
+{
+    bcore_precoder_sample_features_s_get_aware( o )->setup( o, n );
+}
+
+void bcore_precoder_sample_features_r_setup( const sr_s* o, sz_t n )
+{
+    ASSERT( !sr_s_is_const( o ) );
+    ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->setup( o->o, n );
+}
+
+static void bcore_precoder_sample_features_to_stdout_default( const bcore_precoder_sample_features* o )
+{
+    ERR_fa( "Feature has no binding." );
+}
+
+void bcore_precoder_sample_features_t_to_stdout( tp_t __t, const bcore_precoder_sample_features* o )
+{
+    bcore_precoder_sample_features_s_get_typed( __t )->to_stdout( o );
+}
+
+void bcore_precoder_sample_features_a_to_stdout( const bcore_precoder_sample_features* o )
+{
+    bcore_precoder_sample_features_s_get_aware( o )->to_stdout( o );
+}
+
+void bcore_precoder_sample_features_r_to_stdout( const sr_s* o )
+{
+    ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->to_stdout( o->o );
+}
+
+static sz_t bcore_precoder_sample_features_get_size_default( const bcore_precoder_sample_features* o )
+{
+    ERR_fa( "Feature has no binding." );
+    return *(sz_t*)NULL;
+}
+
+sz_t bcore_precoder_sample_features_t_get_size( tp_t __t, const bcore_precoder_sample_features* o )
+{
+    return bcore_precoder_sample_features_s_get_typed( __t )->get_size( o );
+}
+
+sz_t bcore_precoder_sample_features_a_get_size( const bcore_precoder_sample_features* o )
+{
+    return bcore_precoder_sample_features_s_get_aware( o )->get_size( o );
+}
+
+sz_t bcore_precoder_sample_features_r_get_size( const sr_s* o )
+{
+    return ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->get_size( o->o );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+/// group: bcore_precoder_sample
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object_s )\
+  "{ aware_t _; st_s name1; sz_t => [] arr; func bcore_precoder_sample_features:setup; func bcore_precoder_sample_features:to_stdout; func bcore_precoder_sample_features:get_size; }";
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object2_s )\
+  "{ aware_t _; bcore_precoder_sample_object_s object; st_s name2; func bcore_precoder_sample_features:setup; func bcore_precoder_sample_features:to_stdout; }";
+
+/**********************************************************************************************************************/
 
 vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
 {
@@ -21,11 +115,20 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 2029224625 ) );
+            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 4122593692 ) );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_setup );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_to_stdout );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_get_size );
+            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_setup, bcore_precoder_sample_features_setup_default );
+            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_features_to_stdout_default );
+            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_get_size, bcore_precoder_sample_features_get_size_default );
+            BCORE_REGISTER_SPECT( bcore_precoder_sample_features );
+            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_setup, bcore_precoder_sample_object_s_setup );
+            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_object_s_to_stdout );
+            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_get_size, bcore_precoder_sample_object_s_get_size );
             BCORE_REGISTER_OBJECT( bcore_precoder_sample_object_s );
+            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_setup, bcore_precoder_sample_object2_s_setup );
+            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_object2_s_to_stdout );
             BCORE_REGISTER_OBJECT( bcore_precoder_sample_object2_s );
         }
         break;

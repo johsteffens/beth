@@ -72,6 +72,8 @@
 #define TYPEOF_bcore_matrix_s              686911304
 #define TYPEOF_bcore_name_map_s           2156406683
 #define TYPEOF_bcore_name_s               2158870146
+#define TYPEOF_bcore_precoder_arg_s        397387076
+#define TYPEOF_bcore_precoder_args_s      3794127197
 #define TYPEOF_bcore_precoder_feature_s   2057969550
 #define TYPEOF_bcore_precoder_group_s     3308841487
 #define TYPEOF_bcore_precoder_item_s      2569699851

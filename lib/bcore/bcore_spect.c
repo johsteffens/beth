@@ -575,7 +575,7 @@ st_s* bcore_spect_status()
     {
         st_s* s = st_s_create();
         st_s_push_sc( s, "registered perspectives " );
-        st_s_push_char_n( s, '.', 28 - s->size );
+        st_s_push_char_n( s, '.', 32 - s->size );
         bcore_mutex_s_lock( &hmap_s_g->mutex );
         st_s_pushf( s, "% 4zu\n", bcore_hmap_u2vd_s_keys( map ) );
         bcore_mutex_s_unlock( &hmap_s_g->mutex );
@@ -614,7 +614,9 @@ st_s* bcore_spect_status()
         const uz_t* p_count = sr_cl( bcore_via_x_nget( pair, typeof( "count" ) ), l ).o;
         st_s* s = st_s_create();
         st_s_pushf( s, "  %s ", ifnameof( *p_type ) );
-        st_s_push_char_n( s, '.', 28 - s->size );
+        sz_t padding = 32 - s->size;
+        padding = padding < 0 ? 0 : padding;
+        st_s_push_char_n( s, '.', padding );
         st_s_pushf( s, "% 4zu\n", *p_count );
         st_s_push_st_d( log, s );
     }

@@ -12,17 +12,21 @@
 #include "bcore_control.h"
 
 // source: bcore_precoder_sample
+// group: bcore_precoder_sample_features
 #define TYPEOF_bcore_precoder_sample_features 1533308178
   #define BETH_EXPAND_ITEM_bcore_precoder_sample_features_setup \
     typedef void (*bcore_precoder_sample_features_setup)( bcore_precoder_sample_features* o, sz_t n ); \
+    void bcore_precoder_sample_features_t_setup( tp_t t, bcore_precoder_sample_features* o, sz_t n ); \
     void bcore_precoder_sample_features_a_setup( bcore_precoder_sample_features* o, sz_t n ); \
     void bcore_precoder_sample_features_r_setup( const sr_s* o, sz_t n );
   #define BETH_EXPAND_ITEM_bcore_precoder_sample_features_to_stdout \
     typedef void (*bcore_precoder_sample_features_to_stdout)( const bcore_precoder_sample_features* o ); \
+    void bcore_precoder_sample_features_t_to_stdout( tp_t t, const bcore_precoder_sample_features* o ); \
     void bcore_precoder_sample_features_a_to_stdout( const bcore_precoder_sample_features* o ); \
     void bcore_precoder_sample_features_r_to_stdout( const sr_s* o );
   #define BETH_EXPAND_ITEM_bcore_precoder_sample_features_get_size \
     typedef sz_t (*bcore_precoder_sample_features_get_size)( const bcore_precoder_sample_features* o ); \
+    sz_t bcore_precoder_sample_features_t_get_size( tp_t t, const bcore_precoder_sample_features* o ); \
     sz_t bcore_precoder_sample_features_a_get_size( const bcore_precoder_sample_features* o ); \
     sz_t bcore_precoder_sample_features_r_get_size( const sr_s* o );
 #define BETH_EXPAND_GROUP_bcore_precoder_sample_features \
@@ -31,10 +35,11 @@
   BETH_EXPAND_ITEM_bcore_precoder_sample_features_to_stdout \
   BETH_EXPAND_ITEM_bcore_precoder_sample_features_get_size
 
+// group: bcore_precoder_sample
 #define TYPEOF_bcore_precoder_sample 933626240
   #define TYPEOF_bcore_precoder_sample_object_s 1940901916
   #define BETH_EXPAND_ITEM_bcore_precoder_sample_object_s \
-    BCORE_DECLARE_OBJECT( bcore_precoder_sample_object_s ) {aware_t _;st_s name;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
+    BCORE_DECLARE_OBJECT( bcore_precoder_sample_object_s ) {aware_t _;st_s name1;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
     void bcore_precoder_sample_object_s_setup( bcore_precoder_sample_object_s* o, sz_t n ); \
     void bcore_precoder_sample_object_s_to_stdout( const bcore_precoder_sample_object_s* o ); \
     sz_t bcore_precoder_sample_object_s_get_size( const bcore_precoder_sample_object_s* o );

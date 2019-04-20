@@ -23,6 +23,14 @@
 
 /**********************************************************************************************************************/
 
+/* BETH_PRECODE is a c-macro as well as a precode (group-) identifier
+ * The BETH_PRECODE macro is expanded into the c-code of the precode.
+ * The macro argument is a unique identifier for the given precode section.
+ * The associated precode is defined by the commented section immediately
+ * following the macro.
+ */
+
+/// BETH_PRECODE containing features expands to a perspective of group-name
 #ifdef TYPEOF_bcore_precoder_sample_features
 BETH_PRECODE( bcore_precoder_sample_features )
 /*
@@ -30,21 +38,15 @@ BETH_PRECODE( bcore_precoder_sample_features )
     feature void to_stdout( const );
     feature sz_t get_size( const );
 */
-#endif
+#endif // optional enclosure
 
 #ifdef TYPEOF_bcore_precoder_sample
-/** BETH_PRECODE is a c-macro as well as a precode (group-) identifier
- *  The BETH_PRECODE macro is resolved into the c-code of the precode.
- *  The macro argument is a unique identifier for the given precode section.
- *  The associated precode is defined by the commented section immediately
- *  following the macro.
- */
 BETH_PRECODE( bcore_precoder_sample )
 /*
     self bcore_precoder_sample_object_s = bcore_inst
     {
         aware_t _;
-        st_s name;
+        st_s name1;
         sz_t => [] arr;
         func bcore_precoder_sample_features:setup;
         func bcore_precoder_sample_features:to_stdout;
@@ -60,8 +62,7 @@ BETH_PRECODE( bcore_precoder_sample )
         func bcore_precoder_sample_features:to_stdout;
     }
 */
-
-#endif
+#endif // optional enclosure
 
 /**********************************************************************************************************************/
 
