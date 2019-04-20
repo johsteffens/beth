@@ -23,14 +23,13 @@
 
 /**********************************************************************************************************************/
 
-/* BETH_PRECODE is a c-macro as well as a precode (group-) identifier
- * The BETH_PRECODE macro is expanded into the c-code of the precode.
+/* B'ETH_PRECODE is a c-macro as well as a precode (group-) identifier
+ * The B'ETH_PRECODE macro is expanded into the c-code of the precode.
  * The macro argument is a unique identifier for the given precode section.
  * The associated precode is defined by the commented section immediately
  * following the macro.
  */
 
-/// BETH_PRECODE containing features expands to a perspective of group-name
 #ifdef TYPEOF_bcore_precoder_sample_features
 BETH_PRECODE( bcore_precoder_sample_features )
 /*

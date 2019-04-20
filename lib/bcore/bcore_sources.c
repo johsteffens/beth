@@ -545,17 +545,43 @@ void bcore_source_string_s_set_index( bcore_source_string_s* o, s3_t index )
 
 static uz_t string_s_parse_err( vd_t arg, const st_s* string, uz_t idx, st_s* ext_msg )
 {
-    st_s* context   = st_s_show_line_context( string, idx );
-    st_s* msg       = st_s_create();
-    st_s_pushf( msg, "Parse error" );
-    uz_t line = st_s_lineof( string, idx );
-    uz_t col  = st_s_colof( string, idx );
-    st_s_pushf( msg, " at line %zu, col %zu:", line, col );
-    st_s_pushf( msg, "\n%s\n", context->sc );
-    st_s_push_st_d( msg, ext_msg );
-    bcore_err( "%s", msg->sc );
-    st_s_discard( msg );
-    st_s_discard( context );
+    const bcore_source_string_s* o = arg;
+    if( o->chain )
+    {
+        st_s* msg       = st_s_create();
+        st_s_pushf( msg, "Parse error" );
+        if( o->chain->data[ 0 ] && ( *( aware_t* )o->chain->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
+        {
+            bcore_source_file_s* fo = o->chain->data[ 0 ];
+            st_s_pushf( msg, " in file '%s'", bcore_source_file_s_get_name( fo ) );
+            uz_t index = bcore_source_chain_s_get_index( o->chain );
+            uz_t line, col;
+            st_s* context = st_s_create();
+            bcore_source_file_s_get_line_col_context( fo, index, &line, &col, context );
+            st_s_pushf( msg, " at line %zu, col %zu", line, col );
+            st_s_pushf( msg, "\n%s", context->sc );
+            st_s_discard( context );
+        }
+
+        st_s_push_st( msg, ext_msg );
+        bcore_err( "\n%s", msg->sc );
+        st_s_discard( msg );
+    }
+    else
+    {
+        st_s* context   = st_s_show_line_context( string, idx );
+        st_s* msg       = st_s_create();
+        st_s_pushf( msg, "Parse error" );
+        uz_t line = st_s_lineof( string, idx );
+        uz_t col  = st_s_colof( string, idx );
+        st_s_pushf( msg, " at line %zu, col %zu:", line, col );
+        st_s_pushf( msg, "\n%s\n", context->sc );
+        st_s_push_st_d( msg, ext_msg );
+        bcore_err( "%s", msg->sc );
+        st_s_discard( msg );
+        st_s_discard( context );
+    }
+
     return idx;
 }
 
@@ -589,6 +615,7 @@ static bcore_self_s* string_s_create_self( void )
       "private vd_t supplier; "
       "uz_t refill_limit;    "
       "uz_t prefetch_size;   "
+      "private bcore_source_chain_s* chain;" // governing chain (if any)
     "}";
     bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_source_string_s ) );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_init,         "bcore_fp_init", "init" );
@@ -843,7 +870,10 @@ bcore_source_chain_s* bcore_source_open_file( sc_t file_name )
 {
     bcore_source_chain_s* chain = bcore_source_chain_s_create();
     bcore_source_chain_s_push_d( chain, bcore_source_file_s_create_name( file_name ) );
-    bcore_source_chain_s_push_d( chain, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );
+    bcore_source_chain_s_push_d( chain, bcore_inst_t_create( TYPEOF_bcore_source_string_s ) );
+    bcore_source_string_s* string = chain->data[ chain->size - 1 ];
+    string->chain = chain;
+
     return chain;
 }
 

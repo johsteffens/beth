@@ -508,7 +508,8 @@ static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_obj
     bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->item_name, typeof( o->item_name ) );
 
     bcore_sink_a_push_fa( sink, "#rn{ }##define BETH_EXPAND_ITEM_#<sc_t>", indent, o->item_name, o->item_name );
-    bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BCORE_DECLARE_OBJECT( #<sc_t> ) ", indent, o->item_name );
+    bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BCORE_DECLARE_OBJECT( #<sc_t> )", indent, o->item_name );
+    bcore_sink_a_push_fa( sink, " \\\n#rn{ }    ", indent );
     bcore_self_s_struct_body_to_sink_single_line( &o->self, sink );
     bcore_sink_a_push_fa( sink, ";" );
 
@@ -926,7 +927,7 @@ static void bcore_precoder_source_s_compile( bcore_precoder_source_s* o, bcore_s
 {
     while( !bcore_source_a_eos( source ) )
     {
-        if( bcore_source_a_parse_bl_fa( source, " #?'BETH_PRECODE'" ) )
+        if( bcore_source_a_parse_bl_fa( source, "#?'BETH_PRECODE'" ) )
         {
             bcore_precoder_group_s* group = bcore_precoder_group_s_create();
             group->source = o;
@@ -1021,6 +1022,7 @@ static void bcore_precoder_target_s_expand_h( const bcore_precoder_target_s* o, 
 
 static void bcore_precoder_target_s_expand_init1( const bcore_precoder_target_s* o, sz_t indent, bcore_sink* sink )
 {
+    bcore_sink_a_push_fa( sink, "#rn{ }// Comment or remove line below to rebuild this target.\n", indent, o->name.sc, o->hash );
     bcore_sink_a_push_fa( sink, "#rn{ }bcore_const_x_set_d( typeof( \"#<sc_t>_hash\" ), sr_tp( #<tp_t> ) );\n", indent, o->name.sc, o->hash );
 }
 
@@ -1102,7 +1104,14 @@ static bl_t bcore_precoder_target_s_expand( bcore_precoder_target_s* o )
     bl_t modified = true;
 
     tp_t key = typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "#<sc_t>_hash", o->name.sc ) ) )->sc );
-    if( bcore_const_exists( key ) ) modified = ( *( tp_t* )bcore_const_get_o( key ) != o->hash );
+    if( bcore_const_exists( key ) )
+    {
+        modified = ( *( tp_t* )bcore_const_get_o( key ) != o->hash );
+    }
+    else
+    {
+        bcore_msg_fa( "Key for target '#<sc_t>' does not exist. Is signal handler of '#<sc_t>.h' integrated?\n", o->name.sc, o->name.sc );
+    }
 
     if( modified )
     {
@@ -1186,7 +1195,6 @@ static void bcore_precoder_s_compile( bcore_precoder_s* o, sc_t target_name, sc_
 /// returns true if a file was modified
 static bl_t bcore_precoder_s_expand( bcore_precoder_s* o )
 {
-//    bcore_txt_ml_a_to_stdout( o );
     bl_t modified = false;
     for( sz_t i = 0; i < o->size; i++ )
     {

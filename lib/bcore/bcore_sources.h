@@ -119,6 +119,7 @@ typedef struct bcore_source_string_s
     vd_t ext_supplier;       // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_string_s)
     uz_t refill_limit;       // size size limit to request refill from supplier (if present)
     uz_t prefetch_size;      // data amount prefetched from supplier (if present)
+    bcore_source_chain_s* chain; // governing chain (if any)
 } bcore_source_string_s;
 
 void                   bcore_source_string_s_init(          bcore_source_string_s* o );
