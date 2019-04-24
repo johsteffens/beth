@@ -192,6 +192,7 @@ sr_s* bcore_arr_sr_s_push_sr(   bcore_arr_sr_s* o, sr_s v );
 sr_s* bcore_arr_sr_s_push_tp(   bcore_arr_sr_s* o, tp_t type );
 sr_s  bcore_arr_sr_s_pop(       bcore_arr_sr_s* o );
 void  bcore_arr_sr_s_reorder(   bcore_arr_sr_s* o, const bcore_arr_uz_s* order );
+void  bcore_arr_sr_s_set_spect( bcore_arr_sr_s* o, tp_t spect_type ); // switches perspective of all references to 'spect'
 
 /**********************************************************************************************************************/
 

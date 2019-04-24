@@ -14,38 +14,45 @@
 // source: bcore_precoder_sample
 // group: bcore_precoder_sample_features
 #define TYPEOF_bcore_precoder_sample_features 1533308178
-  #define BETH_EXPAND_ITEM_bcore_precoder_sample_features_setup \
-    typedef void (*bcore_precoder_sample_features_setup)( bcore_precoder_sample_features* o, sz_t n ); \
-    void bcore_precoder_sample_features_t_setup( tp_t t, bcore_precoder_sample_features* o, sz_t n ); \
-    void bcore_precoder_sample_features_a_setup( bcore_precoder_sample_features* o, sz_t n ); \
-    void bcore_precoder_sample_features_r_setup( const sr_s* o, sz_t n );
-  #define BETH_EXPAND_ITEM_bcore_precoder_sample_features_to_stdout \
-    typedef void (*bcore_precoder_sample_features_to_stdout)( const bcore_precoder_sample_features* o ); \
-    void bcore_precoder_sample_features_t_to_stdout( tp_t t, const bcore_precoder_sample_features* o ); \
-    void bcore_precoder_sample_features_a_to_stdout( const bcore_precoder_sample_features* o ); \
-    void bcore_precoder_sample_features_r_to_stdout( const sr_s* o );
-  #define BETH_EXPAND_ITEM_bcore_precoder_sample_features_get_size \
-    typedef sz_t (*bcore_precoder_sample_features_get_size)( const bcore_precoder_sample_features* o ); \
-    sz_t bcore_precoder_sample_features_t_get_size( tp_t t, const bcore_precoder_sample_features* o ); \
-    sz_t bcore_precoder_sample_features_a_get_size( const bcore_precoder_sample_features* o ); \
-    sz_t bcore_precoder_sample_features_r_get_size( const sr_s* o );
+#define TYPEOF_bcore_precoder_sample_features_s 2917243660
 #define BETH_EXPAND_GROUP_bcore_precoder_sample_features \
   BCORE_FORWARD_OBJECT( bcore_precoder_sample_features ); \
-  BETH_EXPAND_ITEM_bcore_precoder_sample_features_setup \
-  BETH_EXPAND_ITEM_bcore_precoder_sample_features_to_stdout \
-  BETH_EXPAND_ITEM_bcore_precoder_sample_features_get_size
+  typedef void (*bcore_precoder_sample_features_setup)( bcore_precoder_sample_features* o, sz_t n ); \
+  typedef void (*bcore_precoder_sample_features_to_stdout)( const bcore_precoder_sample_features* o ); \
+  typedef sz_t (*bcore_precoder_sample_features_get_size)( const bcore_precoder_sample_features* o ); \
+  BCORE_DECLARE_SPECT( bcore_precoder_sample_features ) \
+  { \
+      bcore_spect_header_s header; \
+      bcore_precoder_sample_features_setup setup; \
+      bcore_precoder_sample_features_to_stdout to_stdout; \
+      bcore_precoder_sample_features_get_size get_size; \
+  }; \
+  static inline void bcore_precoder_sample_features_p_setup( const bcore_precoder_sample_features_s* __p, bcore_precoder_sample_features* o, sz_t n ) {__p->setup( o, n ); } \
+  static inline void bcore_precoder_sample_features_t_setup( tp_t __t, bcore_precoder_sample_features* o, sz_t n ) { bcore_precoder_sample_features_s_get_typed( __t )->setup( o, n ); } \
+  static inline void bcore_precoder_sample_features_a_setup( bcore_precoder_sample_features* o, sz_t n ) { bcore_precoder_sample_features_s_get_aware( o )->setup( o, n ); } \
+  static inline void bcore_precoder_sample_features_r_setup( const sr_s* o, sz_t n ) { ASSERT( !sr_s_is_const( o ) ); ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->setup( o->o, n ); } \
+  static inline void bcore_precoder_sample_features_p_to_stdout( const bcore_precoder_sample_features_s* __p, const bcore_precoder_sample_features* o ) {__p->to_stdout( o ); } \
+  static inline void bcore_precoder_sample_features_t_to_stdout( tp_t __t, const bcore_precoder_sample_features* o ) { bcore_precoder_sample_features_s_get_typed( __t )->to_stdout( o ); } \
+  static inline void bcore_precoder_sample_features_a_to_stdout( const bcore_precoder_sample_features* o ) { bcore_precoder_sample_features_s_get_aware( o )->to_stdout( o ); } \
+  static inline void bcore_precoder_sample_features_r_to_stdout( const sr_s* o ) { ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->to_stdout( o->o ); } \
+  static inline sz_t bcore_precoder_sample_features_p_get_size( const bcore_precoder_sample_features_s* __p, const bcore_precoder_sample_features* o ) {return __p->get_size( o ); } \
+  static inline sz_t bcore_precoder_sample_features_t_get_size( tp_t __t, const bcore_precoder_sample_features* o ) { return bcore_precoder_sample_features_s_get_typed( __t )->get_size( o ); } \
+  static inline sz_t bcore_precoder_sample_features_a_get_size( const bcore_precoder_sample_features* o ) { return bcore_precoder_sample_features_s_get_aware( o )->get_size( o ); } \
+  static inline sz_t bcore_precoder_sample_features_r_get_size( const sr_s* o ) { return ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->get_size( o->o ); }
 
 // group: bcore_precoder_sample
 #define TYPEOF_bcore_precoder_sample 933626240
   #define TYPEOF_bcore_precoder_sample_object_s 1940901916
   #define BETH_EXPAND_ITEM_bcore_precoder_sample_object_s \
-    BCORE_DECLARE_OBJECT( bcore_precoder_sample_object_s ) {aware_t _;st_s name1;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
+    BCORE_DECLARE_OBJECT( bcore_precoder_sample_object_s ) \
+      {aware_t _;st_s name1;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
     void bcore_precoder_sample_object_s_setup( bcore_precoder_sample_object_s* o, sz_t n ); \
     void bcore_precoder_sample_object_s_to_stdout( const bcore_precoder_sample_object_s* o ); \
     sz_t bcore_precoder_sample_object_s_get_size( const bcore_precoder_sample_object_s* o );
   #define TYPEOF_bcore_precoder_sample_object2_s 2687764618
   #define BETH_EXPAND_ITEM_bcore_precoder_sample_object2_s \
-    BCORE_DECLARE_OBJECT( bcore_precoder_sample_object2_s ) {aware_t _;bcore_precoder_sample_object_s object;st_s name2;}; \
+    BCORE_DECLARE_OBJECT( bcore_precoder_sample_object2_s ) \
+      {aware_t _;bcore_precoder_sample_object_s object;st_s name2;}; \
     void bcore_precoder_sample_object2_s_setup( bcore_precoder_sample_object2_s* o, sz_t n ); \
     void bcore_precoder_sample_object2_s_to_stdout( const bcore_precoder_sample_object2_s* o );
 #define BETH_EXPAND_GROUP_bcore_precoder_sample \

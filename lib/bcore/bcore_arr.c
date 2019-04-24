@@ -1160,6 +1160,12 @@ void bcore_arr_sr_s_reorder( bcore_arr_sr_s* o, const bcore_arr_uz_s* order )
     bcore_array_a_reorder( (bcore_array*)o, order);
 }
 
+void  bcore_arr_sr_s_set_spect( bcore_arr_sr_s* o, tp_t spect_type )
+{
+    for( sz_t i = 0; i < o->size; i++ ) o->data[ i ] = sr_cp( o->data[ i ], spect_type );
+}
+
+
 /**********************************************************************************************************************/
 // selftests
 
