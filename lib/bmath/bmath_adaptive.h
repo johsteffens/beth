@@ -43,7 +43,12 @@ BETH_PRECODE( bmath_adaptive )
     feature f3_t get_decay( const );
     feature void set_decay( mutable, f3_t val );
 
-    // setup of the internal architecture (usually, this function needs not be explicitly called)
+    // Sets up network from architecture parameters.
+    // Usually, this function needs not be explicitly called. The network can lazily initialize itself.
+    // If network is untrained, weights are randomly initialized.
+    // After calling setup architecture parameters should not be changed.
+    // Call 'set_untrained' if architecture parameters are to be changed.
+    // training: true if learning is intended; false otherwise
     feature void setup( mutable, bl_t training );
 
     // resets adaptive to the untrained state
