@@ -32,9 +32,11 @@
 #include "bmath_estimator.h"
 #include "bmath_plot.h"
 #include "bmath_adaptive.h"
+#include "bmath_activation.h"
 #include "bmath_spect_adaptive.h"
 #include "bmath_snn.h"
 #include "bmath_cnn.h"
+#include "bmath_adaptive_cnn_1d.h"
 #include "bmath_precoded.h"
 
 vd_t bmath_signal_handler( const bcore_signal_s* o )
@@ -71,9 +73,11 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_estimator_signal_handler,
             bmath_plot_signal_handler,
             bmath_adaptive_signal_handler,
+            bmath_activation_signal_handler,
             bmath_spect_adaptive_signal_handler,
             bmath_snn_signal_handler,
             bmath_cnn_signal_handler,
+            bmath_adaptive_cnn_1d_signal_handler,
             bmath_precoded_signal_handler,
         };
 
