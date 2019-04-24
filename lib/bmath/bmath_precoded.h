@@ -11,15 +11,15 @@
 
 #include "bcore_control.h"
 
-// source: bmath_smf3
-// group: bmath_smf3
-#define TYPEOF_bmath_smf3 755065351
-  #define TYPEOF_bmath_smf3_s 1713371937
-  #define BETH_EXPAND_ITEM_bmath_smf3_s \
-    BCORE_DECLARE_OBJECT( bmath_smf3_s ) \
+// source: bmath_mf3_sx
+// group: bmath_mf3_sx
+#define TYPEOF_bmath_mf3_sx 934545414
+  #define TYPEOF_bmath_mf3_sx_s 948195256
+  #define BETH_EXPAND_ITEM_bmath_mf3_sx_s \
+    BCORE_DECLARE_OBJECT( bmath_mf3_sx_s ) \
       {aware_t _;sz_t slos;sz_t xons;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
-#define BETH_EXPAND_GROUP_bmath_smf3 \
-  BETH_EXPAND_ITEM_bmath_smf3_s
+#define BETH_EXPAND_GROUP_bmath_mf3_sx \
+  BETH_EXPAND_ITEM_bmath_mf3_sx_s
 
 
 vd_t bmath_precoded_signal_handler( const bcore_signal_s* o );

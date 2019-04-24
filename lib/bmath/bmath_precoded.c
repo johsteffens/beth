@@ -14,13 +14,13 @@
 
 
 /**********************************************************************************************************************/
-/// source: bmath_smf3
-#include "bmath_smf3.h"
+/// source: bmath_mf3_sx
+#include "bmath_mf3_sx.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-/// group: bmath_smf3
+/// group: bmath_mf3_sx
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_smf3_s )\
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sx_s )\
   "{ aware_t _; sz_t slos; sz_t xons; sz_t rows; sz_t i_stride; sz_t [] i; f3_t [] v; }";
 
 /**********************************************************************************************************************/
@@ -32,8 +32,8 @@ vd_t bmath_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 2246404991 ) );
-            BCORE_REGISTER_OBJECT( bmath_smf3_s );
+            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 1208762499 ) );
+            BCORE_REGISTER_OBJECT( bmath_mf3_sx_s );
         }
         break;
         default: break;

@@ -15,13 +15,14 @@
 
 #include "bcore_std.h"
 #include "bmath_std.h"
-#include "bmath_smf3.h"
+#include "bmath_mf3_sx.h"
 
 /**********************************************************************************************************************/
+#ifdef TYPEOF_bmath_mf3_sx_s
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_smf3_s_set_size_splicing( bmath_smf3_s* o, sz_t rows, sz_t xons )
+void bmath_mf3_sx_s_set_size_splicing( bmath_mf3_sx_s* o, sz_t rows, sz_t xons )
 {
     o->i_size = xons * rows;
     o->i_data = bcore_un_alloc( sizeof( sz_t ), o->i_data, o->i_space, o->i_size, &o->i_space );
@@ -33,7 +34,7 @@ void bmath_smf3_s_set_size_splicing( bmath_smf3_s* o, sz_t rows, sz_t xons )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_smf3_s_set_size_data( bmath_smf3_s* o, sz_t size )
+void bmath_mf3_sx_s_set_size_data( bmath_mf3_sx_s* o, sz_t size )
 {
     o->v_size = size;
     o->v_data = bcore_un_alloc( sizeof( f3_t ), o->v_data, o->v_space, o->v_size, &o->v_space );
@@ -42,10 +43,10 @@ void bmath_smf3_s_set_size_data( bmath_smf3_s* o, sz_t size )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_smf3_s_set_size( bmath_smf3_s* o, sz_t rows, sz_t xons, sz_t slos )
+void bmath_mf3_sx_s_set_size( bmath_mf3_sx_s* o, sz_t rows, sz_t xons, sz_t slos )
 {
-    bmath_smf3_s_set_size_splicing( o, rows, xons );
-    bmath_smf3_s_set_size_data( o, rows * xons * slos );
+    bmath_mf3_sx_s_set_size_splicing( o, rows, xons );
+    bmath_mf3_sx_s_set_size_data( o, rows * xons * slos );
     o->slos = slos;
     for( sz_t i = 0; i < o->rows; i++ )
     {
@@ -55,7 +56,7 @@ void bmath_smf3_s_set_size( bmath_smf3_s* o, sz_t rows, sz_t xons, sz_t slos )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_smf3_s_fit_size_data( bmath_smf3_s* o )
+void bmath_mf3_sx_s_fit_size_data( bmath_mf3_sx_s* o )
 {
     sz_t max_idx = 0;
     for( sz_t j = 0; j < o->xons; j++ )
@@ -65,35 +66,35 @@ void bmath_smf3_s_fit_size_data( bmath_smf3_s* o )
             max_idx = sz_max( o->i_data[ j * o->i_stride + i ], max_idx );
         }
     }
-    bmath_smf3_s_set_size_data( o, max_idx + o->slos );
+    bmath_mf3_sx_s_set_size_data( o, max_idx + o->slos );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_smf3_s_set_random( bmath_smf3_s* o, bl_t hsm, bl_t pdf, uz_t rd, f3_t density, f3_t min, f3_t max, u2_t* p_rval )
+void bmath_mf3_sx_s_set_random( bmath_mf3_sx_s* o, bl_t hsm, bl_t pdf, uz_t rd, f3_t density, f3_t min, f3_t max, u2_t* p_rval )
 {
     BCORE_LIFE_INIT();
     BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
     bmath_mf3_s_set_size( m1, o->rows, o->xons * o->slos );
     bmath_mf3_s_set_random( m1, hsm, pdf, rd, density, min, max, p_rval );
-    bmath_smf3_s_cpy_dfl_from_mf3( o, m1 );
+    bmath_mf3_sx_s_cpy_dfl_from_mf3( o, m1 );
     BCORE_LIFE_DOWN();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_smf3_s_zro( bmath_smf3_s* o )
+void bmath_mf3_sx_s_zro( bmath_mf3_sx_s* o )
 {
     bcore_u_memzero( sizeof( f3_t ), o->v_data, o->v_size );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_smf3_s_cpy_dfl_from_mf3( bmath_smf3_s* o, const bmath_mf3_s* src )
+void bmath_mf3_sx_s_cpy_dfl_from_mf3( bmath_mf3_sx_s* o, const bmath_mf3_s* src )
 {
     ASSERT( src->rows == o->rows );
     ASSERT( src->cols == o->xons * o->slos );
-    bmath_smf3_s_zro( o );
+    bmath_mf3_sx_s_zro( o );
     for( sz_t i = 0; i < o->rows; i++ )
     {
         const f3_t* b = src->data + src->stride * i;
@@ -107,7 +108,7 @@ void bmath_smf3_s_cpy_dfl_from_mf3( bmath_smf3_s* o, const bmath_mf3_s* src )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_smf3_s_cpy_ifl_to_mf3( const bmath_smf3_s* o, bmath_mf3_s* dst )
+void bmath_mf3_sx_s_cpy_ifl_to_mf3( const bmath_mf3_sx_s* o, bmath_mf3_s* dst )
 {
     ASSERT( dst->rows == o->rows );
     ASSERT( dst->cols == o->xons * o->slos );
@@ -127,21 +128,21 @@ void bmath_smf3_s_cpy_ifl_to_mf3( const bmath_smf3_s* o, bmath_mf3_s* dst )
 /**********************************************************************************************************************/
 // convolution
 
-void bmath_smf3_s_set_splicing_for_convolution_1d( bmath_smf3_s* o, sz_t size_in, sz_t size_kernel, sz_t step )
+void bmath_mf3_sx_s_set_splicing_for_convolution_1d( bmath_mf3_sx_s* o, sz_t size_in, sz_t size_kernel, sz_t step )
 {
     ASSERT( size_in >= 0 );
     ASSERT( size_kernel >= 0 );
     ASSERT( step > 0 );
 
     sz_t rows = sz_max( 0, 1 + ( ( size_in - size_kernel ) / step ) );
-    bmath_smf3_s_set_size_splicing( o, rows, 1 );
+    bmath_mf3_sx_s_set_size_splicing( o, rows, 1 );
     for( sz_t i = 0; i < rows; i++ ) o->i_data[ i ] = i * step;
     o->slos = size_kernel;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_smf3_s_set_splicing_for_convolution_2d( bmath_smf3_s* o, sz_t rows_in, sz_t cols_in, sz_t rows_kernel, sz_t cols_kernel, sz_t row_step, sz_t col_step )
+void bmath_mf3_sx_s_set_splicing_for_convolution_2d( bmath_mf3_sx_s* o, sz_t rows_in, sz_t cols_in, sz_t rows_kernel, sz_t cols_kernel, sz_t row_step, sz_t col_step )
 {
     ASSERT( rows_in >= 0 );
     ASSERT( cols_in >= 0 );
@@ -157,7 +158,7 @@ void bmath_smf3_s_set_splicing_for_convolution_2d( bmath_smf3_s* o, sz_t rows_in
     o->xons = rows_kernel;
     o->slos = cols_kernel;
 
-    bmath_smf3_s_set_size_splicing( o, o->rows, o->xons );
+    bmath_mf3_sx_s_set_size_splicing( o, o->rows, o->xons );
 
     sz_t o_row = 0;
 
@@ -181,7 +182,7 @@ void bmath_smf3_s_set_splicing_for_convolution_2d( bmath_smf3_s* o, sz_t rows_in
 /**********************************************************************************************************************/
 // checks, deviations
 
-bl_t bmath_smf3_s_is_near_equ( const bmath_smf3_s* o, const bmath_smf3_s* op, f3_t max_dev )
+bl_t bmath_mf3_sx_s_is_near_equ( const bmath_mf3_sx_s* o, const bmath_mf3_sx_s* op, f3_t max_dev )
 {
     if( o->rows != op->rows ) return false;
     if( o->xons != op->xons ) return false;
@@ -203,7 +204,7 @@ bl_t bmath_smf3_s_is_near_equ( const bmath_smf3_s* o, const bmath_smf3_s* op, f3
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bl_t bmath_smf3_s_is_near_zro( const bmath_smf3_s* o, f3_t max_dev )
+bl_t bmath_mf3_sx_s_is_near_zro( const bmath_mf3_sx_s* o, f3_t max_dev )
 {
     for( sz_t row = 0; row <= o->rows; row++ )
     {
@@ -223,7 +224,7 @@ bl_t bmath_smf3_s_is_near_zro( const bmath_smf3_s* o, f3_t max_dev )
 /**********************************************************************************************************************/
 // Frobenius norm
 
-f3_t bmath_smf3_s_fdev_equ( const bmath_smf3_s* o, const bmath_smf3_s* op )
+f3_t bmath_mf3_sx_s_fdev_equ( const bmath_mf3_sx_s* o, const bmath_mf3_sx_s* op )
 {
     ASSERT( o->rows == op->rows );
     ASSERT( o->xons == op->xons );
@@ -245,7 +246,7 @@ f3_t bmath_smf3_s_fdev_equ( const bmath_smf3_s* o, const bmath_smf3_s* op )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_smf3_s_fdev_zro( const bmath_smf3_s* o )
+f3_t bmath_mf3_sx_s_fdev_zro( const bmath_mf3_sx_s* o )
 {
     f3_t sum = 0;
     for( sz_t row = 0; row <= o->rows; row++ )
@@ -266,7 +267,7 @@ f3_t bmath_smf3_s_fdev_zro( const bmath_smf3_s* o )
 /**********************************************************************************************************************/
 // debugging
 
-void bmath_smf3_s_to_sink( const bmath_smf3_s* o, bcore_sink* sink )
+void bmath_mf3_sx_s_to_sink( const bmath_mf3_sx_s* o, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "(#<sz_t> x #<sz_t> x #<sz_t>)\n", o->rows, o->xons, o->slos );
     for( sz_t i = 0; i < o->rows; i++ )
@@ -298,7 +299,7 @@ static vd_t selftest( void )
 
     BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
     BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
-    BCORE_LIFE_CREATE( bmath_smf3_s, sm1 );
+    BCORE_LIFE_CREATE( bmath_mf3_sx_s, sm1 );
 
     {
         sz_t rows = 5;
@@ -310,10 +311,10 @@ static vd_t selftest( void )
 
         bmath_mf3_s_set_size( m1, rows, cols );
         bmath_mf3_s_set_size( m2, rows, cols );
-        bmath_smf3_s_set_size( sm1, rows, xons, slos );
+        bmath_mf3_sx_s_set_size( sm1, rows, xons, slos );
         bmath_mf3_s_set_random( m1, false, false, 0, 1.0, -1.0, 1.0, &rval );
-        bmath_smf3_s_cpy_dfl_from_mf3( sm1, m1 );
-        bmath_smf3_s_cpy_ifl_to_mf3(   sm1, m2 );
+        bmath_mf3_sx_s_cpy_dfl_from_mf3( sm1, m1 );
+        bmath_mf3_sx_s_cpy_ifl_to_mf3(   sm1, m2 );
         ASSERT( bmath_mf3_s_is_equ( m1, m2 ) );
 
     }
@@ -322,13 +323,15 @@ static vd_t selftest( void )
     return NULL;
 }
 
+#endif // TYPEOF_bmath_mf3_sx_s
+
 /**********************************************************************************************************************/
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-vd_t bmath_smf3_signal_handler( const bcore_signal_s* o )
+vd_t bmath_mf3_sx_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_smf3" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_mf3_sx" ) ) )
     {
         case TYPEOF_init1:
         {
