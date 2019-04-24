@@ -1,8 +1,6 @@
 /** List of predefined types for quick access.
  *  Created via bmath_quicktypes_to_stdout( NULL );
  */
-#define TYPEOF_bmath_adaptive          2961196070
-#define TYPEOF_bmath_adaptive_s        2435779224
 #define TYPEOF_bmath_arr_grt_f3_s        68378437
 #define TYPEOF_bmath_arr_mf3_eval_s    2241821565
 #define TYPEOF_bmath_arr_mf3_s         3576372478
@@ -57,7 +55,8 @@
 #define TYPEOF_bmath_pmt_s             4158722099
 #define TYPEOF_bmath_ring              2462086090
 #define TYPEOF_bmath_ring_s            1513035188
-#define TYPEOF_bmath_smf3_s            1713371937
+#define TYPEOF_bmath_sadaptiv           853810480
+#define TYPEOF_bmath_sadaptiv_s        1534399306
 #define TYPEOF_bmath_snn_act_s         2030741768
 #define TYPEOF_bmath_snn_gleaky_relu   2510832374
 #define TYPEOF_bmath_snn_grelu         1730630745

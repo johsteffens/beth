@@ -18,84 +18,84 @@
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_SPECT( bcore_inst, bmath_adaptive )
+BCORE_DEFINE_SPECT( bcore_inst, bmath_sadaptiv )
 "{"
     "bcore_spect_header_s header;"
-    "strict feature bmath_fp_adaptive: get_in_size;"
-    "strict feature bmath_fp_adaptive: set_in_size;"
-    "strict feature bmath_fp_adaptive: get_out_size;"
-    "strict feature bmath_fp_adaptive: set_out_size;"
-    "       feature bmath_fp_adaptive: get_step;"
-    "       feature bmath_fp_adaptive: set_step;"
-    "       feature bmath_fp_adaptive: get_decay;"
-    "       feature bmath_fp_adaptive: set_decay;"
-    "       feature bmath_fp_adaptive: setup;"
-    "strict feature bmath_fp_adaptive: set_untrained;"
-    "       feature bmath_fp_adaptive: arc_to_sink;"
-    "strict feature bmath_fp_adaptive: query;"
-    "strict feature bmath_fp_adaptive: adapt;"
+    "strict feature bmath_fp_sadaptiv: get_in_size;"
+    "strict feature bmath_fp_sadaptiv: set_in_size;"
+    "strict feature bmath_fp_sadaptiv: get_out_size;"
+    "strict feature bmath_fp_sadaptiv: set_out_size;"
+    "       feature bmath_fp_sadaptiv: get_step;"
+    "       feature bmath_fp_sadaptiv: set_step;"
+    "       feature bmath_fp_sadaptiv: get_decay;"
+    "       feature bmath_fp_sadaptiv: set_decay;"
+    "       feature bmath_fp_sadaptiv: setup;"
+    "strict feature bmath_fp_sadaptiv: set_untrained;"
+    "       feature bmath_fp_sadaptiv: arc_to_sink;"
+    "strict feature bmath_fp_sadaptiv: query;"
+    "strict feature bmath_fp_sadaptiv: adapt;"
 "}";
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_adaptive_default_get_step( const bmath_adaptive_s* p, const bmath_adaptive* o )
+f3_t bmath_sadaptiv_default_get_step( const bmath_sadaptiv_s* p, const bmath_sadaptiv* o )
 {
     return 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_adaptive_default_set_step( const bmath_adaptive_s* p, bmath_adaptive* o, f3_t val )
+void bmath_sadaptiv_default_set_step( const bmath_sadaptiv_s* p, bmath_sadaptiv* o, f3_t val )
 {
     /* nothing to do */
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_adaptive_default_get_decay( const bmath_adaptive_s* p, const bmath_adaptive* o )
+f3_t bmath_sadaptiv_default_get_decay( const bmath_sadaptiv_s* p, const bmath_sadaptiv* o )
 {
     return 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_adaptive_default_set_decay( const bmath_adaptive_s* p, bmath_adaptive* o, f3_t val )
+void bmath_sadaptiv_default_set_decay( const bmath_sadaptiv_s* p, bmath_sadaptiv* o, f3_t val )
 {
     /* nothing to do */
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_adaptive_default_setup( const bmath_adaptive_s* p, bmath_adaptive* o, bl_t training )
+void bmath_sadaptiv_default_setup( const bmath_sadaptiv_s* p, bmath_sadaptiv* o, bl_t training )
 {
     /* nothing to do */
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_adaptive_default_arc_to_sink( const bmath_adaptive_s* p, const bmath_adaptive* o, bcore_sink* sink )
+void bmath_sadaptiv_default_arc_to_sink( const bmath_sadaptiv_s* p, const bmath_sadaptiv* o, bcore_sink* sink )
 {
     bcore_txt_ml_a_to_sink( o, sink );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_adaptive_default_query_1( const bmath_adaptive_s* p, bmath_adaptive* o, const bmath_vf3_s* in )
+f3_t bmath_sadaptiv_default_query_1( const bmath_sadaptiv_s* p, bmath_sadaptiv* o, const bmath_vf3_s* in )
 {
     f3_t out_scl = 0;
     bmath_vf3_s out = bmath_vf3_weak( &out_scl, 1 );
-    bmath_adaptive_p_query( p, o, in, &out );
+    bmath_sadaptiv_p_query( p, o, in, &out );
     return out_scl;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_adaptive_default_adapt_1( const bmath_adaptive_s* p, bmath_adaptive* o, const bmath_vf3_s* in, f3_t target )
+f3_t bmath_sadaptiv_default_adapt_1( const bmath_sadaptiv_s* p, bmath_sadaptiv* o, const bmath_vf3_s* in, f3_t target )
 {
     f3_t scl_out = 0;
     bmath_vf3_s vec_out    = bmath_vf3_weak( &scl_out, 1 );
     bmath_vf3_s vec_target = bmath_vf3_weak( &target, 1 );
-    bmath_adaptive_p_adapt( p, o, in, &vec_target, &vec_out );
+    bmath_sadaptiv_p_adapt( p, o, in, &vec_target, &vec_out );
     return scl_out;
 }
 
@@ -103,16 +103,16 @@ f3_t bmath_adaptive_default_adapt_1( const bmath_adaptive_s* p, bmath_adaptive* 
 
 /**********************************************************************************************************************/
 
-void bmath_adaptive_a_test( const bmath_adaptive* const_o )
+void bmath_sadaptiv_a_test( const bmath_sadaptiv* const_o )
 {
     BCORE_LIFE_INIT();
 
-    bmath_adaptive* o = BCORE_LIFE_A_PUSH( bcore_inst_a_clone( ( bcore_inst* )const_o ) );
-    bmath_adaptive_a_set_in_size(  o, 32 );
-    bmath_adaptive_a_set_out_size( o, 1 );
-    bmath_adaptive_a_set_untrained( o );
-    bmath_adaptive_a_setup( o, true ); // only for display
-    bmath_adaptive_a_arc_to_sink( o, BCORE_STDOUT );
+    bmath_sadaptiv* o = BCORE_LIFE_A_PUSH( bcore_inst_a_clone( ( bcore_inst* )const_o ) );
+    bmath_sadaptiv_a_set_in_size(  o, 32 );
+    bmath_sadaptiv_a_set_out_size( o, 1 );
+    bmath_sadaptiv_a_set_untrained( o );
+    bmath_sadaptiv_a_setup( o, true ); // only for display
+    bmath_sadaptiv_a_arc_to_sink( o, BCORE_STDOUT );
 
     /* Learn differentiating between a sine wave of arbitrary amplitude and frequency from
        a random walk curve.
@@ -126,7 +126,7 @@ void bmath_adaptive_a_test( const bmath_adaptive* const_o )
     u2_t rval = 123;
     for( sz_t i = 0; i < samples * 2; i++ )
     {
-        sz_t input_size = bmath_adaptive_a_get_in_size( o );
+        sz_t input_size = bmath_sadaptiv_a_get_in_size( o );
         bmath_vf3_s* pos_vec = bmath_vf3_s_create();
         bmath_vf3_s* neg_vec = bmath_vf3_s_create();
         bmath_vf3_s_set_size( pos_vec, input_size );
@@ -166,8 +166,8 @@ void bmath_adaptive_a_test( const bmath_adaptive* const_o )
     f3_t pos_tgt = 0.9;
     f3_t neg_tgt = -pos_tgt;
 
-    bmath_adaptive_a_set_step(  o, learn_step );
-    bmath_adaptive_a_set_decay( o, decay );
+    bmath_sadaptiv_a_set_step(  o, learn_step );
+    bmath_sadaptiv_a_set_decay( o, decay );
 
     for( sz_t i = 0; i < epochs; i++ )
     {
@@ -176,8 +176,8 @@ void bmath_adaptive_a_test( const bmath_adaptive* const_o )
         {
             const bmath_vf3_s* pos_vec = pos_set_trn->data[ j ].o;
             const bmath_vf3_s* neg_vec = neg_set_trn->data[ j ].o;
-            f3_t pos_est = bmath_adaptive_a_adapt_1( o, pos_vec, pos_tgt );
-            f3_t neg_est = bmath_adaptive_a_adapt_1( o, neg_vec, neg_tgt );
+            f3_t pos_est = bmath_sadaptiv_a_adapt_1( o, pos_vec, pos_tgt );
+            f3_t neg_est = bmath_sadaptiv_a_adapt_1( o, neg_vec, neg_tgt );
             err += f3_sqr( pos_est - pos_tgt );
             err += f3_sqr( neg_est - neg_tgt );
         }
@@ -187,9 +187,9 @@ void bmath_adaptive_a_test( const bmath_adaptive* const_o )
         bcore_msg_fa( "#pl6 {#<sz_t>}: err = #<f3_t>\n", i, err );
     }
 
-    bcore_bin_ml_a_to_file( o, "temp/adaptive.bin" );
-    bmath_adaptive* o_tst = BCORE_LIFE_A_PUSH( bcore_inst_t_create( *( aware_t* )o ) );
-    bcore_bin_ml_a_from_file( o_tst, "temp/adaptive.bin" );
+    bcore_bin_ml_a_to_file( o, "temp/sadaptiv.bin" );
+    bmath_sadaptiv* o_tst = BCORE_LIFE_A_PUSH( bcore_inst_t_create( *( aware_t* )o ) );
+    bcore_bin_ml_a_from_file( o_tst, "temp/sadaptiv.bin" );
 
     {
         f3_t err = 0;
@@ -197,8 +197,8 @@ void bmath_adaptive_a_test( const bmath_adaptive* const_o )
         {
             const bmath_vf3_s* pos_vec = pos_set_tst->data[ j ].o;
             const bmath_vf3_s* neg_vec = neg_set_tst->data[ j ].o;
-            f3_t pos_est = bmath_adaptive_a_query_1( o_tst, pos_vec );
-            f3_t neg_est = bmath_adaptive_a_query_1( o_tst, neg_vec );
+            f3_t pos_est = bmath_sadaptiv_a_query_1( o_tst, pos_vec );
+            f3_t neg_est = bmath_sadaptiv_a_query_1( o_tst, neg_vec );
             err += f3_sqr( pos_est - pos_tgt );
             err += f3_sqr( neg_est - neg_tgt );
         }
@@ -214,31 +214,31 @@ void bmath_adaptive_a_test( const bmath_adaptive* const_o )
 
 vd_t bmath_spect_adaptive_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_spect_adaptive" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_spect_sadaptiv" ) ) )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_get_in_size );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_set_in_size );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_get_out_size );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_set_out_size );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_get_step );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_set_step );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_get_decay );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_set_decay );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_setup );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_set_untrained );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_arc_to_sink );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_query );
-            BCORE_REGISTER_FEATURE( bmath_fp_adaptive_adapt );
-            BCORE_REGISTER_SPECT( bmath_adaptive );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_get_in_size );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_set_in_size );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_get_out_size );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_set_out_size );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_get_step );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_set_step );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_get_decay );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_set_decay );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_setup );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_set_untrained );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_arc_to_sink );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_query );
+            BCORE_REGISTER_FEATURE( bmath_fp_sadaptiv_adapt );
+            BCORE_REGISTER_SPECT( bmath_sadaptiv );
         }
         break;
 
         case TYPEOF_get_quicktypes:
         {
-            BCORE_REGISTER_QUICKTYPE( bmath_adaptive );
-            BCORE_REGISTER_QUICKTYPE( bmath_adaptive_s );
+            BCORE_REGISTER_QUICKTYPE( bmath_sadaptiv );
+            BCORE_REGISTER_QUICKTYPE( bmath_sadaptiv_s );
         }
         break;
 

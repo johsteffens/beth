@@ -21,6 +21,90 @@
 #define BETH_EXPAND_GROUP_bmath_mf3_sx \
   BETH_EXPAND_ITEM_bmath_mf3_sx_s
 
+// source: bmath_adaptive
+// group: bmath_adaptive
+#define TYPEOF_bmath_adaptive 2961196070
+  #define BETH_EXPAND_ITEM_bmath_adaptive_get_in_size \
+    typedef sz_t (*bmath_adaptive_get_in_size)( const bmath_adaptive* o ); \
+    sz_t bmath_adaptive_t_get_in_size( tp_t t, const bmath_adaptive* o ); \
+    sz_t bmath_adaptive_a_get_in_size( const bmath_adaptive* o ); \
+    sz_t bmath_adaptive_r_get_in_size( const sr_s* o );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_set_in_size \
+    typedef void (*bmath_adaptive_set_in_size)( bmath_adaptive* o, sz_t size ); \
+    void bmath_adaptive_t_set_in_size( tp_t t, bmath_adaptive* o, sz_t size ); \
+    void bmath_adaptive_a_set_in_size( bmath_adaptive* o, sz_t size ); \
+    void bmath_adaptive_r_set_in_size( const sr_s* o, sz_t size );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_get_out_size \
+    typedef sz_t (*bmath_adaptive_get_out_size)( const bmath_adaptive* o ); \
+    sz_t bmath_adaptive_t_get_out_size( tp_t t, const bmath_adaptive* o ); \
+    sz_t bmath_adaptive_a_get_out_size( const bmath_adaptive* o ); \
+    sz_t bmath_adaptive_r_get_out_size( const sr_s* o );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_set_out_size \
+    typedef void (*bmath_adaptive_set_out_size)( bmath_adaptive* o, sz_t size ); \
+    void bmath_adaptive_t_set_out_size( tp_t t, bmath_adaptive* o, sz_t size ); \
+    void bmath_adaptive_a_set_out_size( bmath_adaptive* o, sz_t size ); \
+    void bmath_adaptive_r_set_out_size( const sr_s* o, sz_t size );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_get_step \
+    typedef f3_t (*bmath_adaptive_get_step)( const bmath_adaptive* o ); \
+    f3_t bmath_adaptive_t_get_step( tp_t t, const bmath_adaptive* o ); \
+    f3_t bmath_adaptive_a_get_step( const bmath_adaptive* o ); \
+    f3_t bmath_adaptive_r_get_step( const sr_s* o );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_set_step \
+    typedef void (*bmath_adaptive_set_step)( bmath_adaptive* o, f3_t val ); \
+    void bmath_adaptive_t_set_step( tp_t t, bmath_adaptive* o, f3_t val ); \
+    void bmath_adaptive_a_set_step( bmath_adaptive* o, f3_t val ); \
+    void bmath_adaptive_r_set_step( const sr_s* o, f3_t val );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_get_decay \
+    typedef f3_t (*bmath_adaptive_get_decay)( const bmath_adaptive* o ); \
+    f3_t bmath_adaptive_t_get_decay( tp_t t, const bmath_adaptive* o ); \
+    f3_t bmath_adaptive_a_get_decay( const bmath_adaptive* o ); \
+    f3_t bmath_adaptive_r_get_decay( const sr_s* o );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_set_decay \
+    typedef void (*bmath_adaptive_set_decay)( bmath_adaptive* o, f3_t val ); \
+    void bmath_adaptive_t_set_decay( tp_t t, bmath_adaptive* o, f3_t val ); \
+    void bmath_adaptive_a_set_decay( bmath_adaptive* o, f3_t val ); \
+    void bmath_adaptive_r_set_decay( const sr_s* o, f3_t val );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_setup \
+    typedef void (*bmath_adaptive_setup)( bmath_adaptive* o, bl_t training ); \
+    void bmath_adaptive_t_setup( tp_t t, bmath_adaptive* o, bl_t training ); \
+    void bmath_adaptive_a_setup( bmath_adaptive* o, bl_t training ); \
+    void bmath_adaptive_r_setup( const sr_s* o, bl_t training );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_set_untrained \
+    typedef void (*bmath_adaptive_set_untrained)( bmath_adaptive* o ); \
+    void bmath_adaptive_t_set_untrained( tp_t t, bmath_adaptive* o ); \
+    void bmath_adaptive_a_set_untrained( bmath_adaptive* o ); \
+    void bmath_adaptive_r_set_untrained( const sr_s* o );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_arc_to_sink \
+    typedef void (*bmath_adaptive_arc_to_sink)( const bmath_adaptive* o, bcore_sink* sink ); \
+    void bmath_adaptive_t_arc_to_sink( tp_t t, const bmath_adaptive* o, bcore_sink* sink ); \
+    void bmath_adaptive_a_arc_to_sink( const bmath_adaptive* o, bcore_sink* sink ); \
+    void bmath_adaptive_r_arc_to_sink( const sr_s* o, bcore_sink* sink );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_query \
+    typedef void (*bmath_adaptive_query)( bmath_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
+    void bmath_adaptive_t_query( tp_t t, bmath_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
+    void bmath_adaptive_a_query( bmath_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
+    void bmath_adaptive_r_query( const sr_s* o, const bmath_vf3_s* in, bmath_vf3_s* out );
+  #define BETH_EXPAND_ITEM_bmath_adaptive_adapt \
+    typedef void (*bmath_adaptive_adapt)( bmath_adaptive* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ); \
+    void bmath_adaptive_t_adapt( tp_t t, bmath_adaptive* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ); \
+    void bmath_adaptive_a_adapt( bmath_adaptive* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ); \
+    void bmath_adaptive_r_adapt( const sr_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out );
+#define BETH_EXPAND_GROUP_bmath_adaptive \
+  BCORE_FORWARD_OBJECT( bmath_adaptive ); \
+  BETH_EXPAND_ITEM_bmath_adaptive_get_in_size \
+  BETH_EXPAND_ITEM_bmath_adaptive_set_in_size \
+  BETH_EXPAND_ITEM_bmath_adaptive_get_out_size \
+  BETH_EXPAND_ITEM_bmath_adaptive_set_out_size \
+  BETH_EXPAND_ITEM_bmath_adaptive_get_step \
+  BETH_EXPAND_ITEM_bmath_adaptive_set_step \
+  BETH_EXPAND_ITEM_bmath_adaptive_get_decay \
+  BETH_EXPAND_ITEM_bmath_adaptive_set_decay \
+  BETH_EXPAND_ITEM_bmath_adaptive_setup \
+  BETH_EXPAND_ITEM_bmath_adaptive_set_untrained \
+  BETH_EXPAND_ITEM_bmath_adaptive_arc_to_sink \
+  BETH_EXPAND_ITEM_bmath_adaptive_query \
+  BETH_EXPAND_ITEM_bmath_adaptive_adapt
+
 
 vd_t bmath_precoded_signal_handler( const bcore_signal_s* o );
 

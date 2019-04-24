@@ -93,19 +93,19 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_cnn_s )
     /// ==============================================================
 
     /// === functions ================================================
-    "func bmath_fp_adaptive: get_in_size;"
-    "func bmath_fp_adaptive: set_in_size;"
-    "func bmath_fp_adaptive: get_out_size;"
-    "func bmath_fp_adaptive: set_out_size;"
-    "func bmath_fp_adaptive: get_step;"
-    "func bmath_fp_adaptive: set_step;"
-    "func bmath_fp_adaptive: get_decay;"
-    "func bmath_fp_adaptive: set_decay;"
-    "func bmath_fp_adaptive: setup;"
-    "func bmath_fp_adaptive: set_untrained;"
-    "func bmath_fp_adaptive: arc_to_sink;"
-    "func bmath_fp_adaptive: query;"
-    "func bmath_fp_adaptive: adapt;"
+    "func bmath_fp_sadaptiv: get_in_size;"
+    "func bmath_fp_sadaptiv: set_in_size;"
+    "func bmath_fp_sadaptiv: get_out_size;"
+    "func bmath_fp_sadaptiv: set_out_size;"
+    "func bmath_fp_sadaptiv: get_step;"
+    "func bmath_fp_sadaptiv: set_step;"
+    "func bmath_fp_sadaptiv: get_decay;"
+    "func bmath_fp_sadaptiv: set_decay;"
+    "func bmath_fp_sadaptiv: setup;"
+    "func bmath_fp_sadaptiv: set_untrained;"
+    "func bmath_fp_sadaptiv: arc_to_sink;"
+    "func bmath_fp_sadaptiv: query;"
+    "func bmath_fp_sadaptiv: adapt;"
     /// ==============================================================
 "}";
 
@@ -563,19 +563,19 @@ vd_t bmath_cnn_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_cnn_fp_unary, bmath_cnn_softplus );
             BCORE_REGISTER_FFUNC( bmath_cnn_fp_unary, bmath_cnn_gsoftplus );
 
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_get_in_size,   bmath_cnn_s_get_in_size );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_set_in_size,   bmath_cnn_s_set_in_size );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_get_out_size,  bmath_cnn_s_get_out_size );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_set_out_size,  bmath_cnn_s_set_out_size );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_get_step,      bmath_cnn_s_get_step );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_set_step,      bmath_cnn_s_set_step );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_get_decay,     bmath_cnn_s_get_decay );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_set_decay,     bmath_cnn_s_set_decay );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_setup,         bmath_cnn_s_setup );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_set_untrained, bmath_cnn_s_set_untrained );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_arc_to_sink,   bmath_cnn_s_arc_to_sink );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_query,         bmath_cnn_s_query );
-            BCORE_REGISTER_FFUNC( bmath_fp_adaptive_adapt,         bmath_cnn_s_adapt );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_get_in_size,   bmath_cnn_s_get_in_size );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_set_in_size,   bmath_cnn_s_set_in_size );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_get_out_size,  bmath_cnn_s_get_out_size );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_set_out_size,  bmath_cnn_s_set_out_size );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_get_step,      bmath_cnn_s_get_step );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_set_step,      bmath_cnn_s_set_step );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_get_decay,     bmath_cnn_s_get_decay );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_set_decay,     bmath_cnn_s_set_decay );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_setup,         bmath_cnn_s_setup );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_set_untrained, bmath_cnn_s_set_untrained );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_arc_to_sink,   bmath_cnn_s_arc_to_sink );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_query,         bmath_cnn_s_query );
+            BCORE_REGISTER_FFUNC( bmath_fp_sadaptiv_adapt,         bmath_cnn_s_adapt );
 
             BCORE_REGISTER_OBJECT( bmath_cnn_act_s );
             BCORE_REGISTER_OBJECT( bmath_cnn_s );

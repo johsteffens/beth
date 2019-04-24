@@ -308,9 +308,18 @@ static void bcore_precoder_args_s_clear( bcore_precoder_args_s* o )
 
 static void bcore_precoder_arg_s_compile( bcore_precoder_arg_s* o, bcore_source* source )
 {
-    bcore_source_a_parse_fa( source, "#name #name", &o->type, &o->name );
-    if( o->type.size == 0 ) bcore_source_a_parse_err_fa( source, "Argument: Type expected." );
-    if( o->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Argument: Name expected." );
+    st_s* s = st_s_create();
+    if( bcore_source_a_parse_bl_fa( source, "#?'const' " ) ) st_s_push_sc( &o->type, "const " );
+    bcore_source_a_parse_fa( source, "#name ", s );
+    if( s->size == 0 ) bcore_source_a_parse_err_fa( source, "Argument: Type expected." );
+    st_s_push_st( &o->type, s );
+    while( bcore_source_a_parse_bl_fa( source, "#?'*' " ) ) st_s_push_sc( &o->type, "*" );
+
+    bcore_source_a_parse_fa( source, "#name ", s );
+    if( s->size == 0 ) bcore_source_a_parse_err_fa( source, "Argument: Name expected." );
+    st_s_push_st( &o->name, s );
+
+    st_s_discard( s );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
