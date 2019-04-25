@@ -240,7 +240,7 @@ void bmath_adaptive_cnn_1d_s_setup( bmath_adaptive_cnn_1d_s* o, bl_t learning )
         max_g_size = sz_max( max_g_size, b->size );
     }
 
-    bcore_arr_sr_s_set_spect( &o->arr_activation, typeof( "bmath_activation_s" ) );
+    bcore_arr_sr_s_set_spect( &o->arr_activation, TYPEOF_bmath_activation_s );
 
     sz_t buf_part_size = max_g_size * 2;
 

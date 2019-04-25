@@ -188,6 +188,29 @@
 #define BETH_EXPAND_GROUP_bmath_adaptive_cnn_1d \
   BETH_EXPAND_ITEM_bmath_adaptive_cnn_1d_s
 
+// source: bmath_adaptive_mlp
+// group: bmath_adaptive_mlp
+#define TYPEOF_bmath_adaptive_mlp 2240972622
+  #define TYPEOF_bmath_adaptive_mlp_s 513368592
+  #define BETH_EXPAND_ITEM_bmath_adaptive_mlp_s \
+    BCORE_DECLARE_OBJECT( bmath_adaptive_mlp_s ) \
+      {aware_t _;sz_t input_size;sz_t input_kernels;sz_t output_kernels;sz_t layers;f3_t kernels_rate;f3_t adapt_step;f3_t decay_step;sr_s act_mid;sr_s act_out;u2_t random_state;bmath_arr_mf3_s arr_w;bmath_arr_vf3_s arr_a;bmath_arr_vf3_s arr_b;bmath_vf3_s buf_ab;bmath_arr_vf3_s arr_ga;bmath_arr_vf3_s arr_gb;bmath_vf3_s buf_gab;bcore_arr_sr_s arr_activation;bmath_vf3_s in;bmath_vf3_s out;bmath_vf3_s gout;}; \
+    sz_t bmath_adaptive_mlp_s_get_in_size( const bmath_adaptive_mlp_s* o ); \
+    void bmath_adaptive_mlp_s_set_in_size( bmath_adaptive_mlp_s* o, sz_t size ); \
+    sz_t bmath_adaptive_mlp_s_get_out_size( const bmath_adaptive_mlp_s* o ); \
+    void bmath_adaptive_mlp_s_set_out_size( bmath_adaptive_mlp_s* o, sz_t size ); \
+    f3_t bmath_adaptive_mlp_s_get_step( const bmath_adaptive_mlp_s* o ); \
+    void bmath_adaptive_mlp_s_set_step( bmath_adaptive_mlp_s* o, f3_t val ); \
+    f3_t bmath_adaptive_mlp_s_get_decay( const bmath_adaptive_mlp_s* o ); \
+    void bmath_adaptive_mlp_s_set_decay( bmath_adaptive_mlp_s* o, f3_t val ); \
+    void bmath_adaptive_mlp_s_setup( bmath_adaptive_mlp_s* o, bl_t training ); \
+    void bmath_adaptive_mlp_s_set_untrained( bmath_adaptive_mlp_s* o ); \
+    void bmath_adaptive_mlp_s_arc_to_sink( const bmath_adaptive_mlp_s* o, bcore_sink* sink ); \
+    void bmath_adaptive_mlp_s_query( bmath_adaptive_mlp_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
+    void bmath_adaptive_mlp_s_adapt( bmath_adaptive_mlp_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out );
+#define BETH_EXPAND_GROUP_bmath_adaptive_mlp \
+  BETH_EXPAND_ITEM_bmath_adaptive_mlp_s
+
 
 vd_t bmath_precoded_signal_handler( const bcore_signal_s* o );
 
