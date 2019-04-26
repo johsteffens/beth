@@ -18,8 +18,6 @@
 #include "bmath_plot.h"
 #include "bmath_adaptive_cnn_1d.h"
 
-#ifdef TYPEOF_bmath_adaptive_cnn_1d
-
 /**********************************************************************************************************************/
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -455,7 +453,27 @@ f3_t bmath_adaptive_cnn_1d_s_adapt_1( bmath_adaptive_cnn_1d_s* o, const bmath_vf
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-#endif // TYPEOF_bmath_adaptive_cnn
+static void selftest()
+{
+    BCORE_LIFE_INIT();
+
+    BCORE_LIFE_CREATE( bmath_adaptive_cnn_1d_s, cnn );
+
+    cnn->input_step = 1;
+    cnn->input_convolution_size = 2;
+    cnn->input_kernels = 8;
+    cnn->kernels_rate = 0.2;
+    cnn->random_state = 124;
+
+    cnn->act_mid = sr_create( TYPEOF_bmath_activation_leaky_relu_s );
+    cnn->act_out = sr_create( TYPEOF_bmath_activation_tanh_s );
+
+//    bmath_adaptive_a_test_sine_random( ( bmath_adaptive* )cnn );
+    bmath_adaptive_a_test_encode_add( ( bmath_adaptive* )cnn );
+
+    BCORE_LIFE_RETURN();
+}
+
 
 /**********************************************************************************************************************/
 
@@ -472,6 +490,12 @@ vd_t bmath_adaptive_cnn_1d_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_get_quicktypes:
         {
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+            selftest();
         }
         break;
 

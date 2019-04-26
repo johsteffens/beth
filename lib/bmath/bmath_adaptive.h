@@ -70,8 +70,11 @@ BETH_PRECODE( bmath_adaptive )
 f3_t bmath_adaptive_a_query_1( bmath_adaptive* o, const bmath_vf3_s* in );
 f3_t bmath_adaptive_a_adapt_1( bmath_adaptive* o, const bmath_vf3_s* in, f3_t target );
 
-/// generic test for an adaptive
-void bmath_adaptive_a_test( const bmath_adaptive* o );
+/// training challenge: distinguish a sine wave from random walk
+void bmath_adaptive_a_test_sine_random( const bmath_adaptive* o );
+
+/// training challenge: learn binay adding of numbers
+void bmath_adaptive_a_test_encode_add( const bmath_adaptive* o );
 
 /**********************************************************************************************************************/
 

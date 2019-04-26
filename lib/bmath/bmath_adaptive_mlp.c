@@ -409,6 +409,25 @@ void bmath_adaptive_mlp_s_decay( bmath_adaptive_mlp_s* o, f3_t decay )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+static void selftest()
+{
+    BCORE_LIFE_INIT();
+    BCORE_LIFE_CREATE( bmath_adaptive_mlp_s, mlp );
+
+    mlp->input_kernels = 32;
+    mlp->layers = 8;
+    mlp->kernels_rate = 0;
+    mlp->random_state = 124;
+
+    mlp->act_mid = sr_create( TYPEOF_bmath_activation_leaky_relu_s );
+    mlp->act_out = sr_create( TYPEOF_bmath_activation_tanh_s );
+
+//    bmath_adaptive_a_test_sine_random( ( bmath_adaptive* )mlp );
+    bmath_adaptive_a_test_encode_add( ( bmath_adaptive* )mlp );
+
+    BCORE_LIFE_RETURN();
+}
+
 /**********************************************************************************************************************/
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -422,8 +441,9 @@ vd_t bmath_adaptive_mlp_signal_handler( const bcore_signal_s* o )
         }
         break;
 
-        case TYPEOF_get_quicktypes:
+        case TYPEOF_selftest:
         {
+            selftest();
         }
         break;
 
