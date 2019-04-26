@@ -26,6 +26,7 @@
 #include "bmath_mf3.h"
 #include "bmath_mf3_eval.h"
 #include "bmath_mf3_sx.h"
+#include "bmath_mf3_sf.h"
 #include "bmath_pmt.h"
 #include "bmath_grt.h"
 #include "bmath_simd.h"
@@ -64,6 +65,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_vector_signal_handler,
             bmath_mf3_signal_handler,
             bmath_mf3_sx_signal_handler,
+            bmath_mf3_sf_signal_handler,
             bmath_matrix_eval_signal_handler,
             bmath_pmt_signal_handler,
             bmath_grt_signal_handler,

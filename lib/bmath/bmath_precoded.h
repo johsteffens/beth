@@ -21,6 +21,16 @@
 #define BETH_EXPAND_GROUP_bmath_mf3_sx \
   BETH_EXPAND_ITEM_bmath_mf3_sx_s
 
+// source: bmath_mf3_sf
+// group: bmath_mf3_sf
+#define TYPEOF_bmath_mf3_sf 1370763508
+  #define TYPEOF_bmath_mf3_sf_s 913280742
+  #define BETH_EXPAND_ITEM_bmath_mf3_sf_s \
+    BCORE_DECLARE_OBJECT( bmath_mf3_sf_s ) \
+      {aware_t _;sz_t cols;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
+#define BETH_EXPAND_GROUP_bmath_mf3_sf \
+  BETH_EXPAND_ITEM_bmath_mf3_sf_s
+
 // source: bmath_adaptive
 // group: bmath_adaptive
 #define TYPEOF_bmath_adaptive 2961196070

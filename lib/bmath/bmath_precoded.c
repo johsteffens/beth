@@ -24,6 +24,16 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sx_s )\
   "{ aware_t _; sz_t slos; sz_t xons; sz_t rows; sz_t i_stride; sz_t [] i; f3_t [] v; }";
 
 /**********************************************************************************************************************/
+/// source: bmath_mf3_sf
+#include "bmath_mf3_sf.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+/// group: bmath_mf3_sf
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sf_s )\
+  "{ aware_t _; sz_t cols; sz_t rows; sz_t i_stride; sz_t [] i; f3_t [] v; }";
+
+/**********************************************************************************************************************/
 /// source: bmath_adaptive
 #include "bmath_adaptive.h"
 
@@ -187,8 +197,9 @@ vd_t bmath_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 1435127665 ) );
+            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 2840872550 ) );
             BCORE_REGISTER_OBJECT( bmath_mf3_sx_s );
+            BCORE_REGISTER_OBJECT( bmath_mf3_sf_s );
             BCORE_REGISTER_FEATURE( bmath_adaptive_get_in_size );
             BCORE_REGISTER_FEATURE( bmath_adaptive_set_in_size );
             BCORE_REGISTER_FEATURE( bmath_adaptive_get_out_size );
