@@ -92,6 +92,81 @@ static st_s* create_embedded_string( const st_s* s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+/** Creates a structured multiline string for direct code embedding
+ *  from an embedded string
+ */
+static st_s* create_structured_multiline_string( const sc_t s, sz_t indent )
+{
+    st_s* out = st_s_create();
+    sz_t ind = indent;
+    bl_t newline = true;
+    for( sz_t i = 0; s[ i ] != 0; i++ )
+    {
+        char c = s[ i ];
+        if( c == ';' )
+        {
+            if( newline ) st_s_push_fa( out, "#rn{ }\"", ind );
+            st_s_push_char( out, c );
+            st_s_push_fa( out, "\"\n" );
+            newline = true;
+        }
+        else if( c == '{' )
+        {
+            if( newline )
+            {
+                st_s_push_fa( out, "#rn{ }\"{\"", ind );
+            }
+            else
+            {
+                st_s_push_fa( out, "\"\n#rn{ }\"{\"", ind );
+            }
+            if( s[ i + 1 ] != 0 ) st_s_push_char( out, '\n' );
+            ind += 4;
+            newline = true;
+
+        }
+        else if( c == '}' )
+        {
+            ind -= 4;
+            if( newline )
+            {
+                st_s_push_fa( out, "#rn{ }\"}\"", ind );
+            }
+            else
+            {
+                st_s_push_fa( out, "\"\n#rn{ }\"}\"", ind );
+            }
+            if( s[ i + 1 ] != 0 ) st_s_push_char( out, '\n' );
+            newline = true;
+        }
+        else if( c == ' ' )
+        {
+            if( !newline )
+            {
+                if( s[ i + 1 ] != ';' && s[ i + 1 ] != '{' && s[ i + 1 ] != '}' && s[ i + 1 ] != 0 )
+                {
+                    st_s_push_char( out, c );
+                }
+            }
+        }
+        else
+        {
+            if( newline )
+            {
+                st_s_push_fa( out, "#rn{ }\"", ind );
+                newline = false;
+            }
+            st_s_push_char( out, c );
+        }
+    }
+
+    if( !newline ) st_s_push_char( out, '"' );
+    return out;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 BCORE_DECLARE_OBJECT( bcore_precoder_arg_s )
@@ -586,9 +661,14 @@ static void bcore_precoder_item_s_expand_definition( const bcore_precoder_item_s
             sz_t idx = st_s_find_char( self_string, 0, -1, '{' );
             sc_t self_body = "";
             if( idx < self_string->size ) self_body = self_string->sc + idx;
+
             bcore_sink_a_push_fa( sink, "\n" );
-            bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_OBJECT_INST( #<sc_t>, #<sc_t> )\\\n", indent, ifnameof( self->trait ), ifnameof( self->type ) );
-            bcore_sink_a_push_fa( sink, "#rn{ }  \"#<sc_t>\";\n", indent, self_body );
+            bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_OBJECT_INST( #<sc_t>, #<sc_t> )\n", indent, ifnameof( self->trait ), ifnameof( self->type ) );
+//            bcore_sink_a_push_fa( sink, "#rn{ }  \"#<sc_t>\";\n", indent, self_body );
+
+            st_s* multiline_string = create_structured_multiline_string( self_body, indent );
+            bcore_sink_a_push_fa( sink, "#<sc_t>;\n", multiline_string->sc );
+            st_s_discard( multiline_string );
         }
         break;
 
