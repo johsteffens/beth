@@ -20,8 +20,16 @@
 //----------------------------------------------------------------------------------------------------------------------
 /// group: bmath_mf3_sx
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sx_s )\
-  "{ aware_t _; sz_t slos; sz_t xons; sz_t rows; sz_t i_stride; sz_t [] i; f3_t [] v; }";
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sx_s )
+"{"
+    "aware_t _;"
+    "sz_t slos;"
+    "sz_t xons;"
+    "sz_t rows;"
+    "sz_t i_stride;"
+    "sz_t [] i;"
+    "f3_t [] v;"
+"}";
 
 /**********************************************************************************************************************/
 /// source: bmath_mf3_sf
@@ -30,8 +38,15 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sx_s )\
 //----------------------------------------------------------------------------------------------------------------------
 /// group: bmath_mf3_sf
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sf_s )\
-  "{ aware_t _; sz_t cols; sz_t rows; sz_t i_stride; sz_t [] i; f3_t [] v; }";
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sf_s )
+"{"
+    "aware_t _;"
+    "sz_t cols;"
+    "sz_t rows;"
+    "sz_t i_stride;"
+    "sz_t [] i;"
+    "f3_t [] v;"
+"}";
 
 /**********************************************************************************************************************/
 /// source: bmath_adaptive
@@ -156,17 +171,33 @@ static f3_t bmath_activation_dy_default( const bmath_activation* o, f3_t y )
 //----------------------------------------------------------------------------------------------------------------------
 /// group: bmath_activation_objects
 
-BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_tanh_s )\
-  "{ aware_t _; func bmath_activation : fx; func bmath_activation : dy; }";
+BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_tanh_s )
+"{"
+    "aware_t _;"
+    "func bmath_activation : fx;"
+    "func bmath_activation : dy;"
+"}";
 
-BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_relu_s )\
-  "{ aware_t _; func bmath_activation : fx; func bmath_activation : dy; }";
+BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_relu_s )
+"{"
+    "aware_t _;"
+    "func bmath_activation : fx;"
+    "func bmath_activation : dy;"
+"}";
 
-BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_leaky_relu_s )\
-  "{ aware_t _; func bmath_activation : fx; func bmath_activation : dy; }";
+BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_leaky_relu_s )
+"{"
+    "aware_t _;"
+    "func bmath_activation : fx;"
+    "func bmath_activation : dy;"
+"}";
 
-BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_softplus_s )\
-  "{ aware_t _; func bmath_activation : fx; func bmath_activation : dy; }";
+BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_softplus_s )
+"{"
+    "aware_t _;"
+    "func bmath_activation : fx;"
+    "func bmath_activation : dy;"
+"}";
 
 /**********************************************************************************************************************/
 /// source: bmath_adaptive_cnn_1d
@@ -175,8 +206,47 @@ BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_softplus_s )\
 //----------------------------------------------------------------------------------------------------------------------
 /// group: bmath_adaptive_cnn_1d
 
-BCORE_DEFINE_OBJECT_INST( bmath_adaptive, bmath_adaptive_cnn_1d_s )\
-  "{ aware_t _; sz_t input_size ; sz_t input_step = 1; sz_t input_convolution_size = 2; sz_t input_kernels = 8; sz_t output_kernels = 1; f3_t kernels_rate = 0; sz_t reduction_step = 2; sz_t convolution_size = 2; f3_t adapt_step = 0.0001; f3_t decay_step = 0; sr_s act_mid ; sr_s act_out ; u2_t random_state = 1234 ; bmath_arr_mf3_s arr_w; hidden bmath_arr_mf3_s arr_a; hidden bmath_arr_mf3_s arr_b; hidden bmath_vf3_s buf_ab; hidden bmath_arr_mf3_s arr_ga; hidden bmath_arr_mf3_s arr_gb; hidden bmath_vf3_s buf_gab; hidden bcore_arr_sr_s arr_activation; hidden bmath_vf3_s in; hidden bmath_vf3_s out; hidden bmath_vf3_s gout; func bmath_adaptive: get_in_size; func bmath_adaptive: set_in_size; func bmath_adaptive: get_out_size; func bmath_adaptive: set_out_size; func bmath_adaptive: get_step; func bmath_adaptive: set_step; func bmath_adaptive: get_decay; func bmath_adaptive: set_decay; func bmath_adaptive: setup; func bmath_adaptive: set_untrained; func bmath_adaptive: arc_to_sink; func bmath_adaptive: query; func bmath_adaptive: adapt; }";
+BCORE_DEFINE_OBJECT_INST( bmath_adaptive, bmath_adaptive_cnn_1d_s )
+"{"
+    "aware_t _;"
+    "sz_t input_size;"
+    "sz_t input_step = 1;"
+    "sz_t input_convolution_size = 2;"
+    "sz_t input_kernels = 8;"
+    "sz_t output_kernels = 1;"
+    "f3_t kernels_rate = 0;"
+    "sz_t reduction_step = 2;"
+    "sz_t convolution_size = 2;"
+    "f3_t adapt_step = 0.0001;"
+    "f3_t decay_step = 0;"
+    "sr_s act_mid;"
+    "sr_s act_out;"
+    "u2_t random_state = 1234;"
+    "bmath_arr_mf3_s arr_w;"
+    "hidden bmath_arr_mf3_s arr_a;"
+    "hidden bmath_arr_mf3_s arr_b;"
+    "hidden bmath_vf3_s buf_ab;"
+    "hidden bmath_arr_mf3_s arr_ga;"
+    "hidden bmath_arr_mf3_s arr_gb;"
+    "hidden bmath_vf3_s buf_gab;"
+    "hidden bcore_arr_sr_s arr_activation;"
+    "hidden bmath_vf3_s in;"
+    "hidden bmath_vf3_s out;"
+    "hidden bmath_vf3_s gout;"
+    "func bmath_adaptive: get_in_size;"
+    "func bmath_adaptive: set_in_size;"
+    "func bmath_adaptive: get_out_size;"
+    "func bmath_adaptive: set_out_size;"
+    "func bmath_adaptive: get_step;"
+    "func bmath_adaptive: set_step;"
+    "func bmath_adaptive: get_decay;"
+    "func bmath_adaptive: set_decay;"
+    "func bmath_adaptive: setup;"
+    "func bmath_adaptive: set_untrained;"
+    "func bmath_adaptive: arc_to_sink;"
+    "func bmath_adaptive: query;"
+    "func bmath_adaptive: adapt;"
+"}";
 
 /**********************************************************************************************************************/
 /// source: bmath_adaptive_mlp
@@ -185,8 +255,44 @@ BCORE_DEFINE_OBJECT_INST( bmath_adaptive, bmath_adaptive_cnn_1d_s )\
 //----------------------------------------------------------------------------------------------------------------------
 /// group: bmath_adaptive_mlp
 
-BCORE_DEFINE_OBJECT_INST( bmath_adaptive, bmath_adaptive_mlp_s )\
-  "{ aware_t _; sz_t input_size; sz_t input_kernels = 8; sz_t output_kernels = 1; sz_t layers = 2; f3_t kernels_rate = 0; f3_t adapt_step = 0.0001; f3_t decay_step = 0; sr_s act_mid; sr_s act_out; u2_t random_state =1234; bmath_arr_mf3_s arr_w; hidden bmath_arr_vf3_s arr_a; hidden bmath_arr_vf3_s arr_b; hidden bmath_vf3_s buf_ab; hidden bmath_arr_vf3_s arr_ga; hidden bmath_arr_vf3_s arr_gb; hidden bmath_vf3_s buf_gab; hidden bcore_arr_sr_s arr_activation; hidden bmath_vf3_s in; hidden bmath_vf3_s out; hidden bmath_vf3_s gout; func bmath_adaptive: get_in_size; func bmath_adaptive: set_in_size; func bmath_adaptive: get_out_size; func bmath_adaptive: set_out_size; func bmath_adaptive: get_step; func bmath_adaptive: set_step; func bmath_adaptive: get_decay; func bmath_adaptive: set_decay; func bmath_adaptive: setup; func bmath_adaptive: set_untrained; func bmath_adaptive: arc_to_sink; func bmath_adaptive: query; func bmath_adaptive: adapt; }";
+BCORE_DEFINE_OBJECT_INST( bmath_adaptive, bmath_adaptive_mlp_s )
+"{"
+    "aware_t _;"
+    "sz_t input_size;"
+    "sz_t input_kernels = 8;"
+    "sz_t output_kernels = 1;"
+    "sz_t layers = 2;"
+    "f3_t kernels_rate = 0;"
+    "f3_t adapt_step = 0.0001;"
+    "f3_t decay_step = 0;"
+    "sr_s act_mid;"
+    "sr_s act_out;"
+    "u2_t random_state =1234;"
+    "bmath_arr_mf3_s arr_w;"
+    "hidden bmath_arr_vf3_s arr_a;"
+    "hidden bmath_arr_vf3_s arr_b;"
+    "hidden bmath_vf3_s buf_ab;"
+    "hidden bmath_arr_vf3_s arr_ga;"
+    "hidden bmath_arr_vf3_s arr_gb;"
+    "hidden bmath_vf3_s buf_gab;"
+    "hidden bcore_arr_sr_s arr_activation;"
+    "hidden bmath_vf3_s in;"
+    "hidden bmath_vf3_s out;"
+    "hidden bmath_vf3_s gout;"
+    "func bmath_adaptive: get_in_size;"
+    "func bmath_adaptive: set_in_size;"
+    "func bmath_adaptive: get_out_size;"
+    "func bmath_adaptive: set_out_size;"
+    "func bmath_adaptive: get_step;"
+    "func bmath_adaptive: set_step;"
+    "func bmath_adaptive: get_decay;"
+    "func bmath_adaptive: set_decay;"
+    "func bmath_adaptive: setup;"
+    "func bmath_adaptive: set_untrained;"
+    "func bmath_adaptive: arc_to_sink;"
+    "func bmath_adaptive: query;"
+    "func bmath_adaptive: adapt;"
+"}";
 
 /**********************************************************************************************************************/
 

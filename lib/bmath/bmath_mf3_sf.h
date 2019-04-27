@@ -57,6 +57,8 @@
 
 #include "bcore_std.h"
 #include "bmath_precoded.h"
+#include "bmath_mf3.h"
+#include "bmath_mf3_sf_mul.h"
 
 /**********************************************************************************************************************/
 

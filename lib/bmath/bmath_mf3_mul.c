@@ -16,6 +16,10 @@
 /** Collection of algorithms related to matrix multiplication.
  *  All routines have been designed from scratch and optimized with modern architectures in mind.
  *
+ *  Blocking and microkernel strategy:
+ *    - Recursion rows-cols trying to reach BLOCK_SIZE
+ *    - Microkernels are optimized for BLOCK_SIZE and used AVX-SIMD when available
+ *
  *  This header is included in bmath_mf3.h and should not be used in isolation
  *  See bmath_mf3.h for nomenclature.
  */
