@@ -23,7 +23,7 @@
 #include "bmath_mf3_sf.h"
 #include "bmath_mf3_sf_mul.h"
 
-#define BMATH_MUL_SF_BLOCK_SIZE 32
+#define BMATH_MUL_SF_BLOCK_SIZE 48
 #define BMATH_MUL_SF_BLKP4_SIZE ( BMATH_MUL_SF_BLOCK_SIZE >> 2 )
 
 #ifdef TYPEOF_bmath_mf3_sf_s
