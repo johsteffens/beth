@@ -664,7 +664,6 @@ static void bcore_precoder_item_s_expand_definition( const bcore_precoder_item_s
 
             bcore_sink_a_push_fa( sink, "\n" );
             bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_OBJECT_INST( #<sc_t>, #<sc_t> )\n", indent, ifnameof( self->trait ), ifnameof( self->type ) );
-//            bcore_sink_a_push_fa( sink, "#rn{ }  \"#<sc_t>\";\n", indent, self_body );
 
             st_s* multiline_string = create_structured_multiline_string( self_body, indent );
             bcore_sink_a_push_fa( sink, "#<sc_t>;\n", multiline_string->sc );
@@ -842,7 +841,11 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
 static void bcore_precoder_group_s_expand_declaration( const bcore_precoder_group_s* o, sz_t indent, bcore_sink* sink )
 {
     BCORE_LIFE_INIT();
+    bcore_sink_a_push_fa( sink, "\n" );
+    bcore_sink_a_push_fa( sink, "#rn{ }//#rn{-}\n", indent, sz_max( 0, 118 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// group: #<sc_t>\n", indent, o->name.sc );
+
+    bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->name.sc, typeof( o->name.sc ) );
 
     if( o->has_features )
@@ -907,7 +910,6 @@ static void bcore_precoder_group_s_expand_declaration( const bcore_precoder_grou
     }
 
     bcore_sink_a_push_fa( sink, "\n" );
-    bcore_sink_a_push_fa( sink, "\n" );
     BCORE_LIFE_DOWN();
 }
 
@@ -952,7 +954,7 @@ static void bcore_precoder_group_s_expand_definition( const bcore_precoder_group
 {
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }//#rn{-}\n", indent, sz_max( 0, 118 - indent ) );
-    bcore_sink_a_push_fa( sink, "#rn{ }/// group: #<sc_t>\n", indent, o->name.sc );
+    bcore_sink_a_push_fa( sink, "#rn{ }// group: #<sc_t>\n", indent, o->name.sc );
     for( sz_t i = 0; i < o->size; i++ ) bcore_precoder_item_s_expand_definition( o->data[ i ], indent, sink );
     if( o->has_features )
     {
@@ -1014,6 +1016,8 @@ static void bcore_precoder_source_s_compile( bcore_precoder_source_s* o, bcore_s
 
 static void bcore_precoder_source_s_expand_declaration( const bcore_precoder_source_s* o, sz_t indent, bcore_sink* sink )
 {
+    bcore_sink_a_push_fa( sink, "\n" );
+    bcore_sink_a_push_fa( sink, "#rn{ }/*#rn{*}*/\n", indent, sz_max( 0, 116 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// source: #<sc_t>\n", indent, o->name.sc );
     for( sz_t i = 0; i < o->size; i++ ) bcore_precoder_group_s_expand_declaration( o->data[ i ], indent, sink );
 }
@@ -1024,7 +1028,7 @@ static void bcore_precoder_source_s_expand_definition( const bcore_precoder_sour
 {
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }/*#rn{*}*/\n", indent, sz_max( 0, 116 - indent ) );
-    bcore_sink_a_push_fa( sink, "#rn{ }/// source: #<sc_t>\n", indent, o->name.sc );
+    bcore_sink_a_push_fa( sink, "#rn{ }// source: #<sc_t>\n", indent, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }##include \"#<sc_t>.h\"\n", indent, o->name.sc );
     for( sz_t i = 0; i < o->size; i++ ) bcore_precoder_group_s_expand_definition( o->data[ i ], indent, sink );
 }
@@ -1073,6 +1077,8 @@ static void bcore_precoder_target_s_expand_h( const bcore_precoder_target_s* o, 
 
     for( sz_t i = 0; i < o->size; i++ ) bcore_precoder_source_s_expand_declaration( o->data[ i ], indent, sink );
 
+    bcore_sink_a_push_fa( sink, "\n" );
+    bcore_sink_a_push_fa( sink, "#rn{ }/*#rn{*}*/\n", indent, sz_max( 0, 116 - indent ) );
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }vd_t #<sc_t>_signal_handler( const bcore_signal_s* o );\n", indent, o->name.sc );
 

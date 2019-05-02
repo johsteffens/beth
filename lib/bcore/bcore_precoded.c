@@ -14,11 +14,11 @@
 
 
 /**********************************************************************************************************************/
-/// source: bcore_precoder_sample
+// source: bcore_precoder_sample
 #include "bcore_precoder_sample.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-/// group: bcore_precoder_sample_features
+// group: bcore_precoder_sample_features
 
 BCORE_DEFINE_SPECT( bcore_inst, bcore_precoder_sample_features )
 "{"
@@ -45,7 +45,7 @@ static sz_t bcore_precoder_sample_features_get_size_default( const bcore_precode
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-/// group: bcore_precoder_sample
+// group: bcore_precoder_sample
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object_s )
 "{"

@@ -14,11 +14,11 @@
 
 
 /**********************************************************************************************************************/
-/// source: bmath_mf3_sx
+// source: bmath_mf3_sx
 #include "bmath_mf3_sx.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-/// group: bmath_mf3_sx
+// group: bmath_mf3_sx
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sx_s )
 "{"
@@ -32,11 +32,11 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sx_s )
 "}";
 
 /**********************************************************************************************************************/
-/// source: bmath_mf3_sf
+// source: bmath_mf3_sf
 #include "bmath_mf3_sf.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-/// group: bmath_mf3_sf
+// group: bmath_mf3_sf
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sf_s )
 "{"
@@ -49,11 +49,11 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sf_s )
 "}";
 
 /**********************************************************************************************************************/
-/// source: bmath_adaptive
+// source: bmath_adaptive
 #include "bmath_adaptive.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-/// group: bmath_adaptive
+// group: bmath_adaptive
 
 BCORE_DEFINE_SPECT( bcore_inst, bmath_adaptive )
 "{"
@@ -143,11 +143,11 @@ static void bmath_adaptive_adapt_default( bmath_adaptive* o, const bmath_vf3_s* 
 }
 
 /**********************************************************************************************************************/
-/// source: bmath_activation
+// source: bmath_activation
 #include "bmath_activation.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-/// group: bmath_activation
+// group: bmath_activation
 
 BCORE_DEFINE_SPECT( bcore_inst, bmath_activation )
 "{"
@@ -169,7 +169,7 @@ static f3_t bmath_activation_dy_default( const bmath_activation* o, f3_t y )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-/// group: bmath_activation_objects
+// group: bmath_activation_objects
 
 BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_tanh_s )
 "{"
@@ -200,11 +200,11 @@ BCORE_DEFINE_OBJECT_INST( bmath_activation, bmath_activation_softplus_s )
 "}";
 
 /**********************************************************************************************************************/
-/// source: bmath_adaptive_cnn_1d
+// source: bmath_adaptive_cnn_1d
 #include "bmath_adaptive_cnn_1d.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-/// group: bmath_adaptive_cnn_1d
+// group: bmath_adaptive_cnn_1d
 
 BCORE_DEFINE_OBJECT_INST( bmath_adaptive, bmath_adaptive_cnn_1d_s )
 "{"
@@ -249,11 +249,11 @@ BCORE_DEFINE_OBJECT_INST( bmath_adaptive, bmath_adaptive_cnn_1d_s )
 "}";
 
 /**********************************************************************************************************************/
-/// source: bmath_adaptive_mlp
+// source: bmath_adaptive_mlp
 #include "bmath_adaptive_mlp.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-/// group: bmath_adaptive_mlp
+// group: bmath_adaptive_mlp
 
 BCORE_DEFINE_OBJECT_INST( bmath_adaptive, bmath_adaptive_mlp_s )
 "{"

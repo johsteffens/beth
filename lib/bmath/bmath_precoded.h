@@ -11,8 +11,13 @@
 
 #include "bcore_control.h"
 
+
+/**********************************************************************************************************************/
 // source: bmath_mf3_sx
+
+//----------------------------------------------------------------------------------------------------------------------
 // group: bmath_mf3_sx
+
 #define TYPEOF_bmath_mf3_sx 934545414
   #define TYPEOF_bmath_mf3_sx_s 948195256
   #define BETH_EXPAND_ITEM_bmath_mf3_sx_s \
@@ -21,8 +26,12 @@
 #define BETH_EXPAND_GROUP_bmath_mf3_sx \
   BETH_EXPAND_ITEM_bmath_mf3_sx_s
 
+/**********************************************************************************************************************/
 // source: bmath_mf3_sf
+
+//----------------------------------------------------------------------------------------------------------------------
 // group: bmath_mf3_sf
+
 #define TYPEOF_bmath_mf3_sf 1370763508
   #define TYPEOF_bmath_mf3_sf_s 913280742
   #define BETH_EXPAND_ITEM_bmath_mf3_sf_s \
@@ -31,8 +40,12 @@
 #define BETH_EXPAND_GROUP_bmath_mf3_sf \
   BETH_EXPAND_ITEM_bmath_mf3_sf_s
 
+/**********************************************************************************************************************/
 // source: bmath_adaptive
+
+//----------------------------------------------------------------------------------------------------------------------
 // group: bmath_adaptive
+
 #define TYPEOF_bmath_adaptive 2961196070
 #define TYPEOF_bmath_adaptive_s 2435779224
 #define bmath_adaptive_p_defines( p, f_name ) ( p->f_name != NULL )
@@ -124,8 +137,12 @@
   static inline void bmath_adaptive_a_adapt( bmath_adaptive* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) { bmath_adaptive_s_get_aware( o )->adapt( o, in, target, out ); } \
   static inline void bmath_adaptive_r_adapt( const sr_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) { ASSERT( !sr_s_is_const( o ) ); ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->adapt( o->o, in, target, out ); }
 
+/**********************************************************************************************************************/
 // source: bmath_activation
+
+//----------------------------------------------------------------------------------------------------------------------
 // group: bmath_activation
+
 #define TYPEOF_bmath_activation 3944871920
 #define TYPEOF_bmath_activation_s 458575370
 #define bmath_activation_p_defines( p, f_name ) ( p->f_name != NULL )
@@ -151,7 +168,9 @@
   static inline f3_t bmath_activation_a_dy( const bmath_activation* o, f3_t y ) { return bmath_activation_s_get_aware( o )->dy( o, y ); } \
   static inline f3_t bmath_activation_r_dy( const sr_s* o, f3_t y ) { return ( (bmath_activation_s*)ch_spect_p( o->p, TYPEOF_bmath_activation_s ) )->dy( o->o, y ); }
 
+//----------------------------------------------------------------------------------------------------------------------
 // group: bmath_activation_objects
+
 #define TYPEOF_bmath_activation_objects 990908883
   #define TYPEOF_bmath_activation_tanh_s 1820660338
   #define BETH_EXPAND_ITEM_bmath_activation_tanh_s \
@@ -183,8 +202,12 @@
   BETH_EXPAND_ITEM_bmath_activation_leaky_relu_s \
   BETH_EXPAND_ITEM_bmath_activation_softplus_s
 
+/**********************************************************************************************************************/
 // source: bmath_adaptive_cnn_1d
+
+//----------------------------------------------------------------------------------------------------------------------
 // group: bmath_adaptive_cnn_1d
+
 #define TYPEOF_bmath_adaptive_cnn_1d 3372602604
   #define TYPEOF_bmath_adaptive_cnn_1d_s 1730638798
   #define BETH_EXPAND_ITEM_bmath_adaptive_cnn_1d_s \
@@ -206,8 +229,12 @@
 #define BETH_EXPAND_GROUP_bmath_adaptive_cnn_1d \
   BETH_EXPAND_ITEM_bmath_adaptive_cnn_1d_s
 
+/**********************************************************************************************************************/
 // source: bmath_adaptive_mlp
+
+//----------------------------------------------------------------------------------------------------------------------
 // group: bmath_adaptive_mlp
+
 #define TYPEOF_bmath_adaptive_mlp 2240972622
   #define TYPEOF_bmath_adaptive_mlp_s 513368592
   #define BETH_EXPAND_ITEM_bmath_adaptive_mlp_s \
@@ -229,6 +256,7 @@
 #define BETH_EXPAND_GROUP_bmath_adaptive_mlp \
   BETH_EXPAND_ITEM_bmath_adaptive_mlp_s
 
+/**********************************************************************************************************************/
 
 vd_t bmath_precoded_signal_handler( const bcore_signal_s* o );
 

@@ -11,8 +11,13 @@
 
 #include "bcore_control.h"
 
+
+/**********************************************************************************************************************/
 // source: bcore_precoder_sample
+
+//----------------------------------------------------------------------------------------------------------------------
 // group: bcore_precoder_sample_features
+
 #define TYPEOF_bcore_precoder_sample_features 1533308178
 #define TYPEOF_bcore_precoder_sample_features_s 2917243660
 #define bcore_precoder_sample_features_p_defines( p, f_name ) ( p->f_name != NULL )
@@ -44,7 +49,9 @@
   static inline sz_t bcore_precoder_sample_features_a_get_size( const bcore_precoder_sample_features* o ) { return bcore_precoder_sample_features_s_get_aware( o )->get_size( o ); } \
   static inline sz_t bcore_precoder_sample_features_r_get_size( const sr_s* o ) { return ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->get_size( o->o ); }
 
+//----------------------------------------------------------------------------------------------------------------------
 // group: bcore_precoder_sample
+
 #define TYPEOF_bcore_precoder_sample 933626240
   #define TYPEOF_bcore_precoder_sample_object_s 1940901916
   #define BETH_EXPAND_ITEM_bcore_precoder_sample_object_s \
@@ -63,6 +70,7 @@
   BETH_EXPAND_ITEM_bcore_precoder_sample_object_s \
   BETH_EXPAND_ITEM_bcore_precoder_sample_object2_s
 
+/**********************************************************************************************************************/
 
 vd_t bcore_precoded_signal_handler( const bcore_signal_s* o );
 
