@@ -60,13 +60,15 @@ void bcore_precoder_sample_object_s_selftest( void )
 {
     BCORE_LIFE_INIT();
 
-    BCORE_LIFE_CREATE( bcore_precoder_sample_object_s, object1 );
-    bcore_precoder_sample_features_a_setup( ( bcore_precoder_sample_features* )object1, 5 );
-    bcore_precoder_sample_features_a_to_stdout( ( bcore_precoder_sample_features* )object1 );
+    bcore_precoder_sample_features* object1 = BCORE_LIFE_A_PUSH( bcore_precoder_sample_object_s_create() );
+    bcore_precoder_sample_features* object2 = BCORE_LIFE_A_PUSH( bcore_precoder_sample_object2_s_create() );
 
-    BCORE_LIFE_CREATE( bcore_precoder_sample_object2_s, object2 );
-    bcore_precoder_sample_features_a_setup( ( bcore_precoder_sample_features* )object2, bcore_precoder_sample_features_a_get_size( ( bcore_precoder_sample_features* )object1 ) );
-    bcore_precoder_sample_features_a_to_stdout( ( bcore_precoder_sample_features* )object2 );
+    bcore_precoder_sample_features_a_setup( object1, 5 );
+    bcore_precoder_sample_features_a_to_stdout( object1 );
+
+    bcore_precoder_sample_features_a_setup( object2, bcore_precoder_sample_features_a_get_size( object1 ) );
+
+    if( bcore_precoder_sample_features_a_defines( object2, to_stdout ) ) bcore_precoder_sample_features_a_to_stdout( object2 );
 
     BCORE_LIFE_DOWN();
 }

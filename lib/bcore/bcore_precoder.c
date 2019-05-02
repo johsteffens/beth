@@ -581,7 +581,7 @@ static void bcore_precoder_feature_s_expand_indef_declaration( const bcore_preco
     if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
     bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
     bcore_precoder_args_s_expand( &o->args, sink );
-    bcore_sink_a_push_fa( sink, " ) {" );
+    bcore_sink_a_push_fa( sink, " ) { " );
     if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
     bcore_sink_a_push_fa( sink, "__p->#<sc_t>( o", o->name.sc );
     bcore_precoder_args_s_expand_name( &o->args, sink );
@@ -849,6 +849,11 @@ static void bcore_precoder_group_s_expand_declaration( const bcore_precoder_grou
     {
         st_s* spect_name = BCORE_LIFE_A_PUSH( st_s_create_fa( "#<sc_t>_s", o->name.sc ) );
         bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, spect_name->sc, typeof( spect_name->sc ) );
+
+        bcore_sink_a_push_fa( sink, "#rn{ }##define #<sc_t>_p_defines( p, f_name ) ( p->f_name != NULL )\n", indent, o->name.sc );
+        bcore_sink_a_push_fa( sink, "#rn{ }##define #<sc_t>_t_defines( t, f_name ) ( #<sc_t>_s_get_typed( t )->f_name != NULL )\n", indent, o->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, "#rn{ }##define #<sc_t>_a_defines( o, f_name ) ( #<sc_t>_s_get_aware( o )->f_name != NULL )\n", indent, o->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, "#rn{ }##define #<sc_t>_r_defines( o, f_name ) ( #<sc_t>_s_get_typed( o->o_type )->f_name != NULL )\n", indent, o->name.sc, o->name.sc );
     }
 
     for( sz_t i = 0; i < o->size; i++ ) bcore_precoder_item_s_expand_declaration( o->data[ i ], indent + 2, sink );
@@ -935,10 +940,6 @@ static void bcore_precoder_group_s_expand_spect( const bcore_precoder_group_s* o
         if( item->type == TYPEOF_bcore_precoder_feature_s )
         {
             bcore_precoder_feature_s_expand_default( item->data.o, indent, sink );
-//            bcore_precoder_feature_s_expand_virtual_p( item->data.o, indent, sink );
-//            bcore_precoder_feature_s_expand_virtual_t( item->data.o, indent, sink );
-//            bcore_precoder_feature_s_expand_virtual_a( item->data.o, indent, sink );
-//            bcore_precoder_feature_s_expand_virtual_r( item->data.o, indent, sink );
         }
     }
 

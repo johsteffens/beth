@@ -26,7 +26,7 @@
 /**********************************************************************************************************************/
 
 BETH_PRECODE( bmath_adaptive )
-/*
+/**
     // input vector size
     feature sz_t get_in_size( const );
     feature void set_in_size( mutable, sz_t size );
