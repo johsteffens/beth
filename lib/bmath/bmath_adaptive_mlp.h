@@ -76,7 +76,7 @@ BETH_PRECODE( bmath_adaptive_mlp )
         func bmath_adaptive: query;
         func bmath_adaptive: adapt;
         // ==============================================================
-    }
+    };
 */
 
 #endif // TYPEOF_bmath_adaptive_mlp

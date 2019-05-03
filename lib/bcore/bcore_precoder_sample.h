@@ -23,19 +23,12 @@
 
 /**********************************************************************************************************************/
 
-/* B'ETH_PRECODE is a c-macro as well as a precode (group-) identifier
- * The B'ETH_PRECODE macro is expanded into the c-code of the precode.
- * The macro argument is a unique identifier for the given precode section.
- * The associated precode is defined by the commented section immediately
- * following the macro.
- */
-
 #ifdef TYPEOF_bcore_precoder_sample_features
 BETH_PRECODE( bcore_precoder_sample_features )
 /*
-    feature void setup( mutable, sz_t n );
-    feature void to_stdout( const );
-    feature sz_t get_size( const );
+    feature strict 'ptar' void setup( mutable, sz_t n );
+    feature        'ptar' void to_stdout( const ) = to_stdout_default;
+    feature        'ptar' sz_t get_size( const );
 */
 #endif // optional enclosure
 
@@ -50,7 +43,7 @@ BETH_PRECODE( bcore_precoder_sample )
         func bcore_precoder_sample_features:setup;
         func bcore_precoder_sample_features:to_stdout;
         func bcore_precoder_sample_features:get_size;
-    }
+    };
 
     self bcore_precoder_sample_object2_s = bcore_inst
     {
@@ -59,7 +52,7 @@ BETH_PRECODE( bcore_precoder_sample )
         st_s name2;
         func bcore_precoder_sample_features:setup;
         func bcore_precoder_sample_features:to_stdout;
-    }
+    };
 */
 #endif // optional enclosure
 

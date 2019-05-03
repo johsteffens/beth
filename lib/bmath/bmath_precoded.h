@@ -48,10 +48,6 @@
 
 #define TYPEOF_bmath_adaptive 2961196070
 #define TYPEOF_bmath_adaptive_s 2435779224
-#define bmath_adaptive_p_defines( p, f_name ) ( p->f_name != NULL )
-#define bmath_adaptive_t_defines( t, f_name ) ( bmath_adaptive_s_get_typed( t )->f_name != NULL )
-#define bmath_adaptive_a_defines( o, f_name ) ( bmath_adaptive_s_get_aware( o )->f_name != NULL )
-#define bmath_adaptive_r_defines( o, f_name ) ( bmath_adaptive_s_get_typed( o->o_type )->f_name != NULL )
 #define BETH_EXPAND_GROUP_bmath_adaptive \
   BCORE_FORWARD_OBJECT( bmath_adaptive ); \
   typedef sz_t (*bmath_adaptive_get_in_size)( const bmath_adaptive* o ); \
@@ -85,57 +81,83 @@
       bmath_adaptive_adapt adapt; \
   }; \
   static inline sz_t bmath_adaptive_p_get_in_size( const bmath_adaptive_s* __p, const bmath_adaptive* o ) { return __p->get_in_size( o ); } \
-  static inline sz_t bmath_adaptive_t_get_in_size( tp_t __t, const bmath_adaptive* o ) { return bmath_adaptive_s_get_typed( __t )->get_in_size( o ); } \
   static inline sz_t bmath_adaptive_a_get_in_size( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->get_in_size( o ); } \
   static inline sz_t bmath_adaptive_r_get_in_size( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->get_in_size( o->o ); } \
+  static inline bl_t bmath_adaptive_p_defines_get_in_size( const bmath_adaptive_s* __p ) { return __p->get_in_size != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_get_in_size( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->get_in_size != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_get_in_size( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->get_in_size != NULL; } \
   static inline void bmath_adaptive_p_set_in_size( const bmath_adaptive_s* __p, bmath_adaptive* o, sz_t size ) { __p->set_in_size( o, size ); } \
-  static inline void bmath_adaptive_t_set_in_size( tp_t __t, bmath_adaptive* o, sz_t size ) { bmath_adaptive_s_get_typed( __t )->set_in_size( o, size ); } \
   static inline void bmath_adaptive_a_set_in_size( bmath_adaptive* o, sz_t size ) { bmath_adaptive_s_get_aware( o )->set_in_size( o, size ); } \
   static inline void bmath_adaptive_r_set_in_size( const sr_s* o, sz_t size ) { ASSERT( !sr_s_is_const( o ) ); ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->set_in_size( o->o, size ); } \
+  static inline bl_t bmath_adaptive_p_defines_set_in_size( const bmath_adaptive_s* __p ) { return __p->set_in_size != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_set_in_size( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->set_in_size != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_set_in_size( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->set_in_size != NULL; } \
   static inline sz_t bmath_adaptive_p_get_out_size( const bmath_adaptive_s* __p, const bmath_adaptive* o ) { return __p->get_out_size( o ); } \
-  static inline sz_t bmath_adaptive_t_get_out_size( tp_t __t, const bmath_adaptive* o ) { return bmath_adaptive_s_get_typed( __t )->get_out_size( o ); } \
   static inline sz_t bmath_adaptive_a_get_out_size( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->get_out_size( o ); } \
   static inline sz_t bmath_adaptive_r_get_out_size( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->get_out_size( o->o ); } \
+  static inline bl_t bmath_adaptive_p_defines_get_out_size( const bmath_adaptive_s* __p ) { return __p->get_out_size != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_get_out_size( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->get_out_size != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_get_out_size( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->get_out_size != NULL; } \
   static inline void bmath_adaptive_p_set_out_size( const bmath_adaptive_s* __p, bmath_adaptive* o, sz_t size ) { __p->set_out_size( o, size ); } \
-  static inline void bmath_adaptive_t_set_out_size( tp_t __t, bmath_adaptive* o, sz_t size ) { bmath_adaptive_s_get_typed( __t )->set_out_size( o, size ); } \
   static inline void bmath_adaptive_a_set_out_size( bmath_adaptive* o, sz_t size ) { bmath_adaptive_s_get_aware( o )->set_out_size( o, size ); } \
   static inline void bmath_adaptive_r_set_out_size( const sr_s* o, sz_t size ) { ASSERT( !sr_s_is_const( o ) ); ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->set_out_size( o->o, size ); } \
+  static inline bl_t bmath_adaptive_p_defines_set_out_size( const bmath_adaptive_s* __p ) { return __p->set_out_size != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_set_out_size( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->set_out_size != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_set_out_size( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->set_out_size != NULL; } \
   static inline f3_t bmath_adaptive_p_get_step( const bmath_adaptive_s* __p, const bmath_adaptive* o ) { return __p->get_step( o ); } \
-  static inline f3_t bmath_adaptive_t_get_step( tp_t __t, const bmath_adaptive* o ) { return bmath_adaptive_s_get_typed( __t )->get_step( o ); } \
   static inline f3_t bmath_adaptive_a_get_step( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->get_step( o ); } \
   static inline f3_t bmath_adaptive_r_get_step( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->get_step( o->o ); } \
+  static inline bl_t bmath_adaptive_p_defines_get_step( const bmath_adaptive_s* __p ) { return __p->get_step != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_get_step( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->get_step != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_get_step( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->get_step != NULL; } \
   static inline void bmath_adaptive_p_set_step( const bmath_adaptive_s* __p, bmath_adaptive* o, f3_t val ) { __p->set_step( o, val ); } \
-  static inline void bmath_adaptive_t_set_step( tp_t __t, bmath_adaptive* o, f3_t val ) { bmath_adaptive_s_get_typed( __t )->set_step( o, val ); } \
   static inline void bmath_adaptive_a_set_step( bmath_adaptive* o, f3_t val ) { bmath_adaptive_s_get_aware( o )->set_step( o, val ); } \
   static inline void bmath_adaptive_r_set_step( const sr_s* o, f3_t val ) { ASSERT( !sr_s_is_const( o ) ); ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->set_step( o->o, val ); } \
+  static inline bl_t bmath_adaptive_p_defines_set_step( const bmath_adaptive_s* __p ) { return __p->set_step != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_set_step( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->set_step != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_set_step( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->set_step != NULL; } \
   static inline f3_t bmath_adaptive_p_get_decay( const bmath_adaptive_s* __p, const bmath_adaptive* o ) { return __p->get_decay( o ); } \
-  static inline f3_t bmath_adaptive_t_get_decay( tp_t __t, const bmath_adaptive* o ) { return bmath_adaptive_s_get_typed( __t )->get_decay( o ); } \
   static inline f3_t bmath_adaptive_a_get_decay( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->get_decay( o ); } \
   static inline f3_t bmath_adaptive_r_get_decay( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->get_decay( o->o ); } \
+  static inline bl_t bmath_adaptive_p_defines_get_decay( const bmath_adaptive_s* __p ) { return __p->get_decay != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_get_decay( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->get_decay != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_get_decay( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->get_decay != NULL; } \
   static inline void bmath_adaptive_p_set_decay( const bmath_adaptive_s* __p, bmath_adaptive* o, f3_t val ) { __p->set_decay( o, val ); } \
-  static inline void bmath_adaptive_t_set_decay( tp_t __t, bmath_adaptive* o, f3_t val ) { bmath_adaptive_s_get_typed( __t )->set_decay( o, val ); } \
   static inline void bmath_adaptive_a_set_decay( bmath_adaptive* o, f3_t val ) { bmath_adaptive_s_get_aware( o )->set_decay( o, val ); } \
   static inline void bmath_adaptive_r_set_decay( const sr_s* o, f3_t val ) { ASSERT( !sr_s_is_const( o ) ); ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->set_decay( o->o, val ); } \
+  static inline bl_t bmath_adaptive_p_defines_set_decay( const bmath_adaptive_s* __p ) { return __p->set_decay != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_set_decay( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->set_decay != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_set_decay( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->set_decay != NULL; } \
   static inline void bmath_adaptive_p_setup( const bmath_adaptive_s* __p, bmath_adaptive* o, bl_t training ) { __p->setup( o, training ); } \
-  static inline void bmath_adaptive_t_setup( tp_t __t, bmath_adaptive* o, bl_t training ) { bmath_adaptive_s_get_typed( __t )->setup( o, training ); } \
   static inline void bmath_adaptive_a_setup( bmath_adaptive* o, bl_t training ) { bmath_adaptive_s_get_aware( o )->setup( o, training ); } \
   static inline void bmath_adaptive_r_setup( const sr_s* o, bl_t training ) { ASSERT( !sr_s_is_const( o ) ); ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->setup( o->o, training ); } \
+  static inline bl_t bmath_adaptive_p_defines_setup( const bmath_adaptive_s* __p ) { return __p->setup != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_setup( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->setup != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_setup( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->setup != NULL; } \
   static inline void bmath_adaptive_p_set_untrained( const bmath_adaptive_s* __p, bmath_adaptive* o ) { __p->set_untrained( o ); } \
-  static inline void bmath_adaptive_t_set_untrained( tp_t __t, bmath_adaptive* o ) { bmath_adaptive_s_get_typed( __t )->set_untrained( o ); } \
   static inline void bmath_adaptive_a_set_untrained( bmath_adaptive* o ) { bmath_adaptive_s_get_aware( o )->set_untrained( o ); } \
   static inline void bmath_adaptive_r_set_untrained( const sr_s* o ) { ASSERT( !sr_s_is_const( o ) ); ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->set_untrained( o->o ); } \
+  static inline bl_t bmath_adaptive_p_defines_set_untrained( const bmath_adaptive_s* __p ) { return __p->set_untrained != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_set_untrained( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->set_untrained != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_set_untrained( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->set_untrained != NULL; } \
   static inline void bmath_adaptive_p_arc_to_sink( const bmath_adaptive_s* __p, const bmath_adaptive* o, bcore_sink* sink ) { __p->arc_to_sink( o, sink ); } \
-  static inline void bmath_adaptive_t_arc_to_sink( tp_t __t, const bmath_adaptive* o, bcore_sink* sink ) { bmath_adaptive_s_get_typed( __t )->arc_to_sink( o, sink ); } \
   static inline void bmath_adaptive_a_arc_to_sink( const bmath_adaptive* o, bcore_sink* sink ) { bmath_adaptive_s_get_aware( o )->arc_to_sink( o, sink ); } \
   static inline void bmath_adaptive_r_arc_to_sink( const sr_s* o, bcore_sink* sink ) { ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->arc_to_sink( o->o, sink ); } \
+  static inline bl_t bmath_adaptive_p_defines_arc_to_sink( const bmath_adaptive_s* __p ) { return __p->arc_to_sink != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_arc_to_sink( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->arc_to_sink != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_arc_to_sink( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->arc_to_sink != NULL; } \
   static inline void bmath_adaptive_p_query( const bmath_adaptive_s* __p, bmath_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out ) { __p->query( o, in, out ); } \
-  static inline void bmath_adaptive_t_query( tp_t __t, bmath_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out ) { bmath_adaptive_s_get_typed( __t )->query( o, in, out ); } \
   static inline void bmath_adaptive_a_query( bmath_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out ) { bmath_adaptive_s_get_aware( o )->query( o, in, out ); } \
   static inline void bmath_adaptive_r_query( const sr_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ) { ASSERT( !sr_s_is_const( o ) ); ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->query( o->o, in, out ); } \
+  static inline bl_t bmath_adaptive_p_defines_query( const bmath_adaptive_s* __p ) { return __p->query != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_query( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->query != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_query( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->query != NULL; } \
   static inline void bmath_adaptive_p_adapt( const bmath_adaptive_s* __p, bmath_adaptive* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) { __p->adapt( o, in, target, out ); } \
-  static inline void bmath_adaptive_t_adapt( tp_t __t, bmath_adaptive* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) { bmath_adaptive_s_get_typed( __t )->adapt( o, in, target, out ); } \
   static inline void bmath_adaptive_a_adapt( bmath_adaptive* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) { bmath_adaptive_s_get_aware( o )->adapt( o, in, target, out ); } \
-  static inline void bmath_adaptive_r_adapt( const sr_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) { ASSERT( !sr_s_is_const( o ) ); ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->adapt( o->o, in, target, out ); }
+  static inline void bmath_adaptive_r_adapt( const sr_s* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) { ASSERT( !sr_s_is_const( o ) ); ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->adapt( o->o, in, target, out ); } \
+  static inline bl_t bmath_adaptive_p_defines_adapt( const bmath_adaptive_s* __p ) { return __p->adapt != NULL; } \
+  static inline bl_t bmath_adaptive_a_defines_adapt( const bmath_adaptive* o ) { return bmath_adaptive_s_get_aware( o )->adapt != NULL; } \
+  static inline bl_t bmath_adaptive_r_defines_adapt( const sr_s* o ) { return ( (bmath_adaptive_s*)ch_spect_p( o->p, TYPEOF_bmath_adaptive_s ) )->adapt != NULL; }
 
 /**********************************************************************************************************************/
 // source: bmath_activation
@@ -145,10 +167,6 @@
 
 #define TYPEOF_bmath_activation 3944871920
 #define TYPEOF_bmath_activation_s 458575370
-#define bmath_activation_p_defines( p, f_name ) ( p->f_name != NULL )
-#define bmath_activation_t_defines( t, f_name ) ( bmath_activation_s_get_typed( t )->f_name != NULL )
-#define bmath_activation_a_defines( o, f_name ) ( bmath_activation_s_get_aware( o )->f_name != NULL )
-#define bmath_activation_r_defines( o, f_name ) ( bmath_activation_s_get_typed( o->o_type )->f_name != NULL )
 #define BETH_EXPAND_GROUP_bmath_activation \
   BCORE_FORWARD_OBJECT( bmath_activation ); \
   typedef f3_t (*bmath_activation_fx)( const bmath_activation* o, f3_t x ); \
@@ -160,13 +178,17 @@
       bmath_activation_dy dy; \
   }; \
   static inline f3_t bmath_activation_p_fx( const bmath_activation_s* __p, const bmath_activation* o, f3_t x ) { return __p->fx( o, x ); } \
-  static inline f3_t bmath_activation_t_fx( tp_t __t, const bmath_activation* o, f3_t x ) { return bmath_activation_s_get_typed( __t )->fx( o, x ); } \
   static inline f3_t bmath_activation_a_fx( const bmath_activation* o, f3_t x ) { return bmath_activation_s_get_aware( o )->fx( o, x ); } \
   static inline f3_t bmath_activation_r_fx( const sr_s* o, f3_t x ) { return ( (bmath_activation_s*)ch_spect_p( o->p, TYPEOF_bmath_activation_s ) )->fx( o->o, x ); } \
+  static inline bl_t bmath_activation_p_defines_fx( const bmath_activation_s* __p ) { return __p->fx != NULL; } \
+  static inline bl_t bmath_activation_a_defines_fx( const bmath_activation* o ) { return bmath_activation_s_get_aware( o )->fx != NULL; } \
+  static inline bl_t bmath_activation_r_defines_fx( const sr_s* o ) { return ( (bmath_activation_s*)ch_spect_p( o->p, TYPEOF_bmath_activation_s ) )->fx != NULL; } \
   static inline f3_t bmath_activation_p_dy( const bmath_activation_s* __p, const bmath_activation* o, f3_t y ) { return __p->dy( o, y ); } \
-  static inline f3_t bmath_activation_t_dy( tp_t __t, const bmath_activation* o, f3_t y ) { return bmath_activation_s_get_typed( __t )->dy( o, y ); } \
   static inline f3_t bmath_activation_a_dy( const bmath_activation* o, f3_t y ) { return bmath_activation_s_get_aware( o )->dy( o, y ); } \
-  static inline f3_t bmath_activation_r_dy( const sr_s* o, f3_t y ) { return ( (bmath_activation_s*)ch_spect_p( o->p, TYPEOF_bmath_activation_s ) )->dy( o->o, y ); }
+  static inline f3_t bmath_activation_r_dy( const sr_s* o, f3_t y ) { return ( (bmath_activation_s*)ch_spect_p( o->p, TYPEOF_bmath_activation_s ) )->dy( o->o, y ); } \
+  static inline bl_t bmath_activation_p_defines_dy( const bmath_activation_s* __p ) { return __p->dy != NULL; } \
+  static inline bl_t bmath_activation_a_defines_dy( const bmath_activation* o ) { return bmath_activation_s_get_aware( o )->dy != NULL; } \
+  static inline bl_t bmath_activation_r_defines_dy( const sr_s* o ) { return ( (bmath_activation_s*)ch_spect_p( o->p, TYPEOF_bmath_activation_s ) )->dy != NULL; }
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_activation_objects

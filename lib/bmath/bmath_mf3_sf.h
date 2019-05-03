@@ -76,7 +76,7 @@ BETH_PRECODE( bmath_mf3_sf )
 
         sz_t [] i; // index data
         f3_t [] v; // value data
-    }
+    };
 */
 
 /// sets size of splicing (zeros all indexes)

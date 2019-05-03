@@ -83,7 +83,7 @@ BETH_PRECODE( bmath_adaptive_cnn_1d )
         func bmath_adaptive: query;
         func bmath_adaptive: adapt;
         // ==============================================================
-    }
+    };
 */
 
 #endif // TYPEOF_bmath_adaptive_cnn

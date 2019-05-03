@@ -28,20 +28,20 @@
 BETH_PRECODE( bmath_adaptive )
 /**
     // input vector size
-    feature sz_t get_in_size( const );
-    feature void set_in_size( mutable, sz_t size );
+    feature 'par' sz_t get_in_size( const );
+    feature 'par' void set_in_size( mutable, sz_t size );
 
     // output vector size
-    feature sz_t get_out_size( const );
-    feature void set_out_size( mutable, sz_t size );
+    feature 'par' sz_t get_out_size( const );
+    feature 'par' void set_out_size( mutable, sz_t size );
 
     // adaption step
-    feature f3_t get_step( const );
-    feature void set_step( mutable, f3_t val );
+    feature 'par' f3_t get_step( const );
+    feature 'par' void set_step( mutable, f3_t val );
 
     // adaption decay (L2 - regularization)
-    feature f3_t get_decay( const );
-    feature void set_decay( mutable, f3_t val );
+    feature 'par' f3_t get_decay( const );
+    feature 'par' void set_decay( mutable, f3_t val );
 
     // Sets up network from architecture parameters.
     // Usually, this function needs not be explicitly called. The network can lazily initialize itself.
@@ -49,21 +49,21 @@ BETH_PRECODE( bmath_adaptive )
     // After calling setup architecture parameters should not be changed.
     // Call 'set_untrained' if architecture parameters are to be changed.
     // training: true if learning is intended; false otherwise
-    feature void setup( mutable, bl_t training );
+    feature 'par' void setup( mutable, bl_t training );
 
     // resets adaptive to the untrained state
-    feature void set_untrained( mutable );
+    feature 'par' void set_untrained( mutable );
 
     // outputs architecture to text sink (for easy inspection)
-    feature void arc_to_sink( const, bcore_sink* sink );
+    feature 'par' void arc_to_sink( const, bcore_sink* sink );
 
     // query == inference
     // Note that querying can change the internal state of the adaptive.
     // It might not be reentrant (e.g. recurrent network) and should not be assumed concurrent unless explicitly stated.
-    feature void query( mutable, const bmath_vf3_s* in, bmath_vf3_s* out );
+    feature 'par' void query( mutable, const bmath_vf3_s* in, bmath_vf3_s* out );
 
     // adaptation step (out can be NULL)
-    feature void adapt( mutable, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out );
+    feature 'par' void adapt( mutable, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out );
 */
 
 /// simplified query/adapt for output size == 1; returns output activation.

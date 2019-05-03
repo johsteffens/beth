@@ -58,89 +58,20 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mf3_sf_s )
 BCORE_DEFINE_SPECT( bcore_inst, bmath_adaptive )
 "{"
     "bcore_spect_header_s header;"
-    "feature bmath_adaptive : get_in_size = bmath_adaptive_get_in_size_default;"
-    "feature bmath_adaptive : set_in_size = bmath_adaptive_set_in_size_default;"
-    "feature bmath_adaptive : get_out_size = bmath_adaptive_get_out_size_default;"
-    "feature bmath_adaptive : set_out_size = bmath_adaptive_set_out_size_default;"
-    "feature bmath_adaptive : get_step = bmath_adaptive_get_step_default;"
-    "feature bmath_adaptive : set_step = bmath_adaptive_set_step_default;"
-    "feature bmath_adaptive : get_decay = bmath_adaptive_get_decay_default;"
-    "feature bmath_adaptive : set_decay = bmath_adaptive_set_decay_default;"
-    "feature bmath_adaptive : setup = bmath_adaptive_setup_default;"
-    "feature bmath_adaptive : set_untrained = bmath_adaptive_set_untrained_default;"
-    "feature bmath_adaptive : arc_to_sink = bmath_adaptive_arc_to_sink_default;"
-    "feature bmath_adaptive : query = bmath_adaptive_query_default;"
-    "feature bmath_adaptive : adapt = bmath_adaptive_adapt_default;"
+    "feature bmath_adaptive : get_in_size;"
+    "feature bmath_adaptive : set_in_size;"
+    "feature bmath_adaptive : get_out_size;"
+    "feature bmath_adaptive : set_out_size;"
+    "feature bmath_adaptive : get_step;"
+    "feature bmath_adaptive : set_step;"
+    "feature bmath_adaptive : get_decay;"
+    "feature bmath_adaptive : set_decay;"
+    "feature bmath_adaptive : setup;"
+    "feature bmath_adaptive : set_untrained;"
+    "feature bmath_adaptive : arc_to_sink;"
+    "feature bmath_adaptive : query;"
+    "feature bmath_adaptive : adapt;"
 "}";
-
-static sz_t bmath_adaptive_get_in_size_default( const bmath_adaptive* o )
-{
-    ERR_fa( "Feature has no binding." );
-    return *(sz_t*)NULL;
-}
-
-static void bmath_adaptive_set_in_size_default( bmath_adaptive* o, sz_t size )
-{
-    ERR_fa( "Feature has no binding." );
-}
-
-static sz_t bmath_adaptive_get_out_size_default( const bmath_adaptive* o )
-{
-    ERR_fa( "Feature has no binding." );
-    return *(sz_t*)NULL;
-}
-
-static void bmath_adaptive_set_out_size_default( bmath_adaptive* o, sz_t size )
-{
-    ERR_fa( "Feature has no binding." );
-}
-
-static f3_t bmath_adaptive_get_step_default( const bmath_adaptive* o )
-{
-    ERR_fa( "Feature has no binding." );
-    return *(f3_t*)NULL;
-}
-
-static void bmath_adaptive_set_step_default( bmath_adaptive* o, f3_t val )
-{
-    ERR_fa( "Feature has no binding." );
-}
-
-static f3_t bmath_adaptive_get_decay_default( const bmath_adaptive* o )
-{
-    ERR_fa( "Feature has no binding." );
-    return *(f3_t*)NULL;
-}
-
-static void bmath_adaptive_set_decay_default( bmath_adaptive* o, f3_t val )
-{
-    ERR_fa( "Feature has no binding." );
-}
-
-static void bmath_adaptive_setup_default( bmath_adaptive* o, bl_t training )
-{
-    ERR_fa( "Feature has no binding." );
-}
-
-static void bmath_adaptive_set_untrained_default( bmath_adaptive* o )
-{
-    ERR_fa( "Feature has no binding." );
-}
-
-static void bmath_adaptive_arc_to_sink_default( const bmath_adaptive* o, bcore_sink* sink )
-{
-    ERR_fa( "Feature has no binding." );
-}
-
-static void bmath_adaptive_query_default( bmath_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out )
-{
-    ERR_fa( "Feature has no binding." );
-}
-
-static void bmath_adaptive_adapt_default( bmath_adaptive* o, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out )
-{
-    ERR_fa( "Feature has no binding." );
-}
 
 /**********************************************************************************************************************/
 // source: bmath_activation
@@ -152,21 +83,9 @@ static void bmath_adaptive_adapt_default( bmath_adaptive* o, const bmath_vf3_s* 
 BCORE_DEFINE_SPECT( bcore_inst, bmath_activation )
 "{"
     "bcore_spect_header_s header;"
-    "feature bmath_activation : fx = bmath_activation_fx_default;"
-    "feature bmath_activation : dy = bmath_activation_dy_default;"
+    "feature bmath_activation : fx;"
+    "feature bmath_activation : dy;"
 "}";
-
-static f3_t bmath_activation_fx_default( const bmath_activation* o, f3_t x )
-{
-    ERR_fa( "Feature has no binding." );
-    return *(f3_t*)NULL;
-}
-
-static f3_t bmath_activation_dy_default( const bmath_activation* o, f3_t y )
-{
-    ERR_fa( "Feature has no binding." );
-    return *(f3_t*)NULL;
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_activation_objects
@@ -303,7 +222,7 @@ vd_t bmath_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 2840872550 ) );
+            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 1319362563 ) );
             BCORE_REGISTER_OBJECT( bmath_mf3_sx_s );
             BCORE_REGISTER_OBJECT( bmath_mf3_sf_s );
             BCORE_REGISTER_FEATURE( bmath_adaptive_get_in_size );
@@ -319,24 +238,9 @@ vd_t bmath_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bmath_adaptive_arc_to_sink );
             BCORE_REGISTER_FEATURE( bmath_adaptive_query );
             BCORE_REGISTER_FEATURE( bmath_adaptive_adapt );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_get_in_size, bmath_adaptive_get_in_size_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_set_in_size, bmath_adaptive_set_in_size_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_get_out_size, bmath_adaptive_get_out_size_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_set_out_size, bmath_adaptive_set_out_size_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_get_step, bmath_adaptive_get_step_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_set_step, bmath_adaptive_set_step_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_get_decay, bmath_adaptive_get_decay_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_set_decay, bmath_adaptive_set_decay_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_setup, bmath_adaptive_setup_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_set_untrained, bmath_adaptive_set_untrained_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_arc_to_sink, bmath_adaptive_arc_to_sink_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_query, bmath_adaptive_query_default );
-            BCORE_REGISTER_FFUNC( bmath_adaptive_adapt, bmath_adaptive_adapt_default );
             BCORE_REGISTER_SPECT( bmath_adaptive );
             BCORE_REGISTER_FEATURE( bmath_activation_fx );
             BCORE_REGISTER_FEATURE( bmath_activation_dy );
-            BCORE_REGISTER_FFUNC( bmath_activation_fx, bmath_activation_fx_default );
-            BCORE_REGISTER_FFUNC( bmath_activation_dy, bmath_activation_dy_default );
             BCORE_REGISTER_SPECT( bmath_activation );
             BCORE_REGISTER_FFUNC( bmath_activation_fx, bmath_activation_tanh_s_fx );
             BCORE_REGISTER_FFUNC( bmath_activation_dy, bmath_activation_tanh_s_dy );

@@ -27,6 +27,46 @@
  *
  *  During development, bl_t bcore_precoder_run_globally() should be executed.
  *  If it returns 'true' a rebuild is required.
+ *
+ *  Usage:
+ *  BCORE_PRECODE( <group_name> )
+ *  <opening c-comment>
+ *      feature [strict] '<flags>' <ret> <func_name>( const | mutable, <args> ) [ = <default_func> ];
+ *
+ *      self <name> = <trait> { reflection-definition };
+ *
+ *      ...
+ *  <closing c-comment>
+ *
+ *   feature:
+ *       The feature definition triggers implicit definition of a perspective <group_name>
+ *       and corresponding inline implementations for each (virtual) function 'func_name':
+ *         <ret> <group_name>_p_<func_name>( const <group_name>_s* p, <args> )
+ *         <ret> <group_name>_t_<func_name>( tp_t __t, [const] <group_name>* o, <args> )
+ *         <ret> <group_name>_a_<func_name>( [const] <group_name>* o, <args> )
+ *         <ret> <group_name>_r_<func_name>( const sr_s* o, <args> )
+ *         bl_t <group_name>_p_defines_<func_name>( const <group_name>_s* p )
+ *         bl_t <group_name>_t_defines_<func_name>( tp_t t )
+ *         bl_t <group_name>_a_defines_<func_name>( const <group_name>* o )
+ *         bl_t <group_name>_r_defines_<func_name>( const sr_s* o )
+ *
+ *    flags:
+ *        Any character sequence of 'ptar' specifying which type of virtual function shall
+ *        be inline implemented.
+ *
+ *    strict:
+ *        Any object referenced by the perspective must define the function.
+ *
+ *    default_name:
+ *        Optional default function used when the object does not define the feature.
+ *        Requires implementing <ret> <group_name>_<default_name>( [const] <group_name>* o, <args> );
+ *
+ *    self:
+ *        Reflection definition for objects (see flect.h for details)
+ *        (Perspectives should not be explicitly defined here.)
+ *        Function definitions in reflections are matched and bound to features. C-Prototypes are generated
+ *        and registered as featured function.
+ *
  */
 
 #ifndef BCORE_PRECODER_H

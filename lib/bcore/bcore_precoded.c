@@ -23,26 +23,10 @@
 BCORE_DEFINE_SPECT( bcore_inst, bcore_precoder_sample_features )
 "{"
     "bcore_spect_header_s header;"
-    "feature bcore_precoder_sample_features : setup = bcore_precoder_sample_features_setup_default;"
+    "feature strict bcore_precoder_sample_features : setup;"
     "feature bcore_precoder_sample_features : to_stdout = bcore_precoder_sample_features_to_stdout_default;"
-    "feature bcore_precoder_sample_features : get_size = bcore_precoder_sample_features_get_size_default;"
+    "feature bcore_precoder_sample_features : get_size;"
 "}";
-
-static void bcore_precoder_sample_features_setup_default( bcore_precoder_sample_features* o, sz_t n )
-{
-    ERR_fa( "Feature has no binding." );
-}
-
-static void bcore_precoder_sample_features_to_stdout_default( const bcore_precoder_sample_features* o )
-{
-    ERR_fa( "Feature has no binding." );
-}
-
-static sz_t bcore_precoder_sample_features_get_size_default( const bcore_precoder_sample_features* o )
-{
-    ERR_fa( "Feature has no binding." );
-    return *(sz_t*)NULL;
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_precoder_sample
@@ -75,13 +59,11 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 4122593692 ) );
+            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 219774189 ) );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_setup );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_to_stdout );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_get_size );
-            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_setup, bcore_precoder_sample_features_setup_default );
             BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_features_to_stdout_default );
-            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_get_size, bcore_precoder_sample_features_get_size_default );
             BCORE_REGISTER_SPECT( bcore_precoder_sample_features );
             BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_setup, bcore_precoder_sample_object_s_setup );
             BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_object_s_to_stdout );

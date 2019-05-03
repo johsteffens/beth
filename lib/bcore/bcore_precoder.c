@@ -207,6 +207,14 @@ BCORE_DECLARE_OBJECT( bcore_precoder_feature_s )
     st_s name;       // myfeature
     sc_t group_name;
     sc_t item_name;
+    st_s default_name;
+
+    bl_t strict;
+
+    bl_t flag_p;
+    bl_t flag_t;
+    bl_t flag_a;
+    bl_t flag_r;
 
     bl_t has_ret;
     st_s ret_type;        // void
@@ -220,6 +228,15 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_feature_s )
     "st_s name;"       // myfeature
     "sc_t group_name;"
     "sc_t item_name;"
+    "st_s default_name;"
+
+    "bl_t strict;"
+
+    "bl_t flag_p;"
+    "bl_t flag_t;"
+    "bl_t flag_a;"
+    "bl_t flag_r;"
+
     "bl_t has_ret;"
     "st_s ret_type;"        // void
     "bcore_precoder_args_s args;"       // sz_t a, sz_t b
@@ -469,6 +486,24 @@ static tp_t bcore_precoder_args_s_get_hash( const bcore_precoder_args_s* o )
 
 static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore_source* source )
 {
+    o->strict = bcore_source_a_parse_bl_fa(  source, " #?w'strict' " );
+
+    if( bcore_source_a_parse_bl_fa( source, " #?|'|" ) )
+    {
+        st_s* flags = st_s_create();
+        bcore_source_a_parse_fa(  source, " #until'''", flags );
+        o->flag_p = ( st_s_find_char( flags, 0, -1, 'p' ) < flags->size );
+        o->flag_t = ( st_s_find_char( flags, 0, -1, 't' ) < flags->size );
+        o->flag_a = ( st_s_find_char( flags, 0, -1, 'a' ) < flags->size );
+        o->flag_r = ( st_s_find_char( flags, 0, -1, 'r' ) < flags->size );
+        st_s_discard( flags );
+        bcore_source_a_parse_fa(  source, "' " );
+    }
+    else
+    {
+        bcore_source_a_parse_err_fa( source, "Feature: '<flags>' expected. Example: 'ptar'" );
+    }
+
     bcore_source_a_parse_fa( source, " #name #name ( ", &o->ret_type, &o->name );
     if( o->name.size == 0      ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
     if( o->ret_type.size  == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Return type missing." );
@@ -479,7 +514,19 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore
     else     bcore_source_a_parse_err_fa( source, "Feature: 'mutable' or 'const' expected." );
 
     bcore_precoder_args_s_compile( &o->args, source );
-    bcore_source_a_parse_fa( source, " ) ; " );
+    bcore_source_a_parse_fa( source, " ) " );
+
+    if( bcore_source_a_parse_bl_fa( source, " #?'=' " ) )
+    {
+        bcore_source_a_parse_fa( source, " #name ", &o->default_name );
+        if( o->default_name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Default function name expected." );
+        if( st_s_equal_st( &o->default_name, &o->name ) )
+        {
+            bcore_source_a_parse_err_fa( source, "Feature: Default function name must differ from feature name." );
+        }
+    }
+
+    bcore_source_a_parse_fa( source, " ; " );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -489,24 +536,20 @@ static tp_t bcore_precoder_feature_s_get_hash( const bcore_precoder_feature_s* o
     tp_t hash = bcore_tp_init();
     hash = bcore_tp_fold_sc( hash, o->name.sc );
     hash = bcore_tp_fold_sc( hash, o->group_name );
+    hash = bcore_tp_fold_sc( hash, o->item_name );
+    hash = bcore_tp_fold_sc( hash, o->default_name.sc );
+
+    hash = bcore_tp_fold_u0( hash, o->strict ? 1 : 0 );
+    hash = bcore_tp_fold_u0( hash, o->flag_p ? 1 : 0 );
+    hash = bcore_tp_fold_u0( hash, o->flag_t ? 1 : 0 );
+    hash = bcore_tp_fold_u0( hash, o->flag_a ? 1 : 0 );
+    hash = bcore_tp_fold_u0( hash, o->flag_r ? 1 : 0 );
+
     hash = bcore_tp_fold_u0( hash, o->has_ret ? 1 : 0 );
     hash = bcore_tp_fold_sc( hash, o->ret_type.sc );
     hash = bcore_tp_fold_tp( hash, bcore_precoder_args_s_get_hash( &o->args ) );
     hash = bcore_tp_fold_u0( hash, o->mutable ? 1 : 0 );
     return hash;
-}
-
-static void bcore_precoder_feature_s_expand_default( const bcore_precoder_feature_s* o, sz_t indent, bcore_sink* sink )
-{
-    bcore_sink_a_push_fa( sink, "\n" );
-    bcore_sink_a_push_fa( sink, "#rn{ }static #<sc_t> #<sc_t>_default( ", indent, o->ret_type.sc, o->item_name );
-    bcore_sink_a_push_fa( sink, "#<sc_t>#<sc_t>* o", o->mutable ? "" : "const ", o->group_name );
-    bcore_precoder_args_s_expand( &o->args, sink );
-    bcore_sink_a_push_fa( sink, " )\n" );
-    bcore_sink_a_push_fa( sink, "#rn{ }{\n", indent );
-    bcore_sink_a_push_fa( sink, "#rn{ }    ERR_fa( \"Feature has no binding.\" );\n", indent );
-    if( o->has_ret ) bcore_sink_a_push_fa( sink, "#rn{ }    return *(#<sc_t>*)NULL;\n", indent, o->ret_type.sc );
-    bcore_sink_a_push_fa( sink, "#rn{ }}\n", indent );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -576,49 +619,127 @@ static void bcore_precoder_feature_s_expand_indef_typedef( const bcore_precoder_
 
 static void bcore_precoder_feature_s_expand_indef_declaration( const bcore_precoder_feature_s* o, sz_t indent, bcore_sink* sink )
 {
-    // static inline ret_t feature_p_func( const spect* __p, feature* o, arg_t arg1 ) { return __p->func( o, arg1 ); }
-    bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_p_#<sc_t>( const #<sc_t>_s* __p,", indent, o->ret_type.sc, o->group_name, o->name.sc, o->group_name );
-    if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
-    bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
-    bcore_precoder_args_s_expand( &o->args, sink );
-    bcore_sink_a_push_fa( sink, " ) { " );
-    if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
-    bcore_sink_a_push_fa( sink, "__p->#<sc_t>( o", o->name.sc );
-    bcore_precoder_args_s_expand_name( &o->args, sink );
-    bcore_sink_a_push_fa( sink, " ); }" );
+    if( o->flag_p )
+    {
+        // static inline ret_t feature_p_func( const spect* __p, feature* o, arg_t arg1 ) { return __p->func( o, arg1 ); }
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_p_#<sc_t>( const #<sc_t>_s* __p,", indent, o->ret_type.sc, o->group_name, o->name.sc, o->group_name );
+        if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
+        bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
+        bcore_precoder_args_s_expand( &o->args, sink );
+        bcore_sink_a_push_fa( sink, " ) { " );
+        if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
+        bcore_sink_a_push_fa( sink, "__p->#<sc_t>( o", o->name.sc );
+        bcore_precoder_args_s_expand_name( &o->args, sink );
+        bcore_sink_a_push_fa( sink, " ); }" );
+    }
 
-    // static inline ret_t feature_t_func( tp_t __t, feature* o, arg_t arg1 ) { return features_s_get_typed( __t )->func( o, arg1 ); }
-    bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_t_#<sc_t>( tp_t __t,", indent, o->ret_type.sc, o->group_name, o->name.sc, o->group_name );
-    if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
-    bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
-    bcore_precoder_args_s_expand( &o->args, sink );
-    bcore_sink_a_push_fa( sink, " ) { " );
-    if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
-    bcore_sink_a_push_fa( sink, "#<sc_t>_s_get_typed( __t )->#<sc_t>( o", o->group_name, o->name.sc );
-    bcore_precoder_args_s_expand_name( &o->args, sink );
-    bcore_sink_a_push_fa( sink, " ); }" );
+    if( o->flag_t )
+    {
+        // static inline ret_t feature_t_func( tp_t __t, feature* o, arg_t arg1 ) { return features_s_get_typed( __t )->func( o, arg1 ); }
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_t_#<sc_t>( tp_t __t,", indent, o->ret_type.sc, o->group_name, o->name.sc, o->group_name );
+        if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
+        bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
+        bcore_precoder_args_s_expand( &o->args, sink );
+        bcore_sink_a_push_fa( sink, " ) { " );
+        if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
+        bcore_sink_a_push_fa( sink, "#<sc_t>_s_get_typed( __t )->#<sc_t>( o", o->group_name, o->name.sc );
+        bcore_precoder_args_s_expand_name( &o->args, sink );
+        bcore_sink_a_push_fa( sink, " ); }" );
+    }
 
-    // static inline ret_t feature_a_func( feature* o, arg_t arg1 ) { return features_s_get_aware( o )->func( o, arg1 ); }
-    bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_a_#<sc_t>(", indent, o->ret_type.sc, o->group_name, o->name.sc );
-    if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
-    bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
-    bcore_precoder_args_s_expand( &o->args, sink );
-    bcore_sink_a_push_fa( sink, " ) { " );
-    if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
-    bcore_sink_a_push_fa( sink, "#<sc_t>_s_get_aware( o )->#<sc_t>( o", o->group_name, o->name.sc );
-    bcore_precoder_args_s_expand_name( &o->args, sink );
-    bcore_sink_a_push_fa( sink, " ); }" );
+    if( o->flag_a )
+    {
+        // static inline ret_t feature_a_func( feature* o, arg_t arg1 ) { return features_s_get_aware( o )->func( o, arg1 ); }
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_a_#<sc_t>(", indent, o->ret_type.sc, o->group_name, o->name.sc );
+        if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
+        bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
+        bcore_precoder_args_s_expand( &o->args, sink );
+        bcore_sink_a_push_fa( sink, " ) { " );
+        if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
+        bcore_sink_a_push_fa( sink, "#<sc_t>_s_get_aware( o )->#<sc_t>( o", o->group_name, o->name.sc );
+        bcore_precoder_args_s_expand_name( &o->args, sink );
+        bcore_sink_a_push_fa( sink, " ); }" );
+    }
 
-    // static inline ret_t feature_r_func( const sr_s* o, arg_t arg1 ) { return features_s_get_typed( o->o_type )->func( o->o, arg1 ); }
-    bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_r_#<sc_t>(", indent, o->ret_type.sc, o->group_name, o->name.sc );
-    bcore_sink_a_push_fa( sink, " const sr_s* o" );
-    bcore_precoder_args_s_expand( &o->args, sink );
-    bcore_sink_a_push_fa( sink, " ) { " );
-    if( o->mutable ) bcore_sink_a_push_fa( sink, "ASSERT( !sr_s_is_const( o ) ); ", indent );
-    if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
-    bcore_sink_a_push_fa( sink, "( (#<sc_t>_s*)ch_spect_p( o->p, TYPEOF_#<sc_t>_s ) )->#<sc_t>( o->o", o->group_name, o->group_name, o->name.sc );
-    bcore_precoder_args_s_expand_name( &o->args, sink );
-    bcore_sink_a_push_fa( sink, " ); }" );
+    if( o->flag_r )
+    {
+        // static inline ret_t feature_r_func( const sr_s* o, arg_t arg1 ) { return features_s_get_typed( o->o_type )->func( o->o, arg1 ); }
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_r_#<sc_t>(", indent, o->ret_type.sc, o->group_name, o->name.sc );
+        bcore_sink_a_push_fa( sink, " const sr_s* o" );
+        bcore_precoder_args_s_expand( &o->args, sink );
+        bcore_sink_a_push_fa( sink, " ) { " );
+        if( o->mutable ) bcore_sink_a_push_fa( sink, "ASSERT( !sr_s_is_const( o ) ); ", indent );
+        if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
+        bcore_sink_a_push_fa( sink, "( (#<sc_t>_s*)ch_spect_p( o->p, TYPEOF_#<sc_t>_s ) )->#<sc_t>( o->o", o->group_name, o->group_name, o->name.sc );
+        bcore_precoder_args_s_expand_name( &o->args, sink );
+        bcore_sink_a_push_fa( sink, " ); }" );
+    }
+
+    if( o->flag_p )
+    {
+        // static inline bl_t feature_p_defines_func( const spect* __p ) { return __p->func != NULL; }
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline bl_t #<sc_t>_p_defines_#<sc_t>( const #<sc_t>_s* __p ) ", indent, o->group_name, o->name.sc, o->group_name );
+        if( o->strict || o->default_name.size > 0 )
+        {
+            bcore_sink_a_push_fa( sink, "{ return true; }", o->name.sc );
+        }
+        else
+        {
+            bcore_sink_a_push_fa( sink, "{ return __p->#<sc_t> != NULL; }", o->name.sc );
+        }
+    }
+
+    if( o->flag_t )
+    {
+        // static inline bl_t feature_t_defines_func( tp_t __t ) { return features_s_get_typed( __t )->func != NULL; }
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline bl_t #<sc_t>_t_defines_#<sc_t>( tp_t __t ) ", indent, o->group_name, o->name.sc );
+        if( o->strict || o->default_name.size > 0 )
+        {
+            bcore_sink_a_push_fa( sink, "{ return true; }", o->name.sc );
+        }
+        else
+        {
+            bcore_sink_a_push_fa( sink, "{ return #<sc_t>_s_get_typed( __t )->#<sc_t> != NULL; }", o->group_name, o->name.sc );
+        }
+    }
+
+    if( o->flag_a )
+    {
+        // static inline bl_t feature_a_defines_func( const feature* o) { return features_s_get_aware( o )->func != NULL; }
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline bl_t #<sc_t>_a_defines_#<sc_t>( const #<sc_t>* o ) ", indent, o->group_name, o->name.sc, o->group_name );
+        if( o->strict || o->default_name.size > 0 )
+        {
+            bcore_sink_a_push_fa( sink, "{ return true; }", o->name.sc );
+        }
+        else
+        {
+            bcore_sink_a_push_fa( sink, "{ return #<sc_t>_s_get_aware( o )->#<sc_t> != NULL; }", o->group_name, o->name.sc );
+        }
+    }
+
+    if( o->flag_r )
+    {
+        // static inline bl_t feature_r_defines_func( const feature* o) { return features_s_get_typed( o->o_type )->func != NULL; }
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline bl_t #<sc_t>_r_defines_#<sc_t>( const sr_s* o ) ", indent, o->group_name, o->name.sc );
+        if( o->strict || o->default_name.size > 0 )
+        {
+            bcore_sink_a_push_fa( sink, "{ return true; }", o->name.sc );
+        }
+        else
+        {
+            bcore_sink_a_push_fa( sink, "{ return ( (#<sc_t>_s*)ch_spect_p( o->p, TYPEOF_#<sc_t>_s ) )->#<sc_t> != NULL; }", o->group_name, o->group_name, o->name.sc );
+        }
+    }
+
+    if( o->default_name.size > 0 )
+    {
+        // ret_t feature_default( feature* o, arg_t arg1 );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  #<sc_t> #<sc_t>_#<sc_t>(", indent, o->ret_type.sc, o->group_name, o->default_name.sc );
+        if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
+        bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
+        bcore_precoder_args_s_expand( &o->args, sink );
+        bcore_sink_a_push_fa( sink, " );" );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -782,16 +903,25 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             s3_t source_index2 = bcore_source_a_get_index( source );
             bcore_source_a_set_index( source, source_index1 );
 
+
             BCORE_LIFE_CREATE( st_s, self_string );
 
             st_s_set_size( self_string, 0, source_index2 - source_index1 );
             bcore_source_a_get_data( source, self_string->data, source_index2 - source_index1 );
+            bcore_source_a_parse_fa( source, " ; " );
+
             st_s* self_embedded_string = BCORE_LIFE_A_PUSH( create_embedded_string( self_string ) );
 
             /// 4095 is the C99-limit for string literals
             if( self_embedded_string->size > 4095 )
             {
-                bcore_source_a_parse_err_fa( source, "Precoder reflection embedding failed. Embedded code needs a string literal larger than 4095 characters." );
+                bcore_source_a_parse_err_fa
+                (
+                    source,
+                    "Precoder reflection embedding failed.\n"
+                    "The embedded code would require a string literal larger than 4095 characters.\n"
+                    "This exceeds the limit defined in C99.\n"
+                );
             }
 
             st_s st_weak = st_weak_st( self_embedded_string );
@@ -852,11 +982,6 @@ static void bcore_precoder_group_s_expand_declaration( const bcore_precoder_grou
     {
         st_s* spect_name = BCORE_LIFE_A_PUSH( st_s_create_fa( "#<sc_t>_s", o->name.sc ) );
         bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, spect_name->sc, typeof( spect_name->sc ) );
-
-        bcore_sink_a_push_fa( sink, "#rn{ }##define #<sc_t>_p_defines( p, f_name ) ( p->f_name != NULL )\n", indent, o->name.sc );
-        bcore_sink_a_push_fa( sink, "#rn{ }##define #<sc_t>_t_defines( t, f_name ) ( #<sc_t>_s_get_typed( t )->f_name != NULL )\n", indent, o->name.sc, o->name.sc );
-        bcore_sink_a_push_fa( sink, "#rn{ }##define #<sc_t>_a_defines( o, f_name ) ( #<sc_t>_s_get_aware( o )->f_name != NULL )\n", indent, o->name.sc, o->name.sc );
-        bcore_sink_a_push_fa( sink, "#rn{ }##define #<sc_t>_r_defines( o, f_name ) ( #<sc_t>_s_get_typed( o->o_type )->f_name != NULL )\n", indent, o->name.sc, o->name.sc );
     }
 
     for( sz_t i = 0; i < o->size; i++ ) bcore_precoder_item_s_expand_declaration( o->data[ i ], indent + 2, sink );
@@ -930,20 +1055,17 @@ static void bcore_precoder_group_s_expand_spect( const bcore_precoder_group_s* o
         if( item->type == TYPEOF_bcore_precoder_feature_s )
         {
             const bcore_precoder_feature_s* feature = item->data.o;
-            bcore_sink_a_push_fa( sink, "#rn{ }    \"feature #<sc_t> : #<sc_t> = #<sc_t>_default;\"\n", indent, o->name.sc, feature->name.sc, item->name.sc );
+            bcore_sink_a_push_fa( sink, "#rn{ }    \"feature ", indent );
+            if( feature->strict ) bcore_sink_a_push_fa( sink, "strict ", indent );
+            bcore_sink_a_push_fa( sink, "#<sc_t> : #<sc_t>", o->name.sc, feature->name.sc );
+            if( feature->default_name.size > 0 )
+            {
+                bcore_sink_a_push_fa( sink, " = #<sc_t>_#<sc_t>", o->name.sc, feature->default_name.sc );
+            }
+            bcore_sink_a_push_fa( sink, ";\"\n" );
         }
     }
     bcore_sink_a_push_fa( sink, "#rn{ }\"}\";\n", indent );
-
-    // default functions
-    for( sz_t i = 0; i < o->size; i++ )
-    {
-        const bcore_precoder_item_s* item = o->data[ i ];
-        if( item->type == TYPEOF_bcore_precoder_feature_s )
-        {
-            bcore_precoder_feature_s_expand_default( item->data.o, indent, sink );
-        }
-    }
 
     BCORE_LIFE_DOWN();
 }
@@ -976,7 +1098,10 @@ static void bcore_precoder_group_s_expand_init1( const bcore_precoder_group_s* o
             if( item->type == TYPEOF_bcore_precoder_feature_s )
             {
                 const bcore_precoder_feature_s* feature = item->data.o;
-                bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_default );\n", indent, feature->item_name, feature->item_name );
+                if( feature->default_name.size > 0 )
+                {
+                    bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, feature->item_name, feature->group_name, feature->default_name.sc );
+                }
             }
         }
         bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_SPECT( #<sc_t> );\n", indent, o->name.sc );

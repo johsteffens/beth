@@ -19,6 +19,13 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bcore_precoder_sample_features_to_stdout_default( const bcore_precoder_sample_features* o )
+{
+    bcore_msg_fa( "running bcore_precoder_sample_features_to_stdout_default\n" );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_precoder_sample_object_s_setup( bcore_precoder_sample_object_s* o, sz_t n )
 {
     st_s_copy_sc( &o->name1, "Franz" );
@@ -68,7 +75,8 @@ void bcore_precoder_sample_object_s_selftest( void )
 
     bcore_precoder_sample_features_a_setup( object2, bcore_precoder_sample_features_a_get_size( object1 ) );
 
-    if( bcore_precoder_sample_features_a_defines( object2, to_stdout ) ) bcore_precoder_sample_features_a_to_stdout( object2 );
+    if( bcore_precoder_sample_features_a_defines_to_stdout( object2 ) ) bcore_precoder_sample_features_a_to_stdout( object2 );
+    if( bcore_precoder_sample_features_a_defines_get_size( object2 ) ) bcore_precoder_sample_features_a_get_size( object2 );
 
     BCORE_LIFE_DOWN();
 }

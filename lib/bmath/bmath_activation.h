@@ -28,20 +28,20 @@
 BETH_PRECODE( bmath_activation )
 /*
     // forward activation function y = f(x)
-    feature f3_t fx( const, f3_t x );
+    feature 'par' f3_t fx( const, f3_t x );
 
     // derivative on y
-    feature f3_t dy( const, f3_t y );
+    feature 'par' f3_t dy( const, f3_t y );
 */
 
 /**********************************************************************************************************************/
 
 BETH_PRECODE( bmath_activation_objects )
 /*
-    self bmath_activation_tanh_s       = bmath_activation { aware_t _; func bmath_activation : fx; func bmath_activation : dy; }
-    self bmath_activation_relu_s       = bmath_activation { aware_t _; func bmath_activation : fx; func bmath_activation : dy; }
-    self bmath_activation_leaky_relu_s = bmath_activation { aware_t _; func bmath_activation : fx; func bmath_activation : dy; }
-    self bmath_activation_softplus_s   = bmath_activation { aware_t _; func bmath_activation : fx; func bmath_activation : dy; } // smooth approximation of relu
+    self bmath_activation_tanh_s       = bmath_activation { aware_t _; func bmath_activation : fx; func bmath_activation : dy; };
+    self bmath_activation_relu_s       = bmath_activation { aware_t _; func bmath_activation : fx; func bmath_activation : dy; };
+    self bmath_activation_leaky_relu_s = bmath_activation { aware_t _; func bmath_activation : fx; func bmath_activation : dy; };
+    self bmath_activation_softplus_s   = bmath_activation { aware_t _; func bmath_activation : fx; func bmath_activation : dy; }; // smooth approximation of relu
 */
 
 /**********************************************************************************************************************/
