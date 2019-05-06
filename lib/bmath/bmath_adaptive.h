@@ -73,7 +73,7 @@ f3_t bmath_adaptive_a_adapt_1( bmath_adaptive* o, const bmath_vf3_s* in, f3_t ta
 /// training challenge: distinguish a sine wave from random walk
 void bmath_adaptive_a_test_sine_random( const bmath_adaptive* o );
 
-/// training challenge: learn binay adding of numbers
+/// training challenge: learn binary adding of numbers
 void bmath_adaptive_a_test_encode_add( const bmath_adaptive* o );
 
 /**********************************************************************************************************************/

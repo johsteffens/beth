@@ -30,13 +30,20 @@
  *
  *  Usage:
  *  BCORE_PRECODE( <group_name> )
- *  <opening c-comment>
+ *  <precode-opener>
  *      feature [strict] '<flags>' <ret> <func_name>( const | mutable, <args> ) [ = <default_func> ];
  *
  *      self <name> = <trait> { reflection-definition };
  *
  *      ...
- *  <closing c-comment>
+ *  <precode-closer>
+ *
+ *  precode-opener:
+ *    c-style comment-opener or '#ifdef BETH_PRECODE_SECTION'
+ *    Macro BETH_PRECODE_SECTION must never be defined.
+ *
+ *  precode-closer:
+ *    c-style comment-closer or '#endif' (depending on what was used for precode-opener)
  *
  *   feature:
  *       The feature definition triggers implicit definition of a perspective <group_name>

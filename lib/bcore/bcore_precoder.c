@@ -880,15 +880,29 @@ static bl_t bcore_precoder_s_register_group( bcore_precoder_s* o, const bcore_pr
 
 static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_source* source )
 {
+    sc_t precode_termination = NULL;
+
     while( !bcore_source_a_eos( source ) )
     {
-        if( bcore_source_a_parse_bl_fa( source, "#?'/*'" ) ) break;
-        char c = bcore_source_a_get_u0( source );
-        if( c != ' ' && c != '\t' && c != '\n' ) bcore_source_a_parse_err_fa( source, "Opening c-style comment '/*' expected." );
-    }
-    bcore_source_a_parse_fa( source, "#skip'*'" );
+        if( bcore_source_a_parse_bl_fa( source, "#?'/*'" ) )
+        {
+            bcore_source_a_parse_fa( source, "#skip'*'" );
+            precode_termination = " #?'*/'";
+            break;
+        }
+        else if( bcore_source_a_parse_bl_fa( source, "#?'#ifdef'" ) )
+        {
+            bcore_source_a_parse_fa( source, " BETH_PRECODE_SECTION " );
+            precode_termination = " #?'#endif'";
+            break;
+        }
 
-    while( !bcore_source_a_parse_bl_fa( source, " #?'*/'" ) )
+        char c = bcore_source_a_get_u0( source );
+        if( c != ' ' && c != '\t' && c != '\n' ) bcore_source_a_parse_err_fa( source, "Opening c-style comment '/*' or '#<sc_t>' expected.", "#ifdef BETH_PRECODE_SECTION" );
+    }
+
+
+    while( !bcore_source_a_parse_bl_fa( source, precode_termination ) )
     {
         if( bcore_source_a_eos( source ) )  bcore_source_a_parse_err_fa( source, "Closing c-style comment '*/' expected." );
 
@@ -1118,7 +1132,7 @@ static void bcore_precoder_source_s_compile( bcore_precoder_source_s* o, bcore_s
 {
     while( !bcore_source_a_eos( source ) )
     {
-        if( bcore_source_a_parse_bl_fa( source, "#?'BETH_PRECODE'" ) )
+        if( bcore_source_a_parse_bl_fa( source, "#?w'BETH_PRECODE'" ) )
         {
             bcore_precoder_group_s* group = bcore_precoder_group_s_create();
             group->source = o;
