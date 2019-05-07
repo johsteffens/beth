@@ -422,8 +422,8 @@ static void selftest()
     mlp->act_mid = sr_create( TYPEOF_bmath_activation_leaky_relu_s );
     mlp->act_out = sr_create( TYPEOF_bmath_activation_tanh_s );
 
-//    bmath_adaptive_a_test_sine_random( ( bmath_adaptive* )mlp );
-    bmath_adaptive_a_test_encode_add( ( bmath_adaptive* )mlp );
+    bmath_adaptive_a_test_sine_random( ( bmath_adaptive* )mlp );
+//    bmath_adaptive_a_test_encode_add( ( bmath_adaptive* )mlp );
 
     BCORE_LIFE_RETURN();
 }

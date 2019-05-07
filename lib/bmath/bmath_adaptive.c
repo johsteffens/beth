@@ -124,9 +124,16 @@ void bmath_adaptive_a_test_sine_random( const bmath_adaptive* const_o )
         bcore_msg_fa( "#pl6 {#<sz_t>}: err = #<f3_t>\n", i, err );
     }
 
-    bcore_bin_ml_a_to_file( o, "temp/adaptive.bin" );
+
+    bcore_sink_buffer_s* sink_buf = BCORE_LIFE_A_PUSH( bcore_sink_buffer_s_create() );
+    bcore_source_buffer_s* source_buf = BCORE_LIFE_A_PUSH( bcore_source_buffer_s_create() );
+    bcore_bin_ml_a_to_sink( o, ( bcore_sink* )sink_buf );
+
+    source_buf->data = sink_buf->data;
+    source_buf->size = sink_buf->size;
+
     bmath_adaptive* o_tst = BCORE_LIFE_A_PUSH( bcore_inst_t_create( *( aware_t* )o ) );
-    bcore_bin_ml_a_from_file( o_tst, "temp/adaptive.bin" );
+    bcore_bin_ml_a_from_source( o_tst, ( bcore_source* )source_buf );
 
     {
         f3_t err = 0;
