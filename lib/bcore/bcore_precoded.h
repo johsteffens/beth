@@ -20,6 +20,7 @@
 
 #define TYPEOF_bcore_precoder_sample_features 1533308178
 #define TYPEOF_bcore_precoder_sample_features_s 2917243660
+#define TYPEOF_anyglobalname 2209051205
 #define BETH_EXPAND_GROUP_bcore_precoder_sample_features \
   BCORE_FORWARD_OBJECT( bcore_precoder_sample_features ); \
   typedef void (*bcore_precoder_sample_features_setup)( bcore_precoder_sample_features* o, sz_t n ); \

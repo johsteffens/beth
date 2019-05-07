@@ -65,7 +65,7 @@
 #ifdef TYPEOF_bmath_mf3_sf
 
 BETH_PRECODE( bmath_mf3_sf )
-/*
+#ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     self bmath_mf3_sf_s = bcore_inst
     {
         aware_t _;
@@ -77,7 +77,7 @@ BETH_PRECODE( bmath_mf3_sf )
         sz_t [] i; // index data
         f3_t [] v; // value data
     };
-*/
+#endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// sets size of splicing (zeros all indexes)
 void bmath_mf3_sf_s_set_size_splicing( bmath_mf3_sf_s* o, sz_t rows, sz_t cols );

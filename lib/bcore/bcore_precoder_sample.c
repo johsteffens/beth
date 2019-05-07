@@ -78,6 +78,8 @@ void bcore_precoder_sample_object_s_selftest( void )
     if( bcore_precoder_sample_features_a_defines_to_stdout( object2 ) ) bcore_precoder_sample_features_a_to_stdout( object2 );
     if( bcore_precoder_sample_features_a_defines_get_size( object2 ) ) bcore_precoder_sample_features_a_get_size( object2 );
 
+    ASSERT( sc_t_equ( ifnameof( TYPEOF_anyglobalname ), "anyglobalname" ) );
+
     BCORE_LIFE_DOWN();
 }
 

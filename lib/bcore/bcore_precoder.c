@@ -245,6 +245,22 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_feature_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+BCORE_DECLARE_OBJECT( bcore_precoder_name_s )
+{
+    aware_t _;
+    st_s name; // deemed global
+    sc_t group_name;
+};
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_name_s )
+"{"
+    "aware_t _;"
+    "st_s name;" // deemed global
+    "sc_t group_name;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
 BCORE_DECLARE_OBJECT( bcore_precoder_object_s )
 {
     aware_t _;
@@ -554,6 +570,25 @@ static tp_t bcore_precoder_feature_s_get_hash( const bcore_precoder_feature_s* o
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static void bcore_precoder_name_s_compile( bcore_precoder_name_s* o, bcore_source* source )
+{
+    bcore_source_a_parse_fa( source, " #name", &o->name );
+    if( o->name.size == 0      ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
+    bcore_source_a_parse_fa( source, " ; " );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static tp_t bcore_precoder_name_s_get_hash( const bcore_precoder_name_s* o )
+{
+    tp_t hash = bcore_tp_init();
+    hash = bcore_tp_fold_sc( hash, o->name.sc );
+    hash = bcore_tp_fold_sc( hash, o->group_name );
+    return hash;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_object_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->item_name, typeof( o->item_name ) );
@@ -750,13 +785,19 @@ static void bcore_precoder_item_s_expand_declaration( const bcore_precoder_item_
     {
         case TYPEOF_bcore_precoder_object_s:
         {
-            bcore_precoder_object_s_expand_declaration( o->data.o, o->group->source->target->precoder, indent, sink );
+            bcore_precoder_object_s_expand_declaration( o->data.o, o->group->source->target->precoder, indent + 2, sink );
         }
         break;
 
         case TYPEOF_bcore_precoder_feature_s:
         {
-            //bcore_precoder_feature_s_expand_declaration( o->data.o, indent, sink );
+            // nothing to do
+        }
+        break;
+
+        case TYPEOF_bcore_precoder_name_s:
+        {
+            bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->name.sc, typeof( o->name.sc ) );
         }
         break;
 
@@ -765,6 +806,40 @@ static void bcore_precoder_item_s_expand_declaration( const bcore_precoder_item_
             ERR_fa( "Unhandled: #<sc_t>\n", ifnameof( sr_s_type( &o->data ) ) );
         }
         break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_precoder_items_s_expand_indef_declaration( const bcore_precoder_item_s* o, sz_t indent, bcore_sink* sink )
+{
+    switch( sr_s_type( &o->data ) )
+    {
+        case TYPEOF_bcore_precoder_feature_s:
+        {
+            const bcore_precoder_feature_s* feature = o->data.o;
+            bcore_precoder_feature_s_expand_indef_declaration( feature, indent, sink );
+        }
+        break;
+
+        case TYPEOF_bcore_precoder_name_s:
+        {
+            // nothing to do
+        }
+        break;
+
+        case TYPEOF_bcore_precoder_object_s:
+        {
+            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BETH_EXPAND_ITEM_#<sc_t>", indent, o->name.sc );
+        }
+        break;
+
+        default:
+        {
+            ERR_fa( "Unhandled: #<sc_t>\n", ifnameof( sr_s_type( &o->data ) ) );
+        }
+        break;
+
     }
 }
 
@@ -797,6 +872,13 @@ static void bcore_precoder_item_s_expand_definition( const bcore_precoder_item_s
             /* nothing */
         }
         break;
+
+        case TYPEOF_bcore_precoder_name_s:
+        {
+            /* nothing */
+        }
+        break;
+
         default:
         {
             ERR_fa( "Unhandled: #<sc_t>\n", ifnameof( sr_s_type( &o->data ) ) );
@@ -822,6 +904,13 @@ static void bcore_precoder_item_s_expand_init1( const bcore_precoder_item_s* o, 
             bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FEATURE( #<sc_t> );\n", indent, o->name.sc );
         }
         break;
+
+        case TYPEOF_bcore_precoder_name_s:
+        {
+            bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_NAME( #<sc_t> );\n", indent, o->name.sc );
+        }
+        break;
+
         default:
         {
             ERR_fa( "Unhandled: #<sc_t>\n", ifnameof( sr_s_type( &o->data ) ) );
@@ -857,6 +946,14 @@ static void bcore_precoder_item_s_setup( bcore_precoder_item_s* o, vc_t object )
             st_s_copy_fa( &o->name, "#<sc_t>_#<sc_t>", precoder_feature->group_name, precoder_feature->name.sc );
             o->hash = bcore_precoder_feature_s_get_hash( precoder_feature );
             ( ( bcore_precoder_feature_s* )o->data.o )->item_name = o->name.sc;
+        }
+        break;
+
+        case TYPEOF_bcore_precoder_name_s:
+        {
+            const bcore_precoder_name_s* precoder_name = object;
+            st_s_copy( &o->name, &precoder_name->name );
+            o->hash = bcore_precoder_name_s_get_hash( precoder_name );
         }
         break;
 
@@ -966,6 +1063,18 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             o->has_features = true;
             BCORE_LIFE_DOWN();
         }
+        else if( bcore_source_a_parse_bl_fa( source, " #?w'name' " ) )
+        {
+            BCORE_LIFE_INIT();
+            BCORE_LIFE_CREATE( bcore_precoder_name_s, precoder_name );
+            precoder_name->group_name = o->name.sc;
+            bcore_precoder_name_s_compile( precoder_name, source );
+
+            bcore_precoder_item_s_setup( item, precoder_name );
+
+            o->has_features = true;
+            BCORE_LIFE_DOWN();
+        }
         else
         {
             bcore_source_a_parse_err_fa( source, "Precode syntax error." );
@@ -998,7 +1107,7 @@ static void bcore_precoder_group_s_expand_declaration( const bcore_precoder_grou
         bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, spect_name->sc, typeof( spect_name->sc ) );
     }
 
-    for( sz_t i = 0; i < o->size; i++ ) bcore_precoder_item_s_expand_declaration( o->data[ i ], indent + 2, sink );
+    for( sz_t i = 0; i < o->size; i++ ) bcore_precoder_item_s_expand_declaration( o->data[ i ], indent, sink );
     bcore_sink_a_push_fa( sink, "#rn{ }##define BETH_EXPAND_GROUP_#<sc_t>", indent, o->name.sc );
 
     if( o->has_features )
@@ -1037,15 +1146,7 @@ static void bcore_precoder_group_s_expand_declaration( const bcore_precoder_grou
     for( sz_t i = 0; i < o->size; i++ )
     {
         const bcore_precoder_item_s* item = o->data[ i ];
-        if( item->type == TYPEOF_bcore_precoder_feature_s )
-        {
-            const bcore_precoder_feature_s* feature = item->data.o;
-            bcore_precoder_feature_s_expand_indef_declaration( feature, indent, sink );
-        }
-        else
-        {
-            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BETH_EXPAND_ITEM_#<sc_t>", indent, o->data[ i ]->name.sc );
-        }
+        bcore_precoder_items_s_expand_indef_declaration( item, indent, sink );
     }
 
     bcore_sink_a_push_fa( sink, "\n" );
@@ -1324,13 +1425,33 @@ static bl_t bcore_precoder_target_s_expand( bcore_precoder_target_s* o )
 
     if( modified )
     {
-        st_s* file_h = BCORE_LIFE_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
-        bcore_msg_fa( "writing '#<sc_t>'\n", file_h->sc );
-        bcore_precoder_target_s_expand_h( o, 0, BCORE_LIFE_A_PUSH( bcore_file_open_sink( file_h->sc ) ) );
-        st_s* file_c = BCORE_LIFE_A_PUSH( st_s_create_fa( "#<sc_t>.c", o->path.sc ) );
-        bcore_msg_fa( "writing '#<sc_t>'\n", file_c->sc );
-        bcore_precoder_target_s_expand_c( o, 0, BCORE_LIFE_A_PUSH( bcore_file_open_sink( file_c->sc ) ) );
+        BCORE_LIFE_CREATE( st_s, txt_h );
+        BCORE_LIFE_CREATE( st_s, txt_c );
+        bcore_precoder_target_s_expand_h( o, 0, ( bcore_sink* )txt_h );
+        bcore_precoder_target_s_expand_c( o, 0, ( bcore_sink* )txt_c );
 
+        st_s* file_h = BCORE_LIFE_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
+        st_s* file_c = BCORE_LIFE_A_PUSH( st_s_create_fa( "#<sc_t>.c", o->path.sc ) );
+
+        if( bcore_file_exists( file_h->sc ) )
+        {
+            st_s* backup_name = st_s_create_fa( "#<sc_t>.backup", file_h->sc );
+            bcore_file_rename( file_h->sc, backup_name->sc );
+            st_s_discard( backup_name );
+        }
+
+        if( bcore_file_exists( file_c->sc ) )
+        {
+            st_s* backup_name = st_s_create_fa( "#<sc_t>.backup", file_c->sc );
+            bcore_file_rename( file_c->sc, backup_name->sc );
+            st_s_discard( backup_name );
+        }
+
+        bcore_msg_fa( "writing '#<sc_t>'\n", file_h->sc );
+        bcore_sink_a_push_data( BCORE_LIFE_A_PUSH( bcore_file_open_sink( file_h->sc ) ), txt_h->data, txt_h->size );
+
+        bcore_msg_fa( "writing '#<sc_t>'\n", file_c->sc );
+        bcore_sink_a_push_data( BCORE_LIFE_A_PUSH( bcore_file_open_sink( file_c->sc ) ), txt_c->data, txt_c->size );
 
 //        bcore_precoder_target_s_expand_h( o, 0, BCORE_STDOUT );
 //        bcore_precoder_target_s_expand_c( o, 0, BCORE_STDOUT );
@@ -1469,6 +1590,7 @@ vd_t bcore_precoder_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_precoder_args_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_feature_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_object_s );
+            BCORE_REGISTER_OBJECT( bcore_precoder_name_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_item_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_group_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_source_s );
@@ -1490,6 +1612,7 @@ vd_t bcore_precoder_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_args_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_feature_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_object_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_precoder_name_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_item_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_group_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_source_s );

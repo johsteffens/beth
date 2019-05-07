@@ -94,4 +94,9 @@ bcore_name_map_s* bcore_name_create_name_map();
 
 vd_t bcore_name_manager_signal_handler( const bcore_signal_s* o );
 
+/**********************************************************************************************************************/
+
+// Macros
+#define BCORE_REGISTER_NAME( name ) bcore_name_enroll( #name )
+
 #endif // BCORE_NAME_MANAGER_H

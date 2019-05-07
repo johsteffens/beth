@@ -208,6 +208,13 @@ void bmath_vf3_s_set_size( bmath_vf3_s* o, uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_vf3_s_set_space( bmath_vf3_s* o, uz_t space )
+{
+    bcore_array_a_set_space( (bcore_array*)o, space );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_vf3_s_set_size_to( const bmath_vf3_s* o, bmath_vf3_s* res )
 {
     bmath_vf3_s_set_size( res, o->size );
@@ -757,6 +764,13 @@ void bmath_vcf3_s_set_size( bmath_vcf3_s* o, uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_vcf3_s_set_space( bmath_vcf3_s* o, uz_t space )
+{
+    bcore_array_a_set_space( (bcore_array*)o, space );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_cvf3_s_push( bmath_vcf3_s* o, bmath_cf3_s val )
 {
     if( o->size < o->space )
@@ -1181,6 +1195,23 @@ void bmath_arr_vf3_s_on_section_set_random( bmath_arr_vf3_s* o, uz_t start, uz_t
 {
     end = end < o->size ? end : o->size;
     for( uz_t i = start; i < end; i++ ) bmath_vf3_s_set_random( &o->data[ i ], density, min, max, rval );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_swapr( bmath_vf3_s* o, bmath_vf3_s* v )
+{
+    f3_t* data  = o->data;
+    uz_t  space = o->space;
+    uz_t  size  = o->size;
+
+    o->data  = v->data;
+    o->size  = v->size;
+    o->space = v->space;
+
+    v->data  = data;
+    v->size  = size;
+    v->space = space;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

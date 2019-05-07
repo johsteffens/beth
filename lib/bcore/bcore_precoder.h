@@ -24,6 +24,7 @@
  *
  *  <precoded-file> is the name of the output (precoded) file given without path or extension.
  *  <precoded-file>.c and <precoded-file>.h are generated in the folder of the beth-source.
+ *  Before <precoded-file>.? is being modified it is renamed to <precoded-file>.?.backup
  *
  *  During development, bl_t bcore_precoder_run_globally() should be executed.
  *  If it returns 'true' a rebuild is required.
@@ -35,6 +36,8 @@
  *
  *      self <name> = <trait> { reflection-definition };
  *
+ *      name <name>;
+ *
  *      ...
  *  <precode-closer>
  *
@@ -45,20 +48,30 @@
  *  precode-closer:
  *    c-style comment-closer or '#endif' (depending on what was used for precode-opener)
  *
- *   feature:
- *       The feature definition triggers implicit definition of a perspective <group_name>
- *       and corresponding inline implementations for each (virtual) function 'func_name':
- *         <ret> <group_name>_p_<func_name>( const <group_name>_s* p, <args> )
- *         <ret> <group_name>_t_<func_name>( tp_t __t, [const] <group_name>* o, <args> )
- *         <ret> <group_name>_a_<func_name>( [const] <group_name>* o, <args> )
- *         <ret> <group_name>_r_<func_name>( const sr_s* o, <args> )
- *         bl_t <group_name>_p_defines_<func_name>( const <group_name>_s* p )
- *         bl_t <group_name>_t_defines_<func_name>( tp_t t )
- *         bl_t <group_name>_a_defines_<func_name>( const <group_name>* o )
- *         bl_t <group_name>_r_defines_<func_name>( const sr_s* o )
+ *  ----------------------------------------------------------------------------------------------
+ *  feature:
+ *    The feature definition triggers implicit definition of a perspective <group_name>
+ *    and corresponding inline implementations for each (virtual) function 'func_name'.
+ *    <flags>-setting (s.below) determines which referencing method is offered for the feature.
+ *
+ *       Calling a feature depending on referencing method.
+ *       Note:
+ *         Calling an unbound function can result in a segmentation fault.
+ *         Use check below to probe for a valid binding.
+ *       <ret> <group_name>_p_<func_name>( const <group_name>_s* p, <args> );
+ *       <ret> <group_name>_t_<func_name>( tp_t __t, [const] <group_name>* o, <args> );
+ *       <ret> <group_name>_a_<func_name>( [const] <group_name>* o, <args> );
+ *       <ret> <group_name>_r_<func_name>( const sr_s* o, <args> );
+ *
+ *       Checks whether binding exists for given object.
+ *       Existing <default_func> qualifies as valid binding for all objects.
+ *       bl_t <group_name>_p_defines_<func_name>( const <group_name>_s* p );
+ *       bl_t <group_name>_t_defines_<func_name>( tp_t t );
+ *       bl_t <group_name>_a_defines_<func_name>( const <group_name>* o );
+ *       bl_t <group_name>_r_defines_<func_name>( const sr_s* o );
  *
  *    flags:
- *        Any character sequence of 'ptar' specifying which type of virtual function shall
+ *        Any character sub-sequence of 'ptar' specifying which type of virtual function shall
  *        be inline implemented.
  *
  *    strict:
@@ -68,11 +81,17 @@
  *        Optional default function used when the object does not define the feature.
  *        Requires implementing <ret> <group_name>_<default_name>( [const] <group_name>* o, <args> );
  *
- *    self:
- *        Reflection definition for objects (see flect.h for details)
- *        (Perspectives should not be explicitly defined here.)
- *        Function definitions in reflections are matched and bound to features. C-Prototypes are generated
- *        and registered as featured function.
+ *  ----------------------------------------------------------------------------------------------
+ *  name:
+ *    Identifier definition. Generates tp_t TYPEOF_<name>. Registers <name> in name manager.
+ *    <name> has global scope. Multiple definitions of the same name at different places are allowed.
+ *
+ *  ----------------------------------------------------------------------------------------------
+ *  self:
+ *    Reflection definition for objects (see flect.h for details)
+ *    (Perspectives should not be explicitly defined here.)
+ *    Function definitions in reflections are matched and bound to features. C-Prototypes are generated
+ *    and registered as featured function.
  *
  */
 

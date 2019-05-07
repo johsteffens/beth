@@ -1,3 +1,4 @@
+*.backup
 beth.*
 beth_dev.*
 bin

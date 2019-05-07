@@ -82,6 +82,7 @@ bmath_vf3_s* bmath_vf3_s_create_set_size( uz_t size );
 bmath_vf3_s* bmath_vf3_s_create_fill( uz_t size, f3_t val );
 
 void bmath_vf3_s_set_size(    bmath_vf3_s* o, uz_t size );
+void bmath_vf3_s_set_space(   bmath_vf3_s* o, uz_t space );
 void bmath_vf3_s_set_size_to( const bmath_vf3_s* o, bmath_vf3_s* res );
 void bmath_vf3_s_fill(        bmath_vf3_s* o, f3_t val );
 
@@ -95,6 +96,9 @@ void bmath_vf3_s_fill(        bmath_vf3_s* o, f3_t val );
  *     creates a non-zero value.
  */
 void bmath_vf3_s_set_random( bmath_vf3_s* o, f3_t density, f3_t min, f3_t max, u2_t* p_rval );
+
+/// swaps vectors by swapping data references (no copying of memory)
+void bmath_vf3_s_swapr( bmath_vf3_s* o, bmath_vf3_s* v );
 
 void bmath_vf3_s_push( bmath_vf3_s* o, f3_t val );
 void bmath_vf3_s_push_vf3( bmath_vf3_s* o, const bmath_vf3_s* vec );

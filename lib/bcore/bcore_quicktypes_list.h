@@ -77,6 +77,7 @@
 #define TYPEOF_bcore_precoder_feature_s   2057969550
 #define TYPEOF_bcore_precoder_group_s     3308841487
 #define TYPEOF_bcore_precoder_item_s      2569699851
+#define TYPEOF_bcore_precoder_name_s       765553819
 #define TYPEOF_bcore_precoder_object_s    1181867915
 #define TYPEOF_bcore_precoder_s           2936171739
 #define TYPEOF_bcore_precoder_source_s     700523377

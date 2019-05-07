@@ -25,16 +25,18 @@
 
 #ifdef TYPEOF_bcore_precoder_sample_features
 BETH_PRECODE( bcore_precoder_sample_features )
-/*
+#ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     feature strict 'ptar' void setup( mutable, sz_t n );
     feature        'ptar' void to_stdout( const ) = to_stdout_default;
     feature        'ptar' sz_t get_size( const );
-*/
+
+    name anyglobalname;
+#endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // optional enclosure
 
 #ifdef TYPEOF_bcore_precoder_sample
 BETH_PRECODE( bcore_precoder_sample )
-/*
+#ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     self bcore_precoder_sample_object_s = bcore_inst
     {
         aware_t _;
@@ -53,7 +55,7 @@ BETH_PRECODE( bcore_precoder_sample )
         func bcore_precoder_sample_features:setup;
         func bcore_precoder_sample_features:to_stdout;
     };
-*/
+#endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // optional enclosure
 
 /**********************************************************************************************************************/
