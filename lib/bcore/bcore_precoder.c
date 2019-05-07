@@ -502,6 +502,8 @@ static tp_t bcore_precoder_args_s_get_hash( const bcore_precoder_args_s* o )
 
 static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore_source* source )
 {
+    BCORE_LIFE_INIT();
+
     o->strict = bcore_source_a_parse_bl_fa(  source, " #?w'strict' " );
 
     if( bcore_source_a_parse_bl_fa( source, " #?|'|" ) )
@@ -520,9 +522,24 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore
         bcore_source_a_parse_err_fa( source, "Feature: '<flags>' expected. Example: 'ptar'" );
     }
 
-    bcore_source_a_parse_fa( source, " #name #name ( ", &o->ret_type, &o->name );
-    if( o->name.size == 0      ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
-    if( o->ret_type.size  == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Return type missing." );
+    BCORE_LIFE_CREATE( st_s, name_buf );
+    st_s_clear( &o->ret_type );
+    bcore_source_a_parse_fa( source, " #name", name_buf );
+    if( name_buf->size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Return type missing." );
+    st_s_push_fa( &o->ret_type, "#<sc_t>", name_buf->sc );
+
+    if( st_s_equal_sc( name_buf, "const" ) )
+    {
+        bcore_source_a_parse_fa( source, " #name", name_buf );
+        if( name_buf->size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Return type missing." );
+        st_s_push_fa( &o->ret_type, " #<sc_t>", name_buf->sc );
+    }
+
+    while( bcore_source_a_parse_bl_fa( source, " #?'*'" ) ) st_s_push_char( &o->ret_type, '*' );
+
+    bcore_source_a_parse_fa( source, " #name ( ", &o->name );
+
+    if( o->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
     o->has_ret = !st_s_equal_sc( &o->ret_type, "void" );
 
     if(      bcore_source_a_parse_bl_fa(  source, " #?'mutable' " ) ) o->mutable = true;
@@ -534,6 +551,7 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore
 
     if( bcore_source_a_parse_bl_fa( source, " #?'=' " ) )
     {
+        if( o->strict )  bcore_source_a_parse_err_fa( source, "Feature is 'strict'. Default function has no effect." );
         bcore_source_a_parse_fa( source, " #name ", &o->default_name );
         if( o->default_name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Default function name expected." );
         if( st_s_equal_st( &o->default_name, &o->name ) )
@@ -543,6 +561,8 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore
     }
 
     bcore_source_a_parse_fa( source, " ; " );
+
+    BCORE_LIFE_DOWN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
