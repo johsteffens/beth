@@ -173,6 +173,11 @@ void bcore_bin_ml_t_to_file( tp_t t, vc_t o, sc_t file  )
     bcore_bin_ml_x_to_file( sr_twc( t, o ), file );
 }
 
+void bcore_bin_ml_a_to_sink( vc_t o, bcore_sink* sink )
+{
+    bcore_translate_x( sr_asd( bcore_bin_ml_translator_s_create() ), sr_awc( o ), sr_awd( sink ) );
+}
+
 /**********************************************************************************************************************/
 /// bcore_bin_ml_interpreter
 /**********************************************************************************************************************/
@@ -343,6 +348,13 @@ void bcore_bin_ml_t_from_file( tp_t t, vd_t o, sc_t file )
 {
     sr_s sr = bcore_bin_ml_from_file( file );
     bcore_inst_t_copy_typed( t, o, sr_s_type( &sr ), sr.o );
+    sr_down( sr );
+}
+
+void bcore_bin_ml_a_from_source( vd_t o, bcore_source* source )
+{
+    sr_s sr = bcore_bin_ml_from_source( sr_awd( source ) );
+    bcore_inst_t_copy_typed( *(aware_t*)o, o, sr_s_type( &sr ), sr.o );
     sr_down( sr );
 }
 
