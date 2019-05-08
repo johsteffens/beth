@@ -1364,7 +1364,7 @@ bcore_inst_s* create_from_self( const bcore_self_s* self )
             bcore_inst_item_s* inst_item = inst_s_push( o );
 
             inst_item->self_item = self_item;
-            if( self_item->type )
+            if( self_item->type != 0 && !self_item->flags.f_aware )
             {
                 if( !bcore_flect_exists( self_item->type ) )
                 {

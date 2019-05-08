@@ -143,6 +143,9 @@ typedef struct bcore_flect_flags_s
             //    * true: linked objects are deeply copied
             //    * false: linked objects are forked
             unsigned f_deep_copy : 1;
+
+            // type is self aware; 'type' value of self_item can be 0 or represent a trait
+            unsigned f_aware : 1;
         };
     };
 } bcore_flect_flags_s;
@@ -294,7 +297,8 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *  }
  *
  *  <type>:
- *    <type name> | <type number> | typed | aware
+ *    <type name> | <type number> | typed
+ *   ('typed' is to be deprecated an might not be globally supported)
  *
  *  colon:
  *    If ':' follows <type>, '_<name>' is appended to the type name. (In some constructions this reduces redundancy)
@@ -312,6 +316,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *     hidden  : Invisible to spect_via (can be seen as complement of 'shell')
  *     spect   : Perspective of parent object (private shallow link). Initialized by spect_inst. Private to other perspectives.
  *     const   : Constant. Requires default value. No physical representation in object. Typically used as perspective-parameter.
+ *     aware   : aware object (must be link or array of links); type can be a virtual type (e.g. trait); Example "aware bcore_inst* obj;"
  *
  *  Static Function:
  *    The reflection func indicates a function operating on or with the object of the reflection by taking

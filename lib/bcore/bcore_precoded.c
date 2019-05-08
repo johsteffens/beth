@@ -59,7 +59,7 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 3898273996 ) );
+            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 2304114689 ) );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_setup );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_to_stdout );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_get_size );

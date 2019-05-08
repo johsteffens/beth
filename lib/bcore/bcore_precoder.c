@@ -955,7 +955,8 @@ static void bcore_precoder_item_s_setup( bcore_precoder_item_s* o, vc_t object )
         {
             const bcore_precoder_object_s* precoder_object = object;
             st_s_copy_sc( &o->name, nameof( precoder_object->self.type ) );
-            o->hash = bcore_hash_a_get_tp( ( bcore_hash* )&precoder_object->self );
+            //o->hash = bcore_hash_a_get_tp( ( bcore_hash* )&precoder_object->self );
+            o->hash = bcore_tp_hash_sc( precoder_object->self_source.sc );
             ( ( bcore_precoder_object_s* )o->data.o )->item_name = o->name.sc;
         }
         break;
@@ -1262,7 +1263,10 @@ static void bcore_precoder_source_s_compile( bcore_precoder_source_s* o, bcore_s
             group->hash = group->id;
             bcore_precoder_group_s_compile( group, source );
             o->hash = bcore_tp_fold_tp( o->hash, group->hash );
-            bcore_precoder_s_register_group( o->target->precoder, group );
+            if( !bcore_precoder_s_register_group( o->target->precoder, group ) )
+            {
+                bcore_source_a_parse_err_fa( source, "Group #<sc_t> is already in use.", group->name.sc );
+            }
             bcore_array_a_push( ( bcore_array* )o, sr_asd( group ) );
         }
         else

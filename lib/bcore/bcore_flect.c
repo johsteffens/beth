@@ -363,6 +363,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
         bl_t f_assign_default = false;
         bl_t f_feature   = false;
         bl_t f_strict    = false;
+        bl_t f_aware     = false;
 
         uz_t array_fix_size = 0;
 
@@ -412,6 +413,11 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
                 f_any_prefix = f_strict = true;
             }
 
+            if( bcore_source_r_parse_bl_fa( &src, " #?w'aware'"   ) )
+            {
+                if( f_aware ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'aware' occurs twice.", ifnameof( parent ) );
+                f_any_prefix = f_aware = true;
+            }
         }
 
         // type can be specified by explicit type id number (anonymous types) or by name
@@ -485,6 +491,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
         o->flags.f_const     = f_const;
         o->flags.f_feature   = f_feature;
         o->flags.f_strict    = f_strict;
+        o->flags.f_aware     = f_aware;
 
         if( f_arr_fix ) o->array_fix_size = array_fix_size;
 
@@ -493,7 +500,18 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
             bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPerspectives are shallow links. Use 'spect #<sc_t> ->' to clarify method of referencing.", ifnameof( parent ), type_name->sc );
         }
 
-        if( st_s_equal_sc( type_name, "typed" ) )
+        if( f_aware )
+        {
+            if( !f_link )
+            {
+                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nSelf-aware object must be referenced by a link. Use 'aware *|=>|->' to clarify method of referencing.", ifnameof( parent ) );
+            }
+            //o->type = 0;
+            o->type = ( type_val > 0 ) ? type_val : ( type_name->size > 0 ? entypeof( type_name->sc ) : 0 );
+            o->name = entypeof( item_name->sc );
+            o->caps = f_arr_dyn ? BCORE_CAPS_ARRAY_DYN_LINK_AWARE : f_arr_fix ? BCORE_CAPS_ARRAY_FIX_LINK_AWARE : BCORE_CAPS_LINK_AWARE;
+        }
+        else if( st_s_equal_sc( type_name, "typed" ) )
         {
             if( f_arr_fix )
             {
@@ -508,16 +526,6 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
             o->type = 0;
             o->name = entypeof( item_name->sc );
             o->caps = f_arr_dyn ? ( f_link ? BCORE_CAPS_ARRAY_DYN_LINK_TYPED : BCORE_CAPS_ARRAY_DYN_SOLID_TYPED ) : BCORE_CAPS_LINK_TYPED;
-        }
-        else if( st_s_equal_sc( type_name, "aware" ) )
-        {
-            if( !f_link )
-            {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nSelf-aware object must be referenced by a link. Use 'aware *|=>|->' to clarify method of referencing.", ifnameof( parent ) );
-            }
-            o->type = 0;
-            o->name = entypeof( item_name->sc );
-            o->caps = f_arr_dyn ? BCORE_CAPS_ARRAY_DYN_LINK_AWARE : f_arr_fix ? BCORE_CAPS_ARRAY_FIX_LINK_AWARE : BCORE_CAPS_LINK_AWARE;
         }
         else
         {
@@ -708,67 +716,47 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
 
         case BCORE_CAPS_LINK_AWARE:
         {
-            bcore_sink_a_push_fa( sink, "vd_t #<sc_t>;", name );
+            if( o->type )
+            {
+                bcore_sink_a_push_fa( sink, "#<sc_t>* #<sc_t>;", type, name );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, "vd_t #<sc_t>;", name );
+            }
         }
         break;
 
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
         {
-            if( sc_t_equ( name, "data" ) )
-            {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_STATIC_S( #<sc_t>, );", type );
-            }
-            else
-            {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_STATIC_S( #<sc_t>, #<sc_t>_ );", type, name );
-            }
+            bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_STATIC_S( #<sc_t>, #<sc_t>_ );", type, name );
         }
         break;
 
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
         {
-            if( sc_t_equ( name, "data" ) )
-            {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_TYPED_S();" );
-            }
-            else
-            {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_TYPED_S( #<sc_t>_ );", type, name );
-            }
+            bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_TYPED_S( #<sc_t>_ );", type, name );
         }
         break;
 
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
         {
-            if( sc_t_equ( name, "data" ) )
-            {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_STATIC_S( #<sc_t>, );", type );
-            }
-            else
-            {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_STATIC_S( #<sc_t>, #<sc_t>_ );", type, name );
-            }
+            bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_STATIC_S( #<sc_t>, #<sc_t>_ );", type, name );
         }
         break;
 
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
         {
-            if( sc_t_equ( name, "data" ) )
-            {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_TYPED_S();" );
-            }
-            else
-            {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_TYPED_S( #<sc_t>_ );", type, name );
-            }
+            bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_TYPED_S( #<sc_t>_ );", type, name );
         }
         break;
 
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
         {
-            if( sc_t_equ( name, "data" ) )
+            if( o->type )
             {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_AWARE_S();" );
+                /// We can represent a virtual type via BCORE_ARRAY_DYN_LINK_STATIC
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_STATIC_S( #<sc_t>, #<sc_t>_ );", type, name );
             }
             else
             {
@@ -791,7 +779,14 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
 
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
         {
-            bcore_sink_a_push_fa( sink, "#vd_t #<sc_t>[ #<sz_t> ];", name, o->default_sz );
+            if( o->type )
+            {
+                bcore_sink_a_push_fa( sink, "#<sc_t>* #<sc_t>[ #<sz_t> ];", type, name, o->default_sz );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, "vd_t #<sc_t>[ #<sz_t> ];", name, o->default_sz );
+            }
         }
         break;
 
