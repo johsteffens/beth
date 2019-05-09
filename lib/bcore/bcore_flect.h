@@ -133,6 +133,9 @@ typedef struct bcore_flect_flags_s
             // item represents a feature (features are used in perspectives; features are not traced in inst perspective)
             unsigned f_feature   : 1;
 
+            // item represents a feature and require objects using it to be self-aware
+            unsigned f_feature_requires_awarenes : 1;
+
             // used in conjunction with 'feature' to determine if the feature is always existing (either by default or by object-sided implementation)
             unsigned f_strict    : 1;
 
@@ -144,8 +147,9 @@ typedef struct bcore_flect_flags_s
             //    * false: linked objects are forked
             unsigned f_deep_copy : 1;
 
-            // type is self aware; 'type' value of self_item can be 0 or represent a trait
-            unsigned f_aware : 1;
+            // aware or typed objects; 'type' value of self_item can be 0 or represent a trait
+            unsigned f_virtual : 1;
+
         };
     };
 } bcore_flect_flags_s;
@@ -250,13 +254,13 @@ typedef struct bcore_self_s
     bcore_self_body_s* body;
 } bcore_self_s;
 
-void                bcore_self_s_init( bcore_self_s* o );
-void                bcore_self_s_init_plain( bcore_self_s* o, tp_t type, tp_t trait, uz_t size );
-void                bcore_self_s_down( bcore_self_s* o );
-void                bcore_self_s_copy( bcore_self_s* o, const bcore_self_s* src );
+void          bcore_self_s_init( bcore_self_s* o );
+void          bcore_self_s_init_plain( bcore_self_s* o, tp_t type, tp_t trait, uz_t size );
+void          bcore_self_s_down( bcore_self_s* o );
+void          bcore_self_s_copy( bcore_self_s* o, const bcore_self_s* src );
 bcore_self_s* bcore_self_s_create();
 bcore_self_s* bcore_self_s_clone( const bcore_self_s* o );
-void                bcore_self_s_discard( bcore_self_s* o );
+void          bcore_self_s_discard( bcore_self_s* o );
 
 uz_t                     bcore_self_s_items_size( const bcore_self_s* o );
 const bcore_self_item_s* bcore_self_s_get_item( const bcore_self_s* o, uz_t index );
@@ -292,17 +296,16 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *
  *      func <type> [:] <name> [= <ftype>];
  *
- *      [strict] feature <type> [:] <name> [ ~> <related_expression> ];
+ *      [strict] feature [aware] <type> [:] <name> [ ~> <related_expression> ];
  *      ....
  *  }
  *
  *  <type>:
- *    <type name> | <type number> | typed
- *   ('typed' is to be deprecated an might not be globally supported)
+ *    <type name> | <type number>
  *
  *  colon:
  *    If ':' follows <type>, '_<name>' is appended to the type name. (In some constructions this reduces redundancy)
- *    Example: 'func bmath_fp:add' resolves to 'func bmath_fp_add add'
+ *    Example: 'func bmath_fp:add' expands to 'func bmath_fp_add add'
  *
  *  qualifier:
  *    *, =>   : (deep) link    // object is referenced and inst perspective takes full control incl. deep copy
@@ -311,12 +314,13 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *     [size] : fixed-size-array
  *
  *  prefixes: (multiple prefixes can be mixed)
- *     private : Invisible to perspectives (no tracing, no copying, no ownership). Exception: spect_inst may initialize the field
+ *     private : Invisible to perspectives (no tracing, no copying, no ownership). Exception: spect_inst may initialize the field with zeros
  *     shell   : No physical representation in object. values are provided by get, set functions (used by spect_via; invisible to spect_inst)
  *     hidden  : Invisible to spect_via (can be seen as complement of 'shell')
  *     spect   : Perspective of parent object (private shallow link). Initialized by spect_inst. Private to other perspectives.
  *     const   : Constant. Requires default value. No physical representation in object. Typically used as perspective-parameter.
- *     aware   : aware object (must be link or array of links); type can be a virtual type (e.g. trait); Example "aware bcore_inst* obj;"
+ *     aware   : aware object (must be link or array of links); <type> can be virtual (e.g. trait); Example "aware bcore_source* source;"
+ *     typed   : typed object where type is stored explicitly; <type> can be virtual (e.g. trait);  Example "typed bcore_source* source;"
  *
  *  Static Function:
  *    The reflection func indicates a function operating on or with the object of the reflection by taking
@@ -340,11 +344,14 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *      my_feature_fp my_func = my_registered_default_func;
  *
  *  Feature:
- *    [strict] feature  [<prefixes>] <type> [<qualifier>] <name> [=<default>] [~> <related expression> ];
+ *    feature [strict] [aware] [<prefixes>] <type> [<qualifier>] <name> [=<default>] [~> <related expression> ];
  *    A feature governs dynamic binding between perspective and object.
  *    It is declared in the perspective and binds a perspective-item dynamically to the object-item.
  *    'strict' indicates that the relation must exist or the perspective construction produces an error.
  *    Otherwise the feature reverts to default in case binding could not be established.
+ *    'aware' indicates that the object using the perspective is required to be self aware,
+ *    which is tested upon perspective instantiation.
+ *
  *    '~> <related expression>' specifies the exact binding desired. If left blank, canonic binding is used.
  *    Examples:
  *      feature bmath_fp_add fp_add ~> func bmath_fp_add add;
@@ -522,6 +529,17 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         }; \
     }
 
+#define BCORE_LINK_TYPED_VIRTUAL_S( type, name ) \
+    union \
+    { \
+        bcore_link_typed_s name##_struc; \
+        struct \
+        { \
+            type* name; \
+            tp_t name##_type; \
+        }; \
+    }
+
 #define BCORE_ARRAY_DYN_SOLID_STATIC_S( type, prefix ) \
     union \
     { \
@@ -541,6 +559,19 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         struct \
         { \
             vd_t prefix##data; \
+            uz_t prefix##size; \
+            uz_t prefix##space; \
+            tp_t prefix##type; \
+        }; \
+    }
+
+#define BCORE_ARRAY_DYN_SOLID_TYPED_VIRTUAL_S( type, prefix ) \
+    union \
+    { \
+        bcore_array_dyn_solid_typed_s prefix##arr; \
+        struct \
+        { \
+            type* prefix##data; \
             uz_t prefix##size; \
             uz_t prefix##space; \
             tp_t prefix##type; \
@@ -572,6 +603,19 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         }; \
     }
 
+#define BCORE_ARRAY_DYN_LINK_TYPED_VIRTUAL_S( type, prefix ) \
+    union \
+    { \
+        bcore_array_dyn_link_typed_s prefix##arr; \
+        struct \
+        { \
+            type* prefix##data; \
+            uz_t prefix##size; \
+            uz_t prefix##space; \
+            tp_t prefix##type; \
+        }; \
+    }
+
 #define BCORE_ARRAY_DYN_LINK_AWARE_S( prefix ) \
     union \
     { \
@@ -579,6 +623,18 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
         struct \
         { \
             vd_t* prefix##data; \
+            uz_t prefix##size; \
+            uz_t prefix##space; \
+        }; \
+    }
+
+#define BCORE_ARRAY_DYN_LINK_AWARE_VIRTUAL_S( type, prefix ) \
+    union \
+    { \
+        bcore_array_dyn_link_static_s prefix##arr; \
+        struct \
+        { \
+            type** prefix##data; \
             uz_t prefix##size; \
             uz_t prefix##space; \
         }; \

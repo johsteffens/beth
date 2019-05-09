@@ -1192,7 +1192,9 @@ static void bcore_precoder_group_s_expand_spect( const bcore_precoder_group_s* o
         {
             const bcore_precoder_feature_s* feature = item->data.o;
             bcore_sink_a_push_fa( sink, "#rn{ }    \"feature ", indent );
-            if( feature->strict ) bcore_sink_a_push_fa( sink, "strict ", indent );
+            if( feature->strict ) bcore_sink_a_push_fa( sink, "strict " );
+            if( feature->flag_a ) bcore_sink_a_push_fa( sink, "aware " );
+
             bcore_sink_a_push_fa( sink, "#<sc_t> : #<sc_t>", o->name.sc, feature->name.sc );
             if( feature->default_name.size > 0 )
             {

@@ -25,17 +25,10 @@
 
 /**********************************************************************************************************************/
 
-static void translator_s_define_trait()
-{
-    tp_t trait = entypeof( "bcore_translator" );
-    bcore_trait_require_function( trait, entypeof( "bcore_fp_translate" ), 0 );
-    bcore_trait_set( trait, entypeof( "bcore_inst" ) );
-}
-
 BCORE_DEFINE_SPECT( bcore_inst, bcore_translator )
 "{"
     "bcore_spect_header_s header;"
-    "strict feature bcore_fp:translate;"
+    "feature strict aware bcore_fp:translate;"
 "}";
 
 /**********************************************************************************************************************/
@@ -61,7 +54,6 @@ vd_t bcore_spect_translator_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            translator_s_define_trait();
             BCORE_REGISTER_SPECT( bcore_translator );
         }
         break;

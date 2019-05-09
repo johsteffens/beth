@@ -27,18 +27,10 @@
 /**********************************************************************************************************************/
 // bcore_interpreter_s
 
-static void interpreter_s_define_trait()
-{
-    tp_t trait = entypeof( "bcore_interpreter" );
-    bcore_trait_require_awareness( trait );
-    bcore_trait_require_function( trait, entypeof( "bcore_fp_interpret" ), 0 );
-    bcore_trait_set( trait, entypeof( "bcore_inst" ) );
-}
-
 BCORE_DEFINE_SPECT( bcore_inst, bcore_interpreter )
 "{"
     "bcore_spect_header_s header;"
-    "strict feature bcore_fp:interpret;"
+    "feature strict aware bcore_fp:interpret;"
 "}";
 
 sr_s bcore_interpret_auto( sr_s source )
@@ -99,7 +91,6 @@ vd_t bcore_spect_interpreter_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            interpreter_s_define_trait();
             BCORE_REGISTER_SPECT( bcore_interpreter );
         }
         break;

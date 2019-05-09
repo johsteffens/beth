@@ -362,8 +362,10 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
         bl_t f_deep_copy = true;
         bl_t f_assign_default = false;
         bl_t f_feature   = false;
+        bl_t f_feature_requires_awareness = false;
         bl_t f_strict    = false;
         bl_t f_aware     = false;
+        bl_t f_typed     = false;
 
         uz_t array_fix_size = 0;
 
@@ -415,9 +417,21 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
 
             if( bcore_source_r_parse_bl_fa( &src, " #?w'aware'"   ) )
             {
-                if( f_aware ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'aware' occurs twice.", ifnameof( parent ) );
+                if( f_typed || f_aware ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefixes 'aware' occurs twice or mixed with 'typed'.", ifnameof( parent ) );
                 f_any_prefix = f_aware = true;
             }
+
+            if( bcore_source_r_parse_bl_fa( &src, " #?w'typed'"   ) )
+            {
+                if( f_typed || f_aware ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'typed' occurs twice or mixed with 'aware'.", ifnameof( parent ) );
+                f_any_prefix = f_typed = true;
+            }
+        }
+
+        if( f_aware && f_feature )
+        {
+            f_feature_requires_awareness = true;
+            f_aware = false;
         }
 
         // type can be specified by explicit type id number (anonymous types) or by name
@@ -490,8 +504,9 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
         o->flags.f_deep_copy = f_deep_copy;
         o->flags.f_const     = f_const;
         o->flags.f_feature   = f_feature;
+        o->flags.f_feature_requires_awarenes = f_feature_requires_awareness;
         o->flags.f_strict    = f_strict;
-        o->flags.f_aware     = f_aware;
+        o->flags.f_virtual   = f_aware || f_typed;
 
         if( f_arr_fix ) o->array_fix_size = array_fix_size;
 
@@ -511,7 +526,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
             o->name = entypeof( item_name->sc );
             o->caps = f_arr_dyn ? BCORE_CAPS_ARRAY_DYN_LINK_AWARE : f_arr_fix ? BCORE_CAPS_ARRAY_FIX_LINK_AWARE : BCORE_CAPS_LINK_AWARE;
         }
-        else if( st_s_equal_sc( type_name, "typed" ) )
+        else if( f_typed )
         {
             if( f_arr_fix )
             {
@@ -523,7 +538,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
                 bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nTyped objects cannot be nested. Use 'typed *|=>|->' to clarify method of referencing.", ifnameof( parent ) );
             }
 
-            o->type = 0;
+            o->type = ( type_val > 0 ) ? type_val : ( type_name->size > 0 ? entypeof( type_name->sc ) : 0 );
             o->name = entypeof( item_name->sc );
             o->caps = f_arr_dyn ? ( f_link ? BCORE_CAPS_ARRAY_DYN_LINK_TYPED : BCORE_CAPS_ARRAY_DYN_SOLID_TYPED ) : BCORE_CAPS_LINK_TYPED;
         }
@@ -710,7 +725,14 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
 
         case BCORE_CAPS_LINK_TYPED:
         {
-            bcore_sink_a_push_fa( sink, "BCORE_LINK_TYPED_S( #<sc_t> );", name );
+            if( o->type )
+            {
+                bcore_sink_a_push_fa( sink, "BCORE_LINK_TYPED_VIRTUAL_S( #<sc_t>, #<sc_t> );", type, name );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, "BCORE_LINK_TYPED_S( #<sc_t> );", name );
+            }
         }
         break;
 
@@ -735,7 +757,14 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
 
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
         {
-            bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_TYPED_S( #<sc_t>_ );", type, name );
+            if( o->type )
+            {
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_TYPED_VIRTUAL_S( #<sc_t>, #<sc_t>_ );", type, name );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_TYPED_S( #<sc_t>_ );", name );
+            }
         }
         break;
 
@@ -747,7 +776,14 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
 
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
         {
-            bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_TYPED_S( #<sc_t>_ );", type, name );
+            if( o->type )
+            {
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_TYPED_VITUAL_S( #<sc_t>, #<sc_t>_ );", type, name );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_TYPED_S( #<sc_t>_ );", name );
+            }
         }
         break;
 
@@ -1789,6 +1825,13 @@ void bcore_flect_push_all_types( bcore_arr_tp_s* arr )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static void bcore_flect_set_trait( const bcore_self_s* self )
+{
+    bcore_trait_set( self->type, self->trait );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bcore_self_s* bcore_flect_try_d_self( tp_t type )
 {
     // try reflection registry
@@ -1806,7 +1849,6 @@ bcore_self_s* bcore_flect_try_d_self( tp_t type )
     fp_t* p_func = bcore_hmap_u2vd_s_getf( creator_map_s_g->hmap, type );
     bcore_mutex_s_unlock( &creator_map_s_g->mutex );
 
-
     if( p_func )
     {
         self = ( ( bcore_flect_create_self_fp )*p_func )();
@@ -1822,7 +1864,7 @@ bcore_self_s* bcore_flect_try_d_self( tp_t type )
         bcore_self_s_check_integrity( self );
 
         bcore_mutex_s_lock( &self_map_s_g->mutex );
-        bcore_trait_set( self->type, self->trait );
+        bcore_flect_set_trait( self );
 
         if( bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) )
         {
@@ -1880,7 +1922,7 @@ tp_t bcore_flect_define_self_d( bcore_self_s* self )
     tp_t type = self->type;
     bcore_mutex_s_lock( &self_map_s_g->mutex );
     if( bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) ) ERR( "'%s' (%"PRItp_t") is already defined", ifnameof( type ), type );
-    bcore_trait_set( self->type, self->trait );
+    bcore_flect_set_trait( self );
     bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
     bcore_mutex_s_unlock( &self_map_s_g->mutex );
     return self->type;
@@ -1894,7 +1936,7 @@ static tp_t flect_define_self_rentrant_d( bcore_self_s* self )
     bcore_self_s_check_integrity( self );
     tp_t type = self->type;
     bcore_mutex_s_lock( &self_map_s_g->mutex );
-    bcore_trait_set( self->type, self->trait );
+    bcore_flect_set_trait( self );
     if( !bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) ) bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
     bcore_mutex_s_unlock( &self_map_s_g->mutex );
     return self->type;

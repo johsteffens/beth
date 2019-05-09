@@ -173,13 +173,6 @@ void bcore_spect_missing_err( vc_t p, sc_t name );
 #define BCORE_DECLARE_SPECT_BODY( name ) \
     struct name##_s
 
-#define BCORE_DEFINE_SPECT_old( parent_type, name ) \
-    static sc_t name##_s_def_g; \
-    static const tp_t name##_s_parent_type_g = TYPEOF_##parent_type; \
-    BCORE_DEFINE_SPECT_CACHE( name##_s ); \
-    BCORE_DEFINE_CREATE_SELF( name##_s, name##_s_def_g ) \
-    static sc_t name##_s_def_g = #name "_s = spect"
-
 #define BCORE_DEFINE_SPECT( parent_type, name ) \
     static sc_t name##_s_def_g; \
     BCORE_DEFINE_SPECT_CACHE( name##_s ); \

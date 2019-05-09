@@ -335,39 +335,46 @@ void bcore_spect_define_trait( const bcore_self_s* p_self )
         st_s_discard( p_name );
     }
 
-    /// check requirements
-    bcore_spect_header_s* spect = bcore_inst_t_create( p_self->type );
-    const bcore_via_s* p_via = bcore_via_s_get_typed( p_self->type );
-    uz_t size = bcore_via_p_get_size( p_via, NULL );
-    for( uz_t i = 0; i < size; i++ )
+    /// setup requirements
+    sz_t size = bcore_self_s_items_size( p_self );
+
+    bl_t trait_requires_awarenes = false;
+    for( sz_t i = 0; i < size; i++ )
     {
-        const bcore_vitem_s* vitem = bcore_via_p_iget_vitem( p_via, NULL, i );
-        if( vitem->flags.f_feature && vitem->flags.f_strict )
+        const bcore_self_item_s* item = bcore_self_s_get_item( p_self, i );
+
+        if( item->flags.f_feature_requires_awarenes )
         {
-            if( vitem->flags.f_fp )
+            trait_requires_awarenes = true;
+        }
+
+        if( item->flags.f_feature && item->flags.f_strict )
+        {
+            if( item->flags.f_fp )
             {
-                sr_s dst = bcore_via_p_nget( p_via, (bcore_via*)spect, vitem->name );
-                fp_t* dst_fp = ( fp_t* )dst.o;
-                if( vitem->flags.f_strict && !*dst_fp )
+                if( item->flags.f_strict && !item->default_tp )
                 {
-                    bcore_trait_require_function( trait, vitem->type, vitem->name );
+                    if( item->child_item )
+                    {
+                        const bcore_self_item_s* child_item = item->child_item;
+                        if( child_item->caps == BCORE_CAPS_EXTERNAL_FUNC )
+                        {
+                            bcore_trait_require_function( trait, child_item->type, child_item->name );
+                        }
+                    }
+                    else
+                    {
+                        bcore_trait_require_function( trait, item->type, item->name );
+                    }
                 }
-                sr_down( dst );
-            }
-            else
-            {
-                WRN_fa
-                (
-                    "Defining trait of perspective '#<sc_t>': Feature '#<sc_t> #<sc_t>' is not supported.",
-                    ifnameof( p_self->type ),
-                    vitem->type,
-                    vitem->name
-                );
             }
         }
     }
 
-    bcore_inst_a_discard( (bcore_inst*)spect );
+    if( trait_requires_awarenes )
+    {
+        bcore_trait_require_awareness( trait );
+    }
 
     bcore_trait_set( trait, p_self->parent );
 }
