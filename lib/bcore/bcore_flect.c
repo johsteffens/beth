@@ -75,6 +75,20 @@ bl_t bcore_flect_caps_is_array( u2_t caps )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bl_t bcore_flect_caps_is_aware( u2_t caps )
+{
+    switch( caps )
+    {
+        case BCORE_CAPS_LINK_AWARE:           return true;
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE: return true;
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE: return true;
+        default: break;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_flect_caps_is_array_dyn( u2_t caps )
 {
     switch( caps )

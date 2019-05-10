@@ -92,7 +92,13 @@
  *    (Perspectives should not be explicitly defined here.)
  *    Function definitions in reflections are matched and bound to features. C-Prototypes are generated
  *    and registered as featured function.
- *
+ *    Special traits:
+ *      bcore_array: expands additional array-functions
+ *        set_space( o, size ) // preallocation
+ *        set_size(  o, size ) // preallocation + size specification
+ *        clear(     o,      ) // clears array (sets space to 0)
+ *        push_c(    o, v    ) // pushes element by copying it
+ *        push_d(    o, v    ) // pushes element by passing ownership  (whether element is copied depends on array-type)
  */
 
 #ifndef BCORE_PRECODER_H

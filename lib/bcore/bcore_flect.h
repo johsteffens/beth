@@ -102,6 +102,9 @@ bl_t bcore_flect_caps_is_array( u2_t caps );
 bl_t bcore_flect_caps_is_array_dyn( u2_t caps );
 bl_t bcore_flect_caps_is_array_fix( u2_t caps );
 
+/// checks if encapsulation refers to aware types
+bl_t bcore_flect_caps_is_aware( u2_t caps );
+
 //----------------------------------------------------------------------------------------------------------------------
 
 // attribute flags

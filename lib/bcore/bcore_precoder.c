@@ -619,6 +619,9 @@ static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_obj
     bcore_self_s_struct_body_to_sink_single_line( &o->self, sink );
     bcore_sink_a_push_fa( sink, ";" );
 
+    const bcore_self_item_s* array_item = NULL;
+    bl_t expand_array = o->self.trait == TYPEOF_bcore_array;
+
     sz_t items = bcore_self_s_items_size( &o->self );
     for( sz_t i = 0; i < items; i++ )
     {
@@ -633,6 +636,45 @@ static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_obj
             bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->item_name );
             bcore_precoder_args_s_expand( &feature->args, sink );
             bcore_sink_a_push_fa( sink, " );" );
+        }
+        else if( expand_array && bcore_flect_caps_is_array( self_item->caps ) )
+        {
+            array_item = self_item;
+        }
+    }
+
+    if( expand_array )
+    {
+        if( !array_item )
+        {
+            ERR_fa( "Expanding object #<sc_t>: Object is of trait array but contains no array.", o->item_name );
+        }
+
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_set_space( #<sc_t>* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); }", indent, o->item_name, o->item_name, o->item_name );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_set_size( #<sc_t>* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); }", indent, o->item_name, o->item_name, o->item_name );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_clear( #<sc_t>* o ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, 0 ); }", indent, o->item_name, o->item_name, o->item_name );
+
+        if( array_item->type != 0 && nameof( array_item->type ) != NULL )
+        {
+            sc_t type_name = ifnameof( array_item->type );
+            if( bcore_flect_caps_is_aware( array_item->caps ) )
+            {
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, const #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_awc( v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o,       #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_asd( v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, const #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_twc( TYPEOF_#<sc_t>, v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name, type_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o,       #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_tsd( TYPEOF_#<sc_t>, v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name, type_name );
+            }
+        }
+        else
+        {
+            if( bcore_flect_caps_is_aware( array_item->caps ) )
+            {
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, vc_t v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_awc( v ) ); }", indent, o->item_name, o->item_name, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o, vd_t v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_asd( v ) ); }", indent, o->item_name, o->item_name, o->item_name );
+            }
         }
     }
 
