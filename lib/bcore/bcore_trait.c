@@ -366,6 +366,22 @@ bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log )
     return false;
 }
 
+void bcore_trait_assert_satisfied_type( tp_t trait, tp_t object_type )
+{
+    if( bcore_trait_satisfied_type( trait, object_type, NULL ) )
+    {
+        return;
+    }
+    else
+    {
+        st_s* s = st_s_create();
+        bcore_trait_satisfied_type( trait, object_type, s );
+        ERR_fa( "'#<sc_t>' is not supported by '#<sc_t>'. Reason:\n#<sc_t>\n", ifnameof( object_type ), ifnameof( trait ), s->sc );
+        st_s_discard( s );
+    }
+
+}
+
 sz_t bcore_trait_size()
 {
     system_s_g_lock();

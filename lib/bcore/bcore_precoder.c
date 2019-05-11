@@ -320,6 +320,7 @@ BCORE_DECLARE_OBJECT( bcore_precoder_group_s )
     tp_t id;
     tp_t hash;
     bl_t has_features;
+    bl_t is_aware;
     BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_precoder_item_s, );
     bcore_precoder_source_s* source;
 };
@@ -331,6 +332,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_group_s )
     "tp_t id;"
     "tp_t hash;"
     "bl_t has_features;"
+    "bl_t is_aware;"
     "bcore_precoder_item_s => [] arr;"
     "private vd_t source;"
 "}";
@@ -590,118 +592,6 @@ static tp_t bcore_precoder_feature_s_get_hash( const bcore_precoder_feature_s* o
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_name_s_compile( bcore_precoder_name_s* o, bcore_source* source )
-{
-    bcore_source_a_parse_fa( source, " #name", &o->name );
-    if( o->name.size == 0      ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
-    bcore_source_a_parse_fa( source, " ; " );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static tp_t bcore_precoder_name_s_get_hash( const bcore_precoder_name_s* o )
-{
-    tp_t hash = bcore_tp_init();
-    hash = bcore_tp_fold_sc( hash, o->name.sc );
-    hash = bcore_tp_fold_sc( hash, o->group_name );
-    return hash;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_object_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
-{
-    bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->item_name, typeof( o->item_name ) );
-
-    bcore_sink_a_push_fa( sink, "#rn{ }##define BETH_EXPAND_ITEM_#<sc_t>", indent, o->item_name, o->item_name );
-    bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BCORE_DECLARE_OBJECT( #<sc_t> )", indent, o->item_name );
-    bcore_sink_a_push_fa( sink, " \\\n#rn{ }    ", indent );
-    bcore_self_s_struct_body_to_sink_single_line( &o->self, sink );
-    bcore_sink_a_push_fa( sink, ";" );
-
-    const bcore_self_item_s* array_item = NULL;
-    bl_t expand_array = o->self.trait == TYPEOF_bcore_array;
-
-    sz_t items = bcore_self_s_items_size( &o->self );
-    for( sz_t i = 0; i < items; i++ )
-    {
-        const bcore_self_item_s* self_item = bcore_self_s_get_item( &o->self, i );
-        if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_hmap_tpvd_s_exists( &precoder->hmap_item, self_item->type ) )
-        {
-            const bcore_precoder_item_s* item = *bcore_hmap_tpvd_s_get( &precoder->hmap_item, self_item->type );
-            ASSERT( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_feature_s );
-            const bcore_precoder_feature_s* feature = item->data.o;
-            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  #<sc_t> #<sc_t>_#<sc_t>( ", indent, feature->ret_type.sc, o->item_name, ifnameof( self_item->name ) );
-            bcore_sink_a_push_fa( sink, "#<sc_t>", feature->mutable ? "" : "const " );
-            bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->item_name );
-            bcore_precoder_args_s_expand( &feature->args, sink );
-            bcore_sink_a_push_fa( sink, " );" );
-        }
-        else if( expand_array && bcore_flect_caps_is_array( self_item->caps ) )
-        {
-            array_item = self_item;
-        }
-    }
-
-    if( expand_array )
-    {
-        if( !array_item )
-        {
-            ERR_fa( "Expanding object #<sc_t>: Object is of trait array but contains no array.", o->item_name );
-        }
-
-        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_set_space( #<sc_t>* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); }", indent, o->item_name, o->item_name, o->item_name );
-        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_set_size( #<sc_t>* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); }", indent, o->item_name, o->item_name, o->item_name );
-        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_clear( #<sc_t>* o ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, 0 ); }", indent, o->item_name, o->item_name, o->item_name );
-
-        if( array_item->type != 0 && nameof( array_item->type ) != NULL )
-        {
-            sc_t type_name = ifnameof( array_item->type );
-            if( bcore_flect_caps_is_aware( array_item->caps ) )
-            {
-                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, const #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_awc( v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name );
-                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o,       #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_asd( v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name );
-            }
-            else
-            {
-                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, const #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_twc( TYPEOF_#<sc_t>, v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name, type_name );
-                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o,       #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_tsd( TYPEOF_#<sc_t>, v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name, type_name );
-            }
-        }
-        else
-        {
-            if( bcore_flect_caps_is_aware( array_item->caps ) )
-            {
-                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, vc_t v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_awc( v ) ); }", indent, o->item_name, o->item_name, o->item_name );
-                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o, vd_t v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_asd( v ) ); }", indent, o->item_name, o->item_name, o->item_name );
-            }
-        }
-    }
-
-    bcore_sink_a_push_fa( sink, "\n" );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static void bcore_precoder_object_s_expand_init1( const bcore_precoder_object_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
-{
-    sz_t items = bcore_self_s_items_size( &o->self );
-    for( sz_t i = 0; i < items; i++ )
-    {
-        const bcore_self_item_s* self_item = bcore_self_s_get_item( &o->self, i );
-        if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_hmap_tpvd_s_exists( &precoder->hmap_item, self_item->type ) )
-        {
-            const bcore_precoder_item_s* item = *bcore_hmap_tpvd_s_get( &precoder->hmap_item, self_item->type );
-            ASSERT( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_feature_s );
-            const bcore_precoder_feature_s* feature = item->data.o;
-            bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, feature->item_name, o->item_name, ifnameof( self_item->name ) );
-        }
-    }
-    bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_OBJECT( #<sc_t> );\n", indent, o->item_name );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 static void bcore_precoder_feature_s_expand_indef_typedef( const bcore_precoder_feature_s* o, sz_t indent, bcore_sink* sink )
 {
     //typedef ret_t (*feature_func)( feature* o, arg_t arg1 );
@@ -837,6 +727,118 @@ static void bcore_precoder_feature_s_expand_indef_declaration( const bcore_preco
         bcore_precoder_args_s_expand( &o->args, sink );
         bcore_sink_a_push_fa( sink, " );" );
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_precoder_name_s_compile( bcore_precoder_name_s* o, bcore_source* source )
+{
+    bcore_source_a_parse_fa( source, " #name", &o->name );
+    if( o->name.size == 0      ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
+    bcore_source_a_parse_fa( source, " ; " );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static tp_t bcore_precoder_name_s_get_hash( const bcore_precoder_name_s* o )
+{
+    tp_t hash = bcore_tp_init();
+    hash = bcore_tp_fold_sc( hash, o->name.sc );
+    hash = bcore_tp_fold_sc( hash, o->group_name );
+    return hash;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_object_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
+{
+    bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->item_name, typeof( o->item_name ) );
+
+    bcore_sink_a_push_fa( sink, "#rn{ }##define BETH_EXPAND_ITEM_#<sc_t>", indent, o->item_name, o->item_name );
+    bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BCORE_DECLARE_OBJECT( #<sc_t> )", indent, o->item_name );
+    bcore_sink_a_push_fa( sink, " \\\n#rn{ }    ", indent );
+    bcore_self_s_struct_body_to_sink_single_line( &o->self, sink );
+    bcore_sink_a_push_fa( sink, ";" );
+
+    const bcore_self_item_s* array_item = NULL;
+    bl_t expand_array = o->self.trait == TYPEOF_bcore_array;
+
+    sz_t items = bcore_self_s_items_size( &o->self );
+    for( sz_t i = 0; i < items; i++ )
+    {
+        const bcore_self_item_s* self_item = bcore_self_s_get_item( &o->self, i );
+        if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_hmap_tpvd_s_exists( &precoder->hmap_item, self_item->type ) )
+        {
+            const bcore_precoder_item_s* item = *bcore_hmap_tpvd_s_get( &precoder->hmap_item, self_item->type );
+            ASSERT( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_feature_s );
+            const bcore_precoder_feature_s* feature = item->data.o;
+            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  #<sc_t> #<sc_t>_#<sc_t>( ", indent, feature->ret_type.sc, o->item_name, ifnameof( self_item->name ) );
+            bcore_sink_a_push_fa( sink, "#<sc_t>", feature->mutable ? "" : "const " );
+            bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->item_name );
+            bcore_precoder_args_s_expand( &feature->args, sink );
+            bcore_sink_a_push_fa( sink, " );" );
+        }
+        else if( expand_array && bcore_flect_caps_is_array( self_item->caps ) )
+        {
+            array_item = self_item;
+        }
+    }
+
+    if( expand_array )
+    {
+        if( !array_item )
+        {
+            ERR_fa( "Expanding object #<sc_t>: Object is of trait array but contains no array.", o->item_name );
+        }
+
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_set_space( #<sc_t>* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); }", indent, o->item_name, o->item_name, o->item_name );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_set_size( #<sc_t>* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); }", indent, o->item_name, o->item_name, o->item_name );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_clear( #<sc_t>* o ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, 0 ); }", indent, o->item_name, o->item_name, o->item_name );
+
+        if( array_item->type != 0 && nameof( array_item->type ) != NULL )
+        {
+            sc_t type_name = ifnameof( array_item->type );
+            if( bcore_flect_caps_is_aware( array_item->caps ) )
+            {
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, const #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_awc( v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o,       #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_asd( v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, const #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_twc( TYPEOF_#<sc_t>, v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name, type_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o,       #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_tsd( TYPEOF_#<sc_t>, v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name, type_name );
+            }
+        }
+        else
+        {
+            if( bcore_flect_caps_is_aware( array_item->caps ) )
+            {
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, vc_t v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_awc( v ) ); }", indent, o->item_name, o->item_name, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o, vd_t v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_asd( v ) ); }", indent, o->item_name, o->item_name, o->item_name );
+            }
+        }
+    }
+
+    bcore_sink_a_push_fa( sink, "\n" );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_precoder_object_s_expand_init1( const bcore_precoder_object_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
+{
+    sz_t items = bcore_self_s_items_size( &o->self );
+    for( sz_t i = 0; i < items; i++ )
+    {
+        const bcore_self_item_s* self_item = bcore_self_s_get_item( &o->self, i );
+        if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_hmap_tpvd_s_exists( &precoder->hmap_item, self_item->type ) )
+        {
+            const bcore_precoder_item_s* item = *bcore_hmap_tpvd_s_get( &precoder->hmap_item, self_item->type );
+            ASSERT( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_feature_s );
+            const bcore_precoder_feature_s* feature = item->data.o;
+            bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, feature->item_name, o->item_name, ifnameof( self_item->name ) );
+        }
+    }
+    bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_OBJECT( #<sc_t> );\n", indent, o->item_name );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1124,6 +1126,8 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             bcore_precoder_item_s_setup( item, precoder_feature );
 
             o->has_features = true;
+            if( precoder_feature->flag_a ) o->is_aware = true;
+
             BCORE_LIFE_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'name' " ) )
@@ -1204,6 +1208,13 @@ static void bcore_precoder_group_s_expand_declaration( const bcore_precoder_grou
         }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  };", indent );
 
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_#<sc_t>, t ); return ( #<sc_t>* )bcore_inst_t_create( t ); }", indent, o->name.sc, o->name.sc, o->name.sc, o->name.sc );
+        if( o->is_aware )
+        {
+            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_a_clone( const #<sc_t>* o ) { return ( #<sc_t>* )bcore_inst_a_clone( ( bcore_inst* )o ); }", indent, o->name.sc, o->name.sc, o->name.sc, o->name.sc );
+            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_a_discard( #<sc_t>* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); }", indent, o->name.sc, o->name.sc );
+            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_a_replicate( #<sc_t>** o, const #<sc_t>* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); }", indent, o->name.sc, o->name.sc, o->name.sc );
+        }
     }
 
     for( sz_t i = 0; i < o->size; i++ )

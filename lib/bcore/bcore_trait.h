@@ -72,6 +72,7 @@ bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_self_s* self, st_s* log
  *  can be created.
  */
 bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log );
+void bcore_trait_assert_satisfied_type( tp_t trait, tp_t object_type ); // assertion producing error message and aborts
 
 sz_t  bcore_trait_size(); // number of registered names
 st_s* bcore_trait_show(); // store all registered traits with ancestry in a string, separated by newline
