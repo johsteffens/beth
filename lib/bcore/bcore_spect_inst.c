@@ -1539,20 +1539,6 @@ vd_t bcore_inst_t_create_typed( tp_t type, tp_t otp, vc_t obj )
     return bcore_inst_p_create_typed( bcore_inst_s_get_typed( type ), otp, obj );
 }
 
-void bcore_inst_t_discard( tp_t type, vd_t obj )
-{
-    if( !obj ) return;
-    const bcore_inst_s* o = bcore_inst_s_get_typed( type );
-    o->discard( o, obj );
-}
-
-void bcore_inst_a_discard( vd_t obj )
-{
-    if( !obj ) return;
-    const bcore_inst_s* o = bcore_inst_s_get_aware( obj );
-    o->discard( o, obj );
-}
-
 sr_s bcore_inst_t_clone_sr( tp_t type, vc_t obj )
 {
     const bcore_inst_s* p = bcore_inst_s_get_typed( type );

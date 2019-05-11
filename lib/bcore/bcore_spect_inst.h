@@ -150,6 +150,49 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_inst, copy_typed, tp_t, src_type, 
 static inline vd_t bcore_inst_p_clone( const bcore_inst_s* p, const bcore_inst* o ) { return bcore_inst_default_clone( p, o ); }
 static inline vd_t bcore_inst_t_clone( tp_t t,                const bcore_inst* o ) { return bcore_inst_p_clone( bcore_inst_s_get_typed( t ), o ); }
 static inline vd_t bcore_inst_a_clone(                        const bcore_inst* o ) { return o ? bcore_inst_t_clone( *(aware_t*)o, o ) : NULL; }
+
+vd_t bcore_inst_t_create_typed( tp_t type, tp_t otp, vc_t obj );
+sr_s bcore_inst_t_create_sr(    tp_t type );
+sr_s bcore_inst_t_clone_sr(     tp_t type, vc_t obj );
+
+static inline void bcore_inst_t_discard( tp_t type, vd_t obj )
+{
+    if( !obj ) return;
+    const bcore_inst_s* o = bcore_inst_s_get_typed( type );
+    o->discard( o, obj );
+}
+
+static inline void bcore_inst_a_discard( vd_t obj )
+{
+    if( !obj ) return;
+    const bcore_inst_s* o = bcore_inst_s_get_aware( obj );
+    o->discard( o, obj );
+}
+
+void bcore_inst_x_discard(      sr_s o ); // only discards when o is a strong reference; does nothing otherwise
+sr_s bcore_inst_x_clone_sr(     sr_s o ); // returns perspective of o
+
+sr_s bcore_inst_r_clone_sr( const sr_s* o ); // returns perspective of o
+
+static inline void bcore_inst_p_replicate( const bcore_inst_s* p, bcore_inst** o, const bcore_inst* src )
+{
+    assert( o );
+    bcore_inst_p_discard( p, *o );
+    *o = ( bcore_inst* )bcore_inst_p_clone( p, src );
+}
+
+static inline void bcore_inst_t_replicate( tp_t t, bcore_inst** o, const bcore_inst* src )
+{
+    bcore_inst_p_replicate( bcore_inst_s_get_typed( t ), o, src );
+}
+
+static inline void bcore_inst_a_replicate( bcore_inst** o, const bcore_inst* src )
+{
+    assert( o );
+    bcore_inst_a_discard( *o );
+    *o = ( bcore_inst* )bcore_inst_a_clone( src );
+}
+
 static inline vd_t bcore_inst_x_clone( sr_s o                                     )
 {
     if( !o.p ) return NULL;
@@ -165,16 +208,6 @@ static inline vd_t bcore_inst_r_clone( const sr_s* o )
     vd_t ret = bcore_inst_p_clone( ch_spect_p( o->p, TYPEOF_bcore_inst_s ), o->o );
     return ret;
 }
-
-vd_t bcore_inst_t_create_typed( tp_t type, tp_t otp, vc_t obj );
-sr_s bcore_inst_t_create_sr(    tp_t type );
-void bcore_inst_t_discard(      tp_t type, vd_t obj );
-sr_s bcore_inst_t_clone_sr(     tp_t type, vc_t obj );
-void bcore_inst_a_discard(      vd_t obj );
-void bcore_inst_x_discard(      sr_s o ); // only discards when o is a strong reference; does nothing otherwise
-sr_s bcore_inst_x_clone_sr(     sr_s o ); // returns perspective of o
-
-sr_s bcore_inst_r_clone_sr( const sr_s* o ); // returns perspective of o
 
 /** This function checks the instance's size with c-style sizeof( object ).
  *  It can be used as low-level safeguard against changing the c-structure

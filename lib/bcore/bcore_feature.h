@@ -29,10 +29,11 @@ typedef void (*bcore_fp_down )( vd_t o );           // destruction
 typedef void (*bcore_fp_copy )( vd_t o, vc_t src ); // deep copy
 
 /// create, discard, clone and move are derived from above features
-typedef void (*bcore_fp_move   )( vd_t o, vd_t src ); // init(o); copy(o, src); down(src)
-typedef vd_t (*bcore_fp_create )( void   );           // allocate & init
-typedef void (*bcore_fp_discard)( vd_t o );           // down & deallocate; o may be NULL in which case function does nothing
-typedef vd_t (*bcore_fp_clone  )( vc_t o );           // allocate & copy; o may be NULL in which case NULL is returned
+typedef void (*bcore_fp_move      )( vd_t  o, vd_t src ); // init(o); copy(o, src); down(src)
+typedef vd_t (*bcore_fp_create    )( void   );            // allocate & init
+typedef void (*bcore_fp_discard   )( vd_t  o );           // down & deallocate; o may be NULL in which case function does nothing
+typedef vd_t (*bcore_fp_clone     )( vc_t  o );           // allocate & copy; o may be NULL in which case NULL is returned
+typedef void (*bcore_fp_replicate )( vd_t* o, vc_t src ); // discards o, then clones src into *o; replicating NULL is allowed.
 
 /// copy, create from another object with type conversion
 typedef void (*bcore_fp_copy_typed   )( vd_t o, tp_t type, vc_t src ); // deep conversion & copy
