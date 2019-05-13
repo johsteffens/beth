@@ -247,7 +247,7 @@ s2_t bcore_self_item_s_cmp( const bcore_self_item_s* o1, const bcore_self_item_s
 bl_t bcore_self_item_s_has_default_value( const bcore_self_item_s* o )
 {
     if( bcore_flect_caps_is_array_fix( o->caps ) ) return false;
-    if( o->default_u3 == 0 ) return false;
+    if( o->default_umax == 0 ) return false;
     return true;
 }
 
@@ -695,9 +695,56 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
                     }
                 }
             }
+            else if( o->caps == BCORE_CAPS_LINK_AWARE )
+            {
+                st_s* name = st_s_create();
+                bcore_source_r_parse_fa( &src, " #name", name );
+                if( name->size == 0 )
+                {
+                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>': Default must be a type name.", ifnameof( parent ), name->sc );
+                }
+
+                tp_t aware_tp = typeof( name->sc );
+                if( !bcore_flect_exists( aware_tp ) )
+                {
+                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' has no registered reflection.", ifnameof( parent ), name->sc );
+                }
+
+                const bcore_self_s* self = bcore_flect_get_self( aware_tp );
+
+                if( !bcore_self_s_is_aware( self ) )
+                {
+                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not self-aware.", ifnameof( parent ), name->sc );
+                }
+
+                if( o->type != 0 ) // assume trait
+                {
+                    st_s* log = st_s_create();
+                    if( !bcore_trait_satisfied_type( o->type, aware_tp, log ) )
+                    {
+                        bcore_source_r_parse_err_fa
+                        (
+                            &src,
+                            "Parent '#<sc_t>':\n'#<sc_t>' does not support trait '#<sc_t>' Reason:\n#<sc_t>",
+                            ifnameof( parent ),
+                            name->sc,
+                            ifnameof( o->type ),
+                            log->sc
+                        );
+                    }
+                    st_s_discard( log );
+                }
+
+                st_s_discard( name );
+
+                o->default_tp = aware_tp;
+            }
             else
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nAssignment of default value only possible for single solid static nesting (no links, no arrays).", ifnameof( parent ) );
+                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nAssignment of default value possible for:\n"
+                                                   "  - Single solid static nesting.\n"
+                                                   "  - Aware link nesting (default must be an aware type with reflection).\n"
+                                                   "other capsulations cannot receive a default value.", ifnameof( parent ) );
             }
         }
     }
@@ -1014,7 +1061,7 @@ static void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, tp_t pa
         {
             if( o->size > 0 )
             {
-                bcore_source_r_parse_err_fa( &src, "'aware_t' must be first element in body and not used elsewhere." );
+                bcore_source_r_parse_err_fa( &src, "'aware_t' declares self-awareness. It can only be first element in body. Use type 'tp_t' elsewhere." );
             }
         }
 

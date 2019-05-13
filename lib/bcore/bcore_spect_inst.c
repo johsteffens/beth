@@ -258,6 +258,13 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
+            // aware links can evaluate default types
+            case BCORE_CAPS_LINK_AWARE:
+            {
+                if( self_item->default_tp ) *( vd_t* )dst_obj = bcore_inst_t_create( self_item->default_tp );
+            }
+            break;
+
             case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
             {
                 const bcore_inst_s* inst_p = inst_item->inst_p;
@@ -274,7 +281,6 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
             break;
 
             case BCORE_CAPS_LINK_TYPED:
-            case BCORE_CAPS_LINK_AWARE:
             case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
             case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
             case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
@@ -1293,7 +1299,7 @@ static void inst_s_define_trait()
     bcore_trait_set( entypeof( "bcore_inst" ), entypeof( "root" ) );
 }
 
-bcore_inst_s* create_from_self( const bcore_self_s* self )
+static bcore_inst_s* create_from_self( const bcore_self_s* self )
 {
     assert( self != NULL );
 
