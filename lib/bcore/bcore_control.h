@@ -158,12 +158,12 @@ static inline u2_t bcore_lcg3_u2( u2_t val ) { return val *  76157 + 1175399809;
  *  They belong to the family of xorshift generators discovered by George Marsaglia (http://www.jstatsoft.org/v08/i14/paper)
  *  These generators exhibit better randomness than LCG but require about 50% more CPU time.
  *
- *  Note: xsg, xsg2 exhibit random-deficiency for 3d polar coordinate computation.
- *        Discovered in project Actinon (https://github.com/johsteffens/actinon)
+ *  Note: xsg, xsg2 exhibit random-deficiency for 3d polar coordinate computation (path tracing).
+ *        Discovered 2018 in project Actinon (https://github.com/johsteffens/actinon)
  */
-static inline u2_t bcore_xsg_u2(  u2_t rval ) { rval ^= ( rval >>  7 ); rval ^= ( rval << 25 ); return rval ^ ( rval >> 12 ); } // period verified
+static inline u2_t bcore_xsg_u2(  u2_t rval ) { rval ^= ( rval >>  7 ); rval ^= ( rval << 25 ); return rval ^ ( rval >> 12 ); } // period verified; random deficiency
 static inline u2_t bcore_xsg1_u2( u2_t rval ) { rval ^= ( rval >> 11 ); rval ^= ( rval << 21 ); return rval ^ ( rval >> 13 ); } // period verified
-static inline u2_t bcore_xsg2_u2( u2_t rval ) { rval ^= ( rval >>  5 ); rval ^= ( rval << 27 ); return rval ^ ( rval >>  8 ); } // period verified
+static inline u2_t bcore_xsg2_u2( u2_t rval ) { rval ^= ( rval >>  5 ); rval ^= ( rval << 27 ); return rval ^ ( rval >>  8 ); } // period verified; random deficiency
 static inline u2_t bcore_xsg3_u2( u2_t rval ) { rval ^= ( rval >> 17 ); rval ^= ( rval << 15 ); return rval ^ ( rval >> 23 ); } // period verified
 
 /**********************************************************************************************************************/
