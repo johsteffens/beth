@@ -360,14 +360,24 @@ void bcore_bin_ml_a_from_source( vd_t o, bcore_source* source )
 
 /**********************************************************************************************************************/
 
+sr_s bcore_bin_ml_transfer( sr_s obj )
+{
+    bcore_life_s* l = bcore_life_s_create();
+    obj = bcore_life_s_push_sr( l, obj );
+    bcore_sink_buffer_s* sink_buffer = bcore_life_s_push_sr( l, bcore_bin_ml_x_to_sink_buffer( obj ) ).o;
+    bcore_source_buffer_s* source_buffer = bcore_source_buffer_s_create_from_data( sink_buffer->data, sink_buffer->size );
+    sr_s out_sr = bcore_bin_ml_from_source( sr_asd( source_buffer ) );
+    bcore_life_s_discard( l );
+    return out_sr;
+}
+
+/**********************************************************************************************************************/
+
 void bcore_bin_ml_transfer_test( sr_s obj )
 {
     bcore_life_s* l = bcore_life_s_create();
     obj = bcore_life_s_push_sr( l, obj );
-
-    bcore_sink_buffer_s* sink_buffer = bcore_life_s_push_sr( l, bcore_bin_ml_x_to_sink_buffer( obj ) ).o;
-    bcore_source_buffer_s* source_buffer = bcore_source_buffer_s_create_from_data( sink_buffer->data, sink_buffer->size );
-    sr_s sr = bcore_life_s_push_sr( l, bcore_bin_ml_from_source( sr_asd( source_buffer ) ) );
+    sr_s sr = bcore_life_s_push_sr( l, bcore_bin_ml_transfer( obj ) );
 
     s2_t c = bcore_compare_sr( obj, sr );
     if( c != 0 )

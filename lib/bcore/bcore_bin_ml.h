@@ -78,8 +78,12 @@ void bcore_bin_ml_a_from_source( vd_t o, bcore_source* source );
 /**********************************************************************************************************************/
 // testing, debugging
 
+/// writes object to stream; interprets stream and returns interpreted object
+sr_s bcore_bin_ml_transfer( sr_s obj );
+
 /// converts object into stream; interprets stream and compares result to original
 void bcore_bin_ml_transfer_test( sr_s obj );
+
 
 /**********************************************************************************************************************/
 

@@ -37,7 +37,7 @@
  *    tp_t type = entypeof_s( typeof( "mynamespace" ), "myname" )
  *  or
  *    tp_t type = entypeof( "mynamespace:myname" )
- *  ... would produce the same value of type.
+ *  ... produce the same value of type.
  *  However, nameof( type ) would yield different names.
  *  Therefore, trying to enroll both, causes a collision error.
  *  Best practice: Avoid colons inside regular names.

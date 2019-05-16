@@ -13,13 +13,16 @@
  *  limitations under the License.
  */
 
-/** Array Perspective
- *  The array perspective addresses the first array-element of an object's reflection and provides array
- *  related functionality.
+/** Perspective for dynamic and fixed size arrays.
+ *  The array perspective takes control over the first array-element of an object according to its reflection.
  *  'size'  specifies the number of valid elements in the array
  *  'space' represents internally preallocated memory area.
- *  It is size <= space.
- *  size and space changes preserve the array's content up to the lesser of the old and new size.
+ *  It is size <= space when the array own its data.                      (--> strong array)
+ *  It is space == 0 at size > 0 when the array references external data. (--> weak array)
+ *  Changing size does not change space unless the new size exceeds previous space.
+ *  Changing space does not change size unless the new space is lower than previous size.
+ *  Changes in size or space preserve the array's elements up to the lesser of the
+ *  old and new size. Array elements might be relocated in memory when space changes.
  *  In linked arrays NULL is a valid element.
  */
 

@@ -23,7 +23,7 @@
 
 /**********************************************************************************************************************/
 
-/** Collection of frequently used specific arrays compatible with bcore_array_s
+/** Collection of frequently used specific dynamic arrays compatible with bcore_array_s
  *  Standard functions are directly implemented.
  *
  *  Note:

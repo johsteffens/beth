@@ -798,15 +798,36 @@ static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_obj
         if( array_item->type != 0 && nameof( array_item->type ) != NULL )
         {
             sc_t type_name = ifnameof( array_item->type );
-            if( bcore_flect_caps_is_aware( array_item->caps ) )
+            if( array_item->caps == BCORE_CAPS_ARRAY_DYN_LINK_AWARE )
             {
                 bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, const #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_awc( v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name );
                 bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o,       #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_asd( v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_push_t( #<sc_t>* o, tp_t t )", indent, type_name, o->item_name, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  {", indent );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }      bcore_trait_assert_satisfied_type( TYPEOF_#<sc_t>, t );",                    indent, type_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }      bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_t_create( t ) );", indent, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }      return bcore_array_t_get_last( TYPEOF_#<sc_t>, ( bcore_array* )o ).o;",      indent, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  }", indent );
             }
-            else
+            else if( array_item->caps == BCORE_CAPS_ARRAY_DYN_SOLID_STATIC )
             {
                 bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, const #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_twc( TYPEOF_#<sc_t>, v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name, type_name );
                 bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o,       #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_tsd( TYPEOF_#<sc_t>, v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name, type_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_push( #<sc_t>* o )", indent, type_name, o->item_name, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  {", indent );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }      bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_null() );",   indent, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }      return bcore_array_t_get_last( TYPEOF_#<sc_t>, ( bcore_array* )o ).o;", indent, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  }", indent );
+            }
+            else if( array_item->caps == BCORE_CAPS_ARRAY_DYN_LINK_STATIC )
+            {
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_c( #<sc_t>* o, const #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_twc( TYPEOF_#<sc_t>, v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name, type_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o,       #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_tsd( TYPEOF_#<sc_t>, v ) ); }", indent, o->item_name, o->item_name, type_name, o->item_name, type_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_push( #<sc_t>* o )", indent, type_name, o->item_name, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  {", indent );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }      bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_t_create( TYPEOF_#<sc_t> ) );", indent, o->item_name, type_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }      return bcore_array_t_get_last( TYPEOF_#<sc_t>, ( bcore_array* )o ).o;",                   indent, o->item_name );
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  }", indent );
             }
         }
         else

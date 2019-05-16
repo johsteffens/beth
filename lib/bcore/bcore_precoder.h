@@ -94,11 +94,11 @@
  *    and registered as featured function.
  *    Special traits:
  *      bcore_array: expands additional array-functions
- *        set_space( o, size ) // preallocation
- *        set_size(  o, size ) // preallocation + size specification
- *        clear(     o,      ) // clears array (sets space to 0)
- *        push_c(    o, v    ) // pushes element by copying it
- *        push_d(    o, v    ) // pushes element by passing ownership  (whether element is copied depends on array-type)
+ *        void set_space( o, size ) // preallocation
+ *        void set_size(  o, size ) // preallocation + size specification
+ *        void clear(     o,      ) // clears array (sets space to 0)
+ *        void push_c(    o, v    ) // pushes element by copying it
+ *        void push_d(    o, v    ) // pushes element by passing ownership  (whether element is copied depends on array-type)
  */
 
 #ifndef BCORE_PRECODER_H
