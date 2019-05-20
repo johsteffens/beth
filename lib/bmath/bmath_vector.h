@@ -109,6 +109,9 @@ bl_t bmath_vf3_s_is_near_zro( const bmath_vf3_s* o, f3_t max_dev );
 static inline bl_t bmath_vf3_s_is_equ( const bmath_vf3_s* o, const bmath_vf3_s* op ) { return bmath_vf3_s_is_near_equ( o, op, 0 ); }
 static inline bl_t bmath_vf3_s_is_zro( const bmath_vf3_s* o ) { return bmath_vf3_s_is_near_zro( o, 0 ); }
 
+/// vector is nan if at least one element is nan
+bl_t bmath_vf3_s_is_nan( const bmath_vf3_s* o );
+
 void bmath_vf3_s_zro( bmath_vf3_s* o );
 void bmath_vf3_s_neg( const bmath_vf3_s* o, bmath_vf3_s* res );
 void bmath_vf3_s_cpy( const bmath_vf3_s* o, bmath_vf3_s* res );

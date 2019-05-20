@@ -424,6 +424,18 @@ bl_t bmath_mf3_s_is_near_hsm( const bmath_mf3_s* o, f3_t max_dev )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bl_t bmath_mf3_s_is_nan( const bmath_mf3_s* o )
+{
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* v1 = o ->data + i * o ->stride;
+        for( uz_t j = 0; j < o->cols; j++ ) if( f3_is_nan( v1[ j ] ) ) return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 f3_t bmath_mf3_s_fdev_equ( const bmath_mf3_s* o, const bmath_mf3_s* op )
 {
     ASSERT( o->rows == op->rows );

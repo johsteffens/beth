@@ -219,6 +219,9 @@ static inline bl_t bmath_mf3_s_is_hsm( const bmath_mf3_s* o ) { return bmath_mf3
 static inline bl_t bmath_mf3_s_is_ubd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_ubd( o, 0 ); }
 static inline bl_t bmath_mf3_s_is_lbd( const bmath_mf3_s* o ) { return bmath_mf3_s_is_near_lbd( o, 0 ); }
 
+/// Matrix is nan if at least one elememt is nan
+bl_t bmath_mf3_s_is_nan( const bmath_mf3_s* o );
+
 //----------------------------------------------------------------------------------------------------------------------
 // Frobenius norm
 

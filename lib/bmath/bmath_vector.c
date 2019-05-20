@@ -287,6 +287,14 @@ bl_t bmath_vf3_s_is_near_zro( const bmath_vf3_s* o, f3_t max_dev )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bl_t bmath_vf3_s_is_nan( const bmath_vf3_s* o )
+{
+    for( uz_t i = 0; i < o->size; i++ ) if( f3_is_nan( o->data[ i ] ) ) return true;
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bmath_vf3_s* bmath_vf3_s_create_set_size( uz_t size )
 {
     bmath_vf3_s* o = bmath_vf3_s_create();
