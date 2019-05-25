@@ -44,6 +44,7 @@ BCORE_DECLARE_FUNCTIONS_OBJ(    bcore_arr_uz_s )
 
 void bcore_arr_uz_s_clear(      bcore_arr_uz_s* o ); // sets size to zero
 void bcore_arr_uz_s_set_space(  bcore_arr_uz_s* o, uz_t space );
+void bcore_arr_uz_s_set_size(   bcore_arr_uz_s* o, uz_t size  ); // resize
 void bcore_arr_uz_s_fill(       bcore_arr_uz_s* o, uz_t size, uz_t v ); // creates filled array of size <size>
 void bcore_arr_uz_s_step_fill(  bcore_arr_uz_s* o, uz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
 void bcore_arr_uz_s_push(       bcore_arr_uz_s* o, uz_t v );
@@ -71,6 +72,7 @@ BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_sz_s )
 
 void bcore_arr_sz_s_clear(     bcore_arr_sz_s* o ); // sets size to zero
 void bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, uz_t space );
+void bcore_arr_sz_s_set_size(  bcore_arr_sz_s* o, uz_t size ); // resize
 void bcore_arr_sz_s_fill(      bcore_arr_sz_s* o, uz_t size, sz_t v ); // creates filled array of size <size>
 void bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t step, uz_t size ); // creates filled array according to stepping
 void bcore_arr_sz_s_push(      bcore_arr_sz_s* o, sz_t v );
@@ -90,6 +92,7 @@ BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_u3_s )
 
 void bcore_arr_u3_s_clear(     bcore_arr_u3_s* o ); // sets size to zero
 void bcore_arr_u3_s_set_space( bcore_arr_u3_s* o, uz_t space );
+void bcore_arr_u3_s_set_size(  bcore_arr_u3_s* o, uz_t size ); // resize
 void bcore_arr_u3_s_fill(      bcore_arr_u3_s* o, uz_t size, u3_t v ); // creates filled array of size <size>
 void bcore_arr_u3_s_step_fill( bcore_arr_u3_s* o, u3_t v_start, u3_t step, uz_t size ); // creates filled array according to stepping
 void bcore_arr_u3_s_push(      bcore_arr_u3_s* o, u3_t v );
@@ -109,6 +112,7 @@ BCORE_DECLARE_FUNCTIONS_OBJ(    bcore_arr_tp_s )
 
 void bcore_arr_tp_s_clear(      bcore_arr_tp_s* o ); // sets size to zero
 void bcore_arr_tp_s_set_space(  bcore_arr_tp_s* o, uz_t space );
+void bcore_arr_tp_s_set_size(   bcore_arr_tp_s* o, uz_t size ); // resize
 void bcore_arr_tp_s_fill(       bcore_arr_tp_s* o, uz_t size, tp_t v ); // creates filled array of size <size>
 void bcore_arr_tp_s_push(       bcore_arr_tp_s* o, tp_t v );
 tp_t bcore_arr_tp_s_pop(        bcore_arr_tp_s* o );
@@ -128,6 +132,7 @@ BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_st_s )
 
 void  bcore_arr_st_s_clear(     bcore_arr_st_s* o ); // sets size to zero
 void  bcore_arr_st_s_set_space( bcore_arr_st_s* o, uz_t space );
+void  bcore_arr_st_s_set_size(  bcore_arr_st_s* o, uz_t size ); // resize
 st_s* bcore_arr_st_s_push_st(   bcore_arr_st_s* o, const st_s* st );
 st_s* bcore_arr_st_s_push_st_d( bcore_arr_st_s* o, st_s* st );
 st_s* bcore_arr_st_s_push_sc(   bcore_arr_st_s* o, sc_t sc );
@@ -148,6 +153,7 @@ BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_vd_s )
 
 void bcore_arr_vd_s_clear(      bcore_arr_vd_s* o ); // sets size to zero
 void bcore_arr_vd_s_set_space(  bcore_arr_vd_s* o, uz_t space );
+void bcore_arr_vd_s_set_size(   bcore_arr_vd_s* o, uz_t size ); // resize
 void bcore_arr_vd_s_fill(       bcore_arr_vd_s* o, uz_t size, vd_t v ); // creates filled array of size <size>
 void bcore_arr_vd_s_push(       bcore_arr_vd_s* o, vd_t v );
 vd_t bcore_arr_vd_s_pop(        bcore_arr_vd_s* o );
