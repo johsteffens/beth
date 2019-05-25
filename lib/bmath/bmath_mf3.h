@@ -269,12 +269,14 @@ void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* b, bmath_mf3_s* r
 void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res );
 
 //----------------------------------------------------------------------------------------------------------------------
-// matrix * vector --> vector
+// matrix * vector [ + vector] --> vector
 
 void bmath_mf3_s_mul_vec(     const bmath_mf3_s* o, const bmath_vf3_s* v,   bmath_vf3_s* r ); // r = o * v
 void bmath_mf3_s_mul_av1(     const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf3_s* r ); // affine transformation (see nomenclature 'av1')
+void bmath_mf3_s_htp_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* v,   bmath_vf3_s* r ); // r = o^T * v
 
-void bmath_mf3_s_htp_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* v, bmath_vf3_s* r ); // r = o^T * v
+void bmath_mf3_s_mul_vec_add(     const bmath_mf3_s* o, const bmath_vf3_s* v, const bmath_vf3_s* b, bmath_vf3_s* r ); // r = o   * v + b  (in place for b==r)
+void bmath_mf3_s_htp_mul_vec_add( const bmath_mf3_s* o, const bmath_vf3_s* v, const bmath_vf3_s* b, bmath_vf3_s* r ); // r = o^T * v + b  (in place for b==r)
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * scalar + matrix --> matrix; supports folded r

@@ -1003,6 +1003,57 @@ void bmath_mf3_s_htp_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* v, bmath_
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_mul_vec_add( const bmath_mf3_s* o, const bmath_vf3_s* v, const bmath_vf3_s* b, bmath_vf3_s* r )
+{
+    if( r == v )
+    {
+        bmath_vf3_s* buf = bmath_vf3_s_create_set_size( r->size );
+        bmath_mf3_s_mul_vec_add( o, v, b, buf );
+        bmath_vf3_s_cpy( buf, r );
+        bmath_vf3_s_discard( buf );
+        return;
+    }
+
+    if( b != r ) bmath_vf3_s_cpy( b, r );
+
+    ASSERT( o->cols == v->size );
+    ASSERT( o->rows == r->size );
+    f3_t* vr = r->data;
+    f3_t* v2 = v->data;
+    for( uz_t i = 0; i < r->size; i++ )
+    {
+        vr[ i ] += bmath_f3_t_vec_mul_vec( o->data + i * o->stride, v2, o->cols );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_htp_mul_vec_add( const bmath_mf3_s* o, const bmath_vf3_s* v, const bmath_vf3_s* b, bmath_vf3_s* r )
+{
+    if( r == v )
+    {
+        bmath_vf3_s* buf = bmath_vf3_s_create_set_size( r->size );
+        bmath_mf3_s_htp_mul_vec_add( o, v, b, buf );
+        bmath_vf3_s_cpy( buf, r );
+        bmath_vf3_s_discard( buf );
+        return;
+    }
+
+    ASSERT( o->rows == v->size );
+    ASSERT( o->cols == r->size );
+
+    if( b != r ) bmath_vf3_s_cpy( b, r );
+
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        f3_t* or = o->data + i * o->stride;
+        f3_t  vi = v->data[ i ];
+        for( uz_t j = 0; j < o->cols; j++ ) r->data[ j ] += or[ j ] * vi;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_mul_av1( const bmath_mf3_s* o, const bmath_vf3_s* av1, bmath_vf3_s* res )
 {
     if( res == av1 )
