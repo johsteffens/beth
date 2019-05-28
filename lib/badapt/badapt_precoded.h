@@ -610,6 +610,38 @@
   BETH_EXPAND_ITEM_badapt_builder_ern_s
 
 /**********************************************************************************************************************/
+// source: badapt_jrn
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: badapt_jrn
+
+#define TYPEOF_badapt_jrn 3557364830
+  #define TYPEOF_badapt_jrn_s 3863226272
+  #define BETH_EXPAND_ITEM_badapt_jrn_s \
+    BCORE_DECLARE_OBJECT( badapt_jrn_s ) \
+      {aware_t _;sz_t size_input;sz_t size_output;badapt_dynamics_s dynamics;bmath_mf3_s wgt_input;bmath_mf3_s wgt_context;bmath_mf3_s wgt_hidden;f3_t context_epsilon_factor;badapt_activator* activator_hidden;badapt_activator* activator_output;bmath_vf3_s vec_input;bmath_vf3_s vec_context;bmath_vf3_s vec_hidden;bmath_vf3_s vec_output;}; \
+    sz_t badapt_jrn_s_get_in_size( const badapt_jrn_s* o ); \
+    sz_t badapt_jrn_s_get_out_size( const badapt_jrn_s* o ); \
+    void badapt_jrn_s_get_dynamics( const badapt_jrn_s* o, badapt_dynamics_s* dynamics ); \
+    void badapt_jrn_s_set_dynamics( badapt_jrn_s* o, const badapt_dynamics_s* dynamics ); \
+    void badapt_jrn_s_arc_to_sink( const badapt_jrn_s* o, bcore_sink* sink ); \
+    void badapt_jrn_s_minfer( badapt_jrn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
+    void badapt_jrn_s_bgrad( const badapt_jrn_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ); \
+    void badapt_jrn_s_bgrad_adapt( badapt_jrn_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
+  #define TYPEOF_badapt_builder_jrn_s 1047382808
+  #define BETH_EXPAND_ITEM_badapt_builder_jrn_s \
+    BCORE_DECLARE_OBJECT( badapt_builder_jrn_s ) \
+      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;badapt_dynamics_s dynamics;f3_t context_epsilon_factor;u2_t random_seed;badapt_activator* activator_hidden;badapt_activator* activator_output;}; \
+    sz_t badapt_builder_jrn_s_get_in_size( const badapt_builder_jrn_s* o ); \
+    void badapt_builder_jrn_s_set_in_size( badapt_builder_jrn_s* o, sz_t size ); \
+    sz_t badapt_builder_jrn_s_get_out_size( const badapt_builder_jrn_s* o ); \
+    void badapt_builder_jrn_s_set_out_size( badapt_builder_jrn_s* o, sz_t size ); \
+    badapt_adaptive* badapt_builder_jrn_s_build( const badapt_builder_jrn_s* o );
+#define BETH_EXPAND_GROUP_badapt_jrn \
+  BETH_EXPAND_ITEM_badapt_jrn_s \
+  BETH_EXPAND_ITEM_badapt_builder_jrn_s
+
+/**********************************************************************************************************************/
 // source: badapt_training
 
 //----------------------------------------------------------------------------------------------------------------------
