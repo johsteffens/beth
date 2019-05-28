@@ -323,12 +323,48 @@
 // group: badapt_activation_objects
 
 #define TYPEOF_badapt_activation_objects 802839491
+  #define TYPEOF_badapt_activation_lgst_s 2249276893
+  #define BETH_EXPAND_ITEM_badapt_activation_lgst_s \
+    BCORE_DECLARE_OBJECT( badapt_activation_lgst_s ) \
+      {aware_t _;}; \
+    f3_t badapt_activation_lgst_s_fx( const badapt_activation_lgst_s* o, f3_t x ); \
+    f3_t badapt_activation_lgst_s_dy( const badapt_activation_lgst_s* o, f3_t y );
+  #define TYPEOF_badapt_activation_lgst_hard_s 1657353435
+  #define BETH_EXPAND_ITEM_badapt_activation_lgst_hard_s \
+    BCORE_DECLARE_OBJECT( badapt_activation_lgst_hard_s ) \
+      {aware_t _;}; \
+    f3_t badapt_activation_lgst_hard_s_fx( const badapt_activation_lgst_hard_s* o, f3_t x ); \
+    f3_t badapt_activation_lgst_hard_s_dy( const badapt_activation_lgst_hard_s* o, f3_t y );
+  #define TYPEOF_badapt_activation_lgst_leaky_s 4195196768
+  #define BETH_EXPAND_ITEM_badapt_activation_lgst_leaky_s \
+    BCORE_DECLARE_OBJECT( badapt_activation_lgst_leaky_s ) \
+      {aware_t _;}; \
+    f3_t badapt_activation_lgst_leaky_s_fx( const badapt_activation_lgst_leaky_s* o, f3_t x ); \
+    f3_t badapt_activation_lgst_leaky_s_dy( const badapt_activation_lgst_leaky_s* o, f3_t y );
   #define TYPEOF_badapt_activation_tanh_s 2100774626
   #define BETH_EXPAND_ITEM_badapt_activation_tanh_s \
     BCORE_DECLARE_OBJECT( badapt_activation_tanh_s ) \
       {aware_t _;}; \
     f3_t badapt_activation_tanh_s_fx( const badapt_activation_tanh_s* o, f3_t x ); \
     f3_t badapt_activation_tanh_s_dy( const badapt_activation_tanh_s* o, f3_t y );
+  #define TYPEOF_badapt_activation_tanh_hard_s 873661470
+  #define BETH_EXPAND_ITEM_badapt_activation_tanh_hard_s \
+    BCORE_DECLARE_OBJECT( badapt_activation_tanh_hard_s ) \
+      {aware_t _;}; \
+    f3_t badapt_activation_tanh_hard_s_fx( const badapt_activation_tanh_hard_s* o, f3_t x ); \
+    f3_t badapt_activation_tanh_hard_s_dy( const badapt_activation_tanh_hard_s* o, f3_t y );
+  #define TYPEOF_badapt_activation_tanh_leaky_s 2702577623
+  #define BETH_EXPAND_ITEM_badapt_activation_tanh_leaky_s \
+    BCORE_DECLARE_OBJECT( badapt_activation_tanh_leaky_s ) \
+      {aware_t _;}; \
+    f3_t badapt_activation_tanh_leaky_s_fx( const badapt_activation_tanh_leaky_s* o, f3_t x ); \
+    f3_t badapt_activation_tanh_leaky_s_dy( const badapt_activation_tanh_leaky_s* o, f3_t y );
+  #define TYPEOF_badapt_activation_softplus_s 3728332191
+  #define BETH_EXPAND_ITEM_badapt_activation_softplus_s \
+    BCORE_DECLARE_OBJECT( badapt_activation_softplus_s ) \
+      {aware_t _;}; \
+    f3_t badapt_activation_softplus_s_fx( const badapt_activation_softplus_s* o, f3_t x ); \
+    f3_t badapt_activation_softplus_s_dy( const badapt_activation_softplus_s* o, f3_t y );
   #define TYPEOF_badapt_activation_relu_s 708121501
   #define BETH_EXPAND_ITEM_badapt_activation_relu_s \
     BCORE_DECLARE_OBJECT( badapt_activation_relu_s ) \
@@ -341,17 +377,16 @@
       {aware_t _;}; \
     f3_t badapt_activation_leaky_relu_s_fx( const badapt_activation_leaky_relu_s* o, f3_t x ); \
     f3_t badapt_activation_leaky_relu_s_dy( const badapt_activation_leaky_relu_s* o, f3_t y );
-  #define TYPEOF_badapt_activation_softplus_s 3728332191
-  #define BETH_EXPAND_ITEM_badapt_activation_softplus_s \
-    BCORE_DECLARE_OBJECT( badapt_activation_softplus_s ) \
-      {aware_t _;}; \
-    f3_t badapt_activation_softplus_s_fx( const badapt_activation_softplus_s* o, f3_t x ); \
-    f3_t badapt_activation_softplus_s_dy( const badapt_activation_softplus_s* o, f3_t y );
 #define BETH_EXPAND_GROUP_badapt_activation_objects \
+  BETH_EXPAND_ITEM_badapt_activation_lgst_s \
+  BETH_EXPAND_ITEM_badapt_activation_lgst_hard_s \
+  BETH_EXPAND_ITEM_badapt_activation_lgst_leaky_s \
   BETH_EXPAND_ITEM_badapt_activation_tanh_s \
+  BETH_EXPAND_ITEM_badapt_activation_tanh_hard_s \
+  BETH_EXPAND_ITEM_badapt_activation_tanh_leaky_s \
+  BETH_EXPAND_ITEM_badapt_activation_softplus_s \
   BETH_EXPAND_ITEM_badapt_activation_relu_s \
-  BETH_EXPAND_ITEM_badapt_activation_leaky_relu_s \
-  BETH_EXPAND_ITEM_badapt_activation_softplus_s
+  BETH_EXPAND_ITEM_badapt_activation_leaky_relu_s
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_activator_objects

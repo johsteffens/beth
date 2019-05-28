@@ -26,33 +26,40 @@
 BETH_PRECODE( badapt_activation_objects )
 #ifdef BETH_PRECODE_SECTION
 
-self badapt_activation_tanh_s = badapt_activation
-{
-    aware_t _;
-    func badapt_activation : fx;
-    func badapt_activation : dy;
-};
+// logistic function
+// f( x ) = 1.0 / ( 1.0 + exp( -x ) )
+self badapt_activation_lgst_s       = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
 
-self badapt_activation_relu_s = badapt_activation
-{
-    aware_t _;
-    func badapt_activation : fx;
-    func badapt_activation : dy;
-};
+// hard logistic approximation
+// f( x ) = ( x < -2 ) ? 0 : ( x > 2 ) ? 1 : 0.25 * ( x + 2 )
+self badapt_activation_lgst_hard_s  = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
 
-self badapt_activation_leaky_relu_s = badapt_activation
-{
-    aware_t _;
-    func badapt_activation : fx;
-    func badapt_activation : dy;
-};
+// leaky logistic approximation
+// f( x ) = ( x < -2 ) ? 0.01 * ( x + 2 ) : ( x > 2 ) ? 1 + 0.01 * ( x - 2 ) : 0.25 * ( x + 2 )
+self badapt_activation_lgst_leaky_s = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
 
-self badapt_activation_softplus_s = badapt_activation
-{
-    aware_t _;
-    func badapt_activation : fx;
-    func badapt_activation : dy;
-};
+// f(x) = tanh(x)
+self badapt_activation_tanh_s       = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+
+// hard tanh approximation
+// f(x) = ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x
+self badapt_activation_tanh_hard_s  = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+
+// leaky tanh approximation
+// f(x) = ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x
+self badapt_activation_tanh_leaky_s = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+
+// softplus function
+// f(x) = log( 1.0 + exp( x ) )
+self badapt_activation_softplus_s   = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+
+// hard softplus approximation
+// f(x) = x > 0 ? x : 0 (softplus approximation)
+self badapt_activation_relu_s       = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+
+// leaky softplus approximation
+// f(x) = x > 0 ? x : 0.01*x
+self badapt_activation_leaky_relu_s = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
 
 #endif // BETH_PRECODE_SECTION
 

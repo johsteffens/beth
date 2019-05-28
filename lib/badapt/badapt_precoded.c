@@ -209,7 +209,49 @@ BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_binary_hash_s )
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_activation_objects
 
+BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_lgst_s )
+"{"
+    "aware_t _;"
+    "func badapt_activation : fx;"
+    "func badapt_activation : dy;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_lgst_hard_s )
+"{"
+    "aware_t _;"
+    "func badapt_activation : fx;"
+    "func badapt_activation : dy;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_lgst_leaky_s )
+"{"
+    "aware_t _;"
+    "func badapt_activation : fx;"
+    "func badapt_activation : dy;"
+"}";
+
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_tanh_s )
+"{"
+    "aware_t _;"
+    "func badapt_activation : fx;"
+    "func badapt_activation : dy;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_tanh_hard_s )
+"{"
+    "aware_t _;"
+    "func badapt_activation : fx;"
+    "func badapt_activation : dy;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_tanh_leaky_s )
+"{"
+    "aware_t _;"
+    "func badapt_activation : fx;"
+    "func badapt_activation : dy;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_softplus_s )
 "{"
     "aware_t _;"
     "func badapt_activation : fx;"
@@ -224,13 +266,6 @@ BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_relu_s )
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_leaky_relu_s )
-"{"
-    "aware_t _;"
-    "func badapt_activation : fx;"
-    "func badapt_activation : dy;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_softplus_s )
 "{"
     "aware_t _;"
     "func badapt_activation : fx;"
@@ -558,7 +593,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1954519358 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 4222914725 ) );
             BCORE_REGISTER_FEATURE( badapt_loss_loss );
             BCORE_REGISTER_FEATURE( badapt_loss_loss_f3 );
             BCORE_REGISTER_FEATURE( badapt_loss_bgrad );
@@ -636,18 +671,33 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( badapt_supplier_fetch_sample_tio, badapt_problem_binary_hash_s_fetch_sample_tio );
             BCORE_REGISTER_FFUNC( badapt_supplier_fetch_sample_vio, badapt_problem_binary_hash_s_fetch_sample_vio );
             BCORE_REGISTER_OBJECT( badapt_problem_binary_hash_s );
+            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_lgst_s_fx );
+            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_lgst_s_dy );
+            BCORE_REGISTER_OBJECT( badapt_activation_lgst_s );
+            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_lgst_hard_s_fx );
+            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_lgst_hard_s_dy );
+            BCORE_REGISTER_OBJECT( badapt_activation_lgst_hard_s );
+            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_lgst_leaky_s_fx );
+            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_lgst_leaky_s_dy );
+            BCORE_REGISTER_OBJECT( badapt_activation_lgst_leaky_s );
             BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_tanh_s_fx );
             BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_tanh_s_dy );
             BCORE_REGISTER_OBJECT( badapt_activation_tanh_s );
+            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_tanh_hard_s_fx );
+            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_tanh_hard_s_dy );
+            BCORE_REGISTER_OBJECT( badapt_activation_tanh_hard_s );
+            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_tanh_leaky_s_fx );
+            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_tanh_leaky_s_dy );
+            BCORE_REGISTER_OBJECT( badapt_activation_tanh_leaky_s );
+            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_softplus_s_fx );
+            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_softplus_s_dy );
+            BCORE_REGISTER_OBJECT( badapt_activation_softplus_s );
             BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_relu_s_fx );
             BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_relu_s_dy );
             BCORE_REGISTER_OBJECT( badapt_activation_relu_s );
             BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_leaky_relu_s_fx );
             BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_leaky_relu_s_dy );
             BCORE_REGISTER_OBJECT( badapt_activation_leaky_relu_s );
-            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_softplus_s_fx );
-            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_softplus_s_dy );
-            BCORE_REGISTER_OBJECT( badapt_activation_softplus_s );
             BCORE_REGISTER_OBJECT( badapt_layer_activator_s );
             BCORE_REGISTER_OBJECT( badapt_arr_activator_s );
             BCORE_REGISTER_OBJECT( badapt_arr_layer_activator_s );

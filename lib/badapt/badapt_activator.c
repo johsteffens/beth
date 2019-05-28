@@ -17,14 +17,26 @@
 
 /**********************************************************************************************************************/
 
-f3_t badapt_activation_tanh_s_fx(       const badapt_activation_tanh_s* o,       f3_t x ) { return 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ); }
-f3_t badapt_activation_tanh_s_dy(       const badapt_activation_tanh_s* o,       f3_t y ) { return 1.0 - f3_sqr( y ); }
-f3_t badapt_activation_relu_s_fx(       const badapt_activation_relu_s* o,       f3_t x ) { return x > 0 ? x : 0; }
-f3_t badapt_activation_relu_s_dy(       const badapt_activation_relu_s* o,       f3_t y ) { return y > 0 ? 1 : 0; }
+f3_t badapt_activation_lgst_s_fx(       const badapt_activation_lgst_s*       o, f3_t x ) { return 1.0 / ( 1.0 + exp( -x ) ); }
+f3_t badapt_activation_lgst_s_dy(       const badapt_activation_lgst_s*       o, f3_t y ) { return y * ( 1.0 - y ); }
+f3_t badapt_activation_lgst_hard_s_fx(  const badapt_activation_lgst_hard_s*  o, f3_t x ) { return ( x < -2.0 ) ? 0.0 : ( x > 2.0 ) ? 1.0 : 0.25 * ( x + 2.0 ); }
+f3_t badapt_activation_lgst_hard_s_dy(  const badapt_activation_lgst_hard_s*  o, f3_t y ) { return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25; }
+f3_t badapt_activation_lgst_leaky_s_fx( const badapt_activation_lgst_leaky_s* o, f3_t x ) { return ( x < -2.0 ) ? 0.01 * ( x + 2.0 ) : ( x > 2.0 ) ? 1.0 + 0.01 * ( x - 2.0 ) : 0.25 * ( x + 2.0 ); }
+f3_t badapt_activation_lgst_leaky_s_dy( const badapt_activation_lgst_leaky_s* o, f3_t y ) { return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; }
+
+f3_t badapt_activation_tanh_s_fx(       const badapt_activation_tanh_s*       o, f3_t x ) { return 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ); }
+f3_t badapt_activation_tanh_s_dy(       const badapt_activation_tanh_s*       o, f3_t y ) { return 1.0 - f3_sqr( y ); }
+f3_t badapt_activation_tanh_hard_s_fx(  const badapt_activation_tanh_hard_s*  o, f3_t x ) { return ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x; }
+f3_t badapt_activation_tanh_hard_s_dy(  const badapt_activation_tanh_hard_s*  o, f3_t y ) { return ( y < -1.0 ) ?  0.0 : ( y > 1.0 ) ? 0.0 : 1.0; }
+f3_t badapt_activation_tanh_leaky_s_fx( const badapt_activation_tanh_leaky_s* o, f3_t x ) { return ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x; }
+f3_t badapt_activation_tanh_leaky_s_dy( const badapt_activation_tanh_leaky_s* o, f3_t y ) { return ( y < -1.0 ) ?  0.01 : ( y > 1.0 ) ? 0.01 : 1.0; }
+
+f3_t badapt_activation_softplus_s_fx(   const badapt_activation_softplus_s*   o, f3_t x ) { return log( 1.0 + exp( x ) ); }
+f3_t badapt_activation_softplus_s_dy(   const badapt_activation_softplus_s*   o, f3_t y ) { f3_t u = exp( y ); return ( u - 1.0 ) / u; }
+f3_t badapt_activation_relu_s_fx(       const badapt_activation_relu_s*       o, f3_t x ) { return x > 0 ? x : 0; }
+f3_t badapt_activation_relu_s_dy(       const badapt_activation_relu_s*       o, f3_t y ) { return y > 0 ? 1 : 0; }
 f3_t badapt_activation_leaky_relu_s_fx( const badapt_activation_leaky_relu_s* o, f3_t x ) { return x > 0 ? x : x * 0.01; }
 f3_t badapt_activation_leaky_relu_s_dy( const badapt_activation_leaky_relu_s* o, f3_t y ) { return y > 0 ? 1 : 0.01; }
-f3_t badapt_activation_softplus_s_fx(   const badapt_activation_softplus_s* o,   f3_t x ) { return log( 1.0 + exp( x ) ); }
-f3_t badapt_activation_softplus_s_dy(   const badapt_activation_softplus_s* o,   f3_t y ) { f3_t u = exp( y ); return ( u - 1.0 ) / u; }
 
 /**********************************************************************************************************************/
 
