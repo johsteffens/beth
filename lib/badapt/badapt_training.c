@@ -38,18 +38,24 @@ bl_t badapt_guide_std_s_callback( const badapt_guide_std_s* o, badapt_training_s
     BCORE_LIFE_INIT();
     BCORE_LIFE_CREATE( badapt_dynamics_s, dynamics );
 
+    ASSERT( badapt_training_state_a_defines_get_adaptive( training_state ) );
+    ASSERT( badapt_training_state_a_defines_get_progress( training_state ) );
+    badapt_adaptive*   adaptive = badapt_training_state_a_get_adaptive( training_state );
+    badapt_progress_s* progress = badapt_training_state_a_get_progress( training_state );
+
+
     ASSERT( *(aware_t*)training_state == TYPEOF_badapt_training_state_std_s );
-    badapt_training_state_std_s* state = ( badapt_training_state_std_s* )training_state;
+//    badapt_training_state_std_s* state = ( badapt_training_state_std_s* )training_state;
 
-    badapt_adaptive_a_get_dynamics( state->adaptive, dynamics );
+    badapt_adaptive_a_get_dynamics( adaptive, dynamics );
 
-    if( state->log )
+    if( o->log )
     {
-        bcore_sink_a_pushf( state->log, "% 6zi: err%6.3f|progress %6.3f|bias %6.3f|log( eps ) %5.3f\n", state->iteration, state->error, state->progress, state->bias, log( dynamics->epsilon ) );
+        bcore_sink_a_pushf( o->log, "% 6zi: err%6.3f|improved %6.3f|bias %6.3f|log(epsilon) %5.3f\n", progress->iteration, progress->error, progress->improved, progress->bias, log( dynamics->epsilon ) );
     }
 
     dynamics->epsilon *= o->annealing_factor;
-    badapt_adaptive_a_set_dynamics( state->adaptive, dynamics );
+    badapt_adaptive_a_set_dynamics( adaptive, dynamics );
 
     BCORE_LIFE_RETURN( true );
     return true;
@@ -90,9 +96,23 @@ badapt_supplier* badapt_training_state_std_s_get_supplier( const badapt_training
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void badapt_training_state_std_s_set_progress( badapt_training_state_std_s* o, badapt_progress_s* progress )
+{
+    badapt_progress_s_copy( &o->progress, progress );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+badapt_progress_s* badapt_training_state_std_s_get_progress( const badapt_training_state_std_s* o )
+{
+    return ( badapt_progress_s* )&o->progress;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void badapt_training_state_std_s_set_guide( badapt_training_state_std_s* o, badapt_guide* guide )
 {
-    //badapt_guide_a_replicate( &o->guide, guide );
+    badapt_guide_a_replicate( &o->guide, guide );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -100,6 +120,16 @@ void badapt_training_state_std_s_set_guide( badapt_training_state_std_s* o, bada
 badapt_guide* badapt_training_state_std_s_get_guide( const badapt_training_state_std_s* o )
 {
     return ( badapt_guide* )o->guide;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// badapt_guide_std_s
+
+void badapt_guide_std_s_init_x( badapt_guide_std_s* o )
+{
+    o->log = bcore_fork( BCORE_STDOUT );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

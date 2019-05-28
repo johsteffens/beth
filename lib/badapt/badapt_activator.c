@@ -41,6 +41,17 @@ badapt_activator* badapt_activator_create_from_types( tp_t tp_activator, tp_t tp
 
 //----------------------------------------------------------------------------------------------------------------------
 
+badapt_activator* badapt_activator_create_from_names( sc_t sc_activator, sc_t sc_activation )
+{
+    BCORE_LIFE_INIT();
+    tp_t tp_activator  = typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "badapt_activator_#<sc_t>_s", sc_activator   ) ) )->sc );
+    tp_t tp_activation = typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "badapt_activation_#<sc_t>_s", sc_activation ) ) )->sc );
+    badapt_activator* activator = badapt_activator_create_from_types( tp_activator, tp_activation );
+    BCORE_LIFE_RETURN( activator );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 badapt_layer_activator_s* badapt_layer_activator_s_create_from_types( sz_t layer, tp_t tp_activator, tp_t tp_activation )
 {
     badapt_layer_activator_s* o = badapt_layer_activator_s_create();

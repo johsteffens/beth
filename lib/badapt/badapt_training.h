@@ -53,6 +53,7 @@ BETH_PRECODE( badapt_guide )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+BCORE_FORWARD_OBJECT( badapt_progress_s );
 BETH_PRECODE( badapt_training_state )
 #ifdef BETH_PRECODE_SECTION
     feature 'a' void set_adaptive( mutable, badapt_adaptive* adaptive );
@@ -60,6 +61,9 @@ BETH_PRECODE( badapt_training_state )
 
     feature 'a' void set_supplier( mutable, badapt_supplier* supplier );
     feature 'a' badapt_supplier* get_supplier( const );
+
+    feature 'a' void set_progress( mutable, badapt_progress_s* progress );
+    feature 'a' badapt_progress_s* get_progress( const );
 
     feature 'a' void set_guide( mutable, badapt_guide* guide );
     feature 'a' badapt_guide* get_guide( const );
@@ -81,14 +85,21 @@ BETH_PRECODE( badapt_training_objects )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+self badapt_progress_s = bcore_inst
+{
+    sz_t iteration = 0;
+    f3_t error     = 0;
+    f3_t improved  = 0;
+    f3_t bias      = 0;
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 self badapt_training_state_std_s = badapt_training_state
 {
     aware_t _;
 
-    sz_t iteration = 0;
-    f3_t error     = 0;
-    f3_t progress  = 0;
-    f3_t bias      = 0;
+    badapt_progress_s progress;
 
     // adaptive to be trained
     aware badapt_adaptive => adaptive;
@@ -99,13 +110,12 @@ self badapt_training_state_std_s = badapt_training_state
     // training guide; called at each iteration;
     aware badapt_guide => guide = badapt_guide_std_s;
 
-    // logging
-    hidden aware bcore_sink -> log;
-
     func badapt_training_state : set_adaptive;
     func badapt_training_state : get_adaptive;
     func badapt_training_state : set_supplier;
     func badapt_training_state : get_supplier;
+    func badapt_training_state : set_progress;
+    func badapt_training_state : get_progress;
     func badapt_training_state : set_guide;
     func badapt_training_state : get_guide;
 };
@@ -116,6 +126,12 @@ self badapt_guide_std_s = badapt_guide
 {
     aware_t _;
     f3_t annealing_factor = 0.99;
+
+    // logging
+    hidden aware bcore_sink -> log;
+
+    func bcore_inst_call : init_x; // constructor
+
     func badapt_guide : callback;
 };
 

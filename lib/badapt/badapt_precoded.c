@@ -464,6 +464,8 @@ BCORE_DEFINE_SPECT( bcore_inst, badapt_training_state )
     "feature aware badapt_training_state : get_adaptive;"
     "feature aware badapt_training_state : set_supplier;"
     "feature aware badapt_training_state : get_supplier;"
+    "feature aware badapt_training_state : set_progress;"
+    "feature aware badapt_training_state : get_progress;"
     "feature aware badapt_training_state : set_guide;"
     "feature aware badapt_training_state : get_guide;"
 "}";
@@ -481,21 +483,27 @@ BCORE_DEFINE_SPECT( bcore_inst, badapt_trainer )
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_training_objects
 
+BCORE_DEFINE_OBJECT_INST( bcore_inst, badapt_progress_s )
+"{"
+    "sz_t iteration = 0;"
+    "f3_t error = 0;"
+    "f3_t improved = 0;"
+    "f3_t bias = 0;"
+"}";
+
 BCORE_DEFINE_OBJECT_INST( badapt_training_state, badapt_training_state_std_s )
 "{"
     "aware_t _;"
-    "sz_t iteration = 0;"
-    "f3_t error = 0;"
-    "f3_t progress = 0;"
-    "f3_t bias = 0;"
+    "badapt_progress_s progress;"
     "aware badapt_adaptive => adaptive;"
     "aware badapt_supplier => supplier;"
     "aware badapt_guide => guide = badapt_guide_std_s;"
-    "hidden aware bcore_sink -> log;"
     "func badapt_training_state : set_adaptive;"
     "func badapt_training_state : get_adaptive;"
     "func badapt_training_state : set_supplier;"
     "func badapt_training_state : get_supplier;"
+    "func badapt_training_state : set_progress;"
+    "func badapt_training_state : get_progress;"
     "func badapt_training_state : set_guide;"
     "func badapt_training_state : get_guide;"
 "}";
@@ -504,6 +512,8 @@ BCORE_DEFINE_OBJECT_INST( badapt_guide, badapt_guide_std_s )
 "{"
     "aware_t _;"
     "f3_t annealing_factor = 0.99;"
+    "hidden aware bcore_sink -> log;"
+    "func bcore_inst_call : init_x;"
     "func badapt_guide : callback;"
 "}";
 
@@ -548,7 +558,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 3720318462 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1954519358 ) );
             BCORE_REGISTER_FEATURE( badapt_loss_loss );
             BCORE_REGISTER_FEATURE( badapt_loss_loss_f3 );
             BCORE_REGISTER_FEATURE( badapt_loss_bgrad );
@@ -713,19 +723,25 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( badapt_training_state_get_adaptive );
             BCORE_REGISTER_FEATURE( badapt_training_state_set_supplier );
             BCORE_REGISTER_FEATURE( badapt_training_state_get_supplier );
+            BCORE_REGISTER_FEATURE( badapt_training_state_set_progress );
+            BCORE_REGISTER_FEATURE( badapt_training_state_get_progress );
             BCORE_REGISTER_FEATURE( badapt_training_state_set_guide );
             BCORE_REGISTER_FEATURE( badapt_training_state_get_guide );
             BCORE_REGISTER_SPECT( badapt_training_state );
             BCORE_REGISTER_FEATURE( badapt_trainer_run );
             BCORE_REGISTER_FEATURE( badapt_trainer_create_state );
             BCORE_REGISTER_SPECT( badapt_trainer );
+            BCORE_REGISTER_OBJECT( badapt_progress_s );
             BCORE_REGISTER_FFUNC( badapt_training_state_set_adaptive, badapt_training_state_std_s_set_adaptive );
             BCORE_REGISTER_FFUNC( badapt_training_state_get_adaptive, badapt_training_state_std_s_get_adaptive );
             BCORE_REGISTER_FFUNC( badapt_training_state_set_supplier, badapt_training_state_std_s_set_supplier );
             BCORE_REGISTER_FFUNC( badapt_training_state_get_supplier, badapt_training_state_std_s_get_supplier );
+            BCORE_REGISTER_FFUNC( badapt_training_state_set_progress, badapt_training_state_std_s_set_progress );
+            BCORE_REGISTER_FFUNC( badapt_training_state_get_progress, badapt_training_state_std_s_get_progress );
             BCORE_REGISTER_FFUNC( badapt_training_state_set_guide, badapt_training_state_std_s_set_guide );
             BCORE_REGISTER_FFUNC( badapt_training_state_get_guide, badapt_training_state_std_s_get_guide );
             BCORE_REGISTER_OBJECT( badapt_training_state_std_s );
+            BCORE_REGISTER_FFUNC( bcore_inst_call_init_x, badapt_guide_std_s_init_x );
             BCORE_REGISTER_FFUNC( badapt_guide_callback, badapt_guide_std_s_callback );
             BCORE_REGISTER_OBJECT( badapt_guide_std_s );
             BCORE_REGISTER_FFUNC( badapt_trainer_run, badapt_trainer_batch_s_run );

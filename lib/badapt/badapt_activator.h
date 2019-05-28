@@ -112,6 +112,7 @@ self badapt_activator_bias_s = badapt_activator
 #endif // BETH_PRECODE_SECTION
 
 badapt_activator* badapt_activator_create_from_types( tp_t tp_activator, tp_t tp_activation );
+badapt_activator* badapt_activator_create_from_names( sc_t sc_activator, sc_t sc_activation );
 badapt_layer_activator_s* badapt_layer_activator_s_create_from_types( sz_t layer, tp_t tp_activator, tp_t tp_activation );
 void badapt_arr_layer_activator_s_push_from_types( badapt_arr_layer_activator_s* o, sz_t layer, tp_t tp_activator, tp_t tp_activation );
 void badapt_arr_layer_activator_s_push_from_names( badapt_arr_layer_activator_s* o, sz_t layer, sc_t activator, sc_t tp_activation ); //sc: only specifying part (e.g. "plain", "tanh")
