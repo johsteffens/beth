@@ -26,6 +26,7 @@
 #include "bcore_trait.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
+#include "bcore_spect_inst_call.h"
 #include "bcore_spect_array.h"
 #include "bcore_spect_source.h"
 #include "bcore_spect_sink.h"

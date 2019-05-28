@@ -69,6 +69,21 @@ static sr_s leaf_typelist()
     bcore_array_r_push_sc( &list, "root" );
     bcore_array_r_push_sc( &list, "spect" );
     bcore_array_r_push_sc( &list, "function_pointer" );
+
+    bcore_array_r_push_sc( &list, "ap_t" );
+    bcore_array_r_push_sc( &list, "init" );
+    bcore_array_r_push_sc( &list, "down" );
+    bcore_array_r_push_sc( &list, "copy" );
+    bcore_array_r_push_sc( &list, "bcore_fp_init" );
+    bcore_array_r_push_sc( &list, "bcore_fp_down" );
+    bcore_array_r_push_sc( &list, "bcore_fp_copy" );
+    bcore_array_r_push_sc( &list, "bcore_fp_copy_typed" );
+    bcore_array_r_push_sc( &list, "bcore_fp_create" );
+    bcore_array_r_push_sc( &list, "bcore_fp_create_typed" );
+    bcore_array_r_push_sc( &list, "bcore_fp_discard" );
+    bcore_array_r_push_sc( &list, "bcore_fp_clone" );
+
+
     bcore_array_r_sort( &list, 0, -1, 1 );
     return list;
 }

@@ -50,8 +50,8 @@ BETH_PRECODE( badapt_adaptive )
     /// output vector size
     feature strict 'a' sz_t get_out_size( const );
 
-    /// fast concurrent inference
-    feature strict 'a' void infer( const, const bmath_vf3_s* in, bmath_vf3_s* out );
+    /// fast concurrent inference (can be omitted e.g. for recurrent networks)
+    feature        'a' void infer( const, const bmath_vf3_s* in, bmath_vf3_s* out );
 
     /// mutable inference (used for training)
     feature strict 'a' void minfer( mutable, const bmath_vf3_s* in, bmath_vf3_s* out );

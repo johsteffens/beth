@@ -98,13 +98,26 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
         f3_t val_error = 0;
         f3_t val_weight = 0;
 
-        for( sz_t i = 0; i < o->valid_size; i++ )
         {
-            const badapt_sample_batch_s* sample = &buffer_valid->arr_data[ i ];
-            badapt_adaptive_a_infer( state->adaptive, &sample->in, out );
-            f3_t val_loss = badapt_loss_a_loss( loss, out, &sample->out );
-            val_error  += val_loss / sample->out.size;
-            val_weight += 1.0;
+            bl_t use_infer = badapt_adaptive_a_defines_infer( state->adaptive );
+            badapt_adaptive* adaptive_val = use_infer ? bcore_fork( state->adaptive ) : badapt_adaptive_a_clone( state->adaptive );
+
+            for( sz_t i = 0; i < o->valid_size; i++ )
+            {
+                const badapt_sample_batch_s* sample = &buffer_valid->arr_data[ i ];
+                if( use_infer )
+                {
+                    badapt_adaptive_a_infer( adaptive_val, &sample->in, out );
+                }
+                else
+                {
+                    badapt_adaptive_a_minfer( adaptive_val, &sample->in, out );
+                }
+                f3_t val_loss = badapt_loss_a_loss( loss, out, &sample->out );
+                val_error  += val_loss / sample->out.size;
+                val_weight += 1.0;
+            }
+            badapt_adaptive_a_discard( adaptive_val );
         }
 
         if( trn_weight > 0 ) trn_error /= trn_weight;

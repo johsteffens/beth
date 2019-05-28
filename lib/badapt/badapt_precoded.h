@@ -187,7 +187,7 @@
   static inline sz_t badapt_adaptive_a_get_out_size( const badapt_adaptive* o ) { return badapt_adaptive_s_get_aware( o )->get_out_size( o ); } \
   static inline bl_t badapt_adaptive_a_defines_get_out_size( const badapt_adaptive* o ) { return true; } \
   static inline void badapt_adaptive_a_infer( const badapt_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out ) { badapt_adaptive_s_get_aware( o )->infer( o, in, out ); } \
-  static inline bl_t badapt_adaptive_a_defines_infer( const badapt_adaptive* o ) { return true; } \
+  static inline bl_t badapt_adaptive_a_defines_infer( const badapt_adaptive* o ) { return badapt_adaptive_s_get_aware( o )->infer != NULL; } \
   static inline void badapt_adaptive_a_minfer( badapt_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out ) { badapt_adaptive_s_get_aware( o )->minfer( o, in, out ); } \
   static inline bl_t badapt_adaptive_a_defines_minfer( const badapt_adaptive* o ) { return true; } \
   static inline void badapt_adaptive_a_bgrad( const badapt_adaptive* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ) { badapt_adaptive_s_get_aware( o )->bgrad( o, grad_in, grad_out ); } \

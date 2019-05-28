@@ -22,6 +22,7 @@
 #include "bcore_spect_interpreter.h"
 #include "bcore_tp_fastmap.h"
 #include "bcore_arr.h"
+#include "bcore_spect_inst_call.h"
 
 /**********************************************************************************************************************/
 
@@ -299,6 +300,12 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
     }
 }
 
+static void init_call_generic( const bcore_inst_s* p, vd_t o )
+{
+    init_generic( p, o );
+    p->inst_call_p->init_x( o );
+}
+
 typedef struct { ap_t ap; const bcore_inst_s* p; vd_t o; } init_nc;
 
 static void init_amoeba( init_nc* nc )
@@ -511,6 +518,12 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             }
         }
     }
+}
+
+static void down_call_generic( const bcore_inst_s* p, vd_t o )
+{
+    p->inst_call_p->down_e( o );
+    down_generic( p, o );
 }
 
 typedef struct { ap_t ap; const bcore_inst_s* p; vd_t o; } down_nc;
@@ -918,6 +931,13 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
     }
 }
 
+static void copy_call_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
+{
+    if( p->inst_call_p->copy_e ) p->inst_call_p->copy_e( dst );
+    copy_generic( p, dst, src );
+    if( p->inst_call_p->copy_x ) p->inst_call_p->copy_x( dst );
+}
+
 typedef struct { ap_t ap; const bcore_inst_s* p; vd_t dst; vc_t src; } copy_nc;
 
 static void copy_amoeba( copy_nc* nc )
@@ -1307,19 +1327,20 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
     o->header.o_type  = self->type;
     o->move_flat = true;
     o->align     = 0;
+    o->inst_call_p = NULL;
 
     /// amoebas
-    fp_t fp_init_a    = bcore_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "init" ) );
-    fp_t fp_down_a    = bcore_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "down" ) );
-    fp_t fp_copy_a    = bcore_self_s_try_external_fp( self, typeof( "ap_t" ), typeof( "copy" ) );
-    o->init_o         = bcore_self_s_try_external_fp( self, typeof( "bcore_fp_init"         ), 0 );
-    o->down_o         = bcore_self_s_try_external_fp( self, typeof( "bcore_fp_down"         ), 0 );
-    o->copy_o         = bcore_self_s_try_external_fp( self, typeof( "bcore_fp_copy"         ), 0 );
-    o->copy_typed_o   = ( bcore_fp_copy_typed   )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_copy_typed"   ), 0 );
-    o->create_o       = ( bcore_fp_create       )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_create"       ), 0 );
-    o->create_typed_o = ( bcore_fp_create_typed )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_create_typed" ), 0 );
-    o->discard_o      = ( bcore_fp_discard      )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_discard"      ), 0 );
-    o->clone_o        = ( bcore_fp_clone        )bcore_self_s_try_external_fp( self, typeof( "bcore_fp_clone"        ), 0 );
+    fp_t fp_init_a    = bcore_self_s_try_external_fp( self, TYPEOF_ap_t, TYPEOF_init );
+    fp_t fp_down_a    = bcore_self_s_try_external_fp( self, TYPEOF_ap_t, TYPEOF_down );
+    fp_t fp_copy_a    = bcore_self_s_try_external_fp( self, TYPEOF_ap_t, TYPEOF_copy );
+    o->init_o         = bcore_self_s_try_external_fp( self, TYPEOF_bcore_fp_init, 0 );
+    o->down_o         = bcore_self_s_try_external_fp( self, TYPEOF_bcore_fp_down, 0 );
+    o->copy_o         = bcore_self_s_try_external_fp( self, TYPEOF_bcore_fp_copy, 0 );
+    o->copy_typed_o   = ( bcore_fp_copy_typed   )bcore_self_s_try_external_fp( self, TYPEOF_bcore_fp_copy_typed,   0 );
+    o->create_o       = ( bcore_fp_create       )bcore_self_s_try_external_fp( self, TYPEOF_bcore_fp_create,       0 );
+    o->create_typed_o = ( bcore_fp_create_typed )bcore_self_s_try_external_fp( self, TYPEOF_bcore_fp_create_typed, 0 );
+    o->discard_o      = ( bcore_fp_discard      )bcore_self_s_try_external_fp( self, TYPEOF_bcore_fp_discard,      0 );
+    o->clone_o        = ( bcore_fp_clone        )bcore_self_s_try_external_fp( self, TYPEOF_bcore_fp_clone,        0 );
 
     o->init_o = fp_init_a ? fp_init_a : o->init_o;
     o->down_o = fp_down_a ? fp_down_a : o->down_o;
@@ -1329,6 +1350,12 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
     o->copy_flat = ( o->copy_o == NULL );
 
     bl_t body_undefined_or_complete = true;
+
+    bl_t inst_call_init_x = false;
+    bl_t inst_call_copy_e = false;
+    bl_t inst_call_copy_x = false;
+    bl_t inst_call_down_e = false;
+    bl_t inst_call_any    = false;
 
     if( bcore_self_s_items_size( self ) > 0 )
     {
@@ -1342,9 +1369,22 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
             bl_t first_item = ( i == 0 );
             const bcore_self_item_s* self_item = bcore_self_s_get_item( self, i );
 
-            if( self_item->flags.f_shell                    ) continue; // shells are invisible to instance (but handled in via-inst_p)
-            if( self_item->flags.f_const                    ) continue; // constants are invisible to instance
-            if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC ) continue; // nothing yet or handled above
+            if( self_item->flags.f_shell ) continue; // shells are invisible to instance (but handled in via-inst_p)
+            if( self_item->flags.f_const ) continue; // constants are invisible to instance
+
+            if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC )
+            {
+                switch( self_item->type )
+                {
+                    case TYPEOF_bcore_inst_call_init_x: inst_call_any = inst_call_init_x = true; o->init_flat = false; break;
+                    case TYPEOF_bcore_inst_call_down_e: inst_call_any = inst_call_down_e = true; o->down_flat = false; break;
+                    case TYPEOF_bcore_inst_call_copy_e: inst_call_any = inst_call_copy_e = true; o->copy_flat = false; break;
+                    case TYPEOF_bcore_inst_call_copy_x: inst_call_any = inst_call_copy_x = true; o->copy_flat = false; break;
+                    default: break;
+                }
+
+                continue; // nothing else yet or handled above
+            }
 
             switch( self_item->caps )
             {
@@ -1490,12 +1530,62 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
             ifnameof( self->type ), self->size, o->size );
     }
 
+    // inst_calls
+    if( inst_call_any )
+    {
+        o->inst_call_p = bcore_inst_call_s_get_typed( self->type );
+    }
+
+
     if( !o->down_flat ) o->copy_flat = false;
     o->move_flat = o->init_flat && o->copy_flat && o->down_flat;
 
-    o->init         = o->init_o       ? ( fp_init_a ? init_amoebic : init_o ) : ( o->init_flat ? ( o->size > 0 ? init_flat : init_null ) : init_generic );
-    o->down         = o->down_o       ? ( fp_down_a ? down_amoebic : down_o ) : ( o->down_flat ? ( o->size > 0 ? down_flat : down_null ) : down_generic );
-    o->copy         = o->copy_o       ? ( fp_copy_a ? copy_amoebic : copy_o ) : ( o->copy_flat ? ( o->size > 0 ? copy_flat : copy_null ) : copy_generic );
+    o->init = o->init_o ? ( fp_init_a ? init_amoebic : init_o ) : ( o->init_flat ? ( o->size > 0 ? init_flat : init_null ) : init_generic );
+    o->down = o->down_o ? ( fp_down_a ? down_amoebic : down_o ) : ( o->down_flat ? ( o->size > 0 ? down_flat : down_null ) : down_generic );
+    o->copy = o->copy_o ? ( fp_copy_a ? copy_amoebic : copy_o ) : ( o->copy_flat ? ( o->size > 0 ? copy_flat : copy_null ) : copy_generic );
+
+    if( inst_call_init_x )
+    {
+        if( o->init != init_generic )
+        {
+            ERR_fa
+            (
+                "Object '#<sc_t>': Registering bcore_inst_call_init requires generic handling by bcore_inst.\n"
+                "This object also registers direct or amoebic initialization.\n",
+                ifnameof( self->type )
+            );
+        }
+        o->init = init_call_generic;
+    }
+
+    if( inst_call_down_e )
+    {
+        if( o->down != down_generic )
+        {
+            ERR_fa
+            (
+                "Object '#<sc_t>': Registering bcore_inst_call_down requires generic handling by bcore_inst.\n"
+                "This object also registers direct or amoebic shutdown.\n",
+                ifnameof( self->type )
+            );
+        }
+        o->down = down_call_generic;
+    }
+
+    if( inst_call_copy_e || inst_call_copy_x )
+    {
+        if( o->copy != copy_generic )
+        {
+            ERR_fa
+            (
+                "Object '#<sc_t>': Registering bcore_inst_call_copy requires generic handling by bcore_inst.\n"
+                "This object also registers direct or amoebic copy.\n",
+                ifnameof( self->type )
+            );
+        }
+        o->copy = copy_call_generic;
+    }
+
     o->copy_typed   = o->copy_typed_o ? copy_typed_o   : ( o->size > 0 ? copy_typed   : copy_typed_null   );
     o->move         = o->move_o       ? move_o         : ( o->size > 0 ? move         : move_null         );
     o->create       = o->create_o     ? create_o       : ( o->size > 0 ? create       : create_null       );

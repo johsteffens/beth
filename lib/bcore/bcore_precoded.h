@@ -33,6 +33,10 @@
       bcore_precoder_sample_features_to_stdout to_stdout; \
       bcore_precoder_sample_features_get_size get_size; \
   }; \
+  static inline bcore_precoder_sample_features* bcore_precoder_sample_features_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_precoder_sample_features, t ); return ( bcore_precoder_sample_features* )bcore_inst_t_create( t ); } \
+  static inline bcore_precoder_sample_features* bcore_precoder_sample_features_a_clone( const bcore_precoder_sample_features* o ) { return ( bcore_precoder_sample_features* )bcore_inst_a_clone( ( bcore_inst* )o ); } \
+  static inline void bcore_precoder_sample_features_a_discard( bcore_precoder_sample_features* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); } \
+  static inline void bcore_precoder_sample_features_a_replicate( bcore_precoder_sample_features** o, const bcore_precoder_sample_features* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); } \
   static inline void bcore_precoder_sample_features_p_setup( const bcore_precoder_sample_features_s* __p, bcore_precoder_sample_features* o, sz_t n ) { __p->setup( o, n ); } \
   static inline void bcore_precoder_sample_features_t_setup( tp_t __t, bcore_precoder_sample_features* o, sz_t n ) { bcore_precoder_sample_features_s_get_typed( __t )->setup( o, n ); } \
   static inline void bcore_precoder_sample_features_a_setup( bcore_precoder_sample_features* o, sz_t n ) { bcore_precoder_sample_features_s_get_aware( o )->setup( o, n ); } \
@@ -79,6 +83,38 @@
 #define BETH_EXPAND_GROUP_bcore_precoder_sample \
   BETH_EXPAND_ITEM_bcore_precoder_sample_object_s \
   BETH_EXPAND_ITEM_bcore_precoder_sample_object2_s
+
+/**********************************************************************************************************************/
+// source: bcore_spect_inst_call
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_inst_call
+
+#define TYPEOF_bcore_inst_call 2782316552
+#define TYPEOF_bcore_inst_call_s 1816064754
+#define BETH_EXPAND_GROUP_bcore_inst_call \
+  BCORE_FORWARD_OBJECT( bcore_inst_call ); \
+  typedef void (*bcore_inst_call_init_x)( bcore_inst_call* o ); \
+  typedef void (*bcore_inst_call_down_e)( bcore_inst_call* o ); \
+  typedef void (*bcore_inst_call_copy_e)( bcore_inst_call* o ); \
+  typedef void (*bcore_inst_call_copy_x)( bcore_inst_call* o ); \
+  BCORE_DECLARE_SPECT( bcore_inst_call ) \
+  { \
+      bcore_spect_header_s header; \
+      bcore_inst_call_init_x init_x; \
+      bcore_inst_call_down_e down_e; \
+      bcore_inst_call_copy_e copy_e; \
+      bcore_inst_call_copy_x copy_x; \
+  }; \
+  static inline bcore_inst_call* bcore_inst_call_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_inst_call, t ); return ( bcore_inst_call* )bcore_inst_t_create( t ); } \
+  static inline void bcore_inst_call_p_init_x( const bcore_inst_call_s* __p, bcore_inst_call* o ) { __p->init_x( o ); } \
+  static inline bl_t bcore_inst_call_p_defines_init_x( const bcore_inst_call_s* __p ) { return __p->init_x != NULL; } \
+  static inline void bcore_inst_call_p_down_e( const bcore_inst_call_s* __p, bcore_inst_call* o ) { __p->down_e( o ); } \
+  static inline bl_t bcore_inst_call_p_defines_down_e( const bcore_inst_call_s* __p ) { return __p->down_e != NULL; } \
+  static inline void bcore_inst_call_p_copy_e( const bcore_inst_call_s* __p, bcore_inst_call* o ) { __p->copy_e( o ); } \
+  static inline bl_t bcore_inst_call_p_defines_copy_e( const bcore_inst_call_s* __p ) { return __p->copy_e != NULL; } \
+  static inline void bcore_inst_call_p_copy_x( const bcore_inst_call_s* __p, bcore_inst_call* o ) { __p->copy_x( o ); } \
+  static inline bl_t bcore_inst_call_p_defines_copy_x( const bcore_inst_call_s* __p ) { return __p->copy_x != NULL; }
 
 /**********************************************************************************************************************/
 

@@ -78,7 +78,7 @@ BCORE_DEFINE_SPECT( bcore_inst, badapt_adaptive )
     "bcore_spect_header_s header;"
     "feature strict aware badapt_adaptive : get_in_size;"
     "feature strict aware badapt_adaptive : get_out_size;"
-    "feature strict aware badapt_adaptive : infer;"
+    "feature aware badapt_adaptive : infer;"
     "feature strict aware badapt_adaptive : minfer;"
     "feature strict aware badapt_adaptive : bgrad;"
     "feature strict aware badapt_adaptive : bgrad_adapt;"
@@ -548,7 +548,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 931744147 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 3720318462 ) );
             BCORE_REGISTER_FEATURE( badapt_loss_loss );
             BCORE_REGISTER_FEATURE( badapt_loss_loss_f3 );
             BCORE_REGISTER_FEATURE( badapt_loss_bgrad );
