@@ -65,18 +65,18 @@ self badapt_c1d_s = badapt_adaptive
     // ==============================================================
 
     // === adaptive functions =======================================
-    func badapt_adaptive : get_in_size;
-    func badapt_adaptive : get_out_size;
+    func : get_in_size;
+    func : get_out_size;
 
-    func badapt_adaptive : get_dynamics;
-    func badapt_adaptive : set_dynamics;
+    func : get_dynamics;
+    func : set_dynamics;
 
-    func badapt_adaptive : arc_to_sink;
-    func badapt_adaptive : infer;
-    func badapt_adaptive : minfer;
+    func : arc_to_sink;
+    func : infer;
+    func : minfer;
 
-    func badapt_adaptive : bgrad;
-    func badapt_adaptive : bgrad_adapt;
+    func : bgrad;
+    func : bgrad_adapt;
     // ==============================================================
 };
 
@@ -104,15 +104,15 @@ self badapt_builder_c1d_funnel_s = badapt_builder
     // === builder functions =======================================
 
     /// input vector size
-    func badapt_builder : get_in_size;
-    func badapt_builder : set_in_size;
+    func : get_in_size;
+    func : set_in_size;
 
     /// output vector size
-    func badapt_builder : get_out_size;
-    func badapt_builder : set_out_size;
+    func : get_out_size;
+    func : set_out_size;
 
     /// builds adaptive ready to be trained; passes ownership
-    func badapt_builder : build;
+    func : build;
 
     // ==============================================================
 };

@@ -118,11 +118,11 @@ BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_sine_random_s )
     "f3_t pos_tgt = 0.9;"
     "f3_t neg_tgt = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func badapt_supplier : preferred_loss;"
-    "func badapt_supplier : get_in_size;"
-    "func badapt_supplier : get_out_size;"
-    "func badapt_supplier : fetch_sample_tio;"
-    "func badapt_supplier : fetch_sample_vio;"
+    "func : preferred_loss;"
+    "func : get_in_size;"
+    "func : get_out_size;"
+    "func : fetch_sample_tio;"
+    "func : fetch_sample_vio;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_polynom_s )
@@ -134,11 +134,11 @@ BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_polynom_s )
     "u2_t rval = 1234;"
     "f3_t noise_level = 0;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func badapt_supplier : preferred_loss;"
-    "func badapt_supplier : get_in_size;"
-    "func badapt_supplier : get_out_size;"
-    "func badapt_supplier : fetch_sample_tio;"
-    "func badapt_supplier : fetch_sample_vio;"
+    "func : preferred_loss;"
+    "func : get_in_size;"
+    "func : get_out_size;"
+    "func : fetch_sample_tio;"
+    "func : fetch_sample_vio;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_binary_add_s )
@@ -149,11 +149,11 @@ BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_binary_add_s )
     "f3_t val_h = 0.9;"
     "f3_t val_l = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func badapt_supplier : preferred_loss;"
-    "func badapt_supplier : get_in_size;"
-    "func badapt_supplier : get_out_size;"
-    "func badapt_supplier : fetch_sample_tio;"
-    "func badapt_supplier : fetch_sample_vio;"
+    "func : preferred_loss;"
+    "func : get_in_size;"
+    "func : get_out_size;"
+    "func : fetch_sample_tio;"
+    "func : fetch_sample_vio;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_binary_mul_s )
@@ -164,11 +164,11 @@ BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_binary_mul_s )
     "f3_t val_h = 0.9;"
     "f3_t val_l = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func badapt_supplier : preferred_loss;"
-    "func badapt_supplier : get_in_size;"
-    "func badapt_supplier : get_out_size;"
-    "func badapt_supplier : fetch_sample_tio;"
-    "func badapt_supplier : fetch_sample_vio;"
+    "func : preferred_loss;"
+    "func : get_in_size;"
+    "func : get_out_size;"
+    "func : fetch_sample_tio;"
+    "func : fetch_sample_vio;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_binary_xsg3_s )
@@ -179,11 +179,11 @@ BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_binary_xsg3_s )
     "f3_t val_h = 0.9;"
     "f3_t val_l = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func badapt_supplier : preferred_loss;"
-    "func badapt_supplier : get_in_size;"
-    "func badapt_supplier : get_out_size;"
-    "func badapt_supplier : fetch_sample_tio;"
-    "func badapt_supplier : fetch_sample_vio;"
+    "func : preferred_loss;"
+    "func : get_in_size;"
+    "func : get_out_size;"
+    "func : fetch_sample_tio;"
+    "func : fetch_sample_vio;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_binary_hash_s )
@@ -195,11 +195,11 @@ BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_binary_hash_s )
     "f3_t val_l = -0.9;"
     "bl_t reverse = false;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func badapt_supplier : preferred_loss;"
-    "func badapt_supplier : get_in_size;"
-    "func badapt_supplier : get_out_size;"
-    "func badapt_supplier : fetch_sample_tio;"
-    "func badapt_supplier : fetch_sample_vio;"
+    "func : preferred_loss;"
+    "func : get_in_size;"
+    "func : get_out_size;"
+    "func : fetch_sample_tio;"
+    "func : fetch_sample_vio;"
 "}";
 
 /**********************************************************************************************************************/
@@ -212,64 +212,64 @@ BCORE_DEFINE_OBJECT_INST( badapt_supplier, badapt_problem_binary_hash_s )
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_lgst_s )
 "{"
     "aware_t _;"
-    "func badapt_activation : fx;"
-    "func badapt_activation : dy;"
+    "func : fx;"
+    "func : dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_lgst_hard_s )
 "{"
     "aware_t _;"
-    "func badapt_activation : fx;"
-    "func badapt_activation : dy;"
+    "func : fx;"
+    "func : dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_lgst_leaky_s )
 "{"
     "aware_t _;"
-    "func badapt_activation : fx;"
-    "func badapt_activation : dy;"
+    "func : fx;"
+    "func : dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_tanh_s )
 "{"
     "aware_t _;"
-    "func badapt_activation : fx;"
-    "func badapt_activation : dy;"
+    "func : fx;"
+    "func : dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_tanh_hard_s )
 "{"
     "aware_t _;"
-    "func badapt_activation : fx;"
-    "func badapt_activation : dy;"
+    "func : fx;"
+    "func : dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_tanh_leaky_s )
 "{"
     "aware_t _;"
-    "func badapt_activation : fx;"
-    "func badapt_activation : dy;"
+    "func : fx;"
+    "func : dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_softplus_s )
 "{"
     "aware_t _;"
-    "func badapt_activation : fx;"
-    "func badapt_activation : dy;"
+    "func : fx;"
+    "func : dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_relu_s )
 "{"
     "aware_t _;"
-    "func badapt_activation : fx;"
-    "func badapt_activation : dy;"
+    "func : fx;"
+    "func : dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_activation, badapt_activation_leaky_relu_s )
 "{"
     "aware_t _;"
-    "func badapt_activation : fx;"
-    "func badapt_activation : dy;"
+    "func : fx;"
+    "func : dy;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -298,13 +298,13 @@ BCORE_DEFINE_OBJECT_INST( badapt_activator, badapt_activator_plain_s )
 "{"
     "aware_t _;"
     "aware badapt_activation => activation;"
-    "func badapt_activator : setup;"
-    "func badapt_activator : reset;"
-    "func badapt_activator : infer;"
-    "func badapt_activator : bgrad;"
-    "func badapt_activator : adapt;"
-    "func badapt_activator : set_activation;"
-    "func badapt_activator : get_activation;"
+    "func : setup;"
+    "func : reset;"
+    "func : infer;"
+    "func : bgrad;"
+    "func : adapt;"
+    "func : set_activation;"
+    "func : get_activation;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_activator, badapt_activator_bias_s )
@@ -312,13 +312,13 @@ BCORE_DEFINE_OBJECT_INST( badapt_activator, badapt_activator_bias_s )
     "aware_t _;"
     "aware badapt_activation => activation;"
     "f3_t [] arr_bias;"
-    "func badapt_activator : setup;"
-    "func badapt_activator : reset;"
-    "func badapt_activator : infer;"
-    "func badapt_activator : bgrad;"
-    "func badapt_activator : adapt;"
-    "func badapt_activator : set_activation;"
-    "func badapt_activator : get_activation;"
+    "func : setup;"
+    "func : reset;"
+    "func : infer;"
+    "func : bgrad;"
+    "func : adapt;"
+    "func : set_activation;"
+    "func : get_activation;"
 "}";
 
 /**********************************************************************************************************************/
@@ -331,9 +331,9 @@ BCORE_DEFINE_OBJECT_INST( badapt_activator, badapt_activator_bias_s )
 BCORE_DEFINE_OBJECT_INST( badapt_loss, badapt_loss_l2_s )
 "{"
     "aware_t _;"
-    "func badapt_loss : loss;"
-    "func badapt_loss : loss_f3;"
-    "func badapt_loss : bgrad;"
+    "func : loss;"
+    "func : loss_f3;"
+    "func : bgrad;"
 "}";
 
 /**********************************************************************************************************************/
@@ -366,15 +366,15 @@ BCORE_DEFINE_OBJECT_INST( badapt_adaptive, badapt_mlp_s )
     "badapt_mlp_arr_layer_s arr_layer;"
     "sz_t max_buffer_size;"
     "hidden bmath_vf3_s in;"
-    "func badapt_adaptive : get_in_size;"
-    "func badapt_adaptive : get_out_size;"
-    "func badapt_adaptive : get_dynamics;"
-    "func badapt_adaptive : set_dynamics;"
-    "func badapt_adaptive : arc_to_sink;"
-    "func badapt_adaptive : infer;"
-    "func badapt_adaptive : minfer;"
-    "func badapt_adaptive : bgrad;"
-    "func badapt_adaptive : bgrad_adapt;"
+    "func : get_in_size;"
+    "func : get_out_size;"
+    "func : get_dynamics;"
+    "func : set_dynamics;"
+    "func : arc_to_sink;"
+    "func : infer;"
+    "func : minfer;"
+    "func : bgrad;"
+    "func : bgrad_adapt;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_builder, badapt_builder_mlp_funnel_s )
@@ -388,11 +388,11 @@ BCORE_DEFINE_OBJECT_INST( badapt_builder, badapt_builder_mlp_funnel_s )
     "u2_t random_seed = 1234;"
     "badapt_dynamics_s dynamics;"
     "badapt_arr_layer_activator_s arr_layer_activator;"
-    "func badapt_builder : get_in_size;"
-    "func badapt_builder : set_in_size;"
-    "func badapt_builder : get_out_size;"
-    "func badapt_builder : set_out_size;"
-    "func badapt_builder : build;"
+    "func : get_in_size;"
+    "func : set_in_size;"
+    "func : get_out_size;"
+    "func : set_out_size;"
+    "func : build;"
 "}";
 
 /**********************************************************************************************************************/
@@ -428,15 +428,15 @@ BCORE_DEFINE_OBJECT_INST( badapt_adaptive, badapt_c1d_s )
     "badapt_c1d_arr_layer_s arr_layer;"
     "sz_t max_buffer_size;"
     "hidden bmath_vf3_s in;"
-    "func badapt_adaptive : get_in_size;"
-    "func badapt_adaptive : get_out_size;"
-    "func badapt_adaptive : get_dynamics;"
-    "func badapt_adaptive : set_dynamics;"
-    "func badapt_adaptive : arc_to_sink;"
-    "func badapt_adaptive : infer;"
-    "func badapt_adaptive : minfer;"
-    "func badapt_adaptive : bgrad;"
-    "func badapt_adaptive : bgrad_adapt;"
+    "func : get_in_size;"
+    "func : get_out_size;"
+    "func : get_dynamics;"
+    "func : set_dynamics;"
+    "func : arc_to_sink;"
+    "func : infer;"
+    "func : minfer;"
+    "func : bgrad;"
+    "func : bgrad_adapt;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_builder, badapt_builder_c1d_funnel_s )
@@ -453,11 +453,11 @@ BCORE_DEFINE_OBJECT_INST( badapt_builder, badapt_builder_c1d_funnel_s )
     "u2_t random_seed = 1234;"
     "badapt_dynamics_s dynamics;"
     "badapt_arr_layer_activator_s arr_layer_activator;"
-    "func badapt_builder : get_in_size;"
-    "func badapt_builder : set_in_size;"
-    "func badapt_builder : get_out_size;"
-    "func badapt_builder : set_out_size;"
-    "func badapt_builder : build;"
+    "func : get_in_size;"
+    "func : set_in_size;"
+    "func : get_out_size;"
+    "func : set_out_size;"
+    "func : build;"
 "}";
 
 /**********************************************************************************************************************/
@@ -483,14 +483,14 @@ BCORE_DEFINE_OBJECT_INST( badapt_adaptive, badapt_ern_s )
     "hidden bmath_vf3_s vec_context;"
     "hidden bmath_vf3_s vec_hidden;"
     "hidden bmath_vf3_s vec_output;"
-    "func badapt_adaptive : get_in_size;"
-    "func badapt_adaptive : get_out_size;"
-    "func badapt_adaptive : get_dynamics;"
-    "func badapt_adaptive : set_dynamics;"
-    "func badapt_adaptive : arc_to_sink;"
-    "func badapt_adaptive : minfer;"
-    "func badapt_adaptive : bgrad;"
-    "func badapt_adaptive : bgrad_adapt;"
+    "func : get_in_size;"
+    "func : get_out_size;"
+    "func : get_dynamics;"
+    "func : set_dynamics;"
+    "func : arc_to_sink;"
+    "func : minfer;"
+    "func : bgrad;"
+    "func : bgrad_adapt;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_builder, badapt_builder_ern_s )
@@ -504,11 +504,11 @@ BCORE_DEFINE_OBJECT_INST( badapt_builder, badapt_builder_ern_s )
     "u2_t random_seed = 1234;"
     "aware badapt_activator => activator_hidden;"
     "aware badapt_activator => activator_output;"
-    "func badapt_builder : get_in_size;"
-    "func badapt_builder : set_in_size;"
-    "func badapt_builder : get_out_size;"
-    "func badapt_builder : set_out_size;"
-    "func badapt_builder : build;"
+    "func : get_in_size;"
+    "func : set_in_size;"
+    "func : get_out_size;"
+    "func : set_out_size;"
+    "func : build;"
 "}";
 
 /**********************************************************************************************************************/
@@ -534,14 +534,14 @@ BCORE_DEFINE_OBJECT_INST( badapt_adaptive, badapt_jrn_s )
     "hidden bmath_vf3_s vec_context;"
     "hidden bmath_vf3_s vec_hidden;"
     "hidden bmath_vf3_s vec_output;"
-    "func badapt_adaptive : get_in_size;"
-    "func badapt_adaptive : get_out_size;"
-    "func badapt_adaptive : get_dynamics;"
-    "func badapt_adaptive : set_dynamics;"
-    "func badapt_adaptive : arc_to_sink;"
-    "func badapt_adaptive : minfer;"
-    "func badapt_adaptive : bgrad;"
-    "func badapt_adaptive : bgrad_adapt;"
+    "func : get_in_size;"
+    "func : get_out_size;"
+    "func : get_dynamics;"
+    "func : set_dynamics;"
+    "func : arc_to_sink;"
+    "func : minfer;"
+    "func : bgrad;"
+    "func : bgrad_adapt;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_builder, badapt_builder_jrn_s )
@@ -555,11 +555,11 @@ BCORE_DEFINE_OBJECT_INST( badapt_builder, badapt_builder_jrn_s )
     "u2_t random_seed = 1234;"
     "aware badapt_activator => activator_hidden;"
     "aware badapt_activator => activator_output;"
-    "func badapt_builder : get_in_size;"
-    "func badapt_builder : set_in_size;"
-    "func badapt_builder : get_out_size;"
-    "func badapt_builder : set_out_size;"
-    "func badapt_builder : build;"
+    "func : get_in_size;"
+    "func : set_in_size;"
+    "func : get_out_size;"
+    "func : set_out_size;"
+    "func : build;"
 "}";
 
 /**********************************************************************************************************************/
@@ -635,14 +635,14 @@ BCORE_DEFINE_OBJECT_INST( badapt_training_state, badapt_training_state_std_s )
     "aware badapt_adaptive => adaptive;"
     "aware badapt_supplier => supplier;"
     "aware badapt_guide => guide = badapt_guide_std_s;"
-    "func badapt_training_state : set_adaptive;"
-    "func badapt_training_state : get_adaptive;"
-    "func badapt_training_state : set_supplier;"
-    "func badapt_training_state : get_supplier;"
-    "func badapt_training_state : set_progress;"
-    "func badapt_training_state : get_progress;"
-    "func badapt_training_state : set_guide;"
-    "func badapt_training_state : get_guide;"
+    "func : set_adaptive;"
+    "func : get_adaptive;"
+    "func : set_supplier;"
+    "func : get_supplier;"
+    "func : set_progress;"
+    "func : get_progress;"
+    "func : set_guide;"
+    "func : get_guide;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( badapt_guide, badapt_guide_std_s )
@@ -651,7 +651,7 @@ BCORE_DEFINE_OBJECT_INST( badapt_guide, badapt_guide_std_s )
     "f3_t annealing_factor = 0.99;"
     "hidden aware bcore_sink -> log;"
     "func bcore_inst_call : init_x;"
-    "func badapt_guide : callback;"
+    "func : callback;"
 "}";
 
 /**********************************************************************************************************************/
@@ -670,8 +670,8 @@ BCORE_DEFINE_OBJECT_INST( badapt_trainer, badapt_trainer_batch_s )
     "sz_t fetch_cycles_per_iteration = 4;"
     "sz_t valid_size = 10000;"
     "sz_t max_iterations = 10;"
-    "func badapt_trainer : run;"
-    "func badapt_trainer : create_state;"
+    "func : run;"
+    "func : create_state;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, badapt_sample_batch_s )
@@ -695,7 +695,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 2115199888 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 3242335371 ) );
             BCORE_REGISTER_FEATURE( badapt_loss_loss );
             BCORE_REGISTER_FEATURE( badapt_loss_loss_f3 );
             BCORE_REGISTER_FEATURE( badapt_loss_bgrad );

@@ -28,9 +28,9 @@ BETH_PRECODE( badapt_loss_objects )
 self badapt_loss_l2_s = badapt_loss
 {
     aware_t _;
-    func badapt_loss : loss;
-    func badapt_loss : loss_f3;
-    func badapt_loss : bgrad;
+    func : loss;
+    func : loss_f3;
+    func : bgrad;
 };
 
 #endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

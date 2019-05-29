@@ -28,38 +28,38 @@ BETH_PRECODE( badapt_activation_objects )
 
 // logistic function
 // f( x ) = 1.0 / ( 1.0 + exp( -x ) )
-self badapt_activation_lgst_s       = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+self badapt_activation_lgst_s       = badapt_activation { aware_t _; func : fx; func : dy; };
 
 // hard logistic approximation
 // f( x ) = ( x < -2 ) ? 0 : ( x > 2 ) ? 1 : 0.25 * ( x + 2 )
-self badapt_activation_lgst_hard_s  = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+self badapt_activation_lgst_hard_s  = badapt_activation { aware_t _; func : fx; func : dy; };
 
 // leaky logistic approximation
 // f( x ) = ( x < -2 ) ? 0.01 * ( x + 2 ) : ( x > 2 ) ? 1 + 0.01 * ( x - 2 ) : 0.25 * ( x + 2 )
-self badapt_activation_lgst_leaky_s = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+self badapt_activation_lgst_leaky_s = badapt_activation { aware_t _; func : fx; func : dy; };
 
 // f(x) = tanh(x)
-self badapt_activation_tanh_s       = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+self badapt_activation_tanh_s       = badapt_activation { aware_t _; func : fx; func : dy; };
 
 // hard tanh approximation
 // f(x) = ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x
-self badapt_activation_tanh_hard_s  = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+self badapt_activation_tanh_hard_s  = badapt_activation { aware_t _; func : fx; func : dy; };
 
 // leaky tanh approximation
 // f(x) = ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x
-self badapt_activation_tanh_leaky_s = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+self badapt_activation_tanh_leaky_s = badapt_activation { aware_t _; func : fx; func : dy; };
 
 // softplus function
 // f(x) = log( 1.0 + exp( x ) )
-self badapt_activation_softplus_s   = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+self badapt_activation_softplus_s   = badapt_activation { aware_t _; func : fx; func : dy; };
 
 // hard softplus approximation
 // f(x) = x > 0 ? x : 0 (softplus approximation)
-self badapt_activation_relu_s       = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+self badapt_activation_relu_s       = badapt_activation { aware_t _; func : fx; func : dy; };
 
 // leaky softplus approximation
 // f(x) = x > 0 ? x : 0.01*x
-self badapt_activation_leaky_relu_s = badapt_activation { aware_t _; func badapt_activation : fx; func badapt_activation : dy; };
+self badapt_activation_leaky_relu_s = badapt_activation { aware_t _; func : fx; func : dy; };
 
 #endif // BETH_PRECODE_SECTION
 
@@ -88,13 +88,13 @@ self badapt_activator_plain_s = badapt_activator
 {
     aware_t _;
     aware badapt_activation => activation;
-    func badapt_activator : setup;
-    func badapt_activator : reset;
-    func badapt_activator : infer;
-    func badapt_activator : bgrad;
-    func badapt_activator : adapt;
-    func badapt_activator : set_activation;
-    func badapt_activator : get_activation;
+    func : setup;
+    func : reset;
+    func : infer;
+    func : bgrad;
+    func : adapt;
+    func : set_activation;
+    func : get_activation;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,13 +107,13 @@ self badapt_activator_bias_s = badapt_activator
     aware_t _;
     aware badapt_activation => activation;
     f3_t [] arr_bias;
-    func badapt_activator : setup;
-    func badapt_activator : reset;
-    func badapt_activator : infer;
-    func badapt_activator : bgrad;
-    func badapt_activator : adapt;
-    func badapt_activator : set_activation;
-    func badapt_activator : get_activation;
+    func : setup;
+    func : reset;
+    func : infer;
+    func : bgrad;
+    func : adapt;
+    func : set_activation;
+    func : get_activation;
 };
 
 #endif // BETH_PRECODE_SECTION

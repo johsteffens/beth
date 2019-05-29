@@ -38,8 +38,6 @@ BETH_PRECODE( badapt_supplier )
 
     // sets up builder parameters where suitable
     feature 'a' void setup_builder( const, badapt_builder* builder ) = setup_builder_default;
-
-
 #endif // BETH_PRECODE_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -110,14 +108,14 @@ self badapt_training_state_std_s = badapt_training_state
     // training guide; called at each iteration;
     aware badapt_guide => guide = badapt_guide_std_s;
 
-    func badapt_training_state : set_adaptive;
-    func badapt_training_state : get_adaptive;
-    func badapt_training_state : set_supplier;
-    func badapt_training_state : get_supplier;
-    func badapt_training_state : set_progress;
-    func badapt_training_state : get_progress;
-    func badapt_training_state : set_guide;
-    func badapt_training_state : get_guide;
+    func : set_adaptive;
+    func : get_adaptive;
+    func : set_supplier;
+    func : get_supplier;
+    func : set_progress;
+    func : get_progress;
+    func : set_guide;
+    func : get_guide;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,7 +130,7 @@ self badapt_guide_std_s = badapt_guide
 
     func bcore_inst_call : init_x; // constructor
 
-    func badapt_guide : callback;
+    func : callback;
 };
 
 #endif // BETH_PRECODE_SECTION

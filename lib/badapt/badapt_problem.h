@@ -39,11 +39,11 @@ self badapt_problem_sine_random_s = badapt_supplier
     f3_t neg_tgt    = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func badapt_supplier : preferred_loss;
-    func badapt_supplier : get_in_size;
-    func badapt_supplier : get_out_size;
-    func badapt_supplier : fetch_sample_tio;
-    func badapt_supplier : fetch_sample_vio;
+    func : preferred_loss;
+    func : get_in_size;
+    func : get_out_size;
+    func : fetch_sample_tio;
+    func : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -61,11 +61,11 @@ self badapt_problem_polynom_s = badapt_supplier
     f3_t noise_level = 0;   // additive noise to input signal
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func badapt_supplier : preferred_loss;
-    func badapt_supplier : get_in_size;
-    func badapt_supplier : get_out_size;
-    func badapt_supplier : fetch_sample_tio;
-    func badapt_supplier : fetch_sample_vio;
+    func : preferred_loss;
+    func : get_in_size;
+    func : get_out_size;
+    func : fetch_sample_tio;
+    func : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -82,11 +82,11 @@ self badapt_problem_binary_add_s = badapt_supplier
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func badapt_supplier : preferred_loss;
-    func badapt_supplier : get_in_size;
-    func badapt_supplier : get_out_size;
-    func badapt_supplier : fetch_sample_tio;
-    func badapt_supplier : fetch_sample_vio;
+    func : preferred_loss;
+    func : get_in_size;
+    func : get_out_size;
+    func : fetch_sample_tio;
+    func : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,11 +103,11 @@ self badapt_problem_binary_mul_s = badapt_supplier
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func badapt_supplier : preferred_loss;
-    func badapt_supplier : get_in_size;
-    func badapt_supplier : get_out_size;
-    func badapt_supplier : fetch_sample_tio;
-    func badapt_supplier : fetch_sample_vio;
+    func : preferred_loss;
+    func : get_in_size;
+    func : get_out_size;
+    func : fetch_sample_tio;
+    func : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,11 +124,11 @@ self badapt_problem_binary_xsg3_s = badapt_supplier
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func badapt_supplier : preferred_loss;
-    func badapt_supplier : get_in_size;
-    func badapt_supplier : get_out_size;
-    func badapt_supplier : fetch_sample_tio;
-    func badapt_supplier : fetch_sample_vio;
+    func : preferred_loss;
+    func : get_in_size;
+    func : get_out_size;
+    func : fetch_sample_tio;
+    func : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -146,11 +146,11 @@ self badapt_problem_binary_hash_s = badapt_supplier
     bl_t reverse = false;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func badapt_supplier : preferred_loss;
-    func badapt_supplier : get_in_size;
-    func badapt_supplier : get_out_size;
-    func badapt_supplier : fetch_sample_tio;
-    func badapt_supplier : fetch_sample_vio;
+    func : preferred_loss;
+    func : get_in_size;
+    func : get_out_size;
+    func : fetch_sample_tio;
+    func : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

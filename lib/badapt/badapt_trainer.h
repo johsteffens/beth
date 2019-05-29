@@ -47,8 +47,8 @@ self badapt_trainer_batch_s = badapt_trainer
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    func badapt_trainer : run;
-    func badapt_trainer : create_state;
+    func : run;
+    func : create_state;
 
 };
 
