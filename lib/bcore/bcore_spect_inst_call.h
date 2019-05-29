@@ -33,6 +33,11 @@ BETH_PRECODE( bcore_inst_call )
     feature 'p' void down_e( mutable ); // called by bcore_inst when entering shutdown
     feature 'p' void copy_e( mutable ); // called by bcore_inst when entering copy
     feature 'p' void copy_x( mutable ); // called by bcore_inst when exiting copy
+
+    name bcore_inst_call_init_x;
+    name bcore_inst_call_down_e;
+    name bcore_inst_call_copy_e;
+    name bcore_inst_call_copy_x;
 #endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // optional enclosure
 

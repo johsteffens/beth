@@ -16,6 +16,12 @@
 // source: bcore_precoder_sample
 
 //----------------------------------------------------------------------------------------------------------------------
+// group: bcore_precoder_sample_signatures
+
+#define TYPEOF_bcore_precoder_sample_signatures 753998242
+#define BETH_EXPAND_GROUP_bcore_precoder_sample_signatures
+
+//----------------------------------------------------------------------------------------------------------------------
 // group: bcore_precoder_sample_features
 
 #define TYPEOF_bcore_precoder_sample_features 1533308178
@@ -92,6 +98,10 @@
 
 #define TYPEOF_bcore_inst_call 2782316552
 #define TYPEOF_bcore_inst_call_s 1816064754
+#define TYPEOF_bcore_inst_call_init_x 622928068
+#define TYPEOF_bcore_inst_call_down_e 3705510577
+#define TYPEOF_bcore_inst_call_copy_e 1302178876
+#define TYPEOF_bcore_inst_call_copy_x 1117625067
 #define BETH_EXPAND_GROUP_bcore_inst_call \
   BCORE_FORWARD_OBJECT( bcore_inst_call ); \
   typedef void (*bcore_inst_call_init_x)( bcore_inst_call* o ); \

@@ -77,10 +77,6 @@
 #define TYPEOF_bcore_img_u2_argb          1669473939
 #define TYPEOF_bcore_img_u2_s             3223476982
 #define TYPEOF_bcore_inst                 1079125159
-#define TYPEOF_bcore_inst_call_copy_e     1302178876
-#define TYPEOF_bcore_inst_call_copy_x     1117625067
-#define TYPEOF_bcore_inst_call_down_e     3705510577
-#define TYPEOF_bcore_inst_call_init_x      622928068
 #define TYPEOF_bcore_inst_s               1413406849
 #define TYPEOF_bcore_interpreter           354491079
 #define TYPEOF_bcore_interpreter_s         695223265
@@ -96,6 +92,7 @@
 #define TYPEOF_bcore_precoder_name_s       765553819
 #define TYPEOF_bcore_precoder_object_s    1181867915
 #define TYPEOF_bcore_precoder_s           2936171739
+#define TYPEOF_bcore_precoder_signature_s 1491189594
 #define TYPEOF_bcore_precoder_source_s     700523377
 #define TYPEOF_bcore_precoder_target_s    4261411997
 #define TYPEOF_bcore_self_s                422978351
@@ -127,4 +124,3 @@
 #define TYPEOF_precoder                    285665067
 #define TYPEOF_selftest                   2526214595
 #define TYPEOF_st_s                       3358332604
-

@@ -136,7 +136,7 @@ typedef struct bcore_flect_flags_s
             // item represents a feature (features are used in perspectives; features are not traced in inst perspective)
             unsigned f_feature   : 1;
 
-            // item represents a feature and require objects using it to be self-aware
+            // item represents a feature; objects using it must be be self-aware; this flag is used for trait-consistency evaluations.
             unsigned f_feature_requires_awarenes : 1;
 
             // used in conjunction with 'feature' to determine if the feature is always existing (either by default or by object-sided implementation)
@@ -319,22 +319,25 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *  prefixes: (multiple prefixes can be mixed)
  *     private : Invisible to perspectives (no tracing, no copying, no ownership). Exception: spect_inst may initialize the field with zeros
  *     shell   : No physical representation in object. values are provided by get, set functions (used by spect_via; invisible to spect_inst)
- *     hidden  : Invisible to spect_via (can be seen as complement of 'shell')
+ *     hidden  : Invisible to spect_via (complementary to 'shell')
  *     spect   : Perspective of parent object (private shallow link). Initialized by spect_inst. Private to other perspectives.
  *     const   : Constant. Requires default value. No physical representation in object. Typically used as perspective-parameter.
  *     aware   : aware object (must be link or array of links); <type> can be virtual (e.g. trait); Example "aware bcore_source* source;"
  *     typed   : typed object where type is stored explicitly; <type> can be virtual (e.g. trait);  Example "typed bcore_source* source;"
  *
  *  Static Function:
- *    The reflection func indicates a function operating on or with the object of the reflection by taking
- *    a pointer to it as first argument. It does not occupy physical space in the object.
+ *    The reflection func declares a member function. It does not occupy physical space in the object.
+ *    It is used to establish function-bindings (e.g. with perspectives).
  *    func <type> <name> = <ftype>;  // ftype is the name for the function registered with BCORE_REGISTER_(F)FUNC
- *    func <type> <name>;            // ftype is the generic name: <object type>_<function name>
+ *    func <type> <name>;            // ftype is the generic name: <object type>_<name>
+ *    func <ptype> : <name>;         // translates into func <type> <name> with <type> := <ptype>_<name>;
+ *                                   //   this is typically used to conveniently declare bindings with features.
+ *    func         : <name>;         // [Planned] If <ptype> is omitted, <ptype> is assumed to be <trait-name>
  *    Examples:
- *      func bmath_fp:add;
+ *      func bmath_fp : add;
  *      func bmath_fp_add add;                                 // same as above
- *      func bmath_fp_add add = myobject_s_add;                // same as above in case object is 'myobject_s'
- *      func bmath_fp:vector_mul = bmath_vf3_s_mul;
+ *      func bmath_fp_add add = myobject_s_add;                // same as above assuming object is 'myobject_s'
+ *      func bmath_fp : vector_mul = bmath_vf3_s_mul;
  *      func bmath_fp_vector_mul vector_mul = bmath_vf3_s_mul; // same as above
  *
  *  Dynamic Function:

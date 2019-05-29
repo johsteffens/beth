@@ -26,13 +26,17 @@
  *  <precoded-file>.c and <precoded-file>.h are generated in the folder of the beth-source.
  *  Before <precoded-file>.? is being modified it is renamed to <precoded-file>.?.backup
  *
- *  During development, bl_t bcore_precoder_run_globally() should be executed.
- *  If it returns 'true' a rebuild is required.
+ *  During development, bl_t bcore_precoder_run_globally() should be executed at the beginning
+ *  of the program. If it returns 'true' precoded sources were modified and a rebuild is required.
  *
  *  Usage:
  *  BCORE_PRECODE( <group_name> )
  *  <precode-opener>
- *      feature [strict] '<flags>' <ret> <func_name>( const | mutable, <args> ) [ = <default_func> ];
+ *      signature <ret> <func_name>( const | mutable, <args> );
+ *      signature <signature> <func_name>[( <additional-args> )];
+ *      signature [ [<signature-group>] : ] <signature-name> [<func_name>] [( <additional-args> )];
+ *
+ *      feature [strict] '<flags>' <syntax-of-signature> [ = <default_func> ];
  *
  *      self <name> = <trait> { reflection-definition };
  *
@@ -92,6 +96,7 @@
  *    (Perspectives should not be explicitly defined here.)
  *    Function definitions in reflections are matched and bound to features. C-Prototypes are generated
  *    and registered as featured function.
+ *
  *    Special traits:
  *      bcore_array: expands additional array-functions
  *        void set_space( o, size ) // preallocation

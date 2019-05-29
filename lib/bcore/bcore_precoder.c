@@ -197,6 +197,32 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_args_s )
     "bcore_precoder_arg_s [] arr;"
 "}";
 
+// example:
+// signature void myfeature( mutable, sz_t a, sz_t b );
+BCORE_DECLARE_OBJECT( bcore_precoder_signature_s )
+{
+    aware_t _;
+    st_s name;       // myfeature
+    sc_t group_name;
+    sc_t item_name;
+    bl_t has_ret;
+    st_s ret_type;        // void
+    bcore_precoder_args_s args;       // sz_t a, sz_t b
+    bl_t mutable;
+};
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_signature_s )
+"{"
+    "aware_t _;"
+    "st_s name;"       // myfeature
+    "sc_t group_name;"
+    "sc_t item_name;"
+    "bl_t has_ret;"
+    "st_s ret_type;"        // void
+    "bcore_precoder_args_s args;"       // sz_t a, sz_t b
+    "bl_t mutable;"
+"}";
+
 //----------------------------------------------------------------------------------------------------------------------
 
 // example:
@@ -320,6 +346,7 @@ BCORE_DECLARE_OBJECT( bcore_precoder_group_s )
     tp_t id;
     tp_t hash;
     bl_t has_features;
+    bl_t has_signatures;
     bl_t is_aware;
     BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_precoder_item_s, );
     bcore_precoder_source_s* source;
@@ -332,6 +359,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_group_s )
     "tp_t id;"
     "tp_t hash;"
     "bl_t has_features;"
+    "bl_t has_signatures;"
     "bl_t is_aware;"
     "bcore_precoder_item_s => [] arr;"
     "private vd_t source;"
@@ -405,7 +433,10 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_s )
 
 /**********************************************************************************************************************/
 
-static bl_t bcore_precoder_s_register_item( bcore_precoder_s* o, const bcore_precoder_item_s* item );
+static bcore_precoder_s* precoder_g = NULL;
+static bl_t bcore_precoder_s_item_register( bcore_precoder_s* o, const bcore_precoder_item_s* item );
+static const bcore_precoder_item_s* bcore_precoder_s_item_get( const bcore_precoder_s* o, tp_t item_id );
+static bl_t                         bcore_precoder_s_item_exists( const bcore_precoder_s* o, tp_t item_id );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -438,6 +469,18 @@ static void bcore_precoder_args_s_compile( bcore_precoder_args_s* o, bcore_sourc
 {
     bcore_precoder_args_s_clear( o );
     while( bcore_source_a_parse_bl_fa( source, " #?',' " ) ) // args follow
+    {
+        bcore_precoder_arg_s* arg = bcore_precoder_arg_s_create();
+        bcore_precoder_arg_s_compile( arg, source );
+        bcore_array_a_push( ( bcore_array* ) o, sr_asd( arg ) );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_precoder_args_s_append( bcore_precoder_args_s* o, bcore_source* source )
+{
+    while( !bcore_source_a_parse_bl_fa( source, " #=?')' " ) ) // args follow
     {
         bcore_precoder_arg_s* arg = bcore_precoder_arg_s_create();
         bcore_precoder_arg_s_compile( arg, source );
@@ -502,6 +545,106 @@ static tp_t bcore_precoder_args_s_get_hash( const bcore_precoder_args_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static void bcore_precoder_signature_s_compile( bcore_precoder_signature_s* o, bcore_source* source )
+{
+    BCORE_LIFE_INIT();
+
+    BCORE_LIFE_CREATE( st_s, name_buf );
+    BCORE_LIFE_CREATE( st_s, name_candidate );
+    st_s_clear( &o->ret_type );
+
+    bcore_source_a_parse_fa( source, " #name", name_buf );
+
+    bl_t predefined = false;
+
+    if( !bcore_source_a_parse_bl_fa( source, " #=?'*'" ) )
+    {
+        if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
+        {
+            predefined = true;
+            bcore_source_a_parse_fa( source, " #name", name_candidate );
+            if( name_buf->size == 0 )
+            {
+                st_s_push_fa( name_buf, "#<sc_t>_#<sc_t>", o->group_name, name_candidate->sc );
+            }
+            else
+            {
+                st_s_push_fa( name_buf, "_#<sc_t>", name_candidate->sc );
+            }
+        }
+
+        tp_t tp_name = typeof( name_buf->sc );
+        // if name_buf refers to another signature
+        if( bcore_precoder_s_item_exists( precoder_g, tp_name ) )
+        {
+            const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder_g, tp_name );
+            if( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_signature_s )
+            {
+                const bcore_precoder_signature_s* signature = item->data.o;
+                o->has_ret = signature->has_ret;
+                st_s_copy( &o->ret_type, &signature->ret_type );
+                bcore_precoder_args_s_copy( &o->args, &signature->args );
+                o->mutable = signature->mutable;
+                predefined = true;
+            }
+        }
+        else if( predefined )
+        {
+            bcore_source_a_parse_err_fa( source, "Syntax error." );
+        }
+    }
+
+    if( !predefined )
+    {
+        // get return type
+        if( name_buf->size == 0 ) bcore_source_a_parse_err_fa( source, "Return type missing." );
+        st_s_push_fa( &o->ret_type, "#<sc_t>", name_buf->sc );
+        if( st_s_equal_sc( name_buf, "const" ) )
+        {
+            bcore_source_a_parse_fa( source, " #name", name_buf );
+            if( name_buf->size == 0 ) bcore_source_a_parse_err_fa( source, "Return type missing." );
+            st_s_push_fa( &o->ret_type, " #<sc_t>", name_buf->sc );
+        }
+        while( bcore_source_a_parse_bl_fa( source, " #?'*'" ) ) st_s_push_char( &o->ret_type, '*' );
+    }
+
+    // get name
+    bcore_source_a_parse_fa( source, " #name", &o->name );
+    if( o->name.size == 0 )
+    {
+        if( name_candidate->size > 0 )
+        {
+            st_s_copy( &o->name, name_candidate );
+        }
+        else
+        {
+            bcore_source_a_parse_err_fa( source, "Name missing." );
+        }
+    }
+
+    o->has_ret = !st_s_equal_sc( &o->ret_type, "void" );
+
+    // get or append args
+    if( !predefined )
+    {
+        bcore_source_a_parse_fa( source, " ( " );
+        if(      bcore_source_a_parse_bl_fa(  source, " #?'mutable' " ) ) o->mutable = true;
+        else if( bcore_source_a_parse_bl_fa(  source, " #?'const' "   ) ) o->mutable = false;
+        else     bcore_source_a_parse_err_fa( source, "'mutable' or 'const' expected." );
+        bcore_precoder_args_s_compile( &o->args, source );
+        bcore_source_a_parse_fa( source, " ) " );
+    }
+    else if( bcore_source_a_parse_bl_fa( source, " #?'('" ) )
+    {
+        bcore_precoder_args_s_append( &o->args, source );
+        bcore_source_a_parse_fa( source, " ) " );
+    }
+
+    BCORE_LIFE_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore_source* source )
 {
     BCORE_LIFE_INIT();
@@ -524,32 +667,14 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore
         bcore_source_a_parse_err_fa( source, "Feature: '<flags>' expected. Example: 'ptar'" );
     }
 
-    BCORE_LIFE_CREATE( st_s, name_buf );
-    st_s_clear( &o->ret_type );
-    bcore_source_a_parse_fa( source, " #name", name_buf );
-    if( name_buf->size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Return type missing." );
-    st_s_push_fa( &o->ret_type, "#<sc_t>", name_buf->sc );
-
-    if( st_s_equal_sc( name_buf, "const" ) )
-    {
-        bcore_source_a_parse_fa( source, " #name", name_buf );
-        if( name_buf->size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Return type missing." );
-        st_s_push_fa( &o->ret_type, " #<sc_t>", name_buf->sc );
-    }
-
-    while( bcore_source_a_parse_bl_fa( source, " #?'*'" ) ) st_s_push_char( &o->ret_type, '*' );
-
-    bcore_source_a_parse_fa( source, " #name ( ", &o->name );
-
-    if( o->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
-    o->has_ret = !st_s_equal_sc( &o->ret_type, "void" );
-
-    if(      bcore_source_a_parse_bl_fa(  source, " #?'mutable' " ) ) o->mutable = true;
-    else if( bcore_source_a_parse_bl_fa(  source, " #?'const' "   ) ) o->mutable = false;
-    else     bcore_source_a_parse_err_fa( source, "Feature: 'mutable' or 'const' expected." );
-
-    bcore_precoder_args_s_compile( &o->args, source );
-    bcore_source_a_parse_fa( source, " ) " );
+    BCORE_LIFE_CREATE( bcore_precoder_signature_s, signature );
+    signature->group_name = o->group_name;
+    bcore_precoder_signature_s_compile( signature, source );
+    st_s_copy( &o->name, &signature->name );
+    o->has_ret = signature->has_ret;
+    st_s_copy( &o->ret_type, &signature->ret_type );
+    bcore_precoder_args_s_copy( &o->args, &signature->args );
+    o->mutable = signature->mutable;
 
     if( bcore_source_a_parse_bl_fa( source, " #?'=' " ) )
     {
@@ -565,6 +690,22 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore
     bcore_source_a_parse_fa( source, " ; " );
 
     BCORE_LIFE_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static tp_t bcore_precoder_signature_s_get_hash( const bcore_precoder_signature_s* o )
+{
+    tp_t hash = bcore_tp_init();
+    hash = bcore_tp_fold_sc( hash, o->name.sc );
+    hash = bcore_tp_fold_sc( hash, o->group_name );
+    hash = bcore_tp_fold_sc( hash, o->item_name );
+
+    hash = bcore_tp_fold_u0( hash, o->has_ret ? 1 : 0 );
+    hash = bcore_tp_fold_sc( hash, o->ret_type.sc );
+    hash = bcore_tp_fold_tp( hash, bcore_precoder_args_s_get_hash( &o->args ) );
+    hash = bcore_tp_fold_u0( hash, o->mutable ? 1 : 0 );
+    return hash;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -767,9 +908,9 @@ static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_obj
     for( sz_t i = 0; i < items; i++ )
     {
         const bcore_self_item_s* self_item = bcore_self_s_get_item( &o->self, i );
-        if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_hmap_tpvd_s_exists( &precoder->hmap_item, self_item->type ) )
+        if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_precoder_s_item_exists( precoder, self_item->type ) )
         {
-            const bcore_precoder_item_s* item = *bcore_hmap_tpvd_s_get( &precoder->hmap_item, self_item->type );
+            const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder, self_item->type );
             ASSERT( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_feature_s );
             const bcore_precoder_feature_s* feature = item->data.o;
             bcore_sink_a_push_fa( sink, " \\\n#rn{ }  #<sc_t> #<sc_t>_#<sc_t>( ", indent, feature->ret_type.sc, o->item_name, ifnameof( self_item->name ) );
@@ -851,9 +992,9 @@ static void bcore_precoder_object_s_expand_init1( const bcore_precoder_object_s*
     for( sz_t i = 0; i < items; i++ )
     {
         const bcore_self_item_s* self_item = bcore_self_s_get_item( &o->self, i );
-        if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_hmap_tpvd_s_exists( &precoder->hmap_item, self_item->type ) )
+        if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_precoder_s_item_exists( precoder, self_item->type ) )
         {
-            const bcore_precoder_item_s* item = *bcore_hmap_tpvd_s_get( &precoder->hmap_item, self_item->type );
+            const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder, self_item->type );
             ASSERT( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_feature_s );
             const bcore_precoder_feature_s* feature = item->data.o;
             bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, feature->item_name, o->item_name, ifnameof( self_item->name ) );
@@ -871,6 +1012,12 @@ static void bcore_precoder_item_s_expand_declaration( const bcore_precoder_item_
         case TYPEOF_bcore_precoder_object_s:
         {
             bcore_precoder_object_s_expand_declaration( o->data.o, o->group->source->target->precoder, indent + 2, sink );
+        }
+        break;
+
+        case TYPEOF_bcore_precoder_signature_s:
+        {
+            // nothing to do
         }
         break;
 
@@ -900,6 +1047,12 @@ static void bcore_precoder_items_s_expand_indef_declaration( const bcore_precode
 {
     switch( sr_s_type( &o->data ) )
     {
+        case TYPEOF_bcore_precoder_signature_s:
+        {
+            // nothing to do
+        }
+        break;
+
         case TYPEOF_bcore_precoder_feature_s:
         {
             const bcore_precoder_feature_s* feature = o->data.o;
@@ -952,6 +1105,12 @@ static void bcore_precoder_item_s_expand_definition( const bcore_precoder_item_s
         }
         break;
 
+        case TYPEOF_bcore_precoder_signature_s:
+        {
+            /* nothing */
+        }
+        break;
+
         case TYPEOF_bcore_precoder_feature_s:
         {
             /* nothing */
@@ -981,6 +1140,12 @@ static void bcore_precoder_item_s_expand_init1( const bcore_precoder_item_s* o, 
         case TYPEOF_bcore_precoder_object_s:
         {
             bcore_precoder_object_s_expand_init1( o->data.o, o->group->source->target->precoder, indent, sink );
+        }
+        break;
+
+        case TYPEOF_bcore_precoder_signature_s:
+        {
+            // nothing to do
         }
         break;
 
@@ -1026,6 +1191,15 @@ static void bcore_precoder_item_s_setup( bcore_precoder_item_s* o, vc_t object )
         }
         break;
 
+        case TYPEOF_bcore_precoder_signature_s:
+        {
+            const bcore_precoder_signature_s* precoder_signature = object;
+            st_s_copy_fa( &o->name, "#<sc_t>_#<sc_t>", precoder_signature->group_name, precoder_signature->name.sc );
+            o->hash = bcore_precoder_signature_s_get_hash( precoder_signature );
+            ( ( bcore_precoder_signature_s* )o->data.o )->item_name = o->name.sc;
+        }
+        break;
+
         case TYPEOF_bcore_precoder_feature_s:
         {
             const bcore_precoder_feature_s* precoder_feature = object;
@@ -1057,7 +1231,7 @@ static void bcore_precoder_item_s_setup( bcore_precoder_item_s* o, vc_t object )
 
 /**********************************************************************************************************************/
 
-static bl_t bcore_precoder_s_register_group( bcore_precoder_s* o, const bcore_precoder_group_s* group );
+static bl_t bcore_precoder_s_group_register( bcore_precoder_s* o, const bcore_precoder_group_s* group );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -1135,6 +1309,26 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
 
             bcore_precoder_item_s_setup( item, precoder_object );
 
+            if( !bcore_precoder_s_item_register( o->source->target->precoder, item ) )
+            {
+                bcore_source_a_parse_err_fa( source, "Identifier #<sc_t> is already in use.", item->name.sc );
+            }
+            BCORE_LIFE_DOWN();
+        }
+        else if( bcore_source_a_parse_bl_fa( source, " #?w'signature' " ) )
+        {
+            BCORE_LIFE_INIT();
+            BCORE_LIFE_CREATE( bcore_precoder_signature_s, precoder_signature );
+            precoder_signature->group_name = o->name.sc;
+            bcore_precoder_signature_s_compile( precoder_signature, source );
+            bcore_source_a_parse_fa( source, " ; " );
+            bcore_precoder_item_s_setup( item, precoder_signature );
+            o->has_signatures = true;
+
+            if( !bcore_precoder_s_item_register( o->source->target->precoder, item ) )
+            {
+                bcore_source_a_parse_err_fa( source, "Identifier #<sc_t> is already in use.", item->name.sc );
+            }
             BCORE_LIFE_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'feature' " ) )
@@ -1149,6 +1343,10 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             o->has_features = true;
             if( precoder_feature->flag_a ) o->is_aware = true;
 
+            if( !bcore_precoder_s_item_register( o->source->target->precoder, item ) )
+            {
+                bcore_source_a_parse_err_fa( source, "Identifier #<sc_t> is already in use.", item->name.sc );
+            }
             BCORE_LIFE_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'name' " ) )
@@ -1157,8 +1355,9 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             BCORE_LIFE_CREATE( bcore_precoder_name_s, precoder_name );
             precoder_name->group_name = o->name.sc;
             bcore_precoder_name_s_compile( precoder_name, source );
-
             bcore_precoder_item_s_setup( item, precoder_name );
+
+            // names are not registered
 
             o->has_features = true;
             BCORE_LIFE_DOWN();
@@ -1169,10 +1368,6 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
         }
 
         o->hash = bcore_tp_fold_tp( o->hash, item->hash );
-        if( !bcore_precoder_s_register_item( o->source->target->precoder, item ) )
-        {
-            bcore_source_a_parse_err_fa( source, "Identifier #<sc_t> is already in use.", item->name.sc );
-        }
         bcore_array_a_push( ( bcore_array* )o, sr_asd( item ) );
     }
 }
@@ -1339,7 +1534,7 @@ static void bcore_precoder_source_s_compile( bcore_precoder_source_s* o, bcore_s
             group->hash = group->id;
             bcore_precoder_group_s_compile( group, source );
             o->hash = bcore_tp_fold_tp( o->hash, group->hash );
-            if( !bcore_precoder_s_register_group( o->target->precoder, group ) )
+            if( !bcore_precoder_s_group_register( o->target->precoder, group ) )
             {
                 bcore_source_a_parse_err_fa( source, "Group #<sc_t> is already in use.", group->name.sc );
             }
@@ -1566,22 +1761,56 @@ static bl_t bcore_precoder_target_s_expand( bcore_precoder_target_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// returns false if already registered
-static bl_t bcore_precoder_s_register_group( bcore_precoder_s* o, const bcore_precoder_group_s* group )
+/// returns false if already registered; checks for collision
+static bl_t bcore_precoder_s_group_register( bcore_precoder_s* o, const bcore_precoder_group_s* group )
 {
-    if( bcore_hmap_tpvd_s_exists( &o->hmap_group, group->id ) ) return false;
+    if( bcore_hmap_tpvd_s_exists( &o->hmap_group, group->id ) )
+    {
+        /// check collision
+        const bcore_precoder_group_s* registered_group = *bcore_hmap_tpvd_s_get( &o->hmap_group, group->id );
+        if( registered_group->hash != group->hash )
+        {
+            ERR_fa( "Collision detected: #<sc_t> vs #<sc_t>\n", group->name.sc, registered_group->name.sc );
+        }
+        return false;
+    }
     bcore_hmap_tpvd_s_set( &o->hmap_group, group->id, ( vd_t )group );
     return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// returns false if already registered
-static bl_t bcore_precoder_s_register_item( bcore_precoder_s* o, const bcore_precoder_item_s* item )
+/// returns false if already registered; checks for collision
+static bl_t bcore_precoder_s_item_register( bcore_precoder_s* o, const bcore_precoder_item_s* item )
 {
-    if( bcore_hmap_tpvd_s_exists( &o->hmap_item, item->id ) ) return false;
+    if( bcore_hmap_tpvd_s_exists( &o->hmap_item, item->id ) )
+    {
+        /// check collision
+        const bcore_precoder_item_s* registered_item = *bcore_hmap_tpvd_s_get( &o->hmap_item, item->id );
+        if( registered_item->hash != item->hash )
+        {
+            ERR_fa( "Collision detected: #<sc_t> vs #<sc_t>\n", item->name.sc, registered_item->name.sc );
+        }
+        return false;
+    }
+
     bcore_hmap_tpvd_s_set( &o->hmap_item, item->id, ( vd_t )item );
     return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static bl_t bcore_precoder_s_item_exists( const bcore_precoder_s* o, tp_t item_id )
+{
+    return bcore_hmap_tpvd_s_exists( &o->hmap_item, item_id );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static const bcore_precoder_item_s* bcore_precoder_s_item_get( const bcore_precoder_s* o, tp_t item_id )
+{
+    vd_t* ptr = bcore_hmap_tpvd_s_get( &o->hmap_item, item_id );
+    return ptr ? ( const bcore_precoder_item_s* )*ptr : NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1638,8 +1867,6 @@ static bl_t bcore_precoder_s_expand( bcore_precoder_s* o )
 /**********************************************************************************************************************/
 /// precoder interface
 
-static bcore_precoder_s* precoder_g = NULL;
-
 //----------------------------------------------------------------------------------------------------------------------
 
 void bcore_precoder_compile( sc_t target_name, sc_t source_path )
@@ -1688,6 +1915,7 @@ vd_t bcore_precoder_signal_handler( const bcore_signal_s* o )
         {
             BCORE_REGISTER_OBJECT( bcore_precoder_arg_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_args_s );
+            BCORE_REGISTER_OBJECT( bcore_precoder_signature_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_feature_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_object_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_name_s );
@@ -1710,6 +1938,7 @@ vd_t bcore_precoder_signal_handler( const bcore_signal_s* o )
         {
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_arg_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_args_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_precoder_signature_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_feature_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_object_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_name_s );

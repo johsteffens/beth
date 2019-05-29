@@ -34,15 +34,6 @@ vd_t bcore_spect_inst_call_signal_handler( const bcore_signal_s* o )
         }
         break;
 
-        case TYPEOF_get_quicktypes:
-        {
-            BCORE_REGISTER_QUICKTYPE( bcore_inst_call_init_x );
-            BCORE_REGISTER_QUICKTYPE( bcore_inst_call_down_e );
-            BCORE_REGISTER_QUICKTYPE( bcore_inst_call_copy_e );
-            BCORE_REGISTER_QUICKTYPE( bcore_inst_call_copy_x );
-        }
-        break;
-
         case TYPEOF_precoder:
         {
             bcore_precoder_compile( "bcore_precoded", __FILE__ );

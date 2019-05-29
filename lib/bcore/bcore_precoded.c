@@ -18,6 +18,9 @@
 #include "bcore_precoder_sample.h"
 
 //----------------------------------------------------------------------------------------------------------------------
+// group: bcore_precoder_sample_signatures
+
+//----------------------------------------------------------------------------------------------------------------------
 // group: bcore_precoder_sample_features
 
 BCORE_DEFINE_SPECT( bcore_inst, bcore_precoder_sample_features )
@@ -36,9 +39,9 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object_s )
     "aware_t _;"
     "st_s name1;"
     "sz_t => [] arr;"
-    "func bcore_precoder_sample_features:setup;"
-    "func bcore_precoder_sample_features:to_stdout;"
-    "func bcore_precoder_sample_features:get_size;"
+    "func bcore_precoder_sample_features : setup;"
+    "func bcore_precoder_sample_features : to_stdout;"
+    "func bcore_precoder_sample_features : get_size;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object2_s )
@@ -46,8 +49,8 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object2_s )
     "aware_t _;"
     "bcore_precoder_sample_object_s object;"
     "st_s name2;"
-    "func bcore_precoder_sample_features:setup;"
-    "func bcore_precoder_sample_features:to_stdout;"
+    "func bcore_precoder_sample_features : setup;"
+    "func bcore_precoder_sample_features : to_stdout;"
 "}";
 
 /**********************************************************************************************************************/
@@ -75,7 +78,7 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 2019306070 ) );
+            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 232936922 ) );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_setup );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_to_stdout );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_get_size );
@@ -93,6 +96,10 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bcore_inst_call_down_e );
             BCORE_REGISTER_FEATURE( bcore_inst_call_copy_e );
             BCORE_REGISTER_FEATURE( bcore_inst_call_copy_x );
+            BCORE_REGISTER_NAME( bcore_inst_call_init_x );
+            BCORE_REGISTER_NAME( bcore_inst_call_down_e );
+            BCORE_REGISTER_NAME( bcore_inst_call_copy_e );
+            BCORE_REGISTER_NAME( bcore_inst_call_copy_x );
             BCORE_REGISTER_SPECT( bcore_inst_call );
         }
         break;

@@ -23,10 +23,22 @@
 
 /**********************************************************************************************************************/
 
+#ifdef TYPEOF_bcore_precoder_sample_signatures
+BETH_PRECODE( bcore_precoder_sample_signatures )
+#ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    signature void setup( mutable, sz_t n );
+#endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // optional enclosure
+
 #ifdef TYPEOF_bcore_precoder_sample_features
 BETH_PRECODE( bcore_precoder_sample_features )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    feature strict 'ptar' void setup( mutable, sz_t n );
+    signature void sig_setup( mutable, sz_t n );
+
+//    feature strict 'ptar' void setup( mutable, sz_t n );
+
+    feature strict 'ptar' bcore_precoder_sample_signatures : setup;
+
     feature        'ptar' void to_stdout( const ) = to_stdout_default;
     feature        'ptar' sz_t get_size( const );
 
@@ -42,9 +54,9 @@ BETH_PRECODE( bcore_precoder_sample )
         aware_t _;
         st_s name1;
         sz_t => [] arr;
-        func bcore_precoder_sample_features:setup;
-        func bcore_precoder_sample_features:to_stdout;
-        func bcore_precoder_sample_features:get_size;
+        func bcore_precoder_sample_features : setup;
+        func bcore_precoder_sample_features : to_stdout;
+        func bcore_precoder_sample_features : get_size;
     };
 
     self bcore_precoder_sample_object2_s = bcore_inst
@@ -52,8 +64,8 @@ BETH_PRECODE( bcore_precoder_sample )
         aware_t _;
         bcore_precoder_sample_object_s object;
         st_s name2;
-        func bcore_precoder_sample_features:setup;
-        func bcore_precoder_sample_features:to_stdout;
+        func bcore_precoder_sample_features : setup;
+        func bcore_precoder_sample_features : to_stdout;
     };
 #endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // optional enclosure
