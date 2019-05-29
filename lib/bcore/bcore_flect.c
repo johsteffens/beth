@@ -310,10 +310,12 @@ void bcore_self_item_s_check_integrity( const bcore_self_item_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t parent, bl_t advanced_checks )
+static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const bcore_self_s* self, bl_t advanced_checks )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
+
+    tp_t parent_type = self ? self->type : 0;
 
     st_s* type_name = st_s_create_l( l );
     st_s* item_name = st_s_create_l( l );
@@ -325,6 +327,17 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
 
         if( extend_type_name )
         {
+            if( type_name->size == 0 )
+            {
+                if( self && self->trait )
+                {
+                    st_s_copy_sc( type_name, ifnameof( self->trait ) );
+                }
+                else
+                {
+                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction declaration with trait expansion: Parent has no trait.", ifnameof( parent_type ) );
+                }
+            }
 
             st_s* type_prefix = st_s_clone( type_name );
             st_s_copy_fa( type_name, "#<sc_t>_#<sc_t>", type_prefix->sc, item_name->sc );
@@ -340,9 +353,9 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
         {
             bcore_source_r_parse_fa( &src, "#name", assign_name );
         }
-        else if( parent )
+        else if( parent_type )
         {
-            st_s_push_fa( assign_name, "#<sc_t>_#<sc_t>", ifnameof( parent ), item_name->sc );
+            st_s_push_fa( assign_name, "#<sc_t>_#<sc_t>", ifnameof( parent_type ), item_name->sc );
         }
 
         if( !st_s_equal_sc( assign_name, "" ) )
@@ -350,7 +363,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
             tp_t func_tp = entypeof( assign_name->sc );
             if( advanced_checks && !bcore_function_exists( func_tp ) )
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' was not registered.", ifnameof( parent ), ifnameof( func_tp ) );
+                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' was not registered.", ifnameof( parent_type ), ifnameof( func_tp ) );
             }
 
             o->default_tp = func_tp;
@@ -358,7 +371,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
             {
                 if( !bcore_trait_is_of( func_tp, o->type ) )
                 {
-                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' is not of feature '#<sc_t>'.", ifnameof( parent ), ifnameof( func_tp ), ifnameof( o->type ) );
+                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' is not of feature '#<sc_t>'.", ifnameof( parent_type ), ifnameof( func_tp ), ifnameof( o->type ) );
                 }
             }
         }
@@ -389,55 +402,55 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
             f_any_prefix = false;
             if( bcore_source_r_parse_bl_fa( &src, " #?w'private'" ) )
             {
-                if( f_private ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'private' occurs twice.", ifnameof( parent ) );
+                if( f_private ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'private' occurs twice.", ifnameof( parent_type ) );
                 f_any_prefix = f_private = true;
             }
 
             if( bcore_source_r_parse_bl_fa( &src, " #?w'hidden'"  ) )
             {
-                if( f_hidden ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'hidden' occurs twice.", ifnameof( parent ) );
+                if( f_hidden ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'hidden' occurs twice.", ifnameof( parent_type ) );
                 f_any_prefix = f_hidden = true;
             }
 
             if( bcore_source_r_parse_bl_fa( &src, " #?w'shell'"   ) )
             {
-                if( f_shell ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'shell' occurs twice.", ifnameof( parent ) );
+                if( f_shell ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'shell' occurs twice.", ifnameof( parent_type ) );
                 f_any_prefix = f_shell = true;
             }
 
             if( bcore_source_r_parse_bl_fa( &src, " #?w'spect'"   ) )
             {
-                if( f_spect ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'spect' occurs twice.", ifnameof( parent ) );
+                if( f_spect ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'spect' occurs twice.", ifnameof( parent_type ) );
                 f_any_prefix = f_spect = true;
             }
 
             if( bcore_source_r_parse_bl_fa( &src, " #?w'const'"   ) )
             {
-                if( f_const ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'const' occurs twice.", ifnameof( parent ) );
+                if( f_const ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'const' occurs twice.", ifnameof( parent_type ) );
                 f_any_prefix = f_const = true;
             }
 
             if( bcore_source_r_parse_bl_fa( &src, " #?w'feature'"   ) )
             {
-                if( f_feature ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'feature' occurs twice.", ifnameof( parent ) );
+                if( f_feature ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'feature' occurs twice.", ifnameof( parent_type ) );
                 f_any_prefix = f_feature = true;
             }
 
             if( bcore_source_r_parse_bl_fa( &src, " #?w'strict'"   ) )
             {
-                if( f_strict ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'strict' occurs twice.", ifnameof( parent ) );
+                if( f_strict ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'strict' occurs twice.", ifnameof( parent_type ) );
                 f_any_prefix = f_strict = true;
             }
 
             if( bcore_source_r_parse_bl_fa( &src, " #?w'aware'"   ) )
             {
-                if( f_typed || f_aware ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefixes 'aware' occurs twice or mixed with 'typed'.", ifnameof( parent ) );
+                if( f_typed || f_aware ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefixes 'aware' occurs twice or mixed with 'typed'.", ifnameof( parent_type ) );
                 f_any_prefix = f_aware = true;
             }
 
             if( bcore_source_r_parse_bl_fa( &src, " #?w'typed'"   ) )
             {
-                if( f_typed || f_aware ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'typed' occurs twice or mixed with 'aware'.", ifnameof( parent ) );
+                if( f_typed || f_aware ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'typed' occurs twice or mixed with 'aware'.", ifnameof( parent_type ) );
                 f_any_prefix = f_typed = true;
             }
         }
@@ -493,12 +506,12 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
                 bcore_source_r_parse_fa( &src, "#<uz_t*> ", &array_fix_size );
                 if( !bcore_source_r_parse_bl_fa( &src, "#?']' " ) )
                 {
-                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n']' expected.", ifnameof( parent ) );
+                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n']' expected.", ifnameof( parent_type ) );
                 }
             }
             else
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n']' or array fixed-size expected.", ifnameof( parent ) );
+                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n']' or array fixed-size expected.", ifnameof( parent_type ) );
             }
         }
 
@@ -526,14 +539,14 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
 
         if( f_spect && ( !f_link || f_deep_copy ) )
         {
-            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPerspectives are shallow links. Use 'spect #<sc_t> ->' to clarify method of referencing.", ifnameof( parent ), type_name->sc );
+            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPerspectives are shallow links. Use 'spect #<sc_t> ->' to clarify method of referencing.", ifnameof( parent_type ), type_name->sc );
         }
 
         if( f_aware )
         {
             if( !f_link )
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nSelf-aware object must be referenced by a link. Use 'aware *|=>|->' to clarify method of referencing.", ifnameof( parent ) );
+                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nSelf-aware object must be referenced by a link. Use 'aware *|=>|->' to clarify method of referencing.", ifnameof( parent_type ) );
             }
             //o->type = 0;
             o->type = ( type_val > 0 ) ? type_val : ( type_name->size > 0 ? entypeof( type_name->sc ) : 0 );
@@ -544,12 +557,12 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
         {
             if( f_arr_fix )
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nTyped objects not supported for fixed size arrays. Suggest dynamic arrays.", ifnameof( parent ) );
+                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nTyped objects not supported for fixed size arrays. Suggest dynamic arrays.", ifnameof( parent_type ) );
             }
 
             if( !f_link && !f_arr_dyn )
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nTyped objects cannot be nested. Use 'typed *|=>|->' to clarify method of referencing.", ifnameof( parent ) );
+                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nTyped objects cannot be nested. Use 'typed *|=>|->' to clarify method of referencing.", ifnameof( parent_type ) );
             }
 
             o->type = ( type_val > 0 ) ? type_val : ( type_name->size > 0 ? entypeof( type_name->sc ) : 0 );
@@ -574,7 +587,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
         {
             if( o->caps != BCORE_CAPS_SOLID_STATIC )
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'aware_t' can only be used in single solid static nesting.", ifnameof( parent ) );
+                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'aware_t' can only be used in single solid static nesting.", ifnameof( parent_type ) );
             }
         }
 
@@ -631,7 +644,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
                         }
                         else
                         {
-                            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent ), ifnameof( o->type ) );
+                            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) );
                         }
                     }
                     break;
@@ -656,7 +669,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
                         tp_t func_tp = typeof( name->sc );
                         if( !bcore_function_exists( func_tp ) )
                         {
-                            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not a registered function.", ifnameof( parent ), name->sc );
+                            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not a registered function.", ifnameof( parent_type ), name->sc );
                         }
                         st_s_discard( name );
                         o->default_tp = func_tp;
@@ -673,14 +686,14 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
 
                             if( !bcore_function_exists( func_tp ) )
                             {
-                                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not a registered function.", ifnameof( parent ), name->sc );
+                                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not a registered function.", ifnameof( parent_type ), name->sc );
                             }
 
                             if( bcore_trait_exists( o->type ) )
                             {
                                 if( !bcore_trait_is_of( func_tp, o->type ) )
                                 {
-                                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' is not of feature '#<sc_t>'.", ifnameof( parent ), name->sc, ifnameof( o->type ) );
+                                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' is not of feature '#<sc_t>'.", ifnameof( parent_type ), name->sc, ifnameof( o->type ) );
                                 }
                             }
 
@@ -690,7 +703,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
                         }
                         else
                         {
-                            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent ), ifnameof( o->type ) );
+                            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) );
                         }
                     }
                 }
@@ -701,20 +714,20 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
                 bcore_source_r_parse_fa( &src, " #name", name );
                 if( name->size == 0 )
                 {
-                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>': Default must be a type name.", ifnameof( parent ), name->sc );
+                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>': Default must be a type name.", ifnameof( parent_type ), name->sc );
                 }
 
                 tp_t aware_tp = typeof( name->sc );
                 if( !bcore_flect_exists( aware_tp ) )
                 {
-                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' has no registered reflection.", ifnameof( parent ), name->sc );
+                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' has no registered reflection.", ifnameof( parent_type ), name->sc );
                 }
 
                 const bcore_self_s* self = bcore_flect_get_self( aware_tp );
 
                 if( !bcore_self_s_is_aware( self ) )
                 {
-                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not self-aware.", ifnameof( parent ), name->sc );
+                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not self-aware.", ifnameof( parent_type ), name->sc );
                 }
 
                 if( o->type != 0 ) // assume trait
@@ -726,7 +739,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
                         (
                             &src,
                             "Parent '#<sc_t>':\n'#<sc_t>' does not support trait '#<sc_t>' Reason:\n#<sc_t>",
-                            ifnameof( parent ),
+                            ifnameof( parent_type ),
                             name->sc,
                             ifnameof( o->type ),
                             log->sc
@@ -744,7 +757,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
                 bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nAssignment of default value possible for:\n"
                                                    "  - Single solid static nesting.\n"
                                                    "  - Aware link nesting (default must be an aware type with reflection).\n"
-                                                   "other capsulations cannot receive a default value.", ifnameof( parent ) );
+                                                   "other capsulations cannot receive a default value.", ifnameof( parent_type ) );
             }
         }
     }
@@ -753,7 +766,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, tp_t pa
     {
         o->flags.f_feature = true;
         o->child_item = bcore_self_item_s_create();
-        bcore_self_item_s_parse_src( o->child_item, src, 0, advanced_checks );
+        bcore_self_item_s_parse_src( o->child_item, src, NULL, advanced_checks );
     }
     else
     {
@@ -1040,7 +1053,7 @@ st_s* bcore_self_body_s_show( const bcore_self_body_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, tp_t parent, bl_t advanced_checks )
+static void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, const bcore_self_s* self, bl_t advanced_checks )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
@@ -1055,7 +1068,7 @@ static void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, tp_t pa
             break;
         }
         bcore_self_item_s* item = bcore_self_item_s_create();
-        bcore_self_item_s_parse_src( item, src, parent, advanced_checks );
+        bcore_self_item_s_parse_src( item, src, self, advanced_checks );
 
         if( item->type == typeof( "aware_t" ) )
         {
@@ -1446,7 +1459,7 @@ bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, bl_t advanced_chec
         o->trait  = type2 ? type2 : typeof( "bcore_inst" );
         o->parent = type3;
         o->body = bcore_self_body_s_create();
-        bcore_self_body_s_parse_src( o->body, src, o->type, advanced_checks );
+        bcore_self_body_s_parse_src( o->body, src, o, advanced_checks );
 
         if( !o->type )
         {
