@@ -49,9 +49,8 @@ BETH_PRECODE( bcore_precoder_sample_features )
 #ifdef TYPEOF_bcore_precoder_sample
 BETH_PRECODE( bcore_precoder_sample )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    self bcore_precoder_sample_object_s = bcore_inst
+    self : object_s = aware bcore_inst
     {
-        aware_t _;
         st_s name1;
         sz_t => [] arr;
         func bcore_precoder_sample_features : setup;
@@ -68,6 +67,7 @@ BETH_PRECODE( bcore_precoder_sample )
         func bcore_precoder_sample_features : to_stdout;
     };
 #endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #endif // optional enclosure
 
 /**********************************************************************************************************************/

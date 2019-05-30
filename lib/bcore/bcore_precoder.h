@@ -97,6 +97,9 @@
  *    Function definitions in reflections are matched and bound to features. C-Prototypes are generated
  *    and registered as featured function.
  *
+ *    Special conditions:
+ *      ':' following self means that '<group_name>_' is prefixed to the following name
+ *
  *    Special traits:
  *      bcore_array: expands additional array-functions
  *        void set_space( o, size ) // preallocation

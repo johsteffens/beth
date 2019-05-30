@@ -235,7 +235,7 @@ void st_s_print_fa( sc_t format, ... );
  *
  *  "#?w'...'"  word-match (Example: "#?w'hidden'")
  *      Argument: bl_t*
- *      Like "#?'...'" except that the matching criterion fails if the character following
+ *      Like "#?'...'" except that the matching criterion and consumption fails if the character following
  *      the matched string is a letter or digit. The letter following is never consumed.
  *
  *  "#?(...)"

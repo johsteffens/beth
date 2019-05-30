@@ -986,6 +986,28 @@ static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_obj
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static void bcore_precoder_object_s_expand_definition( const bcore_precoder_object_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
+{
+    const bcore_self_s* self = &o->self;
+    const st_s* self_string = &o->self_source;
+    sz_t idx = st_s_find_char( self_string, 0, -1, '=' );
+    sc_t self_def = "";
+    if( idx < self_string->size )
+    {
+        idx++;
+        self_def = self_string->sc + idx + 1;
+    }
+
+    bcore_sink_a_push_fa( sink, "\n" );
+    bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_OBJECT_INST_P( #<sc_t> )\n", indent, ifnameof( self->type ) );
+
+    st_s* multiline_string = create_structured_multiline_string( self_def, indent );
+    bcore_sink_a_push_fa( sink, "#<sc_t>;\n", multiline_string->sc );
+    st_s_discard( multiline_string );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static void bcore_precoder_object_s_expand_init1( const bcore_precoder_object_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
 {
     sz_t items = bcore_self_s_items_size( &o->self );
@@ -1089,19 +1111,7 @@ static void bcore_precoder_item_s_expand_definition( const bcore_precoder_item_s
     {
         case TYPEOF_bcore_precoder_object_s:
         {
-            const bcore_precoder_object_s* precoder_object = o->data.o;
-            const bcore_self_s* self = &precoder_object->self;
-            const st_s* self_string = &precoder_object->self_source;
-            sz_t idx = st_s_find_char( self_string, 0, -1, '{' );
-            sc_t self_body = "";
-            if( idx < self_string->size ) self_body = self_string->sc + idx;
-
-            bcore_sink_a_push_fa( sink, "\n" );
-            bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_OBJECT_INST( #<sc_t>, #<sc_t> )\n", indent, ifnameof( self->trait ), ifnameof( self->type ) );
-
-            st_s* multiline_string = create_structured_multiline_string( self_body, indent );
-            bcore_sink_a_push_fa( sink, "#<sc_t>;\n", multiline_string->sc );
-            st_s_discard( multiline_string );
+            bcore_precoder_object_s_expand_definition( o->data.o, NULL, indent, sink );
         }
         break;
 
@@ -1270,10 +1280,9 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
         {
             BCORE_LIFE_INIT();
             s3_t source_index1 = bcore_source_a_get_index( source );
-            bcore_self_s* self = BCORE_LIFE_A_PUSH( bcore_self_s_parse_source( source, 0, false ) );
+            bcore_self_s* self = BCORE_LIFE_A_PUSH( bcore_self_s_parse_source( source, 0, o->name.sc, false ) );
             s3_t source_index2 = bcore_source_a_get_index( source );
             bcore_source_a_set_index( source, source_index1 );
-
 
             BCORE_LIFE_CREATE( st_s, self_string );
 
@@ -1296,7 +1305,7 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             }
 
             st_s st_weak = st_weak_st( self_embedded_string );
-            bcore_self_s* embedded_self = BCORE_LIFE_A_PUSH( bcore_self_s_parse_source( ( bcore_source* )&st_weak, 0, false ) );
+            bcore_self_s* embedded_self = BCORE_LIFE_A_PUSH( bcore_self_s_parse_source( ( bcore_source* )&st_weak, 0, o->name.sc, false ) );
             if( bcore_self_s_cmp( self, embedded_self ) != 0 )
             {
                 bcore_source_a_parse_err_fa( source, "Precoder reflection embedding failed. Embedded code:\n#<sc_t>", self_embedded_string->sc );

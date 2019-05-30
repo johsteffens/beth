@@ -1053,33 +1053,45 @@ st_s* bcore_self_body_s_show( const bcore_self_body_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, const bcore_self_s* self, bl_t advanced_checks )
+static void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, const bcore_self_s* self, bl_t aware, bl_t advanced_checks )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
     bcore_self_body_s_clear( o );
-    bcore_source_r_parse_fa( &src, " { " );
 
-    while( !bcore_source_r_parse_bl_fa( &src, " #?'}' " ) )
+    if( aware )
     {
-        if( bcore_source_r_parse_bl_fa( &src, " #?'...'" ) )
-        {
-            o->complete = false;
-            break;
-        }
         bcore_self_item_s* item = bcore_self_item_s_create();
-        bcore_self_item_s_parse_src( item, src, self, advanced_checks );
-
-        if( item->type == typeof( "aware_t" ) )
-        {
-            if( o->size > 0 )
-            {
-                bcore_source_r_parse_err_fa( &src, "'aware_t' declares self-awareness. It can only be first element in body. Use type 'tp_t' elsewhere." );
-            }
-        }
-
+        item->type = TYPEOF_aware_t;
+        item->name = typeof( "_" );
+        item->caps = BCORE_CAPS_SOLID_STATIC;
         bcore_self_body_s_push_d( o, item );
     }
+
+    if( bcore_source_r_parse_bl_fa( &src, " #?'{' " ) )
+    {
+        while( !bcore_source_r_parse_bl_fa( &src, " #?'}' " ) )
+        {
+            if( bcore_source_r_parse_bl_fa( &src, " #?'...'" ) )
+            {
+                o->complete = false;
+                break;
+            }
+            bcore_self_item_s* item = bcore_self_item_s_create();
+            bcore_self_item_s_parse_src( item, src, self, advanced_checks );
+
+            if( item->type == typeof( "aware_t" ) )
+            {
+                if( o->size > 0 )
+                {
+                    bcore_source_r_parse_err_fa( &src, "'aware_t' declares self-awareness. It can only be first element in body. Use type 'tp_t' elsewhere." );
+                }
+            }
+
+            bcore_self_body_s_push_d( o, item );
+        }
+    }
+
 
     bcore_life_s_discard( l );
 }
@@ -1437,16 +1449,31 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware( uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, bl_t advanced_checks )
+bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, sc_t namespace, bl_t advanced_checks )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
     bcore_self_s* o = bcore_self_s_create();
 
     st_s* identifier = st_s_create_l( l );
-    bcore_source_r_parse_fa( &src, " #name", identifier );
+
+    if( bcore_source_r_parse_bl_fa( &src, " #?':'" ) )
+    {
+        ASSERT( namespace );
+        st_s* name = st_s_create();
+        bcore_source_r_parse_fa( &src, " #name", name );
+        st_s_copy_fa( identifier, "#<sc_t>_#<sc_t>", namespace, name->sc );
+        st_s_discard( name );
+    }
+    else
+    {
+        bcore_source_r_parse_fa( &src, " #name", identifier );
+    }
+
     o->type = ( identifier->size > 0 ) ? entypeof( identifier->sc ) : 0;
     if( o->type ) bcore_source_r_parse_fa( &src, " =" );
+
+    bl_t aware = bcore_source_r_parse_bl_fa( &src, " #?w'aware'" );
 
     bcore_source_r_parse_fa( &src, " #name", identifier );
     tp_t type2 = ( identifier->size > 0 ) ? entypeof( identifier->sc ) : 0;
@@ -1454,12 +1481,12 @@ bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, bl_t advanced_chec
     bcore_source_r_parse_fa( &src, " #name", identifier );
     tp_t type3 = ( identifier->size > 0 ) ? entypeof( identifier->sc ) : 0;
 
-    if( bcore_source_r_parse_bl_fa( &src, " #=?'{'" ) )
+    if( aware || bcore_source_r_parse_bl_fa( &src, " #=?'{'" ) )
     {
         o->trait  = type2 ? type2 : typeof( "bcore_inst" );
         o->parent = type3;
         o->body = bcore_self_body_s_create();
-        bcore_self_body_s_parse_src( o->body, src, o, advanced_checks );
+        bcore_self_body_s_parse_src( o->body, src, o, aware, advanced_checks );
 
         if( !o->type )
         {
@@ -1472,6 +1499,7 @@ bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, bl_t advanced_chec
         const bcore_self_s* self_l = bcore_flect_try_self( type2 );
         if( !self_l ) bcore_source_r_parse_errf( &src, "Type %s not defined.", ifnameof( type2 ) );
         o->trait = self_l->trait;
+        o->parent = self_l->parent;
         o->body = bcore_self_body_s_clone( self_l->body );
         o->size = self_l->size;
     }
@@ -1483,16 +1511,16 @@ bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, bl_t advanced_chec
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_self_s* bcore_self_s_parse_source( bcore_source* source, uz_t size_of, bl_t advanced_checks )
+bcore_self_s* bcore_self_s_parse_source( bcore_source* source, uz_t size_of, sc_t namespace, bl_t advanced_checks )
 {
-    return bcore_self_s_parse_src( sr_awd( source ), size_of, advanced_checks );
+    return bcore_self_s_parse_src( sr_awd( source ), size_of, namespace, advanced_checks );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of )
 {
-    return bcore_self_s_parse_src( src, size_of, true );
+    return bcore_self_s_parse_src( src, size_of, NULL, true );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

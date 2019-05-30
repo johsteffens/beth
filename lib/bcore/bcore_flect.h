@@ -293,7 +293,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
 
 /** Creating a reflection by parsing a stream:
  *  Typical Format:
- *  <type-name> = [<trait-name> [<parent-name>]]
+ *  [:]<type-name> = [aware] [<trait-name> [<parent-name>]]
  *  {
  *      [<prefixes>] <type> [:] [<qualifier>] <name> [=<default>];
  *
@@ -304,7 +304,8 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *  }
  *
  *  <type>:
- *    <type name> | <type number>
+ *    [:] <type name> | <type number>
+ *    if a colon precedes name than name is namespace-expanded.
  *
  *  colon:
  *    If ':' follows <type>, '_<name>' is appended to the type name. (In some constructions this reduces redundancy)
@@ -373,11 +374,15 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *        Caution: Incomplete body may only be used when the alignment from existing body elements is identical with
  *                 the alignment of the object.
  *
+ *    Self-aware objects:
+ *      Reflections of self aware objects have 'aware_t _;' as first physical element definition;
+ *      Alternative the keyword 'aware' may follow '='
+ *
  *    No body: Allowed for certain leaf types, where alignment == object size.
  *
  */
-bcore_self_s* bcore_self_s_parse_src(          sr_s src,             uz_t size_of, bl_t advanced_checks );
-bcore_self_s* bcore_self_s_parse_source(       bcore_source* source, uz_t size_of, bl_t advanced_checks );
+bcore_self_s* bcore_self_s_parse_src(          sr_s src,             uz_t size_of, sc_t namespace, bl_t advanced_checks );
+bcore_self_s* bcore_self_s_parse_source(       bcore_source* source, uz_t size_of, sc_t namespace, bl_t advanced_checks );
 
 bcore_self_s* bcore_self_s_build_parse_src(    sr_s src,             uz_t size_of ); // with advanced checks
 bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of ); // with advanced checks

@@ -34,9 +34,9 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_precoder_sample_features )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_precoder_sample
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object_s )
+BCORE_DEFINE_OBJECT_INST_P( bcore_precoder_sample_object_s )
+"aware bcore_inst"
 "{"
-    "aware_t _;"
     "st_s name1;"
     "sz_t => [] arr;"
     "func bcore_precoder_sample_features : setup;"
@@ -44,7 +44,8 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object_s )
     "func bcore_precoder_sample_features : get_size;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_sample_object2_s )
+BCORE_DEFINE_OBJECT_INST_P( bcore_precoder_sample_object2_s )
+"bcore_inst"
 "{"
     "aware_t _;"
     "bcore_precoder_sample_object_s object;"
@@ -78,7 +79,7 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 232936922 ) );
+            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 3996365173 ) );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_setup );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_to_stdout );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_get_size );
