@@ -18,7 +18,64 @@
 
 #include "bmath_std.h"
 #include "badapt_precoded.h"
-#include "badapt_features.h"
+
+/**********************************************************************************************************************/
+
+/// activation function
+BETH_PRECODE( badapt_activation )
+#ifdef BETH_PRECODE_SECTION
+    feature strict 'pa' f3_t fx( const, f3_t x ); // y  = f( x )
+    feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
+
+    // (logistic function)
+    self :lgst_s       = aware badapt_activation { func :fx; func :dy; }; // f( x ) = 1.0 / ( 1.0 + exp( -x ) )
+    self :lgst_hard_s  = aware badapt_activation { func :fx; func :dy; }; // f( x ) = ( x < -2 ) ? 0 : ( x > 2 ) ? 1 : 0.25 * ( x + 2 )
+    self :lgst_leaky_s = aware badapt_activation { func :fx; func :dy; }; // f( x ) = ( x < -2 ) ? 0.01 * ( x + 2 ) : ( x > 2 ) ? 1 + 0.01 * ( x - 2 ) : 0.25 * ( x + 2 )
+
+    // tanh
+    self :tanh_s       = aware badapt_activation { func :fx; func :dy; }; // f(x) = tanh(x)
+    self :tanh_hard_s  = aware badapt_activation { func :fx; func :dy; }; // f(x) = ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x
+    self :tanh_leaky_s = aware badapt_activation { func :fx; func :dy; }; // f(x) = ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x
+
+    // softplus function
+    self :softplus_s   = aware badapt_activation { func :fx; func :dy; }; // f(x) = log( 1.0 + exp( x ) )
+    self :relu_s       = aware badapt_activation { func :fx; func :dy; }; // f(x) = x > 0 ? x : 0
+    self :leaky_relu_s = aware badapt_activation { func :fx; func :dy; }; // f(x) = x > 0 ? x : 0.01*x
+
+#endif // BETH_PRECODE_SECTION
+
+/**********************************************************************************************************************/
+
+/// activator: (adaptive) activation applied to a vector
+BETH_PRECODE( badapt_activator )
+#ifdef BETH_PRECODE_SECTION
+
+    /// resets trainable components with given seed
+    feature strict 'a' void reset( mutable );
+
+    /// should be called once before use
+    feature strict 'a' void setup( mutable );
+
+    /// vector size
+    feature        'a' sz_t get_size( const );
+    feature        'a' void set_size( mutable, sz_t size );
+
+    /// activation function
+    feature        'a' const badapt_activation* get_activation( const );
+    feature        'a' void set_activation( mutable, const badapt_activation* activation );
+
+    /// fast concurrent inference
+    feature strict 'a' void infer( const, const bmath_vf3_s* in, bmath_vf3_s* out );
+
+    /// fast concurrent gradient backpropagation (no changing of state)
+    /// grad_in and grad_out may refer to the same object
+    feature strict 'a' void bgrad( const, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
+
+    /// adaptation step after last minfer for given gradient; grad_in can be NULL
+    /// grad_in and grad_out may refer to the same object
+    feature strict 'a' void adapt( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t step );
+
+#endif // BETH_PRECODE_SECTION
 
 /**********************************************************************************************************************/
 
@@ -26,40 +83,6 @@
 BETH_PRECODE( badapt_activation_objects )
 #ifdef BETH_PRECODE_SECTION
 
-// logistic function
-// f( x ) = 1.0 / ( 1.0 + exp( -x ) )
-self badapt_activation_lgst_s       = badapt_activation { aware_t _; func : fx; func : dy; };
-
-// hard logistic approximation
-// f( x ) = ( x < -2 ) ? 0 : ( x > 2 ) ? 1 : 0.25 * ( x + 2 )
-self badapt_activation_lgst_hard_s  = badapt_activation { aware_t _; func : fx; func : dy; };
-
-// leaky logistic approximation
-// f( x ) = ( x < -2 ) ? 0.01 * ( x + 2 ) : ( x > 2 ) ? 1 + 0.01 * ( x - 2 ) : 0.25 * ( x + 2 )
-self badapt_activation_lgst_leaky_s = badapt_activation { aware_t _; func : fx; func : dy; };
-
-// f(x) = tanh(x)
-self badapt_activation_tanh_s       = badapt_activation { aware_t _; func : fx; func : dy; };
-
-// hard tanh approximation
-// f(x) = ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x
-self badapt_activation_tanh_hard_s  = badapt_activation { aware_t _; func : fx; func : dy; };
-
-// leaky tanh approximation
-// f(x) = ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x
-self badapt_activation_tanh_leaky_s = badapt_activation { aware_t _; func : fx; func : dy; };
-
-// softplus function
-// f(x) = log( 1.0 + exp( x ) )
-self badapt_activation_softplus_s   = badapt_activation { aware_t _; func : fx; func : dy; };
-
-// hard softplus approximation
-// f(x) = x > 0 ? x : 0 (softplus approximation)
-self badapt_activation_relu_s       = badapt_activation { aware_t _; func : fx; func : dy; };
-
-// leaky softplus approximation
-// f(x) = x > 0 ? x : 0.01*x
-self badapt_activation_leaky_relu_s = badapt_activation { aware_t _; func : fx; func : dy; };
 
 #endif // BETH_PRECODE_SECTION
 

@@ -18,7 +18,7 @@
 
 #include "bmath_std.h"
 #include "badapt_precoded.h"
-#include "badapt_features.h"
+#include "badapt_loss.h"
 
 /**********************************************************************************************************************/
 

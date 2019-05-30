@@ -17,7 +17,7 @@
 #define BADAPT_PROBLEM_H
 
 #include "bmath_std.h"
-#include "badapt_features.h"
+#include "badapt_loss.h"
 #include "badapt_training.h"
 
 /**********************************************************************************************************************/

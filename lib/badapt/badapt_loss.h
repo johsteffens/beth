@@ -18,23 +18,18 @@
 
 #include "bmath_std.h"
 #include "badapt_precoded.h"
-#include "badapt_features.h"
 
 /**********************************************************************************************************************/
 
-BETH_PRECODE( badapt_loss_objects )
-#ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+BETH_PRECODE( badapt_loss )
+#ifdef BETH_PRECODE_SECTION
+    feature strict 'pa' f3_t loss(    const, const bmath_vf3_s* out, const bmath_vf3_s* target );                    // loss function
+    feature strict 'pa' f3_t loss_f3( const, f3_t               out, f3_t               target );                    // loss function on scalars
+    feature strict 'pa' void bgrad(   const, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad ); // computes loss minimizing backward gradient of x
 
-self badapt_loss_l2_s = badapt_loss
-{
-    aware_t _;
-    func : loss;
-    func : loss_f3;
-    func : bgrad;
-};
-
-#endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+    // l2 loss function
+    self :l2_s = aware badapt_loss { func :loss; func :loss_f3; func :bgrad; };
+#endif // BETH_PRECODE_SECTION
 
 /**********************************************************************************************************************/
 
