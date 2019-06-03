@@ -211,9 +211,23 @@ void badapt_activator_plain_s_bgrad( const badapt_activator_plain_s* o, bmath_vf
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void badapt_activator_plain_s_adapt( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t step )
+void badapt_activator_plain_s_adapt( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon )
 {
     badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void badapt_activator_plain_s_adapt_defer( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out )
+{
+    badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void badapt_activator_plain_s_adapt_apply( badapt_activator_plain_s* o, f3_t epsilon )
+{
+    /// nothing to do
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -244,7 +258,8 @@ void badapt_activator_bias_s_setup( badapt_activator_bias_s* o )
 
 void badapt_activator_bias_s_reset( badapt_activator_bias_s* o )
 {
-    o->arr_bias_size = 0;
+    bmath_vf3_s_clear( &o->v_bias );
+    bmath_vf3_s_clear( &o->v_bias_deferred );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -255,14 +270,14 @@ void badapt_activator_bias_s_infer( const badapt_activator_bias_s* o, const bmat
 
     const badapt_activation_s* activation_p = badapt_activation_s_get_aware( o->activation );
 
-    if( o->arr_bias_size == 0 )
+    if( o->v_bias.size == 0 )
     {
         for( sz_t i = 0; i < out->size; i++ ) out->data[ i ] = badapt_activation_p_fx( activation_p, o->activation, in->data[ i ] );
     }
     else
     {
-        assert( in->size == o->arr_bias_size );
-        for( sz_t i = 0; i < out->size; i++ ) out->data[ i ] = badapt_activation_p_fx( activation_p, o->activation, in->data[ i ] + o->arr_bias_data[ i ] );
+        assert( in->size == o->v_bias.size );
+        for( sz_t i = 0; i < out->size; i++ ) out->data[ i ] = badapt_activation_p_fx( activation_p, o->activation, in->data[ i ] + o->v_bias.data[ i ] );
     }
 }
 
@@ -278,17 +293,17 @@ void badapt_activator_bias_s_bgrad( const badapt_activator_bias_s* o, bmath_vf3_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void badapt_activator_bias_s_adapt( badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t step )
+void badapt_activator_bias_s_adapt( badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon )
 {
     badapt_activator_bias_s_bgrad( o, grad_in, grad_out, out );
 
-    if( o->arr_bias_size == 0 )
+    if( o->v_bias.size != out->size )
     {
-        bcore_array_a_set_size( ( bcore_array* )o, out->size );
-        for( sz_t i = 0; i < out->size; i++ ) o->arr_bias_data[ i ] = 0;
+        bmath_vf3_s_set_size( &o->v_bias, out->size );
+        bmath_vf3_s_zro( &o->v_bias );
     }
 
-    for( sz_t i = 0; i < out->size; i++ ) o->arr_bias_data[ i ] += grad_in->data[ i ] * step;
+    for( sz_t i = 0; i < out->size; i++ ) o->v_bias.data[ i ] += grad_in->data[ i ] * epsilon;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -303,6 +318,35 @@ const badapt_activation* badapt_activator_bias_s_get_activation( const badapt_ac
 void badapt_activator_bias_s_set_activation( badapt_activator_bias_s* o, const badapt_activation* activation )
 {
     badapt_activation_a_replicate( &o->activation, activation );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void badapt_activator_bias_s_adapt_defer( badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out )
+{
+    badapt_activator_bias_s_bgrad( o, grad_in, grad_out, out );
+
+    if( o->v_bias_deferred.size != out->size )
+    {
+        bmath_vf3_s_set_size( &o->v_bias_deferred, out->size );
+        bmath_vf3_s_zro( &o->v_bias_deferred );
+    }
+
+    for( sz_t i = 0; i < out->size; i++ ) o->v_bias_deferred.data[ i ] += grad_in->data[ i ];
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void badapt_activator_bias_s_adapt_apply( badapt_activator_bias_s* o, f3_t epsilon )
+{
+    if( o->v_bias.size != o->v_bias_deferred.size )
+    {
+        bmath_vf3_s_set_size( &o->v_bias, o->v_bias_deferred.size );
+        bmath_vf3_s_zro( &o->v_bias );
+    }
+
+    for( sz_t i = 0; i < o->v_bias.size; i++ ) o->v_bias.data[ i ] += o->v_bias_deferred.data[ i ] * epsilon;
+    bmath_vf3_s_zro( &o->v_bias_deferred );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

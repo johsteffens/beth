@@ -54,7 +54,7 @@ self badapt_c1d_s = badapt_adaptive
 
     // === architecture parameters ================================
 
-    badapt_dynamics_s      dynamics;
+    badapt_dynamics_std_s      dynamics;
     badapt_c1d_arr_layer_s arr_layer;
     sz_t max_buffer_size;
 
@@ -68,8 +68,8 @@ self badapt_c1d_s = badapt_adaptive
     func : get_in_size;
     func : get_out_size;
 
-    func : get_dynamics;
-    func : set_dynamics;
+    func : get_dynamics_std;
+    func : set_dynamics_std;
 
     func : arc_to_sink;
     func : infer;
@@ -97,7 +97,7 @@ self badapt_builder_c1d_funnel_s = badapt_builder
     sz_t convolution_size       = 2; // dimensionality convolution size
     u2_t random_seed         = 1234; // random seed variable (for random initialization)
 
-    badapt_dynamics_s dynamics;
+    badapt_dynamics_std_s dynamics;
 
     badapt_arr_layer_activator_s arr_layer_activator;
 

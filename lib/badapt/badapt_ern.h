@@ -40,66 +40,75 @@ BETH_PRECODE( badapt_ern )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_ern_s = badapt_adaptive
+self :layer_s = bcore_inst
 {
-    aware_t _;
+    hidden bmath_vf3_s v_x;
+    hidden bmath_vf3_s v_c;
+    hidden bmath_vf3_s v_h;
+};
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+self :arr_layer_s = aware bcore_array{ badapt_ern_layer_s => [] arr; };
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+self :s = aware badapt_adaptive
+{
     // === architecture parameters ================================
     sz_t size_input;
+    sz_t size_hidden;
     sz_t size_output;
+    sz_t size_unfolded;
 
-    badapt_dynamics_s dynamics;
+    badapt_dynamics_std_s dynamics;
 
-    bmath_mf3_s wgt_input;
-    bmath_mf3_s wgt_context;
-    bmath_mf3_s wgt_hidden;
+    bmath_mf3_s w_hx;
+    bmath_mf3_s w_hc;
+    bmath_mf3_s w_o;
 
-    f3_t context_epsilon_factor = 1.0;
-
-    aware badapt_activator => activator_hidden;
-    aware badapt_activator => activator_output;
+    aware badapt_activator => a_h;
+    aware badapt_activator => a_o;
 
     // === runtime data =============================================
+    hidden bmath_vf3_s v_o;
 
-    hidden bmath_vf3_s vec_input;
-    hidden bmath_vf3_s vec_context;  // recurred from vec_hidden
-    hidden bmath_vf3_s vec_hidden;
-    hidden bmath_vf3_s vec_output;
+    /// gradients
+    hidden bmath_vf3_s v_go;
+    hidden bmath_vf3_s v_gc;
+    hidden bmath_vf3_s v_gh;
+    hidden bmath_mf3_s gw_hx;
+    hidden bmath_mf3_s gw_hc;
 
+    hidden badapt_ern_arr_layer_s arr_layer;
     // ==============================================================
 
     // === adaptive functions =======================================
     func : get_in_size;
     func : get_out_size;
-
-    func : get_dynamics;
-    func : set_dynamics;
-
+    func : get_dynamics_std;
+    func : set_dynamics_std;
     func : arc_to_sink;
     func : minfer;
-
-    func : bgrad;
     func : bgrad_adapt;
     // ==============================================================
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_builder_ern_s = badapt_builder
+self :builder_s = aware badapt_builder
 {
-    aware_t _;
-
     sz_t size_input;
     sz_t size_hidden = 8;
     sz_t size_output = 1;
-    badapt_dynamics_s dynamics;
+    sz_t size_unfolded = 1;  // number of unfolded time steps during learning
 
-    f3_t context_epsilon_factor = 1.0;
+    badapt_dynamics_std_s dynamics;
 
-    u2_t random_seed     = 1234;   // random seed variable (for random initialization)
+    u2_t random_seed = 1234;   // random seed variable (for random initialization)
 
-    aware badapt_activator => activator_hidden;
-    aware badapt_activator => activator_output;
+    aware badapt_activator => a_h;
+    aware badapt_activator => a_o;
 
     // === builder functions =======================================
 

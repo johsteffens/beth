@@ -16,6 +16,33 @@
 #include "badapt_adaptive.h"
 
 /**********************************************************************************************************************/
+// badapt_dynamics
+
+void badapt_dynamics_std_s_weights_adapt( const badapt_dynamics_std_s* o, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor )
+{
+    assert( w->rows == grad_out->size );
+    assert( w->cols == in->size );
+
+    f3_t epsilon = o->epsilon * epsilon_factor;
+    f3_t l2_reg_factor = ( 1.0 - o->lambda_l2  * epsilon );
+    f3_t l1_reg_offset = o->lambda_l1 * epsilon;
+
+    for( sz_t i = 0; i < w->rows; i++ )
+    {
+        f3_t* wr = w->data + i * w->stride;
+        f3_t gi = epsilon * grad_out->data[ i ];
+        for( sz_t j = 0; j < w->cols; j++ ) wr[ j ] = ( wr[ j ] + in->data[ j ] * gi ) * l2_reg_factor;
+        if( l1_reg_offset > 0 )
+        {
+            for( sz_t j = 0; j < w->cols; j++ ) wr[ j ] += ( wr[ j ] > 0 ) ? -l1_reg_offset : l1_reg_offset;
+        }
+    }
+    assert( !bmath_mf3_s_is_nan( w ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 

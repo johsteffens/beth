@@ -93,10 +93,8 @@ self badapt_progress_s = bcore_inst
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_training_state_std_s = badapt_training_state
+self badapt_training_state_std_s = aware badapt_training_state
 {
-    aware_t _;
-
     badapt_progress_s progress;
 
     // adaptive to be trained
@@ -120,17 +118,15 @@ self badapt_training_state_std_s = badapt_training_state
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_guide_std_s = badapt_guide
+self badapt_guide_std_s = aware badapt_guide
 {
-    aware_t _;
     f3_t annealing_factor = 0.99;
 
     // logging
     hidden aware bcore_sink -> log;
 
     func bcore_inst_call : init_x; // constructor
-
-    func : callback;
+    func badapt_guide    : callback;
 };
 
 #endif // BETH_PRECODE_SECTION

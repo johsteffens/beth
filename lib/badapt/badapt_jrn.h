@@ -40,15 +40,13 @@ BETH_PRECODE( badapt_jrn )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_jrn_s = badapt_adaptive
+self badapt_jrn_s = aware badapt_adaptive
 {
-    aware_t _;
-
     // === architecture parameters ================================
     sz_t size_input;
     sz_t size_output;
 
-    badapt_dynamics_s dynamics;
+    badapt_dynamics_std_s dynamics;
 
     bmath_mf3_s wgt_input;
     bmath_mf3_s wgt_context;
@@ -72,8 +70,8 @@ self badapt_jrn_s = badapt_adaptive
     func : get_in_size;
     func : get_out_size;
 
-    func : get_dynamics;
-    func : set_dynamics;
+    func : get_dynamics_std;
+    func : set_dynamics_std;
 
     func : arc_to_sink;
     func : minfer;
@@ -85,14 +83,12 @@ self badapt_jrn_s = badapt_adaptive
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_builder_jrn_s = badapt_builder
+self badapt_builder_jrn_s = aware badapt_builder
 {
-    aware_t _;
-
     sz_t size_input;
     sz_t size_hidden = 8;
     sz_t size_output = 1;
-    badapt_dynamics_s dynamics;
+    badapt_dynamics_std_s dynamics;
 
     f3_t context_epsilon_factor = 1.0;
 

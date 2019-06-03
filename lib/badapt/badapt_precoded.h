@@ -16,15 +16,30 @@
 // source: badapt_adaptive
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: badapt_adaptive_objects
+// group: badapt_dynamics
 
-#define TYPEOF_badapt_adaptive_objects 1373746825
-  #define TYPEOF_badapt_dynamics_s 1839376072
-  #define BETH_EXPAND_ITEM_badapt_dynamics_s \
-    BCORE_DECLARE_OBJECT( badapt_dynamics_s ) \
-      {aware_t _;f3_t epsilon;f3_t lambda_l1;f3_t lambda_l2;};
-#define BETH_EXPAND_GROUP_badapt_adaptive_objects \
-  BETH_EXPAND_ITEM_badapt_dynamics_s
+#define TYPEOF_badapt_dynamics 776275350
+#define TYPEOF_badapt_dynamics_s 1839376072
+  #define TYPEOF_badapt_dynamics_std_s 2426636234
+  #define BETH_EXPAND_ITEM_badapt_dynamics_std_s \
+    BCORE_DECLARE_OBJECT( badapt_dynamics_std_s ) \
+      {aware_t _;f3_t epsilon;f3_t lambda_l1;f3_t lambda_l2;}; \
+    void badapt_dynamics_std_s_weights_adapt( const badapt_dynamics_std_s* o, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor );
+#define BETH_EXPAND_GROUP_badapt_dynamics \
+  BCORE_FORWARD_OBJECT( badapt_dynamics ); \
+  typedef void (*badapt_dynamics_weights_adapt)( const badapt_dynamics* o, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor ); \
+  BCORE_DECLARE_SPECT( badapt_dynamics ) \
+  { \
+      bcore_spect_header_s header; \
+      badapt_dynamics_weights_adapt weights_adapt; \
+  }; \
+  static inline badapt_dynamics* badapt_dynamics_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_badapt_dynamics, t ); return ( badapt_dynamics* )bcore_inst_t_create( t ); } \
+  static inline badapt_dynamics* badapt_dynamics_a_clone( const badapt_dynamics* o ) { return ( badapt_dynamics* )bcore_inst_a_clone( ( bcore_inst* )o ); } \
+  static inline void badapt_dynamics_a_discard( badapt_dynamics* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); } \
+  static inline void badapt_dynamics_a_replicate( badapt_dynamics** o, const badapt_dynamics* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); } \
+  static inline void badapt_dynamics_a_weights_adapt( const badapt_dynamics* o, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor ) { badapt_dynamics_s_get_aware( o )->weights_adapt( o, in, w, grad_out, epsilon_factor ); } \
+  static inline bl_t badapt_dynamics_a_defines_weights_adapt( const badapt_dynamics* o ) { return true; } \
+  BETH_EXPAND_ITEM_badapt_dynamics_std_s
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_adaptive
@@ -39,8 +54,8 @@
   typedef void (*badapt_adaptive_minfer)( badapt_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
   typedef void (*badapt_adaptive_bgrad)( const badapt_adaptive* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ); \
   typedef void (*badapt_adaptive_bgrad_adapt)( badapt_adaptive* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ); \
-  typedef void (*badapt_adaptive_get_dynamics)( const badapt_adaptive* o, badapt_dynamics_s* dynamics ); \
-  typedef void (*badapt_adaptive_set_dynamics)( badapt_adaptive* o, const badapt_dynamics_s* dynamics ); \
+  typedef void (*badapt_adaptive_get_dynamics_std)( const badapt_adaptive* o, badapt_dynamics_std_s* dynamics ); \
+  typedef void (*badapt_adaptive_set_dynamics_std)( badapt_adaptive* o, const badapt_dynamics_std_s* dynamics ); \
   typedef void (*badapt_adaptive_arc_to_sink)( const badapt_adaptive* o, bcore_sink* sink ); \
   typedef f3_t (*badapt_adaptive_infer_f3)( const badapt_adaptive* o, const bmath_vf3_s* in ); \
   typedef void (*badapt_adaptive_adapt_loss)( badapt_adaptive* o, const badapt_loss* loss, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ); \
@@ -54,8 +69,8 @@
       badapt_adaptive_minfer minfer; \
       badapt_adaptive_bgrad bgrad; \
       badapt_adaptive_bgrad_adapt bgrad_adapt; \
-      badapt_adaptive_get_dynamics get_dynamics; \
-      badapt_adaptive_set_dynamics set_dynamics; \
+      badapt_adaptive_get_dynamics_std get_dynamics_std; \
+      badapt_adaptive_set_dynamics_std set_dynamics_std; \
       badapt_adaptive_arc_to_sink arc_to_sink; \
       badapt_adaptive_infer_f3 infer_f3; \
       badapt_adaptive_adapt_loss adapt_loss; \
@@ -74,13 +89,13 @@
   static inline void badapt_adaptive_a_minfer( badapt_adaptive* o, const bmath_vf3_s* in, bmath_vf3_s* out ) { badapt_adaptive_s_get_aware( o )->minfer( o, in, out ); } \
   static inline bl_t badapt_adaptive_a_defines_minfer( const badapt_adaptive* o ) { return true; } \
   static inline void badapt_adaptive_a_bgrad( const badapt_adaptive* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ) { badapt_adaptive_s_get_aware( o )->bgrad( o, grad_in, grad_out ); } \
-  static inline bl_t badapt_adaptive_a_defines_bgrad( const badapt_adaptive* o ) { return true; } \
+  static inline bl_t badapt_adaptive_a_defines_bgrad( const badapt_adaptive* o ) { return badapt_adaptive_s_get_aware( o )->bgrad != NULL; } \
   static inline void badapt_adaptive_a_bgrad_adapt( badapt_adaptive* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ) { badapt_adaptive_s_get_aware( o )->bgrad_adapt( o, grad_in, grad_out ); } \
   static inline bl_t badapt_adaptive_a_defines_bgrad_adapt( const badapt_adaptive* o ) { return true; } \
-  static inline void badapt_adaptive_a_get_dynamics( const badapt_adaptive* o, badapt_dynamics_s* dynamics ) { badapt_adaptive_s_get_aware( o )->get_dynamics( o, dynamics ); } \
-  static inline bl_t badapt_adaptive_a_defines_get_dynamics( const badapt_adaptive* o ) { return badapt_adaptive_s_get_aware( o )->get_dynamics != NULL; } \
-  static inline void badapt_adaptive_a_set_dynamics( badapt_adaptive* o, const badapt_dynamics_s* dynamics ) { badapt_adaptive_s_get_aware( o )->set_dynamics( o, dynamics ); } \
-  static inline bl_t badapt_adaptive_a_defines_set_dynamics( const badapt_adaptive* o ) { return badapt_adaptive_s_get_aware( o )->set_dynamics != NULL; } \
+  static inline void badapt_adaptive_a_get_dynamics_std( const badapt_adaptive* o, badapt_dynamics_std_s* dynamics ) { badapt_adaptive_s_get_aware( o )->get_dynamics_std( o, dynamics ); } \
+  static inline bl_t badapt_adaptive_a_defines_get_dynamics_std( const badapt_adaptive* o ) { return badapt_adaptive_s_get_aware( o )->get_dynamics_std != NULL; } \
+  static inline void badapt_adaptive_a_set_dynamics_std( badapt_adaptive* o, const badapt_dynamics_std_s* dynamics ) { badapt_adaptive_s_get_aware( o )->set_dynamics_std( o, dynamics ); } \
+  static inline bl_t badapt_adaptive_a_defines_set_dynamics_std( const badapt_adaptive* o ) { return badapt_adaptive_s_get_aware( o )->set_dynamics_std != NULL; } \
   static inline void badapt_adaptive_a_arc_to_sink( const badapt_adaptive* o, bcore_sink* sink ) { badapt_adaptive_s_get_aware( o )->arc_to_sink( o, sink ); } \
   static inline bl_t badapt_adaptive_a_defines_arc_to_sink( const badapt_adaptive* o ) { return true; } \
   void badapt_adaptive_arc_to_sink_fallback( const badapt_adaptive* o, bcore_sink* sink ); \
@@ -134,9 +149,9 @@
 // source: badapt_problem
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: badapt_problem_objects
+// group: badapt_problem
 
-#define TYPEOF_badapt_problem_objects 17872436
+#define TYPEOF_badapt_problem 978854679
   #define TYPEOF_badapt_problem_sine_random_s 232405763
   #define BETH_EXPAND_ITEM_badapt_problem_sine_random_s \
     BCORE_DECLARE_OBJECT( badapt_problem_sine_random_s ) \
@@ -191,7 +206,7 @@
     sz_t badapt_problem_binary_hash_s_get_out_size( const badapt_problem_binary_hash_s* o ); \
     void badapt_problem_binary_hash_s_fetch_sample_tio( badapt_problem_binary_hash_s* o, bmath_vf3_s* in, bmath_vf3_s* out ); \
     void badapt_problem_binary_hash_s_fetch_sample_vio( badapt_problem_binary_hash_s* o, bmath_vf3_s* in, bmath_vf3_s* out );
-#define BETH_EXPAND_GROUP_badapt_problem_objects \
+#define BETH_EXPAND_GROUP_badapt_problem \
   BETH_EXPAND_ITEM_badapt_problem_sine_random_s \
   BETH_EXPAND_ITEM_badapt_problem_polynom_s \
   BETH_EXPAND_ITEM_badapt_problem_binary_add_s \
@@ -298,6 +313,65 @@
 
 #define TYPEOF_badapt_activator 1765962851
 #define TYPEOF_badapt_activator_s 991795461
+  #define TYPEOF_badapt_activator_plain_s 3369734202
+  #define BETH_EXPAND_ITEM_badapt_activator_plain_s \
+    BCORE_DECLARE_OBJECT( badapt_activator_plain_s ) \
+      {aware_t _;badapt_activation* activation;}; \
+    void badapt_activator_plain_s_setup( badapt_activator_plain_s* o ); \
+    void badapt_activator_plain_s_reset( badapt_activator_plain_s* o ); \
+    void badapt_activator_plain_s_infer( const badapt_activator_plain_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
+    void badapt_activator_plain_s_bgrad( const badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
+    void badapt_activator_plain_s_adapt( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon ); \
+    void badapt_activator_plain_s_adapt_defer( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
+    void badapt_activator_plain_s_adapt_apply( badapt_activator_plain_s* o, f3_t epsilon ); \
+    void badapt_activator_plain_s_set_activation( badapt_activator_plain_s* o, const badapt_activation* activation ); \
+    const badapt_activation* badapt_activator_plain_s_get_activation( const badapt_activator_plain_s* o );
+  #define TYPEOF_badapt_activator_bias_s 4133517011
+  #define BETH_EXPAND_ITEM_badapt_activator_bias_s \
+    BCORE_DECLARE_OBJECT( badapt_activator_bias_s ) \
+      {aware_t _;badapt_activation* activation;bmath_vf3_s v_bias;bmath_vf3_s v_bias_deferred;}; \
+    void badapt_activator_bias_s_setup( badapt_activator_bias_s* o ); \
+    void badapt_activator_bias_s_reset( badapt_activator_bias_s* o ); \
+    void badapt_activator_bias_s_infer( const badapt_activator_bias_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
+    void badapt_activator_bias_s_bgrad( const badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
+    void badapt_activator_bias_s_adapt( badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon ); \
+    void badapt_activator_bias_s_adapt_defer( badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
+    void badapt_activator_bias_s_adapt_apply( badapt_activator_bias_s* o, f3_t epsilon ); \
+    void badapt_activator_bias_s_set_activation( badapt_activator_bias_s* o, const badapt_activation* activation ); \
+    const badapt_activation* badapt_activator_bias_s_get_activation( const badapt_activator_bias_s* o );
+  #define TYPEOF_badapt_layer_activator_s 4048593039
+  #define BETH_EXPAND_ITEM_badapt_layer_activator_s \
+    BCORE_DECLARE_OBJECT( badapt_layer_activator_s ) \
+      {aware_t _;sz_t layer;badapt_activator* activator;};
+  #define TYPEOF_badapt_arr_layer_activator_s 1342407707
+  #define BETH_EXPAND_ITEM_badapt_arr_layer_activator_s \
+    BCORE_DECLARE_OBJECT( badapt_arr_layer_activator_s ) \
+      {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( badapt_layer_activator_s, arr_ );}; \
+    static inline void badapt_arr_layer_activator_s_set_space( badapt_arr_layer_activator_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, size ); } \
+    static inline void badapt_arr_layer_activator_s_set_size( badapt_arr_layer_activator_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, size ); } \
+    static inline void badapt_arr_layer_activator_s_clear( badapt_arr_layer_activator_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, 0 ); } \
+    static inline void badapt_arr_layer_activator_s_push_c( badapt_arr_layer_activator_s* o, const badapt_layer_activator_s* v ) { bcore_array_t_push( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, sr_twc( TYPEOF_badapt_layer_activator_s, v ) ); } \
+    static inline void badapt_arr_layer_activator_s_push_d( badapt_arr_layer_activator_s* o,       badapt_layer_activator_s* v ) { bcore_array_t_push( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, sr_tsd( TYPEOF_badapt_layer_activator_s, v ) ); } \
+    static inline badapt_layer_activator_s* badapt_arr_layer_activator_s_push( badapt_arr_layer_activator_s* o ) \
+    { \
+        bcore_array_t_push( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, sr_null() ); \
+        return bcore_array_t_get_last( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o ).o; \
+    }
+  #define TYPEOF_badapt_arr_activator_s 3921137337
+  #define BETH_EXPAND_ITEM_badapt_arr_activator_s \
+    BCORE_DECLARE_OBJECT( badapt_arr_activator_s ) \
+      {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( badapt_activator, arr_ );}; \
+    static inline void badapt_arr_activator_s_set_space( badapt_arr_activator_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, size ); } \
+    static inline void badapt_arr_activator_s_set_size( badapt_arr_activator_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, size ); } \
+    static inline void badapt_arr_activator_s_clear( badapt_arr_activator_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, 0 ); } \
+    static inline void badapt_arr_activator_s_push_c( badapt_arr_activator_s* o, const badapt_activator* v ) { bcore_array_t_push( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, sr_awc( v ) ); } \
+    static inline void badapt_arr_activator_s_push_d( badapt_arr_activator_s* o,       badapt_activator* v ) { bcore_array_t_push( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, sr_asd( v ) ); } \
+    static inline badapt_activator* badapt_arr_activator_s_push_t( badapt_arr_activator_s* o, tp_t t ) \
+    { \
+        bcore_trait_assert_satisfied_type( TYPEOF_badapt_activator, t ); \
+        bcore_array_t_push( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, sr_t_create( t ) ); \
+        return bcore_array_t_get_last( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o ).o; \
+    }
 #define BETH_EXPAND_GROUP_badapt_activator \
   BCORE_FORWARD_OBJECT( badapt_activator ); \
   typedef void (*badapt_activator_reset)( badapt_activator* o ); \
@@ -308,7 +382,9 @@
   typedef void (*badapt_activator_set_activation)( badapt_activator* o, const badapt_activation* activation ); \
   typedef void (*badapt_activator_infer)( const badapt_activator* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
   typedef void (*badapt_activator_bgrad)( const badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
-  typedef void (*badapt_activator_adapt)( badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t step ); \
+  typedef void (*badapt_activator_adapt)( badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon ); \
+  typedef void (*badapt_activator_adapt_defer)( badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
+  typedef void (*badapt_activator_adapt_apply)( badapt_activator* o, f3_t epsilon ); \
   BCORE_DECLARE_SPECT( badapt_activator ) \
   { \
       bcore_spect_header_s header; \
@@ -321,6 +397,8 @@
       badapt_activator_infer infer; \
       badapt_activator_bgrad bgrad; \
       badapt_activator_adapt adapt; \
+      badapt_activator_adapt_defer adapt_defer; \
+      badapt_activator_adapt_apply adapt_apply; \
   }; \
   static inline badapt_activator* badapt_activator_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_badapt_activator, t ); return ( badapt_activator* )bcore_inst_t_create( t ); } \
   static inline badapt_activator* badapt_activator_a_clone( const badapt_activator* o ) { return ( badapt_activator* )bcore_inst_a_clone( ( bcore_inst* )o ); } \
@@ -342,80 +420,17 @@
   static inline bl_t badapt_activator_a_defines_infer( const badapt_activator* o ) { return true; } \
   static inline void badapt_activator_a_bgrad( const badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ) { badapt_activator_s_get_aware( o )->bgrad( o, grad_in, grad_out, out ); } \
   static inline bl_t badapt_activator_a_defines_bgrad( const badapt_activator* o ) { return true; } \
-  static inline void badapt_activator_a_adapt( badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t step ) { badapt_activator_s_get_aware( o )->adapt( o, grad_in, grad_out, out, step ); } \
-  static inline bl_t badapt_activator_a_defines_adapt( const badapt_activator* o ) { return true; }
-
-//----------------------------------------------------------------------------------------------------------------------
-// group: badapt_activation_objects
-
-#define TYPEOF_badapt_activation_objects 802839491
-#define BETH_EXPAND_GROUP_badapt_activation_objects
-
-//----------------------------------------------------------------------------------------------------------------------
-// group: badapt_activator_objects
-
-#define TYPEOF_badapt_activator_objects 987788816
-  #define TYPEOF_badapt_layer_activator_s 4048593039
-  #define BETH_EXPAND_ITEM_badapt_layer_activator_s \
-    BCORE_DECLARE_OBJECT( badapt_layer_activator_s ) \
-      {aware_t _;sz_t layer;badapt_activator* activator;};
-  #define TYPEOF_badapt_arr_activator_s 3921137337
-  #define BETH_EXPAND_ITEM_badapt_arr_activator_s \
-    BCORE_DECLARE_OBJECT( badapt_arr_activator_s ) \
-      {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( badapt_activator, arr_ );}; \
-    static inline void badapt_arr_activator_s_set_space( badapt_arr_activator_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, size ); } \
-    static inline void badapt_arr_activator_s_set_size( badapt_arr_activator_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, size ); } \
-    static inline void badapt_arr_activator_s_clear( badapt_arr_activator_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, 0 ); } \
-    static inline void badapt_arr_activator_s_push_c( badapt_arr_activator_s* o, const badapt_activator* v ) { bcore_array_t_push( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, sr_awc( v ) ); } \
-    static inline void badapt_arr_activator_s_push_d( badapt_arr_activator_s* o,       badapt_activator* v ) { bcore_array_t_push( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, sr_asd( v ) ); } \
-    static inline badapt_activator* badapt_arr_activator_s_push_t( badapt_arr_activator_s* o, tp_t t ) \
-    { \
-        bcore_trait_assert_satisfied_type( TYPEOF_badapt_activator, t ); \
-        bcore_array_t_push( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, sr_t_create( t ) ); \
-        return bcore_array_t_get_last( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o ).o; \
-    }
-  #define TYPEOF_badapt_arr_layer_activator_s 1342407707
-  #define BETH_EXPAND_ITEM_badapt_arr_layer_activator_s \
-    BCORE_DECLARE_OBJECT( badapt_arr_layer_activator_s ) \
-      {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( badapt_layer_activator_s, arr_ );}; \
-    static inline void badapt_arr_layer_activator_s_set_space( badapt_arr_layer_activator_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, size ); } \
-    static inline void badapt_arr_layer_activator_s_set_size( badapt_arr_layer_activator_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, size ); } \
-    static inline void badapt_arr_layer_activator_s_clear( badapt_arr_layer_activator_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, 0 ); } \
-    static inline void badapt_arr_layer_activator_s_push_c( badapt_arr_layer_activator_s* o, const badapt_layer_activator_s* v ) { bcore_array_t_push( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, sr_twc( TYPEOF_badapt_layer_activator_s, v ) ); } \
-    static inline void badapt_arr_layer_activator_s_push_d( badapt_arr_layer_activator_s* o,       badapt_layer_activator_s* v ) { bcore_array_t_push( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, sr_tsd( TYPEOF_badapt_layer_activator_s, v ) ); } \
-    static inline badapt_layer_activator_s* badapt_arr_layer_activator_s_push( badapt_arr_layer_activator_s* o ) \
-    { \
-        bcore_array_t_push( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, sr_null() ); \
-        return bcore_array_t_get_last( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o ).o; \
-    }
-  #define TYPEOF_badapt_activator_plain_s 3369734202
-  #define BETH_EXPAND_ITEM_badapt_activator_plain_s \
-    BCORE_DECLARE_OBJECT( badapt_activator_plain_s ) \
-      {aware_t _;badapt_activation* activation;}; \
-    void badapt_activator_plain_s_setup( badapt_activator_plain_s* o ); \
-    void badapt_activator_plain_s_reset( badapt_activator_plain_s* o ); \
-    void badapt_activator_plain_s_infer( const badapt_activator_plain_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
-    void badapt_activator_plain_s_bgrad( const badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
-    void badapt_activator_plain_s_adapt( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t step ); \
-    void badapt_activator_plain_s_set_activation( badapt_activator_plain_s* o, const badapt_activation* activation ); \
-    const badapt_activation* badapt_activator_plain_s_get_activation( const badapt_activator_plain_s* o );
-  #define TYPEOF_badapt_activator_bias_s 4133517011
-  #define BETH_EXPAND_ITEM_badapt_activator_bias_s \
-    BCORE_DECLARE_OBJECT( badapt_activator_bias_s ) \
-      {aware_t _;badapt_activation* activation;BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, arr_bias_ );}; \
-    void badapt_activator_bias_s_setup( badapt_activator_bias_s* o ); \
-    void badapt_activator_bias_s_reset( badapt_activator_bias_s* o ); \
-    void badapt_activator_bias_s_infer( const badapt_activator_bias_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
-    void badapt_activator_bias_s_bgrad( const badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
-    void badapt_activator_bias_s_adapt( badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t step ); \
-    void badapt_activator_bias_s_set_activation( badapt_activator_bias_s* o, const badapt_activation* activation ); \
-    const badapt_activation* badapt_activator_bias_s_get_activation( const badapt_activator_bias_s* o );
-#define BETH_EXPAND_GROUP_badapt_activator_objects \
-  BETH_EXPAND_ITEM_badapt_layer_activator_s \
-  BETH_EXPAND_ITEM_badapt_arr_activator_s \
-  BETH_EXPAND_ITEM_badapt_arr_layer_activator_s \
+  static inline void badapt_activator_a_adapt( badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon ) { badapt_activator_s_get_aware( o )->adapt( o, grad_in, grad_out, out, epsilon ); } \
+  static inline bl_t badapt_activator_a_defines_adapt( const badapt_activator* o ) { return true; } \
+  static inline void badapt_activator_a_adapt_defer( badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ) { badapt_activator_s_get_aware( o )->adapt_defer( o, grad_in, grad_out, out ); } \
+  static inline bl_t badapt_activator_a_defines_adapt_defer( const badapt_activator* o ) { return badapt_activator_s_get_aware( o )->adapt_defer != NULL; } \
+  static inline void badapt_activator_a_adapt_apply( badapt_activator* o, f3_t epsilon ) { badapt_activator_s_get_aware( o )->adapt_apply( o, epsilon ); } \
+  static inline bl_t badapt_activator_a_defines_adapt_apply( const badapt_activator* o ) { return badapt_activator_s_get_aware( o )->adapt_apply != NULL; } \
   BETH_EXPAND_ITEM_badapt_activator_plain_s \
-  BETH_EXPAND_ITEM_badapt_activator_bias_s
+  BETH_EXPAND_ITEM_badapt_activator_bias_s \
+  BETH_EXPAND_ITEM_badapt_layer_activator_s \
+  BETH_EXPAND_ITEM_badapt_arr_layer_activator_s \
+  BETH_EXPAND_ITEM_badapt_arr_activator_s
 
 /**********************************************************************************************************************/
 // source: badapt_loss
@@ -490,11 +505,11 @@
   #define TYPEOF_badapt_mlp_s 3664397861
   #define BETH_EXPAND_ITEM_badapt_mlp_s \
     BCORE_DECLARE_OBJECT( badapt_mlp_s ) \
-      {aware_t _;badapt_dynamics_s dynamics;badapt_mlp_arr_layer_s arr_layer;sz_t max_buffer_size;bmath_vf3_s in;}; \
+      {aware_t _;badapt_dynamics_std_s dynamics;badapt_mlp_arr_layer_s arr_layer;sz_t max_buffer_size;bmath_vf3_s in;}; \
     sz_t badapt_mlp_s_get_in_size( const badapt_mlp_s* o ); \
     sz_t badapt_mlp_s_get_out_size( const badapt_mlp_s* o ); \
-    void badapt_mlp_s_get_dynamics( const badapt_mlp_s* o, badapt_dynamics_s* dynamics ); \
-    void badapt_mlp_s_set_dynamics( badapt_mlp_s* o, const badapt_dynamics_s* dynamics ); \
+    void badapt_mlp_s_get_dynamics_std( const badapt_mlp_s* o, badapt_dynamics_std_s* dynamics ); \
+    void badapt_mlp_s_set_dynamics_std( badapt_mlp_s* o, const badapt_dynamics_std_s* dynamics ); \
     void badapt_mlp_s_arc_to_sink( const badapt_mlp_s* o, bcore_sink* sink ); \
     void badapt_mlp_s_infer( const badapt_mlp_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
     void badapt_mlp_s_minfer( badapt_mlp_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
@@ -503,7 +518,7 @@
   #define TYPEOF_badapt_builder_mlp_funnel_s 3643146818
   #define BETH_EXPAND_ITEM_badapt_builder_mlp_funnel_s \
     BCORE_DECLARE_OBJECT( badapt_builder_mlp_funnel_s ) \
-      {aware_t _;sz_t input_size;sz_t input_kernels;sz_t output_kernels;sz_t layers;f3_t kernels_rate;u2_t random_seed;badapt_dynamics_s dynamics;badapt_arr_layer_activator_s arr_layer_activator;}; \
+      {aware_t _;sz_t input_size;sz_t input_kernels;sz_t output_kernels;sz_t layers;f3_t kernels_rate;u2_t random_seed;badapt_dynamics_std_s dynamics;badapt_arr_layer_activator_s arr_layer_activator;}; \
     sz_t badapt_builder_mlp_funnel_s_get_in_size( const badapt_builder_mlp_funnel_s* o ); \
     void badapt_builder_mlp_funnel_s_set_in_size( badapt_builder_mlp_funnel_s* o, sz_t size ); \
     sz_t badapt_builder_mlp_funnel_s_get_out_size( const badapt_builder_mlp_funnel_s* o ); \
@@ -543,11 +558,11 @@
   #define TYPEOF_badapt_c1d_s 2405996614
   #define BETH_EXPAND_ITEM_badapt_c1d_s \
     BCORE_DECLARE_OBJECT( badapt_c1d_s ) \
-      {aware_t _;badapt_dynamics_s dynamics;badapt_c1d_arr_layer_s arr_layer;sz_t max_buffer_size;bmath_vf3_s in;}; \
+      {aware_t _;badapt_dynamics_std_s dynamics;badapt_c1d_arr_layer_s arr_layer;sz_t max_buffer_size;bmath_vf3_s in;}; \
     sz_t badapt_c1d_s_get_in_size( const badapt_c1d_s* o ); \
     sz_t badapt_c1d_s_get_out_size( const badapt_c1d_s* o ); \
-    void badapt_c1d_s_get_dynamics( const badapt_c1d_s* o, badapt_dynamics_s* dynamics ); \
-    void badapt_c1d_s_set_dynamics( badapt_c1d_s* o, const badapt_dynamics_s* dynamics ); \
+    void badapt_c1d_s_get_dynamics_std( const badapt_c1d_s* o, badapt_dynamics_std_s* dynamics ); \
+    void badapt_c1d_s_set_dynamics_std( badapt_c1d_s* o, const badapt_dynamics_std_s* dynamics ); \
     void badapt_c1d_s_arc_to_sink( const badapt_c1d_s* o, bcore_sink* sink ); \
     void badapt_c1d_s_infer( const badapt_c1d_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
     void badapt_c1d_s_minfer( badapt_c1d_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
@@ -556,7 +571,7 @@
   #define TYPEOF_badapt_builder_c1d_funnel_s 437767695
   #define BETH_EXPAND_ITEM_badapt_builder_c1d_funnel_s \
     BCORE_DECLARE_OBJECT( badapt_builder_c1d_funnel_s ) \
-      {aware_t _;sz_t input_size;sz_t input_step;sz_t input_convolution_size;sz_t input_kernels;sz_t output_kernels;f3_t kernels_rate;sz_t reduction_step;sz_t convolution_size;u2_t random_seed;badapt_dynamics_s dynamics;badapt_arr_layer_activator_s arr_layer_activator;}; \
+      {aware_t _;sz_t input_size;sz_t input_step;sz_t input_convolution_size;sz_t input_kernels;sz_t output_kernels;f3_t kernels_rate;sz_t reduction_step;sz_t convolution_size;u2_t random_seed;badapt_dynamics_std_s dynamics;badapt_arr_layer_activator_s arr_layer_activator;}; \
     sz_t badapt_builder_c1d_funnel_s_get_in_size( const badapt_builder_c1d_funnel_s* o ); \
     void badapt_builder_c1d_funnel_s_set_in_size( badapt_builder_c1d_funnel_s* o, sz_t size ); \
     sz_t badapt_builder_c1d_funnel_s_get_out_size( const badapt_builder_c1d_funnel_s* o ); \
@@ -575,30 +590,49 @@
 // group: badapt_ern
 
 #define TYPEOF_badapt_ern 3572010651
+  #define TYPEOF_badapt_ern_layer_s 879149859
+  #define BETH_EXPAND_ITEM_badapt_ern_layer_s \
+    BCORE_DECLARE_OBJECT( badapt_ern_layer_s ) \
+      {bmath_vf3_s v_x;bmath_vf3_s v_c;bmath_vf3_s v_h;};
+  #define TYPEOF_badapt_ern_arr_layer_s 3542192735
+  #define BETH_EXPAND_ITEM_badapt_ern_arr_layer_s \
+    BCORE_DECLARE_OBJECT( badapt_ern_arr_layer_s ) \
+      {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( badapt_ern_layer_s, arr_ );}; \
+    static inline void badapt_ern_arr_layer_s_set_space( badapt_ern_arr_layer_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, size ); } \
+    static inline void badapt_ern_arr_layer_s_set_size( badapt_ern_arr_layer_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, size ); } \
+    static inline void badapt_ern_arr_layer_s_clear( badapt_ern_arr_layer_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, 0 ); } \
+    static inline void badapt_ern_arr_layer_s_push_c( badapt_ern_arr_layer_s* o, const badapt_ern_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, sr_twc( TYPEOF_badapt_ern_layer_s, v ) ); } \
+    static inline void badapt_ern_arr_layer_s_push_d( badapt_ern_arr_layer_s* o,       badapt_ern_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, sr_tsd( TYPEOF_badapt_ern_layer_s, v ) ); } \
+    static inline badapt_ern_layer_s* badapt_ern_arr_layer_s_push( badapt_ern_arr_layer_s* o ) \
+    { \
+        bcore_array_t_push( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, sr_t_create( TYPEOF_badapt_ern_layer_s ) ); \
+        return bcore_array_t_get_last( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o ).o; \
+    }
   #define TYPEOF_badapt_ern_s 3488918381
   #define BETH_EXPAND_ITEM_badapt_ern_s \
     BCORE_DECLARE_OBJECT( badapt_ern_s ) \
-      {aware_t _;sz_t size_input;sz_t size_output;badapt_dynamics_s dynamics;bmath_mf3_s wgt_input;bmath_mf3_s wgt_context;bmath_mf3_s wgt_hidden;f3_t context_epsilon_factor;badapt_activator* activator_hidden;badapt_activator* activator_output;bmath_vf3_s vec_input;bmath_vf3_s vec_context;bmath_vf3_s vec_hidden;bmath_vf3_s vec_output;}; \
+      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;bmath_mf3_s w_hx;bmath_mf3_s w_hc;bmath_mf3_s w_o;badapt_activator* a_h;badapt_activator* a_o;bmath_vf3_s v_o;bmath_vf3_s v_go;bmath_vf3_s v_gc;bmath_vf3_s v_gh;bmath_mf3_s gw_hx;bmath_mf3_s gw_hc;badapt_ern_arr_layer_s arr_layer;}; \
     sz_t badapt_ern_s_get_in_size( const badapt_ern_s* o ); \
     sz_t badapt_ern_s_get_out_size( const badapt_ern_s* o ); \
-    void badapt_ern_s_get_dynamics( const badapt_ern_s* o, badapt_dynamics_s* dynamics ); \
-    void badapt_ern_s_set_dynamics( badapt_ern_s* o, const badapt_dynamics_s* dynamics ); \
+    void badapt_ern_s_get_dynamics_std( const badapt_ern_s* o, badapt_dynamics_std_s* dynamics ); \
+    void badapt_ern_s_set_dynamics_std( badapt_ern_s* o, const badapt_dynamics_std_s* dynamics ); \
     void badapt_ern_s_arc_to_sink( const badapt_ern_s* o, bcore_sink* sink ); \
     void badapt_ern_s_minfer( badapt_ern_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
-    void badapt_ern_s_bgrad( const badapt_ern_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ); \
     void badapt_ern_s_bgrad_adapt( badapt_ern_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
-  #define TYPEOF_badapt_builder_ern_s 1730354261
-  #define BETH_EXPAND_ITEM_badapt_builder_ern_s \
-    BCORE_DECLARE_OBJECT( badapt_builder_ern_s ) \
-      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;badapt_dynamics_s dynamics;f3_t context_epsilon_factor;u2_t random_seed;badapt_activator* activator_hidden;badapt_activator* activator_output;}; \
-    sz_t badapt_builder_ern_s_get_in_size( const badapt_builder_ern_s* o ); \
-    void badapt_builder_ern_s_set_in_size( badapt_builder_ern_s* o, sz_t size ); \
-    sz_t badapt_builder_ern_s_get_out_size( const badapt_builder_ern_s* o ); \
-    void badapt_builder_ern_s_set_out_size( badapt_builder_ern_s* o, sz_t size ); \
-    badapt_adaptive* badapt_builder_ern_s_build( const badapt_builder_ern_s* o );
+  #define TYPEOF_badapt_ern_builder_s 178034157
+  #define BETH_EXPAND_ITEM_badapt_ern_builder_s \
+    BCORE_DECLARE_OBJECT( badapt_ern_builder_s ) \
+      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;u2_t random_seed;badapt_activator* a_h;badapt_activator* a_o;}; \
+    sz_t badapt_ern_builder_s_get_in_size( const badapt_ern_builder_s* o ); \
+    void badapt_ern_builder_s_set_in_size( badapt_ern_builder_s* o, sz_t size ); \
+    sz_t badapt_ern_builder_s_get_out_size( const badapt_ern_builder_s* o ); \
+    void badapt_ern_builder_s_set_out_size( badapt_ern_builder_s* o, sz_t size ); \
+    badapt_adaptive* badapt_ern_builder_s_build( const badapt_ern_builder_s* o );
 #define BETH_EXPAND_GROUP_badapt_ern \
+  BETH_EXPAND_ITEM_badapt_ern_layer_s \
+  BETH_EXPAND_ITEM_badapt_ern_arr_layer_s \
   BETH_EXPAND_ITEM_badapt_ern_s \
-  BETH_EXPAND_ITEM_badapt_builder_ern_s
+  BETH_EXPAND_ITEM_badapt_ern_builder_s
 
 /**********************************************************************************************************************/
 // source: badapt_jrn
@@ -610,11 +644,11 @@
   #define TYPEOF_badapt_jrn_s 3863226272
   #define BETH_EXPAND_ITEM_badapt_jrn_s \
     BCORE_DECLARE_OBJECT( badapt_jrn_s ) \
-      {aware_t _;sz_t size_input;sz_t size_output;badapt_dynamics_s dynamics;bmath_mf3_s wgt_input;bmath_mf3_s wgt_context;bmath_mf3_s wgt_hidden;f3_t context_epsilon_factor;badapt_activator* activator_hidden;badapt_activator* activator_output;bmath_vf3_s vec_input;bmath_vf3_s vec_context;bmath_vf3_s vec_hidden;bmath_vf3_s vec_output;}; \
+      {aware_t _;sz_t size_input;sz_t size_output;badapt_dynamics_std_s dynamics;bmath_mf3_s wgt_input;bmath_mf3_s wgt_context;bmath_mf3_s wgt_hidden;f3_t context_epsilon_factor;badapt_activator* activator_hidden;badapt_activator* activator_output;bmath_vf3_s vec_input;bmath_vf3_s vec_context;bmath_vf3_s vec_hidden;bmath_vf3_s vec_output;}; \
     sz_t badapt_jrn_s_get_in_size( const badapt_jrn_s* o ); \
     sz_t badapt_jrn_s_get_out_size( const badapt_jrn_s* o ); \
-    void badapt_jrn_s_get_dynamics( const badapt_jrn_s* o, badapt_dynamics_s* dynamics ); \
-    void badapt_jrn_s_set_dynamics( badapt_jrn_s* o, const badapt_dynamics_s* dynamics ); \
+    void badapt_jrn_s_get_dynamics_std( const badapt_jrn_s* o, badapt_dynamics_std_s* dynamics ); \
+    void badapt_jrn_s_set_dynamics_std( badapt_jrn_s* o, const badapt_dynamics_std_s* dynamics ); \
     void badapt_jrn_s_arc_to_sink( const badapt_jrn_s* o, bcore_sink* sink ); \
     void badapt_jrn_s_minfer( badapt_jrn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
     void badapt_jrn_s_bgrad( const badapt_jrn_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ); \
@@ -622,7 +656,7 @@
   #define TYPEOF_badapt_builder_jrn_s 1047382808
   #define BETH_EXPAND_ITEM_badapt_builder_jrn_s \
     BCORE_DECLARE_OBJECT( badapt_builder_jrn_s ) \
-      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;badapt_dynamics_s dynamics;f3_t context_epsilon_factor;u2_t random_seed;badapt_activator* activator_hidden;badapt_activator* activator_output;}; \
+      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;badapt_dynamics_std_s dynamics;f3_t context_epsilon_factor;u2_t random_seed;badapt_activator* activator_hidden;badapt_activator* activator_output;}; \
     sz_t badapt_builder_jrn_s_get_in_size( const badapt_builder_jrn_s* o ); \
     void badapt_builder_jrn_s_set_in_size( badapt_builder_jrn_s* o, sz_t size ); \
     sz_t badapt_builder_jrn_s_get_out_size( const badapt_builder_jrn_s* o ); \

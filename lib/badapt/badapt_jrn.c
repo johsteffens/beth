@@ -39,16 +39,16 @@ sz_t badapt_jrn_s_get_out_size( const badapt_jrn_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void badapt_jrn_s_get_dynamics( const badapt_jrn_s* o, badapt_dynamics_s* dynamics )
+void badapt_jrn_s_get_dynamics_std( const badapt_jrn_s* o, badapt_dynamics_std_s* dynamics )
 {
-    badapt_dynamics_s_copy( dynamics, &o->dynamics );
+    badapt_dynamics_std_s_copy( dynamics, &o->dynamics );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void badapt_jrn_s_set_dynamics( badapt_jrn_s* o, const badapt_dynamics_s* dynamics )
+void badapt_jrn_s_set_dynamics_std( badapt_jrn_s* o, const badapt_dynamics_std_s* dynamics )
 {
-    badapt_dynamics_s_copy( &o->dynamics, dynamics );
+    badapt_dynamics_std_s_copy( &o->dynamics, dynamics );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ void badapt_jrn_s_bgrad( const badapt_jrn_s* o, bmath_vf3_s* grad_in, const bmat
 
     badapt_activator_a_adapt( o->activator_output, grad_output, grad_output, &o->vec_output, o->dynamics.epsilon );
     bmath_mf3_s_htp_mul_vec( &o->wgt_hidden, grad_output, grad_hidden );          // GH <- W^T * GO
-    badapt_activator_a_adapt( o->activator_output, grad_hidden, grad_hidden, &o->vec_hidden, o->dynamics.epsilon );
+    badapt_activator_a_adapt( o->activator_hidden, grad_hidden, grad_hidden, &o->vec_hidden, o->dynamics.epsilon );
     if( grad_in ) bmath_mf3_s_htp_mul_vec( &o->wgt_input, grad_hidden, grad_in ); // grad_in <- W^T * GH
 
     bmath_vf3_s_discard( grad_hidden );
@@ -144,7 +144,7 @@ void badapt_jrn_s_bgrad_adapt( badapt_jrn_s* o, bmath_vf3_s* grad_in, const bmat
     badapt_activator_a_adapt( o->activator_output, grad_output, grad_output, &o->vec_output, o->dynamics.epsilon );
     bmath_mf3_s_htp_mul_vec( &o->wgt_hidden, grad_output, grad_hidden );          // GH <- W^T * GO
     badapt_jrn_s_update_wgt( o, &o->vec_hidden, &o->wgt_hidden, grad_output, o->dynamics.epsilon );
-    badapt_activator_a_adapt( o->activator_output, grad_hidden, grad_hidden, &o->vec_hidden, o->dynamics.epsilon );
+    badapt_activator_a_adapt( o->activator_hidden, grad_hidden, grad_hidden, &o->vec_hidden, o->dynamics.epsilon );
     if( grad_in ) bmath_mf3_s_htp_mul_vec( &o->wgt_input, grad_hidden, grad_in ); // grad_in <- W^T * GH
     badapt_jrn_s_update_wgt( o, &o->vec_input, &o->wgt_input, grad_hidden, o->dynamics.epsilon );
     if( o->vec_context.size > 0 )
@@ -205,7 +205,7 @@ badapt_adaptive* badapt_builder_jrn_s_build( const badapt_builder_jrn_s* o )
     ern->size_output = o->size_output;
     ern->context_epsilon_factor = o->context_epsilon_factor;
 
-    badapt_dynamics_s_copy( &ern->dynamics, &o->dynamics );
+    badapt_dynamics_std_s_copy( &ern->dynamics, &o->dynamics );
 
     bmath_mf3_s_set_size( &ern->wgt_input,   o->size_hidden, o->size_input );
     bmath_mf3_s_set_size( &ern->wgt_context, o->size_hidden, o->size_output );

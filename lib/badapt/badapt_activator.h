@@ -73,73 +73,49 @@ BETH_PRECODE( badapt_activator )
 
     /// adaptation step after last minfer for given gradient; grad_in can be NULL
     /// grad_in and grad_out may refer to the same object
-    feature strict 'a' void adapt( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t step );
+    feature strict 'a' void adapt( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon );
+
+    /// like adaptation step bt changes of weights is deferred (accumulated) until adapt_apply is called
+    /// grad_in and grad_out may refer to the same object
+    feature 'a' void adapt_defer( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
+
+    /// applies accumulated deferred adaptations
+    feature 'a' void adapt_apply( mutable, f3_t epsilon );
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    /// Activator without bias.
+    self :plain_s = aware badapt_activator
+    {
+        aware badapt_activation => activation;
+        func :setup; func :reset; func :infer; func :bgrad; func :adapt; func :adapt_defer; func :adapt_apply;
+        func :set_activation; func :get_activation;
+    };
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    /** Activator with bias.
+     *  Bias is not randomized but initialized zero (common practice).
+     */
+    self :bias_s = aware badapt_activator
+    {
+        aware badapt_activation => activation;
+        bmath_vf3_s v_bias;
+        bmath_vf3_s v_bias_deferred;
+        func :setup; func :reset; func :infer; func :bgrad; func :adapt; func :adapt_defer; func :adapt_apply;
+        func :set_activation; func :get_activation;
+    };
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    /// specifies which activator is used for which layer; negative layer number means relative to last layer + 1
+    self badapt_layer_activator_s     = aware bcore_inst  { sz_t layer; aware badapt_activator => activator; };
+    self badapt_arr_layer_activator_s = aware bcore_array { badapt_layer_activator_s    [] arr; };
+    self badapt_arr_activator_s       = aware bcore_array { aware badapt_activator   => [] arr; };
 
 #endif // BETH_PRECODE_SECTION
 
 /**********************************************************************************************************************/
-
-/// activation function
-BETH_PRECODE( badapt_activation_objects )
-#ifdef BETH_PRECODE_SECTION
-
-
-#endif // BETH_PRECODE_SECTION
-
-/**********************************************************************************************************************/
-
-/// activation function
-BETH_PRECODE( badapt_activator_objects )
-#ifdef BETH_PRECODE_SECTION
-
-/// specifies which activator is used for which layer; negative layer number means relative to last layer + 1
-self badapt_layer_activator_s = bcore_inst
-{
-    aware_t _;
-    sz_t layer;
-    aware badapt_activator => activator;
-};
-
-self badapt_arr_activator_s       = bcore_array { aware_t _; aware badapt_activator   => [] arr; };
-self badapt_arr_layer_activator_s = bcore_array { aware_t _; badapt_layer_activator_s    [] arr; };
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-/** Activator without bias.
- */
-self badapt_activator_plain_s = badapt_activator
-{
-    aware_t _;
-    aware badapt_activation => activation;
-    func : setup;
-    func : reset;
-    func : infer;
-    func : bgrad;
-    func : adapt;
-    func : set_activation;
-    func : get_activation;
-};
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-/** Activator with bias.
- *  Bias is not randomized but initialized zero (common practice).
- */
-self badapt_activator_bias_s = badapt_activator
-{
-    aware_t _;
-    aware badapt_activation => activation;
-    f3_t [] arr_bias;
-    func : setup;
-    func : reset;
-    func : infer;
-    func : bgrad;
-    func : adapt;
-    func : set_activation;
-    func : get_activation;
-};
-
-#endif // BETH_PRECODE_SECTION
 
 badapt_activator* badapt_activator_create_from_types( tp_t tp_activator, tp_t tp_activation );
 badapt_activator* badapt_activator_create_from_names( sc_t sc_activator, sc_t sc_activation );

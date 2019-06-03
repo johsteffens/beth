@@ -22,7 +22,7 @@
 
 /**********************************************************************************************************************/
 
-BETH_PRECODE( badapt_problem_objects )
+BETH_PRECODE( badapt_problem )
 #ifdef BETH_PRECODE_SECTION
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,9 +30,8 @@ BETH_PRECODE( badapt_problem_objects )
 /** Type: Classifier
  *  Method: Differentiate between a sine wave of arbitrary amplitude and frequency from a random walk curve.
  */
-self badapt_problem_sine_random_s = badapt_supplier
+self :sine_random_s = aware badapt_supplier
 {
-    aware_t _;
     sz_t input_size = 32;
     u2_t rval       = 1234;
     f3_t pos_tgt    =  0.9;
@@ -51,9 +50,8 @@ self badapt_problem_sine_random_s = badapt_supplier
 /** Type: Regression
  *  Method: Estimate polynomial coefficients for a signal within range -1, 1
  */
-self badapt_problem_polynom_s = badapt_supplier
+self :polynom_s = aware badapt_supplier
 {
-    aware_t _;
     sz_t input_size  = 32;
     sz_t output_size = 3;   // polynomial order + 1
     f3_t range       = 1.0; // +/- range of coefficients
@@ -73,9 +71,8 @@ self badapt_problem_polynom_s = badapt_supplier
 /** Type: Encoder
  *  Method: learning to add two unsigned integer variables
  */
-self badapt_problem_binary_add_s = badapt_supplier
+self :binary_add_s = aware badapt_supplier
 {
-    aware_t _;
     sz_t bits  = 4; // input size = bits * 2; output size = bits + 1
     u2_t rval  = 1234;
     f3_t val_h =  0.9;
@@ -94,9 +91,8 @@ self badapt_problem_binary_add_s = badapt_supplier
 /** Type: Encoder
  *  Method: learning to multiply two unsigned integer variables
  */
-self badapt_problem_binary_mul_s = badapt_supplier
+self :binary_mul_s = aware badapt_supplier
 {
-    aware_t _;
     sz_t bits  = 4; // input size = bits * 2; output size = bits * 2
     u2_t rval  = 1234;
     f3_t val_h =  0.9;
@@ -115,9 +111,8 @@ self badapt_problem_binary_mul_s = badapt_supplier
 /** Type: Encoder
  *  Method: forward randomization
  */
-self badapt_problem_binary_xsg3_s = badapt_supplier
+self :binary_xsg3_s = aware badapt_supplier
 {
-    aware_t _;
     sz_t bits  = 4; // input size = bits; output size = bits
     u2_t rval  = 1234;
     f3_t val_h =  0.9;
@@ -136,9 +131,8 @@ self badapt_problem_binary_xsg3_s = badapt_supplier
 /** Type: Encoder
  *  Method: hashing
  */
-self badapt_problem_binary_hash_s = badapt_supplier
+self :binary_hash_s = aware badapt_supplier
 {
-    aware_t _;
     sz_t bits  = 4; // input size = bits; output size = bits
     u2_t rval  = 1234;
     f3_t val_h =  0.9;

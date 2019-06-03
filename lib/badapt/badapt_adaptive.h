@@ -23,15 +23,18 @@
 /**********************************************************************************************************************/
 
 /// training dynamics
-BETH_PRECODE( badapt_adaptive_objects )
+BETH_PRECODE( badapt_dynamics )
 #ifdef BETH_PRECODE_SECTION
 
-self badapt_dynamics_s = bcore_inst
+/// updates weights if forward map is: in * w = out;
+feature strict 'a' void weights_adapt(       const, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor );
+
+self :std_s = aware badapt_dynamics
 {
-    aware_t _;
     f3_t epsilon;   // learning rate
     f3_t lambda_l1; // l1-regularization
     f3_t lambda_l2; // l2-regularization
+    func : weights_adapt;
 };
 
 #endif // BETH_PRECODE_SECTION
@@ -53,19 +56,19 @@ BETH_PRECODE( badapt_adaptive )
     /// fast concurrent inference (can be omitted e.g. for recurrent networks)
     feature        'a' void infer( const, const bmath_vf3_s* in, bmath_vf3_s* out );
 
-    /// mutable inference (used for training)
+    /// mutable inference (used for training and recurrent nets)
     feature strict 'a' void minfer( mutable, const bmath_vf3_s* in, bmath_vf3_s* out );
 
     /// fast concurrent gradient backpropagation (no changing of state)
-    feature strict 'a' void bgrad( const, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
+    feature        'a' void bgrad( const, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
 
     /// gradient backpropagation with adaptation; relates to after last call to minfer for given gradient; grad_in can be NULL
     feature strict 'a' void bgrad_adapt( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
 
     // ===== optional features =====
 
-    feature 'a' void get_dynamics( const,         badapt_dynamics_s* dynamics );
-    feature 'a' void set_dynamics( mutable, const badapt_dynamics_s* dynamics );
+    feature 'a' void get_dynamics_std( const,         badapt_dynamics_std_s* dynamics );
+    feature 'a' void set_dynamics_std( mutable, const badapt_dynamics_std_s* dynamics );
 
     // ===== optional features with default implementation =====
 

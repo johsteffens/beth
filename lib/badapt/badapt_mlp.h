@@ -28,9 +28,8 @@
 BETH_PRECODE( badapt_mlp )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_mlp_layer_s = bcore_inst
+self badapt_mlp_layer_s = aware bcore_inst
 {
-    aware_t _;
     sz_t input_size;
     sz_t kernels;
     bmath_mf3_s                wgt;
@@ -40,17 +39,15 @@ self badapt_mlp_layer_s = bcore_inst
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_mlp_arr_layer_s = bcore_array { aware_t _; badapt_mlp_layer_s [] arr; };
+self badapt_mlp_arr_layer_s = aware bcore_array { badapt_mlp_layer_s [] arr; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_mlp_s = badapt_adaptive
+self badapt_mlp_s = aware badapt_adaptive
 {
-    aware_t _;
-
     // === architecture parameters ================================
 
-    badapt_dynamics_s      dynamics;
+    badapt_dynamics_std_s  dynamics;
     badapt_mlp_arr_layer_s arr_layer;
     sz_t max_buffer_size;
 
@@ -62,8 +59,8 @@ self badapt_mlp_s = badapt_adaptive
     func : get_in_size;
     func : get_out_size;
 
-    func : get_dynamics;
-    func : set_dynamics;
+    func : get_dynamics_std;
+    func : set_dynamics_std;
 
     func : arc_to_sink;
     func : infer;
@@ -77,17 +74,15 @@ self badapt_mlp_s = badapt_adaptive
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// Builder creating a funnel structure of kernels
-self badapt_builder_mlp_funnel_s = badapt_builder
+self badapt_builder_mlp_funnel_s = aware badapt_builder
 {
-    aware_t _;
-
     sz_t input_size;               // input vector size
     sz_t input_kernels   = 8;      // kernels on input layer
     sz_t output_kernels  = 1;      // kernels on output layer
     sz_t layers          = 2;      // number of layers
     f3_t kernels_rate    = 0;      // rate at which number of kernels increase per layer (negative: decrease); last layer excluded
     u2_t random_seed     = 1234;   // random seed variable (for random initialization)
-    badapt_dynamics_s dynamics;
+    badapt_dynamics_std_s dynamics;
 
     badapt_arr_layer_activator_s arr_layer_activator;
 
