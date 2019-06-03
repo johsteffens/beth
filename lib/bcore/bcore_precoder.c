@@ -50,6 +50,7 @@ static st_s* create_embedded_string( const st_s* s )
                     i += 2;
                     break;
                 }
+                i++;
             }
         }
         else if( s->data[ i ] == '"' )
