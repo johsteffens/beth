@@ -65,7 +65,7 @@ self :s = aware badapt_adaptive
 
     bmath_mf3_s w_hx;
     bmath_mf3_s w_hc;
-    bmath_mf3_s w_o;
+    bmath_mf3_s w_oh;
 
     aware badapt_activator => a_h;
     aware badapt_activator => a_o;

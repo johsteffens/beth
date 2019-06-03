@@ -113,7 +113,7 @@ void badapt_ern_s_minfer( badapt_ern_s* o, const bmath_vf3_s* in, bmath_vf3_s* o
     {
         badapt_ern_arr_layer_s_setup( &o->arr_layer, o->size_unfolded, o->size_input, o->size_hidden );
     }
-    bmath_vf3_s_set_size( &o->v_o , o->w_o.rows );
+    bmath_vf3_s_set_size( &o->v_o , o->w_oh.rows );
 
     badapt_ern_arr_layer_s_rotate( &o->arr_layer );
     badapt_ern_layer_s* prev_layer = o->arr_layer.arr_data[ 1 % o->arr_layer.arr_size ];
@@ -127,7 +127,7 @@ void badapt_ern_s_minfer( badapt_ern_s* o, const bmath_vf3_s* in, bmath_vf3_s* o
 
     badapt_activator_a_infer(  o->a_h, &this_layer->v_h,  &this_layer->v_h  );
 
-    bmath_mf3_s_mul_vec     ( &o->w_o, &this_layer->v_h,  &o->v_o );
+    bmath_mf3_s_mul_vec     ( &o->w_oh, &this_layer->v_h,  &o->v_o );
     badapt_activator_a_infer(  o->a_o, &o->v_o,  &o->v_o );
 
     if( out ) bmath_vf3_s_cpy( &o->v_o, out );
@@ -137,17 +137,16 @@ void badapt_ern_s_minfer( badapt_ern_s* o, const bmath_vf3_s* in, bmath_vf3_s* o
 
 void badapt_ern_s_bgrad_adapt( badapt_ern_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out )
 {
-    bmath_vf3_s_set_size( &o->v_go, o->v_o.size );
+    badapt_ern_layer_s* layer0 = o->arr_layer.arr_data[ 0 ];
+    bmath_vf3_s_set_size( &o->v_go,      o->v_o.size );
+    bmath_vf3_s_set_size( &o->v_gh, layer0->v_h.size );
+    bmath_vf3_s_set_size( &o->v_gc, layer0->v_c.size );
 
     bmath_vf3_s_cpy( grad_out, &o->v_go );
     badapt_activator_a_adapt( o->a_o, &o->v_go, &o->v_go, &o->v_o, o->dynamics.epsilon );
 
-    badapt_ern_layer_s* layer0 = o->arr_layer.arr_data[ 0 ];
-    bmath_vf3_s_set_size( &o->v_gh, layer0->v_h.size );
-
-    bmath_vf3_s_set_size( &o->v_gh, layer0->v_h.size );
-    bmath_mf3_s_htp_mul_vec( &o->w_o, &o->v_go, &o->v_gh );      // W^T * GO -> GH
-    badapt_dynamics_std_s_weights_adapt( &o->dynamics, &layer0->v_h, &o->w_o, &o->v_go, 1.0 );
+    bmath_mf3_s_htp_mul_vec( &o->w_oh, &o->v_go, &o->v_gh );      // W^T * GO -> GH
+    badapt_dynamics_std_s_weights_adapt( &o->dynamics, &layer0->v_h, &o->w_oh, &o->v_go, 1.0 );
 
     if( grad_in ) bmath_mf3_s_htp_mul_vec( &o->w_hx, &o->v_gh, grad_in ); // W^T * GH -> grad_in
 
@@ -156,7 +155,6 @@ void badapt_ern_s_bgrad_adapt( badapt_ern_s* o, bmath_vf3_s* grad_in, const bmat
         badapt_ern_layer_s* layer = o->arr_layer.arr_data[ i ];
         badapt_activator_a_adapt_defer( o->a_h, &o->v_gh, &o->v_gh, &layer->v_h );
 
-        bmath_vf3_s_set_size( &o->v_gc, layer0->v_c.size );
         bmath_mf3_s_htp_mul_vec( &o->w_hc, &o->v_gh, &o->v_gc ); // W^T * GH -> GC
 
         bmath_mf3_s_add_opd( &o->gw_hx, &o->v_gh, &layer->v_x, &o->gw_hx );
@@ -228,12 +226,12 @@ badapt_adaptive* badapt_ern_builder_s_build( const badapt_ern_builder_s* o )
 
     bmath_mf3_s_set_size( &ern->w_hx, o->size_hidden, o->size_input );
     bmath_mf3_s_set_size( &ern->w_hc, o->size_hidden, o->size_hidden );
-    bmath_mf3_s_set_size( &ern->w_o , o->size_output, o->size_hidden );
+    bmath_mf3_s_set_size( &ern->w_oh, o->size_output, o->size_hidden );
     bmath_mf3_s_set_random( &ern->w_hx, false, false, 0, 1.0, -0.5, 0.5, &random_state );
 
     f3_t v_limit = 1.0 / f3_srt( o->size_hidden );
     bmath_mf3_s_set_random( &ern->w_hc, false, false, 0, 1.0, -v_limit, v_limit, &random_state );
-    bmath_mf3_s_set_random( &ern->w_o , false, false, 0, 1.0, -0.5, 0.5, &random_state );
+    bmath_mf3_s_set_random( &ern->w_oh, false, false, 0, 1.0, -0.5, 0.5, &random_state );
 
     bmath_mf3_s_set_size( &ern->gw_hx, ern->w_hx.rows, ern->w_hx.cols );
     bmath_mf3_s_set_size( &ern->gw_hc, ern->w_hc.rows, ern->w_hc.cols );

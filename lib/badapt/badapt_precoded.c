@@ -496,7 +496,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_ern_s )
     "badapt_dynamics_std_s dynamics;"
     "bmath_mf3_s w_hx;"
     "bmath_mf3_s w_hc;"
-    "bmath_mf3_s w_o;"
+    "bmath_mf3_s w_oh;"
     "aware badapt_activator => a_h;"
     "aware badapt_activator => a_o;"
     "hidden bmath_vf3_s v_o;"
@@ -540,43 +540,61 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_ern_builder_s )
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_jrn
 
+BCORE_DEFINE_OBJECT_INST_P( badapt_jrn_layer_s )
+"bcore_inst"
+"{"
+    "hidden bmath_vf3_s v_x;"
+    "hidden bmath_vf3_s v_c;"
+    "hidden bmath_vf3_s v_h;"
+    "hidden bmath_vf3_s v_o;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( badapt_jrn_arr_layer_s )
+"aware bcore_array"
+"{"
+    "badapt_jrn_layer_s => [] arr;"
+"}";
+
 BCORE_DEFINE_OBJECT_INST_P( badapt_jrn_s )
 "aware badapt_adaptive"
 "{"
     "sz_t size_input;"
+    "sz_t size_hidden;"
     "sz_t size_output;"
+    "sz_t size_unfolded;"
     "badapt_dynamics_std_s dynamics;"
-    "bmath_mf3_s wgt_input;"
-    "bmath_mf3_s wgt_context;"
-    "bmath_mf3_s wgt_hidden;"
-    "f3_t context_epsilon_factor = 1.0;"
-    "aware badapt_activator => activator_hidden;"
-    "aware badapt_activator => activator_output;"
-    "hidden bmath_vf3_s vec_input;"
-    "hidden bmath_vf3_s vec_context;"
-    "hidden bmath_vf3_s vec_hidden;"
-    "hidden bmath_vf3_s vec_output;"
+    "bmath_mf3_s w_hx;"
+    "bmath_mf3_s w_hc;"
+    "bmath_mf3_s w_oh;"
+    "aware badapt_activator => a_h;"
+    "aware badapt_activator => a_o;"
+    "hidden bmath_vf3_s v_go;"
+    "hidden bmath_vf3_s v_gc;"
+    "hidden bmath_vf3_s v_gh;"
+    "hidden bmath_mf3_s gw_hx;"
+    "hidden bmath_mf3_s gw_hc;"
+    "hidden bmath_mf3_s gw_oh;"
+    "hidden badapt_jrn_arr_layer_s arr_layer;"
     "func : get_in_size;"
     "func : get_out_size;"
     "func : get_dynamics_std;"
     "func : set_dynamics_std;"
     "func : arc_to_sink;"
     "func : minfer;"
-    "func : bgrad;"
     "func : bgrad_adapt;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( badapt_builder_jrn_s )
+BCORE_DEFINE_OBJECT_INST_P( badapt_jrn_builder_s )
 "aware badapt_builder"
 "{"
     "sz_t size_input;"
     "sz_t size_hidden = 8;"
     "sz_t size_output = 1;"
+    "sz_t size_unfolded = 1;"
     "badapt_dynamics_std_s dynamics;"
-    "f3_t context_epsilon_factor = 1.0;"
     "u2_t random_seed = 1234;"
-    "aware badapt_activator => activator_hidden;"
-    "aware badapt_activator => activator_output;"
+    "aware badapt_activator => a_h;"
+    "aware badapt_activator => a_o;"
     "func : get_in_size;"
     "func : set_in_size;"
     "func : get_out_size;"
@@ -719,7 +737,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1935698302 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1339373793 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );
@@ -908,21 +926,22 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( badapt_builder_set_out_size, badapt_ern_builder_s_set_out_size );
             BCORE_REGISTER_FFUNC( badapt_builder_build, badapt_ern_builder_s_build );
             BCORE_REGISTER_OBJECT( badapt_ern_builder_s );
+            BCORE_REGISTER_OBJECT( badapt_jrn_layer_s );
+            BCORE_REGISTER_OBJECT( badapt_jrn_arr_layer_s );
             BCORE_REGISTER_FFUNC( badapt_adaptive_get_in_size, badapt_jrn_s_get_in_size );
             BCORE_REGISTER_FFUNC( badapt_adaptive_get_out_size, badapt_jrn_s_get_out_size );
             BCORE_REGISTER_FFUNC( badapt_adaptive_get_dynamics_std, badapt_jrn_s_get_dynamics_std );
             BCORE_REGISTER_FFUNC( badapt_adaptive_set_dynamics_std, badapt_jrn_s_set_dynamics_std );
             BCORE_REGISTER_FFUNC( badapt_adaptive_arc_to_sink, badapt_jrn_s_arc_to_sink );
             BCORE_REGISTER_FFUNC( badapt_adaptive_minfer, badapt_jrn_s_minfer );
-            BCORE_REGISTER_FFUNC( badapt_adaptive_bgrad, badapt_jrn_s_bgrad );
             BCORE_REGISTER_FFUNC( badapt_adaptive_bgrad_adapt, badapt_jrn_s_bgrad_adapt );
             BCORE_REGISTER_OBJECT( badapt_jrn_s );
-            BCORE_REGISTER_FFUNC( badapt_builder_get_in_size, badapt_builder_jrn_s_get_in_size );
-            BCORE_REGISTER_FFUNC( badapt_builder_set_in_size, badapt_builder_jrn_s_set_in_size );
-            BCORE_REGISTER_FFUNC( badapt_builder_get_out_size, badapt_builder_jrn_s_get_out_size );
-            BCORE_REGISTER_FFUNC( badapt_builder_set_out_size, badapt_builder_jrn_s_set_out_size );
-            BCORE_REGISTER_FFUNC( badapt_builder_build, badapt_builder_jrn_s_build );
-            BCORE_REGISTER_OBJECT( badapt_builder_jrn_s );
+            BCORE_REGISTER_FFUNC( badapt_builder_get_in_size, badapt_jrn_builder_s_get_in_size );
+            BCORE_REGISTER_FFUNC( badapt_builder_set_in_size, badapt_jrn_builder_s_set_in_size );
+            BCORE_REGISTER_FFUNC( badapt_builder_get_out_size, badapt_jrn_builder_s_get_out_size );
+            BCORE_REGISTER_FFUNC( badapt_builder_set_out_size, badapt_jrn_builder_s_set_out_size );
+            BCORE_REGISTER_FFUNC( badapt_builder_build, badapt_jrn_builder_s_build );
+            BCORE_REGISTER_OBJECT( badapt_jrn_builder_s );
             BCORE_REGISTER_FEATURE( badapt_supplier_get_in_size );
             BCORE_REGISTER_FEATURE( badapt_supplier_get_out_size );
             BCORE_REGISTER_FEATURE( badapt_supplier_fetch_sample_tin );

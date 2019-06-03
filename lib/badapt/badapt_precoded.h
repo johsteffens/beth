@@ -611,7 +611,7 @@
   #define TYPEOF_badapt_ern_s 3488918381
   #define BETH_EXPAND_ITEM_badapt_ern_s \
     BCORE_DECLARE_OBJECT( badapt_ern_s ) \
-      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;bmath_mf3_s w_hx;bmath_mf3_s w_hc;bmath_mf3_s w_o;badapt_activator* a_h;badapt_activator* a_o;bmath_vf3_s v_o;bmath_vf3_s v_go;bmath_vf3_s v_gc;bmath_vf3_s v_gh;bmath_mf3_s gw_hx;bmath_mf3_s gw_hc;badapt_ern_arr_layer_s arr_layer;}; \
+      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;bmath_mf3_s w_hx;bmath_mf3_s w_hc;bmath_mf3_s w_oh;badapt_activator* a_h;badapt_activator* a_o;bmath_vf3_s v_o;bmath_vf3_s v_go;bmath_vf3_s v_gc;bmath_vf3_s v_gh;bmath_mf3_s gw_hx;bmath_mf3_s gw_hc;badapt_ern_arr_layer_s arr_layer;}; \
     sz_t badapt_ern_s_get_in_size( const badapt_ern_s* o ); \
     sz_t badapt_ern_s_get_out_size( const badapt_ern_s* o ); \
     void badapt_ern_s_get_dynamics_std( const badapt_ern_s* o, badapt_dynamics_std_s* dynamics ); \
@@ -641,30 +641,49 @@
 // group: badapt_jrn
 
 #define TYPEOF_badapt_jrn 3557364830
+  #define TYPEOF_badapt_jrn_layer_s 3974986334
+  #define BETH_EXPAND_ITEM_badapt_jrn_layer_s \
+    BCORE_DECLARE_OBJECT( badapt_jrn_layer_s ) \
+      {bmath_vf3_s v_x;bmath_vf3_s v_c;bmath_vf3_s v_h;bmath_vf3_s v_o;};
+  #define TYPEOF_badapt_jrn_arr_layer_s 1189668010
+  #define BETH_EXPAND_ITEM_badapt_jrn_arr_layer_s \
+    BCORE_DECLARE_OBJECT( badapt_jrn_arr_layer_s ) \
+      {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( badapt_jrn_layer_s, arr_ );}; \
+    static inline void badapt_jrn_arr_layer_s_set_space( badapt_jrn_arr_layer_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_jrn_arr_layer_s, ( bcore_array* )o, size ); } \
+    static inline void badapt_jrn_arr_layer_s_set_size( badapt_jrn_arr_layer_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_jrn_arr_layer_s, ( bcore_array* )o, size ); } \
+    static inline void badapt_jrn_arr_layer_s_clear( badapt_jrn_arr_layer_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_jrn_arr_layer_s, ( bcore_array* )o, 0 ); } \
+    static inline void badapt_jrn_arr_layer_s_push_c( badapt_jrn_arr_layer_s* o, const badapt_jrn_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_jrn_arr_layer_s, ( bcore_array* )o, sr_twc( TYPEOF_badapt_jrn_layer_s, v ) ); } \
+    static inline void badapt_jrn_arr_layer_s_push_d( badapt_jrn_arr_layer_s* o,       badapt_jrn_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_jrn_arr_layer_s, ( bcore_array* )o, sr_tsd( TYPEOF_badapt_jrn_layer_s, v ) ); } \
+    static inline badapt_jrn_layer_s* badapt_jrn_arr_layer_s_push( badapt_jrn_arr_layer_s* o ) \
+    { \
+        bcore_array_t_push( TYPEOF_badapt_jrn_arr_layer_s, ( bcore_array* )o, sr_t_create( TYPEOF_badapt_jrn_layer_s ) ); \
+        return bcore_array_t_get_last( TYPEOF_badapt_jrn_arr_layer_s, ( bcore_array* )o ).o; \
+    }
   #define TYPEOF_badapt_jrn_s 3863226272
   #define BETH_EXPAND_ITEM_badapt_jrn_s \
     BCORE_DECLARE_OBJECT( badapt_jrn_s ) \
-      {aware_t _;sz_t size_input;sz_t size_output;badapt_dynamics_std_s dynamics;bmath_mf3_s wgt_input;bmath_mf3_s wgt_context;bmath_mf3_s wgt_hidden;f3_t context_epsilon_factor;badapt_activator* activator_hidden;badapt_activator* activator_output;bmath_vf3_s vec_input;bmath_vf3_s vec_context;bmath_vf3_s vec_hidden;bmath_vf3_s vec_output;}; \
+      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;bmath_mf3_s w_hx;bmath_mf3_s w_hc;bmath_mf3_s w_oh;badapt_activator* a_h;badapt_activator* a_o;bmath_vf3_s v_go;bmath_vf3_s v_gc;bmath_vf3_s v_gh;bmath_mf3_s gw_hx;bmath_mf3_s gw_hc;bmath_mf3_s gw_oh;badapt_jrn_arr_layer_s arr_layer;}; \
     sz_t badapt_jrn_s_get_in_size( const badapt_jrn_s* o ); \
     sz_t badapt_jrn_s_get_out_size( const badapt_jrn_s* o ); \
     void badapt_jrn_s_get_dynamics_std( const badapt_jrn_s* o, badapt_dynamics_std_s* dynamics ); \
     void badapt_jrn_s_set_dynamics_std( badapt_jrn_s* o, const badapt_dynamics_std_s* dynamics ); \
     void badapt_jrn_s_arc_to_sink( const badapt_jrn_s* o, bcore_sink* sink ); \
     void badapt_jrn_s_minfer( badapt_jrn_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
-    void badapt_jrn_s_bgrad( const badapt_jrn_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ); \
     void badapt_jrn_s_bgrad_adapt( badapt_jrn_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
-  #define TYPEOF_badapt_builder_jrn_s 1047382808
-  #define BETH_EXPAND_ITEM_badapt_builder_jrn_s \
-    BCORE_DECLARE_OBJECT( badapt_builder_jrn_s ) \
-      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;badapt_dynamics_std_s dynamics;f3_t context_epsilon_factor;u2_t random_seed;badapt_activator* activator_hidden;badapt_activator* activator_output;}; \
-    sz_t badapt_builder_jrn_s_get_in_size( const badapt_builder_jrn_s* o ); \
-    void badapt_builder_jrn_s_set_in_size( badapt_builder_jrn_s* o, sz_t size ); \
-    sz_t badapt_builder_jrn_s_get_out_size( const badapt_builder_jrn_s* o ); \
-    void badapt_builder_jrn_s_set_out_size( badapt_builder_jrn_s* o, sz_t size ); \
-    badapt_adaptive* badapt_builder_jrn_s_build( const badapt_builder_jrn_s* o );
+  #define TYPEOF_badapt_jrn_builder_s 2684012268
+  #define BETH_EXPAND_ITEM_badapt_jrn_builder_s \
+    BCORE_DECLARE_OBJECT( badapt_jrn_builder_s ) \
+      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;u2_t random_seed;badapt_activator* a_h;badapt_activator* a_o;}; \
+    sz_t badapt_jrn_builder_s_get_in_size( const badapt_jrn_builder_s* o ); \
+    void badapt_jrn_builder_s_set_in_size( badapt_jrn_builder_s* o, sz_t size ); \
+    sz_t badapt_jrn_builder_s_get_out_size( const badapt_jrn_builder_s* o ); \
+    void badapt_jrn_builder_s_set_out_size( badapt_jrn_builder_s* o, sz_t size ); \
+    badapt_adaptive* badapt_jrn_builder_s_build( const badapt_jrn_builder_s* o );
 #define BETH_EXPAND_GROUP_badapt_jrn \
+  BETH_EXPAND_ITEM_badapt_jrn_layer_s \
+  BETH_EXPAND_ITEM_badapt_jrn_arr_layer_s \
   BETH_EXPAND_ITEM_badapt_jrn_s \
-  BETH_EXPAND_ITEM_badapt_builder_jrn_s
+  BETH_EXPAND_ITEM_badapt_jrn_builder_s
 
 /**********************************************************************************************************************/
 // source: badapt_training
