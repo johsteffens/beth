@@ -336,6 +336,15 @@ void bmath_vf3_s_cpy( const bmath_vf3_s* o, bmath_vf3_s* res )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_vf3_s_cat( const bmath_vf3_s* a, const bmath_vf3_s* b, bmath_vf3_s* r )
+{
+    ASSERT( r->size == a->size + b->size );
+    for( uz_t i = 0; i < a->size; i++ ) r->data[           i ] = a->data[ i ];
+    for( uz_t i = 0; i < b->size; i++ ) r->data[ a->size + i ] = b->data[ i ];
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_vf3_s_add( const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res )
 {
     ASSERT( o->size == op->size );

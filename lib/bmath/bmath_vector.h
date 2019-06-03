@@ -23,7 +23,8 @@
 /** Nomenclature
  *  add, zro, neg, sub, mul, mul_vec, sqr, sqr_sub - according to spect_vector
  *  cnj: conjugation
- *  cpy: projecting or injecting copy
+ *  cpy: copy
+ *  cat: catenation
  *  sum: sum of elements
  *  avg: average
  *  var: (std-)variance
@@ -115,6 +116,7 @@ bl_t bmath_vf3_s_is_nan( const bmath_vf3_s* o );
 void bmath_vf3_s_zro( bmath_vf3_s* o );
 void bmath_vf3_s_neg( const bmath_vf3_s* o, bmath_vf3_s* res );
 void bmath_vf3_s_cpy( const bmath_vf3_s* o, bmath_vf3_s* res );
+void bmath_vf3_s_cat( const bmath_vf3_s* a, const bmath_vf3_s* b,  bmath_vf3_s* r );
 void bmath_vf3_s_add( const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
 void bmath_vf3_s_sub( const bmath_vf3_s* o, const bmath_vf3_s* op, bmath_vf3_s* res );
 
