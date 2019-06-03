@@ -27,7 +27,7 @@ BETH_PRECODE( badapt_trainer_objects )
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // trainer_batch
 
-self badapt_trainer_batch_s = aware badapt_trainer
+stamp badapt_trainer_batch_s = aware badapt_trainer
 {
     // loss function (optional; overrides preferred loss of supplier)
     aware badapt_loss => loss;
@@ -48,8 +48,8 @@ self badapt_trainer_batch_s = aware badapt_trainer
     func : create_state;
 };
 
-self badapt_sample_batch_s     = bcore_inst { bmath_vf3_s in; bmath_vf3_s out; };
-self badapt_arr_sample_batch_s = aware bcore_array { badapt_sample_batch_s [] arr; };
+stamp badapt_sample_batch_s     = bcore_inst { bmath_vf3_s in; bmath_vf3_s out; };
+stamp badapt_arr_sample_batch_s = aware bcore_array { badapt_sample_batch_s [] arr; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

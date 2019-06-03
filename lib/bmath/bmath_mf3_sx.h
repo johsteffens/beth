@@ -81,7 +81,7 @@
 
 BETH_PRECODE( bmath_mf3_sx )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    self bmath_mf3_sx_s = bcore_inst
+    stamp bmath_mf3_sx_s = bcore_inst
     {
         aware_t _;
 

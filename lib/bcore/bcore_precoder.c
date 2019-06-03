@@ -198,6 +198,8 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_args_s )
     "bcore_precoder_arg_s [] arr;"
 "}";
 
+//----------------------------------------------------------------------------------------------------------------------
+
 // example:
 // signature void myfeature( mutable, sz_t a, sz_t b );
 BCORE_DECLARE_OBJECT( bcore_precoder_signature_s )
@@ -288,20 +290,20 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_name_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BCORE_DECLARE_OBJECT( bcore_precoder_object_s )
+BCORE_DECLARE_OBJECT( bcore_precoder_stamp_s )
 {
     aware_t _;
     sc_t item_name;
-    st_s self_source;
-    bcore_self_s self;
+    st_s         * self_source;
+    bcore_self_s * self;
 };
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_object_s )
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_stamp_s )
 "{"
     "aware_t _;"
     "sc_t item_name;"
-    "st_s self_source;"
-    "bcore_self_s self;"
+    "st_s         => self_source;"
+    "bcore_self_s => self;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -695,6 +697,80 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static void bcore_precoder_stamp_s_compile( bcore_precoder_stamp_s* o, bcore_precoder_group_s* group, bcore_source* source )
+{
+    BCORE_LIFE_INIT();
+
+    BCORE_LIFE_CREATE( st_s, self_string );
+    BCORE_LIFE_CREATE( st_s, string );
+
+    bcore_source_a_parse_fa( source, " #until'='=", string );
+    st_s_push_fa( self_string, "#<sc_t>=", string->sc );
+
+    if( bcore_source_a_parse_bl_fa( source, " #?w'aware'" ) ) st_s_push_sc( self_string, " aware" );
+
+    if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
+    {
+        st_s_push_fa( self_string, " #<sc_t>", group->name.sc );
+    }
+    else
+    {
+        bcore_source_a_parse_fa( source, " #name", string );
+        if( string->size == 0 ) bcore_source_a_parse_err_fa( source, "Trait name expected." );
+        st_s_push_fa( self_string, " #<sc_t>", string->sc );
+    }
+
+    bcore_source_a_parse_fa( source, " {" );
+    st_s_push_fa( self_string, "{" );
+
+    while( !bcore_source_a_eos( source ) && !bcore_source_a_parse_bl_fa( source, " #?'}'" ) )
+    {
+        if( bcore_source_a_parse_bl_fa( source, " #?w'func'" ) )
+        {
+            st_s_push_fa( self_string, "func ", string->sc );
+            bcore_source_a_parse_fa( source, " #until';';", string );
+            st_s_push_fa( self_string, "#<sc_t>;", string->sc );
+        }
+        else
+        {
+            bcore_source_a_parse_fa( source, " #until';';", string );
+            st_s_push_fa( self_string, "#<sc_t>;", string->sc );
+        }
+    }
+    st_s_push_sc( self_string, "}" );
+
+    st_s self_string_source;
+    st_s_init_weak_sc( &self_string_source, self_string->sc );
+
+    o->self = bcore_self_s_parse_source( ( bcore_source* )&self_string_source, 0, group->name.sc, false );
+
+    bcore_source_a_parse_fa( source, " ; " );
+
+    o->self_source = create_embedded_string( self_string );
+
+    /// 4095 is the C99-limit for string literals
+    if( o->self_source->size > 4095 )
+    {
+        bcore_source_a_parse_err_fa
+        (
+            source,
+            "Precoder reflection embedding failed.\n"
+            "The embedded code would require a string literal larger than 4095 characters.\n"
+            "This exceeds the limit defined in C99.\n"
+        );
+    }
+
+    st_s st_weak = st_weak_st( o->self_source );
+    bcore_self_s* embedded_self = BCORE_LIFE_A_PUSH( bcore_self_s_parse_source( ( bcore_source* )&st_weak, 0, group->name.sc, false ) );
+    if( bcore_self_s_cmp( o->self, embedded_self ) != 0 )
+    {
+        bcore_source_a_parse_err_fa( source, "Precoder reflection embedding failed. Embedded code:\n#<sc_t>", o->self_source->sc );
+    }
+    BCORE_LIFE_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static tp_t bcore_precoder_signature_s_get_hash( const bcore_precoder_signature_s* o )
 {
     tp_t hash = bcore_tp_init();
@@ -892,23 +968,23 @@ static tp_t bcore_precoder_name_s_get_hash( const bcore_precoder_name_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_object_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
+static void bcore_precoder_stamp_s_expand_declaration( const bcore_precoder_stamp_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->item_name, typeof( o->item_name ) );
 
     bcore_sink_a_push_fa( sink, "#rn{ }##define BETH_EXPAND_ITEM_#<sc_t>", indent, o->item_name, o->item_name );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BCORE_DECLARE_OBJECT( #<sc_t> )", indent, o->item_name );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }    ", indent );
-    bcore_self_s_struct_body_to_sink_single_line( &o->self, sink );
+    bcore_self_s_struct_body_to_sink_single_line( o->self, sink );
     bcore_sink_a_push_fa( sink, ";" );
 
     const bcore_self_item_s* array_item = NULL;
-    bl_t expand_array = o->self.trait == TYPEOF_bcore_array;
+    bl_t expand_array = o->self->trait == TYPEOF_bcore_array;
 
-    sz_t items = bcore_self_s_items_size( &o->self );
+    sz_t items = bcore_self_s_items_size( o->self );
     for( sz_t i = 0; i < items; i++ )
     {
-        const bcore_self_item_s* self_item = bcore_self_s_get_item( &o->self, i );
+        const bcore_self_item_s* self_item = bcore_self_s_get_item( o->self, i );
         if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_precoder_s_item_exists( precoder, self_item->type ) )
         {
             const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder, self_item->type );
@@ -987,10 +1063,10 @@ static void bcore_precoder_object_s_expand_declaration( const bcore_precoder_obj
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_object_s_expand_definition( const bcore_precoder_object_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
+static void bcore_precoder_stamp_s_expand_definition( const bcore_precoder_stamp_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
 {
-    const bcore_self_s* self = &o->self;
-    const st_s* self_string = &o->self_source;
+    const bcore_self_s* self = o->self;
+    const st_s* self_string = o->self_source;
     sz_t idx = st_s_find_char( self_string, 0, -1, '=' );
     sc_t self_def = "";
     if( idx < self_string->size )
@@ -1009,12 +1085,12 @@ static void bcore_precoder_object_s_expand_definition( const bcore_precoder_obje
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_object_s_expand_init1( const bcore_precoder_object_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
+static void bcore_precoder_stamp_s_expand_init1( const bcore_precoder_stamp_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
 {
-    sz_t items = bcore_self_s_items_size( &o->self );
+    sz_t items = bcore_self_s_items_size( o->self );
     for( sz_t i = 0; i < items; i++ )
     {
-        const bcore_self_item_s* self_item = bcore_self_s_get_item( &o->self, i );
+        const bcore_self_item_s* self_item = bcore_self_s_get_item( o->self, i );
         if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_precoder_s_item_exists( precoder, self_item->type ) )
         {
             const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder, self_item->type );
@@ -1032,9 +1108,9 @@ static void bcore_precoder_item_s_expand_declaration( const bcore_precoder_item_
 {
     switch( sr_s_type( &o->data ) )
     {
-        case TYPEOF_bcore_precoder_object_s:
+        case TYPEOF_bcore_precoder_stamp_s:
         {
-            bcore_precoder_object_s_expand_declaration( o->data.o, o->group->source->target->precoder, indent + 2, sink );
+            bcore_precoder_stamp_s_expand_declaration( o->data.o, o->group->source->target->precoder, indent + 2, sink );
         }
         break;
 
@@ -1095,6 +1171,12 @@ static void bcore_precoder_items_s_expand_indef_declaration( const bcore_precode
         }
         break;
 
+        case TYPEOF_bcore_precoder_stamp_s:
+        {
+            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BETH_EXPAND_ITEM_#<sc_t>", indent, o->name.sc );
+        }
+        break;
+
         default:
         {
             ERR_fa( "Unhandled: #<sc_t>\n", ifnameof( sr_s_type( &o->data ) ) );
@@ -1110,9 +1192,9 @@ static void bcore_precoder_item_s_expand_definition( const bcore_precoder_item_s
 {
     switch( sr_s_type( &o->data ) )
     {
-        case TYPEOF_bcore_precoder_object_s:
+        case TYPEOF_bcore_precoder_stamp_s:
         {
-            bcore_precoder_object_s_expand_definition( o->data.o, NULL, indent, sink );
+            bcore_precoder_stamp_s_expand_definition( o->data.o, NULL, indent, sink );
         }
         break;
 
@@ -1148,9 +1230,9 @@ static void bcore_precoder_item_s_expand_init1( const bcore_precoder_item_s* o, 
 {
     switch( sr_s_type( &o->data ) )
     {
-        case TYPEOF_bcore_precoder_object_s:
+        case TYPEOF_bcore_precoder_stamp_s:
         {
-            bcore_precoder_object_s_expand_init1( o->data.o, o->group->source->target->precoder, indent, sink );
+            bcore_precoder_stamp_s_expand_init1( o->data.o, o->group->source->target->precoder, indent, sink );
         }
         break;
 
@@ -1192,13 +1274,13 @@ static void bcore_precoder_item_s_setup( bcore_precoder_item_s* o, vc_t object )
 
     switch( type )
     {
-        case TYPEOF_bcore_precoder_object_s:
+        case TYPEOF_bcore_precoder_stamp_s:
         {
-            const bcore_precoder_object_s* precoder_object = object;
-            st_s_copy_sc( &o->name, nameof( precoder_object->self.type ) );
+            const bcore_precoder_stamp_s* precoder_object = object;
+            st_s_copy_sc( &o->name, nameof( precoder_object->self->type ) );
             //o->hash = bcore_hash_a_get_tp( ( bcore_hash* )&precoder_object->self );
-            o->hash = bcore_tp_hash_sc( precoder_object->self_source.sc );
-            ( ( bcore_precoder_object_s* )o->data.o )->item_name = o->name.sc;
+            o->hash = bcore_tp_hash_sc( precoder_object->self_source->sc );
+            ( ( bcore_precoder_stamp_s* )o->data.o )->item_name = o->name.sc;
         }
         break;
 
@@ -1277,48 +1359,12 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
         bcore_precoder_item_s* item = bcore_precoder_item_s_create();
         item->group = o;
 
-        if( bcore_source_a_parse_bl_fa( source, " #?w'self' " ) )
+        if( bcore_source_a_parse_bl_fa( source, " #?w'stamp' " ) )
         {
             BCORE_LIFE_INIT();
-            s3_t source_index1 = bcore_source_a_get_index( source );
-            bcore_self_s* self = BCORE_LIFE_A_PUSH( bcore_self_s_parse_source( source, 0, o->name.sc, false ) );
-            s3_t source_index2 = bcore_source_a_get_index( source );
-            bcore_source_a_set_index( source, source_index1 );
-
-            BCORE_LIFE_CREATE( st_s, self_string );
-
-            st_s_set_size( self_string, 0, source_index2 - source_index1 );
-            bcore_source_a_get_data( source, self_string->data, source_index2 - source_index1 );
-            bcore_source_a_parse_fa( source, " ; " );
-
-            st_s* self_embedded_string = BCORE_LIFE_A_PUSH( create_embedded_string( self_string ) );
-
-            /// 4095 is the C99-limit for string literals
-            if( self_embedded_string->size > 4095 )
-            {
-                bcore_source_a_parse_err_fa
-                (
-                    source,
-                    "Precoder reflection embedding failed.\n"
-                    "The embedded code would require a string literal larger than 4095 characters.\n"
-                    "This exceeds the limit defined in C99.\n"
-                );
-            }
-
-            st_s st_weak = st_weak_st( self_embedded_string );
-            bcore_self_s* embedded_self = BCORE_LIFE_A_PUSH( bcore_self_s_parse_source( ( bcore_source* )&st_weak, 0, o->name.sc, false ) );
-            if( bcore_self_s_cmp( self, embedded_self ) != 0 )
-            {
-                bcore_source_a_parse_err_fa( source, "Precoder reflection embedding failed. Embedded code:\n#<sc_t>", self_embedded_string->sc );
-            }
-
-            BCORE_LIFE_CREATE( bcore_precoder_object_s, precoder_object );
-
-            bcore_self_s_copy( &precoder_object->self, self );
-            st_s_copy( &precoder_object->self_source, self_embedded_string );
-
-            bcore_precoder_item_s_setup( item, precoder_object );
-
+            BCORE_LIFE_CREATE( bcore_precoder_stamp_s, stamp );
+            bcore_precoder_stamp_s_compile( stamp, o, source );
+            bcore_precoder_item_s_setup( item, stamp );
             if( !bcore_precoder_s_item_register( o->source->target->precoder, item ) )
             {
                 bcore_source_a_parse_err_fa( source, "Identifier #<sc_t> is already in use.", item->name.sc );
@@ -1927,7 +1973,7 @@ vd_t bcore_precoder_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_precoder_args_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_signature_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_feature_s );
-            BCORE_REGISTER_OBJECT( bcore_precoder_object_s );
+            BCORE_REGISTER_OBJECT( bcore_precoder_stamp_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_name_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_item_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_group_s );
@@ -1950,7 +1996,7 @@ vd_t bcore_precoder_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_args_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_signature_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_feature_s );
-            BCORE_REGISTER_QUICKTYPE( bcore_precoder_object_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_precoder_stamp_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_name_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_item_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_group_s );

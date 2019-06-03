@@ -94,6 +94,7 @@
 #define TYPEOF_bcore_precoder_s           2936171739
 #define TYPEOF_bcore_precoder_signature_s 1491189594
 #define TYPEOF_bcore_precoder_source_s     700523377
+#define TYPEOF_bcore_precoder_stamp_s     3184686203
 #define TYPEOF_bcore_precoder_target_s    4261411997
 #define TYPEOF_bcore_self_s                422978351
 #define TYPEOF_bcore_sink                 4108403612

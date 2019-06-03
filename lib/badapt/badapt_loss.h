@@ -28,7 +28,7 @@ BETH_PRECODE( badapt_loss )
     feature strict 'pa' void bgrad(   const, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad ); // computes loss minimizing backward gradient of x
 
     // l2 loss function
-    self :l2_s = aware badapt_loss { func :loss; func :loss_f3; func :bgrad; };
+    stamp :l2_s = aware badapt_loss { func :loss; func :loss_f3; func :bgrad; };
 #endif // BETH_PRECODE_SECTION
 
 /**********************************************************************************************************************/

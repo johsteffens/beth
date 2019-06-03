@@ -40,7 +40,7 @@ BETH_PRECODE( badapt_jrn )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self :layer_s = bcore_inst
+stamp :layer_s = bcore_inst
 {
     hidden bmath_vf3_s v_x;
     hidden bmath_vf3_s v_c;
@@ -50,11 +50,11 @@ self :layer_s = bcore_inst
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self :arr_layer_s = aware bcore_array{ badapt_jrn_layer_s => [] arr; };
+stamp :arr_layer_s = aware bcore_array{ badapt_jrn_layer_s => [] arr; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self :s = aware badapt_adaptive
+stamp :s = aware badapt_adaptive
 {
     // === architecture parameters ================================
     sz_t size_input;
@@ -98,7 +98,7 @@ self :s = aware badapt_adaptive
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self :builder_s = aware badapt_builder
+stamp :builder_s = aware badapt_builder
 {
     sz_t size_input;
     sz_t size_hidden = 8;

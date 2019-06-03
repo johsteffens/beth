@@ -83,7 +83,7 @@ BETH_PRECODE( badapt_training_objects )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_progress_s = bcore_inst
+stamp badapt_progress_s = bcore_inst
 {
     sz_t iteration = 0;
     f3_t error     = 0;
@@ -93,7 +93,7 @@ self badapt_progress_s = bcore_inst
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_training_state_std_s = aware badapt_training_state
+stamp badapt_training_state_std_s = aware badapt_training_state
 {
     badapt_progress_s progress;
 
@@ -118,7 +118,7 @@ self badapt_training_state_std_s = aware badapt_training_state
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_guide_std_s = aware badapt_guide
+stamp badapt_guide_std_s = aware badapt_guide
 {
     f3_t annealing_factor = 0.99;
 

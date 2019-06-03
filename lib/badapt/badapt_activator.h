@@ -28,19 +28,19 @@ BETH_PRECODE( badapt_activation )
     feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
 
     // (logistic function)
-    self :lgst_s       = aware badapt_activation { func :fx; func :dy; }; // f( x ) = 1.0 / ( 1.0 + exp( -x ) )
-    self :lgst_hard_s  = aware badapt_activation { func :fx; func :dy; }; // f( x ) = ( x < -2 ) ? 0 : ( x > 2 ) ? 1 : 0.25 * ( x + 2 )
-    self :lgst_leaky_s = aware badapt_activation { func :fx; func :dy; }; // f( x ) = ( x < -2 ) ? 0.01 * ( x + 2 ) : ( x > 2 ) ? 1 + 0.01 * ( x - 2 ) : 0.25 * ( x + 2 )
+    stamp :lgst_s       = aware : { func :fx; func :dy; }; // f( x ) = 1.0 / ( 1.0 + exp( -x ) )
+    stamp :lgst_hard_s  = aware : { func :fx; func :dy; }; // f( x ) = ( x < -2 ) ? 0 : ( x > 2 ) ? 1 : 0.25 * ( x + 2 )
+    stamp :lgst_leaky_s = aware : { func :fx; func :dy; }; // f( x ) = ( x < -2 ) ? 0.01 * ( x + 2 ) : ( x > 2 ) ? 1 + 0.01 * ( x - 2 ) : 0.25 * ( x + 2 )
 
     // tanh
-    self :tanh_s       = aware badapt_activation { func :fx; func :dy; }; // f(x) = tanh(x)
-    self :tanh_hard_s  = aware badapt_activation { func :fx; func :dy; }; // f(x) = ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x
-    self :tanh_leaky_s = aware badapt_activation { func :fx; func :dy; }; // f(x) = ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x
+    stamp :tanh_s       = aware : { func :fx; func :dy; }; // f(x) = tanh(x)
+    stamp :tanh_hard_s  = aware : { func :fx; func :dy; }; // f(x) = ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x
+    stamp :tanh_leaky_s = aware : { func :fx; func :dy; }; // f(x) = ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x
 
     // softplus function
-    self :softplus_s   = aware badapt_activation { func :fx; func :dy; }; // f(x) = log( 1.0 + exp( x ) )
-    self :relu_s       = aware badapt_activation { func :fx; func :dy; }; // f(x) = x > 0 ? x : 0
-    self :leaky_relu_s = aware badapt_activation { func :fx; func :dy; }; // f(x) = x > 0 ? x : 0.01*x
+    stamp :softplus_s   = aware : { func :fx; func :dy; }; // f(x) = log( 1.0 + exp( x ) )
+    stamp :relu_s       = aware : { func :fx; func :dy; }; // f(x) = x > 0 ? x : 0
+    stamp :leaky_relu_s = aware : { func :fx; func :dy; }; // f(x) = x > 0 ? x : 0.01*x
 
 #endif // BETH_PRECODE_SECTION
 
@@ -85,7 +85,7 @@ BETH_PRECODE( badapt_activator )
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// Activator without bias.
-    self :plain_s = aware badapt_activator
+    stamp :plain_s = aware badapt_activator
     {
         aware badapt_activation => activation;
         func :setup; func :reset; func :infer; func :bgrad; func :adapt; func :adapt_defer; func :adapt_apply;
@@ -97,7 +97,7 @@ BETH_PRECODE( badapt_activator )
     /** Activator with bias.
      *  Bias is not randomized but initialized zero (common practice).
      */
-    self :bias_s = aware badapt_activator
+    stamp :bias_s = aware :
     {
         aware badapt_activation => activation;
         bmath_vf3_s v_bias;
@@ -109,9 +109,9 @@ BETH_PRECODE( badapt_activator )
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// specifies which activator is used for which layer; negative layer number means relative to last layer + 1
-    self badapt_layer_activator_s     = aware bcore_inst  { sz_t layer; aware badapt_activator => activator; };
-    self badapt_arr_layer_activator_s = aware bcore_array { badapt_layer_activator_s    [] arr; };
-    self badapt_arr_activator_s       = aware bcore_array { aware badapt_activator   => [] arr; };
+    stamp badapt_layer_activator_s     = aware bcore_inst  { sz_t layer; aware badapt_activator => activator; };
+    stamp badapt_arr_layer_activator_s = aware bcore_array { badapt_layer_activator_s    [] arr; };
+    stamp badapt_arr_activator_s       = aware bcore_array { aware badapt_activator   => [] arr; };
 
 #endif // BETH_PRECODE_SECTION
 

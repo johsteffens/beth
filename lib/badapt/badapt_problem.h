@@ -30,7 +30,7 @@ BETH_PRECODE( badapt_problem )
 /** Type: Classifier
  *  Method: Differentiate between a sine wave of arbitrary amplitude and frequency from a random walk curve.
  */
-self :sine_random_s = aware badapt_supplier
+stamp :sine_random_s = aware badapt_supplier
 {
     sz_t input_size = 32;
     u2_t rval       = 1234;
@@ -50,7 +50,7 @@ self :sine_random_s = aware badapt_supplier
 /** Type: Regression
  *  Method: Estimate polynomial coefficients for a signal within range -1, 1
  */
-self :polynom_s = aware badapt_supplier
+stamp :polynom_s = aware badapt_supplier
 {
     sz_t input_size  = 32;
     sz_t output_size = 3;   // polynomial order + 1
@@ -71,7 +71,7 @@ self :polynom_s = aware badapt_supplier
 /** Type: Encoder
  *  Method: learning to add two unsigned integer variables
  */
-self :binary_add_s = aware badapt_supplier
+stamp :binary_add_s = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits * 2; output size = bits + 1
     u2_t rval  = 1234;
@@ -91,7 +91,7 @@ self :binary_add_s = aware badapt_supplier
 /** Type: Encoder
  *  Method: learning to multiply two unsigned integer variables
  */
-self :binary_mul_s = aware badapt_supplier
+stamp :binary_mul_s = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits * 2; output size = bits * 2
     u2_t rval  = 1234;
@@ -111,7 +111,7 @@ self :binary_mul_s = aware badapt_supplier
 /** Type: Encoder
  *  Method: forward randomization
  */
-self :binary_xsg3_s = aware badapt_supplier
+stamp :binary_xsg3_s = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits; output size = bits
     u2_t rval  = 1234;
@@ -131,7 +131,7 @@ self :binary_xsg3_s = aware badapt_supplier
 /** Type: Encoder
  *  Method: hashing
  */
-self :binary_hash_s = aware badapt_supplier
+stamp :binary_hash_s = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits; output size = bits
     u2_t rval  = 1234;

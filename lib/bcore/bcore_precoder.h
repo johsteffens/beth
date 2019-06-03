@@ -38,7 +38,7 @@
  *
  *      feature [strict] '<flags>' <syntax-of-signature> [ = <default_func> ];
  *
- *      self <name> = <trait> { reflection-definition };
+ *      stamp <name> = [aware] :|<trait> { reflection-body };
  *
  *      name <name>;
  *
@@ -91,14 +91,15 @@
  *    <name> has global scope. Multiple definitions of the same name at different places are allowed.
  *
  *  ----------------------------------------------------------------------------------------------
- *  self:
- *    Reflection definition for objects (see flect.h for details)
- *    (Perspectives should not be explicitly defined here.)
+ *  stamp:
+ *
+ *    Reflection of object definition for objects (see flect.h for general syntax)
  *    Function definitions in reflections are matched and bound to features. C-Prototypes are generated
  *    and registered as featured function.
  *
  *    Special conditions:
- *      ':' following self means that '<group_name>_' is prefixed to the following name
+ *      ':' following stamp means that '<group_name>_' is prefixed to the following name
+ *      ':' instead of trait mean that '<group_name>' is declared as trait
  *
  *    Special traits:
  *      bcore_array: expands additional array-functions

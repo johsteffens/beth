@@ -28,7 +28,7 @@
 BETH_PRECODE( badapt_mlp )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_mlp_layer_s = aware bcore_inst
+stamp badapt_mlp_layer_s = aware bcore_inst
 {
     sz_t input_size;
     sz_t kernels;
@@ -39,11 +39,11 @@ self badapt_mlp_layer_s = aware bcore_inst
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_mlp_arr_layer_s = aware bcore_array { badapt_mlp_layer_s [] arr; };
+stamp badapt_mlp_arr_layer_s = aware bcore_array { badapt_mlp_layer_s [] arr; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-self badapt_mlp_s = aware badapt_adaptive
+stamp badapt_mlp_s = aware badapt_adaptive
 {
     // === architecture parameters ================================
 
@@ -74,7 +74,7 @@ self badapt_mlp_s = aware badapt_adaptive
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// Builder creating a funnel structure of kernels
-self badapt_builder_mlp_funnel_s = aware badapt_builder
+stamp badapt_builder_mlp_funnel_s = aware badapt_builder
 {
     sz_t input_size;               // input vector size
     sz_t input_kernels   = 8;      // kernels on input layer
