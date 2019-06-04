@@ -69,34 +69,6 @@ void badapt_jrn_arr_layer_s_rotate( badapt_jrn_arr_layer_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-sz_t badapt_jrn_s_get_in_size( const badapt_jrn_s* o )
-{
-    return o->size_input;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-sz_t badapt_jrn_s_get_out_size( const badapt_jrn_s* o )
-{
-    return o->size_output;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void badapt_jrn_s_get_dynamics_std( const badapt_jrn_s* o, badapt_dynamics_std_s* dynamics )
-{
-    badapt_dynamics_std_s_copy( dynamics, &o->dynamics );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void badapt_jrn_s_set_dynamics_std( badapt_jrn_s* o, const badapt_dynamics_std_s* dynamics )
-{
-    badapt_dynamics_std_s_copy( &o->dynamics, dynamics );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 void badapt_jrn_s_arc_to_sink( const badapt_jrn_s* o, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#<sc_t>\n",  ifnameof( *(aware_t*)o ) );
@@ -183,34 +155,6 @@ void badapt_jrn_s_bgrad_adapt( badapt_jrn_s* o, bmath_vf3_s* grad_in, const bmat
 
 /**********************************************************************************************************************/
 // badapt_jrn_builder_s
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-sz_t badapt_jrn_builder_s_get_in_size( const badapt_jrn_builder_s* o )
-{
-    return o->size_input;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void badapt_jrn_builder_s_set_in_size( badapt_jrn_builder_s* o, sz_t size )
-{
-    o->size_input = size;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-sz_t badapt_jrn_builder_s_get_out_size( const badapt_jrn_builder_s* o )
-{
-    return o->size_output;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void badapt_jrn_builder_s_set_out_size( badapt_jrn_builder_s* o, sz_t size )
-{
-    o->size_output = size;
-}
 
 // ---------------------------------------------------------------------------------------------------------------------
 

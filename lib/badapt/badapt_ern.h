@@ -84,10 +84,10 @@ stamp :s = aware badapt_adaptive
     // ==============================================================
 
     // === adaptive functions =======================================
-    func : get_in_size;
-    func : get_out_size;
-    func : get_dynamics_std;
-    func : set_dynamics_std;
+    func : get_in_size      = { return o->size_input; };
+    func : get_out_size     = { return o->size_output; };
+    func : get_dynamics_std = { badapt_dynamics_std_s_copy( dynamics, &o->dynamics ); };
+    func : set_dynamics_std = { badapt_dynamics_std_s_copy( &o->dynamics, dynamics ); };
     func : arc_to_sink;
     func : minfer;
     func : bgrad_adapt;
@@ -113,12 +113,12 @@ stamp :builder_s = aware badapt_builder
     // === builder functions =======================================
 
     /// input vector size
-    func : get_in_size;
-    func : set_in_size;
+    func : get_in_size = { return o->size_input; };
+    func : set_in_size = { o->size_input = size; };
 
     /// output vector size
-    func : get_out_size;
-    func : set_out_size;
+    func : get_out_size = { return o->size_output; };
+    func : set_out_size = { o->size_output = size; };
 
     /// builds adaptive ready to be trained; passes ownership
     func : build;

@@ -38,30 +38,9 @@ stamp :sine_random_s = aware badapt_supplier
     f3_t neg_tgt    = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss;
-    func : get_in_size;
-    func : get_out_size;
-    func : fetch_sample_tio;
-    func : fetch_sample_vio;
-};
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-/** Type: Regression
- *  Method: Estimate polynomial coefficients for a signal within range -1, 1
- */
-stamp :polynom_s = aware badapt_supplier
-{
-    sz_t input_size  = 32;
-    sz_t output_size = 3;   // polynomial order + 1
-    f3_t range       = 1.0; // +/- range of coefficients
-    u2_t rval        = 1234;
-    f3_t noise_level = 0;   // additive noise to input signal
-    aware badapt_loss* preferred_loss = badapt_loss_l2_s;
-
-    func : preferred_loss;
-    func : get_in_size;
-    func : get_out_size;
+    func : preferred_loss = { return o->preferred_loss; };
+    func : get_in_size    = { return o->input_size; };
+    func : get_out_size   = { return 1; };
     func : fetch_sample_tio;
     func : fetch_sample_vio;
 };
@@ -79,9 +58,9 @@ stamp :binary_add_s = aware badapt_supplier
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss;
-    func : get_in_size;
-    func : get_out_size;
+    func : preferred_loss = { return o->preferred_loss; };
+    func : get_in_size    = { return o->bits * 2; };
+    func : get_out_size   = { return o->bits + 1; };
     func : fetch_sample_tio;
     func : fetch_sample_vio;
 };
@@ -99,9 +78,9 @@ stamp :binary_mul_s = aware badapt_supplier
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss;
-    func : get_in_size;
-    func : get_out_size;
+    func : preferred_loss = { return o->preferred_loss; };
+    func : get_in_size    = { return o->bits * 2; };
+    func : get_out_size   = { return o->bits * 2; };
     func : fetch_sample_tio;
     func : fetch_sample_vio;
 };
@@ -119,9 +98,9 @@ stamp :binary_xsg3_s = aware badapt_supplier
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss;
-    func : get_in_size;
-    func : get_out_size;
+    func : preferred_loss = { return o->preferred_loss; };
+    func : get_in_size    = { return o->bits; };
+    func : get_out_size   = { return o->bits; };
     func : fetch_sample_tio;
     func : fetch_sample_vio;
 };
@@ -140,9 +119,30 @@ stamp :binary_hash_s = aware badapt_supplier
     bl_t reverse = false;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss;
-    func : get_in_size;
-    func : get_out_size;
+    func : preferred_loss = { return o->preferred_loss; };
+    func : get_in_size    = { return o->bits; };
+    func : get_out_size   = { return o->bits; };
+    func : fetch_sample_tio;
+    func : fetch_sample_vio;
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/** Type: Regression
+ *  Method: Estimate polynomial coefficients for a signal within range -1, 1
+ */
+stamp :polynom_s = aware badapt_supplier
+{
+    sz_t input_size  = 32;
+    sz_t output_size = 3;   // polynomial order + 1
+    f3_t range       = 1.0; // +/- range of coefficients
+    u2_t rval        = 1234;
+    f3_t noise_level = 0;   // additive noise to input signal
+    aware badapt_loss* preferred_loss = badapt_loss_l2_s;
+
+    func : preferred_loss = { return o->preferred_loss; };
+    func : get_in_size    = { return o->input_size; };
+    func : get_out_size   = { return o->output_size; };
     func : fetch_sample_tio;
     func : fetch_sample_vio;
 };

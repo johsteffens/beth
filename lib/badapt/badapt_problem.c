@@ -21,12 +21,6 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-sz_t badapt_problem_sine_random_s_get_in_size( const badapt_problem_sine_random_s* o ) { return o->input_size; }
-sz_t badapt_problem_sine_random_s_get_out_size( const badapt_problem_sine_random_s* o ) { return 1; }
-const badapt_loss* badapt_problem_sine_random_s_preferred_loss( const badapt_problem_sine_random_s* o ) { return o->preferred_loss; }
-
-//----------------------------------------------------------------------------------------------------------------------
-
 void badapt_problem_sine_random_s_fetch_sample_tio( badapt_problem_sine_random_s* o, bmath_vf3_s* in, bmath_vf3_s* out )
 {
     o->rval = bcore_xsg1_u2( o->rval );
@@ -75,12 +69,6 @@ void badapt_problem_sine_random_s_fetch_sample_vio( badapt_problem_sine_random_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
-sz_t  badapt_problem_binary_add_s_get_in_size(  const badapt_problem_binary_add_s* o ) { return o->bits * 2; }
-sz_t  badapt_problem_binary_add_s_get_out_size( const badapt_problem_binary_add_s* o ) { return o->bits + 1; }
-const badapt_loss* badapt_problem_binary_add_s_preferred_loss( const badapt_problem_binary_add_s* o ) { return o->preferred_loss; }
-
-//----------------------------------------------------------------------------------------------------------------------
-
 void badapt_problem_binary_add_s_fetch_sample_tio( badapt_problem_binary_add_s* o, bmath_vf3_s* in, bmath_vf3_s* out )
 {
     bmath_vf3_s_set_size( in,  o->bits * 2 );
@@ -114,12 +102,6 @@ void badapt_problem_binary_add_s_fetch_sample_vio( badapt_problem_binary_add_s* 
 
 /**********************************************************************************************************************/
 // badapt_problem_binary_mul_s
-
-//----------------------------------------------------------------------------------------------------------------------
-
-sz_t  badapt_problem_binary_mul_s_get_in_size(  const badapt_problem_binary_mul_s* o ) { return o->bits * 2; }
-sz_t  badapt_problem_binary_mul_s_get_out_size( const badapt_problem_binary_mul_s* o ) { return o->bits * 2; }
-const badapt_loss* badapt_problem_binary_mul_s_preferred_loss( const badapt_problem_binary_mul_s* o ) { return o->preferred_loss; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -159,12 +141,6 @@ void badapt_problem_binary_mul_s_fetch_sample_vio( badapt_problem_binary_mul_s* 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-sz_t  badapt_problem_binary_xsg3_s_get_in_size(  const badapt_problem_binary_xsg3_s* o ) { return o->bits; }
-sz_t  badapt_problem_binary_xsg3_s_get_out_size( const badapt_problem_binary_xsg3_s* o ) { return o->bits; }
-const badapt_loss* badapt_problem_binary_xsg3_s_preferred_loss( const badapt_problem_binary_xsg3_s* o ) { return o->preferred_loss; }
-
-//----------------------------------------------------------------------------------------------------------------------
-
 void badapt_problem_binary_xsg3_s_fetch_sample_tio( badapt_problem_binary_xsg3_s* o, bmath_vf3_s* in, bmath_vf3_s* out )
 {
     bmath_vf3_s_set_size( in,  o->bits );
@@ -196,12 +172,6 @@ void badapt_problem_binary_xsg3_s_fetch_sample_vio( badapt_problem_binary_xsg3_s
 
 /**********************************************************************************************************************/
 // badapt_problem_binary_hash_s
-
-//----------------------------------------------------------------------------------------------------------------------
-
-sz_t  badapt_problem_binary_hash_s_get_in_size(  const badapt_problem_binary_hash_s* o ) { return o->bits; }
-sz_t  badapt_problem_binary_hash_s_get_out_size( const badapt_problem_binary_hash_s* o ) { return o->bits; }
-const badapt_loss* badapt_problem_binary_hash_s_preferred_loss( const badapt_problem_binary_hash_s* o ) { return o->preferred_loss; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -238,12 +208,6 @@ void badapt_problem_binary_hash_s_fetch_sample_vio( badapt_problem_binary_hash_s
 
 /**********************************************************************************************************************/
 // badapt_problem_polynom_s
-
-//----------------------------------------------------------------------------------------------------------------------
-
-sz_t  badapt_problem_polynom_s_get_in_size(  const badapt_problem_polynom_s* o ) { return o->input_size; }
-sz_t  badapt_problem_polynom_s_get_out_size( const badapt_problem_polynom_s* o ) { return o->output_size; }
-const badapt_loss* badapt_problem_polynom_s_preferred_loss( const badapt_problem_polynom_s* o ) { return o->preferred_loss; }
 
 //----------------------------------------------------------------------------------------------------------------------
 

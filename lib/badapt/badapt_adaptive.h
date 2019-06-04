@@ -27,7 +27,7 @@ BETH_PRECODE( badapt_dynamics )
 #ifdef BETH_PRECODE_SECTION
 
 /// updates weights if forward map is: in * w = out;
-feature strict 'a' void weights_adapt(       const, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor );
+feature strict 'a' void weights_adapt( const, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor );
 
 stamp :std_s = aware :
 {
@@ -73,14 +73,40 @@ BETH_PRECODE( badapt_adaptive )
     // ===== optional features with default implementation =====
 
     /// outputs architecture to text sink (for easy inspection)
-    feature 'a' void arc_to_sink( const, bcore_sink* sink ) = arc_to_sink_fallback;
+    feature 'a' void arc_to_sink( const, bcore_sink* sink ) = { bcore_txt_ml_a_to_sink( o, sink ); };
 
     /// inference for scalar output
-    feature 'a' f3_t infer_f3( const, const bmath_vf3_s* in ) = infer_f3_fallback;
+    feature 'a' f3_t infer_f3( const, const bmath_vf3_s* in ) =
+    {
+        bmath_vf3_s v_out;
+        f3_t out = 0;
+        bmath_vf3_s_init_weak( &v_out, &out, 1 );
+        badapt_adaptive_a_infer( o, in, &v_out );
+        return out;
+    };
 
     /// full adaption cycle based on loss function; adapt_loss_f3 returns estimates result
-    feature 'a' void adapt_loss(    mutable, const badapt_loss* loss, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) = adapt_loss_fallback;
-    feature 'a' f3_t adapt_loss_f3( mutable, const badapt_loss* loss, const bmath_vf3_s* in, f3_t target )                                 = adapt_loss_f3_fallback;
+    feature 'a' void adapt_loss(    mutable, const badapt_loss* loss, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) =
+    {
+        ASSERT( out != NULL );
+        bmath_vf3_s* grad = bmath_vf3_s_create();
+        bmath_vf3_s_set_size( grad, out->size );
+        badapt_adaptive_a_minfer( o, in, out );
+        badapt_loss_a_bgrad( loss, out, target, grad );
+        badapt_adaptive_a_bgrad_adapt( o, NULL, grad );
+        bmath_vf3_s_discard( grad );
+    };
+
+    feature 'a' f3_t adapt_loss_f3( mutable, const badapt_loss* loss, const bmath_vf3_s* in, f3_t target ) =
+    {
+        bmath_vf3_s v_target;
+        bmath_vf3_s v_out;
+        f3_t out = 0;
+        bmath_vf3_s_init_weak( &v_target, &target, 1 );
+        bmath_vf3_s_init_weak( &v_out, &out, 1 );
+        badapt_adaptive_a_adapt_loss( o, loss, in, &v_target, &v_out );
+        return out;
+    };
 
 #endif // BETH_PRECODE_SECTION
 

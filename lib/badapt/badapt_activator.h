@@ -27,20 +27,62 @@ BETH_PRECODE( badapt_activation )
     feature strict 'pa' f3_t fx( const, f3_t x ); // y  = f( x )
     feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
 
-    // (logistic function)
-    stamp :lgst_s       = aware : { func :fx; func :dy; }; // f( x ) = 1.0 / ( 1.0 + exp( -x ) )
-    stamp :lgst_hard_s  = aware : { func :fx; func :dy; }; // f( x ) = ( x < -2 ) ? 0 : ( x > 2 ) ? 1 : 0.25 * ( x + 2 )
-    stamp :lgst_leaky_s = aware : { func :fx; func :dy; }; // f( x ) = ( x < -2 ) ? 0.01 * ( x + 2 ) : ( x > 2 ) ? 1 + 0.01 * ( x - 2 ) : 0.25 * ( x + 2 )
+    // ======= (logistic function) ============
+    stamp :lgst_s = aware :
+    {
+        func :fx = { return 1.0 / ( 1.0 + exp( -x ) ); };
+        func :dy = { return y * ( 1.0 - y ); };
+    };
 
-    // tanh
-    stamp :tanh_s       = aware : { func :fx; func :dy; }; // f(x) = tanh(x)
-    stamp :tanh_hard_s  = aware : { func :fx; func :dy; }; // f(x) = ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x
-    stamp :tanh_leaky_s = aware : { func :fx; func :dy; }; // f(x) = ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x
+    stamp :lgst_hard_s = aware :
+    {
+        func :fx = { return ( x < -2.0 ) ? 0.0 : ( x > 2.0 ) ? 1.0 : 0.25 * ( x + 2.0 ); };
+        func :dy = { return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25; };
+    };
 
-    // softplus function
-    stamp :softplus_s   = aware : { func :fx; func :dy; }; // f(x) = log( 1.0 + exp( x ) )
-    stamp :relu_s       = aware : { func :fx; func :dy; }; // f(x) = x > 0 ? x : 0
-    stamp :leaky_relu_s = aware : { func :fx; func :dy; }; // f(x) = x > 0 ? x : 0.01*x
+    stamp :lgst_leaky_s = aware :
+    {
+        func :fx = { return ( x < -2.0 ) ? 0.01 * ( x + 2.0 ) : ( x > 2.0 ) ? 1.0 + 0.01 * ( x - 2.0 ) : 0.25 * ( x + 2.0 ); };
+        func :dy = { return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; };
+    };
+
+    // ======= (tanh) =========================
+    stamp :tanh_s = aware :
+    {
+        func :fx = { return 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ); };
+        func :dy = { return 1.0 - f3_sqr( y ); };
+    };
+
+    stamp :tanh_hard_s = aware :
+    {
+        func :fx = { return ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x; };
+        func :dy = { return ( y < -1.0 ) ?  0.0 : ( y > 1.0 ) ? 0.0 : 1.0; };
+    };
+
+    stamp :tanh_leaky_s = aware :
+    {
+        func :fx = { return ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x; };
+        func :dy = { return ( y < -1.0 ) ?  0.01 : ( y > 1.0 ) ? 0.01 : 1.0; };
+    };
+
+    // ======= (softplus function) ============
+    stamp :softplus_s = aware :
+    {
+        func :fx = { return log( 1.0 + exp( x ) ); };
+        func :dy = { f3_t u = exp( y ); return ( u - 1.0 ) / u; };
+    };
+
+    stamp :relu_s = aware :
+    {
+        func :fx = { return x > 0 ? x : 0; };
+        func :dy = { return y > 0 ? 1 : 0; };
+    };
+
+    stamp :leaky_relu_s = aware :
+    {
+        func :fx = { return x > 0 ? x : x * 0.01; };
+        func :dy = { return y > 0 ? 1 : 0.01; };
+    };
 
 #endif // BETH_PRECODE_SECTION
 
@@ -89,7 +131,9 @@ BETH_PRECODE( badapt_activator )
     {
         aware badapt_activation => activation;
         func :setup; func :reset; func :infer; func :bgrad; func :adapt; func :adapt_defer; func :adapt_apply;
-        func :set_activation; func :get_activation;
+
+        func :set_activation = { badapt_activation_a_replicate( &o->activation, activation ); };
+        func :get_activation = { return o->activation; };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,7 +147,9 @@ BETH_PRECODE( badapt_activator )
         bmath_vf3_s v_bias;
         bmath_vf3_s v_bias_deferred;
         func :setup; func :reset; func :infer; func :bgrad; func :adapt; func :adapt_defer; func :adapt_apply;
-        func :set_activation; func :get_activation;
+
+        func :set_activation = { badapt_activation_a_replicate( &o->activation, activation ); };
+        func :get_activation = { return o->activation; };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

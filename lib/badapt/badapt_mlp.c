@@ -25,33 +25,6 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 #ifdef TYPEOF_badapt_mlp_s
-sz_t badapt_mlp_s_get_in_size(  const badapt_mlp_s* o )
-{
-    return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ 0 ].input_size : 0;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-sz_t badapt_mlp_s_get_out_size( const badapt_mlp_s* o )
-{
-    return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ o->arr_layer.arr_size - 1 ].kernels : 0;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void badapt_mlp_s_get_dynamics_std( const badapt_mlp_s* o, badapt_dynamics_std_s* dynamics )
-{
-    badapt_dynamics_std_s_copy( dynamics, &o->dynamics );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void badapt_mlp_s_set_dynamics_std( badapt_mlp_s* o, const badapt_dynamics_std_s* dynamics )
-{
-    badapt_dynamics_std_s_copy( &o->dynamics, dynamics );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 void badapt_mlp_s_arc_to_sink( const badapt_mlp_s* o, bcore_sink* sink )
 {
@@ -226,34 +199,6 @@ void badapt_mlp_s_bgrad_adapt( badapt_mlp_s* o, bmath_vf3_s* grad_in, const bmat
 
 /**********************************************************************************************************************/
 // badapt_builder_mlp_funnel_s
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-sz_t badapt_builder_mlp_funnel_s_get_in_size( const badapt_builder_mlp_funnel_s* o )
-{
-    return o->input_size;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void badapt_builder_mlp_funnel_s_set_in_size( badapt_builder_mlp_funnel_s* o, sz_t size )
-{
-    o->input_size = size;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-sz_t badapt_builder_mlp_funnel_s_get_out_size( const badapt_builder_mlp_funnel_s* o )
-{
-    return o->output_kernels;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void badapt_builder_mlp_funnel_s_set_out_size( badapt_builder_mlp_funnel_s* o, sz_t size )
-{
-    o->output_kernels = size;
-}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
