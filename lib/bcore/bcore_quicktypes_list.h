@@ -86,11 +86,13 @@
 #define TYPEOF_bcore_name_s               2158870146
 #define TYPEOF_bcore_precoder_arg_s        397387076
 #define TYPEOF_bcore_precoder_args_s      3794127197
+#define TYPEOF_bcore_precoder_body_s       859963184
 #define TYPEOF_bcore_precoder_feature_s   2057969550
+#define TYPEOF_bcore_precoder_func_s      2216192382
+#define TYPEOF_bcore_precoder_funcs_s     2785668271
 #define TYPEOF_bcore_precoder_group_s     3308841487
 #define TYPEOF_bcore_precoder_item_s      2569699851
 #define TYPEOF_bcore_precoder_name_s       765553819
-#define TYPEOF_bcore_precoder_object_s    1181867915
 #define TYPEOF_bcore_precoder_s           2936171739
 #define TYPEOF_bcore_precoder_signature_s 1491189594
 #define TYPEOF_bcore_precoder_source_s     700523377

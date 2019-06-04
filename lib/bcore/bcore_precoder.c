@@ -27,6 +27,9 @@
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_const_manager.h"
 
+// use dry run when debugging decoder (does not change precoded files; output to stadout)
+//#define BCORE_PRECODER_DRY_RUN
+
 /**********************************************************************************************************************/
 /// parsing
 
@@ -228,6 +231,27 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_signature_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+// function body (name is always local to group_name)
+BCORE_DECLARE_OBJECT( bcore_precoder_body_s )
+{
+    aware_t _;
+    st_s name;
+    sc_t group_name;
+    st_s code;
+    bl_t go_inline; // prefer inline expansion
+};
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_body_s )
+"{"
+    "aware_t _;"
+    "st_s name;"
+    "sc_t group_name;"
+    "st_s code;"
+    "bl_t go_inline;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
 // example:
 // feature void myfeature( mutable, sz_t a, sz_t b );
 BCORE_DECLARE_OBJECT( bcore_precoder_feature_s )
@@ -237,6 +261,7 @@ BCORE_DECLARE_OBJECT( bcore_precoder_feature_s )
     sc_t group_name;
     sc_t item_name;
     st_s default_name;
+    bcore_precoder_body_s* default_body;
 
     bl_t strict;
 
@@ -258,6 +283,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_feature_s )
     "sc_t group_name;"
     "sc_t item_name;"
     "st_s default_name;"
+    "bcore_precoder_body_s => default_body;"
 
     "bl_t strict;"
 
@@ -290,12 +316,44 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_name_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+// used in bcore_precoder_stamp_s
+BCORE_DECLARE_OBJECT( bcore_precoder_func_s )
+{
+    st_s name;
+    tp_t type;
+    bcore_precoder_body_s* body;
+};
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_func_s )
+"{"
+    "st_s name;"
+    "tp_t type;"
+    "bcore_precoder_body_s => body;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BCORE_DECLARE_OBJECT( bcore_precoder_funcs_s )
+{
+    aware_t _;
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( bcore_precoder_func_s, );
+};
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_funcs_s )
+"{"
+    "aware_t _;"
+    "bcore_precoder_func_s [] arr;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
 BCORE_DECLARE_OBJECT( bcore_precoder_stamp_s )
 {
     aware_t _;
     sc_t item_name;
     st_s         * self_source;
     bcore_self_s * self;
+    bcore_precoder_funcs_s funcs;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_stamp_s )
@@ -304,6 +362,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_stamp_s )
     "sc_t item_name;"
     "st_s         => self_source;"
     "bcore_self_s => self;"
+    "bcore_precoder_funcs_s funcs;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -349,7 +408,6 @@ BCORE_DECLARE_OBJECT( bcore_precoder_group_s )
     tp_t id;
     tp_t hash;
     bl_t has_features;
-    bl_t has_signatures;
     bl_t is_aware;
     BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_precoder_item_s, );
     bcore_precoder_source_s* source;
@@ -362,7 +420,6 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_group_s )
     "tp_t id;"
     "tp_t hash;"
     "bl_t has_features;"
-    "bl_t has_signatures;"
     "bl_t is_aware;"
     "bcore_precoder_item_s => [] arr;"
     "private vd_t source;"
@@ -648,7 +705,123 @@ static void bcore_precoder_signature_s_compile( bcore_precoder_signature_s* o, b
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore_source* source )
+static void bcore_precoder_body_s_compile_code( bcore_precoder_body_s* o, const bcore_precoder_group_s* group, bcore_source* source )
+{
+    BCORE_LIFE_INIT();
+
+    st_s_clear( &o->code );
+
+    bcore_source_a_parse_fa( source, " {" );
+    st_s_push_sc( &o->code, "{" );
+    sz_t nest_count = 1;
+    bl_t exit_loop = false;
+    bl_t new_line = false;
+    o->go_inline = true;
+    sz_t space_count = 0;
+    sz_t indentation = 0;
+    while( !bcore_source_a_eos( source ) && !exit_loop )
+    {
+        u0_t c = bcore_source_a_get_u0( source );
+        switch( c )
+        {
+            case '{':
+            {
+                nest_count++;
+            }
+            break;
+
+            case '}':
+            {
+                nest_count--;
+                if( !nest_count )
+                {
+                    indentation = space_count;
+                    exit_loop = true;
+                }
+            }
+            break;
+
+            case '\n': new_line = true; o->go_inline = false; break;
+            case ' ' : if( new_line ) space_count++; break;
+
+            default: break;
+        }
+        if( c != '\n' && c != ' ' && c != '\t' )
+        {
+            new_line = false;
+            space_count = 0;
+        }
+        st_s_push_char( &o->code, c );
+    }
+
+    if( indentation > 0 )
+    {
+        st_s* match_format = st_s_create_fa( "\n#rn{ }", indentation );
+        st_s_replace_sc_sc( &o->code, match_format->sc, "\n" );
+        st_s_discard( match_format );
+    }
+
+    BCORE_LIFE_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_precoder_body_s_compile( bcore_precoder_body_s* o, const bcore_precoder_group_s* group, bcore_source* source )
+{
+    BCORE_LIFE_INIT();
+
+    BCORE_LIFE_CREATE( st_s, string );
+
+    o->group_name = group->name.sc;
+
+    if( !bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
+    {
+        bcore_source_a_parse_fa( source, " #name", string );
+        if( string->size == 0 ) bcore_source_a_parse_err_fa( source, "Body name expected." );
+        st_s_push_fa( &o->name, "#<sc_t>", string->sc );
+    }
+
+    bcore_source_a_parse_fa( source, " =" );
+
+    if( bcore_source_a_parse_bl_fa( source, " #=?'{'" ) )
+    {
+        bcore_precoder_body_s_compile_code( o, group, source );
+    }
+    else
+    {
+        BCORE_LIFE_CREATE( st_s, name );
+
+        if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
+        {
+            st_s_push_fa( name, "#<sc_t>_", group->name.sc );
+        }
+        bcore_source_a_parse_fa( source, " #name", string );
+        if( string->size == 0 ) bcore_source_a_parse_err_fa( source, "Body name expected." );
+        st_s_push_fa( name, "#<sc_t>", string->sc );
+
+        tp_t tp_name = typeof( name->sc );
+        // if name_buf refers to another body
+        if( bcore_precoder_s_item_exists( precoder_g, tp_name ) )
+        {
+            const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder_g, tp_name );
+            if( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_body_s )
+            {
+                const bcore_precoder_body_s* body = item->data.o;
+                st_s_copy( &o->code, &body->code );
+            }
+        }
+        else
+        {
+            bcore_source_a_parse_err_fa( source, "Cannot resolve body name '#<sc_t>'\n", name->sc );
+        }
+    }
+
+    BCORE_LIFE_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, const bcore_precoder_group_s* group, bcore_source* source )
 {
     BCORE_LIFE_INIT();
 
@@ -681,12 +854,22 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, bcore
 
     if( bcore_source_a_parse_bl_fa( source, " #?'=' " ) )
     {
-        if( o->strict )  bcore_source_a_parse_err_fa( source, "Feature is 'strict'. Default function has no effect." );
-        bcore_source_a_parse_fa( source, " #name ", &o->default_name );
-        if( o->default_name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Default function name expected." );
-        if( st_s_equal_st( &o->default_name, &o->name ) )
+        if( bcore_source_a_parse_bl_fa( source, " #=?'{' " ) )
         {
-            bcore_source_a_parse_err_fa( source, "Feature: Default function name must differ from feature name." );
+            if( o->strict )  bcore_source_a_parse_err_fa( source, "Feature is 'strict'. Default function would have no effect." );
+            o->default_body = bcore_precoder_body_s_create();
+            bcore_precoder_body_s_compile_code( o->default_body, group, source );
+            st_s_copy_fa( &o->default_name, "#<sc_t>__", o->name.sc );
+        }
+        else
+        {
+            if( o->strict )  bcore_source_a_parse_err_fa( source, "Feature is 'strict'. Default function would have no effect." );
+            bcore_source_a_parse_fa( source, " #name ", &o->default_name );
+            if( o->default_name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Default function name expected." );
+            if( st_s_equal_st( &o->default_name, &o->name ) )
+            {
+                bcore_source_a_parse_err_fa( source, "Feature: Default function name must differ from feature name." );
+            }
         }
     }
 
@@ -702,23 +885,27 @@ static void bcore_precoder_stamp_s_compile( bcore_precoder_stamp_s* o, bcore_pre
     BCORE_LIFE_INIT();
 
     BCORE_LIFE_CREATE( st_s, self_string );
+    BCORE_LIFE_CREATE( st_s, trait_name );
+    BCORE_LIFE_CREATE( st_s, type_name );
     BCORE_LIFE_CREATE( st_s, string );
 
     bcore_source_a_parse_fa( source, " #until'='=", string );
     st_s_push_fa( self_string, "#<sc_t>=", string->sc );
 
-    if( bcore_source_a_parse_bl_fa( source, " #?w'aware'" ) ) st_s_push_sc( self_string, " aware" );
+    if( bcore_source_a_parse_bl_fa( source, " #?w'aware'" ) ) st_s_push_sc( self_string, "aware " );
 
     if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
     {
-        st_s_push_fa( self_string, " #<sc_t>", group->name.sc );
+        st_s_push_fa( trait_name, "#<sc_t>", group->name.sc );
     }
     else
     {
         bcore_source_a_parse_fa( source, " #name", string );
         if( string->size == 0 ) bcore_source_a_parse_err_fa( source, "Trait name expected." );
-        st_s_push_fa( self_string, " #<sc_t>", string->sc );
+        st_s_push_fa( trait_name, "#<sc_t>", string->sc );
     }
+
+    st_s_push_st( self_string, trait_name );
 
     bcore_source_a_parse_fa( source, " {" );
     st_s_push_fa( self_string, "{" );
@@ -727,9 +914,39 @@ static void bcore_precoder_stamp_s_compile( bcore_precoder_stamp_s* o, bcore_pre
     {
         if( bcore_source_a_parse_bl_fa( source, " #?w'func'" ) )
         {
-            st_s_push_fa( self_string, "func ", string->sc );
-            bcore_source_a_parse_fa( source, " #until';';", string );
-            st_s_push_fa( self_string, "#<sc_t>;", string->sc );
+            bcore_precoder_funcs_s* funcs = &o->funcs;
+            bcore_array_a_push( ( bcore_array* )funcs, sr_null() );
+            bcore_precoder_func_s* func = &funcs->data[ funcs->size - 1 ];
+
+            st_s_push_sc( self_string, "func " );
+            bcore_source_a_parse_fa( source, " #name", type_name );
+            st_s_push_fa( self_string, "#<sc_t>", type_name->sc );
+
+            bl_t bind = bcore_source_a_parse_bl_fa( source, " #?':'" );
+            if( bind ) st_s_push_sc( self_string, ":" );
+
+            bcore_source_a_parse_fa( source, " #name", &func->name );
+            if( func->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Function name expected." );
+            st_s_push_sc( self_string, func->name.sc );
+
+            if( bind )
+            {
+                if( type_name->size == 0 )
+                {
+                    st_s_push_fa( type_name, "#<sc_t>", trait_name->sc );
+                }
+                st_s_push_fa( type_name, "_#<sc_t>", func->name.sc );
+            }
+            func->type = typeof( type_name->sc );
+
+            if( bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
+            {
+                func->body = bcore_precoder_body_s_create();
+                bcore_precoder_body_s_compile( func->body, group, source );
+            }
+
+            bcore_source_a_parse_fa( source, " ; " );
+            st_s_push_sc( self_string, ";" );
         }
         else
         {
@@ -787,6 +1004,28 @@ static tp_t bcore_precoder_signature_s_get_hash( const bcore_precoder_signature_
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static tp_t bcore_precoder_body_s_get_hash( const bcore_precoder_body_s* o )
+{
+    tp_t hash = bcore_tp_init();
+    hash = bcore_tp_fold_sc( hash, o->name.sc );
+    hash = bcore_tp_fold_sc( hash, o->code.sc );
+    hash = bcore_tp_fold_u0( hash, o->go_inline ? 1 : 0 );
+    return hash;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static tp_t bcore_precoder_func_s_get_hash( const bcore_precoder_func_s* o )
+{
+    tp_t hash = bcore_tp_init();
+    hash = bcore_tp_fold_sc( hash, o->name.sc );
+    hash = bcore_tp_fold_tp( hash, o->type );
+    if( o->body ) hash = bcore_tp_fold_tp( hash, bcore_precoder_body_s_get_hash( o->body ) );
+    return hash;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static tp_t bcore_precoder_feature_s_get_hash( const bcore_precoder_feature_s* o )
 {
     tp_t hash = bcore_tp_init();
@@ -794,6 +1033,10 @@ static tp_t bcore_precoder_feature_s_get_hash( const bcore_precoder_feature_s* o
     hash = bcore_tp_fold_sc( hash, o->group_name );
     hash = bcore_tp_fold_sc( hash, o->item_name );
     hash = bcore_tp_fold_sc( hash, o->default_name.sc );
+    if( o->default_body )
+    {
+        hash = bcore_tp_fold_tp( hash, bcore_precoder_body_s_get_hash( o->default_body ) );
+    }
 
     hash = bcore_tp_fold_u0( hash, o->strict ? 1 : 0 );
     hash = bcore_tp_fold_u0( hash, o->flag_p ? 1 : 0 );
@@ -805,6 +1048,19 @@ static tp_t bcore_precoder_feature_s_get_hash( const bcore_precoder_feature_s* o
     hash = bcore_tp_fold_sc( hash, o->ret_type.sc );
     hash = bcore_tp_fold_tp( hash, bcore_precoder_args_s_get_hash( &o->args ) );
     hash = bcore_tp_fold_u0( hash, o->mutable ? 1 : 0 );
+    return hash;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static tp_t bcore_precoder_stamp_s_get_hash( const bcore_precoder_stamp_s* o )
+{
+    tp_t hash = bcore_tp_init();
+    hash = bcore_tp_fold_sc( hash, o->self_source->sc );
+    for( sz_t i = 0; i < o->funcs.size; i++ )
+    {
+        hash = bcore_tp_fold_tp( hash, bcore_precoder_func_s_get_hash( &o->funcs.data[ i ] ) );
+    }
     return hash;
 }
 
@@ -884,7 +1140,7 @@ static void bcore_precoder_feature_s_expand_indef_declaration( const bcore_preco
     {
         // static inline bl_t feature_p_defines_func( const spect* __p ) { return __p->func != NULL; }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline bl_t #<sc_t>_p_defines_#<sc_t>( const #<sc_t>_s* __p ) ", indent, o->group_name, o->name.sc, o->group_name );
-        if( o->strict || o->default_name.size > 0 )
+        if( o->strict || o->default_body || o->default_name.size > 0 )
         {
             bcore_sink_a_push_fa( sink, "{ return true; }", o->name.sc );
         }
@@ -898,7 +1154,7 @@ static void bcore_precoder_feature_s_expand_indef_declaration( const bcore_preco
     {
         // static inline bl_t feature_t_defines_func( tp_t __t ) { return features_s_get_typed( __t )->func != NULL; }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline bl_t #<sc_t>_t_defines_#<sc_t>( tp_t __t ) ", indent, o->group_name, o->name.sc );
-        if( o->strict || o->default_name.size > 0 )
+        if( o->strict || o->default_body || o->default_name.size > 0 )
         {
             bcore_sink_a_push_fa( sink, "{ return true; }", o->name.sc );
         }
@@ -912,7 +1168,7 @@ static void bcore_precoder_feature_s_expand_indef_declaration( const bcore_preco
     {
         // static inline bl_t feature_a_defines_func( const feature* o) { return features_s_get_aware( o )->func != NULL; }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline bl_t #<sc_t>_a_defines_#<sc_t>( const #<sc_t>* o ) ", indent, o->group_name, o->name.sc, o->group_name );
-        if( o->strict || o->default_name.size > 0 )
+        if( o->strict || o->default_body || o->default_name.size > 0 )
         {
             bcore_sink_a_push_fa( sink, "{ return true; }", o->name.sc );
         }
@@ -926,7 +1182,7 @@ static void bcore_precoder_feature_s_expand_indef_declaration( const bcore_preco
     {
         // static inline bl_t feature_r_defines_func( const feature* o) { return features_s_get_typed( o->o_type )->func != NULL; }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline bl_t #<sc_t>_r_defines_#<sc_t>( const sr_s* o ) ", indent, o->group_name, o->name.sc );
-        if( o->strict || o->default_name.size > 0 )
+        if( o->strict || o->default_body || o->default_name.size > 0 )
         {
             bcore_sink_a_push_fa( sink, "{ return true; }", o->name.sc );
         }
@@ -938,12 +1194,41 @@ static void bcore_precoder_feature_s_expand_indef_declaration( const bcore_preco
 
     if( o->default_name.size > 0 )
     {
+        if( o->default_body && o->default_body->go_inline )
+        {
+            // ret_t feature_default( feature* o, arg_t arg1 );
+            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_#<sc_t>(", indent, o->ret_type.sc, o->group_name, o->default_name.sc );
+            if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
+            bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
+            bcore_precoder_args_s_expand( &o->args, sink );
+            bcore_sink_a_push_fa( sink, " ) #<sc_t>", o->default_body->code.sc );
+        }
+        else
+        {
+            // ret_t feature_default( feature* o, arg_t arg1 );
+            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  #<sc_t> #<sc_t>_#<sc_t>(", indent, o->ret_type.sc, o->group_name, o->default_name.sc );
+            if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
+            bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
+            bcore_precoder_args_s_expand( &o->args, sink );
+            bcore_sink_a_push_fa( sink, " );" );
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_precoder_feature_s_expand_definition( const bcore_precoder_feature_s* o, sz_t indent, const bcore_precoder_group_s* group, bcore_sink* sink )
+{
+    if( o->default_body && !o->default_body->go_inline )
+    {
         // ret_t feature_default( feature* o, arg_t arg1 );
-        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  #<sc_t> #<sc_t>_#<sc_t>(", indent, o->ret_type.sc, o->group_name, o->default_name.sc );
+        bcore_sink_a_push_fa( sink, "\n" );
+        bcore_sink_a_push_fa( sink, "\n#<sc_t> #<sc_t>_#<sc_t>(", o->ret_type.sc, o->group_name, o->default_name.sc );
         if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
         bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group_name );
         bcore_precoder_args_s_expand( &o->args, sink );
-        bcore_sink_a_push_fa( sink, " );" );
+        bcore_sink_a_push_fa( sink, " )\n", o->default_body->code.sc );
+        bcore_sink_a_push_fa( sink, "#<sc_t>", o->default_body->code.sc );
     }
 }
 
@@ -978,32 +1263,53 @@ static void bcore_precoder_stamp_s_expand_declaration( const bcore_precoder_stam
     bcore_self_s_struct_body_to_sink_single_line( o->self, sink );
     bcore_sink_a_push_fa( sink, ";" );
 
-    const bcore_self_item_s* array_item = NULL;
     bl_t expand_array = o->self->trait == TYPEOF_bcore_array;
 
-    sz_t items = bcore_self_s_items_size( o->self );
-    for( sz_t i = 0; i < items; i++ )
+    for( sz_t i = 0; i < o->funcs.size; i++ )
     {
-        const bcore_self_item_s* self_item = bcore_self_s_get_item( o->self, i );
-        if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_precoder_s_item_exists( precoder, self_item->type ) )
+        bcore_precoder_func_s* func = &o->funcs.data[ i ];
+        if( bcore_precoder_s_item_exists( precoder, func->type ) )
         {
-            const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder, self_item->type );
+            const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder, func->type );
             ASSERT( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_feature_s );
             const bcore_precoder_feature_s* feature = item->data.o;
-            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  #<sc_t> #<sc_t>_#<sc_t>( ", indent, feature->ret_type.sc, o->item_name, ifnameof( self_item->name ) );
+            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  ", indent );
+
+            bl_t go_inline = func->body && func->body->go_inline;
+
+            if( go_inline ) bcore_sink_a_push_fa( sink, "static inline " );
+
+            bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>_#<sc_t>( ", feature->ret_type.sc, o->item_name, func->name.sc );
             bcore_sink_a_push_fa( sink, "#<sc_t>", feature->mutable ? "" : "const " );
             bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->item_name );
             bcore_precoder_args_s_expand( &feature->args, sink );
-            bcore_sink_a_push_fa( sink, " );" );
-        }
-        else if( expand_array && bcore_flect_caps_is_array( self_item->caps ) )
-        {
-            array_item = self_item;
+            bcore_sink_a_push_fa( sink, " )" );
+
+            if( go_inline )
+            {
+                bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, ";" );
+            }
         }
     }
 
     if( expand_array )
     {
+        sz_t items = bcore_self_s_items_size( o->self );
+        const bcore_self_item_s* array_item = NULL;
+        for( sz_t i = 0; i < items; i++ )
+        {
+            const bcore_self_item_s* self_item = bcore_self_s_get_item( o->self, i );
+            if( bcore_flect_caps_is_array( self_item->caps ) )
+            {
+                array_item = self_item;
+                break;
+            }
+        }
+
         if( !array_item )
         {
             ERR_fa( "Expanding object #<sc_t>: Object is of trait array but contains no array.", o->item_name );
@@ -1071,7 +1377,6 @@ static void bcore_precoder_stamp_s_expand_definition( const bcore_precoder_stamp
     sc_t self_def = "";
     if( idx < self_string->size )
     {
-        idx++;
         self_def = self_string->sc + idx + 1;
     }
 
@@ -1080,6 +1385,30 @@ static void bcore_precoder_stamp_s_expand_definition( const bcore_precoder_stamp
 
     st_s* multiline_string = create_structured_multiline_string( self_def, indent );
     bcore_sink_a_push_fa( sink, "#<sc_t>;\n", multiline_string->sc );
+
+    for( sz_t i = 0; i < o->funcs.size; i++ )
+    {
+        bcore_precoder_func_s* func = &o->funcs.data[ i ];
+        if( bcore_precoder_s_item_exists( precoder, func->type ) )
+        {
+            const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder, func->type );
+            ASSERT( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_feature_s );
+            const bcore_precoder_feature_s* feature = item->data.o;
+
+            if( func->body && !func->body->go_inline )
+            {
+                bcore_sink_a_push_fa( sink, "\n" );
+                bcore_sink_a_push_fa( sink, "#rn{ }#<sc_t> #<sc_t>_#<sc_t>( ", indent, feature->ret_type.sc, o->item_name, func->name.sc );
+                bcore_sink_a_push_fa( sink, "#<sc_t>", feature->mutable ? "" : "const " );
+                bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->item_name );
+                bcore_precoder_args_s_expand( &feature->args, sink );
+                bcore_sink_a_push_fa( sink, " )\n" );
+                bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+                bcore_sink_a_push_fa( sink, "\n" );
+            }
+        }
+    }
+
     st_s_discard( multiline_string );
 }
 
@@ -1087,17 +1416,17 @@ static void bcore_precoder_stamp_s_expand_definition( const bcore_precoder_stamp
 
 static void bcore_precoder_stamp_s_expand_init1( const bcore_precoder_stamp_s* o, const bcore_precoder_s* precoder, sz_t indent, bcore_sink* sink )
 {
-    sz_t items = bcore_self_s_items_size( o->self );
-    for( sz_t i = 0; i < items; i++ )
+    for( sz_t i = 0; i < o->funcs.size; i++ )
     {
-        const bcore_self_item_s* self_item = bcore_self_s_get_item( o->self, i );
-        if( self_item->caps == BCORE_CAPS_EXTERNAL_FUNC && bcore_precoder_s_item_exists( precoder, self_item->type ) )
+        bcore_precoder_func_s* func = &o->funcs.data[ i ];
+        if( bcore_precoder_s_item_exists( precoder, func->type ) )
         {
-            const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder, self_item->type );
+            const bcore_precoder_item_s* item = bcore_precoder_s_item_get( precoder, func->type );
             ASSERT( sr_s_type( &item->data ) == TYPEOF_bcore_precoder_feature_s );
             const bcore_precoder_feature_s* feature = item->data.o;
-            bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, feature->item_name, o->item_name, ifnameof( self_item->name ) );
+            bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, feature->item_name, o->item_name, func->name.sc );
         }
+
     }
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_OBJECT( #<sc_t> );\n", indent, o->item_name );
 }
@@ -1115,6 +1444,12 @@ static void bcore_precoder_item_s_expand_declaration( const bcore_precoder_item_
         break;
 
         case TYPEOF_bcore_precoder_signature_s:
+        {
+            // nothing to do
+        }
+        break;
+
+        case TYPEOF_bcore_precoder_body_s:
         {
             // nothing to do
         }
@@ -1152,6 +1487,12 @@ static void bcore_precoder_items_s_expand_indef_declaration( const bcore_precode
         }
         break;
 
+        case TYPEOF_bcore_precoder_body_s:
+        {
+            // nothing to do
+        }
+        break;
+
         case TYPEOF_bcore_precoder_feature_s:
         {
             const bcore_precoder_feature_s* feature = o->data.o;
@@ -1162,12 +1503,6 @@ static void bcore_precoder_items_s_expand_indef_declaration( const bcore_precode
         case TYPEOF_bcore_precoder_name_s:
         {
             // nothing to do
-        }
-        break;
-
-        case TYPEOF_bcore_precoder_object_s:
-        {
-            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BETH_EXPAND_ITEM_#<sc_t>", indent, o->name.sc );
         }
         break;
 
@@ -1194,11 +1529,17 @@ static void bcore_precoder_item_s_expand_definition( const bcore_precoder_item_s
     {
         case TYPEOF_bcore_precoder_stamp_s:
         {
-            bcore_precoder_stamp_s_expand_definition( o->data.o, NULL, indent, sink );
+            bcore_precoder_stamp_s_expand_definition( o->data.o, o->group->source->target->precoder, indent, sink );
         }
         break;
 
         case TYPEOF_bcore_precoder_signature_s:
+        {
+            /* nothing */
+        }
+        break;
+
+        case TYPEOF_bcore_precoder_body_s:
         {
             /* nothing */
         }
@@ -1242,6 +1583,12 @@ static void bcore_precoder_item_s_expand_init1( const bcore_precoder_item_s* o, 
         }
         break;
 
+        case TYPEOF_bcore_precoder_body_s:
+        {
+            // nothing to do
+        }
+        break;
+
         case TYPEOF_bcore_precoder_feature_s:
         {
             bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FEATURE( #<sc_t> );\n", indent, o->name.sc );
@@ -1276,10 +1623,9 @@ static void bcore_precoder_item_s_setup( bcore_precoder_item_s* o, vc_t object )
     {
         case TYPEOF_bcore_precoder_stamp_s:
         {
-            const bcore_precoder_stamp_s* precoder_object = object;
-            st_s_copy_sc( &o->name, nameof( precoder_object->self->type ) );
-            //o->hash = bcore_hash_a_get_tp( ( bcore_hash* )&precoder_object->self );
-            o->hash = bcore_tp_hash_sc( precoder_object->self_source->sc );
+            const bcore_precoder_stamp_s* stamp = object;
+            st_s_copy_sc( &o->name, nameof( stamp->self->type ) );
+            o->hash = bcore_precoder_stamp_s_get_hash( stamp );
             ( ( bcore_precoder_stamp_s* )o->data.o )->item_name = o->name.sc;
         }
         break;
@@ -1290,6 +1636,14 @@ static void bcore_precoder_item_s_setup( bcore_precoder_item_s* o, vc_t object )
             st_s_copy_fa( &o->name, "#<sc_t>_#<sc_t>", precoder_signature->group_name, precoder_signature->name.sc );
             o->hash = bcore_precoder_signature_s_get_hash( precoder_signature );
             ( ( bcore_precoder_signature_s* )o->data.o )->item_name = o->name.sc;
+        }
+        break;
+
+        case TYPEOF_bcore_precoder_body_s:
+        {
+            const bcore_precoder_body_s* body = object;
+            st_s_copy_fa( &o->name, "#<sc_t>_#<sc_t>", body->group_name, body->name.sc );
+            o->hash = bcore_precoder_body_s_get_hash( body );
         }
         break;
 
@@ -1379,8 +1733,20 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             bcore_precoder_signature_s_compile( precoder_signature, source );
             bcore_source_a_parse_fa( source, " ; " );
             bcore_precoder_item_s_setup( item, precoder_signature );
-            o->has_signatures = true;
 
+            if( !bcore_precoder_s_item_register( o->source->target->precoder, item ) )
+            {
+                bcore_source_a_parse_err_fa( source, "Identifier #<sc_t> is already in use.", item->name.sc );
+            }
+            BCORE_LIFE_DOWN();
+        }
+        else if( bcore_source_a_parse_bl_fa( source, " #?w'body' " ) )
+        {
+            BCORE_LIFE_INIT();
+            BCORE_LIFE_CREATE( bcore_precoder_body_s, body );
+            bcore_precoder_body_s_compile( body, o, source );
+            bcore_source_a_parse_fa( source, " ; " );
+            bcore_precoder_item_s_setup( item, body );
             if( !bcore_precoder_s_item_register( o->source->target->precoder, item ) )
             {
                 bcore_source_a_parse_err_fa( source, "Identifier #<sc_t> is already in use.", item->name.sc );
@@ -1392,7 +1758,7 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             BCORE_LIFE_INIT();
             BCORE_LIFE_CREATE( bcore_precoder_feature_s, precoder_feature );
             precoder_feature->group_name = o->name.sc;
-            bcore_precoder_feature_s_compile( precoder_feature, source );
+            bcore_precoder_feature_s_compile( precoder_feature, o, source );
 
             bcore_precoder_item_s_setup( item, precoder_feature );
 
@@ -1544,6 +1910,15 @@ static void bcore_precoder_group_s_expand_definition( const bcore_precoder_group
     if( o->has_features )
     {
         bcore_precoder_group_s_expand_spect( o, indent, sink );
+        for( sz_t i = 0; i < o->size; i++ )
+        {
+            const bcore_precoder_item_s* item = o->data[ i ];
+            if( item->type == TYPEOF_bcore_precoder_feature_s )
+            {
+                const bcore_precoder_feature_s* feature = item->data.o;
+                bcore_precoder_feature_s_expand_definition( feature, indent, o, sink );
+            }
+        }
     }
 }
 
@@ -1774,6 +2149,14 @@ static bl_t bcore_precoder_target_s_expand( bcore_precoder_target_s* o )
         bcore_msg_fa( "Key for target '#<sc_t>' does not exist. Is signal handler of '#<sc_t>.h' integrated?\n", o->name.sc, o->name.sc );
     }
 
+    #ifdef BCORE_PRECODER_DRY_RUN
+    bcore_msg_fa( "Precoder is in mode 'dry-run'\n" );
+    if( modified )
+    {
+        bcore_precoder_target_s_expand_h( o, 0, BCORE_STDOUT );
+        bcore_precoder_target_s_expand_c( o, 0, BCORE_STDOUT );
+    }
+    #else
     if( modified )
     {
         BCORE_LIFE_CREATE( st_s, txt_h );
@@ -1804,9 +2187,9 @@ static bl_t bcore_precoder_target_s_expand( bcore_precoder_target_s* o )
         bcore_msg_fa( "writing '#<sc_t>'\n", file_c->sc );
         bcore_sink_a_push_data( BCORE_LIFE_A_PUSH( bcore_file_open_sink( file_c->sc ) ), txt_c->data, txt_c->size );
 
-//        bcore_precoder_target_s_expand_h( o, 0, BCORE_STDOUT );
-//        bcore_precoder_target_s_expand_c( o, 0, BCORE_STDOUT );
     }
+
+    #endif // BCORE_PRECODER_DRY_RUN
 
     BCORE_LIFE_RETURN( modified );
 }
@@ -1972,7 +2355,10 @@ vd_t bcore_precoder_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_precoder_arg_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_args_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_signature_s );
+            BCORE_REGISTER_OBJECT( bcore_precoder_body_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_feature_s );
+            BCORE_REGISTER_OBJECT( bcore_precoder_func_s );
+            BCORE_REGISTER_OBJECT( bcore_precoder_funcs_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_stamp_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_name_s );
             BCORE_REGISTER_OBJECT( bcore_precoder_item_s );
@@ -1995,7 +2381,10 @@ vd_t bcore_precoder_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_arg_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_args_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_signature_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_precoder_body_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_feature_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_precoder_func_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_precoder_funcs_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_stamp_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_name_s );
             BCORE_REGISTER_QUICKTYPE( bcore_precoder_item_s );

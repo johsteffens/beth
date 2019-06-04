@@ -59,7 +59,7 @@
   static inline bl_t bcore_precoder_sample_features_t_defines_to_stdout( tp_t __t ) { return true; } \
   static inline bl_t bcore_precoder_sample_features_a_defines_to_stdout( const bcore_precoder_sample_features* o ) { return true; } \
   static inline bl_t bcore_precoder_sample_features_r_defines_to_stdout( const sr_s* o ) { return true; } \
-  void bcore_precoder_sample_features_to_stdout_default( const bcore_precoder_sample_features* o ); \
+  void bcore_precoder_sample_features_to_stdout__( const bcore_precoder_sample_features* o ); \
   static inline sz_t bcore_precoder_sample_features_p_get_size( const bcore_precoder_sample_features_s* __p, const bcore_precoder_sample_features* o ) { return __p->get_size( o ); } \
   static inline sz_t bcore_precoder_sample_features_t_get_size( tp_t __t, const bcore_precoder_sample_features* o ) { return bcore_precoder_sample_features_s_get_typed( __t )->get_size( o ); } \
   static inline sz_t bcore_precoder_sample_features_a_get_size( const bcore_precoder_sample_features* o ) { return bcore_precoder_sample_features_s_get_aware( o )->get_size( o ); } \

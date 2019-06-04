@@ -27,10 +27,14 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_precoder_sample_features )
 "{"
     "bcore_spect_header_s header;"
     "feature strict aware bcore_precoder_sample_features : setup;"
-    "feature aware bcore_precoder_sample_features : to_stdout = bcore_precoder_sample_features_to_stdout_default;"
+    "feature aware bcore_precoder_sample_features : to_stdout = bcore_precoder_sample_features_to_stdout__;"
     "feature aware bcore_precoder_sample_features : get_size;"
 "}";
 
+void bcore_precoder_sample_features_to_stdout__( const bcore_precoder_sample_features* o )
+{
+    bcore_msg_fa( "Called to_stdout__\n" );
+}
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_precoder_sample
 
@@ -39,10 +43,13 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_precoder_sample_object_s )
 "{"
     "st_s name1;"
     "sz_t => [] arr;"
-    "func bcore_precoder_sample_features : setup;"
-    "func bcore_precoder_sample_features : to_stdout;"
-    "func bcore_precoder_sample_features : get_size;"
+    "func bcore_precoder_sample_features:setup;"
+    "func bcore_precoder_sample_features:to_stdout;"
+    "func bcore_precoder_sample_features:get_size;"
 "}";
+
+void bcore_precoder_sample_object_s_to_stdout( const bcore_precoder_sample_object_s* o )
+{ bcore_txt_ml_a_to_stdout( o ); }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_precoder_sample_object2_s )
 "bcore_inst"
@@ -50,8 +57,8 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_precoder_sample_object2_s )
     "aware_t _;"
     "bcore_precoder_sample_object_s object;"
     "st_s name2;"
-    "func bcore_precoder_sample_features : setup;"
-    "func bcore_precoder_sample_features : to_stdout;"
+    "func bcore_precoder_sample_features:setup;"
+    "func bcore_precoder_sample_features:to_stdout;"
 "}";
 
 /**********************************************************************************************************************/
@@ -79,12 +86,12 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 3977451782 ) );
+            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 3761617799 ) );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_setup );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_to_stdout );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_get_size );
             BCORE_REGISTER_NAME( anyglobalname );
-            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_features_to_stdout_default );
+            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_features_to_stdout__ );
             BCORE_REGISTER_SPECT( bcore_precoder_sample_features );
             BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_setup, bcore_precoder_sample_object_s_setup );
             BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_object_s_to_stdout );

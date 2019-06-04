@@ -39,7 +39,10 @@ BETH_PRECODE( bcore_precoder_sample_features )
 
     feature strict 'ptar' bcore_precoder_sample_signatures : setup;
 
-    feature        'ptar' void to_stdout( const ) = to_stdout_default;
+    feature        'ptar' void to_stdout( const ) =
+    {
+        bcore_msg_fa( "Called to_stdout__\n" );
+    };
     feature        'ptar' sz_t get_size( const );
 
     name anyglobalname;
@@ -49,12 +52,14 @@ BETH_PRECODE( bcore_precoder_sample_features )
 #ifdef TYPEOF_bcore_precoder_sample
 BETH_PRECODE( bcore_precoder_sample )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    body to_stdout_body = { bcore_txt_ml_a_to_stdout( o ); };
+
     stamp : object_s = aware bcore_inst
     {
         st_s name1;
         sz_t => [] arr;
         func bcore_precoder_sample_features : setup;
-        func bcore_precoder_sample_features : to_stdout;
+        func bcore_precoder_sample_features : to_stdout = : to_stdout_body;
         func bcore_precoder_sample_features : get_size;
     };
 

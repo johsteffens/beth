@@ -19,24 +19,10 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_precoder_sample_features_to_stdout_default( const bcore_precoder_sample_features* o )
-{
-    bcore_msg_fa( "running bcore_precoder_sample_features_to_stdout_default\n" );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 void bcore_precoder_sample_object_s_setup( bcore_precoder_sample_object_s* o, sz_t n )
 {
     st_s_copy_sc( &o->name1, "Franz" );
     for( sz_t i = 0; i < n; i++ ) bcore_array_a_push_sz( ( bcore_array* )o, i );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void bcore_precoder_sample_object_s_to_stdout( const bcore_precoder_sample_object_s* o )
-{
-    bcore_txt_ml_a_to_sink( o, BCORE_STDOUT );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
