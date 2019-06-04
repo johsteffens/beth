@@ -447,6 +447,13 @@
     static inline f3_t badapt_loss_l2_s_loss( const badapt_loss_l2_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target ){ return bmath_vf3_s_f3_sub_sqr( target, out ); } \
     static inline f3_t badapt_loss_l2_s_loss_f3( const badapt_loss_l2_s* o, f3_t out, f3_t target ){ return f3_sqr( target - out ); } \
     static inline void badapt_loss_l2_s_bgrad( const badapt_loss_l2_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad ){ bmath_vf3_s_sub( target, out, grad ); }
+  #define TYPEOF_badapt_loss_log_s 193592684
+  #define BETH_EXPAND_ITEM_badapt_loss_log_s \
+    BCORE_DECLARE_OBJECT( badapt_loss_log_s ) \
+      {aware_t _;}; \
+    f3_t badapt_loss_log_s_loss( const badapt_loss_log_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target ); \
+    f3_t badapt_loss_log_s_loss_f3( const badapt_loss_log_s* o, f3_t out, f3_t target ); \
+    void badapt_loss_log_s_bgrad( const badapt_loss_log_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad );
 #define BETH_EXPAND_GROUP_badapt_loss \
   BCORE_FORWARD_OBJECT( badapt_loss ); \
   typedef f3_t (*badapt_loss_loss)( const badapt_loss* o, const bmath_vf3_s* out, const bmath_vf3_s* target ); \
@@ -475,7 +482,8 @@
   static inline void badapt_loss_a_bgrad( const badapt_loss* o, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad ) { badapt_loss_s_get_aware( o )->bgrad( o, out, target, grad ); } \
   static inline bl_t badapt_loss_p_defines_bgrad( const badapt_loss_s* __p ) { return true; } \
   static inline bl_t badapt_loss_a_defines_bgrad( const badapt_loss* o ) { return true; } \
-  BETH_EXPAND_ITEM_badapt_loss_l2_s
+  BETH_EXPAND_ITEM_badapt_loss_l2_s \
+  BETH_EXPAND_ITEM_badapt_loss_log_s
 
 /**********************************************************************************************************************/
 // source: badapt_mlp

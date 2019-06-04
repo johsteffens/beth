@@ -23,9 +23,15 @@
 
 BETH_PRECODE( badapt_loss )
 #ifdef BETH_PRECODE_SECTION
-    feature strict 'pa' f3_t loss(    const, const bmath_vf3_s* out, const bmath_vf3_s* target );                    // loss function
-    feature strict 'pa' f3_t loss_f3( const, f3_t               out, f3_t               target );                    // loss function on scalars
-    feature strict 'pa' void bgrad(   const, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad ); // computes loss minimizing backward gradient of x
+
+    // loss function
+    feature strict 'pa' f3_t loss( const, const bmath_vf3_s* out, const bmath_vf3_s* target );
+
+    // loss function on scalars
+    feature strict 'pa' f3_t loss_f3( const, f3_t out, f3_t target );
+
+    // computes loss minimizing backward gradient of x
+    feature strict 'pa' void bgrad( const, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad );
 
     // l2 loss function
     stamp :l2_s = aware badapt_loss
@@ -34,6 +40,39 @@ BETH_PRECODE( badapt_loss )
         func :loss_f3 = { return f3_sqr( target - out ); };
         func :bgrad   = { bmath_vf3_s_sub( target, out, grad ); };
     };
+
+    // logistic loss function
+    stamp :log_s = aware badapt_loss
+    {
+        func :loss =
+        {
+            assert( target->size == out->size );
+            f3_t sum = 0;
+            for( sz_t i = 0; i < target->size; i++ )
+            {
+                sum += log( 1.0 + exp( -target->data[ i ] * out->data[ i ] ) );
+            }
+            return sum;
+        };
+
+        func :loss_f3 =
+        {
+            return log( 1.0 + exp( -target * out ) );
+        };
+
+        func :bgrad =
+        {
+            assert( target->size == out->size );
+            assert( target->size == grad->size );
+            for( sz_t i = 0; i < target->size; i++ )
+            {
+                f3_t v_t = target->data[ i ];
+                f3_t v_o = out->data[ i ];
+                grad->data[ i ] = v_t / ( 1.0 + exp( v_t * v_o ) );
+            }
+        };
+    };
+
 #endif // BETH_PRECODE_SECTION
 
 /**********************************************************************************************************************/

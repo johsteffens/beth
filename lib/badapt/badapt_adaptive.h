@@ -86,7 +86,7 @@ BETH_PRECODE( badapt_adaptive )
     };
 
     /// full adaption cycle based on loss function; adapt_loss_f3 returns estimates result
-    feature 'a' void adapt_loss(    mutable, const badapt_loss* loss, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) =
+    feature 'a' void adapt_loss( mutable, const badapt_loss* loss, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) =
     {
         ASSERT( out != NULL );
         bmath_vf3_s* grad = bmath_vf3_s_create();
@@ -99,8 +99,7 @@ BETH_PRECODE( badapt_adaptive )
 
     feature 'a' f3_t adapt_loss_f3( mutable, const badapt_loss* loss, const bmath_vf3_s* in, f3_t target ) =
     {
-        bmath_vf3_s v_target;
-        bmath_vf3_s v_out;
+        bmath_vf3_s v_target, v_out;
         f3_t out = 0;
         bmath_vf3_s_init_weak( &v_target, &target, 1 );
         bmath_vf3_s_init_weak( &v_out, &out, 1 );

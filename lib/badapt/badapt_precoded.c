@@ -12,6 +12,7 @@
 #include "bcore_sr.h"
 #include "bcore_const_manager.h"
 
+
 /**********************************************************************************************************************/
 // source: badapt_adaptive
 #include "badapt_adaptive.h"
@@ -77,8 +78,7 @@ void badapt_adaptive_adapt_loss__( badapt_adaptive* o, const badapt_loss* loss, 
 
 f3_t badapt_adaptive_adapt_loss_f3__( badapt_adaptive* o, const badapt_loss* loss, const bmath_vf3_s* in, f3_t target )
 {
-    bmath_vf3_s v_target;
-    bmath_vf3_s v_out;
+    bmath_vf3_s v_target, v_out;
     f3_t out = 0;
     bmath_vf3_s_init_weak( &v_target, &target, 1 );
     bmath_vf3_s_init_weak( &v_out, &out, 1 );
@@ -358,6 +358,42 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_loss_l2_s )
     "func :loss_f3;"
     "func :bgrad;"
 "}";
+
+BCORE_DEFINE_OBJECT_INST_P( badapt_loss_log_s )
+"aware badapt_loss"
+"{"
+    "func :loss;"
+    "func :loss_f3;"
+    "func :bgrad;"
+"}";
+
+f3_t badapt_loss_log_s_loss( const badapt_loss_log_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target )
+{
+    assert( target->size == out->size );
+    f3_t sum = 0;
+    for( sz_t i = 0; i < target->size; i++ )
+    {
+        sum += log( 1.0 + exp( -target->data[ i ] * out->data[ i ] ) );
+    }
+    return sum;
+}
+
+f3_t badapt_loss_log_s_loss_f3( const badapt_loss_log_s* o, f3_t out, f3_t target )
+{
+    return log( 1.0 + exp( -target * out ) );
+}
+
+void badapt_loss_log_s_bgrad( const badapt_loss_log_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad )
+{
+    assert( target->size == out->size );
+    assert( target->size == grad->size );
+    for( sz_t i = 0; i < target->size; i++ )
+    {
+        f3_t v_t = target->data[ i ];
+        f3_t v_o = out->data[ i ];
+        grad->data[ i ] = v_t / ( 1.0 + exp( v_t * v_o ) );
+    }
+}
 
 BCORE_DEFINE_SPECT( bcore_inst, badapt_loss )
 "{"
@@ -767,7 +803,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1798196873 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1145945258 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );
@@ -903,6 +939,10 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( badapt_loss_loss_f3, badapt_loss_l2_s_loss_f3 );
             BCORE_REGISTER_FFUNC( badapt_loss_bgrad, badapt_loss_l2_s_bgrad );
             BCORE_REGISTER_OBJECT( badapt_loss_l2_s );
+            BCORE_REGISTER_FFUNC( badapt_loss_loss, badapt_loss_log_s_loss );
+            BCORE_REGISTER_FFUNC( badapt_loss_loss_f3, badapt_loss_log_s_loss_f3 );
+            BCORE_REGISTER_FFUNC( badapt_loss_bgrad, badapt_loss_log_s_bgrad );
+            BCORE_REGISTER_OBJECT( badapt_loss_log_s );
             BCORE_REGISTER_SPECT( badapt_loss );
             BCORE_REGISTER_OBJECT( badapt_mlp_layer_s );
             BCORE_REGISTER_OBJECT( badapt_mlp_arr_layer_s );
