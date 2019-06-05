@@ -66,10 +66,8 @@
 
 BETH_PRECODE( bmath_mf3_sf )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    stamp bmath_mf3_sf_s = bcore_inst
+    stamp bmath_mf3_sf = aware bcore_inst
     {
-        aware_t _;
-
         sz_t cols;     // values per row
         sz_t rows;     // number of rows
         sz_t i_stride; // stride of splicing

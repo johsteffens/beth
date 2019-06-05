@@ -261,6 +261,9 @@ void st_s_print_fa( sc_t format, ... );
  *      Example: #u3_t matches to u3_t and requires u3_t* as argument.
  *      Supported types: u*_t, s*_t, f*_t, *z_t, bl_t.
  *
+ *  ==Flags==
+ *  Flags are special characters immediately following '#'. Multiple flags can be mixed.
+ *
  *  "#-..."  (Example: "#-<u3_t>" )
  *      Argument: none
  *      For any above rule: If '-' is inserted after '#', the rule applies
@@ -271,6 +274,11 @@ void st_s_print_fa( sc_t format, ... );
  *      Argument: according to rule
  *      For any above rule: If '=' is inserted after '#', the rule applies
  *      without consuming characters. Arguments are served and consumed as intended.
+ *
+ *  "#:..."  (Example: "#:name" )
+ *      Argument: string
+ *      For any rule with string argument (st_s): If ':' is inserted after '#', the rule
+ *      appends text to the string rather than copying it.
  *
  *  Return:
  *     Index position after scan completes.

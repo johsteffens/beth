@@ -29,7 +29,7 @@ BETH_PRECODE( badapt_dynamics )
 /// updates weights if forward map is: in * w = out;
 feature strict 'a' void weights_adapt( const, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor );
 
-stamp :std_s = aware :
+stamp :std = aware :
 {
     f3_t epsilon;   // learning rate
     f3_t lambda_l1; // l1-regularization

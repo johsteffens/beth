@@ -204,6 +204,13 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_polynom_s )
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_activation
 
+BCORE_DEFINE_OBJECT_INST_P( badapt_activation_linear_s )
+"aware badapt_activation"
+"{"
+    "func :fx;"
+    "func :dy;"
+"}";
+
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_lgst_s )
 "aware badapt_activation"
 "{"
@@ -385,7 +392,7 @@ f3_t badapt_loss_log_s_loss_f3( const badapt_loss_log_s* o, f3_t out, f3_t targe
 
 void badapt_loss_log_s_bgrad( const badapt_loss_log_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad )
 {
-    assert( target->size == out->size );
+    assert( target->size == out ->size );
     assert( target->size == grad->size );
     for( sz_t i = 0; i < target->size; i++ )
     {
@@ -803,7 +810,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1145945258 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 2110646887 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );
@@ -869,6 +876,9 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( badapt_problem_polynom_s );
             BCORE_REGISTER_FEATURE( badapt_activation_fx );
             BCORE_REGISTER_FEATURE( badapt_activation_dy );
+            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_linear_s_fx );
+            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_linear_s_dy );
+            BCORE_REGISTER_OBJECT( badapt_activation_linear_s );
             BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_lgst_s_fx );
             BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_lgst_s_dy );
             BCORE_REGISTER_OBJECT( badapt_activation_lgst_s );

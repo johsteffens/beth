@@ -222,6 +222,12 @@
 
 #define TYPEOF_badapt_activation 1242735104
 #define TYPEOF_badapt_activation_s 314872026
+  #define TYPEOF_badapt_activation_linear_s 3097414786
+  #define BETH_EXPAND_ITEM_badapt_activation_linear_s \
+    BCORE_DECLARE_OBJECT( badapt_activation_linear_s ) \
+      {aware_t _;}; \
+    static inline f3_t badapt_activation_linear_s_fx( const badapt_activation_linear_s* o, f3_t x ){ return   x; } \
+    static inline f3_t badapt_activation_linear_s_dy( const badapt_activation_linear_s* o, f3_t y ){ return 1.0; }
   #define TYPEOF_badapt_activation_lgst_s 2249276893
   #define BETH_EXPAND_ITEM_badapt_activation_lgst_s \
     BCORE_DECLARE_OBJECT( badapt_activation_lgst_s ) \
@@ -298,6 +304,7 @@
   static inline f3_t badapt_activation_a_dy( const badapt_activation* o, f3_t y ) { return badapt_activation_s_get_aware( o )->dy( o, y ); } \
   static inline bl_t badapt_activation_p_defines_dy( const badapt_activation_s* __p ) { return true; } \
   static inline bl_t badapt_activation_a_defines_dy( const badapt_activation* o ) { return true; } \
+  BETH_EXPAND_ITEM_badapt_activation_linear_s \
   BETH_EXPAND_ITEM_badapt_activation_lgst_s \
   BETH_EXPAND_ITEM_badapt_activation_lgst_hard_s \
   BETH_EXPAND_ITEM_badapt_activation_lgst_leaky_s \

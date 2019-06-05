@@ -34,7 +34,7 @@ BETH_PRECODE( badapt_loss )
     feature strict 'pa' void bgrad( const, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad );
 
     // l2 loss function
-    stamp :l2_s = aware badapt_loss
+    stamp :l2 = aware badapt_loss
     {
         func :loss    = { return bmath_vf3_s_f3_sub_sqr( target, out ); };
         func :loss_f3 = { return f3_sqr( target - out ); };
@@ -42,7 +42,7 @@ BETH_PRECODE( badapt_loss )
     };
 
     // logistic loss function
-    stamp :log_s = aware badapt_loss
+    stamp :log = aware badapt_loss
     {
         func :loss =
         {
@@ -62,7 +62,7 @@ BETH_PRECODE( badapt_loss )
 
         func :bgrad =
         {
-            assert( target->size == out->size );
+            assert( target->size == out ->size );
             assert( target->size == grad->size );
             for( sz_t i = 0; i < target->size; i++ )
             {

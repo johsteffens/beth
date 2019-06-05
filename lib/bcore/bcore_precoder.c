@@ -885,12 +885,40 @@ static void bcore_precoder_stamp_s_compile( bcore_precoder_stamp_s* o, bcore_pre
     BCORE_LIFE_INIT();
 
     BCORE_LIFE_CREATE( st_s, self_string );
+    BCORE_LIFE_CREATE( st_s, stamp_name );
     BCORE_LIFE_CREATE( st_s, trait_name );
     BCORE_LIFE_CREATE( st_s, type_name );
     BCORE_LIFE_CREATE( st_s, string );
 
-    bcore_source_a_parse_fa( source, " #until'='=", string );
-    st_s_push_fa( self_string, "#<sc_t>=", string->sc );
+    if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
+    {
+        st_s_push_fa( stamp_name, "#<sc_t>", group->name.sc );
+    }
+
+    bcore_source_a_parse_fa( source, " #name", string );
+
+    if( string->size > 0 )
+    {
+        if( stamp_name->size > 0 ) st_s_push_fa( stamp_name, "_" );
+        st_s_push_fa( stamp_name, "#<sc_t>", string->sc );
+    }
+
+    st_s_push_fa( self_string, "#<sc_t>", stamp_name->sc );
+    if( stamp_name->size >= 2 && sc_t_equ( stamp_name->sc + stamp_name->size - 2, "_s" ) )
+    {
+        WRN_fa( "Stamp '#<sc_t>' ends in '_s'. In beth, this ending identifies a structure. Using it as stamp name can have side effects. Is this intended?", stamp_name->sc );
+    }
+    else
+    {
+        st_s_push_fa( self_string, "_s" );
+    }
+
+    bcore_source_a_parse_fa( source, " = " );
+    st_s_push_fa( self_string, "=" );
+
+
+//    bcore_source_a_parse_fa( source, " #until'='=", string );
+//    st_s_push_fa( self_string, "#<sc_t>=", string->sc );
 
     if( bcore_source_a_parse_bl_fa( source, " #?w'aware'" ) ) st_s_push_sc( self_string, "aware " );
 

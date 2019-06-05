@@ -27,58 +27,65 @@ BETH_PRECODE( badapt_activation )
     feature strict 'pa' f3_t fx( const, f3_t x ); // y  = f( x )
     feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
 
+    // ======= (linear (unbounded) function) ============
+    stamp :linear = aware :
+    {
+        func :fx = { return   x; };
+        func :dy = { return 1.0; };
+    };
+
     // ======= (logistic function) ============
-    stamp :lgst_s = aware :
+    stamp :lgst = aware :
     {
         func :fx = { return 1.0 / ( 1.0 + exp( -x ) ); };
         func :dy = { return y * ( 1.0 - y ); };
     };
 
-    stamp :lgst_hard_s = aware :
+    stamp :lgst_hard = aware :
     {
         func :fx = { return ( x < -2.0 ) ? 0.0 : ( x > 2.0 ) ? 1.0 : 0.25 * ( x + 2.0 ); };
         func :dy = { return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25; };
     };
 
-    stamp :lgst_leaky_s = aware :
+    stamp :lgst_leaky = aware :
     {
         func :fx = { return ( x < -2.0 ) ? 0.01 * ( x + 2.0 ) : ( x > 2.0 ) ? 1.0 + 0.01 * ( x - 2.0 ) : 0.25 * ( x + 2.0 ); };
         func :dy = { return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; };
     };
 
     // ======= (tanh) =========================
-    stamp :tanh_s = aware :
+    stamp :tanh = aware :
     {
         func :fx = { return 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ); };
         func :dy = { return 1.0 - f3_sqr( y ); };
     };
 
-    stamp :tanh_hard_s = aware :
+    stamp :tanh_hard = aware :
     {
         func :fx = { return ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x; };
         func :dy = { return ( y < -1.0 ) ?  0.0 : ( y > 1.0 ) ? 0.0 : 1.0; };
     };
 
-    stamp :tanh_leaky_s = aware :
+    stamp :tanh_leaky = aware :
     {
         func :fx = { return ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x; };
         func :dy = { return ( y < -1.0 ) ?  0.01 : ( y > 1.0 ) ? 0.01 : 1.0; };
     };
 
     // ======= (softplus function) ============
-    stamp :softplus_s = aware :
+    stamp :softplus = aware :
     {
         func :fx = { return log( 1.0 + exp( x ) ); };
         func :dy = { f3_t u = exp( y ); return ( u - 1.0 ) / u; };
     };
 
-    stamp :relu_s = aware :
+    stamp :relu = aware :
     {
         func :fx = { return x > 0 ? x : 0; };
         func :dy = { return y > 0 ? 1 : 0; };
     };
 
-    stamp :leaky_relu_s = aware :
+    stamp :leaky_relu = aware :
     {
         func :fx = { return x > 0 ? x : x * 0.01; };
         func :dy = { return y > 0 ? 1 : 0.01; };
@@ -127,7 +134,7 @@ BETH_PRECODE( badapt_activator )
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// Activator without bias.
-    stamp :plain_s = aware badapt_activator
+    stamp :plain = aware badapt_activator
     {
         aware badapt_activation => activation;
         func :setup; func :reset; func :infer; func :bgrad; func :adapt; func :adapt_defer; func :adapt_apply;
@@ -141,7 +148,7 @@ BETH_PRECODE( badapt_activator )
     /** Activator with bias.
      *  Bias is not randomized but initialized zero (common practice).
      */
-    stamp :bias_s = aware :
+    stamp :bias = aware :
     {
         aware badapt_activation => activation;
         bmath_vf3_s v_bias;
@@ -155,9 +162,9 @@ BETH_PRECODE( badapt_activator )
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// specifies which activator is used for which layer; negative layer number means relative to last layer + 1
-    stamp badapt_layer_activator_s     = aware bcore_inst  { sz_t layer; aware badapt_activator => activator; };
-    stamp badapt_arr_layer_activator_s = aware bcore_array { badapt_layer_activator_s    [] arr; };
-    stamp badapt_arr_activator_s       = aware bcore_array { aware badapt_activator   => [] arr; };
+    stamp badapt_layer_activator     = aware bcore_inst  { sz_t layer; aware badapt_activator => activator; };
+    stamp badapt_arr_layer_activator = aware bcore_array { badapt_layer_activator_s    [] arr; };
+    stamp badapt_arr_activator       = aware bcore_array { aware badapt_activator   => [] arr; };
 
 #endif // BETH_PRECODE_SECTION
 

@@ -81,10 +81,8 @@
 
 BETH_PRECODE( bmath_mf3_sx )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    stamp bmath_mf3_sx_s = bcore_inst
+    stamp bmath_mf3_sx = aware bcore_inst
     {
-        aware_t _;
-
         sz_t slos;   // values per xon
         sz_t xons;   // xons  per row
         sz_t rows;   // number of rows

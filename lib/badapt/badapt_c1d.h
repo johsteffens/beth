@@ -28,7 +28,7 @@
 BETH_PRECODE( badapt_c1d )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp badapt_c1d_layer_s = bcore_inst
+stamp badapt_c1d_layer = bcore_inst
 {
     aware_t _;
     sz_t input_size;  // input vector size
@@ -44,11 +44,11 @@ stamp badapt_c1d_layer_s = bcore_inst
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp badapt_c1d_arr_layer_s = bcore_array { aware_t _; badapt_c1d_layer_s [] arr; };
+stamp badapt_c1d_arr_layer = bcore_array { aware_t _; badapt_c1d_layer_s [] arr; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp badapt_c1d_s = badapt_adaptive
+stamp badapt_c1d = badapt_adaptive
 {
     aware_t _;
 
@@ -82,7 +82,7 @@ stamp badapt_c1d_s = badapt_adaptive
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// Builder creating a funnel structure of kernels
-stamp badapt_builder_c1d_funnel_s = badapt_builder
+stamp badapt_builder_c1d_funnel = badapt_builder
 {
     aware_t _;
 

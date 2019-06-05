@@ -1198,20 +1198,23 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
         else if( *fp == '#' )
         {
             fp++;
-            bl_t set_arg = true;
-            bl_t consume = true;
 
             uz_t enter_idx = idx;
-            if( *fp == '=' )
+
+            bl_t cat_arg = false; // append evaluation result to arg (used for strings)
+            bl_t set_arg = true;
+            bl_t consume = true;
+            for( bl_t loop = true; loop;  )
             {
-                fp++;
-                consume = false;
+                switch( *fp )
+                {
+                    case '=': consume = false; fp++; break;
+                    case '-': set_arg = false; fp++; break;
+                    case ':': cat_arg = true;  fp++; break;
+                    default : loop    = false; break;
+                }
             }
-            if( *fp == '-' )
-            {
-                fp++;
-                set_arg = false;
-            }
+
             tp_t type = 0;
             int fp_inc = 0;
             bl_t is_ptr = true;
@@ -1515,8 +1518,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
             {
                 fp += strlen( "name" );
                 st_s* string = NULL;
-                if( set_arg ) string = va_arg( args, st_s* );
-                if( set_arg ) st_s_clear( string );
+                if( set_arg ) { string = va_arg( args, st_s* ); if( !cat_arg ) st_s_clear( string ); }
                 char c = o->sc[ idx ];
                 if( ( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' ) || c == '_' )
                 {
@@ -1544,8 +1546,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
             {
                 fp += strlen( "string" );
                 st_s* string = NULL;
-                if( set_arg ) string = va_arg( args, st_s* );
-                if( set_arg ) st_s_clear( string );
+                if( set_arg ) { string = va_arg( args, st_s* ); if( !cat_arg ) st_s_clear( string ); }
                 if( o->sc[ idx ] != '"' )
                 {
                     return errfp( arg, o, idx, st_s_createf( "'\"' expected." ) );
@@ -1590,8 +1591,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 if(  char_l == 0  ) ERR( err_msg );
                 if( *fp++ != '\'' ) ERR( err_msg );
                 st_s* string = NULL;
-                if( set_arg ) string = va_arg( args, st_s* );
-                if( set_arg ) st_s_clear( string );
+                if( set_arg ) { string = va_arg( args, st_s* ); if( !cat_arg ) st_s_clear( string ); }
                 while ( o->sc[ idx ] != char_l )
                 {
                     if( set_arg ) st_s_push_char( string, o->sc[ idx++ ] );

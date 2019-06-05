@@ -21,9 +21,8 @@
 // group: bmath_mf3_sx
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_mf3_sx_s )
-"bcore_inst"
+"aware bcore_inst"
 "{"
-    "aware_t _;"
     "sz_t slos;"
     "sz_t xons;"
     "sz_t rows;"
@@ -40,9 +39,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_mf3_sx_s )
 // group: bmath_mf3_sf
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_mf3_sf_s )
-"bcore_inst"
+"aware bcore_inst"
 "{"
-    "aware_t _;"
     "sz_t cols;"
     "sz_t rows;"
     "sz_t i_stride;"
@@ -59,7 +57,7 @@ vd_t bmath_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 4129405981 ) );
+            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 69464240 ) );
             BCORE_REGISTER_OBJECT( bmath_mf3_sx_s );
             BCORE_REGISTER_OBJECT( bmath_mf3_sf_s );
         }
