@@ -97,7 +97,7 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_sz, uz_t, index, sz_t, 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_uz, uz_t, index, uz_t, val ) // Sets item by converting uz_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_sc, uz_t, index, sc_t, val ) // Sets item by converting sc_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_bl, uz_t, index, bl_t, val ) // Sets item by converting bl_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, set_size,  uz_t, size  ) // changes array size (keeping previous data); for linked arrays new items are NULL
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, set_size,  uz_t, size  ) // changes array size (keeping previous data); for linked arrays new items are NULL; otherwise new items are default initialized
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, set_space, uz_t, space ) // changes space (can affect size; set space to zero means clearing the array)
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_array, make_strong )            // turns a weak array reference into a strong one; no effect if array is strong
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_array, get_first, sr_s )        // returns first item; NULL if array is empty
