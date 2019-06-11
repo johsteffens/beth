@@ -72,9 +72,12 @@ void badapt_ern_arr_layer_s_rotate( badapt_ern_arr_layer_s* o )
 void badapt_ern_s_arc_to_sink( const badapt_ern_s* o, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#<sc_t>\n",  ifnameof( *(aware_t*)o ) );
-    bcore_sink_a_push_fa( sink, "size input:  #<sz_t>\n", o->size_input );
-    bcore_sink_a_push_fa( sink, "size hidden: #<sz_t>\n", o->w_hx.rows );
-    bcore_sink_a_push_fa( sink, "size output: #<sz_t>\n", o->size_output );
+    bcore_sink_a_push_fa( sink, "input:    #<sz_t>\n", o->size_input );
+    bcore_sink_a_push_fa( sink, "hidden:   #<sz_t>\n", o->w_hx.rows );
+    bcore_sink_a_push_fa( sink, "output:   #<sz_t>\n", o->size_output );
+    bcore_sink_a_push_fa( sink, "unfolded: #<sz_t>\n", o->size_unfolded );
+    bcore_sink_a_push_fa( sink, "a_h: #<sc_t> (#<sc_t>)\n", ifnameof( *( aware_t* )o->a_h ), ifnameof( *( aware_t* )badapt_activator_a_get_activation( o->a_h ) ) );
+    bcore_sink_a_push_fa( sink, "a_o: #<sc_t> (#<sc_t>)\n", ifnameof( *( aware_t* )o->a_o ), ifnameof( *( aware_t* )badapt_activator_a_get_activation( o->a_o ) ) );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -115,6 +118,7 @@ void badapt_ern_s_bgrad_adapt( badapt_ern_s* o, bmath_vf3_s* grad_in, const bmat
     bmath_vf3_s_set_size( &o->v_gc, layer0->v_c.size );
 
     bmath_vf3_s_cpy( grad_out, &o->v_go );
+
     badapt_activator_a_adapt( o->a_o, &o->v_go, &o->v_go, &o->v_o, o->dynamics.epsilon );
 
     bmath_mf3_s_htp_mul_vec( &o->w_oh, &o->v_go, &o->v_gh );      // W^T * GO -> GH
@@ -142,6 +146,22 @@ void badapt_ern_s_bgrad_adapt( badapt_ern_s* o, bmath_vf3_s* grad_in, const bmat
     bmath_mf3_s_mul_scl_f3( &o->w_hc, ( 1.0 - o->dynamics.epsilon * o->dynamics.lambda_l2 ), &o->w_hc );
     bmath_mf3_s_zro( &o->gw_hx );
     bmath_mf3_s_zro( &o->gw_hc );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void badapt_ern_s_get_weights_min_max( const badapt_ern_s* o, f3_t* arg_min, f3_t* arg_max )
+{
+    f3_t max =         bmath_mf3_s_f3_max( &o->w_hx );
+    max = f3_max( max, bmath_mf3_s_f3_max( &o->w_hc ) );
+    max = f3_max( max, bmath_mf3_s_f3_max( &o->w_oh ) );
+
+    f3_t min =         bmath_mf3_s_f3_min( &o->w_hx );
+    min = f3_min( min, bmath_mf3_s_f3_min( &o->w_hc ) );
+    min = f3_min( min, bmath_mf3_s_f3_min( &o->w_oh ) );
+
+    if( arg_max ) *arg_max = max;
+    if( arg_min ) *arg_min = min;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

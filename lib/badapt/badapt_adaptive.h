@@ -67,6 +67,12 @@ BETH_PRECODE( badapt_adaptive )
 
     // ===== optional features =====
 
+    /// resets network to a defined internal state; (e.g. for recurrent networks )
+    feature        'a' void reset( mutable );
+
+    /// retrieves min and max of weights
+    feature        'a' void get_weights_min_max( const, f3_t* min, f3_t* max );
+
     feature 'a' void get_dynamics_std( const,         badapt_dynamics_std_s* dynamics );
     feature 'a' void set_dynamics_std( mutable, const badapt_dynamics_std_s* dynamics );
 

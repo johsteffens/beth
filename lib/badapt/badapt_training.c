@@ -51,8 +51,16 @@ bl_t badapt_guide_std_s_callback( const badapt_guide_std_s* o, badapt_training_s
 
     if( o->log )
     {
-        bcore_sink_a_pushf( o->log, "% 6zi: err%6.3f|improved %6.3f|bias %6.3f|log(epsilon) %5.3f\n", progress->iteration, progress->error, progress->improved, progress->bias, log( dynamics->epsilon ) );
+        bcore_sink_a_pushf( o->log, "% 6zi: err%8.5f|improved %6.3f|bias %6.3f|log(epsilon) %5.3f", progress->iteration, progress->error, progress->improved, progress->bias, log( dynamics->epsilon ) );
     }
+
+    if( badapt_adaptive_a_defines_get_weights_min_max( adaptive ) )
+    {
+        f3_t max = 0, min = 0;
+        badapt_adaptive_a_get_weights_min_max( adaptive, &min, &max );
+        bcore_sink_a_pushf( o->log, "|min %5.3f|max %5.3f", min, max );
+    }
+    bcore_sink_a_push_fa( o->log, "\n" );
 
     dynamics->epsilon *= o->annealing_factor;
     badapt_adaptive_a_set_dynamics_std( adaptive, dynamics );

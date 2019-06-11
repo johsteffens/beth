@@ -22,9 +22,12 @@
 badapt_activator* badapt_activator_create_from_types( tp_t tp_activator, tp_t tp_activation )
 {
     badapt_activator*  activator  = bcore_inst_t_create( tp_activator );
-    badapt_activation* activation = bcore_inst_t_create( tp_activation );
-    badapt_activator_a_set_activation( activator, activation );
-    bcore_inst_a_discard( ( bcore_inst* )activation );
+    if( tp_activation )
+    {
+        badapt_activation* activation = bcore_inst_t_create( tp_activation );
+        badapt_activator_a_set_activation( activator, activation );
+        bcore_inst_a_discard( ( bcore_inst* )activation );
+    }
     return activator;
 }
 
@@ -34,7 +37,10 @@ badapt_activator* badapt_activator_create_from_names( sc_t sc_activator, sc_t sc
 {
     BCORE_LIFE_INIT();
     tp_t tp_activator  = typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "badapt_activator_#<sc_t>_s", sc_activator   ) ) )->sc );
-    tp_t tp_activation = typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "badapt_activation_#<sc_t>_s", sc_activation ) ) )->sc );
+    tp_t tp_activation =
+        sc_activation
+            ? typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "badapt_activation_#<sc_t>_s", sc_activation ) ) )->sc )
+            : 0;
     badapt_activator* activator = badapt_activator_create_from_types( tp_activator, tp_activation );
     BCORE_LIFE_RETURN( activator );
 }
@@ -147,76 +153,8 @@ const badapt_activator* badapt_arr_layer_activator_s_get_activator( const badapt
 
 //----------------------------------------------------------------------------------------------------------------------
 
-badapt_activator_plain_s* badapt_activator_plain_s_create_activation( const badapt_activation* activation )
-{
-    badapt_activator_plain_s* o = badapt_activator_plain_s_create();
-    badapt_activation_a_replicate( &o->activation, activation );
-    return o;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void badapt_activator_plain_s_setup( badapt_activator_plain_s* o )
-{
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void badapt_activator_plain_s_reset( badapt_activator_plain_s* o )
-{
-   // nothing to do
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void badapt_activator_plain_s_infer( const badapt_activator_plain_s* o, const bmath_vf3_s* in, bmath_vf3_s* out )
-{
-    assert( in->size == out->size );
-    const badapt_activation_s* activation_p = badapt_activation_s_get_aware( o->activation );
-    for( sz_t i = 0; i < out->size; i++ ) out->data[ i ] = badapt_activation_p_fx( activation_p, o->activation, in->data[ i ] );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void badapt_activator_plain_s_bgrad( const badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out )
-{
-    assert( grad_in->size == grad_out->size );
-    assert( grad_in->size ==      out->size );
-    const badapt_activation_s* activation_p = badapt_activation_s_get_aware( o->activation );
-    for( sz_t i = 0; i < out->size; i++ ) grad_in->data[ i ] = badapt_activation_p_dy( activation_p, o->activation, out->data[ i ] ) * grad_out->data[ i ];
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void badapt_activator_plain_s_adapt( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon )
-{
-    badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void badapt_activator_plain_s_adapt_defer( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out )
-{
-    badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void badapt_activator_plain_s_adapt_apply( badapt_activator_plain_s* o, f3_t epsilon )
-{
-    /// nothing to do
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /**********************************************************************************************************************/
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void badapt_activator_bias_s_setup( badapt_activator_bias_s* o )
-{
-}
-
+// badapt_activator_bias_s
 //----------------------------------------------------------------------------------------------------------------------
 
 void badapt_activator_bias_s_reset( badapt_activator_bias_s* o )

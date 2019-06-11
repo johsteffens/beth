@@ -27,12 +27,10 @@ BETH_PRECODE( badapt_activation )
     feature strict 'pa' f3_t fx( const, f3_t x ); // y  = f( x )
     feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
 
-    // ======= (linear (unbounded) function) ============
-    stamp :linear = aware :
-    {
-        func :fx = { return   x; };
-        func :dy = { return 1.0; };
-    };
+    // ======= (trivial activations) ============
+    stamp :zero   = aware : { func :fx = { return 0.0; }; func :dy = { return 0.0; }; };
+    stamp :one    = aware : { func :fx = { return 1.0; }; func :dy = { return 0.0; }; };
+    stamp :linear = aware : { func :fx = { return   x; }; func :dy = { return 1.0; }; };
 
     // ======= (logistic function) ============
     stamp :lgst = aware :
@@ -100,18 +98,18 @@ BETH_PRECODE( badapt_activator )
 #ifdef BETH_PRECODE_SECTION
 
     /// resets trainable components with given seed
-    feature strict 'a' void reset( mutable );
+    feature 'a' void reset( mutable ) = {};
 
     /// should be called once before use
-    feature strict 'a' void setup( mutable );
+    feature 'a' void setup( mutable ) = {};
 
     /// vector size
-    feature        'a' sz_t get_size( const );
-    feature        'a' void set_size( mutable, sz_t size );
+    feature 'a' sz_t get_size( const )              = { return 0; };
+    feature 'a' void set_size( mutable, sz_t size ) = {};
 
     /// activation function
-    feature        'a' const badapt_activation* get_activation( const );
-    feature        'a' void set_activation( mutable, const badapt_activation* activation );
+    feature 'a' const badapt_activation* get_activation( const )                    = { return NULL; };
+    feature 'a' void set_activation( mutable, const badapt_activation* activation ) = {};
 
     /// fast concurrent inference
     feature strict 'a' void infer( const, const bmath_vf3_s* in, bmath_vf3_s* out );
@@ -126,10 +124,10 @@ BETH_PRECODE( badapt_activator )
 
     /// like adaptation step bt changes of weights is deferred (accumulated) until adapt_apply is called
     /// grad_in and grad_out may refer to the same object
-    feature 'a' void adapt_defer( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
+    feature strict 'a' void adapt_defer( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
 
     /// applies accumulated deferred adaptations
-    feature 'a' void adapt_apply( mutable, f3_t epsilon );
+    feature 'a' void adapt_apply( mutable, f3_t epsilon ) = {};
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -137,10 +135,32 @@ BETH_PRECODE( badapt_activator )
     stamp :plain = aware badapt_activator
     {
         aware badapt_activation => activation;
-        func :setup; func :reset; func :infer; func :bgrad; func :adapt; func :adapt_defer; func :adapt_apply;
+
+        func :infer =
+        {
+            assert( in->size == out->size );
+            const badapt_activation_s* activation_p = badapt_activation_s_get_aware( o->activation );
+            for( sz_t i = 0; i < out->size; i++ )
+            {
+                out->data[ i ] = badapt_activation_p_fx( activation_p, o->activation, in->data[ i ] );
+            }
+        };
+
+        func :bgrad =
+        {
+            assert( grad_in->size == grad_out->size );
+            assert( grad_in->size ==      out->size );
+            const badapt_activation_s* activation_p = badapt_activation_s_get_aware( o->activation );
+            for( sz_t i = 0; i < out->size; i++ )
+            {
+                grad_in->data[ i ] = badapt_activation_p_dy( activation_p, o->activation, out->data[ i ] ) * grad_out->data[ i ];
+            }
+        };
 
         func :set_activation = { badapt_activation_a_replicate( &o->activation, activation ); };
         func :get_activation = { return o->activation; };
+        func :adapt          = { badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out ); };
+        func :adapt_defer    = { badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out ); };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -153,10 +173,40 @@ BETH_PRECODE( badapt_activator )
         aware badapt_activation => activation;
         bmath_vf3_s v_bias;
         bmath_vf3_s v_bias_deferred;
-        func :setup; func :reset; func :infer; func :bgrad; func :adapt; func :adapt_defer; func :adapt_apply;
+        func :reset; func :infer; func :bgrad; func :adapt; func :adapt_defer; func :adapt_apply;
 
         func :set_activation = { badapt_activation_a_replicate( &o->activation, activation ); };
         func :get_activation = { return o->activation; };
+    };
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    /// softmax activator.
+    stamp :softmax = aware :
+    {
+        func :infer =
+        {
+            f3_t sum = 0;
+            for( sz_t i = 0; i < out->size; i++ )
+            {
+                f3_t v = exp( in->data[ i ] );
+                sum += v;
+                out->data[ i ] = v;
+            }
+            bmath_vf3_s_mul_f3( out, ( sum > 0 ) ? 1.0 / sum : 0, out );
+        };
+
+        func :bgrad =
+        {
+            f3_t dpd = bmath_vf3_s_f3_mul_vec( grad_out, out );
+            for( sz_t i = 0; i < grad_in->size; i++ )
+            {
+                grad_in->data[ i ] = out->data[ i ] * ( grad_out->data[ i ] - dpd );
+            }
+        };
+
+        func :adapt       = { badapt_activator_softmax_s_bgrad( o, grad_in, grad_out, out ); };
+        func :adapt_defer = { badapt_activator_softmax_s_bgrad( o, grad_in, grad_out, out ); };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
