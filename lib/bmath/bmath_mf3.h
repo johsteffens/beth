@@ -29,6 +29,7 @@
  *    neg: C = -A
  *    sub: C = A - B
  *    mul: C = A * B
+ *    mul_hdm: C = A o B  (hadamard product == elementwise product)
  *    mul_vec: y = A * x
  *    mul_scl: C = A * f (f: scalar)
  *    mul_add:     D = A * B + C
@@ -239,6 +240,10 @@ f3_t bmath_mf3_s_fdev_otn( const bmath_mf3_s* o ); // f = o * oT or oT * o (whic
 /**********************************************************************************************************************/
 /// initializations; copying; basic matrix operations
 
+f3_t bmath_mf3_s_f3_max( const bmath_mf3_s* o ); // maximum value
+f3_t bmath_mf3_s_f3_min( const bmath_mf3_s* o ); // minimum value
+f3_t bmath_mf3_s_f3_sum( const bmath_mf3_s* o ); // sum of all elements
+
 f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o ); // trace
 f3_t bmath_mf3_s_f3_sub_sqr( const bmath_mf3_s* o, const bmath_mf3_s* op ); // ( o - op )^2
 
@@ -299,6 +304,11 @@ void bmath_mf3_s_eop_map_mul( const bmath_mf3_s* o, bmath_fp_f3_unary b, const b
 static inline void bmath_mf3_s_mul_set(     const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ) { bmath_mf3_s_set_size( r, o->rows, m->cols ); bmath_mf3_s_mul( o, m, r ); }
 static inline void bmath_mf3_s_mul_htp_set( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ) { bmath_mf3_s_set_size( r, o->rows, m->rows ); bmath_mf3_s_mul_htp( o, m, r ); }
 static inline void bmath_mf3_s_htp_mul_set( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r ) { bmath_mf3_s_set_size( r, o->cols, m->cols ); bmath_mf3_s_htp_mul( o, m, r ); }
+
+//----------------------------------------------------------------------------------------------------------------------
+// matrix o matrix --> matrix (hadamard product)
+
+void bmath_mf3_s_mul_hdm( const bmath_mf3_s* a, const bmath_mf3_s* b, bmath_mf3_s* r ); /// a o b -> r; (elementwise operation)
 
 //----------------------------------------------------------------------------------------------------------------------
 // inversion; pseudo-inversion;

@@ -394,6 +394,26 @@ void bmath_vf3_s_sub_scl_f3( const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// hadamard product: a o b [+ c] -> r  (elementwise)
+void bmath_vf3_s_mul_hdm( const bmath_vf3_s* a, const bmath_vf3_s* b, bmath_vf3_s* r )
+{
+    ASSERT( a->size == b->size );
+    ASSERT( a->size == r->size );
+    for( uz_t i = 0; i < a->size; i++ ) r->data[ i ] = a->data[ i ] * b->data[ i ];
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_mul_hdm_add( const bmath_vf3_s* a, const bmath_vf3_s* b, const bmath_vf3_s* c, bmath_vf3_s* r )
+{
+    ASSERT( a->size == b->size );
+    ASSERT( a->size == c->size );
+    ASSERT( a->size == r->size );
+    for( uz_t i = 0; i < a->size; i++ ) r->data[ i ] = a->data[ i ] * b->data[ i ] + c->data[ i ];
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_vf3_s_pmt_mul( const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_s* res )
 {
     if( o == res )
@@ -450,10 +470,19 @@ void bmath_vf3_s_mul_scl( const bmath_vf3_s* o, const f3_t* op, bmath_vf3_s* res
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_vf3_s_mul_scl_f3(  const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res )
+void bmath_vf3_s_mul_scl_f3(  const bmath_vf3_s* o, f3_t s, bmath_vf3_s* r )
 {
-    ASSERT( o->size == res->size );
-    for( uz_t i = 0; i < o->size; i++ ) res->data[ i ] = o->data[ i ] * op;
+    ASSERT( o->size == r->size );
+    for( uz_t i = 0; i < o->size; i++ ) r->data[ i ] = o->data[ i ] * s;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_mul_scl_f3_add( const bmath_vf3_s* o, f3_t s, const bmath_vf3_s* a, bmath_vf3_s* r )
+{
+    ASSERT( o->size == r->size );
+    ASSERT( o->size == a->size );
+    for( uz_t i = 0; i < o->size; i++ ) r->data[ i ] = o->data[ i ] * s + a->data[ i ];
 }
 
 //----------------------------------------------------------------------------------------------------------------------

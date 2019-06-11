@@ -518,6 +518,52 @@ f3_t bmath_mf3_s_fdev_otn( const bmath_mf3_s* o )
 /**********************************************************************************************************************/
 /// initializations; copying; basic matrix operations
 
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_mf3_s_f3_max( const bmath_mf3_s* o )
+{
+    f3_t max = ( o->rows * o->cols > 0 ) ? o->data[ 0 ] : 0;
+
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* oi = o->data + i * o->stride;
+        for( uz_t j = 0; j < o->cols; j++ ) max = f3_max( max, oi[ j ] );
+    }
+
+    return max;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_mf3_s_f3_min( const bmath_mf3_s* o )
+{
+    f3_t min = ( o->rows * o->cols > 0 ) ? o->data[ 0 ] : 0;
+
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* oi = o->data + i * o->stride;
+        for( uz_t j = 0; j < o->cols; j++ ) min = f3_min( min, oi[ j ] );
+    }
+    return min;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_mf3_s_f3_sum( const bmath_mf3_s* o )
+{
+    f3_t sum = 0;
+
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        const f3_t* oi = o->data + i * o->stride;
+        for( uz_t j = 0; j < o->cols; j++ ) sum += oi[ j ];
+    }
+
+    return sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 f3_t bmath_mf3_s_f3_trc( const bmath_mf3_s* o )
 {
     ASSERT( o->cols == o->rows );
@@ -692,6 +738,23 @@ void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bm
         const f3_t* oi = o->data   + o->stride * i;
               f3_t* ri = res->data + res->stride * i;
         for( uz_t j = 0; j < o->cols; j++ ) ri[ j ] = oi[ j ] + ( v1[ i ] * v2[ j ] );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_mf3_s_mul_hdm( const bmath_mf3_s* a, const bmath_mf3_s* b, bmath_mf3_s* r )
+{
+    ASSERT(  bmath_mf3_s_is_equ_size( a, b ) );
+    ASSERT(  bmath_mf3_s_is_equ_size( a, r ) );
+    ASSERT( !bmath_mf3_s_is_folded( r ) );
+
+    for( sz_t i = 0; i < a->rows; i++ )
+    {
+        const f3_t* va = a->data + i * a->stride;
+        const f3_t* vb = b->data + i * b->stride;
+              f3_t* vr = r->data + i * r->stride;
+        for( sz_t j = 0; j < a->cols; j++ ) vr[ j ] = va[ j ] * vb[ j ];
     }
 }
 

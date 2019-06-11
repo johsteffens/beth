@@ -22,6 +22,7 @@
 
 /** Nomenclature
  *  add, zro, neg, sub, mul, mul_vec, sqr, sqr_sub - according to spect_vector
+ *  mul_hdm: C = A o B  (hadamard product == elementwise product)
  *  cnj: conjugation
  *  cpy: copy
  *  cat: catenation
@@ -126,11 +127,17 @@ void bmath_vf3_s_sub_scl( const bmath_vf3_s* o, const f3_t* op, bmath_vf3_s* res
 void bmath_vf3_s_add_scl_f3( const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res );
 void bmath_vf3_s_sub_scl_f3( const bmath_vf3_s* o, f3_t op, bmath_vf3_s* res );
 
+/// hadamard product: a o b [+ c] -> r  (elementwise)
+void bmath_vf3_s_mul_hdm(     const bmath_vf3_s* a, const bmath_vf3_s* b,                       bmath_vf3_s* r );
+void bmath_vf3_s_mul_hdm_add( const bmath_vf3_s* a, const bmath_vf3_s* b, const bmath_vf3_s* c, bmath_vf3_s* r );
+
 void bmath_vf3_s_pmt_mul(     const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_s* res ); // y = P   * x ; y_p[k] = x_k
 void bmath_vf3_s_pmt_htp_mul( const bmath_vf3_s* o, const bmath_pmt_s* p, bmath_vf3_s* res ); // y = P^T * x ; y_k = x_p[k]
 
+void bmath_vf3_s_mul_scl_f3(     const bmath_vf3_s* o, f3_t s,                       bmath_vf3_s* r ); // o * b     --> r
+void bmath_vf3_s_mul_scl_f3_add( const bmath_vf3_s* o, f3_t s, const bmath_vf3_s* a, bmath_vf3_s* r ); // o * b + a --> r
+
 void bmath_vf3_s_mul_scl(    const bmath_vf3_s* o, const f3_t* op,        bmath_vf3_s* res  );
-void bmath_vf3_s_mul_scl_f3( const bmath_vf3_s* o, f3_t scl2, bmath_vf3_s* res );
 void bmath_vf3_s_mul_f3(     const bmath_vf3_s* o, f3_t scl2, bmath_vf3_s* res ); // same as bmath_vf3_s_mul_scl_f3
 f3_t bmath_vf3_s_f3_mul_vec( const bmath_vf3_s* o, const bmath_vf3_s* vec2 );
 f3_t bmath_vf3_s_f3_sqr(     const bmath_vf3_s* o );
