@@ -54,13 +54,13 @@ BETH_PRECODE( badapt_guide )
 BCORE_FORWARD_OBJECT( badapt_progress_s );
 BETH_PRECODE( badapt_training_state )
 #ifdef BETH_PRECODE_SECTION
-    feature 'a' void set_adaptive( mutable, badapt_adaptive* adaptive );
+    feature 'a' void set_adaptive( mutable, const badapt_adaptive* adaptive );
     feature 'a' badapt_adaptive* get_adaptive( const );
 
-    feature 'a' void set_supplier( mutable, badapt_supplier* supplier );
+    feature 'a' void set_supplier( mutable, const badapt_supplier* supplier );
     feature 'a' badapt_supplier* get_supplier( const );
 
-    feature 'a' void set_progress( mutable, badapt_progress_s* progress );
+    feature 'a' void set_progress( mutable, const badapt_progress_s* progress );
     feature 'a' badapt_progress_s* get_progress( const );
 
     feature 'a' void set_guide( mutable, badapt_guide* guide );
@@ -106,14 +106,14 @@ stamp badapt_training_state_std = aware badapt_training_state
     // training guide; called at each iteration;
     aware badapt_guide => guide = badapt_guide_std_s;
 
-    func : set_adaptive;
-    func : get_adaptive;
-    func : set_supplier;
-    func : get_supplier;
-    func : set_progress;
-    func : get_progress;
-    func : set_guide;
-    func : get_guide;
+    func : set_adaptive = { badapt_adaptive_a_replicate( &o->adaptive, adaptive ); };
+    func : get_adaptive = { return o->adaptive; };
+    func : set_supplier = { badapt_supplier_a_replicate( &o->supplier, supplier ); };
+    func : get_supplier = { return o->supplier; };
+    func : set_progress = { badapt_progress_s_copy( &o->progress, progress ); };
+    func : get_progress = { return ( badapt_progress_s* )&o->progress; };
+    func : set_guide    = { badapt_guide_a_replicate( &o->guide, guide ); };
+    func : get_guide    = { return ( badapt_guide* )o->guide; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,7 +125,9 @@ stamp badapt_guide_std = aware badapt_guide
     // logging
     hidden aware bcore_sink -> log;
 
-    func bcore_inst_call : init_x; // constructor
+    // constructor
+    func bcore_inst_call : init_x = { o->log = bcore_fork( BCORE_STDOUT ); };
+
     func badapt_guide    : callback;
 };
 

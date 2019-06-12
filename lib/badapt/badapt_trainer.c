@@ -33,7 +33,6 @@ badapt_training_state* badapt_trainer_batch_s_create_state( const badapt_trainer
 void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_training_state* training_state )
 {
     ASSERT( *(aware_t*)training_state == TYPEOF_badapt_training_state_std_s );
-//    badapt_training_state_std_s* state = ( badapt_training_state_std_s* )training_state;
 
     ASSERT( badapt_training_state_a_defines_set_supplier( training_state ) );
     ASSERT( badapt_training_state_a_defines_get_adaptive( training_state ) );

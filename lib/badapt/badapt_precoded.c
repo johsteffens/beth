@@ -360,14 +360,15 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_activator_softmax_s )
 
 void badapt_activator_softmax_s_infer( const badapt_activator_softmax_s* o, const bmath_vf3_s* in, bmath_vf3_s* out )
 {
+    f3_t max = bmath_vf3_s_max( in );
     f3_t sum = 0;
     for( sz_t i = 0; i < out->size; i++ )
     {
-        f3_t v = exp( in->data[ i ] );
+        f3_t v = exp( in->data[ i ] - max );
         sum += v;
         out->data[ i ] = v;
     }
-    bmath_vf3_s_mul_f3( out, ( sum > 0 ) ? 1.0 / sum : 0, out );
+    bmath_vf3_s_mul_f3( out, 1.0 / sum, out );
 }
 
 void badapt_activator_softmax_s_bgrad( const badapt_activator_softmax_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out )
@@ -874,7 +875,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 2779569819 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1460416479 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );

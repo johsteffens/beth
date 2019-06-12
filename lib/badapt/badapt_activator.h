@@ -35,7 +35,7 @@ BETH_PRECODE( badapt_activation )
     // ======= (logistic function) ============
     stamp :lgst = aware :
     {
-        func :fx = { return 1.0 / ( 1.0 + exp( -x ) ); };
+        func :fx = { return ( x > -700 ) ? ( 1.0 / ( 1.0 + exp( -x ) ) ) : 0; };
         func :dy = { return y * ( 1.0 - y ); };
     };
 
@@ -54,7 +54,7 @@ BETH_PRECODE( badapt_activation )
     // ======= (tanh) =========================
     stamp :tanh = aware :
     {
-        func :fx = { return 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ); };
+        func :fx = { return ( x < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ) ) : 1.0; };
         func :dy = { return 1.0 - f3_sqr( y ); };
     };
 
@@ -73,7 +73,7 @@ BETH_PRECODE( badapt_activation )
     // ======= (softplus function) ============
     stamp :softplus = aware :
     {
-        func :fx = { return log( 1.0 + exp( x ) ); };
+        func :fx = { return ( x < 700 ) ? log( 1.0 + exp( x ) ) : x; };
         func :dy = { f3_t u = exp( y ); return ( u - 1.0 ) / u; };
     };
 
@@ -186,14 +186,15 @@ BETH_PRECODE( badapt_activator )
     {
         func :infer =
         {
+            f3_t max = bmath_vf3_s_max( in );
             f3_t sum = 0;
             for( sz_t i = 0; i < out->size; i++ )
             {
-                f3_t v = exp( in->data[ i ] );
+                f3_t v = exp( in->data[ i ] - max );
                 sum += v;
                 out->data[ i ] = v;
             }
-            bmath_vf3_s_mul_f3( out, ( sum > 0 ) ? 1.0 / sum : 0, out );
+            bmath_vf3_s_mul_f3( out, 1.0 / sum, out );
         };
 
         func :bgrad =

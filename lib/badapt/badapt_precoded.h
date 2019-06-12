@@ -252,7 +252,7 @@
   #define BETH_EXPAND_ITEM_badapt_activation_lgst_s \
     BCORE_DECLARE_OBJECT( badapt_activation_lgst_s ) \
       {aware_t _;}; \
-    static inline f3_t badapt_activation_lgst_s_fx( const badapt_activation_lgst_s* o, f3_t x ){ return 1.0 / ( 1.0 + exp( -x ) ); } \
+    static inline f3_t badapt_activation_lgst_s_fx( const badapt_activation_lgst_s* o, f3_t x ){ return ( x > -700 ) ? ( 1.0 / ( 1.0 + exp( -x ) ) ) : 0; } \
     static inline f3_t badapt_activation_lgst_s_dy( const badapt_activation_lgst_s* o, f3_t y ){ return y * ( 1.0 - y ); }
   #define TYPEOF_badapt_activation_lgst_hard_s 1657353435
   #define BETH_EXPAND_ITEM_badapt_activation_lgst_hard_s \
@@ -270,7 +270,7 @@
   #define BETH_EXPAND_ITEM_badapt_activation_tanh_s \
     BCORE_DECLARE_OBJECT( badapt_activation_tanh_s ) \
       {aware_t _;}; \
-    static inline f3_t badapt_activation_tanh_s_fx( const badapt_activation_tanh_s* o, f3_t x ){ return 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ); } \
+    static inline f3_t badapt_activation_tanh_s_fx( const badapt_activation_tanh_s* o, f3_t x ){ return ( x < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ) ) : 1.0; } \
     static inline f3_t badapt_activation_tanh_s_dy( const badapt_activation_tanh_s* o, f3_t y ){ return 1.0 - f3_sqr( y ); }
   #define TYPEOF_badapt_activation_tanh_hard_s 873661470
   #define BETH_EXPAND_ITEM_badapt_activation_tanh_hard_s \
@@ -288,7 +288,7 @@
   #define BETH_EXPAND_ITEM_badapt_activation_softplus_s \
     BCORE_DECLARE_OBJECT( badapt_activation_softplus_s ) \
       {aware_t _;}; \
-    static inline f3_t badapt_activation_softplus_s_fx( const badapt_activation_softplus_s* o, f3_t x ){ return log( 1.0 + exp( x ) ); } \
+    static inline f3_t badapt_activation_softplus_s_fx( const badapt_activation_softplus_s* o, f3_t x ){ return ( x < 700 ) ? log( 1.0 + exp( x ) ) : x; } \
     static inline f3_t badapt_activation_softplus_s_dy( const badapt_activation_softplus_s* o, f3_t y ){ f3_t u = exp( y ); return ( u - 1.0 ) / u; }
   #define TYPEOF_badapt_activation_relu_s 708121501
   #define BETH_EXPAND_ITEM_badapt_activation_relu_s \
@@ -814,11 +814,11 @@
 #define TYPEOF_badapt_training_state_s 3622237734
 #define BETH_EXPAND_GROUP_badapt_training_state \
   BCORE_FORWARD_OBJECT( badapt_training_state ); \
-  typedef void (*badapt_training_state_set_adaptive)( badapt_training_state* o, badapt_adaptive* adaptive ); \
+  typedef void (*badapt_training_state_set_adaptive)( badapt_training_state* o, const badapt_adaptive* adaptive ); \
   typedef badapt_adaptive* (*badapt_training_state_get_adaptive)( const badapt_training_state* o ); \
-  typedef void (*badapt_training_state_set_supplier)( badapt_training_state* o, badapt_supplier* supplier ); \
+  typedef void (*badapt_training_state_set_supplier)( badapt_training_state* o, const badapt_supplier* supplier ); \
   typedef badapt_supplier* (*badapt_training_state_get_supplier)( const badapt_training_state* o ); \
-  typedef void (*badapt_training_state_set_progress)( badapt_training_state* o, badapt_progress_s* progress ); \
+  typedef void (*badapt_training_state_set_progress)( badapt_training_state* o, const badapt_progress_s* progress ); \
   typedef badapt_progress_s* (*badapt_training_state_get_progress)( const badapt_training_state* o ); \
   typedef void (*badapt_training_state_set_guide)( badapt_training_state* o, badapt_guide* guide ); \
   typedef badapt_guide* (*badapt_training_state_get_guide)( const badapt_training_state* o ); \
@@ -838,15 +838,15 @@
   static inline badapt_training_state* badapt_training_state_a_clone( const badapt_training_state* o ) { return ( badapt_training_state* )bcore_inst_a_clone( ( bcore_inst* )o ); } \
   static inline void badapt_training_state_a_discard( badapt_training_state* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); } \
   static inline void badapt_training_state_a_replicate( badapt_training_state** o, const badapt_training_state* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); } \
-  static inline void badapt_training_state_a_set_adaptive( badapt_training_state* o, badapt_adaptive* adaptive ) { badapt_training_state_s_get_aware( o )->set_adaptive( o, adaptive ); } \
+  static inline void badapt_training_state_a_set_adaptive( badapt_training_state* o, const badapt_adaptive* adaptive ) { badapt_training_state_s_get_aware( o )->set_adaptive( o, adaptive ); } \
   static inline bl_t badapt_training_state_a_defines_set_adaptive( const badapt_training_state* o ) { return badapt_training_state_s_get_aware( o )->set_adaptive != NULL; } \
   static inline badapt_adaptive* badapt_training_state_a_get_adaptive( const badapt_training_state* o ) { return badapt_training_state_s_get_aware( o )->get_adaptive( o ); } \
   static inline bl_t badapt_training_state_a_defines_get_adaptive( const badapt_training_state* o ) { return badapt_training_state_s_get_aware( o )->get_adaptive != NULL; } \
-  static inline void badapt_training_state_a_set_supplier( badapt_training_state* o, badapt_supplier* supplier ) { badapt_training_state_s_get_aware( o )->set_supplier( o, supplier ); } \
+  static inline void badapt_training_state_a_set_supplier( badapt_training_state* o, const badapt_supplier* supplier ) { badapt_training_state_s_get_aware( o )->set_supplier( o, supplier ); } \
   static inline bl_t badapt_training_state_a_defines_set_supplier( const badapt_training_state* o ) { return badapt_training_state_s_get_aware( o )->set_supplier != NULL; } \
   static inline badapt_supplier* badapt_training_state_a_get_supplier( const badapt_training_state* o ) { return badapt_training_state_s_get_aware( o )->get_supplier( o ); } \
   static inline bl_t badapt_training_state_a_defines_get_supplier( const badapt_training_state* o ) { return badapt_training_state_s_get_aware( o )->get_supplier != NULL; } \
-  static inline void badapt_training_state_a_set_progress( badapt_training_state* o, badapt_progress_s* progress ) { badapt_training_state_s_get_aware( o )->set_progress( o, progress ); } \
+  static inline void badapt_training_state_a_set_progress( badapt_training_state* o, const badapt_progress_s* progress ) { badapt_training_state_s_get_aware( o )->set_progress( o, progress ); } \
   static inline bl_t badapt_training_state_a_defines_set_progress( const badapt_training_state* o ) { return badapt_training_state_s_get_aware( o )->set_progress != NULL; } \
   static inline badapt_progress_s* badapt_training_state_a_get_progress( const badapt_training_state* o ) { return badapt_training_state_s_get_aware( o )->get_progress( o ); } \
   static inline bl_t badapt_training_state_a_defines_get_progress( const badapt_training_state* o ) { return badapt_training_state_s_get_aware( o )->get_progress != NULL; } \
@@ -891,19 +891,19 @@
   #define BETH_EXPAND_ITEM_badapt_training_state_std_s \
     BCORE_DECLARE_OBJECT( badapt_training_state_std_s ) \
       {aware_t _;badapt_progress_s progress;badapt_adaptive* adaptive;badapt_supplier* supplier;badapt_guide* guide;}; \
-    void badapt_training_state_std_s_set_adaptive( badapt_training_state_std_s* o, badapt_adaptive* adaptive ); \
-    badapt_adaptive* badapt_training_state_std_s_get_adaptive( const badapt_training_state_std_s* o ); \
-    void badapt_training_state_std_s_set_supplier( badapt_training_state_std_s* o, badapt_supplier* supplier ); \
-    badapt_supplier* badapt_training_state_std_s_get_supplier( const badapt_training_state_std_s* o ); \
-    void badapt_training_state_std_s_set_progress( badapt_training_state_std_s* o, badapt_progress_s* progress ); \
-    badapt_progress_s* badapt_training_state_std_s_get_progress( const badapt_training_state_std_s* o ); \
-    void badapt_training_state_std_s_set_guide( badapt_training_state_std_s* o, badapt_guide* guide ); \
-    badapt_guide* badapt_training_state_std_s_get_guide( const badapt_training_state_std_s* o );
+    static inline void badapt_training_state_std_s_set_adaptive( badapt_training_state_std_s* o, const badapt_adaptive* adaptive ){ badapt_adaptive_a_replicate( &o->adaptive, adaptive ); } \
+    static inline badapt_adaptive* badapt_training_state_std_s_get_adaptive( const badapt_training_state_std_s* o ){ return o->adaptive; } \
+    static inline void badapt_training_state_std_s_set_supplier( badapt_training_state_std_s* o, const badapt_supplier* supplier ){ badapt_supplier_a_replicate( &o->supplier, supplier ); } \
+    static inline badapt_supplier* badapt_training_state_std_s_get_supplier( const badapt_training_state_std_s* o ){ return o->supplier; } \
+    static inline void badapt_training_state_std_s_set_progress( badapt_training_state_std_s* o, const badapt_progress_s* progress ){ badapt_progress_s_copy( &o->progress, progress ); } \
+    static inline badapt_progress_s* badapt_training_state_std_s_get_progress( const badapt_training_state_std_s* o ){ return ( badapt_progress_s* )&o->progress; } \
+    static inline void badapt_training_state_std_s_set_guide( badapt_training_state_std_s* o, badapt_guide* guide ){ badapt_guide_a_replicate( &o->guide, guide ); } \
+    static inline badapt_guide* badapt_training_state_std_s_get_guide( const badapt_training_state_std_s* o ){ return ( badapt_guide* )o->guide; }
   #define TYPEOF_badapt_guide_std_s 1442673228
   #define BETH_EXPAND_ITEM_badapt_guide_std_s \
     BCORE_DECLARE_OBJECT( badapt_guide_std_s ) \
       {aware_t _;f3_t annealing_factor;bcore_sink* log;}; \
-    void badapt_guide_std_s_init_x( badapt_guide_std_s* o ); \
+    static inline void badapt_guide_std_s_init_x( badapt_guide_std_s* o ){ o->log = bcore_fork( BCORE_STDOUT ); } \
     bl_t badapt_guide_std_s_callback( const badapt_guide_std_s* o, badapt_training_state* state );
 #define BETH_EXPAND_GROUP_badapt_training_objects \
   BETH_EXPAND_ITEM_badapt_progress_s \
