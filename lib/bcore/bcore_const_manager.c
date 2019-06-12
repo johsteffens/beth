@@ -17,7 +17,10 @@
 #include "bcore_tbman.h"
 #include "bcore_hmap_tp_sr.h"
 
-static bcore_hmap_tp_sr_s* hmap_g = NULL;
+static bcore_hmap_tp_sr_s* hmap_sr_g = NULL; // for general objects
+static bcore_hmap_tp_sr_s* hmap_st_g = NULL; // for dedicated strings
+static bcore_mutex_s*     mutex_st_g = NULL; // for dedicated strings
+
 
 /**********************************************************************************************************************/
 
@@ -25,9 +28,9 @@ static bcore_hmap_tp_sr_s* hmap_g = NULL;
 
 void bcore_const_t_set_d( tp_t key, tp_t t, vd_t v )
 {
-    ASSERT( hmap_g );
+    assert( hmap_sr_g );
     if( bcore_const_exists( key ) ) ERR_fa( "Key '#<sc_t>' (#<tp_t>) already exists.", ifnameof( key ), key );
-    bcore_hmap_tp_sr_s_set( hmap_g, key, sr_tsd( t, v ) );
+    bcore_hmap_tp_sr_s_set( hmap_sr_g, key, sr_tsd( t, v ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -41,9 +44,9 @@ void bcore_const_a_set_d( tp_t key, vd_t v )
 
 void bcore_const_x_set_d( tp_t key, sr_s v )
 {
-    ASSERT( hmap_g );
+    assert( hmap_sr_g );
     if( bcore_const_exists( key ) ) ERR_fa( "Key '#<sc_t>' (#<tp_t>) already exists.", ifnameof( key ), key );
-    bcore_hmap_tp_sr_s_set( hmap_g, key, v );
+    bcore_hmap_tp_sr_s_set( hmap_sr_g, key, v );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -71,14 +74,14 @@ void bcore_const_x_set_c( tp_t key, sr_s v )
 
 void bcore_const_remove( tp_t key )
 {
-    sr_down( bcore_hmap_tp_sr_s_remove( hmap_g, key ) );
+    sr_down( bcore_hmap_tp_sr_s_remove( hmap_sr_g, key ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 vc_t bcore_const_get_o( tp_t key )
 {
-    const sr_s* sr = bcore_hmap_tp_sr_s_get( hmap_g, key );
+    const sr_s* sr = bcore_hmap_tp_sr_s_get( hmap_sr_g, key );
     return ( sr ) ? sr->o : NULL;
 }
 
@@ -86,7 +89,7 @@ vc_t bcore_const_get_o( tp_t key )
 
 sr_s bcore_const_get_x( tp_t key )
 {
-    const sr_s* sr = bcore_hmap_tp_sr_s_get( hmap_g, key );
+    const sr_s* sr = bcore_hmap_tp_sr_s_get( hmap_sr_g, key );
     return ( sr ) ? sr_pwc( sr->p, sr->o ) : sr_null();
 }
 
@@ -94,7 +97,7 @@ sr_s bcore_const_get_x( tp_t key )
 
 const sr_s* bcore_const_get_r( tp_t key )
 {
-    return bcore_hmap_tp_sr_s_get( hmap_g, key );
+    return bcore_hmap_tp_sr_s_get( hmap_sr_g, key );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -133,14 +136,91 @@ const sr_s* bcore_const_vget_r( tp_t key, tp_t type )
 
 bl_t bcore_const_exists( tp_t key )
 {
-    return bcore_hmap_tp_sr_s_exists( hmap_g, key );
+    return bcore_hmap_tp_sr_s_exists( hmap_sr_g, key );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/**********************************************************************************************************************/
+/// Dedicated Strings
+
+//----------------------------------------------------------------------------------------------------------------------
+
+tp_t bcore_const_string_set_st_d( st_s* string )
+{
+    tp_t key = typeof( string->sc );
+    bcore_mutex_s_lock( mutex_st_g );
+    if( bcore_hmap_tp_sr_s_exists( hmap_st_g, key ) )
+    {
+        st_s* st = bcore_hmap_tp_sr_s_get( hmap_st_g, key )->o;
+        if( !st_s_equal_st( st, string ) )
+        {
+            bcore_mutex_s_unlock( mutex_st_g );
+            ERR_fa( "Collision: Strings '#<sc_t>' and '#<sc_t>' produce the same key '#<tp_t>'.", string, st->sc, key );
+        }
+        st_s_discard( string );
+    }
+    else
+    {
+        bcore_hmap_tp_sr_s_set( hmap_st_g, key, sr_asd( string ) );
+    }
+    bcore_mutex_s_unlock( mutex_st_g );
+    return key;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+tp_t bcore_const_string_set_st_c( const st_s* string )
+{
+    return bcore_const_string_set_st_d( st_s_clone( string ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+tp_t bcore_const_string_set_sc( sc_t string )
+{
+    return bcore_const_string_set_st_d( st_s_create_sc( string ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sc_t bcore_const_string_get_sc( tp_t key )
+{
+    bcore_mutex_s_lock( mutex_st_g );
+    sr_s* sr = bcore_hmap_tp_sr_s_get( hmap_st_g, key );
+    sc_t  sc = ( sr ) ? ( ( st_s* )sr->o )->sc : NULL;
+    bcore_mutex_s_unlock( mutex_st_g );
+    return sc;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+const st_s* bcore_const_string_get_st( tp_t key )
+{
+    bcore_mutex_s_lock( mutex_st_g );
+    sr_s* sr = bcore_hmap_tp_sr_s_get( hmap_st_g, key );
+    st_s* st = ( sr ) ? sr->o : NULL;
+    bcore_mutex_s_unlock( mutex_st_g );
+    return st;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_const_string_exists( tp_t key )
+{
+    bcore_mutex_s_lock( mutex_st_g );
+    bl_t bl = bcore_hmap_tp_sr_s_exists( hmap_st_g, key );
+    bcore_mutex_s_unlock( mutex_st_g );
+    return bl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
 sz_t bcore_const_size()
 {
-    return bcore_hmap_tp_sr_s_keys( hmap_g );
+    return bcore_hmap_tp_sr_s_keys( hmap_sr_g ) + bcore_hmap_tp_sr_s_keys( hmap_st_g );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -154,7 +234,10 @@ vd_t bcore_const_manager_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init0:
         {
-            hmap_g = bcore_hmap_tp_sr_s_create();
+            hmap_sr_g = bcore_hmap_tp_sr_s_create();
+            hmap_st_g = bcore_hmap_tp_sr_s_create();
+            mutex_st_g = bcore_mutex_s_create();
+
         }
         break;
 
@@ -174,15 +257,21 @@ vd_t bcore_const_manager_signal_handler( const bcore_signal_s* o )
             {
                 uz_t count = bcore_const_size();
                 uz_t space = bcore_tbman_total_granted_space();
-                bcore_hmap_tp_sr_s_discard( hmap_g );
+                bcore_hmap_tp_sr_s_discard( hmap_sr_g );
+                bcore_hmap_tp_sr_s_discard( hmap_st_g );
+                bcore_mutex_s_discard( mutex_st_g );
                 space -= bcore_tbman_total_granted_space();
                 bcore_msg( "  const manager ....... % 6zu (by % 4zu constants    )\n", space, count );
             }
             else
             {
-                bcore_hmap_tp_sr_s_discard( hmap_g );
+                bcore_hmap_tp_sr_s_discard( hmap_sr_g );
+                bcore_hmap_tp_sr_s_discard( hmap_st_g );
+                bcore_mutex_s_discard( mutex_st_g );
             }
-            hmap_g = NULL;
+            hmap_sr_g = NULL;
+            hmap_st_g = NULL;
+            mutex_st_g = NULL;
         }
         break;
 

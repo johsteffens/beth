@@ -13,11 +13,15 @@
  *  limitations under the License.
  */
 
-/** Associative storage and manager for (lock-free) global constants.
-    Global constants are objects created during the init-signal cycle and
+/** Associative storage and manager for (lock-free) global constants and (lock-secured) strings.
+    Global general constants are objects created during a init-signal and
     destroyed during the down-signal cycle of a program.
     Between these cycles, they are treated constant and never modified,
     added or removed. Therefore concurrent read-access can be kept lock-free.
+
+    String constants is a separate concurrent dedicated manager, which is lock-secured
+    and memory conservative. String constants can be registered and used concurrently anywhere
+    in the program.
  */
 
 #ifndef BCORE_CONST_MANAGER_H
@@ -27,6 +31,7 @@
 #include "bcore_signal.h"
 
 /**********************************************************************************************************************/
+/// Global general constants
 
 /** Set function (Use only during init or down cycles)
   * Defining an existing key causes error and abort.
@@ -54,6 +59,21 @@ const sr_s* bcore_const_vget_r( tp_t key, tp_t type );
 
 /// Checks existence
 bl_t bcore_const_exists( tp_t key );
+
+/**********************************************************************************************************************/
+/** String constants
+ *  Dedicated string constants are kept in a separate map and are keyed by the canonic string hash (via typeof( <string> ))
+ *  String registration/access is concurrent (lock-secured) an can be used anywhere;
+ *  Strings are tested for collisions.
+ */
+tp_t        bcore_const_string_set_sc(          sc_t string ); // returns key; string collision tested and copied.
+tp_t        bcore_const_string_set_st_c( const st_s* string ); // returns key; string collision tested and copied.
+tp_t        bcore_const_string_set_st_d(       st_s* string ); // returns key; string collision tested; assumes ownership
+sc_t        bcore_const_string_get_sc( tp_t key    ); // retuns NULL if not existing
+const st_s* bcore_const_string_get_st( tp_t key    ); // retuns NULL if not existing
+bl_t        bcore_const_string_exists( tp_t key    );
+
+/**********************************************************************************************************************/
 
 /// Number of registered constants
 sz_t bcore_const_size();
