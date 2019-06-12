@@ -28,6 +28,7 @@
 #include "bcore_sinks.h"
 #include "bcore_txt_ml.h"
 #include "bcore_sc.h"
+#include "bcore_const_manager.h"
 
 /**********************************************************************************************************************/
 
@@ -477,7 +478,6 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
             bcore_source_r_parse_fa( &src, "#name #?':' ", type_name, &extend_type_name );
         }
 
-
         if( bcore_source_r_parse_bl_fa( &src, "#?'*' " ) )
         {
             f_link = true;
@@ -676,6 +676,15 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
                     }
                     break;
 
+                    case TYPEOF_sc_t:
+                    case TYPEOF_st_s:
+                    {
+                        st_s* string = st_s_create();
+                        bcore_source_r_parse_fa( &src, " #string", string );
+                        o->default_tp = bcore_const_string_set_st_d( string ); // thread and collision safe
+                    }
+                    break;
+
                     default:
                     {
                         if( o->flags.f_fp ) // assume registered feature
@@ -705,6 +714,24 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
                         {
                             bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) );
                         }
+                    }
+                }
+            }
+            else if( o->caps == BCORE_CAPS_LINK_STATIC )
+            {
+                switch( o->type )
+                {
+                    case TYPEOF_st_s:
+                    {
+                        st_s* string = st_s_create();
+                        bcore_source_r_parse_fa( &src, " #string", string );
+                        o->default_tp = bcore_const_string_set_st_d( string ); // thread and collision safe
+                    }
+                    break;
+
+                    default:
+                    {
+                        bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) );
                     }
                 }
             }
@@ -755,8 +782,9 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
             else
             {
                 bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nAssignment of default value possible for:\n"
-                                                   "  - Single solid static nesting.\n"
-                                                   "  - Aware link nesting (default must be an aware type with reflection).\n"
+                                                   "  - single solid static nesting\n"
+                                                   "  - strings\n"
+                                                   "  - aware link nesting (default must be an aware type with reflection)\n"
                                                    "other capsulations cannot receive a default value.", ifnameof( parent_type ) );
             }
         }

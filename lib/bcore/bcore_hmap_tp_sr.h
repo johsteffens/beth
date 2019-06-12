@@ -24,6 +24,10 @@
 /** Hashmap using tp_t as key and sr_s as value.
  *  (See bcore_hmap.h for algorithmic details)
  *  This version uses fixed internal hash functions and supports generic perspectives.
+ *
+ *  Data persistence during rehashing:
+ *  The memory location of the referenced object does not change;
+ *  the location of the sr_s-instance does change;
  */
 
 /**********************************************************************************************************************/

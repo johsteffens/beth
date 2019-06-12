@@ -22,7 +22,9 @@
 #include "bcore_spect_interpreter.h"
 #include "bcore_tp_fastmap.h"
 #include "bcore_arr.h"
+#include "bcore_sc.h"
 #include "bcore_spect_inst_call.h"
+#include "bcore_const_manager.h"
 
 /**********************************************************************************************************************/
 
@@ -217,6 +219,8 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
                         case TYPEOF_tp_t: *( tp_t* )dst_obj = self_item->default_tp; break;
                         case TYPEOF_bl_t: *( bl_t* )dst_obj = self_item->default_bl; break;
                         case TYPEOF_offset_t: *( offset_t* )dst_obj = self_item->default_uz; break;
+                        case TYPEOF_sc_t: *( sc_t* )dst_obj = bcore_const_string_get_sc( self_item->default_tp ); break;
+                        case TYPEOF_st_s: st_s_copy( ( st_s* )dst_obj, bcore_const_string_get_st( self_item->default_tp ) ); break;
 
                         case TYPEOF_fp_t: // expect a function registered in function_manager
                         {
@@ -252,10 +256,22 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
             }
             break;
 
-            // only perspectives are initialized
             case BCORE_CAPS_LINK_STATIC:
             {
                 if( self_item->flags.f_spect ) *( vc_t* )dst_obj = bcore_spect_get_typed( self_item->type, p->header.o_type );
+                if( self_item->default_u3 )
+                {
+                    switch( self_item->type )
+                    {
+                        case TYPEOF_st_s: *( st_s** )dst_obj = st_s_clone( bcore_const_string_get_st( self_item->default_tp ) ); break;
+
+                        default:
+                        {
+                            ERR( "Default value not supported for type '%s'", ifnameof( self_item->type ) );
+                        }
+                        break;
+                    }
+                }
             }
             break;
 
@@ -1752,6 +1768,17 @@ static st_s* spect_inst_selftest( void )
         o->str1 = st_s_create_sc( "hello " );
         o->str2 = st_s_create_sc( "world!" );
         bcore_inst_t_discard( typeof( "links_object_s" ), o );
+    }
+
+    // default strings
+    {
+        typedef struct { sc_t str0; st_s* str1; st_s str2; } string_init_object_s;
+        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "string_init_object_s = { sc_t str0 = \"hi\"; st_s => str1 = \"hello\"; st_s str2 = \"world!\"; }", sizeof( string_init_object_s ) ) );
+        string_init_object_s* o = bcore_inst_t_create( typeof( "string_init_object_s" ) );
+        ASSERT( sc_t_equal(     o->str0, "hi" ) );
+        ASSERT( st_s_equal_sc(  o->str1, "hello" ) );
+        ASSERT( st_s_equal_sc( &o->str2, "world!" ) );
+        bcore_inst_t_discard( typeof( "string_init_object_s" ), o );
     }
 
     // fixed size array
