@@ -63,8 +63,32 @@ BETH_PRECODE( badapt_training_state )
     feature 'a' void set_progress( mutable, const badapt_progress_s* progress );
     feature 'a' badapt_progress_s* get_progress( const );
 
-    feature 'a' void set_guide( mutable, badapt_guide* guide );
+    feature 'a' void set_guide( mutable, const badapt_guide* guide );
     feature 'a' badapt_guide* get_guide( const );
+
+    feature 'a' void set_backup_path( mutable, sc_t name );
+    feature 'a' sc_t get_backup_path( const );
+
+    feature 'a' bl_t backup( const ) =
+    {
+        sc_t path = badapt_training_state_a_get_backup_path( o );
+        if( !path[ 0 ] ) return false;
+        st_s* tmp = st_s_create_fa( "#<sc_t>.tmp", path );
+        bcore_bin_ml_a_to_file( o, tmp->sc );
+        bcore_file_rename( tmp->sc, path );
+        st_s_discard( tmp );
+        return true;
+    };
+
+    feature 'a' bl_t recover( mutable ) =
+    {
+        sc_t path = badapt_training_state_a_get_backup_path( o );
+        if( !path || !path[ 0 ]        ) return false;
+        if( !bcore_file_exists( path ) ) return false;
+        bcore_bin_ml_a_from_file( o, path );
+        return true;
+    };
+
 #endif // BETH_PRECODE_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -106,6 +130,8 @@ stamp badapt_training_state_std = aware badapt_training_state
     // training guide; called at each iteration;
     aware badapt_guide => guide = badapt_guide_std_s;
 
+    st_s backup_file_name;
+
     func : set_adaptive = { badapt_adaptive_a_replicate( &o->adaptive, adaptive ); };
     func : get_adaptive = { return o->adaptive; };
     func : set_supplier = { badapt_supplier_a_replicate( &o->supplier, supplier ); };
@@ -114,6 +140,10 @@ stamp badapt_training_state_std = aware badapt_training_state
     func : get_progress = { return ( badapt_progress_s* )&o->progress; };
     func : set_guide    = { badapt_guide_a_replicate( &o->guide, guide ); };
     func : get_guide    = { return ( badapt_guide* )o->guide; };
+    func : set_backup_path = { st_s_copy_sc( &o->backup_file_name, name ); };
+    func : get_backup_path = { return o->backup_file_name.sc; };
+
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

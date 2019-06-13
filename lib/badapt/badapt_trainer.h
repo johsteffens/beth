@@ -53,6 +53,17 @@ stamp badapt_arr_sample_batch = aware bcore_array { badapt_sample_batch_s [] arr
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+stamp badapt_trainer_main = aware bcore_main
+{
+    aware badapt_supplier => problem;
+    aware badapt_builder  => builder;
+    aware badapt_guide    => guide;
+    aware badapt_trainer  => trainer;
+    func : main;
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #endif // BETH_PRECODE_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------

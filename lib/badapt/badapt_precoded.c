@@ -783,8 +783,32 @@ BCORE_DEFINE_SPECT( bcore_inst, badapt_training_state )
     "feature aware badapt_training_state : get_progress;"
     "feature aware badapt_training_state : set_guide;"
     "feature aware badapt_training_state : get_guide;"
+    "feature aware badapt_training_state : set_backup_path;"
+    "feature aware badapt_training_state : get_backup_path;"
+    "feature aware badapt_training_state : backup = badapt_training_state_backup__;"
+    "feature aware badapt_training_state : recover = badapt_training_state_recover__;"
 "}";
 
+
+bl_t badapt_training_state_backup__( const badapt_training_state* o )
+{
+    sc_t path = badapt_training_state_a_get_backup_path( o );
+    if( !path[ 0 ] ) return false;
+    st_s* tmp = st_s_create_fa( "#<sc_t>.tmp", path );
+    bcore_bin_ml_a_to_file( o, tmp->sc );
+    bcore_file_rename( tmp->sc, path );
+    st_s_discard( tmp );
+    return true;
+}
+
+bl_t badapt_training_state_recover__( badapt_training_state* o )
+{
+    sc_t path = badapt_training_state_a_get_backup_path( o );
+    if( !path || !path[ 0 ]        ) return false;
+    if( !bcore_file_exists( path ) ) return false;
+    bcore_bin_ml_a_from_file( o, path );
+    return true;
+}
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_trainer
 
@@ -814,6 +838,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_training_state_std_s )
     "aware badapt_adaptive => adaptive;"
     "aware badapt_supplier => supplier;"
     "aware badapt_guide => guide = badapt_guide_std_s;"
+    "st_s backup_file_name;"
     "func :set_adaptive;"
     "func :get_adaptive;"
     "func :set_supplier;"
@@ -822,6 +847,8 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_training_state_std_s )
     "func :get_progress;"
     "func :set_guide;"
     "func :get_guide;"
+    "func :set_backup_path;"
+    "func :get_backup_path;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_guide_std_s )
@@ -866,6 +893,16 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_arr_sample_batch_s )
     "badapt_sample_batch_s [] arr;"
 "}";
 
+BCORE_DEFINE_OBJECT_INST_P( badapt_trainer_main_s )
+"aware bcore_main"
+"{"
+    "aware badapt_supplier => problem;"
+    "aware badapt_builder => builder;"
+    "aware badapt_guide => guide;"
+    "aware badapt_trainer => trainer;"
+    "func :main;"
+"}";
+
 /**********************************************************************************************************************/
 
 vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
@@ -875,7 +912,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1460416479 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1030022827 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );
@@ -1124,6 +1161,12 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( badapt_training_state_get_progress );
             BCORE_REGISTER_FEATURE( badapt_training_state_set_guide );
             BCORE_REGISTER_FEATURE( badapt_training_state_get_guide );
+            BCORE_REGISTER_FEATURE( badapt_training_state_set_backup_path );
+            BCORE_REGISTER_FEATURE( badapt_training_state_get_backup_path );
+            BCORE_REGISTER_FEATURE( badapt_training_state_backup );
+            BCORE_REGISTER_FEATURE( badapt_training_state_recover );
+            BCORE_REGISTER_FFUNC( badapt_training_state_backup, badapt_training_state_backup__ );
+            BCORE_REGISTER_FFUNC( badapt_training_state_recover, badapt_training_state_recover__ );
             BCORE_REGISTER_SPECT( badapt_training_state );
             BCORE_REGISTER_FEATURE( badapt_trainer_run );
             BCORE_REGISTER_FEATURE( badapt_trainer_create_state );
@@ -1137,6 +1180,8 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( badapt_training_state_get_progress, badapt_training_state_std_s_get_progress );
             BCORE_REGISTER_FFUNC( badapt_training_state_set_guide, badapt_training_state_std_s_set_guide );
             BCORE_REGISTER_FFUNC( badapt_training_state_get_guide, badapt_training_state_std_s_get_guide );
+            BCORE_REGISTER_FFUNC( badapt_training_state_set_backup_path, badapt_training_state_std_s_set_backup_path );
+            BCORE_REGISTER_FFUNC( badapt_training_state_get_backup_path, badapt_training_state_std_s_get_backup_path );
             BCORE_REGISTER_OBJECT( badapt_training_state_std_s );
             BCORE_REGISTER_FFUNC( bcore_inst_call_init_x, badapt_guide_std_s_init_x );
             BCORE_REGISTER_FFUNC( badapt_guide_callback, badapt_guide_std_s_callback );
@@ -1146,6 +1191,8 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( badapt_trainer_batch_s );
             BCORE_REGISTER_OBJECT( badapt_sample_batch_s );
             BCORE_REGISTER_OBJECT( badapt_arr_sample_batch_s );
+            BCORE_REGISTER_FFUNC( bcore_main_main, badapt_trainer_main_s_main );
+            BCORE_REGISTER_OBJECT( badapt_trainer_main_s );
         }
         break;
         default: break;

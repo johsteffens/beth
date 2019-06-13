@@ -73,8 +73,10 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
     }
 
     f3_t val_last_error = 0;
+    f3_t improved = 0;
+    f3_t bias = 0;
 
-    for( ; progress->iteration < o->max_iterations; progress->iteration++ )
+    for( ; progress->iteration <= o->max_iterations; progress->iteration++ )
     {
         f3_t val_error = 0;
         f3_t val_weight = 0;
@@ -103,25 +105,20 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
             badapt_adaptive_a_discard( adaptive_val );
         }
 
-        if( trn_weight > 0 ) trn_error /= trn_weight;
         if( val_weight > 0 ) val_error /= val_weight;
-
-        f3_t improved = 0;
-        f3_t bias = 0;
-
-        if( val_error > 0 &&      trn_error > 0 ) bias = log( val_error ) - log( trn_error );
         if( val_error > 0 && val_last_error > 0 ) improved = log( val_last_error ) - log( val_error );
-
         val_last_error = val_error;
-
-        progress->error    = val_error;
-        progress->improved = improved;
-        progress->bias     = bias;
 
         if( guide )
         {
+            progress->error    = val_error;
+            progress->improved = improved;
+            progress->bias     = bias;
             if( !badapt_guide_a_callback( guide, training_state ) ) break;
         }
+        badapt_training_state_a_backup( training_state );
+
+        if( progress->iteration == o->max_iterations ) break;
 
         for( sz_t fetch_cycle = 0; fetch_cycle < o->fetch_cycles_per_iteration; fetch_cycle++ )
         {
@@ -146,9 +143,56 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
                 }
             }
         }
+
+        if( trn_weight > 0 ) trn_error /= trn_weight;
+        if( val_error > 0 && trn_error > 0 ) bias = log( val_error ) - log( trn_error );
     }
 
     BCORE_LIFE_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// badapt_trainer_main_s
+
+s2_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, const bcore_arr_st_s* args )
+{
+    BCORE_LIFE_INIT();
+
+    bl_t reset = false;
+    BCORE_LIFE_CREATE( st_s, backup_path );
+
+    if( args )
+    {
+        for( sz_t i = 0; i < args->size; i++ )
+        {
+            if( st_s_equal_sc( args->data[ i ], "-reset" ) ) reset = true;
+        }
+
+        if( args->size > 1 )
+        {
+            st_s_push_fa( backup_path, "#<sc_t>.state", args->data[ 1 ]->sc );
+        }
+    }
+
+    badapt_training_state* state = BCORE_LIFE_A_PUSH( badapt_trainer_a_create_state( o->trainer ) );
+    if( badapt_training_state_a_defines_set_backup_path( state ) ) badapt_training_state_a_set_backup_path( state, backup_path->sc );
+    if( !reset && badapt_training_state_a_recover( state ) )
+    {
+        bcore_msg_fa( "state recovered from '#<sc_t>'\n", badapt_training_state_a_get_backup_path( state ) );
+    }
+    else
+    {
+        badapt_supplier_a_setup_builder( o->problem, o->builder );
+        badapt_training_state_a_set_adaptive( state, BCORE_LIFE_A_PUSH( badapt_builder_a_build( o->builder ) ) );
+        badapt_training_state_a_set_supplier( state, o->problem );
+        badapt_training_state_a_set_guide( state, o->guide );
+    }
+
+    badapt_adaptive_a_arc_to_sink( badapt_training_state_a_get_adaptive( state ), BCORE_STDOUT );
+    badapt_trainer_a_run( o->trainer, state );
+    BCORE_LIFE_RETURN( 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
