@@ -23,7 +23,6 @@
 #include "badapt_mlp.h"
 #include "badapt_c1d.h"
 #include "badapt_ern.h"
-#include "badapt_jrn.h"
 
 #include "badapt_training.h"
 #include "badapt_trainer.h"
@@ -53,7 +52,6 @@ vd_t badapt_signal_handler( const bcore_signal_s* o )
             badapt_mlp_signal_handler,
             badapt_c1d_signal_handler,
             badapt_ern_signal_handler,
-            badapt_jrn_signal_handler,
 
             badapt_training_signal_handler,
             badapt_trainer_signal_handler,
