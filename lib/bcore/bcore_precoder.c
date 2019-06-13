@@ -66,7 +66,6 @@ static st_s* create_embedded_string( const st_s* s )
             {
                 st_s_push_char( out, '\\' );
                 st_s_push_char( out, '"' );
-                i++;
             }
         }
         else if( s->data[ i ] == '\n' )
@@ -1005,12 +1004,23 @@ static void bcore_precoder_stamp_s_compile( bcore_precoder_stamp_s* o, bcore_pre
         );
     }
 
-    st_s st_weak = st_weak_st( o->self_source );
-    bcore_self_s* embedded_self = BCORE_LIFE_A_PUSH( bcore_self_s_parse_source( ( bcore_source* )&st_weak, 0, group->name.sc, false ) );
-    if( bcore_self_s_cmp( o->self, embedded_self ) != 0 )
+    // test embedded string
     {
-        bcore_source_a_parse_err_fa( source, "Precoder reflection embedding failed. Embedded code:\n#<sc_t>", o->self_source->sc );
+        st_s* self_source_copy = st_s_clone( o->self_source );
+
+        // remove string escape
+        st_s_replace_sc_sc( self_source_copy, "\\\"", "\"" );
+
+        st_s st_weak = st_weak_st( self_source_copy );
+        bcore_self_s* embedded_self = BCORE_LIFE_A_PUSH( bcore_self_s_parse_source( ( bcore_source* )&st_weak, 0, group->name.sc, false ) );
+        if( bcore_self_s_cmp( o->self, embedded_self ) != 0 )
+        {
+            bcore_source_a_parse_err_fa( source, "Precoder reflection embedding failed. Embedded code:\n#<sc_t>", o->self_source->sc );
+        }
+
+        st_s_discard( self_source_copy );
     }
+
     BCORE_LIFE_DOWN();
 }
 

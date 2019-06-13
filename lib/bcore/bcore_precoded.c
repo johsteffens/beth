@@ -79,6 +79,28 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_inst_call )
 "}";
 
 /**********************************************************************************************************************/
+// source: bcore_main
+#include "bcore_main.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_main
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_main_frame_s )
+"aware bcore_inst"
+"{"
+    "aware bcore_interpreter => interpreter = bcore_txt_ml_interpreter_s;"
+    "bl_t use_first_argument = true;"
+    "sc_t local_file = \"beth.config\";"
+    "sc_t global_file;"
+"}";
+
+BCORE_DEFINE_SPECT( bcore_inst, bcore_main )
+"{"
+    "bcore_spect_header_s header;"
+    "feature strict bcore_main : main;"
+"}";
+
+/**********************************************************************************************************************/
 
 vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
 {
@@ -87,7 +109,7 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 1518483729 ) );
+            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 2802606080 ) );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_setup );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_to_stdout );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_get_size );
@@ -110,6 +132,9 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( bcore_inst_call_copy_e );
             BCORE_REGISTER_NAME( bcore_inst_call_copy_x );
             BCORE_REGISTER_SPECT( bcore_inst_call );
+            BCORE_REGISTER_FEATURE( bcore_main_main );
+            BCORE_REGISTER_OBJECT( bcore_main_frame_s );
+            BCORE_REGISTER_SPECT( bcore_main );
         }
         break;
         default: break;

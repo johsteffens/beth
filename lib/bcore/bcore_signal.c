@@ -57,6 +57,7 @@
 #include "bcore_precoded.h"
 #include "bcore_precoder_sample.h"
 #include "bcore_spect_inst_call.h"
+#include "bcore_main.h"
 
 BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
 
@@ -139,6 +140,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_precoded_signal_handler,
         bcore_precoder_sample_signal_handler,
         bcore_spect_inst_call_signal_handler,
+        bcore_main_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );

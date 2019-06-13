@@ -127,6 +127,31 @@
   static inline bl_t bcore_inst_call_p_defines_copy_x( const bcore_inst_call_s* __p ) { return __p->copy_x != NULL; }
 
 /**********************************************************************************************************************/
+// source: bcore_main
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_main
+
+#define TYPEOF_bcore_main 117506434
+#define TYPEOF_bcore_main_s 3641086716
+  #define TYPEOF_bcore_main_frame_s 3517913134
+  #define BETH_EXPAND_ITEM_bcore_main_frame_s \
+    BCORE_DECLARE_OBJECT( bcore_main_frame_s ) \
+      {aware_t _;bcore_interpreter* interpreter;bl_t use_first_argument;sc_t local_file;sc_t global_file;};
+#define BETH_EXPAND_GROUP_bcore_main \
+  BCORE_FORWARD_OBJECT( bcore_main ); \
+  typedef s2_t (*bcore_main_main)( bcore_main* o, const bcore_arr_st_s* args ); \
+  BCORE_DECLARE_SPECT( bcore_main ) \
+  { \
+      bcore_spect_header_s header; \
+      bcore_main_main main; \
+  }; \
+  static inline bcore_main* bcore_main_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_main, t ); return ( bcore_main* )bcore_inst_t_create( t ); } \
+  static inline s2_t bcore_main_r_main( const sr_s* o, const bcore_arr_st_s* args ) { ASSERT( !sr_s_is_const( o ) ); return ( (bcore_main_s*)ch_spect_p( o->p, TYPEOF_bcore_main_s ) )->main( o->o, args ); } \
+  static inline bl_t bcore_main_r_defines_main( const sr_s* o ) { return true; } \
+  BETH_EXPAND_ITEM_bcore_main_frame_s
+
+/**********************************************************************************************************************/
 
 vd_t bcore_precoded_signal_handler( const bcore_signal_s* o );
 
