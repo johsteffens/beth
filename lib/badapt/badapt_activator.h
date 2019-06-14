@@ -97,16 +97,6 @@ BETH_PRECODE( badapt_activation )
 BETH_PRECODE( badapt_activator )
 #ifdef BETH_PRECODE_SECTION
 
-    /// resets trainable components with given seed
-    feature 'a' void reset( mutable ) = {};
-
-    /// should be called once before use
-    feature 'a' void setup( mutable ) = {};
-
-    /// vector size
-    feature 'a' sz_t get_size( const )              = { return 0; };
-    feature 'a' void set_size( mutable, sz_t size ) = {};
-
     /// activation function
     feature 'a' const badapt_activation* get_activation( const )                    = { return NULL; };
     feature 'a' void set_activation( mutable, const badapt_activation* activation ) = {};
@@ -117,17 +107,6 @@ BETH_PRECODE( badapt_activator )
     /// fast concurrent gradient backpropagation (no changing of state)
     /// grad_in and grad_out may refer to the same object
     feature strict 'a' void bgrad( const, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
-
-    /// adaptation step after last minfer for given gradient; grad_in can be NULL
-    /// grad_in and grad_out may refer to the same object
-    feature strict 'a' void adapt( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon );
-
-    /// like adaptation step bt changes of weights is deferred (accumulated) until adapt_apply is called
-    /// grad_in and grad_out may refer to the same object
-    feature strict 'a' void adapt_defer( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
-
-    /// applies accumulated deferred adaptations
-    feature 'a' void adapt_apply( mutable, f3_t epsilon ) = {};
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -159,8 +138,6 @@ BETH_PRECODE( badapt_activator )
 
         func :set_activation = { badapt_activation_a_replicate( &o->activation, activation ); };
         func :get_activation = { return o->activation; };
-        func :adapt          = { badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out ); };
-        func :adapt_defer    = { badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out ); };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -189,9 +166,6 @@ BETH_PRECODE( badapt_activator )
                 grad_in->data[ i ] = out->data[ i ] * ( grad_out->data[ i ] - dpd );
             }
         };
-
-        func :adapt       = { badapt_activator_softmax_s_bgrad( o, grad_in, grad_out, out ); };
-        func :adapt_defer = { badapt_activator_softmax_s_bgrad( o, grad_in, grad_out, out ); };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

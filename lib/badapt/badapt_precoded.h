@@ -349,17 +349,13 @@
     void badapt_activator_plain_s_infer( const badapt_activator_plain_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
     void badapt_activator_plain_s_bgrad( const badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
     static inline void badapt_activator_plain_s_set_activation( badapt_activator_plain_s* o, const badapt_activation* activation ){ badapt_activation_a_replicate( &o->activation, activation ); } \
-    static inline const badapt_activation* badapt_activator_plain_s_get_activation( const badapt_activator_plain_s* o ){ return o->activation; } \
-    static inline void badapt_activator_plain_s_adapt( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon ){ badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out ); } \
-    static inline void badapt_activator_plain_s_adapt_defer( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ){ badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out ); }
+    static inline const badapt_activation* badapt_activator_plain_s_get_activation( const badapt_activator_plain_s* o ){ return o->activation; }
   #define TYPEOF_badapt_activator_softmax_s 3206266268
   #define BETH_EXPAND_ITEM_badapt_activator_softmax_s \
     BCORE_DECLARE_OBJECT( badapt_activator_softmax_s ) \
       {aware_t _;}; \
     void badapt_activator_softmax_s_infer( const badapt_activator_softmax_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
-    void badapt_activator_softmax_s_bgrad( const badapt_activator_softmax_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
-    static inline void badapt_activator_softmax_s_adapt( badapt_activator_softmax_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon ){ badapt_activator_softmax_s_bgrad( o, grad_in, grad_out, out ); } \
-    static inline void badapt_activator_softmax_s_adapt_defer( badapt_activator_softmax_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ){ badapt_activator_softmax_s_bgrad( o, grad_in, grad_out, out ); }
+    void badapt_activator_softmax_s_bgrad( const badapt_activator_softmax_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
   #define TYPEOF_badapt_layer_activator_s 4048593039
   #define BETH_EXPAND_ITEM_badapt_layer_activator_s \
     BCORE_DECLARE_OBJECT( badapt_layer_activator_s ) \
@@ -395,48 +391,22 @@
     }
 #define BETH_EXPAND_GROUP_badapt_activator \
   BCORE_FORWARD_OBJECT( badapt_activator ); \
-  typedef void (*badapt_activator_reset)( badapt_activator* o ); \
-  typedef void (*badapt_activator_setup)( badapt_activator* o ); \
-  typedef sz_t (*badapt_activator_get_size)( const badapt_activator* o ); \
-  typedef void (*badapt_activator_set_size)( badapt_activator* o, sz_t size ); \
   typedef const badapt_activation* (*badapt_activator_get_activation)( const badapt_activator* o ); \
   typedef void (*badapt_activator_set_activation)( badapt_activator* o, const badapt_activation* activation ); \
   typedef void (*badapt_activator_infer)( const badapt_activator* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
   typedef void (*badapt_activator_bgrad)( const badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
-  typedef void (*badapt_activator_adapt)( badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon ); \
-  typedef void (*badapt_activator_adapt_defer)( badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
-  typedef void (*badapt_activator_adapt_apply)( badapt_activator* o, f3_t epsilon ); \
   BCORE_DECLARE_SPECT( badapt_activator ) \
   { \
       bcore_spect_header_s header; \
-      badapt_activator_reset reset; \
-      badapt_activator_setup setup; \
-      badapt_activator_get_size get_size; \
-      badapt_activator_set_size set_size; \
       badapt_activator_get_activation get_activation; \
       badapt_activator_set_activation set_activation; \
       badapt_activator_infer infer; \
       badapt_activator_bgrad bgrad; \
-      badapt_activator_adapt adapt; \
-      badapt_activator_adapt_defer adapt_defer; \
-      badapt_activator_adapt_apply adapt_apply; \
   }; \
   static inline badapt_activator* badapt_activator_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_badapt_activator, t ); return ( badapt_activator* )bcore_inst_t_create( t ); } \
   static inline badapt_activator* badapt_activator_a_clone( const badapt_activator* o ) { return ( badapt_activator* )bcore_inst_a_clone( ( bcore_inst* )o ); } \
   static inline void badapt_activator_a_discard( badapt_activator* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); } \
   static inline void badapt_activator_a_replicate( badapt_activator** o, const badapt_activator* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); } \
-  static inline void badapt_activator_a_reset( badapt_activator* o ) { badapt_activator_s_get_aware( o )->reset( o ); } \
-  static inline bl_t badapt_activator_a_defines_reset( const badapt_activator* o ) { return true; } \
-  static inline void badapt_activator_reset__( badapt_activator* o ) {} \
-  static inline void badapt_activator_a_setup( badapt_activator* o ) { badapt_activator_s_get_aware( o )->setup( o ); } \
-  static inline bl_t badapt_activator_a_defines_setup( const badapt_activator* o ) { return true; } \
-  static inline void badapt_activator_setup__( badapt_activator* o ) {} \
-  static inline sz_t badapt_activator_a_get_size( const badapt_activator* o ) { return badapt_activator_s_get_aware( o )->get_size( o ); } \
-  static inline bl_t badapt_activator_a_defines_get_size( const badapt_activator* o ) { return true; } \
-  static inline sz_t badapt_activator_get_size__( const badapt_activator* o ) { return 0; } \
-  static inline void badapt_activator_a_set_size( badapt_activator* o, sz_t size ) { badapt_activator_s_get_aware( o )->set_size( o, size ); } \
-  static inline bl_t badapt_activator_a_defines_set_size( const badapt_activator* o ) { return true; } \
-  static inline void badapt_activator_set_size__( badapt_activator* o, sz_t size ) {} \
   static inline const badapt_activation* badapt_activator_a_get_activation( const badapt_activator* o ) { return badapt_activator_s_get_aware( o )->get_activation( o ); } \
   static inline bl_t badapt_activator_a_defines_get_activation( const badapt_activator* o ) { return true; } \
   static inline const badapt_activation* badapt_activator_get_activation__( const badapt_activator* o ) { return NULL; } \
@@ -447,13 +417,6 @@
   static inline bl_t badapt_activator_a_defines_infer( const badapt_activator* o ) { return true; } \
   static inline void badapt_activator_a_bgrad( const badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ) { badapt_activator_s_get_aware( o )->bgrad( o, grad_in, grad_out, out ); } \
   static inline bl_t badapt_activator_a_defines_bgrad( const badapt_activator* o ) { return true; } \
-  static inline void badapt_activator_a_adapt( badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon ) { badapt_activator_s_get_aware( o )->adapt( o, grad_in, grad_out, out, epsilon ); } \
-  static inline bl_t badapt_activator_a_defines_adapt( const badapt_activator* o ) { return true; } \
-  static inline void badapt_activator_a_adapt_defer( badapt_activator* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ) { badapt_activator_s_get_aware( o )->adapt_defer( o, grad_in, grad_out, out ); } \
-  static inline bl_t badapt_activator_a_defines_adapt_defer( const badapt_activator* o ) { return true; } \
-  static inline void badapt_activator_a_adapt_apply( badapt_activator* o, f3_t epsilon ) { badapt_activator_s_get_aware( o )->adapt_apply( o, epsilon ); } \
-  static inline bl_t badapt_activator_a_defines_adapt_apply( const badapt_activator* o ) { return true; } \
-  static inline void badapt_activator_adapt_apply__( badapt_activator* o, f3_t epsilon ) {} \
   BETH_EXPAND_ITEM_badapt_activator_plain_s \
   BETH_EXPAND_ITEM_badapt_activator_softmax_s \
   BETH_EXPAND_ITEM_badapt_layer_activator_s \

@@ -232,7 +232,7 @@ void badapt_c1d_s_bgrad( const badapt_c1d_s* o, bmath_vf3_s* grad_in, const bmat
 
         assert( ga.size <= o->max_buffer_size );
 
-        badapt_activator_a_adapt( layer->a, &gb, &gb, b, o->dynamics.epsilon );
+        badapt_activator_a_bgrad( layer->a, &gb, &gb, b );
 
         // Note: "Dangling Elements"
         // Elements in A computed during progression but not influencing loss.
@@ -424,7 +424,6 @@ badapt_adaptive* badapt_builder_c1d_funnel_s_build( const badapt_builder_c1d_fun
         bmath_vf3_s_set_size( &layer->b, layer->kernels * layer->steps );
         bmath_vf3_s_zro( &layer->b );
         layer->a = badapt_activator_a_clone( badapt_arr_layer_activator_s_get_activator( &o->arr_layer_activator, i, layers ) );
-        badapt_activator_a_setup( layer->a );
         max_buffer_size = sz_max( max_buffer_size, layer->input_size );
         max_buffer_size = sz_max( max_buffer_size, layer->kernels * layer->steps );
     }

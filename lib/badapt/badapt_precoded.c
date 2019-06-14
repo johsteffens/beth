@@ -308,8 +308,6 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_activator_plain_s )
     "func :bgrad;"
     "func :set_activation;"
     "func :get_activation;"
-    "func :adapt;"
-    "func :adapt_defer;"
 "}";
 
 void badapt_activator_plain_s_infer( const badapt_activator_plain_s* o, const bmath_vf3_s* in, bmath_vf3_s* out )
@@ -338,8 +336,6 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_activator_softmax_s )
 "{"
     "func :infer;"
     "func :bgrad;"
-    "func :adapt;"
-    "func :adapt_defer;"
 "}";
 
 void badapt_activator_softmax_s_infer( const badapt_activator_softmax_s* o, const bmath_vf3_s* in, bmath_vf3_s* out )
@@ -386,17 +382,10 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_arr_activator_s )
 BCORE_DEFINE_SPECT( bcore_inst, badapt_activator )
 "{"
     "bcore_spect_header_s header;"
-    "feature aware badapt_activator : reset = badapt_activator_reset__;"
-    "feature aware badapt_activator : setup = badapt_activator_setup__;"
-    "feature aware badapt_activator : get_size = badapt_activator_get_size__;"
-    "feature aware badapt_activator : set_size = badapt_activator_set_size__;"
     "feature aware badapt_activator : get_activation = badapt_activator_get_activation__;"
     "feature aware badapt_activator : set_activation = badapt_activator_set_activation__;"
     "feature strict aware badapt_activator : infer;"
     "feature strict aware badapt_activator : bgrad;"
-    "feature strict aware badapt_activator : adapt;"
-    "feature strict aware badapt_activator : adapt_defer;"
-    "feature aware badapt_activator : adapt_apply = badapt_activator_adapt_apply__;"
 "}";
 
 /**********************************************************************************************************************/
@@ -832,7 +821,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1630661007 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1602694434 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );
@@ -937,39 +926,23 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_leaky_relu_s_dy );
             BCORE_REGISTER_OBJECT( badapt_activation_leaky_relu_s );
             BCORE_REGISTER_SPECT( badapt_activation );
-            BCORE_REGISTER_FEATURE( badapt_activator_reset );
-            BCORE_REGISTER_FEATURE( badapt_activator_setup );
-            BCORE_REGISTER_FEATURE( badapt_activator_get_size );
-            BCORE_REGISTER_FEATURE( badapt_activator_set_size );
             BCORE_REGISTER_FEATURE( badapt_activator_get_activation );
             BCORE_REGISTER_FEATURE( badapt_activator_set_activation );
             BCORE_REGISTER_FEATURE( badapt_activator_infer );
             BCORE_REGISTER_FEATURE( badapt_activator_bgrad );
-            BCORE_REGISTER_FEATURE( badapt_activator_adapt );
-            BCORE_REGISTER_FEATURE( badapt_activator_adapt_defer );
-            BCORE_REGISTER_FEATURE( badapt_activator_adapt_apply );
             BCORE_REGISTER_FFUNC( badapt_activator_infer, badapt_activator_plain_s_infer );
             BCORE_REGISTER_FFUNC( badapt_activator_bgrad, badapt_activator_plain_s_bgrad );
             BCORE_REGISTER_FFUNC( badapt_activator_set_activation, badapt_activator_plain_s_set_activation );
             BCORE_REGISTER_FFUNC( badapt_activator_get_activation, badapt_activator_plain_s_get_activation );
-            BCORE_REGISTER_FFUNC( badapt_activator_adapt, badapt_activator_plain_s_adapt );
-            BCORE_REGISTER_FFUNC( badapt_activator_adapt_defer, badapt_activator_plain_s_adapt_defer );
             BCORE_REGISTER_OBJECT( badapt_activator_plain_s );
             BCORE_REGISTER_FFUNC( badapt_activator_infer, badapt_activator_softmax_s_infer );
             BCORE_REGISTER_FFUNC( badapt_activator_bgrad, badapt_activator_softmax_s_bgrad );
-            BCORE_REGISTER_FFUNC( badapt_activator_adapt, badapt_activator_softmax_s_adapt );
-            BCORE_REGISTER_FFUNC( badapt_activator_adapt_defer, badapt_activator_softmax_s_adapt_defer );
             BCORE_REGISTER_OBJECT( badapt_activator_softmax_s );
             BCORE_REGISTER_OBJECT( badapt_layer_activator_s );
             BCORE_REGISTER_OBJECT( badapt_arr_layer_activator_s );
             BCORE_REGISTER_OBJECT( badapt_arr_activator_s );
-            BCORE_REGISTER_FFUNC( badapt_activator_reset, badapt_activator_reset__ );
-            BCORE_REGISTER_FFUNC( badapt_activator_setup, badapt_activator_setup__ );
-            BCORE_REGISTER_FFUNC( badapt_activator_get_size, badapt_activator_get_size__ );
-            BCORE_REGISTER_FFUNC( badapt_activator_set_size, badapt_activator_set_size__ );
             BCORE_REGISTER_FFUNC( badapt_activator_get_activation, badapt_activator_get_activation__ );
             BCORE_REGISTER_FFUNC( badapt_activator_set_activation, badapt_activator_set_activation__ );
-            BCORE_REGISTER_FFUNC( badapt_activator_adapt_apply, badapt_activator_adapt_apply__ );
             BCORE_REGISTER_SPECT( badapt_activator );
             BCORE_REGISTER_FEATURE( badapt_loss_loss );
             BCORE_REGISTER_FEATURE( badapt_loss_loss_f3 );

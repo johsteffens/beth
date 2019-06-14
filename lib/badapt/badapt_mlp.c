@@ -260,7 +260,6 @@ badapt_adaptive* badapt_builder_mlp_funnel_s_build( const badapt_builder_mlp_fun
         bmath_vf3_s_zro( &layer->b );
 
         layer->a = badapt_activator_a_clone( badapt_arr_layer_activator_s_get_activator( &o->arr_layer_activator, i, o->layers ) );
-        badapt_activator_a_setup( layer->a );
         max_buffer_size = sz_max( max_buffer_size, layer->input_size );
         max_buffer_size = sz_max( max_buffer_size, layer->kernels );
     }
