@@ -333,22 +333,6 @@ void badapt_activator_plain_s_bgrad( const badapt_activator_plain_s* o, bmath_vf
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( badapt_activator_bias_s )
-"aware badapt_activator"
-"{"
-    "aware badapt_activation => activation;"
-    "bmath_vf3_s v_bias;"
-    "bmath_vf3_s v_bias_deferred;"
-    "func :reset;"
-    "func :infer;"
-    "func :bgrad;"
-    "func :adapt;"
-    "func :adapt_defer;"
-    "func :adapt_apply;"
-    "func :set_activation;"
-    "func :get_activation;"
-"}";
-
 BCORE_DEFINE_OBJECT_INST_P( badapt_activator_softmax_s )
 "aware badapt_activator"
 "{"
@@ -848,7 +832,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 2368601018 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1630661007 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );
@@ -971,15 +955,6 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( badapt_activator_adapt, badapt_activator_plain_s_adapt );
             BCORE_REGISTER_FFUNC( badapt_activator_adapt_defer, badapt_activator_plain_s_adapt_defer );
             BCORE_REGISTER_OBJECT( badapt_activator_plain_s );
-            BCORE_REGISTER_FFUNC( badapt_activator_reset, badapt_activator_bias_s_reset );
-            BCORE_REGISTER_FFUNC( badapt_activator_infer, badapt_activator_bias_s_infer );
-            BCORE_REGISTER_FFUNC( badapt_activator_bgrad, badapt_activator_bias_s_bgrad );
-            BCORE_REGISTER_FFUNC( badapt_activator_adapt, badapt_activator_bias_s_adapt );
-            BCORE_REGISTER_FFUNC( badapt_activator_adapt_defer, badapt_activator_bias_s_adapt_defer );
-            BCORE_REGISTER_FFUNC( badapt_activator_adapt_apply, badapt_activator_bias_s_adapt_apply );
-            BCORE_REGISTER_FFUNC( badapt_activator_set_activation, badapt_activator_bias_s_set_activation );
-            BCORE_REGISTER_FFUNC( badapt_activator_get_activation, badapt_activator_bias_s_get_activation );
-            BCORE_REGISTER_OBJECT( badapt_activator_bias_s );
             BCORE_REGISTER_FFUNC( badapt_activator_infer, badapt_activator_softmax_s_infer );
             BCORE_REGISTER_FFUNC( badapt_activator_bgrad, badapt_activator_softmax_s_bgrad );
             BCORE_REGISTER_FFUNC( badapt_activator_adapt, badapt_activator_softmax_s_adapt );

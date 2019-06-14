@@ -352,18 +352,6 @@
     static inline const badapt_activation* badapt_activator_plain_s_get_activation( const badapt_activator_plain_s* o ){ return o->activation; } \
     static inline void badapt_activator_plain_s_adapt( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon ){ badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out ); } \
     static inline void badapt_activator_plain_s_adapt_defer( badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ){ badapt_activator_plain_s_bgrad( o, grad_in, grad_out, out ); }
-  #define TYPEOF_badapt_activator_bias_s 4133517011
-  #define BETH_EXPAND_ITEM_badapt_activator_bias_s \
-    BCORE_DECLARE_OBJECT( badapt_activator_bias_s ) \
-      {aware_t _;badapt_activation* activation;bmath_vf3_s v_bias;bmath_vf3_s v_bias_deferred;}; \
-    void badapt_activator_bias_s_reset( badapt_activator_bias_s* o ); \
-    void badapt_activator_bias_s_infer( const badapt_activator_bias_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
-    void badapt_activator_bias_s_bgrad( const badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
-    void badapt_activator_bias_s_adapt( badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out, f3_t epsilon ); \
-    void badapt_activator_bias_s_adapt_defer( badapt_activator_bias_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
-    void badapt_activator_bias_s_adapt_apply( badapt_activator_bias_s* o, f3_t epsilon ); \
-    static inline void badapt_activator_bias_s_set_activation( badapt_activator_bias_s* o, const badapt_activation* activation ){ badapt_activation_a_replicate( &o->activation, activation ); } \
-    static inline const badapt_activation* badapt_activator_bias_s_get_activation( const badapt_activator_bias_s* o ){ return o->activation; }
   #define TYPEOF_badapt_activator_softmax_s 3206266268
   #define BETH_EXPAND_ITEM_badapt_activator_softmax_s \
     BCORE_DECLARE_OBJECT( badapt_activator_softmax_s ) \
@@ -467,7 +455,6 @@
   static inline bl_t badapt_activator_a_defines_adapt_apply( const badapt_activator* o ) { return true; } \
   static inline void badapt_activator_adapt_apply__( badapt_activator* o, f3_t epsilon ) {} \
   BETH_EXPAND_ITEM_badapt_activator_plain_s \
-  BETH_EXPAND_ITEM_badapt_activator_bias_s \
   BETH_EXPAND_ITEM_badapt_activator_softmax_s \
   BETH_EXPAND_ITEM_badapt_layer_activator_s \
   BETH_EXPAND_ITEM_badapt_arr_layer_activator_s \

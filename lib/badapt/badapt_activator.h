@@ -165,22 +165,6 @@ BETH_PRECODE( badapt_activator )
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    /** Activator with bias.
-     *  Bias is not randomized but initialized zero (common practice).
-     */
-    stamp :bias = aware :
-    {
-        aware badapt_activation => activation;
-        bmath_vf3_s v_bias;
-        bmath_vf3_s v_bias_deferred;
-        func :reset; func :infer; func :bgrad; func :adapt; func :adapt_defer; func :adapt_apply;
-
-        func :set_activation = { badapt_activation_a_replicate( &o->activation, activation ); };
-        func :get_activation = { return o->activation; };
-    };
-
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
     /// softmax activator.
     stamp :softmax = aware :
     {
@@ -232,7 +216,6 @@ const badapt_activator* badapt_arr_layer_activator_s_get_activator( const badapt
 void badapt_arr_activator_s_setup_from_arr_layer_activator( badapt_arr_activator_s* o, const badapt_arr_layer_activator_s* arr, sz_t layers );
 
 badapt_activator_plain_s* badapt_activator_plain_s_create_activation( const badapt_activation* activation );
-badapt_activator_bias_s*  badapt_activator_bias_s_create_activation(  const badapt_activation* activation );
 
 /**********************************************************************************************************************/
 

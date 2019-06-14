@@ -309,8 +309,8 @@ void badapt_mlp_s_test_sine_random()
     builder->random_seed   = 124;
     builder->dynamics.epsilon  = 0.0008;
 
-    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "bias", "leaky_relu" );
-    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator, -1, "bias", "tanh" );
+    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "plain", "leaky_relu" );
+    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator, -1, "plain", "tanh" );
 
     trainer->fetch_cycles_per_iteration = 10;
     trainer->max_iterations = 10;
@@ -338,8 +338,8 @@ void badapt_mlp_s_test_binary_add()
 
 //    builder->dynamics.lambda_l1 = 0.0001;
 
-    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "bias", "leaky_relu" );
-    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator, -1, "bias", "tanh" );
+    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "plain", "leaky_relu" );
+    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator, -1, "plain", "tanh" );
 
     trainer->fetch_cycles_per_iteration = 30;
     trainer->max_iterations = 10;
@@ -397,7 +397,7 @@ void badapt_mlp_s_test_binary_xsg3()
     builder->dynamics.lambda_l1 = 0.001;
 
     badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "plain", "leaky_relu" );
-    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator, -1, "bias",  "tanh" );
+    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator, -1, "plain",  "tanh" );
 
     trainer->fetch_cycles_per_iteration = 30;
     trainer->max_iterations = 10;
@@ -426,8 +426,8 @@ void badapt_mlp_s_test_binary_hash()
 //    builder->dynamics.lambda_l1 = 0.001;
     builder->dynamics.lambda_l2 = 0.001;
 
-    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "bias", "leaky_relu" );
-    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator, -1, "bias",  "tanh" );
+    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "plain", "leaky_relu" );
+    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator, -1, "plain",  "tanh" );
 
     trainer->fetch_cycles_per_iteration = 30;
     trainer->max_iterations = 10;
@@ -458,9 +458,9 @@ void badapt_mlp_s_test_polynom()
 //    builder->dynamics.lambda_l1 = 0.001;
     builder->dynamics.lambda_l2 = 0.001;
 
-//    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "bias", "leaky_relu" );
-    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "bias", "leaky_relu" );
-    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator, -1, "bias", "tanh" );
+//    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "plain", "leaky_relu" );
+    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator,  0, "plain", "leaky_relu" );
+    badapt_arr_layer_activator_s_push_from_names( &builder->arr_layer_activator, -1, "plain", "tanh" );
 
     trainer->fetch_cycles_per_iteration = 3;
     trainer->batch_cycles_per_fetch = 10;
