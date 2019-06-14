@@ -549,9 +549,10 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_c1d_layer_s )
     "sz_t steps;"
     "sz_t kernel_size;"
     "sz_t kernels;"
-    "bmath_mf3_s wgt;"
-    "aware badapt_activator => act;"
-    "hidden bmath_vf3_s out;"
+    "bmath_mf3_s w;"
+    "bmath_vf3_s b;"
+    "aware badapt_activator => a;"
+    "hidden bmath_vf3_s o;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_c1d_arr_layer_s )
@@ -670,9 +671,6 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_ern_builder_s )
     "func :set_out_size;"
     "func :build;"
 "}";
-
-/**********************************************************************************************************************/
-// source: badapt_jrn
 
 /**********************************************************************************************************************/
 // source: badapt_training
@@ -846,7 +844,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1030022827 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 3239948312 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );

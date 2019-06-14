@@ -37,9 +37,10 @@ stamp badapt_c1d_layer = bcore_inst
     sz_t kernel_size; // size of single kernel (rows of kernel matrix)
     sz_t kernels;     // number of kernels     (cols of kernel matrix)
 
-    bmath_mf3_s                wgt;
-    aware  badapt_activator => act;
-    hidden bmath_vf3_s         out;
+    bmath_mf3_s                w; // weights
+    bmath_vf3_s                b; // bias
+    aware  badapt_activator => a; // activator
+    hidden bmath_vf3_s         o; // output
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

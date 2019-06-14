@@ -38,8 +38,8 @@ void badapt_c1d_s_arc_to_sink( const badapt_c1d_s* o, bcore_sink* sink )
         badapt_c1d_layer_s* layer = &o->arr_layer.arr_data[ i ];
 
         sz_t a_rows = layer->steps;
-        sz_t a_cols = layer->wgt.rows;
-        const bmath_mf3_s* w = &layer->wgt;
+        sz_t a_cols = layer->w.rows;
+        const bmath_mf3_s* w = &layer->w;
         weights += w->size;
         ops     += a_rows * a_cols * w->rows;
     }
@@ -56,15 +56,16 @@ void badapt_c1d_s_arc_to_sink( const badapt_c1d_s* o, bcore_sink* sink )
         badapt_c1d_layer_s* layer = &o->arr_layer.arr_data[ i ];
 
         sz_t a_rows = layer->steps;
-        sz_t a_cols = layer->wgt.rows;
+        sz_t a_cols = layer->w.rows;
         sz_t b_rows = a_rows;
-        sz_t b_cols = layer->wgt.cols;
-        const bmath_mf3_s* w = &layer->wgt;
+        sz_t b_cols = layer->w.cols;
+        const bmath_mf3_s* w = &layer->w;
 
         st_s* st_activation = st_s_create();
 
-        st_s_push_fa( st_activation, "#<sc_t>", ifnameof( *( aware_t* )layer->act ) );
-        st_s_push_fa( st_activation, " : #<sc_t>", ifnameof( *( aware_t* )badapt_activator_a_get_activation( layer->act ) ) );
+        st_s_push_fa( st_activation, "#<sc_t>", ifnameof( *( aware_t* )layer->a ) );
+        const badapt_activation* activation = badapt_activator_a_get_activation( layer->a );
+        st_s_push_fa( st_activation, " : #<sc_t>", activation ? ifnameof( *( aware_t* )activation ) : "" );
 
         bcore_sink_a_push_fa( sink,
                               "layer #pl2 {#<sz_t>}:"
@@ -103,7 +104,7 @@ void badapt_c1d_s_infer( const badapt_c1d_s* o, const bmath_vf3_s* in, bmath_vf3
     {
         badapt_c1d_layer_s* layer = &o->arr_layer.arr_data[ i ];
         ma.rows = layer->steps;
-        ma.cols = layer->wgt.rows;
+        ma.cols = layer->w.rows;
         ma.data = a.data;
         ma.size = a.size;
         ma.stride = layer->stride;
@@ -111,7 +112,7 @@ void badapt_c1d_s_infer( const badapt_c1d_s* o, const bmath_vf3_s* in, bmath_vf3
         assert( ( ma.rows - 1 ) * ma.stride + ma.cols == ma.size );
 
         mb.rows = ma.rows;
-        mb.cols = layer->wgt.cols;
+        mb.cols = layer->w.cols;
         mb.data = b.data;
         mb.size = mb.rows * mb.cols;
         mb.stride = mb.cols;
@@ -119,9 +120,10 @@ void badapt_c1d_s_infer( const badapt_c1d_s* o, const bmath_vf3_s* in, bmath_vf3
 
         assert( b.size <= o->max_buffer_size );
 
-        bmath_mf3_s_mul( &ma, &layer->wgt, &mb ); // a * w -> b
+        bmath_mf3_s_mul( &ma, &layer->w, &mb ); // a * w -> b
 
-        badapt_activator_a_infer( layer->act, &b, &b );
+        bmath_vf3_s_add( &b, &layer->b, &b ); // b += bias
+        badapt_activator_a_infer( layer->a, &b, &b );
 
         assert( !bmath_vf3_s_is_nan( &b ) );
         bmath_vf3_s_swapr( &a, &b );
@@ -150,12 +152,12 @@ void badapt_c1d_s_minfer( badapt_c1d_s* o, const bmath_vf3_s* in, bmath_vf3_s* o
     for( sz_t i = 0; i < o->arr_layer.arr_size; i++ )
     {
         badapt_c1d_layer_s* layer = &o->arr_layer.arr_data[ i ];
-        const bmath_vf3_s* a = ( i > 0 ) ? &o->arr_layer.arr_data[ i - 1 ].out : &o->in;
-        b = &layer->out;
-        const bmath_mf3_s* mw = &layer->wgt;
+        const bmath_vf3_s* a = ( i > 0 ) ? &o->arr_layer.arr_data[ i - 1 ].o : &o->in;
+        b = &layer->o;
+        const bmath_mf3_s* mw = &layer->w;
 
         ma.rows = layer->steps;
-        ma.cols = layer->wgt.rows;
+        ma.cols = layer->w.rows;
         ma.data = a->data;
         ma.size = a->size;
         ma.stride = layer->stride;
@@ -165,7 +167,7 @@ void badapt_c1d_s_minfer( badapt_c1d_s* o, const bmath_vf3_s* in, bmath_vf3_s* o
         assert( b->size <= o->max_buffer_size );
 
         mb.rows = ma.rows;
-        mb.cols = layer->wgt.cols;
+        mb.cols = layer->w.cols;
         mb.data = b->data;
         mb.size = mb.rows * mb.cols;
         mb.stride = mb.cols;
@@ -174,7 +176,8 @@ void badapt_c1d_s_minfer( badapt_c1d_s* o, const bmath_vf3_s* in, bmath_vf3_s* o
         assert( !bmath_mf3_s_is_nan( mw ) );
         bmath_mf3_s_mul( &ma, mw, &mb ); // a * w -> b
 
-        badapt_activator_a_infer( layer->act, b, b );
+        bmath_vf3_s_add( b, &layer->b, b ); // b += bias
+        badapt_activator_a_infer( layer->a, b, b );
         assert( !bmath_vf3_s_is_nan( b ) );
     }
 
@@ -203,19 +206,19 @@ void badapt_c1d_s_bgrad( const badapt_c1d_s* o, bmath_vf3_s* grad_in, const bmat
     for( sz_t i = o->arr_layer.arr_size - 1; i >= 0; i-- )
     {
         badapt_c1d_layer_s* layer = &o->arr_layer.arr_data[ i ];
-        const bmath_vf3_s* a = ( i > 0 ) ? &o->arr_layer.arr_data[ i - 1 ].out : &o->in;
-        const bmath_vf3_s* b = &o->arr_layer.arr_data[ i ].out;
-              bmath_mf3_s* mw = &layer->wgt;
+        const bmath_vf3_s* a = ( i > 0 ) ? &o->arr_layer.arr_data[ i - 1 ].o : &o->in;
+        const bmath_vf3_s* b = &o->arr_layer.arr_data[ i ].o;
+              bmath_mf3_s* mw = &layer->w;
 
         ga.size = a->size;
 
         ma.rows   = layer->steps;
-        ma.cols   = layer->wgt.rows;
+        ma.cols   = layer->w.rows;
         ma.size   = a->size;
         ma.stride = layer->stride;
 
         mb.rows   = ma.rows;
-        mb.cols   = layer->wgt.cols;
+        mb.cols   = layer->w.cols;
         mb.size   = mb.rows * mb.cols;
         mb.stride = mb.cols;
 
@@ -229,7 +232,7 @@ void badapt_c1d_s_bgrad( const badapt_c1d_s* o, bmath_vf3_s* grad_in, const bmat
 
         assert( ga.size <= o->max_buffer_size );
 
-        badapt_activator_a_adapt( layer->act, &gb, &gb, b, o->dynamics.epsilon );
+        badapt_activator_a_adapt( layer->a, &gb, &gb, b, o->dynamics.epsilon );
 
         // Note: "Dangling Elements"
         // Elements in A computed during progression but not influencing loss.
@@ -274,19 +277,19 @@ void badapt_c1d_s_bgrad_adapt( badapt_c1d_s* o, bmath_vf3_s* grad_in, const bmat
     for( sz_t i = o->arr_layer.arr_size - 1; i >= 0; i-- )
     {
         badapt_c1d_layer_s* layer = &o->arr_layer.arr_data[ i ];
-        const bmath_vf3_s* a = ( i > 0 ) ? &o->arr_layer.arr_data[ i - 1 ].out : &o->in;
-        const bmath_vf3_s* b = &o->arr_layer.arr_data[ i ].out;
-              bmath_mf3_s* mw = &layer->wgt;
+        const bmath_vf3_s* a = ( i > 0 ) ? &o->arr_layer.arr_data[ i - 1 ].o : &o->in;
+        const bmath_vf3_s* b = &o->arr_layer.arr_data[ i ].o;
+              bmath_mf3_s* mw = &layer->w;
 
         ga.size = a->size;
 
         ma.rows   = layer->steps;
-        ma.cols   = layer->wgt.rows;
+        ma.cols   = layer->w.rows;
         ma.size   = a->size;
         ma.stride = layer->stride;
 
         mb.rows   = ma.rows;
-        mb.cols   = layer->wgt.cols;
+        mb.cols   = layer->w.cols;
         mb.size   = mb.rows * mb.cols;
         mb.stride = mb.cols;
 
@@ -300,7 +303,8 @@ void badapt_c1d_s_bgrad_adapt( badapt_c1d_s* o, bmath_vf3_s* grad_in, const bmat
 
         assert( ga.size <= o->max_buffer_size );
 
-        badapt_activator_a_adapt( layer->act, &gb, &gb, b, o->dynamics.epsilon );
+        badapt_activator_a_bgrad( layer->a, &gb, &gb, b );
+        bmath_vf3_s_mul_scl_f3_add( &gb, o->dynamics.epsilon, &layer->b, &layer->b );
 
         f3_t l2_reg_factor = ( 1.0 - o->dynamics.lambda_l2  * o->dynamics.epsilon );
         f3_t l1_reg_offset = o->dynamics.lambda_l1 * o->dynamics.epsilon;
@@ -415,10 +419,12 @@ badapt_adaptive* badapt_builder_c1d_funnel_s_build( const badapt_builder_c1d_fun
     for( sz_t i = 0; i < layers; i++ )
     {
         badapt_c1d_layer_s* layer = &c1d->arr_layer.arr_data[ i ];
-        bmath_mf3_s_set_size( &layer->wgt, layer->kernel_size, layer->kernels );
-        bmath_mf3_s_set_random( &layer->wgt, false, false, 0, 1.0, -0.5, 0.5, &random_state );
-        layer->act = badapt_activator_a_clone( badapt_arr_layer_activator_s_get_activator( &o->arr_layer_activator, i, layers ) );
-        badapt_activator_a_setup( layer->act );
+        bmath_mf3_s_set_size( &layer->w, layer->kernel_size, layer->kernels );
+        bmath_mf3_s_set_random( &layer->w, false, false, 0, 1.0, -0.5, 0.5, &random_state );
+        bmath_vf3_s_set_size( &layer->b, layer->kernels * layer->steps );
+        bmath_vf3_s_zro( &layer->b );
+        layer->a = badapt_activator_a_clone( badapt_arr_layer_activator_s_get_activator( &o->arr_layer_activator, i, layers ) );
+        badapt_activator_a_setup( layer->a );
         max_buffer_size = sz_max( max_buffer_size, layer->input_size );
         max_buffer_size = sz_max( max_buffer_size, layer->kernels * layer->steps );
     }
@@ -610,7 +616,7 @@ void badapt_c1d_s_test_polynom()
     BCORE_LIFE_INIT();
     BCORE_LIFE_CREATE( badapt_problem_polynom_s,     problem );
     BCORE_LIFE_CREATE( badapt_builder_c1d_funnel_s,  builder );
-    BCORE_LIFE_CREATE( badapt_trainer_batch_s,             trainer );
+    BCORE_LIFE_CREATE( badapt_trainer_batch_s,       trainer );
 
     problem->input_size  = 16;
     problem->output_size = 8;   // polynomial order + 1
