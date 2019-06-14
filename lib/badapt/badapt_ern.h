@@ -63,9 +63,14 @@ stamp : = aware badapt_adaptive
 
     badapt_dynamics_std_s dynamics;
 
+    // weights
     bmath_mf3_s w_hx;
     bmath_mf3_s w_hc;
     bmath_mf3_s w_oh;
+
+    // bias
+    bmath_vf3_s b_h;
+    bmath_vf3_s b_o;
 
     aware badapt_activator => a_h;
     aware badapt_activator => a_o;
@@ -74,11 +79,12 @@ stamp : = aware badapt_adaptive
     hidden bmath_vf3_s v_o;
 
     /// gradients
-    hidden bmath_vf3_s v_go;
-    hidden bmath_vf3_s v_gc;
-    hidden bmath_vf3_s v_gh;
-    hidden bmath_mf3_s gw_hx;
-    hidden bmath_mf3_s gw_hc;
+    hidden bmath_vf3_s d_v_o;
+    hidden bmath_vf3_s d_v_c;
+    hidden bmath_vf3_s d_v_h;
+    hidden bmath_mf3_s d_w_hx;
+    hidden bmath_mf3_s d_w_hc;
+    hidden bmath_vf3_s d_b_h;
 
     hidden badapt_ern_arr_layer_s arr_layer;
     // ==============================================================
@@ -100,8 +106,8 @@ stamp : = aware badapt_adaptive
 stamp :builder = aware badapt_builder
 {
     sz_t size_input;
-    sz_t size_hidden = 8;
-    sz_t size_output = 1;
+    sz_t size_hidden   = 8;
+    sz_t size_output   = 1;
     sz_t size_unfolded = 1;  // number of unfolded time steps during learning
 
     badapt_dynamics_std_s dynamics;

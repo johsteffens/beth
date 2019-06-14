@@ -660,7 +660,7 @@
   #define TYPEOF_badapt_ern_s 3488918381
   #define BETH_EXPAND_ITEM_badapt_ern_s \
     BCORE_DECLARE_OBJECT( badapt_ern_s ) \
-      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;bmath_mf3_s w_hx;bmath_mf3_s w_hc;bmath_mf3_s w_oh;badapt_activator* a_h;badapt_activator* a_o;bmath_vf3_s v_o;bmath_vf3_s v_go;bmath_vf3_s v_gc;bmath_vf3_s v_gh;bmath_mf3_s gw_hx;bmath_mf3_s gw_hc;badapt_ern_arr_layer_s arr_layer;}; \
+      {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;bmath_mf3_s w_hx;bmath_mf3_s w_hc;bmath_mf3_s w_oh;bmath_vf3_s b_h;bmath_vf3_s b_o;badapt_activator* a_h;badapt_activator* a_o;bmath_vf3_s v_o;bmath_vf3_s d_v_o;bmath_vf3_s d_v_c;bmath_vf3_s d_v_h;bmath_mf3_s d_w_hx;bmath_mf3_s d_w_hc;bmath_vf3_s d_b_h;badapt_ern_arr_layer_s arr_layer;}; \
     static inline sz_t badapt_ern_s_get_in_size( const badapt_ern_s* o ){ return o->size_input; } \
     static inline sz_t badapt_ern_s_get_out_size( const badapt_ern_s* o ){ return o->size_output; } \
     static inline void badapt_ern_s_get_dynamics_std( const badapt_ern_s* o, badapt_dynamics_std_s* dynamics ){ badapt_dynamics_std_s_copy( dynamics, &o->dynamics ); } \

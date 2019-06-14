@@ -636,14 +636,17 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_ern_s )
     "bmath_mf3_s w_hx;"
     "bmath_mf3_s w_hc;"
     "bmath_mf3_s w_oh;"
+    "bmath_vf3_s b_h;"
+    "bmath_vf3_s b_o;"
     "aware badapt_activator => a_h;"
     "aware badapt_activator => a_o;"
     "hidden bmath_vf3_s v_o;"
-    "hidden bmath_vf3_s v_go;"
-    "hidden bmath_vf3_s v_gc;"
-    "hidden bmath_vf3_s v_gh;"
-    "hidden bmath_mf3_s gw_hx;"
-    "hidden bmath_mf3_s gw_hc;"
+    "hidden bmath_vf3_s d_v_o;"
+    "hidden bmath_vf3_s d_v_c;"
+    "hidden bmath_vf3_s d_v_h;"
+    "hidden bmath_mf3_s d_w_hx;"
+    "hidden bmath_mf3_s d_w_hc;"
+    "hidden bmath_vf3_s d_b_h;"
     "hidden badapt_ern_arr_layer_s arr_layer;"
     "func :get_in_size;"
     "func :get_out_size;"
@@ -845,7 +848,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1764292463 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 2368601018 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );
