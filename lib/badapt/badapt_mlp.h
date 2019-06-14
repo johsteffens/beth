@@ -32,9 +32,10 @@ stamp badapt_mlp_layer = aware bcore_inst
 {
     sz_t input_size;
     sz_t kernels;
-    bmath_mf3_s                wgt;
-    aware  badapt_activator => act;
-    hidden bmath_vf3_s         out;
+    bmath_mf3_s                w; // weights
+    bmath_vf3_s                b; // bias
+    aware  badapt_activator => a; // activation
+    hidden bmath_vf3_s         o; // output
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

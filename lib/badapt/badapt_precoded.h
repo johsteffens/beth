@@ -536,7 +536,7 @@
   #define TYPEOF_badapt_mlp_layer_s 189394571
   #define BETH_EXPAND_ITEM_badapt_mlp_layer_s \
     BCORE_DECLARE_OBJECT( badapt_mlp_layer_s ) \
-      {aware_t _;sz_t input_size;sz_t kernels;bmath_mf3_s wgt;badapt_activator* act;bmath_vf3_s out;};
+      {aware_t _;sz_t input_size;sz_t kernels;bmath_mf3_s w;bmath_vf3_s b;badapt_activator* a;bmath_vf3_s o;};
   #define TYPEOF_badapt_mlp_arr_layer_s 2923615799
   #define BETH_EXPAND_ITEM_badapt_mlp_arr_layer_s \
     BCORE_DECLARE_OBJECT( badapt_mlp_arr_layer_s ) \
