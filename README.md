@@ -120,13 +120,13 @@ The memory-manager, excluding reference manager, was spun-off into a stand-alone
 
 <a name = "precode"></a>
 ### Precode
-Beth-Precode is a dedicated (mostly declarative) meta language. It allows expressing key aspects of reflections and perspectives in a well-readable, compact and simple style. The precode-compiler (precoder) generates c-code and embeds it unobtrusively into the project, thus relieving the programmer from much boilerplate coding.
+Beth-Precode is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding. It allows expressing key aspects of reflections and perspectives in a well-readable, compact and simple style. The precode-compiler (precoder) converts precode into c-code.
 
-Beth-Precode is embedded in non-parseable c-code, initiated by macro `BETH_PRECODE( <context-name> )`. Source files containing precode are registered to the precoder. The precoder compiles it into c-code stored in dedicated source files, which are not meant to be manually edited but can be included and linked with other c-sources. A precode section has a unique context-name serving as precode identifier and namespace. 
+Beth-Precode is embedded in c-code as non-parseable section, initiated by macro `BETH_PRECODE( <context-name> )`. Source files containing precode are registered to the precoder. The precoder compiles them into c-code, which is stored in dedicated source files, which are not meant to be manually edited but can be included and linked with other c-sources. A precode section has a unique context-name serving as precode identifier and namespace. 
 
-A principal component of precode is the `feature`, which is loosely related to the OOP-concept of a _virtual function_. A feature-declaration turns the encompassing context into a [prespective](#prespective). 
+An important component of precode is the `feature`, which is loosely related to the OOP-concept of a _virtual function_. A feature-declaration turns the encompassing context into a [prespective](#prespective). Another key component is the `stamp`, which represents an object definition. A stamp defines variables, initializations, functions and their binding to features. 
 
-Another key component is the `stamp`, which represents an object definition. A stamp defines variables, initializations, functions and their binding to features. The precoder translates a stamp into a [reflection](#reflection).
+The precoder translates precode into [reflections](#reflection), expands functions where possible and adds init-cycle registrations.
 
 # Motivation
 The classic framework for object oriented programming (such as realized in C++) has been widely cherished for decades. I appreciate OOP and like the efficient way C++ supports it. Yet there are issues. For example: The static association between objects and their interfaces forces an inhibiting rigidity into the developer's code-architecture. The limited means of genericity often promotes boiler plate code. More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of these issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware. 
