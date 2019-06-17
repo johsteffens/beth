@@ -12,6 +12,7 @@
       * [Associative Binding](#binding)
       * [RTTI](#RTTI)
       * [Memory Management](#memory-management)
+      * [Precode](#precode)
    * [Motivation](#motivation)
 
 # About Beth
@@ -119,13 +120,13 @@ The memory-manager, excluding reference manager, was spun-off into a stand-alone
 
 <a name = "precode"></a>
 ### Precode
-Beth-Precode is a dedicated (mostly declarative) meta language. It is designed to express reflections and perspectives in a well-readable, compact and simple form. The precode-compiler (precoder) generates c-code and embeds it unobtrusively into the project, thus relieving the programmer from much boilerplate coding.
+Beth-Precode is a dedicated (mostly declarative) meta language. It allows expressing key aspects of reflections and perspectives in a well-readable, compact and simple style. The precode-compiler (precoder) generates c-code and embeds it unobtrusively into the project, thus relieving the programmer from much boilerplate coding.
 
-Beth-Precode is embedded in non-parseable c-code, initiated by macro BETH_PRECODE( <context-name> ). Source files containing precode are registered to the precoder. The precoder compiles it into C-code stored in certain dedicated source files, which are not meant to be manually edited but can be included and linked with other c-sources. A precode section has a unique context-name serving as precode identifier and namespace. 
+Beth-Precode is embedded in non-parseable c-code, initiated by macro `BETH_PRECODE( <context-name> )`. Source files containing precode are registered to the precoder. The precoder compiles it into C-code stored in certain dedicated source files, which are not meant to be manually edited but can be included and linked with other c-sources. A precode section has a unique context-name serving as precode identifier and namespace. 
 
-A principal component of precode is the **feature** which is loosely related to a _Virtual Function_. A feature-declaration turns the encompasing context into a prespective. 
+A principal component of precode is the `feature` which is loosely related to the oop-concept of a _virtual function_. A feature-declaration turns the encompasing context into a prespective. 
 
-Another key component is the **stamp**, which loosely resembles an object (e.g. class) definition. A stamp defines variables, their initializations, functions and their binding to features.
+Another key component is the `stamp`, which prepresents an object definition. A stamp defines variables, initializations, functions and their binding to features. The precoder translates a stamp into a [reflection](#reflection).
 
 Function names, signatures and bodies are separable entities, which the precoder (re-)cpomposes into actual C-functions.
 
