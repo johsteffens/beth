@@ -126,7 +126,7 @@ Beth-Precode is embedded in non-parseable c-code, initiated by macro `BETH_PRECO
 
 A principal component of precode is the `feature`, which is loosely related to the OOP-concept of a _virtual function_. A feature-declaration turns the encompassing context into a [prespective](#prespective). 
 
-Another key component is the `stamp`, which prepresents an object definition. A stamp defines variables, initializations, functions and their binding to features. The precoder translates a stamp into a [reflection](#reflection).
+Another key component is the `stamp`, which represents an object definition. A stamp defines variables, initializations, functions and their binding to features. The precoder translates a stamp into a [reflection](#reflection).
 
 # Motivation
 The classic framework for object oriented programming (such as realized in C++) has been widely cherished for decades. I appreciate OOP and like the efficient way C++ supports it. Yet there are issues. For example: The static association between objects and their interfaces forces an inhibiting rigidity into the developer's code-architecture. The limited means of genericity often promotes boiler plate code. More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of these issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware. 
