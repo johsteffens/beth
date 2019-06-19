@@ -13,6 +13,10 @@
  *  limitations under the License.
  */
 
+/** Functional basis for low-level name management.
+  * Note: for high level use cases consider bcore_hmap_name
+  */
+
 #ifndef BCORE_NAME_H
 #define BCORE_NAME_H
 
