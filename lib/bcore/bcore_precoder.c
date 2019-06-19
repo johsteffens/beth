@@ -977,8 +977,35 @@ static void bcore_precoder_stamp_s_compile( bcore_precoder_stamp_s* o, bcore_pre
         }
         else
         {
-            bcore_source_a_parse_fa( source, " #until';';", string );
-            st_s_push_fa( self_string, "#<sc_t>;", string->sc );
+            bl_t exit = false;
+            while( !exit && !bcore_source_a_eos( source ) )
+            {
+                u0_t c = bcore_source_a_get_u0( source );
+                switch( c )
+                {
+                    case ':':
+                    {
+                        st_s* name = st_s_create();
+                        bcore_source_a_parse_fa( source, " #name", name );
+                        st_s_push_fa( self_string, "#<sc_t>_#<sc_t>", group->name.sc, name->sc );
+                        st_s_discard( name );
+                    }
+                    break;
+
+                    case ';':
+                    {
+                        st_s_push_char( self_string, c );
+                        exit = true;
+                    }
+                    break;
+
+                    default:
+                    {
+                        st_s_push_char( self_string, c );
+                    }
+                    break;
+                }
+            }
         }
     }
     st_s_push_sc( self_string, "}" );

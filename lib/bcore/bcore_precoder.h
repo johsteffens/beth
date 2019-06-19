@@ -99,7 +99,9 @@
  *
  *    Special conditions:
  *      ':' following stamp means that '<group_name>_' is prefixed to the following name
- *      ':' instead of trait mean that '<group_name>' is declared as trait
+ *      ':' instead of trait means that '<group_name>' is declared as trait
+ *      ':' (no func) preceding an identifier name means that '<group_name>_' is prefixed to the following name
+ *      ':' (in func) if no perspective name precedes ':' <trait_name> is used as perspective
  *
  *    Special traits:
  *      bcore_array: expands additional array-functions
