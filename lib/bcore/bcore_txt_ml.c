@@ -27,6 +27,7 @@
 #include "bcore_spect.h"
 #include "bcore_signal.h"
 #include "bcore_trait.h"
+#include "bcore_spect_via_call.h"
 
 void bcore_txt_ml_translator_s_init( bcore_txt_ml_translator_s* o )
 {
@@ -322,6 +323,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 }
             }
         }
+        bcore_via_x_mutated( obj_l );
     }
     bcore_life_s_discard( l );
     return obj;

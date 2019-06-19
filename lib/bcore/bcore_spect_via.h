@@ -53,10 +53,13 @@ typedef struct bcore_vitem_s
     bcore_fp_set fp_set;       // optional explicit setter
 } bcore_vitem_s;
 
+BCORE_FORWARD_OBJECT( bcore_via_call_s );
+
 BCORE_DECLARE_SPECT( bcore_via )
 {
     bcore_spect_header_s  header;
-    const bcore_inst_s* inst_p; // inst perspective of this item
+    const bcore_inst_s*     inst_p;     // inst perspective of this item
+    const bcore_via_call_s* via_call_p; // via callback perspective of this item
     uz_t  size;                 // number of elements
     bl_t  is_leaf;
     bcore_vitem_s* vitem_arr;   // array of vitem
@@ -131,6 +134,8 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_pure_array, bl_t )        
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_array,     bl_t, uz_t, index ) // Checks if element is an array
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_static,    bl_t, uz_t, index ) // Checks if element is static (type need not be recorded)
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_link,      bl_t, uz_t, index ) // Checks if element is a link (means that it can be NULL); an array is a distinct static object -> not a link)
+
+BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_via, mutated ) // Sends signal 'bcore_spect_via_call : mutated' to object
 
 vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o );
 

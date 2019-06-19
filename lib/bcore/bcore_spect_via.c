@@ -14,6 +14,7 @@
  */
 
 #include "bcore_spect_via.h"
+#include "bcore_spect_via_call.h"
 #include "bcore_spect_array.h"
 #include "bcore_flect.h"
 #include "bcore_spect.h"
@@ -346,6 +347,11 @@ bl_t bcore_via_default_iis_link( const bcore_via_s* p, const bcore_via* o, uz_t 
     return false;
 }
 
+void bcore_via_default_mutated( const bcore_via_s* p, bcore_via* o )
+{
+    if( p->via_call_p->mutated ) p->via_call_p->mutated( ( bcore_via_call* ) o );
+}
+
 /**********************************************************************************************************************/
 
 static bcore_via_s* bcore_via_s_create_from_self( const bcore_self_s* self )
@@ -359,6 +365,7 @@ static bcore_via_s* bcore_via_s_create_from_self( const bcore_self_s* self )
 
     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( self->type );
     o->inst_p = inst_p;
+    o->via_call_p = bcore_via_call_s_get_typed( self->type );
 
     o->vitem_arr = NULL;
     uz_t vitem_arr_size  = 0;
@@ -481,6 +488,7 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_via )
 "{"
     "bcore_spect_header_s header;"
     "private bcore_inst_s* inst_p;"
+    "private bcore_via_call_s* via_call_p;"
     "private uz_t  size;"
     "private bl_t  is_leaf;"
     "private vd_t vitem_arr;"

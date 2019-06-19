@@ -301,6 +301,7 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 }
             }
         }
+        bcore_via_x_mutated( obj_l );
     }
     bcore_life_s_discard( l );
     return obj;

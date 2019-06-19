@@ -127,6 +127,28 @@
   static inline bl_t bcore_inst_call_p_defines_copy_x( const bcore_inst_call_s* __p ) { return __p->copy_x != NULL; }
 
 /**********************************************************************************************************************/
+// source: bcore_spect_via_call
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_via_call
+
+#define TYPEOF_bcore_via_call 3918678614
+#define TYPEOF_bcore_via_call_s 2606427784
+#define BETH_EXPAND_GROUP_bcore_via_call \
+  BCORE_FORWARD_OBJECT( bcore_via_call ); \
+  typedef void (*bcore_via_call_mutated)( bcore_via_call* o ); \
+  BCORE_DECLARE_SPECT( bcore_via_call ) \
+  { \
+      bcore_spect_header_s header; \
+      bcore_via_call_mutated mutated; \
+  }; \
+  static inline bcore_via_call* bcore_via_call_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_via_call, t ); return ( bcore_via_call* )bcore_inst_t_create( t ); } \
+  static inline void bcore_via_call_p_mutated( const bcore_via_call_s* __p, bcore_via_call* o ) { __p->mutated( o ); } \
+  static inline void bcore_via_call_t_mutated( tp_t __t, bcore_via_call* o ) { bcore_via_call_s_get_typed( __t )->mutated( o ); } \
+  static inline bl_t bcore_via_call_p_defines_mutated( const bcore_via_call_s* __p ) { return __p->mutated != NULL; } \
+  static inline bl_t bcore_via_call_t_defines_mutated( tp_t __t ) { return bcore_via_call_s_get_typed( __t )->mutated != NULL; }
+
+/**********************************************************************************************************************/
 // source: bcore_main
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -150,6 +172,20 @@
   static inline s2_t bcore_main_r_main( const sr_s* o, const bcore_arr_st_s* args ) { ASSERT( !sr_s_is_const( o ) ); return ( (bcore_main_s*)ch_spect_p( o->p, TYPEOF_bcore_main_s ) )->main( o->o, args ); } \
   static inline bl_t bcore_main_r_defines_main( const sr_s* o ) { return true; } \
   BETH_EXPAND_ITEM_bcore_main_frame_s
+
+/**********************************************************************************************************************/
+// source: bcore_hmap_name
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_hmap_name
+
+#define TYPEOF_bcore_hmap_name 1134505061
+  #define TYPEOF_bcore_hmap_name_s 2060496135
+  #define BETH_EXPAND_ITEM_bcore_hmap_name_s \
+    BCORE_DECLARE_OBJECT( bcore_hmap_name_s ) \
+      {aware_t _;bcore_hmap_tp_sr_s map;};
+#define BETH_EXPAND_GROUP_bcore_hmap_name \
+  BETH_EXPAND_ITEM_bcore_hmap_name_s
 
 /**********************************************************************************************************************/
 

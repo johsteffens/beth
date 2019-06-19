@@ -79,6 +79,19 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_inst_call )
 "}";
 
 /**********************************************************************************************************************/
+// source: bcore_spect_via_call
+#include "bcore_spect_via_call.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_via_call
+
+BCORE_DEFINE_SPECT( bcore_inst, bcore_via_call )
+"{"
+    "bcore_spect_header_s header;"
+    "feature bcore_via_call : mutated;"
+"}";
+
+/**********************************************************************************************************************/
 // source: bcore_main
 #include "bcore_main.h"
 
@@ -101,6 +114,19 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_main )
 "}";
 
 /**********************************************************************************************************************/
+// source: bcore_hmap_name
+#include "bcore_hmap_name.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_hmap_name
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_hmap_name_s )
+"aware bcore_inst"
+"{"
+    "bcore_hmap_tp_sr_s map;"
+"}";
+
+/**********************************************************************************************************************/
 
 vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
 {
@@ -109,7 +135,7 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 2802606080 ) );
+            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 11058910 ) );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_setup );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_to_stdout );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_get_size );
@@ -132,9 +158,12 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( bcore_inst_call_copy_e );
             BCORE_REGISTER_NAME( bcore_inst_call_copy_x );
             BCORE_REGISTER_SPECT( bcore_inst_call );
+            BCORE_REGISTER_FEATURE( bcore_via_call_mutated );
+            BCORE_REGISTER_SPECT( bcore_via_call );
             BCORE_REGISTER_FEATURE( bcore_main_main );
             BCORE_REGISTER_OBJECT( bcore_main_frame_s );
             BCORE_REGISTER_SPECT( bcore_main );
+            BCORE_REGISTER_OBJECT( bcore_hmap_name_s );
         }
         break;
         default: break;
