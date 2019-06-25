@@ -28,7 +28,7 @@
 BETH_PRECODE( badapt_mlp )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp badapt_mlp_layer = aware bcore_inst
+stamp :layer = aware bcore_inst
 {
     sz_t input_size;
     sz_t kernels;
@@ -40,7 +40,7 @@ stamp badapt_mlp_layer = aware bcore_inst
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp badapt_mlp_arr_layer = aware bcore_array { badapt_mlp_layer_s [] arr; };
+stamp :arr_layer = aware bcore_array { :layer_s [] arr; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

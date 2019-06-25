@@ -28,7 +28,7 @@
 BETH_PRECODE( badapt_c1d )
 #ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp badapt_c1d_layer = bcore_inst
+stamp :layer = bcore_inst
 {
     aware_t _;
     sz_t input_size;  // input vector size
@@ -45,7 +45,7 @@ stamp badapt_c1d_layer = bcore_inst
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp badapt_c1d_arr_layer = bcore_array { aware_t _; badapt_c1d_layer_s [] arr; };
+stamp :arr_layer = aware bcore_array { :layer_s [] arr; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -55,9 +55,9 @@ stamp badapt_c1d = badapt_adaptive
 
     // === architecture parameters ================================
 
-    badapt_dynamics_std_s      dynamics;
-    badapt_c1d_arr_layer_s arr_layer;
-    sz_t max_buffer_size;
+    badapt_dynamics_std_s  dynamics;
+    :arr_layer_s           arr_layer;
+    sz_t                   max_buffer_size;
 
     // === runtime data =============================================
 

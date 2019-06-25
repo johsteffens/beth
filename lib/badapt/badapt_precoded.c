@@ -530,9 +530,8 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_c1d_layer_s )
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_c1d_arr_layer_s )
-"bcore_array"
+"aware bcore_array"
 "{"
-    "aware_t _;"
     "badapt_c1d_layer_s [] arr;"
 "}";
 
@@ -932,7 +931,7 @@ vd_t badapt_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 2059500756 ) );
+            bcore_const_x_set_d( typeof( "badapt_precoded_hash" ), sr_tp( 1918503595 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );

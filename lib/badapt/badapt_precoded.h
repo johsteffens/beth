@@ -27,6 +27,7 @@
     void badapt_dynamics_std_s_weights_adapt( const badapt_dynamics_std_s* o, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor );
 #define BETH_EXPAND_GROUP_badapt_dynamics \
   BCORE_FORWARD_OBJECT( badapt_dynamics ); \
+  BCORE_FORWARD_OBJECT( badapt_dynamics_std_s ); \
   typedef void (*badapt_dynamics_weights_adapt)( const badapt_dynamics* o, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor ); \
   BCORE_DECLARE_SPECT( badapt_dynamics ) \
   { \
@@ -160,6 +161,7 @@
 // group: badapt_problem
 
 #define TYPEOF_badapt_problem 978854679
+#define TYPEOF_badapt_problem_s 3095822769
   #define TYPEOF_badapt_problem_sine_random_s 232405763
   #define BETH_EXPAND_ITEM_badapt_problem_sine_random_s \
     BCORE_DECLARE_OBJECT( badapt_problem_sine_random_s ) \
@@ -215,6 +217,13 @@
     void badapt_problem_polynom_s_fetch_sample_tio( badapt_problem_polynom_s* o, bmath_vf3_s* in, bmath_vf3_s* out ); \
     void badapt_problem_polynom_s_fetch_sample_vio( badapt_problem_polynom_s* o, bmath_vf3_s* in, bmath_vf3_s* out );
 #define BETH_EXPAND_GROUP_badapt_problem \
+  BCORE_FORWARD_OBJECT( badapt_problem ); \
+  BCORE_FORWARD_OBJECT( badapt_problem_sine_random_s ); \
+  BCORE_FORWARD_OBJECT( badapt_problem_binary_add_s ); \
+  BCORE_FORWARD_OBJECT( badapt_problem_binary_mul_s ); \
+  BCORE_FORWARD_OBJECT( badapt_problem_binary_xsg3_s ); \
+  BCORE_FORWARD_OBJECT( badapt_problem_binary_hash_s ); \
+  BCORE_FORWARD_OBJECT( badapt_problem_polynom_s ); \
   BETH_EXPAND_ITEM_badapt_problem_sine_random_s \
   BETH_EXPAND_ITEM_badapt_problem_binary_add_s \
   BETH_EXPAND_ITEM_badapt_problem_binary_mul_s \
@@ -304,6 +313,18 @@
     static inline f3_t badapt_activation_leaky_relu_s_dy( const badapt_activation_leaky_relu_s* o, f3_t y ){ return y > 0 ? 1 : 0.01; }
 #define BETH_EXPAND_GROUP_badapt_activation \
   BCORE_FORWARD_OBJECT( badapt_activation ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_zero_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_one_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_linear_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_lgst_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_lgst_hard_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_lgst_leaky_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_tanh_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_tanh_hard_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_tanh_leaky_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_softplus_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_relu_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_leaky_relu_s ); \
   typedef f3_t (*badapt_activation_fx)( const badapt_activation* o, f3_t x ); \
   typedef f3_t (*badapt_activation_dy)( const badapt_activation* o, f3_t y ); \
   BCORE_DECLARE_SPECT( badapt_activation ) \
@@ -391,6 +412,11 @@
     }
 #define BETH_EXPAND_GROUP_badapt_activator \
   BCORE_FORWARD_OBJECT( badapt_activator ); \
+  BCORE_FORWARD_OBJECT( badapt_activator_plain_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activator_softmax_s ); \
+  BCORE_FORWARD_OBJECT( badapt_layer_activator_s ); \
+  BCORE_FORWARD_OBJECT( badapt_arr_layer_activator_s ); \
+  BCORE_FORWARD_OBJECT( badapt_arr_activator_s ); \
   typedef const badapt_activation* (*badapt_activator_get_activation)( const badapt_activator* o ); \
   typedef void (*badapt_activator_set_activation)( badapt_activator* o, const badapt_activation* activation ); \
   typedef void (*badapt_activator_infer)( const badapt_activator* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
@@ -447,6 +473,8 @@
     void badapt_loss_log_s_bgrad( const badapt_loss_log_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad );
 #define BETH_EXPAND_GROUP_badapt_loss \
   BCORE_FORWARD_OBJECT( badapt_loss ); \
+  BCORE_FORWARD_OBJECT( badapt_loss_l2_s ); \
+  BCORE_FORWARD_OBJECT( badapt_loss_log_s ); \
   typedef f3_t (*badapt_loss_loss)( const badapt_loss* o, const bmath_vf3_s* out, const bmath_vf3_s* target ); \
   typedef f3_t (*badapt_loss_loss_f3)( const badapt_loss* o, f3_t out, f3_t target ); \
   typedef void (*badapt_loss_bgrad)( const badapt_loss* o, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad ); \
@@ -483,6 +511,7 @@
 // group: badapt_mlp
 
 #define TYPEOF_badapt_mlp 498425923
+#define TYPEOF_badapt_mlp_s 3664397861
   #define TYPEOF_badapt_mlp_layer_s 189394571
   #define BETH_EXPAND_ITEM_badapt_mlp_layer_s \
     BCORE_DECLARE_OBJECT( badapt_mlp_layer_s ) \
@@ -524,6 +553,11 @@
     static inline void badapt_builder_mlp_funnel_s_set_out_size( badapt_builder_mlp_funnel_s* o, sz_t size ){ o->output_kernels = size; } \
     badapt_adaptive* badapt_builder_mlp_funnel_s_build( const badapt_builder_mlp_funnel_s* o );
 #define BETH_EXPAND_GROUP_badapt_mlp \
+  BCORE_FORWARD_OBJECT( badapt_mlp ); \
+  BCORE_FORWARD_OBJECT( badapt_mlp_layer_s ); \
+  BCORE_FORWARD_OBJECT( badapt_mlp_arr_layer_s ); \
+  BCORE_FORWARD_OBJECT( badapt_mlp_s ); \
+  BCORE_FORWARD_OBJECT( badapt_builder_mlp_funnel_s ); \
   BETH_EXPAND_ITEM_badapt_mlp_layer_s \
   BETH_EXPAND_ITEM_badapt_mlp_arr_layer_s \
   BETH_EXPAND_ITEM_badapt_mlp_s \
@@ -536,6 +570,7 @@
 // group: badapt_c1d
 
 #define TYPEOF_badapt_c1d 4280081428
+#define TYPEOF_badapt_c1d_s 2405996614
   #define TYPEOF_badapt_c1d_layer_s 169352500
   #define BETH_EXPAND_ITEM_badapt_c1d_layer_s \
     BCORE_DECLARE_OBJECT( badapt_c1d_layer_s ) \
@@ -577,6 +612,11 @@
     static inline void badapt_builder_c1d_funnel_s_set_out_size( badapt_builder_c1d_funnel_s* o, sz_t size ){ o->output_kernels = size; } \
     badapt_adaptive* badapt_builder_c1d_funnel_s_build( const badapt_builder_c1d_funnel_s* o );
 #define BETH_EXPAND_GROUP_badapt_c1d \
+  BCORE_FORWARD_OBJECT( badapt_c1d ); \
+  BCORE_FORWARD_OBJECT( badapt_c1d_layer_s ); \
+  BCORE_FORWARD_OBJECT( badapt_c1d_arr_layer_s ); \
+  BCORE_FORWARD_OBJECT( badapt_c1d_s ); \
+  BCORE_FORWARD_OBJECT( badapt_builder_c1d_funnel_s ); \
   BETH_EXPAND_ITEM_badapt_c1d_layer_s \
   BETH_EXPAND_ITEM_badapt_c1d_arr_layer_s \
   BETH_EXPAND_ITEM_badapt_c1d_s \
@@ -589,6 +629,7 @@
 // group: badapt_ern
 
 #define TYPEOF_badapt_ern 3572010651
+#define TYPEOF_badapt_ern_s 3488918381
   #define TYPEOF_badapt_ern_layer_s 879149859
   #define BETH_EXPAND_ITEM_badapt_ern_layer_s \
     BCORE_DECLARE_OBJECT( badapt_ern_layer_s ) \
@@ -629,6 +670,11 @@
     static inline void badapt_ern_builder_s_set_out_size( badapt_ern_builder_s* o, sz_t size ){ o->size_output = size; } \
     badapt_adaptive* badapt_ern_builder_s_build( const badapt_ern_builder_s* o );
 #define BETH_EXPAND_GROUP_badapt_ern \
+  BCORE_FORWARD_OBJECT( badapt_ern ); \
+  BCORE_FORWARD_OBJECT( badapt_ern_layer_s ); \
+  BCORE_FORWARD_OBJECT( badapt_ern_arr_layer_s ); \
+  BCORE_FORWARD_OBJECT( badapt_ern_s ); \
+  BCORE_FORWARD_OBJECT( badapt_ern_builder_s ); \
   BETH_EXPAND_ITEM_badapt_ern_layer_s \
   BETH_EXPAND_ITEM_badapt_ern_arr_layer_s \
   BETH_EXPAND_ITEM_badapt_ern_s \
@@ -641,6 +687,7 @@
 // group: badapt_lstm
 
 #define TYPEOF_badapt_lstm 3143739258
+#define TYPEOF_badapt_lstm_s 1040139428
   #define TYPEOF_badapt_lstm_layer_s 3112546698
   #define BETH_EXPAND_ITEM_badapt_lstm_layer_s \
     BCORE_DECLARE_OBJECT( badapt_lstm_layer_s ) \
@@ -683,6 +730,11 @@
     static inline void badapt_lstm_builder_s_set_out_size( badapt_lstm_builder_s* o, sz_t size ){ o->size_output = size; } \
     badapt_adaptive* badapt_lstm_builder_s_build( const badapt_lstm_builder_s* o );
 #define BETH_EXPAND_GROUP_badapt_lstm \
+  BCORE_FORWARD_OBJECT( badapt_lstm ); \
+  BCORE_FORWARD_OBJECT( badapt_lstm_layer_s ); \
+  BCORE_FORWARD_OBJECT( badapt_lstm_arr_layer_s ); \
+  BCORE_FORWARD_OBJECT( badapt_lstm_s ); \
+  BCORE_FORWARD_OBJECT( badapt_lstm_builder_s ); \
   BETH_EXPAND_ITEM_badapt_lstm_layer_s \
   BETH_EXPAND_ITEM_badapt_lstm_arr_layer_s \
   BETH_EXPAND_ITEM_badapt_lstm_s \
@@ -854,6 +906,7 @@
 // group: badapt_training_objects
 
 #define TYPEOF_badapt_training_objects 446020241
+#define TYPEOF_badapt_training_objects_s 990621627
   #define TYPEOF_badapt_progress_s 1786273765
   #define BETH_EXPAND_ITEM_badapt_progress_s \
     BCORE_DECLARE_OBJECT( badapt_progress_s ) \
@@ -879,6 +932,10 @@
     static inline void badapt_guide_std_s_init_x( badapt_guide_std_s* o ){ o->log = bcore_fork( BCORE_STDOUT ); } \
     bl_t badapt_guide_std_s_callback( const badapt_guide_std_s* o, badapt_training_state* state );
 #define BETH_EXPAND_GROUP_badapt_training_objects \
+  BCORE_FORWARD_OBJECT( badapt_training_objects ); \
+  BCORE_FORWARD_OBJECT( badapt_progress_s ); \
+  BCORE_FORWARD_OBJECT( badapt_training_state_std_s ); \
+  BCORE_FORWARD_OBJECT( badapt_guide_std_s ); \
   BETH_EXPAND_ITEM_badapt_progress_s \
   BETH_EXPAND_ITEM_badapt_training_state_std_s \
   BETH_EXPAND_ITEM_badapt_guide_std_s
@@ -890,6 +947,7 @@
 // group: badapt_trainer_objects
 
 #define TYPEOF_badapt_trainer_objects 2941531770
+#define TYPEOF_badapt_trainer_objects_s 44166052
   #define TYPEOF_badapt_trainer_batch_s 3745932548
   #define BETH_EXPAND_ITEM_badapt_trainer_batch_s \
     BCORE_DECLARE_OBJECT( badapt_trainer_batch_s ) \
@@ -920,6 +978,11 @@
       {aware_t _;badapt_supplier* problem;badapt_builder* builder;badapt_guide* guide;badapt_trainer* trainer;}; \
     s2_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, const bcore_arr_st_s* args );
 #define BETH_EXPAND_GROUP_badapt_trainer_objects \
+  BCORE_FORWARD_OBJECT( badapt_trainer_objects ); \
+  BCORE_FORWARD_OBJECT( badapt_trainer_batch_s ); \
+  BCORE_FORWARD_OBJECT( badapt_sample_batch_s ); \
+  BCORE_FORWARD_OBJECT( badapt_arr_sample_batch_s ); \
+  BCORE_FORWARD_OBJECT( badapt_trainer_main_s ); \
   BETH_EXPAND_ITEM_badapt_trainer_batch_s \
   BETH_EXPAND_ITEM_badapt_sample_batch_s \
   BETH_EXPAND_ITEM_badapt_arr_sample_batch_s \
