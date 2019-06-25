@@ -232,7 +232,7 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
         case TYPEOF_u3_t: st_s_copyf( o, "%"PRIu64, *(const u3_t*)src ); break;
         case TYPEOF_f2_t: st_s_copyf( o, "%g",      *(const f2_t*)src ); break;
         case TYPEOF_f3_t: st_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
-        case TYPEOF_sz_t: st_s_copyf( o, "%tu",     *(const sz_t*)src ); break;
+        case TYPEOF_sz_t: st_s_copyf( o, "%ti",     *(const sz_t*)src ); break;
         case TYPEOF_uz_t: st_s_copyf( o, "%zu",     *(const uz_t*)src ); break;
 
         case TYPEOF_smax_t:   st_s_copyf( o, "%"PRIiMAX, *(const smax_t*)src ); break;
@@ -243,7 +243,6 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
         case TYPEOF_tp_t:
         case TYPEOF_aware_t:
         {
-            // writing a text based name here is problematic because the corresponding parse feature expects a number
             uintmax_t val = *(const tp_t*)src;
             st_s_copyf( o, "%"PRIuMAX, val );
         }
