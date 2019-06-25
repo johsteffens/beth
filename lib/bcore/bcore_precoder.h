@@ -36,7 +36,7 @@
  *      signature <signature> <func_name>[( <additional-args> )];
  *      signature [ [<signature-group>] : ] <signature-name> [<func_name>] [( <additional-args> )];
  *
- *      feature [strict] '<flags>' <syntax-of-signature> [ = <default_func> ];
+ *      feature [strict] '<flags>' <syntax-of-signature> [ = <body> ];
  *
  *      stamp <name> = [aware] :|<trait> { reflection-body };
  *
@@ -110,6 +110,13 @@
  *        void clear(     o,      ) // clears array (sets space to 0)
  *        void push_c(    o, v    ) // pushes element by copying it
  *        void push_d(    o, v    ) // pushes element by passing ownership  (whether element is copied depends on array-type)
+ *
+ *  Functions:
+ *    Features and functions inside a stamp can have a body.
+ *    The body is enclosed in '{ ... }' and contains ordinary c-code.
+ *    Exceptions:
+ *      Symbol ':' immediately followed by a name serves as namespace expander
+ *
  */
 
 #ifndef BCORE_PRECODER_H

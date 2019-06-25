@@ -76,6 +76,7 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_inst_call )
     "feature bcore_inst_call : down_e;"
     "feature bcore_inst_call : copy_e;"
     "feature bcore_inst_call : copy_x;"
+    "feature bcore_inst_call : discard_e;"
 "}";
 
 /**********************************************************************************************************************/
@@ -135,7 +136,7 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 11058910 ) );
+            bcore_const_x_set_d( typeof( "bcore_precoded_hash" ), sr_tp( 1481775673 ) );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_setup );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_to_stdout );
             BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_get_size );
@@ -153,10 +154,12 @@ vd_t bcore_precoded_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bcore_inst_call_down_e );
             BCORE_REGISTER_FEATURE( bcore_inst_call_copy_e );
             BCORE_REGISTER_FEATURE( bcore_inst_call_copy_x );
+            BCORE_REGISTER_FEATURE( bcore_inst_call_discard_e );
             BCORE_REGISTER_NAME( bcore_inst_call_init_x );
             BCORE_REGISTER_NAME( bcore_inst_call_down_e );
             BCORE_REGISTER_NAME( bcore_inst_call_copy_e );
             BCORE_REGISTER_NAME( bcore_inst_call_copy_x );
+            BCORE_REGISTER_NAME( bcore_inst_call_discard_e );
             BCORE_REGISTER_SPECT( bcore_inst_call );
             BCORE_REGISTER_FEATURE( bcore_via_call_mutated );
             BCORE_REGISTER_SPECT( bcore_via_call );

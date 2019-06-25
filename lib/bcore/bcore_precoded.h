@@ -19,7 +19,9 @@
 // group: bcore_precoder_sample_signatures
 
 #define TYPEOF_bcore_precoder_sample_signatures 753998242
-#define BETH_EXPAND_GROUP_bcore_precoder_sample_signatures
+#define TYPEOF_bcore_precoder_sample_signatures_s 71310556
+#define BETH_EXPAND_GROUP_bcore_precoder_sample_signatures \
+  BCORE_FORWARD_OBJECT( bcore_precoder_sample_signatures );
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_precoder_sample_features
@@ -73,6 +75,7 @@
 // group: bcore_precoder_sample
 
 #define TYPEOF_bcore_precoder_sample 933626240
+#define TYPEOF_bcore_precoder_sample_s 2126101594
   #define TYPEOF_bcore_precoder_sample_object_s 1940901916
   #define BETH_EXPAND_ITEM_bcore_precoder_sample_object_s \
     BCORE_DECLARE_OBJECT( bcore_precoder_sample_object_s ) \
@@ -87,6 +90,9 @@
     void bcore_precoder_sample_object2_s_setup( bcore_precoder_sample_object2_s* o, sz_t n ); \
     void bcore_precoder_sample_object2_s_to_stdout( const bcore_precoder_sample_object2_s* o );
 #define BETH_EXPAND_GROUP_bcore_precoder_sample \
+  BCORE_FORWARD_OBJECT( bcore_precoder_sample ); \
+  BCORE_FORWARD_OBJECT( bcore_precoder_sample_object_s ); \
+  BCORE_FORWARD_OBJECT( bcore_precoder_sample_object2_s ); \
   BETH_EXPAND_ITEM_bcore_precoder_sample_object_s \
   BETH_EXPAND_ITEM_bcore_precoder_sample_object2_s
 
@@ -102,12 +108,14 @@
 #define TYPEOF_bcore_inst_call_down_e 3705510577
 #define TYPEOF_bcore_inst_call_copy_e 1302178876
 #define TYPEOF_bcore_inst_call_copy_x 1117625067
+#define TYPEOF_bcore_inst_call_discard_e 1806316605
 #define BETH_EXPAND_GROUP_bcore_inst_call \
   BCORE_FORWARD_OBJECT( bcore_inst_call ); \
   typedef void (*bcore_inst_call_init_x)( bcore_inst_call* o ); \
   typedef void (*bcore_inst_call_down_e)( bcore_inst_call* o ); \
   typedef void (*bcore_inst_call_copy_e)( bcore_inst_call* o ); \
   typedef void (*bcore_inst_call_copy_x)( bcore_inst_call* o ); \
+  typedef void (*bcore_inst_call_discard_e)( bcore_inst_call* o ); \
   BCORE_DECLARE_SPECT( bcore_inst_call ) \
   { \
       bcore_spect_header_s header; \
@@ -115,6 +123,7 @@
       bcore_inst_call_down_e down_e; \
       bcore_inst_call_copy_e copy_e; \
       bcore_inst_call_copy_x copy_x; \
+      bcore_inst_call_discard_e discard_e; \
   }; \
   static inline bcore_inst_call* bcore_inst_call_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_inst_call, t ); return ( bcore_inst_call* )bcore_inst_t_create( t ); } \
   static inline void bcore_inst_call_p_init_x( const bcore_inst_call_s* __p, bcore_inst_call* o ) { __p->init_x( o ); } \
@@ -124,7 +133,9 @@
   static inline void bcore_inst_call_p_copy_e( const bcore_inst_call_s* __p, bcore_inst_call* o ) { __p->copy_e( o ); } \
   static inline bl_t bcore_inst_call_p_defines_copy_e( const bcore_inst_call_s* __p ) { return __p->copy_e != NULL; } \
   static inline void bcore_inst_call_p_copy_x( const bcore_inst_call_s* __p, bcore_inst_call* o ) { __p->copy_x( o ); } \
-  static inline bl_t bcore_inst_call_p_defines_copy_x( const bcore_inst_call_s* __p ) { return __p->copy_x != NULL; }
+  static inline bl_t bcore_inst_call_p_defines_copy_x( const bcore_inst_call_s* __p ) { return __p->copy_x != NULL; } \
+  static inline void bcore_inst_call_p_discard_e( const bcore_inst_call_s* __p, bcore_inst_call* o ) { __p->discard_e( o ); } \
+  static inline bl_t bcore_inst_call_p_defines_discard_e( const bcore_inst_call_s* __p ) { return __p->discard_e != NULL; }
 
 /**********************************************************************************************************************/
 // source: bcore_spect_via_call
@@ -162,6 +173,7 @@
       {aware_t _;bcore_interpreter* interpreter;bl_t use_first_argument;sc_t local_file;sc_t global_file;};
 #define BETH_EXPAND_GROUP_bcore_main \
   BCORE_FORWARD_OBJECT( bcore_main ); \
+  BCORE_FORWARD_OBJECT( bcore_main_frame_s ); \
   typedef s2_t (*bcore_main_main)( bcore_main* o, const bcore_arr_st_s* args ); \
   BCORE_DECLARE_SPECT( bcore_main ) \
   { \
@@ -180,11 +192,14 @@
 // group: bcore_hmap_name
 
 #define TYPEOF_bcore_hmap_name 1134505061
+#define TYPEOF_bcore_hmap_name_s 2060496135
   #define TYPEOF_bcore_hmap_name_s 2060496135
   #define BETH_EXPAND_ITEM_bcore_hmap_name_s \
     BCORE_DECLARE_OBJECT( bcore_hmap_name_s ) \
       {aware_t _;bcore_hmap_tp_sr_s map;};
 #define BETH_EXPAND_GROUP_bcore_hmap_name \
+  BCORE_FORWARD_OBJECT( bcore_hmap_name ); \
+  BCORE_FORWARD_OBJECT( bcore_hmap_name_s ); \
   BETH_EXPAND_ITEM_bcore_hmap_name_s
 
 /**********************************************************************************************************************/
