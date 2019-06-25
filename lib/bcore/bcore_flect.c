@@ -853,7 +853,7 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
 
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
         {
-            bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_STATIC_S( #<sc_t>, #<sc_t>_ );", type, name );
+            bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_STATIC_S( #<sc_t>, #<sc_t>#<sc_t>);", type, name, name[ 0 ] ? "_ " : "" );
         }
         break;
 
@@ -861,18 +861,18 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
         {
             if( o->type )
             {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_TYPED_VIRTUAL_S( #<sc_t>, #<sc_t>_ );", type, name );
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_TYPED_VIRTUAL_S( #<sc_t>, #<sc_t>#<sc_t>);", type, name, name[ 0 ] ? "_ " : "" );
             }
             else
             {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_TYPED_S( #<sc_t>_ );", name );
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_SOLID_TYPED_S( #<sc_t>#<sc_t>);", name, name[ 0 ] ? "_ " : "" );
             }
         }
         break;
 
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
         {
-            bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_STATIC_S( #<sc_t>, #<sc_t>_ );", type, name );
+            bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_STATIC_S( #<sc_t>, #<sc_t>#<sc_t>);", type, name, name[ 0 ] ? "_ " : "" );
         }
         break;
 
@@ -880,11 +880,11 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
         {
             if( o->type )
             {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_TYPED_VITUAL_S( #<sc_t>, #<sc_t>_ );", type, name );
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_TYPED_VITUAL_S( #<sc_t>, #<sc_t>#<sc_t>);", type, name, name[ 0 ] ? "_ " : "" );
             }
             else
             {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_TYPED_S( #<sc_t>_ );", name );
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_TYPED_S( #<sc_t>#<sc_t>);", name, name[ 0 ] ? "_ " : "" );
             }
         }
         break;
@@ -894,11 +894,11 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
             if( o->type )
             {
                 /// We can represent a virtual type via BCORE_ARRAY_DYN_LINK_STATIC
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_STATIC_S( #<sc_t>, #<sc_t>_ );", type, name );
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_STATIC_S( #<sc_t>, #<sc_t>#<sc_t>);", type, name, name[ 0 ] ? "_ " : "" );
             }
             else
             {
-                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_AWARE_S( #<sc_t>_ );", name );
+                bcore_sink_a_push_fa( sink, "BCORE_ARRAY_DYN_LINK_AWARE_S( #<sc_t>#<sc_t>);", name, name[ 0 ] ? "_ " : "" );
             }
         }
         break;
