@@ -1304,6 +1304,13 @@ static void discard( const bcore_inst_s* p, vd_t o )
     bcore_release_arg( ( fp_t )p->down, p, o );
 }
 
+static void discard_call( const bcore_inst_s* p, vd_t o )
+{
+    if( !o ) return;
+    if( p->inst_call_p->discard_e ) p->inst_call_p->discard_e( o );
+    discard( p, o );
+}
+
 static vd_t clone_null( const bcore_inst_s* p, vc_t src ) { return NULL; }
 
 static vd_t clone_o( const bcore_inst_s* p, vc_t src )
@@ -1367,11 +1374,12 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
 
     bl_t body_undefined_or_complete = true;
 
-    bl_t inst_call_init_x = false;
-    bl_t inst_call_copy_e = false;
-    bl_t inst_call_copy_x = false;
-    bl_t inst_call_down_e = false;
-    bl_t inst_call_any    = false;
+    bl_t inst_call_init_x    = false;
+    bl_t inst_call_copy_e    = false;
+    bl_t inst_call_copy_x    = false;
+    bl_t inst_call_down_e    = false;
+    bl_t inst_call_discard_e = false;
+    bl_t inst_call_any       = false;
 
     if( bcore_self_s_items_size( self ) > 0 )
     {
@@ -1396,6 +1404,7 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
                     case TYPEOF_bcore_inst_call_down_e: inst_call_any = inst_call_down_e = true; o->down_flat = false; break;
                     case TYPEOF_bcore_inst_call_copy_e: inst_call_any = inst_call_copy_e = true; o->copy_flat = false; break;
                     case TYPEOF_bcore_inst_call_copy_x: inst_call_any = inst_call_copy_x = true; o->copy_flat = false; break;
+                    case TYPEOF_bcore_inst_call_discard_e: inst_call_any = inst_call_discard_e = true; break;
                     default: break;
                 }
 
@@ -1560,6 +1569,8 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
     o->down = o->down_o ? ( fp_down_a ? down_amoebic : down_o ) : ( o->down_flat ? ( o->size > 0 ? down_flat : down_null ) : down_generic );
     o->copy = o->copy_o ? ( fp_copy_a ? copy_amoebic : copy_o ) : ( o->copy_flat ? ( o->size > 0 ? copy_flat : copy_null ) : copy_generic );
 
+    o->discard = o->discard_o ? discard_o : NULL;
+
     if( inst_call_init_x )
     {
         if( o->init != init_generic )
@@ -1602,11 +1613,25 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
         o->copy = copy_call_generic;
     }
 
+    if( inst_call_discard_e )
+    {
+        if( o->discard )
+        {
+            ERR_fa
+            (
+                "Object '#<sc_t>': Registering bcore_inst_call_discard requires generic handling by bcore_inst.\n"
+                "This object also registers direct discard.\n",
+                ifnameof( self->type )
+            );
+        }
+        o->discard = discard_call;
+    }
+
+    o->discard      = o->discard      ? o->discard     : ( o->size > 0 ? discard      : discard_null      );
     o->copy_typed   = o->copy_typed_o ? copy_typed_o   : ( o->size > 0 ? copy_typed   : copy_typed_null   );
     o->move         = o->move_o       ? move_o         : ( o->size > 0 ? move         : move_null         );
     o->create       = o->create_o     ? create_o       : ( o->size > 0 ? create       : create_null       );
     o->create_typed = o->create_o     ? create_typed_o : ( o->size > 0 ? create_typed : create_typed_null );
-    o->discard      = o->discard_o    ? discard_o      : ( o->size > 0 ? discard      : discard_null      );
     o->clone        = o->clone_o      ? clone_o        : ( o->size > 0 ? clone        : clone_null        );
 
     return o;
