@@ -80,6 +80,13 @@ static inline tp_t entypeof_n(             sc_t name, uz_t n ) { return bcore_na
 static inline tp_t entypeof_ns(   tp_t ns, sc_t name         ) { return bcore_name_enroll_s(  ns, name    ); }
 static inline tp_t entypeof_ns_n( tp_t ns, sc_t name, uz_t n ) { return bcore_name_enroll_sn( ns, name, n ); }
 
+// composes a string from arguments and computes key
+tp_t typeof_fv( sc_t format, va_list args );
+tp_t typeof_fa( sc_t format, ... );
+
+tp_t entypeof_fv( sc_t format, va_list args );
+tp_t entypeof_fa( sc_t format, ... );
+
 static inline sc_t    nameof(   u2_t type ) { return bcore_name_get_name( type ); }
 static inline sc_t  ifnameof(   u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
 static inline st_s*   nameof_s( u2_t type ) { return bcore_name_get_name_s( type ); }

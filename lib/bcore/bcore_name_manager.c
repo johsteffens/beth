@@ -170,6 +170,40 @@ tp_t bcore_name_enroll( sc_t name )
     return bcore_name_enroll_sn( 0, name, bcore_strlen( name ) );
 }
 
+tp_t typeof_fv( sc_t format, va_list args )
+{
+    st_s* s = st_s_create_fv( format, args );
+    tp_t tp = typeof( s->sc );
+    st_s_discard( s );
+    return tp;
+}
+
+tp_t typeof_fa( sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    tp_t tp = typeof_fv( format, args );
+    va_end( args );
+    return tp;
+}
+
+tp_t entypeof_fv( sc_t format, va_list args )
+{
+    st_s* s = st_s_create_fv( format, args );
+    tp_t tp = entypeof( s->sc );
+    st_s_discard( s );
+    return tp;
+}
+
+tp_t entypeof_fa( sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    tp_t tp = entypeof_fv( format, args );
+    va_end( args );
+    return tp;
+}
+
 void bcore_name_remove( tp_t type )
 {
     assert( hmap_s_g != NULL );
