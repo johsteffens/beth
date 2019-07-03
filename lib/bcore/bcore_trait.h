@@ -80,6 +80,9 @@ st_s* bcore_trait_show(); // store all registered traits with ancestry in a stri
 vd_t bcore_trait_signal_handler( const bcore_signal_s* o );
 
 // Macros
+#define BCORE_REGISTER_TRAIT( trait, parent ) \
+    bcore_trait_set( entypeof( #trait ), entypeof( #parent ) );
+
 #define BCORE_REGISTER_FFUNC( feature, func ) \
     bcore_trait_set( entypeof( #func ), entypeof( #feature ) ); \
     BCORE_REGISTER_FUNC( func )
