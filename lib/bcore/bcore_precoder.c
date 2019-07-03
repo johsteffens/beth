@@ -1010,7 +1010,7 @@ static void bcore_precoder_stamp_s_compile( bcore_precoder_stamp_s* o, bcore_pre
                     {
                         st_s* name = st_s_create();
                         bcore_source_a_parse_fa( source, " #name", name );
-                        st_s_push_fa( self_string, "#<sc_t>_#<sc_t>", group->name.sc, name->sc );
+                        st_s_push_fa( self_string, "#<sc_t>#<sc_t>#<sc_t>", group->name.sc, name->sc[ 0 ] ? "_" : "", name->sc );
                         st_s_discard( name );
                     }
                     break;
@@ -2092,6 +2092,10 @@ static void bcore_precoder_group_s_expand_init1( const bcore_precoder_group_s* o
             }
         }
         bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_SPECT( #<sc_t> );\n", indent, o->name.sc );
+    }
+    else
+    {
+        bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_TRAIT( #<sc_t>, bcore_inst );\n", indent, o->name.sc );
     }
 }
 
