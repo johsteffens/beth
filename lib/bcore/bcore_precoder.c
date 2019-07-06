@@ -408,6 +408,7 @@ BCORE_DECLARE_OBJECT( bcore_precoder_group_s )
     tp_t hash;
     bl_t has_features;
     bl_t is_aware;
+    bl_t enroll; // causes all stamps to fully enroll during init cycle;
     BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_precoder_item_s, );
     bcore_precoder_source_s* source;
 };
@@ -420,6 +421,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_group_s )
     "tp_t hash;"
     "bl_t has_features;"
     "bl_t is_aware;"
+    "bl_t enroll;"
     "bcore_precoder_item_s => [] arr;"
     "private vd_t source;"
 "}";
@@ -1851,13 +1853,14 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
     {
         if( bcore_source_a_eos( source ) )  bcore_source_a_parse_err_fa( source, "Closing c-style comment '*/' expected." );
 
-        bcore_precoder_item_s* item = bcore_precoder_item_s_create();
-        item->group = o;
+        bcore_precoder_item_s* item = NULL;
 
         if( bcore_source_a_parse_bl_fa( source, " #?w'stamp' " ) )
         {
             BCORE_LIFE_INIT();
             BCORE_LIFE_CREATE( bcore_precoder_stamp_s, stamp );
+            item = bcore_precoder_item_s_create();
+            item->group = o;
             bcore_precoder_stamp_s_compile( stamp, o, source );
             bcore_precoder_item_s_setup( item, stamp );
             if( !bcore_precoder_s_item_register( o->source->target->precoder, item ) )
@@ -1870,6 +1873,8 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
         {
             BCORE_LIFE_INIT();
             BCORE_LIFE_CREATE( bcore_precoder_signature_s, precoder_signature );
+            item = bcore_precoder_item_s_create();
+            item->group = o;
             precoder_signature->group_name = o->name.sc;
             bcore_precoder_signature_s_compile( precoder_signature, o, source );
             bcore_source_a_parse_fa( source, " ; " );
@@ -1885,6 +1890,8 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
         {
             BCORE_LIFE_INIT();
             BCORE_LIFE_CREATE( bcore_precoder_body_s, body );
+            item = bcore_precoder_item_s_create();
+            item->group = o;
             bcore_precoder_body_s_compile( body, o, source );
             bcore_source_a_parse_fa( source, " ; " );
             bcore_precoder_item_s_setup( item, body );
@@ -1898,6 +1905,8 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
         {
             BCORE_LIFE_INIT();
             BCORE_LIFE_CREATE( bcore_precoder_feature_s, precoder_feature );
+            item = bcore_precoder_item_s_create();
+            item->group = o;
             precoder_feature->group_name = o->name.sc;
             bcore_precoder_feature_s_compile( precoder_feature, o, source );
 
@@ -1916,6 +1925,8 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
         {
             BCORE_LIFE_INIT();
             BCORE_LIFE_CREATE( bcore_precoder_name_s, precoder_name );
+            item = bcore_precoder_item_s_create();
+            item->group = o;
             precoder_name->group_name = o->name.sc;
             bcore_precoder_name_s_compile( precoder_name, o, source );
             bcore_precoder_item_s_setup( item, precoder_name );
@@ -1925,13 +1936,30 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             o->has_features = true;
             BCORE_LIFE_DOWN();
         }
+        else if( bcore_source_a_parse_bl_fa( source, " #?w'set' " ) )
+        {
+            if( bcore_source_a_parse_bl_fa( source, " #?w'enroll' " ) )
+            {
+                o->enroll = true;
+                o->hash = bcore_tp_fold_tp( o->hash, 1 );
+            }
+            else
+            {
+                bcore_source_a_parse_err_fa( source, "Invalid flag." );
+            }
+
+            bcore_source_a_parse_fa( source, " ;" );
+        }
         else
         {
             bcore_source_a_parse_err_fa( source, "Precode syntax error." );
         }
 
-        o->hash = bcore_tp_fold_tp( o->hash, item->hash );
-        bcore_array_a_push( ( bcore_array* )o, sr_asd( item ) );
+        if( item )
+        {
+            o->hash = bcore_tp_fold_tp( o->hash, item->hash );
+            bcore_array_a_push( ( bcore_array* )o, sr_asd( item ) );
+        }
     }
 }
 
@@ -2096,6 +2124,19 @@ static void bcore_precoder_group_s_expand_init1( const bcore_precoder_group_s* o
     else
     {
         bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_TRAIT( #<sc_t>, bcore_inst );\n", indent, o->name.sc );
+    }
+
+    if( o->enroll )
+    {
+        for( sz_t i = 0; i < o->size; i++ )
+        {
+            const bcore_precoder_item_s* item = o->data[ i ];
+            if( item->type == TYPEOF_bcore_precoder_stamp_s )
+            {
+                const bcore_precoder_stamp_s* stamp = item->data.o;
+                bcore_sink_a_push_fa( sink, "#rn{ }bcore_inst_s_get_typed( TYPEOF_#<sc_t> );\n", indent, stamp->item_name );
+            }
+        }
     }
 }
 

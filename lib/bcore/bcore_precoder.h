@@ -32,6 +32,8 @@
  *  Usage:
  *  BCORE_PRECODE( <group_name> )
  *  <precode-opener>
+ *      [set enroll;]
+ *
  *      signature <ret> <func_name>( const | mutable, <args> );
  *      signature <signature> <func_name>[( <additional-args> )];
  *      signature [ [<signature-group>] : ] <signature-name> [<func_name>] [( <additional-args> )];
@@ -116,6 +118,13 @@
  *    The body is enclosed in '{ ... }' and contains ordinary c-code.
  *    Exceptions:
  *      Symbol ':' immediately followed by a name serves as namespace expander
+ *
+ *  ----------------------------------------------------------------------------------------------
+ *  set:
+ *    Keyword 'set' defines certain group-specific flags:
+ *      enroll: This flag forces all stamps in the group to be fully enrolled.
+ *              This requires extra memory and is normally not recommended.
+ *              It is useful when objects are intended to be always reverse-traceable by trait.
  *
  */
 
