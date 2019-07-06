@@ -157,6 +157,8 @@ BCORE_DECLARE_OBJECT( bmath_mf3_s )
 
 void bmath_mf3_s_set_size( bmath_mf3_s* o, uz_t rows, uz_t cols );
 
+bmath_mf3_s bmath_mf3_init_weak( uz_t rows, uz_t cols, uz_t stride, f3_t* data );
+
 /** Sets all matrix elements to random values.
  *  hsm: true: Creates a symmetric matrix
  *  pdf: true: Creates a positive definite matrix

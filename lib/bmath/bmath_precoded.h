@@ -19,11 +19,14 @@
 // group: bmath_mf3_sx
 
 #define TYPEOF_bmath_mf3_sx 934545414
+#define TYPEOF_bmath_mf3_sx_s 948195256
   #define TYPEOF_bmath_mf3_sx_s 948195256
   #define BETH_EXPAND_ITEM_bmath_mf3_sx_s \
     BCORE_DECLARE_OBJECT( bmath_mf3_sx_s ) \
       {aware_t _;sz_t slos;sz_t xons;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
 #define BETH_EXPAND_GROUP_bmath_mf3_sx \
+  BCORE_FORWARD_OBJECT( bmath_mf3_sx ); \
+  BCORE_FORWARD_OBJECT( bmath_mf3_sx_s ); \
   BETH_EXPAND_ITEM_bmath_mf3_sx_s
 
 /**********************************************************************************************************************/
@@ -33,12 +36,32 @@
 // group: bmath_mf3_sf
 
 #define TYPEOF_bmath_mf3_sf 1370763508
+#define TYPEOF_bmath_mf3_sf_s 913280742
   #define TYPEOF_bmath_mf3_sf_s 913280742
   #define BETH_EXPAND_ITEM_bmath_mf3_sf_s \
     BCORE_DECLARE_OBJECT( bmath_mf3_sf_s ) \
       {aware_t _;sz_t cols;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
 #define BETH_EXPAND_GROUP_bmath_mf3_sf \
+  BCORE_FORWARD_OBJECT( bmath_mf3_sf ); \
+  BCORE_FORWARD_OBJECT( bmath_mf3_sf_s ); \
   BETH_EXPAND_ITEM_bmath_mf3_sf_s
+
+/**********************************************************************************************************************/
+// source: bmath_hf3
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bmath_hf3
+
+#define TYPEOF_bmath_hf3 3901573499
+#define TYPEOF_bmath_hf3_s 3558242317
+  #define TYPEOF_bmath_hf3_s 3558242317
+  #define BETH_EXPAND_ITEM_bmath_hf3_s \
+    BCORE_DECLARE_OBJECT( bmath_hf3_s ) \
+      {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, d_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
+#define BETH_EXPAND_GROUP_bmath_hf3 \
+  BCORE_FORWARD_OBJECT( bmath_hf3 ); \
+  BCORE_FORWARD_OBJECT( bmath_hf3_s ); \
+  BETH_EXPAND_ITEM_bmath_hf3_s
 
 /**********************************************************************************************************************/
 

@@ -103,6 +103,20 @@ void bmath_mf3_s_set_size( bmath_mf3_s* o, uz_t rows, uz_t cols )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bmath_mf3_s bmath_mf3_init_weak( uz_t rows, uz_t cols, uz_t stride, f3_t* data )
+{
+    bmath_mf3_s mat;
+    mat.rows = rows;
+    mat.cols = cols;
+    mat.stride = stride;
+    mat.data = data;
+    mat.size = rows * stride;
+    mat.space = 0;
+    return mat;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_set_random( bmath_mf3_s* o, bl_t hsm, bl_t pdf, uz_t rd, f3_t density, f3_t min, f3_t max, u2_t* p_rval )
 {
     u2_t rval = p_rval ? *p_rval : 12345;

@@ -49,6 +49,20 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_mf3_sf_s )
 "}";
 
 /**********************************************************************************************************************/
+// source: bmath_hf3
+#include "bmath_hf3.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bmath_hf3
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_s )
+"aware bcore_inst"
+"{"
+    "sz_t [] d;"
+    "f3_t [] v;"
+"}";
+
+/**********************************************************************************************************************/
 
 vd_t bmath_precoded_signal_handler( const bcore_signal_s* o )
 {
@@ -57,9 +71,13 @@ vd_t bmath_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 69464240 ) );
+            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 3273720976 ) );
             BCORE_REGISTER_OBJECT( bmath_mf3_sx_s );
+            BCORE_REGISTER_TRAIT( bmath_mf3_sx, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_mf3_sf_s );
+            BCORE_REGISTER_TRAIT( bmath_mf3_sf, bcore_inst );
+            BCORE_REGISTER_OBJECT( bmath_hf3_s );
+            BCORE_REGISTER_TRAIT( bmath_hf3, bcore_inst );
         }
         break;
         default: break;
