@@ -63,6 +63,95 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_s )
 "}";
 
 /**********************************************************************************************************************/
+// source: bmath_hf3_vm
+#include "bmath_hf3_vm.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bmath_hf3_vm
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_arr_hf3_s )
+"aware bcore_array"
+"{"
+    "bmath_hf3_s [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_s )
+"aware bmath_hf3_vm"
+"{"
+    "aware bmath_hf3_vm=> op;"
+    "private bmath_hf3_vm_s* p;"
+    "func bcore_inst_call:copy_x;"
+    "func bcore_via_call:mutated;"
+    "func :run;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_proc_s )
+"aware bcore_array"
+"{"
+    "bmath_hf3_vm_op_s [];"
+    "func bmath_hf3_vm:run;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_arr_proc_s )
+"aware bcore_array"
+"{"
+    "bmath_hf3_vm_proc_s [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_add_s )
+"aware bmath_hf3_vm"
+"{"
+    "sz_t a;"
+    "sz_t b;"
+    "sz_t c;"
+    "func :run;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_sub_s )
+"aware bmath_hf3_vm"
+"{"
+    "sz_t a;"
+    "sz_t b;"
+    "sz_t c;"
+    "func :run;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_kmul_s )
+"aware bmath_hf3_vm"
+"{"
+    "sz_t k = 1;"
+    "sz_t a;"
+    "sz_t b;"
+    "sz_t c;"
+    "func :run;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_hmul_s )
+"aware bmath_hf3_vm"
+"{"
+    "sz_t a;"
+    "sz_t b;"
+    "sz_t c;"
+    "func :run;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_frame_s )
+"aware bmath_hf3_vm"
+"{"
+    "bmath_hf3_vm_arr_hf3_s arr_holor;"
+    "bmath_hf3_vm_arr_proc_s arr_proc;"
+    "bcore_hmap_tpuz_s map_proc;"
+    "bcore_hmap_tpuz_s map_holor;"
+    "bcore_hmap_name_s map_name;"
+"}";
+
+BCORE_DEFINE_SPECT( bcore_inst, bmath_hf3_vm )
+"{"
+    "bcore_spect_header_s header;"
+    "feature aware bmath_hf3_vm : run;"
+"}";
+
+/**********************************************************************************************************************/
 
 vd_t bmath_precoded_signal_handler( const bcore_signal_s* o )
 {
@@ -71,13 +160,32 @@ vd_t bmath_precoded_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 3273720976 ) );
+            bcore_const_x_set_d( typeof( "bmath_precoded_hash" ), sr_tp( 1447765462 ) );
             BCORE_REGISTER_OBJECT( bmath_mf3_sx_s );
             BCORE_REGISTER_TRAIT( bmath_mf3_sx, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_mf3_sf_s );
             BCORE_REGISTER_TRAIT( bmath_mf3_sf, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_hf3_s );
             BCORE_REGISTER_TRAIT( bmath_hf3, bcore_inst );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_arr_hf3_s );
+            BCORE_REGISTER_FEATURE( bmath_hf3_vm_run );
+            BCORE_REGISTER_FFUNC( bcore_inst_call_copy_x, bmath_hf3_vm_op_s_copy_x );
+            BCORE_REGISTER_FFUNC( bcore_via_call_mutated, bmath_hf3_vm_op_s_mutated );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_s_run );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_s );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_proc_s_run );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_proc_s );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_arr_proc_s );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_add_s_run );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_add_s );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_sub_s_run );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_sub_s );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_kmul_s_run );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_kmul_s );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_hmul_s_run );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_hmul_s );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_frame_s );
+            BCORE_REGISTER_SPECT( bmath_hf3_vm );
         }
         break;
         default: break;
