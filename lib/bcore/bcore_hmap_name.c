@@ -64,6 +64,12 @@ st_s* bcore_hmap_name_s_get( const bcore_hmap_name_s* o, tp_t key )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+sc_t  bcore_hmap_name_s_get_sc( const bcore_hmap_name_s* o, tp_t key )
+{
+    sr_s* sr = bcore_hmap_tp_sr_s_get( &o->map, key );
+    return sr ? ( ( st_s* )( sr->o ) )->sc : NULL;
+}
+
 void bcore_hmap_name_s_remove( bcore_hmap_name_s* o, tp_t key )
 {
     bcore_hmap_tp_sr_s_remove( &o->map, key );

@@ -41,6 +41,7 @@ tp_t  bcore_hmap_name_s_set_st_c(     bcore_hmap_name_s* o, const st_s* st ); //
 tp_t  bcore_hmap_name_s_set_st_d(     bcore_hmap_name_s* o,       st_s* st ); // owns string (discards string when already registered); collision test; returns key
 tp_t  bcore_hmap_name_s_set_sc(       bcore_hmap_name_s* o,       sc_t  sc ); // copies string (no effect when already registered); collision test; returns key
 st_s* bcore_hmap_name_s_get(    const bcore_hmap_name_s* o, tp_t key ); // returns pointer to string or NULL when key does not exist
+sc_t  bcore_hmap_name_s_get_sc( const bcore_hmap_name_s* o, tp_t key ); // returns sc_t or NULL when key does not exist
 void  bcore_hmap_name_s_remove(       bcore_hmap_name_s* o, tp_t key ); // removes key if existing
 bl_t  bcore_hmap_name_s_exists( const bcore_hmap_name_s* o, tp_t key ); // checks if key exists
 void  bcore_hmap_name_s_clear(        bcore_hmap_name_s* o           ); // removes all entries and frees memory
