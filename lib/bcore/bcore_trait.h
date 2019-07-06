@@ -22,7 +22,7 @@
  *  A trait (identifier) is a unique type (tp_t)
  *  A trait can have a parent trait
  *  The collection of traits of an object is given by the inheritance chain.
- *  (Inheritance is governed by a tp->tp map)
+ *  (Inheritance is governed by a tp->tp hashmap)
  *  A trait can have a descriptive instance of the trait-object
  *  which reflects on trait characteristics and offers functionality
  *  for testing presence of these characteristics in objects.
@@ -55,6 +55,15 @@ tp_t bcore_trait_parent( tp_t trait );
 
 /// Checks if ancestor is in the chain of inheritance of trait. (thread-safe)
 bl_t bcore_trait_is_of( tp_t trait, tp_t ancestor );
+
+/// fills 'traits' with traits that inherit 'parent' immediately
+void bcore_get_traits_of_parent( tp_t parent, bcore_arr_tp_s* traits );
+
+/// fills 'traits' with traits that inherit 'ancestor' (not necessarily immediately)
+void bcore_get_traits_of_ancestor( tp_t ancestor, bcore_arr_tp_s* traits );
+
+void bcore_get_traits_of_parent_to_sink(   tp_t parent,   bcore_sink* sink );
+void bcore_get_traits_of_ancestor_to_sink( tp_t ancestor, bcore_sink* sink );
 
 /** Checks if a reflection supports a trait including all ancestors
  *  by matching the trait requirements with the reflection.

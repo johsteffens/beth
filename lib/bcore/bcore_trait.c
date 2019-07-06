@@ -24,6 +24,9 @@
 #include "bcore_spect_inst.h"
 #include "bcore_signal.h"
 #include "bcore_spect_sink.h"
+#include "bcore_arr.h"
+
+//----------------------------------------------------------------------------------------------------------------------
 
 const char* trait_ft_s_def_g = "bcore_trait_ft_s = bcore_inst { tp_t type; tp_t name; }";
 typedef struct bcore_trait_ft_s { tp_t type; tp_t name; } bcore_trait_ft_s;
@@ -63,10 +66,14 @@ typedef struct bcore_trait_s
 
 } bcore_trait_s;
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_trait_s_init( bcore_trait_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_trait_s_down( bcore_trait_s* o )
 {
@@ -74,8 +81,12 @@ void bcore_trait_s_down( bcore_trait_s* o )
     if( o->fp_space ) o->fp_data = bcore_un_alloc( sizeof( fp_t             ), o->fp_data, o->fp_space, 0, &o->fp_space );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_FUNCTION_CREATE(  bcore_trait_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_trait_s )
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void trait_s_push_function( bcore_trait_s* o, tp_t function, tp_t name )
 {
@@ -86,6 +97,8 @@ static void trait_s_push_function( bcore_trait_s* o, tp_t function, tp_t name )
     o->ft_data[ o->ft_size++ ] = ( bcore_trait_ft_s ) { function, name };
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static void trait_s_push_fp_support( bcore_trait_s* o, bcore_trait_fp_supports f )
 {
     if( o->fp_size == o->fp_space )
@@ -95,15 +108,21 @@ static void trait_s_push_fp_support( bcore_trait_s* o, bcore_trait_fp_supports f
     o->fp_data[ o->fp_size++ ] = f;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static bcore_self_s* trait_ft_s_create_self( void )
 {
     return bcore_self_s_build_parse_sc( trait_ft_s_def_g, sizeof( bcore_trait_ft_s ) );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static bcore_self_s* trait_s_create_self( void )
 {
     return bcore_self_s_build_parse_sc( trait_s_def_g, sizeof( bcore_trait_s ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 typedef struct system_s
 {
@@ -111,6 +130,8 @@ typedef struct system_s
     bcore_hmap_tpto_s trait_map;
     bcore_mutex_s mutex;
 } system_s;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void system_s_init( system_s* o )
 {
@@ -120,12 +141,16 @@ static void system_s_init( system_s* o )
     bcore_mutex_s_init( &o->mutex );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static system_s* system_s_create()
 {
     system_s* o = bcore_alloc( NULL, sizeof( system_s ) );
     system_s_init( o );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void system_s_down( system_s* o )
 {
@@ -149,6 +174,8 @@ static void system_s_down( system_s* o )
     bcore_mutex_s_down( &o->mutex );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static void system_s_discard( system_s* o )
 {
     if( !o ) return;
@@ -164,16 +191,22 @@ static void system_s_g_down()   { system_s_discard( system_s_g ); system_s_g = N
 static void system_s_g_lock()   { assert( system_s_g != NULL ); bcore_mutex_s_lock( &system_s_g->mutex   ); }
 static void system_s_g_unlock() { bcore_mutex_s_unlock( &system_s_g->mutex ); }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static void trait_manager_open()
 {
     static bcore_once_s flag = bcore_once_init;
     bcore_once_s_run( &flag, system_s_g_init );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static void trait_manager_close()
 {
     system_s_g_down();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_trait_s* get_trait( tp_t trait )
 {
@@ -181,6 +214,8 @@ static bcore_trait_s* get_trait( tp_t trait )
     if( trait_pp ) return *trait_pp;
     return *bcore_hmap_tpto_s_set_d( &system_s_g->trait_map, trait, bcore_trait_s_create() );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_trait_require_in_ancestry( tp_t trait )
 {
@@ -191,6 +226,8 @@ void bcore_trait_require_in_ancestry( tp_t trait )
     system_s_g_unlock();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_trait_require_awareness( tp_t trait )
 {
     assert( trait != 0 );
@@ -199,6 +236,8 @@ void bcore_trait_require_awareness( tp_t trait )
     get_trait( trait )->awareness = true;
     system_s_g_unlock();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_trait_require_function( tp_t trait, tp_t function, tp_t name )
 {
@@ -209,6 +248,8 @@ void bcore_trait_require_function( tp_t trait, tp_t function, tp_t name )
     system_s_g_unlock();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_trait_register_fp_support( tp_t trait, bcore_trait_fp_supports f )
 {
     assert( trait != 0 );
@@ -217,6 +258,8 @@ void bcore_trait_register_fp_support( tp_t trait, bcore_trait_fp_supports f )
     trait_s_push_fp_support( get_trait( trait ), f );
     system_s_g_unlock();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bl_t trait_is_of( tp_t trait, tp_t ancestor )
 {
@@ -228,6 +271,8 @@ static bl_t trait_is_of( tp_t trait, tp_t ancestor )
         trait = *parent;
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_trait_set( tp_t trait, tp_t parent )
 {
@@ -241,6 +286,8 @@ void bcore_trait_set( tp_t trait, tp_t parent )
     system_s_g_unlock();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_trait_exists( tp_t trait )
 {
     system_s_g_lock();
@@ -248,6 +295,8 @@ bl_t bcore_trait_exists( tp_t trait )
     system_s_g_unlock();
     return flag;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 tp_t bcore_trait_parent( tp_t trait )
 {
@@ -257,6 +306,8 @@ tp_t bcore_trait_parent( tp_t trait )
     return parent ? *parent : 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_trait_is_of( tp_t trait, tp_t ancestor )
 {
     system_s_g_lock();
@@ -264,6 +315,69 @@ bl_t bcore_trait_is_of( tp_t trait, tp_t ancestor )
     system_s_g_unlock();
     return flag;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_get_traits_of_parent( tp_t parent, bcore_arr_tp_s* traits )
+{
+    system_s_g_lock();
+    bcore_arr_tp_s_clear( traits );
+    for( sz_t i = 0; i < system_s_g->type_map.size; i++ )
+    {
+        tp_t key = bcore_hmap_tptp_s_idx_key( &system_s_g->type_map, i );
+        if( key && key != parent )
+        {
+            tp_t val = bcore_hmap_tptp_s_idx_val( &system_s_g->type_map, i );
+            if( val == parent ) bcore_arr_tp_s_push( traits, key );
+        }
+    }
+    system_s_g_unlock();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_get_traits_of_ancestor( tp_t ancestor, bcore_arr_tp_s* traits )
+{
+    system_s_g_lock();
+    bcore_arr_tp_s_clear( traits );
+    for( sz_t i = 0; i < system_s_g->type_map.size; i++ )
+    {
+        tp_t key = bcore_hmap_tptp_s_idx_key( &system_s_g->type_map, i );
+        if( key && key != ancestor )
+        {
+            if( trait_is_of( key, ancestor ) ) bcore_arr_tp_s_push( traits, key );
+        }
+    }
+    system_s_g_unlock();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_get_traits_of_parent_to_sink( tp_t parent, bcore_sink* sink )
+{
+    bcore_arr_tp_s* traits = bcore_arr_tp_s_create();
+    bcore_get_traits_of_parent( parent, traits );
+    for( sz_t i = 0; i < traits->size; i++ )
+    {
+        bcore_sink_a_push_fa( sink, "#<sc_t>\n", ifnameof( traits->data[ i ] ) );
+    }
+    bcore_arr_tp_s_discard( traits );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_get_traits_of_ancestor_to_sink( tp_t ancestor, bcore_sink* sink )
+{
+    bcore_arr_tp_s* traits = bcore_arr_tp_s_create();
+    bcore_get_traits_of_ancestor( ancestor, traits );
+    for( sz_t i = 0; i < traits->size; i++ )
+    {
+        bcore_sink_a_push_fa( sink, "#<sc_t>\n", ifnameof( traits->data[ i ] ) );
+    }
+    bcore_arr_tp_s_discard( traits );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_trait_supported( tp_t trait, const bcore_self_s* self, st_s* log )
 {
@@ -343,6 +457,8 @@ bl_t bcore_trait_supported( tp_t trait, const bcore_self_s* self, st_s* log )
     return true;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_self_s* self, st_s* log )
 {
     if( self->type == trait                       ) return true;
@@ -350,6 +466,8 @@ bl_t bcore_trait_satisfied_self( tp_t trait, const bcore_self_s* self, st_s* log
     if( bcore_trait_supported( trait, self, log ) ) return true;
     return false;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log )
 {
@@ -367,6 +485,8 @@ bl_t bcore_trait_satisfied_type( tp_t trait, tp_t object_type, st_s* log )
     return false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_trait_assert_satisfied_type( tp_t trait, tp_t object_type )
 {
     if( bcore_trait_satisfied_type( trait, object_type, NULL ) )
@@ -383,6 +503,8 @@ void bcore_trait_assert_satisfied_type( tp_t trait, tp_t object_type )
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 sz_t bcore_trait_size()
 {
     system_s_g_lock();
@@ -390,6 +512,8 @@ sz_t bcore_trait_size()
     system_s_g_unlock();
     return size;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* bcore_trait_show()
 {
@@ -430,6 +554,8 @@ st_s* bcore_trait_show()
     return log;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_trait_show_to_sink( bcore_sink* sink )
 {
     st_s* st = bcore_trait_show();
@@ -437,8 +563,12 @@ void bcore_trait_show_to_sink( bcore_sink* sink )
     st_s_discard( st );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // signal
+
+//----------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_trait_signal_handler( const bcore_signal_s* o )
 {
