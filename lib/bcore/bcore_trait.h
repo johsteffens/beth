@@ -76,6 +76,7 @@ void bcore_trait_assert_satisfied_type( tp_t trait, tp_t object_type ); // asser
 
 sz_t  bcore_trait_size(); // number of registered names
 st_s* bcore_trait_show(); // store all registered traits with ancestry in a string, separated by newline
+void  bcore_trait_show_to_sink( bcore_sink* sink );
 
 vd_t bcore_trait_signal_handler( const bcore_signal_s* o );
 

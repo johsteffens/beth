@@ -23,6 +23,7 @@
 #include "bcore_flect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_signal.h"
+#include "bcore_spect_sink.h"
 
 const char* trait_ft_s_def_g = "bcore_trait_ft_s = bcore_inst { tp_t type; tp_t name; }";
 typedef struct bcore_trait_ft_s { tp_t type; tp_t name; } bcore_trait_ft_s;
@@ -427,6 +428,13 @@ st_s* bcore_trait_show()
     system_s_g_unlock();
     st_s_push_char( log, '\n' );
     return log;
+}
+
+void bcore_trait_show_to_sink( bcore_sink* sink )
+{
+    st_s* st = bcore_trait_show();
+    bcore_sink_a_push_sc( sink, st->sc );
+    st_s_discard( st );
 }
 
 /**********************************************************************************************************************/
