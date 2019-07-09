@@ -395,6 +395,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_group_s )
     bcore_plant_group_s* group; // parent group;
 
     st_s name; // global name
+    st_s trait_name; // trait name (default bcore_inst)
 
     tp_t hash;
     bl_t has_features;
@@ -410,7 +411,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_group_s )
     "vd_t group;" // parent group;
 
     "st_s name;" // global name
-
+    "st_s trait_name = \"bcore_inst\";" // trait name
     "tp_t hash;"
     "bl_t has_features;"
     "bl_t is_aware;"
@@ -1978,7 +1979,7 @@ static void bcore_plant_group_s_expand_declaration( const bcore_plant_group_s* o
 static void bcore_plant_group_s_expand_spect_definition( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "\n" );
-    bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_SPECT( bcore_inst, #<sc_t> )\n", indent, o->name.sc );
+    bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_SPECT( #<sc_t>, #<sc_t> )\n", indent, o->trait_name.sc, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }\"{\"\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }    \"bcore_spect_header_s header;\"\n", indent );
     for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_expand_spect_definition( o->data[ i ], indent + 4, sink );
@@ -2027,7 +2028,7 @@ static void bcore_plant_group_s_expand_init1( const bcore_plant_group_s* o, sz_t
     }
     else
     {
-        bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_TRAIT( #<sc_t>, bcore_inst );\n", indent, o->name.sc );
+        bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_TRAIT( #<sc_t>, #<sc_t> );\n", indent, o->name.sc, o->trait_name.sc );
     }
 
     if( o->enroll )
@@ -2059,6 +2060,17 @@ static void bcore_plant_source_s_parse( bcore_plant_source_s* o, bcore_source* s
             bcore_plant_group_s* group = bcore_plant_group_s_create();
             group->source = o;
             bcore_source_a_parse_fa( source, " ( #name )", &group->name );
+            bcore_plant_group_s_parse( group, source );
+            o->hash = bcore_tp_fold_tp( o->hash, group->hash );
+            bcore_plant_compiler_s_group_register( plant_compiler_g, group, source );
+            bcore_array_a_push( ( bcore_array* )o, sr_asd( group ) );
+        }
+        else if( bcore_source_a_parse_bl_fa( source, "#?w'PLANT_GROUP'" ) )
+        {
+            bcore_plant_group_s* group = bcore_plant_group_s_create();
+            group->source = o;
+            bcore_source_a_parse_fa( source, " ( #name, #name )", &group->name, &group->trait_name );
+            if( group->trait_name.size == 0 ) st_s_copy_sc( &group->trait_name, "bcore_inst" );
             bcore_plant_group_s_parse( group, source );
             o->hash = bcore_tp_fold_tp( o->hash, group->hash );
             bcore_plant_compiler_s_group_register( plant_compiler_g, group, source );

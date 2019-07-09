@@ -56,8 +56,7 @@
 #include "bcore_plant_compiler.h"
 #include "bcore_planted.h"
 
-#include "bcore_precoder.h"
-#include "bcore_precoder_sample.h"
+#include "bcore_plant_sample.h"
 #include "bcore_spect_inst_call.h"
 #include "bcore_spect_via_call.h"
 #include "bcore_main.h"
@@ -140,10 +139,9 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_file_signal_handler,
         bcore_folder_signal_handler,
         bcore_spect_hash_signal_handler,
-        bcore_precoder_signal_handler,
         bcore_plant_compiler_signal_handler,
         bcore_planted_signal_handler,
-        bcore_precoder_sample_signal_handler,
+        bcore_plant_sample_signal_handler,
         bcore_spect_inst_call_signal_handler,
         bcore_spect_via_call_signal_handler,
         bcore_main_signal_handler,

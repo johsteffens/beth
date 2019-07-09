@@ -14,52 +14,52 @@
 
 
 /**********************************************************************************************************************/
-// source: bcore_precoder_sample
-#include "bcore_precoder_sample.h"
+// source: bcore_plant_sample
+#include "bcore_plant_sample.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_precoder_sample_signatures
+// group: bcore_plant_sample_signatures
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_precoder_sample_features
+// group: bcore_plant_sample_features
 
-BCORE_DEFINE_SPECT( bcore_inst, bcore_precoder_sample_features )
+BCORE_DEFINE_SPECT( bcore_inst, bcore_plant_sample_features )
 "{"
     "bcore_spect_header_s header;"
-    "feature strict aware bcore_precoder_sample_features : setup;"
-    "feature aware bcore_precoder_sample_features : to_stdout = bcore_precoder_sample_features_to_stdout__;"
-    "feature aware bcore_precoder_sample_features : get_size;"
+    "feature strict aware bcore_plant_sample_features : setup;"
+    "feature aware bcore_plant_sample_features : to_stdout = bcore_plant_sample_features_to_stdout__;"
+    "feature aware bcore_plant_sample_features : get_size;"
 "}";
 
 
-void bcore_precoder_sample_features_to_stdout__( const bcore_precoder_sample_features* o )
+void bcore_plant_sample_features_to_stdout__( const bcore_plant_sample_features* o )
 {
     bcore_msg_fa( "Called to_stdout__\n" );
 }
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_precoder_sample
+// group: bcore_plant_sample
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_precoder_sample_object_s )
+BCORE_DEFINE_OBJECT_INST_P( bcore_plant_sample_object_s )
 "aware bcore_inst"
 "{"
     "st_s name1;"
     "sz_t => [] arr;"
-    "func bcore_precoder_sample_features:setup;"
-    "func bcore_precoder_sample_features:to_stdout;"
-    "func bcore_precoder_sample_features:get_size;"
+    "func bcore_plant_sample_features:setup;"
+    "func bcore_plant_sample_features:to_stdout;"
+    "func bcore_plant_sample_features:get_size;"
 "}";
 
-void bcore_precoder_sample_object_s_to_stdout( const bcore_precoder_sample_object_s* o )
+void bcore_plant_sample_object_s_to_stdout( const bcore_plant_sample_object_s* o )
 { bcore_txt_ml_a_to_stdout( o ); }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_precoder_sample_object2_s )
+BCORE_DEFINE_OBJECT_INST_P( bcore_plant_sample_object2_s )
 "bcore_inst"
 "{"
     "aware_t _;"
-    "bcore_precoder_sample_object_s object;"
+    "bcore_plant_sample_object_s object;"
     "st_s name2;"
-    "func bcore_precoder_sample_features:setup;"
-    "func bcore_precoder_sample_features:to_stdout;"
+    "func bcore_plant_sample_features:setup;"
+    "func bcore_plant_sample_features:to_stdout;"
 "}";
 
 /**********************************************************************************************************************/
@@ -136,22 +136,22 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 1310237793 ) );
-            BCORE_REGISTER_TRAIT( bcore_precoder_sample_signatures, bcore_inst );
-            BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_setup );
-            BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_to_stdout );
-            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_features_to_stdout__ );
-            BCORE_REGISTER_FEATURE( bcore_precoder_sample_features_get_size );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 723307205 ) );
+            BCORE_REGISTER_TRAIT( bcore_plant_sample_signatures, bcore_inst );
+            BCORE_REGISTER_FEATURE( bcore_plant_sample_features_setup );
+            BCORE_REGISTER_FEATURE( bcore_plant_sample_features_to_stdout );
+            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_to_stdout, bcore_plant_sample_features_to_stdout__ );
+            BCORE_REGISTER_FEATURE( bcore_plant_sample_features_get_size );
             BCORE_REGISTER_NAME( anyglobalname );
-            BCORE_REGISTER_SPECT( bcore_precoder_sample_features );
-            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_setup, bcore_precoder_sample_object_s_setup );
-            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_object_s_to_stdout );
-            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_get_size, bcore_precoder_sample_object_s_get_size );
-            BCORE_REGISTER_OBJECT( bcore_precoder_sample_object_s );
-            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_setup, bcore_precoder_sample_object2_s_setup );
-            BCORE_REGISTER_FFUNC( bcore_precoder_sample_features_to_stdout, bcore_precoder_sample_object2_s_to_stdout );
-            BCORE_REGISTER_OBJECT( bcore_precoder_sample_object2_s );
-            BCORE_REGISTER_TRAIT( bcore_precoder_sample, bcore_inst );
+            BCORE_REGISTER_SPECT( bcore_plant_sample_features );
+            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_setup, bcore_plant_sample_object_s_setup );
+            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_to_stdout, bcore_plant_sample_object_s_to_stdout );
+            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_get_size, bcore_plant_sample_object_s_get_size );
+            BCORE_REGISTER_OBJECT( bcore_plant_sample_object_s );
+            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_setup, bcore_plant_sample_object2_s_setup );
+            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_to_stdout, bcore_plant_sample_object2_s_to_stdout );
+            BCORE_REGISTER_OBJECT( bcore_plant_sample_object2_s );
+            BCORE_REGISTER_TRAIT( bcore_plant_sample, bcore_inst );
             BCORE_REGISTER_FEATURE( bcore_inst_call_init_x );
             BCORE_REGISTER_FEATURE( bcore_inst_call_down_e );
             BCORE_REGISTER_FEATURE( bcore_inst_call_copy_e );

@@ -13,13 +13,13 @@
  *  limitations under the License.
  */
 
-#include "bcore_precoder_sample.h"
+#include "bcore_plant_sample.h"
 
-#ifdef TYPEOF_bcore_precoder_sample
+#ifdef TYPEOF_bcore_plant_sample
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_precoder_sample_object_s_setup( bcore_precoder_sample_object_s* o, sz_t n )
+void bcore_plant_sample_object_s_setup( bcore_plant_sample_object_s* o, sz_t n )
 {
     st_s_copy_sc( &o->name1, "Franz" );
     for( sz_t i = 0; i < n; i++ ) bcore_array_a_push_sz( ( bcore_array* )o, i );
@@ -27,42 +27,42 @@ void bcore_precoder_sample_object_s_setup( bcore_precoder_sample_object_s* o, sz
 
 //----------------------------------------------------------------------------------------------------------------------
 
-sz_t bcore_precoder_sample_object_s_get_size( const bcore_precoder_sample_object_s* o )
+sz_t bcore_plant_sample_object_s_get_size( const bcore_plant_sample_object_s* o )
 {
     return o->arr_size;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_precoder_sample_object2_s_setup( bcore_precoder_sample_object2_s* o, sz_t n )
+void bcore_plant_sample_object2_s_setup( bcore_plant_sample_object2_s* o, sz_t n )
 {
     st_s_copy_sc( &o->name2, "Paul" );
-    bcore_precoder_sample_object_s_setup( &o->object, n );
+    bcore_plant_sample_object_s_setup( &o->object, n );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_precoder_sample_object2_s_to_stdout( const bcore_precoder_sample_object2_s* o )
+void bcore_plant_sample_object2_s_to_stdout( const bcore_plant_sample_object2_s* o )
 {
     bcore_txt_ml_a_to_sink( o, BCORE_STDOUT );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_precoder_sample_object_s_selftest( void )
+void bcore_plant_sample_object_s_selftest( void )
 {
     BCORE_LIFE_INIT();
 
-    bcore_precoder_sample_features* object1 = BCORE_LIFE_A_PUSH( bcore_precoder_sample_object_s_create() );
-    bcore_precoder_sample_features* object2 = BCORE_LIFE_A_PUSH( bcore_precoder_sample_object2_s_create() );
+    bcore_plant_sample_features* object1 = BCORE_LIFE_A_PUSH( bcore_plant_sample_object_s_create() );
+    bcore_plant_sample_features* object2 = BCORE_LIFE_A_PUSH( bcore_plant_sample_object2_s_create() );
 
-    bcore_precoder_sample_features_a_setup( object1, 5 );
-    bcore_precoder_sample_features_a_to_stdout( object1 );
+    bcore_plant_sample_features_a_setup( object1, 5 );
+    bcore_plant_sample_features_a_to_stdout( object1 );
 
-    bcore_precoder_sample_features_a_setup( object2, bcore_precoder_sample_features_a_get_size( object1 ) );
+    bcore_plant_sample_features_a_setup( object2, bcore_plant_sample_features_a_get_size( object1 ) );
 
-    if( bcore_precoder_sample_features_a_defines_to_stdout( object2 ) ) bcore_precoder_sample_features_a_to_stdout( object2 );
-    if( bcore_precoder_sample_features_a_defines_get_size( object2 ) ) bcore_precoder_sample_features_a_get_size( object2 );
+    if( bcore_plant_sample_features_a_defines_to_stdout( object2 ) ) bcore_plant_sample_features_a_to_stdout( object2 );
+    if( bcore_plant_sample_features_a_defines_get_size( object2 ) ) bcore_plant_sample_features_a_get_size( object2 );
 
     ASSERT( sc_t_equ( ifnameof( TYPEOF_anyglobalname ), "anyglobalname" ) );
 
@@ -71,13 +71,13 @@ void bcore_precoder_sample_object_s_selftest( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#endif // TYPEOF_bcore_precoder_sample_object_s
+#endif // TYPEOF_bcore_plant_sample_object_s
 
 /**********************************************************************************************************************/
 
-vd_t bcore_precoder_sample_signal_handler( const bcore_signal_s* o )
+vd_t bcore_plant_sample_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bcore_precoder_sample" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_plant_sample" ) ) )
     {
         case TYPEOF_init1:
         {
@@ -86,7 +86,7 @@ vd_t bcore_precoder_sample_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_selftest:
         {
-            bcore_precoder_sample_object_s_selftest();
+            bcore_plant_sample_object_s_selftest();
         }
         break;
 

@@ -46,4 +46,7 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o );
 #define BETH_PRECODE( name ) \
     BETH_EXPAND_GROUP_##name
 
+#define PLANT_GROUP( name, trait ) \
+    BETH_EXPAND_GROUP_##name
+
 #endif // BCORE_PLANT_COMPILER_H

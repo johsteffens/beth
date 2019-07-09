@@ -13,88 +13,88 @@
 
 
 /**********************************************************************************************************************/
-// source: bcore_precoder_sample
+// source: bcore_plant_sample
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_precoder_sample_signatures
+// group: bcore_plant_sample_signatures
 
-#define TYPEOF_bcore_precoder_sample_signatures 753998242
-#define TYPEOF_bcore_precoder_sample_signatures_s 71310556
-#define BETH_EXPAND_GROUP_bcore_precoder_sample_signatures \
-  BCORE_FORWARD_OBJECT( bcore_precoder_sample_signatures );
+#define TYPEOF_bcore_plant_sample_signatures 2237955315
+#define TYPEOF_bcore_plant_sample_signatures_s 234423829
+#define BETH_EXPAND_GROUP_bcore_plant_sample_signatures \
+  BCORE_FORWARD_OBJECT( bcore_plant_sample_signatures );
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_precoder_sample_features
+// group: bcore_plant_sample_features
 
-#define TYPEOF_bcore_precoder_sample_features 1533308178
-#define TYPEOF_bcore_precoder_sample_features_s 2917243660
+#define TYPEOF_bcore_plant_sample_features 528495263
+#define TYPEOF_bcore_plant_sample_features_s 3695459401
 #define TYPEOF_anyglobalname 2209051205
-#define BETH_EXPAND_GROUP_bcore_precoder_sample_features \
-  BCORE_FORWARD_OBJECT( bcore_precoder_sample_features ); \
-  typedef void (*bcore_precoder_sample_features_setup)( bcore_precoder_sample_features* o, sz_t n ); \
-  typedef void (*bcore_precoder_sample_features_to_stdout)( const bcore_precoder_sample_features* o ); \
-  typedef sz_t (*bcore_precoder_sample_features_get_size)( const bcore_precoder_sample_features* o ); \
-  BCORE_DECLARE_SPECT( bcore_precoder_sample_features ) \
+#define BETH_EXPAND_GROUP_bcore_plant_sample_features \
+  BCORE_FORWARD_OBJECT( bcore_plant_sample_features ); \
+  typedef void (*bcore_plant_sample_features_setup)( bcore_plant_sample_features* o, sz_t n ); \
+  typedef void (*bcore_plant_sample_features_to_stdout)( const bcore_plant_sample_features* o ); \
+  typedef sz_t (*bcore_plant_sample_features_get_size)( const bcore_plant_sample_features* o ); \
+  BCORE_DECLARE_SPECT( bcore_plant_sample_features ) \
   { \
       bcore_spect_header_s header; \
-      bcore_precoder_sample_features_setup setup; \
-      bcore_precoder_sample_features_to_stdout to_stdout; \
-      bcore_precoder_sample_features_get_size get_size; \
+      bcore_plant_sample_features_setup setup; \
+      bcore_plant_sample_features_to_stdout to_stdout; \
+      bcore_plant_sample_features_get_size get_size; \
   }; \
-  static inline bcore_precoder_sample_features* bcore_precoder_sample_features_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_precoder_sample_features, t ); return ( bcore_precoder_sample_features* )bcore_inst_t_create( t ); } \
-  static inline bcore_precoder_sample_features* bcore_precoder_sample_features_a_clone( const bcore_precoder_sample_features* o ) { return ( bcore_precoder_sample_features* )bcore_inst_a_clone( ( bcore_inst* )o ); } \
-  static inline void bcore_precoder_sample_features_a_discard( bcore_precoder_sample_features* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); } \
-  static inline void bcore_precoder_sample_features_a_replicate( bcore_precoder_sample_features** o, const bcore_precoder_sample_features* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); } \
-  static inline void bcore_precoder_sample_features_p_setup( const bcore_precoder_sample_features_s* __p, bcore_precoder_sample_features* o, sz_t n ) { __p->setup( o, n ); } \
-  static inline void bcore_precoder_sample_features_t_setup( tp_t __t, bcore_precoder_sample_features* o, sz_t n ) { bcore_precoder_sample_features_s_get_typed( __t )->setup( o, n ); } \
-  static inline void bcore_precoder_sample_features_a_setup( bcore_precoder_sample_features* o, sz_t n ) { bcore_precoder_sample_features_s_get_aware( o )->setup( o, n ); } \
-  static inline void bcore_precoder_sample_features_r_setup( const sr_s* o, sz_t n ) { ASSERT( !sr_s_is_const( o ) ); ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->setup( o->o, n ); } \
-  static inline bl_t bcore_precoder_sample_features_p_defines_setup( const bcore_precoder_sample_features_s* __p ) { return true; } \
-  static inline bl_t bcore_precoder_sample_features_t_defines_setup( tp_t __t ) { return true; } \
-  static inline bl_t bcore_precoder_sample_features_a_defines_setup( const bcore_precoder_sample_features* o ) { return true; } \
-  static inline bl_t bcore_precoder_sample_features_r_defines_setup( const sr_s* o ) { return true; } \
-  static inline void bcore_precoder_sample_features_p_to_stdout( const bcore_precoder_sample_features_s* __p, const bcore_precoder_sample_features* o ) { __p->to_stdout( o ); } \
-  static inline void bcore_precoder_sample_features_t_to_stdout( tp_t __t, const bcore_precoder_sample_features* o ) { bcore_precoder_sample_features_s_get_typed( __t )->to_stdout( o ); } \
-  static inline void bcore_precoder_sample_features_a_to_stdout( const bcore_precoder_sample_features* o ) { bcore_precoder_sample_features_s_get_aware( o )->to_stdout( o ); } \
-  static inline void bcore_precoder_sample_features_r_to_stdout( const sr_s* o ) { ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->to_stdout( o->o ); } \
-  static inline bl_t bcore_precoder_sample_features_p_defines_to_stdout( const bcore_precoder_sample_features_s* __p ) { return true; } \
-  static inline bl_t bcore_precoder_sample_features_t_defines_to_stdout( tp_t __t ) { return true; } \
-  static inline bl_t bcore_precoder_sample_features_a_defines_to_stdout( const bcore_precoder_sample_features* o ) { return true; } \
-  static inline bl_t bcore_precoder_sample_features_r_defines_to_stdout( const sr_s* o ) { return true; } \
-  void bcore_precoder_sample_features_to_stdout__( const bcore_precoder_sample_features* o ); \
-  static inline sz_t bcore_precoder_sample_features_p_get_size( const bcore_precoder_sample_features_s* __p, const bcore_precoder_sample_features* o ) { return __p->get_size( o ); } \
-  static inline sz_t bcore_precoder_sample_features_t_get_size( tp_t __t, const bcore_precoder_sample_features* o ) { return bcore_precoder_sample_features_s_get_typed( __t )->get_size( o ); } \
-  static inline sz_t bcore_precoder_sample_features_a_get_size( const bcore_precoder_sample_features* o ) { return bcore_precoder_sample_features_s_get_aware( o )->get_size( o ); } \
-  static inline sz_t bcore_precoder_sample_features_r_get_size( const sr_s* o ) { return ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->get_size( o->o ); } \
-  static inline bl_t bcore_precoder_sample_features_p_defines_get_size( const bcore_precoder_sample_features_s* __p ) { return __p->get_size != NULL; } \
-  static inline bl_t bcore_precoder_sample_features_t_defines_get_size( tp_t __t ) { return bcore_precoder_sample_features_s_get_typed( __t )->get_size != NULL; } \
-  static inline bl_t bcore_precoder_sample_features_a_defines_get_size( const bcore_precoder_sample_features* o ) { return bcore_precoder_sample_features_s_get_aware( o )->get_size != NULL; } \
-  static inline bl_t bcore_precoder_sample_features_r_defines_get_size( const sr_s* o ) { return ( (bcore_precoder_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_precoder_sample_features_s ) )->get_size != NULL; }
+  static inline bcore_plant_sample_features* bcore_plant_sample_features_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_plant_sample_features, t ); return ( bcore_plant_sample_features* )bcore_inst_t_create( t ); } \
+  static inline bcore_plant_sample_features* bcore_plant_sample_features_a_clone( const bcore_plant_sample_features* o ) { return ( bcore_plant_sample_features* )bcore_inst_a_clone( ( bcore_inst* )o ); } \
+  static inline void bcore_plant_sample_features_a_discard( bcore_plant_sample_features* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); } \
+  static inline void bcore_plant_sample_features_a_replicate( bcore_plant_sample_features** o, const bcore_plant_sample_features* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); } \
+  static inline void bcore_plant_sample_features_p_setup( const bcore_plant_sample_features_s* __p, bcore_plant_sample_features* o, sz_t n ) { __p->setup( o, n ); } \
+  static inline void bcore_plant_sample_features_t_setup( tp_t __t, bcore_plant_sample_features* o, sz_t n ) { bcore_plant_sample_features_s_get_typed( __t )->setup( o, n ); } \
+  static inline void bcore_plant_sample_features_a_setup( bcore_plant_sample_features* o, sz_t n ) { bcore_plant_sample_features_s_get_aware( o )->setup( o, n ); } \
+  static inline void bcore_plant_sample_features_r_setup( const sr_s* o, sz_t n ) { ASSERT( !sr_s_is_const( o ) ); ( (bcore_plant_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_plant_sample_features_s ) )->setup( o->o, n ); } \
+  static inline bl_t bcore_plant_sample_features_p_defines_setup( const bcore_plant_sample_features_s* __p ) { return true; } \
+  static inline bl_t bcore_plant_sample_features_t_defines_setup( tp_t __t ) { return true; } \
+  static inline bl_t bcore_plant_sample_features_a_defines_setup( const bcore_plant_sample_features* o ) { return true; } \
+  static inline bl_t bcore_plant_sample_features_r_defines_setup( const sr_s* o ) { return true; } \
+  static inline void bcore_plant_sample_features_p_to_stdout( const bcore_plant_sample_features_s* __p, const bcore_plant_sample_features* o ) { __p->to_stdout( o ); } \
+  static inline void bcore_plant_sample_features_t_to_stdout( tp_t __t, const bcore_plant_sample_features* o ) { bcore_plant_sample_features_s_get_typed( __t )->to_stdout( o ); } \
+  static inline void bcore_plant_sample_features_a_to_stdout( const bcore_plant_sample_features* o ) { bcore_plant_sample_features_s_get_aware( o )->to_stdout( o ); } \
+  static inline void bcore_plant_sample_features_r_to_stdout( const sr_s* o ) { ( (bcore_plant_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_plant_sample_features_s ) )->to_stdout( o->o ); } \
+  static inline bl_t bcore_plant_sample_features_p_defines_to_stdout( const bcore_plant_sample_features_s* __p ) { return true; } \
+  static inline bl_t bcore_plant_sample_features_t_defines_to_stdout( tp_t __t ) { return true; } \
+  static inline bl_t bcore_plant_sample_features_a_defines_to_stdout( const bcore_plant_sample_features* o ) { return true; } \
+  static inline bl_t bcore_plant_sample_features_r_defines_to_stdout( const sr_s* o ) { return true; } \
+  void bcore_plant_sample_features_to_stdout__( const bcore_plant_sample_features* o ); \
+  static inline sz_t bcore_plant_sample_features_p_get_size( const bcore_plant_sample_features_s* __p, const bcore_plant_sample_features* o ) { return __p->get_size( o ); } \
+  static inline sz_t bcore_plant_sample_features_t_get_size( tp_t __t, const bcore_plant_sample_features* o ) { return bcore_plant_sample_features_s_get_typed( __t )->get_size( o ); } \
+  static inline sz_t bcore_plant_sample_features_a_get_size( const bcore_plant_sample_features* o ) { return bcore_plant_sample_features_s_get_aware( o )->get_size( o ); } \
+  static inline sz_t bcore_plant_sample_features_r_get_size( const sr_s* o ) { return ( (bcore_plant_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_plant_sample_features_s ) )->get_size( o->o ); } \
+  static inline bl_t bcore_plant_sample_features_p_defines_get_size( const bcore_plant_sample_features_s* __p ) { return __p->get_size != NULL; } \
+  static inline bl_t bcore_plant_sample_features_t_defines_get_size( tp_t __t ) { return bcore_plant_sample_features_s_get_typed( __t )->get_size != NULL; } \
+  static inline bl_t bcore_plant_sample_features_a_defines_get_size( const bcore_plant_sample_features* o ) { return bcore_plant_sample_features_s_get_aware( o )->get_size != NULL; } \
+  static inline bl_t bcore_plant_sample_features_r_defines_get_size( const sr_s* o ) { return ( (bcore_plant_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_plant_sample_features_s ) )->get_size != NULL; }
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_precoder_sample
+// group: bcore_plant_sample
 
-#define TYPEOF_bcore_precoder_sample 933626240
-#define TYPEOF_bcore_precoder_sample_s 2126101594
-#define TYPEOF_bcore_precoder_sample_object_s 1940901916
-#define BETH_EXPAND_ITEM_bcore_precoder_sample_object_s \
-  BCORE_DECLARE_OBJECT( bcore_precoder_sample_object_s ) \
+#define TYPEOF_bcore_plant_sample 910331991
+#define TYPEOF_bcore_plant_sample_s 2634114545
+#define TYPEOF_bcore_plant_sample_object_s 2559330681
+#define BETH_EXPAND_ITEM_bcore_plant_sample_object_s \
+  BCORE_DECLARE_OBJECT( bcore_plant_sample_object_s ) \
     {aware_t _;st_s name1;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
-  void bcore_precoder_sample_object_s_setup( bcore_precoder_sample_object_s* o, sz_t n ); \
-  void bcore_precoder_sample_object_s_to_stdout( const bcore_precoder_sample_object_s* o ); \
-  sz_t bcore_precoder_sample_object_s_get_size( const bcore_precoder_sample_object_s* o );
-#define TYPEOF_bcore_precoder_sample_object2_s 2687764618
-#define BETH_EXPAND_ITEM_bcore_precoder_sample_object2_s \
-  BCORE_DECLARE_OBJECT( bcore_precoder_sample_object2_s ) \
-    {aware_t _;bcore_precoder_sample_object_s object;st_s name2;}; \
-  void bcore_precoder_sample_object2_s_setup( bcore_precoder_sample_object2_s* o, sz_t n ); \
-  void bcore_precoder_sample_object2_s_to_stdout( const bcore_precoder_sample_object2_s* o );
-#define BETH_EXPAND_GROUP_bcore_precoder_sample \
-  BCORE_FORWARD_OBJECT( bcore_precoder_sample ); \
-  BCORE_FORWARD_OBJECT( bcore_precoder_sample_object_s ); \
-  BCORE_FORWARD_OBJECT( bcore_precoder_sample_object2_s ); \
-  BETH_EXPAND_ITEM_bcore_precoder_sample_object_s \
-  BETH_EXPAND_ITEM_bcore_precoder_sample_object2_s
+  void bcore_plant_sample_object_s_setup( bcore_plant_sample_object_s* o, sz_t n ); \
+  void bcore_plant_sample_object_s_to_stdout( const bcore_plant_sample_object_s* o ); \
+  sz_t bcore_plant_sample_object_s_get_size( const bcore_plant_sample_object_s* o );
+#define TYPEOF_bcore_plant_sample_object2_s 2356042977
+#define BETH_EXPAND_ITEM_bcore_plant_sample_object2_s \
+  BCORE_DECLARE_OBJECT( bcore_plant_sample_object2_s ) \
+    {aware_t _;bcore_plant_sample_object_s object;st_s name2;}; \
+  void bcore_plant_sample_object2_s_setup( bcore_plant_sample_object2_s* o, sz_t n ); \
+  void bcore_plant_sample_object2_s_to_stdout( const bcore_plant_sample_object2_s* o );
+#define BETH_EXPAND_GROUP_bcore_plant_sample \
+  BCORE_FORWARD_OBJECT( bcore_plant_sample ); \
+  BCORE_FORWARD_OBJECT( bcore_plant_sample_object_s ); \
+  BCORE_FORWARD_OBJECT( bcore_plant_sample_object2_s ); \
+  BETH_EXPAND_ITEM_bcore_plant_sample_object_s \
+  BETH_EXPAND_ITEM_bcore_plant_sample_object2_s
 
 /**********************************************************************************************************************/
 // source: bcore_spect_inst_call
