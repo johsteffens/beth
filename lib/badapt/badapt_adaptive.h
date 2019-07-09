@@ -23,8 +23,8 @@
 /**********************************************************************************************************************/
 
 /// training dynamics
-BETH_PRECODE( badapt_dynamics )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_dynamics, bcore_inst )
+#ifdef PLANT_SECTION
 
 /// updates weights if forward map is: in * w = out;
 feature strict 'a' void weights_adapt( const, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor );
@@ -34,16 +34,16 @@ stamp :std = aware :
     f3_t epsilon;   // learning rate
     f3_t lambda_l1; // l1-regularization
     f3_t lambda_l2; // l2-regularization
-    func : weights_adapt;
+    func badapt_dynamics : weights_adapt;
 };
 
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 /**********************************************************************************************************************/
 
 /// adaptive unit
-BETH_PRECODE( badapt_adaptive )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_adaptive, bcore_inst )
+#ifdef PLANT_SECTION
 
     // ===== required features =====
 
@@ -113,13 +113,13 @@ BETH_PRECODE( badapt_adaptive )
         return out;
     };
 
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 /**********************************************************************************************************************/
 
 /// builder: constructs the adaptive architecture
-BETH_PRECODE( badapt_builder )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_builder, bcore_inst )
+#ifdef PLANT_SECTION
 
     /// input vector size
     feature strict 'a' sz_t get_in_size( const );
@@ -132,7 +132,7 @@ BETH_PRECODE( badapt_builder )
     /// builds adaptive ready to be trained; passes ownership
     feature strict 'a' badapt_adaptive* build( const );
 
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 /**********************************************************************************************************************/
 

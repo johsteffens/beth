@@ -23,8 +23,8 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BETH_PRECODE( badapt_supplier )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_supplier, bcore_inst )
+#ifdef PLANT_SECTION
     feature strict 'a' sz_t get_in_size(  const );
     feature strict 'a' sz_t get_out_size( const );
 
@@ -38,22 +38,22 @@ BETH_PRECODE( badapt_supplier )
 
     // sets up builder parameters where suitable
     feature 'a' void setup_builder( const, badapt_builder* builder ) = setup_builder_default;
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 
 BCORE_FORWARD_OBJECT( badapt_training_state );
-BETH_PRECODE( badapt_guide )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_guide, bcore_inst )
+#ifdef PLANT_SECTION
     // callback for training iterations; state can be changed; return value indicates if training shall continue
     feature strict 'a' bl_t callback( const, badapt_training_state* state );
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 
 BCORE_FORWARD_OBJECT( badapt_progress_s );
-BETH_PRECODE( badapt_training_state )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_training_state, bcore_inst )
+#ifdef PLANT_SECTION
     feature 'a' void set_adaptive( mutable, const badapt_adaptive* adaptive );
     feature 'a' badapt_adaptive* get_adaptive( const );
 
@@ -89,21 +89,21 @@ BETH_PRECODE( badapt_training_state )
         return true;
     };
 
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BETH_PRECODE( badapt_trainer )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_trainer, bcore_inst )
+#ifdef PLANT_SECTION
     // sets up builder parameters where suitable
     feature strict 'a' void run( const, badapt_training_state* state );
     feature strict 'a' badapt_training_state* create_state( const ); // creates initial state for given training
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BETH_PRECODE( badapt_training_objects )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_training_objects, bcore_inst )
+#ifdef PLANT_SECTION
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -132,16 +132,16 @@ stamp badapt_training_state_std = aware badapt_training_state
 
     st_s backup_file_name;
 
-    func : set_adaptive = { badapt_adaptive_a_replicate( &o->adaptive, adaptive ); };
-    func : get_adaptive = { return o->adaptive; };
-    func : set_supplier = { badapt_supplier_a_replicate( &o->supplier, supplier ); };
-    func : get_supplier = { return o->supplier; };
-    func : set_progress = { badapt_progress_s_copy( &o->progress, progress ); };
-    func : get_progress = { return ( badapt_progress_s* )&o->progress; };
-    func : set_guide    = { badapt_guide_a_replicate( &o->guide, guide ); };
-    func : get_guide    = { return ( badapt_guide* )o->guide; };
-    func : set_backup_path = { st_s_copy_sc( &o->backup_file_name, name ); };
-    func : get_backup_path = { return o->backup_file_name.sc; };
+    func badapt_training_state : set_adaptive = { badapt_adaptive_a_replicate( &o->adaptive, adaptive ); };
+    func badapt_training_state : get_adaptive = { return o->adaptive; };
+    func badapt_training_state : set_supplier = { badapt_supplier_a_replicate( &o->supplier, supplier ); };
+    func badapt_training_state : get_supplier = { return o->supplier; };
+    func badapt_training_state : set_progress = { badapt_progress_s_copy( &o->progress, progress ); };
+    func badapt_training_state : get_progress = { return ( badapt_progress_s* )&o->progress; };
+    func badapt_training_state : set_guide    = { badapt_guide_a_replicate( &o->guide, guide ); };
+    func badapt_training_state : get_guide    = { return ( badapt_guide* )o->guide; };
+    func badapt_training_state : set_backup_path = { st_s_copy_sc( &o->backup_file_name, name ); };
+    func badapt_training_state : get_backup_path = { return o->backup_file_name.sc; };
 
 
 };
@@ -161,7 +161,7 @@ stamp badapt_guide_std = aware badapt_guide
     func badapt_guide    : callback;
 };
 
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -21,8 +21,8 @@
 
 /**********************************************************************************************************************/
 
-BETH_PRECODE( badapt_trainer_objects )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_trainer_objects, bcore_inst )
+#ifdef PLANT_SECTION
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // trainer_batch
@@ -44,8 +44,8 @@ stamp badapt_trainer_batch = aware badapt_trainer
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    func : run;
-    func : create_state;
+    func badapt_trainer : run;
+    func badapt_trainer : create_state;
 };
 
 stamp badapt_sample_batch     = bcore_inst { bmath_vf3_s in; bmath_vf3_s out; };
@@ -59,12 +59,12 @@ stamp badapt_trainer_main = aware bcore_main
     aware badapt_builder  => builder;
     aware badapt_guide    => guide;
     aware badapt_trainer  => trainer;
-    func : main;
+    func bcore_main : main;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 

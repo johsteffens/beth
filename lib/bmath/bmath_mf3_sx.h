@@ -79,8 +79,8 @@
 
 /**********************************************************************************************************************/
 
-BETH_PRECODE( bmath_mf3_sx )
-#ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PLANT_GROUP( bmath_mf3_sx, bcore_inst )
+#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     stamp bmath_mf3_sx = aware bcore_inst
     {
         sz_t slos;   // values per xon
@@ -91,7 +91,7 @@ BETH_PRECODE( bmath_mf3_sx )
         sz_t [] i; // index data
         f3_t [] v; // value data
     };
-#endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// sets size of splicing (zeros all indexes)
 void bmath_mf3_sx_s_set_size_splicing( bmath_mf3_sx_s* o, sz_t rows, sz_t xons );

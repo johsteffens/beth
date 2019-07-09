@@ -21,8 +21,8 @@
 
 /**********************************************************************************************************************/
 
-BETH_PRECODE( badapt_loss )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_loss, bcore_inst )
+#ifdef PLANT_SECTION
 
     // loss function
     feature strict 'pa' f3_t loss( const, const bmath_vf3_s* out, const bmath_vf3_s* target );
@@ -36,15 +36,15 @@ BETH_PRECODE( badapt_loss )
     // l2 loss function
     stamp :l2 = aware badapt_loss
     {
-        func :loss    = { return bmath_vf3_s_f3_sub_sqr( target, out ); };
-        func :loss_f3 = { return f3_sqr( target - out ); };
-        func :bgrad   = { bmath_vf3_s_sub( target, out, grad ); };
+        func badapt_loss:loss    = { return bmath_vf3_s_f3_sub_sqr( target, out ); };
+        func badapt_loss:loss_f3 = { return f3_sqr( target - out ); };
+        func badapt_loss:bgrad   = { bmath_vf3_s_sub( target, out, grad ); };
     };
 
     // logistic loss function
     stamp :log = aware badapt_loss
     {
-        func :loss =
+        func badapt_loss:loss =
         {
             assert( target->size == out->size );
             f3_t sum = 0;
@@ -55,12 +55,12 @@ BETH_PRECODE( badapt_loss )
             return sum;
         };
 
-        func :loss_f3 =
+        func badapt_loss:loss_f3 =
         {
             return log( 1.0 + exp( -target * out ) );
         };
 
-        func :bgrad =
+        func badapt_loss:bgrad =
         {
             assert( target->size == out ->size );
             assert( target->size == grad->size );
@@ -73,7 +73,7 @@ BETH_PRECODE( badapt_loss )
         };
     };
 
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 /**********************************************************************************************************************/
 

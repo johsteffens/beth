@@ -27,8 +27,8 @@
 
 /**********************************************************************************************************************/
 
-BETH_PRECODE( bmath_hf3_vm )
-#ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PLANT_GROUP( bmath_hf3_vm, bcore_inst )
+#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp :arr_hf3 = aware bcore_array { bmath_hf3_s []; };
 
@@ -45,7 +45,7 @@ stamp :op = aware :
     func bcore_inst_call : copy_x  = { o->p = (:s*):s_get_aware( o->op ); };
     func bcore_via_call  : mutated = { :op_s_copy_x( o ); };
 
-    func : run = { :p_run( o->p, o->op, arr_hf3 ); };
+    func bmath_hf3_vm : run = { :p_run( o->p, o->op, arr_hf3 ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,7 +67,7 @@ stamp :arr_proc = aware bcore_array { :proc_s []; };
 stamp :op_add = aware :
 {
     sz_t a; sz_t b; sz_t c;
-    func : run = { bmath_hf3_s_add( &arr_hf3->data[ o->a ], &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
+    func bmath_hf3_vm : run = { bmath_hf3_s_add( &arr_hf3->data[ o->a ], &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,7 +76,7 @@ stamp :op_add = aware :
 stamp :op_sub = aware :
 {
     sz_t a; sz_t b; sz_t c;
-    func : run = { bmath_hf3_s_sub( &arr_hf3->data[ o->a ], &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
+    func bmath_hf3_vm : run = { bmath_hf3_s_sub( &arr_hf3->data[ o->a ], &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,7 +86,7 @@ stamp :op_kmul = aware :
 {
     sz_t k = 1;
     sz_t a; sz_t b; sz_t c;
-    func : run = { bmath_hf3_s_kmul( &arr_hf3->data[ o->a ], o->k, &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
+    func bmath_hf3_vm : run = { bmath_hf3_s_kmul( &arr_hf3->data[ o->a ], o->k, &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -95,7 +95,7 @@ stamp :op_kmul = aware :
 stamp :op_hmul = aware :
 {
     sz_t a; sz_t b; sz_t c;
-    func : run = { bmath_hf3_s_hmul( &arr_hf3->data[ o->a ], &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
+    func bmath_hf3_vm : run = { bmath_hf3_s_hmul( &arr_hf3->data[ o->a ], &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -112,7 +112,7 @@ stamp :frame = aware :
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// runs a procedure
 void bmath_hf3_vm_frame_s_run_proc( bmath_hf3_vm_frame_s* o, tp_t name );

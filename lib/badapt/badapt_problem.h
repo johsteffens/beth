@@ -22,8 +22,8 @@
 
 /**********************************************************************************************************************/
 
-BETH_PRECODE( badapt_problem )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_problem, bcore_inst )
+#ifdef PLANT_SECTION
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -38,11 +38,11 @@ stamp :sine_random = aware badapt_supplier
     f3_t neg_tgt    = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss = { return o->preferred_loss; };
-    func : get_in_size    = { return o->input_size; };
-    func : get_out_size   = { return 1; };
-    func : fetch_sample_tio;
-    func : fetch_sample_vio;
+    func badapt_supplier : preferred_loss = { return o->preferred_loss; };
+    func badapt_supplier : get_in_size    = { return o->input_size; };
+    func badapt_supplier : get_out_size   = { return 1; };
+    func badapt_supplier : fetch_sample_tio;
+    func badapt_supplier : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,11 +58,11 @@ stamp :binary_add = aware badapt_supplier
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss = { return o->preferred_loss; };
-    func : get_in_size    = { return o->bits * 2; };
-    func : get_out_size   = { return o->bits + 1; };
-    func : fetch_sample_tio;
-    func : fetch_sample_vio;
+    func badapt_supplier : preferred_loss = { return o->preferred_loss; };
+    func badapt_supplier : get_in_size    = { return o->bits * 2; };
+    func badapt_supplier : get_out_size   = { return o->bits + 1; };
+    func badapt_supplier : fetch_sample_tio;
+    func badapt_supplier : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,11 +78,11 @@ stamp :binary_mul = aware badapt_supplier
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss = { return o->preferred_loss; };
-    func : get_in_size    = { return o->bits * 2; };
-    func : get_out_size   = { return o->bits * 2; };
-    func : fetch_sample_tio;
-    func : fetch_sample_vio;
+    func badapt_supplier : preferred_loss = { return o->preferred_loss; };
+    func badapt_supplier : get_in_size    = { return o->bits * 2; };
+    func badapt_supplier : get_out_size   = { return o->bits * 2; };
+    func badapt_supplier : fetch_sample_tio;
+    func badapt_supplier : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -98,11 +98,11 @@ stamp :binary_xsg3 = aware badapt_supplier
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss = { return o->preferred_loss; };
-    func : get_in_size    = { return o->bits; };
-    func : get_out_size   = { return o->bits; };
-    func : fetch_sample_tio;
-    func : fetch_sample_vio;
+    func badapt_supplier : preferred_loss = { return o->preferred_loss; };
+    func badapt_supplier : get_in_size    = { return o->bits; };
+    func badapt_supplier : get_out_size   = { return o->bits; };
+    func badapt_supplier : fetch_sample_tio;
+    func badapt_supplier : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -119,11 +119,11 @@ stamp :binary_hash = aware badapt_supplier
     bl_t reverse = false;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss = { return o->preferred_loss; };
-    func : get_in_size    = { return o->bits; };
-    func : get_out_size   = { return o->bits; };
-    func : fetch_sample_tio;
-    func : fetch_sample_vio;
+    func badapt_supplier : preferred_loss = { return o->preferred_loss; };
+    func badapt_supplier : get_in_size    = { return o->bits; };
+    func badapt_supplier : get_out_size   = { return o->bits; };
+    func badapt_supplier : fetch_sample_tio;
+    func badapt_supplier : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -140,16 +140,16 @@ stamp :polynom = aware badapt_supplier
     f3_t noise_level = 0;   // additive noise to input signal
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 
-    func : preferred_loss = { return o->preferred_loss; };
-    func : get_in_size    = { return o->input_size; };
-    func : get_out_size   = { return o->output_size; };
-    func : fetch_sample_tio;
-    func : fetch_sample_vio;
+    func badapt_supplier : preferred_loss = { return o->preferred_loss; };
+    func badapt_supplier : get_in_size    = { return o->input_size; };
+    func badapt_supplier : get_out_size   = { return o->output_size; };
+    func badapt_supplier : fetch_sample_tio;
+    func badapt_supplier : fetch_sample_vio;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 /**********************************************************************************************************************/
 

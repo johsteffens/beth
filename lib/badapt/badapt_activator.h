@@ -22,8 +22,8 @@
 /**********************************************************************************************************************/
 
 /// activation function
-BETH_PRECODE( badapt_activation )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_activation, bcore_inst )
+#ifdef PLANT_SECTION
     feature strict 'pa' f3_t fx( const, f3_t x ); // y  = f( x )
     feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
 
@@ -89,13 +89,13 @@ BETH_PRECODE( badapt_activation )
         func :dy = { return y > 0 ? 1 : 0.01; };
     };
 
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 /**********************************************************************************************************************/
 
 /// activator: (adaptive) activation applied to a vector
-BETH_PRECODE( badapt_activator )
-#ifdef BETH_PRECODE_SECTION
+PLANT_GROUP( badapt_activator, bcore_inst )
+#ifdef PLANT_SECTION
 
     /// activation function
     feature 'a' const badapt_activation* get_activation( const )                    = { return NULL; };
@@ -111,7 +111,7 @@ BETH_PRECODE( badapt_activator )
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// Activator without bias.
-    stamp :plain = aware badapt_activator
+    stamp :plain = aware :
     {
         aware badapt_activation => activation;
 
@@ -175,7 +175,7 @@ BETH_PRECODE( badapt_activator )
     stamp badapt_arr_layer_activator = aware bcore_array { badapt_layer_activator_s    [] arr; };
     stamp badapt_arr_activator       = aware bcore_array { aware badapt_activator   => [] arr; };
 
-#endif // BETH_PRECODE_SECTION
+#endif // PLANT_SECTION
 
 /**********************************************************************************************************************/
 

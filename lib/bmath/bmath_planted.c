@@ -82,7 +82,7 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_s )
     "private bmath_hf3_vm_s* p;"
     "func bcore_inst_call:copy_x;"
     "func bcore_via_call:mutated;"
-    "func :run;"
+    "func ^:run;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_proc_s )
@@ -104,7 +104,7 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_add_s )
     "sz_t a;"
     "sz_t b;"
     "sz_t c;"
-    "func :run;"
+    "func ^:run;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_sub_s )
@@ -113,7 +113,7 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_sub_s )
     "sz_t a;"
     "sz_t b;"
     "sz_t c;"
-    "func :run;"
+    "func ^:run;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_kmul_s )
@@ -123,7 +123,7 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_kmul_s )
     "sz_t a;"
     "sz_t b;"
     "sz_t c;"
-    "func :run;"
+    "func ^:run;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_hmul_s )
@@ -132,7 +132,7 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_hmul_s )
     "sz_t a;"
     "sz_t b;"
     "sz_t c;"
-    "func :run;"
+    "func ^:run;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_frame_s )
@@ -160,7 +160,7 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 52518756 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 3981703498 ) );
             BCORE_REGISTER_OBJECT( bmath_mf3_sx_s );
             BCORE_REGISTER_TRAIT( bmath_mf3_sx, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_mf3_sf_s );

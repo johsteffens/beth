@@ -26,7 +26,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_dynamics_std_s )
     "f3_t epsilon;"
     "f3_t lambda_l1;"
     "f3_t lambda_l2;"
-    "func :weights_adapt;"
+    "func ^:weights_adapt;"
 "}";
 
 BCORE_DEFINE_SPECT( bcore_inst, badapt_dynamics )
@@ -115,11 +115,11 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_sine_random_s )
     "f3_t pos_tgt = 0.9;"
     "f3_t neg_tgt = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func :preferred_loss;"
-    "func :get_in_size;"
-    "func :get_out_size;"
-    "func :fetch_sample_tio;"
-    "func :fetch_sample_vio;"
+    "func ^:preferred_loss;"
+    "func ^:get_in_size;"
+    "func ^:get_out_size;"
+    "func ^:fetch_sample_tio;"
+    "func ^:fetch_sample_vio;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_add_s )
@@ -130,11 +130,11 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_add_s )
     "f3_t val_h = 0.9;"
     "f3_t val_l = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func :preferred_loss;"
-    "func :get_in_size;"
-    "func :get_out_size;"
-    "func :fetch_sample_tio;"
-    "func :fetch_sample_vio;"
+    "func ^:preferred_loss;"
+    "func ^:get_in_size;"
+    "func ^:get_out_size;"
+    "func ^:fetch_sample_tio;"
+    "func ^:fetch_sample_vio;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_mul_s )
@@ -145,11 +145,11 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_mul_s )
     "f3_t val_h = 0.9;"
     "f3_t val_l = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func :preferred_loss;"
-    "func :get_in_size;"
-    "func :get_out_size;"
-    "func :fetch_sample_tio;"
-    "func :fetch_sample_vio;"
+    "func ^:preferred_loss;"
+    "func ^:get_in_size;"
+    "func ^:get_out_size;"
+    "func ^:fetch_sample_tio;"
+    "func ^:fetch_sample_vio;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_xsg3_s )
@@ -160,11 +160,11 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_xsg3_s )
     "f3_t val_h = 0.9;"
     "f3_t val_l = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func :preferred_loss;"
-    "func :get_in_size;"
-    "func :get_out_size;"
-    "func :fetch_sample_tio;"
-    "func :fetch_sample_vio;"
+    "func ^:preferred_loss;"
+    "func ^:get_in_size;"
+    "func ^:get_out_size;"
+    "func ^:fetch_sample_tio;"
+    "func ^:fetch_sample_vio;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_hash_s )
@@ -176,11 +176,11 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_hash_s )
     "f3_t val_l = -0.9;"
     "bl_t reverse = false;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func :preferred_loss;"
-    "func :get_in_size;"
-    "func :get_out_size;"
-    "func :fetch_sample_tio;"
-    "func :fetch_sample_vio;"
+    "func ^:preferred_loss;"
+    "func ^:get_in_size;"
+    "func ^:get_out_size;"
+    "func ^:fetch_sample_tio;"
+    "func ^:fetch_sample_vio;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_problem_polynom_s )
@@ -192,11 +192,11 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_polynom_s )
     "u2_t rval = 1234;"
     "f3_t noise_level = 0;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
-    "func :preferred_loss;"
-    "func :get_in_size;"
-    "func :get_out_size;"
-    "func :fetch_sample_tio;"
-    "func :fetch_sample_vio;"
+    "func ^:preferred_loss;"
+    "func ^:get_in_size;"
+    "func ^:get_out_size;"
+    "func ^:fetch_sample_tio;"
+    "func ^:fetch_sample_vio;"
 "}";
 
 /**********************************************************************************************************************/
@@ -209,85 +209,85 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_polynom_s )
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_zero_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_one_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_linear_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_lgst_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_lgst_hard_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_lgst_leaky_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_tanh_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_tanh_hard_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_tanh_leaky_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_softplus_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_relu_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_activation_leaky_relu_s )
 "aware badapt_activation"
 "{"
-    "func :fx;"
-    "func :dy;"
+    "func ^:fx;"
+    "func ^:dy;"
 "}";
 
 BCORE_DEFINE_SPECT( bcore_inst, badapt_activation )
@@ -304,10 +304,10 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_activator_plain_s )
 "aware badapt_activator"
 "{"
     "aware badapt_activation => activation;"
-    "func :infer;"
-    "func :bgrad;"
-    "func :set_activation;"
-    "func :get_activation;"
+    "func ^:infer;"
+    "func ^:bgrad;"
+    "func ^:set_activation;"
+    "func ^:get_activation;"
 "}";
 
 void badapt_activator_plain_s_infer( const badapt_activator_plain_s* o, const bmath_vf3_s* in, bmath_vf3_s* out )
@@ -334,8 +334,8 @@ void badapt_activator_plain_s_bgrad( const badapt_activator_plain_s* o, bmath_vf
 BCORE_DEFINE_OBJECT_INST_P( badapt_activator_softmax_s )
 "aware badapt_activator"
 "{"
-    "func :infer;"
-    "func :bgrad;"
+    "func ^:infer;"
+    "func ^:bgrad;"
 "}";
 
 void badapt_activator_softmax_s_infer( const badapt_activator_softmax_s* o, const bmath_vf3_s* in, bmath_vf3_s* out )
@@ -398,17 +398,17 @@ BCORE_DEFINE_SPECT( bcore_inst, badapt_activator )
 BCORE_DEFINE_OBJECT_INST_P( badapt_loss_l2_s )
 "aware badapt_loss"
 "{"
-    "func :loss;"
-    "func :loss_f3;"
-    "func :bgrad;"
+    "func ^:loss;"
+    "func ^:loss_f3;"
+    "func ^:bgrad;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_loss_log_s )
 "aware badapt_loss"
 "{"
-    "func :loss;"
-    "func :loss_f3;"
-    "func :bgrad;"
+    "func ^:loss;"
+    "func ^:loss_f3;"
+    "func ^:bgrad;"
 "}";
 
 f3_t badapt_loss_log_s_loss( const badapt_loss_log_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target )
@@ -478,15 +478,15 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_mlp_s )
     "badapt_mlp_arr_layer_s arr_layer;"
     "sz_t max_buffer_size;"
     "hidden bmath_vf3_s in;"
-    "func :get_in_size;"
-    "func :get_out_size;"
-    "func :get_dynamics_std;"
-    "func :set_dynamics_std;"
-    "func :arc_to_sink;"
-    "func :infer;"
-    "func :minfer;"
-    "func :bgrad;"
-    "func :bgrad_adapt;"
+    "func ^:get_in_size;"
+    "func ^:get_out_size;"
+    "func ^:get_dynamics_std;"
+    "func ^:set_dynamics_std;"
+    "func ^:arc_to_sink;"
+    "func ^:infer;"
+    "func ^:minfer;"
+    "func ^:bgrad;"
+    "func ^:bgrad_adapt;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_builder_mlp_funnel_s )
@@ -500,11 +500,11 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_builder_mlp_funnel_s )
     "u2_t random_seed = 1234;"
     "badapt_dynamics_std_s dynamics;"
     "badapt_arr_layer_activator_s arr_layer_activator;"
-    "func :get_in_size;"
-    "func :set_in_size;"
-    "func :get_out_size;"
-    "func :set_out_size;"
-    "func :build;"
+    "func ^:get_in_size;"
+    "func ^:set_in_size;"
+    "func ^:get_out_size;"
+    "func ^:set_out_size;"
+    "func ^:build;"
 "}";
 
 /**********************************************************************************************************************/
@@ -543,15 +543,15 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_c1d_s )
     "badapt_c1d_arr_layer_s arr_layer;"
     "sz_t max_buffer_size;"
     "hidden bmath_vf3_s in;"
-    "func :get_in_size;"
-    "func :get_out_size;"
-    "func :get_dynamics_std;"
-    "func :set_dynamics_std;"
-    "func :arc_to_sink;"
-    "func :infer;"
-    "func :minfer;"
-    "func :bgrad;"
-    "func :bgrad_adapt;"
+    "func ^:get_in_size;"
+    "func ^:get_out_size;"
+    "func ^:get_dynamics_std;"
+    "func ^:set_dynamics_std;"
+    "func ^:arc_to_sink;"
+    "func ^:infer;"
+    "func ^:minfer;"
+    "func ^:bgrad;"
+    "func ^:bgrad_adapt;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_builder_c1d_funnel_s )
@@ -569,11 +569,11 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_builder_c1d_funnel_s )
     "u2_t random_seed = 1234;"
     "badapt_dynamics_std_s dynamics;"
     "badapt_arr_layer_activator_s arr_layer_activator;"
-    "func :get_in_size;"
-    "func :set_in_size;"
-    "func :get_out_size;"
-    "func :set_out_size;"
-    "func :build;"
+    "func ^:get_in_size;"
+    "func ^:set_in_size;"
+    "func ^:get_out_size;"
+    "func ^:set_out_size;"
+    "func ^:build;"
 "}";
 
 /**********************************************************************************************************************/
@@ -620,14 +620,14 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_ern_s )
     "hidden bmath_mf3_s d_w_hc;"
     "hidden bmath_vf3_s d_b_h;"
     "hidden badapt_ern_arr_layer_s arr_layer;"
-    "func :get_in_size;"
-    "func :get_out_size;"
-    "func :get_dynamics_std;"
-    "func :set_dynamics_std;"
-    "func :arc_to_sink;"
-    "func :minfer;"
-    "func :bgrad_adapt;"
-    "func :get_weights_min_max;"
+    "func ^:get_in_size;"
+    "func ^:get_out_size;"
+    "func ^:get_dynamics_std;"
+    "func ^:set_dynamics_std;"
+    "func ^:arc_to_sink;"
+    "func ^:minfer;"
+    "func ^:bgrad_adapt;"
+    "func ^:get_weights_min_max;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_ern_builder_s )
@@ -641,11 +641,11 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_ern_builder_s )
     "u2_t random_seed = 1234;"
     "aware badapt_activator => a_h;"
     "aware badapt_activator => a_o;"
-    "func :get_in_size;"
-    "func :set_in_size;"
-    "func :get_out_size;"
-    "func :set_out_size;"
-    "func :build;"
+    "func ^:get_in_size;"
+    "func ^:set_in_size;"
+    "func ^:get_out_size;"
+    "func ^:set_out_size;"
+    "func ^:build;"
 "}";
 
 /**********************************************************************************************************************/
@@ -724,15 +724,15 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_lstm_s )
     "hidden bmath_vf3_s d_b_o;"
     "hidden bmath_vf3_s d_b_q;"
     "hidden badapt_lstm_arr_layer_s arr_layer;"
-    "func :get_in_size;"
-    "func :get_out_size;"
-    "func :get_dynamics_std;"
-    "func :set_dynamics_std;"
-    "func :arc_to_sink;"
-    "func :minfer;"
-    "func :bgrad_adapt;"
-    "func :reset;"
-    "func :get_weights_min_max;"
+    "func ^:get_in_size;"
+    "func ^:get_out_size;"
+    "func ^:get_dynamics_std;"
+    "func ^:set_dynamics_std;"
+    "func ^:arc_to_sink;"
+    "func ^:minfer;"
+    "func ^:bgrad_adapt;"
+    "func ^:reset;"
+    "func ^:get_weights_min_max;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_lstm_builder_s )
@@ -752,11 +752,11 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_lstm_builder_s )
     "aware badapt_activator => a_d;"
     "aware badapt_activator => a_r;"
     "func bcore_inst_call:init_x;"
-    "func :get_in_size;"
-    "func :set_in_size;"
-    "func :get_out_size;"
-    "func :set_out_size;"
-    "func :build;"
+    "func ^:get_in_size;"
+    "func ^:set_in_size;"
+    "func ^:get_out_size;"
+    "func ^:set_out_size;"
+    "func ^:build;"
 "}";
 
 /**********************************************************************************************************************/
@@ -858,16 +858,16 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_training_state_std_s )
     "aware badapt_supplier => supplier;"
     "aware badapt_guide => guide = badapt_guide_std_s;"
     "st_s backup_file_name;"
-    "func :set_adaptive;"
-    "func :get_adaptive;"
-    "func :set_supplier;"
-    "func :get_supplier;"
-    "func :set_progress;"
-    "func :get_progress;"
-    "func :set_guide;"
-    "func :get_guide;"
-    "func :set_backup_path;"
-    "func :get_backup_path;"
+    "func ^:set_adaptive;"
+    "func ^:get_adaptive;"
+    "func ^:set_supplier;"
+    "func ^:get_supplier;"
+    "func ^:set_progress;"
+    "func ^:get_progress;"
+    "func ^:set_guide;"
+    "func ^:get_guide;"
+    "func ^:set_backup_path;"
+    "func ^:get_backup_path;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_guide_std_s )
@@ -876,7 +876,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_guide_std_s )
     "f3_t annealing_factor = 0.99;"
     "hidden aware bcore_sink -> log;"
     "func bcore_inst_call:init_x;"
-    "func badapt_guide:callback;"
+    "func ^:callback;"
 "}";
 
 /**********************************************************************************************************************/
@@ -895,8 +895,8 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_trainer_batch_s )
     "sz_t fetch_cycles_per_iteration = 4;"
     "sz_t valid_size = 10000;"
     "sz_t max_iterations = 10;"
-    "func :run;"
-    "func :create_state;"
+    "func ^:run;"
+    "func ^:create_state;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( badapt_sample_batch_s )
@@ -919,7 +919,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_trainer_main_s )
     "aware badapt_builder => builder;"
     "aware badapt_guide => guide;"
     "aware badapt_trainer => trainer;"
-    "func :main;"
+    "func ^:main;"
 "}";
 
 /**********************************************************************************************************************/
@@ -931,7 +931,7 @@ vd_t badapt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_planted_hash" ), sr_tp( 3438617416 ) );
+            bcore_const_x_set_d( typeof( "badapt_planted_hash" ), sr_tp( 2643097549 ) );
             BCORE_REGISTER_FEATURE( badapt_dynamics_weights_adapt );
             BCORE_REGISTER_FFUNC( badapt_dynamics_weights_adapt, badapt_dynamics_std_s_weights_adapt );
             BCORE_REGISTER_OBJECT( badapt_dynamics_std_s );
