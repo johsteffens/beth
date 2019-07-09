@@ -34,9 +34,9 @@ vd_t bcore_spect_via_call_signal_handler( const bcore_signal_s* o )
         }
         break;
 
-        case TYPEOF_precoder:
+        case TYPEOF_plant:
         {
-            bcore_precoder_compile( "bcore_precoded", __FILE__ );
+            bcore_plant_compile( "bcore_planted", __FILE__ );
         }
         break;
 

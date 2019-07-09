@@ -32,7 +32,7 @@
 #include "bmath_simd.h"
 #include "bmath_estimator.h"
 #include "bmath_plot.h"
-#include "bmath_precoded.h"
+#include "bmath_planted.h"
 #include "bmath_hf3.h"
 #include "bmath_hf3_vm.h"
 
@@ -70,7 +70,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_simd_signal_handler,
             bmath_estimator_signal_handler,
             bmath_plot_signal_handler,
-            bmath_precoded_signal_handler,
+            bmath_planted_signal_handler,
             bmath_hf3_signal_handler,
             bmath_hf3_vm_signal_handler,
         };

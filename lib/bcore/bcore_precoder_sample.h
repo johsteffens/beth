@@ -19,7 +19,7 @@
 #define BCORE_PRECODER_SAMPLE_H
 
 #include "bcore_std.h"
-#include "bcore_precoded.h"
+#include "bcore_planted.h"
 
 /**********************************************************************************************************************/
 

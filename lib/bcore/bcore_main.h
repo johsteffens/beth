@@ -31,9 +31,9 @@
 #ifndef BCORE_MAIN_H
 #define BCORE_MAIN_H
 
-#include "bcore_precoder.h"
+#include "bcore_plant_compiler.h"
 #include "bcore_trait.h"
-#include "bcore_precoded.h"
+#include "bcore_planted.h"
 #include "bcore_txt_ml.h"
 #include "bcore_spect_interpreter.h"
 #include "bcore_arr.h"

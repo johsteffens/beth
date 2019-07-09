@@ -172,6 +172,9 @@ static st_s* create_structured_multiline_string( const sc_t s, sz_t indent )
 
 /**********************************************************************************************************************/
 
+//----------------------------------------------------------------------------------------------------------------------
+// features
+
 BCORE_DECLARE_OBJECT( bcore_precoder_arg_s )
 {
     aware_t _;
@@ -409,6 +412,7 @@ BCORE_DECLARE_OBJECT( bcore_precoder_group_s )
     bl_t has_features;
     bl_t is_aware;
     bl_t enroll; // causes all stamps to fully enroll during init cycle;
+    bcore_precoder_group_s* parent; // groups can be nested
     BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_precoder_item_s, );
     bcore_precoder_source_s* source;
 };
@@ -422,6 +426,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_precoder_group_s )
     "bl_t has_features;"
     "bl_t is_aware;"
     "bl_t enroll;"
+    "private bcore_precoder_group_s* parent;" // groups can be nested
     "bcore_precoder_item_s => [] arr;"
     "private vd_t source;"
 "}";
@@ -508,7 +513,7 @@ static void bcore_precoder_args_s_clear( bcore_precoder_args_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_arg_s_compile( bcore_precoder_arg_s* o, const bcore_precoder_group_s* group, bcore_source* source )
+static void bcore_precoder_arg_s_parse( bcore_precoder_arg_s* o, const bcore_precoder_group_s* group, bcore_source* source )
 {
     st_s* s = st_s_create();
     if( bcore_source_a_parse_bl_fa( source, "#?'const' " ) ) st_s_push_sc( &o->type, "const " );
@@ -538,13 +543,13 @@ static void bcore_precoder_arg_s_compile( bcore_precoder_arg_s* o, const bcore_p
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_args_s_compile( bcore_precoder_args_s* o, const bcore_precoder_group_s* group, bcore_source* source )
+static void bcore_precoder_args_s_parse( bcore_precoder_args_s* o, const bcore_precoder_group_s* group, bcore_source* source )
 {
     bcore_precoder_args_s_clear( o );
     while( bcore_source_a_parse_bl_fa( source, " #?',' " ) ) // args follow
     {
         bcore_precoder_arg_s* arg = bcore_precoder_arg_s_create();
-        bcore_precoder_arg_s_compile( arg, group, source );
+        bcore_precoder_arg_s_parse( arg, group, source );
         bcore_array_a_push( ( bcore_array* ) o, sr_asd( arg ) );
     }
 }
@@ -556,7 +561,7 @@ static void bcore_precoder_args_s_append( bcore_precoder_args_s* o, const bcore_
     while( !bcore_source_a_parse_bl_fa( source, " #=?')' " ) ) // args follow
     {
         bcore_precoder_arg_s* arg = bcore_precoder_arg_s_create();
-        bcore_precoder_arg_s_compile( arg, group, source );
+        bcore_precoder_arg_s_parse( arg, group, source );
         bcore_array_a_push( ( bcore_array* ) o, sr_asd( arg ) );
     }
 }
@@ -618,7 +623,7 @@ static tp_t bcore_precoder_args_s_get_hash( const bcore_precoder_args_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_signature_s_compile( bcore_precoder_signature_s* o, const bcore_precoder_group_s* group, bcore_source* source )
+static void bcore_precoder_signature_s_parse( bcore_precoder_signature_s* o, const bcore_precoder_group_s* group, bcore_source* source )
 {
     BCORE_LIFE_INIT();
 
@@ -704,7 +709,7 @@ static void bcore_precoder_signature_s_compile( bcore_precoder_signature_s* o, c
         if(      bcore_source_a_parse_bl_fa(  source, " #?'mutable' " ) ) o->mutable = true;
         else if( bcore_source_a_parse_bl_fa(  source, " #?'const' "   ) ) o->mutable = false;
         else     bcore_source_a_parse_err_fa( source, "'mutable' or 'const' expected." );
-        bcore_precoder_args_s_compile( &o->args, group, source );
+        bcore_precoder_args_s_parse( &o->args, group, source );
         bcore_source_a_parse_fa( source, " ) " );
     }
     else if( bcore_source_a_parse_bl_fa( source, " #?'('" ) )
@@ -718,7 +723,7 @@ static void bcore_precoder_signature_s_compile( bcore_precoder_signature_s* o, c
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_body_s_compile_code( bcore_precoder_body_s* o, const bcore_precoder_group_s* group, bcore_source* source )
+static void bcore_precoder_body_s_parse_code( bcore_precoder_body_s* o, const bcore_precoder_group_s* group, bcore_source* source )
 {
     BCORE_LIFE_INIT();
 
@@ -790,7 +795,7 @@ static void bcore_precoder_body_s_compile_code( bcore_precoder_body_s* o, const 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_body_s_compile( bcore_precoder_body_s* o, const bcore_precoder_group_s* group, bcore_source* source )
+static void bcore_precoder_body_s_parse( bcore_precoder_body_s* o, const bcore_precoder_group_s* group, bcore_source* source )
 {
     BCORE_LIFE_INIT();
 
@@ -809,7 +814,7 @@ static void bcore_precoder_body_s_compile( bcore_precoder_body_s* o, const bcore
 
     if( bcore_source_a_parse_bl_fa( source, " #=?'{'" ) )
     {
-        bcore_precoder_body_s_compile_code( o, group, source );
+        bcore_precoder_body_s_parse_code( o, group, source );
     }
     else
     {
@@ -845,7 +850,7 @@ static void bcore_precoder_body_s_compile( bcore_precoder_body_s* o, const bcore
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, const bcore_precoder_group_s* group, bcore_source* source )
+static void bcore_precoder_feature_s_parse( bcore_precoder_feature_s* o, const bcore_precoder_group_s* group, bcore_source* source )
 {
     BCORE_LIFE_INIT();
 
@@ -869,7 +874,7 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, const
 
     BCORE_LIFE_CREATE( bcore_precoder_signature_s, signature );
     signature->group_name = o->group_name;
-    bcore_precoder_signature_s_compile( signature, group, source );
+    bcore_precoder_signature_s_parse( signature, group, source );
     st_s_copy( &o->name, &signature->name );
     o->has_ret = signature->has_ret;
     st_s_copy( &o->ret_type, &signature->ret_type );
@@ -882,7 +887,7 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, const
         {
             if( o->strict )  bcore_source_a_parse_err_fa( source, "Feature is 'strict'. Default function would have no effect." );
             o->default_body = bcore_precoder_body_s_create();
-            bcore_precoder_body_s_compile_code( o->default_body, group, source );
+            bcore_precoder_body_s_parse_code( o->default_body, group, source );
             st_s_copy_fa( &o->default_name, "#<sc_t>__", o->name.sc );
         }
         else
@@ -904,7 +909,7 @@ static void bcore_precoder_feature_s_compile( bcore_precoder_feature_s* o, const
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_stamp_s_compile( bcore_precoder_stamp_s* o, bcore_precoder_group_s* group, bcore_source* source )
+static void bcore_precoder_stamp_s_parse( bcore_precoder_stamp_s* o, bcore_precoder_group_s* group, bcore_source* source )
 {
     BCORE_LIFE_INIT();
 
@@ -994,7 +999,7 @@ static void bcore_precoder_stamp_s_compile( bcore_precoder_stamp_s* o, bcore_pre
             if( bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
             {
                 func->body = bcore_precoder_body_s_create();
-                bcore_precoder_body_s_compile( func->body, group, source );
+                bcore_precoder_body_s_parse( func->body, group, source );
             }
 
             bcore_source_a_parse_fa( source, " ; " );
@@ -1324,7 +1329,7 @@ static void bcore_precoder_feature_s_expand_definition( const bcore_precoder_fea
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_name_s_compile( bcore_precoder_name_s* o, const bcore_precoder_group_s* group, bcore_source* source )
+static void bcore_precoder_name_s_parse( bcore_precoder_name_s* o, const bcore_precoder_group_s* group, bcore_source* source )
 {
     if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
     {
@@ -1620,7 +1625,7 @@ static void bcore_precoder_item_s_expand_declaration( const bcore_precoder_item_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_items_s_expand_indef_declaration( const bcore_precoder_item_s* o, sz_t indent, bcore_sink* sink )
+static void bcore_precoder_item_s_expand_indef_declaration( const bcore_precoder_item_s* o, sz_t indent, bcore_sink* sink )
 {
     switch( sr_s_type( &o->data ) )
     {
@@ -1825,7 +1830,7 @@ static bl_t bcore_precoder_s_group_register( bcore_precoder_s* o, const bcore_pr
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_source* source )
+static void bcore_precoder_group_s_parse( bcore_precoder_group_s* o, bcore_source* source )
 {
     sc_t precode_termination = NULL;
 
@@ -1861,7 +1866,7 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             BCORE_LIFE_CREATE( bcore_precoder_stamp_s, stamp );
             item = bcore_precoder_item_s_create();
             item->group = o;
-            bcore_precoder_stamp_s_compile( stamp, o, source );
+            bcore_precoder_stamp_s_parse( stamp, o, source );
             bcore_precoder_item_s_setup( item, stamp );
             if( !bcore_precoder_s_item_register( o->source->target->precoder, item ) )
             {
@@ -1876,7 +1881,7 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             item = bcore_precoder_item_s_create();
             item->group = o;
             precoder_signature->group_name = o->name.sc;
-            bcore_precoder_signature_s_compile( precoder_signature, o, source );
+            bcore_precoder_signature_s_parse( precoder_signature, o, source );
             bcore_source_a_parse_fa( source, " ; " );
             bcore_precoder_item_s_setup( item, precoder_signature );
 
@@ -1892,7 +1897,7 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             BCORE_LIFE_CREATE( bcore_precoder_body_s, body );
             item = bcore_precoder_item_s_create();
             item->group = o;
-            bcore_precoder_body_s_compile( body, o, source );
+            bcore_precoder_body_s_parse( body, o, source );
             bcore_source_a_parse_fa( source, " ; " );
             bcore_precoder_item_s_setup( item, body );
             if( !bcore_precoder_s_item_register( o->source->target->precoder, item ) )
@@ -1908,7 +1913,7 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             item = bcore_precoder_item_s_create();
             item->group = o;
             precoder_feature->group_name = o->name.sc;
-            bcore_precoder_feature_s_compile( precoder_feature, o, source );
+            bcore_precoder_feature_s_parse( precoder_feature, o, source );
 
             bcore_precoder_item_s_setup( item, precoder_feature );
 
@@ -1928,7 +1933,7 @@ static void bcore_precoder_group_s_compile( bcore_precoder_group_s* o, bcore_sou
             item = bcore_precoder_item_s_create();
             item->group = o;
             precoder_name->group_name = o->name.sc;
-            bcore_precoder_name_s_compile( precoder_name, o, source );
+            bcore_precoder_name_s_parse( precoder_name, o, source );
             bcore_precoder_item_s_setup( item, precoder_name );
 
             // names are not registered
@@ -2035,7 +2040,7 @@ static void bcore_precoder_group_s_expand_declaration( const bcore_precoder_grou
     for( sz_t i = 0; i < o->size; i++ )
     {
         const bcore_precoder_item_s* item = o->data[ i ];
-        bcore_precoder_items_s_expand_indef_declaration( item, indent, sink );
+        bcore_precoder_item_s_expand_indef_declaration( item, indent, sink );
     }
 
     bcore_sink_a_push_fa( sink, "\n" );
@@ -2146,7 +2151,7 @@ static void bcore_precoder_group_s_expand_init1( const bcore_precoder_group_s* o
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_source_s_compile( bcore_precoder_source_s* o, bcore_source* source )
+static void bcore_precoder_source_s_parse( bcore_precoder_source_s* o, bcore_source* source )
 {
     while( !bcore_source_a_eos( source ) )
     {
@@ -2157,7 +2162,7 @@ static void bcore_precoder_source_s_compile( bcore_precoder_source_s* o, bcore_s
             bcore_source_a_parse_fa( source, " ( #name )", &group->name );
             group->id = typeof( group->name.sc );
             group->hash = group->id;
-            bcore_precoder_group_s_compile( group, source );
+            bcore_precoder_group_s_parse( group, source );
             o->hash = bcore_tp_fold_tp( o->hash, group->hash );
             if( !bcore_precoder_s_group_register( o->target->precoder, group ) )
             {
@@ -2295,7 +2300,7 @@ static void bcore_precoder_target_s_expand_c( const bcore_precoder_target_s* o, 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_target_s_compile( bcore_precoder_target_s* o, sc_t source_path )
+static void bcore_precoder_target_s_parse( bcore_precoder_target_s* o, sc_t source_path )
 {
     BCORE_LIFE_INIT();
 
@@ -2314,10 +2319,10 @@ static void bcore_precoder_target_s_compile( bcore_precoder_target_s* o, sc_t so
 
     if( bcore_file_exists( source_path_h->sc ) )
     {
-        bcore_precoder_source_s_compile( precoder_source, BCORE_LIFE_A_PUSH( bcore_file_open_source( source_path_h->sc ) ) );
+        bcore_precoder_source_s_parse( precoder_source, BCORE_LIFE_A_PUSH( bcore_file_open_source( source_path_h->sc ) ) );
     }
 
-    if( bcore_file_exists( source_path_c->sc ) ) bcore_precoder_source_s_compile( precoder_source, BCORE_LIFE_A_PUSH( bcore_file_open_source( source_path_c->sc ) ) );
+    if( bcore_file_exists( source_path_c->sc ) ) bcore_precoder_source_s_parse( precoder_source, BCORE_LIFE_A_PUSH( bcore_file_open_source( source_path_c->sc ) ) );
 
     o->hash = bcore_tp_fold_tp( o->hash, precoder_source->hash );
     bcore_array_a_push( ( bcore_array* )o, sr_asd( precoder_source ) );
@@ -2448,7 +2453,7 @@ static const bcore_precoder_item_s* bcore_precoder_s_item_get( const bcore_preco
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_precoder_s_compile( bcore_precoder_s* o, sc_t target_name, sc_t source_path )
+static void bcore_precoder_s_parse( bcore_precoder_s* o, sc_t target_name, sc_t source_path )
 {
     BCORE_LIFE_INIT();
 
@@ -2477,7 +2482,7 @@ static void bcore_precoder_s_compile( bcore_precoder_s* o, sc_t target_name, sc_
     }
 
     bcore_precoder_target_s* target = o->data[ target_index ];
-    bcore_precoder_target_s_compile( target, source_path );
+    bcore_precoder_target_s_parse( target, source_path );
 
     BCORE_LIFE_DOWN();
 }
@@ -2505,7 +2510,7 @@ static bl_t bcore_precoder_s_expand( bcore_precoder_s* o )
 void bcore_precoder_compile( sc_t target_name, sc_t source_path )
 {
     if( !precoder_g ) precoder_g = bcore_precoder_s_create();
-    bcore_precoder_s_compile( precoder_g, target_name, source_path );
+    bcore_precoder_s_parse( precoder_g, target_name, source_path );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

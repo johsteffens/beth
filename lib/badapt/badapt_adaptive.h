@@ -17,7 +17,7 @@
 #define BADAPT_adaptive_H
 
 #include "bmath_std.h"
-#include "badapt_precoded.h"
+#include "badapt_planted.h"
 #include "badapt_loss.h"
 
 /**********************************************************************************************************************/

@@ -388,6 +388,12 @@ void bcore_spect_missing_err( vc_t p, sc_t name );
     static inline void spect##_p_##name( const spect##_s* p, to no, t1 n1, t2 n2, t3 n3, t4 n4 ) { if( !p->name ) bcore_spect_missing_err( p, #name ); p->name( (vd_t)no, n1, n2, n3, n4 ); } \
     BCORE_FUNC_SPECT_TARX_V4( spect, name, to, no, t1, n1, t2, n2, t3, n3, t4, n4 )
 
+/**
+   MAP0: spect has a default implementation which is always used
+   MAP1: spect has a pointer that is always used (strict feature)
+   MAPX: spect has a pointer and default implementation; default implementation is used when the pointer is NULL
+*/
+
 #define BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAPX( spect, name, tret ) BCORE_FUNC_SPECT_MAPX_R0( spect, name, tret, const spect *, o )
 #define BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAPX( spect, name, tret ) BCORE_FUNC_SPECT_MAPX_R0( spect, name, tret,       spect *, o )
 #define BCORE_FUNC_SPECT_CONST1_RET0_ARG0_MAPX( spect, name       ) BCORE_FUNC_SPECT_MAPX_V0( spect, name,       const spect *, o )

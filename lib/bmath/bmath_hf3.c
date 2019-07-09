@@ -323,9 +323,9 @@ vd_t bmath_hf3_signal_handler( const bcore_signal_s* o )
         }
         break;
 
-        case TYPEOF_precoder:
+        case TYPEOF_plant:
         {
-            bcore_precoder_compile( "bmath_precoded", __FILE__ );
+            bcore_plant_compile( "bmath_planted", __FILE__ );
         }
         break;
 

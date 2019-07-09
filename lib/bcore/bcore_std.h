@@ -49,6 +49,7 @@
 #include "bcore_leaf.h"
 #include "bcore_const_manager.h"
 #include "bcore_precoder.h"
+#include "bcore_plant_compiler.h"
 #include "bcore_main.h"
 
 #endif // BCORE_STD_H

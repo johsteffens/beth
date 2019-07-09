@@ -155,6 +155,7 @@ bl_t bcore_precoder_run_globally();
 vd_t bcore_precoder_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
+
 /// Macros
 #define BETH_PRECODE( name ) \
     BETH_EXPAND_GROUP_##name

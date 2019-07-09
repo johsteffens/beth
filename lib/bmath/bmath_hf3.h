@@ -48,7 +48,7 @@
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
-#include "bmath_precoded.h"
+#include "bmath_planted.h"
 #include "bmath_hwflags.h"
 #include "bmath_feature.h"
 #include "bmath_mf3.h"
@@ -63,8 +63,6 @@ stamp : = aware bcore_inst
     sz_t [] d; // dimension data
     f3_t [] v; // value data
 };
-
-
 
 #endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

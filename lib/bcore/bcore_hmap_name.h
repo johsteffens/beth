@@ -20,9 +20,9 @@
 #ifndef BCORE_HMAP_NAME_H
 #define BCORE_HMAP_NAME_H
 
-#include "bcore_precoder.h"
+#include "bcore_plant_compiler.h"
 #include "bcore_trait.h"
-#include "bcore_precoded.h"
+#include "bcore_planted.h"
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_arr.h"
 
