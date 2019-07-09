@@ -29,12 +29,12 @@
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bcore_hmap_name
-BETH_PRECODE( bcore_hmap_name )
-#ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PLANT_GROUP( bcore_hmap_name, bcore_inst )
+#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp : = aware bcore_inst { bcore_hmap_tp_sr_s map; };
 
-#endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // TYPEOF_bcore_hmap_name
 
 tp_t  bcore_hmap_name_s_set_st_c(     bcore_hmap_name_s* o, const st_s* st ); // copies string (no effect when already registered); collision test; returns key

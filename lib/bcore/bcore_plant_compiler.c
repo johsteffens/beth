@@ -361,6 +361,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_stamp_s )
     bcore_plant_group_s* group;
 
     st_s           name; // global name
+    st_s           trait_name;
     st_s         * self_source;
     bcore_self_s * self;
     bcore_plant_funcs_s funcs;
@@ -372,6 +373,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_stamp_s )
     "vd_t group;"
 
     "st_s            name;" // global name
+    "st_s            trait_name;"
     "st_s         => self_source;"
     "bcore_self_s => self;"
     "bcore_plant_funcs_s funcs;"
@@ -1424,6 +1426,7 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
         st_s_push_fa( trait_name, "#<sc_t>", string->sc );
     }
 
+    st_s_copy( &o->trait_name, trait_name );
     st_s_push_st( self_string, trait_name );
 
     bcore_source_a_parse_fa( source, " {" );
@@ -1438,24 +1441,38 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
             bcore_plant_func_s* func = &funcs->data[ funcs->size - 1 ];
 
             st_s_push_sc( self_string, "func " );
-            bcore_source_a_parse_fa( source, " #name", type_name );
-            st_s_push_fa( self_string, "#<sc_t>", type_name->sc );
 
-            bl_t bind = bcore_source_a_parse_bl_fa( source, " #?':'" );
-            if( bind ) st_s_push_sc( self_string, ":" );
+            if( bcore_source_a_parse_bl_fa( source, " #?'^'" ) )
+            {
+                st_s_copy( type_name, trait_name );
+                st_s_push_fa( self_string, "^" );
+            }
+            else
+            {
+                bcore_source_a_parse_fa( source, " #name", type_name );
+                if( type_name->size == 0 )
+                {
+                    st_s_push_fa( type_name, "#<sc_t>", group->name.sc );
+                }
+
+                if( st_s_equal_st( type_name, trait_name ) )
+                {
+                    st_s_push_fa( self_string, "^" );
+                }
+                else
+                {
+                    st_s_push_fa( self_string, "#<sc_t>", type_name->sc );
+                }
+            }
+
+            bcore_source_a_parse_fa( source, " :" );
+            st_s_push_sc( self_string, ":" );
 
             bcore_source_a_parse_fa( source, " #name", &func->name );
             if( func->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Function name expected." );
             st_s_push_sc( self_string, func->name.sc );
 
-            if( bind )
-            {
-                if( type_name->size == 0 )
-                {
-                    st_s_push_fa( type_name, "#<sc_t>", trait_name->sc );
-                }
-                st_s_push_fa( type_name, "_#<sc_t>", func->name.sc );
-            }
+            st_s_push_fa( type_name, "_#<sc_t>", func->name.sc );
             func->type = typeof( type_name->sc );
 
             if( bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
@@ -1598,6 +1615,10 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
             {
                 bcore_sink_a_push_fa( sink, ";" );
             }
+        }
+        else
+        {
+            ERR_fa( "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
     }
 
@@ -1827,13 +1848,13 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
         }
         else if( bcore_source_a_parse_bl_fa( source, "#?'#ifdef'" ) )
         {
-            bcore_source_a_parse_fa( source, " BETH_PRECODE_SECTION " );
+            bcore_source_a_parse_fa( source, " PLANT_SECTION " );
             precode_termination = " #?'#endif'";
             break;
         }
 
         char c = bcore_source_a_get_u0( source );
-        if( c != ' ' && c != '\t' && c != '\n' ) bcore_source_a_parse_err_fa( source, "Opening c-style comment '/*' or '#<sc_t>' expected.", "#ifdef BETH_PRECODE_SECTION" );
+        if( c != ' ' && c != '\t' && c != '\n' ) bcore_source_a_parse_err_fa( source, "Opening c-style comment '/*' or '#<sc_t>' expected.", "#ifdef PLANT_SECTION" );
     }
 
     while( !bcore_source_a_parse_bl_fa( source, precode_termination ) )

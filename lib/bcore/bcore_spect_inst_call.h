@@ -27,8 +27,8 @@
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bcore_inst_call
-BETH_PRECODE( bcore_inst_call )
-#ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PLANT_GROUP( bcore_inst_call, bcore_inst )
+#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     feature 'p' void init_x( mutable ); // called by bcore_inst when exiting initialization
     feature 'p' void down_e( mutable ); // called by bcore_inst when entering shutdown
     feature 'p' void copy_e( mutable ); // called by bcore_inst when entering copy
@@ -40,7 +40,7 @@ BETH_PRECODE( bcore_inst_call )
     name :copy_e;
     name :copy_x;
     name :discard_e;
-#endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // optional enclosure
 
 /**********************************************************************************************************************/

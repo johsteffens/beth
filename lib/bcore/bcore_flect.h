@@ -333,7 +333,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *    func <type> <name>;            // ftype is the generic name: <object type>_<name>
  *    func <ptype> : <name>;         // translates into func <type> <name> with <type> := <ptype>_<name>;
  *                                   //   this is typically used to conveniently declare bindings with features.
- *    func         : <name>;         // If <ptype> is omitted, <ptype> is assumed to be <trait-name>
+ *    func     ^   : <name>;         // '^' instead of <ptype>: <ptype> is assumed to be <trait-name>
  *    Examples:
  *      func bmath_fp : add;
  *      func bmath_fp_add add;                                 // same as above

@@ -324,12 +324,18 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
     if( bcore_source_r_parse_bl_fa( &src, " #?w'func' " ) ) // function declaration
     {
         bl_t extend_type_name = false;
-        bcore_source_r_parse_fa( &src, "#name #?':' #name", type_name, &extend_type_name, item_name );
+        bl_t use_trait = false;
+        bcore_source_r_parse_fa( &src, "#name #?'^' #?':' #name", type_name, &use_trait, &extend_type_name, item_name );
 
         if( extend_type_name )
         {
-            if( type_name->size == 0 )
+            if( use_trait )
             {
+                if( type_name->size != 0 )
+                {
+                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nMisplaced type name '#<sc_t>'", ifnameof( parent_type ), type_name->sc );
+                }
+
                 if( self && self->trait )
                 {
                     st_s_copy_sc( type_name, ifnameof( self->trait ) );
@@ -339,10 +345,18 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
                     bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction declaration with trait expansion: Parent has no trait.", ifnameof( parent_type ) );
                 }
             }
+            else if( type_name->size == 0 )
+            {
+//                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nType name expected.", ifnameof( parent_type ), type_name->sc );
+            }
 
             st_s* type_prefix = st_s_clone( type_name );
             st_s_copy_fa( type_name, "#<sc_t>_#<sc_t>", type_prefix->sc, item_name->sc );
             st_s_discard( type_prefix );
+        }
+        else if( use_trait )
+        {
+            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nMisplaced '^'", ifnameof( parent_type ) );
         }
 
         o->type = entypeof( type_name->sc );

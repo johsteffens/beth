@@ -41,8 +41,8 @@
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bcore_main
-BETH_PRECODE( bcore_main )
-#ifdef BETH_PRECODE_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PLANT_GROUP( bcore_main, bcore_inst )
+#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     feature strict 'r' s2_t main( mutable, const bcore_arr_st_s* args );
 
     stamp :frame = aware bcore_inst
@@ -55,7 +55,7 @@ BETH_PRECODE( bcore_main )
         sc_t local_file = "beth.config";  // config file in current folder
         sc_t global_file;                 // global path to config file
     };
-#endif // BETH_PRECODE_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // optional enclosure
 
 s2_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv );
