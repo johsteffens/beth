@@ -1430,18 +1430,7 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
     BCORE_LIFE_CREATE( st_s, type_name );
     BCORE_LIFE_CREATE( st_s, string );
 
-    if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
-    {
-        st_s_push_fa( stamp_name, "#<sc_t>", group->name.sc );
-    }
-
-    bcore_source_a_parse_fa( source, " #name", string );
-
-    if( string->size > 0 )
-    {
-        if( stamp_name->size > 0 ) st_s_push_fa( stamp_name, "_" );
-        st_s_push_fa( stamp_name, "#<sc_t>", string->sc );
-    }
+    bcore_plant_group_s_parse_name( o->group, stamp_name, source );
 
     if( stamp_name->size >= 2 && sc_t_equ( stamp_name->sc + stamp_name->size - 2, "_s" ) )
     {
@@ -1884,7 +1873,7 @@ static void bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st
         }
         else
         {
-            bcore_source_a_parse_err_fa( source, "Too many ':'." );
+            bcore_source_a_parse_err_fa( source, "Too many colons: Namespace depth exceeded." );
         }
     }
     else
