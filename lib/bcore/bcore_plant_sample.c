@@ -19,7 +19,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_plant_sample_object_s_setup( bcore_plant_sample_object_s* o, sz_t n )
+void bcore_plant_sample_features_object_s_setup( bcore_plant_sample_features_object_s* o, sz_t n )
 {
     st_s_copy_sc( &o->name1, "Franz" );
     for( sz_t i = 0; i < n; i++ ) bcore_array_a_push_sz( ( bcore_array* )o, i );
@@ -27,7 +27,7 @@ void bcore_plant_sample_object_s_setup( bcore_plant_sample_object_s* o, sz_t n )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-sz_t bcore_plant_sample_object_s_get_size( const bcore_plant_sample_object_s* o )
+sz_t bcore_plant_sample_features_object_s_get_size( const bcore_plant_sample_features_object_s* o )
 {
     return o->arr_size;
 }
@@ -37,7 +37,7 @@ sz_t bcore_plant_sample_object_s_get_size( const bcore_plant_sample_object_s* o 
 void bcore_plant_sample_object2_s_setup( bcore_plant_sample_object2_s* o, sz_t n )
 {
     st_s_copy_sc( &o->name2, "Paul" );
-    bcore_plant_sample_object_s_setup( &o->object, n );
+    bcore_plant_sample_features_object_s_setup( &o->object, n );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -49,11 +49,11 @@ void bcore_plant_sample_object2_s_to_stdout( const bcore_plant_sample_object2_s*
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_plant_sample_object_s_selftest( void )
+void bcore_plant_sample_features_object_s_selftest( void )
 {
     BCORE_LIFE_INIT();
 
-    bcore_plant_sample_features* object1 = BCORE_LIFE_A_PUSH( bcore_plant_sample_object_s_create() );
+    bcore_plant_sample_features* object1 = BCORE_LIFE_A_PUSH( bcore_plant_sample_features_object_s_create() );
     bcore_plant_sample_features* object2 = BCORE_LIFE_A_PUSH( bcore_plant_sample_object2_s_create() );
 
     bcore_plant_sample_features_a_setup( object1, 5 );
@@ -71,7 +71,7 @@ void bcore_plant_sample_object_s_selftest( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#endif // TYPEOF_bcore_plant_sample_object_s
+#endif // TYPEOF_bcore_plant_sample_features_object_s
 
 /**********************************************************************************************************************/
 
@@ -86,7 +86,9 @@ vd_t bcore_plant_sample_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_selftest:
         {
-            bcore_plant_sample_object_s_selftest();
+            #ifdef TYPEOF_bcore_plant_sample
+            bcore_plant_sample_features_object_s_selftest();
+            #endif // TYPEOF_bcore_plant_sample
         }
         break;
 

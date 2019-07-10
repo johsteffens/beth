@@ -44,8 +44,11 @@ BCORE_FORWARD_OBJECT( bcore_plant_compiler_s );
 static const bcore_plant* bcore_plant_compiler_s_item_get( const bcore_plant_compiler_s* o, tp_t item_id );
 
 static bl_t bcore_plant_compiler_s_item_exists( const bcore_plant_compiler_s* o, tp_t item_id );
-static void bcore_plant_compiler_s_item_register(     bcore_plant_compiler_s* o, const bcore_plant* item,          bcore_source* source );
-static void bcore_plant_compiler_s_group_register(    bcore_plant_compiler_s* o, const bcore_plant_group_s* group, bcore_source* source );
+static tp_t bcore_plant_compiler_s_item_register(     bcore_plant_compiler_s* o, const bcore_plant* item,          bcore_source* source );
+static tp_t bcore_plant_compiler_s_group_register(    bcore_plant_compiler_s* o, const bcore_plant_group_s* group, bcore_source* source );
+static void bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, bcore_source* source );
+static void bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st_s* name, bcore_source* source );
+static void bcore_plant_source_s_push_group( bcore_plant_source_s* o, bcore_plant_group_s* group );
 
 //----------------------------------------------------------------------------------------------------------------------
 // globals
@@ -109,7 +112,7 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_plant )
 
     "feature        bcore_plant_fp: parse;"
     "feature strict bcore_plant_fp: get_hash;"
-    "feature strict bcore_plant_fp: get_global_name_sc;"
+    "feature        bcore_plant_fp: get_global_name_sc;"
 
     "feature        bcore_plant_fp: expand_forward;"
     "feature        bcore_plant_fp: expand_indef_typedef;"
@@ -404,6 +407,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_group_s )
     bl_t is_aware;
     bl_t enroll; // causes all stamps to fully enroll during init cycle;
     BCORE_ARRAY_DYN_LINK_AWARE_VIRTUAL_S( bcore_plant, );
+
     bcore_plant_source_s* source;
 };
 
@@ -418,12 +422,29 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_group_s )
     "bl_t has_features;"
     "bl_t is_aware;"
     "bl_t enroll;"
-    "aware bcore_plant => [] arr;"
+    "aware bcore_plant   => [] arr;"
+
     "private vd_t source;"
 
     "func bcore_plant_fp : parse;"
     "func bcore_plant_fp : get_hash;"
     "func bcore_plant_fp : get_global_name_sc;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BCORE_DECLARE_OBJECT( bcore_plant_nested_group_s )
+{
+    aware_t _;
+    bcore_plant_group_s* group; // group object;
+};
+
+BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_nested_group_s )
+"{"
+    "aware_t _;"
+    "vd_t group;" // group object;
+    "func bcore_plant_fp : get_hash;"
+    "func bcore_plant_fp : expand_indef_declaration;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -637,16 +658,14 @@ static void bcore_plant_arg_s_parse( bcore_plant_arg_s* o, bcore_source* source 
 
     if( bcore_source_a_parse_bl_fa( source, "#?':' " ) )
     {
-        st_s_push_st( &o->type, &o->group->name );
-        bcore_source_a_parse_fa( source, "#name ", s );
-        st_s_push_fa( &o->type, "#<sc_t>#<sc_t>", s->sc[ 0 ] ? "_" : "", s->sc );
+        bcore_plant_group_s_parse_name_recursive( o->group, s, source );
     }
     else
     {
         bcore_source_a_parse_fa( source, "#name ", s );
         if( s->size == 0 ) bcore_source_a_parse_err_fa( source, "Argument: Type expected." );
-        st_s_push_st( &o->type, s );
     }
+    st_s_push_st( &o->type, s );
 
 
     while( bcore_source_a_parse_bl_fa( source, "#?'*' " ) ) st_s_push_sc( &o->type, "*" );
@@ -787,7 +806,7 @@ static void bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
     BCORE_LIFE_CREATE( st_s, name_candidate );
     st_s_clear( &o->ret_type );
 
-    bcore_source_a_parse_fa( source, " #name", name_buf );
+    bcore_plant_group_s_parse_name( o->group, name_buf, source );
 
     bl_t predefined = false;
 
@@ -796,6 +815,7 @@ static void bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
         if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
         {
             predefined = true;
+
             bcore_source_a_parse_fa( source, " #name", name_candidate );
             if( name_buf->size == 0 )
             {
@@ -942,15 +962,43 @@ static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_source* 
             }
             break;
 
+            case '"': // string literal
+            {
+                st_s_push_char( &o->code, c );
+                bl_t esc = false;
+                while( !bcore_source_a_eos( source ) )
+                {
+                    u0_t c = bcore_source_a_get_u0( source );
+                    st_s_push_char( &o->code, c );
+                    if( !esc && c == '"' ) break;
+                    esc = ( c == '\\' );
+                    if( c == '\n' ) bcore_source_a_parse_err_fa( source, "Newline in string literal." );
+                }
+                c = 0;
+            }
+            break;
+
+            case '\\': // escape
+            {
+                c = bcore_source_a_get_u0( source );
+                if( c != ':' ) st_s_push_char( &o->code, '\\' );
+            }
+            break;
+
             case '\n': new_line = true; o->go_inline = false; break;
             case ' ' : if( new_line ) space_count++; break;
 
-            case ':': // if a name follows immediately, ':' is interpreted as namespace-prepend (ordinary c-code using : should append a whitespace)
+            // namespace: if a name or another ':' follows immediately,
+            // ':' is interpreted as namespace-prepend
+            // ordinary c-code using ':' should append a whitespace or prepend escape '\:'
+            case ':':
             {
-                if( bcore_source_a_parse_bl_fa( source, "#?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z'))" ) )
+                if( bcore_source_a_parse_bl_fa( source, "#?([0]==':'||([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z'))" ) )
                 {
-                    st_s_push_sc( &o->code, o->group->name.sc );
-                    st_s_push_char( &o->code, '_' );
+                    st_s* name = st_s_create();
+                    bcore_plant_group_s_parse_name_recursive( o->group, name, source );
+                    st_s_push_sc( &o->code, name->sc );
+                    st_s_discard( name );
                     c = 0;
                 }
             }
@@ -1000,14 +1048,8 @@ static void bcore_plant_body_s_parse( bcore_plant_body_s* o, bcore_source* sourc
     else
     {
         BCORE_LIFE_CREATE( st_s, name );
-
-        if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
-        {
-            st_s_push_fa( name, "#<sc_t>_", o->group->name.sc );
-        }
-        bcore_source_a_parse_fa( source, " #name", string );
-        if( string->size == 0 ) bcore_source_a_parse_err_fa( source, "Body name expected." );
-        st_s_push_fa( name, "#<sc_t>", string->sc );
+        bcore_plant_group_s_parse_name( o->group, name, source );
+        if( name->size == 0 ) bcore_source_a_parse_err_fa( source, "Body name expected." );
 
         tp_t tp_name = typeof( name->sc );
         // if name_buf refers to another body
@@ -1496,8 +1538,8 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
                     case ':':
                     {
                         st_s* name = st_s_create();
-                        bcore_source_a_parse_fa( source, " #name", name );
-                        st_s_push_fa( self_string, "#<sc_t>#<sc_t>#<sc_t>", group->name.sc, name->sc[ 0 ] ? "_" : "", name->sc );
+                        bcore_plant_group_s_parse_name_recursive( group, name, source );
+                        st_s_push_st( self_string, name );
                         st_s_discard( name );
                     }
                     break;
@@ -1832,29 +1874,79 @@ static tp_t bcore_plant_group_s_get_hash( const bcore_plant_group_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static void bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st_s* name, bcore_source* source )
+{
+    if( bcore_source_a_parse_bl_fa( source, "#?':'" ) )
+    {
+        if( o->group )
+        {
+            bcore_plant_group_s_parse_name_recursive( o->group, name, source );
+        }
+        else
+        {
+            bcore_source_a_parse_err_fa( source, "Too many ':'." );
+        }
+    }
+    else
+    {
+        st_s_copy( name, &o->name );
+        st_s* s = st_s_create();
+        bcore_source_a_parse_fa( source, " #name", s );
+        if( s->size > 0 )
+        {
+            st_s_push_fa( name, "_#<sc_t>", s->sc );
+        }
+        st_s_discard( s );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, bcore_source* source )
+{
+    if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
+    {
+        bcore_plant_group_s_parse_name_recursive( o, name, source );
+    }
+    else
+    {
+        bcore_source_a_parse_fa( source, " #name", name );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* source )
 {
     sc_t precode_termination = NULL;
 
     o->hash = typeof( o->name.sc );
 
-    while( !bcore_source_a_eos( source ) )
+    if( o->group ) // this group is nested in another group, the group body is enclosed in { ... }
     {
-        if( bcore_source_a_parse_bl_fa( source, "#?'/*'" ) )
+        bcore_source_a_parse_fa( source, " {" );
+        precode_termination = " #?'}'";
+    }
+    else // this group is root, the group body is enclosed in an non-parsable section of c source
+    {
+        while( !bcore_source_a_eos( source ) )
         {
-            bcore_source_a_parse_fa( source, "#skip'*'" );
-            precode_termination = " #?'*/'";
-            break;
-        }
-        else if( bcore_source_a_parse_bl_fa( source, "#?'#ifdef'" ) )
-        {
-            bcore_source_a_parse_fa( source, " PLANT_SECTION " );
-            precode_termination = " #?'#endif'";
-            break;
-        }
+            if( bcore_source_a_parse_bl_fa( source, "#?'/*'" ) )
+            {
+                bcore_source_a_parse_fa( source, "#skip'*'" );
+                precode_termination = " #?'*/'";
+                break;
+            }
+            else if( bcore_source_a_parse_bl_fa( source, "#?'#ifdef'" ) )
+            {
+                bcore_source_a_parse_fa( source, " PLANT_SECTION " );
+                precode_termination = " #?'#endif'";
+                break;
+            }
 
-        char c = bcore_source_a_get_u0( source );
-        if( c != ' ' && c != '\t' && c != '\n' ) bcore_source_a_parse_err_fa( source, "Opening c-style comment '/*' or '#<sc_t>' expected.", "#ifdef PLANT_SECTION" );
+            char c = bcore_source_a_get_u0( source );
+            if( c != ' ' && c != '\t' && c != '\n' ) bcore_source_a_parse_err_fa( source, "Opening c-style comment '/*' or '#<sc_t>' expected.", "#ifdef PLANT_SECTION" );
+        }
     }
 
     while( !bcore_source_a_parse_bl_fa( source, precode_termination ) )
@@ -1904,8 +1996,25 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             bcore_plant_name_s* name = bcore_plant_name_s_create();
             name->group = o;
             bcore_plant_name_s_parse( name, source );
-            // names are not registered
             item = ( bcore_plant* )name;
+        }
+        else if( bcore_source_a_parse_bl_fa( source, " #?w'group' " ) )
+        {
+            bcore_plant_group_s* group = bcore_plant_group_s_create();
+            bcore_plant_source_s_push_group( o->source, group );
+            group->group = o;
+            group->source = o->source;
+            bcore_plant_group_s_parse_name( o, &group->name, source );
+            bcore_source_a_parse_fa( source, " =", &group->name, &group->trait_name );
+            bcore_plant_group_s_parse_name( o, &group->trait_name, source );
+            if( group->trait_name.size == 0 ) st_s_copy( &group->trait_name, &o->name );
+            bcore_plant_group_s_parse( group, source );
+            bcore_source_a_parse_fa( source, " ; " );
+            o->source->hash = bcore_tp_fold_tp( o->source->hash, group->hash );
+            bcore_plant_compiler_s_group_register( plant_compiler_g, group, source );
+            bcore_plant_nested_group_s* nested_group = bcore_plant_nested_group_s_create();
+            nested_group->group = group;
+            item = ( bcore_plant* )nested_group;
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'set' " ) )
         {
@@ -2068,7 +2177,33 @@ static void bcore_plant_group_s_expand_init1( const bcore_plant_group_s* o, sz_t
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// nested_group
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static tp_t bcore_plant_nested_group_s_get_hash( const bcore_plant_nested_group_s* o )
+{
+    return o->group ? o->group->hash : 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_nested_group_s_expand_indef_declaration( const bcore_plant_nested_group_s* o, sz_t indent, bcore_sink* sink )
+{
+    bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BETH_EXPAND_GROUP_#<sc_t>", indent, o->group->name.sc );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 /// source
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_source_s_push_group( bcore_plant_source_s* o, bcore_plant_group_s* group )
+{
+    bcore_array_a_push( ( bcore_array* )o, sr_asd( group ) );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -2076,26 +2211,16 @@ static void bcore_plant_source_s_parse( bcore_plant_source_s* o, bcore_source* s
 {
     while( !bcore_source_a_eos( source ) )
     {
-        if( bcore_source_a_parse_bl_fa( source, "#?w'BETH_PRECODE'" ) )
+        if( bcore_source_a_parse_bl_fa( source, "#?w'PLANT_GROUP'" ) )
         {
             bcore_plant_group_s* group = bcore_plant_group_s_create();
-            group->source = o;
-            bcore_source_a_parse_fa( source, " ( #name )", &group->name );
-            bcore_plant_group_s_parse( group, source );
-            o->hash = bcore_tp_fold_tp( o->hash, group->hash );
-            bcore_plant_compiler_s_group_register( plant_compiler_g, group, source );
-            bcore_array_a_push( ( bcore_array* )o, sr_asd( group ) );
-        }
-        else if( bcore_source_a_parse_bl_fa( source, "#?w'PLANT_GROUP'" ) )
-        {
-            bcore_plant_group_s* group = bcore_plant_group_s_create();
+            bcore_plant_source_s_push_group( o, group );
             group->source = o;
             bcore_source_a_parse_fa( source, " ( #name, #name )", &group->name, &group->trait_name );
             if( group->trait_name.size == 0 ) st_s_copy_sc( &group->trait_name, "bcore_inst" );
             bcore_plant_group_s_parse( group, source );
             o->hash = bcore_tp_fold_tp( o->hash, group->hash );
             bcore_plant_compiler_s_group_register( plant_compiler_g, group, source );
-            bcore_array_a_push( ( bcore_array* )o, sr_asd( group ) );
         }
         else
         {
@@ -2334,14 +2459,14 @@ static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
 /// plant_compiler
 
 /// returns false if already registered; checks for collision
-static void bcore_plant_compiler_s_group_register( bcore_plant_compiler_s* o, const bcore_plant_group_s* group, bcore_source* source )
+static tp_t bcore_plant_compiler_s_group_register( bcore_plant_compiler_s* o, const bcore_plant_group_s* group, bcore_source* source )
 {
     sc_t global_name = group->name.sc;
     tp_t global_id = typeof( global_name );
     if( bcore_hmap_tpvd_s_exists( &o->hmap_group, global_id ) )
     {
         /// check collision
-        const bcore_plant_group_s* group2 = *bcore_hmap_tpvd_s_get( &o->hmap_item, global_id );
+        const bcore_plant_group_s* group2 = *bcore_hmap_tpvd_s_get( &o->hmap_group, global_id );
         sc_t global_name2 = group2->name.sc;
 
         if( !sc_t_equal( global_name, global_name2 ) )
@@ -2354,12 +2479,21 @@ static void bcore_plant_compiler_s_group_register( bcore_plant_compiler_s* o, co
         }
     }
     bcore_hmap_tpvd_s_set( &o->hmap_group, global_id, ( vd_t )group );
+    return global_id;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+/*
+static const bcore_plant_group_s* bcore_plant_compiler_s_group_get( const bcore_plant_compiler_s* o, tp_t group_id )
+{
+    vd_t* ptr = bcore_hmap_tpvd_s_get( &o->hmap_group, group_id );
+    return ptr ? ( const bcore_plant_group_s* )*ptr : NULL;
+}
+*/
+//----------------------------------------------------------------------------------------------------------------------
 
 /// returns false if already registered; checks for collision
-static void bcore_plant_compiler_s_item_register( bcore_plant_compiler_s* o, const bcore_plant* item, bcore_source* source )
+static tp_t bcore_plant_compiler_s_item_register( bcore_plant_compiler_s* o, const bcore_plant* item, bcore_source* source )
 {
     sc_t global_name = bcore_plant_a_get_global_name_sc( item );
     tp_t global_id = typeof( global_name );
@@ -2379,6 +2513,7 @@ static void bcore_plant_compiler_s_item_register( bcore_plant_compiler_s* o, con
     }
 
     bcore_hmap_tpvd_s_set( &o->hmap_item, global_id, ( vd_t )item );
+    return global_id;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2564,6 +2699,10 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_plant_fp_get_global_name_sc, bcore_plant_group_s_get_global_name_sc );
             BCORE_REGISTER_OBJECT( bcore_plant_group_s );
 
+            BCORE_REGISTER_FFUNC( bcore_plant_fp_get_hash,                  bcore_plant_nested_group_s_get_hash );
+            BCORE_REGISTER_FFUNC( bcore_plant_fp_expand_indef_declaration,  bcore_plant_nested_group_s_expand_indef_declaration );
+            BCORE_REGISTER_OBJECT( bcore_plant_nested_group_s );
+
             BCORE_REGISTER_OBJECT( bcore_plant_source_s );
             BCORE_REGISTER_OBJECT( bcore_plant_target_s );
             BCORE_REGISTER_OBJECT( bcore_plant_compiler_s );
@@ -2593,6 +2732,7 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_QUICKTYPE( bcore_plant_stamp_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_name_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_group_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_plant_nested_group_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_source_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_target_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_compiler_s );

@@ -16,6 +16,25 @@
 // source: bcore_plant_sample
 
 //----------------------------------------------------------------------------------------------------------------------
+// group: bcore_plant_sample
+
+#define TYPEOF_bcore_plant_sample 910331991
+#define TYPEOF_bcore_plant_sample_s 2634114545
+#define TYPEOF_anyglobalname 2209051205
+#define TYPEOF_bcore_plant_sample_object2_s 2356042977
+#define BETH_EXPAND_ITEM_bcore_plant_sample_object2_s \
+  BCORE_DECLARE_OBJECT( bcore_plant_sample_object2_s ) \
+    {aware_t _;bcore_plant_sample_features_object_s object;st_s name2;}; \
+  void bcore_plant_sample_object2_s_setup( bcore_plant_sample_object2_s* o, sz_t n ); \
+  void bcore_plant_sample_object2_s_to_stdout( const bcore_plant_sample_object2_s* o );
+#define BETH_EXPAND_GROUP_bcore_plant_sample \
+  BCORE_FORWARD_OBJECT( bcore_plant_sample ); \
+  BCORE_FORWARD_OBJECT( bcore_plant_sample_object2_s ); \
+  BETH_EXPAND_GROUP_bcore_plant_sample_signatures \
+  BETH_EXPAND_GROUP_bcore_plant_sample_features \
+  BETH_EXPAND_ITEM_bcore_plant_sample_object2_s
+
+//----------------------------------------------------------------------------------------------------------------------
 // group: bcore_plant_sample_signatures
 
 #define TYPEOF_bcore_plant_sample_signatures 2237955315
@@ -28,9 +47,16 @@
 
 #define TYPEOF_bcore_plant_sample_features 528495263
 #define TYPEOF_bcore_plant_sample_features_s 3695459401
-#define TYPEOF_anyglobalname 2209051205
+#define TYPEOF_bcore_plant_sample_features_object_s 484501233
+#define BETH_EXPAND_ITEM_bcore_plant_sample_features_object_s \
+  BCORE_DECLARE_OBJECT( bcore_plant_sample_features_object_s ) \
+    {aware_t _;st_s name1;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
+  void bcore_plant_sample_features_object_s_setup( bcore_plant_sample_features_object_s* o, sz_t n ); \
+  void bcore_plant_sample_features_object_s_to_stdout( const bcore_plant_sample_features_object_s* o ); \
+  sz_t bcore_plant_sample_features_object_s_get_size( const bcore_plant_sample_features_object_s* o );
 #define BETH_EXPAND_GROUP_bcore_plant_sample_features \
   BCORE_FORWARD_OBJECT( bcore_plant_sample_features ); \
+  BCORE_FORWARD_OBJECT( bcore_plant_sample_features_object_s ); \
   typedef void (*bcore_plant_sample_features_setup)( bcore_plant_sample_features* o, sz_t n ); \
   typedef void (*bcore_plant_sample_features_to_stdout)( const bcore_plant_sample_features* o ); \
   typedef sz_t (*bcore_plant_sample_features_get_size)( const bcore_plant_sample_features* o ); \
@@ -69,32 +95,8 @@
   static inline bl_t bcore_plant_sample_features_p_defines_get_size( const bcore_plant_sample_features_s* __p ) { return __p->get_size != NULL; } \
   static inline bl_t bcore_plant_sample_features_t_defines_get_size( tp_t __t ) { return bcore_plant_sample_features_s_get_typed( __t )->get_size != NULL; } \
   static inline bl_t bcore_plant_sample_features_a_defines_get_size( const bcore_plant_sample_features* o ) { return bcore_plant_sample_features_s_get_aware( o )->get_size != NULL; } \
-  static inline bl_t bcore_plant_sample_features_r_defines_get_size( const sr_s* o ) { return ( (bcore_plant_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_plant_sample_features_s ) )->get_size != NULL; }
-
-//----------------------------------------------------------------------------------------------------------------------
-// group: bcore_plant_sample
-
-#define TYPEOF_bcore_plant_sample 910331991
-#define TYPEOF_bcore_plant_sample_s 2634114545
-#define TYPEOF_bcore_plant_sample_object_s 2559330681
-#define BETH_EXPAND_ITEM_bcore_plant_sample_object_s \
-  BCORE_DECLARE_OBJECT( bcore_plant_sample_object_s ) \
-    {aware_t _;st_s name1;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
-  void bcore_plant_sample_object_s_setup( bcore_plant_sample_object_s* o, sz_t n ); \
-  void bcore_plant_sample_object_s_to_stdout( const bcore_plant_sample_object_s* o ); \
-  sz_t bcore_plant_sample_object_s_get_size( const bcore_plant_sample_object_s* o );
-#define TYPEOF_bcore_plant_sample_object2_s 2356042977
-#define BETH_EXPAND_ITEM_bcore_plant_sample_object2_s \
-  BCORE_DECLARE_OBJECT( bcore_plant_sample_object2_s ) \
-    {aware_t _;bcore_plant_sample_object_s object;st_s name2;}; \
-  void bcore_plant_sample_object2_s_setup( bcore_plant_sample_object2_s* o, sz_t n ); \
-  void bcore_plant_sample_object2_s_to_stdout( const bcore_plant_sample_object2_s* o );
-#define BETH_EXPAND_GROUP_bcore_plant_sample \
-  BCORE_FORWARD_OBJECT( bcore_plant_sample ); \
-  BCORE_FORWARD_OBJECT( bcore_plant_sample_object_s ); \
-  BCORE_FORWARD_OBJECT( bcore_plant_sample_object2_s ); \
-  BETH_EXPAND_ITEM_bcore_plant_sample_object_s \
-  BETH_EXPAND_ITEM_bcore_plant_sample_object2_s
+  static inline bl_t bcore_plant_sample_features_r_defines_get_size( const sr_s* o ) { return ( (bcore_plant_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_plant_sample_features_s ) )->get_size != NULL; } \
+  BETH_EXPAND_ITEM_bcore_plant_sample_features_object_s
 
 /**********************************************************************************************************************/
 // source: bcore_spect_inst_call

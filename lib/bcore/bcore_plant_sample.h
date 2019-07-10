@@ -23,19 +23,18 @@
 
 /**********************************************************************************************************************/
 
-#ifdef TYPEOF_bcore_plant_sample_signatures
-PLANT_GROUP( bcore_plant_sample_signatures, bcore_inst )
+#ifdef TYPEOF_bcore_plant_sample
+PLANT_GROUP( bcore_plant_sample, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+group :signatures =
+{
     signature void setup( mutable, sz_t n );
-#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#endif // optional enclosure
+};
 
-#ifdef TYPEOF_bcore_plant_sample_features
-PLANT_GROUP( bcore_plant_sample_features, bcore_inst )
-#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+group :features =
+{
     signature void sig_setup( mutable, sz_t n );
-
-//    feature strict 'ptar' void setup( mutable, sz_t n );
 
     feature strict 'ptar' bcore_plant_sample_signatures : setup;
 
@@ -43,15 +42,9 @@ PLANT_GROUP( bcore_plant_sample_features, bcore_inst )
     {
         bcore_msg_fa( "Called to_stdout__\n" );
     };
+
     feature        'ptar' sz_t get_size( const );
 
-    name anyglobalname;
-#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#endif // optional enclosure
-
-#ifdef TYPEOF_bcore_plant_sample
-PLANT_GROUP( bcore_plant_sample, bcore_inst )
-#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     body to_stdout_body = { bcore_txt_ml_a_to_stdout( o ); };
 
     stamp : object = aware bcore_inst
@@ -63,14 +56,19 @@ PLANT_GROUP( bcore_plant_sample, bcore_inst )
         func bcore_plant_sample_features : get_size;
     };
 
-    stamp bcore_plant_sample_object2 = bcore_inst
-    {
-        aware_t _;
-        bcore_plant_sample_object_s object;
-        st_s name2;
-        func bcore_plant_sample_features : setup;
-        func bcore_plant_sample_features : to_stdout;
-    };
+};
+
+name anyglobalname;
+
+stamp bcore_plant_sample_object2 = bcore_inst
+{
+    aware_t _;
+    bcore_plant_sample_features_object_s object;
+    st_s name2;
+    func bcore_plant_sample_features : setup;
+    func bcore_plant_sample_features : to_stdout;
+};
+
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #endif // optional enclosure
