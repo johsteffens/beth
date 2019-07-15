@@ -18,6 +18,7 @@
 #include "bcore_spect.h"
 #include "bcore_trait.h"
 #include "bcore_signal.h"
+#include "bcore_spect_inst.h"
 
 /**********************************************************************************************************************/
 // bcore_sink_s
@@ -131,6 +132,31 @@ void bcore_sink_x_pushf   ( sr_s o, sc_t f, ... )        { va_list a; va_start( 
 void bcore_sink_x_push_fa ( sr_s o, sc_t f, ... )        { va_list a; va_start( a, f ); bcore_sink_x_push_fv( o, f, a ); va_end( a ); }
 void bcore_sink_r_pushf   ( const sr_s* o, sc_t f, ... ) { va_list a; va_start( a, f ); bcore_sink_r_pushvf ( o, f, a ); va_end( a ); }
 void bcore_sink_r_push_fa ( const sr_s* o, sc_t f, ... ) { va_list a; va_start( a, f ); bcore_sink_r_push_fv( o, f, a ); va_end( a ); }
+
+bcore_sink* bcore_sink_t_clone( tp_t type )
+{
+    bcore_trait_assert_satisfied_type( TYPEOF_bcore_sink, type );
+    return ( bcore_sink* )bcore_inst_t_create( type );
+}
+
+void bcore_sink_a_discard( bcore_sink* o )
+{
+    bcore_inst_a_discard( ( bcore_inst* )o );
+}
+
+void bcore_sink_a_detach( bcore_sink** o )
+{
+    if( !o ) return;
+    bcore_sink_a_discard( *o );
+    *o = NULL;
+}
+
+void bcore_sink_a_attach( bcore_sink** o, bcore_sink* src )
+{
+    if( !o ) return;
+    bcore_sink_a_discard( *o );
+    *o = src;
+}
 
 /**********************************************************************************************************************/
 

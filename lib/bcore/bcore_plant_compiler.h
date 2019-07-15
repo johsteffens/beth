@@ -14,7 +14,7 @@
  */
 
 /** Plant Framework (Automatic code generation)
- *  Beth-Plant is a (mostly) declarative language that can be immersed with
+ *  Beth-Plant is a widely declarative language that can be immersed with
  *  c-code. bcore_plant_compiler translates beth-plant code into c-source code,
  *  which is written to dedicated files, which can be included and compiled with
  *  other c-source code.
@@ -43,9 +43,11 @@
  *
  *      feature [strict] '<flags>' <syntax-of-signature> [ = <body> ];
  *
- *      stamp <name> = [aware] :|<trait> { reflection-body };
+ *      stamp <name> = [aware] <trait> { reflection-body };
  *
  *      name <name>;
+ *
+ *      group <name> = [<trait>] { ... };
  *
  *      ...
  *  <plant-closer>

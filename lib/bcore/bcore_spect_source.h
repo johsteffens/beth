@@ -21,6 +21,9 @@
 #include "bcore_feature.h"
 #include "bcore_spect.h"
 
+#include "bcore_spect_inst.h"
+
+
 /// optional source features:
 typedef void (*bcore_source_fp_parse_fv )(    vd_t o, sc_t format, va_list args ); // parse function
 typedef void (*bcore_source_fp_set_supplier)( vd_t o, vd_t supplier );             // to create a chain of source units
@@ -108,6 +111,11 @@ void bcore_source_x_parse_err_fa( sr_s o, sc_t format, ... );
 void bcore_source_r_parse_fa    ( const sr_s* o, sc_t format, ... );
 void bcore_source_r_parse_errf  ( const sr_s* o, sc_t format, ... );
 void bcore_source_r_parse_err_fa( const sr_s* o, sc_t format, ... );
+
+bcore_source* bcore_source_t_clone( tp_t type );
+void bcore_source_a_discard( bcore_source* o );
+void bcore_source_a_detach( bcore_source** o );
+void bcore_source_a_attach( bcore_source** o, bcore_source* src );
 
 vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o );
 

@@ -973,9 +973,9 @@ static void external_manager_s_free( external_manager_s* o, vd_t ptr )
 static void external_manager_s_get_instance( external_manager_s* o, vc_t ptr, vd_t* root, uz_t* granted_space )
 {
     bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ( vd_t )ptr );
-    if( !kv ) ERR( "Object has no root." );
+    if( !kv ) ERR( "Object has no root address in dynamic memory address in dynamic memory." );
     ext_s* ext = kv->val;
-    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) ERR( "Object has no root." );
+    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) ERR( "Object has no root address in dynamic memory." );
 
     if( root ) *root = kv->key;
     if( granted_space ) *granted_space = ext->size;
@@ -1048,9 +1048,9 @@ static uz_t external_manager_s_references( external_manager_s* o, vc_t ptr )
 static void external_manager_s_fork( external_manager_s* o, vd_t ptr )
 {
     bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ptr );
-    if( !kv ) ERR( "Object has no root." );
+    if( !kv ) ERR( "Object has no root address in dynamic memory." );
     ext_s* ext = kv->val;
-    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) ERR( "Object has no root." );
+    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) ERR( "Object has no root address in dynamic memory." );
     ext->rc_count++;
     assert( ext->rc_count ); // overflow check
 }
@@ -1058,9 +1058,9 @@ static void external_manager_s_fork( external_manager_s* o, vd_t ptr )
 static void external_manager_s_release( external_manager_s* o, vd_t ptr )
 {
     bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ptr );
-    if( !kv ) ERR( "Object has no root." );
+    if( !kv ) ERR( "Object has no root address in dynamic memory." );
     ext_s* ext = kv->val;
-    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) ERR( "Object has no root." );
+    if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) ERR( "Object has no root address in dynamic memory." );
     external_manager_s_free_ext( o, kv->key, ext );
 }
 

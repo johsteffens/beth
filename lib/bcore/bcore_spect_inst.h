@@ -174,6 +174,34 @@ static inline void bcore_inst_a_discard( vd_t obj )
     o->discard( o, obj );
 }
 
+static inline void bcore_inst_t_detach( tp_t type, bcore_inst** o )
+{
+    if( !o ) return;
+    bcore_inst_t_discard( type, *o );
+    *o = NULL;
+}
+
+static inline void bcore_inst_a_detach( bcore_inst** o )
+{
+    if( !o ) return;
+    bcore_inst_a_discard( *o );
+    *o = NULL;
+}
+
+static inline void bcore_inst_t_attach( tp_t type, bcore_inst** o, bcore_inst* src )
+{
+    if( !o ) return;
+    bcore_inst_t_discard( type, *o );
+    *o = src;
+}
+
+static inline void bcore_inst_a_attach( bcore_inst** o, bcore_inst* src )
+{
+    if( !o ) return;
+    bcore_inst_a_discard( *o );
+    *o = src;
+}
+
 void bcore_inst_x_discard(      sr_s o ); // only discards when o is a strong reference; does nothing otherwise
 sr_s bcore_inst_x_clone_sr(     sr_s o ); // returns perspective of o
 

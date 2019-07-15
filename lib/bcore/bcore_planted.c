@@ -136,7 +136,7 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 4269112410 ) );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 4252060880 ) );
             BCORE_REGISTER_NAME( anyglobalname );
             BCORE_REGISTER_FFUNC( bcore_plant_sample_features_setup, bcore_plant_sample_object2_s_setup );
             BCORE_REGISTER_FFUNC( bcore_plant_sample_features_to_stdout, bcore_plant_sample_object2_s_to_stdout );

@@ -77,11 +77,20 @@ void bmath_hf3_s_set_v_size( bmath_hf3_s* o, sz_t size );
 /// fits number of values to given dimensions (initialized to zero)
 void bmath_hf3_s_fit_v_size( bmath_hf3_s* o );
 
-/// sets dimensions according to array (does not change v_size)
-void bmath_hf3_s_set_d_data( bmath_hf3_s* o, sz_t* d_data, sz_t d_size );
+/// sets d_data, d_size to array (does not change v_size or v_data)
+void bmath_hf3_s_set_d_data( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size );
+
+/// sets v_data, v_size to array (does not change d_size or d_data)
+void bmath_hf3_s_set_v_data( bmath_hf3_s* o, const f3_t* v_data, sz_t v_size );
+
+/// copies d_data from src (does not change v_size or v_data)
+void bmath_hf3_s_copy_d_data( bmath_hf3_s* o, const bmath_hf3_s* src );
+
+/// copies v_data from src (does not change d_size or d_data)
+void bmath_hf3_s_copy_v_data( bmath_hf3_s* o, const bmath_hf3_s* src );
 
 /// sets size of entire holor including v_data; (v_data initialized to zero)
-void bmath_hf3_s_set_size( bmath_hf3_s* o, sz_t* d_data, sz_t d_size );
+void bmath_hf3_s_set_size( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size );
 
 /// sets d_data via variadic arguments
 void bmath_hf3_s_set_d_data_nv( bmath_hf3_s* o, sz_t d_size, va_list sz_t_args );
@@ -90,6 +99,9 @@ void bmath_hf3_s_set_d_data_na( bmath_hf3_s* o, sz_t d_size, ... );
 /// sets size via variadic arguments
 void bmath_hf3_s_set_size_nv( bmath_hf3_s* o, sz_t d_size, va_list sz_t_args );
 void bmath_hf3_s_set_size_na( bmath_hf3_s* o, sz_t d_size, ... );
+
+/// returns product of all dimensions
+sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o );
 
 /**********************************************************************************************************************/
 /// elementwise operations

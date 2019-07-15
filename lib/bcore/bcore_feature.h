@@ -33,7 +33,9 @@ typedef void (*bcore_fp_move      )( vd_t  o, vd_t src ); // init(o); copy(o, sr
 typedef vd_t (*bcore_fp_create    )( void   );            // allocate & init
 typedef void (*bcore_fp_discard   )( vd_t  o );           // down & deallocate; o may be NULL in which case function does nothing
 typedef vd_t (*bcore_fp_clone     )( vc_t  o );           // allocate & copy; o may be NULL in which case NULL is returned
-typedef void (*bcore_fp_replicate )( vd_t* o, vc_t src ); // discards o, then clones src into *o; replicating NULL is allowed.
+typedef void (*bcore_fp_detach    )( vd_t* o );           // if( o ) { discard( *o ); *o = NULL; }
+typedef void (*bcore_fp_attach    )( vd_t* o, vd_t src ); // if( o ) { if( *o != src ) { discard( *o ); *o = src; } }
+typedef void (*bcore_fp_replicate )( vd_t* o, vc_t src ); // if( o ) { if( *o != src ) { discard( *o ); *o = clone( src ); } }
 
 /// copy, create from another object with type conversion
 typedef void (*bcore_fp_copy_typed   )( vd_t o, tp_t type, vc_t src ); // deep conversion & copy

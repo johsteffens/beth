@@ -26,5 +26,6 @@
 #include "bmath_vector.h"
 #include "bmath_mf3.h"
 #include "bmath_mf3_eval.h"
+#include "bmath_hf3.h"
 
 #endif // BMATH_STD_H

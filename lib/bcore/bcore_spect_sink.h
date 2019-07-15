@@ -52,6 +52,11 @@ void bcore_sink_x_push_fa ( sr_s o, sc_t format, ... );
 void bcore_sink_r_pushf   ( const sr_s* o, sc_t format, ... );
 void bcore_sink_r_push_fa ( const sr_s* o, sc_t format, ... );
 
+bcore_sink* bcore_sink_t_clone( tp_t type );
+void bcore_sink_a_discard( bcore_sink* o );
+void bcore_sink_a_detach( bcore_sink** o );
+void bcore_sink_a_attach( bcore_sink** o, bcore_sink* src );
+
 vd_t bcore_spect_sink_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_SPECT_SINK_H

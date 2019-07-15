@@ -48,7 +48,7 @@ void bmath_hf3_s_fit_v_size( bmath_hf3_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_set_d_data( bmath_hf3_s* o, sz_t* d_data, sz_t d_size )
+void bmath_hf3_s_set_d_data( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size )
 {
     bmath_hf3_s_set_d_size( o, d_size );
     for( sz_t i = 0; i < o->d_size; i++ ) o->d_data[ i ] = d_data[ i ];
@@ -56,7 +56,29 @@ void bmath_hf3_s_set_d_data( bmath_hf3_s* o, sz_t* d_data, sz_t d_size )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_set_size( bmath_hf3_s* o, sz_t* d_data, sz_t d_size )
+void bmath_hf3_s_set_v_data( bmath_hf3_s* o, const f3_t* v_data, sz_t v_size )
+{
+    bmath_hf3_s_set_v_size( o, v_size );
+    for( sz_t i = 0; i < o->v_size; i++ ) o->v_data[ i ] = v_data[ i ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_copy_d_data( bmath_hf3_s* o, const bmath_hf3_s* src )
+{
+    bmath_hf3_s_set_d_data( o, src->d_data, src->d_size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_copy_v_data( bmath_hf3_s* o, const bmath_hf3_s* src )
+{
+    bmath_hf3_s_set_v_data( o, src->v_data, src->v_size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_set_size( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size )
 {
     bmath_hf3_s_set_d_data( o, d_data, d_size );
     bmath_hf3_s_fit_v_size( o );
@@ -99,6 +121,15 @@ void bmath_hf3_s_set_size_na( bmath_hf3_s* o, sz_t d_size, ... )
     va_start( args, d_size );
     bmath_hf3_s_set_size_nv( o, d_size, args );
     va_end( args );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o )
+{
+    sz_t prd = 1;
+    for( sz_t i = 0; i < o->d_size; i++ ) prd *= o->d_data[ i ];
+    return prd;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

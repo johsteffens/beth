@@ -181,6 +181,31 @@ void NPX(r_parse_fa    )( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( 
 void NPX(r_parse_errf  )( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( a, f ); NPX(r_parse_errvf )( o, f, a ); va_end( a ); }
 void NPX(r_parse_err_fa)( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( a, f ); NPX(r_parse_err_fv)( o, f, a ); va_end( a ); }
 
+bcore_source* bcore_source_t_clone( tp_t type )
+{
+    bcore_trait_assert_satisfied_type( TYPEOF_bcore_source, type );
+    return ( bcore_source* )bcore_inst_t_create( type );
+}
+
+void bcore_source_a_discard( bcore_source* o )
+{
+    bcore_inst_a_discard( ( bcore_inst* )o );
+}
+
+void bcore_source_a_detach( bcore_source** o )
+{
+    if( !o ) return;
+    bcore_source_a_discard( *o );
+    *o = NULL;
+}
+
+void bcore_source_a_attach( bcore_source** o, bcore_source* src )
+{
+    if( !o ) return;
+    bcore_source_a_discard( *o );
+    *o = src;
+}
+
 /**********************************************************************************************************************/
 
 BCORE_DEFINE_SPECT_CACHE( bcore_source_s );

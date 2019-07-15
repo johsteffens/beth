@@ -160,7 +160,7 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 3981703498 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 967100864 ) );
             BCORE_REGISTER_OBJECT( bmath_mf3_sx_s );
             BCORE_REGISTER_TRAIT( bmath_mf3_sx, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_mf3_sf_s );

@@ -405,7 +405,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_group_s )
     tp_t hash;
     bl_t has_features;
     bl_t is_aware;
-    bl_t enroll; // causes all stamps to fully enroll during init cycle;
+    bl_t retrievable; // causes all stamps to fully enroll during init cycle;
     BCORE_ARRAY_DYN_LINK_AWARE_VIRTUAL_S( bcore_plant, );
 
     bcore_plant_source_s* source;
@@ -421,7 +421,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_group_s )
     "tp_t hash;"
     "bl_t has_features;"
     "bl_t is_aware;"
-    "bl_t enroll;"
+    "bl_t retrievable;"
     "aware bcore_plant   => [] arr;"
 
     "private vd_t source;"
@@ -444,6 +444,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_nested_group_s )
     "aware_t _;"
     "vd_t group;" // group object;
     "func bcore_plant_fp : get_hash;"
+    "func bcore_plant_fp : expand_forward;"
     "func bcore_plant_fp : expand_indef_declaration;"
 "}";
 
@@ -1480,11 +1481,7 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
             }
             else
             {
-                bcore_source_a_parse_fa( source, " #name", type_name );
-                if( type_name->size == 0 )
-                {
-                    st_s_push_fa( type_name, "#<sc_t>", group->name.sc );
-                }
+                bcore_plant_group_s_parse_name( o->group, type_name, source );
 
                 if( st_s_equal_st( type_name, trait_name ) )
                 {
@@ -1995,6 +1992,10 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             group->source = o->source;
             bcore_plant_group_s_parse_name( o, &group->name, source );
             bcore_source_a_parse_fa( source, " =", &group->name, &group->trait_name );
+
+            // flags
+            if( bcore_source_a_parse_bl_fa( source, " #?w'retrievable' " ) ) group->retrievable = true;
+
             bcore_plant_group_s_parse_name( o, &group->trait_name, source );
             if( group->trait_name.size == 0 ) st_s_copy( &group->trait_name, &o->name );
             bcore_plant_group_s_parse( group, source );
@@ -2007,10 +2008,9 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'set' " ) )
         {
-            if( bcore_source_a_parse_bl_fa( source, " #?w'enroll' " ) )
+            if( bcore_source_a_parse_bl_fa( source, " #?w'retrievable' " ) )
             {
-                o->enroll = true;
-                o->hash = bcore_tp_fold_tp( o->hash, 1 );
+                o->retrievable = true;
             }
             else
             {
@@ -2023,6 +2023,9 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
         {
             bcore_source_a_parse_err_fa( source, "Plant: syntax error." );
         }
+
+        // hash group parameters
+        o->hash = bcore_tp_fold_tp( o->hash, o->retrievable ? 1 : 0 );
 
         if( item )
         {
@@ -2051,11 +2054,17 @@ static void bcore_plant_group_s_expand_spect_declaration( const bcore_plant_grou
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }};", indent );
 
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline #<sc_t>* #<sc_t>_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_#<sc_t>, t ); return ( #<sc_t>* )bcore_inst_t_create( t ); }", indent, o->name.sc, o->name.sc, o->name.sc, o->name.sc );
+    bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline bl_t #<sc_t>_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_#<sc_t> ); }", indent, o->name.sc, o->name.sc );
+
+    /// some extra functionality for aware types
     if( o->is_aware )
     {
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline #<sc_t>* #<sc_t>_a_clone( const #<sc_t>* o ) { return ( #<sc_t>* )bcore_inst_a_clone( ( bcore_inst* )o ); }", indent, o->name.sc, o->name.sc, o->name.sc, o->name.sc );
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline void #<sc_t>_a_discard( #<sc_t>* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); }", indent, o->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline void #<sc_t>_a_detach( #<sc_t>** o ) { if( !o ) return; bcore_inst_a_discard( ( bcore_inst* )*o ); *o = NULL; }", indent, o->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline void #<sc_t>_a_attach( #<sc_t>** o, #<sc_t>* src ) { if( src ) bcore_inst_a_attach( ( bcore_inst** )o, ( bcore_inst* )src ); }", indent, o->name.sc, o->name.sc, o->name.sc );
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline void #<sc_t>_a_replicate( #<sc_t>** o, const #<sc_t>* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); }", indent, o->name.sc, o->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline bl_t #<sc_t>_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_#<sc_t> ); }", indent, o->name.sc, o->name.sc );
     }
 }
 
@@ -2150,7 +2159,7 @@ static void bcore_plant_group_s_expand_init1( const bcore_plant_group_s* o, sz_t
         bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_TRAIT( #<sc_t>, #<sc_t> );\n", indent, o->name.sc, o->trait_name.sc );
     }
 
-    if( o->enroll )
+    if( o->retrievable )
     {
         for( sz_t i = 0; i < o->size; i++ )
         {
@@ -2173,6 +2182,13 @@ static void bcore_plant_group_s_expand_init1( const bcore_plant_group_s* o, sz_t
 static tp_t bcore_plant_nested_group_s_get_hash( const bcore_plant_nested_group_s* o )
 {
     return o->group ? o->group->hash : 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_nested_group_s_expand_forward( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
+{
+    bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o->group->name.sc );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2689,6 +2705,7 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_plant_group_s );
 
             BCORE_REGISTER_FFUNC( bcore_plant_fp_get_hash,                  bcore_plant_nested_group_s_get_hash );
+            BCORE_REGISTER_FFUNC( bcore_plant_fp_expand_forward,            bcore_plant_nested_group_s_expand_forward );
             BCORE_REGISTER_FFUNC( bcore_plant_fp_expand_indef_declaration,  bcore_plant_nested_group_s_expand_indef_declaration );
             BCORE_REGISTER_OBJECT( bcore_plant_nested_group_s );
 
