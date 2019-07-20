@@ -21,10 +21,67 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_hf3_s_d_make_strong( bmath_hf3_s* o )
+{
+    if( o->d_size  == 0 ) return;
+    if( o->d_space != 0 ) return;
+    sz_t  d_size = o->d_size;
+    sz_t* d_data = o->d_data;
+    o->d_size = 0;
+    o->d_data = NULL;
+    bmath_hf3_s_set_d_size( o, d_size );
+    bcore_u_memcpy( sizeof( sz_t ), o->d_data, d_data, d_size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_v_make_strong( bmath_hf3_s* o )
+{
+    if( o->v_size  == 0 ) return;
+    if( o->v_space != 0 ) return;
+    sz_t  v_size = o->v_size;
+    f3_t* v_data = o->v_data;
+    o->v_size = 0;
+    o->v_data = NULL;
+    bmath_hf3_s_set_v_size( o, v_size );
+    bcore_u_memcpy( sizeof( f3_t ), o->v_data, v_data, v_size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_resize_d_size( bmath_hf3_s* o, sz_t size )
+{
+    sz_t old_size = o->d_size;
+    bmath_hf3_s_d_make_strong( o );
+    o->d_size = size;
+    o->d_data = bcore_un_alloc( sizeof( sz_t ), o->d_data, o->d_space, o->d_size, &o->d_space );
+    for( sz_t i = old_size; i < size; i++ ) o->d_data[ i ] = 0;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_resize_v_size( bmath_hf3_s* o, sz_t size )
+{
+    sz_t old_size = o->v_size;
+    bmath_hf3_s_v_make_strong( o );
+    o->v_size = size;
+    o->v_data = bcore_un_alloc( sizeof( f3_t ), o->v_data, o->v_space, o->v_size, &o->v_space );
+    for( sz_t i = old_size; i < size; i++ ) o->v_data[ i ] = 0;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_s_set_d_size( bmath_hf3_s* o, sz_t size )
 {
     o->d_size = size;
-    o->d_data = bcore_un_alloc( sizeof( sz_t ), o->d_data, o->d_space, o->d_size, &o->d_space );
+    if( o->d_space > 0 )
+    {
+        o->d_data = bcore_un_alloc( sizeof( sz_t ), o->d_data, o->d_space, o->d_size, &o->d_space );
+    }
+    else
+    {
+        o->d_data = bcore_un_alloc( sizeof( sz_t ), NULL, 0, o->d_size, &o->d_space );
+    }
     bcore_u_memzero( sizeof( sz_t ), o->d_data, o->d_size );
 }
 
@@ -33,8 +90,39 @@ void bmath_hf3_s_set_d_size( bmath_hf3_s* o, sz_t size )
 void bmath_hf3_s_set_v_size( bmath_hf3_s* o, sz_t size )
 {
     o->v_size = size;
-    o->v_data = bcore_un_alloc( sizeof( f3_t ), o->v_data, o->v_space, o->v_size, &o->v_space );
+    if( o->v_space > 0 )
+    {
+        o->v_data = bcore_un_alloc( sizeof( f3_t ), o->v_data, o->v_space, o->v_size, &o->v_space );
+    }
+    else
+    {
+        o->v_data = bcore_un_alloc( sizeof( f3_t ), NULL, 0, o->v_size, &o->v_space );
+    }
     bcore_u_memzero( sizeof( f3_t ), o->v_data, o->v_size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_clear_v_data( bmath_hf3_s* o )
+{
+    if( o->v_space > 0 )
+    {
+        o->v_data = bcore_un_alloc( sizeof( f3_t ), o->v_data, o->v_space, 0, &o->v_space );
+    }
+    o->v_data = NULL;
+    o->v_size = 0;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_clear_d_data( bmath_hf3_s* o )
+{
+    if( o->d_space > 0 )
+    {
+        o->d_data = bcore_un_alloc( sizeof( sz_t ), o->d_data, o->d_space, 0, &o->d_space );
+    }
+    o->d_data = NULL;
+    o->d_size = 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -138,6 +226,124 @@ sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_hf3_s_inc_order( bmath_hf3_s* o, sz_t dim )
+{
+    bmath_hf3_s_d_make_strong( o );
+
+    o->d_size++;
+    o->d_data = bcore_un_alloc( sizeof( sz_t ), o->d_data, o->d_space, o->d_size, &o->d_space );
+    o->d_data[ o->d_size - 1 ] = dim;
+
+    if( o->v_size > 0 )
+    {
+        bmath_hf3_s_v_make_strong( o );
+
+        f3_t* v_data  = o->v_data;
+        sz_t  v_size  = o->v_size;
+        sz_t  v_space = o->v_space;
+        o->v_data = NULL;
+        o->v_size = 0;
+        o->v_space = 0;
+        bmath_hf3_s_fit_v_size( o );
+        ASSERT( o->v_size == v_size * dim );
+
+        for( sz_t i = 0; i < dim; i++ )
+        {
+            bcore_u_memcpy( sizeof( f3_t ), o->v_data + v_size * i, v_data, v_size );
+        }
+
+        bcore_un_alloc( sizeof( f3_t ), v_data, v_space, 0, NULL );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_push( bmath_hf3_s* o, const bmath_hf3_s* src )
+{
+    if( o->d_size == 0 && o->v_size == 0 )
+    {
+        bmath_hf3_s_copy( o, src );
+        bmath_hf3_s_inc_order( o, 1 );
+        return;
+    }
+
+    ASSERT( o->v_data );
+    ASSERT( src->v_data );
+    ASSERT( src->d_size <= o->d_size );
+
+    for( sz_t i = 0; i < src->d_size; i++ ) ASSERT( o->d_data[ i ] == src->d_data[ i ] );
+    if( src->d_size == o->d_size ) bmath_hf3_s_inc_order( o, 1 );
+
+    ASSERT( o->d_size > 0 );
+
+    bmath_hf3_s_v_make_strong( o );
+    sz_t sub_size = bmath_hf3_s_d_product( src );
+
+    o->d_data[ o->d_size -1 ]++;
+
+    bmath_hf3_s_resize_v_size( o, o->v_size + sub_size );
+    bcore_u_memcpy( sizeof( f3_t ), o->v_data + o->v_size - sub_size, src->v_data, sub_size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static void rec_to_sink( const bmath_hf3_s* o, bcore_sink* sink, f3_t* v_data, sz_t d_idx )
+{
+    if( d_idx == 0 )
+    {
+        for( sz_t i = 0; i < o->d_data[ 0 ]; i++ )
+        {
+            if( i > 0 ) bcore_sink_a_push_fa( sink, " " );
+            bcore_sink_a_push_fa( sink, "#<f3_t>", v_data[ i ] );
+        }
+    }
+    else
+    {
+        sz_t v_block = 1;
+        for( sz_t i = 0; i < d_idx; i++ ) v_block *= o->d_data[ i ];
+        sz_t dim = o->d_data[ d_idx ];
+        for( sz_t i = 0; i < dim; i++ )
+        {
+            bcore_sink_a_push_fa( sink, "{" );
+            rec_to_sink( o, sink, v_data + i * v_block, d_idx - 1 );
+            bcore_sink_a_push_fa( sink, "}" );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_to_sink( const bmath_hf3_s* o, bcore_sink* sink )
+{
+    if( o->v_data )
+    {
+        if( o->d_size > 0 )
+        {
+            bcore_sink_a_push_fa( sink, "{" );
+            rec_to_sink( o, sink, o->v_data, o->d_size - 1 );
+            bcore_sink_a_push_fa( sink, "}" );
+        }
+        else
+        {
+            bcore_sink_a_push_fa( sink, "#<f3_t>", o->v_data[ 0 ] );
+        }
+    }
+    else
+    {
+        for( sz_t i = o->d_size - 1; i >= 0; i-- )
+        {
+            bcore_sink_a_push_fa( sink, "[#<sz_t>]", o->d_data[ i ] );
+        }
+        bcore_sink_a_push_fa( sink, "##" );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 sz_t bmath_hf3_s_get_k_for_cols( const bmath_hf3_s* o, sz_t cols )
 {
     sz_t p = 1;
@@ -184,6 +390,29 @@ bmath_mf3_s bmath_hf3_s_get_weak_mat( const bmath_hf3_s* o, sz_t k )
 
 /**********************************************************************************************************************/
 /// elementwise operations
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_zro( const bmath_hf3_s* o )
+{
+    for( sz_t i = 0; i < o->v_size; i++ ) o->v_data[ i ] = 0;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r )
+{
+    ASSERT( o->v_size == r->v_size );
+    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = o->v_data[ i ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_tanh( const bmath_hf3_s* o, bmath_hf3_s* r )
+{
+    ASSERT( o->v_size == r->v_size );
+    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = tanh( o->v_data[ i ] );
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 

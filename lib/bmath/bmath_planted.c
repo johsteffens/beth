@@ -69,10 +69,18 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_s )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_hf3_vm
 
-BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_arr_hf3_s )
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_holor_s )
+"aware bmath_hf3_vm"
+"{"
+    "tp_t name;"
+    "tp_t type;"
+    "bmath_hf3_s hf3;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_arr_holor_s )
 "aware bcore_array"
 "{"
-    "bmath_hf3_s [];"
+    "bmath_hf3_vm_holor_s [];"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_s )
@@ -88,6 +96,7 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_s )
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_proc_s )
 "aware bcore_array"
 "{"
+    "tp_t name;"
     "bmath_hf3_vm_op_s [];"
     "func bmath_hf3_vm:run;"
 "}";
@@ -98,6 +107,38 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_arr_proc_s )
     "bmath_hf3_vm_proc_s [];"
 "}";
 
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_linear_s )
+"aware bmath_hf3_vm"
+"{"
+    "sz_t a;"
+    "sz_t b;"
+    "func ^:run;"
+    "func ^:set_arg;"
+"}";
+
+void bmath_hf3_vm_op_linear_s_set_arg( bmath_hf3_vm_op_linear_s* o, char id, sz_t idx )
+{
+    if     ( id == 'a' ) o->a = idx;
+    else if( id == 'b' ) o->b = idx;
+    else ERR_fa( "Operator '#<sc_t>': Invalid arg id '#<char>'.", ifnameof( *(aware_t*)o ), id );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_tanh_s )
+"aware bmath_hf3_vm"
+"{"
+    "sz_t a;"
+    "sz_t b;"
+    "func ^:run;"
+    "func ^:set_arg;"
+"}";
+
+void bmath_hf3_vm_op_tanh_s_set_arg( bmath_hf3_vm_op_tanh_s* o, char id, sz_t idx )
+{
+    if     ( id == 'a' ) o->a = idx;
+    else if( id == 'b' ) o->b = idx;
+    else ERR_fa( "Operator '#<sc_t>': Invalid arg id '#<char>'.", ifnameof( *(aware_t*)o ), id );
+}
+
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_add_s )
 "aware bmath_hf3_vm"
 "{"
@@ -105,7 +146,16 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_add_s )
     "sz_t b;"
     "sz_t c;"
     "func ^:run;"
+    "func ^:set_arg;"
 "}";
+
+void bmath_hf3_vm_op_add_s_set_arg( bmath_hf3_vm_op_add_s* o, char id, sz_t idx )
+{
+    if     ( id == 'a' ) o->a = idx;
+    else if( id == 'b' ) o->b = idx;
+    else if( id == 'c' ) o->c = idx;
+    else ERR_fa( "Operator '#<sc_t>': Invalid arg id '#<char>'.", ifnameof( *(aware_t*)o ), id );
+}
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_sub_s )
 "aware bmath_hf3_vm"
@@ -114,7 +164,16 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_sub_s )
     "sz_t b;"
     "sz_t c;"
     "func ^:run;"
+    "func ^:set_arg;"
 "}";
+
+void bmath_hf3_vm_op_sub_s_set_arg( bmath_hf3_vm_op_sub_s* o, char id, sz_t idx )
+{
+    if     ( id == 'a' ) o->a = idx;
+    else if( id == 'b' ) o->b = idx;
+    else if( id == 'c' ) o->c = idx;
+    else ERR_fa( "Operator '#<sc_t>': Invalid arg id '#<char>'.", ifnameof( *(aware_t*)o ), id );
+}
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_kmul_s )
 "aware bmath_hf3_vm"
@@ -124,7 +183,16 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_kmul_s )
     "sz_t b;"
     "sz_t c;"
     "func ^:run;"
+    "func ^:set_arg;"
 "}";
+
+void bmath_hf3_vm_op_kmul_s_set_arg( bmath_hf3_vm_op_kmul_s* o, char id, sz_t idx )
+{
+    if     ( id == 'a' ) o->a = idx;
+    else if( id == 'b' ) o->b = idx;
+    else if( id == 'c' ) o->c = idx;
+    else ERR_fa( "Operator '#<sc_t>': Invalid arg id '#<char>'.", ifnameof( *(aware_t*)o ), id );
+}
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_hmul_s )
 "aware bmath_hf3_vm"
@@ -133,12 +201,21 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_hmul_s )
     "sz_t b;"
     "sz_t c;"
     "func ^:run;"
+    "func ^:set_arg;"
 "}";
+
+void bmath_hf3_vm_op_hmul_s_set_arg( bmath_hf3_vm_op_hmul_s* o, char id, sz_t idx )
+{
+    if     ( id == 'a' ) o->a = idx;
+    else if( id == 'b' ) o->b = idx;
+    else if( id == 'c' ) o->c = idx;
+    else ERR_fa( "Operator '#<sc_t>': Invalid arg id '#<char>'.", ifnameof( *(aware_t*)o ), id );
+}
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_frame_s )
 "aware bmath_hf3_vm"
 "{"
-    "bmath_hf3_vm_arr_hf3_s arr_holor;"
+    "bmath_hf3_vm_arr_holor_s arr_holor;"
     "bmath_hf3_vm_arr_proc_s arr_proc;"
     "bcore_hmap_tpuz_s map_proc;"
     "bcore_hmap_tpuz_s map_holor;"
@@ -149,6 +226,7 @@ BCORE_DEFINE_SPECT( bcore_inst, bmath_hf3_vm )
 "{"
     "bcore_spect_header_s header;"
     "feature aware bmath_hf3_vm : run;"
+    "feature aware bmath_hf3_vm : set_arg = bmath_hf3_vm_set_arg__;"
 "}";
 
 /**********************************************************************************************************************/
@@ -160,14 +238,15 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 967100864 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 2193711420 ) );
             BCORE_REGISTER_OBJECT( bmath_mf3_sx_s );
             BCORE_REGISTER_TRAIT( bmath_mf3_sx, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_mf3_sf_s );
             BCORE_REGISTER_TRAIT( bmath_mf3_sf, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_hf3_s );
             BCORE_REGISTER_TRAIT( bmath_hf3, bcore_inst );
-            BCORE_REGISTER_OBJECT( bmath_hf3_vm_arr_hf3_s );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_holor_s );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_arr_holor_s );
             BCORE_REGISTER_FEATURE( bmath_hf3_vm_run );
             BCORE_REGISTER_FFUNC( bcore_inst_call_copy_x, bmath_hf3_vm_op_s_copy_x );
             BCORE_REGISTER_FFUNC( bcore_via_call_mutated, bmath_hf3_vm_op_s_mutated );
@@ -176,13 +255,25 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_proc_s_run );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_proc_s );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_arr_proc_s );
+            BCORE_REGISTER_FEATURE( bmath_hf3_vm_set_arg );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_set_arg, bmath_hf3_vm_set_arg__ );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_linear_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_set_arg, bmath_hf3_vm_op_linear_s_set_arg );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_linear_s );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_tanh_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_set_arg, bmath_hf3_vm_op_tanh_s_set_arg );
+            BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_tanh_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_add_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_set_arg, bmath_hf3_vm_op_add_s_set_arg );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_add_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_sub_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_set_arg, bmath_hf3_vm_op_sub_s_set_arg );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_sub_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_kmul_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_set_arg, bmath_hf3_vm_op_kmul_s_set_arg );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_kmul_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_hmul_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_set_arg, bmath_hf3_vm_op_hmul_s_set_arg );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_hmul_s );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_frame_s );
             BCORE_REGISTER_SPECT( bmath_hf3_vm );

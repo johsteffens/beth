@@ -30,11 +30,21 @@
 PLANT_GROUP( bmath_hf3_vm, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :arr_hf3 = aware bcore_array { bmath_hf3_s []; };
+// holor
+stamp :holor = aware :
+{
+    tp_t name;
+    tp_t type;
+    bmath_hf3_s hf3;
+};
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-feature 'ap' void run( const, :arr_hf3_s* arr_hf3 );
+stamp :arr_holor = aware bcore_array { :holor_s []; };
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+feature 'ap' void run( const, :arr_holor_s* arr_holor );
 
 // operator with preset perspective
 stamp :op = aware :
@@ -45,7 +55,7 @@ stamp :op = aware :
     func bcore_inst_call : copy_x  = { o->p = (:s*):s_get_aware( o->op ); };
     func bcore_via_call  : mutated = { :op_s_copy_x( o ); };
 
-    func bmath_hf3_vm : run = { :p_run( o->p, o->op, arr_hf3 ); };
+    func bmath_hf3_vm : run = { :p_run( o->p, o->op, arr_holor ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,8 +63,9 @@ stamp :op = aware :
 // procedure
 stamp :proc = aware bcore_array
 {
+    tp_t name;
     :op_s [];
-    func bmath_hf3_vm : run = { for( sz_t i = 0; i < o->size; i++ ) :op_s_run( &o->data[ i ], arr_hf3 ); };
+    func bmath_hf3_vm : run = { for( sz_t i = 0; i < o->size; i++ ) :op_s_run( &o->data[ i ], arr_holor ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,12 +73,59 @@ stamp :proc = aware bcore_array
 stamp :arr_proc = aware bcore_array { :proc_s []; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Operators
+
+feature 'a' void set_arg( mutable, char id, sz_t idx ) = { ERR_fa( "Not implemented in #<sc_t>", ifnameof( *(aware_t*)o ) ); };
+
+body set_arg_a =
+{
+    if     ( id == 'a' ) o->a = idx;
+    else ERR_fa( "Operator '#<sc_t>': Invalid arg id '#<char>'.", ifnameof( *(aware_t*)o ), id );
+};
+
+body set_arg_ab =
+{
+    if     ( id == 'a' ) o->a = idx;
+    else if( id == 'b' ) o->b = idx;
+    else ERR_fa( "Operator '#<sc_t>': Invalid arg id '#<char>'.", ifnameof( *(aware_t*)o ), id );
+};
+
+body set_arg_abc =
+{
+    if     ( id == 'a' ) o->a = idx;
+    else if( id == 'b' ) o->b = idx;
+    else if( id == 'c' ) o->c = idx;
+    else ERR_fa( "Operator '#<sc_t>': Invalid arg id '#<char>'.", ifnameof( *(aware_t*)o ), id );
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/// a -> b
+stamp :op_linear = aware :
+{
+    sz_t a; sz_t b;
+    func : : run = { bmath_hf3_s_cpy( &arr_holor->data[ o->a ].hf3, &arr_holor->data[ o->b ].hf3 ); };
+    func : : set_arg = :set_arg_ab;
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/// tanh(a) -> b
+stamp :op_tanh = aware :
+{
+    sz_t a; sz_t b;
+    func : : run = { bmath_hf3_s_tanh( &arr_holor->data[ o->a ].hf3, &arr_holor->data[ o->b ].hf3 ); };
+    func : : set_arg = :set_arg_ab;
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// a + b -> c
 stamp :op_add = aware :
 {
     sz_t a; sz_t b; sz_t c;
-    func bmath_hf3_vm : run = { bmath_hf3_s_add( &arr_hf3->data[ o->a ], &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
+    func : : run = { bmath_hf3_s_add( &arr_holor->data[ o->a ].hf3, &arr_holor->data[ o->b ].hf3, &arr_holor->data[ o->c ].hf3 ); };
+    func : : set_arg = :set_arg_abc;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,7 +134,8 @@ stamp :op_add = aware :
 stamp :op_sub = aware :
 {
     sz_t a; sz_t b; sz_t c;
-    func bmath_hf3_vm : run = { bmath_hf3_s_sub( &arr_hf3->data[ o->a ], &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
+    func bmath_hf3_vm : run = { bmath_hf3_s_sub( &arr_holor->data[ o->a ].hf3, &arr_holor->data[ o->b ].hf3, &arr_holor->data[ o->c ].hf3 ); };
+    func : : set_arg = :set_arg_abc;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,7 +145,8 @@ stamp :op_kmul = aware :
 {
     sz_t k = 1;
     sz_t a; sz_t b; sz_t c;
-    func bmath_hf3_vm : run = { bmath_hf3_s_kmul( &arr_hf3->data[ o->a ], o->k, &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
+    func bmath_hf3_vm : run = { bmath_hf3_s_kmul( &arr_holor->data[ o->a ].hf3, o->k, &arr_holor->data[ o->b ].hf3, &arr_holor->data[ o->c ].hf3 ); };
+    func : : set_arg = :set_arg_abc;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -95,15 +155,16 @@ stamp :op_kmul = aware :
 stamp :op_hmul = aware :
 {
     sz_t a; sz_t b; sz_t c;
-    func bmath_hf3_vm : run = { bmath_hf3_s_hmul( &arr_hf3->data[ o->a ], &arr_hf3->data[ o->b ], &arr_hf3->data[ o->c ] ); };
+    func bmath_hf3_vm : run = { bmath_hf3_s_hmul( &arr_holor->data[ o->a ].hf3, &arr_holor->data[ o->b ].hf3, &arr_holor->data[ o->c ].hf3 ); };
+    func : : set_arg = :set_arg_abc;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp :frame = aware :
 {
-    :arr_hf3_s  arr_holor; // array of holors
-    :arr_proc_s arr_proc;  // array of principal functions
+    :arr_holor_s arr_holor; // array of holors
+    :arr_proc_s  arr_proc;  // array of principal functions
 
     bcore_hmap_tpuz_s map_proc;  // associates a name with a procedure
     bcore_hmap_tpuz_s map_holor; // associates a name with a holor
@@ -114,11 +175,31 @@ stamp :frame = aware :
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// ---------------------------------------------------------------------------------------------------------------------
+// proc_s
+
+/// do not push bmath_hf3_vm_op_s here
+void bmath_hf3_vm_proc_s_push_op_d( bmath_hf3_vm_proc_s* o, bmath_hf3_vm* op );
+
+// ---------------------------------------------------------------------------------------------------------------------
+// frame_s
+
+/// clears all content
+void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o );
+
 /// runs a procedure
 void bmath_hf3_vm_frame_s_run_proc( bmath_hf3_vm_frame_s* o, tp_t name );
 
-/// retrieves holor
-bmath_hf3_s* bmath_hf3_vm_frame_s_get_holor( bmath_hf3_vm_frame_s* o, tp_t name );
+/// retrieves holor; returns NULL if holor does not exists
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_get_holor( bmath_hf3_vm_frame_s* o, tp_t name );
+
+/// allocates v_data (fit_v_size) of holors of given type
+void bmath_hf3_vm_frame_s_alloc_holors( bmath_hf3_vm_frame_s* o, tp_t type );
+
+/// de-allocates v_data of holors of given type
+void bmath_hf3_vm_frame_s_dealloc_holors( bmath_hf3_vm_frame_s* o, tp_t type );
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 

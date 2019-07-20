@@ -16,6 +16,53 @@
 #include "bmath_hf3_vm.h"
 
 /**********************************************************************************************************************/
+/// op_s
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_op_s_setup_d( bmath_hf3_vm_op_s* o, bmath_hf3_vm* op )
+{
+    if( op )
+    {
+        bmath_hf3_vm_a_attach( &o->op, op );
+        o->p = (bmath_hf3_vm_s*)bmath_hf3_vm_s_get_aware( o->op );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// proc_s
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_proc_s_push_op_d( bmath_hf3_vm_proc_s* o, bmath_hf3_vm* op )
+{
+    if( op )
+    {
+        ASSERT( *(aware_t*)op != TYPEOF_bmath_hf3_vm_op_s );
+        bmath_hf3_vm_op_s* vm_op = bmath_hf3_vm_proc_s_push( o );
+        bmath_hf3_vm_op_s_setup_d( vm_op, op );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// frame_s
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o )
+{
+    bmath_hf3_vm_arr_holor_s_clear( &o->arr_holor );
+    bmath_hf3_vm_arr_proc_s_clear( &o->arr_proc );
+    bcore_hmap_tpuz_s_clear( &o->map_proc );
+    bcore_hmap_tpuz_s_clear( &o->map_holor );
+    bcore_hmap_name_s_clear( &o->map_name );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bmath_hf3_vm_frame_s_run_proc( bmath_hf3_vm_frame_s* o, tp_t name )
 {
@@ -30,15 +77,45 @@ void bmath_hf3_vm_frame_s_run_proc( bmath_hf3_vm_frame_s* o, tp_t name )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bmath_hf3_s* bmath_hf3_vm_frame_s_get_holor( bmath_hf3_vm_frame_s* o, tp_t name )
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_get_holor( bmath_hf3_vm_frame_s* o, tp_t name )
 {
     if( !bcore_hmap_tpuz_s_exists( &o->map_holor, name ) )
     {
         ERR_fa( "'#<sc_t>' does not represent a holor.", bcore_hmap_name_s_get_sc( &o->map_name, name ) );
     }
-    sz_t idx = *bcore_hmap_tpuz_s_get( &o->map_proc, name );
+    sz_t idx = *bcore_hmap_tpuz_s_get( &o->map_holor, name );
     return &o->arr_holor.data[ idx ];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_alloc_holors( bmath_hf3_vm_frame_s* o, tp_t type )
+{
+    for( sz_t i = 0; i < o->arr_holor.size; i++ )
+    {
+        bmath_hf3_vm_holor_s* holor = &o->arr_holor.data[ i ];
+        if( holor->type == type )
+        {
+            bmath_hf3_s_fit_v_size( &holor->hf3 );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_dealloc_holors( bmath_hf3_vm_frame_s* o, tp_t type )
+{
+    for( sz_t i = 0; i < o->arr_holor.size; i++ )
+    {
+        bmath_hf3_vm_holor_s* holor = &o->arr_holor.data[ i ];
+        if( holor->type == type )
+        {
+            bmath_hf3_s_clear_v_data( &holor->hf3 );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 

@@ -23,9 +23,12 @@
  *  A holor represents the canonic extension of a matrix (or generalization of a tensor) as inspired by
  *  Moon & Spencer's Theory of Holors.
  *
- *  A holor in this implementation is represented as a multidimensional array.
+ *  The term holor in this scope is represented as a multidimensional array, where jagged arrays are explicitly excluded.
+ *  Meaning that a (n+1)-holor is an array of n-holors of the same data-layout but independent values.
  *
- *  A n-holor is understood as holor with n dimensions (merates).
+ *  The number of dimensions is called the order of a holor.
+ *
+ *  A n-holor is understood as holor or order n (meaning n separate dimensions).
  *  The number of values a holor holds is equal to the product of its dimensions.
  *
  *  bmath_hf3_t is organized as array of dimensions and array of associated data.
@@ -68,8 +71,29 @@ stamp : = aware bcore_inst
 
 /**********************************************************************************************************************/
 
+/// turns a weak d-array into a strone one (no effect if it is strong)
+void bmath_hf3_s_d_make_strong( bmath_hf3_s* o );
+
+/// turns a weak v-array into a strone one (no effect if it is strong)
+void bmath_hf3_s_v_make_strong( bmath_hf3_s* o );
+
+/// sets number of values (initialized to zero)
+void bmath_hf3_s_set_v_size( bmath_hf3_s* o, sz_t size );
+
 /// sets number of dimensions (initialized to zero)
 void bmath_hf3_s_set_d_size( bmath_hf3_s* o, sz_t size );
+
+/// clears number of values
+void bmath_hf3_s_clear_v_data( bmath_hf3_s* o );
+
+/// clears number of dimensions (makes holor of scalar type)
+void bmath_hf3_s_clear_d_data( bmath_hf3_s* o );
+
+/// changes number of values preserving content (pads zero)
+void bmath_hf3_s_resize_v_size( bmath_hf3_s* o, sz_t size );
+
+/// changes number of dimensions preserving content (pads zero)
+void bmath_hf3_s_resize_d_size( bmath_hf3_s* o, sz_t size );
 
 /// sets number of values (initialized to zero)
 void bmath_hf3_s_set_v_size( bmath_hf3_s* o, sz_t size );
@@ -104,7 +128,31 @@ void bmath_hf3_s_set_size_na( bmath_hf3_s* o, sz_t d_size, ... );
 sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o );
 
 /**********************************************************************************************************************/
+/// holor specific operations
+
+static inline sz_t bmath_hf3_s_get_order( const bmath_hf3_s* o ) { return o->d_size; }
+
+/** Canonic increment of order by appending one dimension 'dim' :
+ *  If the holder holds data, the data is duplicated 'dim' times.
+ */
+void bmath_hf3_s_inc_order( bmath_hf3_s* o, sz_t dim );
+
+/** Canonic data append of a sub-holor */
+void bmath_hf3_s_push( bmath_hf3_s* o, const bmath_hf3_s* src );
+
+void bmath_hf3_s_to_sink( const bmath_hf3_s* o, bcore_sink* sink );
+
+/**********************************************************************************************************************/
 /// elementwise operations
+
+/// o = {0}
+void bmath_hf3_s_zro( const bmath_hf3_s* o );
+
+/// o -> r
+void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r );
+
+/// tanh(o) -> r
+void bmath_hf3_s_tanh( const bmath_hf3_s* o, bmath_hf3_s* r );
 
 /// o + m -> r
 void bmath_hf3_s_add( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
