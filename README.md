@@ -12,7 +12,7 @@
       * [Associative Binding](#binding)
       * [RTTI](#RTTI)
       * [Memory Management](#memory-management)
-      * [Precode](#precode)
+      * [Plant](#plant) (Automatic code)
    * [Motivation](#motivation)
 
 # About Beth
@@ -118,7 +118,7 @@ Beth has its own memory manager with integrated reference manager. Both componen
 
 The memory-manager, excluding reference manager, was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
 
-<a name = "precode"></a>
+<a name = "plant"></a>
 ### Plant
 Beth-Plant is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding. It allows expressing key aspects of reflections and perspectives in a well-readable, compact and simple style. The plant-compiler converts plant-code into c-code.
 
