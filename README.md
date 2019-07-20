@@ -12,7 +12,7 @@
       * [Associative Binding](#binding)
       * [RTTI](#RTTI)
       * [Memory Management](#memory-management)
-      * [Plant](#plant) (Automatic code)
+      * [Plant (automatic code)](#plant)
    * [Motivation](#motivation)
 
 # About Beth
