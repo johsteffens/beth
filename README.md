@@ -96,7 +96,7 @@ It is used by the Interpreter of the [Actinon Programming Language](https://gith
 <a name = "badapt"></a>
 ### badapt - Adaptive Systems (Neural Networks)
 This library represents a newly designed generic infrastructure for trainable objects. It makes extended use of the meta-language [beth-plant](#plant). High computationial efficiency is achieved by using the [bmath](#bmath) linar subsystem.
-With this this concept, specific popular feed-forward and recurrent networks have been newly and explicitly implemented:
+With this this concept, specific popular feed-forward and recurrent networks have (so far) been implemented:
    * Multi Layer Perceptron (MLP)
    * 1 Dimensional Convolutional Neural Network. (1D-CNN)
    * Elman Recurrent Network (ERN)
