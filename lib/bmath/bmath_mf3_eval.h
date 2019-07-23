@@ -31,8 +31,9 @@
 BCORE_DECLARE_OBJECT( bmath_mf3_eval_s )
 {
     aware_t _;
-    uz_t rows;
-    uz_t cols;
+    sz_t rows;
+    sz_t cols;
+    sz_t dim3;       // third dimension (e.g. in multiplication tests); -1: use default
 
     u2_t seed;       // random seed
     f3_t density;    // random matrix density
@@ -60,8 +61,9 @@ BCORE_DECLARE_OBJECT( bmath_mf3_eval_result_s )
 {
     aware_t _;
     tp_t fp_type;
-    uz_t rows;
-    uz_t cols;
+    sz_t rows;
+    sz_t cols;
+    sz_t dim3;     // third dimension (e.g. in multiplication tests); -1: use default
     f3_t density;  // random matrix density
 
     st_s a_log;    // log of matrix a
