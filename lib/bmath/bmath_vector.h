@@ -43,7 +43,7 @@
 #include "bmath_pmt.h"
 
 /**********************************************************************************************************************/
-// low level vector functions
+// low level vector functions (partially AVX optimized)
 
 f3_t bmath_f3_t_vec_sum(          const f3_t* v1, sz_t size ); // sum_i v1[i]
 f3_t bmath_f3_t_vec_sum_esp(      const f3_t* v1, sz_t size ); // sum_i v1[i]
@@ -55,6 +55,9 @@ f3_t bmath_f3_t_vec_mul3_vec_esp( const f3_t* v1, const f3_t* v2, const f3_t* v3
 /// with stride for both vectors
 f3_t bmath_f3_t_vec_mul_vec_stride(     const f3_t* v1, sz_t stride1, const f3_t* v2, sz_t stride2, sz_t size ); // sum_i v1[i]*v2[i]
 f3_t bmath_f3_t_vec_mul_vec_esp_stride( const f3_t* v1, sz_t stride1, const f3_t* v2, sz_t stride2, sz_t size ); // sum_i v1[i]*v2[i]
+
+void bmath_f3_t_vec_mul_scl(     const f3_t* a, f3_t b,                f3_t* r, sz_t size ); // a * b + c -> r
+void bmath_f3_t_vec_mul_scl_add( const f3_t* a, f3_t b, const f3_t* c, f3_t* r, sz_t size ); // a * b + c -> r
 
 /**********************************************************************************************************************/
 // dynamic size vector of f3_t
@@ -75,7 +78,7 @@ BCORE_DECLARE_OBJECT( bmath_vf3_s )
 };
 
 static inline void bmath_vf3_s_init_weak( bmath_vf3_s* o, f3_t* data, sz_t size ) { bmath_vf3_s_init( o ); o->data = data; o->size = size; }
-static inline bmath_vf3_s bmath_vf3_weak( f3_t* data, sz_t size ) { bmath_vf3_s v; bmath_vf3_s_init_weak( &v, data, size ); return v; }
+static inline bmath_vf3_s bmath_vf3_init_weak( f3_t* data, sz_t size ) { bmath_vf3_s o; bmath_vf3_s_init_weak( &o, data, size ); return o; }
 
 void bmath_vf3_s_move( bmath_vf3_s* o, bmath_vf3_s* src );
 void bmath_vf3_s_clear( bmath_vf3_s* o );

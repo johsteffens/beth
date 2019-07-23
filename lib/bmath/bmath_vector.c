@@ -167,6 +167,43 @@ f3_t bmath_f3_t_vec_mul3_vec_esp( const f3_t* v1, const f3_t* v2, const f3_t* v3
 
 //----------------------------------------------------------------------------------------------------------------------
 
+// a * b -> r
+void bmath_f3_t_vec_mul_scl( const f3_t* a, f3_t b, f3_t* r, sz_t size )
+{
+    sz_t i = 0;
+#ifdef BMATH_AVX
+    __m256d b_p4 = _mm256_set1_pd( b );
+    for( ; i <= size - 4; i += 4 )
+    {
+        _mm256_storeu_pd( r + i, _mm256_mul_pd( _mm256_loadu_pd( a + i ), b_p4 ) );
+    }
+#endif // BMATH_AVX
+    for( ; i < size; i++ ) r[ i ] = a[ i ] * b;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// a * b + c -> r
+void bmath_f3_t_vec_mul_scl_add( const f3_t* a, f3_t b, const f3_t* c, f3_t* r, sz_t size )
+{
+    sz_t i = 0;
+#ifdef BMATH_AVX
+    __m256d b_p4 = _mm256_set1_pd( b );
+    for( ; i <= size - 4; i += 4 )
+    {
+        #ifdef BMATH_AVX2_FMA
+            _mm256_storeu_pd( r + i, _mm256_fmadd_pd( _mm256_loadu_pd( a + i ), b_p4 , _mm256_loadu_pd( c + i ) ) );
+        #else
+            _mm256_storeu_pd( r + i, _mm256_add_pd( _mm256_mul_pd( _mm256_loadu_pd( a + i ), b_p4 ), _mm256_loadu_pd( c + i ) ) );
+        #endif // BMATH_AVX2_FMA
+
+    }
+#endif // BMATH_AVX
+    for( ; i < size; i++ ) r[ i ] = a[ i ] * b + c[ i ];
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // bmath_vf3_s
 
