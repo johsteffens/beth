@@ -12,7 +12,7 @@
       * [Associative Binding](#binding)
       * [RTTI](#RTTI)
       * [Memory Management](#memory-management)
-      * [Precode](#precode)
+      * [Plant (automatic code)](#plant)
    * [Motivation](#motivation)
 
 # About Beth
@@ -118,7 +118,7 @@ Beth has its own memory manager with integrated reference manager. Both componen
 
 The memory-manager, excluding reference manager, was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
 
-<a name = "precode"></a>
+<a name = "plant"></a>
 ### Plant
 Beth-Plant is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding. It allows expressing key aspects of reflections and perspectives in a well-readable, compact and simple style. The plant-compiler converts plant-code into c-code.
 
@@ -136,4 +136,4 @@ The classic framework for object oriented programming (such as realized in C++) 
 Primary motivation for this project is overcoming these deficiencies. Secondly, using this new framework to provide functionality as might be expected from a general purpose library with a scientific touch. Thirdly, developing new algorithic ideas and/or experiment with unconventional approaches (this can also be realized in beth-dependent projects).
 
 ### History
-In an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach during Summer 2017 and started project [beth](https://github.com/johsteffens/beth) bringing this (and other ideas) into tangible shape. Winter 2017/2018 the project [actinon](https://github.com/johsteffens/actinon) was developed utilizing the framework and demonstrating its usefulness. Spring 2018 I started developing a numerical mathematics suite  in sub-library [bmath](#bmath) with special focus on accrate, stable and efficient matrix factorizations. Spring 2019 I started developing [Beth-Precode](#precode).
+In an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach during Summer 2017 and started project [beth](https://github.com/johsteffens/beth) bringing this (and other ideas) into tangible shape. Winter 2017/2018 the project [actinon](https://github.com/johsteffens/actinon) was developed utilizing the framework and demonstrating its usefulness. Spring 2018 I started developing a numerical mathematics suite  in sub-library [bmath](#bmath) with special focus on accrate, stable and efficient matrix factorizations. Spring 2019 I started developing [Beth-Plant](#plant).
