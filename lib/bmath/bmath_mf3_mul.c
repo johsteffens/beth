@@ -38,7 +38,7 @@
 /// mul: Fixed size AVX-Microkernel
 static void bmath_mf3_s_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f3_t* m, sz_t m_s, f3_t* r, sz_t r_s )
 {
-    ASSERT( ( BMATH_MUL_BLOCK_SIZE & 3 ) == 0 );
+    assert( ( BMATH_MUL_BLOCK_SIZE & 3 ) == 0 );
 
     __m256d r_p4[ BMATH_MUL_BLKP4_SIZE ];
     __m256d m_p4[ BMATH_MUL_BLOCK_SIZE ][ BMATH_MUL_BLKP4_SIZE ];
@@ -94,8 +94,8 @@ static void bmath_mf3_s_mul_avx_flex_kernel( const f3_t* o, sz_t o_s, sz_t o_r, 
 {
     #define BMATH_MUL_BLKP4_SIZE ( BMATH_MUL_BLOCK_SIZE >> 2 )
 
-    ASSERT( o_c <= BMATH_MUL_BLOCK_SIZE );
-    ASSERT( m_c <= BMATH_MUL_BLKP4_SIZE * 4 );
+    assert( o_c <= BMATH_MUL_BLOCK_SIZE );
+    assert( m_c <= BMATH_MUL_BLKP4_SIZE * 4 );
 
     const sz_t m_c4l = m_c >> 2;
     const sz_t m_cr  = m_c - m_c4l * 4;
@@ -280,7 +280,7 @@ void bmath_mf3_s_mul( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_s* r
 /// mul: Fixed size AVX-Microkernel
 static void bmath_mf3_s_mul_htp_avx_fix_kernel( const f3_t* o, sz_t o_s, const f3_t* m, sz_t m_s, f3_t* r, sz_t r_s )
 {
-    ASSERT( ( BMATH_MUL_BLOCK_SIZE & 3 ) == 0 );
+    assert( ( BMATH_MUL_BLOCK_SIZE & 3 ) == 0 );
 
     __m256d r_p4[ BMATH_MUL_BLKP4_SIZE ];
     __m256d m_p4[ BMATH_MUL_BLOCK_SIZE ][ BMATH_MUL_BLKP4_SIZE ];
@@ -337,8 +337,8 @@ static void bmath_mf3_s_mul_htp_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
  */
 static void bmath_mf3_s_mul_htp_avx_flex_kernel( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const f3_t* m, sz_t m_s, sz_t m_r, f3_t* r, sz_t r_s )
 {
-    ASSERT( o_c <= BMATH_MUL_BLOCK_SIZE );
-    ASSERT( m_r <= BMATH_MUL_BLOCK_SIZE );
+    assert( o_c <= BMATH_MUL_BLOCK_SIZE );
+    assert( m_r <= BMATH_MUL_BLOCK_SIZE );
 
     const sz_t m_r4l = m_r >> 2;
     const sz_t m_rr  = m_r - m_r4l * 4;
@@ -540,7 +540,7 @@ void bmath_mf3_s_mul_htp( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_
 /// mul: Fixed size AVX-Microkernel
 static void bmath_mf3_s_htp_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f3_t* m, sz_t m_s, f3_t* r, sz_t r_s )
 {
-    ASSERT( ( BMATH_MUL_BLOCK_SIZE & 3 ) == 0 );
+    assert( ( BMATH_MUL_BLOCK_SIZE & 3 ) == 0 );
 
     __m256d r_p4[ BMATH_MUL_BLKP4_SIZE ];
     __m256d m_p4[ BMATH_MUL_BLOCK_SIZE ][ BMATH_MUL_BLKP4_SIZE ];
@@ -597,8 +597,8 @@ static void bmath_mf3_s_htp_mul_avx_fix_kernel( const f3_t* o, sz_t o_s, const f
  */
 static void bmath_mf3_s_htp_mul_avx_flex_kernel( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const f3_t* m, sz_t m_s, sz_t m_c, f3_t* r, sz_t r_s )
 {
-    ASSERT( o_r <= BMATH_MUL_BLOCK_SIZE );
-    ASSERT( m_c <= BMATH_MUL_BLKP4_SIZE * 4 );
+    assert( o_r <= BMATH_MUL_BLOCK_SIZE );
+    assert( m_c <= BMATH_MUL_BLKP4_SIZE * 4 );
 
     const sz_t m_c4l = m_c >> 2;
     const sz_t m_cr  = m_c - m_c4l * 4;
@@ -800,7 +800,7 @@ void bmath_mf3_s_htp_mul( const bmath_mf3_s* o, const bmath_mf3_s* m, bmath_mf3_
 
 static void bmath_mf3_s_htp_mul_htp_avx_fix_kernel( const f3_t* o, sz_t o_s, const f3_t* m, sz_t m_s, f3_t* r, sz_t r_s )
 {
-    ASSERT( ( BMATH_MUL_BLOCK_SIZE & 3 ) == 0 );
+    assert( ( BMATH_MUL_BLOCK_SIZE & 3 ) == 0 );
 
     __m256d r_p4[ BMATH_MUL_BLKP4_SIZE ];
     __m256d m_p4[ BMATH_MUL_BLOCK_SIZE ][ BMATH_MUL_BLKP4_SIZE ];
@@ -857,8 +857,8 @@ static void bmath_mf3_s_htp_mul_htp_avx_fix_kernel( const f3_t* o, sz_t o_s, con
  */
 static void bmath_mf3_s_htp_mul_htp_avx_flex_kernel( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const f3_t* m, sz_t m_s, sz_t m_r, f3_t* r, sz_t r_s )
 {
-    ASSERT( o_r <= BMATH_MUL_BLOCK_SIZE );
-    ASSERT( m_r <= BMATH_MUL_BLOCK_SIZE );
+    assert( o_r <= BMATH_MUL_BLOCK_SIZE );
+    assert( m_r <= BMATH_MUL_BLOCK_SIZE );
 
     const sz_t m_r4l = m_r >> 2;
     const sz_t m_rr  = m_r - m_r4l * 4;
