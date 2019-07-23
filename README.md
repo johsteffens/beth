@@ -6,6 +6,7 @@
       * [bcore - Core Concepts](#bcore)
       * [bmath - Algebraic Subsystem](#bmath)
       * [bclos - Closures (Functional Programming)](#bclos)
+      * [badapt - Adaptive Systems (Neural Networks)](#badapt)
    * [Core Concepts](#core-concepts)
       * [Reflection](#reflection)
       * [Perspective](#perspective)
@@ -92,6 +93,15 @@ All routines have been redesigned/redeveloped from scratch (no adaption of pre-e
 Library bclos contains a closure framework useful for for functional programming and interpreter design.
 It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
 
+<a name = "badapt"></a>
+### badapt - Adaptive Systems (Neural Networks)
+This library represents a newly designed generic infrastructure for trainable objects. It makes extended use of the meta-language [beth-plant](#plant). High computationial efficiency is achieved by using the [bmath](#bmath) linar subsystem.
+Base on that infrastructure specific popular feed-forward and recurrent networks have been newly and explicitly implemented:
+   * Multi Layer Perceptron (MLP)
+   * 1 Dimensional Convolutional Neural Network. (1D-CNN)
+   * Elman Recurrent Network (ERN)
+   * Long-Short-Term Memory Recurrent Network (LSTM)
+
 # Core Concepts
 
 <a name = "reflection"></a>
@@ -136,4 +146,4 @@ The classic framework for object oriented programming (such as realized in C++) 
 Primary motivation for this project is overcoming these deficiencies. Secondly, using this new framework to provide functionality as might be expected from a general purpose library with a scientific touch. Thirdly, developing new algorithic ideas and/or experiment with unconventional approaches (this can also be realized in beth-dependent projects).
 
 ### History
-In an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach during Summer 2017 and started project [beth](https://github.com/johsteffens/beth) bringing this (and other ideas) into tangible shape. Winter 2017/2018 the project [actinon](https://github.com/johsteffens/actinon) was developed utilizing the framework and demonstrating its usefulness. Spring 2018 I started developing a numerical mathematics suite  in sub-library [bmath](#bmath) with special focus on accrate, stable and efficient matrix factorizations. Spring 2019 I started developing [Beth-Plant](#plant).
+In an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach during Summer 2017 and started project [beth](https://github.com/johsteffens/beth) bringing this (and other ideas) into tangible shape. Winter 2017/2018 the project [actinon](https://github.com/johsteffens/actinon) was developed utilizing the framework and demonstrating its usefulness. Spring 2018 I started developing a numerical mathematics suite  in sub-library [bmath](#bmath) with special focus on accrate, stable and efficient matrix factorizations. Spring 2019 I started developing the meta-language [Beth-Plant](#plant) and parallel library [badapt](#badapt) using that language.
