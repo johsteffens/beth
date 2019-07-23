@@ -103,9 +103,10 @@
 // mf3 features
 BCORE_FORWARD_OBJECT( bmath_mf3_s );
 
-typedef void (*bmath_fp_mf3_s_mul     )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
-typedef void (*bmath_fp_mf3_s_mul_htp )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
-typedef void (*bmath_fp_mf3_s_htp_mul )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+typedef void (*bmath_fp_mf3_s_mul         )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+typedef void (*bmath_fp_mf3_s_mul_htp     )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+typedef void (*bmath_fp_mf3_s_htp_mul     )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
+typedef void (*bmath_fp_mf3_s_htp_mul_htp )( const bmath_mf3_s* o, const bmath_mf3_s* op, bmath_mf3_s* res );
 
 typedef void (*bmath_fp_mf3_s_uav     )( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v ); // uav decomposition
 typedef void (*bmath_fp_mf3_s_ua      )( bmath_mf3_s* u, bmath_mf3_s* a                 ); //  ua decomposition
@@ -157,8 +158,6 @@ BCORE_DECLARE_OBJECT( bmath_mf3_s )
 
 void bmath_mf3_s_set_size( bmath_mf3_s* o, uz_t rows, uz_t cols );
 
-bmath_mf3_s bmath_mf3_init_weak( uz_t rows, uz_t cols, uz_t stride, f3_t* data );
-
 /** Sets all matrix elements to random values.
  *  hsm: true: Creates a symmetric matrix
  *  pdf: true: Creates a positive definite matrix
@@ -190,7 +189,33 @@ static inline bl_t bmath_mf3_s_is_folded( const bmath_mf3_s* o ) { return o->str
 
 
 /**********************************************************************************************************************/
-// checks, deviations
+/// weak int & conversion (Returned object does not own its data and need not be shut down unless it is resized)
+
+static inline void bmath_mf3_s_init_weak( bmath_mf3_s* o, uz_t rows, uz_t cols, uz_t stride, f3_t* data )
+{
+    o->rows = rows;
+    o->cols = cols;
+    o->stride = stride;
+    o->data = data;
+    o->size = rows * stride;
+    o->space = 0;
+}
+
+static inline bmath_mf3_s bmath_mf3_init_weak( uz_t rows, uz_t cols, uz_t stride, f3_t* data )
+{
+    bmath_mf3_s o;
+    bmath_mf3_s_init_weak( &o, rows, cols, stride, data );
+    return o;
+}
+
+/// Returns a weak (rows x cols) sub matrix at offset (row, col) from o.
+bmath_mf3_s bmath_mf3_s_get_weak_sub_mat( const bmath_mf3_s* o, uz_t row, uz_t col, uz_t rows, uz_t cols );
+
+/// Returns a weak row vector.
+bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, uz_t idx );
+
+/**********************************************************************************************************************/
+/// checks, deviations
 
 /** Near-state means: For each matrix element the absolute difference
  *  to the specified state is less or equal max_dev.
@@ -272,8 +297,11 @@ static inline void bmath_mf3_s_htp_set( const bmath_mf3_s* o, bmath_mf3_s* res )
 void bmath_mf3_s_sub( const bmath_mf3_s* o, const bmath_mf3_s* b, bmath_mf3_s* r ); // supports folded target
 void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* b, bmath_mf3_s* r ); // supports folded target
 
-/// adds outer product of two vectors op1 (X) op2 to matrix
-void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res );
+//----------------------------------------------------------------------------------------------------------------------
+// outer vector product
+
+void bmath_mf3_s_opd(           bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2 );                   // opd( op1, op2 ) -> o
+void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res ); // opd( op1, op2 ) + o -> res
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * vector [ + vector] --> vector
@@ -374,16 +402,6 @@ f3_t bmath_mf3_s_get_f3( const bmath_mf3_s* o, uz_t row, uz_t col )
     assert( row < o->rows && col <= o->cols );
     return o->data[ row * o->stride + col ];
 }
-
-/** Returns a weak (rows x cols) sub matrix at offset (row, col) from o.
- *  Returned object does not own its data and need not be shut down unless it is resized.
- */
-bmath_mf3_s bmath_mf3_s_get_weak_sub_mat( const bmath_mf3_s* o, uz_t row, uz_t col, uz_t rows, uz_t cols );
-
-/** Returns a weak row vector.
- *  Returned object does not own its data and need not be shut down unless it is resized.
- */
-bmath_vf3_s bmath_mf3_s_get_row_weak_vec( const bmath_mf3_s* o, uz_t idx );
 
 /**********************************************************************************************************************/
 /// Triangular decompositions, operations and solvers
@@ -632,13 +650,13 @@ void bmath_mf3_s_sweep_dcol_rotate_rev( bmath_mf3_s* o, uz_t col_start, uz_t col
 /**********************************************************************************************************************/
 /// Convolution
 
-/** Turns the matrix into a convolution-operant on which a multi-kernel convolution can be performed via matrix multiplication.
+/** Turns the matrix into a convolution-operand on which a multi-kernel convolution can be performed via matrix multiplication.
  *  Matrix is first interpreted as vector of size rows * cols (all rows catenated).
  *  After execution cols = kernel_size, rows = number of convolution steps. Rows overlap with step_size as offset.
  *  Note that the resulting matrix stores fewer actual values than its size (rows * cols) might indicate.
  *  No matrix data is actually moved in memory by this function.
  */
-void bmath_mf3_s_to_conv_operant( bmath_mf3_s* o, sz_t kernel_size, sz_t step_size );
+void bmath_mf3_s_to_conv_operand( bmath_mf3_s* o, sz_t kernel_size, sz_t step_size );
 
 /**********************************************************************************************************************/
 /// Development support

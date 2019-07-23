@@ -34,9 +34,10 @@ void bmath_mf3_push_quicktypes( sr_s* list )
     bcore_array_r_push_sc( list, "bmath_arr_mf3_s" );
 
     // features
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul_htp" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_htp_mul" );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul"         );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul_htp"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_htp_mul"     );
+    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_htp_mul_htp" );
 
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_uav" );
     bcore_array_r_push_sc( list, "bmath_fp_mf3_s_ua"  );
@@ -99,20 +100,6 @@ BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf3_s )
 void bmath_mf3_s_set_size( bmath_mf3_s* o, uz_t rows, uz_t cols )
 {
     bcore_matrix_a_set_size( ( bcore_matrix* )o, rows, cols );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-bmath_mf3_s bmath_mf3_init_weak( uz_t rows, uz_t cols, uz_t stride, f3_t* data )
-{
-    bmath_mf3_s mat;
-    mat.rows = rows;
-    mat.cols = cols;
-    mat.stride = stride;
-    mat.data = data;
-    mat.size = rows * stride;
-    mat.space = 0;
-    return mat;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -739,6 +726,22 @@ void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* r )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_mf3_s_opd( bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2 )
+{
+    ASSERT( o->rows == op1->size );
+    ASSERT( o->cols == op2->size );
+
+    const f3_t* v1 = op1->data;
+    const f3_t* v2 = op2->data;
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        f3_t* oi = o->data   + o->stride * i;
+        for( uz_t j = 0; j < o->cols; j++ ) oi[ j ] = ( v1[ i ] * v2[ j ] );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res )
 {
     ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
@@ -1072,9 +1075,7 @@ void bmath_mf3_s_htp_mul_vec( const bmath_mf3_s* o, const bmath_vf3_s* v, bmath_
     bmath_vf3_s_zro( r );
     for( uz_t i = 0; i < o->rows; i++ )
     {
-        f3_t* or = o->data + i * o->stride;
-        f3_t  vi = v->data[ i ];
-        for( uz_t j = 0; j < o->cols; j++ ) r->data[ j ] += or[ j ] * vi;
+        bmath_f3_t_vec_mul_scl_add( o->data + i * o->stride, v->data[ i ], r->data, r->data, o->cols );
     }
 }
 
@@ -1123,9 +1124,7 @@ void bmath_mf3_s_htp_mul_vec_add( const bmath_mf3_s* o, const bmath_vf3_s* v, co
 
     for( uz_t i = 0; i < o->rows; i++ )
     {
-        f3_t* or = o->data + i * o->stride;
-        f3_t  vi = v->data[ i ];
-        for( uz_t j = 0; j < o->cols; j++ ) r->data[ j ] += or[ j ] * vi;
+        bmath_f3_t_vec_mul_scl_add( o->data + i * o->stride, v->data[ i ], r->data, r->data, o->cols );
     }
 }
 
@@ -2686,19 +2685,19 @@ void bmath_mf3_s_to_image( const bmath_mf3_s* o, bmath_fp_u2_argb_from_f3 fp, vd
 /**********************************************************************************************************************/
 /// Convolution
 
-void bmath_mf3_s_to_conv_operant( bmath_mf3_s* o, sz_t kernel_size, sz_t step_size )
+void bmath_mf3_s_to_conv_operand( bmath_mf3_s* o, sz_t kernel_size, sz_t step_size )
 {
-    // Make sure matrix is not already a convolution operant
-    if( o->stride < o->cols ) ERR_fa( "Matrix is already a convolution operant." );
+    // Make sure matrix is not already a convolution operand
+    if( o->stride < o->cols ) ERR_fa( "Matrix is already a convolution operand." );
 
-    sz_t operant_size = o->rows * o->cols;
+    sz_t operand_size = o->rows * o->cols;
 
-    if( kernel_size > operant_size ) ERR_fa( "Kernel is too large." );
+    if( kernel_size > operand_size ) ERR_fa( "Kernel is too large." );
 
-    sz_t conv_steps = ( ( operant_size - kernel_size ) / step_size ) + 1;
+    sz_t conv_steps = ( ( operand_size - kernel_size ) / step_size ) + 1;
 
     // We require a full coverage at this point;
-    if( ( conv_steps - 1 ) * step_size + kernel_size != operant_size ) ERR_fa( "step_size does not yield full coverage." );
+    if( ( conv_steps - 1 ) * step_size + kernel_size != operand_size ) ERR_fa( "step_size does not yield full coverage." );
 
     o->stride = step_size;
     o->cols   = kernel_size;
@@ -2757,23 +2756,30 @@ static vd_t selftest( void )
         ASSERT( bmath_vf3_s_get_f3( v2, 1 ) == 11 );
         ASSERT( bmath_vf3_s_get_f3( v2, 2 ) == 17 );
 
+        bmath_mf3_s_htp_mul_vec( m1, v2, v1 );
+        ASSERT( bmath_vf3_s_get_f3( v1, 0 ) == 123 );
+        ASSERT( bmath_vf3_s_get_f3( v1, 1 ) == 156 );
+
+        bmath_mf3_s_htp_mul_vec_add( m1, v2, v1, v1 );
+        ASSERT( bmath_vf3_s_get_f3( v1, 0 ) == 123 * 2 );
+        ASSERT( bmath_vf3_s_get_f3( v1, 1 ) == 156 * 2 );
     }
 
     // multi-kernel convolution
     {
-        sz_t operant_size = 10000;
+        sz_t operand_size = 10000;
 
         sz_t kernel_size  = 1000;
         sz_t step_size    = 2;
         sz_t kernels      = 100;
 
-        // operant: initially single-row matrix of operant_size
-        bmath_mf3_s_set_size( m1, 1, operant_size );
+        // operand: initially single-row matrix of operand_size
+        bmath_mf3_s_set_size( m1, 1, operand_size );
         for( sz_t i = 0; i < m1->cols; i++ ) m1->data[ i ] = i;
         //bmath_mf3_s_to_stdout( m1 );
 
-        // turn to convolution-operant without moving data
-        bmath_mf3_s_to_conv_operant( m1, kernel_size, step_size );
+        // turn to convolution-operand without moving data
+        bmath_mf3_s_to_conv_operand( m1, kernel_size, step_size );
 
         // set up kernel
         bmath_mf3_s_set_size( m2, kernel_size, kernels ); // note: kernel vectors are column-vectors
@@ -3051,9 +3057,10 @@ static void eval_test( void )
     eval->rows = 10; eval->cols = 30; bmath_arr_mf3_eval_s_push( arr_eval, eval );
     eval->rows = 30; eval->cols = 10; bmath_arr_mf3_eval_s_push( arr_eval, eval );
 
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_mul,     ( fp_t )bmath_mf3_s_mul );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_mul_htp, ( fp_t )bmath_mf3_s_mul_htp );
-    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_htp_mul, ( fp_t )bmath_mf3_s_htp_mul );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_mul,         ( fp_t )bmath_mf3_s_mul );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_mul_htp,     ( fp_t )bmath_mf3_s_mul_htp );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_htp_mul,     ( fp_t )bmath_mf3_s_htp_mul );
+    bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_htp_mul_htp, ( fp_t )bmath_mf3_s_htp_mul_htp );
     bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd,     ( fp_t )bmath_mf3_s_qrd );
     bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_qrd_pmt, ( fp_t )bmath_mf3_s_qrd_pmt );
     bmath_arr_mf3_eval_s_run( arr_eval, TYPEOF_bmath_fp_mf3_s_lqd,     ( fp_t )bmath_mf3_s_lqd );
@@ -3078,6 +3085,7 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_mul );
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_mul_htp );
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_htp_mul );
+            BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_htp_mul_htp );
 
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_uav );
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_ua  );
