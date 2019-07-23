@@ -116,6 +116,9 @@ void bmath_hf3_s_copy_v_data( bmath_hf3_s* o, const bmath_hf3_s* src );
 /// sets size of entire holor including v_data; (v_data initialized to zero)
 void bmath_hf3_s_set_size( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size );
 
+/// copies size of src - holor; (v_data initialized to zero)
+void bmath_hf3_s_copy_size( bmath_hf3_s* o, const bmath_hf3_s* src );
+
 /// sets d_data via variadic arguments
 void bmath_hf3_s_set_d_data_nv( bmath_hf3_s* o, sz_t d_size, va_list sz_t_args );
 void bmath_hf3_s_set_d_data_na( bmath_hf3_s* o, sz_t d_size, ... );
@@ -126,6 +129,36 @@ void bmath_hf3_s_set_size_na( bmath_hf3_s* o, sz_t d_size, ... );
 
 /// returns product of all dimensions
 sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o );
+
+/**********************************************************************************************************************/
+/// comparison
+
+bl_t bmath_hf3_s_d_equal( const bmath_hf3_s* o, const bmath_hf3_s* src ); // compares d_data
+bl_t bmath_hf3_s_v_equal( const bmath_hf3_s* o, const bmath_hf3_s* src ); // compares v_data (independently of d_data)
+
+/**********************************************************************************************************************/
+/// weak conversion
+
+static inline bmath_mf3_s bmath_hf3_s_get_weak_mat( const bmath_hf3_s* o )
+{
+    assert( o->d_size == 2 );
+    sz_t cols = o->d_data[ 0 ];
+    sz_t rows = o->d_data[ 1 ];
+    assert( o->v_size == cols * rows );
+    return bmath_mf3_init_weak( rows, cols, cols, o->v_data );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static inline bmath_vf3_s bmath_hf3_s_get_weak_vec( const bmath_hf3_s* o )
+{
+    assert( o->d_size == 1 );
+    sz_t size = o->d_data[ 0 ];
+    assert( o->v_size == size );
+    return bmath_vf3_init_weak( o->v_data, size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 /// holor specific operations
@@ -140,7 +173,21 @@ void bmath_hf3_s_inc_order( bmath_hf3_s* o, sz_t dim );
 /** Canonic data append of a sub-holor */
 void bmath_hf3_s_push( bmath_hf3_s* o, const bmath_hf3_s* src );
 
-void bmath_hf3_s_to_sink( const bmath_hf3_s* o, bcore_sink* sink );
+void bmath_hf3_s_to_sink(    const bmath_hf3_s* o, bcore_sink* sink );
+void bmath_hf3_s_to_sink_nl( const bmath_hf3_s* o, bcore_sink* sink ); // appends newline
+void bmath_hf3_s_to_stdout(    const bmath_hf3_s* o, bcore_sink* sink );
+void bmath_hf3_s_to_stdout_nl( const bmath_hf3_s* o, bcore_sink* sink ); // appends newline
+
+/** Sets all vector elements to random values.
+ *  Random generator:
+ *    Parameters density, min, max, p_rval apply to the random generator.
+ *      rval: Pointer to running variable of random generator.
+ *            If NULL, an internal fixed random seed is used.
+ *
+ *     density (range [0.0, 1.0]) specifies the rate at which the random generator
+ *     creates a non-zero value.
+ */
+void bmath_hf3_s_set_random( bmath_hf3_s* o, f3_t density, f3_t min, f3_t max, u2_t* p_rval );
 
 /**********************************************************************************************************************/
 /// elementwise operations
@@ -163,8 +210,47 @@ void bmath_hf3_s_sub( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r
 /// o <*> m -> r (hadamard product)
 void bmath_hf3_s_hmul( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
 
+void bmath_hf3_s_mul_scl(     const bmath_hf3_s* o, const f3_t* b,                       bmath_hf3_s* r ); // o * b     -> r
+void bmath_hf3_s_mul_scl_add( const bmath_hf3_s* o, const f3_t* b, const bmath_hf3_s* c, bmath_hf3_s* r ); // o * b + c -> r
+
+static inline void bmath_hf3_s_mul_scl_f3(     const bmath_hf3_s* o, f3_t b,                       bmath_hf3_s* r ) { bmath_hf3_s_mul_scl(     o, &b,    r ); }
+static inline void bmath_hf3_s_mul_scl_f3_add( const bmath_hf3_s* o, f3_t b, const bmath_hf3_s* c, bmath_hf3_s* r ) { bmath_hf3_s_mul_scl_add( o, &b, c, r ); }
+
+f3_t bmath_hf3_s_f3_max( const bmath_hf3_s* o );
+f3_t bmath_hf3_s_f3_min( const bmath_hf3_s* o );
+f3_t bmath_hf3_s_f3_sum( const bmath_hf3_s* o );
+
 /**********************************************************************************************************************/
-/** holor * holor multiplication
+/** bmul: Specific holor * holor multiplication for holors up to order 2
+ *  These operations are mapped to corresponding matrix (M), vector (V), scalar (S) operations depending on given holor order.
+ *
+ *  In case of vectors, the correct transposition-choice is important ...
+ *    V^T * V   is the dot-product and served by htp_bmul
+ *    V   * V^T is the outer-product and served by bmul_htp
+ *    M   * V   is a valid vector transformation and served by bmul
+ *    V^T * M   is a valid vector transformation and served by htp_bmul
+ *
+ *  Undefined compositions are ...
+ *    V   * V,
+ *    V^T * V^T
+ *    V   * M
+ *    M   * V^T
+ */
+
+/// o * m -> r
+void bmath_hf3_s_bmul(         const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
+
+/// o * m^T -> r
+void bmath_hf3_s_bmul_htp(     const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
+
+/// o^T * m -> r
+void bmath_hf3_s_htp_bmul(     const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
+
+/// o^T * m^T -> r
+void bmath_hf3_s_htp_bmul_htp( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
+
+/**********************************************************************************************************************/
+/** general holor * holor multiplication
  *  Separator k refers to holor left of k.
  *  The corresponding separators for other holors are fully determined.
  */
