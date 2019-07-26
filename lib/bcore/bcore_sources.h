@@ -174,6 +174,23 @@ void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t inde
 /// See bcore_file.h for file system related functions
 
 /**********************************************************************************************************************/
+
+/** bcore_source_point_s represents a source (by weak reference) and an index.
+ *  It is intended to be used to traceback a specific source location.
+ *  It is typically used for generating descriptive messages (e.g. parse errors.)
+ */
+BCORE_DECLARE_OBJECT( bcore_source_point_s )
+{
+    aware_t _;
+    bcore_source* source;
+    sz_t index;
+};
+
+void bcore_source_point_s_set(                bcore_source_point_s* o, bcore_source* source );
+void bcore_source_point_s_parse_err_fv( const bcore_source_point_s* o, sc_t format, va_list args );
+void bcore_source_point_s_parse_err_fa( const bcore_source_point_s* o, sc_t format, ... );
+
+/**********************************************************************************************************************/
 // syntactic sugar
 
 /// opens a (string-)buffered file for reading

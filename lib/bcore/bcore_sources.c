@@ -865,6 +865,52 @@ static bcore_self_s* file_s_create_self( void )
 }
 
 /**********************************************************************************************************************/
+/// bcore_source_point_s
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_source_point_s )
+"{"
+    "aware_t _;"
+    "aware bcore_source -> source;"
+    "sz_t index;"
+"}";
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_point_s_set( bcore_source_point_s* o, bcore_source* source )
+{
+    bcore_source_a_attach( &o->source, bcore_fork( source ) );
+    o->index = bcore_source_a_get_index( source );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_point_s_parse_err_fv( const bcore_source_point_s* o, sc_t format, va_list args )
+{
+    if( o->source )
+    {
+        bcore_source_a_set_index( o->source, o->index );
+        bcore_source_a_parse_err_fv( o->source, format, args );
+    }
+    else
+    {
+        bcore_err_fv( format, args );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_point_s_parse_err_fa( const bcore_source_point_s* o, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    bcore_source_point_s_parse_err_fv( o, format, args );
+    va_end( args );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 bcore_source_chain_s* bcore_source_open_file( sc_t file_name )
 {
@@ -961,6 +1007,8 @@ vd_t bcore_sources_signal_handler( const bcore_signal_s* o )
             bcore_flect_define_creator( typeof( "bcore_source_buffer_s"   ), buffer_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_source_file_s"     ), file_s_create_self   );
             bcore_flect_define_creator( typeof( "bcore_source_chain_s"    ), chain_s_create_self  );
+
+            BCORE_REGISTER_OBJECT( bcore_source_point_s );
         }
         break;
 

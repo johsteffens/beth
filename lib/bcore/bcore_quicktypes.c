@@ -116,6 +116,7 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_source_buffer_s" );
     bcore_array_r_push_sc( &list, "bcore_source_file_s"   );
     bcore_array_r_push_sc( &list, "bcore_source_chain_s"  );
+    bcore_array_r_push_sc( &list, "bcore_source_point_s"  );
     bcore_array_r_push_sc( &list, "bcore_sink_buffer_s"   );
     bcore_array_r_push_sc( &list, "bcore_sink_file_s"     );
     bcore_array_r_push_sc( &list, "bcore_sink_chain_s"    );
