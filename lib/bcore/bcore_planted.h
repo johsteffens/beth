@@ -29,6 +29,8 @@
   void bcore_plant_sample_object2_s_to_stdout( const bcore_plant_sample_object2_s* o );
 #define BETH_EXPAND_GROUP_bcore_plant_sample \
   BCORE_FORWARD_OBJECT( bcore_plant_sample ); \
+  BCORE_FORWARD_OBJECT( bcore_plant_sample_signatures ); \
+  BCORE_FORWARD_OBJECT( bcore_plant_sample_features ); \
   BCORE_FORWARD_OBJECT( bcore_plant_sample_object2_s ); \
   BETH_EXPAND_GROUP_bcore_plant_sample_signatures \
   BETH_EXPAND_GROUP_bcore_plant_sample_features \
@@ -53,7 +55,8 @@
     {aware_t _;st_s name1;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
   void bcore_plant_sample_features_object_s_setup( bcore_plant_sample_features_object_s* o, sz_t n ); \
   void bcore_plant_sample_features_object_s_to_stdout( const bcore_plant_sample_features_object_s* o ); \
-  sz_t bcore_plant_sample_features_object_s_get_size( const bcore_plant_sample_features_object_s* o );
+  sz_t bcore_plant_sample_features_object_s_get_size( const bcore_plant_sample_features_object_s* o ); \
+  static inline void bcore_plant_sample_features_object_s_simple_function( bcore_plant_sample_features_object_s* o, sz_t n ){ /* do nothing */ }
 #define BETH_EXPAND_GROUP_bcore_plant_sample_features \
   BCORE_FORWARD_OBJECT( bcore_plant_sample_features ); \
   BCORE_FORWARD_OBJECT( bcore_plant_sample_features_object_s ); \
@@ -68,9 +71,13 @@
       bcore_plant_sample_features_get_size get_size; \
   }; \
   static inline bcore_plant_sample_features* bcore_plant_sample_features_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_plant_sample_features, t ); return ( bcore_plant_sample_features* )bcore_inst_t_create( t ); } \
+  static inline bl_t bcore_plant_sample_features_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_plant_sample_features ); } \
   static inline bcore_plant_sample_features* bcore_plant_sample_features_a_clone( const bcore_plant_sample_features* o ) { return ( bcore_plant_sample_features* )bcore_inst_a_clone( ( bcore_inst* )o ); } \
   static inline void bcore_plant_sample_features_a_discard( bcore_plant_sample_features* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); } \
+  static inline void bcore_plant_sample_features_a_detach( bcore_plant_sample_features** o ) { if( !o ) return; bcore_inst_a_discard( ( bcore_inst* )*o ); *o = NULL; } \
+  static inline void bcore_plant_sample_features_a_attach( bcore_plant_sample_features** o, bcore_plant_sample_features* src ) { if( src ) bcore_inst_a_attach( ( bcore_inst** )o, ( bcore_inst* )src ); } \
   static inline void bcore_plant_sample_features_a_replicate( bcore_plant_sample_features** o, const bcore_plant_sample_features* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); } \
+  static inline bl_t bcore_plant_sample_features_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_plant_sample_features ); } \
   static inline void bcore_plant_sample_features_p_setup( const bcore_plant_sample_features_s* __p, bcore_plant_sample_features* o, sz_t n ) { __p->setup( o, n ); } \
   static inline void bcore_plant_sample_features_t_setup( tp_t __t, bcore_plant_sample_features* o, sz_t n ) { bcore_plant_sample_features_s_get_typed( __t )->setup( o, n ); } \
   static inline void bcore_plant_sample_features_a_setup( bcore_plant_sample_features* o, sz_t n ) { bcore_plant_sample_features_s_get_aware( o )->setup( o, n ); } \
@@ -128,6 +135,7 @@
       bcore_inst_call_discard_e discard_e; \
   }; \
   static inline bcore_inst_call* bcore_inst_call_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_inst_call, t ); return ( bcore_inst_call* )bcore_inst_t_create( t ); } \
+  static inline bl_t bcore_inst_call_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_inst_call ); } \
   static inline void bcore_inst_call_p_init_x( const bcore_inst_call_s* __p, bcore_inst_call* o ) { __p->init_x( o ); } \
   static inline bl_t bcore_inst_call_p_defines_init_x( const bcore_inst_call_s* __p ) { return __p->init_x != NULL; } \
   static inline void bcore_inst_call_p_down_e( const bcore_inst_call_s* __p, bcore_inst_call* o ) { __p->down_e( o ); } \
@@ -156,6 +164,7 @@
       bcore_via_call_mutated mutated; \
   }; \
   static inline bcore_via_call* bcore_via_call_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_via_call, t ); return ( bcore_via_call* )bcore_inst_t_create( t ); } \
+  static inline bl_t bcore_via_call_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_via_call ); } \
   static inline void bcore_via_call_p_mutated( const bcore_via_call_s* __p, bcore_via_call* o ) { __p->mutated( o ); } \
   static inline void bcore_via_call_t_mutated( tp_t __t, bcore_via_call* o ) { bcore_via_call_s_get_typed( __t )->mutated( o ); } \
   static inline bl_t bcore_via_call_p_defines_mutated( const bcore_via_call_s* __p ) { return __p->mutated != NULL; } \
@@ -183,6 +192,7 @@
       bcore_main_main main; \
   }; \
   static inline bcore_main* bcore_main_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_main, t ); return ( bcore_main* )bcore_inst_t_create( t ); } \
+  static inline bl_t bcore_main_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_main ); } \
   static inline s2_t bcore_main_r_main( const sr_s* o, const bcore_arr_st_s* args ) { ASSERT( !sr_s_is_const( o ) ); return ( (bcore_main_s*)ch_spect_p( o->p, TYPEOF_bcore_main_s ) )->main( o->o, args ); } \
   static inline bl_t bcore_main_r_defines_main( const sr_s* o ) { return true; } \
   BETH_EXPAND_ITEM_bcore_main_frame_s

@@ -144,6 +144,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_arg_s )
     bcore_plant_group_s* group;
     st_s type;
     st_s name;
+    bcore_source_point_s source_point;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_arg_s )
@@ -152,6 +153,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_arg_s )
     "vd_t group;"
     "st_s type;"
     "st_s name;"
+    "bcore_source_point_s source_point;"
 
     "func bcore_plant_fp : parse;"
     "func bcore_plant_fp : get_hash;"
@@ -188,6 +190,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_signature_s )
     st_s global_name;
     bl_t has_ret;
     st_s ret_type;        // void
+    bcore_source_point_s source_point;
     bcore_plant_args_s args;       // sz_t a, sz_t b
     bl_t mutable;
 };
@@ -200,6 +203,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_signature_s )
     "st_s global_name;"
     "bl_t has_ret;"
     "st_s ret_type;"        // void
+    "bcore_source_point_s source_point;"
     "bcore_plant_args_s args;"       // sz_t a, sz_t b
     "bl_t mutable;"
 
@@ -219,6 +223,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_body_s )
     st_s global_name;
     st_s code;
     bl_t go_inline; // prefer inline expansion
+    bcore_source_point_s source_point;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_body_s )
@@ -229,6 +234,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_body_s )
     "st_s global_name;"
     "st_s code;"
     "bl_t go_inline;"
+    "bcore_source_point_s source_point;"
 
     "func bcore_plant_fp : parse;"
     "func bcore_plant_fp : get_hash;"
@@ -260,6 +266,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_feature_s )
     st_s ret_type;        // void
     bcore_plant_args_s args;       // sz_t a, sz_t b
     bl_t mutable;
+    bcore_source_point_s source_point;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_feature_s )
@@ -283,6 +290,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_feature_s )
     "st_s ret_type;"        // void
     "bcore_plant_args_s args;"       // sz_t a, sz_t b
     "bl_t mutable;"
+    "bcore_source_point_s source_point;"
 
     "func bcore_plant_fp : parse;"
     "func bcore_plant_fp : get_hash;"
@@ -303,6 +311,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_name_s )
     aware_t _;
     bcore_plant_group_s* group;
     st_s name; // deemed global
+    bcore_source_point_s source_point;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_name_s )
@@ -310,6 +319,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_name_s )
     "aware_t _;"
     "vd_t group;"
     "st_s name;" // deemed global
+    "bcore_source_point_s source_point;"
 
     "func bcore_plant_fp : parse;"
     "func bcore_plant_fp : get_hash;"
@@ -329,6 +339,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_func_s )
     st_s name;
     tp_t type;
     bcore_plant_body_s* body;
+    bcore_source_point_s source_point;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_func_s )
@@ -338,6 +349,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_func_s )
     "st_s name;"
     "tp_t type;"
     "bcore_plant_body_s => body;"
+    "bcore_source_point_s source_point;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -368,6 +380,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_stamp_s )
     st_s         * self_source;
     bcore_self_s * self;
     bcore_plant_funcs_s funcs;
+    bcore_source_point_s source_point;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_stamp_s )
@@ -380,6 +393,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_stamp_s )
     "st_s         => self_source;"
     "bcore_self_s => self;"
     "bcore_plant_funcs_s funcs;"
+    "bcore_source_point_s source_point;"
 
     "func bcore_plant_fp : parse;"
     "func bcore_plant_fp : get_hash;"
@@ -409,6 +423,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_group_s )
     BCORE_ARRAY_DYN_LINK_AWARE_VIRTUAL_S( bcore_plant, );
 
     bcore_plant_source_s* source;
+    bcore_source_point_s source_point;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_group_s )
@@ -425,6 +440,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_group_s )
     "aware bcore_plant   => [] arr;"
 
     "private vd_t source;"
+    "bcore_source_point_s source_point;"
 
     "func bcore_plant_fp : parse;"
     "func bcore_plant_fp : get_hash;"
@@ -654,6 +670,7 @@ static st_s* create_structured_multiline_string( const sc_t s, sz_t indent )
 
 static void bcore_plant_arg_s_parse( bcore_plant_arg_s* o, bcore_source* source )
 {
+    bcore_source_point_s_set( &o->source_point, source );
     st_s* s = st_s_create();
     if( bcore_source_a_parse_bl_fa( source, "#?'const' " ) ) st_s_push_sc( &o->type, "const " );
 
@@ -806,6 +823,8 @@ static void bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
     BCORE_LIFE_CREATE( st_s, name_buf );
     BCORE_LIFE_CREATE( st_s, name_candidate );
     st_s_clear( &o->ret_type );
+
+    bcore_source_point_s_set( &o->source_point, source );
 
     bcore_plant_group_s_parse_name( o->group, name_buf, source );
 
@@ -1033,6 +1052,8 @@ static void bcore_plant_body_s_parse( bcore_plant_body_s* o, bcore_source* sourc
 
     BCORE_LIFE_CREATE( st_s, string );
 
+    bcore_source_point_s_set( &o->source_point, source );
+
     if( !bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
     {
         bcore_source_a_parse_fa( source, " #name", string );
@@ -1115,6 +1136,8 @@ static tp_t bcore_plant_feature_s_get_hash( const bcore_plant_feature_s* o )
 static void bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source* source )
 {
     BCORE_LIFE_INIT();
+
+    bcore_source_point_s_set( &o->source_point, source );
 
     o->strict = bcore_source_a_parse_bl_fa(  source, " #?w'strict' " );
 
@@ -1431,6 +1454,8 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
     BCORE_LIFE_CREATE( st_s, type_name );
     BCORE_LIFE_CREATE( st_s, string );
 
+    bcore_source_point_s_set( &o->source_point, source );
+
     bcore_plant_group_s_parse_name( o->group, stamp_name, source );
 
     if( stamp_name->size >= 2 && sc_t_equ( stamp_name->sc + stamp_name->size - 2, "_s" ) )
@@ -1471,6 +1496,7 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
             bcore_plant_funcs_s* funcs = &o->funcs;
             bcore_array_a_push( ( bcore_array* )funcs, sr_null() );
             bcore_plant_func_s* func = &funcs->data[ funcs->size - 1 ];
+            bcore_source_point_s_set( &func->source_point, source );
 
             st_s_push_sc( self_string, "func " );
 
@@ -1621,32 +1647,62 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
         if( bcore_plant_compiler_s_item_exists( plant_compiler_g, func->type ) )
         {
             const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, func->type );
-            ASSERT( *(aware_t*)item == TYPEOF_bcore_plant_feature_s );
-            const bcore_plant_feature_s* feature = ( bcore_plant_feature_s* )item;
-            bcore_sink_a_push_fa( sink, " \\\n#rn{ }  ", indent );
-
-            bl_t go_inline = func->body && func->body->go_inline;
-
-            if( go_inline ) bcore_sink_a_push_fa( sink, "static inline " );
-
-            bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>_#<sc_t>( ", feature->ret_type.sc, o->name.sc, func->name.sc );
-            bcore_sink_a_push_fa( sink, "#<sc_t>", feature->mutable ? "" : "const " );
-            bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
-            bcore_plant_args_s_expand( &feature->args, sink );
-            bcore_sink_a_push_fa( sink, " )" );
-
-            if( go_inline )
+            if( *(aware_t*)item == TYPEOF_bcore_plant_feature_s )
             {
-                bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+                const bcore_plant_feature_s* feature = ( bcore_plant_feature_s* )item;
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  ", indent );
+
+                bl_t go_inline = func->body && func->body->go_inline;
+
+                if( go_inline ) bcore_sink_a_push_fa( sink, "static inline " );
+
+                bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>_#<sc_t>( ", feature->ret_type.sc, o->name.sc, func->name.sc );
+                bcore_sink_a_push_fa( sink, "#<sc_t>", feature->mutable ? "" : "const " );
+                bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
+                bcore_plant_args_s_expand( &feature->args, sink );
+                bcore_sink_a_push_fa( sink, " )" );
+
+                if( go_inline )
+                {
+                    bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+                }
+                else
+                {
+                    bcore_sink_a_push_fa( sink, ";" );
+                }
+            }
+            else if( *(aware_t*)item == TYPEOF_bcore_plant_signature_s )
+            {
+                const bcore_plant_signature_s* signature = ( bcore_plant_signature_s* )item;
+                bcore_sink_a_push_fa( sink, " \\\n#rn{ }  ", indent );
+
+                bl_t go_inline = func->body && func->body->go_inline;
+
+                if( go_inline ) bcore_sink_a_push_fa( sink, "static inline " );
+
+                bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>_#<sc_t>( ", signature->ret_type.sc, o->name.sc, func->name.sc );
+                bcore_sink_a_push_fa( sink, "#<sc_t>", signature->mutable ? "" : "const " );
+                bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
+                bcore_plant_args_s_expand( &signature->args, sink );
+                bcore_sink_a_push_fa( sink, " )" );
+
+                if( go_inline )
+                {
+                    bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+                }
+                else
+                {
+                    bcore_sink_a_push_fa( sink, ";" );
+                }
             }
             else
             {
-                bcore_sink_a_push_fa( sink, ";" );
+                bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
             }
         }
         else
         {
-            ERR_fa( "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+            bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
     }
 
@@ -1667,7 +1723,7 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
 
         if( !array_item )
         {
-            ERR_fa( "Expanding object #<sc_t>: Object is of trait array but contains no array.", o->name.sc );
+            bcore_source_point_s_parse_err_fa( &o->source_point, "Expanding object #<sc_t>: Object is of trait array but contains no array.", o->name.sc );
         }
 
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_set_space( #<sc_t>* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); }", indent, o->name.sc, o->name.sc, o->name.sc );
@@ -1746,20 +1802,46 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
         if( bcore_plant_compiler_s_item_exists( plant_compiler_g, func->type ) )
         {
             const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, func->type );
-            ASSERT( *(aware_t*)item == TYPEOF_bcore_plant_feature_s );
-            const bcore_plant_feature_s* feature = ( bcore_plant_feature_s* )item;
-
-            if( func->body && !func->body->go_inline )
+            if( *(aware_t*)item == TYPEOF_bcore_plant_feature_s )
             {
-                bcore_sink_a_push_fa( sink, "\n" );
-                bcore_sink_a_push_fa( sink, "#rn{ }#<sc_t> #<sc_t>_#<sc_t>( ", indent, feature->ret_type.sc, o->name.sc, func->name.sc );
-                bcore_sink_a_push_fa( sink, "#<sc_t>", feature->mutable ? "" : "const " );
-                bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
-                bcore_plant_args_s_expand( &feature->args, sink );
-                bcore_sink_a_push_fa( sink, " )\n" );
-                bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
-                bcore_sink_a_push_fa( sink, "\n" );
+                const bcore_plant_feature_s* feature = ( bcore_plant_feature_s* )item;
+
+                if( func->body && !func->body->go_inline )
+                {
+                    bcore_sink_a_push_fa( sink, "\n" );
+                    bcore_sink_a_push_fa( sink, "#rn{ }#<sc_t> #<sc_t>_#<sc_t>( ", indent, feature->ret_type.sc, o->name.sc, func->name.sc );
+                    bcore_sink_a_push_fa( sink, "#<sc_t>", feature->mutable ? "" : "const " );
+                    bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
+                    bcore_plant_args_s_expand( &feature->args, sink );
+                    bcore_sink_a_push_fa( sink, " )\n" );
+                    bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+                    bcore_sink_a_push_fa( sink, "\n" );
+                }
             }
+            else if( *(aware_t*)item == TYPEOF_bcore_plant_signature_s )
+            {
+                const bcore_plant_signature_s* signature = ( bcore_plant_signature_s* )item;
+
+                if( func->body && !func->body->go_inline )
+                {
+                    bcore_sink_a_push_fa( sink, "\n" );
+                    bcore_sink_a_push_fa( sink, "#rn{ }#<sc_t> #<sc_t>_#<sc_t>( ", indent, signature->ret_type.sc, o->name.sc, func->name.sc );
+                    bcore_sink_a_push_fa( sink, "#<sc_t>", signature->mutable ? "" : "const " );
+                    bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
+                    bcore_plant_args_s_expand( &signature->args, sink );
+                    bcore_sink_a_push_fa( sink, " )\n" );
+                    bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+                    bcore_sink_a_push_fa( sink, "\n" );
+                }
+            }
+            else
+            {
+                bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+            }
+        }
+        else
+        {
+            bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
     }
 
@@ -1776,11 +1858,25 @@ static void bcore_plant_stamp_s_expand_init1( const bcore_plant_stamp_s* o, sz_t
         if( bcore_plant_compiler_s_item_exists( plant_compiler_g, func->type ) )
         {
             const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, func->type );
-            ASSERT( *(aware_t*)item == TYPEOF_bcore_plant_feature_s );
-            const bcore_plant_feature_s* feature = ( bcore_plant_feature_s* )item;
-            bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, feature->global_name.sc, o->name.sc, func->name.sc );
+            if( *(aware_t*)item == TYPEOF_bcore_plant_feature_s )
+            {
+                const bcore_plant_feature_s* feature = ( bcore_plant_feature_s* )item;
+                bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, feature->global_name.sc, o->name.sc, func->name.sc );
+            }
+            else if( *(aware_t*)item == TYPEOF_bcore_plant_signature_s )
+            {
+                const bcore_plant_signature_s* signature = ( bcore_plant_signature_s* )item;
+                bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, signature->global_name.sc, o->name.sc, func->name.sc );
+            }
+            else
+            {
+                bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+            }
         }
-
+        else
+        {
+            bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+        }
     }
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_OBJECT( #<sc_t> );\n", indent, o->name.sc );
 }
@@ -1810,6 +1906,8 @@ static tp_t bcore_plant_name_s_get_hash( const bcore_plant_name_s* o )
 
 static void bcore_plant_name_s_parse( bcore_plant_name_s* o, bcore_source* source )
 {
+    bcore_source_point_s_set( &o->source_point, source );
+
     if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
     {
         st_s* name = st_s_create();
@@ -1821,7 +1919,7 @@ static void bcore_plant_name_s_parse( bcore_plant_name_s* o, bcore_source* sourc
     {
         bcore_source_a_parse_fa( source, " #name", &o->name );
     }
-    if( o->name.size == 0      ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
+    if( o->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
     bcore_source_a_parse_fa( source, " ; " );
 }
 
@@ -1905,6 +2003,8 @@ static void bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, 
 static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* source )
 {
     sc_t precode_termination = NULL;
+
+    bcore_source_point_s_set( &o->source_point, source );
 
     o->hash = typeof( o->name.sc );
 
@@ -2487,14 +2587,6 @@ static tp_t bcore_plant_compiler_s_group_register( bcore_plant_compiler_s* o, co
     return global_id;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-/*
-static const bcore_plant_group_s* bcore_plant_compiler_s_group_get( const bcore_plant_compiler_s* o, tp_t group_id )
-{
-    vd_t* ptr = bcore_hmap_tpvd_s_get( &o->hmap_group, group_id );
-    return ptr ? ( const bcore_plant_group_s* )*ptr : NULL;
-}
-*/
 //----------------------------------------------------------------------------------------------------------------------
 
 /// returns false if already registered; checks for collision

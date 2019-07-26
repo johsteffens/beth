@@ -34,7 +34,8 @@ group :signatures =
 
 group :features =
 {
-    signature void sig_setup( mutable, sz_t n );
+    signature void sig_setup(       mutable, sz_t n );
+    signature void simple_function( mutable, sz_t n );
 
     feature strict 'ptar' bcore_plant_sample_signatures : setup;
 
@@ -54,6 +55,7 @@ group :features =
         func bcore_plant_sample_features : setup;
         func bcore_plant_sample_features : to_stdout = : to_stdout_body;
         func bcore_plant_sample_features : get_size;
+        func bcore_plant_sample_features : simple_function = { /* do nothing */ };
     };
 
 };

@@ -101,8 +101,17 @@
  *  stamp:
  *
  *    Reflection of object definition for objects (see flect.h for general syntax)
- *    Function definitions in reflections are matched and bound to features. C-Prototypes are generated
- *    and registered as featured function.
+ *    Function definitions in reflections are matched and bound to features or signatures.
+ *    C-Prototypes are generated and registered as featured function.
+ *
+ *    Function Syntax:
+ *      *  func <group_name> : <signature_name> [ = { <body> }];
+ *           <signature_name> is a signature defined in group <group_name>
+ *           Creates a function <stamp_name>_s_<signature_name>.
+ *
+ *      *  func <group_name> : <feature_name> [ = { <body> }];
+ *           <feature_name> is a feature defined in group <group_name>
+ *           Creates a function <stamp_name>_s_<feature_name> and binds it to <group_name>_<feature_name>.
  *
  *    Special conditions:
  *      ':' following stamp means that '<group_name>_' is prefixed to the following name
