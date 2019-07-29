@@ -42,10 +42,17 @@ static inline void push_flag( const sr_s* sink, bl_t flag )
 static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, uz_t depth )
 {
     bcore_life_s* l = bcore_life_s_create();
-    sr_s sink_l     = sr_cl( sr_cp( sink, TYPEOF_bcore_sink_s ), l );
-    sr_s obj_l      = sr_cl( sr_cp( obj,  TYPEOF_bcore_via_s ),  l );
+    sr_s sink_l = sr_cl( sr_cp( sink, TYPEOF_bcore_sink_s ), l );
+    sr_s obj_l  = sr_cl( sr_cp( obj, TYPEOF_bcore_via_s ), l );
 
     if( name ) push_type( sink_l, name );
+
+    // shelving obj_l
+    if( obj_l.o && bcore_via_r_defines_shelve( &obj_l ) )
+    {
+        obj_l = sr_cl( sr_clone( obj_l ), l );
+        bcore_via_r_shelve( &obj_l );
+    }
 
     if( !obj_l.o ) // NULL
     {
@@ -119,6 +126,7 @@ static void translate( const bcore_bin_ml_translator_s* o, tp_t name, sr_s obj, 
             }
         }
     }
+
     bcore_life_s_discard( l );
 }
 
@@ -301,7 +309,7 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 }
             }
         }
-        bcore_via_x_mutated( obj_l );
+        bcore_via_r_mutated( &obj_l );
     }
     bcore_life_s_discard( l );
     return obj;

@@ -352,6 +352,16 @@ void bcore_via_default_mutated( const bcore_via_s* p, bcore_via* o )
     if( p->via_call_p->mutated ) p->via_call_p->mutated( ( bcore_via_call* ) o );
 }
 
+void bcore_via_default_shelve( const bcore_via_s* p, bcore_via* o )
+{
+    if( p->via_call_p->shelve ) p->via_call_p->shelve( ( bcore_via_call* ) o );
+}
+
+bl_t bcore_via_default_defines_shelve( const bcore_via_s* p, bcore_via* o )
+{
+    return ( p->via_call_p->shelve ) ? true : false;
+}
+
 /**********************************************************************************************************************/
 
 static bcore_via_s* bcore_via_s_create_from_self( const bcore_self_s* self )

@@ -70,10 +70,18 @@ static tp_t type_of( const st_s* name )
 static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, uz_t depth )
 {
     bcore_life_s* l = bcore_life_s_create();
-    sr_s sink_l         = sr_cl( sr_cp( sink, TYPEOF_bcore_sink_s ), l );
-    sr_s obj_l          = sr_cl( sr_cp( obj,  TYPEOF_bcore_via_s ),  l );
+    sr_s sink_l = sr_cl( sr_cp( sink, TYPEOF_bcore_sink_s ), l );
+    sr_s obj_l  = sr_cl( sr_cp( obj, TYPEOF_bcore_via_s ), l );
     st_s* ind = st_s_push_char_n( st_s_create_l( l ), ' ', depth * o->indent );
     st_s* buf = st_s_create_l( l );
+
+
+    // shelving obj_l
+    if( obj_l.o && bcore_via_r_defines_shelve( &obj_l ) )
+    {
+        obj_l = sr_cl( sr_clone( obj_l ), l );
+        bcore_via_r_shelve( &obj_l );
+    }
 
     bcore_sink_x_pushf( sink_l, "%s", ind->sc );
     if( name ) bcore_sink_x_pushf( sink_l, "%s:", name_of( name, buf ) );
@@ -130,6 +138,7 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
         }
         bcore_sink_x_push_sc( sink_l, "</>\n" );
     }
+
     bcore_life_s_discard( l );
 }
 
@@ -323,7 +332,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 }
             }
         }
-        bcore_via_x_mutated( obj_l );
+        bcore_via_r_mutated( &obj_l );
     }
     bcore_life_s_discard( l );
     return obj;
