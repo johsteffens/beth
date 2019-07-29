@@ -31,8 +31,11 @@
  *  A n-holor is understood as holor or order n (meaning n separate dimensions).
  *  The number of values a holor holds is equal to the product of its dimensions.
  *
- *  bmath_hf3_t is organized as array of dimensions and array of associated data.
+ *  bmath_hf3_t is organized as array of dimensions (d_data) and array of associated value data (v_data).
  *  Dimension-values are arranged from lowest to highest level.
+ *
+ *  A given holor is called 'determined' when v_data is set according to its order and dimensionality.
+ *  v_data = NULL is a valid state which is called 'vacant'.
  *
  *  Examples:
  *    A 0-holor represents a scalar.
@@ -101,6 +104,9 @@ void bmath_hf3_s_set_v_size( bmath_hf3_s* o, sz_t size );
 /// fits number of values to given dimensions (initialized to zero)
 void bmath_hf3_s_fit_v_size( bmath_hf3_s* o );
 
+/// turns holor into vacant state without affecting d_data
+void bmath_hf3_s_set_vacant( bmath_hf3_s* o );
+
 /// sets d_data, d_size to array (does not change v_size or v_data)
 void bmath_hf3_s_set_d_data( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size );
 
@@ -129,6 +135,12 @@ void bmath_hf3_s_set_size_na( bmath_hf3_s* o, sz_t d_size, ... );
 
 /// returns product of all dimensions
 sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o );
+
+/// sets d_data to scalar (no change on v_data)
+void bmath_hf3_s_set_d_scalar( bmath_hf3_s* o );
+
+/// sets holor to scalar with given value
+void bmath_hf3_s_set_scalar_f3( bmath_hf3_s* o, f3_t v );
 
 /**********************************************************************************************************************/
 /// comparison
@@ -170,13 +182,21 @@ static inline sz_t bmath_hf3_s_get_order( const bmath_hf3_s* o ) { return o->d_s
  */
 void bmath_hf3_s_inc_order( bmath_hf3_s* o, sz_t dim );
 
-/** Canonic data append of a sub-holor */
+/** Canonic data append of a sub-holor
+ *  Requirements (checked):
+ *  * o and src must either be both vacant or both determined.
+ *  * o->d_size == src->d_size || o->d_size == src->d_size + 1
+ *  * src->d_data must match (lower significant) o->d_data
+ */
 void bmath_hf3_s_push( bmath_hf3_s* o, const bmath_hf3_s* src );
 
 void bmath_hf3_s_to_sink(    const bmath_hf3_s* o, bcore_sink* sink );
 void bmath_hf3_s_to_sink_nl( const bmath_hf3_s* o, bcore_sink* sink ); // appends newline
-void bmath_hf3_s_to_stdout(    const bmath_hf3_s* o, bcore_sink* sink );
-void bmath_hf3_s_to_stdout_nl( const bmath_hf3_s* o, bcore_sink* sink ); // appends newline
+void bmath_hf3_s_to_stdout(    const bmath_hf3_s* o );
+void bmath_hf3_s_to_stdout_nl( const bmath_hf3_s* o ); // appends newline
+
+void bmath_hf3_s_formatted_to_sink(    const bmath_hf3_s* o, bcore_sink* sink );
+void bmath_hf3_s_formatted_to_stdout(  const bmath_hf3_s* o );
 
 /** Sets all vector elements to random values.
  *  Random generator:
@@ -237,41 +257,23 @@ f3_t bmath_hf3_s_f3_sum( const bmath_hf3_s* o );
  *    M   * V^T
  */
 
-/// o * m -> r
-void bmath_hf3_s_bmul(         const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
+void bmath_hf3_s_bmul(         const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r ); // o   * b   -> r
+void bmath_hf3_s_bmul_htp(     const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r ); // o   * b^T -> r
+void bmath_hf3_s_htp_bmul(     const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r ); // o^T * b   -> r
+void bmath_hf3_s_htp_bmul_htp( const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r ); // o^T * b^T -> r
 
-/// o * m^T -> r
-void bmath_hf3_s_bmul_htp(     const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
+void bmath_hf3_s_bmul_add(         const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r ); // o   * b   + c -> r
+void bmath_hf3_s_bmul_htp_add(     const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r ); // o   * b^T + c -> r
+void bmath_hf3_s_htp_bmul_add(     const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r ); // o^T * b   + c -> r
+void bmath_hf3_s_htp_bmul_htp_add( const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r ); // o^T * b^T + c -> r
 
-/// o^T * m -> r
-void bmath_hf3_s_htp_bmul(     const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
-
-/// o^T * m^T -> r
-void bmath_hf3_s_htp_bmul_htp( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
-
-/**********************************************************************************************************************/
-/** general holor * holor multiplication
- *  Separator k refers to holor left of k.
- *  The corresponding separators for other holors are fully determined.
+/** sets d-data on r for bmul operation; returns true in case if success
+ *  Does not change v_data
  */
-
-/// o * m -> r
-void bmath_hf3_s_kmul(         const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* m, bmath_hf3_s* r );
-
-/// o * m^T -> r
-void bmath_hf3_s_kmul_htp(     const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* m, bmath_hf3_s* r );
-
-/// o^T * m -> r
-void bmath_hf3_s_htp_kmul(     const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* m, bmath_hf3_s* r );
-
-/// ( o * b ) + c -> r
-void bmath_hf3_s_kmul_add(     const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r );
-
-/// ( o * b^T ) + c -> r
-void bmath_hf3_s_kmul_htp_add( const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r );
-
-/// ( o^T * b ) + c -> r
-void bmath_hf3_s_htp_kmul_add( const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r );
+bl_t bmath_hf3_s_set_d_bmul(         const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r ); // o   * b   -> r
+bl_t bmath_hf3_s_set_d_bmul_htp(     const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r ); // o   * b^T -> r
+bl_t bmath_hf3_s_set_d_htp_bmul(     const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r ); // o^T * b   -> r
+bl_t bmath_hf3_s_set_d_htp_bmul_htp( const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r ); // o^T * b^T -> r
 
 /** composite multiply-add function. Satisfies functionality of BLAS:DGEMM.
  *  op(a) * op(b) * c + d * e -> r
@@ -279,7 +281,7 @@ void bmath_hf3_s_htp_kmul_add( const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* 
  *  c, e are scalar.
  *  d can be NULL
  */
-void bmath_hf3_s_kmul_add_cps( bl_t htpa, const bmath_hf3_s* a, sz_t k, bl_t htpb, const bmath_hf3_s* b, f3_t c, const bmath_hf3_s* d, f3_t e, bmath_hf3_s* r );
+void bmath_hf3_s_bmul_add_cps( bl_t htpa, const bmath_hf3_s* a, sz_t k, bl_t htpb, const bmath_hf3_s* b, f3_t c, const bmath_hf3_s* d, f3_t e, bmath_hf3_s* r );
 
 /**********************************************************************************************************************/
 

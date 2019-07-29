@@ -20,11 +20,11 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_vm_op_s_setup_d( bmath_hf3_vm_op_s* o, bmath_hf3_vm* op )
+void bmath_hf3_vm_prop_s_setup_d( bmath_hf3_vm_prop_s* o, bmath_hf3_vm_op* op )
 {
     if( op )
     {
-        bmath_hf3_vm_a_attach( &o->op, op );
+        bcore_inst_a_attach( (bcore_inst**)&o->op, (bcore_inst*)op );
         o->p = (bmath_hf3_vm_s*)bmath_hf3_vm_s_get_aware( o->op );
     }
 }
@@ -36,13 +36,13 @@ void bmath_hf3_vm_op_s_setup_d( bmath_hf3_vm_op_s* o, bmath_hf3_vm* op )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_vm_proc_s_push_op_d( bmath_hf3_vm_proc_s* o, bmath_hf3_vm* op )
+void bmath_hf3_vm_proc_s_push_op_d( bmath_hf3_vm_proc_s* o, bmath_hf3_vm_op* op )
 {
     if( op )
     {
-        ASSERT( *(aware_t*)op != TYPEOF_bmath_hf3_vm_op_s );
-        bmath_hf3_vm_op_s* vm_op = bmath_hf3_vm_proc_s_push( o );
-        bmath_hf3_vm_op_s_setup_d( vm_op, op );
+        ASSERT( *(aware_t*)op != TYPEOF_bmath_hf3_vm_prop_s );
+        bmath_hf3_vm_prop_s* vm_op = bmath_hf3_vm_proc_s_push( o );
+        bmath_hf3_vm_prop_s_setup_d( vm_op, op );
     }
 }
 
@@ -56,7 +56,7 @@ void bmath_hf3_vm_proc_s_push_op_d( bmath_hf3_vm_proc_s* o, bmath_hf3_vm* op )
 void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o )
 {
     bmath_hf3_vm_arr_holor_s_clear( &o->arr_holor );
-    bmath_hf3_vm_arr_proc_s_clear( &o->arr_proc );
+    bmath_hf3_vm_library_s_clear( &o->library );
     bcore_hmap_tpuz_s_clear( &o->map_proc );
     bcore_hmap_tpuz_s_clear( &o->map_holor );
     bcore_hmap_name_s_clear( &o->map_name );
@@ -71,20 +71,24 @@ void bmath_hf3_vm_frame_s_run_proc( bmath_hf3_vm_frame_s* o, tp_t name )
         ERR_fa( "'#<sc_t>' does not represent a procedure.", bcore_hmap_name_s_get_sc( &o->map_name, name ) );
     }
     sz_t idx = *bcore_hmap_tpuz_s_get( &o->map_proc, name );
-    bmath_hf3_vm_proc_s* proc = &o->arr_proc.data[ idx ];
-    bmath_hf3_vm_proc_s_run( proc, &o->arr_holor );
+    bmath_hf3_vm_proc_s* proc = &o->library.data[ idx ];
+    bmath_hf3_vm_proc_s_run( proc, o->arr_holor.data );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+sz_t bmath_hf3_vm_frame_s_get_holor_index( bmath_hf3_vm_frame_s* o, tp_t name )
+{
+    if( !bcore_hmap_tpuz_s_exists( &o->map_holor, name ) ) return -1;
+    return *bcore_hmap_tpuz_s_get( &o->map_holor, name );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_get_holor( bmath_hf3_vm_frame_s* o, tp_t name )
 {
-    if( !bcore_hmap_tpuz_s_exists( &o->map_holor, name ) )
-    {
-        ERR_fa( "'#<sc_t>' does not represent a holor.", bcore_hmap_name_s_get_sc( &o->map_name, name ) );
-    }
-    sz_t idx = *bcore_hmap_tpuz_s_get( &o->map_holor, name );
-    return &o->arr_holor.data[ idx ];
+    sz_t idx = bmath_hf3_vm_frame_s_get_holor_index( o, name );
+    return idx >= 0 ? &o->arr_holor.data[ idx ] : NULL;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

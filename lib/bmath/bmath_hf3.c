@@ -111,6 +111,7 @@ void bmath_hf3_s_clear_v_data( bmath_hf3_s* o )
     }
     o->v_data = NULL;
     o->v_size = 0;
+    o->v_space = 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -132,6 +133,13 @@ void bmath_hf3_s_fit_v_size( bmath_hf3_s* o )
     sz_t size = 1;
     for( sz_t i = 0; i < o->d_size; i++ ) size *= o->d_data[ i ];
     bmath_hf3_s_set_v_size( o, size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_set_vacant( bmath_hf3_s* o )
+{
+    bmath_hf3_s_clear_v_data( o );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -229,6 +237,22 @@ sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_hf3_s_set_d_scalar( bmath_hf3_s* o )
+{
+    bmath_hf3_s_set_d_data( o, NULL, 0 );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_set_scalar_f3( bmath_hf3_s* o, f3_t v )
+{
+    bmath_hf3_s_set_d_scalar( o );
+    bmath_hf3_s_fit_v_size( o );
+    o->v_data[ 0 ] = v;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// comparison
 
@@ -297,8 +321,6 @@ void bmath_hf3_s_push( bmath_hf3_s* o, const bmath_hf3_s* src )
         return;
     }
 
-    ASSERT( o->v_data );
-    ASSERT( src->v_data );
     ASSERT( src->d_size <= o->d_size );
 
     for( sz_t i = 0; i < src->d_size; i++ ) ASSERT( o->d_data[ i ] == src->d_data[ i ] );
@@ -311,13 +333,21 @@ void bmath_hf3_s_push( bmath_hf3_s* o, const bmath_hf3_s* src )
 
     o->d_data[ o->d_size -1 ]++;
 
-    bmath_hf3_s_resize_v_size( o, o->v_size + sub_size );
-    bcore_u_memcpy( sizeof( f3_t ), o->v_data + o->v_size - sub_size, src->v_data, sub_size );
+    if( o->v_data )
+    {
+        ASSERT( src->v_data );
+        bmath_hf3_s_resize_v_size( o, o->v_size + sub_size );
+        bcore_u_memcpy( sizeof( f3_t ), o->v_data + o->v_size - sub_size, src->v_data, sub_size );
+    }
+    else
+    {
+        ASSERT( !src->v_data );
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-static void rec_to_sink( const bmath_hf3_s* o, bcore_sink* sink, f3_t* v_data, sz_t d_idx )
+static void rec_to_sink( const bmath_hf3_s* o, sz_t indent, bl_t formatted, bcore_sink* sink, f3_t* v_data, sz_t d_idx )
 {
     if( d_idx == 0 )
     {
@@ -334,8 +364,10 @@ static void rec_to_sink( const bmath_hf3_s* o, bcore_sink* sink, f3_t* v_data, s
         sz_t dim = o->d_data[ d_idx ];
         for( sz_t i = 0; i < dim; i++ )
         {
+            if( formatted && d_idx > 0 ) bcore_sink_a_push_fa( sink, "\n#rn{ }", indent );
             bcore_sink_a_push_fa( sink, "{" );
-            rec_to_sink( o, sink, v_data + i * v_block, d_idx - 1 );
+            rec_to_sink( o, indent + 2, formatted, sink, v_data + i * v_block, d_idx - 1 );
+            if( formatted && d_idx > 1 ) bcore_sink_a_push_fa( sink, "\n#rn{ }", indent );
             bcore_sink_a_push_fa( sink, "}" );
         }
     }
@@ -350,7 +382,7 @@ void bmath_hf3_s_to_sink( const bmath_hf3_s* o, bcore_sink* sink )
         if( o->d_size > 0 )
         {
             bcore_sink_a_push_fa( sink, "{" );
-            rec_to_sink( o, sink, o->v_data, o->d_size - 1 );
+            rec_to_sink( o, 0, false, sink, o->v_data, o->d_size - 1 );
             bcore_sink_a_push_fa( sink, "}" );
         }
         else
@@ -370,6 +402,34 @@ void bmath_hf3_s_to_sink( const bmath_hf3_s* o, bcore_sink* sink )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_hf3_s_formatted_to_sink( const bmath_hf3_s* o, bcore_sink* sink )
+{
+    if( o->v_data )
+    {
+        if( o->d_size > 0 )
+        {
+            bcore_sink_a_push_fa( sink, "{" );
+            rec_to_sink( o, 2, true, sink, o->v_data, o->d_size - 1 );
+            if( o->d_size > 1 ) bcore_sink_a_push_fa( sink, "\n" );
+            bcore_sink_a_push_fa( sink, "}\n" );
+        }
+        else
+        {
+            bcore_sink_a_push_fa( sink, "#<f3_t>\n", o->v_data[ 0 ] );
+        }
+    }
+    else
+    {
+        for( sz_t i = o->d_size - 1; i >= 0; i-- )
+        {
+            bcore_sink_a_push_fa( sink, "[#<sz_t>]", o->d_data[ i ] );
+        }
+        bcore_sink_a_push_fa( sink, "##\n" );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_s_to_sink_nl( const bmath_hf3_s* o, bcore_sink* sink )
 {
     bmath_hf3_s_to_sink( o, sink );
@@ -378,16 +438,23 @@ void bmath_hf3_s_to_sink_nl( const bmath_hf3_s* o, bcore_sink* sink )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_to_stdout( const bmath_hf3_s* o, bcore_sink* sink )
+void bmath_hf3_s_to_stdout( const bmath_hf3_s* o )
 {
     bmath_hf3_s_to_sink( o, BCORE_STDOUT );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_to_stdout_nl( const bmath_hf3_s* o, bcore_sink* sink )
+void bmath_hf3_s_to_stdout_nl( const bmath_hf3_s* o )
 {
     bmath_hf3_s_to_sink_nl( o, BCORE_STDOUT );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_formatted_to_stdout( const bmath_hf3_s* o )
+{
+    bmath_hf3_s_formatted_to_sink( o, BCORE_STDOUT );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -586,82 +653,441 @@ f3_t bmath_hf3_s_f3_min( const bmath_hf3_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_bmul( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r )
+void bmath_hf3_s_bmul( const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r )
 {
     ASSERT( o->d_size <= 2 );
-    ASSERT( m->d_size <= 2 );
-    ASSERT( r != o );
-    ASSERT( r != m );
+    ASSERT( b->d_size <= 2 );
     assert( o->v_size );
-    assert( m->v_size );
+    assert( b->v_size );
     assert( r->v_size );
 
-    switch( o->d_size * 3 + m->d_size )
+    switch( o->d_size * 3 + b->d_size )
     {
-        case 0: // 0H, 0H
+        case 0: // 0H * 0H
         {
             ASSERT( r->d_size == 0 );
-            r->v_data[ 0 ] = o->v_data[ 0 ] * m->v_data[ 0 ];
+            r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0H, 1H
+        case 1: // 0H * 1H
         {
-            ASSERT( m->d_data[ 0 ] == r->d_data[ 0 ] );
-            bmath_hf3_s_mul_scl( m, o->v_data, r );
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl( b, o->v_data, r );
         }
         break;
 
-        case 2: // 0H, 2H
+        case 2: // 0H * 2H
         {
-            ASSERT( m->d_data[ 0 ] == r->d_data[ 0 ] );
-            ASSERT( m->d_data[ 1 ] == r->d_data[ 1 ] );
-            bmath_hf3_s_mul_scl( m, o->v_data, r );
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            ASSERT( b->d_data[ 1 ] == r->d_data[ 1 ] );
+            bmath_hf3_s_mul_scl( b, o->v_data, r );
         }
         break;
 
-        case 3: // 1H, 0H
+        case 3: // 1H * 0H
         {
             ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
-            bmath_hf3_s_mul_scl( o, m->v_data, r );
+            bmath_hf3_s_mul_scl( o, b->v_data, r );
         }
         break;
 
-        case 4: // 1H, 1H
+        case 4: // 1H * 1H
+        {
+            ERR_fa( "'1H * 1H' not defined." );
+        }
+        break;
+
+        case 5: // 1H * 2H
+        {
+            ERR_fa( "'1H * 2H' not defined." );
+        }
+        break;
+
+        case 6: // 2H * 0H
+        {
+            ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
+            ASSERT( o->d_data[ 1 ] == r->d_data[ 1 ] );
+            bmath_hf3_s_mul_scl( o, b->v_data, r );
+        }
+        break;
+
+        case 7: // 2H * 1H  (matrix * vector)
+        {
+            bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
+            bmath_vf3_s vb = bmath_hf3_s_get_weak_vec( b );
+            bmath_vf3_s vr = bmath_hf3_s_get_weak_vec( r );
+            bmath_vf3_s* pb = ( b == r ) ? &vr : &vb;
+            bmath_mf3_s_mul_vec( &mo, pb, &vr );
+        }
+        break;
+
+        case 8: // 2H * 2H  (matrix * matrix)
+        {
+            bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s* po = ( o == b ) ? ( ( o == r ) ? &mr : &mb ) : ( ( o == r ) ? &mr : &mo );
+            bmath_mf3_s* pb = ( b == r ) ? &mr : &mb;
+            bmath_mf3_s_mul( po, pb, &mr );
+        }
+        break;
+
+        default: break;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_bmul_htp( const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r )
+{
+    ASSERT( o->d_size <= 2 );
+    ASSERT( b->d_size <= 2 );
+    assert( o->v_size );
+    assert( b->v_size );
+    assert( r->v_size );
+
+    switch( o->d_size * 3 + b->d_size )
+    {
+        case 0: // 0H * 0Ht
+        {
+            ASSERT( r->d_size == 0 );
+            r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ];
+        }
+        break;
+
+        case 1: // 0H * 1Ht
+        {
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl( b, o->v_data, r );
+        }
+        break;
+
+        case 2: // 0H * 2Ht
+        {
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s_htp( &mb, &mr );
+            bmath_mf3_s_mul_scl( &mr, o->v_data, &mr );
+        }
+        break;
+
+        case 3: // 1H * 0Ht
+        {
+            ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl( o, b->v_data, r );
+        }
+        break;
+
+        case 4: // 1H * 1Ht  (outer product)
+        {
+            bmath_vf3_s vo = bmath_hf3_s_get_weak_vec( o );
+            bmath_vf3_s vb = bmath_hf3_s_get_weak_vec( b );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s_opd( &mr, &vo, &vb );
+        }
+        break;
+
+        case 5: // 1H * 2Ht
+        {
+            ERR_fa( "'1H * 2Ht' not defined." );
+        }
+        break;
+
+        case 6: // 2H * 0Ht
+        {
+            ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
+            ASSERT( o->d_data[ 1 ] == r->d_data[ 1 ] );
+            bmath_hf3_s_mul_scl( o, b->v_data, r );
+        }
+        break;
+
+        case 7: // 2H * 1Ht
+        {
+            ERR_fa( "'2H * 1Ht' not defined." );
+        }
+        break;
+
+        case 8: // 2H * 2Ht
+        {
+            bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s* po = ( o == b ) ? ( ( o == r ) ? &mr : &mb ) : ( ( o == r ) ? &mr : &mo );
+            bmath_mf3_s* pb = ( b == r ) ? &mr : &mb;
+            bmath_mf3_s_mul_htp( po, pb, &mr );
+        }
+        break;
+
+        default: break;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_htp_bmul( const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r )
+{
+    ASSERT( o->d_size <= 2 );
+    ASSERT( b->d_size <= 2 );
+    assert( o->v_size );
+    assert( b->v_size );
+    assert( r->v_size );
+
+    switch( o->d_size * 3 + b->d_size )
+    {
+        case 0: // 0Ht * 0H
+        {
+            ASSERT( r->d_size == 0 );
+            r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ];
+        }
+        break;
+
+        case 1: // 0Ht * 1H
+        {
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl( b, o->v_data, r );
+        }
+        break;
+
+        case 2: // 0Ht * 2H
+        {
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            ASSERT( b->d_data[ 1 ] == r->d_data[ 1 ] );
+            bmath_hf3_s_mul_scl( b, o->v_data, r );
+        }
+        break;
+
+        case 3: // 1Ht * 0H
+        {
+            ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl( o, b->v_data, r );
+        }
+        break;
+
+        case 4: // 1Ht * 1H  (VT V) dot product
+        {
+            ASSERT( o->d_data[ 0 ] == b->d_data[ 0 ] );
+            ASSERT( r->d_size == 0 );
+            r->v_data[ 0 ] = bmath_f3_t_vec_mul_vec( o->v_data, b->v_data, o->v_size );
+        }
+        break;
+
+        case 5: // 1Ht * 2H
+        {
+            bmath_vf3_s vo = bmath_hf3_s_get_weak_vec( o );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_vf3_s vr = bmath_hf3_s_get_weak_vec( r );
+            bmath_vf3_s* po = ( o == r ) ? &vr : &vo;
+            bmath_mf3_s_htp_mul_vec( &mb, po, &vr );
+        }
+        break;
+
+        case 6: // 2Ht * 0H
+        {
+            bmath_mf3_s om = bmath_hf3_s_get_weak_mat( o );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s_htp( &om, &mr );
+            bmath_mf3_s_mul_scl( &mr, b->v_data, &mr );
+        }
+        break;
+
+        case 7: // 2Ht * 1H  (matrix * vector)
+        {
+            bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
+            bmath_vf3_s vb = bmath_hf3_s_get_weak_vec( b );
+            bmath_vf3_s vr = bmath_hf3_s_get_weak_vec( r );
+            bmath_vf3_s* pb = ( b == r ) ? &vr : &vb;
+            bmath_mf3_s_htp_mul_vec( &mo, pb, &vr );
+        }
+        break;
+
+        case 8: // 2Ht * 2H  (matrix * matrix)
+        {
+            bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s* po = ( o == b ) ? ( ( o == r ) ? &mr : &mb ) : ( ( o == r ) ? &mr : &mo );
+            bmath_mf3_s* pb = ( b == r ) ? &mr : &mb;
+            bmath_mf3_s_htp_mul( po, pb, &mr );
+        }
+        break;
+
+        default: break;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_htp_bmul_htp( const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r )
+{
+    ASSERT( o->d_size <= 2 );
+    ASSERT( b->d_size <= 2 );
+    assert( o->v_size );
+    assert( b->v_size );
+    assert( r->v_size );
+
+    switch( o->d_size * 3 + b->d_size )
+    {
+        case 0: // 0Ht * 0Ht
+        {
+            ASSERT( r->d_size == 0 );
+            r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ];
+        }
+        break;
+
+        case 1: // 0Ht * 1Ht
+        {
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl( b, o->v_data, r );
+        }
+        break;
+
+        case 2: // 0Ht * 2Ht
+        {
+            bmath_mf3_s bm = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s_htp( &bm, &mr );
+            bmath_mf3_s_mul_scl( &mr, o->v_data, &mr );
+        }
+        break;
+
+        case 3: // 1Ht * 0Ht
+        {
+            ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl( o, b->v_data, r );
+        }
+        break;
+
+        case 4: // 1Ht * 1Ht  (VT VT) not defined
+        {
+            ERR_fa( "'1Ht * 1Ht' not defined." );
+        }
+        break;
+
+        case 5: // 1Ht * 2Ht
+        {
+            bmath_vf3_s vo = bmath_hf3_s_get_weak_vec( o );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_vf3_s vr = bmath_hf3_s_get_weak_vec( r );
+            bmath_vf3_s* po = ( o == r ) ? &vr : &vo;
+            bmath_mf3_s_mul_vec( &mb, po, &vr );
+        }
+        break;
+
+        case 6: // 2Ht * 0Ht
+        {
+            bmath_mf3_s om = bmath_hf3_s_get_weak_mat( o );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s_htp( &om, &mr );
+            bmath_mf3_s_mul_scl( &mr, b->v_data, &mr );
+        }
+        break;
+
+        case 7: // 2Ht * 1Ht  (matrix * vector)
+        {
+            ERR_fa( "'2Ht * 1Ht' not defined." );
+        }
+        break;
+
+        case 8: // 2Ht * 2Ht  (matrix * matrix)
+        {
+            bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s* po = ( o == b ) ? ( ( o == r ) ? &mr : &mb ) : ( ( o == r ) ? &mr : &mo );
+            bmath_mf3_s* pb = ( b == r ) ? &mr : &mb;
+            bmath_mf3_s_htp_mul_htp( po, pb, &mr );
+        }
+        break;
+
+        default: break;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_bmul_add( const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r )
+{
+    ASSERT( o->d_size <= 2 );
+    ASSERT( b->d_size <= 2 );
+    ASSERT( bmath_hf3_s_d_equal( c, r ) );
+    assert( o->v_size );
+    assert( b->v_size );
+    assert( r->v_size );
+
+    switch( o->d_size * 3 + b->d_size )
+    {
+        case 0: // 0H * 0H
+        {
+            ASSERT( r->d_size == 0 );
+            r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ] + c->v_data[ 0 ];
+        }
+        break;
+
+        case 1: // 0H * 1H
+        {
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl_add( b, o->v_data, c, r );
+        }
+        break;
+
+        case 2: // 0H * 2H
+        {
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            ASSERT( b->d_data[ 1 ] == r->d_data[ 1 ] );
+            bmath_hf3_s_mul_scl_add( b, o->v_data, c, r );
+        }
+        break;
+
+        case 3: // 1H * 0H
+        {
+            ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl_add( o, b->v_data, c, r );
+        }
+        break;
+
+        case 4: // 1H * 1H
         {
             ERR_fa( "bmul(1H,1H) not defined." );
         }
         break;
 
-        case 5: // 1H, 2H
+        case 5: // 1H * 2H
         {
             ERR_fa( "bmul(1H,2H) not defined." );
         }
         break;
 
-        case 6: // 2H, 0H
+        case 6: // 2H * 0H
         {
             ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
             ASSERT( o->d_data[ 1 ] == r->d_data[ 1 ] );
-            bmath_hf3_s_mul_scl( o, m->v_data, r );
+            bmath_hf3_s_mul_scl_add( o, b->v_data, c, r );
         }
         break;
 
-        case 7: // 2H, 1H  (matrix * vector)
+        case 7: // 2H * 1H  (matrix * vector)
         {
             bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
-            bmath_vf3_s vm = bmath_hf3_s_get_weak_vec( m );
+            bmath_vf3_s vb = bmath_hf3_s_get_weak_vec( b );
+            bmath_vf3_s vc = bmath_hf3_s_get_weak_vec( c );
             bmath_vf3_s vr = bmath_hf3_s_get_weak_vec( r );
-            bmath_mf3_s_mul_vec( &mo, &vm, &vr );
+            bmath_vf3_s* pb = ( b == r ) ? &vr : &vb;
+            bmath_vf3_s* pc = ( c == r ) ? &vr : &vc;
+            bmath_mf3_s_mul_vec_add( &mo, pb, pc, &vr );
         }
         break;
 
-        case 8: // 2H, 2H  (matrix * matrix)
+        case 8: // 2H * 2H  (matrix * matrix)
         {
             bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
-            bmath_mf3_s mm = bmath_hf3_s_get_weak_mat( m );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mc = bmath_hf3_s_get_weak_mat( c );
             bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
-            bmath_mf3_s_mul( &mo, &mm, &mr );
+            bmath_mf3_s* po = ( o == b ) ? ( ( o == r ) ? &mr : &mb ) : ( ( o == r ) ? &mr : &mo );
+            bmath_mf3_s* pb = ( b == r ) ? &mr : &mb;
+            bmath_mf3_s* pc = ( c == r ) ? &mr : &mc;
+            bmath_mf3_s_mul_add( po, pb, pc, &mr );
         }
         break;
 
@@ -671,86 +1097,92 @@ void bmath_hf3_s_bmul( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* 
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_bmul_htp( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r )
+void bmath_hf3_s_bmul_htp_add( const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r )
 {
     ASSERT( o->d_size <= 2 );
-    ASSERT( m->d_size <= 2 );
-    ASSERT( r != o );
-    ASSERT( r != m );
+    ASSERT( b->d_size <= 2 );
+    ASSERT( bmath_hf3_s_d_equal( c, r ) );
     assert( o->v_size );
-    assert( m->v_size );
+    assert( b->v_size );
     assert( r->v_size );
 
-    switch( o->d_size * 3 + m->d_size )
+    switch( o->d_size * 3 + b->d_size )
     {
-        case 0: // 0H, 0H
+        case 0: // 0H * 0Ht
         {
             ASSERT( r->d_size == 0 );
-            r->v_data[ 0 ] = o->v_data[ 0 ] * m->v_data[ 0 ];
+            r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ] + c->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0H, 1H
+        case 1: // 0H * 1Ht
         {
-            ASSERT( m->d_data[ 0 ] == r->d_data[ 0 ] );
-            bmath_hf3_s_mul_scl( m, o->v_data, r );
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl_add( b, o->v_data, c, r );
         }
         break;
 
-        case 2: // 0H, 2H
+        case 2: // 0H * 2Ht
         {
-            bmath_mf3_s mm = bmath_hf3_s_get_weak_mat( m );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
             bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
-            bmath_mf3_s_htp( &mm, &mr );
-            bmath_mf3_s_mul_scl( &mr, o->v_data, &mr );
+            bmath_mf3_s mc = bmath_hf3_s_get_weak_mat( c );
+            bmath_mf3_s_htp( &mb, &mr );
+            bmath_mf3_s_mul_scl_add( &mr, o->v_data, &mc, &mr );
         }
         break;
 
-        case 3: // 1H, 0H
+        case 3: // 1H * 0Ht
         {
             ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
-            bmath_hf3_s_mul_scl( o, m->v_data, r );
+            bmath_hf3_s_mul_scl_add( o, b->v_data, c, r );
         }
         break;
 
-        case 4: // 1H, 1H  (outer product)
+        case 4: // 1H * 1Ht  (outer product)
         {
             bmath_vf3_s vo = bmath_hf3_s_get_weak_vec( o );
-            bmath_vf3_s vm = bmath_hf3_s_get_weak_vec( m );
+            bmath_vf3_s vb = bmath_hf3_s_get_weak_vec( b );
+            bmath_mf3_s mc = bmath_hf3_s_get_weak_mat( c );
             bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
-            bmath_mf3_s_opd( &mr, &vo, &vm );
+            bmath_mf3_s* pc = ( c == r ) ? &mr : &mc;
+
+            // TODO: replace with bmath_mf3_s_opd_add
+            bmath_mf3_s_opd( &mr, &vo, &vb );
+            bmath_mf3_s_add( &mr, pc, &mr );
         }
         break;
 
-        case 5: // 1H, 2H
+        case 5: // 1H, 2Ht
         {
-            bmath_vf3_s vo = bmath_hf3_s_get_weak_vec( o );
-            bmath_mf3_s mm = bmath_hf3_s_get_weak_mat( m );
-            bmath_vf3_s vr = bmath_hf3_s_get_weak_vec( r );
-            bmath_mf3_s_mul_vec( &mm, &vo, &vr );
+            ERR_fa( "bmul_htp(1H,2H) not defined." );
         }
         break;
 
-        case 6: // 2H, 0H
+        case 6: // 2H * 0Ht
         {
             ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
             ASSERT( o->d_data[ 1 ] == r->d_data[ 1 ] );
-            bmath_hf3_s_mul_scl( o, m->v_data, r );
+            bmath_hf3_s_mul_scl_add( o, b->v_data, c, r );
         }
         break;
 
-        case 7: // 2H, 1H
+        case 7: // 2H * 1Ht
         {
             ERR_fa( "bmul_htp(2H,1H) not defined." );
         }
         break;
 
-        case 8: // 2H, 2H
+        case 8: // 2H * 2Ht
         {
             bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
-            bmath_mf3_s mm = bmath_hf3_s_get_weak_mat( m );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mc = bmath_hf3_s_get_weak_mat( c );
             bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
-            bmath_mf3_s_mul_htp( &mo, &mm, &mr );
+            bmath_mf3_s* po = ( o == b ) ? ( ( o == r ) ? &mr : &mb ) : ( ( o == r ) ? &mr : &mo );
+            bmath_mf3_s* pb = ( b == r ) ? &mr : &mb;
+            bmath_mf3_s* pc = ( c == r ) ? &mr : &mc;
+            bmath_mf3_s_mul_htp_add( po, pb, pc, &mr );
         }
         break;
 
@@ -760,88 +1192,100 @@ void bmath_hf3_s_bmul_htp( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_htp_bmul( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r )
+void bmath_hf3_s_htp_bmul_add( const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r )
 {
     ASSERT( o->d_size <= 2 );
-    ASSERT( m->d_size <= 2 );
-    ASSERT( r != o );
-    ASSERT( r != m );
+    ASSERT( b->d_size <= 2 );
+    ASSERT( bmath_hf3_s_d_equal( c, r ) );
     assert( o->v_size );
-    assert( m->v_size );
+    assert( b->v_size );
     assert( r->v_size );
 
-    switch( o->d_size * 3 + m->d_size )
+    switch( o->d_size * 3 + b->d_size )
     {
-        case 0: // 0H, 0H
+        case 0: // 0Ht * 0H
         {
             ASSERT( r->d_size == 0 );
-            r->v_data[ 0 ] = o->v_data[ 0 ] * m->v_data[ 0 ];
+            r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ] + c->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0H, 1H
+        case 1: // 0Ht * 1H
         {
-            ASSERT( m->d_data[ 0 ] == r->d_data[ 0 ] );
-            bmath_hf3_s_mul_scl( m, o->v_data, r );
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl_add( b, o->v_data, c, r );
         }
         break;
 
-        case 2: // 0H, 2H
+        case 2: // 0Ht * 2H
         {
-            ASSERT( m->d_data[ 0 ] == r->d_data[ 0 ] );
-            ASSERT( m->d_data[ 1 ] == r->d_data[ 1 ] );
-            bmath_hf3_s_mul_scl( m, o->v_data, r );
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            ASSERT( b->d_data[ 1 ] == r->d_data[ 1 ] );
+            bmath_hf3_s_mul_scl_add( b, o->v_data, c, r );
         }
         break;
 
-        case 3: // 1H, 0H
+        case 3: // 1Ht * 0H
         {
             ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
-            bmath_hf3_s_mul_scl( o, m->v_data, r );
+            bmath_hf3_s_mul_scl_add( o, b->v_data, c, r );
         }
         break;
 
-        case 4: // 1H, 1H  (VT V) dot product
+        case 4: // 1Ht * 1H  (VT V) dot product
         {
-            ASSERT( o->d_data[ 0 ] == m->d_data[ 0 ] );
+            ASSERT( o->d_data[ 0 ] == b->d_data[ 0 ] );
             ASSERT( r->d_size == 0 );
-            r->v_data[ 0 ] = bmath_f3_t_vec_mul_vec( o->v_data, m->v_data, o->v_size );
+            r->v_data[ 0 ] = bmath_f3_t_vec_mul_vec( o->v_data, b->v_data, o->v_size ) + c->v_data[ 0 ];
         }
         break;
 
-        case 5: // 1H, 2H
+        case 5: // 1Ht * 2H
         {
             bmath_vf3_s vo = bmath_hf3_s_get_weak_vec( o );
-            bmath_mf3_s mm = bmath_hf3_s_get_weak_mat( m );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_vf3_s vc = bmath_hf3_s_get_weak_vec( c );
             bmath_vf3_s vr = bmath_hf3_s_get_weak_vec( r );
-            bmath_mf3_s_htp_mul_vec( &mm, &vo, &vr );
+            bmath_vf3_s* po = ( o == r ) ? &vr : &vo;
+            bmath_vf3_s* pc = ( c == r ) ? &vr : &vc;
+            bmath_mf3_s_htp_mul_vec_add( &mb, po, pc, &vr );
         }
         break;
 
-        case 6: // 2H, 0H
+        case 6: // 2Ht * 0H
         {
             bmath_mf3_s om = bmath_hf3_s_get_weak_mat( o );
+            bmath_mf3_s mc = bmath_hf3_s_get_weak_mat( c );
             bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
             bmath_mf3_s_htp( &om, &mr );
-            bmath_mf3_s_mul_scl( &mr, m->v_data, &mr );
+
+            bmath_mf3_s* pc = ( c == r ) ? &mr : &mc;
+            bmath_mf3_s_mul_scl_add( &mr, b->v_data, pc, &mr );
         }
         break;
 
-        case 7: // 2H, 1H  (matrix * vector)
+        case 7: // 2Ht * 1H  (matrix * vector)
         {
             bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
-            bmath_vf3_s vm = bmath_hf3_s_get_weak_vec( m );
+            bmath_vf3_s vb = bmath_hf3_s_get_weak_vec( b );
+            bmath_vf3_s vc = bmath_hf3_s_get_weak_vec( c );
             bmath_vf3_s vr = bmath_hf3_s_get_weak_vec( r );
-            bmath_mf3_s_htp_mul_vec( &mo, &vm, &vr );
+            bmath_vf3_s* pb = ( b == r ) ? &vr : &vb;
+            bmath_vf3_s* pc = ( c == r ) ? &vr : &vc;
+            bmath_mf3_s_htp_mul_vec_add( &mo, pb, pc, &vr );
         }
         break;
 
-        case 8: // 2H, 2H  (matrix * matrix)
+        case 8: // 2Ht * 2H  (matrix * matrix)
         {
             bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
-            bmath_mf3_s mm = bmath_hf3_s_get_weak_mat( m );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mc = bmath_hf3_s_get_weak_mat( c );
             bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
-            bmath_mf3_s_htp_mul( &mo, &mm, &mr );
+            bmath_mf3_s* po = ( o == b ) ? ( ( o == r ) ? &mr : &mb ) : ( ( o == r ) ? &mr : &mo );
+            bmath_mf3_s* pb = ( b == r ) ? &mr : &mb;
+            bmath_mf3_s* pc = ( c == r ) ? &mr : &mc;
+            bmath_mf3_s_htp_mul_add( po, pb, pc, &mr );
         }
         break;
 
@@ -851,146 +1295,295 @@ void bmath_hf3_s_htp_bmul( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_bmul_add( const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r );
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bmath_hf3_s_bmul_htp_add( const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r );
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bmath_hf3_s_htp_bmul_add( const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r );
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-/**********************************************************************************************************************/
-// holor * holor multiplication
-
-/// o * m -> r
-void bmath_hf3_s_kmul( const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* m, bmath_hf3_s* r )
+void bmath_hf3_s_htp_bmul_htp_add( const bmath_hf3_s* o, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r )
 {
-    ASSERT( r != o );
-    ASSERT( r != m );
-    bmath_mf3_s mo = bmath_hf3_s_get_weak_kmat( o, k );
-    bmath_mf3_s mm = bmath_hf3_s_get_weak_kmat( m, bmath_hf3_s_get_k_for_rows( m, mo.cols ) );
-    bmath_mf3_s mr = bmath_hf3_s_get_weak_kmat( r, bmath_hf3_s_get_k_for_rows( r, mo.rows ) );
-    bmath_mf3_s_mul( &mo, &mm, &mr );
-}
+    ASSERT( o->d_size <= 2 );
+    ASSERT( b->d_size <= 2 );
+    ASSERT( bmath_hf3_s_d_equal( c, r ) );
+    assert( o->v_size );
+    assert( b->v_size );
+    assert( r->v_size );
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-/// o * m^T -> r
-void bmath_hf3_s_kmul_htp( const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* m, bmath_hf3_s* r )
-{
-    ASSERT( r != o );
-    ASSERT( r != m );
-    bmath_mf3_s mo = bmath_hf3_s_get_weak_kmat( o, k );
-    bmath_mf3_s mm = bmath_hf3_s_get_weak_kmat( m, bmath_hf3_s_get_k_for_cols( m, mo.cols ) );
-    bmath_mf3_s mr = bmath_hf3_s_get_weak_kmat( r, bmath_hf3_s_get_k_for_rows( r, mo.rows ) );
-    bmath_mf3_s_mul_htp( &mo, &mm, &mr );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-/// o^T * m -> r
-void bmath_hf3_s_htp_kmul( const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* m, bmath_hf3_s* r )
-{
-    ASSERT( r != o );
-    ASSERT( r != m );
-    bmath_mf3_s mo = bmath_hf3_s_get_weak_kmat( o, k );
-    bmath_mf3_s mm = bmath_hf3_s_get_weak_kmat( m, bmath_hf3_s_get_k_for_rows( m, mo.rows ) );
-    bmath_mf3_s mr = bmath_hf3_s_get_weak_kmat( r, bmath_hf3_s_get_k_for_rows( r, mo.cols ) );
-    bmath_mf3_s_htp_mul( &mo, &mm, &mr );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-/// ( o * b ) + c -> r
-void bmath_hf3_s_kmul_add( const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r )
-{
-    ASSERT( r != o );
-    ASSERT( r != b );
-    ASSERT( r != c );
-    bmath_mf3_s mo = bmath_hf3_s_get_weak_kmat( o, k );
-    bmath_mf3_s mb = bmath_hf3_s_get_weak_kmat( b, bmath_hf3_s_get_k_for_rows( b, mo.cols ) );
-    bmath_mf3_s mc = bmath_hf3_s_get_weak_kmat( c, bmath_hf3_s_get_k_for_rows( c, mo.rows ) );
-    bmath_mf3_s mr = bmath_hf3_s_get_weak_kmat( r, bmath_hf3_s_get_k_for_rows( r, mo.rows ) );
-    bmath_mf3_s_mul_add( &mo, &mb, &mc, &mr );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-/// ( o * b^T ) + c -> r
-void bmath_hf3_s_kmul_htp_add( const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r )
-{
-    ASSERT( r != o );
-    ASSERT( r != b );
-    ASSERT( r != c );
-    bmath_mf3_s mo = bmath_hf3_s_get_weak_kmat( o, k );
-    bmath_mf3_s mb = bmath_hf3_s_get_weak_kmat( b, bmath_hf3_s_get_k_for_cols( b, mo.cols ) );
-    bmath_mf3_s mc = bmath_hf3_s_get_weak_kmat( c, bmath_hf3_s_get_k_for_rows( c, mo.rows ) );
-    bmath_mf3_s mr = bmath_hf3_s_get_weak_kmat( r, bmath_hf3_s_get_k_for_rows( r, mo.rows ) );
-    bmath_mf3_s_mul_htp_add( &mo, &mb, &mc, &mr );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-/// ( o^T * b ) + c -> r
-void bmath_hf3_s_htp_kmul_add( const bmath_hf3_s* o, sz_t k, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r )
-{
-    ASSERT( r != o );
-    ASSERT( r != b );
-    ASSERT( r != c );
-    bmath_mf3_s mo = bmath_hf3_s_get_weak_kmat( o, k );
-    bmath_mf3_s mb = bmath_hf3_s_get_weak_kmat( b, bmath_hf3_s_get_k_for_rows( b, mo.rows ) );
-    bmath_mf3_s mc = bmath_hf3_s_get_weak_kmat( c, bmath_hf3_s_get_k_for_rows( c, mo.cols ) );
-    bmath_mf3_s mr = bmath_hf3_s_get_weak_kmat( r, bmath_hf3_s_get_k_for_rows( r, mo.cols ) );
-    bmath_mf3_s_htp_mul_add( &mo, &mb, &mc, &mr );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-/** composite multiply-add function. Satisfies functionality of BLAS:DGEMM.
- *  op(a) * op(b) * c + d * e -> r
- *  op(x) = htpx ? x^T : x;
- *  c, e are scalar.
- *  d can be NULL
- */
-void bmath_hf3_s_kmul_add_cps( bl_t htpa, const bmath_hf3_s* a, sz_t k, bl_t htpb, const bmath_hf3_s* b, f3_t c, const bmath_hf3_s* d, f3_t e, bmath_hf3_s* r )
-{
-    ASSERT( r != a );
-    ASSERT( r != b );
-    ASSERT( r != d );
-
-    bmath_mf3_s ma = bmath_hf3_s_get_weak_kmat( a, k );
-
-    bmath_mf3_s mb, md, mr;
-
-    if( !htpa && !htpb )
+    switch( o->d_size * 3 + b->d_size )
     {
-        mb = bmath_hf3_s_get_weak_kmat( b, bmath_hf3_s_get_k_for_rows( b, ma.cols ) );
-        md = bmath_hf3_s_get_weak_kmat( d, bmath_hf3_s_get_k_for_rows( d, ma.rows ) );
-        mr = bmath_hf3_s_get_weak_kmat( r, bmath_hf3_s_get_k_for_rows( r, ma.rows ) );
+        case 0: // 0Ht * 0Ht
+        {
+            ASSERT( r->d_size == 0 );
+            r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ] + c->v_data[ 0 ];
+        }
+        break;
+
+        case 1: // 0Ht * 1Ht
+        {
+            ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl_add( b, o->v_data, c, r );
+        }
+        break;
+
+        case 2: // 0Ht * 2Ht
+        {
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s mc = bmath_hf3_s_get_weak_mat( c );
+            bmath_mf3_s_htp( &mb, &mr );
+            bmath_mf3_s_mul_scl_add( &mr, o->v_data, &mc, &mr );
+        }
+        break;
+
+        case 3: // 1Ht * 0Ht
+        {
+            ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
+            bmath_hf3_s_mul_scl_add( o, b->v_data, c, r );
+        }
+        break;
+
+        case 4: // 1Ht * 1Ht  (VT VT) not defined
+        {
+            ERR_fa( "htp_bmul_htp(1H,1H) not defined." );
+        }
+        break;
+
+        case 5: // 1Ht * 2Ht
+        {
+            bmath_vf3_s vo = bmath_hf3_s_get_weak_vec( o );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_vf3_s vc = bmath_hf3_s_get_weak_vec( c );
+            bmath_vf3_s vr = bmath_hf3_s_get_weak_vec( r );
+            bmath_vf3_s* po = ( o == r ) ? &vr : &vo;
+            bmath_vf3_s* pc = ( c == r ) ? &vr : &vc;
+            bmath_mf3_s_mul_vec_add( &mb, po, pc, &vr );
+        }
+        break;
+
+        case 6: // 2Ht * 0Ht
+        {
+            bmath_mf3_s om = bmath_hf3_s_get_weak_mat( o );
+            bmath_mf3_s mc = bmath_hf3_s_get_weak_mat( c );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s* pc = ( c == r ) ? &mr : &mc;
+            bmath_mf3_s_htp( &om, &mr );
+            bmath_mf3_s_mul_scl_add( &mr, b->v_data, pc, &mr );
+        }
+        break;
+
+        case 7: // 2Ht * 1Ht  (matrix * vector)
+        {
+            ERR_fa( "htp_bmul_htp(2H,1H) not defined." );
+        }
+        break;
+
+        case 8: // 2Ht * 2Ht  (matrix * matrix)
+        {
+            bmath_mf3_s mo = bmath_hf3_s_get_weak_mat( o );
+            bmath_mf3_s mb = bmath_hf3_s_get_weak_mat( b );
+            bmath_mf3_s mc = bmath_hf3_s_get_weak_mat( c );
+            bmath_mf3_s mr = bmath_hf3_s_get_weak_mat( r );
+            bmath_mf3_s* po = ( o == b ) ? ( ( o == r ) ? &mr : &mb ) : ( ( o == r ) ? &mr : &mo );
+            bmath_mf3_s* pb = ( b == r ) ? &mr : &mb;
+            bmath_mf3_s* pc = ( c == r ) ? &mr : &mc;
+            bmath_mf3_s_htp_mul_htp_add( po, pb, pc, &mr );
+        }
+        break;
+
+        default: break;
     }
-    else if( !htpa && htpb )
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_hf3_s_set_d_bmul( const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r )
+{
+    if( o->d_size > 2 ) return false;
+    if( b->d_size > 2 ) return false;
+    u2_t combination = o->d_size * 3 + b->d_size;
+
+    switch( combination )
     {
-        mb = bmath_hf3_s_get_weak_kmat( b, bmath_hf3_s_get_k_for_cols( b, ma.cols ) );
-        md = bmath_hf3_s_get_weak_kmat( d, bmath_hf3_s_get_k_for_rows( d, ma.rows ) );
-        mr = bmath_hf3_s_get_weak_kmat( r, bmath_hf3_s_get_k_for_rows( r, ma.rows ) );
+        case 0: /* 0H*0H */ break;
+        case 1: /* 0H*1H */ break;
+        case 2: /* 0H*2H */ break;
+        case 3: /* 1H*0H */ break;
+        case 4: /* 1H*1H */ return false;
+        case 5: /* 1H*2H */ return false;
+        case 6: /* 2H*0H */ break;
+        case 7: /* 2H*1H */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break;
+        case 8: /* 2H*2H */ if( o->d_data[ 0 ] != b->d_data[ 1 ] ) return false; else break;
+        default: break;
     }
-    else if( htpa && !htpb )
+
+    switch( combination )
     {
-        mb = bmath_hf3_s_get_weak_kmat( b, bmath_hf3_s_get_k_for_rows( b, ma.rows ) );
-        md = bmath_hf3_s_get_weak_kmat( d, bmath_hf3_s_get_k_for_rows( d, ma.cols ) );
-        mr = bmath_hf3_s_get_weak_kmat( r, bmath_hf3_s_get_k_for_rows( r, ma.cols ) );
+        case 0: /* 0H*0H */ bmath_hf3_s_set_d_data_na( r, 0                                 ); return true;
+        case 1: /* 0H*1H */ bmath_hf3_s_set_d_data_na( r, 1, b->d_data[ 0 ]                 ); return true;
+        case 2: /* 0H*2H */ bmath_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], b->d_data[ 1 ] ); return true;
+        case 3: /* 1H*0H */ bmath_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
+        case 4: /* 1H*1H */ return false;
+        case 5: /* 1H*2H */ return false;
+        case 6: /* 2H*0H */ bmath_hf3_s_set_d_data_na( r, 2, o->d_data[ 0 ], o->d_data[ 1 ] ); return true;
+        case 7: /* 2H*1H */ bmath_hf3_s_set_d_data_na( r, 1, o->d_data[ 1 ]                 ); return true;
+        case 8: /* 2H*2H */ bmath_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], o->d_data[ 1 ] ); return true;
+        default: break;
+    }
+    return false;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_hf3_s_set_d_bmul_htp( const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r )
+{
+    if( o->d_size > 2 ) return false;
+    if( b->d_size > 2 ) return false;
+    u2_t combination = o->d_size * 3 + b->d_size;
+
+    switch( combination )
+    {
+        case 0: /* 0H*0Ht */ break;
+        case 1: /* 0H*1Ht */ break;
+        case 2: /* 0H*2Ht */ break;
+        case 3: /* 1H*0Ht */ break;
+        case 4: /* 1H*1Ht */ break; /* outer product */
+        case 5: /* 1H*2Ht */ return false;
+        case 6: /* 2H*0Ht */ break;
+        case 7: /* 2H*1Ht */ return false;
+        case 8: /* 2H*2Ht */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break;
+        default: break;
+    }
+    switch( combination )
+    {
+        case 0: /* 0H*0Ht */ bmath_hf3_s_set_d_data_na( r, 0                                 ); return true;
+        case 1: /* 0H*1Ht */ bmath_hf3_s_set_d_data_na( r, 1, b->d_data[ 0 ]                 ); return true;
+        case 2: /* 0H*2Ht */ bmath_hf3_s_set_d_data_na( r, 2, b->d_data[ 1 ], b->d_data[ 0 ] ); return true;
+        case 3: /* 1H*0Ht */ bmath_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
+        case 4: /* 1H*1Ht */ bmath_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], o->d_data[ 0 ] ); return true; /* outer product */
+        case 5: /* 1H*2Ht */ return false;
+        case 6: /* 2H*0Ht */ bmath_hf3_s_set_d_data_na( r, 2, o->d_data[ 0 ], o->d_data[ 1 ] ); return true;
+        case 7: /* 2H*1Ht */ return false;
+        case 8: /* 2H*2Ht */ bmath_hf3_s_set_d_data_na( r, 2, b->d_data[ 1 ], o->d_data[ 1 ] ); return true;
+        default: break;
+    }
+    return false;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_hf3_s_set_d_htp_bmul( const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r )
+{
+    if( o->d_size > 2 ) return false;
+    if( b->d_size > 2 ) return false;
+    u2_t combination = o->d_size * 3 + b->d_size;
+
+    switch( combination )
+    {
+        case 0: /* 0Ht*0H */ break;
+        case 1: /* 0Ht*1H */ break;
+        case 2: /* 0Ht*2H */ break;
+        case 3: /* 1Ht*0H */ break;
+        case 4: /* 1Ht*1H */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break; /* dot product */
+        case 5: /* 1Ht*2H */ if( o->d_data[ 0 ] != b->d_data[ 1 ] ) return false; else break;
+        case 6: /* 2Ht*0H */ break;
+        case 7: /* 2Ht*1H */ if( o->d_data[ 1 ] != b->d_data[ 0 ] ) return false; else break;
+        case 8: /* 2Ht*2H */ if( o->d_data[ 1 ] != b->d_data[ 1 ] ) return false; else break;
+        default: break;
+    }
+    switch( combination )
+    {
+        case 0: /* 0Ht*0H */ bmath_hf3_s_set_d_data_na( r, 0                                 ); return true;
+        case 1: /* 0Ht*1H */ bmath_hf3_s_set_d_data_na( r, 1, b->d_data[ 0 ]                 ); return true;
+        case 2: /* 0Ht*2H */ bmath_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], b->d_data[ 1 ] ); return true;
+        case 3: /* 1Ht*0H */ bmath_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
+        case 4: /* 1Ht*1H */ bmath_hf3_s_set_d_data_na( r, 0                                 ); return true; /* dot product */
+        case 5: /* 1Ht*2H */ bmath_hf3_s_set_d_data_na( r, 1, b->d_data[ 0 ]                 ); return true;
+        case 6: /* 2Ht*0H */ bmath_hf3_s_set_d_data_na( r, 2, o->d_data[ 1 ], o->d_data[ 0 ] ); return true;
+        case 7: /* 2Ht*1H */ bmath_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
+        case 8: /* 2Ht*2H */ bmath_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], o->d_data[ 0 ] ); return true;
+        default: break;
+    }
+    return false;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_hf3_s_set_d_htp_bmul_htp( const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r )
+{
+    if( o->d_size > 2 ) return false;
+    if( b->d_size > 2 ) return false;
+    u2_t combination = o->d_size * 3 + b->d_size;
+    switch( combination )
+    {
+        case 0: /* 0Ht*0Ht */ break;
+        case 1: /* 0Ht*1Ht */ break;
+        case 2: /* 0Ht*2Ht */ break;
+        case 3: /* 1Ht*0Ht */ break;
+        case 4: /* 1Ht*1Ht */ return false;
+        case 5: /* 1Ht*2Ht */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break;
+        case 6: /* 2Ht*0Ht */ break;
+        case 7: /* 2Ht*1Ht */ return false;
+        case 8: /* 2Ht*2Ht */ if( o->d_data[ 1 ] != b->d_data[ 0 ] ) return false; else break;
+        default: break;
+    }
+    switch( combination )
+    {
+        case 0: /* 0Ht*0Ht */ bmath_hf3_s_set_d_data_na( r, 0                                 ); return true;
+        case 1: /* 0Ht*1Ht */ bmath_hf3_s_set_d_data_na( r, 1, b->d_data[ 0 ]                 ); return true;
+        case 2: /* 0Ht*2Ht */ bmath_hf3_s_set_d_data_na( r, 2, b->d_data[ 1 ], b->d_data[ 0 ] ); return true;
+        case 3: /* 1Ht*0Ht */ bmath_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
+        case 4: /* 1Ht*1Ht */ return false;
+        case 5: /* 1Ht*2Ht */ bmath_hf3_s_set_d_data_na( r, 1, b->d_data[ 1 ]                 ); return true;
+        case 6: /* 2Ht*0Ht */ bmath_hf3_s_set_d_data_na( r, 2, o->d_data[ 1 ], o->d_data[ 0 ] ); return true;
+        case 7: /* 2Ht*1Ht */ return false;
+        case 8: /* 2Ht*2Ht */ bmath_hf3_s_set_d_data_na( r, 2, b->d_data[ 1 ], o->d_data[ 0 ] ); return true;
+        default: break;
+    }
+    return false;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_bmul_add_cps( bl_t htpa, const bmath_hf3_s* a, sz_t k, bl_t htpb, const bmath_hf3_s* b, f3_t c, const bmath_hf3_s* d, f3_t e, bmath_hf3_s* r )
+{
+    if( d )
+    {
+        ASSERT( bmath_hf3_s_d_equal( d, r ) );
+        if( c != 0 )
+        {
+            if( c == e )
+            {
+                if( d != r ) bmath_hf3_s_cpy( d, r );
+            }
+            else
+            {
+                bmath_hf3_s_mul_scl_f3( d, e / c, r );
+            }
+        }
+        else
+        {
+            if( e == 1.0 )
+            {
+                if( d != r ) bmath_hf3_s_cpy( d, r );
+            }
+            else
+            {
+                bmath_hf3_s_mul_scl_f3( d, e, r );
+            }
+        }
     }
     else
     {
-        mb = bmath_hf3_s_get_weak_kmat( b, bmath_hf3_s_get_k_for_cols( b, ma.rows ) );
-        md = bmath_hf3_s_get_weak_kmat( d, bmath_hf3_s_get_k_for_rows( d, ma.cols ) );
-        mr = bmath_hf3_s_get_weak_kmat( r, bmath_hf3_s_get_k_for_rows( r, ma.cols ) );
+        bmath_hf3_s_zro( r );
     }
-    bmath_mf3_s_mul_add_cps( htpa, &ma, htpb, &mb, c, &md, e, &mr );
+
+    if( c != 0 )
+    {
+        switch( htpa * 2 + htpb )
+        {
+            case 0: bmath_hf3_s_bmul_add(         a, b, r, r ); break; // a * b
+            case 1: bmath_hf3_s_bmul_htp_add(     a, b, r, r ); break; // a * b^T
+            case 2: bmath_hf3_s_htp_bmul_add(     a, b, r, r ); break; // a^T * b
+            case 3: bmath_hf3_s_htp_bmul_htp_add( a, b, r, r ); break; // a^T * b^T
+            default: break;
+        }
+        if( c != 1.0 ) bmath_hf3_s_mul_scl_f3( r, c, r );
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1011,7 +1604,6 @@ static void selftest( void )
 
     u2_t rval = 123;
     bmath_hf3_s_set_random( h1, 1.0, 0, 1, &rval );
-    bmath_hf3_s_to_stdout_nl( h1, BCORE_STDOUT );
     bmath_hf3_s_cpy( h1, h2 );
 
     bmath_hf3_s_mul_scl_f3_add( h1, 2, h2, h2 );
