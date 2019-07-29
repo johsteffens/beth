@@ -821,7 +821,7 @@ void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t inde
         for( uz_t i = 0; i < 128; i++ )
         {
             char c = fgetc( o->handle );
-            if( c == '\n' || c == 0 ) break;
+            if( c == '\n' || c <= 0) break;
             st_s_push_char( context, c );
         }
         st_s_push_char( context, '\n' );
