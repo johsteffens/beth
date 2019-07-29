@@ -1145,10 +1145,17 @@ static void bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
     {
         st_s* flags = st_s_create();
         bcore_source_a_parse_fa(  source, " #until'''", flags );
-        o->flag_p = ( st_s_find_char( flags, 0, -1, 'p' ) < flags->size );
-        o->flag_t = ( st_s_find_char( flags, 0, -1, 't' ) < flags->size );
-        o->flag_a = ( st_s_find_char( flags, 0, -1, 'a' ) < flags->size );
-        o->flag_r = ( st_s_find_char( flags, 0, -1, 'r' ) < flags->size );
+        for( sz_t i = 0; i < flags->size; i++ )
+        {
+            switch( flags->data[ i ] )
+            {
+                case 'p': o->flag_p = true; break;
+                case 't': o->flag_t = true; break;
+                case 'a': o->flag_a = true; break;
+                case 'r': o->flag_r = true; break;
+                default: bcore_source_a_parse_err_fa( source, "Feature: Flag '#<char>' not handled. Choose from 'ptar'.", flags->data[ i ] ); break;
+            }
+        }
         st_s_discard( flags );
         bcore_source_a_parse_fa(  source, "' " );
     }

@@ -158,17 +158,27 @@
 #define BETH_EXPAND_GROUP_bcore_via_call \
   BCORE_FORWARD_OBJECT( bcore_via_call ); \
   typedef void (*bcore_via_call_mutated)( bcore_via_call* o ); \
+  typedef void (*bcore_via_call_shelve)( bcore_via_call* o ); \
   BCORE_DECLARE_SPECT( bcore_via_call ) \
   { \
       bcore_spect_header_s header; \
       bcore_via_call_mutated mutated; \
+      bcore_via_call_shelve shelve; \
   }; \
   static inline bcore_via_call* bcore_via_call_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_via_call, t ); return ( bcore_via_call* )bcore_inst_t_create( t ); } \
   static inline bl_t bcore_via_call_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_via_call ); } \
   static inline void bcore_via_call_p_mutated( const bcore_via_call_s* __p, bcore_via_call* o ) { __p->mutated( o ); } \
   static inline void bcore_via_call_t_mutated( tp_t __t, bcore_via_call* o ) { bcore_via_call_s_get_typed( __t )->mutated( o ); } \
+  static inline void bcore_via_call_r_mutated( const sr_s* o ) { ASSERT( !sr_s_is_const( o ) ); ( (bcore_via_call_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_s ) )->mutated( o->o ); } \
   static inline bl_t bcore_via_call_p_defines_mutated( const bcore_via_call_s* __p ) { return __p->mutated != NULL; } \
-  static inline bl_t bcore_via_call_t_defines_mutated( tp_t __t ) { return bcore_via_call_s_get_typed( __t )->mutated != NULL; }
+  static inline bl_t bcore_via_call_t_defines_mutated( tp_t __t ) { return bcore_via_call_s_get_typed( __t )->mutated != NULL; } \
+  static inline bl_t bcore_via_call_r_defines_mutated( const sr_s* o ) { return ( (bcore_via_call_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_s ) )->mutated != NULL; } \
+  static inline void bcore_via_call_p_shelve( const bcore_via_call_s* __p, bcore_via_call* o ) { __p->shelve( o ); } \
+  static inline void bcore_via_call_t_shelve( tp_t __t, bcore_via_call* o ) { bcore_via_call_s_get_typed( __t )->shelve( o ); } \
+  static inline void bcore_via_call_r_shelve( const sr_s* o ) { ASSERT( !sr_s_is_const( o ) ); ( (bcore_via_call_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_s ) )->shelve( o->o ); } \
+  static inline bl_t bcore_via_call_p_defines_shelve( const bcore_via_call_s* __p ) { return __p->shelve != NULL; } \
+  static inline bl_t bcore_via_call_t_defines_shelve( tp_t __t ) { return bcore_via_call_s_get_typed( __t )->shelve != NULL; } \
+  static inline bl_t bcore_via_call_r_defines_shelve( const sr_s* o ) { return ( (bcore_via_call_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_s ) )->shelve != NULL; }
 
 /**********************************************************************************************************************/
 // source: bcore_main

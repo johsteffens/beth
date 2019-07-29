@@ -91,6 +91,7 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_via_call )
 "{"
     "bcore_spect_header_s header;"
     "feature bcore_via_call : mutated;"
+    "feature bcore_via_call : shelve;"
 "}";
 
 /**********************************************************************************************************************/
@@ -137,7 +138,7 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 4280341771 ) );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 1701135231 ) );
             BCORE_REGISTER_NAME( anyglobalname );
             BCORE_REGISTER_FFUNC( bcore_plant_sample_features_setup, bcore_plant_sample_object2_s_setup );
             BCORE_REGISTER_FFUNC( bcore_plant_sample_features_to_stdout, bcore_plant_sample_object2_s_to_stdout );
@@ -166,6 +167,7 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( bcore_inst_call_discard_e );
             BCORE_REGISTER_SPECT( bcore_inst_call );
             BCORE_REGISTER_FEATURE( bcore_via_call_mutated );
+            BCORE_REGISTER_FEATURE( bcore_via_call_shelve );
             BCORE_REGISTER_SPECT( bcore_via_call );
             BCORE_REGISTER_FEATURE( bcore_main_main );
             BCORE_REGISTER_OBJECT( bcore_main_frame_s );
