@@ -92,7 +92,7 @@
 #include "bmath_hwflags.h"
 #include "bmath_feature.h"
 #include "bmath_spect_algebraic.h"
-#include "bmath_vector.h"
+#include "bmath_vf3.h"
 #include "bmath_simd.h"
 #include "bmath_grt.h"
 #include "bmath_mf3_mul.h"

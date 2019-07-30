@@ -20,7 +20,7 @@
 
 #include "bcore_std.h"
 #include "bmath_hwflags.h"
-#include "bmath_vector.h"
+#include "bmath_vf3.h"
 
 /**********************************************************************************************************************/
 // bmath_plot_s

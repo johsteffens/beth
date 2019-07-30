@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_VECTOR_H
-#define BMATH_VECTOR_H
+#ifndef BMATH_VF3_H
+#define BMATH_VF3_H
 
 /**********************************************************************************************************************/
 
@@ -209,67 +209,6 @@ static inline void bmath_vf3_s_stat_to_string( const bmath_vf3_s* o, st_s* strin
 static inline void bmath_vf3_s_stat_to_stdout( const bmath_vf3_s* o               ) { bmath_vf3_s_stat_to_sink( o, BCORE_STDOUT ); }
 
 /**********************************************************************************************************************/
-// dynamic size vector of bmath_cf3_s
-
-BCORE_DECLARE_OBJECT( bmath_vcf3_s )
-{
-    aware_t _;
-    union
-    {
-        bcore_array_dyn_solid_static_s arr;
-        struct
-        {
-            bmath_cf3_s* data;
-            uz_t  size;
-            uz_t  space;
-        };
-    };
-};
-
-void bmath_vcf3_s_move( bmath_vcf3_s* o, bmath_vcf3_s* src );
-
-void bmath_vcf3_s_set_size( bmath_vcf3_s* o, uz_t size );
-void bmath_vcf3_s_push(     bmath_vcf3_s* o, bmath_cf3_s cf3 );
-void bmath_vcf3_s_push_ri(  bmath_vcf3_s* o, f3_t r, f3_t i );
-
-bmath_vcf3_s* bmath_vcf3_s_create_size( uz_t size );
-bmath_vcf3_s* bmath_vcf3_s_create_fill( bmath_cf3_s val, uz_t size );
-
-void bmath_vcf3_s_zro(           bmath_vcf3_s* o );
-void bmath_vcf3_s_neg(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
-void bmath_vcf3_s_cnj(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
-void bmath_vcf3_s_cpy(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
-void bmath_vcf3_s_add(     const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_vcf3_s* res );
-void bmath_vcf3_s_sub(     const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_vcf3_s* res );
-void bmath_vcf3_s_mul_scl( const bmath_vcf3_s* o, const bmath_cf3_s*  op, bmath_vcf3_s* res );
-void bmath_vcf3_s_mul_cf3( const bmath_vcf3_s* o, const bmath_cf3_s   op, bmath_vcf3_s* res );
-void bmath_vcf3_s_mul_f3(  const bmath_vcf3_s* o,              f3_t   op, bmath_vcf3_s* res );
-void bmath_vcf3_s_dft(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
-void bmath_vcf3_s_ift(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
-void bmath_vcf3_s_mul_vec( const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_cf3_s* res );
-void bmath_vcf3_s_sqr(     const bmath_vcf3_s* o, bmath_cf3_s* res );
-void bmath_vcf3_s_sub_sqr( const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_cf3_s* res );
-void bmath_vcf3_s_sum(     const bmath_vcf3_s* o, bmath_cf3_s* res );
-void bmath_vcf3_s_avg(     const bmath_vcf3_s* o, bmath_cf3_s* res );
-
-static inline
-void bmath_vcf3_s_set_cf3( bmath_vcf3_s* o, uz_t index, bmath_cf3_s v )
-{
-    assert( index < o->size );
-    o->data[ index ] = v;
-}
-
-static inline
-bmath_cf3_s bmath_vcf3_s_get_cf3( const bmath_vcf3_s* o, uz_t index )
-{
-    assert( index < o->size );
-    return o->data[ index ];
-}
-
-/// For easy inspection
-void bmath_vcf3_s_to_stdout( const bmath_vcf3_s* o );
-
-/**********************************************************************************************************************/
 // array of vf3_s
 
 BCORE_DECLARE_OBJECT( bmath_arr_vf3_s )
@@ -330,6 +269,6 @@ static inline void bmath_arr_vf3_s_on_section_get_avg( const bmath_arr_vf3_s* o,
 
 /**********************************************************************************************************************/
 
-vd_t bmath_vector_signal_handler( const bcore_signal_s* o );
+vd_t bmath_vf3_signal_handler( const bcore_signal_s* o );
 
-#endif  // BMATH_VECTOR_H
+#endif  // BMATH_VF3_H

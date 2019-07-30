@@ -22,7 +22,8 @@
 #include "bmath_leaf.h"
 #include "bmath_complex.h"
 #include "bmath_fourier.h"
-#include "bmath_vector.h"
+#include "bmath_vf3.h"
+#include "bmath_vcf3.h"
 #include "bmath_mf3.h"
 #include "bmath_mf3_eval.h"
 #include "bmath_mf3_sx.h"
@@ -60,7 +61,8 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_leaf_signal_handler,
             bmath_complex_signal_handler,
             bmath_fourier_signal_handler,
-            bmath_vector_signal_handler,
+            bmath_vf3_signal_handler,
+            bmath_vcf3_signal_handler,
             bmath_mf3_signal_handler,
             bmath_mf3_sx_signal_handler,
             bmath_mf3_sf_signal_handler,

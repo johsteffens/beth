@@ -18,7 +18,6 @@
  */
 
 #include "bmath_mf3.h"
-#include "bmath_vector.h"
 #include "bmath_spect_matrix.h"
 #include "bmath_fourier.h"
 #include "bmath_grt.h"
