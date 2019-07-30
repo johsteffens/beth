@@ -735,12 +735,15 @@ static void bcore_plant_args_s_parse( bcore_plant_args_s* o, bcore_source* sourc
 
 static void bcore_plant_args_s_append( bcore_plant_args_s* o, bcore_source* source )
 {
+    bl_t first = true;
     while( !bcore_source_a_parse_bl_fa( source, " #=?')' " ) ) // args follow
     {
+        if( !first ) bcore_source_a_parse_fa( source, " ," );
         bcore_plant_arg_s* arg = bcore_plant_arg_s_create();
         arg->group = o->group;
         bcore_plant_arg_s_parse( arg, source );
         bcore_array_a_push( ( bcore_array* ) o, sr_asd( arg ) );
+        first = false;
     }
 }
 

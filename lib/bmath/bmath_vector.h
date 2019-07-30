@@ -91,6 +91,9 @@ void bmath_vf3_s_set_space(   bmath_vf3_s* o, uz_t space );
 void bmath_vf3_s_set_size_to( const bmath_vf3_s* o, bmath_vf3_s* res );
 void bmath_vf3_s_fill(        bmath_vf3_s* o, f3_t val );
 
+/// copies external data into vector
+void bmath_vf3_s_set_data( bmath_vf3_s* o, const f3_t* data, sz_t size );
+
 /** Sets all vector elements to random values.
  *  Random generator:
  *    Parameters density, min, max, p_rval apply to the random generator.

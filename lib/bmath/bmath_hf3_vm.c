@@ -53,6 +53,31 @@ void bmath_hf3_vm_proc_s_push_op_d( bmath_hf3_vm_proc_s* o, bmath_hf3_vm_op* op 
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+tp_t bmath_hf3_vm_frame_s_entypeof( bmath_hf3_vm_frame_s* o, sc_t name )
+{
+    return bcore_hmap_name_s_set_sc( &o->map_name, name );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_setup( bmath_hf3_vm_frame_s* o )
+{
+    if( !o->proc_setup ) return;
+    if( !bmath_hf3_vm_frame_s_proc_exists( o, o->proc_setup ) ) return;
+    bmath_hf3_vm_frame_s_run_proc( o, o->proc_setup );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_shelve( bmath_hf3_vm_frame_s* o )
+{
+    if( !o->proc_shelve ) return;
+    if( !bmath_hf3_vm_frame_s_proc_exists( o, o->proc_shelve ) ) return;
+    bmath_hf3_vm_frame_s_run_proc( o, o->proc_shelve );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o )
 {
     bmath_hf3_vm_arr_holor_s_clear( &o->arr_holor );
@@ -60,6 +85,15 @@ void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o )
     bcore_hmap_tpuz_s_clear( &o->map_proc );
     bcore_hmap_tpuz_s_clear( &o->map_holor );
     bcore_hmap_name_s_clear( &o->map_name );
+    o->proc_setup = 0;
+    o->proc_shelve = 0;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_hf3_vm_frame_s_proc_exists( const bmath_hf3_vm_frame_s* o, tp_t name )
+{
+    return bcore_hmap_tpuz_s_exists( &o->map_proc, name );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -117,6 +151,21 @@ void bmath_hf3_vm_frame_s_dealloc_holors( bmath_hf3_vm_frame_s* o, tp_t type )
             bmath_hf3_s_clear_v_data( &holor->hf3 );
         }
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_push_op_d( bmath_hf3_vm_frame_s* o, tp_t tp_proc, bmath_hf3_vm_op* op )
+{
+    if( !bcore_hmap_tpuz_s_exists( &o->map_proc, tp_proc ) )
+    {
+        bcore_hmap_tpuz_s_set( &o->map_proc, tp_proc, o->library.size );
+        bmath_hf3_vm_library_s_push( &o->library );
+    }
+
+    sz_t idx = *bcore_hmap_tpuz_s_get( &o->map_proc, tp_proc );
+    bmath_hf3_vm_proc_s* proc = &o->library.data[ idx ];
+    bmath_hf3_vm_proc_s_push_op_d( proc, op );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

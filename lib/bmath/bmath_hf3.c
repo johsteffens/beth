@@ -174,6 +174,20 @@ void bmath_hf3_s_copy_v_data( bmath_hf3_s* o, const bmath_hf3_s* src )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_hf3_s_copy_v_data_from_vf3( bmath_hf3_s* o, const bmath_vf3_s* src )
+{
+    bmath_hf3_s_set_v_data( o, src->data, src->size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_copy_v_data_to_vf3( const bmath_hf3_s* o, bmath_vf3_s* dst )
+{
+    bmath_vf3_s_set_data( dst, o->v_data, o->v_size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_s_set_size( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size )
 {
     bmath_hf3_s_set_d_data( o, d_data, d_size );

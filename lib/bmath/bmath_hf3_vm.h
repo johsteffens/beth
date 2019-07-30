@@ -83,27 +83,48 @@ stamp :library = aware bcore_array
 
 group :op =
 {
-
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    /// creates object when argument o is null
+
+    /// Extendable signature to create object, assign arguments and additonal parameters
+    signature :* csetup( mutable );
+
+    /// Extendable signature for assigning arguments
+    signature :* set_args( mutable );
 
     /// arity 0 operators
     group :ar0 =
     {
-        feature 'a' void set_args( mutable, sz_t idx_a );
-        body body_set_args = { o->a = idx_a; };
+        signature   :: : csetup   csetup(   sz_t idx_a );
+        feature 'a' :: : set_args set_args( sz_t idx_a );
 
-        stamp ::set_determined = aware :
+        body body_set_args = { o->a = idx_a; return (::*)o; };
+
+        stamp ::determine = aware :
         {
             sz_t a;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::determine_s_create(); o->a = idx_a; return (::*)o; };
             func ::: :run = { bmath_hf3_s_fit_v_size( &hbase[ o->a ].hf3 ); };
         };
 
-        stamp ::set_vacant = aware :
+        stamp ::vacate = aware :
         {
             sz_t a;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::vacate_s_create(); o->a = idx_a; return (::*)o; };
             func ::: :run = { bmath_hf3_s_set_vacant( &hbase[ o->a ].hf3 ); };
+        };
+
+        signature : : csetup csetup_randomize( u2_t rseed );
+        stamp ::randomize = aware :
+        {
+            sz_t a;
+            u2_t rseed = 1234;
+            func   : :set_args = :body_set_args;
+            func   : :csetup_randomize = { if( !o ) o = ::randomize_s_create(); o->a = idx_a; o->rseed = rseed; return (::*)o; };
+            func ::: :run = { u2_t rval = o->rseed + o->a; bmath_hf3_s_set_random( &hbase[ o->a ].hf3, 1.0, -1.0, 1.0, &rval ); };
         };
     };
 
@@ -112,14 +133,16 @@ group :op =
     /// arity 1 operators
     group :ar1 =
     {
-        feature 'a' void set_args( mutable, sz_t idx_a, sz_t idx_b );
-        body body_set_args = { o->a = idx_a; o->b = idx_b; };
+        signature   :: : csetup   csetup(   sz_t idx_a, sz_t idx_b );
+        feature 'a' :: : set_args set_args( sz_t idx_a, sz_t idx_b );
+        body body_set_args = { o->a = idx_a; o->b = idx_b; return (::*)o; };
 
         /// a -> b
         stamp ::linear = aware :
         {
             sz_t a; sz_t b;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::linear_s_create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
             func ::: :run = { bmath_hf3_s_cpy( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3 ); };
         };
 
@@ -128,6 +151,7 @@ group :op =
         {
             sz_t a; sz_t b;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::tanh_s_create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
             func ::: :run = { bmath_hf3_s_tanh( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3 ); };
         };
     };
@@ -137,14 +161,16 @@ group :op =
     /// arity 2 operators
     group :ar2 =
     {
-        feature 'a' void set_args( mutable, sz_t idx_a, sz_t idx_b, sz_t idx_c );
-        body body_set_args = { o->a = idx_a; o->b = idx_b; o->c = idx_c; };
+        signature   :: : csetup   csetup(   sz_t idx_a, sz_t idx_b, sz_t idx_c );
+        feature 'a' :: : set_args set_args( sz_t idx_a, sz_t idx_b, sz_t idx_c );
+        body body_set_args = { o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
 
         /// a + b -> c
         stamp ::add = aware :
         {
             sz_t a; sz_t b; sz_t c;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::add_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_add( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -153,6 +179,7 @@ group :op =
         {
             sz_t a; sz_t b; sz_t c;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::sub_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_sub( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -161,6 +188,7 @@ group :op =
         {
             sz_t a; sz_t b; sz_t c;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::bmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_bmul( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -169,6 +197,7 @@ group :op =
         {
             sz_t a; sz_t b; sz_t c;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::bmul_htp_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_bmul_htp( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -177,6 +206,7 @@ group :op =
         {
             sz_t a; sz_t b; sz_t c;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::htp_bmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_htp_bmul( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -185,6 +215,7 @@ group :op =
         {
             sz_t a; sz_t b; sz_t c;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::htp_bmul_htp_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_htp_bmul_htp( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -193,6 +224,7 @@ group :op =
         {
             sz_t a; sz_t b; sz_t c;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::hmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_hmul( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -201,6 +233,7 @@ group :op =
         {
             sz_t a; sz_t b; sz_t c;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::mul_scl_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_mul_scl( &hbase[ o->a ].hf3, hbase[ o->b ].hf3.v_data, &hbase[ o->c ].hf3 ); };
         };
 
@@ -209,6 +242,7 @@ group :op =
         {
             sz_t a; sz_t b; sz_t c;
             func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::scl_mul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_mul_scl( &hbase[ o->b ].hf3, hbase[ o->a ].hf3.v_data, &hbase[ o->c ].hf3 ); };
         };
     };
@@ -216,17 +250,25 @@ group :op =
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 };
 
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+signature void setup( mutable );
 
 stamp :frame = aware :
 {
     :arr_holor_s arr_holor; // array of holors
-    :library_s   library;  // array of principal functions
+    :library_s   library;   // array of principal functions
+
+    tp_t proc_setup = 0;
+    tp_t proc_shelve = 0;
 
     bcore_hmap_tpuz_s map_proc;  // associates a name with a procedure
     bcore_hmap_tpuz_s map_holor; // associates a name with a holor
     bcore_hmap_name_s map_name;  // map of names used
+
+    func :              : setup;
+    func bcore_via_call : mutated = { :frame_s_setup( o ); };
+    func bcore_via_call : shelve;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -236,14 +278,25 @@ stamp :frame = aware :
 // ---------------------------------------------------------------------------------------------------------------------
 // proc_s
 
-/// (!)do not push bmath_hf3_vm_op_s here
 void bmath_hf3_vm_proc_s_push_op_d( bmath_hf3_vm_proc_s* o, bmath_hf3_vm_op* op );
 
 // ---------------------------------------------------------------------------------------------------------------------
 // frame_s
 
+/// enrolls name (if not existing) and retuns type
+tp_t bmath_hf3_vm_frame_s_entypeof( bmath_hf3_vm_frame_s* o, sc_t name );
+
+/// runs procedure 'setup'
+void bmath_hf3_vm_frame_s_setup( bmath_hf3_vm_frame_s* o );
+
+/// runs procedure 'shelve'
+void bmath_hf3_vm_frame_s_shelve( bmath_hf3_vm_frame_s* o );
+
 /// clears all content
 void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o );
+
+/// checks if procedure exists
+bl_t bmath_hf3_vm_frame_s_proc_exists( const bmath_hf3_vm_frame_s* o, tp_t name );
 
 /// runs a procedure
 void bmath_hf3_vm_frame_s_run_proc( bmath_hf3_vm_frame_s* o, tp_t name );
@@ -259,6 +312,9 @@ void bmath_hf3_vm_frame_s_alloc_holors( bmath_hf3_vm_frame_s* o, tp_t type );
 
 /// de-allocates v_data of holors of given type
 void bmath_hf3_vm_frame_s_dealloc_holors( bmath_hf3_vm_frame_s* o, tp_t type );
+
+/// pusches operation to given procedure; creates procedure if not existing
+void bmath_hf3_vm_frame_s_push_op_d( bmath_hf3_vm_frame_s* o, tp_t proc, bmath_hf3_vm_op* op );
 
 // ---------------------------------------------------------------------------------------------------------------------
 

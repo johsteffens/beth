@@ -119,6 +119,12 @@ void bmath_hf3_s_copy_d_data( bmath_hf3_s* o, const bmath_hf3_s* src );
 /// copies v_data from src (does not change d_size or d_data)
 void bmath_hf3_s_copy_v_data( bmath_hf3_s* o, const bmath_hf3_s* src );
 
+/// copies v_data from src (does not change d_size or d_data)
+void bmath_hf3_s_copy_v_data_from_vf3( bmath_hf3_s* o, const bmath_vf3_s* src );
+
+/// copies v_data from src (does not change d_size or d_data)
+void bmath_hf3_s_copy_v_data_to_vf3( const bmath_hf3_s* o, bmath_vf3_s* dst );
+
 /// sets size of entire holor including v_data; (v_data initialized to zero)
 void bmath_hf3_s_set_size( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size );
 

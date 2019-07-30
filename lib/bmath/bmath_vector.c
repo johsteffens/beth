@@ -266,6 +266,14 @@ void bmath_vf3_s_fill( bmath_vf3_s* o, f3_t val )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bmath_vf3_s_set_data( bmath_vf3_s* o, const f3_t* data, sz_t size )
+{
+    bmath_vf3_s_set_size( o, size );
+    bcore_u_memcpy( sizeof( f3_t ), o->data, data, size );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_vf3_s_set_random( bmath_vf3_s* o, f3_t density, f3_t min, f3_t max, u2_t* p_rval )
 {
     u2_t rval = p_rval ? *p_rval : 12345;
