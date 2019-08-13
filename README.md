@@ -33,8 +33,9 @@ Some objectives are...
       * Containers (Arrays, Trees, Maps)
       * Serialization
       * Numerical Mathematics
+      * Neural Networks
 
-All code inside beth is redesigned/redeveloped from scratch (no mere adaptation of preexisting code) with focus on platform independence and efficiency.
+All code inside beth is designed/developed from scratch (no mere adaptation of preexisting code) with focus on platform independence and efficiency.
 
 # Usage
 Beth is intended as foundation library for more specialized projects. 
@@ -130,7 +131,7 @@ The memory-manager, excluding reference manager, was spun-off into a stand-alone
 
 <a name = "plant"></a>
 ### Plant
-Beth-Plant is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding. It allows expressing key aspects of reflections and perspectives in a well-readable, compact and simple style. The plant-compiler converts plant-code into c-code.
+Beth-Plant is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding. It allows expressing key aspects of reflections and perspectives in a well-readable, compact and simple style. It uses a simple hierarchical namespace scheme. Plant-code can also wrap snippets of c-code in which namespaces can be used. The plant-compiler converts plant-code and c-code snippets into pure c-code.
 
 Plant-code is embedded in c-code as non-parseable section, initiated by macro `PLANT_GROUP( <group-name>, <trait-name> )`. Source files containing plant-code are registered to the plant-compiler.
 
