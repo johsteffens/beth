@@ -92,6 +92,9 @@ void bmath_hf3_s_clear_v_data( bmath_hf3_s* o );
 /// clears number of dimensions (makes holor of scalar type)
 void bmath_hf3_s_clear_d_data( bmath_hf3_s* o );
 
+/// clears holor
+void bmath_hf3_s_clear( bmath_hf3_s* o );
+
 /// changes number of values preserving content (pads zero)
 void bmath_hf3_s_resize_v_size( bmath_hf3_s* o, sz_t size );
 
@@ -128,7 +131,7 @@ void bmath_hf3_s_copy_v_data_to_vf3( const bmath_hf3_s* o, bmath_vf3_s* dst );
 /// sets size of entire holor including v_data; (v_data initialized to zero)
 void bmath_hf3_s_set_size( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size );
 
-/// copies size of src - holor; (v_data initialized to zero)
+/// copies d data and v size (including vacant state) from src;
 void bmath_hf3_s_copy_size( bmath_hf3_s* o, const bmath_hf3_s* src );
 
 /// sets d_data via variadic arguments
@@ -144,6 +147,9 @@ sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o );
 
 /// sets d_data to scalar (no change on v_data)
 void bmath_hf3_s_set_d_scalar( bmath_hf3_s* o );
+
+/// sets holor to scalar with given value or to vacant scalar
+void bmath_hf3_s_set_scalar_pf3( bmath_hf3_s* o, f3_t* v );
 
 /// sets holor to scalar with given value
 void bmath_hf3_s_set_scalar_f3( bmath_hf3_s* o, f3_t v );

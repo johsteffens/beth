@@ -127,6 +127,14 @@ void bmath_hf3_s_clear_d_data( bmath_hf3_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_hf3_s_clear( bmath_hf3_s* o )
+{
+    bmath_hf3_s_clear_d_data( o );
+    bmath_hf3_s_clear_v_data( o );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_s_fit_v_size( bmath_hf3_s* o )
 {
     sz_t size = 1;
@@ -197,7 +205,15 @@ void bmath_hf3_s_set_size( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size )
 
 void bmath_hf3_s_copy_size( bmath_hf3_s* o, const bmath_hf3_s* src )
 {
-    bmath_hf3_s_set_size( o, src->d_data, src->d_size );
+    bmath_hf3_s_set_d_data( o, src->d_data, src->d_size );
+    if( o->v_data )
+    {
+        bmath_hf3_s_fit_v_size( o );
+    }
+    else
+    {
+        bmath_hf3_s_clear_v_data( o );
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -257,11 +273,25 @@ void bmath_hf3_s_set_d_scalar( bmath_hf3_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_set_scalar_f3( bmath_hf3_s* o, f3_t v )
+void bmath_hf3_s_set_scalar_pf3( bmath_hf3_s* o, f3_t* v )
 {
     bmath_hf3_s_set_d_scalar( o );
-    bmath_hf3_s_fit_v_size( o );
-    o->v_data[ 0 ] = v;
+    if( v )
+    {
+        bmath_hf3_s_fit_v_size( o );
+        o->v_data[ 0 ] = *v;
+    }
+    else
+    {
+        bmath_hf3_s_clear_v_data( o );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_set_scalar_f3( bmath_hf3_s* o, f3_t v )
+{
+    bmath_hf3_s_set_scalar_pf3( o, &v );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
