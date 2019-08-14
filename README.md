@@ -33,8 +33,9 @@ Some objectives are...
       * Containers (Arrays, Trees, Maps)
       * Serialization
       * Numerical Mathematics
+      * Neural Networks
 
-All code inside beth is redesigned/redeveloped from scratch (no mere adaptation of preexisting code) with focus on platform independence and efficiency.
+All code inside beth is designed/developed from scratch (no mere adaptation of preexisting code) with focus on platform independence and efficiency.
 
 # Usage
 Beth is intended as foundation library for more specialized projects. 
@@ -130,7 +131,7 @@ The memory-manager, excluding reference manager, was spun-off into a stand-alone
 
 <a name = "plant"></a>
 ### Plant
-Beth-Plant is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding. It allows expressing key aspects of reflections and perspectives in a well-readable, compact and simple style. The plant-compiler converts plant-code into c-code.
+Beth-Plant is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding. It allows expressing key aspects of reflections and perspectives in a well-readable, compact and simple style. It uses a simple hierarchical namespace scheme. Plant-code can also wrap snippets of c-code in which namespaces can be used. The plant-compiler converts plant-code and c-code snippets into pure c-code.
 
 Plant-code is embedded in c-code as non-parseable section, initiated by macro `PLANT_GROUP( <group-name>, <trait-name> )`. Source files containing plant-code are registered to the plant-compiler.
 
@@ -146,4 +147,4 @@ The classic framework for object oriented programming (such as realized in C++) 
 Primary motivation for this project is overcoming these deficiencies. Secondly, using this new framework to provide functionality as might be expected from a general purpose library with a scientific touch. Thirdly, developing new algorithic ideas and/or experiment with unconventional approaches (this can also be realized in beth-dependent projects).
 
 ### History
-In an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach during Summer 2017 and started project [beth](https://github.com/johsteffens/beth) bringing this (and other ideas) into tangible shape. Winter 2017/2018 the project [actinon](https://github.com/johsteffens/actinon) was developed utilizing the framework and demonstrating its usefulness. Spring 2018 I started developing a numerical mathematics suite  in sub-library [bmath](#bmath) with special focus on accrate, stable and efficient matrix factorizations. Spring 2019 I started developing the meta-language [Beth-Plant](#plant) and parallel library [badapt](#badapt) using that language.
+In an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach during Summer 2017 and started project [beth](https://github.com/johsteffens/beth) bringing this (and other ideas) into tangible shape. Winter 2017/2018 the project [actinon](https://github.com/johsteffens/actinon) was developed utilizing the framework and demonstrating its usefulness. Spring 2018 I started developing a numerical mathematics suite  in sub-library [bmath](#bmath) with special focus on accrate, stable and efficient matrix factorizations. Spring 2019 I started developing the meta-language [Beth-Plant](#plant) and a new library [badapt](#badapt), which makes extensive use of that language.
