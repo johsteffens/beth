@@ -1434,6 +1434,8 @@ void bcore_tbman_s_down( bcore_tbman_s* o )
 
     bcore_btree_vd_s_discard( o->internal_btree );
 
+    if( o->block_size_array ) free( o->block_size_array );
+
     tbman_s_unlock( o );
     bcore_mutex_s_down( &o->mutex );
 }
