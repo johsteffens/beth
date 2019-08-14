@@ -562,7 +562,6 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
             {
                 bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nSelf-aware object must be referenced by a link. Use 'aware *|=>|->' to clarify method of referencing.", ifnameof( parent_type ) );
             }
-            //o->type = 0;
             o->type = ( type_val > 0 ) ? type_val : ( type_name->size > 0 ? entypeof( type_name->sc ) : 0 );
             o->name = entypeof( item_name->sc );
             o->caps = f_arr_dyn ? BCORE_CAPS_ARRAY_DYN_LINK_AWARE : f_arr_fix ? BCORE_CAPS_ARRAY_FIX_LINK_AWARE : BCORE_CAPS_LINK_AWARE;
