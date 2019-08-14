@@ -182,7 +182,7 @@ void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t inde
 BCORE_DECLARE_OBJECT( bcore_source_point_s )
 {
     aware_t _;
-    bcore_source* source;
+    bcore_source* source; // shallow reference
     sz_t index;
 };
 
