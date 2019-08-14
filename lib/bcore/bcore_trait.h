@@ -59,8 +59,11 @@ bl_t bcore_trait_is_of( tp_t trait, tp_t ancestor );
 /// fills 'traits' with traits that inherit 'parent' immediately
 void bcore_get_traits_of_parent( tp_t parent, bcore_arr_tp_s* traits );
 
-/// fills 'traits' with traits that inherit 'ancestor' (not necessarily immediately)
+/// fills 'traits' with traits that inherit 'ancestor'
 void bcore_get_traits_of_ancestor( tp_t ancestor, bcore_arr_tp_s* traits );
+
+/// appends 'traits' with traits that inherit 'ancestor'
+void bcore_push_traits_of_ancestor( tp_t ancestor, bcore_arr_tp_s* traits );
 
 void bcore_get_traits_of_parent_to_sink(   tp_t parent,   bcore_sink* sink );
 void bcore_get_traits_of_ancestor_to_sink( tp_t ancestor, bcore_sink* sink );

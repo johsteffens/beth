@@ -336,10 +336,9 @@ void bcore_get_traits_of_parent( tp_t parent, bcore_arr_tp_s* traits )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_get_traits_of_ancestor( tp_t ancestor, bcore_arr_tp_s* traits )
+void bcore_push_traits_of_ancestor( tp_t ancestor, bcore_arr_tp_s* traits )
 {
     system_s_g_lock();
-    bcore_arr_tp_s_clear( traits );
     for( sz_t i = 0; i < system_s_g->type_map.size; i++ )
     {
         tp_t key = bcore_hmap_tptp_s_idx_key( &system_s_g->type_map, i );
@@ -349,6 +348,14 @@ void bcore_get_traits_of_ancestor( tp_t ancestor, bcore_arr_tp_s* traits )
         }
     }
     system_s_g_unlock();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_get_traits_of_ancestor( tp_t ancestor, bcore_arr_tp_s* traits )
+{
+    bcore_arr_tp_s_clear( traits );
+    bcore_push_traits_of_ancestor( ancestor, traits );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
