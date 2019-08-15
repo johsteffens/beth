@@ -205,5 +205,8 @@ void  bcore_arr_sr_s_set_spect( bcore_arr_sr_s* o, tp_t spect_type ); // switche
 vd_t bcore_arr_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
+/// macros
+
+#define BFOR_EACH( obj, idx ) for( sz_t idx = 0; idx < obj->size; idx++ )
 
 #endif // BCORE_ARR_H
