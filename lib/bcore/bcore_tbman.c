@@ -536,7 +536,7 @@ static uz_t token_manager_s_total_space( const token_manager_s* o )
     return o->pool_size + o->stack_size * sizeof( u1_t );
 }
 
-static void token_manager_s_for_all_instances( token_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+static void token_manager_s_for_each_instance( token_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
     for( uz_t i = 0; i < o->stack_index; i++ )
     {
@@ -807,9 +807,9 @@ static uz_t block_manager_s_total_space( const block_manager_s* o )
     return sum;
 }
 
-static void block_manager_s_for_all_instances( block_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+static void block_manager_s_for_each_instance( block_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
-    for( uz_t i = 0; i < o->size; i++ ) token_manager_s_for_all_instances( o->data[ i ], fp, arg );
+    for( uz_t i = 0; i < o->size; i++ ) token_manager_s_for_each_instance( o->data[ i ], fp, arg );
 }
 
 static st_s* block_manager_s_status( const block_manager_s* o, int detail_level )
@@ -1030,7 +1030,7 @@ static void ext_for_instance( vd_t val, bcore_btree_pp_kv_s kv )
     iarg->fp( iarg->arg, kv.key, ( ( ext_s* )kv.val )->size );
 }
 
-static void external_manager_s_for_all_instances( external_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+static void external_manager_s_for_each_instance( external_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
     ext_for_instance_arg iarg = { .fp = fp, .arg = arg };
     bcore_btree_pp_s_run( o->ex_btree, ext_for_instance, &iarg );
@@ -1446,6 +1446,18 @@ bcore_tbman_s* bcore_tbman_s_create( uz_t pool_size, uz_t min_block_size, uz_t m
     if( !o ) ERR( "Failed allocating %zu bytes", sizeof( bcore_tbman_s ) );
     bcore_tbman_s_init( o, pool_size, min_block_size, max_block_size, stepping_method, full_align );
     return o;
+}
+
+bcore_tbman_s* bcore_tbman_s_create_default()
+{
+    return bcore_tbman_s_create
+    (
+        default_pool_size,
+        default_min_block_size,
+        default_max_block_size,
+        default_stepping_method,
+        default_full_align
+    );
 }
 
 void bcore_tbman_s_discard( bcore_tbman_s* o )
@@ -1900,13 +1912,13 @@ static uz_t tbman_s_total_space( const bcore_tbman_s* o )
     return sum;
 }
 
-static void tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+static void tbman_s_for_each_instance( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
     for( uz_t i = 0; i < o->size; i++ )
     {
-        block_manager_s_for_all_instances( o->data[ i ], fp, arg );
+        block_manager_s_for_each_instance( o->data[ i ], fp, arg );
     }
-    external_manager_s_for_all_instances( &o->external_manager, fp, arg );
+    external_manager_s_for_each_instance( &o->external_manager, fp, arg );
 }
 
 /**********************************************************************************************************************/
@@ -1920,14 +1932,7 @@ static bcore_tbman_s* tbman_s_g = NULL;
 
 static void create_tbman()
 {
-    tbman_s_g = bcore_tbman_s_create
-    (
-        default_pool_size,
-        default_min_block_size,
-        default_max_block_size,
-        default_stepping_method,
-        default_full_align
-    );
+    tbman_s_g = bcore_tbman_s_create_default();
 }
 
 static void discard_tbman()
@@ -2038,24 +2043,51 @@ uz_t bcore_tbman_s_total_granted_space( bcore_tbman_s* o )
 uz_t bcore_tbman_s_total_instances( bcore_tbman_s* o )
 {
     tbman_s_lock( o );
-    uz_t space = tbman_s_total_instances( o );
+    uz_t size = tbman_s_total_instances( o );
     tbman_s_unlock( o );
-    return space;
+    return size;
 }
 
 uz_t bcore_tbman_s_total_references( bcore_tbman_s* o )
 {
     tbman_s_lock( o );
-    uz_t space = tbman_s_total_references( o );
+    uz_t size = tbman_s_total_references( o );
     tbman_s_unlock( o );
-    return space;
+    return size;
 }
 
-void bcore_tbman_s_for_all_instances( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+typedef struct bcore_tbman_mnode { vd_t p; uz_t s; } bcore_tbman_mnode;
+typedef struct bcore_tbman_mnode_arr { bcore_tbman_mnode* data; uz_t size; uz_t space; } bcore_tbman_mnode_arr;
+
+void tbman_s_for_each_instance_collect_callback( vd_t arg, vd_t ptr, uz_t space )
 {
+    assert( arg );
+    bcore_tbman_mnode_arr* arr = arg;
+    assert( arr->size < arr->space );
+    arr->data[ arr->size ] = ( bcore_tbman_mnode ){ .p = ptr, .s = space };
+    arr->size++;
+}
+
+void bcore_tbman_s_for_each_instance( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+{
+    if( !fp ) return;
+    sz_t size = bcore_tbman_s_total_instances( o );
+    if( !size ) return;
+
+    bcore_tbman_mnode_arr arr;
+    arr.data  = malloc( sizeof( bcore_tbman_mnode ) * size );
+    arr.space = size;
+    arr.size  = 0;
+
     tbman_s_lock( o );
-    tbman_s_for_all_instances( o, fp, arg );
+    tbman_s_for_each_instance( o, tbman_s_for_each_instance_collect_callback, &arr );
     tbman_s_unlock( o );
+
+    assert( arr.size == arr.space );
+
+    for( sz_t i = 0; i < size; i++ ) fp( arg, arr.data[ i ].p, arr.data[ i ].s );
+
+    free( arr.data );
 }
 
 uz_t bcore_tbman_granted_space( vc_t ptr )
@@ -2082,10 +2114,10 @@ uz_t bcore_tbman_total_references()
     return bcore_tbman_s_total_references( tbman_s_g );
 }
 
-void bcore_tbman_for_all_instances( void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+void bcore_tbman_for_each_instance( void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
     assert( tbman_s_g != NULL );
-    bcore_tbman_s_for_all_instances( tbman_s_g, fp, arg );
+    bcore_tbman_s_for_each_instance( tbman_s_g, fp, arg );
 }
 
 // not thread-safe
@@ -2175,12 +2207,12 @@ static void instance_diagnostics( vd_t arg, vd_t ptr, uz_t space )
 
 void bcore_tbman_s_instance_disgnostics( bcore_tbman_s* o )
 {
-    bcore_tbman_s_for_all_instances( o, instance_diagnostics, NULL );
+    bcore_tbman_s_for_each_instance( o, instance_diagnostics, NULL );
 }
 
 void bcore_tbman_instance_disgnostics()
 {
-    bcore_tbman_for_all_instances( instance_diagnostics, NULL );
+    bcore_tbman_for_each_instance( instance_diagnostics, NULL );
 }
 
 /**********************************************************************************************************************/
@@ -2593,6 +2625,55 @@ static void tbman_s_instance_test( void )
     }
 }
 
+typedef struct diagnostic_s { bcore_tbman_s* man; vd_t* ptr_arr; uz_t* spc_arr; sz_t size; } diagnostic_s;
+
+static void tbman_s_diagnostic_test_callback( vd_t arg, vd_t ptr, uz_t space )
+{
+    diagnostic_s* d = arg;
+    bl_t found = false;
+    for( sz_t i = 0; i < d->size; i++ )
+    {
+        if( ptr == d->ptr_arr[ i ] )
+        {
+            found = true;
+            ASSERT( space == d->spc_arr[ i ] );
+        }
+    }
+    ASSERT( found );
+    bcore_tbman_s_b_alloc( d->man, ptr, 0, NULL );
+}
+
+static void tbman_s_diagnostic_test( void )
+{
+    diagnostic_s diag;
+    diag.man     = bcore_tbman_s_create_default();
+    diag.size    = 1000;
+    diag.ptr_arr = bcore_malloc( sizeof( vd_t ) * diag.size );
+    diag.spc_arr = bcore_malloc( sizeof( sz_t ) * diag.size );
+
+    u2_t rval = 1234;
+
+    for( sz_t i = 0; i < diag.size; i++ )
+    {
+        rval = bcore_xsg_u2( rval );
+        sz_t size = rval % 20000;
+        diag.ptr_arr[ i ] = bcore_tbman_s_b_alloc( diag.man, NULL, size, &diag.spc_arr[ i ] );
+    }
+
+    ASSERT( bcore_tbman_s_total_instances( diag.man ) == diag.size );
+
+    // the callback function frees memory
+    bcore_tbman_s_for_each_instance( diag.man, tbman_s_diagnostic_test_callback, &diag );
+
+    ASSERT( bcore_tbman_s_total_granted_space( diag.man ) == 0 );
+    ASSERT( bcore_tbman_s_total_instances(     diag.man ) == 0 );
+
+    diag.ptr_arr = bcore_free( diag.ptr_arr );
+    diag.spc_arr = bcore_free( diag.spc_arr );
+
+    bcore_tbman_s_discard( diag.man );
+}
+
 /**********************************************************************************************************************/
 // signal
 
@@ -2637,6 +2718,7 @@ vd_t bcore_tbman_signal_handler( const bcore_signal_s* o )
         case TYPEOF_selftest:
         {
             st_s* log = st_s_create();
+            tbman_s_diagnostic_test();
             tbman_s_instance_test();
             st_s_push_st_d( log, tbman_s_thread_test() );
             st_s_push_st_d( log, tbman_s_rctest() );
