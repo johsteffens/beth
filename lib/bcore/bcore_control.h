@@ -301,6 +301,7 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 /// object related functions
+
 #define BCORE_DECLARE_FUNCTION_INIT( name )    void name##_init( name* o );
 #define BCORE_DECLARE_FUNCTION_DOWN( name )    void name##_down( name* o );
 #define BCORE_DECLARE_FUNCTION_COPY( name )    void name##_copy( name* o, const name* src );
