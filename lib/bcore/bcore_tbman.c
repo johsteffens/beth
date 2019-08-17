@@ -51,6 +51,8 @@ typedef void (*fp_lost_alignment)( vd_t );
 /**********************************************************************************************************************/
 // shutdown-management
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /// shuts down an object (obj), o is the down structure
 typedef void (*fp_down )(      vc_t o, vd_t obj );
 
@@ -68,6 +70,8 @@ typedef struct down_obj_s
 static void _down_obj( const down_obj_s* o, vd_t obj ) { o->fp( obj ); }
 static down_obj_s* down_obj_s_create( down_manager_s* o, fp_down_obj fp );
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 typedef struct down_arg_s
 {
     down_s _; // pointer to _down_arg
@@ -75,8 +79,12 @@ typedef struct down_arg_s
     vc_t arg;  // argument for external function
 } down_arg_s;
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void _down_arg( const down_arg_s* o, vd_t obj ) { o->fp( o->arg, obj ); }
 static down_arg_s* down_arg_s_create( down_manager_s* o, fp_down_arg fp, vc_t arg );
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 typedef struct down_obj_arr_s
 {
@@ -85,6 +93,8 @@ typedef struct down_obj_arr_s
     uz_t size; // number of active array elements
     uz_t step; // stepping between array elements in bytes
 } down_obj_arr_s;
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void _down_obj_arr( const down_obj_arr_s* o, vd_t obj )
 {
@@ -95,7 +105,11 @@ static void _down_obj_arr( const down_obj_arr_s* o, vd_t obj )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static down_obj_arr_s* down_obj_arr_s_create( down_manager_s* o, fp_down_obj fp, uz_t size, uz_t step );
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 typedef struct down_arg_arr_s
 {
@@ -106,6 +120,8 @@ typedef struct down_arg_arr_s
     uz_t step; // stepping between array elements in bytes
 } down_arg_arr_s;
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void _down_arg_arr( const down_arg_arr_s* o, vd_t obj )
 {
     for( uz_t i = o->size; i > 0; i-- )
@@ -115,9 +131,15 @@ static void _down_arg_arr( const down_arg_arr_s* o, vd_t obj )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static down_arg_arr_s* down_arg_arr_s_create( down_manager_s* o, fp_down_arg fp, vc_t arg, uz_t size, uz_t step );
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_tbman_external_b_alloc( vd_t current_ptr, uz_t requested_bytes, uz_t* granted_bytes )
 {
@@ -143,15 +165,21 @@ vd_t bcore_tbman_external_b_alloc( vd_t current_ptr, uz_t requested_bytes, uz_t*
     return current_ptr;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tbman_external_bn_alloc( vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes )
 {
     return bcore_tbman_external_b_alloc( current_ptr, requested_bytes, granted_bytes );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tbman_external_alloc( vd_t ptr, uz_t size )
 {
     return bcore_tbman_external_b_alloc( ptr, size, NULL );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_tbman_external_un_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t current_units, uz_t requested_units, uz_t* reserved_units )
 {
@@ -160,12 +188,16 @@ vd_t bcore_tbman_external_un_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t curr
     return reserved_ptr;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tbman_external_u_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t requested_units, uz_t* reserved_units )
 {
     vd_t reserved_ptr = bcore_tbman_external_b_alloc( current_ptr, unit_bytes * requested_units, reserved_units );
     if( reserved_units ) *reserved_units /= ( unit_bytes > 0 ? unit_bytes : 1 );
     return reserved_ptr;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
@@ -207,17 +239,22 @@ typedef struct token_manager_s
     u1_t  token_stack[]; // stack of block-tokens (part of pool)
 } token_manager_s;
 
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void token_manager_s_init( token_manager_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void token_manager_s_down( token_manager_s* o )
 {
     if( o->rc_count_arr ) free( o->rc_count_arr );
     if( o->rc_down_arr  ) free( o->rc_down_arr  );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static token_manager_s* token_manager_s_create
     (
@@ -268,6 +305,8 @@ static token_manager_s* token_manager_s_create
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void token_manager_s_discard( token_manager_s* o )
 {
     if( !o ) return;
@@ -275,15 +314,21 @@ static void token_manager_s_discard( token_manager_s* o )
     free( o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static bl_t token_manager_s_is_full( token_manager_s* o )
 {
     return o->token_stack[ o->stack_index ] == 0;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static bl_t token_manager_s_is_empty( token_manager_s* o )
 {
     return o->stack_index == 0;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static vd_t token_manager_s_alloc( token_manager_s* o )
 {
@@ -294,9 +339,13 @@ static vd_t token_manager_s_alloc( token_manager_s* o )
     return ret;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 // forward declarations (implementation below)
 static void block_manager_s_full_to_free( struct block_manager_s* o, token_manager_s* child );
 static void block_manager_s_free_to_empty( struct block_manager_s* o, token_manager_s* child );
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void token_manager_s_free_token( token_manager_s* o, u1_t token )
 {
@@ -335,6 +384,8 @@ static void token_manager_s_free_token( token_manager_s* o, u1_t token )
     if( o->stack_index == 0 ) block_manager_s_free_to_empty( o->parent, o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void token_manager_s_free( token_manager_s* o, vd_t ptr )
 {
     #ifdef RTCHECKS
@@ -344,12 +395,16 @@ static void token_manager_s_free( token_manager_s* o, vd_t ptr )
     token_manager_s_free_token( o, ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /// Finds the root address of given memory instance; returns NULL in case ptr is outside token_manager's memory space
 static vd_t token_manager_s_root( token_manager_s* o, vc_t ptr )
 {
     u3_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
     return ( token < o->stack_size ) ? ( u0_t* )o + token * o->block_size : NULL;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void token_manager_s_create_rc_count_arr( token_manager_s* o )
 {
@@ -358,6 +413,8 @@ static void token_manager_s_create_rc_count_arr( token_manager_s* o )
     memset( o->rc_count_arr, 0, alloc_size );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void token_manager_s_create_rc_down_arr( token_manager_s* o )
 {
     uz_t alloc_size = sizeof( vd_t ) * o->stack_size;
@@ -365,12 +422,16 @@ static void token_manager_s_create_rc_down_arr( token_manager_s* o )
     memset( o->rc_down_arr, 0, alloc_size );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t token_manager_s_references( token_manager_s* o, vc_t ptr )
 {
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
     if( !o->rc_count_arr ) return 1;
     return 1 + o->rc_count_arr[ token ];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void token_manager_s_fork( token_manager_s* o, vd_t ptr )
 {
@@ -386,10 +447,14 @@ static void token_manager_s_fork( token_manager_s* o, vd_t ptr )
     assert( o->rc_count_arr[ token ] ); // overflow check
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void token_manager_s_release( token_manager_s* o, vd_t ptr )
 {
     token_manager_s_free( o, ptr );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void token_manager_s_release_obj( token_manager_s* o, fp_down_obj down, vd_t ptr )
 {
@@ -419,6 +484,8 @@ static void token_manager_s_release_obj( token_manager_s* o, fp_down_obj down, v
     }
     token_manager_s_free_token( o, token );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr )
 {
@@ -450,6 +517,8 @@ static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, v
     token_manager_s_free_token( o, token );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
@@ -478,6 +547,8 @@ static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj dow
     }
     token_manager_s_free_token( o, token );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
@@ -509,15 +580,21 @@ static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg dow
     token_manager_s_free_token( o, token );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t token_manager_s_total_alloc( const token_manager_s* o )
 {
     return o->block_size * o->stack_index;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t token_manager_s_total_instances( const token_manager_s* o )
 {
     return o->stack_index;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t token_manager_s_total_references( const token_manager_s* o )
 {
@@ -531,19 +608,26 @@ static uz_t token_manager_s_total_references( const token_manager_s* o )
     return count;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t token_manager_s_total_space( const token_manager_s* o )
 {
     return o->pool_size + o->stack_size * sizeof( u1_t );
 }
 
-static void token_manager_s_for_each_instance( token_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+// ---------------------------------------------------------------------------------------------------------------------
+
+static void token_manager_s_for_each_instance( token_manager_s* o, void (*cb)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
+    if( !cb ) return;
     for( uz_t i = 0; i < o->stack_index; i++ )
     {
         uz_t token = o->token_stack[ i ];
-        if( fp ) fp( arg, ( u0_t* )o + token * o->block_size, o->block_size );
+        cb( arg, ( u0_t* )o + token * o->block_size, o->block_size );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static st_s* token_manager_s_status( const token_manager_s* o, int detail_level )
 {
@@ -558,6 +642,8 @@ static st_s* token_manager_s_status( const token_manager_s* o, int detail_level 
     st_s_pushf( str, "    total space: %zu\n", token_manager_s_total_space( o ) );
     return str;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
@@ -603,6 +689,8 @@ typedef struct block_manager_s
     bcore_mutex_s* mutex;  // governing mutex
 } block_manager_s;
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void block_manager_s_init
     (
         block_manager_s* o,
@@ -629,6 +717,8 @@ static void block_manager_s_init
     o->mutex = mutex;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void block_manager_s_down( block_manager_s* o )
 {
     if( o->data )
@@ -639,6 +729,8 @@ static void block_manager_s_down( block_manager_s* o )
         o->size = o->space = 0;
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static block_manager_s* block_manager_s_create
     (
@@ -658,12 +750,16 @@ static block_manager_s* block_manager_s_create
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void block_manager_s_discard( block_manager_s* o )
 {
     if( !o ) return;
     block_manager_s_down( o );
     free( o );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void block_manager_s_acquire_token_manager( block_manager_s* o )
 {
@@ -694,6 +790,8 @@ static void block_manager_s_acquire_token_manager( block_manager_s* o )
     o->size++;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static vd_t block_manager_s_alloc( block_manager_s* o )
 {
     if( o->free_index == o->size ) block_manager_s_acquire_token_manager( o );
@@ -702,6 +800,8 @@ static vd_t block_manager_s_alloc( block_manager_s* o )
     if( token_manager_s_is_full( child ) ) o->free_index++;
     return ret;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // A child reports turning full --> free
 static void block_manager_s_full_to_free( block_manager_s* o, token_manager_s* child )
@@ -721,6 +821,8 @@ static void block_manager_s_full_to_free( block_manager_s* o, token_manager_s* c
     swapc->parent_index = child_index;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t block_manager_s_empty_tail( const block_manager_s* o )
 {
     if( o->size == 0 ) return 0;
@@ -728,6 +830,8 @@ static uz_t block_manager_s_empty_tail( const block_manager_s* o )
     while( empty_index > 0 && token_manager_s_is_empty( o->data[ empty_index - 1 ] ) ) empty_index--;
     return o->size - empty_index;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // A child reports turning free --> empty
 static void block_manager_s_free_to_empty( block_manager_s* o, token_manager_s* child )
@@ -767,6 +871,8 @@ static void block_manager_s_free_to_empty( block_manager_s* o, token_manager_s* 
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t block_manager_s_total_alloc( const block_manager_s* o )
 {
     uz_t sum = 0;
@@ -776,6 +882,8 @@ static uz_t block_manager_s_total_alloc( const block_manager_s* o )
     }
     return sum;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t block_manager_s_total_instances( const block_manager_s* o )
 {
@@ -787,6 +895,8 @@ static uz_t block_manager_s_total_instances( const block_manager_s* o )
     return sum;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t block_manager_s_total_references( const block_manager_s* o )
 {
     uz_t sum = 0;
@@ -796,6 +906,8 @@ static uz_t block_manager_s_total_references( const block_manager_s* o )
     }
     return sum;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t block_manager_s_total_space( const block_manager_s* o )
 {
@@ -807,10 +919,14 @@ static uz_t block_manager_s_total_space( const block_manager_s* o )
     return sum;
 }
 
-static void block_manager_s_for_each_instance( block_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+// ---------------------------------------------------------------------------------------------------------------------
+
+static void block_manager_s_for_each_instance( block_manager_s* o, void (*cb)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
-    for( uz_t i = 0; i < o->size; i++ ) token_manager_s_for_each_instance( o->data[ i ], fp, arg );
+    for( uz_t i = 0; i < o->size; i++ ) token_manager_s_for_each_instance( o->data[ i ], cb, arg );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static st_s* block_manager_s_status( const block_manager_s* o, int detail_level )
 {
@@ -836,11 +952,15 @@ static st_s* block_manager_s_status( const block_manager_s* o, int detail_level 
     return str;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
 /** External-Control
  *  Control framework for external storage
  */
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 typedef struct ext_s // external item
 {
@@ -849,8 +969,12 @@ typedef struct ext_s // external item
     vd_t rc_down;  // shut down method
 } ext_s;
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void ext_s_init( ext_s* o ) { bcore_memzero( o, sizeof( ext_s ) ); }
 static void ext_s_down( ext_s* o ) {}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 typedef struct external_manager_s
 {
@@ -863,11 +987,14 @@ typedef struct external_manager_s
     bcore_mutex_s*    mutex;    // governing mutex
 } external_manager_s;
 
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void external_manager_s_lost_alignment( external_manager_s* o )
 {
     o->aligned = false;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void external_manager_s_init
     (
@@ -899,6 +1026,8 @@ static void external_manager_s_init
     o->mutex = mutex;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void external_manager_s_down( external_manager_s* o )
 {
     block_manager_s_down( &o->bm_ext );
@@ -906,12 +1035,16 @@ static void external_manager_s_down( external_manager_s* o )
     bcore_btree_pp_s_discard( o->ex_btree );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static ext_s* ext_s_create( external_manager_s* o )
 {
     ext_s* ext = block_manager_s_alloc( &o->bm_ext );
     ext_s_init( ext );
     return ext;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void ext_s_discard( external_manager_s* o, ext_s* ext )
 {
@@ -927,6 +1060,8 @@ static void ext_s_discard( external_manager_s* o, ext_s* ext )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static vd_t external_manager_s_malloc( external_manager_s* o, uz_t requested_bytes, uz_t* granted_bytes )
 {
     vd_t ptr = aligned_alloc( TBMAN_ALIGN, requested_bytes );
@@ -937,6 +1072,8 @@ static vd_t external_manager_s_malloc( external_manager_s* o, uz_t requested_byt
     if( bcore_btree_pp_s_set( o->ex_btree, ptr, ext ) != 1 ) ERR( "Registering new address failed" );
     return ptr;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void external_manager_s_free_ext( external_manager_s* o, vd_t ptr, ext_s* ext )
 {
@@ -963,12 +1100,16 @@ static void external_manager_s_free_ext( external_manager_s* o, vd_t ptr, ext_s*
     free( ptr );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void external_manager_s_free( external_manager_s* o, vd_t ptr )
 {
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Attempt to free invalid memory" );
     external_manager_s_free_ext( o, ptr, *ext_p );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void external_manager_s_get_instance( external_manager_s* o, vc_t ptr, vd_t* root, uz_t* granted_space )
 {
@@ -981,6 +1122,8 @@ static void external_manager_s_get_instance( external_manager_s* o, vc_t ptr, vd
     if( granted_space ) *granted_space = ext->size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t external_manager_s_granted_bytes( external_manager_s* o, vd_t ptr )
 {
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
@@ -988,7 +1131,11 @@ static uz_t external_manager_s_granted_bytes( external_manager_s* o, vd_t ptr )
     return ( ( ext_s* )*ext_p )->size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void ext_sum( vd_t val, bcore_btree_pp_kv_s kv ) { *(uz_t*)val += ( ( ext_s* )kv.val )->size; }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t external_manager_s_total_alloc( const external_manager_s* o )
 {
@@ -997,7 +1144,11 @@ static uz_t external_manager_s_total_alloc( const external_manager_s* o )
     return size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void ext_count( vd_t val, bcore_btree_pp_kv_s kv ) { *(uz_t*)val += 1; }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t external_manager_s_total_instances( const external_manager_s* o )
 {
@@ -1006,10 +1157,14 @@ static uz_t external_manager_s_total_instances( const external_manager_s* o )
     return size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void ext_rc_ref_count( vd_t val, bcore_btree_pp_kv_s kv )
 {
     *(uz_t*)val += 1 + ( ( ext_s* )kv.val )->rc_count;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t external_manager_s_total_references( const external_manager_s* o )
 {
@@ -1018,23 +1173,31 @@ static uz_t external_manager_s_total_references( const external_manager_s* o )
     return size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 typedef struct ext_for_instance_arg
 {
-    void (*fp)( vd_t arg, vd_t ptr, uz_t space );
+    void (*cb)( vd_t arg, vd_t ptr, uz_t space );
     vd_t arg;
 } ext_for_instance_arg;
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void ext_for_instance( vd_t val, bcore_btree_pp_kv_s kv )
 {
     ext_for_instance_arg* iarg = val;
-    iarg->fp( iarg->arg, kv.key, ( ( ext_s* )kv.val )->size );
+    iarg->cb( iarg->arg, kv.key, ( ( ext_s* )kv.val )->size );
 }
 
-static void external_manager_s_for_each_instance( external_manager_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+// ---------------------------------------------------------------------------------------------------------------------
+
+static void external_manager_s_for_each_instance( external_manager_s* o, void (*cb)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
-    ext_for_instance_arg iarg = { .fp = fp, .arg = arg };
+    ext_for_instance_arg iarg = { .cb = cb, .arg = arg };
     bcore_btree_pp_s_run( o->ex_btree, ext_for_instance, &iarg );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t external_manager_s_references( external_manager_s* o, vc_t ptr )
 {
@@ -1044,6 +1207,8 @@ static uz_t external_manager_s_references( external_manager_s* o, vc_t ptr )
     if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) return 0;
     return 1 + ext->rc_count;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void external_manager_s_fork( external_manager_s* o, vd_t ptr )
 {
@@ -1055,6 +1220,8 @@ static void external_manager_s_fork( external_manager_s* o, vd_t ptr )
     assert( ext->rc_count ); // overflow check
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void external_manager_s_release( external_manager_s* o, vd_t ptr )
 {
     bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ptr );
@@ -1063,6 +1230,8 @@ static void external_manager_s_release( external_manager_s* o, vd_t ptr )
     if( ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )kv->key ) ) >= ext->size ) ERR( "Object has no root address in dynamic memory." );
     external_manager_s_free_ext( o, kv->key, ext );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void external_manager_s_release_obj( external_manager_s* o, fp_down_obj down, vd_t ptr )
 {
@@ -1085,6 +1254,8 @@ static void external_manager_s_release_obj( external_manager_s* o, fp_down_obj d
         external_manager_s_free_ext( o, ptr, ext );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void external_manager_s_release_arg( external_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr )
 {
@@ -1109,6 +1280,8 @@ static void external_manager_s_release_arg( external_manager_s* o, fp_down_arg d
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void external_manager_s_release_obj_arr( external_manager_s* o, fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
@@ -1131,6 +1304,8 @@ static void external_manager_s_release_obj_arr( external_manager_s* o, fp_down_o
         external_manager_s_free_ext( o, ptr, ext );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void external_manager_s_release_arg_arr( external_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
@@ -1155,9 +1330,13 @@ static void external_manager_s_release_arg_arr( external_manager_s* o, fp_down_a
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
 /// Manager of down-objects
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 typedef struct down_manager_s
 {
@@ -1171,10 +1350,14 @@ typedef struct down_manager_s
     bcore_mutex_s*    mutex;    // governing mutex
 } down_manager_s;
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void down_manager_s_lost_alignment( external_manager_s* o )
 {
     o->aligned = false;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void down_manager_s_init( down_manager_s* o, uz_t pool_size, bl_t full_align, bcore_mutex_s* mutex )
 {
@@ -1237,6 +1420,8 @@ static void down_manager_s_init( down_manager_s* o, uz_t pool_size, bl_t full_al
     o->aligned = true;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void down_manager_s_down( down_manager_s* o )
 {
     block_manager_s_down( &o->bm_down_obj );
@@ -1245,6 +1430,8 @@ static void down_manager_s_down( down_manager_s* o )
     block_manager_s_down( &o->bm_down_arg_arr );
     bcore_btree_vd_s_discard( o->tm_btree );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void down_s_discard( down_manager_s* o, down_s* down )
 {
@@ -1259,6 +1446,8 @@ static void down_s_discard( down_manager_s* o, down_s* down )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static down_obj_s* down_obj_s_create( down_manager_s* o, fp_down_obj fp )
 {
     down_obj_s* down = block_manager_s_alloc( &o->bm_down_obj );
@@ -1266,6 +1455,8 @@ static down_obj_s* down_obj_s_create( down_manager_s* o, fp_down_obj fp )
     down->fp = fp;
     return down;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static down_arg_s* down_arg_s_create( down_manager_s* o, fp_down_arg fp, vc_t arg )
 {
@@ -1276,6 +1467,8 @@ static down_arg_s* down_arg_s_create( down_manager_s* o, fp_down_arg fp, vc_t ar
     return down;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static down_obj_arr_s* down_obj_arr_s_create( down_manager_s* o, fp_down_obj fp, uz_t size, uz_t step )
 {
     down_obj_arr_s* down = block_manager_s_alloc( &o->bm_down_obj_arr );
@@ -1285,6 +1478,8 @@ static down_obj_arr_s* down_obj_arr_s_create( down_manager_s* o, fp_down_obj fp,
     down->step = step;
     return down;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static down_arg_arr_s* down_arg_arr_s_create( down_manager_s* o, fp_down_arg fp, vc_t arg, uz_t size, uz_t step )
 {
@@ -1297,6 +1492,8 @@ static down_arg_arr_s* down_arg_arr_s_create( down_manager_s* o, fp_down_arg fp,
     return down;
 
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
@@ -1315,7 +1512,7 @@ static down_arg_arr_s* down_arg_arr_s_create( down_manager_s* o, fp_down_arg fp,
  *     - If the previously allocated size is available and all token managers are aligned
  *       the address of the token manager is directly calculated from the allocated address. (O(1))
  *     - Otherwise: The corresponding token-manager is determined via internal_btree from the memory-address
- *       (Olog(n) - where 'n' is the current amount of allocations in circulation.)
+ *       (O(log(n)) - where 'n' is the current amount of token managers.)
  *
  */
 typedef struct bcore_tbman_s
@@ -1333,20 +1530,28 @@ typedef struct bcore_tbman_s
     bcore_mutex_s mutex;
 } bcore_tbman_s;
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static inline void tbman_s_lock( bcore_tbman_s* o )
 {
     bcore_mutex_s_lock( &o->mutex );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static inline void tbman_s_unlock( bcore_tbman_s* o )
 {
     bcore_mutex_s_unlock( &o->mutex );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void tbman_s_lost_alignment( struct bcore_tbman_s* o )
 {
     o->aligned = false;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_tbman_s_init( bcore_tbman_s* o, uz_t pool_size, uz_t min_block_size, uz_t max_block_size, uz_t stepping_method, bl_t full_align )
 {
@@ -1420,6 +1625,8 @@ void bcore_tbman_s_init( bcore_tbman_s* o, uz_t pool_size, uz_t min_block_size, 
     down_manager_s_init( &o->down_manager, pool_size, full_align, &o->mutex );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_s_down( bcore_tbman_s* o )
 {
     tbman_s_lock( o );
@@ -1440,6 +1647,8 @@ void bcore_tbman_s_down( bcore_tbman_s* o )
     bcore_mutex_s_down( &o->mutex );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_tbman_s* bcore_tbman_s_create( uz_t pool_size, uz_t min_block_size, uz_t max_block_size, uz_t stepping_method, bl_t full_align )
 {
     bcore_tbman_s* o = malloc( sizeof( bcore_tbman_s ) );
@@ -1447,6 +1656,8 @@ bcore_tbman_s* bcore_tbman_s_create( uz_t pool_size, uz_t min_block_size, uz_t m
     bcore_tbman_s_init( o, pool_size, min_block_size, max_block_size, stepping_method, full_align );
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_tbman_s* bcore_tbman_s_create_default()
 {
@@ -1460,12 +1671,16 @@ bcore_tbman_s* bcore_tbman_s_create_default()
     );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_s_discard( bcore_tbman_s* o )
 {
     if( !o ) return;
     bcore_tbman_s_down( o );
     free( o );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static vd_t tbman_s_mem_alloc( bcore_tbman_s* o, uz_t requested_bytes, uz_t* granted_bytes )
 {
@@ -1493,6 +1708,8 @@ static vd_t tbman_s_mem_alloc( bcore_tbman_s* o, uz_t requested_bytes, uz_t* gra
     return reserved_ptr;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void tbman_s_mem_free( bcore_tbman_s* o, vd_t current_ptr, const uz_t* current_bytes )
 {
     if( current_bytes && *current_bytes <= o->max_block_size && o->aligned )
@@ -1514,6 +1731,8 @@ static void tbman_s_mem_free( bcore_tbman_s* o, vd_t current_ptr, const uz_t* cu
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void tbman_s_fork( bcore_tbman_s* o, vd_t ptr )
 {
     vd_t block_ptr = bcore_btree_vd_s_largest_below_equal( o->internal_btree, ptr );
@@ -1527,6 +1746,8 @@ static void tbman_s_fork( bcore_tbman_s* o, vd_t ptr )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void tbman_s_release( bcore_tbman_s* o, vd_t ptr )
 {
     vd_t block_ptr = bcore_btree_vd_s_largest_below_equal( o->internal_btree, ptr );
@@ -1539,6 +1760,8 @@ static void tbman_s_release( bcore_tbman_s* o, vd_t ptr )
         external_manager_s_release( &o->external_manager, ptr );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void tbman_s_release_obj( bcore_tbman_s* o, fp_down_obj down, vd_t ptr )
 {
@@ -1560,6 +1783,8 @@ static void tbman_s_release_obj( bcore_tbman_s* o, fp_down_obj down, vd_t ptr )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void tbman_s_release_arg( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr )
 {
     if( down )
@@ -1579,6 +1804,8 @@ static void tbman_s_release_arg( bcore_tbman_s* o, fp_down_arg down, vc_t arg, v
         tbman_s_release( o, ptr );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
@@ -1600,6 +1827,8 @@ static void tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t pt
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
     if( down )
@@ -1620,6 +1849,8 @@ static void tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t ar
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t tbman_s_references( bcore_tbman_s* o, vc_t ptr )
 {
     vd_t block_ptr = bcore_btree_vd_s_largest_below_equal( o->internal_btree, ( vd_t )ptr );
@@ -1632,6 +1863,8 @@ static uz_t tbman_s_references( bcore_tbman_s* o, vc_t ptr )
         return external_manager_s_references( &o->external_manager, ptr );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static vd_t tbman_s_mem_realloc( bcore_tbman_s* o, vd_t current_ptr, const uz_t* current_bytes, uz_t requested_bytes, uz_t* granted_bytes )
 {
@@ -1713,6 +1946,8 @@ static vd_t tbman_s_mem_realloc( bcore_tbman_s* o, vd_t current_ptr, const uz_t*
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tbman_s_fork( bcore_tbman_s* o, vd_t ptr )
 {
     if( !ptr ) return NULL;
@@ -1722,6 +1957,8 @@ vd_t bcore_tbman_s_fork( bcore_tbman_s* o, vd_t ptr )
     return ptr;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_s_release( bcore_tbman_s* o, vd_t ptr )
 {
     if( !ptr ) return;
@@ -1729,6 +1966,8 @@ void bcore_tbman_s_release( bcore_tbman_s* o, vd_t ptr )
     tbman_s_release( o, ptr );
     tbman_s_unlock( o );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_tbman_s_release_obj( bcore_tbman_s* o, fp_down_obj down, vd_t ptr )
 {
@@ -1738,6 +1977,8 @@ void bcore_tbman_s_release_obj( bcore_tbman_s* o, fp_down_obj down, vd_t ptr )
     tbman_s_unlock( o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_s_release_arg( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr )
 {
     if( !ptr ) return;
@@ -1745,6 +1986,8 @@ void bcore_tbman_s_release_arg( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd
     tbman_s_release_arg( o, down, arg, ptr );
     tbman_s_unlock( o );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
@@ -1754,6 +1997,8 @@ void bcore_tbman_s_release_obj_arr( bcore_tbman_s* o, fp_down_obj down, vd_t ptr
     tbman_s_unlock( o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
     if( !ptr ) return;
@@ -1761,6 +2006,8 @@ void bcore_tbman_s_release_arg_arr( bcore_tbman_s* o, fp_down_arg down, vc_t arg
     tbman_s_release_arg_arr( o, down, arg, ptr, size, step );
     tbman_s_unlock( o );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_tbman_s_references( bcore_tbman_s* o, vc_t ptr )
 {
@@ -1770,6 +2017,8 @@ uz_t bcore_tbman_s_references( bcore_tbman_s* o, vc_t ptr )
     tbman_s_unlock( o );
     return n;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_tbman_s_b_alloc( bcore_tbman_s* o, vd_t current_ptr, uz_t requested_bytes, uz_t* granted_bytes )
 {
@@ -1798,6 +2047,8 @@ vd_t bcore_tbman_s_b_alloc( bcore_tbman_s* o, vd_t current_ptr, uz_t requested_b
     return ret;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes )
 {
     tbman_s_lock( o );
@@ -1825,6 +2076,8 @@ vd_t bcore_tbman_s_bn_alloc( bcore_tbman_s* o, vd_t current_ptr, uz_t current_by
     return ret;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tbman_s_u_alloc( bcore_tbman_s* o, uz_t unit_bytes, vd_t current_ptr, uz_t requested_units, uz_t* reserved_units )
 {
     vd_t reserved_ptr = bcore_tbman_s_b_alloc( o, current_ptr, unit_bytes * requested_units, reserved_units );
@@ -1832,12 +2085,16 @@ vd_t bcore_tbman_s_u_alloc( bcore_tbman_s* o, uz_t unit_bytes, vd_t current_ptr,
     return reserved_ptr;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tbman_s_un_alloc( bcore_tbman_s* o, uz_t unit_bytes, vd_t current_ptr, uz_t current_units, uz_t requested_units, uz_t* reserved_units )
 {
     vd_t reserved_ptr = bcore_tbman_s_bn_alloc( o, current_ptr, unit_bytes * current_units, unit_bytes * requested_units, reserved_units );
     if( reserved_units ) *reserved_units /= ( unit_bytes > 0 ? unit_bytes : 1 );
     return reserved_ptr;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_tbman_s_get_instance( bcore_tbman_s* o, vc_t ptr, vd_t* root, uz_t* granted_space )
 {
@@ -1856,6 +2113,8 @@ void bcore_tbman_s_get_instance( bcore_tbman_s* o, vc_t ptr, vd_t* root, uz_t* g
     tbman_s_unlock( o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t tbman_s_internal_total_alloc( const bcore_tbman_s* o )
 {
     uz_t sum = 0;
@@ -1865,6 +2124,8 @@ static uz_t tbman_s_internal_total_alloc( const bcore_tbman_s* o )
     }
     return sum;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t tbman_s_internal_total_instances( const bcore_tbman_s* o )
 {
@@ -1876,6 +2137,8 @@ static uz_t tbman_s_internal_total_instances( const bcore_tbman_s* o )
     return sum;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t tbman_s_internal_total_references( const bcore_tbman_s* o )
 {
     uz_t sum = 0;
@@ -1886,20 +2149,28 @@ static uz_t tbman_s_internal_total_references( const bcore_tbman_s* o )
     return sum;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t tbman_s_total_alloc( const bcore_tbman_s* o )
 {
     return external_manager_s_total_alloc( &o->external_manager ) + tbman_s_internal_total_alloc( o );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t tbman_s_total_instances( const bcore_tbman_s* o )
 {
     return external_manager_s_total_instances( &o->external_manager ) + tbman_s_internal_total_instances( o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static uz_t tbman_s_total_references( const bcore_tbman_s* o )
 {
     return external_manager_s_total_references( &o->external_manager ) + tbman_s_internal_total_references( o );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t tbman_s_total_space( const bcore_tbman_s* o )
 {
@@ -1912,21 +2183,24 @@ static uz_t tbman_s_total_space( const bcore_tbman_s* o )
     return sum;
 }
 
-static void tbman_s_for_each_instance( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+// ---------------------------------------------------------------------------------------------------------------------
+
+static void tbman_s_for_each_instance( bcore_tbman_s* o, void (*cb)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
     for( uz_t i = 0; i < o->size; i++ )
     {
-        block_manager_s_for_each_instance( o->data[ i ], fp, arg );
+        block_manager_s_for_each_instance( o->data[ i ], cb, arg );
     }
-    external_manager_s_for_each_instance( &o->external_manager, fp, arg );
+    external_manager_s_for_each_instance( &o->external_manager, cb, arg );
 }
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
 
-
 /**********************************************************************************************************************/
-// Global manager
+// Interface
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static bcore_tbman_s* tbman_s_g = NULL;
 
@@ -1935,11 +2209,15 @@ static void create_tbman()
     tbman_s_g = bcore_tbman_s_create_default();
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void discard_tbman()
 {
     bcore_tbman_s_discard( tbman_s_g );
     tbman_s_g = NULL;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void tbman_open()
 {
@@ -1947,10 +2225,14 @@ static void tbman_open()
     bcore_once_s_run( &flag, create_tbman );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void tbman_close()
 {
     discard_tbman();
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_tbman_fork( vd_t ptr )
 {
@@ -1958,11 +2240,15 @@ vd_t bcore_tbman_fork( vd_t ptr )
     return bcore_tbman_s_fork( tbman_s_g, ptr );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_release( vd_t ptr )
 {
     assert( tbman_s_g != NULL );
     bcore_tbman_s_release( tbman_s_g, ptr );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_tbman_release_obj( fp_down_obj down, vd_t ptr )
 {
@@ -1970,11 +2256,15 @@ void bcore_tbman_release_obj( fp_down_obj down, vd_t ptr )
     bcore_tbman_s_release_obj( tbman_s_g, down, ptr );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_release_arg( fp_down_arg down, vc_t arg, vd_t ptr )
 {
     assert( tbman_s_g != NULL );
     bcore_tbman_s_release_arg( tbman_s_g, down, arg, ptr );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_tbman_release_obj_arr( fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
@@ -1982,11 +2272,15 @@ void bcore_tbman_release_obj_arr( fp_down_obj down, vd_t ptr, uz_t size, uz_t st
     bcore_tbman_s_release_obj_arr( tbman_s_g, down, ptr, size, step );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_release_arg_arr( fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
     assert( tbman_s_g != NULL );
     bcore_tbman_s_release_arg_arr( tbman_s_g, down, arg, ptr, size, step );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_tbman_references( vc_t ptr )
 {
@@ -1994,17 +2288,23 @@ uz_t bcore_tbman_references( vc_t ptr )
     return bcore_tbman_s_references( tbman_s_g, ptr );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tbman_b_alloc( vd_t current_ptr, uz_t requested_bytes, uz_t* granted_bytes )
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_b_alloc( tbman_s_g, current_ptr, requested_bytes, granted_bytes );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tbman_bn_alloc( vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes )
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_bn_alloc( tbman_s_g, current_ptr, current_bytes, requested_bytes, granted_bytes );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_tbman_u_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t requested_units, uz_t* reserved_units )
 {
@@ -2013,6 +2313,8 @@ vd_t bcore_tbman_u_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t requested_unit
     return reserved_ptr;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tbman_un_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t current_units, uz_t requested_units, uz_t* reserved_units )
 {
     vd_t reserved_ptr = bcore_tbman_bn_alloc( current_ptr, unit_bytes * current_units, unit_bytes * requested_units, reserved_units );
@@ -2020,10 +2322,14 @@ vd_t bcore_tbman_un_alloc( uz_t unit_bytes, vd_t current_ptr, uz_t current_units
     return reserved_ptr;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_get_instance( vc_t ptr, vd_t* root, uz_t* granted_space )
 {
     bcore_tbman_s_get_instance( tbman_s_g, ptr, root, granted_space );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_tbman_s_granted_space( bcore_tbman_s* o, vc_t ptr )
 {
@@ -2031,6 +2337,8 @@ uz_t bcore_tbman_s_granted_space( bcore_tbman_s* o, vc_t ptr )
     bcore_tbman_s_get_instance( o, ptr, NULL, &space );
     return space;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_tbman_s_total_granted_space( bcore_tbman_s* o )
 {
@@ -2040,6 +2348,8 @@ uz_t bcore_tbman_s_total_granted_space( bcore_tbman_s* o )
     return space;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_tbman_s_total_instances( bcore_tbman_s* o )
 {
     tbman_s_lock( o );
@@ -2047,6 +2357,8 @@ uz_t bcore_tbman_s_total_instances( bcore_tbman_s* o )
     tbman_s_unlock( o );
     return size;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_tbman_s_total_references( bcore_tbman_s* o )
 {
@@ -2056,10 +2368,12 @@ uz_t bcore_tbman_s_total_references( bcore_tbman_s* o )
     return size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 typedef struct bcore_tbman_mnode { vd_t p; uz_t s; } bcore_tbman_mnode;
 typedef struct bcore_tbman_mnode_arr { bcore_tbman_mnode* data; uz_t size; uz_t space; } bcore_tbman_mnode_arr;
 
-void tbman_s_for_each_instance_collect_callback( vd_t arg, vd_t ptr, uz_t space )
+static void for_each_instance_collect_callback( vd_t arg, vd_t ptr, uz_t space )
 {
     assert( arg );
     bcore_tbman_mnode_arr* arr = arg;
@@ -2068,9 +2382,11 @@ void tbman_s_for_each_instance_collect_callback( vd_t arg, vd_t ptr, uz_t space 
     arr->size++;
 }
 
-void bcore_tbman_s_for_each_instance( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_tbman_s_for_each_instance( bcore_tbman_s* o, void (*cb)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
-    if( !fp ) return;
+    if( !cb ) return;
     sz_t size = bcore_tbman_s_total_instances( o );
     if( !size ) return;
 
@@ -2080,12 +2396,12 @@ void bcore_tbman_s_for_each_instance( bcore_tbman_s* o, void (*fp)( vd_t arg, vd
     arr.size  = 0;
 
     tbman_s_lock( o );
-    tbman_s_for_each_instance( o, tbman_s_for_each_instance_collect_callback, &arr );
+    tbman_s_for_each_instance( o, for_each_instance_collect_callback, &arr );
     tbman_s_unlock( o );
 
     assert( arr.size == arr.space );
 
-    for( sz_t i = 0; i < size; i++ ) fp( arg, arr.data[ i ].p, arr.data[ i ].s );
+    for( sz_t i = 0; i < size; i++ ) cb( arg, arr.data[ i ].p, arr.data[ i ].s );
 
     free( arr.data );
 }
@@ -2114,10 +2430,10 @@ uz_t bcore_tbman_total_references()
     return bcore_tbman_s_total_references( tbman_s_g );
 }
 
-void bcore_tbman_for_each_instance( void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
+void bcore_tbman_for_each_instance( void (*cb)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
     assert( tbman_s_g != NULL );
-    bcore_tbman_s_for_each_instance( tbman_s_g, fp, arg );
+    bcore_tbman_s_for_each_instance( tbman_s_g, cb, arg );
 }
 
 // not thread-safe
@@ -2221,6 +2537,8 @@ void bcore_tbman_instance_disgnostics()
 #include "bcore_spect_inst.h"
 
 typedef vd_t (*fp_alloc)( vd_t current_ptr, uz_t current_bytes, uz_t requested_bytes, uz_t* granted_bytes );
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static st_s* tbman_alloc_challenge
 (
@@ -2412,6 +2730,8 @@ static st_s* tbman_alloc_challenge
     return str;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void tbman_s_quicktest( void )
 {
     uz_t table_size = 200;
@@ -2420,6 +2740,8 @@ static void tbman_s_quicktest( void )
     uz_t seed       = 5479;
     st_s_discard( tbman_alloc_challenge( bcore_tbman_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /// testing reference control
 static st_s* tbman_s_rctest( void )
@@ -2524,6 +2846,8 @@ static st_s* tbman_s_rctest( void )
     return log;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static st_s* tbman_s_memtest( void )
 {
     st_s* log = st_s_createf( "== tbman_s_memtest " );
@@ -2553,6 +2877,8 @@ static st_s* tbman_s_memtest( void )
     return log;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t tbman_s_thread_func( vd_t arg )
 {
     st_s* log = st_s_create();
@@ -2564,6 +2890,8 @@ vd_t tbman_s_thread_func( vd_t arg )
 //    st_s_push_st_d( log, tbman_alloc_challenge( bcore_tbman_external_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
     return log;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static st_s* tbman_s_thread_test( void )
 {
@@ -2610,6 +2938,8 @@ static st_s* tbman_s_thread_test( void )
     return log;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void tbman_s_instance_test( void )
 {
     for( uz_t size = 1; size < 10000000; size *= 2 )
@@ -2624,6 +2954,8 @@ static void tbman_s_instance_test( void )
         bcore_tbman_free( ptr );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 typedef struct diagnostic_s { bcore_tbman_s* man; vd_t* ptr_arr; uz_t* spc_arr; sz_t size; } diagnostic_s;
 
@@ -2674,8 +3006,12 @@ static void tbman_s_diagnostic_test( void )
     bcore_tbman_s_discard( diag.man );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // signal
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_tbman_signal_handler( const bcore_signal_s* o )
 {
@@ -2732,3 +3068,6 @@ vd_t bcore_tbman_signal_handler( const bcore_signal_s* o )
     return NULL;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
