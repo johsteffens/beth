@@ -34,8 +34,10 @@
 /// basic messaging
 
 /// formatted message to stdout
+void bcore_msgv  ( sc_t format, va_list args );
 void bcore_msg   ( sc_t format, ... );
-void bcore_msg_fa( sc_t format, ... ); // beth format
+void bcore_msg_fv( sc_t format, va_list args ); // beth format (avoid on low-level errors)
+void bcore_msg_fa( sc_t format, ... );          // beth format
 
 /// formatted message + newline to stderr
 void bcore_wrnv  ( sc_t format, va_list args );

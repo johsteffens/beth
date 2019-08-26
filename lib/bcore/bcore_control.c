@@ -53,13 +53,23 @@ void bcore_writeln_fa( FILE* file, sc_t format, ... )
     va_end( args );
 }
 
+void bcore_msgv( sc_t format, va_list args )
+{
+    vfprintf( stdout, format, args );
+    fflush( stdout );
+}
+
 void bcore_msg( sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    vfprintf( stdout, format, args );
-    fflush( stdout );
+    bcore_msgv( format, args );
     va_end( args );
+}
+
+void bcore_msg_fv( sc_t format, va_list args )
+{
+    bcore_write_fv( stdout, format, args );
 }
 
 void bcore_msg_fa( sc_t format, ... )
