@@ -189,6 +189,8 @@ BCORE_DECLARE_OBJECT( bcore_source_point_s )
 void bcore_source_point_s_set(                bcore_source_point_s* o, bcore_source* source );
 void bcore_source_point_s_parse_err_fv( const bcore_source_point_s* o, sc_t format, va_list args );
 void bcore_source_point_s_parse_err_fa( const bcore_source_point_s* o, sc_t format, ... );
+void bcore_source_point_s_parse_msg_fv( const bcore_source_point_s* o, sc_t format, va_list args );
+void bcore_source_point_s_parse_msg_fa( const bcore_source_point_s* o, sc_t format, ... );
 
 /**********************************************************************************************************************/
 // syntactic sugar
