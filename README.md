@@ -49,15 +49,16 @@ Beth is intended as foundation library for more specialized projects.
    * Example: [actinon](https://github.com/johsteffens/actinon) - [How to use it](https://github.com/johsteffens/actinon#how-to-use-it).
     
 ### Build as stand-alone library
-   * Downlowd [beth](https://github.com/johsteffens/beth).
-   * In a terminal ...
-      * enter folder `beth-master/lib`.
-      * run `make`. This creates the static library `beth.a`.
+   * `git clone https://github.com/johsteffens/beth.git`
+   * `cd beth/lib`
+   * `make`
+
+This creates the static library `beth.a`.
       
 # License
 The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
 
-*Copyright (C) 2017, 2018, 2019 Johannes B. Steffens johannes.b.steffens@gmail.com.*
+*Copyright (C) 2017, ..., 2019 Johannes B. Steffens johannes.b.steffens@gmail.com.*
 
 # Sub Libraries
 Beth consists of a suite of sub-libraries.
