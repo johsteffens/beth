@@ -1141,6 +1141,12 @@ uz_t st_s_parse_err( vd_t arg, const st_s* o, uz_t idx, st_s* msg )
     return idx;
 }
 
+uz_t st_s_parse_msg( vd_t arg, const st_s* o, uz_t idx, st_s* msg )
+{
+    bcore_msg( "At (%zu:%zu):\n%s\n%s\n", st_s_lineof( o, idx ), st_s_colof( o, idx ), st_s_show_line_context( o, idx )->sc, msg->sc );
+    return idx;
+}
+
 uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, va_list args )
 {
     uz_t end_l = end < o->size ? end : o->size;
