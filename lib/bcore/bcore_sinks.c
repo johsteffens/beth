@@ -319,7 +319,7 @@ void bcore_sink_file_s_open( bcore_sink_file_s* o )
         st_s* msg = st_s_createf( "Error opening file %s:\n", o->name->sc );
         perror( msg->sc );
         st_s_discard( msg );
-        abort();
+        bcore_abort();
     }
 }
 
@@ -331,7 +331,7 @@ void bcore_sink_file_s_close( bcore_sink_file_s* o )
         st_s* msg = st_s_createf( "Error closing file %s:\n", o->name->sc );
         perror( msg->sc );
         st_s_discard( msg );
-        abort();
+        bcore_abort();
     }
     o->handle = NULL;
 }
@@ -344,7 +344,7 @@ void bcore_sink_file_s_flush( bcore_sink_file_s* o )
         st_s* msg = st_s_createf( "Error flushing file %s:\n", o->name->sc );
         perror( msg->sc );
         st_s_discard( msg );
-        abort();
+        bcore_abort();
     }
 }
 

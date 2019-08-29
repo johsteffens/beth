@@ -800,7 +800,7 @@ void bcore_source_file_s_open( bcore_source_file_s* o )
         st_s* msg = st_s_createf( "Error opening file %s:\n", o->name->sc );
         perror( msg->sc );
         st_s_discard( msg );
-        abort();
+        bcore_abort();
     }
 }
 
@@ -812,7 +812,7 @@ void bcore_source_file_s_close( bcore_source_file_s* o )
         st_s* msg = st_s_createf( "Error closing file %s:\n", o->name->sc );
         perror( msg->sc );
         st_s_discard( msg );
-        abort();
+        bcore_abort();
     }
     o->handle = NULL;
 }

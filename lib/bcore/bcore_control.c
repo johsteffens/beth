@@ -20,6 +20,11 @@
 #include "bcore_signal.h"
 #include "bcore_sc.h"
 
+void bcore_abort()
+{
+    abort();
+}
+
 void bcore_write_fv( FILE* file, sc_t format, va_list args )
 {
     st_s* s = st_s_create_fv( format, args );
@@ -131,7 +136,7 @@ void bcore_ext_wrn_fa( sc_t func, sc_t file, int line, sc_t format, ... )
 void bcore_errv( sc_t format, va_list args )
 {
     bcore_wrnv( format, args );
-    abort();
+    bcore_abort();
 }
 
 void bcore_err( sc_t format, ... )
@@ -140,7 +145,7 @@ void bcore_err( sc_t format, ... )
     va_start( args, format );
     bcore_wrnv( format, args );
     va_end( args );
-    abort();
+    bcore_abort();
 }
 
 void bcore_ext_err( sc_t func, sc_t file, int line, sc_t format, ... )
@@ -150,13 +155,13 @@ void bcore_ext_err( sc_t func, sc_t file, int line, sc_t format, ... )
     va_start( args, format );
     bcore_wrnv( format, args );
     va_end( args );
-    abort();
+    bcore_abort();
 }
 
 void bcore_err_fv( sc_t format, va_list args )
 {
     bcore_writeln_fv( stderr, format, args );
-    abort();
+    bcore_abort();
 }
 
 void bcore_err_fa( sc_t format, ... )
@@ -165,7 +170,7 @@ void bcore_err_fa( sc_t format, ... )
     va_start( args, format );
     bcore_writeln_fv( stderr, format, args );
     va_end( args );
-    abort();
+    bcore_abort();
 }
 
 void bcore_ext_err_fa( sc_t func, sc_t file, int line, sc_t format, ... )
@@ -175,7 +180,7 @@ void bcore_ext_err_fa( sc_t func, sc_t file, int line, sc_t format, ... )
     va_start( args, format );
     bcore_writeln_fv( stderr, format, args );
     va_end( args );
-    abort();
+    bcore_abort();
 }
 
 /**********************************************************************************************************************/
