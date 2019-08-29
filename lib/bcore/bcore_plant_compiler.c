@@ -150,10 +150,10 @@ BCORE_DECLARE_OBJECT( bcore_plant_arg_s )
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_arg_s )
 "{"
     "aware_t _;"
-    "vd_t group;"
+    "hidden vd_t group;"
     "st_s type;"
     "st_s name;"
-    "bcore_source_point_s source_point;"
+    "hidden bcore_source_point_s source_point;"
 
     "func bcore_plant_fp : parse;"
     "func bcore_plant_fp : get_hash;"
@@ -738,7 +738,7 @@ static void bcore_plant_args_s_append( bcore_plant_args_s* o, bcore_source* sour
     bl_t first = true;
     while( !bcore_source_a_parse_bl_fa( source, " #=?')' " ) ) // args follow
     {
-        if( !first ) bcore_source_a_parse_fa( source, " ," );
+        if( !first ) bcore_source_a_parse_fa( source, " , " );
         bcore_plant_arg_s* arg = bcore_plant_arg_s_create();
         arg->group = o->group;
         bcore_plant_arg_s_parse( arg, source );
