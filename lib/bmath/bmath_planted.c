@@ -62,6 +62,12 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_s )
     "f3_t [] v;"
 "}";
 
+BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_adl_s )
+"aware bcore_array"
+"{"
+    "bmath_hf3_s => [];"
+"}";
+
 /**********************************************************************************************************************/
 // source: bmath_hf3_vm
 #include "bmath_hf3_vm.h"
@@ -358,12 +364,13 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 3097513072 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 881821421 ) );
             BCORE_REGISTER_OBJECT( bmath_mf3_sx_s );
             BCORE_REGISTER_TRAIT( bmath_mf3_sx, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_mf3_sf_s );
             BCORE_REGISTER_TRAIT( bmath_mf3_sf, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_hf3_s );
+            BCORE_REGISTER_OBJECT( bmath_hf3_adl_s );
             BCORE_REGISTER_TRAIT( bmath_hf3, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_holor_s );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_arr_holor_s );

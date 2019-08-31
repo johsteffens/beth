@@ -58,10 +58,26 @@
 #define BETH_EXPAND_ITEM_bmath_hf3_s \
   BCORE_DECLARE_OBJECT( bmath_hf3_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, d_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
+#define TYPEOF_bmath_hf3_adl_s 3605419337
+#define BETH_EXPAND_ITEM_bmath_hf3_adl_s \
+  BCORE_DECLARE_OBJECT( bmath_hf3_adl_s ) \
+    {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bmath_hf3_s, );}; \
+  static inline void bmath_hf3_adl_s_set_space( bmath_hf3_adl_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bmath_hf3_adl_s, ( bcore_array* )o, size ); } \
+  static inline void bmath_hf3_adl_s_set_size( bmath_hf3_adl_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bmath_hf3_adl_s, ( bcore_array* )o, size ); } \
+  static inline void bmath_hf3_adl_s_clear( bmath_hf3_adl_s* o ) { bcore_array_t_set_space( TYPEOF_bmath_hf3_adl_s, ( bcore_array* )o, 0 ); } \
+  static inline bmath_hf3_s* bmath_hf3_adl_s_push_c( bmath_hf3_adl_s* o, const bmath_hf3_s* v ) { bcore_array_t_push( TYPEOF_bmath_hf3_adl_s, ( bcore_array* )o, sr_twc( TYPEOF_bmath_hf3_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bmath_hf3_s* bmath_hf3_adl_s_push_d( bmath_hf3_adl_s* o,       bmath_hf3_s* v ) { bcore_array_t_push( TYPEOF_bmath_hf3_adl_s, ( bcore_array* )o, sr_tsd( TYPEOF_bmath_hf3_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bmath_hf3_s* bmath_hf3_adl_s_push( bmath_hf3_adl_s* o ) \
+  { \
+      bcore_array_t_push( TYPEOF_bmath_hf3_adl_s, ( bcore_array* )o, sr_t_create( TYPEOF_bmath_hf3_s ) ); \
+      return o->data[ o->size - 1 ]; \
+  }
 #define BETH_EXPAND_GROUP_bmath_hf3 \
   BCORE_FORWARD_OBJECT( bmath_hf3 ); \
   BCORE_FORWARD_OBJECT( bmath_hf3_s ); \
-  BETH_EXPAND_ITEM_bmath_hf3_s
+  BCORE_FORWARD_OBJECT( bmath_hf3_adl_s ); \
+  BETH_EXPAND_ITEM_bmath_hf3_s \
+  BETH_EXPAND_ITEM_bmath_hf3_adl_s
 
 /**********************************************************************************************************************/
 // source: bmath_hf3_vm
