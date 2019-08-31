@@ -21,7 +21,7 @@
 /** Holor of f3_t
  *
  *  A holor represents the canonic extension of a matrix (or generalization of a tensor) as inspired by
- *  Moon & Spencer's Theory of Holors.
+ *  Moon & Spencer's: "Theory of Holors".
  *
  *  The term holor in this scope is represented as a multidimensional array, where jagged arrays are explicitly excluded.
  *  Meaning that a (n+1)-holor is an array of n-holors of the same data-layout but independent values.
@@ -69,6 +69,9 @@ stamp : = aware bcore_inst
     sz_t [] d; // dimension data
     f3_t [] v; // value data
 };
+
+/// array dynamic of links
+stamp :adl = aware bcore_array { :s => []; };
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -202,11 +205,16 @@ void bmath_hf3_s_inc_order( bmath_hf3_s* o, sz_t dim );
  */
 void bmath_hf3_s_push( bmath_hf3_s* o, const bmath_hf3_s* src );
 
-void bmath_hf3_s_to_sink(    const bmath_hf3_s* o, bcore_sink* sink );
-void bmath_hf3_s_to_sink_nl( const bmath_hf3_s* o, bcore_sink* sink ); // appends newline
+void bmath_hf3_s_to_sink(      const bmath_hf3_s* o, bcore_sink* sink );
+void bmath_hf3_s_to_sink_nl(   const bmath_hf3_s* o, bcore_sink* sink ); // appends newline
 void bmath_hf3_s_to_stdout(    const bmath_hf3_s* o );
 void bmath_hf3_s_to_stdout_nl( const bmath_hf3_s* o ); // appends newline
 
+/** compacted version, single line */
+void bmath_hf3_s_brief_to_sink(        const bmath_hf3_s* o, bcore_sink* sink );
+void bmath_hf3_s_brief_to_stdout(      const bmath_hf3_s* o );
+
+/** multiline version */
 void bmath_hf3_s_formatted_to_sink(    const bmath_hf3_s* o, bcore_sink* sink );
 void bmath_hf3_s_formatted_to_stdout(  const bmath_hf3_s* o );
 

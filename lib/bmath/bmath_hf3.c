@@ -408,25 +408,25 @@ static void rec_to_sink( const bmath_hf3_s* o, sz_t indent, bl_t formatted, bcor
         for( sz_t i = 0; i < dim; i++ )
         {
             if( formatted && d_idx > 0 ) bcore_sink_a_push_fa( sink, "\n#rn{ }", indent );
-            bcore_sink_a_push_fa( sink, "{" );
+            bcore_sink_a_push_fa( sink, "(" );
             rec_to_sink( o, indent + 2, formatted, sink, v_data + i * v_block, d_idx - 1 );
             if( formatted && d_idx > 1 ) bcore_sink_a_push_fa( sink, "\n#rn{ }", indent );
-            bcore_sink_a_push_fa( sink, "}" );
+            bcore_sink_a_push_fa( sink, ")" );
         }
     }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_to_sink( const bmath_hf3_s* o, bcore_sink* sink )
+static void hf3_s_to_sink( const bmath_hf3_s* o, sz_t max_size, bcore_sink* sink )
 {
-    if( o->v_data )
+    if( o->v_size > 0 && ( max_size < 0 || o->v_size <= max_size ) )
     {
         if( o->d_size > 0 )
         {
-            bcore_sink_a_push_fa( sink, "{" );
+            bcore_sink_a_push_fa( sink, "(" );
             rec_to_sink( o, 0, false, sink, o->v_data, o->d_size - 1 );
-            bcore_sink_a_push_fa( sink, "}" );
+            bcore_sink_a_push_fa( sink, ")" );
         }
         else
         {
@@ -439,8 +439,29 @@ void bmath_hf3_s_to_sink( const bmath_hf3_s* o, bcore_sink* sink )
         {
             bcore_sink_a_push_fa( sink, "[#<sz_t>]", o->d_data[ i ] );
         }
-        bcore_sink_a_push_fa( sink, "##" );
+        if( o->v_size == 0 )
+        {
+            bcore_sink_a_push_fa( sink, "##" );
+        }
+        else
+        {
+            bcore_sink_a_push_fa( sink, "D" );
+        }
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_to_sink( const bmath_hf3_s* o, bcore_sink* sink )
+{
+    hf3_s_to_sink( o, -1, sink );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_brief_to_sink( const bmath_hf3_s* o, bcore_sink* sink )
+{
+    hf3_s_to_sink( o, 16, sink );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -451,10 +472,10 @@ void bmath_hf3_s_formatted_to_sink( const bmath_hf3_s* o, bcore_sink* sink )
     {
         if( o->d_size > 0 )
         {
-            bcore_sink_a_push_fa( sink, "{" );
+            bcore_sink_a_push_fa( sink, "(" );
             rec_to_sink( o, 2, true, sink, o->v_data, o->d_size - 1 );
             if( o->d_size > 1 ) bcore_sink_a_push_fa( sink, "\n" );
-            bcore_sink_a_push_fa( sink, "}\n" );
+            bcore_sink_a_push_fa( sink, ")\n" );
         }
         else
         {
@@ -484,6 +505,13 @@ void bmath_hf3_s_to_sink_nl( const bmath_hf3_s* o, bcore_sink* sink )
 void bmath_hf3_s_to_stdout( const bmath_hf3_s* o )
 {
     bmath_hf3_s_to_sink( o, BCORE_STDOUT );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_brief_to_stdout( const bmath_hf3_s* o )
+{
+    bmath_hf3_s_brief_to_sink( o, BCORE_STDOUT );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
