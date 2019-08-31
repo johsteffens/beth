@@ -126,7 +126,7 @@ void bcore_tbman_get_instance(                     vc_t ptr, vd_t* root, uz_t* g
  *
  *  release_*
  *    Advanced release functions for root objects with destructor.
- *    The owner calls the proper function for release and to specify how the object is to be destroyed
+ *    The owner calls the proper function for release to specify how the object is to be destroyed
  *    when last reference terminates. The function can be called any time during the object's lifetime.
  *    Release discriminates single objects, arrays, objects with single-argument destructor
  *    and objects with two-argument destructor. The latter can be used for a destructor served by a perspective.

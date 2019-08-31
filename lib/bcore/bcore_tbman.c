@@ -459,9 +459,12 @@ static void token_manager_s_release( token_manager_s* o, vd_t ptr )
 static void token_manager_s_release_obj( token_manager_s* o, fp_down_obj down, vd_t ptr )
 {
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
+    bl_t ptr_is_root = ( ( u0_t* )o + ( ( uz_t )token * o->block_size ) == ptr );
+
     if( !o->rc_count_arr )
     {
         bcore_mutex_s_unlock( o->mutex );
+        if( !ptr_is_root ) ERR( "Object is not root." );
         down( ptr );
         bcore_mutex_s_lock( o->mutex );
         token_manager_s_free_token( o, token );
@@ -471,8 +474,16 @@ static void token_manager_s_release_obj( token_manager_s* o, fp_down_obj down, v
     if( o->rc_count_arr[ token ] )
     {
         o->rc_count_arr[ token ]--;
-        if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
-        if( !o->rc_down_arr[ token ] ) o->rc_down_arr[ token ] = down_obj_s_create( o->down_manager, down );
+
+        /* We only safe down instruction when the object is root.
+         * Otherwise 'token' refers to a parent to which function down does not apply.
+         * In that case shut down information in controlled by the parent object.
+         */
+        if( ptr_is_root )
+        {
+            if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
+            if( !o->rc_down_arr[ token ] ) o->rc_down_arr[ token ] = down_obj_s_create( o->down_manager, down );
+        }
         return;
     }
 
@@ -490,9 +501,12 @@ static void token_manager_s_release_obj( token_manager_s* o, fp_down_obj down, v
 static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr )
 {
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
+    bl_t ptr_is_root = ( ( u0_t* )o + ( ( uz_t )token * o->block_size ) == ptr );
+
     if( !o->rc_count_arr )
     {
         bcore_mutex_s_unlock( o->mutex );
+        if( !ptr_is_root ) ERR( "Object is not root." );
         down( arg, ptr );
         bcore_mutex_s_lock( o->mutex );
         token_manager_s_free_token( o, token );
@@ -502,8 +516,16 @@ static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, v
     if( o->rc_count_arr[ token ] )
     {
         o->rc_count_arr[ token ]--;
-        if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
-        if( !o->rc_down_arr[ token ] ) o->rc_down_arr[ token ] = down_arg_s_create( o->down_manager, down, arg );
+
+        /* We only safe down instruction when the object is root.
+         * Otherwise 'token' refers to a parent to which function down does not apply.
+         * In that case shut down information in controlled by the parent object.
+         */
+        if( ptr_is_root )
+        {
+            if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
+            if( !o->rc_down_arr[ token ] ) o->rc_down_arr[ token ] = down_arg_s_create( o->down_manager, down, arg );
+        }
         return;
     }
 
@@ -1235,19 +1257,30 @@ static void external_manager_s_release( external_manager_s* o, vd_t ptr )
 
 static void external_manager_s_release_obj( external_manager_s* o, fp_down_obj down, vd_t ptr )
 {
-    vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
-    if( !ext_p ) ERR( "Object is not root." );
-    ext_s* ext = *ext_p;
+    bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ptr );
+    if( !kv ) ERR( "Object has no root address in dynamic memory." );
+    bl_t ptr_is_root = ( kv->key == ptr );
+    ext_s* ext = kv->val;
     if( ext->rc_count )
     {
         ext->rc_count--;
-        if( !ext->rc_down ) ext->rc_down = down_obj_s_create( o->down_manager, down );
+
+        /* We only safe down instruction when the object is root.
+         * Otherwise 'token' refers to a parent to which function down does not apply.
+         * In that case shut down information in controlled by the parent object.
+         */
+        if( ptr_is_root && !ext->rc_down )
+        {
+            assert( o->down_manager );
+            ext->rc_down = down_obj_s_create( o->down_manager, down );
+        }
     }
     else
     {
         if( !ext->rc_down )
         {
             bcore_mutex_s_unlock( o->mutex );
+            if( !ptr_is_root ) ERR( "Object is not root." );
             down( ptr );
             bcore_mutex_s_lock( o->mutex );
         }
@@ -1259,20 +1292,30 @@ static void external_manager_s_release_obj( external_manager_s* o, fp_down_obj d
 
 static void external_manager_s_release_arg( external_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr )
 {
-    vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
-    if( !ext_p ) ERR( "Object is not root." );
-    ext_s* ext = *ext_p;
+    bcore_btree_pp_kv_s* kv = bcore_btree_pp_s_largest_below_equal( o->ex_btree, ptr );
+    if( !kv ) ERR( "Object has no root address in dynamic memory." );
+    bl_t ptr_is_root = ( kv->key == ptr );
+    ext_s* ext = kv->val;
     if( ext->rc_count )
     {
         ext->rc_count--;
-        assert( o->down_manager );
-        if( !ext->rc_down ) ext->rc_down = down_arg_s_create( o->down_manager, down, arg );
+
+        /* We only safe down instruction when the object is root.
+         * Otherwise 'token' refers to a parent to which function down does not apply.
+         * In that case shut down information in controlled by the parent object.
+         */
+        if( ptr_is_root && !ext->rc_down )
+        {
+            assert( o->down_manager );
+            ext->rc_down = down_arg_s_create( o->down_manager, down, arg );
+        }
     }
     else
     {
         if( !ext->rc_down )
         {
             bcore_mutex_s_unlock( o->mutex );
+            if( !ptr_is_root ) ERR( "Object is not root." );
             down( arg, ptr );
             bcore_mutex_s_lock( o->mutex );
         }
