@@ -124,9 +124,16 @@ BCORE_DECLARE_OBJECT( bcore_sink_stdout_s ) { aware_t _; };
 void bcore_sink_stdout_s_flush(      bcore_sink_stdout_s* o );
 uz_t bcore_sink_stdout_s_push_data(  bcore_sink_stdout_s* o, vc_t data, uz_t size );
 
+// stderr sink
+BCORE_DECLARE_OBJECT( bcore_sink_stderr_s ) { aware_t _; };
+void bcore_sink_stderr_s_flush(      bcore_sink_stderr_s* o );
+uz_t bcore_sink_stderr_s_push_data(  bcore_sink_stderr_s* o, vc_t data, uz_t size );
+
 extern bcore_sink_stdout_s* bcore_sink_stdout_g;
+extern bcore_sink_stderr_s* bcore_sink_stderr_g;
 
 #define BCORE_STDOUT ( bcore_sink* )bcore_sink_stdout_g
+#define BCORE_STDERR ( bcore_sink* )bcore_sink_stderr_g
 
 /**********************************************************************************************************************/
 

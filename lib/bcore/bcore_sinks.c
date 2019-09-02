@@ -35,10 +35,14 @@ static void chain_init_a( bcore_nucleus_s* nc )
     o->_ = TYPEOF_bcore_sink_chain_s;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_chain_s_init( bcore_sink_chain_s* o )
 {
     bcore_inst_t_init( TYPEOF_bcore_sink_chain_s, (bcore_inst*)o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void chain_down_a( bcore_nucleus_s* nc )
 {
@@ -47,10 +51,14 @@ static void chain_down_a( bcore_nucleus_s* nc )
     nc->default_handler( nc );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_chain_s_down( bcore_sink_chain_s* o )
 {
     bcore_inst_t_down( TYPEOF_bcore_sink_chain_s, ( bcore_inst* )o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void chain_copy_a( bcore_nucleus_s* nc )
 {
@@ -59,25 +67,35 @@ static void chain_copy_a( bcore_nucleus_s* nc )
     for( uz_t i = 1; i < o->size; i++ ) bcore_sink_a_set_consumer( o->data[ i ], o->data[ i - 1 ] );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_chain_s_copy( bcore_sink_chain_s* o, const bcore_sink_chain_s* src )
 {
     bcore_inst_t_copy( TYPEOF_bcore_sink_chain_s, (bcore_inst*)o, src );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_sink_chain_s_discard( bcore_sink_chain_s* o )
 {
     bcore_inst_t_discard( TYPEOF_bcore_sink_chain_s, (bcore_inst*)o );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bcore_sink_chain_s* bcore_sink_chain_s_create()
 {
     return bcore_inst_t_create( TYPEOF_bcore_sink_chain_s );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bcore_sink_chain_s* bcore_sink_chain_s_clone( const bcore_sink_chain_s* o )
 {
     return bcore_inst_t_clone( TYPEOF_bcore_sink_chain_s, (bcore_inst*)o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void chain_interpret_body_a( vd_t nc )
 {
@@ -87,6 +105,8 @@ static void chain_interpret_body_a( vd_t nc )
     for( uz_t i = 1; i < o->size; i++ ) bcore_sink_a_set_consumer( o->data[ i ], o->data[ i - 1 ] );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_chain_s_push_d( bcore_sink_chain_s* o, vd_t sink )
 {
     const bcore_array_s* arr_p = bcore_array_s_get_typed( TYPEOF_bcore_sink_chain_s );
@@ -94,27 +114,39 @@ void bcore_sink_chain_s_push_d( bcore_sink_chain_s* o, vd_t sink )
     if( o->size > 1 ) bcore_sink_a_set_consumer( o->data[ o->size - 1 ], o->data[ o->size - 2 ] );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_chain_s_push_type( bcore_sink_chain_s* o, tp_t type )
 {
     bcore_sink_chain_s_push_d( o, bcore_inst_t_create( type ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_sink_chain_s_flush( bcore_sink_chain_s* o )
 {
     for( uz_t i = o->size; i > 0; i-- ) bcore_sink_a_flush( o->data[ i - 1 ] );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static uz_t chain_flow_snk( bcore_sink_chain_s* o, vc_t data, uz_t size )
 {
     return ( o->size > 0 ) ? bcore_sink_a_push_data( o->data[ o->size - 1 ], data, size ) : 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_sink_chain_s_push_data( bcore_sink_chain_s* o, vc_t data, uz_t size )
 {
     return chain_flow_snk( o, data, size );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* chain_s_create_self( void )
 {
@@ -136,9 +168,13 @@ static bcore_self_s* chain_s_create_self( void )
     return self;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// bcore_sink_buffer_s
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_sink_buffer_s_init( bcore_sink_buffer_s* o )
 {
@@ -147,30 +183,42 @@ void bcore_sink_buffer_s_init( bcore_sink_buffer_s* o )
     o->entrepot_size = 4096;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_buffer_s_down( bcore_sink_buffer_s* o )
 {
     bcore_inst_t_down( TYPEOF_bcore_sink_buffer_s, ( bcore_inst* )o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_sink_buffer_s_discard( bcore_sink_buffer_s* o )
 {
     bcore_inst_t_discard( TYPEOF_bcore_sink_buffer_s, (bcore_inst*)o );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_buffer_s_copy( bcore_sink_buffer_s* o, const bcore_sink_buffer_s* src )
 {
     bcore_inst_t_copy( TYPEOF_bcore_sink_buffer_s, (bcore_inst*)o, src );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bcore_sink_buffer_s* bcore_sink_buffer_s_create()
 {
     return bcore_inst_t_create( TYPEOF_bcore_sink_buffer_s );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bcore_sink_buffer_s* bcore_sink_buffer_s_clone( const bcore_sink_buffer_s* o )
 {
     return bcore_inst_t_clone( TYPEOF_bcore_sink_buffer_s, (bcore_inst*)o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_sink_buffer_s_flush( bcore_sink_buffer_s* o )
 {
@@ -181,6 +229,8 @@ void bcore_sink_buffer_s_flush( bcore_sink_buffer_s* o )
         o->size = 0;
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t buffer_flow_snk( bcore_sink_buffer_s* o, vc_t data, uz_t size )
 {
@@ -196,10 +246,14 @@ static uz_t buffer_flow_snk( bcore_sink_buffer_s* o, vc_t data, uz_t size )
     return size;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_sink_buffer_s_push_data( bcore_sink_buffer_s* o, vc_t data, uz_t size )
 {
     return buffer_flow_snk( o, data, size );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_sink_chain_s_set_consumer( bcore_sink_chain_s* o, vd_t consumer )
 {
@@ -207,7 +261,11 @@ void bcore_sink_chain_s_set_consumer( bcore_sink_chain_s* o, vd_t consumer )
     bcore_sink_a_set_consumer( o->data[ 0 ], consumer );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* buffer_s_create_self( void )
 {
@@ -227,14 +285,20 @@ static bcore_self_s* buffer_s_create_self( void )
     return self;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_buffer_s_set_consumer( bcore_sink_buffer_s* o, vd_t consumer )
 {
     o->consumer = consumer;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// bcore_sink_file_s
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /** File data sink (copyable, serializable)
   * The 'open' state is not copied;
@@ -246,6 +310,8 @@ typedef struct bcore_sink_file_s
     FILE* handle;
 } bcore_sink_file_s;
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static void file_init_a( bcore_nucleus_s* nc )
 {
     bcore_sink_file_s* o = nc->client;
@@ -253,10 +319,14 @@ static void file_init_a( bcore_nucleus_s* nc )
     o->_ = TYPEOF_bcore_sink_file_s;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_file_s_init( bcore_sink_file_s* o )
 {
     bcore_inst_t_init( TYPEOF_bcore_sink_file_s, (bcore_inst*)o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void file_down_a( bcore_nucleus_s* nc )
 {
@@ -265,10 +335,14 @@ static void file_down_a( bcore_nucleus_s* nc )
     nc->default_handler( nc );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_file_s_down( bcore_sink_file_s* o )
 {
     bcore_inst_t_down( TYPEOF_bcore_sink_file_s, ( bcore_inst* )o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void file_copy_a( bcore_nucleus_s* nc )
 {
@@ -277,20 +351,28 @@ static void file_copy_a( bcore_nucleus_s* nc )
     nc->default_handler( nc );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_file_s_copy( bcore_sink_file_s* o, const bcore_sink_file_s* src )
 {
     bcore_inst_t_copy( TYPEOF_bcore_sink_file_s, (bcore_inst*)o, src );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_sink_file_s_discard( bcore_sink_file_s* o )
 {
     bcore_inst_t_discard( TYPEOF_bcore_sink_file_s, (bcore_inst*)o );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bcore_sink_file_s* bcore_sink_file_s_create()
 {
     return bcore_inst_t_create( TYPEOF_bcore_sink_file_s );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bcore_sink_file_s* bcore_sink_file_s_create_name( sc_t name )
 {
@@ -299,15 +381,21 @@ bcore_sink_file_s* bcore_sink_file_s_create_name( sc_t name )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 sc_t bcore_sink_file_s_get_name( const bcore_sink_file_s* o )
 {
     return o->name->sc;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bcore_sink_file_s* bcore_sink_file_s_clone( const bcore_sink_file_s* o )
 {
     return bcore_inst_t_clone( TYPEOF_bcore_sink_file_s, (bcore_inst*)o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_sink_file_s_open( bcore_sink_file_s* o )
 {
@@ -323,6 +411,8 @@ void bcore_sink_file_s_open( bcore_sink_file_s* o )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_file_s_close( bcore_sink_file_s* o )
 {
     if( !o->handle ) return;
@@ -336,6 +426,8 @@ void bcore_sink_file_s_close( bcore_sink_file_s* o )
     o->handle = NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_file_s_flush( bcore_sink_file_s* o )
 {
     if( !o->handle ) return;
@@ -348,12 +440,16 @@ void bcore_sink_file_s_flush( bcore_sink_file_s* o )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static void file_interpret_body_a( vd_t nc )
 {
     struct { ap_t a; vc_t p; vc_t inter; vd_t sink; tp_t type; vd_t obj; } * nc_l = nc;
     bcore_sink_file_s_close( nc_l->obj );
     nc_l->a( nc ); // default
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t file_flow_snk( bcore_sink_file_s* o, vc_t data, uz_t size )
 {
@@ -371,12 +467,18 @@ static uz_t file_flow_snk( bcore_sink_file_s* o, vc_t data, uz_t size )
     return wsize;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_sink_file_s_push_data( bcore_sink_file_s* o, vc_t data, uz_t size )
 {
     return file_flow_snk( o, data, size );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* file_s_create_self( void )
 {
@@ -398,7 +500,11 @@ static bcore_self_s* file_s_create_self( void )
     return self;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bcore_sink_chain_s* bcore_sink_open_file( sc_t file_name )
 {
@@ -407,6 +513,8 @@ bcore_sink_chain_s* bcore_sink_open_file( sc_t file_name )
     bcore_sink_chain_s_push_d( chain, bcore_inst_t_create( typeof( "bcore_sink_buffer_s" ) ) );
     return chain;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
@@ -418,18 +526,55 @@ BCORE_DEFINE_OBJECT_INST_AUT( bcore_sink, bcore_sink_stdout_s ) "{ aware_t _; fu
 
 bcore_sink_stdout_s* bcore_sink_stdout_g = NULL;
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_stdout_s_flush( bcore_sink_stdout_s* o )
 {
     // nothing
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_sink_stdout_s_push_data( bcore_sink_stdout_s* o, vc_t data, uz_t size )
 {
-    st_s_print_d( st_s_create_sc_n( data, size ) );
+    st_s* msg = st_s_create_sc_n( data, size );
+    fprintf( stdout, "%s", msg->sc );
+    st_s_discard( msg );
     return size;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+/// bcore_sink_stderr_s
+/**********************************************************************************************************************/
+
+BCORE_DEFINE_OBJECT_INST_AUT( bcore_sink, bcore_sink_stderr_s ) "{ aware_t _; func bcore_fp_flow_snk push_data = bcore_sink_stderr_s_push_data; }";
+
+bcore_sink_stderr_s* bcore_sink_stderr_g = NULL;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_sink_stderr_s_flush( bcore_sink_stderr_s* o )
+{
+    // nothing
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_sink_stderr_s_push_data( bcore_sink_stderr_s* o, vc_t data, uz_t size )
+{
+    st_s* msg = st_s_create_sc_n( data, size );
+    fprintf( stderr, "%s", msg->sc );
+    st_s_discard( msg );
+    return size;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_sinks_signal_handler( const bcore_signal_s* o )
 {
@@ -443,15 +588,18 @@ vd_t bcore_sinks_signal_handler( const bcore_signal_s* o )
 
             BCORE_REGISTER_FFUNC( bcore_fp_flow_snk, bcore_sink_stdout_s_push_data );
             BCORE_REGISTER_OBJECT( bcore_sink_stdout_s );
+            BCORE_REGISTER_FFUNC( bcore_fp_flow_snk, bcore_sink_stderr_s_push_data );
+            BCORE_REGISTER_OBJECT( bcore_sink_stderr_s );
 
             bcore_sink_stdout_g = bcore_sink_stdout_s_create();
+            bcore_sink_stderr_g = bcore_sink_stderr_s_create();
         }
         break;
 
         case TYPEOF_down1:
         {
-             bcore_sink_stdout_s_discard( bcore_sink_stdout_g );
-             bcore_sink_stdout_g = NULL;
+             bcore_sink_stdout_s_detach( &bcore_sink_stdout_g );
+             bcore_sink_stderr_s_detach( &bcore_sink_stderr_g );
         }
 
         case TYPEOF_selftest:
@@ -464,6 +612,8 @@ vd_t bcore_sinks_signal_handler( const bcore_signal_s* o )
 
     return NULL;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
