@@ -70,7 +70,7 @@ void bcore_source_default_parse_errvf( const bcore_source_s* p, bcore_source* o,
     st_s* msg = st_s_createvf( format, args );
     bcore_sink_a_push_fa( BCORE_STDERR, "#<sc_t>\n", msg->sc );
     st_s_discard( msg );
-    bcore_abort();
+    bcore_exit( 1 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -116,6 +116,7 @@ void bcore_source_default_parse_err_fv( const bcore_source_s* p, bcore_source* o
 
 void bcore_source_default_parse_msg_to_sink_fv( const bcore_source_s* p, bcore_source* o, bcore_sink* sink, sc_t format, va_list args )
 {
+    if( !sink ) return;
     st_s* s = st_s_create_fv( format, args );
     if( s->size > 0 && s->data[ s->size - 1 ] != '\n' ) st_s_push_char( s, '\n' );
     bcore_sink_a_push_fa( sink, "#<sc_t>", s->sc );

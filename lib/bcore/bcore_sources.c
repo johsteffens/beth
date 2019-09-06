@@ -682,7 +682,7 @@ static uz_t string_s_parse_err( vd_t arg, const st_s* string, uz_t idx, st_s* ex
     bcore_sink_a_push_fa( BCORE_STDERR, "Parse error: " );
     string_context_to_sink( o, BCORE_STDERR );
     bcore_sink_a_push_fa( BCORE_STDERR, "#<sc_t>\n", ext_msg->sc );
-    bcore_abort();
+    bcore_exit( 1 );
     return idx;
 }
 
@@ -987,23 +987,9 @@ void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t inde
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void file_p_errorvf( bcore_source_file_s* o, sc_t format, va_list args )
-{
-    ERR( "File name: %s\n%s\n", o->name->sc, st_s_createvf( format, args )->sc );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 static void file_context_to_sink( bcore_source_file_s* o, bcore_sink* sink )
 {
     bcore_sink_a_pushf( sink, "File name: %s\n", o->name->sc );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static void file_p_messagevf( bcore_source_file_s* o, sc_t format, va_list args )
-{
-    bcore_msg( "File name: %s\n%s\n", o->name->sc, st_s_createvf( format, args )->sc );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1024,9 +1010,7 @@ static bcore_self_s* file_s_create_self( void )
     bcore_self_s_push_ns_amoeba( self, file_copy_a, "copy" );
     bcore_self_s_push_ns_func( self, ( fp_t )file_interpret_body_a,         "ap_t",                            "interpret_body" );
     bcore_self_s_push_ns_func( self, ( fp_t )file_flow_src,                 "bcore_fp_flow_src",               "flow_src"  );
-    bcore_self_s_push_ns_func( self, ( fp_t )file_p_errorvf,                "bcore_fp_logvf",                  "p_errorvf" );
     bcore_self_s_push_ns_func( self, ( fp_t )file_context_to_sink,          "bcore_source_fp_context_to_sink", "context_to_sink" );
-    bcore_self_s_push_ns_func( self, ( fp_t )file_p_messagevf,              "bcore_fp_logvf",                  "p_messagevf" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_eos,       "bcore_source_fp_eos",             "eos" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_get_file,  "bcore_source_fp_get_file",        "get_file" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_get_index, "bcore_source_fp_get_index",       "get_index" );
@@ -1107,7 +1091,7 @@ void bcore_source_point_s_parse_msg_to_sink_fv( const bcore_source_point_s* o, b
     }
     else
     {
-        bcore_msg_fv( format, args );
+        if( sink ) bcore_sink_a_push_fv( sink, format, args );
     }
 }
 
