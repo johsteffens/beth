@@ -158,10 +158,13 @@ void bmath_hf3_s_set_scalar_pf3( bmath_hf3_s* o, f3_t* v );
 void bmath_hf3_s_set_scalar_f3( bmath_hf3_s* o, f3_t v );
 
 /**********************************************************************************************************************/
-/// comparison
+/// status
 
 bl_t bmath_hf3_s_d_equal( const bmath_hf3_s* o, const bmath_hf3_s* src ); // compares d_data
 bl_t bmath_hf3_s_v_equal( const bmath_hf3_s* o, const bmath_hf3_s* src ); // compares v_data (independently of d_data)
+
+bl_t bmath_hf3_s_is_equal(  const bmath_hf3_s* o, const bmath_hf3_s* src );
+bl_t bmath_hf3_s_is_scalar( const bmath_hf3_s* o );
 
 /**********************************************************************************************************************/
 /// weak conversion
@@ -238,8 +241,17 @@ void bmath_hf3_s_zro( const bmath_hf3_s* o );
 /// o -> r
 void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r );
 
+/// exp(o) -> r
+void bmath_hf3_s_exp( const bmath_hf3_s* o, bmath_hf3_s* r );
+
 /// tanh(o) -> r
 void bmath_hf3_s_tanh( const bmath_hf3_s* o, bmath_hf3_s* r );
+
+/// relu(o) -> r  (f(x) = x > 0 ? x : 0)
+void bmath_hf3_s_relu( const bmath_hf3_s* o, bmath_hf3_s* r );
+
+/// leaky relu(o) -> r  (f(x) = x > 0 ? x : x * 0.01)
+void bmath_hf3_s_lrelu( const bmath_hf3_s* o, bmath_hf3_s* r );
 
 /// o + m -> r
 void bmath_hf3_s_add( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );

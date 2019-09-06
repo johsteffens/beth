@@ -297,7 +297,7 @@ void bmath_hf3_s_set_scalar_f3( bmath_hf3_s* o, f3_t v )
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-/// comparison
+/// status
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -315,6 +315,22 @@ bl_t bmath_hf3_s_v_equal( const bmath_hf3_s* o, const bmath_hf3_s* src )
     if( o->v_size != src->v_size ) return false;
     for( sz_t i = 0; i < o->v_size; i++ ) if( o->v_data[ i ] != src->v_data[ i ] ) return false;
     return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_hf3_s_is_equal( const bmath_hf3_s* o, const bmath_hf3_s* op )
+{
+    if( !bmath_hf3_s_d_equal( o, op ) ) return false;
+    if( !bmath_hf3_s_v_equal( o, op ) ) return false;
+    return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_hf3_s_is_scalar( const bmath_hf3_s* o )
+{
+    return o->d_size == 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -618,10 +634,34 @@ void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_hf3_s_exp( const bmath_hf3_s* o, bmath_hf3_s* r )
+{
+    ASSERT( o->v_size == r->v_size );
+    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = exp( o->v_data[ i ] );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_s_tanh( const bmath_hf3_s* o, bmath_hf3_s* r )
 {
     ASSERT( o->v_size == r->v_size );
     for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = tanh( o->v_data[ i ] );
+}
+
+static f3_t relu_f3( f3_t x ) { return x > 0 ? x : 0; }
+void bmath_hf3_s_relu( const bmath_hf3_s* o, bmath_hf3_s* r )
+{
+    ASSERT( o->v_size == r->v_size );
+    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = relu_f3( o->v_data[ i ] );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static f3_t lrelu_f3( f3_t x ) { return x > 0 ? x : x * 0.01; }
+void bmath_hf3_s_lrelu( const bmath_hf3_s* o, bmath_hf3_s* r )
+{
+    ASSERT( o->v_size == r->v_size );
+    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = lrelu_f3( o->v_data[ i ] );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
