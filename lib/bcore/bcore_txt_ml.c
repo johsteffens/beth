@@ -75,7 +75,6 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
     st_s* ind = st_s_push_char_n( st_s_create_l( l ), ' ', depth * o->indent );
     st_s* buf = st_s_create_l( l );
 
-
     // shelving obj_l
     if( obj_l.o && bcore_via_r_defines_shelve( &obj_l ) )
     {
