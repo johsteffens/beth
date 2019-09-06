@@ -33,6 +33,7 @@
 /**********************************************************************************************************************/
 /// exiting
 void bcore_abort(); // program abort due to an internal error
+void bcore_exit( s2_t return_value ); // program exit with return value
 
 /**********************************************************************************************************************/
 /// basic messaging

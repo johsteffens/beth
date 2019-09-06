@@ -20,9 +20,26 @@
 #include "bcore_signal.h"
 #include "bcore_sc.h"
 
+void bcore_terminate( s2_t return_value, bl_t force_abort )
+{
+    if( force_abort )
+    {
+        abort();
+    }
+    else
+    {
+        exit( return_value );
+    }
+}
+
 void bcore_abort()
 {
-    abort();
+    bcore_terminate( 0, true );
+}
+
+void bcore_exit( s2_t return_value )
+{
+    bcore_terminate( return_value, false );
 }
 
 void bcore_write_fv( FILE* file, sc_t format, va_list args )
