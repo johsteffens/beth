@@ -2449,11 +2449,15 @@ void bcore_tbman_s_for_each_instance( bcore_tbman_s* o, void (*cb)( vd_t arg, vd
     free( arr.data );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_tbman_granted_space( vc_t ptr )
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_granted_space( tbman_s_g, ptr );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_tbman_total_granted_space()
 {
@@ -2461,11 +2465,15 @@ uz_t bcore_tbman_total_granted_space()
     return bcore_tbman_s_total_granted_space( tbman_s_g );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_tbman_total_instances()
 {
     assert( tbman_s_g != NULL );
     return bcore_tbman_s_total_instances( tbman_s_g );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_tbman_total_references()
 {
@@ -2473,11 +2481,15 @@ uz_t bcore_tbman_total_references()
     return bcore_tbman_s_total_references( tbman_s_g );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_for_each_instance( void (*cb)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg )
 {
     assert( tbman_s_g != NULL );
     bcore_tbman_s_for_each_instance( tbman_s_g, cb, arg );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // not thread-safe
 st_s* bcore_tbman_s_status( bcore_tbman_s* o, int detail_level )
@@ -2549,6 +2561,8 @@ st_s* bcore_tbman_s_status( bcore_tbman_s* o, int detail_level )
     return str;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 #include <stdio.h>
 static void instance_diagnostics( vd_t arg, vd_t ptr, uz_t space )
 {
@@ -2564,15 +2578,21 @@ static void instance_diagnostics( vd_t arg, vd_t ptr, uz_t space )
     printf( "\n" );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_s_instance_disgnostics( bcore_tbman_s* o )
 {
     bcore_tbman_s_for_each_instance( o, instance_diagnostics, NULL );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_tbman_instance_disgnostics()
 {
     bcore_tbman_for_each_instance( instance_diagnostics, NULL );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // Testing and evaluation

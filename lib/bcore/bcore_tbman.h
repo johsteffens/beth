@@ -163,7 +163,10 @@ uz_t bcore_tbman_s_total_granted_space( bcore_tbman_s* o );
 uz_t bcore_tbman_s_total_instances(     bcore_tbman_s* o );
 uz_t bcore_tbman_s_total_references(    bcore_tbman_s* o );
 
-/// applies a function to all instances
+/** Applies a function to all instances.
+ *  The callback function may change the state of memory manager. (E.g. free memory)
+ *  Eligible instances and their order are determined before calling the first callback.
+ */
 void bcore_tbman_s_for_each_instance( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg );
 
 /// runs instance diagnostics (e.g. to determine the cause of memory leaks)
