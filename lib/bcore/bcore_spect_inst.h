@@ -358,6 +358,17 @@ name* name##_clone( const name* o ) \
     static sc_t name##_def_g = #name " ="
 
 /**********************************************************************************************************************/
+// virtual aware object
+
+#define BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( name ) \
+    typedef struct name { aware_t _; } name; \
+    static inline name* name##_a_clone( const name* o ) { return ( name* )bcore_inst_a_clone( ( bcore_inst* )o ); } \
+    static inline void name##_a_discard( name* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); } \
+    static inline void name##_a_detach( name** o ) { if( !o ) return; bcore_inst_a_discard( ( bcore_inst* )*o ); *o = NULL; } \
+    static inline void name##_a_attach( name** o, name* src ) { if( src ) bcore_inst_a_attach( ( bcore_inst** )o, ( bcore_inst* )src ); } \
+    static inline void name##_a_replicate( name** o, const name* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); }
+
+/**********************************************************************************************************************/
 
 vd_t bcore_spect_inst_signal_handler( const bcore_signal_s* o );
 
