@@ -206,7 +206,7 @@ void bmath_hf3_s_set_size( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size )
 void bmath_hf3_s_copy_size( bmath_hf3_s* o, const bmath_hf3_s* src )
 {
     bmath_hf3_s_set_d_data( o, src->d_data, src->d_size );
-    if( o->v_data )
+    if( src->v_size )
     {
         bmath_hf3_s_fit_v_size( o );
     }
@@ -634,6 +634,14 @@ void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_hf3_s_unary( const bmath_hf3_s* o, bmath_fp_f3_unary unary, bmath_hf3_s* r )
+{
+    ASSERT( o->v_size == r->v_size );
+    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = unary( o->v_data[ i ] );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_s_exp( const bmath_hf3_s* o, bmath_hf3_s* r )
 {
     ASSERT( o->v_size == r->v_size );
@@ -647,6 +655,8 @@ void bmath_hf3_s_tanh( const bmath_hf3_s* o, bmath_hf3_s* r )
     ASSERT( o->v_size == r->v_size );
     for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = tanh( o->v_data[ i ] );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static f3_t relu_f3( f3_t x ) { return x > 0 ? x : 0; }
 void bmath_hf3_s_relu( const bmath_hf3_s* o, bmath_hf3_s* r )

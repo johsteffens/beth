@@ -268,7 +268,7 @@ badapt_adaptive* badapt_builder_mlp_funnel_s_build( const badapt_builder_mlp_fun
 
     badapt_dynamics_std_s_copy( &mlp->dynamics, &o->dynamics );
 
-    BCORE_LIFE_RETURN( ( badapt_adaptive* )mlp );
+    BCORE_LIFE_RETURNV( badapt_adaptive*, ( badapt_adaptive* )mlp );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

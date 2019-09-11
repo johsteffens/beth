@@ -216,7 +216,7 @@ badapt_adaptive* badapt_ern_builder_s_build( const badapt_ern_builder_s* o )
     ern->a_h = badapt_activator_a_clone( o->a_h );
     ern->a_o = badapt_activator_a_clone( o->a_o );
 
-    BCORE_LIFE_RETURN( ( badapt_adaptive* )ern );
+    BCORE_LIFE_RETURNV( badapt_adaptive*, ( badapt_adaptive* )ern );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

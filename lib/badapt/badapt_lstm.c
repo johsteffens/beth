@@ -566,7 +566,7 @@ badapt_adaptive* badapt_lstm_builder_s_build( const badapt_lstm_builder_s* o )
     bmath_mf3_s_set_random( &lstm->w_ih, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
     bmath_mf3_s_set_random( &lstm->w_qh, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
 
-    BCORE_LIFE_RETURN( ( badapt_adaptive* )lstm );
+    BCORE_LIFE_RETURNV( badapt_adaptive*, ( badapt_adaptive* )lstm );
 }
 
 #endif // TYPEOF_badapt_lstm_s

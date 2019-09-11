@@ -417,7 +417,7 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s o
 
     st_s_discard( file );
 
-    BCORE_LIFE_RETURN( obj );
+    BCORE_LIFE_RETURNV( sr_s, obj );
 }
 
 

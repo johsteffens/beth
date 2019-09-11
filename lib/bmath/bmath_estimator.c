@@ -148,7 +148,7 @@ static vd_t selftest( void )
     }
 //    bcore_txt_ml_a_to_stdout( p );
 
-    BCORE_LIFE_RETURN( NULL );
+    BCORE_LIFE_RETURNV( vd_t, NULL );
 }
 
 /**********************************************************************************************************************/

@@ -192,7 +192,7 @@ s2_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, const bcore_arr_st_s*
 
     badapt_adaptive_a_arc_to_sink( badapt_training_state_a_get_adaptive( state ), BCORE_STDOUT );
     badapt_trainer_a_run( o->trainer, state );
-    BCORE_LIFE_RETURN( 0 );
+    BCORE_LIFE_RETURNV( s2_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

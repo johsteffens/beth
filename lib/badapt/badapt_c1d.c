@@ -431,7 +431,7 @@ badapt_adaptive* badapt_builder_c1d_funnel_s_build( const badapt_builder_c1d_fun
     c1d->max_buffer_size = max_buffer_size;
     badapt_dynamics_std_s_copy( &c1d->dynamics, &o->dynamics );
 
-    BCORE_LIFE_RETURN( ( badapt_adaptive* )c1d );
+    BCORE_LIFE_RETURNV( badapt_adaptive*, ( badapt_adaptive* )c1d );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

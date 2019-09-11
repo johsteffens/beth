@@ -53,6 +53,7 @@ void bcore_life_s_init( struct bcore_life_s* o )
 
 void bcore_life_s_down( struct bcore_life_s* o )
 {
+    assert( o );
     bcore_release_obj_arr( ( fp_t )bcore_life_item_s_down, o->data, o->size, sizeof( bcore_life_item_s ) );
 }
 
@@ -61,6 +62,7 @@ BCORE_DEFINE_FUNCTION_DISCARD( bcore_life_s )
 
 bcore_life_item_s* bcore_life_s_push_item( bcore_life_s* o )
 {
+    assert( o );
     if( !o->data )
     {
         o->space = 4;

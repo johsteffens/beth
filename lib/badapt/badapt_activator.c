@@ -42,7 +42,7 @@ badapt_activator* badapt_activator_create_from_names( sc_t sc_activator, sc_t sc
             ? typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "badapt_activation_#<sc_t>_s", sc_activation ) ) )->sc )
             : 0;
     badapt_activator* activator = badapt_activator_create_from_types( tp_activator, tp_activation );
-    BCORE_LIFE_RETURN( activator );
+    BCORE_LIFE_RETURNV( badapt_activator*, activator );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

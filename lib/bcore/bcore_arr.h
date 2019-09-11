@@ -207,6 +207,6 @@ vd_t bcore_arr_signal_handler( const bcore_signal_s* o );
 /**********************************************************************************************************************/
 /// macros
 
-#define BFOR_EACH( obj, idx ) for( sz_t idx = 0; idx < obj->size; idx++ )
+#define BFOR_EACH( obj, idx ) if( obj ) for( sz_t idx = 0; idx < (obj)->size; idx++ )
 
 #endif // BCORE_ARR_H

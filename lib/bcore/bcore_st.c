@@ -234,6 +234,8 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
         case TYPEOF_f3_t: st_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
         case TYPEOF_sz_t: st_s_copyf( o, "%ti",     *(const sz_t*)src ); break;
         case TYPEOF_uz_t: st_s_copyf( o, "%zu",     *(const uz_t*)src ); break;
+        case TYPEOF_vd_t: st_s_copyf( o, "%p",      *(const vd_t*)src ); break;
+        case TYPEOF_vc_t: st_s_copyf( o, "%p",      *(const vc_t*)src ); break;
 
         case TYPEOF_smax_t:   st_s_copyf( o, "%"PRIiMAX, *(const smax_t*)src ); break;
         case TYPEOF_umax_t:   st_s_copyf( o, "%"PRIuMAX, *(const umax_t*)src ); break;

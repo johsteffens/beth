@@ -154,6 +154,16 @@ group :op =
             func   : :csetup   = { if( !o ) o = ::tanh_s_create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
             func ::: :run = { bmath_hf3_s_tanh( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3 ); };
         };
+
+        /// unary(a) -> b
+        stamp ::unary = aware :
+        {
+            sz_t a; sz_t b;
+            bmath_fp_f3_unary unary;
+            func   : :set_args = :body_set_args;
+            func   : :csetup   = { if( !o ) o = ::unary_s_create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
+            func ::: :run = { bmath_hf3_s_unary( &hbase[ o->a ].hf3, o->unary, &hbase[ o->b ].hf3 ); };
+        };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -317,6 +327,15 @@ void bmath_hf3_vm_frame_s_dealloc_holors( bmath_hf3_vm_frame_s* o, tp_t type );
 void bmath_hf3_vm_frame_s_push_op_d( bmath_hf3_vm_frame_s* o, tp_t proc, bmath_hf3_vm_op* op );
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// prototypes, inline
+static inline bmath_hf3_vm_op_unary_s* bmath_hf3_vm_op_unary_s_create_unary( bmath_fp_f3_unary unary )
+{
+    bmath_hf3_vm_op_unary_s* o = bmath_hf3_vm_op_unary_s_create();
+    o->unary = unary;
+    return o;
+}
 
 /**********************************************************************************************************************/
 

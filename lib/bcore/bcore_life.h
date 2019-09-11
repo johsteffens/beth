@@ -46,10 +46,11 @@ typedef struct bcore_life_s
 
 } bcore_life_s;
 
-void                 bcore_life_s_init(      bcore_life_s* o );
-void                 bcore_life_s_down(      bcore_life_s* o );
-struct bcore_life_s* bcore_life_s_create();
-void                 bcore_life_s_discard(   bcore_life_s* o );
+BCORE_DECLARE_FUNCTION_INIT(    bcore_life_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_life_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_life_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_life_s )
+BCORE_DECLARE_FUNCTION_DETACH(  bcore_life_s )
 
 vd_t bcore_life_s_push(         bcore_life_s* o, bcore_fp_discard discard, vd_t object ); // explicit discard
 vd_t bcore_life_s_push_typed(   bcore_life_s* o, tp_t type,    vd_t object ); // discard via bcore_inst_t_discard
@@ -64,14 +65,23 @@ vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 // macros
 
 #define BCORE_LIFE_INIT() bcore_life_s* __life = bcore_life_s_create()
-#define BCORE_LIFE_DOWN() bcore_life_s_discard( __life )
+#define BCORE_LIFE_DOWN() bcore_life_s_detach( &__life )
 #define BCORE_LIFE_CREATE( type_name, var_name ) type_name* var_name = bcore_life_s_push_typed( __life, TYPEOF_##type_name, type_name##_create() )
 #define BCORE_LIFE_CREATE_AUT( type_name, var_name ) type_name* var_name = bcore_life_s_push_typed( __life, typeof( #type_name ), type_name##_create() )
-
 #define BCORE_LIFE_A_PUSH(       expr ) bcore_life_s_push_aware( __life,       expr )
 #define BCORE_LIFE_T_PUSH( type, expr ) bcore_life_s_push_typed( __life, type, expr )
 #define BCORE_LIFE_X_PUSH(       expr ) bcore_life_s_push_sr(    __life,       expr )
+#define BCORE_LIFE_RETURNV( ret_type, expr ) { ret_type retvar = expr; BCORE_LIFE_DOWN(); return retvar; }
+#define BCORE_LIFE_RETURN()                  {                         BCORE_LIFE_DOWN(); return;        }
 
-#define BCORE_LIFE_RETURN(       ret  ) { BCORE_LIFE_DOWN(); return ret; }
+// abbreviated versions (Note: _CREATE and _RETURN is different)
+
+#define BLM_INIT() bcore_life_s* __life = bcore_life_s_create()
+#define BLM_DOWN() bcore_life_s_detach( &__life )
+#define BLM_CREATE( type_name ) ( type_name* )bcore_life_s_push_typed( __life, TYPEOF_##type_name, type_name##_create() )
+#define BLM_A_PUSH(           expr ) bcore_life_s_push_aware( __life,       expr )
+#define BLM_T_PUSH(     type, expr ) bcore_life_s_push_typed( __life, type, expr )
+#define BLM_RETURNV( ret_type, expr ) { ret_type retvar = expr; BLM_DOWN(); return retvar; }
+#define BLM_RETURN()                  {                         BLM_DOWN(); return;        }
 
 #endif // BCORE_LIFE_H

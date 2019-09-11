@@ -94,13 +94,13 @@ bl_t bcore_folder_s_parse( bcore_folder_s* o, sc_t path, bl_t recurse )
     BCORE_LIFE_INIT();
     bcore_folder_s_clear( o );
 
-    if( !bcore_folder_exists( path ) ) BCORE_LIFE_RETURN( false );
+    if( !bcore_folder_exists( path ) ) BCORE_LIFE_RETURNV( bl_t, false );
 
     struct dirent* entry;
     struct stat file_stat;
 
     DIR* dirp = opendir( path );
-    if( !dirp ) BCORE_LIFE_RETURN( false );
+    if( !dirp ) BCORE_LIFE_RETURNV( bl_t, false );
 
     st_s_copy_sc( &o->name, path );
 
@@ -135,7 +135,7 @@ bl_t bcore_folder_s_parse( bcore_folder_s* o, sc_t path, bl_t recurse )
 
     if( closedir( dirp ) ) ERR_fa( "Error closing path '#<sc_t>'.", path );
 
-    BCORE_LIFE_RETURN( true );
+    BCORE_LIFE_RETURNV( bl_t, true );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

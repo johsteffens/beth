@@ -2571,7 +2571,7 @@ static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
         #endif // BCORE_PLANT_DRY_RUN
     }
 
-    BCORE_LIFE_RETURN( modified );
+    BCORE_LIFE_RETURNV( bl_t, modified );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

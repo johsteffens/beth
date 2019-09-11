@@ -65,7 +65,7 @@ bl_t badapt_guide_std_s_callback( const badapt_guide_std_s* o, badapt_training_s
     dynamics->epsilon *= o->annealing_factor;
     badapt_adaptive_a_set_dynamics_std( adaptive, dynamics );
 
-    BCORE_LIFE_RETURN( true );
+    BCORE_LIFE_RETURNV( bl_t, true );
     return true;
 }
 

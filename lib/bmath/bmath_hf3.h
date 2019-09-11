@@ -241,6 +241,9 @@ void bmath_hf3_s_zro( const bmath_hf3_s* o );
 /// o -> r
 void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r );
 
+/// unary(o) -> r
+void bmath_hf3_s_unary( const bmath_hf3_s* o, bmath_fp_f3_unary unary, bmath_hf3_s* r );
+
 /// exp(o) -> r
 void bmath_hf3_s_exp( const bmath_hf3_s* o, bmath_hf3_s* r );
 
