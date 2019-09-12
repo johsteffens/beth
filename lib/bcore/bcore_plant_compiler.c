@@ -331,12 +331,13 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_name_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// used in bcore_plant_stamp_s
+// used in bcore_plant_stamp_s and bcore_plant_group_s
 BCORE_DECLARE_OBJECT( bcore_plant_func_s )
 {
     aware_t _;
     bcore_plant_group_s* group;
     st_s name;
+    st_s decl; // declaration string in stamp
     tp_t type;
     bcore_plant_body_s* body;
     bcore_source_point_s source_point;
@@ -347,6 +348,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_func_s )
     "aware_t _;"
     "vd_t group;"
     "st_s name;"
+    "st_s decl;" // declaration string for stamp
     "tp_t type;"
     "bcore_plant_body_s => body;"
     "bcore_source_point_s source_point;"
@@ -357,15 +359,13 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_func_s )
 BCORE_DECLARE_OBJECT( bcore_plant_funcs_s )
 {
     aware_t _;
-    bcore_plant_group_s* group;
-    BCORE_ARRAY_DYN_SOLID_STATIC_S( bcore_plant_func_s, );
+    BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_plant_func_s, );
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_funcs_s )
 "{"
     "aware_t _;"
-    "vd_t group;"
-    "bcore_plant_func_s [] arr;"
+    "bcore_plant_func_s => [] arr;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -422,6 +422,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_group_s )
     bl_t retrievable; // causes all stamps to fully enroll during init cycle;
     BCORE_ARRAY_DYN_LINK_AWARE_VIRTUAL_S( bcore_plant, );
 
+    bcore_plant_funcs_s funcs;
     bcore_plant_source_s* source;
     bcore_source_point_s source_point;
 };
@@ -439,6 +440,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_group_s )
     "bl_t retrievable;"
     "aware bcore_plant   => [] arr;"
 
+    "bcore_plant_funcs_s funcs;"
     "private vd_t source;"
     "bcore_source_point_s source_point;"
 
@@ -1417,9 +1419,64 @@ static tp_t bcore_plant_func_s_get_hash( const bcore_plant_func_s* o )
 {
     tp_t hash = bcore_tp_init();
     hash = bcore_tp_fold_sc( hash, o->name.sc );
+    hash = bcore_tp_fold_sc( hash, o->decl.sc );
     hash = bcore_tp_fold_tp( hash, o->type );
     if( o->body ) hash = bcore_tp_fold_tp( hash, bcore_plant_body_s_get_hash( o->body ) );
     return hash;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// stamp should be NULL func is not parsed inside a stamp
+static void bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s* group, bcore_plant_stamp_s* stamp, bcore_source* source )
+{
+    BLM_INIT();
+    st_s* type_name = BLM_CREATE( st_s );
+
+    bcore_source_point_s_set( &o->source_point, source );
+
+    st_s_push_sc( &o->decl, "func " );
+
+    if( bcore_source_a_parse_bl_fa( source, " #?'^'" ) )
+    {
+        if( !stamp ) bcore_source_a_parse_err_fa( source, "'^' is only inside a stamp allowed." );
+        st_s_copy( type_name, &stamp->trait_name );
+        st_s_push_fa( &o->decl, "^" );
+    }
+    else
+    {
+        bcore_plant_group_s_parse_name( group, type_name, source );
+
+        if( stamp && st_s_equal_st( type_name, &stamp->trait_name ) )
+        {
+            st_s_push_fa( &o->decl, "^" );
+        }
+        else
+        {
+            st_s_push_fa( &o->decl, "#<sc_t>", type_name->sc );
+        }
+    }
+
+    bcore_source_a_parse_fa( source, " :" );
+    st_s_push_sc( &o->decl, ":" );
+
+    bcore_source_a_parse_fa( source, " #name", &o->name );
+    if( o->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Function name expected." );
+    st_s_push_sc( &o->decl, o->name.sc );
+
+    st_s_push_fa( type_name, "_#<sc_t>", o->name.sc );
+    o->type = typeof( type_name->sc );
+
+    if( bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
+    {
+        o->body = bcore_plant_body_s_create();
+        o->body->group = group;
+        bcore_plant_body_s_parse( o->body, source );
+    }
+
+    bcore_source_a_parse_fa( source, " ; " );
+    st_s_push_sc( &o->decl, ";" );
+    BLM_DOWN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1447,9 +1504,42 @@ static tp_t bcore_plant_stamp_s_get_hash( const bcore_plant_stamp_s* o )
     hash = bcore_tp_fold_sc( hash, o->self_source->sc );
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
-        hash = bcore_tp_fold_tp( hash, bcore_plant_func_s_get_hash( &o->funcs.data[ i ] ) );
+        hash = bcore_tp_fold_tp( hash, bcore_plant_func_s_get_hash( o->funcs.data[ i ] ) );
     }
     return hash;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// resolve special characters in a string
+static void bcore_plant_stamp_s_resolve_chars( bcore_plant_stamp_s* o, st_s* string )
+{
+    st_s* buf = st_s_create();
+    for( sz_t i = 0; i < string->size; i++ )
+    {
+        char c = string->data[ i ];
+        switch( c )
+        {
+            case '@':
+            {
+                st_s_push_sc( buf, o->name.sc );
+                char next = string->data[ i + 1 ];
+                if( ( next >= 'A' && next <= 'Z' ) || ( next >= 'a' && next <= 'z' )|| ( next >= '0' && next <= '9' ) || ( next == '_' ) )
+                {
+                    st_s_push_char( buf, '_' );
+                }
+            }
+            break;
+
+            default:
+            {
+                st_s_push_char( buf, c );
+            }
+            break;
+        }
+    }
+    st_s_copy( string, buf );
+    st_s_discard( buf );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1461,7 +1551,6 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
     BCORE_LIFE_CREATE( st_s, self_string );
     BCORE_LIFE_CREATE( st_s, stamp_name );
     BCORE_LIFE_CREATE( st_s, trait_name );
-    BCORE_LIFE_CREATE( st_s, type_name );
     BCORE_LIFE_CREATE( st_s, string );
 
     bcore_source_point_s_set( &o->source_point, source );
@@ -1503,51 +1592,10 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
     {
         if( bcore_source_a_parse_bl_fa( source, " #?w'func'" ) )
         {
-            bcore_plant_funcs_s* funcs = &o->funcs;
-            bcore_array_a_push( ( bcore_array* )funcs, sr_null() );
-            bcore_plant_func_s* func = &funcs->data[ funcs->size - 1 ];
-            bcore_source_point_s_set( &func->source_point, source );
-
-            st_s_push_sc( self_string, "func " );
-
-            if( bcore_source_a_parse_bl_fa( source, " #?'^'" ) )
-            {
-                st_s_copy( type_name, trait_name );
-                st_s_push_fa( self_string, "^" );
-            }
-            else
-            {
-                bcore_plant_group_s_parse_name( o->group, type_name, source );
-
-                if( st_s_equal_st( type_name, trait_name ) )
-                {
-                    st_s_push_fa( self_string, "^" );
-                }
-                else
-                {
-                    st_s_push_fa( self_string, "#<sc_t>", type_name->sc );
-                }
-            }
-
-            bcore_source_a_parse_fa( source, " :" );
-            st_s_push_sc( self_string, ":" );
-
-            bcore_source_a_parse_fa( source, " #name", &func->name );
-            if( func->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Function name expected." );
-            st_s_push_sc( self_string, func->name.sc );
-
-            st_s_push_fa( type_name, "_#<sc_t>", func->name.sc );
-            func->type = typeof( type_name->sc );
-
-            if( bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
-            {
-                func->body = bcore_plant_body_s_create();
-                func->body->group = o->group;
-                bcore_plant_body_s_parse( func->body, source );
-            }
-
-            bcore_source_a_parse_fa( source, " ; " );
-            st_s_push_sc( self_string, ";" );
+            bcore_plant_func_s* func = bcore_plant_func_s_create();
+            bcore_plant_func_s_parse( func, group, o, source );
+            bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
+            st_s_push_st( self_string, &func->decl );
         }
         else
         {
@@ -1582,7 +1630,24 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
             }
         }
     }
+
+    // apply all functions of group
+    for( sz_t i = 0; i < group->funcs.size; i++ )
+    {
+        bcore_plant_func_s* func = group->funcs.data[ i ];
+        st_s_push_st( self_string, &func->decl );
+        bcore_array_a_push( ( bcore_array* )&o->funcs, sr_awc( func ) );
+    }
+
     st_s_push_sc( self_string, "}" );
+
+    // resolve special characters in self string and function bodies
+    bcore_plant_stamp_s_resolve_chars( o, self_string );
+    for( sz_t i = 0; i < o->funcs.size; i++ )
+    {
+        bcore_plant_func_s* func = o->funcs.data[ i ];
+        if( func->body ) bcore_plant_stamp_s_resolve_chars( o, &func->body->code );
+    }
 
     st_s self_string_source;
     st_s_init_weak_sc( &self_string_source, self_string->sc );
@@ -1591,9 +1656,10 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
 
     bcore_source_a_parse_fa( source, " ; " );
 
+    // create embedded string
     o->self_source = create_embedded_string( self_string );
 
-    /// 4095 is the C99-limit for string literals
+    // 4095 is the C99-limit for string literals
     if( o->self_source->size > 4095 )
     {
         bcore_source_a_parse_err_fa
@@ -1653,7 +1719,7 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
 
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
-        bcore_plant_func_s* func = &o->funcs.data[ i ];
+        bcore_plant_func_s* func = o->funcs.data[ i ];
         if( bcore_plant_compiler_s_item_exists( plant_compiler_g, func->type ) )
         {
             const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, func->type );
@@ -1812,7 +1878,7 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
 
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
-        bcore_plant_func_s* func = &o->funcs.data[ i ];
+        bcore_plant_func_s* func = o->funcs.data[ i ];
         if( bcore_plant_compiler_s_item_exists( plant_compiler_g, func->type ) )
         {
             const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, func->type );
@@ -1868,7 +1934,7 @@ static void bcore_plant_stamp_s_expand_init1( const bcore_plant_stamp_s* o, sz_t
 {
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
-        bcore_plant_func_s* func = &o->funcs.data[ i ];
+        bcore_plant_func_s* func = o->funcs.data[ i ];
         if( bcore_plant_compiler_s_item_exists( plant_compiler_g, func->type ) )
         {
             const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, func->type );
@@ -2097,6 +2163,13 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             name->group = o;
             bcore_plant_name_s_parse( name, source );
             item = ( bcore_plant* )name;
+        }
+        else if( bcore_source_a_parse_bl_fa( source, " #?w'func'" ) )
+        {
+            bcore_plant_func_s* func = bcore_plant_func_s_create();
+            bcore_plant_func_s_parse( func, o, NULL, source );
+            bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
+            o->hash = bcore_tp_fold_tp( o->hash, bcore_plant_func_s_get_hash( func ) );
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'group' " ) )
         {

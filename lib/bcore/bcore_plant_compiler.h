@@ -49,6 +49,8 @@
  *
  *      feature [strict] '<flags>' <syntax-of-signature> [ = <body> ];
  *
+ *      func feature : name [= { <body> }];
+ *
  *      stamp <name> = [aware] <trait> { reflection-body };
  *
  *      name <name>;
@@ -99,6 +101,10 @@
  *        Requires implementing <ret> <group_name>_<default_name>( [const] <group_name>* o, <args> );
  *
  *  ----------------------------------------------------------------------------------------------
+ *  func:
+ *    Generic function definition that is automatically applied to all stamps in this group.
+ *
+ *  ----------------------------------------------------------------------------------------------
  *  name:
  *    Identifier definition. Generates tp_t TYPEOF_<name>. Registers <name> in name manager.
  *    <name> has global scope. Multiple definitions of the same name at different places are allowed.
@@ -125,6 +131,9 @@
  *      ':' (no func) preceding an identifier name means that '<group_name>_' is prefixed to the following name
  *      ':' (in func) if no perspective name precedes ':' then <group_name> is used as perspective
  *     'func ^ : <func_name>'  <trait_name> is used as perspective
+ *
+ *    Special characters:
+ *      '@' : inserts the stamps full type name. If '@' is followed by an alphanumeric character, '_' is appended to type name.
  *
  *    Special traits:
  *      bcore_array: expands additional array-functions
