@@ -52,14 +52,13 @@ group :op =
     group :ar0 =
     {
         func :: :get_arity = { return 0; };
+        func :: :ofx  = { return @f( o ); };
 
         feature 'a' f3_t f( const );
 
-        stamp :literal = aware :
-        {
-            f3_t v;
-            func : :f = { return o->v; };
-        };
+        stamp :zero    = aware : {         func : :f = { return  0.0; }; };
+        stamp :one     = aware : {         func : :f = { return  1.0; }; };
+        stamp :literal = aware : { f3_t v; func : :f = { return o->v; }; };
 
     };
 
@@ -76,10 +75,11 @@ group :op =
         feature 'a' f3_t gy( const, f3_t y );
 
         // ======= (elementary functions) ============
-        stamp :zero     = aware : { func : :fx = { return     0.0; }; func : :gy = { return 0.0; }; };
-        stamp :one      = aware : { func : :fx = { return     1.0; }; func : :gy = { return 0.0; }; };
-        stamp :identity = aware : { func : :fx = { return      a ; }; func : :gy = { return 1.0; }; };
-        stamp :exp      = aware : { func : :fx = { return  exp(a); }; func : :gy = { return   y; }; };
+        stamp :zero     = aware : { func : :fx = { return       0.0; }; func : :gy = { return  0.0; }; };
+        stamp :one      = aware : { func : :fx = { return       1.0; }; func : :gy = { return  0.0; }; };
+        stamp :identity = aware : { func : :fx = { return        a ; }; func : :gy = { return  1.0; }; };
+        stamp :exp      = aware : { func : :fx = { return    exp(a); }; func : :gy = { return    y; }; };
+        stamp :inv      = aware : { func : :fx = { return f3_inv(a); }; func : :gy = { return -y*y; }; };
 
         // ======= (logistic function) ============
         stamp :lgst = aware :
@@ -99,7 +99,6 @@ group :op =
             func : :fx = { return ( a < -2.0 ) ? 0.01 * ( a + 2.0 ) : ( a > 2.0 ) ? 1.0 + 0.01 * ( a - 2.0 ) : 0.25 * ( a + 2.0 ); };
             func : :gy = { return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; };
         };
-
 
         // ======= (tanh) =========================
         stamp :tanh = aware :
