@@ -321,7 +321,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *     private : Invisible to perspectives (no tracing, no copying, no ownership). Exception: spect_inst may initialize the field with zeros
  *     shell   : No physical representation in object. values are provided by get, set functions (used by spect_via; invisible to spect_inst)
  *     hidden  : Invisible to spect_via (complementary to 'shell')
- *     spect   : Perspective of parent object (private shallow link). Initialized by spect_inst. Private to other perspectives.
+ *     spect   : Perspective of parent object or of specified default type (private shallow link). Initialized by spect_inst. Private to other perspectives.
  *     const   : Constant. Requires default value. No physical representation in object. Typically used as perspective-parameter.
  *     aware   : aware object (must be link or array of links); <type> can be virtual (e.g. trait); Example "aware bcore_source* source;"
  *     typed   : typed object where type is stored explicitly; <type> can be virtual (e.g. trait);  Example "typed bcore_source* source;"

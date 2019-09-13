@@ -258,18 +258,32 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
 
             case BCORE_CAPS_LINK_STATIC:
             {
-                if( self_item->flags.f_spect ) *( vc_t* )dst_obj = bcore_spect_get_typed( self_item->type, p->header.o_type );
                 if( self_item->default_u3 )
                 {
-                    switch( self_item->type )
+                    if( self_item->flags.f_spect )
                     {
-                        case TYPEOF_st_s: *( st_s** )dst_obj = st_s_clone( bcore_const_string_get_st( self_item->default_tp ) ); break;
-
-                        default:
+                        *( vc_t* )dst_obj = bcore_spect_get_typed( self_item->type, self_item->default_tp );
+                    }
+                    else
+                    {
+                        switch( self_item->type )
                         {
-                            ERR( "Default value not supported for type '%s'", ifnameof( self_item->type ) );
+                            case TYPEOF_st_s: *( st_s** )dst_obj = st_s_clone( bcore_const_string_get_st( self_item->default_tp ) ); break;
+
+                            default:
+                            {
+                                ERR( "Default value not supported for type '%s'", ifnameof( self_item->type ) );
+                            }
+                            break;
                         }
-                        break;
+                    }
+
+                }
+                else
+                {
+                    if( self_item->flags.f_spect )
+                    {
+                        *( vc_t* )dst_obj = bcore_spect_get_typed( self_item->type, p->header.o_type );
                     }
                 }
             }

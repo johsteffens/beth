@@ -732,19 +732,40 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
             }
             else if( o->caps == BCORE_CAPS_LINK_STATIC )
             {
-                switch( o->type )
+                if( f_spect )
                 {
-                    case TYPEOF_st_s:
+                    if( bcore_source_r_parse_bl_fa( &src, " #?([0]>='0'&&[0]<='9')" ) )
                     {
-                        st_s* string = st_s_create();
-                        bcore_source_r_parse_fa( &src, " #string", string );
-                        o->default_tp = bcore_const_string_set_st_d( string ); // thread and collision safe
+                        bcore_source_r_parse_fa( &src, " #<umax_t*>", &o->default_umax );
                     }
-                    break;
-
-                    default:
+                    else if( bcore_source_r_parse_bl_fa( &src, " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z'))" ) )
+                    {
+                        st_s* name = st_s_create();
+                        bcore_source_r_parse_fa( &src, "#name", name );
+                        o->default_tp = entypeof( name->sc );
+                        st_s_discard( name );
+                    }
+                    else
                     {
                         bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) );
+                    }
+                }
+                else
+                {
+                    switch( o->type )
+                    {
+                        case TYPEOF_st_s:
+                        {
+                            st_s* string = st_s_create();
+                            bcore_source_r_parse_fa( &src, " #string", string );
+                            o->default_tp = bcore_const_string_set_st_d( string ); // thread and collision safe
+                        }
+                        break;
+
+                        default:
+                        {
+                            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) );
+                        }
                     }
                 }
             }
