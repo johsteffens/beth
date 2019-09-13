@@ -118,13 +118,25 @@ vd_t bmath_leaf_signal_handler( const bcore_signal_s* o )
 
             BCORE_REGISTER_FFUNC( bmath_fp_u2_argb_from_f3, bmath_u2_argb_from_f3 );
 
-            BCORE_REGISTER_FEATURE( bmath_fp_f3_unary );
+            BCORE_REGISTER_FEATURE( bmath_fp_f3_ar0 );
+            BCORE_REGISTER_FEATURE( bmath_fp_f3_ar1 );
+            BCORE_REGISTER_FEATURE( bmath_fp_f3_ar2 );
+
+            BCORE_REGISTER_FEATURE( bmath_fp_f3_op_ar0 );
+            BCORE_REGISTER_FEATURE( bmath_fp_f3_op_ar1 );
+            BCORE_REGISTER_FEATURE( bmath_fp_f3_op_ar2 );
         }
         break;
 
         case TYPEOF_get_quicktypes:
         {
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_f3_unary );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_f3_ar0 );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_f3_ar1 );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_f3_ar2 );
+
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_f3_op_ar0 );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_f3_op_ar1 );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_f3_op_ar2 );
         }
         break;
 

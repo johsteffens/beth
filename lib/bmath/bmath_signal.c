@@ -20,7 +20,7 @@
 #include "bmath_spect_vector.h"
 #include "bmath_spect_matrix.h"
 #include "bmath_leaf.h"
-#include "bmath_f3.h"
+#include "bmath_f3_op.h"
 #include "bmath_complex.h"
 #include "bmath_fourier.h"
 #include "bmath_vf3.h"
@@ -36,6 +36,7 @@
 #include "bmath_plot.h"
 #include "bmath_planted.h"
 #include "bmath_hf3.h"
+#include "bmath_hf3_op.h"
 #include "bmath_hf3_vm.h"
 
 vd_t bmath_signal_handler( const bcore_signal_s* o )
@@ -60,7 +61,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_spect_vector_signal_handler,
             bmath_spect_matrix_signal_handler,
             bmath_leaf_signal_handler,
-            bmath_f3_signal_handler,
+            bmath_f3_op_signal_handler,
             bmath_complex_signal_handler,
             bmath_fourier_signal_handler,
             bmath_vf3_signal_handler,
@@ -76,6 +77,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_plot_signal_handler,
             bmath_planted_signal_handler,
             bmath_hf3_signal_handler,
+            bmath_hf3_op_signal_handler,
             bmath_hf3_vm_signal_handler,
         };
 

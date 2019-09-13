@@ -7,7 +7,12 @@
 #define TYPEOF_bmath_arr_vf3_s            3268702147
 #define TYPEOF_bmath_cf3_s                2506167476
 #define TYPEOF_bmath_estimator_s          3775440224
-#define TYPEOF_bmath_fp_f3_unary          1864940108
+#define TYPEOF_bmath_fp_f3_ar0            2665087562
+#define TYPEOF_bmath_fp_f3_ar1            2681865181
+#define TYPEOF_bmath_fp_f3_ar2            2631532324
+#define TYPEOF_bmath_fp_f3_op_ar0          275158156
+#define TYPEOF_bmath_fp_f3_op_ar1          291935775
+#define TYPEOF_bmath_fp_f3_op_ar2          308713394
 #define TYPEOF_bmath_fp_mf3_s_av          3294593231
 #define TYPEOF_bmath_fp_mf3_s_cld         3327146305
 #define TYPEOF_bmath_fp_mf3_s_evd_htp     2695903694

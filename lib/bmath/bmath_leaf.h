@@ -45,7 +45,13 @@ static inline f3_t f3_rnd_pos(  u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv )
 
 u2_t bmath_u2_argb_from_f3( vd_t, f3_t v ); // fist argument ignored (can be NULL)
 
-typedef f3_t (*bmath_fp_f3_unary )( f3_t v ); // unary function f3 -> f3
+typedef f3_t (*bmath_fp_f3_ar0 )( void           ); // nullary function   -> f3
+typedef f3_t (*bmath_fp_f3_ar1 )( f3_t a         ); // unary function  f3 -> f3
+typedef f3_t (*bmath_fp_f3_ar2 )( f3_t a, f3_t b ); // binary function (f3,f3) -> f3
+
+typedef f3_t (*bmath_fp_f3_op_ar0 )( vc_t op );                 // arity 0 operator
+typedef f3_t (*bmath_fp_f3_op_ar1 )( vc_t op, f3_t a );         // arity 1 operator
+typedef f3_t (*bmath_fp_f3_op_ar2 )( vc_t op, f3_t a, f3_t b ); // arity 2 operator
 
 /**********************************************************************************************************************/
 

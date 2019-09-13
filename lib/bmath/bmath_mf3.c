@@ -1213,7 +1213,7 @@ void bmath_mf3_s_mul_scl_add( const bmath_mf3_s* o, const f3_t* b_, const bmath_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_eop_map( const bmath_mf3_s* o, bmath_fp_f3_unary b, bmath_mf3_s* r )
+void bmath_mf3_s_eop_map( const bmath_mf3_s* o, bmath_fp_f3_ar1 b, bmath_mf3_s* r )
 {
     ASSERT( o ->rows == r->rows );
     ASSERT( o ->cols == r->cols );
@@ -1240,7 +1240,7 @@ void bmath_mf3_s_eop_map( const bmath_mf3_s* o, bmath_fp_f3_unary b, bmath_mf3_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_eop_map_mul( const bmath_mf3_s* o, bmath_fp_f3_unary b, const bmath_mf3_s* c_, bmath_mf3_s* r )
+void bmath_mf3_s_eop_map_mul( const bmath_mf3_s* o, bmath_fp_f3_ar1 b, const bmath_mf3_s* c_, bmath_mf3_s* r )
 {
     ASSERT( o ->rows == r->rows );
     ASSERT( o ->cols == r->cols );

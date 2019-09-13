@@ -619,13 +619,6 @@ bmath_mf3_s bmath_hf3_s_get_weak_kmat( const bmath_hf3_s* o, sz_t k )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_zro( const bmath_hf3_s* o )
-{
-    for( sz_t i = 0; i < o->v_size; i++ ) o->v_data[ i ] = 0;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r )
 {
     ASSERT( o->v_size == r->v_size );
@@ -763,40 +756,52 @@ f3_t bmath_hf3_s_f3_min( const bmath_hf3_s* o )
 
 /// operators
 
-//----------------------------------------------------------------------------------------------------------------------
-
-void bmath_hf3_s_f3_unary( const bmath_hf3_s* o, bmath_fp_f3_unary unary, bmath_hf3_s* r )
+void bmath_hf3_s_fp_f3_ar0( bmath_hf3_s* o, bmath_fp_f3_ar0 fp )
 {
-    ASSERT( o->v_size == r->v_size );
-    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = unary( o->v_data[ i ] );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bmath_hf3_s_f3_op_ar0( bmath_hf3_s* o, const bmath_f3_op_ar0* op )
-{
-    const bmath_f3_op_ar0_s* p = bmath_f3_op_ar0_s_get_aware( op );
-    f3_t v = p->f( op );
+    f3_t v = fp();
     for( sz_t i = 0; i < o->v_size; i++ ) o->v_data[ i ] = v;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_f3_op_ar1( const bmath_hf3_s* o, const bmath_f3_op_ar1* op, bmath_hf3_s* r )
+void bmath_hf3_s_fp_f3_ar1( const bmath_hf3_s* a, bmath_fp_f3_ar1 fp, bmath_hf3_s* r )
 {
-    ASSERT( o->v_size == r->v_size );
-    const bmath_f3_op_ar1_s* p = bmath_f3_op_ar1_s_get_aware( op );
-    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = p->fx( op, o->v_data[ i ] );
+    ASSERT( a->v_size == r->v_size );
+    for( sz_t i = 0; i < a->v_size; i++ ) r->v_data[ i ] = fp( a->v_data[ i ] );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_f3_op_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, const bmath_f3_op_ar2* op, bmath_hf3_s* r )
+void bmath_hf3_s_fp_f3_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_fp_f3_ar2 fp, bmath_hf3_s* r )
 {
     ASSERT( a->v_size == r->v_size );
     ASSERT( b->v_size == r->v_size );
-    const bmath_f3_op_ar2_s* p = bmath_f3_op_ar2_s_get_aware( op );
-    for( sz_t i = 0; i < r->v_size; i++ ) r->v_data[ i ] = p->fx( op, a->v_data[ i ], b->v_data[ i ] );
+    for( sz_t i = 0; i < a->v_size; i++ ) r->v_data[ i ] = fp( a->v_data[ i ], b->v_data[ i ] );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_fp_f3_op_ar0( bmath_hf3_s* o, bmath_fp_f3_op_ar0 fp, vc_t op )
+{
+    f3_t v = fp( op );
+    for( sz_t i = 0; i < o->v_size; i++ ) o->v_data[ i ] = v;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_fp_f3_op_ar1( const bmath_hf3_s* a, bmath_fp_f3_op_ar1 fp, vc_t op, bmath_hf3_s* r )
+{
+    ASSERT( a->v_size == r->v_size );
+    for( sz_t i = 0; i < a->v_size; i++ ) r->v_data[ i ] = fp( op, a->v_data[ i ] );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_fp_f3_op_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_fp_f3_op_ar2 fp, vc_t op, bmath_hf3_s* r )
+{
+    ASSERT( a->v_size == r->v_size );
+    ASSERT( b->v_size == r->v_size );
+    for( sz_t i = 0; i < a->v_size; i++ ) r->v_data[ i ] = fp( op, a->v_data[ i ], b->v_data[ i ] );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

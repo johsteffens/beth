@@ -13,30 +13,14 @@
  *  limitations under the License.
  */
 
-#include "bmath_f3.h"
+#include "bmath_hf3_op.h"
 
 /**********************************************************************************************************************/
 
-vd_t bmath_f3_signal_handler( const bcore_signal_s* o )
+vd_t bmath_hf3_op_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_f3" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_hf3_op" ) ) )
     {
-        case TYPEOF_init1:
-        {
-        }
-        break;
-
-        case TYPEOF_get_quicktypes:
-        {
-        }
-        break;
-
-        case TYPEOF_selftest:
-        {
-            return NULL;
-        }
-        break;
-
         case TYPEOF_plant:
         {
             bcore_plant_compile( "bmath_planted", __FILE__ );

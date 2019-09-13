@@ -195,8 +195,8 @@ uz_t bmath_vf3_s_idx_min( const bmath_vf3_s* o );
 //----------------------------------------------------------------------------------------------------------------------
 // vector * unary_map --> vector
 
-void bmath_vf3_s_eop_map(     const bmath_vf3_s* o, bmath_fp_f3_unary b, bmath_vf3_s* r ); // r_i = b( o_i )
-void bmath_vf3_s_eop_map_mul( const bmath_vf3_s* o, bmath_fp_f3_unary b, const bmath_vf3_s* c, bmath_vf3_s* r ); // r_i = b( o_i ) * c_i
+void bmath_vf3_s_eop_map(     const bmath_vf3_s* o, bmath_fp_f3_ar1 b, bmath_vf3_s* r ); // r_i = b( o_i )
+void bmath_vf3_s_eop_map_mul( const bmath_vf3_s* o, bmath_fp_f3_ar1 b, const bmath_vf3_s* c, bmath_vf3_s* r ); // r_i = b( o_i ) * c_i
 
 //----------------------------------------------------------------------------------------------------------------------
 // For easy inspection

@@ -325,8 +325,8 @@ static inline void bmath_mf3_s_mul_scl_f3_add( const bmath_mf3_s* o, f3_t b, con
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * unary_map --> matrix; supports folded r
 
-void bmath_mf3_s_eop_map(     const bmath_mf3_s* o, bmath_fp_f3_unary b, bmath_mf3_s* r ); // r_ij = b( o_ij )
-void bmath_mf3_s_eop_map_mul( const bmath_mf3_s* o, bmath_fp_f3_unary b, const bmath_mf3_s* c, bmath_mf3_s* r ); // r_ij = b( o_ij ) * c_ij
+void bmath_mf3_s_eop_map(     const bmath_mf3_s* o, bmath_fp_f3_ar1 b, bmath_mf3_s* r ); // r_ij = b( o_ij )
+void bmath_mf3_s_eop_map_mul( const bmath_mf3_s* o, bmath_fp_f3_ar1 b, const bmath_mf3_s* c, bmath_mf3_s* r ); // r_ij = b( o_ij ) * c_ij
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * matrix --> matrix (see also bmath_mf3_mul.h)

@@ -57,7 +57,7 @@
 #include "bmath_planted.h"
 #include "bmath_hwflags.h"
 #include "bmath_feature.h"
-#include "bmath_f3.h"
+#include "bmath_f3_op.h"
 #include "bmath_mf3.h"
 
 /**********************************************************************************************************************/
@@ -239,7 +239,10 @@ void bmath_hf3_s_set_random( bmath_hf3_s* o, f3_t density, f3_t min, f3_t max, u
 /// direct implementations
 
 /// o = {0}
-void bmath_hf3_s_zro( const bmath_hf3_s* o );
+static inline void bmath_hf3_s_zro( const bmath_hf3_s* o ) { for( sz_t i = 0; i < o->v_size; i++ ) o->v_data[ i ] = 0; }
+
+/// o = {v}
+static inline void bmath_hf3_s_set_f3( const bmath_hf3_s* o, f3_t v ) { for( sz_t i = 0; i < o->v_size; i++ ) o->v_data[ i ] = v; }
 
 /// o -> r
 void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r );
@@ -277,17 +280,13 @@ f3_t bmath_hf3_s_f3_sum( const bmath_hf3_s* o );
 
 /// operators
 
-/// bmath_fp_f3_unary(o) -> r
-void bmath_hf3_s_f3_unary( const bmath_hf3_s* o, bmath_fp_f3_unary unary, bmath_hf3_s* r );
+void bmath_hf3_s_fp_f3_ar0(       bmath_hf3_s* o,                       bmath_fp_f3_ar0 fp );
+void bmath_hf3_s_fp_f3_ar1( const bmath_hf3_s* a,                       bmath_fp_f3_ar1 fp, bmath_hf3_s* r );
+void bmath_hf3_s_fp_f3_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_fp_f3_ar2 fp, bmath_hf3_s* r );
 
-/// f3_op_ar0() -> o
-void bmath_hf3_s_f3_op_ar0(       bmath_hf3_s* o, const bmath_f3_op_ar0* op );
-
-/// f3_op_ar1(o) -> r
-void bmath_hf3_s_f3_op_ar1( const bmath_hf3_s* o, const bmath_f3_op_ar1* op, bmath_hf3_s* r );
-
-/// f3_op_ar2(a,b) -> r
-void bmath_hf3_s_f3_op_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, const bmath_f3_op_ar2* op, bmath_hf3_s* r );
+void bmath_hf3_s_fp_f3_op_ar0(       bmath_hf3_s* o,                       bmath_fp_f3_op_ar0 fp, vc_t op );
+void bmath_hf3_s_fp_f3_op_ar1( const bmath_hf3_s* a,                       bmath_fp_f3_op_ar1 fp, vc_t op, bmath_hf3_s* r );
+void bmath_hf3_s_fp_f3_op_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_fp_f3_op_ar2 fp, vc_t op, bmath_hf3_s* r );
 
 /**********************************************************************************************************************/
 /** bmul: Specific holor * holor multiplication for holors up to order 2
