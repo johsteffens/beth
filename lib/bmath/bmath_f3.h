@@ -59,7 +59,6 @@ group :op =
         stamp :zero    = aware : {         func : :f = { return  0.0; }; };
         stamp :one     = aware : {         func : :f = { return  1.0; }; };
         stamp :literal = aware : { f3_t v; func : :f = { return o->v; }; };
-
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,6 +74,7 @@ group :op =
         feature 'a' f3_t gy( const, f3_t y );
 
         // ======= (elementary functions) ============
+
         stamp :zero     = aware : { func : :fx = { return       0.0; }; func : :gy = { return  0.0; }; };
         stamp :one      = aware : { func : :fx = { return       1.0; }; func : :gy = { return  0.0; }; };
         stamp :identity = aware : { func : :fx = { return        a ; }; func : :gy = { return  1.0; }; };
@@ -82,58 +82,60 @@ group :op =
         stamp :inv      = aware : { func : :fx = { return f3_inv(a); }; func : :gy = { return -y*y; }; };
 
         // ======= (logistic function) ============
+
         stamp :lgst = aware :
         {
             func : :fx = { return ( a > -700 ) ? ( 1.0 / ( 1.0 + exp( -a ) ) ) : 0; };
             func : :gy = { return y * ( 1.0 - y ); };
         };
 
-        stamp :lgst_hard = aware :
+        stamp :lgst_hard = aware : // lgst approximation
         {
             func : :fx = { return ( a < -2.0 ) ? 0.0 : ( a > 2.0 ) ? 1.0 : 0.25 * ( a + 2.0 ); };
             func : :gy = { return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25; };
         };
 
-        stamp :lgst_leaky = aware :
+        stamp :lgst_leaky = aware : // lgst approximation
         {
             func : :fx = { return ( a < -2.0 ) ? 0.01 * ( a + 2.0 ) : ( a > 2.0 ) ? 1.0 + 0.01 * ( a - 2.0 ) : 0.25 * ( a + 2.0 ); };
             func : :gy = { return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; };
         };
 
         // ======= (tanh) =========================
+
         stamp :tanh = aware :
         {
             func : :fx = { return ( a < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * a ) + 1.0 ) ) ) : 1.0; };
             func : :gy = { return 1.0 - f3_sqr( y ); };
         };
 
-        stamp :tanh_hard = aware :
+        stamp :tanh_hard = aware : // tanh approximation
         {
             func : :fx = { return ( a < -1.0 ) ? -1.0 : ( a > 1.0 ) ? 1.0 : a; };
             func : :gy = { return ( y < -1.0 ) ?  0.0 : ( y > 1.0 ) ? 0.0 : 1.0; };
         };
 
-        stamp :tanh_leaky = aware :
+        stamp :tanh_leaky = aware : // tanh approximation
         {
             func : :fx = { return ( a < -1.0 ) ? -1.0 + 0.01 * ( a + 1.0 ) : ( a > 1.0 ) ? 1.0 + 0.01 * ( a - 1.0 ) : a; };
             func : :gy = { return ( y < -1.0 ) ?  0.01 : ( y > 1.0 ) ? 0.01 : 1.0; };
         };
 
         // ======= (softplus function) ============
+
         stamp :softplus = aware :
         {
             func : :fx = { return ( a < 700 ) ? log( 1.0 + exp( a ) ) : a; };
             func : :gy = { f3_t u = exp( y ); return ( u - 1.0 ) / u; };
         };
 
-        // relu: hard version of softplus
-        stamp :relu = aware :
+        stamp :relu = aware : // relu: hard approximation of softplus
         {
             func : :fx = { return a > 0 ? a : 0; };
             func : :gy = { return y > 0 ? 1 : 0; };
         };
 
-        stamp :leaky_relu = aware :
+        stamp :relu_leaky = aware :
         {
             func : :fx = { return a > 0 ? a : a * 0.01; };
             func : :gy = { return y > 0 ? 1 : 0.01; };

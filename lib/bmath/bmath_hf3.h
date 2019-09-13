@@ -57,6 +57,7 @@
 #include "bmath_planted.h"
 #include "bmath_hwflags.h"
 #include "bmath_feature.h"
+#include "bmath_f3.h"
 #include "bmath_mf3.h"
 
 /**********************************************************************************************************************/
@@ -235,14 +236,13 @@ void bmath_hf3_s_set_random( bmath_hf3_s* o, f3_t density, f3_t min, f3_t max, u
 /**********************************************************************************************************************/
 /// elementwise operations
 
+/// direct implementations
+
 /// o = {0}
 void bmath_hf3_s_zro( const bmath_hf3_s* o );
 
 /// o -> r
 void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r );
-
-/// unary(o) -> r
-void bmath_hf3_s_unary( const bmath_hf3_s* o, bmath_fp_f3_unary unary, bmath_hf3_s* r );
 
 /// exp(o) -> r
 void bmath_hf3_s_exp( const bmath_hf3_s* o, bmath_hf3_s* r );
@@ -274,6 +274,20 @@ static inline void bmath_hf3_s_mul_scl_f3_add( const bmath_hf3_s* o, f3_t b, con
 f3_t bmath_hf3_s_f3_max( const bmath_hf3_s* o );
 f3_t bmath_hf3_s_f3_min( const bmath_hf3_s* o );
 f3_t bmath_hf3_s_f3_sum( const bmath_hf3_s* o );
+
+/// operators
+
+/// bmath_fp_f3_unary(o) -> r
+void bmath_hf3_s_f3_unary( const bmath_hf3_s* o, bmath_fp_f3_unary unary, bmath_hf3_s* r );
+
+/// f3_op_ar0() -> o
+void bmath_hf3_s_f3_op_ar0(       bmath_hf3_s* o, const bmath_f3_op_ar0* op );
+
+/// f3_op_ar1(o) -> r
+void bmath_hf3_s_f3_op_ar1( const bmath_hf3_s* o, const bmath_f3_op_ar1* op, bmath_hf3_s* r );
+
+/// f3_op_ar2(a,b) -> r
+void bmath_hf3_s_f3_op_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, const bmath_f3_op_ar2* op, bmath_hf3_s* r );
 
 /**********************************************************************************************************************/
 /** bmul: Specific holor * holor multiplication for holors up to order 2

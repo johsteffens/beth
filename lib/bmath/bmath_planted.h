@@ -18,7 +18,7 @@
 
 
 /**********************************************************************************************************************/
-// source: bmath_f3
+// source: bmath_f3.h
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_f3
@@ -245,15 +245,15 @@
   static inline sz_t bmath_f3_op_ar1_relu_s_get_arity( const bmath_f3_op_ar1_relu_s* o ){ return 1; } \
   static inline f3_t bmath_f3_op_ar1_relu_s_ofx( const bmath_f3_op_ar1_relu_s* o, f3_t* a ){ return bmath_f3_op_ar1_relu_s_fx( o, a[0] ); } \
   static inline f3_t bmath_f3_op_ar1_relu_s_ogyi( const bmath_f3_op_ar1_relu_s* o, f3_t* a, sz_t i ){ return bmath_f3_op_ar1_relu_s_gy( o, a[0] ); }
-#define TYPEOF_bmath_f3_op_ar1_leaky_relu_s 3622075016
-#define BETH_EXPAND_ITEM_bmath_f3_op_ar1_leaky_relu_s \
-  BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_leaky_relu_s ) \
+#define TYPEOF_bmath_f3_op_ar1_relu_leaky_s 1382667214
+#define BETH_EXPAND_ITEM_bmath_f3_op_ar1_relu_leaky_s \
+  BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_relu_leaky_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_leaky_relu_s_fx( const bmath_f3_op_ar1_leaky_relu_s* o, f3_t a ){ return a > 0 ? a : a * 0.01; } \
-  static inline f3_t bmath_f3_op_ar1_leaky_relu_s_gy( const bmath_f3_op_ar1_leaky_relu_s* o, f3_t y ){ return y > 0 ? 1 : 0.01; } \
-  static inline sz_t bmath_f3_op_ar1_leaky_relu_s_get_arity( const bmath_f3_op_ar1_leaky_relu_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_leaky_relu_s_ofx( const bmath_f3_op_ar1_leaky_relu_s* o, f3_t* a ){ return bmath_f3_op_ar1_leaky_relu_s_fx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_leaky_relu_s_ogyi( const bmath_f3_op_ar1_leaky_relu_s* o, f3_t* a, sz_t i ){ return bmath_f3_op_ar1_leaky_relu_s_gy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_fx( const bmath_f3_op_ar1_relu_leaky_s* o, f3_t a ){ return a > 0 ? a : a * 0.01; } \
+  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_gy( const bmath_f3_op_ar1_relu_leaky_s* o, f3_t y ){ return y > 0 ? 1 : 0.01; } \
+  static inline sz_t bmath_f3_op_ar1_relu_leaky_s_get_arity( const bmath_f3_op_ar1_relu_leaky_s* o ){ return 1; } \
+  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_ofx( const bmath_f3_op_ar1_relu_leaky_s* o, f3_t* a ){ return bmath_f3_op_ar1_relu_leaky_s_fx( o, a[0] ); } \
+  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_ogyi( const bmath_f3_op_ar1_relu_leaky_s* o, f3_t* a, sz_t i ){ return bmath_f3_op_ar1_relu_leaky_s_gy( o, a[0] ); }
 #define BETH_EXPAND_GROUP_bmath_f3_op_ar1 \
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar1 ); \
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar1_zero_s ); \
@@ -269,7 +269,7 @@
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar1_tanh_leaky_s ); \
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar1_softplus_s ); \
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar1_relu_s ); \
-  BCORE_FORWARD_OBJECT( bmath_f3_op_ar1_leaky_relu_s ); \
+  BCORE_FORWARD_OBJECT( bmath_f3_op_ar1_relu_leaky_s ); \
   typedef f3_t (*bmath_f3_op_ar1_fx)( const bmath_f3_op_ar1* o, f3_t a ); \
   typedef f3_t (*bmath_f3_op_ar1_gy)( const bmath_f3_op_ar1* o, f3_t y ); \
   BCORE_DECLARE_SPECT( bmath_f3_op_ar1 ) \
@@ -299,7 +299,7 @@
   BETH_EXPAND_ITEM_bmath_f3_op_ar1_tanh_leaky_s \
   BETH_EXPAND_ITEM_bmath_f3_op_ar1_softplus_s \
   BETH_EXPAND_ITEM_bmath_f3_op_ar1_relu_s \
-  BETH_EXPAND_ITEM_bmath_f3_op_ar1_leaky_relu_s
+  BETH_EXPAND_ITEM_bmath_f3_op_ar1_relu_leaky_s
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_f3_op_ar2
@@ -378,7 +378,7 @@
   BETH_EXPAND_ITEM_bmath_f3_op_ar2_div_s
 
 /**********************************************************************************************************************/
-// source: bmath_mf3_sx
+// source: bmath_mf3_sx.h
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_mf3_sx
@@ -395,7 +395,7 @@
   BETH_EXPAND_ITEM_bmath_mf3_sx_s
 
 /**********************************************************************************************************************/
-// source: bmath_mf3_sf
+// source: bmath_mf3_sf.h
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_mf3_sf
@@ -412,7 +412,7 @@
   BETH_EXPAND_ITEM_bmath_mf3_sf_s
 
 /**********************************************************************************************************************/
-// source: bmath_hf3
+// source: bmath_hf3.h
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_hf3
@@ -445,7 +445,7 @@
   BETH_EXPAND_ITEM_bmath_hf3_adl_s
 
 /**********************************************************************************************************************/
-// source: bmath_hf3_vm
+// source: bmath_hf3_vm.h
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_hf3_vm
@@ -629,7 +629,7 @@
   BCORE_DECLARE_OBJECT( bmath_hf3_vm_op_ar1_unary_s ) \
     {aware_t _;sz_t a;sz_t b;bmath_fp_f3_unary unary;}; \
   static inline bmath_hf3_vm_op* bmath_hf3_vm_op_ar1_unary_s_csetup( bmath_hf3_vm_op_ar1_unary_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bmath_hf3_vm_op_ar1_unary_s_create(); o->a = idx_a; o->b = idx_b; return (bmath_hf3_vm_op*)o; } \
-  static inline void bmath_hf3_vm_op_ar1_unary_s_run( const bmath_hf3_vm_op_ar1_unary_s* o, bmath_hf3_vm_holor_s* hbase ){ bmath_hf3_s_unary( &hbase[ o->a ].hf3, o->unary, &hbase[ o->b ].hf3 ); } \
+  static inline void bmath_hf3_vm_op_ar1_unary_s_run( const bmath_hf3_vm_op_ar1_unary_s* o, bmath_hf3_vm_holor_s* hbase ){ bmath_hf3_s_f3_unary( &hbase[ o->a ].hf3, o->unary, &hbase[ o->b ].hf3 ); } \
   static inline bmath_hf3_vm_op* bmath_hf3_vm_op_ar1_unary_s_set_args( bmath_hf3_vm_op_ar1_unary_s* o, sz_t idx_a, sz_t idx_b ){ o->a = idx_a; o->b = idx_b; return (bmath_hf3_vm_op*)o; }
 #define BETH_EXPAND_GROUP_bmath_hf3_vm_op_ar1 \
   BCORE_FORWARD_OBJECT( bmath_hf3_vm_op_ar1 ); \

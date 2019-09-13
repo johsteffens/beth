@@ -155,7 +155,7 @@ group :op =
             sz_t a; sz_t b;
             bmath_fp_f3_unary unary;
             func   : :csetup   = { if( !o ) o = :unary_s_create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
-            func ::: :run = { bmath_hf3_s_unary( &hbase[ o->a ].hf3, o->unary, &hbase[ o->b ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_f3_unary( &hbase[ o->a ].hf3, o->unary, &hbase[ o->b ].hf3 ); };
         };
     };
 

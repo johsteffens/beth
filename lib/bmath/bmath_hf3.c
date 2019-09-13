@@ -634,14 +634,6 @@ void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_s_unary( const bmath_hf3_s* o, bmath_fp_f3_unary unary, bmath_hf3_s* r )
-{
-    ASSERT( o->v_size == r->v_size );
-    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = unary( o->v_data[ i ] );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 void bmath_hf3_s_exp( const bmath_hf3_s* o, bmath_hf3_s* r )
 {
     ASSERT( o->v_size == r->v_size );
@@ -768,6 +760,46 @@ f3_t bmath_hf3_s_f3_min( const bmath_hf3_s* o )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+/// operators
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_f3_unary( const bmath_hf3_s* o, bmath_fp_f3_unary unary, bmath_hf3_s* r )
+{
+    ASSERT( o->v_size == r->v_size );
+    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = unary( o->v_data[ i ] );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_f3_op_ar0( bmath_hf3_s* o, const bmath_f3_op_ar0* op )
+{
+    const bmath_f3_op_ar0_s* p = bmath_f3_op_ar0_s_get_aware( op );
+    f3_t v = p->f( op );
+    for( sz_t i = 0; i < o->v_size; i++ ) o->v_data[ i ] = v;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_f3_op_ar1( const bmath_hf3_s* o, const bmath_f3_op_ar1* op, bmath_hf3_s* r )
+{
+    ASSERT( o->v_size == r->v_size );
+    const bmath_f3_op_ar1_s* p = bmath_f3_op_ar1_s_get_aware( op );
+    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = p->fx( op, o->v_data[ i ] );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_f3_op_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, const bmath_f3_op_ar2* op, bmath_hf3_s* r )
+{
+    ASSERT( a->v_size == r->v_size );
+    ASSERT( b->v_size == r->v_size );
+    const bmath_f3_op_ar2_s* p = bmath_f3_op_ar2_s_get_aware( op );
+    for( sz_t i = 0; i < r->v_size; i++ ) r->v_data[ i ] = p->fx( op, a->v_data[ i ], b->v_data[ i ] );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // specific (max order 2) holor * holor multiplications
