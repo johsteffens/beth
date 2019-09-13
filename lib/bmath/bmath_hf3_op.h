@@ -88,6 +88,67 @@ group :ar1 =
         func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_s_get_aware( o->op )->fx, o->op, r ); };
         func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_s_get_aware( o->op )->gy, o->op, r ); };
     };
+
+    // ======= (logistic function) ============
+
+    stamp :lgst = aware :
+    {
+        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_s_fx, NULL, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_s_gy, NULL, r ); };
+    };
+
+    stamp :lgst_hard = aware :
+    {
+        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_hard_s_fx, NULL, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_hard_s_gy, NULL, r ); };
+    };
+
+    stamp :lgst_leaky = aware :
+    {
+        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_leaky_s_fx, NULL, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_leaky_s_gy, NULL, r ); };
+    };
+
+    // ======= (tanh) =========================
+
+    stamp :tanh = aware :
+    {
+        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_s_fx, NULL, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_s_gy, NULL, r ); };
+    };
+
+    stamp :tanh_hard = aware :
+    {
+        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_hard_s_fx, NULL, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_hard_s_gy, NULL, r ); };
+    };
+
+    stamp :tanh_leaky = aware :
+    {
+        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_leaky_s_fx, NULL, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_leaky_s_gy, NULL, r ); };
+    };
+
+    // ======= (softplus function) ============
+
+    stamp :softplus = aware :
+    {
+        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_softplus_s_fx, NULL, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_softplus_s_gy, NULL, r ); };
+    };
+
+    stamp :relu = aware :
+    {
+        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_relu_s_fx, NULL, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_relu_s_gy, NULL, r ); };
+    };
+
+    stamp :relu_leaky = aware :
+    {
+        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_relu_leaky_s_fx, NULL, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_relu_leaky_s_gy, NULL, r ); };
+    };
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

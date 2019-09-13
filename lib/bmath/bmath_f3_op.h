@@ -43,8 +43,8 @@ feature 'ap' sz_t get_arity( const );
 
 /// a represents an array of size arity
 feature 'ap' f3_t ofx(  const, const f3_t* a );
-feature 'ap' f3_t ogxi( const, const f3_t* a, sz_t i );
-feature 'ap' f3_t ogyi( const, const f3_t* a, sz_t i );
+feature 'ap' f3_t ogx( const, const f3_t* a, sz_t i );
+feature 'ap' f3_t ogy( const, const f3_t* a, sz_t i );
 
 /// nullary operators
 group :ar0 =
@@ -52,7 +52,7 @@ group :ar0 =
     feature 'a' f3_t f( const );
 
     func :: :get_arity = { return 0; };
-    func :: :ofx  = { return @f( o ); };
+    func :: :ofx = { return @f( o ); };
 
     stamp :zero    = aware : {         func : :f = { return  0.0; }; };
     stamp :one     = aware : {         func : :f = { return  1.0; }; };
@@ -68,8 +68,8 @@ group :ar1 =
     feature 'a' f3_t gy( const, f3_t y );
 
     func :: :get_arity = { return 1; };
-    func :: :ofx  = { return @fx( o, a[0] ); };
-    func :: :ogyi = { return @gy( o, a[0] ); };
+    func :: :ofx = { return @fx( o, a[0] ); };
+    func :: :ogy = { return @gy( o, a[0] ); };
 
     // ======= (elementary functions) ============
 
@@ -150,8 +150,8 @@ group :ar2 =
     feature 'a' f3_t gxb( const, f3_t a, f3_t b );
 
     func :: :get_arity = { return 2; };
-    func :: :ofx  = { return @fx( o, a[0], a[1] ); };
-    func :: :ogxi = { return ( i == 0 ) ? @gxa( o, a[0], a[1] ) : @gxb( o, a[0], a[1] ); };
+    func :: :ofx = { return @fx( o, a[0], a[1] ); };
+    func :: :ogx = { return ( i == 0 ) ? @gxa( o, a[0], a[1] ) : @gxb( o, a[0], a[1] ); };
 
     stamp :add = aware :
     {

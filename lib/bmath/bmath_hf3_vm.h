@@ -100,17 +100,17 @@ group :op =
         feature 'a' :: : set_args set_args( sz_t idx_a );
         func : :set_args = { o->a = idx_a; return (::*)o; };
 
+        func : :csetup = { if( !o ) o = @create(); o->a = idx_a; return (::*)o; };
+
         stamp :determine = aware :
         {
             sz_t a;
-            func   : :csetup   = { if( !o ) o = :determine_s_create(); o->a = idx_a; return (::*)o; };
             func ::: :run = { bmath_hf3_s_fit_v_size( &hbase[ o->a ].hf3 ); };
         };
 
         stamp :vacate = aware :
         {
             sz_t a;
-            func   : :csetup   = { if( !o ) o = :vacate_s_create(); o->a = idx_a; return (::*)o; };
             func ::: :run = { bmath_hf3_s_set_vacant( &hbase[ o->a ].hf3 ); };
         };
 
@@ -132,12 +132,12 @@ group :op =
         signature   :: : csetup   csetup(   sz_t idx_a, sz_t idx_b );
         feature 'a' :: : set_args set_args( sz_t idx_a, sz_t idx_b );
         func : :set_args = { o->a = idx_a; o->b = idx_b; return (::*)o; };
+        func : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
 
         /// a -> b
-        stamp :linear = aware :
+        stamp :identity = aware :
         {
             sz_t a; sz_t b;
-            func   : :csetup   = { if( !o ) o = :linear_s_create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
             func ::: :run = { bmath_hf3_s_cpy( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3 ); };
         };
 
@@ -145,7 +145,6 @@ group :op =
         stamp :tanh = aware :
         {
             sz_t a; sz_t b;
-            func   : :csetup   = { if( !o ) o = :tanh_s_create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
             func ::: :run = { bmath_hf3_s_tanh( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3 ); };
         };
 
@@ -154,7 +153,6 @@ group :op =
         {
             sz_t a; sz_t b;
             bmath_fp_f3_ar1 unary;
-            func   : :csetup   = { if( !o ) o = :unary_s_create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
             func ::: :run = { bmath_hf3_s_fp_f3_ar1( &hbase[ o->a ].hf3, o->unary, &hbase[ o->b ].hf3 ); };
         };
     };
@@ -167,12 +165,12 @@ group :op =
         signature   :: : csetup   csetup(   sz_t idx_a, sz_t idx_b, sz_t idx_c );
         feature 'a' :: : set_args set_args( sz_t idx_a, sz_t idx_b, sz_t idx_c );
         func : :set_args = { o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
+        func : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
 
         /// a + b -> c
         stamp :add = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func   : :csetup   = { if( !o ) o = :add_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_add( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -180,7 +178,6 @@ group :op =
         stamp :sub = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func   : :csetup   = { if( !o ) o = :sub_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_sub( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -188,7 +185,6 @@ group :op =
         stamp :bmul = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func   : :csetup   = { if( !o ) o = :bmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_bmul( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -196,7 +192,6 @@ group :op =
         stamp :bmul_htp = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func   : :csetup   = { if( !o ) o = :bmul_htp_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_bmul_htp( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -204,7 +199,6 @@ group :op =
         stamp :htp_bmul = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func   : :csetup   = { if( !o ) o = :htp_bmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_htp_bmul( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -212,7 +206,6 @@ group :op =
         stamp :htp_bmul_htp = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func   : :csetup   = { if( !o ) o = :htp_bmul_htp_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_htp_bmul_htp( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -220,7 +213,6 @@ group :op =
         stamp :hmul = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func   : :csetup   = { if( !o ) o = :hmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_hmul( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
         };
 
@@ -228,7 +220,6 @@ group :op =
         stamp :mul_scl = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func   : :csetup   = { if( !o ) o = :mul_scl_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_mul_scl( &hbase[ o->a ].hf3, hbase[ o->b ].hf3.v_data, &hbase[ o->c ].hf3 ); };
         };
 
@@ -236,7 +227,6 @@ group :op =
         stamp :scl_mul = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func   : :csetup   = { if( !o ) o = :scl_mul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
             func ::: :run = { bmath_hf3_s_mul_scl( &hbase[ o->b ].hf3, hbase[ o->a ].hf3.v_data, &hbase[ o->c ].hf3 ); };
         };
     };
