@@ -102,7 +102,8 @@
  *
  *  ----------------------------------------------------------------------------------------------
  *  func:
- *    Generic function definition that is automatically applied to all stamps in this group.
+ *    Generic default function definition that is automatically applied to all stamps in this group.
+ *    A stamp can override this definition by defining func of the same name.
  *
  *  ----------------------------------------------------------------------------------------------
  *  name:

@@ -336,9 +336,9 @@ BCORE_DECLARE_OBJECT( bcore_plant_func_s )
 {
     aware_t _;
     bcore_plant_group_s* group;
-    st_s name;
+    st_s name; // local name
     st_s decl; // declaration string in stamp
-    tp_t type;
+    tp_t type; // full type of function ((feature|signature):name)
     bcore_plant_body_s* body;
     bcore_source_point_s source_point;
 };
@@ -1431,6 +1431,8 @@ static tp_t bcore_plant_func_s_get_hash( const bcore_plant_func_s* o )
 static void bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s* group, bcore_plant_stamp_s* stamp, bcore_source* source )
 {
     BLM_INIT();
+
+    /// global name of function
     st_s* type_name = BLM_CREATE( st_s );
 
     bcore_source_point_s_set( &o->source_point, source );
@@ -1483,6 +1485,14 @@ static void bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s
 
 /**********************************************************************************************************************/
 /// funcs
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static bl_t bcore_plant_funcs_s_exists( bcore_plant_funcs_s* o, tp_t type )
+{
+    for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ]->type == type ) return true;
+    return false;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -1594,6 +1604,12 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
         {
             bcore_plant_func_s* func = bcore_plant_func_s_create();
             bcore_plant_func_s_parse( func, group, o, source );
+
+            if( bcore_plant_funcs_s_exists( &o->funcs, func->type ) )
+            {
+                bcore_source_a_parse_err_fa( source, "Function '#<sc_t>' has already been defined", func->name.sc );
+            }
+
             bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
             st_s_push_st( self_string, &func->decl );
         }
@@ -1631,12 +1647,15 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
         }
     }
 
-    // apply all functions of group
+    // apply all functions of group, which are not yet defined in stamp
     for( sz_t i = 0; i < group->funcs.size; i++ )
     {
         bcore_plant_func_s* func = group->funcs.data[ i ];
-        st_s_push_st( self_string, &func->decl );
-        bcore_array_a_push( ( bcore_array* )&o->funcs, sr_awc( func ) );
+        if( !bcore_plant_funcs_s_exists( &o->funcs, func->type ) )
+        {
+            st_s_push_st( self_string, &func->decl );
+            bcore_array_a_push( ( bcore_array* )&o->funcs, sr_awc( func ) );
+        }
     }
 
     st_s_push_sc( self_string, "}" );
@@ -2168,6 +2187,10 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
         {
             bcore_plant_func_s* func = bcore_plant_func_s_create();
             bcore_plant_func_s_parse( func, o, NULL, source );
+            if( bcore_plant_funcs_s_exists( &o->funcs, func->type ) )
+            {
+                bcore_source_a_parse_err_fa( source, "Function '#<sc_t>' has already been defined", func->name.sc );
+            }
             bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
             o->hash = bcore_tp_fold_tp( o->hash, bcore_plant_func_s_get_hash( func ) );
         }
