@@ -600,7 +600,7 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_proc_s )
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_library_s )
 "aware bcore_array"
 "{"
-    "bmath_hf3_vm_proc_s [];"
+    "bmath_hf3_vm_proc_s => [];"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_frame_s )
@@ -627,6 +627,13 @@ BCORE_DEFINE_SPECT( bcore_inst, bmath_hf3_vm )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_hf3_vm_op
 
+BCORE_DEFINE_SPECT( bmath_hf3_vm, bmath_hf3_vm_op )
+"{"
+    "bcore_spect_header_s header;"
+    "feature aware bmath_hf3_vm_op : get_arity;"
+    "feature aware bmath_hf3_vm_op : set_indices;"
+"}";
+
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_hf3_vm_op_ar0
 
@@ -635,6 +642,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar0_determine_s )
 "{"
     "sz_t a;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar0:set_args;"
     "func bmath_hf3_vm_op_ar0:csetup;"
 "}";
@@ -644,6 +653,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar0_vacate_s )
 "{"
     "sz_t a;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar0:set_args;"
     "func bmath_hf3_vm_op_ar0:csetup;"
 "}";
@@ -655,6 +666,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar0_randomize_s )
     "u2_t rseed = 1234;"
     "func ^:csetup_randomize;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar0:set_args;"
     "func bmath_hf3_vm_op_ar0:csetup;"
 "}";
@@ -674,6 +687,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar1_identity_s )
     "sz_t a;"
     "sz_t b;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar1:set_args;"
     "func bmath_hf3_vm_op_ar1:csetup;"
 "}";
@@ -684,6 +699,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar1_tanh_s )
     "sz_t a;"
     "sz_t b;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar1:set_args;"
     "func bmath_hf3_vm_op_ar1:csetup;"
 "}";
@@ -695,6 +712,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar1_unary_s )
     "sz_t b;"
     "bmath_fp_f3_ar1 unary;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar1:set_args;"
     "func bmath_hf3_vm_op_ar1:csetup;"
 "}";
@@ -715,6 +734,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_add_s )
     "sz_t b;"
     "sz_t c;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar2:set_args;"
     "func bmath_hf3_vm_op_ar2:csetup;"
 "}";
@@ -726,6 +747,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_sub_s )
     "sz_t b;"
     "sz_t c;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar2:set_args;"
     "func bmath_hf3_vm_op_ar2:csetup;"
 "}";
@@ -737,6 +760,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_bmul_s )
     "sz_t b;"
     "sz_t c;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar2:set_args;"
     "func bmath_hf3_vm_op_ar2:csetup;"
 "}";
@@ -748,6 +773,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_bmul_htp_s )
     "sz_t b;"
     "sz_t c;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar2:set_args;"
     "func bmath_hf3_vm_op_ar2:csetup;"
 "}";
@@ -759,6 +786,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_htp_bmul_s )
     "sz_t b;"
     "sz_t c;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar2:set_args;"
     "func bmath_hf3_vm_op_ar2:csetup;"
 "}";
@@ -770,6 +799,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_htp_bmul_htp_s )
     "sz_t b;"
     "sz_t c;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar2:set_args;"
     "func bmath_hf3_vm_op_ar2:csetup;"
 "}";
@@ -781,6 +812,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_hmul_s )
     "sz_t b;"
     "sz_t c;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar2:set_args;"
     "func bmath_hf3_vm_op_ar2:csetup;"
 "}";
@@ -792,6 +825,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_mul_scl_s )
     "sz_t b;"
     "sz_t c;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar2:set_args;"
     "func bmath_hf3_vm_op_ar2:csetup;"
 "}";
@@ -803,6 +838,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_scl_mul_s )
     "sz_t b;"
     "sz_t c;"
     "func bmath_hf3_vm:run;"
+    "func bmath_hf3_vm_op:get_arity;"
+    "func bmath_hf3_vm_op:set_indices;"
     "func bmath_hf3_vm_op_ar2:set_args;"
     "func bmath_hf3_vm_op_ar2:csetup;"
 "}";
@@ -822,7 +859,7 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 386781274 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 739391301 ) );
             BCORE_REGISTER_FEATURE( bmath_f3_op_get_arity );
             BCORE_REGISTER_FEATURE( bmath_f3_op_ofx );
             BCORE_REGISTER_FEATURE( bmath_f3_op_ogx );
@@ -1103,70 +1140,102 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_via_call_shelve, bmath_hf3_vm_frame_s_shelve );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_frame_s );
             BCORE_REGISTER_SPECT( bmath_hf3_vm );
-            BCORE_REGISTER_TRAIT( bmath_hf3_vm_op, bmath_hf3_vm );
+            BCORE_REGISTER_FEATURE( bmath_hf3_vm_op_get_arity );
+            BCORE_REGISTER_FEATURE( bmath_hf3_vm_op_set_indices );
+            BCORE_REGISTER_SPECT( bmath_hf3_vm_op );
             BCORE_REGISTER_FEATURE( bmath_hf3_vm_op_ar0_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar0_determine_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar0_determine_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar0_determine_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar0_set_args, bmath_hf3_vm_op_ar0_determine_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar0_csetup, bmath_hf3_vm_op_ar0_determine_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar0_determine_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar0_vacate_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar0_vacate_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar0_vacate_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar0_set_args, bmath_hf3_vm_op_ar0_vacate_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar0_csetup, bmath_hf3_vm_op_ar0_vacate_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar0_vacate_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar0_csetup_randomize, bmath_hf3_vm_op_ar0_randomize_s_csetup_randomize );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar0_randomize_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar0_randomize_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar0_randomize_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar0_set_args, bmath_hf3_vm_op_ar0_randomize_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar0_csetup, bmath_hf3_vm_op_ar0_randomize_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar0_randomize_s );
             BCORE_REGISTER_SPECT( bmath_hf3_vm_op_ar0 );
             BCORE_REGISTER_FEATURE( bmath_hf3_vm_op_ar1_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar1_identity_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar1_identity_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar1_identity_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar1_set_args, bmath_hf3_vm_op_ar1_identity_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar1_csetup, bmath_hf3_vm_op_ar1_identity_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar1_identity_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar1_tanh_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar1_tanh_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar1_tanh_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar1_set_args, bmath_hf3_vm_op_ar1_tanh_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar1_csetup, bmath_hf3_vm_op_ar1_tanh_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar1_tanh_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar1_unary_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar1_unary_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar1_unary_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar1_set_args, bmath_hf3_vm_op_ar1_unary_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar1_csetup, bmath_hf3_vm_op_ar1_unary_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar1_unary_s );
             BCORE_REGISTER_SPECT( bmath_hf3_vm_op_ar1 );
             BCORE_REGISTER_FEATURE( bmath_hf3_vm_op_ar2_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar2_add_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar2_add_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar2_add_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_set_args, bmath_hf3_vm_op_ar2_add_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_csetup, bmath_hf3_vm_op_ar2_add_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar2_add_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar2_sub_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar2_sub_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar2_sub_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_set_args, bmath_hf3_vm_op_ar2_sub_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_csetup, bmath_hf3_vm_op_ar2_sub_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar2_sub_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar2_bmul_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar2_bmul_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar2_bmul_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_set_args, bmath_hf3_vm_op_ar2_bmul_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_csetup, bmath_hf3_vm_op_ar2_bmul_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar2_bmul_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar2_bmul_htp_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar2_bmul_htp_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar2_bmul_htp_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_set_args, bmath_hf3_vm_op_ar2_bmul_htp_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_csetup, bmath_hf3_vm_op_ar2_bmul_htp_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar2_bmul_htp_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar2_htp_bmul_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar2_htp_bmul_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar2_htp_bmul_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_set_args, bmath_hf3_vm_op_ar2_htp_bmul_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_csetup, bmath_hf3_vm_op_ar2_htp_bmul_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar2_htp_bmul_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar2_htp_bmul_htp_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar2_htp_bmul_htp_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar2_htp_bmul_htp_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_set_args, bmath_hf3_vm_op_ar2_htp_bmul_htp_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_csetup, bmath_hf3_vm_op_ar2_htp_bmul_htp_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar2_htp_bmul_htp_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar2_hmul_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar2_hmul_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar2_hmul_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_set_args, bmath_hf3_vm_op_ar2_hmul_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_csetup, bmath_hf3_vm_op_ar2_hmul_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar2_hmul_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar2_mul_scl_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar2_mul_scl_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar2_mul_scl_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_set_args, bmath_hf3_vm_op_ar2_mul_scl_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_csetup, bmath_hf3_vm_op_ar2_mul_scl_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar2_mul_scl_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar2_scl_mul_s_run );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar2_scl_mul_s_get_arity );
+            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar2_scl_mul_s_set_indices );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_set_args, bmath_hf3_vm_op_ar2_scl_mul_s_set_args );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar2_csetup, bmath_hf3_vm_op_ar2_scl_mul_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar2_scl_mul_s );

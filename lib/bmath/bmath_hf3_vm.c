@@ -64,7 +64,7 @@ void bmath_hf3_vm_frame_s_setup( bmath_hf3_vm_frame_s* o )
 {
     if( !o->proc_setup ) return;
     if( !bmath_hf3_vm_frame_s_proc_exists( o, o->proc_setup ) ) return;
-    bmath_hf3_vm_frame_s_run_proc( o, o->proc_setup );
+    bmath_hf3_vm_frame_s_proc_run( o, o->proc_setup );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ void bmath_hf3_vm_frame_s_shelve( bmath_hf3_vm_frame_s* o )
 {
     if( !o->proc_shelve ) return;
     if( !bmath_hf3_vm_frame_s_proc_exists( o, o->proc_shelve ) ) return;
-    bmath_hf3_vm_frame_s_run_proc( o, o->proc_shelve );
+    bmath_hf3_vm_frame_s_proc_run( o, o->proc_shelve );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -98,15 +98,65 @@ bl_t bmath_hf3_vm_frame_s_proc_exists( const bmath_hf3_vm_frame_s* o, tp_t name 
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_vm_frame_s_run_proc( bmath_hf3_vm_frame_s* o, tp_t name )
+bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_push( bmath_hf3_vm_frame_s* o, tp_t name )
 {
-    if( !bcore_hmap_tpuz_s_exists( &o->map_proc, name ) )
+    ASSERT( !bmath_hf3_vm_frame_s_proc_exists( o, name ) );
+    bmath_hf3_vm_proc_s* proc = bmath_hf3_vm_library_s_push( &o->library );
+    proc->name = name;
+    bcore_hmap_tpuz_s_set( &o->map_proc, name, o->library.size - 1 );
+    return proc;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_get( const bmath_hf3_vm_frame_s* o, tp_t name )
+{
+    uz_t* p_idx = bcore_hmap_tpuz_s_get( &o->map_proc, name );
+    if( !p_idx ) return NULL;
+    sz_t idx = *p_idx;
+    bmath_hf3_vm_proc_s* proc = o->library.data[ idx ];
+    return proc;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_get_or_push( bmath_hf3_vm_frame_s* o, tp_t name )
+{
+    bmath_hf3_vm_proc_s* proc = bmath_hf3_vm_frame_s_proc_get( o, name );
+    if( !proc ) proc = bmath_hf3_vm_frame_s_proc_push( o, name );
+    return proc;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_proc_run( bmath_hf3_vm_frame_s* o, tp_t name )
+{
+    if( !bmath_hf3_vm_frame_s_proc_exists( o, name ) )
     {
-        ERR_fa( "'#<sc_t>' does not represent a procedure.", bcore_hmap_name_s_get_sc( &o->map_name, name ) );
+        ERR_fa( "Procedure '#<sc_t>' does not exist.", bcore_hmap_name_s_get_sc( &o->map_name, name ) );
     }
     sz_t idx = *bcore_hmap_tpuz_s_get( &o->map_proc, name );
-    bmath_hf3_vm_proc_s* proc = &o->library.data[ idx ];
+    bmath_hf3_vm_proc_s* proc = o->library.data[ idx ];
     bmath_hf3_vm_proc_s_run( proc, o->arr_holor.data );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_proc_remove( bmath_hf3_vm_frame_s* o, tp_t name )
+{
+    uz_t* p_idx = bcore_hmap_tpuz_s_get( &o->map_proc, name );
+    if( !p_idx ) return;
+    sz_t idx = *p_idx;
+    bmath_hf3_vm_proc_s_detach( &o->library.data[ idx ] );
+    sz_t last_idx = o->library.size - 1;
+    if( idx != last_idx )
+    {
+        bmath_hf3_vm_proc_s* last_proc = o->library.data[ last_idx ];
+        o->library.data[ idx ] = last_proc;
+        o->library.data[ last_idx ] = NULL;
+        bcore_hmap_tpuz_s_set( &o->map_proc, last_proc->name, idx );
+    }
+    bcore_array_a_pop( ( bcore_array* )&o->library );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -164,7 +214,7 @@ void bmath_hf3_vm_frame_s_push_op_d( bmath_hf3_vm_frame_s* o, tp_t tp_proc, bmat
     }
 
     sz_t idx = *bcore_hmap_tpuz_s_get( &o->map_proc, tp_proc );
-    bmath_hf3_vm_proc_s* proc = &o->library.data[ idx ];
+    bmath_hf3_vm_proc_s* proc = o->library.data[ idx ];
     bmath_hf3_vm_proc_s_push_op_d( proc, op );
 }
 

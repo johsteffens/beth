@@ -75,7 +75,7 @@ stamp :proc = aware bcore_array
 // library: array of procedures
 stamp :library = aware bcore_array
 {
-    :proc_s [];
+    :proc_s => [];
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,22 +85,25 @@ group :op =
 {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    /// creates object when argument o is null
+    feature 'a' sz_t get_arity( const );
+    feature 'a' void set_indices( mutable, sz_t* a ); // a represents an array of arity + 1
 
     /// Extendable signature to create object, assign arguments and additional parameters
     signature :* csetup( mutable );
 
-    /// Extendable signature for assigning arguments
+    /// (deprecated) Extendable signature for assigning arguments
     signature :* set_args( mutable );
 
     /// arity 0 operators
     group :ar0 =
     {
-        signature   :: : csetup   csetup(   sz_t idx_a );
-        feature 'a' :: : set_args set_args( sz_t idx_a );
-        func : :set_args = { o->a = idx_a; return (::*)o; };
+        func        :: :get_arity = { return 0; };
+        signature   :: :csetup   csetup(   sz_t idx_a );
+        feature 'a' :: :set_args set_args( sz_t idx_a );
 
-        func : :csetup = { if( !o ) o = @create(); o->a = idx_a; return (::*)o; };
+        func :: :set_indices = { o->a = a[0]; };
+        func  : :set_args = { o->a = idx_a; return (::*)o; };
+        func  : :csetup = { if( !o ) o = @create(); o->a = idx_a; return (::*)o; };
 
         stamp :determine = aware :
         {
@@ -129,10 +132,13 @@ group :op =
     /// arity 1 operators
     group :ar1 =
     {
-        signature   :: : csetup   csetup(   sz_t idx_a, sz_t idx_b );
-        feature 'a' :: : set_args set_args( sz_t idx_a, sz_t idx_b );
-        func : :set_args = { o->a = idx_a; o->b = idx_b; return (::*)o; };
-        func : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
+        func        :: :get_arity = { return 1; };
+        signature   :: :csetup   csetup(   sz_t idx_a, sz_t idx_b );
+        feature 'a' :: :set_args set_args( sz_t idx_a, sz_t idx_b );
+
+        func :: :set_indices = { o->a = a[0]; o->b = a[1]; };
+        func  : :set_args = { o->a = idx_a; o->b = idx_b; return (::*)o; };
+        func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
 
         /// a -> b
         stamp :identity = aware :
@@ -162,10 +168,13 @@ group :op =
     /// arity 2 operators
     group :ar2 =
     {
-        signature   :: : csetup   csetup(   sz_t idx_a, sz_t idx_b, sz_t idx_c );
-        feature 'a' :: : set_args set_args( sz_t idx_a, sz_t idx_b, sz_t idx_c );
-        func : :set_args = { o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
-        func : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
+        func        :: :get_arity = { return 2; };
+        signature   :: :csetup   csetup(   sz_t idx_a, sz_t idx_b, sz_t idx_c );
+        feature 'a' :: :set_args set_args( sz_t idx_a, sz_t idx_b, sz_t idx_c );
+
+        func :: :set_indices = { o->a = a[0]; o->b = a[1]; o->c = a[2]; };
+        func  : :set_args = { o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
+        func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
 
         /// a + b -> c
         stamp :add = aware :
@@ -282,8 +291,20 @@ void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o );
 /// checks if procedure exists
 bl_t bmath_hf3_vm_frame_s_proc_exists( const bmath_hf3_vm_frame_s* o, tp_t name );
 
+/// adds a new procedure
+bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_push( bmath_hf3_vm_frame_s* o, tp_t name );
+
+/// retrieves a procedure
+bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_get( const bmath_hf3_vm_frame_s* o, tp_t name );
+
+/// retrieves a procedure or adds it if not existing
+bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_get_or_push( bmath_hf3_vm_frame_s* o, tp_t name );
+
 /// runs a procedure
-void bmath_hf3_vm_frame_s_run_proc( bmath_hf3_vm_frame_s* o, tp_t name );
+void bmath_hf3_vm_frame_s_proc_run( bmath_hf3_vm_frame_s* o, tp_t name );
+
+/// removes a procedure if existing
+void bmath_hf3_vm_frame_s_proc_remove( bmath_hf3_vm_frame_s* o, tp_t name );
 
 /// retrieves holor index; returns -1 if holor does not exists
 sz_t bmath_hf3_vm_frame_s_get_holor_index( bmath_hf3_vm_frame_s* o, tp_t name );
