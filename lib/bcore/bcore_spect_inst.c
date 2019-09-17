@@ -1453,8 +1453,30 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
             {
                 if( !bcore_flect_exists( self_item->type ) )
                 {
-                    ERR_fa( "Constructing bcore_inst_s of #<sc_t>:\n"
-                         "Type '#<sc_t>' (#<tp_t>) does not exist.", ifnameof( self->type ), ifnameof( self_item->type ), self_item->type );
+                    if( bcore_trait_exists( self_item->type ) )
+                    {
+                        ERR_fa
+                        (
+                            "Constructing bcore_inst_s of '#<sc_t>' element '#<sc_t>':\n"
+                            "Type '#<sc_t>' is a trait but has no reflection.\n"
+                            "If it is intended to be used as virtual type,\n"
+                            "then add prefix {aware|typed} to the element definition.\n",
+                            ifnameof( self->type ),
+                            ifnameof( self_item->name ),
+                            ifnameof( self_item->type )
+                        );
+                    }
+                    else
+                    {
+                        ERR_fa
+                        (
+                            "Constructing bcore_inst_s of #<sc_t>:\n"
+                            "Type '#<sc_t>' (#<tp_t>) has no reflection.",
+                            ifnameof( self->type ),
+                            ifnameof( self_item->type ),
+                            self_item->type
+                        );
+                    }
                 }
                 else if( self_item->type == self->type )
                 {
