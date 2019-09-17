@@ -91,6 +91,10 @@ void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+// Procedures
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 bl_t bmath_hf3_vm_frame_s_proc_exists( const bmath_hf3_vm_frame_s* o, tp_t name )
 {
     return bcore_hmap_tpuz_s_exists( &o->map_proc, name );
@@ -161,7 +165,42 @@ void bmath_hf3_vm_frame_s_proc_remove( bmath_hf3_vm_frame_s* o, tp_t name )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-sz_t bmath_hf3_vm_frame_s_get_holor_index( bmath_hf3_vm_frame_s* o, tp_t name )
+// Holors
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_holors_set_size( bmath_hf3_vm_frame_s* o, sz_t size )
+{
+    bmath_hf3_vm_arr_holor_s_set_size( &o->arr_holor, size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_holors_setup_name_map( bmath_hf3_vm_frame_s* o )
+{
+    bcore_hmap_tpuz_s_clear( &o->map_holor );
+    BFOR_EACH( &o->arr_holor, i )
+    {
+        tp_t name = o->arr_holor.data[ i ].name;
+        if( name )
+        {
+            ASSERT( !bcore_hmap_tpuz_s_exists( &o->map_holor, name ) );
+            bcore_hmap_tpuz_s_set( &o->map_holor, name, i );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_get_by_index( bmath_hf3_vm_frame_s* o, sz_t index )
+{
+    ASSERT( index >= 0 && index < o->arr_holor.size );
+    return &o->arr_holor.data[ index ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+sz_t bmath_hf3_vm_frame_s_holors_get_index_by_name( bmath_hf3_vm_frame_s* o, tp_t name )
 {
     if( !bcore_hmap_tpuz_s_exists( &o->map_holor, name ) ) return -1;
     return *bcore_hmap_tpuz_s_get( &o->map_holor, name );
@@ -169,36 +208,36 @@ sz_t bmath_hf3_vm_frame_s_get_holor_index( bmath_hf3_vm_frame_s* o, tp_t name )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_get_holor( bmath_hf3_vm_frame_s* o, tp_t name )
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_get_by_name( bmath_hf3_vm_frame_s* o, tp_t name )
 {
-    sz_t idx = bmath_hf3_vm_frame_s_get_holor_index( o, name );
+    sz_t idx = bmath_hf3_vm_frame_s_holors_get_index_by_name( o, name );
     return idx >= 0 ? &o->arr_holor.data[ idx ] : NULL;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_vm_frame_s_alloc_holors( bmath_hf3_vm_frame_s* o, tp_t type )
+void bmath_hf3_vm_frame_s_alloc_holors_of_type( bmath_hf3_vm_frame_s* o, tp_t type )
 {
     for( sz_t i = 0; i < o->arr_holor.size; i++ )
     {
         bmath_hf3_vm_holor_s* holor = &o->arr_holor.data[ i ];
         if( holor->type == type )
         {
-            bmath_hf3_s_fit_v_size( &holor->hf3 );
+            bmath_hf3_s_fit_v_size( &holor->h );
         }
     }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_vm_frame_s_dealloc_holors( bmath_hf3_vm_frame_s* o, tp_t type )
+void bmath_hf3_vm_frame_s_dealloc_holors_of_type( bmath_hf3_vm_frame_s* o, tp_t type )
 {
     for( sz_t i = 0; i < o->arr_holor.size; i++ )
     {
         bmath_hf3_vm_holor_s* holor = &o->arr_holor.data[ i ];
         if( holor->type == type )
         {
-            bmath_hf3_s_clear_v_data( &holor->hf3 );
+            bmath_hf3_s_clear_v_data( &holor->h );
         }
     }
 }

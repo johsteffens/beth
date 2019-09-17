@@ -35,7 +35,7 @@ stamp :holor = aware :
 {
     tp_t name;
     tp_t type;
-    bmath_hf3_s hf3;
+    bmath_hf3_s h;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,13 +108,13 @@ group :op =
         stamp :determine = aware :
         {
             sz_t a;
-            func ::: :run = { bmath_hf3_s_fit_v_size( &hbase[ o->a ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_fit_v_size( &hbase[ o->a ].h ); };
         };
 
         stamp :vacate = aware :
         {
             sz_t a;
-            func ::: :run = { bmath_hf3_s_set_vacant( &hbase[ o->a ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_set_vacant( &hbase[ o->a ].h ); };
         };
 
         signature : : csetup csetup_randomize( u2_t rseed );
@@ -123,7 +123,7 @@ group :op =
             sz_t a;
             u2_t rseed = 1234;
             func   : :csetup_randomize = { if( !o ) o = :randomize_s_create(); o->a = idx_a; o->rseed = rseed; return (::*)o; };
-            func ::: :run = { u2_t rval = o->rseed + o->a; bmath_hf3_s_set_random( &hbase[ o->a ].hf3, 1.0, -1.0, 1.0, &rval ); };
+            func ::: :run = { u2_t rval = o->rseed + o->a; bmath_hf3_s_set_random( &hbase[ o->a ].h, 1.0, -1.0, 1.0, &rval ); };
         };
     };
 
@@ -140,18 +140,25 @@ group :op =
         func  : :set_args = { o->a = idx_a; o->b = idx_b; return (::*)o; };
         func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
 
-        /// a -> b
+        /// deprecated: use cpy  (term 'identity' should be used in higher abstractions)
         stamp :identity = aware :
         {
             sz_t a; sz_t b;
-            func ::: :run = { bmath_hf3_s_cpy( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_cpy( &hbase[ o->a ].h, &hbase[ o->b ].h ); };
+        };
+
+        /// a -> b
+        stamp :cpy = aware :
+        {
+            sz_t a; sz_t b;
+            func ::: :run = { bmath_hf3_s_cpy( &hbase[ o->a ].h, &hbase[ o->b ].h ); };
         };
 
         /// tanh(a) -> b
         stamp :tanh = aware :
         {
             sz_t a; sz_t b;
-            func ::: :run = { bmath_hf3_s_tanh( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_tanh( &hbase[ o->a ].h, &hbase[ o->b ].h ); };
         };
 
         /// unary(a) -> b
@@ -159,7 +166,7 @@ group :op =
         {
             sz_t a; sz_t b;
             bmath_fp_f3_ar1 unary;
-            func ::: :run = { bmath_hf3_s_fp_f3_ar1( &hbase[ o->a ].hf3, o->unary, &hbase[ o->b ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_fp_f3_ar1( &hbase[ o->a ].h, o->unary, &hbase[ o->b ].h ); };
         };
     };
 
@@ -174,69 +181,69 @@ group :op =
 
         func :: :set_indices = { o->a = a[0]; o->b = a[1]; o->c = a[2]; };
         func  : :set_args = { o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
-        func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
+        func  : :csetup   = { if( !o ) o = @create(); @set_args( o, idx_a, idx_b, idx_c); return (::*)o; };
 
         /// a + b -> c
         stamp :add = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func ::: :run = { bmath_hf3_s_add( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_add( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); };
         };
 
         /// a - b -> c
         stamp :sub = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func ::: :run = { bmath_hf3_s_sub( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_sub( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); };
         };
 
         /// a ** b -> c
         stamp :bmul = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func ::: :run = { bmath_hf3_s_bmul( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_bmul( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); };
         };
 
         /// a *^ b -> c
         stamp :bmul_htp = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func ::: :run = { bmath_hf3_s_bmul_htp( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_bmul_htp( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); };
         };
 
         /// a ^* b -> c
         stamp :htp_bmul = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func ::: :run = { bmath_hf3_s_htp_bmul( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_htp_bmul( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); };
         };
 
         /// a ^*^ b -> c
         stamp :htp_bmul_htp = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func ::: :run = { bmath_hf3_s_htp_bmul_htp( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_htp_bmul_htp( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); };
         };
 
         /// a * b -> c
         stamp :hmul = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func ::: :run = { bmath_hf3_s_hmul( &hbase[ o->a ].hf3, &hbase[ o->b ].hf3, &hbase[ o->c ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_hmul( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); };
         };
 
         /// a * s(b) -> c
         stamp :mul_scl = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func ::: :run = { bmath_hf3_s_mul_scl( &hbase[ o->a ].hf3, hbase[ o->b ].hf3.v_data, &hbase[ o->c ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_mul_scl( &hbase[ o->a ].h, hbase[ o->b ].h.v_data, &hbase[ o->c ].h ); };
         };
 
         /// s(a) * b -> c
         stamp :scl_mul = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func ::: :run = { bmath_hf3_s_mul_scl( &hbase[ o->b ].hf3, hbase[ o->a ].hf3.v_data, &hbase[ o->c ].hf3 ); };
+            func ::: :run = { bmath_hf3_s_mul_scl( &hbase[ o->b ].h, hbase[ o->a ].h.v_data, &hbase[ o->c ].h ); };
         };
     };
 
@@ -288,6 +295,8 @@ void bmath_hf3_vm_frame_s_shelve( bmath_hf3_vm_frame_s* o );
 /// clears all content
 void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o );
 
+// Procedures
+
 /// checks if procedure exists
 bl_t bmath_hf3_vm_frame_s_proc_exists( const bmath_hf3_vm_frame_s* o, tp_t name );
 
@@ -306,17 +315,23 @@ void bmath_hf3_vm_frame_s_proc_run( bmath_hf3_vm_frame_s* o, tp_t name );
 /// removes a procedure if existing
 void bmath_hf3_vm_frame_s_proc_remove( bmath_hf3_vm_frame_s* o, tp_t name );
 
-/// retrieves holor index; returns -1 if holor does not exists
-sz_t bmath_hf3_vm_frame_s_get_holor_index( bmath_hf3_vm_frame_s* o, tp_t name );
+// Holors
 
-/// retrieves holor; returns NULL if holor does not exists
-bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_get_holor( bmath_hf3_vm_frame_s* o, tp_t name );
+void bmath_hf3_vm_frame_s_holors_set_size( bmath_hf3_vm_frame_s* o, sz_t size );
+void bmath_hf3_vm_frame_s_holors_setup_name_map( bmath_hf3_vm_frame_s* o );
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_get_by_index(      bmath_hf3_vm_frame_s* o, sz_t index );
+
+/// retrieves holor index; returns -1 if holor does not exists
+sz_t bmath_hf3_vm_frame_s_holors_get_index_by_name( bmath_hf3_vm_frame_s* o, tp_t name );
+
+/// retrieves holor by name; returns NULL if holor does not exists
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_get_by_name( bmath_hf3_vm_frame_s* o, tp_t name );
 
 /// allocates v_data (fit_v_size) of holors of given type
-void bmath_hf3_vm_frame_s_alloc_holors( bmath_hf3_vm_frame_s* o, tp_t type );
+void bmath_hf3_vm_frame_s_alloc_holors_of_type( bmath_hf3_vm_frame_s* o, tp_t type );
 
 /// de-allocates v_data of holors of given type
-void bmath_hf3_vm_frame_s_dealloc_holors( bmath_hf3_vm_frame_s* o, tp_t type );
+void bmath_hf3_vm_frame_s_dealloc_holors_of_type( bmath_hf3_vm_frame_s* o, tp_t type );
 
 /// pusches operation to given procedure; creates procedure if not existing
 void bmath_hf3_vm_frame_s_push_op_d( bmath_hf3_vm_frame_s* o, tp_t proc, bmath_hf3_vm_op* op );

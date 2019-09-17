@@ -30,38 +30,32 @@
 PLANT_GROUP( bmath_hf3_op, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/** Operators on scalars
- *  Principal functions
- *     [o]fx  - returns the operator's result given arguments 'x' according to arity (x is only given for arity >= 1)
- *     [o]gxi - returns the gradient for argument 'i' given arguments 'x' (i is only given for arity >= 2)
- *     [o]gyi - returns the gradient for argument 'i' given arguments 'x' but the i-th argument swapped for y=fx
- *     Prefix o is used for generic :op level functions
+/** Operators on holors.
+ *  Generic naming scheme applied here is consistent with bmath_f3_op.
  */
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 feature 'ap' sz_t get_arity( const );
 
 /// a represents an array of size arity
-feature 'ap' void ofx( const,         const bmath_hf3_s** a, bmath_hf3_s* r );
-feature 'ap' void ogx( const, sz_t i, const bmath_hf3_s** a, bmath_hf3_s* r );
-feature 'ap' void ogy( const, sz_t i, const bmath_hf3_s** a, bmath_hf3_s* r );
+feature 'ap' void aofx( const,         const bmath_hf3_s** a, bmath_hf3_s* r );
+feature 'ap' void aogx( const, sz_t ch, const bmath_hf3_s** a, bmath_hf3_s* r );
+feature 'ap' void aogy( const, sz_t ch, const bmath_hf3_s** a, bmath_hf3_s* r );
 
 /// nullary operators
 group :ar0 =
 {
+    signature    void  f( plain, bmath_hf3_s* r );
+    feature 'ap' void of( const, bmath_hf3_s* r );
+
     func :: :get_arity = { return 0; };
-    func :: :ofx = { @f( o, r ); };
+    func :  :f    = { ERR_fa( "Not available." ); };
+    func :  :of   = { @f( r ); };
+    func :: :aofx = { @of( o, r ); };
 
-    feature 'a' void f( const, bmath_hf3_s* r );
+    stamp :zero    = aware : {                   func : : f = { bmath_hf3_s_zro(       r ); }; };
+    stamp :literal = aware : { bmath_hf3_s -> h; func : :of = { bmath_hf3_s_cpy( o->h, r ); }; };
 
-    stamp :zero    = aware : {                   func : :f = { bmath_hf3_s_zro( r ); }; };
-    stamp :literal = aware : { bmath_hf3_s -> h; func : :f = { bmath_hf3_s_cpy( o->h, r ); }; };
-
-    stamp :f3      = aware :
-    {
-        bmath_f3_op_ar0 -> op;
-        func : :f = { bmath_hf3_s_fp_f3_op_ar0( r, ( bmath_fp_f3_op_ar0 )bmath_f3_op_ar0_s_get_aware( o->op )->f, o->op ); };
-    };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -69,12 +63,20 @@ group :ar0 =
 /// unary operators
 group :ar1 =
 {
-    func :: :get_arity = { return 1; };
-    func :: :ofx = { @fx( o, a[0], r ); };
-    func :: :ogy = { @gy( o, a[0], r ); };
+    signature void fx( plain, const bmath_hf3_s* a, bmath_hf3_s* r );
+    signature void gy( plain, const bmath_hf3_s* y, bmath_hf3_s* r );
 
-    feature 'a' void fx( const, const bmath_hf3_s* a, bmath_hf3_s* r );
-    feature 'a' void gy( const, const bmath_hf3_s* y, bmath_hf3_s* r );
+    feature 'ap' void ofx( const, const bmath_hf3_s* a, bmath_hf3_s* r );
+    feature 'ap' void ogy( const, const bmath_hf3_s* y, bmath_hf3_s* r );
+
+    func :: :get_arity = { return 1; };
+
+    func  : :  fx = { ERR_fa( "Not available." ); };
+    func  : :  gy = { ERR_fa( "Not available." ); };
+    func  : : ofx = {  @fx(    a   , r ); };
+    func  : : ogy = {  @gy(    y   , r ); };
+    func :: :aofx = { @ofx( o, a[0], r ); };
+    func :: :aogy = { @ogy( o, a[0], r ); };
 
     stamp :identity = aware :
     {
@@ -82,71 +84,64 @@ group :ar1 =
         func : :gy = { bmath_hf3_s_set_f3( r, 1.0 ); };
     };
 
-    stamp :f3 = aware :
-    {
-        bmath_f3_op_ar1 -> op;
-        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_s_get_aware( o->op )->fx, o->op, r ); };
-        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_s_get_aware( o->op )->gy, o->op, r ); };
-    };
-
     // ======= (logistic function) ============
 
     stamp :lgst = aware :
     {
-        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_s_fx, NULL, r ); };
-        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_s_gy, NULL, r ); };
+        func : :fx = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_lgst_s_fx, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_ar1( y, bmath_f3_op_ar1_lgst_s_gy, r ); };
     };
 
     stamp :lgst_hard = aware :
     {
-        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_hard_s_fx, NULL, r ); };
-        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_hard_s_gy, NULL, r ); };
+        func : :fx = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_lgst_hard_s_fx, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_ar1( y, bmath_f3_op_ar1_lgst_hard_s_gy, r ); };
     };
 
     stamp :lgst_leaky = aware :
     {
-        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_leaky_s_fx, NULL, r ); };
-        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_lgst_leaky_s_gy, NULL, r ); };
+        func : :fx = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_lgst_leaky_s_fx, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_ar1( y, bmath_f3_op_ar1_lgst_leaky_s_gy, r ); };
     };
 
     // ======= (tanh) =========================
 
     stamp :tanh = aware :
     {
-        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_s_fx, NULL, r ); };
-        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_s_gy, NULL, r ); };
+        func : :fx = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_tanh_s_fx, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_ar1( y, bmath_f3_op_ar1_tanh_s_gy, r ); };
     };
 
     stamp :tanh_hard = aware :
     {
-        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_hard_s_fx, NULL, r ); };
-        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_hard_s_gy, NULL, r ); };
+        func : :fx = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_tanh_hard_s_fx, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_ar1( y, bmath_f3_op_ar1_tanh_hard_s_gy, r ); };
     };
 
     stamp :tanh_leaky = aware :
     {
-        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_leaky_s_fx, NULL, r ); };
-        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_tanh_leaky_s_gy, NULL, r ); };
+        func : :fx = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_tanh_leaky_s_fx, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_ar1( y, bmath_f3_op_ar1_tanh_leaky_s_gy, r ); };
     };
 
     // ======= (softplus function) ============
 
     stamp :softplus = aware :
     {
-        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_softplus_s_fx, NULL, r ); };
-        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_softplus_s_gy, NULL, r ); };
+        func : :fx = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_softplus_s_fx, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_ar1( y, bmath_f3_op_ar1_softplus_s_gy, r ); };
     };
 
     stamp :relu = aware :
     {
-        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_relu_s_fx, NULL, r ); };
-        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_relu_s_gy, NULL, r ); };
+        func : :fx = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_relu_s_fx, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_ar1( y, bmath_f3_op_ar1_relu_s_gy, r ); };
     };
 
     stamp :relu_leaky = aware :
     {
-        func : :fx = { bmath_hf3_s_fp_f3_op_ar1( a, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_relu_leaky_s_fx, NULL, r ); };
-        func : :gy = { bmath_hf3_s_fp_f3_op_ar1( y, ( bmath_fp_f3_op_ar1 )bmath_f3_op_ar1_relu_leaky_s_gy, NULL, r ); };
+        func : :fx = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_relu_leaky_s_fx, r ); };
+        func : :gy = { bmath_hf3_s_fp_f3_ar1( y, bmath_f3_op_ar1_relu_leaky_s_gy, r ); };
     };
 
 };
@@ -156,13 +151,25 @@ group :ar1 =
 /// binary operators
 group :ar2 =
 {
-    func :: :get_arity = { return 2; };
-    func :: :ofx = { @fx( o, a[0], a[1], r ); };
-    func :: :ogx = { if( i == 0 ) { @gxa( o, a[0], a[1], r ); } else { @gxb( o, a[0], a[1], r ); } };
+    signature   void fx(   plain, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+    signature   void gxa(  plain, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+    signature   void gxb(  plain, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
 
-    feature 'a' void fx(  const, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
-    feature 'a' void gxa( const, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
-    feature 'a' void gxb( const, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+    feature 'ap' void ofx(  const, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+    feature 'ap' void ogxa( const, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+    feature 'ap' void ogxb( const, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+
+    func :: :get_arity = { return 2; };
+    func  : :  fx  = { ERR_fa( "Not available." ); };
+    func  : :  gxa = { ERR_fa( "Not available." ); };
+    func  : :  gxb = { ERR_fa( "Not available." ); };
+
+    func  : : ofx  = {  @fx(  a, b, r ); };
+    func  : : ogxa = {  @gxa( a, b, r ); };
+    func  : : ogxb = {  @gxb( a, b, r ); };
+
+    func :: :aofx = { @ofx( o, a[0], a[1], r ); };
+    func :: :aogx = { if( ch == 0 ) { @ogxa( o, a[0], a[1], r ); } else { @ogxb( o, a[0], a[1], r ); } };
 
     stamp :add = aware :
     {
@@ -187,9 +194,9 @@ group :ar2 =
 
     stamp :div = aware :
     {
-        func : :fx  = { bmath_hf3_s_fp_f3_op_ar2( a, b, ( bmath_fp_f3_op_ar2 )bmath_f3_op_ar2_div_s_fx,  NULL, r ); };
-        func : :gxa = { bmath_hf3_s_fp_f3_op_ar2( a, b, ( bmath_fp_f3_op_ar2 )bmath_f3_op_ar2_div_s_gxa, NULL, r ); };
-        func : :gxb = { bmath_hf3_s_fp_f3_op_ar2( a, b, ( bmath_fp_f3_op_ar2 )bmath_f3_op_ar2_div_s_gxb, NULL, r ); };
+        func : :fx  = { bmath_hf3_s_fp_f3_ar2( a, b, bmath_f3_op_ar2_div_s_fx,  r ); };
+        func : :gxa = { bmath_hf3_s_fp_f3_ar2( a, b, bmath_f3_op_ar2_div_s_gxa, r ); };
+        func : :gxb = { bmath_hf3_s_fp_f3_ar2( a, b, bmath_f3_op_ar2_div_s_gxb, r ); };
     };
 };
 

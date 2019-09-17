@@ -30,33 +30,45 @@
 PLANT_GROUP( bmath_f3_op, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/** Operators on scalars
- *  Principal functions
- *     [o]fx  - returns the operator's result given arguments 'x' according to arity (x is only given for arity >= 1)
- *     [o]gxi - returns the gradient for argument 'i' given arguments 'x' (i is only given for arity >= 2)
- *     [o]gyi - returns the gradient for argument 'i' given arguments 'x' but the i-th argument swapped for y=fx
- *     Prefix o is used for generic :op level functions
+/** Framework of n-ari operators spelled out on scalars and providing a structure for
+ *  other operands.
+ *
+ *  There are two kinds of principal functions
+ *    f - general forward mapping. Called fx for arity > 0.
+ *    g - gradient of a specific argument by partial derivative for arity > 0.
+ *
+ *  Functors (functions taking the operator instance as first argument) have prefix 'o'.
+ *  Of these the virtual f3_op-functors have additional prefix 'a' because they need different arguments.
+ *  Gradient functions 'g' have two kinds of (first) postfix:
+ *    x - using all input operands of 'f'
+ *    y - using the output of 'f' for the argument channel for which the gradient is computed. The rest is the same as 'x'
+ *  A second postfix indicates the the f-argument for which the gradient is computed.
+ *  Example: gxb: compute the gradient of argument 'b' of function 'f'
+ *
  */
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 feature 'ap' sz_t get_arity( const );
 
 /// a represents an array of size arity
-feature 'ap' f3_t ofx(  const, const f3_t* a );
-feature 'ap' f3_t ogx( const, const f3_t* a, sz_t i );
-feature 'ap' f3_t ogy( const, const f3_t* a, sz_t i );
+feature 'ap' f3_t aofx( const, const f3_t* a );
+feature 'ap' f3_t aogx( const, const f3_t* a, sz_t ch );  // ch: argument channel number [0, ..., arity -1]
+feature 'ap' f3_t aogy( const, const f3_t* a, sz_t ch );
 
 /// nullary operators
 group :ar0 =
 {
-    feature 'a' f3_t f( const );
+    signature   f3_t f(  plain );
+    feature 'ap' f3_t of( const );
 
     func :: :get_arity = { return 0; };
-    func :: :ofx = { return @f( o ); };
+    func :  :f    = { ERR_fa( "Not available." ); return 0; };
+    func :  :of   = { return @f(); };
+    func :: :aofx = { return @of( o ); };
 
-    stamp :zero    = aware : {         func : :f = { return  0.0; }; };
-    stamp :one     = aware : {         func : :f = { return  1.0; }; };
-    stamp :literal = aware : { f3_t v; func : :f = { return o->v; }; };
+    stamp :zero    = aware : {         func : :f  = { return  0.0; }; };
+    stamp :one     = aware : {         func : :f  = { return  1.0; }; };
+    stamp :literal = aware : { f3_t v; func : :of = { return o->v; }; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,12 +76,19 @@ group :ar0 =
 /// unary operators
 group :ar1 =
 {
-    feature 'a' f3_t fx( const, f3_t a );
-    feature 'a' f3_t gy( const, f3_t y );
+    signature f3_t fx( plain, f3_t a );
+    signature f3_t gy( plain, f3_t y );
+
+    feature 'ap' f3_t ofx( const, f3_t a );
+    feature 'ap' f3_t ogy( const, f3_t y );
 
     func :: :get_arity = { return 1; };
-    func :: :ofx = { return @fx( o, a[0] ); };
-    func :: :ogy = { return @gy( o, a[0] ); };
+    func  : :  fx = { ERR_fa( "Not available." ); return 0; };
+    func  : :  gy = { ERR_fa( "Not available." ); return 0; };
+    func  : : ofx = { return @fx( a ); };
+    func  : : ogy = { return @gy( y ); };
+    func :: :aofx = { return @ofx( o, a[0] ); };
+    func :: :aogy = { return @ogy( o, a[0] ); };
 
     // ======= (elementary functions) ============
 
@@ -145,13 +164,25 @@ group :ar1 =
 /// binary operators
 group :ar2 =
 {
-    feature 'a' f3_t fx ( const, f3_t a, f3_t b );
-    feature 'a' f3_t gxa( const, f3_t a, f3_t b );
-    feature 'a' f3_t gxb( const, f3_t a, f3_t b );
+    signature f3_t fx ( plain, f3_t a, f3_t b );
+    signature f3_t gxa( plain, f3_t a, f3_t b );
+    signature f3_t gxb( plain, f3_t a, f3_t b );
+
+    feature 'ap' f3_t ofx ( const, f3_t a, f3_t b );
+    feature 'ap' f3_t ogxa( const, f3_t a, f3_t b );
+    feature 'ap' f3_t ogxb( const, f3_t a, f3_t b );
+
+    func  : :fx  = { ERR_fa( "Not available." ); return 0; };
+    func  : :gxa = { ERR_fa( "Not available." ); return 0; };
+    func  : :gxb = { ERR_fa( "Not available." ); return 0; };
+
+    func  : :ofx  = { return @fx(  a, b ); };
+    func  : :ogxa = { return @gxa( a, b ); };
+    func  : :ogxb = { return @gxb( a, b ); };
 
     func :: :get_arity = { return 2; };
-    func :: :ofx = { return @fx( o, a[0], a[1] ); };
-    func :: :ogx = { return ( i == 0 ) ? @gxa( o, a[0], a[1] ) : @gxb( o, a[0], a[1] ); };
+    func :: :aofx = { return @ofx( o, a[0], a[1] ); };
+    func :: :aogx = { return ( ch == 0 ) ? @ogxa( o, a[0], a[1] ) : @ogxb( o, a[0], a[1] ); };
 
     stamp :add = aware :
     {
