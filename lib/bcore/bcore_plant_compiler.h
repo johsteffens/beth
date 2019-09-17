@@ -41,9 +41,11 @@
  *  Usage:
  *  PLANT_GROUP( <group_name>, <trait_name> )
  *  <plant-opener>
- *      [set enroll;]
+ *      signature <ret> <func_name>( {plain | const | mutable}, <args> );
+ *             plain: plain function (no object pointer as first argument)
+ *             const:   const member function;   first argument: const @* o
+ *             mutable: mutable member function; first argument:       @* o
  *
- *      signature <ret> <func_name>( const | mutable, <args> );
  *      signature <signature> <func_name>[( <additional-args> )];
  *      signature [ [<signature-group>] : ] <signature-name> [<func_name>] [( <additional-args> )];
  *

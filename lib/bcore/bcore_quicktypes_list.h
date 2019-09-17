@@ -1,7 +1,6 @@
 /** List of predefined types for quick access.
  *  Created via bcore_quicktypes_to_stdout( NULL );
  */
-
 // leaf types
 #define TYPEOF_ap_t                  3194897599
 #define TYPEOF_aware_t               1507719906
@@ -120,12 +119,14 @@
 #define TYPEOF_bcore_txt_ml_translator_s  2915184580
 #define TYPEOF_bcore_via                  2952444473
 #define TYPEOF_bcore_via_s                2457308211
+#define TYPEOF_const                      1716507092
 #define TYPEOF_down0                      1348367679
 #define TYPEOF_down1                      1331590060
 #define TYPEOF_get_quicktypes             2134094380
 #define TYPEOF_init0                      4243559033
 #define TYPEOF_init1                      4226781414
 #define TYPEOF_local                      2621662984
+#define TYPEOF_mutable                     990065577
 #define TYPEOF_none                       2913447899
 #define TYPEOF_plant                      3150636434
 #define TYPEOF_precoder                    285665067
