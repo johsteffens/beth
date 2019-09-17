@@ -83,7 +83,7 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_msgvf,  sc_t, format
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_msg_fv, sc_t, format, va_list, args )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_source, parse_msg_to_sink_fv, bcore_sink*, sink, sc_t, format, va_list, args )
 
-/// Returns the boolean of a fometted parse. 'format' must yield just one bool, which is returned.
+/// Returns the boolean of a formatted parse. 'format' must yield just one bool, which is returned.
 BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bcore_source, parse_bl_fa,  bl_t, sc_t, format )
 
 /// Indicates end-of-stream
