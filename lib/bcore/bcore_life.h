@@ -71,17 +71,17 @@ vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 #define BCORE_LIFE_A_PUSH(       expr ) bcore_life_s_push_aware( __life,       expr )
 #define BCORE_LIFE_T_PUSH( type, expr ) bcore_life_s_push_typed( __life, type, expr )
 #define BCORE_LIFE_X_PUSH(       expr ) bcore_life_s_push_sr(    __life,       expr )
-#define BCORE_LIFE_RETURNV( ret_type, expr ) { ret_type retvar = expr; BCORE_LIFE_DOWN(); return retvar; }
+#define BCORE_LIFE_RETURNV( ret_type, expr ) { ret_type __retv = expr; BCORE_LIFE_DOWN(); return __retv; }
 #define BCORE_LIFE_RETURN()                  {                         BCORE_LIFE_DOWN(); return;        }
 
-// abbreviated versions (Note: _CREATE and _RETURN is different)
+// abbreviated versions (Note: _CREATE is different)
 
 #define BLM_INIT() bcore_life_s* __life = bcore_life_s_create()
 #define BLM_DOWN() bcore_life_s_detach( &__life )
 #define BLM_CREATE( type_name ) ( type_name* )bcore_life_s_push_typed( __life, TYPEOF_##type_name, type_name##_create() )
 #define BLM_A_PUSH(           expr ) bcore_life_s_push_aware( __life,       expr )
 #define BLM_T_PUSH(     type, expr ) bcore_life_s_push_typed( __life, type, expr )
-#define BLM_RETURNV( ret_type, expr ) { ret_type retvar = expr; BLM_DOWN(); return retvar; }
+#define BLM_RETURNV( ret_type, expr ) { ret_type __retv = expr; BLM_DOWN(); return __retv; }
 #define BLM_RETURN()                  {                         BLM_DOWN(); return;        }
 
 #endif // BCORE_LIFE_H
