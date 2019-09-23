@@ -53,6 +53,38 @@ void bmath_hf3_vm_proc_s_push_op_d( bmath_hf3_vm_proc_s* o, bmath_hf3_vm_op* op 
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_hf3_vm_frame_s_check_integrity( bmath_hf3_vm_frame_s* o )
+{
+    for( sz_t i = 0; i < o->library.size; i++ )
+    {
+        bmath_hf3_vm_proc_s* proc = o->library.data[ i ];
+        for( sz_t j = 0; j < proc->size; j++ )
+        {
+            bmath_hf3_vm_prop_s* prop = &proc->data[ j ];
+            ASSERT( prop->op );
+            sz_t arity = bmath_hf3_vm_op_a_get_arity( prop->op );
+            sz_t* a = bcore_u_alloc( sizeof( sz_t ), NULL, arity + 1, NULL );
+            bmath_hf3_vm_op_a_get_indices( prop->op, a );
+            for( sz_t k = 0; k <= arity; k++ )
+            {
+                sz_t idx = a[ k ];
+                if( idx < 0 || idx >= o->arr_holor.size )
+                {
+                    ERR_fa
+                    (
+                        "In procedure #<sz_t>, operation #<sz_t>:\n"
+                        "Index #<sz_t> of operator #<sc_t> has value #<sz_t>, which is out of range.",
+                        i, j, k, ifnameof( prop->op->_ ), idx
+                    );
+                }
+            }
+            bcore_free( a );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 tp_t bmath_hf3_vm_frame_s_entypeof( bmath_hf3_vm_frame_s* o, sc_t name )
 {
     return bcore_hmap_name_s_set_sc( &o->map_name, name );

@@ -52,10 +52,10 @@ stamp :prop = aware :
     aware :op => op;
     private :s* p; // bmath_hf3_vm perspective of op
 
-    func bcore_inst_call : copy_x  = { o->p = (:s*):s_get_aware( o->op ); };
+    func bcore_inst_call : copy_x  = { o->p = o->op ? (:s*):s_get_aware( o->op ) : NULL; };
     func bcore_via_call  : mutated = { :prop_s_copy_x( o ); };
 
-    func bmath_hf3_vm : run = { :p_run( o->p, (vc_t)o->op, hbase ); };
+    func bmath_hf3_vm : run = { assert( o->p && o->p->run ); o->p->run( (vc_t)o->op, hbase ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,7 +67,10 @@ stamp :proc = aware bcore_array
     :prop_s [];
     bcore_arr_sz_s in;  // indices for input holors (if any)
     bcore_arr_sz_s out; // indices for output holors (if any)
-    func bmath_hf3_vm : run = { for( sz_t i = 0; i < o->size; i++ ) :prop_s_run( &o->data[ i ], hbase ); };
+    func bmath_hf3_vm : run =
+    {
+        for( sz_t i = 0; i < o->size; i++ ) :prop_s_run( &o->data[ i ], hbase );
+    };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,7 +89,8 @@ group :op =
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     feature 'a' sz_t get_arity( const );
-    feature 'a' void set_indices( mutable, sz_t* a ); // a represents an array of arity + 1
+    feature 'a' void set_indices( mutable, sz_t* a ); // a represents an array of arity + 1 elements
+    feature 'a' void get_indices( const,   sz_t* a ); // a represents an array of arity + 1 elements
 
     /// Extendable signature to create object, assign arguments and additional parameters
     signature :* csetup( mutable );
@@ -102,6 +106,7 @@ group :op =
         feature 'a' :: :set_args set_args( sz_t idx_a );
 
         func :: :set_indices = { o->a = a[0]; };
+        func :: :get_indices = { a[0] = o->a; };
         func  : :set_args = { o->a = idx_a; return (::*)o; };
         func  : :csetup = { if( !o ) o = @create(); o->a = idx_a; return (::*)o; };
 
@@ -137,6 +142,7 @@ group :op =
         feature 'a' :: :set_args set_args( sz_t idx_a, sz_t idx_b );
 
         func :: :set_indices = { o->a = a[0]; o->b = a[1]; };
+        func :: :get_indices = { a[0] = o->a; a[1] = o->b; };
         func  : :set_args = { o->a = idx_a; o->b = idx_b; return (::*)o; };
         func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
 
@@ -180,6 +186,7 @@ group :op =
         feature 'a' :: :set_args set_args( sz_t idx_a, sz_t idx_b, sz_t idx_c );
 
         func :: :set_indices = { o->a = a[0]; o->b = a[1]; o->c = a[2]; };
+        func :: :get_indices = { a[0] = o->a; a[1] = o->b; a[2] = o->c; };
         func  : :set_args = { o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
         func  : :csetup   = { if( !o ) o = @create(); @set_args( o, idx_a, idx_b, idx_c); return (::*)o; };
 
@@ -201,7 +208,10 @@ group :op =
         stamp :bmul = aware :
         {
             sz_t a; sz_t b; sz_t c;
-            func ::: :run = { bmath_hf3_s_bmul( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); };
+            func ::: :run =
+            {
+                bmath_hf3_s_bmul( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h );
+            };
         };
 
         /// a *^ b -> c
@@ -282,6 +292,9 @@ void bmath_hf3_vm_proc_s_push_op_d( bmath_hf3_vm_proc_s* o, bmath_hf3_vm_op* op 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // frame_s
+
+/// error if frame integrity is faulty;
+void bmath_hf3_vm_frame_s_check_integrity( bmath_hf3_vm_frame_s* o );
 
 /// enrolls name (if not existing) and retuns type
 tp_t bmath_hf3_vm_frame_s_entypeof( bmath_hf3_vm_frame_s* o, sc_t name );

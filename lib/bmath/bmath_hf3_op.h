@@ -38,7 +38,7 @@ PLANT_GROUP( bmath_hf3_op, bcore_inst )
 feature 'ap' sz_t get_arity( const );
 
 /// a represents an array of size arity
-feature 'ap' void aofx( const,         const bmath_hf3_s** a, bmath_hf3_s* r );
+feature 'ap' void aofx( const,          const bmath_hf3_s** a, bmath_hf3_s* r );
 feature 'ap' void aogx( const, sz_t ch, const bmath_hf3_s** a, bmath_hf3_s* r );
 feature 'ap' void aogy( const, sz_t ch, const bmath_hf3_s** a, bmath_hf3_s* r );
 
@@ -151,9 +151,9 @@ group :ar1 =
 /// binary operators
 group :ar2 =
 {
-    signature   void fx(   plain, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
-    signature   void gxa(  plain, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
-    signature   void gxb(  plain, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+    signature    void fx(   plain, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+    signature    void gxa(  plain, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+    signature    void gxb(  plain, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
 
     feature 'ap' void ofx(  const, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
     feature 'ap' void ogxa( const, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
@@ -199,9 +199,6 @@ group :ar2 =
         func : :gxb = { bmath_hf3_s_fp_f3_ar2( a, b, bmath_f3_op_ar2_div_s_gxb, r ); };
     };
 };
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
