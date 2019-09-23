@@ -1256,12 +1256,13 @@ static void bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_fe
 {
     if( o->flag_p )
     {
-        // static inline ret_t feature_p_func( const spect* __p, feature* o, arg_t arg1 ) { return __p->func( o, arg1 ); }
+        // static inline ret_t feature_p_func( const spect* __p, feature* o, arg_t arg1 ) { assert( __p->func ); return __p->func( o, arg1 ); }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_p_#<sc_t>( const #<sc_t>_s* __p,", indent, o->ret_type.sc, o->group->name.sc, o->name.sc, o->group->name.sc );
         if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
         bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
         bcore_plant_args_s_expand( &o->args, false, sink );
         bcore_sink_a_push_fa( sink, " ) { " );
+        bcore_sink_a_push_fa( sink, "assert( __p->#<sc_t> ); ", o->name.sc );
         if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
         bcore_sink_a_push_fa( sink, "__p->#<sc_t>( o", o->name.sc );
         bcore_plant_args_s_expand_name( &o->args, false, sink );
@@ -1270,42 +1271,48 @@ static void bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_fe
 
     if( o->flag_t )
     {
-        // static inline ret_t feature_t_func( tp_t __t, feature* o, arg_t arg1 ) { return features_s_get_typed( __t )->func( o, arg1 ); }
+        // static inline ret_t feature_t_func( tp_t __t, feature* o, arg_t arg1 ) { features_s* p = features_s_get_typed( __t ); assert( p->func ); return features_s_get_typed( __t )->func( o, arg1 ); }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_t_#<sc_t>( tp_t __t,", indent, o->ret_type.sc, o->group->name.sc, o->name.sc, o->group->name.sc );
         if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
         bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
         bcore_plant_args_s_expand( &o->args, false, sink );
         bcore_sink_a_push_fa( sink, " ) { " );
+        bcore_sink_a_push_fa( sink, "const #<sc_t>_s* p = #<sc_t>_s_get_typed( __t ); ", o->group->name.sc, o->group->name.sc );
+        bcore_sink_a_push_fa( sink, "assert( p->#<sc_t> ); ", o->name.sc );
         if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
-        bcore_sink_a_push_fa( sink, "#<sc_t>_s_get_typed( __t )->#<sc_t>( o", o->group->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, "p->#<sc_t>( o", o->name.sc );
         bcore_plant_args_s_expand_name( &o->args, false, sink );
         bcore_sink_a_push_fa( sink, " ); }" );
     }
 
     if( o->flag_a )
     {
-        // static inline ret_t feature_a_func( feature* o, arg_t arg1 ) { return features_s_get_aware( o )->func( o, arg1 ); }
+        // static inline ret_t feature_a_func( feature* o, arg_t arg1 ) { const features_s* p = features_s_get_aware( o ); assert( p->func ); return p->func( o, arg1 ); }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_a_#<sc_t>(", indent, o->ret_type.sc, o->group->name.sc, o->name.sc );
         if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
         bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
         bcore_plant_args_s_expand( &o->args, false, sink );
         bcore_sink_a_push_fa( sink, " ) { " );
+        bcore_sink_a_push_fa( sink, "const #<sc_t>_s* p = #<sc_t>_s_get_aware( o ); ", o->group->name.sc, o->group->name.sc );
+        bcore_sink_a_push_fa( sink, "assert( p->#<sc_t> ); ", o->name.sc );
         if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
-        bcore_sink_a_push_fa( sink, "#<sc_t>_s_get_aware( o )->#<sc_t>( o", o->group->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, "p->#<sc_t>( o", o->name.sc );
         bcore_plant_args_s_expand_name( &o->args, false, sink );
         bcore_sink_a_push_fa( sink, " ); }" );
     }
 
     if( o->flag_r )
     {
-        // static inline ret_t feature_r_func( const sr_s* o, arg_t arg1 ) { return features_s_get_typed( o->o_type )->func( o->o, arg1 ); }
+        // static inline ret_t feature_r_func( const sr_s* o, arg_t arg1 ) { const features_s* p = (const features_s*)ch_spect_p( o->p, TYPEOF_feature_s ) ); assert( p->func ); return p->func( o->o, arg1 ); }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_r_#<sc_t>(", indent, o->ret_type.sc, o->group->name.sc, o->name.sc );
         bcore_sink_a_push_fa( sink, " const sr_s* o" );
         bcore_plant_args_s_expand( &o->args, false, sink );
         bcore_sink_a_push_fa( sink, " ) { " );
         if( o->mutable ) bcore_sink_a_push_fa( sink, "ASSERT( !sr_s_is_const( o ) ); ", indent );
+        bcore_sink_a_push_fa( sink, "( const #<sc_t>_s* p = (const #<sc_t>_s*)ch_spect_p( o->p, TYPEOF_#<sc_t>_s ) ); ", o->group->name.sc, o->group->name.sc, o->group->name.sc );
+        bcore_sink_a_push_fa( sink, "assert( p->#<sc_t> ); ", o->name.sc );
         if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
-        bcore_sink_a_push_fa( sink, "( (#<sc_t>_s*)ch_spect_p( o->p, TYPEOF_#<sc_t>_s ) )->#<sc_t>( o->o", o->group->name.sc, o->group->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, "( p->#<sc_t>( o->o", o->name.sc );
         bcore_plant_args_s_expand_name( &o->args, false, sink );
         bcore_sink_a_push_fa( sink, " ); }" );
     }
