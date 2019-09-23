@@ -18,7 +18,7 @@
 
 /**********************************************************************************************************************/
 
-/** Holor of f3_t
+/** Holor of f3_t.
  *
  *  A holor represents the canonic extension of a matrix (or generalization of a tensor) as inspired by
  *  Moon & Spencer's: "Theory of Holors".
@@ -142,6 +142,10 @@ void bmath_hf3_s_copy_size( bmath_hf3_s* o, const bmath_hf3_s* src );
 void bmath_hf3_s_set_d_data_nv( bmath_hf3_s* o, sz_t d_size, va_list sz_t_args );
 void bmath_hf3_s_set_d_data_na( bmath_hf3_s* o, sz_t d_size, ... );
 
+/// sets v_data via variadic arguments
+void bmath_hf3_s_set_v_data_nv( bmath_hf3_s* o, sz_t v_size, va_list sz_t_args );
+void bmath_hf3_s_set_v_data_na( bmath_hf3_s* o, sz_t v_size, ... );
+
 /// sets size via variadic arguments
 void bmath_hf3_s_set_size_nv( bmath_hf3_s* o, sz_t d_size, va_list sz_t_args );
 void bmath_hf3_s_set_size_na( bmath_hf3_s* o, sz_t d_size, ... );
@@ -232,6 +236,13 @@ void bmath_hf3_s_formatted_to_stdout(  const bmath_hf3_s* o );
  *     creates a non-zero value.
  */
 void bmath_hf3_s_set_random( bmath_hf3_s* o, f3_t density, f3_t min, f3_t max, u2_t* p_rval );
+
+//----------------------------------------------------------------------------------------------------------------------
+/** Holor-Generalized Frobenius Norm
+ *  See bmath_mf3_fdev... for more details
+ */
+f3_t bmath_hf3_s_fdev_equ( const bmath_hf3_s* o, const bmath_hf3_s* op );
+f3_t bmath_hf3_s_fdev_zro( const bmath_hf3_s* o );
 
 /**********************************************************************************************************************/
 /// elementwise operations

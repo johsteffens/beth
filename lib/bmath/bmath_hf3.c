@@ -239,6 +239,27 @@ void bmath_hf3_s_set_d_data_na( bmath_hf3_s* o, sz_t d_size, ... )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_hf3_s_set_v_data_nv( bmath_hf3_s* o, sz_t v_size, va_list sz_t_args )
+{
+    bmath_hf3_s_set_v_size( o, v_size );
+    for( uz_t i = 0; i < v_size; i++ )
+    {
+        o->v_data[ i ] = va_arg( sz_t_args, sz_t );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_set_v_data_na( bmath_hf3_s* o, sz_t v_size, ... )
+{
+    va_list args;
+    va_start( args, v_size );
+    bmath_hf3_s_set_v_data_nv( o, v_size, args );
+    va_end( args );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_s_set_size_nv( bmath_hf3_s* o, sz_t d_size, va_list sz_t_args )
 {
     bmath_hf3_s_set_d_data_nv( o, d_size, sz_t_args );
@@ -562,6 +583,28 @@ void bmath_hf3_s_set_random( bmath_hf3_s* o, f3_t density, f3_t min, f3_t max, u
         }
     }
     if( p_rval ) *p_rval = rval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_hf3_s_fdev_equ( const bmath_hf3_s* o, const bmath_hf3_s* op )
+{
+    ASSERT( o->v_size == op->v_size );
+    f3_t sum = 0;
+    const f3_t* a = o ->v_data;
+    const f3_t* b = op->v_data;
+    for( sz_t i = 0; i < o->v_size; i++ ) sum += f3_sqr( a[ i ] - b[ i ] );
+    return ( sum > 0 ) ? f3_srt( sum ) : 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bmath_hf3_s_fdev_zro( const bmath_hf3_s* o )
+{
+    f3_t sum = 0;
+    const f3_t* a = o ->v_data;
+    for( sz_t i = 0; i < o->v_size; i++ ) sum += f3_sqr( a[ i ] );
+    return ( sum > 0 ) ? f3_srt( sum ) : 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
