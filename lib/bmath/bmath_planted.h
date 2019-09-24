@@ -898,7 +898,7 @@
 #define TYPEOF_bmath_hf3_vm_frame_s 1174748325
 #define BETH_EXPAND_ITEM_bmath_hf3_vm_frame_s \
   BCORE_DECLARE_OBJECT( bmath_hf3_vm_frame_s ) \
-    {aware_t _;bmath_hf3_vm_arr_holor_s arr_holor;bmath_hf3_vm_library_s library;tp_t proc_setup;tp_t proc_shelve;bcore_hmap_tpuz_s map_proc;bcore_hmap_tpuz_s map_holor;bcore_hmap_name_s map_name;}; \
+    {aware_t _;bmath_hf3_vm_arr_holor_s arr_holor;bmath_hf3_vm_library_s library;tp_t proc_setup;tp_t proc_shelve;bcore_hmap_tpuz_s map_proc;bcore_hmap_tpuz_s map_holor;bcore_hmap_name_s map_name;bcore_arr_sz_s input;bcore_arr_sz_s output;}; \
   void bmath_hf3_vm_frame_s_setup( bmath_hf3_vm_frame_s* o ); \
   static inline void bmath_hf3_vm_frame_s_mutated( bmath_hf3_vm_frame_s* o ){ bmath_hf3_vm_frame_s_setup( o ); } \
   void bmath_hf3_vm_frame_s_shelve( bmath_hf3_vm_frame_s* o );

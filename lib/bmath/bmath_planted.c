@@ -675,6 +675,8 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_frame_s )
     "bcore_hmap_tpuz_s map_proc;"
     "bcore_hmap_tpuz_s map_holor;"
     "bcore_hmap_name_s map_name;"
+    "bcore_arr_sz_s input;"
+    "bcore_arr_sz_s output;"
     "func ^:setup;"
     "func bcore_via_call:mutated;"
     "func bcore_via_call:shelve;"
@@ -955,7 +957,7 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 2366705980 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 2517244449 ) );
             BCORE_REGISTER_FEATURE( bmath_f3_op_get_arity );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aofx );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aogx );

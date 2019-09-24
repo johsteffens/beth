@@ -145,6 +145,22 @@ bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_push( bmath_hf3_vm_frame_s* o, tp
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_reset( bmath_hf3_vm_frame_s* o, tp_t name )
+{
+    if( !bmath_hf3_vm_frame_s_proc_exists( o, name ) )
+    {
+        return bmath_hf3_vm_frame_s_proc_push( o, name );
+    }
+    else
+    {
+        bmath_hf3_vm_proc_s* proc = bmath_hf3_vm_frame_s_proc_get( o, name );
+        bmath_hf3_vm_proc_s_clear( proc );
+        return proc;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_get( const bmath_hf3_vm_frame_s* o, tp_t name )
 {
     uz_t* p_idx = bcore_hmap_tpuz_s_get( &o->map_proc, name );
@@ -193,6 +209,21 @@ void bmath_hf3_vm_frame_s_proc_remove( bmath_hf3_vm_frame_s* o, tp_t name )
         bcore_hmap_tpuz_s_set( &o->map_proc, last_proc->name, idx );
     }
     bcore_array_a_pop( ( bcore_array* )&o->library );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_proc_push_op_d( bmath_hf3_vm_frame_s* o, tp_t tp_proc, bmath_hf3_vm_op* op )
+{
+    if( !bcore_hmap_tpuz_s_exists( &o->map_proc, tp_proc ) )
+    {
+        bcore_hmap_tpuz_s_set( &o->map_proc, tp_proc, o->library.size );
+        bmath_hf3_vm_library_s_push( &o->library );
+    }
+
+    sz_t idx = *bcore_hmap_tpuz_s_get( &o->map_proc, tp_proc );
+    bmath_hf3_vm_proc_s* proc = o->library.data[ idx ];
+    bmath_hf3_vm_proc_s_push_op_d( proc, op );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -275,18 +306,38 @@ void bmath_hf3_vm_frame_s_dealloc_holors_of_type( bmath_hf3_vm_frame_s* o, tp_t 
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+// input/output holors
 
-void bmath_hf3_vm_frame_s_push_op_d( bmath_hf3_vm_frame_s* o, tp_t tp_proc, bmath_hf3_vm_op* op )
+void bmath_hf3_vm_frame_s_input_push( bmath_hf3_vm_frame_s* o, sz_t idx_val )
 {
-    if( !bcore_hmap_tpuz_s_exists( &o->map_proc, tp_proc ) )
-    {
-        bcore_hmap_tpuz_s_set( &o->map_proc, tp_proc, o->library.size );
-        bmath_hf3_vm_library_s_push( &o->library );
-    }
+    bcore_arr_sz_s_push( &o->input, idx_val );
+}
 
-    sz_t idx = *bcore_hmap_tpuz_s_get( &o->map_proc, tp_proc );
-    bmath_hf3_vm_proc_s* proc = o->library.data[ idx ];
-    bmath_hf3_vm_proc_s_push_op_d( proc, op );
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_input_get_holor( bmath_hf3_vm_frame_s* o, sz_t index )
+{
+    ASSERT( index >= 0 && index < o->input.size );
+    sz_t idx_val = o->input.data[ index ];
+    ASSERT( idx_val >= 0 && idx_val < o->arr_holor.size );
+    return &o->arr_holor.data[ idx_val ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_output_push( bmath_hf3_vm_frame_s* o, sz_t idx_val )
+{
+    bcore_arr_sz_s_push( &o->output, idx_val );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_output_get_holor( bmath_hf3_vm_frame_s* o, sz_t index )
+{
+    ASSERT( index >= 0 && index < o->output.size );
+    sz_t idx_val = o->output.data[ index ];
+    ASSERT( idx_val >= 0 && idx_val < o->arr_holor.size );
+    return &o->arr_holor.data[ idx_val ];
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -276,6 +276,13 @@ stamp :frame = aware :
     bcore_hmap_tpuz_s map_holor; // associates a name with a holor
     bcore_hmap_name_s map_name;  // map of names used
 
+    /** Optional interface for the frame:
+     *  input, output index-reference corresponding holors
+     *  They are setup by vm-builders
+     */
+    bcore_arr_sz_s input;
+    bcore_arr_sz_s output;
+
     func :              : setup;
     func bcore_via_call : mutated = { :frame_s_setup( o ); };
     func bcore_via_call : shelve;
@@ -313,8 +320,11 @@ void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o );
 /// checks if procedure exists
 bl_t bmath_hf3_vm_frame_s_proc_exists( const bmath_hf3_vm_frame_s* o, tp_t name );
 
-/// adds a new procedure
+/// adds a new procedure if not already existing
 bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_push( bmath_hf3_vm_frame_s* o, tp_t name );
+
+/// adds a new procedure if not already existing; if it exists it is set to size 0
+bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_reset( bmath_hf3_vm_frame_s* o, tp_t name );
 
 /// retrieves a procedure
 bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_get( const bmath_hf3_vm_frame_s* o, tp_t name );
@@ -327,6 +337,9 @@ void bmath_hf3_vm_frame_s_proc_run( bmath_hf3_vm_frame_s* o, tp_t name );
 
 /// removes a procedure if existing
 void bmath_hf3_vm_frame_s_proc_remove( bmath_hf3_vm_frame_s* o, tp_t name );
+
+/// pushes operation to given procedure; creates procedure if not existing
+void bmath_hf3_vm_frame_s_proc_push_op_d( bmath_hf3_vm_frame_s* o, tp_t proc, bmath_hf3_vm_op* op );
 
 // Holors
 
@@ -346,8 +359,14 @@ void bmath_hf3_vm_frame_s_alloc_holors_of_type( bmath_hf3_vm_frame_s* o, tp_t ty
 /// de-allocates v_data of holors of given type
 void bmath_hf3_vm_frame_s_dealloc_holors_of_type( bmath_hf3_vm_frame_s* o, tp_t type );
 
-/// pusches operation to given procedure; creates procedure if not existing
-void bmath_hf3_vm_frame_s_push_op_d( bmath_hf3_vm_frame_s* o, tp_t proc, bmath_hf3_vm_op* op );
+// ---------------------------------------------------------------------------------------------------------------------
+// input/output holors
+
+void                  bmath_hf3_vm_frame_s_input_push(      bmath_hf3_vm_frame_s* o, sz_t index );
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_input_get_holor( bmath_hf3_vm_frame_s* o, sz_t index );
+
+void                  bmath_hf3_vm_frame_s_output_push(      bmath_hf3_vm_frame_s* o, sz_t index );
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_output_get_holor( bmath_hf3_vm_frame_s* o, sz_t index );
 
 // ---------------------------------------------------------------------------------------------------------------------
 
