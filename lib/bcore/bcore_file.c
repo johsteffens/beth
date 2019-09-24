@@ -19,6 +19,30 @@
 #include "bcore_sources.h"
 #include "bcore_sinks.h"
 
+/**********************************************************************************************************************/
+/// bcore_file_path_s
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_file_path_s_source( bcore_file_path_s* o, bcore_source* source )
+{
+    sc_t file = bcore_source_a_get_file( source );
+    st_s_detach( &o->full );
+    st_s_detach( &o->root );
+    if( file )
+    {
+        o->root = bcore_file_folder_name( file );
+        if( o->root && o->name.size > 0 && o->name.sc[ 0 ] != '/' )
+        {
+            o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
 //----------------------------------------------------------------------------------------------------------------------
 
 sc_t bcore_file_extension( sc_t path )
@@ -128,6 +152,13 @@ bcore_source* bcore_file_open_source( sc_t name )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bcore_source* bcore_file_open_source_path( const bcore_file_path_s* path )
+{
+    return bcore_file_open_source( bcore_file_path_s_get_sc( path ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bcore_sink* bcore_file_open_sink( sc_t name )
 {
     return ( bcore_sink* )bcore_sink_open_file( name );
@@ -148,6 +179,12 @@ vd_t bcore_file_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_selftest:
         {
+        }
+        break;
+
+        case TYPEOF_plant:
+        {
+            bcore_plant_compile( "bcore_planted", __FILE__ );
         }
         break;
 

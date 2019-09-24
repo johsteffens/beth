@@ -3,6 +3,7 @@
  *  Copyright and License:
  *    Generated code inherits the copyright and license of the beth-plant source code.
  *    The following files contain all source code related to this file:
+ *    bcore_file.h
  *    bcore_plant_sample.h
  *    bcore_spect_inst_call.h
  *    bcore_spect_via_call.h
@@ -17,6 +18,34 @@
 #include "bcore_sr.h"
 #include "bcore_const_manager.h"
 
+
+/**********************************************************************************************************************/
+// source: bcore_file.h
+#include "bcore_file.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_file
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_file_path_s )
+"aware bcore_inst"
+"{"
+    "st_s name;"
+    "hidden st_s => root;"
+    "hidden st_s => full;"
+    "func bcore_via_call:source;"
+    "func bcore_file:get_sc;"
+    "func bcore_file:set_sc;"
+"}";
+
+void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
+{
+    st_s_detach( &o->full );
+    st_s_copy_sc( &o->name, name );
+    if( name[ 0 ] != '/' && o->root != NULL )
+    {
+        o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
+    }
+}
 
 /**********************************************************************************************************************/
 // source: bcore_plant_sample.h
@@ -95,6 +124,7 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_inst_call )
 BCORE_DEFINE_SPECT( bcore_inst, bcore_via_call )
 "{"
     "bcore_spect_header_s header;"
+    "feature bcore_via_call : source;"
     "feature bcore_via_call : mutated;"
     "feature bcore_via_call : shelve;"
 "}";
@@ -143,7 +173,12 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 1417309695 ) );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 4159644716 ) );
+            BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_file_path_s_source );
+            BCORE_REGISTER_FFUNC( bcore_file_get_sc, bcore_file_path_s_get_sc );
+            BCORE_REGISTER_FFUNC( bcore_file_set_sc, bcore_file_path_s_set_sc );
+            BCORE_REGISTER_OBJECT( bcore_file_path_s );
+            BCORE_REGISTER_TRAIT( bcore_file, bcore_inst );
             BCORE_REGISTER_NAME( anyglobalname );
             BCORE_REGISTER_FFUNC( bcore_plant_sample_features_setup, bcore_plant_sample_object2_s_setup );
             BCORE_REGISTER_FFUNC( bcore_plant_sample_features_to_stdout, bcore_plant_sample_object2_s_to_stdout );
@@ -171,6 +206,7 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( bcore_inst_call_copy_x );
             BCORE_REGISTER_NAME( bcore_inst_call_discard_e );
             BCORE_REGISTER_SPECT( bcore_inst_call );
+            BCORE_REGISTER_FEATURE( bcore_via_call_source );
             BCORE_REGISTER_FEATURE( bcore_via_call_mutated );
             BCORE_REGISTER_FEATURE( bcore_via_call_shelve );
             BCORE_REGISTER_SPECT( bcore_via_call );

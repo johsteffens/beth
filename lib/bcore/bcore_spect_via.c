@@ -347,6 +347,11 @@ bl_t bcore_via_default_iis_link( const bcore_via_s* p, const bcore_via* o, uz_t 
     return false;
 }
 
+void bcore_via_default_source( const bcore_via_s* p, bcore_via* o, bcore_source* source )
+{
+    if( p->via_call_p->source ) p->via_call_p->source( ( bcore_via_call* ) o, source );
+}
+
 void bcore_via_default_mutated( const bcore_via_s* p, bcore_via* o )
 {
     if( p->via_call_p->mutated ) p->via_call_p->mutated( ( bcore_via_call* ) o );

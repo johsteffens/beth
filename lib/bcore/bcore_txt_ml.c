@@ -331,6 +331,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 }
             }
         }
+        bcore_via_r_source(  &obj_l, source.o );
         bcore_via_r_mutated( &obj_l );
     }
     bcore_life_s_discard( l );

@@ -20,9 +20,43 @@
 
 #include "bcore_control.h"
 #include "bcore_signal.h"
+#include "bcore_plant_compiler.h"
+#include "bcore_planted.h"
+#include "bcore_spect_via_call.h"
 
 BCORE_FORWARD_OBJECT( bcore_source );
 BCORE_FORWARD_OBJECT( bcore_sink );
+
+/**********************************************************************************************************************/
+
+#ifdef TYPEOF_bcore_file
+PLANT_GROUP( bcore_file, bcore_inst )
+#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+signature sc_t get_sc( const );
+signature void set_sc( mutable, sc_t name );
+
+/// relative file path that is automatically extended
+stamp : path = aware bcore_inst
+{
+    st_s name; // absolute or relative path ( e.g. "../obj/myobj.txt" ); if relative
+    hidden st_s => root; // root folder
+    hidden st_s => full; // full path: source_folder / rel
+    func bcore_via_call : source;
+    func              : : get_sc = { return o->full ? o->full->sc : o->name.sc; };
+    func              : : set_sc =
+    {
+        st_s_detach( &o->full );
+        st_s_copy_sc( &o->name, name );
+        if( name[ 0 ] != '/' && o->root != NULL )
+        {
+            o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
+        }
+    };
+};
+
+#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // TYPEOF_bcore_file
 
 /**********************************************************************************************************************/
 /// file path manipulations using posix path scheme
@@ -60,8 +94,12 @@ bl_t bcore_file_touch(  sc_t name ); // creates empty file if not existing; retu
 bl_t bcore_file_delete( sc_t name ); // deletes file if existing; returns success
 bl_t bcore_file_rename( sc_t src_name, sc_t dst_name ); // renames file if existing; returns success
 
-bcore_source* bcore_file_open_source( sc_t name ); // opens file-source (close with bcore_source_a_discard)
-bcore_sink*   bcore_file_open_sink(   sc_t name ); // opens file-sink   (close with bcore_sink_a_discard)
+/// opens file-source (close it with bcore_source_a_discard)
+bcore_source* bcore_file_open_source( sc_t name );
+bcore_source* bcore_file_open_source_path( const bcore_file_path_s* path );
+
+/// opens file-sink   (close it with bcore_sink_a_discard)
+bcore_sink*   bcore_file_open_sink(   sc_t name );
 
 /**********************************************************************************************************************/
 
