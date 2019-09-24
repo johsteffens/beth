@@ -1309,10 +1309,10 @@ static void bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_fe
         bcore_plant_args_s_expand( &o->args, false, sink );
         bcore_sink_a_push_fa( sink, " ) { " );
         if( o->mutable ) bcore_sink_a_push_fa( sink, "ASSERT( !sr_s_is_const( o ) ); ", indent );
-        bcore_sink_a_push_fa( sink, "( const #<sc_t>_s* p = (const #<sc_t>_s*)ch_spect_p( o->p, TYPEOF_#<sc_t>_s ) ); ", o->group->name.sc, o->group->name.sc, o->group->name.sc );
+        bcore_sink_a_push_fa( sink, "const #<sc_t>_s* p = (const #<sc_t>_s*)ch_spect_p( o->p, TYPEOF_#<sc_t>_s ); ", o->group->name.sc, o->group->name.sc, o->group->name.sc );
         bcore_sink_a_push_fa( sink, "assert( p->#<sc_t> ); ", o->name.sc );
         if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
-        bcore_sink_a_push_fa( sink, "( p->#<sc_t>( o->o", o->name.sc );
+        bcore_sink_a_push_fa( sink, "p->#<sc_t>( o->o", o->name.sc );
         bcore_plant_args_s_expand_name( &o->args, false, sink );
         bcore_sink_a_push_fa( sink, " ); }" );
     }
