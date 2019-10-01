@@ -54,6 +54,10 @@
  *      func feature : name [= { <body> }];
  *
  *      stamp <name> = [aware] <trait> { reflection-body };
+ *      stamp <name> = extending <tmpl> { reflection-body-extension }; // uses stamp 'tmpl' as template to be extended
+ *      stump ... // same as stamp definition. A 'stump' is not expanded into code. But it can be used as template.
+ *
+ *      extending <name>; // stamp 'name' will be extended in all subsequent stamps that do not explicitly use 'extending'
  *
  *      name <name>;
  *

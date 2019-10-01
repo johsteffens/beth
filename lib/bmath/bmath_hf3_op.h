@@ -56,7 +56,7 @@ group :ar0 =
     feature 'ap' void of( const, bmath_hf3_s* r );
 
     func :: :get_arity = { return 0; };
-    func :    :f = { ERR_fa( "Not available." ); };
+    func  : :  f = { ERR_fa( "Function 'f' is not available. Was 'of' intended?" ); };
     func :   :of = { @f( r ); };
     func :: :aof = { @of( o, r ); };
 
@@ -76,7 +76,7 @@ group :ar1 =
 
     func :: :get_arity = { return 1; };
 
-    func  : :  f = { ERR_fa( "Not available." ); };
+    func  : :  f = { ERR_fa( "Function 'f' is not available. Was 'of' intended?" ); };
     func  : : of = {  @f(    a   , r ); };
     func :: :aof = { @of( o, a[0], r ); };
 
@@ -115,7 +115,7 @@ group :ar2 =
     feature 'ap' void of( const, const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
 
     func :: :get_arity = { return 2; };
-    func  : :  f = { ERR_fa( "Not available." ); };
+    func  : :  f = { ERR_fa( "Function 'f' is not available. Was 'of' intended?" ); };
     func  : : of = {  @f( a, b, r ); };
     func :: :aof = { @of( o, a[0], a[1], r ); };
 
@@ -155,7 +155,7 @@ group :ar3 =
     feature 'ap' void of( const, const bmath_hf3_s* a, const bmath_hf3_s* b, const bmath_hf3_s* c, bmath_hf3_s* r );
 
     func :: :get_arity = { return 3; };
-    func  : :  f = { ERR_fa( "Not available." ); };
+    func  : :  f = { ERR_fa( "Function 'f' is not available. Was 'of' intended?" ); };
     func  : : of = {  @f( a, b, c, r ); };
     func :: :aof = { @of( o, a[0], a[1], a[2], r ); };
 

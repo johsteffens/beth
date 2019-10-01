@@ -881,18 +881,6 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar0_randomize_s )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bmath_hf3_vm_op_ar1
 
-BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar1_identity_s )
-"aware bmath_hf3_vm_op_ar1"
-"{"
-    "sz_t a;"
-    "sz_t b;"
-    "func bmath_hf3_vm:run;"
-    "func bmath_hf3_vm_op:get_arity;"
-    "func bmath_hf3_vm_op:set_indices;"
-    "func bmath_hf3_vm_op:get_indices;"
-    "func bmath_hf3_vm_op_ar1:csetup;"
-"}";
-
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar1_cpy_s )
 "aware bmath_hf3_vm_op_ar1"
 "{"
@@ -971,11 +959,6 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_bmul_s )
     "func bmath_hf3_vm_op:get_indices;"
     "func bmath_hf3_vm_op_ar2:csetup;"
 "}";
-
-void bmath_hf3_vm_op_ar2_bmul_s_run( const bmath_hf3_vm_op_ar2_bmul_s* o, bmath_hf3_vm_holor_s* hbase )
-{
-    bmath_hf3_s_bmul( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h );
-}
 
 BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar2_bmul_htp_s )
 "aware bmath_hf3_vm_op_ar2"
@@ -1064,7 +1047,7 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 3320899524 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 2740307621 ) );
             BCORE_REGISTER_FEATURE( bmath_f3_op_get_arity );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aofx );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aogx );
@@ -1488,12 +1471,6 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar0_csetup, bmath_hf3_vm_op_ar0_randomize_s_csetup );
             BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar0_randomize_s );
             BCORE_REGISTER_TRAIT( bmath_hf3_vm_op_ar0, bmath_hf3_vm_op );
-            BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar1_identity_s_run );
-            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar1_identity_s_get_arity );
-            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar1_identity_s_set_indices );
-            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_indices, bmath_hf3_vm_op_ar1_identity_s_get_indices );
-            BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_ar1_csetup, bmath_hf3_vm_op_ar1_identity_s_csetup );
-            BCORE_REGISTER_OBJECT( bmath_hf3_vm_op_ar1_identity_s );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_run, bmath_hf3_vm_op_ar1_cpy_s_run );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_get_arity, bmath_hf3_vm_op_ar1_cpy_s_get_arity );
             BCORE_REGISTER_FFUNC( bmath_hf3_vm_op_set_indices, bmath_hf3_vm_op_ar1_cpy_s_set_indices );
