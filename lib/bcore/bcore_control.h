@@ -232,31 +232,28 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
 // cpu time assessment
 #define CPU_TIME_OF( expression, time_var ) \
-    f3_t __time_diff_sec = 0; \
     { \
         clock_t time = clock(); \
         expression; \
-        __time_diff_sec = clock() - time; \
-        __time_diff_sec /= CLOCKS_PER_SEC; \
+        time_var = clock() - time; \
+        time_var /= CLOCKS_PER_SEC; \
     } \
-    time_var = __time_diff_sec;
 
 //  gettimeofday is not standardized on all platforms
 #define ABS_TIME_OF( expression, time_var ) \
-    f3_t __time_diff_sec = 0; \
     { \
         struct timeval t0, t1; \
         gettimeofday( &t0, NULL ); \
         expression; \
         gettimeofday( &t1, NULL ); \
-        __time_diff_sec = t1.tv_sec - t0.tv_sec; \
-        __time_diff_sec += ( t1.tv_usec - t0.tv_usec ) * 1E-6; \
+        time_var = t1.tv_sec - t0.tv_sec; \
+        time_var += ( t1.tv_usec - t0.tv_usec ) * 1E-6; \
     } \
-    time_var = __time_diff_sec;
 
 #define CPU_TIME_TO_STDOUT( expression ) \
 { \
-    CPU_TIME_OF( expression, f3_t __time_sec ) \
+    f3_t __time_sec; \
+    CPU_TIME_OF( expression, __time_sec ) \
     if( __time_sec >= 100 ) \
     { \
         bcore_msg_fa( "#pl5 {#<uz_t>}s : "#expression"\n", ( uz_t ) __time_sec ); \
@@ -269,7 +266,8 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
 #define ABS_TIME_TO_STDOUT( expression ) \
 { \
-    ABS_TIME_OF( expression, f3_t __time_sec ) \
+    f3_t __time_sec; \
+    ABS_TIME_OF( expression, __time_sec ) \
     if( __time_sec >= 100 ) \
     { \
         bcore_msg_fa( "#pl5 {#<uz_t>}s : "#expression"\n", ( uz_t ) __time_sec ); \
