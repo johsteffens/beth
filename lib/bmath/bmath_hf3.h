@@ -49,6 +49,18 @@
  *    rows == d_data[ k ] * .... * d_data[ n - 1 ] .
  *    The empty product resolves to 1.
  *
+ *  Relationhip to Merates, Valence (Moon et al)
+ *  These are terms describing the aspects of a holor's shape.
+ *    Merates (as number) is the number of independent values. It is the same as v_size for
+ *    a determined holor, or d_product otherwise.
+ *
+ *    Valence is the number of independent dimensions. It is the same as 'order' or d_size.
+ *
+ *  Shape
+ *    We define the shape of a holor by the entire array d_data. Two holors of the same shape
+ *    have the same Valence and same number of Merates, but valence and number of merates alone
+ *    are generally not sufficient to define shape.
+ *
  */
 
 /**********************************************************************************************************************/
@@ -150,8 +162,13 @@ void bmath_hf3_s_set_v_data_na( bmath_hf3_s* o, sz_t v_size, ... );
 void bmath_hf3_s_set_size_nv( bmath_hf3_s* o, sz_t d_size, va_list sz_t_args );
 void bmath_hf3_s_set_size_na( bmath_hf3_s* o, sz_t d_size, ... );
 
-/// returns product of all dimensions
-sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o );
+/**   product of all dimensions
+  * = number of independent quantities
+  * = merates (Moon et al: Theroy of Holors)
+  * = v_size in case of for a determined holor
+  */
+sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o );  // always calculates d-product from d_data
+sz_t bmath_hf3_s_merates(   const bmath_hf3_s* o );  // returns v_size if > 0 otherwise d_product
 
 /// sets d_data to scalar (no change on v_data)
 void bmath_hf3_s_set_d_scalar( bmath_hf3_s* o );
@@ -212,6 +229,22 @@ void bmath_hf3_s_inc_order( bmath_hf3_s* o, sz_t dim );
  *  * src->d_data must match (lower significant) o->d_data
  */
 void bmath_hf3_s_push( bmath_hf3_s* o, const bmath_hf3_s* src );
+
+/** Canonic catenation of two holors.
+ *  r->v_data is catenated from a->v_data and b->v_data
+ *  Shape of r:
+ *  If a, b have equal shape then r has shape [2]a
+ *  If a[0] has shape of b, then r[0] has shape b and dimof(r) == dimof(a) + 1
+ *  If b[0] has shape of a, then r[0] has shape a and dimof(r) == dimof(b) + 1
+ *  Other constellations are not allowed.
+ */
+
+/// sets d-data for vatenation; does not change v-data; returns false if not possible (a,b have incorrect shape)
+bl_t bmath_hf3_s_set_d_cat( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+
+/// performs catenation of data; only checks merates
+void bmath_hf3_s_cat( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
+
 
 void bmath_hf3_s_to_sink(      const bmath_hf3_s* o, bcore_sink* sink );
 void bmath_hf3_s_to_sink_nl(   const bmath_hf3_s* o, bcore_sink* sink ); // appends newline
@@ -276,8 +309,9 @@ void bmath_hf3_s_add( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r
 /// o - m -> r
 void bmath_hf3_s_sub( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
 
-/// o <*> m -> r (hadamard product)
-void bmath_hf3_s_hmul( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
+/// o <*> m [ + b] -> r (hadamard product)
+void bmath_hf3_s_hmul(     const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
+void bmath_hf3_s_hmul_add( const bmath_hf3_s* o, const bmath_hf3_s* m, const bmath_hf3_s* b, bmath_hf3_s* r );
 
 void bmath_hf3_s_mul_scl(     const bmath_hf3_s* o, const f3_t* b,                       bmath_hf3_s* r ); // o * b     -> r
 void bmath_hf3_s_mul_scl_add( const bmath_hf3_s* o, const f3_t* b, const bmath_hf3_s* c, bmath_hf3_s* r ); // o * b + c -> r
@@ -290,7 +324,6 @@ f3_t bmath_hf3_s_f3_min( const bmath_hf3_s* o );
 f3_t bmath_hf3_s_f3_sum( const bmath_hf3_s* o );
 
 /// operators
-
 void bmath_hf3_s_fp_f3_ar0(       bmath_hf3_s* o,                       bmath_fp_f3_ar0 fp );
 void bmath_hf3_s_fp_f3_ar1( const bmath_hf3_s* a,                       bmath_fp_f3_ar1 fp, bmath_hf3_s* r );
 void bmath_hf3_s_fp_f3_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_fp_f3_ar2 fp, bmath_hf3_s* r );
@@ -298,6 +331,11 @@ void bmath_hf3_s_fp_f3_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_fp
 void bmath_hf3_s_fp_f3_op_ar0(       bmath_hf3_s* o,                       bmath_fp_f3_op_ar0 fp, vc_t op );
 void bmath_hf3_s_fp_f3_op_ar1( const bmath_hf3_s* a,                       bmath_fp_f3_op_ar1 fp, vc_t op, bmath_hf3_s* r );
 void bmath_hf3_s_fp_f3_op_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_fp_f3_op_ar2 fp, vc_t op, bmath_hf3_s* r );
+
+/// ... madd: applies operator, elementwise multiplies 'm' and adds result to 'r'
+void bmath_hf3_s_fp_f3_ar0_madd(                                             bmath_fp_f3_ar0 fp, const bmath_hf3_s* m, bmath_hf3_s* r );
+void bmath_hf3_s_fp_f3_ar1_madd( const bmath_hf3_s* a,                       bmath_fp_f3_ar1 fp, const bmath_hf3_s* m, bmath_hf3_s* r );
+void bmath_hf3_s_fp_f3_ar2_madd( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_fp_f3_ar2 fp, const bmath_hf3_s* m, bmath_hf3_s* r );
 
 /**********************************************************************************************************************/
 /** bmul: Specific holor * holor multiplication for holors up to order 2

@@ -95,27 +95,38 @@ group :op =
     /// Extendable signature to create object, assign arguments and additional parameters
     signature :* csetup( mutable );
 
-    /// (deprecated) Extendable signature for assigning arguments
-    signature :* set_args( mutable );
-
     /// arity 0 operators
     group :ar0 =
     {
         func        :: :get_arity = { return 0; };
         signature   :: :csetup   csetup(   sz_t idx_a );
-        feature 'a' :: :set_args set_args( sz_t idx_a );
 
         func :: :set_indices = { o->a = a[0]; };
         func :: :get_indices = { a[0] = o->a; };
-        func  : :set_args = { o->a = idx_a; return (::*)o; };
         func  : :csetup = { if( !o ) o = @create(); o->a = idx_a; return (::*)o; };
 
+        // no operation
+        stamp :nul = aware :
+        {
+            sz_t a; // formal index with no effect
+            func ::: :run = { /* no operation */ };
+        };
+
+        // sets operand zero
+        stamp :zro = aware :
+        {
+            sz_t a;
+            func ::: :run = { bmath_hf3_s_zro( &hbase[ o->a ].h ); };
+        };
+
+        // makes operand determined
         stamp :determine = aware :
         {
             sz_t a;
             func ::: :run = { bmath_hf3_s_fit_v_size( &hbase[ o->a ].h ); };
         };
 
+        // makes operand vacant
         stamp :vacate = aware :
         {
             sz_t a;
@@ -139,11 +150,9 @@ group :op =
     {
         func        :: :get_arity = { return 1; };
         signature   :: :csetup   csetup(   sz_t idx_a, sz_t idx_b );
-        feature 'a' :: :set_args set_args( sz_t idx_a, sz_t idx_b );
 
         func :: :set_indices = { o->a = a[0]; o->b = a[1]; };
         func :: :get_indices = { a[0] = o->a; a[1] = o->b; };
-        func  : :set_args = { o->a = idx_a; o->b = idx_b; return (::*)o; };
         func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
 
         /// deprecated: use cpy  (term 'identity' should be used in higher abstractions)
@@ -183,12 +192,10 @@ group :op =
     {
         func        :: :get_arity = { return 2; };
         signature   :: :csetup   csetup(   sz_t idx_a, sz_t idx_b, sz_t idx_c );
-        feature 'a' :: :set_args set_args( sz_t idx_a, sz_t idx_b, sz_t idx_c );
 
         func :: :set_indices = { o->a = a[0]; o->b = a[1]; o->c = a[2]; };
         func :: :get_indices = { a[0] = o->a; a[1] = o->b; a[2] = o->c; };
-        func  : :set_args = { o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
-        func  : :csetup   = { if( !o ) o = @create(); @set_args( o, idx_a, idx_b, idx_c); return (::*)o; };
+        func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
 
         /// a + b -> c
         stamp :add = aware :
@@ -344,8 +351,9 @@ void bmath_hf3_vm_frame_s_proc_push_op_d( bmath_hf3_vm_frame_s* o, tp_t proc, bm
 // Holors
 
 void bmath_hf3_vm_frame_s_holors_set_size( bmath_hf3_vm_frame_s* o, sz_t size );
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_push( bmath_hf3_vm_frame_s* o );
 void bmath_hf3_vm_frame_s_holors_setup_name_map( bmath_hf3_vm_frame_s* o );
-bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_get_by_index(      bmath_hf3_vm_frame_s* o, sz_t index );
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_get_by_index( bmath_hf3_vm_frame_s* o, sz_t index );
 
 /// retrieves holor index; returns -1 if holor does not exists
 sz_t bmath_hf3_vm_frame_s_holors_get_index_by_name( bmath_hf3_vm_frame_s* o, tp_t name );

@@ -242,7 +242,7 @@ void bmath_hf3_vm_frame_s_holors_set_size( bmath_hf3_vm_frame_s* o, sz_t size )
 void bmath_hf3_vm_frame_s_holors_setup_name_map( bmath_hf3_vm_frame_s* o )
 {
     bcore_hmap_tpuz_s_clear( &o->map_holor );
-    BFOR_EACH( &o->arr_holor, i )
+    BFOR_EACH( i, &o->arr_holor )
     {
         tp_t name = o->arr_holor.data[ i ].name;
         if( name )
@@ -251,6 +251,13 @@ void bmath_hf3_vm_frame_s_holors_setup_name_map( bmath_hf3_vm_frame_s* o )
             bcore_hmap_tpuz_s_set( &o->map_holor, name, i );
         }
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_push( bmath_hf3_vm_frame_s* o )
+{
+    return bmath_hf3_vm_arr_holor_s_push( &o->arr_holor );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

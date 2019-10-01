@@ -58,7 +58,7 @@ feature 'ap' f3_t aogy( const, const f3_t* a, sz_t ch );
 /// nullary operators
 group :ar0 =
 {
-    signature   f3_t f(  plain );
+    signature    f3_t  f( plain );
     feature 'ap' f3_t of( const );
 
     func :: :get_arity = { return 0; };
@@ -95,6 +95,7 @@ group :ar1 =
     stamp :zero     = aware : { func : :fx = { return       0.0; }; func : :gy = { return  0.0; }; };
     stamp :one      = aware : { func : :fx = { return       1.0; }; func : :gy = { return  0.0; }; };
     stamp :identity = aware : { func : :fx = { return        a ; }; func : :gy = { return  1.0; }; };
+    stamp :neg      = aware : { func : :fx = { return       -a ; }; func : :gy = { return -1.0; }; };
     stamp :exp      = aware : { func : :fx = { return    exp(a); }; func : :gy = { return    y; }; };
     stamp :inv      = aware : { func : :fx = { return f3_inv(a); }; func : :gy = { return -y*y; }; };
 

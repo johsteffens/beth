@@ -287,6 +287,20 @@ sz_t bmath_hf3_s_d_product( const bmath_hf3_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+sz_t bmath_hf3_s_merates( const bmath_hf3_s* o )
+{
+    if( o->v_size > 0 )
+    {
+        return o->v_size;
+    }
+    else
+    {
+        return bmath_hf3_s_d_product( o );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_s_set_d_scalar( bmath_hf3_s* o )
 {
     bmath_hf3_s_set_d_data( o, NULL, 0 );
@@ -423,6 +437,47 @@ void bmath_hf3_s_push( bmath_hf3_s* o, const bmath_hf3_s* src )
     {
         ASSERT( !src->v_data );
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_cat( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r )
+{
+    ASSERT( r->v_size == a->v_size + b->v_size );
+    bcore_u_memcpy( sizeof( f3_t ), r->v_data,             a->v_data, a->v_size );
+    bcore_u_memcpy( sizeof( f3_t ), r->v_data + a->v_size, b->v_data, b->v_size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bmath_hf3_s_set_d_cat( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r )
+{
+    if( a->d_size == b->d_size ) // a, b have equal shape
+    {
+        if( !bmath_hf3_s_d_equal( a, b ) ) return false;
+        bmath_hf3_s_set_d_size( r, a->d_size + 1 );
+        bcore_u_memcpy( sizeof( f3_t ), r->d_data, a->d_data, a->d_size );
+        r->d_data[ r->d_size - 1 ] = 2;
+    }
+    else if( a->d_size == b->d_size + 1 )
+    {
+        for( sz_t i = 0; i < b->d_size; i++ ) if( a->d_data[ i ] != b->d_data[ i ] ) return false;
+        bmath_hf3_s_set_d_size( r, a->d_size );
+        bcore_u_memcpy( sizeof( f3_t ), r->d_data, a->d_data, a->d_size );
+        r->d_data[ r->d_size - 1 ] += 1;
+    }
+    else if( a->d_size + 1 == b->d_size )
+    {
+        for( sz_t i = 0; i < a->d_size; i++ ) if( a->d_data[ i ] != b->d_data[ i ] ) return false;
+        bmath_hf3_s_set_d_size( r, b->d_size );
+        bcore_u_memcpy( sizeof( f3_t ), r->d_data, b->d_data, b->d_size );
+        r->d_data[ r->d_size - 1 ] += 1;
+    }
+    else
+    {
+        return false;
+    }
+    return true;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -732,6 +787,15 @@ void bmath_hf3_s_hmul( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* 
     for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = o->v_data[ i ] * m->v_data[ i ];
 }
 
+/// o <*> m + b -> r (hadamard product)
+void bmath_hf3_s_hmul_add( const bmath_hf3_s* o, const bmath_hf3_s* m, const bmath_hf3_s* b, bmath_hf3_s* r )
+{
+    ASSERT( o->v_size == m->v_size );
+    ASSERT( o->v_size == b->v_size );
+    ASSERT( o->v_size == r->v_size );
+    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = b->v_data[ i ] + o->v_data[ i ] * m->v_data[ i ];
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 void bmath_hf3_s_mul_scl( const bmath_hf3_s* o, const f3_t* b, bmath_hf3_s* r )
@@ -845,6 +909,34 @@ void bmath_hf3_s_fp_f3_op_ar2( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath
     ASSERT( a->v_size == r->v_size );
     ASSERT( b->v_size == r->v_size );
     for( sz_t i = 0; i < a->v_size; i++ ) r->v_data[ i ] = fp( op, a->v_data[ i ], b->v_data[ i ] );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_fp_f3_ar0_madd( bmath_fp_f3_ar0 fp, const bmath_hf3_s* m, bmath_hf3_s* r )
+{
+    ASSERT( m->v_size == r->v_size );
+    f3_t c = fp();
+    for( sz_t i = 0; i < r->v_size; i++ ) r->v_data[ i ] += c * m->v_data[ i ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_fp_f3_ar1_madd( const bmath_hf3_s* a, bmath_fp_f3_ar1 fp, const bmath_hf3_s* m, bmath_hf3_s* r )
+{
+    ASSERT( a->v_size == r->v_size );
+    ASSERT( m->v_size == r->v_size );
+    for( sz_t i = 0; i < a->v_size; i++ ) r->v_data[ i ] += fp( a->v_data[ i ] ) * m->v_data[ i ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_s_fp_f3_ar2_madd( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_fp_f3_ar2 fp, const bmath_hf3_s* m, bmath_hf3_s* r )
+{
+    ASSERT( a->v_size == r->v_size );
+    ASSERT( b->v_size == r->v_size );
+    ASSERT( m->v_size == r->v_size );
+    for( sz_t i = 0; i < a->v_size; i++ ) r->v_data[ i ] += fp( a->v_data[ i ], b->v_data[ i ] ) * m->v_data[ i ];
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
