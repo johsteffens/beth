@@ -24,6 +24,7 @@
 /**********************************************************************************************************************/
 
 #include "bmath_hf3.h"
+#include "bmath_hf3_op.h"
 
 /**********************************************************************************************************************/
 
@@ -44,7 +45,7 @@ stamp :arr_holor = aware bcore_array { :holor_s []; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-feature 'ap' void run( const, :holor_s* hbase );
+feature 'ap' void run( const, :holor_s* ah );
 
 // procedural operator with preset perspective
 stamp :prop = aware :
@@ -54,8 +55,7 @@ stamp :prop = aware :
 
     func bcore_inst_call : copy_x  = { o->p = o->op ? (:s*):s_get_aware( o->op ) : NULL; };
     func bcore_via_call  : mutated = { :prop_s_copy_x( o ); };
-
-    func bmath_hf3_vm : run = { assert( o->p && o->p->run ); o->p->run( (vc_t)o->op, hbase ); };
+    func bmath_hf3_vm    : run = { assert( o->p && o->p->run ); o->p->run( (vc_t)o->op, ah ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -69,7 +69,7 @@ stamp :proc = aware bcore_array
     bcore_arr_sz_s out; // indices for output holors (if any)
     func bmath_hf3_vm : run =
     {
-        for( sz_t i = 0; i < o->size; i++ ) :prop_s_run( &o->data[ i ], hbase );
+        for( sz_t i = 0; i < o->size; i++ ) :prop_s_run( &o->data[ i ], ah );
     };
 };
 
@@ -92,41 +92,53 @@ group :op =
     feature 'a' void set_indices( mutable, sz_t* a ); // a represents an array of arity + 1 elements
     feature 'a' void get_indices( const,   sz_t* a ); // a represents an array of arity + 1 elements
 
+    feature 'a' sc_t sig( const ); // argument signature of operator (e.g. "aby")
+
+    /** Sets arguments from index data according to signature
+      * Identifiers:
+      *   a ... j : a-pass input channels
+      *   y       : a-pass output channel
+      *   v       : d-pass gradient (at output channel)
+      *   u       : d-pass gradient (result at selected input channel)
+      */
+    feature 'a' void set_arg( mutable, char id, sz_t idx );
+
     /// Extendable signature to create object, assign arguments and additional parameters
     signature :* csetup( mutable );
 
     /// arity 0 operators
     group :ar0 =
     {
-        stump     :_ = aware : { sz_t a; };
-        extending :_;
+        signature :: :csetup csetup( sz_t idx_a );
 
-        func        :: :get_arity = { return 0; };
-        signature   :: :csetup csetup( sz_t idx_a );
+        extending stump :_ = aware :
+        {
+            sz_t a = -1;
+            func :: :get_arity = { return 0; };
+            func :: :set_indices = { o->a = a[0]; };
+            func :: :get_indices = { a[0] = o->a; };
+            func  : :csetup = { if( !o ) o = @create(); o->a = idx_a; return (::*)o; };
+        };
 
-        func :: :set_indices = { o->a = a[0]; };
-        func :: :get_indices = { a[0] = o->a; };
-        func  : :csetup = { if( !o ) o = @create(); o->a = idx_a; return (::*)o; };
+        func :: :set_arg =
+        {
+            if( id == @sig( o )[0] ) o->a = idx;
+        };
 
-        // no operation
-        stamp :nul       = { func ::: :run = { /* no operation */ }; };
-
-        // sets operand zero
-        stamp :zro       = { func ::: :run = { bmath_hf3_s_zro( &hbase[ o->a ].h ); };  };
-
-        // makes operand determined
-        stamp :determine = { func ::: :run = { bmath_hf3_s_fit_v_size( &hbase[ o->a ].h ); }; };
-
-        // makes operand vacant
-        stamp :vacate    = { func ::: :run = { bmath_hf3_s_set_vacant( &hbase[ o->a ].h ); }; };
+        func :: :sig = { return "y"; };
+        stamp :nul       = { func ::: :run = {                                          }; }; // no operation
+        stamp :zro       = { func ::: :run = { bmath_hf3_s_zro(        &ah[ o->a ].h ); }; }; // sets operand zero
+        stamp :determine = { func ::: :run = { bmath_hf3_s_fit_v_size( &ah[ o->a ].h ); }; }; // makes operand determined
+        stamp :vacate    = { func ::: :run = { bmath_hf3_s_set_vacant( &ah[ o->a ].h ); }; }; // makes operand vacant
 
         // randomizes a determined, rseed and index 'a' are used as seed
         signature : : csetup csetup_randomize( u2_t rseed );
+
         stamp :randomize =
         {
             u2_t rseed = 1234;
             func   : :csetup_randomize = { if( !o ) o = :randomize_s_create(); o->a = idx_a; o->rseed = rseed; return (::*)o; };
-            func ::: :run = { u2_t rval = o->rseed + o->a; bmath_hf3_s_set_random( &hbase[ o->a ].h, 1.0, -1.0, 1.0, &rval ); };
+            func ::: :run = { u2_t rval = o->rseed + o->a; bmath_hf3_s_set_random( &ah[ o->a ].h, 1.0, -1.0, 1.0, &rval ); };
         };
     };
 
@@ -135,19 +147,59 @@ group :op =
     /// arity 1 operators
     group :ar1 =
     {
-        stump     :_ = aware : { sz_t a; sz_t b; };
-        extending :_;
+        signature :: :csetup csetup( sz_t idx_a, sz_t idx_b );
 
-        func      :: :get_arity = { return 1; };
-        signature :: :csetup   csetup( sz_t idx_a, sz_t idx_b );
+        extending stump :_ = aware :
+        {
+            sz_t a = -1;
+            sz_t b = -1;
+            func :: :get_arity   = { return 1; };
+            func :: :set_indices = { o->a = a[0]; o->b = a[1]; };
+            func :: :get_indices = { a[0] = o->a; a[1] = o->b; };
+            func  : :csetup      = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
+        };
 
-        func :: :set_indices = { o->a = a[0]; o->b = a[1]; };
-        func :: :get_indices = { a[0] = o->a; a[1] = o->b; };
-        func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
+        func :: :set_arg =
+        {
+            if( id == @sig( o )[ 0 ] ) o->a = idx;
+            if( id == @sig( o )[ 1 ] ) o->b = idx;
+        };
 
-        stamp :cpy   = { func ::: :run = { bmath_hf3_s_cpy(  &hbase[ o->a ].h, &hbase[ o->b ].h ); }; };
-        stamp :tanh  = { func ::: :run = { bmath_hf3_s_tanh( &hbase[ o->a ].h, &hbase[ o->b ].h ); }; };
-        stamp :unary = { bmath_fp_f3_ar1 unary; func ::: :run = { bmath_hf3_s_fp_f3_ar1( &hbase[ o->a ].h, o->unary, &hbase[ o->b ].h ); }; };
+        func :: :sig = { return "ay"; };
+        stamp :unary = { bmath_fp_f3_ar1 unary; func ::: :run = { bmath_hf3_s_fp_f3_ar1( &ah[o->a].h, o->unary, &ah[o->b].h ); }; };
+
+        stamp :cpy        = { func ::: :run = { bmath_hf3_op_ar1_cpy_s_f  ( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :neg        = { func ::: :run = { bmath_hf3_op_ar1_neg_s_f  ( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :floor      = { func ::: :run = { bmath_hf3_op_ar1_floor_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :ceil       = { func ::: :run = { bmath_hf3_op_ar1_ceil_s_f ( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :exp        = { func ::: :run = { bmath_hf3_op_ar1_exp_s_f  ( &ah[o->a].h, &ah[o->b].h ); }; };
+
+        // logistic
+        stamp :lgst       = { func ::: :run = { bmath_hf3_op_ar1_lgst_s_f      ( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :lgst_hard  = { func ::: :run = { bmath_hf3_op_ar1_lgst_hard_s_f ( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :lgst_leaky = { func ::: :run = { bmath_hf3_op_ar1_lgst_leaky_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+
+        // tanh
+        stamp :tanh       = { func ::: :run = { bmath_hf3_op_ar1_tanh_s_f      ( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :tanh_hard  = { func ::: :run = { bmath_hf3_op_ar1_tanh_hard_s_f ( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :tanh_leaky = { func ::: :run = { bmath_hf3_op_ar1_tanh_leaky_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+
+        // softplus
+        stamp :softplus   = { func ::: :run = { bmath_hf3_op_ar1_softplus_s_f  ( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :relu       = { func ::: :run = { bmath_hf3_op_ar1_relu_s_f      ( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :relu_leaky = { func ::: :run = { bmath_hf3_op_ar1_relu_leaky_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+
+        // dendride-pass
+        group :dp =
+        {
+            func ::: :sig = { return "vu"; };
+            stamp :ca_cpy = { func :::: :run = { bmath_hf3_op_ar1_dp_ca_cpy_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+            stamp :ca_neg = { func :::: :run = { bmath_hf3_op_ar1_dp_ca_neg_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+            stamp :ca_add = { func :::: :run = { bmath_hf3_op_ar1_dp_ca_add_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+            stamp :cb_add = { func :::: :run = { bmath_hf3_op_ar1_dp_cb_add_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+            stamp :ca_sub = { func :::: :run = { bmath_hf3_op_ar1_dp_ca_sub_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+            stamp :cb_sub = { func :::: :run = { bmath_hf3_op_ar1_dp_cb_sub_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+        };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -155,42 +207,73 @@ group :op =
     /// arity 2 operators
     group :ar2 =
     {
-        stump     :_ = aware : { sz_t a; sz_t b; sz_t c; };
-        extending :_;
+        signature   :: :csetup csetup( sz_t idx_a, sz_t idx_b, sz_t idx_c );
 
-        func        :: :get_arity = { return 2; };
-        signature   :: :csetup   csetup(   sz_t idx_a, sz_t idx_b, sz_t idx_c );
+        extending stump :_ = aware :
+        {
+            sz_t a = -1;
+            sz_t b = -1;
+            sz_t c = -1;
+            func :: :get_arity = { return 2; };
+            func :: :set_indices = { o->a = a[0]; o->b = a[1]; o->c = a[2]; };
+            func :: :get_indices = { a[0] = o->a; a[1] = o->b; a[2] = o->c; };
+            func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
+        };
 
-        func :: :set_indices = { o->a = a[0]; o->b = a[1]; o->c = a[2]; };
-        func :: :get_indices = { a[0] = o->a; a[1] = o->b; a[2] = o->c; };
-        func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
+        func :: :set_arg =
+        {
+            if( id == @sig( o )[ 0 ] ) o->a = idx;
+            if( id == @sig( o )[ 1 ] ) o->b = idx;
+            if( id == @sig( o )[ 2 ] ) o->c = idx;
+        };
 
-        /// a + b -> c
-        stamp :add          = { func ::: :run = { bmath_hf3_s_add(      &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); }; };
+        func :: :sig = { return "aby"; };
+        stamp :add          = { func ::: :run = { bmath_hf3_op_ar2_add_s_f(          &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a + b -> c
+        stamp :sub          = { func ::: :run = { bmath_hf3_op_ar2_sub_s_f(          &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a - b -> c
+        stamp :hmul         = { func ::: :run = { bmath_hf3_op_ar2_hmul_s_f(         &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a * b -> c
+        stamp :hdiv         = { func ::: :run = { bmath_hf3_op_ar2_hdiv_s_f(         &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a / b -> c
+        stamp :bmul         = { func ::: :run = { bmath_hf3_op_ar2_bmul_s_f(         &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a ** b -> c
+        stamp :bmul_htp     = { func ::: :run = { bmath_hf3_op_ar2_bmul_htp_s_f(     &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a *^ b -> c
+        stamp :htp_bmul     = { func ::: :run = { bmath_hf3_op_ar2_htp_bmul_s_f(     &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a ^* b -> c
+        stamp :htp_bmul_htp = { func ::: :run = { bmath_hf3_op_ar2_htp_bmul_htp_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a ^*^ b -> c
+        stamp :mul_scl      = { func ::: :run = { bmath_hf3_op_ar2_mul_scl_s_f(      &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a * s(b) -> c
+        stamp :scl_mul      = { func ::: :run = { bmath_hf3_op_ar2_scl_mul_s_f(      &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // s(a) * b -> c
 
-        /// a - b -> c
-        stamp :sub          = { func ::: :run = { bmath_hf3_s_sub(      &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); }; };
+        // dendride-pass
+        group :dp =
+        {
+            func ::: :sig = { return "yvu"; };
 
-        /// a ** b -> c
-        stamp :bmul         = { func ::: :run = { bmath_hf3_s_bmul(     &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); }; };
+            // logistic
+            stamp :ca_lgst       = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_lgst_s_f(       &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
+            stamp :ca_lgst_hard  = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_lgst_hard_s_f(  &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
+            stamp :ca_lgst_leaky = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_lgst_leaky_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
 
-        /// a *^ b -> c
-        stamp :bmul_htp     = { func ::: :run = { bmath_hf3_s_bmul_htp( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); }; };
+            // tanh
+            stamp :ca_tanh       = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_tanh_s_f(       &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
+            stamp :ca_tanh_hard  = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_tanh_hard_s_f(  &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
+            stamp :ca_tanh_leaky = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_tanh_leaky_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
 
-        /// a ^* b -> c
-        stamp :htp_bmul     = { func ::: :run = { bmath_hf3_s_htp_bmul( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); }; };
+            // softplus
+            stamp :ca_softplus   = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_softplus_s_f(   &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
+            stamp :ca_relu       = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_relu_s_f(       &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
+            stamp :ca_relu_leaky = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_relu_leaky_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
 
-        /// a ^*^ b -> c
-        stamp :htp_bmul_htp = { func ::: :run = { bmath_hf3_s_htp_bmul_htp( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); }; };
+            /// explicit dp-signature ...
 
-        /// a * b -> c
-        stamp :hmul         = { func ::: :run = { bmath_hf3_s_hmul( &hbase[ o->a ].h, &hbase[ o->b ].h, &hbase[ o->c ].h ); }; };
+            stamp :ca_hmul =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_ca_hmul_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_ca_hmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
 
-        /// a * s(b) -> c
-        stamp :mul_scl      = { func ::: :run = { bmath_hf3_s_mul_scl( &hbase[ o->a ].h, hbase[ o->b ].h.v_data, &hbase[ o->c ].h ); }; };
+            stamp :cb_hmul =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_cb_hmul_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_cb_hmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
 
-        /// s(a) * b -> c
-        stamp :scl_mul      = { func ::: :run = { bmath_hf3_s_mul_scl( &hbase[ o->b ].h, hbase[ o->a ].h.v_data, &hbase[ o->c ].h ); }; };
+        };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -227,6 +310,12 @@ stamp :frame = aware :
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ---------------------------------------------------------------------------------------------------------------------
+// vm_op
+
+/// sets arguments for operator matching arr_sig to operator signature
+void bmath_hf3_vm_op_set_args( bmath_hf3_vm_op* o, sc_t arr_sig, const bcore_arr_sz_s* arr_idx );
 
 // ---------------------------------------------------------------------------------------------------------------------
 // proc_s
