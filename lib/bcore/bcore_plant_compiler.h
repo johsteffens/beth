@@ -55,13 +55,17 @@
  *
  *      stamp <name> = [aware] <trait> { reflection-body };
  *      stamp <name> = extending <tmpl> { reflection-body-extension }; // uses stamp 'tmpl' as template to be extended
- *      stump ... // same as stamp definition. A 'stump' is not expanded into code. But it can be used as template.
+ *      stump ... // same as stamp definition. A 'stump' is not expanded into code. But it can be used as template. Stump-functions are overloadable.
+ *      {stamp|stump} verbatim ....  // keyword 'verbatim' disables all automatic extensions for this definition
  *
- *      extending <name>; // stamp 'name' will be extended in all subsequent stamps that do not explicitly use 'extending'
+ *      // automatic extending
+ *      extending <name>;    // stamp 'name' will be extended in all subsequent stamps that do not explicitly use 'extending'
+ *      extending stump ...; // extends this stump definition
+ *      extending;           // turns automatic extending off
  *
  *      name <name>;
  *
- *      group <name> = [<trait>] { ... };
+ *      group <name> = [<trait>] { ... }; // sub-group; inheriting from parent: 'extending', 'func'
  *
  *      ...
  *  <plant-closer>
@@ -109,7 +113,8 @@
  *  ----------------------------------------------------------------------------------------------
  *  func:
  *    Generic default function definition that is automatically applied to all stamps in this group.
- *    A stamp can override this definition by defining func of the same name.
+ *    A stamp can overload this definition by defining func of the same name.
+ *    In a group a function can be redefined under the same name.
  *
  *  ----------------------------------------------------------------------------------------------
  *  name:

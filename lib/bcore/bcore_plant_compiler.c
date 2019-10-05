@@ -346,6 +346,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_func_s )
     st_s name; // local name
     st_s decl; // declaration string in stamp
     tp_t type; // full type of function ((feature|signature):name)
+    bl_t overloadable;
     bcore_plant_body_s* body;
     bcore_source_point_s source_point;
 };
@@ -357,6 +358,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_func_s )
     "st_s name;"
     "st_s decl;" // declaration string for stamp
     "tp_t type;"
+    "bl_t overloadable = false;"
     "bcore_plant_body_s => body;"
     "bcore_source_point_s source_point;"
 "}";
@@ -1527,6 +1529,26 @@ static bl_t bcore_plant_funcs_s_exists( bcore_plant_funcs_s* o, tp_t type )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// returns -1 if not found
+static sz_t bcore_plant_funcs_s_get_index( bcore_plant_funcs_s* o, tp_t type )
+{
+    for( sz_t i = 0; i < o->size; i++ ) if( o->data[ i ]->type == type ) return i;
+    return -1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// replacing by removing old function and appending new function keeping order
+static void bcore_plant_funcs_s_replace_d( bcore_plant_funcs_s* o, sz_t idx, bcore_plant_func_s* func )
+{
+    ASSERT( idx >= 0 && idx < o->size );
+    bcore_plant_func_s_detach( &o->data[ idx ] );
+    for( sz_t i = idx + 1; i < o->size; i++ ) o->data[ i - 1 ] = o->data[ i ];
+    o->data[ o->size - 1 ] = func;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// stamp
 
@@ -1585,7 +1607,7 @@ static void bcore_plant_stamp_s_resolve_chars( bcore_plant_stamp_s* o, st_s* str
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_group_s* group, bcore_source* source )
+static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_group_s* group, bcore_source* source, bl_t verbatim )
 {
     BLM_INIT();
     ASSERT( o->self_source );
@@ -1608,13 +1630,27 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
             bcore_plant_func_s* func = bcore_plant_func_s_create();
             bcore_plant_func_s_parse( func, group, o, source );
 
-            if( bcore_plant_funcs_s_exists( &o->funcs, func->type ) )
-            {
-                bcore_source_a_parse_err_fa( source, "Function '#<sc_t>' has already been defined", func->name.sc );
-            }
+            sz_t idx = bcore_plant_funcs_s_get_index( &o->funcs, func->type );
 
-            bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
-            st_s_push_st( o->self_source, &func->decl );
+            if( idx >= 0 )
+            {
+                bcore_plant_func_s* prex_func = o->funcs.data[ idx ];
+                if( prex_func->overloadable )
+                {
+                    bcore_plant_funcs_s_replace_d( &o->funcs, idx, func );
+                    st_s_replace_sc_sc( o->self_source, prex_func->decl.sc, "" );
+                    st_s_push_st( o->self_source, &func->decl );
+                }
+                else
+                {
+                    bcore_source_a_parse_err_fa( source, "Function '#<sc_t>' has already been defined and is not overloadable.", func->name.sc );
+                }
+            }
+            else
+            {
+                bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
+                st_s_push_st( o->self_source, &func->decl );
+            }
         }
         else
         {
@@ -1651,14 +1687,20 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
     }
     bcore_source_a_parse_fa( source, " ; " );
 
-    // apply all functions of group, which are not yet defined in stamp
-    for( sz_t i = 0; i < group->funcs.size; i++ )
+    // apply all functions of group and parents, which are not yet defined in stamp
+    if( !verbatim )
     {
-        bcore_plant_func_s* func = group->funcs.data[ i ];
-        if( !bcore_plant_funcs_s_exists( &o->funcs, func->type ) )
+        for( bcore_plant_group_s* fgroup = group; fgroup != NULL; fgroup = fgroup->group )
         {
-            st_s_push_st( o->self_source, &func->decl );
-            bcore_array_a_push( ( bcore_array* )&o->funcs, sr_awc( func ) );
+            for( sz_t i = 0; i < fgroup->funcs.size; i++ )
+            {
+                bcore_plant_func_s* func = fgroup->funcs.data[ i ];
+                if( !bcore_plant_funcs_s_exists( &o->funcs, func->type ) )
+                {
+                    st_s_push_st( o->self_source, &func->decl );
+                    bcore_array_a_push( ( bcore_array* )&o->funcs, sr_awc( func ) );
+                }
+            }
         }
     }
 
@@ -1672,6 +1714,8 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
 static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group_s* group, bcore_source* source )
 {
     BLM_INIT();
+
+    bl_t verbatim = bcore_source_a_parse_bl_fa( source, " #?w'verbatim'" );
 
     o->self_source = st_s_create();
 
@@ -1703,7 +1747,7 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
         if( *(aware_t*)item != TYPEOF_bcore_plant_stamp_s ) bcore_source_a_parse_err_fa( source, "Template #<sc_t> is no stamp.", templ_name->sc );
         bcore_plant_stamp_s_copy( o, ( bcore_plant_stamp_s* )item );
     }
-    else if( group->extending )
+    else if( !verbatim && group->extending )
     {
         bcore_plant_stamp_s_copy( o, group->extending );
     }
@@ -1729,7 +1773,7 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
 
     st_s_copy( &o->name, stamp_name );
 
-    bcore_plant_stamp_s_extend( o, group, source );
+    bcore_plant_stamp_s_extend( o, group, source, verbatim );
 
     BLM_DOWN();
 }
@@ -1744,6 +1788,17 @@ static void bcore_plant_stamp_s_finalize( bcore_plant_stamp_s* o )
     {
         bcore_plant_func_s* func = o->funcs.data[ i ];
         if( func->body ) bcore_plant_stamp_s_resolve_chars( o, &func->body->code );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_stamp_s_make_funcs_overloadable( bcore_plant_stamp_s* o )
+{
+    for( sz_t i = 0; i < o->funcs.size; i++ )
+    {
+        bcore_plant_func_s* func = o->funcs.data[ i ];
+        func->overloadable = true;
     }
 }
 
@@ -2232,6 +2287,8 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
         }
     }
 
+    bl_t extend_stump = false;
+
     while( !bcore_source_a_parse_bl_fa( source, precode_termination ) )
     {
         if( bcore_source_a_eos( source ) )  bcore_source_a_parse_err_fa( source, "Closing c-style comment '*/' expected." );
@@ -2245,12 +2302,20 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )stamp, source );
             item = ( bcore_plant* )stamp;
         }
-        else if( bcore_source_a_parse_bl_fa( source, " #?w'stump' " ) ) // stumps are 'hidden' stamps (not expanded into final code), but they can be used as template
+
+        /// stumps are 'hidden' stamps (not expanded into final code), but they can be used as template
+        else if( bcore_source_a_parse_bl_fa( source, " #?w'stump' " ) )
         {
-            bcore_plant_stamp_s* stamp = bcore_plant_stamp_s_create();
-            bcore_plant_stamp_s_parse( stamp, o, source );
-            bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )stamp, source );
-            bcore_plant_compiler_s_life_a_push( plant_compiler_g, stamp );
+            bcore_plant_stamp_s* stump = bcore_plant_stamp_s_create();
+            bcore_plant_stamp_s_parse( stump, o, source );
+            bcore_plant_stamp_s_make_funcs_overloadable( stump );
+            bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )stump, source );
+            bcore_plant_compiler_s_life_a_push( plant_compiler_g, stump );
+            if( extend_stump )
+            {
+                o->extending = stump;
+                extend_stump = false;
+            }
             item = NULL;
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'signature' " ) )
@@ -2290,32 +2355,50 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'extending'" ) )
         {
-            st_s* templ_name = BLM_CREATE( st_s );
-            bcore_plant_group_s_parse_name( o, templ_name, source );
-            st_s_push_fa( templ_name, "_s" );
-            const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, typeof( templ_name->sc ) );
-            if( !item ) bcore_source_a_parse_err_fa( source, "Template #<sc_t> not found.", templ_name->sc );
-            if( *(aware_t*)item != TYPEOF_bcore_plant_stamp_s ) bcore_source_a_parse_err_fa( source, "Template #<sc_t> is no stamp.", templ_name->sc );
-            o->extending = ( bcore_plant_stamp_s* )item;
-            bcore_source_a_parse_fa( source, " ;" );
+            o->extending = NULL;
+            if( bcore_source_a_parse_bl_fa( source, " #=?';'" ) )
+            {
+                // just reset o->extending - nothing else
+            }
+            else if( bcore_source_a_parse_bl_fa( source, " #=?w'stump'" ) )
+            {
+                extend_stump = true;
+            }
+            else
+            {
+                st_s* templ_name = BLM_CREATE( st_s );
+                bcore_plant_group_s_parse_name( o, templ_name, source );
+                st_s_push_fa( templ_name, "_s" );
+                const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, typeof( templ_name->sc ) );
+                if( !item ) bcore_source_a_parse_err_fa( source, "Template #<sc_t> not found.", templ_name->sc );
+                if( *(aware_t*)item != TYPEOF_bcore_plant_stamp_s ) bcore_source_a_parse_err_fa( source, "Template #<sc_t> is no stamp.", templ_name->sc );
+                o->extending = ( bcore_plant_stamp_s* )item;
+                bcore_source_a_parse_fa( source, " ;" );
+            }
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'func'" ) )
         {
             bcore_plant_func_s* func = bcore_plant_func_s_create();
             bcore_plant_func_s_parse( func, o, NULL, source );
+            func->overloadable = true;
+            o->hash = bcore_tp_fold_tp( o->hash, bcore_plant_func_s_get_hash( func ) );
+
             if( bcore_plant_funcs_s_exists( &o->funcs, func->type ) )
             {
-                bcore_source_a_parse_err_fa( source, "Function '#<sc_t>' has already been defined", func->name.sc );
+                bcore_plant_funcs_s_replace_d( &o->funcs, bcore_plant_funcs_s_get_index( &o->funcs, func->type ), func );
             }
-            bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
-            o->hash = bcore_tp_fold_tp( o->hash, bcore_plant_func_s_get_hash( func ) );
+            else
+            {
+                bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
+            }
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'group' " ) )
         {
             bcore_plant_group_s* group = bcore_plant_group_s_create();
             bcore_plant_source_s_push_group( o->source, group );
-            group->group = o;
-            group->source = o->source;
+            group->group       = o;
+            group->source      = o->source;
+            group->extending   = o->extending;
             bcore_plant_group_s_parse_name( o, &group->name, source );
             bcore_source_a_parse_fa( source, " =", &group->name, &group->trait_name );
 
