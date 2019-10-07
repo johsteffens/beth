@@ -1564,6 +1564,7 @@ static sc_t bcore_plant_stamp_s_get_global_name_sc( const bcore_plant_stamp_s* o
 static tp_t bcore_plant_stamp_s_get_hash( const bcore_plant_stamp_s* o )
 {
     tp_t hash = bcore_tp_init();
+    hash = bcore_tp_fold_sc( hash, o->name.sc );
     hash = bcore_tp_fold_sc( hash, o->self_source->sc );
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
