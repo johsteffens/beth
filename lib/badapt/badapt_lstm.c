@@ -318,30 +318,30 @@ void badapt_lstm_s_bgrad_adapt( badapt_lstm_s* o, bmath_vf3_s* grad_in, const bm
 
 
         // d_w_fx += d_v_f x v_x
-        bmath_mf3_s_add_opd( &o->d_w_fx, &o->d_v_f, &l->v_x, &o->d_w_fx );
+        bmath_mf3_s_opd_add( &o->d_w_fx, &o->d_v_f, &l->v_x, &o->d_w_fx );
 
         // d_w_ix += d_v_i x v_x
-        bmath_mf3_s_add_opd( &o->d_w_ix, &o->d_v_i, &l->v_x, &o->d_w_ix );
+        bmath_mf3_s_opd_add( &o->d_w_ix, &o->d_v_i, &l->v_x, &o->d_w_ix );
 
         // d_w_ox += d_v_o x v_x
-        bmath_mf3_s_add_opd( &o->d_w_ox, &o->d_v_o, &l->v_x, &o->d_w_ox );
+        bmath_mf3_s_opd_add( &o->d_w_ox, &o->d_v_o, &l->v_x, &o->d_w_ox );
 
         // d_w_qx += d_v_q x v_x
-        bmath_mf3_s_add_opd( &o->d_w_qx, &o->d_v_q, &l->v_x, &o->d_w_qx );
+        bmath_mf3_s_opd_add( &o->d_w_qx, &o->d_v_q, &l->v_x, &o->d_w_qx );
 
         if( p )
         {
             // d_w_fh += d_v_f x pv_h
-            bmath_mf3_s_add_opd( &o->d_w_fh, &o->d_v_f, &p->v_h, &o->d_w_fh );
+            bmath_mf3_s_opd_add( &o->d_w_fh, &o->d_v_f, &p->v_h, &o->d_w_fh );
 
             // d_w_ih += d_v_i x pv_h
-            bmath_mf3_s_add_opd( &o->d_w_ih, &o->d_v_i, &p->v_h, &o->d_w_ih );
+            bmath_mf3_s_opd_add( &o->d_w_ih, &o->d_v_i, &p->v_h, &o->d_w_ih );
 
             // d_w_oh += d_v_o x pv_h
-            bmath_mf3_s_add_opd( &o->d_w_oh, &o->d_v_o, &p->v_h, &o->d_w_oh );
+            bmath_mf3_s_opd_add( &o->d_w_oh, &o->d_v_o, &p->v_h, &o->d_w_oh );
 
             // d_w_qh += d_v_q x pv_h
-            bmath_mf3_s_add_opd( &o->d_w_qh, &o->d_v_q, &p->v_h, &o->d_w_qh );
+            bmath_mf3_s_opd_add( &o->d_w_qh, &o->d_v_q, &p->v_h, &o->d_w_qh );
         }
     }
 

@@ -96,6 +96,8 @@ group :ar1 =
     stamp :one      = aware : { func : :fx = { return       1.0; }; func : :gy = { return  0.0; }; };
     stamp :identity = aware : { func : :fx = { return        a ; }; func : :gy = { return  1.0; }; };
     stamp :neg      = aware : { func : :fx = { return       -a ; }; func : :gy = { return -1.0; }; };
+    stamp :floor    = aware : { func : :fx = { return  floor(a); }; func : :gy = { return  0.0; }; };
+    stamp :ceil     = aware : { func : :fx = { return   ceil(a); }; func : :gy = { return  0.0; }; };
     stamp :exp      = aware : { func : :fx = { return    exp(a); }; func : :gy = { return    y; }; };
     stamp :inv      = aware : { func : :fx = { return f3_inv(a); }; func : :gy = { return -y*y; }; };
 

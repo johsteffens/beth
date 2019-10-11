@@ -36,6 +36,7 @@ stamp :holor = aware :
 {
     tp_t name;
     tp_t type;
+    sz_t idx_paired = -1; // index to holor paired with this one (e.g. axon <=> axon-gradient)
     bmath_hf3_s h;
 };
 
@@ -106,7 +107,7 @@ group :op =
     /// Extendable signature to create object, assign arguments and additional parameters
     signature :* csetup( mutable );
 
-    /// arity 0 operators
+    /// nullary operators
     group :ar0 =
     {
         signature :: :csetup csetup( sz_t idx_a );
@@ -125,7 +126,7 @@ group :op =
             if( id == @sig( o )[0] ) o->a = idx;
         };
 
-        func :: :sig = { return "y"; };
+        func :: :sig = { return "y"; }; // default signature
         stamp :nul       = { func ::: :run = {                                          }; }; // no operation
         stamp :zro       = { func ::: :run = { bmath_hf3_s_zro(        &ah[ o->a ].h ); }; }; // sets operand zero
         stamp :determine = { func ::: :run = { bmath_hf3_s_fit_v_size( &ah[ o->a ].h ); }; }; // makes operand determined
@@ -140,11 +141,19 @@ group :op =
             func   : :csetup_randomize = { if( !o ) o = :randomize_s_create(); o->a = idx_a; o->rseed = rseed; return (::*)o; };
             func ::: :run = { u2_t rval = o->rseed + o->a; bmath_hf3_s_set_random( &ah[ o->a ].h, 1.0, -1.0, 1.0, &rval ); };
         };
+
+        // dendride-pass
+        group :dp =
+        {
+            func ::: :sig = { return "u"; };
+            stamp :ca_floor = { func :::: :run = { bmath_hf3_op_ar0_dp_ca_floor_s_f( &ah[o->a].h ); }; };
+            stamp :ca_ceil  = { func :::: :run = { bmath_hf3_op_ar0_dp_ca_ceil_s_f ( &ah[o->a].h ); }; };
+        };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    /// arity 1 operators
+    /// unary operators
     group :ar1 =
     {
         signature :: :csetup csetup( sz_t idx_a, sz_t idx_b );
@@ -165,7 +174,7 @@ group :op =
             if( id == @sig( o )[ 1 ] ) o->b = idx;
         };
 
-        func :: :sig = { return "ay"; };
+        func :: :sig = { return "ay"; }; // default signature
         stamp :unary = { bmath_fp_f3_ar1 unary; func ::: :run = { bmath_hf3_s_fp_f3_ar1( &ah[o->a].h, o->unary, &ah[o->b].h ); }; };
 
         stamp :cpy        = { func ::: :run = { bmath_hf3_op_ar1_cpy_s_f  ( &ah[o->a].h, &ah[o->b].h ); }; };
@@ -204,7 +213,7 @@ group :op =
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    /// arity 2 operators
+    /// binary operators
     group :ar2 =
     {
         signature   :: :csetup csetup( sz_t idx_a, sz_t idx_b, sz_t idx_c );
@@ -227,7 +236,7 @@ group :op =
             if( id == @sig( o )[ 2 ] ) o->c = idx;
         };
 
-        func :: :sig = { return "aby"; };
+        func :: :sig = { return "aby"; }; // default signature
         stamp :add          = { func ::: :run = { bmath_hf3_op_ar2_add_s_f(          &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a + b -> c
         stamp :sub          = { func ::: :run = { bmath_hf3_op_ar2_sub_s_f(          &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a - b -> c
         stamp :hmul         = { func ::: :run = { bmath_hf3_op_ar2_hmul_s_f(         &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a * b -> c
@@ -236,6 +245,7 @@ group :op =
         stamp :bmul_htp     = { func ::: :run = { bmath_hf3_op_ar2_bmul_htp_s_f(     &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a *^ b -> c
         stamp :htp_bmul     = { func ::: :run = { bmath_hf3_op_ar2_htp_bmul_s_f(     &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a ^* b -> c
         stamp :htp_bmul_htp = { func ::: :run = { bmath_hf3_op_ar2_htp_bmul_htp_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a ^*^ b -> c
+
         stamp :mul_scl      = { func ::: :run = { bmath_hf3_op_ar2_mul_scl_s_f(      &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a * s(b) -> c
         stamp :scl_mul      = { func ::: :run = { bmath_hf3_op_ar2_scl_mul_s_f(      &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // s(a) * b -> c
 
@@ -243,6 +253,9 @@ group :op =
         group :dp =
         {
             func ::: :sig = { return "yvu"; };
+
+            // exp
+            stamp :ca_exp        = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_exp_s_f(        &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
 
             // logistic
             stamp :ca_lgst       = { func :::: :run = { bmath_hf3_op_ar2_dp_ca_lgst_s_f(       &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; };
@@ -273,6 +286,128 @@ group :op =
                 func :::: :run = {        bmath_hf3_op_ar2_dp_cb_hmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
             };
 
+            /// bmul quartet ...
+
+            stamp :ca_bmul =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_ca_bmul_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_ca_bmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            stamp :cb_bmul =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_cb_bmul_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_cb_bmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            stamp :ca_bmul_htp =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_ca_bmul_htp_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_ca_bmul_htp_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            stamp :cb_bmul_htp =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_cb_bmul_htp_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_cb_bmul_htp_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            stamp :ca_htp_bmul =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_ca_htp_bmul_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_ca_htp_bmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            stamp :cb_htp_bmul =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_cb_htp_bmul_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_cb_htp_bmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            stamp :ca_htp_bmul_htp =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_ca_htp_bmul_htp_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_ca_htp_bmul_htp_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            stamp :cb_htp_bmul_htp =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_cb_htp_bmul_htp_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_cb_htp_bmul_htp_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            /// mul with scalar
+
+            stamp :ca_mul_scl =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_ca_mul_scl_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_ca_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            stamp :cb_mul_scl =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_cb_mul_scl_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_cb_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            stamp :ca_scl_mul =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_ca_mul_scl_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_ca_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+            stamp :cb_scl_mul =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar2_dp_cb_mul_scl_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar2_dp_cb_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+            };
+
+        };
+    };
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    /// ternary operators
+    group :ar3 =
+    {
+        signature   :: :csetup csetup( sz_t idx_a, sz_t idx_b, sz_t idx_c, sz_t idx_d );
+
+        extending stump :_ = aware :
+        {
+            sz_t a = -1;
+            sz_t b = -1;
+            sz_t c = -1;
+            sz_t d = -1;
+            func :: :get_arity = { return 3; };
+            func :: :set_indices = { o->a = a[0]; o->b = a[1]; o->c = a[2]; o->d = a[3]; };
+            func :: :get_indices = { a[0] = o->a; a[1] = o->b; a[2] = o->c; a[3] = o->d; };
+            func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; o->d = idx_d; return (::*)o; };
+        };
+
+        func :: :set_arg =
+        {
+            if( id == @sig( o )[ 0 ] ) o->a = idx;
+            if( id == @sig( o )[ 1 ] ) o->b = idx;
+            if( id == @sig( o )[ 2 ] ) o->c = idx;
+            if( id == @sig( o )[ 3 ] ) o->d = idx;
+        };
+
+        func :: :sig = { return "abcy"; };  // default signature
+
+        /// dendride-pass
+        group :dp =
+        {
+            stamp :ca_hdiv =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar3_dp_ca_hdiv_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar3_dp_ca_hdiv_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h, &ah[o->d].h ); };
+            };
+
+            stamp :cb_hdiv =
+            {
+                func  ::: :sig = { return bmath_hf3_op_ar3_dp_cb_hdiv_s_sig(); };
+                func :::: :run = {        bmath_hf3_op_ar3_dp_cb_hdiv_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h, &ah[o->d].h ); };
+            };
         };
     };
 
@@ -288,11 +423,10 @@ stamp :frame = aware :
     :arr_holor_s arr_holor; // array of holors
     :library_s   library;   // array of principal functions
 
-    tp_t proc_setup = 0;
+    tp_t proc_setup  = 0;
     tp_t proc_shelve = 0;
 
     bcore_hmap_tpuz_s map_proc;  // associates a name with a procedure
-    bcore_hmap_tpuz_s map_holor; // associates a name with a holor
     bcore_hmap_name_s map_name;  // map of names used
 
     /** Optional interface for the frame:
@@ -331,6 +465,9 @@ void bmath_hf3_vm_frame_s_check_integrity( bmath_hf3_vm_frame_s* o );
 /// enrolls name (if not existing) and retuns type
 tp_t bmath_hf3_vm_frame_s_entypeof( bmath_hf3_vm_frame_s* o, sc_t name );
 
+/// returns name of type or "" if not existing
+sc_t bmath_hf3_vm_frame_s_ifnameof( bmath_hf3_vm_frame_s* o, tp_t type );
+
 /// runs procedure 'setup'
 void bmath_hf3_vm_frame_s_setup( bmath_hf3_vm_frame_s* o );
 
@@ -351,7 +488,7 @@ bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_push( bmath_hf3_vm_frame_s* o, tp
 /// adds a new procedure if not already existing; if it exists it is set to size 0
 bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_reset( bmath_hf3_vm_frame_s* o, tp_t name );
 
-/// retrieves a procedure
+/// retrieves a procedure; returns NULL if not existing
 bmath_hf3_vm_proc_s* bmath_hf3_vm_frame_s_proc_get( const bmath_hf3_vm_frame_s* o, tp_t name );
 
 /// retrieves a procedure or adds it if not existing
@@ -370,14 +507,10 @@ void bmath_hf3_vm_frame_s_proc_push_op_d( bmath_hf3_vm_frame_s* o, tp_t proc, bm
 
 void bmath_hf3_vm_frame_s_holors_set_size( bmath_hf3_vm_frame_s* o, sz_t size );
 bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_push( bmath_hf3_vm_frame_s* o );
-void bmath_hf3_vm_frame_s_holors_setup_name_map( bmath_hf3_vm_frame_s* o );
 bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_get_by_index( bmath_hf3_vm_frame_s* o, sz_t index );
 
 /// retrieves holor index; returns -1 if holor does not exists
 sz_t bmath_hf3_vm_frame_s_holors_get_index_by_name( bmath_hf3_vm_frame_s* o, tp_t name );
-
-/// retrieves holor by name; returns NULL if holor does not exists
-bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_get_by_name( bmath_hf3_vm_frame_s* o, tp_t name );
 
 /// allocates v_data (fit_v_size) of holors of given type
 void bmath_hf3_vm_frame_s_alloc_holors_of_type( bmath_hf3_vm_frame_s* o, tp_t type );
@@ -388,11 +521,26 @@ void bmath_hf3_vm_frame_s_dealloc_holors_of_type( bmath_hf3_vm_frame_s* o, tp_t 
 // ---------------------------------------------------------------------------------------------------------------------
 // input/output holors
 
-void                  bmath_hf3_vm_frame_s_input_push(      bmath_hf3_vm_frame_s* o, sz_t index );
-bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_input_get_holor( bmath_hf3_vm_frame_s* o, sz_t index );
+void bmath_hf3_vm_frame_s_input_push(  bmath_hf3_vm_frame_s* o, sz_t index );
+void bmath_hf3_vm_frame_s_output_push( bmath_hf3_vm_frame_s* o, sz_t index );
 
-void                  bmath_hf3_vm_frame_s_output_push(      bmath_hf3_vm_frame_s* o, sz_t index );
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_input_get_holor(  bmath_hf3_vm_frame_s* o, sz_t index );
 bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_output_get_holor( bmath_hf3_vm_frame_s* o, sz_t index );
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_input_get_paired_holor(  bmath_hf3_vm_frame_s* o, sz_t index ); // returns NULL if holor has no pair
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_output_get_paired_holor( bmath_hf3_vm_frame_s* o, sz_t index ); // returns NULL if holor has no pair
+
+bmath_hf3_s* bmath_hf3_vm_frame_s_input_get(         bmath_hf3_vm_frame_s* o, sz_t index );
+bmath_hf3_s* bmath_hf3_vm_frame_s_output_get(        bmath_hf3_vm_frame_s* o, sz_t index );
+bmath_hf3_s* bmath_hf3_vm_frame_s_input_get_paired(  bmath_hf3_vm_frame_s* o, sz_t index ); // returns NULL if holor has no pair
+bmath_hf3_s* bmath_hf3_vm_frame_s_output_get_paired( bmath_hf3_vm_frame_s* o, sz_t index ); // returns NULL if holor has no pair
+
+void bmath_hf3_vm_frame_s_input_set( bmath_hf3_vm_frame_s* o, sz_t index, bmath_hf3_s* h ); // copies h
+
+void bmath_hf3_vm_frame_s_input_set_all(  bmath_hf3_vm_frame_s* o, bmath_hf3_adl_s* h ); // copies holors
+void bmath_hf3_vm_frame_s_output_get_all( bmath_hf3_vm_frame_s* o, bmath_hf3_adl_s* h ); // copies holors
+
+/// sets paired holor for existing pairs.
+void bmath_hf3_vm_frame_s_output_set_paired_all( bmath_hf3_vm_frame_s* o, bmath_hf3_adl_s* h );
 
 // ---------------------------------------------------------------------------------------------------------------------
 

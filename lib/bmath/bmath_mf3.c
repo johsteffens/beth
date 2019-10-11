@@ -725,13 +725,13 @@ void bmath_mf3_s_cpy( const bmath_mf3_s* o, bmath_mf3_s* r )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_opd( bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2 )
+void bmath_mf3_s_opd( bmath_mf3_s* o, const bmath_vf3_s* a, const bmath_vf3_s* b )
 {
-    ASSERT( o->rows == op1->size );
-    ASSERT( o->cols == op2->size );
+    ASSERT( o->rows == a->size );
+    ASSERT( o->cols == b->size );
 
-    const f3_t* v1 = op1->data;
-    const f3_t* v2 = op2->data;
+    const f3_t* v1 = a->data;
+    const f3_t* v2 = b->data;
     for( uz_t i = 0; i < o->rows; i++ )
     {
         f3_t* oi = o->data   + o->stride * i;
@@ -741,19 +741,19 @@ void bmath_mf3_s_opd( bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s*
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res )
+void bmath_mf3_s_opd_add( bmath_mf3_s* o, const bmath_vf3_s* a, const bmath_vf3_s* b, const bmath_mf3_s* c )
 {
-    ASSERT( bmath_mf3_s_is_equ_size( o, res ) );
-    ASSERT( o->rows == op1->size );
-    ASSERT( o->cols == op2->size );
+    ASSERT( bmath_mf3_s_is_equ_size( o, c ) );
+    ASSERT( o->rows == a->size );
+    ASSERT( o->cols == b->size );
 
-    const f3_t* v1 = op1->data;
-    const f3_t* v2 = op2->data;
+    const f3_t* v1 = a->data;
+    const f3_t* v2 = b->data;
     for( uz_t i = 0; i < o->rows; i++ )
     {
-        const f3_t* oi = o->data   + o->stride * i;
-              f3_t* ri = res->data + res->stride * i;
-        for( uz_t j = 0; j < o->cols; j++ ) ri[ j ] = oi[ j ] + ( v1[ i ] * v2[ j ] );
+              f3_t* oi = o->data + o->stride * i;
+        const f3_t* ci = c->data + c->stride * i;
+        for( uz_t j = 0; j < o->cols; j++ ) oi[ j ] = ci[ j ] + ( v1[ i ] * v2[ j ] );
     }
 }
 
@@ -2549,7 +2549,7 @@ void bmath_mf3_s_set_covariance_on_section_fast( bmath_mf3_s* o, bmath_arr_vf3_s
     for( uz_t i = start; i < end; i++ )
     {
         bmath_vf3_s_sub( &arr_vec->data[ i ], avg, vec );
-        bmath_mf3_s_add_opd( o, vec, vec, o );
+        bmath_mf3_s_opd_add( o, vec, vec, o );
     }
 
     f3_t f = 1.0 / ( end - start );

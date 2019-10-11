@@ -83,7 +83,7 @@ stamp : = aware bcore_inst
     f3_t [] v; // value data
 };
 
-/// array dynamic of links
+/// array of dynamic links
 stamp :adl = aware bcore_array { :s => []; };
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,8 +132,14 @@ void bmath_hf3_s_set_d_data( bmath_hf3_s* o, const sz_t* d_data, sz_t d_size );
 /// sets v_data, v_size to array (does not change d_size or d_data)
 void bmath_hf3_s_set_v_data( bmath_hf3_s* o, const f3_t* v_data, sz_t v_size );
 
+/// feature copy_typed (use in inst perspective)
+void bmath_hf3_s_copy_typed( bmath_hf3_s* o, tp_t type, vc_t src );
+
 /// copies d_data from src (does not change v_size or v_data)
 void bmath_hf3_s_copy_d_data( bmath_hf3_s* o, const bmath_hf3_s* src );
+
+/// copy_shape == copy_d_data
+static inline void bmath_hf3_s_copy_shape( bmath_hf3_s* o, const bmath_hf3_s* src ) { bmath_hf3_s_copy_d_data( o, src ); }
 
 /// copies v_data from src (does not change d_size or d_data)
 void bmath_hf3_s_copy_v_data( bmath_hf3_s* o, const bmath_hf3_s* src );
@@ -180,6 +186,11 @@ void bmath_hf3_s_set_scalar_pf3( bmath_hf3_s* o, f3_t* v );
 void bmath_hf3_s_set_scalar_f3( bmath_hf3_s* o, f3_t v );
 
 /**********************************************************************************************************************/
+
+/// parsing (generic syntax)
+void bmath_hf3_s_parse( bmath_hf3_s* o, bcore_source* source );
+
+/**********************************************************************************************************************/
 /// status
 
 bl_t bmath_hf3_s_d_equal( const bmath_hf3_s* o, const bmath_hf3_s* src ); // compares d_data
@@ -222,6 +233,11 @@ static inline sz_t bmath_hf3_s_get_order( const bmath_hf3_s* o ) { return o->d_s
  */
 void bmath_hf3_s_inc_order( bmath_hf3_s* o, sz_t dim );
 
+/** Canonic increment of order by prepending one dimension 'dim' :
+ *  If the holder holds data, the data is duplicated on element-level 'dim' times.
+ */
+void bmath_hf3_s_inc_order_prepend( bmath_hf3_s* o, sz_t dim );
+
 /** Canonic data append of a sub-holor
  *  Requirements (checked):
  *  * o and src must either be both vacant or both determined.
@@ -239,12 +255,11 @@ void bmath_hf3_s_push( bmath_hf3_s* o, const bmath_hf3_s* src );
  *  Other constellations are not allowed.
  */
 
-/// sets d-data for vatenation; does not change v-data; returns false if not possible (a,b have incorrect shape)
+/// sets d-data for catenation; does not change v-data; returns false if not possible (a,b have incorrect shape)
 bl_t bmath_hf3_s_set_d_cat( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
 
 /// performs catenation of data; only checks merates
 void bmath_hf3_s_cat( const bmath_hf3_s* a, const bmath_hf3_s* b, bmath_hf3_s* r );
-
 
 void bmath_hf3_s_to_sink(      const bmath_hf3_s* o, bcore_sink* sink );
 void bmath_hf3_s_to_sink_nl(   const bmath_hf3_s* o, bcore_sink* sink ); // appends newline
@@ -252,12 +267,12 @@ void bmath_hf3_s_to_stdout(    const bmath_hf3_s* o );
 void bmath_hf3_s_to_stdout_nl( const bmath_hf3_s* o ); // appends newline
 
 /** compacted version, single line */
-void bmath_hf3_s_brief_to_sink(        const bmath_hf3_s* o, bcore_sink* sink );
-void bmath_hf3_s_brief_to_stdout(      const bmath_hf3_s* o );
+void bmath_hf3_s_brief_to_sink(       const bmath_hf3_s* o, bcore_sink* sink );
+void bmath_hf3_s_brief_to_stdout(     const bmath_hf3_s* o );
 
 /** multiline version */
-void bmath_hf3_s_formatted_to_sink(    const bmath_hf3_s* o, bcore_sink* sink );
-void bmath_hf3_s_formatted_to_stdout(  const bmath_hf3_s* o );
+void bmath_hf3_s_formatted_to_sink(   const bmath_hf3_s* o, bcore_sink* sink );
+void bmath_hf3_s_formatted_to_stdout( const bmath_hf3_s* o );
 
 /** Sets all vector elements to random values.
  *  Random generator:
@@ -285,11 +300,14 @@ f3_t bmath_hf3_s_fdev_zro( const bmath_hf3_s* o );
 /// o = {0}
 static inline void bmath_hf3_s_zro( const bmath_hf3_s* o ) { for( sz_t i = 0; i < o->v_size; i++ ) o->v_data[ i ] = 0; }
 
+void bmath_hf3_adl_s_zro( const bmath_hf3_adl_s* o );
+
 /// o = {v}
 static inline void bmath_hf3_s_set_f3( const bmath_hf3_s* o, f3_t v ) { for( sz_t i = 0; i < o->v_size; i++ ) o->v_data[ i ] = v; }
 
 /// o -> r
-void bmath_hf3_s_cpy( const bmath_hf3_s* o, bmath_hf3_s* r );
+void bmath_hf3_s_cpy(     const bmath_hf3_s*     o, bmath_hf3_s*     r );
+void bmath_hf3_adl_s_cpy( const bmath_hf3_adl_s* o, bmath_hf3_adl_s* r );
 
 /// exp(o) -> r
 void bmath_hf3_s_exp( const bmath_hf3_s* o, bmath_hf3_s* r );
@@ -297,27 +315,43 @@ void bmath_hf3_s_exp( const bmath_hf3_s* o, bmath_hf3_s* r );
 /// tanh(o) -> r
 void bmath_hf3_s_tanh( const bmath_hf3_s* o, bmath_hf3_s* r );
 
-/// relu(o) -> r  (f(x) = x > 0 ? x : 0)
-void bmath_hf3_s_relu( const bmath_hf3_s* o, bmath_hf3_s* r );
-
-/// leaky relu(o) -> r  (f(x) = x > 0 ? x : x * 0.01)
-void bmath_hf3_s_lrelu( const bmath_hf3_s* o, bmath_hf3_s* r );
+/// o^t -> r
+void bmath_hf3_s_htp( const bmath_hf3_s* o, bmath_hf3_s* r );
 
 /// o + m -> r
-void bmath_hf3_s_add( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
+void bmath_hf3_s_add(     const bmath_hf3_s*     o, const bmath_hf3_s*     m, bmath_hf3_s*     r );
+void bmath_hf3_adl_s_add( const bmath_hf3_adl_s* o, const bmath_hf3_adl_s* m, bmath_hf3_adl_s* r );
 
 /// o - m -> r
-void bmath_hf3_s_sub( const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
+void bmath_hf3_s_sub(     const bmath_hf3_s*     o, const bmath_hf3_s*     m, bmath_hf3_s*     r );
+void bmath_hf3_adl_s_sub( const bmath_hf3_adl_s* o, const bmath_hf3_adl_s* m, bmath_hf3_adl_s* r );
 
-/// o <*> m [ + b] -> r (hadamard product)
+/// (o - m)^2 -> r
+void bmath_hf3_s_sub_sqr(    const bmath_hf3_s* o, const bmath_hf3_s* m, f3_t* r );
+f3_t bmath_hf3_s_f3_sub_sqr( const bmath_hf3_s* o, const bmath_hf3_s* m );
+
+void bmath_hf3_adl_s_sub_sqr(    const bmath_hf3_adl_s* o, const bmath_hf3_adl_s* m, f3_t* r );
+f3_t bmath_hf3_adl_s_f3_sub_sqr( const bmath_hf3_adl_s* o, const bmath_hf3_adl_s* m );
+
+/// o * m [ + b] -> r (hadamard product)
 void bmath_hf3_s_hmul(     const bmath_hf3_s* o, const bmath_hf3_s* m, bmath_hf3_s* r );
 void bmath_hf3_s_hmul_add( const bmath_hf3_s* o, const bmath_hf3_s* m, const bmath_hf3_s* b, bmath_hf3_s* r );
 
+void bmath_hf3_adl_s_hmul( const bmath_hf3_adl_s* o, const bmath_hf3_adl_s* m, bmath_hf3_adl_s* r );
+
+/// o * b [ + c] -> r (b scalar)
 void bmath_hf3_s_mul_scl(     const bmath_hf3_s* o, const f3_t* b,                       bmath_hf3_s* r ); // o * b     -> r
 void bmath_hf3_s_mul_scl_add( const bmath_hf3_s* o, const f3_t* b, const bmath_hf3_s* c, bmath_hf3_s* r ); // o * b + c -> r
 
 static inline void bmath_hf3_s_mul_scl_f3(     const bmath_hf3_s* o, f3_t b,                       bmath_hf3_s* r ) { bmath_hf3_s_mul_scl(     o, &b,    r ); }
 static inline void bmath_hf3_s_mul_scl_f3_add( const bmath_hf3_s* o, f3_t b, const bmath_hf3_s* c, bmath_hf3_s* r ) { bmath_hf3_s_mul_scl_add( o, &b, c, r ); }
+
+void bmath_hf3_adl_s_mul_scl(    const bmath_hf3_adl_s* o, const f3_t* b, bmath_hf3_adl_s* r );
+void bmath_hf3_adl_s_mul_scl_f3( const bmath_hf3_adl_s* o,       f3_t  b, bmath_hf3_adl_s* r );
+
+/// cast o, b as vector and performs a dot product
+f3_t bmath_hf3_s_f3_vec_mul_vec( const bmath_hf3_s* o, const bmath_hf3_s* b ); // dot product
+void bmath_hf3_s_vec_mul_vec(     const bmath_hf3_s* o, const bmath_hf3_s* b, f3_t* r ); // dot product
 
 f3_t bmath_hf3_s_f3_max( const bmath_hf3_s* o );
 f3_t bmath_hf3_s_f3_min( const bmath_hf3_s* o );
@@ -339,19 +373,28 @@ void bmath_hf3_s_fp_f3_ar2_madd( const bmath_hf3_s* a, const bmath_hf3_s* b, bma
 
 /**********************************************************************************************************************/
 /** bmul: Specific holor * holor multiplication for holors up to order 2
- *  These operations are mapped to corresponding matrix (M), vector (V), scalar (S) operations depending on given holor order.
+ *  These 4 operations are mapped to corresponding matrix (M), vector (V), scalar (S) operations
+ *  depending on given holor order.
+ *
+ *  A dendride pass can be expressed as bmul of different transposition:
+ *  A **  B = C: GA  = GC *^ B and GB  = A ^* GC
+ *  A *^  B = C: GA  = GC ** B and GBt = A ^* GC
+ *  A ^*  B = C: GAt = GC *^ B and GB  = A ** GC
+ *  A ^*^ B = C: GAt = GC ** B and GBt = A ** GC
  *
  *  In case of vectors, the correct transposition-choice is important ...
- *    V^T * V   is the dot-product and served by htp_bmul
- *    V   * V^T is the outer-product and served by bmul_htp
- *    M   * V   is a valid vector transformation and served by bmul
- *    V^T * M   is a valid vector transformation and served by htp_bmul
+ *    V ^* V is the dot-product and served by htp_bmul
+ *    V *^ V is the outer-product and served by bmul_htp
+ *    M ** V is a valid vector transformation and served by bmul
+ *    V ^* M is a valid vector transformation and served by htp_bmul
  *
  *  Undefined compositions are ...
- *    V   * V,
- *    V^T * V^T
- *    V   * M
- *    M   * V^T
+ *    V  ** V,
+ *    V  ^* V
+ *    V  ** M
+ *    M  *^ V
+ *    M x*x S (all transpositions)
+ *    S x*x M (all transpositions)
  */
 
 void bmath_hf3_s_bmul(         const bmath_hf3_s* o, const bmath_hf3_s* b, bmath_hf3_s* r ); // o   * b   -> r

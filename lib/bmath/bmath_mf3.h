@@ -300,8 +300,8 @@ void bmath_mf3_s_add( const bmath_mf3_s* o, const bmath_mf3_s* b, bmath_mf3_s* r
 //----------------------------------------------------------------------------------------------------------------------
 // outer vector product
 
-void bmath_mf3_s_opd(           bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2 );                   // opd( op1, op2 ) -> o
-void bmath_mf3_s_add_opd( const bmath_mf3_s* o, const bmath_vf3_s* op1, const bmath_vf3_s* op2, bmath_mf3_s* res ); // opd( op1, op2 ) + o -> res
+void bmath_mf3_s_opd(     bmath_mf3_s* o, const bmath_vf3_s* a, const bmath_vf3_s* b );                       // opd( a, b )     -> o
+void bmath_mf3_s_opd_add( bmath_mf3_s* o, const bmath_vf3_s* a, const bmath_vf3_s* b, const bmath_mf3_s* c ); // opd( a, b ) + c -> o
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * vector [ + vector] --> vector

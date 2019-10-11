@@ -105,6 +105,14 @@ tp_t bmath_hf3_vm_frame_s_entypeof( bmath_hf3_vm_frame_s* o, sc_t name )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+sc_t bmath_hf3_vm_frame_s_ifnameof( bmath_hf3_vm_frame_s* o, tp_t type )
+{
+    sc_t name = bcore_hmap_name_s_get_sc( &o->map_name, type );
+    return name ? name : "";
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_vm_frame_s_setup( bmath_hf3_vm_frame_s* o )
 {
     if( !o->proc_setup ) return;
@@ -128,7 +136,6 @@ void bmath_hf3_vm_frame_s_clear( bmath_hf3_vm_frame_s* o )
     bmath_hf3_vm_arr_holor_s_clear( &o->arr_holor );
     bmath_hf3_vm_library_s_clear( &o->library );
     bcore_hmap_tpuz_s_clear( &o->map_proc );
-    bcore_hmap_tpuz_s_clear( &o->map_holor );
     bcore_hmap_name_s_clear( &o->map_name );
     o->proc_setup = 0;
     o->proc_shelve = 0;
@@ -252,22 +259,6 @@ void bmath_hf3_vm_frame_s_holors_set_size( bmath_hf3_vm_frame_s* o, sz_t size )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bmath_hf3_vm_frame_s_holors_setup_name_map( bmath_hf3_vm_frame_s* o )
-{
-    bcore_hmap_tpuz_s_clear( &o->map_holor );
-    BFOR_EACH( i, &o->arr_holor )
-    {
-        tp_t name = o->arr_holor.data[ i ].name;
-        if( name )
-        {
-            ASSERT( !bcore_hmap_tpuz_s_exists( &o->map_holor, name ) );
-            bcore_hmap_tpuz_s_set( &o->map_holor, name, i );
-        }
-    }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_push( bmath_hf3_vm_frame_s* o )
 {
     return bmath_hf3_vm_arr_holor_s_push( &o->arr_holor );
@@ -279,22 +270,6 @@ bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_get_by_index( bmath_hf3_vm_fra
 {
     ASSERT( index >= 0 && index < o->arr_holor.size );
     return &o->arr_holor.data[ index ];
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-sz_t bmath_hf3_vm_frame_s_holors_get_index_by_name( bmath_hf3_vm_frame_s* o, tp_t name )
-{
-    if( !bcore_hmap_tpuz_s_exists( &o->map_holor, name ) ) return -1;
-    return *bcore_hmap_tpuz_s_get( &o->map_holor, name );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_holors_get_by_name( bmath_hf3_vm_frame_s* o, tp_t name )
-{
-    sz_t idx = bmath_hf3_vm_frame_s_holors_get_index_by_name( o, name );
-    return idx >= 0 ? &o->arr_holor.data[ idx ] : NULL;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -345,6 +320,15 @@ bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_input_get_holor( bmath_hf3_vm_frame_s
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_input_get_paired_holor( bmath_hf3_vm_frame_s* o, sz_t index )
+{
+    bmath_hf3_vm_holor_s* h = bmath_hf3_vm_frame_s_input_get_holor( o, index );
+    if( h->idx_paired < 0 ) return NULL;
+    return bmath_hf3_vm_frame_s_holors_get_by_index( o, h->idx_paired );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_hf3_vm_frame_s_output_push( bmath_hf3_vm_frame_s* o, sz_t idx_val )
 {
     bcore_arr_sz_s_push( &o->output, idx_val );
@@ -358,6 +342,84 @@ bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_output_get_holor( bmath_hf3_vm_frame_
     sz_t idx_val = o->output.data[ index ];
     ASSERT( idx_val >= 0 && idx_val < o->arr_holor.size );
     return &o->arr_holor.data[ idx_val ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_vm_holor_s* bmath_hf3_vm_frame_s_output_get_paired_holor( bmath_hf3_vm_frame_s* o, sz_t index )
+{
+    bmath_hf3_vm_holor_s* h = bmath_hf3_vm_frame_s_output_get_holor( o, index );
+    if( h->idx_paired < 0 ) return NULL;
+    return bmath_hf3_vm_frame_s_holors_get_by_index( o, h->idx_paired );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_s* bmath_hf3_vm_frame_s_input_get( bmath_hf3_vm_frame_s* o, sz_t index )
+{
+    return &bmath_hf3_vm_frame_s_input_get_holor( o, index )->h;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_s* bmath_hf3_vm_frame_s_output_get( bmath_hf3_vm_frame_s* o, sz_t index )
+{
+    return &bmath_hf3_vm_frame_s_output_get_holor( o, index )->h;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_s* bmath_hf3_vm_frame_s_input_get_paired( bmath_hf3_vm_frame_s* o, sz_t index )
+{
+    bmath_hf3_vm_holor_s* vmh = bmath_hf3_vm_frame_s_input_get_paired_holor( o, index );
+    return vmh ? &vmh->h : NULL;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bmath_hf3_s* bmath_hf3_vm_frame_s_output_get_paired( bmath_hf3_vm_frame_s* o, sz_t index )
+{
+    bmath_hf3_vm_holor_s* vmh = bmath_hf3_vm_frame_s_output_get_paired_holor( o, index );
+    return vmh ? &vmh->h : NULL;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_input_set( bmath_hf3_vm_frame_s* o, sz_t index, bmath_hf3_s* h )
+{
+    bmath_hf3_s_copy( bmath_hf3_vm_frame_s_input_get( o, index ), h );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_input_set_all( bmath_hf3_vm_frame_s* o, bmath_hf3_adl_s* h )
+{
+    ASSERT( o->input.size == h->size );
+    BFOR_EACH( i, h ) bmath_hf3_vm_frame_s_input_set( o, i, h->data[ i ] );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_output_get_all( bmath_hf3_vm_frame_s* o, bmath_hf3_adl_s* h )
+{
+    bmath_hf3_adl_s_set_size( h, o->output.size );
+    BFOR_EACH( i, h ) bmath_hf3_s_attach( &h->data[ i ], bmath_hf3_s_clone( bmath_hf3_vm_frame_s_output_get( o, i ) ) );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_output_set_paired( bmath_hf3_vm_frame_s* o, sz_t index, bmath_hf3_s* h )
+{
+    bmath_hf3_s* ph = bmath_hf3_vm_frame_s_output_get_paired( o, index );
+    if( ph ) bmath_hf3_s_copy( ph, h );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_hf3_vm_frame_s_output_set_paired_all( bmath_hf3_vm_frame_s* o, bmath_hf3_adl_s* h )
+{
+    ASSERT( o->output.size == h->size );
+    BFOR_EACH( i, h ) bmath_hf3_vm_frame_s_output_set_paired( o, i, h->data[ i ] );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

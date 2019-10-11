@@ -139,8 +139,8 @@ void badapt_ern_s_bgrad_adapt( badapt_ern_s* o, bmath_vf3_s* grad_in, const bmat
 
         bmath_mf3_s_htp_mul_vec( &o->w_hc, &o->d_v_h, &o->d_v_c ); // W^T * GH -> GC
 
-        bmath_mf3_s_add_opd( &o->d_w_hx, &o->d_v_h, &layer->v_x, &o->d_w_hx );
-        bmath_mf3_s_add_opd( &o->d_w_hc, &o->d_v_h, &layer->v_c, &o->d_w_hc );
+        bmath_mf3_s_opd_add( &o->d_w_hx, &o->d_v_h, &layer->v_x, &o->d_w_hx );
+        bmath_mf3_s_opd_add( &o->d_w_hc, &o->d_v_h, &layer->v_c, &o->d_w_hc );
 
         bmath_vf3_s_copy( &o->d_v_h, &o->d_v_c ); // GC -> GH
     }

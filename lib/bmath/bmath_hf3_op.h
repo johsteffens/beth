@@ -60,6 +60,15 @@ group :ar0 =
     stamp :zro     = {                   func : : f = { bmath_hf3_s_zro(       r ); }; };
     stamp :literal = { bmath_hf3_s -> h; func : :of = { bmath_hf3_s_cpy( o->h, r ); }; };
 
+    /// dendride-pass
+    group :dp =
+    {
+        extending stump verbatim :_ = aware : {};
+
+        func ::: :sig = { return "u"; };
+        stamp :ca_floor = { func :: :f = { bmath_hf3_s_zro( r ); }; };
+        stamp :ca_ceil  = { func :: :f = { bmath_hf3_s_zro( r ); }; };
+    };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -133,14 +142,17 @@ group :ar2 =
     func :: :aof = { @of( o, a[0], a[1], r ); };
 
     stamp :add  = { func : :f = { bmath_hf3_s_add ( a, b, r ); }; };
-    stamp :sub  = { func : :f = { bmath_hf3_s_add ( a, b, r ); }; };
+    stamp :sub  = { func : :f = { bmath_hf3_s_sub ( a, b, r ); }; };
     stamp :hmul = { func : :f = { bmath_hf3_s_hmul( a, b, r ); }; };
     stamp :hdiv = { func : :f = { bmath_hf3_s_fp_f3_ar2( a, b, bmath_f3_op_ar2_div_s_fx, r ); }; };
 
+    /// bmul quartet
     stamp :bmul         = { func : :f = { bmath_hf3_s_bmul        ( a, b,         r ); }; }; // a ** b -> c
     stamp :bmul_htp     = { func : :f = { bmath_hf3_s_bmul_htp    ( a, b,         r ); }; }; // a *^ b -> c
     stamp :htp_bmul     = { func : :f = { bmath_hf3_s_htp_bmul    ( a, b,         r ); }; }; // a ^* b -> c
     stamp :htp_bmul_htp = { func : :f = { bmath_hf3_s_htp_bmul_htp( a, b,         r ); }; }; // a ^*^ b -> c
+
+    /// h * scalar
     stamp :mul_scl      = { func : :f = { bmath_hf3_s_mul_scl     ( a, b->v_data, r ); }; }; // a * s(b) -> c
     stamp :scl_mul      = { func : :f = { bmath_hf3_s_mul_scl     ( b, a->v_data, r ); }; }; // s(a) * b -> c
 
@@ -151,6 +163,8 @@ group :ar2 =
 
         /// dp-yvu functions ...
         func ::: :sig = { return "yvu"; };
+
+        stamp :ca_exp        = { func :: :f = { bmath_hf3_s_hmul_add( a, b, r, r ); }; };
 
         // logistic
         stamp :ca_lgst       = { func :: :f = { bmath_hf3_s_fp_f3_ar1_madd( a, bmath_f3_op_ar1_lgst_s_gy,       b, r ); }; };
@@ -169,8 +183,26 @@ group :ar2 =
 
         /// explicit dp-signature ...
         // hmul
-        stamp :ca_hmul = { func ::: :sig = { return "bvu"; }; func :: :f = { bmath_hf3_s_hmul_add( a, b, r, r ); }; };
+        stamp :ca_hmul = { func ::: :sig = { return "vbu"; }; func :: :f = { bmath_hf3_s_hmul_add( a, b, r, r ); }; };
         stamp :cb_hmul = { func ::: :sig = { return "avu"; }; func :: :f = { bmath_hf3_s_hmul_add( a, b, r, r ); }; };
+
+        /// bmul quartet
+        stamp :ca_bmul         = { func ::: :sig = { return "vbu"; }; func :: :f = { bmath_hf3_s_bmul_htp_add    ( a, b, r, r ); }; };
+        stamp :cb_bmul         = { func ::: :sig = { return "avu"; }; func :: :f = { bmath_hf3_s_htp_bmul_add    ( a, b, r, r ); }; };
+        stamp :ca_bmul_htp     = { func ::: :sig = { return "vbu"; }; func :: :f = { bmath_hf3_s_bmul_add        ( a, b, r, r ); }; };
+        stamp :cb_bmul_htp     = { func ::: :sig = { return "vau"; }; func :: :f = { bmath_hf3_s_htp_bmul_add    ( a, b, r, r ); }; };
+        stamp :ca_htp_bmul     = { func ::: :sig = { return "bvu"; }; func :: :f = { bmath_hf3_s_bmul_htp_add    ( a, b, r, r ); }; };
+        stamp :cb_htp_bmul     = { func ::: :sig = { return "avu"; }; func :: :f = { bmath_hf3_s_bmul_add        ( a, b, r, r ); }; };
+        stamp :ca_htp_bmul_htp = { func ::: :sig = { return "bvu"; }; func :: :f = { bmath_hf3_s_htp_bmul_htp_add( a, b, r, r ); }; };
+        stamp :cb_htp_bmul_htp = { func ::: :sig = { return "vau"; }; func :: :f = { bmath_hf3_s_htp_bmul_htp_add( a, b, r, r ); }; };
+
+        /// h * scalar
+        stamp :ca_mul_scl      = { func ::: :sig = { return "vbu"; }; func :: :f = { bmath_hf3_s_mul_scl_f3_add( a, b->v_data[ 0 ], r, r ); }; };
+        stamp :cb_mul_scl      = { func ::: :sig = { return "avu"; }; func :: :f = { r->v_data[ 0 ] += bmath_hf3_s_f3_vec_mul_vec( a, b ); }; };
+
+        /// scalar * h
+        stamp :ca_scl_mul      = { func ::: :sig = { return "vbu"; }; func :: :f = { r->v_data[ 0 ] += bmath_hf3_s_f3_vec_mul_vec( a, b ); }; };
+        stamp :cb_scl_mul      = { func ::: :sig = { return "avu"; }; func :: :f = { bmath_hf3_s_mul_scl_f3_add( b, a->v_data[ 0 ], r, r ); }; };
     };
 };
 

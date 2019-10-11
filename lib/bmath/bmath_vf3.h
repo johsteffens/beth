@@ -154,7 +154,7 @@ f3_t bmath_vf3_s_f3_sum(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_avg(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_var(     const bmath_vf3_s* o );
 f3_t bmath_vf3_s_f3_dev(     const bmath_vf3_s* o );
-void bmath_vf3_s_mul_vec(    const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t* res );
+void bmath_vf3_s_mul_vec(    const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t* res ); // dot product
 void bmath_vf3_s_sqr(        const bmath_vf3_s* o, f3_t* res  );
 void bmath_vf3_s_sub_sqr(    const bmath_vf3_s* o, const bmath_vf3_s* op, f3_t* res );
 void bmath_vf3_s_sum(        const bmath_vf3_s* o, f3_t* res  );
