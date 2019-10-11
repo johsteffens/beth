@@ -36,7 +36,9 @@ PLANT_GROUP( bcore_file, bcore_inst )
 signature sc_t get_sc( const );
 signature void set_sc( mutable, sc_t name );
 
-/// relative file path that is automatically extended
+/** File path that is automatically extended if relative.
+ *  Implements via_call:source to get the root folder during interpreting a source file.
+ */
 stamp : path = aware bcore_inst
 {
     st_s name; // absolute or relative path ( e.g. "../obj/myobj.txt" ); if relative
@@ -57,6 +59,9 @@ stamp : path = aware bcore_inst
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // TYPEOF_bcore_file
+
+bcore_file_path_s* bcore_file_path_s_create_sc( sc_t sc );
+bcore_file_path_s* bcore_file_path_s_create_st( const st_s* st );
 
 /**********************************************************************************************************************/
 /// file path manipulations using posix path scheme
