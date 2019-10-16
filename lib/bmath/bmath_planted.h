@@ -1532,13 +1532,13 @@
 #define TYPEOF_bmath_hf3_vm_op_ar0_randomize_s 2304548753
 #define BETH_EXPAND_ITEM_bmath_hf3_vm_op_ar0_randomize_s \
   BCORE_DECLARE_OBJECT( bmath_hf3_vm_op_ar0_randomize_s ) \
-    {aware_t _;sz_t a;u2_t rseed;}; \
+    {aware_t _;sz_t a;u2_t rseed;f3_t min;f3_t max;f3_t density;}; \
   static inline sz_t bmath_hf3_vm_op_ar0_randomize_s_get_arity( const bmath_hf3_vm_op_ar0_randomize_s* o ){ return 0; } \
   static inline void bmath_hf3_vm_op_ar0_randomize_s_set_indices( bmath_hf3_vm_op_ar0_randomize_s* o, sz_t* a ){ o->a = a[0]; } \
   static inline void bmath_hf3_vm_op_ar0_randomize_s_get_indices( const bmath_hf3_vm_op_ar0_randomize_s* o, sz_t* a ){ a[0] = o->a; } \
   static inline bmath_hf3_vm_op* bmath_hf3_vm_op_ar0_randomize_s_csetup( bmath_hf3_vm_op_ar0_randomize_s* o, sz_t idx_a ){ if( !o ) o = bmath_hf3_vm_op_ar0_randomize_s_create(); o->a = idx_a; return (bmath_hf3_vm_op*)o; } \
-  static inline bmath_hf3_vm_op* bmath_hf3_vm_op_ar0_randomize_s_csetup_randomize( bmath_hf3_vm_op_ar0_randomize_s* o, sz_t idx_a, u2_t rseed ){ if( !o ) o = bmath_hf3_vm_op_ar0_randomize_s_create(); o->a = idx_a; o->rseed = rseed; return (bmath_hf3_vm_op*)o; } \
-  static inline void bmath_hf3_vm_op_ar0_randomize_s_run( const bmath_hf3_vm_op_ar0_randomize_s* o, bmath_hf3_vm_holor_s* ah ){ u2_t rval = o->rseed + o->a; bmath_hf3_s_set_random( &ah[ o->a ].h, 1.0, -1.0, 1.0, &rval ); } \
+  bmath_hf3_vm_op* bmath_hf3_vm_op_ar0_randomize_s_csetup_randomize( bmath_hf3_vm_op_ar0_randomize_s* o, sz_t idx_a, u2_t rseed, f3_t density, f3_t min, f3_t max ); \
+  static inline void bmath_hf3_vm_op_ar0_randomize_s_run( const bmath_hf3_vm_op_ar0_randomize_s* o, bmath_hf3_vm_holor_s* ah ){ u2_t rval = o->rseed + o->a; bmath_hf3_s_set_random( &ah[ o->a ].h, o->density, o->min, o->max, &rval ); } \
   void bmath_hf3_vm_op_ar0_randomize_s_set_arg( bmath_hf3_vm_op_ar0_randomize_s* o, char id, sz_t idx ); \
   static inline sc_t bmath_hf3_vm_op_ar0_randomize_s_sig( const bmath_hf3_vm_op_ar0_randomize_s* o ){ return "y"; }
 #define BETH_EXPAND_GROUP_bmath_hf3_vm_op_ar0 \

@@ -1218,11 +1218,25 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_hf3_vm_op_ar0_randomize_s )
     "func bmath_hf3_vm_op:get_indices;"
     "func ^:csetup;"
     "u2_t rseed = 1234;"
+    "f3_t min = -0.5;"
+    "f3_t max = 0.5;"
+    "f3_t density = 1.0;"
     "func ^:csetup_randomize;"
     "func bmath_hf3_vm:run;"
     "func bmath_hf3_vm_op:set_arg;"
     "func bmath_hf3_vm_op:sig;"
 "}";
+
+bmath_hf3_vm_op* bmath_hf3_vm_op_ar0_randomize_s_csetup_randomize( bmath_hf3_vm_op_ar0_randomize_s* o, sz_t idx_a, u2_t rseed, f3_t density, f3_t min, f3_t max )
+{
+    if( !o ) o = bmath_hf3_vm_op_ar0_randomize_s_create();
+    o->a = idx_a;
+    o->rseed   = rseed;
+    o->density = density;
+    o->min     = min;
+    o->max     = max;
+    return (bmath_hf3_vm_op*)o;
+}
 
 void bmath_hf3_vm_op_ar0_randomize_s_set_arg( bmath_hf3_vm_op_ar0_randomize_s* o, char id, sz_t idx )
 {
@@ -2512,7 +2526,7 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 3347166080 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 145641826 ) );
             BCORE_REGISTER_FEATURE( bmath_f3_op_get_arity );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aofx );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aogx );

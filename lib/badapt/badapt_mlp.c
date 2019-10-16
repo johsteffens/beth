@@ -298,7 +298,7 @@ void badapt_mlp_s_test_sine_random()
     BCORE_LIFE_INIT();
     BCORE_LIFE_CREATE( badapt_problem_sine_random_s, problem );
     BCORE_LIFE_CREATE( badapt_builder_mlp_funnel_s,  builder );
-    BCORE_LIFE_CREATE( badapt_trainer_batch_s,             trainer );
+    BCORE_LIFE_CREATE( badapt_trainer_batch_s,       trainer );
 
     problem->input_size = 32;
 

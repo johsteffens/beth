@@ -40,8 +40,8 @@ stamp :holor = aware :
     bmath_hf3_s h;
 };
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 stamp :arr_holor = aware bcore_array { :holor_s []; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -133,13 +133,26 @@ group :op =
         stamp :vacate    = { func ::: :run = { bmath_hf3_s_set_vacant( &ah[ o->a ].h ); }; }; // makes operand vacant
 
         // randomizes a determined, rseed and index 'a' are used as seed
-        signature : : csetup csetup_randomize( u2_t rseed );
+        signature : : csetup csetup_randomize( u2_t rseed, f3_t density, f3_t min, f3_t max );
 
         stamp :randomize =
         {
             u2_t rseed = 1234;
-            func   : :csetup_randomize = { if( !o ) o = :randomize_s_create(); o->a = idx_a; o->rseed = rseed; return (::*)o; };
-            func ::: :run = { u2_t rval = o->rseed + o->a; bmath_hf3_s_set_random( &ah[ o->a ].h, 1.0, -1.0, 1.0, &rval ); };
+            f3_t min = -0.5;
+            f3_t max =  0.5;
+            f3_t density = 1.0;
+            func : :csetup_randomize =
+            {
+                if( !o ) o = :randomize_s_create();
+                o->a = idx_a;
+                o->rseed   = rseed;
+                o->density = density;
+                o->min     = min;
+                o->max     = max;
+                return (::*)o;
+            };
+
+            func ::: :run = { u2_t rval = o->rseed + o->a; bmath_hf3_s_set_random( &ah[ o->a ].h, o->density, o->min, o->max, &rval ); };
         };
 
         // dendride-pass

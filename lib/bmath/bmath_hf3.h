@@ -90,10 +90,10 @@ stamp :adl = aware bcore_array { :s => []; };
 
 /**********************************************************************************************************************/
 
-/// turns a weak d-array into a strone one (no effect if it is strong)
+/// turns a weak d-array into a strong one (no effect if it is strong)
 void bmath_hf3_s_d_make_strong( bmath_hf3_s* o );
 
-/// turns a weak v-array into a strone one (no effect if it is strong)
+/// turns a weak v-array into a strong one (no effect if it is strong)
 void bmath_hf3_s_v_make_strong( bmath_hf3_s* o );
 
 /// sets number of values (initialized to zero)
