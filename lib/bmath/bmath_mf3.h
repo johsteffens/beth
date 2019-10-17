@@ -93,6 +93,7 @@
 #include "bmath_feature.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_vf3.h"
+#include "bmath_arr_vf3.h"
 #include "bmath_simd.h"
 #include "bmath_grt.h"
 #include "bmath_mf3_mul.h"
@@ -144,16 +145,7 @@ BCORE_DECLARE_OBJECT( bmath_mf3_s )
     uz_t rows;
     uz_t cols;
     uz_t stride;
-    union
-    {
-        bcore_array_dyn_solid_static_s arr;
-        struct
-        {
-            f3_t* data;
-            uz_t  size;
-            uz_t  space;
-        };
-    };
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, );
 };
 
 void bmath_mf3_s_set_size( bmath_mf3_s* o, uz_t rows, uz_t cols );
