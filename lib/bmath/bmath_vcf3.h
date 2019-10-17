@@ -46,16 +46,7 @@
 BCORE_DECLARE_OBJECT( bmath_vcf3_s )
 {
     aware_t _;
-    union
-    {
-        bcore_array_dyn_solid_static_s arr;
-        struct
-        {
-            bmath_cf3_s* data;
-            uz_t  size;
-            uz_t  space;
-        };
-    };
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_cf3_s, );
 };
 
 void bmath_vcf3_s_move( bmath_vcf3_s* o, bmath_vcf3_s* src );

@@ -25,7 +25,7 @@
 BCORE_DEFINE_OBJECT_INST( bmath_vector, bmath_vcf3_s )
 "{"
     "aware_t _;"
-    "bmath_cf3_s [] arr;"
+    "bmath_cf3_s [];"
     "func bmath_fp:add;"
     "func bmath_fp:zro;"
     "func bmath_fp:neg;"
