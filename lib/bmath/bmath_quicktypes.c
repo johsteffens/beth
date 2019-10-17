@@ -46,7 +46,6 @@ static sr_s typelist()
     bcore_array_r_push_sc( &list, "bmath_ring_s"        );
     bcore_array_r_push_sc( &list, "bmath_vector"        );
     bcore_array_r_push_sc( &list, "bmath_vector_s"      );
-    bcore_array_r_push_sc( &list, "bmath_vf3_s"         );
     bcore_array_r_push_sc( &list, "bmath_arr_vf3_s"     );
     bcore_array_r_push_sc( &list, "bmath_vcf3_s"        );
     bcore_array_r_push_sc( &list, "bmath_matrix"        );
@@ -65,14 +64,12 @@ static sr_s typelist()
     // features
     bcore_array_r_push_sc( &list, "bmath_u2_argb_from_f3" );
 
-    // quicktypes from mf3
-    bmath_mf3_push_quicktypes( &list );
-
     // quicktypes from TYPEOF_get_quicktypes
     bcore_signal_s signal = bcore_signal_init( TYPEOF_local, TYPEOF_get_quicktypes, list.o );
     bmath_signal_handler( &signal );
 
     bcore_array_r_sort( &list, 0, -1, 1 );
+
     return list;
 }
 

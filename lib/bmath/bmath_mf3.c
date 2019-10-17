@@ -26,43 +26,6 @@
 #include <stdio.h>
 
 /**********************************************************************************************************************/
-
-void bmath_mf3_push_quicktypes( sr_s* list )
-{
-    bcore_array_r_push_sc( list, "bmath_mf3_s" );
-    bcore_array_r_push_sc( list, "bmath_arr_mf3_s" );
-
-    // features
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul"         );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_mul_htp"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_htp_mul"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_htp_mul_htp" );
-
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_uav" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_ua"  );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_av"  );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_uau" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_vav" );
-
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_trd_htp" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_trd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_evd_htp" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_svd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_ubd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lbd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_qrd_pmt" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lqd"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_pmt_lqd" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_cld"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_lud"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_inv"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_pdf_inv" );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_piv"     );
-    bcore_array_r_push_sc( list, "bmath_fp_mf3_s_hsm_piv" );
-}
-
-/**********************************************************************************************************************/
 /// Matrix object of f3_t
 
 BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf3_s )
@@ -3127,6 +3090,42 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
 
             BCORE_REGISTER_OBJECT( bmath_mf3_s );
             BCORE_REGISTER_OBJECT( bmath_arr_mf3_s );
+        }
+        break;
+
+        case TYPEOF_get_quicktypes:
+        {
+            BCORE_REGISTER_QUICKTYPE( bmath_mf3_s );
+            BCORE_REGISTER_QUICKTYPE( bmath_arr_mf3_s );
+
+            // features
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_mul );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_mul_htp );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_htp_mul );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_htp_mul_htp );
+
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_uav );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_ua );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_av );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_uau );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_vav );
+
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_trd_htp );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_trd );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_evd_htp );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_svd );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_ubd );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_lbd );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_qrd );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_qrd_pmt );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_lqd );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_pmt_lqd );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_cld );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_lud );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_inv );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_pdf_inv );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_piv );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_hsm_piv );
         }
         break;
 

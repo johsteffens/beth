@@ -133,9 +133,6 @@ typedef bl_t (*bmath_fp_mf3_s_pdf_inv )( const bmath_mf3_s* o, bmath_mf3_s* res 
 typedef bl_t (*bmath_fp_mf3_s_piv     )( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res );
 typedef bl_t (*bmath_fp_mf3_s_hsm_piv )( const bmath_mf3_s* o, f3_t eps, bmath_mf3_s* res );
 
-/// quicktypes for matrix
-void bmath_mf3_push_quicktypes( sr_s* list );
-
 /**********************************************************************************************************************/
 /// Matrix object of f3_t
 

@@ -14,7 +14,6 @@
  */
 
 #include "bmath_signal.h"
-#include "bmath_types.h"
 #include "bmath_feature.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_spect_vector.h"
@@ -23,6 +22,7 @@
 #include "bmath_f3_op.h"
 #include "bmath_complex.h"
 #include "bmath_fourier.h"
+#include "bmath_vf2.h"
 #include "bmath_vf3.h"
 #include "bmath_arr_vf3.h"
 #include "bmath_vcf3.h"
@@ -56,7 +56,6 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
     {
         bcore_fp_signal_handler arr[] =
         {
-            bmath_types_signal_handler,
             bmath_feature_signal_handler,
             bmath_spect_algebraic_signal_handler,
             bmath_spect_vector_signal_handler,
@@ -65,6 +64,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_f3_op_signal_handler,
             bmath_complex_signal_handler,
             bmath_fourier_signal_handler,
+            bmath_vf2_signal_handler,
             bmath_vf3_signal_handler,
             bmath_arr_vf3_signal_handler,
             bmath_vcf3_signal_handler,

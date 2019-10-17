@@ -1,4 +1,4 @@
-/** Copyright 2018 Johannes Bernhard Steffens
+/** Copyright 2019 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,28 +13,29 @@
  *  limitations under the License.
  */
 
- #include "bcore_std.h"
- #include "bmath_types.h"
- #include "bmath_quicktypes.h"
+#ifndef BMATH_VF2_H
+#define BMATH_VF2_H
+
+/** bmath_vfx expansion for f2_t
+ *  See bmath_vfx_h.h for details.
+ */
+
+#include "bcore_std.h"
 
 /**********************************************************************************************************************/
+// dynamic size vector of f2_t
 
-/**********************************************************************************************************************/
-
-vd_t bmath_types_signal_handler( const bcore_signal_s* o )
+BCORE_DECLARE_OBJECT( bmath_vf2_s )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_types" ) ) )
-    {
-        case TYPEOF_init1:
-        {
-        }
-        break;
+    aware_t _;
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( f2_t, );
+};
 
-        default: break;
-    }
-
-    return NULL;
-}
+#define BFPREC_LEVEL 2
+#include "bmath_vfx_h.h"
 
 /**********************************************************************************************************************/
 
+vd_t bmath_vf2_signal_handler( const bcore_signal_s* o );
+
+#endif  // BMATH_VF2_H

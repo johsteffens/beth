@@ -22,7 +22,6 @@
 #include "bmath_spect_algebraic.h"
 #include "bcore_spect_array.h"
 #include "bmath_quicktypes.h"
-#include "bmath_types.h"
 
 /**********************************************************************************************************************/
 

@@ -53,6 +53,14 @@ typedef f3_t (*bmath_fp_f3_op_ar0 )( vc_t op );                 // arity 0 opera
 typedef f3_t (*bmath_fp_f3_op_ar1 )( vc_t op, f3_t a );         // arity 1 operator
 typedef f3_t (*bmath_fp_f3_op_ar2 )( vc_t op, f3_t a, f3_t b ); // arity 2 operator
 
+typedef f2_t (*bmath_fp_f2_ar0 )( void           ); // nullary function   -> f2
+typedef f2_t (*bmath_fp_f2_ar1 )( f2_t a         ); // unary function  f2 -> f2
+typedef f2_t (*bmath_fp_f2_ar2 )( f2_t a, f2_t b ); // binary function (f2,f2) -> f2
+
+typedef f2_t (*bmath_fp_f2_op_ar0 )( vc_t op );                 // arity 0 operator
+typedef f2_t (*bmath_fp_f2_op_ar1 )( vc_t op, f2_t a );         // arity 1 operator
+typedef f2_t (*bmath_fp_f2_op_ar2 )( vc_t op, f2_t a, f2_t b ); // arity 2 operator
+
 /**********************************************************************************************************************/
 
 vd_t bmath_leaf_signal_handler( const bcore_signal_s* o );

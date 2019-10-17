@@ -55,4 +55,5 @@
 #define TYPEOF_bmath_vcf3_s               3723112310
 #define TYPEOF_bmath_vector               4070600319
 #define TYPEOF_bmath_vector_s             1200091625
+#define TYPEOF_bmath_vf2_s                2013382996
 #define TYPEOF_bmath_vf3_s                3565809519

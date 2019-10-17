@@ -15,58 +15,58 @@
 
 #include <stdio.h>
 
-#include "bmath_vf3.h"
+#include "bmath_vf2.h"
 
-#define BFPREC_LEVEL 3
+#define BFPREC_LEVEL 2
 #include "bmath_vfx_c.h"
 
 #include "bmath_spect_vector.h"
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_INST_AUT( bmath_vector, bmath_vf3_s )
+BCORE_DEFINE_OBJECT_INST_AUT( bmath_vector, bmath_vf2_s )
 "{"
     "aware_t _;"
-    "f3_t [];"
+    "f2_t [];"
     "func bmath_fp:add;"
     "func bmath_fp:zro;"
     "func bmath_fp:neg;"
     "func bmath_fp:sub;"
     "func bmath_fp:cpy;"
-    "func bmath_fp_vector:mul_scl = bmath_vf3_s_mul_scl;"
-    "func bmath_fp_vector:mul_vec = bmath_vf3_s_mul_vec;"
+    "func bmath_fp_vector:mul_scl = bmath_vf2_s_mul_scl;"
+    "func bmath_fp_vector:mul_vec = bmath_vf2_s_mul_vec;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
-vd_t bmath_vf3_signal_handler( const bcore_signal_s* o )
+vd_t bmath_vf2_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_vf3" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_vf2" ) ) )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_FFUNC( bmath_fp_add,            bmath_vf3_s_add );
-            BCORE_REGISTER_FFUNC( bmath_fp_zro,            bmath_vf3_s_zro );
-            BCORE_REGISTER_FFUNC( bmath_fp_neg,            bmath_vf3_s_neg );
-            BCORE_REGISTER_FFUNC( bmath_fp_sub,            bmath_vf3_s_sub );
-            BCORE_REGISTER_FFUNC( bmath_fp_cpy,            bmath_vf3_s_cpy );
-            BCORE_REGISTER_FFUNC( bmath_fp_vector_mul_vec, bmath_vf3_s_mul_vec );
-            BCORE_REGISTER_FFUNC( bmath_fp_vector_mul_scl, bmath_vf3_s_mul_scl );
-            BCORE_REGISTER_OBJECT( bmath_vf3_s );
+            BCORE_REGISTER_FFUNC( bmath_fp_add,            bmath_vf2_s_add );
+            BCORE_REGISTER_FFUNC( bmath_fp_zro,            bmath_vf2_s_zro );
+            BCORE_REGISTER_FFUNC( bmath_fp_neg,            bmath_vf2_s_neg );
+            BCORE_REGISTER_FFUNC( bmath_fp_sub,            bmath_vf2_s_sub );
+            BCORE_REGISTER_FFUNC( bmath_fp_cpy,            bmath_vf2_s_cpy );
+            BCORE_REGISTER_FFUNC( bmath_fp_vector_mul_vec, bmath_vf2_s_mul_vec );
+            BCORE_REGISTER_FFUNC( bmath_fp_vector_mul_scl, bmath_vf2_s_mul_scl );
+            BCORE_REGISTER_OBJECT( bmath_vf2_s );
         }
         break;
 
         case TYPEOF_get_quicktypes:
         {
-            BCORE_REGISTER_QUICKTYPE( bmath_vf3_s );
+            BCORE_REGISTER_QUICKTYPE( bmath_vf2_s );
         }
         break;
 
         case TYPEOF_selftest:
         {
-            bmath_vf3_selftest();
+            bmath_vf2_selftest();
         }
         break;
 
