@@ -743,7 +743,7 @@ static void bmath_mf3_s_f3_t_htp_mul( const f3_t* o, sz_t o_s, sz_t o_r, sz_t o_
 
             for( sz_t j = 0; j < o_r; j++ )
             {
-                f3_t f = o[ j * m_s + i ];
+                f3_t f = o[ j * o_s + i ];
                 for( sz_t k = 0; k < m_c; k++ ) r_p[ k ] += m_p[ j ][ k ] * f;
             }
 
