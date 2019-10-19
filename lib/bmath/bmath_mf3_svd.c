@@ -250,7 +250,7 @@ bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v )
             if( a->data[ i * ( a->stride + 1 ) ] < 0 )
             {
                 a->data[ i * ( a->stride + 1 ) ] *= -1.0;
-                if( vt ) bmath_mf3_s_mul_f3_to_row( vt, -1.0, i );
+                if( vt ) bmath_mf3_s_mul_fx_to_row( vt, -1.0, i );
             }
         }
     }

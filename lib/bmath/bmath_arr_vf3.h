@@ -54,14 +54,14 @@ void bmath_arr_vf3_s_on_section_neg(     const bmath_arr_vf3_s* o, uz_t start, u
 void bmath_arr_vf3_s_on_section_cpy(     const bmath_arr_vf3_s* o, uz_t start, uz_t end,                        bmath_arr_vf3_s* res );
 void bmath_arr_vf3_s_on_section_add(     const bmath_arr_vf3_s* o, uz_t start, uz_t end, const bmath_vf3_s* op, bmath_arr_vf3_s* res );
 void bmath_arr_vf3_s_on_section_sub(     const bmath_arr_vf3_s* o, uz_t start, uz_t end, const bmath_vf3_s* op, bmath_arr_vf3_s* res );
-void bmath_arr_vf3_s_on_section_mul_f3(  const bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t op,               bmath_arr_vf3_s* res );
+void bmath_arr_vf3_s_on_section_mul_fx(  const bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t op,               bmath_arr_vf3_s* res );
 void bmath_arr_vf3_s_on_section_set_sqr(       bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t val );
 void bmath_arr_vf3_s_on_section_set_sum(       bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t val );
 void bmath_arr_vf3_s_on_section_set_avg(       bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t val );
-f3_t bmath_arr_vf3_s_on_section_f3_sum_sprec( const bmath_arr_vf3_s* o, uz_t start, uz_t end, uz_t index ); // stochastically precise summing of indexed element
+f3_t bmath_arr_vf3_s_on_section_fx_sum_sprec( const bmath_arr_vf3_s* o, uz_t start, uz_t end, uz_t index ); // stochastically precise summing of indexed element
 
 // stochastically precise summing of co-product (vi - ai) * (vj - aj)
-f3_t bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( const bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t ai, f3_t aj, uz_t i, uz_t j );
+f3_t bmath_arr_vf3_s_on_section_fx_sum_coprd_sprec( const bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t ai, f3_t aj, uz_t i, uz_t j );
 
 void bmath_arr_vf3_s_on_section_get_sum_sprc( const bmath_arr_vf3_s* o, uz_t start, uz_t end, bmath_vf3_s* res ); // stochastically precise summing
 void bmath_arr_vf3_s_on_section_get_avg_sprc( const bmath_arr_vf3_s* o, uz_t start, uz_t end, bmath_vf3_s* res ); // stochastically precise averaging

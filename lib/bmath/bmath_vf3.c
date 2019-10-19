@@ -17,8 +17,8 @@
 
 #include "bmath_vf3.h"
 
-#define BFPREC_LEVEL 3
-#include "bmath_vfx_c.h"
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_vfx_c.h"
 
 #include "bmath_spect_vector.h"
 

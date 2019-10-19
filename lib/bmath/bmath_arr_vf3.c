@@ -162,7 +162,7 @@ void bmath_arr_vf3_s_on_section_sub( const bmath_arr_vf3_s* o, uz_t start, uz_t 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_arr_vf3_s_on_section_mul_f3(  const bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t op, bmath_arr_vf3_s* res )
+void bmath_arr_vf3_s_on_section_mul_fx(  const bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t op, bmath_arr_vf3_s* res )
 {
     end = end < o->size ? end : o->size;
     ASSERT( res->size >= end );
@@ -193,7 +193,7 @@ void bmath_arr_vf3_s_on_section_set_avg( bmath_arr_vf3_s* o, uz_t start, uz_t en
 
 //----------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_arr_vf3_s_on_section_f3_sum_sprec( const bmath_arr_vf3_s* o, uz_t start, uz_t end, uz_t index )
+f3_t bmath_arr_vf3_s_on_section_fx_sum_sprec( const bmath_arr_vf3_s* o, uz_t start, uz_t end, uz_t index )
 {
     end   = end < o->size ? end : o->size;
     start = start > end ? end : start;
@@ -219,13 +219,13 @@ f3_t bmath_arr_vf3_s_on_section_f3_sum_sprec( const bmath_arr_vf3_s* o, uz_t sta
 
     uz_t mid = start + ( ( end - start ) >> 1 );
 
-    return bmath_arr_vf3_s_on_section_f3_sum_sprec( o, start, mid, index ) +
-           bmath_arr_vf3_s_on_section_f3_sum_sprec( o, mid,   end, index );
+    return bmath_arr_vf3_s_on_section_fx_sum_sprec( o, start, mid, index ) +
+           bmath_arr_vf3_s_on_section_fx_sum_sprec( o, mid,   end, index );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-f3_t bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( const bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t ai, f3_t aj, uz_t i, uz_t j )
+f3_t bmath_arr_vf3_s_on_section_fx_sum_coprd_sprec( const bmath_arr_vf3_s* o, uz_t start, uz_t end, f3_t ai, f3_t aj, uz_t i, uz_t j )
 {
     end   = end < o->size ? end : o->size;
     start = start > end ? end : start;
@@ -287,15 +287,15 @@ f3_t bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( const bmath_arr_vf3_s* o, uz
 
     uz_t mid = start + ( ( end - start ) >> 1 );
 
-    return bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( o, start, mid, ai, aj, i, j ) +
-           bmath_arr_vf3_s_on_section_f3_sum_coprd_sprec( o, mid,   end, ai, aj, i, j );
+    return bmath_arr_vf3_s_on_section_fx_sum_coprd_sprec( o, start, mid, ai, aj, i, j ) +
+           bmath_arr_vf3_s_on_section_fx_sum_coprd_sprec( o, mid,   end, ai, aj, i, j );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void bmath_arr_vf3_s_on_section_get_sum_sprc( const bmath_arr_vf3_s* o, uz_t start, uz_t end, bmath_vf3_s* res )
 {
-    for( uz_t i = 0; i < res->size; i++ ) res->data[ i ] = bmath_arr_vf3_s_on_section_f3_sum_sprec( o, start, end, i );
+    for( uz_t i = 0; i < res->size; i++ ) res->data[ i ] = bmath_arr_vf3_s_on_section_fx_sum_sprec( o, start, end, i );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

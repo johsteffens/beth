@@ -83,8 +83,8 @@ void bmath_estimator_s_digest( bmath_estimator_s* o, f3_t weight, const bmath_vf
 
 void bmath_estimator_s_reweight( bmath_estimator_s* o, f3_t weight )
 {
-    bmath_mf3_s_mul_scl_f3( &o->xx, weight, &o->xx );
-    bmath_mf3_s_mul_scl_f3( &o->yx, weight, &o->yx );
+    bmath_mf3_s_mul_scl_fx( &o->xx, weight, &o->xx );
+    bmath_mf3_s_mul_scl_fx( &o->yx, weight, &o->yx );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

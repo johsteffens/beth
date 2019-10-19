@@ -1,4 +1,4 @@
-/** Copyright 2018 Johannes Bernhard Steffens
+/** Copyright 2019 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 
 #include "bmath_vf2.h"
 
-#define BFPREC_LEVEL 2
-#include "bmath_vfx_c.h"
+#define BMATH_TEMPLATE_FX_PREC 2
+#include "bmath_template_vfx_c.h"
 
 #include "bmath_spect_vector.h"
 

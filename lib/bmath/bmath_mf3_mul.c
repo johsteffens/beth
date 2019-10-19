@@ -1516,7 +1516,7 @@ void bmath_mf3_s_mul_add_cps( bl_t htpa, const bmath_mf3_s* a, bl_t htpb, const 
             }
             else
             {
-                bmath_mf3_s_mul_scl_f3( d, e / c, r );
+                bmath_mf3_s_mul_scl_fx( d, e / c, r );
             }
         }
         else
@@ -1527,7 +1527,7 @@ void bmath_mf3_s_mul_add_cps( bl_t htpa, const bmath_mf3_s* a, bl_t htpb, const 
             }
             else
             {
-                bmath_mf3_s_mul_scl_f3( d, e, r );
+                bmath_mf3_s_mul_scl_fx( d, e, r );
             }
         }
     }
@@ -1555,7 +1555,7 @@ void bmath_mf3_s_mul_add_cps( bl_t htpa, const bmath_mf3_s* a, bl_t htpb, const 
                 for( sz_t j = 0; j < i; j++ ) r->data[ j * r->stride + i ] = r->data[ i * r->stride + j ];
             }
         }
-        if( c != 1.0 ) bmath_mf3_s_mul_scl_f3( r, c, r );
+        if( c != 1.0 ) bmath_mf3_s_mul_scl_fx( r, c, r );
     }
 }
 
@@ -1592,8 +1592,8 @@ void bmath_mf3_s_mul_add_cps_selftest()
         bmath_mf3_s_set_size( r2, m1, m2 );
         bmath_mf3_s_mul_add_cps( false, a, false, b, c, d, e, r1 );
         bmath_mf3_s_mul_esp( a, b, ab );
-        bmath_mf3_s_mul_scl_f3( ab, c, ab );
-        bmath_mf3_s_mul_scl_f3( d,  e, r2 );
+        bmath_mf3_s_mul_scl_fx( ab, c, ab );
+        bmath_mf3_s_mul_scl_fx( d,  e, r2 );
         bmath_mf3_s_add( ab, r2, r2 );
         ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
     }
@@ -1612,8 +1612,8 @@ void bmath_mf3_s_mul_add_cps_selftest()
         bmath_mf3_s_set_size( r2, m1, m2 );
         bmath_mf3_s_mul_add_cps( true, a, false, b, c, d, e, r1 );
         bmath_mf3_s_htp_mul_esp( a, b, ab );
-        bmath_mf3_s_mul_scl_f3( ab, c, ab );
-        bmath_mf3_s_mul_scl_f3( d,  e, r2 );
+        bmath_mf3_s_mul_scl_fx( ab, c, ab );
+        bmath_mf3_s_mul_scl_fx( d,  e, r2 );
         bmath_mf3_s_add( ab, r2, r2 );
         ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
     }
@@ -1632,8 +1632,8 @@ void bmath_mf3_s_mul_add_cps_selftest()
         bmath_mf3_s_set_size( r2, m1, m2 );
         bmath_mf3_s_mul_add_cps( false, a, true, b, c, d, e, r1 );
         bmath_mf3_s_mul_htp_esp( a, b, ab );
-        bmath_mf3_s_mul_scl_f3( ab, c, ab );
-        bmath_mf3_s_mul_scl_f3( d,  e, r2 );
+        bmath_mf3_s_mul_scl_fx( ab, c, ab );
+        bmath_mf3_s_mul_scl_fx( d,  e, r2 );
         bmath_mf3_s_add( ab, r2, r2 );
         ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
     }
@@ -1652,8 +1652,8 @@ void bmath_mf3_s_mul_add_cps_selftest()
         bmath_mf3_s_set_size( r2, m1, m2 );
         bmath_mf3_s_mul_add_cps( true, a, true, b, c, d, e, r1 );
         bmath_mf3_s_htp_mul_htp( a, b, ab );
-        bmath_mf3_s_mul_scl_f3( ab, c, ab );
-        bmath_mf3_s_mul_scl_f3( d,  e, r2 );
+        bmath_mf3_s_mul_scl_fx( ab, c, ab );
+        bmath_mf3_s_mul_scl_fx( d,  e, r2 );
         bmath_mf3_s_add( ab, r2, r2 );
         ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
     }
@@ -1668,7 +1668,7 @@ void bmath_mf3_s_mul_add_cps_selftest()
         bmath_mf3_s_set_size( r2, n, n );
         bmath_mf3_s_mul_add_cps( true, a, false, a, c, NULL, e, r1 );
         bmath_mf3_s_htp_mul_esp( a, a, r2 );
-        bmath_mf3_s_mul_scl_f3( r2, c, r2 );
+        bmath_mf3_s_mul_scl_fx( r2, c, r2 );
         ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
     }
 
@@ -1682,7 +1682,7 @@ void bmath_mf3_s_mul_add_cps_selftest()
         bmath_mf3_s_set_size( r2, n, n );
         bmath_mf3_s_mul_add_cps( false, a, true, a, c, NULL, e, r1 );
         bmath_mf3_s_mul_htp_esp( a, a, r2 );
-        bmath_mf3_s_mul_scl_f3( r2, c, r2 );
+        bmath_mf3_s_mul_scl_fx( r2, c, r2 );
         ASSERT( bmath_mf3_s_is_near_equ( r1, r2, 1E-10 ) );
     }
 

@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_MF3_EVAL_H
-#define BMATH_MF3_EVAL_H
+#ifndef BMATH_MFX_EVAL_H
+#define BMATH_MFX_EVAL_H
 
 /**********************************************************************************************************************/
 
@@ -28,7 +28,7 @@
 
 /**********************************************************************************************************************/
 
-BCORE_DECLARE_OBJECT( bmath_mf3_eval_s )
+BCORE_DECLARE_OBJECT( bmath_mfx_eval_s )
 {
     aware_t _;
     sz_t rows;
@@ -57,7 +57,7 @@ BCORE_DECLARE_OBJECT( bmath_mf3_eval_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BCORE_DECLARE_OBJECT( bmath_mf3_eval_result_s )
+BCORE_DECLARE_OBJECT( bmath_mfx_eval_result_s )
 {
     aware_t _;
     tp_t fp_type;
@@ -87,42 +87,42 @@ BCORE_DECLARE_OBJECT( bmath_mf3_eval_result_s )
     f3_t time1;    // operation time with all arguments
 };
 
-void bmath_mf3_eval_result_s_to_string( const bmath_mf3_eval_result_s* o, st_s* string );
-void bmath_mf3_eval_result_s_to_stdout( const bmath_mf3_eval_result_s* o );
+void bmath_mfx_eval_result_s_to_string( const bmath_mfx_eval_result_s* o, st_s* string );
+void bmath_mfx_eval_result_s_to_stdout( const bmath_mfx_eval_result_s* o );
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// runs evaluation and logs results if desired (log can be NULL)
-void bmath_mf3_eval_s_run(           const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, bmath_mf3_eval_result_s* res ); // res can be NULL
-void bmath_mf3_eval_s_run_to_log(    const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log );
-void bmath_mf3_eval_s_run_to_stdout( const bmath_mf3_eval_s* o, tp_t fp_type, fp_t fp  );
+void bmath_mfx_eval_s_run(           const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_eval_result_s* res ); // res can be NULL
+void bmath_mfx_eval_s_run_to_log(    const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, st_s* log );
+void bmath_mfx_eval_s_run_to_stdout( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp  );
 
 /**********************************************************************************************************************/
 
-BCORE_DECLARE_OBJECT( bmath_arr_mf3_eval_s )
+BCORE_DECLARE_OBJECT( bmath_arr_mfx_eval_s )
 {
     aware_t _;
-    BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_mf3_eval_s, );
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_mfx_eval_s, );
 };
 
-static inline void bmath_arr_mf3_eval_s_set_size( bmath_arr_mf3_eval_s* o, uz_t size )
+static inline void bmath_arr_mfx_eval_s_set_size( bmath_arr_mfx_eval_s* o, uz_t size )
 {
     bcore_array_a_set_size( ( bcore_array* )o, size );
 }
 
-static inline void bmath_arr_mf3_eval_s_push( bmath_arr_mf3_eval_s* o, const bmath_mf3_eval_s* v )
+static inline void bmath_arr_mfx_eval_s_push( bmath_arr_mfx_eval_s* o, const bmath_mfx_eval_s* v )
 {
-    bcore_array_a_push( ( bcore_array* )o, sr_twc( TYPEOF_bmath_mf3_eval_s, v ) );
+    bcore_array_a_push( ( bcore_array* )o, sr_twc( TYPEOF_bmath_mfx_eval_s, v ) );
 }
 
-void bmath_arr_mf3_eval_s_run(           const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp ); // no logging
-void bmath_arr_mf3_eval_s_run_to_log(    const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp, st_s* log ); // using fp instead of o->fp
-void bmath_arr_mf3_eval_s_run_to_stdout( const bmath_arr_mf3_eval_s* o, tp_t fp_type, fp_t fp );
+void bmath_arr_mfx_eval_s_run(           const bmath_arr_mfx_eval_s* o, tp_t fp_type, fp_t fp ); // no logging
+void bmath_arr_mfx_eval_s_run_to_log(    const bmath_arr_mfx_eval_s* o, tp_t fp_type, fp_t fp, st_s* log ); // using fp instead of o->fp
+void bmath_arr_mfx_eval_s_run_to_stdout( const bmath_arr_mfx_eval_s* o, tp_t fp_type, fp_t fp );
 
 /**********************************************************************************************************************/
 
-vd_t bmath_matrix_eval_signal_handler( const bcore_signal_s* o );
+vd_t bmath_mfx_eval_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif  // BMATH_MF3_EVAL_H
+#endif  // BMATH_MFX_EVAL_H

@@ -1,4 +1,4 @@
-/** Copyright 2019 Johannes Bernhard Steffens
+/** Copyright 2018 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,10 +17,13 @@
 #define BMATH_VF3_H
 
 /** bmath_vfx expansion for f3_t
- *  See bmath_vfx_h.h for details.
+ *  See bmath_template_vfx_h.h for details.
  */
 
 #include "bcore_std.h"
+#include "bmath_hwflags.h"
+#include "bmath_spect_algebraic.h"
+#include "bmath_pmt.h"
 
 /**********************************************************************************************************************/
 // dynamic size vector of f3_t
@@ -31,8 +34,8 @@ BCORE_DECLARE_OBJECT( bmath_vf3_s )
     BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, );
 };
 
-#define BFPREC_LEVEL 3
-#include "bmath_vfx_h.h"
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_vfx_h.h"
 
 /**********************************************************************************************************************/
 
