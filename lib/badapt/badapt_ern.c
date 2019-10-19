@@ -146,10 +146,10 @@ void badapt_ern_s_bgrad_adapt( badapt_ern_s* o, bmath_vf3_s* grad_in, const bmat
     }
 
     bmath_vf3_s_mul_scl_f3_add( &o->d_b_h,  o->dynamics.epsilon, &o->b_h,  &o->b_h );
-    bmath_mf3_s_mul_scl_f3_add( &o->d_w_hx, o->dynamics.epsilon, &o->w_hx, &o->w_hx );
-    bmath_mf3_s_mul_scl_f3_add( &o->d_w_hc, o->dynamics.epsilon, &o->w_hc, &o->w_hc );
-    bmath_mf3_s_mul_scl_f3( &o->w_hx, ( 1.0 - o->dynamics.epsilon * o->dynamics.lambda_l2 ), &o->w_hx );
-    bmath_mf3_s_mul_scl_f3( &o->w_hc, ( 1.0 - o->dynamics.epsilon * o->dynamics.lambda_l2 ), &o->w_hc );
+    bmath_mf3_s_mul_scl_fx_add( &o->d_w_hx, o->dynamics.epsilon, &o->w_hx, &o->w_hx );
+    bmath_mf3_s_mul_scl_fx_add( &o->d_w_hc, o->dynamics.epsilon, &o->w_hc, &o->w_hc );
+    bmath_mf3_s_mul_scl_fx( &o->w_hx, ( 1.0 - o->dynamics.epsilon * o->dynamics.lambda_l2 ), &o->w_hx );
+    bmath_mf3_s_mul_scl_fx( &o->w_hc, ( 1.0 - o->dynamics.epsilon * o->dynamics.lambda_l2 ), &o->w_hc );
     bmath_mf3_s_zro( &o->d_w_hx );
     bmath_mf3_s_zro( &o->d_w_hc );
     bmath_vf3_s_zro( &o->d_b_h );
@@ -159,13 +159,13 @@ void badapt_ern_s_bgrad_adapt( badapt_ern_s* o, bmath_vf3_s* grad_in, const bmat
 
 void badapt_ern_s_get_weights_min_max( const badapt_ern_s* o, f3_t* arg_min, f3_t* arg_max )
 {
-    f3_t max =         bmath_mf3_s_f3_max( &o->w_hx );
-    max = f3_max( max, bmath_mf3_s_f3_max( &o->w_hc ) );
-    max = f3_max( max, bmath_mf3_s_f3_max( &o->w_oh ) );
+    f3_t max =         bmath_mf3_s_fx_max( &o->w_hx );
+    max = f3_max( max, bmath_mf3_s_fx_max( &o->w_hc ) );
+    max = f3_max( max, bmath_mf3_s_fx_max( &o->w_oh ) );
 
-    f3_t min =         bmath_mf3_s_f3_min( &o->w_hx );
-    min = f3_min( min, bmath_mf3_s_f3_min( &o->w_hc ) );
-    min = f3_min( min, bmath_mf3_s_f3_min( &o->w_oh ) );
+    f3_t min =         bmath_mf3_s_fx_min( &o->w_hx );
+    min = f3_min( min, bmath_mf3_s_fx_min( &o->w_hc ) );
+    min = f3_min( min, bmath_mf3_s_fx_min( &o->w_oh ) );
 
     if( arg_max ) *arg_max = max;
     if( arg_min ) *arg_min = min;
