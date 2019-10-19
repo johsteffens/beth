@@ -13,30 +13,17 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_MF3_QRD_H
-#define BMATH_MF3_QRD_H
-
 /**********************************************************************************************************************/
 
 /** Collection of algorithms related to QR and LQ decomposition.
  *  All routines have been entirely designed from scratch and optimized with modern architectures in mind.
- *
- *  This header is included in bmath_mf3.h and should not be used in isolation
- *  See bmath_mf3.h for nomenclature.
  */
 
 /**********************************************************************************************************************/
 
-#include "bcore_std.h"
-#include "bmath_hwflags.h"
-#include "bmath_spect_algebraic.h"
-#include "bmath_vf3.h"
-#include "bmath_grt.h"
+#include "bmath_template_fx_begin.h"
 
 /**********************************************************************************************************************/
-// dynamic size matrix of f3_t
-
-typedef struct bmath_mf3_s bmath_mf3_s;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -61,7 +48,7 @@ typedef struct bmath_mf3_s bmath_mf3_s;
  *  If thin decomposition is chosen, then a' is returned as (thin) nxn square matrix.
  *
  */
-void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a );
+void bmath_mfx_s_(qrd)( bmath_mfx_s* u, bmath_mfx_s* a );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -91,7 +78,7 @@ void bmath_mf3_s_qrd( bmath_mf3_s* u, bmath_mf3_s* a );
  *  If thin decomposition is chosen, then a' is returned as (thin) nxn square matrix.
  *
  */
-void bmath_mf3_s_qrd_pmt( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p );
+void bmath_mfx_s_(qrd_pmt)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -116,7 +103,7 @@ void bmath_mf3_s_qrd_pmt( bmath_mf3_s* u, bmath_mf3_s* a, bmath_pmt_s* p );
  *  If thin decomposition is chosen, then a' is returned as (thin) mxm square matrix.
  *
  */
-void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mfx_s_(lqd)( bmath_mfx_s* a, bmath_mfx_s* v );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -146,8 +133,14 @@ void bmath_mf3_s_lqd( bmath_mf3_s* a, bmath_mf3_s* v );
  *  If thin decomposition is chosen, then a' is returned as (thin) mxm square matrix.
  *
  */
-void bmath_mf3_s_pmt_lqd( bmath_pmt_s* p, bmath_mf3_s* a, bmath_mf3_s* v );
+void bmath_mfx_s_(pmt_lqd)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_mfx_s* v );
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#endif  // BMATH_MF3_QRD_H
+/**********************************************************************************************************************/
+// closing template
+
+#include "bmath_template_fx_end.h"
+
+/**********************************************************************************************************************/
+

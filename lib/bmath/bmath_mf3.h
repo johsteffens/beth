@@ -26,13 +26,9 @@
 #include "bmath_arr_vf3.h"
 #include "bmath_simd.h"
 #include "bmath_grt.h"
-#include "bmath_mf3_mul.h"
-#include "bmath_mf3_qrd.h"
-#include "bmath_mf3_evd.h"
-#include "bmath_mf3_svd.h"
 
 /**********************************************************************************************************************/
-/// Matrix from template for fx = f3
+/// Matrix from templates for fx == f3
 
 BCORE_DECLARE_OBJECT( bmath_mf3_s )
 {
@@ -42,6 +38,18 @@ BCORE_DECLARE_OBJECT( bmath_mf3_s )
     uz_t stride;
     BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, );
 };
+
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_mfx_mul_h.h"
+
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_mfx_qrd_h.h"
+
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_mfx_evd_h.h"
+
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_mfx_svd_h.h"
 
 #define BMATH_TEMPLATE_FX_PREC 3
 #include "bmath_template_mfx_h.h"

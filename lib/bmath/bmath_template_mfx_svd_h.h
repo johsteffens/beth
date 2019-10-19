@@ -13,32 +13,17 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_MF3_SVD_H
-#define BMATH_MF3_SVD_H
-
 /**********************************************************************************************************************/
 
 /** Collection of algorithms related to singular value decomposition (SVD).
  *  All routines have been entirely designed from scratch and optimized with modern architectures in mind.
- *
- *  This header is included in bmath_mf3.h and should not be used in isolation
- *  See bmath_mf3.h for nomenclature.
  */
 
 /**********************************************************************************************************************/
 
-#include "bcore_std.h"
-#include "bmath_hwflags.h"
-#include "bmath_spect_algebraic.h"
-#include "bmath_vf3.h"
-#include "bmath_grt.h"
+#include "bmath_template_fx_begin.h"
 
 /**********************************************************************************************************************/
-// dynamic size matrix of f3_t
-
-typedef struct bmath_mf3_s bmath_mf3_s;
-
-//----------------------------------------------------------------------------------------------------------------------
 
 /** Stable singular value decomposition for a general mxn-matrix a -> a'.
  *  Method: Bi-diagonalization by givens rotations and QR-chasing with stabilized implicit shift.
@@ -70,8 +55,12 @@ typedef struct bmath_mf3_s bmath_mf3_s;
  *  Meaning either a->rows or a->cols is changed to min(m,n) by the routine.
  *
  */
-bl_t bmath_mf3_s_svd( bmath_mf3_s* u, bmath_mf3_s* a, bmath_mf3_s* v );
+bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
 
-//----------------------------------------------------------------------------------------------------------------------
+/**********************************************************************************************************************/
+// closing template
 
-#endif  // BMATH_MF3_SVD_H
+#include "bmath_template_fx_end.h"
+
+/**********************************************************************************************************************/
+

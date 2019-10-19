@@ -107,34 +107,34 @@
 // mfx features
 BCORE_FORWARD_OBJECT( bmath_mfx_s );
 
-typedef void (*bmath_fp_mfx_s_(mul         ))( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
-typedef void (*bmath_fp_mfx_s_(mul_htp     ))( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
-typedef void (*bmath_fp_mfx_s_(htp_mul     ))( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
-typedef void (*bmath_fp_mfx_s_(htp_mul_htp ))( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+typedef void (*bmath_fp_mfx_s_(mul)        )( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+typedef void (*bmath_fp_mfx_s_(mul_htp)    )( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+typedef void (*bmath_fp_mfx_s_(htp_mul)    )( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+typedef void (*bmath_fp_mfx_s_(htp_mul_htp))( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
 
-typedef void (*bmath_fp_mfx_s_(uav     ))( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v ); // uav decomposition
-typedef void (*bmath_fp_mfx_s_(ua      ))( bmath_mfx_s* u, bmath_mfx_s* a                 ); //  ua decomposition
-typedef void (*bmath_fp_mfx_s_(av      ))(                 bmath_mfx_s* a, bmath_mfx_s* v ); //  av decomposition
-typedef void (*bmath_fp_mfx_s_(uau     ))( bmath_mfx_s* u, bmath_mfx_s* a                 ); // uau decomposition
-typedef void (*bmath_fp_mfx_s_(vav     ))(                 bmath_mfx_s* a, bmath_mfx_s* v ); // vav decomposition
+typedef void (*bmath_fp_mfx_s_(uav))( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v ); // uav decomposition
+typedef void (*bmath_fp_mfx_s_(ua) )( bmath_mfx_s* u, bmath_mfx_s* a                 ); //  ua decomposition
+typedef void (*bmath_fp_mfx_s_(av) )(                 bmath_mfx_s* a, bmath_mfx_s* v ); //  av decomposition
+typedef void (*bmath_fp_mfx_s_(uau))( bmath_mfx_s* u, bmath_mfx_s* a                 ); // uau decomposition
+typedef void (*bmath_fp_mfx_s_(vav))(                 bmath_mfx_s* a, bmath_mfx_s* v ); // vav decomposition
 
-typedef void (*bmath_fp_mfx_s_(trd_htp ))(                 bmath_mfx_s* a, bmath_mfx_s* v );
-typedef void (*bmath_fp_mfx_s_(trd     ))(                 bmath_mfx_s* a, bmath_mfx_s* v );
-typedef bl_t (*bmath_fp_mfx_s_(evd_htp ))(                 bmath_mfx_s* a, bmath_mfx_s* v );
-typedef bl_t (*bmath_fp_mfx_s_(svd     ))( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
-typedef void (*bmath_fp_mfx_s_(ubd     ))( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
-typedef void (*bmath_fp_mfx_s_(lbd     ))( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
-typedef void (*bmath_fp_mfx_s_(qrd     ))( bmath_mfx_s* u, bmath_mfx_s* a                 );
-typedef void (*bmath_fp_mfx_s_(qrd_pmt ))( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p ); // rank revealing; A = U * A' * P^T
-typedef void (*bmath_fp_mfx_s_(lqd     ))(                 bmath_mfx_s* a, bmath_mfx_s* v );
-typedef void (*bmath_fp_mfx_s_(pmt_lqd ))( bmath_pmt_s* p, bmath_mfx_s* a, bmath_mfx_s* v ); // rank revealing; A = P^T * A' * V
+typedef void (*bmath_fp_mfx_s_(trd_htp))(                 bmath_mfx_s* a, bmath_mfx_s* v );
+typedef void (*bmath_fp_mfx_s_(trd)    )(                 bmath_mfx_s* a, bmath_mfx_s* v );
+typedef bl_t (*bmath_fp_mfx_s_(evd_htp))(                 bmath_mfx_s* a, bmath_mfx_s* v );
+typedef bl_t (*bmath_fp_mfx_s_(svd)    )( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
+typedef void (*bmath_fp_mfx_s_(ubd)    )( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
+typedef void (*bmath_fp_mfx_s_(lbd)    )( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
+typedef void (*bmath_fp_mfx_s_(qrd)    )( bmath_mfx_s* u, bmath_mfx_s* a                 );
+typedef void (*bmath_fp_mfx_s_(qrd_pmt))( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p ); // rank revealing; A = U * A' * P^T
+typedef void (*bmath_fp_mfx_s_(lqd)    )(                 bmath_mfx_s* a, bmath_mfx_s* v );
+typedef void (*bmath_fp_mfx_s_(pmt_lqd))( bmath_pmt_s* p, bmath_mfx_s* a, bmath_mfx_s* v ); // rank revealing; A = P^T * A' * V
 
-typedef bl_t (*bmath_fp_mfx_s_(cld     ))( const bmath_mfx_s* o, bmath_mfx_s* res );
-typedef bl_t (*bmath_fp_mfx_s_(lud     ))( const bmath_mfx_s* o, bmath_mfx_s* res );
-typedef bl_t (*bmath_fp_mfx_s_(inv     ))( const bmath_mfx_s* o, bmath_mfx_s* res );
-typedef bl_t (*bmath_fp_mfx_s_(pdf_inv ))( const bmath_mfx_s* o, bmath_mfx_s* res );
-typedef bl_t (*bmath_fp_mfx_s_(piv     ))( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res );
-typedef bl_t (*bmath_fp_mfx_s_(hsm_piv ))( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res );
+typedef bl_t (*bmath_fp_mfx_s_(cld)    )( const bmath_mfx_s* o, bmath_mfx_s* res );
+typedef bl_t (*bmath_fp_mfx_s_(lud)    )( const bmath_mfx_s* o, bmath_mfx_s* res );
+typedef bl_t (*bmath_fp_mfx_s_(inv)    )( const bmath_mfx_s* o, bmath_mfx_s* res );
+typedef bl_t (*bmath_fp_mfx_s_(pdf_inv))( const bmath_mfx_s* o, bmath_mfx_s* res );
+typedef bl_t (*bmath_fp_mfx_s_(piv)    )( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res );
+typedef bl_t (*bmath_fp_mfx_s_(hsm_piv))( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res );
 
 /**********************************************************************************************************************/
 /// Matrix object of fx_t (bmath_mfx_s)
@@ -265,10 +265,10 @@ void bmath_mfx_s_(cpy)( const bmath_mfx_s* o, bmath_mfx_s* r );  // copies conte
 //----------------------------------------------------------------------------------------------------------------------
 // transposition / permutation
 
-void bmath_mfx_s_(htp)(         const bmath_mfx_s* o, bmath_mfx_s* res );
-void bmath_mfx_s_(pmt_mul)(     const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P * A   ; row_p[k]( B ) = row_k( A )
+void bmath_mfx_s_(htp)        ( const bmath_mfx_s* o, bmath_mfx_s* res );
+void bmath_mfx_s_(pmt_mul)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P * A   ; row_p[k]( B ) = row_k( A )
 void bmath_mfx_s_(pmt_htp_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P^T * A ; row_k( B ) = row_p[k]( A )
-void bmath_mfx_s_(mul_pmt)(     const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
+void bmath_mfx_s_(mul_pmt)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
 void bmath_mfx_s_(mul_pmt_htp)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P^T ; col_p[k]( B ) = col_k( A )
 
 static inline void bmath_mfx_s_(htp_set)( const bmath_mfx_s* o, bmath_mfx_s* res ) { bmath_mfx_s_(set_size)( res, o->cols, o->rows ); bmath_mfx_s_(htp)( o, res ); }
@@ -288,11 +288,11 @@ void bmath_mfx_s_(opd_add)( bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vf
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * vector [ + vector] --> vector
 
-void bmath_mfx_s_(mul_vec)(     const bmath_mfx_s* o, const bmath_vfx_s* v,   bmath_vfx_s* r ); // r = o * v
-void bmath_mfx_s_(mul_av1)(     const bmath_mfx_s* o, const bmath_vfx_s* av1, bmath_vfx_s* r ); // affine transformation (see nomenclature 'av1')
+void bmath_mfx_s_(mul_vec)    ( const bmath_mfx_s* o, const bmath_vfx_s* v,   bmath_vfx_s* r ); // r = o * v
+void bmath_mfx_s_(mul_av1)    ( const bmath_mfx_s* o, const bmath_vfx_s* av1, bmath_vfx_s* r ); // affine transformation (see nomenclature 'av1')
 void bmath_mfx_s_(htp_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* v,   bmath_vfx_s* r ); // r = o^T * v
 
-void bmath_mfx_s_(mul_vec_add)(     const bmath_mfx_s* o, const bmath_vfx_s* v, const bmath_vfx_s* b, bmath_vfx_s* r ); // r = o   * v + b  (in place for b==r)
+void bmath_mfx_s_(mul_vec_add)    ( const bmath_mfx_s* o, const bmath_vfx_s* v, const bmath_vfx_s* b, bmath_vfx_s* r ); // r = o   * v + b  (in place for b==r)
 void bmath_mfx_s_(htp_mul_vec_add)( const bmath_mfx_s* o, const bmath_vfx_s* v, const bmath_vfx_s* b, bmath_vfx_s* r ); // r = o^T * v + b  (in place for b==r)
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -358,9 +358,9 @@ bl_t bmath_mfx_s_(div)(         const bmath_mfx_s* o, const bmath_mfx_s* op, bma
 void bmath_mfx_s_(set_row_by_data)( bmath_mfx_s* o, uz_t idx, const fx_t* data );
 void bmath_mfx_s_(set_col_by_data)( bmath_mfx_s* o, uz_t idx, const fx_t* data );
 void bmath_mfx_s_(set_dag_by_data)( bmath_mfx_s* o,           const fx_t* data );
-void bmath_mfx_s_(set_row_by_vec )( bmath_mfx_s* o, uz_t idx, const bmath_vfx_s* vec );
-void bmath_mfx_s_(set_col_by_vec )( bmath_mfx_s* o, uz_t idx, const bmath_vfx_s* vec );
-void bmath_mfx_s_(set_dag_by_vec )( bmath_mfx_s* o,           const bmath_vfx_s* vec );
+void bmath_mfx_s_(set_row_by_vec) ( bmath_mfx_s* o, uz_t idx, const bmath_vfx_s* vec );
+void bmath_mfx_s_(set_col_by_vec) ( bmath_mfx_s* o, uz_t idx, const bmath_vfx_s* vec );
+void bmath_mfx_s_(set_dag_by_vec) ( bmath_mfx_s* o,           const bmath_vfx_s* vec );
 void bmath_mfx_s_(get_row_vec)( const bmath_mfx_s* o, uz_t idx, bmath_vfx_s* res );
 void bmath_mfx_s_(get_col_vec)( const bmath_mfx_s* o, uz_t idx, bmath_vfx_s* res );
 void bmath_mfx_s_(get_dag_vec)( const bmath_mfx_s* o,           bmath_vfx_s* res );
@@ -645,8 +645,8 @@ void bmath_mfx_s_(to_conv_operand)( bmath_mfx_s* o, sz_t kernel_size, sz_t step_
 
 // for easy inspection
 
-void bmath_mfx_s_(to_sink)(   const bmath_mfx_s* o, bcore_sink* sink );
-void bmath_mfx_s_(to_image)(  const bmath_mfx_s* o, bmath_fp_u2_argb_from_fx fp, vd_t arg, bcore_img_u2_s* image );
+void bmath_mfx_s_(to_sink) ( const bmath_mfx_s* o, bcore_sink* sink );
+void bmath_mfx_s_(to_image)( const bmath_mfx_s* o, bmath_fp_u2_argb_from_fx fp, vd_t arg, bcore_img_u2_s* image );
 
 static inline void bmath_mfx_s_(to_string)( const bmath_mfx_s* o, st_s* string ) { bmath_mfx_s_(to_sink)( o, ( bcore_sink* )string ); }
 static inline void bmath_mfx_s_(to_stdout)( const bmath_mfx_s* o ) { bmath_mfx_s_(to_sink)( o, BCORE_STDOUT ); }

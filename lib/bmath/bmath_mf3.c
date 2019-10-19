@@ -26,10 +26,21 @@
 #include "bmath_mfx_eval.h"
 
 #define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_mfx_mul_c.h"
+
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_mfx_qrd_c.h"
+
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_mfx_evd_c.h"
+
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_mfx_svd_c.h"
+
+#define BMATH_TEMPLATE_FX_PREC 3
 #include "bmath_template_mfx_c.h"
 
 /**********************************************************************************************************************/
-/// Matrix object of f3_t
 
 BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf3_s )
 "{"

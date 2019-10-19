@@ -33,7 +33,7 @@
 //#include "bmath_mf2_svd.h"
 
 /**********************************************************************************************************************/
-/// Matrix from template for fx = f2
+/// Matrix from template for fx == f2
 
 BCORE_DECLARE_OBJECT( bmath_mf2_s )
 {

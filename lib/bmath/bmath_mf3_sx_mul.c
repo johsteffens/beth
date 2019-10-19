@@ -18,9 +18,6 @@
  *    - Begin recursion reducing rows-xons block size to xons==1 (rxblock)
  *    - Continue recursion rows-slos similar to row-cols in mf3  (rsblock)
  *    - Microkernels are row-slo-adpated, otherwise similar to mf3.
- *
- *  This header is included in bmath_mf3_sx.h and should not be used in isolation
- *  See bmath_mf3_sx.h for nomenclature.
  */
 
 #include "bmath_mf3_sx.h"

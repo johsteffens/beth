@@ -15,9 +15,6 @@
 
 /** Collection of algorithms related to spliced-matrix multiplication.
  *  Blocking and microkernel strategy: Same as bmath_mf3_mul
- *
- *  This header is included in bmath_mf3_sf.h and should not be used in isolation
- *  See bmath_mf3_sf.h for nomenclature.
  */
 
 #include "bmath_mf3_sf.h"
