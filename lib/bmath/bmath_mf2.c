@@ -28,7 +28,7 @@
 /**********************************************************************************************************************/
 /// Matrix object of f2_t
 
-BCORE_DEFINE_OBJECT_INST_AUT( bmath_matrix, bmath_mf2_s )
+BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf2_s )
 "{"
     "aware_t _;"
     "uz_t rows;"
@@ -38,6 +38,7 @@ BCORE_DEFINE_OBJECT_INST_AUT( bmath_matrix, bmath_mf2_s )
 
     "const tp_t type_vector_assoc = bmath_vf2_s;"
 
+/*
     "func bmath_fp: is_equ;"
     "func bmath_fp: is_zro;"
     "func bmath_fp: is_one;"
@@ -52,6 +53,7 @@ BCORE_DEFINE_OBJECT_INST_AUT( bmath_matrix, bmath_mf2_s )
     "func bmath_fp: div;"
     "func bmath_fp_matrix: mul_vec;"
     "func bmath_fp_matrix: mul_scl;"
+*/
 
 "}";
 
