@@ -52,10 +52,10 @@ static void ud_set_zero( bmath_mfx_s* a, uz_t row_idx )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t BCATU(bmath,mfx,s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
+bl_t BCATU(bmath_mfx_s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
 {
     // creating upper-bidiagonal
-    BCATU(bmath,mfx,s,ubd)( u, a, v );
+    BCATU(bmath_mfx_s,ubd)( u, a, v );
 
     uz_t n = BCATU(fx,min)( a->cols, a->rows );
     if( n <= 1 ) return true; // nothing else to do
@@ -70,13 +70,13 @@ bl_t BCATU(bmath,mfx,s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
         {
             // for the thin matrix we only need to track the (lesser) nxn square part
             // and postmultiply it to the matrix
-            ut = BCATU(bmath,mfx,s,create)();
-            BCATU(bmath,mfx,s,set_size)( ut, n, n );
-            BCATU(bmath,mfx,s,one)( ut );
+            ut = BCATU(bmath_mfx_s,create)();
+            BCATU(bmath_mfx_s,set_size)( ut, n, n );
+            BCATU(bmath_mfx_s,one)( ut );
         }
         else
         {
-            BCATU(bmath,mfx,s,htp)( u, ut );
+            BCATU(bmath_mfx_s,htp)( u, ut );
         }
     }
 
@@ -84,13 +84,13 @@ bl_t BCATU(bmath,mfx,s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
     {
         if( v->rows != v->cols )
         {
-            vt = BCATU(bmath,mfx,s,create)();
-            BCATU(bmath,mfx,s,set_size)( vt, n, n );
-            BCATU(bmath,mfx,s,one)( vt );
+            vt = BCATU(bmath_mfx_s,create)();
+            BCATU(bmath_mfx_s,set_size)( vt, n, n );
+            BCATU(bmath_mfx_s,one)( vt );
         }
         else
         {
-            BCATU(bmath,mfx,s,htp)( v, vt );
+            BCATU(bmath_mfx_s,htp)( v, vt );
         }
     }
 
@@ -112,8 +112,8 @@ bl_t BCATU(bmath,mfx,s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
     }
     if( defective )
     {
-        BCATU(bmath,mfx,s,ubd_to_lbd_htp)( a, vt );
-        BCATU(bmath,mfx,s,lbd_to_ubd_htp)( ut, a );
+        BCATU(bmath_mfx_s,ubd_to_lbd_htp)( a, vt );
+        BCATU(bmath_mfx_s,lbd_to_ubd_htp)( ut, a );
     }
 
     bmath_arr_grt_fx_s gru = BCATU(bmath_arr_grt,fx,of_size)( n );
@@ -206,8 +206,8 @@ bl_t BCATU(bmath,mfx,s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
                     exit_cycle = exit_cycle | ud_is_zero( a, k );
                 }
 
-                if( ut ) BCATU(bmath,mfx,s,sweep_arow_rotate_fwd)( ut, irb_start, irb_end - 1, &gru, 0, ut->cols );
-                if( vt ) BCATU(bmath,mfx,s,sweep_arow_rotate_fwd)( vt, irb_start, irb_end - 1, &grv, 0, vt->cols );
+                if( ut ) BCATU(bmath_mfx_s,sweep_arow_rotate_fwd)( ut, irb_start, irb_end - 1, &gru, 0, ut->cols );
+                if( vt ) BCATU(bmath_mfx_s,sweep_arow_rotate_fwd)( vt, irb_start, irb_end - 1, &grv, 0, vt->cols );
 
                 exit_cycle = exit_cycle | ud_is_zero( a, irb_end - 2 );
             }
@@ -241,14 +241,14 @@ bl_t BCATU(bmath,mfx,s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
             if( imax != i )
             {
                 BCATU(fx,t_swap)( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-                if( ut ) BCATU(bmath,mfx,s,swap_row)( ut, i, imax );
-                if( vt ) BCATU(bmath,mfx,s,swap_row)( vt, i, imax );
+                if( ut ) BCATU(bmath_mfx_s,swap_row)( ut, i, imax );
+                if( vt ) BCATU(bmath_mfx_s,swap_row)( vt, i, imax );
             }
 
             if( a->data[ i * ( a->stride + 1 ) ] < 0 )
             {
                 a->data[ i * ( a->stride + 1 ) ] *= -1.0;
-                if( vt ) BCATU(bmath,mfx,s,mul_fx_to_row)( vt, -1.0, i );
+                if( vt ) BCATU(bmath_mfx_s,mul_fx_to_row)( vt, -1.0, i );
             }
         }
     }
@@ -257,12 +257,12 @@ bl_t BCATU(bmath,mfx,s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
     {
         if( ut != u )
         {
-            BCATU(bmath,mfx,s,mul_htp)( u, ut, u );
-            BCATU(bmath,mfx,s,discard)( ut );
+            BCATU(bmath_mfx_s,mul_htp)( u, ut, u );
+            BCATU(bmath_mfx_s,discard)( ut );
         }
         else
         {
-            BCATU(bmath,mfx,s,htp)( ut, u );
+            BCATU(bmath_mfx_s,htp)( ut, u );
         }
     }
 
@@ -270,12 +270,12 @@ bl_t BCATU(bmath,mfx,s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
     {
         if( vt != v )
         {
-            BCATU(bmath,mfx,s,mul_htp)( v, vt, v );
-            BCATU(bmath,mfx,s,discard)( vt );
+            BCATU(bmath_mfx_s,mul_htp)( v, vt, v );
+            BCATU(bmath_mfx_s,discard)( vt );
         }
         else
         {
-            BCATU(bmath,mfx,s,htp)( vt, v );
+            BCATU(bmath_mfx_s,htp)( vt, v );
         }
     }
 

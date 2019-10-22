@@ -46,7 +46,6 @@ static sr_s typelist()
     bcore_array_r_push_sc( &list, "bmath_ring_s"        );
     bcore_array_r_push_sc( &list, "bmath_vector"        );
     bcore_array_r_push_sc( &list, "bmath_vector_s"      );
-    bcore_array_r_push_sc( &list, "bmath_arr_vf3_s"     );
     bcore_array_r_push_sc( &list, "bmath_vcf3_s"        );
     bcore_array_r_push_sc( &list, "bmath_matrix"        );
     bcore_array_r_push_sc( &list, "bmath_matrix_s"      );

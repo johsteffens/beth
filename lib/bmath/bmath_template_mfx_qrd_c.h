@@ -27,14 +27,14 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,qrd_plain)( bmath_mfx_s* u, bmath_mfx_s* a )
+void BCATU(bmath_mfx_s,qrd_plain)( bmath_mfx_s* u, bmath_mfx_s* a )
 {
     if( u )
     {
         ASSERT( u != a );
         ASSERT( u->rows == a->rows );
         ASSERT( u->cols == a->rows /*full*/ || u->cols == a->cols /*thin*/  ); // u may be full or thin (nothing in-between)
-        BCATU(bmath,mfx,s,one)( u );
+        BCATU(bmath_mfx_s,one)( u );
     }
 
     if( a->rows <= 1 )
@@ -52,7 +52,7 @@ void BCATU(bmath,mfx,s,qrd_plain)( bmath_mfx_s* u, bmath_mfx_s* a )
         {
             BCATU(bmath_grt,fx,s,init_and_annihilate_b)( &gr, &a->data[ j * a->stride + j ], &a->data[ l * a->stride + j ] );
             if( u ) a->data[ l * a->stride + j ] = BCATU(bmath_grt,fx,s,rho)( &gr );
-            BCATU(bmath,mfx,s,drow_rotate)( a, j, l, &gr, j + 1, a->cols );
+            BCATU(bmath_mfx_s,drow_rotate)( a, j, l, &gr, j + 1, a->cols );
         }
     }
 
@@ -65,7 +65,7 @@ void BCATU(bmath,mfx,s,qrd_plain)( bmath_mfx_s* u, bmath_mfx_s* a )
                 fx_t rho = 0;
                 BCATU(fx,t_swap)( &a->data[ j + a->stride * ( k + 1 ) ], &rho );
                 BCATU(bmath_grt,fx,s,init_from_rho)( &gr, -rho );
-                BCATU(bmath,mfx,s,drow_rotate)( u, j, k + 1, &gr, j, u->cols );
+                BCATU(bmath_mfx_s,drow_rotate)( u, j, k + 1, &gr, j, u->cols );
             }
         }
         a->rows = u->cols;
@@ -74,7 +74,7 @@ void BCATU(bmath,mfx,s,qrd_plain)( bmath_mfx_s* u, bmath_mfx_s* a )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,qrd_pmt_plain)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p )
+void BCATU(bmath_mfx_s,qrd_pmt_plain)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p )
 {
     if( p )
     {
@@ -87,7 +87,7 @@ void BCATU(bmath,mfx,s,qrd_pmt_plain)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt
         ASSERT( u != a );
         ASSERT( u->rows == a->rows );
         ASSERT( u->cols == a->rows /*full*/ || u->cols == a->cols /*thin*/  ); // u may be full or thin (nothing in-between)
-        BCATU(bmath,mfx,s,one)( u );
+        BCATU(bmath_mfx_s,one)( u );
     }
 
     if( a->rows <= 1 )
@@ -96,9 +96,9 @@ void BCATU(bmath,mfx,s,qrd_pmt_plain)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt
         return; // nothing else to do
     }
 
-    bmath_vfx_s* v = BCATU(bmath,vfx,s,create)();
-    BCATU(bmath,vfx,s,set_size)( v, a->cols );
-    BCATU(bmath,vfx,s,zro)( v );
+    bmath_vfx_s* v = BCATU(bmath_vfx_s,create)();
+    BCATU(bmath_vfx_s,set_size)( v, a->cols );
+    BCATU(bmath_vfx_s,zro)( v );
 
     for( uz_t j = 0; j < a->rows; j++ )
     {
@@ -137,7 +137,7 @@ void BCATU(bmath,mfx,s,qrd_pmt_plain)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt
 
             BCATU(bmath_grt,fx,s,init_and_annihilate_b)( &gr, aj + j, al + j );
             if( u ) a->data[ l * a->stride + j ] = BCATU(bmath_grt,fx,s,rho)( &gr );
-            BCATU(bmath,mfx,s,drow_rotate)( a, j, l, &gr, j + 1, a->cols );
+            BCATU(bmath_mfx_s,drow_rotate)( a, j, l, &gr, j + 1, a->cols );
         }
 
         for( uz_t i = j; i < a->cols; i++ ) v->data[ i ] -= BCATU(fx,sqr)( aj[ i ] );
@@ -164,25 +164,25 @@ void BCATU(bmath,mfx,s,qrd_pmt_plain)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt
                 fx_t rho = 0;
                 BCATU(fx,t_swap)( &a->data[ j + a->stride * ( k + 1 ) ], &rho );
                 BCATU(bmath_grt,fx,s,init_from_rho)( &gr, -rho );
-                BCATU(bmath,mfx,s,drow_rotate)( u, j, k + 1, &gr, j, u->cols );
+                BCATU(bmath_mfx_s,drow_rotate)( u, j, k + 1, &gr, j, u->cols );
             }
         }
         a->rows = u->cols;
     }
 
-    BCATU(bmath,vfx,s,discard)( v );
+    BCATU(bmath_vfx_s,discard)( v );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,lqd_plain)( bmath_mfx_s* a, bmath_mfx_s* v )
+void BCATU(bmath_mfx_s,lqd_plain)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
     if( v )
     {
         ASSERT( v != a );
         ASSERT( v->rows == a->cols );
         ASSERT( v->cols == a->cols || v->cols == a->rows ); // v may be full or thin (nothing in-between)
-        BCATU(bmath,mfx,s,one)( v );
+        BCATU(bmath_mfx_s,one)( v );
     }
 
     if( a->cols <= 1 )
@@ -204,7 +204,7 @@ void BCATU(bmath,mfx,s,lqd_plain)( bmath_mfx_s* a, bmath_mfx_s* v )
             grv.data[ l - 1 ] = gr;
         }
 
-        BCATU(bmath,mfx,s,sweep_dcol_rotate_rev)( a, j, a->cols - 1, &grv, j + 1, a->rows );
+        BCATU(bmath_mfx_s,sweep_dcol_rotate_rev)( a, j, a->cols - 1, &grv, j + 1, a->rows );
     }
 
     if( v ) // reverse construction of v
@@ -216,7 +216,7 @@ void BCATU(bmath,mfx,s,lqd_plain)( bmath_mfx_s* a, bmath_mfx_s* v )
                 fx_t rho = 0;
                 BCATU(fx,t_swap)( &a->data[ j * a->stride + k + 1 ], &rho );
                 BCATU(bmath_grt,fx,s,init_from_rho)( &gr, -rho );
-                BCATU(bmath,mfx,s,drow_rotate)( v, j, k + 1, &gr, j, v->cols );
+                BCATU(bmath_mfx_s,drow_rotate)( v, j, k + 1, &gr, j, v->cols );
             }
         }
         a->cols = v->cols;
@@ -240,7 +240,7 @@ static void qrd_accurate_recursive_annihilate( bmath_mfx_s* a, uz_t offset, uz_t
 
         BCATU(bmath_grt,fx,s,init_and_annihilate_b)( &gr, &a->data[ start * a->stride + offset ], &a->data[ mid * a->stride + offset ] );
         a->data[ mid * a->stride + offset ] = BCATU(bmath_grt,fx,s,rho)( &gr );
-        BCATU(bmath,mfx,s,drow_rotate)( a, start, mid, &gr, offset + 1, a->cols );
+        BCATU(bmath_mfx_s,drow_rotate)( a, start, mid, &gr, offset + 1, a->cols );
     }
     else
     {
@@ -248,7 +248,7 @@ static void qrd_accurate_recursive_annihilate( bmath_mfx_s* a, uz_t offset, uz_t
         {
             BCATU(bmath_grt,fx,s,init_and_annihilate_b)( &gr, &a->data[ start * a->stride + offset ], &a->data[ l * a->stride + offset ] );
             a->data[ l * a->stride + offset ] = BCATU(bmath_grt,fx,s,rho)( &gr );
-            BCATU(bmath,mfx,s,drow_rotate)( a, start, l, &gr, offset + 1, a->cols );
+            BCATU(bmath_mfx_s,drow_rotate)( a, start, l, &gr, offset + 1, a->cols );
         }
     }
 }
@@ -267,7 +267,7 @@ static void qrd_accurate_recursive_construct( bmath_mfx_s* u, const bmath_mfx_s*
 
         fx_t rho = a->data[ offset + a->stride * mid ];
         BCATU(bmath_grt,fx,s,init_from_rho)( &gr, -rho );
-        BCATU(bmath,mfx,s,drow_rotate)( u, start, mid, &gr, offset, u->cols );
+        BCATU(bmath_mfx_s,drow_rotate)( u, start, mid, &gr, offset, u->cols );
 
         if( start < mid - 1 ) qrd_accurate_recursive_construct( u, a, offset, start, mid - 1 );
         if( mid   < end     ) qrd_accurate_recursive_construct( u, a, offset, mid, end );
@@ -278,7 +278,7 @@ static void qrd_accurate_recursive_construct( bmath_mfx_s* u, const bmath_mfx_s*
         {
             fx_t rho = a->data[ offset + a->stride * k ];
             BCATU(bmath_grt,fx,s,init_from_rho)( &gr, -rho );
-            BCATU(bmath,mfx,s,drow_rotate)( u, start, k, &gr, offset, u->cols );
+            BCATU(bmath_mfx_s,drow_rotate)( u, start, k, &gr, offset, u->cols );
         }
     }
 }
@@ -289,14 +289,14 @@ static void qrd_accurate_recursive_construct( bmath_mfx_s* u, const bmath_mfx_s*
  *  Enhanced accuracy via divide & conquer particularly on thin decompositions.
  *  Slightly slower than plain QRD
  */
-void BCATU(bmath,mfx,s,qrd_accurate)( bmath_mfx_s* u, bmath_mfx_s* a )
+void BCATU(bmath_mfx_s,qrd_accurate)( bmath_mfx_s* u, bmath_mfx_s* a )
 {
     if( u )
     {
         ASSERT( u != a );
         ASSERT( u->rows == a->rows );
         ASSERT( u->cols == a->rows /*full*/ || u->cols == a->cols /*thin*/  ); // u may be full or thin (nothing in-between)
-        BCATU(bmath,mfx,s,one)( u );
+        BCATU(bmath_mfx_s,one)( u );
     }
 
     if( a->rows <= 1 )
@@ -336,7 +336,7 @@ void BCATU(bmath,mfx,s,qrd_accurate)( bmath_mfx_s* u, bmath_mfx_s* a )
  *  Enhanced accuracy via divide & conquer particularly on thin decompositions.
  *  Slightly slower than plain QRD
  */
-void BCATU(bmath,mfx,s,qrd_pmt_accurate)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p )
+void BCATU(bmath_mfx_s,qrd_pmt_accurate)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p )
 {
     if( p )
     {
@@ -349,7 +349,7 @@ void BCATU(bmath,mfx,s,qrd_pmt_accurate)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_
         ASSERT( u != a );
         ASSERT( u->rows == a->rows );
         ASSERT( u->cols == a->rows /*full*/ || u->cols == a->cols /*thin*/  ); // u may be full or thin (nothing in-between)
-        BCATU(bmath,mfx,s,one)( u );
+        BCATU(bmath_mfx_s,one)( u );
     }
 
     if( a->rows <= 1 )
@@ -360,9 +360,9 @@ void BCATU(bmath,mfx,s,qrd_pmt_accurate)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_
 
     uz_t n = uz_min( a->cols, a->rows );
 
-    bmath_vfx_s* v = BCATU(bmath,vfx,s,create)();
-    BCATU(bmath,vfx,s,set_size)( v, a->cols );
-    BCATU(bmath,vfx,s,zro)( v );
+    bmath_vfx_s* v = BCATU(bmath_vfx_s,create)();
+    BCATU(bmath_vfx_s,set_size)( v, a->cols );
+    BCATU(bmath_vfx_s,zro)( v );
 
     for( uz_t j = 0; j < a->rows; j++ )
     {
@@ -383,7 +383,7 @@ void BCATU(bmath,mfx,s,qrd_pmt_accurate)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_
         BCATU(fx,t_swap)( v->data + j, v->data + v_idx );
         if( p ) uz_t_swap( p->data + j, p->data + v_idx );
 
-        BCATU(bmath,mfx,s,swap_col)( a, j, v_idx );
+        BCATU(bmath_mfx_s,swap_col)( a, j, v_idx );
 
         qrd_accurate_recursive_annihilate( a, j, j, a->rows - 1 );
 
@@ -419,7 +419,7 @@ void BCATU(bmath,mfx,s,qrd_pmt_accurate)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_
         for( uz_t j = 0; j < end; j++ ) ai[ j ] = 0;
     }
 
-    BCATU(bmath,vfx,s,discard)( v );
+    BCATU(bmath_vfx_s,discard)( v );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -442,7 +442,7 @@ static void lqd_accurate_recursive_annihilate( bmath_mfx_s* a, uz_t offset, uz_t
         /** Trying to express the recursive approach in column swipes is inefficient.
          *  Column rotations are acceptable at this place because the recursive approach favors cache
          */
-        BCATU(bmath,mfx,s,dcol_rotate)( a, start, mid, &gr, offset + 1, a->rows );
+        BCATU(bmath_mfx_s,dcol_rotate)( a, start, mid, &gr, offset + 1, a->rows );
     }
     else
     {
@@ -450,7 +450,7 @@ static void lqd_accurate_recursive_annihilate( bmath_mfx_s* a, uz_t offset, uz_t
         {
             BCATU(bmath_grt,fx,s,init_and_annihilate_b)( &gr, &a->data[ offset * a->stride + start ], &a->data[ offset * a->stride + l ] );
             a->data[ offset * a->stride + l ] = BCATU(bmath_grt,fx,s,rho)( &gr );
-            BCATU(bmath,mfx,s,dcol_rotate)( a, start, l, &gr, offset + 1, a->rows );
+            BCATU(bmath_mfx_s,dcol_rotate)( a, start, l, &gr, offset + 1, a->rows );
         }
     }
 }
@@ -469,7 +469,7 @@ static void lqd_accurate_recursive_construct( const bmath_mfx_s* a, bmath_mfx_s*
 
         fx_t rho = a->data[ a->stride * offset + mid ];
         BCATU(bmath_grt,fx,s,init_from_rho)( &gr, -rho );
-        BCATU(bmath,mfx,s,drow_rotate)( v, start, mid, &gr, offset, v->cols );
+        BCATU(bmath_mfx_s,drow_rotate)( v, start, mid, &gr, offset, v->cols );
 
         if( start < mid - 1 ) lqd_accurate_recursive_construct( a, v, offset, start, mid - 1 );
         if( mid   < end     ) lqd_accurate_recursive_construct( a, v, offset, mid, end );
@@ -480,7 +480,7 @@ static void lqd_accurate_recursive_construct( const bmath_mfx_s* a, bmath_mfx_s*
         {
             fx_t rho = a->data[ offset * a->stride + k ];
             BCATU(bmath_grt,fx,s,init_from_rho)( &gr, -rho );
-            BCATU(bmath,mfx,s,drow_rotate)( v, start, k, &gr, offset, v->cols );
+            BCATU(bmath_mfx_s,drow_rotate)( v, start, k, &gr, offset, v->cols );
         }
     }
 }
@@ -491,14 +491,14 @@ static void lqd_accurate_recursive_construct( const bmath_mfx_s* a, bmath_mfx_s*
  *  Enhanced accuracy via divide & conquer particularly on thin decompositions.
  *  Slightly slower than plain LQD
  */
-void BCATU(bmath,mfx,s,lqd_accurate)( bmath_mfx_s* a, bmath_mfx_s* v )
+void BCATU(bmath_mfx_s,lqd_accurate)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
     if( v )
     {
         ASSERT( v != a );
         ASSERT( v->rows == a->cols );
         ASSERT( v->cols == a->cols || v->cols == a->rows ); // v may be full or thin (nothing in-between)
-        BCATU(bmath,mfx,s,one)( v );
+        BCATU(bmath_mfx_s,one)( v );
     }
 
     if( a->cols <= 1 )
@@ -537,7 +537,7 @@ void BCATU(bmath,mfx,s,lqd_accurate)( bmath_mfx_s* a, bmath_mfx_s* v )
  *  Enhanced accuracy via divide & conquer particularly on thin decompositions.
  *  Slightly slower than plain LQD
  */
-void BCATU(bmath,mfx,s,pmt_lqd_accurate)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_mfx_s* v )
+void BCATU(bmath_mfx_s,pmt_lqd_accurate)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_mfx_s* v )
 {
     if( p )
     {
@@ -550,7 +550,7 @@ void BCATU(bmath,mfx,s,pmt_lqd_accurate)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_
         ASSERT( v != a );
         ASSERT( v->rows == a->cols );
         ASSERT( v->cols == a->cols || v->cols == a->rows ); // v may be full or thin (nothing in-between)
-        BCATU(bmath,mfx,s,one)( v );
+        BCATU(bmath_mfx_s,one)( v );
     }
 
     if( a->cols <= 1 )
@@ -561,9 +561,9 @@ void BCATU(bmath,mfx,s,pmt_lqd_accurate)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_
 
     uz_t n = uz_min( a->cols, a->rows );
 
-    bmath_vfx_s* vec = BCATU(bmath,vfx,s,create)();
-    BCATU(bmath,vfx,s,set_size)( vec, a->rows );
-    BCATU(bmath,vfx,s,zro)( vec );
+    bmath_vfx_s* vec = BCATU(bmath_vfx_s,create)();
+    BCATU(bmath_vfx_s,set_size)( vec, a->rows );
+    BCATU(bmath_vfx_s,zro)( vec );
 
     for( uz_t j = 0; j < a->rows; j++ )
     {
@@ -584,7 +584,7 @@ void BCATU(bmath,mfx,s,pmt_lqd_accurate)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_
         BCATU(fx,t_swap)( vec->data + j, vec->data + vec_idx );
         if( p ) uz_t_swap( p->data + j, p->data + vec_idx );
 
-        BCATU(bmath,mfx,s,swap_row)( a, j, vec_idx );
+        BCATU(bmath_mfx_s,swap_row)( a, j, vec_idx );
 
         lqd_accurate_recursive_annihilate( a, j, j, a->cols - 1 );
 
@@ -617,39 +617,39 @@ void BCATU(bmath,mfx,s,pmt_lqd_accurate)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_
         for( uz_t j = i + 1; j < a->cols; j++ ) ai[ j ] = 0;
     }
 
-    BCATU(bmath,vfx,s,discard)( vec );
+    BCATU(bmath_vfx_s,discard)( vec );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,qrd)( bmath_mfx_s* u, bmath_mfx_s* a )
+void BCATU(bmath_mfx_s,qrd)( bmath_mfx_s* u, bmath_mfx_s* a )
 {
-//    BCATU(bmath,mfx,s,qrd_plain)( u, a );
-    BCATU(bmath,mfx,s,qrd_accurate)( u, a );
+//    BCATU(bmath_mfx_s,qrd_plain)( u, a );
+    BCATU(bmath_mfx_s,qrd_accurate)( u, a );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,qrd_pmt)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p )
+void BCATU(bmath_mfx_s,qrd_pmt)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p )
 {
-//    BCATU(bmath,mfx,s,qrd_pmt_plain)( u, a, p );
-    BCATU(bmath,mfx,s,qrd_pmt_accurate)( u, a, p );
+//    BCATU(bmath_mfx_s,qrd_pmt_plain)( u, a, p );
+    BCATU(bmath_mfx_s,qrd_pmt_accurate)( u, a, p );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,lqd)( bmath_mfx_s* a, bmath_mfx_s* v )
+void BCATU(bmath_mfx_s,lqd)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
-    //BCATU(bmath,mfx,s,lqd_plain)( a, v );
-    BCATU(bmath,mfx,s,lqd_accurate)( a, v );
+    //BCATU(bmath_mfx_s,lqd_plain)( a, v );
+    BCATU(bmath_mfx_s,lqd_accurate)( a, v );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,pmt_lqd)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_mfx_s* v )
+void BCATU(bmath_mfx_s,pmt_lqd)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_mfx_s* v )
 {
-    //BCATU(bmath,mfx,s,lqd_plain)( a, v );
-    BCATU(bmath,mfx,s,pmt_lqd_accurate)( p, a, v );
+    //BCATU(bmath_mfx_s,lqd_plain)( a, v );
+    BCATU(bmath_mfx_s,pmt_lqd_accurate)( p, a, v );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

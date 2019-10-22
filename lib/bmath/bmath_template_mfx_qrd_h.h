@@ -48,7 +48,7 @@
  *  If thin decomposition is chosen, then a' is returned as (thin) nxn square matrix.
  *
  */
-void BCATU(bmath,mfx,s,qrd)( bmath_mfx_s* u, bmath_mfx_s* a );
+void BCATU(bmath_mfx_s,qrd)( bmath_mfx_s* u, bmath_mfx_s* a );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -78,7 +78,7 @@ void BCATU(bmath,mfx,s,qrd)( bmath_mfx_s* u, bmath_mfx_s* a );
  *  If thin decomposition is chosen, then a' is returned as (thin) nxn square matrix.
  *
  */
-void BCATU(bmath,mfx,s,qrd_pmt)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p );
+void BCATU(bmath_mfx_s,qrd_pmt)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ void BCATU(bmath,mfx,s,qrd_pmt)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p 
  *  If thin decomposition is chosen, then a' is returned as (thin) mxm square matrix.
  *
  */
-void BCATU(bmath,mfx,s,lqd)( bmath_mfx_s* a, bmath_mfx_s* v );
+void BCATU(bmath_mfx_s,lqd)( bmath_mfx_s* a, bmath_mfx_s* v );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -133,7 +133,7 @@ void BCATU(bmath,mfx,s,lqd)( bmath_mfx_s* a, bmath_mfx_s* v );
  *  If thin decomposition is chosen, then a' is returned as (thin) mxm square matrix.
  *
  */
-void BCATU(bmath,mfx,s,pmt_lqd)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_mfx_s* v );
+void BCATU(bmath_mfx_s,pmt_lqd)( bmath_pmt_s* p, bmath_mfx_s* a, bmath_mfx_s* v );
 
 //----------------------------------------------------------------------------------------------------------------------
 

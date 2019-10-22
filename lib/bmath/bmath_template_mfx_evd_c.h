@@ -25,15 +25,15 @@
 
 /**********************************************************************************************************************/
 
-bl_t BCATU(bmath,mfx,s,evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v )
+bl_t BCATU(bmath_mfx_s,evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
     ASSERT( a->rows == a->cols );
 
     if( v )
     {
         ASSERT( a != v );
-        ASSERT( BCATU(bmath,mfx,s,is_equ_size)( a, v ) );
-        BCATU(bmath,mfx,s,one)( v );
+        ASSERT( BCATU(bmath_mfx_s,is_equ_size)( a, v ) );
+        BCATU(bmath_mfx_s,one)( v );
     }
 
     uz_t n = a->rows;
@@ -107,15 +107,15 @@ bl_t BCATU(bmath,mfx,s,evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v )
 /** In-place EVD for a symmetric matrix.
  *  (Variant of Francis' QR-Algorithm with shift)
  *  Very efficient for large matrices. >20x faster than Jacobi method but slightly less accurate.
- *  BCATU(bmath,mfx,s,evd_htp) for more details.
+ *  BCATU(bmath_mfx_s,evd_htp) for more details.
  */
-bl_t BCATU(bmath,mfx,s,evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
+bl_t BCATU(bmath_mfx_s,evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
     uz_t n = a->rows;
     if( n <= 1 ) return true; // nothing to do
 
     // tridiagonalization
-    BCATU(bmath,mfx,s,trd_htp)( a, v );
+    BCATU(bmath_mfx_s,trd_htp)( a, v );
 
     bl_t success = true;
 
@@ -205,7 +205,7 @@ bl_t BCATU(bmath,mfx,s,evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
                 vmax = ( v > vmax ) ? v : vmax;
             }
             BCATU(fx,t_swap)( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-            if( v ) BCATU(bmath,mfx,s,swap_row)( v, i, imax );
+            if( v ) BCATU(bmath_mfx_s,swap_row)( v, i, imax );
         }
     }
 
@@ -218,15 +218,15 @@ bl_t BCATU(bmath,mfx,s,evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
  *  (Variant of Francis' QR-Algorithm with shift)
  *  Plain shift is not explicitly added/subtracted. Only the shift effect is applied to the matrix.
  *  This minimizes accuracy-loss similarly as implicit shift would do.
- *  BCATU(bmath,mfx,s,evd) for more details.
+ *  BCATU(bmath_mfx_s,evd) for more details.
  */
-bl_t BCATU(bmath,mfx,s,evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
+bl_t BCATU(bmath_mfx_s,evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
     uz_t n = a->rows;
     if( n <= 1 ) return true; // nothing to do
 
     /// tridiagonalization
-    BCATU(bmath,mfx,s,trd_htp)( a, v );
+    BCATU(bmath_mfx_s,trd_htp)( a, v );
 
     // qr iteration until smallest non-diag element < offd_limit;
 
@@ -324,7 +324,7 @@ bl_t BCATU(bmath,mfx,s,evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
                 vmax = ( v > vmax ) ? v : vmax;
             }
             BCATU(fx,t_swap)( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-            if( v ) BCATU(bmath,mfx,s,swap_row)( v, i, imax );
+            if( v ) BCATU(bmath_mfx_s,swap_row)( v, i, imax );
         }
     }
 
@@ -333,9 +333,9 @@ bl_t BCATU(bmath,mfx,s,evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t BCATU(bmath,mfx,s,evd_htp)( bmath_mfx_s* a, bmath_mfx_s* v )
+bl_t BCATU(bmath_mfx_s,evd_htp)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
-    return BCATU(bmath,mfx,s,evd_htp_qr_ishift)( a, v );
+    return BCATU(bmath_mfx_s,evd_htp_qr_ishift)( a, v );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

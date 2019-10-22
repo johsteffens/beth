@@ -33,7 +33,7 @@
  *  Diagonal elements are sorted in descending value order.
  *  v == NULL allowed, in which case only a' is computed.
  */
-bl_t BCATU(bmath,mfx,s,evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v );
+bl_t BCATU(bmath_mfx_s,evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v );
 
 /** In-place EVD for a symmetric matrix.
  *  Approach: TRD, QR with explicit shifting. (Variant of Francis' QR-Algorithm)
@@ -44,7 +44,7 @@ bl_t BCATU(bmath,mfx,s,evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v );
  *  Diagonal elements are sorted in descending value order.
  *  v == NULL allowed, in which case only a' is computed.
  */
-bl_t BCATU(bmath,mfx,s,evd_htp)( bmath_mfx_s* a, bmath_mfx_s* v );
+bl_t BCATU(bmath_mfx_s,evd_htp)( bmath_mfx_s* a, bmath_mfx_s* v );
 
 /**********************************************************************************************************************/
 // closing template

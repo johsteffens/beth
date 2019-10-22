@@ -13,27 +13,50 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_ARR_VF3_H
-#define BMATH_ARR_VF3_H
+#include <stdio.h>
+
+#include "bmath_arr_vf2.h"
+
+#define BMATH_TEMPLATE_FX_PREC 2
+#include "bmath_template_arr_vfx_c.h"
 
 /**********************************************************************************************************************/
 
-#include "bcore_std.h"
-#include "bmath_vf3.h"
+BCORE_DEFINE_OBJECT_INST( bcore_array, bmath_arr_vf2_s )
+"{"
+    "aware_t _;"
+    "bmath_vf2_s [] arr;"
+"}";
 
 /**********************************************************************************************************************/
 
-BCORE_DECLARE_OBJECT( bmath_arr_vf3_s )
+vd_t bmath_arr_vf2_signal_handler( const bcore_signal_s* o )
 {
-    aware_t _;
-    BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_vf3_s, );
-};
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_arr_vf2" ) ) )
+    {
+        case TYPEOF_init1:
+        {
+            BCORE_REGISTER_OBJECT( bmath_arr_vf2_s );
+        }
+        break;
 
-#define BMATH_TEMPLATE_FX_PREC 3
-#include "bmath_template_arr_vfx_h.h"
+        case TYPEOF_get_quicktypes:
+        {
+            BCORE_REGISTER_QUICKTYPE( bmath_arr_vf2_s );
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+            return selftest();
+        }
+        break;
+
+        default: break;
+    }
+
+    return NULL;
+}
 
 /**********************************************************************************************************************/
 
-vd_t bmath_arr_vf3_signal_handler( const bcore_signal_s* o );
-
-#endif  // BMATH_ARR_VF3_H

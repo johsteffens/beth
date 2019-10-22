@@ -20,11 +20,24 @@
 #include "bmath_fourier.h"
 #include "bmath_grt.h"
 #include "bmath_spect_vector.h"
-//#include "bmath_mf2_eval.h"
+#include "bmath_mfx_eval.h"
 
-//#define BMATH_TEMPLATE_FX_PREC 2
-//#include "bmath_template_mfx_c.h"
+/*
+#define BMATH_TEMPLATE_FX_PREC 2
+#include "bmath_template_mfx_mul_c.h"
 
+#define BMATH_TEMPLATE_FX_PREC 2
+#include "bmath_template_mfx_qrd_c.h"
+
+#define BMATH_TEMPLATE_FX_PREC 2
+#include "bmath_template_mfx_evd_c.h"
+
+#define BMATH_TEMPLATE_FX_PREC 2
+#include "bmath_template_mfx_svd_c.h"
+
+#define BMATH_TEMPLATE_FX_PREC 2
+#include "bmath_template_mfx_c.h"
+*/
 /**********************************************************************************************************************/
 /// Matrix object of f2_t
 

@@ -139,7 +139,7 @@ typedef bl_t (*BCATU(bmath_fp,mfx,s,hsm_piv))( const bmath_mfx_s* o, fx_t eps, b
 /**********************************************************************************************************************/
 /// Matrix object of fx_t (bmath_mfx_s)
 
-void BCATU(bmath,mfx,s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
+void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
 
 /** Sets all matrix elements to random values.
  *  hsm: true: Creates a symmetric matrix
@@ -160,20 +160,20 @@ void BCATU(bmath,mfx,s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
  *  If rd == 0 && !pdf, the matrix elements are set directly to random values.
  *  Otherwise o is a product of two random matrices.
  */
-void BCATU(bmath,mfx,s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, uz_t rd, fx_t density, fx_t min, fx_t max, u2_t* p_rval );
+void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, uz_t rd, fx_t density, fx_t min, fx_t max, u2_t* p_rval );
 
-bmath_mfx_s* BCATU(bmath,mfx,s,create_set_size)( uz_t rows, uz_t cols );
-bmath_mfx_s* BCATU(bmath,mfx,s,create_fill_random)( uz_t rows, uz_t cols, fx_t min, fx_t max, u2_t* rval );
+bmath_mfx_s* BCATU(bmath_mfx_s,create_set_size)( uz_t rows, uz_t cols );
+bmath_mfx_s* BCATU(bmath_mfx_s,create_fill_random)( uz_t rows, uz_t cols, fx_t min, fx_t max, u2_t* rval );
 
-static inline void BCATU(bmath,mfx,s,set_size_to)( const bmath_mfx_s* o, bmath_mfx_s* res ) { BCATU(bmath,mfx,s,set_size)( res, o->rows, o->cols ); }
-static inline bl_t BCATU(bmath,mfx,s,is_equ_size)( const bmath_mfx_s* o, const bmath_mfx_s* op ) { return o->rows == op->rows && o->cols == op->cols; }
-static inline bl_t BCATU(bmath,mfx,s,is_square)  ( const bmath_mfx_s* o ) { return o->rows == o->cols; }
-static inline bl_t BCATU(bmath,mfx,s,is_folded)  ( const bmath_mfx_s* o ) { return o->stride < o->cols; }
+static inline void BCATU(bmath_mfx_s,set_size_to)( const bmath_mfx_s* o, bmath_mfx_s* res ) { BCATU(bmath_mfx_s,set_size)( res, o->rows, o->cols ); }
+static inline bl_t BCATU(bmath_mfx_s,is_equ_size)( const bmath_mfx_s* o, const bmath_mfx_s* op ) { return o->rows == op->rows && o->cols == op->cols; }
+static inline bl_t BCATU(bmath_mfx_s,is_square)  ( const bmath_mfx_s* o ) { return o->rows == o->cols; }
+static inline bl_t BCATU(bmath_mfx_s,is_folded)  ( const bmath_mfx_s* o ) { return o->stride < o->cols; }
 
 /**********************************************************************************************************************/
 /// weak int & conversion (Returned object does not own its data and need not be shut down unless it is resized)
 
-static inline void BCATU(bmath,mfx,s,init_weak)( bmath_mfx_s* o, uz_t rows, uz_t cols, uz_t stride, fx_t* data )
+static inline void BCATU(bmath_mfx_s,init_weak)( bmath_mfx_s* o, uz_t rows, uz_t cols, uz_t stride, fx_t* data )
 {
     o->rows = rows;
     o->cols = cols;
@@ -186,15 +186,15 @@ static inline void BCATU(bmath,mfx,s,init_weak)( bmath_mfx_s* o, uz_t rows, uz_t
 static inline bmath_mfx_s BCATU(bmath,mfx,init_weak)( uz_t rows, uz_t cols, uz_t stride, fx_t* data )
 {
     bmath_mfx_s o;
-    BCATU(bmath,mfx,s,init_weak)( &o, rows, cols, stride, data );
+    BCATU(bmath_mfx_s,init_weak)( &o, rows, cols, stride, data );
     return o;
 }
 
 /// Returns a weak (rows x cols) sub matrix at offset (row, col) from o.
-bmath_mfx_s BCATU(bmath,mfx,s,get_weak_sub_mat)( const bmath_mfx_s* o, uz_t row, uz_t col, uz_t rows, uz_t cols );
+bmath_mfx_s BCATU(bmath_mfx_s,get_weak_sub_mat)( const bmath_mfx_s* o, uz_t row, uz_t col, uz_t rows, uz_t cols );
 
 /// Returns a weak row vector.
-bmath_vfx_s BCATU(bmath,mfx,s,get_row_weak_vec)( const bmath_mfx_s* o, uz_t idx );
+bmath_vfx_s BCATU(bmath_mfx_s,get_row_weak_vec)( const bmath_mfx_s* o, uz_t idx );
 
 /**********************************************************************************************************************/
 /// checks, deviations
@@ -203,34 +203,34 @@ bmath_vfx_s BCATU(bmath,mfx,s,get_row_weak_vec)( const bmath_mfx_s* o, uz_t idx 
  *  to the specified state is less or equal max_dev.
  *  Hence, max_dev == 0 tests for the exact state (s. below).
  */
-bl_t BCATU(bmath,mfx,s,is_near_equ)( const bmath_mfx_s* o, const bmath_mfx_s* op, fx_t max_dev ); // equality
-bl_t BCATU(bmath,mfx,s,is_near_one)( const bmath_mfx_s* o, fx_t max_dev ); // one (== identity)
-bl_t BCATU(bmath,mfx,s,is_near_zro)( const bmath_mfx_s* o, fx_t max_dev ); // zero
-bl_t BCATU(bmath,mfx,s,is_near_otn)( const bmath_mfx_s* o, fx_t max_dev ); // near orthonormal
-bl_t BCATU(bmath,mfx,s,is_near_uni)( const bmath_mfx_s* o, fx_t max_dev ); // near unitary
-bl_t BCATU(bmath,mfx,s,is_near_dag)( const bmath_mfx_s* o, fx_t max_dev ); // diagonal
-bl_t BCATU(bmath,mfx,s,is_near_trd)( const bmath_mfx_s* o, fx_t max_dev ); // symmetric tri-diagonal
-bl_t BCATU(bmath,mfx,s,is_near_utr)( const bmath_mfx_s* o, fx_t max_dev ); // upper triangle
-bl_t BCATU(bmath,mfx,s,is_near_ltr)( const bmath_mfx_s* o, fx_t max_dev ); // lower triangle
-bl_t BCATU(bmath,mfx,s,is_near_hsm)( const bmath_mfx_s* o, fx_t max_dev ); // symmetric
-bl_t BCATU(bmath,mfx,s,is_near_ubd)( const bmath_mfx_s* o, fx_t max_dev ); // upper bi-diagonal
-bl_t BCATU(bmath,mfx,s,is_near_lbd)( const bmath_mfx_s* o, fx_t max_dev ); // lower bi-diagonal
+bl_t BCATU(bmath_mfx_s,is_near_equ)( const bmath_mfx_s* o, const bmath_mfx_s* op, fx_t max_dev ); // equality
+bl_t BCATU(bmath_mfx_s,is_near_one)( const bmath_mfx_s* o, fx_t max_dev ); // one (== identity)
+bl_t BCATU(bmath_mfx_s,is_near_zro)( const bmath_mfx_s* o, fx_t max_dev ); // zero
+bl_t BCATU(bmath_mfx_s,is_near_otn)( const bmath_mfx_s* o, fx_t max_dev ); // near orthonormal
+bl_t BCATU(bmath_mfx_s,is_near_uni)( const bmath_mfx_s* o, fx_t max_dev ); // near unitary
+bl_t BCATU(bmath_mfx_s,is_near_dag)( const bmath_mfx_s* o, fx_t max_dev ); // diagonal
+bl_t BCATU(bmath_mfx_s,is_near_trd)( const bmath_mfx_s* o, fx_t max_dev ); // symmetric tri-diagonal
+bl_t BCATU(bmath_mfx_s,is_near_utr)( const bmath_mfx_s* o, fx_t max_dev ); // upper triangle
+bl_t BCATU(bmath_mfx_s,is_near_ltr)( const bmath_mfx_s* o, fx_t max_dev ); // lower triangle
+bl_t BCATU(bmath_mfx_s,is_near_hsm)( const bmath_mfx_s* o, fx_t max_dev ); // symmetric
+bl_t BCATU(bmath_mfx_s,is_near_ubd)( const bmath_mfx_s* o, fx_t max_dev ); // upper bi-diagonal
+bl_t BCATU(bmath_mfx_s,is_near_lbd)( const bmath_mfx_s* o, fx_t max_dev ); // lower bi-diagonal
 
-static inline bl_t BCATU(bmath,mfx,s,is_equ)( const bmath_mfx_s* o, const bmath_mfx_s* op ) { return BCATU(bmath,mfx,s,is_near_equ)( o, op, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_one)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_one)( o, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_zro)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_zro)( o, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_otn)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_otn)( o, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_uni)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_uni)( o, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_dag)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_dag)( o, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_trd)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_trd)( o, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_utr)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_utr)( o, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_ltr)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_ltr)( o, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_hsm)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_hsm)( o, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_ubd)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_ubd)( o, 0 ); }
-static inline bl_t BCATU(bmath,mfx,s,is_lbd)( const bmath_mfx_s* o ) { return BCATU(bmath,mfx,s,is_near_lbd)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_equ)( const bmath_mfx_s* o, const bmath_mfx_s* op ) { return BCATU(bmath_mfx_s,is_near_equ)( o, op, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_one)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_one)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_zro)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_zro)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_otn)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_otn)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_uni)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_uni)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_dag)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_dag)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_trd)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_trd)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_utr)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_utr)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_ltr)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_ltr)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_hsm)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_hsm)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_ubd)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_ubd)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_lbd)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_lbd)( o, 0 ); }
 
 /// Matrix is nan if at least one element is nan
-bl_t BCATU(bmath,mfx,s,is_nan)( const bmath_mfx_s* o );
+bl_t BCATU(bmath_mfx_s,is_nan)( const bmath_mfx_s* o );
 
 //----------------------------------------------------------------------------------------------------------------------
 // Frobenius norm
@@ -241,86 +241,86 @@ bl_t BCATU(bmath,mfx,s,is_nan)( const bmath_mfx_s* o );
  *  Matrix x is a specified (or implied) state.
  *  Note: By this definition fdev_zro is the Frobenius norm of o.
  */
-fx_t BCATU(bmath,mfx,s,fdev_equ)( const bmath_mfx_s* o, const bmath_mfx_s* op );
-fx_t BCATU(bmath,mfx,s,fdev_zro)( const bmath_mfx_s* o );
-fx_t BCATU(bmath,mfx,s,fdev_one)( const bmath_mfx_s* o );
-fx_t BCATU(bmath,mfx,s,fdev_otn)( const bmath_mfx_s* o ); // f = o * oT or oT * o (whichever smaller); x = I
+fx_t BCATU(bmath_mfx_s,fdev_equ)( const bmath_mfx_s* o, const bmath_mfx_s* op );
+fx_t BCATU(bmath_mfx_s,fdev_zro)( const bmath_mfx_s* o );
+fx_t BCATU(bmath_mfx_s,fdev_one)( const bmath_mfx_s* o );
+fx_t BCATU(bmath_mfx_s,fdev_otn)( const bmath_mfx_s* o ); // f = o * oT or oT * o (whichever smaller); x = I
 
 /**********************************************************************************************************************/
 /// initializations; copying; basic matrix operations
 
-fx_t BCATU(bmath,mfx,s,fx_max)( const bmath_mfx_s* o ); // maximum value
-fx_t BCATU(bmath,mfx,s,fx_min)( const bmath_mfx_s* o ); // minimum value
-fx_t BCATU(bmath,mfx,s,fx_sum)( const bmath_mfx_s* o ); // sum of all elements
+fx_t BCATU(bmath_mfx_s,fx_max)( const bmath_mfx_s* o ); // maximum value
+fx_t BCATU(bmath_mfx_s,fx_min)( const bmath_mfx_s* o ); // minimum value
+fx_t BCATU(bmath_mfx_s,fx_sum)( const bmath_mfx_s* o ); // sum of all elements
 
-fx_t BCATU(bmath,mfx,s,fx_trc)( const bmath_mfx_s* o ); // trace
-fx_t BCATU(bmath,mfx,s,fx_sub_sqr)( const bmath_mfx_s* o, const bmath_mfx_s* op ); // ( o - op )^2
+fx_t BCATU(bmath_mfx_s,fx_trc)( const bmath_mfx_s* o ); // trace
+fx_t BCATU(bmath_mfx_s,fx_sub_sqr)( const bmath_mfx_s* o, const bmath_mfx_s* op ); // ( o - op )^2
 
 // functions below support folded target
-void BCATU(bmath,mfx,s,zro)(       bmath_mfx_s* o ); // set zero;                             supports folded matrix
-void BCATU(bmath,mfx,s,one)(       bmath_mfx_s* o ); // set diagonal elements one, rest zero; supports folded matrix
-void BCATU(bmath,mfx,s,neg)( const bmath_mfx_s* o, bmath_mfx_s* r );  // negate
-void BCATU(bmath,mfx,s,cpy)( const bmath_mfx_s* o, bmath_mfx_s* r );  // copies content o -> r  (does not change allocation of res)
+void BCATU(bmath_mfx_s,zro)(       bmath_mfx_s* o ); // set zero;                             supports folded matrix
+void BCATU(bmath_mfx_s,one)(       bmath_mfx_s* o ); // set diagonal elements one, rest zero; supports folded matrix
+void BCATU(bmath_mfx_s,neg)( const bmath_mfx_s* o, bmath_mfx_s* r );  // negate
+void BCATU(bmath_mfx_s,cpy)( const bmath_mfx_s* o, bmath_mfx_s* r );  // copies content o -> r  (does not change allocation of res)
 
 //----------------------------------------------------------------------------------------------------------------------
 // transposition / permutation
 
-void BCATU(bmath,mfx,s,htp)        ( const bmath_mfx_s* o, bmath_mfx_s* res );
-void BCATU(bmath,mfx,s,pmt_mul)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P * A   ; row_p[k]( B ) = row_k( A )
-void BCATU(bmath,mfx,s,pmt_htp_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P^T * A ; row_k( B ) = row_p[k]( A )
-void BCATU(bmath,mfx,s,mul_pmt)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
-void BCATU(bmath,mfx,s,mul_pmt_htp)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P^T ; col_p[k]( B ) = col_k( A )
+void BCATU(bmath_mfx_s,htp)        ( const bmath_mfx_s* o, bmath_mfx_s* res );
+void BCATU(bmath_mfx_s,pmt_mul)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P * A   ; row_p[k]( B ) = row_k( A )
+void BCATU(bmath_mfx_s,pmt_htp_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P^T * A ; row_k( B ) = row_p[k]( A )
+void BCATU(bmath_mfx_s,mul_pmt)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
+void BCATU(bmath_mfx_s,mul_pmt_htp)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P^T ; col_p[k]( B ) = col_k( A )
 
-static inline void BCATU(bmath,mfx,s,htp_set)( const bmath_mfx_s* o, bmath_mfx_s* res ) { BCATU(bmath,mfx,s,set_size)( res, o->cols, o->rows ); BCATU(bmath,mfx,s,htp)( o, res ); }
+static inline void BCATU(bmath_mfx_s,htp_set)( const bmath_mfx_s* o, bmath_mfx_s* res ) { BCATU(bmath_mfx_s,set_size)( res, o->cols, o->rows ); BCATU(bmath_mfx_s,htp)( o, res ); }
 
 //----------------------------------------------------------------------------------------------------------------------
 // addition, subtraction
 
-void BCATU(bmath,mfx,s,sub)( const bmath_mfx_s* o, const bmath_mfx_s* b, bmath_mfx_s* r ); // supports folded target
-void BCATU(bmath,mfx,s,add)( const bmath_mfx_s* o, const bmath_mfx_s* b, bmath_mfx_s* r ); // supports folded target
+void BCATU(bmath_mfx_s,sub)( const bmath_mfx_s* o, const bmath_mfx_s* b, bmath_mfx_s* r ); // supports folded target
+void BCATU(bmath_mfx_s,add)( const bmath_mfx_s* o, const bmath_mfx_s* b, bmath_mfx_s* r ); // supports folded target
 
 //----------------------------------------------------------------------------------------------------------------------
 // outer vector product
 
-void BCATU(bmath,mfx,s,opd)(     bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vfx_s* b );                       // opd( a, b )     -> o
-void BCATU(bmath,mfx,s,opd_add)( bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vfx_s* b, const bmath_mfx_s* c ); // opd( a, b ) + c -> o
+void BCATU(bmath_mfx_s,opd)(     bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vfx_s* b );                       // opd( a, b )     -> o
+void BCATU(bmath_mfx_s,opd_add)( bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vfx_s* b, const bmath_mfx_s* c ); // opd( a, b ) + c -> o
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * vector [ + vector] --> vector
 
-void BCATU(bmath,mfx,s,mul_vec)    ( const bmath_mfx_s* o, const bmath_vfx_s* v,   bmath_vfx_s* r ); // r = o * v
-void BCATU(bmath,mfx,s,mul_av1)    ( const bmath_mfx_s* o, const bmath_vfx_s* av1, bmath_vfx_s* r ); // affine transformation (see nomenclature 'av1')
-void BCATU(bmath,mfx,s,htp_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* v,   bmath_vfx_s* r ); // r = o^T * v
+void BCATU(bmath_mfx_s,mul_vec)    ( const bmath_mfx_s* o, const bmath_vfx_s* v,   bmath_vfx_s* r ); // r = o * v
+void BCATU(bmath_mfx_s,mul_av1)    ( const bmath_mfx_s* o, const bmath_vfx_s* av1, bmath_vfx_s* r ); // affine transformation (see nomenclature 'av1')
+void BCATU(bmath_mfx_s,htp_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* v,   bmath_vfx_s* r ); // r = o^T * v
 
-void BCATU(bmath,mfx,s,mul_vec_add)    ( const bmath_mfx_s* o, const bmath_vfx_s* v, const bmath_vfx_s* b, bmath_vfx_s* r ); // r = o   * v + b  (in place for b==r)
-void BCATU(bmath,mfx,s,htp_mul_vec_add)( const bmath_mfx_s* o, const bmath_vfx_s* v, const bmath_vfx_s* b, bmath_vfx_s* r ); // r = o^T * v + b  (in place for b==r)
+void BCATU(bmath_mfx_s,mul_vec_add)    ( const bmath_mfx_s* o, const bmath_vfx_s* v, const bmath_vfx_s* b, bmath_vfx_s* r ); // r = o   * v + b  (in place for b==r)
+void BCATU(bmath_mfx_s,htp_mul_vec_add)( const bmath_mfx_s* o, const bmath_vfx_s* v, const bmath_vfx_s* b, bmath_vfx_s* r ); // r = o^T * v + b  (in place for b==r)
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * scalar + matrix --> matrix; supports folded r
 
-void BCATU(bmath,mfx,s,mul_scl)(     const bmath_mfx_s* o, const fx_t* b,                       bmath_mfx_s* r ); // r = o * b
-void BCATU(bmath,mfx,s,mul_scl_add)( const bmath_mfx_s* o, const fx_t* b, const bmath_mfx_s* c, bmath_mfx_s* r ); // r = o * b + c
+void BCATU(bmath_mfx_s,mul_scl)(     const bmath_mfx_s* o, const fx_t* b,                       bmath_mfx_s* r ); // r = o * b
+void BCATU(bmath_mfx_s,mul_scl_add)( const bmath_mfx_s* o, const fx_t* b, const bmath_mfx_s* c, bmath_mfx_s* r ); // r = o * b + c
 
-static inline void BCATU(bmath,mfx,s,mul_scl_fx)(     const bmath_mfx_s* o, fx_t b,                       bmath_mfx_s* r ) { BCATU(bmath,mfx,s,mul_scl)(     o, &b,    r ); }
-static inline void BCATU(bmath,mfx,s,mul_scl_fx_add)( const bmath_mfx_s* o, fx_t b, const bmath_mfx_s* c, bmath_mfx_s* r ) { BCATU(bmath,mfx,s,mul_scl_add)( o, &b, c, r ); }
+static inline void BCATU(bmath_mfx_s,mul_scl_fx)(     const bmath_mfx_s* o, fx_t b,                       bmath_mfx_s* r ) { BCATU(bmath_mfx_s,mul_scl)(     o, &b,    r ); }
+static inline void BCATU(bmath_mfx_s,mul_scl_fx_add)( const bmath_mfx_s* o, fx_t b, const bmath_mfx_s* c, bmath_mfx_s* r ) { BCATU(bmath_mfx_s,mul_scl_add)( o, &b, c, r ); }
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * unary_map --> matrix; supports folded r
 
-void BCATU(bmath,mfx,s,eop_map)(     const bmath_mfx_s* o, BCATU(bmath_fp,fx,ar1) b, bmath_mfx_s* r ); // r_ij = b( o_ij )
-void BCATU(bmath,mfx,s,eop_map_mul)( const bmath_mfx_s* o, BCATU(bmath_fp,fx,ar1) b, const bmath_mfx_s* c, bmath_mfx_s* r ); // r_ij = b( o_ij ) * c_ij
+void BCATU(bmath_mfx_s,eop_map)(     const bmath_mfx_s* o, BCATU(bmath_fp,fx,ar1) b, bmath_mfx_s* r ); // r_ij = b( o_ij )
+void BCATU(bmath_mfx_s,eop_map_mul)( const bmath_mfx_s* o, BCATU(bmath_fp,fx,ar1) b, const bmath_mfx_s* c, bmath_mfx_s* r ); // r_ij = b( o_ij ) * c_ij
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * matrix --> matrix (see also bmath_mfx_mul.h)
 
-static inline void BCATU(bmath,mfx,s,mul_set)(     const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ) { BCATU(bmath,mfx,s,set_size)( r, o->rows, m->cols ); BCATU(bmath,mfx,s,mul)( o, m, r ); }
-static inline void BCATU(bmath,mfx,s,mul_htp_set)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ) { BCATU(bmath,mfx,s,set_size)( r, o->rows, m->rows ); BCATU(bmath,mfx,s,mul_htp)( o, m, r ); }
-static inline void BCATU(bmath,mfx,s,htp_mul_set)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ) { BCATU(bmath,mfx,s,set_size)( r, o->cols, m->cols ); BCATU(bmath,mfx,s,htp_mul)( o, m, r ); }
+static inline void BCATU(bmath_mfx_s,mul_set)(     const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ) { BCATU(bmath_mfx_s,set_size)( r, o->rows, m->cols ); BCATU(bmath_mfx_s,mul)( o, m, r ); }
+static inline void BCATU(bmath_mfx_s,mul_htp_set)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ) { BCATU(bmath_mfx_s,set_size)( r, o->rows, m->rows ); BCATU(bmath_mfx_s,mul_htp)( o, m, r ); }
+static inline void BCATU(bmath_mfx_s,htp_mul_set)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ) { BCATU(bmath_mfx_s,set_size)( r, o->cols, m->cols ); BCATU(bmath_mfx_s,htp_mul)( o, m, r ); }
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix o matrix --> matrix (hadamard product)
 
-void BCATU(bmath,mfx,s,mul_hdm)( const bmath_mfx_s* a, const bmath_mfx_s* b, bmath_mfx_s* r ); /// a o b -> r; (elementwise operation)
+void BCATU(bmath_mfx_s,mul_hdm)( const bmath_mfx_s* a, const bmath_mfx_s* b, bmath_mfx_s* r ); /// a o b -> r; (elementwise operation)
 
 //----------------------------------------------------------------------------------------------------------------------
 // inversion; pseudo-inversion;
@@ -330,9 +330,9 @@ void BCATU(bmath,mfx,s,mul_hdm)( const bmath_mfx_s* a, const bmath_mfx_s* b, bma
     not necessarily a valid result of the intended operation.
  */
 
-bl_t BCATU(bmath,mfx,s,inv)(     const bmath_mfx_s* o, bmath_mfx_s* res ); // res = o^-1
-bl_t BCATU(bmath,mfx,s,inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res ); // res = (o^-1)T
-bl_t BCATU(bmath,mfx,s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res ); // res = o^-1 in case o is positive definite (3x faster than bmath_mfx_s_inv)
+bl_t BCATU(bmath_mfx_s,inv)(     const bmath_mfx_s* o, bmath_mfx_s* res ); // res = o^-1
+bl_t BCATU(bmath_mfx_s,inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res ); // res = (o^-1)T
+bl_t BCATU(bmath_mfx_s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res ); // res = o^-1 in case o is positive definite (3x faster than bmath_mfx_s_inv)
 
 /** Pseudo-Inversion:
  *  Inversion via SVD/EVD by setting near-zero singular values to zero (cut-off).
@@ -340,46 +340,46 @@ bl_t BCATU(bmath,mfx,s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res ); // re
  *  Returns success of underlying SVD/EVD.
  *  In case of non-success res contains a result but it might not be the true pseudo inverse.
  */
-bl_t BCATU(bmath,mfx,s,piv)(     const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res ); // general matrix o
-bl_t BCATU(bmath,mfx,s,hsm_piv)( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res ); // faster inversion in case o is symmetric
+bl_t BCATU(bmath_mfx_s,piv)(     const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res ); // general matrix o
+bl_t BCATU(bmath_mfx_s,hsm_piv)( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res ); // faster inversion in case o is symmetric
 
 /** Affine inversion.
  *  res = av1-inverse of o.
  *  o and res deemed to be av1-transformations
  */
-bl_t BCATU(bmath,mfx,s,inv_av1)(     const bmath_mfx_s* o, bmath_mfx_s* res );
-bl_t BCATU(bmath,mfx,s,pdf_inv_av1)( const bmath_mfx_s* o, bmath_mfx_s* res );           // o positive definite
-bl_t BCATU(bmath,mfx,s,hsm_piv_av1)( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res ); // pseudo inversion; o symmetric
-bl_t BCATU(bmath,mfx,s,div)(         const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+bl_t BCATU(bmath_mfx_s,inv_av1)(     const bmath_mfx_s* o, bmath_mfx_s* res );
+bl_t BCATU(bmath_mfx_s,pdf_inv_av1)( const bmath_mfx_s* o, bmath_mfx_s* res );           // o positive definite
+bl_t BCATU(bmath_mfx_s,hsm_piv_av1)( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res ); // pseudo inversion; o symmetric
+bl_t BCATU(bmath_mfx_s,div)(         const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
 
 /**********************************************************************************************************************/
 /// element-access; col-access; row-access; sub-matrix
 
-void BCATU(bmath,mfx,s,set_row_by_data)( bmath_mfx_s* o, uz_t idx, const fx_t* data );
-void BCATU(bmath,mfx,s,set_col_by_data)( bmath_mfx_s* o, uz_t idx, const fx_t* data );
-void BCATU(bmath,mfx,s,set_dag_by_data)( bmath_mfx_s* o,           const fx_t* data );
-void BCATU(bmath,mfx,s,set_row_by_vec) ( bmath_mfx_s* o, uz_t idx, const bmath_vfx_s* vec );
-void BCATU(bmath,mfx,s,set_col_by_vec) ( bmath_mfx_s* o, uz_t idx, const bmath_vfx_s* vec );
-void BCATU(bmath,mfx,s,set_dag_by_vec) ( bmath_mfx_s* o,           const bmath_vfx_s* vec );
-void BCATU(bmath,mfx,s,get_row_vec)( const bmath_mfx_s* o, uz_t idx, bmath_vfx_s* res );
-void BCATU(bmath,mfx,s,get_col_vec)( const bmath_mfx_s* o, uz_t idx, bmath_vfx_s* res );
-void BCATU(bmath,mfx,s,get_dag_vec)( const bmath_mfx_s* o,           bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,set_row_by_data)( bmath_mfx_s* o, uz_t idx, const fx_t* data );
+void BCATU(bmath_mfx_s,set_col_by_data)( bmath_mfx_s* o, uz_t idx, const fx_t* data );
+void BCATU(bmath_mfx_s,set_dag_by_data)( bmath_mfx_s* o,           const fx_t* data );
+void BCATU(bmath_mfx_s,set_row_by_vec) ( bmath_mfx_s* o, uz_t idx, const bmath_vfx_s* vec );
+void BCATU(bmath_mfx_s,set_col_by_vec) ( bmath_mfx_s* o, uz_t idx, const bmath_vfx_s* vec );
+void BCATU(bmath_mfx_s,set_dag_by_vec) ( bmath_mfx_s* o,           const bmath_vfx_s* vec );
+void BCATU(bmath_mfx_s,get_row_vec)( const bmath_mfx_s* o, uz_t idx, bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,get_col_vec)( const bmath_mfx_s* o, uz_t idx, bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,get_dag_vec)( const bmath_mfx_s* o,           bmath_vfx_s* res );
 
-void BCATU(bmath,mfx,s,swap_row)( bmath_mfx_s* o, uz_t i, uz_t j ); // swaps rows i, j
-void BCATU(bmath,mfx,s,swap_col)( bmath_mfx_s* o, uz_t i, uz_t j ); // swaps cols i, j
+void BCATU(bmath_mfx_s,swap_row)( bmath_mfx_s* o, uz_t i, uz_t j ); // swaps rows i, j
+void BCATU(bmath_mfx_s,swap_col)( bmath_mfx_s* o, uz_t i, uz_t j ); // swaps cols i, j
 
-void BCATU(bmath,mfx,s,mul_fx_to_row)( bmath_mfx_s* o, fx_t v, uz_t i ); // multiplies v to all values in row i
-void BCATU(bmath,mfx,s,mul_fx_to_col)( bmath_mfx_s* o, fx_t v, uz_t i ); // multiplies v to all values in col i
+void BCATU(bmath_mfx_s,mul_fx_to_row)( bmath_mfx_s* o, fx_t v, uz_t i ); // multiplies v to all values in row i
+void BCATU(bmath_mfx_s,mul_fx_to_col)( bmath_mfx_s* o, fx_t v, uz_t i ); // multiplies v to all values in col i
 
 static inline
-void BCATU(bmath,mfx,s,set_fx)( bmath_mfx_s* o, uz_t row, uz_t col, fx_t v )
+void BCATU(bmath_mfx_s,set_fx)( bmath_mfx_s* o, uz_t row, uz_t col, fx_t v )
 {
     assert( row < o->rows && col <= o->cols );
     o->data[ row * o->stride + col ] = v;
 }
 
 static inline
-fx_t BCATU(bmath,mfx,s,get_fx)( const bmath_mfx_s* o, uz_t row, uz_t col )
+fx_t BCATU(bmath_mfx_s,get_fx)( const bmath_mfx_s* o, uz_t row, uz_t col )
 {
     assert( row < o->rows && col <= o->cols );
     return o->data[ row * o->stride + col ];
@@ -395,7 +395,7 @@ fx_t BCATU(bmath,mfx,s,get_fx)( const bmath_mfx_s* o, uz_t row, uz_t col )
  *  res: represents the lower-triangular version
  *  It is o = res * resT.
  */
-bl_t BCATU(bmath,mfx,s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* res );
+bl_t BCATU(bmath_mfx_s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* res );
 
 /** LU decomposition. Returns succcess.
  *  TODO: The current implementation is unstable and not guaranteed to succeed
@@ -407,7 +407,7 @@ bl_t BCATU(bmath,mfx,s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* r
  *       L is lower triangle of LUC except diagonal
  *       diagonal of L is all 1 and not stored.
  */
-bl_t BCATU(bmath,mfx,s,decompose_luc)( const bmath_mfx_s* o, bmath_mfx_s* res );
+bl_t BCATU(bmath_mfx_s,decompose_luc)( const bmath_mfx_s* o, bmath_mfx_s* res );
 
 /** Inversion and h-transposition of lower triangular matrix.
  *  o is deemed lower triangular (only lower triangular elements are evaluated)
@@ -416,50 +416,50 @@ bl_t BCATU(bmath,mfx,s,decompose_luc)( const bmath_mfx_s* o, bmath_mfx_s* res );
  *  Algorithm always finishes.
  *  If o singular, incomputable elements are set to zero.
  */
-bl_t BCATU(bmath,mfx,s,ltr_inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res );
+bl_t BCATU(bmath_mfx_s,ltr_inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res );
 
 /** Multiplication of o with o(transposed) of triangular matrix. (res = o * oT)
  *  Only triangular elements of o are evaluated
  *  res is symmetric
  */
-void BCATU(bmath,mfx,s,ltr_mul_htp)( const bmath_mfx_s* o, bmath_mfx_s* res ); // lower triangular
-void BCATU(bmath,mfx,s,utr_mul_htp)( const bmath_mfx_s* o, bmath_mfx_s* res ); // upper triangular
+void BCATU(bmath_mfx_s,ltr_mul_htp)( const bmath_mfx_s* o, bmath_mfx_s* res ); // lower triangular
+void BCATU(bmath_mfx_s,utr_mul_htp)( const bmath_mfx_s* o, bmath_mfx_s* res ); // upper triangular
 
 /** Multiplication of special matrix with a vector res = o * op.
  *  Only relevant triangular elements of o are evaluated.
  *  In-Place for op==res.
  */
-void BCATU(bmath,mfx,s,ltr_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
-void BCATU(bmath,mfx,s,lt1_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
-void BCATU(bmath,mfx,s,utr_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
-void BCATU(bmath,mfx,s,luc_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,ltr_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,lt1_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,utr_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,luc_mul_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
 
 /** Multiplication of special matrix with a transposed matrix, transposed result: resT = o * opT.
  *  Only relevant triangular elements of o are evaluated.
  *  In-Place for op==res.
  */
-void BCATU(bmath,mfx,s,ltr_mul_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
-void BCATU(bmath,mfx,s,lt1_mul_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
-void BCATU(bmath,mfx,s,utr_mul_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
-void BCATU(bmath,mfx,s,luc_mul_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+void BCATU(bmath_mfx_s,ltr_mul_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+void BCATU(bmath_mfx_s,lt1_mul_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+void BCATU(bmath_mfx_s,utr_mul_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+void BCATU(bmath_mfx_s,luc_mul_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
 
 /** Solves multiplication of special matrix with a vector: op = o * res.
  *  Only relevant triangular elements of o are evaluated.
  *  In-Place for op==res.
  */
-void BCATU(bmath,mfx,s,ltr_solve_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
-void BCATU(bmath,mfx,s,lt1_solve_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
-void BCATU(bmath,mfx,s,utr_solve_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
-void BCATU(bmath,mfx,s,luc_solve_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,ltr_solve_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,lt1_solve_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,utr_solve_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
+void BCATU(bmath_mfx_s,luc_solve_vec)( const bmath_mfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
 
 /** Solves multiplication of special matrix with a transposed matrix, transposed result: opT = o * resT.
  *  Only relevant triangular elements of o are evaluated.
  *  In-Place for op==res.
  */
-void BCATU(bmath,mfx,s,ltr_solve_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
-void BCATU(bmath,mfx,s,lt1_solve_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
-void BCATU(bmath,mfx,s,utr_solve_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
-void BCATU(bmath,mfx,s,luc_solve_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+void BCATU(bmath_mfx_s,ltr_solve_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+void BCATU(bmath_mfx_s,lt1_solve_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+void BCATU(bmath_mfx_s,utr_solve_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+void BCATU(bmath_mfx_s,luc_solve_htp_htp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
 
 /**********************************************************************************************************************/
 /// Other decompositions
@@ -470,8 +470,8 @@ void BCATU(bmath,mfx,s,luc_solve_htp_htp)( const bmath_mfx_s* o, const bmath_mfx
  *  Output: a' (tri-diagonal), v' (rotation or NULL)
  *  It is vT * a * v = v'T * a' * v'.
  */
-void BCATU(bmath,mfx,s,trd)(     bmath_mfx_s* a, bmath_mfx_s* v );
-void BCATU(bmath,mfx,s,trd_htp)( bmath_mfx_s* a, bmath_mfx_s* v );
+void BCATU(bmath_mfx_s,trd)(     bmath_mfx_s* a, bmath_mfx_s* v );
+void BCATU(bmath_mfx_s,trd_htp)( bmath_mfx_s* a, bmath_mfx_s* v );
 
 /** Stable bidiagonal decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
  *  It is a = u * a' * vT, with u, v being unitary.
@@ -500,28 +500,28 @@ void BCATU(bmath,mfx,s,trd_htp)( bmath_mfx_s* a, bmath_mfx_s* v );
  *  Meaning either a->rows or a->cols is changed to min(m,n) by the routine.
  *
  */
-void BCATU(bmath,mfx,s,ubd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v ); // upper bidiagonal
-void BCATU(bmath,mfx,s,lbd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v ); // lower bidiagonal
+void BCATU(bmath_mfx_s,ubd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v ); // upper bidiagonal
+void BCATU(bmath_mfx_s,lbd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v ); // lower bidiagonal
 
 /** Turns an upper bidiagonal matrix into the lower bidiagonal form a -> a'
  *  by postmultiplying a unitary matrix.
  *  If v is provided, it is modified v -> v' such that a * vT = a' * v'T
  *  (v may be full, thin or NULL)
  */
-void BCATU(bmath,mfx,s,ubd_to_lbd)( bmath_mfx_s* a, bmath_mfx_s* v );
+void BCATU(bmath_mfx_s,ubd_to_lbd)( bmath_mfx_s* a, bmath_mfx_s* v );
 
 /** Turns a lower bidiagonal matrix into the upper bidiagonal form a -> a'
  *  by pre-multiplying a unitary matrix.
  *  If u is provided, it is modified u -> u' such that u * a = u' * a'
  *  (u may be full, thin or NULL)
  */
-void BCATU(bmath,mfx,s,lbd_to_ubd)( bmath_mfx_s* u, bmath_mfx_s* a );
+void BCATU(bmath_mfx_s,lbd_to_ubd)( bmath_mfx_s* u, bmath_mfx_s* a );
 
 /** ubd_to_lbd with v deemed transposed. */
-void BCATU(bmath,mfx,s,ubd_to_lbd_htp)( bmath_mfx_s* a, bmath_mfx_s* v );
+void BCATU(bmath_mfx_s,ubd_to_lbd_htp)( bmath_mfx_s* a, bmath_mfx_s* v );
 
 /** lbd_to_vbd with u deemed transposed. */
-void BCATU(bmath,mfx,s,lbd_to_ubd_htp)( bmath_mfx_s* u, bmath_mfx_s* a );
+void BCATU(bmath_mfx_s,lbd_to_ubd_htp)( bmath_mfx_s* u, bmath_mfx_s* a );
 
 /**********************************************************************************************************************/
 /// Covariance
@@ -529,14 +529,14 @@ void BCATU(bmath,mfx,s,lbd_to_ubd_htp)( bmath_mfx_s* u, bmath_mfx_s* a );
 /** Sets o to the covariance matrix of a section of arr_vec:
  *  oij = E( E( vi - E( vi ) )E( vj - E( vj ) ) )
  */
-void BCATU(bmath,mfx,s,set_covariance_on_section_fast)( bmath_mfx_s* o, bmath_arr_vfx_s* arr_vec, uz_t start, uz_t end ); // fast
-void BCATU(bmath,mfx,s,set_covariance_on_section_sprc)( bmath_mfx_s* o, bmath_arr_vfx_s* arr_vec, uz_t start, uz_t end ); // stochastically precise
+void BCATU(bmath_mfx_s,set_covariance_on_section_fast)( bmath_mfx_s* o, bmath_arr_vfx_s* arr_vec, uz_t start, uz_t end ); // fast
+void BCATU(bmath_mfx_s,set_covariance_on_section_sprc)( bmath_mfx_s* o, bmath_arr_vfx_s* arr_vec, uz_t start, uz_t end ); // stochastically precise
 
 /**********************************************************************************************************************/
 /// Givens Rotations
 
 /// rotate two adjacent rows
-static inline void BCATU(bmath,mfx,s,arow_rotate)( bmath_mfx_s* o, uz_t idx, const bmath_grt_fx_s* grt, uz_t col_start, uz_t col_end )
+static inline void BCATU(bmath_mfx_s,arow_rotate)( bmath_mfx_s* o, uz_t idx, const bmath_grt_fx_s* grt, uz_t col_start, uz_t col_end )
 {
     if( grt->s != 0 && col_end > col_start )
     {
@@ -550,7 +550,7 @@ static inline void BCATU(bmath,mfx,s,arow_rotate)( bmath_mfx_s* o, uz_t idx, con
 //----------------------------------------------------------------------------------------------------------------------
 
 /// rotate two distant rows
-static inline void BCATU(bmath,mfx,s,drow_rotate)( bmath_mfx_s* o, uz_t a_idx, uz_t b_idx, const bmath_grt_fx_s* grt, uz_t col_start, uz_t col_end )
+static inline void BCATU(bmath_mfx_s,drow_rotate)( bmath_mfx_s* o, uz_t a_idx, uz_t b_idx, const bmath_grt_fx_s* grt, uz_t col_start, uz_t col_end )
 {
     if( grt->s != 0 && col_end > col_start )
     {
@@ -564,7 +564,7 @@ static inline void BCATU(bmath,mfx,s,drow_rotate)( bmath_mfx_s* o, uz_t a_idx, u
 //----------------------------------------------------------------------------------------------------------------------
 
 /// rotate two adjacent cols
-static inline void BCATU(bmath,mfx,s,acol_rotate)( bmath_mfx_s* o, uz_t idx, const bmath_grt_fx_s* grt, uz_t row_start, uz_t row_end )
+static inline void BCATU(bmath_mfx_s,acol_rotate)( bmath_mfx_s* o, uz_t idx, const bmath_grt_fx_s* grt, uz_t row_start, uz_t row_end )
 {
     if( grt->s != 0 && row_start < row_end )
     {
@@ -580,7 +580,7 @@ static inline void BCATU(bmath,mfx,s,acol_rotate)( bmath_mfx_s* o, uz_t idx, con
 //----------------------------------------------------------------------------------------------------------------------
 
 /// rotate two distant cols
-static inline void BCATU(bmath,mfx,s,dcol_rotate)( bmath_mfx_s* o, uz_t a_idx, uz_t b_idx, const bmath_grt_fx_s* grt, uz_t row_start, uz_t row_end )
+static inline void BCATU(bmath_mfx_s,dcol_rotate)( bmath_mfx_s* o, uz_t a_idx, uz_t b_idx, const bmath_grt_fx_s* grt, uz_t row_start, uz_t row_end )
 {
     if( grt->s != 0 && row_start < row_end )
     {
@@ -596,7 +596,7 @@ static inline void BCATU(bmath,mfx,s,dcol_rotate)( bmath_mfx_s* o, uz_t a_idx, u
 //----------------------------------------------------------------------------------------------------------------------
 
 /// apply a forward row-swipe (start --> end; end - start rotations)
-static inline void BCATU(bmath,mfx,s,arow_swipe_fwd)( bmath_mfx_s* o, uz_t idx, const bmath_arr_grt_fx_s* grt, uz_t col_start, uz_t col_end )
+static inline void BCATU(bmath_mfx_s,arow_swipe_fwd)( bmath_mfx_s* o, uz_t idx, const bmath_arr_grt_fx_s* grt, uz_t col_start, uz_t col_end )
 {
     assert( grt->size >= col_end - 1 );
     fx_t* row = o->data + o->stride * idx;
@@ -606,7 +606,7 @@ static inline void BCATU(bmath,mfx,s,arow_swipe_fwd)( bmath_mfx_s* o, uz_t idx, 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// apply a reverse adjacent row-swipe (end --> start; end - start rotations)
-static inline void BCATU(bmath,mfx,s,arow_swipe_rev)( bmath_mfx_s* o, uz_t idx, const bmath_arr_grt_fx_s* grt, uz_t col_start, uz_t col_end )
+static inline void BCATU(bmath_mfx_s,arow_swipe_rev)( bmath_mfx_s* o, uz_t idx, const bmath_arr_grt_fx_s* grt, uz_t col_start, uz_t col_end )
 {
     assert( grt->size >= col_end - 1 );
     fx_t* row = o->data + o->stride * idx;
@@ -616,16 +616,16 @@ static inline void BCATU(bmath,mfx,s,arow_swipe_rev)( bmath_mfx_s* o, uz_t idx, 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// forward sweep of adjacent row rotations (row_start --> row_end)
-void BCATU(bmath,mfx,s,sweep_arow_rotate_fwd)( bmath_mfx_s* o, uz_t row_start, uz_t row_end, const bmath_arr_grt_fx_s* grt, uz_t col_start, uz_t col_end );
+void BCATU(bmath_mfx_s,sweep_arow_rotate_fwd)( bmath_mfx_s* o, uz_t row_start, uz_t row_end, const bmath_arr_grt_fx_s* grt, uz_t col_start, uz_t col_end );
 
 /// reverse sweep of adjacent row rotations (row_end --> row_start)
-void BCATU(bmath,mfx,s,sweep_arow_rotate_rev)( bmath_mfx_s* o, uz_t row_start, uz_t row_end, const bmath_arr_grt_fx_s* grt, uz_t col_start, uz_t col_end );
+void BCATU(bmath_mfx_s,sweep_arow_rotate_rev)( bmath_mfx_s* o, uz_t row_start, uz_t row_end, const bmath_arr_grt_fx_s* grt, uz_t col_start, uz_t col_end );
 
 /// forward sweep of adjacent col rotations (col_start --> col_end)
-void BCATU(bmath,mfx,s,sweep_acol_rotate_fwd)( bmath_mfx_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_fx_s* grt, uz_t row_start, uz_t row_end );
+void BCATU(bmath_mfx_s,sweep_acol_rotate_fwd)( bmath_mfx_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_fx_s* grt, uz_t row_start, uz_t row_end );
 
 /// reverse sweep of distant col rotations (col_end --> col_start)
-void BCATU(bmath,mfx,s,sweep_dcol_rotate_rev)( bmath_mfx_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_fx_s* grt, uz_t row_start, uz_t row_end );
+void BCATU(bmath_mfx_s,sweep_dcol_rotate_rev)( bmath_mfx_s* o, uz_t col_start, uz_t col_end, const bmath_arr_grt_fx_s* grt, uz_t row_start, uz_t row_end );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -638,18 +638,18 @@ void BCATU(bmath,mfx,s,sweep_dcol_rotate_rev)( bmath_mfx_s* o, uz_t col_start, u
  *  Note that the resulting matrix stores fewer actual values than its size (rows * cols) might indicate.
  *  No matrix data is actually moved in memory by this function.
  */
-void BCATU(bmath,mfx,s,to_conv_operand)( bmath_mfx_s* o, sz_t kernel_size, sz_t step_size );
+void BCATU(bmath_mfx_s,to_conv_operand)( bmath_mfx_s* o, sz_t kernel_size, sz_t step_size );
 
 /**********************************************************************************************************************/
 /// Development support
 
 // for easy inspection
 
-void BCATU(bmath,mfx,s,to_sink) ( const bmath_mfx_s* o, bcore_sink* sink );
-void BCATU(bmath,mfx,s,to_image)( const bmath_mfx_s* o, bmath_fp_u2_argb_from_fx fp, vd_t arg, bcore_img_u2_s* image );
+void BCATU(bmath_mfx_s,to_sink) ( const bmath_mfx_s* o, bcore_sink* sink );
+void BCATU(bmath_mfx_s,to_image)( const bmath_mfx_s* o, bmath_fp_u2_argb_from_fx fp, vd_t arg, bcore_img_u2_s* image );
 
-static inline void BCATU(bmath,mfx,s,to_string)( const bmath_mfx_s* o, st_s* string ) { BCATU(bmath,mfx,s,to_sink)( o, ( bcore_sink* )string ); }
-static inline void BCATU(bmath,mfx,s,to_stdout)( const bmath_mfx_s* o ) { BCATU(bmath,mfx,s,to_sink)( o, BCORE_STDOUT ); }
+static inline void BCATU(bmath_mfx_s,to_string)( const bmath_mfx_s* o, st_s* string ) { BCATU(bmath_mfx_s,to_sink)( o, ( bcore_sink* )string ); }
+static inline void BCATU(bmath_mfx_s,to_stdout)( const bmath_mfx_s* o ) { BCATU(bmath_mfx_s,to_sink)( o, BCORE_STDOUT ); }
 
 /**********************************************************************************************************************/
 // closing template

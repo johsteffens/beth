@@ -44,7 +44,7 @@
 // Microkernels
 
 /// mul: Fixed size AVX-Microkernel
-static void BCATU(bmath,mfx,s,mul_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void BCATU(bmath_mfx_s,mul_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -120,7 +120,7 @@ static void BCATU(bmath,mfx,s,mul_fix_kernel)( const fx_t* o, sz_t o_s, const fx
  *  Allows all combinations o_r, o_c, m_c (including 0)
  *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_c <= BMATH_MUL_BLOCK_SIZE
  */
-static void BCATU(bmath,mfx,s,mul_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
+static void BCATU(bmath_mfx_s,mul_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -204,7 +204,7 @@ static void BCATU(bmath,mfx,s,mul_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_
 //----------------------------------------------------------------------------------------------------------------------
 
 /// mul_htp: Fixed size AVX-Microkernel
-static void BCATU(bmath,mfx,s,mul_htp_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void BCATU(bmath_mfx_s,mul_htp_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -284,7 +284,7 @@ static void BCATU(bmath,mfx,s,mul_htp_fix_kernel)( const fx_t* o, sz_t o_s, cons
  *  Allows all combinations o_r, o_c, m_r (including 0)
  *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_r <= BMATH_MUL_BLOCK_SIZE
  */
-static void BCATU(bmath,mfx,s,mul_htp_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
+static void BCATU(bmath_mfx_s,mul_htp_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -375,7 +375,7 @@ static void BCATU(bmath,mfx,s,mul_htp_flex_kernel)( const fx_t* o, sz_t o_s, sz_
 //----------------------------------------------------------------------------------------------------------------------
 
 /// htp_mul: Fixed size AVX-Microkernel
-static void BCATU(bmath,mfx,s,htp_mul_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void BCATU(bmath_mfx_s,htp_mul_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -453,7 +453,7 @@ static void BCATU(bmath,mfx,s,htp_mul_fix_kernel)( const fx_t* o, sz_t o_s, cons
  *  Allows all combinations o_r, o_c, m_r (including 0)
  *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_c <= BMATH_MUL_BLKPK_SIZE * P5_SIZE
  */
-static void BCATU(bmath,mfx,s,htp_mul_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
+static void BCATU(bmath_mfx_s,htp_mul_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -543,7 +543,7 @@ static void BCATU(bmath,mfx,s,htp_mul_flex_kernel)( const fx_t* o, sz_t o_s, sz_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath,mfx,s,htp_mul_htp_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void BCATU(bmath_mfx_s,htp_mul_htp_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -625,7 +625,7 @@ static void BCATU(bmath,mfx,s,htp_mul_htp_fix_kernel)( const fx_t* o, sz_t o_s, 
  *  Allows all combinations o_r, o_c, m_r (including 0)
  *  provided o_r <= BMATH_MUL_BLOCK_SIZE && m_r <= BMATH_MUL_BLOCK_SIZE
  */
-static void BCATU(bmath,mfx,s,htp_mul_htp_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
+static void BCATU(bmath_mfx_s,htp_mul_htp_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -725,35 +725,35 @@ static sz_t midof( sz_t v, const sz_t bz )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath,mfx,s,fx_t_mul)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
+static void BCATU(bmath_mfx_s,fx_t_mul)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
 {
     if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_c == BMATH_MUL_BLOCK_SIZE )
     {
-        BCATU(bmath,mfx,s,mul_fix_kernel)( o, o_s, m, m_s, r, r_s );
+        BCATU(bmath_mfx_s,mul_fix_kernel)( o, o_s, m, m_s, r, r_s );
         return;
     }
 
     if( o_r >= o_c && o_r >= m_c && o_r > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_mul)( o,             o_s,       mid, o_c, m, m_s, m_c,             r, r_s );
-        BCATU(bmath,mfx,s,fx_t_mul)( o + mid * o_s, o_s, o_r - mid, o_c, m, m_s, m_c, r + mid * r_s, r_s );
+        BCATU(bmath_mfx_s,fx_t_mul)( o,             o_s,       mid, o_c, m, m_s, m_c,             r, r_s );
+        BCATU(bmath_mfx_s,fx_t_mul)( o + mid * o_s, o_s, o_r - mid, o_c, m, m_s, m_c, r + mid * r_s, r_s );
         return;
     }
 
     if( o_c >= m_c && o_c > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_mul)( o,       o_s, o_r,       mid, m,             m_s, m_c, r, r_s );
-        BCATU(bmath,mfx,s,fx_t_mul)( o + mid, o_s, o_r, o_c - mid, m + mid * m_s, m_s, m_c, r, r_s );
+        BCATU(bmath_mfx_s,fx_t_mul)( o,       o_s, o_r,       mid, m,             m_s, m_c, r, r_s );
+        BCATU(bmath_mfx_s,fx_t_mul)( o + mid, o_s, o_r, o_c - mid, m + mid * m_s, m_s, m_c, r, r_s );
         return;
     }
 
     if( m_c > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( m_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_mul)( o, o_s, o_r, o_c, m,       m_s,       mid, r,       r_s );
-        BCATU(bmath,mfx,s,fx_t_mul)( o, o_s, o_r, o_c, m + mid, m_s, m_c - mid, r + mid, r_s );
+        BCATU(bmath_mfx_s,fx_t_mul)( o, o_s, o_r, o_c, m,       m_s,       mid, r,       r_s );
+        BCATU(bmath_mfx_s,fx_t_mul)( o, o_s, o_r, o_c, m + mid, m_s, m_c - mid, r + mid, r_s );
         return;
     }
 
@@ -761,20 +761,20 @@ static void BCATU(bmath,mfx,s,fx_t_mul)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t
     assert( o_r <= BMATH_MUL_BLOCK_SIZE );
     assert( o_c <= BMATH_MUL_BLOCK_SIZE );
     assert( m_c <= BMATH_MUL_BLOCK_SIZE );
-    BCATU(bmath,mfx,s,mul_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_c, r, r_s );
+    BCATU(bmath_mfx_s,mul_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_c, r, r_s );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r )
 {
     if( r == o || r == m )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, r->rows, r->cols );
-        BCATU(bmath,mfx,s,mul)( o, m, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, r );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, r->rows, r->cols );
+        BCATU(bmath_mfx_s,mul)( o, m, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, r );
+        BCATU(bmath_mfx_s,discard)( buf );
         return;
     }
 
@@ -782,45 +782,45 @@ void BCATU(bmath,mfx,s,mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_m
     ASSERT( o->rows == r->rows );
     ASSERT( m->cols == r->cols );
 
-    BCATU(bmath,mfx,s,zro)( r );
+    BCATU(bmath_mfx_s,zro)( r );
 
-    BCATU(bmath,mfx,s,fx_t_mul)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->cols, r->data, r->stride );
+    BCATU(bmath_mfx_s,fx_t_mul)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->cols, r->data, r->stride );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath,mfx,s,fx_t_mul_htp)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s, bl_t sym )
+static void BCATU(bmath_mfx_s,fx_t_mul_htp)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s, bl_t sym )
 {
     if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_r == BMATH_MUL_BLOCK_SIZE )
     {
-        BCATU(bmath,mfx,s,mul_htp_fix_kernel)( o, o_s, m, m_s, r, r_s );
+        BCATU(bmath_mfx_s,mul_htp_fix_kernel)( o, o_s, m, m_s, r, r_s );
         return;
     }
 
     if( o_r >= o_c && o_r >= m_r && o_r > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_mul_htp)( o,             o_s,       mid, o_c, m, m_s, m_r,             r, r_s, sym );
-        BCATU(bmath,mfx,s,fx_t_mul_htp)( o + mid * o_s, o_s, o_r - mid, o_c, m, m_s, m_r, r + mid * r_s, r_s, sym );
+        BCATU(bmath_mfx_s,fx_t_mul_htp)( o,             o_s,       mid, o_c, m, m_s, m_r,             r, r_s, sym );
+        BCATU(bmath_mfx_s,fx_t_mul_htp)( o + mid * o_s, o_s, o_r - mid, o_c, m, m_s, m_r, r + mid * r_s, r_s, sym );
         return;
     }
 
     if( o_c >= m_r && o_c > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_mul_htp)( o,       o_s, o_r,       mid, m,       m_s, m_r, r, r_s, sym );
-        BCATU(bmath,mfx,s,fx_t_mul_htp)( o + mid, o_s, o_r, o_c - mid, m + mid, m_s, m_r, r, r_s, sym );
+        BCATU(bmath_mfx_s,fx_t_mul_htp)( o,       o_s, o_r,       mid, m,       m_s, m_r, r, r_s, sym );
+        BCATU(bmath_mfx_s,fx_t_mul_htp)( o + mid, o_s, o_r, o_c - mid, m + mid, m_s, m_r, r, r_s, sym );
         return;
     }
 
     if( m_r > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( m_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_mul_htp)( o, o_s, o_r, o_c, m, m_s, mid, r, r_s, sym );
+        BCATU(bmath_mfx_s,fx_t_mul_htp)( o, o_s, o_r, o_c, m, m_s, mid, r, r_s, sym );
 
         if( !sym || o != m ) // in case of symmetry skip upper triangle of r
         {
-            BCATU(bmath,mfx,s,fx_t_mul_htp)( o, o_s, o_r, o_c, m + mid * m_s, m_s, m_r - mid, r + mid, r_s, sym );
+            BCATU(bmath_mfx_s,fx_t_mul_htp)( o, o_s, o_r, o_c, m + mid * m_s, m_s, m_r - mid, r + mid, r_s, sym );
         }
         return;
     }
@@ -829,20 +829,20 @@ static void BCATU(bmath,mfx,s,fx_t_mul_htp)( const fx_t* o, sz_t o_s, sz_t o_r, 
     assert( o_r <= BMATH_MUL_BLOCK_SIZE );
     assert( o_c <= BMATH_MUL_BLOCK_SIZE );
     assert( m_r <= BMATH_MUL_BLOCK_SIZE );
-    BCATU(bmath,mfx,s,mul_htp_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_r, r, r_s );
+    BCATU(bmath_mfx_s,mul_htp_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_r, r, r_s );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r )
 {
     if( r == o || r == m )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, r->rows, r->cols );
-        BCATU(bmath,mfx,s,mul_htp)( o, m, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, r );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, r->rows, r->cols );
+        BCATU(bmath_mfx_s,mul_htp)( o, m, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, r );
+        BCATU(bmath_mfx_s,discard)( buf );
         return;
     }
 
@@ -850,11 +850,11 @@ void BCATU(bmath,mfx,s,mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bma
     ASSERT( o->rows == r->rows );
     ASSERT( m->rows == r->cols );
 
-    BCATU(bmath,mfx,s,zro)( r );
+    BCATU(bmath_mfx_s,zro)( r );
 
     bl_t symmetry = ( o == m );
 
-    BCATU(bmath,mfx,s,fx_t_mul_htp)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->rows, r->data, r->stride, symmetry );
+    BCATU(bmath_mfx_s,fx_t_mul_htp)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->rows, r->data, r->stride, symmetry );
 
     if( symmetry )
     {
@@ -870,38 +870,38 @@ void BCATU(bmath,mfx,s,mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bma
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath,mfx,s,fx_t_htp_mul)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s, bl_t sym )
+static void BCATU(bmath_mfx_s,fx_t_htp_mul)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s, bl_t sym )
 {
     if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_c == BMATH_MUL_BLOCK_SIZE )
     {
-        BCATU(bmath,mfx,s,htp_mul_fix_kernel)( o, o_s, m, m_s, r, r_s );
+        BCATU(bmath_mfx_s,htp_mul_fix_kernel)( o, o_s, m, m_s, r, r_s );
         return;
     }
 
     if( o_r >= o_c && o_r >= m_c && o_r > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_htp_mul)( o,             o_s,       mid, o_c, m,             m_s, m_c, r, r_s, sym );
-        BCATU(bmath,mfx,s,fx_t_htp_mul)( o + mid * o_s, o_s, o_r - mid, o_c, m + mid * m_s, m_s, m_c, r, r_s, sym );
+        BCATU(bmath_mfx_s,fx_t_htp_mul)( o,             o_s,       mid, o_c, m,             m_s, m_c, r, r_s, sym );
+        BCATU(bmath_mfx_s,fx_t_htp_mul)( o + mid * o_s, o_s, o_r - mid, o_c, m + mid * m_s, m_s, m_c, r, r_s, sym );
         return;
     }
 
     if( o_c >= m_c && o_c > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_htp_mul)( o,       o_s, o_r,       mid, m, m_s, m_c, r,             r_s, sym );
-        BCATU(bmath,mfx,s,fx_t_htp_mul)( o + mid, o_s, o_r, o_c - mid, m, m_s, m_c, r + mid * r_s, r_s, sym );
+        BCATU(bmath_mfx_s,fx_t_htp_mul)( o,       o_s, o_r,       mid, m, m_s, m_c, r,             r_s, sym );
+        BCATU(bmath_mfx_s,fx_t_htp_mul)( o + mid, o_s, o_r, o_c - mid, m, m_s, m_c, r + mid * r_s, r_s, sym );
         return;
     }
 
     if( m_c > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( m_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_htp_mul)( o, o_s, o_r, o_c, m, m_s, mid, r, r_s, sym );
+        BCATU(bmath_mfx_s,fx_t_htp_mul)( o, o_s, o_r, o_c, m, m_s, mid, r, r_s, sym );
 
         if( !sym || o != m ) // in case of symmetry skip upper triangle of r
         {
-            BCATU(bmath,mfx,s,fx_t_htp_mul)( o, o_s, o_r, o_c, m + mid, m_s, m_c - mid, r + mid, r_s, sym );
+            BCATU(bmath_mfx_s,fx_t_htp_mul)( o, o_s, o_r, o_c, m + mid, m_s, m_c - mid, r + mid, r_s, sym );
         }
         return;
     }
@@ -910,20 +910,20 @@ static void BCATU(bmath,mfx,s,fx_t_htp_mul)( const fx_t* o, sz_t o_s, sz_t o_r, 
     assert( o_c <= BMATH_MUL_BLOCK_SIZE );
     assert( m_c <= BMATH_MUL_BLOCK_SIZE );
     assert( o_r <= BMATH_MUL_BLOCK_SIZE );
-    BCATU(bmath,mfx,s,htp_mul_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_c, r, r_s );
+    BCATU(bmath_mfx_s,htp_mul_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_c, r, r_s );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,htp_mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,htp_mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r )
 {
     if( r == o || r == m )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, r->rows, r->cols );
-        BCATU(bmath,mfx,s,htp_mul)( o, m, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, r );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, r->rows, r->cols );
+        BCATU(bmath_mfx_s,htp_mul)( o, m, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, r );
+        BCATU(bmath_mfx_s,discard)( buf );
         return;
     }
 
@@ -931,11 +931,11 @@ void BCATU(bmath,mfx,s,htp_mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bma
     ASSERT( o->cols == r->rows );
     ASSERT( m->cols == r->cols );
 
-    BCATU(bmath,mfx,s,zro)( r );
+    BCATU(bmath_mfx_s,zro)( r );
 
     bl_t symmetry = ( o == m );
 
-    BCATU(bmath,mfx,s,fx_t_htp_mul)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->cols, r->data, r->stride, symmetry );
+    BCATU(bmath_mfx_s,fx_t_htp_mul)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->cols, r->data, r->stride, symmetry );
 
     if( symmetry )
     {
@@ -952,35 +952,35 @@ void BCATU(bmath,mfx,s,htp_mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bma
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
+static void BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
 {
     if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_r == BMATH_MUL_BLOCK_SIZE )
     {
-        BCATU(bmath,mfx,s,htp_mul_htp_fix_kernel)( o, o_s, m, m_s, r, r_s );
+        BCATU(bmath_mfx_s,htp_mul_htp_fix_kernel)( o, o_s, m, m_s, r, r_s );
         return;
     }
 
     if( o_c >= o_r && o_c >= m_r && o_c > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( o,       o_s, o_r,       mid, m, m_s, m_r,             r, r_s );
-        BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( o + mid, o_s, o_r, o_c - mid, m, m_s, m_r, r + mid * r_s, r_s );
+        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o,       o_s, o_r,       mid, m, m_s, m_r,             r, r_s );
+        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o + mid, o_s, o_r, o_c - mid, m, m_s, m_r, r + mid * r_s, r_s );
         return;
     }
 
     if( o_r >= m_r && o_r > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( o,             o_s,       mid, o_c, m,       m_s, m_r, r, r_s );
-        BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( o + mid * o_s, o_s, o_r - mid, o_c, m + mid, m_s, m_r, r, r_s );
+        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o,             o_s,       mid, o_c, m,       m_s, m_r, r, r_s );
+        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o + mid * o_s, o_s, o_r - mid, o_c, m + mid, m_s, m_r, r, r_s );
         return;
     }
 
     if( m_r > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( m_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( o, o_s, o_r, o_c, m, m_s, mid, r, r_s );
-        BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( o, o_s, o_r, o_c, m + mid * m_s, m_s, m_r - mid, r + mid, r_s );
+        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o, o_s, o_r, o_c, m, m_s, mid, r, r_s );
+        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o, o_s, o_r, o_c, m + mid * m_s, m_s, m_r - mid, r + mid, r_s );
         return;
     }
 
@@ -988,20 +988,20 @@ static void BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( const fx_t* o, sz_t o_s, sz_t o
     assert( o_r <= BMATH_MUL_BLOCK_SIZE );
     assert( o_c <= BMATH_MUL_BLOCK_SIZE );
     assert( m_r <= BMATH_MUL_BLOCK_SIZE );
-    BCATU(bmath,mfx,s,htp_mul_htp_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_r, r, r_s );
+    BCATU(bmath_mfx_s,htp_mul_htp_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_r, r, r_s );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,htp_mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,htp_mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r )
 {
     if( r == o || r == m )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, r->rows, r->cols );
-        BCATU(bmath,mfx,s,htp_mul_htp)( o, m, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, r );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, r->rows, r->cols );
+        BCATU(bmath_mfx_s,htp_mul_htp)( o, m, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, r );
+        BCATU(bmath_mfx_s,discard)( buf );
         return;
     }
 
@@ -1009,8 +1009,8 @@ void BCATU(bmath,mfx,s,htp_mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m,
     ASSERT( o->cols == r->rows );
     ASSERT( m->rows == r->cols );
 
-    BCATU(bmath,mfx,s,zro)( r );
-    BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->rows, r->data, r->stride );
+    BCATU(bmath_mfx_s,zro)( r );
+    BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->rows, r->data, r->stride );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1020,15 +1020,15 @@ void BCATU(bmath,mfx,s,htp_mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res )
+void BCATU(bmath_mfx_s,mul_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res )
 {
     if( res == o )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, res->rows, res->cols );
-        BCATU(bmath,mfx,s,mul_esp)( o, op, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, res );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, res->rows, res->cols );
+        BCATU(bmath_mfx_s,mul_esp)( o, op, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, res );
+        BCATU(bmath_mfx_s,discard)( buf );
         return;
     }
 
@@ -1039,8 +1039,8 @@ void BCATU(bmath,mfx,s,mul_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bm
     ASSERT( op->cols == res->cols );
 
     bmath_vfx_s v;
-    BCATU(bmath,vfx,s,init)( &v );
-    BCATU(bmath,vfx,s,set_size)( &v, op->rows );
+    BCATU(bmath_vfx_s,init)( &v );
+    BCATU(bmath_vfx_s,set_size)( &v, op->rows );
     for( uz_t j = 0; j < op->cols; j++ )
     {
         for( uz_t i = 0; i < op->rows; i++ ) v.data[ i ] = op->data[ i * op->stride + j ];
@@ -1050,12 +1050,12 @@ void BCATU(bmath,mfx,s,mul_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bm
         }
     }
 
-    BCATU(bmath,vfx,s,down)( &v );
+    BCATU(bmath_vfx_s,down)( &v );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_htp_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res )
+void BCATU(bmath_mfx_s,mul_htp_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res )
 {
     ASSERT( o->cols  == op->cols );
     ASSERT( o->rows  == res->rows );
@@ -1065,11 +1065,11 @@ void BCATU(bmath,mfx,s,mul_htp_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op
     {
         if( res == o )
         {
-            bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-            BCATU(bmath,mfx,s,set_size)( buf, res->rows, res->cols );
-            BCATU(bmath,mfx,s,mul_htp_esp)( o, op, buf );
-            BCATU(bmath,mfx,s,cpy)( buf, res );
-            BCATU(bmath,mfx,s,discard)( buf );
+            bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+            BCATU(bmath_mfx_s,set_size)( buf, res->rows, res->cols );
+            BCATU(bmath_mfx_s,mul_htp_esp)( o, op, buf );
+            BCATU(bmath_mfx_s,cpy)( buf, res );
+            BCATU(bmath_mfx_s,discard)( buf );
         }
         else
         {
@@ -1090,12 +1090,12 @@ void BCATU(bmath,mfx,s,mul_htp_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op
     if( res == o )
     {
         bmath_vfx_s row;
-        BCATU(bmath,vfx,s,init)( &row );
-        BCATU(bmath,vfx,s,set_size)( &row, o->cols );
+        BCATU(bmath_vfx_s,init)( &row );
+        BCATU(bmath_vfx_s,set_size)( &row, o->cols );
         for( uz_t i = 0; i < o->rows; i++ )
         {
             const fx_t* voi = o->data + i *   o->stride;
-            BCATU(bmath,vfx,s,zro)( &row );
+            BCATU(bmath_vfx_s,zro)( &row );
             for( uz_t j = 0; j < op->rows; j++ )
             {
                 row.data[ j ] = BCATU(bmath,fx,t_vec,mul_vec_esp)( voi, op->data + j * op->stride, o->cols );
@@ -1104,19 +1104,19 @@ void BCATU(bmath,mfx,s,mul_htp_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op
             fx_t* vri = res->data + i * res->stride;
             for( uz_t k = 0; k < row.size; k++ ) vri[ k ] = row.data[ k ];
         }
-        BCATU(bmath,vfx,s,down)( &row );
+        BCATU(bmath_vfx_s,down)( &row );
     }
     else if( res == op )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, res->rows, res->cols );
-        BCATU(bmath,mfx,s,mul_htp_esp)( o, op, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, res );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, res->rows, res->cols );
+        BCATU(bmath_mfx_s,mul_htp_esp)( o, op, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, res );
+        BCATU(bmath_mfx_s,discard)( buf );
     }
     else
     {
-        BCATU(bmath,mfx,s,zro)( res );
+        BCATU(bmath_mfx_s,zro)( res );
         for( uz_t i = 0; i < o->rows; i++ )
         {
                   fx_t* vri = res->data + i * res->stride;
@@ -1131,7 +1131,7 @@ void BCATU(bmath,mfx,s,mul_htp_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,htp_mul_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res )
+void BCATU(bmath_mfx_s,htp_mul_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res )
 {
     ASSERT( o->rows  == op->rows );
     ASSERT( o->cols  == res->rows );
@@ -1141,11 +1141,11 @@ void BCATU(bmath,mfx,s,htp_mul_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op
     {
         if( res == o )
         {
-            bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-            BCATU(bmath,mfx,s,set_size)( buf, res->rows, res->cols );
-            BCATU(bmath,mfx,s,htp_mul_esp)( o, op, buf );
-            BCATU(bmath,mfx,s,cpy)( buf, res );
-            BCATU(bmath,mfx,s,discard)( buf );
+            bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+            BCATU(bmath_mfx_s,set_size)( buf, res->rows, res->cols );
+            BCATU(bmath_mfx_s,htp_mul_esp)( o, op, buf );
+            BCATU(bmath_mfx_s,cpy)( buf, res );
+            BCATU(bmath_mfx_s,discard)( buf );
         }
         else
         {
@@ -1165,15 +1165,15 @@ void BCATU(bmath,mfx,s,htp_mul_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op
 
     if( res == o || res == op )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, res->rows, res->cols );
-        BCATU(bmath,mfx,s,mul_htp_esp)( o, op, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, res );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, res->rows, res->cols );
+        BCATU(bmath_mfx_s,mul_htp_esp)( o, op, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, res );
+        BCATU(bmath_mfx_s,discard)( buf );
     }
     else
     {
-        BCATU(bmath,mfx,s,zro)( res );
+        BCATU(bmath_mfx_s,zro)( res );
         for( uz_t i = 0; i < o->cols; i++ )
         {
                   fx_t* vri = res->data + i * res->stride;
@@ -1188,15 +1188,15 @@ void BCATU(bmath,mfx,s,htp_mul_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath,mfx,s,mul_udu_htp_)( const bmath_mfx_s* u, const bmath_vfx_s* d, bl_t esp, bmath_mfx_s* r )
+static void BCATU(bmath_mfx_s,mul_udu_htp_)( const bmath_mfx_s* u, const bmath_vfx_s* d, bl_t esp, bmath_mfx_s* r )
 {
     ASSERT( r != u );
     ASSERT( u->rows == r->cols );
     ASSERT( u->rows == r->rows );
     ASSERT( u->cols == d->size );
 
-    bmath_vfx_s* x = BCATU(bmath,vfx,s,create)();
-    BCATU(bmath,vfx,s,set_size)( x, d->size );
+    bmath_vfx_s* x = BCATU(bmath_vfx_s,create)();
+    BCATU(bmath_vfx_s,set_size)( x, d->size );
 
     const fx_t* vd = d->data;
           fx_t* vx = x->data;
@@ -1213,26 +1213,26 @@ static void BCATU(bmath,mfx,s,mul_udu_htp_)( const bmath_mfx_s* u, const bmath_v
         }
     }
 
-    BCATU(bmath,vfx,s,discard)( x );
+    BCATU(bmath_vfx_s,discard)( x );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_udu_htp)( const bmath_mfx_s* u, const bmath_vfx_s* d, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul_udu_htp)( const bmath_mfx_s* u, const bmath_vfx_s* d, bmath_mfx_s* r )
 {
-    BCATU(bmath,mfx,s,mul_udu_htp_)( u, d, false, r );
+    BCATU(bmath_mfx_s,mul_udu_htp_)( u, d, false, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_udu_htp_esp)( const bmath_mfx_s* u, const bmath_vfx_s* d, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul_udu_htp_esp)( const bmath_mfx_s* u, const bmath_vfx_s* d, bmath_mfx_s* r )
 {
-    BCATU(bmath,mfx,s,mul_udu_htp_)( u, d, true, r );
+    BCATU(bmath_mfx_s,mul_udu_htp_)( u, d, true, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath,mfx,s,mul_udv_htp_)( const bmath_mfx_s* u, const bmath_vfx_s* d, const bmath_mfx_s* v, bl_t esp, bmath_mfx_s* r )
+static void BCATU(bmath_mfx_s,mul_udv_htp_)( const bmath_mfx_s* u, const bmath_vfx_s* d, const bmath_mfx_s* v, bl_t esp, bmath_mfx_s* r )
 {
     ASSERT( r != u );
     ASSERT( r != v );
@@ -1241,8 +1241,8 @@ static void BCATU(bmath,mfx,s,mul_udv_htp_)( const bmath_mfx_s* u, const bmath_v
     ASSERT( u->cols >= d->size );
     ASSERT( v->cols >= d->size );
 
-    bmath_vfx_s* x = BCATU(bmath,vfx,s,create)();
-    BCATU(bmath,vfx,s,set_size)( x, d->size );
+    bmath_vfx_s* x = BCATU(bmath_vfx_s,create)();
+    BCATU(bmath_vfx_s,set_size)( x, d->size );
 
     const fx_t* vd = d->data;
           fx_t* vx = x->data;
@@ -1261,26 +1261,26 @@ static void BCATU(bmath,mfx,s,mul_udv_htp_)( const bmath_mfx_s* u, const bmath_v
         }
     }
 
-    BCATU(bmath,vfx,s,discard)( x );
+    BCATU(bmath_vfx_s,discard)( x );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_udv_htp)( const bmath_mfx_s* u, const bmath_vfx_s* d, const bmath_mfx_s* v, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul_udv_htp)( const bmath_mfx_s* u, const bmath_vfx_s* d, const bmath_mfx_s* v, bmath_mfx_s* r )
 {
-    BCATU(bmath,mfx,s,mul_udv_htp_)( u, d, v, false, r );
+    BCATU(bmath_mfx_s,mul_udv_htp_)( u, d, v, false, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_udv_htp_esp)( const bmath_mfx_s* u, const bmath_vfx_s* d, const bmath_mfx_s* v, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul_udv_htp_esp)( const bmath_mfx_s* u, const bmath_vfx_s* d, const bmath_mfx_s* v, bmath_mfx_s* r )
 {
-    BCATU(bmath,mfx,s,mul_udv_htp_)( u, d, v, true, r );
+    BCATU(bmath_mfx_s,mul_udv_htp_)( u, d, v, true, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath,mfx,s,mul_utv_htp_)( const bmath_mfx_s* u, const bmath_mfx_s* t, const bmath_mfx_s* v, bl_t esp, bmath_mfx_s* r )
+static void BCATU(bmath_mfx_s,mul_utv_htp_)( const bmath_mfx_s* u, const bmath_mfx_s* t, const bmath_mfx_s* v, bl_t esp, bmath_mfx_s* r )
 {
     ASSERT( r != u );
     ASSERT( r != v );
@@ -1289,28 +1289,28 @@ static void BCATU(bmath,mfx,s,mul_utv_htp_)( const bmath_mfx_s* u, const bmath_m
     ASSERT( u->cols == t->rows );
     ASSERT( t->cols == v->cols );
 
-    if( BCATU(bmath,mfx,s,is_dag)( t ) )
+    if( BCATU(bmath_mfx_s,is_dag)( t ) )
     {
-        bmath_vfx_s* d = BCATU(bmath,vfx,s,create)();
-        BCATU(bmath,vfx,s,set_size)( d, sz_min( t->rows, t->cols ) );
-        BCATU(bmath,mfx,s,get_dag_vec)( t, d );
-        BCATU(bmath,mfx,s,mul_udv_htp_)( u, d, v, esp, r );
-        BCATU(bmath,vfx,s,discard)( d );
+        bmath_vfx_s* d = BCATU(bmath_vfx_s,create)();
+        BCATU(bmath_vfx_s,set_size)( d, sz_min( t->rows, t->cols ) );
+        BCATU(bmath_mfx_s,get_dag_vec)( t, d );
+        BCATU(bmath_mfx_s,mul_udv_htp_)( u, d, v, esp, r );
+        BCATU(bmath_vfx_s,discard)( d );
         return;
     }
 
-    bmath_vfx_s* dm = BCATU(bmath,vfx,s,create)(); // main  diag
-    bmath_vfx_s* du = BCATU(bmath,vfx,s,create)(); // upper diag (left aligned)
-    bmath_vfx_s* dl = BCATU(bmath,vfx,s,create)(); // lower diag (left aligned)
-    bmath_vfx_s* x  = BCATU(bmath,vfx,s,create)(); // temp vector
+    bmath_vfx_s* dm = BCATU(bmath_vfx_s,create)(); // main  diag
+    bmath_vfx_s* du = BCATU(bmath_vfx_s,create)(); // upper diag (left aligned)
+    bmath_vfx_s* dl = BCATU(bmath_vfx_s,create)(); // lower diag (left aligned)
+    bmath_vfx_s* x  = BCATU(bmath_vfx_s,create)(); // temp vector
 
-    BCATU(bmath,vfx,s,set_size)( dm, sz_min( t->rows, t->cols ) );
+    BCATU(bmath_vfx_s,set_size)( dm, sz_min( t->rows, t->cols ) );
 
     if( dm->size > 0 )
     {
-        BCATU(bmath,vfx,s,set_size)( du, ( ( t->cols > t->rows ) ? dm->size : dm->size - 1 ) );
-        BCATU(bmath,vfx,s,set_size)( dl, ( ( t->rows > t->cols ) ? dm->size : dm->size - 1 ) );
-        BCATU(bmath,vfx,s,set_size)( x,  dm->size );
+        BCATU(bmath_vfx_s,set_size)( du, ( ( t->cols > t->rows ) ? dm->size : dm->size - 1 ) );
+        BCATU(bmath_vfx_s,set_size)( dl, ( ( t->rows > t->cols ) ? dm->size : dm->size - 1 ) );
+        BCATU(bmath_vfx_s,set_size)( x,  dm->size );
 
         for( sz_t i = 0; i < dm->size - 1; i++ )
         {
@@ -1346,37 +1346,37 @@ static void BCATU(bmath,mfx,s,mul_utv_htp_)( const bmath_mfx_s* u, const bmath_m
         }
     }
 
-    BCATU(bmath,vfx,s,discard)( dm );
-    BCATU(bmath,vfx,s,discard)( du );
-    BCATU(bmath,vfx,s,discard)( dl );
-    BCATU(bmath,vfx,s,discard)( x );
+    BCATU(bmath_vfx_s,discard)( dm );
+    BCATU(bmath_vfx_s,discard)( du );
+    BCATU(bmath_vfx_s,discard)( dl );
+    BCATU(bmath_vfx_s,discard)( x );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_utv_htp)( const bmath_mfx_s* u, const bmath_mfx_s* t, const bmath_mfx_s* v, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul_utv_htp)( const bmath_mfx_s* u, const bmath_mfx_s* t, const bmath_mfx_s* v, bmath_mfx_s* r )
 {
-    BCATU(bmath,mfx,s,mul_utv_htp_)( u, t, v, false, r );
+    BCATU(bmath_mfx_s,mul_utv_htp_)( u, t, v, false, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_utv_htp_esp)( const bmath_mfx_s* u, const bmath_mfx_s* t, const bmath_mfx_s* v, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul_utv_htp_esp)( const bmath_mfx_s* u, const bmath_mfx_s* t, const bmath_mfx_s* v, bmath_mfx_s* r )
 {
-    BCATU(bmath,mfx,s,mul_utv_htp_)( u, t, v, false, r );
+    BCATU(bmath_mfx_s,mul_utv_htp_)( u, t, v, false, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r )
 {
     if( r == o || r == b )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, r->rows, r->cols );
-        BCATU(bmath,mfx,s,mul_add)( o, b, c, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, r );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, r->rows, r->cols );
+        BCATU(bmath_mfx_s,mul_add)( o, b, c, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, r );
+        BCATU(bmath_mfx_s,discard)( buf );
         return;
     }
 
@@ -1386,22 +1386,22 @@ void BCATU(bmath,mfx,s,mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, con
     ASSERT( c->rows == r->rows );
     ASSERT( c->cols == r->cols );
 
-    if( c != r ) BCATU(bmath,mfx,s,cpy)( c, r );
+    if( c != r ) BCATU(bmath_mfx_s,cpy)( c, r );
 
-    BCATU(bmath,mfx,s,fx_t_mul)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->cols, r->data, r->stride );
+    BCATU(bmath_mfx_s,fx_t_mul)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->cols, r->data, r->stride );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r )
 {
     if( r == o || r == b )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, r->rows, r->cols );
-        BCATU(bmath,mfx,s,mul_htp_add)( o, b, c, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, r );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, r->rows, r->cols );
+        BCATU(bmath_mfx_s,mul_htp_add)( o, b, c, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, r );
+        BCATU(bmath_mfx_s,discard)( buf );
         return;
     }
 
@@ -1411,22 +1411,22 @@ void BCATU(bmath,mfx,s,mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s* b,
     ASSERT( c->rows == r->rows );
     ASSERT( c->cols == r->cols );
 
-    if( c != r ) BCATU(bmath,mfx,s,cpy)( c, r );
+    if( c != r ) BCATU(bmath_mfx_s,cpy)( c, r );
 
-    BCATU(bmath,mfx,s,fx_t_mul_htp)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->rows, r->data, r->stride, false );
+    BCATU(bmath_mfx_s,fx_t_mul_htp)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->rows, r->data, r->stride, false );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,htp_mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,htp_mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r )
 {
     if( r == o || r == b )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, r->rows, r->cols );
-        BCATU(bmath,mfx,s,htp_mul_add)( o, b, c, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, r );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, r->rows, r->cols );
+        BCATU(bmath_mfx_s,htp_mul_add)( o, b, c, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, r );
+        BCATU(bmath_mfx_s,discard)( buf );
         return;
     }
 
@@ -1436,22 +1436,22 @@ void BCATU(bmath,mfx,s,htp_mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b,
     ASSERT( c->rows == r->rows );
     ASSERT( c->cols == r->cols );
 
-    if( c != r ) BCATU(bmath,mfx,s,cpy)( c, r );
+    if( c != r ) BCATU(bmath_mfx_s,cpy)( c, r );
 
-    BCATU(bmath,mfx,s,fx_t_htp_mul)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->cols, r->data, r->stride, false );
+    BCATU(bmath_mfx_s,fx_t_htp_mul)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->cols, r->data, r->stride, false );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,htp_mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,htp_mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r )
 {
     if( r == o || r == b )
     {
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, r->rows, r->cols );
-        BCATU(bmath,mfx,s,htp_mul_htp_add)( o, b, c, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, r );
-        BCATU(bmath,mfx,s,discard)( buf );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, r->rows, r->cols );
+        BCATU(bmath_mfx_s,htp_mul_htp_add)( o, b, c, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, r );
+        BCATU(bmath_mfx_s,discard)( buf );
         return;
     }
 
@@ -1461,23 +1461,23 @@ void BCATU(bmath,mfx,s,htp_mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s
     ASSERT( c->rows == r->rows );
     ASSERT( c->cols == r->cols );
 
-    if( c != r ) BCATU(bmath,mfx,s,cpy)( c, r );
+    if( c != r ) BCATU(bmath_mfx_s,cpy)( c, r );
 
-    BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->rows, r->data, r->stride );
+    BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->rows, r->data, r->stride );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_add_cps)( bl_t htpa, const bmath_mfx_s* a, bl_t htpb, const bmath_mfx_s* b, fx_t c, const bmath_mfx_s* d, fx_t e, bmath_mfx_s* r )
+void BCATU(bmath_mfx_s,mul_add_cps)( bl_t htpa, const bmath_mfx_s* a, bl_t htpb, const bmath_mfx_s* b, fx_t c, const bmath_mfx_s* d, fx_t e, bmath_mfx_s* r )
 {
     if( r == a || r == b )
     {
-        ASSERT( !BCATU(bmath,mfx,s,is_folded)( r ) );
-        bmath_mfx_s* buf = BCATU(bmath,mfx,s,create)();
-        BCATU(bmath,mfx,s,set_size)( buf, r->rows, r->cols );
-        BCATU(bmath,mfx,s,mul_add_cps)( htpa, a, htpb, b, c, d, e, buf );
-        BCATU(bmath,mfx,s,cpy)( buf, r );
-        BCATU(bmath,mfx,s,discard)( buf );
+        ASSERT( !BCATU(bmath_mfx_s,is_folded)( r ) );
+        bmath_mfx_s* buf = BCATU(bmath_mfx_s,create)();
+        BCATU(bmath_mfx_s,set_size)( buf, r->rows, r->cols );
+        BCATU(bmath_mfx_s,mul_add_cps)( htpa, a, htpb, b, c, d, e, buf );
+        BCATU(bmath_mfx_s,cpy)( buf, r );
+        BCATU(bmath_mfx_s,discard)( buf );
         return;
     }
 
@@ -1493,28 +1493,28 @@ void BCATU(bmath,mfx,s,mul_add_cps)( bl_t htpa, const bmath_mfx_s* a, bl_t htpb,
         {
             if( c == e )
             {
-                if( d != r ) BCATU(bmath,mfx,s,cpy)( d, r );
+                if( d != r ) BCATU(bmath_mfx_s,cpy)( d, r );
             }
             else
             {
-                BCATU(bmath,mfx,s,mul_scl_fx)( d, e / c, r );
+                BCATU(bmath_mfx_s,mul_scl_fx)( d, e / c, r );
             }
         }
         else
         {
             if( e == 1.0 )
             {
-                if( d != r ) BCATU(bmath,mfx,s,cpy)( d, r );
+                if( d != r ) BCATU(bmath_mfx_s,cpy)( d, r );
             }
             else
             {
-                BCATU(bmath,mfx,s,mul_scl_fx)( d, e, r );
+                BCATU(bmath_mfx_s,mul_scl_fx)( d, e, r );
             }
         }
     }
     else
     {
-        BCATU(bmath,mfx,s,zro)( r );
+        BCATU(bmath_mfx_s,zro)( r );
     }
 
     if( c != 0 )
@@ -1522,36 +1522,36 @@ void BCATU(bmath,mfx,s,mul_add_cps)( bl_t htpa, const bmath_mfx_s* a, bl_t htpb,
         bl_t symmetry = ( !d || e == 0.0 ) && ( a == b ) && ( htpa + htpb == 1 );
         switch( htpa * 2 + htpb )
         {
-            case 0: BCATU(bmath,mfx,s,fx_t_mul)(         a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->cols, r->data, r->stride           ); break; // a * b
-            case 1: BCATU(bmath,mfx,s,fx_t_mul_htp)(     a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->rows, r->data, r->stride, symmetry ); break; // a * b^T
-            case 2: BCATU(bmath,mfx,s,fx_t_htp_mul)(     a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->cols, r->data, r->stride, symmetry ); break; // a^T * b
-            case 3: BCATU(bmath,mfx,s,fx_t_htp_mul_htp)( a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->rows, r->data, r->stride           ); break; // a^T * b^T
+            case 0: BCATU(bmath_mfx_s,fx_t_mul)(         a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->cols, r->data, r->stride           ); break; // a * b
+            case 1: BCATU(bmath_mfx_s,fx_t_mul_htp)(     a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->rows, r->data, r->stride, symmetry ); break; // a * b^T
+            case 2: BCATU(bmath_mfx_s,fx_t_htp_mul)(     a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->cols, r->data, r->stride, symmetry ); break; // a^T * b
+            case 3: BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->rows, r->data, r->stride           ); break; // a^T * b^T
             default: break;
         }
         if( symmetry )
         {
-            ASSERT( !BCATU(bmath,mfx,s,is_folded)( r ) );
+            ASSERT( !BCATU(bmath_mfx_s,is_folded)( r ) );
             for( sz_t i = 0; i < r->rows; i++ )
             {
                 for( sz_t j = 0; j < i; j++ ) r->data[ j * r->stride + i ] = r->data[ i * r->stride + j ];
             }
         }
-        if( c != 1.0 ) BCATU(bmath,mfx,s,mul_scl_fx)( r, c, r );
+        if( c != 1.0 ) BCATU(bmath_mfx_s,mul_scl_fx)( r, c, r );
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath,mfx,s,mul_add_cps_selftest)()
+void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
 {
     BLM_INIT();
 
-    bmath_mfx_s* a  = BLM_A_PUSH( BCATU(bmath,mfx,s,create)() );
-    bmath_mfx_s* b  = BLM_A_PUSH( BCATU(bmath,mfx,s,create)() );
-    bmath_mfx_s* ab = BLM_A_PUSH( BCATU(bmath,mfx,s,create)() );
-    bmath_mfx_s* d  = BLM_A_PUSH( BCATU(bmath,mfx,s,create)() );
-    bmath_mfx_s* r1 = BLM_A_PUSH( BCATU(bmath,mfx,s,create)() );
-    bmath_mfx_s* r2 = BLM_A_PUSH( BCATU(bmath,mfx,s,create)() );
+    bmath_mfx_s* a  = BLM_A_PUSH( BCATU(bmath_mfx_s,create)() );
+    bmath_mfx_s* b  = BLM_A_PUSH( BCATU(bmath_mfx_s,create)() );
+    bmath_mfx_s* ab = BLM_A_PUSH( BCATU(bmath_mfx_s,create)() );
+    bmath_mfx_s* d  = BLM_A_PUSH( BCATU(bmath_mfx_s,create)() );
+    bmath_mfx_s* r1 = BLM_A_PUSH( BCATU(bmath_mfx_s,create)() );
+    bmath_mfx_s* r2 = BLM_A_PUSH( BCATU(bmath_mfx_s,create)() );
 
     sz_t n  = 25;
     sz_t m1 = 37;
@@ -1562,110 +1562,110 @@ void BCATU(bmath,mfx,s,mul_add_cps_selftest)()
 
     // a * b
     {
-        BCATU(bmath,mfx,s,set_size)(  a, m1, n  );
-        BCATU(bmath,mfx,s,set_size)(  b, n,  m2 );
-        BCATU(bmath,mfx,s,set_size)(  d, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)(  a, m1, n  );
+        BCATU(bmath_mfx_s,set_size)(  b, n,  m2 );
+        BCATU(bmath_mfx_s,set_size)(  d, m1, m2 );
         u2_t rval = 1236;
-        BCATU(bmath,mfx,s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_size)( ab, m1, m2 );
-        BCATU(bmath,mfx,s,set_size)( r1, m1, m2 );
-        BCATU(bmath,mfx,s,set_size)( r2, m1, m2 );
-        BCATU(bmath,mfx,s,mul_add_cps)( false, a, false, b, c, d, e, r1 );
-        BCATU(bmath,mfx,s,mul_esp)( a, b, ab );
-        BCATU(bmath,mfx,s,mul_scl_fx)( ab, c, ab );
-        BCATU(bmath,mfx,s,mul_scl_fx)( d,  e, r2 );
-        BCATU(bmath,mfx,s,add)( ab, r2, r2 );
-        ASSERT( BCATU(bmath,mfx,s,is_near_equ)( r1, r2, 1E-10 ) );
+        BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_size)( ab, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)( r1, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)( r2, m1, m2 );
+        BCATU(bmath_mfx_s,mul_add_cps)( false, a, false, b, c, d, e, r1 );
+        BCATU(bmath_mfx_s,mul_esp)( a, b, ab );
+        BCATU(bmath_mfx_s,mul_scl_fx)( ab, c, ab );
+        BCATU(bmath_mfx_s,mul_scl_fx)( d,  e, r2 );
+        BCATU(bmath_mfx_s,add)( ab, r2, r2 );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
     }
 
     // a^T * b
     {
-        BCATU(bmath,mfx,s,set_size)(  a, n,  m1  );
-        BCATU(bmath,mfx,s,set_size)(  b, n,  m2 );
-        BCATU(bmath,mfx,s,set_size)(  d, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)(  a, n,  m1  );
+        BCATU(bmath_mfx_s,set_size)(  b, n,  m2 );
+        BCATU(bmath_mfx_s,set_size)(  d, m1, m2 );
         u2_t rval = 1236;
-        BCATU(bmath,mfx,s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_size)( ab, m1, m2 );
-        BCATU(bmath,mfx,s,set_size)( r1, m1, m2 );
-        BCATU(bmath,mfx,s,set_size)( r2, m1, m2 );
-        BCATU(bmath,mfx,s,mul_add_cps)( true, a, false, b, c, d, e, r1 );
-        BCATU(bmath,mfx,s,htp_mul_esp)( a, b, ab );
-        BCATU(bmath,mfx,s,mul_scl_fx)( ab, c, ab );
-        BCATU(bmath,mfx,s,mul_scl_fx)( d,  e, r2 );
-        BCATU(bmath,mfx,s,add)( ab, r2, r2 );
-        ASSERT( BCATU(bmath,mfx,s,is_near_equ)( r1, r2, 1E-10 ) );
+        BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_size)( ab, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)( r1, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)( r2, m1, m2 );
+        BCATU(bmath_mfx_s,mul_add_cps)( true, a, false, b, c, d, e, r1 );
+        BCATU(bmath_mfx_s,htp_mul_esp)( a, b, ab );
+        BCATU(bmath_mfx_s,mul_scl_fx)( ab, c, ab );
+        BCATU(bmath_mfx_s,mul_scl_fx)( d,  e, r2 );
+        BCATU(bmath_mfx_s,add)( ab, r2, r2 );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
     }
 
     // a * b^T
     {
-        BCATU(bmath,mfx,s,set_size)(  a, m1, n  );
-        BCATU(bmath,mfx,s,set_size)(  b, m2, n  );
-        BCATU(bmath,mfx,s,set_size)(  d, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)(  a, m1, n  );
+        BCATU(bmath_mfx_s,set_size)(  b, m2, n  );
+        BCATU(bmath_mfx_s,set_size)(  d, m1, m2 );
         u2_t rval = 1236;
-        BCATU(bmath,mfx,s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_size)( ab, m1, m2 );
-        BCATU(bmath,mfx,s,set_size)( r1, m1, m2 );
-        BCATU(bmath,mfx,s,set_size)( r2, m1, m2 );
-        BCATU(bmath,mfx,s,mul_add_cps)( false, a, true, b, c, d, e, r1 );
-        BCATU(bmath,mfx,s,mul_htp_esp)( a, b, ab );
-        BCATU(bmath,mfx,s,mul_scl_fx)( ab, c, ab );
-        BCATU(bmath,mfx,s,mul_scl_fx)( d,  e, r2 );
-        BCATU(bmath,mfx,s,add)( ab, r2, r2 );
-        ASSERT( BCATU(bmath,mfx,s,is_near_equ)( r1, r2, 1E-10 ) );
+        BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_size)( ab, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)( r1, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)( r2, m1, m2 );
+        BCATU(bmath_mfx_s,mul_add_cps)( false, a, true, b, c, d, e, r1 );
+        BCATU(bmath_mfx_s,mul_htp_esp)( a, b, ab );
+        BCATU(bmath_mfx_s,mul_scl_fx)( ab, c, ab );
+        BCATU(bmath_mfx_s,mul_scl_fx)( d,  e, r2 );
+        BCATU(bmath_mfx_s,add)( ab, r2, r2 );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
     }
 
     // a^T * b^T
     {
-        BCATU(bmath,mfx,s,set_size)(  a, n,  m1 );
-        BCATU(bmath,mfx,s,set_size)(  b, m2, n  );
-        BCATU(bmath,mfx,s,set_size)(  d, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)(  a, n,  m1 );
+        BCATU(bmath_mfx_s,set_size)(  b, m2, n  );
+        BCATU(bmath_mfx_s,set_size)(  d, m1, m2 );
         u2_t rval = 1236;
-        BCATU(bmath,mfx,s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_size)( ab, m1, m2 );
-        BCATU(bmath,mfx,s,set_size)( r1, m1, m2 );
-        BCATU(bmath,mfx,s,set_size)( r2, m1, m2 );
-        BCATU(bmath,mfx,s,mul_add_cps)( true, a, true, b, c, d, e, r1 );
-        BCATU(bmath,mfx,s,htp_mul_htp)( a, b, ab );
-        BCATU(bmath,mfx,s,mul_scl_fx)( ab, c, ab );
-        BCATU(bmath,mfx,s,mul_scl_fx)( d,  e, r2 );
-        BCATU(bmath,mfx,s,add)( ab, r2, r2 );
-        ASSERT( BCATU(bmath,mfx,s,is_near_equ)( r1, r2, 1E-10 ) );
+        BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_size)( ab, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)( r1, m1, m2 );
+        BCATU(bmath_mfx_s,set_size)( r2, m1, m2 );
+        BCATU(bmath_mfx_s,mul_add_cps)( true, a, true, b, c, d, e, r1 );
+        BCATU(bmath_mfx_s,htp_mul_htp)( a, b, ab );
+        BCATU(bmath_mfx_s,mul_scl_fx)( ab, c, ab );
+        BCATU(bmath_mfx_s,mul_scl_fx)( d,  e, r2 );
+        BCATU(bmath_mfx_s,add)( ab, r2, r2 );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
     }
 
     // a^T * a
     {
-        BCATU(bmath,mfx,s,set_size)(  a, m1, n );
+        BCATU(bmath_mfx_s,set_size)(  a, m1, n );
         u2_t rval = 1236;
-        BCATU(bmath,mfx,s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_size)( ab, n, n );
-        BCATU(bmath,mfx,s,set_size)( r1, n, n );
-        BCATU(bmath,mfx,s,set_size)( r2, n, n );
-        BCATU(bmath,mfx,s,mul_add_cps)( true, a, false, a, c, NULL, e, r1 );
-        BCATU(bmath,mfx,s,htp_mul_esp)( a, a, r2 );
-        BCATU(bmath,mfx,s,mul_scl_fx)( r2, c, r2 );
-        ASSERT( BCATU(bmath,mfx,s,is_near_equ)( r1, r2, 1E-10 ) );
+        BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_size)( ab, n, n );
+        BCATU(bmath_mfx_s,set_size)( r1, n, n );
+        BCATU(bmath_mfx_s,set_size)( r2, n, n );
+        BCATU(bmath_mfx_s,mul_add_cps)( true, a, false, a, c, NULL, e, r1 );
+        BCATU(bmath_mfx_s,htp_mul_esp)( a, a, r2 );
+        BCATU(bmath_mfx_s,mul_scl_fx)( r2, c, r2 );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
     }
 
     // a * a^T
     {
-        BCATU(bmath,mfx,s,set_size)(  a, n, m1 );
+        BCATU(bmath_mfx_s,set_size)(  a, n, m1 );
         u2_t rval = 1236;
-        BCATU(bmath,mfx,s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath,mfx,s,set_size)( ab, n, n );
-        BCATU(bmath,mfx,s,set_size)( r1, n, n );
-        BCATU(bmath,mfx,s,set_size)( r2, n, n );
-        BCATU(bmath,mfx,s,mul_add_cps)( false, a, true, a, c, NULL, e, r1 );
-        BCATU(bmath,mfx,s,mul_htp_esp)( a, a, r2 );
-        BCATU(bmath,mfx,s,mul_scl_fx)( r2, c, r2 );
-        ASSERT( BCATU(bmath,mfx,s,is_near_equ)( r1, r2, 1E-10 ) );
+        BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_size)( ab, n, n );
+        BCATU(bmath_mfx_s,set_size)( r1, n, n );
+        BCATU(bmath_mfx_s,set_size)( r2, n, n );
+        BCATU(bmath_mfx_s,mul_add_cps)( false, a, true, a, c, NULL, e, r1 );
+        BCATU(bmath_mfx_s,mul_htp_esp)( a, a, r2 );
+        BCATU(bmath_mfx_s,mul_scl_fx)( r2, c, r2 );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
     }
 
     BLM_DOWN();
