@@ -69,8 +69,14 @@ st_s* bcore_name_get_name_s( tp_t type );
 /// removes hash and associated name; no effect when not enrolled (thread safe)
 void bcore_name_remove( tp_t type );
 
+// TODO (johannes#1#): move away from name 'typeof' (e.g. use type_of instead) ...
+// It conflicts with a keyword in a gcc extension
+
+/// workaround for function typeof, which is a keyword in a gcc specific extension
+#define typeof typeof_
+
 /// syntactic sugar
-static inline tp_t typeof(               sc_t name         ) { return bcore_name_key(          name    ); }
+static inline tp_t typeof_(              sc_t name         ) { return bcore_name_key(          name    ); }
 static inline tp_t typeof_n(             sc_t name, uz_t n ) { return bcore_name_key_n(        name, n ); }
 static inline tp_t typeof_ns(   tp_t ns, sc_t name         ) { return bcore_name_key_ns(   ns, name    ); }
 static inline tp_t typeof_ns_n( tp_t ns, sc_t name, uz_t n ) { return bcore_name_key_ns_n( ns, name, n ); }
