@@ -19,6 +19,7 @@
 #define BCORE_STD_H
 
 #include "bcore.h"
+#include "bcore_macro.h"
 #include "bcore_signal.h"
 #include "bcore_feature.h"
 #include "bcore_flect.h"
