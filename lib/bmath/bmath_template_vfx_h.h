@@ -54,39 +54,39 @@
 /**********************************************************************************************************************/
 // low level vector functions (partially AVX optimized)
 
-fx_t bmath_fx_t_vec_(sum)(          const fx_t* v1, sz_t size ); // sum_i v1[i]
-fx_t bmath_fx_t_vec_(sum_esp)(      const fx_t* v1, sz_t size ); // sum_i v1[i]
-fx_t bmath_fx_t_vec_(mul_vec)(      const fx_t* v1, const fx_t* v2, sz_t size ); // sum_i v1[i]*v2[i]
-fx_t bmath_fx_t_vec_(mul_vec_esp)(  const fx_t* v1, const fx_t* v2, sz_t size ); // sum_i v1[i]*v2[i]
-fx_t bmath_fx_t_vec_(mul3_vec)(     const fx_t* v1, const fx_t* v2, const fx_t* v3, sz_t size ); // sum_i v1[i]*v2[i]*v3[i]
-fx_t bmath_fx_t_vec_(mul3_vec_esp)( const fx_t* v1, const fx_t* v2, const fx_t* v3, sz_t size ); // sum_i v1[i]*v2[i]*v3[i]
+fx_t BCATU(bmath,fx,t_vec,sum)(          const fx_t* v1, sz_t size ); // sum_i v1[i]
+fx_t BCATU(bmath,fx,t_vec,sum_esp)(      const fx_t* v1, sz_t size ); // sum_i v1[i]
+fx_t BCATU(bmath,fx,t_vec,mul_vec)(      const fx_t* v1, const fx_t* v2, sz_t size ); // sum_i v1[i]*v2[i]
+fx_t BCATU(bmath,fx,t_vec,mul_vec_esp)(  const fx_t* v1, const fx_t* v2, sz_t size ); // sum_i v1[i]*v2[i]
+fx_t BCATU(bmath,fx,t_vec,mul3_vec)(     const fx_t* v1, const fx_t* v2, const fx_t* v3, sz_t size ); // sum_i v1[i]*v2[i]*v3[i]
+fx_t BCATU(bmath,fx,t_vec,mul3_vec_esp)( const fx_t* v1, const fx_t* v2, const fx_t* v3, sz_t size ); // sum_i v1[i]*v2[i]*v3[i]
 
 /// with stride for both vectors
-fx_t bmath_fx_t_vec_(mul_vec_stride)(     const fx_t* v1, sz_t stride1, const fx_t* v2, sz_t stride2, sz_t size ); // sum_i v1[i]*v2[i]
-fx_t bmath_fx_t_vec_(mul_vec_esp_stride)( const fx_t* v1, sz_t stride1, const fx_t* v2, sz_t stride2, sz_t size ); // sum_i v1[i]*v2[i]
+fx_t BCATU(bmath,fx,t_vec,mul_vec_stride)(     const fx_t* v1, sz_t stride1, const fx_t* v2, sz_t stride2, sz_t size ); // sum_i v1[i]*v2[i]
+fx_t BCATU(bmath,fx,t_vec,mul_vec_esp_stride)( const fx_t* v1, sz_t stride1, const fx_t* v2, sz_t stride2, sz_t size ); // sum_i v1[i]*v2[i]
 
-void bmath_fx_t_vec_(mul_scl)(     const fx_t* a, fx_t b,                fx_t* r, sz_t size ); // a * b + c -> r
-void bmath_fx_t_vec_(mul_scl_add)( const fx_t* a, fx_t b, const fx_t* c, fx_t* r, sz_t size ); // a * b + c -> r
+void BCATU(bmath,fx,t_vec,mul_scl)(     const fx_t* a, fx_t b,                fx_t* r, sz_t size ); // a * b + c -> r
+void BCATU(bmath,fx,t_vec,mul_scl_add)( const fx_t* a, fx_t b, const fx_t* c, fx_t* r, sz_t size ); // a * b + c -> r
 
 /**********************************************************************************************************************/
 // vector object functions
 
-static inline void bmath_vfx_s_(init_weak)( bmath_vfx_s* o, fx_t* data, sz_t size ) { bmath_vfx_s_(init)( o ); o->data = data; o->size = size; }
-static inline bmath_vfx_s bmath_vfx_(init_weak)( fx_t* data, sz_t size ) { bmath_vfx_s o; bmath_vfx_s_(init_weak)( &o, data, size ); return o; }
+static inline void BCATU(bmath,vfx,s,init_weak)( bmath_vfx_s* o, fx_t* data, sz_t size ) { BCATU(bmath,vfx,s,init)( o ); o->data = data; o->size = size; }
+static inline bmath_vfx_s BCATU(bmath,vfx,init_weak)( fx_t* data, sz_t size ) { bmath_vfx_s o; BCATU(bmath,vfx,s,init_weak)( &o, data, size ); return o; }
 
-void bmath_vfx_s_(move)( bmath_vfx_s* o, bmath_vfx_s* src );
-void bmath_vfx_s_(clear)( bmath_vfx_s* o );
+void BCATU(bmath,vfx,s,move)( bmath_vfx_s* o, bmath_vfx_s* src );
+void BCATU(bmath,vfx,s,clear)( bmath_vfx_s* o );
 
-bmath_vfx_s* bmath_vfx_s_(create_set_size)( uz_t size );
-bmath_vfx_s* bmath_vfx_s_(create_fill)( uz_t size, fx_t val );
+bmath_vfx_s* BCATU(bmath,vfx,s,create_set_size)( uz_t size );
+bmath_vfx_s* BCATU(bmath,vfx,s,create_fill)( uz_t size, fx_t val );
 
-void bmath_vfx_s_(set_size)(    bmath_vfx_s* o, uz_t size );
-void bmath_vfx_s_(set_space)(   bmath_vfx_s* o, uz_t space );
-void bmath_vfx_s_(set_size_to)( const bmath_vfx_s* o, bmath_vfx_s* res );
-void bmath_vfx_s_(fill)(        bmath_vfx_s* o, fx_t val );
+void BCATU(bmath,vfx,s,set_size)(    bmath_vfx_s* o, uz_t size );
+void BCATU(bmath,vfx,s,set_space)(   bmath_vfx_s* o, uz_t space );
+void BCATU(bmath,vfx,s,set_size_to)( const bmath_vfx_s* o, bmath_vfx_s* res );
+void BCATU(bmath,vfx,s,fill)(        bmath_vfx_s* o, fx_t val );
 
 /// copies external data into vector
-void bmath_vfx_s_(set_data)( bmath_vfx_s* o, const fx_t* data, sz_t size );
+void BCATU(bmath,vfx,s,set_data)( bmath_vfx_s* o, const fx_t* data, sz_t size );
 
 /** Sets all vector elements to random values.
  *  Random generator:
@@ -97,110 +97,110 @@ void bmath_vfx_s_(set_data)( bmath_vfx_s* o, const fx_t* data, sz_t size );
  *     density (range [0.0, 1.0]) specifies the rate at which the random generator
  *     creates a non-zero value.
  */
-void bmath_vfx_s_(set_random)( bmath_vfx_s* o, fx_t density, fx_t min, fx_t max, u2_t* p_rval );
+void BCATU(bmath,vfx,s,set_random)( bmath_vfx_s* o, fx_t density, fx_t min, fx_t max, u2_t* p_rval );
 
 /// swaps vectors by swapping data references (no copying of memory)
-void bmath_vfx_s_(swapr)( bmath_vfx_s* o, bmath_vfx_s* v );
+void BCATU(bmath,vfx,s,swapr)( bmath_vfx_s* o, bmath_vfx_s* v );
 
-void bmath_vfx_s_(push)( bmath_vfx_s* o, fx_t val );
-void bmath_vfx_s_(push_vfx)( bmath_vfx_s* o, const bmath_vfx_s* vec );
+void BCATU(bmath,vfx,s,push)( bmath_vfx_s* o, fx_t val );
+void BCATU(bmath,vfx,s,push_vfx)( bmath_vfx_s* o, const bmath_vfx_s* vec );
 
-bl_t bmath_vfx_s_(is_near_equ)( const bmath_vfx_s* o, const bmath_vfx_s* op, fx_t max_dev );
-bl_t bmath_vfx_s_(is_near_zro)( const bmath_vfx_s* o, fx_t max_dev );
+bl_t BCATU(bmath,vfx,s,is_near_equ)( const bmath_vfx_s* o, const bmath_vfx_s* op, fx_t max_dev );
+bl_t BCATU(bmath,vfx,s,is_near_zro)( const bmath_vfx_s* o, fx_t max_dev );
 
-static inline bl_t bmath_vfx_s_(is_equ)( const bmath_vfx_s* o, const bmath_vfx_s* op ) { return bmath_vfx_s_(is_near_equ)( o, op, 0 ); }
-static inline bl_t bmath_vfx_s_(is_zro)( const bmath_vfx_s* o ) { return bmath_vfx_s_(is_near_zro)( o, 0 ); }
+static inline bl_t BCATU(bmath,vfx,s,is_equ)( const bmath_vfx_s* o, const bmath_vfx_s* op ) { return BCATU(bmath,vfx,s,is_near_equ)( o, op, 0 ); }
+static inline bl_t BCATU(bmath,vfx,s,is_zro)( const bmath_vfx_s* o ) { return BCATU(bmath,vfx,s,is_near_zro)( o, 0 ); }
 
 /// vector is nan if at least one element is nan
-bl_t bmath_vfx_s_(is_nan)( const bmath_vfx_s* o );
+bl_t BCATU(bmath,vfx,s,is_nan)( const bmath_vfx_s* o );
 
-void bmath_vfx_s_(zro)( bmath_vfx_s* o );
-void bmath_vfx_s_(neg)( const bmath_vfx_s* o, bmath_vfx_s* res );
-void bmath_vfx_s_(cpy)( const bmath_vfx_s* o, bmath_vfx_s* res );
-void bmath_vfx_s_(cat)( const bmath_vfx_s* a, const bmath_vfx_s* b,  bmath_vfx_s* r );
-void bmath_vfx_s_(add)( const bmath_vfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
-void bmath_vfx_s_(sub)( const bmath_vfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
+void BCATU(bmath,vfx,s,zro)( bmath_vfx_s* o );
+void BCATU(bmath,vfx,s,neg)( const bmath_vfx_s* o, bmath_vfx_s* res );
+void BCATU(bmath,vfx,s,cpy)( const bmath_vfx_s* o, bmath_vfx_s* res );
+void BCATU(bmath,vfx,s,cat)( const bmath_vfx_s* a, const bmath_vfx_s* b,  bmath_vfx_s* r );
+void BCATU(bmath,vfx,s,add)( const bmath_vfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
+void BCATU(bmath,vfx,s,sub)( const bmath_vfx_s* o, const bmath_vfx_s* op, bmath_vfx_s* res );
 
 /// adds the same scalar to all components
-void bmath_vfx_s_(add_scl)( const bmath_vfx_s* o, const fx_t* op, bmath_vfx_s* res );
-void bmath_vfx_s_(sub_scl)( const bmath_vfx_s* o, const fx_t* op, bmath_vfx_s* res );
-void bmath_vfx_s_(add_scl_fx)( const bmath_vfx_s* o, fx_t op, bmath_vfx_s* res );
-void bmath_vfx_s_(sub_scl_fx)( const bmath_vfx_s* o, fx_t op, bmath_vfx_s* res );
+void BCATU(bmath,vfx,s,add_scl)( const bmath_vfx_s* o, const fx_t* op, bmath_vfx_s* res );
+void BCATU(bmath,vfx,s,sub_scl)( const bmath_vfx_s* o, const fx_t* op, bmath_vfx_s* res );
+void BCATU(bmath,vfx,s,add_scl_fx)( const bmath_vfx_s* o, fx_t op, bmath_vfx_s* res );
+void BCATU(bmath,vfx,s,sub_scl_fx)( const bmath_vfx_s* o, fx_t op, bmath_vfx_s* res );
 
 /// hadamard product: a o b [+ c] -> r  (elementwise)
-void bmath_vfx_s_(mul_hdm)(     const bmath_vfx_s* a, const bmath_vfx_s* b,                       bmath_vfx_s* r );
-void bmath_vfx_s_(mul_hdm_add)( const bmath_vfx_s* a, const bmath_vfx_s* b, const bmath_vfx_s* c, bmath_vfx_s* r );
+void BCATU(bmath,vfx,s,mul_hdm)(     const bmath_vfx_s* a, const bmath_vfx_s* b,                       bmath_vfx_s* r );
+void BCATU(bmath,vfx,s,mul_hdm_add)( const bmath_vfx_s* a, const bmath_vfx_s* b, const bmath_vfx_s* c, bmath_vfx_s* r );
 
-void bmath_vfx_s_(pmt_mul)(     const bmath_vfx_s* o, const bmath_pmt_s* p, bmath_vfx_s* res ); // y = P   * x ; y_p[k] = x_k
-void bmath_vfx_s_(pmt_htp_mul)( const bmath_vfx_s* o, const bmath_pmt_s* p, bmath_vfx_s* res ); // y = P^T * x ; y_k = x_p[k]
+void BCATU(bmath,vfx,s,pmt_mul)(     const bmath_vfx_s* o, const bmath_pmt_s* p, bmath_vfx_s* res ); // y = P   * x ; y_p[k] = x_k
+void BCATU(bmath,vfx,s,pmt_htp_mul)( const bmath_vfx_s* o, const bmath_pmt_s* p, bmath_vfx_s* res ); // y = P^T * x ; y_k = x_p[k]
 
-void bmath_vfx_s_(mul_scl_fx)(     const bmath_vfx_s* o, fx_t s,                       bmath_vfx_s* r ); // o * b     --> r
-void bmath_vfx_s_(mul_scl_fx_add)( const bmath_vfx_s* o, fx_t s, const bmath_vfx_s* a, bmath_vfx_s* r ); // o * b + a --> r
+void BCATU(bmath,vfx,s,mul_scl_fx)(     const bmath_vfx_s* o, fx_t s,                       bmath_vfx_s* r ); // o * b     --> r
+void BCATU(bmath,vfx,s,mul_scl_fx_add)( const bmath_vfx_s* o, fx_t s, const bmath_vfx_s* a, bmath_vfx_s* r ); // o * b + a --> r
 
-void bmath_vfx_s_(mul_scl)(    const bmath_vfx_s* o, const fx_t* op, bmath_vfx_s* res  );
-void bmath_vfx_s_(mul_fx)(     const bmath_vfx_s* o, fx_t scl2, bmath_vfx_s* res ); // same as bmath_vfx_s_(mul_scl_fx
-fx_t bmath_vfx_s_(fx_mul_vec)( const bmath_vfx_s* o, const bmath_vfx_s* vec2 );
-fx_t bmath_vfx_s_(fx_sqr)(     const bmath_vfx_s* o );
-fx_t bmath_vfx_s_(fx_sub_sqr)( const bmath_vfx_s* o, const bmath_vfx_s* vec2 );
-fx_t bmath_vfx_s_(fx_max)(     const bmath_vfx_s* o );
-fx_t bmath_vfx_s_(fx_min)(     const bmath_vfx_s* o );
-fx_t bmath_vfx_s_(fx_sum)(     const bmath_vfx_s* o );
-fx_t bmath_vfx_s_(fx_avg)(     const bmath_vfx_s* o );
-fx_t bmath_vfx_s_(fx_var)(     const bmath_vfx_s* o );
-fx_t bmath_vfx_s_(fx_dev)(     const bmath_vfx_s* o );
-void bmath_vfx_s_(mul_vec)(    const bmath_vfx_s* o, const bmath_vfx_s* op, fx_t* res ); // dot product
-void bmath_vfx_s_(sqr)(        const bmath_vfx_s* o, fx_t* res  );
-void bmath_vfx_s_(sub_sqr)(    const bmath_vfx_s* o, const bmath_vfx_s* op, fx_t* res );
-void bmath_vfx_s_(sum)(        const bmath_vfx_s* o, fx_t* res  );
-void bmath_vfx_s_(avg)(        const bmath_vfx_s* o, fx_t* res  );
-void bmath_vfx_s_(var)(        const bmath_vfx_s* o, fx_t* res  );
-void bmath_vfx_s_(dev)(        const bmath_vfx_s* o, fx_t* res  );
+void BCATU(bmath,vfx,s,mul_scl)(    const bmath_vfx_s* o, const fx_t* op, bmath_vfx_s* res  );
+void BCATU(bmath,vfx,s,mul_fx)(     const bmath_vfx_s* o, fx_t scl2, bmath_vfx_s* res ); // same as BCATU(bmath,vfx,s,mul_scl_fx
+fx_t BCATU(bmath,vfx,s,fx_mul_vec)( const bmath_vfx_s* o, const bmath_vfx_s* vec2 );
+fx_t BCATU(bmath,vfx,s,fx_sqr)(     const bmath_vfx_s* o );
+fx_t BCATU(bmath,vfx,s,fx_sub_sqr)( const bmath_vfx_s* o, const bmath_vfx_s* vec2 );
+fx_t BCATU(bmath,vfx,s,fx_max)(     const bmath_vfx_s* o );
+fx_t BCATU(bmath,vfx,s,fx_min)(     const bmath_vfx_s* o );
+fx_t BCATU(bmath,vfx,s,fx_sum)(     const bmath_vfx_s* o );
+fx_t BCATU(bmath,vfx,s,fx_avg)(     const bmath_vfx_s* o );
+fx_t BCATU(bmath,vfx,s,fx_var)(     const bmath_vfx_s* o );
+fx_t BCATU(bmath,vfx,s,fx_dev)(     const bmath_vfx_s* o );
+void BCATU(bmath,vfx,s,mul_vec)(    const bmath_vfx_s* o, const bmath_vfx_s* op, fx_t* res ); // dot product
+void BCATU(bmath,vfx,s,sqr)(        const bmath_vfx_s* o, fx_t* res  );
+void BCATU(bmath,vfx,s,sub_sqr)(    const bmath_vfx_s* o, const bmath_vfx_s* op, fx_t* res );
+void BCATU(bmath,vfx,s,sum)(        const bmath_vfx_s* o, fx_t* res  );
+void BCATU(bmath,vfx,s,avg)(        const bmath_vfx_s* o, fx_t* res  );
+void BCATU(bmath,vfx,s,var)(        const bmath_vfx_s* o, fx_t* res  );
+void BCATU(bmath,vfx,s,dev)(        const bmath_vfx_s* o, fx_t* res  );
 
-void bmath_vfx_s_(set_sqr)( bmath_vfx_s* o, fx_t val ); // multiplies a factor to all components such that bmath_vfx_s_(fx_sqr returns val
-void bmath_vfx_s_(set_sum)( bmath_vfx_s* o, fx_t val ); // adds a value to all components such that bmath_vfx_s_(fx_sum returns val
-void bmath_vfx_s_(set_avg)( bmath_vfx_s* o, fx_t val ); // adds a value to all components such that bmath_vfx_s_(fx_avg returns val
+void BCATU(bmath,vfx,s,set_sqr)( bmath_vfx_s* o, fx_t val ); // multiplies a factor to all components such that BCATU(bmath,vfx,s,fx_sqr returns val
+void BCATU(bmath,vfx,s,set_sum)( bmath_vfx_s* o, fx_t val ); // adds a value to all components such that BCATU(bmath,vfx,s,fx_sum returns val
+void BCATU(bmath,vfx,s,set_avg)( bmath_vfx_s* o, fx_t val ); // adds a value to all components such that BCATU(bmath,vfx,s,fx_avg returns val
 
 static inline
-void bmath_vfx_s_(set_fx)( bmath_vfx_s* o, uz_t index, fx_t v )
+void BCATU(bmath,vfx,s,set_fx)( bmath_vfx_s* o, uz_t index, fx_t v )
 {
     assert( index < o->size );
     o->data[ index ] = v;
 }
 
 static inline
-fx_t bmath_vfx_s_(get_fx)( const bmath_vfx_s* o, uz_t index )
+fx_t BCATU(bmath,vfx,s,get_fx)( const bmath_vfx_s* o, uz_t index )
 {
     assert( index < o->size );
     return o->data[ index ];
 }
 
 static inline
-bmath_vfx_s bmath_vfx_s_(get_weak_sub_vec)( const bmath_vfx_s* o, uz_t index, uz_t size )
+bmath_vfx_s BCATU(bmath,vfx,s,get_weak_sub_vec)( const bmath_vfx_s* o, uz_t index, uz_t size )
 {
     assert( o->size >= index + size );
     return ( bmath_vfx_s ) { .size = size, .space = 0, .data = o->data + index };
 }
 
-fx_t bmath_vfx_s_(max)(     const bmath_vfx_s* o );
-fx_t bmath_vfx_s_(min)(     const bmath_vfx_s* o );
-uz_t bmath_vfx_s_(idx_max)( const bmath_vfx_s* o );
-uz_t bmath_vfx_s_(idx_min)( const bmath_vfx_s* o );
+fx_t BCATU(bmath,vfx,s,max)(     const bmath_vfx_s* o );
+fx_t BCATU(bmath,vfx,s,min)(     const bmath_vfx_s* o );
+uz_t BCATU(bmath,vfx,s,idx_max)( const bmath_vfx_s* o );
+uz_t BCATU(bmath,vfx,s,idx_min)( const bmath_vfx_s* o );
 
 //----------------------------------------------------------------------------------------------------------------------
 // vector * unary_map --> vector
 
-void bmath_vfx_s_(eop_map)(     const bmath_vfx_s* o, bmath_fp_fx_(ar1) b, bmath_vfx_s* r ); // r_i = b( o_i )
-void bmath_vfx_s_(eop_map_mul)( const bmath_vfx_s* o, bmath_fp_fx_(ar1) b, const bmath_vfx_s* c, bmath_vfx_s* r ); // r_i = b( o_i ) * c_i
+void BCATU(bmath,vfx,s,eop_map)(     const bmath_vfx_s* o, BCATU(bmath_fp,fx,ar1) b, bmath_vfx_s* r ); // r_i = b( o_i )
+void BCATU(bmath,vfx,s,eop_map_mul)( const bmath_vfx_s* o, BCATU(bmath_fp,fx,ar1) b, const bmath_vfx_s* c, bmath_vfx_s* r ); // r_i = b( o_i ) * c_i
 
 //----------------------------------------------------------------------------------------------------------------------
 // For easy inspection
-void bmath_vfx_s_(to_sink)( const bmath_vfx_s* o, bcore_sink* sink );
-static inline void bmath_vfx_s_(to_string)( const bmath_vfx_s* o, st_s* string ) { bmath_vfx_s_(to_sink)( o, ( bcore_sink* )string ); }
-static inline void bmath_vfx_s_(to_stdout)( const bmath_vfx_s* o               ) { bmath_vfx_s_(to_sink)( o, BCORE_STDOUT ); }
+void BCATU(bmath,vfx,s,to_sink)( const bmath_vfx_s* o, bcore_sink* sink );
+static inline void BCATU(bmath,vfx,s,to_string)( const bmath_vfx_s* o, st_s* string ) { BCATU(bmath,vfx,s,to_sink)( o, ( bcore_sink* )string ); }
+static inline void BCATU(bmath,vfx,s,to_stdout)( const bmath_vfx_s* o               ) { BCATU(bmath,vfx,s,to_sink)( o, BCORE_STDOUT ); }
 
-void bmath_vfx_s_(stat_to_sink)( const bmath_vfx_s* o, bcore_sink* sink ); // vector statistics
-static inline void bmath_vfx_s_(stat_to_string)( const bmath_vfx_s* o, st_s* string ) { bmath_vfx_s_(stat_to_sink)( o, ( bcore_sink* )string ); }
-static inline void bmath_vfx_s_(stat_to_stdout)( const bmath_vfx_s* o               ) { bmath_vfx_s_(stat_to_sink)( o, BCORE_STDOUT ); }
+void BCATU(bmath,vfx,s,stat_to_sink)( const bmath_vfx_s* o, bcore_sink* sink ); // vector statistics
+static inline void BCATU(bmath,vfx,s,stat_to_string)( const bmath_vfx_s* o, st_s* string ) { BCATU(bmath,vfx,s,stat_to_sink)( o, ( bcore_sink* )string ); }
+static inline void BCATU(bmath,vfx,s,stat_to_stdout)( const bmath_vfx_s* o               ) { BCATU(bmath,vfx,s,stat_to_sink)( o, BCORE_STDOUT ); }
 
 /**********************************************************************************************************************/
 // backward compatibility

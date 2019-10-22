@@ -20,53 +20,32 @@
 
 #undef BMATH_TEMPLATE_FX_PREC
 
-// leaf
+// objects
 #undef fx_t
-#undef fx_
-
-// global functions
-#undef bmath_simd_fx_
-
-// features
+#undef fx
 #undef bmath_fp_u2_argb_from_fx
-
-// vector
 #undef bmath_vfx_s
-#undef bmath_vfx_s_
-#undef bmath_vfx_
-#undef bmath_fx_t_vec_
-#undef bmath_fp_fx_
-
-// arr-vector
 #undef bmath_arr_vfx_s
-#undef bmath_arr_vfx_s_
-
-// givens rotations
 #undef bmath_grt_fx_s
-#undef bmath_grt_fx_s_
-#undef bmath_arr_grt_fx_
 #undef bmath_arr_grt_fx_s
-#undef bmath_arr_grt_fx_s_
-
-// matrix
 #undef bmath_mfx_s
-#undef bmath_mfx_s_
-#undef bmath_mfx_
-#undef bmath_fp_mfx_s_
 #undef TYPEOF_bmath_mfx_s
-#undef TYPEOF_bmath_fp_mfx_s_
 
 // AVX related
-#undef __m256x
-#undef _mm256_add_px
-#undef _mm256_mul_px
-#undef _mm256_loadu_px
-#undef _mm256_storeu_px
-#undef _mm256_fmadd_px
-#undef _mm256_set1_px
-#undef M256_SIZE
-#undef M256_ZERO
-#undef M256_HSUM
+#undef P5_SIZE
+#undef P5_SIZE_EXP
+#undef P5_ZERO
+#undef P5_HSUM
+
+#undef M5_ADD
+#undef M5_MUL
+#undef M5_LOAD
+#undef M5_STOR
+#undef M5_MADD
+#undef M5_SET1
+
+#undef MM_PX
+#undef M5_T
 
 /**********************************************************************************************************************/
 

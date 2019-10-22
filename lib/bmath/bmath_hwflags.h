@@ -20,7 +20,6 @@
 
 /** Compile-time hardware flags controlling optimization strategies,
  *  hardware specific settings (e.g. SIMD), etc.
- *
  */
 
 /**********************************************************************************************************************/

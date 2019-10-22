@@ -25,15 +25,15 @@
 
 /**********************************************************************************************************************/
 
-bl_t bmath_mfx_s_(evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v )
+bl_t BCATU(bmath,mfx,s,evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
     ASSERT( a->rows == a->cols );
 
     if( v )
     {
         ASSERT( a != v );
-        ASSERT( bmath_mfx_s_(is_equ_size)( a, v ) );
-        bmath_mfx_s_(one)( v );
+        ASSERT( BCATU(bmath,mfx,s,is_equ_size)( a, v ) );
+        BCATU(bmath,mfx,s,one)( v );
     }
 
     uz_t n = a->rows;
@@ -51,7 +51,7 @@ bl_t bmath_mfx_s_(evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v )
             {
                 fx_t akl = ak[l];
                 if( akl == 0 ) continue;
-                max_dev = fx_(max)( max_dev, fx_(abs)( akl ) );
+                max_dev = BCATU(fx,max)( max_dev, BCATU(fx,abs)( akl ) );
 
                 fx_t* al =     a->data + l * a->stride;
                 fx_t* vl = v ? v->data + l * v->stride : NULL;
@@ -107,15 +107,15 @@ bl_t bmath_mfx_s_(evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v )
 /** In-place EVD for a symmetric matrix.
  *  (Variant of Francis' QR-Algorithm with shift)
  *  Very efficient for large matrices. >20x faster than Jacobi method but slightly less accurate.
- *  bmath_mfx_s_(evd_htp) for more details.
+ *  BCATU(bmath,mfx,s,evd_htp) for more details.
  */
-bl_t bmath_mfx_s_(evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
+bl_t BCATU(bmath,mfx,s,evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
     uz_t n = a->rows;
     if( n <= 1 ) return true; // nothing to do
 
     // tridiagonalization
-    bmath_mfx_s_(trd_htp)( a, v );
+    BCATU(bmath,mfx,s,trd_htp)( a, v );
 
     bl_t success = true;
 
@@ -131,14 +131,14 @@ bl_t bmath_mfx_s_(evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
             fx_t a00 = a->data[ ( block_n - 2 ) * ( a->stride + 1 )     ];
             fx_t a01 = a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ];
 
-            if( ( fx_(abs)( a01 ) < fx_(lim_min) ) || ( fx_(abs)( a01 ) < fx_(abs)( a11 ) * fx_(lim_eps) ) )
+            if( ( BCATU(fx,abs)( a01 ) < BCATU(fx,lim_min) ) || ( BCATU(fx,abs)( a01 ) < BCATU(fx,abs)( a11 ) * BCATU(fx,lim_eps) ) )
             {
                 a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ] = 0;
                 a->data[ ( block_n - 1 ) * ( a->stride + 1 ) - 1 ] = 0;
                 break;
             }
             fx_t p = 0.5 * ( a00 + a11 );
-            fx_t d = sqrt( 0.25 * fx_(sqr)( a00 - a11 ) + a01 * a01 );
+            fx_t d = sqrt( 0.25 * BCATU(fx,sqr)( a00 - a11 ) + a01 * a01 );
 
             // set shift to eigenvalue of lower 2x2 sub-matrix which is closest to a11
             fx_t shift = ( a11 >= p ) ? p + d : p - d;
@@ -153,11 +153,11 @@ bl_t bmath_mfx_s_(evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
             fx_t cp = 1;
 
             bmath_grt_fx_s gr0;
-            bmath_grt_fx_s_(init_to_annihilate_b)( &gr0, r00, a0[ a->stride ] );
+            BCATU(bmath_grt,fx,s,init_to_annihilate_b)( &gr0, r00, a0[ a->stride ] );
 
             for( uz_t i = 0; i < block_n - 1; i++ )
             {
-                if( v ) bmath_grt_fx_s_(row_rotate)( &gr0, v->data + i * v->stride, v->data + ( i + 1 ) * v->stride, 0, n );
+                if( v ) BCATU(bmath_grt,fx,s,row_rotate)( &gr0, v->data + i * v->stride, v->data + ( i + 1 ) * v->stride, 0, n );
 
                 fx_t* a1 = a0 + a->stride;
 
@@ -171,7 +171,7 @@ bl_t bmath_mfx_s_(evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
                 a0[ 0 ] = r00 * cp * gr0.c + r01 * gr0.s;
 
                 bmath_grt_fx_s gr1;
-                bmath_grt_fx_s_(init_to_annihilate_b)( &gr1, r11, ( i == block_n - 2 ) ? 0 : a1[ a->stride + 1 ] );
+                BCATU(bmath_grt,fx,s,init_to_annihilate_b)( &gr1, r11, ( i == block_n - 2 ) ? 0 : a1[ a->stride + 1 ] );
 
                 // off-diagonal element
                 a1[ 0 ] = a0[ 1 ] = -r00 * gr0.s * cp * gr1.c + r01 * gr0.c * gr1.c + r02 * gr1.s;
@@ -204,8 +204,8 @@ bl_t bmath_mfx_s_(evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
                 imax = ( v > vmax ) ? j : imax;
                 vmax = ( v > vmax ) ? v : vmax;
             }
-            fx_(t_swap)( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-            if( v ) bmath_mfx_s_(swap_row)( v, i, imax );
+            BCATU(fx,t_swap)( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+            if( v ) BCATU(bmath,mfx,s,swap_row)( v, i, imax );
         }
     }
 
@@ -218,15 +218,15 @@ bl_t bmath_mfx_s_(evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
  *  (Variant of Francis' QR-Algorithm with shift)
  *  Plain shift is not explicitly added/subtracted. Only the shift effect is applied to the matrix.
  *  This minimizes accuracy-loss similarly as implicit shift would do.
- *  bmath_mfx_s_(evd) for more details.
+ *  BCATU(bmath,mfx,s,evd) for more details.
  */
-bl_t bmath_mfx_s_(evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
+bl_t BCATU(bmath,mfx,s,evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
     uz_t n = a->rows;
     if( n <= 1 ) return true; // nothing to do
 
     /// tridiagonalization
-    bmath_mfx_s_(trd_htp)( a, v );
+    BCATU(bmath,mfx,s,trd_htp)( a, v );
 
     // qr iteration until smallest non-diag element < offd_limit;
 
@@ -245,14 +245,14 @@ bl_t bmath_mfx_s_(evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
                 fx_t a00 = a->data[ ( block_n - 2 ) * ( a->stride + 1 )     ];
                 fx_t a01 = a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ];
 
-                if( ( fx_(abs)( a01 ) < fx_(lim_min) ) || ( fx_(abs)( a01 ) < fx_(abs)( a11 ) * fx_(lim_eps) ) )
+                if( ( BCATU(fx,abs)( a01 ) < BCATU(fx,lim_min) ) || ( BCATU(fx,abs)( a01 ) < BCATU(fx,abs)( a11 ) * BCATU(fx,lim_eps) ) )
                 {
                     a->data[ ( block_n - 2 ) * ( a->stride + 1 ) + 1 ] = 0;
                     a->data[ ( block_n - 1 ) * ( a->stride + 1 ) - 1 ] = 0;
                     break;
                 }
                 fx_t p = 0.5 * ( a00 + a11 );
-                fx_t d = sqrt( 0.25 * fx_(sqr)( a00 - a11 ) + a01 * a01 );
+                fx_t d = sqrt( 0.25 * BCATU(fx,sqr)( a00 - a11 ) + a01 * a01 );
 
                 // set shift to eigenvalue of lower 2x2 sub-matrix which is closest to a11
                 lambda = ( a11 >= p ) ? p + d : p - d;
@@ -269,11 +269,11 @@ bl_t bmath_mfx_s_(evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
             bmath_grt_fx_s gr_i = { .c = 1, .s = 0 };
             bmath_grt_fx_s gr_j;
             fx_t b = gr_i.c * ajj - gr_i.s * ch * aij;
-            bmath_grt_fx_s_(init_to_annihilate_b)( &gr_j, b - gr_i.c * lambda, ajk );
+            BCATU(bmath_grt,fx,s,init_to_annihilate_b)( &gr_j, b - gr_i.c * lambda, ajk );
 
             for( uz_t j = 0; j < block_n - 1; j++ )
             {
-                if( v ) bmath_grt_fx_s_(row_rotate)( &gr_j, v->data + j * v->stride, v->data + ( j + 1 ) * v->stride, 0, n );
+                if( v ) BCATU(bmath_grt,fx,s,row_rotate)( &gr_j, v->data + j * v->stride, v->data + ( j + 1 ) * v->stride, 0, n );
 
                 fx_t akk = pajj[ a->stride + 1 ];
                 fx_t akl = ( j == block_n - 2 ) ? 0 : pajj[ a->stride + 2 ];
@@ -282,16 +282,16 @@ bl_t bmath_mfx_s_(evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
                 fx_t rjk = gr_j.c * gr_i.c * ajk + gr_j.s * akk;
                 fx_t rjl = gr_j.s * akl;
 
-                fx_t fx_(sqr_si_cj_lambda) = fx_(sqr)( gr_i.s ) * gr_j.c * lambda;
+                fx_t BCATU(fx,sqr_si_cj_lambda) = BCATU(fx,sqr)( gr_i.s ) * gr_j.c * lambda;
 
-                pajj[ 0 ] =  rjj * gr_j.c * gr_i.c + rjk * gr_j.s + gr_j.c * fx_(sqr_si_cj_lambda);
+                pajj[ 0 ] =  rjj * gr_j.c * gr_i.c + rjk * gr_j.s + gr_j.c * BCATU(fx,sqr_si_cj_lambda);
 
                 b = gr_j.c * akk - gr_j.s * gr_i.c * ajk;
 
                 bmath_grt_fx_s gr_k;
-                bmath_grt_fx_s_(init_to_annihilate_b)( &gr_k, b - gr_j.c * lambda, akl );
+                BCATU(bmath_grt,fx,s,init_to_annihilate_b)( &gr_k, b - gr_j.c * lambda, akl );
 
-                fx_t offd = -rjj * gr_j.s * gr_i.c * gr_k.c + rjk * gr_k.c * gr_j.c + rjl * gr_k.s - gr_j.s * gr_k.c * fx_(sqr_si_cj_lambda);
+                fx_t offd = -rjj * gr_j.s * gr_i.c * gr_k.c + rjk * gr_k.c * gr_j.c + rjl * gr_k.s - gr_j.s * gr_k.c * BCATU(fx,sqr_si_cj_lambda);
                 pajj[ 1 ] = offd;
                 pajj[ a->stride ] = offd;
 
@@ -305,7 +305,7 @@ bl_t bmath_mfx_s_(evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
                 ajk = akl;
             }
 
-            pajj[ 0 ] = b * gr_i.c + fx_(sqr)( gr_i.s ) * lambda;
+            pajj[ 0 ] = b * gr_i.c + BCATU(fx,sqr)( gr_i.s ) * lambda;
         }
         if( cycle == max_cycles ) success = false;
     }
@@ -323,8 +323,8 @@ bl_t bmath_mfx_s_(evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
                 imax = ( v > vmax ) ? j : imax;
                 vmax = ( v > vmax ) ? v : vmax;
             }
-            fx_(t_swap)( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-            if( v ) bmath_mfx_s_(swap_row)( v, i, imax );
+            BCATU(fx,t_swap)( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+            if( v ) BCATU(bmath,mfx,s,swap_row)( v, i, imax );
         }
     }
 
@@ -333,9 +333,9 @@ bl_t bmath_mfx_s_(evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bmath_mfx_s_(evd_htp)( bmath_mfx_s* a, bmath_mfx_s* v )
+bl_t BCATU(bmath,mfx,s,evd_htp)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
-    return bmath_mfx_s_(evd_htp_qr_ishift)( a, v );
+    return BCATU(bmath,mfx,s,evd_htp_qr_ishift)( a, v );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

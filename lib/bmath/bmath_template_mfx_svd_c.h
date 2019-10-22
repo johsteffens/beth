@@ -30,11 +30,11 @@
 static bl_t ud_is_zero( bmath_mfx_s* a, uz_t row_idx )
 {
     fx_t* a00 = a->data + ( a->stride + 1 ) * row_idx;
-    fx_t  a01_abs = fx_(abs)( a00[ 1 ] );
-    if( a01_abs < fx_(lim_min) ||
+    fx_t  a01_abs = BCATU(fx,abs)( a00[ 1 ] );
+    if( a01_abs < BCATU(fx,lim_min) ||
         (
-            a01_abs < fx_(abs)( a00[ 0             ] ) * fx_(lim_eps) &&
-            a01_abs < fx_(abs)( a00[ a->stride + 1 ] ) * fx_(lim_eps) )
+            a01_abs < BCATU(fx,abs)( a00[ 0             ] ) * BCATU(fx,lim_eps) &&
+            a01_abs < BCATU(fx,abs)( a00[ a->stride + 1 ] ) * BCATU(fx,lim_eps) )
         )
     {
         a00[ 1 ] = 0;
@@ -52,12 +52,12 @@ static void ud_set_zero( bmath_mfx_s* a, uz_t row_idx )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
+bl_t BCATU(bmath,mfx,s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
 {
     // creating upper-bidiagonal
-    bmath_mfx_s_(ubd)( u, a, v );
+    BCATU(bmath,mfx,s,ubd)( u, a, v );
 
-    uz_t n = fx_(min)( a->cols, a->rows );
+    uz_t n = BCATU(fx,min)( a->cols, a->rows );
     if( n <= 1 ) return true; // nothing else to do
 
     // transposed ur, vr
@@ -70,13 +70,13 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
         {
             // for the thin matrix we only need to track the (lesser) nxn square part
             // and postmultiply it to the matrix
-            ut = bmath_mfx_s_(create)();
-            bmath_mfx_s_(set_size)( ut, n, n );
-            bmath_mfx_s_(one)( ut );
+            ut = BCATU(bmath,mfx,s,create)();
+            BCATU(bmath,mfx,s,set_size)( ut, n, n );
+            BCATU(bmath,mfx,s,one)( ut );
         }
         else
         {
-            bmath_mfx_s_(htp)( u, ut );
+            BCATU(bmath,mfx,s,htp)( u, ut );
         }
     }
 
@@ -84,13 +84,13 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
     {
         if( v->rows != v->cols )
         {
-            vt = bmath_mfx_s_(create)();
-            bmath_mfx_s_(set_size)( vt, n, n );
-            bmath_mfx_s_(one)( vt );
+            vt = BCATU(bmath,mfx,s,create)();
+            BCATU(bmath,mfx,s,set_size)( vt, n, n );
+            BCATU(bmath,mfx,s,one)( vt );
         }
         else
         {
-            bmath_mfx_s_(htp)( v, vt );
+            BCATU(bmath,mfx,s,htp)( v, vt );
         }
     }
 
@@ -100,11 +100,11 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
     for( uz_t i = 0; i < n - 1; i++ )
     {
         fx_t* ai = a->data + i * ( a->stride + 1 );
-        if( fx_(abs)( ai[ 1 ] ) < fx_(abs)( ai[ 0 ] ) * fx_(lim_eps) )
+        if( BCATU(fx,abs)( ai[ 1 ] ) < BCATU(fx,abs)( ai[ 0 ] ) * BCATU(fx,lim_eps) )
         {
             ai[ 1 ] = 0;
         }
-        else if( fx_(abs)( ai[ 0 ] ) < fx_(abs)( ai[ 1 ] ) * fx_(lim_eps) )
+        else if( BCATU(fx,abs)( ai[ 0 ] ) < BCATU(fx,abs)( ai[ 1 ] ) * BCATU(fx,lim_eps) )
         {
             ai[ 0 ] = 0;
             defective = true;
@@ -112,12 +112,12 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
     }
     if( defective )
     {
-        bmath_mfx_s_(ubd_to_lbd_htp)( a, vt );
-        bmath_mfx_s_(lbd_to_ubd_htp)( ut, a );
+        BCATU(bmath,mfx,s,ubd_to_lbd_htp)( a, vt );
+        BCATU(bmath,mfx,s,lbd_to_ubd_htp)( ut, a );
     }
 
-    bmath_arr_grt_fx_s gru = bmath_arr_grt_fx_(of_size)( n );
-    bmath_arr_grt_fx_s grv = bmath_arr_grt_fx_(of_size)( n );
+    bmath_arr_grt_fx_s gru = BCATU(bmath_arr_grt,fx,of_size)( n );
+    bmath_arr_grt_fx_s grv = BCATU(bmath_arr_grt,fx,of_size)( n );
 
     bl_t success = true;
 
@@ -150,12 +150,12 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
                     fx_t* a0 = a->data + ( a->stride + 1 ) * ( irb_end - 2 );
                     fx_t* a1 = a0 + a->stride;
 
-                    fx_t m11 = fx_(sqr)( a1[ 1 ] );
-                    fx_t m00 = fx_(sqr)( a0[ 0 ] ) + fx_(sqr)( a0[ 1 ] );
+                    fx_t m11 = BCATU(fx,sqr)( a1[ 1 ] );
+                    fx_t m00 = BCATU(fx,sqr)( a0[ 0 ] ) + BCATU(fx,sqr)( a0[ 1 ] );
                     fx_t m01 = a0[ 1 ] * a1[ 1 ];
 
                     fx_t p = 0.5 * ( m00 + m11 );
-                    fx_t d = sqrt( 0.25 * fx_(sqr)( m00 - m11 ) + m01 * m01 );
+                    fx_t d = sqrt( 0.25 * BCATU(fx,sqr)( m00 - m11 ) + m01 * m01 );
 
                     // set shift to eigenvalue of lower 2x2 sub-matrix which is closest to m11
                     lambda = ( m11 >= p ) ? p + d : p - d;
@@ -168,10 +168,10 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
                 bmath_grt_fx_s gr_r; // right rotation
 
                 // left rotation strategically diagonalizes a * aT but creates a1[ 0 ]
-                bmath_grt_fx_s_(init_to_annihilate_b)( &gr_l, fx_(sqr)( a0[ 0 ] ) + fx_(sqr)( a0[ 1 ] ) - lambda, a0[ 1 ] * a1[ 1 ] );
+                BCATU(bmath_grt,fx,s,init_to_annihilate_b)( &gr_l, BCATU(fx,sqr)( a0[ 0 ] ) + BCATU(fx,sqr)( a0[ 1 ] ) - lambda, a0[ 1 ] * a1[ 1 ] );
 
                 // right rotation annihilates a1[0]
-                bmath_grt_fx_s_(init_to_annihilate_b)( &gr_r, gr_l.c * a1[ 1 ] - gr_l.s * a0[ 1 ], gr_l.s * a0[ 0 ] );
+                BCATU(bmath_grt,fx,s,init_to_annihilate_b)( &gr_r, gr_l.c * a1[ 1 ] - gr_l.s * a0[ 1 ], gr_l.s * a0[ 0 ] );
 
                 fx_t a00 = a0[ 0 ];
                 fx_t a01 = a0[ 1 ];
@@ -180,7 +180,7 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
                 a0[ 0 ] = gr_r.c * a00 + gr_r.s * a01; a0[ 1 ] = gr_r.c * a01 - gr_r.s * a00;
                 a1[ 0 ] =                gr_r.s * a11; a1[ 1 ] = gr_r.c * a11;
 
-                bmath_grt_fx_s_(row_rotate)( &gr_l, a0, a1, 0, a->cols > irb_start + 2 ? 3 : 2 );
+                BCATU(bmath_grt,fx,s,row_rotate)( &gr_l, a0, a1, 0, a->cols > irb_start + 2 ? 3 : 2 );
                 a1[ 0 ] = 0;
 
                 gru.data[ irb_start ] = gr_l;
@@ -192,13 +192,13 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
                     fx_t* ak = a->data + ( a->stride + 1 ) * k + 1;
                     fx_t* al = ak + a->stride;
                     fx_t* am = al + a->stride;
-                    bmath_grt_fx_s_(init_and_annihilate_b)( &gr_r, ak, ak + 1 );
-                    bmath_grt_fx_s_(rotate)( &gr_r, al, al + 1 );
-                    bmath_grt_fx_s_(rotate)( &gr_r, am, am + 1 );
+                    BCATU(bmath_grt,fx,s,init_and_annihilate_b)( &gr_r, ak, ak + 1 );
+                    BCATU(bmath_grt,fx,s,rotate)( &gr_r, al, al + 1 );
+                    BCATU(bmath_grt,fx,s,rotate)( &gr_r, am, am + 1 );
 
-                    bmath_grt_fx_s_(init_and_annihilate_b)( &gr_l, al, am );
-                    bmath_grt_fx_s_(rotate)( &gr_l, al + 1, am + 1 );
-                    if( k < irb_end - 3 ) bmath_grt_fx_s_(rotate)( &gr_l, al + 2, am + 2 );
+                    BCATU(bmath_grt,fx,s,init_and_annihilate_b)( &gr_l, al, am );
+                    BCATU(bmath_grt,fx,s,rotate)( &gr_l, al + 1, am + 1 );
+                    if( k < irb_end - 3 ) BCATU(bmath_grt,fx,s,rotate)( &gr_l, al + 2, am + 2 );
 
                     gru.data[ k + 1 ] = gr_l;
                     grv.data[ k + 1 ] = gr_r;
@@ -206,8 +206,8 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
                     exit_cycle = exit_cycle | ud_is_zero( a, k );
                 }
 
-                if( ut ) bmath_mfx_s_(sweep_arow_rotate_fwd)( ut, irb_start, irb_end - 1, &gru, 0, ut->cols );
-                if( vt ) bmath_mfx_s_(sweep_arow_rotate_fwd)( vt, irb_start, irb_end - 1, &grv, 0, vt->cols );
+                if( ut ) BCATU(bmath,mfx,s,sweep_arow_rotate_fwd)( ut, irb_start, irb_end - 1, &gru, 0, ut->cols );
+                if( vt ) BCATU(bmath,mfx,s,sweep_arow_rotate_fwd)( vt, irb_start, irb_end - 1, &grv, 0, vt->cols );
 
                 exit_cycle = exit_cycle | ud_is_zero( a, irb_end - 2 );
             }
@@ -221,34 +221,34 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
         }
     }
 
-    bmath_arr_grt_fx_s_(down)( &grv );
-    bmath_arr_grt_fx_s_(down)( &gru );
+    BCATU(bmath_arr_grt,fx,s,down)( &grv );
+    BCATU(bmath_arr_grt,fx,s,down)( &gru );
 
     if( success )
     {
         // sorts by descending diagonal values; turns negative values
         for( uz_t i = 0; i < n; i++ )
         {
-            fx_t vmax = fx_(abs)( a->data[ i * ( a->stride + 1 ) ] );
+            fx_t vmax = BCATU(fx,abs)( a->data[ i * ( a->stride + 1 ) ] );
             uz_t imax = i;
             for( uz_t j = i + 1; j < n; j++ )
             {
-                fx_t v = fx_(abs)( a->data[ j * ( a->stride + 1 ) ] );
+                fx_t v = BCATU(fx,abs)( a->data[ j * ( a->stride + 1 ) ] );
                 imax = ( v > vmax ) ? j : imax;
                 vmax = ( v > vmax ) ? v : vmax;
             }
 
             if( imax != i )
             {
-                fx_(t_swap)( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
-                if( ut ) bmath_mfx_s_(swap_row)( ut, i, imax );
-                if( vt ) bmath_mfx_s_(swap_row)( vt, i, imax );
+                BCATU(fx,t_swap)( a->data + i * ( a->stride + 1 ), a->data + imax * ( a->stride + 1 ) );
+                if( ut ) BCATU(bmath,mfx,s,swap_row)( ut, i, imax );
+                if( vt ) BCATU(bmath,mfx,s,swap_row)( vt, i, imax );
             }
 
             if( a->data[ i * ( a->stride + 1 ) ] < 0 )
             {
                 a->data[ i * ( a->stride + 1 ) ] *= -1.0;
-                if( vt ) bmath_mfx_s_(mul_fx_to_row)( vt, -1.0, i );
+                if( vt ) BCATU(bmath,mfx,s,mul_fx_to_row)( vt, -1.0, i );
             }
         }
     }
@@ -257,12 +257,12 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
     {
         if( ut != u )
         {
-            bmath_mfx_s_(mul_htp)( u, ut, u );
-            bmath_mfx_s_(discard)( ut );
+            BCATU(bmath,mfx,s,mul_htp)( u, ut, u );
+            BCATU(bmath,mfx,s,discard)( ut );
         }
         else
         {
-            bmath_mfx_s_(htp)( ut, u );
+            BCATU(bmath,mfx,s,htp)( ut, u );
         }
     }
 
@@ -270,12 +270,12 @@ bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
     {
         if( vt != v )
         {
-            bmath_mfx_s_(mul_htp)( v, vt, v );
-            bmath_mfx_s_(discard)( vt );
+            BCATU(bmath,mfx,s,mul_htp)( v, vt, v );
+            BCATU(bmath,mfx,s,discard)( vt );
         }
         else
         {
-            bmath_mfx_s_(htp)( vt, v );
+            BCATU(bmath,mfx,s,htp)( vt, v );
         }
     }
 

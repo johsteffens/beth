@@ -55,7 +55,7 @@
  *  Meaning either a->rows or a->cols is changed to min(m,n) by the routine.
  *
  */
-bl_t bmath_mfx_s_(svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
+bl_t BCATU(bmath,mfx,s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
 
 /**********************************************************************************************************************/
 // closing template
