@@ -1,4 +1,4 @@
-/** Copyright 2018 Johannes Bernhard Steffens
+/** Author and Copyright 2018 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -800,7 +800,7 @@ void BCATU(bmath_vfx_s,stat_to_sink)( const bmath_vfx_s* o, bcore_sink* sink )
 
 #include "bmath_spect_vector.h"
 
-static void BCATU(bmath,vfx,selftest)( void )
+static void selftest( void )
 {
     BLM_INIT();
 

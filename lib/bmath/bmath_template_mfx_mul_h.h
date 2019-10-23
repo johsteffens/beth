@@ -1,4 +1,4 @@
-/** Copyright 2018 Johannes Bernhard Steffens
+/** Author and Copyright 2018 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
  *
  *  Blocking and microkernel strategy:
  *    - Recursion rows-cols trying to reach BLOCK_SIZE
- *    - Microkernels are optimized for BLOCK_SIZE and use AVX-SIMD when available
+ *    - Microkernels are optimized for BLOCK_SIZE and use AVX2-SIMD when available
  */
 
 /**********************************************************************************************************************/

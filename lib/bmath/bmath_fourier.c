@@ -1,4 +1,4 @@
-/** Copyright 2018 Johannes Bernhard Steffens
+/** Author and Copyright 2018 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -91,6 +91,8 @@ void bmath_fourier_rct_fft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t n0
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 vd_t bmath_fourier_fft_f3_buf( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size, vd_t buf )
 {
     if( size <= 2 )
@@ -125,14 +127,20 @@ vd_t bmath_fourier_fft_f3_buf( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t si
     return buf_l;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bmath_fourier_fft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size )
 {
     bcore_free( bmath_fourier_fft_f3_buf( src, dst, size, NULL ) );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
-static vd_t selftest( void )
+//----------------------------------------------------------------------------------------------------------------------
+
+static vd_t fourier_selftest( void )
 {
     st_s* log = st_s_createf( "== bmath_fourier_selftest " );
     st_s_push_char_n( log, '=', 120 - log->size );
@@ -164,15 +172,11 @@ static vd_t selftest( void )
             vec1->data[ i ] = bmath_cf3_init( re, im );
         }
 
-    //    bcore_txt_ml_to_stdout( sr_awc( vec1 ) );
-
         /// vec2 = DFT( vec1 )
         bmath_fourier_dft_f3( vec1->data, vec2->data, size );
         /// vec3 = FFT( vec1 )
         bmath_fourier_fft_f3( vec1->data, vec3->data, size );
 
-    //    bcore_txt_ml_to_stdout( sr_awc( vec2 ) );
-    //    bcore_txt_ml_to_stdout( sr_awc( vec3 ) );
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec2, ( const bmath_vector* )vec3, ( bmath_ring* )&z );
         ASSERT( bmath_cf3_mag( z ) < 1e-14 );
 
@@ -185,7 +189,6 @@ static vd_t selftest( void )
 
         /// compare vec1, vec 2
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec1, ( const bmath_vector* )vec2, ( bmath_ring* )&z );
-    //    printf( "%g\n", bmath_cf3_mag( z ) );
         ASSERT( bmath_cf3_mag( z ) < 1e-14 );
     }
 
@@ -223,7 +226,11 @@ static vd_t selftest( void )
     return log;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 vd_t bmath_fourier_signal_handler( const bcore_signal_s* o )
 {
@@ -236,7 +243,7 @@ vd_t bmath_fourier_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_selftest:
         {
-            return selftest();
+            return fourier_selftest();
         }
         break;
 
@@ -245,6 +252,8 @@ vd_t bmath_fourier_signal_handler( const bcore_signal_s* o )
 
     return NULL;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 

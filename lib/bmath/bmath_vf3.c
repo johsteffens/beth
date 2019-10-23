@@ -1,4 +1,4 @@
-/** Copyright 2018 Johannes Bernhard Steffens
+/** Author and Copyright 2018 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 #include <stdio.h>
 
 #include "bmath_vf3.h"
+#include "bmath_spect_vector.h"
 
 #define BMATH_TEMPLATE_FX_PREC 3
 #include "bmath_template_vfx_c.h"
-
-#include "bmath_spect_vector.h"
 
 /**********************************************************************************************************************/
 
@@ -66,7 +65,7 @@ vd_t bmath_vf3_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_selftest:
         {
-            bmath_vf3_selftest();
+            selftest();
         }
         break;
 

@@ -1,4 +1,4 @@
-/** Copyright 2019 Johannes Bernhard Steffens
+/** Author and Copyright 2019 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -53,10 +53,10 @@ BCORE_DECLARE_OBJECT( bmath_mf2_s )
 #define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_mfx_svd_h.h"
 
-
+/*
 #define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_mfx_h.h"
-
+*/
 
 /**********************************************************************************************************************/
 

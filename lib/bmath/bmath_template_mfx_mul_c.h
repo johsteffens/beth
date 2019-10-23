@@ -1,4 +1,4 @@
-/** Copyright 2018 Johannes Bernhard Steffens
+/** Author and Copyright 2018 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@
 // Microkernels
 
 /// mul: Fixed size AVX-Microkernel
-static void BCATU(bmath_mfx_s,mul_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void kernel_fixed_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -120,7 +120,7 @@ static void BCATU(bmath_mfx_s,mul_fix_kernel)( const fx_t* o, sz_t o_s, const fx
  *  Allows all combinations o_r, o_c, m_c (including 0)
  *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_c <= BMATH_MUL_BLOCK_SIZE
  */
-static void BCATU(bmath_mfx_s,mul_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
+static void kernel_flexi_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -204,7 +204,7 @@ static void BCATU(bmath_mfx_s,mul_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_
 //----------------------------------------------------------------------------------------------------------------------
 
 /// mul_htp: Fixed size AVX-Microkernel
-static void BCATU(bmath_mfx_s,mul_htp_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void kernel_fixed_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -284,7 +284,7 @@ static void BCATU(bmath_mfx_s,mul_htp_fix_kernel)( const fx_t* o, sz_t o_s, cons
  *  Allows all combinations o_r, o_c, m_r (including 0)
  *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_r <= BMATH_MUL_BLOCK_SIZE
  */
-static void BCATU(bmath_mfx_s,mul_htp_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
+static void kernel_flexi_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -375,7 +375,7 @@ static void BCATU(bmath_mfx_s,mul_htp_flex_kernel)( const fx_t* o, sz_t o_s, sz_
 //----------------------------------------------------------------------------------------------------------------------
 
 /// htp_mul: Fixed size AVX-Microkernel
-static void BCATU(bmath_mfx_s,htp_mul_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void kernel_fixed_htp_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -453,7 +453,7 @@ static void BCATU(bmath_mfx_s,htp_mul_fix_kernel)( const fx_t* o, sz_t o_s, cons
  *  Allows all combinations o_r, o_c, m_r (including 0)
  *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_c <= BMATH_MUL_BLKPK_SIZE * P5_SIZE
  */
-static void BCATU(bmath_mfx_s,htp_mul_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
+static void kernel_flexi_htp_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -543,7 +543,7 @@ static void BCATU(bmath_mfx_s,htp_mul_flex_kernel)( const fx_t* o, sz_t o_s, sz_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath_mfx_s,htp_mul_htp_fix_kernel)( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void kernel_fixed_htp_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -625,7 +625,7 @@ static void BCATU(bmath_mfx_s,htp_mul_htp_fix_kernel)( const fx_t* o, sz_t o_s, 
  *  Allows all combinations o_r, o_c, m_r (including 0)
  *  provided o_r <= BMATH_MUL_BLOCK_SIZE && m_r <= BMATH_MUL_BLOCK_SIZE
  */
-static void BCATU(bmath_mfx_s,htp_mul_htp_flex_kernel)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
+static void kernel_flexi_htp_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -725,35 +725,35 @@ static sz_t midof( sz_t v, const sz_t bz )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath_mfx_s,fx_t_mul)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
+static void recursive_block_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
 {
     if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_c == BMATH_MUL_BLOCK_SIZE )
     {
-        BCATU(bmath_mfx_s,mul_fix_kernel)( o, o_s, m, m_s, r, r_s );
+        kernel_fixed_mul( o, o_s, m, m_s, r, r_s );
         return;
     }
 
     if( o_r >= o_c && o_r >= m_c && o_r > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_mul)( o,             o_s,       mid, o_c, m, m_s, m_c,             r, r_s );
-        BCATU(bmath_mfx_s,fx_t_mul)( o + mid * o_s, o_s, o_r - mid, o_c, m, m_s, m_c, r + mid * r_s, r_s );
+        recursive_block_mul( o,             o_s,       mid, o_c, m, m_s, m_c,             r, r_s );
+        recursive_block_mul( o + mid * o_s, o_s, o_r - mid, o_c, m, m_s, m_c, r + mid * r_s, r_s );
         return;
     }
 
     if( o_c >= m_c && o_c > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_mul)( o,       o_s, o_r,       mid, m,             m_s, m_c, r, r_s );
-        BCATU(bmath_mfx_s,fx_t_mul)( o + mid, o_s, o_r, o_c - mid, m + mid * m_s, m_s, m_c, r, r_s );
+        recursive_block_mul( o,       o_s, o_r,       mid, m,             m_s, m_c, r, r_s );
+        recursive_block_mul( o + mid, o_s, o_r, o_c - mid, m + mid * m_s, m_s, m_c, r, r_s );
         return;
     }
 
     if( m_c > BMATH_MUL_BLOCK_SIZE )
     {
         sz_t mid = midof( m_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_mul)( o, o_s, o_r, o_c, m,       m_s,       mid, r,       r_s );
-        BCATU(bmath_mfx_s,fx_t_mul)( o, o_s, o_r, o_c, m + mid, m_s, m_c - mid, r + mid, r_s );
+        recursive_block_mul( o, o_s, o_r, o_c, m,       m_s,       mid, r,       r_s );
+        recursive_block_mul( o, o_s, o_r, o_c, m + mid, m_s, m_c - mid, r + mid, r_s );
         return;
     }
 
@@ -761,8 +761,144 @@ static void BCATU(bmath_mfx_s,fx_t_mul)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t
     assert( o_r <= BMATH_MUL_BLOCK_SIZE );
     assert( o_c <= BMATH_MUL_BLOCK_SIZE );
     assert( m_c <= BMATH_MUL_BLOCK_SIZE );
-    BCATU(bmath_mfx_s,mul_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_c, r, r_s );
+    kernel_flexi_mul( o, o_s, o_r, o_c, m, m_s, m_c, r, r_s );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void recursive_block_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s, bl_t sym )
+{
+    if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_r == BMATH_MUL_BLOCK_SIZE )
+    {
+        kernel_fixed_mul_htp( o, o_s, m, m_s, r, r_s );
+        return;
+    }
+
+    if( o_r >= o_c && o_r >= m_r && o_r > BMATH_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
+        recursive_block_mul_htp( o,             o_s,       mid, o_c, m, m_s, m_r,             r, r_s, sym );
+        recursive_block_mul_htp( o + mid * o_s, o_s, o_r - mid, o_c, m, m_s, m_r, r + mid * r_s, r_s, sym );
+        return;
+    }
+
+    if( o_c >= m_r && o_c > BMATH_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
+        recursive_block_mul_htp( o,       o_s, o_r,       mid, m,       m_s, m_r, r, r_s, sym );
+        recursive_block_mul_htp( o + mid, o_s, o_r, o_c - mid, m + mid, m_s, m_r, r, r_s, sym );
+        return;
+    }
+
+    if( m_r > BMATH_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( m_r, BMATH_MUL_BLOCK_SIZE );
+        recursive_block_mul_htp( o, o_s, o_r, o_c, m, m_s, mid, r, r_s, sym );
+
+        if( !sym || o != m ) // in case of symmetry skip upper triangle of r
+        {
+            recursive_block_mul_htp( o, o_s, o_r, o_c, m + mid * m_s, m_s, m_r - mid, r + mid, r_s, sym );
+        }
+        return;
+    }
+
+    /// smaller blocks
+    assert( o_r <= BMATH_MUL_BLOCK_SIZE );
+    assert( o_c <= BMATH_MUL_BLOCK_SIZE );
+    assert( m_r <= BMATH_MUL_BLOCK_SIZE );
+    kernel_flexi_mul_htp( o, o_s, o_r, o_c, m, m_s, m_r, r, r_s );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void recursive_block_htp_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s, bl_t sym )
+{
+    if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_c == BMATH_MUL_BLOCK_SIZE )
+    {
+        kernel_fixed_htp_mul( o, o_s, m, m_s, r, r_s );
+        return;
+    }
+
+    if( o_r >= o_c && o_r >= m_c && o_r > BMATH_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul( o,             o_s,       mid, o_c, m,             m_s, m_c, r, r_s, sym );
+        recursive_block_htp_mul( o + mid * o_s, o_s, o_r - mid, o_c, m + mid * m_s, m_s, m_c, r, r_s, sym );
+        return;
+    }
+
+    if( o_c >= m_c && o_c > BMATH_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul( o,       o_s, o_r,       mid, m, m_s, m_c, r,             r_s, sym );
+        recursive_block_htp_mul( o + mid, o_s, o_r, o_c - mid, m, m_s, m_c, r + mid * r_s, r_s, sym );
+        return;
+    }
+
+    if( m_c > BMATH_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( m_c, BMATH_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul( o, o_s, o_r, o_c, m, m_s, mid, r, r_s, sym );
+
+        if( !sym || o != m ) // in case of symmetry skip upper triangle of r
+        {
+            recursive_block_htp_mul( o, o_s, o_r, o_c, m + mid, m_s, m_c - mid, r + mid, r_s, sym );
+        }
+        return;
+    }
+
+    /// smaller blocks
+    assert( o_c <= BMATH_MUL_BLOCK_SIZE );
+    assert( m_c <= BMATH_MUL_BLOCK_SIZE );
+    assert( o_r <= BMATH_MUL_BLOCK_SIZE );
+    kernel_flexi_htp_mul( o, o_s, o_r, o_c, m, m_s, m_c, r, r_s );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void recursive_block_htp_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
+{
+    if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_r == BMATH_MUL_BLOCK_SIZE )
+    {
+        kernel_fixed_htp_mul_htp( o, o_s, m, m_s, r, r_s );
+        return;
+    }
+
+    if( o_c >= o_r && o_c >= m_r && o_c > BMATH_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul_htp( o,       o_s, o_r,       mid, m, m_s, m_r,             r, r_s );
+        recursive_block_htp_mul_htp( o + mid, o_s, o_r, o_c - mid, m, m_s, m_r, r + mid * r_s, r_s );
+        return;
+    }
+
+    if( o_r >= m_r && o_r > BMATH_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul_htp( o,             o_s,       mid, o_c, m,       m_s, m_r, r, r_s );
+        recursive_block_htp_mul_htp( o + mid * o_s, o_s, o_r - mid, o_c, m + mid, m_s, m_r, r, r_s );
+        return;
+    }
+
+    if( m_r > BMATH_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( m_r, BMATH_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul_htp( o, o_s, o_r, o_c, m, m_s, mid, r, r_s );
+        recursive_block_htp_mul_htp( o, o_s, o_r, o_c, m + mid * m_s, m_s, m_r - mid, r + mid, r_s );
+        return;
+    }
+
+    /// smaller blocks
+    assert( o_r <= BMATH_MUL_BLOCK_SIZE );
+    assert( o_c <= BMATH_MUL_BLOCK_SIZE );
+    assert( m_r <= BMATH_MUL_BLOCK_SIZE );
+    kernel_flexi_htp_mul_htp( o, o_s, o_r, o_c, m, m_s, m_r, r, r_s );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+// interface
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -784,52 +920,7 @@ void BCATU(bmath_mfx_s,mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_m
 
     BCATU(bmath_mfx_s,zro)( r );
 
-    BCATU(bmath_mfx_s,fx_t_mul)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->cols, r->data, r->stride );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static void BCATU(bmath_mfx_s,fx_t_mul_htp)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s, bl_t sym )
-{
-    if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_r == BMATH_MUL_BLOCK_SIZE )
-    {
-        BCATU(bmath_mfx_s,mul_htp_fix_kernel)( o, o_s, m, m_s, r, r_s );
-        return;
-    }
-
-    if( o_r >= o_c && o_r >= m_r && o_r > BMATH_MUL_BLOCK_SIZE )
-    {
-        sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_mul_htp)( o,             o_s,       mid, o_c, m, m_s, m_r,             r, r_s, sym );
-        BCATU(bmath_mfx_s,fx_t_mul_htp)( o + mid * o_s, o_s, o_r - mid, o_c, m, m_s, m_r, r + mid * r_s, r_s, sym );
-        return;
-    }
-
-    if( o_c >= m_r && o_c > BMATH_MUL_BLOCK_SIZE )
-    {
-        sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_mul_htp)( o,       o_s, o_r,       mid, m,       m_s, m_r, r, r_s, sym );
-        BCATU(bmath_mfx_s,fx_t_mul_htp)( o + mid, o_s, o_r, o_c - mid, m + mid, m_s, m_r, r, r_s, sym );
-        return;
-    }
-
-    if( m_r > BMATH_MUL_BLOCK_SIZE )
-    {
-        sz_t mid = midof( m_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_mul_htp)( o, o_s, o_r, o_c, m, m_s, mid, r, r_s, sym );
-
-        if( !sym || o != m ) // in case of symmetry skip upper triangle of r
-        {
-            BCATU(bmath_mfx_s,fx_t_mul_htp)( o, o_s, o_r, o_c, m + mid * m_s, m_s, m_r - mid, r + mid, r_s, sym );
-        }
-        return;
-    }
-
-    /// smaller blocks
-    assert( o_r <= BMATH_MUL_BLOCK_SIZE );
-    assert( o_c <= BMATH_MUL_BLOCK_SIZE );
-    assert( m_r <= BMATH_MUL_BLOCK_SIZE );
-    BCATU(bmath_mfx_s,mul_htp_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_r, r, r_s );
+    recursive_block_mul( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->cols, r->data, r->stride );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -854,7 +945,7 @@ void BCATU(bmath_mfx_s,mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bma
 
     bl_t symmetry = ( o == m );
 
-    BCATU(bmath_mfx_s,fx_t_mul_htp)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->rows, r->data, r->stride, symmetry );
+    recursive_block_mul_htp( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->rows, r->data, r->stride, symmetry );
 
     if( symmetry )
     {
@@ -866,51 +957,6 @@ void BCATU(bmath_mfx_s,mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bma
             }
         }
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static void BCATU(bmath_mfx_s,fx_t_htp_mul)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s, bl_t sym )
-{
-    if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_c == BMATH_MUL_BLOCK_SIZE )
-    {
-        BCATU(bmath_mfx_s,htp_mul_fix_kernel)( o, o_s, m, m_s, r, r_s );
-        return;
-    }
-
-    if( o_r >= o_c && o_r >= m_c && o_r > BMATH_MUL_BLOCK_SIZE )
-    {
-        sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_htp_mul)( o,             o_s,       mid, o_c, m,             m_s, m_c, r, r_s, sym );
-        BCATU(bmath_mfx_s,fx_t_htp_mul)( o + mid * o_s, o_s, o_r - mid, o_c, m + mid * m_s, m_s, m_c, r, r_s, sym );
-        return;
-    }
-
-    if( o_c >= m_c && o_c > BMATH_MUL_BLOCK_SIZE )
-    {
-        sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_htp_mul)( o,       o_s, o_r,       mid, m, m_s, m_c, r,             r_s, sym );
-        BCATU(bmath_mfx_s,fx_t_htp_mul)( o + mid, o_s, o_r, o_c - mid, m, m_s, m_c, r + mid * r_s, r_s, sym );
-        return;
-    }
-
-    if( m_c > BMATH_MUL_BLOCK_SIZE )
-    {
-        sz_t mid = midof( m_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_htp_mul)( o, o_s, o_r, o_c, m, m_s, mid, r, r_s, sym );
-
-        if( !sym || o != m ) // in case of symmetry skip upper triangle of r
-        {
-            BCATU(bmath_mfx_s,fx_t_htp_mul)( o, o_s, o_r, o_c, m + mid, m_s, m_c - mid, r + mid, r_s, sym );
-        }
-        return;
-    }
-
-    /// smaller blocks
-    assert( o_c <= BMATH_MUL_BLOCK_SIZE );
-    assert( m_c <= BMATH_MUL_BLOCK_SIZE );
-    assert( o_r <= BMATH_MUL_BLOCK_SIZE );
-    BCATU(bmath_mfx_s,htp_mul_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_c, r, r_s );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -935,7 +981,7 @@ void BCATU(bmath_mfx_s,htp_mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bma
 
     bl_t symmetry = ( o == m );
 
-    BCATU(bmath_mfx_s,fx_t_htp_mul)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->cols, r->data, r->stride, symmetry );
+    recursive_block_htp_mul( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->cols, r->data, r->stride, symmetry );
 
     if( symmetry )
     {
@@ -948,47 +994,6 @@ void BCATU(bmath_mfx_s,htp_mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bma
         }
     }
 
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static void BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
-{
-    if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_r == BMATH_MUL_BLOCK_SIZE )
-    {
-        BCATU(bmath_mfx_s,htp_mul_htp_fix_kernel)( o, o_s, m, m_s, r, r_s );
-        return;
-    }
-
-    if( o_c >= o_r && o_c >= m_r && o_c > BMATH_MUL_BLOCK_SIZE )
-    {
-        sz_t mid = midof( o_c, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o,       o_s, o_r,       mid, m, m_s, m_r,             r, r_s );
-        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o + mid, o_s, o_r, o_c - mid, m, m_s, m_r, r + mid * r_s, r_s );
-        return;
-    }
-
-    if( o_r >= m_r && o_r > BMATH_MUL_BLOCK_SIZE )
-    {
-        sz_t mid = midof( o_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o,             o_s,       mid, o_c, m,       m_s, m_r, r, r_s );
-        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o + mid * o_s, o_s, o_r - mid, o_c, m + mid, m_s, m_r, r, r_s );
-        return;
-    }
-
-    if( m_r > BMATH_MUL_BLOCK_SIZE )
-    {
-        sz_t mid = midof( m_r, BMATH_MUL_BLOCK_SIZE );
-        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o, o_s, o_r, o_c, m, m_s, mid, r, r_s );
-        BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o, o_s, o_r, o_c, m + mid * m_s, m_s, m_r - mid, r + mid, r_s );
-        return;
-    }
-
-    /// smaller blocks
-    assert( o_r <= BMATH_MUL_BLOCK_SIZE );
-    assert( o_c <= BMATH_MUL_BLOCK_SIZE );
-    assert( m_r <= BMATH_MUL_BLOCK_SIZE );
-    BCATU(bmath_mfx_s,htp_mul_htp_flex_kernel)( o, o_s, o_r, o_c, m, m_s, m_r, r, r_s );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1010,13 +1015,8 @@ void BCATU(bmath_mfx_s,htp_mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m,
     ASSERT( m->rows == r->cols );
 
     BCATU(bmath_mfx_s,zro)( r );
-    BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->rows, r->data, r->stride );
+    recursive_block_htp_mul_htp( o->data, o->stride, o->rows, o->cols, m->data, m->stride, m->rows, r->data, r->stride );
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/**********************************************************************************************************************/
-// other mul functions
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -1188,7 +1188,7 @@ void BCATU(bmath_mfx_s,htp_mul_esp)( const bmath_mfx_s* o, const bmath_mfx_s* op
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath_mfx_s,mul_udu_htp_)( const bmath_mfx_s* u, const bmath_vfx_s* d, bl_t esp, bmath_mfx_s* r )
+static void mul_udu_htp_( const bmath_mfx_s* u, const bmath_vfx_s* d, bl_t esp, bmath_mfx_s* r )
 {
     ASSERT( r != u );
     ASSERT( u->rows == r->cols );
@@ -1220,19 +1220,19 @@ static void BCATU(bmath_mfx_s,mul_udu_htp_)( const bmath_mfx_s* u, const bmath_v
 
 void BCATU(bmath_mfx_s,mul_udu_htp)( const bmath_mfx_s* u, const bmath_vfx_s* d, bmath_mfx_s* r )
 {
-    BCATU(bmath_mfx_s,mul_udu_htp_)( u, d, false, r );
+    mul_udu_htp_( u, d, false, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void BCATU(bmath_mfx_s,mul_udu_htp_esp)( const bmath_mfx_s* u, const bmath_vfx_s* d, bmath_mfx_s* r )
 {
-    BCATU(bmath_mfx_s,mul_udu_htp_)( u, d, true, r );
+    mul_udu_htp_( u, d, true, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath_mfx_s,mul_udv_htp_)( const bmath_mfx_s* u, const bmath_vfx_s* d, const bmath_mfx_s* v, bl_t esp, bmath_mfx_s* r )
+static void mul_udv_htp_( const bmath_mfx_s* u, const bmath_vfx_s* d, const bmath_mfx_s* v, bl_t esp, bmath_mfx_s* r )
 {
     ASSERT( r != u );
     ASSERT( r != v );
@@ -1268,19 +1268,19 @@ static void BCATU(bmath_mfx_s,mul_udv_htp_)( const bmath_mfx_s* u, const bmath_v
 
 void BCATU(bmath_mfx_s,mul_udv_htp)( const bmath_mfx_s* u, const bmath_vfx_s* d, const bmath_mfx_s* v, bmath_mfx_s* r )
 {
-    BCATU(bmath_mfx_s,mul_udv_htp_)( u, d, v, false, r );
+    mul_udv_htp_( u, d, v, false, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void BCATU(bmath_mfx_s,mul_udv_htp_esp)( const bmath_mfx_s* u, const bmath_vfx_s* d, const bmath_mfx_s* v, bmath_mfx_s* r )
 {
-    BCATU(bmath_mfx_s,mul_udv_htp_)( u, d, v, true, r );
+    mul_udv_htp_( u, d, v, true, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(bmath_mfx_s,mul_utv_htp_)( const bmath_mfx_s* u, const bmath_mfx_s* t, const bmath_mfx_s* v, bl_t esp, bmath_mfx_s* r )
+static void mul_utv_htp_( const bmath_mfx_s* u, const bmath_mfx_s* t, const bmath_mfx_s* v, bl_t esp, bmath_mfx_s* r )
 {
     ASSERT( r != u );
     ASSERT( r != v );
@@ -1294,7 +1294,7 @@ static void BCATU(bmath_mfx_s,mul_utv_htp_)( const bmath_mfx_s* u, const bmath_m
         bmath_vfx_s* d = BCATU(bmath_vfx_s,create)();
         BCATU(bmath_vfx_s,set_size)( d, sz_min( t->rows, t->cols ) );
         BCATU(bmath_mfx_s,get_dag_vec)( t, d );
-        BCATU(bmath_mfx_s,mul_udv_htp_)( u, d, v, esp, r );
+        mul_udv_htp_( u, d, v, esp, r );
         BCATU(bmath_vfx_s,discard)( d );
         return;
     }
@@ -1356,14 +1356,14 @@ static void BCATU(bmath_mfx_s,mul_utv_htp_)( const bmath_mfx_s* u, const bmath_m
 
 void BCATU(bmath_mfx_s,mul_utv_htp)( const bmath_mfx_s* u, const bmath_mfx_s* t, const bmath_mfx_s* v, bmath_mfx_s* r )
 {
-    BCATU(bmath_mfx_s,mul_utv_htp_)( u, t, v, false, r );
+    mul_utv_htp_( u, t, v, false, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void BCATU(bmath_mfx_s,mul_utv_htp_esp)( const bmath_mfx_s* u, const bmath_mfx_s* t, const bmath_mfx_s* v, bmath_mfx_s* r )
 {
-    BCATU(bmath_mfx_s,mul_utv_htp_)( u, t, v, false, r );
+    mul_utv_htp_( u, t, v, false, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1388,7 +1388,7 @@ void BCATU(bmath_mfx_s,mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, con
 
     if( c != r ) BCATU(bmath_mfx_s,cpy)( c, r );
 
-    BCATU(bmath_mfx_s,fx_t_mul)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->cols, r->data, r->stride );
+    recursive_block_mul( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->cols, r->data, r->stride );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1413,7 +1413,7 @@ void BCATU(bmath_mfx_s,mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s* b,
 
     if( c != r ) BCATU(bmath_mfx_s,cpy)( c, r );
 
-    BCATU(bmath_mfx_s,fx_t_mul_htp)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->rows, r->data, r->stride, false );
+    recursive_block_mul_htp( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->rows, r->data, r->stride, false );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1438,7 +1438,7 @@ void BCATU(bmath_mfx_s,htp_mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b,
 
     if( c != r ) BCATU(bmath_mfx_s,cpy)( c, r );
 
-    BCATU(bmath_mfx_s,fx_t_htp_mul)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->cols, r->data, r->stride, false );
+    recursive_block_htp_mul( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->cols, r->data, r->stride, false );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1463,7 +1463,7 @@ void BCATU(bmath_mfx_s,htp_mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s
 
     if( c != r ) BCATU(bmath_mfx_s,cpy)( c, r );
 
-    BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->rows, r->data, r->stride );
+    recursive_block_htp_mul_htp( o->data, o->stride, o->rows, o->cols, b->data, b->stride, b->rows, r->data, r->stride );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1522,10 +1522,10 @@ void BCATU(bmath_mfx_s,mul_add_cps)( bl_t htpa, const bmath_mfx_s* a, bl_t htpb,
         bl_t symmetry = ( !d || e == 0.0 ) && ( a == b ) && ( htpa + htpb == 1 );
         switch( htpa * 2 + htpb )
         {
-            case 0: BCATU(bmath_mfx_s,fx_t_mul)(         a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->cols, r->data, r->stride           ); break; // a * b
-            case 1: BCATU(bmath_mfx_s,fx_t_mul_htp)(     a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->rows, r->data, r->stride, symmetry ); break; // a * b^T
-            case 2: BCATU(bmath_mfx_s,fx_t_htp_mul)(     a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->cols, r->data, r->stride, symmetry ); break; // a^T * b
-            case 3: BCATU(bmath_mfx_s,fx_t_htp_mul_htp)( a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->rows, r->data, r->stride           ); break; // a^T * b^T
+            case 0: recursive_block_mul(         a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->cols, r->data, r->stride           ); break; // a * b
+            case 1: recursive_block_mul_htp(     a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->rows, r->data, r->stride, symmetry ); break; // a * b^T
+            case 2: recursive_block_htp_mul(     a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->cols, r->data, r->stride, symmetry ); break; // a^T * b
+            case 3: recursive_block_htp_mul_htp( a->data, a->stride, a->rows, a->cols, b->data, b->stride, b->rows, r->data, r->stride           ); break; // a^T * b^T
             default: break;
         }
         if( symmetry )

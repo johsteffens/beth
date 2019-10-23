@@ -1,4 +1,4 @@
-/** Copyright 2018 Johannes Bernhard Steffens
+/** Author and Copyright 2018 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -2641,7 +2641,7 @@ void BCATU(bmath_mfx_s,to_conv_operand)( bmath_mfx_s* o, sz_t kernel_size, sz_t 
 
 /**********************************************************************************************************************/
 
-static vd_t BCATU(fx,selftest)( void )
+static vd_t selftest( void )
 {
     BLM_INIT();
 
@@ -2967,7 +2967,7 @@ static vd_t BCATU(fx,selftest)( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void BCATU(fx,eval_test)( void )
+static void eval_test( void )
 {
     BLM_INIT();
     BCORE_LIFE_CREATE( bmath_mfx_eval_s, eval );

@@ -1,4 +1,4 @@
-/** Copyright 2019 Johannes Bernhard Steffens
+/** Author and Copyright 2019 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,13 +30,16 @@
     #error "Macro BMATH_TEMPLATE_FX_PREC has wrong value! (Only '2' or '3' are supported)"
 #endif // BMATH_TEMPLATE_FX_PREC
 
-#define vfx BCAT(v,fx)
-#define mfx BCAT(m,fx)
+// infix
+#define vfx  BCAT(v,fx)
+#define vcfx BCAT(vc,fx)
+#define mfx  BCAT(m,fx)
 
 // objects
 #define fx_t                     BCATU(fx,t)
 #define bmath_fp_u2_argb_from_fx BCATU(bmath_fp_u2_argb_from,fx)
 #define bmath_vfx_s              BCATU(bmath,vfx,s)
+#define bmath_vcfx_s             BCATU(bmath,vcfx,s)
 #define bmath_arr_vfx_s          BCATU(bmath_arr,vfx,s)
 #define bmath_grt_fx_s           BCATU(bmath_grt,fx,s)
 #define bmath_arr_grt_fx_s       BCATU(bmath_arr_grt,fx,s)

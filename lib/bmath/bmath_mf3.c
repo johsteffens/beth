@@ -1,4 +1,4 @@
-/** Copyright 2018 Johannes Bernhard Steffens
+/** Author and Copyright 2018 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -170,8 +170,8 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_selftest:
         {
-            f3_selftest();
-            f3_eval_test();
+            selftest();
+            eval_test();
             return NULL;
         }
         break;
