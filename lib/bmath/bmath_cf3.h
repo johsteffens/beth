@@ -13,27 +13,26 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_FOURIER_F3_H
-#define BMATH_FOURIER_F3_H
+#ifndef BMATH_CF3_H
+#define BMATH_CF3_H
 
-/** Discrete Fourier Transform.
- *  DFT: Canonic implementation: F_k = Sum_j( f_j * w^jk ); w := e^-i2pi/n
- *  FFT: Fast transform (on power 2 sizes) (numerically equivalent to DFT)
- *  To obtain the inverse transform:
- *      - Conjugate src before FT.
- *      - Conjugate dst after FT and scale with 1.0 / size.
- */
-
+#include "bmath_spect_algebraic.h"
 #include "bcore_std.h"
 #include "bmath_hwflags.h"
-#include "bmath_spect_algebraic.h"
-#include "bmath_cf3.h"
-
-#define BMATH_TEMPLATE_FX_PREC 3
-#include "bmath_template_fourier_fx_h.h"
+#include "bmath_leaf.h"
+#include "bmath_quicktypes.h"
 
 /**********************************************************************************************************************/
 
-vd_t bmath_fourier_f3_signal_handler( const bcore_signal_s* o );
+/// v[0]: real, v[1]: imaginary
+BCORE_DECLARE_OBJECT( bmath_cf3_s ) { f3_t v[ 2 ]; };
 
-#endif  // BMATH_FOURIER_F3_H
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_cfx_h.h"
+
+/**********************************************************************************************************************/
+
+vd_t bmath_cf3_signal_handler( const bcore_signal_s* o );
+
+#endif  // BMATH_CF3_H
+

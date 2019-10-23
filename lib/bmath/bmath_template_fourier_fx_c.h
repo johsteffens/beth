@@ -155,17 +155,13 @@ void BCATU(bmath_fourier,fx,fft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t
 
 static vd_t fourier_selftest( void )
 {
-    st_s* log = st_s_createf( "== bmath_fourier_selftest " );
+    st_s* log = st_s_create_fa( "== Fourier_selftest: '#<sc_t>' ", BSTR(bmath_cfx_s) );
     st_s_push_char_n( log, '=', 120 - log->size );
     st_s_push_char( log, '\n' );
 
     typedef struct complex_vec_s { aware_t _; bmath_cfx_s* data; uz_t size; uz_t space; } complex_vec_s;
 
-    #if BMATH_TEMPLATE_FX_PREC == 2
-        tp_t TYPEOF_complex_vec_s = bcore_flect_type_parse_sc( "{ aware_t _; bmath_cf2_s [] arr; }" );
-    #else
-        tp_t TYPEOF_complex_vec_s = bcore_flect_type_parse_sc( "{ aware_t _; bmath_cf3_s [] arr; }" );
-    #endif // BMATH_TEMPLATE_FX_PREC
+    tp_t TYPEOF_complex_vec_s = bcore_flect_type_parse_sc( "{ aware_t _; "BSTR(bmath_cfx_s)" [] arr; }" );
 
     /// data test
     bcore_life_s* l = bcore_life_s_create();
@@ -196,7 +192,7 @@ static vd_t fourier_selftest( void )
         BCATU(bmath_fourier,fx,fft)( vec1->data, vec3->data, size );
 
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec2, ( const bmath_vector* )vec3, ( bmath_ring* )&z );
-        ASSERT( BCATU(bmath,cfx,mag)( z ) < 1e-14 );
+        ASSERT( BCATU(bmath,cfx,mag)( z ) < ( sizeof( fx_t ) == 2 ) ? 1e-10 : 1e-14 );
 
         /// vec2 = inverse FFT( vec1 )
         bcore_array_a_do( (bcore_array*)vec2, 0, -1, ( fp_t )BCATU(bmath_cfx_s,self_cnj) );
@@ -207,7 +203,7 @@ static vd_t fourier_selftest( void )
 
         /// compare vec1, vec 2
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec1, ( const bmath_vector* )vec2, ( bmath_ring* )&z );
-        ASSERT( BCATU(bmath,cfx,mag)( z ) < 1e-14 );
+        ASSERT( BCATU(bmath,cfx,mag)( z ) < ( sizeof( fx_t ) == 2 ) ? 1e-10 : 1e-14 );
     }
 
     /// speed test

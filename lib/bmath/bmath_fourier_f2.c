@@ -34,8 +34,7 @@ vd_t bmath_fourier_f2_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_selftest:
         {
-            st_s* st = fourier_selftest();
-            if( st ) st_s_print_d( st );
+            st_s_print_d( fourier_selftest() );
         }
         break;
 

@@ -7,6 +7,7 @@
 #define TYPEOF_bmath_arr_mfx_eval_s       1768572258
 #define TYPEOF_bmath_arr_vf2_s            1685144680
 #define TYPEOF_bmath_arr_vf3_s            3268702147
+#define TYPEOF_bmath_cf2_s                4058593999
 #define TYPEOF_bmath_cf3_s                2506167476
 #define TYPEOF_bmath_estimator_s          3775440224
 #define TYPEOF_bmath_fp_f3_ar0            2665087562

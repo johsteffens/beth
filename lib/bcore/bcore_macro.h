@@ -22,6 +22,9 @@
 #ifndef BCORE_MACRO_H
 #define BCORE_MACRO_H
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Arbitrary concatenation
+
 /// Returns the number of variadic arguments passed (max 8 args)
 #define BCORE_VA_ARGC( ... ) BCORE_VA_ARGC_( __VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1 )
 #define BCORE_VA_ARGC_( a1, a2, a3, a4, a5, a6, a7, a8, argc, ... ) argc
@@ -50,16 +53,20 @@
 #define BCORE_CAT_3( a1, a2, a3 ) BCORE_CAT_3_( a1, a2, a3 )
 #define BCORE_CAT_3_( a1, a2, a3 ) a1##a2##a3
 
-/// Forces argument evaluation
-#define BEVAL( a ) a
-
 /// Evaluates and concatenates a flexible amount of (max 8) arguments with pattern 'f' between
-#define BCATF( f, ... ) BEVAL( BCORE_CAT_2( BCORE_CATF_, BCORE_VA_ARGC( __VA_ARGS__))( f, __VA_ARGS__ ) )
+#define BCATF( f, ... ) BCORE_CAT_2( BCORE_CATF_, BCORE_VA_ARGC( __VA_ARGS__))( f, __VA_ARGS__ )
 
 /// Evaluates and concatenates a flexible amount of (max 8) arguments
 #define BCAT( ... ) BCATF( , __VA_ARGS__ )
 
 /// Evaluates and concatenates an flexible amount of (max 8) arguments with '_' between
 #define BCATU( ... ) BCATF( _, __VA_ARGS__ )
+
+// ---------------------------------------------------------------------------------------------------------------------
+// string
+
+/// Evaluates and encloses argument in quotes
+#define BSTR( a ) BSTR_( a )
+#define BSTR_( a ) #a
 
 #endif // BCORE_MACRO_H

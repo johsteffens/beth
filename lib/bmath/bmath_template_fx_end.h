@@ -36,6 +36,10 @@
 #undef bmath_grt_fx_s
 #undef bmath_arr_grt_fx_s
 #undef bmath_mfx_s
+
+#undef TYPEOF_bmath_vfx_s
+#undef TYPEOF_bmath_cfx_s
+#undef TYPEOF_bmath_vcfx_s
 #undef TYPEOF_bmath_mfx_s
 
 // AVX related

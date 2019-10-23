@@ -46,6 +46,10 @@
 #define bmath_grt_fx_s           BCATU(bmath_grt,fx,s)
 #define bmath_arr_grt_fx_s       BCATU(bmath_arr_grt,fx,s)
 #define bmath_mfx_s              BCATU(bmath,mfx,s)
+
+#define TYPEOF_bmath_vfx_s       BCATU(TYPEOF,bmath,vfx,s)
+#define TYPEOF_bmath_cfx_s       BCATU(TYPEOF,bmath,cfx,s)
+#define TYPEOF_bmath_vcfx_s      BCATU(TYPEOF,bmath,vcfx,s)
 #define TYPEOF_bmath_mfx_s       BCATU(TYPEOF,bmath,mfx,s)
 
 /**********************************************************************************************************************/

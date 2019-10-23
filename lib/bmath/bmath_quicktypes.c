@@ -46,7 +46,6 @@ static sr_s typelist()
     bcore_array_r_push_sc( &list, "bmath_ring_s"        );
     bcore_array_r_push_sc( &list, "bmath_vector"        );
     bcore_array_r_push_sc( &list, "bmath_vector_s"      );
-    bcore_array_r_push_sc( &list, "bmath_vcf3_s"        );
     bcore_array_r_push_sc( &list, "bmath_matrix"        );
     bcore_array_r_push_sc( &list, "bmath_matrix_s"      );
     bcore_array_r_push_sc( &list, "bmath_mfx_eval_s"    );
@@ -55,7 +54,6 @@ static sr_s typelist()
     bcore_array_r_push_sc( &list, "bmath_grt_f3_s"      );
     bcore_array_r_push_sc( &list, "bmath_arr_grt_f3_s"  );
     bcore_array_r_push_sc( &list, "bmath_pmt_s"         );
-    bcore_array_r_push_sc( &list, "bmath_cf3_s"         );
     bcore_array_r_push_sc( &list, "bmath_estimator_s"   );
     bcore_array_r_push_sc( &list, "bmath_plot"          );
     bcore_array_r_push_sc( &list, "bmath_plot_s"        );

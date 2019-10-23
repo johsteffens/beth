@@ -27,9 +27,9 @@
 #include "bcore_std.h"
 #include "bmath_hwflags.h"
 #include "bmath_spect_algebraic.h"
-#include "bmath_complex.h"
+#include "bmath_cf2.h"
 
-#define BMATH_TEMPLATE_FX_PREC 3
+#define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_fourier_fx_h.h"
 
 /**********************************************************************************************************************/

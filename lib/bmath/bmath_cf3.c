@@ -14,7 +14,10 @@
  */
 
 #include <stdio.h>
-#include "bmath_complex.h"
+#include "bmath_cf3.h"
+
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_cfx_c.h"
 
 /**********************************************************************************************************************/
 
@@ -37,33 +40,9 @@ BCORE_DEFINE_OBJECT_FLAT( bmath_ring, bmath_cf3_s )
 
 /**********************************************************************************************************************/
 
-void bmath_cf3_s_to_stdout( const bmath_cf3_s* o )
+vd_t bmath_cf3_signal_handler( const bcore_signal_s* o )
 {
-    printf( "%9.3g %9.3g\n", o->v[ 0 ], o->v[ 1 ] );
-}
-
-/**********************************************************************************************************************/
-
-static vd_t selftest( void )
-{
-    bmath_cf3_s c1 = { .v[0] = 1, .v[1] = 2 };
-    bmath_cf3_s c2 = { .v[0] = 3, .v[1] = 4 };
-    bmath_cf3_s c3 = { .v[0] = 0, .v[1] = 0 };
-    bmath_cf3_s c4 = { .v[0] = 0, .v[1] = 0 };
-
-
-    bmath_cf3_s_div( &c1, &c2, &c3 );
-    bmath_ring_t_div( TYPEOF_bmath_cf3_s, (bmath_ring*)&c1, (bmath_ring*)&c2, (bmath_ring*)&c4 );
-    ASSERT( bmath_cf3_s_is_equ( &c3, &c4 ) );
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
-
-vd_t bmath_complex_signal_handler( const bcore_signal_s* o )
-{
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_complex" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_cf3" ) ) )
     {
         case TYPEOF_init1:
         {
@@ -80,6 +59,12 @@ vd_t bmath_complex_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_fp_one, bmath_cf3_s_one );
             BCORE_REGISTER_FFUNC( bmath_fp_inv, bmath_cf3_s_inv );
             BCORE_REGISTER_FFUNC( bmath_fp_div, bmath_cf3_s_div );
+        }
+        break;
+
+        case TYPEOF_get_quicktypes:
+        {
+            BCORE_REGISTER_QUICKTYPE( bmath_cf3_s );
         }
         break;
 
