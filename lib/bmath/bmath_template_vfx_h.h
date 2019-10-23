@@ -15,20 +15,7 @@
 
 /**********************************************************************************************************************/
 
-
-/** Vector Template.
- *
- *  Include in the final header file after object definition
- *  with macro BMATH_TEMPLATE_FX_PREC (temporarily) defined.
- *
- *  Example:
- *
- *  #define BMATH_TEMPLATE_FX_PREC 2 // defines all functions for f2_t
- *  #include "bmath_template_vfx_h.h"
- *
- *  #define BMATH_TEMPLATE_FX_PREC 3 // defines all functions for f3_t
- *  #include "bmath_template_vfx_h.h"
- */
+/** Template: Vector */
 
 /**********************************************************************************************************************/
 
@@ -222,6 +209,5 @@ static inline void BCATU(bmath_vfx_s,stat_to_stdout)( const bmath_vfx_s* o      
 #endif // BMATH_TEMPLATE_FX_PREC
 
 /**********************************************************************************************************************/
-// closing template
 
 #include "bmath_template_fx_end.h"

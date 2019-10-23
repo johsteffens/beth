@@ -30,6 +30,7 @@
 #undef fx_t
 #undef bmath_fp_u2_argb_from_fx
 #undef bmath_vfx_s
+#undef bmath_cfx_s
 #undef bmath_vcfx_s
 #undef bmath_arr_vfx_s
 #undef bmath_grt_fx_s

@@ -15,7 +15,7 @@
 
 /**********************************************************************************************************************/
 
-/** Array of Vector Template. */
+/** Template: Array of Vector */
 
 /**********************************************************************************************************************/
 
@@ -65,7 +65,6 @@ static inline void BCATU(bmath_arr_vfx_s,on_section_get_sum)( const bmath_arr_vf
 static inline void BCATU(bmath_arr_vfx_s,on_section_get_avg)( const bmath_arr_vfx_s* o, uz_t start, uz_t end, bmath_vfx_s* res ) { BCATU(bmath_arr_vfx_s,on_section_get_avg_sprc)( o, start, end, res ); }
 
 /**********************************************************************************************************************/
-// closing template
 
 #include "bmath_template_fx_end.h"
 

@@ -15,8 +15,12 @@
 
 /**********************************************************************************************************************/
 
-/** Collection of algorithms related to eigenvalue decomposition (EVD).
- *  All routines have been entirely designed from scratch and optimized with modern architectures in mind.
+/** Discrete Fourier Transform.
+ *  DFT: Canonic implementation: F_k = Sum_j( f_j * w^jk ); w := e^-i2pi/n
+ *  FFT: Fast transform (on power 2 sizes) (numerically equivalent to DFT)
+ *  To obtain the inverse transform:
+ *      - Conjugate src before FT.
+ *      - Conjugate dst after FT and scale with 1.0 / size.
  */
 
 /**********************************************************************************************************************/
@@ -25,26 +29,16 @@
 
 /**********************************************************************************************************************/
 
-/** Stable in-place EVD for a symmetric matrix. Jacobi Method.
- *  Input:  a  (symmetric), v  (preallocated or NULL)
- *  Output: a' (diagonal),  v' (rotation) with a = v'T * a' * v'.
- *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.
- *  (Convergence failure is very rare.)
- *  Diagonal elements are sorted in descending value order.
- *  v == NULL allowed, in which case only a' is computed.
- */
-bl_t BCATU(bmath_mfx_s,evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v );
+/// DFT/FFT (dst==src allowed); fft: size = power of 2
+void BCATU(bmath_fourier,fx,dft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t size );
+void BCATU(bmath_fourier,fx,fft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t size );
 
-/** In-place EVD for a symmetric matrix.
- *  Approach: TRD, QR with explicit shifting. (Variant of Francis' QR-Algorithm)
- *  Input:  a  (symmetric), v  (preallocated or NULL)
- *  Output: a' (diagonal),  v' (rotation) with a = v'T * a' * v'.
- *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.
- *  (Convergence failure is very rare.)
- *  Diagonal elements are sorted in descending value order.
- *  v == NULL allowed, in which case only a' is computed.
+/** FFT with reusable buffer. Return value is buffer to be discarded or reused by caller.
+ *  Start with buf = NULL or buf = bcore_malloc( sizeof( bmath_cfx_s ) * size )
+ *  Continue with buf = return from previous call (size <= size of first call)
+ *  Finish by keeping ownership of returned_buf (e.g. bcore_free( returned_buf ))
  */
-bl_t BCATU(bmath_mfx_s,evd_htp)( bmath_mfx_s* a, bmath_mfx_s* v );
+vd_t BCATU(bmath_fourier,fx,fft_buf)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t size, vd_t buf );
 
 /**********************************************************************************************************************/
 

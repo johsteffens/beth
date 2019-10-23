@@ -15,16 +15,7 @@
 
 /**********************************************************************************************************************/
 
-/** Matrix Template.
- *
- *  Include in the final header file after object definition
- *  with macro BMATH_TEMPLATE_FX_PREC (temporarily) defined.
- *
- *  Example:
- *
- *  #define BMATH_TEMPLATE_FX_PREC 2 // defines all functions for f2_t
- *  #include "bmath_mfx_h.h"
- */
+/** Template: Matrix */
 
 /**********************************************************************************************************************/
 
@@ -652,7 +643,6 @@ static inline void BCATU(bmath_mfx_s,to_string)( const bmath_mfx_s* o, st_s* str
 static inline void BCATU(bmath_mfx_s,to_stdout)( const bmath_mfx_s* o ) { BCATU(bmath_mfx_s,to_sink)( o, BCORE_STDOUT ); }
 
 /**********************************************************************************************************************/
-// closing template
 
 #include "bmath_template_fx_end.h"
 

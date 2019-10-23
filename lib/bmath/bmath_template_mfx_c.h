@@ -15,17 +15,10 @@
 
 /**********************************************************************************************************************/
 
-/** Matrix Template. (For use in *.c files)
- *
- *  Example:
- *
- *  #define BMATH_TEMPLATE_FX_PREC 2 // defines all functions for f2_t
- *  #include "bmath_template_vfx_c.h"
- */
+/** Template: Matrix */
 
 /**********************************************************************************************************************/
 
-// NOTE: Do not include non-templates (template definitions could be undone/changed)
 #include "bmath_template_fx_begin.h"
 
 /**********************************************************************************************************************/
@@ -3007,7 +3000,6 @@ static void eval_test( void )
 }
 
 /**********************************************************************************************************************/
-// closing template
 
 #include "bmath_template_fx_end.h"
 

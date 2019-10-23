@@ -58,7 +58,6 @@
 bl_t BCATU(bmath_mfx_s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
 
 /**********************************************************************************************************************/
-// closing template
 
 #include "bmath_template_fx_end.h"
 

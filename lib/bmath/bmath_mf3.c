@@ -21,7 +21,7 @@
 
 #include "bmath_mf3.h"
 #include "bmath_spect_matrix.h"
-#include "bmath_fourier.h"
+#include "bmath_fourier_f3.h"
 #include "bmath_grt.h"
 #include "bmath_mfx_eval.h"
 

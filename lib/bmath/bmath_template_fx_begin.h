@@ -32,6 +32,7 @@
 
 // infix
 #define vfx  BCAT(v,fx)
+#define cfx  BCAT(c,fx)
 #define vcfx BCAT(vc,fx)
 #define mfx  BCAT(m,fx)
 
@@ -39,6 +40,7 @@
 #define fx_t                     BCATU(fx,t)
 #define bmath_fp_u2_argb_from_fx BCATU(bmath_fp_u2_argb_from,fx)
 #define bmath_vfx_s              BCATU(bmath,vfx,s)
+#define bmath_cfx_s              BCATU(bmath,cfx,s)
 #define bmath_vcfx_s             BCATU(bmath,vcfx,s)
 #define bmath_arr_vfx_s          BCATU(bmath_arr,vfx,s)
 #define bmath_grt_fx_s           BCATU(bmath_grt,fx,s)

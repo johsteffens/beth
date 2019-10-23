@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_FOURIER_H
-#define BMATH_FOURIER_H
+#ifndef BMATH_FOURIER_F2_H
+#define BMATH_FOURIER_F2_H
 
 /** Discrete Fourier Transform.
  *  DFT: Canonic implementation: F_k = Sum_j( f_j * w^jk ); w := e^-i2pi/n
@@ -29,21 +29,11 @@
 #include "bmath_spect_algebraic.h"
 #include "bmath_complex.h"
 
-/**********************************************************************************************************************/
-
-/// DFT/FFT (dst==src allowed); fft: size = power of 2
-void bmath_fourier_dft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size );
-void bmath_fourier_fft_f3( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size );
-
-/** FFT with reusable buffer. Return value is buffer to be discarded or reused by caller.
- *  Start with buf = NULL or buf = bcore_malloc( sizeof( bmath_cf3_s ) * size )
- *  Continue with buf = return from previous call (size <= size of first call)
- *  Finish by keeping ownership of returned_buf (e.g. bcore_free( returned_buf ))
- */
-vd_t bmath_fourier_fft_f3_buf( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size, vd_t buf );
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_fourier_fx_h.h"
 
 /**********************************************************************************************************************/
 
-vd_t bmath_fourier_signal_handler( const bcore_signal_s* o );
+vd_t bmath_fourier_f2_signal_handler( const bcore_signal_s* o );
 
-#endif  // BMATH_FOURIER_H
+#endif  // BMATH_FOURIER_F2_H

@@ -49,48 +49,8 @@ BCORE_DECLARE_OBJECT( bmath_vcf3_s )
     BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_cf3_s, );
 };
 
-void bmath_vcf3_s_move( bmath_vcf3_s* o, bmath_vcf3_s* src );
-
-void bmath_vcf3_s_set_size( bmath_vcf3_s* o, uz_t size );
-void bmath_vcf3_s_push(     bmath_vcf3_s* o, bmath_cf3_s cf3 );
-void bmath_vcf3_s_push_ri(  bmath_vcf3_s* o, f3_t r, f3_t i );
-
-bmath_vcf3_s* bmath_vcf3_s_create_size( uz_t size );
-bmath_vcf3_s* bmath_vcf3_s_create_fill( bmath_cf3_s val, uz_t size );
-
-void bmath_vcf3_s_zro(           bmath_vcf3_s* o );
-void bmath_vcf3_s_neg(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
-void bmath_vcf3_s_cnj(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
-void bmath_vcf3_s_cpy(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
-void bmath_vcf3_s_add(     const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_vcf3_s* res );
-void bmath_vcf3_s_sub(     const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_vcf3_s* res );
-void bmath_vcf3_s_mul_scl( const bmath_vcf3_s* o, const bmath_cf3_s*  op, bmath_vcf3_s* res );
-void bmath_vcf3_s_mul_cf3( const bmath_vcf3_s* o, const bmath_cf3_s   op, bmath_vcf3_s* res );
-void bmath_vcf3_s_mul_f3(  const bmath_vcf3_s* o,              f3_t   op, bmath_vcf3_s* res );
-void bmath_vcf3_s_dft(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
-void bmath_vcf3_s_ift(     const bmath_vcf3_s* o, bmath_vcf3_s* res );
-void bmath_vcf3_s_mul_vec( const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_cf3_s* res );
-void bmath_vcf3_s_sqr(     const bmath_vcf3_s* o, bmath_cf3_s* res );
-void bmath_vcf3_s_sub_sqr( const bmath_vcf3_s* o, const bmath_vcf3_s* op, bmath_cf3_s* res );
-void bmath_vcf3_s_sum(     const bmath_vcf3_s* o, bmath_cf3_s* res );
-void bmath_vcf3_s_avg(     const bmath_vcf3_s* o, bmath_cf3_s* res );
-
-static inline
-void bmath_vcf3_s_set_cf3( bmath_vcf3_s* o, uz_t index, bmath_cf3_s v )
-{
-    assert( index < o->size );
-    o->data[ index ] = v;
-}
-
-static inline
-bmath_cf3_s bmath_vcf3_s_get_cf3( const bmath_vcf3_s* o, uz_t index )
-{
-    assert( index < o->size );
-    return o->data[ index ];
-}
-
-/// For easy inspection
-void bmath_vcf3_s_to_stdout( const bmath_vcf3_s* o );
+#define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_vcfx_h.h"
 
 /**********************************************************************************************************************/
 
