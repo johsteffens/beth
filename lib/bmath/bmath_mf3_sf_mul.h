@@ -31,7 +31,7 @@
 #include "bmath_hwflags.h"
 #include "bmath_spect_algebraic.h"
 #include "bmath_vf3.h"
-#include "bmath_grt.h"
+#include "bmath_grt_f3.h"
 
 /**********************************************************************************************************************/
 BCORE_FORWARD_OBJECT( bmath_mf3_sf_s );

@@ -33,8 +33,8 @@
  *
  */
 
-#ifndef BMATH_GRT_H
-#define BMATH_GRT_H
+#ifndef BMATH_GRT_F3_H
+#define BMATH_GRT_F3_H
 
 #include "bcore_std.h"
 #include "bmath_hwflags.h"
@@ -242,6 +242,20 @@ static inline f3_t bmath_arr_grt_f3_s_density( const bmath_arr_grt_f3_s* o, uz_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-vd_t bmath_grt_signal_handler( const bcore_signal_s* o );
+/// givens row rotation (simd optimized)
+void bmath_simd_f3_row_rotate( f3_t* v1, f3_t* v2, sz_t size, const bmath_grt_f3_s* grt );
 
-#endif  // BMATH_GRT_H
+/// givens column rotation (simd optimized)
+void bmath_simd_f3_col_rotate( f3_t* v1, f3_t* v2, sz_t stride, sz_t size, const bmath_grt_f3_s* grt );
+
+/// see bmath_mf3_s_drow_swipe_rev (simd optimized)
+void bmath_simd_f3_drow_swipe_rev( f3_t* row, const bmath_grt_f3_s* grt, sz_t size );
+
+/// bmath_simd_f3_drow_swipe_rev for 4 successive rows (simd optimized)
+void bmath_simd_f3_4drow_swipe_rev( f3_t* row, sz_t stride, const bmath_grt_f3_s* grt, sz_t size );
+
+//----------------------------------------------------------------------------------------------------------------------
+
+vd_t bmath_grt_f3_signal_handler( const bcore_signal_s* o );
+
+#endif  // BMATH_GRT_F3_H

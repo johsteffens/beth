@@ -36,8 +36,7 @@
 #include "bmath_mf3_sx.h"
 #include "bmath_mf3_sf.h"
 #include "bmath_pmt.h"
-#include "bmath_grt.h"
-#include "bmath_simd.h"
+#include "bmath_grt_f3.h"
 #include "bmath_estimator.h"
 #include "bmath_plot.h"
 #include "bmath_planted.h"
@@ -83,8 +82,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_mf3_sf_signal_handler,
             bmath_mfx_eval_signal_handler,
             bmath_pmt_signal_handler,
-            bmath_grt_signal_handler,
-            bmath_simd_signal_handler,
+            bmath_grt_f3_signal_handler,
             bmath_estimator_signal_handler,
             bmath_plot_signal_handler,
             bmath_planted_signal_handler,

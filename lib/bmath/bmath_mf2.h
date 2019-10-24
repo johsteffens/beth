@@ -26,8 +26,7 @@
 #include "bmath_spect_algebraic.h"
 #include "bmath_vf2.h"
 #include "bmath_arr_vf2.h"
-#include "bmath_simd.h"
-#include "bmath_grt.h"
+#include "bmath_grt_f3.h"
 
 /**********************************************************************************************************************/
 /// Matrix from template for fx == f2

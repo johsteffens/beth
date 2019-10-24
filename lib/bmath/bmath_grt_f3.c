@@ -13,11 +13,48 @@
  *  limitations under the License.
  */
 
-#include "bmath_simd.h"
-#include "bmath_grt.h"
-#include "bmath_vf3.h"
+#include "bmath_grt_f3.h"
+
+BCORE_DEFINE_OBJECT_FLAT( bcore_inst, bmath_grt_f3_s ) "{ f3_t c; f3_t s; }";
 
 //----------------------------------------------------------------------------------------------------------------------
+
+void bmath_grt_f3_s_to_stdout( const bmath_grt_f3_s* o )
+{
+    bcore_msg_fa( "c=#<f3_t> s=#<f3_t>\n", o->c, o->s );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_grt_f3_s ) "{ aware_t _; bmath_grt_f3_s [] arr; }";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bmath_arr_grt_f3_s* bmath_arr_grt_f3_s_create_size( uz_t size )
+{
+    bmath_arr_grt_f3_s* o = bmath_arr_grt_f3_s_create();
+    bmath_arr_grt_f3_s_set_size( o, size );
+    bmath_arr_grt_f3_s_zro( o );
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bmath_arr_grt_f3_s bmath_arr_grt_f3_of_size( uz_t size )
+{
+    bmath_arr_grt_f3_s o;
+    bmath_arr_grt_f3_s_init( &o );
+    bmath_arr_grt_f3_s_set_size( &o, size );
+    bmath_arr_grt_f3_s_zro( &o );
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// simd optimized code
 
 void bmath_simd_f3_row_rotate_default( f3_t* v1, f3_t* v2, sz_t size, const bmath_grt_f3_s* grt )
 {
@@ -174,12 +211,14 @@ void bmath_simd_f3_4drow_swipe_rev( f3_t* row, sz_t stride, const bmath_grt_f3_s
 
 /**********************************************************************************************************************/
 
-vd_t bmath_simd_signal_handler( const bcore_signal_s* o )
+vd_t bmath_grt_f3_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_simd" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_grt" ) ) )
     {
         case TYPEOF_init1:
         {
+            BCORE_REGISTER_OBJECT( bmath_grt_f3_s );
+            BCORE_REGISTER_OBJECT( bmath_arr_grt_f3_s );
         }
         break;
 
@@ -195,3 +234,4 @@ vd_t bmath_simd_signal_handler( const bcore_signal_s* o )
 }
 
 /**********************************************************************************************************************/
+
