@@ -66,11 +66,10 @@ void BCATU(bmath_fourier,fx,dft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t
  *    for n0 > 4: buf must be preallocated to size n0.
  *    buf == src is allowed.
  */
-void BCATU(bmath_fourier,fx,rct_fft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t n0, bmath_cfx_s* buf )
+static void recursive_fft( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t n0, bmath_cfx_s* buf )
 {
     if( n0 == 4 )
     {
-        // attempt to further disentangle appears not to speed up on gcc -O3
         dst[ 0 ].v[ 0 ] = src[ 0 ].v[ 0 ] + src[ 1 ].v[ 0 ] + src[ 2 ].v[ 0 ] + src[ 3 ].v[ 0 ];
         dst[ 0 ].v[ 1 ] = src[ 0 ].v[ 1 ] + src[ 1 ].v[ 1 ] + src[ 2 ].v[ 1 ] + src[ 3 ].v[ 1 ];
         dst[ 2 ].v[ 0 ] = src[ 0 ].v[ 0 ] - src[ 1 ].v[ 0 ] + src[ 2 ].v[ 0 ] - src[ 3 ].v[ 0 ];
@@ -81,6 +80,7 @@ void BCATU(bmath_fourier,fx,rct_fft)( const bmath_cfx_s* src, bmath_cfx_s* dst, 
         dst[ 3 ].v[ 1 ] = src[ 0 ].v[ 1 ] + src[ 1 ].v[ 0 ] - src[ 2 ].v[ 1 ] - src[ 3 ].v[ 0 ];
         return;
     }
+    // attempt to explicitly disentangle for n0 > 4 shows no speed advantage on gcc -O3
 
     uz_t n1 = n0 >> 1;
 
@@ -94,8 +94,8 @@ void BCATU(bmath_fourier,fx,rct_fft)( const bmath_cfx_s* src, bmath_cfx_s* dst, 
         BCATU(bmath_cfx_s,mul)( &w0, &ws0, &w0 );
     }
 
-    BCATU(bmath_fourier,fx,rct_fft)( buf, dst + n1, n1, buf + n1 );
-    BCATU(bmath_fourier,fx,rct_fft)( dst, buf,      n1, buf + n1 );
+    recursive_fft( buf, dst + n1, n1, buf + n1 );
+    recursive_fft( dst, buf,      n1, buf + n1 );
 
     for( uz_t i = 0; i < n1; i++ )
     {
@@ -131,11 +131,11 @@ vd_t BCATU(bmath_fourier,fx,fft_buf)( const bmath_cfx_s* src, bmath_cfx_s* dst, 
     if( src == dst )
     {
         bcore_memcpy( buf_l, src, sizeof( bmath_cfx_s ) * size );
-        BCATU(bmath_fourier,fx,rct_fft)( buf_l, dst, size, buf_l );
+        recursive_fft( buf_l, dst, size, buf_l );
     }
     else
     {
-        BCATU(bmath_fourier,fx,rct_fft)( src, dst, size, buf_l );
+        recursive_fft( src, dst, size, buf_l );
     }
     return buf_l;
 }
