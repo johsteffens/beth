@@ -452,7 +452,7 @@ static vd_t selftest( void )
         BCATU(bmath_vcfx_s,dft)( v1, v2 );
         BCATU(bmath_vcfx_s,ift)( v2, v2 );
         BCATU(bmath_vcfx_s,sub_sqr)( v1, v2, &sqr1 );
-        ASSERT( BCATU(bmath,cfx,mag)( sqr1 ) < 1E-14 );
+        ASSERT( BCATU(bmath,cfx,mag)( sqr1 ) < ( ( sizeof( fx_t ) == 4 ) ? 1E-6 : 1E-14 ) );
     }
 
     bcore_life_s_discard( l );

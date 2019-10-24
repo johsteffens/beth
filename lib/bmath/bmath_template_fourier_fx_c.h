@@ -192,7 +192,8 @@ static vd_t fourier_selftest( void )
         BCATU(bmath_fourier,fx,fft)( vec1->data, vec3->data, size );
 
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec2, ( const bmath_vector* )vec3, ( bmath_ring* )&z );
-        ASSERT( BCATU(bmath,cfx,mag)( z ) < ( sizeof( fx_t ) == 2 ) ? 1e-10 : 1e-14 );
+        bcore_msg_fa( "#<f3_t>\n", (f3_t)BCATU(bmath,cfx,mag)( z ) );
+        ASSERT( BCATU(bmath,cfx,mag)( z ) < ( ( sizeof( fx_t ) == 4 ) ? 1e-5 : 1e-14 ) );
 
         /// vec2 = inverse FFT( vec1 )
         bcore_array_a_do( (bcore_array*)vec2, 0, -1, ( fp_t )BCATU(bmath_cfx_s,self_cnj) );
@@ -203,7 +204,8 @@ static vd_t fourier_selftest( void )
 
         /// compare vec1, vec 2
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec1, ( const bmath_vector* )vec2, ( bmath_ring* )&z );
-        ASSERT( BCATU(bmath,cfx,mag)( z ) < ( sizeof( fx_t ) == 2 ) ? 1e-10 : 1e-14 );
+        bcore_msg_fa( "#<f3_t>\n", (f3_t)BCATU(bmath,cfx,mag)( z ) );
+        ASSERT( BCATU(bmath,cfx,mag)( z ) < ( ( sizeof( fx_t ) == 4 ) ? 1e-7 : 1e-14 ) );
     }
 
     /// speed test

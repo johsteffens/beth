@@ -17,6 +17,21 @@
 
 /** Template: Complex Vector */
 
+/** Nomenclature
+ *  add, zro, neg, sub, mul, mul_vec, sqr, sqr_sub - according to spect_vector
+ *  mul_hdm: C = A o B  (hadamard product == elementwise product)
+ *  cnj: conjugation
+ *  cpy: copy
+ *  cat: catenation
+ *  sum: sum of elements
+ *  avg: average
+ *  var: (std-)variance
+ *  dev: (std-)deviation
+ *  dft: discrete fourier transform  (fft used when size is power of 2)
+ *  ift: inverse dft
+ *  pmt: permutation
+ */
+
 /**********************************************************************************************************************/
 
 #include "bmath_template_fx_begin.h"

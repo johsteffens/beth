@@ -13,29 +13,29 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_VCF3_H
-#define BMATH_VCF3_H
+#ifndef BMATH_VCF2_H
+#define BMATH_VCF2_H
 
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
-#include "bmath_cf3.h"
-#include "bmath_vf3.h"
+#include "bmath_cf2.h"
+#include "bmath_vf2.h"
 
 /**********************************************************************************************************************/
-// dynamic size vector of bmath_cf3_s
+// dynamic size vector of bmath_cf2_s
 
-BCORE_DECLARE_OBJECT( bmath_vcf3_s )
+BCORE_DECLARE_OBJECT( bmath_vcf2_s )
 {
     aware_t _;
-    BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_cf3_s, );
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_cf2_s, );
 };
 
-#define BMATH_TEMPLATE_FX_PREC 3
+#define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_vcfx_h.h"
 
 /**********************************************************************************************************************/
 
-vd_t bmath_vcf3_signal_handler( const bcore_signal_s* o );
+vd_t bmath_vcf2_signal_handler( const bcore_signal_s* o );
 
-#endif  // BMATH_VCF3_H
+#endif  // BMATH_VCF2_H

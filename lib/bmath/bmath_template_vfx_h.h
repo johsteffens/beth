@@ -17,8 +17,6 @@
 
 /** Template: Vector */
 
-/**********************************************************************************************************************/
-
 /** Nomenclature
  *  add, zro, neg, sub, mul, mul_vec, sqr, sqr_sub - according to spect_vector
  *  mul_hdm: C = A o B  (hadamard product == elementwise product)
