@@ -78,11 +78,15 @@ void bmath_simd_f3_row_rotate_avx( f3_t* v1, f3_t* v2, sz_t size, const bmath_gr
     {
         __m256d a_p4 = _mm256_loadu_pd( v1 + i );
         __m256d b_p4 = _mm256_loadu_pd( v2 + i );
+
+#ifdef BMATH_AVX2_FMA
+        _mm256_storeu_pd( v1 + i, _mm256_fmadd_pd( a_p4, c_p4, _mm256_mul_pd( b_p4, s_p4 ) ) );
+        _mm256_storeu_pd( v2 + i, _mm256_fmsub_pd( b_p4, c_p4, _mm256_mul_pd( a_p4, s_p4 ) ) );
+#else
         _mm256_storeu_pd( v1 + i, _mm256_add_pd( _mm256_mul_pd( a_p4, c_p4 ), _mm256_mul_pd( b_p4, s_p4 ) ) );
         _mm256_storeu_pd( v2 + i, _mm256_sub_pd( _mm256_mul_pd( b_p4, c_p4 ), _mm256_mul_pd( a_p4, s_p4 ) ) );
+#endif // BMATH_AVX2_FMA
 
-//        _mm256_storeu_pd( v1 + i, _mm256_fmadd_pd( a_p4, c_p4, _mm256_mul_pd( b_p4, s_p4 ) ) );
-//        _mm256_storeu_pd( v2 + i, _mm256_fmsub_pd( b_p4, c_p4, _mm256_mul_pd( a_p4, s_p4 ) ) );
     }
 
     for( ; i < size; i++ )
