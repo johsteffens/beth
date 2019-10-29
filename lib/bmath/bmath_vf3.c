@@ -16,10 +16,12 @@
 #include <stdio.h>
 
 #include "bmath_vf3.h"
+#include "bmath_vf2.h"
 #include "bmath_spect_vector.h"
 
 #define BMATH_TEMPLATE_FX_PREC 3
 #include "bmath_template_vfx_c.h"
+
 
 /**********************************************************************************************************************/
 
@@ -34,7 +36,26 @@ BCORE_DEFINE_OBJECT_INST_AUT( bmath_vector, bmath_vf3_s )
     "func bmath_fp:cpy;"
     "func bmath_fp_vector:mul_scl = bmath_vf3_s_mul_scl;"
     "func bmath_fp_vector:mul_vec = bmath_vf3_s_mul_vec;"
+    "func bcore_fp_copy_typed     = bmath_vf3_s_copy_typed;"
 "}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_vf3_s_copy_typed( bmath_vf3_s* o, tp_t type, vc_t src )
+{
+    switch( type )
+    {
+        case TYPEOF_bmath_vf3_s: bmath_vf3_s_copy( o, src ); break;
+        case TYPEOF_bmath_vf2_s:
+        {
+            const bmath_vf2_s* v = src;
+            bmath_vf3_s_set_size( o, v->size );
+            BFOR_EACH( i, o ) o->data[ i ] = v->data[ i ];
+        }
+        break;
+        default: bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) ); break;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -53,6 +74,7 @@ vd_t bmath_vf3_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_fp_cpy,            bmath_vf3_s_cpy );
             BCORE_REGISTER_FFUNC( bmath_fp_vector_mul_vec, bmath_vf3_s_mul_vec );
             BCORE_REGISTER_FFUNC( bmath_fp_vector_mul_scl, bmath_vf3_s_mul_scl );
+            BCORE_REGISTER_FFUNC( bcore_fp_copy_typed,     bmath_vf3_s_copy_typed );
             BCORE_REGISTER_OBJECT( bmath_vf3_s );
         }
         break;

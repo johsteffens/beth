@@ -16,6 +16,7 @@
 #include <stdio.h>
 
 #include "bmath_arr_vf3.h"
+#include "bmath_arr_vf2.h"
 
 #define BMATH_TEMPLATE_FX_PREC 3
 #include "bmath_template_arr_vfx_c.h"
@@ -26,7 +27,28 @@ BCORE_DEFINE_OBJECT_INST( bcore_array, bmath_arr_vf3_s )
 "{"
     "aware_t _;"
     "bmath_vf3_s [] arr;"
+    "func bcore_fp_copy_typed = bmath_arr_vf3_s_copy_typed;"
 "}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_arr_vf3_s_copy_typed( bmath_arr_vf3_s* o, tp_t type, vc_t src )
+{
+    switch( type )
+    {
+        case TYPEOF_bmath_arr_vf3_s: bmath_arr_vf3_s_copy( o, src ); break;
+        case TYPEOF_bmath_arr_vf2_s:
+        {
+            const bmath_arr_vf2_s* v = src;
+            bmath_arr_vf3_s_set_size( o, v->size );
+            BFOR_EACH( i, o ) bmath_vf3_s_copy_a( &o->data[ i ], &v->data[ i ] );
+        }
+        break;
+        default: bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) ); break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
@@ -36,6 +58,7 @@ vd_t bmath_arr_vf3_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
+            BCORE_REGISTER_FFUNC( bcore_fp_copy_typed, bmath_arr_vf3_s_copy_typed );
             BCORE_REGISTER_OBJECT( bmath_arr_vf3_s );
         }
         break;

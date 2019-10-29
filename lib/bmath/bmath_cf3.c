@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#include <stdio.h>
 #include "bmath_cf3.h"
+#include "bmath_cf2.h"
 
 #define BMATH_TEMPLATE_FX_PREC 3
 #include "bmath_template_cfx_c.h"
@@ -36,7 +36,29 @@ BCORE_DEFINE_OBJECT_FLAT( bmath_ring, bmath_cf3_s )
     "func bmath_fp:one;"
     "func bmath_fp:inv;"
     "func bmath_fp:div;"
+
+    "func bcore_fp_copy_typed = bmath_cf3_s_copy_typed;"
 "}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_cf3_s_copy_typed( bmath_cf3_s* o, tp_t type, vc_t src )
+{
+    switch( type )
+    {
+        case TYPEOF_bmath_cf3_s: bmath_cf3_s_copy( o, src ); break;
+        case TYPEOF_bmath_cf2_s:
+        {
+            const bmath_cf2_s* v = src;
+            o->v[ 0 ] = v->v[ 0 ];
+            o->v[ 1 ] = v->v[ 1 ];
+        }
+        break;
+        default: bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) ); break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
@@ -46,6 +68,7 @@ vd_t bmath_cf3_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
+            BCORE_REGISTER_FFUNC( bcore_fp_copy_typed, bmath_cf3_s_copy_typed );
             BCORE_REGISTER_OBJECT( bmath_cf3_s );
             BCORE_REGISTER_FFUNC( bmath_fp_is_equ, bmath_cf3_s_is_equ );
             BCORE_REGISTER_FFUNC( bmath_fp_is_zro, bmath_cf3_s_is_zro );

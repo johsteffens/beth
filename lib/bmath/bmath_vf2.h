@@ -37,6 +37,10 @@ BCORE_DECLARE_OBJECT( bmath_vf2_s )
 #define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_vfx_h.h"
 
+void bmath_vf2_s_copy_typed( bmath_vf2_s* o, tp_t type, vc_t src );
+static inline void bmath_vf2_s_copy_t( bmath_vf2_s* o, tp_t type, vc_t src ) { bmath_vf2_s_copy_typed( o, type, src ); }
+static inline void bmath_vf2_s_copy_a( bmath_vf2_s* o, vc_t src ) { if( src ) bmath_vf2_s_copy_t( o, *(aware_t*)src, src ); else bmath_vf2_s_clear( o ); }
+
 /**********************************************************************************************************************/
 
 vd_t bmath_vf2_signal_handler( const bcore_signal_s* o );
