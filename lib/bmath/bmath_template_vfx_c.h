@@ -29,7 +29,7 @@
 fx_t BCATU(bmath,fx,t_vec,sum)( const fx_t* v1, sz_t size )
 {
 #ifdef BMATH_AVX
-    M5_T sum_p = P5_ZERO;
+    M5_T sum_p = M5_SET_ZERO();
     sz_t i = 0;
     for( ; i <= size - P5_SIZE; i += P5_SIZE )
     {
@@ -61,7 +61,7 @@ fx_t BCATU(bmath,fx,t_vec,sum_esp)( const fx_t* v1, sz_t size )
 fx_t BCATU(bmath,fx,t_vec,mul_vec)( const fx_t* v1, const fx_t* v2, sz_t size )
 {
 #ifdef BMATH_AVX
-    M5_T sum_p = P5_ZERO;
+    M5_T sum_p = M5_SET_ZERO();
     sz_t i = 0;
     for( ; i <= size - P5_SIZE; i += P5_SIZE )
     {
@@ -119,7 +119,7 @@ fx_t BCATU(bmath,fx,t_vec,mul_vec_esp_stride)( const fx_t* v1, sz_t stride1, con
 fx_t BCATU(bmath,fx,t_vec,mul3_vec)( const fx_t* v1, const fx_t* v2, const fx_t* v3, sz_t size )
 {
 #ifdef BMATH_AVX
-    M5_T sum_p = P5_ZERO;
+    M5_T sum_p = M5_SET_ZERO();
     sz_t i = 0;
     for( ; i <= size - P5_SIZE; i += P5_SIZE )
     {
@@ -153,7 +153,7 @@ void BCATU(bmath,fx,t_vec,mul_scl)( const fx_t* a, fx_t b, fx_t* r, sz_t size )
 {
     sz_t i = 0;
 #ifdef BMATH_AVX
-    M5_T b_p = M5_SET1( b );
+    M5_T b_p = M5_SET_ALL( b );
     for( ; i <= size - P5_SIZE; i += P5_SIZE )
     {
         M5_STOR( r + i, M5_MUL( M5_LOAD( a + i ), b_p ) );
@@ -169,7 +169,7 @@ void BCATU(bmath,fx,t_vec,mul_scl_add)( const fx_t* a, fx_t b, const fx_t* c, fx
 {
     sz_t i = 0;
 #ifdef BMATH_AVX
-    M5_T b_p = M5_SET1( b );
+    M5_T b_p = M5_SET_ALL( b );
     for( ; i <= size - P5_SIZE; i += P5_SIZE )
     {
         M5_STOR( r + i, M5_MUL_ADD( M5_LOAD( a + i ), b_p , M5_LOAD( c + i ) ) );
@@ -279,7 +279,7 @@ void BCATU(bmath_vfx_s,push_vfx)( bmath_vfx_s* o, const bmath_vfx_s* vec )
 bl_t BCATU(bmath_vfx_s,is_near_equ)( const bmath_vfx_s* o, const bmath_vfx_s* op, fx_t max_dev )
 {
     if( o->size != op->size ) return false;
-    for( uz_t i = 0   ; i < o->size;  i++ ) if( f3_abs( o->data[ i ] - op->data[ i ] ) > max_dev ) return false;
+    for( uz_t i = 0   ; i < o->size;  i++ ) if( BCATU(fx,abs)( o->data[ i ] - op->data[ i ] ) > max_dev ) return false;
     return true;
 }
 
@@ -287,8 +287,18 @@ bl_t BCATU(bmath_vfx_s,is_near_equ)( const bmath_vfx_s* o, const bmath_vfx_s* op
 
 bl_t BCATU(bmath_vfx_s,is_near_zro)( const bmath_vfx_s* o, fx_t max_dev )
 {
-    for( uz_t i = 0; i < o->size; i++ ) if( f3_abs( o->data[ i ] )  > max_dev ) return false;
+    for( uz_t i = 0; i < o->size; i++ ) if( BCATU(fx,abs)( o->data[ i ] )  > max_dev ) return false;
     return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+fx_t BCATU(bmath_vfx_s,fdev)( const bmath_vfx_s* o, const bmath_vfx_s* op )
+{
+    ASSERT( o->size == op->size );
+    fx_t sum = 0;
+    for( sz_t i = 0 ; i < o->size;  i++ ) sum += BCATU(fx,sqr)( o->data[ i ] - op->data[ i ] );
+    return BCATU(fx,srt)( sum );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

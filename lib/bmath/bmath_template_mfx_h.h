@@ -227,7 +227,7 @@ bl_t BCATU(bmath_mfx_s,is_nan)( const bmath_mfx_s* o );
 // Frobenius norm
 
 /** fdev = ||f(o) - x||
- *  '|| ... ||' = Frobenius norm
+ *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
  *  f is either idenity (o-->o) or a specifed function
  *  Matrix x is a specified (or implied) state.
  *  Note: By this definition fdev_zro is the Frobenius norm of o.

@@ -176,7 +176,7 @@ void BCATU(bmath_cfx_s,mul,fx)( const bmath_cfx_s* o, fx_t op, bmath_cfx_s* res 
 
 // res = o + ( op1 * op2 )
 static inline
-void BCATU(bmath_cfx_s,add_mul)( const bmath_cfx_s* o, const bmath_cfx_s* op1, const bmath_cfx_s* op2, bmath_cfx_s* res )
+void BCATU(bmath_cfx_s,add_prod)( const bmath_cfx_s* o, const bmath_cfx_s* op1, const bmath_cfx_s* op2, bmath_cfx_s* res )
 {
     fx_t re     = o->v[ 0 ] + ( op1->v[ 0 ] * op2->v[ 0 ] - op1->v[ 1 ] * op2->v[ 1 ] );
     res->v[ 1 ] = o->v[ 1 ] + ( op1->v[ 0 ] * op2->v[ 1 ] + op1->v[ 1 ] * op2->v[ 0 ] );
@@ -185,7 +185,7 @@ void BCATU(bmath_cfx_s,add_mul)( const bmath_cfx_s* o, const bmath_cfx_s* op1, c
 
 // res = o - ( op1 * op2 )
 static inline
-void BCATU(bmath_cfx_s,sub_mul)( const bmath_cfx_s* o, const bmath_cfx_s* op1, const bmath_cfx_s* op2, bmath_cfx_s* res )
+void BCATU(bmath_cfx_s,sub_prod)( const bmath_cfx_s* o, const bmath_cfx_s* op1, const bmath_cfx_s* op2, bmath_cfx_s* res )
 {
     fx_t re     = o->v[ 0 ] - ( op1->v[ 0 ] * op2->v[ 0 ] - op1->v[ 1 ] * op2->v[ 1 ] );
     res->v[ 1 ] = o->v[ 1 ] - ( op1->v[ 0 ] * op2->v[ 1 ] + op1->v[ 1 ] * op2->v[ 0 ] );
@@ -194,7 +194,7 @@ void BCATU(bmath_cfx_s,sub_mul)( const bmath_cfx_s* o, const bmath_cfx_s* op1, c
 
 // res = o * ( op1 - op2 )
 static inline
-void BCATU(bmath_cfx_s,mul_sub)( const bmath_cfx_s* o, const bmath_cfx_s* op1, const bmath_cfx_s* op2, bmath_cfx_s* res )
+void BCATU(bmath_cfx_s,mul_diff)( const bmath_cfx_s* o, const bmath_cfx_s* op1, const bmath_cfx_s* op2, bmath_cfx_s* res )
 {
     fx_t dre = op1->v[ 0 ] - op2->v[ 0 ];
     fx_t dim = op1->v[ 1 ] - op2->v[ 1 ];
@@ -251,6 +251,14 @@ static inline
 fx_t BCATU(bmath,cfx,mag)( bmath_cfx_s o )
 {
     return sqrt( BCATU(bmath,cfx,det)( o ) );
+}
+
+static inline
+fx_t BCATU(bmath,cfx,diff_mag)( bmath_cfx_s o, bmath_cfx_s b )
+{
+    bmath_cfx_s r;
+    BCATU(bmath_cfx_s,sub)( &o, &b, &r );
+    return sqrt( BCATU(bmath,cfx,det)( r ) );
 }
 
 static inline

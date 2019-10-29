@@ -58,12 +58,12 @@
 #if BMATH_TEMPLATE_FX_PREC == 2
     #define MM_PX      ps
     #define M5_T       __m256
-    #define P5_ZERO    { 0, 0, 0, 0, 0, 0, 0, 0 }
+    #define P5_ZERO    { 0, 0, 0, 0, 0, 0, 0, 0 } // do not use with M5_T: might be platform dependent
     #define P5_HSUM(v) ( v[0] + v[1] + v[2] + v[3] + v[4] + v[5] + v[6] + v[7] )
 #elif BMATH_TEMPLATE_FX_PREC == 3
     #define MM_PX      pd
     #define M5_T       __m256d
-    #define P5_ZERO    { 0, 0, 0, 0 }
+    #define P5_ZERO    { 0, 0, 0, 0 } // do not use with M5_T: might be platform dependent
     #define P5_HSUM(v) ( v[0] + v[1] + v[2] + v[3] )
 #endif // BMATH_TEMPLATE_FX_PREC
 
@@ -71,19 +71,25 @@
 #define P5_SIZE_EXP ( 5 - BMATH_TEMPLATE_FX_PREC )
 #define P5_SIZE     ( 1 << P5_SIZE_EXP )
 
-#define M5_LOAD BCATU(_mm256_loadu,  MM_PX) // a = loadu( ptr256 ): a = *ptr256
-#define M5_STOR BCATU(_mm256_storeu, MM_PX) // storeu( ptr256, a ): *ptr256 = a
-#define M5_SET1 BCATU(_mm256_set1,   MM_PX) // a = set1( f_val ):  duplicates f_val to all elements of a
+#define M5_LOAD     BCATU(_mm256_loadu,   MM_PX) // a = loadu( ptr256 ): a = *ptr256
+#define M5_STOR     BCATU(_mm256_storeu,  MM_PX) // storeu( ptr256, a ): *ptr256 = a
+#define M5_SET_ALL  BCATU(_mm256_set1,    MM_PX) // a = set1( f_val ):  duplicates f_val to all elements of a
+#define M5_SET_ZERO BCATU(_mm256_setzero, MM_PX) // returns zero M5_T
 
 #define M5_ADD BCATU(_mm256_add, MM_PX) // c = add( a, b ): c = a + b
+#define M5_SUB BCATU(_mm256_sub, MM_PX) // c = add( a, b ): c = a - b
 #define M5_MUL BCATU(_mm256_mul, MM_PX) // c = mul( a, b ): c = a * b
 
 // d = fmadd( a, b, c ): d = a * b + c
 #ifdef BMATH_AVX2_FMA
     #define M5_MUL_ADD( a, b, c ) BCATU(_mm256_fmadd, MM_PX)( a, b, c )
+    #define M5_MUL_SUB( a, b, c ) BCATU(_mm256_fmsub, MM_PX)( a, b, c )
 #else
     #define M5_MUL_ADD( a, b, c ) M5_ADD( M5_MUL( a, b ), c )
+    #define M5_MUL_SUB( a, b, c ) M5_SUB( M5_MUL( a, b ), c )
 #endif
+
+#define M5_GATHER  BCATU(_mm256_i32gather, MM_PX)
 
 /**********************************************************************************************************************/
 

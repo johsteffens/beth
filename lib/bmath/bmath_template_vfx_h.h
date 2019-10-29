@@ -96,6 +96,9 @@ bl_t BCATU(bmath_vfx_s,is_near_zro)( const bmath_vfx_s* o, fx_t max_dev );
 static inline bl_t BCATU(bmath_vfx_s,is_equ)( const bmath_vfx_s* o, const bmath_vfx_s* op ) { return BCATU(bmath_vfx_s,is_near_equ)( o, op, 0 ); }
 static inline bl_t BCATU(bmath_vfx_s,is_zro)( const bmath_vfx_s* o ) { return BCATU(bmath_vfx_s,is_near_zro)( o, 0 ); }
 
+/// sqrt(sum over squared differences)
+fx_t BCATU(bmath_vfx_s,fdev)( const bmath_vfx_s* o, const bmath_vfx_s* op );
+
 /// vector is nan if at least one element is nan
 bl_t BCATU(bmath_vfx_s,is_nan)( const bmath_vfx_s* o );
 

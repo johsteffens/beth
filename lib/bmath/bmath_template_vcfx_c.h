@@ -22,6 +22,50 @@
 #include "bmath_template_fx_begin.h"
 
 /**********************************************************************************************************************/
+/// checks, deviations
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t BCATU(bmath_vcfx_s,is_near_equ)( const bmath_vcfx_s* o, const bmath_vcfx_s* op, fx_t max_dev )
+{
+    if( o->size != op->size ) return false;
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        if( BCATU(fx,abs)( o->data[ i ].v[ 0 ] - op->data[ i ].v[ 0 ] ) > max_dev ) return false;
+        if( BCATU(fx,abs)( o->data[ i ].v[ 1 ] - op->data[ i ].v[ 1 ] ) > max_dev ) return false;
+    }
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t BCATU(bmath_vcfx_s,is_near_zro)( const bmath_vcfx_s* o, fx_t max_dev )
+{
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        if( BCATU(fx,abs)( o->data[ i ].v[ 0 ] ) > max_dev ) return false;
+        if( BCATU(fx,abs)( o->data[ i ].v[ 1 ] ) > max_dev ) return false;
+    }
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+fx_t BCATU(bmath_vcfx_s,fdev)( const bmath_vcfx_s* o, const bmath_vcfx_s* op )
+{
+    ASSERT( o->size == op->size );
+    fx_t sum = 0;
+    for( sz_t i = 0 ; i < o->size; i++ )
+    {
+        sum += BCATU(fx,sqr)( o->data[ i ].v[ 0 ] - op->data[ i ].v[ 0 ] )
+            +  BCATU(fx,sqr)( o->data[ i ].v[ 1 ] - op->data[ i ].v[ 1 ] );
+    }
+    return BCATU(fx,srt)( sum );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,6 +74,13 @@ void BCATU(bmath_vcfx_s,move)( bmath_vcfx_s* o, bmath_vcfx_s* src )
     if( o == src ) return;
     *o = *src;
     o->space = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void BCATU(bmath_vcfx_s,clear)( bmath_vcfx_s* o )
+{
+    bcore_array_a_set_space( (bcore_array*)o, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -83,6 +134,28 @@ bmath_vcfx_s* BCATU(bmath_vcfx_s,create_fill)( bmath_cfx_s val, uz_t size )
     o->size = size;
     for( uz_t i = 0; i < size; i++ ) o->data[ i ] = val;
     return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void BCATU(bmath_vcfx_s,set_random)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, u2_t* p_rval )
+{
+    u2_t rval = p_rval ? *p_rval : 12345;
+    fx_t range = max - min;
+    for( uz_t i = 0; i < o->size; i++ )
+    {
+        if( f3_xsg1_pos( &rval ) < density )
+        {
+            o->data[ i ].v[ 0 ] = ( range * f3_xsg1_pos( &rval ) ) + min;
+            o->data[ i ].v[ 1 ] = ( range * f3_xsg1_pos( &rval ) ) + min;
+        }
+        else
+        {
+            o->data[ i ].v[ 0 ] = 0;
+            o->data[ i ].v[ 1 ] = 0;
+        }
+    }
+    if( p_rval ) *p_rval = rval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -204,7 +277,7 @@ static void vcfx_s_mul_vec( const bmath_cfx_s* v1, const bmath_cfx_s* v2, uz_t s
         case 2:
         {
             BCATU(bmath,cfx,s_mul)( &v1[0], &v2[0], res );
-            BCATU(bmath,cfx,s_add_mul)( res, &v1[1], &v2[1], res );
+            BCATU(bmath,cfx,s_add_prod)( res, &v1[1], &v2[1], res );
             return;
         }
 
@@ -406,11 +479,17 @@ static vd_t selftest( void )
     {
         uz_t size = 100;
         bmath_vcfx_s* v1 = bcore_life_s_push_aware( l, BCATU(bmath_vcfx_s,create_size)( size ) );
+
+        //u2_t rval = 1234;
+        //BCATU(bmath_vcfx_s,set_random)( v1, 1.0, -1.0, 1.0, &rval );
+
+
         for( uz_t i = 0; i < size; i++ )
         {
             v1->data[ i ].v[ 0 ] = i + 1;
             v1->data[ i ].v[ 1 ] = i;
         }
+
 
         bmath_cfx_s sum1 = BCATU(bmath,cfx,zro)();
         bmath_cfx_s sqr1 = BCATU(bmath,cfx,zro)();
@@ -452,7 +531,7 @@ static vd_t selftest( void )
         BCATU(bmath_vcfx_s,dft)( v1, v2 );
         BCATU(bmath_vcfx_s,ift)( v2, v2 );
         BCATU(bmath_vcfx_s,sub_sqr)( v1, v2, &sqr1 );
-        ASSERT( BCATU(bmath,cfx,mag)( sqr1 ) < ( ( sizeof( fx_t ) == 4 ) ? 1E-6 : 1E-14 ) );
+        ASSERT( BCATU(bmath,cfx,mag)( sqr1 ) < ( ( sizeof( fx_t ) == 4 ) ? 1E-3 : 1E-14 ) );
     }
 
     bcore_life_s_discard( l );

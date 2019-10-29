@@ -64,7 +64,7 @@ static void kernel_fixed_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, 
         const fx_t* oi = o + i * o_s;
               fx_t* ri = r + i * r_s;
 
-        M5_T o_pk = M5_SET1( oi[ 0 ] );
+        M5_T o_pk = M5_SET_ALL( oi[ 0 ] );
 
         for( sz_t k = 0; k < BMATH_MUL_BLKPK_SIZE; k++ )
         {
@@ -73,7 +73,7 @@ static void kernel_fixed_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, 
 
         for( sz_t j = 1; j < BMATH_MUL_BLOCK_SIZE; j++ )
         {
-            o_pk = M5_SET1( oi[ j ] );
+            o_pk = M5_SET_ALL( oi[ j ] );
             for( sz_t k = 0; k < BMATH_MUL_BLKPK_SIZE; k++ )
             {
                 r_pk[ k ] = M5_MUL_ADD( m_pk[ j ][ k ], o_pk, r_pk[ k ] );
@@ -145,7 +145,7 @@ static void kernel_flexi_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const
 
         if( m_c_rest > 0 )
         {
-            m_pk[ j ][ m_cp_fit ] = M5_SET1( 0 );
+            m_pk[ j ][ m_cp_fit ] = M5_SET_ALL( 0 );
             for( sz_t k = 0; k < m_c_rest;  k++ ) m_pk[ j ][ m_cp_fit ][ k ] = mj[ m_cp_fit * P5_SIZE + k ];
         }
     }
@@ -155,11 +155,11 @@ static void kernel_flexi_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const
         const fx_t* oi = o + i * o_s;
               fx_t* ri = r + i * r_s;
 
-        for( sz_t k = 0; k < m_cp_ful; k++ ) r_pk[ k ] = M5_SET1( 0 );
+        for( sz_t k = 0; k < m_cp_ful; k++ ) r_pk[ k ] = M5_SET_ALL( 0 );
 
         for( sz_t j = 0; j < o_c; j++ )
         {
-            M5_T o_pk = M5_SET1( oi[ j ] );
+            M5_T o_pk = M5_SET_ALL( oi[ j ] );
             for( sz_t k = 0; k < m_cp_ful; k++ )
             {
                 r_pk[ k ] = M5_MUL_ADD( m_pk[ j ][ k ], o_pk, r_pk[ k ] );
@@ -228,7 +228,7 @@ static void kernel_fixed_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m
         const fx_t* oi = o + i * o_s;
               fx_t* ri = r + i * r_s;
 
-        M5_T o_pk = M5_SET1( oi[ 0 ] );
+        M5_T o_pk = M5_SET_ALL( oi[ 0 ] );
 
         for( sz_t k = 0; k < BMATH_MUL_BLKPK_SIZE; k++ )
         {
@@ -237,7 +237,7 @@ static void kernel_fixed_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m
 
         for( sz_t j = 1; j < BMATH_MUL_BLOCK_SIZE; j++ )
         {
-            o_pk = M5_SET1( oi[ j ] );
+            o_pk = M5_SET_ALL( oi[ j ] );
             for( sz_t k = 0; k < BMATH_MUL_BLKPK_SIZE; k++ )
             {
                 r_pk[ k ] = M5_MUL_ADD( m_pk[ j ][ k ], o_pk, r_pk[ k ] );
@@ -315,7 +315,7 @@ static void kernel_flexi_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
 
         if( m_r_rest > 0 )
         {
-            m_pk[ j ][ m_rp_fit ] = M5_SET1( 0 );
+            m_pk[ j ][ m_rp_fit ] = M5_SET_ALL( 0 );
             for( sz_t k = 0; k < m_r_rest; k++ ) m_pk[ j ][ m_rp_fit ][ k ] = mj[ ( m_rp_fit * P5_SIZE + k ) * m_s ];
         }
     }
@@ -325,11 +325,11 @@ static void kernel_flexi_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
         const fx_t* oi = o + i * o_s;
               fx_t* ri = r + i * r_s;
 
-        for( sz_t k = 0; k < m_rp_ful; k++ ) r_pk[ k ] = M5_SET1( 0 );
+        for( sz_t k = 0; k < m_rp_ful; k++ ) r_pk[ k ] = M5_SET_ALL( 0 );
 
         for( sz_t j = 0; j < o_c; j++ )
         {
-            M5_T o_pk = M5_SET1( oi[ j ] );
+            M5_T o_pk = M5_SET_ALL( oi[ j ] );
             for( sz_t k = 0; k < m_rp_ful; k++ )
             {
                 r_pk[ k ] = M5_MUL_ADD( m_pk[ j ][ k ], o_pk, r_pk[ k ] );
@@ -399,7 +399,7 @@ static void kernel_fixed_htp_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m
         const fx_t* oi = o + i;
               fx_t* ri = r + i * r_s;
 
-        M5_T o_pk = M5_SET1( oi[ 0 ] );
+        M5_T o_pk = M5_SET_ALL( oi[ 0 ] );
 
         for( sz_t k = 0; k < BMATH_MUL_BLKPK_SIZE; k++ )
         {
@@ -408,7 +408,7 @@ static void kernel_fixed_htp_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m
 
         for( sz_t j = 1; j < BMATH_MUL_BLOCK_SIZE; j++ )
         {
-            o_pk = M5_SET1( oi[ j * o_s ] );
+            o_pk = M5_SET_ALL( oi[ j * o_s ] );
             for( sz_t k = 0; k < BMATH_MUL_BLKPK_SIZE; k++ )
             {
                 r_pk[ k ] = M5_MUL_ADD( m_pk[ j ][ k ], o_pk, r_pk[ k ] );
@@ -484,7 +484,7 @@ static void kernel_flexi_htp_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
 
         if( m_c_rest > 0 )
         {
-            m_pk[ j ][ m_cp_fit ] = M5_SET1( 0 );
+            m_pk[ j ][ m_cp_fit ] = M5_SET_ALL( 0 );
             for( sz_t k = 0; k < m_c_rest;  k++ ) m_pk[ j ][ m_cp_fit ][ k ] = mj[ ( m_cp_fit * P5_SIZE + k ) ];
         }
     }
@@ -494,11 +494,11 @@ static void kernel_flexi_htp_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
         const fx_t* oi = o + i;
               fx_t* ri = r + i * r_s;
 
-        for( sz_t k = 0; k < m_cp_ful; k++ ) r_pk[ k ] = M5_SET1( 0 );
+        for( sz_t k = 0; k < m_cp_ful; k++ ) r_pk[ k ] = M5_SET_ALL( 0 );
 
         for( sz_t j = 0; j < o_r; j++ )
         {
-            M5_T o_pk = M5_SET1( oi[ j * o_s ] );
+            M5_T o_pk = M5_SET_ALL( oi[ j * o_s ] );
             for( sz_t k = 0; k < m_cp_ful; k++ )
             {
                 r_pk[ k ] = M5_MUL_ADD( m_pk[ j ][ k ], o_pk, r_pk[ k ] );
@@ -569,7 +569,7 @@ static void kernel_fixed_htp_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz
         const fx_t* oi = o + i;
               fx_t* ri = r + i * r_s;
 
-        M5_T o_pk = M5_SET1( oi[ 0 ] );
+        M5_T o_pk = M5_SET_ALL( oi[ 0 ] );
 
         for( sz_t k = 0; k < BMATH_MUL_BLKPK_SIZE; k++ )
         {
@@ -578,7 +578,7 @@ static void kernel_fixed_htp_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz
 
         for( sz_t j = 1; j < BMATH_MUL_BLOCK_SIZE; j++ )
         {
-            o_pk = M5_SET1( oi[ j * o_s ] );
+            o_pk = M5_SET_ALL( oi[ j * o_s ] );
             for( sz_t k = 0; k < BMATH_MUL_BLKPK_SIZE; k++ )
             {
                 r_pk[ k ] = M5_MUL_ADD( m_pk[ j ][ k ], o_pk, r_pk[ k ] );
@@ -656,7 +656,7 @@ static void kernel_flexi_htp_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_
 
         if( m_r_rest > 0 )
         {
-            m_pk[ j ][ m_rp_fit ] = M5_SET1( 0 );
+            m_pk[ j ][ m_rp_fit ] = M5_SET_ALL( 0 );
             for( sz_t k = 0; k < m_r_rest;  k++ ) m_pk[ j ][ m_rp_fit ][ k ] = mj[ ( m_rp_fit * P5_SIZE + k ) * m_s ];
         }
     }
@@ -666,11 +666,11 @@ static void kernel_flexi_htp_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_
         const fx_t* oi = o + i;
               fx_t* ri = r + i * r_s;
 
-        for( sz_t k = 0; k < m_rp_ful; k++ ) r_pk[ k ] = M5_SET1( 0 );
+        for( sz_t k = 0; k < m_rp_ful; k++ ) r_pk[ k ] = M5_SET_ALL( 0 );
 
         for( sz_t j = 0; j < o_r; j++ )
         {
-            M5_T o_pk = M5_SET1( oi[ j * o_s ] );
+            M5_T o_pk = M5_SET_ALL( oi[ j * o_s ] );
             for( sz_t k = 0; k < m_rp_ful; k++ )
             {
                 r_pk[ k ] = M5_MUL_ADD( m_pk[ j ][ k ], o_pk, r_pk[ k ] );

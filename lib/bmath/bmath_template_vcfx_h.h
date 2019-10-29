@@ -38,7 +38,29 @@
 
 /**********************************************************************************************************************/
 
+/**********************************************************************************************************************/
+/// checks, deviations
+
+/** Near-state means: For each vector element the absolute difference
+ *  to the specified state is less or equal max_dev.
+ *  Hence, max_dev == 0 tests for the exact state (s. below).
+ */
+bl_t BCATU(bmath_vcfx_s,is_near_equ)( const bmath_vcfx_s* o, const bmath_vcfx_s* op, fx_t max_dev ); // equality
+bl_t BCATU(bmath_vcfx_s,is_near_zro)( const bmath_vcfx_s* o, fx_t max_dev ); // zero
+
+static inline bl_t BCATU(bmath_vcfx_s,is_equ)( const bmath_vcfx_s* o, const bmath_vcfx_s* op ) { return BCATU(bmath_vcfx_s,is_near_equ)( o, op, 0 ); }
+static inline bl_t BCATU(bmath_vcfx_s,is_zro)( const bmath_vcfx_s* o ) { return BCATU(bmath_vcfx_s,is_near_zro)( o, 0 ); }
+
+/// Vector is nan if at least one element is nan
+bl_t BCATU(bmath_vcfx_s,is_nan)( const bmath_vcfx_s* o );
+
+/// Generalized frobenius norm (sqrt(sum over all components: sqr(difference))
+fx_t BCATU(bmath_vcfx_s,fdev)( const bmath_vcfx_s* o, const bmath_vcfx_s* op );
+
+/**********************************************************************************************************************/
+
 void BCATU(bmath_vcfx_s,move)( bmath_vcfx_s* o, bmath_vcfx_s* src );
+void BCATU(bmath_vcfx_s,clear)( bmath_vcfx_s* o );
 
 void BCATU(bmath_vcfx_s,set_size)( bmath_vcfx_s* o, uz_t size );
 void BCATU(bmath_vcfx_s,push)(     bmath_vcfx_s* o, bmath_cfx_s cfx );
@@ -46,6 +68,17 @@ void BCATU(bmath_vcfx_s,push_ri)(  bmath_vcfx_s* o, fx_t r, fx_t i );
 
 bmath_vcfx_s* BCATU(bmath_vcfx_s,create_size)( uz_t size );
 bmath_vcfx_s* BCATU(bmath_vcfx_s,create_fill)( bmath_cfx_s val, uz_t size );
+
+/** Sets all vector elements to random values.
+ *  Random generator:
+ *    Parameters density, min, max, p_rval apply to the random generator.
+ *      rval: Pointer to running variable of random generator.
+ *            If NULL, an internal fixed random seed is used.
+ *
+ *     density (range [0.0, 1.0]) specifies the rate at which the random generator
+ *     creates a non-zero value.
+ */
+void BCATU(bmath_vcfx_s,set_random)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, u2_t* p_rval );
 
 void BCATU(bmath_vcfx_s,zro)(           bmath_vcfx_s* o );
 void BCATU(bmath_vcfx_s,neg)(     const bmath_vcfx_s* o, bmath_vcfx_s* res );

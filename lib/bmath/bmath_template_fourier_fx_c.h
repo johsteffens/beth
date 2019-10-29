@@ -52,7 +52,7 @@ void BCATU(bmath_fourier,fx,dft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t
         bmath_cfx_s sum = BCATU(bmath,cfx,zro)();
         for( uz_t i = 0; i < size; i++ )
         {
-            BCATU(bmath_cfx_s,add_mul)( &sum, &src[ i ], &w, &sum );
+            BCATU(bmath_cfx_s,add_prod)( &sum, &src[ i ], &w, &sum );
             BCATU(bmath_cfx_s,mul)( &w, &ws1, &w );
         }
         dst[ j ] = sum;
@@ -61,41 +61,168 @@ void BCATU(bmath_fourier,fx,dft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t
 }
 
 /**********************************************************************************************************************/
+// using arrays of bmath_cfx_s
 
-/** Efficient flavor of the recursive Cooley Turkey fft algorithm.
- *    for n0 > 4: buf must be preallocated to size n0.
+//----------------------------------------------------------------------------------------------------------------------
+
+static void fft_4( const bmath_cfx_s* src, bmath_cfx_s* dst )
+{
+    #ifdef BMATH_AVX
+        #if ( BMATH_TEMPLATE_FX_PREC == 2 )
+            __m128 dst0_m5 = _mm_add_ps( _mm_setr_ps( src[ 0 ].v[ 0 ], src[ 0 ].v[ 1 ],  src[ 0 ].v[ 0 ],  src[ 0 ].v[ 1 ] ),
+                                         _mm_setr_ps( src[ 2 ].v[ 0 ], src[ 2 ].v[ 1 ], -src[ 2 ].v[ 0 ], -src[ 2 ].v[ 1 ] ) );
+            __m128 dst1_m5 = _mm_add_ps( _mm_setr_ps( src[ 1 ].v[ 0 ], src[ 1 ].v[ 1 ],  src[ 1 ].v[ 1 ], -src[ 1 ].v[ 0 ] ),
+                                         _mm_setr_ps( src[ 3 ].v[ 0 ], src[ 3 ].v[ 1 ], -src[ 3 ].v[ 1 ], +src[ 3 ].v[ 0 ] ) );
+            _mm_storeu_ps( ( ( fx_t* )dst ),     _mm_add_ps( dst0_m5, dst1_m5 ) );
+            _mm_storeu_ps( ( ( fx_t* )dst ) + 4, _mm_sub_ps( dst0_m5, dst1_m5 ) );
+        #else
+            __m256d dst0_m5 = M5_ADD( _mm256_setr_pd( src[ 0 ].v[ 0 ], src[ 0 ].v[ 1 ],  src[ 0 ].v[ 0 ],  src[ 0 ].v[ 1 ] ),
+                                      _mm256_setr_pd( src[ 2 ].v[ 0 ], src[ 2 ].v[ 1 ], -src[ 2 ].v[ 0 ], -src[ 2 ].v[ 1 ] ) );
+            __m256d dst1_m5 = M5_ADD( _mm256_setr_pd( src[ 1 ].v[ 0 ], src[ 1 ].v[ 1 ],  src[ 1 ].v[ 1 ], -src[ 1 ].v[ 0 ] ),
+                                      _mm256_setr_pd( src[ 3 ].v[ 0 ], src[ 3 ].v[ 1 ], -src[ 3 ].v[ 1 ], +src[ 3 ].v[ 0 ] ) );
+            M5_STOR( ( ( fx_t* )dst ),     M5_ADD( dst0_m5, dst1_m5 ) );
+            M5_STOR( ( ( fx_t* )dst ) + 4, M5_SUB( dst0_m5, dst1_m5 ) );
+
+        #endif
+    #else
+        dst[ 0 ].v[ 0 ] = src[ 0 ].v[ 0 ] + src[ 1 ].v[ 0 ] + src[ 2 ].v[ 0 ] + src[ 3 ].v[ 0 ];
+        dst[ 0 ].v[ 1 ] = src[ 0 ].v[ 1 ] + src[ 1 ].v[ 1 ] + src[ 2 ].v[ 1 ] + src[ 3 ].v[ 1 ];
+        dst[ 1 ].v[ 0 ] = src[ 0 ].v[ 0 ] + src[ 1 ].v[ 1 ] - src[ 2 ].v[ 0 ] - src[ 3 ].v[ 1 ];
+        dst[ 1 ].v[ 1 ] = src[ 0 ].v[ 1 ] - src[ 1 ].v[ 0 ] - src[ 2 ].v[ 1 ] + src[ 3 ].v[ 0 ];
+        dst[ 2 ].v[ 0 ] = src[ 0 ].v[ 0 ] - src[ 1 ].v[ 0 ] + src[ 2 ].v[ 0 ] - src[ 3 ].v[ 0 ];
+        dst[ 2 ].v[ 1 ] = src[ 0 ].v[ 1 ] - src[ 1 ].v[ 1 ] + src[ 2 ].v[ 1 ] - src[ 3 ].v[ 1 ];
+        dst[ 3 ].v[ 0 ] = src[ 0 ].v[ 0 ] - src[ 1 ].v[ 1 ] - src[ 2 ].v[ 0 ] + src[ 3 ].v[ 1 ];
+        dst[ 3 ].v[ 1 ] = src[ 0 ].v[ 1 ] + src[ 1 ].v[ 0 ] - src[ 2 ].v[ 1 ] - src[ 3 ].v[ 0 ];
+        // further disentangling shows no speed advantage on gcc -O3
+    #endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Efficient flavor of the recursive Cooley Tukey fft algorithm. SIMD optimized.
+ *    for n0 >= 4: buf must be preallocated to size n0.
  *    buf == src is allowed.
  */
 static void recursive_fft( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t n0, bmath_cfx_s* buf )
 {
-    if( n0 == 4 )
-    {
-        dst[ 0 ].v[ 0 ] = src[ 0 ].v[ 0 ] + src[ 1 ].v[ 0 ] + src[ 2 ].v[ 0 ] + src[ 3 ].v[ 0 ];
-        dst[ 0 ].v[ 1 ] = src[ 0 ].v[ 1 ] + src[ 1 ].v[ 1 ] + src[ 2 ].v[ 1 ] + src[ 3 ].v[ 1 ];
-        dst[ 2 ].v[ 0 ] = src[ 0 ].v[ 0 ] - src[ 1 ].v[ 0 ] + src[ 2 ].v[ 0 ] - src[ 3 ].v[ 0 ];
-        dst[ 2 ].v[ 1 ] = src[ 0 ].v[ 1 ] - src[ 1 ].v[ 1 ] + src[ 2 ].v[ 1 ] - src[ 3 ].v[ 1 ];
-        dst[ 1 ].v[ 0 ] = src[ 0 ].v[ 0 ] + src[ 1 ].v[ 1 ] - src[ 2 ].v[ 0 ] - src[ 3 ].v[ 1 ];
-        dst[ 1 ].v[ 1 ] = src[ 0 ].v[ 1 ] - src[ 1 ].v[ 0 ] - src[ 2 ].v[ 1 ] + src[ 3 ].v[ 0 ];
-        dst[ 3 ].v[ 0 ] = src[ 0 ].v[ 0 ] - src[ 1 ].v[ 1 ] - src[ 2 ].v[ 0 ] + src[ 3 ].v[ 1 ];
-        dst[ 3 ].v[ 1 ] = src[ 0 ].v[ 1 ] + src[ 1 ].v[ 0 ] - src[ 2 ].v[ 1 ] - src[ 3 ].v[ 0 ];
-        return;
-    }
-    // attempt to explicitly disentangle for n0 > 4 shows no speed advantage on gcc -O3
-
     uz_t n1 = n0 >> 1;
 
     bmath_cfx_s ws0 = BCATU(bmath,cfx,init_urt)( -1, n0 );
     bmath_cfx_s w0  = BCATU(bmath,cfx,one)();
 
-    for( uz_t i = 0; i < n1; i++ )
-    {
-        BCATU(bmath_cfx_s,add)( &src[ i ], &src[ i + n1 ], &dst[ i ] );
-        BCATU(bmath_cfx_s,mul_sub)( &w0, &src[ i ], &src[ i + n1 ], &buf[ i ] );
-        BCATU(bmath_cfx_s,mul)( &w0, &ws0, &w0 );
-    }
+    #ifdef BMATH_AVX2
 
-    recursive_fft( buf, dst + n1, n1, buf + n1 );
-    recursive_fft( dst, buf,      n1, buf + n1 );
+        assert( n1 >= 4 && ( n1 & 3 ) == 0 );
+
+        #if ( BMATH_TEMPLATE_FX_PREC == 2 )
+            #define BMATH_COND_NO_SIMD ( n1 == 4 )
+        #else
+            #define BMATH_COND_NO_SIMD false
+        #endif
+
+        // reasonable compiler optimization will skip this branch entirely for FX_PREC == 3
+        if( BMATH_COND_NO_SIMD )
+        {
+            for( sz_t i = 0; i < 4; i++ )
+            {
+                BCATU(bmath_cfx_s,add)( &src[ i ], &src[ i + n1 ], &dst[ i ] );
+                BCATU(bmath_cfx_s,mul_diff)( &w0, &src[ i ], &src[ i + n1 ], &buf[ i ] );
+                BCATU(bmath_cfx_s,mul)( &w0, &ws0, &w0 );
+            }
+        }
+        else
+        {
+            #if ( BMATH_TEMPLATE_FX_PREC == 2 )
+                __m256i mask_eve = _mm256_setr_epi32( -1, 0, -1, 0, -1, 0, -1, 0 );
+                __m256i mask_odd = _mm256_setr_epi32( 0, -1, 0, -1, 0, -1, 0, -1 );
+                __m256i idx_r    = _mm256_setr_epi32( 0, 8, 2, 10, 4, 12, 6, 14 );
+                __m256i idx_i    = _mm256_setr_epi32( 1, 9, 3, 11, 5, 13, 7, 15 );
+            #else
+                __m128i idx_r = _mm_setr_epi32( 0, 4, 2, 6 );
+                __m128i idx_i = _mm_setr_epi32( 1, 5, 3, 7 );
+            #endif
+
+            M5_T w0_r;
+            M5_T w0_i;
+
+            {
+                bmath_cfx_s wb[ P5_SIZE ];
+                for( sz_t i = 0; i < P5_SIZE; i++ )
+                {
+                    wb[ i ] = w0;
+                    BCATU(bmath_cfx_s,mul)( &w0, &ws0, &w0 );
+                }
+                w0_r = M5_GATHER( ( fx_t* )wb, idx_r, sizeof( fx_t ) );
+                w0_i = M5_GATHER( ( fx_t* )wb, idx_i, sizeof( fx_t ) );
+            }
+
+            M5_T ws0_r = M5_SET_ALL( w0.v[ 0 ] );
+            M5_T ws0_i = M5_SET_ALL( w0.v[ 1 ] );
+
+            for( sz_t i = 0; i < n1; i += P5_SIZE )
+            {
+                M5_T src_0_r = M5_GATHER( ( fx_t* )&src[ i      ], idx_r, sizeof( fx_t ) );
+                M5_T src_0_i = M5_GATHER( ( fx_t* )&src[ i      ], idx_i, sizeof( fx_t ) );
+                M5_T src_n_r = M5_GATHER( ( fx_t* )&src[ i + n1 ], idx_r, sizeof( fx_t ) );
+                M5_T src_n_i = M5_GATHER( ( fx_t* )&src[ i + n1 ], idx_i, sizeof( fx_t ) );
+                M5_T dst_r   = M5_ADD( src_0_r, src_n_r );
+                M5_T dst_i   = M5_ADD( src_0_i, src_n_i );
+
+                #if ( BMATH_TEMPLATE_FX_PREC == 2 )
+                    _mm256_maskstore_ps( ( ( fx_t* )dst ) + i * 2,     mask_eve, dst_r );
+                    _mm256_maskstore_ps( ( ( fx_t* )dst ) + i * 2 + 1, mask_eve, dst_i );
+                    _mm256_maskstore_ps( ( ( fx_t* )dst ) + i * 2 + 7, mask_odd, dst_r );
+                    _mm256_maskstore_ps( ( ( fx_t* )dst ) + i * 2 + 8, mask_odd, dst_i );
+                #else
+                    M5_STOR( ( fx_t* )&dst[ i     ], _mm256_shuffle_pd( dst_r, dst_i, 0x0 ) );
+                    M5_STOR( ( fx_t* )&dst[ i + 2 ], _mm256_shuffle_pd( dst_r, dst_i, 0xF ) );
+                #endif
+
+                M5_T tmp_r = M5_SUB( src_0_r, src_n_r );
+                M5_T tmp_i = M5_SUB( src_0_i, src_n_i );
+
+                dst_r = M5_MUL_SUB( tmp_r, w0_r, M5_MUL( tmp_i, w0_i ) );
+                dst_i = M5_MUL_ADD( tmp_r, w0_i, M5_MUL( tmp_i, w0_r ) );
+
+                #if ( BMATH_TEMPLATE_FX_PREC == 2 )
+                    _mm256_maskstore_ps( ( ( fx_t* )buf ) + i * 2,     mask_eve, dst_r );
+                    _mm256_maskstore_ps( ( ( fx_t* )buf ) + i * 2 + 1, mask_eve, dst_i );
+                    _mm256_maskstore_ps( ( ( fx_t* )buf ) + i * 2 + 7, mask_odd, dst_r );
+                    _mm256_maskstore_ps( ( ( fx_t* )buf ) + i * 2 + 8, mask_odd, dst_i );
+                #else
+                    M5_STOR( ( fx_t* )&buf[ i     ], _mm256_shuffle_pd( dst_r, dst_i, 0x0 ) );
+                    M5_STOR( ( fx_t* )&buf[ i + 2 ], _mm256_shuffle_pd( dst_r, dst_i, 0xF ) );
+                #endif
+
+                tmp_r = M5_MUL_SUB( ws0_r, w0_r, M5_MUL( ws0_i, w0_i ) );
+                tmp_i = M5_MUL_ADD( ws0_r, w0_i, M5_MUL( ws0_i, w0_r ) );
+
+                w0_r = tmp_r;
+                w0_i = tmp_i;
+            }
+        }
+
+    #else // no simd
+
+        for( sz_t i = 0; i < n1; i++ )
+        {
+            BCATU(bmath_cfx_s,add)( &src[ i ], &src[ i + n1 ], &dst[ i ] );
+            BCATU(bmath_cfx_s,mul_diff)( &w0, &src[ i ], &src[ i + n1 ], &buf[ i ] );
+            BCATU(bmath_cfx_s,mul)( &w0, &ws0, &w0 );
+        }
+
+    #endif
+
+    if( n1 == 4 )
+    {
+        fft_4( buf, dst + n1 );
+        fft_4( dst, buf      );
+    }
+    else
+    {
+        recursive_fft( buf, dst + n1, n1, buf + n1 );
+        recursive_fft( dst, buf,      n1, buf + n1 );
+    }
 
     for( uz_t i = 0; i < n1; i++ )
     {
@@ -106,6 +233,11 @@ static void recursive_fft( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t n0, bm
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/** Note on splitting complex data:
+ *  Splitting complex array into separate arrays or real and imaginary values is sometimes recommended because it needs
+ *  fewer SIMD operations (no gathering unpacking). I found experimentally that extra cost due to splitting, merging
+ *  and cache misses leaves no net benefit altogether, though.
+ */
 vd_t BCATU(bmath_fourier,fx,fft_buf)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t size, vd_t buf )
 {
     if( size <= 2 )
@@ -131,12 +263,27 @@ vd_t BCATU(bmath_fourier,fx,fft_buf)( const bmath_cfx_s* src, bmath_cfx_s* dst, 
     if( src == dst )
     {
         bcore_memcpy( buf_l, src, sizeof( bmath_cfx_s ) * size );
-        recursive_fft( buf_l, dst, size, buf_l );
+        if( size == 4 )
+        {
+            fft_4( buf_l, dst );
+        }
+        else
+        {
+            recursive_fft( buf_l, dst, size, buf_l );
+        }
     }
     else
     {
-        recursive_fft( src, dst, size, buf_l );
+        if( size == 4 )
+        {
+            fft_4( src, dst );
+        }
+        else
+        {
+            recursive_fft( src, dst, size, buf_l );
+        }
     }
+
     return buf_l;
 }
 
@@ -153,6 +300,7 @@ void BCATU(bmath_fourier,fx,fft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
+///TODO: compare accuracy of f2 dft/fft to f3 (determine to which size dft/fft remains reasonably accurate)
 static vd_t fourier_selftest( void )
 {
     st_s* log = st_s_create_fa( "== Fourier_selftest: '#<sc_t>' ", BSTR(bmath_cfx_s) );
@@ -166,7 +314,7 @@ static vd_t fourier_selftest( void )
     /// data test
     bcore_life_s* l = bcore_life_s_create();
     {
-        uz_t size = 128;
+        sz_t size = 1 << 7;
 
         bmath_cfx_s z;
 
@@ -179,7 +327,7 @@ static vd_t fourier_selftest( void )
 
         u2_t rval = 1234;
 
-        for( uz_t i = 0; i < size; i++ )
+        for( sz_t i = 0; i < size; i++ )
         {
             fx_t re = BCATU(fx,xsg1_sym)( &rval );
             fx_t im = BCATU(fx,xsg1_sym)( &rval );
@@ -190,9 +338,18 @@ static vd_t fourier_selftest( void )
         BCATU(bmath_fourier,fx,dft)( vec1->data, vec2->data, size );
         /// vec3 = FFT( vec1 )
         BCATU(bmath_fourier,fx,fft)( vec1->data, vec3->data, size );
+/*
+        for( sz_t i = 0; i < size; i++ )
+        {
+            BCATU(bmath_cfx_s,to_stdout)( &vec2->data[ i ] );
+            BCATU(bmath_cfx_s,to_stdout)( &vec3->data[ i ] );
+            bcore_msg_fa( "#<f3_t>\n", BCATU( bmath,cfx,diff_mag)( vec2->data[ i ], vec3->data[ i ] ) );
+            bcore_msg_fa( "--------------------------\n" );
+        }
+*/
 
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec2, ( const bmath_vector* )vec3, ( bmath_ring* )&z );
-        bcore_msg_fa( "#<f3_t>\n", (f3_t)BCATU(bmath,cfx,mag)( z ) );
+        //bcore_msg_fa( "#<f3_t>\n", (f3_t)BCATU(bmath,cfx,mag)( z ) );
         ASSERT( BCATU(bmath,cfx,mag)( z ) < ( ( sizeof( fx_t ) == 4 ) ? 1e-5 : 1e-14 ) );
 
         /// vec2 = inverse FFT( vec1 )
@@ -204,13 +361,13 @@ static vd_t fourier_selftest( void )
 
         /// compare vec1, vec 2
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec1, ( const bmath_vector* )vec2, ( bmath_ring* )&z );
-        bcore_msg_fa( "#<f3_t>\n", (f3_t)BCATU(bmath,cfx,mag)( z ) );
+        //bcore_msg_fa( "#<f3_t>\n", (f3_t)BCATU(bmath,cfx,mag)( z ) );
         ASSERT( BCATU(bmath,cfx,mag)( z ) < ( ( sizeof( fx_t ) == 4 ) ? 1e-7 : 1e-14 ) );
     }
 
     /// speed test
     {
-        uz_t size = 1 << 20;
+        sz_t size = 1 << 20;
 
         complex_vec_s* vec1 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
         complex_vec_s* vec2 = bcore_life_s_push_aware( l, bcore_inst_t_create( TYPEOF_complex_vec_s ) );
@@ -219,7 +376,7 @@ static vd_t fourier_selftest( void )
 
         u2_t rval = 1234;
 
-        for( uz_t i = 0; i < size; i++ )
+        for( sz_t i = 0; i < size; i++ )
         {
             fx_t re = BCATU(fx,xsg1_sym)( &rval );
             fx_t im = BCATU(fx,xsg1_sym)( &rval );
@@ -231,7 +388,7 @@ static vd_t fourier_selftest( void )
         time = clock();
         BCATU(bmath_fourier,fx,fft)( vec1->data, vec2->data, size );
         time = clock() - time;
-        st_s_push_fa( log, "fft ... #<uz_t>ms\n", ( uz_t ) ( ( 1E3 * ( double )( time )/CLOCKS_PER_SEC ) ) );
+        st_s_push_fa( log, "fft ... #<uz_t>ms\n", ( sz_t ) ( ( 1E3 * ( double )( time )/CLOCKS_PER_SEC ) ) );
 
     }
 

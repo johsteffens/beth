@@ -48,12 +48,17 @@
 #undef P5_ZERO
 #undef P5_HSUM
 
-#undef M5_ADD
-#undef M5_MUL
 #undef M5_LOAD
 #undef M5_STOR
-#undef M5_MADD
-#undef M5_SET1
+#undef M5_SET_ALL
+#undef M5_SET_ZERO
+
+#undef M5_ADD
+#undef M5_SUB
+#undef M5_MUL
+
+#undef M5_MUL_ADD
+#undef M5_MUL_SUB
 
 #undef MM_PX
 #undef M5_T
