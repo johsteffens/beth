@@ -130,7 +130,7 @@ void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, uz_t rd,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bmath_mfx_s* bmath_mfx_s_create_set_size( uz_t rows, uz_t cols )
+bmath_mfx_s* BCATU(bmath_mfx_s,create_set_size)( uz_t rows, uz_t cols )
 {
     bmath_mfx_s* o = BCATU(bmath_mfx_s,create)();
     BCATU(bmath_mfx_s,set_size)( o, rows, cols );

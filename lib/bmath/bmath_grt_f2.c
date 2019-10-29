@@ -13,38 +13,38 @@
  *  limitations under the License.
  */
 
-#include "bmath_grt_f3.h"
+#include "bmath_grt_f2.h"
 
-#define BMATH_TEMPLATE_FX_PREC 3
+#define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_grt_fx_c.h"
 
-BCORE_DEFINE_OBJECT_FLAT( bcore_inst, bmath_grt_f3_s ) "{ f3_t c; f3_t s; }";
+BCORE_DEFINE_OBJECT_FLAT( bcore_inst, bmath_grt_f2_s ) "{ f2_t c; f2_t s; }";
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_grt_f3_s ) "{ aware_t _; bmath_grt_f3_s [] arr; }";
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_grt_f2_s ) "{ aware_t _; bmath_grt_f2_s [] arr; }";
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
-vd_t bmath_grt_f3_signal_handler( const bcore_signal_s* o )
+vd_t bmath_grt_f2_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bmath_grt_f3" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bmath_grt_f2" ) ) )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_OBJECT( bmath_grt_f3_s );
-            BCORE_REGISTER_OBJECT( bmath_arr_grt_f3_s );
+            BCORE_REGISTER_OBJECT( bmath_grt_f2_s );
+            BCORE_REGISTER_OBJECT( bmath_arr_grt_f2_s );
         }
         break;
 
         case TYPEOF_get_quicktypes:
         {
-            BCORE_REGISTER_QUICKTYPE( bmath_grt_f3_s );
-            BCORE_REGISTER_QUICKTYPE( bmath_arr_grt_f3_s );
+            BCORE_REGISTER_QUICKTYPE( bmath_grt_f2_s );
+            BCORE_REGISTER_QUICKTYPE( bmath_arr_grt_f2_s );
         }
         break;
 

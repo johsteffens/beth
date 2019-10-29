@@ -235,8 +235,8 @@ static void recursive_fft( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t n0, bm
 
 /** Note on splitting complex data:
  *  Splitting complex array into separate arrays or real and imaginary values is sometimes recommended because it needs
- *  fewer SIMD operations (no gathering unpacking). I found experimentally that extra cost due to splitting, merging
- *  and cache misses leaves no net benefit altogether, though.
+ *  fewer SIMD operations (no gathering, unpacking). I found experimentally, though, that extra cost due to splitting, merging
+ *  and cache misses leaves no net benefit altogether.
  */
 vd_t BCATU(bmath_fourier,fx,fft_buf)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t size, vd_t buf )
 {
@@ -300,7 +300,6 @@ void BCATU(bmath_fourier,fx,fft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-///TODO: compare accuracy of f2 dft/fft to f3 (determine to which size dft/fft remains reasonably accurate)
 static vd_t fourier_selftest( void )
 {
     st_s* log = st_s_create_fa( "== Fourier_selftest: '#<sc_t>' ", BSTR(bmath_cfx_s) );
@@ -338,18 +337,8 @@ static vd_t fourier_selftest( void )
         BCATU(bmath_fourier,fx,dft)( vec1->data, vec2->data, size );
         /// vec3 = FFT( vec1 )
         BCATU(bmath_fourier,fx,fft)( vec1->data, vec3->data, size );
-/*
-        for( sz_t i = 0; i < size; i++ )
-        {
-            BCATU(bmath_cfx_s,to_stdout)( &vec2->data[ i ] );
-            BCATU(bmath_cfx_s,to_stdout)( &vec3->data[ i ] );
-            bcore_msg_fa( "#<f3_t>\n", BCATU( bmath,cfx,diff_mag)( vec2->data[ i ], vec3->data[ i ] ) );
-            bcore_msg_fa( "--------------------------\n" );
-        }
-*/
 
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec2, ( const bmath_vector* )vec3, ( bmath_ring* )&z );
-        //bcore_msg_fa( "#<f3_t>\n", (f3_t)BCATU(bmath,cfx,mag)( z ) );
         ASSERT( BCATU(bmath,cfx,mag)( z ) < ( ( sizeof( fx_t ) == 4 ) ? 1e-5 : 1e-14 ) );
 
         /// vec2 = inverse FFT( vec1 )
@@ -361,7 +350,6 @@ static vd_t fourier_selftest( void )
 
         /// compare vec1, vec 2
         bmath_vector_a_sub_sqr( ( const bmath_vector* )vec1, ( const bmath_vector* )vec2, ( bmath_ring* )&z );
-        //bcore_msg_fa( "#<f3_t>\n", (f3_t)BCATU(bmath,cfx,mag)( z ) );
         ASSERT( BCATU(bmath,cfx,mag)( z ) < ( ( sizeof( fx_t ) == 4 ) ? 1e-7 : 1e-14 ) );
     }
 

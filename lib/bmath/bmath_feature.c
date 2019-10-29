@@ -25,6 +25,7 @@ vd_t bmath_feature_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
+            BCORE_REGISTER_FEATURE( bmath_fp_u2_argb_from_f2 );
             BCORE_REGISTER_FEATURE( bmath_fp_u2_argb_from_f3 );
         }
         break;

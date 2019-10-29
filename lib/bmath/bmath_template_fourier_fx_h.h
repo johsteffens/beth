@@ -31,7 +31,7 @@
 
 /// DFT/FFT (dst==src allowed); fft: size = power of 2
 
-/** (Slow) Discrete Fourier transformation for all vector sizes.
+/** (Slow) Discrete Fourier Transformation for all vector sizes.
  *  - Complexity O(n^2)
  *  - dst==src allowed
  *  - Accuracy:
@@ -40,7 +40,7 @@
  */
 void BCATU(bmath_fourier,fx,dft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t size );
 
-/** Fast Fourier transformation for vector size being power of 2.
+/** Fast Fourier Transformation for vector size being power of 2.
  *  - Complexity O(n*log(n))
  *  - dst==src allowed
  *  - Accuracy: f2 stable up to very large sizes (see function test_fourier_accuracy)

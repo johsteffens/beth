@@ -13,17 +13,24 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_FEATURE_H
-#define BMATH_FEATURE_H
+#ifndef BMATH_GRT_F2_H
+#define BMATH_GRT_F2_H
 
-#include "bcore_feature.h"
-
-typedef u2_t (*bmath_fp_u2_argb_from_f2 )( vd_t o, f2_t v ); // converts f2 value to argb pixel value
-typedef u2_t (*bmath_fp_u2_argb_from_f3 )( vd_t o, f3_t v ); // converts f3 value to argb pixel value
+#include "bcore_std.h"
+#include "bmath_hwflags.h"
+#include "bmath_leaf.h"
 
 /**********************************************************************************************************************/
 
-vd_t bmath_feature_signal_handler( const bcore_signal_s* o );
+BCORE_DECLARE_OBJECT( bmath_grt_f2_s ) { f2_t c; f2_t s; };
 
-#endif // BMATH_FEATURE_H
+#define BMATH_TEMPLATE_FX_PREC 2
+#include "bmath_template_grt_fx_h.h"
 
+//----------------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
+
+vd_t bmath_grt_f2_signal_handler( const bcore_signal_s* o );
+
+#endif  // BMATH_GRT_F2_H

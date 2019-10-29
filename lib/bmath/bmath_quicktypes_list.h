@@ -1,6 +1,7 @@
 /** List of predefined types for quick access.
  *  Created via bmath_quicktypes_to_stdout( NULL );
  */
+#define TYPEOF_bmath_arr_grt_f2_s         2800473450
 #define TYPEOF_bmath_arr_grt_f3_s           68378437
 #define TYPEOF_bmath_arr_mf2_s             844277465
 #define TYPEOF_bmath_arr_mf3_s            3576372478
@@ -68,6 +69,7 @@
 #define TYPEOF_bmath_fp_mf3_s_vav          749029037
 #define TYPEOF_bmath_group                1421936371
 #define TYPEOF_bmath_group_s              1219600405
+#define TYPEOF_bmath_grt_f2_s             1815124462
 #define TYPEOF_bmath_grt_f3_s             3367654153
 #define TYPEOF_bmath_matrix               3796445417
 #define TYPEOF_bmath_matrix_s             1909792099

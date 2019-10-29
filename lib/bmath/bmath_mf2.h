@@ -26,7 +26,7 @@
 #include "bmath_spect_algebraic.h"
 #include "bmath_vf2.h"
 #include "bmath_arr_vf2.h"
-#include "bmath_grt_f3.h"
+#include "bmath_grt_f2.h"
 
 /**********************************************************************************************************************/
 /// Matrix from template for fx == f2
@@ -52,10 +52,13 @@ BCORE_DECLARE_OBJECT( bmath_mf2_s )
 #define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_mfx_svd_h.h"
 
-/*
 #define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_mfx_h.h"
-*/
+
+/**********************************************************************************************************************/
+/// array of mf2_s
+
+BCORE_DECLARE_ARRAY_DYN_SOLID_STATIC( bmath_mf2_s, bmath_arr_mf2_s );
 
 /**********************************************************************************************************************/
 

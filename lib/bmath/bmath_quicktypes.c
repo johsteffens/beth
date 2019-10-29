@@ -51,8 +51,6 @@ static sr_s typelist()
     bcore_array_r_push_sc( &list, "bmath_mfx_eval_s"    );
     bcore_array_r_push_sc( &list, "bmath_mfx_eval_result_s" );
     bcore_array_r_push_sc( &list, "bmath_arr_mfx_eval_s");
-    bcore_array_r_push_sc( &list, "bmath_grt_f3_s"      );
-    bcore_array_r_push_sc( &list, "bmath_arr_grt_f3_s"  );
     bcore_array_r_push_sc( &list, "bmath_pmt_s"         );
     bcore_array_r_push_sc( &list, "bmath_estimator_s"   );
     bcore_array_r_push_sc( &list, "bmath_plot"          );
