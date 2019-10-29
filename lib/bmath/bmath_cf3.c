@@ -44,6 +44,12 @@ BCORE_DEFINE_OBJECT_FLAT( bmath_ring, bmath_cf3_s )
 
 void bmath_cf3_s_copy_typed( bmath_cf3_s* o, tp_t type, vc_t src )
 {
+    if( !src )
+    {
+        bmath_cf3_s_zro( o );
+        return;
+    }
+
     switch( type )
     {
         case TYPEOF_bmath_cf3_s: bmath_cf3_s_copy( o, src ); break;

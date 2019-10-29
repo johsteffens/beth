@@ -30,6 +30,7 @@
  *  dft: discrete fourier transform  (fft used when size is power of 2)
  *  ift: inverse dft
  *  pmt: permutation
+ *  tss: total sum of squares (also vector-norm)
  */
 
 /**********************************************************************************************************************/
@@ -101,6 +102,9 @@ fx_t BCATU(bmath_vfx_s,fdev)( const bmath_vfx_s* o, const bmath_vfx_s* op );
 
 /// vector is nan if at least one element is nan
 bl_t BCATU(bmath_vfx_s,is_nan)( const bmath_vfx_s* o );
+
+/// total sum of squares
+fx_t BCATU(bmath_vfx_s,tss)( const bmath_vfx_s* o );
 
 void BCATU(bmath_vfx_s,zro)( bmath_vfx_s* o );
 void BCATU(bmath_vfx_s,neg)( const bmath_vfx_s* o, bmath_vfx_s* res );

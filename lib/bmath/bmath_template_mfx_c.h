@@ -365,6 +365,19 @@ bl_t BCATU(bmath_mfx_s,is_nan)( const bmath_mfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+fx_t BCATU(bmath_mfx_s,tss)( const bmath_mfx_s* o )
+{
+    fx_t sum = 0;
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        const fx_t* v1 = o ->data + i * o ->stride;
+        for( uz_t j = 0; j < o->cols; j++ ) sum += BCATU(fx,sqr)( v1[ j ] );
+    }
+    return sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 fx_t BCATU(bmath_mfx_s,fdev_equ)( const bmath_mfx_s* o, const bmath_mfx_s* op )
 {
     ASSERT( o->rows == op->rows );

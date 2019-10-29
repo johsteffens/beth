@@ -217,6 +217,20 @@ fx_t BCATU(bmath,cfx,det)( bmath_cfx_s o )
     return BCATU(fx,sqr)( o.v[ 0 ] ) + BCATU(fx,sqr)( o.v[ 1 ] );
 }
 
+/// total sum of squares (same as det)
+static inline
+fx_t BCATU(bmath,cfx,tss)( bmath_cfx_s o )
+{
+    return BCATU(fx,sqr)( o.v[ 0 ] ) + BCATU(fx,sqr)( o.v[ 1 ] );
+}
+
+/// total sum of squares (same as det)
+static inline
+fx_t BCATU(bmath,cfx,s,tss)( const bmath_cfx_s* o )
+{
+    return BCATU(fx,sqr)( o->v[ 0 ] ) + BCATU(fx,sqr)( o->v[ 1 ] );
+}
+
 static inline
 void BCATU(bmath_cfx_s,inv)( const bmath_cfx_s* o, bmath_cfx_s* res )
 {

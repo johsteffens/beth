@@ -47,6 +47,7 @@
  *    trc: trace
  *    dag: diagonal
  *    det: determinant
+ *    tss: total sum of squares
  *    otn: orthonormal mxn marix (for m>n orthonormality applies to columns, otherwise to rows)
  *    uni: unitary ( == orthonormal square marix)
  *
@@ -222,6 +223,9 @@ static inline bl_t BCATU(bmath_mfx_s,is_lbd)( const bmath_mfx_s* o ) { return BC
 
 /// Matrix is nan if at least one element is nan
 bl_t BCATU(bmath_mfx_s,is_nan)( const bmath_mfx_s* o );
+
+/// total sum of squares
+fx_t BCATU(bmath_mfx_s,tss)( const bmath_mfx_s* o );
 
 //----------------------------------------------------------------------------------------------------------------------
 // Frobenius norm

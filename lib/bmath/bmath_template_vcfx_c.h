@@ -51,6 +51,30 @@ bl_t BCATU(bmath_vcfx_s,is_near_zro)( const bmath_vcfx_s* o, fx_t max_dev )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bl_t BCATU(bmath_vcfx_s,is_nan)( const bmath_vcfx_s* o )
+{
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        if( BCATU(fx,is_nan)( o->data[ i ].v[ 0 ] ) ) return true;
+        if( BCATU(fx,is_nan)( o->data[ i ].v[ 1 ] ) ) return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+fx_t BCATU(bmath_vcfx_s,tss)( const bmath_vcfx_s* o )
+{
+    fx_t sum = 0;
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        sum += BCATU(bmath_cfx_s,tss)( &o->data[ i ] );
+    }
+    return sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 fx_t BCATU(bmath_vcfx_s,fdev)( const bmath_vcfx_s* o, const bmath_vcfx_s* op )
 {
     ASSERT( o->size == op->size );

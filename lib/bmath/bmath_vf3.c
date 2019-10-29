@@ -43,6 +43,12 @@ BCORE_DEFINE_OBJECT_INST_AUT( bmath_vector, bmath_vf3_s )
 
 void bmath_vf3_s_copy_typed( bmath_vf3_s* o, tp_t type, vc_t src )
 {
+    if( !src )
+    {
+        bmath_vf3_s_clear( o );
+        return;
+    }
+
     switch( type )
     {
         case TYPEOF_bmath_vf3_s: bmath_vf3_s_copy( o, src ); break;

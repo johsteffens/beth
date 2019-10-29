@@ -30,6 +30,7 @@
  *  dft: discrete fourier transform  (fft used when size is power of 2)
  *  ift: inverse dft
  *  pmt: permutation
+ *  tss: total sum of squares (also vector-norm)
  */
 
 /**********************************************************************************************************************/
@@ -53,6 +54,9 @@ static inline bl_t BCATU(bmath_vcfx_s,is_zro)( const bmath_vcfx_s* o ) { return 
 
 /// Vector is nan if at least one element is nan
 bl_t BCATU(bmath_vcfx_s,is_nan)( const bmath_vcfx_s* o );
+
+/// total sum of squares
+fx_t BCATU(bmath_vcfx_s,tss)( const bmath_vcfx_s* o );
 
 /// Generalized frobenius norm (sqrt(sum over all components: sqr(difference))
 fx_t BCATU(bmath_vcfx_s,fdev)( const bmath_vcfx_s* o, const bmath_vcfx_s* op );

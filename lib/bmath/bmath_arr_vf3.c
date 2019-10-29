@@ -34,6 +34,12 @@ BCORE_DEFINE_OBJECT_INST( bcore_array, bmath_arr_vf3_s )
 
 void bmath_arr_vf3_s_copy_typed( bmath_arr_vf3_s* o, tp_t type, vc_t src )
 {
+    if( !src )
+    {
+        bmath_arr_vf3_s_clear( o );
+        return;
+    }
+
     switch( type )
     {
         case TYPEOF_bmath_arr_vf3_s: bmath_arr_vf3_s_copy( o, src ); break;

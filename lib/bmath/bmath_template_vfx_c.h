@@ -311,6 +311,15 @@ bl_t BCATU(bmath_vfx_s,is_nan)( const bmath_vfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+fx_t BCATU(bmath_vfx_s,tss)( const bmath_vfx_s* o )
+{
+    fx_t sum = 0;
+    for( uz_t i = 0; i < o->size; i++ ) sum += BCATU(fx,sqr)( o->data[ i ] );
+    return sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bmath_vfx_s* BCATU(bmath_vfx_s,create_set_size)( uz_t size )
 {
     bmath_vfx_s* o = BCATU(bmath_vfx_s,create)();
