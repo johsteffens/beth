@@ -33,7 +33,7 @@
 
 #if BMATH_TEMPLATE_FX_PREC == 2
     // TODO: find optimal value
-    #define BMATH_MUL_BLKPK_SIZE ( 4 )
+    #define BMATH_MUL_BLKPK_SIZE ( 8 )
 #elif BMATH_TEMPLATE_FX_PREC == 3
     #define BMATH_MUL_BLKPK_SIZE ( 8 )
 #endif // BMATH_TEMPLATE_FX_PREC

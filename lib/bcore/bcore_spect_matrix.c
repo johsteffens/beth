@@ -34,6 +34,8 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_matrix )
     "func bcore_spect_fp:create_from_self;"
 "}";
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static bcore_matrix_s* bcore_matrix_s_create_from_self( const bcore_self_s* self )
 {
     bcore_matrix_s* o = bcore_spect_create_from_self( bcore_flect_get_self( typeof( "bcore_matrix_s" ) ), self );
@@ -52,7 +54,23 @@ static bcore_matrix_s* bcore_matrix_s_create_from_self( const bcore_self_s* self
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_matrix_default_clear( const bcore_matrix_s* p, bcore_matrix* o )
+{
+    if( p->rows_fix > 0 ) ERR_fa( "Array has a fixed row-size of #<uz_t>"   , p->rows_fix );
+    if( p->cols_fix > 0 ) ERR_fa( "Array has a fixed column-size of #<uz_t>", p->cols_fix );
+    bcore_array_p_set_space( p->spect_array, (bcore_array*)o, 0 );
+    if( p->stride_off != ( uz_t )-1 ) *( uz_t* )BCORE_OFFSET( o, p->stride_off ) = 0;
+    if( p->cols_off   != ( uz_t )-1 ) *( uz_t* )BCORE_OFFSET( o, p->cols_off   ) = 0;
+    if( p->rows_off   != ( uz_t )-1 ) *( uz_t* )BCORE_OFFSET( o, p->rows_off   ) = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_matrix_default_set_size( const bcore_matrix_s* p, bcore_matrix* o, uz_t rows, uz_t cols )
 {
@@ -64,6 +82,8 @@ void bcore_matrix_default_set_size( const bcore_matrix_s* p, bcore_matrix* o, uz
     if( p->cols_off   != ( uz_t )-1 ) *( uz_t* )BCORE_OFFSET( o, p->cols_off   ) = cols;
     if( p->rows_off   != ( uz_t )-1 ) *( uz_t* )BCORE_OFFSET( o, p->rows_off   ) = rows;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // signal

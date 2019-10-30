@@ -86,6 +86,22 @@ static inline void BCATU(bmath_arr_vfx_s,copy_a)( bmath_arr_vfx_s* o, vc_t src )
     }
 }
 
+static inline bmath_arr_vfx_s* BCATU(bmath_arr_vfx_s,clone_t)( tp_t type, vc_t src )
+{
+    if( !src ) return NULL;
+    bmath_arr_vfx_s* o = BCATU(bmath_arr_vfx_s,create)();
+    BCATU(bmath_arr_vfx_s,copy_t)( o, type, src );
+    return o;
+}
+
+static inline bmath_arr_vfx_s* BCATU(bmath_arr_vfx_s,clone_a)( vc_t src )
+{
+    if( !src ) return NULL;
+    bmath_arr_vfx_s* o = BCATU(bmath_arr_vfx_s,create)();
+    BCATU(bmath_arr_vfx_s,copy_a)( o, src );
+    return o;
+}
+
 /**********************************************************************************************************************/
 
 #include "bmath_template_fx_end.h"

@@ -25,6 +25,8 @@
 
 #include "bmath_vf3.h"
 #include "bmath_mf3.h"
+#include "bmath_vf2.h"
+#include "bmath_mf2.h"
 
 /**********************************************************************************************************************/
 
@@ -38,7 +40,8 @@ BCORE_DECLARE_OBJECT( bmath_mfx_eval_s )
     u2_t seed;       // random seed
     f3_t density;    // random matrix density
     bl_t full;       // full vs thin decomposition (where applicable)
-    f3_t near_limit; // limit for near-assertions
+    f3_t near_limit_f2; // limit for near-assertions (f2_t)
+    f3_t near_limit_f3; // limit for near-assertions (f3_t)
     f3_t eps;        // for functions requiring an epsilon
 
     bl_t create_a_log; // log matrix a after conversion
@@ -60,6 +63,7 @@ BCORE_DECLARE_OBJECT( bmath_mfx_eval_s )
 BCORE_DECLARE_OBJECT( bmath_mfx_eval_result_s )
 {
     aware_t _;
+    st_s label;    // test label
     tp_t fp_type;
     sz_t rows;
     sz_t cols;
@@ -97,6 +101,14 @@ void bmath_mfx_eval_s_run(           const bmath_mfx_eval_s* o, tp_t fp_type, fp
 void bmath_mfx_eval_s_run_to_log(    const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, st_s* log );
 void bmath_mfx_eval_s_run_to_stdout( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp  );
 
+void bmath_mfx_eval_s_label_run(           const bmath_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp, bmath_mfx_eval_result_s* res ); // res can be NULL
+void bmath_mfx_eval_s_label_run_to_log(    const bmath_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp, st_s* log );
+void bmath_mfx_eval_s_label_run_to_stdout( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp  );
+
+#define BMATH_MFX_EVAL_S_RUN(           o, bmath_fp_name, fp ) bmath_mfx_eval_s_label_run(           o, #fp, TYPEOF_bmath_fp_##bmath_fp_name, (fp_t)fp )
+#define BMATH_MFX_EVAL_S_RUN_TO_LOG(    o, bmath_fp_name, fp ) bmath_mfx_eval_s_label_run_to_log(    o, #fp, TYPEOF_bmath_fp_##bmath_fp_name, (fp_t)fp )
+#define BMATH_MFX_EVAL_S_RUN_TO_STDOUT( o, bmath_fp_name, fp ) bmath_mfx_eval_s_label_run_to_stdout( o, #fp, TYPEOF_bmath_fp_##bmath_fp_name, (fp_t)fp )
+
 /**********************************************************************************************************************/
 
 BCORE_DECLARE_OBJECT( bmath_arr_mfx_eval_s )
@@ -118,6 +130,14 @@ static inline void bmath_arr_mfx_eval_s_push( bmath_arr_mfx_eval_s* o, const bma
 void bmath_arr_mfx_eval_s_run(           const bmath_arr_mfx_eval_s* o, tp_t fp_type, fp_t fp ); // no logging
 void bmath_arr_mfx_eval_s_run_to_log(    const bmath_arr_mfx_eval_s* o, tp_t fp_type, fp_t fp, st_s* log ); // using fp instead of o->fp
 void bmath_arr_mfx_eval_s_run_to_stdout( const bmath_arr_mfx_eval_s* o, tp_t fp_type, fp_t fp );
+
+void bmath_arr_mfx_eval_s_label_run(           const bmath_arr_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp ); // no logging
+void bmath_arr_mfx_eval_s_label_run_to_log(    const bmath_arr_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp, st_s* log ); // using fp instead of o->fp
+void bmath_arr_mfx_eval_s_label_run_to_stdout( const bmath_arr_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp );
+
+#define BMATH_ARR_MFX_EVAL_S_RUN(           o, bmath_fp_name, fp ) bmath_arr_mfx_eval_s_label_run(           o, #fp, TYPEOF_bmath_fp_##bmath_fp_name, (fp_t)fp )
+#define BMATH_ARR_MFX_EVAL_S_RUN_TO_LOG(    o, bmath_fp_name, fp ) bmath_arr_mfx_eval_s_label_run_to_log(    o, #fp, TYPEOF_bmath_fp_##bmath_fp_name, (fp_t)fp )
+#define BMATH_ARR_MFX_EVAL_S_RUN_TO_STDOUT( o, bmath_fp_name, fp ) bmath_arr_mfx_eval_s_label_run_to_stdout( o, #fp, TYPEOF_bmath_fp_##bmath_fp_name, (fp_t)fp )
 
 /**********************************************************************************************************************/
 

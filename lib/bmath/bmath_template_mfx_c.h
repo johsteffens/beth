@@ -25,6 +25,13 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void BCATU(bmath_mfx_s,clear)( bmath_mfx_s* o )
+{
+    bcore_matrix_a_clear( ( bcore_matrix* )o );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
 {
     bcore_matrix_a_set_size( ( bcore_matrix* )o, rows, cols );
@@ -2623,6 +2630,8 @@ void BCATU(bmath_mfx_s,to_image)( const bmath_mfx_s* o, bmath_fp_u2_argb_from_fx
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// Convolution
 
@@ -2644,6 +2653,51 @@ void BCATU(bmath_mfx_s,to_conv_operand)( bmath_mfx_s* o, sz_t kernel_size, sz_t 
     o->cols   = kernel_size;
     o->rows   = conv_steps;
 }
+
+/**********************************************************************************************************************/
+// type conversion
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void BCATU(bmath_mfx_s,copy_typed)( bmath_mfx_s* o, tp_t type, vc_t src )
+{
+    if( !src )
+    {
+        BCATU(bmath_mfx_s,clear)( o );
+        return;
+    }
+
+    switch( type )
+    {
+        case TYPEOF_bmath_mfx_s:
+        {
+            BCATU(bmath_mfx_s,copy)( o, src );
+        }
+        break;
+
+        case TYPEOF_bmath_mfy_s:
+        {
+            const bmath_mfy_s* v = src;
+            BCATU(bmath_mfx_s,set_size)( o, v->rows, v->cols );
+            for( sz_t i = 0; i < o->rows; i++ )
+            {
+                const fy_t* v_fy = &v->data[ v->stride * i ];
+                      fx_t* o_fx = &o->data[ o->stride * i ];
+                for( sz_t j = 0; j < o->cols; j++ ) o_fx[ j ] = v_fy[ j ];
+            }
+            BFOR_EACH( i, o ) o->data[ i ] = v->data[ i ];
+        }
+        break;
+
+        default:
+        {
+            bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) );
+        }
+        break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 

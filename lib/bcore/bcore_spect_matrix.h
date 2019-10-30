@@ -86,6 +86,7 @@ void bcore_matrix_default_set_cell( const bcore_matrix_s* p, bcore_matrix* o, uz
     bcore_array_p_set( p->spect_array, (bcore_array*)o, bcore_matrix_default_get_index( p, o, i, j ), src );
 }
 
+BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_matrix, clear               )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_rows,      uz_t )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_cols,      uz_t )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_stride,    uz_t )

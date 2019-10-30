@@ -300,16 +300,12 @@ static inline void BCATU(bmath_cfx_s,copy_t)( bmath_cfx_s* o, tp_t type, vc_t sr
     BCATU(bmath_cfx_s,copy_typed)( o, type, src );
 }
 
-static inline void BCATU(bmath_cfx_s,copy_a)( bmath_cfx_s* o, vc_t src )
+static inline bmath_cfx_s* BCATU(bmath_cfx_s,clone_t)( tp_t type, vc_t src )
 {
-    if( src )
-    {
-        BCATU(bmath_cfx_s,copy_t)( o, *(aware_t*)src, src );
-    }
-    else
-    {
-        BCATU(bmath_cfx_s,zro)( o );
-    }
+    if( !src ) return NULL;
+    bmath_cfx_s* o = BCATU(bmath_cfx_s,create)();
+    BCATU(bmath_cfx_s,copy_t)( o, type, src );
+    return o;
 }
 
 /**********************************************************************************************************************/

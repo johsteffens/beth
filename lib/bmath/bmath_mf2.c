@@ -16,6 +16,7 @@
 #include <stdio.h>
 
 #include "bmath_mf2.h"
+#include "bmath_mf3.h"
 #include "bmath_spect_matrix.h"
 #include "bmath_fourier_f2.h"
 #include "bmath_spect_vector.h"

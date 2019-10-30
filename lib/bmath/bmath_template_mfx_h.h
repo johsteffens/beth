@@ -131,6 +131,7 @@ typedef bl_t (*BCATU(bmath_fp,mfx,s,hsm_piv))( const bmath_mfx_s* o, fx_t eps, b
 /**********************************************************************************************************************/
 /// Matrix object of fx_t (bmath_mfx_s)
 
+void BCATU(bmath_mfx_s,clear)(    bmath_mfx_s* o );
 void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
 
 /** Sets all matrix elements to random values.
@@ -645,6 +646,44 @@ void BCATU(bmath_mfx_s,to_image)( const bmath_mfx_s* o, bmath_fp_u2_argb_from_fx
 
 static inline void BCATU(bmath_mfx_s,to_string)( const bmath_mfx_s* o, st_s* string ) { BCATU(bmath_mfx_s,to_sink)( o, ( bcore_sink* )string ); }
 static inline void BCATU(bmath_mfx_s,to_stdout)( const bmath_mfx_s* o ) { BCATU(bmath_mfx_s,to_sink)( o, BCORE_STDOUT ); }
+
+/**********************************************************************************************************************/
+// type conversion
+
+void BCATU(bmath_mfx_s,copy_typed)( bmath_mfx_s* o, tp_t type, vc_t src );
+
+static inline void BCATU(bmath_mfx_s,copy_t)( bmath_mfx_s* o, tp_t type, vc_t src )
+{
+    BCATU(bmath_mfx_s,copy_typed)( o, type, src );
+}
+
+static inline void BCATU(bmath_mfx_s,copy_a)( bmath_mfx_s* o, vc_t src )
+{
+    if( src )
+    {
+        BCATU(bmath_mfx_s,copy_t)( o, *(aware_t*)src, src );
+    }
+    else
+    {
+        BCATU(bmath_mfx_s,clear)( o );
+    }
+}
+
+static inline bmath_mfx_s* BCATU(bmath_mfx_s,clone_t)( tp_t type, vc_t src )
+{
+    if( !src ) return NULL;
+    bmath_mfx_s* o = BCATU(bmath_mfx_s,create)();
+    BCATU(bmath_mfx_s,copy_t)( o, type, src );
+    return o;
+}
+
+static inline bmath_mfx_s* BCATU(bmath_mfx_s,clone_a)( vc_t src )
+{
+    if( !src ) return NULL;
+    bmath_mfx_s* o = BCATU(bmath_mfx_s,create)();
+    BCATU(bmath_mfx_s,copy_a)( o, src );
+    return o;
+}
 
 /**********************************************************************************************************************/
 

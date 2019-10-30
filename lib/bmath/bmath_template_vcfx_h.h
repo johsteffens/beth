@@ -140,6 +140,22 @@ static inline void BCATU(bmath_vcfx_s,copy_a)( bmath_vcfx_s* o, vc_t src )
     }
 }
 
+static inline bmath_vcfx_s* BCATU(bmath_vcfx_s,clone_t)( tp_t type, vc_t src )
+{
+    if( !src ) return NULL;
+    bmath_vcfx_s* o = BCATU(bmath_vcfx_s,create)();
+    BCATU(bmath_vcfx_s,copy_t)( o, type, src );
+    return o;
+}
+
+static inline bmath_vcfx_s* BCATU(bmath_vcfx_s,clone_a)( vc_t src )
+{
+    if( !src ) return NULL;
+    bmath_vcfx_s* o = BCATU(bmath_vcfx_s,create)();
+    BCATU(bmath_vcfx_s,copy_a)( o, src );
+    return o;
+}
+
 /**********************************************************************************************************************/
 
 #include "bmath_template_fx_end.h"
