@@ -32,10 +32,9 @@
 // we use macros instead of const sz_t because we need them to be const expressions for best compiler optimizations
 
 #if BMATH_TEMPLATE_FX_PREC == 2
-    // TODO: find optimal value
-    #define BMATH_MUL_BLKPK_SIZE ( 8 )
+    #define BMATH_MUL_BLKPK_SIZE ( 8 ) // Value is optimal on Gen 8 Core i7
 #elif BMATH_TEMPLATE_FX_PREC == 3
-    #define BMATH_MUL_BLKPK_SIZE ( 8 )
+    #define BMATH_MUL_BLKPK_SIZE ( 8 ) // Value is optimal on Gen 8 Core i7
 #endif // BMATH_TEMPLATE_FX_PREC
 
 #define BMATH_MUL_BLOCK_SIZE ( BMATH_MUL_BLKPK_SIZE * P5_SIZE )

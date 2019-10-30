@@ -88,14 +88,19 @@ static void bmath_mfx_eval_result_s_set_defaults_from_eval( bmath_mfx_eval_resul
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bmath_mfx_eval_s_create_image_file( const bmath_mfx_eval_s* v, const bmath_mf3_s* mat, const st_s* file )
+static void bmath_mfx_eval_s_create_image_file( const bmath_mfx_eval_s* v, vc_t mat, const st_s* file )
 {
     if( file->size > 0 )
     {
         bcore_msg_fa( "creating '#<sc_t>'\n", file->sc );
         BLM_INIT();
         bcore_img_u2_s* img = BLM_CREATE( bcore_img_u2_s );
-        bmath_mf3_s_to_image( mat, bmath_u2_argb_from_f3, NULL, img );
+        switch( *(aware_t*)mat )
+        {
+            case TYPEOF_bmath_mf3_s: bmath_mf3_s_to_image( mat, bmath_u2_argb_from_f3, NULL, img ); break;
+            case TYPEOF_bmath_mf2_s: bmath_mf2_s_to_image( mat, bmath_u2_argb_from_f2, NULL, img ); break;
+            default: ERR_fa( "Invalid matrix." );
+        }
         bcore_img_u2_s_pnm_to_file( img, file->sc );
         BLM_DOWN();
     }
@@ -587,7 +592,131 @@ void bmath_mfx_eval_s_run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mfx_eval_s_run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_eval_result_s* res )
+void bmath_mfx_eval_s_run_uav_f2( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_eval_result_s* res )
+{
+    ASSERT( fp != NULL );
+    ASSERT( fp_type != 0 );
+
+    BLM_INIT();
+    BCORE_LIFE_CREATE( bmath_mf2_s, m0 );
+    BCORE_LIFE_CREATE( bmath_mf2_s, u );
+    BCORE_LIFE_CREATE( bmath_mf2_s, a );
+    BCORE_LIFE_CREATE( bmath_mf2_s, v );
+    BCORE_LIFE_CREATE( bmath_mf2_s, m2 );
+    BCORE_LIFE_CREATE( bmath_mfx_eval_result_s, r );
+    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    r->fp_type = fp_type;
+
+    sz_t m = o->rows;
+    sz_t n = o->cols;
+
+    bmath_mf2_s_set_size( m0, m, n );
+    bmath_mf2_s_set_size( a,  m, n );
+    u2_t rval = o->seed;
+    bmath_mf2_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
+    bmath_mf2_s_set_size( u, m, o->full ? m : uz_min( m, n ) );
+    bmath_mf2_s_set_size( v, n, o->full ? n : uz_min( m, n ) );
+
+    bmath_mf2_s_zro( a );
+    bmath_mf2_s_zro( u );
+    bmath_mf2_s_zro( v );
+
+    if( fp_type == TYPEOF_bmath_fp_mf2_s_uav )
+    {
+        if( o->test0 )
+        {
+            bmath_mf2_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf2_s_uav )fp )( NULL, a, NULL ), r->time0 );
+        }
+
+        if( o->test1 )
+        {
+            bmath_mf2_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf2_s_uav )fp )( u, a, v ), r->time1 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_mf2_s_svd )
+    {
+        if( o->test0 )
+        {
+            bmath_mf2_s_cpy( m0, a );
+            CPU_TIME_OF( r->success0 = ( ( bmath_fp_mf2_s_svd )fp )( NULL, a, NULL ), r->time0 );
+            r->assert_a = bmath_mf2_s_is_dag( a );
+        }
+
+        if( o->test1 )
+        {
+            bmath_mf2_s_cpy( m0, a );
+            CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_svd )fp )( u, a, v ), r->time1 );
+            r->assert_a = r->assert_a && bmath_mf2_s_is_dag( a );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_mf2_s_ubd )
+    {
+        if( o->test0 )
+        {
+            bmath_mf2_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf2_s_ubd )fp )( NULL, a, NULL ), r->time0 );
+            r->assert_a = bmath_mf2_s_is_ubd( a );
+        }
+
+        if( o->test1 )
+        {
+            bmath_mf2_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf2_s_ubd )fp )( u, a, v ), r->time1 );
+            r->assert_a = r->assert_a && bmath_mf2_s_is_ubd( a );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_mf2_s_lbd )
+    {
+        if( o->test0 )
+        {
+            bmath_mf2_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf2_s_lbd )fp )( NULL, a, NULL ), r->time0 );
+            r->assert_a = bmath_mf2_s_is_lbd( a );
+        }
+
+        if( o->test1 )
+        {
+            bmath_mf2_s_cpy( m0, a );
+            CPU_TIME_OF( ( ( bmath_fp_mf2_s_lbd )fp )( u, a, v ), r->time1 );
+            r->assert_a = r->assert_a && bmath_mf2_s_is_lbd( a );
+        }
+    }
+    else
+    {
+        ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
+    }
+
+    if( o->create_a_log ) bmath_mf2_s_to_string( a, &r->a_log );
+    bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
+
+    if( o->test1 )
+    {
+        r->fdev_u = bmath_mf2_s_fdev_otn( u );
+        r->fdev_v = bmath_mf2_s_fdev_otn( v );
+        if( o->create_u_log ) bmath_mf2_s_to_string( u, &r->u_log );
+        if( o->create_v_log ) bmath_mf2_s_to_string( v, &r->v_log );
+        bmath_mfx_eval_s_create_image_file( o, u, &o->u_img_file );
+        bmath_mfx_eval_s_create_image_file( o, v, &o->v_img_file );
+        r->assert_u = bmath_mf2_s_is_near_otn( u, o->near_limit_f2 );
+        r->assert_v = bmath_mf2_s_is_near_otn( v, o->near_limit_f2 );
+
+        bmath_mf2_s_set_size( m2, u->rows, v->rows );
+        bmath_mf2_s_mul_utv_htp_esp( u, a, v, m2 );
+
+        r->assert_m = bmath_mf2_s_is_near_equ( m0, m2, o->near_limit_f2 );
+        r->fdev_m   = bmath_mf2_s_fdev_equ( m0, m2 );
+    }
+
+    if( res ) bmath_mfx_eval_result_s_copy( res, r );
+
+    BLM_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_mfx_eval_s_run_uav_f3( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_eval_result_s* res )
 {
     ASSERT( fp != NULL );
     ASSERT( fp_type != 0 );
@@ -1460,14 +1589,20 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
         case TYPEOF_bmath_fp_mf2_s_htp_mul_htp :
         case TYPEOF_bmath_fp_mf3_s_htp_mul_htp : bmath_mfx_eval_s_run_htp_mul_htp( o, fp_type, fp, r ); break;
 
-        case TYPEOF_bmath_fp_mf3_s_uav         : bmath_mfx_eval_s_run_uav(         o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf2_s_uav         : bmath_mfx_eval_s_run_uav_f2(      o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf2_s_svd         : bmath_mfx_eval_s_run_uav_f2(      o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf2_s_ubd         : bmath_mfx_eval_s_run_uav_f2(      o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf2_s_lbd         : bmath_mfx_eval_s_run_uav_f2(      o, fp_type, fp, r ); break;
+
+        case TYPEOF_bmath_fp_mf3_s_uav         : bmath_mfx_eval_s_run_uav_f3(      o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_svd         : bmath_mfx_eval_s_run_uav_f3(      o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_ubd         : bmath_mfx_eval_s_run_uav_f3(      o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_lbd         : bmath_mfx_eval_s_run_uav_f3(      o, fp_type, fp, r ); break;
+
         case TYPEOF_bmath_fp_mf3_s_ua          : bmath_mfx_eval_s_run_ua(          o, fp_type, fp, r ); break;
         case TYPEOF_bmath_fp_mf3_s_av          : bmath_mfx_eval_s_run_av(          o, fp_type, fp, r ); break;
         case TYPEOF_bmath_fp_mf3_s_uau         : bmath_mfx_eval_s_run_sym_uau_htp( o, fp_type, fp, r ); break;
         case TYPEOF_bmath_fp_mf3_s_vav         : bmath_mfx_eval_s_run_sym_uau_htp( o, fp_type, fp, r ); break;
-        case TYPEOF_bmath_fp_mf3_s_svd         : bmath_mfx_eval_s_run_uav(         o, fp_type, fp, r ); break;
-        case TYPEOF_bmath_fp_mf3_s_ubd         : bmath_mfx_eval_s_run_uav(         o, fp_type, fp, r ); break;
-        case TYPEOF_bmath_fp_mf3_s_lbd         : bmath_mfx_eval_s_run_uav(         o, fp_type, fp, r ); break;
         case TYPEOF_bmath_fp_mf3_s_qrd         : bmath_mfx_eval_s_run_ua(          o, fp_type, fp, r ); break;
         case TYPEOF_bmath_fp_mf3_s_qrd_pmt     : bmath_mfx_eval_s_run_ua(          o, fp_type, fp, r ); break;
         case TYPEOF_bmath_fp_mf3_s_lqd         : bmath_mfx_eval_s_run_av(          o, fp_type, fp, r ); break;
