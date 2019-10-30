@@ -42,34 +42,6 @@ BCORE_DEFINE_OBJECT_INST( bmath_vector, bmath_vcf2_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_vcf2_s_copy_typed( bmath_vcf2_s* o, tp_t type, vc_t src )
-{
-    if( !src )
-    {
-        bmath_vcf2_s_clear( o );
-        return;
-    }
-
-    switch( type )
-    {
-        case TYPEOF_bmath_vcf2_s: bmath_vcf2_s_copy( o, src ); break;
-        case TYPEOF_bmath_vcf3_s:
-        {
-            const bmath_vcf3_s* v = src;
-            bmath_vcf2_s_set_size( o, v->size );
-            BFOR_EACH( i, o )
-            {
-                o->data[ i ].v[ 0 ] = v->data[ i ].v[ 0 ];
-                o->data[ i ].v[ 1 ] = v->data[ i ].v[ 1 ];
-            }
-        }
-        break;
-        default: bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) ); break;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /**********************************************************************************************************************/
 
 vd_t bmath_vcf2_signal_handler( const bcore_signal_s* o )

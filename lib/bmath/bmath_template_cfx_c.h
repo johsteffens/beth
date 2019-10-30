@@ -39,6 +39,45 @@ void BCATU(bmath_cfx_s,to_stdout)( const bmath_cfx_s* o )
 
 /**********************************************************************************************************************/
 
+/**********************************************************************************************************************/
+// type conversion
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void BCATU(bmath_cfx_s,copy_typed)( bmath_cfx_s* o, tp_t type, vc_t src )
+{
+    if( !src )
+    {
+        BCATU(bmath_cfx_s,zro)( o );
+        return;
+    }
+
+    switch( type )
+    {
+        case BCATU(TYPEOF,bmath_cfx_s):
+        {
+            BCATU(bmath_cfx_s,copy)( o, src );
+        }
+        break;
+
+        case BCATU(TYPEOF,bmath_cfy_s):
+        {
+            const bmath_cfy_s* v = src;
+            o->v[ 0 ] = v->v[ 0 ];
+            o->v[ 1 ] = v->v[ 1 ];
+        }
+        break;
+
+        default:
+        {
+            bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) );
+        }
+        break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static vd_t selftest( void )
 {
     bmath_cfx_s c1 = { .v[0] = 1, .v[1] = 2 };

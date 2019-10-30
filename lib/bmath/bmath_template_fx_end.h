@@ -22,25 +22,42 @@
 
 // infix
 #undef fx
+#undef fy
 #undef vfx
+#undef vfy
 #undef vcfx
+#undef vcfy
 #undef mfx
+#undef mfy
 
 // objects
 #undef fx_t
+#undef fy_t
 #undef bmath_fp_u2_argb_from_fx
+#undef bmath_fp_u2_argb_from_fy
 #undef bmath_vfx_s
+#undef bmath_vfy_s
 #undef bmath_cfx_s
+#undef bmath_cfy_s
 #undef bmath_vcfx_s
+#undef bmath_vcfy_s
 #undef bmath_arr_vfx_s
+#undef bmath_arr_vfy_s
 #undef bmath_grt_fx_s
+#undef bmath_grt_fy_s
 #undef bmath_arr_grt_fx_s
+#undef bmath_arr_grt_fy_s
 #undef bmath_mfx_s
+#undef bmath_mfy_s
 
 #undef TYPEOF_bmath_vfx_s
+#undef TYPEOF_bmath_vfy_s
 #undef TYPEOF_bmath_cfx_s
+#undef TYPEOF_bmath_cfy_s
 #undef TYPEOF_bmath_vcfx_s
+#undef TYPEOF_bmath_vcfy_s
 #undef TYPEOF_bmath_mfx_s
+#undef TYPEOF_bmath_mfy_s
 
 // AVX related
 #undef P5_SIZE

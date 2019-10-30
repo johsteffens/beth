@@ -24,33 +24,52 @@
 
 #if BMATH_TEMPLATE_FX_PREC == 2
     #define fx f2
+    #define fy f3
 #elif BMATH_TEMPLATE_FX_PREC == 3
     #define fx f3
+    #define fy f2
 #else
     #error "Macro BMATH_TEMPLATE_FX_PREC has wrong value! (Only '2' or '3' are supported)"
 #endif // BMATH_TEMPLATE_FX_PREC
 
 // infix
 #define vfx  BCAT(v,fx)
+#define vfy  BCAT(v,fy)
 #define cfx  BCAT(c,fx)
+#define cfy  BCAT(c,fy)
 #define vcfx BCAT(vc,fx)
+#define vcfy BCAT(vc,fy)
 #define mfx  BCAT(m,fx)
+#define mfy  BCAT(m,fy)
 
 // objects
 #define fx_t                     BCATU(fx,t)
+#define fy_t                     BCATU(fy,t)
 #define bmath_fp_u2_argb_from_fx BCATU(bmath_fp_u2_argb_from,fx)
+#define bmath_fp_u2_argb_from_fy BCATU(bmath_fp_u2_argb_from,fy)
 #define bmath_vfx_s              BCATU(bmath,vfx,s)
+#define bmath_vfy_s              BCATU(bmath,vfy,s)
 #define bmath_cfx_s              BCATU(bmath,cfx,s)
+#define bmath_cfy_s              BCATU(bmath,cfy,s)
 #define bmath_vcfx_s             BCATU(bmath,vcfx,s)
+#define bmath_vcfy_s             BCATU(bmath,vcfy,s)
 #define bmath_arr_vfx_s          BCATU(bmath_arr,vfx,s)
+#define bmath_arr_vfy_s          BCATU(bmath_arr,vfy,s)
 #define bmath_grt_fx_s           BCATU(bmath_grt,fx,s)
+#define bmath_grt_fy_s           BCATU(bmath_grt,fy,s)
 #define bmath_arr_grt_fx_s       BCATU(bmath_arr_grt,fx,s)
+#define bmath_arr_grt_fy_s       BCATU(bmath_arr_grt,fy,s)
 #define bmath_mfx_s              BCATU(bmath,mfx,s)
+#define bmath_mfy_s              BCATU(bmath,mfy,s)
 
 #define TYPEOF_bmath_vfx_s       BCATU(TYPEOF,bmath,vfx,s)
+#define TYPEOF_bmath_vfy_s       BCATU(TYPEOF,bmath,vfy,s)
 #define TYPEOF_bmath_cfx_s       BCATU(TYPEOF,bmath,cfx,s)
+#define TYPEOF_bmath_cfy_s       BCATU(TYPEOF,bmath,cfy,s)
 #define TYPEOF_bmath_vcfx_s      BCATU(TYPEOF,bmath,vcfx,s)
+#define TYPEOF_bmath_vcfy_s      BCATU(TYPEOF,bmath,vcfy,s)
 #define TYPEOF_bmath_mfx_s       BCATU(TYPEOF,bmath,mfx,s)
+#define TYPEOF_bmath_mfy_s       BCATU(TYPEOF,bmath,mfy,s)
 
 /**********************************************************************************************************************/
 // AVX related macros

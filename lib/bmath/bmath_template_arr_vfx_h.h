@@ -65,6 +65,28 @@ static inline void BCATU(bmath_arr_vfx_s,on_section_get_sum)( const bmath_arr_vf
 static inline void BCATU(bmath_arr_vfx_s,on_section_get_avg)( const bmath_arr_vfx_s* o, uz_t start, uz_t end, bmath_vfx_s* res ) { BCATU(bmath_arr_vfx_s,on_section_get_avg_sprc)( o, start, end, res ); }
 
 /**********************************************************************************************************************/
+// type conversion
+
+void BCATU(bmath_arr_vfx_s,copy_typed)( bmath_arr_vfx_s* o, tp_t type, vc_t src );
+
+static inline void BCATU(bmath_arr_vfx_s,copy_t)( bmath_arr_vfx_s* o, tp_t type, vc_t src )
+{
+    BCATU(bmath_arr_vfx_s,copy_typed)( o, type, src );
+}
+
+static inline void BCATU(bmath_arr_vfx_s,copy_a)( bmath_arr_vfx_s* o, vc_t src )
+{
+    if( src )
+    {
+        BCATU(bmath_arr_vfx_s,copy_t)( o, *(aware_t*)src, src );
+    }
+    else
+    {
+        BCATU(bmath_arr_vfx_s,clear)( o );
+    }
+}
+
+/**********************************************************************************************************************/
 
 #include "bmath_template_fx_end.h"
 

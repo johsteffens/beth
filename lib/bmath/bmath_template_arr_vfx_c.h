@@ -327,6 +327,45 @@ void BCATU(bmath_arr_vfx_s,on_section_get_avg_fast)( const bmath_arr_vfx_s* o, u
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+// type conversion
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void BCATU(bmath_arr_vfx_s,copy_typed)( bmath_arr_vfx_s* o, tp_t type, vc_t src )
+{
+    if( !src )
+    {
+        BCATU(bmath_arr_vfx_s,clear)( o );
+        return;
+    }
+
+    switch( type )
+    {
+        case BCATU(TYPEOF,bmath_arr_vfx_s):
+        {
+            BCATU(bmath_arr_vfx_s,copy)( o, src );
+        }
+        break;
+
+        case BCATU(TYPEOF,bmath_arr_vfy_s):
+        {
+            const bmath_arr_vfy_s* v = src;
+            BCATU(bmath_arr_vfx_s,set_size)( o, v->size );
+            BFOR_EACH( i, o ) BCATU(bmath_vfx_s,copy_a)( &o->data[ i ], &v->data[ i ] );
+        }
+        break;
+
+        default:
+        {
+            bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) );
+        }
+        break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 

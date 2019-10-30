@@ -291,6 +291,28 @@ bl_t BCATU(bmath,cfx,equ)( bmath_cfx_s o, bmath_cfx_s op1 )
 void BCATU(bmath_cfx_s,to_stdout)( const bmath_cfx_s* o );
 
 /**********************************************************************************************************************/
+// type conversion
+
+void BCATU(bmath_cfx_s,copy_typed)( bmath_cfx_s* o, tp_t type, vc_t src );
+
+static inline void BCATU(bmath_cfx_s,copy_t)( bmath_cfx_s* o, tp_t type, vc_t src )
+{
+    BCATU(bmath_cfx_s,copy_typed)( o, type, src );
+}
+
+static inline void BCATU(bmath_cfx_s,copy_a)( bmath_cfx_s* o, vc_t src )
+{
+    if( src )
+    {
+        BCATU(bmath_cfx_s,copy_t)( o, *(aware_t*)src, src );
+    }
+    else
+    {
+        BCATU(bmath_cfx_s,zro)( o );
+    }
+}
+
+/**********************************************************************************************************************/
 
 #include "bmath_template_fx_end.h"
 

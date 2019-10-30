@@ -42,30 +42,6 @@ BCORE_DEFINE_OBJECT_FLAT( bmath_ring, bmath_cf3_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_cf3_s_copy_typed( bmath_cf3_s* o, tp_t type, vc_t src )
-{
-    if( !src )
-    {
-        bmath_cf3_s_zro( o );
-        return;
-    }
-
-    switch( type )
-    {
-        case TYPEOF_bmath_cf3_s: bmath_cf3_s_copy( o, src ); break;
-        case TYPEOF_bmath_cf2_s:
-        {
-            const bmath_cf2_s* v = src;
-            o->v[ 0 ] = v->v[ 0 ];
-            o->v[ 1 ] = v->v[ 1 ];
-        }
-        break;
-        default: bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) ); break;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /**********************************************************************************************************************/
 
 vd_t bmath_cf3_signal_handler( const bcore_signal_s* o )

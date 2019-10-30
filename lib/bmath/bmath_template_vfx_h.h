@@ -195,6 +195,28 @@ static inline void BCATU(bmath_vfx_s,stat_to_string)( const bmath_vfx_s* o, st_s
 static inline void BCATU(bmath_vfx_s,stat_to_stdout)( const bmath_vfx_s* o               ) { BCATU(bmath_vfx_s,stat_to_sink)( o, BCORE_STDOUT ); }
 
 /**********************************************************************************************************************/
+// type conversion
+
+void BCATU(bmath_vfx_s,copy_typed)( bmath_vfx_s* o, tp_t type, vc_t src );
+
+static inline void BCATU(bmath_vfx_s,copy_t)( bmath_vfx_s* o, tp_t type, vc_t src )
+{
+    BCATU(bmath_vfx_s,copy_typed)( o, type, src );
+}
+
+static inline void BCATU(bmath_vfx_s,copy_a)( bmath_vfx_s* o, vc_t src )
+{
+    if( src )
+    {
+        BCATU(bmath_vfx_s,copy_t)( o, *(aware_t*)src, src );
+    }
+    else
+    {
+        BCATU(bmath_vfx_s,clear)( o );
+    }
+}
+
+/**********************************************************************************************************************/
 // backward compatibility
 
 #if BMATH_TEMPLATE_FX_PREC == 3

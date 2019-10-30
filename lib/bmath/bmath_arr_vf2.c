@@ -32,30 +32,6 @@ BCORE_DEFINE_OBJECT_INST( bcore_array, bmath_arr_vf2_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_arr_vf2_s_copy_typed( bmath_arr_vf2_s* o, tp_t type, vc_t src )
-{
-    if( !src )
-    {
-        bmath_arr_vf2_s_clear( o );
-        return;
-    }
-
-    switch( type )
-    {
-        case TYPEOF_bmath_arr_vf2_s: bmath_arr_vf2_s_copy( o, src ); break;
-        case TYPEOF_bmath_arr_vf3_s:
-        {
-            const bmath_arr_vf3_s* v = src;
-            bmath_arr_vf2_s_set_size( o, v->size );
-            BFOR_EACH( i, o ) bmath_vf2_s_copy_a( &o->data[ i ], &v->data[ i ] );
-        }
-        break;
-        default: bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) ); break;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /**********************************************************************************************************************/
 
 vd_t bmath_arr_vf2_signal_handler( const bcore_signal_s* o )

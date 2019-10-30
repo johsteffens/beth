@@ -178,6 +178,21 @@ void bmath_mfx_eval_s_run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp,
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
     }
+    else if( fp_type == TYPEOF_bmath_fp_mf2_s_mul )
+    {
+        /*
+        if( o->test1 )
+        {
+            CPU_TIME_OF( ( ( bmath_fp_mf3_s_mul )fp )( m0, m1, m2 ), r->time1 );
+            bmath_mf3_s_mul_esp( m0, m1, m3 );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+        */
+    }
     else
     {
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
