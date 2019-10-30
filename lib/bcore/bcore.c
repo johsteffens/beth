@@ -129,7 +129,7 @@ void bcore_down( bl_t verbose )
     {
         bcore_msg( "\nBeth global system's memory usage (bytes):\n");
         uz_t space = bcore_tbman_total_granted_space();
-        bcore_msg( "Total ................. % 6zu\n", space );
+        bcore_msg( "Total ................. % 7zu\n", space );
     }
 
     bcore_signal_handler( &signal_down0 );

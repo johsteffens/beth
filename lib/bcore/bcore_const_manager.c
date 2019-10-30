@@ -261,7 +261,7 @@ vd_t bcore_const_manager_signal_handler( const bcore_signal_s* o )
                 bcore_hmap_tp_sr_s_discard( hmap_st_g );
                 bcore_mutex_s_discard( mutex_st_g );
                 space -= bcore_tbman_total_granted_space();
-                bcore_msg( "  const manager ....... % 6zu (by % 4zu constants    )\n", space, count );
+                bcore_msg( "  const manager ....... % 7zu (by % 4zu constants    )\n", space, count );
             }
             else
             {

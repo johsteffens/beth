@@ -292,7 +292,7 @@ vd_t bcore_name_manager_signal_handler( const bcore_signal_s* o )
                 uz_t space = bcore_tbman_total_granted_space();
                 name_manager_close();
                 space -= bcore_tbman_total_granted_space();
-                bcore_msg( "  name mananger ....... % 6zu (by % 4zu names        )\n", space, count );
+                bcore_msg( "  name mananger ....... % 7zu (by % 4zu names        )\n", space, count );
             }
             else
             {

@@ -1254,7 +1254,7 @@ st_s* bcore_arr_uz_selftest( void )
             bcore_arr_uz_s_push( sz_arr1, rval );
         }
         time = clock() - time;
-        st_s_pushf( log, "bcore_arr_uz_s_push ........ %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_arr_uz_s_push } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     const bcore_array_s* array_p = bcore_array_s_get_typed( TYPEOF_bcore_arr_uz_s );
@@ -1269,7 +1269,7 @@ st_s* bcore_arr_uz_selftest( void )
             bcore_array_p_push( array_p, (bcore_array*)sz_arr2, sr_pwc( u2_t_p, &rval ) );
         }
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_p_push ..... %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_array_p_push } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     ASSERT( bcore_compare_aware( sz_arr1, sz_arr2 ) == 0 );
@@ -1278,14 +1278,14 @@ st_s* bcore_arr_uz_selftest( void )
         clock_t time = clock();
         bcore_arr_uz_s_sort( sz_arr1, 1 );
         time = clock() - time;
-        st_s_pushf( log, "bcore_arr_uz_s_sort ........ %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_arr_uz_s_sort } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
         clock_t time = clock();
         bcore_array_a_sort( (bcore_array*)sz_arr2, 0, -1, 1 );
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_a_sort ..... %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_array_a_sort } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     bcore_arr_uz_s* permutation = bcore_arr_uz_s_create_random_permutation( bcore_xsg2_u2, 1, size );
@@ -1294,14 +1294,14 @@ st_s* bcore_arr_uz_selftest( void )
         clock_t time = clock();
         bcore_arr_uz_s_reorder( sz_arr1, permutation );
         time = clock() - time;
-        st_s_pushf( log, "bcore_arr_uz_s_reorder ..... %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_arr_uz_s_reorder } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
         clock_t time = clock();
         bcore_array_a_reorder( (bcore_array*)sz_arr2, permutation );
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_a_reorder .. %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_array_a_reorder } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     ASSERT( bcore_compare_aware( sz_arr1, sz_arr2 ) == 0 );
@@ -1336,7 +1336,7 @@ st_s* bcore_arr_st_selftest( void )
             bcore_arr_st_s_push_st_d( st_arr1, st_s_createf( "%u", rval ) );
         }
         time = clock() - time;
-        st_s_pushf( log, "bcore_arr_st_s_push_st_d ... %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_arr_st_s_push_st_d } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
@@ -1348,21 +1348,21 @@ st_s* bcore_arr_st_selftest( void )
             bcore_array_a_push( (bcore_array*)st_arr2, sr_asd( st_s_createf( "%u", rval ) ) );
         }
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_a_push ..... %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_array_a_push } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
         clock_t time = clock();
         bcore_arr_st_s_sort( st_arr1, 1 );
         time = clock() - time;
-        st_s_pushf( log, "bcore_arr_st_s_sort ........ %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_arr_st_s_sort } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
         clock_t time = clock();
         bcore_array_a_sort( (bcore_array*)st_arr2, 0, -1, 1 );
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_a_sort ..... %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_array_a_sort } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     bcore_arr_uz_s* permutation = bcore_arr_uz_s_create_random_permutation( bcore_xsg2_u2, 1, size );
@@ -1371,14 +1371,14 @@ st_s* bcore_arr_st_selftest( void )
         clock_t time = clock();
         bcore_arr_st_s_reorder( st_arr1, permutation );
         time = clock() - time;
-        st_s_pushf( log, "bcore_arr_st_s_reorder ..... %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_arr_st_s_reorder } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     {
         clock_t time = clock();
         bcore_array_a_reorder( (bcore_array*)st_arr2, permutation );
         time = clock() - time;
-        st_s_pushf( log, "bcore_array_a_reorder .. %zuns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
+        st_s_push_fa( log, "#p28.{bcore_array_a_reorder } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
     }
 
     ASSERT( bcore_compare_aware( st_arr1, st_arr2 ) == 0 );

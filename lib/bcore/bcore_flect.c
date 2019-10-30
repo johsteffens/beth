@@ -2432,7 +2432,7 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
                 flect_close();
                 space -= bcore_tbman_total_granted_space();
 
-                bcore_msg( "  reflection mananger . % 6zu (by % 4zu reflections  )\n", space, count );
+                bcore_msg( "  reflection mananger . % 7zu (by % 4zu reflections  )\n", space, count );
             }
             else
             {
