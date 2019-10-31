@@ -70,27 +70,20 @@ void BCATU(bmath_simd,fx,row_rotate_default)( fx_t* v1, fx_t* v2, sz_t size, con
     }
 }
 
-#if (defined BMATH_AVX) && (BMATH_TEMPLATE_FX_PREC == 3)
+#if (defined BMATH_AVX)
 
 void BCATU(bmath_simd,fx,row_rotate_avx)( fx_t* v1, fx_t* v2, sz_t size, const bmath_grt_fx_s* grt )
 {
-    __m256d s_p4 = { grt->s, grt->s, grt->s, grt->s };
-    __m256d c_p4 = { grt->c, grt->c, grt->c, grt->c };
+    M5_T s_pk = M5_SET_ALL( grt->s );
+    M5_T c_pk = M5_SET_ALL( grt->c );
 
     sz_t i;
-    for( i = 0; i <= size - 4; i += 4 )
+    for( i = 0; i <= size - P5_SIZE; i += P5_SIZE )
     {
-        __m256d a_p4 = _mm256_loadu_pd( v1 + i );
-        __m256d b_p4 = _mm256_loadu_pd( v2 + i );
-
-#ifdef BMATH_AVX2_FMA
-        _mm256_storeu_pd( v1 + i, _mm256_fmadd_pd( a_p4, c_p4, _mm256_mul_pd( b_p4, s_p4 ) ) );
-        _mm256_storeu_pd( v2 + i, _mm256_fmsub_pd( b_p4, c_p4, _mm256_mul_pd( a_p4, s_p4 ) ) );
-#else
-        _mm256_storeu_pd( v1 + i, _mm256_add_pd( _mm256_mul_pd( a_p4, c_p4 ), _mm256_mul_pd( b_p4, s_p4 ) ) );
-        _mm256_storeu_pd( v2 + i, _mm256_sub_pd( _mm256_mul_pd( b_p4, c_p4 ), _mm256_mul_pd( a_p4, s_p4 ) ) );
-#endif // BMATH_AVX2_FMA
-
+        M5_T a_pk = M5_LOAD( v1 + i );
+        M5_T b_pk = M5_LOAD( v2 + i );
+        M5_STOR( v1 + i, M5_MUL_ADD( a_pk, c_pk, M5_MUL( b_pk, s_pk ) ) );
+        M5_STOR( v2 + i, M5_MUL_SUB( b_pk, c_pk, M5_MUL( a_pk, s_pk ) ) );
     }
 
     for( ; i < size; i++ )
@@ -105,7 +98,7 @@ void BCATU(bmath_simd,fx,row_rotate_avx)( fx_t* v1, fx_t* v2, sz_t size, const b
 
 void BCATU(bmath_simd,fx,row_rotate)( fx_t* v1, fx_t* v2, sz_t size, const bmath_grt_fx_s* grt )
 {
-#if (defined BMATH_AVX) && (BMATH_TEMPLATE_FX_PREC == 3)
+#if (defined BMATH_AVX)
     BCATU(bmath_simd,fx,row_rotate_avx)( v1, v2, size, grt );
 #else
     BCATU(bmath_simd,fx,row_rotate_default)( v1, v2, size, grt );
@@ -127,28 +120,28 @@ void BCATU(bmath_simd,fx,col_rotate_default)( fx_t* v1, fx_t* v2, sz_t stride, s
 //----------------------------------------------------------------------------------------------------------------------
 
 #if (defined BMATH_AVX) && (BMATH_TEMPLATE_FX_PREC == 3)
-
+/// AVX improves insignificantly due to memory latency
 void BCATU(bmath_simd,fx,col_rotate_avx)( fx_t* v1, fx_t* v2, sz_t stride, sz_t size, const bmath_grt_fx_s* grt )
 {
-    __m256d s_p4 = { grt->s, grt->s, grt->s, grt->s };
-    __m256d c_p4 = { grt->c, grt->c, grt->c, grt->c };
+    M5_T s_pk = { grt->s, grt->s, grt->s, grt->s };
+    M5_T c_pk = { grt->c, grt->c, grt->c, grt->c };
 
     sz_t i;
     for( i = 0; i <= size - 4; i += 4 )
     {
-        __m256d a1_p4 = { v1[ ( i + 0 ) * stride ], v1[ ( i + 1 ) * stride ], v1[ ( i + 2 ) * stride ], v1[ ( i + 3 ) * stride ] };
-        __m256d b1_p4 = { v2[ ( i + 0 ) * stride ], v2[ ( i + 1 ) * stride ], v2[ ( i + 2 ) * stride ], v2[ ( i + 3 ) * stride ] };
-        __m256d a2_p4 = _mm256_add_pd( _mm256_mul_pd( a1_p4, c_p4 ), _mm256_mul_pd( b1_p4, s_p4 ) );
-        __m256d b2_p4 = _mm256_sub_pd( _mm256_mul_pd( b1_p4, c_p4 ), _mm256_mul_pd( a1_p4, s_p4 ) );
-        v1[ ( i + 0 ) * stride ] = a2_p4[ 0 ];
-        v1[ ( i + 1 ) * stride ] = a2_p4[ 1 ];
-        v1[ ( i + 2 ) * stride ] = a2_p4[ 2 ];
-        v1[ ( i + 3 ) * stride ] = a2_p4[ 3 ];
+        M5_T a1_pk = { v1[ ( i + 0 ) * stride ], v1[ ( i + 1 ) * stride ], v1[ ( i + 2 ) * stride ], v1[ ( i + 3 ) * stride ] };
+        M5_T b1_pk = { v2[ ( i + 0 ) * stride ], v2[ ( i + 1 ) * stride ], v2[ ( i + 2 ) * stride ], v2[ ( i + 3 ) * stride ] };
+        M5_T a2_pk = M5_MUL_ADD( a1_pk, c_pk, M5_MUL( b1_pk, s_pk ) );
+        M5_T b2_pk = M5_MUL_SUB( b1_pk, c_pk, M5_MUL( a1_pk, s_pk ) );
+        v1[ ( i + 0 ) * stride ] = a2_pk[ 0 ];
+        v1[ ( i + 1 ) * stride ] = a2_pk[ 1 ];
+        v1[ ( i + 2 ) * stride ] = a2_pk[ 2 ];
+        v1[ ( i + 3 ) * stride ] = a2_pk[ 3 ];
 
-        v2[ ( i + 0 ) * stride ] = b2_p4[ 0 ];
-        v2[ ( i + 1 ) * stride ] = b2_p4[ 1 ];
-        v2[ ( i + 2 ) * stride ] = b2_p4[ 2 ];
-        v2[ ( i + 3 ) * stride ] = b2_p4[ 3 ];
+        v2[ ( i + 0 ) * stride ] = b2_pk[ 0 ];
+        v2[ ( i + 1 ) * stride ] = b2_pk[ 1 ];
+        v2[ ( i + 2 ) * stride ] = b2_pk[ 2 ];
+        v2[ ( i + 3 ) * stride ] = b2_pk[ 3 ];
     }
 
     for( ; i < size; i++ )

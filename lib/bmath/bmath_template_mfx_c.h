@@ -1654,12 +1654,14 @@ bl_t BCATU(bmath_mfx_s,ltr_inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
     return success;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t BCATU(bmath_mfx_s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
     ASSERT( BCATU(bmath_mfx_s,is_hsm)( o ) );
     bl_t success = BCATU(bmath_mfx_s,decompose_cholesky)( o, res ); // res = ltr
     success = success & BCATU(bmath_mfx_s,ltr_inv_htp)( res, res ); // res = utr
-    BCATU(bmath_mfx_s,utr_mul_htp)( res, res );      // res = oI
+    BCATU(bmath_mfx_s,utr_mul_htp)( res, res );      // res = o^-1
     return success;
 }
 
@@ -2685,7 +2687,6 @@ void BCATU(bmath_mfx_s,copy_typed)( bmath_mfx_s* o, tp_t type, vc_t src )
                       fx_t* o_fx = &o->data[ o->stride * i ];
                 for( sz_t j = 0; j < o->cols; j++ ) o_fx[ j ] = v_fy[ j ];
             }
-            BFOR_EACH( i, o ) o->data[ i ] = v->data[ i ];
         }
         break;
 
