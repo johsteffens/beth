@@ -29,7 +29,7 @@
 #define BCORE_VA_ARGC( ... ) BCORE_VA_ARGC_( __VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1 )
 #define BCORE_VA_ARGC_( a1, a2, a3, a4, a5, a6, a7, a8, argc, ... ) argc
 
-/// Returns the first argument is a variadic list (discards rest)
+/// Returns the first argument in a variadic list (discards rest)
 #define BCORE_VA_HEAD( ... ) BCORE_VA_HEAD_( __VA_ARGS__ )
 #define BCORE_VA_HEAD_( a1, ... ) a1
 
@@ -46,6 +46,7 @@
 #define BCORE_CATF_6( f, ... ) BCORE_CATF_2( f, BCORE_VA_HEAD( __VA_ARGS__ ), BCORE_CATF_5( f, BCORE_VA_TAIL( __VA_ARGS__ ) ) )
 #define BCORE_CATF_7( f, ... ) BCORE_CATF_2( f, BCORE_VA_HEAD( __VA_ARGS__ ), BCORE_CATF_6( f, BCORE_VA_TAIL( __VA_ARGS__ ) ) )
 #define BCORE_CATF_8( f, ... ) BCORE_CATF_2( f, BCORE_VA_HEAD( __VA_ARGS__ ), BCORE_CATF_7( f, BCORE_VA_TAIL( __VA_ARGS__ ) ) )
+// If case more arguments are needed: check/extend BCORE_VA_ARGC, then extend this list canonically
 
 #define BCORE_CAT_2( a1, a2 ) BCORE_CAT_2_( a1, a2 )
 #define BCORE_CAT_2_( a1, a2 ) a1##a2
@@ -59,7 +60,7 @@
 /// Evaluates and concatenates a flexible amount of (max 8) arguments
 #define BCAT( ... ) BCATF( , __VA_ARGS__ )
 
-/// Evaluates and concatenates an flexible amount of (max 8) arguments with '_' between
+/// Evaluates and concatenates a flexible amount of (max 8) arguments inserting '_' between
 #define BCATU( ... ) BCATF( _, __VA_ARGS__ )
 
 // ---------------------------------------------------------------------------------------------------------------------
