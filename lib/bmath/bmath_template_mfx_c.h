@@ -1608,36 +1608,6 @@ bl_t BCATU(bmath_mfx_s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* r
 
     BCATU(bmath_vfx_s,discard)( inv_diag );
     return success;
-
-
-//    // Algorithm works in-place: No need to check for o == res;
-//    ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
-//    ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, res ) );
-//
-//    bl_t success = true;
-//
-//    for( uz_t i = 0; i < o->rows; i++ )
-//    {
-//              fx_t* vli = res->data + i * res->stride;
-//        const fx_t* voi =   o->data + i * o->stride;
-//        for( uz_t j = 0; j <= i; j++ )
-//        {
-//            fx_t* vlj = res->data + j * res->stride;
-//            fx_t acc = voi[ j ];
-//            for( uz_t k = 0; k < j; k++ ) acc -= vli[ k ] * vlj[ k ];
-//            if( i == j )
-//            {
-//                if( acc <= BCATU(fx,lim_min) ) success = false;
-//                vli[ j ] = ( acc > 0 ) ? sqrt( acc ) : 0;
-//            }
-//            else
-//            {
-//                vli[ j ] = ( vlj[ j ] != 0 ) ? acc / vlj[ j ] : 0;
-//                vlj[ i ] = 0; // upper triangle element
-//            }
-//        }
-//    }
-//    return success;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1694,37 +1664,31 @@ bl_t BCATU(bmath_mfx_s,ltr_inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
     ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
     ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, res ) );
 
-    uz_t n = o->rows;
+    BCATU(bmath_mfx_s,cpy)( o, res );
+
+    uz_t n = res->rows;
 
     bl_t success = true;
 
-    // diagonal elements
-    for( uz_t i = 0; i < n; i++ )
+    // inverting diagonal elements
+    for( sz_t i = 0; i < n; i++ )
     {
-        fx_t v = o->data[ i * o->stride + i ];
-        if( BCATU(fx,abs)( v ) < BCATU(fx,lim_min) ) success = false;
-        res->data[ i * res->stride + i ] = ( v != 0 ) ? 1.0 / v : 0;
+        fx_t* v = res->data + i * ( res->stride + 1 );
+        if( BCATU(fx,abs)( *v ) < BCATU(fx,lim_min) ) success = false;
+        *v = ( *v != 0 ) ? 1.0 / *v : 0;
     }
 
     // upper off-diagonal elements
-    for( uz_t i = 0; i < n; i++ )
+    // TODO: work out a solution with a read-write stream (rather than read-read-accu stream)
+    for( sz_t i = 0; i < n; i++ )
     {
-        fx_t* vri = res->data + i * res->stride;
-        for( uz_t j = i + 1; j < n; j++ )
+        fx_t* vi = res->data + i * res->stride;
+        for( sz_t j = i + 1; j < n; j++ )
         {
-            const fx_t* voj =   o->data + j *   o->stride;
-                  fx_t* vrj = res->data + j * res->stride;
-
-            vri[ j ] = -vrj[ j ] * BCATU(bmath,fx,t_vec,mul_vec)( voj + i, vri + i, j - i );
-            vrj[ i ] = 0;
+            fx_t* vj = res->data + j * res->stride;
+            vi[ j ] = -vj[ j ] * BCATU(bmath,fx,t_vec,mul_vec)( vj + i, vi + i, j - i );
+            vj[ i ] = 0;
         }
-    }
-
-    // zero lower off-diagonal elements; (this part must be kept to last for the in-place algorithm)
-    for( uz_t i = 0; i < n; i++ )
-    {
-        fx_t* vri = res->data + i * res->stride;
-        for( uz_t j = 0; j < i; j++ ) vri[ j ] = 0;
     }
 
     return success;
