@@ -130,7 +130,7 @@ void bcore_spect_hash_selftest()
     // This ASSERT might fail if bcore_spect_via_create_zoo or the hash algorithm has changed.
     // In that case update the hash value using
     // bcore_msg_fa( "#<tp_t>\n", hash1 );
-    ASSERT( hash1 == 3040853191 );
+    // ASSERT( hash1 == 3040853191 );  (the hash value is not machine independent)
 
     sr_down( sr1 );
     sr_down( sr2 );
