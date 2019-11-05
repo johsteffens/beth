@@ -390,10 +390,9 @@ fx_t BCATU(bmath_mfx_s,get_fx)( const bmath_mfx_s* o, uz_t row, uz_t col )
 /// Triangular decompositions, operations and solvers
 
 /** Cholesky decomposition. Returns succcess.
- *  Succeeds when o is positive definite.
+ *  Requires o to be positive definite.
  *  If false is returned res is lower triangular but not a valid cholesky decomposition of o.
- *  Only the lower triangle of o is evaluated.
- *  res: represents the lower-triangular version
+ *  res: represents the lower-triangular version (upper triangle is set to zero)
  *  It is o = res * resT.
  */
 bl_t BCATU(bmath_mfx_s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* res );

@@ -1548,28 +1548,96 @@ bl_t BCATU(bmath_mfx_s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* r
 
     bl_t success = true;
 
-    for( uz_t i = 0; i < o->rows; i++ )
+    sz_t n = o->rows;
+
+    bmath_vfx_s* inv_diag = BCATU(bmath_vfx_s,create)();
+    BCATU(bmath_vfx_s,set_size)( inv_diag, n );
+
+    fx_t* q = inv_diag->data;
+
+    BCATU(bmath_mfx_s,cpy)( o, res );
+
+    /* This implementation actively uses the upper triangle of res.
+     * It allows a more cache efficient data progression in innermost loops.
+     */
+    for( sz_t i = 0; i < n; i++ )
     {
-              fx_t* vli = res->data + i * res->stride;
-        const fx_t* voi =   o->data + i * o->stride;
-        for( uz_t j = 0; j <= i; j++ )
+        fx_t* vi = res->data + i * res->stride;
+        for( sz_t j = 0; j < i; j++ )
         {
-            fx_t* vlj = res->data + j * res->stride;
-            fx_t acc = voi[ j ];
-            for( uz_t k = 0; k < j; k++ ) acc -= vli[ k ] * vlj[ k ];
-            if( i == j )
-            {
-                if( acc <= BCATU(fx,lim_min) ) success = false;
-                vli[ j ] = ( acc > 0 ) ? sqrt( acc ) : 0;
-            }
-            else
-            {
-                vli[ j ] = ( vlj[ j ] != 0 ) ? acc / vlj[ j ] : 0;
-                vlj[ i ] = 0; // upper triangle element
-            }
+            fx_t* vj = res->data + j * res->stride;
+            vi[ j ] *= q[ j ];
+            vj[ i ] = vi[ j ]; // we keep res symmetric
+            f3_t f = -vi[ j ];
+
+            #ifdef BMATH_AVX
+                M5_T f_pk = M5_SET_ALL( f );
+                sz_t k = j + 1;
+                for( ; k <= i - P5_SIZE; k += P5_SIZE ) M5_STOR( vi + k, M5_MUL_ADD( f_pk, M5_LOAD( vj + k ), M5_LOAD( vi + k ) ) );
+                for( ; k < i; k++ ) vi[ k ] += f * vj[ k ];
+            #else
+                for( sz_t k = j + 1; k < i; k++ ) vi[ k ] += f * vj[ k ];
+            #endif // BMATH_AVX
+        }
+
+        for( sz_t j = 0; j < i; j++ ) vi[ i ] -= BCATU(fx,sqr)( vi[ j ] );
+
+        if( vi[ i ] <= BCATU(fx,lim_min) )
+        {
+            success = false;
+            vi[ i ] = 0;
+            q [ i ] = 0;
+        }
+        else
+        {
+            vi[ i ] = sqrt( vi[ i ] );
+            q [ i ] = ( 1.0 / vi[ i ] );
         }
     }
+
+    /* Zeroing upper triangle.
+     * This guarantees the equality: o = res * res^T.
+     * Typical use cases do not require that equality.
+     * Since the footprint is negligible, we do it anyway.
+     */
+    for( sz_t i = 0; i < n; i++ )
+    {
+        fx_t* vi = res->data + i * res->stride;
+        for( sz_t j = i + 1; j < n; j++ ) vi[ j ] = 0;
+    }
+
+    BCATU(bmath_vfx_s,discard)( inv_diag );
     return success;
+
+
+//    // Algorithm works in-place: No need to check for o == res;
+//    ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
+//    ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, res ) );
+//
+//    bl_t success = true;
+//
+//    for( uz_t i = 0; i < o->rows; i++ )
+//    {
+//              fx_t* vli = res->data + i * res->stride;
+//        const fx_t* voi =   o->data + i * o->stride;
+//        for( uz_t j = 0; j <= i; j++ )
+//        {
+//            fx_t* vlj = res->data + j * res->stride;
+//            fx_t acc = voi[ j ];
+//            for( uz_t k = 0; k < j; k++ ) acc -= vli[ k ] * vlj[ k ];
+//            if( i == j )
+//            {
+//                if( acc <= BCATU(fx,lim_min) ) success = false;
+//                vli[ j ] = ( acc > 0 ) ? sqrt( acc ) : 0;
+//            }
+//            else
+//            {
+//                vli[ j ] = ( vlj[ j ] != 0 ) ? acc / vlj[ j ] : 0;
+//                vlj[ i ] = 0; // upper triangle element
+//            }
+//        }
+//    }
+//    return success;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
