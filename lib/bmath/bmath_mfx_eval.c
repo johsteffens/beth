@@ -1689,7 +1689,6 @@ static void run_pdf_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         bmath_mf2_s_copy_a( _m0, m0 );
         bmath_mf2_s_copy_a( _a,   a );
         CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_pdf_inv )fp )( _m0, _a ), r->time1 );
-        bmath_mf3_s_copy_a( m0, _m0 );
         bmath_mf3_s_copy_a(  a, _a );
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_pdf_inv )
@@ -1753,7 +1752,6 @@ static void run_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             bmath_mf2_s_copy_a( _m0, m0 );
             bmath_mf2_s_copy_a( _a,   a );
             CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_piv )fp )( _m0, o->eps, _a ), r->time1 );
-            bmath_mf3_s_copy_a( m0, _m0 );
             bmath_mf3_s_copy_a(  a, _a );
         }
         else if( fp_type == TYPEOF_bmath_fp_mf3_s_piv )
@@ -1797,7 +1795,6 @@ static void run_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             bmath_mf2_s_copy_a( _m0, m0 );
             bmath_mf2_s_copy_a( _a,   a );
             CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_piv )fp )( _m0, o->eps, _a ), r->time1 );
-            bmath_mf3_s_copy_a( m0, _m0 );
             bmath_mf3_s_copy_a(  a, _a );
         }
         else if( fp_type == TYPEOF_bmath_fp_mf3_s_piv )
@@ -1872,7 +1869,6 @@ static void run_hsm_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         bmath_mf2_s_copy_a( _m0, m0 );
         bmath_mf2_s_copy_a( _a,   a );
         CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_hsm_piv )fp )( _m0, o->eps, _a ), r->time1 );
-        bmath_mf3_s_copy_a( m0, _m0 );
         bmath_mf3_s_copy_a(  a, _a );
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_hsm_piv )
