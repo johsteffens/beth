@@ -1559,6 +1559,8 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
     fx_t c = 0.5;
     fx_t e = 0.3;
 
+    fx_t max_dev = sizeof( fx_t ) == 4 ? 1E-5 : 1E-10;
+
     // a * b
     {
         BCATU(bmath_mfx_s,set_size)(  a, m1, n  );
@@ -1576,7 +1578,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
         BCATU(bmath_mfx_s,mul_scl_fx)( ab, c, ab );
         BCATU(bmath_mfx_s,mul_scl_fx)( d,  e, r2 );
         BCATU(bmath_mfx_s,add)( ab, r2, r2 );
-        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, max_dev ) );
     }
 
     // a^T * b
@@ -1596,7 +1598,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
         BCATU(bmath_mfx_s,mul_scl_fx)( ab, c, ab );
         BCATU(bmath_mfx_s,mul_scl_fx)( d,  e, r2 );
         BCATU(bmath_mfx_s,add)( ab, r2, r2 );
-        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, max_dev ) );
     }
 
     // a * b^T
@@ -1616,7 +1618,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
         BCATU(bmath_mfx_s,mul_scl_fx)( ab, c, ab );
         BCATU(bmath_mfx_s,mul_scl_fx)( d,  e, r2 );
         BCATU(bmath_mfx_s,add)( ab, r2, r2 );
-        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, max_dev ) );
     }
 
     // a^T * b^T
@@ -1636,7 +1638,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
         BCATU(bmath_mfx_s,mul_scl_fx)( ab, c, ab );
         BCATU(bmath_mfx_s,mul_scl_fx)( d,  e, r2 );
         BCATU(bmath_mfx_s,add)( ab, r2, r2 );
-        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, max_dev ) );
     }
 
     // a^T * a
@@ -1650,7 +1652,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
         BCATU(bmath_mfx_s,mul_add_cps)( true, a, false, a, c, NULL, e, r1 );
         BCATU(bmath_mfx_s,htp_mul_esp)( a, a, r2 );
         BCATU(bmath_mfx_s,mul_scl_fx)( r2, c, r2 );
-        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, max_dev ) );
     }
 
     // a * a^T
@@ -1664,7 +1666,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
         BCATU(bmath_mfx_s,mul_add_cps)( false, a, true, a, c, NULL, e, r1 );
         BCATU(bmath_mfx_s,mul_htp_esp)( a, a, r2 );
         BCATU(bmath_mfx_s,mul_scl_fx)( r2, c, r2 );
-        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, 1E-10 ) );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( r1, r2, max_dev ) );
     }
 
     BLM_DOWN();
