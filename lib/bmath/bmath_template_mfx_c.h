@@ -1576,37 +1576,45 @@ bl_t BCATU(bmath_mfx_s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* r
 
 bl_t BCATU(bmath_mfx_s,decompose_luc)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
-    // Algorithm works in-place: No need to check for o == res;
+    // o == res is allowed
     ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
     ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, res ) );
-    uz_t n = o->cols;
-    uz_t stride = res->stride;
+    sz_t n = o->cols;
+    sz_t stride = res->stride;
     bl_t success = true;
 
     BCATU(bmath_mfx_s,cpy)( o, res );
-    for( uz_t i = 0; i < n; i++ )
+
+    bmath_vfx_s* inv_diag = BCATU(bmath_vfx_s,create)();
+    BCATU(bmath_vfx_s,set_size)( inv_diag, res->rows );
+
+    fx_t* q = inv_diag->data;
+
+    for( sz_t i = 0; i < n; i++ )
     {
         fx_t* vi = res->data + i * stride;
-        for( uz_t j = 0; j < i; j++ )
+
+        for( sz_t j = 0; j < i; j++ )
         {
-            fx_t* vj = res->data + j;
-            fx_t sum = 0;
-            for( uz_t k = 0; k < j; k++ ) sum += vi[ k ] * vj[ k * stride ];
-
-            fx_t denom = vj[ j * stride ];
-            if( BCATU(fx,abs)( denom ) <= BCATU(fx,lim_min) ) success = false;
-
-            vi[ j ] = ( denom != 0 ) ? ( ( vi[ j ] - sum ) / denom ) : 0;
+            fx_t* vj = res->data + j * stride;
+            for( sz_t k = j + 1; k < n; k++ ) vi[ k ] -= vi[ j ] * q[ j ] * vj[ k ];
         }
 
-        for( uz_t j = i; j < n; j++ )
+        for( sz_t j = 0; j < i; j++ ) vi[ j ] *= q[ j ];
+
+        fx_t denom = vi[ i ];
+        if( BCATU(fx,abs)( denom ) <= BCATU(fx,lim_min) )
         {
-            fx_t* vj = res->data + j;
-            fx_t sum = 0;
-            for( uz_t k = 0; k < i; k++ ) sum += vi[ k ] * vj[ k * stride ];
-            vi[ j ] -= sum;
+            success = false;
+            q[ i ] = 0;
+        }
+        else
+        {
+            q[ i ] = 1.0 / denom;
         }
     }
+
+    BCATU(bmath_vfx_s,discard)( inv_diag );
     return success;
 }
 
@@ -2761,11 +2769,11 @@ static vd_t selftest( void )
 
     // multi-kernel convolution
     {
-        sz_t operand_size = 10000;
+        sz_t operand_size = 1000;
 
-        sz_t kernel_size  = 1000;
+        sz_t kernel_size  = 100;
         sz_t step_size    = 2;
-        sz_t kernels      = 100;
+        sz_t kernels      = 10;
 
         // operand: initially single-row matrix of operand_size
         BCATU(bmath_mfx_s,set_size)( m1, 1, operand_size );
@@ -2796,11 +2804,16 @@ static vd_t selftest( void )
         {
             for( sz_t i = 0; i < m3->cols; i++ )
             {
-                ASSERT( BCATU(bmath_mfx_s,get_fx)( m3, j, i ) == ( ( ( kernel_size ) * ( kernel_size - 1 ) / 2 ) + kernel_size * j * step_size ) * ( i + 1 ) );
+                fx_t diff = BCATU(bmath_mfx_s,get_fx)( m3, j, i ) - ( ( ( kernel_size ) * ( kernel_size - 1 ) / 2 ) + kernel_size * j * step_size ) * ( i + 1 );
+                //bcore_msg_fa( "#<"BSTR( fx_t )">\n", diff );
+                ASSERT( diff == 0 );
             }
         }
 
     }
+
+    fx_t max_dev = sizeof( fx_t ) == 4 ? 1E-4 : 1E-8;
+    fx_t epsilon = sizeof( fx_t ) == 4 ? 1E-5 : 1E-8;
 
     // lower triangular inversion
     {
@@ -2812,7 +2825,7 @@ static vd_t selftest( void )
         BCATU(bmath_mfx_s,set_size)( m3, 3, 3 );
         BCATU(bmath_mfx_s,ltr_inv_htp)( m1, m2 );
         BCATU(bmath_mfx_s,mul_htp)( m1, m2, m3 );
-        ASSERT( BCATU(bmath_mfx_s,is_near_one)( m3, 1E-10 ) );
+        ASSERT( BCATU(bmath_mfx_s,is_near_one)( m3, max_dev ) );
     }
 
     // A * AT
@@ -2823,7 +2836,7 @@ static vd_t selftest( void )
         BCATU(bmath_mfx_s,set_size_to)( m1, m2 );
         BCATU(bmath_mfx_s,set_random)( m1, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,mul_htp)( m1, m1, m2 );
-        ASSERT( BCATU(bmath_mfx_s,is_near_hsm)( m2, 1E-8 ) );
+        ASSERT( BCATU(bmath_mfx_s,is_near_hsm)( m2, max_dev ) );
     }
 
 
@@ -2842,7 +2855,7 @@ static vd_t selftest( void )
 
         BCATU(bmath_mfx_s,set_covariance_on_section_fast)( m1, a1, 0, -1 );
         BCATU(bmath_mfx_s,set_covariance_on_section_sprc)( m2, a1, 0, -1 );
-        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( m1, m2, 1E-8 ) );
+        ASSERT( BCATU(bmath_mfx_s,is_near_equ)( m1, m2, max_dev ) );
         ASSERT( BCATU(fx,abs)( BCATU(bmath_mfx_s,fx_trc)( m1 ) - n * 0.3333 ) < 1E-1 ); // trace should be near n/3
 
         fx_t sqr_norm = 4.0;
@@ -2853,7 +2866,7 @@ static vd_t selftest( void )
         BCATU(bmath_arr,vfx,s,on_section_set_sum)( a1, 0, -1, 0 ); // set sum of vector components to 0 (introducing a linear dependence)
         BCATU(bmath_mfx_s,set_covariance_on_section_fast)( m1, a1, 0, -1 );
         BCATU(bmath_mfx_s,evd_htp)( m1, NULL );
-        ASSERT( BCATU(fx,abs)( BCATU(bmath_mfx_s,get_fx)( m1, n - 1, n - 1 ) ) < 1E-8 ); // last eigenvalue should be near zero
+        ASSERT( BCATU(fx,abs)( BCATU(bmath_mfx_s,get_fx)( m1, n - 1, n - 1 ) ) < max_dev ); // last eigenvalue should be near zero
     }
 
     // affine-transformation
@@ -2873,7 +2886,7 @@ static vd_t selftest( void )
         BCATU(bmath_mfx_s,inv_av1)( m1, m2 );
         BCATU(bmath_mfx_s,mul_av1)( m2, v2, v3 );
 
-        ASSERT( BCATU(bmath_vfx_s,is_near_equ)( v1, v3, 1E-8 ) );
+        ASSERT( BCATU(bmath_vfx_s,is_near_equ)( v1, v3, max_dev ) );
     }
 
     // hsm-affine-transformation
@@ -2897,7 +2910,7 @@ static vd_t selftest( void )
         BCATU(bmath_mfx_s,pdf_inv_av1)( m1, m2 );
         BCATU(bmath_mfx_s,mul_av1)( m2, v2, v3 );
 
-        ASSERT( BCATU(bmath_vfx_s,is_near_equ)( v1, v3, 1E-8 ) );
+        ASSERT( BCATU(bmath_vfx_s,is_near_equ)( v1, v3, max_dev ) );
     }
 
     // hsm-affine-transformation (test via piv)
@@ -2918,10 +2931,10 @@ static vd_t selftest( void )
         BCATU(bmath_vfx_s,set_random)( v1, 1.0, -1, 1, &rval );
 
         BCATU(bmath_mfx_s,mul_av1)( m1, v1, v2 );
-        BCATU(bmath_mfx_s,hsm_piv_av1)( m1, 1E-8, m2 );
+        BCATU(bmath_mfx_s,hsm_piv_av1)( m1, epsilon, m2 );
         BCATU(bmath_mfx_s,mul_av1)( m2, v2, v3 );
 
-        ASSERT( BCATU(bmath_vfx_s,is_near_equ)( v1, v3, 1E-8 ) );
+        ASSERT( BCATU(bmath_vfx_s,is_near_equ)( v1, v3, max_dev ) );
     }
 
     // mul_udu_htp
@@ -2949,7 +2962,7 @@ static vd_t selftest( void )
             BCATU(bmath_mfx_s,set_dag_by_vec)( m2, v1 );
             BCATU(bmath_mfx_s,mul)( m1, m2, m3 );
             BCATU(bmath_mfx_s,mul_htp)( m3, m1, m4 );
-            ASSERT( BCATU(bmath_mfx_s,is_near_equ)( m4, m5, 1E-8 ) );
+            ASSERT( BCATU(bmath_mfx_s,is_near_equ)( m4, m5, max_dev ) );
         }
     }
 
@@ -2980,7 +2993,7 @@ static vd_t selftest( void )
             BCATU(bmath_mfx_s,set_dag_by_vec)( m2, v2 );
             BCATU(bmath_mfx_s,mul)( m1, m2, m4 );
             BCATU(bmath_mfx_s,mul_htp)( m4, m3, m6 );
-            ASSERT( BCATU(bmath_mfx_s,is_near_equ)( m5, m6, 1E-8 ) );
+            ASSERT( BCATU(bmath_mfx_s,is_near_equ)( m5, m6, max_dev ) );
         }
     }
 
@@ -3015,7 +3028,7 @@ static vd_t selftest( void )
             BCATU(bmath_mfx_s,mul_utv_htp)( m1, m2, m3, m5 );
             BCATU(bmath_mfx_s,mul)( m1, m2, m4 );
             BCATU(bmath_mfx_s,mul_htp)( m4, m3, m6 );
-            ASSERT( BCATU(bmath_mfx_s,is_near_equ)( m5, m6, 1E-8 ) );
+            ASSERT( BCATU(bmath_mfx_s,is_near_equ)( m5, m6, max_dev ) );
         }
     }
 

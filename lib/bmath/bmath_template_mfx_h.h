@@ -321,11 +321,14 @@ void BCATU(bmath_mfx_s,mul_hdm)( const bmath_mfx_s* a, const bmath_mfx_s* b, bma
 //----------------------------------------------------------------------------------------------------------------------
 // inversion; pseudo-inversion;
 
-/** Function require a certain form or well-behaveness of the input matrix to succeed.
+/** Hard inversion (inv, pdf_inv) functions require some distance from singularity in order to succeed.
+    Inv is based on LU decomposition, pdf_inv is based on Cholesky decomposition.
     In case of failure, false is returned and the resulting matrix, though numerically valid,
-    not necessarily a valid result of the intended operation.
+    may not necessarily be a valid result of the intended operation.
+    If the matrix is known to be positive definite, pdf_inv is faster and more stable than inv.
+    If stability is more important than speed, pseudo inversion ...piv (below) should be preferred over
+    hard inversion.
  */
-
 bl_t BCATU(bmath_mfx_s,inv)(     const bmath_mfx_s* o, bmath_mfx_s* res ); // res = o^-1
 bl_t BCATU(bmath_mfx_s,inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res ); // res = (o^-1)T
 bl_t BCATU(bmath_mfx_s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res ); // res = o^-1 in case o is positive definite (3x faster than bmath_mfx_s_inv)
@@ -346,7 +349,9 @@ bl_t BCATU(bmath_mfx_s,hsm_piv)( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* re
 bl_t BCATU(bmath_mfx_s,inv_av1)(     const bmath_mfx_s* o, bmath_mfx_s* res );
 bl_t BCATU(bmath_mfx_s,pdf_inv_av1)( const bmath_mfx_s* o, bmath_mfx_s* res );           // o positive definite
 bl_t BCATU(bmath_mfx_s,hsm_piv_av1)( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res ); // pseudo inversion; o symmetric
-bl_t BCATU(bmath_mfx_s,div)(         const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
+
+/// res = o * op^-1 via hard inversion; returns success of inversion.
+bl_t BCATU(bmath_mfx_s,div)( const bmath_mfx_s* o, const bmath_mfx_s* op, bmath_mfx_s* res );
 
 /**********************************************************************************************************************/
 /// element-access; col-access; row-access; sub-matrix
@@ -398,7 +403,7 @@ bl_t BCATU(bmath_mfx_s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* r
  *  even when o is non-singular --> use partial pivoting to fix this.
  *
  *  If false is returned res is a LU-composite but not a LU decomposition of o.
- *  res: represents a LU-composite matrix (LUC):
+ *  res: represents a special LU-composite matrix (LUC):
  *       U is upper triangle of LUC
  *       L is lower triangle of LUC except diagonal
  *       diagonal of L is all 1 and not stored.
