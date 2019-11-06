@@ -17,13 +17,13 @@
  *  Blocking and microkernel strategy: Same as bmath_mf3_mul
  */
 
-#include "bmath_mf3_sf.h"
-#include "bmath_mf3_sf_mul.h"
+#include "bmath_fsmf3.h"
+#include "bmath_fsmf3_mul.h"
 
 #define BMATH_MUL_SF_BLOCK_SIZE 48
 #define BMATH_MUL_SF_BLKP4_SIZE ( BMATH_MUL_SF_BLOCK_SIZE >> 2 )
 
-#ifdef TYPEOF_bmath_mf3_sf_s
+#ifdef TYPEOF_bmath_fsmf3_s
 
 /**********************************************************************************************************************/
 // mul
@@ -40,11 +40,11 @@ static sz_t mf3_sf_midof( sz_t v, const sz_t bz )
 /** smul: Fixed size AVX-Microkernel
  *  Requirement: o_cols == BMATH_MUL_SF_BLOCK_SIZE && m_cols == BMATH_MUL_SF_BLOCK_SIZE
  */
-static void bmath_mf3_sf_s_mul_block_avx_fix_kernel
+static void bmath_fsmf3_s_mul_block_avx_fix_kernel
 (
-    const bmath_mf3_sf_s* o, sz_t o_row, sz_t o_rows, sz_t o_col,
-    const bmath_mf3_sf_s* m,                          sz_t m_col,
-          bmath_mf3_sf_s* r
+    const bmath_fsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col,
+    const bmath_fsmf3_s* m,                          sz_t m_col,
+          bmath_fsmf3_s* r
 )
 {
     __m256d r_p4[ BMATH_MUL_SF_BLKP4_SIZE ];
@@ -102,11 +102,11 @@ static void bmath_mf3_sf_s_mul_block_avx_fix_kernel
 /** smul: Flexible AVX-Microkernel
  *  Requirement: o_cols <= BMATH_MUL_SF_BLOCK_SIZE && m_cols <= BMATH_MUL_SF_BLOCK_SIZE
  */
-static void bmath_mf3_sf_s_mul_block_avx_flex_kernel
+static void bmath_fsmf3_s_mul_block_avx_flex_kernel
 (
-    const bmath_mf3_sf_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
-    const bmath_mf3_sf_s* m,                          sz_t m_col, sz_t m_cols,
-          bmath_mf3_sf_s* r
+    const bmath_fsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
+    const bmath_fsmf3_s* m,                          sz_t m_col, sz_t m_cols,
+          bmath_fsmf3_s* r
 )
 {
     ASSERT( o_cols <= BMATH_MUL_SF_BLOCK_SIZE );
@@ -179,17 +179,17 @@ static void bmath_mf3_sf_s_mul_block_avx_flex_kernel
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bmath_mf3_sf_s_mul_block
+static void bmath_fsmf3_s_mul_block
 (
-    const bmath_mf3_sf_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
-    const bmath_mf3_sf_s* m,                          sz_t m_col, sz_t m_cols,
-          bmath_mf3_sf_s* r
+    const bmath_fsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
+    const bmath_fsmf3_s* m,                          sz_t m_col, sz_t m_cols,
+          bmath_fsmf3_s* r
 )
 {
     if( o_cols == BMATH_MUL_SF_BLOCK_SIZE && m_cols == BMATH_MUL_SF_BLOCK_SIZE )
     {
         #ifdef BMATH_AVX
-            bmath_mf3_sf_s_mul_block_avx_fix_kernel( o, o_row, o_rows, o_col, m, m_col, r );
+            bmath_fsmf3_s_mul_block_avx_fix_kernel( o, o_row, o_rows, o_col, m, m_col, r );
         #else
             f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
             f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
@@ -222,30 +222,30 @@ static void bmath_mf3_sf_s_mul_block
     if( o_rows >= o_cols && o_rows >= m_cols && o_rows > BMATH_MUL_SF_BLOCK_SIZE )
     {
         sz_t mid = mf3_sf_midof( o_rows, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_mf3_sf_s_mul_block( o, o_row,                mid, o_col, o_cols, m, m_col, m_cols, r );
-        bmath_mf3_sf_s_mul_block( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_col, m_cols, r );
+        bmath_fsmf3_s_mul_block( o, o_row,                mid, o_col, o_cols, m, m_col, m_cols, r );
+        bmath_fsmf3_s_mul_block( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_col, m_cols, r );
         return;
     }
 
     if( o_cols >= m_cols && o_cols > BMATH_MUL_SF_BLOCK_SIZE )
     {
         sz_t mid = mf3_sf_midof( o_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_mf3_sf_s_mul_block( o, o_row, o_rows, o_col,                mid, m, m_col, m_cols, r );
-        bmath_mf3_sf_s_mul_block( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_col, m_cols, r );
+        bmath_fsmf3_s_mul_block( o, o_row, o_rows, o_col,                mid, m, m_col, m_cols, r );
+        bmath_fsmf3_s_mul_block( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_col, m_cols, r );
         return;
     }
 
     if( m_cols > BMATH_MUL_SF_BLOCK_SIZE )
     {
         sz_t mid = mf3_sf_midof( m_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_mf3_sf_s_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col,                mid, r );
-        bmath_mf3_sf_s_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col + mid, m_cols - mid, r );
+        bmath_fsmf3_s_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col,                mid, r );
+        bmath_fsmf3_s_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col + mid, m_cols - mid, r );
         return;
     }
 
     {
     #ifdef BMATH_AVX
-        bmath_mf3_sf_s_mul_block_avx_flex_kernel( o, o_row, o_rows, o_col, o_cols, m, m_col, m_cols, r );
+        bmath_fsmf3_s_mul_block_avx_flex_kernel( o, o_row, o_rows, o_col, o_cols, m, m_col, m_cols, r );
     #else
         f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
         f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
@@ -277,13 +277,13 @@ static void bmath_mf3_sf_s_mul_block
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_sf_s_mul( const bmath_mf3_sf_s* o, const bmath_mf3_sf_s* m, bmath_mf3_sf_s* r )
+void bmath_fsmf3_s_mul( const bmath_fsmf3_s* o, const bmath_fsmf3_s* m, bmath_fsmf3_s* r )
 {
     ASSERT( o->rows == r->rows );
     ASSERT( o->cols == m->rows );
     ASSERT( m->cols == r->cols );
-    bmath_mf3_sf_s_zro( r );
-    bmath_mf3_sf_s_mul_block( o, 0, o->rows, 0, o->cols, m, 0, m->cols, r );
+    bmath_fsmf3_s_zro( r );
+    bmath_fsmf3_s_mul_block( o, 0, o->rows, 0, o->cols, m, 0, m->cols, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -295,11 +295,11 @@ void bmath_mf3_sf_s_mul( const bmath_mf3_sf_s* o, const bmath_mf3_sf_s* m, bmath
 /** smul: Fixed size AVX-Microkernel
  *  Requirement: o_cols == BMATH_MUL_SF_BLOCK_SIZE && m_cols == BMATH_MUL_SF_BLOCK_SIZE
  */
-static void bmath_mf3_sf_s_mul_htp_block_avx_fix_kernel
+static void bmath_fsmf3_s_mul_htp_block_avx_fix_kernel
 (
-    const bmath_mf3_sf_s* o, sz_t o_row, sz_t o_rows, sz_t o_col,
-    const bmath_mf3_sf_s* m,
-          bmath_mf3_sf_s* r,                          sz_t r_col
+    const bmath_fsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col,
+    const bmath_fsmf3_s* m,
+          bmath_fsmf3_s* r,                          sz_t r_col
 )
 {
     assert( ( BMATH_MUL_SF_BLOCK_SIZE & 3 ) == 0 );
@@ -359,11 +359,11 @@ static void bmath_mf3_sf_s_mul_htp_block_avx_fix_kernel
 /** smul: Flexible AVX-Microkernel
  *  Requirement: o_cols <= BMATH_MUL_SF_BLOCK_SIZE && m_cols <= BMATH_MUL_SF_BLOCK_SIZE
  */
-static void bmath_mf3_sf_s_mul_htp_block_avx_flex_kernel
+static void bmath_fsmf3_s_mul_htp_block_avx_flex_kernel
 (
-    const bmath_mf3_sf_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
-    const bmath_mf3_sf_s* m,
-          bmath_mf3_sf_s* r,                          sz_t r_col, sz_t r_cols
+    const bmath_fsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
+    const bmath_fsmf3_s* m,
+          bmath_fsmf3_s* r,                          sz_t r_col, sz_t r_cols
 )
 {
     ASSERT( o_cols <= BMATH_MUL_SF_BLOCK_SIZE );
@@ -439,17 +439,17 @@ static void bmath_mf3_sf_s_mul_htp_block_avx_flex_kernel
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bmath_mf3_sf_s_mul_htp_block
+static void bmath_fsmf3_s_mul_htp_block
 (
-    const bmath_mf3_sf_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
-    const bmath_mf3_sf_s* m,
-          bmath_mf3_sf_s* r,                          sz_t r_col, sz_t r_cols
+    const bmath_fsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
+    const bmath_fsmf3_s* m,
+          bmath_fsmf3_s* r,                          sz_t r_col, sz_t r_cols
 )
 {
     if( o_cols == BMATH_MUL_SF_BLOCK_SIZE && r_cols == BMATH_MUL_SF_BLOCK_SIZE )
     {
         #ifdef BMATH_AVX
-            bmath_mf3_sf_s_mul_htp_block_avx_fix_kernel( o, o_row, o_rows, o_col, m, r, r_col );
+            bmath_fsmf3_s_mul_htp_block_avx_fix_kernel( o, o_row, o_rows, o_col, m, r, r_col );
         #else
             f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
             f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
@@ -480,30 +480,30 @@ static void bmath_mf3_sf_s_mul_htp_block
     if( o_rows >= o_cols && o_rows >= r_cols && o_rows > BMATH_MUL_SF_BLOCK_SIZE )
     {
         sz_t mid = mf3_sf_midof( o_rows, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_mf3_sf_s_mul_htp_block( o, o_row,                mid, o_col, o_cols, m, r, r_col, r_cols );
-        bmath_mf3_sf_s_mul_htp_block( o, o_row + mid, o_rows - mid, o_col, o_cols, m, r, r_col, r_cols );
+        bmath_fsmf3_s_mul_htp_block( o, o_row,                mid, o_col, o_cols, m, r, r_col, r_cols );
+        bmath_fsmf3_s_mul_htp_block( o, o_row + mid, o_rows - mid, o_col, o_cols, m, r, r_col, r_cols );
         return;
     }
 
     if( o_cols >= r_cols && o_cols > BMATH_MUL_SF_BLOCK_SIZE )
     {
         sz_t mid = mf3_sf_midof( o_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_mf3_sf_s_mul_htp_block( o, o_row, o_rows, o_col,                mid, m, r, r_col, r_cols );
-        bmath_mf3_sf_s_mul_htp_block( o, o_row, o_rows, o_col + mid, o_cols - mid, m, r, r_col, r_cols );
+        bmath_fsmf3_s_mul_htp_block( o, o_row, o_rows, o_col,                mid, m, r, r_col, r_cols );
+        bmath_fsmf3_s_mul_htp_block( o, o_row, o_rows, o_col + mid, o_cols - mid, m, r, r_col, r_cols );
         return;
     }
 
     if( r_cols > BMATH_MUL_SF_BLOCK_SIZE )
     {
         sz_t mid = mf3_sf_midof( r_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_mf3_sf_s_mul_htp_block( o, o_row, o_rows, o_col, o_cols, m, r, r_col,                mid );
-        bmath_mf3_sf_s_mul_htp_block( o, o_row, o_rows, o_col, o_cols, m, r, r_col + mid, r_cols - mid );
+        bmath_fsmf3_s_mul_htp_block( o, o_row, o_rows, o_col, o_cols, m, r, r_col,                mid );
+        bmath_fsmf3_s_mul_htp_block( o, o_row, o_rows, o_col, o_cols, m, r, r_col + mid, r_cols - mid );
         return;
     }
 
     {
         #ifdef BMATH_AVX
-            bmath_mf3_sf_s_mul_htp_block_avx_flex_kernel( o, o_row, o_rows, o_col, o_cols, m, r, r_col, r_cols );
+            bmath_fsmf3_s_mul_htp_block_avx_flex_kernel( o, o_row, o_rows, o_col, o_cols, m, r, r_col, r_cols );
         #else
             f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
             f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
@@ -535,13 +535,13 @@ static void bmath_mf3_sf_s_mul_htp_block
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_sf_s_mul_htp( const bmath_mf3_sf_s* o, const bmath_mf3_sf_s* m, bmath_mf3_sf_s* r )
+void bmath_fsmf3_s_mul_htp( const bmath_fsmf3_s* o, const bmath_fsmf3_s* m, bmath_fsmf3_s* r )
 {
     ASSERT( o->rows == r->rows );
     ASSERT( m->rows == r->cols );
     ASSERT( o->cols == m->cols );
-    bmath_mf3_sf_s_zro( r );
-    bmath_mf3_sf_s_mul_htp_block( o, 0, o->rows, 0, o->cols, m, r, 0, r->cols );
+    bmath_fsmf3_s_zro( r );
+    bmath_fsmf3_s_mul_htp_block( o, 0, o->rows, 0, o->cols, m, r, 0, r->cols );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -554,11 +554,11 @@ void bmath_mf3_sf_s_mul_htp( const bmath_mf3_sf_s* o, const bmath_mf3_sf_s* m, b
 /** smul: Fixed size AVX-Microkernel
  *  Requirement: o_rows == BMATH_MUL_SF_BLOCK_SIZE && m_cols == BMATH_MUL_SF_BLOCK_SIZE
  */
-static void bmath_mf3_sf_s_htp_mul_block_avx_fix_kernel
+static void bmath_fsmf3_s_htp_mul_block_avx_fix_kernel
 (
-    const bmath_mf3_sf_s* o, sz_t o_row, sz_t o_col, sz_t o_cols,
-    const bmath_mf3_sf_s* m,             sz_t m_col,
-          bmath_mf3_sf_s* r
+    const bmath_fsmf3_s* o, sz_t o_row, sz_t o_col, sz_t o_cols,
+    const bmath_fsmf3_s* m,             sz_t m_col,
+          bmath_fsmf3_s* r
 )
 {
     __m256d r_p4[ BMATH_MUL_SF_BLKP4_SIZE ];
@@ -617,11 +617,11 @@ static void bmath_mf3_sf_s_htp_mul_block_avx_fix_kernel
 /** smul: Flexible AVX-Microkernel
  *  Requirement: o_rows <= BMATH_MUL_SF_BLOCK_SIZE && m_cols <= BMATH_MUL_SF_BLOCK_SIZE
  */
-static void bmath_mf3_sf_s_htp_mul_block_avx_flex_kernel
+static void bmath_fsmf3_s_htp_mul_block_avx_flex_kernel
 (
-    const bmath_mf3_sf_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
-    const bmath_mf3_sf_s* m,                          sz_t m_col, sz_t m_cols,
-          bmath_mf3_sf_s* r
+    const bmath_fsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
+    const bmath_fsmf3_s* m,                          sz_t m_col, sz_t m_cols,
+          bmath_fsmf3_s* r
 )
 {
     assert( o_rows <= BMATH_MUL_SF_BLOCK_SIZE );
@@ -694,18 +694,18 @@ static void bmath_mf3_sf_s_htp_mul_block_avx_flex_kernel
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bmath_mf3_sf_s_htp_mul_block
+static void bmath_fsmf3_s_htp_mul_block
 (
-    const bmath_mf3_sf_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
-    const bmath_mf3_sf_s* m,                          sz_t m_col, sz_t m_cols,
-          bmath_mf3_sf_s* r
+    const bmath_fsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
+    const bmath_fsmf3_s* m,                          sz_t m_col, sz_t m_cols,
+          bmath_fsmf3_s* r
 )
 {
 
     if( o_rows == BMATH_MUL_SF_BLOCK_SIZE && m_cols == BMATH_MUL_SF_BLOCK_SIZE )
     {
         #ifdef BMATH_AVX
-            bmath_mf3_sf_s_htp_mul_block_avx_fix_kernel( o, o_row, o_col, o_cols, m, m_col, r );
+            bmath_fsmf3_s_htp_mul_block_avx_fix_kernel( o, o_row, o_col, o_cols, m, m_col, r );
         #else
             f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
             f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
@@ -739,29 +739,29 @@ static void bmath_mf3_sf_s_htp_mul_block
     if( o_rows >= o_cols && o_rows >= m_cols && o_rows > BMATH_MUL_SF_BLOCK_SIZE )
     {
         sz_t mid = mf3_sf_midof( o_rows, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_mf3_sf_s_htp_mul_block( o, o_row,                mid, o_col, o_cols, m, m_col, m_cols, r );
-        bmath_mf3_sf_s_htp_mul_block( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_col, m_cols, r );
+        bmath_fsmf3_s_htp_mul_block( o, o_row,                mid, o_col, o_cols, m, m_col, m_cols, r );
+        bmath_fsmf3_s_htp_mul_block( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_col, m_cols, r );
         return;
     }
 
     if( o_cols >= m_cols && o_cols > BMATH_MUL_SF_BLOCK_SIZE )
     {
         sz_t mid = mf3_sf_midof( o_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_mf3_sf_s_htp_mul_block( o, o_row, o_rows, o_col,                mid, m, m_col, m_cols, r );
-        bmath_mf3_sf_s_htp_mul_block( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_col, m_cols, r );
+        bmath_fsmf3_s_htp_mul_block( o, o_row, o_rows, o_col,                mid, m, m_col, m_cols, r );
+        bmath_fsmf3_s_htp_mul_block( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_col, m_cols, r );
         return;
     }
 
     if( m_cols > BMATH_MUL_SF_BLOCK_SIZE )
     {
         sz_t mid = mf3_sf_midof( m_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_mf3_sf_s_htp_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col,                mid, r );
-        bmath_mf3_sf_s_htp_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col + mid, m_cols - mid, r );
+        bmath_fsmf3_s_htp_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col,                mid, r );
+        bmath_fsmf3_s_htp_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col + mid, m_cols - mid, r );
         return;
     }
 
     #ifdef BMATH_AVX
-        bmath_mf3_sf_s_htp_mul_block_avx_flex_kernel( o, o_row, o_rows, o_col, o_cols, m, m_col, m_cols, r );
+        bmath_fsmf3_s_htp_mul_block_avx_flex_kernel( o, o_row, o_rows, o_col, o_cols, m, m_col, m_cols, r );
     #else
         f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
         f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
@@ -793,17 +793,17 @@ static void bmath_mf3_sf_s_htp_mul_block
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_sf_s_htp_mul( const bmath_mf3_sf_s* o, const bmath_mf3_sf_s* m, bmath_mf3_sf_s* r )
+void bmath_fsmf3_s_htp_mul( const bmath_fsmf3_s* o, const bmath_fsmf3_s* m, bmath_fsmf3_s* r )
 {
     ASSERT( o->cols == r->rows );
     ASSERT( o->rows == m->rows );
     ASSERT( m->cols == r->cols );
-    bmath_mf3_sf_s_zro( r );
-    bmath_mf3_sf_s_htp_mul_block( o, 0, o->rows, 0, o->cols, m, 0, m->cols, r );
+    bmath_fsmf3_s_zro( r );
+    bmath_fsmf3_s_htp_mul_block( o, 0, o->rows, 0, o->cols, m, 0, m->cols, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
-#endif // TYPEOF_bmath_mf3_sf_s
+#endif // TYPEOF_bmath_fsmf3_s

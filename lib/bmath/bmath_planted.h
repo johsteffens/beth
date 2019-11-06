@@ -4,8 +4,8 @@
  *    Generated code inherits the copyright and license of the beth-plant source code.
  *    The following files contain all source code related to this file:
  *    bmath_f3_op.h
- *    bmath_mf3_sx.h
- *    bmath_mf3_sf.h
+ *    bmath_xsmf3.h
+ *    bmath_fsmf3.h
  *    bmath_hf3.h
  *    bmath_hf3_op.h
  *    bmath_hf3_vm.h
@@ -463,38 +463,38 @@
   BETH_EXPAND_ITEM_bmath_f3_op_ar2_div_s
 
 /**********************************************************************************************************************/
-// source: bmath_mf3_sx.h
+// source: bmath_xsmf3.h
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bmath_mf3_sx
+// group: bmath_xsmf3
 
-#define TYPEOF_bmath_mf3_sx 934545414
-#define TYPEOF_bmath_mf3_sx_s 948195256
-#define TYPEOF_bmath_mf3_sx_s 948195256
-#define BETH_EXPAND_ITEM_bmath_mf3_sx_s \
-  BCORE_DECLARE_OBJECT( bmath_mf3_sx_s ) \
+#define TYPEOF_bmath_xsmf3 3839273471
+#define TYPEOF_bmath_xsmf3_s 4011940201
+#define TYPEOF_bmath_xsmf3_s 4011940201
+#define BETH_EXPAND_ITEM_bmath_xsmf3_s \
+  BCORE_DECLARE_OBJECT( bmath_xsmf3_s ) \
     {aware_t _;sz_t slos;sz_t xons;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
-#define BETH_EXPAND_GROUP_bmath_mf3_sx \
-  BCORE_FORWARD_OBJECT( bmath_mf3_sx ); \
-  BCORE_FORWARD_OBJECT( bmath_mf3_sx_s ); \
-  BETH_EXPAND_ITEM_bmath_mf3_sx_s
+#define BETH_EXPAND_GROUP_bmath_xsmf3 \
+  BCORE_FORWARD_OBJECT( bmath_xsmf3 ); \
+  BCORE_FORWARD_OBJECT( bmath_xsmf3_s ); \
+  BETH_EXPAND_ITEM_bmath_xsmf3_s
 
 /**********************************************************************************************************************/
-// source: bmath_mf3_sf.h
+// source: bmath_fsmf3.h
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bmath_mf3_sf
+// group: bmath_fsmf3
 
-#define TYPEOF_bmath_mf3_sf 1370763508
-#define TYPEOF_bmath_mf3_sf_s 913280742
-#define TYPEOF_bmath_mf3_sf_s 913280742
-#define BETH_EXPAND_ITEM_bmath_mf3_sf_s \
-  BCORE_DECLARE_OBJECT( bmath_mf3_sf_s ) \
+#define TYPEOF_bmath_fsmf3 742123413
+#define TYPEOF_bmath_fsmf3_s 194749431
+#define TYPEOF_bmath_fsmf3_s 194749431
+#define BETH_EXPAND_ITEM_bmath_fsmf3_s \
+  BCORE_DECLARE_OBJECT( bmath_fsmf3_s ) \
     {aware_t _;sz_t cols;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
-#define BETH_EXPAND_GROUP_bmath_mf3_sf \
-  BCORE_FORWARD_OBJECT( bmath_mf3_sf ); \
-  BCORE_FORWARD_OBJECT( bmath_mf3_sf_s ); \
-  BETH_EXPAND_ITEM_bmath_mf3_sf_s
+#define BETH_EXPAND_GROUP_bmath_fsmf3 \
+  BCORE_FORWARD_OBJECT( bmath_fsmf3 ); \
+  BCORE_FORWARD_OBJECT( bmath_fsmf3_s ); \
+  BETH_EXPAND_ITEM_bmath_fsmf3_s
 
 /**********************************************************************************************************************/
 // source: bmath_hf3.h

@@ -13,16 +13,16 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_MF3_SX_MUL_H
-#define BMATH_MF3_SX_MUL_H
+#ifndef BMATH_XSMF3_MUL_H
+#define BMATH_XSMF3_MUL_H
 
 /**********************************************************************************************************************/
 
 /** Collection of algorithms related to spliced-matrix multiplication.
  *  All routines have been designed from scratch and optimized with modern architectures in mind.
  *
- *  This header is included in bmath_mf3_sx.h and should not be used in isolation
- *  See bmath_mf3_sx.h for nomenclature.
+ *  This header is included in bmath_xsmf3.h and should not be used in isolation
+ *  See bmath_xsmf3.h for nomenclature.
  */
 
 /**********************************************************************************************************************/
@@ -34,14 +34,14 @@
 #include "bmath_grt_f3.h"
 
 /**********************************************************************************************************************/
-BCORE_FORWARD_OBJECT( bmath_mf3_sx_s );
+BCORE_FORWARD_OBJECT( bmath_xsmf3_s );
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mf3_sx_s_mul(     const bmath_mf3_sx_s* o, const bmath_mf3_sx_s* m, bmath_mf3_sx_s* r ); // o * m -> r
-void bmath_mf3_sx_s_mul_htp( const bmath_mf3_sx_s* o, const bmath_mf3_sx_s* m, bmath_mf3_sx_s* r ); // o * m^T -> r
-void bmath_mf3_sx_s_htp_mul( const bmath_mf3_sx_s* o, const bmath_mf3_sx_s* m, bmath_mf3_sx_s* r ); // o^T * m -> r
+void bmath_xsmf3_s_mul(     const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o * m -> r
+void bmath_xsmf3_s_mul_htp( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o * m^T -> r
+void bmath_xsmf3_s_htp_mul( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o^T * m -> r
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#endif  // BMATH_MF3_SX_MUL_H
+#endif  // BMATH_XSMF3_MUL_H
