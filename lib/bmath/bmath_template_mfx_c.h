@@ -1838,38 +1838,95 @@ void BCATU(bmath_mfx_s,utr_mul_htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
     // Algorithm works in-place: No need to check for o == res;
     ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
     ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, res ) );
-    uz_t n = o->rows;
+    sz_t n = o->rows;
 
-    // compute off diagonal elements; store in lower triangle of res
-    for( uz_t i = 0; i < n; i++ )
+    BCATU(bmath_mfx_s,cpy)( o, res );
+
+    bmath_vfx_s* buf = BCATU(bmath_vfx_s,create)();
+    BCATU(bmath_vfx_s,set_size)( buf, n );
+    fx_t* q = buf->data;
+
+    // copy upper off-diagonal to lower off-diagonal
+    for( sz_t i = 0; i < n; i++ )
     {
-        const fx_t* voi = o->data + i * o->stride;
-        for( uz_t j = i + 1; j < n; j++ )
+        fx_t* vi = res->data + i * res->stride;
+        for( sz_t j = 0; j < i; j++ )
         {
-            const fx_t* voj =   o->data + j *   o->stride;
-                  fx_t* vrj = res->data + j * res->stride;
-
-            vrj[ i ] = BCATU(bmath,fx,t_vec,mul_vec)( voi + j, voj + j, n - j );
+            fx_t* vj = res->data + j * res->stride;
+            vi[ j ] = vj[ i ];
         }
     }
 
-    // diagonal elements in ascending order
-    for( uz_t i = 0; i < n; i++ )
+    for( sz_t i = 0; i < n; i++ )
     {
-        const fx_t* voi =   o->data + i *   o->stride;
-              fx_t* vri = res->data + i * res->stride;
+        fx_t* vi = res->data + i * o->stride;
+        for( sz_t j = i; j < n; j++ ) q[ j ] = 0;
 
-        fx_t sum = 0;
-        for( uz_t k = i; k < n; k++ ) sum += BCATU(fx,sqr)( voi[ k ] );
-        vri[ i ] = sum;
+        for( sz_t j = i; j < n; j++ )
+        {
+            fx_t* vj = res->data + j * res->stride;
+            #ifdef BMATH_AVX
+                sz_t k = i;
+                M5_T f_pk = M5_SET_ALL( vi[ j ] );
+                for( ; k <= j - P5_SIZE + 1; k += P5_SIZE ) M5_STOR( q + k, M5_MUL_ADD( f_pk, M5_LOAD( vj + k ), M5_LOAD( q + k ) ) );
+                for( ; k <= j; k++ ) q[ k ] += vi[ j ] * vj[ k ];
+            #else
+                for( sz_t k = i; k <= j; k++ ) q[ k ] += vi[ j ] * vj[ k ];
+            #endif // BMATH_AVX
+        }
+
+        for( sz_t j = i; j < n; j++ ) vi[ j ] = q[ j ];
     }
 
-    // copy lower off-diagonal to upper off-diagonal
-    for( uz_t i = 0; i < n; i++ )
+    // copy upper off-diagonal to lower off-diagonal
+    for( sz_t i = 0; i < n; i++ )
     {
-        fx_t* vri = res->data + i * res->stride;
-        for( uz_t j = 0; j < i; j++ ) res->data[ j * res->stride + i ] = vri[ j ];
+        fx_t* vi = res->data + i * res->stride;
+        for( sz_t j = 0; j < i; j++ )
+        {
+            fx_t* vj = res->data + j * res->stride;
+            vi[ j ] = vj[ i ];
+        }
     }
+
+    BCATU(bmath_vfx_s,discard)( buf );
+
+
+//    // Algorithm works in-place: No need to check for o == res;
+//    ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
+//    ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, res ) );
+//    uz_t n = o->rows;
+//
+//    // compute off diagonal elements; store in lower triangle of res
+//    for( uz_t i = 0; i < n; i++ )
+//    {
+//        const fx_t* voi = o->data + i * o->stride;
+//        for( uz_t j = i + 1; j < n; j++ )
+//        {
+//            const fx_t* voj =   o->data + j *   o->stride;
+//                  fx_t* vrj = res->data + j * res->stride;
+//
+//            vrj[ i ] = BCATU(bmath,fx,t_vec,mul_vec)( voi + j, voj + j, n - j );
+//        }
+//    }
+//
+//    // diagonal elements in ascending order
+//    for( uz_t i = 0; i < n; i++ )
+//    {
+//        const fx_t* voi =   o->data + i *   o->stride;
+//              fx_t* vri = res->data + i * res->stride;
+//
+//        fx_t sum = 0;
+//        for( uz_t k = i; k < n; k++ ) sum += BCATU(fx,sqr)( voi[ k ] );
+//        vri[ i ] = sum;
+//    }
+//
+//    // copy lower off-diagonal to upper off-diagonal
+//    for( uz_t i = 0; i < n; i++ )
+//    {
+//        fx_t* vri = res->data + i * res->stride;
+//        for( uz_t j = 0; j < i; j++ ) res->data[ j * res->stride + i ] = vri[ j ];
+//    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
