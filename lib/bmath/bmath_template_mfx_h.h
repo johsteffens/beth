@@ -137,10 +137,10 @@ void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
 /** Sets all matrix elements to random values.
  *  hsm: true: Creates a symmetric matrix
  *  pdf: true: Creates a positive definite matrix
- *  rd > 0: Embeds a rank deficit
- *     If rd < min( cols, rows ) at density == 1.0, the matrix-rank can be expected to be equal to min( cols, rows ) - rd.
- *     If rd >= min( cols, rows ), a zero-matrix is created.
- *     If density is < 1.0, it is matrix-rank <= min( cols, rows ) - rd.
+ *  rank_deficit > 0: Embeds a rank deficit
+ *     If rank_deficit < min( cols, rows ) at density == 1.0, the matrix-rank can be expected to be equal to min( cols, rows ) - rank_deficit.
+ *     If rank_deficit >= min( cols, rows ), a zero-matrix is created.
+ *     If density is < 1.0, it is matrix-rank <= min( cols, rows ) - rank_deficit.
  *
  *  Random generator:
  *    Parameters density, min, max, p_rval apply to the random generator.
@@ -153,7 +153,7 @@ void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
  *  If rd == 0 && !pdf, the matrix elements are set directly to random values.
  *  Otherwise o is a product of two random matrices.
  */
-void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, uz_t rd, fx_t density, fx_t min, fx_t max, u2_t* p_rval );
+void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, fx_t density, fx_t min, fx_t max, u2_t* p_rval );
 
 bmath_mfx_s* BCATU(bmath_mfx_s,create_set_size)( uz_t rows, uz_t cols );
 bmath_mfx_s* BCATU(bmath_mfx_s,create_fill_random)( uz_t rows, uz_t cols, fx_t min, fx_t max, u2_t* rval );
@@ -409,12 +409,21 @@ bl_t BCATU(bmath_mfx_s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* r
  */
 bl_t BCATU(bmath_mfx_s,decompose_luc)( const bmath_mfx_s* o, bmath_mfx_s* res );
 
+/** Inversion of lower triangular matrix.
+ *  o is deemed lower triangular (only lower triangular elements are evaluated)
+ *  res is lower triangular
+ *  It is: 1 = o * res = res * o
+ *  Algorithm always finishes.
+ *  If o is singular, incomputable elements are set to zero.
+ */
+bl_t BCATU(bmath_mfx_s,ltr_inv)( const bmath_mfx_s* o, bmath_mfx_s* res );
+
 /** Inversion and h-transposition of lower triangular matrix.
  *  o is deemed lower triangular (only lower triangular elements are evaluated)
  *  res is upper triangular
  *  It is: 1 = o * resT = resT * o
  *  Algorithm always finishes.
- *  If o singular, incomputable elements are set to zero.
+ *  If o is singular, incomputable elements are set to zero.
  */
 bl_t BCATU(bmath_mfx_s,ltr_inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res );
 

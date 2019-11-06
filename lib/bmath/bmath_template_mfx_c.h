@@ -39,14 +39,14 @@ void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, uz_t rd, fx_t density, fx_t min, fx_t max, u2_t* p_rval )
+void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, fx_t density, fx_t min, fx_t max, u2_t* p_rval )
 {
     u2_t rval = p_rval ? *p_rval : 12345;
     fx_t range = max - min;
     if( pdf ) ASSERT( hsm );
     if( hsm ) ASSERT( o->rows == o->cols );
 
-    if( rd == 0 ) // full rank
+    if( rank_deficit == 0 ) // full rank
     {
         if( pdf )
         {
@@ -93,10 +93,10 @@ void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, uz_t rd,
             }
         }
     }
-    else if( rd < uz_min( o->cols, o->rows ) ) // rank is uz_min( o->cols, o->rows ) - rd
+    else if( rank_deficit < uz_min( o->cols, o->rows ) ) // rank is uz_min( o->cols, o->rows ) - rank_deficit
     {
         uz_t n = uz_min( o->cols, o->rows );
-        uz_t rank = n - rd;
+        uz_t rank = n - rank_deficit;
         if( hsm )
         {
             bmath_mfx_s* m1 = BCATU(bmath_mfx_s,create)();
@@ -1658,7 +1658,7 @@ bl_t BCATU(bmath_mfx_s,decompose_luc)( const bmath_mfx_s* o, bmath_mfx_s* res )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t BCATU(bmath_mfx_s,ltr_inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
+bl_t BCATU(bmath_mfx_s,ltr_inv)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
     // Algorithm works in-place: No need to check for o == res;
     ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
@@ -1666,28 +1666,60 @@ bl_t BCATU(bmath_mfx_s,ltr_inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
 
     BCATU(bmath_mfx_s,cpy)( o, res );
 
-    uz_t n = res->rows;
+    sz_t n = res->rows;
 
     bl_t success = true;
 
-    // inverting diagonal elements
-    for( sz_t i = 0; i < n; i++ )
-    {
-        fx_t* v = res->data + i * ( res->stride + 1 );
-        if( BCATU(fx,abs)( *v ) < BCATU(fx,lim_min) ) success = false;
-        *v = ( *v != 0 ) ? 1.0 / *v : 0;
-    }
+    bmath_vfx_s* buf = BCATU(bmath_vfx_s,create)();
+    BCATU(bmath_vfx_s,set_size)( buf, n );
+    fx_t* q = buf->data;
 
-    // upper off-diagonal elements
-    // TODO: work out a solution with a read-write stream (rather than read-read-accu stream)
     for( sz_t i = 0; i < n; i++ )
     {
         fx_t* vi = res->data + i * res->stride;
-        for( sz_t j = i + 1; j < n; j++ )
+
+        for( sz_t j = 0; j < i; j++ ) q[ j ] = 0;
+        for( sz_t j = 0; j < i; j++ )
         {
             fx_t* vj = res->data + j * res->stride;
-            vi[ j ] = -vj[ j ] * BCATU(bmath,fx,t_vec,mul_vec)( vj + i, vi + i, j - i );
-            vj[ i ] = 0;
+            #ifdef BMATH_AVX
+                M5_T f_pk = M5_SET_ALL( -vi[ j ] );
+                sz_t k = 0;
+                for( ; k <= j - P5_SIZE + 1; k += P5_SIZE ) M5_STOR( q + k, M5_MUL_ADD( f_pk, M5_LOAD( vj + k ), M5_LOAD( q + k ) ) );
+                for( ; k <= j; k++ ) q[ k ] -= vi[ j ] * vj[ k ];
+            #else
+                for( sz_t k = 0; k <= j; k++ ) q[ k ] -= vi[ j ] * vj[ k ];
+            #endif // BMATH_AVX
+        }
+
+        bl_t stable = ( BCATU(fx,abs)( vi[ i ] ) > BCATU(fx,lim_min) );
+        vi[ i ] = stable ? 1.0 / vi[ i ] : 0;
+        success = success && stable;
+
+        for( sz_t j = 0; j < i; j++ ) vi[ j ] = q[ j ] * vi[ i ];
+    }
+
+    BCATU(bmath_vfx_s,discard)( buf );
+
+    return success;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t BCATU(bmath_mfx_s,ltr_inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
+{
+    bl_t success = BCATU(bmath_mfx_s,ltr_inv)( o, res );
+    sz_t n = res->rows;
+
+    // transpose result
+    for( sz_t i = 0; i < n; i++ )
+    {
+        fx_t* vi = res->data + i * res->stride;
+        for( sz_t j = 0; j < i; j++ )
+        {
+            fx_t* vj = res->data + j * res->stride;
+            vj[ i ] = vi[ j ];
+            vi[ j ] = 0;
         }
     }
 
@@ -1698,10 +1730,14 @@ bl_t BCATU(bmath_mfx_s,ltr_inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
 
 bl_t BCATU(bmath_mfx_s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
+    // Idea: Reduce matrix inversion to inversion of a triangular matrix.
+    // O    =  R * R^T
+    // O^-1 = (R * R^T)^-1 = R^T^-1 * R^-1 = (R^-1)^T * (R^-1)
+
     ASSERT( BCATU(bmath_mfx_s,is_hsm)( o ) );
-    bl_t success = BCATU(bmath_mfx_s,decompose_cholesky)( o, res ); // res = ltr
-    success = success & BCATU(bmath_mfx_s,ltr_inv_htp)( res, res ); // res = utr
-    BCATU(bmath_mfx_s,utr_mul_htp)( res, res );      // res = o^-1
+    bl_t success = BCATU(bmath_mfx_s,decompose_cholesky)( o, res ); // res <- R
+    success = success & BCATU(bmath_mfx_s,ltr_inv_htp)( res, res ); // res <- R^-1^T
+    BCATU(bmath_mfx_s,utr_mul_htp)( res, res );                     // res <- o^-1 = R^-1^T * R^-1
     return success;
 }
 
