@@ -137,6 +137,52 @@ void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t ran
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void BCATU(bmath_mfx_s,set_random_full_rank)( bmath_mfx_s* o, bl_t pdf, fx_t eps, u2_t* p_rval )
+{
+    BLM_INIT();
+    ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
+    ASSERT( eps > 0 && eps <= 1.0 );
+
+    BCATU(bmath_mfx_s,set_random)( o, false, false, 0, 1.0, -1.0, 1.0, p_rval );
+    sz_t n = o->rows;
+
+    bmath_mfx_s* u = BLM_A_PUSH( BCATU(bmath_mfx_s,create)() );
+    bmath_vfx_s* d = BLM_A_PUSH( BCATU(bmath_vfx_s,create)() );
+    bmath_mfx_s* v = BLM_A_PUSH( BCATU(bmath_mfx_s,create)() );
+
+    BCATU(bmath_mfx_s,set_size)( u, n, n );
+    BCATU(bmath_mfx_s,set_size)( v, n, n );
+    BCATU(bmath_vfx_s,set_size)( d, n );
+
+    BCATU(bmath_mfx_s,svd)( u, o, v );
+
+    BCATU(bmath_vfx_s,set_random)( d, 1.0, eps, 1.0, p_rval );
+
+    if( pdf )
+    {
+        BCATU(bmath_mfx_s,mul_udu_htp)( u, d, o );
+
+        // enforce symmetry (mul_udu_htp may leave small symmetry deficits)
+        for( sz_t i = 0; i < n; i++ )
+        {
+            fx_t* vi = o->data + i * o->stride;
+            for( sz_t j = 0; j < i; j++ )
+            {
+                fx_t* vj = o->data + j * o->stride;
+                vj[ i ] = vi[ j ];
+            }
+        }
+    }
+    else
+    {
+        BCATU(bmath_mfx_s,mul_udv_htp)( u, d, v, o );
+    }
+
+    BLM_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bmath_mfx_s* BCATU(bmath_mfx_s,create_set_size)( uz_t rows, uz_t cols )
 {
     bmath_mfx_s* o = BCATU(bmath_mfx_s,create)();
@@ -1730,7 +1776,7 @@ bl_t BCATU(bmath_mfx_s,ltr_inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
 
 bl_t BCATU(bmath_mfx_s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
-    // Idea: Reduce matrix inversion to inversion of a triangular matrix.
+    // Method: Combine cholesky decomposition with fast inversion of a triangular matrix.
     // O    =  R * R^T
     // O^-1 = (R * R^T)^-1 = R^T^-1 * R^-1 = (R^-1)^T * (R^-1)
 
@@ -1738,6 +1784,7 @@ bl_t BCATU(bmath_mfx_s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res )
     bl_t success = BCATU(bmath_mfx_s,decompose_cholesky)( o, res ); // res <- R
     success = success & BCATU(bmath_mfx_s,ltr_inv_htp)( res, res ); // res <- R^-1^T
     BCATU(bmath_mfx_s,utr_mul_htp)( res, res );                     // res <- o^-1 = R^-1^T * R^-1
+
     return success;
 }
 

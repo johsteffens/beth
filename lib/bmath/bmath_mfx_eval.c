@@ -1618,7 +1618,7 @@ static void run_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf3_s_set_size( m0, n, n );
     bmath_mf3_s_set_size( a,  n, n );
     u2_t rval = o->seed;
-    bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
+    bmath_mf3_s_set_random_full_rank( m0, false, 0.1, &rval );
 
     bmath_mf3_s_zro( a );
     f3_t near_limit = o->near_limit_f3;
@@ -1677,7 +1677,7 @@ static void run_pdf_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     bmath_mf3_s_set_size( m0, n, n );
     bmath_mf3_s_set_size( a,  n, n );
     u2_t rval = o->seed;
-    bmath_mf3_s_set_random( m0, true, true, 0, o->density, -1.0, 1.0, &rval );
+    bmath_mf3_s_set_random_full_rank( m0, true, 0.1, &rval );
 
     bmath_mf3_s_zro( a );
 

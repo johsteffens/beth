@@ -70,6 +70,7 @@
  *  Other:
  *    opd: outer product of two vectors
  *    udu: similarity transform a of a diagonal matrix: htp_udu: U^T * D * U; udu_htp: U * D * U^T
+ *    udv: recombination of a diagonal matrix (reverse of SVD): U * D * V^T
  *    grt: givens rotation
  *    esp: enhanced stochastic precision (function with this suffix are (statistically) more precise but likely slower)
  *    eop: elementary operation: subsequent operation applies to matrix elements rather than the matrix-object
@@ -152,8 +153,19 @@ void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
  *
  *  If rd == 0 && !pdf, the matrix elements are set directly to random values.
  *  Otherwise o is a product of two random matrices.
+ *
+ *  Note:
+ *  Even with rank_deficit == 0, a large matrix can be near enough to singular
+ *  such that an attempt of matrix inversion fails. Use set_random_full_rank
+ *  in order to create a full rank square matrix.
  */
 void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, fx_t density, fx_t min, fx_t max, u2_t* p_rval );
+
+/** Creates a random full rank square matrix
+ *  pdf: true: Creates a positive definite matrix
+ *  eps: Specifies the ratio of minimal to maximal magnitude of singular values.
+ */
+void BCATU(bmath_mfx_s,set_random_full_rank)( bmath_mfx_s* o, bl_t pdf, fx_t eps, u2_t* p_rval );
 
 bmath_mfx_s* BCATU(bmath_mfx_s,create_set_size)( uz_t rows, uz_t cols );
 bmath_mfx_s* BCATU(bmath_mfx_s,create_fill_random)( uz_t rows, uz_t cols, fx_t min, fx_t max, u2_t* rval );
@@ -164,6 +176,7 @@ static inline bl_t BCATU(bmath_mfx_s,is_square)  ( const bmath_mfx_s* o ) { retu
 static inline bl_t BCATU(bmath_mfx_s,is_folded)  ( const bmath_mfx_s* o ) { return o->stride < o->cols; }
 
 /**********************************************************************************************************************/
+/// weak int & conversion (Returned object does not own its data and need not be shut down unless it is resized)
 /// weak int & conversion (Returned object does not own its data and need not be shut down unless it is resized)
 
 static inline void BCATU(bmath_mfx_s,init_weak)( bmath_mfx_s* o, uz_t rows, uz_t cols, uz_t stride, fx_t* data )
