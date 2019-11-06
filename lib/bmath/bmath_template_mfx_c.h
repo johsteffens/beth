@@ -771,7 +771,7 @@ void BCATU(bmath_mfx_s,mul_hdm)( const bmath_mfx_s* a, const bmath_mfx_s* b, bma
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t BCATU(bmath_mfx_s,inv_htp_luc)( const bmath_mfx_s* o, bmath_mfx_s* res )
+bl_t BCATU(bmath_mfx_s,inv_htp_via_luc)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
     ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, res ) );
     bmath_mfx_s* luc = BCATU(bmath_mfx_s,create)();
@@ -784,18 +784,32 @@ bl_t BCATU(bmath_mfx_s,inv_htp_luc)( const bmath_mfx_s* o, bmath_mfx_s* res )
     return success;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t BCATU(bmath_mfx_s,inv_via_cld)( const bmath_mfx_s* o, bmath_mfx_s* res )
+{
+    // Makes use of the relationship A^-1 = ( A * A^T )^-1
+    // A * A^T is positive definite and can be solved via cld
+    BCATU(bmath_mfx_s,mul_htp)( o, o, res );
+    bl_t success = BCATU(bmath_mfx_s,pdf_inv)( res, res );
+    BCATU(bmath_mfx_s,htp_mul)( o, res, res );
+    return success;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t BCATU(bmath_mfx_s,inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
-    return BCATU(bmath_mfx_s,inv_htp_luc)( o, res );
+    bl_t success = BCATU(bmath_mfx_s,inv)( o, res );
+    BCATU(bmath_mfx_s,htp)( res, res );
+    return success;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 bl_t BCATU(bmath_mfx_s,inv)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
-    bl_t success = BCATU(bmath_mfx_s,inv_htp)( o, res );
-    BCATU(bmath_mfx_s,htp)( res, res );
-    return success;
+    return BCATU(bmath_mfx_s,inv_via_cld)( o, res );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1890,43 +1904,6 @@ void BCATU(bmath_mfx_s,utr_mul_htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
     }
 
     BCATU(bmath_vfx_s,discard)( buf );
-
-
-//    // Algorithm works in-place: No need to check for o == res;
-//    ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
-//    ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, res ) );
-//    uz_t n = o->rows;
-//
-//    // compute off diagonal elements; store in lower triangle of res
-//    for( uz_t i = 0; i < n; i++ )
-//    {
-//        const fx_t* voi = o->data + i * o->stride;
-//        for( uz_t j = i + 1; j < n; j++ )
-//        {
-//            const fx_t* voj =   o->data + j *   o->stride;
-//                  fx_t* vrj = res->data + j * res->stride;
-//
-//            vrj[ i ] = BCATU(bmath,fx,t_vec,mul_vec)( voi + j, voj + j, n - j );
-//        }
-//    }
-//
-//    // diagonal elements in ascending order
-//    for( uz_t i = 0; i < n; i++ )
-//    {
-//        const fx_t* voi =   o->data + i *   o->stride;
-//              fx_t* vri = res->data + i * res->stride;
-//
-//        fx_t sum = 0;
-//        for( uz_t k = i; k < n; k++ ) sum += BCATU(fx,sqr)( voi[ k ] );
-//        vri[ i ] = sum;
-//    }
-//
-//    // copy lower off-diagonal to upper off-diagonal
-//    for( uz_t i = 0; i < n; i++ )
-//    {
-//        fx_t* vri = res->data + i * res->stride;
-//        for( uz_t j = 0; j < i; j++ ) res->data[ j * res->stride + i ] = vri[ j ];
-//    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -334,17 +334,20 @@ void BCATU(bmath_mfx_s,mul_hdm)( const bmath_mfx_s* a, const bmath_mfx_s* b, bma
 //----------------------------------------------------------------------------------------------------------------------
 // inversion; pseudo-inversion;
 
-/** Hard inversion (inv, pdf_inv) functions require some distance from singularity in order to succeed.
-    Inv is based on LU decomposition, pdf_inv is based on Cholesky decomposition.
+/** Hard inversion (inv, pdf_inv) functions fail in case o is close to singular.
+    Inv and pdf_inv are based on Cholesky decomposition.
     In case of failure, false is returned and the resulting matrix, though numerically valid,
     may not necessarily be a valid result of the intended operation.
-    If the matrix is known to be positive definite, pdf_inv is faster and more stable than inv.
+    If the matrix is known to be positive definite, pdf_inv is faster and more accurate than inv.
     If stability is more important than speed, pseudo inversion ...piv (below) should be preferred over
     hard inversion.
  */
 bl_t BCATU(bmath_mfx_s,inv)(     const bmath_mfx_s* o, bmath_mfx_s* res ); // res = o^-1
 bl_t BCATU(bmath_mfx_s,inv_htp)( const bmath_mfx_s* o, bmath_mfx_s* res ); // res = (o^-1)T
-bl_t BCATU(bmath_mfx_s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res ); // res = o^-1 in case o is positive definite (3x faster than bmath_mfx_s_inv)
+bl_t BCATU(bmath_mfx_s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res ); // res = o^-1 in case o is positive definite (faster than bmath_mfx_s_inv)
+
+bl_t BCATU(bmath_mfx_s,inv_via_cld)(     const bmath_mfx_s* o, bmath_mfx_s* res ); // inversion via Cholesky decomposition
+bl_t BCATU(bmath_mfx_s,inv_htp_via_luc)( const bmath_mfx_s* o, bmath_mfx_s* res ); // inversion via LU decomposition (instable even on non-singular cases; not recommended)
 
 /** Pseudo-Inversion:
  *  Inversion via SVD/EVD by setting near-zero singular values to zero (cut-off).
