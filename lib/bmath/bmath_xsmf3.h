@@ -30,10 +30,11 @@
  * 'XON' denotes a contiguous data block of fixed size.
  *  '()' indicates that the data bock is referenced via index.
  *
- * The reason for this specific matrix design is the efficient computation of of convolutions, transposed convolutions and
- * their respective gradient propagation by expressing them as fast matrix*matrix multiplications.
- * Conceptually the FSM and XSM serve the same purpose. FSM is more flexible and applicable on any type of convolution
- * including a series of operations, which are not strictly convolutions. XSM is less flexible but faster.
+ *  The reason for this specific matrix design is the efficient computation of of convolutions, transposed convolutions
+ *  and their respective gradient propagation by expressing them as fast matrix*matrix multiplications.
+ *  Conceptually the ASM and XSM serve the same purpose. ASM is most flexible and applicable on any type of convolution
+ *  including a series of operations, which are not strictly convolutions. XSM can theoretically represent any ASM but
+ *  is more efficient on convolution operations used typically with neural networks.
  *
  * Each row is composed of a fixed number of xons.
  * The matrix is composed of a fixed number of rows.

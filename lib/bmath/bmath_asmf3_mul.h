@@ -13,16 +13,16 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_FSMF3_MUL_H
-#define BMATH_FSMF3_MUL_H
+#ifndef BMATH_ASMF3_MUL_H
+#define BMATH_ASMF3_MUL_H
 
 /**********************************************************************************************************************/
 
 /** Collection of algorithms related to spliced-matrix multiplication.
  *  All routines have been designed from scratch and optimized with modern architectures in mind.
  *
- *  This header is included in bmath_fsmf3.h and should not be used in isolation
- *  See bmath_fsmf3.h for nomenclature.
+ *  This header is included in bmath_asmf3.h and should not be used in isolation
+ *  See bmath_asmf3.h for nomenclature.
  */
 
 /**********************************************************************************************************************/
@@ -34,14 +34,14 @@
 #include "bmath_grt_f3.h"
 
 /**********************************************************************************************************************/
-BCORE_FORWARD_OBJECT( bmath_fsmf3_s );
+BCORE_FORWARD_OBJECT( bmath_asmf3_s );
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_fsmf3_s_mul(     const bmath_fsmf3_s* o, const bmath_fsmf3_s* m, bmath_fsmf3_s* r ); // o * m -> r
-void bmath_fsmf3_s_mul_htp( const bmath_fsmf3_s* o, const bmath_fsmf3_s* m, bmath_fsmf3_s* r ); // o * m^T -> r
-void bmath_fsmf3_s_htp_mul( const bmath_fsmf3_s* o, const bmath_fsmf3_s* m, bmath_fsmf3_s* r ); // o^T * m -> r
+void bmath_asmf3_s_mul(     const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o * m -> r
+void bmath_asmf3_s_mul_htp( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o * m^T -> r
+void bmath_asmf3_s_htp_mul( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o^T * m -> r
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#endif  // BMATH_FSMF3_MUL_H
+#endif  // BMATH_ASMF3_MUL_H

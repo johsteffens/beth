@@ -5,7 +5,7 @@
  *    The following files contain all source code related to this file:
  *    bmath_f3_op.h
  *    bmath_xsmf3.h
- *    bmath_fsmf3.h
+ *    bmath_asmf3.h
  *    bmath_hf3.h
  *    bmath_hf3_op.h
  *    bmath_hf3_vm.h
@@ -372,13 +372,13 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_xsmf3_s )
 "}";
 
 /**********************************************************************************************************************/
-// source: bmath_fsmf3.h
-#include "bmath_fsmf3.h"
+// source: bmath_asmf3.h
+#include "bmath_asmf3.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bmath_fsmf3
+// group: bmath_asmf3
 
-BCORE_DEFINE_OBJECT_INST_P( bmath_fsmf3_s )
+BCORE_DEFINE_OBJECT_INST_P( bmath_asmf3_s )
 "aware bcore_inst"
 "{"
     "sz_t cols;"
@@ -2526,7 +2526,7 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 1524219018 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 2398627448 ) );
             BCORE_REGISTER_FEATURE( bmath_f3_op_get_arity );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aofx );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aogx );
@@ -2734,8 +2734,8 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_SPECT( bmath_f3_op_ar2 );
             BCORE_REGISTER_OBJECT( bmath_xsmf3_s );
             BCORE_REGISTER_TRAIT( bmath_xsmf3, bcore_inst );
-            BCORE_REGISTER_OBJECT( bmath_fsmf3_s );
-            BCORE_REGISTER_TRAIT( bmath_fsmf3, bcore_inst );
+            BCORE_REGISTER_OBJECT( bmath_asmf3_s );
+            BCORE_REGISTER_TRAIT( bmath_asmf3, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_hf3_s );
             BCORE_REGISTER_OBJECT( bmath_hf3_adl_s );
             BCORE_REGISTER_TRAIT( bmath_hf3, bcore_inst );

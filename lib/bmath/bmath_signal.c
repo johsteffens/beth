@@ -34,7 +34,7 @@
 #include "bmath_mf3.h"
 #include "bmath_mfx_eval.h"
 #include "bmath_xsmf3.h"
-#include "bmath_fsmf3.h"
+#include "bmath_asmf3.h"
 #include "bmath_pmt.h"
 #include "bmath_grt_f2.h"
 #include "bmath_grt_f3.h"
@@ -80,7 +80,7 @@ vd_t bmath_signal_handler( const bcore_signal_s* o )
             bmath_mf2_signal_handler,
             bmath_mf3_signal_handler,
             bmath_xsmf3_signal_handler,
-            bmath_fsmf3_signal_handler,
+            bmath_asmf3_signal_handler,
             bmath_mfx_eval_signal_handler,
             bmath_pmt_signal_handler,
             bmath_grt_f2_signal_handler,

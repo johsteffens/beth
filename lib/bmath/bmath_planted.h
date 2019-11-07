@@ -5,7 +5,7 @@
  *    The following files contain all source code related to this file:
  *    bmath_f3_op.h
  *    bmath_xsmf3.h
- *    bmath_fsmf3.h
+ *    bmath_asmf3.h
  *    bmath_hf3.h
  *    bmath_hf3_op.h
  *    bmath_hf3_vm.h
@@ -480,21 +480,21 @@
   BETH_EXPAND_ITEM_bmath_xsmf3_s
 
 /**********************************************************************************************************************/
-// source: bmath_fsmf3.h
+// source: bmath_asmf3.h
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bmath_fsmf3
+// group: bmath_asmf3
 
-#define TYPEOF_bmath_fsmf3 742123413
-#define TYPEOF_bmath_fsmf3_s 194749431
-#define TYPEOF_bmath_fsmf3_s 194749431
-#define BETH_EXPAND_ITEM_bmath_fsmf3_s \
-  BCORE_DECLARE_OBJECT( bmath_fsmf3_s ) \
+#define TYPEOF_bmath_asmf3 3333028768
+#define TYPEOF_bmath_asmf3_s 13460794
+#define TYPEOF_bmath_asmf3_s 13460794
+#define BETH_EXPAND_ITEM_bmath_asmf3_s \
+  BCORE_DECLARE_OBJECT( bmath_asmf3_s ) \
     {aware_t _;sz_t cols;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
-#define BETH_EXPAND_GROUP_bmath_fsmf3 \
-  BCORE_FORWARD_OBJECT( bmath_fsmf3 ); \
-  BCORE_FORWARD_OBJECT( bmath_fsmf3_s ); \
-  BETH_EXPAND_ITEM_bmath_fsmf3_s
+#define BETH_EXPAND_GROUP_bmath_asmf3 \
+  BCORE_FORWARD_OBJECT( bmath_asmf3 ); \
+  BCORE_FORWARD_OBJECT( bmath_asmf3_s ); \
+  BETH_EXPAND_ITEM_bmath_asmf3_s
 
 /**********************************************************************************************************************/
 // source: bmath_hf3.h
