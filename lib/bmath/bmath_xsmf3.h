@@ -97,7 +97,24 @@ PLANT_GROUP( bmath_xsmf3, bcore_inst )
         sz_t [] i; // index data
         f3_t [] v; // value data
     };
+
+    // function pointer names
+    name bmath_fp_xsmf3_s_mul;
+    name bmath_fp_xsmf3_s_mul_htp;
+    name bmath_fp_xsmf3_s_htp_mul;
+    name bmath_fp_xsmf3_s_htp_mul_htp;
+
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/**********************************************************************************************************************/
+// features
+
+typedef void (*bmath_fp_xsmf3_s_mul        )( const bmath_xsmf3_s* o, const bmath_xsmf3_s* op, bmath_xsmf3_s* res );
+typedef void (*bmath_fp_xsmf3_s_mul_htp    )( const bmath_xsmf3_s* o, const bmath_xsmf3_s* op, bmath_xsmf3_s* res );
+typedef void (*bmath_fp_xsmf3_s_htp_mul    )( const bmath_xsmf3_s* o, const bmath_xsmf3_s* op, bmath_xsmf3_s* res );
+typedef void (*bmath_fp_xsmf3_s_htp_mul_htp)( const bmath_xsmf3_s* o, const bmath_xsmf3_s* op, bmath_xsmf3_s* res );
+
+/**********************************************************************************************************************/
 
 /// sets size of splicing (zeros all indexes)
 void bmath_xsmf3_s_set_size_splicing( bmath_xsmf3_s* o, sz_t rows, sz_t xons );

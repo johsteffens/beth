@@ -2526,7 +2526,7 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 2398627448 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 926448870 ) );
             BCORE_REGISTER_FEATURE( bmath_f3_op_get_arity );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aofx );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aogx );
@@ -2733,8 +2733,16 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bmath_f3_op_ar2_div_s );
             BCORE_REGISTER_SPECT( bmath_f3_op_ar2 );
             BCORE_REGISTER_OBJECT( bmath_xsmf3_s );
+            BCORE_REGISTER_NAME( bmath_fp_xsmf3_s_mul );
+            BCORE_REGISTER_NAME( bmath_fp_xsmf3_s_mul_htp );
+            BCORE_REGISTER_NAME( bmath_fp_xsmf3_s_htp_mul );
+            BCORE_REGISTER_NAME( bmath_fp_xsmf3_s_htp_mul_htp );
             BCORE_REGISTER_TRAIT( bmath_xsmf3, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_asmf3_s );
+            BCORE_REGISTER_NAME( bmath_fp_asmf3_s_mul );
+            BCORE_REGISTER_NAME( bmath_fp_asmf3_s_mul_htp );
+            BCORE_REGISTER_NAME( bmath_fp_asmf3_s_htp_mul );
+            BCORE_REGISTER_NAME( bmath_fp_asmf3_s_htp_mul_htp );
             BCORE_REGISTER_TRAIT( bmath_asmf3, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_hf3_s );
             BCORE_REGISTER_OBJECT( bmath_hf3_adl_s );

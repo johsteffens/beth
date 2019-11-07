@@ -320,21 +320,10 @@ vd_t bmath_asmf3_signal_handler( const bcore_signal_s* o )
         }
         break;
 
-        case TYPEOF_get_quicktypes:
-        {
-        }
-        break;
-
         case TYPEOF_selftest:
         {
             selftest();
             return NULL;
-        }
-        break;
-
-        case TYPEOF_precoder:
-        {
-//            bcore_precoder_compile( "bmath_precoded", __FILE__ );
         }
         break;
 

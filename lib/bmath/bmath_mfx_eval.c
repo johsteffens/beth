@@ -14,6 +14,13 @@
  */
 
 #include "bmath_mfx_eval.h"
+#include "bmath_vf3.h"
+#include "bmath_mf3.h"
+#include "bmath_vf2.h"
+#include "bmath_mf2.h"
+#include "bmath_asmf3.h"
+#include "bmath_xsmf3.h"
+
 
 /**********************************************************************************************************************/
 
@@ -78,7 +85,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mfx_eval_result_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bmath_mfx_eval_result_s_set_defaults_from_eval( bmath_mfx_eval_result_s* o, const bmath_mfx_eval_s* v )
+static void result_s_set_defaults_from_eval( bmath_mfx_eval_result_s* o, const bmath_mfx_eval_s* v )
 {
     o->rows    = v->rows;
     o->cols    = v->cols;
@@ -88,7 +95,7 @@ static void bmath_mfx_eval_result_s_set_defaults_from_eval( bmath_mfx_eval_resul
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bmath_mfx_eval_s_create_image_file( const bmath_mfx_eval_s* v, vc_t mat, const st_s* file )
+static void eval_s_create_image_file( const bmath_mfx_eval_s* v, vc_t mat, const st_s* file )
 {
     if( file->size > 0 )
     {
@@ -139,6 +146,21 @@ void bmath_mfx_eval_result_s_to_string( const bmath_mfx_eval_result_s* o, st_s* 
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// finds large exponent with ( cols % ( 1 << exp ) ) == 0
+static sz_t exp_from_cols( sz_t cols )
+{
+    for( sz_t exp = 8; exp > 0; exp-- )
+    {
+        if( ( cols % ( 1 << exp ) ) == 0 ) return exp;
+    }
+    return 0;
+}
+
+sz_t slos_from_cols( sz_t cols ) { return ( cols > 0 ) ? ( 1 << exp_from_cols( cols ) )    : 0; } // slos selector from cols
+sz_t xons_from_cols( sz_t cols ) { return ( cols > 0 ) ? ( cols / slos_from_cols( cols ) ) : 0; } // exon selector from cols
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_eval_result_s* res )
 {
     ASSERT( fp != NULL );
@@ -150,7 +172,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf3_s* m2 = BLM_CREATE( bmath_mf3_s );
     bmath_mf3_s* m3 = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t m = o->rows;
@@ -180,7 +202,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             bmath_mf3_s_mul_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -193,7 +215,51 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             bmath_mf3_s_mul_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_asmf3_s_mul )
+    {
+        bmath_asmf3_s* sm0 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s* sm1 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s* sm2 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s_set_size( sm0, m0->rows, m0->cols );
+        bmath_asmf3_s_set_size( sm1, m1->rows, m1->cols );
+        bmath_asmf3_s_set_size( sm2, m2->rows, m2->cols );
+        bmath_asmf3_s_cpy_dfl_from_mf3( sm0, m0 );
+        bmath_asmf3_s_cpy_dfl_from_mf3( sm1, m1 );
+        if( o->test1 )
+        {
+            CPU_TIME_OF( ( ( bmath_fp_asmf3_s_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            bmath_asmf3_s_cpy_ifl_to_mf3( sm2, m2 );
+            bmath_mf3_s_mul_esp( m0, m1, m3 );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_xsmf3_s_mul )
+    {
+        bmath_xsmf3_s* sm0 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s* sm1 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s* sm2 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s_set_size( sm0, m0->rows, xons_from_cols( m0->cols ), slos_from_cols( m0->cols ) );
+        bmath_xsmf3_s_set_size( sm1, m1->rows, xons_from_cols( m1->cols ), slos_from_cols( m1->cols ) );
+        bmath_xsmf3_s_set_size( sm2, m2->rows, xons_from_cols( m2->cols ), slos_from_cols( m2->cols ) );
+        bmath_xsmf3_s_cpy_dfl_from_mf3( sm0, m0 );
+        bmath_xsmf3_s_cpy_dfl_from_mf3( sm1, m1 );
+        if( o->test1 )
+        {
+            CPU_TIME_OF( ( ( bmath_fp_xsmf3_s_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            bmath_xsmf3_s_cpy_ifl_to_mf3( sm2, m2 );
+            bmath_mf3_s_mul_esp( m0, m1, m3 );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -202,7 +268,6 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     {
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
-
 
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
 
@@ -222,7 +287,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     bmath_mf3_s* m2 = BLM_CREATE( bmath_mf3_s );
     bmath_mf3_s* m3 = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     if( fp_type == TYPEOF_bmath_fp_mf2_s_mul_htp )
@@ -251,7 +316,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             bmath_mf3_s_mul_htp_esp( m0, m0, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -280,7 +345,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -303,7 +368,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             bmath_mf3_s_mul_htp_esp( m0, m0, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -327,7 +392,77 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_asmf3_s_mul_htp )
+    {
+        sz_t m = o->rows;
+        sz_t n = o->cols;
+        sz_t p = o->dim3 >=0 ? o->dim3 : m;
+
+        bmath_mf3_s_set_size( m0, m, n );
+        bmath_mf3_s_set_size( m1, p, n );
+        bmath_mf3_s_set_size( m2, m, p );
+        bmath_mf3_s_set_size( m3, m, p );
+
+        u2_t rval = o->seed;
+        bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
+        bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, &rval );
+
+        bmath_asmf3_s* sm0 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s* sm1 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s* sm2 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s_set_size( sm0, m0->rows, m0->cols );
+        bmath_asmf3_s_set_size( sm1, m1->rows, m1->cols );
+        bmath_asmf3_s_set_size( sm2, m2->rows, m2->cols );
+        bmath_asmf3_s_cpy_dfl_from_mf3( sm0, m0 );
+        bmath_asmf3_s_cpy_dfl_from_mf3( sm1, m1 );
+        if( o->test1 )
+        {
+            CPU_TIME_OF( ( ( bmath_fp_asmf3_s_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            bmath_asmf3_s_cpy_ifl_to_mf3( sm2, m2 );
+            bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_xsmf3_s_mul_htp )
+    {
+        sz_t m = o->rows;
+        sz_t n = o->cols;
+        sz_t p = o->dim3 >=0 ? o->dim3 : m;
+
+        bmath_mf3_s_set_size( m0, m, n );
+        bmath_mf3_s_set_size( m1, p, n );
+        bmath_mf3_s_set_size( m2, m, p );
+        bmath_mf3_s_set_size( m3, m, p );
+
+        u2_t rval = o->seed;
+        bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
+        bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, &rval );
+
+        bmath_xsmf3_s* sm0 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s* sm1 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s* sm2 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s_set_size( sm0, m0->rows, xons_from_cols( m0->cols ), slos_from_cols( m0->cols ) );
+        bmath_xsmf3_s_set_size( sm1, m1->rows, xons_from_cols( m1->cols ), slos_from_cols( m1->cols ) );
+        bmath_xsmf3_s_set_size( sm2, m2->rows, xons_from_cols( m2->cols ), slos_from_cols( m2->cols ) );
+        bmath_xsmf3_s_cpy_dfl_from_mf3( sm0, m0 );
+        bmath_xsmf3_s_cpy_dfl_from_mf3( sm1, m1 );
+        if( o->test1 )
+        {
+            CPU_TIME_OF( ( ( bmath_fp_xsmf3_s_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            bmath_xsmf3_s_cpy_ifl_to_mf3( sm2, m2 );
+            bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -357,7 +492,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     bmath_mf3_s* m2  = BLM_CREATE( bmath_mf3_s );
     bmath_mf3_s* m3  = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     if( fp_type == TYPEOF_bmath_fp_mf2_s_htp_mul )
@@ -391,7 +526,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
 
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -424,7 +559,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
 
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -453,7 +588,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
 
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -476,13 +611,87 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
 
             CPU_TIME_OF( ( ( bmath_fp_mf3_s_htp_mul )fp )( m0, m1, m2 ), r->time1 );
 
-            // bmath_mf3_s_htp_mul_esp is very slow --> we use explicit transposition instead
+            // bmath_mf3_s_htp_mul_esp is much slower than bmath_mf3_s_mul_esp
             bmath_mf3_s_htp( m0, m0t );
             bmath_mf3_s_mul_esp( m0t, m1, m3 );
 
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_asmf3_s_htp_mul )
+    {
+        sz_t m = o->rows;
+        sz_t n = o->cols;
+        sz_t p = o->dim3 >=0 ? o->dim3 : n;
+
+        bmath_mf3_s_set_size( m0,  m, n );
+        bmath_mf3_s_set_size( m0t, n, m );
+        bmath_mf3_s_set_size( m1, m, p );
+        bmath_mf3_s_set_size( m2, n, p );
+        bmath_mf3_s_set_size( m3, n, p );
+
+        u2_t rval = o->seed;
+        bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
+        bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, &rval );
+
+        bmath_asmf3_s* sm0 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s* sm1 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s* sm2 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s_set_size( sm0, m0->rows, m0->cols );
+        bmath_asmf3_s_set_size( sm1, m1->rows, m1->cols );
+        bmath_asmf3_s_set_size( sm2, m2->rows, m2->cols );
+        bmath_asmf3_s_cpy_dfl_from_mf3( sm0, m0 );
+        bmath_asmf3_s_cpy_dfl_from_mf3( sm1, m1 );
+        if( o->test1 )
+        {
+            CPU_TIME_OF( ( ( bmath_fp_asmf3_s_htp_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            bmath_asmf3_s_cpy_ifl_to_mf3( sm2, m2 );
+            bmath_mf3_s_htp( m0, m0t );
+            bmath_mf3_s_mul_esp( m0t, m1, m3 );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_xsmf3_s_htp_mul )
+    {
+        sz_t m = o->rows;
+        sz_t n = o->cols;
+        sz_t p = o->dim3 >=0 ? o->dim3 : n;
+
+        bmath_mf3_s_set_size( m0,  m, n );
+        bmath_mf3_s_set_size( m0t, n, m );
+        bmath_mf3_s_set_size( m1, m, p );
+        bmath_mf3_s_set_size( m2, n, p );
+        bmath_mf3_s_set_size( m3, n, p );
+
+        u2_t rval = o->seed;
+        bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
+        bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, &rval );
+
+        bmath_xsmf3_s* sm0 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s* sm1 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s* sm2 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s_set_size( sm0, m0->rows, xons_from_cols( m0->cols ), slos_from_cols( m0->cols ) );
+        bmath_xsmf3_s_set_size( sm1, m1->rows, xons_from_cols( m1->cols ), slos_from_cols( m1->cols ) );
+        bmath_xsmf3_s_set_size( sm2, m2->rows, xons_from_cols( m2->cols ), slos_from_cols( m2->cols ) );
+        bmath_xsmf3_s_cpy_dfl_from_mf3( sm0, m0 );
+        bmath_xsmf3_s_cpy_dfl_from_mf3( sm1, m1 );
+        if( o->test1 )
+        {
+            CPU_TIME_OF( ( ( bmath_fp_xsmf3_s_htp_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            bmath_xsmf3_s_cpy_ifl_to_mf3( sm2, m2 );
+            bmath_mf3_s_htp( m0, m0t );
+            bmath_mf3_s_mul_esp( m0t, m1, m3 );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -512,7 +721,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
     bmath_mf3_s* m3 = BLM_CREATE( bmath_mf3_s );
     bmath_mf3_s* m4 = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t m = o->rows;
@@ -549,7 +758,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
 
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -565,7 +774,53 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
             CPU_TIME_OF( ( ( bmath_fp_mf3_s_htp_mul_htp )fp )( m0, m1, m2 ), r->time1 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
-            bmath_mfx_eval_s_create_image_file( o, m3, &o->a_img_file );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_asmf3_s_htp_mul_htp )
+    {
+        bmath_asmf3_s* sm0 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s* sm1 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s* sm2 = BLM_CREATE( bmath_asmf3_s );
+        bmath_asmf3_s_set_size( sm0, m0->rows, m0->cols );
+        bmath_asmf3_s_set_size( sm1, m1->rows, m1->cols );
+        bmath_asmf3_s_set_size( sm2, m2->rows, m2->cols );
+        bmath_asmf3_s_cpy_dfl_from_mf3( sm0, m0 );
+        bmath_asmf3_s_cpy_dfl_from_mf3( sm1, m1 );
+        if( o->test1 )
+        {
+            CPU_TIME_OF( ( ( bmath_fp_asmf3_s_htp_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            bmath_asmf3_s_cpy_ifl_to_mf3( sm2, m2 );
+            bmath_mf3_s_mul_esp( m1, m0, m4 );
+            bmath_mf3_s_htp( m4, m3 );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
+            r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
+            r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+        }
+    }
+    else if( fp_type == TYPEOF_bmath_fp_xsmf3_s_htp_mul_htp )
+    {
+        bmath_xsmf3_s* sm0 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s* sm1 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s* sm2 = BLM_CREATE( bmath_xsmf3_s );
+        bmath_xsmf3_s_set_size( sm0, m0->rows, xons_from_cols( m0->cols ), slos_from_cols( m0->cols ) );
+        bmath_xsmf3_s_set_size( sm1, m1->rows, xons_from_cols( m1->cols ), slos_from_cols( m1->cols ) );
+        bmath_xsmf3_s_set_size( sm2, m2->rows, xons_from_cols( m2->cols ), slos_from_cols( m2->cols ) );
+        bmath_xsmf3_s_cpy_dfl_from_mf3( sm0, m0 );
+        bmath_xsmf3_s_cpy_dfl_from_mf3( sm1, m1 );
+        if( o->test1 )
+        {
+            CPU_TIME_OF( ( ( bmath_fp_xsmf3_s_htp_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            bmath_xsmf3_s_cpy_ifl_to_mf3( sm2, m2 );
+            bmath_mf3_s_mul_esp( m1, m0, m4 );
+            bmath_mf3_s_htp( m4, m3 );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
+            if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
+            eval_s_create_image_file( o, m3, &o->a_img_file );
             r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
             r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
         }
@@ -597,7 +852,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf2_s* _v = BLM_CREATE( bmath_mf2_s );
     bmath_mf3_s* m2 = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t m = o->rows;
@@ -774,7 +1029,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     }
 
     if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
-    bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
+    eval_s_create_image_file( o, a, &o->a_img_file );
 
     if( o->test1 )
     {
@@ -782,8 +1037,8 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         r->fdev_v = bmath_mf3_s_fdev_otn( v );
         if( o->create_u_log ) bmath_mf3_s_to_string( u, &r->u_log );
         if( o->create_v_log ) bmath_mf3_s_to_string( v, &r->v_log );
-        bmath_mfx_eval_s_create_image_file( o, u, &o->u_img_file );
-        bmath_mfx_eval_s_create_image_file( o, v, &o->v_img_file );
+        eval_s_create_image_file( o, u, &o->u_img_file );
+        eval_s_create_image_file( o, v, &o->v_img_file );
         r->assert_u = bmath_mf3_s_is_near_otn( u, near_limit );
         r->assert_v = bmath_mf3_s_is_near_otn( v, near_limit );
 
@@ -814,7 +1069,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
     bmath_mf2_s* _a = BLM_CREATE( bmath_mf2_s );
     bmath_mf3_s* m2 = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t m = o->rows;
@@ -994,8 +1249,8 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
     {
         r->fdev_u = bmath_mf3_s_fdev_otn( u );
         if( o->create_u_log ) bmath_mf3_s_to_string( u, &r->u_log );
-        bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
-        bmath_mfx_eval_s_create_image_file( o, u, &o->u_img_file );
+        eval_s_create_image_file( o, a, &o->a_img_file );
+        eval_s_create_image_file( o, u, &o->u_img_file );
         r->assert_u = bmath_mf3_s_is_near_otn( u, near_limit );
 
         bmath_mf3_s_set_size( m2, u->rows, a->cols );
@@ -1025,7 +1280,7 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
     bmath_mf2_s* _v = BLM_CREATE( bmath_mf2_s );
     bmath_mf3_s* m2 = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t m = o->rows;
@@ -1205,8 +1460,8 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
     {
         r->fdev_v = bmath_mf3_s_fdev_otn( v );
         if( o->create_v_log ) bmath_mf3_s_to_string( v, &r->v_log );
-        bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
-        bmath_mfx_eval_s_create_image_file( o, v, &o->v_img_file );
+        eval_s_create_image_file( o, a, &o->a_img_file );
+        eval_s_create_image_file( o, v, &o->v_img_file );
         r->assert_v = bmath_mf3_s_is_near_otn( v, near_limit );
 
         bmath_mf3_s_set_size( m2, a->rows, v->rows );
@@ -1236,7 +1491,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
     bmath_mf2_s* _v = BLM_CREATE( bmath_mf2_s );
     bmath_mf3_s* m2 = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t n = o->rows;
@@ -1445,8 +1700,8 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         r->fdev_v = bmath_mf3_s_fdev_otn( v );
         if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
         if( o->create_v_log ) bmath_mf3_s_to_string( v, &r->v_log );
-        bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
-        bmath_mfx_eval_s_create_image_file( o, v, &o->v_img_file );
+        eval_s_create_image_file( o, a, &o->a_img_file );
+        eval_s_create_image_file( o, v, &o->v_img_file );
         r->assert_v = bmath_mf3_s_is_near_otn( v, near_limit );
 
         bmath_mf3_s_set_size( m2, n, n );
@@ -1477,7 +1732,7 @@ static void run_cld( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf2_s* _a  = BLM_CREATE( bmath_mf2_s );
     bmath_mf3_s* m2  = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t n = o->rows;
@@ -1512,7 +1767,7 @@ static void run_cld( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     }
 
     if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
-    bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
+    eval_s_create_image_file( o, a, &o->a_img_file );
 
     bmath_mf3_s_set_size( m2, n, n );
     bmath_mf3_s_mul_htp_esp( a, a, m2 );
@@ -1542,7 +1797,7 @@ static void run_lud( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf3_s* m2  = BLM_CREATE( bmath_mf3_s );
     bmath_mf3_s* m3  = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t n = o->rows;
@@ -1575,7 +1830,7 @@ static void run_lud( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     }
 
     if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
-    bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
+    eval_s_create_image_file( o, a, &o->a_img_file );
 
     bmath_mf3_s_set_size( m1, n, n );
     bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, &rval );
@@ -1610,7 +1865,7 @@ static void run_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf2_s* _a  = BLM_CREATE( bmath_mf2_s );
     bmath_mf3_s* m2  = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t n = o->rows;
@@ -1641,7 +1896,7 @@ static void run_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     }
 
     if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
-    bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
+    eval_s_create_image_file( o, a, &o->a_img_file );
 
     bmath_mf3_s_set_size( m2, n, n );
     bmath_mf3_s_mul_esp( m0, a, m2 );
@@ -1669,7 +1924,7 @@ static void run_pdf_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     bmath_mf2_s* _a  = BLM_CREATE( bmath_mf2_s );
     bmath_mf3_s* m2  = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t n = o->rows;
@@ -1701,7 +1956,7 @@ static void run_pdf_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     }
 
     if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
-    bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
+    eval_s_create_image_file( o, a, &o->a_img_file );
 
     bmath_mf3_s_set_size( m2, n, n );
     bmath_mf3_s_mul_esp( m0, a, m2 );
@@ -1728,7 +1983,7 @@ static void run_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf3_s* m1  = BLM_CREATE( bmath_mf3_s );
     bmath_mf3_s* m2  = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t m = o->rows;
@@ -1764,7 +2019,7 @@ static void run_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         }
 
         if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
-        bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
+        eval_s_create_image_file( o, a, &o->a_img_file );
 
         bmath_mf3_s_set_size( m2, uz_min( m, n ), uz_min( m, n ) );
 
@@ -1807,7 +2062,7 @@ static void run_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         }
 
         if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
-        bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
+        eval_s_create_image_file( o, a, &o->a_img_file );
 
         bmath_mf3_s_set_size( m1, m, m );
         bmath_mf3_s_set_size( m2, m, n );
@@ -1849,7 +2104,7 @@ static void run_hsm_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     bmath_mf2_s* _a  = BLM_CREATE( bmath_mf2_s );
     bmath_mf3_s* m2  = BLM_CREATE( bmath_mf3_s );
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
-    bmath_mfx_eval_result_s_set_defaults_from_eval( r, o );
+    result_s_set_defaults_from_eval( r, o );
     r->fp_type = fp_type;
 
     sz_t n = o->rows;
@@ -1881,7 +2136,7 @@ static void run_hsm_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     }
 
     if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
-    bmath_mfx_eval_s_create_image_file( o, a, &o->a_img_file );
+    eval_s_create_image_file( o, a, &o->a_img_file );
 
     bmath_mf3_s_set_size( m2, n, n );
     bmath_mf3_s_mul_esp( m0, a, m2 );
@@ -1904,15 +2159,23 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
     bmath_mfx_eval_result_s* r = BLM_CREATE( bmath_mfx_eval_result_s );
     switch( fp_type )
     {
+        case TYPEOF_bmath_fp_asmf3_s_mul:
+        case TYPEOF_bmath_fp_xsmf3_s_mul:
         case TYPEOF_bmath_fp_mf2_s_mul:
-        case TYPEOF_bmath_fp_mf3_s_mul : run_mul(         o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_mul: run_mul( o, fp_type, fp, r ); break;
 
+        case TYPEOF_bmath_fp_asmf3_s_mul_htp:
+        case TYPEOF_bmath_fp_xsmf3_s_mul_htp:
         case TYPEOF_bmath_fp_mf2_s_mul_htp:
-        case TYPEOF_bmath_fp_mf3_s_mul_htp: run_mul_htp(     o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_mul_htp: run_mul_htp( o, fp_type, fp, r ); break;
 
+        case TYPEOF_bmath_fp_asmf3_s_htp_mul:
+        case TYPEOF_bmath_fp_xsmf3_s_htp_mul:
         case TYPEOF_bmath_fp_mf2_s_htp_mul:
-        case TYPEOF_bmath_fp_mf3_s_htp_mul: run_htp_mul(     o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_htp_mul: run_htp_mul( o, fp_type, fp, r ); break;
 
+        case TYPEOF_bmath_fp_asmf3_s_htp_mul_htp:
+        case TYPEOF_bmath_fp_xsmf3_s_htp_mul_htp:
         case TYPEOF_bmath_fp_mf2_s_htp_mul_htp:
         case TYPEOF_bmath_fp_mf3_s_htp_mul_htp: run_htp_mul_htp( o, fp_type, fp, r ); break;
 
