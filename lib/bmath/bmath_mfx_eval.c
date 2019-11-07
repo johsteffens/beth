@@ -2162,22 +2162,30 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
         case TYPEOF_bmath_fp_asmf3_s_mul:
         case TYPEOF_bmath_fp_xsmf3_s_mul:
         case TYPEOF_bmath_fp_mf2_s_mul:
-        case TYPEOF_bmath_fp_mf3_s_mul: run_mul( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_mul:
+            run_mul( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_asmf3_s_mul_htp:
         case TYPEOF_bmath_fp_xsmf3_s_mul_htp:
         case TYPEOF_bmath_fp_mf2_s_mul_htp:
-        case TYPEOF_bmath_fp_mf3_s_mul_htp: run_mul_htp( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_mul_htp:
+            run_mul_htp( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_asmf3_s_htp_mul:
         case TYPEOF_bmath_fp_xsmf3_s_htp_mul:
         case TYPEOF_bmath_fp_mf2_s_htp_mul:
-        case TYPEOF_bmath_fp_mf3_s_htp_mul: run_htp_mul( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_htp_mul:
+            run_htp_mul( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_asmf3_s_htp_mul_htp:
         case TYPEOF_bmath_fp_xsmf3_s_htp_mul_htp:
         case TYPEOF_bmath_fp_mf2_s_htp_mul_htp:
-        case TYPEOF_bmath_fp_mf3_s_htp_mul_htp: run_htp_mul_htp( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_htp_mul_htp:
+            run_htp_mul_htp( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_mf2_s_uav:
         case TYPEOF_bmath_fp_mf2_s_svd:
@@ -2186,21 +2194,27 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
         case TYPEOF_bmath_fp_mf3_s_uav:
         case TYPEOF_bmath_fp_mf3_s_svd:
         case TYPEOF_bmath_fp_mf3_s_ubd:
-        case TYPEOF_bmath_fp_mf3_s_lbd: run_uav( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_lbd:
+            run_uav( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_mf2_s_ua:
         case TYPEOF_bmath_fp_mf2_s_qrd:
         case TYPEOF_bmath_fp_mf2_s_qrd_pmt:
         case TYPEOF_bmath_fp_mf3_s_ua:
         case TYPEOF_bmath_fp_mf3_s_qrd:
-        case TYPEOF_bmath_fp_mf3_s_qrd_pmt: run_ua( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_qrd_pmt:
+            run_ua( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_mf2_s_av:
         case TYPEOF_bmath_fp_mf2_s_lqd:
         case TYPEOF_bmath_fp_mf2_s_pmt_lqd:
         case TYPEOF_bmath_fp_mf3_s_av:
         case TYPEOF_bmath_fp_mf3_s_lqd:
-        case TYPEOF_bmath_fp_mf3_s_pmt_lqd: run_av( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_pmt_lqd:
+            run_av( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_mf2_s_uau:
         case TYPEOF_bmath_fp_mf2_s_vav:
@@ -2211,27 +2225,43 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
         case TYPEOF_bmath_fp_mf3_s_vav:
         case TYPEOF_bmath_fp_mf3_s_trd_htp:
         case TYPEOF_bmath_fp_mf3_s_trd:
-        case TYPEOF_bmath_fp_mf3_s_evd_htp: run_sym_uau_htp( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_evd_htp:
+            run_sym_uau_htp( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_mf2_s_cld:
-        case TYPEOF_bmath_fp_mf3_s_cld: run_cld( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_cld:
+            run_cld( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_mf2_s_lud:
-        case TYPEOF_bmath_fp_mf3_s_lud: run_lud( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_lud:
+            run_lud( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_mf2_s_inv:
-        case TYPEOF_bmath_fp_mf3_s_inv: run_inv( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_inv:
+            run_inv( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_mf2_s_pdf_inv:
-        case TYPEOF_bmath_fp_mf3_s_pdf_inv: run_pdf_inv( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_pdf_inv:
+            run_pdf_inv( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_mf2_s_hsm_piv:
-        case TYPEOF_bmath_fp_mf3_s_hsm_piv: run_hsm_piv( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_hsm_piv:
+            run_hsm_piv( o, fp_type, fp, r );
+            break;
 
         case TYPEOF_bmath_fp_mf2_s_piv:
-        case TYPEOF_bmath_fp_mf3_s_piv: run_piv( o, fp_type, fp, r ); break;
+        case TYPEOF_bmath_fp_mf3_s_piv:
+            run_piv( o, fp_type, fp, r );
+            break;
 
-        default: ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) ); break;
+        default:
+            ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
+            break;
     }
 
     if( label ) st_s_copy_sc( &r->label, label );
