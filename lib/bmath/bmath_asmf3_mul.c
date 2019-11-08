@@ -20,13 +20,13 @@
 #include "bmath_asmf3.h"
 #include "bmath_asmf3_mul.h"
 
-#define BMATH_MUL_SF_BLOCK_SIZE 48
-#define BMATH_MUL_SF_BLKP4_SIZE ( BMATH_MUL_SF_BLOCK_SIZE >> 2 )
+#define BMATH_ASM_MUL_BLOCK_SIZE 48
+#define BMATH_ASM_MUL_BLKP4_SIZE ( BMATH_ASM_MUL_BLOCK_SIZE >> 2 )
 
 #ifdef TYPEOF_bmath_asmf3_s
 
 /**********************************************************************************************************************/
-// mul
+// Microkernels
 
 static sz_t mf3_sf_midof( sz_t v, const sz_t bz )
 {
@@ -35,24 +35,24 @@ static sz_t mf3_sf_midof( sz_t v, const sz_t bz )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#ifdef BMATH_AVX
-
 /** smul: Fixed size AVX-Microkernel
- *  Requirement: o_cols == BMATH_MUL_SF_BLOCK_SIZE && m_cols == BMATH_MUL_SF_BLOCK_SIZE
+ *  Requirement: o_cols == BMATH_ASM_MUL_BLOCK_SIZE && m_cols == BMATH_ASM_MUL_BLOCK_SIZE
  */
-static void bmath_asmf3_s_mul_block_avx_fix_kernel
+static void kernel_fixed_mul
 (
     const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col,
     const bmath_asmf3_s* m,                          sz_t m_col,
           bmath_asmf3_s* r
 )
 {
-    __m256d r_p4[ BMATH_MUL_SF_BLKP4_SIZE ];
-    __m256d m_p4[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLKP4_SIZE ];
+#ifdef BMATH_AVX
 
-    for( sz_t j = 0; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
+    __m256d r_p4[ BMATH_ASM_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLKP4_SIZE ];
+
+    for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
     {
-        for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
         {
             sz_t* m_x = &m->i_data[ ( o_col + j ) * m->i_stride + m_col + k * 4 ];
             m_p4[ j ][ k ][ 0 ] = m->v_data[ m_x[ 0 ] ];
@@ -69,15 +69,15 @@ static void bmath_asmf3_s_mul_block_avx_fix_kernel
 
         __m256d o_p4 = _mm256_set1_pd( o->v_data[ o_x[ 0 ] ] );
 
-        for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
         {
             r_p4[ k ] = _mm256_mul_pd( m_p4[ 0 ][ k ], o_p4 );
         }
 
-        for( sz_t j = 1; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
+        for( sz_t j = 1; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
         {
             o_p4 = _mm256_set1_pd( o->v_data[ o_x[ j ] ] );
-            for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+            for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
             {
                 #ifdef BMATH_AVX2_FMA
                     r_p4[ k ] = _mm256_fmadd_pd( m_p4[ j ][ k ], o_p4, r_p4[ k ] );
@@ -87,7 +87,7 @@ static void bmath_asmf3_s_mul_block_avx_fix_kernel
             }
         }
 
-        for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
         {
             r->v_data[ r_x[ k * 4 + 0 ] ] += r_p4[ k ][ 0 ];
             r->v_data[ r_x[ k * 4 + 1 ] ] += r_p4[ k ][ 1 ];
@@ -95,29 +95,60 @@ static void bmath_asmf3_s_mul_block_avx_fix_kernel
             r->v_data[ r_x[ k * 4 + 3 ] ] += r_p4[ k ][ 3 ];
         }
     }
+
+#else
+
+    f3_t r_p[ BMATH_ASM_MUL_BLOCK_SIZE ];
+    f3_t m_p[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLOCK_SIZE ];
+    for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
+    {
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ )
+        {
+            m_p[ j ][ k ] = m->v_data[ m->i_data[ ( o_col + j ) * m->i_stride + m_col + k ] ];
+        }
+    }
+
+    for( sz_t i = 0; i < o_rows; i++ )
+    {
+        const sz_t* o_x = &o->i_data[ ( o_row + i ) * o->i_stride + o_col ];
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
+
+        for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
+        {
+            f3_t o_v = o->v_data[ o_x[ j ] ];
+            for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r_p[ k ] += m_p[ j ][ k ] * o_v;
+        }
+
+        sz_t* r_x = &r->i_data[ ( o_row + i ) * r->i_stride + m_col ];
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
+    }
+
+#endif // BMATH_AVX
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /** smul: Flexible AVX-Microkernel
- *  Requirement: o_cols <= BMATH_MUL_SF_BLOCK_SIZE && m_cols <= BMATH_MUL_SF_BLOCK_SIZE
+ *  Requirement: o_cols <= BMATH_ASM_MUL_BLOCK_SIZE && m_cols <= BMATH_ASM_MUL_BLOCK_SIZE
  */
-static void bmath_asmf3_s_mul_block_avx_flex_kernel
+static void kernel_flexi_mul
 (
     const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
     const bmath_asmf3_s* m,                          sz_t m_col, sz_t m_cols,
           bmath_asmf3_s* r
 )
 {
-    ASSERT( o_cols <= BMATH_MUL_SF_BLOCK_SIZE );
-    ASSERT( m_cols <= BMATH_MUL_SF_BLOCK_SIZE );
+#ifdef BMATH_AVX
+
+    ASSERT( o_cols <= BMATH_ASM_MUL_BLOCK_SIZE );
+    ASSERT( m_cols <= BMATH_ASM_MUL_BLOCK_SIZE );
 
     const sz_t m_cols4l = m_cols >> 2;
     const sz_t m_colsr  = m_cols - m_cols4l * 4;
     const sz_t m_cols4p = m_colsr > 0 ? m_cols4l + 1 : m_cols4l;
 
-    __m256d r_p4[ BMATH_MUL_SF_BLKP4_SIZE ];
-    __m256d m_p4[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLKP4_SIZE ];
+    __m256d r_p4[ BMATH_ASM_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLKP4_SIZE ];
 
     for( sz_t j = 0; j < o_cols; j++ )
     {
@@ -173,144 +204,59 @@ static void bmath_asmf3_s_mul_block_avx_flex_kernel
             for( sz_t k = 0; k < m_colsr; k++ ) r->v_data[ r_x[ m_cols4l * 4 + k ] ] += r_p4[ m_cols4l ][ k ];
         }
     }
-}
 
-#endif // BMATH_AVX
+#else
 
-//----------------------------------------------------------------------------------------------------------------------
-
-static void bmath_asmf3_s_mul_block
-(
-    const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
-    const bmath_asmf3_s* m,                          sz_t m_col, sz_t m_cols,
-          bmath_asmf3_s* r
-)
-{
-    if( o_cols == BMATH_MUL_SF_BLOCK_SIZE && m_cols == BMATH_MUL_SF_BLOCK_SIZE )
+    f3_t r_p[ BMATH_ASM_MUL_BLOCK_SIZE ];
+    f3_t m_p[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLOCK_SIZE ];
+    for( sz_t j = 0; j < o_cols; j++ )
     {
-        #ifdef BMATH_AVX
-            bmath_asmf3_s_mul_block_avx_fix_kernel( o, o_row, o_rows, o_col, m, m_col, r );
-        #else
-            f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
-            f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
-            for( sz_t j = 0; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
-            {
-                for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ )
-                {
-                    m_p[ j ][ k ] = m->v_data[ m->i_data[ ( o_col + j ) * m->i_stride + m_col + k ] ];
-                }
-            }
-
-            for( sz_t i = 0; i < o_rows; i++ )
-            {
-                const sz_t* o_x = &o->i_data[ ( o_row + i ) * o->i_stride + o_col ];
-                for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
-
-                for( sz_t j = 0; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
-                {
-                    f3_t o_v = o->v_data[ o_x[ j ] ];
-                    for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ ) r_p[ k ] += m_p[ j ][ k ] * o_v;
-                }
-
-                sz_t* r_x = &r->i_data[ ( o_row + i ) * r->i_stride + m_col ];
-                for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
-            }
-        #endif // BMATH_AVX
-        return;
+        for( sz_t k = 0; k < m_cols; k++ )
+        {
+            m_p[ j ][ k ] = m->v_data[ m->i_data[ ( o_col + j ) * m->i_stride + m_col + k ] ];
+        }
     }
 
-    if( o_rows >= o_cols && o_rows >= m_cols && o_rows > BMATH_MUL_SF_BLOCK_SIZE )
+    for( sz_t i = 0; i < o_rows; i++ )
     {
-        sz_t mid = mf3_sf_midof( o_rows, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_asmf3_s_mul_block( o, o_row,                mid, o_col, o_cols, m, m_col, m_cols, r );
-        bmath_asmf3_s_mul_block( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_col, m_cols, r );
-        return;
-    }
+        const sz_t* o_x = &o->i_data[ ( o_row + i ) * o->i_stride + o_col ];
+        for( sz_t k = 0; k < m_cols; k++ ) r_p[ k ] = 0;
 
-    if( o_cols >= m_cols && o_cols > BMATH_MUL_SF_BLOCK_SIZE )
-    {
-        sz_t mid = mf3_sf_midof( o_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_asmf3_s_mul_block( o, o_row, o_rows, o_col,                mid, m, m_col, m_cols, r );
-        bmath_asmf3_s_mul_block( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_col, m_cols, r );
-        return;
-    }
-
-    if( m_cols > BMATH_MUL_SF_BLOCK_SIZE )
-    {
-        sz_t mid = mf3_sf_midof( m_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_asmf3_s_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col,                mid, r );
-        bmath_asmf3_s_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col + mid, m_cols - mid, r );
-        return;
-    }
-
-    {
-    #ifdef BMATH_AVX
-        bmath_asmf3_s_mul_block_avx_flex_kernel( o, o_row, o_rows, o_col, o_cols, m, m_col, m_cols, r );
-    #else
-        f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
-        f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
         for( sz_t j = 0; j < o_cols; j++ )
         {
-            for( sz_t k = 0; k < m_cols; k++ )
-            {
-                m_p[ j ][ k ] = m->v_data[ m->i_data[ ( o_col + j ) * m->i_stride + m_col + k ] ];
-            }
+            f3_t o_v = o->v_data[ o_x[ j ] ];
+            for( sz_t k = 0; k < m_cols; k++ ) r_p[ k ] += m_p[ j ][ k ] * o_v;
         }
 
-        for( sz_t i = 0; i < o_rows; i++ )
-        {
-            const sz_t* o_x = &o->i_data[ ( o_row + i ) * o->i_stride + o_col ];
-            for( sz_t k = 0; k < m_cols; k++ ) r_p[ k ] = 0;
-
-            for( sz_t j = 0; j < o_cols; j++ )
-            {
-                f3_t o_v = o->v_data[ o_x[ j ] ];
-                for( sz_t k = 0; k < m_cols; k++ ) r_p[ k ] += m_p[ j ][ k ] * o_v;
-            }
-
-            sz_t* r_x = &r->i_data[ ( o_row + i ) * r->i_stride + m_col ];
-            for( sz_t k = 0; k < m_cols; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
-        }
-    #endif
+        sz_t* r_x = &r->i_data[ ( o_row + i ) * r->i_stride + m_col ];
+        for( sz_t k = 0; k < m_cols; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
     }
+
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_asmf3_s_mul( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r )
-{
-    ASSERT( o->rows == r->rows );
-    ASSERT( o->cols == m->rows );
-    ASSERT( m->cols == r->cols );
-    bmath_asmf3_s_zro( r );
-    bmath_asmf3_s_mul_block( o, 0, o->rows, 0, o->cols, m, 0, m->cols, r );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/**********************************************************************************************************************/
-// mul_htp
-
-#ifdef BMATH_AVX
 /** smul: Fixed size AVX-Microkernel
- *  Requirement: o_cols == BMATH_MUL_SF_BLOCK_SIZE && m_cols == BMATH_MUL_SF_BLOCK_SIZE
+ *  Requirement: o_cols == BMATH_ASM_MUL_BLOCK_SIZE && m_cols == BMATH_ASM_MUL_BLOCK_SIZE
  */
-static void bmath_asmf3_s_mul_htp_block_avx_fix_kernel
+static void kernel_fixed_mul_htp
 (
     const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col,
     const bmath_asmf3_s* m,
           bmath_asmf3_s* r,                          sz_t r_col
 )
 {
-    assert( ( BMATH_MUL_SF_BLOCK_SIZE & 3 ) == 0 );
+#ifdef BMATH_AVX
+    assert( ( BMATH_ASM_MUL_BLOCK_SIZE & 3 ) == 0 );
 
-    __m256d r_p4[ BMATH_MUL_SF_BLKP4_SIZE ];
-    __m256d m_p4[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLKP4_SIZE ];
+    __m256d r_p4[ BMATH_ASM_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLKP4_SIZE ];
 
-    for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+    for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
     {
         sz_t m_row = r_col + k * 4;
-        for( sz_t j = 0; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
+        for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
         {
             m_p4[ j ][ k ][ 0 ] = m->v_data[ m->i_data[ ( m_row + 0 ) * m->i_stride + o_col + j ] ];
             m_p4[ j ][ k ][ 1 ] = m->v_data[ m->i_data[ ( m_row + 1 ) * m->i_stride + o_col + j ] ];
@@ -326,15 +272,15 @@ static void bmath_asmf3_s_mul_htp_block_avx_fix_kernel
 
         __m256d o_p4 = _mm256_set1_pd( o->v_data[ o_x[ 0 ] ] );
 
-        for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
         {
             r_p4[ k ] = _mm256_mul_pd( m_p4[ 0 ][ k ], o_p4 );
         }
 
-        for( sz_t j = 1; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
+        for( sz_t j = 1; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
         {
             o_p4 = _mm256_set1_pd( o->v_data[ o_x[ j ] ] );
-            for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+            for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
             {
                 #ifdef BMATH_AVX2_FMA
                     r_p4[ k ] = _mm256_fmadd_pd( m_p4[ j ][ k ], o_p4, r_p4[ k ] );
@@ -344,7 +290,7 @@ static void bmath_asmf3_s_mul_htp_block_avx_fix_kernel
             }
         }
 
-        for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
         {
             r->v_data[ r_x[ k * 4 + 0 ] ] += r_p4[ k ][ 0 ];
             r->v_data[ r_x[ k * 4 + 1 ] ] += r_p4[ k ][ 1 ];
@@ -352,29 +298,54 @@ static void bmath_asmf3_s_mul_htp_block_avx_fix_kernel
             r->v_data[ r_x[ k * 4 + 3 ] ] += r_p4[ k ][ 3 ];
         }
     }
+#else
+    f3_t r_p[ BMATH_ASM_MUL_BLOCK_SIZE ];
+    f3_t m_p[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLOCK_SIZE ];
+    for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ )
+    {
+        for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
+        {
+            m_p[ j ][ k ] = m->v_data[ m->i_data[ ( r_col + k ) * m->i_stride + o_col + j ] ];
+        }
+    }
+
+    for( sz_t i = 0; i < o_rows; i++ )
+    {
+        const sz_t* o_x = &o->i_data[ ( o_row + i ) * o->i_stride + o_col ];
+              sz_t* r_x = &r->i_data[ ( o_row + i ) * r->i_stride + r_col ];
+
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
+        for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
+        {
+            for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r_p[ k ] += m_p[ j ][ k ] * o->v_data[ o_x[ j ] ];
+        }
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
+    }
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /** smul: Flexible AVX-Microkernel
- *  Requirement: o_cols <= BMATH_MUL_SF_BLOCK_SIZE && m_cols <= BMATH_MUL_SF_BLOCK_SIZE
+ *  Requirement: o_cols <= BMATH_ASM_MUL_BLOCK_SIZE && m_cols <= BMATH_ASM_MUL_BLOCK_SIZE
  */
-static void bmath_asmf3_s_mul_htp_block_avx_flex_kernel
+static void kernel_flexi_mul_htp
 (
     const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
     const bmath_asmf3_s* m,
           bmath_asmf3_s* r,                          sz_t r_col, sz_t r_cols
 )
 {
-    ASSERT( o_cols <= BMATH_MUL_SF_BLOCK_SIZE );
-    ASSERT( r_cols <= BMATH_MUL_SF_BLOCK_SIZE );
+#ifdef BMATH_AVX
+    ASSERT( o_cols <= BMATH_ASM_MUL_BLOCK_SIZE );
+    ASSERT( r_cols <= BMATH_ASM_MUL_BLOCK_SIZE );
 
     const sz_t r_cols4l = r_cols >> 2;
     const sz_t r_colsr  = r_cols - r_cols4l * 4;
     const sz_t r_cols4p = r_colsr > 0 ? r_cols4l + 1 : r_cols4l;
 
-    __m256d r_p4[ BMATH_MUL_SF_BLKP4_SIZE ];
-    __m256d m_p4[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLKP4_SIZE ];
+    __m256d r_p4[ BMATH_ASM_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLKP4_SIZE ];
 
     for( sz_t k = 0; k < r_cols4l; k++ )
     {
@@ -433,140 +404,53 @@ static void bmath_asmf3_s_mul_htp_block_avx_flex_kernel
             for( sz_t k = 0; k < r_colsr; k++ ) r->v_data[ r_x[ r_cols4l * 4 + k ] ] += r_p4[ r_cols4l ][ k ];
         }
     }
-}
+#else
+    f3_t r_p[ BMATH_ASM_MUL_BLOCK_SIZE ];
+    f3_t m_p[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLOCK_SIZE ];
+    for( sz_t k = 0; k < r_cols; k++ )
+    {
+        for( sz_t j = 0; j < o_cols; j++ )
+        {
+            m_p[ j ][ k ] = m->v_data[ m->i_data[ ( r_col + k ) * m->i_stride + o_col + j ] ];
+        }
+    }
 
+    for( sz_t i = 0; i < o_rows; i++ )
+    {
+        const sz_t* o_x = &o->i_data[ ( o_row + i ) * o->i_stride + o_col ];
+
+        for( sz_t k = 0; k < r_cols; k++ ) r_p[ k ] = 0;
+
+        for( sz_t j = 0; j < o_cols; j++ )
+        {
+            for( sz_t k = 0; k < r_cols; k++ ) r_p[ k ] += m_p[ j ][ k ] * o->v_data[ o_x[ j ] ];
+        }
+
+        const sz_t* r_x = &r->i_data[ ( o_row + i ) * r->i_stride + r_col ];
+        for( sz_t k = 0; k < r_cols; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
+    }
 #endif // BMATH_AVX
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static void bmath_asmf3_s_mul_htp_block
-(
-    const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
-    const bmath_asmf3_s* m,
-          bmath_asmf3_s* r,                          sz_t r_col, sz_t r_cols
-)
-{
-    if( o_cols == BMATH_MUL_SF_BLOCK_SIZE && r_cols == BMATH_MUL_SF_BLOCK_SIZE )
-    {
-        #ifdef BMATH_AVX
-            bmath_asmf3_s_mul_htp_block_avx_fix_kernel( o, o_row, o_rows, o_col, m, r, r_col );
-        #else
-            f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
-            f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
-            for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ )
-            {
-                for( sz_t j = 0; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
-                {
-                    m_p[ j ][ k ] = m->v_data[ m->i_data[ ( r_col + k ) * m->i_stride + o_col + j ] ];
-                }
-            }
-
-            for( sz_t i = 0; i < o_rows; i++ )
-            {
-                const sz_t* o_x = &o->i_data[ ( o_row + i ) * o->i_stride + o_col ];
-                      sz_t* r_x = &r->i_data[ ( o_row + i ) * r->i_stride + r_col ];
-
-                for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
-                for( sz_t j = 0; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
-                {
-                    for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ ) r_p[ k ] += m_p[ j ][ k ] * o->v_data[ o_x[ j ] ];
-                }
-                for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
-            }
-        #endif
-        return;
-    }
-
-    if( o_rows >= o_cols && o_rows >= r_cols && o_rows > BMATH_MUL_SF_BLOCK_SIZE )
-    {
-        sz_t mid = mf3_sf_midof( o_rows, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_asmf3_s_mul_htp_block( o, o_row,                mid, o_col, o_cols, m, r, r_col, r_cols );
-        bmath_asmf3_s_mul_htp_block( o, o_row + mid, o_rows - mid, o_col, o_cols, m, r, r_col, r_cols );
-        return;
-    }
-
-    if( o_cols >= r_cols && o_cols > BMATH_MUL_SF_BLOCK_SIZE )
-    {
-        sz_t mid = mf3_sf_midof( o_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_asmf3_s_mul_htp_block( o, o_row, o_rows, o_col,                mid, m, r, r_col, r_cols );
-        bmath_asmf3_s_mul_htp_block( o, o_row, o_rows, o_col + mid, o_cols - mid, m, r, r_col, r_cols );
-        return;
-    }
-
-    if( r_cols > BMATH_MUL_SF_BLOCK_SIZE )
-    {
-        sz_t mid = mf3_sf_midof( r_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_asmf3_s_mul_htp_block( o, o_row, o_rows, o_col, o_cols, m, r, r_col,                mid );
-        bmath_asmf3_s_mul_htp_block( o, o_row, o_rows, o_col, o_cols, m, r, r_col + mid, r_cols - mid );
-        return;
-    }
-
-    {
-        #ifdef BMATH_AVX
-            bmath_asmf3_s_mul_htp_block_avx_flex_kernel( o, o_row, o_rows, o_col, o_cols, m, r, r_col, r_cols );
-        #else
-            f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
-            f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
-            for( sz_t k = 0; k < r_cols; k++ )
-            {
-                for( sz_t j = 0; j < o_cols; j++ )
-                {
-                    m_p[ j ][ k ] = m->v_data[ m->i_data[ ( r_col + k ) * m->i_stride + o_col + j ] ];
-                }
-            }
-
-            for( sz_t i = 0; i < o_rows; i++ )
-            {
-                const sz_t* o_x = &o->i_data[ ( o_row + i ) * o->i_stride + o_col ];
-
-                for( sz_t k = 0; k < r_cols; k++ ) r_p[ k ] = 0;
-
-                for( sz_t j = 0; j < o_cols; j++ )
-                {
-                    for( sz_t k = 0; k < r_cols; k++ ) r_p[ k ] += m_p[ j ][ k ] * o->v_data[ o_x[ j ] ];
-                }
-
-                const sz_t* r_x = &r->i_data[ ( o_row + i ) * r->i_stride + r_col ];
-                for( sz_t k = 0; k < r_cols; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
-            }
-        #endif
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
-void bmath_asmf3_s_mul_htp( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r )
-{
-    ASSERT( o->rows == r->rows );
-    ASSERT( m->rows == r->cols );
-    ASSERT( o->cols == m->cols );
-    bmath_asmf3_s_zro( r );
-    bmath_asmf3_s_mul_htp_block( o, 0, o->rows, 0, o->cols, m, r, 0, r->cols );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/**********************************************************************************************************************/
-// htp_mul
-
-#ifdef BMATH_AVX
 
 /** smul: Fixed size AVX-Microkernel
- *  Requirement: o_rows == BMATH_MUL_SF_BLOCK_SIZE && m_cols == BMATH_MUL_SF_BLOCK_SIZE
+ *  Requirement: o_rows == BMATH_ASM_MUL_BLOCK_SIZE && m_cols == BMATH_ASM_MUL_BLOCK_SIZE
  */
-static void bmath_asmf3_s_htp_mul_block_avx_fix_kernel
+static void kernel_fixed_htp_mul
 (
     const bmath_asmf3_s* o, sz_t o_row, sz_t o_col, sz_t o_cols,
     const bmath_asmf3_s* m,             sz_t m_col,
           bmath_asmf3_s* r
 )
 {
-    __m256d r_p4[ BMATH_MUL_SF_BLKP4_SIZE ];
-    __m256d m_p4[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLKP4_SIZE ];
+#ifdef BMATH_AVX
+    __m256d r_p4[ BMATH_ASM_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLKP4_SIZE ];
 
-    for( sz_t j = 0; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
+    for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
     {
-        for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
         {
             sz_t idx = ( o_row + j ) * m->i_stride + m_col + k * 4;
             m_p4[ j ][ k ][ 0 ] = m->v_data[ m->i_data[ idx + 0 ] ];
@@ -581,16 +465,16 @@ static void bmath_asmf3_s_htp_mul_block_avx_fix_kernel
         const sz_t* o_x = &o->i_data[ o_row * o->i_stride + o_col ];
         __m256d o_p4 = _mm256_set1_pd( o->v_data[ o_x[ i ] ] );
 
-        for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
         {
             r_p4[ k ] = _mm256_mul_pd( m_p4[ 0 ][ k ], o_p4 );
         }
 
-        for( sz_t j = 1; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
+        for( sz_t j = 1; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
         {
             const sz_t* o_x = &o->i_data[ ( o_row + j ) * o->i_stride + o_col ];
             __m256d o_p4 = _mm256_set1_pd( o->v_data[ o_x[ i ] ] );
-            for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+            for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
             {
                 #ifdef BMATH_AVX2_FMA
                     r_p4[ k ] = _mm256_fmadd_pd( m_p4[ j ][ k ], o_p4, r_p4[ k ] );
@@ -602,7 +486,7 @@ static void bmath_asmf3_s_htp_mul_block_avx_fix_kernel
 
         sz_t m_row = o_col;
         const sz_t* r_x = &r->i_data[ ( m_row + i ) * r->i_stride + m_col ];
-        for( sz_t k = 0; k < BMATH_MUL_SF_BLKP4_SIZE; k++ )
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
         {
             r->v_data[ r_x[ k * 4 + 0 ] ] += r_p4[ k ][ 0 ];
             r->v_data[ r_x[ k * 4 + 1 ] ] += r_p4[ k ][ 1 ];
@@ -610,29 +494,57 @@ static void bmath_asmf3_s_htp_mul_block_avx_fix_kernel
             r->v_data[ r_x[ k * 4 + 3 ] ] += r_p4[ k ][ 3 ];
         }
     }
+#else
+    f3_t r_p[ BMATH_ASM_MUL_BLOCK_SIZE ];
+    f3_t m_p[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLOCK_SIZE ];
+    for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
+    {
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ )
+        {
+            m_p[ j ][ k ] = m->v_data[ m->i_data[ ( o_row + j ) * m->i_stride + m_col + k ] ];
+        }
+    }
+
+    for( sz_t i = 0; i < o_cols; i++ )
+    {
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
+
+        for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
+        {
+            f3_t o_v = o->v_data[ o->i_data[ ( o_row + j ) * o->i_stride + o_col + i ] ];
+            for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r_p[ k ] += m_p[ j ][ k ] * o_v;
+        }
+
+        sz_t m_row = o_col;
+
+        const sz_t* r_x = &r->i_data[ ( m_row + i ) * r->i_stride + m_col ];
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
+    }
+#endif // BMATH_AVX
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /** smul: Flexible AVX-Microkernel
- *  Requirement: o_rows <= BMATH_MUL_SF_BLOCK_SIZE && m_cols <= BMATH_MUL_SF_BLOCK_SIZE
+ *  Requirement: o_rows <= BMATH_ASM_MUL_BLOCK_SIZE && m_cols <= BMATH_ASM_MUL_BLOCK_SIZE
  */
-static void bmath_asmf3_s_htp_mul_block_avx_flex_kernel
+static void kernel_flexi_htp_mul
 (
     const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
     const bmath_asmf3_s* m,                          sz_t m_col, sz_t m_cols,
           bmath_asmf3_s* r
 )
 {
-    assert( o_rows <= BMATH_MUL_SF_BLOCK_SIZE );
-    assert( m_cols <= BMATH_MUL_SF_BLOCK_SIZE );
+#ifdef BMATH_AVX
+    assert( o_rows <= BMATH_ASM_MUL_BLOCK_SIZE );
+    assert( m_cols <= BMATH_ASM_MUL_BLOCK_SIZE );
 
     const sz_t m_cols4l = m_cols >> 2;
     const sz_t m_colsr  = m_cols - m_cols4l * 4;
     const sz_t m_cols4p = m_colsr > 0 ? m_cols4l + 1 : m_cols4l;
 
-    __m256d r_p4[ BMATH_MUL_SF_BLKP4_SIZE ];
-    __m256d m_p4[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLKP4_SIZE ];
+    __m256d r_p4[ BMATH_ASM_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLKP4_SIZE ];
 
     for( sz_t j = 0; j < o_rows; j++ )
     {
@@ -688,13 +600,129 @@ static void bmath_asmf3_s_htp_mul_block_avx_flex_kernel
             for( sz_t k = 0; k < m_colsr; k++ ) r->v_data[ r_x[ m_cols4l * 4 + k ] ] += r_p4[ m_cols4l ][ k ];
         }
     }
-}
+#else
+    f3_t r_p[ BMATH_ASM_MUL_BLOCK_SIZE ];
+    f3_t m_p[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLOCK_SIZE ];
+    for( sz_t j = 0; j < o_rows; j++ )
+    {
+        for( sz_t k = 0; k < m_cols; k++ )
+        {
+            m_p[ j ][ k ] = m->v_data[ m->i_data[ ( o_row + j ) * m->i_stride + m_col + k ] ];
+        }
+    }
 
+    for( sz_t i = 0; i < o_cols; i++ )
+    {
+        for( sz_t k = 0; k < m_cols; k++ ) r_p[ k ] = 0;
+
+        for( sz_t j = 0; j < o_rows; j++ )
+        {
+            f3_t o_v = o->v_data[ o->i_data[ ( o_row + j ) * o->i_stride + o_col + i ] ];
+            for( sz_t k = 0; k < m_cols; k++ ) r_p[ k ] += m_p[ j ][ k ] * o_v;
+        }
+
+        sz_t m_row = o_col;
+
+        const sz_t* r_x = &r->i_data[ ( m_row + i ) * r->i_stride + m_col ];
+        for( sz_t k = 0; k < m_cols; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
+    }
 #endif // BMATH_AVX
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bmath_asmf3_s_htp_mul_block
+/**********************************************************************************************************************/
+// Recursive block multiplication
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void recursive_block_mul
+(
+    const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
+    const bmath_asmf3_s* m,                          sz_t m_col, sz_t m_cols,
+          bmath_asmf3_s* r
+)
+{
+    if( o_cols == BMATH_ASM_MUL_BLOCK_SIZE && m_cols == BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        kernel_fixed_mul( o, o_row, o_rows, o_col, m, m_col, r );
+        return;
+    }
+
+    if( o_rows >= o_cols && o_rows >= m_cols && o_rows > BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = mf3_sf_midof( o_rows, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_mul( o, o_row,                mid, o_col, o_cols, m, m_col, m_cols, r );
+        recursive_block_mul( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_col, m_cols, r );
+        return;
+    }
+
+    if( o_cols >= m_cols && o_cols > BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = mf3_sf_midof( o_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_mul( o, o_row, o_rows, o_col,                mid, m, m_col, m_cols, r );
+        recursive_block_mul( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_col, m_cols, r );
+        return;
+    }
+
+    if( m_cols > BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = mf3_sf_midof( m_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_mul( o, o_row, o_rows, o_col, o_cols, m, m_col,                mid, r );
+        recursive_block_mul( o, o_row, o_rows, o_col, o_cols, m, m_col + mid, m_cols - mid, r );
+        return;
+    }
+
+    kernel_flexi_mul( o, o_row, o_rows, o_col, o_cols, m, m_col, m_cols, r );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void recursive_block_mul_htp
+(
+    const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
+    const bmath_asmf3_s* m,
+          bmath_asmf3_s* r,                          sz_t r_col, sz_t r_cols
+)
+{
+    if( o_cols == BMATH_ASM_MUL_BLOCK_SIZE && r_cols == BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        kernel_fixed_mul_htp( o, o_row, o_rows, o_col, m, r, r_col );
+        return;
+    }
+
+    if( o_rows >= o_cols && o_rows >= r_cols && o_rows > BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = mf3_sf_midof( o_rows, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_mul_htp( o, o_row,                mid, o_col, o_cols, m, r, r_col, r_cols );
+        recursive_block_mul_htp( o, o_row + mid, o_rows - mid, o_col, o_cols, m, r, r_col, r_cols );
+        return;
+    }
+
+    if( o_cols >= r_cols && o_cols > BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = mf3_sf_midof( o_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_mul_htp( o, o_row, o_rows, o_col,                mid, m, r, r_col, r_cols );
+        recursive_block_mul_htp( o, o_row, o_rows, o_col + mid, o_cols - mid, m, r, r_col, r_cols );
+        return;
+    }
+
+    if( r_cols > BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = mf3_sf_midof( r_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_mul_htp( o, o_row, o_rows, o_col, o_cols, m, r, r_col,                mid );
+        recursive_block_mul_htp( o, o_row, o_rows, o_col, o_cols, m, r, r_col + mid, r_cols - mid );
+        return;
+    }
+
+    {
+        kernel_flexi_mul_htp( o, o_row, o_rows, o_col, o_cols, m, r, r_col, r_cols );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void recursive_block_htp_mul
 (
     const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
     const bmath_asmf3_s* m,                          sz_t m_col, sz_t m_cols,
@@ -702,93 +730,64 @@ static void bmath_asmf3_s_htp_mul_block
 )
 {
 
-    if( o_rows == BMATH_MUL_SF_BLOCK_SIZE && m_cols == BMATH_MUL_SF_BLOCK_SIZE )
+    if( o_rows == BMATH_ASM_MUL_BLOCK_SIZE && m_cols == BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        #ifdef BMATH_AVX
-            bmath_asmf3_s_htp_mul_block_avx_fix_kernel( o, o_row, o_col, o_cols, m, m_col, r );
-        #else
-            f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
-            f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
-            for( sz_t j = 0; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
-            {
-                for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ )
-                {
-                    m_p[ j ][ k ] = m->v_data[ m->i_data[ ( o_row + j ) * m->i_stride + m_col + k ] ];
-                }
-            }
-
-            for( sz_t i = 0; i < o_cols; i++ )
-            {
-                for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
-
-                for( sz_t j = 0; j < BMATH_MUL_SF_BLOCK_SIZE; j++ )
-                {
-                    f3_t o_v = o->v_data[ o->i_data[ ( o_row + j ) * o->i_stride + o_col + i ] ];
-                    for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ ) r_p[ k ] += m_p[ j ][ k ] * o_v;
-                }
-
-                sz_t m_row = o_col;
-
-                const sz_t* r_x = &r->i_data[ ( m_row + i ) * r->i_stride + m_col ];
-                for( sz_t k = 0; k < BMATH_MUL_SF_BLOCK_SIZE; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
-            }
-        #endif // BMATH_AVX
+        kernel_fixed_htp_mul( o, o_row, o_col, o_cols, m, m_col, r );
         return;
     }
 
-    if( o_rows >= o_cols && o_rows >= m_cols && o_rows > BMATH_MUL_SF_BLOCK_SIZE )
+    if( o_rows >= o_cols && o_rows >= m_cols && o_rows > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( o_rows, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_asmf3_s_htp_mul_block( o, o_row,                mid, o_col, o_cols, m, m_col, m_cols, r );
-        bmath_asmf3_s_htp_mul_block( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_col, m_cols, r );
+        sz_t mid = mf3_sf_midof( o_rows, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul( o, o_row,                mid, o_col, o_cols, m, m_col, m_cols, r );
+        recursive_block_htp_mul( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_col, m_cols, r );
         return;
     }
 
-    if( o_cols >= m_cols && o_cols > BMATH_MUL_SF_BLOCK_SIZE )
+    if( o_cols >= m_cols && o_cols > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( o_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_asmf3_s_htp_mul_block( o, o_row, o_rows, o_col,                mid, m, m_col, m_cols, r );
-        bmath_asmf3_s_htp_mul_block( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_col, m_cols, r );
+        sz_t mid = mf3_sf_midof( o_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul( o, o_row, o_rows, o_col,                mid, m, m_col, m_cols, r );
+        recursive_block_htp_mul( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_col, m_cols, r );
         return;
     }
 
-    if( m_cols > BMATH_MUL_SF_BLOCK_SIZE )
+    if( m_cols > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( m_cols, BMATH_MUL_SF_BLOCK_SIZE );
-        bmath_asmf3_s_htp_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col,                mid, r );
-        bmath_asmf3_s_htp_mul_block( o, o_row, o_rows, o_col, o_cols, m, m_col + mid, m_cols - mid, r );
+        sz_t mid = mf3_sf_midof( m_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul( o, o_row, o_rows, o_col, o_cols, m, m_col,                mid, r );
+        recursive_block_htp_mul( o, o_row, o_rows, o_col, o_cols, m, m_col + mid, m_cols - mid, r );
         return;
     }
 
-    #ifdef BMATH_AVX
-        bmath_asmf3_s_htp_mul_block_avx_flex_kernel( o, o_row, o_rows, o_col, o_cols, m, m_col, m_cols, r );
-    #else
-        f3_t r_p[ BMATH_MUL_SF_BLOCK_SIZE ];
-        f3_t m_p[ BMATH_MUL_SF_BLOCK_SIZE ][ BMATH_MUL_SF_BLOCK_SIZE ];
-        for( sz_t j = 0; j < o_rows; j++ )
-        {
-            for( sz_t k = 0; k < m_cols; k++ )
-            {
-                m_p[ j ][ k ] = m->v_data[ m->i_data[ ( o_row + j ) * m->i_stride + m_col + k ] ];
-            }
-        }
+    kernel_flexi_htp_mul( o, o_row, o_rows, o_col, o_cols, m, m_col, m_cols, r );
+}
 
-        for( sz_t i = 0; i < o_cols; i++ )
-        {
-            for( sz_t k = 0; k < m_cols; k++ ) r_p[ k ] = 0;
+//----------------------------------------------------------------------------------------------------------------------
 
-            for( sz_t j = 0; j < o_rows; j++ )
-            {
-                f3_t o_v = o->v_data[ o->i_data[ ( o_row + j ) * o->i_stride + o_col + i ] ];
-                for( sz_t k = 0; k < m_cols; k++ ) r_p[ k ] += m_p[ j ][ k ] * o_v;
-            }
+/**********************************************************************************************************************/
+// Interface
 
-            sz_t m_row = o_col;
+//----------------------------------------------------------------------------------------------------------------------
 
-            const sz_t* r_x = &r->i_data[ ( m_row + i ) * r->i_stride + m_col ];
-            for( sz_t k = 0; k < m_cols; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
-        }
-    #endif // BMATH_AVX
+void bmath_asmf3_s_mul( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r )
+{
+    ASSERT( o->rows == r->rows );
+    ASSERT( o->cols == m->rows );
+    ASSERT( m->cols == r->cols );
+    bmath_asmf3_s_zro( r );
+    recursive_block_mul( o, 0, o->rows, 0, o->cols, m, 0, m->cols, r );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_asmf3_s_mul_htp( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r )
+{
+    ASSERT( o->rows == r->rows );
+    ASSERT( m->rows == r->cols );
+    ASSERT( o->cols == m->cols );
+    bmath_asmf3_s_zro( r );
+    recursive_block_mul_htp( o, 0, o->rows, 0, o->cols, m, r, 0, r->cols );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -799,7 +798,7 @@ void bmath_asmf3_s_htp_mul( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmat
     ASSERT( o->rows == m->rows );
     ASSERT( m->cols == r->cols );
     bmath_asmf3_s_zro( r );
-    bmath_asmf3_s_htp_mul_block( o, 0, o->rows, 0, o->cols, m, 0, m->cols, r );
+    recursive_block_htp_mul( o, 0, o->rows, 0, o->cols, m, 0, m->cols, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
