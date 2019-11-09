@@ -28,7 +28,7 @@
 /**********************************************************************************************************************/
 // Microkernels
 
-static sz_t mf3_sf_midof( sz_t v, const sz_t bz )
+static sz_t midof( sz_t v, const sz_t bz )
 {
     return ( v > ( bz << 1 ) ) ? ( v / ( bz << 1 ) ) * bz : bz;
 }
@@ -631,6 +631,208 @@ static void kernel_flexi_htp_mul
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/** smul: Fixed size AVX-Microkernel
+ *  Requirement: o_rows == BMATH_ASM_MUL_BLOCK_SIZE && m_rows == BMATH_ASM_MUL_BLOCK_SIZE
+ */
+static void kernel_fixed_htp_mul_htp
+(
+    const bmath_asmf3_s* o, sz_t o_row, sz_t o_col, sz_t o_cols,
+    const bmath_asmf3_s* m,             sz_t m_row,
+          bmath_asmf3_s* r
+)
+{
+#ifdef BMATH_AVX
+    __m256d r_p4[ BMATH_ASM_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLKP4_SIZE ];
+
+    for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
+    {
+        for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
+        {
+            m_p4[ j ][ k ][ 0 ] = m->v_data[ m->i_data[ ( m_row + k * 4 + 0 ) * m->i_stride + o_row + j ] ];
+            m_p4[ j ][ k ][ 1 ] = m->v_data[ m->i_data[ ( m_row + k * 4 + 1 ) * m->i_stride + o_row + j ] ];
+            m_p4[ j ][ k ][ 2 ] = m->v_data[ m->i_data[ ( m_row + k * 4 + 2 ) * m->i_stride + o_row + j ] ];
+            m_p4[ j ][ k ][ 3 ] = m->v_data[ m->i_data[ ( m_row + k * 4 + 3 ) * m->i_stride + o_row + j ] ];
+        }
+    }
+
+    for( sz_t i = 0; i < o_cols; i++ )
+    {
+        const sz_t* o_x = &o->i_data[ o_row * o->i_stride + o_col ];
+        __m256d o_p4 = _mm256_set1_pd( o->v_data[ o_x[ i ] ] );
+
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
+        {
+            r_p4[ k ] = _mm256_mul_pd( m_p4[ 0 ][ k ], o_p4 );
+        }
+
+        for( sz_t j = 1; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
+        {
+            const sz_t* o_x = &o->i_data[ ( o_row + j ) * o->i_stride + o_col ];
+            __m256d o_p4 = _mm256_set1_pd( o->v_data[ o_x[ i ] ] );
+            for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
+            {
+                #ifdef BMATH_AVX2_FMA
+                    r_p4[ k ] = _mm256_fmadd_pd( m_p4[ j ][ k ], o_p4, r_p4[ k ] );
+                #else
+                    r_p4[ k ] = _mm256_add_pd( _mm256_mul_pd( m_p4[ j ][ k ], o_p4 ), r_p4[ k ] );
+                #endif // BMATH_AVX2_FMA
+            }
+        }
+
+        const sz_t* r_x = &r->i_data[ ( o_col + i ) * r->i_stride + m_row ];
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLKP4_SIZE; k++ )
+        {
+            r->v_data[ r_x[ k * 4 + 0 ] ] += r_p4[ k ][ 0 ];
+            r->v_data[ r_x[ k * 4 + 1 ] ] += r_p4[ k ][ 1 ];
+            r->v_data[ r_x[ k * 4 + 2 ] ] += r_p4[ k ][ 2 ];
+            r->v_data[ r_x[ k * 4 + 3 ] ] += r_p4[ k ][ 3 ];
+        }
+    }
+#else
+    f3_t r_p[ BMATH_ASM_MUL_BLOCK_SIZE ];
+    f3_t m_p[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLOCK_SIZE ];
+    for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ )
+    {
+        for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
+        {
+            m_p[ j ][ k ] = m->v_data[ m->i_data[ ( m_row + k ) * m->i_stride + o_row + j ] ];
+        }
+    }
+
+    for( sz_t i = 0; i < o_cols; i++ )
+    {
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
+
+        for( sz_t j = 0; j < BMATH_ASM_MUL_BLOCK_SIZE; j++ )
+        {
+            f3_t o_v = o->v_data[ o->i_data[ ( o_row + j ) * o->i_stride + o_col + i ] ];
+            for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r_p[ k ] += m_p[ j ][ k ] * o_v;
+        }
+
+        const sz_t* r_x = &r->i_data[ ( o_col + i ) * r->i_stride + m_row ];
+        for( sz_t k = 0; k < BMATH_ASM_MUL_BLOCK_SIZE; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
+    }
+#endif // BMATH_AVX
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** smul: Flexible AVX-Microkernel
+ *  Requirement: o_rows <= BMATH_ASM_MUL_BLOCK_SIZE && m_rows <= BMATH_ASM_MUL_BLOCK_SIZE
+ */
+static void kernel_flexi_htp_mul_htp
+(
+    const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
+    const bmath_asmf3_s* m,                          sz_t m_row, sz_t m_rows,
+          bmath_asmf3_s* r
+)
+{
+#ifdef BMATH_AVX
+    ASSERT( o_rows <= BMATH_ASM_MUL_BLOCK_SIZE );
+    ASSERT( m_rows <= BMATH_ASM_MUL_BLOCK_SIZE );
+
+    sz_t r_col  = m_row;
+    sz_t r_cols = m_rows;
+
+    const sz_t r_cols4l = r_cols >> 2;
+    const sz_t r_colsr  = r_cols - r_cols4l * 4;
+    const sz_t r_cols4p = r_colsr > 0 ? r_cols4l + 1 : r_cols4l;
+
+    __m256d r_p4[ BMATH_ASM_MUL_BLKP4_SIZE ];
+    __m256d m_p4[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLKP4_SIZE ];
+
+    for( sz_t k = 0; k < r_cols4l; k++ )
+    {
+        sz_t m_row = r_col + k * 4;
+        for( sz_t j = 0; j < o_rows; j++ )
+        {
+            m_p4[ j ][ k ][ 0 ] = m->v_data[ m->i_data[ ( m_row + 0 ) * m->i_stride + o_row + j ] ];
+            m_p4[ j ][ k ][ 1 ] = m->v_data[ m->i_data[ ( m_row + 1 ) * m->i_stride + o_row + j ] ];
+            m_p4[ j ][ k ][ 2 ] = m->v_data[ m->i_data[ ( m_row + 2 ) * m->i_stride + o_row + j ] ];
+            m_p4[ j ][ k ][ 3 ] = m->v_data[ m->i_data[ ( m_row + 3 ) * m->i_stride + o_row + j ] ];
+        }
+    }
+
+    if( r_colsr > 0 )
+    {
+        for( sz_t j = 0; j < o_rows; j++ ) m_p4[ j ][ r_cols4l ] = _mm256_set1_pd( 0 );
+        for( sz_t k = 0; k < r_colsr; k++ )
+        {
+            for( sz_t j = 0; j < o_rows; j++ )
+            {
+                m_p4[ j ][ r_cols4l ][ k ] = m->v_data[ m->i_data[ ( r_col + r_cols4l * 4 + k ) * m->i_stride + o_row + j ] ];
+            }
+        }
+    }
+
+    for( sz_t i = 0; i < o_cols; i++ )
+    {
+        const sz_t* o_x = &o->i_data[ o_row * o->i_stride + o_col + i ];
+              sz_t* r_x = &r->i_data[ ( o_col + i ) * r->i_stride + r_col ];
+
+        for( sz_t k = 0; k < r_cols4p; k++ ) r_p4[ k ] = _mm256_set1_pd( 0 );
+
+        for( sz_t j = 0; j < o_rows; j++ )
+        {
+            __m256d o_p4 = _mm256_set1_pd( o->v_data[ o_x[ j * o->i_stride ] ] );
+            for( sz_t k = 0; k < r_cols4p; k++ )
+            {
+                #ifdef BMATH_AVX2_FMA
+                    r_p4[ k ] = _mm256_fmadd_pd( m_p4[ j ][ k ], o_p4, r_p4[ k ] );
+                #else
+                    r_p4[ k ] = _mm256_add_pd( _mm256_mul_pd( m_p4[ j ][ k ], o_p4 ), r_p4[ k ] );
+                #endif // BMATH_AVX2_FMA
+            }
+        }
+
+        for( sz_t k = 0; k < r_cols4l; k++ )
+        {
+            r->v_data[ r_x[ k * 4 + 0 ] ] += r_p4[ k ][ 0 ];
+            r->v_data[ r_x[ k * 4 + 1 ] ] += r_p4[ k ][ 1 ];
+            r->v_data[ r_x[ k * 4 + 2 ] ] += r_p4[ k ][ 2 ];
+            r->v_data[ r_x[ k * 4 + 3 ] ] += r_p4[ k ][ 3 ];
+        }
+
+        if( r_colsr > 0 )
+        {
+            for( sz_t k = 0; k < r_colsr; k++ ) r->v_data[ r_x[ r_cols4l * 4 + k ] ] += r_p4[ r_cols4l ][ k ];
+        }
+    }
+#else
+    f3_t r_p[ BMATH_ASM_MUL_BLOCK_SIZE ];
+    f3_t m_p[ BMATH_ASM_MUL_BLOCK_SIZE ][ BMATH_ASM_MUL_BLOCK_SIZE ];
+
+    sz_t r_col  = m_row;
+    sz_t r_cols = m_rows;
+
+    for( sz_t k = 0; k < r_cols; k++ )
+    {
+        for( sz_t j = 0; j < o_rows; j++ )
+        {
+            m_p[ j ][ k ] = m->v_data[ m->i_data[ ( r_col + k ) * m->i_stride + o_row + j ] ];
+        }
+    }
+
+    for( sz_t i = 0; i < o_cols; i++ )
+    {
+        const sz_t* o_x = &o->i_data[ o_row * o->i_stride + o_col + i ];
+
+        for( sz_t k = 0; k < r_cols; k++ ) r_p[ k ] = 0;
+
+        for( sz_t j = 0; j < o_rows; j++ )
+        {
+            for( sz_t k = 0; k < r_cols; k++ ) r_p[ k ] += m_p[ j ][ k ] * o->v_data[ o_x[ j * o->i_stride ] ];
+        }
+
+        const sz_t* r_x = &r->i_data[ ( o_col + i ) * r->i_stride + r_col ];
+        for( sz_t k = 0; k < r_cols; k++ ) r->v_data[ r_x[ k ] ] += r_p[ k ];
+    }
+#endif // BMATH_AVX
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // Recursive block multiplication
 
@@ -651,7 +853,7 @@ static void recursive_block_mul
 
     if( o_rows >= o_cols && o_rows >= m_cols && o_rows > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( o_rows, BMATH_ASM_MUL_BLOCK_SIZE );
+        sz_t mid = midof( o_rows, BMATH_ASM_MUL_BLOCK_SIZE );
         recursive_block_mul( o, o_row,                mid, o_col, o_cols, m, m_col, m_cols, r );
         recursive_block_mul( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_col, m_cols, r );
         return;
@@ -659,7 +861,7 @@ static void recursive_block_mul
 
     if( o_cols >= m_cols && o_cols > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( o_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        sz_t mid = midof( o_cols, BMATH_ASM_MUL_BLOCK_SIZE );
         recursive_block_mul( o, o_row, o_rows, o_col,                mid, m, m_col, m_cols, r );
         recursive_block_mul( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_col, m_cols, r );
         return;
@@ -667,7 +869,7 @@ static void recursive_block_mul
 
     if( m_cols > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( m_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        sz_t mid = midof( m_cols, BMATH_ASM_MUL_BLOCK_SIZE );
         recursive_block_mul( o, o_row, o_rows, o_col, o_cols, m, m_col,                mid, r );
         recursive_block_mul( o, o_row, o_rows, o_col, o_cols, m, m_col + mid, m_cols - mid, r );
         return;
@@ -693,7 +895,7 @@ static void recursive_block_mul_htp
 
     if( o_rows >= o_cols && o_rows >= r_cols && o_rows > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( o_rows, BMATH_ASM_MUL_BLOCK_SIZE );
+        sz_t mid = midof( o_rows, BMATH_ASM_MUL_BLOCK_SIZE );
         recursive_block_mul_htp( o, o_row,                mid, o_col, o_cols, m, r, r_col, r_cols );
         recursive_block_mul_htp( o, o_row + mid, o_rows - mid, o_col, o_cols, m, r, r_col, r_cols );
         return;
@@ -701,7 +903,7 @@ static void recursive_block_mul_htp
 
     if( o_cols >= r_cols && o_cols > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( o_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        sz_t mid = midof( o_cols, BMATH_ASM_MUL_BLOCK_SIZE );
         recursive_block_mul_htp( o, o_row, o_rows, o_col,                mid, m, r, r_col, r_cols );
         recursive_block_mul_htp( o, o_row, o_rows, o_col + mid, o_cols - mid, m, r, r_col, r_cols );
         return;
@@ -709,7 +911,7 @@ static void recursive_block_mul_htp
 
     if( r_cols > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( r_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        sz_t mid = midof( r_cols, BMATH_ASM_MUL_BLOCK_SIZE );
         recursive_block_mul_htp( o, o_row, o_rows, o_col, o_cols, m, r, r_col,                mid );
         recursive_block_mul_htp( o, o_row, o_rows, o_col, o_cols, m, r, r_col + mid, r_cols - mid );
         return;
@@ -738,7 +940,7 @@ static void recursive_block_htp_mul
 
     if( o_rows >= o_cols && o_rows >= m_cols && o_rows > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( o_rows, BMATH_ASM_MUL_BLOCK_SIZE );
+        sz_t mid = midof( o_rows, BMATH_ASM_MUL_BLOCK_SIZE );
         recursive_block_htp_mul( o, o_row,                mid, o_col, o_cols, m, m_col, m_cols, r );
         recursive_block_htp_mul( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_col, m_cols, r );
         return;
@@ -746,7 +948,7 @@ static void recursive_block_htp_mul
 
     if( o_cols >= m_cols && o_cols > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( o_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        sz_t mid = midof( o_cols, BMATH_ASM_MUL_BLOCK_SIZE );
         recursive_block_htp_mul( o, o_row, o_rows, o_col,                mid, m, m_col, m_cols, r );
         recursive_block_htp_mul( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_col, m_cols, r );
         return;
@@ -754,13 +956,55 @@ static void recursive_block_htp_mul
 
     if( m_cols > BMATH_ASM_MUL_BLOCK_SIZE )
     {
-        sz_t mid = mf3_sf_midof( m_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        sz_t mid = midof( m_cols, BMATH_ASM_MUL_BLOCK_SIZE );
         recursive_block_htp_mul( o, o_row, o_rows, o_col, o_cols, m, m_col,                mid, r );
         recursive_block_htp_mul( o, o_row, o_rows, o_col, o_cols, m, m_col + mid, m_cols - mid, r );
         return;
     }
 
     kernel_flexi_htp_mul( o, o_row, o_rows, o_col, o_cols, m, m_col, m_cols, r );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void recursive_block_htp_mul_htp
+(
+    const bmath_asmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_col, sz_t o_cols,
+    const bmath_asmf3_s* m,                          sz_t m_row, sz_t m_rows,
+          bmath_asmf3_s* r
+)
+{
+    if( o_rows == BMATH_ASM_MUL_BLOCK_SIZE && m_rows == BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        kernel_fixed_htp_mul_htp( o, o_row, o_col, o_cols, m, m_row, r );
+        return;
+    }
+
+    if( o_cols >= o_rows && o_cols >= m_rows && o_cols > BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( o_cols, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul_htp( o, o_row, o_rows, o_col,                mid, m, m_row, m_rows, r );
+        recursive_block_htp_mul_htp( o, o_row, o_rows, o_col + mid, o_cols - mid, m, m_row, m_rows, r );
+        return;
+    }
+
+    if( o_rows >= m_rows && o_rows > BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( o_rows, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul_htp( o, o_row,                mid, o_col, o_cols, m, m_row, m_rows, r );
+        recursive_block_htp_mul_htp( o, o_row + mid, o_rows - mid, o_col, o_cols, m, m_row, m_rows, r );
+        return;
+    }
+
+    if( m_rows > BMATH_ASM_MUL_BLOCK_SIZE )
+    {
+        sz_t mid = midof( m_rows, BMATH_ASM_MUL_BLOCK_SIZE );
+        recursive_block_htp_mul_htp( o, o_row, o_rows, o_col, o_cols, m, m_row,                mid, r );
+        recursive_block_htp_mul_htp( o, o_row, o_rows, o_col, o_cols, m, m_row + mid, m_rows - mid, r );
+        return;
+    }
+
+    kernel_flexi_htp_mul_htp( o, o_row, o_rows, o_col, o_cols, m, m_row, m_rows, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -772,6 +1016,15 @@ static void recursive_block_htp_mul
 
 void bmath_asmf3_s_mul( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r )
 {
+    if( r == o || r == m )
+    {
+        bmath_asmf3_s* buf = BCATU(bmath_asmf3_s,create_shape_alike)( r );
+        BCATU(bmath_asmf3_s,mul)( o, m, buf );
+        BCATU(bmath_asmf3_s,copy)( r, buf );
+        BCATU(bmath_asmf3_s,discard)( buf );
+        return;
+    }
+
     ASSERT( o->rows == r->rows );
     ASSERT( o->cols == m->rows );
     ASSERT( m->cols == r->cols );
@@ -783,6 +1036,15 @@ void bmath_asmf3_s_mul( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_as
 
 void bmath_asmf3_s_mul_htp( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r )
 {
+    if( r == o || r == m )
+    {
+        bmath_asmf3_s* buf = BCATU(bmath_asmf3_s,create_shape_alike)( r );
+        BCATU(bmath_asmf3_s,mul_htp)( o, m, buf );
+        BCATU(bmath_asmf3_s,copy)( r, buf );
+        BCATU(bmath_asmf3_s,discard)( buf );
+        return;
+    }
+
     ASSERT( o->rows == r->rows );
     ASSERT( m->rows == r->cols );
     ASSERT( o->cols == m->cols );
@@ -794,11 +1056,41 @@ void bmath_asmf3_s_mul_htp( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmat
 
 void bmath_asmf3_s_htp_mul( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r )
 {
+    if( r == o || r == m )
+    {
+        bmath_asmf3_s* buf = BCATU(bmath_asmf3_s,create_shape_alike)( r );
+        BCATU(bmath_asmf3_s,htp_mul)( o, m, buf );
+        BCATU(bmath_asmf3_s,copy)( r, buf );
+        BCATU(bmath_asmf3_s,discard)( buf );
+        return;
+    }
+
     ASSERT( o->cols == r->rows );
     ASSERT( o->rows == m->rows );
     ASSERT( m->cols == r->cols );
     bmath_asmf3_s_zro( r );
     recursive_block_htp_mul( o, 0, o->rows, 0, o->cols, m, 0, m->cols, r );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bmath_asmf3_s_htp_mul_htp( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r )
+{
+    if( r == o || r == m )
+    {
+        bmath_asmf3_s* buf = BCATU(bmath_asmf3_s,create_shape_alike)( r );
+        BCATU(bmath_asmf3_s,htp_mul_htp)( o, m, buf );
+        BCATU(bmath_asmf3_s,copy)( r, buf );
+        BCATU(bmath_asmf3_s,discard)( buf );
+        return;
+    }
+
+    ASSERT( m->cols == o->rows );
+    ASSERT( o->cols == r->rows );
+    ASSERT( m->rows == r->cols );
+
+    bmath_asmf3_s_zro( r );
+    recursive_block_htp_mul_htp( o, 0, o->rows, 0, o->cols, m, 0, m->rows, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

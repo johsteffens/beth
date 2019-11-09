@@ -34,6 +34,15 @@ void bmath_asmf3_s_set_size_splicing( bmath_asmf3_s* o, sz_t rows, sz_t cols )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_asmf3_s_copy_splicing( bmath_asmf3_s* o, const bmath_asmf3_s* src )
+{
+    if( o == src ) return;
+    bmath_asmf3_s_set_size_splicing( o, o->rows, o->cols );
+    bcore_u_memcpy( sizeof( sz_t ), o->i_data, src->i_data, o->i_size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_asmf3_s_set_size_data( bmath_asmf3_s* o, sz_t size )
 {
     o->v_size = size;
@@ -51,6 +60,14 @@ void bmath_asmf3_s_set_size( bmath_asmf3_s* o, sz_t rows, sz_t cols )
     {
         for( sz_t j = 0; j < o->cols; j++ ) o->i_data[ i * o->i_stride + j ] = i * o->cols + j;
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_asmf3_s_set_shape_alike( bmath_asmf3_s* o, const bmath_asmf3_s* src )
+{
+    bmath_asmf3_s_copy_splicing( o, src );
+    bmath_asmf3_s_set_size_data( o, src->v_size );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

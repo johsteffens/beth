@@ -34,6 +34,15 @@ void bmath_xsmf3_s_set_size_splicing( bmath_xsmf3_s* o, sz_t rows, sz_t xons )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bmath_xsmf3_s_copy_splicing( bmath_xsmf3_s* o, const bmath_xsmf3_s* src )
+{
+    if( o == src ) return;
+    bmath_xsmf3_s_set_size_splicing( o, o->rows, o->xons );
+    bcore_u_memcpy( sizeof( sz_t ), o->i_data, src->i_data, o->i_size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bmath_xsmf3_s_set_size_data( bmath_xsmf3_s* o, sz_t size )
 {
     o->v_size = size;
@@ -52,6 +61,15 @@ void bmath_xsmf3_s_set_size( bmath_xsmf3_s* o, sz_t rows, sz_t xons, sz_t slos )
     {
         for( sz_t j = 0; j < o->xons; j++ ) o->i_data[ j * o->i_stride + i ] = ( i * o->xons + j ) * o->slos;
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bmath_xsmf3_s_set_shape_alike( bmath_xsmf3_s* o, const bmath_xsmf3_s* src )
+{
+    bmath_xsmf3_s_copy_splicing( o, src );
+    o->slos = src->slos;
+    bmath_xsmf3_s_set_size_data( o, src->v_size );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

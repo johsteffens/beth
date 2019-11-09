@@ -121,7 +121,7 @@ static void kernel_fixed_mul
 /** smul: Flexible AVX-Microkernel
  *  Requirement: o_slos <= BMATH_XSM_MUL_BLOCK_SIZE && m_slos <= BMATH_XSM_MUL_BLOCK_SIZE
  */
-static void recursive_rsblock_mul_avx_flex_kernel
+static void kernel_flexi_mul
 (
     const bmath_xsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_xon, sz_t o_slo, sz_t o_slos,
     const bmath_xsmf3_s* m,                          sz_t m_xon, sz_t m_slo, sz_t m_slos,
@@ -301,7 +301,7 @@ static void kernel_fixed_mul_htp
 /** smul: Flexible AVX-Microkernel
  *  Requirement: o_slos <= BMATH_XSM_MUL_BLOCK_SIZE && m_slos <= BMATH_XSM_MUL_BLOCK_SIZE
  */
-static void recursive_rsblock_mul_htp_avx_flex_kernel
+static void kernel_flexi_mul_htp
 (
     const bmath_xsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_xon, sz_t o_slo, sz_t o_slos,
     const bmath_xsmf3_s* m,
@@ -487,7 +487,7 @@ static void kernel_fixed_htp_mul
 /** smul: Flexible AVX-Microkernel
  *  Requirement: o_rows <= BMATH_XSM_MUL_BLOCK_SIZE && m_slos <= BMATH_XSM_MUL_BLOCK_SIZE
  */
-static void recursive_rsblock_htp_mul_avx_flex_kernel
+static void kernel_flexi_htp_mul
 (
     const bmath_xsmf3_s* o, sz_t o_row, sz_t o_rows, sz_t o_xon, sz_t o_slo, sz_t o_slos,
     const bmath_xsmf3_s* m,                          sz_t m_xon, sz_t m_slo, sz_t m_slos,
@@ -624,7 +624,7 @@ static void recursive_rsblock_mul
         return;
     }
 
-    recursive_rsblock_mul_avx_flex_kernel( o, o_row, o_rows, o_xon, o_slo, o_slos, m, m_xon, m_slo, m_slos, r );
+    kernel_flexi_mul( o, o_row, o_rows, o_xon, o_slo, o_slos, m, m_xon, m_slo, m_slos, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -702,7 +702,7 @@ static void recursive_rsblock_mul_htp
         return;
     }
 
-    recursive_rsblock_mul_htp_avx_flex_kernel( o, o_row, o_rows, o_xon, o_slo, o_slos, m, r, r_xon, r_slo, r_slos );
+    kernel_flexi_mul_htp( o, o_row, o_rows, o_xon, o_slo, o_slos, m, r, r_xon, r_slo, r_slos );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -781,7 +781,7 @@ static void recursive_rsblock_htp_mul
         return;
     }
 
-    recursive_rsblock_htp_mul_avx_flex_kernel( o, o_row, o_rows, o_xon, o_slo, o_slos, m, m_xon, m_slo, m_slos, r );
+    kernel_flexi_htp_mul( o, o_row, o_rows, o_xon, o_slo, o_slos, m, m_xon, m_slo, m_slos, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -829,6 +829,14 @@ static void recursive_rxblock_htp_mul
 
 void bmath_xsmf3_s_mul( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r )
 {
+    if( r == o || r == m )
+    {
+        bmath_xsmf3_s* buf = BCATU(bmath_xsmf3_s,create_shape_alike)( r );
+        BCATU(bmath_xsmf3_s,mul)( o, m, buf );
+        BCATU(bmath_xsmf3_s,copy)( r, buf );
+        BCATU(bmath_xsmf3_s,discard)( buf );
+        return;
+    }
     ASSERT( o->rows           == r->rows );
     ASSERT( o->xons * o->slos == m->rows );
     ASSERT( m->xons           == r->xons );
@@ -841,6 +849,14 @@ void bmath_xsmf3_s_mul( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xs
 
 void bmath_xsmf3_s_mul_htp( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r )
 {
+    if( r == o || r == m )
+    {
+        bmath_xsmf3_s* buf = BCATU(bmath_xsmf3_s,create_shape_alike)( r );
+        BCATU(bmath_xsmf3_s,mul_htp)( o, m, buf );
+        BCATU(bmath_xsmf3_s,copy)( r, buf );
+        BCATU(bmath_xsmf3_s,discard)( buf );
+        return;
+    }
     ASSERT( o->rows == r->rows );
     ASSERT( m->rows == r->xons * r->slos );
     ASSERT( o->xons == m->xons );
@@ -853,6 +869,14 @@ void bmath_xsmf3_s_mul_htp( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmat
 
 void bmath_xsmf3_s_htp_mul( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r )
 {
+    if( r == o || r == m )
+    {
+        bmath_xsmf3_s* buf = BCATU(bmath_xsmf3_s,create_shape_alike)( r );
+        BCATU(bmath_xsmf3_s,htp_mul)( o, m, buf );
+        BCATU(bmath_xsmf3_s,copy)( r, buf );
+        BCATU(bmath_xsmf3_s,discard)( buf );
+        return;
+    }
     ASSERT( o->xons * o->slos == r->rows );
     ASSERT( o->rows           == m->rows );
     ASSERT( m->xons           == r->xons );

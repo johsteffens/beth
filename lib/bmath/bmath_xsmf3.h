@@ -119,11 +119,25 @@ typedef void (*bmath_fp_xsmf3_s_htp_mul_htp)( const bmath_xsmf3_s* o, const bmat
 /// sets size of splicing (zeros all indexes)
 void bmath_xsmf3_s_set_size_splicing( bmath_xsmf3_s* o, sz_t rows, sz_t xons );
 
+/// copies splicing (does not affect values or value allocation)
+void bmath_xsmf3_s_copy_splicing( bmath_xsmf3_s* o, const bmath_xsmf3_s* src );
+
 /// sets size of data (zeros all values)
 void bmath_xsmf3_s_set_size_data( bmath_xsmf3_s* o, sz_t size );
 
 /// sets size (non-overlapping, all owning, all initialized)
 void bmath_xsmf3_s_set_size( bmath_xsmf3_s* o, sz_t rows, sz_t xons, sz_t slos );
+
+/// sets size and copies index index data (like copy without copying values)
+void bmath_xsmf3_s_set_shape_alike( bmath_xsmf3_s* o, const bmath_xsmf3_s* src );
+
+/// sets size and clones index index data (like clone without copying values)
+static inline bmath_xsmf3_s* bmath_xsmf3_s_create_shape_alike( const bmath_xsmf3_s* src )
+{
+    bmath_xsmf3_s* o = bmath_xsmf3_s_create();
+    bmath_xsmf3_s_set_shape_alike( o, src );
+    return o;
+}
 
 /// allocates and initializes data to given splicing
 void bmath_xsmf3_s_fit_size_data( bmath_xsmf3_s* o );
