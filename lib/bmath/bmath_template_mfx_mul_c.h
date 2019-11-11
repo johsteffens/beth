@@ -42,7 +42,7 @@
 /**********************************************************************************************************************/
 // Microkernels
 
-/// mul: Fixed size AVX-Microkernel
+/// mul: Fixed size Microkernel
 static void kernel_fixed_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
@@ -115,7 +115,7 @@ static void kernel_fixed_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** mul: Flexible AVX-Microkernel
+/** mul: Flexible Microkernel
  *  Allows all combinations o_r, o_c, m_c (including 0)
  *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_c <= BMATH_MUL_BLOCK_SIZE
  */
@@ -202,7 +202,7 @@ static void kernel_flexi_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// mul_htp: Fixed size AVX-Microkernel
+/// mul_htp: Fixed size Microkernel
 static void kernel_fixed_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
@@ -279,7 +279,7 @@ static void kernel_fixed_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** mul_htp: Flexible AVX-Microkernel
+/** mul_htp: Flexible Microkernel
  *  Allows all combinations o_r, o_c, m_r (including 0)
  *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_r <= BMATH_MUL_BLOCK_SIZE
  */
@@ -373,7 +373,7 @@ static void kernel_flexi_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// htp_mul: Fixed size AVX-Microkernel
+/// htp_mul: Fixed size Microkernel
 static void kernel_fixed_htp_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
@@ -448,7 +448,7 @@ static void kernel_fixed_htp_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** htp_mul: Flexible AVX-Microkernel
+/** htp_mul: Flexible Microkernel
  *  Allows all combinations o_r, o_c, m_r (including 0)
  *  provided o_c <= BMATH_MUL_BLOCK_SIZE && m_c <= BMATH_MUL_BLKPK_SIZE * P5_SIZE
  */
@@ -620,7 +620,7 @@ static void kernel_fixed_htp_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** htp_mul_htp: Flexible AVX-Microkernel
+/** htp_mul_htp: Flexible Microkernel
  *  Allows all combinations o_r, o_c, m_r (including 0)
  *  provided o_r <= BMATH_MUL_BLOCK_SIZE && m_r <= BMATH_MUL_BLOCK_SIZE
  */

@@ -738,7 +738,6 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
     bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, &rval );
     bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, &rval );
 
-
     if( fp_type == TYPEOF_bmath_fp_mf2_s_htp_mul_htp )
     {
         bmath_mf2_s* _m0 = BLM_A_PUSH( bmath_mf2_s_create() );

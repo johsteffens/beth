@@ -38,9 +38,10 @@ BCORE_FORWARD_OBJECT( bmath_xsmf3_s );
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_xsmf3_s_mul(     const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o * m -> r
-void bmath_xsmf3_s_mul_htp( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o * m^T -> r
-void bmath_xsmf3_s_htp_mul( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o^T * m -> r
+void bmath_xsmf3_s_mul(         const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o   * m   -> r
+void bmath_xsmf3_s_mul_htp(     const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o   * m^T -> r
+void bmath_xsmf3_s_htp_mul(     const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o^T * m   -> r
+void bmath_xsmf3_s_htp_mul_htp( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o^T * m^T -> r
 
 //----------------------------------------------------------------------------------------------------------------------
 
