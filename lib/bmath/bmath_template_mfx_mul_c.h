@@ -43,7 +43,8 @@
 // Microkernels
 
 /// mul: Fixed size Microkernel
-static void kernel_fixed_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+/// o_c == BMATH_MUL_BLOCK_SIZE && m_c == BMATH_MUL_BLOCK_SIZE
+static void kernel_fixed_mul( const fx_t* o, sz_t o_s, sz_t o_r, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -58,7 +59,7 @@ static void kernel_fixed_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, 
             m_pk[ j ][ k ] = M5_LOAD( mj + k * P5_SIZE );
         }
     }
-    for( sz_t i = 0; i < BMATH_MUL_BLOCK_SIZE; i++ )
+    for( sz_t i = 0; i < o_r; i++ )
     {
         const fx_t* oi = o + i * o_s;
               fx_t* ri = r + i * r_s;
@@ -94,7 +95,7 @@ static void kernel_fixed_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, 
         for( sz_t k = 0; k < BMATH_MUL_BLOCK_SIZE; k++ ) m_p[ j ][ k ] = m[ j * m_s + k ];
     }
 
-    for( sz_t i = 0; i < BMATH_MUL_BLOCK_SIZE; i++ )
+    for( sz_t i = 0; i < o_r; i++ )
     {
         const fx_t* oi = o + i * o_s;
 
@@ -203,7 +204,7 @@ static void kernel_flexi_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const
 //----------------------------------------------------------------------------------------------------------------------
 
 /// mul_htp: Fixed size Microkernel
-static void kernel_fixed_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void kernel_fixed_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -222,7 +223,7 @@ static void kernel_fixed_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m
         }
     }
 
-    for( sz_t i = 0; i < BMATH_MUL_BLOCK_SIZE; i++ )
+    for( sz_t i = 0; i < o_r; i++ )
     {
         const fx_t* oi = o + i * o_s;
               fx_t* ri = r + i * r_s;
@@ -258,7 +259,7 @@ static void kernel_fixed_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m
         for( sz_t j = 0; j < BMATH_MUL_BLOCK_SIZE; j++ ) m_p[ j ][ k ] = m[ k * m_s + j ];
     }
 
-    for( sz_t i = 0; i < BMATH_MUL_BLOCK_SIZE; i++ )
+    for( sz_t i = 0; i < o_r; i++ )
     {
         const fx_t* oi = o + i * o_s;
 
@@ -374,7 +375,7 @@ static void kernel_flexi_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
 //----------------------------------------------------------------------------------------------------------------------
 
 /// htp_mul: Fixed size Microkernel
-static void kernel_fixed_htp_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void kernel_fixed_htp_mul( const fx_t* o, sz_t o_s, sz_t o_c, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -393,7 +394,7 @@ static void kernel_fixed_htp_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m
         }
     }
 
-    for( sz_t i = 0; i < BMATH_MUL_BLOCK_SIZE; i++ )
+    for( sz_t i = 0; i < o_c; i++ )
     {
         const fx_t* oi = o + i;
               fx_t* ri = r + i * r_s;
@@ -429,7 +430,7 @@ static void kernel_fixed_htp_mul( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m
         for( sz_t j = 0; j < BMATH_MUL_BLOCK_SIZE; j++ ) m_p[ k ][ j ] = m[ k * m_s + j ];
     }
 
-    for( sz_t i = 0; i < BMATH_MUL_BLOCK_SIZE; i++ )
+    for( sz_t i = 0; i < o_c; i++ )
     {
         for( sz_t k = 0; k < BMATH_MUL_BLOCK_SIZE; k++ ) r_p[ k ] = 0;
 
@@ -542,7 +543,7 @@ static void kernel_flexi_htp_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void kernel_fixed_htp_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
+static void kernel_fixed_htp_mul_htp( const fx_t* o, sz_t o_s, sz_t o_c, const fx_t* m, sz_t m_s, fx_t* r, sz_t r_s )
 {
 #ifdef BMATH_AVX
 
@@ -563,7 +564,7 @@ static void kernel_fixed_htp_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz
         }
     }
 
-    for( sz_t i = 0; i < BMATH_MUL_BLOCK_SIZE; i++ )
+    for( sz_t i = 0; i < o_c; i++ )
     {
         const fx_t* oi = o + i;
               fx_t* ri = r + i * r_s;
@@ -599,7 +600,7 @@ static void kernel_fixed_htp_mul_htp( const fx_t* o, sz_t o_s, const fx_t* m, sz
         for( sz_t j = 0; j < BMATH_MUL_BLOCK_SIZE; j++ ) m_p[ j ][ k ] = m[ k * m_s + j ];
     }
 
-    for( sz_t i = 0; i < BMATH_MUL_BLOCK_SIZE; i++ )
+    for( sz_t i = 0; i < o_c; i++ )
     {
         const fx_t* oi = o + i;
 
@@ -726,9 +727,9 @@ static sz_t midof( sz_t v, const sz_t bz )
 
 static void recursive_block_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s )
 {
-    if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_c == BMATH_MUL_BLOCK_SIZE )
+    if( o_c == BMATH_MUL_BLOCK_SIZE && m_c == BMATH_MUL_BLOCK_SIZE )
     {
-        kernel_fixed_mul( o, o_s, m, m_s, r, r_s );
+        kernel_fixed_mul( o, o_s, o_r, m, m_s, r, r_s );
         return;
     }
 
@@ -767,9 +768,9 @@ static void recursive_block_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, co
 
 static void recursive_block_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s, bl_t sym )
 {
-    if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_r == BMATH_MUL_BLOCK_SIZE )
+    if( o_c == BMATH_MUL_BLOCK_SIZE && m_r == BMATH_MUL_BLOCK_SIZE )
     {
-        kernel_fixed_mul_htp( o, o_s, m, m_s, r, r_s );
+        kernel_fixed_mul_htp( o, o_s, o_r, m, m_s, r, r_s );
         return;
     }
 
@@ -812,9 +813,9 @@ static void recursive_block_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c
 
 static void recursive_block_htp_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_c, fx_t* r, sz_t r_s, bl_t sym )
 {
-    if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_c == BMATH_MUL_BLOCK_SIZE )
+    if( o_r == BMATH_MUL_BLOCK_SIZE && m_c == BMATH_MUL_BLOCK_SIZE )
     {
-        kernel_fixed_htp_mul( o, o_s, m, m_s, r, r_s );
+        kernel_fixed_htp_mul( o, o_s, o_c, m, m_s, r, r_s );
         return;
     }
 
@@ -857,9 +858,9 @@ static void recursive_block_htp_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c
 
 static void recursive_block_htp_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const fx_t* m, sz_t m_s, sz_t m_r, fx_t* r, sz_t r_s )
 {
-    if( o_r == BMATH_MUL_BLOCK_SIZE && o_c == BMATH_MUL_BLOCK_SIZE && m_r == BMATH_MUL_BLOCK_SIZE )
+    if( o_r == BMATH_MUL_BLOCK_SIZE && m_r == BMATH_MUL_BLOCK_SIZE )
     {
-        kernel_fixed_htp_mul_htp( o, o_s, m, m_s, r, r_s );
+        kernel_fixed_htp_mul_htp( o, o_s, o_c, m, m_s, r, r_s );
         return;
     }
 
