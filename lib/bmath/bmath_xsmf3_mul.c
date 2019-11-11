@@ -127,7 +127,7 @@ static void kernel_flexi_mul
     // p_fit: number of M5_t fitting into block
     // p_ful: number of M5_t required to hold all data of block (either p_fit or p_fit + 1)
     // rest:  remaining fx_t not fitting into p_fit
-    const sz_t m_slos_p_fit = m_slos >> 2;
+    const sz_t m_slos_p_fit = m_slos >> P5_SIZE_B2E;
     const sz_t m_slos_rest  = m_slos - m_slos_p_fit * P5_SIZE;
     const sz_t m_slos_p_ful = m_slos_rest > 0 ? m_slos_p_fit + 1 : m_slos_p_fit;
 
@@ -293,7 +293,7 @@ static void kernel_flexi_mul_htp
     ASSERT( o_slos <= BMATH_XSM_MUL_BLOCK_SIZE );
     ASSERT( r_slos <= BMATH_XSM_MUL_BLOCK_SIZE );
 
-    const sz_t r_slos_p_fit = r_slos >> 2;
+    const sz_t r_slos_p_fit = r_slos >> P5_SIZE_B2E;
     const sz_t r_slos_rest  = r_slos - r_slos_p_fit * P5_SIZE;
     const sz_t r_slos_p_ful = r_slos_rest > 0 ? r_slos_p_fit + 1 : r_slos_p_fit;
 
@@ -467,7 +467,7 @@ static void kernel_flexi_htp_mul
     assert( o_rows <= BMATH_XSM_MUL_BLOCK_SIZE );
     assert( m_slos <= BMATH_XSM_MUL_BLOCK_SIZE );
 
-    const sz_t m_slos_p_fit = m_slos >> 2;
+    const sz_t m_slos_p_fit = m_slos >> P5_SIZE_B2E;
     const sz_t m_slos_rest  = m_slos - m_slos_p_fit * P5_SIZE;
     const sz_t m_slos_p_ful = m_slos_rest > 0 ? m_slos_p_fit + 1 : m_slos_p_fit;
 
@@ -629,7 +629,7 @@ static void kernel_flexi_htp_mul_htp
 #ifdef BMATH_AVX
     M5_T r_pk[ BMATH_XSM_MUL_BLKPK_SIZE ];
     M5_T m_pk[ BMATH_XSM_MUL_BLOCK_SIZE ][ BMATH_XSM_MUL_BLKPK_SIZE ];
-    const sz_t m_rows_p_fit = m_rows >> 2;
+    const sz_t m_rows_p_fit = m_rows >> P5_SIZE_B2E;
     const sz_t m_rows_rest  = m_rows - m_rows_p_fit * P5_SIZE;
     const sz_t m_rows_p_ful = m_rows_rest > 0 ? m_rows_p_fit + 1 : m_rows_p_fit;
 

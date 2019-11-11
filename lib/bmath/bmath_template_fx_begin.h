@@ -43,6 +43,8 @@
 #define mfy  BCAT(m,fy)
 #define xsmfx  BCAT(xsm,fx)
 #define xsmfy  BCAT(xsm,fy)
+#define asmfx  BCAT(asm,fx)
+#define asmfy  BCAT(asm,fy)
 
 // objects
 #define fx_t                     BCATU(fx,t)
@@ -65,6 +67,8 @@
 #define bmath_mfy_s              BCATU(bmath,mfy,s)
 #define bmath_xsmfx_s            BCATU(bmath,xsmfx,s)
 #define bmath_xsmfy_s            BCATU(bmath,xsmfy,s)
+#define bmath_asmfx_s            BCATU(bmath,asmfx,s)
+#define bmath_asmfy_s            BCATU(bmath,asmfy,s)
 
 #define TYPEOF_bmath_vfx_s       BCATU(TYPEOF,bmath,vfx,s)
 #define TYPEOF_bmath_vfy_s       BCATU(TYPEOF,bmath,vfy,s)
@@ -76,6 +80,8 @@
 #define TYPEOF_bmath_mfy_s       BCATU(TYPEOF,bmath,mfy,s)
 #define TYPEOF_bmath_xsmfx_s     BCATU(TYPEOF,bmath,xsmfx,s)
 #define TYPEOF_bmath_xsmfy_s     BCATU(TYPEOF,bmath,xsmfy,s)
+#define TYPEOF_bmath_asmfx_s     BCATU(TYPEOF,bmath,asmfx,s)
+#define TYPEOF_bmath_asmfy_s     BCATU(TYPEOF,bmath,asmfy,s)
 
 /**********************************************************************************************************************/
 // AVX related macros
@@ -92,9 +98,9 @@
     #define P5_HSUM(v) ( v[0] + v[1] + v[2] + v[3] )
 #endif // BMATH_TEMPLATE_FX_PREC
 
-// P5_SIZE: number of values per M5_T; P5_SIZE = 2 ^ P5_SIZE_EXP
-#define P5_SIZE_EXP ( 5 - BMATH_TEMPLATE_FX_PREC )
-#define P5_SIZE     ( 1 << P5_SIZE_EXP )
+// P5_SIZE: number of values per M5_T; P5_SIZE = 2 ^ P5_SIZE_B2E
+#define P5_SIZE_B2E ( 5 - BMATH_TEMPLATE_FX_PREC )
+#define P5_SIZE     ( 1 << P5_SIZE_B2E )
 
 #define M5_LOAD     BCATU(_mm256_loadu,   MM_PX) // a = loadu( ptr256 ): a = *ptr256
 #define M5_STOR     BCATU(_mm256_storeu,  MM_PX) // storeu( ptr256, a ): *ptr256 = a

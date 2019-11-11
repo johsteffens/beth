@@ -31,6 +31,8 @@
 #undef mfy
 #undef xsmfx
 #undef xsmfy
+#undef asmfx
+#undef asmfy
 
 // objects
 #undef fx_t
@@ -53,6 +55,8 @@
 #undef bmath_mfy_s
 #undef bmath_xsmfx_s
 #undef bmath_xsmfy_s
+#undef bmath_asmfx_s
+#undef bmath_asmfy_s
 
 #undef TYPEOF_bmath_vfx_s
 #undef TYPEOF_bmath_vfy_s
@@ -64,10 +68,12 @@
 #undef TYPEOF_bmath_mfy_s
 #undef TYPEOF_bmath_xsmfx_s
 #undef TYPEOF_bmath_xsmfy_s
+#undef TYPEOF_bmath_asmfx_s
+#undef TYPEOF_bmath_asmfy_s
 
 // AVX related
 #undef P5_SIZE
-#undef P5_SIZE_EXP
+#undef P5_SIZE_B2E
 #undef P5_ZERO
 #undef P5_HSUM
 

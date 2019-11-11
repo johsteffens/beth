@@ -131,7 +131,7 @@ static void kernel_flexi_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const
     // p_fit: number of M5_t fitting into m_c
     // p_ful: number of M5_t required to hold all data of m_c (either p_fit or p_fit + 1)
     // rest:  remaining fx_t not fitting into p_fit
-    const sz_t m_cp_fit = m_c >> P5_SIZE_EXP;
+    const sz_t m_cp_fit = m_c >> P5_SIZE_B2E;
     const sz_t m_c_rest = m_c - m_cp_fit * P5_SIZE;
     const sz_t m_cp_ful = m_c_rest > 0 ? m_cp_fit + 1 : m_cp_fit;
 
@@ -145,7 +145,7 @@ static void kernel_flexi_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const
 
         if( m_c_rest > 0 )
         {
-            m_pk[ j ][ m_cp_fit ] = M5_SET_ALL( 0 );
+            m_pk[ j ][ m_cp_fit ] = M5_SET_ZERO();
             for( sz_t k = 0; k < m_c_rest;  k++ ) m_pk[ j ][ m_cp_fit ][ k ] = mj[ m_cp_fit * P5_SIZE + k ];
         }
     }
@@ -155,7 +155,7 @@ static void kernel_flexi_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, const
         const fx_t* oi = o + i * o_s;
               fx_t* ri = r + i * r_s;
 
-        for( sz_t k = 0; k < m_cp_ful; k++ ) r_pk[ k ] = M5_SET_ALL( 0 );
+        for( sz_t k = 0; k < m_cp_ful; k++ ) r_pk[ k ] = M5_SET_ZERO();
 
         for( sz_t j = 0; j < o_c; j++ )
         {
@@ -295,7 +295,7 @@ static void kernel_flexi_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
     // p_fit: number of M5_t fitting into m_c
     // p_ful: number of M5_t required to hold all data of m_c (either p_fit or p_fit + 1)
     // rest:  remaining fx_t not fitting into p_fit
-    const sz_t m_rp_fit = m_r >> P5_SIZE_EXP;
+    const sz_t m_rp_fit = m_r >> P5_SIZE_B2E;
     const sz_t m_r_rest = m_r - m_rp_fit * P5_SIZE;
     const sz_t m_rp_ful = m_r_rest > 0 ? m_rp_fit + 1 : m_rp_fit;
 
@@ -315,7 +315,7 @@ static void kernel_flexi_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
 
         if( m_r_rest > 0 )
         {
-            m_pk[ j ][ m_rp_fit ] = M5_SET_ALL( 0 );
+            m_pk[ j ][ m_rp_fit ] = M5_SET_ZERO();
             for( sz_t k = 0; k < m_r_rest; k++ ) m_pk[ j ][ m_rp_fit ][ k ] = mj[ ( m_rp_fit * P5_SIZE + k ) * m_s ];
         }
     }
@@ -325,7 +325,7 @@ static void kernel_flexi_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
         const fx_t* oi = o + i * o_s;
               fx_t* ri = r + i * r_s;
 
-        for( sz_t k = 0; k < m_rp_ful; k++ ) r_pk[ k ] = M5_SET_ALL( 0 );
+        for( sz_t k = 0; k < m_rp_ful; k++ ) r_pk[ k ] = M5_SET_ZERO();
 
         for( sz_t j = 0; j < o_c; j++ )
         {
@@ -464,7 +464,7 @@ static void kernel_flexi_htp_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
     // p_fit: number of M5_t fitting into m_c
     // p_ful: number of M5_t required to hold all data of m_c (either p_fit or p_fit + 1)
     // rest:  remaining fx_t not fitting into p_fit
-    const sz_t m_cp_fit = m_c >> P5_SIZE_EXP;
+    const sz_t m_cp_fit = m_c >> P5_SIZE_B2E;
     const sz_t m_c_rest = m_c - m_cp_fit * P5_SIZE;
     const sz_t m_cp_ful = m_c_rest > 0 ? m_cp_fit + 1 : m_cp_fit;
 
@@ -484,7 +484,7 @@ static void kernel_flexi_htp_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
 
         if( m_c_rest > 0 )
         {
-            m_pk[ j ][ m_cp_fit ] = M5_SET_ALL( 0 );
+            m_pk[ j ][ m_cp_fit ] = M5_SET_ZERO();
             for( sz_t k = 0; k < m_c_rest;  k++ ) m_pk[ j ][ m_cp_fit ][ k ] = mj[ ( m_cp_fit * P5_SIZE + k ) ];
         }
     }
@@ -494,7 +494,7 @@ static void kernel_flexi_htp_mul( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_c, c
         const fx_t* oi = o + i;
               fx_t* ri = r + i * r_s;
 
-        for( sz_t k = 0; k < m_cp_ful; k++ ) r_pk[ k ] = M5_SET_ALL( 0 );
+        for( sz_t k = 0; k < m_cp_ful; k++ ) r_pk[ k ] = M5_SET_ZERO();
 
         for( sz_t j = 0; j < o_r; j++ )
         {
@@ -636,7 +636,7 @@ static void kernel_flexi_htp_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_
     // p_fit: number of M5_t fitting into m_c
     // p_ful: number of M5_t required to hold all data of m_c (either p_fit or p_fit + 1)
     // rest:  remaining fx_t not fitting into p_fit
-    const sz_t m_rp_fit = m_r >> P5_SIZE_EXP;
+    const sz_t m_rp_fit = m_r >> P5_SIZE_B2E;
     const sz_t m_r_rest = m_r - m_rp_fit * P5_SIZE;
     const sz_t m_rp_ful = m_r_rest > 0 ? m_rp_fit + 1 : m_rp_fit;
 
@@ -656,7 +656,7 @@ static void kernel_flexi_htp_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_
 
         if( m_r_rest > 0 )
         {
-            m_pk[ j ][ m_rp_fit ] = M5_SET_ALL( 0 );
+            m_pk[ j ][ m_rp_fit ] = M5_SET_ZERO();
             for( sz_t k = 0; k < m_r_rest;  k++ ) m_pk[ j ][ m_rp_fit ][ k ] = mj[ ( m_rp_fit * P5_SIZE + k ) * m_s ];
         }
     }
@@ -666,7 +666,7 @@ static void kernel_flexi_htp_mul_htp( const fx_t* o, sz_t o_s, sz_t o_r, sz_t o_
         const fx_t* oi = o + i;
               fx_t* ri = r + i * r_s;
 
-        for( sz_t k = 0; k < m_rp_ful; k++ ) r_pk[ k ] = M5_SET_ALL( 0 );
+        for( sz_t k = 0; k < m_rp_ful; k++ ) r_pk[ k ] = M5_SET_ZERO();
 
         for( sz_t j = 0; j < o_r; j++ )
         {
