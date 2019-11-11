@@ -41,6 +41,8 @@
 #define vcfy BCAT(vc,fy)
 #define mfx  BCAT(m,fx)
 #define mfy  BCAT(m,fy)
+#define xsmfx  BCAT(xsm,fx)
+#define xsmfy  BCAT(xsm,fy)
 
 // objects
 #define fx_t                     BCATU(fx,t)
@@ -61,6 +63,8 @@
 #define bmath_arr_grt_fy_s       BCATU(bmath_arr_grt,fy,s)
 #define bmath_mfx_s              BCATU(bmath,mfx,s)
 #define bmath_mfy_s              BCATU(bmath,mfy,s)
+#define bmath_xsmfx_s            BCATU(bmath,xsmfx,s)
+#define bmath_xsmfy_s            BCATU(bmath,xsmfy,s)
 
 #define TYPEOF_bmath_vfx_s       BCATU(TYPEOF,bmath,vfx,s)
 #define TYPEOF_bmath_vfy_s       BCATU(TYPEOF,bmath,vfy,s)
@@ -70,6 +74,8 @@
 #define TYPEOF_bmath_vcfy_s      BCATU(TYPEOF,bmath,vcfy,s)
 #define TYPEOF_bmath_mfx_s       BCATU(TYPEOF,bmath,mfx,s)
 #define TYPEOF_bmath_mfy_s       BCATU(TYPEOF,bmath,mfy,s)
+#define TYPEOF_bmath_xsmfx_s     BCATU(TYPEOF,bmath,xsmfx,s)
+#define TYPEOF_bmath_xsmfy_s     BCATU(TYPEOF,bmath,xsmfy,s)
 
 /**********************************************************************************************************************/
 // AVX related macros
