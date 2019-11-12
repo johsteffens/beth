@@ -671,7 +671,7 @@ void BCATU(bmath_mfx_s,to_conv_operand)( bmath_mfx_s* o, sz_t kernel_size, sz_t 
 // for easy inspection
 
 void BCATU(bmath_mfx_s,to_sink) ( const bmath_mfx_s* o, bcore_sink* sink );
-void BCATU(bmath_mfx_s,to_image)( const bmath_mfx_s* o, bmath_fp_u2_argb_from_fx fp, vd_t arg, bcore_img_u2_s* image );
+void BCATU(bmath_mfx_s,to_image)( const bmath_mfx_s* o, BCATU(bmath_fp_u2_argb_from,fx) fp, vd_t arg, bcore_img_u2_s* image );
 
 static inline void BCATU(bmath_mfx_s,to_string)( const bmath_mfx_s* o, st_s* string ) { BCATU(bmath_mfx_s,to_sink)( o, ( bcore_sink* )string ); }
 static inline void BCATU(bmath_mfx_s,to_stdout)( const bmath_mfx_s* o ) { BCATU(bmath_mfx_s,to_sink)( o, BCORE_STDOUT ); }

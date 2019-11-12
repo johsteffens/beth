@@ -13,47 +13,22 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_ASMF3_H
-#define BMATH_ASMF3_H
+/**********************************************************************************************************************/
 
 /**********************************************************************************************************************/
 
-#include "bcore_std.h"
-#include "bmath_planted.h"
-#include "bmath_mf3.h"
+#include "bmath_template_fx_begin.h"
 
 /**********************************************************************************************************************/
 
-PLANT_GROUP( bmath_asmf3, bcore_inst )
-#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    stamp bmath_asmf3 = aware bcore_inst
-    {
-        sz_t cols;     // values per row
-        sz_t rows;     // number of rows
-        sz_t i_stride; // stride of splicing
-
-        sz_t [] i; // index data
-        f3_t [] v; // value data
-    };
-
-    // function pointer names
-    name bmath_fp_asmf3_s_mul;
-    name bmath_fp_asmf3_s_mul_htp;
-    name bmath_fp_asmf3_s_htp_mul;
-    name bmath_fp_asmf3_s_htp_mul_htp;
-
-#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#define BMATH_TEMPLATE_FX_PREC 3
-#include "bmath_template_asmfx_h.h"
-
-#define BMATH_TEMPLATE_FX_PREC 3
-#include "bmath_template_asmfx_mul_h.h"
+void BCATU(bmath_asmf3_s,mul)(         const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o * m -> r
+void BCATU(bmath_asmf3_s,mul_htp)(     const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o * m^T -> r
+void BCATU(bmath_asmf3_s,htp_mul)(     const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o^T * m -> r
+void BCATU(bmath_asmf3_s,htp_mul_htp)( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o^T * m^T -> r
 
 /**********************************************************************************************************************/
 
-vd_t bmath_asmf3_signal_handler( const bcore_signal_s* o );
+#include "bmath_template_fx_end.h"
 
 /**********************************************************************************************************************/
 
-#endif // BMATH_ASMF3_H

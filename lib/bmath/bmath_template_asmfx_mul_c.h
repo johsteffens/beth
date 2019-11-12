@@ -13,20 +13,16 @@
  *  limitations under the License.
  */
 
-/** Collection of algorithms related to spliced-matrix multiplication.
- *  Blocking and microkernel strategy: Same as bmath_mf3_mul
- */
+/**********************************************************************************************************************/
 
-#include "bmath_asmf3.h"
-#include "bmath_asmf3_mul.h"
+/**********************************************************************************************************************/
 
-#define BMATH_TEMPLATE_FX_PREC 3
 #include "bmath_template_fx_begin.h"
+
+/**********************************************************************************************************************/
 
 #define BMATH_ASM_MUL_BLKPK_SIZE 12
 #define BMATH_ASM_MUL_BLOCK_SIZE ( BMATH_ASM_MUL_BLKPK_SIZE * P5_SIZE )
-
-#ifdef TYPEOF_bmath_asmf3_s
 
 /**********************************************************************************************************************/
 // Microkernels
@@ -1063,7 +1059,6 @@ void BCATU(bmath_asmfx_s,htp_mul_htp)( const bmath_asmfx_s* o, const bmath_asmfx
     ASSERT( m->cols == o->rows );
     ASSERT( o->cols == r->rows );
     ASSERT( m->rows == r->cols );
-
     BCATU(bmath_asmfx_s,zro)( r );
     recursive_block_htp_mul_htp( o, 0, o->rows, 0, o->cols, m, 0, m->rows, r );
 }
@@ -1072,4 +1067,7 @@ void BCATU(bmath_asmfx_s,htp_mul_htp)( const bmath_asmfx_s* o, const bmath_asmfx
 
 /**********************************************************************************************************************/
 
-#endif // TYPEOF_bmath_asmf3_s
+#include "bmath_template_fx_end.h"
+
+/**********************************************************************************************************************/
+

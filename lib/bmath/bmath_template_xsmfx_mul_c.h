@@ -13,18 +13,13 @@
  *  limitations under the License.
  */
 
-/** Collection of algorithms related to spliced-matrix multiplication.
- *  Blocking and microkernel strategy:
- *    - Begin recursion reducing rows-xons block size to xons==1 (rxblock)
- *    - Continue recursion rows-slos similar to row-cols in mf3  (rsblock)
- *    - Microkernels are row-slo-adpated, otherwise similar to mf3.
- */
+/**********************************************************************************************************************/
 
-#include "bmath_xsmf3.h"
-#include "bmath_xsmf3_mul.h"
+/**********************************************************************************************************************/
 
-#define BMATH_TEMPLATE_FX_PREC 3
 #include "bmath_template_fx_begin.h"
+
+/**********************************************************************************************************************/
 
 #define BMATH_XSM_MUL_BLKPK_SIZE 8
 #define BMATH_XSM_MUL_BLOCK_SIZE ( BMATH_XSM_MUL_BLKPK_SIZE * P5_SIZE )
@@ -1120,3 +1115,8 @@ void BCATU(bmath_xsmfx_s,htp_mul_htp)( const bmath_xsmfx_s* o, const bmath_xsmfx
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+
+#include "bmath_template_fx_end.h"
+
+/**********************************************************************************************************************/
+

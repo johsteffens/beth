@@ -37,8 +37,6 @@
 // objects
 #undef fx_t
 #undef fy_t
-#undef bmath_fp_u2_argb_from_fx
-#undef bmath_fp_u2_argb_from_fy
 #undef bmath_vfx_s
 #undef bmath_vfy_s
 #undef bmath_cfx_s

@@ -2777,7 +2777,7 @@ void BCATU(bmath_mfx_s,to_sink)( const bmath_mfx_s* o, bcore_sink* sink )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,to_image)( const bmath_mfx_s* o, bmath_fp_u2_argb_from_fx fp, vd_t arg, bcore_img_u2_s* image )
+void BCATU(bmath_mfx_s,to_image)( const bmath_mfx_s* o, BCATU(bmath_fp_u2_argb_from,fx) fp, vd_t arg, bcore_img_u2_s* image )
 {
     bcore_img_u2_s_set_size( image, o->rows, o->cols );
     for( sz_t i = 0; i < o->rows; i++ )
