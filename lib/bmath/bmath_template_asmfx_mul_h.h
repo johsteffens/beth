@@ -15,16 +15,14 @@
 
 /**********************************************************************************************************************/
 
-/**********************************************************************************************************************/
-
 #include "bmath_template_fx_begin.h"
 
 /**********************************************************************************************************************/
 
-void BCATU(bmath_asmf3_s,mul)(         const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o * m -> r
-void BCATU(bmath_asmf3_s,mul_htp)(     const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o * m^T -> r
-void BCATU(bmath_asmf3_s,htp_mul)(     const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o^T * m -> r
-void BCATU(bmath_asmf3_s,htp_mul_htp)( const bmath_asmf3_s* o, const bmath_asmf3_s* m, bmath_asmf3_s* r ); // o^T * m^T -> r
+void BCATU(bmath_asmfx_s,mul)(         const bmath_asmfx_s* o, const bmath_asmfx_s* m, bmath_asmfx_s* r ); // o   * m   -> r
+void BCATU(bmath_asmfx_s,mul_htp)(     const bmath_asmfx_s* o, const bmath_asmfx_s* m, bmath_asmfx_s* r ); // o   * m^T -> r
+void BCATU(bmath_asmfx_s,htp_mul)(     const bmath_asmfx_s* o, const bmath_asmfx_s* m, bmath_asmfx_s* r ); // o^T * m   -> r
+void BCATU(bmath_asmfx_s,htp_mul_htp)( const bmath_asmfx_s* o, const bmath_asmfx_s* m, bmath_asmfx_s* r ); // o^T * m^T -> r
 
 /**********************************************************************************************************************/
 

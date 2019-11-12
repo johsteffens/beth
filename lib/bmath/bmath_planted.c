@@ -6,6 +6,7 @@
  *    bmath_f3_op.h
  *    bmath_xsmf2.h
  *    bmath_xsmf3.h
+ *    bmath_asmf2.h
  *    bmath_asmf3.h
  *    bmath_hf3.h
  *    bmath_hf3_op.h
@@ -388,6 +389,23 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_xsmf3_s )
     "sz_t i_stride;"
     "sz_t [] i;"
     "f3_t [] v;"
+"}";
+
+/**********************************************************************************************************************/
+// source: bmath_asmf2.h
+#include "bmath_asmf2.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bmath_asmf2
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_asmf2_s )
+"aware bcore_inst"
+"{"
+    "sz_t cols;"
+    "sz_t rows;"
+    "sz_t i_stride;"
+    "sz_t [] i;"
+    "f2_t [] v;"
 "}";
 
 /**********************************************************************************************************************/
@@ -2545,7 +2563,7 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 819772304 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 2090165989 ) );
             BCORE_REGISTER_FEATURE( bmath_f3_op_get_arity );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aofx );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aogx );
@@ -2763,6 +2781,12 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( bmath_fp_xsmf3_s_htp_mul );
             BCORE_REGISTER_NAME( bmath_fp_xsmf3_s_htp_mul_htp );
             BCORE_REGISTER_TRAIT( bmath_xsmf3, bcore_inst );
+            BCORE_REGISTER_OBJECT( bmath_asmf2_s );
+            BCORE_REGISTER_NAME( bmath_fp_asmf2_s_mul );
+            BCORE_REGISTER_NAME( bmath_fp_asmf2_s_mul_htp );
+            BCORE_REGISTER_NAME( bmath_fp_asmf2_s_htp_mul );
+            BCORE_REGISTER_NAME( bmath_fp_asmf2_s_htp_mul_htp );
+            BCORE_REGISTER_TRAIT( bmath_asmf2, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_asmf3_s );
             BCORE_REGISTER_NAME( bmath_fp_asmf3_s_mul );
             BCORE_REGISTER_NAME( bmath_fp_asmf3_s_mul_htp );

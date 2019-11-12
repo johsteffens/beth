@@ -122,6 +122,21 @@ void BCATU(bmath_asmfx_s,cpy_dfl_from,mfx)( bmath_asmfx_s* o, const bmath_mfx_s*
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void BCATU(bmath_asmfx_s,cpy_dfl_from,mfy)( bmath_asmfx_s* o, const bmath_mfy_s* src )
+{
+    ASSERT( src->rows == o->rows );
+    ASSERT( src->cols == o->cols );
+    BCATU(bmath_asmfx_s,zro)( o );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const fy_t* b = src->data + src->stride * i;
+        const sz_t* x = o->i_data + o->i_stride * i;
+        for( sz_t j = 0; j < o->cols; j++ ) o->v_data[ x[ j ] ] += b[ j ];
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void BCATU(bmath_asmfx_s,cpy_ifl_to,mfx)( const bmath_asmfx_s* o, bmath_mfx_s* dst )
 {
     ASSERT( dst->rows == o->rows );
@@ -129,6 +144,20 @@ void BCATU(bmath_asmfx_s,cpy_ifl_to,mfx)( const bmath_asmfx_s* o, bmath_mfx_s* d
     for( sz_t i = 0; i < o->rows; i++ )
     {
               fx_t* b = dst->data + dst->stride * i;
+        const sz_t* x = o->i_data + o->i_stride * i;
+        for( sz_t j = 0; j < o->cols; j++ ) b[ j ] = o->v_data[ x[ j ] ];
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void BCATU(bmath_asmfx_s,cpy_ifl_to,mfy)( const bmath_asmfx_s* o, bmath_mfy_s* dst )
+{
+    ASSERT( dst->rows == o->rows );
+    ASSERT( dst->cols == o->cols );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+              fy_t* b = dst->data + dst->stride * i;
         const sz_t* x = o->i_data + o->i_stride * i;
         for( sz_t j = 0; j < o->cols; j++ ) b[ j ] = o->v_data[ x[ j ] ];
     }

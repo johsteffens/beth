@@ -27,6 +27,8 @@
 #include "bmath_vf3.h"
 #include "bmath_mf2.h"
 #include "bmath_mf3.h"
+#include "bmath_asmf2.h"
+#include "bmath_asmf3.h"
 #include "bmath_xsmf2.h"
 #include "bmath_xsmf3.h"
 #include "bmath_mfx_eval.h"

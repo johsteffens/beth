@@ -6,6 +6,7 @@
  *    bmath_f3_op.h
  *    bmath_xsmf2.h
  *    bmath_xsmf3.h
+ *    bmath_asmf2.h
  *    bmath_asmf3.h
  *    bmath_hf3.h
  *    bmath_hf3_op.h
@@ -504,6 +505,27 @@
   BCORE_FORWARD_OBJECT( bmath_xsmf3 ); \
   BCORE_FORWARD_OBJECT( bmath_xsmf3_s ); \
   BETH_EXPAND_ITEM_bmath_xsmf3_s
+
+/**********************************************************************************************************************/
+// source: bmath_asmf2.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bmath_asmf2
+
+#define TYPEOF_bmath_asmf2 3349806387
+#define TYPEOF_bmath_asmf2_s 1565990485
+#define TYPEOF_bmath_asmf2_s 1565990485
+#define BETH_EXPAND_ITEM_bmath_asmf2_s \
+  BCORE_DECLARE_OBJECT( bmath_asmf2_s ) \
+    {aware_t _;sz_t cols;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f2_t, v_ );};
+#define TYPEOF_bmath_fp_asmf2_s_mul 841287705
+#define TYPEOF_bmath_fp_asmf2_s_mul_htp 1241522170
+#define TYPEOF_bmath_fp_asmf2_s_htp_mul 210701570
+#define TYPEOF_bmath_fp_asmf2_s_htp_mul_htp 4281623137
+#define BETH_EXPAND_GROUP_bmath_asmf2 \
+  BCORE_FORWARD_OBJECT( bmath_asmf2 ); \
+  BCORE_FORWARD_OBJECT( bmath_asmf2_s ); \
+  BETH_EXPAND_ITEM_bmath_asmf2_s
 
 /**********************************************************************************************************************/
 // source: bmath_asmf3.h
