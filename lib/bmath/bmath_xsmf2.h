@@ -13,21 +13,20 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_XSMF3_H
-#define BMATH_XSMF3_H
+#ifndef BMATH_XSMF2_H
+#define BMATH_XSMF2_H
 
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
 #include "bmath_planted.h"
 #include "bmath_mf2.h"
-#include "bmath_mf3.h"
 
 /**********************************************************************************************************************/
 
-PLANT_GROUP( bmath_xsmf3, bcore_inst )
+PLANT_GROUP( bmath_xsmf2, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    stamp bmath_xsmf3 = aware bcore_inst
+    stamp bmath_xsmf2 = aware bcore_inst
     {
         sz_t slos;   // values per xon
         sz_t xons;   // xons  per row
@@ -35,27 +34,27 @@ PLANT_GROUP( bmath_xsmf3, bcore_inst )
         sz_t i_stride; // stride of splicing
 
         sz_t [] i; // index data
-        f3_t [] v; // value data
+        f2_t [] v; // value data
     };
 
     // function pointer names
-    name bmath_fp_xsmf3_s_mul;
-    name bmath_fp_xsmf3_s_mul_htp;
-    name bmath_fp_xsmf3_s_htp_mul;
-    name bmath_fp_xsmf3_s_htp_mul_htp;
+    name bmath_fp_xsmf2_s_mul;
+    name bmath_fp_xsmf2_s_mul_htp;
+    name bmath_fp_xsmf2_s_htp_mul;
+    name bmath_fp_xsmf2_s_htp_mul_htp;
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#define BMATH_TEMPLATE_FX_PREC 3
+#define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_xsmfx_h.h"
 
-#define BMATH_TEMPLATE_FX_PREC 3
+#define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_xsmfx_mul_h.h"
 
 /**********************************************************************************************************************/
 
-vd_t bmath_xsmf3_signal_handler( const bcore_signal_s* o );
+vd_t bmath_xsmf2_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif // BMATH_XSMF3_H
+#endif // BMATH_XSMF2_H

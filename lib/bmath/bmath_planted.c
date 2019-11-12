@@ -4,6 +4,7 @@
  *    Generated code inherits the copyright and license of the beth-plant source code.
  *    The following files contain all source code related to this file:
  *    bmath_f3_op.h
+ *    bmath_xsmf2.h
  *    bmath_xsmf3.h
  *    bmath_asmf3.h
  *    bmath_hf3.h
@@ -351,6 +352,24 @@ BCORE_DEFINE_SPECT( bmath_f3_op, bmath_f3_op_ar2 )
     "feature aware bmath_f3_op_ar2 : ofx;"
     "feature aware bmath_f3_op_ar2 : ogxa;"
     "feature aware bmath_f3_op_ar2 : ogxb;"
+"}";
+
+/**********************************************************************************************************************/
+// source: bmath_xsmf2.h
+#include "bmath_xsmf2.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bmath_xsmf2
+
+BCORE_DEFINE_OBJECT_INST_P( bmath_xsmf2_s )
+"aware bcore_inst"
+"{"
+    "sz_t slos;"
+    "sz_t xons;"
+    "sz_t rows;"
+    "sz_t i_stride;"
+    "sz_t [] i;"
+    "f2_t [] v;"
 "}";
 
 /**********************************************************************************************************************/
@@ -2526,7 +2545,7 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 926448870 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 819772304 ) );
             BCORE_REGISTER_FEATURE( bmath_f3_op_get_arity );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aofx );
             BCORE_REGISTER_FEATURE( bmath_f3_op_aogx );
@@ -2732,6 +2751,12 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_f3_op_aogx, bmath_f3_op_ar2_div_s_aogx );
             BCORE_REGISTER_OBJECT( bmath_f3_op_ar2_div_s );
             BCORE_REGISTER_SPECT( bmath_f3_op_ar2 );
+            BCORE_REGISTER_OBJECT( bmath_xsmf2_s );
+            BCORE_REGISTER_NAME( bmath_fp_xsmf2_s_mul );
+            BCORE_REGISTER_NAME( bmath_fp_xsmf2_s_mul_htp );
+            BCORE_REGISTER_NAME( bmath_fp_xsmf2_s_htp_mul );
+            BCORE_REGISTER_NAME( bmath_fp_xsmf2_s_htp_mul_htp );
+            BCORE_REGISTER_TRAIT( bmath_xsmf2, bcore_inst );
             BCORE_REGISTER_OBJECT( bmath_xsmf3_s );
             BCORE_REGISTER_NAME( bmath_fp_xsmf3_s_mul );
             BCORE_REGISTER_NAME( bmath_fp_xsmf3_s_mul_htp );

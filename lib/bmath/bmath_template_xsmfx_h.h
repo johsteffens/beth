@@ -124,11 +124,13 @@ void BCATU(bmath_xsmfx_s,set_random)( bmath_xsmfx_s* o, bl_t hsm, bl_t pdf, uz_t
 /// zeros all values
 void BCATU(bmath_xsmfx_s,zro)( bmath_xsmfx_s* o );
 
-/// copies and deflates data from mfx
+/// copies and deflates data from mfx,y
 void BCATU(bmath_xsmfx_s,cpy_dfl_from,mfx)( bmath_xsmfx_s* o, const bmath_mfx_s* src );
+void BCATU(bmath_xsmfx_s,cpy_dfl_from,mfy)( bmath_xsmfx_s* o, const bmath_mfy_s* src );
 
-/// copies and inflates data to mfx
+/// copies and inflates data to mfx,y
 void BCATU(bmath_xsmfx_s,cpy_ifl_to,mfx)( const bmath_xsmfx_s* o, bmath_mfx_s* dst );
+void BCATU(bmath_xsmfx_s,cpy_ifl_to,mfy)( const bmath_xsmfx_s* o, bmath_mfy_s* dst );
 
 /**********************************************************************************************************************/
 // convolution

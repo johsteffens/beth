@@ -4,6 +4,7 @@
  *    Generated code inherits the copyright and license of the beth-plant source code.
  *    The following files contain all source code related to this file:
  *    bmath_f3_op.h
+ *    bmath_xsmf2.h
  *    bmath_xsmf3.h
  *    bmath_asmf3.h
  *    bmath_hf3.h
@@ -461,6 +462,27 @@
   BETH_EXPAND_ITEM_bmath_f3_op_ar2_sub_s \
   BETH_EXPAND_ITEM_bmath_f3_op_ar2_mul_s \
   BETH_EXPAND_ITEM_bmath_f3_op_ar2_div_s
+
+/**********************************************************************************************************************/
+// source: bmath_xsmf2.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bmath_xsmf2
+
+#define TYPEOF_bmath_xsmf2 3822495852
+#define TYPEOF_bmath_xsmf2_s 2459513678
+#define TYPEOF_bmath_xsmf2_s 2459513678
+#define BETH_EXPAND_ITEM_bmath_xsmf2_s \
+  BCORE_DECLARE_OBJECT( bmath_xsmf2_s ) \
+    {aware_t _;sz_t slos;sz_t xons;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f2_t, v_ );};
+#define TYPEOF_bmath_fp_xsmf2_s_mul 2668840510
+#define TYPEOF_bmath_fp_xsmf2_s_mul_htp 1932743757
+#define TYPEOF_bmath_fp_xsmf2_s_htp_mul 3419519109
+#define TYPEOF_bmath_fp_xsmf2_s_htp_mul_htp 4172637414
+#define BETH_EXPAND_GROUP_bmath_xsmf2 \
+  BCORE_FORWARD_OBJECT( bmath_xsmf2 ); \
+  BCORE_FORWARD_OBJECT( bmath_xsmf2_s ); \
+  BETH_EXPAND_ITEM_bmath_xsmf2_s
 
 /**********************************************************************************************************************/
 // source: bmath_xsmf3.h

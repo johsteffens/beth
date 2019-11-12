@@ -127,6 +127,24 @@ void BCATU(bmath_xsmfx_s,cpy_dfl_from,mfx)( bmath_xsmfx_s* o, const bmath_mfx_s*
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void BCATU(bmath_xsmfx_s,cpy_dfl_from,mfy)( bmath_xsmfx_s* o, const bmath_mfy_s* src )
+{
+    ASSERT( src->rows == o->rows );
+    ASSERT( src->cols == o->xons * o->slos );
+    BCATU(bmath_xsmfx_s,zro)( o );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        const fy_t* b = src->data + src->stride * i;
+        for( sz_t j = 0; j < o->xons; j++ )
+        {
+            fx_t* xon = o->v_data + o->i_data[ j * o->i_stride + i ];
+            for( sz_t k = 0; k < o->slos; k++ ) xon[ k ] += b[ j * o->slos + k ];
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void BCATU(bmath_xsmfx_s,cpy_ifl_to,mfx)( const bmath_xsmfx_s* o, bmath_mfx_s* dst )
 {
     ASSERT( dst->rows == o->rows );
@@ -134,6 +152,23 @@ void BCATU(bmath_xsmfx_s,cpy_ifl_to,mfx)( const bmath_xsmfx_s* o, bmath_mfx_s* d
     for( sz_t i = 0; i < o->rows; i++ )
     {
         fx_t* b = dst->data + dst->stride * i;
+        for( sz_t j = 0; j < o->xons; j++ )
+        {
+            const fx_t* xon = o->v_data + o->i_data[ j * o->i_stride + i ];
+            for( sz_t k = 0; k < o->slos; k++ ) b[ j * o->slos + k ] = xon[ k ];
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void BCATU(bmath_xsmfx_s,cpy_ifl_to,mfy)( const bmath_xsmfx_s* o, bmath_mfy_s* dst )
+{
+    ASSERT( dst->rows == o->rows );
+    ASSERT( dst->cols == o->xons * o->slos );
+    for( sz_t i = 0; i < o->rows; i++ )
+    {
+        fy_t* b = dst->data + dst->stride * i;
         for( sz_t j = 0; j < o->xons; j++ )
         {
             const fx_t* xon = o->v_data + o->i_data[ j * o->i_stride + i ];

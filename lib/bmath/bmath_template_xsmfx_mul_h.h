@@ -21,10 +21,10 @@
 
 /**********************************************************************************************************************/
 
-void BCATU(bmath_xsmf3_s,mul)(         const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o   * m   -> r
-void BCATU(bmath_xsmf3_s,mul_htp)(     const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o   * m^T -> r
-void BCATU(bmath_xsmf3_s,htp_mul)(     const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o^T * m   -> r
-void BCATU(bmath_xsmf3_s,htp_mul_htp)( const bmath_xsmf3_s* o, const bmath_xsmf3_s* m, bmath_xsmf3_s* r ); // o^T * m^T -> r
+void BCATU(bmath_xsmfx_s,mul)(         const bmath_xsmfx_s* o, const bmath_xsmfx_s* m, bmath_xsmfx_s* r ); // o   * m   -> r
+void BCATU(bmath_xsmfx_s,mul_htp)(     const bmath_xsmfx_s* o, const bmath_xsmfx_s* m, bmath_xsmfx_s* r ); // o   * m^T -> r
+void BCATU(bmath_xsmfx_s,htp_mul)(     const bmath_xsmfx_s* o, const bmath_xsmfx_s* m, bmath_xsmfx_s* r ); // o^T * m   -> r
+void BCATU(bmath_xsmfx_s,htp_mul_htp)( const bmath_xsmfx_s* o, const bmath_xsmfx_s* m, bmath_xsmfx_s* r ); // o^T * m^T -> r
 
 /**********************************************************************************************************************/
 
