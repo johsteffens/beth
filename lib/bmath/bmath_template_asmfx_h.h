@@ -82,6 +82,9 @@ void BCATU(bmath_asmfx_s,set_size_data)( bmath_asmfx_s* o, sz_t size );
 /// sets size (non-overlapping, all owning, all initialized)
 void BCATU(bmath_asmfx_s,set_size)( bmath_asmfx_s* o, sz_t rows, sz_t cols );
 
+/// clears all data
+void BCATU(bmath_asmfx_s,clear)( bmath_asmfx_s* o );
+
 /// sets size and copies index index data (like copy without copying values)
 void BCATU(bmath_asmfx_s,set_shape_alike)( bmath_asmfx_s* o, const bmath_asmfx_s* src );
 
@@ -155,6 +158,44 @@ fx_t BCATU(bmath_asmfx_s,fdev_zro)( const bmath_asmfx_s* o );
 void BCATU(bmath_asmfx_s,to_sink)( const bmath_asmfx_s* o, bcore_sink* sink );
 static inline void BCATU(bmath_asmfx_s,to_string)( const bmath_asmfx_s* o, st_s* string ) { BCATU(bmath_asmfx_s,to_sink)( o, ( bcore_sink* )string ); }
 static inline void BCATU(bmath_asmfx_s,to_stdout)( const bmath_asmfx_s* o               ) { BCATU(bmath_asmfx_s,to_sink)( o, BCORE_STDOUT ); }
+
+/**********************************************************************************************************************/
+// type conversion
+
+void BCATU(bmath_asmfx_s,copy_typed)( bmath_asmfx_s* o, tp_t type, vc_t src );
+
+static inline void BCATU(bmath_asmfx_s,copy_t)( bmath_asmfx_s* o, tp_t type, vc_t src )
+{
+    BCATU(bmath_asmfx_s,copy_typed)( o, type, src );
+}
+
+static inline void BCATU(bmath_asmfx_s,copy_a)( bmath_asmfx_s* o, vc_t src )
+{
+    if( src )
+    {
+        BCATU(bmath_asmfx_s,copy_t)( o, *(aware_t*)src, src );
+    }
+    else
+    {
+        BCATU(bmath_asmfx_s,clear)( o );
+    }
+}
+
+static inline bmath_asmfx_s* BCATU(bmath_asmfx_s,clone_t)( tp_t type, vc_t src )
+{
+    if( !src ) return NULL;
+    bmath_asmfx_s* o = BCATU(bmath_asmfx_s,create)();
+    BCATU(bmath_asmfx_s,copy_t)( o, type, src );
+    return o;
+}
+
+static inline bmath_asmfx_s* BCATU(bmath_asmfx_s,clone_a)( vc_t src )
+{
+    if( !src ) return NULL;
+    bmath_asmfx_s* o = BCATU(bmath_asmfx_s,create)();
+    BCATU(bmath_asmfx_s,copy_a)( o, src );
+    return o;
+}
 
 /**********************************************************************************************************************/
 

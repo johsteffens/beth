@@ -100,6 +100,9 @@ void BCATU(bmath_xsmfx_s,set_size_data)( bmath_xsmfx_s* o, sz_t size );
 /// sets size (non-overlapping, all owning, all initialized)
 void BCATU(bmath_xsmfx_s,set_size)( bmath_xsmfx_s* o, sz_t rows, sz_t xons, sz_t slos );
 
+/// clears all data
+void BCATU(bmath_xsmfx_s,clear)( bmath_xsmfx_s* o );
+
 /// sets size and copies index index data (like copy without copying values)
 void BCATU(bmath_xsmfx_s,set_shape_alike)( bmath_xsmfx_s* o, const bmath_xsmfx_s* src );
 
@@ -175,6 +178,44 @@ static inline void BCATU(bmath_xsmfx_s,to_string)( const bmath_xsmfx_s* o, st_s*
 static inline void BCATU(bmath_xsmfx_s,to_stdout)( const bmath_xsmfx_s* o               ) { BCATU(bmath_xsmfx_s,to_sink)( o, BCORE_STDOUT ); }
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+// type conversion
+
+void BCATU(bmath_xsmfx_s,copy_typed)( bmath_xsmfx_s* o, tp_t type, vc_t src );
+
+static inline void BCATU(bmath_xsmfx_s,copy_t)( bmath_xsmfx_s* o, tp_t type, vc_t src )
+{
+    BCATU(bmath_xsmfx_s,copy_typed)( o, type, src );
+}
+
+static inline void BCATU(bmath_xsmfx_s,copy_a)( bmath_xsmfx_s* o, vc_t src )
+{
+    if( src )
+    {
+        BCATU(bmath_xsmfx_s,copy_t)( o, *(aware_t*)src, src );
+    }
+    else
+    {
+        BCATU(bmath_xsmfx_s,clear)( o );
+    }
+}
+
+static inline bmath_xsmfx_s* BCATU(bmath_xsmfx_s,clone_t)( tp_t type, vc_t src )
+{
+    if( !src ) return NULL;
+    bmath_xsmfx_s* o = BCATU(bmath_xsmfx_s,create)();
+    BCATU(bmath_xsmfx_s,copy_t)( o, type, src );
+    return o;
+}
+
+static inline bmath_xsmfx_s* BCATU(bmath_xsmfx_s,clone_a)( vc_t src )
+{
+    if( !src ) return NULL;
+    bmath_xsmfx_s* o = BCATU(bmath_xsmfx_s,create)();
+    BCATU(bmath_xsmfx_s,copy_a)( o, src );
+    return o;
+}
 
 /**********************************************************************************************************************/
 

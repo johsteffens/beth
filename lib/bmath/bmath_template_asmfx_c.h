@@ -53,6 +53,19 @@ void BCATU(bmath_asmfx_s,set_size_data)( bmath_asmfx_s* o, sz_t size )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void BCATU(bmath_asmfx_s,clear)( bmath_asmfx_s* o )
+{
+    o->i_size = 0;
+    o->i_data = bcore_un_alloc( sizeof( sz_t ), o->i_data, o->i_space, o->i_size, &o->i_space );
+    o->rows = 0;
+    o->cols = 0;
+    o->i_stride = 0;
+    o->v_size = 0;
+    o->v_data = bcore_un_alloc( sizeof( fx_t ), o->v_data, o->v_space, o->v_size, &o->v_space );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void BCATU(bmath_asmfx_s,set_size)( bmath_asmfx_s* o, sz_t rows, sz_t cols )
 {
     BCATU(bmath_asmfx_s,set_size_splicing)( o, rows, cols );
@@ -319,6 +332,45 @@ void BCATU(bmath_asmfx_s,to_sink)( const bmath_asmfx_s* o, bcore_sink* sink )
         bcore_sink_a_push_fa( sink, "\n" );
     }
 }
+
+/**********************************************************************************************************************/
+// type conversion
+
+void BCATU(bmath_asmfx_s,copy_typed)( bmath_asmfx_s* o, tp_t type, vc_t src )
+{
+    if( !src )
+    {
+        BCATU(bmath_asmfx_s,clear)( o );
+        return;
+    }
+
+    switch( type )
+    {
+        case TYPEOF_bmath_asmfx_s:
+        {
+            BCATU(bmath_asmfx_s,copy)( o, src );
+        }
+        break;
+
+        case TYPEOF_bmath_asmfy_s:
+        {
+            const bmath_asmfy_s* v = src;
+            BCATU(bmath_asmfx_s,set_size_splicing)( o, v->rows, v->cols );
+            BCATU(bmath_asmfx_s,set_size_data)( o, v->v_size );
+            bcore_u_memcpy( sizeof( sz_t ), o->i_data, v->i_data, v->i_size );
+            bcore_u_memcpy( sizeof( fx_t ), o->v_data, v->v_data, v->v_size );
+        }
+        break;
+
+        default:
+        {
+            bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) );
+        }
+        break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // testing

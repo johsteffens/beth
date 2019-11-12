@@ -66,6 +66,20 @@ void BCATU(bmath_xsmfx_s,set_size)( bmath_xsmfx_s* o, sz_t rows, sz_t xons, sz_t
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void BCATU(bmath_xsmfx_s,clear)( bmath_xsmfx_s* o )
+{
+    o->i_size = 0;
+    o->i_data = bcore_un_alloc( sizeof( sz_t ), o->i_data, o->i_space, o->i_size, &o->i_space );
+    o->rows = 0;
+    o->xons = 0;
+    o->slos = 0;
+    o->i_stride = 0;
+    o->v_size = 0;
+    o->v_data = bcore_un_alloc( sizeof( fx_t ), o->v_data, o->v_space, o->v_size, &o->v_space );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void BCATU(bmath_xsmfx_s,set_shape_alike)( bmath_xsmfx_s* o, const bmath_xsmfx_s* src )
 {
     BCATU(bmath_xsmfx_s,copy_splicing)( o, src );
@@ -343,6 +357,46 @@ void BCATU(bmath_xsmfx_s,to_sink)( const bmath_xsmfx_s* o, bcore_sink* sink )
         bcore_sink_a_push_fa( sink, "\n" );
     }
 }
+
+/**********************************************************************************************************************/
+// type conversion
+
+void BCATU(bmath_xsmfx_s,copy_typed)( bmath_xsmfx_s* o, tp_t type, vc_t src )
+{
+    if( !src )
+    {
+        BCATU(bmath_xsmfx_s,clear)( o );
+        return;
+    }
+
+    switch( type )
+    {
+        case TYPEOF_bmath_xsmfx_s:
+        {
+            BCATU(bmath_xsmfx_s,copy)( o, src );
+        }
+        break;
+
+        case TYPEOF_bmath_xsmfy_s:
+        {
+            const bmath_xsmfy_s* v = src;
+            BCATU(bmath_xsmfx_s,set_size_splicing)( o, v->rows, v->xons );
+            BCATU(bmath_xsmfx_s,set_size_data)( o, v->v_size );
+            o->slos = v->slos;
+            bcore_u_memcpy( sizeof( sz_t ), o->i_data, v->i_data, v->i_size );
+            bcore_u_memcpy( sizeof( fx_t ), o->v_data, v->v_data, v->v_size );
+        }
+        break;
+
+        default:
+        {
+            bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) );
+        }
+        break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // testing

@@ -15,6 +15,7 @@
 
 #include "bcore_std.h"
 #include "bmath_std.h"
+#include "bmath_xsmf2.h"
 #include "bmath_xsmf3.h"
 
 #define BMATH_TEMPLATE_FX_PREC 3
