@@ -24,7 +24,7 @@
 #define TYPEOF_bhvm_hf3_s 3394151696
 #define BETH_EXPAND_ITEM_bhvm_hf3_s \
   BCORE_DECLARE_OBJECT( bhvm_hf3_s ) \
-    {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, d_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
+    {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, d_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );bl_t htp;};
 #define TYPEOF_bhvm_hf3_adl_s 963867488
 #define BETH_EXPAND_ITEM_bhvm_hf3_adl_s \
   BCORE_DECLARE_OBJECT( bhvm_hf3_adl_s ) \

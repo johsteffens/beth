@@ -53,8 +53,10 @@
  *  These are terms describing the aspects of a holor's shape.
  *    Merates (as number) is the number of independent values. It is the same as v_size for
  *    a determined holor, or d_product otherwise.
+ *    We call this value 'Volume'
  *
- *    Valence is the number of independent dimensions. It is the same as 'order' or d_size.
+ *    Valence is the number of independent dimensions.
+ *    We call this value 'order' or d_size.
  *
  *  Shape
  *    We define the shape of a holor by the entire array d_data. Two holors of the same shape
@@ -80,6 +82,7 @@ stamp : = aware bcore_inst
 {
     sz_t [] d; // dimension data
     f3_t [] v; // value data
+    bl_t htp;  // holor is transposed
 };
 
 /// array of dynamic links
@@ -169,11 +172,10 @@ void bhvm_hf3_s_set_size_na( bhvm_hf3_s* o, sz_t d_size, ... );
 
 /**   product of all dimensions
   * = number of independent quantities
-  * = merates (Moon et al: Theroy of Holors)
   * = v_size in case of for a determined holor
   */
 sz_t bhvm_hf3_s_d_product( const bhvm_hf3_s* o );  // always calculates d-product from d_data
-sz_t bhvm_hf3_s_merates(   const bhvm_hf3_s* o );  // returns v_size if > 0 otherwise d_product
+sz_t bhvm_hf3_s_volume(    const bhvm_hf3_s* o );  // returns v_size if > 0 otherwise d_product
 
 /// sets d_data to scalar (no change on v_data)
 void bhvm_hf3_s_set_d_scalar( bhvm_hf3_s* o );
@@ -357,17 +359,17 @@ f3_t bhvm_hf3_s_f3_min( const bhvm_hf3_s* o );
 f3_t bhvm_hf3_s_f3_sum( const bhvm_hf3_s* o );
 
 /// operators
-void bhvm_hf3_s_fp_f3_ar0(       bhvm_hf3_s* o,                       bmath_fp_f3_ar0 fp );
-void bhvm_hf3_s_fp_f3_ar1( const bhvm_hf3_s* a,                       bmath_fp_f3_ar1 fp, bhvm_hf3_s* r );
+void bhvm_hf3_s_fp_f3_ar0(       bhvm_hf3_s* o,                      bmath_fp_f3_ar0 fp );
+void bhvm_hf3_s_fp_f3_ar1( const bhvm_hf3_s* a,                      bmath_fp_f3_ar1 fp, bhvm_hf3_s* r );
 void bhvm_hf3_s_fp_f3_ar2( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bmath_fp_f3_ar2 fp, bhvm_hf3_s* r );
 
-void bhvm_hf3_s_fp_f3_op_ar0(       bhvm_hf3_s* o,                       bmath_fp_f3_op_ar0 fp, vc_t op );
-void bhvm_hf3_s_fp_f3_op_ar1( const bhvm_hf3_s* a,                       bmath_fp_f3_op_ar1 fp, vc_t op, bhvm_hf3_s* r );
+void bhvm_hf3_s_fp_f3_op_ar0(       bhvm_hf3_s* o,                      bmath_fp_f3_op_ar0 fp, vc_t op );
+void bhvm_hf3_s_fp_f3_op_ar1( const bhvm_hf3_s* a,                      bmath_fp_f3_op_ar1 fp, vc_t op, bhvm_hf3_s* r );
 void bhvm_hf3_s_fp_f3_op_ar2( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bmath_fp_f3_op_ar2 fp, vc_t op, bhvm_hf3_s* r );
 
 /// ... madd: applies operator, elementwise multiplies 'm' and adds result to 'r'
-void bhvm_hf3_s_fp_f3_ar0_madd(                                             bmath_fp_f3_ar0 fp, const bhvm_hf3_s* m, bhvm_hf3_s* r );
-void bhvm_hf3_s_fp_f3_ar1_madd( const bhvm_hf3_s* a,                       bmath_fp_f3_ar1 fp, const bhvm_hf3_s* m, bhvm_hf3_s* r );
+void bhvm_hf3_s_fp_f3_ar0_madd(                                           bmath_fp_f3_ar0 fp, const bhvm_hf3_s* m, bhvm_hf3_s* r );
+void bhvm_hf3_s_fp_f3_ar1_madd( const bhvm_hf3_s* a,                      bmath_fp_f3_ar1 fp, const bhvm_hf3_s* m, bhvm_hf3_s* r );
 void bhvm_hf3_s_fp_f3_ar2_madd( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bmath_fp_f3_ar2 fp, const bhvm_hf3_s* m, bhvm_hf3_s* r );
 
 /**********************************************************************************************************************/
@@ -376,51 +378,40 @@ void bhvm_hf3_s_fp_f3_ar2_madd( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bmath_
  *  depending on given holor order.
  *
  *  A dendride pass can be expressed as bmul of different transposition:
- *  A **  B = C: GA  = GC *^ B and GB  = A ^* GC
- *  A *^  B = C: GA  = GC ** B and GBt = A ^* GC
- *  A ^*  B = C: GAt = GC *^ B and GB  = A ** GC
- *  A ^*^ B = C: GAt = GC ** B and GBt = A ** GC
+ *  A  ** B  = C: GA  = GC ** Bt and GB  = At ** GC
+ *  A  ** Bt = C: GA  = GC ** B  and GBt = At ** GC
+ *  At ** B  = C: GAt = GC ** Bt and GB  = A  ** GC
+ *  At ** Bt = C: GAt = GC ** B  and GBt = A  ** GC
  *
  *  In case of vectors, the correct transposition-choice is important ...
- *    V ^* V is the dot-product and served by htp_bmul
- *    V *^ V is the outer-product and served by bmul_htp
- *    M ** V is a valid vector transformation and served by bmul
- *    V ^* M is a valid vector transformation and served by htp_bmul
+ *  Vt ** V  is the dot-product
+ *  V  ** Vt is the outer-product
+ *  M  ** V is a valid vector transformation
+ *  Vt ** M is a valid vector transformation
  *
  *  Undefined compositions are ...
- *    V  ** V,
- *    V  ^* V
- *    V  ** M
- *    M  *^ V
- *    M x*x S (all transpositions)
- *    S x*x M (all transpositions)
+ *  V  ** V
+ *  Vt ** V
+ *  V  ** M
+ *  M  ** Vt
+ *  M(t) ** S    (all transpositions)
+ *  S    ** M(t) (all transpositions)
  */
 
-void bhvm_hf3_s_bmul(         const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o   * b   -> r
-void bhvm_hf3_s_bmul_htp(     const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o   * b^T -> r
-void bhvm_hf3_s_htp_bmul(     const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o^T * b   -> r
-void bhvm_hf3_s_htp_bmul_htp( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o^T * b^T -> r
-
-void bhvm_hf3_s_bmul_add(         const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_hf3_s* c, bhvm_hf3_s* r ); // o   * b   + c -> r
-void bhvm_hf3_s_bmul_htp_add(     const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_hf3_s* c, bhvm_hf3_s* r ); // o   * b^T + c -> r
-void bhvm_hf3_s_htp_bmul_add(     const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_hf3_s* c, bhvm_hf3_s* r ); // o^T * b   + c -> r
-void bhvm_hf3_s_htp_bmul_htp_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_hf3_s* c, bhvm_hf3_s* r ); // o^T * b^T + c -> r
+void bhvm_hf3_s_bmul(     const bhvm_hf3_s* o, const bhvm_hf3_s* b,                      bhvm_hf3_s* r ); // o * b     -> r
+void bhvm_hf3_s_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_hf3_s* c, bhvm_hf3_s* r ); // o * b + c -> r
 
 /** sets d-data on r for bmul operation; returns true in case if success
  *  Does not change v_data
  */
-bl_t bhvm_hf3_s_set_d_bmul(         const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o   * b   -> r
-bl_t bhvm_hf3_s_set_d_bmul_htp(     const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o   * b^T -> r
-bl_t bhvm_hf3_s_set_d_htp_bmul(     const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o^T * b   -> r
-bl_t bhvm_hf3_s_set_d_htp_bmul_htp( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o^T * b^T -> r
+bl_t bhvm_hf3_s_set_d_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o * b -> r
 
 /** composite multiply-add function. Satisfies functionality of BLAS:DGEMM.
- *  op(a) * op(b) * c + d * e -> r
- *  op(x) = htpx ? x^T : x;
+ *  a * b * c + d * e -> r
  *  c, e are scalar.
  *  d can be NULL
  */
-void bhvm_hf3_s_bmul_add_cps( bl_t htpa, const bhvm_hf3_s* a, sz_t k, bl_t htpb, const bhvm_hf3_s* b, f3_t c, const bhvm_hf3_s* d, f3_t e, bhvm_hf3_s* r );
+void bhvm_hf3_s_bmul_add_cps( const bhvm_hf3_s* a, const bhvm_hf3_s* b, f3_t c, const bhvm_hf3_s* d, f3_t e, bhvm_hf3_s* r );
 
 #endif // TYPEOF_bhvm_hf3
 

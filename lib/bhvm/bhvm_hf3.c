@@ -132,6 +132,7 @@ void bhvm_hf3_s_clear( bhvm_hf3_s* o )
 {
     bhvm_hf3_s_clear_d_data( o );
     bhvm_hf3_s_clear_v_data( o );
+    o->htp = false;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -185,6 +186,7 @@ void bhvm_hf3_s_copy_typed( bhvm_hf3_s* o, tp_t type, vc_t src )
             const bmath_mf3_s* m = src;
             bhvm_hf3_s_set_d_data_na( o, 2, m->cols, m->rows );
             bhvm_hf3_s_set_v_data( o, m->data, m->cols * m->rows );
+            o->htp = false;
         }
         break;
 
@@ -194,12 +196,14 @@ void bhvm_hf3_s_copy_typed( bhvm_hf3_s* o, tp_t type, vc_t src )
             const bmath_vf3_s* v = src;
             bhvm_hf3_s_set_d_data_na( o, 1, v->size );
             bhvm_hf3_s_set_v_data( o, v->data, v->size );
+            o->htp = false;
         }
         break;
 
         case TYPEOF_f3_t:
         {
             bhvm_hf3_s_set_scalar_f3( o, *( const f3_t* )src );
+            o->htp = false;
         }
         break;
 
@@ -350,7 +354,7 @@ sz_t bhvm_hf3_s_d_product( const bhvm_hf3_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-sz_t bhvm_hf3_s_merates( const bhvm_hf3_s* o )
+sz_t bhvm_hf3_s_volume( const bhvm_hf3_s* o )
 {
     if( o->v_size > 0 )
     {
@@ -383,6 +387,7 @@ void bhvm_hf3_s_set_scalar_pf3( bhvm_hf3_s* o, f3_t* v )
     {
         bhvm_hf3_s_clear_v_data( o );
     }
+    o->htp = false;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -467,6 +472,7 @@ bl_t bhvm_hf3_s_v_equal( const bhvm_hf3_s* o, const bhvm_hf3_s* src )
 
 bl_t bhvm_hf3_s_is_equal( const bhvm_hf3_s* o, const bhvm_hf3_s* op )
 {
+    if( o->htp    != op->htp        ) return false;
     if( !bhvm_hf3_s_d_equal( o, op ) ) return false;
     if( !bhvm_hf3_s_v_equal( o, op ) ) return false;
     return true;
@@ -686,6 +692,7 @@ static void hf3_s_to_sink( const bhvm_hf3_s* o, sz_t max_size, bcore_sink* sink 
             bcore_sink_a_push_fa( sink, "D" );
         }
     }
+    if( o->htp ) bcore_sink_a_push_fa( sink, "^T" );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -713,7 +720,9 @@ void bhvm_hf3_s_formatted_to_sink( const bhvm_hf3_s* o, bcore_sink* sink )
             bcore_sink_a_push_fa( sink, "(" );
             rec_to_sink( o, 2, true, sink, o->v_data, o->d_size - 1 );
             if( o->d_size > 1 ) bcore_sink_a_push_fa( sink, "\n" );
-            bcore_sink_a_push_fa( sink, ")\n" );
+            bcore_sink_a_push_fa( sink, ")" );
+            if( o->htp ) bcore_sink_a_push_fa( sink, "^T" );
+            bcore_sink_a_push_fa( sink, "\n" );
         }
         else
         {
@@ -727,6 +736,8 @@ void bhvm_hf3_s_formatted_to_sink( const bhvm_hf3_s* o, bcore_sink* sink )
             bcore_sink_a_push_fa( sink, "[#<sz_t>]", o->d_data[ i ] );
         }
         bcore_sink_a_push_fa( sink, "##\n" );
+        if( o->htp ) bcore_sink_a_push_fa( sink, "^T" );
+        bcore_sink_a_push_fa( sink, "\n" );
     }
 }
 
@@ -790,6 +801,7 @@ void bhvm_hf3_s_set_random( bhvm_hf3_s* o, f3_t density, f3_t min, f3_t max, u2_
 
 f3_t bhvm_hf3_s_fdev_equ( const bhvm_hf3_s* o, const bhvm_hf3_s* op )
 {
+    ASSERT( o->htp == op->htp );
     ASSERT( o->v_size == op->v_size );
     f3_t sum = 0;
     const f3_t* a = o ->v_data;
@@ -809,54 +821,6 @@ f3_t bhvm_hf3_s_fdev_zro( const bhvm_hf3_s* o )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
-/**********************************************************************************************************************/
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-sz_t bhvm_hf3_s_get_k_for_cols( const bhvm_hf3_s* o, sz_t cols )
-{
-    sz_t p = 1;
-    if( cols == p ) return 0;
-    for( sz_t i = 0; i < o->d_size; i++ )
-    {
-        if( cols == p ) return i;
-        p *= o->d_data[ i ];
-    }
-    if( cols == p ) return o->d_size;
-    ERR_fa( "Cannot convert holor to matrix with <#sz_t> columns.", cols );
-    return 0;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-sz_t bhvm_hf3_s_get_k_for_rows( const bhvm_hf3_s* o, sz_t rows )
-{
-    sz_t p = 1;
-    if( rows == p ) return o->d_size;
-    for( sz_t i = o->d_size; i > 0; i-- )
-    {
-        if( rows == p ) return i;
-        p *= o->d_data[ i - 1 ];
-    }
-    if( rows == p ) return 0;
-    ERR_fa( "Cannot convert holor to matrix with <#sz_t> rows.", rows );
-    return 0;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bmath_mf3_s bhvm_hf3_s_get_weak_kmat( const bhvm_hf3_s* o, sz_t k )
-{
-    ASSERT( k >= 0 && k <= o->d_size );
-    sz_t cols = 1;
-    sz_t rows = 1;
-    for( sz_t i = 0; i < k;         i++ ) cols *= o->d_data[ i ];
-    for( sz_t i = k; i < o->d_size; i++ ) rows *= o->d_data[ i ];
-    return bmath_mf3_init_weak( rows, cols, cols, o->v_data );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 /// elementwise operations
@@ -894,19 +858,12 @@ void bhvm_hf3_s_exp( const bhvm_hf3_s* o, bhvm_hf3_s* r )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_hf3_s_tanh( const bhvm_hf3_s* o, bhvm_hf3_s* r )
-{
-    ASSERT( o->v_size == r->v_size );
-    for( sz_t i = 0; i < o->v_size; i++ ) r->v_data[ i ] = tanh( o->v_data[ i ] );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 void bhvm_hf3_s_htp( const bhvm_hf3_s* o, bhvm_hf3_s* r )
 {
     bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
     bmath_mf3_s mr = bhvm_hf3_s_get_weak_mat( o );
     bmath_mf3_s_htp( &mo, &mr );
+    r->htp = o->htp;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1191,6 +1148,16 @@ void bhvm_hf3_s_fp_f3_ar2_madd( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bmath_
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+#define _0H  0
+#define _0Ht 1
+#define _1H  2
+#define _1Ht 3
+#define _2H  4
+#define _2Ht 5
+
+#define HS_CODE( h ) ( h->d_size * 2 + ( h->htp ? 1 : 0 ) )
+#define BHS_CODE( HS_CODE1, HS_CODE2 ) ( HS_CODE1 * 6 + HS_CODE2 )
+
 void bhvm_hf3_s_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r )
 {
     ASSERT( o->d_size <= 2 );
@@ -1199,53 +1166,53 @@ void bhvm_hf3_s_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r )
     assert( b->v_size );
     assert( r->v_size );
 
-    switch( o->d_size * 3 + b->d_size )
+    switch( BHS_CODE( HS_CODE( o ), HS_CODE( b ) ) )
     {
-        case 0: // 0H * 0H
+        case BHS_CODE( _0H, _0H ):
         {
             ASSERT( r->d_size == 0 );
             r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0H * 1H
+        case BHS_CODE( _0H, _1H ):
         {
             ERR_fa( "'0H * 1H' not defined." );
         }
         break;
 
-        case 2: // 0H * 2H
+        case BHS_CODE( _0H, _2H ):
         {
             ERR_fa( "'0H * 2H' not defined." );
         }
         break;
 
-        case 3: // 1H * 0H
+        case BHS_CODE( _1H, _0H ):
         {
             ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
             bhvm_hf3_s_mul_scl( o, b->v_data, r );
         }
         break;
 
-        case 4: // 1H * 1H
+        case BHS_CODE( _1H, _1H ):
         {
             ERR_fa( "'1H * 1H' not defined." );
         }
         break;
 
-        case 5: // 1H * 2H
+        case BHS_CODE( _1H, _2H ):
         {
             ERR_fa( "'1H * 2H' not defined." );
         }
         break;
 
-        case 6: // 2H * 0H
+        case BHS_CODE( _2H, _0H ):
         {
             ERR_fa( "'2H * 0H' not defined." );
         }
         break;
 
-        case 7: // 2H * 1H  (matrix * vector)
+        case BHS_CODE( _2H, _1H ): // (matrix * vector)
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_vf3_s vb = bhvm_hf3_s_get_weak_vec( b );
@@ -1255,7 +1222,7 @@ void bhvm_hf3_s_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r )
         }
         break;
 
-        case 8: // 2H * 2H  (matrix * matrix)
+        case BHS_CODE( _2H, _2H ): // (matrix * matrix)
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_mf3_s mb = bhvm_hf3_s_get_weak_mat( b );
@@ -1266,49 +1233,33 @@ void bhvm_hf3_s_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r )
         }
         break;
 
-        default: break;
-    }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_hf3_s_bmul_htp( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r )
-{
-    ASSERT( o->d_size <= 2 );
-    ASSERT( b->d_size <= 2 );
-    assert( o->v_size );
-    assert( b->v_size );
-    assert( r->v_size );
-
-    switch( o->d_size * 3 + b->d_size )
-    {
-        case 0: // 0H * 0Ht
+        case BHS_CODE( _0H, _0Ht ): // 0H * 0Ht
         {
             ASSERT( r->d_size == 0 );
             r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0H * 1Ht
+        case BHS_CODE( _0H, _1Ht ): // 0H * 1Ht
         {
             ERR_fa( "'0H * 1Ht' not defined." );  // result would be 1Ht but holor has no representation for that state
         }
         break;
 
-        case 2: // 0H * 2Ht
+        case BHS_CODE( _0H, _2Ht ): // 0H * 2Ht
         {
             ERR_fa( "'0H * 2Ht' not defined." );
         }
         break;
 
-        case 3: // 1H * 0Ht
+        case BHS_CODE( _1H, _0Ht ): // 1H * 0Ht
         {
             ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
             bhvm_hf3_s_mul_scl( o, b->v_data, r );
         }
         break;
 
-        case 4: // 1H * 1Ht  (outer product)
+        case BHS_CODE( _1H, _1Ht ): // 1H * 1Ht  (outer product)
         {
             bmath_vf3_s vo = bhvm_hf3_s_get_weak_vec( o );
             bmath_vf3_s vb = bhvm_hf3_s_get_weak_vec( b );
@@ -1317,25 +1268,25 @@ void bhvm_hf3_s_bmul_htp( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* 
         }
         break;
 
-        case 5: // 1H * 2Ht
+        case BHS_CODE( _1H, _2Ht ): // 1H * 2Ht
         {
             ERR_fa( "'1H * 2Ht' not defined." );
         }
         break;
 
-        case 6: // 2H * 0Ht
+        case BHS_CODE( _2H, _0Ht ): // 2H * 0Ht
         {
             ERR_fa( "'2H * 0Ht' not defined." );
         }
         break;
 
-        case 7: // 2H * 1Ht
+        case BHS_CODE( _2H, _1Ht ): // 2H * 1Ht
         {
             ERR_fa( "'2H * 1Ht' not defined." );
         }
         break;
 
-        case 8: // 2H * 2Ht
+        case BHS_CODE( _2H, _2Ht ): // 2H * 2Ht
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_mf3_s mb = bhvm_hf3_s_get_weak_mat( b );
@@ -1346,36 +1297,20 @@ void bhvm_hf3_s_bmul_htp( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* 
         }
         break;
 
-        default: break;
-    }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_hf3_s_htp_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r )
-{
-    ASSERT( o->d_size <= 2 );
-    ASSERT( b->d_size <= 2 );
-    assert( o->v_size );
-    assert( b->v_size );
-    assert( r->v_size );
-
-    switch( o->d_size * 3 + b->d_size )
-    {
-        case 0: // 0Ht * 0H
+        case BHS_CODE( _0Ht, _0H ): // 0Ht * 0H
         {
             ASSERT( r->d_size == 0 );
             r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0Ht * 1H
+        case BHS_CODE( _0Ht, _1H ): // 0Ht * 1H
         {
             ERR_fa( "'0Ht * 1H' not defined." );
         }
         break;
 
-        case 2: // 0Ht * 2H
+        case BHS_CODE( _0Ht, _2H ): // 0Ht * 2H
         {
             ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
             ASSERT( b->d_data[ 1 ] == r->d_data[ 1 ] );
@@ -1383,13 +1318,13 @@ void bhvm_hf3_s_htp_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* 
         }
         break;
 
-        case 3: // 1Ht * 0H
+        case BHS_CODE( _1Ht, _0H ): // 1Ht * 0H
         {
             ERR_fa( "'1Ht * 0H' not defined." );
         }
         break;
 
-        case 4: // 1Ht * 1H  (VT V) dot product
+        case BHS_CODE( _1Ht, _1H ): // 1Ht * 1H  (VT V) dot product
         {
             ASSERT( o->d_data[ 0 ] == b->d_data[ 0 ] );
             ASSERT( r->d_size == 0 );
@@ -1397,19 +1332,19 @@ void bhvm_hf3_s_htp_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* 
         }
         break;
 
-        case 5: // 1Ht * 2H
+        case BHS_CODE( _1Ht, _2H ): // 1Ht * 2H
         {
             ERR_fa( "'1Ht * 2H' not defined." );  // result would be 1Ht but holor has no representation for that state
         }
         break;
 
-        case 6: // 2Ht * 0H
+        case BHS_CODE( _2Ht, _0H ): // 2Ht * 0H
         {
             ERR_fa( "'2Ht * 0H' not defined." );
         }
         break;
 
-        case 7: // 2Ht * 1H  (matrix * vector)
+        case BHS_CODE( _2Ht, _1H ): // 2Ht * 1H  (matrix * vector)
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_vf3_s vb = bhvm_hf3_s_get_weak_vec( b );
@@ -1419,7 +1354,7 @@ void bhvm_hf3_s_htp_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* 
         }
         break;
 
-        case 8: // 2Ht * 2H  (matrix * matrix)
+        case BHS_CODE( _2Ht, _2H ): // 2Ht * 2H  (matrix * matrix)
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_mf3_s mb = bhvm_hf3_s_get_weak_mat( b );
@@ -1430,54 +1365,38 @@ void bhvm_hf3_s_htp_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* 
         }
         break;
 
-        default: break;
-    }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_hf3_s_htp_bmul_htp( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r )
-{
-    ASSERT( o->d_size <= 2 );
-    ASSERT( b->d_size <= 2 );
-    assert( o->v_size );
-    assert( b->v_size );
-    assert( r->v_size );
-
-    switch( o->d_size * 3 + b->d_size )
-    {
-        case 0: // 0Ht * 0Ht
+        case BHS_CODE( _0Ht, _0Ht ): // 0Ht * 0Ht
         {
             ASSERT( r->d_size == 0 );
             r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0Ht * 1Ht
+        case BHS_CODE( _0Ht, _1Ht ): // 0Ht * 1Ht
         {
             ERR_fa( "'0Ht * 1Ht' not defined." );  // result would be 1Ht but holor has no representation for that state
         }
         break;
 
-        case 2: // 0Ht * 2Ht
+        case BHS_CODE( _0Ht, _2Ht ): // 0Ht * 2Ht
         {
             ERR_fa( "'0Ht * 2Ht' not defined." );
         }
         break;
 
-        case 3: // 1Ht * 0Ht
+        case BHS_CODE( _1Ht, _0Ht ): // 1Ht * 0Ht
         {
             ERR_fa( "'1Ht * 0Ht' not defined." );
         }
         break;
 
-        case 4: // 1Ht * 1Ht  (VT VT) not defined
+        case BHS_CODE( _1Ht, _1Ht ): // 1Ht * 1Ht  (VT VT) not defined
         {
             ERR_fa( "'1Ht * 1Ht' not defined." );
         }
         break;
 
-        case 5: // 1Ht * 2Ht
+        case BHS_CODE( _1Ht, _2Ht ): // 1Ht * 2Ht
         {
             bmath_vf3_s vo = bhvm_hf3_s_get_weak_vec( o );
             bmath_mf3_s mb = bhvm_hf3_s_get_weak_mat( b );
@@ -1487,19 +1406,19 @@ void bhvm_hf3_s_htp_bmul_htp( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3
         }
         break;
 
-        case 6: // 2Ht * 0Ht
+        case BHS_CODE( _2Ht, _0Ht ): // 2Ht * 0Ht
         {
             ERR_fa( "'2Ht * 1Ht' not defined." );
         }
         break;
 
-        case 7: // 2Ht * 1Ht  (matrix * vector)
+        case BHS_CODE( _2Ht, _1Ht ): // 2Ht * 1Ht  (matrix * vector)
         {
             ERR_fa( "'2Ht * 1Ht' not defined." );
         }
         break;
 
-        case 8: // 2Ht * 2Ht  (matrix * matrix)
+        case BHS_CODE( _2Ht, _2Ht ): // 2Ht * 2Ht  (matrix * matrix)
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_mf3_s mb = bhvm_hf3_s_get_weak_mat( b );
@@ -1525,53 +1444,53 @@ void bhvm_hf3_s_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_h
     assert( b->v_size );
     assert( r->v_size );
 
-    switch( o->d_size * 3 + b->d_size )
+    switch( BHS_CODE( HS_CODE( o ), HS_CODE( b ) ) )
     {
-        case 0: // 0H * 0H
+        case BHS_CODE( _0H, _0H ): // 0H * 0H
         {
             ASSERT( r->d_size == 0 );
             r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ] + c->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0H * 1H
+        case BHS_CODE( _0H, _1H ): // 0H * 1H
         {
             ERR_fa( "'0H * 1H' not defined." );
         }
         break;
 
-        case 2: // 0H * 2H
+        case BHS_CODE( _0H, _2H ): // 0H * 2H
         {
             ERR_fa( "'0H * 2H' not defined." );
         }
         break;
 
-        case 3: // 1H * 0H
+        case BHS_CODE( _1H, _0H ): // 1H * 0H
         {
             ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
             bhvm_hf3_s_mul_scl_add( o, b->v_data, c, r );
         }
         break;
 
-        case 4: // 1H * 1H
+        case BHS_CODE( _1H, _1H ): // 1H * 1H
         {
             ERR_fa( "'1H * 1H' not defined." );
         }
         break;
 
-        case 5: // 1H * 2H
+        case BHS_CODE( _1H, _2H ): // 1H * 2H
         {
             ERR_fa( "'1H * 2H' not defined." );
         }
         break;
 
-        case 6: // 2H * 0H
+        case BHS_CODE( _2H, _0H ): // 2H * 0H
         {
             ERR_fa( "'2H * 0H' not defined." );
         }
         break;
 
-        case 7: // 2H * 1H  (matrix * vector)
+        case BHS_CODE( _2H, _1H ): // 2H * 1H  (matrix * vector)
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_vf3_s vb = bhvm_hf3_s_get_weak_vec( b );
@@ -1583,7 +1502,7 @@ void bhvm_hf3_s_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_h
         }
         break;
 
-        case 8: // 2H * 2H  (matrix * matrix)
+        case BHS_CODE( _2H, _2H ): // 2H * 2H  (matrix * matrix)
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_mf3_s mb = bhvm_hf3_s_get_weak_mat( b );
@@ -1596,50 +1515,33 @@ void bhvm_hf3_s_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_h
         }
         break;
 
-        default: break;
-    }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_hf3_s_bmul_htp_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_hf3_s* c, bhvm_hf3_s* r )
-{
-    ASSERT( o->d_size <= 2 );
-    ASSERT( b->d_size <= 2 );
-    ASSERT( bhvm_hf3_s_d_equal( c, r ) );
-    assert( o->v_size );
-    assert( b->v_size );
-    assert( r->v_size );
-
-    switch( o->d_size * 3 + b->d_size )
-    {
-        case 0: // 0H * 0Ht
+        case BHS_CODE( _0H, _0Ht ): // 0H * 0Ht
         {
             ASSERT( r->d_size == 0 );
             r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ] + c->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0H * 1Ht
+        case BHS_CODE( _0H, _1Ht ): // 0H * 1Ht
         {
             ERR_fa( "'0H * 1Ht' not defined." );  // result would be 1Ht but holor has no representation for that state
         }
         break;
 
-        case 2: // 0H * 2Ht
+        case BHS_CODE( _0H, _2Ht ): // 0H * 2Ht
         {
             ERR_fa( "'0H * 2Ht' not defined." );
         }
         break;
 
-        case 3: // 1H * 0Ht
+        case BHS_CODE( _1H, _0Ht ): // 1H * 0Ht
         {
             ASSERT( o->d_data[ 0 ] == r->d_data[ 0 ] );
             bhvm_hf3_s_mul_scl_add( o, b->v_data, c, r );
         }
         break;
 
-        case 4: // 1H * 1Ht  (outer product)
+        case BHS_CODE( _1H, _1Ht ): // 1H * 1Ht  (outer product)
         {
             bmath_vf3_s vo = bhvm_hf3_s_get_weak_vec( o );
             bmath_vf3_s vb = bhvm_hf3_s_get_weak_vec( b );
@@ -1650,25 +1552,25 @@ void bhvm_hf3_s_bmul_htp_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bh
         }
         break;
 
-        case 5: // 1H, 2Ht
+        case BHS_CODE( _1H, _2Ht ): // 1H, 2Ht
         {
             ERR_fa( "'1H * 2Ht' not defined." );
         }
         break;
 
-        case 6: // 2H * 0Ht
+        case BHS_CODE( _2H, _0Ht ): // 2H * 0Ht
         {
             ERR_fa( "'2H * 0Ht' not defined." );
         }
         break;
 
-        case 7: // 2H * 1Ht
+        case BHS_CODE( _2H, _1Ht ): // 2H * 1Ht
         {
             ERR_fa( "'1H * 2Ht' not defined." );
         }
         break;
 
-        case 8: // 2H * 2Ht
+        case BHS_CODE( _2H, _2Ht ): // 2H * 2Ht
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_mf3_s mb = bhvm_hf3_s_get_weak_mat( b );
@@ -1681,37 +1583,20 @@ void bhvm_hf3_s_bmul_htp_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bh
         }
         break;
 
-        default: break;
-    }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_hf3_s_htp_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_hf3_s* c, bhvm_hf3_s* r )
-{
-    ASSERT( o->d_size <= 2 );
-    ASSERT( b->d_size <= 2 );
-    ASSERT( bhvm_hf3_s_d_equal( c, r ) );
-    assert( o->v_size );
-    assert( b->v_size );
-    assert( r->v_size );
-
-    switch( o->d_size * 3 + b->d_size )
-    {
-        case 0: // 0Ht * 0H
+        case BHS_CODE( _0Ht, _0H ): // 0Ht * 0H
         {
             ASSERT( r->d_size == 0 );
             r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ] + c->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0Ht * 1H
+        case BHS_CODE( _0Ht, _1H ): // 0Ht * 1H
         {
             ERR_fa( "'0Ht * 1H' not defined." );
         }
         break;
 
-        case 2: // 0Ht * 2H
+        case BHS_CODE( _0Ht, _2H ): // 0Ht * 2H
         {
             ASSERT( b->d_data[ 0 ] == r->d_data[ 0 ] );
             ASSERT( b->d_data[ 1 ] == r->d_data[ 1 ] );
@@ -1719,13 +1604,13 @@ void bhvm_hf3_s_htp_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bh
         }
         break;
 
-        case 3: // 1Ht * 0H
+        case BHS_CODE( _1Ht, _0H ): // 1Ht * 0H
         {
             ERR_fa( "'1Ht * 0H' not defined." );
         }
         break;
 
-        case 4: // 1Ht * 1H  (VT V) dot product
+        case BHS_CODE( _1Ht, _1H ): // 1Ht * 1H  (VT V) dot product
         {
             ASSERT( o->d_data[ 0 ] == b->d_data[ 0 ] );
             ASSERT( r->d_size == 0 );
@@ -1733,19 +1618,19 @@ void bhvm_hf3_s_htp_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bh
         }
         break;
 
-        case 5: // 1Ht * 2H
+        case BHS_CODE( _1Ht, _2H ): // 1Ht * 2H
         {
             ERR_fa( "'1Ht * 2H' not defined." );  // result would be 1Ht but holor has no representation for that state
         }
         break;
 
-        case 6: // 2Ht * 0H
+        case BHS_CODE( _2Ht, _0H ): // 2Ht * 0H
         {
             ERR_fa( "'2Ht * 0H' not defined." );
         }
         break;
 
-        case 7: // 2Ht * 1H  (matrix * vector)
+        case BHS_CODE( _2Ht, _1H ): // 2Ht * 1H  (matrix * vector)
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_vf3_s vb = bhvm_hf3_s_get_weak_vec( b );
@@ -1757,7 +1642,7 @@ void bhvm_hf3_s_htp_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bh
         }
         break;
 
-        case 8: // 2Ht * 2H  (matrix * matrix)
+        case BHS_CODE( _2Ht, _2H ): // 2Ht * 2H  (matrix * matrix)
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_mf3_s mb = bhvm_hf3_s_get_weak_mat( b );
@@ -1770,55 +1655,38 @@ void bhvm_hf3_s_htp_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bh
         }
         break;
 
-        default: break;
-    }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_hf3_s_htp_bmul_htp_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_hf3_s* c, bhvm_hf3_s* r )
-{
-    ASSERT( o->d_size <= 2 );
-    ASSERT( b->d_size <= 2 );
-    ASSERT( bhvm_hf3_s_d_equal( c, r ) );
-    assert( o->v_size );
-    assert( b->v_size );
-    assert( r->v_size );
-
-    switch( o->d_size * 3 + b->d_size )
-    {
-        case 0: // 0Ht * 0Ht
+        case BHS_CODE( _0Ht, _0Ht ): // 0Ht * 0Ht
         {
             ASSERT( r->d_size == 0 );
             r->v_data[ 0 ] = o->v_data[ 0 ] * b->v_data[ 0 ] + c->v_data[ 0 ];
         }
         break;
 
-        case 1: // 0Ht * 1Ht
+        case BHS_CODE( _0Ht, _1Ht ): // 0Ht * 1Ht
         {
             ERR_fa( "'0Ht * 1Ht' not defined." );  // result would be 1Ht but holor has no representation for that state
         }
         break;
 
-        case 2: // 0Ht * 2Ht
+        case BHS_CODE( _0Ht, _2Ht ): // 0Ht * 2Ht
         {
             ERR_fa( "'0Ht * 2Ht' not defined." );
         }
         break;
 
-        case 3: // 1Ht * 0Ht
+        case BHS_CODE( _1Ht, _0Ht ): // 1Ht * 0Ht
         {
             ERR_fa( "'1Ht * 0Ht' not defined." );
         }
         break;
 
-        case 4: // 1Ht * 1Ht  (VT VT) not defined
+        case BHS_CODE( _1Ht, _1Ht ): // 1Ht * 1Ht  (VT VT) not defined
         {
             ERR_fa( "'1Ht * 1Ht' not defined." );
         }
         break;
 
-        case 5: // 1Ht * 2Ht
+        case BHS_CODE( _1Ht, _2Ht ): // 1Ht * 2Ht
         {
             bmath_vf3_s vo = bhvm_hf3_s_get_weak_vec( o );
             bmath_mf3_s mb = bhvm_hf3_s_get_weak_mat( b );
@@ -1830,19 +1698,19 @@ void bhvm_hf3_s_htp_bmul_htp_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, cons
         }
         break;
 
-        case 6: // 2Ht * 0Ht
+        case BHS_CODE( _2Ht, _0Ht ): // 2Ht * 0Ht
         {
             ERR_fa( "'2Ht * 0Ht' not defined." );
         }
         break;
 
-        case 7: // 2Ht * 1Ht  (matrix * vector)
+        case BHS_CODE( _2Ht, _1Ht ): // 2Ht * 1Ht  (matrix * vector)
         {
             ERR_fa( "'2Ht * 1Ht' not defined." );
         }
         break;
 
-        case 8: // 2Ht * 2Ht  (matrix * matrix)
+        case BHS_CODE( _2Ht, _2Ht ): // 2Ht * 2Ht  (matrix * matrix)
         {
             bmath_mf3_s mo = bhvm_hf3_s_get_weak_mat( o );
             bmath_mf3_s mb = bhvm_hf3_s_get_weak_mat( b );
@@ -1865,107 +1733,87 @@ bl_t bhvm_hf3_s_set_d_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s
 {
     if( o->d_size > 2 ) return false;
     if( b->d_size > 2 ) return false;
-    u2_t combination = o->d_size * 3 + b->d_size;
+    u2_t bhs_code = BHS_CODE( HS_CODE( o ), HS_CODE( b ) );
 
-    switch( combination )
+    switch( bhs_code )
     {
-        case 0: /* 0H*0H */ break;
-        case 1: /* 0H*1H */ return false;
-        case 2: /* 0H*2H */ return false;
-        case 3: /* 1H*0H */ break;
-        case 4: /* 1H*1H */ return false;
-        case 5: /* 1H*2H */ return false;
-        case 6: /* 2H*0H */ return false;
-        case 7: /* 2H*1H */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break;
-        case 8: /* 2H*2H */ if( o->d_data[ 0 ] != b->d_data[ 1 ] ) return false; else break;
+        case BHS_CODE(_0H ,_0H ): /* 0H *0H  */ break;
+        case BHS_CODE(_0H ,_1H ): /* 0H *1H  */ return false;
+        case BHS_CODE(_0H ,_2H ): /* 0H *2H  */ return false;
+        case BHS_CODE(_1H ,_0H ): /* 1H *0H  */ break;
+        case BHS_CODE(_1H ,_1H ): /* 1H *1H  */ return false;
+        case BHS_CODE(_1H ,_2H ): /* 1H *2H  */ return false;
+        case BHS_CODE(_2H ,_0H ): /* 2H *0H  */ return false;
+        case BHS_CODE(_2H ,_1H ): /* 2H *1H  */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break;
+        case BHS_CODE(_2H ,_2H ): /* 2H *2H  */ if( o->d_data[ 0 ] != b->d_data[ 1 ] ) return false; else break;
+        case BHS_CODE(_0H ,_0Ht): /* 0H *0Ht */ break;
+        case BHS_CODE(_0H ,_1Ht): /* 0H *1Ht */ return false;
+        case BHS_CODE(_0H ,_2Ht): /* 0H *2Ht */ return false;
+        case BHS_CODE(_1H ,_0Ht): /* 1H *0Ht */ break;
+        case BHS_CODE(_1H ,_1Ht): /* 1H *1Ht */ break; /* outer product */
+        case BHS_CODE(_1H ,_2Ht): /* 1H *2Ht */ return false;
+        case BHS_CODE(_2H ,_0Ht): /* 2H *0Ht */ return false;
+        case BHS_CODE(_2H ,_1Ht): /* 2H *1Ht */ return false;
+        case BHS_CODE(_2H ,_2Ht): /* 2H *2Ht */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break;
+        case BHS_CODE(_0Ht,_0H ): /* 0Ht*0H  */ break;
+        case BHS_CODE(_0Ht,_1H ): /* 0Ht*1H  */ return false;
+        case BHS_CODE(_0Ht,_2H ): /* 0Ht*2H  */ break;
+        case BHS_CODE(_1Ht,_0H ): /* 1Ht*0H  */ return false;
+        case BHS_CODE(_1Ht,_1H ): /* 1Ht*1H  */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break; /* dot product */
+        case BHS_CODE(_1Ht,_2H ): /* 1Ht*2H  */ return false;
+        case BHS_CODE(_2Ht,_0H ): /* 2Ht*0H  */ return false;
+        case BHS_CODE(_2Ht,_1H ): /* 2Ht*1H  */ if( o->d_data[ 1 ] != b->d_data[ 0 ] ) return false; else break;
+        case BHS_CODE(_2Ht,_2H ): /* 2Ht*2H  */ if( o->d_data[ 1 ] != b->d_data[ 1 ] ) return false; else break;
+        case BHS_CODE(_0Ht,_0Ht): /* 0Ht*0Ht */ break;
+        case BHS_CODE(_0Ht,_1Ht): /* 0Ht*1Ht */ return false;
+        case BHS_CODE(_0Ht,_2Ht): /* 0Ht*2Ht */ return false;
+        case BHS_CODE(_1Ht,_0Ht): /* 1Ht*0Ht */ return false;
+        case BHS_CODE(_1Ht,_1Ht): /* 1Ht*1Ht */ return false;
+        case BHS_CODE(_1Ht,_2Ht): /* 1Ht*2Ht */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break;
+        case BHS_CODE(_2Ht,_0Ht): /* 2Ht*0Ht */ return false;
+        case BHS_CODE(_2Ht,_1Ht): /* 2Ht*1Ht */ return false;
+        case BHS_CODE(_2Ht,_2Ht): /* 2Ht*2Ht */ if( o->d_data[ 1 ] != b->d_data[ 0 ] ) return false; else break;
         default: break;
     }
 
-    switch( combination )
+    switch( bhs_code )
     {
-        case 0: /* 0H*0H */ bhvm_hf3_s_set_d_data_na( r, 0                                 ); return true;
-        case 1: /* 0H*1H */ return false;
-        case 2: /* 0H*2H */ return false;
-        case 3: /* 1H*0H */ bhvm_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
-        case 4: /* 1H*1H */ return false;
-        case 5: /* 1H*2H */ return false;
-        case 6: /* 2H*0H */ return false;
-        case 7: /* 2H*1H */ bhvm_hf3_s_set_d_data_na( r, 1, o->d_data[ 1 ]                 ); return true;
-        case 8: /* 2H*2H */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], o->d_data[ 1 ] ); return true;
-        default: break;
-    }
-    return false;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bl_t bhvm_hf3_s_set_d_bmul_htp( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r )
-{
-    if( o->d_size > 2 ) return false;
-    if( b->d_size > 2 ) return false;
-    u2_t combination = o->d_size * 3 + b->d_size;
-
-    switch( combination )
-    {
-        case 0: /* 0H*0Ht */ break;
-        case 1: /* 0H*1Ht */ return false;
-        case 2: /* 0H*2Ht */ return false;
-        case 3: /* 1H*0Ht */ break;
-        case 4: /* 1H*1Ht */ break; /* outer product */
-        case 5: /* 1H*2Ht */ return false;
-        case 6: /* 2H*0Ht */ return false;
-        case 7: /* 2H*1Ht */ return false;
-        case 8: /* 2H*2Ht */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break;
-        default: break;
-    }
-    switch( combination )
-    {
-        case 0: /* 0H*0Ht */ bhvm_hf3_s_set_d_data_na( r, 0                                 ); return true;
-        case 1: /* 0H*1Ht */ return false;
-        case 2: /* 0H*2Ht */ return false;
-        case 3: /* 1H*0Ht */ bhvm_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
-        case 4: /* 1H*1Ht */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], o->d_data[ 0 ] ); return true; /* outer product */
-        case 5: /* 1H*2Ht */ return false;
-        case 6: /* 2H*0Ht */ return false;
-        case 7: /* 2H*1Ht */ return false;
-        case 8: /* 2H*2Ht */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 1 ], o->d_data[ 1 ] ); return true;
-        default: break;
-    }
-    return false;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bl_t bhvm_hf3_s_set_d_htp_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r )
-{
-    if( o->d_size > 2 ) return false;
-    if( b->d_size > 2 ) return false;
-    u2_t combination = o->d_size * 3 + b->d_size;
-
-    switch( combination )
-    {
-        case 0: /* 0Ht*0H */ break;
-        case 1: /* 0Ht*1H */ return false;
-        case 2: /* 0Ht*2H */ break;
-        case 3: /* 1Ht*0H */ return false;
-        case 4: /* 1Ht*1H */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break; /* dot product */
-        case 5: /* 1Ht*2H */ return false;
-        case 6: /* 2Ht*0H */ return false;
-        case 7: /* 2Ht*1H */ if( o->d_data[ 1 ] != b->d_data[ 0 ] ) return false; else break;
-        case 8: /* 2Ht*2H */ if( o->d_data[ 1 ] != b->d_data[ 1 ] ) return false; else break;
-        default: break;
-    }
-    switch( combination )
-    {
-        case 0: /* 0Ht*0H */ bhvm_hf3_s_set_d_data_na( r, 0                                 ); return true;
-        case 1: /* 0Ht*1H */ return false;
-        case 2: /* 0Ht*2H */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], b->d_data[ 1 ] ); return true;
-        case 3: /* 1Ht*0H */ return false;
-        case 4: /* 1Ht*1H */ bhvm_hf3_s_set_d_data_na( r, 0                                 ); return true; /* dot product */
-        case 5: /* 1Ht*2H */ return false;
-        case 6: /* 2Ht*0H */ return false;
-        case 7: /* 2Ht*1H */ bhvm_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
-        case 8: /* 2Ht*2H */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], o->d_data[ 0 ] ); return true;
+        case BHS_CODE(_0H ,_0H ): /* 0H *0H  */ bhvm_hf3_s_set_d_data_na( r, 0                                 ); return true;
+        case BHS_CODE(_0H ,_1H ): /* 0H *1H  */ return false;
+        case BHS_CODE(_0H ,_2H ): /* 0H *2H  */ return false;
+        case BHS_CODE(_1H ,_0H ): /* 1H *0H  */ bhvm_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
+        case BHS_CODE(_1H ,_1H ): /* 1H *1H  */ return false;
+        case BHS_CODE(_1H ,_2H ): /* 1H *2H  */ return false;
+        case BHS_CODE(_2H ,_0H ): /* 2H *0H  */ return false;
+        case BHS_CODE(_2H ,_1H ): /* 2H *1H  */ bhvm_hf3_s_set_d_data_na( r, 1, o->d_data[ 1 ]                 ); return true;
+        case BHS_CODE(_2H ,_2H ): /* 2H *2H  */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], o->d_data[ 1 ] ); return true;
+        case BHS_CODE(_0H ,_0Ht): /* 0H *0Ht */ bhvm_hf3_s_set_d_data_na( r, 0                                 ); return true;
+        case BHS_CODE(_0H ,_1Ht): /* 0H *1Ht */ return false;
+        case BHS_CODE(_0H ,_2Ht): /* 0H *2Ht */ return false;
+        case BHS_CODE(_1H ,_0Ht): /* 1H *0Ht */ bhvm_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
+        case BHS_CODE(_1H ,_1Ht): /* 1H *1Ht */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], o->d_data[ 0 ] ); return true; /* outer product */
+        case BHS_CODE(_1H ,_2Ht): /* 1H *2Ht */ return false;
+        case BHS_CODE(_2H ,_0Ht): /* 2H *0Ht */ return false;
+        case BHS_CODE(_2H ,_1Ht): /* 2H *1Ht */ return false;
+        case BHS_CODE(_2H ,_2Ht): /* 2H *2Ht */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 1 ], o->d_data[ 1 ] ); return true;
+        case BHS_CODE(_0Ht,_0H ): /* 0Ht*0H  */ bhvm_hf3_s_set_d_data_na( r, 0                                 ); return true;
+        case BHS_CODE(_0Ht,_1H ): /* 0Ht*1H  */ return false;
+        case BHS_CODE(_0Ht,_2H ): /* 0Ht*2H  */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], b->d_data[ 1 ] ); return true;
+        case BHS_CODE(_1Ht,_0H ): /* 1Ht*0H  */ return false;
+        case BHS_CODE(_1Ht,_1H ): /* 1Ht*1H  */ bhvm_hf3_s_set_d_data_na( r, 0                                 ); return true; /* dot product */
+        case BHS_CODE(_1Ht,_2H ): /* 1Ht*2H  */ return false;
+        case BHS_CODE(_2Ht,_0H ): /* 2Ht*0H  */ return false;
+        case BHS_CODE(_2Ht,_1H ): /* 2Ht*1H  */ bhvm_hf3_s_set_d_data_na( r, 1, o->d_data[ 0 ]                 ); return true;
+        case BHS_CODE(_2Ht,_2H ): /* 2Ht*2H  */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 0 ], o->d_data[ 0 ] ); return true;
+        case BHS_CODE(_0Ht,_0Ht): /* 0Ht*0Ht */ bhvm_hf3_s_set_d_data_na( r, 0                                 ); return true;
+        case BHS_CODE(_0Ht,_1Ht): /* 0Ht*1Ht */ return false;
+        case BHS_CODE(_0Ht,_2Ht): /* 0Ht*2Ht */ return false;
+        case BHS_CODE(_1Ht,_0Ht): /* 1Ht*0Ht */ return false;
+        case BHS_CODE(_1Ht,_1Ht): /* 1Ht*1Ht */ return false;
+        case BHS_CODE(_1Ht,_2Ht): /* 1Ht*2Ht */ bhvm_hf3_s_set_d_data_na( r, 1, b->d_data[ 1 ]                 ); return true;
+        case BHS_CODE(_2Ht,_0Ht): /* 2Ht*0Ht */ bhvm_hf3_s_set_d_data_na( r, 2, o->d_data[ 1 ], o->d_data[ 0 ] ); return true;
+        case BHS_CODE(_2Ht,_1Ht): /* 2Ht*1Ht */ return false;
+        case BHS_CODE(_2Ht,_2Ht): /* 2Ht*2Ht */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 1 ], o->d_data[ 0 ] ); return true;
         default: break;
     }
     return false;
@@ -1973,43 +1821,7 @@ bl_t bhvm_hf3_s_set_d_htp_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_h
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bl_t bhvm_hf3_s_set_d_htp_bmul_htp( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r )
-{
-    if( o->d_size > 2 ) return false;
-    if( b->d_size > 2 ) return false;
-    u2_t combination = o->d_size * 3 + b->d_size;
-    switch( combination )
-    {
-        case 0: /* 0Ht*0Ht */ break;
-        case 1: /* 0Ht*1Ht */ return false;
-        case 2: /* 0Ht*2Ht */ return false;
-        case 3: /* 1Ht*0Ht */ return false;
-        case 4: /* 1Ht*1Ht */ return false;
-        case 5: /* 1Ht*2Ht */ if( o->d_data[ 0 ] != b->d_data[ 0 ] ) return false; else break;
-        case 6: /* 2Ht*0Ht */ return false;
-        case 7: /* 2Ht*1Ht */ return false;
-        case 8: /* 2Ht*2Ht */ if( o->d_data[ 1 ] != b->d_data[ 0 ] ) return false; else break;
-        default: break;
-    }
-    switch( combination )
-    {
-        case 0: /* 0Ht*0Ht */ bhvm_hf3_s_set_d_data_na( r, 0                                 ); return true;
-        case 1: /* 0Ht*1Ht */ return false;
-        case 2: /* 0Ht*2Ht */ return false;
-        case 3: /* 1Ht*0Ht */ return false;
-        case 4: /* 1Ht*1Ht */ return false;
-        case 5: /* 1Ht*2Ht */ bhvm_hf3_s_set_d_data_na( r, 1, b->d_data[ 1 ]                 ); return true;
-        case 6: /* 2Ht*0Ht */ bhvm_hf3_s_set_d_data_na( r, 2, o->d_data[ 1 ], o->d_data[ 0 ] ); return true;
-        case 7: /* 2Ht*1Ht */ return false;
-        case 8: /* 2Ht*2Ht */ bhvm_hf3_s_set_d_data_na( r, 2, b->d_data[ 1 ], o->d_data[ 0 ] ); return true;
-        default: break;
-    }
-    return false;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_hf3_s_bmul_add_cps( bl_t htpa, const bhvm_hf3_s* a, sz_t k, bl_t htpb, const bhvm_hf3_s* b, f3_t c, const bhvm_hf3_s* d, f3_t e, bhvm_hf3_s* r )
+void bhvm_hf3_s_bmul_add_cps( const bhvm_hf3_s* a, const bhvm_hf3_s* b, f3_t c, const bhvm_hf3_s* d, f3_t e, bhvm_hf3_s* r )
 {
     if( d )
     {
@@ -2044,14 +1856,7 @@ void bhvm_hf3_s_bmul_add_cps( bl_t htpa, const bhvm_hf3_s* a, sz_t k, bl_t htpb,
 
     if( c != 0 )
     {
-        switch( htpa * 2 + htpb )
-        {
-            case 0: bhvm_hf3_s_bmul_add(         a, b, r, r ); break; // a * b
-            case 1: bhvm_hf3_s_bmul_htp_add(     a, b, r, r ); break; // a * b^T
-            case 2: bhvm_hf3_s_htp_bmul_add(     a, b, r, r ); break; // a^T * b
-            case 3: bhvm_hf3_s_htp_bmul_htp_add( a, b, r, r ); break; // a^T * b^T
-            default: break;
-        }
+        bhvm_hf3_s_bmul_add( a, b, r, r );
         if( c != 1.0 ) bhvm_hf3_s_mul_scl_f3( r, c, r );
     }
 }

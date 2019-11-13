@@ -26,6 +26,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_s )
 "{"
     "sz_t [] d;"
     "f3_t [] v;"
+    "bl_t htp;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_adl_s )
@@ -43,7 +44,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 4142767635 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2860377640 ) );
             BCORE_REGISTER_OBJECT( bhvm_hf3_s );
             BCORE_REGISTER_OBJECT( bhvm_hf3_adl_s );
             BCORE_REGISTER_TRAIT( bhvm_hf3, bcore_inst );
