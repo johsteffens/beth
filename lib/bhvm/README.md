@@ -2,7 +2,7 @@
 
 ## Holor
 Name and definition was inspired by *Moon & Spencer's work: "Theory of Holors"*. A holor can be understood as
-generalization of a Tensor. We choose to deviate from some of M&S specification and some nomenclature for practical
+generalization of a Tensor. We partially deviated from M&S's specification and nomenclature for practical
 reasons. E.g. Our definition actually represents a sub-class of the M&S Holor. Certain properties are emphasized and 
 renamed to better relate to the intended realm of use cases.
 
