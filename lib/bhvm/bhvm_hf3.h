@@ -92,6 +92,18 @@ stamp :adl = aware bcore_array { :s => []; };
 
 /**********************************************************************************************************************/
 
+static inline bhvm_hf3_s bmath_hf3_init_weak( sz_t* d_data, sz_t d_size, f3_t* v_data, sz_t v_size, bl_t htp )
+{
+    bhvm_hf3_s o;
+    bhvm_hf3_s_init( &o );
+    o.d_data = d_data;
+    o.d_size = d_size;
+    o.v_data = v_data;
+    o.v_size = v_size;
+    o.htp = htp;
+    return o;
+}
+
 /// turns a weak d-array into a strong one (no effect if it is strong)
 void bhvm_hf3_s_d_make_strong( bhvm_hf3_s* o );
 
@@ -203,6 +215,9 @@ bl_t bhvm_hf3_s_is_scalar( const bhvm_hf3_s* o );
 /**********************************************************************************************************************/
 /// weak conversion
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// holor -> matrix
 static inline bmath_mf3_s bhvm_hf3_s_get_weak_mat( const bhvm_hf3_s* o )
 {
     assert( o->d_size == 2 );
@@ -214,12 +229,21 @@ static inline bmath_mf3_s bhvm_hf3_s_get_weak_mat( const bhvm_hf3_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+/// holor -> vector
 static inline bmath_vf3_s bhvm_hf3_s_get_weak_vec( const bhvm_hf3_s* o )
 {
     assert( o->d_size == 1 );
     sz_t size = o->d_data[ 0 ];
     assert( o->v_size == size );
     return bmath_vf3_init_weak( o->v_data, size );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// holor -> transposed holor
+static inline bhvm_hf3_s bhvm_hf3_s_get_weak_htp( const bhvm_hf3_s* o )
+{
+    return bmath_hf3_init_weak( o->d_data, o->d_size, o->v_data, o->v_size, !o->htp );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -374,8 +398,8 @@ void bhvm_hf3_s_fp_f3_ar2_madd( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bmath_
 
 /**********************************************************************************************************************/
 /** bmul: Specific holor * holor multiplication for holors up to order 2
- *  These 4 operations are mapped to corresponding matrix (M), vector (V), scalar (S) operations
- *  depending on given holor order.
+ *  These operations are mapped to corresponding matrix (M), vector (V), scalar (S) operations
+ *  depending on given holor-order and transposition state.
  *
  *  A dendride pass can be expressed as bmul of different transposition:
  *  A  ** B  = C: GA  = GC ** Bt and GB  = At ** GC
@@ -384,14 +408,14 @@ void bhvm_hf3_s_fp_f3_ar2_madd( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bmath_
  *  At ** Bt = C: GAt = GC ** B  and GBt = A  ** GC
  *
  *  In case of vectors, the correct transposition-choice is important ...
- *  Vt ** V  is the dot-product
- *  V  ** Vt is the outer-product
- *  M  ** V is a valid vector transformation
- *  Vt ** M is a valid vector transformation
+ *  Vt ** V  -> S  is the vector-dot-product
+ *  V  ** Vt -> M  is the vector-outer-product
+ *  M  ** V  -> V  is a valid vector transformation
+ *  Vt ** M  -> Vt is a valid vector transformation
  *
  *  Undefined compositions are ...
  *  V  ** V
- *  Vt ** V
+ *  Vt ** Vt
  *  V  ** M
  *  M  ** Vt
  *  M(t) ** S    (all transpositions)
