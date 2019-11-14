@@ -80,8 +80,8 @@ PLANT_GROUP( bhvm_hf3, bcore_inst )
 
 stamp : = aware bcore_inst
 {
-    sz_t [] d; // dimension data
-    f3_t [] v; // value data
+    sz_t [] d; // shape
+    f3_t [] v; // values
     bl_t htp;  // holor is transposed
 };
 
@@ -430,7 +430,7 @@ void bhvm_hf3_s_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_h
  */
 bl_t bhvm_hf3_s_set_d_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o * b -> r
 
-/** composite multiply-add function. Satisfies functionality of BLAS:DGEMM.
+/** Composite multiply-add function.
  *  a * b * c + d * e -> r
  *  c, e are scalar.
  *  d can be NULL

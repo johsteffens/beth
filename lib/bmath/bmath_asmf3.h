@@ -35,6 +35,8 @@ PLANT_GROUP( bmath_asmf3, bcore_inst )
 
         sz_t [] i; // index data
         f3_t [] v; // value data
+
+        func bcore_fp : copy_typed;
     };
 
     // function pointer names

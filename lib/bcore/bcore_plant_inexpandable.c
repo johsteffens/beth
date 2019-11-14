@@ -13,38 +13,30 @@
  *  limitations under the License.
  */
 
-#include "bhvm_signal.h"
-#include "bhvm_planted.h"
-#include "bhvm_hf3.h"
-#include "bhvm_hf3_op.h"
-#include "bhvm_hf3_vm.h"
+#include "bcore_plant_inexpandable.h"
 
-vd_t bhvm_signal_handler( const bcore_signal_s* o )
+/**********************************************************************************************************************/
+
+vd_t bcore_plant_inexpandable_signal_handler( const bcore_signal_s* o )
 {
-    vd_t ret = NULL;
-
-    // non-local targets
-    if( o->target != TYPEOF_local )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_plant_inexpandable" ) ) )
     {
-        /// nothing yet
-    }
-
-    if( ret ) return ret;
-
-    // local targets
-    {
-        bcore_fp_signal_handler arr[] =
+        case TYPEOF_init1:
         {
-            bhvm_planted_signal_handler,
-            bhvm_hf3_signal_handler,
-            bhvm_hf3_op_signal_handler,
-            bhvm_hf3_vm_signal_handler,
-        };
+        }
+        break;
 
-        ret = bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );
+        case TYPEOF_plant:
+        {
+            bcore_plant_compile( "bcore_planted", __FILE__ );
+        }
+        break;
+
+        default: break;
     }
 
-    return ret;
+    return NULL;
 }
 
 /**********************************************************************************************************************/
+

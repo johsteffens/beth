@@ -425,6 +425,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_group_s )
     st_s trait_name; // trait name (default bcore_inst)
 
     tp_t hash;
+    bl_t expandable;
     bl_t has_features;
     bl_t is_aware;
     bl_t retrievable; // causes all stamps to fully enroll during init cycle;
@@ -444,6 +445,9 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_group_s )
     "st_s name;" // global name
     "st_s trait_name = \"bcore_inst\";" // trait name
     "tp_t hash;"
+    // 'expandable' is set 'false' for groups that is not intended to be expanded into actual code
+    // but may contain information referenced in other groups (e.g. global features)
+    "bl_t expandable = true;"
     "bl_t has_features;"
     "bl_t is_aware;"
     "bl_t retrievable;"
@@ -2354,6 +2358,17 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             bcore_plant_name_s_parse( name, source );
             item = ( bcore_plant* )name;
         }
+        else if( bcore_source_a_parse_bl_fa( source, " #?w'expandable'" ) )
+        {
+            bcore_source_a_parse_fa( source, " = " );
+            if(      bcore_source_a_parse_bl_fa( source, " #?'true'"  ) ) o->expandable = true;
+            else if( bcore_source_a_parse_bl_fa( source, " #?'false'" ) ) o->expandable = false;
+            else
+            {
+                bcore_source_a_parse_err_fa( source, "'true' or 'false' expected." );
+            }
+            bcore_source_a_parse_fa( source, " ; " );
+        }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'extending'" ) )
         {
             o->extending = NULL;
@@ -2457,6 +2472,7 @@ static void bcore_plant_group_s_finalize( bcore_plant_group_s* o )
 
 static void bcore_plant_group_s_expand_forward( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
+    if( !o->expandable ) return;
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o->name.sc );
     for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_expand_forward( o->data[ i ], indent, sink );
 }
@@ -2465,6 +2481,7 @@ static void bcore_plant_group_s_expand_forward( const bcore_plant_group_s* o, sz
 
 static void bcore_plant_group_s_expand_spect_declaration( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
+    if( !o->expandable ) return;
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_DECLARE_SPECT( #<sc_t> )", indent, o->name.sc );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }{", indent );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }    bcore_spect_header_s header;", indent );
@@ -2486,6 +2503,7 @@ static void bcore_plant_group_s_expand_spect_declaration( const bcore_plant_grou
 
 static void bcore_plant_group_s_expand_declaration( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
+    if( !o->expandable ) return;
     BLM_INIT();
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }//#rn{-}\n", indent, sz_max( 0, 118 - indent ) );
@@ -2520,6 +2538,7 @@ static void bcore_plant_group_s_expand_declaration( const bcore_plant_group_s* o
 
 static void bcore_plant_group_s_expand_spect_definition( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
+    if( !o->expandable ) return;
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_SPECT( #<sc_t>, #<sc_t> )\n", indent, o->trait_name.sc, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }\"{\"\n", indent );
@@ -2532,6 +2551,7 @@ static void bcore_plant_group_s_expand_spect_definition( const bcore_plant_group
 
 static void bcore_plant_group_s_expand_definition( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
+    if( !o->expandable ) return;
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }//#rn{-}\n", indent, sz_max( 0, 118 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// group: #<sc_t>\n", indent, o->name.sc );
@@ -2562,6 +2582,7 @@ static void bcore_plant_group_s_expand_definition( const bcore_plant_group_s* o,
 
 static void bcore_plant_group_s_expand_init1( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
+    if( !o->expandable ) return;
     for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_expand_init1( o->data[ i ], indent, sink );
 
     if( o->has_features )

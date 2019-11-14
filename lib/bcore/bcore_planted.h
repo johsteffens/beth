@@ -4,6 +4,7 @@
  *    Generated code inherits the copyright and license of the beth-plant source code.
  *    The following files contain all source code related to this file:
  *    bcore_file.h
+ *    bcore_plant_inexpandable.h
  *    bcore_plant_sample.h
  *    bcore_spect_inst_call.h
  *    bcore_spect_via_call.h
@@ -37,6 +38,9 @@
   BCORE_FORWARD_OBJECT( bcore_file ); \
   BCORE_FORWARD_OBJECT( bcore_file_path_s ); \
   BETH_EXPAND_ITEM_bcore_file_path_s
+
+/**********************************************************************************************************************/
+// source: bcore_plant_inexpandable.h
 
 /**********************************************************************************************************************/
 // source: bcore_plant_sample.h

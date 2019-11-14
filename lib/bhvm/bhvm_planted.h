@@ -5,6 +5,7 @@
  *    The following files contain all source code related to this file:
  *    bhvm_hf3.h
  *    bhvm_hf3_op.h
+ *    bhvm_hf3_vm.h
  *
  */
 
@@ -445,7 +446,7 @@
 #define BETH_EXPAND_ITEM_bhvm_hf3_op_ar2_bmul_s \
   BCORE_DECLARE_OBJECT( bhvm_hf3_op_ar2_bmul_s ) \
     {aware_t _;}; \
-  static inline void bhvm_hf3_op_ar2_bmul_s_f( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r ){ bhvm_hf3_s_bmul        ( a, b,         r ); } \
+  static inline void bhvm_hf3_op_ar2_bmul_s_f( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r ){ bhvm_hf3_s_bmul( a, b, r ); } \
   static inline sz_t bhvm_hf3_op_ar2_bmul_s_get_arity( const bhvm_hf3_op_ar2_bmul_s* o ){ return 2; } \
   static inline void bhvm_hf3_op_ar2_bmul_s_of( const bhvm_hf3_op_ar2_bmul_s* o, const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r ){  bhvm_hf3_op_ar2_bmul_s_f( a, b, r ); } \
   static inline void bhvm_hf3_op_ar2_bmul_s_aof( const bhvm_hf3_op_ar2_bmul_s* o, const bhvm_hf3_s** a, bhvm_hf3_s* r ){ bhvm_hf3_op_ar2_bmul_s_of( o, a[0], a[1], r ); }
@@ -453,7 +454,7 @@
 #define BETH_EXPAND_ITEM_bhvm_hf3_op_ar2_mul_scl_s \
   BCORE_DECLARE_OBJECT( bhvm_hf3_op_ar2_mul_scl_s ) \
     {aware_t _;}; \
-  static inline void bhvm_hf3_op_ar2_mul_scl_s_f( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r ){ bhvm_hf3_s_mul_scl     ( a, b->v_data, r ); } \
+  static inline void bhvm_hf3_op_ar2_mul_scl_s_f( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r ){ bhvm_hf3_s_mul_scl( a, b->v_data, r ); } \
   static inline sz_t bhvm_hf3_op_ar2_mul_scl_s_get_arity( const bhvm_hf3_op_ar2_mul_scl_s* o ){ return 2; } \
   static inline void bhvm_hf3_op_ar2_mul_scl_s_of( const bhvm_hf3_op_ar2_mul_scl_s* o, const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r ){  bhvm_hf3_op_ar2_mul_scl_s_f( a, b, r ); } \
   static inline void bhvm_hf3_op_ar2_mul_scl_s_aof( const bhvm_hf3_op_ar2_mul_scl_s* o, const bhvm_hf3_s** a, bhvm_hf3_s* r ){ bhvm_hf3_op_ar2_mul_scl_s_of( o, a[0], a[1], r ); }
@@ -461,7 +462,7 @@
 #define BETH_EXPAND_ITEM_bhvm_hf3_op_ar2_scl_mul_s \
   BCORE_DECLARE_OBJECT( bhvm_hf3_op_ar2_scl_mul_s ) \
     {aware_t _;}; \
-  static inline void bhvm_hf3_op_ar2_scl_mul_s_f( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r ){ bhvm_hf3_s_mul_scl     ( b, a->v_data, r ); } \
+  static inline void bhvm_hf3_op_ar2_scl_mul_s_f( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r ){ bhvm_hf3_s_mul_scl( b, a->v_data, r ); } \
   static inline sz_t bhvm_hf3_op_ar2_scl_mul_s_get_arity( const bhvm_hf3_op_ar2_scl_mul_s* o ){ return 2; } \
   static inline void bhvm_hf3_op_ar2_scl_mul_s_of( const bhvm_hf3_op_ar2_scl_mul_s* o, const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r ){  bhvm_hf3_op_ar2_scl_mul_s_f( a, b, r ); } \
   static inline void bhvm_hf3_op_ar2_scl_mul_s_aof( const bhvm_hf3_op_ar2_scl_mul_s* o, const bhvm_hf3_s** a, bhvm_hf3_s* r ){ bhvm_hf3_op_ar2_scl_mul_s_of( o, a[0], a[1], r ); }
@@ -757,6 +758,938 @@
   BCORE_FORWARD_OBJECT( bhvm_hf3_op_ar3_dp_cb_hdiv_s ); \
   BETH_EXPAND_ITEM_bhvm_hf3_op_ar3_dp_ca_hdiv_s \
   BETH_EXPAND_ITEM_bhvm_hf3_op_ar3_dp_cb_hdiv_s
+
+/**********************************************************************************************************************/
+// source: bhvm_hf3_vm.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm
+
+#define TYPEOF_bhvm_hf3_vm 3671691430
+#define TYPEOF_bhvm_hf3_vm_s 390359832
+#define TYPEOF_bhvm_hf3_vm_holor_s 3516685217
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_holor_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_holor_s ) \
+    {aware_t _;tp_t name;tp_t type;sz_t idx_paired;bhvm_hf3_s h;};
+#define TYPEOF_bhvm_hf3_vm_arr_holor_s 2636035365
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_arr_holor_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_arr_holor_s ) \
+    {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhvm_hf3_vm_holor_s, );}; \
+  static inline void bhvm_hf3_vm_arr_holor_s_set_space( bhvm_hf3_vm_arr_holor_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_hf3_vm_arr_holor_s, ( bcore_array* )o, size ); } \
+  static inline void bhvm_hf3_vm_arr_holor_s_set_size( bhvm_hf3_vm_arr_holor_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_hf3_vm_arr_holor_s, ( bcore_array* )o, size ); } \
+  static inline void bhvm_hf3_vm_arr_holor_s_clear( bhvm_hf3_vm_arr_holor_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_hf3_vm_arr_holor_s, ( bcore_array* )o, 0 ); } \
+  static inline bhvm_hf3_vm_holor_s* bhvm_hf3_vm_arr_holor_s_push_c( bhvm_hf3_vm_arr_holor_s* o, const bhvm_hf3_vm_holor_s* v ) { bcore_array_t_push( TYPEOF_bhvm_hf3_vm_arr_holor_s, ( bcore_array* )o, sr_twc( TYPEOF_bhvm_hf3_vm_holor_s, v ) ); return &o->data[ o->size - 1 ]; } \
+  static inline bhvm_hf3_vm_holor_s* bhvm_hf3_vm_arr_holor_s_push_d( bhvm_hf3_vm_arr_holor_s* o,       bhvm_hf3_vm_holor_s* v ) { bcore_array_t_push( TYPEOF_bhvm_hf3_vm_arr_holor_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhvm_hf3_vm_holor_s, v ) ); return &o->data[ o->size - 1 ]; } \
+  static inline bhvm_hf3_vm_holor_s* bhvm_hf3_vm_arr_holor_s_push( bhvm_hf3_vm_arr_holor_s* o ) \
+  { \
+      bcore_array_t_push( TYPEOF_bhvm_hf3_vm_arr_holor_s, ( bcore_array* )o, sr_null() ); \
+      return &o->data[ o->size - 1 ]; \
+  }
+#define TYPEOF_bhvm_hf3_vm_prop_s 328349608
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_prop_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_prop_s ) \
+    {aware_t _;bhvm_hf3_vm_op* op;bhvm_hf3_vm_s* p;}; \
+  static inline void bhvm_hf3_vm_prop_s_copy_x( bhvm_hf3_vm_prop_s* o ){ o->p = o->op ? (bhvm_hf3_vm_s*)bhvm_hf3_vm_s_get_aware( o->op ) : NULL; } \
+  static inline void bhvm_hf3_vm_prop_s_mutated( bhvm_hf3_vm_prop_s* o ){ bhvm_hf3_vm_prop_s_copy_x( o ); } \
+  static inline void bhvm_hf3_vm_prop_s_run( const bhvm_hf3_vm_prop_s* o, bhvm_hf3_vm_holor_s* ah ){ assert( o->p && o->p->run ); o->p->run( (vc_t)o->op, ah ); }
+#define TYPEOF_bhvm_hf3_vm_proc_s 3474064149
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_proc_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_proc_s ) \
+    {aware_t _;tp_t name;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhvm_hf3_vm_prop_s, );bcore_arr_sz_s in;bcore_arr_sz_s out;}; \
+  void bhvm_hf3_vm_proc_s_run( const bhvm_hf3_vm_proc_s* o, bhvm_hf3_vm_holor_s* ah ); \
+  static inline void bhvm_hf3_vm_proc_s_set_space( bhvm_hf3_vm_proc_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, size ); } \
+  static inline void bhvm_hf3_vm_proc_s_set_size( bhvm_hf3_vm_proc_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, size ); } \
+  static inline void bhvm_hf3_vm_proc_s_clear( bhvm_hf3_vm_proc_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, 0 ); } \
+  static inline bhvm_hf3_vm_prop_s* bhvm_hf3_vm_proc_s_push_c( bhvm_hf3_vm_proc_s* o, const bhvm_hf3_vm_prop_s* v ) { bcore_array_t_push( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, sr_twc( TYPEOF_bhvm_hf3_vm_prop_s, v ) ); return &o->data[ o->size - 1 ]; } \
+  static inline bhvm_hf3_vm_prop_s* bhvm_hf3_vm_proc_s_push_d( bhvm_hf3_vm_proc_s* o,       bhvm_hf3_vm_prop_s* v ) { bcore_array_t_push( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhvm_hf3_vm_prop_s, v ) ); return &o->data[ o->size - 1 ]; } \
+  static inline bhvm_hf3_vm_prop_s* bhvm_hf3_vm_proc_s_push( bhvm_hf3_vm_proc_s* o ) \
+  { \
+      bcore_array_t_push( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, sr_null() ); \
+      return &o->data[ o->size - 1 ]; \
+  }
+#define TYPEOF_bhvm_hf3_vm_library_s 2655378256
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_library_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_library_s ) \
+    {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bhvm_hf3_vm_proc_s, );}; \
+  static inline void bhvm_hf3_vm_library_s_set_space( bhvm_hf3_vm_library_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, size ); } \
+  static inline void bhvm_hf3_vm_library_s_set_size( bhvm_hf3_vm_library_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, size ); } \
+  static inline void bhvm_hf3_vm_library_s_clear( bhvm_hf3_vm_library_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, 0 ); } \
+  static inline bhvm_hf3_vm_proc_s* bhvm_hf3_vm_library_s_push_c( bhvm_hf3_vm_library_s* o, const bhvm_hf3_vm_proc_s* v ) { bcore_array_t_push( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, sr_twc( TYPEOF_bhvm_hf3_vm_proc_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bhvm_hf3_vm_proc_s* bhvm_hf3_vm_library_s_push_d( bhvm_hf3_vm_library_s* o,       bhvm_hf3_vm_proc_s* v ) { bcore_array_t_push( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhvm_hf3_vm_proc_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bhvm_hf3_vm_proc_s* bhvm_hf3_vm_library_s_push( bhvm_hf3_vm_library_s* o ) \
+  { \
+      bcore_array_t_push( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, sr_t_create( TYPEOF_bhvm_hf3_vm_proc_s ) ); \
+      return o->data[ o->size - 1 ]; \
+  }
+#define TYPEOF_bhvm_hf3_vm_frame_s 2173405754
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_frame_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_frame_s ) \
+    {aware_t _;bhvm_hf3_vm_arr_holor_s arr_holor;bhvm_hf3_vm_library_s library;tp_t proc_setup;tp_t proc_shelve;bcore_hmap_tpuz_s map_proc;bcore_hmap_name_s map_name;bcore_arr_sz_s input;bcore_arr_sz_s output;}; \
+  void bhvm_hf3_vm_frame_s_setup( bhvm_hf3_vm_frame_s* o ); \
+  static inline void bhvm_hf3_vm_frame_s_mutated( bhvm_hf3_vm_frame_s* o ){ bhvm_hf3_vm_frame_s_setup( o ); } \
+  void bhvm_hf3_vm_frame_s_shelve( bhvm_hf3_vm_frame_s* o );
+#define BETH_EXPAND_GROUP_bhvm_hf3_vm \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_holor_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_arr_holor_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_prop_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_proc_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_library_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_frame_s ); \
+  typedef void (*bhvm_hf3_vm_run)( const bhvm_hf3_vm* o, bhvm_hf3_vm_holor_s* ah ); \
+  BCORE_DECLARE_SPECT( bhvm_hf3_vm ) \
+  { \
+      bcore_spect_header_s header; \
+      bhvm_hf3_vm_run run; \
+  }; \
+  static inline bhvm_hf3_vm* bhvm_hf3_vm_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bhvm_hf3_vm, t ); return ( bhvm_hf3_vm* )bcore_inst_t_create( t ); } \
+  static inline bl_t bhvm_hf3_vm_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhvm_hf3_vm ); } \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bhvm_hf3_vm ) \
+  static inline bl_t bhvm_hf3_vm_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bhvm_hf3_vm ); } \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_holor_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_arr_holor_s \
+  static inline void bhvm_hf3_vm_p_run( const bhvm_hf3_vm_s* __p, const bhvm_hf3_vm* o, bhvm_hf3_vm_holor_s* ah ) { assert( __p->run ); __p->run( o, ah ); } \
+  static inline void bhvm_hf3_vm_a_run( const bhvm_hf3_vm* o, bhvm_hf3_vm_holor_s* ah ) { const bhvm_hf3_vm_s* p = bhvm_hf3_vm_s_get_aware( o ); assert( p->run ); p->run( o, ah ); } \
+  static inline bl_t bhvm_hf3_vm_p_defines_run( const bhvm_hf3_vm_s* __p ) { return __p->run != NULL; } \
+  static inline bl_t bhvm_hf3_vm_a_defines_run( const bhvm_hf3_vm* o ) { return bhvm_hf3_vm_s_get_aware( o )->run != NULL; } \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_prop_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_proc_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_library_s \
+  BETH_EXPAND_GROUP_bhvm_hf3_vm_op \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_frame_s
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm_op
+
+#define TYPEOF_bhvm_hf3_vm_op 282174308
+#define TYPEOF_bhvm_hf3_vm_op_s 2268828886
+#define BETH_EXPAND_GROUP_bhvm_hf3_vm_op \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0 ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1 ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2 ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar3 ); \
+  typedef sz_t (*bhvm_hf3_vm_op_get_arity)( const bhvm_hf3_vm_op* o ); \
+  typedef void (*bhvm_hf3_vm_op_set_indices)( bhvm_hf3_vm_op* o, sz_t* a ); \
+  typedef void (*bhvm_hf3_vm_op_get_indices)( const bhvm_hf3_vm_op* o, sz_t* a ); \
+  typedef sc_t (*bhvm_hf3_vm_op_sig)( const bhvm_hf3_vm_op* o ); \
+  typedef void (*bhvm_hf3_vm_op_set_arg)( bhvm_hf3_vm_op* o, char id, sz_t idx ); \
+  BCORE_DECLARE_SPECT( bhvm_hf3_vm_op ) \
+  { \
+      bcore_spect_header_s header; \
+      bhvm_hf3_vm_op_get_arity get_arity; \
+      bhvm_hf3_vm_op_set_indices set_indices; \
+      bhvm_hf3_vm_op_get_indices get_indices; \
+      bhvm_hf3_vm_op_sig sig; \
+      bhvm_hf3_vm_op_set_arg set_arg; \
+  }; \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bhvm_hf3_vm_op, t ); return ( bhvm_hf3_vm_op* )bcore_inst_t_create( t ); } \
+  static inline bl_t bhvm_hf3_vm_op_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhvm_hf3_vm_op ); } \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bhvm_hf3_vm_op ) \
+  static inline bl_t bhvm_hf3_vm_op_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bhvm_hf3_vm_op ); } \
+  static inline sz_t bhvm_hf3_vm_op_a_get_arity( const bhvm_hf3_vm_op* o ) { const bhvm_hf3_vm_op_s* p = bhvm_hf3_vm_op_s_get_aware( o ); assert( p->get_arity ); return p->get_arity( o ); } \
+  static inline bl_t bhvm_hf3_vm_op_a_defines_get_arity( const bhvm_hf3_vm_op* o ) { return bhvm_hf3_vm_op_s_get_aware( o )->get_arity != NULL; } \
+  static inline void bhvm_hf3_vm_op_a_set_indices( bhvm_hf3_vm_op* o, sz_t* a ) { const bhvm_hf3_vm_op_s* p = bhvm_hf3_vm_op_s_get_aware( o ); assert( p->set_indices ); p->set_indices( o, a ); } \
+  static inline bl_t bhvm_hf3_vm_op_a_defines_set_indices( const bhvm_hf3_vm_op* o ) { return bhvm_hf3_vm_op_s_get_aware( o )->set_indices != NULL; } \
+  static inline void bhvm_hf3_vm_op_a_get_indices( const bhvm_hf3_vm_op* o, sz_t* a ) { const bhvm_hf3_vm_op_s* p = bhvm_hf3_vm_op_s_get_aware( o ); assert( p->get_indices ); p->get_indices( o, a ); } \
+  static inline bl_t bhvm_hf3_vm_op_a_defines_get_indices( const bhvm_hf3_vm_op* o ) { return bhvm_hf3_vm_op_s_get_aware( o )->get_indices != NULL; } \
+  static inline sc_t bhvm_hf3_vm_op_a_sig( const bhvm_hf3_vm_op* o ) { const bhvm_hf3_vm_op_s* p = bhvm_hf3_vm_op_s_get_aware( o ); assert( p->sig ); return p->sig( o ); } \
+  static inline bl_t bhvm_hf3_vm_op_a_defines_sig( const bhvm_hf3_vm_op* o ) { return bhvm_hf3_vm_op_s_get_aware( o )->sig != NULL; } \
+  static inline void bhvm_hf3_vm_op_a_set_arg( bhvm_hf3_vm_op* o, char id, sz_t idx ) { const bhvm_hf3_vm_op_s* p = bhvm_hf3_vm_op_s_get_aware( o ); assert( p->set_arg ); p->set_arg( o, id, idx ); } \
+  static inline bl_t bhvm_hf3_vm_op_a_defines_set_arg( const bhvm_hf3_vm_op* o ) { return bhvm_hf3_vm_op_s_get_aware( o )->set_arg != NULL; } \
+  BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar0 \
+  BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar1 \
+  BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar2 \
+  BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar3
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm_op_ar0
+
+#define TYPEOF_bhvm_hf3_vm_op_ar0 451650482
+#define TYPEOF_bhvm_hf3_vm_op_ar0_s 429893484
+#define TYPEOF_bhvm_hf3_vm_op_ar0_nul_s 2545579148
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_nul_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar0_nul_s ) \
+    {aware_t _;sz_t a;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar0_nul_s_get_arity( const bhvm_hf3_vm_op_ar0_nul_s* o ){ return 0; } \
+  static inline void bhvm_hf3_vm_op_ar0_nul_s_set_indices( bhvm_hf3_vm_op_ar0_nul_s* o, sz_t* a ){ o->a = a[0]; } \
+  static inline void bhvm_hf3_vm_op_ar0_nul_s_get_indices( const bhvm_hf3_vm_op_ar0_nul_s* o, sz_t* a ){ a[0] = o->a; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar0_nul_s_csetup( bhvm_hf3_vm_op_ar0_nul_s* o, sz_t idx_a ){ if( !o ) o = bhvm_hf3_vm_op_ar0_nul_s_create(); o->a = idx_a; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar0_nul_s_run( const bhvm_hf3_vm_op_ar0_nul_s* o, bhvm_hf3_vm_holor_s* ah ){                                         } \
+  void bhvm_hf3_vm_op_ar0_nul_s_set_arg( bhvm_hf3_vm_op_ar0_nul_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar0_nul_s_sig( const bhvm_hf3_vm_op_ar0_nul_s* o ){ return "y"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar0_zro_s 2471423050
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_zro_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar0_zro_s ) \
+    {aware_t _;sz_t a;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar0_zro_s_get_arity( const bhvm_hf3_vm_op_ar0_zro_s* o ){ return 0; } \
+  static inline void bhvm_hf3_vm_op_ar0_zro_s_set_indices( bhvm_hf3_vm_op_ar0_zro_s* o, sz_t* a ){ o->a = a[0]; } \
+  static inline void bhvm_hf3_vm_op_ar0_zro_s_get_indices( const bhvm_hf3_vm_op_ar0_zro_s* o, sz_t* a ){ a[0] = o->a; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar0_zro_s_csetup( bhvm_hf3_vm_op_ar0_zro_s* o, sz_t idx_a ){ if( !o ) o = bhvm_hf3_vm_op_ar0_zro_s_create(); o->a = idx_a; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar0_zro_s_run( const bhvm_hf3_vm_op_ar0_zro_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_s_zro(        &ah[ o->a ].h ); } \
+  void bhvm_hf3_vm_op_ar0_zro_s_set_arg( bhvm_hf3_vm_op_ar0_zro_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar0_zro_s_sig( const bhvm_hf3_vm_op_ar0_zro_s* o ){ return "y"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar0_determine_s 2720720910
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_determine_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar0_determine_s ) \
+    {aware_t _;sz_t a;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar0_determine_s_get_arity( const bhvm_hf3_vm_op_ar0_determine_s* o ){ return 0; } \
+  static inline void bhvm_hf3_vm_op_ar0_determine_s_set_indices( bhvm_hf3_vm_op_ar0_determine_s* o, sz_t* a ){ o->a = a[0]; } \
+  static inline void bhvm_hf3_vm_op_ar0_determine_s_get_indices( const bhvm_hf3_vm_op_ar0_determine_s* o, sz_t* a ){ a[0] = o->a; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar0_determine_s_csetup( bhvm_hf3_vm_op_ar0_determine_s* o, sz_t idx_a ){ if( !o ) o = bhvm_hf3_vm_op_ar0_determine_s_create(); o->a = idx_a; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar0_determine_s_run( const bhvm_hf3_vm_op_ar0_determine_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_s_fit_v_size( &ah[ o->a ].h ); } \
+  void bhvm_hf3_vm_op_ar0_determine_s_set_arg( bhvm_hf3_vm_op_ar0_determine_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar0_determine_s_sig( const bhvm_hf3_vm_op_ar0_determine_s* o ){ return "y"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar0_vacate_s 3528096543
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_vacate_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar0_vacate_s ) \
+    {aware_t _;sz_t a;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar0_vacate_s_get_arity( const bhvm_hf3_vm_op_ar0_vacate_s* o ){ return 0; } \
+  static inline void bhvm_hf3_vm_op_ar0_vacate_s_set_indices( bhvm_hf3_vm_op_ar0_vacate_s* o, sz_t* a ){ o->a = a[0]; } \
+  static inline void bhvm_hf3_vm_op_ar0_vacate_s_get_indices( const bhvm_hf3_vm_op_ar0_vacate_s* o, sz_t* a ){ a[0] = o->a; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar0_vacate_s_csetup( bhvm_hf3_vm_op_ar0_vacate_s* o, sz_t idx_a ){ if( !o ) o = bhvm_hf3_vm_op_ar0_vacate_s_create(); o->a = idx_a; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar0_vacate_s_run( const bhvm_hf3_vm_op_ar0_vacate_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_s_set_vacant( &ah[ o->a ].h ); } \
+  void bhvm_hf3_vm_op_ar0_vacate_s_set_arg( bhvm_hf3_vm_op_ar0_vacate_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar0_vacate_s_sig( const bhvm_hf3_vm_op_ar0_vacate_s* o ){ return "y"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar0_randomize_s 614377668
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_randomize_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar0_randomize_s ) \
+    {aware_t _;sz_t a;u2_t rseed;f3_t min;f3_t max;f3_t density;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar0_randomize_s_get_arity( const bhvm_hf3_vm_op_ar0_randomize_s* o ){ return 0; } \
+  static inline void bhvm_hf3_vm_op_ar0_randomize_s_set_indices( bhvm_hf3_vm_op_ar0_randomize_s* o, sz_t* a ){ o->a = a[0]; } \
+  static inline void bhvm_hf3_vm_op_ar0_randomize_s_get_indices( const bhvm_hf3_vm_op_ar0_randomize_s* o, sz_t* a ){ a[0] = o->a; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar0_randomize_s_csetup( bhvm_hf3_vm_op_ar0_randomize_s* o, sz_t idx_a ){ if( !o ) o = bhvm_hf3_vm_op_ar0_randomize_s_create(); o->a = idx_a; return (bhvm_hf3_vm_op*)o; } \
+  bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar0_randomize_s_csetup_randomize( bhvm_hf3_vm_op_ar0_randomize_s* o, sz_t idx_a, u2_t rseed, f3_t density, f3_t min, f3_t max ); \
+  static inline void bhvm_hf3_vm_op_ar0_randomize_s_run( const bhvm_hf3_vm_op_ar0_randomize_s* o, bhvm_hf3_vm_holor_s* ah ){ u2_t rval = o->rseed + o->a; bhvm_hf3_s_set_random( &ah[ o->a ].h, o->density, o->min, o->max, &rval ); } \
+  void bhvm_hf3_vm_op_ar0_randomize_s_set_arg( bhvm_hf3_vm_op_ar0_randomize_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar0_randomize_s_sig( const bhvm_hf3_vm_op_ar0_randomize_s* o ){ return "y"; }
+#define BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar0 \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0 ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0_nul_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0_zro_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0_determine_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0_vacate_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0_randomize_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0_dp ); \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_nul_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_zro_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_determine_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_vacate_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_randomize_s \
+  BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar0_dp
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm_op_ar0_dp
+
+#define TYPEOF_bhvm_hf3_vm_op_ar0_dp 1819962235
+#define TYPEOF_bhvm_hf3_vm_op_ar0_dp_s 915237389
+#define TYPEOF_bhvm_hf3_vm_op_ar0_dp_ca_floor_s 202185547
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_dp_ca_floor_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar0_dp_ca_floor_s ) \
+    {aware_t _;sz_t a;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar0_dp_ca_floor_s_get_arity( const bhvm_hf3_vm_op_ar0_dp_ca_floor_s* o ){ return 0; } \
+  static inline void bhvm_hf3_vm_op_ar0_dp_ca_floor_s_set_indices( bhvm_hf3_vm_op_ar0_dp_ca_floor_s* o, sz_t* a ){ o->a = a[0]; } \
+  static inline void bhvm_hf3_vm_op_ar0_dp_ca_floor_s_get_indices( const bhvm_hf3_vm_op_ar0_dp_ca_floor_s* o, sz_t* a ){ a[0] = o->a; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar0_dp_ca_floor_s_csetup( bhvm_hf3_vm_op_ar0_dp_ca_floor_s* o, sz_t idx_a ){ if( !o ) o = bhvm_hf3_vm_op_ar0_dp_ca_floor_s_create(); o->a = idx_a; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar0_dp_ca_floor_s_run( const bhvm_hf3_vm_op_ar0_dp_ca_floor_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar0_dp_ca_floor_s_f( &ah[o->a].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar0_dp_ca_floor_s_sig( const bhvm_hf3_vm_op_ar0_dp_ca_floor_s* o ){ return "u"; } \
+  void bhvm_hf3_vm_op_ar0_dp_ca_floor_s_set_arg( bhvm_hf3_vm_op_ar0_dp_ca_floor_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar0_dp_ca_ceil_s 3161708566
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_dp_ca_ceil_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar0_dp_ca_ceil_s ) \
+    {aware_t _;sz_t a;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar0_dp_ca_ceil_s_get_arity( const bhvm_hf3_vm_op_ar0_dp_ca_ceil_s* o ){ return 0; } \
+  static inline void bhvm_hf3_vm_op_ar0_dp_ca_ceil_s_set_indices( bhvm_hf3_vm_op_ar0_dp_ca_ceil_s* o, sz_t* a ){ o->a = a[0]; } \
+  static inline void bhvm_hf3_vm_op_ar0_dp_ca_ceil_s_get_indices( const bhvm_hf3_vm_op_ar0_dp_ca_ceil_s* o, sz_t* a ){ a[0] = o->a; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar0_dp_ca_ceil_s_csetup( bhvm_hf3_vm_op_ar0_dp_ca_ceil_s* o, sz_t idx_a ){ if( !o ) o = bhvm_hf3_vm_op_ar0_dp_ca_ceil_s_create(); o->a = idx_a; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar0_dp_ca_ceil_s_run( const bhvm_hf3_vm_op_ar0_dp_ca_ceil_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar0_dp_ca_ceil_s_f ( &ah[o->a].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar0_dp_ca_ceil_s_sig( const bhvm_hf3_vm_op_ar0_dp_ca_ceil_s* o ){ return "u"; } \
+  void bhvm_hf3_vm_op_ar0_dp_ca_ceil_s_set_arg( bhvm_hf3_vm_op_ar0_dp_ca_ceil_s* o, char id, sz_t idx );
+#define BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar0_dp \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0_dp ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0_dp_ca_floor_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar0_dp_ca_ceil_s ); \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_dp_ca_floor_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar0_dp_ca_ceil_s
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm_op_ar1
+
+#define TYPEOF_bhvm_hf3_vm_op_ar1 468428101
+#define TYPEOF_bhvm_hf3_vm_op_ar1_s 2508758055
+#define TYPEOF_bhvm_hf3_vm_op_ar1_unary_s 1350751771
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_unary_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_unary_s ) \
+    {aware_t _;sz_t a;sz_t b;bmath_fp_f3_ar1 unary;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_unary_s_get_arity( const bhvm_hf3_vm_op_ar1_unary_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_unary_s_set_indices( bhvm_hf3_vm_op_ar1_unary_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_unary_s_get_indices( const bhvm_hf3_vm_op_ar1_unary_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_unary_s_csetup( bhvm_hf3_vm_op_ar1_unary_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_unary_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_unary_s_run( const bhvm_hf3_vm_op_ar1_unary_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_s_fp_f3_ar1( &ah[o->a].h, o->unary, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_unary_s_set_arg( bhvm_hf3_vm_op_ar1_unary_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_unary_s_sig( const bhvm_hf3_vm_op_ar1_unary_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_cpy_s 237558182
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_cpy_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_cpy_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_cpy_s_get_arity( const bhvm_hf3_vm_op_ar1_cpy_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_cpy_s_set_indices( bhvm_hf3_vm_op_ar1_cpy_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_cpy_s_get_indices( const bhvm_hf3_vm_op_ar1_cpy_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_cpy_s_csetup( bhvm_hf3_vm_op_ar1_cpy_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_cpy_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_cpy_s_run( const bhvm_hf3_vm_op_ar1_cpy_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_cpy_s_f  ( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_cpy_s_set_arg( bhvm_hf3_vm_op_ar1_cpy_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_cpy_s_sig( const bhvm_hf3_vm_op_ar1_cpy_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_neg_s 2942976434
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_neg_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_neg_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_neg_s_get_arity( const bhvm_hf3_vm_op_ar1_neg_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_neg_s_set_indices( bhvm_hf3_vm_op_ar1_neg_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_neg_s_get_indices( const bhvm_hf3_vm_op_ar1_neg_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_neg_s_csetup( bhvm_hf3_vm_op_ar1_neg_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_neg_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_neg_s_run( const bhvm_hf3_vm_op_ar1_neg_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_neg_s_f  ( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_neg_s_set_arg( bhvm_hf3_vm_op_ar1_neg_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_neg_s_sig( const bhvm_hf3_vm_op_ar1_neg_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_floor_s 4202880442
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_floor_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_floor_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_floor_s_get_arity( const bhvm_hf3_vm_op_ar1_floor_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_floor_s_set_indices( bhvm_hf3_vm_op_ar1_floor_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_floor_s_get_indices( const bhvm_hf3_vm_op_ar1_floor_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_floor_s_csetup( bhvm_hf3_vm_op_ar1_floor_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_floor_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_floor_s_run( const bhvm_hf3_vm_op_ar1_floor_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_floor_s_f( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_floor_s_set_arg( bhvm_hf3_vm_op_ar1_floor_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_floor_s_sig( const bhvm_hf3_vm_op_ar1_floor_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_ceil_s 2328616501
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_ceil_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_ceil_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_ceil_s_get_arity( const bhvm_hf3_vm_op_ar1_ceil_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_ceil_s_set_indices( bhvm_hf3_vm_op_ar1_ceil_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_ceil_s_get_indices( const bhvm_hf3_vm_op_ar1_ceil_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_ceil_s_csetup( bhvm_hf3_vm_op_ar1_ceil_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_ceil_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_ceil_s_run( const bhvm_hf3_vm_op_ar1_ceil_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_ceil_s_f ( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_ceil_s_set_arg( bhvm_hf3_vm_op_ar1_ceil_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_ceil_s_sig( const bhvm_hf3_vm_op_ar1_ceil_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_exp_s 928754955
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_exp_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_exp_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_exp_s_get_arity( const bhvm_hf3_vm_op_ar1_exp_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_exp_s_set_indices( bhvm_hf3_vm_op_ar1_exp_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_exp_s_get_indices( const bhvm_hf3_vm_op_ar1_exp_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_exp_s_csetup( bhvm_hf3_vm_op_ar1_exp_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_exp_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_exp_s_run( const bhvm_hf3_vm_op_ar1_exp_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_exp_s_f  ( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_exp_s_set_arg( bhvm_hf3_vm_op_ar1_exp_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_exp_s_sig( const bhvm_hf3_vm_op_ar1_exp_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_lgst_s 2637714270
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_lgst_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_lgst_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_lgst_s_get_arity( const bhvm_hf3_vm_op_ar1_lgst_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_lgst_s_set_indices( bhvm_hf3_vm_op_ar1_lgst_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_lgst_s_get_indices( const bhvm_hf3_vm_op_ar1_lgst_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_lgst_s_csetup( bhvm_hf3_vm_op_ar1_lgst_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_lgst_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_lgst_s_run( const bhvm_hf3_vm_op_ar1_lgst_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_lgst_s_f      ( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_lgst_s_set_arg( bhvm_hf3_vm_op_ar1_lgst_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_lgst_s_sig( const bhvm_hf3_vm_op_ar1_lgst_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_lgst_hard_s 759313010
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_lgst_hard_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_lgst_hard_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_lgst_hard_s_get_arity( const bhvm_hf3_vm_op_ar1_lgst_hard_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_lgst_hard_s_set_indices( bhvm_hf3_vm_op_ar1_lgst_hard_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_lgst_hard_s_get_indices( const bhvm_hf3_vm_op_ar1_lgst_hard_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_lgst_hard_s_csetup( bhvm_hf3_vm_op_ar1_lgst_hard_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_lgst_hard_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_lgst_hard_s_run( const bhvm_hf3_vm_op_ar1_lgst_hard_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_lgst_hard_s_f ( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_lgst_hard_s_set_arg( bhvm_hf3_vm_op_ar1_lgst_hard_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_lgst_hard_s_sig( const bhvm_hf3_vm_op_ar1_lgst_hard_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_lgst_leaky_s 2429277723
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_lgst_leaky_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_lgst_leaky_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_lgst_leaky_s_get_arity( const bhvm_hf3_vm_op_ar1_lgst_leaky_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_lgst_leaky_s_set_indices( bhvm_hf3_vm_op_ar1_lgst_leaky_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_lgst_leaky_s_get_indices( const bhvm_hf3_vm_op_ar1_lgst_leaky_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_lgst_leaky_s_csetup( bhvm_hf3_vm_op_ar1_lgst_leaky_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_lgst_leaky_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_lgst_leaky_s_run( const bhvm_hf3_vm_op_ar1_lgst_leaky_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_lgst_leaky_s_f( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_lgst_leaky_s_set_arg( bhvm_hf3_vm_op_ar1_lgst_leaky_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_lgst_leaky_s_sig( const bhvm_hf3_vm_op_ar1_lgst_leaky_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_tanh_s 2624717141
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_tanh_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_tanh_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_tanh_s_get_arity( const bhvm_hf3_vm_op_ar1_tanh_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_tanh_s_set_indices( bhvm_hf3_vm_op_ar1_tanh_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_tanh_s_get_indices( const bhvm_hf3_vm_op_ar1_tanh_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_tanh_s_csetup( bhvm_hf3_vm_op_ar1_tanh_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_tanh_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_tanh_s_run( const bhvm_hf3_vm_op_ar1_tanh_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_tanh_s_f      ( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_tanh_s_set_arg( bhvm_hf3_vm_op_ar1_tanh_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_tanh_s_sig( const bhvm_hf3_vm_op_ar1_tanh_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_tanh_hard_s 1778994403
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_tanh_hard_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_tanh_hard_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_tanh_hard_s_get_arity( const bhvm_hf3_vm_op_ar1_tanh_hard_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_tanh_hard_s_set_indices( bhvm_hf3_vm_op_ar1_tanh_hard_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_tanh_hard_s_get_indices( const bhvm_hf3_vm_op_ar1_tanh_hard_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_tanh_hard_s_csetup( bhvm_hf3_vm_op_ar1_tanh_hard_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_tanh_hard_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_tanh_hard_s_run( const bhvm_hf3_vm_op_ar1_tanh_hard_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_tanh_hard_s_f ( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_tanh_hard_s_set_arg( bhvm_hf3_vm_op_ar1_tanh_hard_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_tanh_hard_s_sig( const bhvm_hf3_vm_op_ar1_tanh_hard_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_tanh_leaky_s 2826818232
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_tanh_leaky_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_tanh_leaky_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_tanh_leaky_s_get_arity( const bhvm_hf3_vm_op_ar1_tanh_leaky_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_tanh_leaky_s_set_indices( bhvm_hf3_vm_op_ar1_tanh_leaky_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_tanh_leaky_s_get_indices( const bhvm_hf3_vm_op_ar1_tanh_leaky_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_tanh_leaky_s_csetup( bhvm_hf3_vm_op_ar1_tanh_leaky_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_tanh_leaky_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_tanh_leaky_s_run( const bhvm_hf3_vm_op_ar1_tanh_leaky_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_tanh_leaky_s_f( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_tanh_leaky_s_set_arg( bhvm_hf3_vm_op_ar1_tanh_leaky_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_tanh_leaky_s_sig( const bhvm_hf3_vm_op_ar1_tanh_leaky_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_softplus_s 3729825904
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_softplus_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_softplus_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_softplus_s_get_arity( const bhvm_hf3_vm_op_ar1_softplus_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_softplus_s_set_indices( bhvm_hf3_vm_op_ar1_softplus_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_softplus_s_get_indices( const bhvm_hf3_vm_op_ar1_softplus_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_softplus_s_csetup( bhvm_hf3_vm_op_ar1_softplus_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_softplus_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_softplus_s_run( const bhvm_hf3_vm_op_ar1_softplus_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_softplus_s_f  ( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_softplus_s_set_arg( bhvm_hf3_vm_op_ar1_softplus_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_softplus_s_sig( const bhvm_hf3_vm_op_ar1_softplus_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_relu_s 1254389858
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_relu_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_relu_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_relu_s_get_arity( const bhvm_hf3_vm_op_ar1_relu_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_relu_s_set_indices( bhvm_hf3_vm_op_ar1_relu_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_relu_s_get_indices( const bhvm_hf3_vm_op_ar1_relu_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_relu_s_csetup( bhvm_hf3_vm_op_ar1_relu_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_relu_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_relu_s_run( const bhvm_hf3_vm_op_ar1_relu_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_relu_s_f      ( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_relu_s_set_arg( bhvm_hf3_vm_op_ar1_relu_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_relu_s_sig( const bhvm_hf3_vm_op_ar1_relu_s* o ){ return "ay"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar1_relu_leaky_s 967685463
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_relu_leaky_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_relu_leaky_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_relu_leaky_s_get_arity( const bhvm_hf3_vm_op_ar1_relu_leaky_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_relu_leaky_s_set_indices( bhvm_hf3_vm_op_ar1_relu_leaky_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_relu_leaky_s_get_indices( const bhvm_hf3_vm_op_ar1_relu_leaky_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_relu_leaky_s_csetup( bhvm_hf3_vm_op_ar1_relu_leaky_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_relu_leaky_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_relu_leaky_s_run( const bhvm_hf3_vm_op_ar1_relu_leaky_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_relu_leaky_s_f( &ah[o->a].h, &ah[o->b].h ); } \
+  void bhvm_hf3_vm_op_ar1_relu_leaky_s_set_arg( bhvm_hf3_vm_op_ar1_relu_leaky_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar1_relu_leaky_s_sig( const bhvm_hf3_vm_op_ar1_relu_leaky_s* o ){ return "ay"; }
+#define BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar1 \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1 ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_unary_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_cpy_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_neg_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_floor_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_ceil_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_exp_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_lgst_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_lgst_hard_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_lgst_leaky_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_tanh_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_tanh_hard_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_tanh_leaky_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_softplus_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_relu_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_relu_leaky_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_dp ); \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_unary_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_cpy_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_neg_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_floor_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_ceil_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_exp_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_lgst_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_lgst_hard_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_lgst_leaky_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_tanh_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_tanh_hard_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_tanh_leaky_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_softplus_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_relu_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_relu_leaky_s \
+  BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar1_dp
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm_op_ar1_dp
+
+#define TYPEOF_bhvm_hf3_vm_op_ar1_dp 3403601098
+#define TYPEOF_bhvm_hf3_vm_op_ar1_dp_s 2598297268
+#define TYPEOF_bhvm_hf3_vm_op_ar1_dp_ca_cpy_s 79187336
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_ca_cpy_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_dp_ca_cpy_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_dp_ca_cpy_s_get_arity( const bhvm_hf3_vm_op_ar1_dp_ca_cpy_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_cpy_s_set_indices( bhvm_hf3_vm_op_ar1_dp_ca_cpy_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_cpy_s_get_indices( const bhvm_hf3_vm_op_ar1_dp_ca_cpy_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_dp_ca_cpy_s_csetup( bhvm_hf3_vm_op_ar1_dp_ca_cpy_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_dp_ca_cpy_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_cpy_s_run( const bhvm_hf3_vm_op_ar1_dp_ca_cpy_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_dp_ca_cpy_s_f( &ah[o->a].h, &ah[o->b].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar1_dp_ca_cpy_s_sig( const bhvm_hf3_vm_op_ar1_dp_ca_cpy_s* o ){ return "vu"; } \
+  void bhvm_hf3_vm_op_ar1_dp_ca_cpy_s_set_arg( bhvm_hf3_vm_op_ar1_dp_ca_cpy_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar1_dp_ca_neg_s 2354317744
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_ca_neg_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_dp_ca_neg_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_dp_ca_neg_s_get_arity( const bhvm_hf3_vm_op_ar1_dp_ca_neg_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_neg_s_set_indices( bhvm_hf3_vm_op_ar1_dp_ca_neg_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_neg_s_get_indices( const bhvm_hf3_vm_op_ar1_dp_ca_neg_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_dp_ca_neg_s_csetup( bhvm_hf3_vm_op_ar1_dp_ca_neg_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_dp_ca_neg_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_neg_s_run( const bhvm_hf3_vm_op_ar1_dp_ca_neg_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_dp_ca_neg_s_f( &ah[o->a].h, &ah[o->b].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar1_dp_ca_neg_s_sig( const bhvm_hf3_vm_op_ar1_dp_ca_neg_s* o ){ return "vu"; } \
+  void bhvm_hf3_vm_op_ar1_dp_ca_neg_s_set_arg( bhvm_hf3_vm_op_ar1_dp_ca_neg_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar1_dp_ca_add_s 1464649029
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_ca_add_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_dp_ca_add_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_dp_ca_add_s_get_arity( const bhvm_hf3_vm_op_ar1_dp_ca_add_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_add_s_set_indices( bhvm_hf3_vm_op_ar1_dp_ca_add_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_add_s_get_indices( const bhvm_hf3_vm_op_ar1_dp_ca_add_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_dp_ca_add_s_csetup( bhvm_hf3_vm_op_ar1_dp_ca_add_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_dp_ca_add_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_add_s_run( const bhvm_hf3_vm_op_ar1_dp_ca_add_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_dp_ca_add_s_f( &ah[o->a].h, &ah[o->b].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar1_dp_ca_add_s_sig( const bhvm_hf3_vm_op_ar1_dp_ca_add_s* o ){ return "vu"; } \
+  void bhvm_hf3_vm_op_ar1_dp_ca_add_s_set_arg( bhvm_hf3_vm_op_ar1_dp_ca_add_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar1_dp_cb_add_s 1611453404
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_cb_add_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_dp_cb_add_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_dp_cb_add_s_get_arity( const bhvm_hf3_vm_op_ar1_dp_cb_add_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_cb_add_s_set_indices( bhvm_hf3_vm_op_ar1_dp_cb_add_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_cb_add_s_get_indices( const bhvm_hf3_vm_op_ar1_dp_cb_add_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_dp_cb_add_s_csetup( bhvm_hf3_vm_op_ar1_dp_cb_add_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_dp_cb_add_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_cb_add_s_run( const bhvm_hf3_vm_op_ar1_dp_cb_add_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_dp_cb_add_s_f( &ah[o->a].h, &ah[o->b].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar1_dp_cb_add_s_sig( const bhvm_hf3_vm_op_ar1_dp_cb_add_s* o ){ return "vu"; } \
+  void bhvm_hf3_vm_op_ar1_dp_cb_add_s_set_arg( bhvm_hf3_vm_op_ar1_dp_cb_add_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar1_dp_ca_sub_s 838990012
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_ca_sub_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_dp_ca_sub_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_dp_ca_sub_s_get_arity( const bhvm_hf3_vm_op_ar1_dp_ca_sub_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_sub_s_set_indices( bhvm_hf3_vm_op_ar1_dp_ca_sub_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_sub_s_get_indices( const bhvm_hf3_vm_op_ar1_dp_ca_sub_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_dp_ca_sub_s_csetup( bhvm_hf3_vm_op_ar1_dp_ca_sub_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_dp_ca_sub_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_ca_sub_s_run( const bhvm_hf3_vm_op_ar1_dp_ca_sub_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_dp_ca_sub_s_f( &ah[o->a].h, &ah[o->b].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar1_dp_ca_sub_s_sig( const bhvm_hf3_vm_op_ar1_dp_ca_sub_s* o ){ return "vu"; } \
+  void bhvm_hf3_vm_op_ar1_dp_ca_sub_s_set_arg( bhvm_hf3_vm_op_ar1_dp_ca_sub_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar1_dp_cb_sub_s 2045117741
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_cb_sub_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar1_dp_cb_sub_s ) \
+    {aware_t _;sz_t a;sz_t b;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar1_dp_cb_sub_s_get_arity( const bhvm_hf3_vm_op_ar1_dp_cb_sub_s* o ){ return 1; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_cb_sub_s_set_indices( bhvm_hf3_vm_op_ar1_dp_cb_sub_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_cb_sub_s_get_indices( const bhvm_hf3_vm_op_ar1_dp_cb_sub_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar1_dp_cb_sub_s_csetup( bhvm_hf3_vm_op_ar1_dp_cb_sub_s* o, sz_t idx_a, sz_t idx_b ){ if( !o ) o = bhvm_hf3_vm_op_ar1_dp_cb_sub_s_create(); o->a = idx_a; o->b = idx_b; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar1_dp_cb_sub_s_run( const bhvm_hf3_vm_op_ar1_dp_cb_sub_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar1_dp_cb_sub_s_f( &ah[o->a].h, &ah[o->b].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar1_dp_cb_sub_s_sig( const bhvm_hf3_vm_op_ar1_dp_cb_sub_s* o ){ return "vu"; } \
+  void bhvm_hf3_vm_op_ar1_dp_cb_sub_s_set_arg( bhvm_hf3_vm_op_ar1_dp_cb_sub_s* o, char id, sz_t idx );
+#define BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar1_dp \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_dp ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_dp_ca_cpy_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_dp_ca_neg_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_dp_ca_add_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_dp_cb_add_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_dp_ca_sub_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar1_dp_cb_sub_s ); \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_ca_cpy_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_ca_neg_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_ca_add_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_cb_add_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_ca_sub_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar1_dp_cb_sub_s
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm_op_ar2
+
+#define TYPEOF_bhvm_hf3_vm_op_ar2 418095244
+#define TYPEOF_bhvm_hf3_vm_op_ar2_s 1206899118
+#define TYPEOF_bhvm_hf3_vm_op_ar2_add_s 1381170762
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_add_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_add_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_add_s_get_arity( const bhvm_hf3_vm_op_ar2_add_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_add_s_set_indices( bhvm_hf3_vm_op_ar2_add_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_add_s_get_indices( const bhvm_hf3_vm_op_ar2_add_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_add_s_csetup( bhvm_hf3_vm_op_ar2_add_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_add_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_add_s_run( const bhvm_hf3_vm_op_ar2_add_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_add_s_f(    &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_add_s_set_arg( bhvm_hf3_vm_op_ar2_add_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar2_add_s_sig( const bhvm_hf3_vm_op_ar2_add_s* o ){ return "aby"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar2_sub_s 2879155667
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_sub_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_sub_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_sub_s_get_arity( const bhvm_hf3_vm_op_ar2_sub_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_sub_s_set_indices( bhvm_hf3_vm_op_ar2_sub_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_sub_s_get_indices( const bhvm_hf3_vm_op_ar2_sub_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_sub_s_csetup( bhvm_hf3_vm_op_ar2_sub_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_sub_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_sub_s_run( const bhvm_hf3_vm_op_ar2_sub_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_sub_s_f(    &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_sub_s_set_arg( bhvm_hf3_vm_op_ar2_sub_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar2_sub_s_sig( const bhvm_hf3_vm_op_ar2_sub_s* o ){ return "aby"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar2_hmul_s 3452639589
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_hmul_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_hmul_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_hmul_s_get_arity( const bhvm_hf3_vm_op_ar2_hmul_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_hmul_s_set_indices( bhvm_hf3_vm_op_ar2_hmul_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_hmul_s_get_indices( const bhvm_hf3_vm_op_ar2_hmul_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_hmul_s_csetup( bhvm_hf3_vm_op_ar2_hmul_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_hmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_hmul_s_run( const bhvm_hf3_vm_op_ar2_hmul_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_hmul_s_f(   &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_hmul_s_set_arg( bhvm_hf3_vm_op_ar2_hmul_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar2_hmul_s_sig( const bhvm_hf3_vm_op_ar2_hmul_s* o ){ return "aby"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar2_hdiv_s 1570809560
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_hdiv_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_hdiv_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_hdiv_s_get_arity( const bhvm_hf3_vm_op_ar2_hdiv_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_hdiv_s_set_indices( bhvm_hf3_vm_op_ar2_hdiv_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_hdiv_s_get_indices( const bhvm_hf3_vm_op_ar2_hdiv_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_hdiv_s_csetup( bhvm_hf3_vm_op_ar2_hdiv_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_hdiv_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_hdiv_s_run( const bhvm_hf3_vm_op_ar2_hdiv_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_hdiv_s_f(   &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_hdiv_s_set_arg( bhvm_hf3_vm_op_ar2_hdiv_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar2_hdiv_s_sig( const bhvm_hf3_vm_op_ar2_hdiv_s* o ){ return "aby"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar2_bmul_s 1612377823
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_bmul_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_bmul_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_bmul_s_get_arity( const bhvm_hf3_vm_op_ar2_bmul_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_bmul_s_set_indices( bhvm_hf3_vm_op_ar2_bmul_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_bmul_s_get_indices( const bhvm_hf3_vm_op_ar2_bmul_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_bmul_s_csetup( bhvm_hf3_vm_op_ar2_bmul_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_bmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_bmul_s_run( const bhvm_hf3_vm_op_ar2_bmul_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_bmul_s_f(   &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_bmul_s_set_arg( bhvm_hf3_vm_op_ar2_bmul_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar2_bmul_s_sig( const bhvm_hf3_vm_op_ar2_bmul_s* o ){ return "aby"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar2_mul_scl_s 2150904682
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_mul_scl_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_mul_scl_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_mul_scl_s_get_arity( const bhvm_hf3_vm_op_ar2_mul_scl_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_mul_scl_s_set_indices( bhvm_hf3_vm_op_ar2_mul_scl_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_mul_scl_s_get_indices( const bhvm_hf3_vm_op_ar2_mul_scl_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_mul_scl_s_csetup( bhvm_hf3_vm_op_ar2_mul_scl_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_mul_scl_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_mul_scl_s_run( const bhvm_hf3_vm_op_ar2_mul_scl_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_mul_scl_s_set_arg( bhvm_hf3_vm_op_ar2_mul_scl_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar2_mul_scl_s_sig( const bhvm_hf3_vm_op_ar2_mul_scl_s* o ){ return "aby"; }
+#define TYPEOF_bhvm_hf3_vm_op_ar2_scl_mul_s 3667377846
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_scl_mul_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_scl_mul_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_scl_mul_s_get_arity( const bhvm_hf3_vm_op_ar2_scl_mul_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_scl_mul_s_set_indices( bhvm_hf3_vm_op_ar2_scl_mul_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_scl_mul_s_get_indices( const bhvm_hf3_vm_op_ar2_scl_mul_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_scl_mul_s_csetup( bhvm_hf3_vm_op_ar2_scl_mul_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_scl_mul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_scl_mul_s_run( const bhvm_hf3_vm_op_ar2_scl_mul_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_scl_mul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_scl_mul_s_set_arg( bhvm_hf3_vm_op_ar2_scl_mul_s* o, char id, sz_t idx ); \
+  static inline sc_t bhvm_hf3_vm_op_ar2_scl_mul_s_sig( const bhvm_hf3_vm_op_ar2_scl_mul_s* o ){ return "aby"; }
+#define BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar2 \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2 ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_add_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_sub_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_hmul_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_hdiv_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_bmul_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_mul_scl_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_scl_mul_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp ); \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_add_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_sub_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_hmul_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_hdiv_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_bmul_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_mul_scl_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_scl_mul_s \
+  BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar2_dp
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm_op_ar2_dp
+
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp 241628869
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_s 1911818663
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_exp_s 687239648
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_exp_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_exp_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_exp_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_exp_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_exp_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_exp_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_exp_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_exp_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_exp_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_exp_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_exp_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_exp_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_exp_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_dp_ca_exp_s_f(        &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_exp_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_exp_s* o ){ return "yvu"; } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_exp_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_exp_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_lgst_s 1890628599
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_lgst_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_lgst_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_lgst_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_lgst_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_lgst_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_lgst_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_lgst_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_lgst_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_lgst_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_lgst_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_dp_ca_lgst_s_f(       &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_lgst_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_s* o ){ return "yvu"; } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_lgst_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_lgst_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s 1734294361
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_dp_ca_lgst_hard_s_f(  &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s* o ){ return "yvu"; } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s 1423051210
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_dp_ca_lgst_leaky_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s* o ){ return "yvu"; } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_tanh_s 3324329088
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_tanh_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_tanh_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_tanh_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_tanh_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_tanh_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_tanh_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_tanh_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_tanh_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_tanh_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_tanh_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_dp_ca_tanh_s_f(       &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_tanh_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_s* o ){ return "yvu"; } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_tanh_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_tanh_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s 3499620456
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_dp_ca_tanh_hard_s_f(  &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s* o ){ return "yvu"; } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s 858384285
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_dp_ca_tanh_leaky_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s* o ){ return "yvu"; } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_softplus_s 3219719705
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_softplus_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_softplus_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_softplus_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_softplus_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_softplus_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_softplus_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_softplus_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_softplus_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_softplus_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_softplus_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_softplus_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_softplus_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_softplus_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_dp_ca_softplus_s_f(   &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_softplus_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_softplus_s* o ){ return "yvu"; } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_softplus_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_softplus_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_relu_s 2218255251
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_relu_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_relu_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_relu_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_relu_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_relu_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_relu_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_relu_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_relu_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_relu_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_relu_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_relu_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_relu_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_relu_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_dp_ca_relu_s_f(       &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_relu_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_relu_s* o ){ return "yvu"; } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_relu_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_relu_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s 1600631598
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s* o, bhvm_hf3_vm_holor_s* ah ){ bhvm_hf3_op_ar2_dp_ca_relu_leaky_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s* o ){ return "yvu"; } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_hmul_s 1325510595
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_hmul_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_hmul_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_hmul_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_hmul_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_hmul_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_hmul_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_hmul_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_hmul_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_hmul_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_hmul_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_hmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_hmul_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_hmul_s* o ){ return bhvm_hf3_op_ar2_dp_ca_hmul_s_sig(); } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_hmul_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_hmul_s* o, bhvm_hf3_vm_holor_s* ah ){        bhvm_hf3_op_ar2_dp_ca_hmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_hmul_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_hmul_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_cb_hmul_s 1234424712
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_cb_hmul_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_cb_hmul_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_cb_hmul_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_cb_hmul_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_hmul_s_set_indices( bhvm_hf3_vm_op_ar2_dp_cb_hmul_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_hmul_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_cb_hmul_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_cb_hmul_s_csetup( bhvm_hf3_vm_op_ar2_dp_cb_hmul_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_cb_hmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_cb_hmul_s_sig( const bhvm_hf3_vm_op_ar2_dp_cb_hmul_s* o ){ return bhvm_hf3_op_ar2_dp_cb_hmul_s_sig(); } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_hmul_s_run( const bhvm_hf3_vm_op_ar2_dp_cb_hmul_s* o, bhvm_hf3_vm_holor_s* ah ){        bhvm_hf3_op_ar2_dp_cb_hmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_dp_cb_hmul_s_set_arg( bhvm_hf3_vm_op_ar2_dp_cb_hmul_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_bmul_s 2943988441
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_bmul_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_bmul_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_bmul_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_bmul_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_bmul_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_bmul_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_bmul_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_bmul_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_bmul_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_bmul_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_bmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_bmul_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_bmul_s* o ){ return bhvm_hf3_op_ar2_dp_ca_bmul_s_sig(); } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_bmul_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_bmul_s* o, bhvm_hf3_vm_holor_s* ah ){        bhvm_hf3_op_ar2_dp_ca_bmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_bmul_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_bmul_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_cb_bmul_s 3002030410
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_cb_bmul_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_cb_bmul_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_cb_bmul_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_cb_bmul_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_bmul_s_set_indices( bhvm_hf3_vm_op_ar2_dp_cb_bmul_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_bmul_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_cb_bmul_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_cb_bmul_s_csetup( bhvm_hf3_vm_op_ar2_dp_cb_bmul_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_cb_bmul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_cb_bmul_s_sig( const bhvm_hf3_vm_op_ar2_dp_cb_bmul_s* o ){ return bhvm_hf3_op_ar2_dp_cb_bmul_s_sig(); } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_bmul_s_run( const bhvm_hf3_vm_op_ar2_dp_cb_bmul_s* o, bhvm_hf3_vm_holor_s* ah ){        bhvm_hf3_op_ar2_dp_cb_bmul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_dp_cb_bmul_s_set_arg( bhvm_hf3_vm_op_ar2_dp_cb_bmul_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s 2569118688
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s* o ){ return bhvm_hf3_op_ar2_dp_ca_mul_scl_s_sig(); } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s* o, bhvm_hf3_vm_holor_s* ah ){        bhvm_hf3_op_ar2_dp_ca_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s 462451241
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s_set_indices( bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s_csetup( bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s_sig( const bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s* o ){ return bhvm_hf3_op_ar2_dp_cb_mul_scl_s_sig(); } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s_run( const bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s* o, bhvm_hf3_vm_holor_s* ah ){        bhvm_hf3_op_ar2_dp_cb_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s_set_arg( bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s 635018844
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s_set_indices( bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s_csetup( bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s_sig( const bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s* o ){ return bhvm_hf3_op_ar2_dp_ca_mul_scl_s_sig(); } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s_run( const bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s* o, bhvm_hf3_vm_holor_s* ah ){        bhvm_hf3_op_ar2_dp_ca_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s_set_arg( bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s 1803807341
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s_get_arity( const bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s* o ){ return 2; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s_set_indices( bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s_get_indices( const bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s_csetup( bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c ){ if( !o ) o = bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (bhvm_hf3_vm_op*)o; } \
+  static inline sc_t bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s_sig( const bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s* o ){ return bhvm_hf3_op_ar2_dp_cb_mul_scl_s_sig(); } \
+  static inline void bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s_run( const bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s* o, bhvm_hf3_vm_holor_s* ah ){        bhvm_hf3_op_ar2_dp_cb_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); } \
+  void bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s_set_arg( bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s* o, char id, sz_t idx );
+#define BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar2_dp \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_exp_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_lgst_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_tanh_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_softplus_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_relu_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_hmul_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_cb_hmul_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_bmul_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_cb_bmul_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s ); \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_exp_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_lgst_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_lgst_hard_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_lgst_leaky_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_tanh_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_tanh_hard_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_tanh_leaky_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_softplus_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_relu_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_relu_leaky_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_hmul_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_cb_hmul_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_bmul_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_cb_bmul_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_mul_scl_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_cb_mul_scl_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_ca_scl_mul_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar2_dp_cb_scl_mul_s
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm_op_ar3
+
+#define TYPEOF_bhvm_hf3_vm_op_ar3 434872863
+#define TYPEOF_bhvm_hf3_vm_op_ar3_s 2759325641
+#define BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar3 \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar3 ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar3_dp ); \
+  BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar3_dp
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm_op_ar3_dp
+
+#define TYPEOF_bhvm_hf3_vm_op_ar3_dp 2813735124
+#define TYPEOF_bhvm_hf3_vm_op_ar3_dp_s 1894898950
+#define TYPEOF_bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s 1420475735
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;sz_t d;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s_get_arity( const bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s* o ){ return 3; } \
+  static inline void bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s_set_indices( bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; o->d = a[3]; } \
+  static inline void bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s_get_indices( const bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; a[3] = o->d; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s_csetup( bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c, sz_t idx_d ){ if( !o ) o = bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; o->d = idx_d; return (bhvm_hf3_vm_op*)o; } \
+  static inline sc_t bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s_sig( const bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s* o ){ return bhvm_hf3_op_ar3_dp_ca_hdiv_s_sig(); } \
+  static inline void bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s_run( const bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s* o, bhvm_hf3_vm_holor_s* ah ){        bhvm_hf3_op_ar3_dp_ca_hdiv_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h, &ah[o->d].h ); } \
+  void bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s_set_arg( bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s* o, char id, sz_t idx );
+#define TYPEOF_bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s 4252627112
+#define BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s \
+  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s ) \
+    {aware_t _;sz_t a;sz_t b;sz_t c;sz_t d;}; \
+  static inline sz_t bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_get_arity( const bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s* o ){ return 3; } \
+  static inline void bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_set_indices( bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s* o, sz_t* a ){ o->a = a[0]; o->b = a[1]; o->c = a[2]; o->d = a[3]; } \
+  static inline void bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_get_indices( const bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s* o, sz_t* a ){ a[0] = o->a; a[1] = o->b; a[2] = o->c; a[3] = o->d; } \
+  static inline bhvm_hf3_vm_op* bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_csetup( bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s* o, sz_t idx_a, sz_t idx_b, sz_t idx_c, sz_t idx_d ){ if( !o ) o = bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; o->d = idx_d; return (bhvm_hf3_vm_op*)o; } \
+  static inline sc_t bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_sig( const bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s* o ){ return bhvm_hf3_op_ar3_dp_cb_hdiv_s_sig(); } \
+  static inline void bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_run( const bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s* o, bhvm_hf3_vm_holor_s* ah ){        bhvm_hf3_op_ar3_dp_cb_hdiv_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h, &ah[o->d].h ); } \
+  void bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_set_arg( bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s* o, char id, sz_t idx );
+#define BETH_EXPAND_GROUP_bhvm_hf3_vm_op_ar3_dp \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar3_dp ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s ); \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar3_dp_ca_hdiv_s \
+  BETH_EXPAND_ITEM_bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s
 
 /**********************************************************************************************************************/
 

@@ -13,51 +13,32 @@
  *  limitations under the License.
  */
 
-#ifndef BMATH_XSMF3_H
-#define BMATH_XSMF3_H
+/** Inexpandable group defining beth-system features */
 
-/**********************************************************************************************************************/
+#ifndef BCORE_PLANT_INEXPANDABLE_H
+#define BCORE_PLANT_INEXPANDABLE_H
 
 #include "bcore_std.h"
-#include "bmath_planted.h"
-#include "bmath_mf2.h"
-#include "bmath_mf3.h"
+#include "bcore_planted.h"
 
 /**********************************************************************************************************************/
 
-PLANT_GROUP( bmath_xsmf3, bcore_inst )
+#ifdef TYPEOF_bcore_fp
+PLANT_GROUP( bcore_fp, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    stamp bmath_xsmf3 = aware bcore_inst
-    {
-        sz_t slos;   // values per xon
-        sz_t xons;   // xons  per row
-        sz_t rows;   // number of rows
-        sz_t i_stride; // stride of splicing
 
-        sz_t [] i; // index data
-        f3_t [] v; // value data
+expandable = false;
 
-        func bcore_fp : copy_typed;
-    };
-
-    // function pointer names
-    name bmath_fp_xsmf3_s_mul;
-    name bmath_fp_xsmf3_s_mul_htp;
-    name bmath_fp_xsmf3_s_htp_mul;
-    name bmath_fp_xsmf3_s_htp_mul_htp;
+feature '' void copy_typed( mutable, tp_t type, vc_t src );
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#define BMATH_TEMPLATE_FX_PREC 3
-#include "bmath_template_xsmfx_h.h"
-
-#define BMATH_TEMPLATE_FX_PREC 3
-#include "bmath_template_xsmfx_mul_h.h"
+#endif // optional enclosure
 
 /**********************************************************************************************************************/
 
-vd_t bmath_xsmf3_signal_handler( const bcore_signal_s* o );
+vd_t bcore_plant_inexpandable_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif // BMATH_XSMF3_H
+#endif  // BCORE_PLANT_INEXPANDABLE_H

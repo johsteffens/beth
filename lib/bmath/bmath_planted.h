@@ -475,7 +475,8 @@
 #define TYPEOF_bmath_xsmf2_s 2459513678
 #define BETH_EXPAND_ITEM_bmath_xsmf2_s \
   BCORE_DECLARE_OBJECT( bmath_xsmf2_s ) \
-    {aware_t _;sz_t slos;sz_t xons;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f2_t, v_ );};
+    {aware_t _;sz_t slos;sz_t xons;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f2_t, v_ );}; \
+  void bmath_xsmf2_s_copy_typed( bmath_xsmf2_s* o, tp_t type, vc_t src );
 #define TYPEOF_bmath_fp_xsmf2_s_mul 2668840510
 #define TYPEOF_bmath_fp_xsmf2_s_mul_htp 1932743757
 #define TYPEOF_bmath_fp_xsmf2_s_htp_mul 3419519109
@@ -496,7 +497,8 @@
 #define TYPEOF_bmath_xsmf3_s 4011940201
 #define BETH_EXPAND_ITEM_bmath_xsmf3_s \
   BCORE_DECLARE_OBJECT( bmath_xsmf3_s ) \
-    {aware_t _;sz_t slos;sz_t xons;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
+    {aware_t _;sz_t slos;sz_t xons;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );}; \
+  void bmath_xsmf3_s_copy_typed( bmath_xsmf3_s* o, tp_t type, vc_t src );
 #define TYPEOF_bmath_fp_xsmf3_s_mul 4077153789
 #define TYPEOF_bmath_fp_xsmf3_s_mul_htp 2287413566
 #define TYPEOF_bmath_fp_xsmf3_s_htp_mul 4175413206
@@ -517,7 +519,8 @@
 #define TYPEOF_bmath_asmf2_s 1565990485
 #define BETH_EXPAND_ITEM_bmath_asmf2_s \
   BCORE_DECLARE_OBJECT( bmath_asmf2_s ) \
-    {aware_t _;sz_t cols;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f2_t, v_ );};
+    {aware_t _;sz_t cols;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f2_t, v_ );}; \
+  void bmath_asmf2_s_copy_typed( bmath_asmf2_s* o, tp_t type, vc_t src );
 #define TYPEOF_bmath_fp_asmf2_s_mul 841287705
 #define TYPEOF_bmath_fp_asmf2_s_mul_htp 1241522170
 #define TYPEOF_bmath_fp_asmf2_s_htp_mul 210701570
@@ -538,7 +541,8 @@
 #define TYPEOF_bmath_asmf3_s 13460794
 #define BETH_EXPAND_ITEM_bmath_asmf3_s \
   BCORE_DECLARE_OBJECT( bmath_asmf3_s ) \
-    {aware_t _;sz_t cols;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );};
+    {aware_t _;sz_t cols;sz_t rows;sz_t i_stride;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, i_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );}; \
+  void bmath_asmf3_s_copy_typed( bmath_asmf3_s* o, tp_t type, vc_t src );
 #define TYPEOF_bmath_fp_asmf3_s_mul 2985816538
 #define TYPEOF_bmath_fp_asmf3_s_mul_htp 1836265849
 #define TYPEOF_bmath_fp_asmf3_s_htp_mul 3026576497

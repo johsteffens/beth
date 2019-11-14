@@ -4,6 +4,7 @@
  *    Generated code inherits the copyright and license of the beth-plant source code.
  *    The following files contain all source code related to this file:
  *    bcore_file.h
+ *    bcore_plant_inexpandable.h
  *    bcore_plant_sample.h
  *    bcore_spect_inst_call.h
  *    bcore_spect_via_call.h
@@ -46,6 +47,10 @@ void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
         o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
     }
 }
+
+/**********************************************************************************************************************/
+// source: bcore_plant_inexpandable.h
+#include "bcore_plant_inexpandable.h"
 
 /**********************************************************************************************************************/
 // source: bcore_plant_sample.h
@@ -173,7 +178,7 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 2460725962 ) );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 582787326 ) );
             BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_file_path_s_source );
             BCORE_REGISTER_FFUNC( bcore_file_get_sc, bcore_file_path_s_get_sc );
             BCORE_REGISTER_FFUNC( bcore_file_set_sc, bcore_file_path_s_set_sc );
