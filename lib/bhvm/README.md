@@ -22,7 +22,7 @@ All possible values are allowed.
 The **(n+1)-Holor** is an array with specified number of elements. 
 We call the number of elements: **Leading Dimension**.
 Each element is a **n-Holor** of **the same leading dimension**. The values of each element have no restriction.
-They are are all independent.
+They are are all independent of each other.
 
 ### Shape
 Above definition implies that a n-holor is a hierarchical composition

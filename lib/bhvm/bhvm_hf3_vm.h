@@ -133,6 +133,7 @@ group :op =
         stamp :zro       = { func ::: :run = { bhvm_hf3_s_zro(        &ah[ o->a ].h ); }; }; // sets operand zero
         stamp :determine = { func ::: :run = { bhvm_hf3_s_fit_v_size( &ah[ o->a ].h ); }; }; // makes operand determined
         stamp :vacate    = { func ::: :run = { bhvm_hf3_s_set_vacant( &ah[ o->a ].h ); }; }; // makes operand vacant
+        stamp :clear     = { func ::: :run = { bhvm_hf3_s_clear(      &ah[ o->a ].h ); }; }; // clears operand
 
         // randomizes a determined, rseed and index 'a' are used as seed
         signature : : csetup csetup_randomize( u2_t rseed, f3_t density, f3_t min, f3_t max );
@@ -213,6 +214,10 @@ group :op =
         stamp :relu       = { func ::: :run = { bhvm_hf3_op_ar1_relu_s_f      ( &ah[o->a].h, &ah[o->b].h ); }; };
         stamp :relu_leaky = { func ::: :run = { bhvm_hf3_op_ar1_relu_leaky_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
 
+        // Cast operators make the target weakly reference source data.
+        // Value data are always referenced; shape might be referenced.
+        stamp :cast_htp   = { func :::  :run = { bhvm_hf3_op_ar1_cast_htp_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+
         // dendride-pass
         group :dp =
         {
@@ -223,6 +228,8 @@ group :op =
             stamp :cb_add = { func :::: :run = { bhvm_hf3_op_ar1_dp_cb_add_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
             stamp :ca_sub = { func :::: :run = { bhvm_hf3_op_ar1_dp_ca_sub_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
             stamp :cb_sub = { func :::: :run = { bhvm_hf3_op_ar1_dp_cb_sub_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+            stamp :ca_cast_htp = { func ::::  :run = { bhvm_hf3_op_ar1_cast_htp_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+
         };
     };
 
@@ -252,13 +259,13 @@ group :op =
         };
 
         func :: :sig = { return "aby"; }; // default signature
-        stamp :add          = { func ::: :run = { bhvm_hf3_op_ar2_add_s_f(    &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a + b -> c
-        stamp :sub          = { func ::: :run = { bhvm_hf3_op_ar2_sub_s_f(    &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a - b -> c
-        stamp :hmul         = { func ::: :run = { bhvm_hf3_op_ar2_hmul_s_f(   &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a * b -> c
-        stamp :hdiv         = { func ::: :run = { bhvm_hf3_op_ar2_hdiv_s_f(   &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a / b -> c
-        stamp :bmul         = { func ::: :run = { bhvm_hf3_op_ar2_bmul_s_f(   &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a ** b -> c
-        stamp :mul_scl      = { func ::: :run = { bhvm_hf3_op_ar2_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a * s(b) -> c
-        stamp :scl_mul      = { func ::: :run = { bhvm_hf3_op_ar2_scl_mul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // s(a) * b -> c
+        stamp :add     = { func ::: :run = { bhvm_hf3_op_ar2_add_s_f(     &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a + b -> c
+        stamp :sub     = { func ::: :run = { bhvm_hf3_op_ar2_sub_s_f(     &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a - b -> c
+        stamp :hmul    = { func ::: :run = { bhvm_hf3_op_ar2_hmul_s_f(    &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a * b -> c
+        stamp :hdiv    = { func ::: :run = { bhvm_hf3_op_ar2_hdiv_s_f(    &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a / b -> c
+        stamp :bmul    = { func ::: :run = { bhvm_hf3_op_ar2_bmul_s_f(    &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a ** b -> c
+        stamp :mul_scl = { func ::: :run = { bhvm_hf3_op_ar2_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a * s(b) -> c
+        stamp :scl_mul = { func ::: :run = { bhvm_hf3_op_ar2_scl_mul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // s(a) * b -> c
 
         // dendride-pass
         group :dp =
@@ -473,6 +480,10 @@ void bhvm_hf3_vm_frame_s_proc_remove( bhvm_hf3_vm_frame_s* o, tp_t name );
 
 /// pushes operation to given procedure; creates procedure if not existing
 void bhvm_hf3_vm_frame_s_proc_push_op_d( bhvm_hf3_vm_frame_s* o, tp_t proc, bhvm_hf3_vm_op* op );
+void bhvm_hf3_vm_frame_s_proc_push_op_c( bhvm_hf3_vm_frame_s* o, tp_t proc, const bhvm_hf3_vm_op* op ); // copies op
+
+/// appends all operations of src_proc to proc; if src_proc does not exists, nothing happens
+void bhvm_hf3_vm_frame_s_proc_append_proc( bhvm_hf3_vm_frame_s* o, tp_t proc, tp_t src_proc );
 
 // Holors
 

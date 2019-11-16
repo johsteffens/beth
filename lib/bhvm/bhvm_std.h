@@ -21,5 +21,7 @@
 #include "bmath_std.h"
 #include "bhvm_signal.h"
 #include "bhvm_hf3.h"
+#include "bhvm_hf3_op.h"
+#include "bhvm_hf3_vm.h"
 
 #endif // BHVM_STD_H

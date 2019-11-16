@@ -111,6 +111,11 @@ group :ar1 =
     stamp :relu       = { func : :f = { bhvm_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_relu_s_fx,       r ); }; };
     stamp :relu_leaky = { func : :f = { bhvm_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_relu_leaky_s_fx, r ); }; };
 
+    // Cast operators make the target weakly reference source data.
+    // Value data are always referenced; shape might be referenced.
+    // A casts has no dendrite-pass.
+    stamp :cast_htp   = { func : :f = { bhvm_hf3_s_cast_htp( a, r ); }; };
+
     /// dendride-pass
     group :dp =
     {

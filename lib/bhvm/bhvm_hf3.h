@@ -92,7 +92,7 @@ stamp :adl = aware bcore_array { :s => []; };
 
 /**********************************************************************************************************************/
 
-static inline bhvm_hf3_s bmath_hf3_init_weak( sz_t* d_data, sz_t d_size, f3_t* v_data, sz_t v_size, bl_t htp )
+static inline bhvm_hf3_s bhvm_hf3_init_weak( sz_t* d_data, sz_t d_size, f3_t* v_data, sz_t v_size, bl_t htp )
 {
     bhvm_hf3_s o;
     bhvm_hf3_s_init( &o );
@@ -243,7 +243,23 @@ static inline bmath_vf3_s bhvm_hf3_s_get_weak_vec( const bhvm_hf3_s* o )
 /// holor -> transposed holor
 static inline bhvm_hf3_s bhvm_hf3_s_get_weak_htp( const bhvm_hf3_s* o )
 {
-    return bmath_hf3_init_weak( o->d_data, o->d_size, o->v_data, o->v_size, !o->htp );
+    return bhvm_hf3_init_weak( o->d_data, o->d_size, o->v_data, o->v_size, !o->htp );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// casts  (make the target weakly reference source data)
+
+/// cast to transposed holor
+static inline void bhvm_hf3_s_cast_htp( const bhvm_hf3_s* o, bhvm_hf3_s* r )
+{
+    bhvm_hf3_s_clear( r );
+    r->d_data = o->d_data;
+    r->d_size = o->d_size;
+    r->v_data = o->v_data;
+    r->v_size = o->v_size;
+    r->htp    = !o->htp;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

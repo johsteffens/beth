@@ -232,6 +232,15 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_op_ar1_relu_leaky_s )
     "func bhvm_hf3_op:aof;"
 "}";
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_op_ar1_cast_htp_s )
+"aware bhvm_hf3_op_ar1"
+"{"
+    "func ^:f;"
+    "func bhvm_hf3_op:get_arity;"
+    "func bhvm_hf3_op_ar1:of;"
+    "func bhvm_hf3_op:aof;"
+"}";
+
 BCORE_DEFINE_SPECT( bhvm_hf3_op, bhvm_hf3_op_ar1 )
 "{"
     "bcore_spect_header_s header;"
@@ -751,6 +760,24 @@ void bhvm_hf3_vm_op_ar0_vacate_s_set_arg( bhvm_hf3_vm_op_ar0_vacate_s* o, char i
     if( id == bhvm_hf3_vm_op_ar0_vacate_s_sig( o )[0] ) o->a = idx;
 }
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_op_ar0_clear_s )
+"aware bhvm_hf3_vm_op_ar0"
+"{"
+    "sz_t a = -1;"
+    "func bhvm_hf3_vm_op:get_arity;"
+    "func bhvm_hf3_vm_op:set_indices;"
+    "func bhvm_hf3_vm_op:get_indices;"
+    "func ^:csetup;"
+    "func bhvm_hf3_vm:run;"
+    "func bhvm_hf3_vm_op:set_arg;"
+    "func bhvm_hf3_vm_op:sig;"
+"}";
+
+void bhvm_hf3_vm_op_ar0_clear_s_set_arg( bhvm_hf3_vm_op_ar0_clear_s* o, char id, sz_t idx )
+{
+    if( id == bhvm_hf3_vm_op_ar0_clear_s_sig( o )[0] ) o->a = idx;
+}
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_op_ar0_randomize_s )
 "aware bhvm_hf3_vm_op_ar0"
 "{"
@@ -1128,6 +1155,26 @@ void bhvm_hf3_vm_op_ar1_relu_leaky_s_set_arg( bhvm_hf3_vm_op_ar1_relu_leaky_s* o
     if( id == bhvm_hf3_vm_op_ar1_relu_leaky_s_sig( o )[ 1 ] ) o->b = idx;
 }
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_op_ar1_cast_htp_s )
+"aware bhvm_hf3_vm_op_ar1"
+"{"
+    "sz_t a = -1;"
+    "sz_t b = -1;"
+    "func bhvm_hf3_vm_op:get_arity;"
+    "func bhvm_hf3_vm_op:set_indices;"
+    "func bhvm_hf3_vm_op:get_indices;"
+    "func ^:csetup;"
+    "func bhvm_hf3_vm:run;"
+    "func bhvm_hf3_vm_op:set_arg;"
+    "func bhvm_hf3_vm_op:sig;"
+"}";
+
+void bhvm_hf3_vm_op_ar1_cast_htp_s_set_arg( bhvm_hf3_vm_op_ar1_cast_htp_s* o, char id, sz_t idx )
+{
+    if( id == bhvm_hf3_vm_op_ar1_cast_htp_s_sig( o )[ 0 ] ) o->a = idx;
+    if( id == bhvm_hf3_vm_op_ar1_cast_htp_s_sig( o )[ 1 ] ) o->b = idx;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hf3_vm_op_ar1_dp
 
@@ -1249,6 +1296,26 @@ void bhvm_hf3_vm_op_ar1_dp_cb_sub_s_set_arg( bhvm_hf3_vm_op_ar1_dp_cb_sub_s* o, 
 {
     if( id == bhvm_hf3_vm_op_ar1_dp_cb_sub_s_sig( o )[ 0 ] ) o->a = idx;
     if( id == bhvm_hf3_vm_op_ar1_dp_cb_sub_s_sig( o )[ 1 ] ) o->b = idx;
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s )
+"aware bhvm_hf3_vm_op_ar1"
+"{"
+    "sz_t a = -1;"
+    "sz_t b = -1;"
+    "func bhvm_hf3_vm_op:get_arity;"
+    "func bhvm_hf3_vm_op:set_indices;"
+    "func bhvm_hf3_vm_op:get_indices;"
+    "func ^:csetup;"
+    "func bhvm_hf3_vm:run;"
+    "func bhvm_hf3_vm_op:sig;"
+    "func bhvm_hf3_vm_op:set_arg;"
+"}";
+
+void bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s_set_arg( bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s* o, char id, sz_t idx )
+{
+    if( id == bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s_sig( o )[ 0 ] ) o->a = idx;
+    if( id == bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s_sig( o )[ 1 ] ) o->b = idx;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1870,7 +1937,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3147514657 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3762857073 ) );
             BCORE_REGISTER_OBJECT( bhvm_hf3_s );
             BCORE_REGISTER_OBJECT( bhvm_hf3_adl_s );
             BCORE_REGISTER_TRAIT( bhvm_hf3, bcore_inst );
@@ -1974,6 +2041,11 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_hf3_op_ar1_of, bhvm_hf3_op_ar1_relu_leaky_s_of );
             BCORE_REGISTER_FFUNC( bhvm_hf3_op_aof, bhvm_hf3_op_ar1_relu_leaky_s_aof );
             BCORE_REGISTER_OBJECT( bhvm_hf3_op_ar1_relu_leaky_s );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_op_ar1_f, bhvm_hf3_op_ar1_cast_htp_s_f );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_op_get_arity, bhvm_hf3_op_ar1_cast_htp_s_get_arity );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_op_ar1_of, bhvm_hf3_op_ar1_cast_htp_s_of );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_op_aof, bhvm_hf3_op_ar1_cast_htp_s_aof );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_op_ar1_cast_htp_s );
             BCORE_REGISTER_SPECT( bhvm_hf3_op_ar1 );
             BCORE_REGISTER_FFUNC( bhvm_hf3_op_ar1_f, bhvm_hf3_op_ar1_dp_ca_cpy_s_f );
             BCORE_REGISTER_FFUNC( bhvm_hf3_op_sig, bhvm_hf3_op_ar1_dp_ca_cpy_s_sig );
@@ -2226,6 +2298,14 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_arg, bhvm_hf3_vm_op_ar0_vacate_s_set_arg );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_sig, bhvm_hf3_vm_op_ar0_vacate_s_sig );
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_op_ar0_vacate_s );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_arity, bhvm_hf3_vm_op_ar0_clear_s_get_arity );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_indices, bhvm_hf3_vm_op_ar0_clear_s_set_indices );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_indices, bhvm_hf3_vm_op_ar0_clear_s_get_indices );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_ar0_csetup, bhvm_hf3_vm_op_ar0_clear_s_csetup );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_run, bhvm_hf3_vm_op_ar0_clear_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_arg, bhvm_hf3_vm_op_ar0_clear_s_set_arg );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_sig, bhvm_hf3_vm_op_ar0_clear_s_sig );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_op_ar0_clear_s );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_arity, bhvm_hf3_vm_op_ar0_randomize_s_get_arity );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_indices, bhvm_hf3_vm_op_ar0_randomize_s_set_indices );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_indices, bhvm_hf3_vm_op_ar0_randomize_s_get_indices );
@@ -2373,6 +2453,14 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_arg, bhvm_hf3_vm_op_ar1_relu_leaky_s_set_arg );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_sig, bhvm_hf3_vm_op_ar1_relu_leaky_s_sig );
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_op_ar1_relu_leaky_s );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_arity, bhvm_hf3_vm_op_ar1_cast_htp_s_get_arity );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_indices, bhvm_hf3_vm_op_ar1_cast_htp_s_set_indices );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_indices, bhvm_hf3_vm_op_ar1_cast_htp_s_get_indices );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_ar1_csetup, bhvm_hf3_vm_op_ar1_cast_htp_s_csetup );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_run, bhvm_hf3_vm_op_ar1_cast_htp_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_arg, bhvm_hf3_vm_op_ar1_cast_htp_s_set_arg );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_sig, bhvm_hf3_vm_op_ar1_cast_htp_s_sig );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_op_ar1_cast_htp_s );
             BCORE_REGISTER_TRAIT( bhvm_hf3_vm_op_ar1, bhvm_hf3_vm_op );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_arity, bhvm_hf3_vm_op_ar1_dp_ca_cpy_s_get_arity );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_indices, bhvm_hf3_vm_op_ar1_dp_ca_cpy_s_set_indices );
@@ -2422,6 +2510,14 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_sig, bhvm_hf3_vm_op_ar1_dp_cb_sub_s_sig );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_arg, bhvm_hf3_vm_op_ar1_dp_cb_sub_s_set_arg );
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_op_ar1_dp_cb_sub_s );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_arity, bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s_get_arity );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_indices, bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s_set_indices );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_indices, bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s_get_indices );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_ar1_csetup, bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s_csetup );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_run, bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_sig, bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s_sig );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_arg, bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s_set_arg );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_op_ar1_dp_ca_cast_htp_s );
             BCORE_REGISTER_TRAIT( bhvm_hf3_vm_op_ar1_dp, bhvm_hf3_vm_op_ar1 );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_arity, bhvm_hf3_vm_op_ar2_add_s_get_arity );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_indices, bhvm_hf3_vm_op_ar2_add_s_set_indices );
