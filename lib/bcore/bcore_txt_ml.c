@@ -338,14 +338,20 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
     return obj;
 }
 
-/** Embedding of another file.
- *  Syntax: <#file> <interpreter> <file path> </>
- *  Example:
+/** Embedding (including) of another file.
+ *  Syntax: <#file> [<interpreter>] <file path> </>
+ *  File path can be a string object <st_s> "..." </> of a simple character string "..."
+ *
+ *  Example (Brief):
+ *    <#file> "../myfile.cfg" </>
+ *
+ *  Example (Elaborate):
  *    <#file>
  *       <bcore_bin_ml_interpreter_s> </>
- *       <st_s> "myfolders/myfile.myext" </>
+ *       <st_s> "myfolder/myfile.bin" </>
  *    </>
- *  Relative paths are considered relative to current file, if applicable,
+ *
+ *  Relative paths are considered relative to current file (if applicable),
  *  or current runtime directory otherwise.
  *  The file must contain the complete (sub-)object.
  */
@@ -354,7 +360,27 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s o
     BCORE_LIFE_INIT();
     sr_s src_l = BCORE_LIFE_X_PUSH( source );
 
-    sr_s interpreter_obj = interpret( o, sr_null(), src_l );
+    sr_s interpreter_obj = sr_null();
+
+    st_s* st_file = NULL;
+
+    if( bcore_source_r_parse_bl_fa( &src_l, " #=?'\"'" ) )
+    {
+        interpreter_obj = sr_awc( o );
+        st_file = st_s_create();
+        bcore_source_r_parse_fa( &src_l, "#string", st_file );
+    }
+    else if( bcore_source_r_parse_bl_fa( &src_l, " #=?'<st_s>'" ) )
+    {
+        interpreter_obj = sr_awc( o );
+        sr_s file_obj = interpret( o, sr_null(), src_l );
+        if( sr_s_type( &file_obj ) != TYPEOF_st_s ) bcore_source_r_parse_errf( &src_l, "String with file path expected." );
+        st_file = sr_fork( file_obj ).o;
+    }
+    else
+    {
+        interpreter_obj = interpret( o, sr_null(), src_l );
+    }
 
     if( !interpreter_obj.o )
     {
@@ -375,15 +401,11 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s o
         }
     }
 
-    sr_s file_obj = interpret( o, sr_null(), src_l );
-    if( sr_s_type( &file_obj ) != TYPEOF_st_s ) bcore_source_r_parse_errf( &src_l, "String with file path expected." );
-
     bcore_source_r_parse_fa( &src_l, " </>" );
 
-    st_s* file = sr_fork( file_obj ).o;
-    if( file->size == 0 )  bcore_source_r_parse_errf( &src_l, "Invalid file path." );
+    if( st_file->size == 0 )  bcore_source_r_parse_errf( &src_l, "Invalid file path." );
 
-    if( file->sc[ 0 ] != '/' ) // make path relative to current file path
+    if( st_file->sc[ 0 ] != '/' ) // make path relative to current file path
     {
         st_s* cur_file = st_s_create_sc( bcore_source_r_get_file( &src_l ) );
         if( cur_file->size > 0 )
@@ -392,16 +414,16 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s o
             if( idx < cur_file->size )
             {
                 cur_file->data[ idx ] = 0;
-                st_s* new_file = st_s_create_fa( "#<sc_t>/#<sc_t>", cur_file->sc, file->sc );
-                st_s_discard( file );
-                file = new_file;
+                st_s* new_file = st_s_create_fa( "#<sc_t>/#<sc_t>", cur_file->sc, st_file->sc );
+                st_s_discard( st_file );
+                st_file = new_file;
             }
         }
         st_s_discard( cur_file );
     }
 
     sr_s sub_source = sr_asd( bcore_source_chain_s_create() );
-    bcore_source_chain_s_push_d( sub_source.o, bcore_source_file_s_create_name( file->sc ) );
+    bcore_source_chain_s_push_d( sub_source.o, bcore_source_file_s_create_name( st_file->sc ) );
     bcore_source_chain_s_push_d( sub_source.o, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );
 
     sr_s sub_obj = bcore_interpret_x( interpreter_obj, sub_source );
@@ -416,7 +438,7 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s o
         obj = sub_obj;
     }
 
-    st_s_discard( file );
+    st_s_discard( st_file );
 
     BCORE_LIFE_RETURNV( sr_s, obj );
 }
