@@ -152,8 +152,8 @@ void bhvm_hf3_s_copy_typed( bhvm_hf3_s* o, tp_t type, vc_t src );
 /// copies d_data from src (does not change v_size or v_data)
 void bhvm_hf3_s_copy_d_data( bhvm_hf3_s* o, const bhvm_hf3_s* src );
 
-/// copy_shape == copy_d_data
-static inline void bhvm_hf3_s_copy_shape( bhvm_hf3_s* o, const bhvm_hf3_s* src ) { bhvm_hf3_s_copy_d_data( o, src ); }
+/// copy_shape == copy d_data and htp flag
+static inline void bhvm_hf3_s_copy_shape( bhvm_hf3_s* o, const bhvm_hf3_s* src ) { bhvm_hf3_s_copy_d_data( o, src ); o->htp = src->htp; }
 
 /// copies v_data from src (does not change d_size or d_data)
 void bhvm_hf3_s_copy_v_data( bhvm_hf3_s* o, const bhvm_hf3_s* src );
@@ -189,8 +189,8 @@ void bhvm_hf3_s_set_size_na( bhvm_hf3_s* o, sz_t d_size, ... );
 sz_t bhvm_hf3_s_d_product( const bhvm_hf3_s* o );  // always calculates d-product from d_data
 sz_t bhvm_hf3_s_volume(    const bhvm_hf3_s* o );  // returns v_size if > 0 otherwise d_product
 
-/// sets d_data to scalar (no change on v_data)
-void bhvm_hf3_s_set_d_scalar( bhvm_hf3_s* o );
+/// sets shape to scalar (no change on v_data)
+void bhvm_hf3_s_set_shape_scalar( bhvm_hf3_s* o );
 
 /// sets holor to scalar with given value or to vacant scalar
 void bhvm_hf3_s_set_scalar_pf3( bhvm_hf3_s* o, f3_t* v );
@@ -206,8 +206,9 @@ void bhvm_hf3_s_parse( bhvm_hf3_s* o, bcore_source* source );
 /**********************************************************************************************************************/
 /// status
 
-bl_t bhvm_hf3_s_d_equal( const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares d_data
-bl_t bhvm_hf3_s_v_equal( const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares v_data (independently of d_data)
+bl_t bhvm_hf3_s_d_equal(     const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares d_data
+bl_t bhvm_hf3_s_v_equal(     const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares v_data (independently of d_data)
+bl_t bhvm_hf3_s_shape_equal( const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares d_data and htp
 
 bl_t bhvm_hf3_s_is_equal(  const bhvm_hf3_s* o, const bhvm_hf3_s* src );
 bl_t bhvm_hf3_s_is_scalar( const bhvm_hf3_s* o );
@@ -297,7 +298,7 @@ void bhvm_hf3_s_push( bhvm_hf3_s* o, const bhvm_hf3_s* src );
  */
 
 /// sets d-data for catenation; does not change v-data; returns false if not possible (a,b have incorrect shape)
-bl_t bhvm_hf3_s_set_d_cat( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r );
+bl_t bhvm_hf3_s_set_shape_cat( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r );
 
 /// performs catenation of data; only checks merates
 void bhvm_hf3_s_cat( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf3_s* r );
@@ -416,8 +417,10 @@ void bhvm_hf3_s_fp_f3_ar2_madd( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bmath_
 /** bmul: Specific holor * holor multiplication for holors up to order 2
  *  These operations are mapped to corresponding matrix (M), vector (V), scalar (S) operations
  *  depending on given holor-order and transposition state.
+ *  Note: bmul only allows operand combinations that have canonical dendrite-passes.
+ *        For that reason scalar multiplication of matrices is excluded in this context.
  *
- *  A dendride pass can be expressed as bmul of different transposition:
+ *  A dendrite pass can be expressed as bmul of different transposition:
  *  A  ** B  = C: GA  = GC ** Bt and GB  = At ** GC
  *  A  ** Bt = C: GA  = GC ** B  and GBt = At ** GC
  *  At ** B  = C: GAt = GC ** Bt and GB  = A  ** GC
@@ -428,23 +431,27 @@ void bhvm_hf3_s_fp_f3_ar2_madd( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bmath_
  *  V  ** Vt -> M  is the vector-outer-product
  *  M  ** V  -> V  is a valid vector transformation
  *  Vt ** M  -> Vt is a valid vector transformation
+ *  V  ** S  -> V
+ *  S  ** vt -> Vt
  *
  *  Undefined compositions are ...
+ *  S  ** V
+ *  Vt ** S
  *  V  ** V
  *  Vt ** Vt
  *  V  ** M
  *  M  ** Vt
- *  M(t) ** S    (all transpositions)
- *  S    ** M(t) (all transpositions)
+ *  M(t) ** S(t) (scalar multiplication is handled in separate function)
+ *  S(t) ** M(t) (scalar multiplication is handled in separate function)
  */
 
 void bhvm_hf3_s_bmul(     const bhvm_hf3_s* o, const bhvm_hf3_s* b,                      bhvm_hf3_s* r ); // o * b     -> r
 void bhvm_hf3_s_bmul_add( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_hf3_s* c, bhvm_hf3_s* r ); // o * b + c -> r
 
-/** sets d-data on r for bmul operation; returns true in case if success
+/** sets shape on r for bmul operation; returns true in case if success
  *  Does not change v_data
  */
-bl_t bhvm_hf3_s_set_d_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o * b -> r
+bl_t bhvm_hf3_s_set_shape_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_hf3_s* r ); // o * b -> r
 
 /** Composite multiply-add function.
  *  a * b * c + d * e -> r

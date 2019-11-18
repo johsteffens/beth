@@ -62,7 +62,7 @@ group :ar0 =
     stamp :zro     = {                  func : : f = { bhvm_hf3_s_zro(       r ); }; };
     stamp :literal = { bhvm_hf3_s -> h; func : :of = { bhvm_hf3_s_cpy( o->h, r ); }; };
 
-    /// dendride-pass
+    /// dendrite-pass
     group :dp =
     {
         extending stump verbatim :_ = aware : {};
@@ -116,7 +116,7 @@ group :ar1 =
     // A casts has no dendrite-pass.
     stamp :cast_htp   = { func : :f = { bhvm_hf3_s_cast_htp( a, r ); }; };
 
-    /// dendride-pass
+    /// dendrite-pass
     group :dp =
     {
         extending stump verbatim :_ = aware : {};
@@ -160,7 +160,7 @@ group :ar2 =
     stamp :mul_scl = { func : :f = { bhvm_hf3_s_mul_scl( a, b->v_data, r ); }; }; // a * s(b) -> c
     stamp :scl_mul = { func : :f = { bhvm_hf3_s_mul_scl( b, a->v_data, r ); }; }; // s(a) * b -> c
 
-    /// dendride-pass
+    /// dendrite-pass
     group :dp =
     {
         extending stump verbatim :_ = aware : {};
@@ -219,7 +219,7 @@ group :ar3 =
     func  : : of = {  @f( a, b, c, r ); };
     func :: :aof = { @of( o, a[0], a[1], a[2], r ); };
 
-    /// dendride-pass
+    /// dendrite-pass
     group :dp =
     {
         extending stump verbatim :_ = aware : {};

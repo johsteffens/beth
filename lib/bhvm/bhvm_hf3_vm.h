@@ -158,7 +158,7 @@ group :op =
             func ::: :run = { u2_t rval = o->rseed + o->a; bhvm_hf3_s_set_random( &ah[ o->a ].h, o->density, o->min, o->max, &rval ); };
         };
 
-        // dendride-pass
+        // dendrite-pass
         group :dp =
         {
             func ::: :sig = { return "u"; };
@@ -218,7 +218,7 @@ group :op =
         // Value data are always referenced; shape might be referenced.
         stamp :cast_htp   = { func :::  :run = { bhvm_hf3_op_ar1_cast_htp_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
 
-        // dendride-pass
+        // dendrite-pass
         group :dp =
         {
             func ::: :sig = { return "vu"; };
@@ -267,7 +267,7 @@ group :op =
         stamp :mul_scl = { func ::: :run = { bhvm_hf3_op_ar2_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // a * s(b) -> c
         stamp :scl_mul = { func ::: :run = { bhvm_hf3_op_ar2_scl_mul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); }; }; // s(a) * b -> c
 
-        // dendride-pass
+        // dendrite-pass
         group :dp =
         {
             func ::: :sig = { return "yvu"; };
@@ -372,7 +372,7 @@ group :op =
 
         func :: :sig = { return "abcy"; };  // default signature
 
-        /// dendride-pass
+        /// dendrite-pass
         group :dp =
         {
             stamp :ca_hdiv =

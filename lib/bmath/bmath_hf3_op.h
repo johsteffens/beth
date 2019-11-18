@@ -60,7 +60,7 @@ group :ar0 =
     stamp :zro     = {                   func : : f = { bmath_hf3_s_zro(       r ); }; };
     stamp :literal = { bmath_hf3_s -> h; func : :of = { bmath_hf3_s_cpy( o->h, r ); }; };
 
-    /// dendride-pass
+    /// dendrite-pass
     group :dp =
     {
         extending stump verbatim :_ = aware : {};
@@ -109,7 +109,7 @@ group :ar1 =
     stamp :relu       = { func : :f = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_relu_s_fx,       r ); }; };
     stamp :relu_leaky = { func : :f = { bmath_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_relu_leaky_s_fx, r ); }; };
 
-    /// dendride-pass
+    /// dendrite-pass
     group :dp =
     {
         extending stump verbatim :_ = aware : {};
@@ -156,7 +156,7 @@ group :ar2 =
     stamp :mul_scl      = { func : :f = { bmath_hf3_s_mul_scl     ( a, b->v_data, r ); }; }; // a * s(b) -> c
     stamp :scl_mul      = { func : :f = { bmath_hf3_s_mul_scl     ( b, a->v_data, r ); }; }; // s(a) * b -> c
 
-    /// dendride-pass
+    /// dendrite-pass
     group :dp =
     {
         extending stump verbatim :_ = aware : {};
@@ -221,7 +221,7 @@ group :ar3 =
     func  : : of = {  @f( a, b, c, r ); };
     func :: :aof = { @of( o, a[0], a[1], a[2], r ); };
 
-    /// dendride-pass
+    /// dendrite-pass
     group :dp =
     {
         extending stump verbatim :_ = aware : {};

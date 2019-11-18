@@ -29,17 +29,23 @@
 #include "bcore_trait.h"
 #include "bcore_spect_via_call.h"
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_txt_ml_translator_s_init( bcore_txt_ml_translator_s* o )
 {
     o->_ = TYPEOF_bcore_txt_ml_translator_s;
     o->indent = 4;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_txt_ml_translator_s )
 BCORE_DEFINE_FUNCTION_COPY_INST( bcore_txt_ml_translator_s )
 BCORE_DEFINE_FUNCTION_CREATE(    bcore_txt_ml_translator_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bcore_txt_ml_translator_s )
 BCORE_DEFINE_FUNCTION_CLONE(     bcore_txt_ml_translator_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static sc_t name_of( tp_t type, st_s* buf )
 {
@@ -48,6 +54,8 @@ static sc_t name_of( tp_t type, st_s* buf )
     st_s_copy_typed( buf, TYPEOF_tp_t, &type );
     return buf->sc;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static tp_t type_of( const st_s* name )
 {
@@ -66,6 +74,8 @@ static tp_t type_of( const st_s* name )
     }
     return tp;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, sr_s sink, uz_t depth )
 {
@@ -141,20 +151,28 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
     bcore_life_s_discard( l );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr_s obj, sr_s snk )
 {
     translate( o, 0, obj, snk, 0 );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static bcore_self_s* translator_s_create_self( void )
 {
     bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_txt_ml_translator_s = bcore_translator { aware_t _; uz_t indent; }", sizeof( bcore_txt_ml_translator_s ) );
-    bcore_self_s_push_ns_func( self, ( fp_t )bcore_txt_ml_translator_s_init,             "bcore_fp_init", "init" );
-    bcore_self_s_push_ns_func( self, ( fp_t )bcore_txt_ml_translator_s_translate,        "bcore_fp_translate",        "translate"        );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_txt_ml_translator_s_init,      "bcore_fp_init",      "init"      );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_txt_ml_translator_s_translate, "bcore_fp_translate", "translate" );
     return self;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_txt_ml_x_to_sink( sr_s obj, bcore_sink* sink )
 {
@@ -216,6 +234,8 @@ void bcore_txt_ml_default_to_string( tp_t t, st_s* string    ) { bcore_txt_ml_x_
 /**********************************************************************************************************************/
 /// bcore_txt_ml_interpreter
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_txt_ml_interpreter_s_init( bcore_txt_ml_interpreter_s* o )
 {
@@ -338,6 +358,8 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
     return obj;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /** Embedding (including) of another file.
  *  Syntax: <#file> [<interpreter>] <file path> </>
  *  File path can be a string object <st_s> "..." </> of a simple character string "..."
@@ -443,11 +465,14 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s o
     BCORE_LIFE_RETURNV( sr_s, obj );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 
 sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, sr_s src )
 {
     return interpret( o, sr_null(), src );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* interpreter_s_create_self( void )
 {
@@ -457,7 +482,11 @@ static bcore_self_s* interpreter_s_create_self( void )
     return self;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 sr_s bcore_txt_ml_from_file( sc_t file )
 {
@@ -468,6 +497,8 @@ sr_s bcore_txt_ml_from_file( sc_t file )
     return ret;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 sr_s bcore_txt_ml_from_string( const st_s* string )
 {
     sr_s chain = sr_asd( bcore_source_chain_s_create() );
@@ -475,6 +506,8 @@ sr_s bcore_txt_ml_from_string( const st_s* string )
     sr_s ret = bcore_interpret_x( bcore_inst_t_create_sr( TYPEOF_bcore_txt_ml_interpreter_s ), chain );
     return ret;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 sr_s bcore_txt_ml_from_sc( sc_t sc )
 {
@@ -485,15 +518,21 @@ sr_s bcore_txt_ml_from_sc( sc_t sc )
     return ret;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_txt_ml_a_from_file( vd_t o, sc_t file )
 {
     bcore_txt_ml_t_from_file( *(aware_t*)o, o, file );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_txt_ml_r_from_file( sr_s* o, sc_t file )
 {
     bcore_txt_ml_t_from_file( sr_s_type( o ), o->o, file );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_txt_ml_t_from_file( tp_t t, vd_t o, sc_t file )
 {
@@ -502,7 +541,11 @@ void bcore_txt_ml_t_from_file( tp_t t, vd_t o, sc_t file )
     sr_down( sr );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_txt_ml_transfer_test( sr_s obj )
 {
@@ -527,6 +570,12 @@ void bcore_txt_ml_transfer_test( sr_s obj )
     bcore_life_s_discard( l );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 #include <time.h>
 
 static st_s* txt_ml_selftest( void )
@@ -547,8 +596,12 @@ static st_s* txt_ml_selftest( void )
     return log;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // signal
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_txt_ml_signal_handler( const bcore_signal_s* o )
 {
@@ -571,3 +624,6 @@ vd_t bcore_txt_ml_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+

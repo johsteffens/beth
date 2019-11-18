@@ -376,7 +376,7 @@ void bmath_hf3_s_fp_f3_ar2_madd( const bmath_hf3_s* a, const bmath_hf3_s* b, bma
  *  These 4 operations are mapped to corresponding matrix (M), vector (V), scalar (S) operations
  *  depending on given holor order.
  *
- *  A dendride pass can be expressed as bmul of different transposition:
+ *  A dendrite pass can be expressed as bmul of different transposition:
  *  A **  B = C: GA  = GC *^ B and GB  = A ^* GC
  *  A *^  B = C: GA  = GC ** B and GBt = A ^* GC
  *  A ^*  B = C: GAt = GC *^ B and GB  = A ** GC
