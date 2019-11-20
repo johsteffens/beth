@@ -70,6 +70,11 @@ void bhvm_hf3_vm_proc_s_push_op_d( bhvm_hf3_vm_proc_s* o, bhvm_hf3_vm_op* op )
 
 void bhvm_hf3_vm_frame_s_check_integrity( bhvm_hf3_vm_frame_s* o )
 {
+    for( sz_t i = 0; i < o->arr_holor.size; i++ )
+    {
+        bhvm_hf3_s_check_integrity( &o->arr_holor.data[ i ].h );
+    }
+
     for( sz_t i = 0; i < o->library.size; i++ )
     {
         bhvm_hf3_vm_proc_s* proc = o->library.data[ i ];

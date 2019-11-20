@@ -131,6 +131,7 @@ group :op =
         func :: :sig = { return "y"; }; // default signature
         stamp :nul       = { func ::: :run = {                                         }; }; // no operation
         stamp :zro       = { func ::: :run = { bhvm_hf3_s_zro(        &ah[ o->a ].h ); }; }; // sets operand zero
+        stamp :zro_nc    = { func ::: :run = { if( ah[ o->a ].h.v_space > 0 ) bhvm_hf3_s_zro( &ah[ o->a ].h ); }; }; // sets operand zero
         stamp :determine = { func ::: :run = { bhvm_hf3_s_fit_v_size( &ah[ o->a ].h ); }; }; // makes operand determined
         stamp :vacate    = { func ::: :run = { bhvm_hf3_s_set_vacant( &ah[ o->a ].h ); }; }; // makes operand vacant
         stamp :clear     = { func ::: :run = { bhvm_hf3_s_clear(      &ah[ o->a ].h ); }; }; // clears operand
@@ -228,7 +229,15 @@ group :op =
             stamp :cb_add = { func :::: :run = { bhvm_hf3_op_ar1_dp_cb_add_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
             stamp :ca_sub = { func :::: :run = { bhvm_hf3_op_ar1_dp_ca_sub_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
             stamp :cb_sub = { func :::: :run = { bhvm_hf3_op_ar1_dp_cb_sub_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
-            stamp :ca_cast_htp = { func ::::  :run = { bhvm_hf3_op_ar1_cast_htp_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+
+            /** Note: The dendrite-pass cast operator makes the the axon gradient reference the dendrite gradient (never vice versa).
+             *  This is important because the dendrite node may have multiple other independent down-links.
+             */
+            stamp :ca_cast_htp =
+            {
+                func  ::: :sig = { return bhvm_hf3_op_ar1_dp_ca_cast_htp_s_sig(); }; // signature would be "uv"
+                func :::: :run = {        bhvm_hf3_op_ar1_dp_ca_cast_htp_s_f( &ah[o->a].h, &ah[o->b].h ); };
+            };
 
         };
     };

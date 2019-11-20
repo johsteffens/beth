@@ -110,6 +110,9 @@ void bhvm_hf3_s_d_make_strong( bhvm_hf3_s* o );
 /// turns a weak v-array into a strong one (no effect if it is strong)
 void bhvm_hf3_s_v_make_strong( bhvm_hf3_s* o );
 
+/// make_strong on d-array and v-array (in case either is weak)
+void bhvm_hf3_s_make_strong( bhvm_hf3_s* o );
+
 /// sets number of values (initialized to zero)
 void bhvm_hf3_s_set_v_size( bhvm_hf3_s* o, sz_t size );
 
@@ -206,12 +209,22 @@ void bhvm_hf3_s_parse( bhvm_hf3_s* o, bcore_source* source );
 /**********************************************************************************************************************/
 /// status
 
-bl_t bhvm_hf3_s_d_equal(     const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares d_data
-bl_t bhvm_hf3_s_v_equal(     const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares v_data (independently of d_data)
-bl_t bhvm_hf3_s_shape_equal( const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares d_data and htp
+bl_t bhvm_hf3_s_d_equal(       const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares d_data
+bl_t bhvm_hf3_s_v_equal(       const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares v_data (independently of d_data)
+bl_t bhvm_hf3_s_shape_equal(   const bhvm_hf3_s* o, const bhvm_hf3_s* src ); // compares d_data and htp
+bl_t bhvm_hf3_s_is_equal(      const bhvm_hf3_s* o, const bhvm_hf3_s* src );
+bl_t bhvm_hf3_s_is_scalar(     const bhvm_hf3_s* o );
+bl_t bhvm_hf3_s_is_nan(        const bhvm_hf3_s* o ); // Holor is nan if at least one value-element is nan
 
-bl_t bhvm_hf3_s_is_equal(  const bhvm_hf3_s* o, const bhvm_hf3_s* src );
-bl_t bhvm_hf3_s_is_scalar( const bhvm_hf3_s* o );
+/// Overall consistency; all valid states return true;
+bl_t bhvm_hf3_s_is_consistent( const bhvm_hf3_s* o );
+
+/// Overall consistency; Invalid state produces an error.
+void bhvm_hf3_s_check_integrity( const bhvm_hf3_s* o );
+
+static inline bl_t bhvm_hf3_s_d_is_weak( const bhvm_hf3_s* o ) { return ( o->d_space == 0 ) && ( o->d_size > 0 ); }
+static inline bl_t bhvm_hf3_s_v_is_weak( const bhvm_hf3_s* o ) { return ( o->v_space == 0 ) && ( o->v_size > 0 ); }
+static inline bl_t bhvm_hf3_s_is_weak( const bhvm_hf3_s* o ) { return bhvm_hf3_s_d_is_weak( o ) || bhvm_hf3_s_v_is_weak( o ); }
 
 /**********************************************************************************************************************/
 /// weak conversion
@@ -443,6 +456,9 @@ void bhvm_hf3_s_fp_f3_ar2_madd( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bmath_
  *  M  ** Vt
  *  M(t) ** S(t) (scalar multiplication is handled in separate function)
  *  S(t) ** M(t) (scalar multiplication is handled in separate function)
+ *
+ *  hs_code, bhs_code, ths_code:
+ *  Configuration encoding used in bmul functions.
  */
 
 void bhvm_hf3_s_bmul(     const bhvm_hf3_s* o, const bhvm_hf3_s* b,                      bhvm_hf3_s* r ); // o * b     -> r
@@ -459,6 +475,19 @@ bl_t bhvm_hf3_s_set_shape_bmul( const bhvm_hf3_s* o, const bhvm_hf3_s* b, bhvm_h
  *  d can be NULL
  */
 void bhvm_hf3_s_bmul_add_cps( const bhvm_hf3_s* a, const bhvm_hf3_s* b, f3_t c, const bhvm_hf3_s* d, f3_t e, bhvm_hf3_s* r );
+
+/// hs_code retrieval
+s2_t bhvm_hf3_s_hs_code(  const bhvm_hf3_s* o                                           );
+s2_t bhvm_hf3_s_bhs_code( const bhvm_hf3_s* o, const bhvm_hf3_s* b                      );
+s2_t bhvm_hf3_s_ths_code( const bhvm_hf3_s* o, const bhvm_hf3_s* b, const bhvm_hf3_s* r );
+
+/// hs_code to descriptive string
+void bhvm_hf3_st_s_push_hs_code(  st_s* o, s2_t  hs_code );
+void bhvm_hf3_st_s_push_bhs_code( st_s* o, s2_t bhs_code );
+void bhvm_hf3_st_s_push_ths_code( st_s* o, s2_t ths_code );
+
+/// checks if bmul is defined for given bhs_code
+bl_t bhvm_hf3_s_bmul_bhs_code_allowed( s2_t bhs_code );
 
 #endif // TYPEOF_bhvm_hf3
 
