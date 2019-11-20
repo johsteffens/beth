@@ -339,14 +339,14 @@ group :op =
 
             stamp :ca_scl_mul =
             {
-                func  ::: :sig = { return bhvm_hf3_op_ar2_dp_ca_mul_scl_s_sig(); };
-                func :::: :run = {        bhvm_hf3_op_ar2_dp_ca_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+                func  ::: :sig = { return bhvm_hf3_op_ar2_dp_ca_scl_mul_s_sig(); };
+                func :::: :run = {        bhvm_hf3_op_ar2_dp_ca_scl_mul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
             };
 
             stamp :cb_scl_mul =
             {
-                func  ::: :sig = { return bhvm_hf3_op_ar2_dp_cb_mul_scl_s_sig(); };
-                func :::: :run = {        bhvm_hf3_op_ar2_dp_cb_mul_scl_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
+                func  ::: :sig = { return bhvm_hf3_op_ar2_dp_cb_scl_mul_s_sig(); };
+                func :::: :run = {        bhvm_hf3_op_ar2_dp_cb_scl_mul_s_f( &ah[o->a].h, &ah[o->b].h, &ah[o->c].h ); };
             };
 
         };
@@ -492,7 +492,8 @@ void bhvm_hf3_vm_frame_s_proc_push_op_d( bhvm_hf3_vm_frame_s* o, tp_t proc, bhvm
 void bhvm_hf3_vm_frame_s_proc_push_op_c( bhvm_hf3_vm_frame_s* o, tp_t proc, const bhvm_hf3_vm_op* op ); // copies op
 
 /// appends all operations of src_proc to proc; if src_proc does not exists, nothing happens
-void bhvm_hf3_vm_frame_s_proc_append_proc( bhvm_hf3_vm_frame_s* o, tp_t proc, tp_t src_proc );
+void bhvm_hf3_vm_frame_s_proc_append_proc(         bhvm_hf3_vm_frame_s* o, tp_t proc, tp_t src_proc );
+void bhvm_hf3_vm_frame_s_proc_append_proc_reverse( bhvm_hf3_vm_frame_s* o, tp_t proc, tp_t src_proc ); // appends in reverse order
 
 // Holors
 

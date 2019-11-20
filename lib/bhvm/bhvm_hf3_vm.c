@@ -275,6 +275,19 @@ void bhvm_hf3_vm_frame_s_proc_append_proc( bhvm_hf3_vm_frame_s* o, tp_t proc, tp
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bhvm_hf3_vm_frame_s_proc_append_proc_reverse( bhvm_hf3_vm_frame_s* o, tp_t proc, tp_t src_proc )
+{
+    ASSERT( proc != src_proc );
+    if( !bhvm_hf3_vm_frame_s_proc_exists( o, src_proc ) ) return;
+    bhvm_hf3_vm_proc_s* vm_src_proc = bhvm_hf3_vm_frame_s_proc_get( o, src_proc );
+    for( sz_t i = vm_src_proc->size - 1; i >= 0; i-- )
+    {
+        bhvm_hf3_vm_frame_s_proc_push_op_c( o, proc, vm_src_proc->data[ i ].op );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 // Holors
 
 // ---------------------------------------------------------------------------------------------------------------------
