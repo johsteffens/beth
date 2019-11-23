@@ -92,6 +92,7 @@ stamp :adl = aware bcore_array { :s => []; };
 
 /**********************************************************************************************************************/
 
+/// Initializes Holor weakly; no shutdown necessary
 static inline bhvm_hf3_s bhvm_hf3_init_weak( sz_t* d_data, sz_t d_size, f3_t* v_data, sz_t v_size, bl_t htp )
 {
     bhvm_hf3_s o;
@@ -100,6 +101,21 @@ static inline bhvm_hf3_s bhvm_hf3_init_weak( sz_t* d_data, sz_t d_size, f3_t* v_
     o.d_size = d_size;
     o.v_data = v_data;
     o.v_size = v_size;
+    o.htp = htp;
+    return o;
+}
+
+/// Initializes Holor by forking references; normal shutdown required
+static inline bhvm_hf3_s bhvm_hf3_init_fork( sz_t* d_data, sz_t d_size, sz_t d_space, f3_t* v_data, sz_t v_size, sz_t v_space, bl_t htp )
+{
+    bhvm_hf3_s o;
+    bhvm_hf3_s_init( &o );
+    o.d_data  = bcore_fork( d_data );
+    o.d_size  = d_size;
+    o.d_space = d_space;
+    o.v_data  = bcore_fork( v_data );
+    o.v_size  = v_size;
+    o.v_space = v_space;
     o.htp = htp;
     return o;
 }

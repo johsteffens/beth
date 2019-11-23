@@ -1003,6 +1003,46 @@ void bhvm_hf3_vm_op_ar1_exp_s_set_arg( bhvm_hf3_vm_op_ar1_exp_s* o, char id, sz_
     if( id == bhvm_hf3_vm_op_ar1_exp_s_sig( o )[ 1 ] ) o->b = idx;
 }
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_op_ar1_cpy_ay_s )
+"aware bhvm_hf3_vm_op_ar1"
+"{"
+    "sz_t a = -1;"
+    "sz_t b = -1;"
+    "func bhvm_hf3_vm_op:get_arity;"
+    "func bhvm_hf3_vm_op:set_indices;"
+    "func bhvm_hf3_vm_op:get_indices;"
+    "func ^:csetup;"
+    "func bhvm_hf3_vm_op:sig;"
+    "func bhvm_hf3_vm:run;"
+    "func bhvm_hf3_vm_op:set_arg;"
+"}";
+
+void bhvm_hf3_vm_op_ar1_cpy_ay_s_set_arg( bhvm_hf3_vm_op_ar1_cpy_ay_s* o, char id, sz_t idx )
+{
+    if( id == bhvm_hf3_vm_op_ar1_cpy_ay_s_sig( o )[ 0 ] ) o->a = idx;
+    if( id == bhvm_hf3_vm_op_ar1_cpy_ay_s_sig( o )[ 1 ] ) o->b = idx;
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_op_ar1_cpy_by_s )
+"aware bhvm_hf3_vm_op_ar1"
+"{"
+    "sz_t a = -1;"
+    "sz_t b = -1;"
+    "func bhvm_hf3_vm_op:get_arity;"
+    "func bhvm_hf3_vm_op:set_indices;"
+    "func bhvm_hf3_vm_op:get_indices;"
+    "func ^:csetup;"
+    "func bhvm_hf3_vm_op:sig;"
+    "func bhvm_hf3_vm:run;"
+    "func bhvm_hf3_vm_op:set_arg;"
+"}";
+
+void bhvm_hf3_vm_op_ar1_cpy_by_s_set_arg( bhvm_hf3_vm_op_ar1_cpy_by_s* o, char id, sz_t idx )
+{
+    if( id == bhvm_hf3_vm_op_ar1_cpy_by_s_sig( o )[ 0 ] ) o->a = idx;
+    if( id == bhvm_hf3_vm_op_ar1_cpy_by_s_sig( o )[ 1 ] ) o->b = idx;
+}
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_op_ar1_lgst_s )
 "aware bhvm_hf3_vm_op_ar1"
 "{"
@@ -1965,7 +2005,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2633967574 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3615291403 ) );
             BCORE_REGISTER_OBJECT( bhvm_hf3_s );
             BCORE_REGISTER_OBJECT( bhvm_hf3_adl_s );
             BCORE_REGISTER_TRAIT( bhvm_hf3, bcore_inst );
@@ -2423,6 +2463,22 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_arg, bhvm_hf3_vm_op_ar1_exp_s_set_arg );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_sig, bhvm_hf3_vm_op_ar1_exp_s_sig );
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_op_ar1_exp_s );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_arity, bhvm_hf3_vm_op_ar1_cpy_ay_s_get_arity );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_indices, bhvm_hf3_vm_op_ar1_cpy_ay_s_set_indices );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_indices, bhvm_hf3_vm_op_ar1_cpy_ay_s_get_indices );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_ar1_csetup, bhvm_hf3_vm_op_ar1_cpy_ay_s_csetup );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_sig, bhvm_hf3_vm_op_ar1_cpy_ay_s_sig );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_run, bhvm_hf3_vm_op_ar1_cpy_ay_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_arg, bhvm_hf3_vm_op_ar1_cpy_ay_s_set_arg );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_op_ar1_cpy_ay_s );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_arity, bhvm_hf3_vm_op_ar1_cpy_by_s_get_arity );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_indices, bhvm_hf3_vm_op_ar1_cpy_by_s_set_indices );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_indices, bhvm_hf3_vm_op_ar1_cpy_by_s_get_indices );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_ar1_csetup, bhvm_hf3_vm_op_ar1_cpy_by_s_csetup );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_sig, bhvm_hf3_vm_op_ar1_cpy_by_s_sig );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_run, bhvm_hf3_vm_op_ar1_cpy_by_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_arg, bhvm_hf3_vm_op_ar1_cpy_by_s_set_arg );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_op_ar1_cpy_by_s );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_arity, bhvm_hf3_vm_op_ar1_lgst_s_get_arity );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_indices, bhvm_hf3_vm_op_ar1_lgst_s_set_indices );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_get_indices, bhvm_hf3_vm_op_ar1_lgst_s_get_indices );

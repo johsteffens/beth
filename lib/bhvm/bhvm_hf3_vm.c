@@ -112,7 +112,14 @@ tp_t bhvm_hf3_vm_frame_s_entypeof( bhvm_hf3_vm_frame_s* o, sc_t name )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-sc_t bhvm_hf3_vm_frame_s_ifnameof( bhvm_hf3_vm_frame_s* o, tp_t type )
+sc_t bhvm_hf3_vm_frame_s_nameof( const bhvm_hf3_vm_frame_s* o, tp_t type )
+{
+    return bcore_hmap_name_s_get_sc( &o->map_name, type );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+sc_t bhvm_hf3_vm_frame_s_ifnameof( const bhvm_hf3_vm_frame_s* o, tp_t type )
 {
     sc_t name = bcore_hmap_name_s_get_sc( &o->map_name, type );
     return name ? name : "";
@@ -284,6 +291,56 @@ void bhvm_hf3_vm_frame_s_proc_append_proc_reverse( bhvm_hf3_vm_frame_s* o, tp_t 
     {
         bhvm_hf3_vm_frame_s_proc_push_op_c( o, proc, vm_src_proc->data[ i ].op );
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_hf3_vm_frame_s_proc_to_sink( const bhvm_hf3_vm_frame_s* o, tp_t proc, bcore_sink* sink )
+{
+    if( !bhvm_hf3_vm_frame_s_proc_exists( o, proc ) ) return;
+    bhvm_hf3_vm_proc_s* vm_proc = bhvm_hf3_vm_frame_s_proc_get( o, proc );
+
+    BLM_INIT();
+    bcore_arr_sz_s* arr_sz = BLM_CREATE( bcore_arr_sz_s );
+    st_s* st1 = BLM_CREATE( st_s );
+    st_s* st2 = BLM_CREATE( st_s );
+
+    bcore_sink_a_push_fa( sink, "PROC #<sc_t>:\n", bhvm_hf3_vm_frame_s_ifnameof( o, proc ) );
+
+    BFOR_EACH( i, vm_proc )
+    {
+        bhvm_hf3_vm_prop_s* prop = &vm_proc->data[ i ];
+        assert( prop->op );
+        const bhvm_hf3_vm_op* op = ( bhvm_hf3_vm_op* )prop->op;
+        bcore_arr_sz_s_set_size( arr_sz, bhvm_hf3_vm_op_a_get_arity( op ) + 1 );
+        bhvm_hf3_vm_op_a_get_indices( op, arr_sz->data );
+
+        st_s_copy_sc( st1, ifnameof( op->_ ) );
+        st_s_replace_sc_sc( st1, "bhvm_hf3_vm_op_", "" );
+        if( st1->size >= 2 && sc_t_equ( st1->sc + st1->size - 2, "_s" ) ) st_s_pop_n( st1, 2 );
+
+        bcore_sink_a_push_fa( sink, "#p32'.'{#<sc_t> } ", st1->sc );
+        BFOR_EACH( i, arr_sz )
+        {
+            st_s_clear( st2 );
+            sz_t index = arr_sz->data[ i ];
+            bhvm_hf3_vm_holor_s* holor = &o->arr_holor.data[ index ];
+            sc_t sc_name = bhvm_hf3_vm_frame_s_nameof( o, holor->name );
+            if( sc_name ) st_s_push_fa( st2, "(#<sc_t>)", sc_name );
+            st_s_push_fa( st2, "#<sz_t>", index );
+            bcore_sink_a_push_fa( sink, " #pl8' '{#<sc_t>}", st2->sc );
+        }
+        bcore_sink_a_push_fa( sink, "\n" );
+    }
+
+    BLM_DOWN();
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_hf3_vm_frame_s_proc_to_stdout( const bhvm_hf3_vm_frame_s* o, tp_t proc )
+{
+    bhvm_hf3_vm_frame_s_proc_to_sink( o, proc, BCORE_STDOUT );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

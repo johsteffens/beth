@@ -200,6 +200,10 @@ group :op =
         stamp :ceil       = { func ::: :run = { bhvm_hf3_op_ar1_ceil_s_f ( &ah[o->a].h, &ah[o->b].h ); }; };
         stamp :exp        = { func ::: :run = { bhvm_hf3_op_ar1_exp_s_f  ( &ah[o->a].h, &ah[o->b].h ); }; };
 
+        /// specific copy operators
+        stamp :cpy_ay     = { func :: :sig = { return "ay"; }; func ::: :run = { bhvm_hf3_op_ar1_cpy_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+        stamp :cpy_by     = { func :: :sig = { return "by"; }; func ::: :run = { bhvm_hf3_op_ar1_cpy_s_f( &ah[o->a].h, &ah[o->b].h ); }; };
+
         // logistic
         stamp :lgst       = { func ::: :run = { bhvm_hf3_op_ar1_lgst_s_f      ( &ah[o->a].h, &ah[o->b].h ); }; };
         stamp :lgst_hard  = { func ::: :run = { bhvm_hf3_op_ar1_lgst_hard_s_f ( &ah[o->a].h, &ah[o->b].h ); }; };
@@ -452,8 +456,11 @@ void bhvm_hf3_vm_frame_s_check_integrity( bhvm_hf3_vm_frame_s* o );
 /// enrolls name (if not existing) and retuns type
 tp_t bhvm_hf3_vm_frame_s_entypeof( bhvm_hf3_vm_frame_s* o, sc_t name );
 
+/// returns name of type or NULL if not existing
+sc_t bhvm_hf3_vm_frame_s_nameof( const bhvm_hf3_vm_frame_s* o, tp_t type );
+
 /// returns name of type or "" if not existing
-sc_t bhvm_hf3_vm_frame_s_ifnameof( bhvm_hf3_vm_frame_s* o, tp_t type );
+sc_t bhvm_hf3_vm_frame_s_ifnameof( const bhvm_hf3_vm_frame_s* o, tp_t type );
 
 /// runs procedure 'setup'
 void bhvm_hf3_vm_frame_s_setup( bhvm_hf3_vm_frame_s* o );
@@ -464,6 +471,7 @@ void bhvm_hf3_vm_frame_s_shelve( bhvm_hf3_vm_frame_s* o );
 /// clears all content
 void bhvm_hf3_vm_frame_s_clear( bhvm_hf3_vm_frame_s* o );
 
+// ---------------------------------------------------------------------------------------------------------------------
 // Procedures
 
 /// checks if procedure exists
@@ -495,6 +503,11 @@ void bhvm_hf3_vm_frame_s_proc_push_op_c( bhvm_hf3_vm_frame_s* o, tp_t proc, cons
 void bhvm_hf3_vm_frame_s_proc_append_proc(         bhvm_hf3_vm_frame_s* o, tp_t proc, tp_t src_proc );
 void bhvm_hf3_vm_frame_s_proc_append_proc_reverse( bhvm_hf3_vm_frame_s* o, tp_t proc, tp_t src_proc ); // appends in reverse order
 
+/// inspection / debugging
+void bhvm_hf3_vm_frame_s_proc_to_sink(   const bhvm_hf3_vm_frame_s* o, tp_t proc, bcore_sink* sink );
+void bhvm_hf3_vm_frame_s_proc_to_stdout( const bhvm_hf3_vm_frame_s* o, tp_t proc );
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Holors
 
 void bhvm_hf3_vm_frame_s_holors_set_size( bhvm_hf3_vm_frame_s* o, sz_t size );
@@ -511,7 +524,7 @@ void bhvm_hf3_vm_frame_s_alloc_holors_of_type( bhvm_hf3_vm_frame_s* o, tp_t type
 void bhvm_hf3_vm_frame_s_dealloc_holors_of_type( bhvm_hf3_vm_frame_s* o, tp_t type );
 
 // ---------------------------------------------------------------------------------------------------------------------
-// input/output holors
+// Holors for frame-input and frame-output
 
 void bhvm_hf3_vm_frame_s_input_push(  bhvm_hf3_vm_frame_s* o, sz_t index );
 void bhvm_hf3_vm_frame_s_output_push( bhvm_hf3_vm_frame_s* o, sz_t index );
