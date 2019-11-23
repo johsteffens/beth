@@ -65,7 +65,7 @@ u0_t bcore_source_default_inspect_u0( const bcore_source_s* p, bcore_source* o )
 
 void bcore_source_default_parse_errvf( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
 {
-    bcore_sink_a_push_fa( BCORE_STDERR, "\nParse Error: " );
+    bcore_sink_a_push_fa( BCORE_STDERR, "\nError: " );
     bcore_source_p_context_to_sink( p, o, BCORE_STDERR );
     st_s* msg = st_s_createvf( format, args );
     bcore_sink_a_push_fa( BCORE_STDERR, "#<sc_t>\n", msg->sc );
