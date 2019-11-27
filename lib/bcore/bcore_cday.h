@@ -47,8 +47,8 @@
 PLANT_GROUP( bcore_cday, bcore_inst )
 #ifdef PLANT_SECTION
 
-stamp :ymd  = aware : { s2_t y; s2_t m; s2_t d; }; // year - month - day
-stamp :time = aware : { s2_t cday; s2_t ms; }; // cday, milliseconds from 0:00 into the day
+stamp :ymd = aware : { s2_t y; s2_t m; s2_t d; }; // year - month - day
+stamp :utc = aware : { s2_t cday; s2_t ms; };     // utc-time stamp: cday, milliseconds from 0:00 into the day
 
 #endif // PLANT_SECTION
 #endif // TYPEOF_bcore_cday
@@ -62,22 +62,14 @@ void bcore_cday_ymd_s_from_cday( bcore_cday_ymd_s* o, s2_t cday );
 /// conversion from cday
 bcore_cday_ymd_s* bcore_cday_ymd_s_create_from_cday( s2_t cday );
 
-/// copies from string notation in the format "YYYY-MM-DD"
-void bcore_cday_ymd_s_from_sc( bcore_cday_ymd_s* o, sc_t sc );
-
-/// copies from string notation in the format "YYYY-MM-DD"
-void bcore_cday_ymd_s_from_string( bcore_cday_ymd_s* o, const st_s* st );
-
 /// copies from text source in the format "YYYY-MM-DD"
 void bcore_cday_ymd_s_from_source( bcore_cday_ymd_s* o, bcore_source* source );
+void bcore_cday_ymd_s_from_string( bcore_cday_ymd_s* o, const st_s* st );
+void bcore_cday_ymd_s_from_sc(     bcore_cday_ymd_s* o, sc_t sc );
 
 /// pushes ymd to sink in the format "YYYY-MM-DD"
-void bcore_cday_ymd_s_to_sink( const bcore_cday_ymd_s* o, bcore_sink* sink );
-
-/// copies ymd to string in the format "YYYY-MM-DD"
-void bcore_cday_ymd_s_to_string( const bcore_cday_ymd_s* o, st_s* st );
-
-/// pushes ymd to string in the format "YYYY-MM-DD"
+void bcore_cday_ymd_s_to_sink(        const bcore_cday_ymd_s* o, bcore_sink* sink );
+void bcore_cday_ymd_s_to_string(      const bcore_cday_ymd_s* o, st_s* st );
 void bcore_cday_ymd_s_push_to_string( const bcore_cday_ymd_s* o, st_s* st );
 
 /// pushes ymd to sink in the format "YYYY-MM-DD"
@@ -105,37 +97,42 @@ s2_t bcore_cday_to_wday( s2_t cday );
 sc_t bcore_wday_to_sc( s2_t wday );
 
 /// converts cday to format "YYYY-MM-DD"
-void bcore_cday_to_string( s2_t cday, st_s* st );
-
-/// converts cday to format "YYYY-MM-DD"
-void bcore_cday_to_sink( s2_t cday, bcore_sink* sink );
-
-/// converts cday to format "YYYY-MM-DD"
+void bcore_cday_to_sink(        s2_t cday, bcore_sink* sink );
+void bcore_cday_to_string(      s2_t cday, st_s* st );
 void bcore_cday_push_to_string( s2_t cday, st_s* st );
 
 /// pushes cday to text-sink with format "YYYY-MM-DD"
 void bcore_cday_to_sink( s2_t cday, bcore_sink* sink );
 
 /// computes cday from format "YYYY-MM-DD"
-s2_t bcore_cday_from_string( const st_s* st );
-
-/// computes cday from source text format "YYYY-MM-DD"
 s2_t bcore_cday_from_source( bcore_source* source );
-
-/// computes cday from format "YYYY-MM-DD"
+s2_t bcore_cday_from_string( const st_s* st );
 s2_t bcore_cday_from_sc( sc_t sc );
 
 // ---------------------------------------------------------------------------------------------------------------------
 // time
 
 /// obtains the current UTC time from the system
-void bcore_cday_time_s_from_system( bcore_cday_time_s* o );
+void bcore_cday_utc_s_from_system( bcore_cday_utc_s* o );
 
 /// adjusts values in case ms exceeds the range of the specified cday
-void bcore_cday_time_s_normalize( bcore_cday_time_s* o );
+void bcore_cday_utc_s_normalize( bcore_cday_utc_s* o );
 
 /// converts time into ISO 8601 time format YYYY-MM-DDThh:mm:ssZ
-void bcore_cday_time_s_to_string( bcore_cday_time_s* o, st_s* st );
+void bcore_cday_utc_s_to_sink(        const bcore_cday_utc_s* o, bcore_sink* sink );
+void bcore_cday_utc_s_to_string(      const bcore_cday_utc_s* o, st_s* st );
+void bcore_cday_utc_s_push_to_string( const bcore_cday_utc_s* o, st_s* st );
+
+/// converts time from ISO 8601 time format YYYY-MM-DDThh:mm:ssZ
+void bcore_cday_utc_s_from_source( bcore_cday_utc_s* o, bcore_source* source );
+void bcore_cday_utc_s_from_string( bcore_cday_utc_s* o, const st_s* st );
+void bcore_cday_utc_s_from_sc(     bcore_cday_utc_s* o, sc_t sc );
+
+/// returns time in ms from cday-epoch (1900-03-01T00:00:00Z)
+s3_t bcore_cday_utc_s_to_ms( const bcore_cday_utc_s* o );
+
+/// returns the time difference (o-b) in milliseconds
+s3_t bcore_cday_utc_s_diff_ms( const bcore_cday_utc_s* o, const bcore_cday_utc_s* b );
 
 // ---------------------------------------------------------------------------------------------------------------------
 

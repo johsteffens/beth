@@ -319,7 +319,7 @@ s2_t bcore_cday_from_source( bcore_source* source )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_time_s_from_system( bcore_cday_time_s* o )
+void bcore_cday_utc_s_from_system( bcore_cday_utc_s* o )
 {
     u3_t stime = ( u3_t )time( NULL );
     s2_t epoch_days = stime / ( 24 * 3600 );
@@ -330,7 +330,7 @@ void bcore_cday_time_s_from_system( bcore_cday_time_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_time_s_normalize( bcore_cday_time_s* o )
+void bcore_cday_utc_s_normalize( bcore_cday_utc_s* o )
 {
     s2_t range = 24 * 3600 * 1000;
     while( o->ms <      0 ) { o->cday--; o->ms += range; }
@@ -339,7 +339,7 @@ void bcore_cday_time_s_normalize( bcore_cday_time_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_time_s_to_sink( bcore_cday_time_s* o, bcore_sink* sink )
+void bcore_cday_utc_s_to_sink( const bcore_cday_utc_s* o, bcore_sink* sink )
 {
     bcore_cday_to_sink( o->cday, sink );
     s2_t secs = o->ms / 1000;
@@ -353,9 +353,59 @@ void bcore_cday_time_s_to_sink( bcore_cday_time_s* o, bcore_sink* sink )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_time_s_push_to_string( bcore_cday_time_s* o, st_s* st )
+void bcore_cday_utc_s_push_to_string( const bcore_cday_utc_s* o, st_s* st )
 {
-    bcore_cday_time_s_to_sink( o, ( bcore_sink* )st );
+    bcore_cday_utc_s_to_sink( o, ( bcore_sink* )st );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_cday_utc_s_to_string( const bcore_cday_utc_s* o, st_s* st )
+{
+    st_s_clear( st );
+    bcore_cday_utc_s_push_to_string( o, st );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_cday_utc_s_from_source( bcore_cday_utc_s* o, bcore_source* source )
+{
+    o->cday = bcore_cday_from_source( source );
+    s2_t hh = 0;
+    s2_t mm = 0;
+    s2_t ss = 0;
+    bcore_source_a_parse_fa( source, "T#<s2_t*>:#<s2_t*>:#<s2_t*>Z", &hh, &mm, &ss );
+    o->ms = ( hh * 3600 + mm * 60 + ss ) * 1000;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_cday_utc_s_from_sc( bcore_cday_utc_s* o, sc_t sc )
+{
+    st_s st;
+    st_s_init_weak_sc( &st, sc );
+    bcore_cday_utc_s_from_source( o, ( bcore_source* )&st );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_cday_utc_s_from_string( bcore_cday_utc_s* o, const st_s* string )
+{
+    bcore_cday_utc_s_from_sc( o, string->sc );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s3_t bcore_cday_utc_s_to_ms( const bcore_cday_utc_s* o )
+{
+    return ( s3_t )o->cday * ( 24 * 3600 * 1000 ) + o->ms;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s3_t bcore_cday_utc_s_diff_ms( const bcore_cday_utc_s* o, const bcore_cday_utc_s* b )
+{
+    return bcore_cday_utc_s_to_ms( o ) - bcore_cday_utc_s_to_ms( b );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -403,10 +453,13 @@ static void selftest( void )
     ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "2027-01-01" ) ) == 53 );
     ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "2027-01-09" ) ) == 1 );
 
-//    bcore_cday_time_s* time = BLM_CREATE( bcore_cday_time_s );
-//    bcore_cday_time_s_from_system( time );
-//    bcore_cday_time_s_to_sink( time, BCORE_STDOUT );
-//    bcore_sink_a_push_fa( BCORE_STDOUT, "\n" );
+    bcore_cday_utc_s* utc1 = BLM_CREATE( bcore_cday_utc_s );
+    bcore_cday_utc_s* utc2 = BLM_CREATE( bcore_cday_utc_s );
+    bcore_cday_utc_s_from_system( utc1 );
+    bcore_cday_utc_s_to_string( utc1, string );
+    bcore_cday_utc_s_from_string( utc2, string );
+    ASSERT( bcore_cday_utc_s_diff_ms( utc2, utc1 ) == 0 );
+    //bcore_sink_a_push_fa( BCORE_STDOUT, "#<sc_t>\n", string->sc );
 
     BLM_DOWN();
 }
