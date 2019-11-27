@@ -61,6 +61,7 @@
 #include "bcore_spect_via_call.h"
 #include "bcore_main.h"
 #include "bcore_hmap_name.h"
+#include "bcore_cday.h"
 
 BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
 
@@ -147,6 +148,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_spect_via_call_signal_handler,
         bcore_main_signal_handler,
         bcore_hmap_name_signal_handler,
+        bcore_cday_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );

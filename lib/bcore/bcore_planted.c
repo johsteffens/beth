@@ -10,6 +10,7 @@
  *    bcore_spect_via_call.h
  *    bcore_main.h
  *    bcore_hmap_name.h
+ *    bcore_cday.h
  *
  */
 
@@ -170,6 +171,28 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_hmap_name_s )
 "}";
 
 /**********************************************************************************************************************/
+// source: bcore_cday.h
+#include "bcore_cday.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_cday
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_cday_ymd_s )
+"aware bcore_cday"
+"{"
+    "s2_t y;"
+    "s2_t m;"
+    "s2_t d;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_cday_time_s )
+"aware bcore_cday"
+"{"
+    "s2_t cday;"
+    "s2_t ms;"
+"}";
+
+/**********************************************************************************************************************/
 
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
 {
@@ -178,7 +201,7 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 582787326 ) );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 363988054 ) );
             BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_file_path_s_source );
             BCORE_REGISTER_FFUNC( bcore_file_get_sc, bcore_file_path_s_get_sc );
             BCORE_REGISTER_FFUNC( bcore_file_set_sc, bcore_file_path_s_set_sc );
@@ -220,6 +243,9 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_SPECT( bcore_main );
             BCORE_REGISTER_OBJECT( bcore_hmap_name_s );
             BCORE_REGISTER_TRAIT( bcore_hmap_name, bcore_inst );
+            BCORE_REGISTER_OBJECT( bcore_cday_ymd_s );
+            BCORE_REGISTER_OBJECT( bcore_cday_time_s );
+            BCORE_REGISTER_TRAIT( bcore_cday, bcore_inst );
         }
         break;
         default: break;

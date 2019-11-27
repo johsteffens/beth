@@ -10,6 +10,7 @@
  *    bcore_spect_via_call.h
  *    bcore_main.h
  *    bcore_hmap_name.h
+ *    bcore_cday.h
  *
  */
 
@@ -257,6 +258,29 @@
   BCORE_FORWARD_OBJECT( bcore_hmap_name ); \
   BCORE_FORWARD_OBJECT( bcore_hmap_name_s ); \
   BETH_EXPAND_ITEM_bcore_hmap_name_s
+
+/**********************************************************************************************************************/
+// source: bcore_cday.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_cday
+
+#define TYPEOF_bcore_cday 383355802
+#define TYPEOF_bcore_cday_s 2925571844
+#define TYPEOF_bcore_cday_ymd_s 3333433405
+#define BETH_EXPAND_ITEM_bcore_cday_ymd_s \
+  BCORE_DECLARE_OBJECT( bcore_cday_ymd_s ) \
+    {aware_t _;s2_t y;s2_t m;s2_t d;};
+#define TYPEOF_bcore_cday_time_s 2805682608
+#define BETH_EXPAND_ITEM_bcore_cday_time_s \
+  BCORE_DECLARE_OBJECT( bcore_cday_time_s ) \
+    {aware_t _;s2_t cday;s2_t ms;};
+#define BETH_EXPAND_GROUP_bcore_cday \
+  BCORE_FORWARD_OBJECT( bcore_cday ); \
+  BCORE_FORWARD_OBJECT( bcore_cday_ymd_s ); \
+  BCORE_FORWARD_OBJECT( bcore_cday_time_s ); \
+  BETH_EXPAND_ITEM_bcore_cday_ymd_s \
+  BETH_EXPAND_ITEM_bcore_cday_time_s
 
 /**********************************************************************************************************************/
 
