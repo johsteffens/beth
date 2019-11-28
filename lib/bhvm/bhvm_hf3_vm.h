@@ -68,8 +68,6 @@ stamp :proc = aware bcore_array
 {
     tp_t name;
     :prop_s [];
-    bcore_arr_sz_s in;  // indices for input holors (if any)
-    bcore_arr_sz_s out; // indices for output holors (if any)
     func bhvm_hf3_vm : run =
     {
         for( sz_t i = 0; i < o->size; i++ ) :prop_s_run( &o->data[ i ], ah );
@@ -85,7 +83,7 @@ stamp :library = aware bcore_array
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Operators
+// Microcode Operators
 
 group :op =
 {
@@ -406,19 +404,144 @@ group :op =
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Microcode
+
+feature 'ap' void mrun( const, :holor_s* ah ); // microcode operation
+
+signature void clear( mutable );
+
+// microcode operator with preset perspective
+stamp :mop = aware :
+{
+    aware :op => op;
+    private :s* p; // bhvm_hf3_vm perspective of op
+
+    func bcore_inst_call : copy_x  = { o->p = o->op ? (:s*):s_get_aware( o->op ) : NULL; };
+    func bcore_via_call  : mutated = { @copy_x( o ); };
+    func bhvm_hf3_vm     : mrun = { assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->op, ah ); };
+};
+
+signature void op_push_d( mutable,       :op* op );
+signature void op_push_c( mutable, const :op* op );
+
+// microcode
+stamp :mcode = aware bcore_array
+{
+    tp_t name;
+    :mop_s [];
+    func bhvm_hf3_vm : mrun = { BFOR_EACH( i, o ) :mop_s_mrun( &o->data[ i ], ah ); };
+
+    func : :op_push_d =
+    {
+        assert( op );
+        :mop_s* mop = @push( o );
+        mop->op = op;
+        mop->p = (:s*):s_get_aware( mop->op );
+        assert( mop->p );
+    };
+
+    func : :op_push_c =
+    {
+        @op_push_d( o, :op_a_clone( op ) );
+    };
+};
+
+// microcode array
+stamp :arr_mcode = aware bcore_array { :mcode_s => []; };
+
+// mcode library functions
+signature      bl_t mcode_exists      (   const, tp_t name );
+signature :mcode_s* mcode_get         ( mutable, tp_t name ); // retrieves mcode if existing or returns NULL
+signature :mcode_s* mcode_get_or_new  ( mutable, tp_t name ); // creates mcode if not yet existing otherwise same as get
+signature :mcode_s* mcode_reset       ( mutable, tp_t name ); // creates mcode if not yet existing or sets its size to zero
+signature      void mcode_op_push_d   ( mutable, tp_t name,       :op* op );
+signature      void mcode_op_push_c   ( mutable, tp_t name, const :op* op );
+signature      void mcode_push        ( mutable, tp_t name, tp_t src_name ); // appends mcode of src_name
+signature      void mcode_push_reverse( mutable, tp_t name, tp_t src_name ); // appends mcode of src_name in reverse order
+signature      void mcode_remove      ( mutable, tp_t name );                // removes mcode if existing
+signature      void mcode_mrun        ( mutable, tp_t name, :holor_s* ah );
+
+// microcode library
+stamp :lib_mcode = aware :
+{
+    :arr_mcode_s arr;
+    bcore_hmap_tpuz_s map; // name-index map
+
+    func : :clear = { :arr_mcode_s_clear( &o->arr ); bcore_hmap_tpuz_s_clear( &o->map ); };
+
+    func : :mcode_exists = { return bcore_hmap_tpuz_s_exists( &o->map, name ); };
+
+    func : :mcode_get =
+    {
+        uz_t* pidx = bcore_hmap_tpuz_s_get( &o->map, name );
+        if( !pidx ) return NULL;
+        return o->arr.data[ *pidx ];
+    };
+
+    func : :mcode_get_or_new =
+    {
+        if( bcore_hmap_tpuz_s_exists( &o->map, name ) ) return @mcode_get( o, name );
+        bcore_hmap_tpuz_s_set( &o->map, name, o->arr.size );
+        :mcode_s* mcode = :arr_mcode_s_push( &o->arr );
+        mcode->name = name;
+        return mcode;
+    };
+
+    func : :mcode_reset =
+    {
+        :mcode_s* mcode = @mcode_get_or_new( o, name );
+        :mcode_s_clear( mcode );
+        return mcode;
+    };
+
+    func : :mcode_op_push_c = { :mcode_s_op_push_c( @mcode_get_or_new( o, name ), op ); };
+    func : :mcode_op_push_d = { :mcode_s_op_push_d( @mcode_get_or_new( o, name ), op ); };
+
+    func : :mcode_push =
+    {
+        :mcode_s* src = @mcode_get( o, src_name );
+        if( !src ) return;
+        :mcode_s* dst = @mcode_get_or_new( o, name );
+        BFOR_EACH( i, src ) :mcode_s_op_push_c( dst, src->data[ i ].op );
+    };
+
+    func : :mcode_push_reverse =
+    {
+        :mcode_s* src = @mcode_get( o, src_name );
+        if( !src ) return;
+        :mcode_s* dst = @mcode_get_or_new( o, name );
+        for( sz_t i = src->size - 1; i >= 0; i-- ) :mcode_s_op_push_c( dst, src->data[ i ].op );
+    };
+
+    func : :mcode_remove =
+    {
+        uz_t* pidx = bcore_hmap_tpuz_s_get( &o->map, name );
+        if( !pidx ) return;
+        sz_t idx = *pidx;
+        :mcode_s_discard( o->arr.data[ idx ] );
+        o->arr.size--;
+        o->arr.data[ idx ] = o->arr.data[ o->arr.size ];
+        o->arr.data[ o->arr.size ] = NULL;
+        if( idx < o->arr.size ) bcore_hmap_tpuz_s_set( &o->map, o->arr.data[ idx ]->name, idx );
+    };
+
+    func : :mcode_mrun = { :mcode_s* mc = @mcode_get( o, name ); if( mc ) :mcode_s_mrun( mc, ah ); };
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Frame
 
 signature void setup( mutable );
+signature void mcode_run( mutable, tp_t name );
 
 stamp :frame = aware :
 {
     :arr_holor_s arr_holor; // array of holors
-    :library_s   library;   // array of principal functions
-
-    tp_t proc_setup  = 0;
-    tp_t proc_shelve = 0;
-
-    bcore_hmap_tpuz_s map_proc;  // associates a name with a procedure
+    :lib_mcode_s lib_mcode;
     bcore_hmap_name_s map_name;  // map of names used
+
+    tp_t mcode_setup  = 0;
+    tp_t mcode_shelve = 0;
 
     /** Optional interface for the frame:
      *  input, output index-reference corresponding holors
@@ -430,6 +553,18 @@ stamp :frame = aware :
     func :              : setup;
     func bcore_via_call : mutated = { :frame_s_setup( o ); };
     func bcore_via_call : shelve;
+
+    /// mcode library functions
+    func : :mcode_exists       = { return :lib_mcode_s_mcode_exists( &o->lib_mcode, name ); };
+    func : :mcode_get          = { return :lib_mcode_s_mcode_get(    &o->lib_mcode, name ); };
+    func : :mcode_get_or_new   = { return :lib_mcode_s_mcode_get_or_new( &o->lib_mcode, name ); };
+    func : :mcode_reset        = { return :lib_mcode_s_mcode_reset(  &o->lib_mcode, name ); };
+    func : :mcode_op_push_d    = { :lib_mcode_s_mcode_op_push_d(     &o->lib_mcode, name, op ); };
+    func : :mcode_op_push_c    = { :lib_mcode_s_mcode_op_push_c(     &o->lib_mcode, name, op ); };
+    func : :mcode_push         = { :lib_mcode_s_mcode_push(          &o->lib_mcode, name, src_name ); };
+    func : :mcode_push_reverse = { :lib_mcode_s_mcode_push_reverse(  &o->lib_mcode, name, src_name ); };
+    func : :mcode_remove       = { :lib_mcode_s_mcode_remove(        &o->lib_mcode, name ); };
+    func : :mcode_run          = { :lib_mcode_s_mcode_mrun(          &o->lib_mcode, name, o->arr_holor.data ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -472,40 +607,11 @@ void bhvm_hf3_vm_frame_s_shelve( bhvm_hf3_vm_frame_s* o );
 void bhvm_hf3_vm_frame_s_clear( bhvm_hf3_vm_frame_s* o );
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Procedures
-
-/// checks if procedure exists
-bl_t bhvm_hf3_vm_frame_s_proc_exists( const bhvm_hf3_vm_frame_s* o, tp_t name );
-
-/// adds a new procedure if not already existing
-bhvm_hf3_vm_proc_s* bhvm_hf3_vm_frame_s_proc_push( bhvm_hf3_vm_frame_s* o, tp_t name );
-
-/// adds a new procedure if not already existing; if it exists it is set to size 0
-bhvm_hf3_vm_proc_s* bhvm_hf3_vm_frame_s_proc_reset( bhvm_hf3_vm_frame_s* o, tp_t name );
-
-/// retrieves a procedure; returns NULL if not existing
-bhvm_hf3_vm_proc_s* bhvm_hf3_vm_frame_s_proc_get( const bhvm_hf3_vm_frame_s* o, tp_t name );
-
-/// retrieves a procedure or adds it if not existing
-bhvm_hf3_vm_proc_s* bhvm_hf3_vm_frame_s_proc_get_or_push( bhvm_hf3_vm_frame_s* o, tp_t name );
-
-/// runs a procedure
-void bhvm_hf3_vm_frame_s_proc_run( bhvm_hf3_vm_frame_s* o, tp_t name );
-
-/// removes a procedure if existing
-void bhvm_hf3_vm_frame_s_proc_remove( bhvm_hf3_vm_frame_s* o, tp_t name );
-
-/// pushes operation to given procedure; creates procedure if not existing
-void bhvm_hf3_vm_frame_s_proc_push_op_d( bhvm_hf3_vm_frame_s* o, tp_t proc, bhvm_hf3_vm_op* op );
-void bhvm_hf3_vm_frame_s_proc_push_op_c( bhvm_hf3_vm_frame_s* o, tp_t proc, const bhvm_hf3_vm_op* op ); // copies op
-
-/// appends all operations of src_proc to proc; if src_proc does not exists, nothing happens
-void bhvm_hf3_vm_frame_s_proc_append_proc(         bhvm_hf3_vm_frame_s* o, tp_t proc, tp_t src_proc );
-void bhvm_hf3_vm_frame_s_proc_append_proc_reverse( bhvm_hf3_vm_frame_s* o, tp_t proc, tp_t src_proc ); // appends in reverse order
+// Microcode
 
 /// inspection / debugging
-void bhvm_hf3_vm_frame_s_proc_to_sink(   const bhvm_hf3_vm_frame_s* o, tp_t proc, bcore_sink* sink );
-void bhvm_hf3_vm_frame_s_proc_to_stdout( const bhvm_hf3_vm_frame_s* o, tp_t proc );
+void bhvm_hf3_vm_frame_s_mcode_to_sink(   const bhvm_hf3_vm_frame_s* o, tp_t name, bcore_sink* sink );
+void bhvm_hf3_vm_frame_s_mcode_to_stdout( const bhvm_hf3_vm_frame_s* o, tp_t name );
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Holors
