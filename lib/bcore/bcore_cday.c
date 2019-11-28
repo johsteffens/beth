@@ -445,13 +445,13 @@ static void selftest( void )
     //bcore_msg_fa( "#<s2_t>\n", bcore_cday_from_sc( "1970-01-01" ) );
 
     ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "2019-11-26" ) ) == 48 );
-    ASSERT( bcore_cday_to_wday( bcore_cday_from_sc( "2019-11-26" ) ) == 1 );
+    ASSERT( bcore_cday_to_wday( bcore_cday_from_sc( "2019-11-26" ) ) ==  1 );
     ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "1969-06-11" ) ) == 24 );
     ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "2012-01-01" ) ) == 52 );
-    ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "2012-12-31" ) ) == 1 );
+    ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "2012-12-31" ) ) ==  1 );
     ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "2020-12-31" ) ) == 53 );
     ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "2027-01-01" ) ) == 53 );
-    ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "2027-01-09" ) ) == 1 );
+    ASSERT( bcore_cday_to_wnum( bcore_cday_from_sc( "2027-01-09" ) ) ==  1 );
 
     bcore_cday_utc_s* utc1 = BLM_CREATE( bcore_cday_utc_s );
     bcore_cday_utc_s* utc2 = BLM_CREATE( bcore_cday_utc_s );
