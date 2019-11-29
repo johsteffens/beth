@@ -103,6 +103,7 @@ st_s* st_s_clone(   const st_s* o );
 st_s* st_s_crop(    const st_s* o, uz_t start, uz_t end ); // creates a new string with subsection of o;
 st_s* st_s_crop_d(        st_s* o, uz_t start, uz_t end ); // discards o;
 
+static inline void st_s_attach( st_s** o, st_s* src ) { if( !o ) return; st_s_discard( *o ); *o = src; }
 static inline void st_s_detach( st_s** o ) { if( o ) { st_s_discard( *o ); *o = NULL; } }
 
 st_s* st_s_clear( st_s* o ); // empties string
