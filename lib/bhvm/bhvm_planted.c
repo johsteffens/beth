@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-11-28T22:03:50Z
+ *  Last File Update: 2019-11-29T10:02:56Z
  *
  *  Copyright and License of this File:
  *
@@ -631,35 +631,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_arr_holor_s )
 "aware bcore_array"
 "{"
     "bhvm_hf3_vm_holor_s [];"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_prop_s )
-"aware bhvm_hf3_vm"
-"{"
-    "aware bhvm_hf3_vm_op => op;"
-    "private bhvm_hf3_vm_s* p;"
-    "func bcore_inst_call:copy_x;"
-    "func bcore_via_call:mutated;"
-    "func ^:run;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_proc_s )
-"aware bcore_array"
-"{"
-    "tp_t name;"
-    "bhvm_hf3_vm_prop_s [];"
-    "func bhvm_hf3_vm:run;"
-"}";
-
-void bhvm_hf3_vm_proc_s_run( const bhvm_hf3_vm_proc_s* o, bhvm_hf3_vm_holor_s* ah )
-{
-    for( sz_t i = 0; i < o->size; i++ ) bhvm_hf3_vm_prop_s_run( &o->data[ i ], ah );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_library_s )
-"aware bcore_array"
-"{"
-    "bhvm_hf3_vm_proc_s => [];"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_mop_s )
@@ -2126,7 +2097,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 653308204 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 221110954 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_hf3.h
@@ -2474,13 +2445,6 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_holor_s );
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_arr_holor_s );
             BCORE_REGISTER_FEATURE( bhvm_hf3_vm_run );
-            BCORE_REGISTER_FFUNC( bcore_inst_call_copy_x, bhvm_hf3_vm_prop_s_copy_x );
-            BCORE_REGISTER_FFUNC( bcore_via_call_mutated, bhvm_hf3_vm_prop_s_mutated );
-            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_run, bhvm_hf3_vm_prop_s_run );
-            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_prop_s );
-            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_run, bhvm_hf3_vm_proc_s_run );
-            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_proc_s );
-            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_library_s );
             BCORE_REGISTER_FEATURE( bhvm_hf3_vm_mrun );
             BCORE_REGISTER_FFUNC( bcore_inst_call_copy_x, bhvm_hf3_vm_mop_s_copy_x );
             BCORE_REGISTER_FFUNC( bcore_via_call_mutated, bhvm_hf3_vm_mop_s_mutated );

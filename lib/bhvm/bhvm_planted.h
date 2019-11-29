@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-11-28T22:03:50Z
+ *  Last File Update: 2019-11-29T10:02:56Z
  *
  *  Copyright and License of this File:
  *
@@ -810,42 +810,6 @@
       bcore_array_t_push( TYPEOF_bhvm_hf3_vm_arr_holor_s, ( bcore_array* )o, sr_null() ); \
       return &o->data[ o->size - 1 ]; \
   }
-#define TYPEOF_bhvm_hf3_vm_prop_s 328349608
-#define BETH_EXPAND_ITEM_bhvm_hf3_vm_prop_s \
-  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_prop_s ) \
-    {aware_t _;bhvm_hf3_vm_op* op;bhvm_hf3_vm_s* p;}; \
-  static inline void bhvm_hf3_vm_prop_s_copy_x( bhvm_hf3_vm_prop_s* o ){ o->p = o->op ? (bhvm_hf3_vm_s*)bhvm_hf3_vm_s_get_aware( o->op ) : NULL; } \
-  static inline void bhvm_hf3_vm_prop_s_mutated( bhvm_hf3_vm_prop_s* o ){ bhvm_hf3_vm_prop_s_copy_x( o ); } \
-  static inline void bhvm_hf3_vm_prop_s_run( const bhvm_hf3_vm_prop_s* o, bhvm_hf3_vm_holor_s* ah ){ assert( o->p && o->p->run ); o->p->run( (vc_t)o->op, ah ); }
-#define TYPEOF_bhvm_hf3_vm_proc_s 3474064149
-#define BETH_EXPAND_ITEM_bhvm_hf3_vm_proc_s \
-  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_proc_s ) \
-    {aware_t _;tp_t name;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhvm_hf3_vm_prop_s, );}; \
-  void bhvm_hf3_vm_proc_s_run( const bhvm_hf3_vm_proc_s* o, bhvm_hf3_vm_holor_s* ah ); \
-  static inline void bhvm_hf3_vm_proc_s_set_space( bhvm_hf3_vm_proc_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, size ); } \
-  static inline void bhvm_hf3_vm_proc_s_set_size( bhvm_hf3_vm_proc_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, size ); } \
-  static inline void bhvm_hf3_vm_proc_s_clear( bhvm_hf3_vm_proc_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, 0 ); } \
-  static inline bhvm_hf3_vm_prop_s* bhvm_hf3_vm_proc_s_push_c( bhvm_hf3_vm_proc_s* o, const bhvm_hf3_vm_prop_s* v ) { bcore_array_t_push( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, sr_twc( TYPEOF_bhvm_hf3_vm_prop_s, v ) ); return &o->data[ o->size - 1 ]; } \
-  static inline bhvm_hf3_vm_prop_s* bhvm_hf3_vm_proc_s_push_d( bhvm_hf3_vm_proc_s* o,       bhvm_hf3_vm_prop_s* v ) { bcore_array_t_push( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhvm_hf3_vm_prop_s, v ) ); return &o->data[ o->size - 1 ]; } \
-  static inline bhvm_hf3_vm_prop_s* bhvm_hf3_vm_proc_s_push( bhvm_hf3_vm_proc_s* o ) \
-  { \
-      bcore_array_t_push( TYPEOF_bhvm_hf3_vm_proc_s, ( bcore_array* )o, sr_null() ); \
-      return &o->data[ o->size - 1 ]; \
-  }
-#define TYPEOF_bhvm_hf3_vm_library_s 2655378256
-#define BETH_EXPAND_ITEM_bhvm_hf3_vm_library_s \
-  BCORE_DECLARE_OBJECT( bhvm_hf3_vm_library_s ) \
-    {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bhvm_hf3_vm_proc_s, );}; \
-  static inline void bhvm_hf3_vm_library_s_set_space( bhvm_hf3_vm_library_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, size ); } \
-  static inline void bhvm_hf3_vm_library_s_set_size( bhvm_hf3_vm_library_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, size ); } \
-  static inline void bhvm_hf3_vm_library_s_clear( bhvm_hf3_vm_library_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, 0 ); } \
-  static inline bhvm_hf3_vm_proc_s* bhvm_hf3_vm_library_s_push_c( bhvm_hf3_vm_library_s* o, const bhvm_hf3_vm_proc_s* v ) { bcore_array_t_push( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, sr_twc( TYPEOF_bhvm_hf3_vm_proc_s, v ) ); return o->data[ o->size - 1 ]; } \
-  static inline bhvm_hf3_vm_proc_s* bhvm_hf3_vm_library_s_push_d( bhvm_hf3_vm_library_s* o,       bhvm_hf3_vm_proc_s* v ) { bcore_array_t_push( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhvm_hf3_vm_proc_s, v ) ); return o->data[ o->size - 1 ]; } \
-  static inline bhvm_hf3_vm_proc_s* bhvm_hf3_vm_library_s_push( bhvm_hf3_vm_library_s* o ) \
-  { \
-      bcore_array_t_push( TYPEOF_bhvm_hf3_vm_library_s, ( bcore_array* )o, sr_t_create( TYPEOF_bhvm_hf3_vm_proc_s ) ); \
-      return o->data[ o->size - 1 ]; \
-  }
 #define TYPEOF_bhvm_hf3_vm_mop_s 3650793127
 #define BETH_EXPAND_ITEM_bhvm_hf3_vm_mop_s \
   BCORE_DECLARE_OBJECT( bhvm_hf3_vm_mop_s ) \
@@ -920,9 +884,6 @@
   BCORE_FORWARD_OBJECT( bhvm_hf3_vm ); \
   BCORE_FORWARD_OBJECT( bhvm_hf3_vm_holor_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hf3_vm_arr_holor_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_prop_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_proc_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_hf3_vm_library_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hf3_vm_op ); \
   BCORE_FORWARD_OBJECT( bhvm_hf3_vm_mop_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hf3_vm_mcode_s ); \
@@ -947,9 +908,6 @@
   static inline void bhvm_hf3_vm_a_run( const bhvm_hf3_vm* o, bhvm_hf3_vm_holor_s* ah ) { const bhvm_hf3_vm_s* p = bhvm_hf3_vm_s_get_aware( o ); assert( p->run ); p->run( o, ah ); } \
   static inline bl_t bhvm_hf3_vm_p_defines_run( const bhvm_hf3_vm_s* __p ) { return __p->run != NULL; } \
   static inline bl_t bhvm_hf3_vm_a_defines_run( const bhvm_hf3_vm* o ) { return bhvm_hf3_vm_s_get_aware( o )->run != NULL; } \
-  BETH_EXPAND_ITEM_bhvm_hf3_vm_prop_s \
-  BETH_EXPAND_ITEM_bhvm_hf3_vm_proc_s \
-  BETH_EXPAND_ITEM_bhvm_hf3_vm_library_s \
   BETH_EXPAND_GROUP_bhvm_hf3_vm_op \
   static inline void bhvm_hf3_vm_p_mrun( const bhvm_hf3_vm_s* __p, const bhvm_hf3_vm* o, bhvm_hf3_vm_holor_s* ah ) { assert( __p->mrun ); __p->mrun( o, ah ); } \
   static inline void bhvm_hf3_vm_a_mrun( const bhvm_hf3_vm* o, bhvm_hf3_vm_holor_s* ah ) { const bhvm_hf3_vm_s* p = bhvm_hf3_vm_s_get_aware( o ); assert( p->mrun ); p->mrun( o, ah ); } \

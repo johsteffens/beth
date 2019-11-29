@@ -50,38 +50,6 @@ stamp :arr_holor = aware bcore_array { :holor_s []; };
 
 feature 'ap' void run( const, :holor_s* ah );
 
-// procedural operator with preset perspective
-stamp :prop = aware :
-{
-    aware :op => op;
-    private :s* p; // bhvm_hf3_vm perspective of op
-
-    func bcore_inst_call : copy_x  = { o->p = o->op ? (:s*):s_get_aware( o->op ) : NULL; };
-    func bcore_via_call  : mutated = { :prop_s_copy_x( o ); };
-    func bhvm_hf3_vm     : run = { assert( o->p && o->p->run ); o->p->run( (vc_t)o->op, ah ); };
-};
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// procedure
-stamp :proc = aware bcore_array
-{
-    tp_t name;
-    :prop_s [];
-    func bhvm_hf3_vm : run =
-    {
-        for( sz_t i = 0; i < o->size; i++ ) :prop_s_run( &o->data[ i ], ah );
-    };
-};
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// library: array of procedures
-stamp :library = aware bcore_array
-{
-    :proc_s => [];
-};
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Microcode Operators
 
@@ -576,11 +544,6 @@ stamp :frame = aware :
 
 /// sets arguments for operator matching arr_sig to operator signature
 void bhvm_hf3_vm_op_set_args( bhvm_hf3_vm_op* o, sc_t arr_sig, const bcore_arr_sz_s* arr_idx );
-
-// ---------------------------------------------------------------------------------------------------------------------
-// proc_s
-
-void bhvm_hf3_vm_proc_s_push_op_d( bhvm_hf3_vm_proc_s* o, bhvm_hf3_vm_op* op );
 
 // ---------------------------------------------------------------------------------------------------------------------
 // frame_s
