@@ -374,7 +374,7 @@ void bcore_cday_utc_s_from_source( bcore_cday_utc_s* o, bcore_source* source )
     s2_t hh = 0;
     s2_t mm = 0;
     s2_t ss = 0;
-    bcore_source_a_parse_fa( source, "T#<s2_t*>:#<s2_t*>:#<s2_t*>Z", &hh, &mm, &ss );
+    bcore_source_a_parse_fa( source, "T#-?'0'#<s2_t*>:#-?'0'#<s2_t*>:#-?'0'#<s2_t*>Z", &hh, &mm, &ss );
     o->ms = ( hh * 3600 + mm * 60 + ss ) * 1000;
 }
 
@@ -459,6 +459,10 @@ static void selftest( void )
     bcore_cday_utc_s_to_string( utc1, string );
     bcore_cday_utc_s_from_string( utc2, string );
     ASSERT( bcore_cday_utc_s_diff_ms( utc2, utc1 ) == 0 );
+
+    bcore_cday_utc_s_from_sc( utc1, "2027-01-09T09:07:23Z" );
+    ASSERT( utc1->ms == ( 9 * 3600 + 7 * 60 + 23 ) * 1000 );
+
     //bcore_sink_a_push_fa( BCORE_STDOUT, "#<sc_t>\n", string->sc );
 
     BLM_DOWN();
