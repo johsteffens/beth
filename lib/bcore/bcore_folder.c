@@ -68,6 +68,18 @@ bl_t bcore_folder_rename( sc_t src_name, sc_t dst_name )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bcore_folder_get_current( st_s* name )
+{
+    if( !name ) return;
+    char *get_current_dir_name( void ); // prototype not defined in unistd.h
+    sd_t sd = get_current_dir_name();
+    ASSERT( sd );
+    st_s_copy_sc( name, sd );
+    free( sd );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_folder_s )

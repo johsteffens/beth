@@ -18,6 +18,7 @@
 #include "bcore_file.h"
 #include "bcore_sources.h"
 #include "bcore_sinks.h"
+#include "bcore_life.h"
 
 /**********************************************************************************************************************/
 /// bcore_file_path_s
@@ -157,6 +158,35 @@ bl_t bcore_file_delete( sc_t name )
 bl_t bcore_file_rename( sc_t src_name, sc_t dst_name )
 {
     return rename( src_name, dst_name ) == 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_file_find_descend( sc_t folder, sc_t name, st_s* result )
+{
+    BLM_INIT();
+    st_s* st_folder = BLM_A_PUSH( st_s_create_sc( folder ) );
+    st_s* st_result = BLM_A_PUSH( st_s_create() );
+
+    for(;;)
+    {
+        st_s_copy_fa( st_result, "#<sc_t>/#<sc_t>", st_folder->sc, name );
+        if( bcore_file_exists( st_result->sc ) )
+        {
+            if( result ) st_s_copy( result, st_result );
+            BLM_RETURNV( bl_t, true );
+        }
+
+        if( st_folder->size == 0 || ( st_folder->size == 1 && st_folder->sc[ 0 ] == '/' ) ) break;
+
+        {
+            st_s* st_new = bcore_file_folder_path( st_folder->sc );
+            st_s_copy( st_folder, st_new );
+            st_s_discard( st_new );
+        }
+    }
+
+    BLM_RETURNV( bl_t, false );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

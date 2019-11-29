@@ -37,11 +37,13 @@ signature sc_t get_sc( const );
 signature void set_sc( mutable, sc_t name );
 
 /** File path that is automatically extended if relative.
- *  Implements via_call:source to get the root folder during interpreting a source file.
+ *  Use function get_sc to obtain the full path.
+ *  This object implements via_call:source, which is called during interpreting a source (e.g. object is read from a file).
+ *  via_call:source provides bcore_path_s with a stream source from which a file location is obtained.
  */
 stamp : path = aware bcore_inst
 {
-    st_s name; // absolute or relative path ( e.g. "../obj/myobj.txt" ); if relative
+    st_s name; // absolute or relative path ( e.g. "../obj/myobj.txt" );
     hidden st_s => root; // root folder
     hidden st_s => full; // full path: source_folder / rel
     func bcore_via_call : source;
@@ -99,12 +101,27 @@ bl_t bcore_file_touch(  sc_t name ); // creates empty file if not existing; retu
 bl_t bcore_file_delete( sc_t name ); // deletes file if existing; returns success
 bl_t bcore_file_rename( sc_t src_name, sc_t dst_name ); // renames file if existing; returns success
 
+/** Searches for a file <folder>/<name>, descending the tree through parent folders of <folder>.
+ *  Returns false if not found.
+ *  If found the correct path is stored in <result>.
+ *  Example:
+ *  bcore_file_find_descend( "/home/john/proj/proj1", "module.cfg", result );
+ *  Searches for module.cfg in
+ *     /home/john/proj/proj1/module.cfg
+ *     /home/john/proj/module.cfg
+ *     /home/john/module.cfg
+ *     /home/module.cfg
+ *     /module.cfg
+ *  The first match is returned.
+ */
+bl_t bcore_file_find_descend( sc_t folder, sc_t name, st_s* result );
+
 /// opens file-source (close it with bcore_source_a_discard)
 bcore_source* bcore_file_open_source( sc_t name );
 bcore_source* bcore_file_open_source_path( const bcore_file_path_s* path );
 
 /// opens file-sink   (close it with bcore_sink_a_discard)
-bcore_sink*   bcore_file_open_sink(   sc_t name );
+bcore_sink* bcore_file_open_sink( sc_t name );
 
 /**********************************************************************************************************************/
 

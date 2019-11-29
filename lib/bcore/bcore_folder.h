@@ -32,6 +32,8 @@ bl_t bcore_folder_create( sc_t name ); // creates new folder in mode 0700 if not
 bl_t bcore_folder_delete( sc_t name ); // deletes empty folder if existing; returns true if success or folder did not exist in the first place
 bl_t bcore_folder_rename( sc_t src_name, sc_t dst_name ); // renames folder if existing; returns success
 
+void bcore_folder_get_current( st_s* name ); // obtains current folder
+
 /**********************************************************************************************************************/
 /** bcore_folder_s represents a full directory tree with files and sub-folders
  *  use bcore_folder_s_parse to setup from a given root-folder

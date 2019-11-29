@@ -170,6 +170,15 @@
  *
  */
 
+/** Plant Compiler
+ *  The plant framework is invoked by function 'bcore_plant_run_globally'. It would typically be executed
+ *  at the beginning of the program. If it returns 'true', the program should be terminated and rebuilt.
+ *
+ *  The plant compiler is instantiated and configured with the first call of function 'bcore_plant_compile'.
+ *  If a configuration file of name ".bcore_plant_compiler.cfg" exists in any parent path between the
+ *  current folder and the root folder, it is loaded by the compiler.
+ */
+
 #ifndef BCORE_PLANT_COMPILER_H
 #define BCORE_PLANT_COMPILER_H
 
