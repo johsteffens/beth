@@ -764,7 +764,7 @@ static void bcore_plant_arg_s_parse( bcore_plant_arg_s* o, bcore_source* source 
 
 static tp_t bcore_plant_arg_s_get_hash( const bcore_plant_arg_s* o )
 {
-    tp_t hash = bcore_tp_init();
+    tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
     hash = bcore_tp_fold_sc( hash, o->type.sc );
     hash = bcore_tp_fold_sc( hash, o->name.sc );
     return hash;
@@ -854,7 +854,7 @@ static void bcore_plant_args_s_expand_name( const bcore_plant_args_s* o, bl_t fi
 
 static tp_t bcore_plant_args_s_get_hash( const bcore_plant_args_s* o )
 {
-    tp_t hash = bcore_tp_init();
+    tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
     for( sz_t i = 0; i < o->size; i++ ) hash = bcore_tp_fold_tp( hash, bcore_plant_arg_s_get_hash( &o->data[ i ] ) );
     return hash;
 }
@@ -875,7 +875,7 @@ static sc_t bcore_plant_signature_s_get_global_name_sc( const bcore_plant_signat
 
 static tp_t bcore_plant_signature_s_get_hash( const bcore_plant_signature_s* o )
 {
-    tp_t hash = bcore_tp_init();
+    tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
     hash = bcore_tp_fold_sc( hash, o->global_name.sc );
     hash = bcore_tp_fold_u0( hash, o->has_ret ? 1 : 0 );
     hash = bcore_tp_fold_sc( hash, o->ret_type.sc );
@@ -1008,7 +1008,7 @@ static sc_t bcore_plant_body_s_get_global_name_sc( const bcore_plant_body_s* o )
 
 static tp_t bcore_plant_body_s_get_hash( const bcore_plant_body_s* o )
 {
-    tp_t hash = bcore_tp_init();
+    tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
     hash = bcore_tp_fold_sc( hash, o->name.sc );
     hash = bcore_tp_fold_sc( hash, o->code.sc );
     hash = bcore_tp_fold_u0( hash, o->go_inline ? 1 : 0 );
@@ -1181,7 +1181,7 @@ static sc_t bcore_plant_feature_s_get_global_name_sc( const bcore_plant_feature_
 
 static tp_t bcore_plant_feature_s_get_hash( const bcore_plant_feature_s* o )
 {
-    tp_t hash = bcore_tp_init();
+    tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
     hash = bcore_tp_fold_sc( hash, o->global_name.sc );
     hash = bcore_tp_fold_sc( hash, o->default_name.sc );
     if( o->default_body )
@@ -1497,7 +1497,7 @@ static void bcore_plant_feature_s_expand_init1( const bcore_plant_feature_s* o, 
 
 static tp_t bcore_plant_func_s_get_hash( const bcore_plant_func_s* o )
 {
-    tp_t hash = bcore_tp_init();
+    tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
     hash = bcore_tp_fold_sc( hash, o->name.sc );
     hash = bcore_tp_fold_sc( hash, o->decl.sc );
     hash = bcore_tp_fold_tp( hash, o->type );
@@ -1610,7 +1610,7 @@ static sc_t bcore_plant_stamp_s_get_global_name_sc( const bcore_plant_stamp_s* o
 
 static tp_t bcore_plant_stamp_s_get_hash( const bcore_plant_stamp_s* o )
 {
-    tp_t hash = bcore_tp_init();
+    tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
     hash = bcore_tp_fold_sc( hash, o->name.sc );
     hash = bcore_tp_fold_sc( hash, o->self_source->sc );
     for( sz_t i = 0; i < o->funcs.size; i++ )
@@ -2196,7 +2196,7 @@ static sc_t bcore_plant_name_s_get_global_name_sc( const bcore_plant_name_s* o )
 
 static tp_t bcore_plant_name_s_get_hash( const bcore_plant_name_s* o )
 {
-    tp_t hash = bcore_tp_init();
+    tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
     hash = bcore_tp_fold_sc( hash, o->name.sc );
     return hash;
 }
@@ -2252,8 +2252,7 @@ static sc_t bcore_plant_forward_s_get_global_name_sc( const bcore_plant_forward_
 
 static tp_t bcore_plant_forward_s_get_hash( const bcore_plant_forward_s* o )
 {
-    tp_t hash = bcore_tp_init();
-    hash = bcore_tp_fold_tp( hash, o->_ );
+    tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
     hash = bcore_tp_fold_sc( hash, o->name.sc );
     return hash;
 }
