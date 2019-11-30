@@ -1,6 +1,7 @@
 /** List of predefined types for quick access.
  *  Created via bcore_quicktypes_to_stdout( NULL );
  */
+
 // leaf types
 #define TYPEOF_ap_t                  3194897599
 #define TYPEOF_aware_t               1507719906
@@ -89,6 +90,7 @@
 #define TYPEOF_bcore_plant_body_s          258589671
 #define TYPEOF_bcore_plant_compiler_s     1609764454
 #define TYPEOF_bcore_plant_feature_s      1345402207
+#define TYPEOF_bcore_plant_forward_s      2665063796
 #define TYPEOF_bcore_plant_func_s         3034465073
 #define TYPEOF_bcore_plant_funcs_s        4110519758
 #define TYPEOF_bcore_plant_group_s        3104917086

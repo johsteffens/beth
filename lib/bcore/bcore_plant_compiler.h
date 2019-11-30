@@ -122,6 +122,11 @@
  *    <name> has global scope. Multiple definitions of the same name at different places are allowed.
  *
  *  ----------------------------------------------------------------------------------------------
+ *  forward:
+ *    Forward declaration. Generates tp_t TYPEOF_<name> and BCORE_FORWARD_OBJECT( <name> );
+ *    <name> has global scope. Multiple definitions of the same forwarding at different places are allowed.
+ *
+ *  ----------------------------------------------------------------------------------------------
  *  stamp:
  *
  *    Reflection of object definition for objects (see flect.h for general syntax)

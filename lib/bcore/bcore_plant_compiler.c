@@ -341,6 +341,32 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_name_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+BCORE_DECLARE_OBJECT( bcore_plant_forward_s )
+{
+    aware_t _;
+    bcore_plant_group_s* group;
+    st_s name; // deemed global
+    bcore_source_point_s source_point;
+};
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_forward_s )
+"{"
+    "aware_t _;"
+    "vd_t group;"
+    "st_s name;" // deemed global
+    "bcore_source_point_s source_point;"
+
+    "func bcore_plant_fp : parse;"
+    "func bcore_plant_fp : get_hash;"
+    "func bcore_plant_fp : get_global_name_sc;"
+
+    "func bcore_plant_fp : expand_declaration;"
+    "func bcore_plant_fp : expand_forward;"
+    "func bcore_plant_fp : expand_init1;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
 // used in bcore_plant_stamp_s and bcore_plant_group_s
 BCORE_DECLARE_OBJECT( bcore_plant_func_s )
 {
@@ -2213,6 +2239,70 @@ static void bcore_plant_name_s_expand_init1( const bcore_plant_name_s* o, sz_t i
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// forward
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static sc_t bcore_plant_forward_s_get_global_name_sc( const bcore_plant_forward_s* o )
+{
+    return o->name.sc;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static tp_t bcore_plant_forward_s_get_hash( const bcore_plant_forward_s* o )
+{
+    tp_t hash = bcore_tp_init();
+    hash = bcore_tp_fold_tp( hash, o->_ );
+    hash = bcore_tp_fold_sc( hash, o->name.sc );
+    return hash;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_forward_s_parse( bcore_plant_forward_s* o, bcore_source* source )
+{
+    bcore_source_point_s_set( &o->source_point, source );
+
+    if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
+    {
+        st_s* name = st_s_create();
+        bcore_source_a_parse_fa( source, " #name", name );
+        st_s_push_fa( &o->name, "#<sc_t>#<sc_t>#<sc_t>", o->group->name.sc, name->sc[ 0 ] ? "_" : "", name->sc );
+        st_s_discard( name );
+    }
+    else
+    {
+        bcore_source_a_parse_fa( source, " #name", &o->name );
+    }
+    if( o->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
+    bcore_source_a_parse_fa( source, " ; " );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_forward_s_expand_declaration( const bcore_plant_forward_s* o, sz_t indent, bcore_sink* sink )
+{
+    bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n",  indent, o->name.sc, typeof( o->name.sc ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_forward_s_expand_forward( const bcore_plant_forward_s* o, sz_t indent, bcore_sink* sink )
+{
+    bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o->name.sc );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_forward_s_expand_init1( const bcore_plant_forward_s* o, sz_t indent, bcore_sink* sink )
+{
+//    bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_NAME( #<sc_t> );\n", indent, o->name.sc );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 /// group
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2374,6 +2464,13 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             name->group = o;
             bcore_plant_name_s_parse( name, source );
             item = ( bcore_plant* )name;
+        }
+        else if( bcore_source_a_parse_bl_fa( source, " #?w'forward' " ) )
+        {
+            bcore_plant_forward_s* forward = bcore_plant_forward_s_create();
+            forward->group = o;
+            bcore_plant_forward_s_parse( forward, source );
+            item = ( bcore_plant* )forward;
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'expandable'" ) )
         {
@@ -3260,6 +3357,14 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_plant_fp_expand_init1,       bcore_plant_name_s_expand_init1 );
             BCORE_REGISTER_OBJECT( bcore_plant_name_s );
 
+            BCORE_REGISTER_FFUNC( bcore_plant_fp_get_hash,           bcore_plant_forward_s_get_hash );
+            BCORE_REGISTER_FFUNC( bcore_plant_fp_parse,              bcore_plant_forward_s_parse );
+            BCORE_REGISTER_FFUNC( bcore_plant_fp_get_global_name_sc, bcore_plant_forward_s_get_global_name_sc );
+            BCORE_REGISTER_FFUNC( bcore_plant_fp_expand_declaration, bcore_plant_forward_s_expand_declaration );
+            BCORE_REGISTER_FFUNC( bcore_plant_fp_expand_forward,     bcore_plant_forward_s_expand_forward );
+            BCORE_REGISTER_FFUNC( bcore_plant_fp_expand_init1,       bcore_plant_forward_s_expand_init1 );
+            BCORE_REGISTER_OBJECT( bcore_plant_forward_s );
+
             BCORE_REGISTER_FFUNC( bcore_plant_fp_get_hash,           bcore_plant_group_s_get_hash );
             BCORE_REGISTER_FFUNC( bcore_plant_fp_parse,              bcore_plant_group_s_parse );
             BCORE_REGISTER_FFUNC( bcore_plant_fp_finalize,           bcore_plant_group_s_finalize );
@@ -3302,6 +3407,7 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_QUICKTYPE( bcore_plant_funcs_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_stamp_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_name_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_plant_forward_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_group_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_nested_group_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_source_s );
