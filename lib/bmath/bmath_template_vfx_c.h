@@ -320,6 +320,28 @@ fx_t BCATU(bmath_vfx_s,tss)( const bmath_vfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+fx_t BCATU(bmath_vfx_s,fdev_equ)( const bmath_vfx_s* a, const bmath_vfx_s* b )
+{
+    ASSERT( a->size == b->size );
+    fx_t sum = 0;
+    const fx_t* ad = a->data;
+    const fx_t* bd = b->data;
+    BFOR_EACH( i, a ) sum += BCATU(fx,sqr)( ad[ i ] - bd[ i ] );
+    return ( sum > 0 ) ? BCATU(fx,srt)( sum ) : 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+fx_t BCATU(bmath_vfx_s,fdev_zro)( const bmath_vfx_s* o )
+{
+    fx_t sum = 0;
+    const fx_t* od = o->data;
+    BFOR_EACH( i, o ) sum += BCATU(fx,sqr)( od[ i ] );
+    return ( sum > 0 ) ? BCATU(fx,srt)( sum ) : 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bmath_vfx_s* BCATU(bmath_vfx_s,create_set_size)( uz_t size )
 {
     bmath_vfx_s* o = BCATU(bmath_vfx_s,create)();
