@@ -56,8 +56,8 @@ group :ar0 =
 
     func :: :get_arity = { return 0; };
     func  : :  f = { ERR_fa( "Function 'f' is not available. Need to call 'of' instead?" ); };
-    func  : : of = { @f( r ); };
-    func :: :aof = { @of( o, r ); };
+    func  : : of = { @_f( r ); };
+    func :: :aof = { @_of( o, r ); };
 
     stamp :zro     = {                  func : : f = { bhvm_hf3_s_zro(       r ); }; };
     stamp :literal = { bhvm_hf3_s -> h; func : :of = { bhvm_hf3_s_cpy( o->h, r ); }; };
@@ -87,8 +87,8 @@ group :ar1 =
     func :: :get_arity = { return 1; };
 
     func  : :  f = { ERR_fa( "Function 'f' is not available. Need to call 'of' instead?" ); };
-    func  : : of = {  @f(    a   , r ); };
-    func :: :aof = { @of( o, a[0], r ); };
+    func  : : of = {  @_f(    a   , r ); };
+    func :: :aof = { @_of( o, a[0], r ); };
 
     stamp :cpy        = { func : :f = { bhvm_hf3_s_cpy( a, r ); }; };
     stamp :neg        = { func : :f = { bhvm_hf3_s_fp_f3_ar1( a, bmath_f3_op_ar1_neg_s_fx, r ); }; };
@@ -148,8 +148,8 @@ group :ar2 =
 
     func :: :get_arity = { return 2; };
     func  : :  f = { ERR_fa( "Function 'f' is not available. Need to call 'of' instead?" ); };
-    func  : : of = {  @f( a, b, r ); };
-    func :: :aof = { @of( o, a[0], a[1], r ); };
+    func  : : of = {  @_f( a, b, r ); };
+    func :: :aof = { @_of( o, a[0], a[1], r ); };
 
     stamp :add  = { func : :f = { bhvm_hf3_s_add ( a, b, r ); }; };
     stamp :sub  = { func : :f = { bhvm_hf3_s_sub ( a, b, r ); }; };
@@ -219,8 +219,8 @@ group :ar3 =
 
     func :: :get_arity = { return 3; };
     func  : :  f = { ERR_fa( "Function 'f' is not available. Need to call 'of' instead?" ); };
-    func  : : of = {  @f( a, b, c, r ); };
-    func :: :aof = { @of( o, a[0], a[1], a[2], r ); };
+    func  : : of = {  @_f( a, b, c, r ); };
+    func :: :aof = { @_of( o, a[0], a[1], a[2], r ); };
 
     /// dendrite-pass
     group :dp =

@@ -676,21 +676,21 @@ bl_t bhvm_hf3_s_set_shape_cat( const bhvm_hf3_s* a, const bhvm_hf3_s* b, bhvm_hf
     {
         if( !bhvm_hf3_s_d_equal( a, b ) ) return false;
         bhvm_hf3_s_set_d_size( r, a->d_size + 1 );
-        bcore_u_memcpy( sizeof( f3_t ), r->d_data, a->d_data, a->d_size );
+        bcore_u_memcpy( sizeof( sz_t ), r->d_data, a->d_data, a->d_size );
         r->d_data[ r->d_size - 1 ] = 2;
     }
     else if( a->d_size == b->d_size + 1 )
     {
         for( sz_t i = 0; i < b->d_size; i++ ) if( a->d_data[ i ] != b->d_data[ i ] ) return false;
         bhvm_hf3_s_set_d_size( r, a->d_size );
-        bcore_u_memcpy( sizeof( f3_t ), r->d_data, a->d_data, a->d_size );
+        bcore_u_memcpy( sizeof( sz_t ), r->d_data, a->d_data, a->d_size );
         r->d_data[ r->d_size - 1 ] += 1;
     }
     else if( a->d_size + 1 == b->d_size )
     {
         for( sz_t i = 0; i < a->d_size; i++ ) if( a->d_data[ i ] != b->d_data[ i ] ) return false;
         bhvm_hf3_s_set_d_size( r, b->d_size );
-        bcore_u_memcpy( sizeof( f3_t ), r->d_data, b->d_data, b->d_size );
+        bcore_u_memcpy( sizeof( sz_t ), r->d_data, b->d_data, b->d_size );
         r->d_data[ r->d_size - 1 ] += 1;
     }
     else

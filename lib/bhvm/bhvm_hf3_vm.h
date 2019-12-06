@@ -33,12 +33,19 @@
 PLANT_GROUP( bhvm_hf3_vm, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // holor
-stamp :holor = aware :
+
+stamp :hparam = aware :
 {
     tp_t name;
     tp_t type;
     sz_t idx_paired = -1; // index to holor paired with this one (e.g. axon <=> axon-gradient)
+};
+
+stamp :holor = aware :
+{
+    :hparam_s p;
     bhvm_hf3_s h;
 };
 
@@ -51,7 +58,7 @@ stamp :arr_holor = aware bcore_array { :holor_s []; };
 feature 'ap' void run( const, :holor_s* ah );
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Microcode Operators
+// Microcode Operator Set
 
 group :op =
 {
@@ -86,12 +93,12 @@ group :op =
             func :: :get_arity = { return 0; };
             func :: :set_indices = { o->a = a[0]; };
             func :: :get_indices = { a[0] = o->a; };
-            func  : :csetup = { if( !o ) o = @create(); o->a = idx_a; return (::*)o; };
+            func  : :csetup = { if( !o ) o = @_create(); o->a = idx_a; return (::*)o; };
         };
 
         func :: :set_arg =
         {
-            if( id == @sig( o )[0] ) o->a = idx;
+            if( id == @_sig( o )[0] ) o->a = idx;
         };
 
         func :: :sig = { return "y"; }; // default signature
@@ -148,13 +155,13 @@ group :op =
             func :: :get_arity   = { return 1; };
             func :: :set_indices = { o->a = a[0]; o->b = a[1]; };
             func :: :get_indices = { a[0] = o->a; a[1] = o->b; };
-            func  : :csetup      = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
+            func  : :csetup      = { if( !o ) o = @_create(); o->a = idx_a; o->b = idx_b; return (::*)o; };
         };
 
         func :: :set_arg =
         {
-            if( id == @sig( o )[ 0 ] ) o->a = idx;
-            if( id == @sig( o )[ 1 ] ) o->b = idx;
+            if( id == @_sig( o )[ 0 ] ) o->a = idx;
+            if( id == @_sig( o )[ 1 ] ) o->b = idx;
         };
 
         func :: :sig = { return "ay"; }; // default signature
@@ -227,14 +234,14 @@ group :op =
             func :: :get_arity = { return 2; };
             func :: :set_indices = { o->a = a[0]; o->b = a[1]; o->c = a[2]; };
             func :: :get_indices = { a[0] = o->a; a[1] = o->b; a[2] = o->c; };
-            func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
+            func  : :csetup   = { if( !o ) o = @_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; return (::*)o; };
         };
 
         func :: :set_arg =
         {
-            if( id == @sig( o )[ 0 ] ) o->a = idx;
-            if( id == @sig( o )[ 1 ] ) o->b = idx;
-            if( id == @sig( o )[ 2 ] ) o->c = idx;
+            if( id == @_sig( o )[ 0 ] ) o->a = idx;
+            if( id == @_sig( o )[ 1 ] ) o->b = idx;
+            if( id == @_sig( o )[ 2 ] ) o->c = idx;
         };
 
         func :: :sig = { return "aby"; }; // default signature
@@ -338,15 +345,15 @@ group :op =
             func :: :get_arity = { return 3; };
             func :: :set_indices = { o->a = a[0]; o->b = a[1]; o->c = a[2]; o->d = a[3]; };
             func :: :get_indices = { a[0] = o->a; a[1] = o->b; a[2] = o->c; a[3] = o->d; };
-            func  : :csetup   = { if( !o ) o = @create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; o->d = idx_d; return (::*)o; };
+            func  : :csetup   = { if( !o ) o = @_create(); o->a = idx_a; o->b = idx_b; o->c = idx_c; o->d = idx_d; return (::*)o; };
         };
 
         func :: :set_arg =
         {
-            if( id == @sig( o )[ 0 ] ) o->a = idx;
-            if( id == @sig( o )[ 1 ] ) o->b = idx;
-            if( id == @sig( o )[ 2 ] ) o->c = idx;
-            if( id == @sig( o )[ 3 ] ) o->d = idx;
+            if( id == @_sig( o )[ 0 ] ) o->a = idx;
+            if( id == @_sig( o )[ 1 ] ) o->b = idx;
+            if( id == @_sig( o )[ 2 ] ) o->c = idx;
+            if( id == @_sig( o )[ 3 ] ) o->d = idx;
         };
 
         func :: :sig = { return "abcy"; };  // default signature
@@ -385,7 +392,7 @@ stamp :mop = aware :
     private :s* p; // bhvm_hf3_vm perspective of op
 
     func bcore_inst_call : copy_x  = { o->p = o->op ? (:s*):s_get_aware( o->op ) : NULL; };
-    func bcore_via_call  : mutated = { @copy_x( o ); };
+    func bcore_via_call  : mutated = { @_copy_x( o ); };
     func bhvm_hf3_vm     : mrun = { assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->op, ah ); };
 };
 
@@ -402,7 +409,7 @@ stamp :mcode = aware bcore_array
     func : :op_push_d =
     {
         assert( op );
-        :mop_s* mop = @push( o );
+        :mop_s* mop = @_push( o );
         mop->op = op;
         mop->p = (:s*):s_get_aware( mop->op );
         assert( mop->p );
@@ -410,7 +417,7 @@ stamp :mcode = aware bcore_array
 
     func : :op_push_c =
     {
-        @op_push_d( o, :op_a_clone( op ) );
+        @_op_push_d( o, :op_a_clone( op ) );
     };
 };
 
@@ -448,7 +455,7 @@ stamp :lib_mcode = aware :
 
     func : :mcode_get_or_new =
     {
-        if( bcore_hmap_tpuz_s_exists( &o->map, name ) ) return @mcode_get( o, name );
+        if( bcore_hmap_tpuz_s_exists( &o->map, name ) ) return @_mcode_get( o, name );
         bcore_hmap_tpuz_s_set( &o->map, name, o->arr.size );
         :mcode_s* mcode = :arr_mcode_s_push( &o->arr );
         mcode->name = name;
@@ -457,27 +464,27 @@ stamp :lib_mcode = aware :
 
     func : :mcode_reset =
     {
-        :mcode_s* mcode = @mcode_get_or_new( o, name );
+        :mcode_s* mcode = @_mcode_get_or_new( o, name );
         :mcode_s_clear( mcode );
         return mcode;
     };
 
-    func : :mcode_op_push_c = { :mcode_s_op_push_c( @mcode_get_or_new( o, name ), op ); };
-    func : :mcode_op_push_d = { :mcode_s_op_push_d( @mcode_get_or_new( o, name ), op ); };
+    func : :mcode_op_push_c = { :mcode_s_op_push_c( @_mcode_get_or_new( o, name ), op ); };
+    func : :mcode_op_push_d = { :mcode_s_op_push_d( @_mcode_get_or_new( o, name ), op ); };
 
     func : :mcode_push =
     {
-        :mcode_s* src = @mcode_get( o, src_name );
+        :mcode_s* src = @_mcode_get( o, src_name );
         if( !src ) return;
-        :mcode_s* dst = @mcode_get_or_new( o, name );
+        :mcode_s* dst = @_mcode_get_or_new( o, name );
         BFOR_EACH( i, src ) :mcode_s_op_push_c( dst, src->data[ i ].op );
     };
 
     func : :mcode_push_reverse =
     {
-        :mcode_s* src = @mcode_get( o, src_name );
+        :mcode_s* src = @_mcode_get( o, src_name );
         if( !src ) return;
-        :mcode_s* dst = @mcode_get_or_new( o, name );
+        :mcode_s* dst = @_mcode_get_or_new( o, name );
         for( sz_t i = src->size - 1; i >= 0; i-- ) :mcode_s_op_push_c( dst, src->data[ i ].op );
     };
 
@@ -493,7 +500,143 @@ stamp :lib_mcode = aware :
         if( idx < o->arr.size ) bcore_hmap_tpuz_s_set( &o->map, o->arr.data[ idx ]->name, idx );
     };
 
-    func : :mcode_mrun = { :mcode_s* mc = @mcode_get( o, name ); if( mc ) :mcode_s_mrun( mc, ah ); };
+    func : :mcode_mrun = { :mcode_s* mc = @_mcode_get( o, name ); if( mc ) :mcode_s_mrun( mc, ah ); };
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Privileged (frame) instruction code
+
+forward :thread_s;
+forward :pi;
+
+feature 'ap' void trun( const, :thread_s* t );
+
+// privileged instruction with preset perspective
+stamp :fpi = aware :
+{
+    aware :pi => pi;
+    private :s* p; // bhvm_hf3_vm perspective of pi
+
+    func bcore_inst_call : copy_x  = { o->p = o->pi ? (:s*):s_get_aware( o->pi ) : NULL; };
+    func bcore_via_call  : mutated = { @_copy_x( o ); };
+    func bhvm_hf3_vm     : trun = { assert( o->p ); assert( o->p->trun ); o->p->trun( (vc_t)o->pi, t ); };
+};
+
+signature void pi_push_d( mutable,       :pi* pi );
+signature void pi_push_c( mutable, const :pi* pi );
+
+// frame-code
+stamp :fcode = aware bcore_array
+{
+    tp_t name;
+    :fpi_s [];
+
+    func : :pi_push_d =
+    {
+        assert( pi );
+        :fpi_s* fpi = @_push( o );
+        fpi->pi = pi;
+        fpi->p = (:s*):s_get_aware( fpi->pi );
+        assert( fpi->p );
+    };
+
+    func : :pi_push_c =
+    {
+        @_pi_push_d( o, :pi_a_clone( pi ) );
+    };
+
+    func : :trun =
+    {
+        while( t->ip >= 0 && t->ip < t->fcode->size && t->sp <= t->stack.size )
+        {
+            :fpi_s_trun( &o->data[ t->ip ], t );
+        }
+    };
+};
+
+// frame-code array
+stamp :arr_fcode = aware bcore_array { :fcode_s => []; };
+
+// frame-thread
+stamp :thread = aware :
+{
+    private :frame_s* frame;
+    private :fcode_s* fcode;
+
+    sz_t ip; // instruction pointer
+    sz_t sp; // stack pointer
+    bcore_arr_sz_s stack;
+};
+
+// fcode library functions
+signature      bl_t fcode_exists      (   const, tp_t name );
+signature :fcode_s* fcode_get         ( mutable, tp_t name ); // retrieves fcode if existing or returns NULL
+signature :fcode_s* fcode_get_or_new  ( mutable, tp_t name ); // creates fcode if not yet existing otherwise same as get
+signature :fcode_s* fcode_reset       ( mutable, tp_t name ); // creates fcode if not yet existing or sets its size to zero
+signature      void fcode_pi_push_d   ( mutable, tp_t name,       :pi* pi );
+signature      void fcode_pi_push_c   ( mutable, tp_t name, const :pi* pi );
+signature      void fcode_push        ( mutable, tp_t name, tp_t src_name ); // appends fcode of src_name
+signature      void fcode_push_reverse( mutable, tp_t name, tp_t src_name ); // appends fcode of src_name in reverse order
+signature      void fcode_remove      ( mutable, tp_t name );                // removes fcode if existing
+signature      void fcode_trun        ( mutable, tp_t name, :thread_s* t );
+
+// microcode library
+stamp :lib_fcode = aware :
+{
+    :arr_fcode_s arr;
+    bcore_hmap_tpuz_s map; // name-index map
+
+    func : :clear = { :arr_fcode_s_clear( &o->arr ); bcore_hmap_tpuz_s_clear( &o->map ); };
+
+    func : :fcode_exists = { return bcore_hmap_tpuz_s_exists( &o->map, name ); };
+
+    func : :fcode_get =
+    {
+        uz_t* pidx = bcore_hmap_tpuz_s_get( &o->map, name );
+        if( !pidx ) return NULL;
+        return o->arr.data[ *pidx ];
+    };
+
+    func : :fcode_get_or_new =
+    {
+        if( bcore_hmap_tpuz_s_exists( &o->map, name ) ) return @_fcode_get( o, name );
+        bcore_hmap_tpuz_s_set( &o->map, name, o->arr.size );
+        :fcode_s* fcode = :arr_fcode_s_push( &o->arr );
+        fcode->name = name;
+        return fcode;
+    };
+
+    func : :fcode_reset =
+    {
+        :fcode_s* fcode = @_fcode_get_or_new( o, name );
+        :fcode_s_clear( fcode );
+        return fcode;
+    };
+
+    func : :fcode_pi_push_c = { :fcode_s_pi_push_c( @_fcode_get_or_new( o, name ), pi ); };
+    func : :fcode_pi_push_d = { :fcode_s_pi_push_d( @_fcode_get_or_new( o, name ), pi ); };
+
+    func : :fcode_push =
+    {
+        :fcode_s* src = @_fcode_get( o, src_name );
+        if( !src ) return;
+        :fcode_s* dst = @_fcode_get_or_new( o, name );
+        BFOR_EACH( i, src ) :fcode_s_pi_push_c( dst, src->data[ i ].pi );
+    };
+
+    func : :fcode_remove =
+    {
+        uz_t* pidx = bcore_hmap_tpuz_s_get( &o->map, name );
+        if( !pidx ) return;
+        sz_t idx = *pidx;
+        :fcode_s_discard( o->arr.data[ idx ] );
+        o->arr.size--;
+        o->arr.data[ idx ] = o->arr.data[ o->arr.size ];
+        o->arr.data[ o->arr.size ] = NULL;
+        if( idx < o->arr.size ) bcore_hmap_tpuz_s_set( &o->map, o->arr.data[ idx ]->name, idx );
+    };
+
+    func : :fcode_trun = { :fcode_s* fc = @_fcode_get( o, name ); if( fc ) :fcode_s_trun( fc, t ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -506,6 +649,7 @@ stamp :frame = aware :
 {
     :arr_holor_s arr_holor; // array of holors
     :lib_mcode_s lib_mcode;
+    :lib_fcode_s lib_fcode;
     bcore_hmap_name_s map_name;  // map of names used
 
     tp_t mcode_setup  = 0;
@@ -533,11 +677,31 @@ stamp :frame = aware :
     func : :mcode_push_reverse = { :lib_mcode_s_mcode_push_reverse(  &o->lib_mcode, name, src_name ); };
     func : :mcode_remove       = { :lib_mcode_s_mcode_remove(        &o->lib_mcode, name ); };
     func : :mcode_run          = { :lib_mcode_s_mcode_mrun(          &o->lib_mcode, name, o->arr_holor.data ); };
+
+    /// fcode library functions
+    func : :fcode_exists       = { return :lib_fcode_s_fcode_exists( &o->lib_fcode, name ); };
+    func : :fcode_get          = { return :lib_fcode_s_fcode_get(    &o->lib_fcode, name ); };
+    func : :fcode_get_or_new   = { return :lib_fcode_s_fcode_get_or_new( &o->lib_fcode, name ); };
+    func : :fcode_reset        = { return :lib_fcode_s_fcode_reset(  &o->lib_fcode, name ); };
+    func : :fcode_pi_push_d    = { :lib_fcode_s_fcode_pi_push_d(     &o->lib_fcode, name, pi ); };
+    func : :fcode_pi_push_c    = { :lib_fcode_s_fcode_pi_push_c(     &o->lib_fcode, name, pi ); };
+    func : :fcode_push         = { :lib_fcode_s_fcode_push(          &o->lib_fcode, name, src_name ); };
+    func : :fcode_remove       = { :lib_fcode_s_fcode_remove(        &o->lib_fcode, name ); };
+    //func : :fcode_run          = { :lib_fcode_s_fcode_mrun(          &o->lib_fcode, name, o->arr_holor.data ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Privileged Instruction Set
 
-#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+group :pi =
+{
+    feature 'a' tp_t get_class( const );
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+};
+
+#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ---------------------------------------------------------------------------------------------------------------------
 // vm_op

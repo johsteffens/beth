@@ -31,7 +31,7 @@
  *  A n-holor is understood as holor or order n (meaning n separate dimensions).
  *  The number of values a holor holds is equal to the product of its dimensions.
  *
- *  bhvm_hf3_t is organized as array of dimensions (d_data) and array of associated value data (v_data).
+ *  bhvm_hf3_s is organized as array of dimensions (d_data) and array of associated value data (v_data).
  *  Dimension-values are arranged from lowest to highest level.
  *
  *  A given holor is called 'determined' when v_data is set according to its order and dimensionality.

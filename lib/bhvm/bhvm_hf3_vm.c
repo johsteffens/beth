@@ -159,7 +159,7 @@ void bhvm_hf3_vm_frame_s_mcode_to_sink( const bhvm_hf3_vm_frame_s* o, tp_t name,
             st_s_clear( st2 );
             sz_t index = arr_sz->data[ i ];
             bhvm_hf3_vm_holor_s* holor = &o->arr_holor.data[ index ];
-            sc_t sc_name = bhvm_hf3_vm_frame_s_nameof( o, holor->name );
+            sc_t sc_name = bhvm_hf3_vm_frame_s_nameof( o, holor->p.name );
             if( sc_name ) st_s_push_fa( st2, "(#<sc_t>)", sc_name );
             st_s_push_fa( st2, "#<sz_t>", index );
             bcore_sink_a_push_fa( sink, " #pl8' '{#<sc_t>}", st2->sc );
@@ -210,7 +210,7 @@ void bhvm_hf3_vm_frame_s_alloc_holors_of_type( bhvm_hf3_vm_frame_s* o, tp_t type
     for( sz_t i = 0; i < o->arr_holor.size; i++ )
     {
         bhvm_hf3_vm_holor_s* holor = &o->arr_holor.data[ i ];
-        if( holor->type == type )
+        if( holor->p.type == type )
         {
             bhvm_hf3_s_fit_v_size( &holor->h );
         }
@@ -224,7 +224,7 @@ void bhvm_hf3_vm_frame_s_dealloc_holors_of_type( bhvm_hf3_vm_frame_s* o, tp_t ty
     for( sz_t i = 0; i < o->arr_holor.size; i++ )
     {
         bhvm_hf3_vm_holor_s* holor = &o->arr_holor.data[ i ];
-        if( holor->type == type )
+        if( holor->p.type == type )
         {
             bhvm_hf3_s_clear_v_data( &holor->h );
         }
@@ -254,8 +254,8 @@ bhvm_hf3_vm_holor_s* bhvm_hf3_vm_frame_s_input_get_holor( bhvm_hf3_vm_frame_s* o
 bhvm_hf3_vm_holor_s* bhvm_hf3_vm_frame_s_input_get_paired_holor( bhvm_hf3_vm_frame_s* o, sz_t index )
 {
     bhvm_hf3_vm_holor_s* h = bhvm_hf3_vm_frame_s_input_get_holor( o, index );
-    if( h->idx_paired < 0 ) return NULL;
-    return bhvm_hf3_vm_frame_s_holors_get_by_index( o, h->idx_paired );
+    if( h->p.idx_paired < 0 ) return NULL;
+    return bhvm_hf3_vm_frame_s_holors_get_by_index( o, h->p.idx_paired );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -280,8 +280,8 @@ bhvm_hf3_vm_holor_s* bhvm_hf3_vm_frame_s_output_get_holor( bhvm_hf3_vm_frame_s* 
 bhvm_hf3_vm_holor_s* bhvm_hf3_vm_frame_s_output_get_paired_holor( bhvm_hf3_vm_frame_s* o, sz_t index )
 {
     bhvm_hf3_vm_holor_s* h = bhvm_hf3_vm_frame_s_output_get_holor( o, index );
-    if( h->idx_paired < 0 ) return NULL;
-    return bhvm_hf3_vm_frame_s_holors_get_by_index( o, h->idx_paired );
+    if( h->p.idx_paired < 0 ) return NULL;
+    return bhvm_hf3_vm_frame_s_holors_get_by_index( o, h->p.idx_paired );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
