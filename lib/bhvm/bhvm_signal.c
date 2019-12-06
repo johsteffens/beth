@@ -18,6 +18,9 @@
 #include "bhvm_hf3.h"
 #include "bhvm_hf3_op.h"
 #include "bhvm_hf3_vm.h"
+#include "bhvm_lop.h"
+#include "bhvm_holor.h"
+#include "bhvm_hop.h"
 
 vd_t bhvm_signal_handler( const bcore_signal_s* o )
 {
@@ -39,6 +42,9 @@ vd_t bhvm_signal_handler( const bcore_signal_s* o )
             bhvm_hf3_signal_handler,
             bhvm_hf3_op_signal_handler,
             bhvm_hf3_vm_signal_handler,
+            bhvm_lop_signal_handler,
+            bhvm_holor_signal_handler,
+            bhvm_hop_signal_handler,
         };
 
         ret = bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );

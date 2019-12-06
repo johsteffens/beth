@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-11-29T10:02:56Z
+ *  Last File Update: 2019-12-06T20:06:12Z
  *
  *  Copyright and License of this File:
  *
@@ -10,6 +10,9 @@
  *  bhvm_hf3.h
  *  bhvm_hf3_op.h
  *  bhvm_hf3_vm.h
+ *  bhvm_lop.h
+ *  bhvm_holor.h
+ *  bhvm_hop.h
  *
  */
 
@@ -618,12 +621,18 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_op_ar3_dp_cb_hdiv_s )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hf3_vm
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_holor_s )
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_hparam_s )
 "aware bhvm_hf3_vm"
 "{"
     "tp_t name;"
     "tp_t type;"
     "sz_t idx_paired = -1;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_holor_s )
+"aware bhvm_hf3_vm"
+"{"
+    "bhvm_hf3_vm_hparam_s p;"
     "bhvm_hf3_s h;"
 "}";
 
@@ -742,11 +751,130 @@ void bhvm_hf3_vm_lib_mcode_s_mcode_remove( bhvm_hf3_vm_lib_mcode_s* o, tp_t name
     if( idx < o->arr.size ) bcore_hmap_tpuz_s_set( &o->map, o->arr.data[ idx ]->name, idx );
 }
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_fpi_s )
+"aware bhvm_hf3_vm"
+"{"
+    "aware bhvm_hf3_vm_pi => pi;"
+    "private bhvm_hf3_vm_s* p;"
+    "func bcore_inst_call:copy_x;"
+    "func bcore_via_call:mutated;"
+    "func ^:trun;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_fcode_s )
+"aware bcore_array"
+"{"
+    "tp_t name;"
+    "bhvm_hf3_vm_fpi_s [];"
+    "func bhvm_hf3_vm:pi_push_d;"
+    "func bhvm_hf3_vm:pi_push_c;"
+    "func bhvm_hf3_vm:trun;"
+"}";
+
+void bhvm_hf3_vm_fcode_s_pi_push_d( bhvm_hf3_vm_fcode_s* o, bhvm_hf3_vm_pi* pi )
+{
+    assert( pi );
+    bhvm_hf3_vm_fpi_s* fpi = bhvm_hf3_vm_fcode_s_push( o );
+    fpi->pi = pi;
+    fpi->p = (bhvm_hf3_vm_s*)bhvm_hf3_vm_s_get_aware( fpi->pi );
+    assert( fpi->p );
+}
+
+void bhvm_hf3_vm_fcode_s_pi_push_c( bhvm_hf3_vm_fcode_s* o, const bhvm_hf3_vm_pi* pi )
+{
+    bhvm_hf3_vm_fcode_s_pi_push_d( o, bhvm_hf3_vm_pi_a_clone( pi ) );
+}
+
+void bhvm_hf3_vm_fcode_s_trun( const bhvm_hf3_vm_fcode_s* o, bhvm_hf3_vm_thread_s* t )
+{
+    while( t->ip >= 0 && t->ip < t->fcode->size && t->sp <= t->stack.size )
+    {
+        bhvm_hf3_vm_fpi_s_trun( &o->data[ t->ip ], t );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_arr_fcode_s )
+"aware bcore_array"
+"{"
+    "bhvm_hf3_vm_fcode_s => [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_thread_s )
+"aware bhvm_hf3_vm"
+"{"
+    "private bhvm_hf3_vm_frame_s* frame;"
+    "private bhvm_hf3_vm_fcode_s* fcode;"
+    "sz_t ip;"
+    "sz_t sp;"
+    "bcore_arr_sz_s stack;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_lib_fcode_s )
+"aware bhvm_hf3_vm"
+"{"
+    "bhvm_hf3_vm_arr_fcode_s arr;"
+    "bcore_hmap_tpuz_s map;"
+    "func ^:clear;"
+    "func ^:fcode_exists;"
+    "func ^:fcode_get;"
+    "func ^:fcode_get_or_new;"
+    "func ^:fcode_reset;"
+    "func ^:fcode_pi_push_c;"
+    "func ^:fcode_pi_push_d;"
+    "func ^:fcode_push;"
+    "func ^:fcode_remove;"
+    "func ^:fcode_trun;"
+"}";
+
+bhvm_hf3_vm_fcode_s* bhvm_hf3_vm_lib_fcode_s_fcode_get( bhvm_hf3_vm_lib_fcode_s* o, tp_t name )
+{
+    uz_t* pidx = bcore_hmap_tpuz_s_get( &o->map, name );
+    if( !pidx ) return NULL;
+    return o->arr.data[ *pidx ];
+}
+
+bhvm_hf3_vm_fcode_s* bhvm_hf3_vm_lib_fcode_s_fcode_get_or_new( bhvm_hf3_vm_lib_fcode_s* o, tp_t name )
+{
+    if( bcore_hmap_tpuz_s_exists( &o->map, name ) ) return bhvm_hf3_vm_lib_fcode_s_fcode_get( o, name );
+    bcore_hmap_tpuz_s_set( &o->map, name, o->arr.size );
+    bhvm_hf3_vm_fcode_s* fcode = bhvm_hf3_vm_arr_fcode_s_push( &o->arr );
+    fcode->name = name;
+    return fcode;
+}
+
+bhvm_hf3_vm_fcode_s* bhvm_hf3_vm_lib_fcode_s_fcode_reset( bhvm_hf3_vm_lib_fcode_s* o, tp_t name )
+{
+    bhvm_hf3_vm_fcode_s* fcode = bhvm_hf3_vm_lib_fcode_s_fcode_get_or_new( o, name );
+    bhvm_hf3_vm_fcode_s_clear( fcode );
+    return fcode;
+}
+
+void bhvm_hf3_vm_lib_fcode_s_fcode_push( bhvm_hf3_vm_lib_fcode_s* o, tp_t name, tp_t src_name )
+{
+    bhvm_hf3_vm_fcode_s* src = bhvm_hf3_vm_lib_fcode_s_fcode_get( o, src_name );
+    if( !src ) return;
+    bhvm_hf3_vm_fcode_s* dst = bhvm_hf3_vm_lib_fcode_s_fcode_get_or_new( o, name );
+    BFOR_EACH( i, src ) bhvm_hf3_vm_fcode_s_pi_push_c( dst, src->data[ i ].pi );
+}
+
+void bhvm_hf3_vm_lib_fcode_s_fcode_remove( bhvm_hf3_vm_lib_fcode_s* o, tp_t name )
+{
+    uz_t* pidx = bcore_hmap_tpuz_s_get( &o->map, name );
+    if( !pidx ) return;
+    sz_t idx = *pidx;
+    bhvm_hf3_vm_fcode_s_discard( o->arr.data[ idx ] );
+    o->arr.size--;
+    o->arr.data[ idx ] = o->arr.data[ o->arr.size ];
+    o->arr.data[ o->arr.size ] = NULL;
+    if( idx < o->arr.size ) bcore_hmap_tpuz_s_set( &o->map, o->arr.data[ idx ]->name, idx );
+}
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_frame_s )
 "aware bhvm_hf3_vm"
 "{"
     "bhvm_hf3_vm_arr_holor_s arr_holor;"
     "bhvm_hf3_vm_lib_mcode_s lib_mcode;"
+    "bhvm_hf3_vm_lib_fcode_s lib_fcode;"
     "bcore_hmap_name_s map_name;"
     "tp_t mcode_setup = 0;"
     "tp_t mcode_shelve = 0;"
@@ -765,6 +893,14 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_vm_frame_s )
     "func ^:mcode_push_reverse;"
     "func ^:mcode_remove;"
     "func ^:mcode_run;"
+    "func ^:fcode_exists;"
+    "func ^:fcode_get;"
+    "func ^:fcode_get_or_new;"
+    "func ^:fcode_reset;"
+    "func ^:fcode_pi_push_d;"
+    "func ^:fcode_pi_push_c;"
+    "func ^:fcode_push;"
+    "func ^:fcode_remove;"
 "}";
 
 BCORE_DEFINE_SPECT( bcore_inst, bhvm_hf3_vm )
@@ -772,6 +908,7 @@ BCORE_DEFINE_SPECT( bcore_inst, bhvm_hf3_vm )
     "bcore_spect_header_s header;"
     "feature aware bhvm_hf3_vm : run;"
     "feature aware bhvm_hf3_vm : mrun;"
+    "feature aware bhvm_hf3_vm : trun;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2088,6 +2225,1578 @@ void bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_set_arg( bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s* o
     if( id == bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_sig( o )[ 3 ] ) o->d = idx;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hf3_vm_pi
+
+BCORE_DEFINE_SPECT( bhvm_hf3_vm, bhvm_hf3_vm_pi )
+"{"
+    "bcore_spect_header_s header;"
+    "feature aware bhvm_hf3_vm_pi : get_class;"
+"}";
+
+/**********************************************************************************************************************/
+// source: bhvm_lop.h
+#include "bhvm_lop.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_lop
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_lop_ar0
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar0_zro_s )
+"aware bhvm_lop_ar0"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar0:knit_v;"
+"}";
+
+void bhvm_lop_ar0_zro_s_knit_v( tp_t tknit, vd_t r, sz_t s )
+{
+    assert( s == 0 || r );
+    switch( tknit )
+    {
+        case BKNIT_F2: { f2_t v = bhvm_lop_ar0_zro_s_f2(); for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=v; } } break;
+        case BKNIT_F3: { f3_t v = bhvm_lop_ar0_zro_s_f3(); for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=v; } } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar0_one_s )
+"aware bhvm_lop_ar0"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar0:knit_v;"
+"}";
+
+void bhvm_lop_ar0_one_s_knit_v( tp_t tknit, vd_t r, sz_t s )
+{
+    assert( s == 0 || r );
+    switch( tknit )
+    {
+        case BKNIT_F2: { f2_t v = bhvm_lop_ar0_one_s_f2(); for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=v; } } break;
+        case BKNIT_F3: { f3_t v = bhvm_lop_ar0_one_s_f3(); for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=v; } } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_lop_ar1
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_identity_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_identity_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_identity_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_identity_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_identity_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_identity_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_neg_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_neg_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_neg_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_neg_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_neg_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_neg_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_floor_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_floor_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_floor_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_floor_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_floor_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_floor_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_ceil_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_ceil_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_ceil_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_ceil_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_ceil_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_ceil_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_exp_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_exp_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_exp_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_exp_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_exp_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_exp_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_inv_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_inv_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_inv_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_inv_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_inv_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_inv_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_lgst_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_lgst_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_lgst_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_lgst_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_lgst_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_lgst_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_lgst_hard_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_lgst_hard_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_lgst_hard_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_lgst_hard_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_lgst_hard_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_lgst_hard_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_lgst_leaky_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_lgst_leaky_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_lgst_leaky_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_lgst_leaky_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_lgst_leaky_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_lgst_leaky_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_tanh_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_tanh_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_tanh_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_tanh_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_tanh_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_tanh_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_tanh_hard_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_tanh_hard_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_tanh_hard_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_tanh_hard_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_tanh_hard_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_tanh_hard_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_tanh_leaky_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_tanh_leaky_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_tanh_leaky_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_tanh_leaky_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_tanh_leaky_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_tanh_leaky_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_softplus_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_softplus_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_softplus_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_softplus_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_softplus_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_softplus_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_relu_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_relu_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_relu_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_relu_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_relu_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_relu_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar1_relu_leaky_s )
+"aware bhvm_lop_ar1"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar1:knit_vv;"
+"}";
+
+void bhvm_lop_ar1_relu_leaky_s_knit_vv( tp_t tknit, vc_t a, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F22: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_relu_leaky_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F23: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_relu_leaky_s_f2(((f2_t*)a)[i]); } break;
+        case BKNIT_F32: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar1_relu_leaky_s_f3(((f3_t*)a)[i]); } break;
+        case BKNIT_F33: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar1_relu_leaky_s_f3(((f3_t*)a)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_lop_ar2
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_add_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_add_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_add_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_add_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_add_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_add_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_add_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_add_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_add_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_sub_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_sub_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_sub_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_sub_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_sub_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_sub_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_sub_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_sub_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_sub_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_mul_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_mul_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_mul_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_mul_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_mul_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_mul_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_mul_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_mul_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_mul_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_mul_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_mul_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_mul_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_mul_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_exp_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_exp_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_exp_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_exp_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_exp_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_exp_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_inv_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_inv_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_inv_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_inv_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_inv_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_inv_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_lgst_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_lgst_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_lgst_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_lgst_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_lgst_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_lgst_hard_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_lgst_hard_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_lgst_hard_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_lgst_hard_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_lgst_hard_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_lgst_leaky_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_lgst_leaky_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_lgst_leaky_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_lgst_leaky_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_lgst_leaky_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_tanh_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_tanh_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_tanh_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_tanh_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_tanh_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_tanh_hard_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_tanh_hard_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_tanh_hard_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_tanh_hard_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_tanh_hard_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_hard_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_tanh_leaky_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_tanh_leaky_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_tanh_leaky_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_tanh_leaky_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_tanh_leaky_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_softplus_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_softplus_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_softplus_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_softplus_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_softplus_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_softplus_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_relu_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_relu_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_relu_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_relu_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_relu_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_relu_leaky_dp_vy_s )
+"aware bhvm_lop_ar2"
+"{"
+    "func ^:f2;"
+    "func ^:f3;"
+    "func bhvm_lop_ar2:knit_vvv;"
+    "func bhvm_lop_ar2:knit_acc_vvv;"
+    "func bhvm_lop_ar2:knit_vsv;"
+    "func bhvm_lop_ar2:knit_acc_vsv;"
+"}";
+
+void bhvm_lop_ar2_relu_leaky_dp_vy_s_knit_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_relu_leaky_dp_vy_s_knit_acc_vvv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_relu_leaky_dp_vy_s_knit_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+void bhvm_lop_ar2_relu_leaky_dp_vy_s_knit_acc_vsv( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_relu_leaky_dp_vy_s_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+/**********************************************************************************************************************/
+// source: bhvm_holor.h
+#include "bhvm_holor.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_shape_s )
+"bcore_array"
+"{"
+    "sz_t [];"
+    "bl_t htp;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_value_s )
+"bcore_array"
+"{"
+    "typed [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_holor_s )
+"aware bcore_inst"
+"{"
+    "bhvm_shape_s s;"
+    "bhvm_value_s v;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_holor_adl_s )
+"aware bcore_array"
+"{"
+    "bhvm_holor_s => [];"
+"}";
+
+/**********************************************************************************************************************/
+// source: bhvm_hop.h
+#include "bhvm_hop.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hop
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hop_ar2
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_add_s )
+"aware bhvm_hop_ar2"
+"{"
+    "func ^:f;"
+"}";
+
+void bhvm_hop_ar2_add_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    assert( a->v.size == r->v.size );
+    tp_t tknit = BKNIT_FA3( a->v.type, b->v.type, r->v.type );
+    if(      b->v.size == 1         ) bhvm_lop_ar2_add_s_knit_vsv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+    else if( b->v.size == a->v.size ) bhvm_lop_ar2_add_s_knit_vvv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+    else ERR_fa( "Vector size mismatch." );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_sub_s )
+"aware bhvm_hop_ar2"
+"{"
+    "func ^:f;"
+"}";
+
+void bhvm_hop_ar2_sub_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    assert( a->v.size == r->v.size );
+    tp_t tknit = BKNIT_FA3( a->v.type, b->v.type, r->v.type );
+    if(      b->v.size == 1         ) bhvm_lop_ar2_sub_s_knit_vsv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+    else if( b->v.size == a->v.size ) bhvm_lop_ar2_sub_s_knit_vvv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+    else ERR_fa( "Vector size mismatch." );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_hmul_s )
+"aware bhvm_hop_ar2"
+"{"
+    "func ^:f;"
+"}";
+
+void bhvm_hop_ar2_hmul_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    assert( a->v.size == r->v.size );
+    tp_t tknit = BKNIT_FA3( a->v.type, b->v.type, r->v.type );
+    if(      b->v.size == 1         ) bhvm_lop_ar2_mul_s_knit_vsv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+    else if( b->v.size == a->v.size ) bhvm_lop_ar2_mul_s_knit_vvv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+    else ERR_fa( "Vector size mismatch." );
+}
+
 /**********************************************************************************************************************/
 
 vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
@@ -2097,7 +3806,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 221110954 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3051128862 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_hf3.h
@@ -2442,6 +4151,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             // source: bhvm_hf3_vm.h
 
             // group: bhvm_hf3_vm
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_hparam_s );
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_holor_s );
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_arr_holor_s );
             BCORE_REGISTER_FEATURE( bhvm_hf3_vm_run );
@@ -2467,6 +4177,28 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_mcode_remove, bhvm_hf3_vm_lib_mcode_s_mcode_remove );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_mcode_mrun, bhvm_hf3_vm_lib_mcode_s_mcode_mrun );
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_lib_mcode_s );
+            BCORE_REGISTER_FEATURE( bhvm_hf3_vm_trun );
+            BCORE_REGISTER_FFUNC( bcore_inst_call_copy_x, bhvm_hf3_vm_fpi_s_copy_x );
+            BCORE_REGISTER_FFUNC( bcore_via_call_mutated, bhvm_hf3_vm_fpi_s_mutated );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_trun, bhvm_hf3_vm_fpi_s_trun );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_fpi_s );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_pi_push_d, bhvm_hf3_vm_fcode_s_pi_push_d );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_pi_push_c, bhvm_hf3_vm_fcode_s_pi_push_c );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_trun, bhvm_hf3_vm_fcode_s_trun );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_fcode_s );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_arr_fcode_s );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_thread_s );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_clear, bhvm_hf3_vm_lib_fcode_s_clear );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_exists, bhvm_hf3_vm_lib_fcode_s_fcode_exists );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_get, bhvm_hf3_vm_lib_fcode_s_fcode_get );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_get_or_new, bhvm_hf3_vm_lib_fcode_s_fcode_get_or_new );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_reset, bhvm_hf3_vm_lib_fcode_s_fcode_reset );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_pi_push_c, bhvm_hf3_vm_lib_fcode_s_fcode_pi_push_c );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_pi_push_d, bhvm_hf3_vm_lib_fcode_s_fcode_pi_push_d );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_push, bhvm_hf3_vm_lib_fcode_s_fcode_push );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_remove, bhvm_hf3_vm_lib_fcode_s_fcode_remove );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_trun, bhvm_hf3_vm_lib_fcode_s_fcode_trun );
+            BCORE_REGISTER_OBJECT( bhvm_hf3_vm_lib_fcode_s );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_setup, bhvm_hf3_vm_frame_s_setup );
             BCORE_REGISTER_FFUNC( bcore_via_call_mutated, bhvm_hf3_vm_frame_s_mutated );
             BCORE_REGISTER_FFUNC( bcore_via_call_shelve, bhvm_hf3_vm_frame_s_shelve );
@@ -2480,6 +4212,14 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_mcode_push_reverse, bhvm_hf3_vm_frame_s_mcode_push_reverse );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_mcode_remove, bhvm_hf3_vm_frame_s_mcode_remove );
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_mcode_run, bhvm_hf3_vm_frame_s_mcode_run );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_exists, bhvm_hf3_vm_frame_s_fcode_exists );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_get, bhvm_hf3_vm_frame_s_fcode_get );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_get_or_new, bhvm_hf3_vm_frame_s_fcode_get_or_new );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_reset, bhvm_hf3_vm_frame_s_fcode_reset );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_pi_push_d, bhvm_hf3_vm_frame_s_fcode_pi_push_d );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_pi_push_c, bhvm_hf3_vm_frame_s_fcode_pi_push_c );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_push, bhvm_hf3_vm_frame_s_fcode_push );
+            BCORE_REGISTER_FFUNC( bhvm_hf3_vm_fcode_remove, bhvm_hf3_vm_frame_s_fcode_remove );
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_frame_s );
             BCORE_REGISTER_SPECT( bhvm_hf3_vm );
 
@@ -3003,6 +4743,216 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_hf3_vm_op_set_arg, bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s_set_arg );
             BCORE_REGISTER_OBJECT( bhvm_hf3_vm_op_ar3_dp_cb_hdiv_s );
             BCORE_REGISTER_TRAIT( bhvm_hf3_vm_op_ar3_dp, bhvm_hf3_vm_op_ar3 );
+
+            // group: bhvm_hf3_vm_pi
+            BCORE_REGISTER_FEATURE( bhvm_hf3_vm_pi_get_class );
+            BCORE_REGISTER_SPECT( bhvm_hf3_vm_pi );
+
+            // --------------------------------------------------------------------
+            // source: bhvm_lop.h
+
+            // group: bhvm_lop
+            BCORE_REGISTER_TRAIT( bhvm_lop, bcore_inst );
+
+            // group: bhvm_lop_ar0
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar0_f2, bhvm_lop_ar0_zro_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar0_f3, bhvm_lop_ar0_zro_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar0_knit_v, bhvm_lop_ar0_zro_s_knit_v );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar0_zro_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar0_f2, bhvm_lop_ar0_one_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar0_f3, bhvm_lop_ar0_one_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar0_knit_v, bhvm_lop_ar0_one_s_knit_v );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar0_one_s );
+            BCORE_REGISTER_TRAIT( bhvm_lop_ar0, bhvm_lop );
+
+            // group: bhvm_lop_ar1
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_identity_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_identity_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_identity_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_identity_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_neg_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_neg_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_neg_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_neg_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_floor_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_floor_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_floor_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_floor_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_ceil_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_ceil_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_ceil_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_ceil_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_exp_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_exp_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_exp_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_exp_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_inv_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_inv_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_inv_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_inv_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_lgst_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_lgst_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_lgst_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_lgst_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_lgst_hard_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_lgst_hard_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_lgst_hard_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_lgst_hard_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_lgst_leaky_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_lgst_leaky_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_lgst_leaky_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_lgst_leaky_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_tanh_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_tanh_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_tanh_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_tanh_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_tanh_hard_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_tanh_hard_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_tanh_hard_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_tanh_hard_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_tanh_leaky_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_tanh_leaky_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_tanh_leaky_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_tanh_leaky_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_softplus_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_softplus_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_softplus_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_softplus_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_relu_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_relu_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_relu_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_relu_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f2, bhvm_lop_ar1_relu_leaky_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_f3, bhvm_lop_ar1_relu_leaky_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar1_knit_vv, bhvm_lop_ar1_relu_leaky_s_knit_vv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar1_relu_leaky_s );
+            BCORE_REGISTER_TRAIT( bhvm_lop_ar1, bhvm_lop );
+
+            // group: bhvm_lop_ar2
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_add_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_add_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_add_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_add_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_add_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_add_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_add_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_sub_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_sub_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_sub_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_sub_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_sub_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_sub_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_sub_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_mul_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_mul_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_mul_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_mul_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_mul_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_mul_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_exp_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_exp_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_exp_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_exp_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_exp_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_exp_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_exp_dp_vy_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_inv_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_inv_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_inv_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_inv_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_inv_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_inv_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_inv_dp_vy_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_lgst_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_lgst_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_lgst_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_lgst_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_lgst_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_lgst_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_lgst_dp_vy_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_lgst_hard_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_lgst_hard_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_lgst_hard_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_lgst_hard_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_lgst_hard_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_lgst_hard_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_lgst_hard_dp_vy_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_lgst_leaky_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_lgst_leaky_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_lgst_leaky_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_lgst_leaky_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_lgst_leaky_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_lgst_leaky_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_lgst_leaky_dp_vy_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_tanh_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_tanh_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_tanh_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_tanh_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_tanh_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_tanh_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_tanh_dp_vy_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_tanh_hard_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_tanh_hard_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_tanh_hard_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_tanh_hard_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_tanh_hard_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_tanh_hard_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_tanh_hard_dp_vy_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_tanh_leaky_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_tanh_leaky_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_tanh_leaky_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_tanh_leaky_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_tanh_leaky_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_tanh_leaky_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_tanh_leaky_dp_vy_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_softplus_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_softplus_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_softplus_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_softplus_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_softplus_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_softplus_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_softplus_dp_vy_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_relu_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_relu_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_relu_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_relu_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_relu_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_relu_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_relu_dp_vy_s );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f2, bhvm_lop_ar2_relu_leaky_dp_vy_s_f2 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_f3, bhvm_lop_ar2_relu_leaky_dp_vy_s_f3 );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vvv, bhvm_lop_ar2_relu_leaky_dp_vy_s_knit_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vvv, bhvm_lop_ar2_relu_leaky_dp_vy_s_knit_acc_vvv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_vsv, bhvm_lop_ar2_relu_leaky_dp_vy_s_knit_vsv );
+            BCORE_REGISTER_FFUNC( bhvm_lop_ar2_knit_acc_vsv, bhvm_lop_ar2_relu_leaky_dp_vy_s_knit_acc_vsv );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_relu_leaky_dp_vy_s );
+            BCORE_REGISTER_TRAIT( bhvm_lop_ar2, bhvm_lop );
+
+            // --------------------------------------------------------------------
+            // source: bhvm_holor.h
+
+            // group: bhvm
+            BCORE_REGISTER_OBJECT( bhvm_shape_s );
+            BCORE_REGISTER_OBJECT( bhvm_value_s );
+            BCORE_REGISTER_OBJECT( bhvm_holor_s );
+            BCORE_REGISTER_OBJECT( bhvm_holor_adl_s );
+            BCORE_REGISTER_TRAIT( bhvm, bcore_inst );
+
+            // --------------------------------------------------------------------
+            // source: bhvm_hop.h
+
+            // group: bhvm_hop
+            BCORE_REGISTER_TRAIT( bhvm_hop, bcore_inst );
+
+            // group: bhvm_hop_ar2
+            BCORE_REGISTER_FFUNC( bhvm_hop_ar2_f, bhvm_hop_ar2_add_s_f );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_add_s );
+            BCORE_REGISTER_FFUNC( bhvm_hop_ar2_f, bhvm_hop_ar2_sub_s_f );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_s );
+            BCORE_REGISTER_FFUNC( bhvm_hop_ar2_f, bhvm_hop_ar2_hmul_s_f );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_hmul_s );
+            BCORE_REGISTER_TRAIT( bhvm_hop_ar2, bhvm_hop );
         }
         break;
         default: break;
