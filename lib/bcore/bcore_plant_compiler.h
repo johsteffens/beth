@@ -150,7 +150,12 @@
  *     'func ^ : <func_name>'  <trait_name> is used as perspective
  *
  *    Special characters:
- *      '@' : inserts the stamps full type name. If '@' is followed by an alphanumeric character, '_' is appended to type name.
+ *      '@' : inserts the stamps full type name.
+ *      '$R': inserts the stamps relative type name without '_s'.
+ *            Example: In group 'bcore_fog'
+ *               stamp :blue       -> $R: "blue"
+ *               stamp bcore_blue' -> $R: "blue"
+ *               stamp bmath_blue' -> $R: "bmath_blue"
  *
  *    Special traits:
  *      bcore_array: expands additional array-functions

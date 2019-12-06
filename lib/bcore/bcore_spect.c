@@ -30,7 +30,10 @@
 /**********************************************************************************************************************/
 // bcore_spect_header_s
 
-BCORE_DEFINE_FUNCTIONS_SELF_OBJECT_FLAT( bcore_spect_header_s, "bcore_spect_header_s = { tp_t p_type; tp_t o_type; }")
+//BCORE_DEFINE_FUNCTIONS_SELF_OBJECT_FLAT( bcore_spect_header_s, "bcore_spect_header_s = { tp_t p_type; tp_t o_type; }" )
+
+BCORE_DEFINE_OBJECT_FLAT( , bcore_spect_header_s ) "{ tp_t p_type; tp_t o_type; }";
+
 
 /**********************************************************************************************************************/
 // hash map

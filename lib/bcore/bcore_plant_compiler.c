@@ -414,6 +414,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_stamp_s )
     bcore_plant_group_s* group;
 
     st_s           name; // global name
+    st_s       rel_name; // relative name: if group->name matches first matching characters of group name are stripped
     st_s           trait_name;
     st_s         * self_source;
     bcore_plant_funcs_s funcs;
@@ -426,6 +427,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_stamp_s )
     "vd_t group;"
 
     "st_s            name;" // global name
+    "st_s        rel_name;" // relative name: if group->name matches first matching characters of group name are stripped
     "st_s            trait_name;"
     "st_s         => self_source;"
     "bcore_plant_funcs_s funcs;"
@@ -1153,6 +1155,7 @@ static void bcore_plant_body_s_parse( bcore_plant_body_s* o, bcore_source* sourc
             {
                 const bcore_plant_body_s* body = item;
                 st_s_copy( &o->code, &body->code );
+                o->go_inline = body->go_inline;
             }
         }
         else
@@ -1635,9 +1638,37 @@ static void bcore_plant_stamp_s_resolve_chars( bcore_plant_stamp_s* o, st_s* str
             {
                 st_s_push_sc( buf, o->name.sc );
                 char next = string->data[ i + 1 ];
-                if( ( next >= 'A' && next <= 'Z' ) || ( next >= 'a' && next <= 'z' )|| ( next >= '0' && next <= '9' ) || ( next == '_' ) )
+
+                /// TODO: Remove this check when all old code has been corrected
+                if( ( next >= 'A' && next <= 'Z' ) || ( next >= 'a' && next <= 'z' )|| ( next >= '0' && next <= '9' ) /*|| ( next == '_' )*/ )
                 {
-                    st_s_push_char( buf, '_' );
+                    bcore_source_point_s_parse_err_fa
+                    (
+                        &o->source_point,
+                        "'#<sc_t>':\nCharacter '@': Automatic underscoring is deprecated. Place manual '_' please.",
+                        string->sc
+                    );
+                    //st_s_push_char( buf, '_' );
+                }
+            }
+            break;
+
+            case '$':
+            {
+                i++;
+                c = string->data[ i ];
+                switch( c )
+                {
+                    case 'R': st_s_push_sc( buf, o->rel_name.sc ); break;
+                    default :
+                    {
+                        bcore_source_point_s_parse_err_fa
+                        (
+                            &o->source_point,
+                            "'#<sc_t>':\nInvalid character following '$'.",
+                            string->sc
+                        );
+                    }
                 }
             }
             break;
@@ -1775,6 +1806,14 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
     o->group = group;
 
     bcore_plant_group_s_parse_name( group, stamp_name, source );
+
+    // rel name
+    {
+        sz_t i = 0;
+        for( i = 0; i < group->name.size; i++ ) if( group->name.data[ i ] != stamp_name->data[ i ] ) break;
+        if( i == group->name.size && stamp_name->data[ i ] == '_' ) i++;
+        st_s_copy_sc( &o->rel_name, stamp_name->sc + i );
+    }
 
     if( stamp_name->size >= 2 && sc_t_equ( stamp_name->sc + stamp_name->size - 2, "_s" ) )
     {

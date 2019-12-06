@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-11-30T13:11:26Z
+ *  Last File Update: 2019-12-05T16:52:40Z
  *
  *  Copyright and License of this File:
  *
@@ -90,9 +90,6 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_plant_sample_features_object_s )
     "func bcore_plant_sample_features:get_size;"
     "func bcore_plant_sample_features:simple_function;"
 "}";
-
-void bcore_plant_sample_features_object_s_to_stdout( const bcore_plant_sample_features_object_s* o )
-{ bcore_txt_ml_a_to_stdout( o ); }
 
 BCORE_DEFINE_SPECT( bcore_plant_sample, bcore_plant_sample_features )
 "{"
@@ -205,7 +202,7 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 3595400715 ) );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 1614285838 ) );
 
             // --------------------------------------------------------------------
             // source: bcore_file.h

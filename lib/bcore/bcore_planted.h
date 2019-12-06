@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-11-30T13:11:26Z
+ *  Last File Update: 2019-12-05T16:52:40Z
  *
  *  Copyright and License of this File:
  *
@@ -89,7 +89,7 @@
   BCORE_DECLARE_OBJECT( bcore_plant_sample_features_object_s ) \
     {aware_t _;st_s name1;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
   void bcore_plant_sample_features_object_s_setup( bcore_plant_sample_features_object_s* o, sz_t n ); \
-  void bcore_plant_sample_features_object_s_to_stdout( const bcore_plant_sample_features_object_s* o ); \
+  static inline void bcore_plant_sample_features_object_s_to_stdout( const bcore_plant_sample_features_object_s* o ){ bcore_txt_ml_a_to_stdout( o ); } \
   sz_t bcore_plant_sample_features_object_s_get_size( const bcore_plant_sample_features_object_s* o ); \
   static inline void bcore_plant_sample_features_object_s_simple_function( bcore_plant_sample_features_object_s* o, sz_t n ){ /* do nothing */ }
 #define BETH_EXPAND_GROUP_bcore_plant_sample_features \
