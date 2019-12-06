@@ -63,8 +63,8 @@ group :ar0 =
 
     func :: :get_arity = { return 0; };
     func :  :f    = { ERR_fa( "Not available." ); return 0; };
-    func :  :of   = { return @f(); };
-    func :: :aofx = { return @of( o ); };
+    func :  :of   = { return @_f(); };
+    func :: :aofx = { return @_of( o ); };
 
     stamp :zero    = aware : {         func : :f  = { return  0.0; }; };
     stamp :one     = aware : {         func : :f  = { return  1.0; }; };
@@ -85,10 +85,10 @@ group :ar1 =
     func :: :get_arity = { return 1; };
     func  : :  fx = { ERR_fa( "Not available." ); return 0; };
     func  : :  gy = { ERR_fa( "Not available." ); return 0; };
-    func  : : ofx = { return @fx( a ); };
-    func  : : ogy = { return @gy( y ); };
-    func :: :aofx = { return @ofx( o, a[0] ); };
-    func :: :aogy = { return @ogy( o, a[0] ); };
+    func  : : ofx = { return @_fx( a ); };
+    func  : : ogy = { return @_gy( y ); };
+    func :: :aofx = { return @_ofx( o, a[0] ); };
+    func :: :aogy = { return @_ogy( o, a[0] ); };
 
     // ======= (elementary functions) ============
 
@@ -179,13 +179,13 @@ group :ar2 =
     func  : :gxa = { ERR_fa( "Not available." ); return 0; };
     func  : :gxb = { ERR_fa( "Not available." ); return 0; };
 
-    func  : :ofx  = { return @fx(  a, b ); };
-    func  : :ogxa = { return @gxa( a, b ); };
-    func  : :ogxb = { return @gxb( a, b ); };
+    func  : :ofx  = { return @_fx(  a, b ); };
+    func  : :ogxa = { return @_gxa( a, b ); };
+    func  : :ogxb = { return @_gxb( a, b ); };
 
     func :: :get_arity = { return 2; };
-    func :: :aofx = { return @ofx( o, a[0], a[1] ); };
-    func :: :aogx = { return ( ch == 0 ) ? @ogxa( o, a[0], a[1] ) : @ogxb( o, a[0], a[1] ); };
+    func :: :aofx = { return @_ofx( o, a[0], a[1] ); };
+    func :: :aogx = { return ( ch == 0 ) ? @_ogxa( o, a[0], a[1] ) : @_ogxb( o, a[0], a[1] ); };
 
     stamp :add = aware :
     {
@@ -218,7 +218,7 @@ group :ar2 =
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**********************************************************************************************************************/
 

@@ -106,6 +106,12 @@ bl_t BCATU(bmath_vfx_s,is_nan)( const bmath_vfx_s* o );
 /// total sum of squares
 fx_t BCATU(bmath_vfx_s,tss)( const bmath_vfx_s* o );
 
+/** fdev = ||f(o) - x||
+ *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
+ */
+fx_t BCATU(bmath_vfx_s,fdev_equ)( const bmath_vfx_s* a, const bmath_vfx_s* b );
+fx_t BCATU(bmath_vfx_s,fdev_zro)( const bmath_vfx_s* o );
+
 void BCATU(bmath_vfx_s,zro)( bmath_vfx_s* o );
 void BCATU(bmath_vfx_s,neg)( const bmath_vfx_s* o, bmath_vfx_s* res );
 void BCATU(bmath_vfx_s,cpy)( const bmath_vfx_s* o, bmath_vfx_s* res );
