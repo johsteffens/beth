@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-06T20:06:12Z
+ *  Last File Update: 2019-12-07T10:02:34Z
  *
  *  Copyright and License of this File:
  *
@@ -3782,13 +3782,13 @@ void bhvm_hop_ar2_sub_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_ho
     else ERR_fa( "Vector size mismatch." );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_hmul_s )
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_s )
 "aware bhvm_hop_ar2"
 "{"
     "func ^:f;"
 "}";
 
-void bhvm_hop_ar2_hmul_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+void bhvm_hop_ar2_mul_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( a->v.size == r->v.size );
     tp_t tknit = BKNIT_FA3( a->v.type, b->v.type, r->v.type );
@@ -3806,7 +3806,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3051128862 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 1246563611 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_hf3.h
@@ -4950,8 +4950,8 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_add_s );
             BCORE_REGISTER_FFUNC( bhvm_hop_ar2_f, bhvm_hop_ar2_sub_s_f );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_s );
-            BCORE_REGISTER_FFUNC( bhvm_hop_ar2_f, bhvm_hop_ar2_hmul_s_f );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_hmul_s );
+            BCORE_REGISTER_FFUNC( bhvm_hop_ar2_f, bhvm_hop_ar2_mul_s_f );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_s );
             BCORE_REGISTER_TRAIT( bhvm_hop_ar2, bhvm_hop );
         }
         break;

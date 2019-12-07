@@ -414,7 +414,6 @@ BCORE_DECLARE_OBJECT( bcore_plant_stamp_s )
     bcore_plant_group_s* group;
 
     st_s           name; // global name
-    st_s       rel_name; // relative name: if group->name matches first matching characters of group name are stripped
     st_s           trait_name;
     st_s         * self_source;
     bcore_plant_funcs_s funcs;
@@ -427,7 +426,6 @@ BCORE_DEFINE_OBJECT_INST( bcore_plant, bcore_plant_stamp_s )
     "vd_t group;"
 
     "st_s            name;" // global name
-    "st_s        rel_name;" // relative name: if group->name matches first matching characters of group name are stripped
     "st_s            trait_name;"
     "st_s         => self_source;"
     "bcore_plant_funcs_s funcs;"
@@ -1611,6 +1609,20 @@ static sc_t bcore_plant_stamp_s_get_global_name_sc( const bcore_plant_stamp_s* o
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static sc_t bcore_plant_stamp_s_get_rel_name_sc( const bcore_plant_stamp_s* o )
+{
+    sc_t group_name = o->group->name.sc;
+    sc_t stamp_name = o->name.sc;
+
+    sz_t i = 0;
+    while( group_name[ i ] == stamp_name[ i ] && group_name[ i ] != 0 ) i++;
+    if( group_name[ i ] == 0 && stamp_name[ i ] == '_' ) i++;
+
+    return stamp_name + i;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static tp_t bcore_plant_stamp_s_get_hash( const bcore_plant_stamp_s* o )
 {
     tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
@@ -1659,7 +1671,21 @@ static void bcore_plant_stamp_s_resolve_chars( bcore_plant_stamp_s* o, st_s* str
                 c = string->data[ i ];
                 switch( c )
                 {
-                    case 'R': st_s_push_sc( buf, o->rel_name.sc ); break;
+                    case 'R':
+                    {
+                        sc_t rel_name = bcore_plant_stamp_s_get_rel_name_sc( o );
+                        sz_t size = bcore_strlen( rel_name );
+                        if( size >= 2 && sc_t_equal( rel_name + size - 2, "_s" ) )
+                        {
+                            st_s_push_sc_n( buf, rel_name, size - 2 );
+                        }
+                        else
+                        {
+                            st_s_push_sc( buf, rel_name );
+                        }
+                    }
+                    break;
+
                     default :
                     {
                         bcore_source_point_s_parse_err_fa
@@ -1798,22 +1824,14 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
 
     o->self_source = st_s_create();
 
-    st_s* stamp_name  = BLM_CREATE( st_s );
-    st_s* trait_name  = BLM_CREATE( st_s );
+    st_s* stamp_name = BLM_CREATE( st_s );
+    st_s* trait_name = BLM_CREATE( st_s );
 
     bcore_source_point_s_set( &o->source_point, source );
 
     o->group = group;
 
     bcore_plant_group_s_parse_name( group, stamp_name, source );
-
-    // rel name
-    {
-        sz_t i = 0;
-        for( i = 0; i < group->name.size; i++ ) if( group->name.data[ i ] != stamp_name->data[ i ] ) break;
-        if( i == group->name.size && stamp_name->data[ i ] == '_' ) i++;
-        st_s_copy_sc( &o->rel_name, stamp_name->sc + i );
-    }
 
     if( stamp_name->size >= 2 && sc_t_equ( stamp_name->sc + stamp_name->size - 2, "_s" ) )
     {

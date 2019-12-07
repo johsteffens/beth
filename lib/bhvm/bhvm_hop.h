@@ -35,6 +35,7 @@
 PLANT_GROUP( bhvm_hop, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
 /// binary operators
 group :ar2 =
 {
@@ -42,41 +43,18 @@ group :ar2 =
 
     signature void f( plain, const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
 
-    stamp :add =
+    body body_lop_f =
     {
-        func : :f =
-        {
-            assert( a->v.size == r->v.size );
-            tp_t tknit = BKNIT_FA3( a->v.type, b->v.type, r->v.type );
-            if(      b->v.size == 1         ) bhvm_lop_ar2_add_s_knit_vsv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
-            else if( b->v.size == a->v.size ) bhvm_lop_ar2_add_s_knit_vvv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
-            else ERR_fa( "Vector size mismatch." );
-        };
+        assert( a->v.size == r->v.size );
+        tp_t tknit = BKNIT_FA3( a->v.type, b->v.type, r->v.type );
+        if(      b->v.size == 1         ) bhvm_lop_ar2_$R_s_knit_vsv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+        else if( b->v.size == a->v.size ) bhvm_lop_ar2_$R_s_knit_vvv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+        else ERR_fa( "Vector size mismatch." );
     };
 
-    stamp :sub =
-    {
-        func : :f =
-        {
-            assert( a->v.size == r->v.size );
-            tp_t tknit = BKNIT_FA3( a->v.type, b->v.type, r->v.type );
-            if(      b->v.size == 1         ) bhvm_lop_ar2_sub_s_knit_vsv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
-            else if( b->v.size == a->v.size ) bhvm_lop_ar2_sub_s_knit_vvv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
-            else ERR_fa( "Vector size mismatch." );
-        };
-    };
-
-    stamp :hmul =
-    {
-        func : :f =
-        {
-            assert( a->v.size == r->v.size );
-            tp_t tknit = BKNIT_FA3( a->v.type, b->v.type, r->v.type );
-            if(      b->v.size == 1         ) bhvm_lop_ar2_mul_s_knit_vsv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
-            else if( b->v.size == a->v.size ) bhvm_lop_ar2_mul_s_knit_vvv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
-            else ERR_fa( "Vector size mismatch." );
-        };
-    };
+    stamp :add = { func : :f = :body_lop_f; };
+    stamp :sub = { func : :f = :body_lop_f; };
+    stamp :mul = { func : :f = :body_lop_f; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
