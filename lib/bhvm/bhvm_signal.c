@@ -15,6 +15,7 @@
 
 #include "bhvm_signal.h"
 #include "bhvm_planted.h"
+#include "bhvm_planted_lop.h"
 #include "bhvm_hf3.h"
 #include "bhvm_hf3_op.h"
 #include "bhvm_hf3_vm.h"
@@ -39,6 +40,7 @@ vd_t bhvm_signal_handler( const bcore_signal_s* o )
         bcore_fp_signal_handler arr[] =
         {
             bhvm_planted_signal_handler,
+            bhvm_planted_lop_signal_handler,
             bhvm_hf3_signal_handler,
             bhvm_hf3_op_signal_handler,
             bhvm_hf3_vm_signal_handler,

@@ -569,6 +569,8 @@ BCORE_DECLARE_OBJECT( bcore_plant_compiler_s )
 
     // parameters
     st_s* sh_file_undo_expand;
+    bl_t  register_plain_functions;
+    bl_t  register_signatures;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_compiler_s )
@@ -584,6 +586,8 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_compiler_s )
 
     // parameters
     "st_s => sh_file_undo_expand;"
+    "bl_t register_plain_functions = true;"
+    "bl_t register_signatures = true;"
 
     // functions
     "func bcore_plant_fp : finalize;"
@@ -1564,6 +1568,36 @@ static void bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static bl_t bcore_plant_func_s_registerable( const bcore_plant_func_s* o )
+{
+    if( bcore_plant_compiler_s_item_exists( plant_compiler_g, o->type ) )
+    {
+        const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, o->type );
+        if( *(aware_t*)item == TYPEOF_bcore_plant_signature_s )
+        {
+            if( plant_compiler_g->register_signatures )
+            {
+                const bcore_plant_signature_s* signature = ( bcore_plant_signature_s* )item;
+                return ( signature->arg_o != 0 || plant_compiler_g->register_plain_functions );
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
+    else
+    {
+        return true;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// funcs
 
@@ -1735,6 +1769,7 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
             bcore_plant_func_s* func = bcore_plant_func_s_create();
             bcore_plant_func_s_parse( func, group, o, source );
 
+            bl_t register_func = bcore_plant_func_s_registerable( func );
             sz_t idx = bcore_plant_funcs_s_get_index( &o->funcs, func->type );
 
             if( idx >= 0 )
@@ -1744,7 +1779,7 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
                 {
                     bcore_plant_funcs_s_replace_d( &o->funcs, idx, func );
                     st_s_replace_sc_sc( o->self_source, prex_func->decl.sc, "" );
-                    st_s_push_st( o->self_source, &func->decl );
+                    if( register_func ) st_s_push_st( o->self_source, &func->decl );
                 }
                 else
                 {
@@ -1754,7 +1789,7 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
             else
             {
                 bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
-                st_s_push_st( o->self_source, &func->decl );
+                if( register_func ) st_s_push_st( o->self_source, &func->decl );
             }
         }
         else
@@ -1802,7 +1837,7 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
                 bcore_plant_func_s* func = fgroup->funcs.data[ i ];
                 if( !bcore_plant_funcs_s_exists( &o->funcs, func->type ) )
                 {
-                    st_s_push_st( o->self_source, &func->decl );
+                    if( bcore_plant_func_s_registerable( func ) ) st_s_push_st( o->self_source, &func->decl );
                     bcore_array_a_push( ( bcore_array* )&o->funcs, sr_awc( func ) );
                 }
             }
@@ -2221,8 +2256,11 @@ static void bcore_plant_stamp_s_expand_init1( const bcore_plant_stamp_s* o, sz_t
             }
             else if( *(aware_t*)item == TYPEOF_bcore_plant_signature_s )
             {
-                const bcore_plant_signature_s* signature = ( bcore_plant_signature_s* )item;
-                bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, signature->global_name.sc, o->name.sc, func->name.sc );
+                if( bcore_plant_func_s_registerable( func ) )
+                {
+                    const bcore_plant_signature_s* signature = ( bcore_plant_signature_s* )item;
+                    bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, signature->global_name.sc, o->name.sc, func->name.sc );
+                }
             }
             else
             {

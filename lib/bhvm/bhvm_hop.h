@@ -47,14 +47,36 @@ group :ar2 =
     {
         assert( a->v.size == r->v.size );
         tp_t tknit = BKNIT_FA3( a->v.type, b->v.type, r->v.type );
-        if(      b->v.size == 1         ) bhvm_lop_ar2_$R_s_knit_vsv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
-        else if( b->v.size == a->v.size ) bhvm_lop_ar2_$R_s_knit_vvv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+        if(      b->v.size == 1         ) bhvm_lop_ar2_$R_s_k_vs_cv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+        else if( b->v.size == a->v.size ) bhvm_lop_ar2_$R_s_k_vv_cv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
         else ERR_fa( "Vector size mismatch." );
     };
 
     stamp :add = { func : :f = :body_lop_f; };
     stamp :sub = { func : :f = :body_lop_f; };
     stamp :mul = { func : :f = :body_lop_f; };
+    stamp :div =
+    {
+        func : :f =
+        {
+            assert( a->v.size == r->v.size );
+            if( b->v.size == 1 )
+            {
+                tp_t tknit = BKNIT_FA3( a->v.type, TYPEOF_f3_t, r->v.type );
+                f3_t inv = f3_inv( b->v.type == TYPEOF_f2_t ? *(f2_t*)b->v.data : *(f3_t*)b->v.data );
+                bhvm_lop_ar2_mul_s_k_vs_cv( tknit, a->v.data, &inv, r->v.data, a->v.size );
+            }
+            else if( b->v.size == a->v.size )
+            {
+                tp_t tknit = BKNIT_FA3( a->v.type, b->v.type, r->v.type );
+                bhvm_lop_ar2_div_s_k_vv_cv( tknit, a->v.data, b->v.data, r->v.data, a->v.size );
+            }
+            else
+            {
+                ERR_fa( "Vector size mismatch." );
+            }
+        };
+    };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
