@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-09T10:54:09Z
+ *  Last File Update: 2019-12-09T11:12:48Z
  *
  *  Copyright and License of this File:
  *
@@ -39,8 +39,6 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_file_path_s )
     "hidden st_s => root;"
     "hidden st_s => full;"
     "func bcore_via_call:source;"
-    "func bcore_file:get_sc;"
-    "func bcore_file:set_sc;"
 "}";
 
 void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
@@ -88,7 +86,6 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_plant_sample_features_object_s )
     "func bcore_plant_sample_features:setup;"
     "func bcore_plant_sample_features:to_stdout;"
     "func bcore_plant_sample_features:get_size;"
-    "func bcore_plant_sample_features:simple_function;"
 "}";
 
 BCORE_DEFINE_SPECT( bcore_plant_sample, bcore_plant_sample_features )
@@ -202,15 +199,13 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 1614285838 ) );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 2497427137 ) );
 
             // --------------------------------------------------------------------
             // source: bcore_file.h
 
             // group: bcore_file
             BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_file_path_s_source );
-            BCORE_REGISTER_FFUNC( bcore_file_get_sc, bcore_file_path_s_get_sc );
-            BCORE_REGISTER_FFUNC( bcore_file_set_sc, bcore_file_path_s_set_sc );
             BCORE_REGISTER_OBJECT( bcore_file_path_s );
             BCORE_REGISTER_TRAIT( bcore_file, bcore_inst );
 
@@ -238,7 +233,6 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_plant_sample_features_setup, bcore_plant_sample_features_object_s_setup );
             BCORE_REGISTER_FFUNC( bcore_plant_sample_features_to_stdout, bcore_plant_sample_features_object_s_to_stdout );
             BCORE_REGISTER_FFUNC( bcore_plant_sample_features_get_size, bcore_plant_sample_features_object_s_get_size );
-            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_simple_function, bcore_plant_sample_features_object_s_simple_function );
             BCORE_REGISTER_OBJECT( bcore_plant_sample_features_object_s );
             BCORE_REGISTER_SPECT( bcore_plant_sample_features );
 

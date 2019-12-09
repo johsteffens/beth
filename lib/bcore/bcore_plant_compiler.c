@@ -1575,15 +1575,9 @@ static bl_t bcore_plant_func_s_registerable( const bcore_plant_func_s* o )
         const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, o->type );
         if( *(aware_t*)item == TYPEOF_bcore_plant_signature_s )
         {
-            if( plant_compiler_g->register_signatures )
-            {
-                const bcore_plant_signature_s* signature = ( bcore_plant_signature_s* )item;
-                return ( signature->arg_o != 0 || plant_compiler_g->register_plain_functions );
-            }
-            else
-            {
-                return false;
-            }
+            if( !plant_compiler_g->register_signatures ) return false;
+            const bcore_plant_signature_s* signature = ( bcore_plant_signature_s* )item;
+            return ( signature->arg_o != 0 || plant_compiler_g->register_plain_functions );
         }
         else
         {
