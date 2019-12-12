@@ -232,23 +232,23 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
 // cpu time assessment
 #define CPU_TIME_OF( expression, time_var ) \
-    { \
-        clock_t time = clock(); \
-        expression; \
-        time_var = clock() - time; \
-        time_var /= CLOCKS_PER_SEC; \
-    } \
+{ \
+    clock_t time = clock(); \
+    expression; \
+    time_var = clock() - time; \
+    time_var /= CLOCKS_PER_SEC; \
+} \
 
 //  gettimeofday is not standardized on all platforms
 #define ABS_TIME_OF( expression, time_var ) \
-    { \
-        struct timeval t0, t1; \
-        gettimeofday( &t0, NULL ); \
-        expression; \
-        gettimeofday( &t1, NULL ); \
-        time_var = t1.tv_sec - t0.tv_sec; \
-        time_var += ( t1.tv_usec - t0.tv_usec ) * 1E-6; \
-    } \
+{ \
+    struct timeval t0, t1; \
+    gettimeofday( &t0, NULL ); \
+    expression; \
+    gettimeofday( &t1, NULL ); \
+    time_var = t1.tv_sec - t0.tv_sec; \
+    time_var += ( t1.tv_usec - t0.tv_usec ) * 1E-6; \
+} \
 
 #define CPU_TIME_TO_STDOUT( expression ) \
 { \
