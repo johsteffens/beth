@@ -79,8 +79,8 @@ stamp :holor = aware bcore_inst
     :value_s v;
 };
 
-/// array of dynamic links
-stamp :holor_adl = aware bcore_array { :holor_s => []; };
+stamp :holor_adl = aware bcore_array { :holor_s => []; }; // dynamic array of links
+stamp :holor_ads = aware bcore_array { :holor_s    []; }; // dynamic array of solids
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -223,32 +223,6 @@ void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max,
  */
 f3_t bhvm_value_s_fdev_equ( const bhvm_value_s* a, const bhvm_value_s* b );
 f3_t bhvm_value_s_fdev_zro( const bhvm_value_s* o );
-
-/// lop operations
-
-//static inline void bhvm_value_s_add( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_s* r )
-//{
-//    assert( a->size == b->size && a->size == r->size );
-//    bhvm_lop_ar2_add_s_vvf_knit( BKNIT_FA3( a->type, b->type, r->type ), a->data, b->data, r->data, a->size );
-//}
-//
-//static inline void bhvm_value_s_sub( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_s* r )
-//{
-//    assert( a->size == b->size && a->size == r->size );
-//    bhvm_lop_ar2_sub_s_vvf_knit( BKNIT_FA3( a->type, b->type, r->type ), a->data, b->data, r->data, a->size );
-//}
-//
-//static inline void bhvm_value_s_mul( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_s* r )
-//{
-//    assert( a->size == b->size && a->size == r->size );
-//    bhvm_lop_ar2_mul_s_vvf_knit( BKNIT_FA3( a->type, b->type, r->type ), a->data, b->data, r->data, a->size );
-//}
-//
-//static inline void bhvm_value_s_div( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_s* r )
-//{
-//    assert( a->size == b->size && a->size == r->size );
-//    bhvm_lop_ar2_div_s_vvf_knit( BKNIT_FA3( a->type, b->type, r->type ), a->data, b->data, r->data, a->size );
-//}
 
 /**********************************************************************************************************************/
 /// holor

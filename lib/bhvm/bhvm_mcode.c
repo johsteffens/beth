@@ -13,17 +13,42 @@
  *  limitations under the License.
  */
 
-#include "bhvm_hf3_op.h"
+#include "bhvm_mcode.h"
+
+#ifdef TYPEOF_bhvm_mcode
 
 /**********************************************************************************************************************/
 
-vd_t bhvm_hf3_op_signal_handler( const bcore_signal_s* o )
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+#endif // TYPEOF_bhvm_mcode
+
+vd_t bhvm_mcode_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_hf3_op" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_mcode" ) ) )
     {
+        case TYPEOF_init1:
+        {
+        }
+        break;
+
+        case TYPEOF_get_quicktypes:
+        {
+        }
+        break;
+
+        case TYPEOF_selftest:
+        {
+        }
+        break;
+
         case TYPEOF_plant:
         {
-            bcore_plant_compile( "bhvm_planted_hf3", __FILE__ );
+            bcore_plant_compile( "bhvm_planted", __FILE__ );
         }
         break;
 
