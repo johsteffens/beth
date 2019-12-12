@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-09T11:12:48Z
+ *  Last File Update: 2019-12-12T12:53:51Z
  *
  *  Copyright and License of this File:
  *
@@ -79,26 +79,26 @@
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar0_zero_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar0_zero_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar0_zero_s_f( void ){ return  0.0; } \
-  static inline sz_t bmath_f3_op_ar0_zero_s_get_arity( const bmath_f3_op_ar0_zero_s* o ){ return 0; } \
-  static inline f3_t bmath_f3_op_ar0_zero_s_of( const bmath_f3_op_ar0_zero_s* o ){ return bmath_f3_op_ar0_zero_s_f(); } \
-  static inline f3_t bmath_f3_op_ar0_zero_s_aofx( const bmath_f3_op_ar0_zero_s* o, const f3_t* a ){ return bmath_f3_op_ar0_zero_s_of( o ); }
+  static inline f3_t bmath_f3_op_ar0_zero_s_f( void ){return  0.0;} \
+  static inline sz_t bmath_f3_op_ar0_zero_s_get_arity( const bmath_f3_op_ar0_zero_s* o ){return 0;} \
+  static inline f3_t bmath_f3_op_ar0_zero_s_of( const bmath_f3_op_ar0_zero_s* o ){return bmath_f3_op_ar0_zero_s_f();} \
+  static inline f3_t bmath_f3_op_ar0_zero_s_aofx( const bmath_f3_op_ar0_zero_s* o, const f3_t* a ){return bmath_f3_op_ar0_zero_s_of( o );}
 #define TYPEOF_bmath_f3_op_ar0_one_s 2829534504
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar0_one_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar0_one_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar0_one_s_f( void ){ return  1.0; } \
-  static inline sz_t bmath_f3_op_ar0_one_s_get_arity( const bmath_f3_op_ar0_one_s* o ){ return 0; } \
-  static inline f3_t bmath_f3_op_ar0_one_s_of( const bmath_f3_op_ar0_one_s* o ){ return bmath_f3_op_ar0_one_s_f(); } \
-  static inline f3_t bmath_f3_op_ar0_one_s_aofx( const bmath_f3_op_ar0_one_s* o, const f3_t* a ){ return bmath_f3_op_ar0_one_s_of( o ); }
+  static inline f3_t bmath_f3_op_ar0_one_s_f( void ){return  1.0;} \
+  static inline sz_t bmath_f3_op_ar0_one_s_get_arity( const bmath_f3_op_ar0_one_s* o ){return 0;} \
+  static inline f3_t bmath_f3_op_ar0_one_s_of( const bmath_f3_op_ar0_one_s* o ){return bmath_f3_op_ar0_one_s_f();} \
+  static inline f3_t bmath_f3_op_ar0_one_s_aofx( const bmath_f3_op_ar0_one_s* o, const f3_t* a ){return bmath_f3_op_ar0_one_s_of( o );}
 #define TYPEOF_bmath_f3_op_ar0_literal_s 2842497783
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar0_literal_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar0_literal_s ) \
     {aware_t _;f3_t v;}; \
-  static inline f3_t bmath_f3_op_ar0_literal_s_of( const bmath_f3_op_ar0_literal_s* o ){ return o->v; } \
-  static inline sz_t bmath_f3_op_ar0_literal_s_get_arity( const bmath_f3_op_ar0_literal_s* o ){ return 0; } \
-  static inline f3_t bmath_f3_op_ar0_literal_s_f( void ){ ERR_fa( "Not available." ); return 0; } \
-  static inline f3_t bmath_f3_op_ar0_literal_s_aofx( const bmath_f3_op_ar0_literal_s* o, const f3_t* a ){ return bmath_f3_op_ar0_literal_s_of( o ); }
+  static inline f3_t bmath_f3_op_ar0_literal_s_of( const bmath_f3_op_ar0_literal_s* o ){return o->v;} \
+  static inline sz_t bmath_f3_op_ar0_literal_s_get_arity( const bmath_f3_op_ar0_literal_s* o ){return 0;} \
+  static inline f3_t bmath_f3_op_ar0_literal_s_f( void ){ERR_fa( "Not available." ); return 0;} \
+  static inline f3_t bmath_f3_op_ar0_literal_s_aofx( const bmath_f3_op_ar0_literal_s* o, const f3_t* a ){return bmath_f3_op_ar0_literal_s_of( o );}
 #define BETH_EXPAND_GROUP_bmath_f3_op_ar0 \
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar0 ); \
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar0_zero_s ); \
@@ -131,189 +131,189 @@
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_zero_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_zero_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_zero_s_fx( f3_t a ){ return       0.0; } \
-  static inline f3_t bmath_f3_op_ar1_zero_s_gy( f3_t y ){ return  0.0; } \
-  static inline sz_t bmath_f3_op_ar1_zero_s_get_arity( const bmath_f3_op_ar1_zero_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_zero_s_ofx( const bmath_f3_op_ar1_zero_s* o, f3_t a ){ return bmath_f3_op_ar1_zero_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_zero_s_ogy( const bmath_f3_op_ar1_zero_s* o, f3_t y ){ return bmath_f3_op_ar1_zero_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_zero_s_aofx( const bmath_f3_op_ar1_zero_s* o, const f3_t* a ){ return bmath_f3_op_ar1_zero_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_zero_s_aogy( const bmath_f3_op_ar1_zero_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_zero_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_zero_s_fx( f3_t a ){return       0.0;} \
+  static inline f3_t bmath_f3_op_ar1_zero_s_gy( f3_t y ){return  0.0;} \
+  static inline sz_t bmath_f3_op_ar1_zero_s_get_arity( const bmath_f3_op_ar1_zero_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_zero_s_ofx( const bmath_f3_op_ar1_zero_s* o, f3_t a ){return bmath_f3_op_ar1_zero_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_zero_s_ogy( const bmath_f3_op_ar1_zero_s* o, f3_t y ){return bmath_f3_op_ar1_zero_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_zero_s_aofx( const bmath_f3_op_ar1_zero_s* o, const f3_t* a ){return bmath_f3_op_ar1_zero_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_zero_s_aogy( const bmath_f3_op_ar1_zero_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_zero_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_one_s 2623621383
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_one_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_one_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_one_s_fx( f3_t a ){ return       1.0; } \
-  static inline f3_t bmath_f3_op_ar1_one_s_gy( f3_t y ){ return  0.0; } \
-  static inline sz_t bmath_f3_op_ar1_one_s_get_arity( const bmath_f3_op_ar1_one_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_one_s_ofx( const bmath_f3_op_ar1_one_s* o, f3_t a ){ return bmath_f3_op_ar1_one_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_one_s_ogy( const bmath_f3_op_ar1_one_s* o, f3_t y ){ return bmath_f3_op_ar1_one_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_one_s_aofx( const bmath_f3_op_ar1_one_s* o, const f3_t* a ){ return bmath_f3_op_ar1_one_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_one_s_aogy( const bmath_f3_op_ar1_one_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_one_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_one_s_fx( f3_t a ){return       1.0;} \
+  static inline f3_t bmath_f3_op_ar1_one_s_gy( f3_t y ){return  0.0;} \
+  static inline sz_t bmath_f3_op_ar1_one_s_get_arity( const bmath_f3_op_ar1_one_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_one_s_ofx( const bmath_f3_op_ar1_one_s* o, f3_t a ){return bmath_f3_op_ar1_one_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_one_s_ogy( const bmath_f3_op_ar1_one_s* o, f3_t y ){return bmath_f3_op_ar1_one_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_one_s_aofx( const bmath_f3_op_ar1_one_s* o, const f3_t* a ){return bmath_f3_op_ar1_one_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_one_s_aogy( const bmath_f3_op_ar1_one_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_one_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_identity_s 1923605299
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_identity_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_identity_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_identity_s_fx( f3_t a ){ return        a ; } \
-  static inline f3_t bmath_f3_op_ar1_identity_s_gy( f3_t y ){ return  1.0; } \
-  static inline sz_t bmath_f3_op_ar1_identity_s_get_arity( const bmath_f3_op_ar1_identity_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_identity_s_ofx( const bmath_f3_op_ar1_identity_s* o, f3_t a ){ return bmath_f3_op_ar1_identity_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_identity_s_ogy( const bmath_f3_op_ar1_identity_s* o, f3_t y ){ return bmath_f3_op_ar1_identity_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_identity_s_aofx( const bmath_f3_op_ar1_identity_s* o, const f3_t* a ){ return bmath_f3_op_ar1_identity_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_identity_s_aogy( const bmath_f3_op_ar1_identity_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_identity_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_identity_s_fx( f3_t a ){return        a ;} \
+  static inline f3_t bmath_f3_op_ar1_identity_s_gy( f3_t y ){return  1.0;} \
+  static inline sz_t bmath_f3_op_ar1_identity_s_get_arity( const bmath_f3_op_ar1_identity_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_identity_s_ofx( const bmath_f3_op_ar1_identity_s* o, f3_t a ){return bmath_f3_op_ar1_identity_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_identity_s_ogy( const bmath_f3_op_ar1_identity_s* o, f3_t y ){return bmath_f3_op_ar1_identity_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_identity_s_aofx( const bmath_f3_op_ar1_identity_s* o, const f3_t* a ){return bmath_f3_op_ar1_identity_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_identity_s_aogy( const bmath_f3_op_ar1_identity_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_identity_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_neg_s 4138731505
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_neg_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_neg_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_neg_s_fx( f3_t a ){ return       -a ; } \
-  static inline f3_t bmath_f3_op_ar1_neg_s_gy( f3_t y ){ return -1.0; } \
-  static inline sz_t bmath_f3_op_ar1_neg_s_get_arity( const bmath_f3_op_ar1_neg_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_neg_s_ofx( const bmath_f3_op_ar1_neg_s* o, f3_t a ){ return bmath_f3_op_ar1_neg_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_neg_s_ogy( const bmath_f3_op_ar1_neg_s* o, f3_t y ){ return bmath_f3_op_ar1_neg_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_neg_s_aofx( const bmath_f3_op_ar1_neg_s* o, const f3_t* a ){ return bmath_f3_op_ar1_neg_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_neg_s_aogy( const bmath_f3_op_ar1_neg_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_neg_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_neg_s_fx( f3_t a ){return       -a ;} \
+  static inline f3_t bmath_f3_op_ar1_neg_s_gy( f3_t y ){return -1.0;} \
+  static inline sz_t bmath_f3_op_ar1_neg_s_get_arity( const bmath_f3_op_ar1_neg_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_neg_s_ofx( const bmath_f3_op_ar1_neg_s* o, f3_t a ){return bmath_f3_op_ar1_neg_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_neg_s_ogy( const bmath_f3_op_ar1_neg_s* o, f3_t y ){return bmath_f3_op_ar1_neg_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_neg_s_aofx( const bmath_f3_op_ar1_neg_s* o, const f3_t* a ){return bmath_f3_op_ar1_neg_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_neg_s_aogy( const bmath_f3_op_ar1_neg_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_neg_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_floor_s 3823756461
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_floor_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_floor_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_floor_s_fx( f3_t a ){ return  floor(a); } \
-  static inline f3_t bmath_f3_op_ar1_floor_s_gy( f3_t y ){ return  0.0; } \
-  static inline sz_t bmath_f3_op_ar1_floor_s_get_arity( const bmath_f3_op_ar1_floor_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_floor_s_ofx( const bmath_f3_op_ar1_floor_s* o, f3_t a ){ return bmath_f3_op_ar1_floor_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_floor_s_ogy( const bmath_f3_op_ar1_floor_s* o, f3_t y ){ return bmath_f3_op_ar1_floor_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_floor_s_aofx( const bmath_f3_op_ar1_floor_s* o, const f3_t* a ){ return bmath_f3_op_ar1_floor_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_floor_s_aogy( const bmath_f3_op_ar1_floor_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_floor_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_floor_s_fx( f3_t a ){return  floor(a);} \
+  static inline f3_t bmath_f3_op_ar1_floor_s_gy( f3_t y ){return  0.0;} \
+  static inline sz_t bmath_f3_op_ar1_floor_s_get_arity( const bmath_f3_op_ar1_floor_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_floor_s_ofx( const bmath_f3_op_ar1_floor_s* o, f3_t a ){return bmath_f3_op_ar1_floor_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_floor_s_ogy( const bmath_f3_op_ar1_floor_s* o, f3_t y ){return bmath_f3_op_ar1_floor_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_floor_s_aofx( const bmath_f3_op_ar1_floor_s* o, const f3_t* a ){return bmath_f3_op_ar1_floor_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_floor_s_aogy( const bmath_f3_op_ar1_floor_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_floor_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_ceil_s 2436632800
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_ceil_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_ceil_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_ceil_s_fx( f3_t a ){ return   ceil(a); } \
-  static inline f3_t bmath_f3_op_ar1_ceil_s_gy( f3_t y ){ return  0.0; } \
-  static inline sz_t bmath_f3_op_ar1_ceil_s_get_arity( const bmath_f3_op_ar1_ceil_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_ceil_s_ofx( const bmath_f3_op_ar1_ceil_s* o, f3_t a ){ return bmath_f3_op_ar1_ceil_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_ceil_s_ogy( const bmath_f3_op_ar1_ceil_s* o, f3_t y ){ return bmath_f3_op_ar1_ceil_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_ceil_s_aofx( const bmath_f3_op_ar1_ceil_s* o, const f3_t* a ){ return bmath_f3_op_ar1_ceil_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_ceil_s_aogy( const bmath_f3_op_ar1_ceil_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_ceil_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_ceil_s_fx( f3_t a ){return   ceil(a);} \
+  static inline f3_t bmath_f3_op_ar1_ceil_s_gy( f3_t y ){return  0.0;} \
+  static inline sz_t bmath_f3_op_ar1_ceil_s_get_arity( const bmath_f3_op_ar1_ceil_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_ceil_s_ofx( const bmath_f3_op_ar1_ceil_s* o, f3_t a ){return bmath_f3_op_ar1_ceil_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_ceil_s_ogy( const bmath_f3_op_ar1_ceil_s* o, f3_t y ){return bmath_f3_op_ar1_ceil_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_ceil_s_aofx( const bmath_f3_op_ar1_ceil_s* o, const f3_t* a ){return bmath_f3_op_ar1_ceil_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_ceil_s_aogy( const bmath_f3_op_ar1_ceil_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_ceil_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_exp_s 3725340992
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_exp_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_exp_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_exp_s_fx( f3_t a ){ return    exp(a); } \
-  static inline f3_t bmath_f3_op_ar1_exp_s_gy( f3_t y ){ return    y; } \
-  static inline sz_t bmath_f3_op_ar1_exp_s_get_arity( const bmath_f3_op_ar1_exp_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_exp_s_ofx( const bmath_f3_op_ar1_exp_s* o, f3_t a ){ return bmath_f3_op_ar1_exp_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_exp_s_ogy( const bmath_f3_op_ar1_exp_s* o, f3_t y ){ return bmath_f3_op_ar1_exp_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_exp_s_aofx( const bmath_f3_op_ar1_exp_s* o, const f3_t* a ){ return bmath_f3_op_ar1_exp_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_exp_s_aogy( const bmath_f3_op_ar1_exp_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_exp_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_exp_s_fx( f3_t a ){return    exp(a);} \
+  static inline f3_t bmath_f3_op_ar1_exp_s_gy( f3_t y ){return    y;} \
+  static inline sz_t bmath_f3_op_ar1_exp_s_get_arity( const bmath_f3_op_ar1_exp_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_exp_s_ofx( const bmath_f3_op_ar1_exp_s* o, f3_t a ){return bmath_f3_op_ar1_exp_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_exp_s_ogy( const bmath_f3_op_ar1_exp_s* o, f3_t y ){return bmath_f3_op_ar1_exp_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_exp_s_aofx( const bmath_f3_op_ar1_exp_s* o, const f3_t* a ){return bmath_f3_op_ar1_exp_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_exp_s_aogy( const bmath_f3_op_ar1_exp_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_exp_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_inv_s 299842672
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_inv_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_inv_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_inv_s_fx( f3_t a ){ return f3_inv(a); } \
-  static inline f3_t bmath_f3_op_ar1_inv_s_gy( f3_t y ){ return -y*y; } \
-  static inline sz_t bmath_f3_op_ar1_inv_s_get_arity( const bmath_f3_op_ar1_inv_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_inv_s_ofx( const bmath_f3_op_ar1_inv_s* o, f3_t a ){ return bmath_f3_op_ar1_inv_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_inv_s_ogy( const bmath_f3_op_ar1_inv_s* o, f3_t y ){ return bmath_f3_op_ar1_inv_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_inv_s_aofx( const bmath_f3_op_ar1_inv_s* o, const f3_t* a ){ return bmath_f3_op_ar1_inv_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_inv_s_aogy( const bmath_f3_op_ar1_inv_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_inv_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_inv_s_fx( f3_t a ){return f3_inv(a);} \
+  static inline f3_t bmath_f3_op_ar1_inv_s_gy( f3_t y ){return -y*y;} \
+  static inline sz_t bmath_f3_op_ar1_inv_s_get_arity( const bmath_f3_op_ar1_inv_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_inv_s_ofx( const bmath_f3_op_ar1_inv_s* o, f3_t a ){return bmath_f3_op_ar1_inv_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_inv_s_ogy( const bmath_f3_op_ar1_inv_s* o, f3_t y ){return bmath_f3_op_ar1_inv_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_inv_s_aofx( const bmath_f3_op_ar1_inv_s* o, const f3_t* a ){return bmath_f3_op_ar1_inv_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_inv_s_aogy( const bmath_f3_op_ar1_inv_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_inv_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_lgst_s 333512919
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_lgst_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_lgst_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_lgst_s_fx( f3_t a ){ return ( a > -700 ) ? ( 1.0 / ( 1.0 + exp( -a ) ) ) : 0; } \
-  static inline f3_t bmath_f3_op_ar1_lgst_s_gy( f3_t y ){ return y * ( 1.0 - y ); } \
-  static inline sz_t bmath_f3_op_ar1_lgst_s_get_arity( const bmath_f3_op_ar1_lgst_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_lgst_s_ofx( const bmath_f3_op_ar1_lgst_s* o, f3_t a ){ return bmath_f3_op_ar1_lgst_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_s_ogy( const bmath_f3_op_ar1_lgst_s* o, f3_t y ){ return bmath_f3_op_ar1_lgst_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_s_aofx( const bmath_f3_op_ar1_lgst_s* o, const f3_t* a ){ return bmath_f3_op_ar1_lgst_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_s_aogy( const bmath_f3_op_ar1_lgst_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_lgst_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_lgst_s_fx( f3_t a ){return ( a > -700 ) ? ( 1.0 / ( 1.0 + exp( -a ) ) ) : 0;} \
+  static inline f3_t bmath_f3_op_ar1_lgst_s_gy( f3_t y ){return y * ( 1.0 - y );} \
+  static inline sz_t bmath_f3_op_ar1_lgst_s_get_arity( const bmath_f3_op_ar1_lgst_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_lgst_s_ofx( const bmath_f3_op_ar1_lgst_s* o, f3_t a ){return bmath_f3_op_ar1_lgst_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_s_ogy( const bmath_f3_op_ar1_lgst_s* o, f3_t y ){return bmath_f3_op_ar1_lgst_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_s_aofx( const bmath_f3_op_ar1_lgst_s* o, const f3_t* a ){return bmath_f3_op_ar1_lgst_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_s_aogy( const bmath_f3_op_ar1_lgst_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_lgst_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_lgst_hard_s 2938768633
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_lgst_hard_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_lgst_hard_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_fx( f3_t a ){ return ( a < -2.0 ) ? 0.0 : ( a > 2.0 ) ? 1.0 : 0.25 * ( a + 2.0 ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_gy( f3_t y ){ return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25; } \
-  static inline sz_t bmath_f3_op_ar1_lgst_hard_s_get_arity( const bmath_f3_op_ar1_lgst_hard_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_ofx( const bmath_f3_op_ar1_lgst_hard_s* o, f3_t a ){ return bmath_f3_op_ar1_lgst_hard_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_ogy( const bmath_f3_op_ar1_lgst_hard_s* o, f3_t y ){ return bmath_f3_op_ar1_lgst_hard_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_aofx( const bmath_f3_op_ar1_lgst_hard_s* o, const f3_t* a ){ return bmath_f3_op_ar1_lgst_hard_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_aogy( const bmath_f3_op_ar1_lgst_hard_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_lgst_hard_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_fx( f3_t a ){return ( a < -2.0 ) ? 0.0 : ( a > 2.0 ) ? 1.0 : 0.25 * ( a + 2.0 );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_gy( f3_t y ){return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25;} \
+  static inline sz_t bmath_f3_op_ar1_lgst_hard_s_get_arity( const bmath_f3_op_ar1_lgst_hard_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_ofx( const bmath_f3_op_ar1_lgst_hard_s* o, f3_t a ){return bmath_f3_op_ar1_lgst_hard_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_ogy( const bmath_f3_op_ar1_lgst_hard_s* o, f3_t y ){return bmath_f3_op_ar1_lgst_hard_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_aofx( const bmath_f3_op_ar1_lgst_hard_s* o, const f3_t* a ){return bmath_f3_op_ar1_lgst_hard_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_hard_s_aogy( const bmath_f3_op_ar1_lgst_hard_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_lgst_hard_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_lgst_leaky_s 4083486954
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_lgst_leaky_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_lgst_leaky_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_fx( f3_t a ){ return ( a < -2.0 ) ? 0.01 * ( a + 2.0 ) : ( a > 2.0 ) ? 1.0 + 0.01 * ( a - 2.0 ) : 0.25 * ( a + 2.0 ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_gy( f3_t y ){ return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; } \
-  static inline sz_t bmath_f3_op_ar1_lgst_leaky_s_get_arity( const bmath_f3_op_ar1_lgst_leaky_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_ofx( const bmath_f3_op_ar1_lgst_leaky_s* o, f3_t a ){ return bmath_f3_op_ar1_lgst_leaky_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_ogy( const bmath_f3_op_ar1_lgst_leaky_s* o, f3_t y ){ return bmath_f3_op_ar1_lgst_leaky_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_aofx( const bmath_f3_op_ar1_lgst_leaky_s* o, const f3_t* a ){ return bmath_f3_op_ar1_lgst_leaky_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_aogy( const bmath_f3_op_ar1_lgst_leaky_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_lgst_leaky_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_fx( f3_t a ){return ( a < -2.0 ) ? 0.01 * ( a + 2.0 ) : ( a > 2.0 ) ? 1.0 + 0.01 * ( a - 2.0 ) : 0.25 * ( a + 2.0 );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_gy( f3_t y ){return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25;} \
+  static inline sz_t bmath_f3_op_ar1_lgst_leaky_s_get_arity( const bmath_f3_op_ar1_lgst_leaky_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_ofx( const bmath_f3_op_ar1_lgst_leaky_s* o, f3_t a ){return bmath_f3_op_ar1_lgst_leaky_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_ogy( const bmath_f3_op_ar1_lgst_leaky_s* o, f3_t y ){return bmath_f3_op_ar1_lgst_leaky_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_aofx( const bmath_f3_op_ar1_lgst_leaky_s* o, const f3_t* a ){return bmath_f3_op_ar1_lgst_leaky_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_lgst_leaky_s_aogy( const bmath_f3_op_ar1_lgst_leaky_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_lgst_leaky_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_tanh_s 1788001760
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_tanh_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_tanh_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_tanh_s_fx( f3_t a ){ return ( a < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * a ) + 1.0 ) ) ) : 1.0; } \
-  static inline f3_t bmath_f3_op_ar1_tanh_s_gy( f3_t y ){ return 1.0 - f3_sqr( y ); } \
-  static inline sz_t bmath_f3_op_ar1_tanh_s_get_arity( const bmath_f3_op_ar1_tanh_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_tanh_s_ofx( const bmath_f3_op_ar1_tanh_s* o, f3_t a ){ return bmath_f3_op_ar1_tanh_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_tanh_s_ogy( const bmath_f3_op_ar1_tanh_s* o, f3_t y ){ return bmath_f3_op_ar1_tanh_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_tanh_s_aofx( const bmath_f3_op_ar1_tanh_s* o, const f3_t* a ){ return bmath_f3_op_ar1_tanh_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_tanh_s_aogy( const bmath_f3_op_ar1_tanh_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_tanh_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_tanh_s_fx( f3_t a ){return ( a < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * a ) + 1.0 ) ) ) : 1.0;} \
+  static inline f3_t bmath_f3_op_ar1_tanh_s_gy( f3_t y ){return 1.0 - f3_sqr( y );} \
+  static inline sz_t bmath_f3_op_ar1_tanh_s_get_arity( const bmath_f3_op_ar1_tanh_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_tanh_s_ofx( const bmath_f3_op_ar1_tanh_s* o, f3_t a ){return bmath_f3_op_ar1_tanh_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_tanh_s_ogy( const bmath_f3_op_ar1_tanh_s* o, f3_t y ){return bmath_f3_op_ar1_tanh_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_tanh_s_aofx( const bmath_f3_op_ar1_tanh_s* o, const f3_t* a ){return bmath_f3_op_ar1_tanh_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_tanh_s_aogy( const bmath_f3_op_ar1_tanh_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_tanh_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_tanh_hard_s 3038132616
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_tanh_hard_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_tanh_hard_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_fx( f3_t a ){ return ( a < -1.0 ) ? -1.0 : ( a > 1.0 ) ? 1.0 : a; } \
-  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_gy( f3_t y ){ return ( y < -1.0 ) ?  0.0 : ( y > 1.0 ) ? 0.0 : 1.0; } \
-  static inline sz_t bmath_f3_op_ar1_tanh_hard_s_get_arity( const bmath_f3_op_ar1_tanh_hard_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_ofx( const bmath_f3_op_ar1_tanh_hard_s* o, f3_t a ){ return bmath_f3_op_ar1_tanh_hard_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_ogy( const bmath_f3_op_ar1_tanh_hard_s* o, f3_t y ){ return bmath_f3_op_ar1_tanh_hard_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_aofx( const bmath_f3_op_ar1_tanh_hard_s* o, const f3_t* a ){ return bmath_f3_op_ar1_tanh_hard_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_aogy( const bmath_f3_op_ar1_tanh_hard_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_tanh_hard_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_fx( f3_t a ){return ( a < -1.0 ) ? -1.0 : ( a > 1.0 ) ? 1.0 : a;} \
+  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_gy( f3_t y ){return ( y < -1.0 ) ?  0.0 : ( y > 1.0 ) ? 0.0 : 1.0;} \
+  static inline sz_t bmath_f3_op_ar1_tanh_hard_s_get_arity( const bmath_f3_op_ar1_tanh_hard_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_ofx( const bmath_f3_op_ar1_tanh_hard_s* o, f3_t a ){return bmath_f3_op_ar1_tanh_hard_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_ogy( const bmath_f3_op_ar1_tanh_hard_s* o, f3_t y ){return bmath_f3_op_ar1_tanh_hard_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_aofx( const bmath_f3_op_ar1_tanh_hard_s* o, const f3_t* a ){return bmath_f3_op_ar1_tanh_hard_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_tanh_hard_s_aogy( const bmath_f3_op_ar1_tanh_hard_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_tanh_hard_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_tanh_leaky_s 2633497533
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_tanh_leaky_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_tanh_leaky_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_fx( f3_t a ){ return ( a < -1.0 ) ? -1.0 + 0.01 * ( a + 1.0 ) : ( a > 1.0 ) ? 1.0 + 0.01 * ( a - 1.0 ) : a; } \
-  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_gy( f3_t y ){ return ( y < -1.0 ) ?  0.01 : ( y > 1.0 ) ? 0.01 : 1.0; } \
-  static inline sz_t bmath_f3_op_ar1_tanh_leaky_s_get_arity( const bmath_f3_op_ar1_tanh_leaky_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_ofx( const bmath_f3_op_ar1_tanh_leaky_s* o, f3_t a ){ return bmath_f3_op_ar1_tanh_leaky_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_ogy( const bmath_f3_op_ar1_tanh_leaky_s* o, f3_t y ){ return bmath_f3_op_ar1_tanh_leaky_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_aofx( const bmath_f3_op_ar1_tanh_leaky_s* o, const f3_t* a ){ return bmath_f3_op_ar1_tanh_leaky_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_aogy( const bmath_f3_op_ar1_tanh_leaky_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_tanh_leaky_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_fx( f3_t a ){return ( a < -1.0 ) ? -1.0 + 0.01 * ( a + 1.0 ) : ( a > 1.0 ) ? 1.0 + 0.01 * ( a - 1.0 ) : a;} \
+  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_gy( f3_t y ){return ( y < -1.0 ) ?  0.01 : ( y > 1.0 ) ? 0.01 : 1.0;} \
+  static inline sz_t bmath_f3_op_ar1_tanh_leaky_s_get_arity( const bmath_f3_op_ar1_tanh_leaky_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_ofx( const bmath_f3_op_ar1_tanh_leaky_s* o, f3_t a ){return bmath_f3_op_ar1_tanh_leaky_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_ogy( const bmath_f3_op_ar1_tanh_leaky_s* o, f3_t y ){return bmath_f3_op_ar1_tanh_leaky_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_aofx( const bmath_f3_op_ar1_tanh_leaky_s* o, const f3_t* a ){return bmath_f3_op_ar1_tanh_leaky_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_tanh_leaky_s_aogy( const bmath_f3_op_ar1_tanh_leaky_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_tanh_leaky_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_softplus_s 3026965625
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_softplus_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_softplus_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_softplus_s_fx( f3_t a ){ return ( a < 700 ) ? log( 1.0 + exp( a ) ) : a; } \
-  static inline f3_t bmath_f3_op_ar1_softplus_s_gy( f3_t y ){ f3_t u = exp( y ); return ( u - 1.0 ) / u; } \
-  static inline sz_t bmath_f3_op_ar1_softplus_s_get_arity( const bmath_f3_op_ar1_softplus_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_softplus_s_ofx( const bmath_f3_op_ar1_softplus_s* o, f3_t a ){ return bmath_f3_op_ar1_softplus_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_softplus_s_ogy( const bmath_f3_op_ar1_softplus_s* o, f3_t y ){ return bmath_f3_op_ar1_softplus_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_softplus_s_aofx( const bmath_f3_op_ar1_softplus_s* o, const f3_t* a ){ return bmath_f3_op_ar1_softplus_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_softplus_s_aogy( const bmath_f3_op_ar1_softplus_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_softplus_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_softplus_s_fx( f3_t a ){return ( a < 700 ) ? log( 1.0 + exp( a ) ) : a;} \
+  static inline f3_t bmath_f3_op_ar1_softplus_s_gy( f3_t y ){f3_t u = exp( y ); return ( u - 1.0 ) / u;} \
+  static inline sz_t bmath_f3_op_ar1_softplus_s_get_arity( const bmath_f3_op_ar1_softplus_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_softplus_s_ofx( const bmath_f3_op_ar1_softplus_s* o, f3_t a ){return bmath_f3_op_ar1_softplus_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_softplus_s_ogy( const bmath_f3_op_ar1_softplus_s* o, f3_t y ){return bmath_f3_op_ar1_softplus_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_softplus_s_aofx( const bmath_f3_op_ar1_softplus_s* o, const f3_t* a ){return bmath_f3_op_ar1_softplus_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_softplus_s_aogy( const bmath_f3_op_ar1_softplus_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_softplus_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_relu_s 2725306995
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_relu_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_relu_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_relu_s_fx( f3_t a ){ return a > 0 ? a : 0; } \
-  static inline f3_t bmath_f3_op_ar1_relu_s_gy( f3_t y ){ return y > 0 ? 1 : 0; } \
-  static inline sz_t bmath_f3_op_ar1_relu_s_get_arity( const bmath_f3_op_ar1_relu_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_relu_s_ofx( const bmath_f3_op_ar1_relu_s* o, f3_t a ){ return bmath_f3_op_ar1_relu_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_relu_s_ogy( const bmath_f3_op_ar1_relu_s* o, f3_t y ){ return bmath_f3_op_ar1_relu_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_relu_s_aofx( const bmath_f3_op_ar1_relu_s* o, const f3_t* a ){ return bmath_f3_op_ar1_relu_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_relu_s_aogy( const bmath_f3_op_ar1_relu_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_relu_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_relu_s_fx( f3_t a ){return a > 0 ? a : 0;} \
+  static inline f3_t bmath_f3_op_ar1_relu_s_gy( f3_t y ){return y > 0 ? 1 : 0;} \
+  static inline sz_t bmath_f3_op_ar1_relu_s_get_arity( const bmath_f3_op_ar1_relu_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_relu_s_ofx( const bmath_f3_op_ar1_relu_s* o, f3_t a ){return bmath_f3_op_ar1_relu_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_relu_s_ogy( const bmath_f3_op_ar1_relu_s* o, f3_t y ){return bmath_f3_op_ar1_relu_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_relu_s_aofx( const bmath_f3_op_ar1_relu_s* o, const f3_t* a ){return bmath_f3_op_ar1_relu_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_relu_s_aogy( const bmath_f3_op_ar1_relu_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_relu_s_ogy( o, a[0] );}
 #define TYPEOF_bmath_f3_op_ar1_relu_leaky_s 1382667214
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar1_relu_leaky_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar1_relu_leaky_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_fx( f3_t a ){ return a > 0 ? a : a * 0.01; } \
-  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_gy( f3_t y ){ return y > 0 ? 1 : 0.01; } \
-  static inline sz_t bmath_f3_op_ar1_relu_leaky_s_get_arity( const bmath_f3_op_ar1_relu_leaky_s* o ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_ofx( const bmath_f3_op_ar1_relu_leaky_s* o, f3_t a ){ return bmath_f3_op_ar1_relu_leaky_s_fx( a ); } \
-  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_ogy( const bmath_f3_op_ar1_relu_leaky_s* o, f3_t y ){ return bmath_f3_op_ar1_relu_leaky_s_gy( y ); } \
-  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_aofx( const bmath_f3_op_ar1_relu_leaky_s* o, const f3_t* a ){ return bmath_f3_op_ar1_relu_leaky_s_ofx( o, a[0] ); } \
-  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_aogy( const bmath_f3_op_ar1_relu_leaky_s* o, const f3_t* a, sz_t ch ){ return bmath_f3_op_ar1_relu_leaky_s_ogy( o, a[0] ); }
+  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_fx( f3_t a ){return a > 0 ? a : a * 0.01;} \
+  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_gy( f3_t y ){return y > 0 ? 1 : 0.01;} \
+  static inline sz_t bmath_f3_op_ar1_relu_leaky_s_get_arity( const bmath_f3_op_ar1_relu_leaky_s* o ){return 1;} \
+  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_ofx( const bmath_f3_op_ar1_relu_leaky_s* o, f3_t a ){return bmath_f3_op_ar1_relu_leaky_s_fx( a );} \
+  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_ogy( const bmath_f3_op_ar1_relu_leaky_s* o, f3_t y ){return bmath_f3_op_ar1_relu_leaky_s_gy( y );} \
+  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_aofx( const bmath_f3_op_ar1_relu_leaky_s* o, const f3_t* a ){return bmath_f3_op_ar1_relu_leaky_s_ofx( o, a[0] );} \
+  static inline f3_t bmath_f3_op_ar1_relu_leaky_s_aogy( const bmath_f3_op_ar1_relu_leaky_s* o, const f3_t* a, sz_t ch ){return bmath_f3_op_ar1_relu_leaky_s_ogy( o, a[0] );}
 #define BETH_EXPAND_GROUP_bmath_f3_op_ar1 \
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar1 ); \
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar1_zero_s ); \
@@ -380,54 +380,54 @@
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar2_add_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar2_add_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar2_add_s_fx( f3_t a, f3_t b ){ return a + b; } \
-  static inline f3_t bmath_f3_op_ar2_add_s_gxa( f3_t a, f3_t b ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar2_add_s_gxb( f3_t a, f3_t b ){ return 1; } \
-  static inline f3_t bmath_f3_op_ar2_add_s_ofx( const bmath_f3_op_ar2_add_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_add_s_fx(  a, b ); } \
-  static inline f3_t bmath_f3_op_ar2_add_s_ogxa( const bmath_f3_op_ar2_add_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_add_s_gxa( a, b ); } \
-  static inline f3_t bmath_f3_op_ar2_add_s_ogxb( const bmath_f3_op_ar2_add_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_add_s_gxb( a, b ); } \
-  static inline sz_t bmath_f3_op_ar2_add_s_get_arity( const bmath_f3_op_ar2_add_s* o ){ return 2; } \
-  static inline f3_t bmath_f3_op_ar2_add_s_aofx( const bmath_f3_op_ar2_add_s* o, const f3_t* a ){ return bmath_f3_op_ar2_add_s_ofx( o, a[0], a[1] ); } \
-  static inline f3_t bmath_f3_op_ar2_add_s_aogx( const bmath_f3_op_ar2_add_s* o, const f3_t* a, sz_t ch ){ return ( ch == 0 ) ? bmath_f3_op_ar2_add_s_ogxa( o, a[0], a[1] ) : bmath_f3_op_ar2_add_s_ogxb( o, a[0], a[1] ); }
+  static inline f3_t bmath_f3_op_ar2_add_s_fx( f3_t a, f3_t b ){return a + b;} \
+  static inline f3_t bmath_f3_op_ar2_add_s_gxa( f3_t a, f3_t b ){return 1;} \
+  static inline f3_t bmath_f3_op_ar2_add_s_gxb( f3_t a, f3_t b ){return 1;} \
+  static inline f3_t bmath_f3_op_ar2_add_s_ofx( const bmath_f3_op_ar2_add_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_add_s_fx(  a, b );} \
+  static inline f3_t bmath_f3_op_ar2_add_s_ogxa( const bmath_f3_op_ar2_add_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_add_s_gxa( a, b );} \
+  static inline f3_t bmath_f3_op_ar2_add_s_ogxb( const bmath_f3_op_ar2_add_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_add_s_gxb( a, b );} \
+  static inline sz_t bmath_f3_op_ar2_add_s_get_arity( const bmath_f3_op_ar2_add_s* o ){return 2;} \
+  static inline f3_t bmath_f3_op_ar2_add_s_aofx( const bmath_f3_op_ar2_add_s* o, const f3_t* a ){return bmath_f3_op_ar2_add_s_ofx( o, a[0], a[1] );} \
+  static inline f3_t bmath_f3_op_ar2_add_s_aogx( const bmath_f3_op_ar2_add_s* o, const f3_t* a, sz_t ch ){return ( ch == 0 ) ? bmath_f3_op_ar2_add_s_ogxa( o, a[0], a[1] ) : bmath_f3_op_ar2_add_s_ogxb( o, a[0], a[1] );}
 #define TYPEOF_bmath_f3_op_ar2_sub_s 967394508
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar2_sub_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar2_sub_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar2_sub_s_fx( f3_t a, f3_t b ){ return a - b; } \
-  static inline f3_t bmath_f3_op_ar2_sub_s_gxa( f3_t a, f3_t b ){ return  1; } \
-  static inline f3_t bmath_f3_op_ar2_sub_s_gxb( f3_t a, f3_t b ){ return -1; } \
-  static inline f3_t bmath_f3_op_ar2_sub_s_ofx( const bmath_f3_op_ar2_sub_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_sub_s_fx(  a, b ); } \
-  static inline f3_t bmath_f3_op_ar2_sub_s_ogxa( const bmath_f3_op_ar2_sub_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_sub_s_gxa( a, b ); } \
-  static inline f3_t bmath_f3_op_ar2_sub_s_ogxb( const bmath_f3_op_ar2_sub_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_sub_s_gxb( a, b ); } \
-  static inline sz_t bmath_f3_op_ar2_sub_s_get_arity( const bmath_f3_op_ar2_sub_s* o ){ return 2; } \
-  static inline f3_t bmath_f3_op_ar2_sub_s_aofx( const bmath_f3_op_ar2_sub_s* o, const f3_t* a ){ return bmath_f3_op_ar2_sub_s_ofx( o, a[0], a[1] ); } \
-  static inline f3_t bmath_f3_op_ar2_sub_s_aogx( const bmath_f3_op_ar2_sub_s* o, const f3_t* a, sz_t ch ){ return ( ch == 0 ) ? bmath_f3_op_ar2_sub_s_ogxa( o, a[0], a[1] ) : bmath_f3_op_ar2_sub_s_ogxb( o, a[0], a[1] ); }
+  static inline f3_t bmath_f3_op_ar2_sub_s_fx( f3_t a, f3_t b ){return a - b;} \
+  static inline f3_t bmath_f3_op_ar2_sub_s_gxa( f3_t a, f3_t b ){return  1;} \
+  static inline f3_t bmath_f3_op_ar2_sub_s_gxb( f3_t a, f3_t b ){return -1;} \
+  static inline f3_t bmath_f3_op_ar2_sub_s_ofx( const bmath_f3_op_ar2_sub_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_sub_s_fx(  a, b );} \
+  static inline f3_t bmath_f3_op_ar2_sub_s_ogxa( const bmath_f3_op_ar2_sub_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_sub_s_gxa( a, b );} \
+  static inline f3_t bmath_f3_op_ar2_sub_s_ogxb( const bmath_f3_op_ar2_sub_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_sub_s_gxb( a, b );} \
+  static inline sz_t bmath_f3_op_ar2_sub_s_get_arity( const bmath_f3_op_ar2_sub_s* o ){return 2;} \
+  static inline f3_t bmath_f3_op_ar2_sub_s_aofx( const bmath_f3_op_ar2_sub_s* o, const f3_t* a ){return bmath_f3_op_ar2_sub_s_ofx( o, a[0], a[1] );} \
+  static inline f3_t bmath_f3_op_ar2_sub_s_aogx( const bmath_f3_op_ar2_sub_s* o, const f3_t* a, sz_t ch ){return ( ch == 0 ) ? bmath_f3_op_ar2_sub_s_ogxa( o, a[0], a[1] ) : bmath_f3_op_ar2_sub_s_ogxb( o, a[0], a[1] );}
 #define TYPEOF_bmath_f3_op_ar2_mul_s 1939336112
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar2_mul_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar2_mul_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar2_mul_s_fx( f3_t a, f3_t b ){ return a * b; } \
-  static inline f3_t bmath_f3_op_ar2_mul_s_gxa( f3_t a, f3_t b ){ return b; } \
-  static inline f3_t bmath_f3_op_ar2_mul_s_gxb( f3_t a, f3_t b ){ return a; } \
-  static inline f3_t bmath_f3_op_ar2_mul_s_ofx( const bmath_f3_op_ar2_mul_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_mul_s_fx(  a, b ); } \
-  static inline f3_t bmath_f3_op_ar2_mul_s_ogxa( const bmath_f3_op_ar2_mul_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_mul_s_gxa( a, b ); } \
-  static inline f3_t bmath_f3_op_ar2_mul_s_ogxb( const bmath_f3_op_ar2_mul_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_mul_s_gxb( a, b ); } \
-  static inline sz_t bmath_f3_op_ar2_mul_s_get_arity( const bmath_f3_op_ar2_mul_s* o ){ return 2; } \
-  static inline f3_t bmath_f3_op_ar2_mul_s_aofx( const bmath_f3_op_ar2_mul_s* o, const f3_t* a ){ return bmath_f3_op_ar2_mul_s_ofx( o, a[0], a[1] ); } \
-  static inline f3_t bmath_f3_op_ar2_mul_s_aogx( const bmath_f3_op_ar2_mul_s* o, const f3_t* a, sz_t ch ){ return ( ch == 0 ) ? bmath_f3_op_ar2_mul_s_ogxa( o, a[0], a[1] ) : bmath_f3_op_ar2_mul_s_ogxb( o, a[0], a[1] ); }
+  static inline f3_t bmath_f3_op_ar2_mul_s_fx( f3_t a, f3_t b ){return a * b;} \
+  static inline f3_t bmath_f3_op_ar2_mul_s_gxa( f3_t a, f3_t b ){return b;} \
+  static inline f3_t bmath_f3_op_ar2_mul_s_gxb( f3_t a, f3_t b ){return a;} \
+  static inline f3_t bmath_f3_op_ar2_mul_s_ofx( const bmath_f3_op_ar2_mul_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_mul_s_fx(  a, b );} \
+  static inline f3_t bmath_f3_op_ar2_mul_s_ogxa( const bmath_f3_op_ar2_mul_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_mul_s_gxa( a, b );} \
+  static inline f3_t bmath_f3_op_ar2_mul_s_ogxb( const bmath_f3_op_ar2_mul_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_mul_s_gxb( a, b );} \
+  static inline sz_t bmath_f3_op_ar2_mul_s_get_arity( const bmath_f3_op_ar2_mul_s* o ){return 2;} \
+  static inline f3_t bmath_f3_op_ar2_mul_s_aofx( const bmath_f3_op_ar2_mul_s* o, const f3_t* a ){return bmath_f3_op_ar2_mul_s_ofx( o, a[0], a[1] );} \
+  static inline f3_t bmath_f3_op_ar2_mul_s_aogx( const bmath_f3_op_ar2_mul_s* o, const f3_t* a, sz_t ch ){return ( ch == 0 ) ? bmath_f3_op_ar2_mul_s_ogxa( o, a[0], a[1] ) : bmath_f3_op_ar2_mul_s_ogxb( o, a[0], a[1] );}
 #define TYPEOF_bmath_f3_op_ar2_div_s 3454172141
 #define BETH_EXPAND_ITEM_bmath_f3_op_ar2_div_s \
   BCORE_DECLARE_OBJECT( bmath_f3_op_ar2_div_s ) \
     {aware_t _;}; \
-  static inline f3_t bmath_f3_op_ar2_div_s_fx( f3_t a, f3_t b ){ return b != 0 ?   a / b         :  a * f3_lim_inf; } \
-  static inline f3_t bmath_f3_op_ar2_div_s_gxa( f3_t a, f3_t b ){ return b != 0 ? 1.0 / b         :      f3_lim_inf; } \
-  static inline f3_t bmath_f3_op_ar2_div_s_gxb( f3_t a, f3_t b ){ return b != 0 ?  -a / ( b * b ) : -a * f3_lim_inf; } \
-  static inline f3_t bmath_f3_op_ar2_div_s_ofx( const bmath_f3_op_ar2_div_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_div_s_fx(  a, b ); } \
-  static inline f3_t bmath_f3_op_ar2_div_s_ogxa( const bmath_f3_op_ar2_div_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_div_s_gxa( a, b ); } \
-  static inline f3_t bmath_f3_op_ar2_div_s_ogxb( const bmath_f3_op_ar2_div_s* o, f3_t a, f3_t b ){ return bmath_f3_op_ar2_div_s_gxb( a, b ); } \
-  static inline sz_t bmath_f3_op_ar2_div_s_get_arity( const bmath_f3_op_ar2_div_s* o ){ return 2; } \
-  static inline f3_t bmath_f3_op_ar2_div_s_aofx( const bmath_f3_op_ar2_div_s* o, const f3_t* a ){ return bmath_f3_op_ar2_div_s_ofx( o, a[0], a[1] ); } \
-  static inline f3_t bmath_f3_op_ar2_div_s_aogx( const bmath_f3_op_ar2_div_s* o, const f3_t* a, sz_t ch ){ return ( ch == 0 ) ? bmath_f3_op_ar2_div_s_ogxa( o, a[0], a[1] ) : bmath_f3_op_ar2_div_s_ogxb( o, a[0], a[1] ); }
+  static inline f3_t bmath_f3_op_ar2_div_s_fx( f3_t a, f3_t b ){return b != 0 ?   a / b         :  a * f3_lim_inf;} \
+  static inline f3_t bmath_f3_op_ar2_div_s_gxa( f3_t a, f3_t b ){return b != 0 ? 1.0 / b         :      f3_lim_inf;} \
+  static inline f3_t bmath_f3_op_ar2_div_s_gxb( f3_t a, f3_t b ){return b != 0 ?  -a / ( b * b ) : -a * f3_lim_inf;} \
+  static inline f3_t bmath_f3_op_ar2_div_s_ofx( const bmath_f3_op_ar2_div_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_div_s_fx(  a, b );} \
+  static inline f3_t bmath_f3_op_ar2_div_s_ogxa( const bmath_f3_op_ar2_div_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_div_s_gxa( a, b );} \
+  static inline f3_t bmath_f3_op_ar2_div_s_ogxb( const bmath_f3_op_ar2_div_s* o, f3_t a, f3_t b ){return bmath_f3_op_ar2_div_s_gxb( a, b );} \
+  static inline sz_t bmath_f3_op_ar2_div_s_get_arity( const bmath_f3_op_ar2_div_s* o ){return 2;} \
+  static inline f3_t bmath_f3_op_ar2_div_s_aofx( const bmath_f3_op_ar2_div_s* o, const f3_t* a ){return bmath_f3_op_ar2_div_s_ofx( o, a[0], a[1] );} \
+  static inline f3_t bmath_f3_op_ar2_div_s_aogx( const bmath_f3_op_ar2_div_s* o, const f3_t* a, sz_t ch ){return ( ch == 0 ) ? bmath_f3_op_ar2_div_s_ogxa( o, a[0], a[1] ) : bmath_f3_op_ar2_div_s_ogxb( o, a[0], a[1] );}
 #define BETH_EXPAND_GROUP_bmath_f3_op_ar2 \
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar2 ); \
   BCORE_FORWARD_OBJECT( bmath_f3_op_ar2_add_s ); \
