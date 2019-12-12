@@ -78,6 +78,22 @@
  *    c-style comment-closer or '#endif' (depending on what was used for plant-opener)
  *
  *  ----------------------------------------------------------------------------------------------
+ *  body:
+ *    A body consists of C-code and specific plant controls.
+ *
+ *    body <name> = <body-expression>; // definition of a body
+ *
+ *    <body-expression>:
+ *       { code.... } [: <body-expression>];
+ *       <body-name>  [: <body-expression>];
+ *
+ *    inside body code:
+ *       \body <body-expression>; // expands another body
+ *       :<alphabetic-character>  // expands namespace
+ *       :<space>                 // expands ':<space>' (without evaluation)
+ *       \:                       // expands ':' (without evaluation)
+ *
+ *  ----------------------------------------------------------------------------------------------
  *  feature:
  *    The feature definition triggers implicit definition of a perspective <group_name>
  *    and corresponding inline implementations for each (virtual) function 'func_name'.

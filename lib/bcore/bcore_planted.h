@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-09T11:12:48Z
+ *  Last File Update: 2019-12-12T12:53:51Z
  *
  *  Copyright and License of this File:
  *
@@ -37,7 +37,7 @@
   BCORE_DECLARE_OBJECT( bcore_file_path_s ) \
     {aware_t _;st_s name;st_s* root;st_s* full;}; \
   void bcore_file_path_s_source( bcore_file_path_s* o, bcore_source* source ); \
-  static inline sc_t bcore_file_path_s_get_sc( const bcore_file_path_s* o ){ return o->full ? o->full->sc : o->name.sc; } \
+  static inline sc_t bcore_file_path_s_get_sc( const bcore_file_path_s* o ){return o->full ? o->full->sc : o->name.sc;} \
   void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name );
 #define BETH_EXPAND_GROUP_bcore_file \
   BCORE_FORWARD_OBJECT( bcore_file ); \
@@ -89,9 +89,9 @@
   BCORE_DECLARE_OBJECT( bcore_plant_sample_features_object_s ) \
     {aware_t _;st_s name1;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
   void bcore_plant_sample_features_object_s_setup( bcore_plant_sample_features_object_s* o, sz_t n ); \
-  static inline void bcore_plant_sample_features_object_s_to_stdout( const bcore_plant_sample_features_object_s* o ){ bcore_txt_ml_a_to_stdout( o ); } \
+  static inline void bcore_plant_sample_features_object_s_to_stdout( const bcore_plant_sample_features_object_s* o ){bcore_txt_ml_a_to_stdout( o );} \
   sz_t bcore_plant_sample_features_object_s_get_size( const bcore_plant_sample_features_object_s* o ); \
-  static inline void bcore_plant_sample_features_object_s_simple_function( bcore_plant_sample_features_object_s* o, sz_t n ){ /* do nothing */ }
+  static inline void bcore_plant_sample_features_object_s_simple_function( bcore_plant_sample_features_object_s* o, sz_t n ){/* do nothing */}
 #define BETH_EXPAND_GROUP_bcore_plant_sample_features \
   BCORE_FORWARD_OBJECT( bcore_plant_sample_features ); \
   BCORE_FORWARD_OBJECT( bcore_plant_sample_features_object_s ); \

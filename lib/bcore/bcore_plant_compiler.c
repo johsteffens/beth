@@ -40,6 +40,7 @@
 BCORE_FORWARD_OBJECT( bcore_plant );
 BCORE_FORWARD_OBJECT( bcore_plant_s );
 BCORE_FORWARD_OBJECT( bcore_plant_group_s );
+BCORE_FORWARD_OBJECT( bcore_plant_stamp_s );
 BCORE_FORWARD_OBJECT( bcore_plant_source_s );
 BCORE_FORWARD_OBJECT( bcore_plant_target_s );
 BCORE_FORWARD_OBJECT( bcore_plant_compiler_s );
@@ -53,6 +54,8 @@ static void bcore_plant_compiler_s_life_a_push(       bcore_plant_compiler_s* o,
 static void bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, bcore_source* source );
 static void bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st_s* name, bcore_source* source );
 static void bcore_plant_source_s_push_group( bcore_plant_source_s* o, bcore_plant_group_s* group );
+static void bcore_plant_stamp_s_resolve_chars( bcore_plant_stamp_s* o, st_s* string );
+static sc_t bcore_plant_stamp_s_get_rel_name_sc( const bcore_plant_stamp_s* o );
 
 //----------------------------------------------------------------------------------------------------------------------
 // globals
@@ -246,7 +249,6 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_body_s )
     "bl_t go_inline;"
     "bcore_source_point_s source_point;"
 
-    "func bcore_plant_fp : parse;"
     "func bcore_plant_fp : get_hash;"
     "func bcore_plant_fp : get_global_name_sc;"
 "}";
@@ -1021,20 +1023,49 @@ static tp_t bcore_plant_body_s_get_hash( const bcore_plant_body_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_source* source )
+static void bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source );
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_body_s_append( bcore_plant_body_s* o, sz_t indent, const bcore_plant_body_s* body )
+{
+    if( body->go_inline )
+    {
+        st_s_push_fa( &o->code, " #<st_s*> ", &body->code );
+    }
+    else
+    {
+        BLM_INIT();
+        st_s* body_code = BLM_A_PUSH( st_s_clone( &body->code ) );
+        st_s* newline = BLM_A_PUSH( st_s_create_fa( "\n#rn{ }", indent ) );
+        st_s_replace_sc_sc( body_code, "\n", newline->sc );
+        st_s_push_fa( &o->code, "#<st_s*>", body_code );
+        o->go_inline = false;
+        BLM_DOWN();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source )
 {
     BLM_INIT();
 
     st_s_clear( &o->code );
 
     bcore_source_a_parse_fa( source, " {" );
-    st_s_push_sc( &o->code, "{" );
     sz_t nest_count = 1;
     bl_t exit_loop = false;
-    bl_t new_line = false;
     o->go_inline = true;
-    sz_t space_count = 0;
-    sz_t indentation = 0;
+    sz_t undo_indentation = 0;
+
+    while( bcore_source_a_parse_bl_fa( source, "#?' '" ) ); // skip leading spaces
+    if( bcore_source_a_parse_bl_fa( source, "#?'\n'" ) )
+    {
+        o->go_inline = false;
+        while( bcore_source_a_parse_bl_fa( source, "#?' '" ) ) undo_indentation++;
+    }
+
     while( !bcore_source_a_eos( source ) && !exit_loop )
     {
         u0_t c = bcore_source_a_get_u0( source );
@@ -1051,7 +1082,7 @@ static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_source* 
                 nest_count--;
                 if( !nest_count )
                 {
-                    indentation = space_count;
+                    c = 0;
                     exit_loop = true;
                 }
             }
@@ -1075,13 +1106,36 @@ static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_source* 
 
             case '\\': // escape
             {
-                c = bcore_source_a_get_u0( source );
-                if( c != ':' ) st_s_push_char( &o->code, '\\' );
+                if( bcore_source_a_parse_bl_fa( source, "#?w'body'" ) ) // embeds another body
+                {
+                    BLM_INIT();
+                    c = 0;
+                    sz_t indent = 0;
+                    for( sz_t i = o->code.size - 1; i >= 0; i-- )
+                    {
+                        if( o->code.sc[ i ] == ' ') indent++; else break;
+                    }
+                    bcore_plant_body_s* body = BLM_CREATE( bcore_plant_body_s );
+                    body->group = o->group;
+                    bcore_plant_body_s_parse_expression( body, stamp, source );
+                    bcore_source_a_parse_fa( source, " ;" ); // embedded body expression must close with a semicolon
+                    bcore_plant_body_s_append( o, indent, body );
+                    BLM_DOWN();
+                }
+                else
+                {
+                    c = bcore_source_a_get_u0( source );
+                    if( c != ':' ) st_s_push_char( &o->code, '\\' );
+                }
             }
             break;
 
-            case '\n': new_line = true; o->go_inline = false; break;
-            case ' ' : if( new_line ) space_count++; break;
+            case '\n' :
+            {
+                o->go_inline = false;
+                for( sz_t i = 0; i < undo_indentation; i++ ) { if( !bcore_source_a_parse_bl_fa( source, "#?' '" ) ) break; };
+                break;
+            }
 
             // namespace: if a name, '*' or another ':' follows immediately,
             // ':' is interpreted as namespace-prepend
@@ -1101,19 +1155,21 @@ static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_source* 
 
             default: break;
         }
-        if( c != '\n' && c != ' ' && c != '\t' )
-        {
-            new_line = false;
-            space_count = 0;
-        }
         if( c ) st_s_push_char( &o->code, c );
     }
 
-    if( indentation > 0 )
+    // remove trailing spaces and newline
+    for( sz_t i = o->code.size - 1; i >= 0; i-- )
     {
-        st_s* match_format = st_s_create_fa( "\n#rn{ }", indentation );
-        st_s_replace_sc_sc( &o->code, match_format->sc, "\n" );
-        st_s_discard( match_format );
+        char c = o->code.data[ i ];
+        if( c == ' ' || c == '\n' )
+        {
+            st_s_pop_char( &o->code );
+        }
+        else
+        {
+            break;
+        }
     }
 
     BLM_DOWN();
@@ -1121,32 +1177,23 @@ static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_source* 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_body_s_parse( bcore_plant_body_s* o, bcore_source* source )
+static void bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source )
 {
     BLM_INIT();
-
-    st_s* string = BLM_CREATE( st_s );
-
-    bcore_source_point_s_set( &o->source_point, source );
-
-    if( !bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
-    {
-        bcore_source_a_parse_fa( source, " #name", string );
-        if( string->size == 0 ) bcore_source_a_parse_err_fa( source, "Body name expected." );
-        st_s_push_fa( &o->name, "#<sc_t>", string->sc );
-    }
-
-    bcore_source_a_parse_fa( source, " =" );
-
     if( bcore_source_a_parse_bl_fa( source, " #=?'{'" ) )
     {
-        bcore_plant_body_s_parse_code( o, source );
+        bcore_plant_body_s_parse_code( o, stamp, source );
     }
     else
     {
         st_s* name = BLM_CREATE( st_s );
         bcore_plant_group_s_parse_name( o->group, name, source );
         if( name->size == 0 ) bcore_source_a_parse_err_fa( source, "Body name expected." );
+
+        if( stamp )
+        {
+            bcore_plant_stamp_s_resolve_chars( stamp, name );
+        }
 
         tp_t tp_name = typeof( name->sc );
         // if name_buf refers to another body
@@ -1166,11 +1213,64 @@ static void bcore_plant_body_s_parse( bcore_plant_body_s* o, bcore_source* sourc
         }
     }
 
+    if( bcore_source_a_parse_bl_fa( source, " #?': '" ) ) // concatenating another body
+    {
+        bcore_plant_body_s* body = BLM_CREATE( bcore_plant_body_s );
+        body->group = o->group;
+        bcore_plant_body_s_parse_expression( body, stamp, source );
+        if( !body->go_inline ) st_s_push_char( &o->code, '\n' );
+        bcore_plant_body_s_append( o, 0, body );
+    }
+    BLM_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// stamp should be NULL when body is not parsed inside a stamp
+static void bcore_plant_body_s_parse( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source )
+{
+    BLM_INIT();
+
+    st_s* string = BLM_CREATE( st_s );
+
+    bcore_source_point_s_set( &o->source_point, source );
+
+    if( !bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
+    {
+        bcore_source_a_parse_fa( source, " #name", string );
+        if( string->size == 0 ) bcore_source_a_parse_err_fa( source, "Body name expected." );
+        st_s_push_fa( &o->name, "#<sc_t>", string->sc );
+    }
+
+    bcore_source_a_parse_fa( source, " =" );
+
+    bcore_plant_body_s_parse_expression( o, stamp, source );
+
     st_s_copy_fa( &o->global_name, "#<sc_t>_#<sc_t>", o->group->name.sc, o->name.sc );
     BLM_DOWN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+void bcore_plant_body_s_expand( const bcore_plant_body_s* body, sz_t indent, bcore_sink* sink )
+{
+    if( body->go_inline )
+    {
+        bcore_sink_a_push_fa( sink, "{#<sc_t>}", body->code.sc );
+    }
+    else
+    {
+        bcore_sink_a_push_fa( sink, "{\n#rn{ }", indent + 4 );
+        for( sz_t i = 0; i < body->code.size; i++ )
+        {
+            char c = body->code.sc[ i ];
+            bcore_sink_a_push_char( sink, c );
+            if( c == '\n' ) bcore_sink_a_push_fa( sink, "#rn{ }", indent + 4 );
+        }
+        bcore_sink_a_push_fa( sink, "\n#rn{ }}", indent );
+    }
+}
+
 
 /**********************************************************************************************************************/
 /// feature
@@ -1263,7 +1363,7 @@ static void bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
             if( o->strict )  bcore_source_a_parse_err_fa( source, "Feature is 'strict'. Default function would have no effect." );
             o->default_body = bcore_plant_body_s_create();
             o->default_body->group = o->group;
-            bcore_plant_body_s_parse_code( o->default_body, source );
+            bcore_plant_body_s_parse_code( o->default_body, NULL, source );
             st_s_copy_fa( &o->default_name, "#<sc_t>__", o->name.sc );
         }
         else
@@ -1451,7 +1551,8 @@ static void bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_fe
             if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
             bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
             bcore_plant_args_s_expand( &o->args, false, sink );
-            bcore_sink_a_push_fa( sink, " ) #<sc_t>", o->default_body->code.sc );
+            bcore_sink_a_push_fa( sink, " )" );
+            bcore_plant_body_s_expand( o->default_body, indent, sink );
         }
         else
         {
@@ -1477,8 +1578,8 @@ static void bcore_plant_feature_s_expand_definition( const bcore_plant_feature_s
         if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
         bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
         bcore_plant_args_s_expand( &o->args, false, sink );
-        bcore_sink_a_push_fa( sink, " )\n", o->default_body->code.sc );
-        bcore_sink_a_push_fa( sink, "#<sc_t>", o->default_body->code.sc );
+        bcore_sink_a_push_fa( sink, " )\n" );
+        bcore_plant_body_s_expand( o->default_body, indent, sink );
     }
 }
 
@@ -1558,7 +1659,7 @@ static void bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s
     {
         o->body = bcore_plant_body_s_create();
         o->body->group = group;
-        bcore_plant_body_s_parse( o->body, source );
+        bcore_plant_body_s_parse( o->body, stamp, source );
     }
 
     bcore_source_a_parse_fa( source, " ; " );
@@ -1998,7 +2099,7 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
 
                 if( go_inline )
                 {
-                    bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+                    bcore_plant_body_s_expand( func->body, indent, sink );
                 }
                 else
                 {
@@ -2038,7 +2139,7 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
 
                 if( go_inline )
                 {
-                    bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+                    bcore_plant_body_s_expand( func->body, indent, sink );
                 }
                 else
                 {
@@ -2183,7 +2284,7 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
                     bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
                     bcore_plant_args_s_expand( &feature->args, false, sink );
                     bcore_sink_a_push_fa( sink, " )\n" );
-                    bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+                    bcore_plant_body_s_expand( func->body, indent, sink );
                     bcore_sink_a_push_fa( sink, "\n" );
                 }
             }
@@ -2214,7 +2315,7 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
                     }
 
                     bcore_sink_a_push_fa( sink, " )\n" );
-                    bcore_sink_a_push_fa( sink, "#<sc_t>", func->body->code.sc );
+                    bcore_plant_body_s_expand( func->body, indent, sink );
                     bcore_sink_a_push_fa( sink, "\n" );
                 }
             }
@@ -2427,6 +2528,14 @@ static void bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st
         st_s_copy( name, &o->name );
         st_s* s = st_s_create();
         bcore_source_a_parse_fa( source, " #name", s );
+
+        // include certain key-characters in name
+        if( bcore_source_a_parse_bl_fa( source, "#?'$'" ) )
+        {
+            st_s_push_char( s, '$' );
+            bcore_source_a_parse_fa( source, " #:name", s );
+        }
+
         if( s->size > 0 )
         {
             st_s_push_fa( name, "_#<sc_t>", s->sc );
@@ -2531,7 +2640,7 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
         {
             bcore_plant_body_s* body = bcore_plant_body_s_create();
             body->group = o;
-            bcore_plant_body_s_parse( body, source );
+            bcore_plant_body_s_parse( body, NULL, source );
             bcore_source_a_parse_fa( source, " ; " );
             bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )body, source );
             item = ( bcore_plant* )body;
@@ -3287,12 +3396,23 @@ static bl_t bcore_plant_compiler_s_expand( bcore_plant_compiler_s* o )
         {
             bcore_sink_a_push_fa( sink, "echo \"#<sc_t>\"\n", o->undo_expand_files.data[ i ]->sc );
         }
-        bcore_sink_a_push_fa( sink, "read -rp $'Continue? (Y/n): ' key;\n" );
-        bcore_sink_a_push_fa( sink, "if [ \"$key\" == \"Y\" ]; then\n" );
+
+        bcore_sink_a_push_fa( sink, "function swap_files\n" );
+        bcore_sink_a_push_fa( sink, "{\n" );
         bcore_sink_a_push_fa( sink, "#<sc_t>", o->undo_expand_actions.sc );
-        bcore_sink_a_push_fa( sink, "    echo \"Done\"\n" );
-        bcore_sink_a_push_fa( sink, "else\n" );
+        bcore_sink_a_push_fa( sink, "  echo \"Done\"\n" );
+        bcore_sink_a_push_fa( sink, "}\n" );
+        bcore_sink_a_push_fa( sink, "\n" );
+
+        bcore_sink_a_push_fa( sink, "if [ \"$1\" != \"-f\" ]; then\n" );
+        bcore_sink_a_push_fa( sink, "  read -rp $'Continue? (Y/n): ' key;\n" );
+        bcore_sink_a_push_fa( sink, "  if [ \"$key\" == \"Y\" ]; then\n" );
+        bcore_sink_a_push_fa( sink, "    swap_files\n" );
+        bcore_sink_a_push_fa( sink, "  else\n" );
         bcore_sink_a_push_fa( sink, "    echo \"Aborted\"\n" );
+        bcore_sink_a_push_fa( sink, "  fi\n" );
+        bcore_sink_a_push_fa( sink, "else\n" );
+        bcore_sink_a_push_fa( sink, "  swap_files\n" );
         bcore_sink_a_push_fa( sink, "fi\n" );
         bcore_sink_a_discard( sink );
     }
@@ -3344,7 +3464,7 @@ bl_t bcore_plant_expand()
     bl_t modified = false;
     f3_t time = 0;
 
-    CPU_TIME_OF( modified = bcore_plant_compiler_s_expand( plant_compiler_g ), time );
+    ABS_TIME_OF( modified = bcore_plant_compiler_s_expand( plant_compiler_g ), time );
     if( modified )
     {
         bcore_msg_fa( "PLANT: Expanded in #<f3_t> sec.\n", time );
@@ -3364,7 +3484,7 @@ bl_t bcore_plant_expand()
 bl_t bcore_plant_run_globally()
 {
     f3_t time = 0;
-    CPU_TIME_OF( bcore_run_signal_globally( TYPEOF_all, TYPEOF_plant, NULL ), time );
+    ABS_TIME_OF( bcore_run_signal_globally( TYPEOF_all, TYPEOF_plant, NULL ), time );
     bcore_msg_fa( "PLANT: Compiled in #<f3_t> sec.\n", time );
     return bcore_plant_expand();
 }
@@ -3407,7 +3527,6 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_plant_signature_s );
 
             BCORE_REGISTER_FFUNC( bcore_plant_fp_get_hash,           bcore_plant_body_s_get_hash );
-            BCORE_REGISTER_FFUNC( bcore_plant_fp_parse,              bcore_plant_body_s_parse );
             BCORE_REGISTER_FFUNC( bcore_plant_fp_get_global_name_sc, bcore_plant_body_s_get_global_name_sc );
             BCORE_REGISTER_OBJECT( bcore_plant_body_s );
 
