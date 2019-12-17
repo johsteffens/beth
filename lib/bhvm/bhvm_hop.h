@@ -53,8 +53,14 @@ group :ar0 =
         bhvm_lop_ar0_$R_s_f( BKNIT_FA1( r->v.type ), r->v.data, r->v.size );
     };
 
+    /// axon pass --------------------------------------------------------------
+
     stamp :zro = { func : :f = :body_lop_cv; };
     stamp :one = { func : :f = :body_lop_cv; };
+
+    /// dendrite pass ----------------------------------------------------------
+
+    stamp :nul_dp = { func : :f = { /* no action */ }; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -97,10 +103,14 @@ group :ar1 =
 
     /// dendrite pass ----------------------------------------------------------
 
+    stamp :identity_dp_v = { func : :f = :body_lop_v_av; };
+    stamp :neg_dp_v      = { func : :f = :body_lop_v_av; };
+
     stamp :add_dp_a_v = { func : :f = :body_lop_v_av; };
     stamp :add_dp_b_v = { func : :f = :body_lop_v_av; };
     stamp :sub_dp_a_v = { func : :f = :body_lop_v_av; };
     stamp :sub_dp_b_v = { func : :f = :body_lop_v_av; };
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -111,78 +121,92 @@ group :ar2 =
     extending stump verbatim :_ = aware : {};
     signature void f( plain, const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
 
-    body body_lop_vv_cv =
-    {
-        assert( a->v.size == r->v.size );
-        assert( b->v.size == r->v.size );
-        bhvm_lop_ar2_$R_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-    };
+    body body_assert_vvv = { assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size ); };
+    body body_assert_vsv = { assert( a->v.size == r->v.size ); assert( b->v.size == 1         ); };
+    body body_assert_svv = { assert( a->v.size == 1         ); assert( b->v.size == r->v.size ); };
+    body body_assert_vvs = { assert( a->v.size == b->v.size ); assert( r->v.size == 1         ); };
 
-    body body_lop_vvv =
-    {
-        assert( a->v.size == r->v.size );
-        assert( b->v.size == r->v.size );
-        bhvm_lop_ar2_$R_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-    };
+    body body_assert_mvv = { assert( a->s.size == 2 ); assert( b->v.size == a->s.data[ 0 ] ); assert( r->v.size == a->s.data[ 1 ] ); };
+    body body_assert_vmv = { assert( b->s.size == 2 ); assert( a->v.size == b->s.data[ 1 ] ); assert( r->v.size == b->s.data[ 0 ] ); };
+    body body_assert_vvm = { assert( r->s.size == 2 ); assert( a->v.size == r->s.data[ 1 ] ); assert( b->v.size == r->s.data[ 0 ] ); };
 
-    body body_lop_svv =
-    {
-        assert( a->v.size == 1 );
-        assert( b->v.size == r->v.size );
-        bhvm_lop_ar2_$R_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-    };
+    body body_assert_tvv = { assert( a->s.size == 2 ); assert( b->v.size == a->s.data[ 1 ] ); assert( r->v.size == a->s.data[ 0 ] ); };
+    body body_assert_vtv = { assert( b->s.size == 2 ); assert( a->v.size == b->s.data[ 0 ] ); assert( r->v.size == b->s.data[ 1 ] ); };
+    body body_assert_vvt = { assert( r->s.size == 2 ); assert( a->v.size == r->s.data[ 0 ] ); assert( b->v.size == r->s.data[ 1 ] ); };
 
-    body body_lop_vsv =
-    {
-        assert( a->v.size == r->v.size );
-        assert( b->v.size == 1 );
-        bhvm_lop_ar2_$R_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-    };
+    body body_lop_r = { bhvm_lop_ar2_$R_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; // r has full size
+    body body_lop_a = { bhvm_lop_ar2_$R_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->v.size ); }; // a has full size
 
-    body body_lop_vvs =
-    {
-        assert( a->v.size == b->v.size );
-        assert( r->v.size == 1 );
-        bhvm_lop_ar2_$R_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-    };
-
-    body body_lop_vs_cv =
-    {
-        assert( a->v.size == r->v.size );
-        assert( b->v.size == 1 );
-        bhvm_lop_ar2_$R_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-    };
-
-    body body_lop_vv_av =
-    {
-        assert( a->v.size == r->v.size );
-        assert( b->v.size == r->v.size );
-        bhvm_lop_ar2_$R_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-    };
+    body body_lop_ma = { bhvm_lop_ar2_$R_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] ); }; // a is matrix
+    body body_lop_mb = { bhvm_lop_ar2_$R_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] ); }; // b is matrix
+    body body_lop_mr = { bhvm_lop_ar2_$R_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->s.data[ 1 ], r->s.data[ 0 ] ); }; // r is matrix
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :add     = { func : :f = :body_lop_vv_cv; };
-    stamp :sub     = { func : :f = :body_lop_vv_cv; };
-    stamp :mul     = { func : :f = :body_lop_vv_cv; };
-    stamp :div     = { func : :f = :body_lop_vv_cv; };
+    stamp :add = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :sub = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :div = { func : :f = :body_assert_vvv : :body_lop_r; };
+    // muls: s below
+
+    /// logic ------------------------------------------------------------------
+
+    stamp :equal         = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :larger        = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :smaller       = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :larger_equal  = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :smaller_equal = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :logic_and     = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :logic_or      = { func : :f = :body_assert_vvv : :body_lop_r; };
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :mul_dp_a_vb      = { func : :f = :body_lop_vv_av; };
-    stamp :mul_dp_b_va      = { func : :f = :body_lop_vv_av; };
-    stamp :div_dp_a_vb      = { func : :f = :body_lop_vv_av; };
-    stamp :exp_dp_vy        = { func : :f = :body_lop_vv_av; };
-    stamp :inv_dp_vy        = { func : :f = :body_lop_vv_av; };
-    stamp :lgst_dp_vy       = { func : :f = :body_lop_vv_av; };
-    stamp :lgst_hard_dp_vy  = { func : :f = :body_lop_vv_av; };
-    stamp :lgst_leaky_dp_vy = { func : :f = :body_lop_vv_av; };
-    stamp :tanh_dp_vy       = { func : :f = :body_lop_vv_av; };
-    stamp :tanh_hard_dp_vy  = { func : :f = :body_lop_vv_av; };
-    stamp :tanh_leaky_dp_vy = { func : :f = :body_lop_vv_av; };
-    stamp :softplus_dp_vy   = { func : :f = :body_lop_vv_av; };
-    stamp :relu_dp_vy       = { func : :f = :body_lop_vv_av; };
-    stamp :relu_leaky_dp_vy = { func : :f = :body_lop_vv_av; };
+    stamp :div_dp_a_vb      = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :exp_dp_vy        = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :inv_dp_vy        = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :lgst_dp_vy       = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :lgst_hard_dp_vy  = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :lgst_leaky_dp_vy = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :tanh_dp_vy       = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :tanh_hard_dp_vy  = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :tanh_leaky_dp_vy = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :softplus_dp_vy   = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :relu_dp_vy       = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :relu_leaky_dp_vy = { func : :f = :body_assert_vvv : :body_lop_r; };
+
+    /// mul axon pass ----------------------------------------------------------
+
+    stamp :mul_vvv = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :mul_vsv = { func : :f = :body_assert_vsv : :body_lop_r; };
+    stamp :mul_svv = { func : :f = :body_assert_svv : :body_lop_r; };
+    stamp :mul_vvs = { func : :f = :body_assert_vvs : :body_lop_r; };
+    stamp :mul_mvv = { func : :f = :body_assert_mvv : :body_lop_ma; };
+    stamp :mul_vmv = { func : :f = :body_assert_vmv : :body_lop_mb; };
+    stamp :mul_vvm = { func : :f = :body_assert_vvm : :body_lop_mr; };
+    stamp :mul_tvv = { func : :f = :body_assert_tvv : :body_lop_ma; };
+    stamp :mul_vtv = { func : :f = :body_assert_vtv : :body_lop_mb; };
+
+    stamp :mul_mmm = { func : :f; };
+    stamp :mul_mtm = { func : :f; };
+    stamp :mul_tmm = { func : :f; };
+    stamp :mul_ttm = { func : :f; };
+
+    /// mul accumulate ---------------------------------------------------------
+
+    stamp :mul_acc_vvv = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :mul_acc_vsv = { func : :f = :body_assert_vsv : :body_lop_r; };
+    stamp :mul_acc_svv = { func : :f = :body_assert_svv : :body_lop_r; };
+    stamp :mul_acc_vvs = { func : :f = :body_assert_vvs : :body_lop_r; };
+    stamp :mul_acc_mvv = { func : :f = :body_assert_mvv : :body_lop_ma; };
+    stamp :mul_acc_vmv = { func : :f = :body_assert_vmv : :body_lop_mb; };
+    stamp :mul_acc_tvv = { func : :f = :body_assert_tvv : :body_lop_ma; };
+    stamp :mul_acc_vtv = { func : :f = :body_assert_vtv : :body_lop_mb; };
+    stamp :mul_acc_vvm = { func : :f = :body_assert_vvm : :body_lop_mr; };
+
+    stamp :mul_acc_mmm = { func : :f; };
+    stamp :mul_acc_mtm = { func : :f; };
+    stamp :mul_acc_tmm = { func : :f; };
+    stamp :mul_acc_ttm = { func : :f; };
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

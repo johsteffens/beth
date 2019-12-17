@@ -1714,7 +1714,6 @@ vd_t bhvm_hf3_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            bcore_flect_push_ns_func( TYPEOF_bhvm_hf3_s, ( fp_t )bhvm_hf3_s_copy_typed, "bcore_fp_copy_typed", "copy_typed" );
         }
         break;
 

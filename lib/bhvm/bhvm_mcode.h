@@ -107,6 +107,8 @@ signature      void track_push_reverse( mutable, tp_t name, tp_t src_name ); // 
 signature      void track_remove      ( mutable, tp_t name );                // removes track if existing
 signature      void track_run         (   const, tp_t name, bhvm_holor_s* ah );
 
+signature :track_vop_push_d track_vop_set_args_push_d( const bhvm_vop_arr_ci_s* arr_ci );
+
 // track library
 stamp :lib = aware :
 {
@@ -142,6 +144,12 @@ stamp :lib = aware :
 
     func : :track_vop_push_c = { :track_s_vop_push_c( @_track_get_or_new( o, name ), vop ); };
     func : :track_vop_push_d = { :track_s_vop_push_d( @_track_get_or_new( o, name ), vop ); };
+
+    func : :track_vop_set_args_push_d =
+    {
+        bhvm_vop_a_set_args( vop, arr_ci );
+        :track_s_vop_push_d( @_track_get_or_new( o, name ), vop );
+    };
 
     func : :track_push =
     {
@@ -183,6 +191,8 @@ stamp :frame = aware :
 
     func : :track_vop_push_c = { :lib_s_track_vop_push_c( o->lib, name, vop ); };
     func : :track_vop_push_d = { :lib_s_track_vop_push_d( o->lib, name, vop ); };
+
+    func : :track_vop_set_args_push_d = { :lib_s_track_vop_set_args_push_d( o->lib, name, vop, arr_ci ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

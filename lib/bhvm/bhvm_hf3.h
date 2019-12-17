@@ -83,6 +83,8 @@ stamp : = aware bcore_inst
     sz_t [] d; // shape
     f3_t [] v; // values
     bl_t htp;  // holor is transposed
+
+    func bcore_fp : copy_typed;
 };
 
 /// array of dynamic links

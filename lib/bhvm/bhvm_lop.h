@@ -48,9 +48,14 @@
 #define BKNIT_FA1( type ) ( ( type == TYPEOF_f2_t ) ? 0 : ( type == TYPEOF_f3_t ) ? 1 : -256 )
 #define BKNIT_FA1_ERR( t1 ) ERR_fa( "Invalid type: '#<sc_t>'.", ifnameof( t1 ) )
 
-#define BKNIT_FA2( t1, t2 ) ( BKNIT_FA1( t1 ) * 2 + BKNIT_FA1( t2 ) )
-#define BKNIT_FA3( t1, t2, t3 ) ( BKNIT_FA2( t1, t2 ) * 2 + BKNIT_FA1( t3 ) )
+#define BKNIT_FA2( t1, t2 )         ( BKNIT_FA1( t1 )         * 2 + BKNIT_FA1( t2 ) )
+#define BKNIT_FA3( t1, t2, t3 )     ( BKNIT_FA2( t1, t2 )     * 2 + BKNIT_FA1( t3 ) )
 #define BKNIT_FA4( t1, t2, t3, t4 ) ( BKNIT_FA3( t1, t2, t3 ) * 2 + BKNIT_FA1( t4 ) )
+
+#define BKNIT_FA_L1_FROM_KNIT( knit ) (   knit        & 1 )
+#define BKNIT_FA_L2_FROM_KNIT( knit ) ( ( knit >> 1 ) & 1 )
+#define BKNIT_FA_L3_FROM_KNIT( knit ) ( ( knit >> 2 ) & 1 )
+#define BKNIT_FA_L4_FROM_KNIT( knit ) ( ( knit >> 3 ) & 1 )
 
 #define BKNIT_F2 BKNIT_FA1( TYPEOF_f2_t )
 #define BKNIT_F3 BKNIT_FA1( TYPEOF_f3_t )
@@ -119,6 +124,10 @@ group :ar0 =
 
     stamp :zro = { func : :f2 = { return 0; }; func : :f3 = { return 0; }; func : :f = :body_cv; };
     stamp :one = { func : :f2 = { return 1; }; func : :f3 = { return 1; }; func : :f = :body_cv; };
+
+    /// dendrite pass ----------------------------------------------------------
+
+    stamp :nul_dp_v = { func : :f = { /* no action*/ }; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -175,17 +184,14 @@ group :ar1 =
         }
     };
 
+    /// axon pass --------------------------------------------------------------
+
     stamp :identity = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_cv; };
     stamp :neg      = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_cv; };
     stamp :floor    = { func : :f2 = { return  floor(a); }; func : :f3 = { return  floor(a); }; func : :f = :body_v_cv; };
     stamp :ceil     = { func : :f2 = { return   ceil(a); }; func : :f3 = { return   ceil(a); }; func : :f = :body_v_cv; };
     stamp :exp      = { func : :f2 = { return    exp(a); }; func : :f3 = { return    exp(a); }; func : :f = :body_v_cv; };
     stamp :inv      = { func : :f2 = { return f2_inv(a); }; func : :f3 = { return f3_inv(a); }; func : :f = :body_v_cv; };
-
-    stamp :add_dp_a_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :add_dp_b_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :sub_dp_a_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :sub_dp_b_v = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_av; };
 
     body body_lgst       = { return ( a > -700 ) ? ( 1.0 / ( 1.0 + exp( -( f3_t )a ) ) ) : 0; };
     body body_lgst_hard  = { return ( a < -2.0 ) ? 0.0 : ( a > 2.0 ) ? 1.0 : 0.25 * ( a + 2.0 ); };
@@ -206,6 +212,16 @@ group :ar1 =
     stamp :softplus   = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
     stamp :relu       = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
     stamp :relu_leaky = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
+
+    /// dendrite pass ----------------------------------------------------------
+
+    stamp :identity_dp_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
+    stamp :neg_dp_v      = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_av; };
+
+    stamp :add_dp_a_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
+    stamp :add_dp_b_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
+    stamp :sub_dp_a_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
+    stamp :sub_dp_b_v = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_av; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -218,9 +234,8 @@ group :ar2 =
     signature f2_t f2( plain, f2_t a, f2_t b );
     signature f3_t f3( plain, f3_t a, f3_t b );
 
-    signature void f( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
-
-    func : : f2 = { return @_f3( a, b ); };
+    signature void f  ( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
+    signature void f_m( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t rows, sz_t cols );
 
     // vector <- vector <op> vector
     body body_vv_cv =
@@ -312,7 +327,25 @@ group :ar2 =
         }
     };
 
-    // scalar += vector <op> vector (e.g. dot product)  (not that target needs to be initialized zero for a pure dot product)
+    // vector <- scalar <op> vector
+    body body_sv_av =
+    {
+        assert( s == 0 || ( a && b && r ) );
+        switch( tknit )
+        {
+            case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f2(((f2_t*)a)[0],((f2_t*)b)[i]); } break;
+            case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f2(((f2_t*)a)[0],((f2_t*)b)[i]); } break;
+            case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f3(((f2_t*)a)[0],((f3_t*)b)[i]); } break;
+            case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f3(((f2_t*)a)[0],((f3_t*)b)[i]); } break;
+            case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f3(((f3_t*)a)[0],((f2_t*)b)[i]); } break;
+            case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f3(((f3_t*)a)[0],((f2_t*)b)[i]); } break;
+            case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f3(((f3_t*)a)[0],((f3_t*)b)[i]); } break;
+            case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f3(((f3_t*)a)[0],((f3_t*)b)[i]); } break;
+            default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+        }
+    };
+
+    // scalar += vector <op> vector (e.g. dot product)
     body body_vv_as =
     {
         assert( s == 0 || ( a && b && r ) );
@@ -330,6 +363,24 @@ group :ar2 =
         }
     };
 
+    // scalar += vector <op> vector (e.g. dot product)
+    body body_vv_cs =
+    {
+        assert( s == 0 || ( a && b && r ) );
+        switch( tknit )
+        {
+            case BKNIT_F222: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+            case BKNIT_F223: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+            case BKNIT_F232: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+            case BKNIT_F233: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+            case BKNIT_F322: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+            case BKNIT_F323: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+            case BKNIT_F332: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+            case BKNIT_F333: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+            default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+        }
+    };
+
     body body_mul    = { return a * b; };
     body body_add    = { return a + b; };
     body body_sub    = { return a - b; };
@@ -339,21 +390,63 @@ group :ar2 =
     stamp :add = { func : :f2 = :body_add;    func : :f3 = :body_add;    func : :f = :body_vv_cv; };
     stamp :sub = { func : :f2 = :body_sub;    func : :f3 = :body_sub;    func : :f = :body_vv_cv; };
     stamp :div = { func : :f2 = :body_div_f2; func : :f3 = :body_div_f3; func : :f = :body_vv_cv; };
-    stamp :mul = { func : :f2 = :body_mul;    func : :f3 = :body_mul;    func : :f = :body_vv_cv; };
 
-    stamp :mul_vsv         = { func : :f2 = :body_mul; func : :f3 = :body_mul; func : :f = :body_vs_cv; };
-    stamp :mul_vsv_dp_a_vb = { func : :f2 = :body_mul; func : :f3 = :body_mul; func : :f = :body_vs_av; };
-    stamp :mul_vsv_dp_b_va = { func : :f2 = :body_mul; func : :f3 = :body_mul; func : :f = :body_vv_as; };
-    stamp :mul_svv         = { func : :f2 = :body_mul; func : :f3 = :body_mul; func : :f = :body_sv_cv; };
-    stamp :mul_svv_dp_a_vb = { func : :f2 = :body_mul; func : :f3 = :body_mul; func : :f = :body_vv_as; };
-    stamp :mul_svv_dp_b_va = { func : :f2 = :body_mul; func : :f3 = :body_mul; func : :f = :body_vs_av; };
+    /// multiplication ---------------------------------------------------------
 
-//    for(sz_t i=0;i<r;i++) for(sz_t j=0;j<c;j++) { ((f2_t*)r)[i]+=@_f2(((f2_t*)a)[i*c+j],((f2_t*)b)[j]); }
-//    for(sz_t i=0;i<r;i++) for(sz_t j=0;j<c;j++) { ((f2_t*)r)[j]+=@_f2(((f2_t*)a)[i*c+j],((f2_t*)b)[i]); }
-//    for(sz_t i=0;i<r;i++) for(sz_t j=0;j<c;j++) { ((f2_t*)r)[i*c+j]=@_f2(((f2_t*)a)[i],((f2_t*)b)[j]); }
+    signature :f f_vv_cv;
+    signature :f f_vv_av;
+    signature :f f_vs_cv;
+    signature :f f_vs_av;
+    signature :f f_vv_as;
+    signature :f f_vv_cs;
 
-    stamp :mul_dp_a_vb = { func : :f2 = :body_mul; func : :f3 = :body_mul; func : :f = :body_vv_av; };
-    stamp :mul_dp_b_va = { func : :f2 = :body_mul; func : :f3 = :body_mul; func : :f = :body_vv_av; };
+    signature :f_m f_mv_cv;
+    signature :f_m f_mv_av;
+    signature :f_m f_vm_cv;
+    signature :f_m f_vm_av;
+    signature :f_m f_vv_cm;
+    signature :f_m f_vv_am;
+
+    stamp verbatim :mul_body = aware bcore_inst
+    {
+        func : :f2 = :body_mul; func : :f3 = :body_mul;
+        func : :f_vv_cv;
+        func : :f_vv_av;
+        func : :f_vs_cv;
+        func : :f_vs_av;
+        func : :f_vv_as;
+        func : :f_vv_cs;
+        func : :f_mv_cv;
+        func : :f_mv_av;
+        func : :f_vm_cv;
+        func : :f_vm_av;
+        func : :f_vv_cm;
+        func : :f_vv_am;
+    };
+
+    /// mul
+    stamp :mul_vvv = { func : :f   = { :mul_body_s_f_vv_cv( tknit, a, b, r, s ); }; };
+    stamp :mul_vsv = { func : :f   = { :mul_body_s_f_vs_cv( tknit, a, b, r, s ); }; };
+    stamp :mul_svv = { func : :f   = { :mul_body_s_f_vs_cv( tknit, b, a, r, s ); }; };
+    stamp :mul_vvs = { func : :f   = { :mul_body_s_f_vv_cs( tknit, a, b, r, s ); }; };
+    stamp :mul_mvv = { func : :f_m = { :mul_body_s_f_mv_cv( tknit, a, b, r, rows, cols ); }; };
+    stamp :mul_tvv = { func : :f_m = { :mul_body_s_f_vm_cv( tknit, b, a, r, rows, cols ); }; };
+    stamp :mul_vmv = { func : :f_m = { :mul_body_s_f_vm_cv( tknit, a, b, r, rows, cols ); }; };
+    stamp :mul_vtv = { func : :f_m = { :mul_body_s_f_mv_cv( tknit, b, a, r, rows, cols ); }; };
+    stamp :mul_vvm = { func : :f_m = { :mul_body_s_f_vv_cm( tknit, a, b, r, rows, cols ); }; };
+
+    /// mul-accumulate
+    stamp :mul_acc_vvv = { func : :f   = { :mul_body_s_f_vv_av( tknit, a, b, r, s ); }; };
+    stamp :mul_acc_vsv = { func : :f   = { :mul_body_s_f_vs_av( tknit, a, b, r, s ); }; };
+    stamp :mul_acc_svv = { func : :f   = { :mul_body_s_f_vs_av( tknit, b, a, r, s ); }; };
+    stamp :mul_acc_vvs = { func : :f   = { :mul_body_s_f_vv_as( tknit, a, b, r, s ); }; };
+    stamp :mul_acc_mvv = { func : :f_m = { :mul_body_s_f_mv_av( tknit, a, b, r, rows, cols ); }; };
+    stamp :mul_acc_tvv = { func : :f_m = { :mul_body_s_f_vm_av( tknit, b, a, r, rows, cols ); }; };
+    stamp :mul_acc_vmv = { func : :f_m = { :mul_body_s_f_vm_av( tknit, a, b, r, rows, cols ); }; };
+    stamp :mul_acc_vtv = { func : :f_m = { :mul_body_s_f_mv_av( tknit, b, a, r, rows, cols ); }; };
+    stamp :mul_acc_vvm = { func : :f_m = { :mul_body_s_f_vv_am( tknit, a, b, r, rows, cols ); }; };
+
+    /// dendrite pass ----------------------------------------------------------
 
     stamp :div_dp_a_vb = { func : :f2 = { return a * f2_inv( b ); }; func : :f3 = { return a * f3_inv( b ); }; func : :f = :body_vv_av; };
 
@@ -379,6 +472,25 @@ group :ar2 =
     stamp :softplus_dp_vy   = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
     stamp :relu_dp_vy       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
     stamp :relu_leaky_dp_vy = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+
+    /// logic ------------------------------------------------------------------
+
+    body body_equal         = { return a == b ? 1 : -1; };
+    body body_larger        = { return a >  b ? 1 : -1; };
+    body body_smaller       = { return a <  b ? 1 : -1; };
+    body body_larger_equal  = { return a >= b ? 1 : -1; };
+    body body_smaller_equal = { return a <= b ? 1 : -1; };
+    body body_logic_and     = { return ( ( a > 0 ) && ( b > 0 ) ) ? 1 : -1; };
+    body body_logic_or      = { return ( ( a > 0 ) || ( b > 0 ) ) ? 1 : -1; };
+
+    stamp :equal         = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
+    stamp :larger        = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
+    stamp :smaller       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
+    stamp :larger_equal  = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
+    stamp :smaller_equal = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
+    stamp :logic_and     = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
+    stamp :logic_or      = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

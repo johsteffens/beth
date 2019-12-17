@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-12T12:53:51Z
+ *  Last File Update: 2019-12-17T16:25:52Z
  *
  *  Copyright and License of this File:
  *
@@ -33,6 +33,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_s )
     "sz_t [] d;"
     "f3_t [] v;"
     "bl_t htp;"
+    "func bcore_fp:copy_typed;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hf3_adl_s )
@@ -2052,12 +2053,13 @@ vd_t bhvm_planted_hf3_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hf3_hash" ), sr_tp( 3682065565 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hf3_hash" ), sr_tp( 3351740265 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_hf3.h
 
             // group: bhvm_hf3
+            BCORE_REGISTER_FFUNC( bcore_fp_copy_typed, bhvm_hf3_s_copy_typed );
             BCORE_REGISTER_OBJECT( bhvm_hf3_s );
             BCORE_REGISTER_OBJECT( bhvm_hf3_adl_s );
             BCORE_REGISTER_TRAIT( bhvm_hf3, bcore_inst );

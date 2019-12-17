@@ -48,7 +48,7 @@ vd_t bhvm_vop_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_plant:
         {
-            bcore_plant_compile( "bhvm_planted", __FILE__ );
+            bcore_plant_compile( "bhvm_planted_vop", __FILE__ );
         }
         break;
 

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-12T12:53:51Z
+ *  Last File Update: 2019-12-17T16:25:52Z
  *
  *  Copyright and License of this File:
  *
@@ -30,7 +30,8 @@
 #define TYPEOF_bhvm_hf3_s 3394151696
 #define BETH_EXPAND_ITEM_bhvm_hf3_s \
   BCORE_DECLARE_OBJECT( bhvm_hf3_s ) \
-    {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, d_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );bl_t htp;};
+    {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( sz_t, d_ );BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, v_ );bl_t htp;}; \
+  void bhvm_hf3_s_copy_typed( bhvm_hf3_s* o, tp_t type, vc_t src );
 #define TYPEOF_bhvm_hf3_adl_s 963867488
 #define BETH_EXPAND_ITEM_bhvm_hf3_adl_s \
   BCORE_DECLARE_OBJECT( bhvm_hf3_adl_s ) \

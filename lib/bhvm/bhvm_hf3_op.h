@@ -131,7 +131,7 @@ group :ar1 =
         stamp :ca_sub = { func :: :f = { bhvm_hf3_s_add( r, a, r ); }; };
         stamp :cb_sub = { func :: :f = { bhvm_hf3_s_sub( r, a, r ); }; };
 
-        /// Note: the dp cast operator makes (axon) v reference u (not vice versa)
+        /// Note: the dp cast operator has the same reference direction as axon pass ((axon) v is referencing u (not vice versa))
         stamp :ca_cast_htp = { func ::: :sig = { return "uv"; };  func :: :f = { ASSERT( a->htp != r->htp ); bhvm_hf3_s_cast_htp( a, r ); }; };
     };
 

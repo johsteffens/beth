@@ -65,7 +65,6 @@ PLANT_GROUP( bhvm, bcore_inst )
 stamp :shape = bcore_array
 {
     sz_t  [];
-    bl_t htp;
 };
 
 stamp :value = bcore_array
@@ -77,6 +76,7 @@ stamp :holor = aware bcore_inst
 {
     :shape_s s;
     :value_s v;
+    func bcore_fp : copy_typed;
 };
 
 stamp :holor_adl = aware bcore_array { :holor_s => []; }; // dynamic array of links
@@ -88,19 +88,30 @@ stamp :holor_ads = aware bcore_array { :holor_s    []; }; // dynamic array of so
 /// shape
 
 /// weak reference; no shutdown required
-static inline void bhvm_shape_s_init_weak( bhvm_shape_s* o, sz_t* data, sz_t size, bl_t htp )
+static inline void bhvm_shape_s_init_weak( bhvm_shape_s* o, sz_t* data, sz_t size )
 {
     bhvm_shape_s_init( o );
     o->data = data;
     o->size = size;
-    o->htp = htp;
+}
+
+/// weak reference; no shutdown required
+static inline void bhvm_shape_s_init_weak_from_shape( bhvm_shape_s* o, bhvm_shape_s* src )
+{
+    bhvm_shape_s_init_weak( o, src->data, src->size );
 }
 
 /// forked reference; shutdown required
-static inline void bhvm_shape_s_init_fork( bhvm_shape_s* o, sz_t* data, sz_t size, sz_t space, bl_t htp )
+static inline void bhvm_shape_s_init_fork( bhvm_shape_s* o, sz_t* data, sz_t size, sz_t space )
 {
-    bhvm_shape_s_init_weak( o, bcore_fork( data ), size, htp );
+    bhvm_shape_s_init_weak( o, bcore_fork( data ), size );
     o->space = space;
+}
+
+/// forked reference; shutdown required
+static inline void bhvm_shape_s_init_fork_from_shape( bhvm_shape_s* o, bhvm_shape_s* src )
+{
+    bhvm_shape_s_init_fork( o, src->data, src->size, src->space );
 }
 
 /// forked reference;
@@ -110,7 +121,6 @@ static inline void bhvm_shape_s_fork( bhvm_shape_s* o, bhvm_shape_s* src )
     o->data  = bcore_fork( src->data );
     o->size  = src->size;
     o->space = src->space;
-    o->htp   = src->htp;
 }
 
 static inline void bhvm_shape_s_make_strong( bhvm_shape_s* o ) { bcore_array_t_make_strong( TYPEOF_bhvm_shape_s, ( bcore_array* )o ); }
@@ -144,11 +154,23 @@ static inline void bhvm_value_s_init_weak( bhvm_value_s* o, tp_t type, vd_t* dat
     o->size = size;
 }
 
+/// weak reference; no shutdown required
+static inline void bhvm_value_s_init_weak_from_value( bhvm_value_s* o, bhvm_value_s* src )
+{
+    bhvm_value_s_init_weak( o, src->type, src->data, src->size );
+}
+
 /// forked reference; shutdown required
 static inline void bhvm_value_s_init_fork( bhvm_value_s* o, tp_t type, vd_t* data, sz_t size, sz_t space )
 {
     bhvm_value_s_init_weak( o, type, bcore_fork( data ), size );
     o->space = space;
+}
+
+/// forked reference; shutdown required
+static inline void bhvm_value_s_init_fork_from_value( bhvm_value_s* o, bhvm_value_s* src )
+{
+    bhvm_value_s_init_fork( o, src->type, src->data, src->size, src->space );
 }
 
 /// forked reference;
@@ -172,7 +194,7 @@ void bhvm_value_s_set_type_size( bhvm_value_s* o, tp_t type, sz_t size );
 /// sets type and data by copying/converting
 void bhvm_value_s_set_type_data( bhvm_value_s* o, tp_t dst_type, tp_t src_type, vc_t src_data, sz_t size );
 
-/// sets data by converting to holor type
+/// sets data by converting to holor type (sets target type if not set)
 void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t src_data, sz_t size );
 
 /// pushes data by converting to o->type
@@ -228,19 +250,35 @@ f3_t bhvm_value_s_fdev_zro( const bhvm_value_s* o );
 /// holor
 
 /// weak reference; no shutdown required
-static inline void bhvm_holor_s_init_weak( bhvm_holor_s* o, sz_t* s_data, sz_t s_size, bl_t htp, tp_t v_type, vd_t* v_data, sz_t v_size )
+static inline void bhvm_holor_s_init_weak( bhvm_holor_s* o, sz_t* s_data, sz_t s_size, tp_t v_type, vd_t* v_data, sz_t v_size )
 {
     bhvm_holor_s_init( o );
-    bhvm_shape_s_init_weak( &o->s, s_data, s_size, htp );
+    bhvm_shape_s_init_weak( &o->s, s_data, s_size );
     bhvm_value_s_init_weak( &o->v, v_type, v_data, v_size );
 }
 
-/// forked reference; shutdown required
-static inline void bhvm_holor_s_init_fork( bhvm_holor_s* o, sz_t* s_data, sz_t s_size, sz_t s_space, bl_t htp, tp_t v_type, vd_t* v_data, sz_t v_size, sz_t v_space )
+/// weak reference; no shutdown required
+static inline void bhvm_holor_s_init_weak_from_holor( bhvm_holor_s* o, bhvm_holor_s* src )
 {
     bhvm_holor_s_init( o );
-    bhvm_shape_s_init_fork( &o->s, s_data, s_size, s_space, htp );
+    bhvm_shape_s_init_weak_from_shape( &o->s, &src->s );
+    bhvm_value_s_init_weak_from_value( &o->v, &src->v );
+}
+
+/// forked reference; shutdown required
+static inline void bhvm_holor_s_init_fork( bhvm_holor_s* o, sz_t* s_data, sz_t s_size, sz_t s_space, tp_t v_type, vd_t* v_data, sz_t v_size, sz_t v_space )
+{
+    bhvm_holor_s_init( o );
+    bhvm_shape_s_init_fork( &o->s, s_data, s_size, s_space );
     bhvm_value_s_init_fork( &o->v, v_type, v_data, v_size, v_space );
+}
+
+/// forked reference; shutdown required
+static inline void bhvm_holor_s_init_fork_from_holor( bhvm_holor_s* o, bhvm_holor_s* src )
+{
+    bhvm_holor_s_init( o );
+    bhvm_shape_s_init_fork_from_shape( &o->s, &src->s );
+    bhvm_value_s_init_fork_from_value( &o->v, &src->v );
 }
 
 /// clears entire holor
@@ -248,8 +286,9 @@ static inline void bhvm_holor_s_clear( bhvm_holor_s* o )
 {
     bhvm_shape_s_clear( &o->s );
     bhvm_value_s_clear( &o->v );
-    o->s.htp = false;
 }
+
+void bhvm_holor_s_copy_typed( bhvm_holor_s* o, tp_t type, vc_t src );
 
 static inline void bhvm_holor_s_set_type( bhvm_holor_s* o, tp_t type ) { bhvm_value_s_set_type( &o->v, type ); }
 static inline void bhvm_holor_s_fit_size(      bhvm_holor_s* o )         { bhvm_value_s_set_size(      &o->v,    bhvm_shape_s_get_volume( &o->s ) ); }
@@ -258,6 +297,13 @@ static inline void bhvm_holor_s_fit_type_size( bhvm_holor_s* o, tp_t t ) { bhvm_
 /// sets holor to scalar with given value or to vacant scalar
 void bhvm_holor_s_set_type_scalar_pf( bhvm_holor_s* o, tp_t t, tp_t t_src, vc_t v );
 void bhvm_holor_s_set_scalar_pf(      bhvm_holor_s* o,         tp_t t_src, vc_t v );
+static inline void bhvm_holor_s_set_scalar_f3( bhvm_holor_s* o, f3_t v ) { bhvm_holor_s_set_scalar_pf( o, TYPEOF_f3_t, &v ); }
+
+static inline f3_t bhvm_holor_s_f3_get_scalar( const bhvm_holor_s* o )
+{
+    assert( o->v.size == 1 );
+    return o->v.type == TYPEOF_f3_t ? ( ( f3_t* )o->v.data )[ 0 ] : o->v.type == TYPEOF_f2_t ? ( ( f2_t* )o->v.data )[ 0 ] : 0;
+}
 
 /// sets holor to scalar from f3 value
 static inline void bhvm_holor_s_set_type_scalar( bhvm_holor_s* o, tp_t t, f3_t v ) { bhvm_holor_s_set_type_scalar_pf( o, t, TYPEOF_f3_t, &v ); }
@@ -302,16 +348,6 @@ static inline bmath_mf3_s bhvm_holor_s_get_weak_mf3( const bhvm_holor_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-/// holor -> transposed holor
-static inline bhvm_holor_s bhvm_holor_s_get_weak_htp( const bhvm_holor_s* o )
-{
-    bhvm_holor_s h;
-    bhvm_holor_s_init_weak( &h, o->s.data, o->s.size, !o->s.htp, o->v.type, o->v.data, o->v.size );
-    return h;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 /**********************************************************************************************************************/
 /// casts  (make the target weakly reference source data)
 
@@ -319,7 +355,7 @@ static inline bhvm_holor_s bhvm_holor_s_get_weak_htp( const bhvm_holor_s* o )
 static inline void bhvm_holor_s_cast_htp( const bhvm_holor_s* o, bhvm_holor_s* r )
 {
     bhvm_holor_s_clear( r );
-    bhvm_shape_s_init_weak( &r->s, o->s.data, o->s.size, !o->s.htp );
+    bhvm_shape_s_init_weak( &r->s, o->s.data, o->s.size );
     bhvm_value_s_init_weak( &r->v, o->v.type, o->v.data, o->v.size );
 }
 
