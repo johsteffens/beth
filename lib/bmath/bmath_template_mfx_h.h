@@ -177,7 +177,6 @@ static inline bl_t BCATU(bmath_mfx_s,is_folded)  ( const bmath_mfx_s* o ) { retu
 
 /**********************************************************************************************************************/
 /// weak int & conversion (Returned object does not own its data and need not be shut down unless it is resized)
-/// weak int & conversion (Returned object does not own its data and need not be shut down unless it is resized)
 
 static inline void BCATU(bmath_mfx_s,init_weak)( bmath_mfx_s* o, uz_t rows, uz_t cols, uz_t stride, fx_t* data )
 {
