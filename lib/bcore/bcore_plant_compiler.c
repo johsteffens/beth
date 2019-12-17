@@ -1031,7 +1031,7 @@ static void bcore_plant_body_s_append( bcore_plant_body_s* o, sz_t indent, const
 {
     if( body->go_inline )
     {
-        st_s_push_fa( &o->code, " #<st_s*> ", &body->code );
+        st_s_push_fa( &o->code, "#<st_s*>", &body->code );
     }
     else
     {
@@ -1213,12 +1213,17 @@ static void bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_pl
         }
     }
 
-    if( bcore_source_a_parse_bl_fa( source, " #?': '" ) ) // concatenating another body
+    if( bcore_source_a_parse_bl_fa( source, " #?':'" ) ) // concatenating another body
     {
+        if( bcore_source_a_parse_bl_fa( source, "#?(([0]!=' ')&&([0]!='\t')&&([0]!='\n'))" ) )
+        {
+            bcore_source_a_parse_err_fa( source, "Whitespace after ':' expected." );
+        }
         bcore_plant_body_s* body = BLM_CREATE( bcore_plant_body_s );
         body->group = o->group;
         bcore_plant_body_s_parse_expression( body, stamp, source );
-        if( !body->go_inline ) st_s_push_char( &o->code, '\n' );
+        st_s_push_char( &o->code, '\n' );
+        o->go_inline = false;
         bcore_plant_body_s_append( o, 0, body );
     }
     BLM_DOWN();
