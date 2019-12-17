@@ -133,7 +133,7 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_leaf,       bl_t )        
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_pure_array, bl_t )              // Checks if object is an array without additional elements (pure arrays are not leafs)
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_array,     bl_t, uz_t, index ) // Checks if element is an array
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_static,    bl_t, uz_t, index ) // Checks if element is static (type need not be recorded)
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_link,      bl_t, uz_t, index ) // Checks if element is a link (means that it can be NULL); an array is a distinct static object -> not a link)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_link,      bl_t, uz_t, index ) // Checks if element is a link (means that it can be NULL); (Note: An array is a distinct static object -> not a link)
 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_via, source, bcore_source*, source ) // Sends signal 'bcore_spect_via_call : source' to object
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_via, mutated ) // Sends signal 'bcore_spect_via_call : mutated' to object
