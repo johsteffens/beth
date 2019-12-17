@@ -29,6 +29,16 @@
 #include "bcore_trait.h"
 #include "bcore_spect_via_call.h"
 
+/**********************************************************************************************************************/
+// flags
+
+/** This flag allows full type conversion to object elements in interpreter:
+ *  Any type can be assigned provided the target has a conversion (copy_typed) in place.
+ *  It causes extra overhead (potentially slower, more memory).
+ *  Disable in case overhead is not tolerable.
+ */
+#define BCORE_TXT_ML_INTERPRETER_FULL_CONVERSION
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_txt_ml_translator_s_init( bcore_txt_ml_translator_s* o )
@@ -318,7 +328,6 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
             }
             else
             {
-                st_s* buf = st_s_create_l( l );
                 while( !bcore_source_r_parse_bl_fa( &src_l, " #?'</>'" ) )
                 {
                     st_s* name = st_s_create_l( l );
@@ -331,6 +340,10 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                     }
 
                     uz_t idx = bcore_via_x_nget_index( obj_l, ntype );
+
+#ifdef BCORE_TXT_ML_INTERPRETER_FULL_CONVERSION // see comment to this flag
+                    bcore_via_x_iset( obj_l, idx, interpret( o, sr_null(), src_l ) );
+#else
                     if( bcore_via_x_iis_link( obj_l, idx ) )
                     {
                         bcore_via_x_iset( obj_l, idx, interpret( o, sr_null(), src_l ) );
@@ -348,6 +361,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                             sr_down( interpret( o, item, src_l ) );
                         }
                     }
+#endif // BCORE_TXT_ML_INTERPRETER_FULL_CONVERSION
                 }
             }
         }
