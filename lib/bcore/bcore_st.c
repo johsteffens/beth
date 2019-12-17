@@ -1093,7 +1093,7 @@ static bl_t c_match( sc_t o, uz_t on, sc_t f, uz_t* fi )
             case '=': return ( rc2 == '=' ) ? ( c1 == c2 ) : false;
             case '>': return ( rc2 == '=' ) ? ( c1 >= c2 ) : ( c1 > c2 );
             case '<': return ( rc2 == '=' ) ? ( c1 <= c2 ) : ( c1 < c2 );
-            case '!': return ( rc2 == '=' ) ? ( c1 <= c2 ) : false;
+            case '!': return ( rc2 == '=' ) ? ( c1 != c2 ) : false;
             default: ERR( "Format '%s' at position %zu: relation expected.", f, i0 );
         }
     }
