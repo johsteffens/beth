@@ -270,28 +270,48 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
     if( !obj.o )
     {
         st_s* type_string = st_s_create_l( l );
-        bcore_source_r_parse_fa( &src_l, " <#until'>'>", type_string );
-        tp_t type = type_of( type_string );
-        if( type )
-        {
-            if( !bcore_flect_exists( type ) )
-            {
-                bcore_source_r_parse_errf( &src_l, "Type '%s' has no reflection.", type_string->sc );
-            }
+        bcore_source_r_parse_fa( &src_l, " " ); // take whitespaces
 
-            if( bcore_source_r_parse_bl_fa( &src_l, " #?'NULL'" ) ) // no instance
+        if( bcore_source_r_parse_bl_fa( &src_l, "#?'<'" ) ) // type specifier
+        {
+            bcore_source_r_parse_fa( &src_l, "#until'>'>", type_string );
+            tp_t type = type_of( type_string );
+            if( type )
             {
-                obj.p = bcore_inst_s_get_typed( type );
-                bcore_source_r_parse_fa( &src_l, " </>" );
+                if( !bcore_flect_exists( type ) )
+                {
+                    bcore_source_r_parse_errf( &src_l, "Type '%s' has no reflection.", type_string->sc );
+                }
+
+                if( bcore_source_r_parse_bl_fa( &src_l, " #?'NULL'" ) ) // no instance
+                {
+                    obj.p = bcore_inst_s_get_typed( type );
+                    bcore_source_r_parse_fa( &src_l, " </>" );
+                }
+                else
+                {
+                    obj = interpret( o, bcore_inst_t_create_sr( type ), src_l );
+                }
             }
             else
             {
-                obj = interpret( o, bcore_inst_t_create_sr( type ), src_l );
+                bcore_source_r_parse_fa( &src_l, " </>" );
             }
+        }
+        else if( bcore_source_r_parse_bl_fa( &src_l, "#=?'\"'" ) ) // string
+        {
+            obj = sr_create( TYPEOF_st_s );
+            bcore_source_r_parse_fa( &src_l, " #string", obj.o );
+        }
+        else if( bcore_source_r_parse_bl_fa( &src_l, "#?(([0]>='0'&&[0]<='9')||[0]=='+'||[0]=='-')" ) ) // number
+        {
+            obj = sr_create( TYPEOF_f3_t );
+            f3_t* v = obj.o;
+            bcore_source_r_parse_fa( &src_l, "#<f3_t*>", v );
         }
         else
         {
-            bcore_source_r_parse_fa( &src_l, " </>" );
+            bcore_source_r_parse_err_fa( &src_l, "Type expected." );
         }
     }
     else
