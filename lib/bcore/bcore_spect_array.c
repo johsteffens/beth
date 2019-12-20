@@ -686,15 +686,18 @@ static void set_dyn_link_aware( const bcore_array_s* p, vd_t o, uz_t index, sr_s
     if( *dst ) bcore_inst_a_discard( *dst );
     *dst = NULL;
 
-    const bcore_inst_s* inst_p = sr_s_get_spect( TYPEOF_bcore_inst_s, &src );
-    if( inst_p->aware )
+    if( src.o )
     {
-        *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_p_clone( inst_p, src.o );
-       src = sr_cw( src );
-    }
-    else
-    {
-        ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_s_type( &src ) ) );
+        const bcore_inst_s* inst_p = sr_s_get_spect( TYPEOF_bcore_inst_s, &src );
+        if( inst_p->aware )
+        {
+            *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_p_clone( inst_p, src.o );
+           src = sr_cw( src );
+        }
+        else
+        {
+            ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_s_type( &src ) ) );
+        }
     }
 
     sr_down( src );
@@ -750,15 +753,18 @@ static void set_fix_link_aware( const bcore_array_s* p, vd_t o, uz_t index, sr_s
     if( *dst ) bcore_inst_a_discard( *dst );
     *dst = NULL;
 
-    const bcore_inst_s* inst_p = sr_s_get_spect( TYPEOF_bcore_inst_s, &src );
-    if( inst_p->aware )
+    if( src.o )
     {
-        *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_p_clone( inst_p, src.o );
-       src = sr_cw( src );
-    }
-    else
-    {
-        ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_s_type( &src ) ) );
+        const bcore_inst_s* inst_p = sr_s_get_spect( TYPEOF_bcore_inst_s, &src );
+        if( inst_p->aware )
+        {
+            *dst = sr_s_is_strong( &src ) ? src.o : bcore_inst_p_clone( inst_p, src.o );
+           src = sr_cw( src );
+        }
+        else
+        {
+            ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_s_type( &src ) ) );
+        }
     }
 
     sr_down( src );
@@ -768,16 +774,16 @@ static void set_fix_link_aware( const bcore_array_s* p, vd_t o, uz_t index, sr_s
 
 static inline uz_t auz( const bcore_array_s* p, vc_t o ) { return bcore_array_p_get_size( p, o ); }
 
-sr_s NPX(default_get_first )( const NPX(s)* p, const bcore_array* o           ) { return NPX(p_get    )( p, o, 0 ); }
-sr_s NPX(default_get_last  )( const NPX(s)* p, const bcore_array* o           ) { return NPX(p_get    )( p, o, auz( p, o ) - 1 ); }
-void NPX(default_push      )( const NPX(s)* p, bcore_array* o, sr_s src ) {        NPX(p_set    )( p, o, auz( p, o ), src ); }
-void NPX(default_push_s3   )( const NPX(s)* p, bcore_array* o, s3_t val ) {        NPX(p_set_s3 )( p, o, auz( p, o ), val ); }
-void NPX(default_push_u3   )( const NPX(s)* p, bcore_array* o, u3_t val ) {        NPX(p_set_u3 )( p, o, auz( p, o ), val ); }
-void NPX(default_push_f3   )( const NPX(s)* p, bcore_array* o, f3_t val ) {        NPX(p_set_f3 )( p, o, auz( p, o ), val ); }
-void NPX(default_push_sz   )( const NPX(s)* p, bcore_array* o, sz_t val ) {        NPX(p_set_sz )( p, o, auz( p, o ), val ); }
-void NPX(default_push_uz   )( const NPX(s)* p, bcore_array* o, uz_t val ) {        NPX(p_set_uz )( p, o, auz( p, o ), val ); }
-void NPX(default_push_sc   )( const NPX(s)* p, bcore_array* o, sc_t val ) {        NPX(p_set_sc )( p, o, auz( p, o ), val ); }
-void NPX(default_push_bl   )( const NPX(s)* p, bcore_array* o, bl_t val ) {        NPX(p_set_bl )( p, o, auz( p, o ), val ); }
+sr_s NPX(default_get_first )( const NPX(s)* p, const bcore_array* o ) { return NPX(p_get )( p, o, 0 ); }
+sr_s NPX(default_get_last  )( const NPX(s)* p, const bcore_array* o ) { return NPX(p_get )( p, o, auz( p, o ) - 1 ); }
+void NPX(default_push      )( const NPX(s)* p, bcore_array* o, sr_s src ) { NPX(p_set    )( p, o, auz( p, o ), src ); }
+void NPX(default_push_s3   )( const NPX(s)* p, bcore_array* o, s3_t val ) { NPX(p_set_s3 )( p, o, auz( p, o ), val ); }
+void NPX(default_push_u3   )( const NPX(s)* p, bcore_array* o, u3_t val ) { NPX(p_set_u3 )( p, o, auz( p, o ), val ); }
+void NPX(default_push_f3   )( const NPX(s)* p, bcore_array* o, f3_t val ) { NPX(p_set_f3 )( p, o, auz( p, o ), val ); }
+void NPX(default_push_sz   )( const NPX(s)* p, bcore_array* o, sz_t val ) { NPX(p_set_sz )( p, o, auz( p, o ), val ); }
+void NPX(default_push_uz   )( const NPX(s)* p, bcore_array* o, uz_t val ) { NPX(p_set_uz )( p, o, auz( p, o ), val ); }
+void NPX(default_push_sc   )( const NPX(s)* p, bcore_array* o, sc_t val ) { NPX(p_set_sc )( p, o, auz( p, o ), val ); }
+void NPX(default_push_bl   )( const NPX(s)* p, bcore_array* o, bl_t val ) { NPX(p_set_bl )( p, o, auz( p, o ), val ); }
 
 /**********************************************************************************************************************/
 
