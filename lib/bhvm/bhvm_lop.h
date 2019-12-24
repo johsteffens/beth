@@ -273,122 +273,16 @@ group :ar2 =
         }
     };
 
-    // vector <- vector <op> scalar
-    body body_vs_cv =
-    {
-        assert( s == 0 || ( a && b && r ) );
-        switch( tknit )
-        {
-            case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=@_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
-            case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=@_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
-            case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=@_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
-            case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=@_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
-            case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=@_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
-            case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=@_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
-            case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=@_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
-            case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=@_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
-            default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
-        }
-    };
-
-    // vector += vector <op> scalar
-    body body_vs_av =
-    {
-        assert( s == 0 || ( a && b && r ) );
-        switch( tknit )
-        {
-            case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
-            case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f2(((f2_t*)a)[i],((f2_t*)b)[0]); } break;
-            case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
-            case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f3(((f2_t*)a)[i],((f3_t*)b)[0]); } break;
-            case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
-            case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f3(((f3_t*)a)[i],((f2_t*)b)[0]); } break;
-            case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
-            case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f3(((f3_t*)a)[i],((f3_t*)b)[0]); } break;
-            default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
-        }
-    };
-
-    // vector <- scalar <op> vector
-    body body_sv_cv =
-    {
-        assert( s == 0 || ( a && b && r ) );
-        switch( tknit )
-        {
-            case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=@_f2(((f2_t*)a)[0],((f2_t*)b)[i]); } break;
-            case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=@_f2(((f2_t*)a)[0],((f2_t*)b)[i]); } break;
-            case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=@_f3(((f2_t*)a)[0],((f3_t*)b)[i]); } break;
-            case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=@_f3(((f2_t*)a)[0],((f3_t*)b)[i]); } break;
-            case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=@_f3(((f3_t*)a)[0],((f2_t*)b)[i]); } break;
-            case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=@_f3(((f3_t*)a)[0],((f2_t*)b)[i]); } break;
-            case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=@_f3(((f3_t*)a)[0],((f3_t*)b)[i]); } break;
-            case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=@_f3(((f3_t*)a)[0],((f3_t*)b)[i]); } break;
-            default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
-        }
-    };
-
-    // vector <- scalar <op> vector
-    body body_sv_av =
-    {
-        assert( s == 0 || ( a && b && r ) );
-        switch( tknit )
-        {
-            case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f2(((f2_t*)a)[0],((f2_t*)b)[i]); } break;
-            case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f2(((f2_t*)a)[0],((f2_t*)b)[i]); } break;
-            case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f3(((f2_t*)a)[0],((f3_t*)b)[i]); } break;
-            case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f3(((f2_t*)a)[0],((f3_t*)b)[i]); } break;
-            case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f3(((f3_t*)a)[0],((f2_t*)b)[i]); } break;
-            case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f3(((f3_t*)a)[0],((f2_t*)b)[i]); } break;
-            case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=@_f3(((f3_t*)a)[0],((f3_t*)b)[i]); } break;
-            case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=@_f3(((f3_t*)a)[0],((f3_t*)b)[i]); } break;
-            default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
-        }
-    };
-
-    // scalar += vector <op> vector (e.g. dot product)
-    body body_vv_as =
-    {
-        assert( s == 0 || ( a && b && r ) );
-        switch( tknit )
-        {
-            case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
-            case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
-            case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
-            case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
-            case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
-            case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
-            case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
-            case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
-            default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
-        }
-    };
-
-    // scalar += vector <op> vector (e.g. dot product)
-    body body_vv_cs =
-    {
-        assert( s == 0 || ( a && b && r ) );
-        switch( tknit )
-        {
-            case BKNIT_F222: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
-            case BKNIT_F223: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
-            case BKNIT_F232: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
-            case BKNIT_F233: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
-            case BKNIT_F322: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
-            case BKNIT_F323: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
-            case BKNIT_F332: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
-            case BKNIT_F333: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0]+=@_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
-            default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
-        }
-    };
-
     body body_mul    = { return a * b; };
     body body_add    = { return a + b; };
     body body_sub    = { return a - b; };
     body body_div_f3 = { return a * f3_inv( b ); };
     body body_div_f2 = { return a * f2_inv( b ); };
 
-    stamp :add = { func : :f2 = :body_add;    func : :f3 = :body_add;    func : :f = :body_vv_cv; };
-    stamp :sub = { func : :f2 = :body_sub;    func : :f3 = :body_sub;    func : :f = :body_vv_cv; };
+    stamp :add     = { func : :f2 = :body_add;    func : :f3 = :body_add;    func : :f = :body_vv_cv; };
+    stamp :sub     = { func : :f2 = :body_sub;    func : :f3 = :body_sub;    func : :f = :body_vv_cv; };
+    stamp :sub_sqr = { func : :f; }; // r = ( a - b )^2
+
     stamp :div = { func : :f2 = :body_div_f2; func : :f3 = :body_div_f3; func : :f = :body_vv_cv; };
 
     /// multiplication ---------------------------------------------------------
@@ -427,23 +321,17 @@ group :ar2 =
     /// mul
     stamp :mul_vvv = { func : :f   = { :mul_body_s_f_vv_cv( tknit, a, b, r, s ); }; };
     stamp :mul_vsv = { func : :f   = { :mul_body_s_f_vs_cv( tknit, a, b, r, s ); }; };
-    stamp :mul_svv = { func : :f   = { :mul_body_s_f_vs_cv( tknit, b, a, r, s ); }; };
     stamp :mul_vvs = { func : :f   = { :mul_body_s_f_vv_cs( tknit, a, b, r, s ); }; };
     stamp :mul_mvv = { func : :f_m = { :mul_body_s_f_mv_cv( tknit, a, b, r, rows, cols ); }; };
-    stamp :mul_tvv = { func : :f_m = { :mul_body_s_f_vm_cv( tknit, b, a, r, rows, cols ); }; };
     stamp :mul_vmv = { func : :f_m = { :mul_body_s_f_vm_cv( tknit, a, b, r, rows, cols ); }; };
-    stamp :mul_vtv = { func : :f_m = { :mul_body_s_f_mv_cv( tknit, b, a, r, rows, cols ); }; };
     stamp :mul_vvm = { func : :f_m = { :mul_body_s_f_vv_cm( tknit, a, b, r, rows, cols ); }; };
 
     /// mul-accumulate
     stamp :mul_acc_vvv = { func : :f   = { :mul_body_s_f_vv_av( tknit, a, b, r, s ); }; };
     stamp :mul_acc_vsv = { func : :f   = { :mul_body_s_f_vs_av( tknit, a, b, r, s ); }; };
-    stamp :mul_acc_svv = { func : :f   = { :mul_body_s_f_vs_av( tknit, b, a, r, s ); }; };
     stamp :mul_acc_vvs = { func : :f   = { :mul_body_s_f_vv_as( tknit, a, b, r, s ); }; };
     stamp :mul_acc_mvv = { func : :f_m = { :mul_body_s_f_mv_av( tknit, a, b, r, rows, cols ); }; };
-    stamp :mul_acc_tvv = { func : :f_m = { :mul_body_s_f_vm_av( tknit, b, a, r, rows, cols ); }; };
     stamp :mul_acc_vmv = { func : :f_m = { :mul_body_s_f_vm_av( tknit, a, b, r, rows, cols ); }; };
-    stamp :mul_acc_vtv = { func : :f_m = { :mul_body_s_f_mv_av( tknit, b, a, r, rows, cols ); }; };
     stamp :mul_acc_vvm = { func : :f_m = { :mul_body_s_f_vv_am( tknit, a, b, r, rows, cols ); }; };
 
     /// dendrite pass ----------------------------------------------------------

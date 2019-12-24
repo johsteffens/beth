@@ -143,10 +143,10 @@ group :ar2 =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :add = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :sub = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :div = { func : :f = :body_assert_vvv : :body_lop_r; };
-    // muls: s below
+    stamp :add     = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :sub     = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :div     = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :sub_sqr = { func : :f = :body_assert_vvs : :body_lop_a; }; // r = ( a - b )^2
 
     /// logic ------------------------------------------------------------------
 
@@ -177,13 +177,13 @@ group :ar2 =
 
     stamp :mul_vvv = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :mul_vsv = { func : :f = :body_assert_vsv : :body_lop_r; };
-    stamp :mul_svv = { func : :f = :body_assert_svv : :body_lop_r; };
-    stamp :mul_vvs = { func : :f = :body_assert_vvs : :body_lop_r; };
+    stamp :mul_svv = { func : :f = :body_assert_svv : { bhvm_lop_ar2_mul_vsv_s_f( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, r->v.size ); }; };
+    stamp :mul_vvs = { func : :f = :body_assert_vvs : :body_lop_a; };
     stamp :mul_mvv = { func : :f = :body_assert_mvv : :body_lop_ma; };
     stamp :mul_vmv = { func : :f = :body_assert_vmv : :body_lop_mb; };
     stamp :mul_vvm = { func : :f = :body_assert_vvm : :body_lop_mr; };
-    stamp :mul_tvv = { func : :f = :body_assert_tvv : :body_lop_ma; };
-    stamp :mul_vtv = { func : :f = :body_assert_vtv : :body_lop_mb; };
+    stamp :mul_tvv = { func : :f = :body_assert_tvv : { bhvm_lop_ar2_mul_vmv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] ); }; };
+    stamp :mul_vtv = { func : :f = :body_assert_vtv : { bhvm_lop_ar2_mul_mvv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] ); }; };
 
     stamp :mul_mmm = { func : :f; };
     stamp :mul_mtm = { func : :f; };
@@ -194,12 +194,12 @@ group :ar2 =
 
     stamp :mul_acc_vvv = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :mul_acc_vsv = { func : :f = :body_assert_vsv : :body_lop_r; };
-    stamp :mul_acc_svv = { func : :f = :body_assert_svv : :body_lop_r; };
-    stamp :mul_acc_vvs = { func : :f = :body_assert_vvs : :body_lop_r; };
+    stamp :mul_acc_svv = { func : :f = :body_assert_svv : { bhvm_lop_ar2_mul_acc_vsv_s_f( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, r->v.size ); }; };
+    stamp :mul_acc_vvs = { func : :f = :body_assert_vvs : :body_lop_a; };
     stamp :mul_acc_mvv = { func : :f = :body_assert_mvv : :body_lop_ma; };
     stamp :mul_acc_vmv = { func : :f = :body_assert_vmv : :body_lop_mb; };
-    stamp :mul_acc_tvv = { func : :f = :body_assert_tvv : :body_lop_ma; };
-    stamp :mul_acc_vtv = { func : :f = :body_assert_vtv : :body_lop_mb; };
+    stamp :mul_acc_tvv = { func : :f = :body_assert_tvv : { bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] ); }; };
+    stamp :mul_acc_vtv = { func : :f = :body_assert_vtv : { bhvm_lop_ar2_mul_acc_mvv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] ); }; };
     stamp :mul_acc_vvm = { func : :f = :body_assert_vvm : :body_lop_mr; };
 
     stamp :mul_acc_mmm = { func : :f; };

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-16T19:27:48Z
+ *  Last File Update: 2019-12-23T11:03:48Z
  *
  *  Copyright and License of this File:
  *
@@ -493,6 +493,11 @@ void bhvm_lop_ar2_sub_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
     }
 }
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_sub_sqr_s )
+"aware bhvm_lop_ar2"
+"{"
+"}";
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_div_s )
 "aware bhvm_lop_ar2"
 "{"
@@ -530,11 +535,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_vsv_s )
 "{"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_svv_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_vvs_s )
 "aware bhvm_lop_ar2"
 "{"
@@ -545,17 +545,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_mvv_s )
 "{"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_tvv_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_vmv_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_vtv_s )
 "aware bhvm_lop_ar2"
 "{"
 "}";
@@ -575,11 +565,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_acc_vsv_s )
 "{"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_acc_svv_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_acc_vvs_s )
 "aware bhvm_lop_ar2"
 "{"
@@ -590,17 +575,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_acc_mvv_s )
 "{"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_acc_tvv_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_acc_vmv_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_acc_vtv_s )
 "aware bhvm_lop_ar2"
 "{"
 "}";
@@ -1070,7 +1045,7 @@ vd_t bhvm_planted_lop_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_lop_hash" ), sr_tp( 1897224766 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_lop_hash" ), sr_tp( 854903411 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_lop.h
@@ -1111,25 +1086,20 @@ vd_t bhvm_planted_lop_signal_handler( const bcore_signal_s* o )
             // group: bhvm_lop_ar2
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_add_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_sub_s );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_sub_sqr_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_div_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_body_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vvv_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vsv_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_svv_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vvs_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_mvv_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_tvv_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vmv_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vtv_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vvm_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_acc_vvv_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_acc_vsv_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_acc_svv_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_acc_vvs_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_acc_mvv_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_acc_tvv_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_acc_vmv_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_acc_vtv_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_acc_vvm_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_div_dp_a_vb_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_exp_dp_vy_s );

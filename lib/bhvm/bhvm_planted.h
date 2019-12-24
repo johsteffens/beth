@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-17T16:28:56Z
+ *  Last File Update: 2019-12-23T23:05:42Z
  *
  *  Copyright and License of this File:
  *
@@ -317,6 +317,11 @@
   BCORE_DECLARE_OBJECT( bhvm_hop_ar2_div_s ) \
     {aware_t _;}; \
   void bhvm_hop_ar2_div_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_sub_sqr_s 2405404168
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_sub_sqr_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_sub_sqr_s ) \
+    {aware_t _;}; \
+  void bhvm_hop_ar2_sub_sqr_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
 #define TYPEOF_bhvm_hop_ar2_equal_s 3335757939
 #define BETH_EXPAND_ITEM_bhvm_hop_ar2_equal_s \
   BCORE_DECLARE_OBJECT( bhvm_hop_ar2_equal_s ) \
@@ -547,6 +552,7 @@
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_add_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_sub_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_div_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_sub_sqr_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_equal_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_larger_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_smaller_s ); \
@@ -595,6 +601,7 @@
   BETH_EXPAND_ITEM_bhvm_hop_ar2_add_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_sub_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_div_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_sub_sqr_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_equal_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_larger_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_smaller_s \
@@ -717,14 +724,16 @@
   void bhvm_mcode_lib_s_track_push( bhvm_mcode_lib_s* o, tp_t name, tp_t src_name ); \
   void bhvm_mcode_lib_s_track_push_reverse( bhvm_mcode_lib_s* o, tp_t name, tp_t src_name ); \
   void bhvm_mcode_lib_s_track_remove( bhvm_mcode_lib_s* o, tp_t name ); \
-  static inline void bhvm_mcode_lib_s_track_run( const bhvm_mcode_lib_s* o, tp_t name, bhvm_holor_s* ah ){bhvm_mcode_track_s* t = bhvm_mcode_lib_s_track_get( (bhvm_mcode_lib_s*)o, name ); if( t ) bhvm_mcode_track_s_run( t, ah );}
+  static inline void bhvm_mcode_lib_s_track_run_ah( const bhvm_mcode_lib_s* o, tp_t name, bhvm_holor_s* ah ){bhvm_mcode_track_s* t = bhvm_mcode_lib_s_track_get( (bhvm_mcode_lib_s*)o, name ); if( t ) bhvm_mcode_track_s_run( t, ah );}
 #define TYPEOF_bhvm_mcode_frame_s 832185203
 #define BETH_EXPAND_ITEM_bhvm_mcode_frame_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_frame_s ) \
     {aware_t _;bhvm_mcode_lib_s* lib;bhvm_mcode_hbase_s* hbase;}; \
-  static inline void bhvm_mcode_frame_s_track_vop_push_c( bhvm_mcode_frame_s* o, tp_t name, const bhvm_vop* vop ){bhvm_mcode_lib_s_track_vop_push_c( o->lib, name, vop );} \
-  static inline void bhvm_mcode_frame_s_track_vop_push_d( bhvm_mcode_frame_s* o, tp_t name, bhvm_vop* vop ){bhvm_mcode_lib_s_track_vop_push_d( o->lib, name, vop );} \
-  static inline void bhvm_mcode_frame_s_track_vop_set_args_push_d( bhvm_mcode_frame_s* o, tp_t name, bhvm_vop* vop, const bhvm_vop_arr_ci_s* arr_ci ){bhvm_mcode_lib_s_track_vop_set_args_push_d( o->lib, name, vop, arr_ci );}
+  static inline void bhvm_mcode_frame_s_track_vop_push_c( bhvm_mcode_frame_s* o, tp_t name, const bhvm_vop* vop ){if( !o->lib ) o->lib = bhvm_mcode_lib_s_create(); bhvm_mcode_lib_s_track_vop_push_c( o->lib, name, vop );} \
+  static inline void bhvm_mcode_frame_s_track_vop_push_d( bhvm_mcode_frame_s* o, tp_t name, bhvm_vop* vop ){if( !o->lib ) o->lib = bhvm_mcode_lib_s_create(); bhvm_mcode_lib_s_track_vop_push_d( o->lib, name, vop );} \
+  static inline void bhvm_mcode_frame_s_track_vop_set_args_push_d( bhvm_mcode_frame_s* o, tp_t name, bhvm_vop* vop, const bhvm_vop_arr_ci_s* arr_ci ){if( !o->lib ) o->lib = bhvm_mcode_lib_s_create(); bhvm_mcode_lib_s_track_vop_set_args_push_d( o->lib, name, vop, arr_ci );} \
+  static inline sz_t bhvm_mcode_frame_s_push_hmc( bhvm_mcode_frame_s* o, bhvm_vop_arr_ci_s* arr_ci, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m, char c ){if( !o->hbase ) o->hbase = bhvm_mcode_hbase_s_create(); return bhvm_mcode_hbase_s_push_hmc( o->hbase, arr_ci, h, m, c );} \
+  static inline void bhvm_mcode_frame_s_track_run( const bhvm_mcode_frame_s* o, tp_t name ){if( !o->lib ) return; bhvm_mcode_lib_s_track_run_ah( o->lib, name, o->hbase->holor_ads.data );}
 #define BETH_EXPAND_GROUP_bhvm_mcode \
   BCORE_FORWARD_OBJECT( bhvm_mcode ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_op_s ); \
@@ -765,6 +774,18 @@
 #define BETH_EXPAND_GROUP_bhvm_mcode_hmeta \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hmeta ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hmeta_adl_s ); \
+  typedef void (*bhvm_mcode_hmeta_do_nothing)( const bhvm_mcode_hmeta* o ); \
+  BCORE_DECLARE_SPECT( bhvm_mcode_hmeta ) \
+  { \
+      bcore_spect_header_s header; \
+      bhvm_mcode_hmeta_do_nothing do_nothing; \
+  }; \
+  static inline bhvm_mcode_hmeta* bhvm_mcode_hmeta_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bhvm_mcode_hmeta, t ); return ( bhvm_mcode_hmeta* )bcore_inst_t_create( t ); } \
+  static inline bl_t bhvm_mcode_hmeta_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhvm_mcode_hmeta ); } \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bhvm_mcode_hmeta ) \
+  static inline bl_t bhvm_mcode_hmeta_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bhvm_mcode_hmeta ); } \
+  static inline void bhvm_mcode_hmeta_a_do_nothing( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->do_nothing ); p->do_nothing( o ); } \
+  static inline bl_t bhvm_mcode_hmeta_a_defines_do_nothing( const bhvm_mcode_hmeta* o ) { return bhvm_mcode_hmeta_s_get_aware( o )->do_nothing != NULL; } \
   BETH_EXPAND_ITEM_bhvm_mcode_hmeta_adl_s
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -777,7 +798,7 @@
   BCORE_DECLARE_OBJECT( bhvm_mcode_hbase_s ) \
     {aware_t _;bhvm_holor_ads_s holor_ads;bhvm_mcode_hmeta_adl_s hmeta_adl;}; \
   static inline void bhvm_mcode_hbase_s_set_size( bhvm_mcode_hbase_s* o, sz_t size ){bhvm_holor_ads_s_set_size( &o->holor_ads, size  ); bhvm_mcode_hmeta_adl_s_set_size( &o->hmeta_adl, size  );} \
-  static inline void bhvm_mcode_hbase_s_push_c( bhvm_mcode_hbase_s* o, const bhvm_holor_s* holor, const bhvm_mcode_hmeta* hmeta ){bhvm_holor_ads_s_push_c(   &o->holor_ads, holor ); bhvm_mcode_hmeta_adl_s_push_c(   &o->hmeta_adl, hmeta );}
+  sz_t bhvm_mcode_hbase_s_push_hmc( bhvm_mcode_hbase_s* o, bhvm_vop_arr_ci_s* arr_ci, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m, char c );
 #define BETH_EXPAND_GROUP_bhvm_mcode_hbase \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hbase ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hbase_s ); \

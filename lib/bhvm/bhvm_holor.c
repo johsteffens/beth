@@ -26,8 +26,10 @@
 bl_t bhvm_shape_s_is_consistent( const bhvm_shape_s* o )
 {
     if( ( o->data == NULL ) && ( o->size != 0 ) ) return false;
-    sz_t volume = bhvm_shape_s_get_volume( o );
-    if( volume < 0 ) return false;
+    BFOR_EACH( i, o )
+    {
+        if( o->data[ i ] <= 0 ) return false;
+    }
     return true;
 }
 
@@ -36,8 +38,10 @@ bl_t bhvm_shape_s_is_consistent( const bhvm_shape_s* o )
 void bhvm_shape_s_check_integrity( const bhvm_shape_s* o )
 {
     if( ( o->data == NULL ) && ( o->size != 0 ) ) ERR_fa( "size == #<sz_t> but data not allocated.", o->size );
-    sz_t volume = bhvm_shape_s_get_volume( o );
-    if( volume < 0 ) ERR_fa( "volume is negative." );
+    BFOR_EACH( i, o )
+    {
+        if( o->data[ i ] <= 0 ) ERR_fa( "Dimension '#<sz_t>' is '#<sz_t>'", i, o->data[ i ] );
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -60,7 +64,13 @@ void bhvm_shape_s_set_scalar_vacant( bhvm_shape_s* o )
 void bhvm_shape_s_set_data_nv( bhvm_shape_s* o, sz_t size, va_list sz_t_args )
 {
     bhvm_shape_s_set_size( o, size );
-    BFOR_EACH( i, o ) o->data[ i ] = va_arg( sz_t_args, sz_t );
+    BFOR_EACH( i, o )
+    {
+        sz_t v = va_arg( sz_t_args, sz_t );
+        assert( v > 0 );
+        if( !BHVM_SHAPE_DIM_VALID( v ) ) ERR_fa( "Dimension '#<sz_t>' is '#<sz_t>', with is out of range.", i, v );
+        o->data[ i ] = v;
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -533,6 +543,33 @@ f3_t bhvm_value_s_fdev_zro( const bhvm_value_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+f3_t bhvm_value_s_get_f3( const bhvm_value_s* a, sz_t index )
+{
+    assert( index >= 0 && index < a->size );
+    switch( a->type )
+    {
+        case TYPEOF_f2_t: return ( ( f2_t* )a->data )[ index ];
+        case TYPEOF_f3_t: return ( ( f3_t* )a->data )[ index ];
+        default: ERR_fa( "Invalid type" );
+    }
+    return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_set_f3( const bhvm_value_s* a, sz_t index, f3_t v )
+{
+    assert( index >= 0 && index < a->size );
+    switch( a->type )
+    {
+        case TYPEOF_f2_t: ( ( f2_t* )a->data )[ index ] = v; break;
+        case TYPEOF_f3_t: ( ( f3_t* )a->data )[ index ] = v; break;
+        default: ERR_fa( "Invalid type" );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// holor
 
@@ -731,13 +768,6 @@ void bhvm_holor_s_inc_order_prepend( bhvm_holor_s* o, sz_t dim )
 
 void bhvm_holor_s_push( bhvm_holor_s* o, const bhvm_holor_s* src )
 {
-    if( o->s.size == 0 && o->v.size == 0 )
-    {
-        bhvm_holor_s_copy( o, src );
-        bhvm_holor_s_inc_order( o, 1 );
-        return;
-    }
-
     ASSERT( ( src->s.size == o->s.size     ) ||
             ( src->s.size == o->s.size - 1 ) );
     for( sz_t i = 0; i < src->s.size; i++ ) ASSERT( o->s.data[ i ] == src->s.data[ i ] );
@@ -958,13 +988,13 @@ void bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source )
 
     if( bcore_source_a_parse_bl_fa( source, " #?'<f2_t>'" ) )
     {
-        bhvm_value_s_set_type( &o->v, TYPEOF_f2_t );
         bhvm_holor_s_parse( o, source );
+        bhvm_value_s_set_type( &o->v, TYPEOF_f2_t );
     }
     else if( bcore_source_a_parse_bl_fa( source, " #?'<f3_t>'" ) )
     {
-        bhvm_value_s_set_type( &o->v, TYPEOF_f3_t );
         bhvm_holor_s_parse( o, source );
+        bhvm_value_s_set_type( &o->v, TYPEOF_f3_t );
     }
     else if( bcore_source_a_parse_bl_fa( source, " #?'#'" ) ) // undetermined scalar
     {
@@ -989,10 +1019,20 @@ void bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source )
     else if( bcore_source_a_parse_bl_fa( source, " #?'('" ) )
     {
         bhvm_holor_s* h = bhvm_holor_s_create();
+        bl_t first = true;
         while( !bcore_source_a_eos( source ) && !bcore_source_a_parse_bl_fa( source, " #=?')'" ) )
         {
             bhvm_holor_s_parse( h, source );
-            bhvm_holor_s_push( o, h );
+            if( first )
+            {
+                bhvm_holor_s_copy( o, h );
+                bhvm_holor_s_inc_order( o, 1 );
+                first = false;
+            }
+            else
+            {
+                bhvm_holor_s_push( o, h );
+            }
         }
         bcore_source_a_parse_fa( source, " )" );
         bhvm_holor_s_discard( h );
@@ -1020,15 +1060,13 @@ static void selftest( void )
     st_s* s = BLM_CREATE( st_s );
 
     bhvm_holor_s_parse( h1, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>[2](( 1 1 )( 7 2 ))" ) ) );
-
     bhvm_holor_s_to_sink( h1, ( bcore_sink* )s );
-    ASSERT( st_s_equal_sc( s, "<f3_t>(((1 1)(7 2))((1 1)(7 2)))" ) );
+    ASSERT( st_s_equal_sc( s, "<f2_t>(((1 1)(7 2))((1 1)(7 2)))" ) );
 
     bhvm_holor_s_parse( h1, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>( 1 2 )" ) ) );
     bhvm_holor_s_parse( h2, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f3_t>( 2 2 )" ) ) );
     bhvm_holor_s_parse( h3, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>[2]0" ) ) );
 
-    //bhvm_value_s_mul( &h1->v, &h2->v, &h3->v );
     bhvm_hop_ar2_mul_vvv_s_f( h1, h2, h3 );
 
     st_s_clear( s );

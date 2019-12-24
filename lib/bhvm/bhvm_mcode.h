@@ -52,20 +52,34 @@ signature void vop_push_c( mutable, const bhvm_vop* vop );
 
 group :hmeta =
 {
+    // dummy feature to enforce self-awareness testing for meta types
+    feature 'a' void do_nothing( const );
+
     stamp :adl = aware bcore_array { aware : => []; };
 };
+
+/// returns index to pushed holor;
+signature sz_t push_hmc( mutable, bhvm_vop_arr_ci_s* arr_ci, const bhvm_holor_s* h, const :hmeta* m, char c );
 
 group :hbase =
 {
     signature void set_size( mutable, sz_t size );
-    signature void push_c(   mutable, const bhvm_holor_s* holor, const ::hmeta* hmeta );
-
     stamp : = aware :
     {
         bhvm_holor_ads_s holor_ads;
            ::hmeta_adl_s hmeta_adl;
-        func : :set_size = { bhvm_holor_ads_s_set_size( &o->holor_ads, size  ); ::hmeta_adl_s_set_size( &o->hmeta_adl, size  ); };
-        func : :push_c   = { bhvm_holor_ads_s_push_c(   &o->holor_ads, holor ); ::hmeta_adl_s_push_c(   &o->hmeta_adl, hmeta ); };
+        func  : :set_size   = { bhvm_holor_ads_s_set_size( &o->holor_ads, size  ); ::hmeta_adl_s_set_size( &o->hmeta_adl, size  ); };
+        func :: :push_hmc  =
+        {
+            bhvm_vop_ci_s ci;
+            bhvm_vop_ci_s_init( &ci );
+            ci.c = c;
+            ci.i = o->holor_ads.size;
+            *bhvm_vop_arr_ci_s_push( arr_ci ) = ci;
+            ::hmeta_adl_s_push_c( &o->hmeta_adl, m );
+            bhvm_holor_ads_s_push_c( &o->holor_ads, h );
+            return ci.i;
+        };
     };
 };
 
@@ -105,7 +119,8 @@ signature      void track_vop_push_c  ( mutable, tp_t name, const bhvm_vop* vop 
 signature      void track_push        ( mutable, tp_t name, tp_t src_name ); // appends track of src_name
 signature      void track_push_reverse( mutable, tp_t name, tp_t src_name ); // appends track of src_name in reverse order
 signature      void track_remove      ( mutable, tp_t name );                // removes track if existing
-signature      void track_run         (   const, tp_t name, bhvm_holor_s* ah );
+signature      void track_run_ah      (   const, tp_t name, bhvm_holor_s* ah );
+signature      void track_run         (   const, tp_t name );
 
 signature :track_vop_push_d track_vop_set_args_push_d( const bhvm_vop_arr_ci_s* arr_ci );
 
@@ -179,7 +194,7 @@ stamp :lib = aware :
         if( idx < o->arr.size ) bcore_hmap_tpuz_s_set( &o->map, o->arr.data[ idx ]->name, idx );
     };
 
-    func : :track_run = { :track_s* t = @_track_get( (@*)o, name ); if( t ) :track_s_run( t, ah ); };
+    func : :track_run_ah = { :track_s* t = @_track_get( (@*)o, name ); if( t ) :track_s_run( t, ah ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -189,10 +204,14 @@ stamp :frame = aware :
     :lib_s   => lib;
     :hbase_s => hbase;
 
-    func : :track_vop_push_c = { :lib_s_track_vop_push_c( o->lib, name, vop ); };
-    func : :track_vop_push_d = { :lib_s_track_vop_push_d( o->lib, name, vop ); };
+    func : :track_vop_push_c = { if( !o->lib ) o->lib = :lib_s_create(); :lib_s_track_vop_push_c( o->lib, name, vop ); };
+    func : :track_vop_push_d = { if( !o->lib ) o->lib = :lib_s_create(); :lib_s_track_vop_push_d( o->lib, name, vop ); };
 
-    func : :track_vop_set_args_push_d = { :lib_s_track_vop_set_args_push_d( o->lib, name, vop, arr_ci ); };
+    func : :track_vop_set_args_push_d = { if( !o->lib ) o->lib = :lib_s_create(); :lib_s_track_vop_set_args_push_d( o->lib, name, vop, arr_ci ); };
+
+    func : :push_hmc = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hmc( o->hbase, arr_ci, h, m, c ); };
+
+    func : :track_run = { if( !o->lib ) return; :lib_s_track_run_ah( o->lib, name, o->hbase->holor_ads.data ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

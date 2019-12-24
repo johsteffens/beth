@@ -56,6 +56,15 @@
 #include "bhvm_lop.h"
 
 /**********************************************************************************************************************/
+// constants
+
+/** We define an upper limit for a holor dimension in order to simplify detecting invalid shapes
+ *  This limit is not relevant for general functionality and can be increased or removed
+ *  once the code has been well established.
+ */
+#define BHVM_SHAPE_DIM_VALID( dim ) ( ( dim > 0 ) && ( ( dim >> 40 ) == 0 ) )
+
+/**********************************************************************************************************************/
 
 #ifdef TYPEOF_bhvm
 
@@ -246,6 +255,9 @@ void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max,
 f3_t bhvm_value_s_fdev_equ( const bhvm_value_s* a, const bhvm_value_s* b );
 f3_t bhvm_value_s_fdev_zro( const bhvm_value_s* o );
 
+f3_t bhvm_value_s_get_f3( const bhvm_value_s* a, sz_t index );
+void bhvm_value_s_set_f3( const bhvm_value_s* a, sz_t index, f3_t v );
+
 /**********************************************************************************************************************/
 /// holor
 
@@ -279,6 +291,13 @@ static inline void bhvm_holor_s_init_fork_from_holor( bhvm_holor_s* o, bhvm_holo
     bhvm_holor_s_init( o );
     bhvm_shape_s_init_fork_from_shape( &o->s, &src->s );
     bhvm_value_s_init_fork_from_value( &o->v, &src->v );
+}
+
+/// forked reference; shutdown required
+static inline void bhvm_holor_s_fork( bhvm_holor_s* o, bhvm_holor_s* src )
+{
+    bhvm_shape_s_fork( &o->s, &src->s );
+    bhvm_value_s_fork( &o->v, &src->v );
 }
 
 /// clears entire holor
@@ -316,6 +335,13 @@ void bhvm_holor_s_check_integrity( const bhvm_holor_s* o );
 
 /// sets holor from text source
 void bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source );
+
+static inline bl_t bhvm_holor_s_is_equal( const bhvm_holor_s* o, const bhvm_holor_s* src )
+{
+    if( !bhvm_shape_s_is_equal( &o->s, &src->s ) ) return false;
+    if( !bhvm_value_s_is_equal( &o->v, &src->v ) ) return false;
+    return true;
+}
 
 /**********************************************************************************************************************/
 /// weak conversion

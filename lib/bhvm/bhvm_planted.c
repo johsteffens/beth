@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-17T16:28:56Z
+ *  Last File Update: 2019-12-23T23:05:42Z
  *
  *  Copyright and License of this File:
  *
@@ -364,6 +364,17 @@ void bhvm_hop_ar2_div_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_ho
     bhvm_lop_ar2_div_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
 }
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_sub_sqr_s )
+"aware bhvm_hop_ar2"
+"{"
+"}";
+
+void bhvm_hop_ar2_sub_sqr_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    assert( a->v.size == b->v.size ); assert( r->v.size == 1         );
+    bhvm_lop_ar2_sub_sqr_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->v.size );
+}
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_equal_s )
 "aware bhvm_hop_ar2"
 "{"
@@ -603,7 +614,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_svv_s )
 void bhvm_hop_ar2_mul_svv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( a->v.size == 1         ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_mul_svv_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
+    bhvm_lop_ar2_mul_vsv_s_f( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, r->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_vvs_s )
@@ -614,7 +625,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_vvs_s )
 void bhvm_hop_ar2_mul_vvs_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( a->v.size == b->v.size ); assert( r->v.size == 1         );
-    bhvm_lop_ar2_mul_vvs_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
+    bhvm_lop_ar2_mul_vvs_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_mvv_s )
@@ -658,7 +669,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_tvv_s )
 void bhvm_hop_ar2_mul_tvv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( a->s.size == 2 ); assert( b->v.size == a->s.data[ 1 ] ); assert( r->v.size == a->s.data[ 0 ] );
-    bhvm_lop_ar2_mul_tvv_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] );
+    bhvm_lop_ar2_mul_vmv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_vtv_s )
@@ -669,7 +680,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_vtv_s )
 void bhvm_hop_ar2_mul_vtv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( b->s.size == 2 ); assert( a->v.size == b->s.data[ 0 ] ); assert( r->v.size == b->s.data[ 1 ] );
-    bhvm_lop_ar2_mul_vtv_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] );
+    bhvm_lop_ar2_mul_mvv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_mmm_s )
@@ -722,7 +733,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_svv_s )
 void bhvm_hop_ar2_mul_acc_svv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( a->v.size == 1         ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_mul_acc_svv_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
+    bhvm_lop_ar2_mul_acc_vsv_s_f( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, r->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_vvs_s )
@@ -733,7 +744,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_vvs_s )
 void bhvm_hop_ar2_mul_acc_vvs_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( a->v.size == b->v.size ); assert( r->v.size == 1         );
-    bhvm_lop_ar2_mul_acc_vvs_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
+    bhvm_lop_ar2_mul_acc_vvs_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_mvv_s )
@@ -766,7 +777,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_tvv_s )
 void bhvm_hop_ar2_mul_acc_tvv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( a->s.size == 2 ); assert( b->v.size == a->s.data[ 1 ] ); assert( r->v.size == a->s.data[ 0 ] );
-    bhvm_lop_ar2_mul_acc_tvv_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] );
+    bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_vtv_s )
@@ -777,7 +788,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_vtv_s )
 void bhvm_hop_ar2_mul_acc_vtv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( b->s.size == 2 ); assert( a->v.size == b->s.data[ 0 ] ); assert( r->v.size == b->s.data[ 1 ] );
-    bhvm_lop_ar2_mul_acc_vtv_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] );
+    bhvm_lop_ar2_mul_acc_mvv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_vvm_s )
@@ -952,6 +963,12 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hmeta_adl_s )
     "aware bhvm_mcode_hmeta=> [];"
 "}";
 
+BCORE_DEFINE_SPECT( bhvm_mcode, bhvm_mcode_hmeta )
+"{"
+    "bcore_spect_header_s header;"
+    "feature aware bhvm_mcode_hmeta : do_nothing;"
+"}";
+
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_mcode_hbase
 
@@ -962,6 +979,18 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hbase_s )
     "bhvm_mcode_hmeta_adl_s hmeta_adl;"
 "}";
 
+sz_t bhvm_mcode_hbase_s_push_hmc( bhvm_mcode_hbase_s* o, bhvm_vop_arr_ci_s* arr_ci, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m, char c )
+{
+    bhvm_vop_ci_s ci;
+    bhvm_vop_ci_s_init( &ci );
+    ci.c = c;
+    ci.i = o->holor_ads.size;
+    *bhvm_vop_arr_ci_s_push( arr_ci ) = ci;
+    bhvm_mcode_hmeta_adl_s_push_c( &o->hmeta_adl, m );
+    bhvm_holor_ads_s_push_c( &o->holor_ads, h );
+    return ci.i;
+}
+
 /**********************************************************************************************************************/
 
 vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
@@ -971,7 +1000,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2234091348 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2752767781 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1025,6 +1054,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_add_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_div_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_sqr_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_equal_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_larger_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_smaller_s );
@@ -1092,8 +1122,9 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bhvm_mcode, bcore_inst );
 
             // group: bhvm_mcode_hmeta
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_do_nothing );
             BCORE_REGISTER_OBJECT( bhvm_mcode_hmeta_adl_s );
-            BCORE_REGISTER_TRAIT( bhvm_mcode_hmeta, bhvm_mcode );
+            BCORE_REGISTER_SPECT( bhvm_mcode_hmeta );
 
             // group: bhvm_mcode_hbase
             BCORE_REGISTER_OBJECT( bhvm_mcode_hbase_s );

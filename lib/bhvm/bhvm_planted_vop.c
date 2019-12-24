@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-17T11:11:49Z
+ *  Last File Update: 2019-12-23T22:58:50Z
  *
  *  Copyright and License of this File:
  *
@@ -57,10 +57,12 @@ void bhvm_vop_set_arg__( bhvm_vop* o, bhvm_vop_ci_s* ci )
     sz_t* index = bhvm_vop_a_get_index( o );
     for( sz_t i = 0; i < size; i++ )
     {
-        if( ci->c == sig[ i ] )
+        u0_t c = sig[ i ];
+        ASSERT( c );
+        if( ci->c == c )
         {
             index[ i ] = ci->i;
-            break;
+            return;
         }
     }
 }
@@ -346,42 +348,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_cpy_by_s )
     "func bhvm_vop:sig;"
     "func bhvm_vop:run;"
 "}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_cast_htp_s )
-"aware bhvm_vop_ar1"
-"{"
-    "bhvm_vop_ar1_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index;"
-    "func bhvm_vop:sig;"
-    "func bhvm_vop:run;"
-"}";
-
-void bhvm_vop_ar1_cast_htp_s_run( const bhvm_vop_ar1_cast_htp_s* o, bhvm_holor_s* ah )
-{
-    bhvm_holor_s* a = &ah[o->i.v[0]];
-    bhvm_holor_s* r = &ah[o->i.v[1]];
-    bhvm_holor_s_clear( r );
-    bhvm_holor_s_init_weak_from_holor( r, a );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_cast_htp_dp_v_s )
-"aware bhvm_vop_ar1"
-"{"
-    "bhvm_vop_ar1_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index;"
-    "func bhvm_vop:sig;"
-    "func bhvm_vop:run;"
-"}";
-
-void bhvm_vop_ar1_cast_htp_dp_v_s_run( const bhvm_vop_ar1_cast_htp_dp_v_s* o, bhvm_holor_s* ah )
-{
-    bhvm_holor_s* v = &ah[o->i.v[0]];
-    bhvm_holor_s* u = &ah[o->i.v[1]];
-    bhvm_holor_s_clear( v );
-    bhvm_holor_s_init_weak_from_holor( v, u );
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_vop_ar2
@@ -1030,7 +996,7 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 2606842801 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 350747790 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_vop.h
@@ -1184,16 +1150,6 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar1_cpy_by_s_sig );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar1_cpy_by_s_run );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar1_cpy_by_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar1_cast_htp_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index, bhvm_vop_ar1_cast_htp_s_get_index );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar1_cast_htp_s_sig );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar1_cast_htp_s_run );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar1_cast_htp_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar1_cast_htp_dp_v_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index, bhvm_vop_ar1_cast_htp_dp_v_s_get_index );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar1_cast_htp_dp_v_s_sig );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar1_cast_htp_dp_v_s_run );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar1_cast_htp_dp_v_s );
             BCORE_REGISTER_TRAIT( bhvm_vop_ar1, bhvm_vop );
 
             // group: bhvm_vop_ar2
