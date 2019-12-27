@@ -298,6 +298,8 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                 bcore_source_r_parse_fa( &src_l, " </>" );
             }
         }
+
+        // simplified encoding for certain leaf types
         else if( bcore_source_r_parse_bl_fa( &src_l, "#=?'\"'" ) ) // string
         {
             obj = sr_create( TYPEOF_st_s );
@@ -308,6 +310,16 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
             obj = sr_create( TYPEOF_f3_t );
             f3_t* v = obj.o;
             bcore_source_r_parse_fa( &src_l, "#<f3_t*>", v );
+        }
+        else if( bcore_source_r_parse_bl_fa( &src_l, "#?w'true'" ) ) // boolean
+        {
+            obj = sr_create( TYPEOF_bl_t );
+            *( bl_t* )obj.o = true;
+        }
+        else if( bcore_source_r_parse_bl_fa( &src_l, "#?w'false'" ) ) // boolean
+        {
+            obj = sr_create( TYPEOF_bl_t );
+            *( bl_t* )obj.o = false;
         }
         else
         {
