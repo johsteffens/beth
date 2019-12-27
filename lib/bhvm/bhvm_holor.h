@@ -374,6 +374,23 @@ static inline bmath_mf3_s bhvm_holor_s_get_weak_mf3( const bhvm_holor_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+static inline vd_t bhvm_holor_s_mfx_create_weak( const bhvm_holor_s* o )
+{
+    assert( o->s.size == 2 );
+    sz_t cols = o->s.data[ 0 ];
+    sz_t rows = o->s.data[ 1 ];
+    assert( o->v.size == cols * rows );
+    switch( o->v.type )
+    {
+        case TYPEOF_f2_t: return bmath_mf2_s_create_weak( rows, cols, cols, ( f2_t* )o->v.data );
+        case TYPEOF_f3_t: return bmath_mf3_s_create_weak( rows, cols, cols, ( f3_t* )o->v.data );
+        default: ERR_fa( "Invalid type" );
+    }
+    return NULL;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// casts  (make the target weakly reference source data)
 

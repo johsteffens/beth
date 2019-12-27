@@ -47,36 +47,9 @@ static void bhvm_hop_ar2_mul( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm
 
     BLM_INIT();
 
-    vd_t vma = NULL;
-    vd_t vmb = NULL;
-    vd_t vmr = NULL;
-
-    if( a->v.type == TYPEOF_f2_t )
-    {
-        bmath_mf2_s_init_weak( ( vma = BLM_CREATE( bmath_mf2_s ) ), a->s.data[1], a->s.data[0], a->s.data[0], a->v.data );
-    }
-    else
-    {
-        bmath_mf3_s_init_weak( ( vma = BLM_CREATE( bmath_mf3_s ) ), a->s.data[1], a->s.data[0], a->s.data[0], a->v.data );
-    }
-
-    if( b->v.type == TYPEOF_f2_t )
-    {
-        bmath_mf2_s_init_weak( ( vmb = BLM_CREATE( bmath_mf2_s ) ), b->s.data[1], b->s.data[0], b->s.data[0], b->v.data );
-    }
-    else
-    {
-        bmath_mf3_s_init_weak( ( vmb = BLM_CREATE( bmath_mf3_s ) ), b->s.data[1], b->s.data[0], b->s.data[0], b->v.data );
-    }
-
-    if( r->v.type == TYPEOF_f2_t )
-    {
-        bmath_mf2_s_init_weak( ( vmr = BLM_CREATE( bmath_mf2_s ) ), r->s.data[1], r->s.data[0], r->s.data[0], r->v.data );
-    }
-    else
-    {
-        bmath_mf3_s_init_weak( ( vmr = BLM_CREATE( bmath_mf3_s ) ), r->s.data[1], r->s.data[0], r->s.data[0], r->v.data );
-    }
+    vd_t vma = BLM_A_PUSH( bhvm_holor_s_mfx_create_weak( a ) );
+    vd_t vmb = BLM_A_PUSH( bhvm_holor_s_mfx_create_weak( b ) );
+    vd_t vmr = BLM_A_PUSH( bhvm_holor_s_mfx_create_weak( r ) );
 
     if( a->v.type == TYPEOF_f2_t && b->v.type == TYPEOF_f2_t )
     {
@@ -95,7 +68,10 @@ static void bhvm_hop_ar2_mul( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm
             case MUL_ACC_TTM: bmath_mf2_s_htp_mul_htp_add( ma, mb, mr, mr ); break;
             default: break;
         }
-        if( r->v.type == TYPEOF_f3_t ) bmath_mf3_s_copy_a( vmr, mr );
+        if( r->v.type == TYPEOF_f3_t )
+        {
+            bhvm_lop_ar1_cpy_s_f( BKNIT_FA2( TYPEOF_f2_t, TYPEOF_f3_t ), mr->data, r->v.data, mr->rows * mr->cols );
+        }
     }
     else
     {
@@ -114,7 +90,10 @@ static void bhvm_hop_ar2_mul( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm
             case MUL_ACC_TTM: bmath_mf3_s_htp_mul_htp_add( ma, mb, mr, mr ); break;
             default: break;
         }
-        if( r->v.type == TYPEOF_f2_t ) bmath_mf2_s_copy_a( vmr, mr );
+        if( r->v.type == TYPEOF_f2_t )
+        {
+            bhvm_lop_ar1_cpy_s_f( BKNIT_FA2( TYPEOF_f3_t, TYPEOF_f2_t ), mr->data, r->v.data, mr->rows * mr->cols );
+        }
     }
 
     BLM_DOWN();

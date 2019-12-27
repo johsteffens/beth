@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-23T23:05:42Z
+ *  Last File Update: 2019-12-27T10:55:11Z
  *
  *  Copyright and License of this File:
  *
@@ -161,6 +161,50 @@ void bhvm_hop_ar1_inv_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 {
     assert( a->v.size == r->v.size );
     bhvm_lop_ar1_inv_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_abs_s )
+"aware bhvm_hop_ar1"
+"{"
+"}";
+
+void bhvm_hop_ar1_abs_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+{
+    assert( a->v.size == r->v.size );
+    bhvm_lop_ar1_abs_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_sig_s )
+"aware bhvm_hop_ar1"
+"{"
+"}";
+
+void bhvm_hop_ar1_sig_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+{
+    assert( a->v.size == r->v.size );
+    bhvm_lop_ar1_sig_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_l1_s )
+"aware bhvm_hop_ar1"
+"{"
+"}";
+
+void bhvm_hop_ar1_l1_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+{
+    assert( r->v.size == 1 );
+    bhvm_lop_ar1_l1_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, a->v.size );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_sqr_s )
+"aware bhvm_hop_ar1"
+"{"
+"}";
+
+void bhvm_hop_ar1_sqr_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+{
+    assert( r->v.size == 1 );
+    bhvm_lop_ar1_sqr_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, a->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_lgst_s )
@@ -373,6 +417,17 @@ void bhvm_hop_ar2_sub_sqr_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhv
 {
     assert( a->v.size == b->v.size ); assert( r->v.size == 1         );
     bhvm_lop_ar2_sub_sqr_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->v.size );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_sub_l1_s )
+"aware bhvm_hop_ar2"
+"{"
+"}";
+
+void bhvm_hop_ar2_sub_l1_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    assert( a->v.size == b->v.size ); assert( r->v.size == 1         );
+    bhvm_lop_ar2_sub_l1_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_equal_s )
@@ -1000,7 +1055,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2752767781 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 4255322084 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1033,6 +1088,10 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_ceil_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_exp_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_inv_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_abs_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_sig_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_l1_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_sqr_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_lgst_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_lgst_hard_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_lgst_leaky_s );
@@ -1055,6 +1114,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_div_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_sqr_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_l1_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_equal_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_larger_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_smaller_s );

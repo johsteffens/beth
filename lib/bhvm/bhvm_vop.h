@@ -125,6 +125,8 @@ group :ar1 =
     stamp :ceil       = { func :: :sig = { return "AY"; }; };
     stamp :exp        = { func :: :sig = { return "AY"; }; };
     stamp :inv        = { func :: :sig = { return "AY"; }; };
+    stamp :abs        = { func :: :sig = { return "AY"; }; };
+    stamp :l1         = { func :: :sig = { return "AY"; }; };
     stamp :lgst       = { func :: :sig = { return "AY"; }; };
     stamp :lgst_hard  = { func :: :sig = { return "AY"; }; };
     stamp :lgst_leaky = { func :: :sig = { return "AY"; }; };

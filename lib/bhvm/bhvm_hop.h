@@ -77,6 +77,12 @@ group :ar1 =
         bhvm_lop_ar1_$R_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
     };
 
+    body body_lop_v_cs =
+    {
+        assert( r->v.size == 1 );
+        bhvm_lop_ar1_$R_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, a->v.size );
+    };
+
     body body_lop_v_av =
     {
         assert( a->v.size == r->v.size );
@@ -91,6 +97,10 @@ group :ar1 =
     stamp :ceil       = { func : :f = :body_lop_v_cv; };
     stamp :exp        = { func : :f = :body_lop_v_cv; };
     stamp :inv        = { func : :f = :body_lop_v_cv; };
+    stamp :abs        = { func : :f = :body_lop_v_cv; };
+    stamp :sig        = { func : :f = :body_lop_v_cv; };
+    stamp :l1         = { func : :f = :body_lop_v_cs; };
+    stamp :sqr        = { func : :f = :body_lop_v_cs; };
     stamp :lgst       = { func : :f = :body_lop_v_cv; };
     stamp :lgst_hard  = { func : :f = :body_lop_v_cv; };
     stamp :lgst_leaky = { func : :f = :body_lop_v_cv; };
@@ -147,6 +157,7 @@ group :ar2 =
     stamp :sub     = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :div     = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :sub_sqr = { func : :f = :body_assert_vvs : :body_lop_a; }; // r = ( a - b )^2
+    stamp :sub_l1  = { func : :f = :body_assert_vvs : :body_lop_a; }; // r = l1-norm of ( a - b )
 
     /// logic ------------------------------------------------------------------
 

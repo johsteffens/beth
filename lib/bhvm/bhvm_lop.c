@@ -41,6 +41,25 @@ void bhvm_lop_ar2_sub_sqr_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bhvm_lop_ar2_sub_l1_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0] += f2_abs(((f2_t*)a)[i] - ((f2_t*)b)[i]); } break;
+        case BKNIT_F223: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0] += f2_abs(((f2_t*)a)[i] - ((f2_t*)b)[i]); } break;
+        case BKNIT_F232: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0] += f3_abs(((f2_t*)a)[i] - ((f3_t*)b)[i]); } break;
+        case BKNIT_F233: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0] += f3_abs(((f2_t*)a)[i] - ((f3_t*)b)[i]); } break;
+        case BKNIT_F322: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0] += f3_abs(((f3_t*)a)[i] - ((f2_t*)b)[i]); } break;
+        case BKNIT_F323: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0] += f3_abs(((f3_t*)a)[i] - ((f2_t*)b)[i]); } break;
+        case BKNIT_F332: ((f2_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f2_t*)r)[0] += f3_abs(((f3_t*)a)[i] - ((f3_t*)b)[i]); } break;
+        case BKNIT_F333: ((f3_t*)r)[0] = 0; for(sz_t i=0; i<s; i++) { ((f3_t*)r)[0] += f3_abs(((f3_t*)a)[i] - ((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // mul
 
