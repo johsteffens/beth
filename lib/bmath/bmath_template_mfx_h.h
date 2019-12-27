@@ -195,6 +195,18 @@ static inline bmath_mfx_s BCATU(bmath,mfx,init_weak)( uz_t rows, uz_t cols, uz_t
     return o;
 }
 
+static inline bmath_mfx_s* BCATU(bmath_mfx_s,create_weak)( uz_t rows, uz_t cols, uz_t stride, fx_t* data )
+{
+    bmath_mfx_s* o = BCATU(bmath_mfx_s,create)();
+    o->rows = rows;
+    o->cols = cols;
+    o->stride = stride;
+    o->data = data;
+    o->size = rows * stride;
+    o->space = 0;
+    return o;
+}
+
 /// Returns a weak (rows x cols) sub matrix at offset (row, col) from o.
 bmath_mfx_s BCATU(bmath_mfx_s,get_weak_sub_mat)( const bmath_mfx_s* o, uz_t row, uz_t col, uz_t rows, uz_t cols );
 
