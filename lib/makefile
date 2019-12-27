@@ -3,9 +3,20 @@ AR      = ar
 CFLAGS  = -Wall -O3 -std=c11 
 AFLAGS  = -r -s
 
-INCLUDES = -I bcore -I bclos -I bmath -I badapt
+INCLUDES = \
+  -I bcore  \
+  -I bclos  \
+  -I bmath  \
+  -I badapt \
+  -I bhvm
 
-SRCS = $(wildcard bcore/*.c) $(wildcard bclos/*.c)  $(wildcard bmath/*.c)  $(wildcard badapt/*.c)
+SRCS = \
+  $(wildcard bcore/*.c)  \
+  $(wildcard bclos/*.c)  \
+  $(wildcard bmath/*.c)  \
+  $(wildcard badapt/*.c) \
+  $(wildcard bhvm/*.c)
+
 OBJS = $(SRCS:.c=.o)
 TARGET = beth.a
 
