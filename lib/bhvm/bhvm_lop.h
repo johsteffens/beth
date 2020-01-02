@@ -235,13 +235,13 @@ group :ar1 =
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :identity_dp_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :neg_dp_v      = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_av; };
+    stamp :identity_dp_zf = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
+    stamp :neg_dp_zf      = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_av; };
 
-    stamp :add_dp_a_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :add_dp_b_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :sub_dp_a_v = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :sub_dp_b_v = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_av; };
+    stamp :add_dp_zf = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
+    stamp :add_dp_zg = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
+    stamp :sub_dp_zf = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
+    stamp :sub_dp_zg = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_av; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -375,30 +375,33 @@ group :ar2 =
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :div_dp_a_vb = { func : :f2 = { return a * f2_inv( b ); }; func : :f3 = { return a * f3_inv( b ); }; func : :f = :body_vv_av; };
+    stamp :div_dp_zbf = { func : :f2 = { return a * f2_inv( b ); }; func : :f3 = { return a * f3_inv( b ); }; func : :f = :body_vv_av; };
 
-    stamp :exp_dp_vy   = { func : :f2 = :body_mul;          func : :f3 = :body_mul;          func : :f = :body_vv_av; };
-    stamp :inv_dp_vy   = { func : :f2 = { return -a*b*b; }; func : :f3 = { return -a*b*b; }; func : :f = :body_vv_av; };
+    stamp :exp_dp_zyf   = { func : :f2 = :body_mul;          func : :f3 = :body_mul;          func : :f = :body_vv_av; };
+    stamp :inv_dp_zyf   = { func : :f2 = { return -a*b*b; }; func : :f3 = { return -a*b*b; }; func : :f = :body_vv_av; };
 
-    body body_lgst_dp_vy       = { return b * ( 1.0 - b ) * a; };
-    body body_lgst_hard_dp_vy  = { return ( b <  0.0 ) ? 0.0 : ( b > 1.0 ) ? 0.0 : 0.25 * a; };
-    body body_lgst_leaky_dp_vy = { return ( b <  0.0 ) ? 0.01 * a : ( b > 1.0 ) ? 0.01 * a : 0.25 * a; };
-    body body_tanh_dp_vy       = { return ( 1.0 - f3_sqr( b ) ) * a; };
-    body body_tanh_hard_dp_vy  = { return ( b < -1.0 ) ?  0.0 : ( b > 1.0 ) ? 0.0 : a; };
-    body body_tanh_leaky_dp_vy = { return ( b < -1.0 ) ?  0.01 * a : ( b > 1.0 ) ? 0.01 * a : a; };
-    body body_softplus_dp_vy   = { f3_t u = exp( b ); return a * ( u - 1.0 ) * f3_inv( u ); };
-    body body_relu_dp_vy       = { return b > 0 ? a : 0; };
-    body body_relu_leaky_dp_vy = { return b > 0 ? a : 0.01 * a; };
+    body body_lgst_dp_zyf       = { return b * ( 1.0 - b ) * a; };
+    body body_lgst_hard_dp_zyf  = { return ( b <  0.0 ) ? 0.0 : ( b > 1.0 ) ? 0.0 : 0.25 * a; };
+    body body_lgst_leaky_dp_zyf = { return ( b <  0.0 ) ? 0.01 * a : ( b > 1.0 ) ? 0.01 * a : 0.25 * a; };
+    body body_tanh_dp_zyf       = { return ( 1.0 - f3_sqr( b ) ) * a; };
+    body body_tanh_hard_dp_zyf  = { return ( b < -1.0 ) ?  0.0 : ( b > 1.0 ) ? 0.0 : a; };
+    body body_tanh_leaky_dp_zyf = { return ( b < -1.0 ) ?  0.01 * a : ( b > 1.0 ) ? 0.01 * a : a; };
+    body body_softplus_dp_zyf   = { f3_t u = exp( b ); return a * ( u - 1.0 ) * f3_inv( u ); };
+    body body_relu_dp_zyf       = { return b > 0 ? a : 0; };
+    body body_relu_leaky_dp_zyf = { return b > 0 ? a : 0.01 * a; };
 
-    stamp :lgst_dp_vy       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :lgst_hard_dp_vy  = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :lgst_leaky_dp_vy = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :tanh_dp_vy       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :tanh_hard_dp_vy  = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :tanh_leaky_dp_vy = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :softplus_dp_vy   = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :relu_dp_vy       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :relu_leaky_dp_vy = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :lgst_dp_zyf       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :lgst_hard_dp_zyf  = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :lgst_leaky_dp_zyf = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :tanh_dp_zyf       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :tanh_hard_dp_zyf  = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :tanh_leaky_dp_zyf = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :softplus_dp_zyf   = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :relu_dp_zyf       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :relu_leaky_dp_zyf = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+
+    stamp :branch_vvvv_dp_azg = { func : :f2 = { return a > 0 ? b : 0; }; func : :f3 = { return a > 0 ? b : 0; }; func : :f = :body_vv_av; };
+    stamp :branch_vvvv_dp_azh = { func : :f2 = { return a > 0 ? 0 : b; }; func : :f3 = { return a > 0 ? 0 : b; }; func : :f = :body_vv_av; };
 
     /// logic ------------------------------------------------------------------
 
@@ -482,10 +485,15 @@ group :ar3 =
         }
     };
 
-    body body_div_dp_b_vab_f2 = { return -a * b * f2_inv( c * c ); };
-    body body_div_dp_b_vab_f3 = { return -a * b * f3_inv( c * c ); };
+    stamp :branch_vvvv = { func : :f2 = { return a > 0 ? b : c; }; func : :f3 = { return a > 0 ? b : c; }; func : :f = :body_vvv_cv; };
 
-    stamp :div_dp_b_vab = { func : :f2 = :body_$R_f2; func : :f3 = :body_$R_f3; func : :f = :body_vvv_av; };
+    /// dendrite pass ----------------------------------------------------------
+
+    body body_div_dp_zabg_f2 = { return -a * b * f2_inv( c * c ); };
+    body body_div_dp_zabg_f3 = { return -a * b * f3_inv( c * c ); };
+
+    stamp :div_dp_zabg = { func : :f2 = :body_$R_f2; func : :f3 = :body_$R_f3; func : :f = :body_vvv_av; };
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

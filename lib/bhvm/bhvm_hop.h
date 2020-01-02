@@ -113,13 +113,13 @@ group :ar1 =
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :identity_dp_v = { func : :f = :body_lop_v_av; };
-    stamp :neg_dp_v      = { func : :f = :body_lop_v_av; };
+    stamp :identity_dp_zf = { func : :f = :body_lop_v_av; };
+    stamp :neg_dp_zf      = { func : :f = :body_lop_v_av; };
 
-    stamp :add_dp_a_v = { func : :f = :body_lop_v_av; };
-    stamp :add_dp_b_v = { func : :f = :body_lop_v_av; };
-    stamp :sub_dp_a_v = { func : :f = :body_lop_v_av; };
-    stamp :sub_dp_b_v = { func : :f = :body_lop_v_av; };
+    stamp :add_dp_zf = { func : :f = :body_lop_v_av; };
+    stamp :add_dp_zg = { func : :f = :body_lop_v_av; };
+    stamp :sub_dp_zf = { func : :f = :body_lop_v_av; };
+    stamp :sub_dp_zg = { func : :f = :body_lop_v_av; };
 
 };
 
@@ -171,18 +171,21 @@ group :ar2 =
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :div_dp_a_vb      = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :exp_dp_vy        = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :inv_dp_vy        = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :lgst_dp_vy       = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :lgst_hard_dp_vy  = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :lgst_leaky_dp_vy = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :tanh_dp_vy       = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :tanh_hard_dp_vy  = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :tanh_leaky_dp_vy = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :softplus_dp_vy   = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :relu_dp_vy       = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :relu_leaky_dp_vy = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :div_dp_zbf        = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :exp_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :inv_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :lgst_dp_zyf       = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :lgst_hard_dp_zyf  = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :lgst_leaky_dp_zyf = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :tanh_dp_zyf       = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :tanh_hard_dp_zyf  = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :tanh_leaky_dp_zyf = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :softplus_dp_zyf   = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :relu_dp_zyf       = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :relu_leaky_dp_zyf = { func : :f = :body_assert_vvv : :body_lop_r; };
+
+    stamp :branch_vvvv_dp_azg = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :branch_vvvv_dp_azh = { func : :f = :body_assert_vvv : :body_lop_r; };
 
     /// mul axon pass ----------------------------------------------------------
 
@@ -228,15 +231,7 @@ group :ar3 =
     extending stump verbatim :_ = aware : {};
     signature void f( plain, const bhvm_holor_s* a, const bhvm_holor_s* b, const bhvm_holor_s* c, bhvm_holor_s* r );
 
-    body body_lop_vvv_cv =
-    {
-        assert( a->v.size == r->v.size );
-        assert( b->v.size == r->v.size );
-        assert( c->v.size == r->v.size );
-        bhvm_lop_ar3_$R_s_f( BKNIT_FA4( a->v.type, b->v.type, c->v.type, r->v.type ), a->v.data, b->v.data, c->v.data, r->v.data, r->v.size );
-    };
-
-    body body_lop_vvv_av =
+    body body_lop_vvvv =
     {
         assert( a->v.size == r->v.size );
         assert( b->v.size == r->v.size );
@@ -246,9 +241,12 @@ group :ar3 =
 
     /// axon pass --------------------------------------------------------------
 
+    stamp :branch_vvvv = { func : :f = :body_lop_vvvv; };
+    stamp :branch_svvv = { func : :f; };
+
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :div_dp_b_vab = { func : :f = :body_lop_vvv_av; };
+    stamp :div_dp_zabg = { func : :f = :body_lop_vvvv; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
