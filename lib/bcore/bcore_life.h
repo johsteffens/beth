@@ -79,9 +79,9 @@ vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 #define BLM_INIT() bcore_life_s* __life = bcore_life_s_create()
 #define BLM_DOWN() bcore_life_s_detach( &__life )
 #define BLM_CREATE( type_name ) ( type_name* )bcore_life_s_push_typed( __life, TYPEOF_##type_name, type_name##_create() )
-#define BLM_A_PUSH(           expr ) bcore_life_s_push_aware( __life,       expr )
-#define BLM_T_PUSH(     type, expr ) bcore_life_s_push_typed( __life, type, expr )
-#define BLM_RETURNV( ret_type, expr ) { ret_type __retv = expr; BLM_DOWN(); return __retv; }
+#define BLM_A_PUSH(       expr ) bcore_life_s_push_aware( __life,       expr )
+#define BLM_T_PUSH( type, expr ) bcore_life_s_push_typed( __life, type, expr )
 #define BLM_RETURN()                  {                         BLM_DOWN(); return;        }
+#define BLM_RETURNV( ret_type, expr ) { ret_type __retv = expr; BLM_DOWN(); return __retv; }
 
 #endif // BCORE_LIFE_H
