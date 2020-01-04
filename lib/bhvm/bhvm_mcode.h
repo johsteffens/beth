@@ -59,7 +59,8 @@ group :hmeta =
 };
 
 /// returns index to pushed holor;
-signature sz_t push_hmc( mutable, bhvm_vop_arr_ci_s* arr_ci, const bhvm_holor_s* h, const :hmeta* m, char c );
+signature sz_t push_hm ( mutable, const bhvm_holor_s* h, const :hmeta* m );
+signature :push_hm push_hmc( char c, bhvm_vop_arr_ci_s* arr_ci );
 
 group :hbase =
 {
@@ -69,15 +70,21 @@ group :hbase =
         bhvm_holor_ads_s holor_ads;
            ::hmeta_adl_s hmeta_adl;
         func  : :set_size   = { bhvm_holor_ads_s_set_size( &o->holor_ads, size  ); ::hmeta_adl_s_set_size( &o->hmeta_adl, size  ); };
+        func :: :push_hm  =
+        {
+            sz_t idx = o->holor_ads.size;
+            ::hmeta_adl_s_push_c( &o->hmeta_adl, m );
+            bhvm_holor_ads_s_push_c( &o->holor_ads, h );
+            return idx;
+        };
+
         func :: :push_hmc  =
         {
             bhvm_vop_ci_s ci;
             bhvm_vop_ci_s_init( &ci );
             ci.c = c;
-            ci.i = o->holor_ads.size;
+            ci.i = @_push_hm( o, h, m );
             *bhvm_vop_arr_ci_s_push( arr_ci ) = ci;
-            ::hmeta_adl_s_push_c( &o->hmeta_adl, m );
-            bhvm_holor_ads_s_push_c( &o->holor_ads, h );
             return ci.i;
         };
     };
@@ -209,7 +216,8 @@ stamp :frame = aware :
 
     func : :track_vop_set_args_push_d = { if( !o->lib ) o->lib = :lib_s_create(); :lib_s_track_vop_set_args_push_d( o->lib, name, vop, arr_ci ); };
 
-    func : :push_hmc = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hmc( o->hbase, arr_ci, h, m, c ); };
+    func : :push_hm  = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hm(  o->hbase, h, m            ); };
+    func : :push_hmc = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hmc( o->hbase, h, m, c, arr_ci ); };
 
     func : :track_run = { if( !o->lib ) return; :lib_s_track_run_ah( o->lib, name, o->hbase->holor_ads.data ); };
 };

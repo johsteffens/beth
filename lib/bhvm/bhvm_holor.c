@@ -682,6 +682,22 @@ void bhvm_holor_s_copy_typed( bhvm_holor_s* o, tp_t type, vc_t src )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bhvm_holor_s_copy_shape( bhvm_holor_s* o, bhvm_shape_s* src )
+{
+    bhvm_shape_s_copy( &o->s, src );
+    bhvm_value_s_clear( &o->v );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_copy_shape_type( bhvm_holor_s* o, bhvm_holor_s* src )
+{
+    bhvm_holor_s_copy_shape( o, &src->s );
+    bhvm_value_s_set_type( &o->v, src->v.type );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bhvm_holor_s_set_type_scalar_vacant( bhvm_holor_s* o, tp_t t )
 {
     bhvm_shape_s_set_scalar_vacant( &o->s );

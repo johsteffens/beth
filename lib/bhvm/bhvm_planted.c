@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-01T20:21:14Z
+ *  Last File Update: 2020-01-03T20:56:58Z
  *
  *  Copyright and License of this File:
  *
@@ -1074,15 +1074,21 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hbase_s )
     "bhvm_mcode_hmeta_adl_s hmeta_adl;"
 "}";
 
-sz_t bhvm_mcode_hbase_s_push_hmc( bhvm_mcode_hbase_s* o, bhvm_vop_arr_ci_s* arr_ci, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m, char c )
+sz_t bhvm_mcode_hbase_s_push_hm( bhvm_mcode_hbase_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m )
+{
+    sz_t idx = o->holor_ads.size;
+    bhvm_mcode_hmeta_adl_s_push_c( &o->hmeta_adl, m );
+    bhvm_holor_ads_s_push_c( &o->holor_ads, h );
+    return idx;
+}
+
+sz_t bhvm_mcode_hbase_s_push_hmc( bhvm_mcode_hbase_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m, char c, bhvm_vop_arr_ci_s* arr_ci )
 {
     bhvm_vop_ci_s ci;
     bhvm_vop_ci_s_init( &ci );
     ci.c = c;
-    ci.i = o->holor_ads.size;
+    ci.i = bhvm_mcode_hbase_s_push_hm( o, h, m );
     *bhvm_vop_arr_ci_s_push( arr_ci ) = ci;
-    bhvm_mcode_hmeta_adl_s_push_c( &o->hmeta_adl, m );
-    bhvm_holor_ads_s_push_c( &o->holor_ads, h );
     return ci.i;
 }
 
@@ -1095,7 +1101,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 1090747921 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 1534511705 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h

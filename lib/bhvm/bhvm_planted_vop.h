@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-01T20:21:14Z
+ *  Last File Update: 2020-01-03T22:15:40Z
  *
  *  Copyright and License of this File:
  *
@@ -28,11 +28,13 @@
 #define TYPEOF_bhvm_vop_ci_s 711211199
 #define BETH_EXPAND_ITEM_bhvm_vop_ci_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ci_s ) \
-    {u0_t c;sz_t i;};
+    {u0_t c;sz_t i;}; \
+  static inline void bhvm_vop_ci_s_push_ci( bhvm_vop_ci_s* o, u0_t c, sz_t i ){o->c = c; o->i = i;}
 #define TYPEOF_bhvm_vop_arr_ci_s 791850599
 #define BETH_EXPAND_ITEM_bhvm_vop_arr_ci_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_arr_ci_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhvm_vop_ci_s, );}; \
+  void bhvm_vop_arr_ci_s_push_ci( bhvm_vop_arr_ci_s* o, u0_t c, sz_t i ); \
   static inline void bhvm_vop_arr_ci_s_set_space( bhvm_vop_arr_ci_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, size ); } \
   static inline void bhvm_vop_arr_ci_s_set_size( bhvm_vop_arr_ci_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, size ); } \
   static inline void bhvm_vop_arr_ci_s_clear( bhvm_vop_arr_ci_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, 0 ); } \
@@ -109,33 +111,63 @@
     {aware_t _;bhvm_vop_ar0_index_s i;}; \
   static inline sz_t bhvm_vop_ar0_zro_s_arity( const bhvm_vop_ar0_zro_s* o ){return 0;} \
   static inline sz_t* bhvm_vop_ar0_zro_s_get_index( bhvm_vop_ar0_zro_s* o ){return o->i.v;} \
-  static inline sc_t bhvm_vop_ar0_zro_s_sig( const bhvm_vop_ar0_zro_s* o ){return "y";} \
-  static inline void bhvm_vop_ar0_zro_s_run( const bhvm_vop_ar0_zro_s* o, bhvm_holor_s* ah ){bhvm_hop_ar0_zro_s_f( &ah[o->i.v[0]] );}
+  static inline void bhvm_vop_ar0_zro_s_run( const bhvm_vop_ar0_zro_s* o, bhvm_holor_s* ah ){bhvm_hop_ar0_zro_s_f( &ah[o->i.v[0]] );} \
+  static inline sc_t bhvm_vop_ar0_zro_s_sig( const bhvm_vop_ar0_zro_s* o ){return "y";}
 #define TYPEOF_bhvm_vop_ar0_one_s 131160455
 #define BETH_EXPAND_ITEM_bhvm_vop_ar0_one_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar0_one_s ) \
     {aware_t _;bhvm_vop_ar0_index_s i;}; \
   static inline sz_t bhvm_vop_ar0_one_s_arity( const bhvm_vop_ar0_one_s* o ){return 0;} \
   static inline sz_t* bhvm_vop_ar0_one_s_get_index( bhvm_vop_ar0_one_s* o ){return o->i.v;} \
-  static inline sc_t bhvm_vop_ar0_one_s_sig( const bhvm_vop_ar0_one_s* o ){return "y";} \
-  static inline void bhvm_vop_ar0_one_s_run( const bhvm_vop_ar0_one_s* o, bhvm_holor_s* ah ){bhvm_hop_ar0_one_s_f( &ah[o->i.v[0]] );}
+  static inline void bhvm_vop_ar0_one_s_run( const bhvm_vop_ar0_one_s* o, bhvm_holor_s* ah ){bhvm_hop_ar0_one_s_f( &ah[o->i.v[0]] );} \
+  static inline sc_t bhvm_vop_ar0_one_s_sig( const bhvm_vop_ar0_one_s* o ){return "y";}
+#define TYPEOF_bhvm_vop_ar0_determine_s 4243788798
+#define BETH_EXPAND_ITEM_bhvm_vop_ar0_determine_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar0_determine_s ) \
+    {aware_t _;bhvm_vop_ar0_index_s i;}; \
+  static inline sz_t bhvm_vop_ar0_determine_s_arity( const bhvm_vop_ar0_determine_s* o ){return 0;} \
+  static inline sz_t* bhvm_vop_ar0_determine_s_get_index( bhvm_vop_ar0_determine_s* o ){return o->i.v;} \
+  static inline void bhvm_vop_ar0_determine_s_run( const bhvm_vop_ar0_determine_s* o, bhvm_holor_s* ah ){bhvm_holor_s_fit_size( &ah[o->i.v[0]] );} \
+  static inline sc_t bhvm_vop_ar0_determine_s_sig( const bhvm_vop_ar0_determine_s* o ){return "y";}
+#define TYPEOF_bhvm_vop_ar0_vacate_s 1495941295
+#define BETH_EXPAND_ITEM_bhvm_vop_ar0_vacate_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar0_vacate_s ) \
+    {aware_t _;bhvm_vop_ar0_index_s i;}; \
+  static inline sz_t bhvm_vop_ar0_vacate_s_arity( const bhvm_vop_ar0_vacate_s* o ){return 0;} \
+  static inline sz_t* bhvm_vop_ar0_vacate_s_get_index( bhvm_vop_ar0_vacate_s* o ){return o->i.v;} \
+  static inline void bhvm_vop_ar0_vacate_s_run( const bhvm_vop_ar0_vacate_s* o, bhvm_holor_s* ah ){bhvm_value_s_clear( &ah[o->i.v[0]].v );} \
+  static inline sc_t bhvm_vop_ar0_vacate_s_sig( const bhvm_vop_ar0_vacate_s* o ){return "y";}
+#define TYPEOF_bhvm_vop_ar0_randomize_s 3200359220
+#define BETH_EXPAND_ITEM_bhvm_vop_ar0_randomize_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar0_randomize_s ) \
+    {aware_t _;bhvm_vop_ar0_index_s i;u2_t rseed;f3_t min;f3_t max;f3_t density;}; \
+  static inline sz_t bhvm_vop_ar0_randomize_s_arity( const bhvm_vop_ar0_randomize_s* o ){return 0;} \
+  static inline sz_t* bhvm_vop_ar0_randomize_s_get_index( bhvm_vop_ar0_randomize_s* o ){return o->i.v;} \
+  void bhvm_vop_ar0_randomize_s_run( const bhvm_vop_ar0_randomize_s* o, bhvm_holor_s* ah ); \
+  static inline sc_t bhvm_vop_ar0_randomize_s_sig( const bhvm_vop_ar0_randomize_s* o ){return "y";}
 #define TYPEOF_bhvm_vop_ar0_nul_dp_s 2224397213
 #define BETH_EXPAND_ITEM_bhvm_vop_ar0_nul_dp_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar0_nul_dp_s ) \
     {aware_t _;bhvm_vop_ar0_index_s i;}; \
   static inline sz_t bhvm_vop_ar0_nul_dp_s_arity( const bhvm_vop_ar0_nul_dp_s* o ){return 0;} \
   static inline sz_t* bhvm_vop_ar0_nul_dp_s_get_index( bhvm_vop_ar0_nul_dp_s* o ){return o->i.v;} \
-  static inline sc_t bhvm_vop_ar0_nul_dp_s_sig( const bhvm_vop_ar0_nul_dp_s* o ){return "f";} \
-  static inline void bhvm_vop_ar0_nul_dp_s_run( const bhvm_vop_ar0_nul_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar0_nul_dp_s_f( &ah[o->i.v[0]] );}
+  static inline void bhvm_vop_ar0_nul_dp_s_run( const bhvm_vop_ar0_nul_dp_s* o, bhvm_holor_s* ah ){} \
+  static inline sc_t bhvm_vop_ar0_nul_dp_s_sig( const bhvm_vop_ar0_nul_dp_s* o ){return "f";}
 #define BETH_EXPAND_GROUP_bhvm_vop_ar0 \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar0 ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar0_index_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar0_zro_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar0_one_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar0_determine_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar0_vacate_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar0_randomize_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar0_nul_dp_s ); \
   BETH_EXPAND_ITEM_bhvm_vop_ar0_index_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar0_zro_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar0_one_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar0_determine_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar0_vacate_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar0_randomize_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar0_nul_dp_s
 
 //----------------------------------------------------------------------------------------------------------------------

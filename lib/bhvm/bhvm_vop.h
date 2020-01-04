@@ -43,8 +43,22 @@ feature 'a' sc_t sig( const );
 
 feature 'a' sz_t* get_index( mutable );
 
-stamp :ci = bcore_inst { u0_t c; sz_t i; };
-stamp :arr_ci = aware bcore_array { :ci_s []; };
+signature void push_ci( mutable, u0_t c, sz_t i );
+
+stamp :ci = bcore_inst
+{
+    u0_t c; sz_t i;
+    func : :push_ci = { o->c = c; o->i = i; };
+};
+
+stamp :arr_ci = aware bcore_array
+{
+    :ci_s [];
+    func : :push_ci =
+    {
+        :ci_s_push_ci( @_push( o ), c, i );
+    };
+};
 
 /** Sets arguments from index data according to signature
   * Identifiers:
@@ -88,16 +102,34 @@ group :ar0 =
         func :: :get_index = { return o->i.v; };
     };
 
-    func :: :run = { bhvm_hop_ar0_$R_s_f( &ah[o->i.v[0]] ); };
-
     /// axon pass --------------------------------------------------------------
 
-    stamp :zro = { func :: :sig = { return "y"; }; };
-    stamp :one = { func :: :sig = { return "y"; }; };
+    stamp :zro = { func :: :run = { bhvm_hop_ar0_zro_s_f( &ah[o->i.v[0]] ); }; func :: :sig = { return "y"; }; };
+    stamp :one = { func :: :run = { bhvm_hop_ar0_one_s_f( &ah[o->i.v[0]] ); }; func :: :sig = { return "y"; }; };
+
+    stamp :determine = { func :: :run = { bhvm_holor_s_fit_size( &ah[o->i.v[0]] ); }; func :: :sig = { return "y"; }; };
+    stamp :vacate    = { func :: :run = { bhvm_value_s_clear( &ah[o->i.v[0]].v ); };  func :: :sig = { return "y"; }; };
+
+    stamp :randomize =
+    {
+        u2_t rseed   = 1234;
+        f3_t min     = -0.5;
+        f3_t max     =  0.5;
+        f3_t density =  1.0;
+
+        func :: :run =
+        {
+            sz_t i = o->i.v[ 0 ];
+            u2_t rval = o->rseed + i;
+            bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, &rval );
+        };
+
+        func :: :sig = { return "y"; };
+    };
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :nul_dp = { func :: :sig = { return "f"; }; }; // no action
+    stamp :nul_dp = { func :: :run = {}; func :: :sig = { return "f"; }; }; // no action
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
