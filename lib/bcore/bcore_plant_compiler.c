@@ -54,8 +54,9 @@ static void bcore_plant_compiler_s_life_a_push(       bcore_plant_compiler_s* o,
 static void bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, bcore_source* source );
 static void bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st_s* name, bcore_source* source );
 static void bcore_plant_source_s_push_group( bcore_plant_source_s* o, bcore_plant_group_s* group );
-static void bcore_plant_stamp_s_resolve_chars( bcore_plant_stamp_s* o, st_s* string );
 static sc_t bcore_plant_stamp_s_get_rel_name_sc( const bcore_plant_stamp_s* o );
+
+static st_s* stamp_s_resolve_chars( const bcore_plant_stamp_s* o, st_s* string );
 
 //----------------------------------------------------------------------------------------------------------------------
 // globals
@@ -589,7 +590,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_compiler_s )
     // parameters
     "st_s => sh_file_undo_expand;"
     "bl_t register_plain_functions = true;"
-    "bl_t register_signatures = true;"
+    "bl_t register_signatures = false;"
 
     // functions
     "func bcore_plant_fp : finalize;"
@@ -748,6 +749,10 @@ static void bcore_plant_arg_s_parse( bcore_plant_arg_s* o, bcore_source* source 
     if( bcore_source_a_parse_bl_fa( source, "#?':' " ) )
     {
         bcore_plant_group_s_parse_name_recursive( o->group, s, source );
+    }
+    else if( bcore_source_a_parse_bl_fa( source, "#?'@' " ) )
+    {
+        st_s_push_char( s, '@' );
     }
     else
     {
@@ -920,6 +925,17 @@ static void bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
             else
             {
                 st_s_push_fa( name_buf, "_#<sc_t>", name_candidate->sc );
+            }
+        }
+        else if( bcore_source_a_parse_bl_fa( source, " #?'@'" ) )
+        {
+            if( name_buf->size == 0 )
+            {
+                st_s_push_sc( name_buf, "@" );
+            }
+            else
+            {
+                bcore_source_a_parse_err_fa( source, "Misplaced '@'." );
             }
         }
 
@@ -1192,7 +1208,7 @@ static void bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_pl
 
         if( stamp )
         {
-            bcore_plant_stamp_s_resolve_chars( stamp, name );
+            stamp_s_resolve_chars( stamp, name );
         }
 
         tp_t tp_name = typeof( name->sc );
@@ -1772,7 +1788,7 @@ static tp_t bcore_plant_stamp_s_get_hash( const bcore_plant_stamp_s* o )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// resolve special characters in a string
-static void bcore_plant_stamp_s_resolve_chars( bcore_plant_stamp_s* o, st_s* string )
+static st_s* stamp_s_resolve_chars( const bcore_plant_stamp_s* o, st_s* string )
 {
     st_s* buf = st_s_create();
     for( sz_t i = 0; i < string->size; i++ )
@@ -1842,6 +1858,7 @@ static void bcore_plant_stamp_s_resolve_chars( bcore_plant_stamp_s* o, st_s* str
     }
     st_s_copy( string, buf );
     st_s_discard( buf );
+    return string;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2023,11 +2040,11 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
 static void bcore_plant_stamp_s_finalize( bcore_plant_stamp_s* o )
 {
     // resolve special characters in self string and function bodies
-    bcore_plant_stamp_s_resolve_chars( o, o->self_source );
+    stamp_s_resolve_chars( o, o->self_source );
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
         bcore_plant_func_s* func = o->funcs.data[ i ];
-        if( func->body ) bcore_plant_stamp_s_resolve_chars( o, &func->body->code );
+        if( func->body ) stamp_s_resolve_chars( o, &func->body->code );
     }
 }
 
@@ -2058,6 +2075,27 @@ static void bcore_plant_stamp_s_expand_indef_declaration( const bcore_plant_stam
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static void bcore_plant_stamp_s_arg_s_expand( const bcore_plant_stamp_s* o, const bcore_plant_arg_s* arg, bcore_sink* sink )
+{
+    BLM_INIT();
+    bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>", stamp_s_resolve_chars( o, BLM_CLONE( st_s, &arg->type ) )->sc, arg->name.sc );
+    BLM_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_stamp_s_args_s_expand( const bcore_plant_stamp_s* o, const bcore_plant_args_s* args, bl_t first, bcore_sink* sink )
+{
+    for( sz_t i = 0; i < args->size; i++ )
+    {
+        if( !first ) bcore_sink_a_push_fa( sink, ", " );
+        first = false;
+        bcore_plant_stamp_s_arg_s_expand( o, &args->data[ i ], sink );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
 {
     BLM_INIT();
@@ -2083,6 +2121,7 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
 
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
+        BLM_INIT();
         bcore_plant_func_s* func = o->funcs.data[ i ];
         if( bcore_plant_compiler_s_item_exists( plant_compiler_g, func->type ) )
         {
@@ -2120,19 +2159,19 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
 
                 if( go_inline ) bcore_sink_a_push_fa( sink, "static inline " );
 
-                bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>_#<sc_t>( ", signature->ret_type.sc, o->name.sc, func->name.sc );
+                bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>_#<sc_t>( ", stamp_s_resolve_chars( o, BLM_CLONE( st_s, &signature->ret_type ) )->sc, o->name.sc, func->name.sc );
 
                 if( signature->arg_o )
                 {
                     bcore_sink_a_push_fa( sink, "#<sc_t>", ( signature->arg_o == TYPEOF_mutable ) ? "" : "const " );
                     bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
-                    bcore_plant_args_s_expand( &signature->args, false, sink );
+                    bcore_plant_stamp_s_args_s_expand( o, &signature->args, false, sink );
                 }
                 else
                 {
                     if( signature->args.size > 0 )
                     {
-                        bcore_plant_args_s_expand( &signature->args, true, sink );
+                        bcore_plant_stamp_s_args_s_expand( o, &signature->args, true, sink );
                     }
                     else
                     {
@@ -2160,6 +2199,7 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
         {
             bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
+        BLM_DOWN();
     }
 
     // expand array
@@ -2182,9 +2222,9 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
             bcore_source_point_s_parse_err_fa( &o->source_point, "Expanding object #<sc_t>: Object is of trait array but contains no array.", o->name.sc );
         }
 
-        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_set_space( #<sc_t>* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); }", indent, o->name.sc, o->name.sc, o->name.sc );
-        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_set_size( #<sc_t>* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); }", indent, o->name.sc, o->name.sc, o->name.sc );
-        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_clear( #<sc_t>* o ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, 0 ); }", indent, o->name.sc, o->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_set_space( #<sc_t>* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); return o; }", indent, o->name.sc, o->name.sc, o->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_set_size( #<sc_t>* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); return o; }",   indent, o->name.sc, o->name.sc, o->name.sc, o->name.sc );
+        bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_clear( #<sc_t>* o ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, 0 ); return o; }",                   indent, o->name.sc, o->name.sc, o->name.sc, o->name.sc );
 
         sc_t  sc_name = ifnameof( array_item->name );
         st_s* st_last = st_s_create_fa( "o->#<sc_t>#<sc_t>data[ o->#<sc_t>#<sc_t>size - 1 ]", sc_name, sc_name[ 0 ] ? "_" : "", sc_name, sc_name[ 0 ] ? "_" : ""  );
@@ -2273,6 +2313,7 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
 
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
+        BLM_INIT();
         bcore_plant_func_s* func = o->funcs.data[ i ];
         if( bcore_plant_compiler_s_item_exists( plant_compiler_g, func->type ) )
         {
@@ -2300,18 +2341,18 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
                 if( func->body && !func->body->go_inline )
                 {
                     bcore_sink_a_push_fa( sink, "\n" );
-                    bcore_sink_a_push_fa( sink, "#rn{ }#<sc_t> #<sc_t>_#<sc_t>( ", indent, signature->ret_type.sc, o->name.sc, func->name.sc );
+                    bcore_sink_a_push_fa( sink, "#rn{ }#<sc_t> #<sc_t>_#<sc_t>( ", indent, stamp_s_resolve_chars( o, BLM_CLONE( st_s, &signature->ret_type ) )->sc, o->name.sc, func->name.sc );
                     if( signature->arg_o )
                     {
                         bcore_sink_a_push_fa( sink, "#<sc_t>", ( signature->arg_o == TYPEOF_mutable ) ? "" : "const " );
                         bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
-                        bcore_plant_args_s_expand( &signature->args, false, sink );
+                        bcore_plant_stamp_s_args_s_expand( o, &signature->args, false, sink );
                     }
                     else
                     {
                         if( signature->args.size > 0 )
                         {
-                            bcore_plant_args_s_expand( &signature->args, true, sink );
+                            bcore_plant_stamp_s_args_s_expand( o, &signature->args, true, sink );
                         }
                         else
                         {
@@ -2333,6 +2374,7 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
         {
             bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
+        BLM_DOWN();
     }
 
     st_s_discard( multiline_string );

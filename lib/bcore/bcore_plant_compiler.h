@@ -166,12 +166,20 @@
  *     'func ^ : <func_name>'  <trait_name> is used as perspective
  *
  *    Special characters:
- *      '@' : inserts the stamps full type name.
- *      '$R': inserts the stamps relative type name without '_s'.
+ *      Special characters are evaluated and replaced with specific text
+ *      for signature types and body code. Signature and body definition
+ *      can be outside the stamp. Replacement happens in all stamps to which
+ *      they are assigned.
+ *
+ *      '@' : is replaced with the stamp's full type name.
+ *            Example: In stamp 'bcore_fog_s'
+ *               @ -> "bcore_fog_s"
+ *
+ *      '$R': is replaced with the stamps relative type name without '_s'.
  *            Example: In group 'bcore_fog'
- *               stamp :blue       -> $R: "blue"
- *               stamp bcore_blue' -> $R: "blue"
- *               stamp bmath_blue' -> $R: "bmath_blue"
+ *               stamp :blue       : $R -> "blue"
+ *               stamp bcore_blue' : $R -> "blue"
+ *               stamp bmath_blue' : $R -> "bmath_blue"
  *
  *    Special traits:
  *      bcore_array: expands additional array-functions
