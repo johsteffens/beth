@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-03T22:15:40Z
+ *  Last File Update: 2020-01-05T20:33:48Z
  *
  *  Copyright and License of this File:
  *
@@ -35,9 +35,9 @@
   BCORE_DECLARE_OBJECT( bhvm_vop_arr_ci_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhvm_vop_ci_s, );}; \
   void bhvm_vop_arr_ci_s_push_ci( bhvm_vop_arr_ci_s* o, u0_t c, sz_t i ); \
-  static inline void bhvm_vop_arr_ci_s_set_space( bhvm_vop_arr_ci_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, size ); } \
-  static inline void bhvm_vop_arr_ci_s_set_size( bhvm_vop_arr_ci_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, size ); } \
-  static inline void bhvm_vop_arr_ci_s_clear( bhvm_vop_arr_ci_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, 0 ); } \
+  static inline bhvm_vop_arr_ci_s* bhvm_vop_arr_ci_s_set_space( bhvm_vop_arr_ci_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, size ); return o; } \
+  static inline bhvm_vop_arr_ci_s* bhvm_vop_arr_ci_s_set_size( bhvm_vop_arr_ci_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, size ); return o; } \
+  static inline bhvm_vop_arr_ci_s* bhvm_vop_arr_ci_s_clear( bhvm_vop_arr_ci_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, 0 ); return o; } \
   static inline bhvm_vop_ci_s* bhvm_vop_arr_ci_s_push_c( bhvm_vop_arr_ci_s* o, const bhvm_vop_ci_s* v ) { bcore_array_t_push( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, sr_twc( TYPEOF_bhvm_vop_ci_s, v ) ); return &o->data[ o->size - 1 ]; } \
   static inline bhvm_vop_ci_s* bhvm_vop_arr_ci_s_push_d( bhvm_vop_arr_ci_s* o,       bhvm_vop_ci_s* v ) { bcore_array_t_push( TYPEOF_bhvm_vop_arr_ci_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhvm_vop_ci_s, v ) ); return &o->data[ o->size - 1 ]; } \
   static inline bhvm_vop_ci_s* bhvm_vop_arr_ci_s_push( bhvm_vop_arr_ci_s* o ) \
@@ -58,7 +58,7 @@
   typedef sc_t (*bhvm_vop_sig)( const bhvm_vop* o ); \
   typedef sz_t* (*bhvm_vop_get_index)( bhvm_vop* o ); \
   typedef void (*bhvm_vop_set_arg)( bhvm_vop* o, bhvm_vop_ci_s* ci ); \
-  typedef void (*bhvm_vop_set_args)( bhvm_vop* o, const bhvm_vop_arr_ci_s* arr ); \
+  typedef bhvm_vop* (*bhvm_vop_set_args)( bhvm_vop* o, const bhvm_vop_arr_ci_s* arr ); \
   BCORE_DECLARE_SPECT( bhvm_vop ) \
   { \
       bcore_spect_header_s header; \
@@ -88,9 +88,9 @@
   static inline void bhvm_vop_a_set_arg( bhvm_vop* o, bhvm_vop_ci_s* ci ) { const bhvm_vop_s* p = bhvm_vop_s_get_aware( o ); assert( p->set_arg ); p->set_arg( o, ci ); } \
   static inline bl_t bhvm_vop_a_defines_set_arg( const bhvm_vop* o ) { return true; } \
   void bhvm_vop_set_arg__( bhvm_vop* o, bhvm_vop_ci_s* ci ); \
-  static inline void bhvm_vop_a_set_args( bhvm_vop* o, const bhvm_vop_arr_ci_s* arr ) { const bhvm_vop_s* p = bhvm_vop_s_get_aware( o ); assert( p->set_args ); p->set_args( o, arr ); } \
+  static inline bhvm_vop* bhvm_vop_a_set_args( bhvm_vop* o, const bhvm_vop_arr_ci_s* arr ) { const bhvm_vop_s* p = bhvm_vop_s_get_aware( o ); assert( p->set_args ); return p->set_args( o, arr ); } \
   static inline bl_t bhvm_vop_a_defines_set_args( const bhvm_vop* o ) { return true; } \
-  void bhvm_vop_set_args__( bhvm_vop* o, const bhvm_vop_arr_ci_s* arr ); \
+  bhvm_vop* bhvm_vop_set_args__( bhvm_vop* o, const bhvm_vop_arr_ci_s* arr ); \
   BETH_EXPAND_GROUP_bhvm_vop_ar0 \
   BETH_EXPAND_GROUP_bhvm_vop_ar1 \
   BETH_EXPAND_GROUP_bhvm_vop_ar2 \

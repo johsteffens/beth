@@ -64,12 +64,19 @@ signature :push_hm push_hmc( char c, bhvm_vop_arr_ci_s* arr_ci );
 
 group :hbase =
 {
-    signature void set_size( mutable, sz_t size );
+    signature @* set_size( mutable, sz_t size );
     stamp : = aware :
     {
         bhvm_holor_ads_s holor_ads;
            ::hmeta_adl_s hmeta_adl;
-        func  : :set_size   = { bhvm_holor_ads_s_set_size( &o->holor_ads, size  ); ::hmeta_adl_s_set_size( &o->hmeta_adl, size  ); };
+
+        func  : :set_size =
+        {
+            bhvm_holor_ads_s_set_size( &o->holor_ads, size  );
+            ::hmeta_adl_s_set_size( &o->hmeta_adl, size  );
+            return o;
+        };
+
         func :: :push_hm  =
         {
             sz_t idx = o->holor_ads.size;

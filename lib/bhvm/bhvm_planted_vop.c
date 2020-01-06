@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-03T22:15:40Z
+ *  Last File Update: 2020-01-05T20:33:48Z
  *
  *  Copyright and License of this File:
  *
@@ -72,9 +72,10 @@ void bhvm_vop_set_arg__( bhvm_vop* o, bhvm_vop_ci_s* ci )
     }
 }
 
-void bhvm_vop_set_args__( bhvm_vop* o, const bhvm_vop_arr_ci_s* arr )
+bhvm_vop* bhvm_vop_set_args__( bhvm_vop* o, const bhvm_vop_arr_ci_s* arr )
 {
     for( sz_t i = 0; i < arr->size; i++ ) bhvm_vop_a_set_arg( o, &arr->data[ i ] );
+    return o;
 }
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_vop_ar0
@@ -1102,7 +1103,7 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 2573300763 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 2067187463 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_vop.h

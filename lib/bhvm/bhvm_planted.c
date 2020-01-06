@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-03T20:56:58Z
+ *  Last File Update: 2020-01-05T20:12:50Z
  *
  *  Copyright and License of this File:
  *
@@ -1074,6 +1074,13 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hbase_s )
     "bhvm_mcode_hmeta_adl_s hmeta_adl;"
 "}";
 
+bhvm_mcode_hbase_s* bhvm_mcode_hbase_s_set_size( bhvm_mcode_hbase_s* o, sz_t size )
+{
+    bhvm_holor_ads_s_set_size( &o->holor_ads, size  );
+    bhvm_mcode_hmeta_adl_s_set_size( &o->hmeta_adl, size  );
+    return o;
+}
+
 sz_t bhvm_mcode_hbase_s_push_hm( bhvm_mcode_hbase_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m )
 {
     sz_t idx = o->holor_ads.size;
@@ -1101,7 +1108,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 1534511705 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3714954973 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h

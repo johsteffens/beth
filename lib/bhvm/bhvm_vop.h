@@ -83,9 +83,10 @@ feature 'a' void set_arg( mutable, :ci_s* ci ) =
     }
 };
 
-feature 'a' void set_args( mutable, const :arr_ci_s* arr ) =
+feature 'a' :* set_args( mutable, const :arr_ci_s* arr ) =
 {
     for( sz_t i = 0; i < arr->size; i++ ) :a_set_arg( o, &arr->data[ i ] );
+    return o;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
