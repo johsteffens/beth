@@ -59,13 +59,14 @@ static bcore_self_s* arr_uz_s_create_self( void )
     return self;
 }
 
-void bcore_arr_uz_s_clear( bcore_arr_uz_s* o )
+bcore_arr_uz_s* bcore_arr_uz_s_clear( bcore_arr_uz_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+    return o;
 }
 
-void bcore_arr_uz_s_set_space( bcore_arr_uz_s* o, uz_t space )
+bcore_arr_uz_s* bcore_arr_uz_s_set_space( bcore_arr_uz_s* o, uz_t space )
 {
     if( o->space == 0 )
     {
@@ -76,16 +77,18 @@ void bcore_arr_uz_s_set_space( bcore_arr_uz_s* o, uz_t space )
         o->data = bcore_un_alloc( sizeof( uz_t ), o->data, o->space, space, &o->space );
     }
     if( o->size > space ) o->size = space;
+    return o;
 }
 
-void bcore_arr_uz_s_fill( bcore_arr_uz_s* o, uz_t size, uz_t v )
+bcore_arr_uz_s* bcore_arr_uz_s_fill( bcore_arr_uz_s* o, uz_t size, uz_t v )
 {
     bcore_arr_uz_s_set_space( o, size );
     for( uz_t i = 0; i < size; i++ ) o->data[ i ] = v;
     o->size = size;
+    return o;
 }
 
-void bcore_arr_uz_s_set_size( bcore_arr_uz_s* o, uz_t size )
+bcore_arr_uz_s* bcore_arr_uz_s_set_size( bcore_arr_uz_s* o, uz_t size )
 {
     bcore_arr_uz_s_set_space( o, size );
     if( size > o->size )
@@ -93,9 +96,10 @@ void bcore_arr_uz_s_set_size( bcore_arr_uz_s* o, uz_t size )
         for( sz_t i = o->size; i < size; i++ ) o->data[ i ] = 0;
     }
     o->size = size;
+    return o;
 }
 
-void bcore_arr_uz_s_step_fill( bcore_arr_uz_s* o, uz_t v_start, s3_t step, uz_t size )
+bcore_arr_uz_s* bcore_arr_uz_s_step_fill( bcore_arr_uz_s* o, uz_t v_start, s3_t step, uz_t size )
 {
     bcore_arr_uz_s_set_space( o, size );
     uz_t v = v_start;
@@ -105,6 +109,7 @@ void bcore_arr_uz_s_step_fill( bcore_arr_uz_s* o, uz_t v_start, s3_t step, uz_t 
         v += step;
     }
     o->size = size;
+    return o;
 }
 
 void bcore_arr_uz_s_make_strong( bcore_arr_uz_s* o )
@@ -157,15 +162,16 @@ static void uz_sort( uz_t* data, uz_t size, uz_t* buf, s2_t order )
     }
 }
 
-void bcore_arr_uz_s_sort( bcore_arr_uz_s* o, s2_t order ) // stable mergesort
+bcore_arr_uz_s* bcore_arr_uz_s_sort( bcore_arr_uz_s* o, s2_t order ) // stable mergesort
 {
     if( o->space < o->size ) bcore_arr_uz_s_make_strong( o );
     uz_t* buf = bcore_u_alloc( sizeof( uz_t ), NULL, o->size >> 1, NULL );
     uz_sort( o->data, o->size, buf, order );
     bcore_free( buf );
+    return o;
 }
 
-void bcore_arr_uz_s_reorder( bcore_arr_uz_s* o, const bcore_arr_uz_s* order )
+bcore_arr_uz_s* bcore_arr_uz_s_reorder( bcore_arr_uz_s* o, const bcore_arr_uz_s* order )
 {
     if( o->space < o->size ) bcore_arr_uz_s_make_strong( o );
     uz_t buf_space = 0;
@@ -179,6 +185,7 @@ void bcore_arr_uz_s_reorder( bcore_arr_uz_s* o, const bcore_arr_uz_s* order )
     o->data = buf;
     o->space = buf_space;
     o->size = order->size;
+    return o;
 }
 
 bcore_arr_uz_s* bcore_arr_uz_s_create_random_permutation( u2_t ( *rg )( u2_t ), u2_t rval, uz_t size )
@@ -302,13 +309,14 @@ static bcore_self_s* arr_sz_s_create_self( void )
     return self;
 }
 
-void bcore_arr_sz_s_clear( bcore_arr_sz_s* o )
+bcore_arr_sz_s* bcore_arr_sz_s_clear( bcore_arr_sz_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+    return o;
 }
 
-void bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, uz_t space )
+bcore_arr_sz_s* bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, uz_t space )
 {
     if( o->space == 0 )
     {
@@ -319,16 +327,18 @@ void bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, uz_t space )
         o->data = bcore_un_alloc( sizeof( sz_t ), o->data, o->space, space, &o->space );
     }
     if( o->size > space ) o->size = space;
+    return o;
 }
 
-void bcore_arr_sz_s_fill( bcore_arr_sz_s* o, uz_t size, sz_t v )
+bcore_arr_sz_s* bcore_arr_sz_s_fill( bcore_arr_sz_s* o, uz_t size, sz_t v )
 {
     bcore_arr_sz_s_set_space( o, size );
     for( uz_t i = 0; i < size; i++ ) o->data[ i ] = v;
     o->size = size;
+    return o;
 }
 
-void bcore_arr_sz_s_set_size( bcore_arr_sz_s* o, uz_t size )
+bcore_arr_sz_s* bcore_arr_sz_s_set_size( bcore_arr_sz_s* o, uz_t size )
 {
     bcore_arr_sz_s_set_space( o, size );
     if( size > o->size )
@@ -336,9 +346,10 @@ void bcore_arr_sz_s_set_size( bcore_arr_sz_s* o, uz_t size )
         for( sz_t i = o->size; i < size; i++ ) o->data[ i ] = 0;
     }
     o->size = size;
+    return o;
 }
 
-void bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t step, uz_t size )
+bcore_arr_sz_s* bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t step, uz_t size )
 {
     bcore_arr_sz_s_set_space( o, size );
     sz_t v = v_start;
@@ -348,6 +359,7 @@ void bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t step, uz_t 
         v += step;
     }
     o->size = size;
+    return o;
 }
 
 void bcore_arr_sz_s_make_strong( bcore_arr_sz_s* o )
@@ -400,15 +412,16 @@ static void sz_sort( sz_t* data, uz_t size, sz_t* buf, s2_t order )
     }
 }
 
-void bcore_arr_sz_s_sort( bcore_arr_sz_s* o, s2_t order ) // stable mergesort
+bcore_arr_sz_s* bcore_arr_sz_s_sort( bcore_arr_sz_s* o, s2_t order ) // stable mergesort
 {
     if( o->space < o->size ) bcore_arr_sz_s_make_strong( o );
     sz_t* buf = bcore_u_alloc( sizeof( sz_t ), NULL, o->size >> 1, NULL );
     sz_sort( o->data, o->size, buf, order );
     bcore_free( buf );
+    return o;
 }
 
-void bcore_arr_sz_s_reorder( bcore_arr_sz_s* o, const bcore_arr_uz_s* order )
+bcore_arr_sz_s* bcore_arr_sz_s_reorder( bcore_arr_sz_s* o, const bcore_arr_uz_s* order )
 {
     if( o->space < o->size ) bcore_arr_sz_s_make_strong( o );
     uz_t buf_space = 0;
@@ -422,6 +435,7 @@ void bcore_arr_sz_s_reorder( bcore_arr_sz_s* o, const bcore_arr_uz_s* order )
     o->data = buf;
     o->space = buf_space;
     o->size = order->size;
+    return o;
 }
 
 /**********************************************************************************************************************/
@@ -462,13 +476,14 @@ static bcore_self_s* arr_u3_s_create_self( void )
     return self;
 }
 
-void bcore_arr_u3_s_clear( bcore_arr_u3_s* o )
+bcore_arr_u3_s* bcore_arr_u3_s_clear( bcore_arr_u3_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+    return o;
 }
 
-void bcore_arr_u3_s_set_space( bcore_arr_u3_s* o, uz_t space )
+bcore_arr_u3_s* bcore_arr_u3_s_set_space( bcore_arr_u3_s* o, uz_t space )
 {
     if( o->space == 0 )
     {
@@ -479,16 +494,18 @@ void bcore_arr_u3_s_set_space( bcore_arr_u3_s* o, uz_t space )
         o->data = bcore_un_alloc( sizeof( u3_t ), o->data, o->space, space, &o->space );
     }
     if( o->size > space ) o->size = space;
+    return o;
 }
 
-void bcore_arr_u3_s_fill( bcore_arr_u3_s* o, uz_t size, u3_t v )
+bcore_arr_u3_s* bcore_arr_u3_s_fill( bcore_arr_u3_s* o, uz_t size, u3_t v )
 {
     bcore_arr_u3_s_set_space( o, size );
     for( uz_t i = 0; i < size; i++ ) o->data[ i ] = v;
     o->size = size;
+    return o;
 }
 
-void bcore_arr_u3_s_set_size( bcore_arr_u3_s* o, uz_t size )
+bcore_arr_u3_s* bcore_arr_u3_s_set_size( bcore_arr_u3_s* o, uz_t size )
 {
     bcore_arr_u3_s_set_space( o, size );
     if( size > o->size )
@@ -496,9 +513,10 @@ void bcore_arr_u3_s_set_size( bcore_arr_u3_s* o, uz_t size )
         for( sz_t i = o->size; i < size; i++ ) o->data[ i ] = 0;
     }
     o->size = size;
+    return o;
 }
 
-void bcore_arr_u3_s_step_fill( bcore_arr_u3_s* o, u3_t v_start, u3_t step, uz_t size )
+bcore_arr_u3_s* bcore_arr_u3_s_step_fill( bcore_arr_u3_s* o, u3_t v_start, u3_t step, uz_t size )
 {
     bcore_arr_u3_s_set_space( o, size );
     u3_t v = v_start;
@@ -508,6 +526,7 @@ void bcore_arr_u3_s_step_fill( bcore_arr_u3_s* o, u3_t v_start, u3_t step, uz_t 
         v += step;
     }
     o->size = size;
+    return o;
 }
 
 void bcore_arr_u3_s_make_strong( bcore_arr_u3_s* o )
@@ -560,15 +579,16 @@ static void u3_sort( u3_t* data, uz_t size, u3_t* buf, s2_t order )
     }
 }
 
-void bcore_arr_u3_s_sort( bcore_arr_u3_s* o, s2_t order ) // stable mergesort
+bcore_arr_u3_s* bcore_arr_u3_s_sort( bcore_arr_u3_s* o, s2_t order ) // stable mergesort
 {
     if( o->space < o->size ) bcore_arr_u3_s_make_strong( o );
     u3_t* buf = bcore_u_alloc( sizeof( u3_t ), NULL, o->size >> 1, NULL );
     u3_sort( o->data, o->size, buf, order );
     bcore_free( buf );
+    return o;
 }
 
-void bcore_arr_u3_s_reorder( bcore_arr_u3_s* o, const bcore_arr_uz_s* order )
+bcore_arr_u3_s* bcore_arr_u3_s_reorder( bcore_arr_u3_s* o, const bcore_arr_uz_s* order )
 {
     if( o->space < o->size ) bcore_arr_u3_s_make_strong( o );
     uz_t buf_space = 0;
@@ -582,6 +602,7 @@ void bcore_arr_u3_s_reorder( bcore_arr_u3_s* o, const bcore_arr_uz_s* order )
     o->data = buf;
     o->space = buf_space;
     o->size = order->size;
+    return o;
 }
 
 /**********************************************************************************************************************/
@@ -622,13 +643,14 @@ static bcore_self_s* arr_tp_s_create_self( void )
     return self;
 }
 
-void bcore_arr_tp_s_clear( bcore_arr_tp_s* o )
+bcore_arr_tp_s* bcore_arr_tp_s_clear( bcore_arr_tp_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+    return o;
 }
 
-void bcore_arr_tp_s_set_space( bcore_arr_tp_s* o, uz_t space )
+bcore_arr_tp_s* bcore_arr_tp_s_set_space( bcore_arr_tp_s* o, uz_t space )
 {
     if( o->space == 0 )
     {
@@ -639,16 +661,18 @@ void bcore_arr_tp_s_set_space( bcore_arr_tp_s* o, uz_t space )
         o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, space, &o->space );
     }
     if( o->size > space ) o->size = space;
+    return o;
 }
 
-void bcore_arr_tp_s_fill( bcore_arr_tp_s* o, uz_t size, tp_t v )
+bcore_arr_tp_s* bcore_arr_tp_s_fill( bcore_arr_tp_s* o, uz_t size, tp_t v )
 {
     bcore_arr_tp_s_set_space( o, size );
     for( uz_t i = 0; i < size; i++ ) o->data[ i ] = v;
     o->size = size;
+    return o;
 }
 
-void bcore_arr_tp_s_set_size( bcore_arr_tp_s* o, uz_t size )
+bcore_arr_tp_s* bcore_arr_tp_s_set_size( bcore_arr_tp_s* o, uz_t size )
 {
     bcore_arr_tp_s_set_space( o, size );
     if( size > o->size )
@@ -656,6 +680,7 @@ void bcore_arr_tp_s_set_size( bcore_arr_tp_s* o, uz_t size )
         for( sz_t i = o->size; i < size; i++ ) o->data[ i ] = 0;
     }
     o->size = size;
+    return o;
 }
 
 void bcore_arr_tp_s_make_strong( bcore_arr_tp_s* o )
@@ -668,7 +693,7 @@ void bcore_arr_tp_s_make_strong( bcore_arr_tp_s* o )
     }
 }
 
-void bcore_arr_tp_s_push( bcore_arr_tp_s* o, tp_t v )
+bcore_arr_tp_s* bcore_arr_tp_s_push( bcore_arr_tp_s* o, tp_t v )
 {
     if( o->size >  o->space ) bcore_arr_tp_s_make_strong( o );
     if( o->size == o->space )
@@ -676,6 +701,7 @@ void bcore_arr_tp_s_push( bcore_arr_tp_s* o, tp_t v )
         o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
     }
     o->data[ o->size++ ] = v;
+    return o;
 }
 
 tp_t bcore_arr_tp_s_pop( bcore_arr_tp_s* o )
@@ -708,15 +734,16 @@ static void tp_sort( tp_t* data, uz_t size, tp_t* buf, s2_t order )
     }
 }
 
-void bcore_arr_tp_s_sort( bcore_arr_tp_s* o, s2_t order ) // stable mergesort
+bcore_arr_tp_s* bcore_arr_tp_s_sort( bcore_arr_tp_s* o, s2_t order ) // stable mergesort
 {
     if( o->space < o->size ) bcore_arr_tp_s_make_strong( o );
     tp_t* buf = bcore_u_alloc( sizeof( tp_t ), NULL, o->size >> 1, NULL );
     tp_sort( o->data, o->size, buf, order );
     bcore_free( buf );
+    return o;
 }
 
-void bcore_arr_tp_s_reorder( bcore_arr_tp_s* o, const bcore_arr_uz_s* order )
+bcore_arr_tp_s* bcore_arr_tp_s_reorder( bcore_arr_tp_s* o, const bcore_arr_uz_s* order )
 {
     if( o->space < o->size ) bcore_arr_tp_s_make_strong( o );
     uz_t buf_space = 0;
@@ -730,6 +757,7 @@ void bcore_arr_tp_s_reorder( bcore_arr_tp_s* o, const bcore_arr_uz_s* order )
     o->data = buf;
     o->space = buf_space;
     o->size = order->size;
+    return o;
 }
 
 uz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v )
@@ -762,7 +790,7 @@ static bcore_self_s* arr_st_s_create_self( void )
     return bcore_self_s_build_parse_sc( "bcore_arr_st_s = bcore_array { aware_t _; st_s* [] arr; }", sizeof( bcore_arr_st_s ) );
 }
 
-void bcore_arr_st_s_clear( bcore_arr_st_s* o )
+bcore_arr_st_s* bcore_arr_st_s_clear( bcore_arr_st_s* o )
 {
     if( o->space == 0 )
     {
@@ -772,14 +800,16 @@ void bcore_arr_st_s_clear( bcore_arr_st_s* o )
 
     for( uz_t i = 0; i < o->size; i++ ) st_s_discard( o->data[ i ] );
     o->size = 0;
+    return o;
 }
 
-void bcore_arr_st_s_set_space( bcore_arr_st_s* o, uz_t space )
+bcore_arr_st_s* bcore_arr_st_s_set_space( bcore_arr_st_s* o, uz_t space )
 {
     bcore_array_a_set_space( (bcore_array*)o, space );
+    return o;
 }
 
-void bcore_arr_st_s_set_size( bcore_arr_st_s* o, uz_t size )
+bcore_arr_st_s* bcore_arr_st_s_set_size( bcore_arr_st_s* o, uz_t size )
 {
     bcore_arr_st_s_set_space( o, size );
     if( size > o->size )
@@ -787,6 +817,7 @@ void bcore_arr_st_s_set_size( bcore_arr_st_s* o, uz_t size )
         for( sz_t i = o->size; i < size; i++ ) o->data[ i ] = NULL;
     }
     o->size = size;
+    return o;
 }
 
 void bcore_arr_st_s_make_strong( bcore_arr_st_s* o )
@@ -849,15 +880,16 @@ static void st_sort( st_s** data, uz_t size, st_s** buf, s2_t order )
     }
 }
 
-void bcore_arr_st_s_sort( bcore_arr_st_s* o, s2_t order ) // stable mergesort
+bcore_arr_st_s* bcore_arr_st_s_sort( bcore_arr_st_s* o, s2_t order ) // stable mergesort
 {
     if( o->space < o->size ) bcore_arr_st_s_make_strong( o );
     st_s** buf = bcore_u_alloc( sizeof( st_s* ), NULL, o->size >> 1, NULL );
     st_sort( o->data, o->size, buf, order );
     bcore_free( buf );
+    return o;
 }
 
-void bcore_arr_st_s_reorder( bcore_arr_st_s* o, const bcore_arr_uz_s* order )
+bcore_arr_st_s* bcore_arr_st_s_reorder( bcore_arr_st_s* o, const bcore_arr_uz_s* order )
 {
     if( o->space < o->size ) bcore_arr_st_s_make_strong( o );
     uz_t buf_space = 0;
@@ -872,6 +904,7 @@ void bcore_arr_st_s_reorder( bcore_arr_st_s* o, const bcore_arr_uz_s* order )
     o->data = buf;
     o->space = buf_space;
     o->size = order->size;
+    return o;
 }
 
 /**********************************************************************************************************************/
@@ -913,13 +946,14 @@ static bcore_self_s* arr_vd_s_create_self( void )
     return self;
 }
 
-void bcore_arr_vd_s_clear( bcore_arr_vd_s* o )
+bcore_arr_vd_s* bcore_arr_vd_s_clear( bcore_arr_vd_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+    return o;
 }
 
-void bcore_arr_vd_s_set_space( bcore_arr_vd_s* o, uz_t space )
+bcore_arr_vd_s* bcore_arr_vd_s_set_space( bcore_arr_vd_s* o, uz_t space )
 {
     if( o->space == 0 )
     {
@@ -930,16 +964,18 @@ void bcore_arr_vd_s_set_space( bcore_arr_vd_s* o, uz_t space )
         o->data = bcore_un_alloc( sizeof( vd_t ), o->data, o->space, space, &o->space );
     }
     if( o->size > space ) o->size = space;
+    return o;
 }
 
-void bcore_arr_vd_s_fill( bcore_arr_vd_s* o, uz_t size, vd_t v )
+bcore_arr_vd_s* bcore_arr_vd_s_fill( bcore_arr_vd_s* o, uz_t size, vd_t v )
 {
     bcore_arr_vd_s_set_space( o, size );
     for( uz_t i = 0; i < size; i++ ) o->data[ i ] = v;
     o->size = size;
+    return o;
 }
 
-void bcore_arr_vd_s_set_size( bcore_arr_vd_s* o, uz_t size )
+bcore_arr_vd_s* bcore_arr_vd_s_set_size( bcore_arr_vd_s* o, uz_t size )
 {
     bcore_arr_vd_s_set_space( o, size );
     if( size > o->size )
@@ -947,6 +983,7 @@ void bcore_arr_vd_s_set_size( bcore_arr_vd_s* o, uz_t size )
         for( sz_t i = o->size; i < size; i++ ) o->data[ i ] = NULL;
     }
     o->size = size;
+    return o;
 }
 
 void bcore_arr_vd_s_make_strong( bcore_arr_vd_s* o )
@@ -976,7 +1013,7 @@ vd_t bcore_arr_vd_s_pop( bcore_arr_vd_s* o )
     return o->data[ o->size ];
 }
 
-void bcore_arr_vd_s_reorder( bcore_arr_vd_s* o, const bcore_arr_uz_s* order )
+bcore_arr_vd_s* bcore_arr_vd_s_reorder( bcore_arr_vd_s* o, const bcore_arr_uz_s* order )
 {
     if( o->space < o->size ) bcore_arr_vd_s_make_strong( o );
     uz_t buf_space = 0;
@@ -990,6 +1027,7 @@ void bcore_arr_vd_s_reorder( bcore_arr_vd_s* o, const bcore_arr_uz_s* order )
     o->data = buf;
     o->space = buf_space;
     o->size = order->size;
+    return o;
 }
 
 uz_t bcore_arr_vd_s_find( const bcore_arr_vd_s* o, uz_t start, uz_t end, vd_t v )
@@ -1047,13 +1085,14 @@ static bcore_self_s* arr_fp_s_create_self( void )
     return self;
 }
 
-void bcore_arr_fp_s_clear( bcore_arr_fp_s* o )
+bcore_arr_fp_s* bcore_arr_fp_s_clear( bcore_arr_fp_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+    return o;
 }
 
-void bcore_arr_fp_s_set_space( bcore_arr_fp_s* o, uz_t space )
+bcore_arr_fp_s* bcore_arr_fp_s_set_space( bcore_arr_fp_s* o, uz_t space )
 {
     if( o->space == 0 )
     {
@@ -1064,9 +1103,10 @@ void bcore_arr_fp_s_set_space( bcore_arr_fp_s* o, uz_t space )
         o->data = bcore_un_alloc( sizeof( fp_t ), o->data, o->space, space, &o->space );
     }
     if( o->size > space ) o->size = space;
+    return o;
 }
 
-void bcore_arr_fp_s_set_size( bcore_arr_fp_s* o, sz_t size )
+bcore_arr_fp_s* bcore_arr_fp_s_set_size( bcore_arr_fp_s* o, sz_t size )
 {
     bcore_arr_fp_s_set_space( o, size );
     if( size > o->size )
@@ -1074,13 +1114,15 @@ void bcore_arr_fp_s_set_size( bcore_arr_fp_s* o, sz_t size )
         for( sz_t i = o->size; i < size; i++ ) o->data[ i ] = NULL;
     }
     o->size = size;
+    return o;
 }
 
-void bcore_arr_fp_s_fill( bcore_arr_fp_s* o, uz_t size, fp_t v )
+bcore_arr_fp_s* bcore_arr_fp_s_fill( bcore_arr_fp_s* o, uz_t size, fp_t v )
 {
     bcore_arr_fp_s_set_space( o, size );
     for( uz_t i = 0; i < size; i++ ) o->data[ i ] = v;
     o->size = size;
+    return o;
 }
 
 void bcore_arr_fp_s_make_strong( bcore_arr_fp_s* o )
@@ -1110,7 +1152,7 @@ fp_t bcore_arr_fp_s_pop( bcore_arr_fp_s* o )
     return o->data[ o->size ];
 }
 
-void bcore_arr_fp_s_reorder( bcore_arr_fp_s* o, const bcore_arr_uz_s* order )
+bcore_arr_fp_s* bcore_arr_fp_s_reorder( bcore_arr_fp_s* o, const bcore_arr_uz_s* order )
 {
     if( o->space < o->size ) bcore_arr_fp_s_make_strong( o );
     uz_t buf_space = 0;
@@ -1124,6 +1166,7 @@ void bcore_arr_fp_s_reorder( bcore_arr_fp_s* o, const bcore_arr_uz_s* order )
     o->data = buf;
     o->space = buf_space;
     o->size = order->size;
+    return o;
 }
 
 uz_t bcore_arr_fp_s_find( const bcore_arr_fp_s* o, uz_t start, uz_t end, fp_t v )
@@ -1158,7 +1201,7 @@ static bcore_self_s* arr_sr_s_create_self( void )
     return self;
 }
 
-void bcore_arr_sr_s_clear( bcore_arr_sr_s* o )
+bcore_arr_sr_s* bcore_arr_sr_s_clear( bcore_arr_sr_s* o )
 {
     if( o->space == 0 )
     {
@@ -1168,16 +1211,19 @@ void bcore_arr_sr_s_clear( bcore_arr_sr_s* o )
 
     for( uz_t i = 0; i < o->size; i++ ) sr_down( o->data[ i ] );
     o->size = 0;
+    return o;
 }
 
-void bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, uz_t space )
+bcore_arr_sr_s* bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, uz_t space )
 {
     bcore_array_a_set_space( (bcore_array*)o, space );
+    return o;
 }
 
-void bcore_arr_sr_s_set_size( bcore_arr_sr_s* o, uz_t size )
+bcore_arr_sr_s* bcore_arr_sr_s_set_size( bcore_arr_sr_s* o, uz_t size )
 {
     bcore_array_a_set_size( (bcore_array*)o, size );
+    return o;
 }
 
 void bcore_arr_sr_s_make_strong( bcore_arr_sr_s* o )
@@ -1220,14 +1266,16 @@ void bcore_arr_sr_s_sort( bcore_arr_sr_s* o, s2_t order )
     bcore_array_a_sort( (bcore_array*)o, 0, o->size, order );
 }
 
-void bcore_arr_sr_s_reorder( bcore_arr_sr_s* o, const bcore_arr_uz_s* order )
+bcore_arr_sr_s* bcore_arr_sr_s_reorder( bcore_arr_sr_s* o, const bcore_arr_uz_s* order )
 {
     bcore_array_a_reorder( (bcore_array*)o, order);
+    return o;
 }
 
-void  bcore_arr_sr_s_set_spect( bcore_arr_sr_s* o, tp_t spect_type )
+bcore_arr_sr_s* bcore_arr_sr_s_set_spect( bcore_arr_sr_s* o, tp_t spect_type )
 {
     for( sz_t i = 0; i < o->size; i++ ) o->data[ i ] = sr_cp( o->data[ i ], spect_type );
+    return o;
 }
 
 

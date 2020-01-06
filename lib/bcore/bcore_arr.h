@@ -42,15 +42,15 @@ typedef struct bcore_arr_uz_s
 
 BCORE_DECLARE_FUNCTIONS_OBJ(    bcore_arr_uz_s )
 
-void bcore_arr_uz_s_clear(      bcore_arr_uz_s* o ); // sets size to zero
-void bcore_arr_uz_s_set_space(  bcore_arr_uz_s* o, uz_t space );
-void bcore_arr_uz_s_set_size(   bcore_arr_uz_s* o, uz_t size  ); // resize
-void bcore_arr_uz_s_fill(       bcore_arr_uz_s* o, uz_t size, uz_t v ); // creates filled array of size <size>
-void bcore_arr_uz_s_step_fill(  bcore_arr_uz_s* o, uz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+bcore_arr_uz_s* bcore_arr_uz_s_clear(      bcore_arr_uz_s* o ); // sets size to zero
+bcore_arr_uz_s* bcore_arr_uz_s_set_space(  bcore_arr_uz_s* o, uz_t space );
+bcore_arr_uz_s* bcore_arr_uz_s_set_size(   bcore_arr_uz_s* o, uz_t size  ); // resize
+bcore_arr_uz_s* bcore_arr_uz_s_fill(       bcore_arr_uz_s* o, uz_t size, uz_t v ); // creates filled array of size <size>
+bcore_arr_uz_s* bcore_arr_uz_s_step_fill(  bcore_arr_uz_s* o, uz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
 void bcore_arr_uz_s_push(       bcore_arr_uz_s* o, uz_t v );
 uz_t bcore_arr_uz_s_pop(        bcore_arr_uz_s* o );
-void bcore_arr_uz_s_sort(       bcore_arr_uz_s* o, s2_t order ); // stable
-void bcore_arr_uz_s_reorder(    bcore_arr_uz_s* o, const bcore_arr_uz_s* order );
+bcore_arr_uz_s* bcore_arr_uz_s_sort(       bcore_arr_uz_s* o, s2_t order ); // stable
+bcore_arr_uz_s* bcore_arr_uz_s_reorder(    bcore_arr_uz_s* o, const bcore_arr_uz_s* order );
 uz_t bcore_arr_uz_s_find( const bcore_arr_uz_s* o, uz_t start, uz_t end, uz_t v ); // behaves like st_s_find_*
 
 uz_t bcore_arr_uz_s_max(     const bcore_arr_uz_s* o );
@@ -70,15 +70,15 @@ typedef struct bcore_arr_sz_s
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_sz_s )
 
-void bcore_arr_sz_s_clear(     bcore_arr_sz_s* o ); // sets size to zero
-void bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, uz_t space );
-void bcore_arr_sz_s_set_size(  bcore_arr_sz_s* o, uz_t size ); // resize
-void bcore_arr_sz_s_fill(      bcore_arr_sz_s* o, uz_t size, sz_t v ); // creates filled array of size <size>
-void bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t step, uz_t size ); // creates filled array according to stepping
+bcore_arr_sz_s* bcore_arr_sz_s_clear(     bcore_arr_sz_s* o ); // sets size to zero
+bcore_arr_sz_s* bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, uz_t space );
+bcore_arr_sz_s* bcore_arr_sz_s_set_size(  bcore_arr_sz_s* o, uz_t size ); // resize
+bcore_arr_sz_s* bcore_arr_sz_s_fill(      bcore_arr_sz_s* o, uz_t size, sz_t v ); // creates filled array of size <size>
+bcore_arr_sz_s* bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t step, uz_t size ); // creates filled array according to stepping
 void bcore_arr_sz_s_push(      bcore_arr_sz_s* o, sz_t v );
 sz_t bcore_arr_sz_s_pop(       bcore_arr_sz_s* o );
-void bcore_arr_sz_s_sort(      bcore_arr_sz_s* o, s2_t order ); // stable
-void bcore_arr_sz_s_reorder(   bcore_arr_sz_s* o, const bcore_arr_uz_s* order );
+bcore_arr_sz_s* bcore_arr_sz_s_sort(      bcore_arr_sz_s* o, s2_t order ); // stable
+bcore_arr_sz_s* bcore_arr_sz_s_reorder(   bcore_arr_sz_s* o, const bcore_arr_uz_s* order );
 
 /**********************************************************************************************************************/
 
@@ -90,15 +90,15 @@ typedef struct bcore_arr_u3_s
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_u3_s )
 
-void bcore_arr_u3_s_clear(     bcore_arr_u3_s* o ); // sets size to zero
-void bcore_arr_u3_s_set_space( bcore_arr_u3_s* o, uz_t space );
-void bcore_arr_u3_s_set_size(  bcore_arr_u3_s* o, uz_t size ); // resize
-void bcore_arr_u3_s_fill(      bcore_arr_u3_s* o, uz_t size, u3_t v ); // creates filled array of size <size>
-void bcore_arr_u3_s_step_fill( bcore_arr_u3_s* o, u3_t v_start, u3_t step, uz_t size ); // creates filled array according to stepping
+bcore_arr_u3_s* bcore_arr_u3_s_clear(     bcore_arr_u3_s* o ); // sets size to zero
+bcore_arr_u3_s* bcore_arr_u3_s_set_space( bcore_arr_u3_s* o, uz_t space );
+bcore_arr_u3_s* bcore_arr_u3_s_set_size(  bcore_arr_u3_s* o, uz_t size ); // resize
+bcore_arr_u3_s* bcore_arr_u3_s_fill(      bcore_arr_u3_s* o, uz_t size, u3_t v ); // creates filled array of size <size>
+bcore_arr_u3_s* bcore_arr_u3_s_step_fill( bcore_arr_u3_s* o, u3_t v_start, u3_t step, uz_t size ); // creates filled array according to stepping
 void bcore_arr_u3_s_push(      bcore_arr_u3_s* o, u3_t v );
 u3_t bcore_arr_u3_s_pop(       bcore_arr_u3_s* o );
-void bcore_arr_u3_s_sort(      bcore_arr_u3_s* o, s2_t order ); // stable
-void bcore_arr_u3_s_reorder(   bcore_arr_u3_s* o, const bcore_arr_uz_s* order );
+bcore_arr_u3_s* bcore_arr_u3_s_sort(      bcore_arr_u3_s* o, s2_t order ); // stable
+bcore_arr_u3_s* bcore_arr_u3_s_reorder(   bcore_arr_u3_s* o, const bcore_arr_uz_s* order );
 
 /**********************************************************************************************************************/
 
@@ -110,14 +110,14 @@ typedef struct bcore_arr_tp_s
 
 BCORE_DECLARE_FUNCTIONS_OBJ(    bcore_arr_tp_s )
 
-void bcore_arr_tp_s_clear(      bcore_arr_tp_s* o ); // sets size to zero
-void bcore_arr_tp_s_set_space(  bcore_arr_tp_s* o, uz_t space );
-void bcore_arr_tp_s_set_size(   bcore_arr_tp_s* o, uz_t size ); // resize
-void bcore_arr_tp_s_fill(       bcore_arr_tp_s* o, uz_t size, tp_t v ); // creates filled array of size <size>
-void bcore_arr_tp_s_push(       bcore_arr_tp_s* o, tp_t v );
+bcore_arr_tp_s* bcore_arr_tp_s_clear(      bcore_arr_tp_s* o ); // sets size to zero
+bcore_arr_tp_s* bcore_arr_tp_s_set_space(  bcore_arr_tp_s* o, uz_t space );
+bcore_arr_tp_s* bcore_arr_tp_s_set_size(   bcore_arr_tp_s* o, uz_t size ); // resize
+bcore_arr_tp_s* bcore_arr_tp_s_fill(       bcore_arr_tp_s* o, uz_t size, tp_t v ); // creates filled array of size <size>
+bcore_arr_tp_s* bcore_arr_tp_s_push(       bcore_arr_tp_s* o, tp_t v );
 tp_t bcore_arr_tp_s_pop(        bcore_arr_tp_s* o );
-void bcore_arr_tp_s_sort(       bcore_arr_tp_s* o, s2_t order ); // stable
-void bcore_arr_tp_s_reorder(    bcore_arr_tp_s* o, const bcore_arr_uz_s* order );
+bcore_arr_tp_s* bcore_arr_tp_s_sort(       bcore_arr_tp_s* o, s2_t order ); // stable
+bcore_arr_tp_s* bcore_arr_tp_s_reorder(    bcore_arr_tp_s* o, const bcore_arr_uz_s* order );
 uz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v ); // behaves like st_s_find_*
 
 /**********************************************************************************************************************/
@@ -130,15 +130,15 @@ typedef struct bcore_arr_st_s
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_st_s )
 
-void  bcore_arr_st_s_clear(     bcore_arr_st_s* o ); // sets size to zero
-void  bcore_arr_st_s_set_space( bcore_arr_st_s* o, uz_t space );
-void  bcore_arr_st_s_set_size(  bcore_arr_st_s* o, uz_t size ); // resize
+bcore_arr_st_s* bcore_arr_st_s_clear(     bcore_arr_st_s* o ); // sets size to zero
+bcore_arr_st_s* bcore_arr_st_s_set_space( bcore_arr_st_s* o, uz_t space );
+bcore_arr_st_s* bcore_arr_st_s_set_size(  bcore_arr_st_s* o, uz_t size ); // resize
 st_s* bcore_arr_st_s_push_st(   bcore_arr_st_s* o, const st_s* st );
 st_s* bcore_arr_st_s_push_st_d( bcore_arr_st_s* o, st_s* st );
 st_s* bcore_arr_st_s_push_sc(   bcore_arr_st_s* o, sc_t sc );
 void  bcore_arr_st_s_pop(       bcore_arr_st_s* o );
-void  bcore_arr_st_s_sort(      bcore_arr_st_s* o, s2_t order ); // stable
-void  bcore_arr_st_s_reorder(   bcore_arr_st_s* o, const bcore_arr_uz_s* order );
+bcore_arr_st_s* bcore_arr_st_s_sort(      bcore_arr_st_s* o, s2_t order ); // stable
+bcore_arr_st_s* bcore_arr_st_s_reorder(   bcore_arr_st_s* o, const bcore_arr_uz_s* order );
 
 /**********************************************************************************************************************/
 
@@ -151,13 +151,13 @@ typedef struct bcore_arr_vd_s
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_vd_s )
 
-void bcore_arr_vd_s_clear(      bcore_arr_vd_s* o ); // sets size to zero
-void bcore_arr_vd_s_set_space(  bcore_arr_vd_s* o, uz_t space );
-void bcore_arr_vd_s_set_size(   bcore_arr_vd_s* o, uz_t size ); // resize
-void bcore_arr_vd_s_fill(       bcore_arr_vd_s* o, uz_t size, vd_t v ); // creates filled array of size <size>
+bcore_arr_vd_s* bcore_arr_vd_s_clear(      bcore_arr_vd_s* o ); // sets size to zero
+bcore_arr_vd_s* bcore_arr_vd_s_set_space(  bcore_arr_vd_s* o, uz_t space );
+bcore_arr_vd_s* bcore_arr_vd_s_set_size(   bcore_arr_vd_s* o, uz_t size ); // resize
+bcore_arr_vd_s* bcore_arr_vd_s_fill(       bcore_arr_vd_s* o, uz_t size, vd_t v ); // creates filled array of size <size>
 void bcore_arr_vd_s_push(       bcore_arr_vd_s* o, vd_t v );
 vd_t bcore_arr_vd_s_pop(        bcore_arr_vd_s* o );
-void bcore_arr_vd_s_reorder(    bcore_arr_vd_s* o, const bcore_arr_uz_s* order );
+bcore_arr_vd_s* bcore_arr_vd_s_reorder(    bcore_arr_vd_s* o, const bcore_arr_uz_s* order );
 uz_t bcore_arr_vd_s_find( const bcore_arr_vd_s* o, uz_t start, uz_t end, vd_t v );  // behaves like st_s_find_*
 
 /**********************************************************************************************************************/
@@ -171,13 +171,13 @@ typedef struct bcore_arr_fp_s
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_fp_s )
 
-void bcore_arr_fp_s_clear(      bcore_arr_fp_s* o ); // sets size to zero
-void bcore_arr_fp_s_set_space(  bcore_arr_fp_s* o, uz_t space );
-void bcore_arr_fp_s_set_size(   bcore_arr_fp_s* o, sz_t size );
-void bcore_arr_fp_s_fill(       bcore_arr_fp_s* o, uz_t size, fp_t v ); // creates filled array of size <size>
+bcore_arr_fp_s* bcore_arr_fp_s_clear(      bcore_arr_fp_s* o ); // sets size to zero
+bcore_arr_fp_s* bcore_arr_fp_s_set_space(  bcore_arr_fp_s* o, uz_t space );
+bcore_arr_fp_s* bcore_arr_fp_s_set_size(   bcore_arr_fp_s* o, sz_t size );
+bcore_arr_fp_s* bcore_arr_fp_s_fill(       bcore_arr_fp_s* o, uz_t size, fp_t v ); // creates filled array of size <size>
 void bcore_arr_fp_s_push(       bcore_arr_fp_s* o, fp_t v );
 fp_t bcore_arr_fp_s_pop(        bcore_arr_fp_s* o );
-void bcore_arr_fp_s_reorder(    bcore_arr_fp_s* o, const bcore_arr_uz_s* order );
+bcore_arr_fp_s* bcore_arr_fp_s_reorder(    bcore_arr_fp_s* o, const bcore_arr_uz_s* order );
 uz_t bcore_arr_fp_s_find( const bcore_arr_fp_s* o, uz_t start, uz_t end, fp_t v ); // behaves like st_s_find_*
 
 
@@ -191,14 +191,14 @@ typedef struct bcore_arr_sr_s
 
 BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_sr_s )
 
-void  bcore_arr_sr_s_clear(     bcore_arr_sr_s* o ); // sets size to zero
-void  bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, uz_t space );
-void  bcore_arr_sr_s_set_size(  bcore_arr_sr_s* o, uz_t size  ); // conservative resize
+bcore_arr_sr_s* bcore_arr_sr_s_clear(     bcore_arr_sr_s* o ); // sets size to zero
+bcore_arr_sr_s* bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, uz_t space );
+bcore_arr_sr_s* bcore_arr_sr_s_set_size(  bcore_arr_sr_s* o, uz_t size  ); // conservative resize
 sr_s* bcore_arr_sr_s_push_sr(   bcore_arr_sr_s* o, sr_s v );
 sr_s* bcore_arr_sr_s_push_tp(   bcore_arr_sr_s* o, tp_t type );
 sr_s  bcore_arr_sr_s_pop(       bcore_arr_sr_s* o );
-void  bcore_arr_sr_s_reorder(   bcore_arr_sr_s* o, const bcore_arr_uz_s* order );
-void  bcore_arr_sr_s_set_spect( bcore_arr_sr_s* o, tp_t spect_type ); // switches perspective of all references to 'spect'
+bcore_arr_sr_s* bcore_arr_sr_s_reorder(   bcore_arr_sr_s* o, const bcore_arr_uz_s* order );
+bcore_arr_sr_s* bcore_arr_sr_s_set_spect( bcore_arr_sr_s* o, tp_t spect_type ); // switches perspective of all references to 'spect'
 
 /**********************************************************************************************************************/
 
