@@ -258,11 +258,11 @@ BCORE_DEFINE_FUNCTION_CREATE(    bcore_txt_ml_interpreter_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bcore_txt_ml_interpreter_s )
 BCORE_DEFINE_FUNCTION_CLONE(     bcore_txt_ml_interpreter_s )
 
-static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source );
+static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s source );
 
 static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source )
 {
-    if( bcore_source_r_parse_bl_fa( &source, " #?'<#file>'" ) ) return interpret_embedded_file( o, obj, source );
+    if( !obj.o && bcore_source_r_parse_bl_fa( &source, " #?'<#file>'" ) ) return interpret_embedded_file( o, source );
 
     bcore_life_s* l = bcore_life_s_create();
     sr_s src_l = sr_cl( sr_cp( source, TYPEOF_bcore_source_s ), l );
@@ -423,7 +423,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
  *  or current runtime directory otherwise.
  *  The file must contain the complete (sub-)object.
  */
-static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s source )
+static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s source )
 {
     BCORE_LIFE_INIT();
     sr_s src_l = BCORE_LIFE_X_PUSH( source );
@@ -494,17 +494,7 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s o
     bcore_source_chain_s_push_d( sub_source.o, bcore_source_file_s_create_name( st_file->sc ) );
     bcore_source_chain_s_push_d( sub_source.o, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );
 
-    sr_s sub_obj = bcore_interpret_x( interpreter_obj, sub_source );
-
-    if( obj.o )
-    {
-        bcore_inst_r_copy_typed( &obj, sr_s_type( &sub_obj ), sub_obj.o );
-        sr_down( sub_obj );
-    }
-    else
-    {
-        obj = sub_obj;
-    }
+    sr_s obj = bcore_interpret_x( interpreter_obj, sub_source );
 
     st_s_discard( st_file );
 
