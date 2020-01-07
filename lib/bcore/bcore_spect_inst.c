@@ -770,6 +770,7 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 }
                 dst->data = NULL;
                 dst->size = 0;
+                dst->space = 0;
                 dst->type = src->type;
                 if( src->size > 0 ) // fill dst with new data
                 {
