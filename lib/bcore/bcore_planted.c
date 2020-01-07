@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-12T12:53:51Z
+ *  Last File Update: 2020-01-07T12:06:32Z
  *
  *  Copyright and License of this File:
  *
@@ -149,10 +149,30 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_frame_s )
     "sc_t global_file;"
 "}";
 
+BCORE_DEFINE_OBJECT_INST_P( bcore_main_arr_s )
+"aware bcore_array"
+"{"
+    "aware bcore_main* [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_main_set_s )
+"aware bcore_main"
+"{"
+    "bcore_main_arr_s arr;"
+    "func ^:main;"
+"}";
+
+s2_t bcore_main_set_s_main( bcore_main_set_s* o, const bcore_arr_st_s* args )
+{
+    s2_t r = 0;
+    BFOR_EACH( i, &o->arr ) { if( ( r = bcore_main_a_main( o->arr.data[ i ], args ) ) ) break; }
+    return r;
+}
+
 BCORE_DEFINE_SPECT( bcore_inst, bcore_main )
 "{"
     "bcore_spect_header_s header;"
-    "feature strict bcore_main : main;"
+    "feature strict aware bcore_main : main;"
 "}";
 
 /**********************************************************************************************************************/
@@ -199,7 +219,7 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 3441427912 ) );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 2133336728 ) );
 
             // --------------------------------------------------------------------
             // source: bcore_file.h
@@ -267,6 +287,9 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             // group: bcore_main
             BCORE_REGISTER_FEATURE( bcore_main_main );
             BCORE_REGISTER_OBJECT( bcore_main_frame_s );
+            BCORE_REGISTER_OBJECT( bcore_main_arr_s );
+            BCORE_REGISTER_FFUNC( bcore_main_main, bcore_main_set_s_main );
+            BCORE_REGISTER_OBJECT( bcore_main_set_s );
             BCORE_REGISTER_SPECT( bcore_main );
 
             // --------------------------------------------------------------------

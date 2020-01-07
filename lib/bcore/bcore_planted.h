@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-12T12:53:51Z
+ *  Last File Update: 2020-01-07T12:06:32Z
  *
  *  Copyright and License of this File:
  *
@@ -231,9 +231,31 @@
 #define BETH_EXPAND_ITEM_bcore_main_frame_s \
   BCORE_DECLARE_OBJECT( bcore_main_frame_s ) \
     {aware_t _;bcore_interpreter* interpreter;bl_t use_first_argument;sc_t local_file;sc_t global_file;};
+#define TYPEOF_bcore_main_arr_s 2064610792
+#define BETH_EXPAND_ITEM_bcore_main_arr_s \
+  BCORE_DECLARE_OBJECT( bcore_main_arr_s ) \
+    {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_main, );}; \
+  static inline bcore_main_arr_s* bcore_main_arr_s_set_space( bcore_main_arr_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, size ); return o; } \
+  static inline bcore_main_arr_s* bcore_main_arr_s_set_size( bcore_main_arr_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, size ); return o; } \
+  static inline bcore_main_arr_s* bcore_main_arr_s_clear( bcore_main_arr_s* o ) { bcore_array_t_set_space( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, 0 ); return o; } \
+  static inline bcore_main* bcore_main_arr_s_push_c( bcore_main_arr_s* o, const bcore_main* v ) { bcore_array_t_push( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, sr_awc( v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bcore_main* bcore_main_arr_s_push_d( bcore_main_arr_s* o,       bcore_main* v ) { bcore_array_t_push( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, sr_asd( v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bcore_main* bcore_main_arr_s_push_t( bcore_main_arr_s* o, tp_t t ) \
+  { \
+      bcore_trait_assert_satisfied_type( TYPEOF_bcore_main, t ); \
+      bcore_array_t_push( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, sr_t_create( t ) ); \
+      return o->data[ o->size - 1 ]; \
+  }
+#define TYPEOF_bcore_main_set_s 642235823
+#define BETH_EXPAND_ITEM_bcore_main_set_s \
+  BCORE_DECLARE_OBJECT( bcore_main_set_s ) \
+    {aware_t _;bcore_main_arr_s arr;}; \
+  s2_t bcore_main_set_s_main( bcore_main_set_s* o, const bcore_arr_st_s* args );
 #define BETH_EXPAND_GROUP_bcore_main \
   BCORE_FORWARD_OBJECT( bcore_main ); \
   BCORE_FORWARD_OBJECT( bcore_main_frame_s ); \
+  BCORE_FORWARD_OBJECT( bcore_main_arr_s ); \
+  BCORE_FORWARD_OBJECT( bcore_main_set_s ); \
   typedef s2_t (*bcore_main_main)( bcore_main* o, const bcore_arr_st_s* args ); \
   BCORE_DECLARE_SPECT( bcore_main ) \
   { \
@@ -242,9 +264,15 @@
   }; \
   static inline bcore_main* bcore_main_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_main, t ); return ( bcore_main* )bcore_inst_t_create( t ); } \
   static inline bl_t bcore_main_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_main ); } \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_main ) \
+  static inline bl_t bcore_main_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_main ); } \
+  static inline s2_t bcore_main_a_main( bcore_main* o, const bcore_arr_st_s* args ) { const bcore_main_s* p = bcore_main_s_get_aware( o ); assert( p->main ); return p->main( o, args ); } \
   static inline s2_t bcore_main_r_main( const sr_s* o, const bcore_arr_st_s* args ) { ASSERT( !sr_s_is_const( o ) ); const bcore_main_s* p = (const bcore_main_s*)ch_spect_p( o->p, TYPEOF_bcore_main_s ); assert( p->main ); return p->main( o->o, args ); } \
+  static inline bl_t bcore_main_a_defines_main( const bcore_main* o ) { return true; } \
   static inline bl_t bcore_main_r_defines_main( const sr_s* o ) { return true; } \
-  BETH_EXPAND_ITEM_bcore_main_frame_s
+  BETH_EXPAND_ITEM_bcore_main_frame_s \
+  BETH_EXPAND_ITEM_bcore_main_arr_s \
+  BETH_EXPAND_ITEM_bcore_main_set_s
 
 /**********************************************************************************************************************/
 // source: bcore_hmap_name.h

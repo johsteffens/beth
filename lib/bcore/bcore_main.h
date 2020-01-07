@@ -43,7 +43,8 @@
 #ifdef TYPEOF_bcore_main
 PLANT_GROUP( bcore_main, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    feature strict 'r' s2_t main( mutable, const bcore_arr_st_s* args );
+
+    feature strict 'ar' s2_t main( mutable, const bcore_arr_st_s* args );
 
     stamp :frame = aware bcore_inst
     {
@@ -55,8 +56,22 @@ PLANT_GROUP( bcore_main, bcore_inst )
         sc_t local_file = "beth.config";  // config file in current folder
         sc_t global_file;                 // global path to config file
     };
+
+    stamp :arr = aware bcore_array { aware :* []; };
+
+    stamp :set = aware :
+    {
+        :arr_s arr;
+        func : : main =
+        {
+            s2_t r = 0;
+            BFOR_EACH( i, &o->arr ) { if( ( r = :a_main( o->arr.data[ i ], args ) ) ) break; }
+            return r;
+        };
+    };
+
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#endif // optional enclosure
+#endif // TYPEOF_bcore_main
 
 s2_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv );
 
