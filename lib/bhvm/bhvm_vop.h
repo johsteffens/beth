@@ -41,7 +41,20 @@ feature 'a' sz_t arity( const );
 /// signature of operator (e.g. "ABY")
 feature 'a' sc_t sig( const );
 
-feature 'a' sz_t* get_index( mutable );
+feature 'a' sz_t* get_index_arr( mutable );
+
+feature 'a' sz_t get_index( const, sz_t index ) =
+{
+    ASSERT( index  >= 0 && index <= :a_arity( o ) );
+    return :a_get_index_arr( (:*)o )[ index ];
+};
+
+feature 'a' :* set_index( mutable, sz_t index, sz_t idx_val ) =
+{
+    ASSERT( index  >= 0 && index <= :a_arity( o ) );
+    :a_get_index_arr( o )[ index ] = idx_val;
+    return o;
+};
 
 signature void push_ci( mutable, u0_t c, sz_t i );
 
@@ -70,7 +83,7 @@ feature 'a' void set_arg( mutable, :ci_s* ci ) =
 {
     sz_t size   = :a_arity( o ) + 1;
     sc_t  sig   = :a_sig( o );
-    sz_t* index = :a_get_index( o );
+    sz_t* index = :a_get_index_arr( o );
     for( sz_t i = 0; i < size; i++ )
     {
         u0_t c = sig[ i ];
@@ -100,7 +113,7 @@ group :ar0 =
     {
         :index_s i;
         func :: :arity = { return 0; };
-        func :: :get_index = { return o->i.v; };
+        func :: :get_index_arr = { return o->i.v; };
     };
 
     /// axon pass --------------------------------------------------------------
@@ -144,7 +157,7 @@ group :ar1 =
     {
         :index_s i;
         func :: :arity = { return 1; };
-        func :: :get_index = { return o->i.v; };
+        func :: :get_index_arr = { return o->i.v; };
     };
 
     func :: :run = { bhvm_hop_ar1_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); };
@@ -214,7 +227,7 @@ group :ar2 =
     {
         :index_s i;
         func :: :arity = { return 2; };
-        func :: :get_index = { return o->i.v; };
+        func :: :get_index_arr = { return o->i.v; };
     };
 
     func :: :run = { bhvm_hop_ar2_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); };
@@ -309,7 +322,7 @@ group :ar3 =
     {
         :index_s i;
         func :: :arity = { return 3; };
-        func :: :get_index = { return o->i.v; };
+        func :: :get_index_arr = { return o->i.v; };
     };
 
     func :: :run = { bhvm_hop_ar3_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]], &ah[o->i.v[3]] ); };
