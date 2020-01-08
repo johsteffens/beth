@@ -139,6 +139,10 @@ static void translate( const bcore_txt_ml_translator_s* o, tp_t name, sr_s obj, 
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
+                if( bcore_array_x_is_mutable_mono_typed( arr_l ) )
+                {
+                    translate( o, TYPEOF_type, sr_tp( bcore_array_x_get_mono_type( arr_l ) ), sink_l, depth + 1 );
+                }
                 uz_t size = bcore_array_x_get_size( arr_l );
                 for( uz_t i = 0; i < size; i++ )
                 {
@@ -346,6 +350,17 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
+
+                if( bcore_array_x_is_mutable_mono_typed( arr_l ) )
+                {
+                    tp_t type = 0;
+                    if( bcore_source_r_parse_bl_fa( &src_l, "#?'type:'" ) )
+                    {
+                        type = sr_tp_sr( interpret( o, sr_null(), src_l ) );
+                    }
+                    bcore_array_x_set_gtype( arr_l, type );
+                }
+
                 if( bcore_array_x_is_fixed( arr_l ) )
                 {
                     uz_t arr_size = bcore_array_x_get_size( arr_l );
