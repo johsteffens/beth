@@ -64,6 +64,9 @@ stamp :ci = bcore_inst
     func : :push_ci = { o->c = c; o->i = i; };
 };
 
+signature sz_t i_of_c( const, u0_t c );
+signature u0_t c_of_i( const, sz_t i );
+
 stamp :arr_ci = aware bcore_array
 {
     :ci_s [];
@@ -71,6 +74,9 @@ stamp :arr_ci = aware bcore_array
     {
         :ci_s_push_ci( @_push( o ), c, i );
     };
+
+    func : :i_of_c = { BFOR_EACH( j, o ) if( o->data[ j ].c == c ) return o->data[ j ].i; return -1; };
+    func : :c_of_i = { BFOR_EACH( j, o ) if( o->data[ j ].i == i ) return o->data[ j ].c; return -1; };
 };
 
 /** Sets arguments from index data according to signature
@@ -214,6 +220,13 @@ group :ar1 =
     // They are not intended to actually execute in ap of dp tracks.
     // They are typically placed in the setup track.
 
+    /// y references a
+    stamp :fork =
+    {
+        func :: :sig = { return "ay"; };
+        func :: :run = { bhvm_holor_s_fork( &ah[o->i.v[1]], &ah[o->i.v[0]] ); };
+    };
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -344,6 +357,8 @@ group :ar3 =
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void bhvm_vop_a_to_sink( bhvm_vop* o, bcore_sink* sink );
 
 #endif // TYPEOF_bhvm_vop
 

@@ -493,52 +493,31 @@ void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max,
 
 f3_t bhvm_value_s_fdev_equ( const bhvm_value_s* a, const bhvm_value_s* b )
 {
-    switch( a->type )
+    ASSERT( a->size == b->size );
+    f3_t sqr_sum = 0;
+    switch( KNIT_T2( a->type, b->type ) )
     {
-        case TYPEOF_f2_t:
-        {
-            bmath_vf2_s va = bhvm_value_s_get_weak_vf2( a );
-            bmath_vf2_s vb = bhvm_value_s_get_weak_vf2( b );
-            return bmath_vf2_s_fdev_equ( &va, &vb );
-        }
-        break;
-
-        case TYPEOF_f3_t:
-        {
-            bmath_vf3_s va = bhvm_value_s_get_weak_vf3( a );
-            bmath_vf3_s vb = bhvm_value_s_get_weak_vf3( b );
-            return bmath_vf3_s_fdev_equ( &va, &vb );
-        }
-        break;
-
-        default: break;
+        case KNIT_F2F2: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f2_t* )a->data )[ i ] - ( ( f2_t* )b->data )[ i ] ); break;
+        case KNIT_F2F3: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f2_t* )a->data )[ i ] - ( ( f3_t* )b->data )[ i ] ); break;
+        case KNIT_F3F2: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f3_t* )a->data )[ i ] - ( ( f2_t* )b->data )[ i ] ); break;
+        case KNIT_F3F3: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f3_t* )a->data )[ i ] - ( ( f3_t* )b->data )[ i ] ); break;
+        default: KNIT_T2_ERR( a->type, b->type ); break;
     }
-    return 0;
+    return f3_srt( sqr_sum );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 f3_t bhvm_value_s_fdev_zro( const bhvm_value_s* o )
 {
+    f3_t sqr_sum = 0;
     switch( o->type )
     {
-        case TYPEOF_f2_t:
-        {
-            bmath_vf2_s v = bhvm_value_s_get_weak_vf2( o );
-            return bmath_vf2_s_fdev_zro( &v );
-        }
-        break;
-
-        case TYPEOF_f3_t:
-        {
-            bmath_vf3_s v = bhvm_value_s_get_weak_vf3( o );
-            return bmath_vf3_s_fdev_zro( &v );
-        }
-        break;
-
-        default: break;
+        case TYPEOF_f2_t: BFOR_EACH( i, o ) sqr_sum += f3_sqr( ( ( f2_t* )o->data )[ i ] ); break;
+        case TYPEOF_f3_t: BFOR_EACH( i, o ) sqr_sum += f3_sqr( ( ( f3_t* )o->data )[ i ] ); break;
+        default: ERR_fa( "Unhandled type '#<sc_t>'", ifnameof( o->type ) );
     }
-    return 0;
+    return f3_srt( sqr_sum );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -690,7 +669,7 @@ bhvm_holor_s* bhvm_holor_s_copy_t( bhvm_holor_s* o, tp_t type, vc_t src )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bhvm_holor_s* bhvm_holor_s_copy_shape( bhvm_holor_s* o, bhvm_shape_s* src )
+bhvm_holor_s* bhvm_holor_s_copy_shape( bhvm_holor_s* o, const bhvm_shape_s* src )
 {
     bhvm_shape_s_copy( &o->s, src );
     bhvm_value_s_clear( &o->v );
@@ -699,11 +678,34 @@ bhvm_holor_s* bhvm_holor_s_copy_shape( bhvm_holor_s* o, bhvm_shape_s* src )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bhvm_holor_s* bhvm_holor_s_copy_shape_type( bhvm_holor_s* o, bhvm_holor_s* src )
+bhvm_holor_s* bhvm_holor_s_copy_shape_type( bhvm_holor_s* o, const bhvm_holor_s* src )
 {
     bhvm_holor_s_copy_shape( o, &src->s );
     bhvm_value_s_set_type( &o->v, src->v.type );
     return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bhvm_holor_s* bhvm_holor_s_set_type( bhvm_holor_s* o, tp_t type )
+{
+    bhvm_value_s_set_type( &o->v, type );
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bhvm_holor_s* bhvm_holor_s_fit_size( bhvm_holor_s* o )
+{
+    bhvm_value_s_set_type_size( &o->v, o->v.type ? o->v.type : TYPEOF_f3_t, bhvm_shape_s_get_volume( &o->s ) );
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bhvm_holor_s* bhvm_holor_s_fit_type_size( bhvm_holor_s* o, tp_t t )
+{
+    bhvm_value_s_set_type_size( &o->v, t, bhvm_shape_s_get_volume( &o->s ) ); return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -721,14 +723,21 @@ bhvm_holor_s* bhvm_holor_s_set_type_scalar_vacant( bhvm_holor_s* o, tp_t t )
 void bhvm_holor_s_set_type_scalar_pf( bhvm_holor_s* o, tp_t t, tp_t t_src, vc_t v )
 {
     bhvm_shape_s_set_scalar_vacant( &o->s );
-    bhvm_value_s_set_type_size( &o->v, t, 1 );
-    switch( KNIT_T2( t, t_src ) )
+    if( v )
     {
-        case KNIT_F2F2: *( f2_t* )o->v.data = *( f2_t* )v; break;
-        case KNIT_F2F3: *( f2_t* )o->v.data = *( f3_t* )v; break;
-        case KNIT_F3F2: *( f3_t* )o->v.data = *( f2_t* )v; break;
-        case KNIT_F3F3: *( f3_t* )o->v.data = *( f3_t* )v; break;
-        default: KNIT_T2_ERR( t, t_src ); break;
+        bhvm_value_s_set_type_size( &o->v, t, 1 );
+        switch( KNIT_T2( t, t_src ) )
+        {
+            case KNIT_F2F2: *( f2_t* )o->v.data = *( f2_t* )v; break;
+            case KNIT_F2F3: *( f2_t* )o->v.data = *( f3_t* )v; break;
+            case KNIT_F3F2: *( f3_t* )o->v.data = *( f2_t* )v; break;
+            case KNIT_F3F3: *( f3_t* )o->v.data = *( f3_t* )v; break;
+            default: KNIT_T2_ERR( t, t_src ); break;
+        }
+    }
+    else
+    {
+        bhvm_value_s_set_type( &o->v, t );
     }
 }
 

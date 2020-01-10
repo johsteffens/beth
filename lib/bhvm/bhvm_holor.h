@@ -312,14 +312,14 @@ void bhvm_holor_s_copy_typed( bhvm_holor_s* o, tp_t type, vc_t src );
 bhvm_holor_s* bhvm_holor_s_copy_t( bhvm_holor_s* o, tp_t type, vc_t src );
 
 /// Copies shape; clears value
-bhvm_holor_s* bhvm_holor_s_copy_shape( bhvm_holor_s* o, bhvm_shape_s* src );
+bhvm_holor_s* bhvm_holor_s_copy_shape( bhvm_holor_s* o, const bhvm_shape_s* src );
 
 /// Copies shape; clears value; copies type
-bhvm_holor_s* bhvm_holor_s_copy_shape_type( bhvm_holor_s* o, bhvm_holor_s* src );
+bhvm_holor_s* bhvm_holor_s_copy_shape_type( bhvm_holor_s* o, const bhvm_holor_s* src );
 
-static inline bhvm_holor_s* bhvm_holor_s_set_type(      bhvm_holor_s* o, tp_t type ) { bhvm_value_s_set_type( &o->v, type ); return o; }
-static inline bhvm_holor_s* bhvm_holor_s_fit_size(      bhvm_holor_s* o )            { bhvm_value_s_set_size(      &o->v,    bhvm_shape_s_get_volume( &o->s ) ); return o; }
-static inline bhvm_holor_s* bhvm_holor_s_fit_type_size( bhvm_holor_s* o, tp_t t )    { bhvm_value_s_set_type_size( &o->v, t, bhvm_shape_s_get_volume( &o->s ) ); return o; }
+bhvm_holor_s* bhvm_holor_s_set_type(      bhvm_holor_s* o, tp_t type );
+bhvm_holor_s* bhvm_holor_s_fit_size(      bhvm_holor_s* o );
+bhvm_holor_s* bhvm_holor_s_fit_type_size( bhvm_holor_s* o, tp_t t );
 
 /// sets holor to scalar with given value or to vacant scalar
 void bhvm_holor_s_set_type_scalar_pf( bhvm_holor_s* o, tp_t t, tp_t t_src, vc_t v );

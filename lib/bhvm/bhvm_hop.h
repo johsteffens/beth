@@ -91,6 +91,7 @@ group :ar1 =
 
     /// axon pass --------------------------------------------------------------
 
+    stamp :cpy        = { func : :f = :body_lop_v_cv; };
     stamp :identity   = { func : :f = :body_lop_v_cv; };
     stamp :neg        = { func : :f = :body_lop_v_cv; };
     stamp :floor      = { func : :f = :body_lop_v_cv; };

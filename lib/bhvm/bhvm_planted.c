@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-05T20:12:50Z
+ *  Last File Update: 2020-01-09T14:23:50Z
  *
  *  Copyright and License of this File:
  *
@@ -96,6 +96,17 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar0_nul_dp_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hop_ar1
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_cpy_s )
+"aware bhvm_hop_ar1"
+"{"
+"}";
+
+void bhvm_hop_ar1_cpy_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+{
+    assert( a->v.size == r->v.size );
+    bhvm_lop_ar1_cpy_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
+}
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_identity_s )
 "aware bhvm_hop_ar1"
@@ -1108,7 +1119,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3714954973 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2758294578 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1135,6 +1146,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bhvm_hop_ar0, bhvm_hop );
 
             // group: bhvm_hop_ar1
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_cpy_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_identity_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_neg_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_floor_s );

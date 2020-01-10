@@ -65,6 +65,8 @@ signature :push_hm push_hmc( char c, bhvm_vop_arr_ci_s* arr_ci );
 group :hbase =
 {
     signature @* set_size( mutable, sz_t size );
+    signature sz_t get_size( const );
+
     stamp : = aware :
     {
         bhvm_holor_ads_s holor_ads;
@@ -76,6 +78,8 @@ group :hbase =
             ::hmeta_adl_s_set_size( &o->hmeta_adl, size  );
             return o;
         };
+
+        func  : :get_size = { return o->holor_ads.size; };
 
         func :: :push_hm  =
         {
@@ -217,6 +221,8 @@ stamp :frame = aware :
 {
     :lib_s   => lib;
     :hbase_s => hbase;
+
+    func : :track_get = { if( !o->lib ) return NULL; return :lib_s_track_get( o->lib, name ); };
 
     func : :track_vop_push_c = { if( !o->lib ) o->lib = :lib_s_create(); :lib_s_track_vop_push_c( o->lib, name, vop ); };
     func : :track_vop_push_d = { if( !o->lib ) o->lib = :lib_s_create(); :lib_s_track_vop_push_d( o->lib, name, vop ); };
