@@ -44,9 +44,11 @@
 
 #define SIZEOF_FX( type ) ( ( type == TYPEOF_f2_t ) ? sizeof( f2_t ) : ( type == TYPEOF_f3_t ) ? sizeof( f3_t ) : -1 )
 
-/// type kniting macros
+/// type knitting macros
 #define BKNIT_FA1( type ) ( ( type == TYPEOF_f2_t ) ? 0 : ( type == TYPEOF_f3_t ) ? 1 : -256 )
-#define BKNIT_FA1_ERR( t1 ) ERR_fa( "Invalid type: '#<sc_t>'.", ifnameof( t1 ) )
+#define BKNIT_FA1_ERR( t1         ) ERR_fa( "Invalid type: '#<sc_t>'.", ifnameof( t1 ) )
+#define BKNIT_FA2_ERR( t1, t2     ) ERR_fa( "Invalid type combination: '#<sc_t>', '#<sc_t>'.", ifnameof( t1 ), ifnameof( t2 ) )
+#define BKNIT_FA3_ERR( t1, t2, t3 ) ERR_fa( "Invalid type combination: '#<sc_t>', '#<sc_t>', '#<sc_t>'.", ifnameof( t1 ), ifnameof( t2 ), ifnameof( t3 ) )
 
 #define BKNIT_FA2( t1, t2 )         ( BKNIT_FA1( t1 )         * 2 + BKNIT_FA1( t2 ) )
 #define BKNIT_FA3( t1, t2, t3 )     ( BKNIT_FA2( t1, t2 )     * 2 + BKNIT_FA1( t3 ) )
@@ -203,9 +205,10 @@ group :ar1 =
     stamp :cpy      = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_cv; };
     stamp :identity = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_cv; }; // same as cpy
     stamp :neg      = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_cv; };
-    stamp :floor    = { func : :f2 = { return  floor(a); }; func : :f3 = { return  floor(a); }; func : :f = :body_v_cv; };
-    stamp :ceil     = { func : :f2 = { return   ceil(a); }; func : :f3 = { return   ceil(a); }; func : :f = :body_v_cv; };
-    stamp :exp      = { func : :f2 = { return    exp(a); }; func : :f3 = { return    exp(a); }; func : :f = :body_v_cv; };
+    stamp :floor    = { func : :f2 = { return floorf(a); }; func : :f3 = { return  floor(a); }; func : :f = :body_v_cv; };
+    stamp :ceil     = { func : :f2 = { return  ceilf(a); }; func : :f3 = { return   ceil(a); }; func : :f = :body_v_cv; };
+    stamp :exp      = { func : :f2 = { return f2_exp(a); }; func : :f3 = { return f3_exp(a); }; func : :f = :body_v_cv; };
+    stamp :log      = { func : :f2 = { return f2_log(a); }; func : :f3 = { return f3_log(a); }; func : :f = :body_v_cv; };
     stamp :inv      = { func : :f2 = { return f2_inv(a); }; func : :f3 = { return f3_inv(a); }; func : :f = :body_v_cv; };
 
     stamp :abs      = { func : :f2 = { return f2_abs(a); }; func : :f3 = { return f3_abs(a); }; func : :f = :body_v_cv; };
@@ -375,10 +378,10 @@ group :ar2 =
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :div_dp_zbf = { func : :f2 = { return a * f2_inv( b ); }; func : :f3 = { return a * f3_inv( b ); }; func : :f = :body_vv_av; };
-
-    stamp :exp_dp_zyf   = { func : :f2 = :body_mul;          func : :f3 = :body_mul;          func : :f = :body_vv_av; };
-    stamp :inv_dp_zyf   = { func : :f2 = { return -a*b*b; }; func : :f3 = { return -a*b*b; }; func : :f = :body_vv_av; };
+    stamp :div_dp_zbf = { func : :f2 = :body_div_f2;       func : :f3 = :body_div_f3;       func : :f = :body_vv_av; };
+    stamp :exp_dp_zyf = { func : :f2 = :body_mul;          func : :f3 = :body_mul;          func : :f = :body_vv_av; };
+    stamp :log_dp_zaf = { func : :f2 = :body_div_f2;       func : :f3 = :body_div_f3;       func : :f = :body_vv_av; };
+    stamp :inv_dp_zyf = { func : :f2 = { return -a*b*b; }; func : :f3 = { return -a*b*b; }; func : :f = :body_vv_av; };
 
     body body_lgst_dp_zyf       = { return b * ( 1.0 - b ) * a; };
     body body_lgst_hard_dp_zyf  = { return ( b <  0.0 ) ? 0.0 : ( b > 1.0 ) ? 0.0 : 0.25 * a; };
