@@ -113,7 +113,7 @@ void bhvm_shape_s_inc_order_prepend( bhvm_shape_s* o, sz_t dim )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bl_t bhvm_shape_s_can_cat( const bhvm_shape_s* a, const bhvm_shape_s* b )
+bl_t bhvm_shape_s_cat_can( const bhvm_shape_s* a, const bhvm_shape_s* b )
 {
     if( a->size == b->size ) // a, b have equal shape
     {
@@ -136,9 +136,9 @@ bl_t bhvm_shape_s_can_cat( const bhvm_shape_s* a, const bhvm_shape_s* b )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bl_t bhvm_shape_s_fits_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r )
+bl_t bhvm_shape_s_cat_fits( const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r )
 {
-    if( !bhvm_shape_s_can_cat( a, b ) ) return false;
+    if( !bhvm_shape_s_cat_can( a, b ) ) return false;
     if( a->size == b->size ) // a, b have equal shape
     {
         if( r->size != a->size + 1 ) return false;
@@ -158,7 +158,7 @@ bl_t bhvm_shape_s_fits_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, const 
 
 bl_t bhvm_shape_s_is_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r )
 {
-    if( !bhvm_shape_s_fits_cat( a, b, r ) ) return false;
+    if( !bhvm_shape_s_cat_fits( a, b, r ) ) return false;
 
     if( a->size == b->size ) // a, b have equal shape
     {
@@ -182,7 +182,7 @@ bl_t bhvm_shape_s_is_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, const bh
 
 void bhvm_shape_s_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
 {
-    ASSERT( bhvm_shape_s_can_cat( a, b ) );
+    ASSERT( bhvm_shape_s_cat_can( a, b ) );
 
     if( a->size == b->size ) // a, b have equal shape
     {
@@ -208,7 +208,16 @@ void bhvm_shape_s_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_
 
 void bhvm_shape_s_cat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
 {
-    ASSERT( bhvm_shape_s_can_cat( a, b ) );
+    if( a == r || b == r )
+    {
+        bhvm_shape_s* buf = bhvm_shape_s_create();
+        bhvm_shape_s_cat_set( a, b, buf );
+        bhvm_shape_s_copy( r, buf );
+        bhvm_shape_s_discard( buf );
+        return;
+    }
+
+    ASSERT( bhvm_shape_s_cat_can( a, b ) );
 
     if( a->size == b->size ) // a, b have equal shape
     {
@@ -234,22 +243,6 @@ void bhvm_shape_s_cat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_sh
 
 /**********************************************************************************************************************/
 /// value
-
-#define SIZEOF_T1( type ) ( ( type == TYPEOF_f2_t ) ? sizeof( f2_t ) : ( type == TYPEOF_f3_t ) ? sizeof( f3_t ) : -1 )
-
-#define KNIT_T1( type ) ( ( type == TYPEOF_f2_t ) ? 0 : ( type == TYPEOF_f3_t ) ? 1 : -1 )
-#define KNIT_T1_ERR( t1 ) ERR_fa( "Invalid type: '#<sc_t>'.", ifnameof( t1 ) )
-
-#define KNIT_T2( t1, t2 ) ( KNIT_T1( t1 ) * 2 + KNIT_T1( t2 ) )
-#define KNIT_T2_ERR( t1, t2 ) ERR_fa( "Invalid type knit: '#<sc_t>', '#<sc_t>'.", ifnameof( t1 ), ifnameof( t2 ) )
-
-#define KNIT_F2 KNIT_T1( TYPEOF_f2_t )
-#define KNIT_F3 KNIT_T1( TYPEOF_f3_t )
-
-#define KNIT_F2F2 KNIT_T2( TYPEOF_f2_t, TYPEOF_f2_t )
-#define KNIT_F2F3 KNIT_T2( TYPEOF_f2_t, TYPEOF_f3_t )
-#define KNIT_F3F2 KNIT_T2( TYPEOF_f3_t, TYPEOF_f2_t )
-#define KNIT_F3F3 KNIT_T2( TYPEOF_f3_t, TYPEOF_f3_t )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -356,13 +349,13 @@ void bhvm_value_s_set_type_data( bhvm_value_s* o, tp_t dst_type, tp_t src_type, 
 {
     bhvm_value_s_set_type( o, dst_type );
     bhvm_value_s_set_size( o, size );
-    switch( KNIT_T2( dst_type, src_type ) )
+    switch( BKNIT_FA2( dst_type, src_type ) )
     {
-        case KNIT_F2F2: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = ( ( f2_t* )data )[ i ]; break;
-        case KNIT_F2F3: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
-        case KNIT_F3F2: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f2_t* )data )[ i ]; break;
-        case KNIT_F3F3: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
-        default: KNIT_T2_ERR( dst_type, src_type ); break;
+        case BKNIT_F22: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = ( ( f2_t* )data )[ i ]; break;
+        case BKNIT_F23: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
+        case BKNIT_F32: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f2_t* )data )[ i ]; break;
+        case BKNIT_F33: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
+        default: BKNIT_FA2_ERR( dst_type, src_type ); break;
     }
 }
 
@@ -372,14 +365,25 @@ void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size
 {
     if( !o->type ) o->type = src_type;
     bhvm_value_s_set_size( o, size );
-    switch( KNIT_T2( o->type, src_type ) )
+    switch( BKNIT_FA2( o->type, src_type ) )
     {
-        case KNIT_F2F2: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = ( ( f2_t* )data )[ i ]; break;
-        case KNIT_F2F3: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
-        case KNIT_F3F2: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f2_t* )data )[ i ]; break;
-        case KNIT_F3F3: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
-        default: KNIT_T2_ERR( o->type, src_type ); break;
+        case BKNIT_F22: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = ( ( f2_t* )data )[ i ]; break;
+        case BKNIT_F23: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
+        case BKNIT_F32: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f2_t* )data )[ i ]; break;
+        case BKNIT_F33: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
+        default: BKNIT_FA2_ERR( o->type, src_type ); break;
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_fork_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size )
+{
+    bhvm_value_s_clear( o );
+    o->type = src_type;
+    o->data = bcore_fork( src_data );
+    o->size = size;
+    o->space = size;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -389,13 +393,13 @@ void bhvm_value_s_push_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t siz
     if( !o->type ) o->type = src_type;
     sz_t size0 = o->size;
     bhvm_value_s_set_size( o, size0 + size );
-    switch( KNIT_T2( o->type, src_type ) )
+    switch( BKNIT_FA2( o->type, src_type ) )
     {
-        case KNIT_F2F2: for( sz_t i = 0; i < size; i++ ) ( ( f2_t* )o->data )[ i + size0 ] = ( ( f2_t* )data )[ i ]; break;
-        case KNIT_F2F3: for( sz_t i = 0; i < size; i++ ) ( ( f2_t* )o->data )[ i + size0 ] = ( ( f3_t* )data )[ i ]; break;
-        case KNIT_F3F2: for( sz_t i = 0; i < size; i++ ) ( ( f3_t* )o->data )[ i + size0 ] = ( ( f2_t* )data )[ i ]; break;
-        case KNIT_F3F3: for( sz_t i = 0; i < size; i++ ) ( ( f3_t* )o->data )[ i + size0 ] = ( ( f3_t* )data )[ i ]; break;
-        default: KNIT_T2_ERR( o->type, src_type ); break;
+        case BKNIT_F22: for( sz_t i = 0; i < size; i++ ) ( ( f2_t* )o->data )[ i + size0 ] = ( ( f2_t* )data )[ i ]; break;
+        case BKNIT_F23: for( sz_t i = 0; i < size; i++ ) ( ( f2_t* )o->data )[ i + size0 ] = ( ( f3_t* )data )[ i ]; break;
+        case BKNIT_F32: for( sz_t i = 0; i < size; i++ ) ( ( f3_t* )o->data )[ i + size0 ] = ( ( f2_t* )data )[ i ]; break;
+        case BKNIT_F33: for( sz_t i = 0; i < size; i++ ) ( ( f3_t* )o->data )[ i + size0 ] = ( ( f3_t* )data )[ i ]; break;
+        default: BKNIT_FA2_ERR( o->type, src_type ); break;
     }
 }
 
@@ -410,11 +414,11 @@ void bhvm_value_s_push_value( bhvm_value_s* o, const bhvm_value_s* src )
 
 bl_t bhvm_value_s_is_nan( const bhvm_value_s* o )
 {
-    switch( KNIT_T1( o->type ) )
+    switch( BKNIT_FA1( o->type ) )
     {
-        case KNIT_F2: BFOR_EACH( i, o ) if( f2_is_nan( ( ( f2_t* )o->data )[ i ] ) ) return false; break;
-        case KNIT_F3: BFOR_EACH( i, o ) if( f3_is_nan( ( ( f2_t* )o->data )[ i ] ) ) return false; break;
-        default: KNIT_T1_ERR( o->type ); break;
+        case BKNIT_F2: BFOR_EACH( i, o ) if( f2_is_nan( ( ( f2_t* )o->data )[ i ] ) ) return false; break;
+        case BKNIT_F3: BFOR_EACH( i, o ) if( f3_is_nan( ( ( f2_t* )o->data )[ i ] ) ) return false; break;
+        default: BKNIT_FA1_ERR( o->type ); break;
     }
     return false;
 }
@@ -426,11 +430,11 @@ bl_t bhvm_value_s_is_equal( const bhvm_value_s* o, const bhvm_value_s* b )
     if( o->type != b->type ) return false;
     if( o->size != b->size ) return false;
 
-    switch( KNIT_T1( o->type ) )
+    switch( BKNIT_FA1( o->type ) )
     {
-        case KNIT_F2: BFOR_EACH( i, o ) if( ( ( f2_t* )o->data )[ i ] != ( ( f2_t* )b->data )[ i ] ) return false; break;
-        case KNIT_F3: BFOR_EACH( i, o ) if( ( ( f3_t* )o->data )[ i ] != ( ( f3_t* )b->data )[ i ] ) return false; break;
-        default: KNIT_T1_ERR( o->type ); break;
+        case BKNIT_F2: BFOR_EACH( i, o ) if( ( ( f2_t* )o->data )[ i ] != ( ( f2_t* )b->data )[ i ] ) return false; break;
+        case BKNIT_F3: BFOR_EACH( i, o ) if( ( ( f3_t* )o->data )[ i ] != ( ( f3_t* )b->data )[ i ] ) return false; break;
+        default: BKNIT_FA1_ERR( o->type ); break;
     }
 
     return true;
@@ -438,33 +442,37 @@ bl_t bhvm_value_s_is_equal( const bhvm_value_s* o, const bhvm_value_s* b )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bl_t bhvm_value_s_can_cat( const bhvm_value_s* a, const bhvm_value_s* b )
+bl_t bhvm_value_s_cat_can( const bhvm_value_s* a, const bhvm_value_s* b )
 {
-    if( a->type != b->type ) return false;
-    if( bhvm_value_s_is_vacant( a ) !=  bhvm_value_s_is_vacant( b ) ) return false;
     return true;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bl_t bhvm_value_s_fits_cat( const bhvm_value_s* a, const bhvm_value_s* b, const bhvm_value_s* r )
+bl_t bhvm_value_s_cat_fits( const bhvm_value_s* a, const bhvm_value_s* b, const bhvm_value_s* r )
 {
-    if( !bhvm_value_s_can_cat( a, b ) ) return false;
-    if( a->type != r->type ) return false;
-    if( r->size != a->size + b->size ) return false;
-    return true;
+    if( !bhvm_value_s_cat_can( a, b ) ) return false;
+    return ( r->size == a->size + b->size );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 void bhvm_value_s_cat( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_s* r )
 {
-    ASSERT( bhvm_value_s_fits_cat( a, b, r ) );
-    if( r->size > 0 )
+    ASSERT( bhvm_value_s_cat_fits( a, b, r ) );
+    if( r->size == 0 ) return;
+
+    switch( BKNIT_FA3( a->type, b->type, r->type ) )
     {
-        sz_t u_size = SIZEOF_T1( a->type );
-        bcore_u_memcpy( u_size, r->data, a->data, a->size );
-        bcore_u_memcpy( u_size, ( u0_t* )r->data + a->size * u_size, a->data, a->size );
+        case BKNIT_F222: for( sz_t i = 0; i < r->size; i++ ) ( ( f2_t* )r->data )[ i ] = i < a->size ? ( ( f2_t* )a->data )[ i ] : ( ( f2_t* )b->data )[ i - a->size ]; break;
+        case BKNIT_F223: for( sz_t i = 0; i < r->size; i++ ) ( ( f3_t* )r->data )[ i ] = i < a->size ? ( ( f2_t* )a->data )[ i ] : ( ( f2_t* )b->data )[ i - a->size ]; break;
+        case BKNIT_F232: for( sz_t i = 0; i < r->size; i++ ) ( ( f2_t* )r->data )[ i ] = i < a->size ? ( ( f2_t* )a->data )[ i ] : ( ( f3_t* )b->data )[ i - a->size ]; break;
+        case BKNIT_F233: for( sz_t i = 0; i < r->size; i++ ) ( ( f3_t* )r->data )[ i ] = i < a->size ? ( ( f2_t* )a->data )[ i ] : ( ( f3_t* )b->data )[ i - a->size ]; break;
+        case BKNIT_F322: for( sz_t i = 0; i < r->size; i++ ) ( ( f2_t* )r->data )[ i ] = i < a->size ? ( ( f3_t* )a->data )[ i ] : ( ( f2_t* )b->data )[ i - a->size ]; break;
+        case BKNIT_F323: for( sz_t i = 0; i < r->size; i++ ) ( ( f3_t* )r->data )[ i ] = i < a->size ? ( ( f3_t* )a->data )[ i ] : ( ( f2_t* )b->data )[ i - a->size ]; break;
+        case BKNIT_F332: for( sz_t i = 0; i < r->size; i++ ) ( ( f2_t* )r->data )[ i ] = i < a->size ? ( ( f3_t* )a->data )[ i ] : ( ( f3_t* )b->data )[ i - a->size ]; break;
+        case BKNIT_F333: for( sz_t i = 0; i < r->size; i++ ) ( ( f3_t* )r->data )[ i ] = i < a->size ? ( ( f3_t* )a->data )[ i ] : ( ( f3_t* )b->data )[ i - a->size ]; break;
+        default: BKNIT_FA3_ERR( a->type, b->type, r->type ); break;
     }
 }
 
@@ -472,9 +480,22 @@ void bhvm_value_s_cat( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_
 
 void bhvm_value_s_cat_set( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_s* r )
 {
-    ASSERT( bhvm_value_s_can_cat( a, b ) );
-    bhvm_value_s_set_type_size( r, a->type, a->size + b->size );
-    bhvm_value_s_cat( a, b, r );
+    if( a == r || b == r )
+    {
+        bhvm_value_s* buf = bhvm_value_s_create();
+        bhvm_value_s_cat_set( a, b, buf );
+        bhvm_value_s_copy( r, buf );
+        bhvm_value_s_discard( buf );
+        return;
+    }
+
+    ASSERT( bhvm_value_s_cat_can( a, b ) );
+
+    tp_t r_type = ( a->type == TYPEOF_f2_t ) && ( b->type == TYPEOF_f2_t ) ? TYPEOF_f2_t : TYPEOF_f3_t;
+    sz_t r_size = ( a->size  > 0           ) && ( b->size  > 0           ) ? a->size + b->size : 0;
+
+    bhvm_value_s_set_type_size( r, r_type, r_size );
+    if( r_size > 0 ) bhvm_value_s_cat( a, b, r );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -495,13 +516,13 @@ f3_t bhvm_value_s_fdev_equ( const bhvm_value_s* a, const bhvm_value_s* b )
 {
     ASSERT( a->size == b->size );
     f3_t sqr_sum = 0;
-    switch( KNIT_T2( a->type, b->type ) )
+    switch( BKNIT_FA2( a->type, b->type ) )
     {
-        case KNIT_F2F2: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f2_t* )a->data )[ i ] - ( ( f2_t* )b->data )[ i ] ); break;
-        case KNIT_F2F3: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f2_t* )a->data )[ i ] - ( ( f3_t* )b->data )[ i ] ); break;
-        case KNIT_F3F2: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f3_t* )a->data )[ i ] - ( ( f2_t* )b->data )[ i ] ); break;
-        case KNIT_F3F3: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f3_t* )a->data )[ i ] - ( ( f3_t* )b->data )[ i ] ); break;
-        default: KNIT_T2_ERR( a->type, b->type ); break;
+        case BKNIT_F22: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f2_t* )a->data )[ i ] - ( ( f2_t* )b->data )[ i ] ); break;
+        case BKNIT_F23: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f2_t* )a->data )[ i ] - ( ( f3_t* )b->data )[ i ] ); break;
+        case BKNIT_F32: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f3_t* )a->data )[ i ] - ( ( f2_t* )b->data )[ i ] ); break;
+        case BKNIT_F33: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f3_t* )a->data )[ i ] - ( ( f3_t* )b->data )[ i ] ); break;
+        default: BKNIT_FA2_ERR( a->type, b->type ); break;
     }
     return f3_srt( sqr_sum );
 }
@@ -518,6 +539,20 @@ f3_t bhvm_value_s_fdev_zro( const bhvm_value_s* o )
         default: ERR_fa( "Unhandled type '#<sc_t>'", ifnameof( o->type ) );
     }
     return f3_srt( sqr_sum );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sz_t bhvm_value_s_get_sz( const bhvm_value_s* a, sz_t index )
+{
+    assert( index >= 0 && index < a->size );
+    switch( a->type )
+    {
+        case TYPEOF_f2_t: return ( ( f2_t* )a->data )[ index ];
+        case TYPEOF_f3_t: return ( ( f3_t* )a->data )[ index ];
+        default: ERR_fa( "Invalid type" );
+    }
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -545,6 +580,70 @@ void bhvm_value_s_set_f3( const bhvm_value_s* a, sz_t index, f3_t v )
         case TYPEOF_f3_t: ( ( f3_t* )a->data )[ index ] = v; break;
         default: ERR_fa( "Invalid type" );
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_order_inc( const bhvm_value_s* o, sz_t dim, bhvm_value_s* r )
+{
+    // safe for o == r
+    assert( r->size == o->size * dim );
+    switch( BKNIT_FA2( o->type, r->type ) )
+    {
+        case BKNIT_F22: for( sz_t i = 0; i < dim; i++ ) { f2_t* dst = ( ( f2_t* )r->data ) + i * o->size;  BFOR_EACH( i, o ) dst[ i ] = ( ( f2_t* )o->data )[ i ]; } break;
+        case BKNIT_F23: for( sz_t i = 0; i < dim; i++ ) { f3_t* dst = ( ( f3_t* )r->data ) + i * o->size;  BFOR_EACH( i, o ) dst[ i ] = ( ( f2_t* )o->data )[ i ]; } break;
+        case BKNIT_F32: for( sz_t i = 0; i < dim; i++ ) { f2_t* dst = ( ( f2_t* )r->data ) + i * o->size;  BFOR_EACH( i, o ) dst[ i ] = ( ( f3_t* )o->data )[ i ]; } break;
+        case BKNIT_F33: for( sz_t i = 0; i < dim; i++ ) { f3_t* dst = ( ( f3_t* )r->data ) + i * o->size;  BFOR_EACH( i, o ) dst[ i ] = ( ( f3_t* )o->data )[ i ]; } break;
+        default: BKNIT_FA2_ERR( o->type, r->type ); break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_order_inc_set( const bhvm_value_s* o, sz_t dim, bhvm_value_s* r )
+{
+    if( o == r )
+    {
+        BLM_INIT();
+        bhvm_value_s_order_inc_set( BLM_CLONE( bhvm_value_s, o), dim, r );
+        BLM_RETURN();
+    }
+    bhvm_value_s_set_type_size( r, o->type, o->size * dim );
+    bhvm_value_s_order_inc( o, dim, r );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_order_dec( const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm_value_s* r )
+{
+    // safe for o == r
+    assert( o->size == r->size * dim );
+    assert( idx >= 0 && idx < dim );
+
+    sz_t offs = ( o->size / dim ) * idx;
+    switch( BKNIT_FA2( o->type, r->type ) )
+    {
+        case BKNIT_F22: BFOR_EACH( i, r ) ( ( f2_t* )r->data )[ i ] = ( ( f2_t* )o->data )[ i + offs ]; break;
+        case BKNIT_F23: BFOR_EACH( i, r ) ( ( f3_t* )r->data )[ i ] = ( ( f2_t* )o->data )[ i + offs ]; break;
+        case BKNIT_F32: BFOR_EACH( i, r ) ( ( f2_t* )r->data )[ i ] = ( ( f3_t* )o->data )[ i + offs ]; break;
+        case BKNIT_F33: BFOR_EACH( i, r ) ( ( f3_t* )r->data )[ i ] = ( ( f3_t* )o->data )[ i + offs ]; break;
+        default: BKNIT_FA2_ERR( o->type, r->type ); break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_order_dec_set( const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm_value_s* r )
+{
+    if( o == r )
+    {
+        BLM_INIT();
+        bhvm_value_s_order_dec_set( BLM_CLONE( bhvm_value_s, o), dim, idx, r );
+        BLM_RETURN();
+    }
+
+    bhvm_value_s_set_type_size( r, o->type, o->size / dim );
+    bhvm_value_s_order_dec( o, dim, idx, r );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -726,13 +825,13 @@ void bhvm_holor_s_set_type_scalar_pf( bhvm_holor_s* o, tp_t t, tp_t t_src, vc_t 
     if( v )
     {
         bhvm_value_s_set_type_size( &o->v, t, 1 );
-        switch( KNIT_T2( t, t_src ) )
+        switch( BKNIT_FA2( t, t_src ) )
         {
-            case KNIT_F2F2: *( f2_t* )o->v.data = *( f2_t* )v; break;
-            case KNIT_F2F3: *( f2_t* )o->v.data = *( f3_t* )v; break;
-            case KNIT_F3F2: *( f3_t* )o->v.data = *( f2_t* )v; break;
-            case KNIT_F3F3: *( f3_t* )o->v.data = *( f3_t* )v; break;
-            default: KNIT_T2_ERR( t, t_src ); break;
+            case BKNIT_F22: *( f2_t* )o->v.data = *( f2_t* )v; break;
+            case BKNIT_F23: *( f2_t* )o->v.data = *( f3_t* )v; break;
+            case BKNIT_F32: *( f3_t* )o->v.data = *( f2_t* )v; break;
+            case BKNIT_F33: *( f3_t* )o->v.data = *( f3_t* )v; break;
+            default: BKNIT_FA2_ERR( t, t_src ); break;
         }
     }
     else
@@ -768,7 +867,7 @@ void bhvm_holor_s_inc_order( bhvm_holor_s* o, sz_t dim )
         bhvm_value_s_clear( &o->v );
         bhvm_holor_s_fit_size( o );
         ASSERT( o->v.size == v->size * dim );
-        sz_t u_size = SIZEOF_T1( o->v.type );
+        sz_t u_size = SIZEOF_FX( o->v.type );
         for( sz_t i = 0; i < dim; i++ ) bcore_u_memcpy( u_size, ( u0_t* )o->v.data + v->size * u_size * i, v->data, v->size );
         BLM_DOWN();
     }
@@ -789,7 +888,7 @@ void bhvm_holor_s_inc_order_prepend( bhvm_holor_s* o, sz_t dim )
         bhvm_value_s_clear( &o->v );
         bhvm_holor_s_fit_size( o );
         ASSERT( o->v.size == v->size * dim );
-        sz_t u_size = SIZEOF_T1( o->v.type );
+        sz_t u_size = SIZEOF_FX( o->v.type );
         for( sz_t i = 0; i < v->size; i++ )
         {
             u0_t* dst = ( u0_t* )o->v.data + i * u_size * dim;
@@ -823,10 +922,13 @@ void bhvm_holor_s_push( bhvm_holor_s* o, const bhvm_holor_s* src )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bl_t bhvm_holor_s_can_cat( const bhvm_holor_s* a, const bhvm_holor_s* b )
+bl_t bhvm_holor_s_cat_can( const bhvm_holor_s* a, const bhvm_holor_s* b )
 {
-    if( !bhvm_shape_s_can_cat( &a->s, &b->s ) ) return false;
-    if( !bhvm_value_s_can_cat( &a->v, &b->v ) ) return false;
+    if( !bhvm_shape_s_cat_can( &a->s, &b->s ) ) return false;
+    if( a->v.size > 0 && b->v.size > 0 )
+    {
+        if( !bhvm_value_s_cat_can( &a->v, &b->v ) ) return false;
+    }
     return true;
 }
 
@@ -834,9 +936,16 @@ bl_t bhvm_holor_s_can_cat( const bhvm_holor_s* a, const bhvm_holor_s* b )
 
 void bhvm_holor_s_cat( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
-    ASSERT( bhvm_shape_s_is_cat(   &a->s, &b->s, &r->s ) );
-    ASSERT( bhvm_value_s_fits_cat( &a->v, &b->v, &r->v ) );
-    bhvm_value_s_cat( &a->v, &b->v, &r->v );
+    ASSERT( bhvm_shape_s_is_cat( &a->s, &b->s, &r->s ) );
+    if( a->v.size > 0 && b->v.size > 0 )
+    {
+        ASSERT( bhvm_value_s_cat_fits( &a->v, &b->v, &r->v ) );
+        bhvm_value_s_cat( &a->v, &b->v, &r->v );
+    }
+    else
+    {
+        ASSERT( r->v.size == 0 );
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -849,13 +958,133 @@ void bhvm_holor_s_cat_set( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_ho
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bhvm_holor_s_order_inc_set( const bhvm_holor_s* o, sz_t dim, bhvm_holor_s* r )
+{
+    if( o == r )
+    {
+        BLM_INIT();
+        bhvm_holor_s_order_inc_set( BLM_CLONE( bhvm_holor_s, o ), dim, r );
+        BLM_RETURN();
+    }
+
+    bhvm_shape_s_copy( &r->s, &o->s );
+    *bhvm_shape_s_push( &r->s ) = dim;
+
+    if( o->v.size > 0 )
+    {
+        bhvm_value_s_order_inc_set( &o->v, dim, &r->v );
+    }
+    else
+    {
+        bhvm_value_s_clear( &r->v );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_order_inc( const bhvm_holor_s* o, sz_t dim, bhvm_holor_s* r )
+{
+    assert( o->s.size + 1 == r->s.size );
+    assert( r->s.data[ r->s.size - 1 ] == dim );
+    #ifdef RTCHECKS
+        BFOR_EACH( i, &o->s ) ASSERT( o->s.data[ i ] == r->s.data[ i ] );
+    #endif
+
+    if( o->v.size > 0 )
+    {
+        bhvm_value_s_order_inc( &o->v, dim, &r->v );
+    }
+    else
+    {
+        assert( r->v.size == 0 );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_order_dec_set(  const bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r )
+{
+    if( o == r )
+    {
+        BLM_INIT();
+        bhvm_holor_s_order_dec_set( BLM_CLONE( bhvm_holor_s, o ), idx, r );
+        BLM_RETURN();
+    }
+
+    assert( o->s.size > 0 );
+    sz_t dim = o->s.data[ o->s.size - 1 ];
+    assert( idx >= 0 && idx < dim );
+
+    bhvm_shape_s_copy( &r->s, &o->s );
+    r->s.size--;
+
+    if( o->v.size > 0 )
+    {
+        bhvm_value_s_order_dec_set( &o->v, dim, idx, &r->v );
+    }
+    else
+    {
+        bhvm_value_s_clear( &r->v );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_order_dec( const bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r )
+{
+    assert( o->s.size == r->s.size + 1 );
+    #ifdef RTCHECKS
+        BFOR_EACH( i, &r->s ) ASSERT( o->s.data[ i ] == r->s.data[ i ] );
+    #endif
+    sz_t dim = o->s.data[ o->s.size - 1 ];
+    assert( idx >= 0 && idx < dim );
+
+    if( o->v.size > 0 )
+    {
+        bhvm_value_s_order_dec( &o->v, dim, idx, &r->v );
+    }
+    else
+    {
+        assert( r->v.size == 0 );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_order_dec_fork( bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r )
+{
+    assert( o != r );
+    assert( o->s.size > 0 );
+    sz_t dim = o->s.data[ o->s.size - 1 ];
+    assert( idx >= 0 && idx < dim );
+
+    bhvm_holor_s_fork( r, o );
+    r->s.size--;
+
+    if( o->v.size > 0 )
+    {
+        sz_t offs = idx * dim;
+        switch( BKNIT_FA1( r->v.type ) )
+        {
+            case BKNIT_F2: r->v.data = ( ( f2_t* )r->v.data ) + offs; break;
+            case BKNIT_F3: r->v.data = ( ( f3_t* )r->v.data ) + offs; break;
+            default: BKNIT_FA1_ERR( r->v.type );
+        }
+
+        r->v.size /= dim;
+        r->v.space = o->v.size;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void to_sink_recursive( const bhvm_holor_s* o, sz_t indent, bl_t formatted, bcore_sink* sink, vc_t v_data, sz_t d_idx )
 {
     if( d_idx == 0 )
     {
         for( sz_t i = 0; i < o->s.data[ 0 ]; i++ )
         {
-            if( i > 0 ) bcore_sink_a_push_fa( sink, " " );
+            if( i > 0 ) bcore_sink_a_push_fa( sink, ":" );
             switch( o->v.type )
             {
                 case TYPEOF_f2_t: bcore_sink_a_push_fa( sink, "#<f2_t>", ( ( f2_t* )v_data )[ i ] ); break;
@@ -881,6 +1110,7 @@ static void to_sink_recursive( const bhvm_holor_s* o, sz_t indent, bl_t formatte
             }
             if( formatted && d_idx > 1 ) bcore_sink_a_push_fa( sink, "\n#rn{ }", indent );
             bcore_sink_a_push_fa( sink, ")" );
+            if( i < dim - 1 ) bcore_sink_a_push_fa( sink, ":" );
         }
     }
 }
@@ -895,9 +1125,17 @@ static void holor_s_to_sink( const bhvm_holor_s* o, sz_t max_size, bcore_sink* s
     {
         if( o->s.size > 0 )
         {
-            bcore_sink_a_push_fa( sink, "(" );
-            to_sink_recursive( o, 0, false, sink, o->v.data, o->s.size - 1 );
-            bcore_sink_a_push_fa( sink, ")" );
+            if( o->s.data[ o->s.size - 1 ] == 1 )
+            {
+                bcore_sink_a_push_fa( sink, "[1]" );
+                to_sink_recursive( o, 0, false, sink, o->v.data, o->s.size - 1 );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, "(" );
+                to_sink_recursive( o, 0, false, sink, o->v.data, o->s.size - 1 );
+                bcore_sink_a_push_fa( sink, ")" );
+            }
         }
         else
         {
@@ -948,11 +1186,19 @@ void bhvm_holor_s_formatted_to_sink( const bhvm_holor_s* o, bcore_sink* sink )
     {
         if( o->s.size > 0 )
         {
-            bcore_sink_a_push_fa( sink, "(" );
-            to_sink_recursive( o, 2, true, sink, o->v.data, o->s.size - 1 );
-            if( o->s.size > 1 ) bcore_sink_a_push_fa( sink, "\n" );
-            bcore_sink_a_push_fa( sink, ")" );
-            bcore_sink_a_push_fa( sink, "\n" );
+            if( o->s.data[ o->s.size - 1 ] == 1 )
+            {
+                bcore_sink_a_push_fa( sink, "[1]" );
+                to_sink_recursive( o, 2, true, sink, o->v.data, o->s.size - 1 );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, "(" );
+                to_sink_recursive( o, 2, true, sink, o->v.data, o->s.size - 1 );
+                if( o->s.size > 1 ) bcore_sink_a_push_fa( sink, "\n" );
+                bcore_sink_a_push_fa( sink, ")" );
+                bcore_sink_a_push_fa( sink, "\n" );
+            }
         }
         else
         {
@@ -1054,28 +1300,21 @@ void bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source )
     }
     else if( bcore_source_a_parse_bl_fa( source, " #?'('" ) )
     {
-        bhvm_holor_s* h = bhvm_holor_s_create();
-        bl_t first = true;
-        while( !bcore_source_a_eos( source ) && !bcore_source_a_parse_bl_fa( source, " #=?')'" ) )
-        {
-            bhvm_holor_s_parse( h, source );
-            if( first )
-            {
-                bhvm_holor_s_copy( o, h );
-                bhvm_holor_s_inc_order( o, 1 );
-                first = false;
-            }
-            else
-            {
-                bhvm_holor_s_push( o, h );
-            }
-        }
+        bhvm_holor_s_parse( o, source );
         bcore_source_a_parse_fa( source, " )" );
-        bhvm_holor_s_discard( h );
     }
     else
     {
         bcore_source_a_parse_err_fa( source, "Syntax error." );
+    }
+
+
+    if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
+    {
+        bhvm_holor_s* h = bhvm_holor_s_create();
+        bhvm_holor_s_parse( h, source );
+        bhvm_holor_s_cat_set( o, h, o );
+        bhvm_holor_s_discard( h );
     }
 
     bhvm_holor_s_check_integrity( o );

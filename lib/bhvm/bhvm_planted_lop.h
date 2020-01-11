@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-05T13:35:39Z
+ *  Last File Update: 2020-01-11T11:50:16Z
  *
  *  Copyright and License of this File:
  *
@@ -99,23 +99,30 @@
 #define BETH_EXPAND_ITEM_bhvm_lop_ar1_floor_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar1_floor_s ) \
     {aware_t _;}; \
-  static inline f2_t bhvm_lop_ar1_floor_s_f2( f2_t a ){return  floor(a);} \
+  static inline f2_t bhvm_lop_ar1_floor_s_f2( f2_t a ){return floorf(a);} \
   static inline f3_t bhvm_lop_ar1_floor_s_f3( f3_t a ){return  floor(a);} \
   void bhvm_lop_ar1_floor_s_f( tp_t tknit, vc_t a, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar1_ceil_s 1300617787
 #define BETH_EXPAND_ITEM_bhvm_lop_ar1_ceil_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar1_ceil_s ) \
     {aware_t _;}; \
-  static inline f2_t bhvm_lop_ar1_ceil_s_f2( f2_t a ){return   ceil(a);} \
+  static inline f2_t bhvm_lop_ar1_ceil_s_f2( f2_t a ){return  ceilf(a);} \
   static inline f3_t bhvm_lop_ar1_ceil_s_f3( f3_t a ){return   ceil(a);} \
   void bhvm_lop_ar1_ceil_s_f( tp_t tknit, vc_t a, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar1_exp_s 2284292249
 #define BETH_EXPAND_ITEM_bhvm_lop_ar1_exp_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar1_exp_s ) \
     {aware_t _;}; \
-  static inline f2_t bhvm_lop_ar1_exp_s_f2( f2_t a ){return    exp(a);} \
-  static inline f3_t bhvm_lop_ar1_exp_s_f3( f3_t a ){return    exp(a);} \
+  static inline f2_t bhvm_lop_ar1_exp_s_f2( f2_t a ){return f2_exp(a);} \
+  static inline f3_t bhvm_lop_ar1_exp_s_f3( f3_t a ){return f3_exp(a);} \
   void bhvm_lop_ar1_exp_s_f( tp_t tknit, vc_t a, vd_t r, sz_t s );
+#define TYPEOF_bhvm_lop_ar1_log_s 1653987804
+#define BETH_EXPAND_ITEM_bhvm_lop_ar1_log_s \
+  BCORE_DECLARE_OBJECT( bhvm_lop_ar1_log_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_lop_ar1_log_s_f2( f2_t a ){return f2_log(a);} \
+  static inline f3_t bhvm_lop_ar1_log_s_f3( f3_t a ){return f3_log(a);} \
+  void bhvm_lop_ar1_log_s_f( tp_t tknit, vc_t a, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar1_inv_s 1876691453
 #define BETH_EXPAND_ITEM_bhvm_lop_ar1_inv_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar1_inv_s ) \
@@ -264,6 +271,7 @@
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_floor_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_ceil_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_exp_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_lop_ar1_log_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_inv_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_abs_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_sig_s ); \
@@ -290,6 +298,7 @@
   BETH_EXPAND_ITEM_bhvm_lop_ar1_floor_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar1_ceil_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar1_exp_s \
+  BETH_EXPAND_ITEM_bhvm_lop_ar1_log_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar1_inv_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar1_abs_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar1_sig_s \
@@ -439,6 +448,13 @@
   static inline f2_t bhvm_lop_ar2_exp_dp_zyf_s_f2( f2_t a, f2_t b ){return a * b;} \
   static inline f3_t bhvm_lop_ar2_exp_dp_zyf_s_f3( f3_t a, f3_t b ){return a * b;} \
   void bhvm_lop_ar2_exp_dp_zyf_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
+#define TYPEOF_bhvm_lop_ar2_log_dp_zaf_s 4255960388
+#define BETH_EXPAND_ITEM_bhvm_lop_ar2_log_dp_zaf_s \
+  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_log_dp_zaf_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_lop_ar2_log_dp_zaf_s_f2( f2_t a, f2_t b ){return a * f2_inv( b );} \
+  static inline f3_t bhvm_lop_ar2_log_dp_zaf_s_f3( f3_t a, f3_t b ){return a * f3_inv( b );} \
+  void bhvm_lop_ar2_log_dp_zaf_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar2_inv_dp_zyf_s 2696105571
 #define BETH_EXPAND_ITEM_bhvm_lop_ar2_inv_dp_zyf_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_inv_dp_zyf_s ) \
@@ -594,6 +610,7 @@
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_acc_vvm_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_div_dp_zbf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_exp_dp_zyf_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_log_dp_zaf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_inv_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_lgst_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_lgst_hard_dp_zyf_s ); \
@@ -633,6 +650,7 @@
   BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_vvm_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_div_dp_zbf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_exp_dp_zyf_s \
+  BETH_EXPAND_ITEM_bhvm_lop_ar2_log_dp_zaf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_inv_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_lgst_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_lgst_hard_dp_zyf_s \

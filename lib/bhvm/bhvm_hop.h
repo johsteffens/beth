@@ -97,6 +97,7 @@ group :ar1 =
     stamp :floor      = { func : :f = :body_lop_v_cv; };
     stamp :ceil       = { func : :f = :body_lop_v_cv; };
     stamp :exp        = { func : :f = :body_lop_v_cv; };
+    stamp :log        = { func : :f = :body_lop_v_cv; };
     stamp :inv        = { func : :f = :body_lop_v_cv; };
     stamp :abs        = { func : :f = :body_lop_v_cv; };
     stamp :sig        = { func : :f = :body_lop_v_cv; };
@@ -174,6 +175,7 @@ group :ar2 =
 
     stamp :div_dp_zbf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :exp_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :log_dp_zaf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :inv_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :lgst_dp_zyf       = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :lgst_hard_dp_zyf  = { func : :f = :body_assert_vvv : :body_lop_r; };
@@ -222,6 +224,11 @@ group :ar2 =
     stamp :mul_acc_tmm = { func : :f; };
     stamp :mul_acc_ttm = { func : :f; };
 
+    /// other -----------------------------------------------------------------
+
+    stamp :cat       = { func : :f = { bhvm_holor_s_cat( a, b, r ); }; };
+    //stamp :order_inc = { func : :f = { assert( a->v.size == 1 ); bhvm_holor_s_order_inc( b, bhvm_value_s_get_sz( &a->v, 0 ), r ); }; };
+    //stamp :order_dec = { func : :f = { assert( b->v.size == 1 ); bhvm_holor_s_order_dec( a, bhvm_value_s_get_sz( &b->v, 0 ), r ); }; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

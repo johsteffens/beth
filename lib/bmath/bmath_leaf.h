@@ -33,6 +33,10 @@ static inline f3_t f3_tau(  void ) { return 6.2831853071795864769252868; } // 2 
 
 static inline bl_t f3_is_nan( f3_t v ) { return v != v; } // nan compares unequal to itself
 
+/// functions
+static inline f3_t f3_exp( f3_t v ) { return exp( v ); }
+static inline f3_t f3_log( f3_t v ) { return v > 0 ? log( v ) : -f3_lim_max; }
+
 /// random generator (range -1, 1)
 static inline f3_t f3_xsg1_sym( u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv ) ) * ( 2.0 / 0xFFFFFFFFu ) - 1.0; }
 static inline f3_t f3_xsg2_sym( u2_t* rv ) { return ( *rv = bcore_xsg2_u2( *rv ) ) * ( 2.0 / 0xFFFFFFFFu ) - 1.0; } // do not use for polar coordinate randomization
@@ -62,6 +66,10 @@ static inline f2_t f2_pi_2( void ) { return 1.5707963267948966192313217; } // PI
 static inline f2_t f2_tau(  void ) { return 6.2831853071795864769252868; } // 2 * PI
 
 static inline bl_t f2_is_nan( f2_t v ) { return v != v; } // nan compares unequal to itself
+
+/// functions
+static inline f3_t f2_exp( f3_t v ) { return expf( v ); }
+static inline f3_t f2_log( f3_t v ) { return v > 0 ? logf( v ) : -f2_lim_max; }
 
 /// random generator (range -1, 1)
 static inline f2_t f2_xsg1_sym( u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv ) ) * ( 2.0 / 0xFFFFFFFFu ) - 1.0; }

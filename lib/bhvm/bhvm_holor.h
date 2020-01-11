@@ -145,8 +145,8 @@ void bhvm_shape_s_set_data_na( bhvm_shape_s* o, sz_t size, ... );
 static inline bl_t bhvm_shape_s_is_weak(  const bhvm_shape_s* o ) { return ( o->space == 0 ) && ( o->size > 0 ); }
 bl_t bhvm_shape_s_is_equal( const bhvm_shape_s* o, const bhvm_shape_s* b );
 
-bl_t bhvm_shape_s_can_cat(  const bhvm_shape_s* a, const bhvm_shape_s* b );
-bl_t bhvm_shape_s_fits_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r );
+bl_t bhvm_shape_s_cat_can(  const bhvm_shape_s* a, const bhvm_shape_s* b );
+bl_t bhvm_shape_s_cat_fits( const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r );
 bl_t bhvm_shape_s_is_cat(   const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r );
 void bhvm_shape_s_cat(      const bhvm_shape_s* a, const bhvm_shape_s* b,       bhvm_shape_s* r );
 void bhvm_shape_s_cat_set(  const bhvm_shape_s* a, const bhvm_shape_s* b,       bhvm_shape_s* r );
@@ -206,6 +206,9 @@ void bhvm_value_s_set_type_data( bhvm_value_s* o, tp_t dst_type, tp_t src_type, 
 /// sets data by converting to holor type (sets target type if not set)
 void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t src_data, sz_t size );
 
+/// forks data (type = src_type)
+void bhvm_value_s_fork_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size );
+
 /// pushes data by converting to o->type
 void bhvm_value_s_push_data( bhvm_value_s* o, tp_t src_type, vc_t src_data, sz_t size );
 
@@ -219,8 +222,8 @@ bl_t bhvm_value_s_is_nan(   const bhvm_value_s* o );
 bl_t bhvm_value_s_is_equal( const bhvm_value_s* o, const bhvm_value_s* b );
 
 /// concatenation
-bl_t bhvm_value_s_can_cat ( const bhvm_value_s* a, const bhvm_value_s* b );
-bl_t bhvm_value_s_fits_cat( const bhvm_value_s* a, const bhvm_value_s* b, const bhvm_value_s* r );
+bl_t bhvm_value_s_cat_can ( const bhvm_value_s* a, const bhvm_value_s* b );
+bl_t bhvm_value_s_cat_fits( const bhvm_value_s* a, const bhvm_value_s* b, const bhvm_value_s* r );
 void bhvm_value_s_cat     ( const bhvm_value_s* a, const bhvm_value_s* b,       bhvm_value_s* r );
 void bhvm_value_s_cat_set ( const bhvm_value_s* a, const bhvm_value_s* b,       bhvm_value_s* r );
 
@@ -255,8 +258,17 @@ void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max,
 f3_t bhvm_value_s_fdev_equ( const bhvm_value_s* a, const bhvm_value_s* b );
 f3_t bhvm_value_s_fdev_zro( const bhvm_value_s* o );
 
+sz_t bhvm_value_s_get_sz( const bhvm_value_s* a, sz_t index );
 f3_t bhvm_value_s_get_f3( const bhvm_value_s* a, sz_t index );
 void bhvm_value_s_set_f3( const bhvm_value_s* a, sz_t index, f3_t v );
+
+/// order increment by duplication (in place)
+void bhvm_value_s_order_inc(     const bhvm_value_s* o, sz_t dim, bhvm_value_s* r ); // in place
+void bhvm_value_s_order_inc_set( const bhvm_value_s* o, sz_t dim, bhvm_value_s* r ); // allocating, order_inc
+
+/// order decrement by indexing (in place); dim is leading dimension of o
+void bhvm_value_s_order_dec(     const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm_value_s* r ); // in place
+void bhvm_value_s_order_dec_set( const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm_value_s* r ); // allocating, order_dec
 
 /**********************************************************************************************************************/
 /// holor
@@ -400,19 +412,6 @@ static inline vd_t bhvm_holor_s_mfx_create_weak( const bhvm_holor_s* o )
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-/// casts  (make the target weakly reference source data)
-
-/// cast to transposed holor
-static inline void bhvm_holor_s_cast_htp( const bhvm_holor_s* o, bhvm_holor_s* r )
-{
-    bhvm_holor_s_clear( r );
-    bhvm_shape_s_init_weak( &r->s, o->s.data, o->s.size );
-    bhvm_value_s_init_weak( &r->v, o->v.type, o->v.data, o->v.size );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-/**********************************************************************************************************************/
 /// holor specific operations
 
 static inline sz_t bhvm_holor_s_get_order( const bhvm_holor_s* o ) { return o->s.size; }
@@ -441,11 +440,30 @@ void bhvm_holor_s_push( bhvm_holor_s* o, const bhvm_holor_s* src );
  *  If a, b have equal shape then r has shape [2]a
  *  If a[0] has shape of b, then r[0] has shape b and dimof(r) == dimof(a) + 1
  *  If b[0] has shape of a, then r[0] has shape a and dimof(r) == dimof(b) + 1
- *  Other constellations are not allowed.
+ *  Other shape constellations are not allowed.
+ *
+ *  Type and Vacancy:
+ *  r inherits the common or more precise type of a,b
+ *  r is vacant iff at least one of a,b is vacant.
  */
-bl_t bhvm_holor_s_can_cat( const bhvm_holor_s* a, const bhvm_holor_s* b                  ); // test
+bl_t bhvm_holor_s_cat_can( const bhvm_holor_s* a, const bhvm_holor_s* b                  ); // test
+void bhvm_holor_s_cat_set( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ); // cat with allocating r
 void bhvm_holor_s_cat    ( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ); // in place
-void bhvm_holor_s_cat_set( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ); // allocating r
+
+/** Order increment
+ *  A new leading dimension is appended to shape.
+ *  holor value is duplicated dim-times
+ */
+void bhvm_holor_s_order_inc_set(  const bhvm_holor_s* o, sz_t dim, bhvm_holor_s* r ); // order increment allocating r
+void bhvm_holor_s_order_inc    (  const bhvm_holor_s* o, sz_t dim, bhvm_holor_s* r ); // order increment in place
+
+/** Order decrement
+ *  Leading dimension is removed from shape.
+ *  indexed sub-holor is copied or referenced
+ */
+void bhvm_holor_s_order_dec_set(  const bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r ); // order decrement by indexing into leading dimension allocating r
+void bhvm_holor_s_order_dec    (  const bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r ); // order decrement by indexing into leading dimension in place
+void bhvm_holor_s_order_dec_fork(       bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r ); // order decrement by indexing into leading dimension r is a fork from a
 
 void bhvm_holor_s_to_sink(      const bhvm_holor_s* o, bcore_sink* sink );
 void bhvm_holor_s_to_sink_nl(   const bhvm_holor_s* o, bcore_sink* sink ); // appends newline

@@ -34,6 +34,8 @@
 PLANT_GROUP( bhvm_vop, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+stamp :arr = aware bcore_array { aware bhvm_vop => []; };
+
 feature 'ap' void run( const, bhvm_holor_s* ah );
 
 feature 'a' sz_t arity( const );
@@ -175,6 +177,7 @@ group :ar1 =
     stamp :floor      = { func :: :sig = { return "ay"; }; };
     stamp :ceil       = { func :: :sig = { return "ay"; }; };
     stamp :exp        = { func :: :sig = { return "ay"; }; };
+    stamp :log        = { func :: :sig = { return "ay"; }; };
     stamp :inv        = { func :: :sig = { return "ay"; }; };
     stamp :abs        = { func :: :sig = { return "ay"; }; };
     stamp :l1         = { func :: :sig = { return "ay"; }; };
@@ -187,6 +190,27 @@ group :ar1 =
     stamp :softplus   = { func :: :sig = { return "ay"; }; };
     stamp :relu       = { func :: :sig = { return "ay"; }; };
     stamp :relu_leaky = { func :: :sig = { return "ay"; }; };
+
+    stamp :order_inc =
+    {
+        sz_t dim;
+        func :: :run = { bhvm_holor_s_order_inc( &ah[o->i.v[0]], o->dim, &ah[o->i.v[1]] ); };
+        func :: :sig = { return "ay"; };
+    };
+
+    stamp :order_dec =
+    {
+        sz_t idx;
+        func :: :run = { bhvm_holor_s_order_dec( &ah[o->i.v[0]], o->idx, &ah[o->i.v[1]] ); };
+        func :: :sig = { return "ay"; };
+    };
+
+    stamp :order_dec_fork =
+    {
+        sz_t idx;
+        func :: :run = { bhvm_holor_s_order_dec_fork( &ah[o->i.v[0]], o->idx, &ah[o->i.v[1]] ); };
+        func :: :sig = { return "ay"; };
+    };
 
     /// dendrite pass ----------------------------------------------------------
 
@@ -247,9 +271,10 @@ group :ar2 =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :add     = { func :: :sig = { return "aby"; }; };
-    stamp :sub     = { func :: :sig = { return "aby"; }; };
-    stamp :div     = { func :: :sig = { return "aby"; }; };
+    stamp :add       = { func :: :sig = { return "aby"; }; };
+    stamp :sub       = { func :: :sig = { return "aby"; }; };
+    stamp :div       = { func :: :sig = { return "aby"; }; };
+    stamp :cat       = { func :: :sig = { return "aby"; }; };
 
     stamp :mul_vvv = { func :: :sig = { return "aby"; }; };
     stamp :mul_vsv = { func :: :sig = { return "aby"; }; };
@@ -309,6 +334,7 @@ group :ar2 =
 
     stamp :div_dp_a      = { func :: :run = { bhvm_hop_ar2_div_dp_zbf_s_f(        &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
     stamp :exp_dp        = { func :: :run = { bhvm_hop_ar2_exp_dp_zyf_s_f(        &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :log_dp        = { func :: :run = { bhvm_hop_ar2_log_dp_zaf_s_f(        &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zaf"; }; };
     stamp :inv_dp        = { func :: :run = { bhvm_hop_ar2_inv_dp_zyf_s_f(        &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
     stamp :lgst_dp       = { func :: :run = { bhvm_hop_ar2_lgst_dp_zyf_s_f(       &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
     stamp :lgst_hard_dp  = { func :: :run = { bhvm_hop_ar2_lgst_hard_dp_zyf_s_f(  &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };

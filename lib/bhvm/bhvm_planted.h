@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-09T14:23:50Z
+ *  Last File Update: 2020-01-11T18:06:56Z
  *
  *  Copyright and License of this File:
  *
@@ -177,6 +177,11 @@
   BCORE_DECLARE_OBJECT( bhvm_hop_ar1_exp_s ) \
     {aware_t _;}; \
   void bhvm_hop_ar1_exp_s_f( const bhvm_holor_s* a, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar1_log_s 2496886144
+#define BETH_EXPAND_ITEM_bhvm_hop_ar1_log_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar1_log_s ) \
+    {aware_t _;}; \
+  void bhvm_hop_ar1_log_s_f( const bhvm_holor_s* a, bhvm_holor_s* r );
 #define TYPEOF_bhvm_hop_ar1_inv_s 3653712297
 #define BETH_EXPAND_ITEM_bhvm_hop_ar1_inv_s \
   BCORE_DECLARE_OBJECT( bhvm_hop_ar1_inv_s ) \
@@ -285,6 +290,7 @@
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_floor_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_ceil_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_exp_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar1_log_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_inv_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_abs_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_sig_s ); \
@@ -311,6 +317,7 @@
   BETH_EXPAND_ITEM_bhvm_hop_ar1_floor_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_ceil_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_exp_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar1_log_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_inv_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_abs_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_sig_s \
@@ -407,6 +414,11 @@
   BCORE_DECLARE_OBJECT( bhvm_hop_ar2_exp_dp_zyf_s ) \
     {aware_t _;}; \
   void bhvm_hop_ar2_exp_dp_zyf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_log_dp_zaf_s 2545962112
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_log_dp_zaf_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_log_dp_zaf_s ) \
+    {aware_t _;}; \
+  void bhvm_hop_ar2_log_dp_zaf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
 #define TYPEOF_bhvm_hop_ar2_inv_dp_zyf_s 1319162647
 #define BETH_EXPAND_ITEM_bhvm_hop_ar2_inv_dp_zyf_s \
   BCORE_DECLARE_OBJECT( bhvm_hop_ar2_inv_dp_zyf_s ) \
@@ -597,6 +609,11 @@
   BCORE_DECLARE_OBJECT( bhvm_hop_ar2_mul_acc_ttm_s ) \
     {aware_t _;}; \
   void bhvm_hop_ar2_mul_acc_ttm_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_cat_s 1433501047
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_cat_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_cat_s ) \
+    {aware_t _;}; \
+  static inline void bhvm_hop_ar2_cat_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ){bhvm_holor_s_cat( a, b, r );}
 #define BETH_EXPAND_GROUP_bhvm_hop_ar2 \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2 ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_add_s ); \
@@ -613,6 +630,7 @@
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_logic_or_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_div_dp_zbf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_exp_dp_zyf_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_log_dp_zaf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_inv_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_lgst_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_lgst_hard_dp_zyf_s ); \
@@ -651,6 +669,7 @@
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_mul_acc_mtm_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_mul_acc_tmm_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_mul_acc_ttm_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_cat_s ); \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_add_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_sub_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_div_s \
@@ -665,6 +684,7 @@
   BETH_EXPAND_ITEM_bhvm_hop_ar2_logic_or_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_div_dp_zbf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_exp_dp_zyf_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_log_dp_zaf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_inv_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_lgst_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_lgst_hard_dp_zyf_s \
@@ -702,7 +722,8 @@
   BETH_EXPAND_ITEM_bhvm_hop_ar2_mul_acc_mmm_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_mul_acc_mtm_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_mul_acc_tmm_s \
-  BETH_EXPAND_ITEM_bhvm_hop_ar2_mul_acc_ttm_s
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_mul_acc_ttm_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_cat_s
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hop_ar3
