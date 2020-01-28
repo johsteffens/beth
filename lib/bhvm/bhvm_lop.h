@@ -325,12 +325,8 @@ group :ar2 =
     body body_div_f3 = { return a * f3_inv( b ); };
     body body_div_f2 = { return a * f2_inv( b ); };
 
-    stamp :add        = { func : :f2 = :body_add; func : :f3 = :body_add; func : :f = :body_vv_cv; };
-    stamp :sub        = { func : :f2 = :body_sub; func : :f3 = :body_sub; func : :f = :body_vv_cv; };
     stamp :sub_sqrsum = { func : :f; }; // r = ( a - b )^2
     stamp :sub_l1     = { func : :f; }; // r = l1 norm of ( a - b )
-
-    stamp :div = { func : :f2 = :body_div_f2; func : :f3 = :body_div_f3; func : :f = :body_vv_cv; };
 
     /// multiplication ---------------------------------------------------------
 
@@ -366,9 +362,6 @@ group :ar2 =
     };
 
     /// mul
-    stamp :mul_vvv = { func : :f   = { :mul_body_s_f_vv_cv( tknit, a, b, r, s ); }; };
-    stamp :mul_vsv = { func : :f   = { :mul_body_s_f_vs_cv( tknit, a, b, r, s ); }; };
-    stamp :mul_vvs = { func : :f   = { :mul_body_s_f_vv_cs( tknit, a, b, r, s ); }; };
     stamp :mul_mvv = { func : :f_m = { :mul_body_s_f_mv_cv( tknit, a, b, r, rows, cols ); }; };
     stamp :mul_vmv = { func : :f_m = { :mul_body_s_f_vm_cv( tknit, a, b, r, rows, cols ); }; };
     stamp :mul_vvm = { func : :f_m = { :mul_body_s_f_vv_cm( tknit, a, b, r, rows, cols ); }; };

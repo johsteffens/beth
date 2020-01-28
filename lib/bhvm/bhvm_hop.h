@@ -119,11 +119,6 @@ group :ar1 =
 
     stamp :identity_dp_zf = { func : :f = :body_lop_v_av; };
     stamp :neg_dp_zf      = { func : :f = :body_lop_v_av; };
-
-//    stamp :add_dp_zf = { func : :f = :body_lop_v_av; };
-//    stamp :add_dp_zg = { func : :f = :body_lop_v_av; };
-//    stamp :sub_dp_zf = { func : :f = :body_lop_v_av; };
-//    stamp :sub_dp_zg = { func : :f = :body_lop_v_av; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -136,9 +131,6 @@ group :ar1_eci =
     signature f2_t f2( plain, f2_t a );
     signature f3_t f3( plain, f3_t a );
     signature void f( plain, const bhvm_holor_s* a, bhvm_holor_s* r );
-
-    // vector += vector <op> vector
-    body body_zro = { bhvm_value_s_zro( &r->v ); };
 
     body body_acc =
     {
@@ -172,13 +164,29 @@ group :ar1_eci =
         #undef :ACC_CASE
     };
 
-    stamp :cpy = { func : :f2 = { return  a; };          func : :f3 = { return  a; };          func : :f = :body_zro : :body_acc; };
-    stamp :neg = { func : :f2 = { return -a; };          func : :f3 = { return -a; };          func : :f = :body_zro : :body_acc; };
-    stamp :inv = { func : :f2 = { return f2_inv( a ); }; func : :f3 = { return f3_inv( a ); }; func : :f = :body_zro : :body_acc; };
+    body body_std =
+    {
+        if( a == r )
+        {
+            bhvm_holor_s* buf = bhvm_holor_s_create();
+            :$R_acc_s_f( a, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
+            if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
+            bhvm_holor_s_discard( buf );
+        }
+        else
+        {
+            bhvm_value_s_zro( &r->v );
+            :$R_acc_s_f( a, r );
+        }
+    };
 
     stamp :cpy_acc = { func : :f2 = { return  a; };          func : :f3 = { return  a; };          func : :f = :body_acc; };
     stamp :neg_acc = { func : :f2 = { return -a; };          func : :f3 = { return -a; };          func : :f = :body_acc; };
     stamp :inv_acc = { func : :f2 = { return f2_inv( a ); }; func : :f3 = { return f3_inv( a ); }; func : :f = :body_acc; };
+
+    stamp :cpy = { func : :f2 = { return  a; };          func : :f3 = { return  a; };          func : :f = :body_std; };
+    stamp :neg = { func : :f2 = { return -a; };          func : :f3 = { return -a; };          func : :f = :body_std; };
+    stamp :inv = { func : :f2 = { return f2_inv( a ); }; func : :f3 = { return f3_inv( a ); }; func : :f = :body_std; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -213,9 +221,6 @@ group :ar2 =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :add        = { func : :f = :body_assert_vvv : :body_lop_r; /*func : :f = :body_lop_r_x;*/ };
-    stamp :sub        = { func : :f = :body_assert_vvv : :body_lop_r; };
-//    stamp :div        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :sub_sqrsum = { func : :f = :body_assert_vvs : :body_lop_a; }; // r = ( a - b )^2
     stamp :sub_l1     = { func : :f = :body_assert_vvs : :body_lop_a; }; // r = l1-norm of ( a - b )
 
@@ -252,10 +257,6 @@ group :ar2 =
 
     /// mul axon pass ----------------------------------------------------------
 
-    stamp :mul_vvv = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :mul_vsv = { func : :f = :body_assert_vsv : :body_lop_r; };
-    stamp :mul_svv = { func : :f = :body_assert_svv : { bhvm_lop_ar2_mul_vsv_s_f( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, r->v.size ); }; };
-    stamp :mul_vvs = { func : :f = :body_assert_vvs : :body_lop_a; };
     stamp :mul_mvv = { func : :f = :body_assert_mvv : :body_lop_ma; };
     stamp :mul_vmv = { func : :f = :body_assert_vmv : :body_lop_mb; };
     stamp :mul_vvm = { func : :f = :body_assert_vvm : :body_lop_mr; };
@@ -269,10 +270,6 @@ group :ar2 =
 
     /// mul accumulate ---------------------------------------------------------
 
-//    stamp :mul_acc_vvv = { func : :f = :body_assert_vvv : :body_lop_r; };
-//    stamp :mul_acc_vsv = { func : :f = :body_assert_vsv : :body_lop_r; };
-//    stamp :mul_acc_svv = { func : :f = :body_assert_svv : { bhvm_lop_ar2_mul_acc_vsv_s_f( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, r->v.size ); }; };
-//    stamp :mul_acc_vvs = { func : :f = :body_assert_vvs : :body_lop_a; };
     stamp :mul_acc_mvv = { func : :f = :body_assert_mvv : :body_lop_ma; };
     stamp :mul_acc_vmv = { func : :f = :body_assert_vmv : :body_lop_mb; };
     stamp :mul_acc_tvv = { func : :f = :body_assert_tvv : { bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] ); }; };
@@ -287,8 +284,6 @@ group :ar2 =
     /// other -----------------------------------------------------------------
 
     stamp :cat       = { func : :f = { bhvm_holor_s_cat( a, b, r ); }; };
-    //stamp :order_inc = { func : :f = { assert( a->v.size == 1 ); bhvm_holor_s_order_inc( b, bhvm_value_s_get_sz( &a->v, 0 ), r ); }; };
-    //stamp :order_dec = { func : :f = { assert( b->v.size == 1 ); bhvm_holor_s_order_dec( a, bhvm_value_s_get_sz( &b->v, 0 ), r ); }; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -342,6 +337,22 @@ group :ar2_eci =
         #undef :ACC_CASE
     };
 
+    body body_std =
+    {
+        if( a == r || b == r )
+        {
+            bhvm_holor_s* buf = bhvm_holor_s_create();
+            :$R_acc_s_f( a, b, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
+            if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
+            bhvm_holor_s_discard( buf );
+        }
+        else
+        {
+            bhvm_value_s_zro( &r->v );
+            :$R_acc_s_f( a, b, r );
+        }
+    };
+
     /// axon pass --------------------------------------------------------------
 
     stamp :add_acc = { func : :f2 = { return a + b; };           func : :f3 = { return a + b; };           func : :f = :body_acc; };
@@ -349,10 +360,10 @@ group :ar2_eci =
     stamp :mul_acc = { func : :f2 = { return a * b; };           func : :f3 = { return a * b; };           func : :f = :body_acc; };
     stamp :div_acc = { func : :f2 = { return a * f2_inv( b ); }; func : :f3 = { return a * f3_inv( b ); }; func : :f = :body_acc; };
 
-    stamp :add = { func : :f2 = { return a + b; };           func : :f3 = { return a + b; };           func : :f = { bhvm_value_s_zro( &r->v ); :$R_acc_s_f( a, b, r ); }; };
-    stamp :sub = { func : :f2 = { return a - b; };           func : :f3 = { return a - b; };           func : :f = { bhvm_value_s_zro( &r->v ); :$R_acc_s_f( a, b, r ); }; };
-    stamp :mul = { func : :f2 = { return a * b; };           func : :f3 = { return a * b; };           func : :f = { bhvm_value_s_zro( &r->v ); :$R_acc_s_f( a, b, r ); }; };
-    stamp :div = { func : :f2 = { return a * f2_inv( b ); }; func : :f3 = { return a * f3_inv( b ); }; func : :f = { bhvm_value_s_zro( &r->v ); :$R_acc_s_f( a, b, r ); }; };
+    stamp :add = { func : :f2 = { return a + b; };           func : :f3 = { return a + b; };           func : :f = :body_std; };
+    stamp :sub = { func : :f2 = { return a - b; };           func : :f3 = { return a - b; };           func : :f = :body_std; };
+    stamp :mul = { func : :f2 = { return a * b; };           func : :f3 = { return a * b; };           func : :f = :body_std; };
+    stamp :div = { func : :f2 = { return a * f2_inv( b ); }; func : :f3 = { return a * f3_inv( b ); }; func : :f = :body_std; };
 
     /// logic ------------------------------------------------------------------
 

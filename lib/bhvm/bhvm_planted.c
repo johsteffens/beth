@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-28T12:56:31Z
+ *  Last File Update: 2020-01-28T14:59:45Z
  *
  *  Copyright and License of this File:
  *
@@ -375,120 +375,6 @@ void bhvm_hop_ar1_neg_dp_zf_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hop_ar1_eci
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_cpy_s )
-"aware bhvm_hop_ar1_eci"
-"{"
-"}";
-
-void bhvm_hop_ar1_eci_cpy_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
-{
-    bhvm_value_s_zro( &r->v );
-    assert( a != r );
-    assert(  sz_min( a->v.size, r->v.size ) > 0 );
-    sz_t n = sz_gcd( a->v.size, r->v.size );
-    sz_t m = sz_max( a->v.size, r->v.size ) / n;
-    
-    
-    #define bhvm_hop_ar1_eci_ACC_CASE( TA_T, TR_T, FUNC ) \
-            { \
-                const TA_T *a0 = a->v.data, *a1 = a0; \
-                      TR_T *r0 = r->v.data, *r1 = r0; \
-                for( sz_t i = 0; i < m; i++ ) \
-                { \
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += FUNC( a1[ i ] ); \
-                    a1 = ( a1 + n - a0 ) < a->v.size ? ( a1 + n ) : a0; \
-                    r1 = ( r1 + n - r0 ) < r->v.size ? ( r1 + n ) : r0; \
-                } \
-            }
-    
-    switch( BKNIT_FA2( a->v.type, r->v.type ) )
-    {
-        case BKNIT_F22: bhvm_hop_ar1_eci_ACC_CASE( f2_t, f2_t, bhvm_hop_ar1_eci_cpy_s_f2 ); break;
-        case BKNIT_F23: bhvm_hop_ar1_eci_ACC_CASE( f2_t, f3_t, bhvm_hop_ar1_eci_cpy_s_f3 ); break;
-        case BKNIT_F32: bhvm_hop_ar1_eci_ACC_CASE( f3_t, f2_t, bhvm_hop_ar1_eci_cpy_s_f3 ); break;
-        case BKNIT_F33: bhvm_hop_ar1_eci_ACC_CASE( f3_t, f3_t, bhvm_hop_ar1_eci_cpy_s_f3 ); break;
-        default: BKNIT_FA2_ERR( a->v.type, r->v.type ); break;
-    }
-    
-    #undef bhvm_hop_ar1_eci_ACC_CASE
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_neg_s )
-"aware bhvm_hop_ar1_eci"
-"{"
-"}";
-
-void bhvm_hop_ar1_eci_neg_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
-{
-    bhvm_value_s_zro( &r->v );
-    assert( a != r );
-    assert(  sz_min( a->v.size, r->v.size ) > 0 );
-    sz_t n = sz_gcd( a->v.size, r->v.size );
-    sz_t m = sz_max( a->v.size, r->v.size ) / n;
-    
-    
-    #define bhvm_hop_ar1_eci_ACC_CASE( TA_T, TR_T, FUNC ) \
-            { \
-                const TA_T *a0 = a->v.data, *a1 = a0; \
-                      TR_T *r0 = r->v.data, *r1 = r0; \
-                for( sz_t i = 0; i < m; i++ ) \
-                { \
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += FUNC( a1[ i ] ); \
-                    a1 = ( a1 + n - a0 ) < a->v.size ? ( a1 + n ) : a0; \
-                    r1 = ( r1 + n - r0 ) < r->v.size ? ( r1 + n ) : r0; \
-                } \
-            }
-    
-    switch( BKNIT_FA2( a->v.type, r->v.type ) )
-    {
-        case BKNIT_F22: bhvm_hop_ar1_eci_ACC_CASE( f2_t, f2_t, bhvm_hop_ar1_eci_neg_s_f2 ); break;
-        case BKNIT_F23: bhvm_hop_ar1_eci_ACC_CASE( f2_t, f3_t, bhvm_hop_ar1_eci_neg_s_f3 ); break;
-        case BKNIT_F32: bhvm_hop_ar1_eci_ACC_CASE( f3_t, f2_t, bhvm_hop_ar1_eci_neg_s_f3 ); break;
-        case BKNIT_F33: bhvm_hop_ar1_eci_ACC_CASE( f3_t, f3_t, bhvm_hop_ar1_eci_neg_s_f3 ); break;
-        default: BKNIT_FA2_ERR( a->v.type, r->v.type ); break;
-    }
-    
-    #undef bhvm_hop_ar1_eci_ACC_CASE
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_inv_s )
-"aware bhvm_hop_ar1_eci"
-"{"
-"}";
-
-void bhvm_hop_ar1_eci_inv_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
-{
-    bhvm_value_s_zro( &r->v );
-    assert( a != r );
-    assert(  sz_min( a->v.size, r->v.size ) > 0 );
-    sz_t n = sz_gcd( a->v.size, r->v.size );
-    sz_t m = sz_max( a->v.size, r->v.size ) / n;
-    
-    
-    #define bhvm_hop_ar1_eci_ACC_CASE( TA_T, TR_T, FUNC ) \
-            { \
-                const TA_T *a0 = a->v.data, *a1 = a0; \
-                      TR_T *r0 = r->v.data, *r1 = r0; \
-                for( sz_t i = 0; i < m; i++ ) \
-                { \
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += FUNC( a1[ i ] ); \
-                    a1 = ( a1 + n - a0 ) < a->v.size ? ( a1 + n ) : a0; \
-                    r1 = ( r1 + n - r0 ) < r->v.size ? ( r1 + n ) : r0; \
-                } \
-            }
-    
-    switch( BKNIT_FA2( a->v.type, r->v.type ) )
-    {
-        case BKNIT_F22: bhvm_hop_ar1_eci_ACC_CASE( f2_t, f2_t, bhvm_hop_ar1_eci_inv_s_f2 ); break;
-        case BKNIT_F23: bhvm_hop_ar1_eci_ACC_CASE( f2_t, f3_t, bhvm_hop_ar1_eci_inv_s_f3 ); break;
-        case BKNIT_F32: bhvm_hop_ar1_eci_ACC_CASE( f3_t, f2_t, bhvm_hop_ar1_eci_inv_s_f3 ); break;
-        case BKNIT_F33: bhvm_hop_ar1_eci_ACC_CASE( f3_t, f3_t, bhvm_hop_ar1_eci_inv_s_f3 ); break;
-        default: BKNIT_FA2_ERR( a->v.type, r->v.type ); break;
-    }
-    
-    #undef bhvm_hop_ar1_eci_ACC_CASE
-}
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_cpy_acc_s )
 "aware bhvm_hop_ar1_eci"
 "{"
@@ -600,30 +486,71 @@ void bhvm_hop_ar1_eci_inv_acc_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
     #undef bhvm_hop_ar1_eci_ACC_CASE
 }
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_cpy_s )
+"aware bhvm_hop_ar1_eci"
+"{"
+"}";
+
+void bhvm_hop_ar1_eci_cpy_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+{
+    if( a == r )
+    {
+        bhvm_holor_s* buf = bhvm_holor_s_create();
+        bhvm_hop_ar1_eci_cpy_acc_s_f( a, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
+        if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
+        bhvm_holor_s_discard( buf );
+    }
+    else
+    {
+        bhvm_value_s_zro( &r->v );
+        bhvm_hop_ar1_eci_cpy_acc_s_f( a, r );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_neg_s )
+"aware bhvm_hop_ar1_eci"
+"{"
+"}";
+
+void bhvm_hop_ar1_eci_neg_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+{
+    if( a == r )
+    {
+        bhvm_holor_s* buf = bhvm_holor_s_create();
+        bhvm_hop_ar1_eci_neg_acc_s_f( a, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
+        if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
+        bhvm_holor_s_discard( buf );
+    }
+    else
+    {
+        bhvm_value_s_zro( &r->v );
+        bhvm_hop_ar1_eci_neg_acc_s_f( a, r );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_inv_s )
+"aware bhvm_hop_ar1_eci"
+"{"
+"}";
+
+void bhvm_hop_ar1_eci_inv_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+{
+    if( a == r )
+    {
+        bhvm_holor_s* buf = bhvm_holor_s_create();
+        bhvm_hop_ar1_eci_inv_acc_s_f( a, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
+        if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
+        bhvm_holor_s_discard( buf );
+    }
+    else
+    {
+        bhvm_value_s_zro( &r->v );
+        bhvm_hop_ar1_eci_inv_acc_s_f( a, r );
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hop_ar2
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_add_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_add_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_add_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_sub_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_sub_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_sub_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-}
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_sub_sqrsum_s )
 "aware bhvm_hop_ar2"
@@ -898,50 +825,6 @@ void bhvm_hop_ar2_branch_vvvv_dp_azh_s_f( const bhvm_holor_s* a, const bhvm_holo
 {
     assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
     bhvm_lop_ar2_branch_vvvv_dp_azh_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_vvv_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_mul_vvv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_mul_vvv_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_vsv_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_mul_vsv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size ); assert( b->v.size == 1         );
-    bhvm_lop_ar2_mul_vsv_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_svv_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_mul_svv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == 1         ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_mul_vsv_s_f( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_vvs_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_mul_vvs_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == b->v.size ); assert( r->v.size == 1         );
-    bhvm_lop_ar2_mul_vvs_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_mvv_s )
@@ -1275,20 +1158,84 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_eci_add_s )
 "{"
 "}";
 
+void bhvm_hop_ar2_eci_add_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    if( a == r || b == r )
+    {
+        bhvm_holor_s* buf = bhvm_holor_s_create();
+        bhvm_hop_ar2_eci_add_acc_s_f( a, b, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
+        if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
+        bhvm_holor_s_discard( buf );
+    }
+    else
+    {
+        bhvm_value_s_zro( &r->v );
+        bhvm_hop_ar2_eci_add_acc_s_f( a, b, r );
+    }
+}
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_eci_sub_s )
 "aware bhvm_hop_ar2_eci"
 "{"
 "}";
+
+void bhvm_hop_ar2_eci_sub_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    if( a == r || b == r )
+    {
+        bhvm_holor_s* buf = bhvm_holor_s_create();
+        bhvm_hop_ar2_eci_sub_acc_s_f( a, b, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
+        if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
+        bhvm_holor_s_discard( buf );
+    }
+    else
+    {
+        bhvm_value_s_zro( &r->v );
+        bhvm_hop_ar2_eci_sub_acc_s_f( a, b, r );
+    }
+}
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_eci_mul_s )
 "aware bhvm_hop_ar2_eci"
 "{"
 "}";
 
+void bhvm_hop_ar2_eci_mul_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    if( a == r || b == r )
+    {
+        bhvm_holor_s* buf = bhvm_holor_s_create();
+        bhvm_hop_ar2_eci_mul_acc_s_f( a, b, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
+        if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
+        bhvm_holor_s_discard( buf );
+    }
+    else
+    {
+        bhvm_value_s_zro( &r->v );
+        bhvm_hop_ar2_eci_mul_acc_s_f( a, b, r );
+    }
+}
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_eci_div_s )
 "aware bhvm_hop_ar2_eci"
 "{"
 "}";
+
+void bhvm_hop_ar2_eci_div_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    if( a == r || b == r )
+    {
+        bhvm_holor_s* buf = bhvm_holor_s_create();
+        bhvm_hop_ar2_eci_div_acc_s_f( a, b, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
+        if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
+        bhvm_holor_s_discard( buf );
+    }
+    else
+    {
+        bhvm_value_s_zro( &r->v );
+        bhvm_hop_ar2_eci_div_acc_s_f( a, b, r );
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hop_ar3
@@ -1541,7 +1488,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 1312037583 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 843908077 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1596,17 +1543,15 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bhvm_hop_ar1, bhvm_hop );
 
             // group: bhvm_hop_ar1_eci
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_eci_cpy_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_eci_neg_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_eci_inv_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_eci_cpy_acc_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_eci_neg_acc_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_eci_inv_acc_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_eci_cpy_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_eci_neg_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_eci_inv_s );
             BCORE_REGISTER_TRAIT( bhvm_hop_ar1_eci, bhvm_hop );
 
             // group: bhvm_hop_ar2
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_add_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_sqrsum_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_l1_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_equal_s );
@@ -1632,10 +1577,6 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_relu_leaky_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_branch_vvvv_dp_azg_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_branch_vvvv_dp_azh_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_vvv_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_vsv_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_svv_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_vvs_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_mvv_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_vmv_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_vvm_s );

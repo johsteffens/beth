@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-28T14:27:49Z
+ *  Last File Update: 2020-01-28T14:59:45Z
  *
  *  Copyright and License of this File:
  *
@@ -593,50 +593,6 @@ void bhvm_lop_ar1_sub_dp_zg_s_f( tp_t tknit, vc_t a, vd_t r, sz_t s )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_lop_ar2
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_add_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
-void bhvm_lop_ar2_add_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
-{
-    assert( s == 0 || ( a && b && r ) );
-    switch( tknit )
-    {
-        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
-        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
-        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
-        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_add_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
-        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
-    }
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_sub_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
-void bhvm_lop_ar2_sub_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
-{
-    assert( s == 0 || ( a && b && r ) );
-    switch( tknit )
-    {
-        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
-        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
-        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
-        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_sub_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
-        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
-    }
-}
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_sub_sqrsum_s )
 "aware bhvm_lop_ar2"
 "{"
@@ -647,45 +603,8 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_sub_l1_s )
 "{"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_div_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
-void bhvm_lop_ar2_div_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
-{
-    assert( s == 0 || ( a && b && r ) );
-    switch( tknit )
-    {
-        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_div_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_div_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_div_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
-        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_div_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
-        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_div_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_div_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
-        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]=bhvm_lop_ar2_div_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
-        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]=bhvm_lop_ar2_div_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
-        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
-    }
-}
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_body_s )
 "aware bcore_inst"
-"{"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_vvv_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_vsv_s )
-"aware bhvm_lop_ar2"
-"{"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_mul_vvs_s )
-"aware bhvm_lop_ar2"
 "{"
 "}";
 
@@ -1267,7 +1186,7 @@ vd_t bhvm_planted_lop_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_lop_hash" ), sr_tp( 2039525909 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_lop_hash" ), sr_tp( 1397364602 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_lop.h
@@ -1314,15 +1233,9 @@ vd_t bhvm_planted_lop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bhvm_lop_ar1, bhvm_lop );
 
             // group: bhvm_lop_ar2
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_add_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_sub_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_sub_sqrsum_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_sub_l1_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_div_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_body_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vvv_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vsv_s );
-            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vvs_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_mvv_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vmv_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_mul_vvm_s );
