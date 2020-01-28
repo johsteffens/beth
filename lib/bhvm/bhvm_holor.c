@@ -94,6 +94,15 @@ bl_t bhvm_shape_s_is_equal( const bhvm_shape_s* o, const bhvm_shape_s* b )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+bl_t bhvm_shape_s_is_sub( const bhvm_shape_s* o, const bhvm_shape_s* b )
+{
+    if( o->size < b->size ) return false;
+    BFOR_EACH( i, b ) if( o->data[ i ] != b->data[ i ] ) return false;
+    return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bhvm_shape_s_inc_order( bhvm_shape_s* o, sz_t dim )
 {
     bhvm_shape_s_make_strong( o );
@@ -361,10 +370,10 @@ void bhvm_value_s_set_type_data( bhvm_value_s* o, tp_t dst_type, tp_t src_type, 
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size )
+void bhvm_value_s_cpy_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size )
 {
-    if( !o->type ) o->type = src_type;
-    bhvm_value_s_set_size( o, size );
+    assert( o->type );
+    assert( o->size == size );
     switch( BKNIT_FA2( o->type, src_type ) )
     {
         case BKNIT_F22: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = ( ( f2_t* )data )[ i ]; break;
@@ -373,6 +382,28 @@ void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size
         case BKNIT_F33: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
         default: BKNIT_FA2_ERR( o->type, src_type ); break;
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_zro( bhvm_value_s* o )
+{
+    if( o->size == 0 ) return;
+    switch( BKNIT_FA1( o->type ) )
+    {
+        case BKNIT_F2: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = 0; break;
+        case BKNIT_F3: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = 0; break;
+        default: BKNIT_FA1_ERR( o->type ); break;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size )
+{
+    if( !o->type ) o->type = src_type;
+    bhvm_value_s_set_size( o, size );
+    bhvm_value_s_cpy_data( o, src_type, data, size );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1095,21 +1126,22 @@ static void to_sink_recursive( const bhvm_holor_s* o, sz_t indent, bl_t formatte
     }
     else
     {
-        sz_t v_block = 1;
-        for( sz_t i = 0; i < d_idx; i++ ) v_block *= o->s.data[ i ];
+        sz_t sub_volume = 1;
+        for( sz_t i = 0; i < d_idx; i++ ) sub_volume *= o->s.data[ i ];
         sz_t dim = o->s.data[ d_idx ];
+        sz_t sub_dim = o->s.data[ d_idx - 1 ];
         for( sz_t i = 0; i < dim; i++ )
         {
             if( formatted && d_idx > 0 ) bcore_sink_a_push_fa( sink, "\n#rn{ }", indent );
-            bcore_sink_a_push_fa( sink, "(" );
+            bcore_sink_a_push_fa( sink, ( sub_dim == 1 ) ? "1[" : "(" );
             switch( o->v.type )
             {
-                case TYPEOF_f2_t: to_sink_recursive( o, indent + 2, formatted, sink, ( f2_t* )v_data + i * v_block, d_idx - 1 ); break;
-                case TYPEOF_f3_t: to_sink_recursive( o, indent + 2, formatted, sink, ( f3_t* )v_data + i * v_block, d_idx - 1 ); break;
+                case TYPEOF_f2_t: to_sink_recursive( o, indent + 2, formatted, sink, ( f2_t* )v_data + i * sub_volume, d_idx - 1 ); break;
+                case TYPEOF_f3_t: to_sink_recursive( o, indent + 2, formatted, sink, ( f3_t* )v_data + i * sub_volume, d_idx - 1 ); break;
                 default: break;
             }
             if( formatted && d_idx > 1 ) bcore_sink_a_push_fa( sink, "\n#rn{ }", indent );
-            bcore_sink_a_push_fa( sink, ")" );
+            if( ( sub_dim > 1 ) ) bcore_sink_a_push_fa( sink, ")" );
             if( i < dim - 1 ) bcore_sink_a_push_fa( sink, ":" );
         }
     }
@@ -1125,17 +1157,10 @@ static void holor_s_to_sink( const bhvm_holor_s* o, sz_t max_size, bcore_sink* s
     {
         if( o->s.size > 0 )
         {
-            if( o->s.data[ o->s.size - 1 ] == 1 )
-            {
-                bcore_sink_a_push_fa( sink, "[1]" );
-                to_sink_recursive( o, 0, false, sink, o->v.data, o->s.size - 1 );
-            }
-            else
-            {
-                bcore_sink_a_push_fa( sink, "(" );
-                to_sink_recursive( o, 0, false, sink, o->v.data, o->s.size - 1 );
-                bcore_sink_a_push_fa( sink, ")" );
-            }
+            sz_t sub_dim = o->s.data[ o->s.size - 1 ];
+            bcore_sink_a_push_fa( sink, ( sub_dim == 1 ) ? "1[" : "(" );
+            to_sink_recursive( o, 0, false, sink, o->v.data, o->s.size - 1 );
+            if( sub_dim > 1 ) bcore_sink_a_push_fa( sink, ")" );
         }
         else
         {
@@ -1151,7 +1176,7 @@ static void holor_s_to_sink( const bhvm_holor_s* o, sz_t max_size, bcore_sink* s
     {
         for( sz_t i = o->s.size - 1; i >= 0; i-- )
         {
-            bcore_sink_a_push_fa( sink, "[#<sz_t>]", o->s.data[ i ] );
+            bcore_sink_a_push_fa( sink, "#<sz_t>[", o->s.data[ i ] );
         }
         if( o->v.size == 0 )
         {
@@ -1175,7 +1200,7 @@ void bhvm_holor_s_to_sink( const bhvm_holor_s* o, bcore_sink* sink )
 
 void bhvm_holor_s_brief_to_sink( const bhvm_holor_s* o, bcore_sink* sink )
 {
-    holor_s_to_sink( o, 16, sink );
+    holor_s_to_sink( o, 32, sink );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1186,19 +1211,11 @@ void bhvm_holor_s_formatted_to_sink( const bhvm_holor_s* o, bcore_sink* sink )
     {
         if( o->s.size > 0 )
         {
-            if( o->s.data[ o->s.size - 1 ] == 1 )
-            {
-                bcore_sink_a_push_fa( sink, "[1]" );
-                to_sink_recursive( o, 2, true, sink, o->v.data, o->s.size - 1 );
-            }
-            else
-            {
-                bcore_sink_a_push_fa( sink, "(" );
-                to_sink_recursive( o, 2, true, sink, o->v.data, o->s.size - 1 );
-                if( o->s.size > 1 ) bcore_sink_a_push_fa( sink, "\n" );
-                bcore_sink_a_push_fa( sink, ")" );
-                bcore_sink_a_push_fa( sink, "\n" );
-            }
+            sz_t sub_dim = o->s.data[ o->s.size - 1 ];
+            bcore_sink_a_push_fa( sink, ( sub_dim == 1 ) ? "1[" : "(" );
+            to_sink_recursive( o, 2, true, sink, o->v.data, o->s.size - 1 );
+            if( o->s.size > 1 ) bcore_sink_a_push_fa( sink, "\n" );
+            if( sub_dim > 1 ) bcore_sink_a_push_fa( sink, ")\n" );
         }
         else
         {
@@ -1264,7 +1281,7 @@ void bhvm_holor_s_formatted_to_stdout( const bhvm_holor_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source )
+bhvm_holor_s* bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source )
 {
     bhvm_holor_s_clear( o );
 
@@ -1288,16 +1305,6 @@ void bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source )
         bcore_source_a_parse_fa( source, " #<f3_t*>", &val );
         bhvm_holor_s_set_type_scalar( o, o->v.type ? o->v.type : TYPEOF_f3_t, val );
     }
-    else if( bcore_source_a_parse_bl_fa( source, " #?'['" ) )
-    {
-        sz_t dim = -1;
-        bcore_source_a_parse_fa( source, " #<sz_t*>", &dim );
-        if( dim <= 0 ) bcore_source_a_parse_err_fa( source, "Incorrect dimension value '#<sz_t>' or syntax error.", dim );
-        bcore_source_a_parse_fa( source, " ]" );
-
-        bhvm_holor_s_parse( o, source );
-        bhvm_holor_s_inc_order( o, dim );
-    }
     else if( bcore_source_a_parse_bl_fa( source, " #?'('" ) )
     {
         bhvm_holor_s_parse( o, source );
@@ -1308,7 +1315,6 @@ void bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source )
         bcore_source_a_parse_err_fa( source, "Syntax error." );
     }
 
-
     if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
     {
         bhvm_holor_s* h = bhvm_holor_s_create();
@@ -1316,8 +1322,59 @@ void bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source )
         bhvm_holor_s_cat_set( o, h, o );
         bhvm_holor_s_discard( h );
     }
+    else if( bcore_source_a_parse_bl_fa( source, " #?'['" ) )
+    {
+        if( o->s.size != 0 || o->v.size == 0 ) bcore_source_a_parse_err_fa( source, "[: lvalue must be a scalar literal." );
+        sz_t dim = bhvm_value_s_get_sz( &o->v, 0 );
+        if( dim <= 0 ) bcore_source_a_parse_err_fa( source, "[: lvalue must be >=1." );
+        bhvm_holor_s_parse( o, source );
+        bhvm_holor_s_inc_order( o, dim );
+    }
 
     bhvm_holor_s_check_integrity( o );
+
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bhvm_holor_s* bhvm_holor_s_parse_st( bhvm_holor_s* o, const st_s* st )
+{
+    BLM_INIT();
+    bhvm_holor_s_parse( o, BLM_A_PUSH( bcore_source_string_s_create_from_string( st ) ) );
+    BLM_DOWN();
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bhvm_holor_s*bhvm_holor_s_parse_sc( bhvm_holor_s* o, sc_t sc )
+{
+    BLM_INIT();
+    bhvm_holor_s_parse( o, BLM_A_PUSH( bcore_source_string_s_create_from_string_d( st_s_create_sc( sc ) ) ) );
+    BLM_DOWN();
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bhvm_holor_s* bhvm_holor_s_create_parse( bcore_source* source )
+{
+    return bhvm_holor_s_parse( bhvm_holor_s_create(), source );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bhvm_holor_s* bhvm_holor_s_create_parse_st( const st_s* st )
+{
+    return bhvm_holor_s_parse_st( bhvm_holor_s_create(), st );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bhvm_holor_s* bhvm_holor_s_create_parse_sc( sc_t sc )
+{
+    return bhvm_holor_s_parse_sc( bhvm_holor_s_create(), sc );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

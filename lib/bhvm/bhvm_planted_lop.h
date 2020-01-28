@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-11T11:50:16Z
+ *  Last File Update: 2020-01-21T16:02:31Z
  *
  *  Copyright and License of this File:
  *
@@ -158,6 +158,20 @@
   static inline f2_t bhvm_lop_ar1_sqr_s_f2( f2_t a ){return f2_sqr(a);} \
   static inline f3_t bhvm_lop_ar1_sqr_s_f3( f3_t a ){return f3_sqr(a);} \
   void bhvm_lop_ar1_sqr_s_f( tp_t tknit, vc_t a, vd_t r, sz_t s );
+#define TYPEOF_bhvm_lop_ar1_sqrsum_s 248756107
+#define BETH_EXPAND_ITEM_bhvm_lop_ar1_sqrsum_s \
+  BCORE_DECLARE_OBJECT( bhvm_lop_ar1_sqrsum_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_lop_ar1_sqrsum_s_f2( f2_t a ){return f2_sqr(a);} \
+  static inline f3_t bhvm_lop_ar1_sqrsum_s_f3( f3_t a ){return f3_sqr(a);} \
+  void bhvm_lop_ar1_sqrsum_s_f( tp_t tknit, vc_t a, vd_t r, sz_t s );
+#define TYPEOF_bhvm_lop_ar1_srt_s 779109753
+#define BETH_EXPAND_ITEM_bhvm_lop_ar1_srt_s \
+  BCORE_DECLARE_OBJECT( bhvm_lop_ar1_srt_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_lop_ar1_srt_s_f2( f2_t a ){return f2_srt(a);} \
+  static inline f3_t bhvm_lop_ar1_srt_s_f3( f3_t a ){return f3_srt(a);} \
+  void bhvm_lop_ar1_srt_s_f( tp_t tknit, vc_t a, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar1_tanh_s 3034687379
 #define BETH_EXPAND_ITEM_bhvm_lop_ar1_tanh_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar1_tanh_s ) \
@@ -277,6 +291,8 @@
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_sig_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_l1_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_sqr_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_lop_ar1_sqrsum_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_lop_ar1_srt_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_tanh_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_tanh_hard_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar1_tanh_leaky_s ); \
@@ -304,6 +320,8 @@
   BETH_EXPAND_ITEM_bhvm_lop_ar1_sig_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar1_l1_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar1_sqr_s \
+  BETH_EXPAND_ITEM_bhvm_lop_ar1_sqrsum_s \
+  BETH_EXPAND_ITEM_bhvm_lop_ar1_srt_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar1_tanh_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar1_tanh_hard_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar1_tanh_leaky_s \
@@ -331,7 +349,8 @@
     {aware_t _;}; \
   static inline f2_t bhvm_lop_ar2_add_s_f2( f2_t a, f2_t b ){return a + b;} \
   static inline f3_t bhvm_lop_ar2_add_s_f3( f3_t a, f3_t b ){return a + b;} \
-  void bhvm_lop_ar2_add_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
+  void bhvm_lop_ar2_add_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s ); \
+  void bhvm_lop_ar2_add_s_fra( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t sa, sz_t sb, sz_t sr );
 #define TYPEOF_bhvm_lop_ar2_sub_s 2025417869
 #define BETH_EXPAND_ITEM_bhvm_lop_ar2_sub_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_sub_s ) \
@@ -339,11 +358,11 @@
   static inline f2_t bhvm_lop_ar2_sub_s_f2( f2_t a, f2_t b ){return a - b;} \
   static inline f3_t bhvm_lop_ar2_sub_s_f3( f3_t a, f3_t b ){return a - b;} \
   void bhvm_lop_ar2_sub_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
-#define TYPEOF_bhvm_lop_ar2_sub_sqr_s 2638056300
-#define BETH_EXPAND_ITEM_bhvm_lop_ar2_sub_sqr_s \
-  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_sub_sqr_s ) \
+#define TYPEOF_bhvm_lop_ar2_sub_sqrsum_s 1296103135
+#define BETH_EXPAND_ITEM_bhvm_lop_ar2_sub_sqrsum_s \
+  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_sub_sqrsum_s ) \
     {aware_t _;}; \
-  void bhvm_lop_ar2_sub_sqr_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
+  void bhvm_lop_ar2_sub_sqrsum_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar2_sub_l1_s 3478307077
 #define BETH_EXPAND_ITEM_bhvm_lop_ar2_sub_l1_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_sub_l1_s ) \
@@ -462,6 +481,20 @@
   static inline f2_t bhvm_lop_ar2_inv_dp_zyf_s_f2( f2_t a, f2_t b ){return -a*b*b;} \
   static inline f3_t bhvm_lop_ar2_inv_dp_zyf_s_f3( f3_t a, f3_t b ){return -a*b*b;} \
   void bhvm_lop_ar2_inv_dp_zyf_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
+#define TYPEOF_bhvm_lop_ar2_sqr_dp_zaf_s 2353135468
+#define BETH_EXPAND_ITEM_bhvm_lop_ar2_sqr_dp_zaf_s \
+  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_sqr_dp_zaf_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_lop_ar2_sqr_dp_zaf_s_f2( f2_t a, f2_t b ){return  2*a*b;} \
+  static inline f3_t bhvm_lop_ar2_sqr_dp_zaf_s_f3( f3_t a, f3_t b ){return  2*a*b;} \
+  void bhvm_lop_ar2_sqr_dp_zaf_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
+#define TYPEOF_bhvm_lop_ar2_srt_dp_zyf_s 1653429823
+#define BETH_EXPAND_ITEM_bhvm_lop_ar2_srt_dp_zyf_s \
+  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_srt_dp_zyf_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_lop_ar2_srt_dp_zyf_s_f2( f2_t a, f2_t b ){return a * f2_inv( b );} \
+  static inline f3_t bhvm_lop_ar2_srt_dp_zyf_s_f3( f3_t a, f3_t b ){return a * f3_inv( b );} \
+  void bhvm_lop_ar2_srt_dp_zyf_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar2_lgst_dp_zyf_s 3623060366
 #define BETH_EXPAND_ITEM_bhvm_lop_ar2_lgst_dp_zyf_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_lgst_dp_zyf_s ) \
@@ -592,7 +625,7 @@
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2 ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_add_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_sub_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_sub_sqr_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_sub_sqrsum_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_sub_l1_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_div_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_body_s ); \
@@ -612,6 +645,8 @@
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_exp_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_log_dp_zaf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_inv_dp_zyf_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_sqr_dp_zaf_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_srt_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_lgst_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_lgst_hard_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_lgst_leaky_dp_zyf_s ); \
@@ -632,7 +667,7 @@
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_logic_or_s ); \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_add_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_sub_s \
-  BETH_EXPAND_ITEM_bhvm_lop_ar2_sub_sqr_s \
+  BETH_EXPAND_ITEM_bhvm_lop_ar2_sub_sqrsum_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_sub_l1_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_div_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_body_s \
@@ -652,6 +687,8 @@
   BETH_EXPAND_ITEM_bhvm_lop_ar2_exp_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_log_dp_zaf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_inv_dp_zyf_s \
+  BETH_EXPAND_ITEM_bhvm_lop_ar2_sqr_dp_zaf_s \
+  BETH_EXPAND_ITEM_bhvm_lop_ar2_srt_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_lgst_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_lgst_hard_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_lgst_leaky_dp_zyf_s \

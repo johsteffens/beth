@@ -46,9 +46,10 @@
 
 /// type knitting macros
 #define BKNIT_FA1( type ) ( ( type == TYPEOF_f2_t ) ? 0 : ( type == TYPEOF_f3_t ) ? 1 : -256 )
-#define BKNIT_FA1_ERR( t1         ) ERR_fa( "Invalid type: '#<sc_t>'.", ifnameof( t1 ) )
-#define BKNIT_FA2_ERR( t1, t2     ) ERR_fa( "Invalid type combination: '#<sc_t>', '#<sc_t>'.", ifnameof( t1 ), ifnameof( t2 ) )
-#define BKNIT_FA3_ERR( t1, t2, t3 ) ERR_fa( "Invalid type combination: '#<sc_t>', '#<sc_t>', '#<sc_t>'.", ifnameof( t1 ), ifnameof( t2 ), ifnameof( t3 ) )
+#define BKNIT_FA1_ERR( t1             ) ERR_fa( "Invalid type: '#<sc_t>'.", ifnameof( t1 ) )
+#define BKNIT_FA2_ERR( t1, t2         ) ERR_fa( "Invalid type combination: '#<sc_t>', '#<sc_t>'.", ifnameof( t1 ), ifnameof( t2 ) )
+#define BKNIT_FA3_ERR( t1, t2, t3     ) ERR_fa( "Invalid type combination: '#<sc_t>', '#<sc_t>', '#<sc_t>'.", ifnameof( t1 ), ifnameof( t2 ), ifnameof( t3 ) )
+#define BKNIT_FA4_ERR( t1, t2, t3, t4 ) ERR_fa( "Invalid type combination: '#<sc_t>', '#<sc_t>', '#<sc_t>', '#<sc_t>'.", ifnameof( t1 ), ifnameof( t2 ), ifnameof( t3 ), ifnameof( t4 ) )
 
 #define BKNIT_FA2( t1, t2 )         ( BKNIT_FA1( t1 )         * 2 + BKNIT_FA1( t2 ) )
 #define BKNIT_FA3( t1, t2, t3 )     ( BKNIT_FA2( t1, t2 )     * 2 + BKNIT_FA1( t3 ) )
@@ -94,6 +95,10 @@
 #define BKNIT_F3333 BKNIT_FA4( TYPEOF_f3_t, TYPEOF_f3_t, TYPEOF_f3_t, TYPEOF_f3_t )
 
 /**********************************************************************************************************************/
+
+/// greatest common divisor
+static inline sz_t bhvm_lop_gcd2( sz_t a, sz_t b ) { return ( a == 0 ) ? b : bhvm_lop_gcd2( b % a, a ); }
+static inline sz_t bhvm_lop_gcd3( sz_t a, sz_t b, sz_t c ) { return bhvm_lop_gcd2( a, bhvm_lop_gcd2( b, c ) ); }
 
 #ifdef TYPEOF_bhvm_lop
 
@@ -214,7 +219,9 @@ group :ar1 =
     stamp :abs      = { func : :f2 = { return f2_abs(a); }; func : :f3 = { return f3_abs(a); }; func : :f = :body_v_cv; };
     stamp :sig      = { func : :f2 = { return f2_sig(a); }; func : :f3 = { return f3_sig(a); }; func : :f = :body_v_cv; };
     stamp :l1       = { func : :f2 = { return f2_abs(a); }; func : :f3 = { return f3_abs(a); }; func : :f = :body_v_cs; };
-    stamp :sqr      = { func : :f2 = { return f2_sqr(a); }; func : :f3 = { return f3_sqr(a); }; func : :f = :body_v_cs; };
+    stamp :sqr      = { func : :f2 = { return f2_sqr(a); }; func : :f3 = { return f3_sqr(a); }; func : :f = :body_v_cv; };
+    stamp :sqrsum   = { func : :f2 = { return f2_sqr(a); }; func : :f3 = { return f3_sqr(a); }; func : :f = :body_v_cs; }; // squared sum
+    stamp :srt      = { func : :f2 = { return f2_srt(a); }; func : :f3 = { return f3_srt(a); }; func : :f = :body_v_cv; };
 
     body body_lgst       = { return ( a > -700 ) ? ( 1.0 / ( 1.0 + exp( -( f3_t )a ) ) ) : 0; };
     body body_lgst_hard  = { return ( a < -2.0 ) ? 0.0 : ( a > 2.0 ) ? 1.0 : 0.25 * ( a + 2.0 ); };
@@ -260,6 +267,9 @@ group :ar2 =
     signature void f  ( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
     signature void f_m( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t rows, sz_t cols );
 
+    /// rolling accumulation
+    signature void fra( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t sa, sz_t sb, sz_t sr );
+
     // vector <- vector <op> vector
     body body_vv_cv =
     {
@@ -277,6 +287,147 @@ group :ar2 =
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
+
+    // vector += vector <op> vector
+    body body_fra =
+    {
+        assert( sz_min( sz_min( sa, sb ), sr ) > 0 );
+        sz_t n = bhvm_lop_gcd3( sa, sb, sr );
+        sz_t m = sz_max( sz_max( sa, sb ), sr ) / n;
+        switch( tknit )
+        {
+            case BKNIT_F222:
+            {
+                const f2_t *a0 = a, *a1 = a0;
+                const f2_t *b0 = b, *b1 = b0;
+                      f2_t *r0 = r, *r1 = r0;
+
+                for( sz_t i = 0; i < m; i++ )
+                {
+                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f2( a1[ i ], b1[ i ] );
+                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
+                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
+                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
+                }
+            }
+            break;
+
+            case BKNIT_F223:
+            {
+                const f2_t *a0 = a, *a1 = a0;
+                const f2_t *b0 = b, *b1 = b0;
+                      f3_t *r0 = r, *r1 = r0;
+
+                for( sz_t i = 0; i < m; i++ )
+                {
+                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
+                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
+                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
+                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
+                }
+            }
+            break;
+
+            case BKNIT_F232:
+            {
+                const f2_t *a0 = a, *a1 = a0;
+                const f3_t *b0 = b, *b1 = b0;
+                      f2_t *r0 = r, *r1 = r0;
+
+                for( sz_t i = 0; i < m; i++ )
+                {
+                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
+                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
+                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
+                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
+                }
+            }
+            break;
+
+            case BKNIT_F233:
+            {
+                const f2_t *a0 = a, *a1 = a0;
+                const f3_t *b0 = b, *b1 = b0;
+                      f3_t *r0 = r, *r1 = r0;
+
+                for( sz_t i = 0; i < m; i++ )
+                {
+                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
+                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
+                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
+                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
+                }
+            }
+            break;
+
+            case BKNIT_F322:
+            {
+                const f3_t *a0 = a, *a1 = a0;
+                const f2_t *b0 = b, *b1 = b0;
+                      f2_t *r0 = r, *r1 = r0;
+
+                for( sz_t i = 0; i < m; i++ )
+                {
+                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
+                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
+                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
+                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
+                }
+            }
+            break;
+
+            case BKNIT_F323:
+            {
+                const f3_t *a0 = a, *a1 = a0;
+                const f2_t *b0 = b, *b1 = b0;
+                      f3_t *r0 = r, *r1 = r0;
+
+                for( sz_t i = 0; i < m; i++ )
+                {
+                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
+                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
+                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
+                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
+                }
+            }
+            break;
+
+            case BKNIT_F332:
+            {
+                const f3_t *a0 = a, *a1 = a0;
+                const f3_t *b0 = b, *b1 = b0;
+                      f2_t *r0 = r, *r1 = r0;
+
+                for( sz_t i = 0; i < m; i++ )
+                {
+                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
+                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
+                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
+                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
+                }
+            }
+            break;
+
+            case BKNIT_F333:
+            {
+                const f3_t *a0 = a, *a1 = a0;
+                const f3_t *b0 = b, *b1 = b0;
+                      f3_t *r0 = r, *r1 = r0;
+
+                for( sz_t i = 0; i < m; i++ )
+                {
+                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
+                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
+                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
+                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
+                }
+            }
+            break;
+
+            default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+        }
+    };
+
 
     // vector += vector <op> vector
     body body_vv_av =
@@ -320,10 +471,10 @@ group :ar2 =
     body body_div_f3 = { return a * f3_inv( b ); };
     body body_div_f2 = { return a * f2_inv( b ); };
 
-    stamp :add     = { func : :f2 = :body_add; func : :f3 = :body_add; func : :f = :body_vv_cv; };
-    stamp :sub     = { func : :f2 = :body_sub; func : :f3 = :body_sub; func : :f = :body_vv_cv; };
-    stamp :sub_sqr = { func : :f; }; // r = ( a - b )^2
-    stamp :sub_l1  = { func : :f; }; // r = l1 norm of ( a - b )
+    stamp :add        = { func : :f2 = :body_add; func : :f3 = :body_add; func : :f = :body_vv_cv; func : :fra = :body_fra; };
+    stamp :sub        = { func : :f2 = :body_sub; func : :f3 = :body_sub; func : :f = :body_vv_cv; };
+    stamp :sub_sqrsum = { func : :f; }; // r = ( a - b )^2
+    stamp :sub_l1     = { func : :f; }; // r = l1 norm of ( a - b )
 
     stamp :div = { func : :f2 = :body_div_f2; func : :f3 = :body_div_f3; func : :f = :body_vv_cv; };
 
@@ -382,6 +533,8 @@ group :ar2 =
     stamp :exp_dp_zyf = { func : :f2 = :body_mul;          func : :f3 = :body_mul;          func : :f = :body_vv_av; };
     stamp :log_dp_zaf = { func : :f2 = :body_div_f2;       func : :f3 = :body_div_f3;       func : :f = :body_vv_av; };
     stamp :inv_dp_zyf = { func : :f2 = { return -a*b*b; }; func : :f3 = { return -a*b*b; }; func : :f = :body_vv_av; };
+    stamp :sqr_dp_zaf = { func : :f2 = { return  2*a*b; }; func : :f3 = { return  2*a*b; }; func : :f = :body_vv_av; };
+    stamp :srt_dp_zyf = { func : :f2 = :body_div_f2;       func : :f3 = :body_div_f3;       func : :f = :body_vv_av; };
 
     body body_lgst_dp_zyf       = { return b * ( 1.0 - b ) * a; };
     body body_lgst_hard_dp_zyf  = { return ( b <  0.0 ) ? 0.0 : ( b > 1.0 ) ? 0.0 : 0.25 * a; };

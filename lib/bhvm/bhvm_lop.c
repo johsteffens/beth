@@ -22,7 +22,7 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_lop_ar2_sub_sqr_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+void bhvm_lop_ar2_sub_sqrsum_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
 {
     assert( s == 0 || ( a && b && r ) );
     switch( tknit )

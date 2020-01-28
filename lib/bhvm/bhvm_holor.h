@@ -145,6 +145,9 @@ void bhvm_shape_s_set_data_na( bhvm_shape_s* o, sz_t size, ... );
 static inline bl_t bhvm_shape_s_is_weak(  const bhvm_shape_s* o ) { return ( o->space == 0 ) && ( o->size > 0 ); }
 bl_t bhvm_shape_s_is_equal( const bhvm_shape_s* o, const bhvm_shape_s* b );
 
+// b is a sub-shape of o
+bl_t bhvm_shape_s_is_sub(   const bhvm_shape_s* o, const bhvm_shape_s* b );
+
 bl_t bhvm_shape_s_cat_can(  const bhvm_shape_s* a, const bhvm_shape_s* b );
 bl_t bhvm_shape_s_cat_fits( const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r );
 bl_t bhvm_shape_s_is_cat(   const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r );
@@ -202,6 +205,13 @@ void bhvm_value_s_set_type_size( bhvm_value_s* o, tp_t type, sz_t size );
 
 /// sets type and data by copying/converting
 void bhvm_value_s_set_type_data( bhvm_value_s* o, tp_t dst_type, tp_t src_type, vc_t src_data, sz_t size );
+
+/// copies data in place; converts type; no allocation; o->type must exits
+void bhvm_value_s_cpy_data( bhvm_value_s* o, tp_t src_type, vc_t src_data, sz_t size );
+static inline void bhvm_value_s_cpy( const bhvm_value_s* o, bhvm_value_s* dst ) { bhvm_value_s_cpy_data( dst, o->type, o->data, o->size ); }
+
+/// sets all values zero
+void bhvm_value_s_zro( bhvm_value_s* o );
 
 /// sets data by converting to holor type (sets target type if not set)
 void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t src_data, sz_t size );
@@ -354,7 +364,13 @@ bl_t bhvm_holor_s_is_consistent( const bhvm_holor_s* o );
 void bhvm_holor_s_check_integrity( const bhvm_holor_s* o );
 
 /// sets holor from text source
-void bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source );
+bhvm_holor_s* bhvm_holor_s_parse(    bhvm_holor_s* o, bcore_source* source );
+bhvm_holor_s* bhvm_holor_s_parse_st( bhvm_holor_s* o, const st_s* st );
+bhvm_holor_s* bhvm_holor_s_parse_sc( bhvm_holor_s* o, sc_t sc );
+
+bhvm_holor_s* bhvm_holor_s_create_parse(    bcore_source* source );
+bhvm_holor_s* bhvm_holor_s_create_parse_st( const st_s* st );
+bhvm_holor_s* bhvm_holor_s_create_parse_sc( sc_t sc );
 
 static inline bl_t bhvm_holor_s_is_equal( const bhvm_holor_s* o, const bhvm_holor_s* src )
 {
