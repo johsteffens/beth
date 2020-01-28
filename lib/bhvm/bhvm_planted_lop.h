@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-21T16:02:31Z
+ *  Last File Update: 2020-01-28T14:27:49Z
  *
  *  Copyright and License of this File:
  *
@@ -349,8 +349,7 @@
     {aware_t _;}; \
   static inline f2_t bhvm_lop_ar2_add_s_f2( f2_t a, f2_t b ){return a + b;} \
   static inline f3_t bhvm_lop_ar2_add_s_f3( f3_t a, f3_t b ){return a + b;} \
-  void bhvm_lop_ar2_add_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s ); \
-  void bhvm_lop_ar2_add_s_fra( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t sa, sz_t sb, sz_t sr );
+  void bhvm_lop_ar2_add_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar2_sub_s 2025417869
 #define BETH_EXPAND_ITEM_bhvm_lop_ar2_sub_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_sub_s ) \
@@ -423,21 +422,6 @@
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_mul_vvm_s ) \
     {aware_t _;}; \
   static inline void bhvm_lop_ar2_mul_vvm_s_f_m( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t rows, sz_t cols ){bhvm_lop_ar2_mul_body_s_f_vv_cm( tknit, a, b, r, rows, cols );}
-#define TYPEOF_bhvm_lop_ar2_mul_acc_vvv_s 590550666
-#define BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_vvv_s \
-  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_mul_acc_vvv_s ) \
-    {aware_t _;}; \
-  static inline void bhvm_lop_ar2_mul_acc_vvv_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s ){bhvm_lop_ar2_mul_body_s_f_vv_av( tknit, a, b, r, s );}
-#define TYPEOF_bhvm_lop_ar2_mul_acc_vsv_s 2629306179
-#define BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_vsv_s \
-  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_mul_acc_vsv_s ) \
-    {aware_t _;}; \
-  static inline void bhvm_lop_ar2_mul_acc_vsv_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s ){bhvm_lop_ar2_mul_body_s_f_vs_av( tknit, a, b, r, s );}
-#define TYPEOF_bhvm_lop_ar2_mul_acc_vvs_s 733632633
-#define BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_vvs_s \
-  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_mul_acc_vvs_s ) \
-    {aware_t _;}; \
-  static inline void bhvm_lop_ar2_mul_acc_vvs_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s ){bhvm_lop_ar2_mul_body_s_f_vv_as( tknit, a, b, r, s );}
 #define TYPEOF_bhvm_lop_ar2_mul_acc_mvv_s 4270331839
 #define BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_mvv_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_mul_acc_mvv_s ) \
@@ -453,13 +437,6 @@
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_mul_acc_vvm_s ) \
     {aware_t _;}; \
   static inline void bhvm_lop_ar2_mul_acc_vvm_s_f_m( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t rows, sz_t cols ){bhvm_lop_ar2_mul_body_s_f_vv_am( tknit, a, b, r, rows, cols );}
-#define TYPEOF_bhvm_lop_ar2_div_dp_zbf_s 199323548
-#define BETH_EXPAND_ITEM_bhvm_lop_ar2_div_dp_zbf_s \
-  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_div_dp_zbf_s ) \
-    {aware_t _;}; \
-  static inline f2_t bhvm_lop_ar2_div_dp_zbf_s_f2( f2_t a, f2_t b ){return a * f2_inv( b );} \
-  static inline f3_t bhvm_lop_ar2_div_dp_zbf_s_f3( f3_t a, f3_t b ){return a * f3_inv( b );} \
-  void bhvm_lop_ar2_div_dp_zbf_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar2_exp_dp_zyf_s 2678660179
 #define BETH_EXPAND_ITEM_bhvm_lop_ar2_exp_dp_zyf_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_exp_dp_zyf_s ) \
@@ -635,13 +612,9 @@
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_mvv_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_vmv_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_vvm_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_acc_vvv_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_acc_vsv_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_acc_vvs_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_acc_mvv_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_acc_vmv_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_mul_acc_vvm_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_div_dp_zbf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_exp_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_log_dp_zaf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_inv_dp_zyf_s ); \
@@ -677,13 +650,9 @@
   BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_mvv_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_vmv_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_vvm_s \
-  BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_vvv_s \
-  BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_vsv_s \
-  BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_vvs_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_mvv_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_vmv_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_mul_acc_vvm_s \
-  BETH_EXPAND_ITEM_bhvm_lop_ar2_div_dp_zbf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_exp_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_log_dp_zaf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_inv_dp_zyf_s \
@@ -720,19 +689,10 @@
   static inline f2_t bhvm_lop_ar3_branch_vvvv_s_f2( f2_t a, f2_t b, f2_t c ){return a > 0 ? b : c;} \
   static inline f3_t bhvm_lop_ar3_branch_vvvv_s_f3( f3_t a, f3_t b, f3_t c ){return a > 0 ? b : c;} \
   void bhvm_lop_ar3_branch_vvvv_s_f( tp_t tknit, vc_t a, vc_t b, vc_t c, vd_t r, sz_t s );
-#define TYPEOF_bhvm_lop_ar3_div_dp_zabg_s 3625730011
-#define BETH_EXPAND_ITEM_bhvm_lop_ar3_div_dp_zabg_s \
-  BCORE_DECLARE_OBJECT( bhvm_lop_ar3_div_dp_zabg_s ) \
-    {aware_t _;}; \
-  static inline f2_t bhvm_lop_ar3_div_dp_zabg_s_f2( f2_t a, f2_t b, f2_t c ){return -a * b * f2_inv( c * c );} \
-  static inline f3_t bhvm_lop_ar3_div_dp_zabg_s_f3( f3_t a, f3_t b, f3_t c ){return -a * b * f3_inv( c * c );} \
-  void bhvm_lop_ar3_div_dp_zabg_s_f( tp_t tknit, vc_t a, vc_t b, vc_t c, vd_t r, sz_t s );
 #define BETH_EXPAND_GROUP_bhvm_lop_ar3 \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar3 ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar3_branch_vvvv_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_lop_ar3_div_dp_zabg_s ); \
-  BETH_EXPAND_ITEM_bhvm_lop_ar3_branch_vvvv_s \
-  BETH_EXPAND_ITEM_bhvm_lop_ar3_div_dp_zabg_s
+  BETH_EXPAND_ITEM_bhvm_lop_ar3_branch_vvvv_s
 
 /**********************************************************************************************************************/
 

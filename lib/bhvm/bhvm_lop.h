@@ -29,8 +29,6 @@
  *  Function Nomenclature:
  *    f    - plain pass
  *   of    - functor pass
- *   [o]vf - vectorized pass
- *   suffix: f2 or f3
  *
  */
 
@@ -267,9 +265,6 @@ group :ar2 =
     signature void f  ( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
     signature void f_m( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t rows, sz_t cols );
 
-    /// rolling accumulation
-    signature void fra( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t sa, sz_t sb, sz_t sr );
-
     // vector <- vector <op> vector
     body body_vv_cv =
     {
@@ -287,147 +282,6 @@ group :ar2 =
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
-
-    // vector += vector <op> vector
-    body body_fra =
-    {
-        assert( sz_min( sz_min( sa, sb ), sr ) > 0 );
-        sz_t n = bhvm_lop_gcd3( sa, sb, sr );
-        sz_t m = sz_max( sz_max( sa, sb ), sr ) / n;
-        switch( tknit )
-        {
-            case BKNIT_F222:
-            {
-                const f2_t *a0 = a, *a1 = a0;
-                const f2_t *b0 = b, *b1 = b0;
-                      f2_t *r0 = r, *r1 = r0;
-
-                for( sz_t i = 0; i < m; i++ )
-                {
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f2( a1[ i ], b1[ i ] );
-                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
-                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
-                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
-                }
-            }
-            break;
-
-            case BKNIT_F223:
-            {
-                const f2_t *a0 = a, *a1 = a0;
-                const f2_t *b0 = b, *b1 = b0;
-                      f3_t *r0 = r, *r1 = r0;
-
-                for( sz_t i = 0; i < m; i++ )
-                {
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
-                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
-                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
-                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
-                }
-            }
-            break;
-
-            case BKNIT_F232:
-            {
-                const f2_t *a0 = a, *a1 = a0;
-                const f3_t *b0 = b, *b1 = b0;
-                      f2_t *r0 = r, *r1 = r0;
-
-                for( sz_t i = 0; i < m; i++ )
-                {
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
-                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
-                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
-                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
-                }
-            }
-            break;
-
-            case BKNIT_F233:
-            {
-                const f2_t *a0 = a, *a1 = a0;
-                const f3_t *b0 = b, *b1 = b0;
-                      f3_t *r0 = r, *r1 = r0;
-
-                for( sz_t i = 0; i < m; i++ )
-                {
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
-                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
-                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
-                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
-                }
-            }
-            break;
-
-            case BKNIT_F322:
-            {
-                const f3_t *a0 = a, *a1 = a0;
-                const f2_t *b0 = b, *b1 = b0;
-                      f2_t *r0 = r, *r1 = r0;
-
-                for( sz_t i = 0; i < m; i++ )
-                {
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
-                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
-                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
-                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
-                }
-            }
-            break;
-
-            case BKNIT_F323:
-            {
-                const f3_t *a0 = a, *a1 = a0;
-                const f2_t *b0 = b, *b1 = b0;
-                      f3_t *r0 = r, *r1 = r0;
-
-                for( sz_t i = 0; i < m; i++ )
-                {
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
-                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
-                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
-                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
-                }
-            }
-            break;
-
-            case BKNIT_F332:
-            {
-                const f3_t *a0 = a, *a1 = a0;
-                const f3_t *b0 = b, *b1 = b0;
-                      f2_t *r0 = r, *r1 = r0;
-
-                for( sz_t i = 0; i < m; i++ )
-                {
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
-                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
-                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
-                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
-                }
-            }
-            break;
-
-            case BKNIT_F333:
-            {
-                const f3_t *a0 = a, *a1 = a0;
-                const f3_t *b0 = b, *b1 = b0;
-                      f3_t *r0 = r, *r1 = r0;
-
-                for( sz_t i = 0; i < m; i++ )
-                {
-                    for( sz_t i = 0; i < n; i++ ) r1[ i ] += @_f3( a1[ i ], b1[ i ] );
-                    a1 = ( a1 + n - a0 ) < sa ? ( a1 + n ) : a0;
-                    b1 = ( b1 + n - b0 ) < sb ? ( b1 + n ) : b0;
-                    r1 = ( r1 + n - r0 ) < sr ? ( r1 + n ) : r0;
-                }
-            }
-            break;
-
-            default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
-        }
-    };
-
 
     // vector += vector <op> vector
     body body_vv_av =
@@ -471,7 +325,7 @@ group :ar2 =
     body body_div_f3 = { return a * f3_inv( b ); };
     body body_div_f2 = { return a * f2_inv( b ); };
 
-    stamp :add        = { func : :f2 = :body_add; func : :f3 = :body_add; func : :f = :body_vv_cv; func : :fra = :body_fra; };
+    stamp :add        = { func : :f2 = :body_add; func : :f3 = :body_add; func : :f = :body_vv_cv; };
     stamp :sub        = { func : :f2 = :body_sub; func : :f3 = :body_sub; func : :f = :body_vv_cv; };
     stamp :sub_sqrsum = { func : :f; }; // r = ( a - b )^2
     stamp :sub_l1     = { func : :f; }; // r = l1 norm of ( a - b )
@@ -520,16 +374,12 @@ group :ar2 =
     stamp :mul_vvm = { func : :f_m = { :mul_body_s_f_vv_cm( tknit, a, b, r, rows, cols ); }; };
 
     /// mul-accumulate
-    stamp :mul_acc_vvv = { func : :f   = { :mul_body_s_f_vv_av( tknit, a, b, r, s ); }; };
-    stamp :mul_acc_vsv = { func : :f   = { :mul_body_s_f_vs_av( tknit, a, b, r, s ); }; };
-    stamp :mul_acc_vvs = { func : :f   = { :mul_body_s_f_vv_as( tknit, a, b, r, s ); }; };
     stamp :mul_acc_mvv = { func : :f_m = { :mul_body_s_f_mv_av( tknit, a, b, r, rows, cols ); }; };
     stamp :mul_acc_vmv = { func : :f_m = { :mul_body_s_f_vm_av( tknit, a, b, r, rows, cols ); }; };
     stamp :mul_acc_vvm = { func : :f_m = { :mul_body_s_f_vv_am( tknit, a, b, r, rows, cols ); }; };
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :div_dp_zbf = { func : :f2 = :body_div_f2;       func : :f3 = :body_div_f3;       func : :f = :body_vv_av; };
     stamp :exp_dp_zyf = { func : :f2 = :body_mul;          func : :f3 = :body_mul;          func : :f = :body_vv_av; };
     stamp :log_dp_zaf = { func : :f2 = :body_div_f2;       func : :f3 = :body_div_f3;       func : :f = :body_vv_av; };
     stamp :inv_dp_zyf = { func : :f2 = { return -a*b*b; }; func : :f3 = { return -a*b*b; }; func : :f = :body_vv_av; };
@@ -644,11 +494,6 @@ group :ar3 =
     stamp :branch_vvvv = { func : :f2 = { return a > 0 ? b : c; }; func : :f3 = { return a > 0 ? b : c; }; func : :f = :body_vvv_cv; };
 
     /// dendrite pass ----------------------------------------------------------
-
-    body body_div_dp_zabg_f2 = { return -a * b * f2_inv( c * c ); };
-    body body_div_dp_zabg_f3 = { return -a * b * f3_inv( c * c ); };
-
-    stamp :div_dp_zabg = { func : :f2 = :body_$R_f2; func : :f3 = :body_$R_f3; func : :f = :body_vvv_av; };
 
 };
 

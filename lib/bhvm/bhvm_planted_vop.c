@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-28T10:49:22Z
+ *  Last File Update: 2020-01-28T12:08:56Z
  *
  *  Copyright and License of this File:
  *
@@ -549,6 +549,16 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_sub_s )
     "func bhvm_vop:sig;"
 "}";
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_s )
+"aware bhvm_vop_ar2"
+"{"
+    "bhvm_vop_ar2_index_s i;"
+    "func bhvm_vop:arity;"
+    "func bhvm_vop:get_index_arr;"
+    "func bhvm_vop:run;"
+    "func bhvm_vop:sig;"
+"}";
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_div_s )
 "aware bhvm_vop_ar2"
 "{"
@@ -557,46 +567,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_div_s )
     "func bhvm_vop:get_index_arr;"
     "func bhvm_vop:run;"
     "func bhvm_vop:sig;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vvv_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:sig;"
-    "func bhvm_vop:run;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vsv_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:sig;"
-    "func bhvm_vop:run;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_svv_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:sig;"
-    "func bhvm_vop:run;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vvs_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:sig;"
-    "func bhvm_vop:run;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_mvv_s )
@@ -759,46 +729,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_logic_or_s )
     "func bhvm_vop:run;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vvv_dp_a_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:run;"
-    "func bhvm_vop:sig;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vsv_dp_a_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:run;"
-    "func bhvm_vop:sig;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_svv_dp_a_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:run;"
-    "func bhvm_vop:sig;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vvs_dp_a_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:run;"
-    "func bhvm_vop:sig;"
-"}";
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_mvv_dp_a_s )
 "aware bhvm_vop_ar2"
 "{"
@@ -840,46 +770,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vtv_dp_a_s )
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vvm_dp_a_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:run;"
-    "func bhvm_vop:sig;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vvv_dp_b_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:run;"
-    "func bhvm_vop:sig;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vsv_dp_b_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:run;"
-    "func bhvm_vop:sig;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_svv_dp_b_s )
-"aware bhvm_vop_ar2"
-"{"
-    "bhvm_vop_ar2_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:run;"
-    "func bhvm_vop:sig;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_vvs_dp_b_s )
 "aware bhvm_vop_ar2"
 "{"
     "bhvm_vop_ar2_index_s i;"
@@ -1010,6 +900,26 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_tmm_dp_b_s )
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_ttm_dp_b_s )
+"aware bhvm_vop_ar2"
+"{"
+    "bhvm_vop_ar2_index_s i;"
+    "func bhvm_vop:arity;"
+    "func bhvm_vop:get_index_arr;"
+    "func bhvm_vop:run;"
+    "func bhvm_vop:sig;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_dp_a_s )
+"aware bhvm_vop_ar2"
+"{"
+    "bhvm_vop_ar2_index_s i;"
+    "func bhvm_vop:arity;"
+    "func bhvm_vop:get_index_arr;"
+    "func bhvm_vop:run;"
+    "func bhvm_vop:sig;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_dp_b_s )
 "aware bhvm_vop_ar2"
 "{"
     "bhvm_vop_ar2_index_s i;"
@@ -1237,7 +1147,7 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 3321766953 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 3184201334 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_vop.h
@@ -1475,31 +1385,16 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_sub_s_run );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_sub_s_sig );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar2_sub_s );
+            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_s_arity );
+            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_s_get_index_arr );
+            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_s_sig );
+            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_div_s_arity );
             BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_div_s_get_index_arr );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_div_s_run );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_div_s_sig );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar2_div_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_vvv_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_vvv_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_vvv_s_sig );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_vvv_s_run );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_vvv_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_vsv_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_vsv_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_vsv_s_sig );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_vsv_s_run );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_vsv_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_svv_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_svv_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_svv_s_sig );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_svv_s_run );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_svv_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_vvs_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_vvs_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_vvs_s_sig );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_vvs_s_run );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_vvs_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_mvv_s_arity );
             BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_mvv_s_get_index_arr );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_mvv_s_sig );
@@ -1580,26 +1475,6 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_logic_or_s_sig );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_logic_or_s_run );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar2_logic_or_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_vvv_dp_a_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_vvv_dp_a_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_vvv_dp_a_s_run );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_vvv_dp_a_s_sig );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_vvv_dp_a_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_vsv_dp_a_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_vsv_dp_a_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_vsv_dp_a_s_run );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_vsv_dp_a_s_sig );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_vsv_dp_a_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_svv_dp_a_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_svv_dp_a_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_svv_dp_a_s_run );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_svv_dp_a_s_sig );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_svv_dp_a_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_vvs_dp_a_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_vvs_dp_a_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_vvs_dp_a_s_run );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_vvs_dp_a_s_sig );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_vvs_dp_a_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_mvv_dp_a_s_arity );
             BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_mvv_dp_a_s_get_index_arr );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_mvv_dp_a_s_run );
@@ -1625,26 +1500,6 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_vvm_dp_a_s_run );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_vvm_dp_a_s_sig );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_vvm_dp_a_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_vvv_dp_b_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_vvv_dp_b_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_vvv_dp_b_s_run );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_vvv_dp_b_s_sig );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_vvv_dp_b_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_vsv_dp_b_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_vsv_dp_b_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_vsv_dp_b_s_run );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_vsv_dp_b_s_sig );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_vsv_dp_b_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_svv_dp_b_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_svv_dp_b_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_svv_dp_b_s_run );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_svv_dp_b_s_sig );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_svv_dp_b_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_vvs_dp_b_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_vvs_dp_b_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_vvs_dp_b_s_run );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_vvs_dp_b_s_sig );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_vvs_dp_b_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_mvv_dp_b_s_arity );
             BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_mvv_dp_b_s_get_index_arr );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_mvv_dp_b_s_run );
@@ -1710,6 +1565,16 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_ttm_dp_b_s_run );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_ttm_dp_b_s_sig );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_ttm_dp_b_s );
+            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_dp_a_s_arity );
+            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_dp_a_s_get_index_arr );
+            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_dp_a_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_dp_a_s_sig );
+            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_dp_a_s );
+            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_dp_b_s_arity );
+            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_dp_b_s_get_index_arr );
+            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_mul_dp_b_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_dp_b_s_sig );
+            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_mul_dp_b_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_div_dp_a_s_arity );
             BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_div_dp_a_s_get_index_arr );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_div_dp_a_s_run );

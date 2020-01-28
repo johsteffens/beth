@@ -1399,7 +1399,7 @@ static void selftest( void )
     bhvm_holor_s_parse( h2, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f3_t>( 2 2 )" ) ) );
     bhvm_holor_s_parse( h3, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>[2]0" ) ) );
 
-    bhvm_hop_ar2_mul_vvv_s_f( h1, h2, h3 );
+    bhvm_hop_ar2_eci_mul_s_f( h1, h2, h3 );
 
     st_s_clear( s );
     bhvm_holor_s_to_sink( h3, ( bcore_sink* )s );

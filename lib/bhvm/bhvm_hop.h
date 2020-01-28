@@ -120,10 +120,10 @@ group :ar1 =
     stamp :identity_dp_zf = { func : :f = :body_lop_v_av; };
     stamp :neg_dp_zf      = { func : :f = :body_lop_v_av; };
 
-    stamp :add_dp_zf = { func : :f = :body_lop_v_av; };
-    stamp :add_dp_zg = { func : :f = :body_lop_v_av; };
-    stamp :sub_dp_zf = { func : :f = :body_lop_v_av; };
-    stamp :sub_dp_zg = { func : :f = :body_lop_v_av; };
+//    stamp :add_dp_zf = { func : :f = :body_lop_v_av; };
+//    stamp :add_dp_zg = { func : :f = :body_lop_v_av; };
+//    stamp :sub_dp_zf = { func : :f = :body_lop_v_av; };
+//    stamp :sub_dp_zg = { func : :f = :body_lop_v_av; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -142,6 +142,7 @@ group :ar1_eci =
 
     body body_acc =
     {
+        assert( a != r );
         assert(  sz_min( a->v.size, r->v.size ) > 0 );
         sz_t n = sz_gcd( a->v.size, r->v.size );
         sz_t m = sz_max( a->v.size, r->v.size ) / n;
@@ -214,7 +215,7 @@ group :ar2 =
 
     stamp :add        = { func : :f = :body_assert_vvv : :body_lop_r; /*func : :f = :body_lop_r_x;*/ };
     stamp :sub        = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :div        = { func : :f = :body_assert_vvv : :body_lop_r; };
+//    stamp :div        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :sub_sqrsum = { func : :f = :body_assert_vvs : :body_lop_a; }; // r = ( a - b )^2
     stamp :sub_l1     = { func : :f = :body_assert_vvs : :body_lop_a; }; // r = l1-norm of ( a - b )
 
@@ -230,7 +231,7 @@ group :ar2 =
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :div_dp_zbf        = { func : :f = :body_assert_vvv : :body_lop_r; };
+//    stamp :div_dp_zbf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :exp_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :log_dp_zaf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :inv_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
@@ -268,10 +269,10 @@ group :ar2 =
 
     /// mul accumulate ---------------------------------------------------------
 
-    stamp :mul_acc_vvv = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :mul_acc_vsv = { func : :f = :body_assert_vsv : :body_lop_r; };
-    stamp :mul_acc_svv = { func : :f = :body_assert_svv : { bhvm_lop_ar2_mul_acc_vsv_s_f( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, r->v.size ); }; };
-    stamp :mul_acc_vvs = { func : :f = :body_assert_vvs : :body_lop_a; };
+//    stamp :mul_acc_vvv = { func : :f = :body_assert_vvv : :body_lop_r; };
+//    stamp :mul_acc_vsv = { func : :f = :body_assert_vsv : :body_lop_r; };
+//    stamp :mul_acc_svv = { func : :f = :body_assert_svv : { bhvm_lop_ar2_mul_acc_vsv_s_f( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, r->v.size ); }; };
+//    stamp :mul_acc_vvs = { func : :f = :body_assert_vvs : :body_lop_a; };
     stamp :mul_acc_mvv = { func : :f = :body_assert_mvv : :body_lop_ma; };
     stamp :mul_acc_vmv = { func : :f = :body_assert_vmv : :body_lop_mb; };
     stamp :mul_acc_tvv = { func : :f = :body_assert_tvv : { bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] ); }; };
@@ -306,6 +307,7 @@ group :ar2_eci =
 
     body body_acc =
     {
+        assert( a != r && b != r );
         assert(  sz_min( sz_min( a->v.size, b->v.size ), r->v.size ) > 0 );
         sz_t n = sz_gcd( sz_gcd( a->v.size, b->v.size ), r->v.size );
         sz_t m = sz_max( sz_max( a->v.size, b->v.size ), r->v.size ) / n;
@@ -381,7 +383,7 @@ group :ar3 =
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :div_dp_zabg = { func : :f = :body_lop_vvvv; };
+//    stamp :div_dp_zabg = { func : :f = :body_lop_vvvv; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -400,6 +402,7 @@ group :ar3_eci =
 
     body body_acc =
     {
+        assert( a != r && b != r && c != r );
         assert(  sz_min( a->v.size, sz_min( b->v.size, sz_min( c->v.size, r->v.size ) ) ) > 0 );
         sz_t n = sz_gcd( a->v.size, sz_gcd( b->v.size, sz_gcd( c->v.size, r->v.size ) ) );
         sz_t m = sz_max( a->v.size, sz_max( b->v.size, sz_max( c->v.size, r->v.size ) ) ) / n;

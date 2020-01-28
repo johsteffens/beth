@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-28T10:22:36Z
+ *  Last File Update: 2020-01-28T12:56:31Z
  *
  *  Copyright and License of this File:
  *
@@ -372,50 +372,6 @@ void bhvm_hop_ar1_neg_dp_zf_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
     bhvm_lop_ar1_neg_dp_zf_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_add_dp_zf_s )
-"aware bhvm_hop_ar1"
-"{"
-"}";
-
-void bhvm_hop_ar1_add_dp_zf_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size );
-    bhvm_lop_ar1_add_dp_zf_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_add_dp_zg_s )
-"aware bhvm_hop_ar1"
-"{"
-"}";
-
-void bhvm_hop_ar1_add_dp_zg_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size );
-    bhvm_lop_ar1_add_dp_zg_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_sub_dp_zf_s )
-"aware bhvm_hop_ar1"
-"{"
-"}";
-
-void bhvm_hop_ar1_sub_dp_zf_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size );
-    bhvm_lop_ar1_sub_dp_zf_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_sub_dp_zg_s )
-"aware bhvm_hop_ar1"
-"{"
-"}";
-
-void bhvm_hop_ar1_sub_dp_zg_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size );
-    bhvm_lop_ar1_sub_dp_zg_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hop_ar1_eci
 
@@ -427,6 +383,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_cpy_s )
 void bhvm_hop_ar1_eci_cpy_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 {
     bhvm_value_s_zro( &r->v );
+    assert( a != r );
     assert(  sz_min( a->v.size, r->v.size ) > 0 );
     sz_t n = sz_gcd( a->v.size, r->v.size );
     sz_t m = sz_max( a->v.size, r->v.size ) / n;
@@ -464,6 +421,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_neg_s )
 void bhvm_hop_ar1_eci_neg_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 {
     bhvm_value_s_zro( &r->v );
+    assert( a != r );
     assert(  sz_min( a->v.size, r->v.size ) > 0 );
     sz_t n = sz_gcd( a->v.size, r->v.size );
     sz_t m = sz_max( a->v.size, r->v.size ) / n;
@@ -501,6 +459,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_inv_s )
 void bhvm_hop_ar1_eci_inv_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 {
     bhvm_value_s_zro( &r->v );
+    assert( a != r );
     assert(  sz_min( a->v.size, r->v.size ) > 0 );
     sz_t n = sz_gcd( a->v.size, r->v.size );
     sz_t m = sz_max( a->v.size, r->v.size ) / n;
@@ -537,6 +496,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_cpy_acc_s )
 
 void bhvm_hop_ar1_eci_cpy_acc_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 {
+    assert( a != r );
     assert(  sz_min( a->v.size, r->v.size ) > 0 );
     sz_t n = sz_gcd( a->v.size, r->v.size );
     sz_t m = sz_max( a->v.size, r->v.size ) / n;
@@ -573,6 +533,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_neg_acc_s )
 
 void bhvm_hop_ar1_eci_neg_acc_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 {
+    assert( a != r );
     assert(  sz_min( a->v.size, r->v.size ) > 0 );
     sz_t n = sz_gcd( a->v.size, r->v.size );
     sz_t m = sz_max( a->v.size, r->v.size ) / n;
@@ -609,6 +570,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_eci_inv_acc_s )
 
 void bhvm_hop_ar1_eci_inv_acc_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 {
+    assert( a != r );
     assert(  sz_min( a->v.size, r->v.size ) > 0 );
     sz_t n = sz_gcd( a->v.size, r->v.size );
     sz_t m = sz_max( a->v.size, r->v.size ) / n;
@@ -661,17 +623,6 @@ void bhvm_hop_ar2_sub_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_ho
 {
     assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
     bhvm_lop_ar2_sub_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_div_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_div_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_div_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_sub_sqrsum_s )
@@ -771,17 +722,6 @@ void bhvm_hop_ar2_logic_or_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bh
 {
     assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
     bhvm_lop_ar2_logic_or_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_div_dp_zbf_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_div_dp_zbf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_div_dp_zbf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_exp_dp_zyf_s )
@@ -1079,50 +1019,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_ttm_s )
 "{"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_vvv_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_mul_acc_vvv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_mul_acc_vvv_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_vsv_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_mul_acc_vsv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size ); assert( b->v.size == 1         );
-    bhvm_lop_ar2_mul_acc_vsv_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_svv_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_mul_acc_svv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == 1         ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_mul_acc_vsv_s_f( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, r->v.size );
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_vvs_s )
-"aware bhvm_hop_ar2"
-"{"
-"}";
-
-void bhvm_hop_ar2_mul_acc_vvs_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
-{
-    assert( a->v.size == b->v.size ); assert( r->v.size == 1         );
-    bhvm_lop_ar2_mul_acc_vvs_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->v.size );
-}
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_mvv_s )
 "aware bhvm_hop_ar2"
 "{"
@@ -1213,6 +1109,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_eci_add_acc_s )
 
 void bhvm_hop_ar2_eci_add_acc_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
+    assert( a != r && b != r );
     assert(  sz_min( sz_min( a->v.size, b->v.size ), r->v.size ) > 0 );
     sz_t n = sz_gcd( sz_gcd( a->v.size, b->v.size ), r->v.size );
     sz_t m = sz_max( sz_max( a->v.size, b->v.size ), r->v.size ) / n;
@@ -1254,6 +1151,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_eci_sub_acc_s )
 
 void bhvm_hop_ar2_eci_sub_acc_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
+    assert( a != r && b != r );
     assert(  sz_min( sz_min( a->v.size, b->v.size ), r->v.size ) > 0 );
     sz_t n = sz_gcd( sz_gcd( a->v.size, b->v.size ), r->v.size );
     sz_t m = sz_max( sz_max( a->v.size, b->v.size ), r->v.size ) / n;
@@ -1295,6 +1193,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_eci_mul_acc_s )
 
 void bhvm_hop_ar2_eci_mul_acc_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
+    assert( a != r && b != r );
     assert(  sz_min( sz_min( a->v.size, b->v.size ), r->v.size ) > 0 );
     sz_t n = sz_gcd( sz_gcd( a->v.size, b->v.size ), r->v.size );
     sz_t m = sz_max( sz_max( a->v.size, b->v.size ), r->v.size ) / n;
@@ -1336,6 +1235,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_eci_div_acc_s )
 
 void bhvm_hop_ar2_eci_div_acc_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
+    assert( a != r && b != r );
     assert(  sz_min( sz_min( a->v.size, b->v.size ), r->v.size ) > 0 );
     sz_t n = sz_gcd( sz_gcd( a->v.size, b->v.size ), r->v.size );
     sz_t m = sz_max( sz_max( a->v.size, b->v.size ), r->v.size ) / n;
@@ -1411,19 +1311,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar3_branch_svvv_s )
 "{"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar3_div_dp_zabg_s )
-"aware bhvm_hop_ar3"
-"{"
-"}";
-
-void bhvm_hop_ar3_div_dp_zabg_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, const bhvm_holor_s* c, bhvm_holor_s* r )
-{
-    assert( a->v.size == r->v.size );
-    assert( b->v.size == r->v.size );
-    assert( c->v.size == r->v.size );
-    bhvm_lop_ar3_div_dp_zabg_s_f( BKNIT_FA4( a->v.type, b->v.type, c->v.type, r->v.type ), a->v.data, b->v.data, c->v.data, r->v.data, r->v.size );
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hop_ar3_eci
 
@@ -1434,6 +1321,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar3_eci_div_dp_zabg_s )
 
 void bhvm_hop_ar3_eci_div_dp_zabg_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, const bhvm_holor_s* c, bhvm_holor_s* r )
 {
+    assert( a != r && b != r && c != r );
     assert(  sz_min( a->v.size, sz_min( b->v.size, sz_min( c->v.size, r->v.size ) ) ) > 0 );
     sz_t n = sz_gcd( a->v.size, sz_gcd( b->v.size, sz_gcd( c->v.size, r->v.size ) ) );
     sz_t m = sz_max( a->v.size, sz_max( b->v.size, sz_max( c->v.size, r->v.size ) ) ) / n;
@@ -1653,7 +1541,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 1079812865 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 1312037583 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1705,10 +1593,6 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_relu_leaky_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_identity_dp_zf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_neg_dp_zf_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_add_dp_zf_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_add_dp_zg_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_sub_dp_zf_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_sub_dp_zg_s );
             BCORE_REGISTER_TRAIT( bhvm_hop_ar1, bhvm_hop );
 
             // group: bhvm_hop_ar1_eci
@@ -1723,7 +1607,6 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             // group: bhvm_hop_ar2
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_add_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_div_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_sqrsum_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sub_l1_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_equal_s );
@@ -1733,7 +1616,6 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_smaller_equal_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_logic_and_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_logic_or_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_div_dp_zbf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_exp_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_log_dp_zaf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_inv_dp_zyf_s );
@@ -1763,10 +1645,6 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_mtm_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_tmm_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_ttm_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_acc_vvv_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_acc_vsv_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_acc_svv_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_acc_vvs_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_acc_mvv_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_acc_vmv_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_acc_tvv_s );
@@ -1793,7 +1671,6 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             // group: bhvm_hop_ar3
             BCORE_REGISTER_OBJECT( bhvm_hop_ar3_branch_vvvv_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar3_branch_svvv_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar3_div_dp_zabg_s );
             BCORE_REGISTER_TRAIT( bhvm_hop_ar3, bhvm_hop );
 
             // group: bhvm_hop_ar3_eci
