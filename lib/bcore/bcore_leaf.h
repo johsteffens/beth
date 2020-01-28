@@ -77,6 +77,9 @@ static inline sz_t sz_sig( sz_t v ) { return v < 0 ? -1 : 1; }
 static inline sz_t sz_abs( sz_t v ) { return v < 0 ? -v : v; }
 static inline void sz_t_swap( sz_t* v1, sz_t* v2 ) { sz_t t = *v1; *v1 = *v2; *v2 = t; }
 
+// greatest common divisor
+static inline sz_t sz_gcd( sz_t a, sz_t b ) { return ( a == 0 ) ? b : sz_gcd( b % a, a ); }
+
 /**********************************************************************************************************************/
 // uz_t
 
@@ -84,6 +87,9 @@ static inline uz_t uz_sqr( uz_t v ) { return v * v; }
 static inline uz_t uz_min( uz_t a, uz_t b ) { return a < b ? a : b; }
 static inline uz_t uz_max( uz_t a, uz_t b ) { return a > b ? a : b; }
 static inline void uz_t_swap( uz_t* v1, uz_t* v2 ) { uz_t t = *v1; *v1 = *v2; *v2 = t; }
+
+// greatest common divisor
+static inline uz_t uz_gcd( uz_t a, uz_t b ) { return ( a == 0 ) ? b : uz_gcd( b % a, a ); }
 
 /**********************************************************************************************************************/
 // tp_t
