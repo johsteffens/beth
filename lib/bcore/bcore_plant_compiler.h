@@ -54,7 +54,7 @@
  *      func feature : name [= { <body> }];
  *
  *      stamp <name> = [aware] <trait> { reflection-body };
- *      stamp <name> = extending <tmpl> { reflection-body-extension }; // uses stamp 'tmpl' as template to be extended
+ *      stamp <name> = extending <tmpl> { reflection-body-extension }; // uses 'tmpl' as template to be extended; 'tmpl' can be a stamp or stump.
  *      stump ... // same as stamp definition. A 'stump' is not expanded into code. But it can be used as template. Stump-functions are overloadable.
  *      {stamp|stump} verbatim ....  // keyword 'verbatim' disables all automatic extensions for this definition
  *

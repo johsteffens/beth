@@ -265,7 +265,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_feature_s )
 
     st_s name;       // myfeature
     st_s global_name;
-    st_s default_name;
+    st_s default_name; // default function name (used for default implementation of feature; "" if no default implementation exists)
     bcore_plant_body_s* default_body;
 
     bl_t strict;
@@ -1158,7 +1158,7 @@ static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_st
             // ordinary c-code using ':' should append a whitespace or prepend escape '\:'
             case ':':
             {
-                if( bcore_source_a_parse_bl_fa( source, "#?([0]==':'||[0]=='*'||([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z'))" ) )
+                if( bcore_source_a_parse_bl_fa( source, "#?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]==':'||[0]=='*'||[0]=='@'||[0]=='$')" ) )
                 {
                     st_s* name = st_s_create();
                     bcore_plant_group_s_parse_name_recursive( o->group, name, source );
