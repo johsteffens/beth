@@ -236,7 +236,6 @@ group :ar2 =
 
     /// dendrite pass ----------------------------------------------------------
 
-//    stamp :div_dp_zbf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :exp_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :log_dp_zaf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :inv_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
@@ -359,11 +358,12 @@ group :ar2_eci =
     stamp :sub_acc = { func : :f2 = { return a - b; };           func : :f3 = { return a - b; };           func : :f = :body_acc; };
     stamp :mul_acc = { func : :f2 = { return a * b; };           func : :f3 = { return a * b; };           func : :f = :body_acc; };
     stamp :div_acc = { func : :f2 = { return a * f2_inv( b ); }; func : :f3 = { return a * f3_inv( b ); }; func : :f = :body_acc; };
-
-    stamp :add = { func : :f2 = { return a + b; };           func : :f3 = { return a + b; };           func : :f = :body_std; };
-    stamp :sub = { func : :f2 = { return a - b; };           func : :f3 = { return a - b; };           func : :f = :body_std; };
-    stamp :mul = { func : :f2 = { return a * b; };           func : :f3 = { return a * b; };           func : :f = :body_std; };
-    stamp :div = { func : :f2 = { return a * f2_inv( b ); }; func : :f3 = { return a * f3_inv( b ); }; func : :f = :body_std; };
+    stamp :pow_acc = { func : :f2 = { return  f2_pow( a, b ); }; func : :f3 = { return  f3_pow( a, b ); }; func : :f = :body_acc; };
+    stamp :add     = { func : :f = :body_std; };
+    stamp :sub     = { func : :f = :body_std; };
+    stamp :mul     = { func : :f = :body_std; };
+    stamp :div     = { func : :f = :body_std; };
+    stamp :pow     = { func : :f = :body_std; };
 
     /// logic ------------------------------------------------------------------
 
@@ -394,7 +394,6 @@ group :ar3 =
 
     /// dendrite pass ----------------------------------------------------------
 
-//    stamp :div_dp_zabg = { func : :f = :body_lop_vvvv; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -467,6 +466,14 @@ group :ar3_eci =
     body body_div_dp_zabg_f2 = { return -a * b * f2_inv( c * c ); };
     body body_div_dp_zabg_f3 = { return -a * b * f3_inv( c * c ); };
     stamp :div_dp_zabg = { func : :f2 = :body_$R_f2; func : :f3 = :body_$R_f3; func : :f = :body_acc; };
+
+    body body_pow_dp_abzf_f2 = { return c * b * f2_pow( a, b - 1 ); };
+    body body_pow_dp_abzf_f3 = { return c * b * f3_pow( a, b - 1 ); };
+    stamp :pow_dp_abzf = { func : :f2 = :body_$R_f2; func : :f3 = :body_$R_f3; func : :f = :body_acc; };
+
+    body body_pow_dp_ayzg_f2 = { return ( a > 0 ) ? b * c * logf( a ) : 0; };
+    body body_pow_dp_ayzg_f3 = { return ( a > 0 ) ? b * c * log ( a ) : 0; };
+    stamp :pow_dp_ayzg = { func : :f2 = :body_$R_f2; func : :f3 = :body_$R_f3; func : :f = :body_acc; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

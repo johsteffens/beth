@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-28T12:08:56Z
+ *  Last File Update: 2020-01-28T17:06:18Z
  *
  *  Copyright and License of this File:
  *
@@ -560,6 +560,16 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_mul_s )
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_div_s )
+"aware bhvm_vop_ar2"
+"{"
+    "bhvm_vop_ar2_index_s i;"
+    "func bhvm_vop:arity;"
+    "func bhvm_vop:get_index_arr;"
+    "func bhvm_vop:run;"
+    "func bhvm_vop:sig;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_pow_s )
 "aware bhvm_vop_ar2"
 "{"
     "bhvm_vop_ar2_index_s i;"
@@ -1138,6 +1148,26 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar3_div_dp_b_s )
     "func bhvm_vop:sig;"
 "}";
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar3_pow_dp_a_s )
+"aware bhvm_vop_ar3"
+"{"
+    "bhvm_vop_ar3_index_s i;"
+    "func bhvm_vop:arity;"
+    "func bhvm_vop:get_index_arr;"
+    "func bhvm_vop:run;"
+    "func bhvm_vop:sig;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar3_pow_dp_b_s )
+"aware bhvm_vop_ar3"
+"{"
+    "bhvm_vop_ar3_index_s i;"
+    "func bhvm_vop:arity;"
+    "func bhvm_vop:get_index_arr;"
+    "func bhvm_vop:run;"
+    "func bhvm_vop:sig;"
+"}";
+
 /**********************************************************************************************************************/
 
 vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
@@ -1147,7 +1177,7 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 3184201334 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 3072875006 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_vop.h
@@ -1395,6 +1425,11 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_div_s_run );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_div_s_sig );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar2_div_s );
+            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_pow_s_arity );
+            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_pow_s_get_index_arr );
+            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_pow_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_pow_s_sig );
+            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_pow_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_mul_mvv_s_arity );
             BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_mul_mvv_s_get_index_arr );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_mul_mvv_s_sig );
@@ -1679,6 +1714,16 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar3_div_dp_b_s_run );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar3_div_dp_b_s_sig );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar3_div_dp_b_s );
+            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar3_pow_dp_a_s_arity );
+            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar3_pow_dp_a_s_get_index_arr );
+            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar3_pow_dp_a_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar3_pow_dp_a_s_sig );
+            BCORE_REGISTER_OBJECT( bhvm_vop_ar3_pow_dp_a_s );
+            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar3_pow_dp_b_s_arity );
+            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar3_pow_dp_b_s_get_index_arr );
+            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar3_pow_dp_b_s_run );
+            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar3_pow_dp_b_s_sig );
+            BCORE_REGISTER_OBJECT( bhvm_vop_ar3_pow_dp_b_s );
             BCORE_REGISTER_TRAIT( bhvm_vop_ar3, bhvm_vop );
         }
         break;

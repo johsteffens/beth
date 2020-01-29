@@ -21,6 +21,39 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bhvm_mcode_track_s_check_index( const bhvm_mcode_track_s* o, sz_t hbase_size )
+{
+    BFOR_EACH( i, o )
+    {
+        const bhvm_vop* vop = o->data[ i ].vop;
+        sz_t arity = bhvm_vop_a_arity( vop );
+        for( sz_t i = 0; i <= arity; i++ )
+        {
+            sz_t idx = bhvm_vop_a_get_index( vop, i );
+            if( idx <  0 || idx >= hbase_size )
+            {
+                ERR_fa( "vop '#<sc_t>' index #<sz_t> of value #<sz_t> is out of range [0, #<sz_t>].\n", ifnameof( vop->_ ), i, idx, hbase_size - 1 );
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_mcode_frame_s_check_integrity( const bhvm_mcode_frame_s* o )
+{
+    if( !o->lib ) return;
+    if( o->lib && !o->hbase ) ERR_fa( "hbase missing" );
+
+    BFOR_EACH( i, &o->lib->arr )
+    {
+        const bhvm_mcode_track_s* track = o->lib->arr.data[ i ];
+        bhvm_mcode_track_s_check_index( track, o->hbase->holor_ads.size );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 // ---------------------------------------------------------------------------------------------------------------------
