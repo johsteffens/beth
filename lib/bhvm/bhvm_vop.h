@@ -115,7 +115,7 @@ feature 'a' :* set_args( mutable, const :arr_ci_s* arr ) =
 /// nullary operators
 group :ar0 =
 {
-    stamp :index = bcore_inst { sz_t [ 1 ] v; };
+    stamp :index = bcore_inst { sz_t [ 1 ] v; func bcore_inst_call : init_x = { o->v[0] = -1; }; };
 
     extending stump verbatim :_ = aware :
     {
@@ -159,7 +159,7 @@ group :ar0 =
 /// unary operators
 group :ar1 =
 {
-    stamp :index = bcore_inst { sz_t [ 2 ] v; };
+    stamp :index = bcore_inst { sz_t [ 2 ] v; func bcore_inst_call : init_x = { o->v[0] = o->v[1] = -1; }; };
 
     extending stump verbatim :_ = aware :
     {
@@ -260,7 +260,7 @@ group :ar1 =
 /// binary operators
 group :ar2 =
 {
-    stamp :index = bcore_inst { sz_t [ 3 ] v; };
+    stamp :index = bcore_inst { sz_t [ 3 ] v; func bcore_inst_call : init_x = { o->v[0] = o->v[1] = o->v[2] = -1; }; };
 
     extending stump verbatim :_ = aware :
     {
@@ -356,7 +356,7 @@ group :ar2 =
 /// ternary operators
 group :ar3 =
 {
-    stamp :index = bcore_inst { sz_t [ 4 ] v; };
+    stamp :index = bcore_inst { sz_t [ 4 ] v; func bcore_inst_call : init_x = { o->v[0] = o->v[1] = o->v[2] = o->v[3] = -1; }; };
 
     extending stump verbatim :_ = aware :
     {

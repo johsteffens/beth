@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-28T17:06:18Z
+ *  Last File Update: 2020-02-03T14:17:06Z
  *
  *  Copyright and License of this File:
  *
@@ -133,7 +133,8 @@
 #define TYPEOF_bhvm_vop_ar0_index_s 4130666847
 #define BETH_EXPAND_ITEM_bhvm_vop_ar0_index_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar0_index_s ) \
-    {sz_t v[ 1 ];};
+    {sz_t v[ 1 ];}; \
+  static inline void bhvm_vop_ar0_index_s_init_x( bhvm_vop_ar0_index_s* o ){o->v[0] = -1;}
 #define TYPEOF_bhvm_vop_ar0_zro_s 2672924538
 #define BETH_EXPAND_ITEM_bhvm_vop_ar0_zro_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar0_zro_s ) \
@@ -207,7 +208,8 @@
 #define TYPEOF_bhvm_vop_ar1_index_s 3144050460
 #define BETH_EXPAND_ITEM_bhvm_vop_ar1_index_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar1_index_s ) \
-    {sz_t v[ 2 ];};
+    {sz_t v[ 2 ];}; \
+  static inline void bhvm_vop_ar1_index_s_init_x( bhvm_vop_ar1_index_s* o ){o->v[0] = o->v[1] = -1;}
 #define TYPEOF_bhvm_vop_ar1_identity_s 3388163422
 #define BETH_EXPAND_ITEM_bhvm_vop_ar1_identity_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar1_identity_s ) \
@@ -541,7 +543,8 @@
 #define TYPEOF_bhvm_vop_ar2_index_s 180378457
 #define BETH_EXPAND_ITEM_bhvm_vop_ar2_index_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar2_index_s ) \
-    {sz_t v[ 3 ];};
+    {sz_t v[ 3 ];}; \
+  static inline void bhvm_vop_ar2_index_s_init_x( bhvm_vop_ar2_index_s* o ){o->v[0] = o->v[1] = o->v[2] = -1;}
 #define TYPEOF_bhvm_vop_ar2_cat_s 2758102237
 #define BETH_EXPAND_ITEM_bhvm_vop_ar2_cat_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar2_cat_s ) \
@@ -1145,7 +1148,8 @@
 #define TYPEOF_bhvm_vop_ar3_index_s 878118510
 #define BETH_EXPAND_ITEM_bhvm_vop_ar3_index_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar3_index_s ) \
-    {sz_t v[ 4 ];};
+    {sz_t v[ 4 ];}; \
+  static inline void bhvm_vop_ar3_index_s_init_x( bhvm_vop_ar3_index_s* o ){o->v[0] = o->v[1] = o->v[2] = o->v[3] = -1;}
 #define TYPEOF_bhvm_vop_ar3_branch_vvvv_s 1240146799
 #define BETH_EXPAND_ITEM_bhvm_vop_ar3_branch_vvvv_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar3_branch_vvvv_s ) \

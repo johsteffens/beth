@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-01-28T17:19:45Z
+ *  Last File Update: 2020-01-29T16:04:07Z
  *
  *  Copyright and License of this File:
  *
@@ -81,6 +81,20 @@
       bcore_array_t_push( TYPEOF_bhvm_holor_ads_s, ( bcore_array* )o, sr_null() ); \
       return &o->data[ o->size - 1 ]; \
   }
+#define TYPEOF_bhvm_holor_mdl_s 1507510669
+#define BETH_EXPAND_ITEM_bhvm_holor_mdl_s \
+  BCORE_DECLARE_OBJECT( bhvm_holor_mdl_s ) \
+    {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bhvm_holor_adl_s, );}; \
+  static inline bhvm_holor_mdl_s* bhvm_holor_mdl_s_set_space( bhvm_holor_mdl_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_holor_mdl_s, ( bcore_array* )o, size ); return o; } \
+  static inline bhvm_holor_mdl_s* bhvm_holor_mdl_s_set_size( bhvm_holor_mdl_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_holor_mdl_s, ( bcore_array* )o, size ); return o; } \
+  static inline bhvm_holor_mdl_s* bhvm_holor_mdl_s_clear( bhvm_holor_mdl_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_holor_mdl_s, ( bcore_array* )o, 0 ); return o; } \
+  static inline bhvm_holor_adl_s* bhvm_holor_mdl_s_push_c( bhvm_holor_mdl_s* o, const bhvm_holor_adl_s* v ) { bcore_array_t_push( TYPEOF_bhvm_holor_mdl_s, ( bcore_array* )o, sr_twc( TYPEOF_bhvm_holor_adl_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bhvm_holor_adl_s* bhvm_holor_mdl_s_push_d( bhvm_holor_mdl_s* o,       bhvm_holor_adl_s* v ) { bcore_array_t_push( TYPEOF_bhvm_holor_mdl_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhvm_holor_adl_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bhvm_holor_adl_s* bhvm_holor_mdl_s_push( bhvm_holor_mdl_s* o ) \
+  { \
+      bcore_array_t_push( TYPEOF_bhvm_holor_mdl_s, ( bcore_array* )o, sr_t_create( TYPEOF_bhvm_holor_adl_s ) ); \
+      return o->data[ o->size - 1 ]; \
+  }
 #define BETH_EXPAND_GROUP_bhvm \
   BCORE_FORWARD_OBJECT( bhvm ); \
   BCORE_FORWARD_OBJECT( bhvm_shape_s ); \
@@ -88,11 +102,13 @@
   BCORE_FORWARD_OBJECT( bhvm_holor_s ); \
   BCORE_FORWARD_OBJECT( bhvm_holor_adl_s ); \
   BCORE_FORWARD_OBJECT( bhvm_holor_ads_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_holor_mdl_s ); \
   BETH_EXPAND_ITEM_bhvm_shape_s \
   BETH_EXPAND_ITEM_bhvm_value_s \
   BETH_EXPAND_ITEM_bhvm_holor_s \
   BETH_EXPAND_ITEM_bhvm_holor_adl_s \
-  BETH_EXPAND_ITEM_bhvm_holor_ads_s
+  BETH_EXPAND_ITEM_bhvm_holor_ads_s \
+  BETH_EXPAND_ITEM_bhvm_holor_mdl_s
 
 /**********************************************************************************************************************/
 // source: bhvm_hop.h

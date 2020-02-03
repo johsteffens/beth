@@ -20,7 +20,7 @@
 
 /** Holor of flexible value type (f3_t or f2_t).
  *
- *  A Holor represents the canonic extension of a matrix (or generalization of a tensor).
+ *  A Holor represents the canonic extension of a matrix. (It can also be seen as generalization of a tensor).
  *  The name was coined by Moon & Spencer (P.Moon, D.E.Spencer: "Theory of Holors", 1986. ISBN 0-521-01900-1 )
  *  We use our own nomenclature for holor properties, which deviates from M&S's choice of terms.
  *
@@ -88,8 +88,9 @@ stamp :holor = aware bcore_inst
     func bcore_fp : copy_typed;
 };
 
-stamp :holor_adl = aware bcore_array { :holor_s => []; }; // dynamic array of links
-stamp :holor_ads = aware bcore_array { :holor_s    []; }; // dynamic array of solids
+stamp :holor_adl = aware bcore_array { :holor_s     => []; }; // dynamic array of links
+stamp :holor_ads = aware bcore_array { :holor_s        []; }; // dynamic array of solids
+stamp :holor_mdl = aware bcore_array { :holor_adl_s => []; }; // dynamic matrix of links
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -153,6 +154,9 @@ bl_t bhvm_shape_s_cat_fits( const bhvm_shape_s* a, const bhvm_shape_s* b, const 
 bl_t bhvm_shape_s_is_cat(   const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r );
 void bhvm_shape_s_cat(      const bhvm_shape_s* a, const bhvm_shape_s* b,       bhvm_shape_s* r );
 void bhvm_shape_s_cat_set(  const bhvm_shape_s* a, const bhvm_shape_s* b,       bhvm_shape_s* r );
+
+// converts a shape to a vector (1-holor) preserving volume; a == r allowed
+void bhvm_shape_s_to_vector(  const bhvm_shape_s* a, bhvm_shape_s* r );
 
 /**********************************************************************************************************************/
 /// value
