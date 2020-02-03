@@ -209,4 +209,7 @@ vd_t bcore_arr_signal_handler( const bcore_signal_s* o );
 
 #define BFOR_EACH( idx, obj ) if( obj ) for( sz_t idx = 0; idx < (obj)->size; idx++ )
 
+/// size_expr is evaluated only at the beginning of the loop
+#define BFOR_SIZE( idx, size_expr ) for( sz_t idx = 0, _##idx##_size = size_expr; idx < _##idx##_size; idx++ )
+
 #endif // BCORE_ARR_H
