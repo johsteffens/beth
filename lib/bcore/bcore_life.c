@@ -21,6 +21,8 @@
 
 /**********************************************************************************************************************/
 
+bcore_life_s* __bcore_life = NULL;
+
 BCORE_DEFINE_FUNCTION_INIT_FLAT( bcore_life_item_s )
 
 void bcore_life_item_s_down( bcore_life_item_s* o )
@@ -128,11 +130,19 @@ vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type )
     return bcore_life_s_push_typed( o, type, bcore_inst_t_create( type ) );
 }
 
+void bcore_life_s_discard_all( bcore_life_s* o )
+{
+    if( !o ) return;
+    bcore_life_s* parent = o->parent;
+    bcore_life_s_discard( o );
+    bcore_life_s_discard_all( parent );
+}
+
 /**********************************************************************************************************************/
 
 static bcore_self_s* life_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( " bcore_life_s =  bcore_inst { aware_t _; private vd_t data; private uz_t size; private uz_t space; }", sizeof( bcore_life_s ) );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( " bcore_life_s =  bcore_inst { aware_t _; private vd_t parent; private vd_t data; private uz_t size; private uz_t space; }", sizeof( bcore_life_s ) );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_life_s_init, "bcore_fp_init",  "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_life_s_down, "bcore_fp_down",  "down" );
     return self;

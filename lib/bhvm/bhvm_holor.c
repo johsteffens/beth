@@ -1399,19 +1399,19 @@ static void selftest( void )
 //    bhvm_holor_s* h2 = BLM_CREATE( bhvm_holor_s );
     st_s* s = BLM_CREATE( st_s );
 
-    bhvm_holor_s_parse( h1, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>[2](( 1 1 )( 7 2 ))" ) ) );
+    bhvm_holor_s_parse( h1, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>2[(( 1:1 ):( 7:2 ))" ) ) );
     bhvm_holor_s_to_sink( h1, ( bcore_sink* )s );
-    ASSERT( st_s_equal_sc( s, "<f2_t>(((1 1)(7 2))((1 1)(7 2)))" ) );
+    ASSERT( st_s_equal_sc( s, "<f2_t>(((1:1):(7:2)):((1:1):(7:2)))" ) );
 
-    bhvm_holor_s_parse( h1, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>( 1 2 )" ) ) );
-    bhvm_holor_s_parse( h2, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f3_t>( 2 2 )" ) ) );
-    bhvm_holor_s_parse( h3, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>[2]0" ) ) );
+    bhvm_holor_s_parse( h1, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>( 1:2 )" ) ) );
+    bhvm_holor_s_parse( h2, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f3_t>( 2:2 )" ) ) );
+    bhvm_holor_s_parse( h3, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>2[0" ) ) );
 
     bhvm_hop_ar2_eci_mul_s_f( h1, h2, h3 );
 
     st_s_clear( s );
     bhvm_holor_s_to_sink( h3, ( bcore_sink* )s );
-    ASSERT( st_s_equal_sc( s, "<f2_t>(2 4)" ) );
+    ASSERT( st_s_equal_sc( s, "<f2_t>(2:4)" ) );
 
 /*
     bhvm_holor_s_set_size_na( h1, 3, 2, 2, 7 );

@@ -3192,7 +3192,7 @@ static vd_t selftest( void )
 
 static void eval_test( void )
 {
-    BLM_INIT();
+    BCORE_LIFE_INIT();
     BCORE_LIFE_CREATE( bmath_mfx_eval_s, eval );
     BCORE_LIFE_CREATE( bmath_arr_mfx_eval_s, arr_eval );
 
@@ -3226,7 +3226,7 @@ static void eval_test( void )
     bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,svd),     ( fp_t )BCATU(bmath_mfx_s,svd) );
     bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,piv),     ( fp_t )BCATU(bmath_mfx_s,piv) );
 
-    BLM_DOWN();
+    BCORE_LIFE_DOWN();
 }
 
 /**********************************************************************************************************************/

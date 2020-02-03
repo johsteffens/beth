@@ -31,9 +31,16 @@ typedef struct bcore_life_item_s
     vd_t object;
 } bcore_life_item_s;
 
+
 typedef struct bcore_life_s
 {
     aware_t _;
+
+    /** The parent is used to indicate a block-nested life definition inside a function;
+     *  Used in function bcore_life_s_down_all.
+     */
+    bcore_life_s* parent;
+
     union
     {
         bcore_array_dyn_solid_static_s arr;
@@ -59,12 +66,15 @@ vd_t bcore_life_s_push_aware(   bcore_life_s* o,               vd_t object ); //
 vd_t bcore_life_s_push_free(    bcore_life_s* o,               vd_t object ); // uses bcore_free as discard function
 vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type                 ); // creates new object and manages its lifetime
 
+/// discards o and all parents
+void bcore_life_s_discard_all( bcore_life_s* o );
+
 vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 // macros
 
-// preferably use abbreviated versions below
+/// (Deprecated) preferably use improved versions below;
 #define BCORE_LIFE_INIT() bcore_life_s* __life = bcore_life_s_create()
 #define BCORE_LIFE_DOWN() bcore_life_s_detach( &__life )
 #define BCORE_LIFE_CREATE( type_name, var_name ) type_name* var_name = bcore_life_s_push_typed( __life, TYPEOF_##type_name, type_name##_create() )
@@ -75,15 +85,35 @@ vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 #define BCORE_LIFE_RETURNV( ret_type, expr ) { ret_type __retv = expr; BCORE_LIFE_DOWN(); return __retv; }
 #define BCORE_LIFE_RETURN()                  {                         BCORE_LIFE_DOWN(); return;        }
 
-// abbreviated versions (Note: _CREATE is different)
-#define BLM_INIT() bcore_life_s* __life = bcore_life_s_create()
-#define BLM_DOWN() bcore_life_s_detach( &__life )
-#define BLM_CREATE( tname ) ( tname* )bcore_life_s_push_typed( __life, TYPEOF_##tname, tname##_create() )
-#define BLM_CLONE(  tname, src ) ( tname* )bcore_life_s_push_typed( __life, TYPEOF_##tname, tname##_clone( src ) )
-#define BLM_A_PUSH(       expr ) bcore_life_s_push_aware( __life,       expr )
-#define BLM_T_PUSH( type, expr ) bcore_life_s_push_typed( __life, type, expr )
-#define BLM_RETURN()                  {                         BLM_DOWN(); return;        }
-#define BLM_RETURNV( ret_type, expr ) { ret_type __retv = expr; BLM_DOWN(); return __retv; }
+/** Improved macros
+ * *_CREATE now function-like
+ * *_RETURN* detaches all active nested life managers in current function
+ */
+extern bcore_life_s* __bcore_life; // always NULL; needed to root a life-chain
+
+#define BLM_INIT() \
+    bcore_life_s* __bcore_life_p = __bcore_life; \
+    bcore_life_s* __bcore_life = bcore_life_s_create(); \
+    __bcore_life->parent = __bcore_life_p
+
+#define BLM_DOWN() bcore_life_s_detach( &__bcore_life )
+#define BLM_CREATE( tname ) ( tname* )bcore_life_s_push_typed( __bcore_life, TYPEOF_##tname, tname##_create() )
+#define BLM_CLONE(  tname, src ) ( tname* )bcore_life_s_push_typed( __bcore_life, TYPEOF_##tname, tname##_clone( src ) )
+#define BLM_A_PUSH(       expr ) bcore_life_s_push_aware( __bcore_life,       expr )
+#define BLM_T_PUSH( type, expr ) bcore_life_s_push_typed( __bcore_life, type, expr )
+
+#define BLM_RETURN() \
+{ \
+    bcore_life_s_discard_all( __bcore_life ); \
+    return; \
+}
+
+#define BLM_RETURNV( ret_type, expr ) \
+{ \
+    ret_type __retv = expr;  \
+    bcore_life_s_discard_all( __bcore_life );  \
+    return __retv;  \
+}
 
 // creates object and runs a member function as continuation
 #define BLM_CREATEC( tname, fname, ... ) tname##_##fname( BLM_CREATE( tname ), __VA_ARGS__ )
