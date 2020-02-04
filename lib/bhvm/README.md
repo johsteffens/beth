@@ -14,9 +14,9 @@ In the scope of this library the holor is physically represented as multidimensi
 
 ### Inductive Definition
 A given holor has an *order* **n**, with **n** being a non-negative whole number.
-We use the specifying term **n-Holor**.
+We use the specifying term **n-holor**.
 
-The simplest holor is the **0-holor**, which is a **scalar**. 
+The **0-holor**, is a **scalar**. 
 It can be represented as real (or complex) number.
 All possible values are allowed.
 
@@ -24,11 +24,11 @@ The **(n+1)-holor** is an array of **n-holors**.
 We call the array-size: **Leading Dimension**.
 
 Each element is an **n-holor** and each has the the same leading dimension.
-The values across elements are independent.
+Values across elements are independent.
 
 ### Shape
-Above definition implies that a n-holor is a hierarchical composition
-of n sub-holors: { n-Holor, (n-1)-Holor, ... , 1-Holor }, each with a specified
+Above definition implies that an n-holor is a hierarchical composition
+of n sub-holors: { n-holor, (n-1)-holor, ... , 1-holor }, each with a specified
 leading dimension. 
 
 We call the ordered set (or sequence) of 'n' leading dimensions **shape**.
