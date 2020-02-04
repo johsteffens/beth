@@ -3,53 +3,55 @@
 ## Holor
 Name and definition was inspired by *Moon & Spencer's work: "Theory of Holors"*. 
 A holor can be understood as generalization of a Tensor. Likewise it can be seen
-as canonical extension of a Matrix to *n* dimensions. 
+as canonical extension of a matrix to *n* dimensions. 
 
-Our definition actually represents a specific sub-class of the M&S Holor. We have chosen
-different semantics and nomenclature to describe its properties, as it seemed better
+Our definition actually represents a specific sub-class of the M&S holor. We have chosen
+different semantics and nomenclature to describe its properties as it seemed better
 suited to the realm of intended use cases.
 
-In the scope of this library, the holor is physically represented as multidimensional array.
+In the scope of this library the holor is physically represented as multidimensional array.
 (Jagged arrays are excluded.)
 
 ### Inductive Definition
-A given Holor has an *Order* **n**, with **n** being a non-negative whole number.
-We call it **n-Holor**.
+A given holor has an *order* **n**, with **n** being a non-negative whole number.
+We use the specifying term **n-Holor**.
 
-The simplest Holor is the **0-Holor**, which is a **Scalar**. 
+The simplest holor is the **0-holor**, which is a **scalar**. 
 It can be represented as real (or complex) number.
 All possible values are allowed.
 
-The **(n+1)-Holor** is an array of **n-Holors**.
-We call the number of elements in the array: **Leading Dimension** of the Holor.
+The **(n+1)-holor** is an array of **n-holors**.
+We call the array-size: **Leading Dimension**.
 
-Each element is a **n-Holor** of **the same leading dimension**.
-The values of each element are independent.
+Each element is an **n-holor** and each has the the same leading dimension.
+The values across elements are independent.
 
 ### Shape
-Above definition implies that a n-Holor is a hierarchical composition
+Above definition implies that a n-holor is a hierarchical composition
 of n sub-holors: { n-Holor, (n-1)-Holor, ... , 1-Holor }, each with a specified
 leading dimension. 
 
-We call the ordered set (or sequence) of 'n' leading dimensions: **Shape**.
+We call the ordered set (or sequence) of 'n' leading dimensions **shape**.
 The shape of the 0-holor is the empty set: \{ \}.
 
-It follows from the definition that all elements of a Holor must have the same Shape.
+It follows from the definition that all elements of a holor must have the same shape.
 
-One can mentalize the Holor as n-Orthotoype (or n-Hypercuboid), with the 0-Holor
-being an *'Atom'* (or Orthotoype of unit-size).
+One can mentalize the holor as n-orthotoype (or n-hypercuboid), with the 0-holor
+being an *'atom'* (, which is an orthotoype of unit-size).
 
-Constructing the (n+1)-Holor means stacking multiple n-Orthotoype on each other
-in a new dimension. Since each sub-Orthotoype has a fixed and finite shape,
-its atoms can be generically folded into linear space
-(or linear addressable memory) such that all sub-holors also retain a valid
-representation. One possibility of implementing this, and the way we adopted as well, 
-is like the ABI of multidimensional arrays in the programming language 'C'.
+Constructing the (n+1)-holor means stacking multiple n-orthotoypes on each other
+in a new dimension. Since each sub-orthotoype has a fixed and finite shape,
+its atoms can be folded into linear space
+(e.g. linear addressable memory) such that all sub-holors also retain a valid
+representation. 
+
+There are different ways to encode this. The method we apply is like the way
+multidimensional arrays represented by the programming language 'C'.
 
 ### Volume
-We define **Volume** as the product of all elements of **Shape**.
-<br>The 0-holor has Volume **1** (*Empty Product*).
-<br><sub> Note: *'Volume'* is the related to Moon & Spencer's *'Number of Merates'*</sub>
+We define **volume** as the product of all elements of **shape**.
+<br>The 0-holor has volume **1** (*empty product*).
+<br><sub> Note: *'volume'* is the related to Moon & Spencer's *'Number of Merates'*</sub>
 
 ### Examples
 |Name|Description|Shape|Volume|
@@ -61,8 +63,7 @@ We define **Volume** as the product of all elements of **Shape**.
 
 ## Operations
 A holor has well defined operations like addition, multiplication, convolution, transposition, etc.
-Where suitable operations are expressed as operators, 
-which are dedicated objects.
+Where suitable operations are expressed as operators, which are dedicated objects.
 
 ## Holor Virtual Machine
 The holor virtual machine is a virtual machine with holors as data elements
