@@ -250,10 +250,12 @@ void bhvm_shape_s_cat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_sh
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_shape_s_to_vector(  const bhvm_shape_s* a, bhvm_shape_s* r )
+
+bhvm_shape_s* bhvm_shape_s_copy_vector_isovol( bhvm_shape_s* o, const bhvm_shape_s* src )
 {
-    sz_t volume = bhvm_shape_s_get_volume( a );
-    bhvm_shape_s_set_data( r, &volume, 1 );
+    sz_t volume = bhvm_shape_s_get_volume( src );
+    bhvm_shape_s_set_data( o, &volume, 1 );
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

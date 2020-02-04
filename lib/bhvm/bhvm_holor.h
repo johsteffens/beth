@@ -73,7 +73,7 @@ PLANT_GROUP( bhvm, bcore_inst )
 
 stamp :shape = bcore_array
 {
-    sz_t  [];
+    sz_t [];
 };
 
 stamp :value = bcore_array
@@ -155,8 +155,8 @@ bl_t bhvm_shape_s_is_cat(   const bhvm_shape_s* a, const bhvm_shape_s* b, const 
 void bhvm_shape_s_cat(      const bhvm_shape_s* a, const bhvm_shape_s* b,       bhvm_shape_s* r );
 void bhvm_shape_s_cat_set(  const bhvm_shape_s* a, const bhvm_shape_s* b,       bhvm_shape_s* r );
 
-// converts a shape to a vector (1-holor) preserving volume; a == r allowed
-void bhvm_shape_s_to_vector(  const bhvm_shape_s* a, bhvm_shape_s* r );
+/// isovolumetric conversion to a vector (order 1); o == src allowed
+bhvm_shape_s* bhvm_shape_s_copy_vector_isovol( bhvm_shape_s* o, const bhvm_shape_s* src );
 
 /**********************************************************************************************************************/
 /// value
@@ -319,18 +319,42 @@ static inline void bhvm_holor_s_init_fork_from_holor( bhvm_holor_s* o, bhvm_holo
     bhvm_value_s_init_fork_from_value( &o->v, &src->v );
 }
 
-/// forked reference; shutdown required
+/// forked reference; (shutdown required)
 static inline void bhvm_holor_s_fork( bhvm_holor_s* o, bhvm_holor_s* src )
 {
     bhvm_shape_s_fork( &o->s, &src->s );
     bhvm_value_s_fork( &o->v, &src->v );
 }
 
+/// fork or copy according to flags
+static inline void bhvm_holor_s_fork_copy( bhvm_holor_s* o, bhvm_holor_s* src, bl_t fork_shape, bl_t fork_value )
+{
+    if( fork_shape ) bhvm_shape_s_fork( &o->s, &src->s ); else bhvm_shape_s_copy( &o->s, &src->s );
+    if( fork_value ) bhvm_value_s_fork( &o->v, &src->v ); else bhvm_shape_s_copy( &o->s, &src->s );
+}
+
+/// copies value and converts shape to vector
+static inline bhvm_holor_s* bhvm_holor_s_copy_vector_isovol( bhvm_holor_s* o, const bhvm_holor_s* src )
+{
+    bhvm_shape_s_copy_vector_isovol( &o->s, &src->s );
+    bhvm_value_s_copy( &o->v, &src->v );
+    return o;
+}
+
+/// forks value and converts shape to vector
+static inline bhvm_holor_s* bhvm_holor_s_fork_vector_isovol( bhvm_holor_s* o, bhvm_holor_s* src )
+{
+    bhvm_shape_s_copy_vector_isovol( &o->s, &src->s );
+    bhvm_value_s_fork( &o->v, &src->v );
+    return o;
+}
+
 /// clears entire holor
-static inline void bhvm_holor_s_clear( bhvm_holor_s* o )
+static inline bhvm_holor_s* bhvm_holor_s_clear( bhvm_holor_s* o )
 {
     bhvm_shape_s_clear( &o->s );
     bhvm_value_s_clear( &o->v );
+    return o;
 }
 
 void bhvm_holor_s_copy_typed( bhvm_holor_s* o, tp_t type, vc_t src );
