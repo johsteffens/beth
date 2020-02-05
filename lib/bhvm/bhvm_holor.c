@@ -689,6 +689,20 @@ void bhvm_value_s_order_dec_set( const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bhvm_value_s_acc_offs( const bhvm_value_s* a, sz_t a_offs, bhvm_value_s* r, sz_t r_offs, sz_t size )
+{
+    assert( a->size >= a_offs + size );
+    assert( r->size >= r_offs + size );
+    switch( BKNIT_FA2( a->type, r->type ) )
+    {
+        case BKNIT_F22: for( sz_t i = 0; i < size; i++ ) ( ( f2_t* )r->data )[ i + r_offs ] += ( ( f2_t* )a->data )[ i + a_offs ]; break;
+        case BKNIT_F23: for( sz_t i = 0; i < size; i++ ) ( ( f3_t* )r->data )[ i + r_offs ] += ( ( f2_t* )a->data )[ i + a_offs ]; break;
+        case BKNIT_F32: for( sz_t i = 0; i < size; i++ ) ( ( f2_t* )r->data )[ i + r_offs ] += ( ( f3_t* )a->data )[ i + a_offs ]; break;
+        case BKNIT_F33: for( sz_t i = 0; i < size; i++ ) ( ( f3_t* )r->data )[ i + r_offs ] += ( ( f3_t* )a->data )[ i + a_offs ]; break;
+        default: BKNIT_FA2_ERR( a->type, r->type ); break;
+    }
+}
+
 /**********************************************************************************************************************/
 /// holor
 

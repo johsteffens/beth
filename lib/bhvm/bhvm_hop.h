@@ -117,8 +117,11 @@ group :ar1 =
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :identity_dp_zf = { func : :f = :body_lop_v_av; };
-    stamp :neg_dp_zf      = { func : :f = :body_lop_v_av; };
+    stamp :identity_dp_zf = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_acc_s_f(  BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
+    stamp :neg_dp_zf      = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_accn_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
+
+    stamp :cat_dp_zf = { func : :f = { bhvm_value_s_acc_offs( &a->v, 0, &r->v, 0, r->v.size ); }; };
+    stamp :cat_dp_zg = { func : :f = { bhvm_value_s_acc_offs( &a->v, a->v.size - r->v.size, &r->v, 0, r->v.size ); }; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -282,7 +285,7 @@ group :ar2 =
 
     /// other -----------------------------------------------------------------
 
-    stamp :cat       = { func : :f = { bhvm_holor_s_cat( a, b, r ); }; };
+    stamp :cat = { func : :f = { bhvm_holor_s_cat( a, b, r ); }; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

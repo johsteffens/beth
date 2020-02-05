@@ -224,6 +224,10 @@ group :ar1 =
     stamp :identity_dp = { func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
     stamp :neg_dp      = { func :: :run = { bhvm_hop_ar1_eci_neg_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
 
+    stamp :cat_dp_a = { func :: :run = { bhvm_hop_ar1_cat_dp_zf_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
+    stamp :cat_dp_b = { func :: :run = { bhvm_hop_ar1_cat_dp_zg_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zg"; }; };
+
+
     /// copy special channel ---------------------------------------------------
 
     stamp :cpy_ay =
@@ -240,7 +244,8 @@ group :ar1 =
 
     /// cast -------------------------------------------------------------------
 
-    // Cast operators make the target weakly reference source data.
+    // Cast operators provide 'fixed wiring'.
+    // This is typically achieved by having the target reference source data.
     // Value data is always referenced; shape might be referenced.
     // Cast operators are inert as far as actual vm-processing is concerned.
     // They are not intended to actually execute in ap of dp tracks.

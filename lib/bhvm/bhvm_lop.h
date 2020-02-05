@@ -243,13 +243,9 @@ group :ar1 =
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :identity_dp_zf = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :neg_dp_zf      = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_av; };
-
-    stamp :add_dp_zf = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :add_dp_zg = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :sub_dp_zf = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
-    stamp :sub_dp_zg = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_av; };
+    /// simple accumulation
+    stamp :acc  = { func : :f2 = { return  a; }; func : :f3 = { return  a; }; func : :f = :body_v_av; };
+    stamp :accn = { func : :f2 = { return -a; }; func : :f3 = { return -a; }; func : :f = :body_v_av; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

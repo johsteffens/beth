@@ -284,6 +284,9 @@ void bhvm_value_s_order_inc_set( const bhvm_value_s* o, sz_t dim, bhvm_value_s* 
 void bhvm_value_s_order_dec(     const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm_value_s* r ); // in place
 void bhvm_value_s_order_dec_set( const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm_value_s* r ); // allocating, order_dec
 
+/// r[ i + r_offs ] += a[ i + a_offs ]
+void bhvm_value_s_acc_offs( const bhvm_value_s* a, sz_t a_offs, bhvm_value_s* r, sz_t r_offs, sz_t size );
+
 /**********************************************************************************************************************/
 /// holor
 

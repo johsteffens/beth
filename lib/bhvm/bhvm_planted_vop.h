@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-03T18:00:41Z
+ *  Last File Update: 2020-02-05T20:27:02Z
  *
  *  Copyright and License of this File:
  *
@@ -442,6 +442,22 @@
   static inline sz_t* bhvm_vop_ar1_neg_dp_s_get_index_arr( bhvm_vop_ar1_neg_dp_s* o ){return o->i.v;} \
   static inline void bhvm_vop_ar1_neg_dp_s_run( const bhvm_vop_ar1_neg_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_eci_neg_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );} \
   static inline sc_t bhvm_vop_ar1_neg_dp_s_sig( const bhvm_vop_ar1_neg_dp_s* o ){return "zf";}
+#define TYPEOF_bhvm_vop_ar1_cat_dp_a_s 2542334481
+#define BETH_EXPAND_ITEM_bhvm_vop_ar1_cat_dp_a_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_cat_dp_a_s ) \
+    {aware_t _;bhvm_vop_ar1_index_s i;}; \
+  static inline sz_t bhvm_vop_ar1_cat_dp_a_s_arity( const bhvm_vop_ar1_cat_dp_a_s* o ){return 1;} \
+  static inline sz_t* bhvm_vop_ar1_cat_dp_a_s_get_index_arr( bhvm_vop_ar1_cat_dp_a_s* o ){return o->i.v;} \
+  static inline void bhvm_vop_ar1_cat_dp_a_s_run( const bhvm_vop_ar1_cat_dp_a_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_cat_dp_zf_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );} \
+  static inline sc_t bhvm_vop_ar1_cat_dp_a_s_sig( const bhvm_vop_ar1_cat_dp_a_s* o ){return "zf";}
+#define TYPEOF_bhvm_vop_ar1_cat_dp_b_s 192113972
+#define BETH_EXPAND_ITEM_bhvm_vop_ar1_cat_dp_b_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_cat_dp_b_s ) \
+    {aware_t _;bhvm_vop_ar1_index_s i;}; \
+  static inline sz_t bhvm_vop_ar1_cat_dp_b_s_arity( const bhvm_vop_ar1_cat_dp_b_s* o ){return 1;} \
+  static inline sz_t* bhvm_vop_ar1_cat_dp_b_s_get_index_arr( bhvm_vop_ar1_cat_dp_b_s* o ){return o->i.v;} \
+  static inline void bhvm_vop_ar1_cat_dp_b_s_run( const bhvm_vop_ar1_cat_dp_b_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_cat_dp_zg_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );} \
+  static inline sc_t bhvm_vop_ar1_cat_dp_b_s_sig( const bhvm_vop_ar1_cat_dp_b_s* o ){return "zg";}
 #define TYPEOF_bhvm_vop_ar1_cpy_ay_s 3008825357
 #define BETH_EXPAND_ITEM_bhvm_vop_ar1_cpy_ay_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar1_cpy_ay_s ) \
@@ -498,6 +514,8 @@
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_sub_dp_b_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_identity_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_neg_dp_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_cat_dp_a_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_cat_dp_b_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_cpy_ay_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_cpy_by_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_fork_s ); \
@@ -531,6 +549,8 @@
   BETH_EXPAND_ITEM_bhvm_vop_ar1_sub_dp_b_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_identity_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_neg_dp_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar1_cat_dp_a_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar1_cat_dp_b_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_cpy_ay_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_cpy_by_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_fork_s
