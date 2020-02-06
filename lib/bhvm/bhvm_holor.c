@@ -1404,6 +1404,81 @@ bhvm_holor_s* bhvm_holor_s_create_parse_sc( sc_t sc )
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+// bhvm_holor_adl_s
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bhvm_holor_adl_s* bhvm_holor_adl_s_parse( bhvm_holor_adl_s* o, bcore_source* source )
+{
+    bhvm_holor_adl_s_clear( o );
+
+    do
+    {
+        bhvm_holor_s* h = bhvm_holor_s_create();
+        bhvm_holor_s_parse( h, source );
+        bhvm_holor_adl_s_push_d( o, h );
+    }
+    while( bcore_source_a_parse_bl_fa( source, " #?','" ) );
+
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_adl_s_copy_typed( bhvm_holor_adl_s* o, tp_t type, vc_t src )
+{
+    switch( type )
+    {
+        case TYPEOF_bhvm_holor_s:
+        {
+            assert( *(aware_t*)src == TYPEOF_bhvm_holor_s );
+            bhvm_holor_adl_s_clear( o );
+            bhvm_holor_adl_s_push_c( o, src );
+        }
+        break;
+
+        case TYPEOF_bmath_mf2_s:
+        case TYPEOF_bmath_mf3_s:
+        case TYPEOF_bmath_vf2_s:
+        case TYPEOF_bmath_vf3_s:
+        case TYPEOF_f2_t:
+        case TYPEOF_f3_t:
+        {
+            bhvm_holor_adl_s_clear( o );
+            bhvm_holor_s* h = bhvm_holor_s_create();
+            bhvm_holor_s_copy_typed( h, type, src );
+            bhvm_holor_adl_s_push_d( o, h );
+        }
+        break;
+
+        case TYPEOF_st_s:
+        {
+            assert( *(aware_t*)src == TYPEOF_st_s );
+            bcore_source* source = ( bcore_source* )bcore_source_string_s_create_from_string( src );
+            bhvm_holor_adl_s_parse( o, source );
+            bcore_source_a_discard( source );
+        }
+        break;
+
+        case TYPEOF_sc_t:
+        {
+            bcore_source* source = ( bcore_source* )bcore_source_string_s_create_sc( src );
+            bhvm_holor_adl_s_parse( o, source );
+            bcore_source_a_discard( source );
+        }
+        break;
+
+        default:
+        {
+            ERR_fa( "Cannot convert '#<sc_t>' to 'bhvm_holor_adl_s'", ifnameof( type ) );
+        }
+        break;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 static void selftest( void )
 {

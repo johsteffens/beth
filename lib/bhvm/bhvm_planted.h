@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-05T20:24:58Z
+ *  Last File Update: 2020-02-06T11:48:05Z
  *
  *  Copyright and License of this File:
  *
@@ -57,6 +57,7 @@
 #define BETH_EXPAND_ITEM_bhvm_holor_adl_s \
   BCORE_DECLARE_OBJECT( bhvm_holor_adl_s ) \
     {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bhvm_holor_s, );}; \
+  void bhvm_holor_adl_s_copy_typed( bhvm_holor_adl_s* o, tp_t type, vc_t src ); \
   static inline bhvm_holor_adl_s* bhvm_holor_adl_s_set_space( bhvm_holor_adl_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_holor_adl_s, ( bcore_array* )o, size ); return o; } \
   static inline bhvm_holor_adl_s* bhvm_holor_adl_s_set_size( bhvm_holor_adl_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_holor_adl_s, ( bcore_array* )o, size ); return o; } \
   static inline bhvm_holor_adl_s* bhvm_holor_adl_s_clear( bhvm_holor_adl_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_holor_adl_s, ( bcore_array* )o, 0 ); return o; } \

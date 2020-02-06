@@ -88,7 +88,7 @@ stamp :holor = aware bcore_inst
     func bcore_fp : copy_typed;
 };
 
-stamp :holor_adl = aware bcore_array { :holor_s     => []; }; // dynamic array of links
+stamp :holor_adl = aware bcore_array { :holor_s     => [];  func bcore_fp : copy_typed; }; // dynamic array of links
 stamp :holor_ads = aware bcore_array { :holor_s        []; }; // dynamic array of solids
 stamp :holor_mdl = aware bcore_array { :holor_adl_s => []; }; // dynamic matrix of links
 
@@ -524,6 +524,12 @@ void bhvm_holor_s_brief_to_stdout(     const bhvm_holor_s* o );
 /** multiline version */
 void bhvm_holor_s_formatted_to_sink(   const bhvm_holor_s* o, bcore_sink* sink );
 void bhvm_holor_s_formatted_to_stdout( const bhvm_holor_s* o );
+
+/**********************************************************************************************************************/
+/// holor_adl
+
+/// sets adl from text source. Format "<holor> , <holor> , ..."
+bhvm_holor_adl_s* bhvm_holor_adl_s_parse( bhvm_holor_adl_s* o, bcore_source* source );
 
 //----------------------------------------------------------------------------------------------------------------------
 
