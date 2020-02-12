@@ -689,6 +689,36 @@ void bhvm_value_s_order_dec_set( const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bhvm_value_s_mul_scl_f3( const bhvm_value_s* a, f3_t scl, bhvm_value_s* r )
+{
+    assert( r->size == a->size );
+    switch( BKNIT_FA2( a->type, r->type ) )
+    {
+        case BKNIT_F22: for( sz_t i = 0; i < a->size; i++ ) ( ( f2_t* )r->data )[i] = ( ( f2_t* )a->data )[i] * scl; break;
+        case BKNIT_F23: for( sz_t i = 0; i < a->size; i++ ) ( ( f3_t* )r->data )[i] = ( ( f2_t* )a->data )[i] * scl; break;
+        case BKNIT_F32: for( sz_t i = 0; i < a->size; i++ ) ( ( f2_t* )r->data )[i] = ( ( f3_t* )a->data )[i] * scl; break;
+        case BKNIT_F33: for( sz_t i = 0; i < a->size; i++ ) ( ( f3_t* )r->data )[i] = ( ( f3_t* )a->data )[i] * scl; break;
+        default: BKNIT_FA2_ERR( a->type, r->type ); break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_mul_scl_f3_acc( const bhvm_value_s* a, f3_t scl, bhvm_value_s* r )
+{
+    assert( r->size == a->size );
+    switch( BKNIT_FA2( a->type, r->type ) )
+    {
+        case BKNIT_F22: for( sz_t i = 0; i < a->size; i++ ) ( ( f2_t* )r->data )[i] += ( ( f2_t* )a->data )[i] * scl; break;
+        case BKNIT_F23: for( sz_t i = 0; i < a->size; i++ ) ( ( f3_t* )r->data )[i] += ( ( f2_t* )a->data )[i] * scl; break;
+        case BKNIT_F32: for( sz_t i = 0; i < a->size; i++ ) ( ( f2_t* )r->data )[i] += ( ( f3_t* )a->data )[i] * scl; break;
+        case BKNIT_F33: for( sz_t i = 0; i < a->size; i++ ) ( ( f3_t* )r->data )[i] += ( ( f3_t* )a->data )[i] * scl; break;
+        default: BKNIT_FA2_ERR( a->type, r->type ); break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bhvm_value_s_acc_offs( const bhvm_value_s* a, sz_t a_offs, bhvm_value_s* r, sz_t r_offs, sz_t size )
 {
     assert( a->size >= a_offs + size );
@@ -702,6 +732,8 @@ void bhvm_value_s_acc_offs( const bhvm_value_s* a, sz_t a_offs, bhvm_value_s* r,
         default: BKNIT_FA2_ERR( a->type, r->type ); break;
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 /// holor
@@ -1032,6 +1064,7 @@ void bhvm_holor_s_order_inc_set( const bhvm_holor_s* o, sz_t dim, bhvm_holor_s* 
     else
     {
         bhvm_value_s_clear( &r->v );
+        bhvm_value_s_set_type( &r->v, o->v.type );
     }
 }
 
