@@ -112,7 +112,7 @@ A virtual machine is a generalization of a von Neumann architecture.
 It can run virtual code, which in this case is typically representing a
 computational graph on holors. 
 
-[More details ...](https://github.com/johsteffens/beth/blob/master/lib/bhvm/README.md);
+[More details ...](https://github.com/johsteffens/beth/blob/master/lib/bhvm/README.md)
 
 # Core Concepts
 
