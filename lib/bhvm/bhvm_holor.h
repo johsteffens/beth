@@ -149,11 +149,19 @@ bl_t bhvm_shape_s_is_equal( const bhvm_shape_s* o, const bhvm_shape_s* b );
 // b is a sub-shape of o
 bl_t bhvm_shape_s_is_sub(   const bhvm_shape_s* o, const bhvm_shape_s* b );
 
+/// constructive catenation
 bl_t bhvm_shape_s_cat_can(  const bhvm_shape_s* a, const bhvm_shape_s* b );
 bl_t bhvm_shape_s_cat_fits( const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r );
 bl_t bhvm_shape_s_is_cat(   const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r );
 void bhvm_shape_s_cat(      const bhvm_shape_s* a, const bhvm_shape_s* b,       bhvm_shape_s* r );
 void bhvm_shape_s_cat_set(  const bhvm_shape_s* a, const bhvm_shape_s* b,       bhvm_shape_s* r );
+
+/// conservative catenation
+bl_t bhvm_shape_s_ccat_can(  const bhvm_shape_s* a, const bhvm_shape_s* b );
+bl_t bhvm_shape_s_ccat_fits( const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r );
+bl_t bhvm_shape_s_is_ccat(   const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r );
+void bhvm_shape_s_ccat(      const bhvm_shape_s* a, const bhvm_shape_s* b,       bhvm_shape_s* r );
+void bhvm_shape_s_ccat_set(  const bhvm_shape_s* a, const bhvm_shape_s* b,       bhvm_shape_s* r );
 
 /// isovolumetric conversion to a vector (order 1); o == src allowed
 bhvm_shape_s* bhvm_shape_s_copy_vector_isovol( bhvm_shape_s* o, const bhvm_shape_s* src );
@@ -235,7 +243,7 @@ static inline bl_t bhvm_value_s_is_vacant( const bhvm_value_s* o ) { return ( o-
 bl_t bhvm_value_s_is_nan(   const bhvm_value_s* o );
 bl_t bhvm_value_s_is_equal( const bhvm_value_s* o, const bhvm_value_s* b );
 
-/// concatenation
+/// constructive (==conservative) concatenation
 bl_t bhvm_value_s_cat_can ( const bhvm_value_s* a, const bhvm_value_s* b );
 bl_t bhvm_value_s_cat_fits( const bhvm_value_s* a, const bhvm_value_s* b, const bhvm_value_s* r );
 void bhvm_value_s_cat     ( const bhvm_value_s* a, const bhvm_value_s* b,       bhvm_value_s* r );
@@ -487,12 +495,13 @@ void bhvm_holor_s_inc_order_prepend( bhvm_holor_s* o, sz_t dim );
  */
 void bhvm_holor_s_push( bhvm_holor_s* o, const bhvm_holor_s* src );
 
-/** Canonic catenation of two holors.
- *  r->v_data is catenated from a->v_data and b->v_data
+/** Constructive catenation of two holors.
+ *  valua data is catenated from a b
+ *
  *  Shape of r:
- *  If a, b have equal shape then r has shape [2]a
- *  If a[0] has shape of b, then r[0] has shape b and dimof(r) == dimof(a) + 1
- *  If b[0] has shape of a, then r[0] has shape a and dimof(r) == dimof(b) + 1
+ *  If a, b have equal shape then r has shape 2[a
+ *  If a]0 has shape of b, then r]0 has shape b and dimof(r) == dimof(a) + 1
+ *  If b]0 has shape of a, then r]0 has shape a and dimof(r) == dimof(b) + 1
  *  Other shape constellations are not allowed.
  *
  *  Type and Vacancy:
@@ -502,6 +511,25 @@ void bhvm_holor_s_push( bhvm_holor_s* o, const bhvm_holor_s* src );
 bl_t bhvm_holor_s_cat_can( const bhvm_holor_s* a, const bhvm_holor_s* b                  ); // test
 void bhvm_holor_s_cat_set( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ); // cat with allocating r
 void bhvm_holor_s_cat    ( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ); // in place
+
+/** Conservative catenation of two holors.
+ *  valua data is catenated from a b
+ *  Requirements:
+ *    order(a) == order(b)
+ *    order(a) >= 1
+ *    a]0, b]0 have equal shape
+ *
+ *  Shape of r:
+ *  r]0 = a]0
+ *  dimof( r ) == dimof( a ) + dimof( b )
+ *
+ *  Type and Vacancy:
+ *  r inherits the common or more precise type of a,b
+ *  r is vacant iff at least one of a,b is vacant.
+ */
+bl_t bhvm_holor_s_ccat_can( const bhvm_holor_s* a, const bhvm_holor_s* b                  ); // test
+void bhvm_holor_s_ccat_set( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ); // cat with allocating r
+void bhvm_holor_s_ccat    ( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ); // in place
 
 /** Order increment
  *  A new leading dimension is appended to shape.

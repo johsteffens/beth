@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-11T19:41:50Z
+ *  Last File Update: 2020-02-12T11:58:47Z
  *
  *  Copyright and License of this File:
  *
@@ -373,6 +373,16 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_cat_dp_zf_s )
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_cat_dp_zg_s )
+"aware bhvm_hop_ar1"
+"{"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_ccat_dp_zf_s )
+"aware bhvm_hop_ar1"
+"{"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_ccat_dp_zg_s )
 "aware bhvm_hop_ar1"
 "{"
 "}";
@@ -994,6 +1004,11 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_mul_acc_ttm_s )
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_cat_s )
+"aware bhvm_hop_ar2"
+"{"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_ccat_s )
 "aware bhvm_hop_ar2"
 "{"
 "}";
@@ -1671,7 +1686,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2868063073 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 792529419 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1727,6 +1742,8 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_neg_dp_zf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_cat_dp_zf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_cat_dp_zg_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_ccat_dp_zf_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_ccat_dp_zg_s );
             BCORE_REGISTER_TRAIT( bhvm_hop_ar1, bhvm_hop );
 
             // group: bhvm_hop_ar1_eci
@@ -1784,6 +1801,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_acc_tmm_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_acc_ttm_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_cat_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_ccat_s );
             BCORE_REGISTER_TRAIT( bhvm_hop_ar2, bhvm_hop );
 
             // group: bhvm_hop_ar2_eci

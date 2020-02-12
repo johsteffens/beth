@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-11T19:41:50Z
+ *  Last File Update: 2020-02-12T11:58:47Z
  *
  *  Copyright and License of this File:
  *
@@ -305,6 +305,16 @@
   BCORE_DECLARE_OBJECT( bhvm_hop_ar1_cat_dp_zg_s ) \
     {aware_t _;}; \
   static inline void bhvm_hop_ar1_cat_dp_zg_s_f( const bhvm_holor_s* a, bhvm_holor_s* r ){bhvm_value_s_acc_offs( &a->v, a->v.size - r->v.size, &r->v, 0, r->v.size );}
+#define TYPEOF_bhvm_hop_ar1_ccat_dp_zf_s 1764183895
+#define BETH_EXPAND_ITEM_bhvm_hop_ar1_ccat_dp_zf_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar1_ccat_dp_zf_s ) \
+    {aware_t _;}; \
+  static inline void bhvm_hop_ar1_ccat_dp_zf_s_f( const bhvm_holor_s* a, bhvm_holor_s* r ){bhvm_value_s_acc_offs( &a->v, 0, &r->v, 0, r->v.size );}
+#define TYPEOF_bhvm_hop_ar1_ccat_dp_zg_s 3969840860
+#define BETH_EXPAND_ITEM_bhvm_hop_ar1_ccat_dp_zg_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar1_ccat_dp_zg_s ) \
+    {aware_t _;}; \
+  static inline void bhvm_hop_ar1_ccat_dp_zg_s_f( const bhvm_holor_s* a, bhvm_holor_s* r ){bhvm_value_s_acc_offs( &a->v, a->v.size - r->v.size, &r->v, 0, r->v.size );}
 #define BETH_EXPAND_GROUP_bhvm_hop_ar1 \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1 ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_cpy_s ); \
@@ -334,6 +344,8 @@
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_neg_dp_zf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_cat_dp_zf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_cat_dp_zg_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar1_ccat_dp_zf_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar1_ccat_dp_zg_s ); \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_cpy_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_identity_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_neg_s \
@@ -360,7 +372,9 @@
   BETH_EXPAND_ITEM_bhvm_hop_ar1_identity_dp_zf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_neg_dp_zf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_cat_dp_zf_s \
-  BETH_EXPAND_ITEM_bhvm_hop_ar1_cat_dp_zg_s
+  BETH_EXPAND_ITEM_bhvm_hop_ar1_cat_dp_zg_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar1_ccat_dp_zf_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar1_ccat_dp_zg_s
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hop_ar1_eci
@@ -654,6 +668,11 @@
   BCORE_DECLARE_OBJECT( bhvm_hop_ar2_cat_s ) \
     {aware_t _;}; \
   static inline void bhvm_hop_ar2_cat_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ){bhvm_holor_s_cat( a, b, r );}
+#define TYPEOF_bhvm_hop_ar2_ccat_s 673538486
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_ccat_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_ccat_s ) \
+    {aware_t _;}; \
+  static inline void bhvm_hop_ar2_ccat_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ){bhvm_holor_s_ccat( a, b, r );}
 #define BETH_EXPAND_GROUP_bhvm_hop_ar2 \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2 ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_sub_sqrsum_s ); \
@@ -701,6 +720,7 @@
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_mul_acc_tmm_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_mul_acc_ttm_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_cat_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_ccat_s ); \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_sub_sqrsum_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_sub_l1_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_equal_s \
@@ -745,7 +765,8 @@
   BETH_EXPAND_ITEM_bhvm_hop_ar2_mul_acc_mtm_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_mul_acc_tmm_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_mul_acc_ttm_s \
-  BETH_EXPAND_ITEM_bhvm_hop_ar2_cat_s
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_cat_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_ccat_s
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hop_ar2_eci

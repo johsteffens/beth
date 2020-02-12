@@ -226,6 +226,8 @@ group :ar1 =
 
     stamp :cat_dp_a = { func :: :run = { bhvm_hop_ar1_cat_dp_zf_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
     stamp :cat_dp_b = { func :: :run = { bhvm_hop_ar1_cat_dp_zg_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zg"; }; };
+    stamp :ccat_dp_a = { func :: :run = { bhvm_hop_ar1_ccat_dp_zf_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
+    stamp :ccat_dp_b = { func :: :run = { bhvm_hop_ar1_ccat_dp_zg_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zg"; }; };
 
 
     /// copy special channel ---------------------------------------------------
@@ -278,7 +280,8 @@ group :ar2 =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :cat = { func :: :sig = { return "aby"; }; };
+    stamp :cat  = { func :: :sig = { return "aby"; }; };
+    stamp :ccat = { func :: :sig = { return "aby"; }; };
 
     stamp :add = { func :: :run = { bhvm_hop_ar2_eci_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
     stamp :sub = { func :: :run = { bhvm_hop_ar2_eci_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };

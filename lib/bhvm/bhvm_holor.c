@@ -121,6 +121,7 @@ void bhvm_shape_s_inc_order_prepend( bhvm_shape_s* o, sz_t dim )
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+/// constructive catenation
 
 bl_t bhvm_shape_s_cat_can( const bhvm_shape_s* a, const bhvm_shape_s* b )
 {
@@ -250,6 +251,64 @@ void bhvm_shape_s_cat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_sh
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+/// conservative catenation
+
+bl_t bhvm_shape_s_ccat_can( const bhvm_shape_s* a, const bhvm_shape_s* b )
+{
+    if( a->size == 0 ) return false;
+    if( b->size == 0 ) return false;
+    if( a->size != b->size ) return false;
+    for( sz_t i = 0; i < a->size - 1; i++ ) if( a->data[ i ] != b->data[ i ] ) return false;
+    return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bhvm_shape_s_ccat_fits( const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r )
+{
+    if( !bhvm_shape_s_ccat_can( a, b ) ) return false;
+    if( a->size != r->size ) return false;
+    return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bhvm_shape_s_is_ccat( const bhvm_shape_s* a, const bhvm_shape_s* b, const bhvm_shape_s* r )
+{
+    if( !bhvm_shape_s_ccat_fits( a, b, r ) ) return false;
+    for( sz_t i = 0; i < a->size - 1; i++ ) if( a->data[ i ] != r->data[ i ] ) return false;
+    return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_shape_s_ccat( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
+{
+    ASSERT( bhvm_shape_s_ccat_can( a, b ) );
+    ASSERT( r->size == a->size );
+    for( sz_t i = 0; i < a->size - 1; i++ ) r->data[ i ] = a->data[ i ];
+    r->data[ a->size - 1 ] = a->data[ a->size - 1 ] + b->data[ a->size - 1 ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_shape_s_ccat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
+{
+    if( a == r || b == r )
+    {
+        bhvm_shape_s* buf = bhvm_shape_s_create();
+        bhvm_shape_s_ccat_set( a, b, buf );
+        bhvm_shape_s_copy( r, buf );
+        bhvm_shape_s_discard( buf );
+        return;
+    }
+
+    assert( bhvm_shape_s_ccat_can( a, b ) );
+    bhvm_shape_s_set_size( r, a->size );
+    bhvm_shape_s_ccat( a, b, r );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bhvm_shape_s* bhvm_shape_s_copy_vector_isovol( bhvm_shape_s* o, const bhvm_shape_s* src )
 {
@@ -1008,6 +1067,7 @@ void bhvm_holor_s_push( bhvm_holor_s* o, const bhvm_holor_s* src )
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+/// constructive catenation
 
 bl_t bhvm_holor_s_cat_can( const bhvm_holor_s* a, const bhvm_holor_s* b )
 {
@@ -1041,6 +1101,43 @@ void bhvm_holor_s_cat_set( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_ho
 {
     bhvm_shape_s_cat_set( &a->s, &b->s, &r->s );
     bhvm_value_s_cat_set( &a->v, &b->v, &r->v );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+/// conservative catenation
+
+bl_t bhvm_holor_s_ccat_can( const bhvm_holor_s* a, const bhvm_holor_s* b )
+{
+    if( !bhvm_shape_s_ccat_can( &a->s, &b->s ) ) return false;
+    if( a->v.size > 0 && b->v.size > 0 )
+    {
+        if( !bhvm_value_s_cat_can( &a->v, &b->v ) ) return false;
+    }
+    return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_ccat( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    ASSERT( bhvm_shape_s_is_ccat( &a->s, &b->s, &r->s ) );
+    if( a->v.size > 0 && b->v.size > 0 )
+    {
+        ASSERT( bhvm_value_s_cat_fits( &a->v, &b->v, &r->v ) );
+        bhvm_value_s_cat( &a->v, &b->v, &r->v );
+    }
+    else
+    {
+        ASSERT( r->v.size == 0 );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_ccat_set( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    bhvm_shape_s_ccat_set( &a->s, &b->s, &r->s );
+    bhvm_value_s_cat_set(  &a->v, &b->v, &r->v );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1209,28 +1306,29 @@ static void to_sink_recursive( const bhvm_holor_s* o, sz_t indent, bl_t formatte
 static void holor_s_to_sink( const bhvm_holor_s* o, sz_t max_size, bcore_sink* sink )
 {
     bhvm_holor_s_check_integrity( o );
-    bcore_sink_a_push_fa( sink, "<#<sc_t>>", ifnameof( o->v.type ) );
+    bcore_sink_a_push_fa( sink, "#<sc_t>", ifnameof( o->v.type ) );
     if( o->v.size > 0 && ( max_size < 0 || o->v.size <= max_size ) )
     {
         if( o->s.size > 0 )
         {
             sz_t sub_dim = o->s.data[ o->s.size - 1 ];
-            bcore_sink_a_push_fa( sink, ( sub_dim == 1 ) ? "1[" : "(" );
+            bcore_sink_a_push_fa( sink, ( sub_dim == 1 ) ? "(1[" : "(" );
             to_sink_recursive( o, 0, false, sink, o->v.data, o->s.size - 1 );
-            if( sub_dim > 1 ) bcore_sink_a_push_fa( sink, ")" );
+            bcore_sink_a_push_fa( sink, ")" );
         }
         else
         {
             switch( o->v.type )
             {
-                case TYPEOF_f2_t: bcore_sink_a_push_fa( sink, "#<f2_t>", ( ( f2_t* )o->v.data )[ 0 ] ); break;
-                case TYPEOF_f3_t: bcore_sink_a_push_fa( sink, "#<f3_t>", ( ( f3_t* )o->v.data )[ 0 ] ); break;
+                case TYPEOF_f2_t: bcore_sink_a_push_fa( sink, "(#<f2_t>)", ( ( f2_t* )o->v.data )[ 0 ] ); break;
+                case TYPEOF_f3_t: bcore_sink_a_push_fa( sink, "(#<f3_t>)", ( ( f3_t* )o->v.data )[ 0 ] ); break;
                 default: break;
             }
         }
     }
     else
     {
+        bcore_sink_a_push_fa( sink, "(" );
         for( sz_t i = o->s.size - 1; i >= 0; i-- )
         {
             bcore_sink_a_push_fa( sink, "#<sz_t>[", o->s.data[ i ] );
@@ -1243,6 +1341,7 @@ static void holor_s_to_sink( const bhvm_holor_s* o, sz_t max_size, bcore_sink* s
         {
             bcore_sink_a_push_fa( sink, "D" );
         }
+        bcore_sink_a_push_fa( sink, ")" );
     }
 }
 
@@ -1342,14 +1441,18 @@ bhvm_holor_s* bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source )
 {
     bhvm_holor_s_clear( o );
 
-    if( bcore_source_a_parse_bl_fa( source, " #?'<f2_t>'" ) )
+    if( bcore_source_a_parse_bl_fa( source, " #?'f2_t'" ) )
     {
+        bcore_source_a_parse_fa( source, " (" );
         bhvm_holor_s_parse( o, source );
+        bcore_source_a_parse_fa( source, " )" );
         bhvm_value_s_set_type( &o->v, TYPEOF_f2_t );
     }
-    else if( bcore_source_a_parse_bl_fa( source, " #?'<f3_t>'" ) )
+    else if( bcore_source_a_parse_bl_fa( source, " #?'f3_t'" ) )
     {
+        bcore_source_a_parse_fa( source, " (" );
         bhvm_holor_s_parse( o, source );
+        bcore_source_a_parse_fa( source, " )" );
         bhvm_value_s_set_type( &o->v, TYPEOF_f3_t );
     }
     else if( bcore_source_a_parse_bl_fa( source, " #?'#'" ) ) // undetermined scalar
@@ -1523,19 +1626,20 @@ static void selftest( void )
 //    bhvm_holor_s* h2 = BLM_CREATE( bhvm_holor_s );
     st_s* s = BLM_CREATE( st_s );
 
-    bhvm_holor_s_parse( h1, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>2[(( 1:1 ):( 7:2 ))" ) ) );
+    bhvm_holor_s_parse( h1, BLM_A_PUSH( bcore_source_string_s_create_sc( "f2_t(2[(( 1:1 ):( 7:2 )))" ) ) );
     bhvm_holor_s_to_sink( h1, ( bcore_sink* )s );
-    ASSERT( st_s_equal_sc( s, "<f2_t>(((1:1):(7:2)):((1:1):(7:2)))" ) );
+    bhvm_holor_s_to_stdout_nl( h1 );
+    ASSERT( st_s_equal_sc( s, "f2_t(((1:1):(7:2)):((1:1):(7:2)))" ) );
 
-    bhvm_holor_s_parse( h1, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>( 1:2 )" ) ) );
-    bhvm_holor_s_parse( h2, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f3_t>( 2:2 )" ) ) );
-    bhvm_holor_s_parse( h3, BLM_A_PUSH( bcore_source_string_s_create_sc( "<f2_t>2[0" ) ) );
+    bhvm_holor_s_parse( h1, BLM_A_PUSH( bcore_source_string_s_create_sc( "f2_t( 1:2 )" ) ) );
+    bhvm_holor_s_parse( h2, BLM_A_PUSH( bcore_source_string_s_create_sc( "f3_t( 2:2 )" ) ) );
+    bhvm_holor_s_parse( h3, BLM_A_PUSH( bcore_source_string_s_create_sc( "f2_t( 2[0 )" ) ) );
 
     bhvm_hop_ar2_eci_mul_s_f( h1, h2, h3 );
 
     st_s_clear( s );
     bhvm_holor_s_to_sink( h3, ( bcore_sink* )s );
-    ASSERT( st_s_equal_sc( s, "<f2_t>(2:4)" ) );
+    ASSERT( st_s_equal_sc( s, "f2_t(2:4)" ) );
 
 /*
     bhvm_holor_s_set_size_na( h1, 3, 2, 2, 7 );
