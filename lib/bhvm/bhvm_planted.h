@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-06T11:48:05Z
+ *  Last File Update: 2020-02-11T19:41:50Z
  *
  *  Copyright and License of this File:
  *
@@ -474,6 +474,11 @@
   BCORE_DECLARE_OBJECT( bhvm_hop_ar2_logic_or_s ) \
     {aware_t _;}; \
   void bhvm_hop_ar2_logic_or_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_abs_dp_zaf_s 748127710
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_abs_dp_zaf_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_abs_dp_zaf_s ) \
+    {aware_t _;}; \
+  void bhvm_hop_ar2_abs_dp_zaf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
 #define TYPEOF_bhvm_hop_ar2_exp_dp_zyf_s 2904686959
 #define BETH_EXPAND_ITEM_bhvm_hop_ar2_exp_dp_zyf_s \
   BCORE_DECLARE_OBJECT( bhvm_hop_ar2_exp_dp_zyf_s ) \
@@ -660,6 +665,7 @@
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_smaller_equal_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_logic_and_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_logic_or_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_abs_dp_zaf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_exp_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_log_dp_zaf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_inv_dp_zyf_s ); \
@@ -704,6 +710,7 @@
   BETH_EXPAND_ITEM_bhvm_hop_ar2_smaller_equal_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_logic_and_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_logic_or_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_abs_dp_zaf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_exp_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_log_dp_zaf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_inv_dp_zyf_s \

@@ -375,6 +375,7 @@ group :ar2 =
     stamp :sqr_dp_zaf = { func : :f2 = { return  2*a*b; }; func : :f3 = { return  2*a*b; }; func : :f = :body_vv_av; };
     stamp :srt_dp_zyf = { func : :f2 = :body_div_f2;       func : :f3 = :body_div_f3;       func : :f = :body_vv_av; };
 
+    body body_abs_dp_zaf        = { return b >= 0 ? a : -a; };
     body body_lgst_dp_zyf       = { return b * ( 1.0 - b ) * a; };
     body body_lgst_hard_dp_zyf  = { return ( b <  0.0 ) ? 0.0 : ( b > 1.0 ) ? 0.0 : 0.25 * a; };
     body body_lgst_leaky_dp_zyf = { return ( b <  0.0 ) ? 0.01 * a : ( b > 1.0 ) ? 0.01 * a : 0.25 * a; };
@@ -385,6 +386,7 @@ group :ar2 =
     body body_relu_dp_zyf       = { return b > 0 ? a : 0; };
     body body_relu_leaky_dp_zyf = { return b > 0 ? a : 0.01 * a; };
 
+    stamp :abs_dp_zaf        = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
     stamp :lgst_dp_zyf       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
     stamp :lgst_hard_dp_zyf  = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
     stamp :lgst_leaky_dp_zyf = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };

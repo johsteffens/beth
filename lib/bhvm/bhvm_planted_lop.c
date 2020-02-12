@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-05T20:05:43Z
+ *  Last File Update: 2020-02-11T19:48:08Z
  *
  *  Copyright and License of this File:
  *
@@ -676,6 +676,28 @@ void bhvm_lop_ar2_srt_dp_zyf_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
     }
 }
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_abs_dp_zaf_s )
+"aware bhvm_lop_ar2"
+"{"
+"}";
+
+void bhvm_lop_ar2_abs_dp_zaf_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s )
+{
+    assert( s == 0 || ( a && b && r ) );
+    switch( tknit )
+    {
+        case BKNIT_F222: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_abs_dp_zaf_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F223: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_abs_dp_zaf_s_f2(((f2_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F232: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_abs_dp_zaf_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F233: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_abs_dp_zaf_s_f3(((f2_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F322: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_abs_dp_zaf_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F323: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_abs_dp_zaf_s_f3(((f3_t*)a)[i],((f2_t*)b)[i]); } break;
+        case BKNIT_F332: for(sz_t i=0; i<s; i++) { ((f2_t*)r)[i]+=bhvm_lop_ar2_abs_dp_zaf_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        case BKNIT_F333: for(sz_t i=0; i<s; i++) { ((f3_t*)r)[i]+=bhvm_lop_ar2_abs_dp_zaf_s_f3(((f3_t*)a)[i],((f3_t*)b)[i]); } break;
+        default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
+    }
+}
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_lop_ar2_lgst_dp_zyf_s )
 "aware bhvm_lop_ar2"
 "{"
@@ -1114,7 +1136,7 @@ vd_t bhvm_planted_lop_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_lop_hash" ), sr_tp( 3203692756 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_lop_hash" ), sr_tp( 3949606911 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_lop.h
@@ -1171,6 +1193,7 @@ vd_t bhvm_planted_lop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_inv_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_sqr_dp_zaf_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_srt_dp_zyf_s );
+            BCORE_REGISTER_OBJECT( bhvm_lop_ar2_abs_dp_zaf_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_lgst_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_lgst_hard_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_lop_ar2_lgst_leaky_dp_zyf_s );

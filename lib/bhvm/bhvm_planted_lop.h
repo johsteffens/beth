@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-05T20:05:43Z
+ *  Last File Update: 2020-02-11T19:48:08Z
  *
  *  Copyright and License of this File:
  *
@@ -400,6 +400,13 @@
   static inline f2_t bhvm_lop_ar2_srt_dp_zyf_s_f2( f2_t a, f2_t b ){return a * f2_inv( b );} \
   static inline f3_t bhvm_lop_ar2_srt_dp_zyf_s_f3( f3_t a, f3_t b ){return a * f3_inv( b );} \
   void bhvm_lop_ar2_srt_dp_zyf_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
+#define TYPEOF_bhvm_lop_ar2_abs_dp_zaf_s 680733482
+#define BETH_EXPAND_ITEM_bhvm_lop_ar2_abs_dp_zaf_s \
+  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_abs_dp_zaf_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_lop_ar2_abs_dp_zaf_s_f2( f2_t a, f2_t b ){return b >= 0 ? a : -a;} \
+  static inline f3_t bhvm_lop_ar2_abs_dp_zaf_s_f3( f3_t a, f3_t b ){return b >= 0 ? a : -a;} \
+  void bhvm_lop_ar2_abs_dp_zaf_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar2_lgst_dp_zyf_s 3623060366
 #define BETH_EXPAND_ITEM_bhvm_lop_ar2_lgst_dp_zyf_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_lgst_dp_zyf_s ) \
@@ -542,6 +549,7 @@
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_inv_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_sqr_dp_zaf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_srt_dp_zyf_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_abs_dp_zaf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_lgst_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_lgst_hard_dp_zyf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_lgst_leaky_dp_zyf_s ); \
@@ -574,6 +582,7 @@
   BETH_EXPAND_ITEM_bhvm_lop_ar2_inv_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_sqr_dp_zaf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_srt_dp_zyf_s \
+  BETH_EXPAND_ITEM_bhvm_lop_ar2_abs_dp_zaf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_lgst_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_lgst_hard_dp_zyf_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_lgst_leaky_dp_zyf_s \

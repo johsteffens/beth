@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-06T11:48:05Z
+ *  Last File Update: 2020-02-11T19:41:50Z
  *
  *  Copyright and License of this File:
  *
@@ -654,6 +654,17 @@ void bhvm_hop_ar2_logic_or_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bh
 {
     assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
     bhvm_lop_ar2_logic_or_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_abs_dp_zaf_s )
+"aware bhvm_hop_ar2"
+"{"
+"}";
+
+void bhvm_hop_ar2_abs_dp_zaf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
+    bhvm_lop_ar2_abs_dp_zaf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_exp_dp_zyf_s )
@@ -1660,7 +1671,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3569251813 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2868063073 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1737,6 +1748,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_smaller_equal_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_logic_and_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_logic_or_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_abs_dp_zaf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_exp_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_log_dp_zaf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_inv_dp_zyf_s );

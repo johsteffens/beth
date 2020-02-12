@@ -334,9 +334,9 @@ group :ar2 =
 
     stamp :mul_dp_a      = { func :: :run = { bhvm_hop_ar2_eci_mul_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
     stamp :mul_dp_b      = { func :: :run = { bhvm_hop_ar2_eci_mul_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zag"; }; };
-
     stamp :div_dp_a      = { func :: :run = { bhvm_hop_ar2_eci_div_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
 
+    stamp :abs_dp        = { func :: :run = { bhvm_hop_ar2_abs_dp_zaf_s_f(        &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zaf"; }; };
     stamp :exp_dp        = { func :: :run = { bhvm_hop_ar2_exp_dp_zyf_s_f(        &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
     stamp :log_dp        = { func :: :run = { bhvm_hop_ar2_log_dp_zaf_s_f(        &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zaf"; }; };
     stamp :inv_dp        = { func :: :run = { bhvm_hop_ar2_inv_dp_zyf_s_f(        &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };

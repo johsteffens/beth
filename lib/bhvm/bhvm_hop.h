@@ -239,6 +239,7 @@ group :ar2 =
 
     /// dendrite pass ----------------------------------------------------------
 
+    stamp :abs_dp_zaf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :exp_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :log_dp_zaf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :inv_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
