@@ -104,6 +104,16 @@ With this this concept, specific popular feed-forward and recurrent networks hav
    * Elman Recurrent Network (ERN)
    * Long-Short-Term Memory Recurrent Network (LSTM)
 
+<a name = "bhvm"></a>
+### bhvm - Holor Virtual Machine
+A holor is a generic type representing a multidimensional array.
+This library implements a virtual machine where operands are holors.
+A virtual machine is a generalization of a von Neumann architecture.
+It can run virtual code, which in this case is typically representing a
+computational graph on holors. 
+
+[More details ...](https://github.com/johsteffens/beth/blob/master/lib/bhvm/README.md);
+
 # Core Concepts
 
 <a name = "reflection"></a>
