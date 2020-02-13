@@ -105,12 +105,12 @@ With this this concept, specific popular feed-forward and recurrent networks hav
    * Long-Short-Term Memory Recurrent Network (LSTM)
 
 <a name = "bhvm"></a>
-### bhvm - Holor Virtual Machine
-A holor is a generic type representing a multidimensional array.
+### bhvm - Holor Virtual Machine (HVM)
+A holor is a generic data type. It can be understood as generalization of a Tensor.
 This library implements a virtual machine where operands are holors.
 A virtual machine is a generalization of a von Neumann architecture.
-It can run virtual code, which in this case is typically representing a
-computational graph on holors. 
+It can run virtual machine code. 
+Code for a HVM is compiled from a computational graph on holors.
 
 [More details ...](https://github.com/johsteffens/beth/blob/master/lib/bhvm/README.md)
 
