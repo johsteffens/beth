@@ -102,7 +102,7 @@ Executing a track means executing all vop in the track from first to last in giv
 
 Additional components are allowed but not mandatory.
 Typically such components would include operations such as conditional execution, jump, loop, 
-branch, call-subroutine, etc (tuning a HVM into a Turing Machine).
+branch, call-subroutine, etc (turning a HVM into a Turing Machine).
 
 ------
 <sub>&copy; 2019, 2020 Johannes B. Steffens</sub>
