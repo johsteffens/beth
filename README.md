@@ -67,6 +67,7 @@ Beth consists of a suite of sub-libraries.
 ### bcore - Core Concepts
 Library bcore represents the functional essence of Beth. It defines [core concepts](https://github.com/johsteffens/beth#core-concepts) and contains objects and/or abstractions around ...
    * Memory Management
+   * Reference Management
    * Garbage Collection
    * Object Definition and Instance Management
    * Object Scope Management
@@ -136,9 +137,17 @@ Runtime type information is represented as hash value of the (text-based) identi
 
 <a name = "memory-management"></a>
 ### Memory Management & Garbage Collection
-Beth has its own memory manager with integrated reference manager. Both components work closely together providing efficient garbage collection based on reference-counting. A special design-feature is the overhead-free (near) O(1) root-address-determination from any pointer adressing an embedded element of the object. This allows garbage collection, even after all direct pointers to the object have been released while only pointers to its elements remain in use. Once the last such element-reference is released, the enveloping instance is automatically determined and destroyed.
+Beth has its own memory manager with integrated reference manager. 
+Both components work closely together providing efficient garbage collection based on reference-counting. 
+A special design-feature is the overhead-free (near) O(1) root-address-determination from any pointer
+adressing an embedded element of the object. 
+This allows garbage collection, even after all direct pointers to the object have been released while
+only pointers to its elements remain in use.
+Once the last such element-reference is released,
+the enveloping instance is automatically determined and destroyed.
 
-The memory-manager, excluding reference manager, was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
+A simplified version of the memory-manager (excluding reference management)
+was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
 
 <a name = "plant"></a>
 ### Plant

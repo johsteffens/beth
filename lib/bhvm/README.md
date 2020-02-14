@@ -16,11 +16,11 @@ In the scope of this library the holor is physically represented as multidimensi
 A given holor has an *order* **n**, with **n** being a non-negative whole number.
 We use the specifying term **n-holor**.
 
-The **0-holor**, is a **scalar**. 
+**A:** The **0-holor**, is a **scalar**.
 It can be represented as real (or complex) number.
 All possible values are allowed.
 
-The **(n+1)-holor** is an array of **n-holors**.
+**B:** The **(n+1)-holor** is an array of **n-holors**.
 We call the array-size: **Leading Dimension**.
 
 Each element is an **n-holor** and each has the the same leading dimension.
@@ -45,13 +45,31 @@ its atoms can be folded into linear space
 (e.g. linear addressable memory) such that all sub-holors also retain a valid
 representation. 
 
-There are different ways to encode this. The method we apply is like the way
-multidimensional arrays represented by the programming language 'C'.
-
 ### Volume
 We define **volume** as the product of all elements of **shape**.
 <br>The 0-holor has volume **1** (*empty product*).
 <br><sub> Note: *'volume'* is the related to Moon & Spencer's *'Number of Merates'*</sub>
+
+### Value
+We call the composite of all individual scalars of a given holor **the value** of that holor.
+The value is stored as array of a specified data type. Currently the types f2_t (float) and f3_t
+(double) are supported.
+
+The holor-value can be seen as vector. Its size is equal to the volume of the holor. For a given shape
+all scalars have a well defined order:
+
+We obtain the order uniquely by adding axiom 'C' to a holor's definition:
+
+**C:** The value of an **(n+1)-holor** is the concatenated array of the associated values 
+of **n-holors** as specified in axiom 'B'.
+
+### Undetermined Holor
+We extend the definition of holor to include a objects with shape but no associated value.
+Here the vale-size is zero, a number not possible for any holor defined so far.
+
+**D:** We define an object with shape but no value and call it _undetermined holor_
+
+*Consequently all holors with value are then called _determined_.*
 
 ### Examples
 |Name|Description|Shape|Volume|
@@ -65,10 +83,26 @@ We define **volume** as the product of all elements of **shape**.
 A holor has well defined operations like addition, multiplication, convolution, transposition, etc.
 Where suitable operations are expressed as operators, which are dedicated objects.
 
-## Holor Virtual Machine
-The holor virtual machine is a virtual machine with holors as data elements
-holor-operands as principal instructions. Additional instructions
-controlling program flow (loops, branches) can be part of the virtual machine.
+## Holor Virtual Machine (HVM)
+We define the HVM as virtual machine with holors as data elements
+holor-operands as principal instructions. A HVM contains at least the following components:
+
+1. A database for storing holors where each holor is addressable by an integer index.
+
+2. A collection of _virtual machine operations_ (vop). Each vop representing
+an operation of arity n on holors and containing an array of n+1 indices, where the
+first n indices address the input holors and the last one the output holor of the
+given operation. Normally, a vop can handle holors of all data types (f2_t or f3_t)
+in any combination.
+
+3. An executable array of vop, called _track_. 
+Executing a track means executing all vop in the track from first to last in given sequence.
+
+4. An database of tracks, called _library_.
+
+Additional components are allowed but not mandatory.
+Typically such components would include operations such as conditional execution, jump, loop, 
+branch, call-subroutine, etc (tuning a HVM into a Turing Machine).
 
 ------
 <sub>&copy; 2019, 2020 Johannes B. Steffens</sub>
