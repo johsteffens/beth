@@ -62,6 +62,10 @@ group :hmeta =
 signature sz_t push_hm ( mutable, const bhvm_holor_s* h, const :hmeta* m );
 signature :push_hm push_hmc( char c, bhvm_vop_arr_ci_s* arr_ci );
 
+/// sub-section of an array (typically of a track)
+stamp :sub = : { sz_t start; sz_t size; };
+stamp :sub_ads = aware bcore_array { :sub_s []; };
+
 group :hbase =
 {
     signature @* set_size( mutable, sz_t size );
@@ -101,11 +105,34 @@ group :hbase =
     };
 };
 
+signature void run_section( const, sz_t start, sz_t size, bhvm_holor_s* ah );
+signature void run_sub(     const, const :sub_s* sub, bhvm_holor_s* ah );
+signature void run_isub(    const, sz_t index, bhvm_holor_s* ah );
+
 stamp :track = aware bcore_array
 {
     tp_t name;
     :op_s [];
-    func bhvm_vop : run = { BFOR_EACH( i, o ) :op_s_run( &o->data[ i ], ah ); };
+    : sub_ads_s => sub_arr; // optional array of sub sections
+
+    func bhvm_vop : run =
+    {
+        BFOR_EACH( i, o ) :op_s_run( &o->data[ i ], ah );
+    };
+
+    func : : run_section =
+    {
+        assert( start >= 0 && start < o->size - size );
+        for( sz_t i = 0; i < size; i++ ) :op_s_run( &o->data[ i + start ], ah );
+    };
+
+    func : : run_sub = { @_run_section( o, sub->start, sub->size, ah ); };
+
+    func : : run_isub =
+    {
+        assert( o->sub_arr && index >= 0 && index < o->sub_arr->size );
+        @_run_sub( o, &o->sub_arr->data[ index ], ah );
+    };
 
     func : :vop_push_d =
     {
@@ -122,7 +149,7 @@ stamp :track = aware bcore_array
     };
 };
 
-stamp :track_ads = aware bcore_array { :track_s => []; };
+stamp :track_adl = aware bcore_array { :track_s => []; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -135,7 +162,6 @@ signature :track_s* track_reset       ( mutable, tp_t name ); // creates track i
 signature      void track_vop_push_d  ( mutable, tp_t name,       bhvm_vop* vop );
 signature      void track_vop_push_c  ( mutable, tp_t name, const bhvm_vop* vop );
 signature      void track_push        ( mutable, tp_t name, tp_t src_name ); // appends track of src_name
-signature      void track_push_reverse( mutable, tp_t name, tp_t src_name ); // appends track of src_name in reverse order
 signature      void track_remove      ( mutable, tp_t name );                // removes track if existing
 signature      void track_run_ah      (   const, tp_t name, bhvm_holor_s* ah );
 signature      void track_run         (   const, tp_t name );
@@ -145,10 +171,10 @@ signature :track_vop_push_d track_vop_set_args_push_d( const bhvm_vop_arr_ci_s* 
 // track library
 stamp :lib = aware :
 {
-    :track_ads_s      arr;
+    :track_adl_s      arr;
     bcore_hmap_tpuz_s map; // name-index map
 
-    func : :clear = { :track_ads_s_clear( &o->arr ); bcore_hmap_tpuz_s_clear( &o->map ); };
+    func : :clear = { :track_adl_s_clear( &o->arr ); bcore_hmap_tpuz_s_clear( &o->map ); };
 
     func : :track_exists = { return bcore_hmap_tpuz_s_exists( &o->map, name ); };
 
@@ -163,7 +189,7 @@ stamp :lib = aware :
     {
         if( bcore_hmap_tpuz_s_exists( &o->map, name ) ) return @_track_get( o, name );
         bcore_hmap_tpuz_s_set( &o->map, name, o->arr.size );
-        :track_s* track = :track_ads_s_push( &o->arr );
+        :track_s* track = :track_adl_s_push( &o->arr );
         track->name = name;
         return track;
     };
@@ -190,14 +216,6 @@ stamp :lib = aware :
         if( !src ) return;
         :track_s* dst = @_track_get_or_new( o, name );
         BFOR_EACH( i, src ) :track_s_vop_push_c( dst, src->data[ i ].vop );
-    };
-
-    func : :track_push_reverse =
-    {
-        :track_s* src = @_track_get( o, src_name );
-        if( !src ) return;
-        :track_s* dst = @_track_get_or_new( o, name );
-        for( sz_t i = src->size - 1; i >= 0; i-- ) :track_s_vop_push_c( dst, src->data[ i ].vop );
     };
 
     func : :track_remove =

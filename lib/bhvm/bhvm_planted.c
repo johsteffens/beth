@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-12T11:58:47Z
+ *  Last File Update: 2020-02-17T18:49:49Z
  *
  *  Copyright and License of this File:
  *
@@ -1528,13 +1528,44 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_op_s )
     "func bhvm_vop:run;"
 "}";
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_sub_s )
+"bhvm_mcode"
+"{"
+    "sz_t start;"
+    "sz_t size;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_sub_ads_s )
+"aware bcore_array"
+"{"
+    "bhvm_mcode_sub_s [];"
+"}";
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_track_s )
 "aware bcore_array"
 "{"
     "tp_t name;"
     "bhvm_mcode_op_s [];"
+    "bhvm_mcode_sub_ads_s => sub_arr;"
     "func bhvm_vop:run;"
 "}";
+
+void bhvm_mcode_track_s_run( const bhvm_mcode_track_s* o, bhvm_holor_s* ah )
+{
+    BFOR_EACH( i, o ) bhvm_mcode_op_s_run( &o->data[ i ], ah );
+}
+
+void bhvm_mcode_track_s_run_section( const bhvm_mcode_track_s* o, sz_t start, sz_t size, bhvm_holor_s* ah )
+{
+    assert( start >= 0 && start < o->size - size );
+    for( sz_t i = 0; i < size; i++ ) bhvm_mcode_op_s_run( &o->data[ i + start ], ah );
+}
+
+void bhvm_mcode_track_s_run_isub( const bhvm_mcode_track_s* o, sz_t index, bhvm_holor_s* ah )
+{
+    assert( o->sub_arr && index >= 0 && index < o->sub_arr->size );
+    bhvm_mcode_track_s_run_sub( o, &o->sub_arr->data[ index ], ah );
+}
 
 void bhvm_mcode_track_s_vop_push_d( bhvm_mcode_track_s* o, bhvm_vop* vop )
 {
@@ -1550,7 +1581,7 @@ void bhvm_mcode_track_s_vop_push_c( bhvm_mcode_track_s* o, const bhvm_vop* vop )
     bhvm_mcode_track_s_vop_push_d( o, bhvm_vop_a_clone( vop ) );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_track_ads_s )
+BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_track_adl_s )
 "aware bcore_array"
 "{"
     "bhvm_mcode_track_s => [];"
@@ -1559,7 +1590,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_track_ads_s )
 BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_lib_s )
 "aware bhvm_mcode"
 "{"
-    "bhvm_mcode_track_ads_s arr;"
+    "bhvm_mcode_track_adl_s arr;"
     "bcore_hmap_tpuz_s map;"
 "}";
 
@@ -1574,7 +1605,7 @@ bhvm_mcode_track_s* bhvm_mcode_lib_s_track_get_or_new( bhvm_mcode_lib_s* o, tp_t
 {
     if( bcore_hmap_tpuz_s_exists( &o->map, name ) ) return bhvm_mcode_lib_s_track_get( o, name );
     bcore_hmap_tpuz_s_set( &o->map, name, o->arr.size );
-    bhvm_mcode_track_s* track = bhvm_mcode_track_ads_s_push( &o->arr );
+    bhvm_mcode_track_s* track = bhvm_mcode_track_adl_s_push( &o->arr );
     track->name = name;
     return track;
 }
@@ -1598,14 +1629,6 @@ void bhvm_mcode_lib_s_track_push( bhvm_mcode_lib_s* o, tp_t name, tp_t src_name 
     if( !src ) return;
     bhvm_mcode_track_s* dst = bhvm_mcode_lib_s_track_get_or_new( o, name );
     BFOR_EACH( i, src ) bhvm_mcode_track_s_vop_push_c( dst, src->data[ i ].vop );
-}
-
-void bhvm_mcode_lib_s_track_push_reverse( bhvm_mcode_lib_s* o, tp_t name, tp_t src_name )
-{
-    bhvm_mcode_track_s* src = bhvm_mcode_lib_s_track_get( o, src_name );
-    if( !src ) return;
-    bhvm_mcode_track_s* dst = bhvm_mcode_lib_s_track_get_or_new( o, name );
-    for( sz_t i = src->size - 1; i >= 0; i-- ) bhvm_mcode_track_s_vop_push_c( dst, src->data[ i ].vop );
 }
 
 void bhvm_mcode_lib_s_track_remove( bhvm_mcode_lib_s* o, tp_t name )
@@ -1686,7 +1709,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 792529419 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2826056917 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1836,9 +1859,11 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_via_call_mutated, bhvm_mcode_op_s_mutated );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_mcode_op_s_run );
             BCORE_REGISTER_OBJECT( bhvm_mcode_op_s );
+            BCORE_REGISTER_OBJECT( bhvm_mcode_sub_s );
+            BCORE_REGISTER_OBJECT( bhvm_mcode_sub_ads_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_mcode_track_s_run );
             BCORE_REGISTER_OBJECT( bhvm_mcode_track_s );
-            BCORE_REGISTER_OBJECT( bhvm_mcode_track_ads_s );
+            BCORE_REGISTER_OBJECT( bhvm_mcode_track_adl_s );
             BCORE_REGISTER_OBJECT( bhvm_mcode_lib_s );
             BCORE_REGISTER_OBJECT( bhvm_mcode_frame_s );
             BCORE_REGISTER_TRAIT( bhvm_mcode, bcore_inst );
