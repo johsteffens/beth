@@ -777,6 +777,112 @@ uz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v 
 }
 
 /**********************************************************************************************************************/
+// bcore_arr_bl_s
+
+void bcore_arr_bl_s_init( bcore_arr_bl_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+    o->_ = TYPEOF_bcore_arr_bl_s;
+}
+
+void bcore_arr_bl_s_down( bcore_arr_bl_s* o )
+{
+    if( o->space > 0 ) bcore_un_alloc( sizeof( bl_t ), o->data, o->space, 0, NULL );
+}
+
+void bcore_arr_bl_s_copy( bcore_arr_bl_s* o, const bcore_arr_bl_s* src )
+{
+    if( o->space < src->size )
+    {
+        if( o->space > 0 ) o->data = bcore_un_alloc( sizeof( bl_t ), o->data, o->space, 0, &o->space );
+        o->data = bcore_un_alloc( sizeof( bl_t ), NULL, o->space, src->size, &o->space );
+    }
+    bcore_u_memcpy( sizeof( bl_t ), o->data, src->data, src->size );
+    o->size = src->size;
+}
+
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_bl_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_bl_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_bl_s )
+
+static bcore_self_s* arr_bl_s_create_self( void )
+{
+    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_arr_bl_s = bcore_array { aware_t _; bl_t [] arr; }", sizeof( bcore_arr_bl_s ) );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_bl_s_init, "bcore_fp_init", "init" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_bl_s_down, "bcore_fp_down", "down" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_bl_s_copy, "bcore_fp_copy", "copy" );
+    return self;
+}
+
+bcore_arr_bl_s* bcore_arr_bl_s_clear( bcore_arr_bl_s* o )
+{
+    o->size = 0;
+    if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+    return o;
+}
+
+bcore_arr_bl_s* bcore_arr_bl_s_set_space( bcore_arr_bl_s* o, uz_t space )
+{
+    if( o->space == 0 )
+    {
+        o->data = bcore_u_alloc( sizeof( bl_t ), NULL, space, &o->space );
+    }
+    else
+    {
+        o->data = bcore_un_alloc( sizeof( bl_t ), o->data, o->space, space, &o->space );
+    }
+    if( o->size > space ) o->size = space;
+    return o;
+}
+
+bcore_arr_bl_s* bcore_arr_bl_s_fill( bcore_arr_bl_s* o, uz_t size, bl_t v )
+{
+    bcore_arr_bl_s_set_space( o, size );
+    for( uz_t i = 0; i < size; i++ ) o->data[ i ] = v;
+    o->size = size;
+    return o;
+}
+
+bcore_arr_bl_s* bcore_arr_bl_s_set_size( bcore_arr_bl_s* o, uz_t size )
+{
+    bcore_arr_bl_s_set_space( o, size );
+    if( size > o->size )
+    {
+        for( sz_t i = o->size; i < size; i++ ) o->data[ i ] = 0;
+    }
+    o->size = size;
+    return o;
+}
+
+void bcore_arr_bl_s_make_strong( bcore_arr_bl_s* o )
+{
+    if( o->size > o->space )
+    {
+        bl_t* data = o->data;
+        o->data = bcore_u_alloc( sizeof( bl_t ), NULL, o->size, &o->space );
+        bcore_u_memcpy( sizeof( bl_t ), o->data, data, o->size );
+    }
+}
+
+bcore_arr_bl_s* bcore_arr_bl_s_push( bcore_arr_bl_s* o, bl_t v )
+{
+    if( o->size >  o->space ) bcore_arr_bl_s_make_strong( o );
+    if( o->size == o->space )
+    {
+        o->data = bcore_un_alloc( sizeof( bl_t ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+    }
+    o->data[ o->size++ ] = v;
+    return o;
+}
+
+bl_t bcore_arr_bl_s_pop( bcore_arr_bl_s* o )
+{
+    if( o->size == 0 ) return 0;
+    o->size--;
+    return o->data[ o->size ];
+}
+
+/**********************************************************************************************************************/
 
 BCORE_DEFINE_FUNCTION_INIT_INST( bcore_arr_st_s )
 BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_arr_st_s )
@@ -1455,6 +1561,7 @@ vd_t bcore_arr_signal_handler( const bcore_signal_s* o )
             bcore_flect_define_creator( typeof( "bcore_arr_sz_s" ), arr_sz_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_arr_u3_s" ), arr_u3_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_arr_tp_s" ), arr_tp_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_arr_bl_s" ), arr_bl_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_arr_st_s" ), arr_st_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_arr_vd_s" ), arr_vd_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_arr_fp_s" ), arr_fp_s_create_self );

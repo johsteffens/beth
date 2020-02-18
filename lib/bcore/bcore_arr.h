@@ -122,6 +122,23 @@ uz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v 
 
 /**********************************************************************************************************************/
 
+typedef struct bcore_arr_bl_s
+{
+    aware_t _;
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( bl_t, );
+} bcore_arr_bl_s;
+
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_bl_s )
+
+bcore_arr_bl_s* bcore_arr_bl_s_clear(      bcore_arr_bl_s* o ); // sets size to zero
+bcore_arr_bl_s* bcore_arr_bl_s_set_space(  bcore_arr_bl_s* o, uz_t space );
+bcore_arr_bl_s* bcore_arr_bl_s_set_size(   bcore_arr_bl_s* o, uz_t size ); // resize
+bcore_arr_bl_s* bcore_arr_bl_s_fill(       bcore_arr_bl_s* o, uz_t size, bl_t v ); // creates filled array of size <size>
+bcore_arr_bl_s* bcore_arr_bl_s_push(       bcore_arr_bl_s* o, bl_t v );
+bl_t bcore_arr_bl_s_pop( bcore_arr_bl_s* o );
+
+/**********************************************************************************************************************/
+
 typedef struct bcore_arr_st_s
 {
     aware_t _;

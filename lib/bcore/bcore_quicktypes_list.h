@@ -49,6 +49,7 @@
 
 // other types
 #define TYPEOF_all                         321211332
+#define TYPEOF_bcore_arr_bl_s             3271423707
 #define TYPEOF_bcore_arr_fp_s              534232891
 #define TYPEOF_bcore_arr_sr_s             3772348668
 #define TYPEOF_bcore_arr_st_s             1663834730
