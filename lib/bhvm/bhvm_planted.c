@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-17T18:49:49Z
+ *  Last File Update: 2020-02-20T09:50:52Z
  *
  *  Copyright and License of this File:
  *
@@ -1567,18 +1567,25 @@ void bhvm_mcode_track_s_run_isub( const bhvm_mcode_track_s* o, sz_t index, bhvm_
     bhvm_mcode_track_s_run_sub( o, &o->sub_arr->data[ index ], ah );
 }
 
-void bhvm_mcode_track_s_vop_push_d( bhvm_mcode_track_s* o, bhvm_vop* vop )
+sz_t bhvm_mcode_track_s_vop_push_d( bhvm_mcode_track_s* o, bhvm_vop* vop )
 {
     assert( vop );
     bhvm_mcode_op_s* op = bhvm_mcode_track_s_push( o );
     op->vop = vop;
     op->p = ( bhvm_vop_s* )bhvm_vop_s_get_aware( op->vop );
     assert( op->p );
+    return o->size - 1;
 }
 
-void bhvm_mcode_track_s_vop_push_c( bhvm_mcode_track_s* o, const bhvm_vop* vop )
+sz_t bhvm_mcode_track_s_vop_push_c( bhvm_mcode_track_s* o, const bhvm_vop* vop )
 {
-    bhvm_mcode_track_s_vop_push_d( o, bhvm_vop_a_clone( vop ) );
+    return bhvm_mcode_track_s_vop_push_d( o, bhvm_vop_a_clone( vop ) );
+}
+
+sz_t bhvm_mcode_track_s_push_copy_from_index( bhvm_mcode_track_s* o, sz_t index )
+{
+    assert( index >= 0 && index < o->size );
+    return bhvm_mcode_track_s_vop_push_d( o, bhvm_vop_a_clone( o->data[ index ].vop ) );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_track_adl_s )
@@ -1662,7 +1669,13 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hmeta_adl_s )
 BCORE_DEFINE_SPECT( bhvm_mcode, bhvm_mcode_hmeta )
 "{"
     "bcore_spect_header_s header;"
-    "feature aware bhvm_mcode_hmeta : do_nothing;"
+    "feature aware bhvm_mcode_hmeta : index_enc = bhvm_mcode_hmeta_index_enc__;"
+    "feature aware bhvm_mcode_hmeta : index_exc = bhvm_mcode_hmeta_index_exc__;"
+    "feature aware bhvm_mcode_hmeta : index_hbase = bhvm_mcode_hmeta_index_hbase__;"
+    "feature aware bhvm_mcode_hmeta : is_rollable = bhvm_mcode_hmeta_is_rollable__;"
+    "feature aware bhvm_mcode_hmeta : is_adaptive = bhvm_mcode_hmeta_is_adaptive__;"
+    "feature aware bhvm_mcode_hmeta : is_recurrent = bhvm_mcode_hmeta_is_recurrent__;"
+    "feature aware bhvm_mcode_hmeta : is_hclass = bhvm_mcode_hmeta_is_hclass__;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1700,6 +1713,16 @@ sz_t bhvm_mcode_hbase_s_push_hmc( bhvm_mcode_hbase_s* o, const bhvm_holor_s* h, 
     return ci.i;
 }
 
+sz_t bhvm_mcode_hbase_s_push_copy_from_index( bhvm_mcode_hbase_s* o, sz_t index )
+{
+    assert( index >= 0 && index < o->holor_ads.size );
+    
+    sz_t ret = o->holor_ads.size;
+       bhvm_mcode_hmeta_adl_s_push_d( &o->hmeta_adl, bhvm_mcode_hmeta_a_clone(     o->hmeta_adl.data[ index ] ) );
+    bhvm_holor_ads_s_push_d( &o->holor_ads, bhvm_holor_s_clone( &o->holor_ads.data[ index ] ) );
+    return ret;
+}
+
 /**********************************************************************************************************************/
 
 vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
@@ -1709,7 +1732,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2826056917 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3093987102 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1869,7 +1892,22 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bhvm_mcode, bcore_inst );
 
             // group: bhvm_mcode_hmeta
-            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_do_nothing );
+            BCORE_REGISTER_NAME( hclass_ap );
+            BCORE_REGISTER_NAME( hclass_dp );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_index_enc );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_index_enc, bhvm_mcode_hmeta_index_enc__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_index_exc );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_index_exc, bhvm_mcode_hmeta_index_exc__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_index_hbase );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_index_hbase, bhvm_mcode_hmeta_index_hbase__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_rollable );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_rollable, bhvm_mcode_hmeta_is_rollable__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_adaptive );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_adaptive, bhvm_mcode_hmeta_is_adaptive__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_recurrent );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_recurrent, bhvm_mcode_hmeta_is_recurrent__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_hclass );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_hclass, bhvm_mcode_hmeta_is_hclass__ );
             BCORE_REGISTER_OBJECT( bhvm_mcode_hmeta_adl_s );
             BCORE_REGISTER_SPECT( bhvm_mcode_hmeta );
 

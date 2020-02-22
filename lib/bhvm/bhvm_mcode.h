@@ -47,13 +47,24 @@ stamp :op = aware :
     func bhvm_vop        : run = { assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); };
 };
 
-signature void vop_push_d( mutable,       bhvm_vop* vop );
-signature void vop_push_c( mutable, const bhvm_vop* vop );
+signature sz_t vop_push_d( mutable,       bhvm_vop* vop );
+signature sz_t vop_push_c( mutable, const bhvm_vop* vop );
 
+/// Holor meta data
 group :hmeta =
 {
-    // dummy feature to enforce self-awareness testing for meta types
-    feature 'a' void do_nothing( const );
+    name pclass_ap;
+    name pclass_dp;
+
+    feature 'a' tp_t get_pclass(      const ) = { return 0; };
+
+    feature 'a' sz_t get_index_enc(   const ) = { return -1; }; // entry channel index
+    feature 'a' sz_t get_index_exc(   const ) = { return -1; }; // exit channel index
+    feature 'a' sz_t get_index_hbase( const, tp_t pclass ) = { return -1; }; // location in holor base of holor of given pclass
+
+    feature 'a' bl_t is_rollable( const )  = { return false; };  // holor must be duplicated when unrolling a track
+    feature 'a' bl_t is_adaptive( const )  = { return false; };  // holor is adaptive
+    feature 'a' bl_t is_recurrent( const ) = { return false; };  // holor is recurrent
 
     stamp :adl = aware bcore_array { aware : => []; };
 };
@@ -61,6 +72,7 @@ group :hmeta =
 /// returns index to pushed holor;
 signature sz_t push_hm ( mutable, const bhvm_holor_s* h, const :hmeta* m );
 signature :push_hm push_hmc( char c, bhvm_vop_arr_ci_s* arr_ci );
+signature sz_t push_copy_from_index( mutable, sz_t index );
 
 /// sub-section of an array (typically of a track)
 stamp :sub = : { sz_t start; sz_t size; };
@@ -102,6 +114,17 @@ group :hbase =
             *bhvm_vop_arr_ci_s_push( arr_ci ) = ci;
             return ci.i;
         };
+
+        func :: :push_copy_from_index =
+        {
+            assert( index >= 0 && index < o->holor_ads.size );
+
+            sz_t ret = o->holor_ads.size;
+               ::hmeta_adl_s_push_d( &o->hmeta_adl, ::hmeta_a_clone(     o->hmeta_adl.data[ index ] ) );
+            bhvm_holor_ads_s_push_d( &o->holor_ads, bhvm_holor_s_clone( &o->holor_ads.data[ index ] ) );
+            return ret;
+        };
+
     };
 };
 
@@ -141,12 +164,20 @@ stamp :track = aware bcore_array
         op->vop = vop;
         op->p = ( bhvm_vop_s* )bhvm_vop_s_get_aware( op->vop );
         assert( op->p );
+        return o->size - 1;
     };
 
     func : :vop_push_c =
     {
-        @_vop_push_d( o, bhvm_vop_a_clone( vop ) );
+        return @_vop_push_d( o, bhvm_vop_a_clone( vop ) );
     };
+
+    func : :push_copy_from_index =
+    {
+        assert( index >= 0 && index < o->size );
+        return @_vop_push_d( o, bhvm_vop_a_clone( o->data[ index ].vop ) );
+    };
+
 };
 
 stamp :track_adl = aware bcore_array { :track_s => []; };
@@ -164,7 +195,9 @@ signature      void track_vop_push_c  ( mutable, tp_t name, const bhvm_vop* vop 
 signature      void track_push        ( mutable, tp_t name, tp_t src_name ); // appends track of src_name
 signature      void track_remove      ( mutable, tp_t name );                // removes track if existing
 signature      void track_run_ah      (   const, tp_t name, bhvm_holor_s* ah );
+signature      void track_run_isub_ah (   const, tp_t name, sz_t index, bhvm_holor_s* ah );
 signature      void track_run         (   const, tp_t name );
+signature      void track_run_isub    (   const, tp_t name, sz_t index );
 
 signature :track_vop_push_d track_vop_set_args_push_d( const bhvm_vop_arr_ci_s* arr_ci );
 
@@ -231,6 +264,8 @@ stamp :lib = aware :
     };
 
     func : :track_run_ah = { :track_s* t = @_track_get( (@*)o, name ); if( t ) :track_s_run( t, ah ); };
+    func : :track_run_isub_ah = { :track_s* t = @_track_get( (@*)o, name ); if( t ) :track_s_run_isub( t, index, ah ); };
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -250,7 +285,8 @@ stamp :frame = aware :
     func : :push_hm  = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hm(  o->hbase, h, m            ); };
     func : :push_hmc = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hmc( o->hbase, h, m, c, arr_ci ); };
 
-    func : :track_run = { if( !o->lib ) return; :lib_s_track_run_ah( o->lib, name, o->hbase->holor_ads.data ); };
+    func : :track_run      = { if( !o->lib ) return; :lib_s_track_run_ah(      o->lib, name,        o->hbase->holor_ads.data ); };
+    func : :track_run_isub = { if( !o->lib ) return; :lib_s_track_run_isub_ah( o->lib, name, index, o->hbase->holor_ads.data ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

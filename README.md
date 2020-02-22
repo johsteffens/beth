@@ -159,7 +159,7 @@ Key components of the plant language are `stamp`, `group` and `feature`.
 
 `stamp` represents an object (or class). It can have member variables and functions. A stamp is defined inside a `group`.
 `group` represents a declarative context. Groups can be nested.
-`feature` represents a virtual function. It is defined inside a group turning it into a perspective.
+`feature` represents a virtual function. It is defined inside a group turning it into a [perspective](#perspective).
 
 # Motivation
 The classic framework for object oriented programming (such as realized in C++) has been widely cherished for decades. I appreciate OOP and like the efficient way C++ supports it. Yet there are issues. For example: The static association between objects and their interfaces forces an inhibiting rigidity into the developer's code-architecture. The limited means of genericity often promotes boiler plate code. More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of these issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware. 
