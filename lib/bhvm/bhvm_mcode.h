@@ -74,10 +74,6 @@ signature sz_t push_hm ( mutable, const bhvm_holor_s* h, const :hmeta* m );
 signature :push_hm push_hmc( char c, bhvm_vop_arr_ci_s* arr_ci );
 signature sz_t push_copy_from_index( mutable, sz_t index );
 
-/// sub-section of an array (typically of a track)
-stamp :sub = : { sz_t start; sz_t size; };
-stamp :sub_ads = aware bcore_array { :sub_s []; };
-
 group :hbase =
 {
     signature @* set_size( mutable, sz_t size );
@@ -129,14 +125,11 @@ group :hbase =
 };
 
 signature void run_section( const, sz_t start, sz_t size, bhvm_holor_s* ah );
-signature void run_sub(     const, const :sub_s* sub, bhvm_holor_s* ah );
-signature void run_isub(    const, sz_t index, bhvm_holor_s* ah );
 
 stamp :track = aware bcore_array
 {
     tp_t name;
     :op_s [];
-    : sub_ads_s => sub_arr; // optional array of sub sections
 
     func bhvm_vop : run =
     {
@@ -147,14 +140,6 @@ stamp :track = aware bcore_array
     {
         assert( start >= 0 && start < o->size - size );
         for( sz_t i = 0; i < size; i++ ) :op_s_run( &o->data[ i + start ], ah );
-    };
-
-    func : : run_sub = { @_run_section( o, sub->start, sub->size, ah ); };
-
-    func : : run_isub =
-    {
-        assert( o->sub_arr && index >= 0 && index < o->sub_arr->size );
-        @_run_sub( o, &o->sub_arr->data[ index ], ah );
     };
 
     func : :vop_push_d =
@@ -195,9 +180,7 @@ signature      void track_vop_push_c  ( mutable, tp_t name, const bhvm_vop* vop 
 signature      void track_push        ( mutable, tp_t name, tp_t src_name ); // appends track of src_name
 signature      void track_remove      ( mutable, tp_t name );                // removes track if existing
 signature      void track_run_ah      (   const, tp_t name, bhvm_holor_s* ah );
-signature      void track_run_isub_ah (   const, tp_t name, sz_t index, bhvm_holor_s* ah );
 signature      void track_run         (   const, tp_t name );
-signature      void track_run_isub    (   const, tp_t name, sz_t index );
 
 signature :track_vop_push_d track_vop_set_args_push_d( const bhvm_vop_arr_ci_s* arr_ci );
 
@@ -264,7 +247,6 @@ stamp :lib = aware :
     };
 
     func : :track_run_ah = { :track_s* t = @_track_get( (@*)o, name ); if( t ) :track_s_run( t, ah ); };
-    func : :track_run_isub_ah = { :track_s* t = @_track_get( (@*)o, name ); if( t ) :track_s_run_isub( t, index, ah ); };
 
 };
 
@@ -286,7 +268,6 @@ stamp :frame = aware :
     func : :push_hmc = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hmc( o->hbase, h, m, c, arr_ci ); };
 
     func : :track_run      = { if( !o->lib ) return; :lib_s_track_run_ah(      o->lib, name,        o->hbase->holor_ads.data ); };
-    func : :track_run_isub = { if( !o->lib ) return; :lib_s_track_run_isub_ah( o->lib, name, index, o->hbase->holor_ads.data ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

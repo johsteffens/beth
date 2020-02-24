@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-20T09:50:52Z
+ *  Last File Update: 2020-02-24T12:03:27Z
  *
  *  Copyright and License of this File:
  *
@@ -928,32 +928,12 @@
   static inline void bhvm_mcode_op_s_copy_x( bhvm_mcode_op_s* o ){o->p = o->vop ? ( bhvm_vop_s* )bhvm_vop_s_get_aware( o->vop ) : NULL;} \
   static inline void bhvm_mcode_op_s_mutated( bhvm_mcode_op_s* o ){bhvm_mcode_op_s_copy_x( o );} \
   static inline void bhvm_mcode_op_s_run( const bhvm_mcode_op_s* o, bhvm_holor_s* ah ){assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah );}
-#define TYPEOF_bhvm_mcode_sub_s 2068050416
-#define BETH_EXPAND_ITEM_bhvm_mcode_sub_s \
-  BCORE_DECLARE_OBJECT( bhvm_mcode_sub_s ) \
-    {sz_t start;sz_t size;};
-#define TYPEOF_bhvm_mcode_sub_ads_s 2476571257
-#define BETH_EXPAND_ITEM_bhvm_mcode_sub_ads_s \
-  BCORE_DECLARE_OBJECT( bhvm_mcode_sub_ads_s ) \
-    {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhvm_mcode_sub_s, );}; \
-  static inline bhvm_mcode_sub_ads_s* bhvm_mcode_sub_ads_s_set_space( bhvm_mcode_sub_ads_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_mcode_sub_ads_s, ( bcore_array* )o, size ); return o; } \
-  static inline bhvm_mcode_sub_ads_s* bhvm_mcode_sub_ads_s_set_size( bhvm_mcode_sub_ads_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_mcode_sub_ads_s, ( bcore_array* )o, size ); return o; } \
-  static inline bhvm_mcode_sub_ads_s* bhvm_mcode_sub_ads_s_clear( bhvm_mcode_sub_ads_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_mcode_sub_ads_s, ( bcore_array* )o, 0 ); return o; } \
-  static inline bhvm_mcode_sub_s* bhvm_mcode_sub_ads_s_push_c( bhvm_mcode_sub_ads_s* o, const bhvm_mcode_sub_s* v ) { bcore_array_t_push( TYPEOF_bhvm_mcode_sub_ads_s, ( bcore_array* )o, sr_twc( TYPEOF_bhvm_mcode_sub_s, v ) ); return &o->data[ o->size - 1 ]; } \
-  static inline bhvm_mcode_sub_s* bhvm_mcode_sub_ads_s_push_d( bhvm_mcode_sub_ads_s* o,       bhvm_mcode_sub_s* v ) { bcore_array_t_push( TYPEOF_bhvm_mcode_sub_ads_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhvm_mcode_sub_s, v ) ); return &o->data[ o->size - 1 ]; } \
-  static inline bhvm_mcode_sub_s* bhvm_mcode_sub_ads_s_push( bhvm_mcode_sub_ads_s* o ) \
-  { \
-      bcore_array_t_push( TYPEOF_bhvm_mcode_sub_ads_s, ( bcore_array* )o, sr_null() ); \
-      return &o->data[ o->size - 1 ]; \
-  }
 #define TYPEOF_bhvm_mcode_track_s 946103125
 #define BETH_EXPAND_ITEM_bhvm_mcode_track_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_track_s ) \
-    {aware_t _;tp_t name;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhvm_mcode_op_s, );bhvm_mcode_sub_ads_s* sub_arr;}; \
+    {aware_t _;tp_t name;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhvm_mcode_op_s, );}; \
   void bhvm_mcode_track_s_run( const bhvm_mcode_track_s* o, bhvm_holor_s* ah ); \
   void bhvm_mcode_track_s_run_section( const bhvm_mcode_track_s* o, sz_t start, sz_t size, bhvm_holor_s* ah ); \
-  static inline void bhvm_mcode_track_s_run_sub( const bhvm_mcode_track_s* o, const bhvm_mcode_sub_s* sub, bhvm_holor_s* ah ){bhvm_mcode_track_s_run_section( o, sub->start, sub->size, ah );} \
-  void bhvm_mcode_track_s_run_isub( const bhvm_mcode_track_s* o, sz_t index, bhvm_holor_s* ah ); \
   sz_t bhvm_mcode_track_s_vop_push_d( bhvm_mcode_track_s* o, bhvm_vop* vop ); \
   sz_t bhvm_mcode_track_s_vop_push_c( bhvm_mcode_track_s* o, const bhvm_vop* vop ); \
   sz_t bhvm_mcode_track_s_push_copy_from_index( bhvm_mcode_track_s* o, sz_t index ); \
@@ -995,8 +975,7 @@
   void bhvm_mcode_lib_s_track_vop_set_args_push_d( bhvm_mcode_lib_s* o, tp_t name, bhvm_vop* vop, const bhvm_vop_arr_ci_s* arr_ci ); \
   void bhvm_mcode_lib_s_track_push( bhvm_mcode_lib_s* o, tp_t name, tp_t src_name ); \
   void bhvm_mcode_lib_s_track_remove( bhvm_mcode_lib_s* o, tp_t name ); \
-  static inline void bhvm_mcode_lib_s_track_run_ah( const bhvm_mcode_lib_s* o, tp_t name, bhvm_holor_s* ah ){bhvm_mcode_track_s* t = bhvm_mcode_lib_s_track_get( (bhvm_mcode_lib_s*)o, name ); if( t ) bhvm_mcode_track_s_run( t, ah );} \
-  static inline void bhvm_mcode_lib_s_track_run_isub_ah( const bhvm_mcode_lib_s* o, tp_t name, sz_t index, bhvm_holor_s* ah ){bhvm_mcode_track_s* t = bhvm_mcode_lib_s_track_get( (bhvm_mcode_lib_s*)o, name ); if( t ) bhvm_mcode_track_s_run_isub( t, index, ah );}
+  static inline void bhvm_mcode_lib_s_track_run_ah( const bhvm_mcode_lib_s* o, tp_t name, bhvm_holor_s* ah ){bhvm_mcode_track_s* t = bhvm_mcode_lib_s_track_get( (bhvm_mcode_lib_s*)o, name ); if( t ) bhvm_mcode_track_s_run( t, ah );}
 #define TYPEOF_bhvm_mcode_frame_s 832185203
 #define BETH_EXPAND_ITEM_bhvm_mcode_frame_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_frame_s ) \
@@ -1007,14 +986,11 @@
   static inline void bhvm_mcode_frame_s_track_vop_set_args_push_d( bhvm_mcode_frame_s* o, tp_t name, bhvm_vop* vop, const bhvm_vop_arr_ci_s* arr_ci ){if( !o->lib ) o->lib = bhvm_mcode_lib_s_create(); bhvm_mcode_lib_s_track_vop_set_args_push_d( o->lib, name, vop, arr_ci );} \
   static inline sz_t bhvm_mcode_frame_s_push_hm( bhvm_mcode_frame_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m ){if( !o->hbase ) o->hbase = bhvm_mcode_hbase_s_create(); return bhvm_mcode_hbase_s_push_hm(  o->hbase, h, m            );} \
   static inline sz_t bhvm_mcode_frame_s_push_hmc( bhvm_mcode_frame_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m, char c, bhvm_vop_arr_ci_s* arr_ci ){if( !o->hbase ) o->hbase = bhvm_mcode_hbase_s_create(); return bhvm_mcode_hbase_s_push_hmc( o->hbase, h, m, c, arr_ci );} \
-  static inline void bhvm_mcode_frame_s_track_run( const bhvm_mcode_frame_s* o, tp_t name ){if( !o->lib ) return; bhvm_mcode_lib_s_track_run_ah(      o->lib, name,        o->hbase->holor_ads.data );} \
-  static inline void bhvm_mcode_frame_s_track_run_isub( const bhvm_mcode_frame_s* o, tp_t name, sz_t index ){if( !o->lib ) return; bhvm_mcode_lib_s_track_run_isub_ah( o->lib, name, index, o->hbase->holor_ads.data );}
+  static inline void bhvm_mcode_frame_s_track_run( const bhvm_mcode_frame_s* o, tp_t name ){if( !o->lib ) return; bhvm_mcode_lib_s_track_run_ah(      o->lib, name,        o->hbase->holor_ads.data );}
 #define BETH_EXPAND_GROUP_bhvm_mcode \
   BCORE_FORWARD_OBJECT( bhvm_mcode ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_op_s ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hmeta ); \
-  BCORE_FORWARD_OBJECT( bhvm_mcode_sub_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_mcode_sub_ads_s ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hbase ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_track_s ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_track_adl_s ); \
@@ -1022,8 +998,6 @@
   BCORE_FORWARD_OBJECT( bhvm_mcode_frame_s ); \
   BETH_EXPAND_ITEM_bhvm_mcode_op_s \
   BETH_EXPAND_GROUP_bhvm_mcode_hmeta \
-  BETH_EXPAND_ITEM_bhvm_mcode_sub_s \
-  BETH_EXPAND_ITEM_bhvm_mcode_sub_ads_s \
   BETH_EXPAND_GROUP_bhvm_mcode_hbase \
   BETH_EXPAND_ITEM_bhvm_mcode_track_s \
   BETH_EXPAND_ITEM_bhvm_mcode_track_adl_s \
@@ -1035,8 +1009,8 @@
 
 #define TYPEOF_bhvm_mcode_hmeta 816277129
 #define TYPEOF_bhvm_mcode_hmeta_s 4233538115
-#define TYPEOF_hclass_ap 2141044923
-#define TYPEOF_hclass_dp 1906702710
+#define TYPEOF_pclass_ap 3850224883
+#define TYPEOF_pclass_dp 4152766478
 #define TYPEOF_bhvm_mcode_hmeta_adl_s 2477847419
 #define BETH_EXPAND_ITEM_bhvm_mcode_hmeta_adl_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_hmeta_adl_s ) \
@@ -1055,37 +1029,40 @@
 #define BETH_EXPAND_GROUP_bhvm_mcode_hmeta \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hmeta ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hmeta_adl_s ); \
-  typedef sz_t (*bhvm_mcode_hmeta_index_enc)( const bhvm_mcode_hmeta* o ); \
-  typedef sz_t (*bhvm_mcode_hmeta_index_exc)( const bhvm_mcode_hmeta* o ); \
-  typedef sz_t (*bhvm_mcode_hmeta_index_hbase)( const bhvm_mcode_hmeta* o, tp_t hclass ); \
+  typedef tp_t (*bhvm_mcode_hmeta_get_pclass)( const bhvm_mcode_hmeta* o ); \
+  typedef sz_t (*bhvm_mcode_hmeta_get_index_enc)( const bhvm_mcode_hmeta* o ); \
+  typedef sz_t (*bhvm_mcode_hmeta_get_index_exc)( const bhvm_mcode_hmeta* o ); \
+  typedef sz_t (*bhvm_mcode_hmeta_get_index_hbase)( const bhvm_mcode_hmeta* o, tp_t pclass ); \
   typedef bl_t (*bhvm_mcode_hmeta_is_rollable)( const bhvm_mcode_hmeta* o ); \
   typedef bl_t (*bhvm_mcode_hmeta_is_adaptive)( const bhvm_mcode_hmeta* o ); \
   typedef bl_t (*bhvm_mcode_hmeta_is_recurrent)( const bhvm_mcode_hmeta* o ); \
-  typedef bl_t (*bhvm_mcode_hmeta_is_hclass)( const bhvm_mcode_hmeta* o, tp_t hclass ); \
   BCORE_DECLARE_SPECT( bhvm_mcode_hmeta ) \
   { \
       bcore_spect_header_s header; \
-      bhvm_mcode_hmeta_index_enc index_enc; \
-      bhvm_mcode_hmeta_index_exc index_exc; \
-      bhvm_mcode_hmeta_index_hbase index_hbase; \
+      bhvm_mcode_hmeta_get_pclass get_pclass; \
+      bhvm_mcode_hmeta_get_index_enc get_index_enc; \
+      bhvm_mcode_hmeta_get_index_exc get_index_exc; \
+      bhvm_mcode_hmeta_get_index_hbase get_index_hbase; \
       bhvm_mcode_hmeta_is_rollable is_rollable; \
       bhvm_mcode_hmeta_is_adaptive is_adaptive; \
       bhvm_mcode_hmeta_is_recurrent is_recurrent; \
-      bhvm_mcode_hmeta_is_hclass is_hclass; \
   }; \
   static inline bhvm_mcode_hmeta* bhvm_mcode_hmeta_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bhvm_mcode_hmeta, t ); return ( bhvm_mcode_hmeta* )bcore_inst_t_create( t ); } \
   static inline bl_t bhvm_mcode_hmeta_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhvm_mcode_hmeta ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bhvm_mcode_hmeta ) \
   static inline bl_t bhvm_mcode_hmeta_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bhvm_mcode_hmeta ); } \
-  static inline sz_t bhvm_mcode_hmeta_a_index_enc( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->index_enc ); return p->index_enc( o ); } \
-  static inline bl_t bhvm_mcode_hmeta_a_defines_index_enc( const bhvm_mcode_hmeta* o ) { return true; } \
-  static inline sz_t bhvm_mcode_hmeta_index_enc__( const bhvm_mcode_hmeta* o ){return -1;} \
-  static inline sz_t bhvm_mcode_hmeta_a_index_exc( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->index_exc ); return p->index_exc( o ); } \
-  static inline bl_t bhvm_mcode_hmeta_a_defines_index_exc( const bhvm_mcode_hmeta* o ) { return true; } \
-  static inline sz_t bhvm_mcode_hmeta_index_exc__( const bhvm_mcode_hmeta* o ){return -1;} \
-  static inline sz_t bhvm_mcode_hmeta_a_index_hbase( const bhvm_mcode_hmeta* o, tp_t hclass ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->index_hbase ); return p->index_hbase( o, hclass ); } \
-  static inline bl_t bhvm_mcode_hmeta_a_defines_index_hbase( const bhvm_mcode_hmeta* o ) { return true; } \
-  static inline sz_t bhvm_mcode_hmeta_index_hbase__( const bhvm_mcode_hmeta* o, tp_t hclass ){return -1;} \
+  static inline tp_t bhvm_mcode_hmeta_a_get_pclass( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->get_pclass ); return p->get_pclass( o ); } \
+  static inline bl_t bhvm_mcode_hmeta_a_defines_get_pclass( const bhvm_mcode_hmeta* o ) { return true; } \
+  static inline tp_t bhvm_mcode_hmeta_get_pclass__( const bhvm_mcode_hmeta* o ){return 0;} \
+  static inline sz_t bhvm_mcode_hmeta_a_get_index_enc( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->get_index_enc ); return p->get_index_enc( o ); } \
+  static inline bl_t bhvm_mcode_hmeta_a_defines_get_index_enc( const bhvm_mcode_hmeta* o ) { return true; } \
+  static inline sz_t bhvm_mcode_hmeta_get_index_enc__( const bhvm_mcode_hmeta* o ){return -1;} \
+  static inline sz_t bhvm_mcode_hmeta_a_get_index_exc( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->get_index_exc ); return p->get_index_exc( o ); } \
+  static inline bl_t bhvm_mcode_hmeta_a_defines_get_index_exc( const bhvm_mcode_hmeta* o ) { return true; } \
+  static inline sz_t bhvm_mcode_hmeta_get_index_exc__( const bhvm_mcode_hmeta* o ){return -1;} \
+  static inline sz_t bhvm_mcode_hmeta_a_get_index_hbase( const bhvm_mcode_hmeta* o, tp_t pclass ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->get_index_hbase ); return p->get_index_hbase( o, pclass ); } \
+  static inline bl_t bhvm_mcode_hmeta_a_defines_get_index_hbase( const bhvm_mcode_hmeta* o ) { return true; } \
+  static inline sz_t bhvm_mcode_hmeta_get_index_hbase__( const bhvm_mcode_hmeta* o, tp_t pclass ){return -1;} \
   static inline bl_t bhvm_mcode_hmeta_a_is_rollable( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->is_rollable ); return p->is_rollable( o ); } \
   static inline bl_t bhvm_mcode_hmeta_a_defines_is_rollable( const bhvm_mcode_hmeta* o ) { return true; } \
   static inline bl_t bhvm_mcode_hmeta_is_rollable__( const bhvm_mcode_hmeta* o ){return false;} \
@@ -1095,9 +1072,6 @@
   static inline bl_t bhvm_mcode_hmeta_a_is_recurrent( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->is_recurrent ); return p->is_recurrent( o ); } \
   static inline bl_t bhvm_mcode_hmeta_a_defines_is_recurrent( const bhvm_mcode_hmeta* o ) { return true; } \
   static inline bl_t bhvm_mcode_hmeta_is_recurrent__( const bhvm_mcode_hmeta* o ){return false;} \
-  static inline bl_t bhvm_mcode_hmeta_a_is_hclass( const bhvm_mcode_hmeta* o, tp_t hclass ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->is_hclass ); return p->is_hclass( o, hclass ); } \
-  static inline bl_t bhvm_mcode_hmeta_a_defines_is_hclass( const bhvm_mcode_hmeta* o ) { return true; } \
-  static inline bl_t bhvm_mcode_hmeta_is_hclass__( const bhvm_mcode_hmeta* o, tp_t hclass ){return false;} \
   BETH_EXPAND_ITEM_bhvm_mcode_hmeta_adl_s
 
 //----------------------------------------------------------------------------------------------------------------------

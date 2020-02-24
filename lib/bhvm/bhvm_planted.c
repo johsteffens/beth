@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-20T09:50:52Z
+ *  Last File Update: 2020-02-24T12:03:27Z
  *
  *  Copyright and License of this File:
  *
@@ -1528,25 +1528,11 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_op_s )
     "func bhvm_vop:run;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_sub_s )
-"bhvm_mcode"
-"{"
-    "sz_t start;"
-    "sz_t size;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_sub_ads_s )
-"aware bcore_array"
-"{"
-    "bhvm_mcode_sub_s [];"
-"}";
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_track_s )
 "aware bcore_array"
 "{"
     "tp_t name;"
     "bhvm_mcode_op_s [];"
-    "bhvm_mcode_sub_ads_s => sub_arr;"
     "func bhvm_vop:run;"
 "}";
 
@@ -1559,12 +1545,6 @@ void bhvm_mcode_track_s_run_section( const bhvm_mcode_track_s* o, sz_t start, sz
 {
     assert( start >= 0 && start < o->size - size );
     for( sz_t i = 0; i < size; i++ ) bhvm_mcode_op_s_run( &o->data[ i + start ], ah );
-}
-
-void bhvm_mcode_track_s_run_isub( const bhvm_mcode_track_s* o, sz_t index, bhvm_holor_s* ah )
-{
-    assert( o->sub_arr && index >= 0 && index < o->sub_arr->size );
-    bhvm_mcode_track_s_run_sub( o, &o->sub_arr->data[ index ], ah );
 }
 
 sz_t bhvm_mcode_track_s_vop_push_d( bhvm_mcode_track_s* o, bhvm_vop* vop )
@@ -1669,13 +1649,13 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hmeta_adl_s )
 BCORE_DEFINE_SPECT( bhvm_mcode, bhvm_mcode_hmeta )
 "{"
     "bcore_spect_header_s header;"
-    "feature aware bhvm_mcode_hmeta : index_enc = bhvm_mcode_hmeta_index_enc__;"
-    "feature aware bhvm_mcode_hmeta : index_exc = bhvm_mcode_hmeta_index_exc__;"
-    "feature aware bhvm_mcode_hmeta : index_hbase = bhvm_mcode_hmeta_index_hbase__;"
+    "feature aware bhvm_mcode_hmeta : get_pclass = bhvm_mcode_hmeta_get_pclass__;"
+    "feature aware bhvm_mcode_hmeta : get_index_enc = bhvm_mcode_hmeta_get_index_enc__;"
+    "feature aware bhvm_mcode_hmeta : get_index_exc = bhvm_mcode_hmeta_get_index_exc__;"
+    "feature aware bhvm_mcode_hmeta : get_index_hbase = bhvm_mcode_hmeta_get_index_hbase__;"
     "feature aware bhvm_mcode_hmeta : is_rollable = bhvm_mcode_hmeta_is_rollable__;"
     "feature aware bhvm_mcode_hmeta : is_adaptive = bhvm_mcode_hmeta_is_adaptive__;"
     "feature aware bhvm_mcode_hmeta : is_recurrent = bhvm_mcode_hmeta_is_recurrent__;"
-    "feature aware bhvm_mcode_hmeta : is_hclass = bhvm_mcode_hmeta_is_hclass__;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1732,7 +1712,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3093987102 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2024597607 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1882,8 +1862,6 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_via_call_mutated, bhvm_mcode_op_s_mutated );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_mcode_op_s_run );
             BCORE_REGISTER_OBJECT( bhvm_mcode_op_s );
-            BCORE_REGISTER_OBJECT( bhvm_mcode_sub_s );
-            BCORE_REGISTER_OBJECT( bhvm_mcode_sub_ads_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_mcode_track_s_run );
             BCORE_REGISTER_OBJECT( bhvm_mcode_track_s );
             BCORE_REGISTER_OBJECT( bhvm_mcode_track_adl_s );
@@ -1892,22 +1870,22 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bhvm_mcode, bcore_inst );
 
             // group: bhvm_mcode_hmeta
-            BCORE_REGISTER_NAME( hclass_ap );
-            BCORE_REGISTER_NAME( hclass_dp );
-            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_index_enc );
-            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_index_enc, bhvm_mcode_hmeta_index_enc__ );
-            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_index_exc );
-            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_index_exc, bhvm_mcode_hmeta_index_exc__ );
-            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_index_hbase );
-            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_index_hbase, bhvm_mcode_hmeta_index_hbase__ );
+            BCORE_REGISTER_NAME( pclass_ap );
+            BCORE_REGISTER_NAME( pclass_dp );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_pclass );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_pclass, bhvm_mcode_hmeta_get_pclass__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_index_enc );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_index_enc, bhvm_mcode_hmeta_get_index_enc__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_index_exc );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_index_exc, bhvm_mcode_hmeta_get_index_exc__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_index_hbase );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_index_hbase, bhvm_mcode_hmeta_get_index_hbase__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_rollable );
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_rollable, bhvm_mcode_hmeta_is_rollable__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_adaptive );
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_adaptive, bhvm_mcode_hmeta_is_adaptive__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_recurrent );
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_recurrent, bhvm_mcode_hmeta_is_recurrent__ );
-            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_hclass );
-            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_hclass, bhvm_mcode_hmeta_is_hclass__ );
             BCORE_REGISTER_OBJECT( bhvm_mcode_hmeta_adl_s );
             BCORE_REGISTER_SPECT( bhvm_mcode_hmeta );
 
