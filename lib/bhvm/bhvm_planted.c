@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-24T12:03:27Z
+ *  Last File Update: 2020-02-25T12:23:28Z
  *
  *  Copyright and License of this File:
  *
@@ -1649,9 +1649,8 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hmeta_adl_s )
 BCORE_DEFINE_SPECT( bhvm_mcode, bhvm_mcode_hmeta )
 "{"
     "bcore_spect_header_s header;"
+    "feature aware bhvm_mcode_hmeta : get_name = bhvm_mcode_hmeta_get_name__;"
     "feature aware bhvm_mcode_hmeta : get_pclass = bhvm_mcode_hmeta_get_pclass__;"
-    "feature aware bhvm_mcode_hmeta : get_index_enc = bhvm_mcode_hmeta_get_index_enc__;"
-    "feature aware bhvm_mcode_hmeta : get_index_exc = bhvm_mcode_hmeta_get_index_exc__;"
     "feature aware bhvm_mcode_hmeta : get_index_hbase = bhvm_mcode_hmeta_get_index_hbase__;"
     "feature aware bhvm_mcode_hmeta : is_rollable = bhvm_mcode_hmeta_is_rollable__;"
     "feature aware bhvm_mcode_hmeta : is_adaptive = bhvm_mcode_hmeta_is_adaptive__;"
@@ -1712,7 +1711,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2024597607 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3397193027 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1872,12 +1871,10 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             // group: bhvm_mcode_hmeta
             BCORE_REGISTER_NAME( pclass_ap );
             BCORE_REGISTER_NAME( pclass_dp );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_name );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_name, bhvm_mcode_hmeta_get_name__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_pclass );
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_pclass, bhvm_mcode_hmeta_get_pclass__ );
-            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_index_enc );
-            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_index_enc, bhvm_mcode_hmeta_get_index_enc__ );
-            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_index_exc );
-            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_index_exc, bhvm_mcode_hmeta_get_index_exc__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_index_hbase );
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_index_hbase, bhvm_mcode_hmeta_get_index_hbase__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_rollable );

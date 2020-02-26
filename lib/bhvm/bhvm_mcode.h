@@ -56,13 +56,11 @@ group :hmeta =
     name pclass_ap;
     name pclass_dp;
 
-    feature 'a' tp_t get_pclass(      const ) = { return 0; };
-
-    feature 'a' sz_t get_index_enc(   const ) = { return -1; }; // entry channel index
-    feature 'a' sz_t get_index_exc(   const ) = { return -1; }; // exit channel index
+    feature 'a' tp_t get_name( const ) = { return 0; };
+    feature 'a' tp_t get_pclass( const )  = { return 0; };
     feature 'a' sz_t get_index_hbase( const, tp_t pclass ) = { return -1; }; // location in holor base of holor of given pclass
 
-    feature 'a' bl_t is_rollable( const )  = { return false; };  // holor must be duplicated when unrolling a track
+    feature 'a' bl_t is_rollable( const )  = { return false; };  // unrolling: holor need not be duplicated (e.g. const or adaptive)
     feature 'a' bl_t is_adaptive( const )  = { return false; };  // holor is adaptive
     feature 'a' bl_t is_recurrent( const ) = { return false; };  // holor is recurrent
 
@@ -78,6 +76,9 @@ group :hbase =
 {
     signature @* set_size( mutable, sz_t size );
     signature sz_t get_size( const );
+
+    signature  bhvm_holor_s* get_holor( const, sz_t index );
+    signature  ::hmeta*      get_hmeta( const, sz_t index );
 
     stamp : = aware :
     {
@@ -121,6 +122,8 @@ group :hbase =
             return ret;
         };
 
+        func : :get_holor = { assert( index >= 0 && index < o->holor_ads.size ); return &o->holor_ads.data[ index ]; };
+        func : :get_hmeta = { assert( index >= 0 && index < o->hmeta_adl.size ); return  o->hmeta_adl.data[ index ]; };
     };
 };
 
@@ -267,12 +270,21 @@ stamp :frame = aware :
     func : :push_hm  = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hm(  o->hbase, h, m            ); };
     func : :push_hmc = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hmc( o->hbase, h, m, c, arr_ci ); };
 
-    func : :track_run      = { if( !o->lib ) return; :lib_s_track_run_ah(      o->lib, name,        o->hbase->holor_ads.data ); };
+    func : :track_run = { if( !o->lib ) return; :lib_s_track_run_ah(      o->lib, name,        o->hbase->holor_ads.data ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/// fills index_arr with all holor references; each index occurring only once
+void bhvm_mcode_track_s_get_index_arr( const bhvm_mcode_track_s* o, bcore_arr_sz_s* index_arr );
+
+/// replaces all indices where index map yields an index >= 0
+void bhvm_mcode_track_s_replace_index( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map );
+
+/// remove all operations there the output index is not mapped
+void bhvm_mcode_track_s_remove_unmapped_output( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map );
 
 void bhvm_mcode_frame_s_check_integrity( const bhvm_mcode_frame_s* o );
 

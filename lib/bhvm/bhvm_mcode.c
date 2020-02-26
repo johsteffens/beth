@@ -21,6 +21,72 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bhvm_mcode_track_s_get_index_arr( const bhvm_mcode_track_s* o, bcore_arr_sz_s* index_arr )
+{
+    BLM_INIT();
+    sz_t max_index = -1;
+    bcore_arr_sz_s_clear( index_arr );
+
+    BFOR_EACH( i, o )
+    {
+        const bhvm_vop* vop = o->data[ i ].vop;
+        BFOR_SIZE( i, bhvm_vop_a_arity( vop ) + 1 ) max_index = sz_max( max_index, bhvm_vop_a_get_index( vop, i ) );
+    }
+
+    if( max_index < 0 ) BLM_RETURN();
+
+    bcore_arr_bl_s* flag_arr = BLM_CREATE( bcore_arr_bl_s );
+    bcore_arr_bl_s_fill( flag_arr, max_index, false );
+
+    BFOR_EACH( i, o )
+    {
+        const bhvm_vop* vop = o->data[ i ].vop;
+        BFOR_SIZE( i, bhvm_vop_a_arity( vop ) + 1 ) flag_arr->data[ bhvm_vop_a_get_index( vop, i ) ] = true;
+    }
+
+    BFOR_EACH( i, flag_arr ) if( flag_arr->data[ i ] ) bcore_arr_sz_s_push( index_arr, i );
+
+    BLM_DOWN();
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_mcode_track_s_replace_index( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map )
+{
+    BFOR_EACH( i, o )
+    {
+        bhvm_vop* vop = o->data[ i ].vop;
+        BFOR_SIZE( i, bhvm_vop_a_arity( vop ) + 1 )
+        {
+            sz_t old_index = bhvm_vop_a_get_index( vop, i );
+            assert( old_index >= 0 && old_index < index_map->size );
+            sz_t new_index = index_map->data[ old_index ];
+            if( new_index >= 0 ) bhvm_vop_a_set_index( vop, i, new_index );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_mcode_track_s_remove_unmapped_output( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map )
+{
+    sz_t k = 0;
+    BFOR_EACH( i, o )
+    {
+        bhvm_vop* vop = o->data[ i ].vop;
+        sz_t arity = bhvm_vop_a_arity( vop );
+        sz_t old_index = bhvm_vop_a_get_index( vop, arity );
+        sz_t new_index = index_map->data[ old_index ];
+        if( new_index >= 0 )
+        {
+            if( k < i ) bhvm_mcode_op_s_copy( &o->data[ k ], &o->data[ i ] );
+            k++;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bhvm_mcode_track_s_check_index( const bhvm_mcode_track_s* o, sz_t hbase_size )
 {
     BFOR_EACH( i, o )
