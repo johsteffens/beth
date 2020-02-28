@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-25T12:23:28Z
+ *  Last File Update: 2020-02-27T14:45:44Z
  *
  *  Copyright and License of this File:
  *
@@ -1655,6 +1655,9 @@ BCORE_DEFINE_SPECT( bhvm_mcode, bhvm_mcode_hmeta )
     "feature aware bhvm_mcode_hmeta : is_rollable = bhvm_mcode_hmeta_is_rollable__;"
     "feature aware bhvm_mcode_hmeta : is_adaptive = bhvm_mcode_hmeta_is_adaptive__;"
     "feature aware bhvm_mcode_hmeta : is_recurrent = bhvm_mcode_hmeta_is_recurrent__;"
+    "feature aware bhvm_mcode_hmeta : is_active = bhvm_mcode_hmeta_is_active__;"
+    "feature aware bhvm_mcode_hmeta : get_custom = bhvm_mcode_hmeta_get_custom__;"
+    "feature aware bhvm_mcode_hmeta : set_custom = bhvm_mcode_hmeta_set_custom__;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1711,7 +1714,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3397193027 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2352200944 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1883,6 +1886,12 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_adaptive, bhvm_mcode_hmeta_is_adaptive__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_recurrent );
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_recurrent, bhvm_mcode_hmeta_is_recurrent__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_is_active );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_is_active, bhvm_mcode_hmeta_is_active__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_custom );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_custom, bhvm_mcode_hmeta_get_custom__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_set_custom );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_set_custom, bhvm_mcode_hmeta_set_custom__ );
             BCORE_REGISTER_OBJECT( bhvm_mcode_hmeta_adl_s );
             BCORE_REGISTER_SPECT( bhvm_mcode_hmeta );
 

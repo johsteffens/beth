@@ -63,6 +63,10 @@ group :hmeta =
     feature 'a' bl_t is_rollable( const )  = { return false; };  // unrolling: holor need not be duplicated (e.g. const or adaptive)
     feature 'a' bl_t is_adaptive( const )  = { return false; };  // holor is adaptive
     feature 'a' bl_t is_recurrent( const ) = { return false; };  // holor is recurrent
+    feature 'a' bl_t is_active( const )    = { return true;  };  // holor is active
+
+    feature 'a' bcore_inst* get_custom( const )                             = { return NULL; }; // retrieves custom data (if available)
+    feature 'a' bcore_inst* set_custom( mutable, const bcore_inst* custom ) = { return NULL; }; // sets custom data and returns custom copy (if supported)
 
     stamp :adl = aware bcore_array { aware : => []; };
 };
@@ -281,7 +285,13 @@ stamp :frame = aware :
 void bhvm_mcode_track_s_get_index_arr( const bhvm_mcode_track_s* o, bcore_arr_sz_s* index_arr );
 
 /// replaces all indices where index map yields an index >= 0
-void bhvm_mcode_track_s_replace_index( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map );
+void bhvm_mcode_track_s_replace_index_via_map( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map );
+
+/**
+ *  Replaces all matching inputs until (including) recurrent_idx occurs as output.
+ *  Subsequent operators remain unchanged.
+ */
+void bhvm_mcode_track_s_recurrent_split_replace( bhvm_mcode_track_s* o, sz_t idx, sz_t new_idx );
 
 /// remove all operations there the output index is not mapped
 void bhvm_mcode_track_s_remove_unmapped_output( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map );

@@ -36,7 +36,7 @@ void bhvm_mcode_track_s_get_index_arr( const bhvm_mcode_track_s* o, bcore_arr_sz
     if( max_index < 0 ) BLM_RETURN();
 
     bcore_arr_bl_s* flag_arr = BLM_CREATE( bcore_arr_bl_s );
-    bcore_arr_bl_s_fill( flag_arr, max_index, false );
+    bcore_arr_bl_s_fill( flag_arr, max_index + 1, false );
 
     BFOR_EACH( i, o )
     {
@@ -51,18 +51,38 @@ void bhvm_mcode_track_s_get_index_arr( const bhvm_mcode_track_s* o, bcore_arr_sz
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_mcode_track_s_replace_index( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map )
+static void track_s_replace_index_via_map( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map, bl_t include_output )
 {
     BFOR_EACH( i, o )
     {
         bhvm_vop* vop = o->data[ i ].vop;
-        BFOR_SIZE( i, bhvm_vop_a_arity( vop ) + 1 )
+        BFOR_SIZE( i, bhvm_vop_a_arity( vop ) + ( include_output ? 1 : 0 ) )
         {
             sz_t old_index = bhvm_vop_a_get_index( vop, i );
             assert( old_index >= 0 && old_index < index_map->size );
             sz_t new_index = index_map->data[ old_index ];
             if( new_index >= 0 ) bhvm_vop_a_set_index( vop, i, new_index );
         }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_mcode_track_s_replace_index_via_map( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map )
+{
+    track_s_replace_index_via_map( o, index_map, true );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_mcode_track_s_recurrent_split_replace( bhvm_mcode_track_s* o, sz_t idx, sz_t new_idx )
+{
+    BFOR_EACH( i, o )
+    {
+        bhvm_vop* vop = o->data[ i ].vop;
+        sz_t arity = bhvm_vop_a_arity( vop );
+        BFOR_SIZE( i, arity ) if( bhvm_vop_a_get_index( vop, i ) == idx ) bhvm_vop_a_set_index( vop, i, new_idx );
+        if( bhvm_vop_a_get_index( vop, arity ) == idx ) break;
     }
 }
 
@@ -83,6 +103,8 @@ void bhvm_mcode_track_s_remove_unmapped_output( bhvm_mcode_track_s* o, bcore_arr
             k++;
         }
     }
+
+    bhvm_mcode_track_s_set_size( o, k );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

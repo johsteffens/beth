@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-25T12:23:28Z
+ *  Last File Update: 2020-02-27T14:45:44Z
  *
  *  Copyright and License of this File:
  *
@@ -1035,6 +1035,9 @@
   typedef bl_t (*bhvm_mcode_hmeta_is_rollable)( const bhvm_mcode_hmeta* o ); \
   typedef bl_t (*bhvm_mcode_hmeta_is_adaptive)( const bhvm_mcode_hmeta* o ); \
   typedef bl_t (*bhvm_mcode_hmeta_is_recurrent)( const bhvm_mcode_hmeta* o ); \
+  typedef bl_t (*bhvm_mcode_hmeta_is_active)( const bhvm_mcode_hmeta* o ); \
+  typedef bcore_inst* (*bhvm_mcode_hmeta_get_custom)( const bhvm_mcode_hmeta* o ); \
+  typedef bcore_inst* (*bhvm_mcode_hmeta_set_custom)( bhvm_mcode_hmeta* o, const bcore_inst* custom ); \
   BCORE_DECLARE_SPECT( bhvm_mcode_hmeta ) \
   { \
       bcore_spect_header_s header; \
@@ -1044,6 +1047,9 @@
       bhvm_mcode_hmeta_is_rollable is_rollable; \
       bhvm_mcode_hmeta_is_adaptive is_adaptive; \
       bhvm_mcode_hmeta_is_recurrent is_recurrent; \
+      bhvm_mcode_hmeta_is_active is_active; \
+      bhvm_mcode_hmeta_get_custom get_custom; \
+      bhvm_mcode_hmeta_set_custom set_custom; \
   }; \
   static inline bhvm_mcode_hmeta* bhvm_mcode_hmeta_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bhvm_mcode_hmeta, t ); return ( bhvm_mcode_hmeta* )bcore_inst_t_create( t ); } \
   static inline bl_t bhvm_mcode_hmeta_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhvm_mcode_hmeta ); } \
@@ -1067,6 +1073,15 @@
   static inline bl_t bhvm_mcode_hmeta_a_is_recurrent( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->is_recurrent ); return p->is_recurrent( o ); } \
   static inline bl_t bhvm_mcode_hmeta_a_defines_is_recurrent( const bhvm_mcode_hmeta* o ) { return true; } \
   static inline bl_t bhvm_mcode_hmeta_is_recurrent__( const bhvm_mcode_hmeta* o ){return false;} \
+  static inline bl_t bhvm_mcode_hmeta_a_is_active( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->is_active ); return p->is_active( o ); } \
+  static inline bl_t bhvm_mcode_hmeta_a_defines_is_active( const bhvm_mcode_hmeta* o ) { return true; } \
+  static inline bl_t bhvm_mcode_hmeta_is_active__( const bhvm_mcode_hmeta* o ){return true;} \
+  static inline bcore_inst* bhvm_mcode_hmeta_a_get_custom( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->get_custom ); return p->get_custom( o ); } \
+  static inline bl_t bhvm_mcode_hmeta_a_defines_get_custom( const bhvm_mcode_hmeta* o ) { return true; } \
+  static inline bcore_inst* bhvm_mcode_hmeta_get_custom__( const bhvm_mcode_hmeta* o ){return NULL;} \
+  static inline bcore_inst* bhvm_mcode_hmeta_a_set_custom( bhvm_mcode_hmeta* o, const bcore_inst* custom ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->set_custom ); return p->set_custom( o, custom ); } \
+  static inline bl_t bhvm_mcode_hmeta_a_defines_set_custom( const bhvm_mcode_hmeta* o ) { return true; } \
+  static inline bcore_inst* bhvm_mcode_hmeta_set_custom__( bhvm_mcode_hmeta* o, const bcore_inst* custom ){return NULL;} \
   BETH_EXPAND_ITEM_bhvm_mcode_hmeta_adl_s
 
 //----------------------------------------------------------------------------------------------------------------------
