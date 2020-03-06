@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-27T14:45:44Z
+ *  Last File Update: 2020-03-06T16:44:34Z
  *
  *  Copyright and License of this File:
  *
@@ -1011,6 +1011,7 @@
 #define TYPEOF_bhvm_mcode_hmeta_s 4233538115
 #define TYPEOF_pclass_ap 3850224883
 #define TYPEOF_pclass_dp 4152766478
+#define TYPEOF_pclass_dp_alt 2400239966
 #define TYPEOF_bhvm_mcode_hmeta_adl_s 2477847419
 #define BETH_EXPAND_ITEM_bhvm_mcode_hmeta_adl_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_hmeta_adl_s ) \

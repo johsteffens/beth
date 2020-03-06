@@ -55,6 +55,7 @@ group :hmeta =
 {
     name pclass_ap;
     name pclass_dp;
+    name pclass_dp_alt; // alternate dp gradient
 
     feature 'a' tp_t get_name( const ) = { return 0; };
     feature 'a' tp_t get_pclass( const )  = { return 0; };
