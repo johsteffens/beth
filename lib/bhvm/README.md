@@ -55,21 +55,21 @@ We call the composite of all individual scalars of a given holor **the value** o
 The value is stored as array of a specified data type. Currently the types f2_t (float) and f3_t
 (double) are supported.
 
-The holor-value can be seen as vector. Its size is equal to the volume of the holor. For a given shape
-all scalars have a well defined order:
+The holor-value can be interpreted as vector. Its dimension is equal to the volume of the holor. For a given shape
+all scalars have a well defined order.
 
-We obtain the order uniquely by adding axiom 'C' to a holor's definition:
+We define a unique order by adding axiom 'C' to a holor's definition:
 
 **C:** The value of an **(n+1)-holor** is the concatenated array of the associated values 
 of **n-holors** as specified in axiom 'B'.
 
-### Undetermined Holor
+### Vacant Holor
 We extend the definition of holor to include a objects with shape but no associated value.
-Here the vale-size is zero, a number not possible for any holor defined so far.
+For this new type of holor the vale-size is zero.
 
-**D:** We define an object with shape but no value and call it _undetermined holor_
+**D:** We define a holor with shape but no value and call it **vacant**.
 
-*Consequently all holors with value are then called _determined_.*
+A holor with value is called **determined**.
 
 ### Examples
 |Name|Description|Shape|Volume|
