@@ -58,6 +58,19 @@ feature 'a' :* set_index( mutable, sz_t index, sz_t idx_val ) =
     return o;
 };
 
+feature 'a' :* set_index_arr( mutable, sz_t* idx_arr, sz_t size ) =
+{
+    ASSERT( size == :a_arity( o ) + 1 );
+    sz_t* o_idx_arr = :a_get_index_arr( o );
+    BFOR_SIZE( i, size )
+    {
+        sz_t idx_val = idx_arr[ i ];
+        ASSERT( idx_val >= 0 );
+        o_idx_arr[ i ] = idx_val;
+    }
+    return o;
+};
+
 signature void push_ci( mutable, u0_t c, sz_t i );
 
 stamp :ci = bcore_inst

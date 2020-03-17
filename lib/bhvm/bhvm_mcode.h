@@ -50,20 +50,86 @@ stamp :op = aware :
 signature sz_t vop_push_d( mutable,       bhvm_vop* vop );
 signature sz_t vop_push_c( mutable, const bhvm_vop* vop );
 
+name pclass_ax0; // main axon holor
+name pclass_ag0; // main axon gradient
+name pclass_ax1; // alternate axon holor
+name pclass_ag1; // alternate axon gradient
+
+signature sz_t get_pclass_idx( const, tp_t pclass );
+
+/// mcode node (indexing for a given hbase)
+stamp :node = aware :
+{
+    /// Index into nbase holding this node
+    sz_t nidx = -1;
+
+    /** Main axon holor index.
+     *  Indicates the location of the axon-holor for the node in the mcode framework.
+     *  -1 means: Holor is not specified
+     */
+    sz_t ax0 = -1;
+
+    /** Main axon-gradient index.
+     *  Indicates the location of the gradient holor for the node in the mcode framework.
+     *  -1 means: Node has no gradient or gradient is not specified;
+     */
+    sz_t ag0 = -1;
+
+    /** Auxiliary axon holor index (context dependent)
+     *  - Used on cyclic node to resolve update.
+     */
+    sz_t ax1 = -1;
+
+    /** Auxiliary axon-gradient index (context dependent)
+     *  - Used on cyclic nodes to resolve dp track
+     */
+    sz_t ag1 = -1;
+
+    /// node is adaptive
+    bl_t adaptive;
+
+    /// node is recurrent
+    bl_t recurrent;
+
+    func : :get_pclass_idx =
+    {
+        switch( pclass )
+        {
+            case TYPEOF_pclass_ax0: return o->ax0;
+            case TYPEOF_pclass_ag0: return o->ag0;
+            case TYPEOF_pclass_ax1: return o->ax1;
+            case TYPEOF_pclass_ag1: return o->ag1;
+            default: break;
+        }
+        return -1;
+    };
+};
+
+signature :node_s* push_node( mutable );
+
+stamp :nbase = aware bcore_array
+{
+    :node_s [];
+    func : :push_node =
+    {
+        sz_t nidx = o->size;
+        bcore_array_a_push( ( bcore_array* )o, sr_null() );
+        :node_s* node = &o->data[ nidx ];
+        node->nidx = nidx;
+        return node;
+    };
+};
+
 /// Holor meta data
 group :hmeta =
 {
-    name pclass_ap;
-    name pclass_dp;
-    name pclass_dp_alt; // alternate dp gradient
-
     feature 'a' tp_t get_name( const ) = { return 0; };
     feature 'a' tp_t get_pclass( const )  = { return 0; };
-    feature 'a' sz_t get_index_hbase( const, tp_t pclass ) = { return -1; }; // location in holor base of holor of given pclass
+
+    feature 'a' ::node_s* get_node( const ) = { return NULL; };
+    feature 'a' void      set_node( mutable, ::node_s* node ) = {};
 
     feature 'a' bl_t is_rollable( const )  = { return false; };  // unrolling: holor need not be duplicated (e.g. const or adaptive)
-    feature 'a' bl_t is_adaptive( const )  = { return false; };  // holor is adaptive
-    feature 'a' bl_t is_recurrent( const ) = { return false; };  // holor is recurrent
     feature 'a' bl_t is_active( const )    = { return true;  };  // holor is active
 
     feature 'a' bcore_inst* get_custom( const )                             = { return NULL; }; // retrieves custom data (if available)
@@ -170,7 +236,6 @@ stamp :track = aware bcore_array
         assert( index >= 0 && index < o->size );
         return @_vop_push_d( o, bhvm_vop_a_clone( o->data[ index ].vop ) );
     };
-
 };
 
 stamp :track_adl = aware bcore_array { :track_s => []; };
@@ -262,8 +327,11 @@ stamp :lib = aware :
 
 stamp :frame = aware :
 {
-    :lib_s   => lib;
-    :hbase_s => hbase;
+    :lib_s    => lib;
+    :hbase_s  => hbase;
+    :nbase_s  => nbase;
+
+    func bcore_via_call : mutated;
 
     func : :track_get = { if( !o->lib ) return NULL; return :lib_s_track_get( o->lib, name ); };
 
@@ -272,10 +340,11 @@ stamp :frame = aware :
 
     func : :track_vop_set_args_push_d = { if( !o->lib ) o->lib = :lib_s_create(); :lib_s_track_vop_set_args_push_d( o->lib, name, vop, arr_ci ); };
 
-    func : :push_hm  = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hm(  o->hbase, h, m            ); };
-    func : :push_hmc = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hmc( o->hbase, h, m, c, arr_ci ); };
+    func : :push_hm   = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hm(   o->hbase, h, m            ); };
+    func : :push_hmc  = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hmc(  o->hbase, h, m, c, arr_ci ); };
+    func : :push_node = { if( !o->nbase ) o->nbase = :nbase_s_create(); return :nbase_s_push_node( o->nbase                  ); };
 
-    func : :track_run = { if( !o->lib ) return; :lib_s_track_run_ah(      o->lib, name,        o->hbase->holor_ads.data ); };
+    func : :track_run = { if( !o->lib ) return; :lib_s_track_run_ah( o->lib, name, o->hbase->holor_ads.data ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

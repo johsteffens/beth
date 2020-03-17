@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-03-06T17:09:54Z
+ *  Last File Update: 2020-03-17T11:13:58Z
  *
  *  Copyright and License of this File:
  *
@@ -58,6 +58,7 @@ BCORE_DEFINE_SPECT( bcore_inst, bhvm_vop )
     "feature aware bhvm_vop : get_index_arr;"
     "feature aware bhvm_vop : get_index = bhvm_vop_get_index__;"
     "feature aware bhvm_vop : set_index = bhvm_vop_set_index__;"
+    "feature aware bhvm_vop : set_index_arr = bhvm_vop_set_index_arr__;"
     "feature aware bhvm_vop : set_arg = bhvm_vop_set_arg__;"
     "feature aware bhvm_vop : set_args = bhvm_vop_set_args__;"
 "}";
@@ -73,6 +74,19 @@ bhvm_vop* bhvm_vop_set_index__( bhvm_vop* o, sz_t index, sz_t idx_val )
 {
     ASSERT( index  >= 0 && index <= bhvm_vop_a_arity( o ) );
     bhvm_vop_a_get_index_arr( o )[ index ] = idx_val;
+    return o;
+}
+
+bhvm_vop* bhvm_vop_set_index_arr__( bhvm_vop* o, sz_t* idx_arr, sz_t size )
+{
+    ASSERT( size == bhvm_vop_a_arity( o ) + 1 );
+    sz_t* o_idx_arr = bhvm_vop_a_get_index_arr( o );
+    BFOR_SIZE( i, size )
+    {
+        sz_t idx_val = idx_arr[ i ];
+        ASSERT( idx_val >= 0 );
+        o_idx_arr[ i ] = idx_val;
+    }
     return o;
 }
 
@@ -1251,7 +1265,7 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 745903341 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 953389502 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_vop.h
@@ -1266,6 +1280,8 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_get_index, bhvm_vop_get_index__ );
             BCORE_REGISTER_FEATURE( bhvm_vop_set_index );
             BCORE_REGISTER_FFUNC( bhvm_vop_set_index, bhvm_vop_set_index__ );
+            BCORE_REGISTER_FEATURE( bhvm_vop_set_index_arr );
+            BCORE_REGISTER_FFUNC( bhvm_vop_set_index_arr, bhvm_vop_set_index_arr__ );
             BCORE_REGISTER_OBJECT( bhvm_vop_ci_s );
             BCORE_REGISTER_OBJECT( bhvm_vop_arr_ci_s );
             BCORE_REGISTER_FEATURE( bhvm_vop_set_arg );

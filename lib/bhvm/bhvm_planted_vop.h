@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-03-06T17:09:54Z
+ *  Last File Update: 2020-03-17T11:13:58Z
  *
  *  Copyright and License of this File:
  *
@@ -77,6 +77,7 @@
   typedef sz_t* (*bhvm_vop_get_index_arr)( bhvm_vop* o ); \
   typedef sz_t (*bhvm_vop_get_index)( const bhvm_vop* o, sz_t index ); \
   typedef bhvm_vop* (*bhvm_vop_set_index)( bhvm_vop* o, sz_t index, sz_t idx_val ); \
+  typedef bhvm_vop* (*bhvm_vop_set_index_arr)( bhvm_vop* o, sz_t* idx_arr, sz_t size ); \
   typedef void (*bhvm_vop_set_arg)( bhvm_vop* o, bhvm_vop_ci_s* ci ); \
   typedef bhvm_vop* (*bhvm_vop_set_args)( bhvm_vop* o, const bhvm_vop_arr_ci_s* arr ); \
   BCORE_DECLARE_SPECT( bhvm_vop ) \
@@ -88,6 +89,7 @@
       bhvm_vop_get_index_arr get_index_arr; \
       bhvm_vop_get_index get_index; \
       bhvm_vop_set_index set_index; \
+      bhvm_vop_set_index_arr set_index_arr; \
       bhvm_vop_set_arg set_arg; \
       bhvm_vop_set_args set_args; \
   }; \
@@ -112,6 +114,9 @@
   static inline bhvm_vop* bhvm_vop_a_set_index( bhvm_vop* o, sz_t index, sz_t idx_val ) { const bhvm_vop_s* p = bhvm_vop_s_get_aware( o ); assert( p->set_index ); return p->set_index( o, index, idx_val ); } \
   static inline bl_t bhvm_vop_a_defines_set_index( const bhvm_vop* o ) { return true; } \
   bhvm_vop* bhvm_vop_set_index__( bhvm_vop* o, sz_t index, sz_t idx_val ); \
+  static inline bhvm_vop* bhvm_vop_a_set_index_arr( bhvm_vop* o, sz_t* idx_arr, sz_t size ) { const bhvm_vop_s* p = bhvm_vop_s_get_aware( o ); assert( p->set_index_arr ); return p->set_index_arr( o, idx_arr, size ); } \
+  static inline bl_t bhvm_vop_a_defines_set_index_arr( const bhvm_vop* o ) { return true; } \
+  bhvm_vop* bhvm_vop_set_index_arr__( bhvm_vop* o, sz_t* idx_arr, sz_t size ); \
   BETH_EXPAND_ITEM_bhvm_vop_ci_s \
   BETH_EXPAND_ITEM_bhvm_vop_arr_ci_s \
   static inline void bhvm_vop_a_set_arg( bhvm_vop* o, bhvm_vop_ci_s* ci ) { const bhvm_vop_s* p = bhvm_vop_s_get_aware( o ); assert( p->set_arg ); p->set_arg( o, ci ); } \

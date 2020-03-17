@@ -128,6 +128,21 @@ void bhvm_mcode_track_s_check_index( const bhvm_mcode_track_s* o, sz_t hbase_siz
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bhvm_mcode_frame_s_mutated( bhvm_mcode_frame_s* o )
+{
+    /// restore mnode in holors
+    BFOR_EACH( i, o->nbase )
+    {
+        bhvm_mcode_node_s* node = &o->nbase->data[ i ];
+        if( node->ax0 >= 0 ) bhvm_mcode_hmeta_a_set_node( bhvm_mcode_hbase_s_get_hmeta( o->hbase, node->ax0 ), node );
+        if( node->ax1 >= 0 ) bhvm_mcode_hmeta_a_set_node( bhvm_mcode_hbase_s_get_hmeta( o->hbase, node->ax1 ), node );
+        if( node->ag0 >= 0 ) bhvm_mcode_hmeta_a_set_node( bhvm_mcode_hbase_s_get_hmeta( o->hbase, node->ag0 ), node );
+        if( node->ag1 >= 0 ) bhvm_mcode_hmeta_a_set_node( bhvm_mcode_hbase_s_get_hmeta( o->hbase, node->ag1 ), node );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bhvm_mcode_frame_s_check_integrity( const bhvm_mcode_frame_s* o )
 {
     if( !o->lib ) return;
