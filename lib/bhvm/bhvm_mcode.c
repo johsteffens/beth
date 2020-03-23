@@ -59,8 +59,8 @@ static void track_s_replace_index_via_map( bhvm_mcode_track_s* o, bcore_arr_sz_s
         BFOR_SIZE( i, bhvm_vop_a_arity( vop ) + ( include_output ? 1 : 0 ) )
         {
             sz_t old_index = bhvm_vop_a_get_index( vop, i );
-            assert( old_index >= 0 && old_index < index_map->size );
-            sz_t new_index = index_map->data[ old_index ];
+            assert( old_index >= 0 );
+            sz_t new_index = ( old_index < index_map->size ) ? index_map->data[ old_index ] : -1;
             if( new_index >= 0 ) bhvm_vop_a_set_index( vop, i, new_index );
         }
     }
