@@ -185,7 +185,6 @@ group :ar1 =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :identity   = { func :: :sig = { return "ay"; }; };
     stamp :neg        = { func :: :sig = { return "ay"; }; };
     stamp :floor      = { func :: :sig = { return "ay"; }; };
     stamp :ceil       = { func :: :sig = { return "ay"; }; };
@@ -246,12 +245,6 @@ group :ar1 =
     /// copy special channel ---------------------------------------------------
 
     stamp :cpy =
-    {
-        func :: :sig = { return "ay"; };
-        func :: :run = { bhvm_hop_ar1_identity_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); };
-    };
-
-    stamp :cpy_ay =
     {
         func :: :sig = { return "ay"; };
         func :: :run = { bhvm_hop_ar1_identity_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); };
