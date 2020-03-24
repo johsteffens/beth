@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-03-14T17:01:21Z
+ *  Last File Update: 2020-03-24T14:23:49Z
  *
  *  Copyright and License of this File:
  *
@@ -175,11 +175,6 @@
   BCORE_DECLARE_OBJECT( bhvm_hop_ar1_cpy_s ) \
     {aware_t _;}; \
   void bhvm_hop_ar1_cpy_s_f( const bhvm_holor_s* a, bhvm_holor_s* r );
-#define TYPEOF_bhvm_hop_ar1_identity_s 3061145192
-#define BETH_EXPAND_ITEM_bhvm_hop_ar1_identity_s \
-  BCORE_DECLARE_OBJECT( bhvm_hop_ar1_identity_s ) \
-    {aware_t _;}; \
-  void bhvm_hop_ar1_identity_s_f( const bhvm_holor_s* a, bhvm_holor_s* r );
 #define TYPEOF_bhvm_hop_ar1_neg_s 1232253556
 #define BETH_EXPAND_ITEM_bhvm_hop_ar1_neg_s \
   BCORE_DECLARE_OBJECT( bhvm_hop_ar1_neg_s ) \
@@ -285,11 +280,6 @@
   BCORE_DECLARE_OBJECT( bhvm_hop_ar1_relu_leaky_s ) \
     {aware_t _;}; \
   void bhvm_hop_ar1_relu_leaky_s_f( const bhvm_holor_s* a, bhvm_holor_s* r );
-#define TYPEOF_bhvm_hop_ar1_identity_dp_zf_s 2162575322
-#define BETH_EXPAND_ITEM_bhvm_hop_ar1_identity_dp_zf_s \
-  BCORE_DECLARE_OBJECT( bhvm_hop_ar1_identity_dp_zf_s ) \
-    {aware_t _;}; \
-  static inline void bhvm_hop_ar1_identity_dp_zf_s_f( const bhvm_holor_s* a, bhvm_holor_s* r ){assert( a->v.size == r->v.size ); bhvm_lop_ar1_acc_s_f(  BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );}
 #define TYPEOF_bhvm_hop_ar1_neg_dp_zf_s 2808498694
 #define BETH_EXPAND_ITEM_bhvm_hop_ar1_neg_dp_zf_s \
   BCORE_DECLARE_OBJECT( bhvm_hop_ar1_neg_dp_zf_s ) \
@@ -318,7 +308,6 @@
 #define BETH_EXPAND_GROUP_bhvm_hop_ar1 \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1 ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_cpy_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_hop_ar1_identity_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_neg_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_floor_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_ceil_s ); \
@@ -340,14 +329,12 @@
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_softplus_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_relu_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_relu_leaky_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_hop_ar1_identity_dp_zf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_neg_dp_zf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_cat_dp_zf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_cat_dp_zg_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_ccat_dp_zf_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar1_ccat_dp_zg_s ); \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_cpy_s \
-  BETH_EXPAND_ITEM_bhvm_hop_ar1_identity_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_neg_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_floor_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_ceil_s \
@@ -369,7 +356,6 @@
   BETH_EXPAND_ITEM_bhvm_hop_ar1_softplus_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_relu_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_relu_leaky_s \
-  BETH_EXPAND_ITEM_bhvm_hop_ar1_identity_dp_zf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_neg_dp_zf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_cat_dp_zf_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar1_cat_dp_zg_s \

@@ -233,7 +233,6 @@ group :ar1 =
     stamp :sub_dp_a = { func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
     stamp :sub_dp_b = { func :: :run = { bhvm_hop_ar1_eci_neg_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zg"; }; };
 
-    stamp :identity_dp = { func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
     stamp :neg_dp      = { func :: :run = { bhvm_hop_ar1_eci_neg_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
 
     stamp :cat_dp_a = { func :: :run = { bhvm_hop_ar1_cat_dp_zf_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
@@ -247,13 +246,14 @@ group :ar1 =
     stamp :cpy =
     {
         func :: :sig = { return "ay"; };
-        func :: :run = { bhvm_hop_ar1_identity_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); };
+        func :: :run = { bhvm_hop_ar1_cpy_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); };
     };
 
-    stamp :cpy_by =
+    /// accumulate: dendrite pass of copy
+    stamp :acc =
     {
-        func :: :sig = { return "by"; };
-        func :: :run = { bhvm_hop_ar1_identity_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); };
+        func :: :sig = { return "zf"; };
+        func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); };
     };
 
     /// cast -------------------------------------------------------------------

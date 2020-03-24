@@ -92,7 +92,6 @@ group :ar1 =
     /// axon pass --------------------------------------------------------------
 
     stamp :cpy        = { func : :f = :body_lop_v_cv; };
-    stamp :identity   = { func : :f = :body_lop_v_cv; };
     stamp :neg        = { func : :f = :body_lop_v_cv; };
     stamp :floor      = { func : :f = :body_lop_v_cv; };
     stamp :ceil       = { func : :f = :body_lop_v_cv; };
@@ -117,7 +116,6 @@ group :ar1 =
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :identity_dp_zf = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_acc_s_f(  BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
     stamp :neg_dp_zf      = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_accn_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
 
     stamp :cat_dp_zf  = { func : :f = { bhvm_value_s_acc_offs( &a->v, 0, &r->v, 0, r->v.size ); }; };

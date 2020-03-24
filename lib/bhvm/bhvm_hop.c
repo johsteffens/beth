@@ -118,11 +118,11 @@ void bhvm_hop_ar3_branch_svvv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b,
     bl_t flag = ( a->v.type == TYPEOF_f2_t ) ? ( ( ( f2_t* )a->v.data )[ 0 ] > 0 ) : ( ( ( f3_t* )a->v.data )[ 0 ] > 0 );
     if( flag )
     {
-        bhvm_hop_ar1_identity_s_f( b, r );
+        bhvm_hop_ar1_cpy_s_f( b, r );
     }
     else
     {
-        bhvm_hop_ar1_identity_s_f( c, r );
+        bhvm_hop_ar1_cpy_s_f( c, r );
     }
 }
 

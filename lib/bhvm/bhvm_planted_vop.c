@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-03-24T13:25:15Z
+ *  Last File Update: 2020-03-24T14:22:14Z
  *
  *  Copyright and License of this File:
  *
@@ -466,16 +466,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_sub_dp_b_s )
     "func bhvm_vop:sig;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_identity_dp_s )
-"aware bhvm_vop_ar1"
-"{"
-    "bhvm_vop_ar1_index_s i;"
-    "func bhvm_vop:arity;"
-    "func bhvm_vop:get_index_arr;"
-    "func bhvm_vop:run;"
-    "func bhvm_vop:sig;"
-"}";
-
 BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_neg_dp_s )
 "aware bhvm_vop_ar1"
 "{"
@@ -536,7 +526,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_cpy_s )
     "func bhvm_vop:run;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_cpy_by_s )
+BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_acc_s )
 "aware bhvm_vop_ar1"
 "{"
     "bhvm_vop_ar1_index_s i;"
@@ -1245,7 +1235,7 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 865030965 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 3822500832 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_vop.h
@@ -1438,11 +1428,6 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar1_sub_dp_b_s_run );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar1_sub_dp_b_s_sig );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar1_sub_dp_b_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar1_identity_dp_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar1_identity_dp_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar1_identity_dp_s_run );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar1_identity_dp_s_sig );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar1_identity_dp_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar1_neg_dp_s_arity );
             BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar1_neg_dp_s_get_index_arr );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar1_neg_dp_s_run );
@@ -1473,11 +1458,11 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar1_cpy_s_sig );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar1_cpy_s_run );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar1_cpy_s );
-            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar1_cpy_by_s_arity );
-            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar1_cpy_by_s_get_index_arr );
-            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar1_cpy_by_s_sig );
-            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar1_cpy_by_s_run );
-            BCORE_REGISTER_OBJECT( bhvm_vop_ar1_cpy_by_s );
+            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar1_acc_s_arity );
+            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar1_acc_s_get_index_arr );
+            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar1_acc_s_sig );
+            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar1_acc_s_run );
+            BCORE_REGISTER_OBJECT( bhvm_vop_ar1_acc_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar1_fork_s_arity );
             BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar1_fork_s_get_index_arr );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar1_fork_s_sig );
