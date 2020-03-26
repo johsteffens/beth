@@ -75,7 +75,7 @@ void bhvm_mcode_track_s_replace_index_via_map( bhvm_mcode_track_s* o, bcore_arr_
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_mcode_track_s_recurrent_split_replace( bhvm_mcode_track_s* o, sz_t idx, sz_t new_idx )
+void bhvm_mcode_track_s_cyclic_split_replace( bhvm_mcode_track_s* o, sz_t idx, sz_t new_idx )
 {
     BFOR_EACH( i, o )
     {

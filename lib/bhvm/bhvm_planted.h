@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-03-24T14:23:49Z
+ *  Last File Update: 2020-03-26T15:22:31Z
  *
  *  Copyright and License of this File:
  *
@@ -921,7 +921,7 @@
 #define TYPEOF_bhvm_mcode_node_s 1711993250
 #define BETH_EXPAND_ITEM_bhvm_mcode_node_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_node_s ) \
-    {aware_t _;sz_t nidx;sz_t ax0;sz_t ag0;sz_t ax1;sz_t ag1;bl_t adaptive;bl_t recurrent;}; \
+    {aware_t _;sz_t nidx;sz_t ax0;sz_t ag0;sz_t ax1;sz_t ag1;bl_t adaptive;bl_t cyclic;}; \
   sz_t bhvm_mcode_node_s_get_pclass_idx( const bhvm_mcode_node_s* o, tp_t pclass );
 #define TYPEOF_bhvm_mcode_nbase_s 4123399117
 #define BETH_EXPAND_ITEM_bhvm_mcode_nbase_s \

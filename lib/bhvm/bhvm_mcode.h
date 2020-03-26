@@ -88,8 +88,8 @@ stamp :node = aware :
     /// node is adaptive
     bl_t adaptive;
 
-    /// node is recurrent
-    bl_t recurrent;
+    /// node is cyclic
+    bl_t cyclic;
 
     func : :get_pclass_idx =
     {
@@ -358,10 +358,10 @@ void bhvm_mcode_track_s_get_index_arr( const bhvm_mcode_track_s* o, bcore_arr_sz
 void bhvm_mcode_track_s_replace_index_via_map( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map );
 
 /**
- *  Replaces all matching inputs until (including) recurrent_idx occurs as output.
+ *  Replaces all matching inputs until (including) cyclic_idx occurs as output.
  *  Subsequent operators remain unchanged.
  */
-void bhvm_mcode_track_s_recurrent_split_replace( bhvm_mcode_track_s* o, sz_t idx, sz_t new_idx );
+void bhvm_mcode_track_s_cyclic_split_replace( bhvm_mcode_track_s* o, sz_t idx, sz_t new_idx );
 
 /// remove all operations there the output index is not mapped
 void bhvm_mcode_track_s_remove_unmapped_output( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map );
