@@ -1354,9 +1354,16 @@ void bhvm_holor_s_to_sink( const bhvm_holor_s* o, bcore_sink* sink )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bhvm_holor_s_compact_to_sink( const bhvm_holor_s* o, sz_t max_size, bcore_sink* sink )
+{
+    holor_s_to_sink( o, max_size, sink );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bhvm_holor_s_brief_to_sink( const bhvm_holor_s* o, bcore_sink* sink )
 {
-    holor_s_to_sink( o, 32, sink );
+    bhvm_holor_s_compact_to_sink( o, 16, sink );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

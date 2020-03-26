@@ -552,8 +552,11 @@ void bhvm_holor_s_to_stdout(    const bhvm_holor_s* o );
 void bhvm_holor_s_to_stdout_nl( const bhvm_holor_s* o ); // appends newline
 
 /** compacted version, single line */
-void bhvm_holor_s_brief_to_sink(       const bhvm_holor_s* o, bcore_sink* sink );
-void bhvm_holor_s_brief_to_stdout(     const bhvm_holor_s* o );
+void bhvm_holor_s_compact_to_sink( const bhvm_holor_s* o, sz_t max_size, bcore_sink* sink );
+void bhvm_holor_s_brief_to_sink(   const bhvm_holor_s* o, bcore_sink* sink );
+void bhvm_holor_s_brief_to_stdout( const bhvm_holor_s* o );
+
+
 
 /** multiline version */
 void bhvm_holor_s_formatted_to_sink(   const bhvm_holor_s* o, bcore_sink* sink );
