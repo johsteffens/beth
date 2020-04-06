@@ -202,6 +202,7 @@ group :ar1 =
     stamp :tanh_hard  = { func :: :sig = { return "ay"; }; };
     stamp :tanh_leaky = { func :: :sig = { return "ay"; }; };
     stamp :softplus   = { func :: :sig = { return "ay"; }; };
+    stamp :softmax    = { func :: :sig = { return "ay"; }; };
     stamp :relu       = { func :: :sig = { return "ay"; }; };
     stamp :relu_leaky = { func :: :sig = { return "ay"; }; };
 
@@ -364,6 +365,7 @@ group :ar2 =
     stamp :tanh_hard_dp  = { func :: :run = { bhvm_hop_ar2_tanh_hard_dp_zyf_s_f(  &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
     stamp :tanh_leaky_dp = { func :: :run = { bhvm_hop_ar2_tanh_leaky_dp_zyf_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
     stamp :softplus_dp   = { func :: :run = { bhvm_hop_ar2_softplus_dp_zyf_s_f(   &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :softmax_dp    = { func :: :run = { bhvm_hop_ar2_softmax_dp_zyf_s_f(    &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
     stamp :relu_dp       = { func :: :run = { bhvm_hop_ar2_relu_dp_zyf_s_f(       &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
     stamp :relu_leaky_dp = { func :: :run = { bhvm_hop_ar2_relu_leaky_dp_zyf_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
 

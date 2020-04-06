@@ -113,6 +113,7 @@ group :ar1 =
     stamp :softplus   = { func : :f = :body_lop_v_cv; };
     stamp :relu       = { func : :f = :body_lop_v_cv; };
     stamp :relu_leaky = { func : :f = :body_lop_v_cv; };
+    stamp :softmax    = { func : :f; };
 
     /// dendrite pass ----------------------------------------------------------
 
@@ -254,6 +255,7 @@ group :ar2 =
     stamp :softplus_dp_zyf   = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :relu_dp_zyf       = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :relu_leaky_dp_zyf = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :softmax_dp_zyf    = { func : :f; };
 
     stamp :branch_vvvv_dp_azg = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :branch_vvvv_dp_azh = { func : :f = :body_assert_vvv : :body_lop_r; };

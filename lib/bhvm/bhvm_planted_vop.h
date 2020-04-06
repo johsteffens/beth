@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-03-24T14:22:14Z
+ *  Last File Update: 2020-04-04T15:10:23Z
  *
  *  Copyright and License of this File:
  *
@@ -351,6 +351,14 @@
   static inline sz_t* bhvm_vop_ar1_softplus_s_get_index_arr( bhvm_vop_ar1_softplus_s* o ){return o->i.v;} \
   static inline sc_t bhvm_vop_ar1_softplus_s_sig( const bhvm_vop_ar1_softplus_s* o ){return "ay";} \
   static inline void bhvm_vop_ar1_softplus_s_run( const bhvm_vop_ar1_softplus_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_softplus_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );}
+#define TYPEOF_bhvm_vop_ar1_softmax_s 3565593710
+#define BETH_EXPAND_ITEM_bhvm_vop_ar1_softmax_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_softmax_s ) \
+    {aware_t _;bhvm_vop_ar1_index_s i;}; \
+  static inline sz_t bhvm_vop_ar1_softmax_s_arity( const bhvm_vop_ar1_softmax_s* o ){return 1;} \
+  static inline sz_t* bhvm_vop_ar1_softmax_s_get_index_arr( bhvm_vop_ar1_softmax_s* o ){return o->i.v;} \
+  static inline sc_t bhvm_vop_ar1_softmax_s_sig( const bhvm_vop_ar1_softmax_s* o ){return "ay";} \
+  static inline void bhvm_vop_ar1_softmax_s_run( const bhvm_vop_ar1_softmax_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_softmax_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );}
 #define TYPEOF_bhvm_vop_ar1_relu_s 3052643634
 #define BETH_EXPAND_ITEM_bhvm_vop_ar1_relu_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar1_relu_s ) \
@@ -507,6 +515,7 @@
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_tanh_hard_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_tanh_leaky_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_softplus_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_softmax_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_relu_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_relu_leaky_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_order_inc_s ); \
@@ -542,6 +551,7 @@
   BETH_EXPAND_ITEM_bhvm_vop_ar1_tanh_hard_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_tanh_leaky_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_softplus_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar1_softmax_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_relu_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_relu_leaky_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_order_inc_s \
@@ -1026,6 +1036,14 @@
   static inline sz_t* bhvm_vop_ar2_softplus_dp_s_get_index_arr( bhvm_vop_ar2_softplus_dp_s* o ){return o->i.v;} \
   static inline void bhvm_vop_ar2_softplus_dp_s_run( const bhvm_vop_ar2_softplus_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar2_softplus_dp_zyf_s_f(   &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] );} \
   static inline sc_t bhvm_vop_ar2_softplus_dp_s_sig( const bhvm_vop_ar2_softplus_dp_s* o ){return "zyf";}
+#define TYPEOF_bhvm_vop_ar2_softmax_dp_s 1171233508
+#define BETH_EXPAND_ITEM_bhvm_vop_ar2_softmax_dp_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar2_softmax_dp_s ) \
+    {aware_t _;bhvm_vop_ar2_index_s i;}; \
+  static inline sz_t bhvm_vop_ar2_softmax_dp_s_arity( const bhvm_vop_ar2_softmax_dp_s* o ){return 2;} \
+  static inline sz_t* bhvm_vop_ar2_softmax_dp_s_get_index_arr( bhvm_vop_ar2_softmax_dp_s* o ){return o->i.v;} \
+  static inline void bhvm_vop_ar2_softmax_dp_s_run( const bhvm_vop_ar2_softmax_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar2_softmax_dp_zyf_s_f(    &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] );} \
+  static inline sc_t bhvm_vop_ar2_softmax_dp_s_sig( const bhvm_vop_ar2_softmax_dp_s* o ){return "zyf";}
 #define TYPEOF_bhvm_vop_ar2_relu_dp_s 414292006
 #define BETH_EXPAND_ITEM_bhvm_vop_ar2_relu_dp_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar2_relu_dp_s ) \
@@ -1118,6 +1136,7 @@
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_tanh_hard_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_tanh_leaky_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_softplus_dp_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar2_softmax_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_relu_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_relu_leaky_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_branch_vvvv_dp_b_s ); \
@@ -1180,6 +1199,7 @@
   BETH_EXPAND_ITEM_bhvm_vop_ar2_tanh_hard_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar2_tanh_leaky_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar2_softplus_dp_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar2_softmax_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar2_relu_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar2_relu_leaky_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar2_branch_vvvv_dp_b_s \

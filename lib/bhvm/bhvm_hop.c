@@ -128,6 +128,74 @@ void bhvm_hop_ar3_branch_svvv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b,
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bhvm_hop_ar1_softmax_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+{
+    assert( a->v.size == r->v.size );
+    sz_t size = a->v.size;
+    f3_t max = bhvm_value_s_get_max_f3( &a->v );
+    f3_t sum = 0;
+
+    vc_t ap = a->v.data;
+    vd_t rp = r->v.data;
+
+    switch( BKNIT_FA2( a->v.type, r->v.type ) )
+    {
+        case BKNIT_F22: for( sz_t i = 0; i < size; i++ ) { f3_t v = f3_exp( ( ( f2_t* )ap )[ i ] - max ); sum += v; ( ( f2_t* )rp )[ i ] = v; } break;
+        case BKNIT_F23: for( sz_t i = 0; i < size; i++ ) { f3_t v = f3_exp( ( ( f2_t* )ap )[ i ] - max ); sum += v; ( ( f3_t* )rp )[ i ] = v; } break;
+        case BKNIT_F32: for( sz_t i = 0; i < size; i++ ) { f3_t v = f3_exp( ( ( f3_t* )ap )[ i ] - max ); sum += v; ( ( f2_t* )rp )[ i ] = v; } break;
+        case BKNIT_F33: for( sz_t i = 0; i < size; i++ ) { f3_t v = f3_exp( ( ( f3_t* )ap )[ i ] - max ); sum += v; ( ( f3_t* )rp )[ i ] = v; } break;
+        default: BKNIT_FA2_ERR( a->v.type, r->v.type ); break;
+    }
+
+    f3_t inv = f3_inv( sum );
+
+    switch( BKNIT_FA1( r->v.type ) )
+    {
+        case BKNIT_F2: for( sz_t i = 0; i < size; i++ ) { ( ( f2_t* )rp )[ i ] *= inv; } break;
+        case BKNIT_F3: for( sz_t i = 0; i < size; i++ ) { ( ( f3_t* )rp )[ i ] *= inv; } break;
+        default: break;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_hop_ar2_softmax_dp_zyf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+{
+    assert( a->v.size == r->v.size );
+    assert( b->v.size == r->v.size );
+    sz_t size = a->v.size;
+
+    vc_t ap = a->v.data;
+    vc_t bp = b->v.data;
+    vd_t rp = r->v.data;
+
+    f3_t dpd = 0;
+
+    switch( BKNIT_FA2( a->v.type, b->v.type ) )
+    {
+        case BKNIT_F22: for( sz_t i = 0; i < size; i++ ) { dpd += ( ( f2_t* )ap )[ i ] * ( ( f2_t* )bp )[ i ]; } break;
+        case BKNIT_F23: for( sz_t i = 0; i < size; i++ ) { dpd += ( ( f2_t* )ap )[ i ] * ( ( f3_t* )bp )[ i ]; } break;
+        case BKNIT_F32: for( sz_t i = 0; i < size; i++ ) { dpd += ( ( f3_t* )ap )[ i ] * ( ( f2_t* )bp )[ i ]; } break;
+        case BKNIT_F33: for( sz_t i = 0; i < size; i++ ) { dpd += ( ( f3_t* )ap )[ i ] * ( ( f3_t* )bp )[ i ]; } break;
+        default: BKNIT_FA2_ERR( a->v.type, b->v.type ); break;
+    }
+
+    switch( BKNIT_FA3( r->v.type, a->v.type, b->v.type ) )
+    {
+        case BKNIT_F222: for( sz_t i = 0; i < size; i++ ) { ( ( f2_t* )rp )[ i ] += ( ( ( f2_t* )ap )[ i ] - dpd ) * ( ( f2_t* )bp )[ i ]; } break;
+        case BKNIT_F223: for( sz_t i = 0; i < size; i++ ) { ( ( f2_t* )rp )[ i ] += ( ( ( f2_t* )ap )[ i ] - dpd ) * ( ( f3_t* )bp )[ i ]; } break;
+        case BKNIT_F232: for( sz_t i = 0; i < size; i++ ) { ( ( f2_t* )rp )[ i ] += ( ( ( f3_t* )ap )[ i ] - dpd ) * ( ( f2_t* )bp )[ i ]; } break;
+        case BKNIT_F233: for( sz_t i = 0; i < size; i++ ) { ( ( f2_t* )rp )[ i ] += ( ( ( f3_t* )ap )[ i ] - dpd ) * ( ( f3_t* )bp )[ i ]; } break;
+        case BKNIT_F322: for( sz_t i = 0; i < size; i++ ) { ( ( f3_t* )rp )[ i ] += ( ( ( f2_t* )ap )[ i ] - dpd ) * ( ( f2_t* )bp )[ i ]; } break;
+        case BKNIT_F323: for( sz_t i = 0; i < size; i++ ) { ( ( f3_t* )rp )[ i ] += ( ( ( f2_t* )ap )[ i ] - dpd ) * ( ( f3_t* )bp )[ i ]; } break;
+        case BKNIT_F332: for( sz_t i = 0; i < size; i++ ) { ( ( f3_t* )rp )[ i ] += ( ( ( f3_t* )ap )[ i ] - dpd ) * ( ( f2_t* )bp )[ i ]; } break;
+        case BKNIT_F333: for( sz_t i = 0; i < size; i++ ) { ( ( f3_t* )rp )[ i ] += ( ( ( f3_t* )ap )[ i ] - dpd ) * ( ( f3_t* )bp )[ i ]; } break;
+        default: BKNIT_FA3_ERR( r->v.type, a->v.type, b->v.type ); break;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 // ---------------------------------------------------------------------------------------------------------------------

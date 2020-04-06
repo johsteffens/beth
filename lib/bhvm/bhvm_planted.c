@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-03-26T15:22:31Z
+ *  Last File Update: 2020-04-04T14:55:48Z
  *
  *  Copyright and License of this File:
  *
@@ -345,6 +345,11 @@ void bhvm_hop_ar1_relu_leaky_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
     assert( a->v.size == r->v.size );
     bhvm_lop_ar1_relu_leaky_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
 }
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_softmax_s )
+"aware bhvm_hop_ar1"
+"{"
+"}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_neg_dp_zf_s )
 "aware bhvm_hop_ar1"
@@ -814,6 +819,11 @@ void bhvm_hop_ar2_relu_leaky_dp_zyf_s_f( const bhvm_holor_s* a, const bhvm_holor
     assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
     bhvm_lop_ar2_relu_leaky_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
 }
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_softmax_dp_zyf_s )
+"aware bhvm_hop_ar2"
+"{"
+"}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_branch_vvvv_dp_azg_s )
 "aware bhvm_hop_ar2"
@@ -1739,7 +1749,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 2717649558 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3003252729 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1790,6 +1800,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_softplus_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_relu_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_relu_leaky_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_softmax_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_neg_dp_zf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_cat_dp_zf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_cat_dp_zg_s );
@@ -1831,6 +1842,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_softplus_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_relu_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_relu_leaky_dp_zyf_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_softmax_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_branch_vvvv_dp_azg_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_branch_vvvv_dp_azh_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_mul_mvv_s );
