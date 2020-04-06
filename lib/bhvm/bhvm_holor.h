@@ -284,6 +284,9 @@ sz_t bhvm_value_s_get_sz( const bhvm_value_s* a, sz_t index );
 f3_t bhvm_value_s_get_f3( const bhvm_value_s* a, sz_t index );
 void bhvm_value_s_set_f3( const bhvm_value_s* a, sz_t index, f3_t v );
 
+f3_t bhvm_value_s_get_max_f3( const bhvm_value_s* o );
+f3_t bhvm_value_s_get_min_f3( const bhvm_value_s* o );
+
 /// order increment by duplication (in place)
 void bhvm_value_s_order_inc(     const bhvm_value_s* o, sz_t dim, bhvm_value_s* r ); // in place
 void bhvm_value_s_order_inc_set( const bhvm_value_s* o, sz_t dim, bhvm_value_s* r ); // allocating, order_inc

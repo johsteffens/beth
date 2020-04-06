@@ -671,6 +671,62 @@ f3_t bhvm_value_s_get_f3( const bhvm_value_s* a, sz_t index )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+f3_t bhvm_value_s_get_max_f3( const bhvm_value_s* o )
+{
+    f3_t max = 0;
+    if( o->size == 0 ) return max;
+    switch( o->type )
+    {
+        case TYPEOF_f2_t:
+        {
+            max = ( ( f2_t* )o->data )[ 0 ];
+            for( sz_t i = 1; i < o->size; i++ ) max = f3_max( max, ( ( f2_t* )o->data )[ i ] );
+        }
+        break;
+
+        case TYPEOF_f3_t:
+        {
+            max = ( ( f3_t* )o->data )[ 0 ];
+            for( sz_t i = 1; i < o->size; i++ ) max = f3_max( max, ( ( f3_t* )o->data )[ i ] );
+        }
+        break;
+
+        default: ERR_fa( "Invalid type" );
+    }
+
+    return max;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_value_s_get_min_f3( const bhvm_value_s* o )
+{
+    f3_t min = 0;
+    if( o->size == 0 ) return min;
+    switch( o->type )
+    {
+        case TYPEOF_f2_t:
+        {
+            min = ( ( f2_t* )o->data )[ 0 ];
+            for( sz_t i = 1; i < o->size; i++ ) min = f3_min( min, ( ( f2_t* )o->data )[ i ] );
+        }
+        break;
+
+        case TYPEOF_f3_t:
+        {
+            min = ( ( f3_t* )o->data )[ 0 ];
+            for( sz_t i = 1; i < o->size; i++ ) min = f3_min( min, ( ( f3_t* )o->data )[ i ] );
+        }
+        break;
+
+        default: ERR_fa( "Invalid type" );
+    }
+
+    return min;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bhvm_value_s_set_f3( const bhvm_value_s* a, sz_t index, f3_t v )
 {
     assert( index >= 0 && index < a->size );
