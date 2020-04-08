@@ -439,7 +439,13 @@ static void token_manager_s_fork( token_manager_s* o, vd_t ptr )
 
     #ifdef RTCHECKS
         if( token * o->block_size < sizeof( token_manager_s ) ) ERR( "Attempt to fork reserved memory." );
-        for( uz_t i = o->stack_index; i < o->stack_size; i++ ) if( o->token_stack[ i ] == token ) ERR( "Attempt to fork memory that is declared free." );
+        for( uz_t i = o->stack_index; i < o->stack_size; i++ )
+        {
+            if( o->token_stack[ i ] == token )
+            {
+                ERR( "Attempt to fork memory that is declared free." );
+            }
+        }
     #endif // RTCHECKS
 
     if( !o->rc_count_arr ) token_manager_s_create_rc_count_arr( o );
@@ -1127,7 +1133,10 @@ static void external_manager_s_free_ext( external_manager_s* o, vd_t ptr, ext_s*
 static void external_manager_s_free( external_manager_s* o, vd_t ptr )
 {
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
-    if( !ext_p ) ERR( "Attempt to free invalid memory" );
+    if( !ext_p )
+    {
+        ERR( "Attempt to free invalid memory" );
+    }
     external_manager_s_free_ext( o, ptr, *ext_p );
 }
 
