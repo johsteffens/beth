@@ -220,10 +220,17 @@ group :ar1 =
         func :: :sig = { return "ay"; };
     };
 
-    stamp :order_dec_fork =
+//    stamp :order_dec_fork =
+//    {
+//        sz_t idx;
+//        func :: :run = { bhvm_holor_s_order_dec_fork( &ah[o->i.v[0]], o->idx, &ah[o->i.v[1]] ); };
+//        func :: :sig = { return "ay"; };
+//    };
+
+    stamp :order_dec_weak =
     {
         sz_t idx;
-        func :: :run = { bhvm_holor_s_order_dec_fork( &ah[o->i.v[0]], o->idx, &ah[o->i.v[1]] ); };
+        func :: :run = { bhvm_holor_s_order_dec_weak( &ah[o->i.v[0]], o->idx, &ah[o->i.v[1]] ); };
         func :: :sig = { return "ay"; };
     };
 

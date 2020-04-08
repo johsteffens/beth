@@ -480,10 +480,22 @@ void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size
 void bhvm_value_s_fork_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size )
 {
     bhvm_value_s_clear( o );
+    assert( o->space == 0 );
     o->type = src_type;
     o->data = bcore_fork( src_data );
     o->size = size;
     o->space = size;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_weak_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size )
+{
+    bhvm_value_s_clear( o );
+    assert( o->space == 0 );
+    o->type = src_type;
+    o->data = src_data;
+    o->size = size;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1292,28 +1304,30 @@ void bhvm_holor_s_order_dec( const bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_holor_s_order_dec_fork( bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r )
+void bhvm_holor_s_order_dec_weak( bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r )
 {
     assert( o != r );
     assert( o->s.size > 0 );
-    sz_t dim = o->s.data[ o->s.size - 1 ];
-    assert( idx >= 0 && idx < dim );
+    sz_t o_dim = o->s.data[ o->s.size - 1 ];
+    sz_t o_vol = bhvm_shape_s_get_volume( &o->s );
+    sz_t r_vol = o_vol / o_dim;
+    tp_t type = o->v.type;
 
-    bhvm_holor_s_fork( r, o );
+    assert( idx >= 0 && idx < o_dim );
+
+    bhvm_shape_s_weak( &r->s, &o->s );
     r->s.size--;
 
     if( o->v.size > 0 )
     {
-        sz_t offs = idx * dim;
-        switch( BKNIT_FA1( r->v.type ) )
+        sz_t offs = idx * r_vol;
+        assert( offs + r_vol <= o->v.size );
+        switch( BKNIT_FA1( type ) )
         {
-            case BKNIT_F2: r->v.data = ( ( f2_t* )r->v.data ) + offs; break;
-            case BKNIT_F3: r->v.data = ( ( f3_t* )r->v.data ) + offs; break;
+            case BKNIT_F2: bhvm_value_s_weak_data( &r->v, type, ( ( f2_t* )o->v.data ) + offs, r_vol ); break;
+            case BKNIT_F3: bhvm_value_s_weak_data( &r->v, type, ( ( f3_t* )o->v.data ) + offs, r_vol ); break;
             default: BKNIT_FA1_ERR( r->v.type );
         }
-
-        r->v.size /= dim;
-        r->v.space = o->v.size;
     }
 }
 

@@ -118,19 +118,23 @@ static inline void bhvm_shape_s_init_fork( bhvm_shape_s* o, sz_t* data, sz_t siz
     o->space = space;
 }
 
-/// forked reference; shutdown required
-static inline void bhvm_shape_s_init_fork_from_shape( bhvm_shape_s* o, bhvm_shape_s* src )
-{
-    bhvm_shape_s_init_fork( o, src->data, src->size, src->space );
-}
-
-/// forked reference;
+/// forked reference if src is strong, otherwise weak reference
 static inline void bhvm_shape_s_fork( bhvm_shape_s* o, bhvm_shape_s* src )
 {
     bhvm_shape_s_clear( o );
-    o->data  = bcore_fork( src->data );
+    assert( o->space == 0 );
+    o->data  = ( src->space > 0 ) ? bcore_fork( src->data ) : src->data;
     o->size  = src->size;
     o->space = src->space;
+}
+
+/// weak reference;
+static inline void bhvm_shape_s_weak( bhvm_shape_s* o, bhvm_shape_s* src )
+{
+    bhvm_shape_s_clear( o );
+    assert( o->space == 0 );
+    o->data  = src->data;
+    o->size  = src->size;
 }
 
 static inline void bhvm_shape_s_make_strong( bhvm_shape_s* o ) { bcore_array_t_make_strong( TYPEOF_bhvm_shape_s, ( bcore_array* )o ); }
@@ -184,27 +188,25 @@ static inline void bhvm_value_s_init_weak_from_value( bhvm_value_s* o, bhvm_valu
     bhvm_value_s_init_weak( o, src->type, src->data, src->size );
 }
 
-/// forked reference; shutdown required
-static inline void bhvm_value_s_init_fork( bhvm_value_s* o, tp_t type, vd_t* data, sz_t size, sz_t space )
-{
-    bhvm_value_s_init_weak( o, type, bcore_fork( data ), size );
-    o->space = space;
-}
-
-/// forked reference; shutdown required
-static inline void bhvm_value_s_init_fork_from_value( bhvm_value_s* o, bhvm_value_s* src )
-{
-    bhvm_value_s_init_fork( o, src->type, src->data, src->size, src->space );
-}
-
-/// forked reference;
+/// forked reference if src is strong, otherwise weak reference
 static inline void bhvm_value_s_fork( bhvm_value_s* o, bhvm_value_s* src )
 {
     bhvm_value_s_clear( o );
+    assert( o->space == 0 );
     o->type  = src->type;
-    o->data  = bcore_fork( src->data );
+    o->data  = ( src->space > 0 ) ? bcore_fork( src->data ) : src->data;
     o->size  = src->size;
     o->space = src->space;
+}
+
+/// weak reference;
+static inline void bhvm_value_s_weak( bhvm_value_s* o, bhvm_value_s* src )
+{
+    bhvm_value_s_clear( o );
+    assert( o->space == 0 );
+    o->type = src->type;
+    o->data = src->data;
+    o->size = src->size;
 }
 
 static inline void bhvm_value_s_make_strong( bhvm_value_s* o ) { bcore_array_t_make_strong( TYPEOF_bhvm_value_s, ( bcore_array* )o ); }
@@ -230,6 +232,9 @@ void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t src_data, sz_t 
 
 /// forks data (type = src_type)
 void bhvm_value_s_fork_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size );
+
+/// weakly references data (type = src_type)
+void bhvm_value_s_weak_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size );
 
 /// pushes data by converting to o->type
 void bhvm_value_s_push_data( bhvm_value_s* o, tp_t src_type, vc_t src_data, sz_t size );
@@ -321,22 +326,6 @@ static inline void bhvm_holor_s_init_weak_from_holor( bhvm_holor_s* o, bhvm_holo
     bhvm_holor_s_init( o );
     bhvm_shape_s_init_weak_from_shape( &o->s, &src->s );
     bhvm_value_s_init_weak_from_value( &o->v, &src->v );
-}
-
-/// forked reference; shutdown required
-static inline void bhvm_holor_s_init_fork( bhvm_holor_s* o, sz_t* s_data, sz_t s_size, sz_t s_space, tp_t v_type, vd_t* v_data, sz_t v_size, sz_t v_space )
-{
-    bhvm_holor_s_init( o );
-    bhvm_shape_s_init_fork( &o->s, s_data, s_size, s_space );
-    bhvm_value_s_init_fork( &o->v, v_type, v_data, v_size, v_space );
-}
-
-/// forked reference; shutdown required
-static inline void bhvm_holor_s_init_fork_from_holor( bhvm_holor_s* o, bhvm_holor_s* src )
-{
-    bhvm_holor_s_init( o );
-    bhvm_shape_s_init_fork_from_shape( &o->s, &src->s );
-    bhvm_value_s_init_fork_from_value( &o->v, &src->v );
 }
 
 /// forked reference; (shutdown required)
@@ -547,7 +536,7 @@ void bhvm_holor_s_order_inc    (  const bhvm_holor_s* o, sz_t dim, bhvm_holor_s*
  */
 void bhvm_holor_s_order_dec_set(  const bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r ); // order decrement by indexing into leading dimension allocating r
 void bhvm_holor_s_order_dec    (  const bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r ); // order decrement by indexing into leading dimension in place
-void bhvm_holor_s_order_dec_fork(       bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r ); // order decrement by indexing into leading dimension r is a fork from a
+void bhvm_holor_s_order_dec_weak(       bhvm_holor_s* o, sz_t idx, bhvm_holor_s* r ); // order decrement by indexing into leading dimension r is weakly referencing a
 
 void bhvm_holor_s_to_sink(      const bhvm_holor_s* o, bcore_sink* sink );
 void bhvm_holor_s_to_sink_nl(   const bhvm_holor_s* o, bcore_sink* sink ); // appends newline

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-04T15:10:23Z
+ *  Last File Update: 2020-04-08T14:39:25Z
  *
  *  Copyright and License of this File:
  *
@@ -391,14 +391,14 @@
   static inline sz_t* bhvm_vop_ar1_order_dec_s_get_index_arr( bhvm_vop_ar1_order_dec_s* o ){return o->i.v;} \
   static inline void bhvm_vop_ar1_order_dec_s_run( const bhvm_vop_ar1_order_dec_s* o, bhvm_holor_s* ah ){bhvm_holor_s_order_dec( &ah[o->i.v[0]], o->idx, &ah[o->i.v[1]] );} \
   static inline sc_t bhvm_vop_ar1_order_dec_s_sig( const bhvm_vop_ar1_order_dec_s* o ){return "ay";}
-#define TYPEOF_bhvm_vop_ar1_order_dec_fork_s 2965629832
-#define BETH_EXPAND_ITEM_bhvm_vop_ar1_order_dec_fork_s \
-  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_order_dec_fork_s ) \
+#define TYPEOF_bhvm_vop_ar1_order_dec_weak_s 1571902324
+#define BETH_EXPAND_ITEM_bhvm_vop_ar1_order_dec_weak_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_order_dec_weak_s ) \
     {aware_t _;bhvm_vop_ar1_index_s i;sz_t idx;}; \
-  static inline sz_t bhvm_vop_ar1_order_dec_fork_s_arity( const bhvm_vop_ar1_order_dec_fork_s* o ){return 1;} \
-  static inline sz_t* bhvm_vop_ar1_order_dec_fork_s_get_index_arr( bhvm_vop_ar1_order_dec_fork_s* o ){return o->i.v;} \
-  static inline void bhvm_vop_ar1_order_dec_fork_s_run( const bhvm_vop_ar1_order_dec_fork_s* o, bhvm_holor_s* ah ){bhvm_holor_s_order_dec_fork( &ah[o->i.v[0]], o->idx, &ah[o->i.v[1]] );} \
-  static inline sc_t bhvm_vop_ar1_order_dec_fork_s_sig( const bhvm_vop_ar1_order_dec_fork_s* o ){return "ay";}
+  static inline sz_t bhvm_vop_ar1_order_dec_weak_s_arity( const bhvm_vop_ar1_order_dec_weak_s* o ){return 1;} \
+  static inline sz_t* bhvm_vop_ar1_order_dec_weak_s_get_index_arr( bhvm_vop_ar1_order_dec_weak_s* o ){return o->i.v;} \
+  static inline void bhvm_vop_ar1_order_dec_weak_s_run( const bhvm_vop_ar1_order_dec_weak_s* o, bhvm_holor_s* ah ){bhvm_holor_s_order_dec_weak( &ah[o->i.v[0]], o->idx, &ah[o->i.v[1]] );} \
+  static inline sc_t bhvm_vop_ar1_order_dec_weak_s_sig( const bhvm_vop_ar1_order_dec_weak_s* o ){return "ay";}
 #define TYPEOF_bhvm_vop_ar1_add_dp_a_s 4154047980
 #define BETH_EXPAND_ITEM_bhvm_vop_ar1_add_dp_a_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar1_add_dp_a_s ) \
@@ -520,7 +520,7 @@
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_relu_leaky_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_order_inc_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_order_dec_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_order_dec_fork_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_order_dec_weak_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_add_dp_a_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_add_dp_b_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_sub_dp_a_s ); \
@@ -556,7 +556,7 @@
   BETH_EXPAND_ITEM_bhvm_vop_ar1_relu_leaky_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_order_inc_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_order_dec_s \
-  BETH_EXPAND_ITEM_bhvm_vop_ar1_order_dec_fork_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar1_order_dec_weak_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_add_dp_a_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_add_dp_b_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_sub_dp_a_s \
