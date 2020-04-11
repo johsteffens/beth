@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-08T14:53:41Z
+ *  Last File Update: 2020-04-11T12:52:11Z
  *
  *  Copyright and License of this File:
  *
@@ -940,17 +940,17 @@
 #define TYPEOF_bhvm_mcode_nbase_s 4123399117
 #define BETH_EXPAND_ITEM_bhvm_mcode_nbase_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_nbase_s ) \
-    {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhvm_mcode_node_s, );}; \
+    {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bhvm_mcode_node_s, );}; \
   bhvm_mcode_node_s* bhvm_mcode_nbase_s_push_node( bhvm_mcode_nbase_s* o ); \
   static inline bhvm_mcode_nbase_s* bhvm_mcode_nbase_s_set_space( bhvm_mcode_nbase_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhvm_mcode_nbase_s, ( bcore_array* )o, size ); return o; } \
   static inline bhvm_mcode_nbase_s* bhvm_mcode_nbase_s_set_size( bhvm_mcode_nbase_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhvm_mcode_nbase_s, ( bcore_array* )o, size ); return o; } \
   static inline bhvm_mcode_nbase_s* bhvm_mcode_nbase_s_clear( bhvm_mcode_nbase_s* o ) { bcore_array_t_set_space( TYPEOF_bhvm_mcode_nbase_s, ( bcore_array* )o, 0 ); return o; } \
-  static inline bhvm_mcode_node_s* bhvm_mcode_nbase_s_push_c( bhvm_mcode_nbase_s* o, const bhvm_mcode_node_s* v ) { bcore_array_t_push( TYPEOF_bhvm_mcode_nbase_s, ( bcore_array* )o, sr_twc( TYPEOF_bhvm_mcode_node_s, v ) ); return &o->data[ o->size - 1 ]; } \
-  static inline bhvm_mcode_node_s* bhvm_mcode_nbase_s_push_d( bhvm_mcode_nbase_s* o,       bhvm_mcode_node_s* v ) { bcore_array_t_push( TYPEOF_bhvm_mcode_nbase_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhvm_mcode_node_s, v ) ); return &o->data[ o->size - 1 ]; } \
+  static inline bhvm_mcode_node_s* bhvm_mcode_nbase_s_push_c( bhvm_mcode_nbase_s* o, const bhvm_mcode_node_s* v ) { bcore_array_t_push( TYPEOF_bhvm_mcode_nbase_s, ( bcore_array* )o, sr_twc( TYPEOF_bhvm_mcode_node_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bhvm_mcode_node_s* bhvm_mcode_nbase_s_push_d( bhvm_mcode_nbase_s* o,       bhvm_mcode_node_s* v ) { bcore_array_t_push( TYPEOF_bhvm_mcode_nbase_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhvm_mcode_node_s, v ) ); return o->data[ o->size - 1 ]; } \
   static inline bhvm_mcode_node_s* bhvm_mcode_nbase_s_push( bhvm_mcode_nbase_s* o ) \
   { \
-      bcore_array_t_push( TYPEOF_bhvm_mcode_nbase_s, ( bcore_array* )o, sr_null() ); \
-      return &o->data[ o->size - 1 ]; \
+      bcore_array_t_push( TYPEOF_bhvm_mcode_nbase_s, ( bcore_array* )o, sr_t_create( TYPEOF_bhvm_mcode_node_s ) ); \
+      return o->data[ o->size - 1 ]; \
   }
 #define TYPEOF_bhvm_mcode_track_s 946103125
 #define BETH_EXPAND_ITEM_bhvm_mcode_track_s \
@@ -1005,6 +1005,7 @@
   BCORE_DECLARE_OBJECT( bhvm_mcode_frame_s ) \
     {aware_t _;bhvm_mcode_lib_s* lib;bhvm_mcode_hbase_s* hbase;bhvm_mcode_nbase_s* nbase;}; \
   void bhvm_mcode_frame_s_mutated( bhvm_mcode_frame_s* o ); \
+  void bhvm_mcode_frame_s_copy_x( bhvm_mcode_frame_s* o ); \
   static inline bhvm_mcode_track_s* bhvm_mcode_frame_s_track_get( bhvm_mcode_frame_s* o, tp_t name ){if( !o->lib ) return NULL; return bhvm_mcode_lib_s_track_get( o->lib, name );} \
   static inline void bhvm_mcode_frame_s_track_vop_push_c( bhvm_mcode_frame_s* o, tp_t name, const bhvm_vop* vop ){if( !o->lib ) o->lib = bhvm_mcode_lib_s_create(); bhvm_mcode_lib_s_track_vop_push_c( o->lib, name, vop );} \
   static inline void bhvm_mcode_frame_s_track_vop_push_d( bhvm_mcode_frame_s* o, tp_t name, bhvm_vop* vop ){if( !o->lib ) o->lib = bhvm_mcode_lib_s_create(); bhvm_mcode_lib_s_track_vop_push_d( o->lib, name, vop );} \
@@ -1115,8 +1116,10 @@
 #define TYPEOF_bhvm_mcode_hbase_s 3977623907
 #define BETH_EXPAND_ITEM_bhvm_mcode_hbase_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_hbase_s ) \
-    {aware_t _;bhvm_holor_ads_s holor_ads;bhvm_mcode_hmeta_adl_s hmeta_adl;}; \
+    {aware_t _;bhvm_holor_ads_s holor_ads;bhvm_mcode_hmeta_adl_s hmeta_adl;sz_t copy_size_limit;}; \
   bhvm_mcode_hbase_s* bhvm_mcode_hbase_s_set_size( bhvm_mcode_hbase_s* o, sz_t size ); \
+  static inline void bhvm_mcode_hbase_s_mutated( bhvm_mcode_hbase_s* o ){if( o->copy_size_limit >= 0 ) bhvm_mcode_hbase_s_set_size( o, o->copy_size_limit );} \
+  static inline void bhvm_mcode_hbase_s_copy_x( bhvm_mcode_hbase_s* o ){if( o->copy_size_limit >= 0 ) bhvm_mcode_hbase_s_set_size( o, o->copy_size_limit );} \
   static inline sz_t bhvm_mcode_hbase_s_get_size( const bhvm_mcode_hbase_s* o ){return o->holor_ads.size;} \
   sz_t bhvm_mcode_hbase_s_push_hm( bhvm_mcode_hbase_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m ); \
   sz_t bhvm_mcode_hbase_s_push_hmc( bhvm_mcode_hbase_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m, char c, bhvm_vop_arr_ci_s* arr_ci ); \

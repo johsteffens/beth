@@ -109,12 +109,12 @@ signature :node_s* push_node( mutable );
 
 stamp :nbase = aware bcore_array
 {
-    :node_s [];
+    :node_s => [];
     func : :push_node =
     {
         sz_t nidx = o->size;
-        bcore_array_a_push( ( bcore_array* )o, sr_null() );
-        :node_s* node = &o->data[ nidx ];
+        bcore_array_a_push( ( bcore_array* )o, sr_asd( :node_s_create() ) );
+        :node_s* node = o->data[ nidx ];
         node->nidx = nidx;
         return node;
     };
@@ -129,8 +129,8 @@ group :hmeta =
     feature 'a' ::node_s* get_node( const ) = { return NULL; };
     feature 'a' void      set_node( mutable, ::node_s* node ) = {};
 
-    feature 'a' bl_t is_rollable( const )  = { return false; };  // unrolling: holor need not be duplicated (e.g. const or adaptive)
-    feature 'a' bl_t is_active( const )    = { return true;  };  // holor is active
+    feature 'a' bl_t is_rollable( const )  = { return false; }; // unrolling: holor need not be duplicated (e.g. const or adaptive)
+    feature 'a' bl_t is_active( const )    = { return true;  }; // holor is active
 
     feature 'a' bcore_inst* get_custom( const )                             = { return NULL; }; // retrieves custom data (if available)
     feature 'a' bcore_inst* set_custom( mutable, const bcore_inst* custom ) = { return NULL; }; // sets custom data and returns custom copy (if supported)
@@ -162,6 +162,11 @@ group :hbase =
             ::hmeta_adl_s_set_size( &o->hmeta_adl, size  );
             return o;
         };
+
+        /// if(copy_size_limit >=0) holors beyond the limit are not copied or streamed
+        sz_t copy_size_limit = -1;
+        func bcore_via_call : mutated = { if( o->copy_size_limit >= 0 ) @_set_size( o, o->copy_size_limit ); };
+        func bcore_inst_call : copy_x = { if( o->copy_size_limit >= 0 ) @_set_size( o, o->copy_size_limit ); };
 
         func  : :get_size = { return o->holor_ads.size; };
 
@@ -332,6 +337,7 @@ stamp :frame = aware :
     :nbase_s  => nbase;
 
     func bcore_via_call : mutated;
+    func bcore_inst_call : copy_x;
 
     func : :track_get = { if( !o->lib ) return NULL; return :lib_s_track_get( o->lib, name ); };
 

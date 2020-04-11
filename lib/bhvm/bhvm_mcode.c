@@ -128,17 +128,32 @@ void bhvm_mcode_track_s_check_index( const bhvm_mcode_track_s* o, sz_t hbase_siz
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_mcode_frame_s_mutated( bhvm_mcode_frame_s* o )
+static void bhvm_mcode_frame_s_reassign_mnodes( bhvm_mcode_frame_s* o )
 {
     /// restore mnode in holors
     BFOR_EACH( i, o->nbase )
     {
-        bhvm_mcode_node_s* node = &o->nbase->data[ i ];
+        bhvm_mcode_node_s* node = o->nbase->data[ i ];
         if( node->ax0 >= 0 ) bhvm_mcode_hmeta_a_set_node( bhvm_mcode_hbase_s_get_hmeta( o->hbase, node->ax0 ), node );
         if( node->ax1 >= 0 ) bhvm_mcode_hmeta_a_set_node( bhvm_mcode_hbase_s_get_hmeta( o->hbase, node->ax1 ), node );
         if( node->ag0 >= 0 ) bhvm_mcode_hmeta_a_set_node( bhvm_mcode_hbase_s_get_hmeta( o->hbase, node->ag0 ), node );
         if( node->ag1 >= 0 ) bhvm_mcode_hmeta_a_set_node( bhvm_mcode_hbase_s_get_hmeta( o->hbase, node->ag1 ), node );
     }
+    bhvm_mcode_frame_s_check_integrity( o );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_mcode_frame_s_mutated( bhvm_mcode_frame_s* o )
+{
+    bhvm_mcode_frame_s_reassign_mnodes( o );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_mcode_frame_s_copy_x( bhvm_mcode_frame_s* o )
+{
+    bhvm_mcode_frame_s_reassign_mnodes( o );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -148,10 +163,99 @@ void bhvm_mcode_frame_s_check_integrity( const bhvm_mcode_frame_s* o )
     if( !o->lib ) return;
     if( o->lib && !o->hbase ) ERR_fa( "hbase missing" );
 
+    /// checking all tracks
     BFOR_EACH( i, &o->lib->arr )
     {
         const bhvm_mcode_track_s* track = o->lib->arr.data[ i ];
         bhvm_mcode_track_s_check_index( track, o->hbase->holor_ads.size );
+    }
+
+    bhvm_mcode_hbase_s* hbase = o->hbase;
+    bhvm_mcode_nbase_s* nbase = o->nbase;
+    bhvm_mcode_hmeta_adl_s* mbase = &hbase->hmeta_adl;
+
+    /// checking nbase
+    BFOR_EACH( i, nbase )
+    {
+        bhvm_mcode_node_s* mnode = nbase->data[ i ];
+        ASSERT( mnode->nidx == i );
+        if( mnode->ax0 >= 0 )
+        {
+            sz_t midx = mnode->ax0;
+            ASSERT( midx < mbase->size );
+            ASSERT( bhvm_mcode_hmeta_a_get_node( mbase->data[ midx ] ) == mnode );
+        }
+
+        if( mnode->ax1 >= 0 )
+        {
+            sz_t midx = mnode->ax1;
+            ASSERT( midx < mbase->size );
+            ASSERT( bhvm_mcode_hmeta_a_get_node( mbase->data[ midx ] ) == mnode );
+        }
+
+        if( mnode->ag0 >= 0 )
+        {
+            sz_t midx = mnode->ag0;
+            ASSERT( midx < mbase->size );
+            ASSERT( bhvm_mcode_hmeta_a_get_node( mbase->data[ midx ] ) == mnode );
+        }
+
+        if( mnode->ag1 >= 0 )
+        {
+            sz_t midx = mnode->ag1;
+            ASSERT( midx < mbase->size );
+            ASSERT( bhvm_mcode_hmeta_a_get_node( mbase->data[ midx ] ) == mnode );
+        }
+    }
+
+    /// check nodes in hbase
+    BFOR_EACH( i, &hbase->hmeta_adl )
+    {
+        bhvm_mcode_hmeta*  hmeta = bhvm_mcode_hbase_s_get_hmeta( hbase, i );
+        bhvm_mcode_node_s* mnode = bhvm_mcode_hmeta_a_get_node( hmeta );
+
+        ASSERT( mnode );
+        ASSERT( mnode->nidx >= 0 );
+        ASSERT( mnode->nidx < nbase->size );
+
+        bhvm_mcode_node_s* mnode1 = nbase->data[ mnode->nidx ];
+
+        ASSERT( mnode == mnode1 );
+
+        sz_t idx_ap = mnode->ax0;
+        sz_t idx_dp = mnode->ag0;
+        tp_t pclass = bhvm_mcode_hmeta_a_get_pclass( hmeta );
+
+        ASSERT
+        (
+            pclass == TYPEOF_pclass_ax0 ||
+            pclass == TYPEOF_pclass_ax1 ||
+            pclass == TYPEOF_pclass_ag0 ||
+            pclass == TYPEOF_pclass_ag1
+        );
+
+        if( pclass == TYPEOF_pclass_ax0 )
+        {
+            ASSERT( idx_ap == i );
+            if( idx_dp >= 0 )
+            {
+                bhvm_mcode_hmeta* hmeta2  = bhvm_mcode_hbase_s_get_hmeta( hbase, idx_dp );
+                bhvm_mcode_node_s* mnode2 = bhvm_mcode_hmeta_a_get_node( hmeta2 );
+                ASSERT( mnode2 );
+                ASSERT( mnode2->ax0 == i );
+            }
+        }
+        else if( pclass == TYPEOF_pclass_ag0 )
+        {
+            ASSERT( idx_dp == i );
+            if( idx_ap >= 0 )
+            {
+                bhvm_mcode_hmeta* hmeta2 = bhvm_mcode_hbase_s_get_hmeta( hbase, idx_ap );
+                bhvm_mcode_node_s* mnode2 = bhvm_mcode_hmeta_a_get_node( hmeta2 );
+                ASSERT( mnode2 );
+                ASSERT( mnode2->ag0 == i );
+            }
+        }
     }
 }
 

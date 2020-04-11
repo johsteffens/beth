@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-08T14:53:41Z
+ *  Last File Update: 2020-04-11T12:52:11Z
  *
  *  Copyright and License of this File:
  *
@@ -1550,14 +1550,14 @@ sz_t bhvm_mcode_node_s_get_pclass_idx( const bhvm_mcode_node_s* o, tp_t pclass )
 BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_nbase_s )
 "aware bcore_array"
 "{"
-    "bhvm_mcode_node_s [];"
+    "bhvm_mcode_node_s => [];"
 "}";
 
 bhvm_mcode_node_s* bhvm_mcode_nbase_s_push_node( bhvm_mcode_nbase_s* o )
 {
     sz_t nidx = o->size;
-    bcore_array_a_push( ( bcore_array* )o, sr_null() );
-    bhvm_mcode_node_s* node = &o->data[ nidx ];
+    bcore_array_a_push( ( bcore_array* )o, sr_asd( bhvm_mcode_node_s_create() ) );
+    bhvm_mcode_node_s* node = o->data[ nidx ];
     node->nidx = nidx;
     return node;
 }
@@ -1671,6 +1671,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_frame_s )
     "bhvm_mcode_hbase_s => hbase;"
     "bhvm_mcode_nbase_s => nbase;"
     "func bcore_via_call:mutated;"
+    "func bcore_inst_call:copy_x;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1703,6 +1704,9 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hbase_s )
 "{"
     "bhvm_holor_ads_s holor_ads;"
     "bhvm_mcode_hmeta_adl_s hmeta_adl;"
+    "sz_t copy_size_limit = -1;"
+    "func bcore_via_call:mutated;"
+    "func bcore_inst_call:copy_x;"
 "}";
 
 bhvm_mcode_hbase_s* bhvm_mcode_hbase_s_set_size( bhvm_mcode_hbase_s* o, sz_t size )
@@ -1749,7 +1753,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3003252729 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 1572164204 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -1910,6 +1914,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_mcode_track_adl_s );
             BCORE_REGISTER_OBJECT( bhvm_mcode_lib_s );
             BCORE_REGISTER_FFUNC( bcore_via_call_mutated, bhvm_mcode_frame_s_mutated );
+            BCORE_REGISTER_FFUNC( bcore_inst_call_copy_x, bhvm_mcode_frame_s_copy_x );
             BCORE_REGISTER_OBJECT( bhvm_mcode_frame_s );
             BCORE_REGISTER_TRAIT( bhvm_mcode, bcore_inst );
 
@@ -1934,6 +1939,8 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_SPECT( bhvm_mcode_hmeta );
 
             // group: bhvm_mcode_hbase
+            BCORE_REGISTER_FFUNC( bcore_via_call_mutated, bhvm_mcode_hbase_s_mutated );
+            BCORE_REGISTER_FFUNC( bcore_inst_call_copy_x, bhvm_mcode_hbase_s_copy_x );
             BCORE_REGISTER_OBJECT( bhvm_mcode_hbase_s );
             BCORE_REGISTER_TRAIT( bhvm_mcode_hbase, bhvm_mcode );
         }
