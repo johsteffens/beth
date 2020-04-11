@@ -83,6 +83,11 @@ void bcore_bin_ml_a_from_source( vd_t o, bcore_source* source );
 /// writes object to stream; interprets stream and returns interpreted object
 sr_s bcore_bin_ml_transfer( sr_s obj );
 
+/** Copies aware object via a bin_ml transfer (writes src to binary sink, reads o from source (of sink)
+ *  This function can be used to test correct transfer
+ */
+void bcore_bin_ml_a_copy( vd_t o, vc_t src );
+
 /// converts object into stream; interprets stream and compares result to original
 void bcore_bin_ml_transfer_test( sr_s obj );
 
