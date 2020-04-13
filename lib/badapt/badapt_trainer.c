@@ -186,9 +186,10 @@ s2_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, const bcore_arr_st_s*
     {
         badapt_supplier_a_setup_builder( o->problem, o->builder );
         badapt_training_state_a_set_adaptive( state, BCORE_LIFE_A_PUSH( badapt_builder_a_build( o->builder ) ) );
-        badapt_training_state_a_set_supplier( state, o->problem );
-        badapt_training_state_a_set_guide( state, o->guide );
     }
+
+    badapt_training_state_a_set_supplier( state, o->problem );
+    badapt_training_state_a_set_guide(    state, o->guide );
 
     badapt_adaptive_a_arc_to_sink( badapt_training_state_a_get_adaptive( state ), BCORE_STDOUT );
     badapt_trainer_a_run( o->trainer, state );
