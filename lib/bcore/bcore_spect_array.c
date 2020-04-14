@@ -184,12 +184,15 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, uz_t
         ERR( "Cannot change space for fixed-size-array" );
     }
     vd_t obj = ( u0_t* )o + p->caps_offset;
-    if( ( ( bcore_array_dyn_head_s* )obj )->size > ( ( bcore_array_dyn_head_s* )obj )->space ) bcore_array_p_make_strong( p, o );
+
     switch( p->type_caps )
     {
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
         {
             bcore_array_dyn_solid_static_s* arr = obj;
+            if( space == 0 && arr->space == 0 ) { arr->size = 0; arr->data = NULL; return; }
+            if( arr->size > 0 && arr->space == 0 ) bcore_array_p_make_strong( p, o );
+
             const bcore_inst_s* instance_p = p->item_p;
             uz_t unit_size = instance_p->size;
             if( instance_p->move_flat )
@@ -231,6 +234,9 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, uz_t
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
         {
             bcore_array_dyn_solid_typed_s* arr = obj;
+            if( space == 0 && arr->space == 0 ) { arr->size = 0; arr->data = NULL; return; }
+            if( arr->size > 0 && arr->space == 0 ) bcore_array_p_make_strong( p, o );
+
             if( space == arr->space ) break;
             if( !arr->type ) ERR( "attempt to change space on type-zero array" );
             const bcore_inst_s* instance_p = bcore_inst_s_get_typed( arr->type );
@@ -275,6 +281,9 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, uz_t
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
         {
             bcore_array_dyn_link_static_s* arr = obj;
+            if( space == 0 && arr->space == 0 ) { arr->size = 0; arr->data = NULL; return; }
+            if( arr->size > 0 && arr->space == 0 ) bcore_array_p_make_strong( p, o );
+
             const bcore_inst_s* instance_p = p->item_p;
             while( arr->size > space )
             {
@@ -288,6 +297,9 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, uz_t
         case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
         {
             bcore_array_dyn_link_typed_s* arr = obj;
+            if( space == 0 && arr->space == 0 ) { arr->size = 0; arr->data = NULL; return; }
+            if( arr->size > 0 && arr->space == 0 ) bcore_array_p_make_strong( p, o );
+
             if( space < arr->size )
             {
                 if( !arr->type ) ERR( "type-zero array with non-zero size detected" );
@@ -305,6 +317,9 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, uz_t
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
         {
             bcore_array_dyn_link_aware_s* arr = obj;
+            if( space == 0 && arr->space == 0 ) { arr->size = 0; arr->data = NULL; return; }
+            if( arr->size > 0 && arr->space == 0 ) bcore_array_p_make_strong( p, o );
+
             while( arr->size > space )
             {
                 arr->size--;
