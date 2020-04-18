@@ -173,7 +173,7 @@ Key components of the plant language are `stamp`, `group` and `feature`.
 
 # Motivation
 Object oriented programming is generally associated with a specific framework which can be seen in 
-many programming Languages. C++ is probably offers of the most efficient ways of implementing this concept.
+many programming Languages. C++ is probably one of the most efficient ways of implementing this concept.
 I appreciate and value it, but I also see issues.
 
 For example: The static association between objects and their interfaces forces an inhibiting
