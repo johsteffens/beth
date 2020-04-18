@@ -196,9 +196,9 @@ trodden paths and trying to come up with new ideas or at least viable variations
 of what has been done before.
 
 For that matter, getting a grasp on *beth* is probably a bit of a challenge for a
-seasoned developer. I hope that those those who try anyway feel rewarded, and experience
-it like discovering a new world. For me it is like painting a new picture, which has not
-been painted before. Watching it unfold and taking shape is beautiful.
+seasoned developer. I hope that those those who try anyway feel rewarded.
+For me it is like painting a new picture, which has not been painted before. 
+Watching it unfold and taking shape is beautiful.
 
 But for all the bliss, the ultimate goal is *usefulness*.
 
