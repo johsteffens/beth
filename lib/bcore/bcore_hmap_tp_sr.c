@@ -77,7 +77,7 @@ static bcore_self_s* hnode_tp_sr_s_create_self( void )
             tp_t key; \
             sr_s val; \
         }";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hnode_tp_sr_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_hnode_tp_sr_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_hnode_tp_sr_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_hnode_tp_sr_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_hnode_tp_sr_s_copy, "bcore_fp_copy", "copy" );
@@ -348,7 +348,7 @@ static bcore_self_s* hmap_tp_sr_s_create_self( void )
             private uz_t size_limit; \
             shell { bcore_hnode_tp_sr_s []; } data; } \
         }";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_hmap_tp_sr_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_hmap_tp_sr_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_sr_s_init,    "bcore_fp_init",  "init"     );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_sr_s_down,    "bcore_fp_down",  "down"     );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tp_sr_s_copy,    "bcore_fp_copy",  "copy"     );

@@ -176,7 +176,7 @@ void bcore_txt_ml_translator_s_translate( const bcore_txt_ml_translator_s* o, sr
 
 static bcore_self_s* translator_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_txt_ml_translator_s = bcore_translator { aware_t _; uz_t indent; }", sizeof( bcore_txt_ml_translator_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_txt_ml_translator_s = bcore_translator { aware_t _; uz_t indent; }", bcore_txt_ml_translator_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_txt_ml_translator_s_init,      "bcore_fp_init",      "init"      );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_txt_ml_translator_s_translate, "bcore_fp_translate", "translate" );
     return self;
@@ -527,7 +527,7 @@ sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, 
 
 static bcore_self_s* interpreter_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_txt_ml_interpreter_s = bcore_interpreter { aware_t _; }", sizeof( bcore_txt_ml_interpreter_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_txt_ml_interpreter_s = bcore_interpreter { aware_t _; }", bcore_txt_ml_interpreter_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_txt_ml_interpreter_s_init,             "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_txt_ml_interpreter_s_interpret,        "bcore_fp_interpret",        "interpret"        );
     return self;

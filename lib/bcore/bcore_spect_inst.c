@@ -1573,17 +1573,29 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
             o->size = self->size;
         }
 
+        /** For incomplete bodies the computed alignment is insufficient
+         *  Take self->align.
+         */
+        if( !body_complete )
+        {
+            if( self->align == 0 ) ERR( "Object %s has incomplete body but no alignment declaration.\n", ifnameof( self->type ) );
+            o->align = self->align;
+        }
+
         // If alignment is zero, the body does not contain physical data.
         // In this case alignment must be treated as if the body was not defined.
-        if( o->align == 0 ) o->align = self->size;
+        if( o->align == 0 ) o->align = self->align;
 
         bcore_inst_item_s_discard( last_inst_item );
     }
     else
     {
         o->size  = self->size;
-        o->align = self->size;
+        o->align = self->align;
     }
+
+    // if self->align is given force o->align to that number
+    if( self->align > 0 ) o->align = self->align;
 
     if( body_undefined_or_complete && ( self->size > 0 ) && ( self->size != o->size ) )
     {
@@ -1592,12 +1604,16 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
             ifnameof( self->type ), self->size, o->size );
     }
 
+    if( o->size > 0 && o->align == 0 )
+    {
+        ERR( "Missing alignment of object: %s\n", ifnameof( self->type ) );
+    }
+
     // inst_calls
     if( inst_call_any )
     {
         o->inst_call_p = bcore_inst_call_s_get_typed( self->type );
     }
-
 
     if( !o->down_flat ) o->copy_flat = false;
     o->move_flat = o->init_flat && o->copy_flat && o->down_flat;
@@ -1676,13 +1692,11 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
 
 static bcore_self_s* bcore_inst_s_create_self( void )
 {
-//    sc_t def = "bcore_inst_s = spect { aware_t p_type; tp_t o_type; ... }";
-//    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_inst_s ) );
 
 //  We need to create this reflection manually because self_s_build_parse uses it.
-    bcore_self_s* self = bcore_self_s_create_plain( entypeof( "bcore_inst_s" ), typeof( "spect" ), sizeof( bcore_inst_s ) );
+    bcore_self_s* self = bcore_self_s_create_plain( entypeof( "bcore_inst_s" ), typeof( "spect" ), sizeof( bcore_inst_s ), alignof( bcore_inst_s ) );
     bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_bcore_spect_header_s, entypeof( "header"  ) ) );
-    bcore_self_body_s_set_complete( self->body, false );
+    bcore_self_body_s_set_complete( self->body, false ); // we declare the body incomplete
 
     bcore_self_s_push_ns_func( self, ( fp_t )inst_s_init,             "bcore_fp_init",                   "init"         );
     bcore_self_s_push_ns_func( self, ( fp_t )inst_s_down,             "bcore_fp_down",                   "down"         );
@@ -1747,10 +1761,10 @@ static st_s* spect_inst_selftest( void )
 {
     typedef struct { aware_t _; bcore_array_dyn_link_typed_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
 
-    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " test_object1_s = { aware_t _; typed * [] string_arr; u2_t val1; u3_t val2; s1_t val3; }", 0 ) );
+    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " test_object1_s = { aware_t _; typed * [] string_arr; u2_t val1; u3_t val2; s1_t val3; }", 0, 0 ) );
 
     typedef struct { aware_t _; u2_t val1; test_object1_s* o1; } test_object2_s;
-    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " test_object2_s = { aware_t _; u2_t val1; test_object1_s* o1; }", 0 ) );
+    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " test_object2_s = { aware_t _; u2_t val1; test_object1_s* o1; }", 0, 0 ) );
 
     test_object1_s* o1 = bcore_inst_t_create( typeof( "test_object1_s" ) );
 
@@ -1791,9 +1805,9 @@ static st_s* spect_inst_selftest( void )
     // deep vs shallow links
     {
         typedef struct { aware_t _; st_s * str; } deep_object_s;
-        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " deep_object_s = { aware_t _; st_s => str; }", sizeof( deep_object_s ) ) );
+        bcore_flect_define_self_d( BCORE_SELF_S_BUILD_PARSE_SC( " deep_object_s = { aware_t _; st_s => str; }", deep_object_s ) );
         typedef struct { aware_t _; st_s * str; } shallow_object_s;
-        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " shallow_object_s = { aware_t _; st_s -> str; }", sizeof( shallow_object_s ) ) );
+        bcore_flect_define_self_d( BCORE_SELF_S_BUILD_PARSE_SC( " shallow_object_s = { aware_t _; st_s -> str; }", shallow_object_s ) );
 
         deep_object_s*    do1 = bcore_inst_t_create( typeof( "deep_object_s" ) );
         shallow_object_s* so1 = bcore_inst_t_create( typeof( "shallow_object_s" ) );
@@ -1825,7 +1839,7 @@ static st_s* spect_inst_selftest( void )
     // just links
     {
         typedef struct { st_s* str1; st_s* str2; } links_object_s;
-        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "links_object_s = { st_s => str1; st_s => str2; }", sizeof( links_object_s ) ) );
+        bcore_flect_define_self_d( BCORE_SELF_S_BUILD_PARSE_SC( "links_object_s = { st_s => str1; st_s => str2; }", links_object_s ) );
         links_object_s* o = bcore_inst_t_create( typeof( "links_object_s" ) );
         o->str1 = st_s_create_sc( "hello " );
         o->str2 = st_s_create_sc( "world!" );
@@ -1835,7 +1849,7 @@ static st_s* spect_inst_selftest( void )
     // default strings
     {
         typedef struct { sc_t str0; st_s* str1; st_s str2; } string_init_object_s;
-        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "string_init_object_s = { sc_t str0 = \"hi\"; st_s => str1 = \"hello\"; st_s str2 = \"world!\"; }", sizeof( string_init_object_s ) ) );
+        bcore_flect_define_self_d( BCORE_SELF_S_BUILD_PARSE_SC( "string_init_object_s = { sc_t str0 = \"hi\"; st_s => str1 = \"hello\"; st_s str2 = \"world!\"; }", string_init_object_s ) );
         string_init_object_s* o = bcore_inst_t_create( typeof( "string_init_object_s" ) );
         ASSERT( sc_t_equal(     o->str0, "hi" ) );
         ASSERT( st_s_equal_sc(  o->str1, "hello" ) );
@@ -1846,7 +1860,7 @@ static st_s* spect_inst_selftest( void )
     // fixed size array
     {
         typedef struct { st_s str_arr[ 10 ]; } arr_object_s;
-        bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "arr_object_s = { st_s [ 10 ] str_arr; }", sizeof( arr_object_s ) ) );
+        bcore_flect_define_self_d( BCORE_SELF_S_BUILD_PARSE_SC( "arr_object_s = { st_s [ 10 ] str_arr; }", arr_object_s ) );
         arr_object_s* o1 = bcore_inst_t_create( typeof( "arr_object_s" ) );
         arr_object_s* o2 = bcore_inst_t_create( typeof( "arr_object_s" ) );
 

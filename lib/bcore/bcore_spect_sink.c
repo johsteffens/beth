@@ -119,7 +119,7 @@ static bcore_sink_s* create_from_self( const bcore_self_s* self )
 static bcore_self_s* sink_s_create_self( void )
 {
     sc_t def = "bcore_sink_s = spect { aware_t p_type; tp_t o_type; ... }";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_sink_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_sink_s );
     bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,        "bcore_spect_fp_create_from_self", "create_from_self" );
     return self;
 }

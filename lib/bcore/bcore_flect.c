@@ -283,17 +283,17 @@ uz_t bcore_self_item_s_inst_align( const bcore_self_item_s* o )
     switch( o->caps )
     {
         case BCORE_CAPS_SOLID_STATIC:           return 0;
-        case BCORE_CAPS_LINK_STATIC:            return _Alignof( bcore_link_static_s );
-        case BCORE_CAPS_LINK_TYPED:             return _Alignof( bcore_link_typed_s );
-        case BCORE_CAPS_LINK_AWARE:             return _Alignof( bcore_link_aware_s );
-        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return _Alignof( bcore_array_dyn_solid_static_s );
-        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return _Alignof( bcore_array_dyn_solid_typed_s );
-        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return _Alignof( bcore_array_dyn_link_static_s );
-        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return _Alignof( bcore_array_dyn_link_typed_s );
-        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return _Alignof( bcore_array_dyn_link_aware_s );
+        case BCORE_CAPS_LINK_STATIC:            return alignof( bcore_link_static_s );
+        case BCORE_CAPS_LINK_TYPED:             return alignof( bcore_link_typed_s );
+        case BCORE_CAPS_LINK_AWARE:             return alignof( bcore_link_aware_s );
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return alignof( bcore_array_dyn_solid_static_s );
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return alignof( bcore_array_dyn_solid_typed_s );
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return alignof( bcore_array_dyn_link_static_s );
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return alignof( bcore_array_dyn_link_typed_s );
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return alignof( bcore_array_dyn_link_aware_s );
         case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return 0;
-        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return _Alignof( bcore_link_static_s );
-        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return _Alignof( bcore_link_aware_s  );
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return alignof( bcore_link_static_s );
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return alignof( bcore_link_aware_s  );
         case BCORE_CAPS_EXTERNAL_FUNC:          return 0;
         default: break;
     }
@@ -986,7 +986,7 @@ static bcore_self_s* self_item_s_create_self( void )
         "umax_t default;" // container of default data
         "bcore_self_item_s* child_item;"
     "}";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_self_item_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_self_item_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_self_item_s_init,    "bcore_fp_init",    "init"    );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_self_item_s_down,    "bcore_fp_down",    "down"    );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_self_item_s_copy,    "bcore_fp_copy",    "copy"    );
@@ -1270,7 +1270,7 @@ static bcore_self_s* flect_body_s_create_self( void )
         "bcore_self_item_s* [] arr;"
         "bl_t complete;"
     "}";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_self_body_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_self_body_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_self_body_s_init,    "bcore_fp_init",    "init"    );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_self_body_s_down,    "bcore_fp_down",    "down"    );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_self_body_s_copy,    "bcore_fp_copy",    "copy"    );
@@ -1402,12 +1402,13 @@ bcore_self_item_s* bcore_self_s_push_fp_get( bcore_self_s* o, bcore_fp_get func,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_self_s_init_plain( bcore_self_s* o, tp_t type, tp_t trait, uz_t size )
+void bcore_self_s_init_plain( bcore_self_s* o, tp_t type, tp_t trait, uz_t size, uz_t align )
 {
     bcore_self_s_init( o );
     o->type  = type;
     o->trait = trait;
     o->size  = size;
+    o->align = align;
     if( o->body ) bcore_self_body_s_discard( o->body );
     o->body = NULL;
 }
@@ -1429,10 +1430,10 @@ st_s* bcore_self_s_show( const bcore_self_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_self_s* bcore_self_s_create_plain( tp_t type, tp_t trait, uz_t size )
+bcore_self_s* bcore_self_s_create_plain( tp_t type, tp_t trait, uz_t size, uz_t align )
 {
     bcore_self_s* o = bcore_self_s_create();
-    bcore_self_s_init_plain( o, type, trait, size );
+    bcore_self_s_init_plain( o, type, trait, size, align );
     return o;
 }
 
@@ -1511,7 +1512,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware( uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, sc_t namespace, bl_t advanced_checks )
+bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, uz_t align_of, sc_t namespace, bl_t advanced_checks )
 {
     bcore_life_s* l = bcore_life_s_create();
     src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
@@ -1567,36 +1568,37 @@ bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, sc_t namespace, bl
     }
 
     o->size = size_of;
+    o->align = align_of;
     bcore_life_s_discard( l );
     return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_self_s* bcore_self_s_parse_source( bcore_source* source, uz_t size_of, sc_t namespace, bl_t advanced_checks )
+bcore_self_s* bcore_self_s_parse_source( bcore_source* source, uz_t size_of, uz_t align_of, sc_t namespace, bl_t advanced_checks )
 {
-    return bcore_self_s_parse_src( sr_awd( source ), size_of, namespace, advanced_checks );
+    return bcore_self_s_parse_src( sr_awd( source ), size_of, align_of, namespace, advanced_checks );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of )
+bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of, uz_t align_of )
 {
-    return bcore_self_s_parse_src( src, size_of, NULL, true );
+    return bcore_self_s_parse_src( src, size_of, align_of, NULL, true );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of )
+bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of, uz_t align_of )
 {
-    return bcore_self_s_build_parse_src( sr_awd( source ), size_of );
+    return bcore_self_s_build_parse_src( sr_awd( source ), size_of, align_of );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_self_s* bcore_self_s_build_parse_sc( sc_t text, uz_t size_of )
+bcore_self_s* bcore_self_s_build_parse_sc( sc_t text, uz_t size_of, uz_t align_of )
 {
-    return bcore_self_s_build_parse_src( sr_asd( st_s_create_weak_sc( text ) ), size_of );
+    return bcore_self_s_build_parse_src( sr_asd( st_s_create_weak_sc( text ) ), size_of, align_of );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1744,9 +1746,10 @@ static bcore_self_s* flect_self_s_create_self( void )
         "tp_t trait;"
         "tp_t parent;"
         "uz_t size;"
+        "uz_t align;"
         "bcore_self_body_s* body;"
     "}";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_self_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_self_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_self_s_init,         "bcore_fp_init",         "init"         );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_self_s_down,         "bcore_fp_down",         "down"         );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_self_s_copy,         "bcore_fp_copy",         "copy"         );
@@ -2117,7 +2120,7 @@ tp_t bcore_flect_define_self_c( const bcore_self_s* self )
 
 tp_t bcore_flect_define_parse_src( sr_s src )
 {
-    return bcore_flect_define_self_d( bcore_self_s_build_parse_src( src, 0 ) );
+    return bcore_flect_define_self_d( bcore_self_s_build_parse_src( src, 0, 0 ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2175,7 +2178,7 @@ tp_t bcore_flect_type_self_c( const bcore_self_s* self )
 
 tp_t bcore_flect_type_parse_src( sr_s src )
 {
-    return bcore_flect_type_self_d( bcore_self_s_build_parse_src( src, 0 ) );
+    return bcore_flect_type_self_d( bcore_self_s_build_parse_src( src, 0, 0 ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2283,7 +2286,7 @@ void bcore_flect_parse_all_flects()
 
 static void flect_define_basics()
 {
-    bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( "void" ), typeof( "leaf" ), 0 ) );
+    bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( "void" ), typeof( "leaf" ), 0, 0 ) );
 
     BCORE_REGISTER_TYPE( num, s0_t );
     BCORE_REGISTER_TYPE( num, s1_t );

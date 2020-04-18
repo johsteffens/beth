@@ -32,7 +32,10 @@ typedef struct bcore_mutex_s
 
 void           bcore_mutex_s_init( bcore_mutex_s* o );
 void           bcore_mutex_s_down( bcore_mutex_s* o );
+void           bcore_mutex_s_copy( bcore_mutex_s* o, const bcore_mutex_s* src ); // copy does not change o
+
 bcore_mutex_s* bcore_mutex_s_create();
+bcore_mutex_s* bcore_mutex_s_clone( const bcore_mutex_s* src ); // clone does not use src; it simply creates a new mutex
 void           bcore_mutex_s_discard( bcore_mutex_s* o );
 
 void bcore_mutex_s_lock(   bcore_mutex_s* o );
@@ -43,7 +46,7 @@ void bcore_mutex_s_unlock( bcore_mutex_s* o );
 
 typedef pthread_once_t bcore_once_s;
 #define bcore_once_init PTHREAD_ONCE_INIT
-void bcore_once_s_run( bcore_once_s* flag, void (*func)() );
+void bcore_once_s_run( bcore_once_s* flag, void (*func)( void ) );
 
 /**********************************************************************************************************************/
 // condition

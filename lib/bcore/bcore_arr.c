@@ -52,7 +52,7 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_uz_s )
 
 static bcore_self_s* arr_uz_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_arr_uz_s = bcore_array { aware_t _; uz_t [] arr; }", sizeof( bcore_arr_uz_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_uz_s = bcore_array { aware_t _; uz_t [] arr; }", bcore_arr_uz_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_uz_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_uz_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_uz_s_copy, "bcore_fp_copy", "copy" );
@@ -302,7 +302,7 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_sz_s )
 
 static bcore_self_s* arr_sz_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_arr_sz_s = bcore_array { aware_t _; sz_t [] arr; }", sizeof( bcore_arr_sz_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_sz_s = bcore_array { aware_t _; sz_t [] arr; }", bcore_arr_sz_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_sz_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_sz_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_sz_s_copy, "bcore_fp_copy", "copy" );
@@ -469,7 +469,7 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_u3_s )
 
 static bcore_self_s* arr_u3_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_arr_u3_s = bcore_array { aware_t _; u3_t [] arr; }", sizeof( bcore_arr_u3_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_u3_s = bcore_array { aware_t _; u3_t [] arr; }", bcore_arr_u3_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_u3_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_u3_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_u3_s_copy, "bcore_fp_copy", "copy" );
@@ -636,7 +636,7 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_tp_s )
 
 static bcore_self_s* arr_tp_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_arr_tp_s = bcore_array { aware_t _; tp_t [] arr; }", sizeof( bcore_arr_tp_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_tp_s = bcore_array { aware_t _; tp_t [] arr; }", bcore_arr_tp_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_tp_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_tp_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_tp_s_copy, "bcore_fp_copy", "copy" );
@@ -807,7 +807,7 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_bl_s )
 
 static bcore_self_s* arr_bl_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_arr_bl_s = bcore_array { aware_t _; bl_t [] arr; }", sizeof( bcore_arr_bl_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_bl_s = bcore_array { aware_t _; bl_t [] arr; }", bcore_arr_bl_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_bl_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_bl_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_bl_s_copy, "bcore_fp_copy", "copy" );
@@ -893,7 +893,7 @@ BCORE_DEFINE_FUNCTION_CLONE(     bcore_arr_st_s )
 
 static bcore_self_s* arr_st_s_create_self( void )
 {
-    return bcore_self_s_build_parse_sc( "bcore_arr_st_s = bcore_array { aware_t _; st_s* [] arr; }", sizeof( bcore_arr_st_s ) );
+    return BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_st_s = bcore_array { aware_t _; st_s* [] arr; }", bcore_arr_st_s );
 }
 
 bcore_arr_st_s* bcore_arr_st_s_clear( bcore_arr_st_s* o )
@@ -1045,7 +1045,7 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_vd_s )
 
 static bcore_self_s* arr_vd_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_arr_vd_s = bcore_array { aware_t _; vd_t [] arr; }", sizeof( bcore_arr_vd_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_vd_s = bcore_array { aware_t _; vd_t [] arr; }", bcore_arr_vd_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_vd_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_vd_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_vd_s_copy, "bcore_fp_copy", "copy" );
@@ -1184,7 +1184,7 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_fp_s )
 
 static bcore_self_s* arr_fp_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_arr_fp_s = bcore_array { aware_t _; fp_t [] arr; }", sizeof( bcore_arr_fp_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_fp_s = bcore_array { aware_t _; fp_t [] arr; }", bcore_arr_fp_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_fp_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_fp_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_fp_s_copy, "bcore_fp_copy", "copy" );
@@ -1303,7 +1303,7 @@ BCORE_DEFINE_FUNCTION_CLONE(     bcore_arr_sr_s )
 
 static bcore_self_s* arr_sr_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_arr_sr_s = bcore_array { aware_t _; sr_s [] arr; }", sizeof( bcore_arr_sr_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_sr_s = bcore_array { aware_t _; sr_s [] arr; }", bcore_arr_sr_s );
     return self;
 }
 

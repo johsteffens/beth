@@ -31,6 +31,7 @@
 #include "bcore_function_manager.h"
 #include "bcore_st.h"
 #include "bcore_feature.h"
+#include "bcore_feature.h"
 
 /**********************************************************************************************************************/
 
@@ -240,14 +241,26 @@ typedef struct bcore_self_s
     /** size
      *  Represents sizeof(object-type);
      *  Mandatory for leaf-types (which are basically types without body)
-     *  Optional for types with body:
+     *  For types with body:
      *   = 0: sizeof(type) is calculated in the instance perspective (e.g. for runtime generated types)
-     *   > 0: sizeof(type) is calculated in the instance perspective and checked against bcore_self_s::size
-     *        Perspective can produce a descriptive error in case of a mismatch.
+     *   > 0: sizeof(type) is calculated in the instance perspective and compared to bcore_self_s::size
+     *        The perspective can produce a descriptive error in case of a mismatch.
      *        This feature is useful to detect the error that object's compile-time definition is out of
      *        sync with its reflection.
      */
     uz_t size;
+
+    /** align
+     *  Represents alignof(object-type);
+     *  Mandatory for leaf-types (which are basically types without body)
+     *  For types with body:
+     *   = 0: alignof(type) is calculated in the instance perspective (e.g. for runtime generated types)
+     *   > 0: alignof(type) is calculated in the instance perspective and compared to bcore_self_s::align
+     *        The perspective can produce a descriptive error in case of a mismatch.
+     *        This feature is useful to detect the error that object's computed alignment is does not
+     *        match the compiler's alignment.
+     */
+    uz_t align;
 
     /** Body of type. Exposing the body is optional.
      *  If the body is exposed, declarations must be complete up to the last declared element.
@@ -258,7 +271,7 @@ typedef struct bcore_self_s
 } bcore_self_s;
 
 void          bcore_self_s_init( bcore_self_s* o );
-void          bcore_self_s_init_plain( bcore_self_s* o, tp_t type, tp_t trait, uz_t size );
+void          bcore_self_s_init_plain( bcore_self_s* o, tp_t type, tp_t trait, uz_t size, uz_t align );
 void          bcore_self_s_down( bcore_self_s* o );
 void          bcore_self_s_copy( bcore_self_s* o, const bcore_self_s* src );
 bcore_self_s* bcore_self_s_create();
@@ -282,7 +295,7 @@ st_s*              bcore_self_s_show( const bcore_self_s* o );
 void               bcore_self_s_check_integrity( const bcore_self_s* o );
 
 /// special reflections
-bcore_self_s* bcore_self_s_create_plain( tp_t type, tp_t trait, uz_t size ); // plain (primitive) self contained type
+bcore_self_s* bcore_self_s_create_plain( tp_t type, tp_t trait, uz_t size, uz_t align ); // plain (primitive) self contained type
 
 // creates anonymous array type ...
 bcore_self_s* bcore_self_s_create_array_dyn_solid_static( tp_t item_type );
@@ -378,15 +391,15 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *      Reflections of self aware objects have 'aware_t _;' as first physical element definition;
  *      Alternative the keyword 'aware' may follow '='
  *
- *    No body: Allowed for certain leaf types, where alignment == object size.
+ *    No body: Only allowed for certain leaf types, where alignment == object size.
  *
  */
-bcore_self_s* bcore_self_s_parse_src(          sr_s src,             uz_t size_of, sc_t namespace, bl_t advanced_checks );
-bcore_self_s* bcore_self_s_parse_source(       bcore_source* source, uz_t size_of, sc_t namespace, bl_t advanced_checks );
+bcore_self_s* bcore_self_s_parse_src(          sr_s src,             uz_t size_of, uz_t align_of, sc_t namespace, bl_t advanced_checks );
+bcore_self_s* bcore_self_s_parse_source(       bcore_source* source, uz_t size_of, uz_t align_of, sc_t namespace, bl_t advanced_checks );
 
-bcore_self_s* bcore_self_s_build_parse_src(    sr_s src,             uz_t size_of ); // with advanced checks
-bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of ); // with advanced checks
-bcore_self_s* bcore_self_s_build_parse_sc(     sc_t text,            uz_t size_of ); // with advanced checks
+bcore_self_s* bcore_self_s_build_parse_src(    sr_s src,             uz_t size_of, uz_t align_of ); // with advanced checks
+bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of, uz_t align_of ); // with advanced checks
+bcore_self_s* bcore_self_s_build_parse_sc(     sc_t text,            uz_t size_of, uz_t align_of ); // with advanced checks
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -517,14 +530,16 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
 /**********************************************************************************************************************/
 
 // Macros
+#define BCORE_SELF_S_BUILD_PARSE_SC( text, type ) bcore_self_s_build_parse_sc( text, sizeof( type ), alignof( type ) )
+
 #define BCORE_DEFINE_CREATE_SELF( name, def )\
     static bcore_self_s* name##_create_self( void ) \
     {\
-        return bcore_self_s_build_parse_sc( def, sizeof( name ) ); \
+        return BCORE_SELF_S_BUILD_PARSE_SC( def, name ); \
     }
 
 #define BCORE_REGISTER_TYPE( trait, name )\
-    bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( #name ), TYPEOF_##trait, sizeof( name ) ) )
+    bcore_flect_define_self_d( bcore_self_s_create_plain( entypeof( #name ), TYPEOF_##trait, sizeof( name ), alignof( name ) ) )
 
 #define BCORE_REGISTER_FEATURE( name )\
     BCORE_REGISTER_TYPE( function_pointer, name )

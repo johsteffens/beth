@@ -2111,6 +2111,7 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
         (
             BLM_A_PUSH( (bcore_source*)bcore_source_string_s_create_from_string( o->self_source ) ),
             0,
+            0,
             o->group->name.sc,
             false
         )
@@ -2774,7 +2775,7 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             group->source      = o->source;
             group->extending   = o->extending;
             bcore_plant_group_s_parse_name( o, &group->name, source );
-            bcore_source_a_parse_fa( source, " =", &group->name, &group->trait_name );
+            bcore_source_a_parse_fa( source, " =" );
 
             // flags
             if( bcore_source_a_parse_bl_fa( source, " #?w'retrievable' " ) ) group->retrievable = true;

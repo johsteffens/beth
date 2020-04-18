@@ -1814,7 +1814,7 @@ static void test_string_array( sc_t type_sc )
 
 static st_s* spect_array_selftest( void )
 {
-    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "string_array = { aware_t _; st_s [] string_arr; }", 0 ) );
+    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( "string_array = { aware_t _; st_s [] string_arr; }", 0, 0 ) );
     vd_t arr = bcore_inst_t_create( typeof( "string_array" ) );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
 
@@ -1831,7 +1831,7 @@ static st_s* spect_array_selftest( void )
     {
 
         const st_s* code = arr_p->get( arr_p, arr, i ).o;
-        bcore_self_s* self = bcore_self_s_build_parse_sc( code->sc, 0 );
+        bcore_self_s* self = bcore_self_s_build_parse_sc( code->sc, 0, 0 );
         ASSERT( !bcore_spect_trait_supported( typeof( "bcore_array" ), self->type ) );
         tp_t type = bcore_flect_type_self_c( self );
         ASSERT( bcore_spect_trait_supported( typeof( "bcore_array" ), type ) );

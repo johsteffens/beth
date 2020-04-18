@@ -290,7 +290,7 @@ static bcore_compare_s* create_from_self( const bcore_self_s* self )
 static bcore_self_s* compare_s_create_self( void )
 {
     sc_t def = "bcore_compare_s = spect { aware_t p_type; tp_t o_type; ... }";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_compare_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_compare_s );
     bcore_self_s_push_ns_func( self, ( fp_t )compare_s_init,             "bcore_fp_init",                    "init"         );
     bcore_self_s_push_ns_func( self, ( fp_t )compare_s_down,             "bcore_fp_down",                    "down"         );
     bcore_self_s_push_ns_func( self, ( fp_t )compare_s_create,           "bcore_fp_create",                  "create"       );

@@ -14,8 +14,8 @@
  */
 
 /** Beth inexpandable group.
- *  This group does not generate effective plat-code but is otherwise accessible within the plant framework.
- *  It is used to add components, which have a low-level implementation: E.g. beth-system features.
+ *  This group does not generate effective plant-code but is otherwise accessible within the plant framework.
+ *  It manages components, which have a low-level implementation: E.g. beth-system features.
  */
 
 #ifndef BCORE_PLANT_INEXPANDABLE_H

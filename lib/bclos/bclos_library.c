@@ -30,7 +30,7 @@ BCORE_DEFINE_FUNCTION_CLONE(      bclos_library_s )
 static bcore_self_s* library_s_create_self( void )
 {
     sc_t def = "bclos_library_s = bcore_inst { aware_t _; bcore_hmap_tp_sr_s map; bclos_library_arr_s* deps; }";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bclos_library_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bclos_library_s );
     return self;
 }
 
@@ -46,7 +46,7 @@ BCORE_DEFINE_FUNCTION_CLONE(      bclos_library_arr_s )
 static bcore_self_s* library_arr_s_create_self( void )
 {
     sc_t def = "bclos_library_arr_s = bcore_inst_s { aware_t _; library_s* [] arr; }";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bclos_library_arr_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bclos_library_arr_s );
     return self;
 }
 

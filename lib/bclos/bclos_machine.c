@@ -44,7 +44,11 @@ typedef struct bclos_minst_s
 } bclos_minst_s;
 
 BCORE_DEFINE_FUNCTIONS_OBJ_INST( bclos_minst_s )
-static sc_t bclos_minst_s_def_g = "bclos_minst_s = bcore_inst { u2_t inst; u0_t op0; u0_t op1; u0_t op2; u0_t op3; }";
+
+//static sc_t bclos_minst_s_def_g = "bclos_minst_s = bcore_inst { u2_t inst; u0_t op0; u0_t op1; u0_t op2; u0_t op3; }";
+// above declaration produces an alignment error (correct alignment of union cannot be computed)
+
+static sc_t bclos_minst_s_def_g = "bclos_minst_s = bcore_inst { u3_t val; }";
 BCORE_DEFINE_CREATE_SELF( bclos_minst_s, bclos_minst_s_def_g )
 
 bclos_minst_s bclos_minst_s_create0( u2_t oc )                            { return (bclos_minst_s){ .oc=oc, .o0 =  0, .o1 =  0, .o2 =  0, .o3 =  0 }; }

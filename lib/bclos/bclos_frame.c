@@ -84,7 +84,7 @@ bcore_self_s* frame_s_create_self( void )
         "bcore_hmap_tp_sr_s map;"
     "}";
 
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bclos_frame_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bclos_frame_s );
     return self;
 }
 

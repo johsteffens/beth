@@ -32,6 +32,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <assert.h>
+#include <stdalign.h>
 
 #include <math.h>
 

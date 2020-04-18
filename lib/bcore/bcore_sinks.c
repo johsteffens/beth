@@ -157,7 +157,7 @@ static bcore_self_s* chain_s_create_self( void )
       "aware * [] data; "
     "}";
 
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_sink_chain_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_sink_chain_s );
     bcore_self_s_push_ns_amoeba( self, chain_init_a, "init" );
     bcore_self_s_push_ns_amoeba( self, chain_down_a, "down" );
     bcore_self_s_push_ns_amoeba( self, chain_copy_a, "copy" );
@@ -277,7 +277,7 @@ static bcore_self_s* buffer_s_create_self( void )
       "private vd_t consumer; "
       "uz_t entrepot_size; "
     "}";
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_sink_buffer_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_sink_buffer_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_sink_buffer_s_init,         "bcore_fp_init",              "init"  );
     bcore_self_s_push_ns_func( self, ( fp_t )buffer_flow_snk,                  "bcore_fp_flow_snk",          "flow_snk"  );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_sink_buffer_s_set_consumer, "bcore_sink_fp_set_consumer", "set_consumer" );
@@ -490,7 +490,7 @@ static bcore_self_s* file_s_create_self( void )
       "private vd_t handle; "
     "}";
 
-    bcore_self_s* self = bcore_self_s_build_parse_sc( def, sizeof( bcore_sink_file_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_sink_file_s );
     bcore_self_s_push_ns_amoeba( self, file_init_a, "init" );
     bcore_self_s_push_ns_amoeba( self, file_down_a, "down" );
     bcore_self_s_push_ns_amoeba( self, file_copy_a, "copy" );

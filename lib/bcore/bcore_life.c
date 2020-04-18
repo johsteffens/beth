@@ -142,7 +142,7 @@ void bcore_life_s_discard_all( bcore_life_s* o )
 
 static bcore_self_s* life_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( " bcore_life_s =  bcore_inst { aware_t _; private vd_t parent; private vd_t data; private uz_t size; private uz_t space; }", sizeof( bcore_life_s ) );
+    bcore_self_s* self = bcore_self_s_build_parse_sc( " bcore_life_s =  bcore_inst { aware_t _; private vd_t parent; private vd_t data; private uz_t size; private uz_t space; }", sizeof( bcore_life_s ), alignof( bcore_life_s ) );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_life_s_init, "bcore_fp_init",  "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_life_s_down, "bcore_fp_down",  "down" );
     return self;

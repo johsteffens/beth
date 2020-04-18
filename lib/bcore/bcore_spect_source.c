@@ -208,7 +208,7 @@ static bcore_source_s* create_from_self( const bcore_self_s* self )
 static bcore_self_s* source_s_create_self( void )
 {
 //  We need to create this reflection manually because self_s_build_parse uses it.
-    bcore_self_s* self = bcore_self_s_create_plain( entypeof( "bcore_source_s" ), typeof( "spect" ), sizeof( bcore_source_s ) );
+    bcore_self_s* self = bcore_self_s_create_plain( entypeof( "bcore_source_s" ), typeof( "spect" ), sizeof( bcore_source_s ), alignof( bcore_source_s ) );
     bcore_self_s_push_d( self, bcore_self_item_s_create_plain( BCORE_CAPS_SOLID_STATIC, TYPEOF_bcore_spect_header_s, entypeof( "header" ) ) );
     bcore_self_body_s_set_complete( self->body, false );
     bcore_self_s_push_ns_func( self, ( fp_t )create_from_self,  "bcore_spect_fp_create_from_self",  "create_from_self" );

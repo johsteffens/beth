@@ -46,7 +46,7 @@ void bcore_mutex_s_down( bcore_mutex_s* o )
 
 void bcore_mutex_s_copy( bcore_mutex_s* o, const bcore_mutex_s* src )
 {
-    ERR( "bcore_mutex_s cannot be copied" );
+    // nothing to do
 }
 
 BCORE_DEFINE_FUNCTIONS_CDC( bcore_mutex_s )
@@ -65,7 +65,7 @@ void bcore_mutex_s_unlock( bcore_mutex_s* o )
 
 static bcore_self_s* bcore_mutex_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_mutex_s = { ... }", sizeof( bcore_mutex_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_mutex_s = { ... }", bcore_mutex_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_copy, "bcore_fp_copy", "copy" );
@@ -75,7 +75,7 @@ static bcore_self_s* bcore_mutex_s_create_self( void )
 /**********************************************************************************************************************/
 // once
 
-void bcore_once_s_run( bcore_once_s* flag, void (*func)() )
+void bcore_once_s_run( bcore_once_s* flag, void (*func)( void ) )
 {
     int ern = pthread_once( flag, func );
     if( ern ) ERR( "function returned error %i", ern );
@@ -123,7 +123,7 @@ void bcore_condition_s_wake_all( bcore_condition_s* o )
 
 static bcore_self_s* bcore_condition_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_condition_s = { ... }", sizeof( bcore_condition_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_condition_s = { ... }", bcore_condition_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_condition_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_condition_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_condition_s_copy, "bcore_fp_copy", "copy" );
@@ -153,7 +153,7 @@ BCORE_DEFINE_FUNCTIONS_CDC( bcore_thread_s )
 
 static bcore_self_s* bcore_thread_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( "bcore_thread_s = { ... }", sizeof( bcore_thread_s ) );
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_thread_s = { ... }", bcore_thread_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_thread_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_thread_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_thread_s_copy, "bcore_fp_copy", "copy" );

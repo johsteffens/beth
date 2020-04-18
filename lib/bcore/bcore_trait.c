@@ -112,14 +112,14 @@ static void trait_s_push_fp_support( bcore_trait_s* o, bcore_trait_fp_supports f
 
 static bcore_self_s* trait_ft_s_create_self( void )
 {
-    return bcore_self_s_build_parse_sc( trait_ft_s_def_g, sizeof( bcore_trait_ft_s ) );
+    return bcore_self_s_build_parse_sc( trait_ft_s_def_g, sizeof( bcore_trait_ft_s ), alignof( bcore_trait_ft_s ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* trait_s_create_self( void )
 {
-    return bcore_self_s_build_parse_sc( trait_s_def_g, sizeof( bcore_trait_s ) );
+    return BCORE_SELF_S_BUILD_PARSE_SC( trait_s_def_g, bcore_trait_s );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
