@@ -184,7 +184,7 @@ these issues. Still, they may come at a loss of efficiency and/or loss of contro
 code and data is mapped onto the hardware. 
 
 Overcoming these deficiencies is a key motivation. 'C' was preferred over 'C++' 
-because most most concepts introduced by 'C++' are solved differently here.
+because most concepts introduced by 'C++' are solved differently here.
 
 Another motivation is providing functionality as might be expected from a general purpose
 library with a scientific touch.
