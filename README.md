@@ -229,7 +229,7 @@ From April 2017:
      with adaptive and cyclic components. This is gradually being ported into *beth*.
    * Conceived the [holor virtual machine](#bhvm).
    * Named the script language "Haptive" and developed an initial compiler for it.
-     Further ongoing development of *haptive* is codenamed "lion"
+     Further ongoing development of *haptive* is codenamed "lion".
    
 2020:
 
