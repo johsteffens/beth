@@ -7,6 +7,7 @@
       * [bmath - Algebraic Subsystem](#bmath)
       * [bclos - Closures (Functional Programming)](#bclos)
       * [badapt - Adaptive Systems (Neural Networks)](#badapt)
+      * [bhvm - Holor Virtual Machine](#bhvm)
    * [Core Concepts](#core-concepts)
       * [Reflection](#reflection)
       * [Perspective](#perspective)
@@ -18,11 +19,18 @@
 
 # About Beth
 
-*Beth* is a personal *"moonshot"* project. 
+*Beth* is a collection of foundation libraries covering basic objects, advanced 
+numerical frameworks, a [meta-code framework](#plant) for high level software design
+and a [framework for machine learning](#badapt) (in development).
 
-It brings high-level programming paradigms (such as OOP, Serialization, Dynamic Binding) into efficient C code. It also (in a way) reinvents polymorphism and reflection-aided generic programming. 
+It is a personal *"moonshot"* project in which I'm trying to bring several high-level programming
+paradigms (such as OOP, Serialization, Dynamic Binding) together into efficient C code.
+Then using this framework to develop useful solutions in numerical computing, 
+machine learning and other disciplines.
 
 Some objectives are...
+
+   * Re-inventing polymorphism and reflection-aided generic programming. 
    * Bridging the gap between procedural and object oriented programming.
    * Reducing interdependencies and enhancing flexibility in maintaining and extending code.
    * Providing the framework for reflection-base generic software design.
@@ -30,12 +38,14 @@ Some objectives are...
    * Binding interfaces and objects via associations.
    * Achieving high runtime efficiency.
    * Providing baseline functionality covering ...
-      * Containers (Arrays, Trees, Maps)
-      * Serialization
-      * Numerical Mathematics
-      * Neural Networks
+       * Containers (Arrays, Trees, Maps)
+       * Serialization
+       * Metacoding
+       * Numerical Mathematics
+       * Machine Learning (Neural Networks)
 
-All code inside beth is designed/developed from scratch (no mere adaptation of preexisting code) with focus on platform independence and efficiency.
+All code inside beth is designed/developed from scratch (no mere adaptation of preexisting code) 
+with focus on platform independence and computational efficiency.
 
 # Usage
 Beth is intended as foundation library for more specialized projects. 
@@ -162,9 +172,71 @@ Key components of the plant language are `stamp`, `group` and `feature`.
 `feature` represents a virtual function. It is defined inside a group turning it into a [perspective](#perspective).
 
 # Motivation
-The classic framework for object oriented programming (such as realized in C++) has been widely cherished for decades. I appreciate OOP and like the efficient way C++ supports it. Yet there are issues. For example: The static association between objects and their interfaces forces an inhibiting rigidity into the developer's code-architecture. The limited means of genericity often promotes boiler plate code. More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of these issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware. 
+Object oriented programming is generally associated with a specific framework which can be seen in 
+many programming Languages. C++ is probably offers of the most efficient ways of implementing this concept.
+I appreciate and value it, but I also see issues.
 
-Primary motivation for this project is overcoming these deficiencies. Secondly, using this new framework to provide functionality as might be expected from a general purpose library with a scientific touch. Thirdly, developing new algorithic ideas and/or experiment with unconventional approaches (this can also be realized in beth-dependent projects).
+For example: The static association between objects and their interfaces forces an inhibiting
+rigidity into the developer's code-architecture.
+The limited means of genericity often promotes boiler plate code.
+More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of
+these issues. Still, they may come at a loss of efficiency and/or loss of control over how
+code and data is mapped onto the hardware. 
 
-### History
-In an attempt to find my own solution to generic polymorphism, I conceived the *reflection-perspective* approach during Summer 2017 and started project [beth](https://github.com/johsteffens/beth) bringing this (and other ideas) into tangible shape. Winter 2017/2018 the project [actinon](https://github.com/johsteffens/actinon) was developed utilizing the framework and demonstrating its usefulness. Spring 2018 I started developing a numerical mathematics suite  in sub-library [bmath](#bmath) with special focus on accrate, stable and efficient matrix factorizations. Spring 2019 I started developing the meta-language [Beth-Plant](#plant) and a new library [badapt](#badapt), which makes extensive use of that language.
+Overcoming these deficiencies is a key motivation. 'C' was preferred over 'C++' 
+because most most concepts introduced by 'C++' are solved differently here.
+
+Another motivation is providing functionality as might be expected from a general purpose
+library with a scientific touch.
+
+Good prior ideas influencing this work are appreciated and cited inside the code.
+
+However, a major part of this codebase is accomplished by actually questioning well
+trodden paths and trying to come up with new ideas or at least viable variations
+of what has been done before.
+
+For that matter, getting a grasp on *beth* is probably a bit of a challenge for a
+seasoned developer. I hope that those those who try anyway feel rewarded, and experience
+it like discovering a new world. For me it is like painting a new picture, which has not
+been painted before. Watching it unfold and taking shape is beautiful.
+
+But for all bliss, the ultimate goal is *usefulness*.
+
+# History
+
+From April 2017: 
+
+   * Developed beth-specific coding conventions.
+   * Developed a dedicated memory manager.
+   * Developed my own solution to generic polymorphism.
+   * Conceived the *reflection-perspective* approach.
+   * Started project [beth](https://github.com/johsteffens/beth) on github.
+
+2018:
+
+   * Developed the project [actinon](https://github.com/johsteffens/actinon), which is a ray-tracer 
+     utilizing *beth* and demonstrating its usefulness.
+   * Developed a numerical mathematics suite in sub-library [bmath](#bmath) with special focus on accrate,
+     stable and efficient matrix factorization.
+
+2019
+
+   * Developed the meta-language [Beth-Plant](#plant).
+   * Developed a new machine learning library [badapt](#badapt).
+   * Designed a more generic approach to machine learning. 
+   * Initially privately in [badapt_dev](https://github.com/johsteffens/badapt_dev): 
+     Developed a new script language for defining mathematical graphs (networks)
+     with adaptive and cyclic components. This is gradually being ported into *beth*.
+   * Conceived the [holor virtual machine](#bhvm).
+   * Named the script language "Haptive" and developed an initial compiler for it.
+     Further ongoing development of *haptive* is codenamed "lion"
+   
+2020:
+
+   * Made [badapt_dev](https://github.com/johsteffens/badapt_dev) public.
+   * *Haptive/Lion* Language and Compiler: Continued development.
+   
+------
+
+<sub>&copy; Johannes B. Steffens</sub>
+
