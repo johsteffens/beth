@@ -189,11 +189,11 @@ because most concepts introduced by 'C++' are solved differently here.
 Another motivation is providing functionality as might be expected from a general purpose
 library with a scientific touch.
 
-Good prior ideas influencing this work are appreciated and cited inside the code.
-
-However, a major part of this codebase is accomplished by actually questioning well
-trodden paths and trying to come up with new ideas or at least viable variations
-of what has been done before.
+The codebase itself is entirely original work.
+Specific prior work, which has influenced its development is cited inside the code 
+or in related documents where feasible.
+However, a major part is accomplished by actually questioning well trodden paths.
+I've been trying to come up with new ideas or at least viable variations of prior solutions.
 
 For that matter, getting a grasp on *beth* is probably a bit of a challenge for a
 seasoned developer. I hope that who tries it feels rewarded.
