@@ -196,7 +196,7 @@ trodden paths and trying to come up with new ideas or at least viable variations
 of what has been done before.
 
 For that matter, getting a grasp on *beth* is probably a bit of a challenge for a
-seasoned developer. I hope that those those who try anyway feel rewarded.
+seasoned developer. I hope that who tries it feels rewarded.
 For me it is like painting a new picture, which has not been painted before. 
 Watching it unfold and taking shape is beautiful.
 
