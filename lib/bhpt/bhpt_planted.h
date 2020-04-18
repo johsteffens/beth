@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-17T16:45:00Z
+ *  Last File Update: 2020-04-18T18:10:28Z
  *
  *  Copyright and License of this File:
  *
@@ -9,6 +9,8 @@
  *
  *  bhpt_sketch.h
  *  bhpt_frame.h
+ *  bhpt_adaptor_stamp.h
+ *  bhpt_tutor_stamp.h
  *
  */
 
@@ -101,8 +103,8 @@
 #define TYPEOF_bhpt_adaptive_s 2158321412
 #define BETH_EXPAND_GROUP_bhpt_adaptive \
   BCORE_FORWARD_OBJECT( bhpt_adaptive ); \
-  typedef void (*bhpt_adaptive_get_shape_en)( const bhpt_adaptive* o, bhvm_shape_s* shape ); \
-  typedef void (*bhpt_adaptive_get_shape_ex)( const bhpt_adaptive* o, bhvm_shape_s* shape ); \
+  typedef void (*bhpt_adaptive_get_holor_en)( const bhpt_adaptive* o, bhvm_holor_s* holor ); \
+  typedef void (*bhpt_adaptive_get_holor_ex)( const bhpt_adaptive* o, bhvm_holor_s* holor ); \
   typedef void (*bhpt_adaptive_axon_pass)( bhpt_adaptive* o, const bhvm_holor_s* ax_en, bhvm_holor_s* ax_ex ); \
   typedef void (*bhpt_adaptive_dendrite_pass)( bhpt_adaptive* o, const bhvm_holor_s* ag_ex, bhvm_holor_s* ag_en ); \
   typedef void (*bhpt_adaptive_cyclic_reset)( bhpt_adaptive* o ); \
@@ -112,8 +114,8 @@
   BCORE_DECLARE_SPECT( bhpt_adaptive ) \
   { \
       bcore_spect_header_s header; \
-      bhpt_adaptive_get_shape_en get_shape_en; \
-      bhpt_adaptive_get_shape_ex get_shape_ex; \
+      bhpt_adaptive_get_holor_en get_holor_en; \
+      bhpt_adaptive_get_holor_ex get_holor_ex; \
       bhpt_adaptive_axon_pass axon_pass; \
       bhpt_adaptive_dendrite_pass dendrite_pass; \
       bhpt_adaptive_cyclic_reset cyclic_reset; \
@@ -125,10 +127,10 @@
   static inline bl_t bhpt_adaptive_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhpt_adaptive ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bhpt_adaptive ) \
   static inline bl_t bhpt_adaptive_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bhpt_adaptive ); } \
-  static inline void bhpt_adaptive_a_get_shape_en( const bhpt_adaptive* o, bhvm_shape_s* shape ) { const bhpt_adaptive_s* p = bhpt_adaptive_s_get_aware( o ); assert( p->get_shape_en ); p->get_shape_en( o, shape ); } \
-  static inline bl_t bhpt_adaptive_a_defines_get_shape_en( const bhpt_adaptive* o ) { return true; } \
-  static inline void bhpt_adaptive_a_get_shape_ex( const bhpt_adaptive* o, bhvm_shape_s* shape ) { const bhpt_adaptive_s* p = bhpt_adaptive_s_get_aware( o ); assert( p->get_shape_ex ); p->get_shape_ex( o, shape ); } \
-  static inline bl_t bhpt_adaptive_a_defines_get_shape_ex( const bhpt_adaptive* o ) { return true; } \
+  static inline void bhpt_adaptive_a_get_holor_en( const bhpt_adaptive* o, bhvm_holor_s* holor ) { const bhpt_adaptive_s* p = bhpt_adaptive_s_get_aware( o ); assert( p->get_holor_en ); p->get_holor_en( o, holor ); } \
+  static inline bl_t bhpt_adaptive_a_defines_get_holor_en( const bhpt_adaptive* o ) { return true; } \
+  static inline void bhpt_adaptive_a_get_holor_ex( const bhpt_adaptive* o, bhvm_holor_s* holor ) { const bhpt_adaptive_s* p = bhpt_adaptive_s_get_aware( o ); assert( p->get_holor_ex ); p->get_holor_ex( o, holor ); } \
+  static inline bl_t bhpt_adaptive_a_defines_get_holor_ex( const bhpt_adaptive* o ) { return true; } \
   static inline void bhpt_adaptive_a_axon_pass( bhpt_adaptive* o, const bhvm_holor_s* ax_en, bhvm_holor_s* ax_ex ) { const bhpt_adaptive_s* p = bhpt_adaptive_s_get_aware( o ); assert( p->axon_pass ); p->axon_pass( o, ax_en, ax_ex ); } \
   static inline bl_t bhpt_adaptive_a_defines_axon_pass( const bhpt_adaptive* o ) { return true; } \
   static inline void bhpt_adaptive_axon_pass__( bhpt_adaptive* o, const bhvm_holor_s* ax_en, bhvm_holor_s* ax_ex ){} \
@@ -155,24 +157,24 @@
 #define TYPEOF_bhpt_builder_s 1545361237
 #define BETH_EXPAND_GROUP_bhpt_builder \
   BCORE_FORWARD_OBJECT( bhpt_builder ); \
-  typedef void (*bhpt_builder_set_shape_en)( bhpt_builder* o, const bhvm_shape_s* shape ); \
-  typedef void (*bhpt_builder_set_shape_ex)( bhpt_builder* o, const bhvm_shape_s* shape ); \
+  typedef void (*bhpt_builder_set_holor_en)( bhpt_builder* o, const bhvm_holor_s* holor ); \
+  typedef void (*bhpt_builder_set_holor_ex)( bhpt_builder* o, const bhvm_holor_s* holor ); \
   typedef bhpt_adaptive* (*bhpt_builder_create_adaptive)( const bhpt_builder* o ); \
   BCORE_DECLARE_SPECT( bhpt_builder ) \
   { \
       bcore_spect_header_s header; \
-      bhpt_builder_set_shape_en set_shape_en; \
-      bhpt_builder_set_shape_ex set_shape_ex; \
+      bhpt_builder_set_holor_en set_holor_en; \
+      bhpt_builder_set_holor_ex set_holor_ex; \
       bhpt_builder_create_adaptive create_adaptive; \
   }; \
   static inline bhpt_builder* bhpt_builder_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bhpt_builder, t ); return ( bhpt_builder* )bcore_inst_t_create( t ); } \
   static inline bl_t bhpt_builder_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhpt_builder ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bhpt_builder ) \
   static inline bl_t bhpt_builder_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bhpt_builder ); } \
-  static inline void bhpt_builder_a_set_shape_en( bhpt_builder* o, const bhvm_shape_s* shape ) { const bhpt_builder_s* p = bhpt_builder_s_get_aware( o ); assert( p->set_shape_en ); p->set_shape_en( o, shape ); } \
-  static inline bl_t bhpt_builder_a_defines_set_shape_en( const bhpt_builder* o ) { return true; } \
-  static inline void bhpt_builder_a_set_shape_ex( bhpt_builder* o, const bhvm_shape_s* shape ) { const bhpt_builder_s* p = bhpt_builder_s_get_aware( o ); assert( p->set_shape_ex ); p->set_shape_ex( o, shape ); } \
-  static inline bl_t bhpt_builder_a_defines_set_shape_ex( const bhpt_builder* o ) { return true; } \
+  static inline void bhpt_builder_a_set_holor_en( bhpt_builder* o, const bhvm_holor_s* holor ) { const bhpt_builder_s* p = bhpt_builder_s_get_aware( o ); assert( p->set_holor_en ); p->set_holor_en( o, holor ); } \
+  static inline bl_t bhpt_builder_a_defines_set_holor_en( const bhpt_builder* o ) { return true; } \
+  static inline void bhpt_builder_a_set_holor_ex( bhpt_builder* o, const bhvm_holor_s* holor ) { const bhpt_builder_s* p = bhpt_builder_s_get_aware( o ); assert( p->set_holor_ex ); p->set_holor_ex( o, holor ); } \
+  static inline bl_t bhpt_builder_a_defines_set_holor_ex( const bhpt_builder* o ) { return true; } \
   static inline bhpt_adaptive* bhpt_builder_a_create_adaptive( const bhpt_builder* o ) { const bhpt_builder_s* p = bhpt_builder_s_get_aware( o ); assert( p->create_adaptive ); return p->create_adaptive( o ); } \
   static inline bl_t bhpt_builder_a_defines_create_adaptive( const bhpt_builder* o ) { return true; }
 
@@ -234,6 +236,55 @@
   BCORE_FORWARD_OBJECT( bhpt_frame_s ); \
   BETH_EXPAND_ITEM_bhpt_frame_state_s \
   BETH_EXPAND_ITEM_bhpt_frame_s
+
+/**********************************************************************************************************************/
+// source: bhpt_adaptor_stamp.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhpt_adaptor_stamp
+
+#define TYPEOF_bhpt_adaptor_stamp 2535804545
+#define TYPEOF_bhpt_adaptor_stamp_s 3869143851
+#define TYPEOF_bhpt_adaptor_epsilon_s 526346998
+#define BETH_EXPAND_ITEM_bhpt_adaptor_epsilon_s \
+  BCORE_DECLARE_OBJECT( bhpt_adaptor_epsilon_s ) \
+    {aware_t _;f3_t epsilon;}; \
+  static inline void bhpt_adaptor_epsilon_s_reset( bhpt_adaptor_epsilon_s* o ){} \
+  void bhpt_adaptor_epsilon_s_adapt( bhpt_adaptor_epsilon_s* o, const bhvm_holor_s* accugrad, bhvm_holor_s* adaptive );
+#define TYPEOF_bhpt_adaptor_list_s 3111754760
+#define BETH_EXPAND_ITEM_bhpt_adaptor_list_s \
+  BCORE_DECLARE_OBJECT( bhpt_adaptor_list_s ) \
+    {aware_t _;bhpt_adaptor_adl_s adl;}; \
+  static inline void bhpt_adaptor_list_s_reset( bhpt_adaptor_list_s* o ){BFOR_EACH( i, &o->adl ) bhpt_adaptor_a_reset( o->adl.data[ i ] );} \
+  static inline void bhpt_adaptor_list_s_adapt( bhpt_adaptor_list_s* o, const bhvm_holor_s* accugrad, bhvm_holor_s* adaptive ){BFOR_EACH( i, &o->adl ) bhpt_adaptor_a_adapt( o->adl.data[ i ], accugrad, adaptive );}
+#define BETH_EXPAND_GROUP_bhpt_adaptor_stamp \
+  BCORE_FORWARD_OBJECT( bhpt_adaptor_stamp ); \
+  BCORE_FORWARD_OBJECT( bhpt_adaptor_epsilon_s ); \
+  BCORE_FORWARD_OBJECT( bhpt_adaptor_list_s ); \
+  BETH_EXPAND_ITEM_bhpt_adaptor_epsilon_s \
+  BETH_EXPAND_ITEM_bhpt_adaptor_list_s
+
+/**********************************************************************************************************************/
+// source: bhpt_tutor_stamp.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhpt_tutor_stamp
+
+#define TYPEOF_bhpt_tutor_stamp 4217977908
+#define TYPEOF_bhpt_tutor_stamp_s 818550566
+#define TYPEOF_bhpt_tutor_sine_random_s 4152364972
+#define BETH_EXPAND_ITEM_bhpt_tutor_sine_random_s \
+  BCORE_DECLARE_OBJECT( bhpt_tutor_sine_random_s ) \
+    {aware_t _;sz_t input_size;u2_t rval;f3_t pos_tgt;f3_t neg_tgt;bcore_mutex_s* mutex;}; \
+  static inline void bhpt_tutor_sine_random_s_init_x( bhpt_tutor_sine_random_s* o ){o->mutex = bcore_mutex_s_create();} \
+  void bhpt_tutor_sine_random_s_reset( bhpt_tutor_sine_random_s* o ); \
+  bhpt_adaptive* bhpt_tutor_sine_random_s_create_adaptive( const bhpt_tutor_sine_random_s* o, const bhpt_builder* builder ); \
+  void bhpt_tutor_sine_random_s_prime( bhpt_tutor_sine_random_s* o, bhpt_adaptive* adaptive ); \
+  void bhpt_tutor_sine_random_s_test( const bhpt_tutor_sine_random_s* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log );
+#define BETH_EXPAND_GROUP_bhpt_tutor_stamp \
+  BCORE_FORWARD_OBJECT( bhpt_tutor_stamp ); \
+  BCORE_FORWARD_OBJECT( bhpt_tutor_sine_random_s ); \
+  BETH_EXPAND_ITEM_bhpt_tutor_sine_random_s
 
 /**********************************************************************************************************************/
 

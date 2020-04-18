@@ -54,13 +54,6 @@ void bhvm_shape_s_set_data( bhvm_shape_s* o, const sz_t* data, sz_t size )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_shape_s_set_scalar_vacant( bhvm_shape_s* o )
-{
-    bhvm_shape_s_set_size( o, 0 );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 void bhvm_shape_s_set_data_nv( bhvm_shape_s* o, sz_t size, va_list sz_t_args )
 {
     bhvm_shape_s_set_size( o, size );
@@ -81,6 +74,20 @@ void bhvm_shape_s_set_data_na( bhvm_shape_s* o, sz_t size, ... )
     va_start( args, size );
     bhvm_shape_s_set_data_nv( o, size, args );
     va_end( args );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_shape_s_set_scalar( bhvm_shape_s* o )
+{
+    bhvm_shape_s_set_size( o, 0 );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_shape_s_set_vector( bhvm_shape_s* o, sz_t dim )
+{
+    bhvm_shape_s_set_data_na( o, 1, dim );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1025,7 +1032,17 @@ bhvm_holor_s* bhvm_holor_s_fit_type_size( bhvm_holor_s* o, tp_t t )
 
 bhvm_holor_s* bhvm_holor_s_set_type_scalar_vacant( bhvm_holor_s* o, tp_t t )
 {
-    bhvm_shape_s_set_scalar_vacant( &o->s );
+    bhvm_shape_s_set_scalar( &o->s );
+    bhvm_value_s_clear( &o->v );
+    bhvm_value_s_set_type( &o->v, t );
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bhvm_holor_s* bhvm_holor_s_set_type_vector_vacant( bhvm_holor_s* o, tp_t t, sz_t dim )
+{
+    bhvm_shape_s_set_vector( &o->s, dim );
     bhvm_value_s_clear( &o->v );
     bhvm_value_s_set_type( &o->v, t );
     return o;
@@ -1035,7 +1052,7 @@ bhvm_holor_s* bhvm_holor_s_set_type_scalar_vacant( bhvm_holor_s* o, tp_t t )
 
 void bhvm_holor_s_set_type_scalar_pf( bhvm_holor_s* o, tp_t t, tp_t t_src, vc_t v )
 {
-    bhvm_shape_s_set_scalar_vacant( &o->s );
+    bhvm_shape_s_set_scalar( &o->s );
     if( v )
     {
         bhvm_value_s_set_type_size( &o->v, t, 1 );

@@ -200,7 +200,7 @@ seasoned developer. I hope that those those who try anyway feel rewarded, and ex
 it like discovering a new world. For me it is like painting a new picture, which has not
 been painted before. Watching it unfold and taking shape is beautiful.
 
-But for all bliss, the ultimate goal is *usefulness*.
+But for all the bliss, the ultimate goal is *usefulness*.
 
 # History
 
@@ -208,7 +208,6 @@ From April 2017:
 
    * Developed beth-specific coding conventions.
    * Developed a dedicated memory manager.
-   * Developed my own solution to generic polymorphism.
    * Conceived the *reflection-perspective* approach.
    * Started project [beth](https://github.com/johsteffens/beth) on github.
 

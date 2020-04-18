@@ -17,6 +17,8 @@
 #include "bhpt_planted.h"
 #include "bhpt_sketch.h"
 #include "bhpt_frame.h"
+#include "bhpt_adaptor_stamp.h"
+#include "bhpt_tutor_stamp.h"
 
 vd_t bhpt_signal_handler( const bcore_signal_s* o )
 {
@@ -37,6 +39,8 @@ vd_t bhpt_signal_handler( const bcore_signal_s* o )
             bhpt_planted_signal_handler,
             bhpt_sketch_signal_handler,
             bhpt_frame_signal_handler,
+            bhpt_adaptor_stamp_signal_handler,
+            bhpt_tutor_stamp_signal_handler,
         };
 
         ret = bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );

@@ -146,6 +146,12 @@ void bhvm_shape_s_set_data(    bhvm_shape_s* o, const sz_t* data, sz_t size );
 void bhvm_shape_s_set_data_nv( bhvm_shape_s* o, sz_t size, va_list sz_t_args );
 void bhvm_shape_s_set_data_na( bhvm_shape_s* o, sz_t size, ... );
 
+/// sets shape to scalar
+void bhvm_shape_s_set_scalar( bhvm_shape_s* o );
+
+/// sets shape to vector ( dim [ #)
+void bhvm_shape_s_set_vector( bhvm_shape_s* o, sz_t dim );
+
 /// status
 static inline bl_t bhvm_shape_s_is_weak(  const bhvm_shape_s* o ) { return ( o->space == 0 ) && ( o->size > 0 ); }
 bl_t bhvm_shape_s_is_equal( const bhvm_shape_s* o, const bhvm_shape_s* b );
@@ -393,6 +399,10 @@ static inline f3_t bhvm_holor_s_f3_get_scalar( const bhvm_holor_s* o )
 
 /// sets holor to scalar from f3 value
 static inline void bhvm_holor_s_set_type_scalar( bhvm_holor_s* o, tp_t t, f3_t v ) { bhvm_holor_s_set_type_scalar_pf( o, t, TYPEOF_f3_t, &v ); }
+
+/// sets holor to vacant scalar or vector
+bhvm_holor_s* bhvm_holor_s_set_type_scalar_vacant( bhvm_holor_s* o, tp_t type );
+bhvm_holor_s* bhvm_holor_s_set_type_vector_vacant( bhvm_holor_s* o, tp_t type, sz_t dim );
 
 /// Overall consistency; all valid states return true;
 bl_t bhvm_holor_s_is_consistent( const bhvm_holor_s* o );

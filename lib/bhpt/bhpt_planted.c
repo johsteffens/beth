@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-17T16:45:00Z
+ *  Last File Update: 2020-04-18T18:10:28Z
  *
  *  Copyright and License of this File:
  *
@@ -9,6 +9,8 @@
  *
  *  bhpt_sketch.h
  *  bhpt_frame.h
+ *  bhpt_adaptor_stamp.h
+ *  bhpt_tutor_stamp.h
  *
  */
 
@@ -54,8 +56,8 @@ BCORE_DEFINE_SPECT( bhpt, bhpt_adaptor )
 BCORE_DEFINE_SPECT( bhpt, bhpt_adaptive )
 "{"
     "bcore_spect_header_s header;"
-    "feature strict aware bhpt_adaptive : get_shape_en;"
-    "feature strict aware bhpt_adaptive : get_shape_ex;"
+    "feature strict aware bhpt_adaptive : get_holor_en;"
+    "feature strict aware bhpt_adaptive : get_holor_ex;"
     "feature aware bhpt_adaptive : axon_pass = bhpt_adaptive_axon_pass__;"
     "feature aware bhpt_adaptive : dendrite_pass = bhpt_adaptive_dendrite_pass__;"
     "feature aware bhpt_adaptive : cyclic_reset = bhpt_adaptive_cyclic_reset__;"
@@ -70,8 +72,8 @@ BCORE_DEFINE_SPECT( bhpt, bhpt_adaptive )
 BCORE_DEFINE_SPECT( bhpt, bhpt_builder )
 "{"
     "bcore_spect_header_s header;"
-    "feature strict aware bhpt_builder : set_shape_en;"
-    "feature strict aware bhpt_builder : set_shape_ex;"
+    "feature strict aware bhpt_builder : set_holor_en;"
+    "feature strict aware bhpt_builder : set_holor_ex;"
     "feature strict aware bhpt_builder : create_adaptive;"
 "}";
 
@@ -123,6 +125,57 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
 "}";
 
 /**********************************************************************************************************************/
+// source: bhpt_adaptor_stamp.h
+#include "bhpt_adaptor_stamp.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhpt_adaptor_stamp
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_epsilon_s )
+"aware bhpt_adaptor"
+"{"
+    "f3_t epsilon;"
+    "func ^:reset;"
+    "func ^:adapt;"
+"}";
+
+void bhpt_adaptor_epsilon_s_adapt( bhpt_adaptor_epsilon_s* o, const bhvm_holor_s* accugrad, bhvm_holor_s* adaptive )
+{
+    assert( bhvm_shape_s_is_equal( &accugrad->s, &adaptive->s ) );
+    bhvm_value_s_mul_scl_f3_acc( &accugrad->v, o->epsilon, &adaptive->v );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_list_s )
+"aware bhpt_adaptor"
+"{"
+    "bhpt_adaptor_adl_s adl;"
+    "func ^:reset;"
+    "func ^:adapt;"
+"}";
+
+/**********************************************************************************************************************/
+// source: bhpt_tutor_stamp.h
+#include "bhpt_tutor_stamp.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhpt_tutor_stamp
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_sine_random_s )
+"aware bhpt_tutor"
+"{"
+    "sz_t input_size = 32;"
+    "u2_t rval = 1234;"
+    "f3_t pos_tgt = 0.9;"
+    "f3_t neg_tgt = -0.9;"
+    "hidden bcore_mutex_s => mutex;"
+    "func bcore_inst_call:init_x;"
+    "func ^:reset;"
+    "func ^:create_adaptive;"
+    "func ^:prime;"
+    "func ^:test;"
+"}";
+
+/**********************************************************************************************************************/
 
 vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
 {
@@ -131,7 +184,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 1294865093 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 1922460080 ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h
@@ -147,8 +200,8 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_SPECT( bhpt_adaptor );
 
             // group: bhpt_adaptive
-            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_shape_en );
-            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_shape_ex );
+            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_holor_en );
+            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_holor_ex );
             BCORE_REGISTER_FEATURE( bhpt_adaptive_axon_pass );
             BCORE_REGISTER_FFUNC( bhpt_adaptive_axon_pass, bhpt_adaptive_axon_pass__ );
             BCORE_REGISTER_FEATURE( bhpt_adaptive_dendrite_pass );
@@ -164,8 +217,8 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_SPECT( bhpt_adaptive );
 
             // group: bhpt_builder
-            BCORE_REGISTER_FEATURE( bhpt_builder_set_shape_en );
-            BCORE_REGISTER_FEATURE( bhpt_builder_set_shape_ex );
+            BCORE_REGISTER_FEATURE( bhpt_builder_set_holor_en );
+            BCORE_REGISTER_FEATURE( bhpt_builder_set_holor_ex );
             BCORE_REGISTER_FEATURE( bhpt_builder_create_adaptive );
             BCORE_REGISTER_SPECT( bhpt_builder );
 
@@ -187,6 +240,30 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_main_main, bhpt_frame_s_main );
             BCORE_REGISTER_OBJECT( bhpt_frame_s );
             BCORE_REGISTER_TRAIT( bhpt_frame, bcore_inst );
+
+            // --------------------------------------------------------------------
+            // source: bhpt_adaptor_stamp.h
+
+            // group: bhpt_adaptor_stamp
+            BCORE_REGISTER_FFUNC( bhpt_adaptor_reset, bhpt_adaptor_epsilon_s_reset );
+            BCORE_REGISTER_FFUNC( bhpt_adaptor_adapt, bhpt_adaptor_epsilon_s_adapt );
+            BCORE_REGISTER_OBJECT( bhpt_adaptor_epsilon_s );
+            BCORE_REGISTER_FFUNC( bhpt_adaptor_reset, bhpt_adaptor_list_s_reset );
+            BCORE_REGISTER_FFUNC( bhpt_adaptor_adapt, bhpt_adaptor_list_s_adapt );
+            BCORE_REGISTER_OBJECT( bhpt_adaptor_list_s );
+            BCORE_REGISTER_TRAIT( bhpt_adaptor_stamp, bhpt_adaptor );
+
+            // --------------------------------------------------------------------
+            // source: bhpt_tutor_stamp.h
+
+            // group: bhpt_tutor_stamp
+            BCORE_REGISTER_FFUNC( bcore_inst_call_init_x, bhpt_tutor_sine_random_s_init_x );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_reset, bhpt_tutor_sine_random_s_reset );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptive, bhpt_tutor_sine_random_s_create_adaptive );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_prime, bhpt_tutor_sine_random_s_prime );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_test, bhpt_tutor_sine_random_s_test );
+            BCORE_REGISTER_OBJECT( bhpt_tutor_sine_random_s );
+            BCORE_REGISTER_TRAIT( bhpt_tutor_stamp, bhpt_tutor );
         }
         break;
         default: break;
