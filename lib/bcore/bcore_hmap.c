@@ -2441,8 +2441,8 @@ static st_s* hmap_tpvd_selftest( void )
     st_s_pushf( log, "Mixed access: " );
 
     {
-        u3_t rval1 = 1;
-        u3_t rval2 = 12345;
+        uz_t rval1 = 1;
+        uz_t rval2 = 12345;
         for( uz_t i = 0; i < cycles; i++ )
         {
             rval1 = bcore_xsg_u2( rval1 );

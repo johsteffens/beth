@@ -1363,9 +1363,11 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
 
     bcore_inst_s* o = inst_s_create();
     o->header.o_type  = self->type;
-    o->move_flat = true;
-    o->align     = 0;
+    o->move_flat   = true;
     o->inst_call_p = NULL;
+
+    sz_t computed_size = 0;
+    sz_t computed_align = 0;
 
     /// amoebas
     fp_t fp_init_a    = bcore_self_s_try_external_fp( self, TYPEOF_ap_t, TYPEOF_init );
@@ -1558,7 +1560,7 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
                 inst_item->offset = 0;
             }
 
-            o->align = ( inst_item->align > o->align ) ? inst_item->align : o->align;
+            computed_align = ( inst_item->align > computed_align ) ? inst_item->align : computed_align;
 
             bcore_inst_item_s_discard( last_inst_item );
             last_inst_item = bcore_inst_item_s_clone( inst_item );
@@ -1566,11 +1568,11 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
 
         if( body_complete && last_inst_item )
         {
-            o->size = aligned_offset( o->align, last_inst_item->offset + last_inst_item->size );
+            computed_size = aligned_offset( computed_align, last_inst_item->offset + last_inst_item->size );
         }
         else
         {
-            o->size = self->size;
+            computed_size = self->size;
         }
 
         /** For incomplete bodies the computed alignment is insufficient
@@ -1579,23 +1581,25 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
         if( !body_complete )
         {
             if( self->align == 0 ) ERR( "Object %s has incomplete body but no alignment declaration.\n", ifnameof( self->type ) );
-            o->align = self->align;
+            computed_align = self->align;
         }
 
         // If alignment is zero, the body does not contain physical data.
         // In this case alignment must be treated as if the body was not defined.
-        if( o->align == 0 ) o->align = self->align;
+        if( computed_align == 0 ) computed_align = self->align;
 
         bcore_inst_item_s_discard( last_inst_item );
     }
     else
     {
-        o->size  = self->size;
-        o->align = self->align;
+        computed_size  = self->size;
+        computed_align = self->align;
     }
 
-    // if self->align is given force o->align to that number
-    if( self->align > 0 ) o->align = self->align;
+    o->size  = computed_size;
+
+    /// Prefer self->align over computed_align.
+    o->align = ( self->align > 0 ) ? self->align : computed_align;
 
     if( body_undefined_or_complete && ( self->size > 0 ) && ( self->size != o->size ) )
     {

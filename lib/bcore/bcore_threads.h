@@ -32,11 +32,11 @@ typedef struct bcore_mutex_s
 
 void           bcore_mutex_s_init( bcore_mutex_s* o );
 void           bcore_mutex_s_down( bcore_mutex_s* o );
-void           bcore_mutex_s_copy( bcore_mutex_s* o, const bcore_mutex_s* src ); // copy does not change o
+void           bcore_mutex_s_copy( bcore_mutex_s* o, const bcore_mutex_s* src ); // does not do anything
 
 bcore_mutex_s* bcore_mutex_s_create();
-bcore_mutex_s* bcore_mutex_s_clone( const bcore_mutex_s* src ); // clone does not use src; it simply creates a new mutex
 void           bcore_mutex_s_discard( bcore_mutex_s* o );
+bcore_mutex_s* bcore_mutex_s_clone( const bcore_mutex_s* src ); // clone behaves like create (src is not evaluated)
 
 void bcore_mutex_s_lock(   bcore_mutex_s* o );
 void bcore_mutex_s_unlock( bcore_mutex_s* o );
@@ -58,8 +58,10 @@ typedef struct bcore_condition_s
 
 void               bcore_condition_s_init( bcore_condition_s* o );
 void               bcore_condition_s_down( bcore_condition_s* o );
+void               bcore_condition_s_copy( bcore_condition_s* o, const bcore_condition_s* src ); // does not do anything
 bcore_condition_s* bcore_condition_s_create();
 void               bcore_condition_s_discard( bcore_condition_s* o );
+bcore_condition_s* bcore_condition_s_clone( const bcore_condition_s* src ); // clone behaves like create (src is not evaluated)
 
 /** Sleeps until woken from another thread.
  *  A mutex-lock must have been obtained before. The mutex is unlocked
@@ -91,11 +93,11 @@ typedef struct bcore_thread_s bcore_pthread_s;
 
 void            bcore_thread_s_init( bcore_thread_s* o );
 void            bcore_thread_s_down( bcore_thread_s* o ); // joins automatically if required
-void            bcore_thread_s_copy( bcore_thread_s* o, const bcore_thread_s* src );
+void            bcore_thread_s_copy( bcore_thread_s* o, const bcore_thread_s* src ); // does not do anything
 
 bcore_thread_s* bcore_thread_s_create();
 void            bcore_thread_s_discard(     bcore_thread_s* o );
-bcore_thread_s* bcore_thread_s_clone( const bcore_thread_s* o );
+bcore_thread_s* bcore_thread_s_clone( const bcore_thread_s* src ); // clone behaves like create (src is not evaluated)
 
 /** Calls func( arg ) in a new joinable thread
  *  If o is unjoined, it is joined first.

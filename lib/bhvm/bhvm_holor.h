@@ -62,7 +62,7 @@
  *  This limit is not relevant for general functionality and can be increased or removed
  *  once the code has been well established.
  */
-#define BHVM_SHAPE_DIM_VALID( dim ) ( ( dim > 0 ) && ( ( dim >> 40 ) == 0 ) )
+#define BHVM_SHAPE_DIM_VALID( dim ) ( ( dim > 0 ) && ( ( ((u3_t)dim) >> 40 ) == 0 ) )
 
 /**********************************************************************************************************************/
 

@@ -98,7 +98,7 @@ void bcore_condition_s_down( bcore_condition_s* o )
 
 void bcore_condition_s_copy( bcore_condition_s* o, const bcore_condition_s* src )
 {
-    ERR( "bcore_condition_s cannot be copied" );
+    // nothing to do
 }
 
 BCORE_DEFINE_FUNCTIONS_CDC( bcore_condition_s )
@@ -145,8 +145,7 @@ void bcore_thread_s_down( bcore_thread_s* o )
 
 void bcore_thread_s_copy( bcore_thread_s* o, const bcore_thread_s* src )
 {
-    bcore_memcpy( o, src, sizeof( *o ) );
-    o->_join = false;
+    // nothing to do
 }
 
 BCORE_DEFINE_FUNCTIONS_CDC( bcore_thread_s )
