@@ -8,14 +8,16 @@ INCLUDES = \
   -I bclos  \
   -I bmath  \
   -I badapt \
-  -I bhvm
+  -I bhvm \
+  -I bhpt
 
 SRCS = \
   $(wildcard bcore/*.c)  \
   $(wildcard bclos/*.c)  \
   $(wildcard bmath/*.c)  \
   $(wildcard badapt/*.c) \
-  $(wildcard bhvm/*.c)
+  $(wildcard bhvm/*.c) \
+  $(wildcard bhpt/*.c)
 
 OBJS = $(SRCS:.c=.o)
 TARGET = beth.a

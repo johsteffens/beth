@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-#include "bhpt_adaptor_stamp.h"
+#include "bhpt_adaptor.h"
 
 #ifdef TYPEOF_bhpt_adaptor_stamp
 
@@ -27,9 +27,9 @@
 
 #endif // TYPEOF_bhpt_adaptor_stamp
 
-vd_t bhpt_adaptor_stamp_signal_handler( const bcore_signal_s* o )
+vd_t bhpt_adaptor_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_adaptor_stamp" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_adaptor" ) ) )
     {
         case TYPEOF_init1:
         {

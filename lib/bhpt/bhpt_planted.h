@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-18T18:10:28Z
+ *  Last File Update: 2020-04-19T14:30:12Z
  *
  *  Copyright and License of this File:
  *
@@ -9,8 +9,8 @@
  *
  *  bhpt_sketch.h
  *  bhpt_frame.h
- *  bhpt_adaptor_stamp.h
- *  bhpt_tutor_stamp.h
+ *  bhpt_adaptor.h
+ *  bhpt_tutor.h
  *
  */
 
@@ -238,7 +238,7 @@
   BETH_EXPAND_ITEM_bhpt_frame_s
 
 /**********************************************************************************************************************/
-// source: bhpt_adaptor_stamp.h
+// source: bhpt_adaptor.h
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhpt_adaptor_stamp
@@ -265,7 +265,7 @@
   BETH_EXPAND_ITEM_bhpt_adaptor_list_s
 
 /**********************************************************************************************************************/
-// source: bhpt_tutor_stamp.h
+// source: bhpt_tutor.h
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhpt_tutor_stamp
@@ -275,8 +275,7 @@
 #define TYPEOF_bhpt_tutor_sine_random_s 4152364972
 #define BETH_EXPAND_ITEM_bhpt_tutor_sine_random_s \
   BCORE_DECLARE_OBJECT( bhpt_tutor_sine_random_s ) \
-    {aware_t _;sz_t input_size;u2_t rval;f3_t pos_tgt;f3_t neg_tgt;bcore_mutex_s* mutex;}; \
-  static inline void bhpt_tutor_sine_random_s_init_x( bhpt_tutor_sine_random_s* o ){o->mutex = bcore_mutex_s_create();} \
+    {aware_t _;sz_t input_size;f3_t pos_tgt;f3_t neg_tgt;u2_t rval_prime;u2_t rval_test;sz_t test_size;bcore_mutex_s mutex;}; \
   void bhpt_tutor_sine_random_s_reset( bhpt_tutor_sine_random_s* o ); \
   bhpt_adaptive* bhpt_tutor_sine_random_s_create_adaptive( const bhpt_tutor_sine_random_s* o, const bhpt_builder* builder ); \
   void bhpt_tutor_sine_random_s_prime( bhpt_tutor_sine_random_s* o, bhpt_adaptive* adaptive ); \

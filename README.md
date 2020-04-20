@@ -195,8 +195,8 @@ or in related documents where feasible.
 However, a major part is accomplished by actually questioning well trodden paths.
 I've been trying to come up with new ideas or at least viable variations of prior solutions.
 
-For that matter, getting a grasp on *beth* is probably a bit of a challenge for a
-seasoned developer. I hope that who tries it feels rewarded.
+For that matter, getting a grasp on *beth* is probably a bit of a challenge 
+even for a seasoned developer. I hope that who tries it, feels rewarded.
 For me it is like painting a new picture, which has not been painted before. 
 Watching it unfold and taking shape is beautiful.
 

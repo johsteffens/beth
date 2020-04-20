@@ -13,10 +13,10 @@
  *  limitations under the License.
  */
 
- /// Collection of bhpt_tutor stamps
+ /// Collection of bhpt_adaptor stamps
 
-#ifndef BHPT_TUTOR_STAMP_H
-#define BHPT_TUTOR_STAMP_H
+#ifndef BHPT_ADAPTOR_H
+#define BHPT_ADAPTOR_H
 
 /**********************************************************************************************************************/
 
@@ -26,55 +26,45 @@
 
 /**********************************************************************************************************************/
 
-#ifdef TYPEOF_bhpt_tutor_stamp
+#ifdef TYPEOF_bhpt_adaptor_stamp
 
-PLANT_GROUP( bhpt_tutor_stamp, bhpt_tutor )
+PLANT_GROUP( bhpt_adaptor_stamp, bhpt_adaptor )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/** Type: Classifier
- *  Method: Differentiate between a sine wave of arbitrary amplitude and frequency from a random walk curve.
- */
-stamp bhpt_tutor_sine_random = aware bhpt_tutor
+/// Adding gradient*epsilon to adaptive
+stamp bhpt_adaptor_epsilon = aware bhpt_adaptor
 {
-    sz_t input_size = 32;
-    u2_t rval       = 1234;
-    f3_t pos_tgt    =  0.9;
-    f3_t neg_tgt    = -0.9;
-
-    hidden bcore_mutex_s => mutex;
-    func bcore_inst_call : init_x = { o->mutex = bcore_mutex_s_create(); };
-
-    func bhpt_tutor : reset;
-    func bhpt_tutor : create_adaptive;
-    func bhpt_tutor : prime;
-    func bhpt_tutor : test;
+    f3_t epsilon;
+    func bhpt_adaptor : reset = {};
+    func bhpt_adaptor : adapt =
+    {
+        assert( bhvm_shape_s_is_equal( &accugrad->s, &adaptive->s ) );
+        bhvm_value_s_mul_scl_f3_acc( &accugrad->v, o->epsilon, &adaptive->v );
+    };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//stamp bhpt_tutor_test = bcore_inst
-//{
-//    bcore_mutex_s mutex;
-//
-////    func bcore_inst_call : init_x = { o->mutex = bcore_mutex_s_create(); };
-////
-////    func bhpt_tutor : reset;
-////    func bhpt_tutor : create_adaptive;
-////    func bhpt_tutor : prime;
-////    func bhpt_tutor : test;
-//};
+/// List of adaptors applied in sequence
+stamp bhpt_adaptor_list = aware bhpt_adaptor
+{
+    bhpt_adaptor_adl_s adl;
+    func bhpt_adaptor : reset = { BFOR_EACH( i, &o->adl ) bhpt_adaptor_a_reset( o->adl.data[ i ] ); };
+    func bhpt_adaptor : adapt = { BFOR_EACH( i, &o->adl ) bhpt_adaptor_a_adapt( o->adl.data[ i ], accugrad, adaptive ); };
+};
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#endif // TYPEOF_bhpt_tutor_stamp
+#endif // TYPEOF_bhpt_adaptor_stamp
 
 /**********************************************************************************************************************/
 
-vd_t bhpt_tutor_stamp_signal_handler( const bcore_signal_s* o );
+vd_t bhpt_adaptor_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif // BHPT_TUTOR_STAMP_H
+#endif // BHPT_ADAPTOR_H

@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-#include "bhpt_tutor_stamp.h"
+#include "bhpt_tutor.h"
 
 #ifdef TYPEOF_bhpt_tutor_stamp
 
@@ -51,7 +51,7 @@ bhpt_adaptive* bhpt_tutor_sine_random_s_create_adaptive( const bhpt_tutor_sine_r
 void bhpt_tutor_sine_random_s_fetch_sample( const bhpt_tutor_sine_random_s* o, u2_t* rval, bhvm_holor_s* en, bhvm_holor_s* ex )
 {
     *rval = bcore_xsg1_u2( *rval );
-    bl_t pos = ( o->rval & 1 ) == 0; // pos vs neg sample
+    bl_t pos = ( o->rval_prime & 1 ) == 0; // pos vs neg sample
     *rval = bcore_xsg1_u2( *rval );
 
     bhvm_value_s_set_size( &en->v, o->input_size );
@@ -99,10 +99,9 @@ void bhpt_tutor_sine_random_s_prime( bhpt_tutor_sine_random_s* o, bhpt_adaptive*
 
     bhvm_holor_s* buf = BLM_CLONE( bhvm_holor_s, hex );
 
-    assert( o->mutex );
-    bcore_mutex_s_lock( o->mutex );
-    bhpt_tutor_sine_random_s_fetch_sample( o, &o->rval, hen, hex );
-    bcore_mutex_s_unlock( o->mutex );
+    bcore_mutex_s_lock( &o->mutex );
+    bhpt_tutor_sine_random_s_fetch_sample( o, &o->rval_prime, hen, hex );
+    bcore_mutex_s_unlock( &o->mutex );
 
     bhpt_adaptive_a_axon_pass( adaptive, hen, buf );
     bhvm_hop_ar2_eci_sub_s_f( hex, buf, buf );
@@ -126,9 +125,9 @@ void bhpt_tutor_sine_random_s_test( const bhpt_tutor_sine_random_s* o, const bhp
 
 #endif // TYPEOF_bhpt_tutor_stamp
 
-vd_t bhpt_tutor_stamp_signal_handler( const bcore_signal_s* o )
+vd_t bhpt_tutor_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_tutor_stamp" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_tutor" ) ) )
     {
         case TYPEOF_init1:
         {

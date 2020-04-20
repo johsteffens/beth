@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-18T18:10:28Z
+ *  Last File Update: 2020-04-19T14:30:12Z
  *
  *  Copyright and License of this File:
  *
@@ -9,8 +9,8 @@
  *
  *  bhpt_sketch.h
  *  bhpt_frame.h
- *  bhpt_adaptor_stamp.h
- *  bhpt_tutor_stamp.h
+ *  bhpt_adaptor.h
+ *  bhpt_tutor.h
  *
  */
 
@@ -125,8 +125,8 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
 "}";
 
 /**********************************************************************************************************************/
-// source: bhpt_adaptor_stamp.h
-#include "bhpt_adaptor_stamp.h"
+// source: bhpt_adaptor.h
+#include "bhpt_adaptor.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhpt_adaptor_stamp
@@ -154,8 +154,8 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_list_s )
 "}";
 
 /**********************************************************************************************************************/
-// source: bhpt_tutor_stamp.h
-#include "bhpt_tutor_stamp.h"
+// source: bhpt_tutor.h
+#include "bhpt_tutor.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhpt_tutor_stamp
@@ -164,11 +164,12 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_sine_random_s )
 "aware bhpt_tutor"
 "{"
     "sz_t input_size = 32;"
-    "u2_t rval = 1234;"
     "f3_t pos_tgt = 0.9;"
     "f3_t neg_tgt = -0.9;"
-    "hidden bcore_mutex_s => mutex;"
-    "func bcore_inst_call:init_x;"
+    "u2_t rval_prime = 1234;"
+    "u2_t rval_test = 1234;"
+    "sz_t test_size;"
+    "hidden bcore_mutex_s mutex;"
     "func ^:reset;"
     "func ^:create_adaptive;"
     "func ^:prime;"
@@ -184,7 +185,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 1922460080 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 2328781793 ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h
@@ -242,7 +243,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bhpt_frame, bcore_inst );
 
             // --------------------------------------------------------------------
-            // source: bhpt_adaptor_stamp.h
+            // source: bhpt_adaptor.h
 
             // group: bhpt_adaptor_stamp
             BCORE_REGISTER_FFUNC( bhpt_adaptor_reset, bhpt_adaptor_epsilon_s_reset );
@@ -254,10 +255,9 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bhpt_adaptor_stamp, bhpt_adaptor );
 
             // --------------------------------------------------------------------
-            // source: bhpt_tutor_stamp.h
+            // source: bhpt_tutor.h
 
             // group: bhpt_tutor_stamp
-            BCORE_REGISTER_FFUNC( bcore_inst_call_init_x, bhpt_tutor_sine_random_s_init_x );
             BCORE_REGISTER_FFUNC( bhpt_tutor_reset, bhpt_tutor_sine_random_s_reset );
             BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptive, bhpt_tutor_sine_random_s_create_adaptive );
             BCORE_REGISTER_FFUNC( bhpt_tutor_prime, bhpt_tutor_sine_random_s_prime );
