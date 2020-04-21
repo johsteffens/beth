@@ -134,7 +134,7 @@ s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args )
 
     bhpt_adaptive_a_status_to_sink( o->state->adaptive, o->verbosity, o->log );
 
-//    bhpt_frame_s_run( o );
+    bhpt_frame_s_run( o );
 
     BLM_RETURNV( s2_t, 0 );
 }
