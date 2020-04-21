@@ -74,7 +74,82 @@ vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 /**********************************************************************************************************************/
 // macros
 
-/// (Deprecated) preferably use improved versions below;
+/** Block-Lifetime-Management
+ *  Usage:
+ *  {
+ *      BLM_INIT(); // at the beginning of a managed block
+ *
+ *      .... regular code inside a block
+ *
+ *      BLM_DOWN(); // at the end of a managed block
+ *  }
+ *
+ *  BLM_CREATE, BLM_CLONE, BLM_A_PUSH, BLM_T_PUSH
+ *  place objects on lifetime management.
+ *
+ *  BLM_DOWN, BLM_RETURN or BLM_RETURNV
+ *  shut down the manager and discard all managed objects
+ *
+ *  BLM_RETURN(V) also return from a function.
+ *  It may be called even inside a nested block in which case
+ *  all eligible parent managers are shut down as well.
+ *
+ *  Example:
+ *  {
+ *      BLM_INIT(); // bock 1
+ *      ....
+ *      {
+ *          BLM_INIT(); // bock 2
+ *          ....
+ *          if( condition )
+ *          {
+ *              // This shuts down BLMs of blocks 2 and 1, then returns the function.
+ *              BLM_RETURNV( type, val );
+ *          }
+ *          ....
+ *          BLM_DOWN();
+ *      }
+ *      ....
+ *      BLM_DOWN();
+ *  }
+ *
+ */
+
+extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chain
+
+#define BLM_INIT() \
+    bcore_life_s* __bcore_life_p = __bcore_life; \
+    bcore_life_s* __bcore_life = bcore_life_s_create(); \
+    __bcore_life->parent = __bcore_life_p; \
+    __bcore_life_p = __bcore_life
+
+#define BLM_DOWN() bcore_life_s_detach( &__bcore_life_p )
+#define BLM_CREATE( tname ) ( tname* )bcore_life_s_push_typed( __bcore_life_p, TYPEOF_##tname, tname##_create() )
+#define BLM_CLONE(  tname, src ) ( tname* )bcore_life_s_push_typed( __bcore_life_p, TYPEOF_##tname, tname##_clone( src ) )
+#define BLM_A_PUSH(       expr ) bcore_life_s_push_aware( __bcore_life_p,       expr )
+#define BLM_T_PUSH( type, expr ) bcore_life_s_push_typed( __bcore_life_p, type, expr )
+
+#define BLM_RETURN() \
+{ \
+    bcore_life_s_discard_all( __bcore_life_p ); \
+    return; \
+}
+
+#define BLM_RETURNV( ret_type, expr ) \
+{ \
+    ret_type __retv = expr;  \
+    bcore_life_s_discard_all( __bcore_life_p );  \
+    return __retv;  \
+}
+
+// creates object and runs a member function as continuation
+#define BLM_CREATEC( tname, fname, ... ) tname##_##fname( BLM_CREATE( tname ), __VA_ARGS__ )
+
+// clones object and runs a member function as continuation
+#define BLM_CLONEC( tname, src, fname, ... ) tname##_##fname( BLM_CLONE( tname, src ), __VA_ARGS__ )
+
+
+/// Deprecated Macros. Preferably use improved versions BLM_... above;
 #define BCORE_LIFE_INIT() bcore_life_s* __life = bcore_life_s_create()
 #define BCORE_LIFE_DOWN() bcore_life_s_detach( &__life )
 #define BCORE_LIFE_CREATE( type_name, var_name ) type_name* var_name = bcore_life_s_push_typed( __life, TYPEOF_##type_name, type_name##_create() )
@@ -85,37 +160,5 @@ vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 #define BCORE_LIFE_RETURNV( ret_type, expr ) { ret_type __retv = expr; BCORE_LIFE_DOWN(); return __retv; }
 #define BCORE_LIFE_RETURN()                  {                         BCORE_LIFE_DOWN(); return;        }
 
-/** Improved macros
- * *_CREATE now function-like
- * *_RETURN* detaches all active nested life managers in current function
- */
-extern bcore_life_s* __bcore_life; // always NULL; needed to root a life-chain
-
-#define BLM_INIT() \
-    bcore_life_s* __bcore_life_p = __bcore_life; \
-    bcore_life_s* __bcore_life = bcore_life_s_create(); \
-    __bcore_life->parent = __bcore_life_p
-
-#define BLM_DOWN() bcore_life_s_detach( &__bcore_life )
-#define BLM_CREATE( tname ) ( tname* )bcore_life_s_push_typed( __bcore_life, TYPEOF_##tname, tname##_create() )
-#define BLM_CLONE(  tname, src ) ( tname* )bcore_life_s_push_typed( __bcore_life, TYPEOF_##tname, tname##_clone( src ) )
-#define BLM_A_PUSH(       expr ) bcore_life_s_push_aware( __bcore_life,       expr )
-#define BLM_T_PUSH( type, expr ) bcore_life_s_push_typed( __bcore_life, type, expr )
-
-#define BLM_RETURN() \
-{ \
-    bcore_life_s_discard_all( __bcore_life ); \
-    return; \
-}
-
-#define BLM_RETURNV( ret_type, expr ) \
-{ \
-    ret_type __retv = expr;  \
-    bcore_life_s_discard_all( __bcore_life );  \
-    return __retv;  \
-}
-
-// creates object and runs a member function as continuation
-#define BLM_CREATEC( tname, fname, ... ) tname##_##fname( BLM_CREATE( tname ), __VA_ARGS__ )
 
 #endif // BCORE_LIFE_H
