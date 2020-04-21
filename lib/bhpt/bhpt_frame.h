@@ -59,7 +59,7 @@ stamp : = aware bcore_main
     // A single single cycle represents an adaptive prime
 
     // cycle number at which the adaptor is applied (mini-batch size)
-    sz_t cycle_adapt  = 10;
+    sz_t cycle_adapt  = 1;
 
     // cycle number at which the network is tested
     sz_t cycle_test   = 1000;
@@ -71,7 +71,7 @@ stamp : = aware bcore_main
     sz_t cycle_finish = 1000000;
 
     // log verbosity
-    sz_t verbosity;
+    sz_t verbosity = 1;
     /// ========= end parameters  ==========
 
     /// current state of frame

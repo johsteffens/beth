@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-19T14:30:12Z
+ *  Last File Update: 2020-04-21T10:14:28Z
  *
  *  Copyright and License of this File:
  *
@@ -103,8 +103,8 @@
 #define TYPEOF_bhpt_adaptive_s 2158321412
 #define BETH_EXPAND_GROUP_bhpt_adaptive \
   BCORE_FORWARD_OBJECT( bhpt_adaptive ); \
-  typedef void (*bhpt_adaptive_get_holor_en)( const bhpt_adaptive* o, bhvm_holor_s* holor ); \
-  typedef void (*bhpt_adaptive_get_holor_ex)( const bhpt_adaptive* o, bhvm_holor_s* holor ); \
+  typedef bhvm_holor_s* (*bhpt_adaptive_get_format_en)( const bhpt_adaptive* o, bhvm_holor_s* format ); \
+  typedef bhvm_holor_s* (*bhpt_adaptive_get_format_ex)( const bhpt_adaptive* o, bhvm_holor_s* format ); \
   typedef void (*bhpt_adaptive_axon_pass)( bhpt_adaptive* o, const bhvm_holor_s* ax_en, bhvm_holor_s* ax_ex ); \
   typedef void (*bhpt_adaptive_dendrite_pass)( bhpt_adaptive* o, const bhvm_holor_s* ag_ex, bhvm_holor_s* ag_en ); \
   typedef void (*bhpt_adaptive_cyclic_reset)( bhpt_adaptive* o ); \
@@ -114,8 +114,8 @@
   BCORE_DECLARE_SPECT( bhpt_adaptive ) \
   { \
       bcore_spect_header_s header; \
-      bhpt_adaptive_get_holor_en get_holor_en; \
-      bhpt_adaptive_get_holor_ex get_holor_ex; \
+      bhpt_adaptive_get_format_en get_format_en; \
+      bhpt_adaptive_get_format_ex get_format_ex; \
       bhpt_adaptive_axon_pass axon_pass; \
       bhpt_adaptive_dendrite_pass dendrite_pass; \
       bhpt_adaptive_cyclic_reset cyclic_reset; \
@@ -127,10 +127,10 @@
   static inline bl_t bhpt_adaptive_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhpt_adaptive ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bhpt_adaptive ) \
   static inline bl_t bhpt_adaptive_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bhpt_adaptive ); } \
-  static inline void bhpt_adaptive_a_get_holor_en( const bhpt_adaptive* o, bhvm_holor_s* holor ) { const bhpt_adaptive_s* p = bhpt_adaptive_s_get_aware( o ); assert( p->get_holor_en ); p->get_holor_en( o, holor ); } \
-  static inline bl_t bhpt_adaptive_a_defines_get_holor_en( const bhpt_adaptive* o ) { return true; } \
-  static inline void bhpt_adaptive_a_get_holor_ex( const bhpt_adaptive* o, bhvm_holor_s* holor ) { const bhpt_adaptive_s* p = bhpt_adaptive_s_get_aware( o ); assert( p->get_holor_ex ); p->get_holor_ex( o, holor ); } \
-  static inline bl_t bhpt_adaptive_a_defines_get_holor_ex( const bhpt_adaptive* o ) { return true; } \
+  static inline bhvm_holor_s* bhpt_adaptive_a_get_format_en( const bhpt_adaptive* o, bhvm_holor_s* format ) { const bhpt_adaptive_s* p = bhpt_adaptive_s_get_aware( o ); assert( p->get_format_en ); return p->get_format_en( o, format ); } \
+  static inline bl_t bhpt_adaptive_a_defines_get_format_en( const bhpt_adaptive* o ) { return true; } \
+  static inline bhvm_holor_s* bhpt_adaptive_a_get_format_ex( const bhpt_adaptive* o, bhvm_holor_s* format ) { const bhpt_adaptive_s* p = bhpt_adaptive_s_get_aware( o ); assert( p->get_format_ex ); return p->get_format_ex( o, format ); } \
+  static inline bl_t bhpt_adaptive_a_defines_get_format_ex( const bhpt_adaptive* o ) { return true; } \
   static inline void bhpt_adaptive_a_axon_pass( bhpt_adaptive* o, const bhvm_holor_s* ax_en, bhvm_holor_s* ax_ex ) { const bhpt_adaptive_s* p = bhpt_adaptive_s_get_aware( o ); assert( p->axon_pass ); p->axon_pass( o, ax_en, ax_ex ); } \
   static inline bl_t bhpt_adaptive_a_defines_axon_pass( const bhpt_adaptive* o ) { return true; } \
   static inline void bhpt_adaptive_axon_pass__( bhpt_adaptive* o, const bhvm_holor_s* ax_en, bhvm_holor_s* ax_ex ){} \
@@ -157,24 +157,24 @@
 #define TYPEOF_bhpt_builder_s 1545361237
 #define BETH_EXPAND_GROUP_bhpt_builder \
   BCORE_FORWARD_OBJECT( bhpt_builder ); \
-  typedef void (*bhpt_builder_set_holor_en)( bhpt_builder* o, const bhvm_holor_s* holor ); \
-  typedef void (*bhpt_builder_set_holor_ex)( bhpt_builder* o, const bhvm_holor_s* holor ); \
+  typedef void (*bhpt_builder_set_format_en)( bhpt_builder* o, const bhvm_holor_s* format ); \
+  typedef void (*bhpt_builder_set_format_ex)( bhpt_builder* o, const bhvm_holor_s* format ); \
   typedef bhpt_adaptive* (*bhpt_builder_create_adaptive)( const bhpt_builder* o ); \
   BCORE_DECLARE_SPECT( bhpt_builder ) \
   { \
       bcore_spect_header_s header; \
-      bhpt_builder_set_holor_en set_holor_en; \
-      bhpt_builder_set_holor_ex set_holor_ex; \
+      bhpt_builder_set_format_en set_format_en; \
+      bhpt_builder_set_format_ex set_format_ex; \
       bhpt_builder_create_adaptive create_adaptive; \
   }; \
   static inline bhpt_builder* bhpt_builder_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bhpt_builder, t ); return ( bhpt_builder* )bcore_inst_t_create( t ); } \
   static inline bl_t bhpt_builder_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhpt_builder ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bhpt_builder ) \
   static inline bl_t bhpt_builder_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bhpt_builder ); } \
-  static inline void bhpt_builder_a_set_holor_en( bhpt_builder* o, const bhvm_holor_s* holor ) { const bhpt_builder_s* p = bhpt_builder_s_get_aware( o ); assert( p->set_holor_en ); p->set_holor_en( o, holor ); } \
-  static inline bl_t bhpt_builder_a_defines_set_holor_en( const bhpt_builder* o ) { return true; } \
-  static inline void bhpt_builder_a_set_holor_ex( bhpt_builder* o, const bhvm_holor_s* holor ) { const bhpt_builder_s* p = bhpt_builder_s_get_aware( o ); assert( p->set_holor_ex ); p->set_holor_ex( o, holor ); } \
-  static inline bl_t bhpt_builder_a_defines_set_holor_ex( const bhpt_builder* o ) { return true; } \
+  static inline void bhpt_builder_a_set_format_en( bhpt_builder* o, const bhvm_holor_s* format ) { const bhpt_builder_s* p = bhpt_builder_s_get_aware( o ); assert( p->set_format_en ); p->set_format_en( o, format ); } \
+  static inline bl_t bhpt_builder_a_defines_set_format_en( const bhpt_builder* o ) { return true; } \
+  static inline void bhpt_builder_a_set_format_ex( bhpt_builder* o, const bhvm_holor_s* format ) { const bhpt_builder_s* p = bhpt_builder_s_get_aware( o ); assert( p->set_format_ex ); p->set_format_ex( o, format ); } \
+  static inline bl_t bhpt_builder_a_defines_set_format_ex( const bhpt_builder* o ) { return true; } \
   static inline bhpt_adaptive* bhpt_builder_a_create_adaptive( const bhpt_builder* o ) { const bhpt_builder_s* p = bhpt_builder_s_get_aware( o ); assert( p->create_adaptive ); return p->create_adaptive( o ); } \
   static inline bl_t bhpt_builder_a_defines_create_adaptive( const bhpt_builder* o ) { return true; }
 

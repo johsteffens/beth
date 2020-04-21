@@ -60,11 +60,11 @@ group :adaptor =
  */
 group :adaptive =
 {
-    /// retrieves entry-holor (shape & type)
-    feature strict 'a' void get_holor_en( const, bhvm_holor_s* holor );
+    /// retrieves entry-holor-format (shape & type); returns format
+    feature strict 'a' bhvm_holor_s* get_format_en( const, bhvm_holor_s* format );
 
-    /// retrieves exit-holor (shape & type)
-    feature strict 'a' void get_holor_ex( const, bhvm_holor_s* holor );
+    /// retrieves exit-holor-format (shape & type); returns format
+    feature strict 'a' bhvm_holor_s* get_format_ex( const, bhvm_holor_s* format );
 
     /// axon-pass
     feature 'a' void axon_pass( mutable, const bhvm_holor_s* ax_en, bhvm_holor_s* ax_ex ) = {};
@@ -92,11 +92,11 @@ group :adaptive =
  */
 group :builder =
 {
-    /// defines entry-holor (shape & type)
-    feature strict 'a' void set_holor_en( mutable, const bhvm_holor_s* holor );
+    /// defines entry-holor format (shape & type)
+    feature strict 'a' void set_format_en( mutable, const bhvm_holor_s* format );
 
     /// defines exit-holor (shape & type)
-    feature strict 'a' void set_holor_ex( mutable, const bhvm_holor_s* holor );
+    feature strict 'a' void set_format_ex( mutable, const bhvm_holor_s* format );
 
     /// creates adaptive releasing ownership
     feature strict 'a' ::adaptive* create_adaptive( const );

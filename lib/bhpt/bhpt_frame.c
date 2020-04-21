@@ -38,6 +38,7 @@ void bhpt_frame_s_adapt( bhpt_frame_s* o )
         bhpt_adaptor_a_adapt( o->adaptor_adl->data[ i ], hprobe_accugrad->data[ i ], hprobe_adaptive->data[ i ] );
         bhvm_value_s_zro( &hprobe_accugrad->data[ i ]->v );
     }
+
     BLM_DOWN();
 }
 
@@ -45,8 +46,6 @@ void bhpt_frame_s_adapt( bhpt_frame_s* o )
 
 void bhpt_frame_s_run( bhpt_frame_s* o )
 {
-    bhpt_adaptive_a_status_to_sink( o->state->adaptive, o->verbosity, o->log );
-
     bhpt_frame_state_s* state = o->state;
 
     while( state->cycle_number < o->cycle_finish )
@@ -72,7 +71,6 @@ void bhpt_frame_s_run( bhpt_frame_s* o )
             sc_t path = o->state_path.sc;
             if( path[ 0 ] )
             {
-                bhpt_frame_state_s_attach( &o->state, bhpt_frame_state_s_create() );
                 bcore_bin_ml_a_to_file( o->state, path );
             }
         }
@@ -118,8 +116,6 @@ s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args )
         }
     }
 
-    if( !o->state ) o->state = bhpt_frame_state_s_create();
-
     assert( o->builder );
     assert( o->tutor );
 
@@ -136,8 +132,9 @@ s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args )
         BLM_DOWN();
     }
 
+    bhpt_adaptive_a_status_to_sink( o->state->adaptive, o->verbosity, o->log );
 
-    bhpt_frame_s_run( o );
+//    bhpt_frame_s_run( o );
 
     BLM_RETURNV( s2_t, 0 );
 }

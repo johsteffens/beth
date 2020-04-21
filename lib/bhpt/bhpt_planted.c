@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-19T14:30:12Z
+ *  Last File Update: 2020-04-21T10:14:28Z
  *
  *  Copyright and License of this File:
  *
@@ -56,8 +56,8 @@ BCORE_DEFINE_SPECT( bhpt, bhpt_adaptor )
 BCORE_DEFINE_SPECT( bhpt, bhpt_adaptive )
 "{"
     "bcore_spect_header_s header;"
-    "feature strict aware bhpt_adaptive : get_holor_en;"
-    "feature strict aware bhpt_adaptive : get_holor_ex;"
+    "feature strict aware bhpt_adaptive : get_format_en;"
+    "feature strict aware bhpt_adaptive : get_format_ex;"
     "feature aware bhpt_adaptive : axon_pass = bhpt_adaptive_axon_pass__;"
     "feature aware bhpt_adaptive : dendrite_pass = bhpt_adaptive_dendrite_pass__;"
     "feature aware bhpt_adaptive : cyclic_reset = bhpt_adaptive_cyclic_reset__;"
@@ -72,8 +72,8 @@ BCORE_DEFINE_SPECT( bhpt, bhpt_adaptive )
 BCORE_DEFINE_SPECT( bhpt, bhpt_builder )
 "{"
     "bcore_spect_header_s header;"
-    "feature strict aware bhpt_builder : set_holor_en;"
-    "feature strict aware bhpt_builder : set_holor_ex;"
+    "feature strict aware bhpt_builder : set_format_en;"
+    "feature strict aware bhpt_builder : set_format_ex;"
     "feature strict aware bhpt_builder : create_adaptive;"
 "}";
 
@@ -112,11 +112,11 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
     "aware bhpt_tutor => tutor;"
     "aware bhpt_builder => builder;"
     "aware bhpt_adaptor => adaptor;"
-    "sz_t cycle_adapt = 10;"
+    "sz_t cycle_adapt = 1;"
     "sz_t cycle_test = 1000;"
     "sz_t cycle_backup = 1000;"
     "sz_t cycle_finish = 1000000;"
-    "sz_t verbosity;"
+    "sz_t verbosity = 1;"
     "hidden bhpt_frame_state_s => state;"
     "hidden bhpt_adaptor_adl_s => adaptor_adl;"
     "st_s state_path;"
@@ -167,8 +167,8 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_sine_random_s )
     "f3_t pos_tgt = 0.9;"
     "f3_t neg_tgt = -0.9;"
     "u2_t rval_prime = 1234;"
-    "u2_t rval_test = 1234;"
-    "sz_t test_size;"
+    "u2_t rval_test = 5342;"
+    "sz_t test_size = 1000;"
     "hidden bcore_mutex_s mutex;"
     "func ^:reset;"
     "func ^:create_adaptive;"
@@ -185,7 +185,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 2328781793 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 493502275 ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h
@@ -201,8 +201,8 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_SPECT( bhpt_adaptor );
 
             // group: bhpt_adaptive
-            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_holor_en );
-            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_holor_ex );
+            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_format_en );
+            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_format_ex );
             BCORE_REGISTER_FEATURE( bhpt_adaptive_axon_pass );
             BCORE_REGISTER_FFUNC( bhpt_adaptive_axon_pass, bhpt_adaptive_axon_pass__ );
             BCORE_REGISTER_FEATURE( bhpt_adaptive_dendrite_pass );
@@ -218,8 +218,8 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_SPECT( bhpt_adaptive );
 
             // group: bhpt_builder
-            BCORE_REGISTER_FEATURE( bhpt_builder_set_holor_en );
-            BCORE_REGISTER_FEATURE( bhpt_builder_set_holor_ex );
+            BCORE_REGISTER_FEATURE( bhpt_builder_set_format_en );
+            BCORE_REGISTER_FEATURE( bhpt_builder_set_format_ex );
             BCORE_REGISTER_FEATURE( bhpt_builder_create_adaptive );
             BCORE_REGISTER_SPECT( bhpt_builder );
 

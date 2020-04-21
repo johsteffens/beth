@@ -42,9 +42,13 @@ stamp bhpt_tutor_sine_random = aware bhpt_tutor
     f3_t pos_tgt    =  0.9;
     f3_t neg_tgt    = -0.9;
 
+    /// rval_prime is updated after each prime
     u2_t rval_prime = 1234;
-    u2_t rval_test  = 1234;
-    sz_t test_size;
+
+    /// rval_test stays constant
+    u2_t rval_test = 5342;
+
+    sz_t test_size = 1000;
 
     hidden bcore_mutex_s mutex;
 

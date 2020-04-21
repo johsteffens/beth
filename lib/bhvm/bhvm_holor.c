@@ -631,19 +631,84 @@ void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-f3_t bhvm_value_s_fdev_equ( const bhvm_value_s* a, const bhvm_value_s* b )
+void bhvm_value_s_acc( bhvm_value_s* o, const bhvm_value_s* a )
+{
+    ASSERT( o->size == a->size );
+    switch( BKNIT_FA2( o->type, a->type ) )
+    {
+        case BKNIT_F22: BFOR_EACH( i, a ) { ( ( f2_t* )o->data )[ i ] += ( ( f2_t* )a->data )[ i ]; } break;
+        case BKNIT_F23: BFOR_EACH( i, a ) { ( ( f2_t* )o->data )[ i ] += ( ( f3_t* )a->data )[ i ]; } break;
+        case BKNIT_F32: BFOR_EACH( i, a ) { ( ( f3_t* )o->data )[ i ] += ( ( f2_t* )a->data )[ i ]; } break;
+        case BKNIT_F33: BFOR_EACH( i, a ) { ( ( f3_t* )o->data )[ i ] += ( ( f3_t* )a->data )[ i ]; } break;
+        default: BKNIT_FA2_ERR( o->type, a->type ); break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bhvm_value_s_acc_sqr( bhvm_value_s* o, const bhvm_value_s* a )
+{
+    ASSERT( o->size == a->size );
+    switch( BKNIT_FA2( o->type, a->type ) )
+    {
+        case BKNIT_F22: BFOR_EACH( i, a ) { ( ( f2_t* )o->data )[ i ] += f2_sqr( ( ( f2_t* )a->data )[ i ] ); } break;
+        case BKNIT_F23: BFOR_EACH( i, a ) { ( ( f2_t* )o->data )[ i ] += f2_sqr( ( ( f3_t* )a->data )[ i ] ); } break;
+        case BKNIT_F32: BFOR_EACH( i, a ) { ( ( f3_t* )o->data )[ i ] += f3_sqr( ( ( f2_t* )a->data )[ i ] ); } break;
+        case BKNIT_F33: BFOR_EACH( i, a ) { ( ( f3_t* )o->data )[ i ] += f3_sqr( ( ( f3_t* )a->data )[ i ] ); } break;
+        default: BKNIT_FA2_ERR( o->type, a->type ); break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_value_s_sum( const bhvm_value_s* o )
+{
+    f3_t sum = 0;
+    switch( BKNIT_FA1( o->type ) )
+    {
+        case BKNIT_F2: BFOR_EACH( i, o ) { sum += ( ( f2_t* )o->data )[ i ]; } break;
+        case BKNIT_F3: BFOR_EACH( i, o ) { sum += ( ( f3_t* )o->data )[ i ]; } break;
+        default: BKNIT_FA1_ERR( o->type ); break;
+    }
+    return sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_value_s_sum_sqr( const bhvm_value_s* o )
+{
+    f3_t sum = 0;
+    switch( BKNIT_FA1( o->type ) )
+    {
+        case BKNIT_F2: BFOR_EACH( i, o ) { sum += f3_sqr( ( ( f2_t* )o->data )[ i ] ); } break;
+        case BKNIT_F3: BFOR_EACH( i, o ) { sum += f3_sqr( ( ( f3_t* )o->data )[ i ] ); } break;
+        default: BKNIT_FA1_ERR( o->type ); break;
+    }
+    return sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_value_s_sub_sqr_sum( const bhvm_value_s* a, const bhvm_value_s* b )
 {
     ASSERT( a->size == b->size );
     f3_t sqr_sum = 0;
     switch( BKNIT_FA2( a->type, b->type ) )
     {
-        case BKNIT_F22: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f2_t* )a->data )[ i ] - ( ( f2_t* )b->data )[ i ] ); break;
-        case BKNIT_F23: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f2_t* )a->data )[ i ] - ( ( f3_t* )b->data )[ i ] ); break;
-        case BKNIT_F32: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f3_t* )a->data )[ i ] - ( ( f2_t* )b->data )[ i ] ); break;
-        case BKNIT_F33: BFOR_EACH( i, a ) sqr_sum += f3_sqr( ( ( f3_t* )a->data )[ i ] - ( ( f3_t* )b->data )[ i ] ); break;
+        case BKNIT_F22: BFOR_EACH( i, a ) { sqr_sum += f3_sqr( ( ( f2_t* )a->data )[ i ] - ( ( f2_t* )b->data )[ i ] ); } break;
+        case BKNIT_F23: BFOR_EACH( i, a ) { sqr_sum += f3_sqr( ( ( f2_t* )a->data )[ i ] - ( ( f3_t* )b->data )[ i ] ); } break;
+        case BKNIT_F32: BFOR_EACH( i, a ) { sqr_sum += f3_sqr( ( ( f3_t* )a->data )[ i ] - ( ( f2_t* )b->data )[ i ] ); } break;
+        case BKNIT_F33: BFOR_EACH( i, a ) { sqr_sum += f3_sqr( ( ( f3_t* )a->data )[ i ] - ( ( f3_t* )b->data )[ i ] ); } break;
         default: BKNIT_FA2_ERR( a->type, b->type ); break;
     }
-    return f3_srt( sqr_sum );
+    return sqr_sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_value_s_fdev_equ( const bhvm_value_s* a, const bhvm_value_s* b )
+{
+    return f3_srt( bhvm_value_s_sub_sqr_sum( a, b ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1076,6 +1141,67 @@ void bhvm_holor_s_set_type_scalar_pf( bhvm_holor_s* o, tp_t t, tp_t t_src, vc_t 
 void bhvm_holor_s_set_scalar_pf( bhvm_holor_s* o, tp_t t_src, vc_t v )
 {
     bhvm_holor_s_set_type_scalar_pf( o, o->v.type ? o->v.type : t_src, t_src, v );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// general mathematics
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_zro( bhvm_holor_s* o )
+{
+    assert( o->v.size > 0 );
+    bhvm_value_s_zro( &o->v );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_zro_set( bhvm_holor_s* o )
+{
+    if( o->v.size == 0 ) bhvm_value_s_set_size( &o->v, bhvm_shape_s_get_volume( &o->s ) );
+    bhvm_holor_s_zro( o );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_holor_s_sum( const bhvm_holor_s* o )
+{
+    assert( o->v.size > 0 );
+    return bhvm_value_s_sum( &o->v );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_holor_s_sum_sqr( const bhvm_holor_s* o )
+{
+    assert( o->v.size > 0 );
+    return bhvm_value_s_sum_sqr( &o->v );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_holor_s_sub_sqr_sum( const bhvm_holor_s* a, const bhvm_holor_s* b )
+{
+    assert( a->v.size > 0 && b->v.size > 0 );
+    return bhvm_value_s_sub_sqr_sum( &a->v, &b->v );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_acc( bhvm_holor_s* o, const bhvm_holor_s* a )
+{
+    assert( o->v.size > 0 && a->v.size > 0 );
+    bhvm_value_s_acc( &o->v, &a->v );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_holor_s_acc_set( bhvm_holor_s* o, const bhvm_holor_s* a )
+{
+    if( o->v.size == 0 ) bhvm_holor_s_zro_set( o );
+    bhvm_holor_s_acc( o, a );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

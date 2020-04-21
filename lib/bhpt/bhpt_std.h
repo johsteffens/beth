@@ -20,6 +20,7 @@
 
 #include "bhvm_std.h"
 #include "bhpt_signal.h"
+#include "bhpt_sketch.h"
 #include "bhpt_planted.h"
 #include "bhpt_frame.h"
 

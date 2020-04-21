@@ -306,6 +306,21 @@ void bhvm_value_s_order_inc_set( const bhvm_value_s* o, sz_t dim, bhvm_value_s* 
 void bhvm_value_s_order_dec(     const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm_value_s* r ); // in place
 void bhvm_value_s_order_dec_set( const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm_value_s* r ); // allocating, order_dec
 
+/**********************************************************************************************************************/
+/// general mathematics
+
+/// o[ i ] += a[ i ]
+void bhvm_value_s_acc( bhvm_value_s* o, const bhvm_value_s* a );
+
+/// returns sum{ ( o[i] ) }
+f3_t bhvm_value_s_sum( const bhvm_value_s* o );
+
+/// returns sum{ ( o[i]^2 ) } (dot product)
+f3_t bhvm_value_s_sum_sqr( const bhvm_value_s* o );
+
+/// returns sum{ ( a[i] - b[i] )^2 }
+f3_t bhvm_value_s_sub_sqr_sum( const bhvm_value_s* a, const bhvm_value_s* b );
+
 /// r[ i ] = a[ i ] * scl
 void bhvm_value_s_mul_scl_f3( const bhvm_value_s* a, f3_t scl, bhvm_value_s* r );
 
@@ -475,6 +490,26 @@ static inline vd_t bhvm_holor_s_mfx_create_weak( const bhvm_holor_s* o )
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// general mathematics
+
+/// sets all values zero
+void bhvm_holor_s_zro(     bhvm_holor_s* o );
+void bhvm_holor_s_zro_set( bhvm_holor_s* o ); // allocates o->v if necessary
+
+/// returns sum{ ( o[i] ) }
+f3_t bhvm_holor_s_sum( const bhvm_holor_s* o );
+
+/// returns sum{ ( o[i]^2 ) } (dot product)
+f3_t bhvm_holor_s_sum_sqr( const bhvm_holor_s* o );
+
+/// returns sum{ ( a[i] - b[i] )^2 }
+f3_t bhvm_holor_s_sub_sqr_sum( const bhvm_holor_s* a, const bhvm_holor_s* b );
+
+// o[i] += a[i];
+void bhvm_holor_s_acc(     bhvm_holor_s* o, const bhvm_holor_s* a );
+void bhvm_holor_s_acc_set( bhvm_holor_s* o, const bhvm_holor_s* a ); // allocates value and initializes zero if necessary
+
+/**********************************************************************************************************************/
 /// holor specific operations
 
 static inline sz_t bhvm_holor_s_get_order( const bhvm_holor_s* o ) { return o->s.size; }
@@ -557,8 +592,6 @@ void bhvm_holor_s_to_stdout_nl( const bhvm_holor_s* o ); // appends newline
 void bhvm_holor_s_compact_to_sink( const bhvm_holor_s* o, sz_t max_size, bcore_sink* sink );
 void bhvm_holor_s_brief_to_sink(   const bhvm_holor_s* o, bcore_sink* sink );
 void bhvm_holor_s_brief_to_stdout( const bhvm_holor_s* o );
-
-
 
 /** multiline version */
 void bhvm_holor_s_formatted_to_sink(   const bhvm_holor_s* o, bcore_sink* sink );
