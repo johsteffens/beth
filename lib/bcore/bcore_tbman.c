@@ -54,7 +54,7 @@ typedef void (*fp_lost_alignment)( vd_t );
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// shuts down an object (obj), o is the down structure
-typedef void (*fp_down )(      vc_t o, vd_t obj );
+typedef void (*fp_down )( vc_t o, vd_t obj );
 
 /// first element of down structures below
 typedef struct down_s { fp_down _; } down_s;
@@ -483,7 +483,7 @@ static void token_manager_s_release_obj( token_manager_s* o, fp_down_obj down, v
 
         /* We only safe down instruction when the object is root.
          * Otherwise 'token' refers to a parent to which function down does not apply.
-         * In that case shut down information in controlled by the parent object.
+         * In that case shut down information is controlled by the parent object.
          */
         if( ptr_is_root )
         {
@@ -525,7 +525,7 @@ static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, v
 
         /* We only safe down instruction when the object is root.
          * Otherwise 'token' refers to a parent to which function down does not apply.
-         * In that case shut down information in controlled by the parent object.
+         * In that case shut down information is controlled by the parent object.
          */
         if( ptr_is_root )
         {
@@ -550,30 +550,56 @@ static void token_manager_s_release_arg( token_manager_s* o, fp_down_arg down, v
 static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj down, vd_t ptr, uz_t size, uz_t step )
 {
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
-    if( !o->rc_count_arr )
+
+    bl_t free_token = true;
+    bl_t direct_down = true;
+
+    if( o->rc_count_arr )
+    {
+        if( o->rc_count_arr[ token ] )
+        {
+            o->rc_count_arr[ token ]--;
+            if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
+            free_token = false;
+            direct_down = false;
+        }
+        else if( o->rc_down_arr && o->rc_down_arr[ token ] )
+        {
+            direct_down = false;
+        }
+    }
+
+    if( direct_down )
     {
         bcore_mutex_s_unlock( o->mutex );
         for( uz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
         bcore_mutex_s_lock( o->mutex );
+    }
+    else
+    {
+        down_s** p_down = ( down_s** )&o->rc_down_arr[ token ];
+
+        if
+        (
+            !( *p_down ) ||
+            (
+                ( ( *p_down )->_ != ( fp_down )_down_obj_arr ) &&
+                ( ( *p_down )->_ != ( fp_down )_down_arg_arr )
+            )
+        )
+        {
+            if( *p_down )
+            {
+                down_s_discard( o->down_manager, *p_down );  // *p_down came from a forked reference
+            }
+            *p_down = ( down_s* )down_obj_arr_s_create( o->down_manager, down, size, step );
+        }
+    }
+
+    if( free_token )
+    {
         token_manager_s_free_token( o, token );
-        return;
     }
-
-    if( o->rc_count_arr[ token ] )
-    {
-        o->rc_count_arr[ token ]--;
-        if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
-        if( !o->rc_down_arr[ token ] ) o->rc_down_arr[ token ] = down_obj_arr_s_create( o->down_manager, down, size, step );
-        return;
-    }
-
-    if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
-    {
-        bcore_mutex_s_unlock( o->mutex );
-        for( uz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
-        bcore_mutex_s_lock( o->mutex );
-    }
-    token_manager_s_free_token( o, token );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -581,31 +607,55 @@ static void token_manager_s_release_obj_arr( token_manager_s* o, fp_down_obj dow
 static void token_manager_s_release_arg_arr( token_manager_s* o, fp_down_arg down, vc_t arg, vd_t ptr, uz_t size, uz_t step )
 {
     u1_t token = ( ( ptrdiff_t )( ( u0_t* )ptr - ( u0_t* )o ) ) / o->block_size;
-    if( !o->rc_count_arr )
+    bl_t free_token = true;
+    bl_t direct_down = true;
+
+    if( o->rc_count_arr )
+    {
+        if( o->rc_count_arr[ token ] )
+        {
+            o->rc_count_arr[ token ]--;
+            if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
+            free_token = false;
+            direct_down = false;
+        }
+        else if( o->rc_down_arr && o->rc_down_arr[ token ] )
+        {
+            direct_down = false;
+        }
+    }
+
+    if( direct_down )
     {
         bcore_mutex_s_unlock( o->mutex );
         for( uz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
         bcore_mutex_s_lock( o->mutex );
+    }
+    else
+    {
+        down_s** p_down = ( down_s** )&o->rc_down_arr[ token ];
+
+        if
+        (
+            !( *p_down ) ||
+            (
+                ( ( *p_down )->_ != ( fp_down )_down_obj_arr ) &&
+                ( ( *p_down )->_ != ( fp_down )_down_arg_arr )
+            )
+        )
+        {
+            if( *p_down )
+            {
+                down_s_discard( o->down_manager, *p_down ); // *p_down came from a forked reference
+            }
+            *p_down = ( down_s* )down_arg_arr_s_create( o->down_manager, down, arg, size, step );
+        }
+    }
+
+    if( free_token )
+    {
         token_manager_s_free_token( o, token );
-        return;
     }
-
-    if( o->rc_count_arr[ token ] )
-    {
-        o->rc_count_arr[ token ]--;
-        if( !o->rc_down_arr ) token_manager_s_create_rc_down_arr( o );
-        if( !o->rc_down_arr[ token ] ) o->rc_down_arr[ token ] = down_arg_arr_s_create( o->down_manager, down, arg, size, step );
-        return;
-    }
-
-    if( !o->rc_down_arr || !o->rc_down_arr[ token ] )
-    {
-        bcore_mutex_s_unlock( o->mutex );
-        for( uz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
-        bcore_mutex_s_lock( o->mutex );
-    }
-
-    token_manager_s_free_token( o, token );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1276,7 +1326,7 @@ static void external_manager_s_release_obj( external_manager_s* o, fp_down_obj d
 
         /* We only safe down instruction when the object is root.
          * Otherwise 'token' refers to a parent to which function down does not apply.
-         * In that case shut down information in controlled by the parent object.
+         * In that case shut down information is controlled by the parent object.
          */
         if( ptr_is_root && !ext->rc_down )
         {
@@ -1310,13 +1360,15 @@ static void external_manager_s_release_arg( external_manager_s* o, fp_down_arg d
         ext->rc_count--;
 
         /* We only safe down instruction when the object is root.
-         * Otherwise 'token' refers to a parent to which function down does not apply.
-         * In that case shut down information in controlled by the parent object.
+         * Otherwise shut down information is controlled by the parent object.
          */
-        if( ptr_is_root && !ext->rc_down )
+        if( ptr_is_root )
         {
-            assert( o->down_manager );
-            ext->rc_down = down_arg_s_create( o->down_manager, down, arg );
+            if( !ext->rc_down )
+            {
+                assert( o->down_manager );
+                ext->rc_down = down_arg_s_create( o->down_manager, down, arg );
+            }
         }
     }
     else
@@ -1339,20 +1391,51 @@ static void external_manager_s_release_obj_arr( external_manager_s* o, fp_down_o
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Object is not root." );
     ext_s* ext = *ext_p;
+
+    bl_t free_token  = true;
+    bl_t direct_down = true;
+
     if( ext->rc_count )
     {
         ext->rc_count--;
         assert( o->down_manager );
-        if( !ext->rc_down ) ext->rc_down = down_obj_arr_s_create( o->down_manager, down, size, step );
+        free_token = false;
+        direct_down = false;
+    }
+    else if( ext->rc_down )
+    {
+        direct_down = false;
+    }
+
+    if( direct_down )
+    {
+        bcore_mutex_s_unlock( o->mutex );
+        for( uz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
+        bcore_mutex_s_lock( o->mutex );
     }
     else
     {
-        if( !ext->rc_down )
+        down_s** p_down = ( down_s** )&ext->rc_down;
+
+        if
+        (
+            !( *p_down ) ||
+            (
+                ( ( *p_down )->_ != ( fp_down )_down_obj_arr ) &&
+                ( ( *p_down )->_ != ( fp_down )_down_arg_arr )
+            )
+        )
         {
-            bcore_mutex_s_unlock( o->mutex );
-            for( uz_t i = 0; i < size; i++ ) down( ( u0_t* )ptr + i * step );
-            bcore_mutex_s_lock( o->mutex );
+            if( *p_down )
+            {
+                down_s_discard( o->down_manager, *p_down ); // *p_down came from a forked reference
+            }
+            *p_down = ( down_s* )down_obj_arr_s_create( o->down_manager, down, size, step );
         }
+    }
+
+    if( free_token )
+    {
         external_manager_s_free_ext( o, ptr, ext );
     }
 }
@@ -1364,20 +1447,53 @@ static void external_manager_s_release_arg_arr( external_manager_s* o, fp_down_a
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Object is not root." );
     ext_s* ext = *ext_p;
+
+
+
+    bl_t free_token  = true;
+    bl_t direct_down = true;
+
     if( ext->rc_count )
     {
         ext->rc_count--;
         assert( o->down_manager );
-        if( !ext->rc_down ) ext->rc_down = down_arg_arr_s_create( o->down_manager, down, arg, size, step );
+        free_token = false;
+        direct_down = false;
+    }
+    else if( ext->rc_down )
+    {
+        direct_down = false;
+    }
+
+    if( direct_down )
+    {
+        bcore_mutex_s_unlock( o->mutex );
+        for( uz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
+        bcore_mutex_s_lock( o->mutex );
     }
     else
     {
-        if( !ext->rc_down )
+        down_s** p_down = ( down_s** )&ext->rc_down;
+
+        if
+        (
+            !( *p_down ) ||
+            (
+                ( ( *p_down )->_ != ( fp_down )_down_obj_arr ) &&
+                ( ( *p_down )->_ != ( fp_down )_down_arg_arr )
+            )
+        )
         {
-            bcore_mutex_s_unlock( o->mutex );
-            for( uz_t i = 0; i < size; i++ ) down( arg, ( u0_t* )ptr + i * step );
-            bcore_mutex_s_lock( o->mutex );
+            if( *p_down )
+            {
+                down_s_discard( o->down_manager, *p_down ); // *p_down came from a forked reference
+            }
+            *p_down = ( down_s* )down_arg_arr_s_create( o->down_manager, down, arg, size, step );
         }
+    }
+
+    if( free_token )
+    {
         external_manager_s_free_ext( o, ptr, ext );
     }
 }
