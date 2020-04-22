@@ -33,20 +33,44 @@
 PLANT_GROUP( bhpt, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/** Holor-probe:
- *  An array of holor references. Used to probe into adaptive for inspection and update purposes
- */
-stamp :hprobe = aware bcore_array { bhvm_holor_s -> []; };
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 /** The adaptor defines a method for updating adaptive holors from accumulated gradients
  *  It is assigned to an adaptive, which prepares (resets) its adapt function.
  */
 group :adaptor =
 {
+    signature void get_min_max( const, f3_t* min, f3_t* max );
+
+    stamp :node  = aware :
+    {
+        bhvm_holor_s -> axon;
+        bhvm_holor_s -> grad;
+        func : :get_min_max =
+        {
+            if( o->axon )
+            {
+                if( min ) *min = bhvm_value_s_get_min_f3( &o->axon->v );
+                if( max ) *max = bhvm_value_s_get_max_f3( &o->axon->v );
+            }
+        };
+    };
+
+    stamp :probe = aware bcore_array
+    {
+        :node_s [];
+        func : :get_min_max =
+        {
+            f3_t min_l = 0, max_l = 0;
+            BFOR_EACH( i, o )
+            {
+                :node_s_get_min_max( &o->data[ i ], &min_l, &max_l );
+                if( min ) *min = ( i > 0 ) ? f3_min( *min, min_l ) : min_l;
+                if( max ) *max = ( i > 0 ) ? f3_max( *max, max_l ) : max_l;
+            }
+        };
+    };
+
     feature 'a' void reset( mutable ); // resets all moments
-    feature 'a' void adapt( mutable, const bhvm_holor_s* accugrad, bhvm_holor_s* adaptive );
+    feature 'a' void adapt( mutable, const :node_s* node );
 
     stamp :adl = aware bcore_array { aware : => []; };
 };
@@ -75,11 +99,8 @@ group :adaptive =
     /// resets cyclic variables
     feature 'a' void cyclic_reset( mutable ) = {};
 
-    /// obtains a holor-probe for accumulative gradients
-    feature 'a' void get_hprobe_accugrad( const, ::hprobe_s* hprobe ) = {};
-
-    /// obtains a holor-probe for adaptive holors
-    feature 'a' void get_hprobe_adaptive( const, ::hprobe_s* hprobe ) = {};
+    /// obtains a holor-probe for accumulative gradients; returns probe
+    feature 'a' ::adaptor_probe_s* get_adaptor_probe( const, ::adaptor_probe_s* probe ) = { return probe; };
 
     /// outputs current status information to sink
     feature 'a' void status_to_sink( const, sz_t verbosity, bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };

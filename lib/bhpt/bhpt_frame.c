@@ -24,22 +24,37 @@
 void bhpt_frame_s_adapt( bhpt_frame_s* o )
 {
     BLM_INIT();
-    bhpt_hprobe_s* hprobe_adaptive = BLM_CREATE( bhpt_hprobe_s );
-    bhpt_hprobe_s* hprobe_accugrad = BLM_CREATE( bhpt_hprobe_s );
+    bhpt_adaptor_adl_s* adaptor_adl = o->state->adaptor_adl;
+    bhpt_adaptive*      adaptive = o->state->adaptive;
+    bhpt_adaptor_probe_s* probe = bhpt_adaptive_a_get_adaptor_probe( adaptive, BLM_CREATE( bhpt_adaptor_probe_s ) );
 
-    bhpt_adaptive_a_get_hprobe_adaptive( o->state->adaptive, hprobe_adaptive );
-    bhpt_adaptive_a_get_hprobe_accugrad( o->state->adaptive, hprobe_accugrad );
+    ASSERT( probe->size == adaptor_adl->size );
 
-    ASSERT( o->adaptor_adl->size == hprobe_adaptive->size );
-    ASSERT( o->adaptor_adl->size == hprobe_accugrad->size );
-
-    BFOR_EACH( i, o->adaptor_adl )
+    BFOR_EACH( i, adaptor_adl )
     {
-        bhpt_adaptor_a_adapt( o->adaptor_adl->data[ i ], hprobe_accugrad->data[ i ], hprobe_adaptive->data[ i ] );
-        bhvm_value_s_zro( &hprobe_accugrad->data[ i ]->v );
+        bhpt_adaptor_a_adapt( adaptor_adl->data[ i ], &probe->data[ i ] );
     }
 
     BLM_DOWN();
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhpt_frame_s_test( bhpt_frame_s* o )
+{
+    bhpt_frame_state_s* state = o->state;
+    if( o->verbosity > 0 ) bcore_sink_a_push_fa( o->log, "#pl10 {#<sz_t>}: ", state->cycle_number );
+    bhpt_tutor_a_test( o->tutor, state->adaptive, o->verbosity, o->log );
+    if( o->verbosity > 0 )
+    {
+        BLM_INIT();
+        bhpt_adaptor_probe_s* probe = bhpt_adaptive_a_get_adaptor_probe( state->adaptive, BLM_CREATE( bhpt_adaptor_probe_s ) );
+        f3_t min = 0, max = 0;
+        bhpt_adaptor_probe_s_get_min_max( probe, &min, &max );
+        bcore_sink_a_pushf( o->log, ", min: %6.3g, max: %6.3g", min, max );
+        bcore_sink_a_push_fa( o->log, "\n" );
+        BLM_DOWN();
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -50,6 +65,12 @@ void bhpt_frame_s_run( bhpt_frame_s* o )
 
     while( state->cycle_number < o->cycle_finish )
     {
+        if( state->cycle_number == 0 || state->cycle_number - state->last_cycle_test >= o->cycle_test )
+        {
+            state->last_cycle_test = state->cycle_number;
+            bhpt_frame_s_test( o );
+        }
+
         bhpt_tutor_a_prime( o->tutor, state->adaptive );
         state->cycle_number++;
 
@@ -57,12 +78,6 @@ void bhpt_frame_s_run( bhpt_frame_s* o )
         {
             state->last_cycle_adapt = state->cycle_number;
             bhpt_frame_s_adapt( o );
-        }
-
-        if( state->cycle_number - state->last_cycle_test >= o->cycle_test )
-        {
-            state->last_cycle_test = state->cycle_number;
-            bhpt_tutor_a_test( o->tutor, state->adaptive, o->verbosity, o->log );
         }
 
         if( state->cycle_number - state->last_cycle_backup >= o->cycle_backup )
@@ -101,11 +116,7 @@ s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args )
         }
     }
 
-    if( reset )
-    {
-        bhpt_frame_state_s_attach( &o->state, bhpt_frame_state_s_create() );
-    }
-    else
+    if( !reset )
     {
         sc_t path = o->state_path.sc;
         if( path[ 0 ] && bcore_file_exists( path ) )
@@ -114,23 +125,32 @@ s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args )
             bcore_bin_ml_a_from_file( o->state, path );
             bcore_sink_a_push_fa( o->log, "State recovered from '#<sc_t>'\n", path );
         }
+        else
+        {
+            reset = true;
+        }
+    }
+
+    if( reset )
+    {
+        BLM_INIT();
+        bhpt_frame_state_s_attach( &o->state, bhpt_frame_state_s_create() );
+        o->state->adaptive = bhpt_tutor_a_create_adaptive( o->tutor, o->builder );
+
+        // setting up adaptors
+        bhpt_adaptor_adl_s_attach( &o->state->adaptor_adl, bhpt_adaptor_adl_s_create() );
+        bhpt_adaptor_probe_s* probe = BLM_CREATE( bhpt_adaptor_probe_s );
+        bhpt_adaptive_a_get_adaptor_probe( o->state->adaptive, probe );
+        bhpt_adaptor_adl_s_set_size( o->state->adaptor_adl, probe->size );
+        BFOR_EACH( i, o->state->adaptor_adl ) o->state->adaptor_adl->data[ i ] = bhpt_adaptor_a_clone( o->adaptor );
+
+        BLM_DOWN();
     }
 
     assert( o->builder );
     assert( o->tutor );
-
-    if( !o->state->adaptive ) o->state->adaptive = bhpt_tutor_a_create_adaptive( o->tutor, o->builder );
-
-    // setting up adaptors
-    {
-        BLM_INIT();
-        bhpt_adaptor_adl_s_attach( &o->adaptor_adl, bhpt_adaptor_adl_s_create() );
-        bhpt_hprobe_s* hprobe = BLM_CREATE( bhpt_hprobe_s );
-        bhpt_adaptive_a_get_hprobe_adaptive( o->state->adaptive, hprobe );
-        bhpt_adaptor_adl_s_set_size( o->adaptor_adl, hprobe->size );
-        BFOR_EACH( i, o->adaptor_adl ) o->adaptor_adl->data[ i ] = bhpt_adaptor_a_clone( o->adaptor );
-        BLM_DOWN();
-    }
+    assert( o->state );
+    assert( o->state->adaptive );
 
     bhpt_adaptive_a_status_to_sink( o->state->adaptive, o->verbosity, o->log );
 

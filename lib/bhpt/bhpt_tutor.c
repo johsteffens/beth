@@ -46,7 +46,7 @@ bhpt_adaptive* bhpt_tutor_sine_random_s_create_adaptive( const bhpt_tutor_sine_r
 u2_t bhpt_tutor_sine_random_s_fetch_sample( const bhpt_tutor_sine_random_s* o, u2_t rval, bhvm_holor_s* en, bhvm_holor_s* ex )
 {
     rval = bcore_xsg1_u2( rval );
-    bl_t pos = ( o->rval_prime & 1 ) == 0; // pos vs neg sample
+    bl_t pos = ( rval & 1 ) == 0; // pos vs neg sample
     rval = bcore_xsg1_u2( rval );
 
     ASSERT( en->v.size == o->input_size );
@@ -54,14 +54,14 @@ u2_t bhpt_tutor_sine_random_s_fetch_sample( const bhpt_tutor_sine_random_s* o, u
     ASSERT( en->v.type == TYPEOF_f3_t );
     ASSERT( ex->v.type == TYPEOF_f3_t );
 
-    f3_t omega = 1.0 * f3_pi() * f3_rnd_pos( &rval );
-    f3_t amplitude = 4.0 * f3_rnd_pos( &rval );
-
     f3_t* en_data = ( f3_t* )en->v.data;
     f3_t* ex_data = ( f3_t* )ex->v.data;
 
     if( pos )
     {
+        f3_t omega = 1.0 * f3_pi() * f3_rnd_pos( &rval );
+        f3_t amplitude = 4.0 * f3_rnd_pos( &rval );
+
         for( sz_t i = 0; i < o->input_size; i++ )
         {
             f3_t vp = sin( omega * i ) * amplitude;
@@ -119,10 +119,14 @@ void bhpt_tutor_sine_random_s_test( const bhpt_tutor_sine_random_s* o, const bhp
 
     bhvm_holor_s_zro( bhvm_holor_s_fit_size( hx ) );
     bhvm_holor_s_zro( bhvm_holor_s_fit_size( hy ) );
-    bhvm_holor_s* hf = BLM_CLONE( bhvm_holor_s, hy );
-    bhvm_holor_s* hd = BLM_CLONE( bhvm_holor_s, hy ); // y - f
-    bhvm_holor_s* sf = BLM_CLONE( bhvm_holor_s, hy );
-    bhvm_holor_s* sy = BLM_CLONE( bhvm_holor_s, hy );
+    bhvm_holor_s* hf  = BLM_CLONE( bhvm_holor_s, hy );
+    bhvm_holor_s* hd  = BLM_CLONE( bhvm_holor_s, hy ); // y - f
+    bhvm_holor_s* hsd = BLM_CLONE( bhvm_holor_s, hy ); // y - f
+
+    sz_t dimy = hy->v.size;
+
+    f3_t sy  = 0;
+    f3_t sd  = 0;
 
     f3_t sy2 = 0;
     f3_t sd2 = 0;
@@ -133,35 +137,37 @@ void bhpt_tutor_sine_random_s_test( const bhpt_tutor_sine_random_s* o, const bhp
     {
         rval = bhpt_tutor_sine_random_s_fetch_sample( o, rval, hx, hy );
         bhpt_adaptive_a_axon_pass( adaptive, hx, hf );
-
         bhvm_hop_ar2_eci_sub_s_f( hy, hf, hd );
 
-        bhvm_holor_s_acc( sf, hf ); // sf += hf
-        bhvm_holor_s_acc( sy, hy ); // sy += hy
-
+        sy  += bhvm_holor_s_sum( hy );
+        sd  += bhvm_holor_s_sum( hd );
         sy2 += bhvm_holor_s_sum_sqr( hy );
         sd2 += bhvm_holor_s_sum_sqr( hd );
+
+        bhvm_holor_s_acc( hsd, hd );
     }
 
-    sz_t dimy = sy->v.size;
     sz_t n = ( o->test_size > 0 ) ? o->test_size * dimy : 1;
 
-    f3_t e2y = bhvm_holor_s_sum_sqr(     sy )     / ( n * n );
-    f3_t e2d = bhvm_holor_s_sub_sqr_sum( sy, sf ) / ( n * n );
+    f3_t ey = sy / n;
+    f3_t ed = sd / n;
 
     f3_t ey2 = sy2 / n;
     f3_t ed2 = sd2 / n;
 
     /// variances
-    f3_t vy = ey2 - e2y; // variance of training data
-    f3_t vd = ed2 - e2d; // variance of output difference
+    f3_t vy = ey2 - f3_sqr( ey ); // variance of training data
+    f3_t vd = ed2 - f3_sqr( ed ); // variance of output difference
 
     f3_t error = f3_srt(  vd * f3_inv( vy ) );
-    f3_t bias  = f3_srt( e2d * f3_inv( vy ) );
+
+    f3_t eb2 = bhvm_holor_s_sum_sqr( hsd ) / ( n * n );
+
+    f3_t bias  = f3_srt( eb2 * f3_inv( vy ) );
 
     if( verbosity > 0 )
     {
-        bcore_sink_a_push_fa( log, "err = #<f3_t>, bias = #<f3_t>\n", error, bias );
+        bcore_sink_a_pushf( log, "err: %5.3f, bias: %7.5f", error, bias );
     }
 
     BLM_DOWN();

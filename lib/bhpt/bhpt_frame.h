@@ -44,6 +44,7 @@ stamp :state = aware :
     sz_t last_cycle_test;
     sz_t last_cycle_backup;
     aware bhpt_adaptive => adaptive;
+    bhpt_adaptor_adl_s => adaptor_adl;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,7 +77,6 @@ stamp : = aware bcore_main
 
     /// current state of frame
     hidden :state_s => state;
-    hidden bhpt_adaptor_adl_s => adaptor_adl;
 
     st_s state_path; // backup file for state
 

@@ -40,8 +40,9 @@ stamp bhpt_adaptor_epsilon = aware bhpt_adaptor
     func bhpt_adaptor : reset = {};
     func bhpt_adaptor : adapt =
     {
-        assert( bhvm_shape_s_is_equal( &accugrad->s, &adaptive->s ) );
-        bhvm_value_s_mul_scl_f3_acc( &accugrad->v, o->epsilon, &adaptive->v );
+        assert( bhvm_shape_s_is_equal( &node->axon->s, &node->grad->s ) );
+        bhvm_value_s_mul_scl_f3_acc( &node->grad->v, o->epsilon, &node->axon->v );
+        bhvm_value_s_zro( &node->grad->v );
     };
 };
 
@@ -52,7 +53,7 @@ stamp bhpt_adaptor_list = aware bhpt_adaptor
 {
     bhpt_adaptor_adl_s adl;
     func bhpt_adaptor : reset = { BFOR_EACH( i, &o->adl ) bhpt_adaptor_a_reset( o->adl.data[ i ] ); };
-    func bhpt_adaptor : adapt = { BFOR_EACH( i, &o->adl ) bhpt_adaptor_a_adapt( o->adl.data[ i ], accugrad, adaptive ); };
+    func bhpt_adaptor : adapt = { BFOR_EACH( i, &o->adl ) bhpt_adaptor_a_adapt( o->adl.data[ i ], node ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

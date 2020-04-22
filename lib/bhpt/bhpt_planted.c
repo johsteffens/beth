@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-21T10:14:28Z
+ *  Last File Update: 2020-04-22T11:28:14Z
  *
  *  Copyright and License of this File:
  *
@@ -28,14 +28,41 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhpt
 
-BCORE_DEFINE_OBJECT_INST_P( bhpt_hprobe_s )
-"aware bcore_array"
-"{"
-    "bhvm_holor_s -> [];"
-"}";
-
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhpt_adaptor
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_node_s )
+"aware bhpt_adaptor"
+"{"
+    "bhvm_holor_s -> axon;"
+    "bhvm_holor_s -> grad;"
+"}";
+
+void bhpt_adaptor_node_s_get_min_max( const bhpt_adaptor_node_s* o, f3_t* min, f3_t* max )
+{
+    if( o->axon )
+    {
+        if( min ) *min = bhvm_value_s_get_min_f3( &o->axon->v );
+        if( max ) *max = bhvm_value_s_get_max_f3( &o->axon->v );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_probe_s )
+"aware bcore_array"
+"{"
+    "bhpt_adaptor_node_s [];"
+"}";
+
+void bhpt_adaptor_probe_s_get_min_max( const bhpt_adaptor_probe_s* o, f3_t* min, f3_t* max )
+{
+    f3_t min_l = 0, max_l = 0;
+    BFOR_EACH( i, o )
+    {
+        bhpt_adaptor_node_s_get_min_max( &o->data[ i ], &min_l, &max_l );
+        if( min ) *min = ( i > 0 ) ? f3_min( *min, min_l ) : min_l;
+        if( max ) *max = ( i > 0 ) ? f3_max( *max, max_l ) : max_l;
+    }
+}
 
 BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_adl_s )
 "aware bcore_array"
@@ -61,8 +88,7 @@ BCORE_DEFINE_SPECT( bhpt, bhpt_adaptive )
     "feature aware bhpt_adaptive : axon_pass = bhpt_adaptive_axon_pass__;"
     "feature aware bhpt_adaptive : dendrite_pass = bhpt_adaptive_dendrite_pass__;"
     "feature aware bhpt_adaptive : cyclic_reset = bhpt_adaptive_cyclic_reset__;"
-    "feature aware bhpt_adaptive : get_hprobe_accugrad = bhpt_adaptive_get_hprobe_accugrad__;"
-    "feature aware bhpt_adaptive : get_hprobe_adaptive = bhpt_adaptive_get_hprobe_adaptive__;"
+    "feature aware bhpt_adaptive : get_adaptor_probe = bhpt_adaptive_get_adaptor_probe__;"
     "feature aware bhpt_adaptive : status_to_sink = bhpt_adaptive_status_to_sink__;"
 "}";
 
@@ -104,6 +130,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_state_s )
     "sz_t last_cycle_test;"
     "sz_t last_cycle_backup;"
     "aware bhpt_adaptive => adaptive;"
+    "bhpt_adaptor_adl_s => adaptor_adl;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
@@ -118,7 +145,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
     "sz_t cycle_finish = 1000000;"
     "sz_t verbosity = 1;"
     "hidden bhpt_frame_state_s => state;"
-    "hidden bhpt_adaptor_adl_s => adaptor_adl;"
     "st_s state_path;"
     "hidden aware bcore_sink -> log;"
     "func ^:main;"
@@ -139,10 +165,11 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_epsilon_s )
     "func ^:adapt;"
 "}";
 
-void bhpt_adaptor_epsilon_s_adapt( bhpt_adaptor_epsilon_s* o, const bhvm_holor_s* accugrad, bhvm_holor_s* adaptive )
+void bhpt_adaptor_epsilon_s_adapt( bhpt_adaptor_epsilon_s* o, const bhpt_adaptor_node_s* node )
 {
-    assert( bhvm_shape_s_is_equal( &accugrad->s, &adaptive->s ) );
-    bhvm_value_s_mul_scl_f3_acc( &accugrad->v, o->epsilon, &adaptive->v );
+    assert( bhvm_shape_s_is_equal( &node->axon->s, &node->grad->s ) );
+    bhvm_value_s_mul_scl_f3_acc( &node->grad->v, o->epsilon, &node->axon->v );
+    bhvm_value_s_zro( &node->grad->v );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_list_s )
@@ -185,16 +212,17 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 493502275 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 3832939672 ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h
 
             // group: bhpt
-            BCORE_REGISTER_OBJECT( bhpt_hprobe_s );
             BCORE_REGISTER_TRAIT( bhpt, bcore_inst );
 
             // group: bhpt_adaptor
+            BCORE_REGISTER_OBJECT( bhpt_adaptor_node_s );
+            BCORE_REGISTER_OBJECT( bhpt_adaptor_probe_s );
             BCORE_REGISTER_FEATURE( bhpt_adaptor_reset );
             BCORE_REGISTER_FEATURE( bhpt_adaptor_adapt );
             BCORE_REGISTER_OBJECT( bhpt_adaptor_adl_s );
@@ -209,10 +237,8 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhpt_adaptive_dendrite_pass, bhpt_adaptive_dendrite_pass__ );
             BCORE_REGISTER_FEATURE( bhpt_adaptive_cyclic_reset );
             BCORE_REGISTER_FFUNC( bhpt_adaptive_cyclic_reset, bhpt_adaptive_cyclic_reset__ );
-            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_hprobe_accugrad );
-            BCORE_REGISTER_FFUNC( bhpt_adaptive_get_hprobe_accugrad, bhpt_adaptive_get_hprobe_accugrad__ );
-            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_hprobe_adaptive );
-            BCORE_REGISTER_FFUNC( bhpt_adaptive_get_hprobe_adaptive, bhpt_adaptive_get_hprobe_adaptive__ );
+            BCORE_REGISTER_FEATURE( bhpt_adaptive_get_adaptor_probe );
+            BCORE_REGISTER_FFUNC( bhpt_adaptive_get_adaptor_probe, bhpt_adaptive_get_adaptor_probe__ );
             BCORE_REGISTER_FEATURE( bhpt_adaptive_status_to_sink );
             BCORE_REGISTER_FFUNC( bhpt_adaptive_status_to_sink, bhpt_adaptive_status_to_sink__ );
             BCORE_REGISTER_SPECT( bhpt_adaptive );
