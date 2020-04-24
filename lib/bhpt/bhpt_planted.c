@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-22T11:28:14Z
+ *  Last File Update: 2020-04-24T11:59:22Z
  *
  *  Copyright and License of this File:
  *
@@ -10,7 +10,7 @@
  *  bhpt_sketch.h
  *  bhpt_frame.h
  *  bhpt_adaptor.h
- *  bhpt_tutor.h
+ *  bhpt_tutor_sampler.h
  *
  */
 
@@ -113,6 +113,7 @@ BCORE_DEFINE_SPECT( bhpt, bhpt_tutor )
     "feature aware bhpt_tutor : reset = bhpt_tutor_reset__;"
     "feature aware bhpt_tutor : prime = bhpt_tutor_prime__;"
     "feature aware bhpt_tutor : test = bhpt_tutor_test__;"
+    "feature aware bhpt_tutor : status_to_sink = bhpt_tutor_status_to_sink__;"
 "}";
 
 /**********************************************************************************************************************/
@@ -181,18 +182,95 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_list_s )
 "}";
 
 /**********************************************************************************************************************/
-// source: bhpt_tutor.h
-#include "bhpt_tutor.h"
+// source: bhpt_tutor_sampler.h
+#include "bhpt_tutor_sampler.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bhpt_tutor_stamp
+// group: bhpt_sampler
 
-BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_sine_random_s )
-"aware bhpt_tutor"
+BCORE_DEFINE_OBJECT_INST_P( bhpt_sampler_sine_random_s )
+"aware bhpt_sampler"
 "{"
-    "sz_t input_size = 32;"
+    "sz_t size_en = 32;"
     "f3_t pos_tgt = 0.9;"
     "f3_t neg_tgt = -0.9;"
+    "func ^:fetch;"
+    "func ^:get_size_en;"
+    "func ^:get_size_ex;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_sampler_binary_add_s )
+"aware bhpt_sampler"
+"{"
+    "sz_t bits = 4;"
+    "f3_t val_h = 0.9;"
+    "f3_t val_l = -0.9;"
+    "func ^:fetch;"
+    "func ^:get_size_en;"
+    "func ^:get_size_ex;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_sampler_binary_mul_s )
+"aware bhpt_sampler"
+"{"
+    "sz_t bits = 4;"
+    "f3_t val_h = 0.9;"
+    "f3_t val_l = -0.9;"
+    "func ^:fetch;"
+    "func ^:get_size_en;"
+    "func ^:get_size_ex;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_sampler_binary_xsg3_s )
+"aware bhpt_sampler"
+"{"
+    "sz_t bits = 4;"
+    "f3_t val_h = 0.9;"
+    "f3_t val_l = -0.9;"
+    "func ^:fetch;"
+    "func ^:get_size_en;"
+    "func ^:get_size_ex;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_sampler_binary_hash_s )
+"aware bhpt_sampler"
+"{"
+    "sz_t bits = 4;"
+    "f3_t val_h = 0.9;"
+    "f3_t val_l = -0.9;"
+    "bl_t reverse = false;"
+    "func ^:fetch;"
+    "func ^:get_size_en;"
+    "func ^:get_size_ex;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_sampler_polynom_s )
+"aware bhpt_sampler"
+"{"
+    "sz_t size_en = 32;"
+    "sz_t size_ex = 3;"
+    "f3_t range = 1.0;"
+    "f3_t noise_level = 0;"
+    "func ^:fetch;"
+    "func ^:get_size_en;"
+    "func ^:get_size_ex;"
+"}";
+
+BCORE_DEFINE_SPECT( bcore_inst, bhpt_sampler )
+"{"
+    "bcore_spect_header_s header;"
+    "feature strict aware bhpt_sampler : fetch;"
+    "feature strict aware bhpt_sampler : get_size_en;"
+    "feature strict aware bhpt_sampler : get_size_ex;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhpt_tutor_sampler
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_sampler_s )
+"aware bhpt_tutor"
+"{"
+    "aware bhpt_sampler => sampler;"
     "u2_t rval_prime = 1234;"
     "u2_t rval_test = 5342;"
     "sz_t test_size = 1000;"
@@ -201,7 +279,16 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_sine_random_s )
     "func ^:create_adaptive;"
     "func ^:prime;"
     "func ^:test;"
+    "func ^:status_to_sink;"
 "}";
+
+void bhpt_tutor_sampler_s_status_to_sink( const bhpt_tutor_sampler_s* o, sz_t verbosity, bcore_sink* sink )
+{
+    if( verbosity > 0 )
+    {
+        bcore_sink_a_push_fa( sink, "#<sc_t> : #<sc_t>", ifnameof( o->_ ), ifnameof( o->sampler ? o->sampler->_ : 0 ) );
+    }
+}
 
 /**********************************************************************************************************************/
 
@@ -212,7 +299,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 3832939672 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 2616072631 ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h
@@ -257,6 +344,8 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhpt_tutor_prime, bhpt_tutor_prime__ );
             BCORE_REGISTER_FEATURE( bhpt_tutor_test );
             BCORE_REGISTER_FFUNC( bhpt_tutor_test, bhpt_tutor_test__ );
+            BCORE_REGISTER_FEATURE( bhpt_tutor_status_to_sink );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_status_to_sink, bhpt_tutor_status_to_sink__ );
             BCORE_REGISTER_SPECT( bhpt_tutor );
 
             // --------------------------------------------------------------------
@@ -281,15 +370,46 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bhpt_adaptor_stamp, bhpt_adaptor );
 
             // --------------------------------------------------------------------
-            // source: bhpt_tutor.h
+            // source: bhpt_tutor_sampler.h
 
-            // group: bhpt_tutor_stamp
-            BCORE_REGISTER_FFUNC( bhpt_tutor_reset, bhpt_tutor_sine_random_s_reset );
-            BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptive, bhpt_tutor_sine_random_s_create_adaptive );
-            BCORE_REGISTER_FFUNC( bhpt_tutor_prime, bhpt_tutor_sine_random_s_prime );
-            BCORE_REGISTER_FFUNC( bhpt_tutor_test, bhpt_tutor_sine_random_s_test );
-            BCORE_REGISTER_OBJECT( bhpt_tutor_sine_random_s );
-            BCORE_REGISTER_TRAIT( bhpt_tutor_stamp, bhpt_tutor );
+            // group: bhpt_sampler
+            BCORE_REGISTER_FEATURE( bhpt_sampler_fetch );
+            BCORE_REGISTER_FEATURE( bhpt_sampler_get_size_en );
+            BCORE_REGISTER_FEATURE( bhpt_sampler_get_size_ex );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_fetch, bhpt_sampler_sine_random_s_fetch );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_en, bhpt_sampler_sine_random_s_get_size_en );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_ex, bhpt_sampler_sine_random_s_get_size_ex );
+            BCORE_REGISTER_OBJECT( bhpt_sampler_sine_random_s );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_fetch, bhpt_sampler_binary_add_s_fetch );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_en, bhpt_sampler_binary_add_s_get_size_en );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_ex, bhpt_sampler_binary_add_s_get_size_ex );
+            BCORE_REGISTER_OBJECT( bhpt_sampler_binary_add_s );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_fetch, bhpt_sampler_binary_mul_s_fetch );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_en, bhpt_sampler_binary_mul_s_get_size_en );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_ex, bhpt_sampler_binary_mul_s_get_size_ex );
+            BCORE_REGISTER_OBJECT( bhpt_sampler_binary_mul_s );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_fetch, bhpt_sampler_binary_xsg3_s_fetch );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_en, bhpt_sampler_binary_xsg3_s_get_size_en );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_ex, bhpt_sampler_binary_xsg3_s_get_size_ex );
+            BCORE_REGISTER_OBJECT( bhpt_sampler_binary_xsg3_s );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_fetch, bhpt_sampler_binary_hash_s_fetch );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_en, bhpt_sampler_binary_hash_s_get_size_en );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_ex, bhpt_sampler_binary_hash_s_get_size_ex );
+            BCORE_REGISTER_OBJECT( bhpt_sampler_binary_hash_s );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_fetch, bhpt_sampler_polynom_s_fetch );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_en, bhpt_sampler_polynom_s_get_size_en );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_ex, bhpt_sampler_polynom_s_get_size_ex );
+            BCORE_REGISTER_OBJECT( bhpt_sampler_polynom_s );
+            BCORE_REGISTER_SPECT( bhpt_sampler );
+
+            // group: bhpt_tutor_sampler
+            BCORE_REGISTER_FFUNC( bhpt_tutor_reset, bhpt_tutor_sampler_s_reset );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptive, bhpt_tutor_sampler_s_create_adaptive );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_prime, bhpt_tutor_sampler_s_prime );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_test, bhpt_tutor_sampler_s_test );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_status_to_sink, bhpt_tutor_sampler_s_status_to_sink );
+            BCORE_REGISTER_OBJECT( bhpt_tutor_sampler_s );
+            BCORE_REGISTER_TRAIT( bhpt_tutor_sampler, bcore_inst );
         }
         break;
         default: break;

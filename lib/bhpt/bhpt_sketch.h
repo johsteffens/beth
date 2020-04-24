@@ -141,6 +141,9 @@ group :tutor =
 
     /// tests a specified adaptive (concurrent for tutor) and writes result to log
     feature 'a' void test( const, const ::adaptive* adaptive, sz_t verbosity, bcore_sink* log ) = {};
+
+    /// outputs current status information to sink
+    feature 'a' void status_to_sink( const, sz_t verbosity, bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

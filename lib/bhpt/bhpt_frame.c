@@ -152,7 +152,10 @@ s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args )
     assert( o->state );
     assert( o->state->adaptive );
 
+    bhpt_tutor_a_status_to_sink( o->tutor, o->verbosity, o->log );
+    bcore_sink_a_push_fa( o->log, "\n" );
     bhpt_adaptive_a_status_to_sink( o->state->adaptive, o->verbosity, o->log );
+    bcore_sink_a_push_fa( o->log, "\n" );
 
     bhpt_frame_s_run( o );
 
