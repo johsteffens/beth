@@ -49,6 +49,22 @@ void bcore_mutex_s_copy( bcore_mutex_s* o, const bcore_mutex_s* src )
     // nothing to do
 }
 
+void bcore_mutex_s_attach( bcore_mutex_s** o, bcore_mutex_s* src )
+{
+    if( !o ) return;
+    bcore_mutex_s_discard( *o );
+    *o = src;
+}
+
+void bcore_mutex_s_detach( bcore_mutex_s** o )
+{
+    if( o )
+    {
+        bcore_mutex_s_discard( *o );
+        *o = NULL;
+    }
+}
+
 BCORE_DEFINE_FUNCTIONS_CDC( bcore_mutex_s )
 
 void bcore_mutex_s_lock( bcore_mutex_s* o )
@@ -101,6 +117,22 @@ void bcore_condition_s_copy( bcore_condition_s* o, const bcore_condition_s* src 
     // nothing to do
 }
 
+void bcore_condition_s_attach( bcore_condition_s** o, bcore_condition_s* src )
+{
+    if( !o ) return;
+    bcore_condition_s_discard( *o );
+    *o = src;
+}
+
+void bcore_condition_s_detach( bcore_condition_s** o )
+{
+    if( o )
+    {
+        bcore_condition_s_discard( *o );
+        *o = NULL;
+    }
+}
+
 BCORE_DEFINE_FUNCTIONS_CDC( bcore_condition_s )
 
 void bcore_condition_s_sleep( bcore_condition_s* o, bcore_mutex_s* mutex )
@@ -146,6 +178,22 @@ void bcore_thread_s_down( bcore_thread_s* o )
 void bcore_thread_s_copy( bcore_thread_s* o, const bcore_thread_s* src )
 {
     // nothing to do
+}
+
+void bcore_thread_s_attach( bcore_thread_s** o, bcore_thread_s* src )
+{
+    if( !o ) return;
+    bcore_thread_s_discard( *o );
+    *o = src;
+}
+
+void bcore_thread_s_detach( bcore_thread_s** o )
+{
+    if( o )
+    {
+        bcore_thread_s_discard( *o );
+        *o = NULL;
+    }
 }
 
 BCORE_DEFINE_FUNCTIONS_CDC( bcore_thread_s )
@@ -214,6 +262,22 @@ typedef struct bcore_thread_arr_s
 
 BCORE_DEFINE_FUNCTIONS_SELF_OBJECT_INST( bcore_thread_arr_s, "bcore_thread_arr_s = bcore_inst { aware_t _; bcore_thread_s [] arr; }" )
 
+void bcore_thread_arr_s_attach( bcore_thread_arr_s** o, bcore_thread_arr_s* src )
+{
+    if( !o ) return;
+    bcore_thread_arr_s_discard( *o );
+    *o = src;
+}
+
+void bcore_thread_arr_s_detach( bcore_thread_arr_s** o )
+{
+    if( o )
+    {
+        bcore_thread_arr_s_discard( *o );
+        *o = NULL;
+    }
+}
+
 uz_t bcore_thread_arr_s_get_size( const bcore_thread_arr_s* o )
 {
     return o->size;
@@ -250,7 +314,7 @@ void bcore_sleep_ns( uz_t ns )
     ts.tv_sec  = ns / 1000000000;
     ts.tv_nsec = ns % 1000000000;
 
-    // it seems the nanosleep prototype ins not necessarily defined in <time.h>
+    // it seems the nanosleep prototype is not necessarily defined in <time.h>
     // so we do it here.
     int nanosleep( const struct timespec* requested, struct timespec* remaining );
 

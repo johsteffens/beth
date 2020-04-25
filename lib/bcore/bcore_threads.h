@@ -38,6 +38,9 @@ bcore_mutex_s* bcore_mutex_s_create();
 void           bcore_mutex_s_discard( bcore_mutex_s* o );
 bcore_mutex_s* bcore_mutex_s_clone( const bcore_mutex_s* src ); // clone behaves like create (src is not evaluated)
 
+void bcore_mutex_s_attach( bcore_mutex_s** o, bcore_mutex_s* src );
+void bcore_mutex_s_detach( bcore_mutex_s** o );
+
 void bcore_mutex_s_lock(   bcore_mutex_s* o );
 void bcore_mutex_s_unlock( bcore_mutex_s* o );
 
@@ -63,9 +66,12 @@ bcore_condition_s* bcore_condition_s_create();
 void               bcore_condition_s_discard( bcore_condition_s* o );
 bcore_condition_s* bcore_condition_s_clone( const bcore_condition_s* src ); // clone behaves like create (src is not evaluated)
 
+void bcore_condition_s_attach( bcore_condition_s** o, bcore_condition_s* src );
+void bcore_condition_s_detach( bcore_condition_s** o );
+
 /** Sleeps until woken from another thread.
  *  A mutex-lock must have been obtained before. The mutex is unlocked
- *  by during sleep and re-locked when woken up.
+ *  during sleep and re-locked when woken up.
  *  Beware of spurious wakeups: A wakeup may happen spuriously without
  *  actual cause from wake-trigger send to this condition.
  */
@@ -99,6 +105,9 @@ bcore_thread_s* bcore_thread_s_create();
 void            bcore_thread_s_discard(     bcore_thread_s* o );
 bcore_thread_s* bcore_thread_s_clone( const bcore_thread_s* src ); // clone behaves like create (src is not evaluated)
 
+void bcore_thread_s_attach( bcore_thread_s** o, bcore_thread_s* src );
+void bcore_thread_s_detach( bcore_thread_s** o );
+
 /** Calls func( arg ) in a new joinable thread
  *  If o is unjoined, it is joined first.
  */
@@ -128,6 +137,9 @@ void bcore_thread_arr_s_copy( bcore_thread_arr_s* o, const bcore_thread_arr_s* s
 bcore_thread_arr_s* bcore_thread_arr_s_create();
 void                bcore_thread_arr_s_discard(     bcore_thread_arr_s* o );
 bcore_thread_arr_s* bcore_thread_arr_s_clone( const bcore_thread_arr_s* o );
+
+void bcore_thread_arr_s_attach( bcore_thread_arr_s** o, bcore_thread_arr_s* src );
+void bcore_thread_arr_s_detach( bcore_thread_arr_s** o );
 
 uz_t            bcore_thread_arr_s_get_size( const bcore_thread_arr_s* o );
 bcore_thread_s* bcore_thread_arr_s_get_thread( bcore_thread_arr_s* o, uz_t index );
