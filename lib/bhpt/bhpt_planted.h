@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-24T11:59:22Z
+ *  Last File Update: 2020-04-25T15:39:53Z
  *
  *  Copyright and License of this File:
  *
@@ -233,16 +233,53 @@
 #define BETH_EXPAND_ITEM_bhpt_frame_state_s \
   BCORE_DECLARE_OBJECT( bhpt_frame_state_s ) \
     {aware_t _;sz_t cycle_number;sz_t last_cycle_adapt;sz_t last_cycle_test;sz_t last_cycle_backup;bhpt_adaptive* adaptive;bhpt_adaptor_adl_s* adaptor_adl;};
+#define TYPEOF_bhpt_frame_thread_s 2072199184
+#define BETH_EXPAND_ITEM_bhpt_frame_thread_s \
+  BCORE_DECLARE_OBJECT( bhpt_frame_thread_s ) \
+    {aware_t _;bl_t flag;bl_t running;sz_t prime_cycles;bhpt_adaptive* adaptive;bhpt_adaptor_probe_s* probe;bhpt_tutor* tutor;bcore_thread_s* thread;bcore_mutex_s* mutex;bcore_condition_s* condition;}; \
+  static inline void bhpt_frame_thread_s_down_e( bhpt_frame_thread_s* o ){ASSERT( !o->running );} \
+  vd_t bhpt_frame_thread_s_tloop( bhpt_frame_thread_s* o ); \
+  void bhpt_frame_thread_s_tloop_enter( bhpt_frame_thread_s* o ); \
+  void bhpt_frame_thread_s_tloop_exit( bhpt_frame_thread_s* o );
+#define TYPEOF_bhpt_frame_thread_ads_s 1091463513
+#define BETH_EXPAND_ITEM_bhpt_frame_thread_ads_s \
+  BCORE_DECLARE_OBJECT( bhpt_frame_thread_ads_s ) \
+    {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhpt_frame_thread_s, );}; \
+  static inline bhpt_frame_thread_ads_s* bhpt_frame_thread_ads_s_set_space( bhpt_frame_thread_ads_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bhpt_frame_thread_ads_s, ( bcore_array* )o, size ); return o; } \
+  static inline bhpt_frame_thread_ads_s* bhpt_frame_thread_ads_s_set_size( bhpt_frame_thread_ads_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bhpt_frame_thread_ads_s, ( bcore_array* )o, size ); return o; } \
+  static inline bhpt_frame_thread_ads_s* bhpt_frame_thread_ads_s_clear( bhpt_frame_thread_ads_s* o ) { bcore_array_t_set_space( TYPEOF_bhpt_frame_thread_ads_s, ( bcore_array* )o, 0 ); return o; } \
+  static inline bhpt_frame_thread_s* bhpt_frame_thread_ads_s_push_c( bhpt_frame_thread_ads_s* o, const bhpt_frame_thread_s* v ) { bcore_array_t_push( TYPEOF_bhpt_frame_thread_ads_s, ( bcore_array* )o, sr_twc( TYPEOF_bhpt_frame_thread_s, v ) ); return &o->data[ o->size - 1 ]; } \
+  static inline bhpt_frame_thread_s* bhpt_frame_thread_ads_s_push_d( bhpt_frame_thread_ads_s* o,       bhpt_frame_thread_s* v ) { bcore_array_t_push( TYPEOF_bhpt_frame_thread_ads_s, ( bcore_array* )o, sr_tsd( TYPEOF_bhpt_frame_thread_s, v ) ); return &o->data[ o->size - 1 ]; } \
+  static inline bhpt_frame_thread_s* bhpt_frame_thread_ads_s_push( bhpt_frame_thread_ads_s* o ) \
+  { \
+      bcore_array_t_push( TYPEOF_bhpt_frame_thread_ads_s, ( bcore_array* )o, sr_null() ); \
+      return &o->data[ o->size - 1 ]; \
+  }
+#define TYPEOF_bhpt_frame_thread_base_s 21291312
+#define BETH_EXPAND_ITEM_bhpt_frame_thread_base_s \
+  BCORE_DECLARE_OBJECT( bhpt_frame_thread_base_s ) \
+    {aware_t _;bhpt_frame_thread_ads_s thread_ads;bcore_condition_s* condition;}; \
+  void bhpt_frame_thread_base_s_tsetup( bhpt_frame_thread_base_s* o, sz_t threads, bhpt_adaptive* adaptive, bhpt_tutor* tutor ); \
+  void bhpt_frame_thread_base_s_tdown( bhpt_frame_thread_base_s* o ); \
+  void bhpt_frame_thread_base_s_run( bhpt_frame_thread_base_s* o, bhpt_adaptor_probe_s* adaptive_probe, sz_t cycles_per_thread ); \
+  static inline void bhpt_frame_thread_base_s_down_e( bhpt_frame_thread_base_s* o ){bhpt_frame_thread_base_s_tdown( o );} \
+  static inline void bhpt_frame_thread_base_s_copy_e( bhpt_frame_thread_base_s* o ){bhpt_frame_thread_base_s_tdown( o );}
 #define TYPEOF_bhpt_frame_s 3192581947
 #define BETH_EXPAND_ITEM_bhpt_frame_s \
   BCORE_DECLARE_OBJECT( bhpt_frame_s ) \
-    {aware_t _;bhpt_tutor* tutor;bhpt_builder* builder;bhpt_adaptor* adaptor;sz_t cycle_adapt;sz_t cycle_test;sz_t cycle_backup;sz_t cycle_finish;sz_t verbosity;bhpt_frame_state_s* state;st_s state_path;bcore_sink* log;}; \
+    {aware_t _;bhpt_tutor* tutor;bhpt_builder* builder;bhpt_adaptor* adaptor;bhpt_frame_thread_base_s* thread_base;sz_t threads;sz_t prime_cycles_per_thread;sz_t cycle_test;sz_t cycle_backup;sz_t cycle_finish;sz_t verbosity;bhpt_frame_state_s* state;st_s state_path;bcore_sink* log;}; \
   s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args );
 #define BETH_EXPAND_GROUP_bhpt_frame \
   BCORE_FORWARD_OBJECT( bhpt_frame ); \
   BCORE_FORWARD_OBJECT( bhpt_frame_state_s ); \
+  BCORE_FORWARD_OBJECT( bhpt_frame_thread_s ); \
+  BCORE_FORWARD_OBJECT( bhpt_frame_thread_ads_s ); \
+  BCORE_FORWARD_OBJECT( bhpt_frame_thread_base_s ); \
   BCORE_FORWARD_OBJECT( bhpt_frame_s ); \
   BETH_EXPAND_ITEM_bhpt_frame_state_s \
+  BETH_EXPAND_ITEM_bhpt_frame_thread_s \
+  BETH_EXPAND_ITEM_bhpt_frame_thread_ads_s \
+  BETH_EXPAND_ITEM_bhpt_frame_thread_base_s \
   BETH_EXPAND_ITEM_bhpt_frame_s
 
 /**********************************************************************************************************************/

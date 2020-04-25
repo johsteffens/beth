@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-24T11:59:22Z
+ *  Last File Update: 2020-04-25T15:39:53Z
  *
  *  Copyright and License of this File:
  *
@@ -134,13 +134,45 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_state_s )
     "bhpt_adaptor_adl_s => adaptor_adl;"
 "}";
 
+BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_thread_s )
+"aware bhpt_frame"
+"{"
+    "bl_t flag;"
+    "bl_t running = false;"
+    "sz_t prime_cycles = 0;"
+    "aware bhpt_adaptive => adaptive;"
+    "bhpt_adaptor_probe_s => probe;"
+    "aware bhpt_tutor -> tutor;"
+    "bcore_thread_s => thread;"
+    "bcore_mutex_s => mutex;"
+    "bcore_condition_s -> condition;"
+    "func bcore_inst_call:down_e;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_thread_ads_s )
+"aware bcore_array"
+"{"
+    "bhpt_frame_thread_s [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_thread_base_s )
+"aware bhpt_frame"
+"{"
+    "bhpt_frame_thread_ads_s thread_ads;"
+    "bcore_condition_s => condition;"
+    "func bcore_inst_call:down_e;"
+    "func bcore_inst_call:copy_e;"
+"}";
+
 BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
 "aware bcore_main"
 "{"
     "aware bhpt_tutor => tutor;"
     "aware bhpt_builder => builder;"
     "aware bhpt_adaptor => adaptor;"
-    "sz_t cycle_adapt = 1;"
+    "hidden bhpt_frame_thread_base_s => thread_base;"
+    "sz_t threads = 1;"
+    "sz_t prime_cycles_per_thread = 1;"
     "sz_t cycle_test = 1000;"
     "sz_t cycle_backup = 1000;"
     "sz_t cycle_finish = 1000000;"
@@ -299,7 +331,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 2616072631 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 2165840483 ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h
@@ -353,6 +385,12 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
 
             // group: bhpt_frame
             BCORE_REGISTER_OBJECT( bhpt_frame_state_s );
+            BCORE_REGISTER_FFUNC( bcore_inst_call_down_e, bhpt_frame_thread_s_down_e );
+            BCORE_REGISTER_OBJECT( bhpt_frame_thread_s );
+            BCORE_REGISTER_OBJECT( bhpt_frame_thread_ads_s );
+            BCORE_REGISTER_FFUNC( bcore_inst_call_down_e, bhpt_frame_thread_base_s_down_e );
+            BCORE_REGISTER_FFUNC( bcore_inst_call_copy_e, bhpt_frame_thread_base_s_copy_e );
+            BCORE_REGISTER_OBJECT( bhpt_frame_thread_base_s );
             BCORE_REGISTER_FFUNC( bcore_main_main, bhpt_frame_s_main );
             BCORE_REGISTER_OBJECT( bhpt_frame_s );
             BCORE_REGISTER_TRAIT( bhpt_frame, bcore_inst );
