@@ -3118,7 +3118,7 @@ static void bcore_plant_target_s_finalize( bcore_plant_target_s* o )
 static void bcore_plant_target_s_expand_heading( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "/** This file was generated from beth-plant source code.\n" );
-    bcore_sink_a_push_fa( sink, " *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens\n" );
+    bcore_sink_a_push_fa( sink, " *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens\n" );
     bcore_sink_a_push_fa( sink, " *  Last File Update: " );
     {
         bcore_cday_utc_s* time = bcore_cday_utc_s_create();
