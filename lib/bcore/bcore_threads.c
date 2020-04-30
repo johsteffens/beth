@@ -308,7 +308,7 @@ vd_t bcore_thread_arr_s_join_pop( bcore_thread_arr_s* o )
 
 /**********************************************************************************************************************/
 
-void bcore_sleep_ns( uz_t ns )
+void bcore_sleep_ns( u3_t ns )
 {
     struct timespec ts = { 0 };
     ts.tv_sec  = ns / 1000000000;
@@ -321,12 +321,12 @@ void bcore_sleep_ns( uz_t ns )
     nanosleep( &ts, NULL );
 }
 
-void bcore_sleep_us( uz_t us )
+void bcore_sleep_us( u3_t us )
 {
     bcore_sleep_ns( us * 1000 );
 }
 
-void bcore_sleep_ms( uz_t ms )
+void bcore_sleep_ms( u3_t ms )
 {
     bcore_sleep_ns( ms * 1000000 );
 }
