@@ -118,27 +118,27 @@ vd_t bcore_life_signal_handler( const bcore_signal_s* o );
 extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chain
 
 #define BLM_INIT() \
-    bcore_life_s* __bcore_life_p = __bcore_life; \
+    bcore_life_s* BLM_INIT__ = __bcore_life; \
     bcore_life_s* __bcore_life = bcore_life_s_create(); \
-    __bcore_life->parent = __bcore_life_p; \
-    __bcore_life_p = __bcore_life
+    __bcore_life->parent = BLM_INIT__; \
+    BLM_INIT__ = __bcore_life
 
-#define BLM_DOWN() bcore_life_s_detach( &__bcore_life_p )
-#define BLM_CREATE( tname ) ( tname* )bcore_life_s_push_typed( __bcore_life_p, TYPEOF_##tname, tname##_create() )
-#define BLM_CLONE(  tname, src ) ( tname* )bcore_life_s_push_typed( __bcore_life_p, TYPEOF_##tname, tname##_clone( src ) )
-#define BLM_A_PUSH(       expr ) bcore_life_s_push_aware( __bcore_life_p,       expr )
-#define BLM_T_PUSH( type, expr ) bcore_life_s_push_typed( __bcore_life_p, type, expr )
+#define BLM_DOWN() bcore_life_s_detach( &BLM_INIT__ )
+#define BLM_CREATE( tname ) ( tname* )bcore_life_s_push_typed( BLM_INIT__, TYPEOF_##tname, tname##_create() )
+#define BLM_CLONE(  tname, src ) ( tname* )bcore_life_s_push_typed( BLM_INIT__, TYPEOF_##tname, tname##_clone( src ) )
+#define BLM_A_PUSH(       expr ) bcore_life_s_push_aware( BLM_INIT__,       expr )
+#define BLM_T_PUSH( type, expr ) bcore_life_s_push_typed( BLM_INIT__, type, expr )
 
 #define BLM_RETURN() \
 { \
-    bcore_life_s_discard_all( __bcore_life_p ); \
+    bcore_life_s_discard_all( BLM_INIT__ ); \
     return; \
 }
 
 #define BLM_RETURNV( ret_type, expr ) \
 { \
     ret_type __retv = expr;  \
-    bcore_life_s_discard_all( __bcore_life_p );  \
+    bcore_life_s_discard_all( BLM_INIT__ );  \
     return __retv;  \
 }
 
