@@ -21,53 +21,62 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-vd_t bhpt_frame_thread_s_tloop( bhpt_frame_thread_s* o )
+vd_t bhpt_frame_thread_item_s_loop( bhpt_frame_thread_item_s* o )
 {
+    BLM_INIT();
+    bhpt_adaptor_probe_s* probe_item  = BLM_CREATE( bhpt_adaptor_probe_s );
+    bhpt_adaptor_probe_s* probe_share = BLM_CREATE( bhpt_adaptor_probe_s );
+
     bcore_mutex_s_lock( o->mutex );
 
     while( o->running )
     {
-        if( o->tutor && o->adaptive )
+        if( o->prime_cycles > 0 )
         {
-            while( o->prime_cycles > 0 )
-            {
-                bhpt_tutor_a_prime( o->tutor, o->adaptive );
-                o->prime_cycles--;
-            }
+            bhpt_adaptive_a_get_adaptor_probe( o->adaptive, probe_item );
+
+            bhpt_adaptor_probe_s_zro_grad( probe_item );
+            BFOR_SIZE( i, o->prime_cycles ) bhpt_tutor_a_prime( o->share->tutor, o->adaptive );
+
+            bhpt_adaptive_a_get_adaptor_probe( o->adaptive, probe_item );
+
+            bcore_mutex_s_lock( o->share->mutex );
+            bhpt_adaptive_a_get_adaptor_probe( o->share->adaptive, probe_share );
+            bhpt_adaptor_probe_s_acc_grad( probe_share, probe_item );
+            o->share->finished_count++;
+            bcore_mutex_s_unlock( o->share->mutex );
+
+            o->prime_cycles = 0;
         }
-        bcore_condition_s_sleep( o->condition, o->mutex );
+
+        bcore_condition_s_sleep( o->share->condition_item, o->mutex );
     }
 
     bcore_mutex_s_unlock( o->mutex );
-    return NULL;
+    BLM_RETURNV( vd_t, NULL );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhpt_frame_thread_s_tloop_enter( bhpt_frame_thread_s* o )
+void bhpt_frame_thread_item_s_loop_enter( bhpt_frame_thread_item_s* o )
 {
-    bhpt_frame_thread_s_tloop_exit( o );
+    bhpt_frame_thread_item_s_loop_exit( o );
     if( !o->thread ) o->thread = bcore_thread_s_create();
     if( !o->mutex  ) o->mutex  = bcore_mutex_s_create();
-    if( !o->probe  ) o->probe  = bhpt_adaptor_probe_s_create();
-    ASSERT( o->condition );
+    ASSERT( o->share->condition_item );
 
     bcore_mutex_s_lock( o->mutex );
     o->running = true;
-    bhpt_adaptive_a_get_adaptor_probe( o->adaptive, o->probe );
     bcore_mutex_s_unlock( o->mutex );
 
-    bcore_thread_s_call( o->thread, ( bcore_fp_thread )bhpt_frame_thread_s_tloop, o );
+    bcore_thread_s_call( o->thread, ( bcore_fp_thread )bhpt_frame_thread_item_s_loop, o );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhpt_frame_thread_s_tloop_exit( bhpt_frame_thread_s* o )
+void bhpt_frame_thread_item_s_loop_exit( bhpt_frame_thread_item_s* o )
 {
-    if( !o->running   ) return;
-    if( !o->thread    ) return;
-    if( !o->mutex     ) return;
-    if( !o->condition ) return;
+    if( !o->mutex ) return;
     bcore_mutex_s_lock( o->mutex );
     o->running = false;
     bcore_mutex_s_unlock( o->mutex );
@@ -78,31 +87,32 @@ void bhpt_frame_thread_s_tloop_exit( bhpt_frame_thread_s* o )
 void bhpt_frame_thread_base_s_tsetup( bhpt_frame_thread_base_s* o, sz_t threads, bhpt_adaptive* adaptive, bhpt_tutor* tutor )
 {
     BLM_INIT();
-    if( o->thread_ads.size > 0 ) bhpt_frame_thread_base_s_tdown( o );
-    bcore_condition_s_attach( &o->condition, bcore_condition_s_create() );
-    bhpt_frame_thread_ads_s_set_size( &o->thread_ads, threads );
+    if( o->ads.size > 0 ) bhpt_frame_thread_base_s_tdown( o );
+    bhpt_frame_thread_share_s_attach( &o->share, bhpt_frame_thread_share_s_create() );
+    bhpt_frame_thread_share_s* share = o->share;
+    bcore_condition_s_attach( &share->condition_item, bcore_condition_s_create() );
+    bcore_mutex_s_attach( &share->mutex, bcore_mutex_s_create() );
+    bhpt_adaptive_a_attach( &share->adaptive, bcore_fork( adaptive ) );
 
-    bhpt_adaptor_probe_s* probe0 = bhpt_adaptive_a_get_adaptor_probe( adaptive, BLM_CREATE( bhpt_adaptor_probe_s ) );
-    bhpt_adaptor_probe_s* probe1 = BLM_CREATE( bhpt_adaptor_probe_s );
+    bhpt_tutor_a_attach( &share->tutor, bcore_fork( tutor ) );
+    bhpt_frame_thread_ads_s_set_size( &o->ads, threads );
 
-    BFOR_EACH( i, &o->thread_ads )
+    bhpt_adaptor_probe_s* probe_item  = BLM_CREATE( bhpt_adaptor_probe_s );
+    bhpt_adaptor_probe_s* probe_share = bhpt_adaptive_a_get_adaptor_probe( adaptive, BLM_CREATE( bhpt_adaptor_probe_s ) );
+
+    BFOR_EACH( i, &o->ads )
     {
-        bhpt_frame_thread_s* thread = &o->thread_ads.data[ i ];
-        thread->condition = bcore_fork( o->condition );
-        thread->tutor     = bcore_fork( tutor );
-        thread->adaptive  = bhpt_adaptive_a_clone( adaptive );
+        bhpt_frame_thread_item_s* item = &o->ads.data[ i ];
+        item->adaptive = bhpt_adaptive_a_clone( adaptive );
 
-        // weakly redirect adadaptive values
-        bhpt_adaptive_a_get_adaptor_probe( thread->adaptive, probe1 );
-        BFOR_EACH( i, probe0 )
-        {
-            bhpt_adaptor_node_s* node0 = &probe0->data[ i ];
-            bhpt_adaptor_node_s* node1 = &probe1->data[ i ];
-            bhvm_value_s_weak( &node1->axon->v, &node0->axon->v );
-        }
+        bhpt_adaptive_a_get_adaptor_probe( item->adaptive, probe_item );
+        bhpt_adaptor_probe_s_rebind_axon( probe_item, probe_share );
+        bhpt_adaptive_a_rebind_holors( item->adaptive );
+
+        item->share    = bcore_fork( share );
     }
 
-    BFOR_EACH( i, &o->thread_ads ) bhpt_frame_thread_s_tloop_enter( &o->thread_ads.data[ i ] );
+    BFOR_EACH( i, &o->ads ) bhpt_frame_thread_item_s_loop_enter( &o->ads.data[ i ] );
     BLM_DOWN();
 }
 
@@ -110,53 +120,47 @@ void bhpt_frame_thread_base_s_tsetup( bhpt_frame_thread_base_s* o, sz_t threads,
 
 void bhpt_frame_thread_base_s_tdown( bhpt_frame_thread_base_s* o )
 {
-    if( !o->condition ) return;
-    BFOR_EACH( i, &o->thread_ads )
+    if( !o->share ) return;
+    BFOR_EACH( i, &o->ads )
     {
-        bhpt_frame_thread_s* thread = &o->thread_ads.data[ i ];
-        bhpt_frame_thread_s_tloop_exit( thread );
+        bhpt_frame_thread_item_s* item = &o->ads.data[ i ];
+        bhpt_frame_thread_item_s_loop_exit( item );
     }
-    bcore_condition_s_wake_all( o->condition );
-    bhpt_frame_thread_ads_s_clear( &o->thread_ads );
-    bcore_condition_s_detach( &o->condition );
+    bcore_condition_s_wake_all( o->share->condition_item );
+
+    bhpt_frame_thread_ads_s_clear( &o->ads );
+    bcore_condition_s_detach( &o->share->condition_item );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhpt_frame_thread_base_s_run( bhpt_frame_thread_base_s* o, bhpt_adaptor_probe_s* adaptive_probe, sz_t cycles_per_thread )
+void bhpt_frame_thread_base_s_run( bhpt_frame_thread_base_s* o, sz_t cycles_per_thread )
 {
-    BFOR_EACH( i, &o->thread_ads )
+    bcore_mutex_s_lock( o->share->mutex );
+
+    o->share->finished_count = 0;
+    bcore_mutex_s_unlock( o->share->mutex );
+
+    BFOR_EACH( i, &o->ads )
     {
-        bhpt_frame_thread_s* thread = &o->thread_ads.data[ i ];
-        bcore_mutex_s_lock( thread->mutex );
-        BFOR_EACH( i, thread->probe ) bhvm_value_s_zro( &thread->probe->data[ i ].grad->v );
-        thread->prime_cycles = cycles_per_thread;
-        thread->flag = true;
-        bcore_mutex_s_unlock( thread->mutex );
+        bhpt_frame_thread_item_s* item = &o->ads.data[ i ];
+        bcore_mutex_s_lock( item->mutex );
+        item->prime_cycles = cycles_per_thread;
+        bcore_mutex_s_unlock( item->mutex );
     }
 
-    bcore_condition_s_wake_all( o->condition );
-    BFOR_EACH( i, adaptive_probe ) bhvm_value_s_zro( &adaptive_probe->data[ i ].grad->v );
+    bcore_condition_s_wake_all( o->share->condition_item );
 
-    for( sz_t busy_count = o->thread_ads.size; busy_count > 0; )
+    for( bl_t busy = true; busy; )
     {
         bcore_sleep_us( 10 );
-        busy_count = 0;
-        BFOR_EACH( i, &o->thread_ads )
-        {
-            bhpt_frame_thread_s* thread = &o->thread_ads.data[ i ];
-            if( thread->flag )
-            {
-                bcore_mutex_s_lock( thread->mutex );
-                if( thread->prime_cycles == 0 )
-                {
-                    thread->flag = false;
-                    BFOR_EACH( i, adaptive_probe ) bhvm_holor_s_acc( adaptive_probe->data[ i ].grad, thread->probe->data[ i ].grad );
-                }
-                bcore_mutex_s_unlock( thread->mutex );
-            }
-            busy_count += thread->flag;
-        }
+
+        /// obtaining item-locks reduces idling cycles
+        BFOR_EACH( i, &o->ads ) bhpt_frame_thread_item_s_wait_while_locked( &o->ads.data[ i ] );
+
+        bcore_mutex_s_lock( o->share->mutex );
+        busy = o->share->finished_count < o->ads.size;
+        bcore_mutex_s_unlock( o->share->mutex );
     }
 }
 
@@ -177,6 +181,14 @@ void bhpt_frame_s_adapt( bhpt_frame_s* o )
     }
 
     BLM_DOWN();
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhpt_frame_s_backup( bhpt_frame_s* o )
+{
+    sc_t path = o->state_path.sc;
+    if( path[ 0 ] ) bcore_bin_ml_a_to_file( o->state, path );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -205,7 +217,7 @@ void bhpt_frame_s_run_single_threaded( bhpt_frame_s* o )
 {
     bhpt_frame_state_s* state = o->state;
 
-    sz_t cycle_adapt = sz_max( o->threads, 1 ) * o->prime_cycles_per_thread;
+    sz_t cycle_adapt = sz_max( o->cycle_adapt, 1 );
 
     while( state->cycle_number < o->cycle_finish )
     {
@@ -227,11 +239,7 @@ void bhpt_frame_s_run_single_threaded( bhpt_frame_s* o )
         if( state->cycle_number - state->last_cycle_backup >= o->cycle_backup )
         {
             state->last_cycle_backup = state->cycle_number;
-            sc_t path = o->state_path.sc;
-            if( path[ 0 ] )
-            {
-                bcore_bin_ml_a_to_file( o->state, path );
-            }
+            bhpt_frame_s_backup( o );
         }
     }
 }
@@ -247,9 +255,8 @@ void bhpt_frame_s_run_multi_threaded( bhpt_frame_s* o )
     if( !o->thread_base ) o->thread_base = bhpt_frame_thread_base_s_create();
     bhpt_frame_thread_base_s_tsetup( o->thread_base, o->threads, state->adaptive, o->tutor );
 
-    sz_t cycle_adapt = o->threads * o->prime_cycles_per_thread;
-
-    bhpt_adaptor_probe_s* adaptive_probe = bhpt_adaptive_a_get_adaptor_probe( state->adaptive, BLM_CREATE( bhpt_adaptor_probe_s ) );
+    sz_t prime_cycles_per_thread = sz_max( o->cycle_adapt / sz_max( o->threads, 1 ), 1 );
+    sz_t cycle_adapt = o->threads * prime_cycles_per_thread;
 
     while( state->cycle_number < o->cycle_finish )
     {
@@ -259,18 +266,17 @@ void bhpt_frame_s_run_multi_threaded( bhpt_frame_s* o )
             bhpt_frame_s_test( o );
         }
 
-        bhpt_frame_thread_base_s_run( o->thread_base, adaptive_probe, o->prime_cycles_per_thread );
+        bhpt_frame_thread_base_s_run( o->thread_base, prime_cycles_per_thread );
+
+
         state->cycle_number += cycle_adapt;
         bhpt_frame_s_adapt( o );
+        state->last_cycle_adapt = state->cycle_number;
 
         if( state->cycle_number - state->last_cycle_backup >= o->cycle_backup )
         {
             state->last_cycle_backup = state->cycle_number;
-            sc_t path = o->state_path.sc;
-            if( path[ 0 ] )
-            {
-                bcore_bin_ml_a_to_file( o->state, path );
-            }
+            bhpt_frame_s_backup( o );
         }
     }
 
@@ -343,7 +349,7 @@ s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args )
     bhpt_adaptive_a_status_to_sink( o->state->adaptive, o->verbosity, o->log );
     bcore_sink_a_push_fa( o->log, "\n" );
 
-    if( o->threads <= 1 )
+    if( o->threads < 1 )
     {
         bhpt_frame_s_run_single_threaded( o );
     }

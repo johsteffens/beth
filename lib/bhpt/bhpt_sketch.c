@@ -18,6 +18,31 @@
 #ifdef TYPEOF_bhpt
 
 /**********************************************************************************************************************/
+/// bhpt_adaptor
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhpt_adaptor_node_s_get_min_max( const bhpt_adaptor_node_s* o, f3_t* min, f3_t* max )
+{
+    if( o->axon )
+    {
+        if( min ) *min = bhvm_value_s_get_min_f3( &o->axon->v );
+        if( max ) *max = bhvm_value_s_get_max_f3( &o->axon->v );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhpt_adaptor_probe_s_get_min_max( const bhpt_adaptor_probe_s* o, f3_t* min, f3_t* max )
+{
+    f3_t min_l = 0, max_l = 0;
+    BFOR_EACH( i, o )
+    {
+        bhpt_adaptor_node_s_get_min_max( &o->data[ i ], &min_l, &max_l );
+        if( min ) *min = ( i > 0 ) ? f3_min( *min, min_l ) : min_l;
+        if( max ) *max = ( i > 0 ) ? f3_max( *max, max_l ) : max_l;
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 

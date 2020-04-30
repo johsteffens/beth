@@ -1082,7 +1082,14 @@ bhvm_holor_s* bhvm_holor_s_set_type( bhvm_holor_s* o, tp_t type )
 
 bhvm_holor_s* bhvm_holor_s_fit_size( bhvm_holor_s* o )
 {
-    bhvm_value_s_set_type_size( &o->v, o->v.type ? o->v.type : TYPEOF_f3_t, bhvm_shape_s_get_volume( &o->s ) );
+    if( o->v.size == 0 )
+    {
+        bhvm_value_s_set_type_size( &o->v, o->v.type ? o->v.type : TYPEOF_f3_t, bhvm_shape_s_get_volume( &o->s ) );
+    }
+    else
+    {
+        ASSERT( o->v.size == bhvm_shape_s_get_volume( &o->s ) );
+    }
     return o;
 }
 

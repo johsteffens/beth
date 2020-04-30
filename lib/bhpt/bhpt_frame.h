@@ -37,6 +37,69 @@ PLANT_GROUP( bhpt_frame, bcore_inst )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+group :thread =
+{
+    /// shared object in a thread base
+    stamp :share = aware :
+    {
+        aware bhpt_tutor    -> tutor;
+        aware bhpt_adaptive -> adaptive;
+
+        bcore_condition_s    => condition_item;
+        bcore_mutex_s        => mutex; // mutex for share
+
+        sz_t finished_count  = 0;      // number is incremented by item when a task was finished
+    };
+
+    signature vd_t loop(       mutable ); // thread function
+    signature void loop_enter( mutable );
+    signature void loop_exit(  mutable );
+    signature void wait_while_locked( mutable ); // lock-unlock in sequence (used to test if the item is unlocked and waits otherwise)
+
+
+    stamp :item = aware :
+    {
+        bl_t running = false;
+        sz_t prime_cycles = 0; // number of prime cycles yet to be executed
+        bcore_thread_s       => thread;
+        bcore_mutex_s        => mutex;
+        :share_s             -> share;
+        aware bhpt_adaptive  => adaptive; // local adaptive
+
+        func bcore_inst_call : down_e = { ASSERT( !o->running ); };
+
+        func : :loop;
+        func : :loop_enter;
+        func : :loop_exit;
+        func : :wait_while_locked = { bcore_mutex_s_lock( o->mutex ); bcore_mutex_s_unlock( o->mutex ); };
+    };
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    stamp :ads = aware bcore_array { :item_s []; };
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    signature void tsetup( mutable, sz_t threads, bhpt_adaptive* adaptive, bhpt_tutor* tutor ); // thread function
+    signature void tdown( mutable ); // thread function
+    signature void run( mutable, sz_t cycles_per_thread );
+
+    stamp :base = aware :
+    {
+        :ads_s ads;
+        :share_s => share;
+
+        func : :tsetup;
+        func : :tdown;
+        func : :run;
+
+        func bcore_inst_call : down_e = { @_tdown( o ); };
+        func bcore_inst_call : copy_e = { @_tdown( o ); };
+    };
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 stamp :state = aware :
 {
     sz_t cycle_number;
@@ -45,55 +108,6 @@ stamp :state = aware :
     sz_t last_cycle_backup;
     aware bhpt_adaptive => adaptive;
     bhpt_adaptor_adl_s => adaptor_adl;
-};
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-signature vd_t tloop(       mutable ); // thread function
-signature void tloop_enter( mutable );
-signature void tloop_exit(  mutable );
-
-stamp :thread = aware :
-{
-    bl_t flag; // general purpose flag (not used inside thread function)
-    bl_t running = false;
-    sz_t prime_cycles = 0; // number of prime cycles yet to be executed
-    aware bhpt_adaptive  => adaptive;
-    bhpt_adaptor_probe_s => probe; // adaptive probe
-    aware bhpt_tutor    ->  tutor;
-    bcore_thread_s      => thread;
-    bcore_mutex_s       => mutex;
-    bcore_condition_s   -> condition;
-
-    func bcore_inst_call : down_e = { ASSERT( !o->running ); };
-
-    func : :tloop;
-    func : :tloop_enter;
-    func : :tloop_exit;
-};
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-stamp :thread_ads = aware bcore_array { :thread_s []; };
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-signature void tsetup( mutable, sz_t threads, bhpt_adaptive* adaptive, bhpt_tutor* tutor ); // thread function
-signature void tdown( mutable ); // thread function
-
-signature void run( mutable, bhpt_adaptor_probe_s* adaptive_probe, sz_t cycles_per_thread );
-
-stamp :thread_base = aware :
-{
-    :thread_ads_s thread_ads;
-    bcore_condition_s => condition;
-
-    func : :tsetup;
-    func : :tdown;
-    func : :run;
-
-    func bcore_inst_call : down_e = { @_tdown( o ); };
-    func bcore_inst_call : copy_e = { @_tdown( o ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -112,8 +126,11 @@ stamp : = aware bcore_main
     // number of threads to run a minibatch (0 means single threaded)
     sz_t threads = 1;
 
-    // cycle number at which the adaptor is applied (mini-batch size)
-    sz_t prime_cycles_per_thread  = 1;
+    /** Requested cycle number at which the network is adapted.
+     *  The actual number is the nearest within [1, cycle_adapt]
+     *  divisible by max( threads, 1 )
+     */
+    sz_t cycle_adapt  = 1;
 
     // cycle number at which the network is tested
     sz_t cycle_test   = 1000;

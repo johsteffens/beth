@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-25T15:39:53Z
+ *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
+ *  Last File Update: 2020-04-30T12:16:02Z
  *
  *  Copyright and License of this File:
  *
@@ -11,6 +11,7 @@
  *  bhpt_frame.h
  *  bhpt_adaptor.h
  *  bhpt_tutor_sampler.h
+ *  bhpt_tutor_utf8.h
  *
  */
 
@@ -34,35 +35,15 @@
 BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_node_s )
 "aware bhpt_adaptor"
 "{"
-    "bhvm_holor_s -> axon;"
-    "bhvm_holor_s -> grad;"
+    "private bhvm_holor_s* axon;"
+    "private bhvm_holor_s* grad;"
 "}";
-
-void bhpt_adaptor_node_s_get_min_max( const bhpt_adaptor_node_s* o, f3_t* min, f3_t* max )
-{
-    if( o->axon )
-    {
-        if( min ) *min = bhvm_value_s_get_min_f3( &o->axon->v );
-        if( max ) *max = bhvm_value_s_get_max_f3( &o->axon->v );
-    }
-}
 
 BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_probe_s )
 "aware bcore_array"
 "{"
     "bhpt_adaptor_node_s [];"
 "}";
-
-void bhpt_adaptor_probe_s_get_min_max( const bhpt_adaptor_probe_s* o, f3_t* min, f3_t* max )
-{
-    f3_t min_l = 0, max_l = 0;
-    BFOR_EACH( i, o )
-    {
-        bhpt_adaptor_node_s_get_min_max( &o->data[ i ], &min_l, &max_l );
-        if( min ) *min = ( i > 0 ) ? f3_min( *min, min_l ) : min_l;
-        if( max ) *max = ( i > 0 ) ? f3_max( *max, max_l ) : max_l;
-    }
-}
 
 BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_adl_s )
 "aware bcore_array"
@@ -89,6 +70,7 @@ BCORE_DEFINE_SPECT( bhpt, bhpt_adaptive )
     "feature aware bhpt_adaptive : dendrite_pass = bhpt_adaptive_dendrite_pass__;"
     "feature aware bhpt_adaptive : cyclic_reset = bhpt_adaptive_cyclic_reset__;"
     "feature aware bhpt_adaptive : get_adaptor_probe = bhpt_adaptive_get_adaptor_probe__;"
+    "feature aware bhpt_adaptive : rebind_holors;"
     "feature aware bhpt_adaptive : status_to_sink = bhpt_adaptive_status_to_sink__;"
 "}";
 
@@ -134,36 +116,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_state_s )
     "bhpt_adaptor_adl_s => adaptor_adl;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_thread_s )
-"aware bhpt_frame"
-"{"
-    "bl_t flag;"
-    "bl_t running = false;"
-    "sz_t prime_cycles = 0;"
-    "aware bhpt_adaptive => adaptive;"
-    "bhpt_adaptor_probe_s => probe;"
-    "aware bhpt_tutor -> tutor;"
-    "bcore_thread_s => thread;"
-    "bcore_mutex_s => mutex;"
-    "bcore_condition_s -> condition;"
-    "func bcore_inst_call:down_e;"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_thread_ads_s )
-"aware bcore_array"
-"{"
-    "bhpt_frame_thread_s [];"
-"}";
-
-BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_thread_base_s )
-"aware bhpt_frame"
-"{"
-    "bhpt_frame_thread_ads_s thread_ads;"
-    "bcore_condition_s => condition;"
-    "func bcore_inst_call:down_e;"
-    "func bcore_inst_call:copy_e;"
-"}";
-
 BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
 "aware bcore_main"
 "{"
@@ -172,7 +124,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
     "aware bhpt_adaptor => adaptor;"
     "hidden bhpt_frame_thread_base_s => thread_base;"
     "sz_t threads = 1;"
-    "sz_t prime_cycles_per_thread = 1;"
+    "sz_t cycle_adapt = 1;"
     "sz_t cycle_test = 1000;"
     "sz_t cycle_backup = 1000;"
     "sz_t cycle_finish = 1000000;"
@@ -181,6 +133,46 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
     "st_s state_path;"
     "hidden aware bcore_sink -> log;"
     "func ^:main;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhpt_frame_thread
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_thread_share_s )
+"aware bhpt_frame_thread"
+"{"
+    "aware bhpt_tutor -> tutor;"
+    "aware bhpt_adaptive -> adaptive;"
+    "bcore_condition_s => condition_item;"
+    "bcore_mutex_s => mutex;"
+    "sz_t finished_count = 0;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_thread_item_s )
+"aware bhpt_frame_thread"
+"{"
+    "bl_t running = false;"
+    "sz_t prime_cycles = 0;"
+    "bcore_thread_s => thread;"
+    "bcore_mutex_s => mutex;"
+    "bhpt_frame_thread_share_s -> share;"
+    "aware bhpt_adaptive => adaptive;"
+    "func bcore_inst_call:down_e;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_thread_ads_s )
+"aware bcore_array"
+"{"
+    "bhpt_frame_thread_item_s [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_thread_base_s )
+"aware bhpt_frame_thread"
+"{"
+    "bhpt_frame_thread_ads_s ads;"
+    "bhpt_frame_thread_share_s => share;"
+    "func bcore_inst_call:down_e;"
+    "func bcore_inst_call:copy_e;"
 "}";
 
 /**********************************************************************************************************************/
@@ -202,16 +194,39 @@ void bhpt_adaptor_epsilon_s_adapt( bhpt_adaptor_epsilon_s* o, const bhpt_adaptor
 {
     assert( bhvm_shape_s_is_equal( &node->axon->s, &node->grad->s ) );
     bhvm_value_s_mul_scl_f3_acc( &node->grad->v, o->epsilon, &node->axon->v );
-    bhvm_value_s_zro( &node->grad->v );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_list_s )
+BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_reg_l2_s )
 "aware bhpt_adaptor"
 "{"
-    "bhpt_adaptor_adl_s adl;"
+    "f3_t lambda;"
     "func ^:reset;"
     "func ^:adapt;"
 "}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_zro_grad_s )
+"aware bhpt_adaptor"
+"{"
+    "func ^:adapt;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_adaptor_list_s )
+"aware bcore_array"
+"{"
+    "aware bhpt_adaptor => [];"
+    "func bhpt_adaptor:reset;"
+    "func bhpt_adaptor:adapt;"
+"}";
+
+void bhpt_adaptor_list_s_reset( bhpt_adaptor_list_s* o )
+{
+    BFOR_SIZE( i, o->size ) bhpt_adaptor_a_reset( o->data[ i ] );
+}
+
+void bhpt_adaptor_list_s_adapt( bhpt_adaptor_list_s* o, const bhpt_adaptor_node_s* node )
+{
+    BFOR_SIZE( i, o->size ) bhpt_adaptor_a_adapt( o->data[ i ], node );
+}
 
 /**********************************************************************************************************************/
 // source: bhpt_tutor_sampler.h
@@ -323,6 +338,52 @@ void bhpt_tutor_sampler_s_status_to_sink( const bhpt_tutor_sampler_s* o, sz_t ve
 }
 
 /**********************************************************************************************************************/
+// source: bhpt_tutor_utf8.h
+#include "bhpt_tutor_utf8.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhpt_tutor_utf8
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_utf8_chatter_s )
+"aware bhpt_tutor_utf8"
+"{"
+    "bl_t cyclic_reset = false;"
+    "st_s trigger = \"The chatter triggerbhpt_tutor_utf8\";"
+    "sz_t size_text = 400;"
+    "sz_t size_line = 100;"
+    "f3_t heat = 0.2;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_utf8_s )
+"aware bhpt_tutor"
+"{"
+    "aware => src;"
+    "hidden st_s => st;"
+    "u2_t rval_prime = 1234;"
+    "u2_t rval_test = 5342;"
+    "sz_t size_trans = 20;"
+    "sz_t size_prime = 200;"
+    "sz_t size_test = 1000;"
+    "f3_t tgt_pos = 1.0;"
+    "f3_t tgt_neg = 0.0;"
+    "bhpt_tutor_utf8_chatter_s => chatter;"
+    "hidden bcore_mutex_s mutex;"
+    "func ^:reset;"
+    "func ^:create_adaptive;"
+    "func ^:prime;"
+    "func ^:test;"
+    "func ^:status_to_sink;"
+"}";
+
+void bhpt_tutor_utf8_s_status_to_sink( const bhpt_tutor_utf8_s* o, sz_t verbosity, bcore_sink* sink )
+{
+    if( verbosity > 0 )
+    {
+        bcore_sink_a_push_fa( sink, "#<sc_t>", ifnameof( o->_ ) );
+    }
+}
+
+/**********************************************************************************************************************/
 
 vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
 {
@@ -331,7 +392,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 2165840483 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 2965921179 ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h
@@ -358,6 +419,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhpt_adaptive_cyclic_reset, bhpt_adaptive_cyclic_reset__ );
             BCORE_REGISTER_FEATURE( bhpt_adaptive_get_adaptor_probe );
             BCORE_REGISTER_FFUNC( bhpt_adaptive_get_adaptor_probe, bhpt_adaptive_get_adaptor_probe__ );
+            BCORE_REGISTER_FEATURE( bhpt_adaptive_rebind_holors );
             BCORE_REGISTER_FEATURE( bhpt_adaptive_status_to_sink );
             BCORE_REGISTER_FFUNC( bhpt_adaptive_status_to_sink, bhpt_adaptive_status_to_sink__ );
             BCORE_REGISTER_SPECT( bhpt_adaptive );
@@ -385,15 +447,19 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
 
             // group: bhpt_frame
             BCORE_REGISTER_OBJECT( bhpt_frame_state_s );
-            BCORE_REGISTER_FFUNC( bcore_inst_call_down_e, bhpt_frame_thread_s_down_e );
-            BCORE_REGISTER_OBJECT( bhpt_frame_thread_s );
+            BCORE_REGISTER_FFUNC( bcore_main_main, bhpt_frame_s_main );
+            BCORE_REGISTER_OBJECT( bhpt_frame_s );
+            BCORE_REGISTER_TRAIT( bhpt_frame, bcore_inst );
+
+            // group: bhpt_frame_thread
+            BCORE_REGISTER_OBJECT( bhpt_frame_thread_share_s );
+            BCORE_REGISTER_FFUNC( bcore_inst_call_down_e, bhpt_frame_thread_item_s_down_e );
+            BCORE_REGISTER_OBJECT( bhpt_frame_thread_item_s );
             BCORE_REGISTER_OBJECT( bhpt_frame_thread_ads_s );
             BCORE_REGISTER_FFUNC( bcore_inst_call_down_e, bhpt_frame_thread_base_s_down_e );
             BCORE_REGISTER_FFUNC( bcore_inst_call_copy_e, bhpt_frame_thread_base_s_copy_e );
             BCORE_REGISTER_OBJECT( bhpt_frame_thread_base_s );
-            BCORE_REGISTER_FFUNC( bcore_main_main, bhpt_frame_s_main );
-            BCORE_REGISTER_OBJECT( bhpt_frame_s );
-            BCORE_REGISTER_TRAIT( bhpt_frame, bcore_inst );
+            BCORE_REGISTER_TRAIT( bhpt_frame_thread, bhpt_frame );
 
             // --------------------------------------------------------------------
             // source: bhpt_adaptor.h
@@ -402,6 +468,11 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhpt_adaptor_reset, bhpt_adaptor_epsilon_s_reset );
             BCORE_REGISTER_FFUNC( bhpt_adaptor_adapt, bhpt_adaptor_epsilon_s_adapt );
             BCORE_REGISTER_OBJECT( bhpt_adaptor_epsilon_s );
+            BCORE_REGISTER_FFUNC( bhpt_adaptor_reset, bhpt_adaptor_reg_l2_s_reset );
+            BCORE_REGISTER_FFUNC( bhpt_adaptor_adapt, bhpt_adaptor_reg_l2_s_adapt );
+            BCORE_REGISTER_OBJECT( bhpt_adaptor_reg_l2_s );
+            BCORE_REGISTER_FFUNC( bhpt_adaptor_adapt, bhpt_adaptor_zro_grad_s_adapt );
+            BCORE_REGISTER_OBJECT( bhpt_adaptor_zro_grad_s );
             BCORE_REGISTER_FFUNC( bhpt_adaptor_reset, bhpt_adaptor_list_s_reset );
             BCORE_REGISTER_FFUNC( bhpt_adaptor_adapt, bhpt_adaptor_list_s_adapt );
             BCORE_REGISTER_OBJECT( bhpt_adaptor_list_s );
@@ -448,6 +519,19 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhpt_tutor_status_to_sink, bhpt_tutor_sampler_s_status_to_sink );
             BCORE_REGISTER_OBJECT( bhpt_tutor_sampler_s );
             BCORE_REGISTER_TRAIT( bhpt_tutor_sampler, bcore_inst );
+
+            // --------------------------------------------------------------------
+            // source: bhpt_tutor_utf8.h
+
+            // group: bhpt_tutor_utf8
+            BCORE_REGISTER_OBJECT( bhpt_tutor_utf8_chatter_s );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_reset, bhpt_tutor_utf8_s_reset );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptive, bhpt_tutor_utf8_s_create_adaptive );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_prime, bhpt_tutor_utf8_s_prime );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_test, bhpt_tutor_utf8_s_test );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_status_to_sink, bhpt_tutor_utf8_s_status_to_sink );
+            BCORE_REGISTER_OBJECT( bhpt_tutor_utf8_s );
+            BCORE_REGISTER_TRAIT( bhpt_tutor_utf8, bcore_inst );
         }
         break;
         default: break;

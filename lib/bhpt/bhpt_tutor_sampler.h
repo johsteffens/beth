@@ -146,9 +146,6 @@ PLANT_GROUP( bhpt_tutor_sampler, bcore_inst )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/** Type: Classifier
- *  Method: Differentiate between a sine wave of arbitrary amplitude and frequency from a random walk curve.
- */
 stamp : = aware bhpt_tutor
 {
     aware bhpt_sampler => sampler;

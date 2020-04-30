@@ -39,34 +39,36 @@ PLANT_GROUP( bhpt, bcore_inst )
 group :adaptor =
 {
     signature void get_min_max( const, f3_t* min, f3_t* max );
+    signature void zro_grad( mutable );
+    signature void acc_grad( mutable, const @* src );
 
+    /// Makes axon values of o reference axon values of src; run adaptive_a_rebind_holors afterwards
+    signature void rebind_axon( mutable, @* src );
+
+    /// The node weakly references adaptive axon and gradient holors.
     stamp :node  = aware :
     {
-        bhvm_holor_s -> axon;
-        bhvm_holor_s -> grad;
-        func : :get_min_max =
-        {
-            if( o->axon )
-            {
-                if( min ) *min = bhvm_value_s_get_min_f3( &o->axon->v );
-                if( max ) *max = bhvm_value_s_get_max_f3( &o->axon->v );
-            }
-        };
+        private bhvm_holor_s* axon;
+        private bhvm_holor_s* grad;
+        func : :get_min_max;
+        func : :zro_grad  = { bhvm_value_s_zro( &o->grad->v ); };
+        func : :acc_grad  = { assert( bhvm_shape_s_is_equal( &o->grad->s, &src->grad->s ) ); bhvm_value_s_acc( &o->grad->v, &src->grad->v ); };
+        func : :rebind_axon = { assert( bhvm_shape_s_is_equal( &o->axon->s, &src->axon->s ) ); bhvm_value_s_weak( &o->axon->v, &src->axon->v ); };
     };
 
+    /** The probe is obtained via function get_adaptor_probe.
+     *  It is valid after obtaining until any modification
+     *  of the underlying adaptive that can change holor bindings.
+     *  If the probe is used to change holor bindings,
+     *  adaptive_a_rebind_holors must be called.
+     */
     stamp :probe = aware bcore_array
     {
         :node_s [];
-        func : :get_min_max =
-        {
-            f3_t min_l = 0, max_l = 0;
-            BFOR_EACH( i, o )
-            {
-                :node_s_get_min_max( &o->data[ i ], &min_l, &max_l );
-                if( min ) *min = ( i > 0 ) ? f3_min( *min, min_l ) : min_l;
-                if( max ) *max = ( i > 0 ) ? f3_max( *max, max_l ) : max_l;
-            }
-        };
+        func : :get_min_max;
+        func : :zro_grad  = { BFOR_EACH( i, o ) :node_s_zro_grad( &o->data[ i ] ); };
+        func : :acc_grad  = { assert( o->size == src->size ); BFOR_EACH( i, o ) :node_s_acc_grad( &o->data[ i ], &src->data[ i ] ); };
+        func : :rebind_axon  = { assert( o->size == src->size ); BFOR_EACH( i, o ) :node_s_rebind_axon( &o->data[ i ], &src->data[ i ] ); };
     };
 
     feature 'a' void reset( mutable ); // resets all moments
@@ -99,8 +101,19 @@ group :adaptive =
     /// resets cyclic variables
     feature 'a' void cyclic_reset( mutable ) = {};
 
-    /// obtains a holor-probe for accumulative gradients; returns probe
+    /** Obtains a holor-probe for accumulative gradients; returns probe
+     *  The probe is to be deemed invalid after the adaptive has been modified
+     *  in a way that effects holor binding. If a probe is used to change holor bindings
+     *  rebind_holors must be executed afterwards.
+     *  This function should execute fast.
+     */
     feature 'a' ::adaptor_probe_s* get_adaptor_probe( const, ::adaptor_probe_s* probe ) = { return probe; };
+
+    /** Explicitly rebinds internal holorbase.
+     *  This can be necessary when holors of a probe have been externally reallocated.
+     *  Use with care!
+     */
+    feature 'a' void rebind_holors( mutable );
 
     /// outputs current status information to sink
     feature 'a' void status_to_sink( const, sz_t verbosity, bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
