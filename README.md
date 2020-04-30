@@ -172,24 +172,34 @@ Key components of the plant language are `stamp`, `group` and `feature`.
 `feature` represents a virtual function. It is defined inside a group turning it into a [perspective](#perspective).
 
 # Motivation
-Object oriented programming is generally associated with a specific framework which can be seen in 
-many programming Languages. C++ is probably one of the most efficient ways of implementing this concept.
-I appreciate and value it, but I also see issues.
+Object oriented programming is generally associated with a specific
+framework which can be seen in many programming Languages.
+I'd say tat C++ offers one of the most efficient framework. 
+I've used, appreciated and valued it for decades. (Still do.)
+But that language has also issues, which caused some
+resentment over time.
 
-For example: The static association between objects and their interfaces forces an inhibiting
-rigidity into the developer's code-architecture.
-The limited means of genericity often promotes boiler plate code.
-More recent languages (e.g. Java, Python, Go) provide advanced features alleviating some of
-these issues. Still, they may come at a loss of efficiency and/or loss of control over how
-code and data is mapped onto the hardware. 
+For example: 
 
-Overcoming these deficiencies is a key motivation. 'C' was preferred over 'C++' 
-because most concepts introduced by 'C++' are solved differently here.
+   * The static association between objects and their interfaces forces
+     an inhibiting rigidity onto the developer's code-architecture.
+   * The limited means of genericity promotes boiler plate coding.
+   * The seemingly rampant increase of built-in features in recent years. <br>
+     (Of which only a fraction appears to be truly needed in any given code base.)
+   * Consequently rather slow compilation.
+   
+More modern languages (e.g. Java, Python, Go) provide advanced features as well as 
+alleviating some of above issues. Still, they may come at a loss of efficiency and/or
+loss of control over how code and data is mapped onto the hardware.
+
+Overcoming these deficiencies is a key motivation in project *beth*. 
+The language 'C' was preferred over 'C++' because most concepts that
+set 'C++' apart from 'C' have been solved differently in *beth*.
 
 Another motivation is providing functionality as might be expected from a general purpose
 library with a scientific touch.
 
-The codebase itself is entirely original work.
+The codebase of *beth* is original work.
 Specific prior work, which has influenced its development is cited inside the code 
 or in related documents where feasible.
 However, a major part is accomplished by actually questioning well trodden paths.
@@ -206,7 +216,7 @@ But for all the bliss, the ultimate goal is *usefulness*.
 
 From April 2017: 
 
-   * Developed beth-specific coding conventions.
+   * Conceived beth-specific coding conventions.
    * Developed a dedicated memory manager.
    * Conceived the *reflection-perspective* approach.
    * Started project [beth](https://github.com/johsteffens/beth) on github.
