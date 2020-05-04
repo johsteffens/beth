@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-04-30T12:16:02Z
+ *  Last File Update: 2020-05-02T15:01:40Z
  *
  *  Copyright and License of this File:
  *
@@ -11,7 +11,7 @@
  *  bhpt_frame.h
  *  bhpt_adaptor.h
  *  bhpt_tutor_sampler.h
- *  bhpt_tutor_utf8.h
+ *  bhpt_tutor_language.h
  *
  */
 
@@ -468,32 +468,32 @@
   BETH_EXPAND_ITEM_bhpt_tutor_sampler_s
 
 /**********************************************************************************************************************/
-// source: bhpt_tutor_utf8.h
+// source: bhpt_tutor_language.h
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bhpt_tutor_utf8
+// group: bhpt_tutor_language
 
-#define TYPEOF_bhpt_tutor_utf8 4242500162
-#define TYPEOF_bhpt_tutor_utf8_s 2137956028
-#define TYPEOF_bhpt_tutor_utf8_chatter_s 3425339982
-#define BETH_EXPAND_ITEM_bhpt_tutor_utf8_chatter_s \
-  BCORE_DECLARE_OBJECT( bhpt_tutor_utf8_chatter_s ) \
-    {aware_t _;bl_t cyclic_reset;st_s trigger;sz_t size_text;sz_t size_line;f3_t heat;};
-#define TYPEOF_bhpt_tutor_utf8_s 2137956028
-#define BETH_EXPAND_ITEM_bhpt_tutor_utf8_s \
-  BCORE_DECLARE_OBJECT( bhpt_tutor_utf8_s ) \
-    {aware_t _;vd_t src;st_s* st;u2_t rval_prime;u2_t rval_test;sz_t size_trans;sz_t size_prime;sz_t size_test;f3_t tgt_pos;f3_t tgt_neg;bhpt_tutor_utf8_chatter_s* chatter;bcore_mutex_s mutex;}; \
-  static inline void bhpt_tutor_utf8_s_reset( bhpt_tutor_utf8_s* o ){o->rval_prime = 1234;} \
-  bhpt_adaptive* bhpt_tutor_utf8_s_create_adaptive( const bhpt_tutor_utf8_s* o, const bhpt_builder* builder ); \
-  void bhpt_tutor_utf8_s_prime( bhpt_tutor_utf8_s* o, bhpt_adaptive* adaptive ); \
-  void bhpt_tutor_utf8_s_test( const bhpt_tutor_utf8_s* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ); \
-  void bhpt_tutor_utf8_s_status_to_sink( const bhpt_tutor_utf8_s* o, sz_t verbosity, bcore_sink* sink );
-#define BETH_EXPAND_GROUP_bhpt_tutor_utf8 \
-  BCORE_FORWARD_OBJECT( bhpt_tutor_utf8 ); \
-  BCORE_FORWARD_OBJECT( bhpt_tutor_utf8_chatter_s ); \
-  BCORE_FORWARD_OBJECT( bhpt_tutor_utf8_s ); \
-  BETH_EXPAND_ITEM_bhpt_tutor_utf8_chatter_s \
-  BETH_EXPAND_ITEM_bhpt_tutor_utf8_s
+#define TYPEOF_bhpt_tutor_language 3148785547
+#define TYPEOF_bhpt_tutor_language_s 289799133
+#define TYPEOF_bhpt_tutor_language_utf8_chatter_s 1375128031
+#define BETH_EXPAND_ITEM_bhpt_tutor_language_utf8_chatter_s \
+  BCORE_DECLARE_OBJECT( bhpt_tutor_language_utf8_chatter_s ) \
+    {aware_t _;bl_t cyclic_reset;st_s trigger;sz_t size_line;sz_t size_lines;f3_t heat;};
+#define TYPEOF_bhpt_tutor_language_utf8_s 409996605
+#define BETH_EXPAND_ITEM_bhpt_tutor_language_utf8_s \
+  BCORE_DECLARE_OBJECT( bhpt_tutor_language_utf8_s ) \
+    {aware_t _;vd_t src;st_s* st;u2_t rval_prime;u2_t rval_test;sz_t size_trans;sz_t size_prime;sz_t size_test;f3_t tgt_pos;f3_t tgt_neg;bhpt_tutor_language_utf8_chatter_s* chatter;bcore_mutex_s mutex;}; \
+  static inline void bhpt_tutor_language_utf8_s_reset( bhpt_tutor_language_utf8_s* o ){o->rval_prime = 1234;} \
+  bhpt_adaptive* bhpt_tutor_language_utf8_s_create_adaptive( const bhpt_tutor_language_utf8_s* o, const bhpt_builder* builder ); \
+  void bhpt_tutor_language_utf8_s_prime( bhpt_tutor_language_utf8_s* o, bhpt_adaptive* adaptive ); \
+  void bhpt_tutor_language_utf8_s_test( const bhpt_tutor_language_utf8_s* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ); \
+  void bhpt_tutor_language_utf8_s_status_to_sink( const bhpt_tutor_language_utf8_s* o, sz_t verbosity, bcore_sink* sink );
+#define BETH_EXPAND_GROUP_bhpt_tutor_language \
+  BCORE_FORWARD_OBJECT( bhpt_tutor_language ); \
+  BCORE_FORWARD_OBJECT( bhpt_tutor_language_utf8_chatter_s ); \
+  BCORE_FORWARD_OBJECT( bhpt_tutor_language_utf8_s ); \
+  BETH_EXPAND_ITEM_bhpt_tutor_language_utf8_chatter_s \
+  BETH_EXPAND_ITEM_bhpt_tutor_language_utf8_s
 
 /**********************************************************************************************************************/
 

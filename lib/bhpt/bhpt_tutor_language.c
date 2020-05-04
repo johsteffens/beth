@@ -13,13 +13,13 @@
  *  limitations under the License.
  */
 
-#include "bhpt_tutor_utf8.h"
+#include "bhpt_tutor_language.h"
 
 /**********************************************************************************************************************/
 
-#ifdef TYPEOF_bhpt_tutor_utf8
+#ifdef TYPEOF_bhpt_tutor_language
 
-bhpt_adaptive* bhpt_tutor_utf8_s_create_adaptive( const bhpt_tutor_utf8_s* o, const bhpt_builder* src_builder )
+bhpt_adaptive* bhpt_tutor_language_utf8_s_create_adaptive( const bhpt_tutor_language_utf8_s* o, const bhpt_builder* src_builder )
 {
     BLM_INIT();
     bhpt_builder* builder = BLM_A_PUSH( bhpt_builder_a_clone( src_builder ) );
@@ -30,7 +30,7 @@ bhpt_adaptive* bhpt_tutor_utf8_s_create_adaptive( const bhpt_tutor_utf8_s* o, co
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-static u2_t bhpt_tutor_utf8_s_get_string( bhpt_tutor_utf8_s* o, u2_t rval, sz_t size, st_s* string )
+static u2_t bhpt_tutor_language_utf8_s_get_string( bhpt_tutor_language_utf8_s* o, u2_t rval, sz_t size, st_s* string )
 {
     if( !o->st )
     {
@@ -77,7 +77,7 @@ static u2_t bhpt_tutor_utf8_s_get_string( bhpt_tutor_utf8_s* o, u2_t rval, sz_t 
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-static void bhpt_tutor_utf8_s_encode( const bhpt_tutor_utf8_s* o, u0_t c, bhvm_value_s* v )
+static void bhpt_tutor_language_utf8_s_encode( const bhpt_tutor_language_utf8_s* o, u0_t c, bhvm_value_s* v )
 {
     assert( v->type == TYPEOF_f3_t );
     f3_t* v_data = v->data;
@@ -86,7 +86,7 @@ static void bhpt_tutor_utf8_s_encode( const bhpt_tutor_utf8_s* o, u0_t c, bhvm_v
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhpt_tutor_utf8_s_prime( bhpt_tutor_utf8_s* o, bhpt_adaptive* adaptive )
+void bhpt_tutor_language_utf8_s_prime( bhpt_tutor_language_utf8_s* o, bhpt_adaptive* adaptive )
 {
 //    bcore_mutex_s_lock( &o->mutex );
     BLM_INIT();
@@ -101,7 +101,7 @@ void bhpt_tutor_utf8_s_prime( bhpt_tutor_utf8_s* o, bhpt_adaptive* adaptive )
 
     bcore_mutex_s_lock( &o->mutex );
     st_s* string = BLM_CREATE( st_s );
-    o->rval_prime = bhpt_tutor_utf8_s_get_string( o, o->rval_prime, o->size_trans + o->size_prime + 1, string );
+    o->rval_prime = bhpt_tutor_language_utf8_s_get_string( o, o->rval_prime, o->size_trans + o->size_prime + 1, string );
     bcore_mutex_s_unlock( &o->mutex );
 
     bhpt_adaptive_a_cyclic_reset( adaptive );
@@ -110,15 +110,15 @@ void bhpt_tutor_utf8_s_prime( bhpt_tutor_utf8_s* o, bhpt_adaptive* adaptive )
 
     BFOR_SIZE( i, o->size_trans )
     {
-        bhpt_tutor_utf8_s_encode( o, string->data[ index ], &hx->v );
+        bhpt_tutor_language_utf8_s_encode( o, string->data[ index ], &hx->v );
         bhpt_adaptive_a_axon_pass( adaptive, hx, hf );
         index++;
     }
 
     BFOR_SIZE( i, o->size_prime )
     {
-        bhpt_tutor_utf8_s_encode( o, string->data[ index     ], &hx->v );
-        bhpt_tutor_utf8_s_encode( o, string->data[ index + 1 ], &hy->v );
+        bhpt_tutor_language_utf8_s_encode( o, string->data[ index     ], &hx->v );
+        bhpt_tutor_language_utf8_s_encode( o, string->data[ index + 1 ], &hy->v );
         bhpt_adaptive_a_axon_pass( adaptive, hx, hf );
         bhvm_hop_ar2_eci_sub_s_f( hy, hf, hy );
         bhpt_adaptive_a_dendrite_pass( adaptive, hy, NULL );
@@ -131,7 +131,7 @@ void bhpt_tutor_utf8_s_prime( bhpt_tutor_utf8_s* o, bhpt_adaptive* adaptive )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhpt_tutor_utf8_chatter_s_run( const bhpt_tutor_utf8_chatter_s* o, const bhpt_tutor_utf8_s* tutor, bhpt_adaptive* adaptive, bcore_sink* log )
+void bhpt_tutor_language_utf8_chatter_s_run( const bhpt_tutor_language_utf8_chatter_s* o, const bhpt_tutor_language_utf8_s* tutor, bhpt_adaptive* adaptive, bcore_sink* log )
 {
     BLM_INIT();
 
@@ -142,23 +142,30 @@ void bhpt_tutor_utf8_chatter_s_run( const bhpt_tutor_utf8_chatter_s* o, const bh
 
     if( o->cyclic_reset ) bhpt_adaptive_a_cyclic_reset( adaptive );
 
-    bcore_sink_a_push_fa( log, "\n#rn{=}\n", o->size_line );
+    bcore_sink_a_push_fa( log, "\n#rn{=}", o->size_line );
 
     sz_t c_count = 0;
     BFOR_SIZE( i, o->trigger.size )
     {
+        if( c_count == 0 ) { bcore_sink_a_push_fa( log, "\n" ); }
         char c = o->trigger.data[ i ];
         bcore_sink_a_push_fa( log, "#<char>", c );
-        if( ++c_count == o->size_line ) { c_count = 0;  bcore_sink_a_push_fa( log, "\n", c ); }
-        bhpt_tutor_utf8_s_encode( tutor, c, &hx->v );
+        bhpt_tutor_language_utf8_s_encode( tutor, c, &hx->v );
         bhpt_adaptive_a_axon_pass( adaptive, hx, hy );
+        c_count = ( c_count + 1 ) % o->size_line;
     }
 
     u2_t rval = 12341234 * bhvm_value_s_get_max_f3( &hy->v );
 
     f3_t* hy_data = hy->v.data;
-    BFOR_SIZE( i, o->size_text )
+
+    sz_t size_text = sz_max( 0, o->size_lines * o->size_line - o->trigger.size );
+
+    sz_t follow_bytes = 0;
+
+    BFOR_SIZE( i, size_text )
     {
+        if( c_count == 0 ) { bcore_sink_a_push_fa( log, "\n" ); }
         f3_t max_val = 0;
         u0_t c = 0;
         BFOR_SIZE( j, 256 )
@@ -170,11 +177,55 @@ void bhpt_tutor_utf8_chatter_s_run( const bhpt_tutor_utf8_chatter_s* o, const bh
                 c = j;
             }
         }
-        // filter out control characters except line feed
-        if( c >= 32 || c == '\n' ) bcore_sink_a_push_fa( log, "#<char>", c );
-        if( ++c_count == o->size_line ) { c_count = 0;  bcore_sink_a_push_fa( log, "\n", c ); }
-        bhpt_tutor_utf8_s_encode( tutor, c, &hx->v );
+
+        bl_t valid = true;
+
+        if( c < 128 || ( c & 0xC0 ) == 0xC0 ) // ASCII char or start of a new sequence
+        {
+            /// clear previous sequence
+            for( ; follow_bytes > 0; follow_bytes-- ) bcore_sink_a_push_fa( log, "#<char>", ( u0_t )0x80 );
+
+            // simple ASCII
+            if( c < 128 )
+            {
+                if( c == '\n' ) c = ' ';
+                valid = ( c >= 32 && c < 127 );
+            }
+            else if( ( c & 0xE0 ) == 0xC0 ) // 2-byte sequence
+            {
+                follow_bytes = 1;
+            }
+            else if( ( c & 0xF0 ) == 0xE0 ) // 3-byte sequence
+            {
+                follow_bytes = 2;
+            }
+            else if( ( c & 0xF8 ) == 0xF0 ) // 4-byte sequence
+            {
+                follow_bytes = 3;
+            }
+            else
+            {
+                valid = false;
+            }
+        }
+        else if( ( c & 0xC0 ) == 0x80 ) // follow byte
+        {
+            if( follow_bytes > 0 )
+            {
+                follow_bytes--;
+            }
+            else
+            {
+                valid = false;
+            }
+        }
+
+
+        if( valid ) bcore_sink_a_push_fa( log, "#<char>", c );
+
+        bhpt_tutor_language_utf8_s_encode( tutor, c, &hx->v );
         bhpt_adaptive_a_axon_pass( adaptive, hx, hy );
+        c_count = ( c_count + 1 ) % o->size_line;
     }
 
     bcore_sink_a_push_fa( log, "\n#rn{=}\n", o->size_line );
@@ -183,7 +234,7 @@ void bhpt_tutor_utf8_chatter_s_run( const bhpt_tutor_utf8_chatter_s* o, const bh
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhpt_tutor_utf8_s_test( const bhpt_tutor_utf8_s* o, const bhpt_adaptive* adaptive_src, sz_t verbosity, bcore_sink* log )
+void bhpt_tutor_language_utf8_s_test( const bhpt_tutor_language_utf8_s* o, const bhpt_adaptive* adaptive_src, sz_t verbosity, bcore_sink* log )
 {
     BLM_INIT();
     bhpt_adaptive* adaptive = BLM_A_PUSH( bhpt_adaptive_a_clone( adaptive_src ) );
@@ -196,10 +247,10 @@ void bhpt_tutor_utf8_s_test( const bhpt_tutor_utf8_s* o, const bhpt_adaptive* ad
     bhvm_holor_s* hd  = BLM_CLONE( bhvm_holor_s, hy ); // y - f
     bhvm_holor_s* hsd = BLM_CLONE( bhvm_holor_s, hy ); // y - f
 
-    bcore_mutex_s_lock( &( ( bhpt_tutor_utf8_s* )o )->mutex );
+    bcore_mutex_s_lock( &( ( bhpt_tutor_language_utf8_s* )o )->mutex );
     st_s* string = BLM_CREATE( st_s );
-    bhpt_tutor_utf8_s_get_string( ( bhpt_tutor_utf8_s* )o, o->rval_test, o->size_trans + o->size_test + 1, string );
-    bcore_mutex_s_unlock( &( ( bhpt_tutor_utf8_s* )o )->mutex );
+    bhpt_tutor_language_utf8_s_get_string( ( bhpt_tutor_language_utf8_s* )o, o->rval_test, o->size_trans + o->size_test + 1, string );
+    bcore_mutex_s_unlock( &( ( bhpt_tutor_language_utf8_s* )o )->mutex );
 
     bhpt_adaptive_a_cyclic_reset( adaptive );
 
@@ -215,15 +266,15 @@ void bhpt_tutor_utf8_s_test( const bhpt_tutor_utf8_s* o, const bhpt_adaptive* ad
 
     BFOR_SIZE( i, o->size_trans )
     {
-        bhpt_tutor_utf8_s_encode( o, string->data[ index ], &hx->v );
+        bhpt_tutor_language_utf8_s_encode( o, string->data[ index ], &hx->v );
         bhpt_adaptive_a_axon_pass( adaptive, hx, hf );
         index++;
     }
 
     BFOR_SIZE( i, o->size_test )
     {
-        bhpt_tutor_utf8_s_encode( o, string->data[ index     ], &hx->v );
-        bhpt_tutor_utf8_s_encode( o, string->data[ index + 1 ], &hy->v );
+        bhpt_tutor_language_utf8_s_encode( o, string->data[ index     ], &hx->v );
+        bhpt_tutor_language_utf8_s_encode( o, string->data[ index + 1 ], &hy->v );
         bhpt_adaptive_a_axon_pass( adaptive, hx, hf );
         bhvm_hop_ar2_eci_sub_s_f( hy, hf, hd );
 
@@ -257,7 +308,7 @@ void bhpt_tutor_utf8_s_test( const bhpt_tutor_utf8_s* o, const bhpt_adaptive* ad
 
     if( verbosity > 1 )
     {
-        if( o->chatter ) bhpt_tutor_utf8_chatter_s_run( o->chatter, o, adaptive, log );
+        if( o->chatter ) bhpt_tutor_language_utf8_chatter_s_run( o->chatter, o, adaptive, log );
         bcore_sink_a_pushf( log, "db-size: %5.3fM, ", o->st->size * 1E-6 );
     }
 
@@ -268,15 +319,15 @@ void bhpt_tutor_utf8_s_test( const bhpt_tutor_utf8_s* o, const bhpt_adaptive* ad
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-#endif // TYPEOF_bhpt_tutor_utf8
+#endif // TYPEOF_bhpt_tutor_language
 
 /**********************************************************************************************************************/
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-vd_t bhpt_tutor_utf8_signal_handler( const bcore_signal_s* o )
+vd_t bhpt_tutor_language_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_tutor_utf8" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_tutor_language" ) ) )
     {
         case TYPEOF_init1:
         {

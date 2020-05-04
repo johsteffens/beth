@@ -13,15 +13,11 @@
  *  limitations under the License.
  */
 
-/** Training a language model based on utf8-text. Intended for recurrent networks.
- *
- *  This tutor was inspired by Andrey Karpathy's work on training language models with RNN:
- *  "The Unreasonable Effectiveness of Recurrent Neural Networks", May, 2015,
- *  http://karpathy.github.io/2015/05/21/rnn-effectiveness/
+/** Training a language model. Intended for recurrent networks.
  */
 
-#ifndef BHPT_TUTOR_UTF8_H
-#define BHPT_TUTOR_UTF8_H
+#ifndef BHPT_TUTOR_LANGUAGE_H
+#define BHPT_TUTOR_LANGUAGE_H
 
 /**********************************************************************************************************************/
 
@@ -31,27 +27,32 @@
 
 /**********************************************************************************************************************/
 
-#ifdef TYPEOF_bhpt_tutor_utf8
+#ifdef TYPEOF_bhpt_tutor_language
 
-PLANT_GROUP( bhpt_tutor_utf8, bcore_inst )
+PLANT_GROUP( bhpt_tutor_language, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /** Generates automatic text from a trigger
  */
-stamp :chatter = aware :
+stamp :utf8_chatter = aware :
 {
     bl_t cyclic_reset = false;
-    st_s trigger   = "The chatter trigger:";
-    sz_t size_text = 400;
-    sz_t size_line = 100;
-    f3_t heat      = 0.2;
+    st_s trigger    = "The chatter trigger:";
+    sz_t size_line  = 100;
+    sz_t size_lines = 4;
+    f3_t heat       = 0.2;
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp : = aware bhpt_tutor
+/** UTF8 character tutor.
+ *  Inspired by Andrey Karpathy's work on training language models with RNN:
+ *  "The Unreasonable Effectiveness of Recurrent Neural Networks", May, 2015,
+ *  http://karpathy.github.io/2015/05/21/rnn-effectiveness/
+ */
+stamp :utf8 = aware bhpt_tutor
 {
     aware => src; // source (bcore_file_path_s or st_s with inline code)
 
@@ -74,7 +75,7 @@ stamp : = aware bhpt_tutor
     f3_t tgt_pos = 1.0;
     f3_t tgt_neg = 0.0;
 
-    :chatter_s => chatter;
+    :utf8_chatter_s => chatter;
 
     hidden bcore_mutex_s mutex;
 
@@ -95,12 +96,12 @@ stamp : = aware bhpt_tutor
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#endif // TYPEOF_bhpt_tutor_utf8
+#endif // TYPEOF_bhpt_tutor_language
 
 /**********************************************************************************************************************/
 
-vd_t bhpt_tutor_utf8_signal_handler( const bcore_signal_s* o );
+vd_t bhpt_tutor_language_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif // BHPT_TUTOR_UTF8_H
+#endif // BHPT_TUTOR_LANGUAGE_H

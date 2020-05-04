@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-04-30T12:16:02Z
+ *  Last File Update: 2020-05-02T15:01:40Z
  *
  *  Copyright and License of this File:
  *
@@ -11,7 +11,7 @@
  *  bhpt_frame.h
  *  bhpt_adaptor.h
  *  bhpt_tutor_sampler.h
- *  bhpt_tutor_utf8.h
+ *  bhpt_tutor_language.h
  *
  */
 
@@ -338,23 +338,23 @@ void bhpt_tutor_sampler_s_status_to_sink( const bhpt_tutor_sampler_s* o, sz_t ve
 }
 
 /**********************************************************************************************************************/
-// source: bhpt_tutor_utf8.h
-#include "bhpt_tutor_utf8.h"
+// source: bhpt_tutor_language.h
+#include "bhpt_tutor_language.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bhpt_tutor_utf8
+// group: bhpt_tutor_language
 
-BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_utf8_chatter_s )
-"aware bhpt_tutor_utf8"
+BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_language_utf8_chatter_s )
+"aware bhpt_tutor_language"
 "{"
     "bl_t cyclic_reset = false;"
-    "st_s trigger = \"The chatter triggerbhpt_tutor_utf8\";"
-    "sz_t size_text = 400;"
+    "st_s trigger = \"The chatter triggerbhpt_tutor_language\";"
     "sz_t size_line = 100;"
+    "sz_t size_lines = 4;"
     "f3_t heat = 0.2;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_utf8_s )
+BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_language_utf8_s )
 "aware bhpt_tutor"
 "{"
     "aware => src;"
@@ -366,7 +366,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_utf8_s )
     "sz_t size_test = 1000;"
     "f3_t tgt_pos = 1.0;"
     "f3_t tgt_neg = 0.0;"
-    "bhpt_tutor_utf8_chatter_s => chatter;"
+    "bhpt_tutor_language_utf8_chatter_s => chatter;"
     "hidden bcore_mutex_s mutex;"
     "func ^:reset;"
     "func ^:create_adaptive;"
@@ -375,7 +375,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_utf8_s )
     "func ^:status_to_sink;"
 "}";
 
-void bhpt_tutor_utf8_s_status_to_sink( const bhpt_tutor_utf8_s* o, sz_t verbosity, bcore_sink* sink )
+void bhpt_tutor_language_utf8_s_status_to_sink( const bhpt_tutor_language_utf8_s* o, sz_t verbosity, bcore_sink* sink )
 {
     if( verbosity > 0 )
     {
@@ -392,7 +392,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 2965921179 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 3637352583 ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h
@@ -521,17 +521,17 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bhpt_tutor_sampler, bcore_inst );
 
             // --------------------------------------------------------------------
-            // source: bhpt_tutor_utf8.h
+            // source: bhpt_tutor_language.h
 
-            // group: bhpt_tutor_utf8
-            BCORE_REGISTER_OBJECT( bhpt_tutor_utf8_chatter_s );
-            BCORE_REGISTER_FFUNC( bhpt_tutor_reset, bhpt_tutor_utf8_s_reset );
-            BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptive, bhpt_tutor_utf8_s_create_adaptive );
-            BCORE_REGISTER_FFUNC( bhpt_tutor_prime, bhpt_tutor_utf8_s_prime );
-            BCORE_REGISTER_FFUNC( bhpt_tutor_test, bhpt_tutor_utf8_s_test );
-            BCORE_REGISTER_FFUNC( bhpt_tutor_status_to_sink, bhpt_tutor_utf8_s_status_to_sink );
-            BCORE_REGISTER_OBJECT( bhpt_tutor_utf8_s );
-            BCORE_REGISTER_TRAIT( bhpt_tutor_utf8, bcore_inst );
+            // group: bhpt_tutor_language
+            BCORE_REGISTER_OBJECT( bhpt_tutor_language_utf8_chatter_s );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_reset, bhpt_tutor_language_utf8_s_reset );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptive, bhpt_tutor_language_utf8_s_create_adaptive );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_prime, bhpt_tutor_language_utf8_s_prime );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_test, bhpt_tutor_language_utf8_s_test );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_status_to_sink, bhpt_tutor_language_utf8_s_status_to_sink );
+            BCORE_REGISTER_OBJECT( bhpt_tutor_language_utf8_s );
+            BCORE_REGISTER_TRAIT( bhpt_tutor_language, bcore_inst );
         }
         break;
         default: break;
