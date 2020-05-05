@@ -42,6 +42,7 @@ void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
 void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, fx_t density, fx_t min, fx_t max, u2_t* p_rval )
 {
     u2_t rval = p_rval ? *p_rval : 12345;
+    rval = ( rval ) ? rval : 12345; // map 0 to a valid rval for xsg
     fx_t range = max - min;
     if( pdf ) ASSERT( hsm );
     if( hsm ) ASSERT( o->rows == o->cols );

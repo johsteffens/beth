@@ -238,6 +238,7 @@ void BCATU(bmath_vfx_s,set_data)( bmath_vfx_s* o, const fx_t* data, sz_t size )
 void BCATU(bmath_vfx_s,set_random)( bmath_vfx_s* o, fx_t density, fx_t min, fx_t max, u2_t* p_rval )
 {
     u2_t rval = p_rval ? *p_rval : 12345;
+    rval = ( rval ) ? rval : 12345; // map 0 to a valid rval for xsg
     fx_t range = max - min;
     for( uz_t i = 0; i < o->size; i++ )
     {
