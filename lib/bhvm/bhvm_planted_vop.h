@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-08T14:39:25Z
+ *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
+ *  Last File Update: 2020-05-05T12:13:58Z
  *
  *  Copyright and License of this File:
  *
@@ -188,6 +188,14 @@
   static inline sz_t* bhvm_vop_ar0_nul_dp_s_get_index_arr( bhvm_vop_ar0_nul_dp_s* o ){return o->i.v;} \
   static inline void bhvm_vop_ar0_nul_dp_s_run( const bhvm_vop_ar0_nul_dp_s* o, bhvm_holor_s* ah ){} \
   static inline sc_t bhvm_vop_ar0_nul_dp_s_sig( const bhvm_vop_ar0_nul_dp_s* o ){return "f";}
+#define TYPEOF_bhvm_vop_ar0_rand_s 1661292898
+#define BETH_EXPAND_ITEM_bhvm_vop_ar0_rand_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar0_rand_s ) \
+    {aware_t _;bhvm_vop_ar0_index_s i;u2_t rval;f3_t min;f3_t max;f3_t density;bcore_mutex_s mutex;}; \
+  static inline sz_t bhvm_vop_ar0_rand_s_arity( const bhvm_vop_ar0_rand_s* o ){return 0;} \
+  static inline sz_t* bhvm_vop_ar0_rand_s_get_index_arr( bhvm_vop_ar0_rand_s* o ){return o->i.v;} \
+  void bhvm_vop_ar0_rand_s_run( const bhvm_vop_ar0_rand_s* o, bhvm_holor_s* ah ); \
+  static inline sc_t bhvm_vop_ar0_rand_s_sig( const bhvm_vop_ar0_rand_s* o ){return "y";}
 #define BETH_EXPAND_GROUP_bhvm_vop_ar0 \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar0 ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar0_index_s ); \
@@ -197,13 +205,15 @@
   BCORE_FORWARD_OBJECT( bhvm_vop_ar0_vacate_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar0_randomize_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar0_nul_dp_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar0_rand_s ); \
   BETH_EXPAND_ITEM_bhvm_vop_ar0_index_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar0_zro_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar0_one_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar0_determine_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar0_vacate_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar0_randomize_s \
-  BETH_EXPAND_ITEM_bhvm_vop_ar0_nul_dp_s
+  BETH_EXPAND_ITEM_bhvm_vop_ar0_nul_dp_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar0_rand_s
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_vop_ar1

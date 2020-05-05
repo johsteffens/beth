@@ -165,6 +165,35 @@ group :ar0 =
     /// dendrite pass ----------------------------------------------------------
 
     stamp :nul_dp = { func :: :run = {}; func :: :sig = { return "f"; }; }; // no action
+
+    /// state -------------------------------------------------------------------
+
+    // State operators maintain an internal state, which can also change during use.
+
+    /** Randomizer with internal seed state and updating seed at each use
+      * The internal state is protected via mutex
+      */
+    stamp :rand =
+    {
+        u2_t rval    = 1234; // mutable
+        f3_t min     = -0.5;
+        f3_t max     =  0.5;
+        f3_t density =  1.0;
+        hidden bcore_mutex_s mutex;
+
+        func :: :run =
+        {
+            sz_t i = o->i.v[ 0 ];
+            u2_t* rval = ( u2_t* )&o->rval;
+            bcore_mutex_s* mutex = ( bcore_mutex_s* )&o->mutex;
+            bcore_mutex_s_lock( mutex );
+            bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, rval );
+            bcore_mutex_s_unlock( mutex );
+        };
+
+        func :: :sig = { return "y"; };
+    };
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -220,13 +249,6 @@ group :ar1 =
         func :: :sig = { return "ay"; };
     };
 
-//    stamp :order_dec_fork =
-//    {
-//        sz_t idx;
-//        func :: :run = { bhvm_holor_s_order_dec_fork( &ah[o->i.v[0]], o->idx, &ah[o->i.v[1]] ); };
-//        func :: :sig = { return "ay"; };
-//    };
-
     stamp :order_dec_weak =
     {
         sz_t idx;
@@ -241,7 +263,7 @@ group :ar1 =
     stamp :sub_dp_a = { func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
     stamp :sub_dp_b = { func :: :run = { bhvm_hop_ar1_eci_neg_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zg"; }; };
 
-    stamp :neg_dp      = { func :: :run = { bhvm_hop_ar1_eci_neg_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
+    stamp :neg_dp   = { func :: :run = { bhvm_hop_ar1_eci_neg_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
 
     stamp :cat_dp_a = { func :: :run = { bhvm_hop_ar1_cat_dp_zf_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
     stamp :cat_dp_b = { func :: :run = { bhvm_hop_ar1_cat_dp_zg_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] ); }; func :: :sig = { return "zg"; }; };
@@ -352,8 +374,6 @@ group :ar2 =
     stamp :mul_mtm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_tmm_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zag"; }; };
     stamp :mul_tmm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_mmm_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "azg"; }; };
     stamp :mul_ttm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_ttm_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zag"; }; };
-
-//    stamp :div_dp_a      = { func :: :run = { bhvm_hop_ar2_div_dp_zbf_s_f(        &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
 
     stamp :mul_dp_a      = { func :: :run = { bhvm_hop_ar2_eci_mul_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
     stamp :mul_dp_b      = { func :: :run = { bhvm_hop_ar2_eci_mul_acc_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "zag"; }; };
