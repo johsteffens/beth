@@ -343,14 +343,14 @@ group :ar2 =
 
     /// logic ------------------------------------------------------------------
 
-    stamp :equal         = { func :: :sig = { return "aby"; }; };
-    stamp :unequal       = { func :: :sig = { return "aby"; }; };
-    stamp :larger        = { func :: :sig = { return "aby"; }; };
-    stamp :smaller       = { func :: :sig = { return "aby"; }; };
-    stamp :larger_equal  = { func :: :sig = { return "aby"; }; };
-    stamp :smaller_equal = { func :: :sig = { return "aby"; }; };
-    stamp :logic_and     = { func :: :sig = { return "aby"; }; };
-    stamp :logic_or      = { func :: :sig = { return "aby"; }; };
+    stamp :logic_equal         = { func :: :run = { bhvm_hop_ar2_eci_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_unequal       = { func :: :run = { bhvm_hop_ar2_eci_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_larger        = { func :: :run = { bhvm_hop_ar2_eci_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_smaller       = { func :: :run = { bhvm_hop_ar2_eci_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_larger_equal  = { func :: :run = { bhvm_hop_ar2_eci_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_smaller_equal = { func :: :run = { bhvm_hop_ar2_eci_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_and           = { func :: :run = { bhvm_hop_ar2_eci_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_or            = { func :: :run = { bhvm_hop_ar2_eci_$R_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
 
     /// dendrite pass ----------------------------------------------------------
 

@@ -307,6 +307,45 @@ group :ar2_eci =
     // vector += vector <op> vector
     body body_zro = { bhvm_value_s_zro( &r->v ); };
 
+    /// sets the target value: r = op( a, b )
+    body body_set =
+    {
+        assert( a != r && b != r );
+        assert(  sz_min( sz_min( a->v.size, b->v.size ), r->v.size ) > 0 );
+        sz_t n = sz_gcd( sz_gcd( a->v.size, b->v.size ), r->v.size );
+        sz_t m = sz_max( sz_max( a->v.size, b->v.size ), r->v.size ) / n;
+
+        #define :SET_CASE( TA_T, TB_T, TR_T, FUNC ) \
+        { \
+            const TA_T *a0 = a->v.data, *a1 = a0; \
+            const TB_T *b0 = b->v.data, *b1 = b0; \
+                  TR_T *r0 = r->v.data, *r1 = r0; \
+            for( sz_t i = 0; i < m; i++ ) \
+            { \
+                for( sz_t i = 0; i < n; i++ ) r1[ i ] = FUNC( a1[ i ], b1[ i ] ); \
+                a1 = ( a1 + n - a0 ) < a->v.size ? ( a1 + n ) : a0; \
+                b1 = ( b1 + n - b0 ) < b->v.size ? ( b1 + n ) : b0; \
+                r1 = ( r1 + n - r0 ) < r->v.size ? ( r1 + n ) : r0; \
+            } \
+        }
+
+        switch( BKNIT_FA3( a->v.type, b->v.type, r->v.type ) )
+        {
+            case BKNIT_F222: :SET_CASE( f2_t, f2_t, f2_t, @_f2 ); break;
+            case BKNIT_F223: :SET_CASE( f2_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F232: :SET_CASE( f2_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F233: :SET_CASE( f2_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F322: :SET_CASE( f3_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F323: :SET_CASE( f3_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F332: :SET_CASE( f3_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F333: :SET_CASE( f3_t, f3_t, f3_t, @_f3 ); break;
+            default: BKNIT_FA3_ERR( a->v.type, b->v.type, r->v.type ); break;
+        }
+
+        #undef :SET_CASE
+    };
+
+    /// accumulates the target value: r += op( a, b )
     body body_acc =
     {
         assert( a != r && b != r );
@@ -344,7 +383,7 @@ group :ar2_eci =
         #undef :ACC_CASE
     };
 
-    body body_std =
+    body body_chk_zro_acc =
     {
         if( a == r || b == r )
         {
@@ -367,13 +406,37 @@ group :ar2_eci =
     stamp :mul_acc = { func : :f2 = { return a * b; };           func : :f3 = { return a * b; };           func : :f = :body_acc; };
     stamp :div_acc = { func : :f2 = { return a * f2_inv( b ); }; func : :f3 = { return a * f3_inv( b ); }; func : :f = :body_acc; };
     stamp :pow_acc = { func : :f2 = { return  f2_pow( a, b ); }; func : :f3 = { return  f3_pow( a, b ); }; func : :f = :body_acc; };
-    stamp :add     = { func : :f = :body_std; };
-    stamp :sub     = { func : :f = :body_std; };
-    stamp :mul     = { func : :f = :body_std; };
-    stamp :div     = { func : :f = :body_std; };
-    stamp :pow     = { func : :f = :body_std; };
+
+    stamp :add     = { func : :f = :body_chk_zro_acc; };
+    stamp :sub     = { func : :f = :body_chk_zro_acc; };
+    stamp :mul     = { func : :f = :body_chk_zro_acc; };
+    stamp :div     = { func : :f = :body_chk_zro_acc; };
+    stamp :pow     = { func : :f = :body_chk_zro_acc; };
 
     /// logic ------------------------------------------------------------------
+
+    group :logic =
+    {
+        extending stump verbatim :_ = aware : {};
+
+        body body_equal         = { return a == b ? 1 : -1; };
+        body body_unequal       = { return a != b ? 1 : -1; };
+        body body_larger        = { return a >  b ? 1 : -1; };
+        body body_smaller       = { return a <  b ? 1 : -1; };
+        body body_larger_equal  = { return a >= b ? 1 : -1; };
+        body body_smaller_equal = { return a <= b ? 1 : -1; };
+        body body_and           = { return ( ( a > 0 ) && ( b > 0 ) ) ? 1 : -1; };
+        body body_or            = { return ( ( a > 0 ) || ( b > 0 ) ) ? 1 : -1; };
+
+        stamp :equal         = { func :: :f2 = :body_$R; func :: :f3 = :body_$R; func :: :f = ::body_set; };
+        stamp :unequal       = { func :: :f2 = :body_$R; func :: :f3 = :body_$R; func :: :f = ::body_set; };
+        stamp :larger        = { func :: :f2 = :body_$R; func :: :f3 = :body_$R; func :: :f = ::body_set; };
+        stamp :smaller       = { func :: :f2 = :body_$R; func :: :f3 = :body_$R; func :: :f = ::body_set; };
+        stamp :larger_equal  = { func :: :f2 = :body_$R; func :: :f3 = :body_$R; func :: :f = ::body_set; };
+        stamp :smaller_equal = { func :: :f2 = :body_$R; func :: :f3 = :body_$R; func :: :f = ::body_set; };
+        stamp :and           = { func :: :f2 = :body_$R; func :: :f3 = :body_$R; func :: :f = ::body_set; };
+        stamp :or            = { func :: :f2 = :body_$R; func :: :f3 = :body_$R; func :: :f = ::body_set; };
+    };
 
     /// dendrite pass ----------------------------------------------------------
 

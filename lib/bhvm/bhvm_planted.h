@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-06T09:56:50Z
+ *  Last File Update: 2020-05-06T11:42:37Z
  *
  *  Copyright and License of this File:
  *
@@ -852,6 +852,7 @@
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_mul_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_div_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_pow_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_logic ); \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_add_acc_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_sub_acc_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_mul_acc_s \
@@ -861,7 +862,88 @@
   BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_sub_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_mul_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_div_s \
-  BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_pow_s
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_pow_s \
+  BETH_EXPAND_GROUP_bhvm_hop_ar2_eci_logic
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bhvm_hop_ar2_eci_logic
+
+#define TYPEOF_bhvm_hop_ar2_eci_logic 2366322535
+#define TYPEOF_bhvm_hop_ar2_eci_logic_s 593143361
+#define TYPEOF_bhvm_hop_ar2_eci_logic_equal_s 1614856858
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_equal_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_eci_logic_equal_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_hop_ar2_eci_logic_equal_s_f2( f2_t a, f2_t b ){return a == b ? 1 : -1;} \
+  static inline f3_t bhvm_hop_ar2_eci_logic_equal_s_f3( f3_t a, f3_t b ){return a == b ? 1 : -1;} \
+  void bhvm_hop_ar2_eci_logic_equal_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_eci_logic_unequal_s 4206991803
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_unequal_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_eci_logic_unequal_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_hop_ar2_eci_logic_unequal_s_f2( f2_t a, f2_t b ){return a != b ? 1 : -1;} \
+  static inline f3_t bhvm_hop_ar2_eci_logic_unequal_s_f3( f3_t a, f3_t b ){return a != b ? 1 : -1;} \
+  void bhvm_hop_ar2_eci_logic_unequal_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_eci_logic_larger_s 3863619497
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_larger_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_eci_logic_larger_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_hop_ar2_eci_logic_larger_s_f2( f2_t a, f2_t b ){return a >  b ? 1 : -1;} \
+  static inline f3_t bhvm_hop_ar2_eci_logic_larger_s_f3( f3_t a, f3_t b ){return a >  b ? 1 : -1;} \
+  void bhvm_hop_ar2_eci_logic_larger_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_eci_logic_smaller_s 2182465830
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_smaller_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_eci_logic_smaller_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_hop_ar2_eci_logic_smaller_s_f2( f2_t a, f2_t b ){return a <  b ? 1 : -1;} \
+  static inline f3_t bhvm_hop_ar2_eci_logic_smaller_s_f3( f3_t a, f3_t b ){return a <  b ? 1 : -1;} \
+  void bhvm_hop_ar2_eci_logic_smaller_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_eci_logic_larger_equal_s 838739170
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_larger_equal_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_eci_logic_larger_equal_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_hop_ar2_eci_logic_larger_equal_s_f2( f2_t a, f2_t b ){return a >= b ? 1 : -1;} \
+  static inline f3_t bhvm_hop_ar2_eci_logic_larger_equal_s_f3( f3_t a, f3_t b ){return a >= b ? 1 : -1;} \
+  void bhvm_hop_ar2_eci_logic_larger_equal_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_eci_logic_smaller_equal_s 374739805
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_smaller_equal_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_eci_logic_smaller_equal_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_hop_ar2_eci_logic_smaller_equal_s_f2( f2_t a, f2_t b ){return a <= b ? 1 : -1;} \
+  static inline f3_t bhvm_hop_ar2_eci_logic_smaller_equal_s_f3( f3_t a, f3_t b ){return a <= b ? 1 : -1;} \
+  void bhvm_hop_ar2_eci_logic_smaller_equal_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_eci_logic_and_s 3857671755
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_and_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_eci_logic_and_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_hop_ar2_eci_logic_and_s_f2( f2_t a, f2_t b ){return ( ( a > 0 ) && ( b > 0 ) ) ? 1 : -1;} \
+  static inline f3_t bhvm_hop_ar2_eci_logic_and_s_f3( f3_t a, f3_t b ){return ( ( a > 0 ) && ( b > 0 ) ) ? 1 : -1;} \
+  void bhvm_hop_ar2_eci_logic_and_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_eci_logic_or_s 2477003383
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_or_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_eci_logic_or_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_hop_ar2_eci_logic_or_s_f2( f2_t a, f2_t b ){return ( ( a > 0 ) || ( b > 0 ) ) ? 1 : -1;} \
+  static inline f3_t bhvm_hop_ar2_eci_logic_or_s_f3( f3_t a, f3_t b ){return ( ( a > 0 ) || ( b > 0 ) ) ? 1 : -1;} \
+  void bhvm_hop_ar2_eci_logic_or_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define BETH_EXPAND_GROUP_bhvm_hop_ar2_eci_logic \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_logic ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_logic_equal_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_logic_unequal_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_logic_larger_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_logic_smaller_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_logic_larger_equal_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_logic_smaller_equal_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_logic_and_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_eci_logic_or_s ); \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_equal_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_unequal_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_larger_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_smaller_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_larger_equal_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_smaller_equal_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_and_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_eci_logic_or_s
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bhvm_hop_ar3
