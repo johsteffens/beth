@@ -344,6 +344,7 @@ group :ar2 =
     /// logic ------------------------------------------------------------------
 
     stamp :equal         = { func :: :sig = { return "aby"; }; };
+    stamp :unequal       = { func :: :sig = { return "aby"; }; };
     stamp :larger        = { func :: :sig = { return "aby"; }; };
     stamp :smaller       = { func :: :sig = { return "aby"; }; };
     stamp :larger_equal  = { func :: :sig = { return "aby"; }; };

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-11T19:48:08Z
+ *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
+ *  Last File Update: 2020-05-06T09:56:50Z
  *
  *  Copyright and License of this File:
  *
@@ -491,6 +491,13 @@
   static inline f2_t bhvm_lop_ar2_equal_s_f2( f2_t a, f2_t b ){return a == b ? 1 : -1;} \
   static inline f3_t bhvm_lop_ar2_equal_s_f3( f3_t a, f3_t b ){return a == b ? 1 : -1;} \
   void bhvm_lop_ar2_equal_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
+#define TYPEOF_bhvm_lop_ar2_unequal_s 3266278730
+#define BETH_EXPAND_ITEM_bhvm_lop_ar2_unequal_s \
+  BCORE_DECLARE_OBJECT( bhvm_lop_ar2_unequal_s ) \
+    {aware_t _;}; \
+  static inline f2_t bhvm_lop_ar2_unequal_s_f2( f2_t a, f2_t b ){return a != b ? 1 : -1;} \
+  static inline f3_t bhvm_lop_ar2_unequal_s_f3( f3_t a, f3_t b ){return a != b ? 1 : -1;} \
+  void bhvm_lop_ar2_unequal_s_f( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
 #define TYPEOF_bhvm_lop_ar2_larger_s 3685391226
 #define BETH_EXPAND_ITEM_bhvm_lop_ar2_larger_s \
   BCORE_DECLARE_OBJECT( bhvm_lop_ar2_larger_s ) \
@@ -562,6 +569,7 @@
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_branch_vvvv_dp_azg_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_branch_vvvv_dp_azh_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_equal_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_lop_ar2_unequal_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_larger_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_smaller_s ); \
   BCORE_FORWARD_OBJECT( bhvm_lop_ar2_larger_equal_s ); \
@@ -595,6 +603,7 @@
   BETH_EXPAND_ITEM_bhvm_lop_ar2_branch_vvvv_dp_azg_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_branch_vvvv_dp_azh_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_equal_s \
+  BETH_EXPAND_ITEM_bhvm_lop_ar2_unequal_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_larger_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_smaller_s \
   BETH_EXPAND_ITEM_bhvm_lop_ar2_larger_equal_s \

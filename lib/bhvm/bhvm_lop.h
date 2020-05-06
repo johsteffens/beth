@@ -403,6 +403,7 @@ group :ar2 =
     /// logic ------------------------------------------------------------------
 
     body body_equal         = { return a == b ? 1 : -1; };
+    body body_unequal       = { return a != b ? 1 : -1; };
     body body_larger        = { return a >  b ? 1 : -1; };
     body body_smaller       = { return a <  b ? 1 : -1; };
     body body_larger_equal  = { return a >= b ? 1 : -1; };
@@ -411,6 +412,7 @@ group :ar2 =
     body body_logic_or      = { return ( ( a > 0 ) || ( b > 0 ) ) ? 1 : -1; };
 
     stamp :equal         = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
+    stamp :unequal       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
     stamp :larger        = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
     stamp :smaller       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };
     stamp :larger_equal  = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_cv; };

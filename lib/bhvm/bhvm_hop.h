@@ -231,6 +231,7 @@ group :ar2 =
     /// logic ------------------------------------------------------------------
 
     stamp :equal         = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :unequal       = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :larger        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :smaller       = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :larger_equal  = { func : :f = :body_assert_vvv : :body_lop_r; };

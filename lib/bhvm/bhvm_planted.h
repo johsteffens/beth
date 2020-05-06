@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-04-11T12:52:11Z
+ *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
+ *  Last File Update: 2020-05-06T09:56:50Z
  *
  *  Copyright and License of this File:
  *
@@ -451,6 +451,11 @@
   BCORE_DECLARE_OBJECT( bhvm_hop_ar2_equal_s ) \
     {aware_t _;}; \
   void bhvm_hop_ar2_equal_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+#define TYPEOF_bhvm_hop_ar2_unequal_s 550621358
+#define BETH_EXPAND_ITEM_bhvm_hop_ar2_unequal_s \
+  BCORE_DECLARE_OBJECT( bhvm_hop_ar2_unequal_s ) \
+    {aware_t _;}; \
+  void bhvm_hop_ar2_unequal_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
 #define TYPEOF_bhvm_hop_ar2_larger_s 4003471110
 #define BETH_EXPAND_ITEM_bhvm_hop_ar2_larger_s \
   BCORE_DECLARE_OBJECT( bhvm_hop_ar2_larger_s ) \
@@ -676,6 +681,7 @@
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_sub_sqrsum_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_sub_l1_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_equal_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_hop_ar2_unequal_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_larger_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_smaller_s ); \
   BCORE_FORWARD_OBJECT( bhvm_hop_ar2_larger_equal_s ); \
@@ -723,6 +729,7 @@
   BETH_EXPAND_ITEM_bhvm_hop_ar2_sub_sqrsum_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_sub_l1_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_equal_s \
+  BETH_EXPAND_ITEM_bhvm_hop_ar2_unequal_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_larger_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_smaller_s \
   BETH_EXPAND_ITEM_bhvm_hop_ar2_larger_equal_s \

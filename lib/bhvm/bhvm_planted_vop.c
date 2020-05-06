@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-05T12:13:58Z
+ *  Last File Update: 2020-05-06T09:56:50Z
  *
  *  Copyright and License of this File:
  *
@@ -761,6 +761,16 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_equal_s )
     "func bhvm_vop:run;"
 "}";
 
+BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_unequal_s )
+"aware bhvm_vop_ar2"
+"{"
+    "bhvm_vop_ar2_index_s i;"
+    "func bhvm_vop:arity;"
+    "func bhvm_vop:get_index_arr;"
+    "func bhvm_vop:sig;"
+    "func bhvm_vop:run;"
+"}";
+
 BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar2_larger_s )
 "aware bhvm_vop_ar2"
 "{"
@@ -1280,7 +1290,7 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 4140523604 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 1944605439 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_vop.h
@@ -1613,6 +1623,11 @@ vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_equal_s_sig );
             BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_equal_s_run );
             BCORE_REGISTER_OBJECT( bhvm_vop_ar2_equal_s );
+            BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_unequal_s_arity );
+            BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_unequal_s_get_index_arr );
+            BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_unequal_s_sig );
+            BCORE_REGISTER_FFUNC( bhvm_vop_run, bhvm_vop_ar2_unequal_s_run );
+            BCORE_REGISTER_OBJECT( bhvm_vop_ar2_unequal_s );
             BCORE_REGISTER_FFUNC( bhvm_vop_arity, bhvm_vop_ar2_larger_s_arity );
             BCORE_REGISTER_FFUNC( bhvm_vop_get_index_arr, bhvm_vop_ar2_larger_s_get_index_arr );
             BCORE_REGISTER_FFUNC( bhvm_vop_sig, bhvm_vop_ar2_larger_s_sig );
