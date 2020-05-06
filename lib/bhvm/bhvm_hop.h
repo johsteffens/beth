@@ -258,9 +258,6 @@ group :ar2 =
     stamp :relu_leaky_dp_zyf = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :softmax_dp_zyf    = { func : :f; };
 
-    stamp :branch_vvvv_dp_azg = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :branch_vvvv_dp_azh = { func : :f = :body_assert_vvv : :body_lop_r; };
-
     /// mul axon pass ----------------------------------------------------------
 
     stamp :mul_mvv = { func : :f = :body_assert_mvv : :body_lop_ma; };
@@ -303,9 +300,6 @@ group :ar2_eci =
     signature f2_t f2( plain, f2_t a, f2_t b );
     signature f3_t f3( plain, f3_t a, f3_t b );
     signature void f( plain, const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
-
-    // vector += vector <op> vector
-    body body_zro = { bhvm_value_s_zro( &r->v ); };
 
     /// sets the target value: r = op( a, b )
     body body_set =
@@ -440,6 +434,11 @@ group :ar2_eci =
 
     /// dendrite pass ----------------------------------------------------------
 
+    body body_iff_dp_b = { return ( a > 0 ) ? b : 0; };
+    body body_iff_dp_c = { return ( a > 0 ) ? 0 : b; };
+    stamp :iff_dp_b_azg = { func : :f2 = :body_iff_dp_b; func : :f3 = :body_iff_dp_b; func : :f = :body_acc; };
+    stamp :iff_dp_c_azh = { func : :f2 = :body_iff_dp_c; func : :f3 = :body_iff_dp_c; func : :f = :body_acc; };
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -460,9 +459,6 @@ group :ar3 =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :branch_vvvv = { func : :f = :body_lop_vvvv; };
-    stamp :branch_svvv = { func : :f; };
-
     /// dendrite pass ----------------------------------------------------------
 
 };
@@ -478,9 +474,55 @@ group :ar3_eci =
     signature f3_t f3( plain, f3_t a, f3_t b, f3_t c );
     signature void f( plain, const bhvm_holor_s* a, const bhvm_holor_s* b, const bhvm_holor_s* c, bhvm_holor_s* r );
 
-    // vector += vector <op> vector
-    body body_zro = { bhvm_value_s_zro( &r->v ); };
+    /// sets the target value: r = op( a, b, c )
+    body body_set =
+    {
+        assert( a != r && b != r && c != r );
+        assert(  sz_min( a->v.size, sz_min( b->v.size, sz_min( c->v.size, r->v.size ) ) ) > 0 );
+        sz_t n = sz_gcd( a->v.size, sz_gcd( b->v.size, sz_gcd( c->v.size, r->v.size ) ) );
+        sz_t m = sz_max( a->v.size, sz_max( b->v.size, sz_max( c->v.size, r->v.size ) ) ) / n;
 
+        #define :SET_CASE( TA_T, TB_T, TC_T, TR_T, FUNC ) \
+        { \
+            const TA_T *a0 = a->v.data, *a1 = a0; \
+            const TB_T *b0 = b->v.data, *b1 = b0; \
+            const TC_T *c0 = c->v.data, *c1 = c0; \
+                  TR_T *r0 = r->v.data, *r1 = r0; \
+            for( sz_t i = 0; i < m; i++ ) \
+            { \
+                for( sz_t i = 0; i < n; i++ ) r1[ i ] = FUNC( a1[ i ], b1[ i ], c1[ i ] ); \
+                a1 = ( a1 + n - a0 ) < a->v.size ? ( a1 + n ) : a0; \
+                b1 = ( b1 + n - b0 ) < b->v.size ? ( b1 + n ) : b0; \
+                c1 = ( c1 + n - c0 ) < c->v.size ? ( c1 + n ) : c0; \
+                r1 = ( r1 + n - r0 ) < r->v.size ? ( r1 + n ) : r0; \
+            } \
+        }
+
+        switch( BKNIT_FA4( a->v.type, b->v.type, c->v.type, r->v.type ) )
+        {
+            case BKNIT_F2222: :SET_CASE( f2_t, f2_t, f2_t, f2_t, @_f2 ); break;
+            case BKNIT_F2223: :SET_CASE( f2_t, f2_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F2232: :SET_CASE( f2_t, f2_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F2233: :SET_CASE( f2_t, f2_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F2322: :SET_CASE( f2_t, f3_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F2323: :SET_CASE( f2_t, f3_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F2332: :SET_CASE( f2_t, f3_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F2333: :SET_CASE( f2_t, f3_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F3222: :SET_CASE( f3_t, f2_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F3223: :SET_CASE( f3_t, f2_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F3232: :SET_CASE( f3_t, f2_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F3233: :SET_CASE( f3_t, f2_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F3322: :SET_CASE( f3_t, f3_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F3323: :SET_CASE( f3_t, f3_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F3332: :SET_CASE( f3_t, f3_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F3333: :SET_CASE( f3_t, f3_t, f3_t, f3_t, @_f3 ); break;
+            default: BKNIT_FA4_ERR( a->v.type, b->v.type, c->v.type, r->v.type ); break;
+        }
+
+        #undef :SET_CASE
+    };
+
+    /// accumulates the target value: r += op( a, b, c )
     body body_acc =
     {
         assert( a != r && b != r && c != r );
@@ -531,6 +573,10 @@ group :ar3_eci =
     /// axon pass --------------------------------------------------------------
 
     /// logic ------------------------------------------------------------------
+
+    body body_iff  = { return ( a > 0 ) ? b : c; };
+    stamp :iff     = { func : :f2 = :body_iff; func : :f3 = :body_iff; func : :f = :body_set; };
+    stamp :iff_acc = { func : :f2 = :body_iff; func : :f3 = :body_iff; func : :f = :body_acc; };
 
     /// dendrite pass ----------------------------------------------------------
 
