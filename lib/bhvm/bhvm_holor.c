@@ -1689,8 +1689,11 @@ bhvm_holor_s* bhvm_holor_s_parse( bhvm_holor_s* o, bcore_source* source )
     else if( bcore_source_a_parse_bl_fa( source, " #?(([0]>='0'&&[0]<='9')||([0]=='-'&&([1]>='0'&&[1]<='9')))" ) )
     {
         f3_t val = 0;
+        tp_t type = o->v.type ? o->v.type : TYPEOF_f3_t;
         bcore_source_a_parse_fa( source, " #<f3_t*>", &val );
-        bhvm_holor_s_set_type_scalar( o, o->v.type ? o->v.type : TYPEOF_f3_t, val );
+        if(      bcore_source_a_parse_bl_fa( source, "#?'f2'" ) ) type = TYPEOF_f2_t;
+        else if( bcore_source_a_parse_bl_fa( source, "#?'f3'" ) ) type = TYPEOF_f3_t;
+        bhvm_holor_s_set_type_scalar( o, type, val );
     }
     else if( bcore_source_a_parse_bl_fa( source, " #?'('" ) )
     {
