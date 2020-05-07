@@ -33,7 +33,7 @@ enum mul_type_s
     MUL_ACC_TTM,
 };
 
-static void bhvm_hop_ar2_mul( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r, enum mul_type_s mul_type )
+static void bhvm_hop_ar2_mul_3m( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r, enum mul_type_s mul_type )
 {
     assert( a->s.size == 2 );
     assert( b->s.size == 2 );
@@ -101,30 +101,14 @@ static void bhvm_hop_ar2_mul( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_hop_ar2_mul_mmm_s_f(     const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul( a, b, r, MUL_MMM ); }
-void bhvm_hop_ar2_mul_mtm_s_f(     const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul( a, b, r, MUL_MTM ); }
-void bhvm_hop_ar2_mul_tmm_s_f(     const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul( a, b, r, MUL_TMM ); }
-void bhvm_hop_ar2_mul_ttm_s_f(     const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul( a, b, r, MUL_TTM ); }
-void bhvm_hop_ar2_mul_acc_mmm_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul( a, b, r, MUL_ACC_MMM ); }
-void bhvm_hop_ar2_mul_acc_mtm_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul( a, b, r, MUL_ACC_MTM ); }
-void bhvm_hop_ar2_mul_acc_tmm_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul( a, b, r, MUL_ACC_TMM ); }
-void bhvm_hop_ar2_mul_acc_ttm_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul( a, b, r, MUL_ACC_TTM ); }
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_hop_ar3_branch_svvv_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, const bhvm_holor_s* c, bhvm_holor_s* r )
-{
-    assert( a->v.size == 1 );
-    bl_t flag = ( a->v.type == TYPEOF_f2_t ) ? ( ( ( f2_t* )a->v.data )[ 0 ] > 0 ) : ( ( ( f3_t* )a->v.data )[ 0 ] > 0 );
-    if( flag )
-    {
-        bhvm_hop_ar1_cpy_s_f( b, r );
-    }
-    else
-    {
-        bhvm_hop_ar1_cpy_s_f( c, r );
-    }
-}
+void bhvm_hop_ar2_mul_mmm_s_f(     const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul_3m( a, b, r, MUL_MMM ); }
+void bhvm_hop_ar2_mul_mtm_s_f(     const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul_3m( a, b, r, MUL_MTM ); }
+void bhvm_hop_ar2_mul_tmm_s_f(     const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul_3m( a, b, r, MUL_TMM ); }
+void bhvm_hop_ar2_mul_ttm_s_f(     const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul_3m( a, b, r, MUL_TTM ); }
+void bhvm_hop_ar2_mul_acc_mmm_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul_3m( a, b, r, MUL_ACC_MMM ); }
+void bhvm_hop_ar2_mul_acc_mtm_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul_3m( a, b, r, MUL_ACC_MTM ); }
+void bhvm_hop_ar2_mul_acc_tmm_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul_3m( a, b, r, MUL_ACC_TMM ); }
+void bhvm_hop_ar2_mul_acc_ttm_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r ) { bhvm_hop_ar2_mul_3m( a, b, r, MUL_ACC_TTM ); }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
