@@ -295,13 +295,32 @@ group :ar1 =
     // They are not intended to actually execute in ap of dp tracks.
     // They are typically placed in the setup track.
 
-    /// y references a
+    /// y references a (forking shape and value)
     stamp :fork =
     {
         func :: :sig = { return "ay"; };
-        func :: :run = { bhvm_holor_s_fork( &ah[o->i.v[1]], &ah[o->i.v[0]] ); };
+        func :: :run =
+        {
+            bhvm_holor_s* a = &ah[o->i.v[0]];
+            bhvm_holor_s* y = &ah[o->i.v[1]];
+            bhvm_holor_s_fork( y, a );
+        };
     };
 
+    /// value of y references value of a; shape of y is set from internal shape parameter
+    stamp :reshape =
+    {
+        bhvm_shape_s shape; // shape of y
+        func :: :sig = { return "ay"; };
+        func :: :run =
+        {
+            bhvm_holor_s* a = &ah[o->i.v[0]];
+            bhvm_holor_s* y = &ah[o->i.v[1]];
+            assert( bhvm_shape_s_get_volume( &o->shape ) ==  bhvm_shape_s_get_volume( &a->s ) );
+            bhvm_shape_s_copy( &y->s, &o->shape );
+            bhvm_value_s_fork( &y->v, &a->v );
+        };
+    };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
