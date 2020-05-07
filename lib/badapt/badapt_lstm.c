@@ -485,12 +485,12 @@ void badapt_lstm_s_get_weights_min_max( const badapt_lstm_s* o, f3_t* arg_min, f
 
 void badapt_lstm_builder_s_init_x( badapt_lstm_builder_s* o )
 {
-    o->a_f = badapt_activator_create_from_names( "plain", "lgst" );
-    o->a_i = badapt_activator_create_from_names( "plain", "lgst" );
-    o->a_o = badapt_activator_create_from_names( "plain", "lgst" );
+    o->a_f = badapt_activator_create_from_names( "plain", "sigm" );
+    o->a_i = badapt_activator_create_from_names( "plain", "sigm" );
+    o->a_o = badapt_activator_create_from_names( "plain", "sigm" );
     o->a_q = badapt_activator_create_from_names( "plain", "tanh" );
     o->a_d = badapt_activator_create_from_names( "plain", "tanh" );
-//    o->a_r = badapt_activator_create_from_names( "plain", "lgst" );
+//    o->a_r = badapt_activator_create_from_names( "plain", "sigm" );
     o->a_r = badapt_activator_create_from_names( "softmax", NULL );
 }
 
@@ -504,7 +504,7 @@ void badapt_lstm_builder_s_set_ern( badapt_lstm_builder_s* o )
     badapt_activator_a_discard( o->a_o ); o->a_o = badapt_activator_create_from_names( "plain", "tanh" );
     badapt_activator_a_discard( o->a_q ); o->a_q = badapt_activator_create_from_names( "plain", "zero" );
     badapt_activator_a_discard( o->a_d ); o->a_d = badapt_activator_create_from_names( "plain", "one"  );
-    badapt_activator_a_discard( o->a_r ); o->a_r = badapt_activator_create_from_names( "plain", "lgst" );
+    badapt_activator_a_discard( o->a_r ); o->a_r = badapt_activator_create_from_names( "plain", "sigm" );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

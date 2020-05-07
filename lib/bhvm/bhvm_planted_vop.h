@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-07T15:07:08Z
+ *  Last File Update: 2020-05-07T21:41:18Z
  *
  *  Copyright and License of this File:
  *
@@ -305,30 +305,30 @@
   static inline sz_t* bhvm_vop_ar1_l1_s_get_index_arr( bhvm_vop_ar1_l1_s* o ){return o->i.v;} \
   static inline sc_t bhvm_vop_ar1_l1_s_sig( const bhvm_vop_ar1_l1_s* o ){return "ay";} \
   static inline void bhvm_vop_ar1_l1_s_run( const bhvm_vop_ar1_l1_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_l1_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );}
-#define TYPEOF_bhvm_vop_ar1_lgst_s 3402156782
-#define BETH_EXPAND_ITEM_bhvm_vop_ar1_lgst_s \
-  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_lgst_s ) \
+#define TYPEOF_bhvm_vop_ar1_sigm_s 365885632
+#define BETH_EXPAND_ITEM_bhvm_vop_ar1_sigm_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_sigm_s ) \
     {aware_t _;bhvm_vop_ar1_index_s i;}; \
-  static inline sz_t bhvm_vop_ar1_lgst_s_arity( const bhvm_vop_ar1_lgst_s* o ){return 1;} \
-  static inline sz_t* bhvm_vop_ar1_lgst_s_get_index_arr( bhvm_vop_ar1_lgst_s* o ){return o->i.v;} \
-  static inline sc_t bhvm_vop_ar1_lgst_s_sig( const bhvm_vop_ar1_lgst_s* o ){return "ay";} \
-  static inline void bhvm_vop_ar1_lgst_s_run( const bhvm_vop_ar1_lgst_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_lgst_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );}
-#define TYPEOF_bhvm_vop_ar1_lgst_hard_s 1312586658
-#define BETH_EXPAND_ITEM_bhvm_vop_ar1_lgst_hard_s \
-  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_lgst_hard_s ) \
+  static inline sz_t bhvm_vop_ar1_sigm_s_arity( const bhvm_vop_ar1_sigm_s* o ){return 1;} \
+  static inline sz_t* bhvm_vop_ar1_sigm_s_get_index_arr( bhvm_vop_ar1_sigm_s* o ){return o->i.v;} \
+  static inline sc_t bhvm_vop_ar1_sigm_s_sig( const bhvm_vop_ar1_sigm_s* o ){return "ay";} \
+  static inline void bhvm_vop_ar1_sigm_s_run( const bhvm_vop_ar1_sigm_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_sigm_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );}
+#define TYPEOF_bhvm_vop_ar1_sigm_hard_s 2214033576
+#define BETH_EXPAND_ITEM_bhvm_vop_ar1_sigm_hard_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_sigm_hard_s ) \
     {aware_t _;bhvm_vop_ar1_index_s i;}; \
-  static inline sz_t bhvm_vop_ar1_lgst_hard_s_arity( const bhvm_vop_ar1_lgst_hard_s* o ){return 1;} \
-  static inline sz_t* bhvm_vop_ar1_lgst_hard_s_get_index_arr( bhvm_vop_ar1_lgst_hard_s* o ){return o->i.v;} \
-  static inline sc_t bhvm_vop_ar1_lgst_hard_s_sig( const bhvm_vop_ar1_lgst_hard_s* o ){return "ay";} \
-  static inline void bhvm_vop_ar1_lgst_hard_s_run( const bhvm_vop_ar1_lgst_hard_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_lgst_hard_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );}
-#define TYPEOF_bhvm_vop_ar1_lgst_leaky_s 3970548331
-#define BETH_EXPAND_ITEM_bhvm_vop_ar1_lgst_leaky_s \
-  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_lgst_leaky_s ) \
+  static inline sz_t bhvm_vop_ar1_sigm_hard_s_arity( const bhvm_vop_ar1_sigm_hard_s* o ){return 1;} \
+  static inline sz_t* bhvm_vop_ar1_sigm_hard_s_get_index_arr( bhvm_vop_ar1_sigm_hard_s* o ){return o->i.v;} \
+  static inline sc_t bhvm_vop_ar1_sigm_hard_s_sig( const bhvm_vop_ar1_sigm_hard_s* o ){return "ay";} \
+  static inline void bhvm_vop_ar1_sigm_hard_s_run( const bhvm_vop_ar1_sigm_hard_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_sigm_hard_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );}
+#define TYPEOF_bhvm_vop_ar1_sigm_leaky_s 2546434269
+#define BETH_EXPAND_ITEM_bhvm_vop_ar1_sigm_leaky_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar1_sigm_leaky_s ) \
     {aware_t _;bhvm_vop_ar1_index_s i;}; \
-  static inline sz_t bhvm_vop_ar1_lgst_leaky_s_arity( const bhvm_vop_ar1_lgst_leaky_s* o ){return 1;} \
-  static inline sz_t* bhvm_vop_ar1_lgst_leaky_s_get_index_arr( bhvm_vop_ar1_lgst_leaky_s* o ){return o->i.v;} \
-  static inline sc_t bhvm_vop_ar1_lgst_leaky_s_sig( const bhvm_vop_ar1_lgst_leaky_s* o ){return "ay";} \
-  static inline void bhvm_vop_ar1_lgst_leaky_s_run( const bhvm_vop_ar1_lgst_leaky_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_lgst_leaky_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );}
+  static inline sz_t bhvm_vop_ar1_sigm_leaky_s_arity( const bhvm_vop_ar1_sigm_leaky_s* o ){return 1;} \
+  static inline sz_t* bhvm_vop_ar1_sigm_leaky_s_get_index_arr( bhvm_vop_ar1_sigm_leaky_s* o ){return o->i.v;} \
+  static inline sc_t bhvm_vop_ar1_sigm_leaky_s_sig( const bhvm_vop_ar1_sigm_leaky_s* o ){return "ay";} \
+  static inline void bhvm_vop_ar1_sigm_leaky_s_run( const bhvm_vop_ar1_sigm_leaky_s* o, bhvm_holor_s* ah ){bhvm_hop_ar1_sigm_leaky_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]] );}
 #define TYPEOF_bhvm_vop_ar1_tanh_s 3583954501
 #define BETH_EXPAND_ITEM_bhvm_vop_ar1_tanh_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar1_tanh_s ) \
@@ -526,9 +526,9 @@
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_srt_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_abs_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_l1_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_lgst_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_lgst_hard_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_lgst_leaky_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_sigm_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_sigm_hard_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar1_sigm_leaky_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_tanh_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_tanh_hard_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar1_tanh_leaky_s ); \
@@ -563,9 +563,9 @@
   BETH_EXPAND_ITEM_bhvm_vop_ar1_srt_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_abs_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_l1_s \
-  BETH_EXPAND_ITEM_bhvm_vop_ar1_lgst_s \
-  BETH_EXPAND_ITEM_bhvm_vop_ar1_lgst_hard_s \
-  BETH_EXPAND_ITEM_bhvm_vop_ar1_lgst_leaky_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar1_sigm_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar1_sigm_hard_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar1_sigm_leaky_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_tanh_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_tanh_hard_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar1_tanh_leaky_s \
@@ -1008,30 +1008,30 @@
   static inline sz_t* bhvm_vop_ar2_srt_dp_s_get_index_arr( bhvm_vop_ar2_srt_dp_s* o ){return o->i.v;} \
   static inline void bhvm_vop_ar2_srt_dp_s_run( const bhvm_vop_ar2_srt_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar2_srt_dp_zyf_s_f(        &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] );} \
   static inline sc_t bhvm_vop_ar2_srt_dp_s_sig( const bhvm_vop_ar2_srt_dp_s* o ){return "zyf";}
-#define TYPEOF_bhvm_vop_ar2_lgst_dp_s 2656749734
-#define BETH_EXPAND_ITEM_bhvm_vop_ar2_lgst_dp_s \
-  BCORE_DECLARE_OBJECT( bhvm_vop_ar2_lgst_dp_s ) \
+#define TYPEOF_bhvm_vop_ar2_sigm_dp_s 1685672096
+#define BETH_EXPAND_ITEM_bhvm_vop_ar2_sigm_dp_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar2_sigm_dp_s ) \
     {aware_t _;bhvm_vop_ar2_index_s i;}; \
-  static inline sz_t bhvm_vop_ar2_lgst_dp_s_arity( const bhvm_vop_ar2_lgst_dp_s* o ){return 2;} \
-  static inline sz_t* bhvm_vop_ar2_lgst_dp_s_get_index_arr( bhvm_vop_ar2_lgst_dp_s* o ){return o->i.v;} \
-  static inline void bhvm_vop_ar2_lgst_dp_s_run( const bhvm_vop_ar2_lgst_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar2_lgst_dp_zyf_s_f(       &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] );} \
-  static inline sc_t bhvm_vop_ar2_lgst_dp_s_sig( const bhvm_vop_ar2_lgst_dp_s* o ){return "zyf";}
-#define TYPEOF_bhvm_vop_ar2_lgst_hard_dp_s 1750505756
-#define BETH_EXPAND_ITEM_bhvm_vop_ar2_lgst_hard_dp_s \
-  BCORE_DECLARE_OBJECT( bhvm_vop_ar2_lgst_hard_dp_s ) \
+  static inline sz_t bhvm_vop_ar2_sigm_dp_s_arity( const bhvm_vop_ar2_sigm_dp_s* o ){return 2;} \
+  static inline sz_t* bhvm_vop_ar2_sigm_dp_s_get_index_arr( bhvm_vop_ar2_sigm_dp_s* o ){return o->i.v;} \
+  static inline void bhvm_vop_ar2_sigm_dp_s_run( const bhvm_vop_ar2_sigm_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar2_sigm_dp_zyf_s_f(       &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] );} \
+  static inline sc_t bhvm_vop_ar2_sigm_dp_s_sig( const bhvm_vop_ar2_sigm_dp_s* o ){return "zyf";}
+#define TYPEOF_bhvm_vop_ar2_sigm_hard_dp_s 1644110218
+#define BETH_EXPAND_ITEM_bhvm_vop_ar2_sigm_hard_dp_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar2_sigm_hard_dp_s ) \
     {aware_t _;bhvm_vop_ar2_index_s i;}; \
-  static inline sz_t bhvm_vop_ar2_lgst_hard_dp_s_arity( const bhvm_vop_ar2_lgst_hard_dp_s* o ){return 2;} \
-  static inline sz_t* bhvm_vop_ar2_lgst_hard_dp_s_get_index_arr( bhvm_vop_ar2_lgst_hard_dp_s* o ){return o->i.v;} \
-  static inline void bhvm_vop_ar2_lgst_hard_dp_s_run( const bhvm_vop_ar2_lgst_hard_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar2_lgst_hard_dp_zyf_s_f(  &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] );} \
-  static inline sc_t bhvm_vop_ar2_lgst_hard_dp_s_sig( const bhvm_vop_ar2_lgst_hard_dp_s* o ){return "zyf";}
-#define TYPEOF_bhvm_vop_ar2_lgst_leaky_dp_s 353391877
-#define BETH_EXPAND_ITEM_bhvm_vop_ar2_lgst_leaky_dp_s \
-  BCORE_DECLARE_OBJECT( bhvm_vop_ar2_lgst_leaky_dp_s ) \
+  static inline sz_t bhvm_vop_ar2_sigm_hard_dp_s_arity( const bhvm_vop_ar2_sigm_hard_dp_s* o ){return 2;} \
+  static inline sz_t* bhvm_vop_ar2_sigm_hard_dp_s_get_index_arr( bhvm_vop_ar2_sigm_hard_dp_s* o ){return o->i.v;} \
+  static inline void bhvm_vop_ar2_sigm_hard_dp_s_run( const bhvm_vop_ar2_sigm_hard_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar2_sigm_hard_dp_zyf_s_f(  &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] );} \
+  static inline sc_t bhvm_vop_ar2_sigm_hard_dp_s_sig( const bhvm_vop_ar2_sigm_hard_dp_s* o ){return "zyf";}
+#define TYPEOF_bhvm_vop_ar2_sigm_leaky_dp_s 3401331775
+#define BETH_EXPAND_ITEM_bhvm_vop_ar2_sigm_leaky_dp_s \
+  BCORE_DECLARE_OBJECT( bhvm_vop_ar2_sigm_leaky_dp_s ) \
     {aware_t _;bhvm_vop_ar2_index_s i;}; \
-  static inline sz_t bhvm_vop_ar2_lgst_leaky_dp_s_arity( const bhvm_vop_ar2_lgst_leaky_dp_s* o ){return 2;} \
-  static inline sz_t* bhvm_vop_ar2_lgst_leaky_dp_s_get_index_arr( bhvm_vop_ar2_lgst_leaky_dp_s* o ){return o->i.v;} \
-  static inline void bhvm_vop_ar2_lgst_leaky_dp_s_run( const bhvm_vop_ar2_lgst_leaky_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar2_lgst_leaky_dp_zyf_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] );} \
-  static inline sc_t bhvm_vop_ar2_lgst_leaky_dp_s_sig( const bhvm_vop_ar2_lgst_leaky_dp_s* o ){return "zyf";}
+  static inline sz_t bhvm_vop_ar2_sigm_leaky_dp_s_arity( const bhvm_vop_ar2_sigm_leaky_dp_s* o ){return 2;} \
+  static inline sz_t* bhvm_vop_ar2_sigm_leaky_dp_s_get_index_arr( bhvm_vop_ar2_sigm_leaky_dp_s* o ){return o->i.v;} \
+  static inline void bhvm_vop_ar2_sigm_leaky_dp_s_run( const bhvm_vop_ar2_sigm_leaky_dp_s* o, bhvm_holor_s* ah ){bhvm_hop_ar2_sigm_leaky_dp_zyf_s_f( &ah[o->i.v[0]], &ah[o->i.v[1]], &ah[o->i.v[2]] );} \
+  static inline sc_t bhvm_vop_ar2_sigm_leaky_dp_s_sig( const bhvm_vop_ar2_sigm_leaky_dp_s* o ){return "zyf";}
 #define TYPEOF_bhvm_vop_ar2_tanh_dp_s 3481712559
 #define BETH_EXPAND_ITEM_bhvm_vop_ar2_tanh_dp_s \
   BCORE_DECLARE_OBJECT( bhvm_vop_ar2_tanh_dp_s ) \
@@ -1158,9 +1158,9 @@
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_inv_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_sqr_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_srt_dp_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_vop_ar2_lgst_dp_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_vop_ar2_lgst_hard_dp_s ); \
-  BCORE_FORWARD_OBJECT( bhvm_vop_ar2_lgst_leaky_dp_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar2_sigm_dp_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar2_sigm_hard_dp_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_vop_ar2_sigm_leaky_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_tanh_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_tanh_hard_dp_s ); \
   BCORE_FORWARD_OBJECT( bhvm_vop_ar2_tanh_leaky_dp_s ); \
@@ -1222,9 +1222,9 @@
   BETH_EXPAND_ITEM_bhvm_vop_ar2_inv_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar2_sqr_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar2_srt_dp_s \
-  BETH_EXPAND_ITEM_bhvm_vop_ar2_lgst_dp_s \
-  BETH_EXPAND_ITEM_bhvm_vop_ar2_lgst_hard_dp_s \
-  BETH_EXPAND_ITEM_bhvm_vop_ar2_lgst_leaky_dp_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar2_sigm_dp_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar2_sigm_hard_dp_s \
+  BETH_EXPAND_ITEM_bhvm_vop_ar2_sigm_leaky_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar2_tanh_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar2_tanh_hard_dp_s \
   BETH_EXPAND_ITEM_bhvm_vop_ar2_tanh_leaky_dp_s \

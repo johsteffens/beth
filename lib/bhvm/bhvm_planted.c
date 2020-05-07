@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-06T17:09:46Z
+ *  Last File Update: 2020-05-07T21:41:18Z
  *
  *  Copyright and License of this File:
  *
@@ -247,37 +247,37 @@ void bhvm_hop_ar1_sqrsum_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
     bhvm_lop_ar1_sqrsum_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, a->v.size );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_lgst_s )
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_sigm_s )
 "aware bhvm_hop_ar1"
 "{"
 "}";
 
-void bhvm_hop_ar1_lgst_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+void bhvm_hop_ar1_sigm_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 {
     assert( a->v.size == r->v.size );
-    bhvm_lop_ar1_lgst_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
+    bhvm_lop_ar1_sigm_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_lgst_hard_s )
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_sigm_hard_s )
 "aware bhvm_hop_ar1"
 "{"
 "}";
 
-void bhvm_hop_ar1_lgst_hard_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+void bhvm_hop_ar1_sigm_hard_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 {
     assert( a->v.size == r->v.size );
-    bhvm_lop_ar1_lgst_hard_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
+    bhvm_lop_ar1_sigm_hard_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_lgst_leaky_s )
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_sigm_leaky_s )
 "aware bhvm_hop_ar1"
 "{"
 "}";
 
-void bhvm_hop_ar1_lgst_leaky_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
+void bhvm_hop_ar1_sigm_leaky_s_f( const bhvm_holor_s* a, bhvm_holor_s* r )
 {
     assert( a->v.size == r->v.size );
-    bhvm_lop_ar1_lgst_leaky_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
+    bhvm_lop_ar1_sigm_leaky_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar1_tanh_s )
@@ -732,37 +732,37 @@ void bhvm_hop_ar2_srt_dp_zyf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, 
     bhvm_lop_ar2_srt_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_lgst_dp_zyf_s )
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_sigm_dp_zyf_s )
 "aware bhvm_hop_ar2"
 "{"
 "}";
 
-void bhvm_hop_ar2_lgst_dp_zyf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+void bhvm_hop_ar2_sigm_dp_zyf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_lgst_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
+    bhvm_lop_ar2_sigm_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_lgst_hard_dp_zyf_s )
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_sigm_hard_dp_zyf_s )
 "aware bhvm_hop_ar2"
 "{"
 "}";
 
-void bhvm_hop_ar2_lgst_hard_dp_zyf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+void bhvm_hop_ar2_sigm_hard_dp_zyf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_lgst_hard_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
+    bhvm_lop_ar2_sigm_hard_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_lgst_leaky_dp_zyf_s )
+BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_sigm_leaky_dp_zyf_s )
 "aware bhvm_hop_ar2"
 "{"
 "}";
 
-void bhvm_hop_ar2_lgst_leaky_dp_zyf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
+void bhvm_hop_ar2_sigm_leaky_dp_zyf_s_f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r )
 {
     assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
-    bhvm_lop_ar2_lgst_leaky_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
+    bhvm_lop_ar2_sigm_leaky_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_hop_ar2_tanh_dp_zyf_s )
@@ -2251,7 +2251,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3870071532 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 1184973771 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -2293,9 +2293,9 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_sqr_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_srt_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_sqrsum_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_lgst_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_lgst_hard_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_lgst_leaky_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_sigm_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_sigm_hard_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar1_sigm_leaky_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_tanh_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_tanh_hard_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar1_tanh_leaky_s );
@@ -2336,9 +2336,9 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_inv_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sqr_dp_zaf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_srt_dp_zyf_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_lgst_dp_zyf_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_lgst_hard_dp_zyf_s );
-            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_lgst_leaky_dp_zyf_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sigm_dp_zyf_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sigm_hard_dp_zyf_s );
+            BCORE_REGISTER_OBJECT( bhvm_hop_ar2_sigm_leaky_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_tanh_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_tanh_hard_dp_zyf_s );
             BCORE_REGISTER_OBJECT( bhvm_hop_ar2_tanh_leaky_dp_zyf_s );

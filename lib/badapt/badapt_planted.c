@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-12T12:53:52Z
+ *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
+ *  Last File Update: 2020-05-07T21:41:18Z
  *
  *  Copyright and License of this File:
  *
@@ -241,21 +241,21 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_activation_linear_s )
     "func ^:dy;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( badapt_activation_lgst_s )
+BCORE_DEFINE_OBJECT_INST_P( badapt_activation_sigm_s )
 "aware badapt_activation"
 "{"
     "func ^:fx;"
     "func ^:dy;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( badapt_activation_lgst_hard_s )
+BCORE_DEFINE_OBJECT_INST_P( badapt_activation_sigm_hard_s )
 "aware badapt_activation"
 "{"
     "func ^:fx;"
     "func ^:dy;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( badapt_activation_lgst_leaky_s )
+BCORE_DEFINE_OBJECT_INST_P( badapt_activation_sigm_leaky_s )
 "aware badapt_activation"
 "{"
     "func ^:fx;"
@@ -945,7 +945,7 @@ vd_t badapt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "badapt_planted_hash" ), sr_tp( 3726372828 ) );
+            bcore_const_x_set_d( typeof( "badapt_planted_hash" ), sr_tp( 49497618 ) );
 
             // --------------------------------------------------------------------
             // source: badapt_adaptive.h
@@ -1042,15 +1042,15 @@ vd_t badapt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_linear_s_fx );
             BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_linear_s_dy );
             BCORE_REGISTER_OBJECT( badapt_activation_linear_s );
-            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_lgst_s_fx );
-            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_lgst_s_dy );
-            BCORE_REGISTER_OBJECT( badapt_activation_lgst_s );
-            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_lgst_hard_s_fx );
-            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_lgst_hard_s_dy );
-            BCORE_REGISTER_OBJECT( badapt_activation_lgst_hard_s );
-            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_lgst_leaky_s_fx );
-            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_lgst_leaky_s_dy );
-            BCORE_REGISTER_OBJECT( badapt_activation_lgst_leaky_s );
+            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_sigm_s_fx );
+            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_sigm_s_dy );
+            BCORE_REGISTER_OBJECT( badapt_activation_sigm_s );
+            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_sigm_hard_s_fx );
+            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_sigm_hard_s_dy );
+            BCORE_REGISTER_OBJECT( badapt_activation_sigm_hard_s );
+            BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_sigm_leaky_s_fx );
+            BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_sigm_leaky_s_dy );
+            BCORE_REGISTER_OBJECT( badapt_activation_sigm_leaky_s );
             BCORE_REGISTER_FFUNC( badapt_activation_fx, badapt_activation_tanh_s_fx );
             BCORE_REGISTER_FFUNC( badapt_activation_dy, badapt_activation_tanh_s_dy );
             BCORE_REGISTER_OBJECT( badapt_activation_tanh_s );

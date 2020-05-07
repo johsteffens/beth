@@ -33,19 +33,19 @@ PLANT_GROUP( badapt_activation, bcore_inst )
     stamp :linear = aware : { func : :fx = { return   x; }; func : :dy = { return 1.0; }; };
 
     // ======= (logistic function) ============
-    stamp :lgst = aware :
+    stamp :sigm = aware :
     {
         func : :fx = { return ( x > -700 ) ? ( 1.0 / ( 1.0 + exp( -x ) ) ) : 0; };
         func : :dy = { return y * ( 1.0 - y ); };
     };
 
-    stamp :lgst_hard = aware :
+    stamp :sigm_hard = aware :
     {
         func : :fx = { return ( x < -2.0 ) ? 0.0 : ( x > 2.0 ) ? 1.0 : 0.25 * ( x + 2.0 ); };
         func : :dy = { return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25; };
     };
 
-    stamp :lgst_leaky = aware :
+    stamp :sigm_leaky = aware :
     {
         func : :fx = { return ( x < -2.0 ) ? 0.01 * ( x + 2.0 ) : ( x > 2.0 ) ? 1.0 + 0.01 * ( x - 2.0 ) : 0.25 * ( x + 2.0 ); };
         func : :dy = { return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; };

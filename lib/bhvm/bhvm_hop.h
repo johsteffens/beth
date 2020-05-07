@@ -104,9 +104,9 @@ group :ar1 =
     stamp :sqr        = { func : :f = :body_lop_v_cv; };
     stamp :srt        = { func : :f = :body_lop_v_cv; };
     stamp :sqrsum     = { func : :f = :body_lop_v_cs; };
-    stamp :lgst       = { func : :f = :body_lop_v_cv; };
-    stamp :lgst_hard  = { func : :f = :body_lop_v_cv; };
-    stamp :lgst_leaky = { func : :f = :body_lop_v_cv; };
+    stamp :sigm       = { func : :f = :body_lop_v_cv; };
+    stamp :sigm_hard  = { func : :f = :body_lop_v_cv; };
+    stamp :sigm_leaky = { func : :f = :body_lop_v_cv; };
     stamp :tanh       = { func : :f = :body_lop_v_cv; };
     stamp :tanh_hard  = { func : :f = :body_lop_v_cv; };
     stamp :tanh_leaky = { func : :f = :body_lop_v_cv; };
@@ -247,9 +247,9 @@ group :ar2 =
     stamp :inv_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :sqr_dp_zaf        = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :srt_dp_zyf        = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :lgst_dp_zyf       = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :lgst_hard_dp_zyf  = { func : :f = :body_assert_vvv : :body_lop_r; };
-    stamp :lgst_leaky_dp_zyf = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :sigm_dp_zyf       = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :sigm_hard_dp_zyf  = { func : :f = :body_assert_vvv : :body_lop_r; };
+    stamp :sigm_leaky_dp_zyf = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :tanh_dp_zyf       = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :tanh_hard_dp_zyf  = { func : :f = :body_assert_vvv : :body_lop_r; };
     stamp :tanh_leaky_dp_zyf = { func : :f = :body_assert_vvv : :body_lop_r; };

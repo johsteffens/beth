@@ -103,19 +103,19 @@ group :ar1 =
 
     // ======= (logistic function) ============
 
-    stamp :lgst = aware :
+    stamp :sigm = aware :
     {
         func : :fx = { return ( a > -700 ) ? ( 1.0 / ( 1.0 + exp( -a ) ) ) : 0; };
         func : :gy = { return y * ( 1.0 - y ); };
     };
 
-    stamp :lgst_hard = aware : // lgst approximation
+    stamp :sigm_hard = aware : // sigm approximation
     {
         func : :fx = { return ( a < -2.0 ) ? 0.0 : ( a > 2.0 ) ? 1.0 : 0.25 * ( a + 2.0 ); };
         func : :gy = { return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25; };
     };
 
-    stamp :lgst_leaky = aware : // lgst approximation
+    stamp :sigm_leaky = aware : // sigm approximation
     {
         func : :fx = { return ( a < -2.0 ) ? 0.01 * ( a + 2.0 ) : ( a > 2.0 ) ? 1.0 + 0.01 * ( a - 2.0 ) : 0.25 * ( a + 2.0 ); };
         func : :gy = { return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; };

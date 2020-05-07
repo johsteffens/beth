@@ -221,9 +221,9 @@ group :ar1 =
     stamp :sqrsum   = { func : :f2 = { return f2_sqr(a); }; func : :f3 = { return f3_sqr(a); }; func : :f = :body_v_cs; }; // squared sum
     stamp :srt      = { func : :f2 = { return f2_srt(a); }; func : :f3 = { return f3_srt(a); }; func : :f = :body_v_cv; };
 
-    body body_lgst       = { return ( a > -700 ) ? ( 1.0 / ( 1.0 + exp( -( f3_t )a ) ) ) : 0; };
-    body body_lgst_hard  = { return ( a < -2.0 ) ? 0.0 : ( a > 2.0 ) ? 1.0 : 0.25 * ( a + 2.0 ); };
-    body body_lgst_leaky = { return ( a < -2.0 ) ? 0.01 * ( a + 2.0 ) : ( a > 2.0 ) ? 1.0 + 0.01 * ( a - 2.0 ) : 0.25 * ( a + 2.0 ); };
+    body body_sigm       = { return ( a > -700 ) ? ( 1.0 / ( 1.0 + exp( -( f3_t )a ) ) ) : 0; };
+    body body_sigm_hard  = { return ( a < -2.0 ) ? 0.0 : ( a > 2.0 ) ? 1.0 : 0.25 * ( a + 2.0 ); };
+    body body_sigm_leaky = { return ( a < -2.0 ) ? 0.01 * ( a + 2.0 ) : ( a > 2.0 ) ? 1.0 + 0.01 * ( a - 2.0 ) : 0.25 * ( a + 2.0 ); };
     body body_tanh       = { return ( a < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * ( f3_t )a ) + 1.0 ) ) ) : 1.0; };
     body body_tanh_hard  = { return ( a < -1.0 ) ? -1.0 : ( a > 1.0 ) ? 1.0 : a; };
     body body_tanh_leaky = { return ( a < -1.0 ) ? -1.0 + 0.01 * ( a + 1.0 ) : ( a > 1.0 ) ? 1.0 + 0.01 * ( a - 1.0 ) : a; };
@@ -234,9 +234,9 @@ group :ar1 =
     stamp :tanh       = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
     stamp :tanh_hard  = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
     stamp :tanh_leaky = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
-    stamp :lgst       = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
-    stamp :lgst_hard  = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
-    stamp :lgst_leaky = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
+    stamp :sigm       = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
+    stamp :sigm_hard  = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
+    stamp :sigm_leaky = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
     stamp :softplus   = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
     stamp :relu       = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
     stamp :relu_leaky = { func : :f2 = :body_$R;  func : :f3 = :body_$R;  func : :f = :body_v_cv; };
@@ -376,9 +376,9 @@ group :ar2 =
     stamp :srt_dp_zyf = { func : :f2 = :body_div_f2;       func : :f3 = :body_div_f3;       func : :f = :body_vv_av; };
 
     body body_abs_dp_zaf        = { return b >= 0 ? a : -a; };
-    body body_lgst_dp_zyf       = { return b * ( 1.0 - b ) * a; };
-    body body_lgst_hard_dp_zyf  = { return ( b <  0.0 ) ? 0.0 : ( b > 1.0 ) ? 0.0 : 0.25 * a; };
-    body body_lgst_leaky_dp_zyf = { return ( b <  0.0 ) ? 0.01 * a : ( b > 1.0 ) ? 0.01 * a : 0.25 * a; };
+    body body_sigm_dp_zyf       = { return b * ( 1.0 - b ) * a; };
+    body body_sigm_hard_dp_zyf  = { return ( b <  0.0 ) ? 0.0 : ( b > 1.0 ) ? 0.0 : 0.25 * a; };
+    body body_sigm_leaky_dp_zyf = { return ( b <  0.0 ) ? 0.01 * a : ( b > 1.0 ) ? 0.01 * a : 0.25 * a; };
     body body_tanh_dp_zyf       = { return ( 1.0 - f3_sqr( b ) ) * a; };
     body body_tanh_hard_dp_zyf  = { return ( b < -1.0 ) ?  0.0 : ( b > 1.0 ) ? 0.0 : a; };
     body body_tanh_leaky_dp_zyf = { return ( b < -1.0 ) ?  0.01 * a : ( b > 1.0 ) ? 0.01 * a : a; };
@@ -387,9 +387,9 @@ group :ar2 =
     body body_relu_leaky_dp_zyf = { return b > 0 ? a : 0.01 * a; };
 
     stamp :abs_dp_zaf        = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :lgst_dp_zyf       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :lgst_hard_dp_zyf  = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
-    stamp :lgst_leaky_dp_zyf = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :sigm_dp_zyf       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :sigm_hard_dp_zyf  = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
+    stamp :sigm_leaky_dp_zyf = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
     stamp :tanh_dp_zyf       = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
     stamp :tanh_hard_dp_zyf  = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };
     stamp :tanh_leaky_dp_zyf = { func : :f2 = :body_$R; func : :f3 = :body_$R; func : :f = :body_vv_av; };

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2019-12-12T12:53:52Z
+ *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
+ *  Last File Update: 2020-05-07T21:41:18Z
  *
  *  Copyright and License of this File:
  *
@@ -271,24 +271,24 @@
     {aware_t _;}; \
   static inline f3_t badapt_activation_linear_s_fx( const badapt_activation_linear_s* o, f3_t x ){return   x;} \
   static inline f3_t badapt_activation_linear_s_dy( const badapt_activation_linear_s* o, f3_t y ){return 1.0;}
-#define TYPEOF_badapt_activation_lgst_s 2249276893
-#define BETH_EXPAND_ITEM_badapt_activation_lgst_s \
-  BCORE_DECLARE_OBJECT( badapt_activation_lgst_s ) \
+#define TYPEOF_badapt_activation_sigm_s 747753319
+#define BETH_EXPAND_ITEM_badapt_activation_sigm_s \
+  BCORE_DECLARE_OBJECT( badapt_activation_sigm_s ) \
     {aware_t _;}; \
-  static inline f3_t badapt_activation_lgst_s_fx( const badapt_activation_lgst_s* o, f3_t x ){return ( x > -700 ) ? ( 1.0 / ( 1.0 + exp( -x ) ) ) : 0;} \
-  static inline f3_t badapt_activation_lgst_s_dy( const badapt_activation_lgst_s* o, f3_t y ){return y * ( 1.0 - y );}
-#define TYPEOF_badapt_activation_lgst_hard_s 1657353435
-#define BETH_EXPAND_ITEM_badapt_activation_lgst_hard_s \
-  BCORE_DECLARE_OBJECT( badapt_activation_lgst_hard_s ) \
+  static inline f3_t badapt_activation_sigm_s_fx( const badapt_activation_sigm_s* o, f3_t x ){return ( x > -700 ) ? ( 1.0 / ( 1.0 + exp( -x ) ) ) : 0;} \
+  static inline f3_t badapt_activation_sigm_s_dy( const badapt_activation_sigm_s* o, f3_t y ){return y * ( 1.0 - y );}
+#define TYPEOF_badapt_activation_sigm_hard_s 710496809
+#define BETH_EXPAND_ITEM_badapt_activation_sigm_hard_s \
+  BCORE_DECLARE_OBJECT( badapt_activation_sigm_hard_s ) \
     {aware_t _;}; \
-  static inline f3_t badapt_activation_lgst_hard_s_fx( const badapt_activation_lgst_hard_s* o, f3_t x ){return ( x < -2.0 ) ? 0.0 : ( x > 2.0 ) ? 1.0 : 0.25 * ( x + 2.0 );} \
-  static inline f3_t badapt_activation_lgst_hard_s_dy( const badapt_activation_lgst_hard_s* o, f3_t y ){return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25;}
-#define TYPEOF_badapt_activation_lgst_leaky_s 4195196768
-#define BETH_EXPAND_ITEM_badapt_activation_lgst_leaky_s \
-  BCORE_DECLARE_OBJECT( badapt_activation_lgst_leaky_s ) \
+  static inline f3_t badapt_activation_sigm_hard_s_fx( const badapt_activation_sigm_hard_s* o, f3_t x ){return ( x < -2.0 ) ? 0.0 : ( x > 2.0 ) ? 1.0 : 0.25 * ( x + 2.0 );} \
+  static inline f3_t badapt_activation_sigm_hard_s_dy( const badapt_activation_sigm_hard_s* o, f3_t y ){return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25;}
+#define TYPEOF_badapt_activation_sigm_leaky_s 2268012026
+#define BETH_EXPAND_ITEM_badapt_activation_sigm_leaky_s \
+  BCORE_DECLARE_OBJECT( badapt_activation_sigm_leaky_s ) \
     {aware_t _;}; \
-  static inline f3_t badapt_activation_lgst_leaky_s_fx( const badapt_activation_lgst_leaky_s* o, f3_t x ){return ( x < -2.0 ) ? 0.01 * ( x + 2.0 ) : ( x > 2.0 ) ? 1.0 + 0.01 * ( x - 2.0 ) : 0.25 * ( x + 2.0 );} \
-  static inline f3_t badapt_activation_lgst_leaky_s_dy( const badapt_activation_lgst_leaky_s* o, f3_t y ){return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25;}
+  static inline f3_t badapt_activation_sigm_leaky_s_fx( const badapt_activation_sigm_leaky_s* o, f3_t x ){return ( x < -2.0 ) ? 0.01 * ( x + 2.0 ) : ( x > 2.0 ) ? 1.0 + 0.01 * ( x - 2.0 ) : 0.25 * ( x + 2.0 );} \
+  static inline f3_t badapt_activation_sigm_leaky_s_dy( const badapt_activation_sigm_leaky_s* o, f3_t y ){return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25;}
 #define TYPEOF_badapt_activation_tanh_s 2100774626
 #define BETH_EXPAND_ITEM_badapt_activation_tanh_s \
   BCORE_DECLARE_OBJECT( badapt_activation_tanh_s ) \
@@ -330,9 +330,9 @@
   BCORE_FORWARD_OBJECT( badapt_activation_zero_s ); \
   BCORE_FORWARD_OBJECT( badapt_activation_one_s ); \
   BCORE_FORWARD_OBJECT( badapt_activation_linear_s ); \
-  BCORE_FORWARD_OBJECT( badapt_activation_lgst_s ); \
-  BCORE_FORWARD_OBJECT( badapt_activation_lgst_hard_s ); \
-  BCORE_FORWARD_OBJECT( badapt_activation_lgst_leaky_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_sigm_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_sigm_hard_s ); \
+  BCORE_FORWARD_OBJECT( badapt_activation_sigm_leaky_s ); \
   BCORE_FORWARD_OBJECT( badapt_activation_tanh_s ); \
   BCORE_FORWARD_OBJECT( badapt_activation_tanh_hard_s ); \
   BCORE_FORWARD_OBJECT( badapt_activation_tanh_leaky_s ); \
@@ -362,9 +362,9 @@
   BETH_EXPAND_ITEM_badapt_activation_zero_s \
   BETH_EXPAND_ITEM_badapt_activation_one_s \
   BETH_EXPAND_ITEM_badapt_activation_linear_s \
-  BETH_EXPAND_ITEM_badapt_activation_lgst_s \
-  BETH_EXPAND_ITEM_badapt_activation_lgst_hard_s \
-  BETH_EXPAND_ITEM_badapt_activation_lgst_leaky_s \
+  BETH_EXPAND_ITEM_badapt_activation_sigm_s \
+  BETH_EXPAND_ITEM_badapt_activation_sigm_hard_s \
+  BETH_EXPAND_ITEM_badapt_activation_sigm_leaky_s \
   BETH_EXPAND_ITEM_badapt_activation_tanh_s \
   BETH_EXPAND_ITEM_badapt_activation_tanh_hard_s \
   BETH_EXPAND_ITEM_badapt_activation_tanh_leaky_s \
@@ -399,9 +399,9 @@
 #define BETH_EXPAND_ITEM_badapt_arr_layer_activator_s \
   BCORE_DECLARE_OBJECT( badapt_arr_layer_activator_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( badapt_layer_activator_s, arr_ );}; \
-  static inline void badapt_arr_layer_activator_s_set_space( badapt_arr_layer_activator_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_arr_layer_activator_s_set_size( badapt_arr_layer_activator_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_arr_layer_activator_s_clear( badapt_arr_layer_activator_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, 0 ); } \
+  static inline badapt_arr_layer_activator_s* badapt_arr_layer_activator_s_set_space( badapt_arr_layer_activator_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_arr_layer_activator_s* badapt_arr_layer_activator_s_set_size( badapt_arr_layer_activator_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_arr_layer_activator_s* badapt_arr_layer_activator_s_clear( badapt_arr_layer_activator_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, 0 ); return o; } \
   static inline badapt_layer_activator_s* badapt_arr_layer_activator_s_push_c( badapt_arr_layer_activator_s* o, const badapt_layer_activator_s* v ) { bcore_array_t_push( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, sr_twc( TYPEOF_badapt_layer_activator_s, v ) ); return &o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_layer_activator_s* badapt_arr_layer_activator_s_push_d( badapt_arr_layer_activator_s* o,       badapt_layer_activator_s* v ) { bcore_array_t_push( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, sr_tsd( TYPEOF_badapt_layer_activator_s, v ) ); return &o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_layer_activator_s* badapt_arr_layer_activator_s_push( badapt_arr_layer_activator_s* o ) \
@@ -413,9 +413,9 @@
 #define BETH_EXPAND_ITEM_badapt_arr_activator_s \
   BCORE_DECLARE_OBJECT( badapt_arr_activator_s ) \
     {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( badapt_activator, arr_ );}; \
-  static inline void badapt_arr_activator_s_set_space( badapt_arr_activator_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_arr_activator_s_set_size( badapt_arr_activator_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_arr_activator_s_clear( badapt_arr_activator_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, 0 ); } \
+  static inline badapt_arr_activator_s* badapt_arr_activator_s_set_space( badapt_arr_activator_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_arr_activator_s* badapt_arr_activator_s_set_size( badapt_arr_activator_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_arr_activator_s* badapt_arr_activator_s_clear( badapt_arr_activator_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, 0 ); return o; } \
   static inline badapt_activator* badapt_arr_activator_s_push_c( badapt_arr_activator_s* o, const badapt_activator* v ) { bcore_array_t_push( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, sr_awc( v ) ); return o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_activator* badapt_arr_activator_s_push_d( badapt_arr_activator_s* o,       badapt_activator* v ) { bcore_array_t_push( TYPEOF_badapt_arr_activator_s, ( bcore_array* )o, sr_asd( v ) ); return o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_activator* badapt_arr_activator_s_push_t( badapt_arr_activator_s* o, tp_t t ) \
@@ -534,9 +534,9 @@
 #define BETH_EXPAND_ITEM_badapt_mlp_arr_layer_s \
   BCORE_DECLARE_OBJECT( badapt_mlp_arr_layer_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( badapt_mlp_layer_s, arr_ );}; \
-  static inline void badapt_mlp_arr_layer_s_set_space( badapt_mlp_arr_layer_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_mlp_arr_layer_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_mlp_arr_layer_s_set_size( badapt_mlp_arr_layer_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_mlp_arr_layer_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_mlp_arr_layer_s_clear( badapt_mlp_arr_layer_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_mlp_arr_layer_s, ( bcore_array* )o, 0 ); } \
+  static inline badapt_mlp_arr_layer_s* badapt_mlp_arr_layer_s_set_space( badapt_mlp_arr_layer_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_mlp_arr_layer_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_mlp_arr_layer_s* badapt_mlp_arr_layer_s_set_size( badapt_mlp_arr_layer_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_mlp_arr_layer_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_mlp_arr_layer_s* badapt_mlp_arr_layer_s_clear( badapt_mlp_arr_layer_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_mlp_arr_layer_s, ( bcore_array* )o, 0 ); return o; } \
   static inline badapt_mlp_layer_s* badapt_mlp_arr_layer_s_push_c( badapt_mlp_arr_layer_s* o, const badapt_mlp_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_mlp_arr_layer_s, ( bcore_array* )o, sr_twc( TYPEOF_badapt_mlp_layer_s, v ) ); return &o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_mlp_layer_s* badapt_mlp_arr_layer_s_push_d( badapt_mlp_arr_layer_s* o,       badapt_mlp_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_mlp_arr_layer_s, ( bcore_array* )o, sr_tsd( TYPEOF_badapt_mlp_layer_s, v ) ); return &o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_mlp_layer_s* badapt_mlp_arr_layer_s_push( badapt_mlp_arr_layer_s* o ) \
@@ -593,9 +593,9 @@
 #define BETH_EXPAND_ITEM_badapt_c1d_arr_layer_s \
   BCORE_DECLARE_OBJECT( badapt_c1d_arr_layer_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( badapt_c1d_layer_s, arr_ );}; \
-  static inline void badapt_c1d_arr_layer_s_set_space( badapt_c1d_arr_layer_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_c1d_arr_layer_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_c1d_arr_layer_s_set_size( badapt_c1d_arr_layer_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_c1d_arr_layer_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_c1d_arr_layer_s_clear( badapt_c1d_arr_layer_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_c1d_arr_layer_s, ( bcore_array* )o, 0 ); } \
+  static inline badapt_c1d_arr_layer_s* badapt_c1d_arr_layer_s_set_space( badapt_c1d_arr_layer_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_c1d_arr_layer_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_c1d_arr_layer_s* badapt_c1d_arr_layer_s_set_size( badapt_c1d_arr_layer_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_c1d_arr_layer_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_c1d_arr_layer_s* badapt_c1d_arr_layer_s_clear( badapt_c1d_arr_layer_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_c1d_arr_layer_s, ( bcore_array* )o, 0 ); return o; } \
   static inline badapt_c1d_layer_s* badapt_c1d_arr_layer_s_push_c( badapt_c1d_arr_layer_s* o, const badapt_c1d_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_c1d_arr_layer_s, ( bcore_array* )o, sr_twc( TYPEOF_badapt_c1d_layer_s, v ) ); return &o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_c1d_layer_s* badapt_c1d_arr_layer_s_push_d( badapt_c1d_arr_layer_s* o,       badapt_c1d_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_c1d_arr_layer_s, ( bcore_array* )o, sr_tsd( TYPEOF_badapt_c1d_layer_s, v ) ); return &o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_c1d_layer_s* badapt_c1d_arr_layer_s_push( badapt_c1d_arr_layer_s* o ) \
@@ -652,9 +652,9 @@
 #define BETH_EXPAND_ITEM_badapt_ern_arr_layer_s \
   BCORE_DECLARE_OBJECT( badapt_ern_arr_layer_s ) \
     {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( badapt_ern_layer_s, arr_ );}; \
-  static inline void badapt_ern_arr_layer_s_set_space( badapt_ern_arr_layer_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_ern_arr_layer_s_set_size( badapt_ern_arr_layer_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_ern_arr_layer_s_clear( badapt_ern_arr_layer_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, 0 ); } \
+  static inline badapt_ern_arr_layer_s* badapt_ern_arr_layer_s_set_space( badapt_ern_arr_layer_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_ern_arr_layer_s* badapt_ern_arr_layer_s_set_size( badapt_ern_arr_layer_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_ern_arr_layer_s* badapt_ern_arr_layer_s_clear( badapt_ern_arr_layer_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, 0 ); return o; } \
   static inline badapt_ern_layer_s* badapt_ern_arr_layer_s_push_c( badapt_ern_arr_layer_s* o, const badapt_ern_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, sr_twc( TYPEOF_badapt_ern_layer_s, v ) ); return o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_ern_layer_s* badapt_ern_arr_layer_s_push_d( badapt_ern_arr_layer_s* o,       badapt_ern_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, sr_tsd( TYPEOF_badapt_ern_layer_s, v ) ); return o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_ern_layer_s* badapt_ern_arr_layer_s_push( badapt_ern_arr_layer_s* o ) \
@@ -710,9 +710,9 @@
 #define BETH_EXPAND_ITEM_badapt_lstm_arr_layer_s \
   BCORE_DECLARE_OBJECT( badapt_lstm_arr_layer_s ) \
     {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( badapt_lstm_layer_s, arr_ );}; \
-  static inline void badapt_lstm_arr_layer_s_set_space( badapt_lstm_arr_layer_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_lstm_arr_layer_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_lstm_arr_layer_s_set_size( badapt_lstm_arr_layer_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_lstm_arr_layer_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_lstm_arr_layer_s_clear( badapt_lstm_arr_layer_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_lstm_arr_layer_s, ( bcore_array* )o, 0 ); } \
+  static inline badapt_lstm_arr_layer_s* badapt_lstm_arr_layer_s_set_space( badapt_lstm_arr_layer_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_lstm_arr_layer_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_lstm_arr_layer_s* badapt_lstm_arr_layer_s_set_size( badapt_lstm_arr_layer_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_lstm_arr_layer_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_lstm_arr_layer_s* badapt_lstm_arr_layer_s_clear( badapt_lstm_arr_layer_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_lstm_arr_layer_s, ( bcore_array* )o, 0 ); return o; } \
   static inline badapt_lstm_layer_s* badapt_lstm_arr_layer_s_push_c( badapt_lstm_arr_layer_s* o, const badapt_lstm_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_lstm_arr_layer_s, ( bcore_array* )o, sr_twc( TYPEOF_badapt_lstm_layer_s, v ) ); return o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_lstm_layer_s* badapt_lstm_arr_layer_s_push_d( badapt_lstm_arr_layer_s* o,       badapt_lstm_layer_s* v ) { bcore_array_t_push( TYPEOF_badapt_lstm_arr_layer_s, ( bcore_array* )o, sr_tsd( TYPEOF_badapt_lstm_layer_s, v ) ); return o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_lstm_layer_s* badapt_lstm_arr_layer_s_push( badapt_lstm_arr_layer_s* o ) \
@@ -976,9 +976,9 @@
 #define BETH_EXPAND_ITEM_badapt_arr_sample_batch_s \
   BCORE_DECLARE_OBJECT( badapt_arr_sample_batch_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( badapt_sample_batch_s, arr_ );}; \
-  static inline void badapt_arr_sample_batch_s_set_space( badapt_arr_sample_batch_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_arr_sample_batch_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_arr_sample_batch_s_set_size( badapt_arr_sample_batch_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_arr_sample_batch_s, ( bcore_array* )o, size ); } \
-  static inline void badapt_arr_sample_batch_s_clear( badapt_arr_sample_batch_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_arr_sample_batch_s, ( bcore_array* )o, 0 ); } \
+  static inline badapt_arr_sample_batch_s* badapt_arr_sample_batch_s_set_space( badapt_arr_sample_batch_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_badapt_arr_sample_batch_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_arr_sample_batch_s* badapt_arr_sample_batch_s_set_size( badapt_arr_sample_batch_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_badapt_arr_sample_batch_s, ( bcore_array* )o, size ); return o; } \
+  static inline badapt_arr_sample_batch_s* badapt_arr_sample_batch_s_clear( badapt_arr_sample_batch_s* o ) { bcore_array_t_set_space( TYPEOF_badapt_arr_sample_batch_s, ( bcore_array* )o, 0 ); return o; } \
   static inline badapt_sample_batch_s* badapt_arr_sample_batch_s_push_c( badapt_arr_sample_batch_s* o, const badapt_sample_batch_s* v ) { bcore_array_t_push( TYPEOF_badapt_arr_sample_batch_s, ( bcore_array* )o, sr_twc( TYPEOF_badapt_sample_batch_s, v ) ); return &o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_sample_batch_s* badapt_arr_sample_batch_s_push_d( badapt_arr_sample_batch_s* o,       badapt_sample_batch_s* v ) { bcore_array_t_push( TYPEOF_badapt_arr_sample_batch_s, ( bcore_array* )o, sr_tsd( TYPEOF_badapt_sample_batch_s, v ) ); return &o->arr_data[ o->arr_size - 1 ]; } \
   static inline badapt_sample_batch_s* badapt_arr_sample_batch_s_push( badapt_arr_sample_batch_s* o ) \
