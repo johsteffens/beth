@@ -225,10 +225,10 @@ u2_t bhpt_sampler_polynom_s_fetch( const bhpt_sampler_polynom_s* o, u2_t rval, b
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bhpt_adaptive* bhpt_tutor_sampler_s_create_adaptive( const bhpt_tutor_sampler_s* o, const bhpt_builder* src_builder )
+bhpt_adaptive* bhpt_tutor_sampler_s_create_adaptive( const bhpt_tutor_sampler_s* o )
 {
     BLM_INIT();
-    bhpt_builder* builder = BLM_A_PUSH( bhpt_builder_a_clone( src_builder ) );
+    bhpt_builder* builder = BLM_A_PUSH( bhpt_builder_a_clone( o->builder ) );
     bhpt_builder_a_set_format_en( builder, bhvm_holor_s_set_type_vector_vacant( BLM_CREATE( bhvm_holor_s ), TYPEOF_f3_t, bhpt_sampler_a_get_size_en( o->sampler ) ) );
     bhpt_builder_a_set_format_ex( builder, bhvm_holor_s_set_type_vector_vacant( BLM_CREATE( bhvm_holor_s ), TYPEOF_f3_t, bhpt_sampler_a_get_size_ex( o->sampler ) ) );
     BLM_RETURNV( bhpt_adaptive*, bhpt_builder_a_create_adaptive( builder ) );
@@ -261,7 +261,7 @@ void bhpt_tutor_sampler_s_prime( bhpt_tutor_sampler_s* o, bhpt_adaptive* adaptiv
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhpt_tutor_sampler_s_test( const bhpt_tutor_sampler_s* o, const bhpt_adaptive* adaptive_src, sz_t verbosity, bcore_sink* log )
+void bhpt_tutor_sampler_s_test( bhpt_tutor_sampler_s* o, const bhpt_adaptive* adaptive_src, sz_t verbosity, bcore_sink* log )
 {
     BLM_INIT();
     bhpt_adaptive* adaptive = BLM_A_PUSH( bhpt_adaptive_a_clone( adaptive_src ) );

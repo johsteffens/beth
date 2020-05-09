@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-02T15:01:40Z
+ *  Last File Update: 2020-05-09T16:14:35Z
  *
  *  Copyright and License of this File:
  *
@@ -199,15 +199,17 @@
 #define TYPEOF_bhpt_tutor_s 1394724786
 #define BETH_EXPAND_GROUP_bhpt_tutor \
   BCORE_FORWARD_OBJECT( bhpt_tutor ); \
-  typedef bhpt_adaptive* (*bhpt_tutor_create_adaptive)( const bhpt_tutor* o, const bhpt_builder* builder ); \
+  typedef bhpt_adaptive* (*bhpt_tutor_create_adaptive)( const bhpt_tutor* o ); \
+  typedef bhpt_adaptor* (*bhpt_tutor_create_adaptor)( const bhpt_tutor* o ); \
   typedef void (*bhpt_tutor_reset)( bhpt_tutor* o ); \
   typedef void (*bhpt_tutor_prime)( bhpt_tutor* o, bhpt_adaptive* adaptive ); \
-  typedef void (*bhpt_tutor_test)( const bhpt_tutor* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ); \
+  typedef void (*bhpt_tutor_test)( bhpt_tutor* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ); \
   typedef void (*bhpt_tutor_status_to_sink)( const bhpt_tutor* o, sz_t verbosity, bcore_sink* sink ); \
   BCORE_DECLARE_SPECT( bhpt_tutor ) \
   { \
       bcore_spect_header_s header; \
       bhpt_tutor_create_adaptive create_adaptive; \
+      bhpt_tutor_create_adaptor create_adaptor; \
       bhpt_tutor_reset reset; \
       bhpt_tutor_prime prime; \
       bhpt_tutor_test test; \
@@ -217,17 +219,19 @@
   static inline bl_t bhpt_tutor_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhpt_tutor ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bhpt_tutor ) \
   static inline bl_t bhpt_tutor_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bhpt_tutor ); } \
-  static inline bhpt_adaptive* bhpt_tutor_a_create_adaptive( const bhpt_tutor* o, const bhpt_builder* builder ) { const bhpt_tutor_s* p = bhpt_tutor_s_get_aware( o ); assert( p->create_adaptive ); return p->create_adaptive( o, builder ); } \
+  static inline bhpt_adaptive* bhpt_tutor_a_create_adaptive( const bhpt_tutor* o ) { const bhpt_tutor_s* p = bhpt_tutor_s_get_aware( o ); assert( p->create_adaptive ); return p->create_adaptive( o ); } \
   static inline bl_t bhpt_tutor_a_defines_create_adaptive( const bhpt_tutor* o ) { return true; } \
+  static inline bhpt_adaptor* bhpt_tutor_a_create_adaptor( const bhpt_tutor* o ) { const bhpt_tutor_s* p = bhpt_tutor_s_get_aware( o ); assert( p->create_adaptor ); return p->create_adaptor( o ); } \
+  static inline bl_t bhpt_tutor_a_defines_create_adaptor( const bhpt_tutor* o ) { return true; } \
   static inline void bhpt_tutor_a_reset( bhpt_tutor* o ) { const bhpt_tutor_s* p = bhpt_tutor_s_get_aware( o ); assert( p->reset ); p->reset( o ); } \
   static inline bl_t bhpt_tutor_a_defines_reset( const bhpt_tutor* o ) { return true; } \
   static inline void bhpt_tutor_reset__( bhpt_tutor* o ){} \
   static inline void bhpt_tutor_a_prime( bhpt_tutor* o, bhpt_adaptive* adaptive ) { const bhpt_tutor_s* p = bhpt_tutor_s_get_aware( o ); assert( p->prime ); p->prime( o, adaptive ); } \
   static inline bl_t bhpt_tutor_a_defines_prime( const bhpt_tutor* o ) { return true; } \
   static inline void bhpt_tutor_prime__( bhpt_tutor* o, bhpt_adaptive* adaptive ){} \
-  static inline void bhpt_tutor_a_test( const bhpt_tutor* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ) { const bhpt_tutor_s* p = bhpt_tutor_s_get_aware( o ); assert( p->test ); p->test( o, adaptive, verbosity, log ); } \
+  static inline void bhpt_tutor_a_test( bhpt_tutor* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ) { const bhpt_tutor_s* p = bhpt_tutor_s_get_aware( o ); assert( p->test ); p->test( o, adaptive, verbosity, log ); } \
   static inline bl_t bhpt_tutor_a_defines_test( const bhpt_tutor* o ) { return true; } \
-  static inline void bhpt_tutor_test__( const bhpt_tutor* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ){} \
+  static inline void bhpt_tutor_test__( bhpt_tutor* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ){} \
   static inline void bhpt_tutor_a_status_to_sink( const bhpt_tutor* o, sz_t verbosity, bcore_sink* sink ) { const bhpt_tutor_s* p = bhpt_tutor_s_get_aware( o ); assert( p->status_to_sink ); p->status_to_sink( o, verbosity, sink ); } \
   static inline bl_t bhpt_tutor_a_defines_status_to_sink( const bhpt_tutor* o ) { return true; } \
   static inline void bhpt_tutor_status_to_sink__( const bhpt_tutor* o, sz_t verbosity, bcore_sink* sink ){if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink );}
@@ -247,7 +251,7 @@
 #define TYPEOF_bhpt_frame_s 3192581947
 #define BETH_EXPAND_ITEM_bhpt_frame_s \
   BCORE_DECLARE_OBJECT( bhpt_frame_s ) \
-    {aware_t _;bhpt_tutor* tutor;bhpt_builder* builder;bhpt_adaptor* adaptor;bhpt_frame_thread_base_s* thread_base;sz_t threads;sz_t cycle_adapt;sz_t cycle_test;sz_t cycle_backup;sz_t cycle_finish;sz_t verbosity;bhpt_frame_state_s* state;st_s state_path;bcore_sink* log;}; \
+    {aware_t _;bhpt_tutor* tutor;bhpt_frame_thread_base_s* thread_base;sz_t threads;sz_t cycle_adapt;sz_t cycle_test;sz_t cycle_backup;sz_t cycle_finish;sz_t verbosity;bhpt_frame_state_s* state;st_s state_path;bcore_sink* log;}; \
   s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args );
 #define BETH_EXPAND_GROUP_bhpt_frame \
   BCORE_FORWARD_OBJECT( bhpt_frame ); \
@@ -456,11 +460,12 @@
 #define TYPEOF_bhpt_tutor_sampler_s 3882161769
 #define BETH_EXPAND_ITEM_bhpt_tutor_sampler_s \
   BCORE_DECLARE_OBJECT( bhpt_tutor_sampler_s ) \
-    {aware_t _;bhpt_sampler* sampler;u2_t rval_prime;u2_t rval_test;sz_t test_size;bcore_mutex_s mutex;}; \
+    {aware_t _;bhpt_builder* builder;bhpt_adaptor* adaptor;bhpt_sampler* sampler;u2_t rval_prime;u2_t rval_test;sz_t test_size;bcore_mutex_s mutex;}; \
   static inline void bhpt_tutor_sampler_s_reset( bhpt_tutor_sampler_s* o ){} \
-  bhpt_adaptive* bhpt_tutor_sampler_s_create_adaptive( const bhpt_tutor_sampler_s* o, const bhpt_builder* builder ); \
+  bhpt_adaptive* bhpt_tutor_sampler_s_create_adaptive( const bhpt_tutor_sampler_s* o ); \
+  static inline bhpt_adaptor* bhpt_tutor_sampler_s_create_adaptor( const bhpt_tutor_sampler_s* o ){return bhpt_adaptor_a_clone( o->adaptor );} \
   void bhpt_tutor_sampler_s_prime( bhpt_tutor_sampler_s* o, bhpt_adaptive* adaptive ); \
-  void bhpt_tutor_sampler_s_test( const bhpt_tutor_sampler_s* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ); \
+  void bhpt_tutor_sampler_s_test( bhpt_tutor_sampler_s* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ); \
   void bhpt_tutor_sampler_s_status_to_sink( const bhpt_tutor_sampler_s* o, sz_t verbosity, bcore_sink* sink );
 #define BETH_EXPAND_GROUP_bhpt_tutor_sampler \
   BCORE_FORWARD_OBJECT( bhpt_tutor_sampler ); \
@@ -482,11 +487,12 @@
 #define TYPEOF_bhpt_tutor_language_utf8_s 409996605
 #define BETH_EXPAND_ITEM_bhpt_tutor_language_utf8_s \
   BCORE_DECLARE_OBJECT( bhpt_tutor_language_utf8_s ) \
-    {aware_t _;vd_t src;st_s* st;u2_t rval_prime;u2_t rval_test;sz_t size_trans;sz_t size_prime;sz_t size_test;f3_t tgt_pos;f3_t tgt_neg;bhpt_tutor_language_utf8_chatter_s* chatter;bcore_mutex_s mutex;}; \
+    {aware_t _;bhpt_builder* builder;bhpt_adaptor* adaptor;vd_t src;st_s* st;u2_t rval_prime;u2_t rval_test;sz_t size_trans;sz_t size_prime;sz_t size_test;f3_t tgt_pos;f3_t tgt_neg;bhpt_tutor_language_utf8_chatter_s* chatter;bcore_mutex_s mutex;}; \
   static inline void bhpt_tutor_language_utf8_s_reset( bhpt_tutor_language_utf8_s* o ){o->rval_prime = 1234;} \
-  bhpt_adaptive* bhpt_tutor_language_utf8_s_create_adaptive( const bhpt_tutor_language_utf8_s* o, const bhpt_builder* builder ); \
+  bhpt_adaptive* bhpt_tutor_language_utf8_s_create_adaptive( const bhpt_tutor_language_utf8_s* o ); \
+  static inline bhpt_adaptor* bhpt_tutor_language_utf8_s_create_adaptor( const bhpt_tutor_language_utf8_s* o ){return bhpt_adaptor_a_clone( o->adaptor );} \
   void bhpt_tutor_language_utf8_s_prime( bhpt_tutor_language_utf8_s* o, bhpt_adaptive* adaptive ); \
-  void bhpt_tutor_language_utf8_s_test( const bhpt_tutor_language_utf8_s* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ); \
+  void bhpt_tutor_language_utf8_s_test( bhpt_tutor_language_utf8_s* o, const bhpt_adaptive* adaptive, sz_t verbosity, bcore_sink* log ); \
   void bhpt_tutor_language_utf8_s_status_to_sink( const bhpt_tutor_language_utf8_s* o, sz_t verbosity, bcore_sink* sink );
 #define BETH_EXPAND_GROUP_bhpt_tutor_language \
   BCORE_FORWARD_OBJECT( bhpt_tutor_language ); \

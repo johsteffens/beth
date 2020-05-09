@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-02T15:01:40Z
+ *  Last File Update: 2020-05-09T16:14:35Z
  *
  *  Copyright and License of this File:
  *
@@ -92,6 +92,7 @@ BCORE_DEFINE_SPECT( bhpt, bhpt_tutor )
 "{"
     "bcore_spect_header_s header;"
     "feature strict aware bhpt_tutor : create_adaptive;"
+    "feature strict aware bhpt_tutor : create_adaptor;"
     "feature aware bhpt_tutor : reset = bhpt_tutor_reset__;"
     "feature aware bhpt_tutor : prime = bhpt_tutor_prime__;"
     "feature aware bhpt_tutor : test = bhpt_tutor_test__;"
@@ -120,8 +121,6 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
 "aware bcore_main"
 "{"
     "aware bhpt_tutor => tutor;"
-    "aware bhpt_builder => builder;"
-    "aware bhpt_adaptor => adaptor;"
     "hidden bhpt_frame_thread_base_s => thread_base;"
     "sz_t threads = 1;"
     "sz_t cycle_adapt = 1;"
@@ -317,6 +316,8 @@ BCORE_DEFINE_SPECT( bcore_inst, bhpt_sampler )
 BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_sampler_s )
 "aware bhpt_tutor"
 "{"
+    "aware bhpt_builder => builder;"
+    "aware bhpt_adaptor => adaptor;"
     "aware bhpt_sampler => sampler;"
     "u2_t rval_prime = 1234;"
     "u2_t rval_test = 5342;"
@@ -324,6 +325,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_sampler_s )
     "hidden bcore_mutex_s mutex;"
     "func ^:reset;"
     "func ^:create_adaptive;"
+    "func ^:create_adaptor;"
     "func ^:prime;"
     "func ^:test;"
     "func ^:status_to_sink;"
@@ -357,6 +359,8 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_language_utf8_chatter_s )
 BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_language_utf8_s )
 "aware bhpt_tutor"
 "{"
+    "aware bhpt_builder => builder;"
+    "aware bhpt_adaptor => adaptor;"
     "aware => src;"
     "hidden st_s => st;"
     "u2_t rval_prime = 1234;"
@@ -370,6 +374,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_language_utf8_s )
     "hidden bcore_mutex_s mutex;"
     "func ^:reset;"
     "func ^:create_adaptive;"
+    "func ^:create_adaptor;"
     "func ^:prime;"
     "func ^:test;"
     "func ^:status_to_sink;"
@@ -392,7 +397,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 3637352583 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 138033222 ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h
@@ -432,6 +437,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
 
             // group: bhpt_tutor
             BCORE_REGISTER_FEATURE( bhpt_tutor_create_adaptive );
+            BCORE_REGISTER_FEATURE( bhpt_tutor_create_adaptor );
             BCORE_REGISTER_FEATURE( bhpt_tutor_reset );
             BCORE_REGISTER_FFUNC( bhpt_tutor_reset, bhpt_tutor_reset__ );
             BCORE_REGISTER_FEATURE( bhpt_tutor_prime );
@@ -514,6 +520,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             // group: bhpt_tutor_sampler
             BCORE_REGISTER_FFUNC( bhpt_tutor_reset, bhpt_tutor_sampler_s_reset );
             BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptive, bhpt_tutor_sampler_s_create_adaptive );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptor, bhpt_tutor_sampler_s_create_adaptor );
             BCORE_REGISTER_FFUNC( bhpt_tutor_prime, bhpt_tutor_sampler_s_prime );
             BCORE_REGISTER_FFUNC( bhpt_tutor_test, bhpt_tutor_sampler_s_test );
             BCORE_REGISTER_FFUNC( bhpt_tutor_status_to_sink, bhpt_tutor_sampler_s_status_to_sink );
@@ -527,6 +534,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhpt_tutor_language_utf8_chatter_s );
             BCORE_REGISTER_FFUNC( bhpt_tutor_reset, bhpt_tutor_language_utf8_s_reset );
             BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptive, bhpt_tutor_language_utf8_s_create_adaptive );
+            BCORE_REGISTER_FFUNC( bhpt_tutor_create_adaptor, bhpt_tutor_language_utf8_s_create_adaptor );
             BCORE_REGISTER_FFUNC( bhpt_tutor_prime, bhpt_tutor_language_utf8_s_prime );
             BCORE_REGISTER_FFUNC( bhpt_tutor_test, bhpt_tutor_language_utf8_s_test );
             BCORE_REGISTER_FFUNC( bhpt_tutor_status_to_sink, bhpt_tutor_language_utf8_s_status_to_sink );

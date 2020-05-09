@@ -148,6 +148,8 @@ PLANT_GROUP( bhpt_tutor_sampler, bcore_inst )
 
 stamp : = aware bhpt_tutor
 {
+    aware bhpt_builder => builder;
+    aware bhpt_adaptor => adaptor;
     aware bhpt_sampler => sampler;
 
     /// rval_prime is updated after priming
@@ -162,6 +164,7 @@ stamp : = aware bhpt_tutor
 
     func bhpt_tutor : reset = {};
     func bhpt_tutor : create_adaptive;
+    func bhpt_tutor : create_adaptor = { return bhpt_adaptor_a_clone( o->adaptor ); };
     func bhpt_tutor : prime;
     func bhpt_tutor : test;
     func bhpt_tutor : status_to_sink =

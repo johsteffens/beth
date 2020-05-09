@@ -327,19 +327,18 @@ s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args )
     {
         BLM_INIT();
         bhpt_frame_state_s_attach( &o->state, bhpt_frame_state_s_create() );
-        o->state->adaptive = bhpt_tutor_a_create_adaptive( o->tutor, o->builder );
+        o->state->adaptive = bhpt_tutor_a_create_adaptive( o->tutor );
 
         // setting up adaptors
         bhpt_adaptor_adl_s_attach( &o->state->adaptor_adl, bhpt_adaptor_adl_s_create() );
         bhpt_adaptor_probe_s* probe = BLM_CREATE( bhpt_adaptor_probe_s );
         bhpt_adaptive_a_get_adaptor_probe( o->state->adaptive, probe );
         bhpt_adaptor_adl_s_set_size( o->state->adaptor_adl, probe->size );
-        BFOR_EACH( i, o->state->adaptor_adl ) o->state->adaptor_adl->data[ i ] = bhpt_adaptor_a_clone( o->adaptor );
+        BFOR_EACH( i, o->state->adaptor_adl ) o->state->adaptor_adl->data[ i ] = bhpt_tutor_a_create_adaptor( o->tutor );
 
         BLM_DOWN();
     }
 
-    assert( o->builder );
     assert( o->tutor );
     assert( o->state );
     assert( o->state->adaptive );

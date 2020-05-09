@@ -138,13 +138,17 @@ group :builder =
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/** The tutor defines a training task.
- *  It primes and tests adaptives (thread safe).
+/** The tutor defines an adaptive and a training task.
+ *  It provide routines for adaptive generation, priming and testing.
+ *  Priming and testing may mutate the tutor in a concurrent fashion.
  */
 group :tutor =
 {
     /// creates adaptive via builder releasing ownership
-    feature strict 'a' ::adaptive* create_adaptive( const, const ::builder* builder );
+    feature strict 'a' ::adaptive* create_adaptive( const );
+
+    /// creates adaptor for adaptive
+    feature strict 'a' ::adaptor* create_adaptor( const );
 
     /// resets the training session
     feature 'a' void reset( mutable ) = {};
@@ -152,8 +156,12 @@ group :tutor =
     /// primes a specified adaptive (concurrent for tutor)
     feature 'a' void prime( mutable, ::adaptive* adaptive ) = {};
 
-    /// tests a specified adaptive (concurrent for tutor) and writes result to log
-    feature 'a' void test( const, const ::adaptive* adaptive, sz_t verbosity, bcore_sink* log ) = {};
+    /** Tests a specified adaptive (concurrent for tutor) and writes result to log;
+     *  Testing may mutate the tutor, if it necessary and done in a thread safe manner.
+     *  Mutation is not desired, though, and should never affect the reliability or interpretability
+     *  of test results.
+     */
+    feature 'a' void test( mutable, const ::adaptive* adaptive, sz_t verbosity, bcore_sink* log ) = {};
 
     /// outputs current status information to sink
     feature 'a' void status_to_sink( const, sz_t verbosity, bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };

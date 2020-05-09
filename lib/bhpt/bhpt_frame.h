@@ -117,8 +117,6 @@ stamp : = aware bcore_main
 {
     /// ========= parameters ================
     aware bhpt_tutor   => tutor;
-    aware bhpt_builder => builder;
-    aware bhpt_adaptor => adaptor;
     hidden :thread_base_s => thread_base;
 
     // A single single cycle represents an adaptive primimg

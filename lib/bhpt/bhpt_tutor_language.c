@@ -19,10 +19,10 @@
 
 #ifdef TYPEOF_bhpt_tutor_language
 
-bhpt_adaptive* bhpt_tutor_language_utf8_s_create_adaptive( const bhpt_tutor_language_utf8_s* o, const bhpt_builder* src_builder )
+bhpt_adaptive* bhpt_tutor_language_utf8_s_create_adaptive( const bhpt_tutor_language_utf8_s* o )
 {
     BLM_INIT();
-    bhpt_builder* builder = BLM_A_PUSH( bhpt_builder_a_clone( src_builder ) );
+    bhpt_builder* builder = BLM_A_PUSH( bhpt_builder_a_clone( o->builder ) );
     bhpt_builder_a_set_format_en( builder, bhvm_holor_s_set_type_vector_vacant( BLM_CREATE( bhvm_holor_s ), TYPEOF_f3_t, 256 ) );
     bhpt_builder_a_set_format_ex( builder, bhvm_holor_s_set_type_vector_vacant( BLM_CREATE( bhvm_holor_s ), TYPEOF_f3_t, 256 ) );
     BLM_RETURNV( bhpt_adaptive*, bhpt_builder_a_create_adaptive( builder ) );
@@ -234,7 +234,7 @@ void bhpt_tutor_language_utf8_chatter_s_run( const bhpt_tutor_language_utf8_chat
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhpt_tutor_language_utf8_s_test( const bhpt_tutor_language_utf8_s* o, const bhpt_adaptive* adaptive_src, sz_t verbosity, bcore_sink* log )
+void bhpt_tutor_language_utf8_s_test( bhpt_tutor_language_utf8_s* o, const bhpt_adaptive* adaptive_src, sz_t verbosity, bcore_sink* log )
 {
     BLM_INIT();
     bhpt_adaptive* adaptive = BLM_A_PUSH( bhpt_adaptive_a_clone( adaptive_src ) );

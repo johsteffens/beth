@@ -54,7 +54,10 @@ stamp :utf8_chatter = aware :
  */
 stamp :utf8 = aware bhpt_tutor
 {
-    aware => src; // source (bcore_file_path_s or st_s with inline code)
+    aware bhpt_builder => builder;
+    aware bhpt_adaptor => adaptor;
+
+    aware => src; // text source (bcore_file_path_s or st_s with inline code)
 
     hidden st_s => st; // buffered text
 
@@ -81,6 +84,7 @@ stamp :utf8 = aware bhpt_tutor
 
     func bhpt_tutor : reset = { o->rval_prime = 1234; };
     func bhpt_tutor : create_adaptive;
+    func bhpt_tutor : create_adaptor = { return bhpt_adaptor_a_clone( o->adaptor ); };
     func bhpt_tutor : prime;
     func bhpt_tutor : test;
     func bhpt_tutor : status_to_sink =
