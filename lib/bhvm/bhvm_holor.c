@@ -934,6 +934,19 @@ void bhvm_value_s_acc_offs( const bhvm_value_s* a, sz_t a_offs, bhvm_value_s* r,
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bhvm_stats_s* bhvm_value_s_stats_acc( const bhvm_value_s* o, bhvm_stats_s* stats )
+{
+    switch( o->type )
+    {
+        case TYPEOF_f2_t: BFOR_EACH( i, o ) bhvm_stats_s_acc( stats, ( ( f2_t* )o->data )[ i ] ); break;
+        case TYPEOF_f3_t: BFOR_EACH( i, o ) bhvm_stats_s_acc( stats, ( ( f3_t* )o->data )[ i ] ); break;
+        default: ERR_fa( "Invalid type" );
+    }
+    return stats;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// holor
 
@@ -1884,6 +1897,83 @@ static void selftest( void )
     ASSERT( f3_abs( ( bhvm_holor_s_f3_sum( h2 ) / bhvm_holor_s_f3_sum( h1 ) ) - 3.0 ) < 1E-10 );
 */
     BLM_DOWN();
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// stats
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_stats_s_clear( bhvm_stats_s* o )
+{
+    o->min = o->max = o->sum = o->sqr_sum = 0;
+    o->size = 0;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_stats_s_acc( bhvm_stats_s* o, f3_t v )
+{
+    o->min = ( o->size > 0 ) ? f3_min( o->min, v ) : v;
+    o->max = ( o->size > 0 ) ? f3_max( o->max, v ) : v;
+    o->sum += v;
+    o->sqr_sum += f3_sqr( v );
+    o->size++;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_stats_s_acc_stats( bhvm_stats_s* o, bhvm_stats_s* stats )
+{
+    o->min = ( o->size > 0 ) ? f3_min( o->min, stats->min ) : stats->min;
+    o->max = ( o->size > 0 ) ? f3_max( o->max, stats->max ) : stats->max;
+    o->sum     += stats->sum;
+    o->sqr_sum += stats->sqr_sum;
+    o->size    += stats->size;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_stats_s_get_avg( const bhvm_stats_s* o )
+{
+    return ( o->size > 0 ) ? o->sum / o->size : 0;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_stats_s_get_var( const bhvm_stats_s* o )
+{
+    f3_t avg = 0;
+    f3_t sqr_avg = 0;
+
+    if( o->size > 0 )
+    {
+        avg = o->sum / o->size;
+        sqr_avg = o->sqr_sum / o->size;
+    }
+
+    return f3_max( 0, sqr_avg - avg * avg );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+f3_t bhvm_stats_s_get_dev( const bhvm_stats_s* o )
+{
+    return f3_srt( bhvm_stats_s_get_var( o ) );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bhvm_stats_s_to_sink( const bhvm_stats_s* o, bcore_sink* sink )
+{
+    f3_t min = o->min;
+    f3_t max = o->max;
+    f3_t avg = bhvm_stats_s_get_avg( o );
+    f3_t dev = bhvm_stats_s_get_dev( o );
+    bcore_sink_a_pushf( sink, "\xCE\xA3:%10zu \xCE\xB1:%6.3g \xCF\x89:%6.3g \xCE\xBC:%6.3g \xCF\x83:%6.3g", ( uz_t )o->size, min, max, avg, dev );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

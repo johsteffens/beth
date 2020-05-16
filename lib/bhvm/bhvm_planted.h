@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-07T21:41:18Z
+ *  Last File Update: 2020-05-11T17:07:37Z
  *
  *  Copyright and License of this File:
  *
@@ -96,6 +96,10 @@
       bcore_array_t_push( TYPEOF_bhvm_holor_mdl_s, ( bcore_array* )o, sr_t_create( TYPEOF_bhvm_holor_adl_s ) ); \
       return o->data[ o->size - 1 ]; \
   }
+#define TYPEOF_bhvm_stats_s 4125200492
+#define BETH_EXPAND_ITEM_bhvm_stats_s \
+  BCORE_DECLARE_OBJECT( bhvm_stats_s ) \
+    {aware_t _;f3_t min;f3_t max;f3_t sum;f3_t sqr_sum;sz_t size;};
 #define BETH_EXPAND_GROUP_bhvm \
   BCORE_FORWARD_OBJECT( bhvm ); \
   BCORE_FORWARD_OBJECT( bhvm_shape_s ); \
@@ -104,12 +108,14 @@
   BCORE_FORWARD_OBJECT( bhvm_holor_adl_s ); \
   BCORE_FORWARD_OBJECT( bhvm_holor_ads_s ); \
   BCORE_FORWARD_OBJECT( bhvm_holor_mdl_s ); \
+  BCORE_FORWARD_OBJECT( bhvm_stats_s ); \
   BETH_EXPAND_ITEM_bhvm_shape_s \
   BETH_EXPAND_ITEM_bhvm_value_s \
   BETH_EXPAND_ITEM_bhvm_holor_s \
   BETH_EXPAND_ITEM_bhvm_holor_adl_s \
   BETH_EXPAND_ITEM_bhvm_holor_ads_s \
-  BETH_EXPAND_ITEM_bhvm_holor_mdl_s
+  BETH_EXPAND_ITEM_bhvm_holor_mdl_s \
+  BETH_EXPAND_ITEM_bhvm_stats_s
 
 /**********************************************************************************************************************/
 // source: bhvm_hop.h

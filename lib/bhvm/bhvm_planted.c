@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-07T21:41:18Z
+ *  Last File Update: 2020-05-11T17:07:37Z
  *
  *  Copyright and License of this File:
  *
@@ -64,6 +64,16 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_holor_mdl_s )
 "aware bcore_array"
 "{"
     "bhvm_holor_adl_s => [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bhvm_stats_s )
+"aware bhvm"
+"{"
+    "f3_t min;"
+    "f3_t max;"
+    "f3_t sum;"
+    "f3_t sqr_sum;"
+    "sz_t size;"
 "}";
 
 /**********************************************************************************************************************/
@@ -2251,7 +2261,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 1184973771 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3090835405 ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -2265,6 +2275,7 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bhvm_holor_adl_s );
             BCORE_REGISTER_OBJECT( bhvm_holor_ads_s );
             BCORE_REGISTER_OBJECT( bhvm_holor_mdl_s );
+            BCORE_REGISTER_OBJECT( bhvm_stats_s );
             BCORE_REGISTER_TRAIT( bhvm, bcore_inst );
 
             // --------------------------------------------------------------------

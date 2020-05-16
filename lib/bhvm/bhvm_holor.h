@@ -92,6 +92,16 @@ stamp :holor_adl = aware bcore_array { :holor_s     => [];  func bcore_fp : copy
 stamp :holor_ads = aware bcore_array { :holor_s        []; }; // dynamic array of solids
 stamp :holor_mdl = aware bcore_array { :holor_adl_s => []; }; // dynamic matrix of links
 
+/// value statistics
+stamp :stats  = aware :
+{
+    f3_t min;
+    f3_t max;
+    f3_t sum;
+    f3_t sqr_sum;
+    sz_t size;
+};
+
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**********************************************************************************************************************/
@@ -305,6 +315,9 @@ void bhvm_value_s_order_inc_set( const bhvm_value_s* o, sz_t dim, bhvm_value_s* 
 /// order decrement by indexing (in place); dim is leading dimension of o
 void bhvm_value_s_order_dec(     const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm_value_s* r ); // in place
 void bhvm_value_s_order_dec_set( const bhvm_value_s* o, sz_t dim, sz_t idx, bhvm_value_s* r ); // allocating, order_dec
+
+/// accumulates values in stats; returns stats
+bhvm_stats_s* bhvm_value_s_stats_acc( const bhvm_value_s* o, bhvm_stats_s* stats );
 
 /**********************************************************************************************************************/
 /// general mathematics
@@ -602,6 +615,17 @@ void bhvm_holor_s_formatted_to_stdout( const bhvm_holor_s* o );
 
 /// sets adl from text source. Format "<holor> , <holor> , ..."
 bhvm_holor_adl_s* bhvm_holor_adl_s_parse( bhvm_holor_adl_s* o, bcore_source* source );
+
+/**********************************************************************************************************************/
+/// stats
+
+void bhvm_stats_s_clear( bhvm_stats_s* o );       // clear accumulation
+void bhvm_stats_s_acc( bhvm_stats_s* o, f3_t v ); // accumulates a value
+void bhvm_stats_s_acc_stats( bhvm_stats_s* o, bhvm_stats_s* stats ); // accumulates stats to o
+f3_t bhvm_stats_s_get_avg( const bhvm_stats_s* o ); // returns average
+f3_t bhvm_stats_s_get_var( const bhvm_stats_s* o ); // returns variance
+f3_t bhvm_stats_s_get_dev( const bhvm_stats_s* o ); // returns stddev
+void bhvm_stats_s_to_sink( const bhvm_stats_s* o, bcore_sink* sink );
 
 //----------------------------------------------------------------------------------------------------------------------
 
