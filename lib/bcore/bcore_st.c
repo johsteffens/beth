@@ -1149,6 +1149,12 @@ uz_t st_s_parse_msg( vd_t arg, const st_s* o, uz_t idx, st_s* msg )
     return idx;
 }
 
+static bl_t is_hex( sc_t sc )
+{
+    if( sc[ 0 ] == '-' || sc[ 0 ] == '+' ) return is_hex( sc + 1 );
+    return ( sc[ 0 ] == '0' && ( sc[ 1 ] == 'x' || sc[ 1 ] == 'X' ) );
+}
+
 uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, va_list args )
 {
     uz_t end_l = end < o->size ? end : o->size;
@@ -1244,7 +1250,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_u0_t:
                     {
                         u0_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNu8"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, is_hex( sc ) ? "%"SCNx8"%n" : "%"SCNu8"%n", &v, &size );
                         if( set_arg ) *va_arg( args, u0_t* ) = v;
                         break;
                     }
@@ -1252,7 +1259,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_u1_t:
                     {
                         u1_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNu16"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, is_hex( sc ) ? "%"SCNx16"%n" : "%"SCNu16"%n", &v, &size );
                         if( set_arg ) *va_arg( args, u1_t* ) = v;
                         break;
                     }
@@ -1260,7 +1268,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_u2_t:
                     {
                         u2_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNu32"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, is_hex( sc ) ? "%"SCNx32"%n" : "%"SCNu32"%n", &v, &size );
                         if( set_arg ) *va_arg( args, u2_t* ) = v;
                         break;
                     }
@@ -1268,7 +1277,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_u3_t:
                     {
                         u3_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNu64"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, is_hex( sc ) ? "%"SCNx64"%n" : "%"SCNu64"%n", &v, &size );
                         if( set_arg ) *va_arg( args, u3_t* ) = v;
                         break;
                     }
@@ -1276,7 +1286,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_umax_t:
                     {
                         umax_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
                         if( set_arg ) *va_arg( args, umax_t* ) = v;
                         break;
                     }
@@ -1284,7 +1295,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_s0_t:
                     {
                         s0_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNi8"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, "%"SCNi8"%n", &v, &size );
                         if( set_arg ) *va_arg( args, s0_t* ) = v;
                         break;
                     }
@@ -1292,7 +1304,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_s1_t:
                     {
                         s1_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNi16"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, "%"SCNi16"%n", &v, &size );
                         if( set_arg ) *va_arg( args, s1_t* ) = v;
                         break;
                     }
@@ -1300,7 +1313,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_s2_t:
                     {
                         s2_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNi32"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, "%"SCNi32"%n", &v, &size );
                         if( set_arg ) *va_arg( args, s2_t* ) = v;
                         break;
                     }
@@ -1308,7 +1322,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_s3_t:
                     {
                         s3_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNi64"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, "%"SCNi64"%n", &v, &size );
                         if( set_arg ) *va_arg( args, s3_t* ) = v;
                         break;
                     }
@@ -1316,7 +1331,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_smax_t:
                     {
                         smax_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNiMAX"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, "%"SCNiMAX"%n", &v, &size );
                         if( set_arg ) *va_arg( args, smax_t* ) = v;
                         break;
                     }
@@ -1324,7 +1340,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_sz_t:
                     {
                         smax_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNiMAX"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, "%"SCNiMAX"%n", &v, &size );
                         if( set_arg ) *va_arg( args, sz_t* ) = v;
                         break;
                     }
@@ -1332,7 +1349,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_uz_t:
                     {
                         umax_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
                         if( set_arg ) *va_arg( args, uz_t* ) = v;
                         break;
                     }
@@ -1340,7 +1358,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_offset_t:
                     {
                         umax_t v;
-                        sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
                         if( set_arg ) *va_arg( args, offset_t* ) = v;
                         break;
                     }
@@ -1364,7 +1383,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     case TYPEOF_tp_t:
                     {
                         uintmax_t v = 0;
-                        sres = sscanf( o->sc + idx, "%"SCNuMAX"%n", &v, &size );
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
                         if( set_arg ) *va_arg( args, tp_t* ) = v;
                         break;
                     }
