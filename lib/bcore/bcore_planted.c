@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019 J.B.Steffens
- *  Last File Update: 2020-02-03T18:04:09Z
+ *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
+ *  Last File Update: 2020-05-16T10:15:38Z
  *
  *  Copyright and License of this File:
  *
@@ -15,6 +15,7 @@
  *  bcore_main.h
  *  bcore_hmap_name.h
  *  bcore_cday.h
+ *  bcore_rand.h
  *
  */
 
@@ -211,6 +212,54 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_cday_utc_s )
 "}";
 
 /**********************************************************************************************************************/
+// source: bcore_rand.h
+#include "bcore_rand.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_rand
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_rand_lcg_s )
+"aware bcore_rand"
+"{"
+    "u2_t state = 16432;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:gen_u3;"
+    "func ^:gen_f3;"
+    "func ^:reseed;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_rand_xsg_s )
+"aware bcore_rand"
+"{"
+    "u2_t state = 13754;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:gen_u3;"
+    "func ^:gen_f3;"
+    "func ^:reseed;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_rand_lxm_s )
+"aware bcore_rand"
+"{"
+    "u3_t l0 = 27458;"
+    "u3_t l1 = 33296;"
+    "u3_t x0 = 23532;"
+    "u3_t x1 = 10954;"
+"}";
+
+BCORE_DEFINE_SPECT( bcore_inst, bcore_rand )
+"{"
+    "bcore_spect_header_s header;"
+    "feature aware bcore_rand : max_u3;"
+    "feature aware bcore_rand : min_u3;"
+    "feature aware bcore_rand : gen_u3;"
+    "feature aware bcore_rand : gen_f3;"
+    "feature aware bcore_rand : reseed;"
+"}";
+
+/**********************************************************************************************************************/
 
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
 {
@@ -219,7 +268,7 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 2133336728 ) );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 2281234107 ) );
 
             // --------------------------------------------------------------------
             // source: bcore_file.h
@@ -306,6 +355,30 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_cday_ymd_s );
             BCORE_REGISTER_OBJECT( bcore_cday_utc_s );
             BCORE_REGISTER_TRAIT( bcore_cday, bcore_inst );
+
+            // --------------------------------------------------------------------
+            // source: bcore_rand.h
+
+            // group: bcore_rand
+            BCORE_REGISTER_FEATURE( bcore_rand_max_u3 );
+            BCORE_REGISTER_FEATURE( bcore_rand_min_u3 );
+            BCORE_REGISTER_FEATURE( bcore_rand_gen_u3 );
+            BCORE_REGISTER_FEATURE( bcore_rand_gen_f3 );
+            BCORE_REGISTER_FEATURE( bcore_rand_reseed );
+            BCORE_REGISTER_FFUNC( bcore_rand_max_u3, bcore_rand_lcg_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_rand_min_u3, bcore_rand_lcg_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_rand_gen_u3, bcore_rand_lcg_s_gen_u3 );
+            BCORE_REGISTER_FFUNC( bcore_rand_gen_f3, bcore_rand_lcg_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_rand_reseed, bcore_rand_lcg_s_reseed );
+            BCORE_REGISTER_OBJECT( bcore_rand_lcg_s );
+            BCORE_REGISTER_FFUNC( bcore_rand_max_u3, bcore_rand_xsg_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_rand_min_u3, bcore_rand_xsg_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_rand_gen_u3, bcore_rand_xsg_s_gen_u3 );
+            BCORE_REGISTER_FFUNC( bcore_rand_gen_f3, bcore_rand_xsg_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_rand_reseed, bcore_rand_xsg_s_reseed );
+            BCORE_REGISTER_OBJECT( bcore_rand_xsg_s );
+            BCORE_REGISTER_OBJECT( bcore_rand_lxm_s );
+            BCORE_REGISTER_SPECT( bcore_rand );
         }
         break;
         default: break;

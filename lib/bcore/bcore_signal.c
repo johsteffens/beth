@@ -62,6 +62,7 @@
 #include "bcore_main.h"
 #include "bcore_hmap_name.h"
 #include "bcore_cday.h"
+#include "bcore_rand.h"
 
 BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
 
@@ -149,6 +150,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_main_signal_handler,
         bcore_hmap_name_signal_handler,
         bcore_cday_signal_handler,
+        bcore_rand_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );
