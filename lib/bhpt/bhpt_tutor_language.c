@@ -188,8 +188,8 @@ void bhpt_tutor_language_utf8_chatter_s_run( const bhpt_tutor_language_utf8_chat
             // simple ASCII
             if( c < 128 )
             {
-                if( c == '\n' ) c = ' ';
-                valid = ( c >= 32 && c < 127 );
+                if( c == '\n' && o->newline_to_space ) c = ' ';
+                valid = ( c == '\n' ) || ( c >= 32 && c < 127 );
             }
             else if( ( c & 0xE0 ) == 0xC0 ) // 2-byte sequence
             {
@@ -226,6 +226,8 @@ void bhpt_tutor_language_utf8_chatter_s_run( const bhpt_tutor_language_utf8_chat
         bhpt_tutor_language_utf8_s_encode( tutor, c, &hx->v );
         bhpt_adaptive_a_axon_pass( adaptive, hx, hy );
         c_count = ( c_count + 1 ) % o->size_line;
+
+        if( c == '\n' ) c_count = 1;
     }
 
     bcore_sink_a_push_fa( log, "\n#rn{=}\n", o->size_line );

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-09T16:14:35Z
+ *  Last File Update: 2020-05-11T19:16:16Z
  *
  *  Copyright and License of this File:
  *
@@ -50,6 +50,7 @@
   BCORE_DECLARE_OBJECT( bhpt_adaptor_node_s ) \
     {aware_t _;bhvm_holor_s* axon;bhvm_holor_s* grad;}; \
   void bhpt_adaptor_node_s_get_min_max( const bhpt_adaptor_node_s* o, f3_t* min, f3_t* max ); \
+  void bhpt_adaptor_node_s_acc_stats( const bhpt_adaptor_node_s* o, bhvm_stats_s* axon, bhvm_stats_s* grad ); \
   static inline void bhpt_adaptor_node_s_zro_grad( bhpt_adaptor_node_s* o ){bhvm_value_s_zro( &o->grad->v );} \
   static inline void bhpt_adaptor_node_s_acc_grad( bhpt_adaptor_node_s* o, const bhpt_adaptor_node_s* src ){assert( bhvm_shape_s_is_equal( &o->grad->s, &src->grad->s ) ); bhvm_value_s_acc( &o->grad->v, &src->grad->v );} \
   static inline void bhpt_adaptor_node_s_rebind_axon( bhpt_adaptor_node_s* o, bhpt_adaptor_node_s* src ){assert( bhvm_shape_s_is_equal( &o->axon->s, &src->axon->s ) ); bhvm_value_s_weak( &o->axon->v, &src->axon->v );}
@@ -58,6 +59,7 @@
   BCORE_DECLARE_OBJECT( bhpt_adaptor_probe_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhpt_adaptor_node_s, );}; \
   void bhpt_adaptor_probe_s_get_min_max( const bhpt_adaptor_probe_s* o, f3_t* min, f3_t* max ); \
+  static inline void bhpt_adaptor_probe_s_acc_stats( const bhpt_adaptor_probe_s* o, bhvm_stats_s* axon, bhvm_stats_s* grad ){BFOR_EACH( i, o ) bhpt_adaptor_node_s_acc_stats( &o->data[ i ], axon, grad );} \
   static inline void bhpt_adaptor_probe_s_zro_grad( bhpt_adaptor_probe_s* o ){BFOR_EACH( i, o ) bhpt_adaptor_node_s_zro_grad( &o->data[ i ] );} \
   static inline void bhpt_adaptor_probe_s_acc_grad( bhpt_adaptor_probe_s* o, const bhpt_adaptor_probe_s* src ){assert( o->size == src->size ); BFOR_EACH( i, o ) bhpt_adaptor_node_s_acc_grad( &o->data[ i ], &src->data[ i ] );} \
   static inline void bhpt_adaptor_probe_s_rebind_axon( bhpt_adaptor_probe_s* o, bhpt_adaptor_probe_s* src ){assert( o->size == src->size ); BFOR_EACH( i, o ) bhpt_adaptor_node_s_rebind_axon( &o->data[ i ], &src->data[ i ] );} \
@@ -251,7 +253,7 @@
 #define TYPEOF_bhpt_frame_s 3192581947
 #define BETH_EXPAND_ITEM_bhpt_frame_s \
   BCORE_DECLARE_OBJECT( bhpt_frame_s ) \
-    {aware_t _;bhpt_tutor* tutor;bhpt_frame_thread_base_s* thread_base;sz_t threads;sz_t cycle_adapt;sz_t cycle_test;sz_t cycle_backup;sz_t cycle_finish;sz_t verbosity;bhpt_frame_state_s* state;st_s state_path;bcore_sink* log;}; \
+    {aware_t _;bhpt_tutor* tutor;bhpt_frame_thread_base_s* thread_base;sz_t threads;sz_t cycle_adapt;sz_t cycle_test;sz_t cycle_backup;sz_t cycle_finish;sz_t verbosity;bhpt_frame_state_s* state;bhvm_stats_s stats_grad;st_s state_path;bcore_sink* log;}; \
   s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args );
 #define BETH_EXPAND_GROUP_bhpt_frame \
   BCORE_FORWARD_OBJECT( bhpt_frame ); \
@@ -483,7 +485,7 @@
 #define TYPEOF_bhpt_tutor_language_utf8_chatter_s 1375128031
 #define BETH_EXPAND_ITEM_bhpt_tutor_language_utf8_chatter_s \
   BCORE_DECLARE_OBJECT( bhpt_tutor_language_utf8_chatter_s ) \
-    {aware_t _;bl_t cyclic_reset;st_s trigger;sz_t size_line;sz_t size_lines;f3_t heat;};
+    {aware_t _;bl_t cyclic_reset;st_s trigger;sz_t size_line;sz_t size_lines;bl_t newline_to_space;f3_t heat;};
 #define TYPEOF_bhpt_tutor_language_utf8_s 409996605
 #define BETH_EXPAND_ITEM_bhpt_tutor_language_utf8_s \
   BCORE_DECLARE_OBJECT( bhpt_tutor_language_utf8_s ) \

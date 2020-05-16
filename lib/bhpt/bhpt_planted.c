@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-09T16:14:35Z
+ *  Last File Update: 2020-05-11T19:16:16Z
  *
  *  Copyright and License of this File:
  *
@@ -129,6 +129,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_frame_s )
     "sz_t cycle_finish = 1000000;"
     "sz_t verbosity = 1;"
     "hidden bhpt_frame_state_s => state;"
+    "hidden bhvm_stats_s stats_grad;"
     "st_s state_path;"
     "hidden aware bcore_sink -> log;"
     "func ^:main;"
@@ -353,6 +354,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_language_utf8_chatter_s )
     "st_s trigger = \"The chatter triggerbhpt_tutor_language\";"
     "sz_t size_line = 100;"
     "sz_t size_lines = 4;"
+    "bl_t newline_to_space = true;"
     "f3_t heat = 0.2;"
 "}";
 
@@ -397,7 +399,7 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 138033222 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 3208683 ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h

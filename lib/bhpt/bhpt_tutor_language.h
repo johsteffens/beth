@@ -42,6 +42,7 @@ stamp :utf8_chatter = aware :
     st_s trigger    = "The chatter trigger:";
     sz_t size_line  = 100;
     sz_t size_lines = 4;
+    bl_t newline_to_space = true;
     f3_t heat       = 0.2;
 };
 

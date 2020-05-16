@@ -147,6 +147,9 @@ stamp : = aware bcore_main
     /// current state of frame
     hidden :state_s => state;
 
+    /// statistics
+    hidden bhvm_stats_s stats_grad;
+
     st_s state_path; // backup file for state
 
     hidden aware bcore_sink -> log;

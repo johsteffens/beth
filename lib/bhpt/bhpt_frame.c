@@ -175,6 +175,10 @@ void bhpt_frame_s_adapt( bhpt_frame_s* o )
 
     ASSERT( probe->size == adaptor_adl->size );
 
+    bhvm_stats_s* stats_grad = BLM_CREATE( bhvm_stats_s );
+    bhpt_adaptor_probe_s_acc_stats( probe, NULL, stats_grad );
+    bhvm_stats_s_acc_stats( &o->stats_grad, stats_grad );
+
     BFOR_EACH( i, adaptor_adl )
     {
         bhpt_adaptor_a_adapt( adaptor_adl->data[ i ], &probe->data[ i ] );
@@ -202,10 +206,15 @@ void bhpt_frame_s_test( bhpt_frame_s* o )
     {
         BLM_INIT();
         bhpt_adaptor_probe_s* probe = bhpt_adaptive_a_get_adaptor_probe( state->adaptive, BLM_CREATE( bhpt_adaptor_probe_s ) );
-        f3_t min = 0, max = 0;
-        bhpt_adaptor_probe_s_get_min_max( probe, &min, &max );
-        bcore_sink_a_pushf( o->log, ", min: %6.3g, max: %6.3g", min, max );
-        bcore_sink_a_push_fa( o->log, "\n" );
+        bhvm_stats_s* stats_axon = BLM_CREATE( bhvm_stats_s );
+        bhpt_adaptor_probe_s_acc_stats( probe, stats_axon, NULL );
+        bcore_sink_a_push_fa( o->log, ", axon{ " );
+        bhvm_stats_s_to_sink( stats_axon, o->log );
+        bcore_sink_a_push_fa( o->log, " }" );
+        bcore_sink_a_push_fa( o->log, ", grad{ " );
+        bhvm_stats_s_to_sink( &o->stats_grad, o->log );
+        bcore_sink_a_push_fa( o->log, " }\n" );
+        bhvm_stats_s_clear( &o->stats_grad );
         BLM_DOWN();
     }
 }

@@ -42,6 +42,8 @@ group :adaptor =
     signature void zro_grad( mutable );
     signature void acc_grad( mutable, const @* src );
 
+    signature void acc_stats( const, bhvm_stats_s* axon, bhvm_stats_s* grad );
+
     /// Makes axon values of o reference axon values of src; run adaptive_a_rebind_holors afterwards
     signature void rebind_axon( mutable, @* src );
 
@@ -51,13 +53,14 @@ group :adaptor =
         private bhvm_holor_s* axon;
         private bhvm_holor_s* grad;
         func : :get_min_max;
+        func : :acc_stats;
         func : :zro_grad  = { bhvm_value_s_zro( &o->grad->v ); };
         func : :acc_grad  = { assert( bhvm_shape_s_is_equal( &o->grad->s, &src->grad->s ) ); bhvm_value_s_acc( &o->grad->v, &src->grad->v ); };
         func : :rebind_axon = { assert( bhvm_shape_s_is_equal( &o->axon->s, &src->axon->s ) ); bhvm_value_s_weak( &o->axon->v, &src->axon->v ); };
     };
 
     /** The probe is obtained via function get_adaptor_probe.
-     *  It is valid after obtaining until any modification
+     *  It is valid after obtaining until a modification
      *  of the underlying adaptive that can change holor bindings.
      *  If the probe is used to change holor bindings,
      *  adaptive_a_rebind_holors must be called.
@@ -66,6 +69,7 @@ group :adaptor =
     {
         :node_s [];
         func : :get_min_max;
+        func : :acc_stats = { BFOR_EACH( i, o ) :node_s_acc_stats( &o->data[ i ], axon, grad ); };
         func : :zro_grad  = { BFOR_EACH( i, o ) :node_s_zro_grad( &o->data[ i ] ); };
         func : :acc_grad  = { assert( o->size == src->size ); BFOR_EACH( i, o ) :node_s_acc_grad( &o->data[ i ], &src->data[ i ] ); };
         func : :rebind_axon  = { assert( o->size == src->size ); BFOR_EACH( i, o ) :node_s_rebind_axon( &o->data[ i ], &src->data[ i ] ); };
