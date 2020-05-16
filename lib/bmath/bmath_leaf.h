@@ -37,6 +37,7 @@ static inline bl_t f3_is_nan( f3_t v ) { return v != v; } // nan compares unequa
 static inline f3_t f3_exp( f3_t v ) { return exp( v ); }
 static inline f3_t f3_log( f3_t v ) { return v > 0 ? log( v ) : -f3_lim_max; }
 static inline f3_t f3_pow( f3_t a, f3_t b ) { return ( a > 0 ) ? pow( a, b ) : 1.0; }
+static inline f3_t f3_erf( f3_t a ) { return erf( a ); }
 
 /// random generator (range -1, 1)
 static inline f3_t f3_xsg1_sym( u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv ) ) * ( 2.0 / 0xFFFFFFFFu ) - 1.0; }
@@ -72,6 +73,7 @@ static inline bl_t f2_is_nan( f2_t v ) { return v != v; } // nan compares unequa
 static inline f2_t f2_exp( f2_t v ) { return expf( v ); }
 static inline f2_t f2_log( f2_t v ) { return v > 0 ? logf( v ) : -f2_lim_max; }
 static inline f2_t f2_pow( f2_t a, f2_t b ) { return ( a > 0 ) ? powf( a, b ) : 1.0; }
+static inline f2_t f2_erf( f2_t a ) { return erff( a ); }
 
 /// random generator (range -1, 1)
 static inline f2_t f2_xsg1_sym( u2_t* rv ) { return ( *rv = bcore_xsg1_u2( *rv ) ) * ( 2.0 / 0xFFFFFFFFu ) - 1.0; }
