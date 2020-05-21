@@ -80,7 +80,7 @@ st_s* cat_name_ns_n( tp_t name_space, sc_t name, uz_t n )
     st_s* cat_name = st_s_create();
     if( name_space )
     {
-        st_s_push_st_d( cat_name, ifnameof_s( name_space ) );
+        st_s_push_st_d( cat_name, bifnameof_s( name_space ) );
         st_s_push_char( cat_name, ':' );
     }
     st_s_push_sc_n( cat_name, name, n );
@@ -170,36 +170,36 @@ tp_t bcore_name_enroll( sc_t name )
     return bcore_name_enroll_sn( 0, name, bcore_strlen( name ) );
 }
 
-tp_t typeof_fv( sc_t format, va_list args )
+tp_t btypeof_fv( sc_t format, va_list args )
 {
     st_s* s = st_s_create_fv( format, args );
-    tp_t tp = typeof( s->sc );
+    tp_t tp = btypeof( s->sc );
     st_s_discard( s );
     return tp;
 }
 
-tp_t typeof_fa( sc_t format, ... )
+tp_t btypeof_fa( sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    tp_t tp = typeof_fv( format, args );
+    tp_t tp = btypeof_fv( format, args );
     va_end( args );
     return tp;
 }
 
-tp_t entypeof_fv( sc_t format, va_list args )
+tp_t bentypeof_fv( sc_t format, va_list args )
 {
     st_s* s = st_s_create_fv( format, args );
-    tp_t tp = entypeof( s->sc );
+    tp_t tp = bentypeof( s->sc );
     st_s_discard( s );
     return tp;
 }
 
-tp_t entypeof_fa( sc_t format, ... )
+tp_t bentypeof_fa( sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    tp_t tp = entypeof_fv( format, args );
+    tp_t tp = bentypeof_fv( format, args );
     va_end( args );
     return tp;
 }
@@ -255,10 +255,10 @@ bcore_name_map_s* bcore_name_create_name_map()
 
 st_s* bcore_name_manager_selftest()
 {
-    tp_t mynamespace_t = entypeof( "mynamespace" );
-    tp_t myname_t = entypeof_ns( mynamespace_t, "myname" );
-    ASSERT( myname_t == typeof( "mynamespace:myname" ) );
-    st_s* cname = nameof_s( myname_t );
+    tp_t mynamespace_t = bentypeof( "mynamespace" );
+    tp_t myname_t = bentypeof_ns( mynamespace_t, "myname" );
+    ASSERT( myname_t == btypeof( "mynamespace:myname" ) );
+    st_s* cname = bnameof_s( myname_t );
     ASSERT( st_s_cmp_sc( cname, "mynamespace:myname" ) == 0 );
     st_s_discard( cname );
     return NULL;
@@ -269,7 +269,7 @@ st_s* bcore_name_manager_selftest()
 
 vd_t bcore_name_manager_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bcore_name_manager" ) ) )
+    switch( bcore_signal_s_handle_type( o, btypeof( "bcore_name_manager" ) ) )
     {
         case TYPEOF_init0:
         {

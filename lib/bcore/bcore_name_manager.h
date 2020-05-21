@@ -69,34 +69,41 @@ st_s* bcore_name_get_name_s( tp_t type );
 /// removes hash and associated name; no effect when not enrolled (thread safe)
 void bcore_name_remove( tp_t type );
 
-// TODO (johannes#1#): move away from name 'typeof' (e.g. use type_of instead) ...
+// TODO (johannes#1#): move away from name 'typeof' (e.g. use btypeof instead) ...
 // It conflicts with a keyword in a gcc extension
-
-/// workaround for function typeof, which is a keyword in a gcc specific extension
-#define typeof typeof_
+#define typeof      btypeof // workaround for function typeof, which is a keyword in a gcc specific extension
+#define entypeof    bentypeof
+#define typeof_fv   btypeof_fv
+#define typeof_fa   btypeof_fa
+#define entypeof_fv bentypeof_fv
+#define entypeof_fa bentypeof_fa
+#define nameof      bnameof
+#define ifnameof    bifnameof
+#define nameof_s    bnameof
+#define ifnameof_s  bifnameof
 
 /// syntactic sugar
-static inline tp_t typeof_(              sc_t name         ) { return bcore_name_key(          name    ); }
-static inline tp_t typeof_n(             sc_t name, uz_t n ) { return bcore_name_key_n(        name, n ); }
-static inline tp_t typeof_ns(   tp_t ns, sc_t name         ) { return bcore_name_key_ns(   ns, name    ); }
-static inline tp_t typeof_ns_n( tp_t ns, sc_t name, uz_t n ) { return bcore_name_key_ns_n( ns, name, n ); }
+static inline tp_t btypeof(               sc_t name         ) { return bcore_name_key(          name    ); }
+static inline tp_t btypeof_n(             sc_t name, uz_t n ) { return bcore_name_key_n(        name, n ); }
+static inline tp_t btypeof_ns(   tp_t ns, sc_t name         ) { return bcore_name_key_ns(   ns, name    ); }
+static inline tp_t btypeof_ns_n( tp_t ns, sc_t name, uz_t n ) { return bcore_name_key_ns_n( ns, name, n ); }
 
-static inline tp_t entypeof(               sc_t name         ) { return bcore_name_enroll(        name    ); }
-static inline tp_t entypeof_n(             sc_t name, uz_t n ) { return bcore_name_enroll_n(      name, n ); }
-static inline tp_t entypeof_ns(   tp_t ns, sc_t name         ) { return bcore_name_enroll_s(  ns, name    ); }
-static inline tp_t entypeof_ns_n( tp_t ns, sc_t name, uz_t n ) { return bcore_name_enroll_sn( ns, name, n ); }
+static inline tp_t bentypeof(               sc_t name         ) { return bcore_name_enroll(        name    ); }
+static inline tp_t bentypeof_n(             sc_t name, uz_t n ) { return bcore_name_enroll_n(      name, n ); }
+static inline tp_t bentypeof_ns(   tp_t ns, sc_t name         ) { return bcore_name_enroll_s(  ns, name    ); }
+static inline tp_t bentypeof_ns_n( tp_t ns, sc_t name, uz_t n ) { return bcore_name_enroll_sn( ns, name, n ); }
 
 // composes a string from arguments and computes key
-tp_t typeof_fv( sc_t format, va_list args );
-tp_t typeof_fa( sc_t format, ... );
+tp_t btypeof_fv( sc_t format, va_list args );
+tp_t btypeof_fa( sc_t format, ... );
 
-tp_t entypeof_fv( sc_t format, va_list args );
-tp_t entypeof_fa( sc_t format, ... );
+tp_t bentypeof_fv( sc_t format, va_list args );
+tp_t bentypeof_fa( sc_t format, ... );
 
-static inline sc_t    nameof(   u2_t type ) { return bcore_name_get_name( type ); }
-static inline sc_t  ifnameof(   u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
-static inline st_s*   nameof_s( u2_t type ) { return bcore_name_get_name_s( type ); }
-static inline st_s* ifnameof_s( u2_t type ) { st_s* n = bcore_name_try_name_s( type ); return n ? n : st_s_create(); }
+static inline sc_t    bnameof(   u2_t type ) { return bcore_name_get_name( type ); }
+static inline sc_t  bifnameof(   u2_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
+static inline st_s*   bnameof_s( u2_t type ) { return bcore_name_get_name_s( type ); }
+static inline st_s* bifnameof_s( u2_t type ) { st_s* n = bcore_name_try_name_s( type ); return n ? n : st_s_create(); }
 
 /// statistics
 typedef struct st_s st_s;
