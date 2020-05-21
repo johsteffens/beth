@@ -201,6 +201,7 @@ void st_s_print_fa( sc_t format, ... );
  *  The format string contains characters and rules to parse an input string.
  *  Characters that do not belong to a conversion rule are simply consumed as is.
  *  A space ' ' in the format string consumes all whitespaces and comments. These are ' ', '\t', '\n', '\r', c-style comments.
+ *  If an NULL inside the argument list is allowed. In that case that specific argument is consumed but not attempted to be modified.
  *
  *  Format rules
  *  "#char"

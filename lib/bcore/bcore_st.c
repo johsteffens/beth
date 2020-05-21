@@ -1243,7 +1243,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     {
                         u0_t v;
                         sres = sscanf( o->sc + idx, "%c%n", &v, &size );
-                        if( set_arg ) *va_arg( args, char* ) = v;
+                        if( set_arg )
+                        {
+                            char* target = va_arg( args, char* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1252,7 +1256,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         u0_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNx8"%n" : "%"SCNu8"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, u0_t* ) = v;
+                        if( set_arg )
+                        {
+                            u0_t* target = va_arg( args, u0_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1261,7 +1269,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         u1_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNx16"%n" : "%"SCNu16"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, u1_t* ) = v;
+                        if( set_arg )
+                        {
+                            u1_t* target = va_arg( args, u1_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1270,7 +1282,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         u2_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNx32"%n" : "%"SCNu32"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, u2_t* ) = v;
+                        if( set_arg )
+                        {
+                            u2_t* target = va_arg( args, u2_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1279,7 +1295,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         u3_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNx64"%n" : "%"SCNu64"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, u3_t* ) = v;
+                        if( set_arg )
+                        {
+                            u3_t* target = va_arg( args, u3_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1288,7 +1308,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         umax_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, umax_t* ) = v;
+                        if( set_arg )
+                        {
+                            umax_t* target = va_arg( args, umax_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1297,7 +1321,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         s0_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNi8"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, s0_t* ) = v;
+                        if( set_arg )
+                        {
+                            s0_t* target = va_arg( args, s0_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1306,7 +1334,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         s1_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNi16"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, s1_t* ) = v;
+                        if( set_arg )
+                        {
+                            s1_t* target = va_arg( args, s1_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1315,7 +1347,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         s2_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNi32"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, s2_t* ) = v;
+                        if( set_arg )
+                        {
+                            s2_t* target = va_arg( args, s2_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1324,7 +1360,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         s3_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNi64"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, s3_t* ) = v;
+                        if( set_arg )
+                        {
+                            s3_t* target = va_arg( args, s3_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1333,7 +1373,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         smax_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNiMAX"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, smax_t* ) = v;
+                        if( set_arg )
+                        {
+                            smax_t* target = va_arg( args, smax_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1342,7 +1386,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         smax_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNiMAX"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, sz_t* ) = v;
+                        if( set_arg )
+                        {
+                            sz_t* target = va_arg( args, sz_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1351,7 +1399,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         umax_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, uz_t* ) = v;
+                        if( set_arg )
+                        {
+                            uz_t* target = va_arg( args, uz_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1360,7 +1412,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         umax_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, offset_t* ) = v;
+                        if( set_arg )
+                        {
+                            offset_t* target = va_arg( args, offset_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1368,7 +1424,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     {
                         f2_t v;
                         sres = sscanf( o->sc + idx, "%g%n", &v, &size );
-                        if( set_arg ) *va_arg( args, f2_t* ) = v;
+                        if( set_arg )
+                        {
+                            f2_t* target = va_arg( args, f2_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1376,7 +1436,12 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     {
                         f3_t v;
                         sres = sscanf( o->sc + idx, "%lg%n", &v, &size );
-                        if( set_arg ) *va_arg( args, f3_t* ) = v;
+                        if( set_arg )
+                        {
+                            f3_t* target = va_arg( args, f3_t* );
+                            if( target ) *target = v;
+                        }
+                        break;
                         break;
                     }
 
@@ -1385,7 +1450,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         uintmax_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
-                        if( set_arg ) *va_arg( args, tp_t* ) = v;
+                        if( set_arg )
+                        {
+                            tp_t* target = va_arg( args, tp_t* );
+                            if( target ) *target = v;
+                        }
                         break;
                     }
 
@@ -1406,7 +1475,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         {
                             return errfp( arg, o, idx, st_s_createf( "Parsing #bl_t failed; true or false expected." ) );
                         }
-                        if( set_arg ) *va_arg( args, bl_t* ) = val;
+                        if( set_arg )
+                        {
+                            bl_t* target = va_arg( args, bl_t* );
+                            if( target ) *target = val;
+                        }
                         size = 0;
                         sres = 1;
                     }
@@ -1486,7 +1559,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     }
                 }
                 if( invert ) flag = !flag;
-                if( set_arg ) *va_arg( args, bl_t* ) = flag;
+                if( set_arg )
+                {
+                    bl_t* target = va_arg( args, bl_t* );
+                    if( target ) *target = flag;
+                }
             }
             else if( *fp == '#' )
             {
@@ -1509,7 +1586,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 {
                     return errfp( arg, o, idx, st_s_createf( "Parsing #aware_t failed." ) );
                 }
-                if( set_arg ) *va_arg( args, aware_t* ) = val;
+                if( set_arg )
+                {
+                    aware_t* target = va_arg( args, aware_t* );
+                    if( target ) *target = val;
+                }
                 idx += size;
                 if( idx > end_l ) idx = end_l;
             }
@@ -1531,7 +1612,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 {
                     return errfp( arg, o, idx, st_s_createf( "Parsing #bool failed: true or false expected." ) );
                 }
-                if( set_arg ) *va_arg( args, bool* ) = val;
+                if( set_arg )
+                {
+                    bool* target = va_arg( args, bool* );
+                    if( target ) *target = val;
+                }
                 if( idx > end_l ) idx = end_l;
             }
             else if( ( bcore_strcmp( "char", fp ) >> 1 ) == 0 )
@@ -1539,26 +1624,34 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 fp += strlen( "char" );
                 u0_t c = o->sc[ idx ];
                 if( idx < end_l ) idx++;
-                if( set_arg ) *va_arg( args, u0_t* ) = c;
+                if( set_arg )
+                {
+                    u0_t* target = va_arg( args, u0_t* );
+                    if( target ) *target = c;
+                }
             }
             else if( ( bcore_strcmp( "name", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "name" );
                 st_s* string = NULL;
-                if( set_arg ) { string = va_arg( args, st_s* ); if( !cat_arg ) st_s_clear( string ); }
+                if( set_arg )
+                {
+                    string = va_arg( args, st_s* );
+                    if( string && !cat_arg ) st_s_clear( string );
+                }
                 char c = o->sc[ idx ];
                 if( ( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' ) || c == '_' )
                 {
                     if( idx < end_l )
                     {
                         idx++;
-                        if( set_arg ) st_s_push_char( string, c );
+                        if( string ) st_s_push_char( string, c );
                         for(;;)
                         {
                             c = o->sc[ idx ];
                             if( idx < end_l && ( ( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' ) || ( c >= '0' && c <= '9' ) || c == '_' ) )
                             {
-                                if( set_arg ) st_s_push_char( string, c );
+                                if( string ) st_s_push_char( string, c );
                                 idx++;
                             }
                             else
@@ -1573,7 +1666,11 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
             {
                 fp += strlen( "string" );
                 st_s* string = NULL;
-                if( set_arg ) { string = va_arg( args, st_s* ); if( !cat_arg ) st_s_clear( string ); }
+                if( set_arg )
+                {
+                    string = va_arg( args, st_s* );
+                    if( string && !cat_arg ) st_s_clear( string );
+                }
                 if( o->sc[ idx ] != '"' )
                 {
                     return errfp( arg, o, idx, st_s_createf( "'\"' expected." ) );
@@ -1583,17 +1680,17 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 {
                     if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\"' )
                     {
-                        if( set_arg ) st_s_push_char( string, '\"' );
+                        if( string ) st_s_push_char( string, '\"' );
                         idx += 2;
                     }
                     else if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\\' )
                     {
-                        if( set_arg ) st_s_push_char( string, '\\' );
+                        if( string ) st_s_push_char( string, '\\' );
                         idx += 2;
                     }
                     else
                     {
-                        if( set_arg ) st_s_push_char( string, o->sc[ idx ] );
+                        if( string ) st_s_push_char( string, o->sc[ idx ] );
                         idx++;
                     }
                 }
@@ -1618,10 +1715,14 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 if(  char_l == 0  ) ERR( err_msg );
                 if( *fp++ != '\'' ) ERR( err_msg );
                 st_s* string = NULL;
-                if( set_arg ) { string = va_arg( args, st_s* ); if( !cat_arg ) st_s_clear( string ); }
+                if( set_arg )
+                {
+                    string = va_arg( args, st_s* );
+                    if( string && !cat_arg ) st_s_clear( string );
+                }
                 while ( o->sc[ idx ] != char_l )
                 {
-                    if( set_arg ) st_s_push_char( string, o->sc[ idx++ ] );
+                    if( string ) st_s_push_char( string, o->sc[ idx++ ] );
                 }
             }
             else
