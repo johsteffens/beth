@@ -350,7 +350,7 @@ name* name##_clone( const name* o ) \
     BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \
     static sc_t name##_def_g = #name " =" #trait
 
-/// preferably used by precoder
+/// preferably used by beth-plant
 #define BCORE_DEFINE_OBJECT_INST_P( name ) \
     static sc_t name##_def_g; \
     BCORE_DEFINE_FUNCTIONS_OBJ_INST( name ) \

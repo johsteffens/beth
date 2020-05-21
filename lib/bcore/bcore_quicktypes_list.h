@@ -132,6 +132,5 @@
 #define TYPEOF_mutable                     990065577
 #define TYPEOF_none                       2913447899
 #define TYPEOF_plant                      3150636434
-#define TYPEOF_precoder                    285665067
 #define TYPEOF_selftest                   2526214595
 #define TYPEOF_st_s                       3358332604

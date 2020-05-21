@@ -24,6 +24,6 @@
 
 /// broadcasts a signal within the library
 vd_t badapt_signal_handler( const bcore_signal_s* o );
-
+static inline vd_t badapt_general_signal_handler( const bcore_signal_s* o ) { return badapt_signal_handler( o ); }
 
 #endif  // BADAPT_SIGNAL_H

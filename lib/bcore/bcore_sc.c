@@ -46,11 +46,11 @@ s2_t sc_t_scan_type( sc_t format, tp_t* p_type, bl_t* p_is_ptr )
         {
             if( p_is_ptr ) *p_is_ptr = false;
         }
-        type = typeof_n( fp0, fp1 - fp0 );
+        type = btypeof_n( fp0, fp1 - fp0 );
     }
     else if( fp[ 1 ] != 0 && fp[ 2 ] == '_' && fp[ 3 ] == 't' ) // all types of format xy_t
     {
-        type = typeof_n( fp, 4 );
+        type = btypeof_n( fp, 4 );
         fp += 4;
     }
     else

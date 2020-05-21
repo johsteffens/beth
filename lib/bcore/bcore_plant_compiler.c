@@ -31,7 +31,6 @@
 #include "bcore_folder.h"
 #include "bcore_txt_ml.h"
 
-
 //#define BCORE_PLANT_DRY_RUN
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -574,6 +573,7 @@ BCORE_DECLARE_OBJECT( bcore_plant_compiler_s )
     st_s* sh_file_undo_expand;
     bl_t  register_plain_functions;
     bl_t  register_signatures;
+    sz_t  verbosity;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_compiler_s )
@@ -591,6 +591,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_compiler_s )
     "st_s => sh_file_undo_expand;"
     "bl_t register_plain_functions = true;"
     "bl_t register_signatures = false;"
+    "sz_t verbosity = 1;"
 
     // functions
     "func bcore_plant_fp : finalize;"
@@ -2293,7 +2294,7 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
         bcore_source_point_s_parse_err_fa
         (
             &o->source_point,
-            "Precoder reflection embedding failed.\n"
+            "Plant Compiler: Reflection embedding failed.\n"
             "The embedded code would require a string literal larger than 4095 characters.\n"
             "This exceeds the limit defined in C99.\n"
         );
@@ -3012,12 +3013,35 @@ static void bcore_plant_source_s_parse( bcore_plant_source_s* o, bcore_source* s
 {
     while( !bcore_source_a_eos( source ) )
     {
+        bcore_plant_group_s* group = NULL;
+
         if( bcore_source_a_parse_bl_fa( source, "#?w'PLANT_GROUP'" ) )
         {
-            bcore_plant_group_s* group = bcore_plant_group_s_create();
+            group = bcore_plant_group_s_create();
             bcore_plant_source_s_push_group( o, group );
             group->source = o;
             bcore_source_a_parse_fa( source, " ( #name, #name )", &group->name, &group->trait_name );
+        }
+
+        /* deprecated */
+        else if( bcore_source_a_parse_bl_fa( source, "#?w'BETH_PLANT_GROUP_H'" ) )
+        {
+            group = bcore_plant_group_s_create();
+            bcore_plant_source_s_push_group( o, group );
+            group->source = o;
+            bcore_source_a_parse_fa( source, " ( #name, #name, #name )", NULL, &group->name, &group->trait_name );
+        }
+
+        else if( bcore_source_a_parse_bl_fa( source, "#?w'BETH_PLANT_DEFINE_GROUP'" ) )
+        {
+            group = bcore_plant_group_s_create();
+            bcore_plant_source_s_push_group( o, group );
+            group->source = o;
+            bcore_source_a_parse_fa( source, " ( #name, #name, #name )", NULL, &group->name, &group->trait_name );
+        }
+
+        if( group )
+        {
             if( group->trait_name.size == 0 ) st_s_copy_sc( &group->trait_name, "bcore_inst" );
             bcore_plant_group_s_parse( group, source );
             o->hash = bcore_tp_fold_tp( o->hash, group->hash );
@@ -3083,7 +3107,6 @@ static void bcore_plant_target_s_parse( bcore_plant_target_s* o, sc_t source_pat
     st_s* source_folder_path = BLM_A_PUSH( bcore_file_folder_path( source_path ) );
     st_s* source_path_n      = BLM_A_PUSH( st_s_create_fa( "#<sc_t>/#<sc_t>", source_folder_path->sc, source_name->sc ) );
     st_s* source_path_h      = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", source_path_n->sc ) );
-//    st_s* source_path_c      = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.c", source_path_n->sc ) );
 
     bcore_plant_source_s* plant_source = bcore_plant_source_s_create();
     plant_source->target = o;
@@ -3162,6 +3185,13 @@ static void bcore_plant_target_s_expand_h( const bcore_plant_target_s* o, sz_t i
 
     bcore_sink_a_push_fa( sink, "\n" );
 
+    bcore_sink_a_push_fa( sink, "#rn{ }//To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.\n", indent, o->name.sc, o->hash );
+    bcore_sink_a_push_fa( sink, "#rn{ }##define HKEYOF_#<sc_t> #<tp_t>\n", indent, o->name.sc, o->hash );
+
+    bcore_sink_a_push_fa( sink, "\n" );
+
+    bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->name.sc, typeof( o->name.sc ) );
+
     for( sz_t i = 0; i < o->size; i++ ) bcore_plant_source_s_expand_declaration( o->data[ i ], indent, sink );
 
     bcore_sink_a_push_fa( sink, "\n" );
@@ -3179,8 +3209,7 @@ static void bcore_plant_target_s_expand_h( const bcore_plant_target_s* o, sz_t i
 
 static void bcore_plant_target_s_expand_init1( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
 {
-    bcore_sink_a_push_fa( sink, "#rn{ }// Comment or remove line below to rebuild this target.\n", indent, o->name.sc, o->hash );
-    bcore_sink_a_push_fa( sink, "#rn{ }bcore_const_x_set_d( typeof( \"#<sc_t>_hash\" ), sr_tp( #<tp_t> ) );\n", indent, o->name.sc, o->hash );
+    bcore_sink_a_push_fa( sink, "#rn{ }bcore_const_x_set_d( typeof( \"#<sc_t>_hash\" ), sr_tp( HKEYOF_#<sc_t> ) );\n", indent, o->name.sc, o->name.sc );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3222,89 +3251,97 @@ static void bcore_plant_target_s_expand_c( const bcore_plant_target_s* o, sz_t i
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// returns true if a file was modified
-static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
+static bl_t bcore_plant_target_s_to_be_modified( const bcore_plant_target_s* o )
 {
     BLM_INIT();
-    bl_t modified = true;
+    bl_t to_be_modified = true;
 
     tp_t key = typeof( ( ( st_s* )BLM_A_PUSH( st_s_create_fa( "#<sc_t>_hash", o->name.sc ) ) )->sc );
     if( bcore_const_exists( key ) )
     {
-        modified = ( *( tp_t* )bcore_const_get_o( key ) != o->hash );
+        to_be_modified = ( *( tp_t* )bcore_const_get_o( key ) != o->hash );
     }
     else
     {
-        bcore_msg_fa( "Key for target '#<sc_t>' does not exist. Is signal handler of '#<sc_t>.h' integrated?\n", o->name.sc, o->name.sc );
+        bcore_wrn_fa( "Key for target '#<sc_t>' does not exist. Is signal handler of '#<sc_t>.h' integrated?\n", o->name.sc, o->name.sc );
     }
+
+    BLM_RETURNV( bl_t, to_be_modified );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// returns true if a file was modified
+static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
+{
+    if( !bcore_plant_target_s_to_be_modified( o ) ) return false;
+
+    BLM_INIT();
 
     st_s*           undo_expand_actions = &plant_compiler_g->undo_expand_actions;
     bcore_arr_st_s* undo_expand_files   = &plant_compiler_g->undo_expand_files;
 
-    if( modified )
+    st_s* txt_h = BLM_CREATE( st_s );
+    st_s* txt_c = BLM_CREATE( st_s );
+    bcore_plant_target_s_expand_h( o, 0, ( bcore_sink* )txt_h );
+    bcore_plant_target_s_expand_c( o, 0, ( bcore_sink* )txt_c );
+
+    st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
+    st_s* file_c = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.c", o->path.sc ) );
+
+    #ifdef BCORE_PLANT_DRY_RUN
+
+    bcore_msg_fa( "\nPlant compiler is in mode 'dry-run'\n" );
+
+    bcore_msg_fa( "#r80{+}\n" );
+    bcore_msg_fa( "File #<sc_t>:\n", file_h->sc );
+    bcore_msg_fa( "#r80{+}\n" );
+    st_s_to_stdout( txt_h );
+
+    bcore_msg_fa( "#r80{+}\n" );
+    bcore_msg_fa( "File #<sc_t>:\n", file_c->sc );
+    bcore_msg_fa( "#r80{+}\n" );
+    st_s_to_stdout( txt_c );
+
+    #else
+
+    if( bcore_file_exists( file_h->sc ) )
     {
-        st_s* txt_h = BLM_CREATE( st_s );
-        st_s* txt_c = BLM_CREATE( st_s );
-        bcore_plant_target_s_expand_h( o, 0, ( bcore_sink* )txt_h );
-        bcore_plant_target_s_expand_c( o, 0, ( bcore_sink* )txt_c );
+        st_s* backup_name = st_s_create_fa( "#<sc_t>.backup", file_h->sc );
+        bcore_file_rename( file_h->sc, backup_name->sc );
+        st_s_discard( backup_name );
+        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.backup #<sc_t>.swap\n",   file_h->sc, file_h->sc );
+        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>        #<sc_t>.backup\n", file_h->sc, file_h->sc );
+        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.swap   #<sc_t>\n",        file_h->sc, file_h->sc );
+        st_s_push_fa( undo_expand_actions, "    touch #<sc_t>\n",        file_h->sc );
+        st_s_push_fa( undo_expand_actions, "\n" );
 
-        st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
-        st_s* file_c = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.c", o->path.sc ) );
-
-        #ifdef BCORE_PLANT_DRY_RUN
-
-        bcore_msg_fa( "\nPlant compiler is in mode 'dry-run'\n" );
-
-        bcore_msg_fa( "#r80{+}\n" );
-        bcore_msg_fa( "File #<sc_t>:\n", file_h->sc );
-        bcore_msg_fa( "#r80{+}\n" );
-        st_s_to_stdout( txt_h );
-
-        bcore_msg_fa( "#r80{+}\n" );
-        bcore_msg_fa( "File #<sc_t>:\n", file_c->sc );
-        bcore_msg_fa( "#r80{+}\n" );
-        st_s_to_stdout( txt_c );
-
-        #else
-
-        if( bcore_file_exists( file_h->sc ) )
-        {
-            st_s* backup_name = st_s_create_fa( "#<sc_t>.backup", file_h->sc );
-            bcore_file_rename( file_h->sc, backup_name->sc );
-            st_s_discard( backup_name );
-            st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.backup #<sc_t>.swap\n",   file_h->sc, file_h->sc );
-            st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>        #<sc_t>.backup\n", file_h->sc, file_h->sc );
-            st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.swap   #<sc_t>\n",        file_h->sc, file_h->sc );
-            st_s_push_fa( undo_expand_actions, "    touch #<sc_t>\n",        file_h->sc );
-            st_s_push_fa( undo_expand_actions, "\n" );
-
-            bcore_arr_st_s_push_st( undo_expand_files, file_h );
-        }
-
-        if( bcore_file_exists( file_c->sc ) )
-        {
-            st_s* backup_name = st_s_create_fa( "#<sc_t>.backup", file_c->sc );
-            bcore_file_rename( file_c->sc, backup_name->sc );
-            st_s_discard( backup_name );
-            st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.backup #<sc_t>.swap\n",   file_c->sc, file_c->sc );
-            st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>        #<sc_t>.backup\n", file_c->sc, file_c->sc );
-            st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.swap   #<sc_t>\n",        file_c->sc, file_c->sc );
-            st_s_push_fa( undo_expand_actions, "    touch #<sc_t>\n",        file_c->sc );
-            st_s_push_fa( undo_expand_actions, "\n" );
-
-            bcore_arr_st_s_push_st( undo_expand_files, file_c );
-        }
-
-        bcore_msg_fa( "writing '#<sc_t>'\n", file_h->sc );
-        bcore_sink_a_push_data( BLM_A_PUSH( bcore_file_open_sink( file_h->sc ) ), txt_h->data, txt_h->size );
-
-        bcore_msg_fa( "writing '#<sc_t>'\n", file_c->sc );
-        bcore_sink_a_push_data( BLM_A_PUSH( bcore_file_open_sink( file_c->sc ) ), txt_c->data, txt_c->size );
-
-        #endif // BCORE_PLANT_DRY_RUN
+        bcore_arr_st_s_push_st( undo_expand_files, file_h );
     }
 
-    BLM_RETURNV( bl_t, modified );
+    if( bcore_file_exists( file_c->sc ) )
+    {
+        st_s* backup_name = st_s_create_fa( "#<sc_t>.backup", file_c->sc );
+        bcore_file_rename( file_c->sc, backup_name->sc );
+        st_s_discard( backup_name );
+        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.backup #<sc_t>.swap\n",   file_c->sc, file_c->sc );
+        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>        #<sc_t>.backup\n", file_c->sc, file_c->sc );
+        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.swap   #<sc_t>\n",        file_c->sc, file_c->sc );
+        st_s_push_fa( undo_expand_actions, "    touch #<sc_t>\n",        file_c->sc );
+        st_s_push_fa( undo_expand_actions, "\n" );
+
+        bcore_arr_st_s_push_st( undo_expand_files, file_c );
+    }
+
+    bcore_msg_fa( "writing '#<sc_t>'\n", file_h->sc );
+    bcore_sink_a_push_data( BLM_A_PUSH( bcore_file_open_sink( file_h->sc ) ), txt_h->data, txt_h->size );
+
+    bcore_msg_fa( "writing '#<sc_t>'\n", file_c->sc );
+    bcore_sink_a_push_data( BLM_A_PUSH( bcore_file_open_sink( file_c->sc ) ), txt_c->data, txt_c->size );
+
+    #endif // BCORE_PLANT_DRY_RUN
+
+    BLM_RETURNV( bl_t, true );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3421,6 +3458,30 @@ static void bcore_plant_compiler_s_finalize( bcore_plant_compiler_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// returns true if a file will be modified in function bcore_plant_compiler_s_expand
+static bl_t bcore_plant_compiler_s_to_be_modified( const bcore_plant_compiler_s* o, st_s* affected_list )
+{
+    if( affected_list ) st_s_clear( affected_list );
+    bl_t modified = false;
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        if( bcore_plant_target_s_to_be_modified( o->data[ i ] ) )
+        {
+            if( affected_list )
+            {
+                // if not the first entry
+                if( modified ) st_s_push_fa( affected_list, ", " );
+                st_s_push_fa( affected_list, "#<sc_t>", o->data[ i ]->name.sc );
+            }
+            modified = true;
+            if( !affected_list ) break;
+        }
+    }
+    return modified;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /// returns true if a file was modified
 static bl_t bcore_plant_compiler_s_expand( bcore_plant_compiler_s* o )
 {
@@ -3506,20 +3567,21 @@ void bcore_plant_compile( sc_t target_name, sc_t source_path )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_plant_expand()
+bl_t bcore_plant_compiler_update_planted_files( void )
 {
     ASSERT( plant_compiler_g );
     bl_t modified = false;
+    bl_t verbosity = plant_compiler_g->verbosity;
     f3_t time = 0;
 
     ABS_TIME_OF( modified = bcore_plant_compiler_s_expand( plant_compiler_g ), time );
     if( modified )
     {
-        bcore_msg_fa( "PLANT: Expanded in #<f3_t> sec.\n", time );
-        bcore_msg_fa( "PLANT: Files were updated. Rebuild is necessary.\n" );
+        if( verbosity > 0 ) bcore_msg_fa( "PLANT: Expanded in #<f3_t> sec.\n", time );
+        if( verbosity > 0 ) bcore_msg_fa( "PLANT: Files were updated. Rebuild is necessary.\n" );
         if( plant_compiler_g->sh_file_undo_expand )
         {
-            bcore_msg_fa( "PLANT: To revert to the previous state, execute '#<sc_t>'.\n", plant_compiler_g->sh_file_undo_expand->sc );
+            if( verbosity > 0 ) bcore_msg_fa( "PLANT: To revert to the previous state, execute '#<sc_t>'.\n", plant_compiler_g->sh_file_undo_expand->sc );
         }
     }
     bcore_plant_compiler_s_discard( plant_compiler_g );
@@ -3529,15 +3591,58 @@ bl_t bcore_plant_expand()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_plant_run_globally()
+bl_t bcore_plant_compiler_compile_all_registered_plants( void )
 {
     f3_t time = 0;
     ABS_TIME_OF( bcore_run_signal_globally( TYPEOF_all, TYPEOF_plant, NULL ), time );
-    bcore_msg_fa( "PLANT: Compiled in #<f3_t> sec.\n", time );
-    return bcore_plant_expand();
+    if( plant_compiler_g->verbosity > 0 ) bcore_msg_fa( "PLANT: Compiled in #<f3_t> sec.\n", time );
+    return bcore_plant_compiler_s_to_be_modified( plant_compiler_g, NULL );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+void bcore_plant_compiler_compile_registered_plant( sc_t name )
+{
+    f3_t time = 0;
+    ABS_TIME_OF( bcore_run_signal( btypeof( name ), TYPEOF_all, TYPEOF_plant, NULL ), time );
+    if( plant_compiler_g->verbosity > 0 ) bcore_msg_fa( "PLANT: Compiled '#<sc_t>' in #<f3_t> sec.\n", name, time );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_plant_compiler_update_required( void )
+{
+    return bcore_plant_compiler_s_to_be_modified( plant_compiler_g, NULL );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_plant_compiler_compile_update_all_planted_files( void )
+{
+    bcore_plant_compiler_compile_all_registered_plants();
+    return bcore_plant_compiler_update_planted_files();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_plant_run_globally( void )
+{
+    return bcore_plant_compiler_compile_update_all_planted_files();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sz_t bcore_plant_compiler_get_verbosity( void )
+{
+    return plant_compiler_g->verbosity;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_plant_compiler_set_verbosity( sz_t verbosity )
+{
+    plant_compiler_g->verbosity = verbosity;
+}
 
 /**********************************************************************************************************************/
 

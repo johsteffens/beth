@@ -54,6 +54,7 @@
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
 #include "bcore_plant_compiler.h"
+#include "bcore_plant.h"
 #include "bcore_planted.h"
 #include "bcore_plant_inexpandable.h"
 #include "bcore_plant_sample.h"
@@ -142,6 +143,7 @@ vd_t bcore_signal_handler( const bcore_signal_s* o )
         bcore_folder_signal_handler,
         bcore_spect_hash_signal_handler,
         bcore_plant_compiler_signal_handler,
+        bcore_plant_signal_handler,
         bcore_planted_signal_handler,
         bcore_plant_inexpandable_signal_handler,
         bcore_plant_sample_signal_handler,

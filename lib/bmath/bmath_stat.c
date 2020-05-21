@@ -105,6 +105,30 @@ f3_t bmath_stat_chisqu_cdf_inv( sz_t k, f3_t p, bl_t* success )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+f3_t bmath_erf_inv( f3_t y )
+{
+    if( y >=  1.0 ) return  f3_lim_inf;
+    if( y <= -1.0 ) return -f3_lim_inf;
+
+    f3_t x_min = -10;
+    f3_t x_max =  10;
+
+    while( y < bmath_erf( x_min ) ) { x_max = x_min; x_min *= 2; }
+    while( y > bmath_erf( x_max ) ) { x_min = x_max; x_max *= 2; }
+
+    for( sz_t i = 0; i < 64; i++ )
+    {
+        f3_t x = ( x_min + x_max ) * 0.5;
+        f3_t y1 = bmath_erf( x );
+        x_max = ( y1 > y ) ? x : x_max;
+        x_min = ( y1 < y ) ? x : x_min;
+    }
+
+    return ( x_min + x_max ) * 0.5;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 vd_t bmath_stat_signal_handler( const bcore_signal_s* o )

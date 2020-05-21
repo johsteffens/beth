@@ -42,6 +42,12 @@ f3_t bmath_stat_chisqu_cdf( sz_t k, f3_t x, bl_t* success );
  */
 f3_t bmath_stat_chisqu_cdf_inv( sz_t k, f3_t p, bl_t* success );
 
+/// error function of the normal distribution N(0,1)
+static inline f3_t bmath_erf( f3_t x ) { return erf( x ); }
+
+/// inverse error function: erf_inv( erf( x ) ) == x
+f3_t bmath_erf_inv( f3_t y );
+
 /**********************************************************************************************************************/
 
 vd_t bmath_stat_signal_handler( const bcore_signal_s* o );
