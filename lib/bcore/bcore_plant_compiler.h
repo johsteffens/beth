@@ -23,9 +23,6 @@
  *  The term plant reflects the notion of 'planting' (embedding) dedicated code with regular
  *  source code.
  *
- *  A beth-source participates in 'planting' when its signal-handler executes upon
- *  TYPEOF_plant the function bcore_plant_compile( <planted-file>, __FILE__ );
- *
  *  <planted-file> is the name of the output file containing generated code.
  *  <planted-file>.c and <planted-file>.h are generated in the folder of the beth-source.
  *  Before <planted-file>.? is being modified it is renamed to <planted-file>.?.backup
@@ -244,23 +241,6 @@ void bcore_plant_compiler_set_target_dependencies( sz_t target_index, const bcor
 sz_t bcore_plant_compiler_get_verbosity( void );
 void bcore_plant_compiler_set_verbosity( sz_t verbosity );
 
-/// Deprecated stuff ....
-
-/** Runs plant compiler globally (compiling only);
- *  Returns true in case a planted-file needs updating.
- */
-//bl_t bcore_plant_compiler_compile_all_registered_plants( void );
-
-/** Runs plant compiler globally (compiling, expansion);
- *  Returns true in case a planted-file was generated or modified.
- */
-//bl_t bcore_plant_compiler_compile_update_all_planted_files( void );
-
-/** Runs plant compiler globally (compiling, expansion);
- *  Returns true in case a planted-file was generated or modified.
- */
-//bl_t bcore_plant_run_globally( void );
-
 /**********************************************************************************************************************/
 
 vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o );
@@ -271,18 +251,5 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o );
 
 #define PLANT_GROUP( name, trait ) \
     BETH_EXPAND_GROUP_##name
-
-#define PLANT_DECLARE_SIGNAL_HANDLER( group_name ) \
-    vd_t group_name##_signal_handler( const bcore_signal_s* o );
-
-#define PLANT_DEFEINE_SIGNAL_HANDLER( plant_name, group_name ) \
-    vd_t group_name##_signal_handler( const bcore_signal_s* o ) \
-    { \
-        if( bcore_signal_s_handle_type( o, typeof( #group_name ) ) == TYPEOF_plant ) \
-        { \
-            bcore_plant_compile( #plant_name"_planted", __FILE__ ); \
-        } \
-        return NULL; \
-    }
 
 #endif // BCORE_PLANT_COMPILER_H

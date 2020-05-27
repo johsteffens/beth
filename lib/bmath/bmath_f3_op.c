@@ -21,12 +21,6 @@ vd_t bmath_f3_op_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bmath_f3_op" ) ) )
     {
-        case TYPEOF_plant:
-        {
-            bcore_plant_compile( "bmath_planted", __FILE__ );
-        }
-        break;
-
         default: break;
     }
 

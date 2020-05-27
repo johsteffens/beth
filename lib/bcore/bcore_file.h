@@ -115,16 +115,19 @@ bl_t bcore_file_rename( sc_t src_name, sc_t dst_name ); // renames file if exist
 
 /** Searches for a file <folder>/<name>, descending the tree through parent folders of <folder>.
  *  Returns false if not found.
- *  If found the correct path is stored in <result>.
+ *  If found, the detected path is stored in <result>.
+ *
  *  Example:
- *  bcore_file_find_descend( "/home/john/proj/proj1", "module.cfg", result );
- *  Searches for module.cfg in
- *     /home/john/proj/proj1/module.cfg
- *     /home/john/proj/module.cfg
- *     /home/john/module.cfg
- *     /home/module.cfg
- *     /module.cfg
- *  The first match is returned.
+ *    bcore_file_find_descend( "/home/john/proj/proj1", "module.cfg", result );
+ *     Searches for module.cfg in
+ *       /home/john/proj/proj1/module.cfg
+ *       /home/john/proj/module.cfg
+ *       /home/john/module.cfg
+ *       /home/module.cfg
+ *       /module.cfg
+ *
+ *    If any matches, result holds the first matching path (e.g. "/home/module.cfg")
+ *    and 'true' is returned. Otherwise 'false' is returned.
  */
 bl_t bcore_file_find_descend( sc_t folder, sc_t name, st_s* result );
 
@@ -132,7 +135,7 @@ bl_t bcore_file_find_descend( sc_t folder, sc_t name, st_s* result );
 bcore_source* bcore_file_open_source( sc_t name );
 bcore_source* bcore_file_open_source_path( const bcore_file_path_s* path );
 
-/// opens file-sink   (close it with bcore_sink_a_discard)
+/// opens file-sink (close it with bcore_sink_a_discard)
 bcore_sink* bcore_file_open_sink( sc_t name );
 
 /**********************************************************************************************************************/

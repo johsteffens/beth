@@ -92,12 +92,6 @@ vd_t bcore_plant_sample_signal_handler( const bcore_signal_s* o )
         }
         break;
 
-        case TYPEOF_plant:
-        {
-            bcore_plant_compile( "bcore_planted", __FILE__ );
-        }
-        break;
-
         default: break;
     }
 

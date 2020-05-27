@@ -665,12 +665,6 @@ vd_t badapt_c1d_signal_handler( const bcore_signal_s* o )
         }
         break;
 
-        case TYPEOF_plant:
-        {
-            bcore_plant_compile( "badapt_planted", __FILE__ );
-        }
-        break;
-
         default: break;
     }
 

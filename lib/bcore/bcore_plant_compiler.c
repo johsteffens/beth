@@ -3307,6 +3307,29 @@ static bl_t bcore_plant_target_s_to_be_modified( const bcore_plant_target_s* o )
     {
         to_be_modified = ( *( tp_t* )bcore_const_get_o( key ) != o->hash );
     }
+    else
+    {
+        st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
+        if( bcore_file_exists( file_h->sc ) )
+        {
+            st_s* key_defined = BLM_A_PUSH( st_s_create_fa( "##?'define HKEYOF_#<sc_t>'", o->name.sc ) );
+            bcore_source* source = BLM_A_PUSH( bcore_file_open_source( file_h->sc ) );
+            while( !bcore_source_a_eos( source ) )
+            {
+                char c = bcore_source_a_get_u0( source );
+                if( c == '#' )
+                {
+                    if( bcore_source_a_parse_bl_fa( source, key_defined->sc ) )
+                    {
+                        tp_t key_val = 0;
+                        bcore_source_a_parse_fa( source, " #<tp_t*>", &key_val );
+                        to_be_modified = ( key_val != o->hash );
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     BLM_RETURNV( bl_t, to_be_modified );
 }
@@ -3663,35 +3686,10 @@ bl_t bcore_plant_compiler_update_planted_files( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-//bl_t bcore_plant_compiler_compile_all_registered_plants( void )
-//{
-//    f3_t time = 0;
-//    ABS_TIME_OF( bcore_run_signal_globally( TYPEOF_all, TYPEOF_plant, NULL ), time );
-//    if( plant_compiler_g->verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: Compiled in #<f3_t> sec.\n", time );
-//    return bcore_plant_compiler_s_to_be_modified( plant_compiler_g, NULL );
-//}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 bl_t bcore_plant_compiler_update_required( void )
 {
     return bcore_plant_compiler_s_to_be_modified( plant_compiler_g, NULL );
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-//bl_t bcore_plant_compiler_compile_update_all_planted_files( void )
-//{
-//    bcore_plant_compiler_compile_all_registered_plants();
-//    return bcore_plant_compiler_update_planted_files();
-//}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-//bl_t bcore_plant_run_globally( void )
-//{
-//    return bcore_plant_compiler_compile_update_all_planted_files();
-//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -3845,8 +3843,6 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_get_quicktypes:
         {
-            BCORE_REGISTER_QUICKTYPE( plant ); // signal
-
             BCORE_REGISTER_QUICKTYPE( bcore_plant );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_s );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_arg_s );

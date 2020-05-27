@@ -2004,12 +2004,6 @@ vd_t bhvm_holor_signal_handler( const bcore_signal_s* o )
         }
         break;
 
-        case TYPEOF_plant:
-        {
-            bcore_plant_compile( "bhvm_planted", __FILE__ );
-        }
-        break;
-
         default: break;
     }
 
