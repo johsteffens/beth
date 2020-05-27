@@ -21,7 +21,7 @@
 #include "bhpt_tutor_sampler.h"
 #include "bhpt_tutor_language.h"
 
-vd_t bhpt_signal_handler( const bcore_signal_s* o )
+vd_t bhpt_general_signal_handler( const bcore_signal_s* o )
 {
     vd_t ret = NULL;
 

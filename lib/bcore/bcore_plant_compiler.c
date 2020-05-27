@@ -15,6 +15,7 @@
 
 #include "bcore.h"
 #include "bcore_plant_compiler.h"
+#include "bcore_plant_builder.h"
 #include "bcore_sources.h"
 #include "bcore_sinks.h"
 #include "bcore_spect_inst.h"
@@ -544,6 +545,8 @@ BCORE_DECLARE_OBJECT( bcore_plant_target_s )
     st_s path; // path excluding extension
     tp_t hash;
     BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_plant_source_s, );
+    st_s signal_handler_name;    // name of governing signal handler
+    bcore_arr_sz_s dependencies; // index array to dependent targets
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_target_s )
@@ -554,6 +557,8 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_target_s )
     "tp_t hash;"
     "bcore_plant_source_s => [] arr;"
     "func bcore_plant_fp : finalize;"
+    "st_s signal_handler_name;"    // name of governing signal handler
+    "bcore_arr_sz_s dependencies;" // index array to dependent targets
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3037,7 +3042,7 @@ static void bcore_plant_source_s_parse( bcore_plant_source_s* o, bcore_source* s
             group = bcore_plant_group_s_create();
             bcore_plant_source_s_push_group( o, group );
             group->source = o;
-            bcore_source_a_parse_fa( source, " ( #name, #name, #name )", NULL, &group->name, &group->trait_name );
+            bcore_source_a_parse_fa( source, " ( #name, #name )", &group->name, &group->trait_name );
         }
 
         if( group )
@@ -3108,23 +3113,36 @@ static void bcore_plant_target_s_parse( bcore_plant_target_s* o, sc_t source_pat
     st_s* source_path_n      = BLM_A_PUSH( st_s_create_fa( "#<sc_t>/#<sc_t>", source_folder_path->sc, source_name->sc ) );
     st_s* source_path_h      = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", source_path_n->sc ) );
 
-    bcore_plant_source_s* plant_source = bcore_plant_source_s_create();
-    plant_source->target = o;
-    st_s_copy_sc( &plant_source->name, source_name->sc );
-    st_s_copy   ( &plant_source->path, source_path_n );
-
-    plant_source->hash = bcore_tp_init();
-
-    if( bcore_file_exists( source_path_h->sc ) )
+    bl_t source_exists = false;
+    for( sz_t i = 0; i < o->size; i++ )
     {
-        bcore_plant_source_s_parse( plant_source, BLM_A_PUSH( bcore_file_open_source( source_path_h->sc ) ) );
+        if( st_s_equal_st( source_path_n, &o->data[ i ]->path ) )
+        {
+            source_exists = true;
+            break;
+        }
     }
 
-    // parsing *.c files is generally not helpful  (currently plant code can only reside in header files)
-    // if( bcore_file_exists( source_path_c->sc ) ) bcore_plant_source_s_parse( plant_source, BLM_A_PUSH( bcore_file_open_source( source_path_c->sc ) ) );
+    if( !source_exists )
+    {
+        bcore_plant_source_s* plant_source = bcore_plant_source_s_create();
+        plant_source->target = o;
+        st_s_copy_sc( &plant_source->name, source_name->sc );
+        st_s_copy   ( &plant_source->path, source_path_n );
 
-    o->hash = bcore_tp_fold_tp( o->hash, plant_source->hash );
-    bcore_array_a_push( ( bcore_array* )o, sr_asd( plant_source ) );
+        plant_source->hash = bcore_tp_init();
+
+        if( bcore_file_exists( source_path_h->sc ) )
+        {
+            bcore_plant_source_s_parse( plant_source, BLM_A_PUSH( bcore_file_open_source( source_path_h->sc ) ) );
+        }
+
+        // parsing *.c files is generally not helpful  (currently plant code can only reside in header files)
+        // if( bcore_file_exists( source_path_c->sc ) ) bcore_plant_source_s_parse( plant_source, BLM_A_PUSH( bcore_file_open_source( source_path_c->sc ) ) );
+
+        o->hash = bcore_tp_fold_tp( o->hash, plant_source->hash );
+        bcore_array_a_push( ( bcore_array* )o, sr_asd( plant_source ) );
+    }
 
     BLM_DOWN();
 }
@@ -3233,16 +3251,44 @@ static void bcore_plant_target_s_expand_c( const bcore_plant_target_s* o, sz_t i
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }/*#rn{*}*/\n", indent, sz_max( 0, 116 - indent ) );
     bcore_sink_a_push_fa( sink, "\n" );
+
+    /// prototypes of signal handlers this target depends on
+    BFOR_EACH( i, &o->dependencies )
+    {
+        const bcore_plant_target_s* target = plant_compiler_g->data[ o->dependencies.data[ i ] ];
+        if( target->signal_handler_name.size == 0 ) continue;
+        bcore_sink_a_push_fa( sink, "#rn{ }vd_t #<sc_t>( const bcore_signal_s* o );\n", indent, target->signal_handler_name.sc );
+    }
+
+    bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }vd_t #<sc_t>_signal_handler( const bcore_signal_s* o )\n", indent, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }{\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }    switch( bcore_signal_s_handle_type( o, typeof( \"#<sc_t>\" ) ) )\n", indent, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }    {\n", indent );
+
     bcore_sink_a_push_fa( sink, "#rn{ }        case TYPEOF_init1:\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }        {\n", indent );
     bcore_plant_target_s_expand_init1( o, indent + 12, sink );
     for( sz_t i = 0; i < o->size; i++ ) bcore_plant_source_s_expand_init1( o->data[ i ], indent + 12, sink );
     bcore_sink_a_push_fa( sink, "#rn{ }        }\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }        break;\n", indent );
+
+    if( o->dependencies.size > 0 )
+    {
+        bcore_sink_a_push_fa( sink, "#rn{ }        case TYPEOF_push_dependencies:\n", indent );
+        bcore_sink_a_push_fa( sink, "#rn{ }        {\n", indent );
+        bcore_sink_a_push_fa( sink, "#rn{ }            ASSERT( o->object && ( *( aware_t* )o->object ) == TYPEOF_bcore_arr_fp_s );\n", indent );
+        bcore_sink_a_push_fa( sink, "#rn{ }            bcore_arr_fp_s* arr_fp = o->object;\n", indent );
+        BFOR_EACH( i, &o->dependencies )
+        {
+            const bcore_plant_target_s* target = plant_compiler_g->data[ o->dependencies.data[ i ] ];
+            if( target->signal_handler_name.size == 0 ) continue;
+            bcore_sink_a_push_fa( sink, "#rn{ }            bcore_arr_fp_s_push( arr_fp, ( fp_t )#<sc_t> );\n", indent, target->signal_handler_name.sc );
+        }
+        bcore_sink_a_push_fa( sink, "#rn{ }        }\n", indent );
+        bcore_sink_a_push_fa( sink, "#rn{ }        break;\n", indent );
+    }
+
     bcore_sink_a_push_fa( sink, "#rn{ }        default: break;\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }    }\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }    return NULL;\n", indent );
@@ -3260,10 +3306,6 @@ static bl_t bcore_plant_target_s_to_be_modified( const bcore_plant_target_s* o )
     if( bcore_const_exists( key ) )
     {
         to_be_modified = ( *( tp_t* )bcore_const_get_o( key ) != o->hash );
-    }
-    else
-    {
-        bcore_wrn_fa( "Key for target '#<sc_t>' does not exist. Is signal handler of '#<sc_t>.h' integrated?\n", o->name.sc, o->name.sc );
     }
 
     BLM_RETURNV( bl_t, to_be_modified );
@@ -3416,7 +3458,8 @@ static const bcore_plant* bcore_plant_compiler_s_item_get( const bcore_plant_com
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_compiler_s_parse( bcore_plant_compiler_s* o, sc_t target_name, sc_t source_path )
+/** returns target index */
+static sz_t bcore_plant_compiler_s_parse( bcore_plant_compiler_s* o, sc_t target_name, sc_t source_path )
 {
     BLM_INIT();
 
@@ -3446,7 +3489,7 @@ static void bcore_plant_compiler_s_parse( bcore_plant_compiler_s* o, sc_t target
     bcore_plant_target_s* target = o->data[ target_index ];
     bcore_plant_target_s_parse( target, source_path );
 
-    BLM_DOWN();
+    BLM_RETURNV( sz_t, target_index );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3544,11 +3587,11 @@ static void bcore_plant_compiler_s_life_a_push( bcore_plant_compiler_s* o, vd_t 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_plant_compile( sc_t target_name, sc_t source_path )
+void bcore_plant_compiler_setup( void )
 {
-    BLM_INIT();
     if( !plant_compiler_g )
     {
+        BLM_INIT();
         plant_compiler_g = bcore_plant_compiler_s_create();
         st_s* dir_name = BLM_CREATE( st_s );
         st_s* cfg_file = BLM_CREATE( st_s );
@@ -3556,13 +3599,42 @@ void bcore_plant_compile( sc_t target_name, sc_t source_path )
 
         if( bcore_file_find_descend( dir_name->sc, ".bcore_plant_compiler.cfg", cfg_file ) )
         {
-            bcore_msg_fa( "PLANT: Using '#<sc_t>'\n", cfg_file->sc );
             bcore_txt_ml_a_from_file( plant_compiler_g, cfg_file->sc );
+            if( plant_compiler_g->verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: Using '#<sc_t>'\n", cfg_file->sc );
         }
+        BLM_DOWN();
     }
-    bcore_plant_compiler_s_parse( plant_compiler_g, target_name, source_path );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// returns target index
+sz_t bcore_plant_compile( sc_t target_name, sc_t source_path )
+{
+    if( !plant_compiler_g ) bcore_plant_compiler_setup();
+    sz_t target_index = bcore_plant_compiler_s_parse( plant_compiler_g, target_name, source_path );
     bcore_plant_compiler_s_finalize( plant_compiler_g );
-    BLM_DOWN();
+    return target_index;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_plant_compiler_set_target_signal_handler_name( sz_t target_index, sc_t name )
+{
+    ASSERT( plant_compiler_g );
+    ASSERT( target_index >= 0 && target_index < plant_compiler_g->size );
+    bcore_plant_target_s* target = plant_compiler_g->data[ target_index ];
+    st_s_copy_sc( &target->signal_handler_name, name );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_plant_compiler_set_target_dependencies( sz_t target_index, const bcore_arr_sz_s* dependencies )
+{
+    ASSERT( plant_compiler_g );
+    ASSERT( target_index >= 0 && target_index < plant_compiler_g->size );
+    bcore_plant_target_s* target = plant_compiler_g->data[ target_index ];
+    bcore_arr_sz_s_copy( &target->dependencies, dependencies );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3577,11 +3649,11 @@ bl_t bcore_plant_compiler_update_planted_files( void )
     ABS_TIME_OF( modified = bcore_plant_compiler_s_expand( plant_compiler_g ), time );
     if( modified )
     {
-        if( verbosity > 0 ) bcore_msg_fa( "PLANT: Expanded in #<f3_t> sec.\n", time );
-        if( verbosity > 0 ) bcore_msg_fa( "PLANT: Files were updated. Rebuild is necessary.\n" );
+        if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: Expanded in #<f3_t> sec.\n", time );
+        if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: Files were updated. Rebuild is necessary.\n" );
         if( plant_compiler_g->sh_file_undo_expand )
         {
-            if( verbosity > 0 ) bcore_msg_fa( "PLANT: To revert to the previous state, execute '#<sc_t>'.\n", plant_compiler_g->sh_file_undo_expand->sc );
+            if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: To revert to the previous state, execute '#<sc_t>'.\n", plant_compiler_g->sh_file_undo_expand->sc );
         }
     }
     bcore_plant_compiler_s_discard( plant_compiler_g );
@@ -3591,22 +3663,13 @@ bl_t bcore_plant_compiler_update_planted_files( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_plant_compiler_compile_all_registered_plants( void )
-{
-    f3_t time = 0;
-    ABS_TIME_OF( bcore_run_signal_globally( TYPEOF_all, TYPEOF_plant, NULL ), time );
-    if( plant_compiler_g->verbosity > 0 ) bcore_msg_fa( "PLANT: Compiled in #<f3_t> sec.\n", time );
-    return bcore_plant_compiler_s_to_be_modified( plant_compiler_g, NULL );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void bcore_plant_compiler_compile_registered_plant( sc_t name )
-{
-    f3_t time = 0;
-    ABS_TIME_OF( bcore_run_signal( btypeof( name ), TYPEOF_all, TYPEOF_plant, NULL ), time );
-    if( plant_compiler_g->verbosity > 0 ) bcore_msg_fa( "PLANT: Compiled '#<sc_t>' in #<f3_t> sec.\n", name, time );
-}
+//bl_t bcore_plant_compiler_compile_all_registered_plants( void )
+//{
+//    f3_t time = 0;
+//    ABS_TIME_OF( bcore_run_signal_globally( TYPEOF_all, TYPEOF_plant, NULL ), time );
+//    if( plant_compiler_g->verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: Compiled in #<f3_t> sec.\n", time );
+//    return bcore_plant_compiler_s_to_be_modified( plant_compiler_g, NULL );
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -3617,23 +3680,24 @@ bl_t bcore_plant_compiler_update_required( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_plant_compiler_compile_update_all_planted_files( void )
-{
-    bcore_plant_compiler_compile_all_registered_plants();
-    return bcore_plant_compiler_update_planted_files();
-}
+//bl_t bcore_plant_compiler_compile_update_all_planted_files( void )
+//{
+//    bcore_plant_compiler_compile_all_registered_plants();
+//    return bcore_plant_compiler_update_planted_files();
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_plant_run_globally( void )
-{
-    return bcore_plant_compiler_compile_update_all_planted_files();
-}
+//bl_t bcore_plant_run_globally( void )
+//{
+//    return bcore_plant_compiler_compile_update_all_planted_files();
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 sz_t bcore_plant_compiler_get_verbosity( void )
 {
+    if( !plant_compiler_g ) bcore_plant_compiler_setup();
     return plant_compiler_g->verbosity;
 }
 
@@ -3641,8 +3705,35 @@ sz_t bcore_plant_compiler_get_verbosity( void )
 
 void bcore_plant_compiler_set_verbosity( sz_t verbosity )
 {
+    if( !plant_compiler_g ) bcore_plant_compiler_setup();
     plant_compiler_g->verbosity = verbosity;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_plant_builder_target_adl_s* bcore_plant_compiler_create_builder_targets()
+{
+    bcore_plant_builder_target_adl_s* adl = bcore_plant_builder_target_adl_s_create();
+
+    BFOR_EACH( i, plant_compiler_g )
+    {
+        bcore_plant_target_s* target = plant_compiler_g->data[ i ];
+        bcore_plant_builder_target_s* builder_target = bcore_plant_builder_target_s_create();
+        bcore_plant_builder_target_adl_s_push_d( adl, builder_target );
+
+        builder_target->name = st_s_clone( &target->name );
+
+        BFOR_EACH( j, target )
+        {
+            bcore_plant_source_s* source = target->data[ j ];
+            bcore_arr_st_s_push_st_d( &builder_target->sources, st_s_create_fa( "#<sc_t>.h", source->path.sc ) );
+        }
+    }
+
+    return adl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
@@ -3754,7 +3845,7 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_get_quicktypes:
         {
-            BCORE_REGISTER_QUICKTYPE( plant );
+            BCORE_REGISTER_QUICKTYPE( plant ); // signal
 
             BCORE_REGISTER_QUICKTYPE( bcore_plant );
             BCORE_REGISTER_QUICKTYPE( bcore_plant_s );

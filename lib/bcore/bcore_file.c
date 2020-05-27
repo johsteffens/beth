@@ -62,6 +62,49 @@ bcore_file_path_s* bcore_file_path_s_create_st( const st_s* st )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+st_s* bcore_file_path_minimized( sc_t path )
+{
+    if( !path ) return NULL;
+    st_s* s = st_s_create();
+    sc_t sc = path;
+    while( *sc != 0 )
+    {
+        if( sc[0] == '/' )
+        {
+            while( sc[ 1 ] == '/' ) sc++;
+            st_s_push_char( s, '/' );
+            sc++;
+        }
+        else if( sc[0] == '.' && sc[1] == '/' )
+        {
+            sc += 2;
+        }
+        else if( sc[0] == '.' && sc[1] == '.' && sc[2] == '/' )
+        {
+            if( s->size > 1 && s->sc[ s->size - 1 ] == '/' )
+            {
+                st_s_pop_char( s );
+                st_s_attach( &s, bcore_file_folder_path( s->sc ) );
+                st_s_push_char( s, '/' );
+            }
+            else
+            {
+                st_s_push_sc( s, "../" );
+            }
+            sc += 3;
+        }
+        else
+        {
+            st_s_push_char( s, *sc );
+            sc++;
+        }
+    }
+
+    return s;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 sc_t bcore_file_extension( sc_t path )
 {
     st_s* s = st_s_create_sc( path );
@@ -111,6 +154,10 @@ st_s* bcore_file_folder_path( sc_t path )
         s->data[ 0 ] = 0;
         s->size = 0;
     }
+
+    // preserve explicit root folder
+    if( s->size == 0 && path[ 0 ] == '/' ) st_s_push_char( s, '/' );
+
     return s;
 }
 

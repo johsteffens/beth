@@ -132,5 +132,6 @@
 #define TYPEOF_mutable                     990065577
 #define TYPEOF_none                       2913447899
 #define TYPEOF_plant                      3150636434
+#define TYPEOF_push_dependencies          1709904819
 #define TYPEOF_selftest                   2526214595
 #define TYPEOF_st_s                       3358332604

@@ -15,15 +15,15 @@
 
 #include "bhvm_signal.h"
 #include "bhvm_planted.h"
-#include "bhvm_planted_lop.h"
-#include "bhvm_planted_vop.h"
+#include "bhvm_lop_planted.h"
+#include "bhvm_vop_planted.h"
 #include "bhvm_lop.h"
 #include "bhvm_holor.h"
 #include "bhvm_hop.h"
 #include "bhvm_vop.h"
 #include "bhvm_mcode.h"
 
-vd_t bhvm_signal_handler( const bcore_signal_s* o )
+vd_t bhvm_general_signal_handler( const bcore_signal_s* o )
 {
     vd_t ret = NULL;
 
@@ -40,8 +40,8 @@ vd_t bhvm_signal_handler( const bcore_signal_s* o )
         bcore_fp_signal_handler arr[] =
         {
             bhvm_planted_signal_handler,
-            bhvm_planted_lop_signal_handler,
-            bhvm_planted_vop_signal_handler,
+            bhvm_lop_planted_signal_handler,
+            bhvm_vop_planted_signal_handler,
             bhvm_lop_signal_handler,
             bhvm_holor_signal_handler,
             bhvm_hop_signal_handler,

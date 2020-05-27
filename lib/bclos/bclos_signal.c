@@ -26,7 +26,7 @@
 #include "bclos_procedure.h"
 #include "bclos_machine.h"
 
-vd_t bclos_signal_handler( const bcore_signal_s* o )
+vd_t bclos_general_signal_handler( const bcore_signal_s* o )
 {
     bcore_fp_signal_handler arr[] =
     {

@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-/** bcore_main is a main functional generalizing the main function of a program.
+/** bcore_main is a functional generalizing the main function of a program.
  *
  *  Usage (in function main):
  *    - Instantiate and setup bcore_main_frame_s

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-07T21:41:18Z
+ *  Last File Update: 2020-05-27T11:05:31Z
  *
  *  Copyright and License of this File:
  *
@@ -11,7 +11,7 @@
  *
  */
 
-#include "bhvm_planted_lop.h"
+#include "bhvm_lop_planted.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_sr.h"
@@ -1151,14 +1151,14 @@ void bhvm_lop_ar3_branch_vvvv_s_f( tp_t tknit, vc_t a, vc_t b, vc_t c, vd_t r, s
 
 /**********************************************************************************************************************/
 
-vd_t bhvm_planted_lop_signal_handler( const bcore_signal_s* o )
+
+vd_t bhvm_lop_planted_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_planted_lop" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_lop_planted" ) ) )
     {
         case TYPEOF_init1:
         {
-            // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_lop_hash" ), sr_tp( 1325967404 ) );
+            bcore_const_x_set_d( typeof( "bhvm_lop_planted_hash" ), sr_tp( HKEYOF_bhvm_lop_planted ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_lop.h

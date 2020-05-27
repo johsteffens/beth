@@ -22,7 +22,6 @@
 #include "bcore_feature.h"
 
 /// broadcasts a signal within the library
-vd_t bmath_signal_handler( const bcore_signal_s* o );
-static inline vd_t bmath_general_signal_handler( const bcore_signal_s* o ) { return bmath_signal_handler( o ); }
+vd_t bmath_general_signal_handler( const bcore_signal_s* o );
 
 #endif  // BMATH_SIGNAL_H

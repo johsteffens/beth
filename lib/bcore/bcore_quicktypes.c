@@ -149,19 +149,20 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_life_s" );
 
     // signals
-    bcore_array_r_push_sc( &list, "all"   );          // (target) broadcast to all
-    bcore_array_r_push_sc( &list, "local" );          // (target) broadcast to local library (interpreted by library's signal handler)
+    bcore_array_r_push_sc( &list, "all"   );             // (target) broadcast to all
+    bcore_array_r_push_sc( &list, "local" );             // (target) broadcast to local library (interpreted by library's signal handler)
     bcore_array_r_push_sc( &list, "none"  );
-    bcore_array_r_push_sc( &list, "init0" );          // (type) init cycle 0
-    bcore_array_r_push_sc( &list, "init1" );          // (type) init cycle 1
-    bcore_array_r_push_sc( &list, "down0" );          // (type) down cycle 0
-    bcore_array_r_push_sc( &list, "down1" );          // (type) down cycle 1
-    bcore_array_r_push_sc( &list, "selftest" );       // (type) selftest (returns NULL or st_s*)
-    bcore_array_r_push_sc( &list, "get_quicktypes" ); // (type) object referencing an array accepting strings
+    bcore_array_r_push_sc( &list, "init0" );             // (type) init cycle 0
+    bcore_array_r_push_sc( &list, "init1" );             // (type) init cycle 1
+    bcore_array_r_push_sc( &list, "down0" );             // (type) down cycle 0
+    bcore_array_r_push_sc( &list, "down1" );             // (type) down cycle 1
+    bcore_array_r_push_sc( &list, "selftest" );          // (type) selftest (returns NULL or st_s*)
+    bcore_array_r_push_sc( &list, "get_quicktypes" );    // (type) object referencing an array accepting strings
+    bcore_array_r_push_sc( &list, "push_dependencies" ); // appends to bcore_arr_ft_s all signal handlers the current handler depends on
 
     // quicktypes from TYPEOF_get_quicktypes
     bcore_signal_s signal = bcore_signal_init( TYPEOF_local, TYPEOF_get_quicktypes, list.o );
-    bcore_signal_handler( &signal );
+    bcore_general_signal_handler( &signal );
 
     bcore_array_r_sort( &list, 0, -1, 1 );
     return list;

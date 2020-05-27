@@ -13,77 +13,37 @@
  *  limitations under the License.
  */
 
-#include "bcore.h"
+#include "bcore_plant.h"
 #include "bcore_plant_compiler.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void beth_plant_set_verbosity( sz_t verbosity )
+void beth_plant_build_from_file( sc_t path )
 {
-    bcore_plant_compiler_set_verbosity( verbosity );
+    bcore_plant_builder_build_from_file( path );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t beth_plant_compile_all( void )
+void beth_plant_build_from_rel_file( sc_t root_path, sc_t path )
 {
-    return bcore_plant_compiler_compile_all_registered_plants();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void beth_plant_compile( sc_t name )
-{
-    bcore_plant_compiler_compile_registered_plant( name );
+    bcore_plant_builder_build_from_rel_file( root_path, path );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 bl_t beth_plant_update_required( void )
 {
-    return bcore_plant_compiler_update_required();
+    return bcore_plant_builder_update_required();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 bl_t beth_plant_update( void )
 {
-    return bcore_plant_compiler_update_planted_files();
+    return bcore_plant_builder_update();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-
-vd_t bcore_plant_signal_handler( const bcore_signal_s* o )
-{
-    switch( bcore_signal_s_handle_type( o, typeof( "bcore_plant" ) ) )
-    {
-        case TYPEOF_init1:
-        {
-        }
-        break;
-
-        case TYPEOF_down1:
-        {
-        }
-        break;
-
-        case TYPEOF_get_quicktypes:
-        {
-        }
-        break;
-
-        case TYPEOF_selftest:
-        {
-        }
-        break;
-
-        default: break;
-    }
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
-

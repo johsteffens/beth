@@ -19,7 +19,7 @@
     Between these cycles, they are treated constant and never modified,
     added or removed. Therefore concurrent read-access can be kept lock-free.
 
-    String constants is a separate concurrent dedicated manager, which is lock-secured
+    String constants are in a separate concurrent dedicated manager, which is lock-secured
     and memory conservative. String constants can be registered and used concurrently anywhere
     in the program.
  */

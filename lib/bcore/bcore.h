@@ -21,8 +21,16 @@
 /// Initializes library bcore only (need not be called in case bcore_register_signal_handler is used)
 void bcore_init();
 
-/// Registers signal handler and initializes targets
-void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler, tp_t name );
+/** Registers signal handler and initializes targets
+ *  No effect if signal_handler has already been registered.
+ */
+void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler );
+
+/** Registers signal handler and initializes targets
+ *  No effect if signal_handler has already been registered.
+ *  Recursion through all declared dependencies which are also registered.
+ */
+void bcore_register_signal_handler_with_deep_dependencies( bcore_fp_signal_handler signal_handler );
 
 /// signal handler for all registered libraries (do not send init or down signals by this function)
 vd_t bcore_global_signal_handler( const bcore_signal_s* signal );
@@ -31,12 +39,6 @@ vd_t bcore_global_signal_handler( const bcore_signal_s* signal );
  *  Example: bcore_run_signal_globally( TYEOF_all, TYPEOF_plant, NULL );
  */
 vd_t bcore_run_signal_globally( tp_t target, tp_t type, vd_t object );
-
-/** Runs a signal across a specific handler.
- *  If the handler was not registered, the function has no effect and returns NULL;
- *  Example: bcore_run_signal( typeof( "bmath" ), TYEOF_all, TYPEOF_plant, NULL );
- */
-vd_t bcore_run_signal( tp_t handler_name, tp_t target, tp_t type, vd_t object );
 
 /// runs selftest on target
 vd_t bcore_run_signal_selftest( tp_t target, vd_t object );

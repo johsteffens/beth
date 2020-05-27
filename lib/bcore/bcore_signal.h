@@ -47,8 +47,6 @@ tp_t bcore_signal_s_handle_type( const bcore_signal_s* o, tp_t target );
 vd_t bcore_signal_s_broadcast( const bcore_signal_s* o, bcore_fp_signal_handler* arr, uz_t size );
 
 /// signal handler hub for this library
-vd_t bcore_signal_handler( const bcore_signal_s* o );
-static inline vd_t bcore_general_signal_handler( const bcore_signal_s* o ) { return bcore_signal_handler( o ); }
-
+vd_t bcore_general_signal_handler( const bcore_signal_s* o );
 
 #endif  // BCORE_SIGNAL_H

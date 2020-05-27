@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-16T10:15:38Z
+ *  Last File Update: 2020-05-27T11:03:10Z
  *
  *  Copyright and License of this File:
  *
@@ -8,6 +8,7 @@
  *  Source code defining this file is distributed across following files:
  *
  *  bcore_file.h
+ *  bcore_plant_builder.h
  *  bcore_plant_inexpandable.h
  *  bcore_plant_sample.h
  *  bcore_spect_inst_call.h
@@ -24,6 +25,10 @@
 
 #include "bcore_control.h"
 
+//To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
+#define HKEYOF_bcore_planted 2378888293
+
+#define TYPEOF_bcore_planted 3660391305
 
 /**********************************************************************************************************************/
 // source: bcore_file.h
@@ -44,6 +49,53 @@
   BCORE_FORWARD_OBJECT( bcore_file ); \
   BCORE_FORWARD_OBJECT( bcore_file_path_s ); \
   BETH_EXPAND_ITEM_bcore_file_path_s
+
+/**********************************************************************************************************************/
+// source: bcore_plant_builder.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_plant_builder
+
+#define TYPEOF_bcore_plant_builder 2932821712
+#define TYPEOF_bcore_plant_builder_s 2794839594
+#define TYPEOF_bcore_plant_builder_target_s 4218879578
+#define BETH_EXPAND_ITEM_bcore_plant_builder_target_s \
+  BCORE_DECLARE_OBJECT( bcore_plant_builder_target_s ) \
+    {aware_t _;st_s* name;st_s* root;bcore_arr_st_s dependencies;bcore_arr_st_s sources;st_s* signal_handler;}; \
+  void bcore_plant_builder_target_s_source( bcore_plant_builder_target_s* o, bcore_source* source ); \
+  sz_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o );
+#define TYPEOF_bcore_plant_builder_target_adl_s 2526634006
+#define BETH_EXPAND_ITEM_bcore_plant_builder_target_adl_s \
+  BCORE_DECLARE_OBJECT( bcore_plant_builder_target_adl_s ) \
+    {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_plant_builder_target_s, );}; \
+  static inline bcore_plant_builder_target_adl_s* bcore_plant_builder_target_adl_s_set_space( bcore_plant_builder_target_adl_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bcore_plant_builder_target_adl_s, ( bcore_array* )o, size ); return o; } \
+  static inline bcore_plant_builder_target_adl_s* bcore_plant_builder_target_adl_s_set_size( bcore_plant_builder_target_adl_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bcore_plant_builder_target_adl_s, ( bcore_array* )o, size ); return o; } \
+  static inline bcore_plant_builder_target_adl_s* bcore_plant_builder_target_adl_s_clear( bcore_plant_builder_target_adl_s* o ) { bcore_array_t_set_space( TYPEOF_bcore_plant_builder_target_adl_s, ( bcore_array* )o, 0 ); return o; } \
+  static inline bcore_plant_builder_target_s* bcore_plant_builder_target_adl_s_push_c( bcore_plant_builder_target_adl_s* o, const bcore_plant_builder_target_s* v ) { bcore_array_t_push( TYPEOF_bcore_plant_builder_target_adl_s, ( bcore_array* )o, sr_twc( TYPEOF_bcore_plant_builder_target_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bcore_plant_builder_target_s* bcore_plant_builder_target_adl_s_push_d( bcore_plant_builder_target_adl_s* o,       bcore_plant_builder_target_s* v ) { bcore_array_t_push( TYPEOF_bcore_plant_builder_target_adl_s, ( bcore_array* )o, sr_tsd( TYPEOF_bcore_plant_builder_target_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bcore_plant_builder_target_s* bcore_plant_builder_target_adl_s_push( bcore_plant_builder_target_adl_s* o ) \
+  { \
+      bcore_array_t_push( TYPEOF_bcore_plant_builder_target_adl_s, ( bcore_array* )o, sr_t_create( TYPEOF_bcore_plant_builder_target_s ) ); \
+      return o->data[ o->size - 1 ]; \
+  }
+#define BETH_EXPAND_GROUP_bcore_plant_builder \
+  BCORE_FORWARD_OBJECT( bcore_plant_builder ); \
+  BCORE_FORWARD_OBJECT( bcore_plant_builder_target_s ); \
+  BCORE_FORWARD_OBJECT( bcore_plant_builder_target_adl_s ); \
+  typedef sz_t (*bcore_plant_builder_build)( const bcore_plant_builder* o ); \
+  BCORE_DECLARE_SPECT( bcore_plant_builder ) \
+  { \
+      bcore_spect_header_s header; \
+      bcore_plant_builder_build build; \
+  }; \
+  static inline bcore_plant_builder* bcore_plant_builder_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_plant_builder, t ); return ( bcore_plant_builder* )bcore_inst_t_create( t ); } \
+  static inline bl_t bcore_plant_builder_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_plant_builder ); } \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_plant_builder ) \
+  static inline bl_t bcore_plant_builder_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_plant_builder ); } \
+  static inline sz_t bcore_plant_builder_a_build( const bcore_plant_builder* o ) { const bcore_plant_builder_s* p = bcore_plant_builder_s_get_aware( o ); assert( p->build ); return p->build( o ); } \
+  static inline bl_t bcore_plant_builder_a_defines_build( const bcore_plant_builder* o ) { return bcore_plant_builder_s_get_aware( o )->build != NULL; } \
+  BETH_EXPAND_ITEM_bcore_plant_builder_target_s \
+  BETH_EXPAND_ITEM_bcore_plant_builder_target_adl_s
 
 /**********************************************************************************************************************/
 // source: bcore_plant_inexpandable.h

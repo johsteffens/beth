@@ -28,7 +28,7 @@
 #include "badapt_training.h"
 #include "badapt_trainer.h"
 
-vd_t badapt_signal_handler( const bcore_signal_s* o )
+vd_t badapt_general_signal_handler( const bcore_signal_s* o )
 {
     vd_t ret = NULL;
 

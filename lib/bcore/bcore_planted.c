@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-16T10:15:38Z
+ *  Last File Update: 2020-05-27T11:03:10Z
  *
  *  Copyright and License of this File:
  *
@@ -8,6 +8,7 @@
  *  Source code defining this file is distributed across following files:
  *
  *  bcore_file.h
+ *  bcore_plant_builder.h
  *  bcore_plant_inexpandable.h
  *  bcore_plant_sample.h
  *  bcore_spect_inst_call.h
@@ -51,6 +52,46 @@ void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
         o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
     }
 }
+
+/**********************************************************************************************************************/
+// source: bcore_plant_builder.h
+#include "bcore_plant_builder.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_plant_builder
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_plant_builder_target_s )
+"aware bcore_plant_builder"
+"{"
+    "st_s => name;"
+    "st_s => root;"
+    "bcore_arr_st_s dependencies;"
+    "bcore_arr_st_s sources;"
+    "st_s => signal_handler;"
+    "func bcore_via_call:source;"
+    "func ^:build;"
+"}";
+
+void bcore_plant_builder_target_s_source( bcore_plant_builder_target_s* o, bcore_source* source )
+{
+    if( !o->root )
+    {
+        o->root = bcore_file_folder_path( bcore_source_a_get_file( source ) );
+        st_s_attach( &o->root, bcore_file_path_minimized( o->root->sc ) );
+    }
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_plant_builder_target_adl_s )
+"aware bcore_array"
+"{"
+    "bcore_plant_builder_target_s => [];"
+"}";
+
+BCORE_DEFINE_SPECT( bcore_inst, bcore_plant_builder )
+"{"
+    "bcore_spect_header_s header;"
+    "feature aware bcore_plant_builder : build;"
+"}";
 
 /**********************************************************************************************************************/
 // source: bcore_plant_inexpandable.h
@@ -261,14 +302,14 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_rand )
 
 /**********************************************************************************************************************/
 
+
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_planted" ) ) )
     {
         case TYPEOF_init1:
         {
-            // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( 2281234107 ) );
+            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( HKEYOF_bcore_planted ) );
 
             // --------------------------------------------------------------------
             // source: bcore_file.h
@@ -277,6 +318,17 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_file_path_s_source );
             BCORE_REGISTER_OBJECT( bcore_file_path_s );
             BCORE_REGISTER_TRAIT( bcore_file, bcore_inst );
+
+            // --------------------------------------------------------------------
+            // source: bcore_plant_builder.h
+
+            // group: bcore_plant_builder
+            BCORE_REGISTER_FEATURE( bcore_plant_builder_build );
+            BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_plant_builder_target_s_source );
+            BCORE_REGISTER_FFUNC( bcore_plant_builder_build, bcore_plant_builder_target_s_build );
+            BCORE_REGISTER_OBJECT( bcore_plant_builder_target_s );
+            BCORE_REGISTER_OBJECT( bcore_plant_builder_target_adl_s );
+            BCORE_REGISTER_SPECT( bcore_plant_builder );
 
             // --------------------------------------------------------------------
             // source: bcore_plant_inexpandable.h

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-07T21:41:18Z
+ *  Last File Update: 2020-05-27T12:54:07Z
  *
  *  Copyright and License of this File:
  *
@@ -383,14 +383,15 @@ BCORE_DEFINE_OBJECT_INST_P( bmath_asmf3_s )
 
 /**********************************************************************************************************************/
 
+vd_t bcore_general_signal_handler( const bcore_signal_s* o );
+
 vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bmath_planted" ) ) )
     {
         case TYPEOF_init1:
         {
-            // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( 2315622933 ) );
+            bcore_const_x_set_d( typeof( "bmath_planted_hash" ), sr_tp( HKEYOF_bmath_planted ) );
 
             // --------------------------------------------------------------------
             // source: bmath_f3_op.h
@@ -606,6 +607,13 @@ vd_t bmath_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( bmath_fp_asmf3_s_htp_mul );
             BCORE_REGISTER_NAME( bmath_fp_asmf3_s_htp_mul_htp );
             BCORE_REGISTER_TRAIT( bmath_asmf3, bcore_inst );
+        }
+        break;
+        case TYPEOF_push_dependencies:
+        {
+            ASSERT( o->object && ( *( aware_t* )o->object ) == TYPEOF_bcore_arr_fp_s );
+            bcore_arr_fp_s* arr_fp = o->object;
+            bcore_arr_fp_s_push( arr_fp, ( fp_t )bcore_general_signal_handler );
         }
         break;
         default: break;

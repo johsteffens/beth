@@ -23,7 +23,6 @@
 #include "bcore_signal.h"
 
 /// broadcasts a signal within the library
-vd_t bhpt_signal_handler( const bcore_signal_s* o );
-static inline vd_t bhpt_general_signal_handler( const bcore_signal_s* o ) { return bhpt_signal_handler( o ); }
+vd_t bhpt_general_signal_handler( const bcore_signal_s* o );
 
 #endif  // BHPT_SIGNAL_H

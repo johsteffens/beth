@@ -22,7 +22,6 @@
 #include "bcore_feature.h"
 
 /// broadcasts a signal within the library
-vd_t bclos_signal_handler( const bcore_signal_s* o );
-static inline vd_t bclos_general_signal_handler( const bcore_signal_s* o ) { return bclos_signal_handler( o ); }
+vd_t bclos_general_signal_handler( const bcore_signal_s* o );
 
 #endif  // BCLOS_SIGNAL_H

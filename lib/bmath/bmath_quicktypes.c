@@ -61,7 +61,7 @@ static sr_s typelist()
 
     // quicktypes from TYPEOF_get_quicktypes
     bcore_signal_s signal = bcore_signal_init( TYPEOF_local, TYPEOF_get_quicktypes, list.o );
-    bmath_signal_handler( &signal );
+    bmath_general_signal_handler( &signal );
 
     bcore_array_r_sort( &list, 0, -1, 1 );
 

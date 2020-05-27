@@ -53,9 +53,9 @@ PLANT_GROUP( bcore_via_call, bcore_inst )
      *  Typical shelvers are: Translator
      *
      *  Note:
-     *    If an object implements this feature the shelver is likely to copy
-     *    the object to obtain modification privileges before shelving it.
-     *    This causes extra overhead. Therefore 'shelve' should only be implemented
+     *    If an object implements this feature, the 'shelver' may opt to create a temporary copy
+     *    of the the object in order to obtain modification privileges to execute 'shelve'.
+     *    This can cause extra overhead. Therefore 'shelve' should only be implemented
      *    when needed.
      */
     feature 'ptr' void shelve( mutable );

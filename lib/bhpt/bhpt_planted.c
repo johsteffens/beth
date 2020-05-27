@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-11T19:16:16Z
+ *  Last File Update: 2020-05-27T11:03:37Z
  *
  *  Copyright and License of this File:
  *
@@ -392,14 +392,15 @@ void bhpt_tutor_language_utf8_s_status_to_sink( const bhpt_tutor_language_utf8_s
 
 /**********************************************************************************************************************/
 
+vd_t bhvm_general_signal_handler( const bcore_signal_s* o );
+
 vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bhpt_planted" ) ) )
     {
         case TYPEOF_init1:
         {
-            // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( 3208683 ) );
+            bcore_const_x_set_d( typeof( "bhpt_planted_hash" ), sr_tp( HKEYOF_bhpt_planted ) );
 
             // --------------------------------------------------------------------
             // source: bhpt_sketch.h
@@ -542,6 +543,13 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhpt_tutor_status_to_sink, bhpt_tutor_language_utf8_s_status_to_sink );
             BCORE_REGISTER_OBJECT( bhpt_tutor_language_utf8_s );
             BCORE_REGISTER_TRAIT( bhpt_tutor_language, bcore_inst );
+        }
+        break;
+        case TYPEOF_push_dependencies:
+        {
+            ASSERT( o->object && ( *( aware_t* )o->object ) == TYPEOF_bcore_arr_fp_s );
+            bcore_arr_fp_s* arr_fp = o->object;
+            bcore_arr_fp_s_push( arr_fp, ( fp_t )bhvm_general_signal_handler );
         }
         break;
         default: break;

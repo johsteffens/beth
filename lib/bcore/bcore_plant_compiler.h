@@ -225,16 +225,10 @@
 /**********************************************************************************************************************/
 /// Plant interface
 
-/// Compiles plants into target files: directory( file )/target{ .c | .h }
-void bcore_plant_compile( sc_t target_name, sc_t source_path );
-
-/** Runs plant compiler globally (compiling only);
- *  Returns true in case a planted-file needs updating.
+/** Compiles plants into target files: directory( source_path )/target{ .c | .h }
+ *  Returns target index ( remember that index for function bcore_plant_push_dependency_signal_handler )
  */
-bl_t bcore_plant_compiler_compile_all_registered_plants( void );
-
-/** Runs plant compiler on registered plant (compiling only); */
-void bcore_plant_compiler_compile_registered_plant( sc_t name );
+sz_t bcore_plant_compile( sc_t target_name, sc_t source_path );
 
 /// Returns true in case any planted files require updating.
 bl_t bcore_plant_compiler_update_required( void );
@@ -244,18 +238,28 @@ bl_t bcore_plant_compiler_update_required( void );
  */
 bl_t bcore_plant_compiler_update_planted_files( void );
 
-/** Runs plant compiler globally (compiling, expansion);
- *  Returns true in case a planted-file was generated or modified.
- */
-bl_t bcore_plant_compiler_compile_update_all_planted_files( void );
-
-/** Runs plant compiler globally (compiling, expansion);
- *  Returns true in case a planted-file was generated or modified.
- */
-bl_t bcore_plant_run_globally( void );
+void bcore_plant_compiler_set_target_signal_handler_name( sz_t target_index, sc_t name );
+void bcore_plant_compiler_set_target_dependencies( sz_t target_index, const bcore_arr_sz_s* dependencies );
 
 sz_t bcore_plant_compiler_get_verbosity( void );
 void bcore_plant_compiler_set_verbosity( sz_t verbosity );
+
+/// Deprecated stuff ....
+
+/** Runs plant compiler globally (compiling only);
+ *  Returns true in case a planted-file needs updating.
+ */
+//bl_t bcore_plant_compiler_compile_all_registered_plants( void );
+
+/** Runs plant compiler globally (compiling, expansion);
+ *  Returns true in case a planted-file was generated or modified.
+ */
+//bl_t bcore_plant_compiler_compile_update_all_planted_files( void );
+
+/** Runs plant compiler globally (compiling, expansion);
+ *  Returns true in case a planted-file was generated or modified.
+ */
+//bl_t bcore_plant_run_globally( void );
 
 /**********************************************************************************************************************/
 

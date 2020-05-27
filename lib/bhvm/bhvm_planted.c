@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-11T17:07:37Z
+ *  Last File Update: 2020-05-27T11:05:05Z
  *
  *  Copyright and License of this File:
  *
@@ -2254,14 +2254,16 @@ sz_t bhvm_mcode_hbase_s_push_copy_from_index( bhvm_mcode_hbase_s* o, sz_t index 
 
 /**********************************************************************************************************************/
 
+vd_t bhvm_general_signal_handler( const bcore_signal_s* o );
+vd_t bhvm_general_signal_handler( const bcore_signal_s* o );
+
 vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bhvm_planted" ) ) )
     {
         case TYPEOF_init1:
         {
-            // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( 3090835405 ) );
+            bcore_const_x_set_d( typeof( "bhvm_planted_hash" ), sr_tp( HKEYOF_bhvm_planted ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_holor.h
@@ -2464,6 +2466,14 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_inst_call_copy_x, bhvm_mcode_hbase_s_copy_x );
             BCORE_REGISTER_OBJECT( bhvm_mcode_hbase_s );
             BCORE_REGISTER_TRAIT( bhvm_mcode_hbase, bhvm_mcode );
+        }
+        break;
+        case TYPEOF_push_dependencies:
+        {
+            ASSERT( o->object && ( *( aware_t* )o->object ) == TYPEOF_bcore_arr_fp_s );
+            bcore_arr_fp_s* arr_fp = o->object;
+            bcore_arr_fp_s_push( arr_fp, ( fp_t )bhvm_general_signal_handler );
+            bcore_arr_fp_s_push( arr_fp, ( fp_t )bhvm_general_signal_handler );
         }
         break;
         default: break;

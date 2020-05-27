@@ -68,6 +68,16 @@ bcore_file_path_s* bcore_file_path_s_create_st( const st_s* st );
 /**********************************************************************************************************************/
 /// file path manipulations using posix path scheme
 
+/** Creates a string returning 'path' with redundancies removed.
+ *  Redundancies are expressions that can be replaced by a shorter expression
+ *  without changing the actual path.
+ *  Examples:
+ *    - repeating slashes: '<expr1>//<expr2>'         -> '<expr1>/<expr2>'
+ *    - current directory: '<expr1>/./<expr2>'        -> '<expr1>/<expr2>'
+ *    - parent directory:  '<expr1>/<dir>/../<expr2>' -> '<expr1>/<expr2>'
+ */
+st_s* bcore_file_path_minimized( sc_t path );
+
 /** Returns extension of path excluding '.'
  *  If path has no extension, returns ""
  */
@@ -78,14 +88,16 @@ sc_t  bcore_file_extension( sc_t path );
  */
 sc_t  bcore_file_name( sc_t path );
 
-/** Returns string 'path' with extension removed
+/** Returns string 'path' with extension removed.
  *  If path has no extension, returns path as is.
- *  path can also be just a file name
+ *  Example: "mydir/myfile.cpp" -> "mydir/myfile"
  */
 st_s* bcore_file_strip_extension( sc_t path ); // path with extension (if any) removed
 
 /** Creates string with path up to last folder, excluding file-name.
- *  If path has no preceding folder, returns ""
+ *  If path has no preceding folder, the function returns ""
+ *  Example: "myroot/mydir/myfile.cpp" -> "myroot/mydir"
+ *  Example: "myroot/mydir"            -> "myroot"
  */
 st_s* bcore_file_folder_path( sc_t path ); // creates string with path of folder
 

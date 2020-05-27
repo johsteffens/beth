@@ -49,6 +49,7 @@
 #include "bcore_sc.h"
 #include "bcore_leaf.h"
 #include "bcore_const_manager.h"
+#include "bcore_plant_builder.h"
 #include "bcore_plant.h"
 #include "bcore_main.h"
 

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-07T21:41:18Z
+ *  Last File Update: 2020-05-27T11:04:14Z
  *
  *  Copyright and License of this File:
  *
@@ -11,7 +11,7 @@
  *
  */
 
-#include "bhvm_planted_vop.h"
+#include "bhvm_vop_planted.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_sr.h"
@@ -1300,14 +1300,14 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar3_pow_dp_b_s )
 
 /**********************************************************************************************************************/
 
-vd_t bhvm_planted_vop_signal_handler( const bcore_signal_s* o )
+
+vd_t bhvm_vop_planted_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_planted_vop" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_vop_planted" ) ) )
     {
         case TYPEOF_init1:
         {
-            // Comment or remove line below to rebuild this target.
-            bcore_const_x_set_d( typeof( "bhvm_planted_vop_hash" ), sr_tp( 168344164 ) );
+            bcore_const_x_set_d( typeof( "bhvm_vop_planted_hash" ), sr_tp( HKEYOF_bhvm_vop_planted ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_vop.h
