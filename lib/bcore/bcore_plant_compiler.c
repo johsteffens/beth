@@ -3227,7 +3227,7 @@ static void bcore_plant_target_s_expand_h( const bcore_plant_target_s* o, sz_t i
 
 static void bcore_plant_target_s_expand_init1( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
 {
-    bcore_sink_a_push_fa( sink, "#rn{ }bcore_const_x_set_d( typeof( \"#<sc_t>_hash\" ), sr_tp( HKEYOF_#<sc_t> ) );\n", indent, o->name.sc, o->name.sc );
+//    bcore_sink_a_push_fa( sink, "#rn{ }bcore_const_x_set_d( typeof( \"#<sc_t>_hash\" ), sr_tp( HKEYOF_#<sc_t> ) );\n", indent, o->name.sc, o->name.sc );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3302,12 +3302,12 @@ static bl_t bcore_plant_target_s_to_be_modified( const bcore_plant_target_s* o )
     BLM_INIT();
     bl_t to_be_modified = true;
 
-    tp_t key = typeof( ( ( st_s* )BLM_A_PUSH( st_s_create_fa( "#<sc_t>_hash", o->name.sc ) ) )->sc );
-    if( bcore_const_exists( key ) )
-    {
-        to_be_modified = ( *( tp_t* )bcore_const_get_o( key ) != o->hash );
-    }
-    else
+//    tp_t key = typeof( ( ( st_s* )BLM_A_PUSH( st_s_create_fa( "#<sc_t>_hash", o->name.sc ) ) )->sc );
+//    if( bcore_const_exists( key ) )
+//    {
+//        to_be_modified = ( *( tp_t* )bcore_const_get_o( key ) != o->hash );
+//    }
+//    else
     {
         st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
         if( bcore_file_exists( file_h->sc ) )
@@ -3332,6 +3332,46 @@ static bl_t bcore_plant_target_s_to_be_modified( const bcore_plant_target_s* o )
     }
 
     BLM_RETURNV( bl_t, to_be_modified );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// returns true if a file was modified
+static void bcore_plant_compiler_write_with_signature( sc_t file, const st_s* data )
+{
+    tp_t hash = bcore_tp_fold_sc( bcore_tp_init(), data->sc );
+    bcore_sink* sink = bcore_file_open_sink( file );
+    bcore_sink_a_push_data( sink, data->data, data->size );
+    bcore_sink_a_push_fa( sink, "// BETH_PLANT_SIGNATURE #pl10 {#<tp_t>}\n", hash );
+    bcore_sink_a_discard( sink );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// returns true if correct signature could be verified
+static bl_t bcore_plant_compiler_check_signature( sc_t file )
+{
+    BLM_INIT();
+    bcore_source* source = BLM_A_PUSH( bcore_file_open_source( file ) );
+    st_s* data = BLM_CREATE( st_s );
+    while( !bcore_source_a_eos( source ) ) st_s_push_char( data, bcore_source_a_get_u0( source ) );
+
+    if( data->size < bcore_strlen( "// BETH_PLANT_SIGNATURE" ) ) BLM_RETURNV( bl_t, false );
+
+    sz_t idx = data->size - 1;
+    while( idx >= 0 && data->data[ idx ] != '/' ) idx--;
+    if( idx > 0 ) idx--;
+
+    if( st_s_find_sc( data, idx, -1, "// BETH_PLANT_SIGNATURE" ) != idx ) BLM_RETURNV( bl_t, false );
+
+    tp_t hash = 0;
+    st_s_parse_fa( data, idx, -1, "// BETH_PLANT_SIGNATURE #<tp_t*>", &hash );
+
+    data->data[ idx ] = 0;
+
+    if( hash != bcore_tp_fold_sc( bcore_tp_init(), data->sc ) ) BLM_RETURNV( bl_t, false );
+
+    BLM_RETURNV( bl_t, true );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3372,6 +3412,11 @@ static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
 
     if( bcore_file_exists( file_h->sc ) )
     {
+        if( !bcore_plant_compiler_check_signature( file_h->sc ) )
+        {
+            bcore_wrn_fa( "\nWARNING: #<sc_t> - Signature check failed.\n", file_h->sc );
+        }
+
         st_s* backup_name = st_s_create_fa( "#<sc_t>.backup", file_h->sc );
         bcore_file_rename( file_h->sc, backup_name->sc );
         st_s_discard( backup_name );
@@ -3386,6 +3431,11 @@ static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
 
     if( bcore_file_exists( file_c->sc ) )
     {
+        if( !bcore_plant_compiler_check_signature( file_c->sc ) )
+        {
+            bcore_wrn_fa( "\nWARNING: #<sc_t> - Signature check failed.\n", file_c->sc );
+        }
+
         st_s* backup_name = st_s_create_fa( "#<sc_t>.backup", file_c->sc );
         bcore_file_rename( file_c->sc, backup_name->sc );
         st_s_discard( backup_name );
@@ -3399,10 +3449,10 @@ static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
     }
 
     bcore_msg_fa( "writing '#<sc_t>'\n", file_h->sc );
-    bcore_sink_a_push_data( BLM_A_PUSH( bcore_file_open_sink( file_h->sc ) ), txt_h->data, txt_h->size );
+    bcore_plant_compiler_write_with_signature( file_h->sc, txt_h );
 
     bcore_msg_fa( "writing '#<sc_t>'\n", file_c->sc );
-    bcore_sink_a_push_data( BLM_A_PUSH( bcore_file_open_sink( file_c->sc ) ), txt_c->data, txt_c->size );
+    bcore_plant_compiler_write_with_signature( file_c->sc, txt_c );
 
     #endif // BCORE_PLANT_DRY_RUN
 
@@ -3632,7 +3682,7 @@ void bcore_plant_compiler_setup( void )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// returns target index
-sz_t bcore_plant_compile( sc_t target_name, sc_t source_path )
+sz_t bcore_plant_compiler_compile( sc_t target_name, sc_t source_path )
 {
     if( !plant_compiler_g ) bcore_plant_compiler_setup();
     sz_t target_index = bcore_plant_compiler_s_parse( plant_compiler_g, target_name, source_path );

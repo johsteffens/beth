@@ -225,7 +225,7 @@
 /** Compiles plants into target files: directory( source_path )/target{ .c | .h }
  *  Returns target index ( remember that index for function bcore_plant_push_dependency_signal_handler )
  */
-sz_t bcore_plant_compile( sc_t target_name, sc_t source_path );
+sz_t bcore_plant_compiler_compile( sc_t target_name, sc_t source_path );
 
 /// Returns true in case any planted files require updating.
 bl_t bcore_plant_compiler_update_required( void );

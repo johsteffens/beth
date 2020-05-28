@@ -79,7 +79,7 @@ sz_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o )
 
         st_s* planted_name = BLM_A_PUSH( st_s_create_fa( "#<sc_t>_planted", o->name->sc ) );
 
-        sz_t index = bcore_plant_compile( planted_name->sc, file_path->sc );
+        sz_t index = bcore_plant_compiler_compile( planted_name->sc, file_path->sc );
         target_index = ( target_index == -1 ) ? index : target_index;
         if( index != target_index )
         {
