@@ -530,7 +530,13 @@ bcore_sink_stdout_s* bcore_sink_stdout_g = NULL;
 
 void bcore_sink_stdout_s_flush( bcore_sink_stdout_s* o )
 {
-    // nothing
+    if( fflush( stdout ) != 0 )
+    {
+        st_s* msg = st_s_createf( "Error flushing stdout\n" );
+        perror( msg->sc );
+        st_s_discard( msg );
+        bcore_abort();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -557,7 +563,13 @@ bcore_sink_stderr_s* bcore_sink_stderr_g = NULL;
 
 void bcore_sink_stderr_s_flush( bcore_sink_stderr_s* o )
 {
-    // nothing
+    if( fflush( stderr ) != 0 )
+    {
+        st_s* msg = st_s_createf( "Error flushing stderr\n" );
+        perror( msg->sc );
+        st_s_discard( msg );
+        bcore_abort();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
